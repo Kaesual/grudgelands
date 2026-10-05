@@ -5,16 +5,14 @@ points P1–P4 are recorded in §10).
 
 **Reworked 2026-08-07** (crafting rework session): the material ladder is
 now six tiers (§3.0), the tome chain is replaced by one UI recipe book per
-profession (§2.2), professions **enchant** instead of owning
+profession (professions.md §1.2), professions **enchant** instead of owning
 the item catalog (§3.3–§3.6b, §6b), and there is **exactly one item per
 concept** — the vendor bracket catalog and the base craft ladder are the
 same, material-named items (§3.0.3). Resolutions in §10.
 
-**World-zone revision 2026-08-10.** Surface progression is now keyed by the
+**World-zone revision 2026-08-10.** Surface progression is keyed by the
 stable named zones and level bands in `world_zones.md`, not by WP18's radial
-ring names. Any surviving ring wording below describes shipped calibration;
-WP40 must translate placement to the named-zone catalog without changing the
-item, tier, depth or economy rules.
+ring names.
 
 **Material-system integration 2026-08-12.** Six universal metals now form a
 non-circular pick/depth spine. Since Round 24 (2026-09-29) the pick tier is
@@ -26,15 +24,24 @@ PvP-special channel were removed in Round 33. Private housing
 isles, guild systems, finder items and the Amplifier are absent from the target
 design. Historical decisions in §10 remain design history only.
 
-Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
-(professions/workbenches), WP22 (repair). Crafting mechanics frame:
-`inventory_equipment.md` §4 (3×3 grid, multi-stage, profession-level
-permission gate and recipe-book UI).
+**This file owns the item rules:** the material ladder, tier rock and
+harvest tiers, one item per concept, the armor and weapon curves, the
+profession catalogs, food, the vendor catalog, loot sources, the quality and
+enchant model and the bow foundation. Every item number that a script prints
+(enchant values and inputs, upgrades, the crown, potions and elixirs, sale
+values, repair math, culture prices) is in [item_tiers.md](item_tiers.md);
+the profession rules (slots, progression, recipe books, mastery, stations) are
+in [professions.md](professions.md); money, prices and sinks in
+[economy.md](economy.md); wear and repair in
+[durability_repair.md](durability_repair.md); farming in
+[farming.md](farming.md). Crafting mechanics frame: `inventory_equipment.md`
+§4 (3×3 grid, multi-stage, shared and personal stations).
 
 **Notation (binding, 2026-08-07).** `T1`–`T6` **always** means a *gear /
-material* tier (§3.0). The four **mastery** tiers are **always written by
-name** — Apprentice, Journeyman, Expert, Master — never as "T4". The two
-ladders are independent; §2.1 spells out how they meet.
+material* tier (§3.0) or the profession tier of the same number. The four
+**mastery** bands are **always written by name** — Apprentice, Journeyman,
+Expert, Master — never as "T4". The ladders are independent;
+[professions.md](professions.md) §1.1 spells out how they meet.
 
 ## 0. Decided anchors (2026-08-06, binding — preserved)
 
@@ -67,14 +74,17 @@ ladders are independent; §2.1 spells out how they meet.
   stations are personal workspaces; crafted player-placed stations are shared.
   Bags have parallel Tailor and Leatherworker lines.
 - Vendor rule: vendors sell supplies, consumables, tools, the Common gear
-  floor and a few T1 basics; never an enchant input and never a crafting
-  ingredient above T1 (professions.md §4, economy.md §2).
+  floor and a few T1 basics; never an enchant input (a signature loot item or
+  family input of `enchants.json`; a T1 own material such as the Bronze Bar
+  may be sold) and never a crafting ingredient above T1 (professions.md §4,
+  economy.md §2).
 - **One item per concept** (decided 2026-08-07, binding): no two items
   may fill the same role. The vendor bracket catalog *is* the base craft
   ladder, and both are material-named (§3.0.3).
 - **Everyone crafts the base items of every material tier**; professions
-  enchant them and hold a few exclusive recipes per mastery
-  tier (§3.3–§3.6b, §6b).
+  enchant and upgrade them and hold a few exclusive recipes (bags,
+  spellbooks, trinkets, settings and cut gems, potions, dishes; §3.3–§3.7,
+  §6b).
 
 ## 1. Reference research (2026-08-06)
 
@@ -90,164 +100,19 @@ See [archived §1.1](../archive/design/items-history.md#11-lord-of-the-test-the-
 
 See [archived §1.2](../archive/design/items-history.md#12-voxelibre-harvestable-item-family-templates-verified-per-mod).
 
-## 2. Profession progression: the two ladders & the recipe book
+## 2. Profession progression and the recipe book
 
-**Revised 2026-09-18:** the profession recipe book is UI and exposes its catalog;
-profession level is the sole recipe-permission progression. There are no book
-items, per-recipe unlocks, keystone redemptions or ingredient-discovery
-unlocks for profession recipe permission. The 2026-09-20 Basics visibility
-amendment below is a presentation rule, not a crafting-permission unlock.
+Moved to [professions.md](professions.md) in Round 37, which owns the
+profession rules:
 
-### 2.1 The two ladders (mastery vs. gear) — made explicit 2026-08-07
-
-There are **two independent ladders**. They are not alternatives; both
-stay, and they never mean the same thing.
-
-**Ladder 1 — mastery** (this table, unchanged since 2026-08-06). Four
-tiers, one per quarter of the level curve. Mastery is a property of the
-*crafter*.
-
-| Tier | Name | Item levels | Learn at ~char level | Ring that feeds it |
-|---|---|---|---|---|
-| 1 | Apprentice | 1–15 | 1 (trainer) | start + home zones |
-| 2 | Journeyman | 16–30 | ~15–18 | home + heartland (+depth mining) |
-| 3 | Expert | 31–45 | ~30–33 | contested approaches/front |
-| 4 | Master | 46–60 | ~46–50 | high front + named rares |
-
-**Ladder 2 — gear/material, T1–T6** (§3.0). Six tiers, one per ten
-character levels, matching the six vendor brackets of §3.8 exactly:
-1–10, 11–20, 21–30, 31–40, 41–50, 51–60, ilvl anchors 3 / 10 / 20 / 30 /
-40 / 50. Gear tier is a property of the *item*.
-
-Three statements close the 4-vs-6 question for good — none of them is a
-new rule, all three were implicit before:
-
-1. **Enchant values follow item level up to their tier** (Round 33,
-   [item_tiers.md](item_tiers.md) §1.1): a crafted enchant has its recipe's
-   tier, a found one its item's tier; neither depends on the crafter's
-   mastery.
-2. **Profession tier gates enchant operations.** Every legal prefix and suffix
-   is available in each T1–T6 tier; no mastery suffix gate or temper step remains.
-3. **Mastery retains specialist recipes**, such as bag capacities and spellbooks;
-   it does not add enchant slots. Recipe profession tier and explicitly declared
-   specialist prerequisites govern crafting. Universal Basics routes are ungated.
-
-| Profession | Retained specialist products |
-|---|---|
-| Weaponsmith | Physical-weapon enchantments |
-| Armorsmith | Metal-armor and shield enchantments |
-| Leatherworker | 8/16/24/32-slot leather bags; leather armour and bow enchants |
-| Tailor | 8/16/24/32-slot cloth bags; spellbooks; cloth armour and spellbook enchants |
-| Woodcarver | Staff and wand enchantments |
-| Goldsmith | Rough→Cut gems; Settings; trinkets; trinket enchants |
-| Alchemy (secondary) | Profession-gated mixtures for universal Brewing Stand finishing |
-
-Enchant values and costs follow §6b, [item_tiers.md](item_tiers.md) and
-[the current contract](crafting_equipment_revision.md#enchanting). Removed
-Imbue/Temper recipes do not survive as mastery unlocks.
-
-### 2.2 Recipe books are UI (revised 2026-09-18)
-
-- Learning a profession at a trainer exposes its book. A book is not an item,
-  is never bought, traded, carried, lost or consumed, and stores no state.
-- Every learned book shows its complete catalog from T1 through T6. Recipes
-  above the effective profession level remain visible but greyed, with the
-  required profession tier and corresponding character-band floor
-  ("Locked: needs Weaponsmith tier 3 (character level 21+).", in the tooltip
-  and in the recipe view). A profession book's per-tier line counts these
-  recipes ("T3: 4 locked"); Basics keeps its per-tier "Undiscovered" count.
-  A station's book button lists only what the player can craft there.
-  Greyed recipes are browsable but are never ingredient-navigation targets.
-- The crafting page carries two primary book slots, one fixed slot for each
-  framework secondary (Cooking, then Alchemy; Round 33), and the always-open
-  **Basics** book below them. Empty learnable slots say **learn at a
-  trainer**. Riding does not acquire a book slot.
-- The Basics book derives its entries from existing non-profession engine and
-  dual-furnace recipes. Those recipes remain registered by their owning mods
-  and are not re-registered by the profession framework.
-  A Basics recipe's tier (its "Undiscovered" count and sort order) is its
-  output's material tier: the item's own tier, else its gear bracket, else
-  its registered ingredient tier, else its item-level band; an output with
-  none of these takes the highest tier among its inputs (a pick, block or
-  rod takes its bar's tier), else T1 (Round 29).
-- **Basics visibility (user decision 2026-09-20):** an explicit starter set is
-  visible immediately: bootstrap wood/stick/torch/chest/furnace/wooden-hoe
-  routes, every universal T1 weapon/tool/shield and metal/cloth/leather armor,
-  the universal arrow, and T1 profession-free feedstock preparations. Additional
-  universal recipes become visible after the first acquisition of their
-  explicitly declared main material, rather than requiring every auxiliary
-  ingredient to have been seen. Declarations are keyed by complete station,
-  output, method/shape and input signature; missing, stale or ambiguous routes
-  fail the catalog audit. Concrete acquired item names are persisted from all
-  player-owned inventory lists, and group declarations match any acquired
-  concrete member. This discovery remains recorded. Visibility
-  never gates crafting: a level-1 character with the inputs may craft an
-  Abyssal Steel base item. Character level does not reveal recipe tiers;
-  material tier remains a catalog classification and item-level use/equip
-  restrictions remain separate. Professional recipes keep their owning books.
-- Every furnace, dual furnace and brewing stand carries the same book button,
-  filtered to recipes for that station. Grid recipes remain beside the normal
-  3×3 grid.
-- **Ingredient navigation (decided 2026-09-28):** an ingredient cell of the
-  selected recipe is clickable when the ingredient has a recipe the player's
-  books already list (Basics, the primary professions, Cooking, Alchemy); its tooltip
-  gains "Click to view recipe". A group ingredient uses the item the cell
-  shows. The click keeps the current book when that view lists the
-  ingredient; otherwise it opens the first of those books that does, and a
-  station-filtered view falls back to that book's full view. It clears the
-  search, selects the ingredient's first route and turns to its page. A Back
-  button then restores the previous book, station, page, search, recipe and
-  route (up to 20 steps). The grid looks unchanged at rest and on hover; raw,
-  undiscovered and locked ingredients stay inert. Navigation ignores
-  **inverse routes**: a route making X from one distinct ingredient Y, when
-  some route makes Y from X alone with more slots (slab/stair back to block,
-  block back to bar or lump). So mined materials such as cobble, sand, coal
-  lump or snow stay inert, while bars (smelting) and planks (trees) stay
-  clickable. Inverse routes remain listed and browsable in the book.
-- A profession recipe is craftable only when the player has learned the
-  profession and its profession level is at least the recipe tier. Universal
-  base recipes (§3.0.3) remain craftable by everyone.
-- Unlearning removes the book immediately and wipes that profession's level
-  and current-tier count. Learning it again starts at T1.
-
-### 2.3 Profession level and tier ingredients (revised 2026-09-18)
-
-- Every profession starts at T1. Successful crafts of the **current** tier
-  advance the fixed counter in `professions.md` §1; lower-tier crafts count
-  nothing and above-tier crafts are refused.
-- **Only real recipes count (Round 33):** enchants, upgrades and the
-  profession's own end products (potion and elixir mixtures, dishes and raw
-  dish assemblies, bags, trinkets, spellbooks). Stations and intermediates
-  (settings, cut gems, bolt bundles) and every automatic
-  furnace or brewing finish count nothing. A recipe registers as such with
-  `material = true` or `progress = false`; every craft path and station
-  operation awards progress through `grug_jobs.award_progress`.
-- Character level caps the effective profession tier to the material bands of
-  §3.0.1. Profession and item-use gates are independent: item-level requirements remain separate from profession qualification.
-  Ordinary T1 weapons explicitly require level 1 through `_grug_req_level`;
-  elevated found levels keep their actual item-level gate.
-- Every profession recipe of tier N declares at least one tier-N ingredient.
-  Lower-tier ingredients may accompany it; a higher-tier ingredient may not
-  be hidden in a lower-tier recipe. Ingredient tier is registered explicitly
-  through `grug_jobs.register_ingredient_tier(item, tier)` before the recipe.
-- The former keystone tables are retired historical design data. No keystone
-  item is registered or consumed and no workbench redemption advances a book.
-  Regional ingredients still create travel and trade demand as recipe inputs,
-  not as a second unlock state.
-
-### 2.4 Pacing check (10–20 h to level 60; revised 2026-09-18)
-
-~10–20 min per character level keeps each ten-level profession cap open for
-roughly 100–200 minutes. The five current-tier craft thresholds are
-10 / 15 / 20 / 25 / 30 (§2.3), so a player who works two professions beside
-questing has a predictable craft goal in every band without a separate
-redemption item or discovery grind. A pure fighter instead buys enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
-**Intended gear cadence: a visible upgrade every 45–90 min** (quest
-rewards + the world drops of §5.1 between the six material tiers, §3.0),
-and at 60 the professions stay load-bearing via consumables
-(elixirs/potions) and named enchant application/replacement (§7). V1 repair is universal and gold-only at every profession
-trainer; material/profession repair remains later work (§8 and
-[durability_repair.md](durability_repair.md)).
+- §2.1 the two ladders (profession tier and mastery band) →
+  [professions.md §1.1](professions.md#11-profession-tier-and-mastery-band);
+- §2.2 recipe books, Basics visibility, ingredient navigation and the craft
+  gate → [professions.md §1.2](professions.md#12-recipe-books-are-ui-revised-2026-09-18);
+- §2.3 profession level and tier ingredients →
+  [professions.md §1](professions.md#1-structure) and
+  [§1.3](professions.md#13-tier-ingredients-revised-2026-09-18);
+- §2.4 pacing → [professions.md §1.4](professions.md#14-pacing-check-1020-h-to-level-60-revised-2026-09-18).
 
 ## 3. Materials, curves and the profession catalogs
 
@@ -263,7 +128,8 @@ secondaries, **§3.8** the vendor brackets.
 
 ### 3.0 The material ladder (decided 2026-08-07)
 
-Six tiers, one per ten character levels. This is gear ladder 2 of §2.1;
+Six tiers, one per ten character levels. This is the gear ladder of
+[professions.md](professions.md) §1.1;
 the level bands and ilvl anchors are the §3.8 vendor brackets verbatim,
 because under §3.0.3 they are the same items.
 
@@ -375,8 +241,7 @@ political territory or PvP state; it selects the region's signature wood:
   not runtime ore respawn.
 - Map generation measures actual exposed yield and route time before freezing
   ore-registration literals. The acceptance audit compares both factions'
-  native volume, dragon refill/yield including the Goldsmith bonus, a full
-  gear set's demand and two-handed equivalence.
+  native volume, a full gear set's demand and two-handed equivalence.
 
 Crafted material blocks are storage/building nodes, never natural resources.
 **The pack/unpack recipes shipped 2026-09-16** (WP26): all twelve processed
@@ -392,8 +257,8 @@ and unpack to the same 9 Cut Gems; Rough Gems cannot be packed. Emberglass,
 Embersteel, Abyssal Crystal, Abyssal Steel, Gold and mundane metal blocks obey
 the same non-gated building-node rule.
 
-The Gold Block specifically packs from 9 Gold Ingots and unpacks to the same
-9 ingots. It is a storage/status/decor node, not ledger currency or a housing
+The Gold Block specifically packs from 9 Gold Bars and unpacks to the same
+9 bars. It is a storage/status/decor node, not ledger currency or a housing
 purchase token; no universal progression step requires it.
 
 #### 3.0.2 Alloys and the two-slot furnace
@@ -465,7 +330,7 @@ from `grug_gear`. Consequences, all binding:
   | Cloth armor (§3.5's bolt grades) | Patch | Woven | Heavy | Silkweave | Silk | Stormweave |
   | Leather armor (§3.4's grades) | Light | Cured | Heavy | Scaled | Sleek | Nightscale |
 
-  Nouns are Sword / Dagger / Battle Axe / Staff, Helm / Chestplate / Greaves /
+  Nouns are Sword / Dagger / Battle Axe / Staff / Wand / Bow, Helm / Chestplate / Greaves /
   Sabatons (metal), Cowl / Robe / Leggings / Slippers (cloth) and Hood /
   Jerkin / Pants / Boots (leather) — so the catalogue reads *Abyssal Steel
   Battle Axe*, *Silkweave Cowl*, *Iron Helm*. Itemstrings follow the same
@@ -479,7 +344,7 @@ from `grug_gear`. Consequences, all binding:
   Four wood sticks use the familiar two-plank vertical recipe; the old
   one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick, with a same-tier
   metal rod accepted in the handle slot. Pickaxes, axes, shovels and the
-  Farmer's Hoes use their canonical Minecraft shapes; axes and hoes
+  hoes use their canonical Minecraft shapes; axes and hoes
   accept both mirrored orientations. The exact non-Minecraft shapes are dagger = one
   material over one handle; greataxe = five material units symmetrically around
   two vertical handles. Wands and staves use ordinary sticks, matching metal
@@ -774,16 +639,16 @@ fpi = full_punch_interval. Columns are **ilvl sample points**, relabelled
 
 | Family | fpi | dmg factor | ilvl 12 | 27 | 42 | 57 |
 |---|---|---|---|---|---|---|
-| 1H sword / mace / axe | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
+| Sword (1H) | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
 | Wand (caster 1H) | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
-| Dagger | 0.7 | ×0.7 | 6 | 9 | 13 | 17 |
-| 2H greataxe / warhammer | 1.4 | ×1.5 | 12 | 20 | 29 | 36 |
-| Metal-shod staff (caster 2H) | 1.4 | ×1.2 | 10 | 16 | 23 | 29 |
-| Bow (physical 2H) | charged | ×1.0 | 8 | 13 | 19 | 24 |
+| Dagger (1H) | 0.7 | ×0.7 | 6 | 9 | 13 | 17 |
+| Battle Axe (2H) | 1.4 | ×1.5 | 12 | 20 | 29 | 36 |
+| Staff (caster 2H) | 1.4 | ×1.2 | 10 | 16 | 23 | 29 |
+| Bow (1H, charged) | charged | ×1.0 | 8 | 13 | 19 | 24 |
 
 **Rounding rule** (made explicit 2026-08-07): **round the 1H value
 half-up, then apply the family factor and round half-up again** — never
-one rounding over the whole product. The greataxe ilvl-42 cell read 28
+one rounding over the whole product. The Battle Axe ilvl-42 cell read 28
 under the old text and is **corrected to 29** here: 1H at ilvl 42 is
 18.7 → 19, and 19 × 1.5 = 28.5 → 29, the same two-step that already turns
 ilvl 27's 13 × 1.5 = 19.5 into 20. The rule is load-bearing, not
@@ -811,13 +676,14 @@ describe a model where each profession **owned** its item catalog. Under
 §3.0.3 that is no longer true: the base item of every material tier is
 craftable by everyone. What each section now lists is three things —
 
-1. the **material chain** the profession refines through (unchanged; it
-   is still the profession's progression and its trade good),
-2. the **item families** the profession may **enchant and turn
-   into special variants** (§6b) — its exclusive claim on the *quality*
-   of an item, not on its existence,
-3. its **exclusive recipes**, a handful per mastery tier: things nobody
-   else can make at all.
+1. the **material chain** the profession enchants and upgrades with — its
+   grades are universal Basics grid recipes that award no progress
+   ([professions.md](professions.md) §3),
+2. the **item families** the profession may **enchant and upgrade**
+   (§6b, §7) — its exclusive claim on the *quality* of an item, not on its
+   existence,
+3. its **exclusive recipes**: things nobody else can make at all (bags,
+   spellbooks, trinkets, settings and cut gems).
 
 Coverage across the six primaries and the two secondaries is complete and
 overlap-free (professions.md §2).
@@ -826,7 +692,7 @@ overlap-free (professions.md §2).
 
 **Material chain**: T1 **Bronze** → T2 **Iron** → T3 **Steel** → T4
 **Silversteel** → T5 **Embersteel** → T6 **Abyssal Steel** (§3.0.1/§3.0.2).
-Vendor supply: flux. *Revised 2026-08-07*: the old four-step chain
+*Revised 2026-08-07*: the old four-step chain
 (bronze / iron / steel / gem-tempered steel) is superseded by the
 six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
 — the T4 metal is Silversteel from a real new ore, which is exactly the
@@ -850,9 +716,10 @@ a lead-metal-band rule.
 Every pick is a universal base recipe. Higher-tier tools improve their mining
 access and lifetime; no professional refinement step exists.
 
-### 3.4 Leatherworker (tanning rack) — leather
+### 3.4 Leatherworker (tanning rack) — leather armour, bows and leather bags
 
-**Material chain**: hide + thread → leather, 1:1 per grade. Authored grades are
+**Material chain**: hide + thread → leather, 1:1 per grade, as universal
+Basics grid recipes (no profession, no progress). Authored grades are
 **T1 light leather, T2 cured leather, T3 heavy leather and T4 scaled hide**;
 decided 2026-08-13: **T5 sleek leather** (from the panther's sleek pelt —
 `biomes_mobs.md` §3.1/§6, both continents via jungle fringe/deep jungle) and
@@ -865,17 +732,20 @@ the §3.1 shapes at jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP
 wearers are the **Warrior** (light avoidance set, §3.8 — decided
 2026-08-13) and the **Scout**.
 
-**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): named
-leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes
-the 8-slot Leather Pouch. (The quiver item and its recipe were removed in
-Round 28; the quiver is a Scout-only slot, `inventory_equipment.md` §3.) Its 16/24/32-slot leather bags follow at
-Journeyman/Expert/Master. Plain bows are Basics; the Leatherworker enchants
+**Exclusive recipes**: named leather-armor enchantments across T1–T6 (§6b)
+and four leather bags at the Tanning Rack — the 8-slot Leather Pouch at
+profession T1, then 16 / 24 / 32 slots at T2 / T4 / T5, each also needing
+its mastery band Apprentice / Journeyman / Expert / Master
+([professions.md](professions.md) §1.1). (The quiver item and its recipe
+were removed in Round 28; the quiver is a Scout-only slot,
+`inventory_equipment.md` §3.) Plain bows are Basics; the Leatherworker enchants
 and upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md) §3.3).
 
 
-### 3.5 Tailor (tailor bench) — cloth and cloth bags
+### 3.5 Tailor (tailor bench) — cloth armour, spellbooks and cloth bags
 
-**Material chain**: 2 cloth + thread → bolt. Authored grades are **T1 linen
+**Material chain**: 2 cloth + thread → bolt, as universal Basics grid
+recipes (no profession, no progress). Authored grades are **T1 linen
 scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
 bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
@@ -893,16 +763,19 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
 
 **Exclusive recipes**:
 
-- **Bags** (`inventory_equipment.md` §3) — **four sizes across the four
-  mastery tiers, 8 / 16 / 24 / 32 slots**. The 8-slot bag stays
+- **Bags** (`inventory_equipment.md` §3) — **four sizes, 8 / 16 / 24 / 32
+  slots**, at profession T1 / T2 / T4 / T5, each also needing its mastery
+  band Apprentice / Journeyman / Expert / Master
+  ([professions.md](professions.md) §1.1). The 8-slot bag stays
   vendor-sellable, because it is the floor tier (vendor floor rule); the
   16-slot bag is 8 woven bolts + 2 cured leather, the 24-slot 10 heavy
   bolts + 4 spider silk + 2 heavy leather, and the 32-slot ("huge bag")
-  is the Master-tier addition of 2026-08-07. Bags are the one signature
-  recipe line that is fully decided.
+  is the Master addition of 2026-08-07.
 - **Named cloth enchantments** across all six tiers (§6b); no separate kit line.
 - **Spellbooks** (Round 33, from the Goldsmith): two bolts of the tier and a
-  Parchment at the Tailor Bench, Journeyman mastery; the Tailor also enchants
+  Parchment at the Tailor Bench; every tier also needs the Journeyman
+  mastery band (character level 16+, [professions.md](professions.md) §1.1),
+  so the T1 spellbook is out of reach in the T1 band. The Tailor also enchants
   and upgrades them with its bolt ([item_tiers.md](item_tiers.md) §3.3).
 - The woven and heavy bolt bundles are bag inputs (intermediates, no
   profession progress).
@@ -911,11 +784,14 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
 
 **Implemented 2026-09-18; a secondary profession since Round 33** (no primary
 slot, its own book slot beside Cooking, `professions.md` §1). Herbalism is
-part of Alchemy rather than a separate profession. Gravemoss, Dragonweed, Crimson Lotus and Ember Moss are
-fail-closed scenery for everyone who has not learned Alchemy; learning the
-profession authorizes all four. Cave Cap remains food-grade and universal.
-Recipe access is the effective Alchemy tier (§2.2), not a herb
-or keystone book gate. Every tier-N recipe contains a declared tier-N reagent.
+part of Alchemy rather than a separate profession. The wild sources of
+Gravemoss, Dragonweed, Crimson Lotus and Ember Moss are fail-closed scenery
+for everyone who has not learned Alchemy; learning the profession authorizes
+all four. The cultivated Ember Moss crop and its seed recipe carry no Alchemy
+gate ([farming.md](farming.md)). Cave Cap remains food-grade and universal.
+Recipe access is the effective Alchemy tier ([professions.md](professions.md)
+§1.2), not a herb or keystone book gate. Every tier-N recipe contains a
+declared tier-N reagent.
 
 Alchemists assemble a potion mixture from its reagents and vial in their own
 inventory 3x3 grid; that qualified preparation awards current-tier progress.
@@ -928,66 +804,19 @@ three Steel Bars, one Furnace and one Glass Bottle. Glass Bottles cost 3 copper.
 
 Potions restore or act immediately and share the persistent potion clock.
 Every successfully consumed potion or elixir plays one shared drinking sound;
-refused uses play no sound.
-Since Round 33 ([item_tiers.md](item_tiers.md) §5) healing and mana potions
-restore **fixed amounts**, about half a Priest's base pool at the tier's top
-level: **70 / 200 / 400 / 650 / 1000 / 1350** for tiers I–VI. Every potion and
-draught starts the one shared **60-second** clock; the vendor's Weak Healing
-Potion (8c) heals a fixed **35 HP** on the same clock. A full-health healing
-potion is refused without consumption or cooldown. A mana potion may be
-consumed at full mana. Elixirs give two enchants' worth of their stat at the
-tier's top level (Stoneskin one armor enchant) and never touch the potion
-clock: exactly one `elixir` status may run, the newest replaces it, and it
-stacks with the separate food status. Pool and crit values are percentage
-points, armor a rating. Consumables require the first character level of
-their recipe tier: **1, 11, 21, 31, 41, 51**. No recipe uses a reagent that
-drops in only one faction's zones; Elixir of Precision II takes the Ridged
-Boar Tusk because Dragonweed and Fang are the Swiftness Draught's recipe.
+refused uses play no sound. Healing and mana potions restore **fixed
+amounts**, and every potion and draught starts the one shared potion clock,
+the vendor's Weak Healing Potion included. A full-health healing potion is
+refused without consumption or cooldown. A mana potion may be consumed at
+full mana. Elixirs never touch the potion clock: exactly one `elixir` status
+may run, the newest replaces it, and it stacks with the separate food status.
+Pool and crit values are percentage points, armor a rating. Consumables
+require the first character level of their recipe tier. No recipe uses a
+reagent that drops in only one faction's zones.
 
-| Tier | Product | Reagent 1 | Reagent 2 | Effect |
-|---:|---|---|---|---|
-| T1 | Healing Potion I | Gravemoss | Sunleaf | Restores 70 HP at once; 60 s shared cooldown |
-| T1 | Mana Potion I | Gravemoss | Carrot or Cassava | Restores 70 Mana at once; 60 s shared cooldown |
-| T1 | Elixir of Vigor I | Sunleaf | Tattered Flesh | +4.0% maximum HP for 15 minutes |
-| T1 | Elixir of Focus I | Gravemoss | Crab Eye | +5.0% maximum Mana for 15 minutes |
-| T1 | Elixir of Precision I | Sunleaf | Boar Tusk | +4.2 percentage points Crit for 15 minutes |
-| T1 | Stoneskin Elixir I | Gravemoss | Crab Leg | +0.8 armor rating for 30 minutes |
-| T2 | Healing Potion II | Dragonweed | Sunleaf | Restores 200 HP at once; 60 s shared cooldown |
-| T2 | Mana Potion II | Dragonweed | Sugar Cane | Restores 200 Mana at once; 60 s shared cooldown |
-| T2 | Elixir of Vigor II | Dragonweed | Tough Sinew | +4.8% maximum HP for 15 minutes |
-| T2 | Elixir of Focus II | Dragonweed | Clear Crab Eye | +5.6% maximum Mana for 15 minutes |
-| T2 | Elixir of Precision II | Dragonweed | Ridged Boar Tusk | +5.2 percentage points Crit for 15 minutes |
-| T2 | Stoneskin Elixir II | Dragonweed | Ridged Crab Shell | +1.6 armor rating for 30 minutes |
-| T2 | Antivenom | Dragonweed | Venom Gland | Cures poison; 60 s shared cooldown |
-| T2 | Swiftness Draught | Dragonweed | Fang | +10% movement speed for 5 seconds; 60 s shared cooldown |
-| T3 | Healing Potion III | Crimson Lotus | Gravemoss | Restores 400 HP at once; 60 s shared cooldown |
-| T3 | Mana Potion III | Crimson Lotus | Sugar Cane | Restores 400 Mana at once; 60 s shared cooldown |
-| T3 | Elixir of Vigor III | Crimson Lotus | Bear Claw | +5.6% maximum HP for 15 minutes |
-| T3 | Elixir of Focus III | Crimson Lotus | Cave Cap | +6.2% maximum Mana for 15 minutes |
-| T3 | Elixir of Precision III | Crimson Lotus | Serrated Fang | +6.0 percentage points Crit for 15 minutes |
-| T3 | Stoneskin Elixir III | Crimson Lotus | Layered Crab Shell | +2.4 armor rating for 30 minutes |
-| T3 | Cave Draught | Cave Cap | Bound Wisp Mote | Night vision for 10 minutes; 60 s shared cooldown |
-| T4 | Healing Potion IV | Crimson Lotus | Leathery Flesh | Restores 650 HP at once; 60 s shared cooldown |
-| T4 | Mana Potion IV | Crimson Lotus | Venom Sac | Restores 650 Mana at once; 60 s shared cooldown |
-| T4 | Elixir of Vigor IV | Crimson Lotus | Ironbound Sinew | +6.4% maximum HP for 15 minutes |
-| T4 | Elixir of Focus IV | Crimson Lotus | Campaign Talisman | +6.8% maximum Mana for 15 minutes |
-| T4 | Elixir of Precision IV | Crimson Lotus | Razor Cat Claw | +7.0 percentage points Crit for 15 minutes |
-| T4 | Stoneskin Elixir IV | Crimson Lotus | Shiny Scale | +3.2 armor rating for 30 minutes |
-| T5 | Healing Potion V | Ember Moss | Crimson Lotus | Restores 1000 HP at once; 60 s shared cooldown |
-| T5 | Mana Potion V | Stormkelp | Crimson Lotus | Restores 1000 Mana at once; 60 s shared cooldown |
-| T5 | Elixir of Vigor V | Ember Moss | Scorched Flesh | +7.2% maximum HP for 15 minutes |
-| T5 | Elixir of Focus V | Ember Moss | Cave Cap | +7.4% maximum Mana for 15 minutes |
-| T5 | Elixir of Precision V | Ember Moss | Siegepack Fang | +7.8 percentage points Crit for 15 minutes |
-| T5 | Stoneskin Elixir V | Stormkelp | Siege Bone | +4.0 armor rating for 30 minutes |
-| T5 | Deepwater Elixir | Stormkelp | Cave Cap | Water breathing for 10 minutes |
-| T6 | Healing Potion VI | Wild Cocoa | Ember Moss | Restores 1350 HP at once; 60 s shared cooldown |
-| T6 | Mana Potion VI | Wild Cocoa | Stormkelp | Restores 1350 Mana at once; 60 s shared cooldown |
-| T6 | Elixir of Vigor VI | Wild Cocoa | Salt-Cured Flesh | +8.0% maximum HP for 15 minutes |
-| T6 | Elixir of Focus VI | Wild Cocoa | Last-Hex Shard | +8.0% maximum Mana for 15 minutes |
-| T6 | Elixir of Precision VI | Ember Moss | Sharp Feather | +8.6 percentage points Crit for 15 minutes |
-| T6 | Stoneskin Elixir VI | Wild Cocoa | Unquiet Bone | +4.8 armor rating for 30 minutes |
-
-Every row also consumes one Glass Bottle. There is no apothecary gear, no
+**The recipes, amounts, durations and level requirements** are the
+generated table of [item_tiers.md](item_tiers.md) §5 (40 rows, T1–T6). Every
+row also consumes one Glass Bottle. There is no apothecary gear, no
 imbuing oil and no Sovereign's Flask (removed in Round 33).
 
 ### 3.6a Woodcarver (carving bench) — wood and caster weapons
@@ -1032,7 +861,7 @@ Natural gem nodes drop Rough Gems. The Goldsmith alone refines Rough → Cut,
 at the gem's tier; every storage block and equipment recipe consumes Cut Gems
 where a gem is required. Quartz is a mineral without a cut form (Round 33);
 raw Quartz stays an enchant input. Cut gems and settings are intermediates:
-they award no profession progress (§2.3).
+they award no profession progress ([professions.md](professions.md) §1).
 
 **Owns exclusively:**
 

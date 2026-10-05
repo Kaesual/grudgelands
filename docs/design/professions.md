@@ -4,10 +4,18 @@ Decided 2026-08-06, roster **re-cut 2026-08-07** (crafting rework),
 material identities integrated 2026-08-12 and profession progression revised
 2026-09-18, the smith split adopted 2026-09-20, and Alchemy made a secondary
 with progression from real recipes only in Round 33 (2026-10-04).
-Crafting mechanics: `inventory_equipment.md` §4 (3×3 + profession-level
-recipe permission + station hints). Recipe/material details: `items_crafting.md` —
-the material ladder is its §3.0, the per-profession catalogs are
-§3.3–§3.6b, and what a profession actually *does* to an item is §6b.
+
+**This file owns the profession rules:** roster and ids, slots, learning,
+progression and its thresholds, the profession tier and mastery band, recipe
+books, station ownership, production and progress, the families each
+profession serves, the vendor rule and trainers. Item rules (materials,
+catalogs, enchant operations, loot) live in
+[items_crafting.md](items_crafting.md): the material ladder is its §3.0, the
+per-profession catalogs are §3.3–§3.6b, and what a profession *does* to an
+item is §6b. Every item number (enchant values, inputs, upgrades, potions) is
+in [item_tiers.md](item_tiers.md). Station and workspace behaviour (shared and
+personal stations, access, digging) is
+[inventory_equipment.md](inventory_equipment.md) §4.
 
 ## 1. Structure
 
@@ -21,14 +29,18 @@ the material ladder is its §3.0, the per-profession catalogs are
 - **Secondary professions have no slot limit.** Cooking and **Alchemy** are
   the two secondaries (Alchemy since Round 33). Every player may learn both in
   addition to the two primaries; a secondary cannot be unlearned. Each has its
-  own fixed book slot on the crafting page (`items_crafting.md` §2.2). There
-  is no First Aid.
+  own fixed book slot on the crafting page (§1.2). There is no First Aid.
   - Both have the same visible T1–T6 book groups and profession-level gate
-    as every primary profession (`items_crafting.md` §2.2, §3.6, §3.7).
+    as every primary profession (§1.2; `items_crafting.md` §3.6, §3.7).
   - **Riding is likewise universal**, but is taught only by the dedicated
     Riding Trainer in each capital's outer stable, in four steps at levels
     15/30/45/60 (`mounts.md` §1). It costs no main profession slot, is not a
     framework profession and is absent from all profession trainer interfaces.
+- **Learning is free** (right-click a trainer). Like every service NPC, a
+  trainer serves only its own faction (`grug_factions.serves`). The internal
+  profession ids are `weaponsmith`, `armorsmith`, `tailor`, `leatherworker`,
+  `woodcarver`, `goldsmith`, `cooking` and `alchemist` (Alchemy;
+  `grug_jobs.PROFESSIONS`), so code asks `grug_jobs.has(player, "alchemist")`.
 - **Cooking in every start, all eight in every capital.** The eight capital
   trainers are the six primaries plus Cooking and Alchemy.
   Capital trainers and their public stations occupy themed outer-district
@@ -44,10 +56,12 @@ the material ladder is its §3.0, the per-profession catalogs are
   cannot release items. This guarantee is intrinsic to the display definitions,
   independent of the unfinished general protection system.
 - **Gathering split**: food-grade plants (potatoes, berries, cooking
-  ingredients) are gatherable by EVERYONE; **alchemy herbs
-  ("dragonweed") require Alchemy** — for everyone else those plants are
-  scenery. (Revised 2026-08-07: this used to name Herbalism, which no longer
-  exists — see §2.)
+  ingredients) are gatherable by EVERYONE. The wild sources of the four
+  **Alchemy herbs** — Gravemoss, Dragonweed, Crimson Lotus and Ember Moss —
+  need Alchemy: learning it authorizes all four, with no per-tier herb gate,
+  and for everyone else those plants are scenery. Sunleaf, Stormkelp and
+  Wild Cocoa are ungated reagents, and the cultivated Ember Moss crop and its
+  seeds are not gated ([farming.md](farming.md)).
 - Mining and smelting are open to everyone (unchanged), and so is
   **crafting the base item of every material tier** (`items_crafting.md`
   §3.0.3). A profession is not what lets you make a sword; it is what
@@ -64,32 +78,201 @@ the material ladder is its §3.0, the per-profession catalogs are
   successful craft of the previous tier opens the new tier and clears the
   counter. Further crafts while still character-capped count nothing.
 - **Only real recipes count (Round 33):** enchants, upgrades and the
-  profession's own end products (potions and elixirs at their mixture,
-  dishes, bags, trinkets, spellbooks). Stations (Forge, Carving Bench, …),
-  intermediates (settings, cut gems, bolt bundles) and
-  every automatic furnace or brewing finish count nothing
-  (`items_crafting.md` §2.3). There is no fast path for late starters. Every
-  profession still reaches its band cap: the six primaries enchant at every
-  tier, Cooking and Alchemy have counting recipes at T1–T6.
+  profession's own end products (potion and elixir mixtures, dishes and raw
+  dish assemblies, bags, trinkets, spellbooks). Stations (Forge, Carving
+  Bench, …), intermediates (settings, cut gems, bolt bundles) and every
+  automatic furnace or brewing finish count nothing. A recipe registers as
+  such with `material = true` or `progress = false`; every craft path and
+  station operation awards progress through `grug_jobs.award_progress`. There
+  is no fast path for late starters. Every profession still reaches its band
+  cap: the six primaries enchant at every tier, Cooking and Alchemy have
+  counting recipes at T1–T6.
 - Profession level gates crafting only. Item consumption and equipment remain
-  independently gated by `_grug_ilvl`; neither consuming an item nor checking
-  its use requirement consults profession state.
+  independently gated by `_grug_ilvl` and the level requirement
+  (`items_crafting.md` §6.1); neither consuming an item nor checking its use
+  requirement consults profession state.
+
+### 1.1 Profession tier and mastery band
+
+Two independent ladders meet at the crafting table; they never mean the same
+thing.
+
+- **Profession tier T1–T6** is the crafter's progression in one profession
+  (§1). It uses the same six tiers as gear and materials (`items_crafting.md`
+  §3.0: one per ten character levels, item-level anchors 3 / 10 / 20 / 30 /
+  40 / 50). Every profession recipe and station operation needs a profession
+  tier at least its own, and it counts only at the crafter's current tier.
+- **Mastery band** comes from the character's level, not from any
+  profession: **Apprentice** from level 1, **Journeyman** 16, **Expert** 31,
+  **Master** 46 (`grug_items.mastery_band`). The bands are always written by
+  name, never as "T4". A band gates only a recipe that declares
+  `mastery_required`, and only the bags and the spellbooks do:
+
+  | Recipe | Profession tier | Mastery band |
+  |---|---|---|
+  | 8-slot bag (Tailor, Leatherworker) | T1 | Apprentice |
+  | 16-slot bag | T2 | Journeyman |
+  | 24-slot bag | T4 | Expert |
+  | 32-slot bag | T5 | Master |
+  | Spellbook, every tier (Tailor) | T1–T6 | Journeyman |
+
+  So no T1 spellbook can be made in the T1 band (levels 1–10); from level 16
+  it counts only for a Tailor still at profession tier 1. The 32-slot bags
+  need level 46 inside the T5 band 41–50. No enchant, upgrade, gem, setting,
+  trinket, potion or dish declares a mastery band.
+
+Three consequences:
+
+1. **Enchant values follow the item level up to their tier**
+   ([item_tiers.md](item_tiers.md) §1.1): a crafted enchant has its recipe's
+   tier, a found one its item's tier; neither depends on the crafter.
+2. **Profession tier gates enchant operations.** Every legal prefix and
+   suffix is available at each tier T1–T6; no mastery suffix gate or temper
+   step remains, and removed Imbue/Temper recipes do not survive as mastery
+   unlocks.
+3. **Mastery adds no enchant slots.** Universal Basics routes are ungated.
+
+### 1.2 Recipe books are UI (revised 2026-09-18)
+
+The profession recipe book is UI and exposes its catalog; profession level is
+the sole recipe-permission progression. There are no book items, per-recipe
+unlocks, keystone redemptions or ingredient-discovery unlocks for profession
+recipe permission. The 2026-09-20 Basics visibility amendment below is a
+presentation rule, not a crafting-permission unlock.
+
+- Learning a profession at a trainer exposes its book. A book is not an item,
+  is never bought, traded, carried, lost or consumed, and stores no state.
+- Every learned book shows its complete catalog from T1 through T6. Recipes
+  above the effective profession level remain visible but greyed, with the
+  required profession tier and corresponding character-band floor
+  ("Locked: needs Weaponsmith tier 3 (character level 21+).", in the tooltip
+  and in the recipe view); a recipe held back only by its mastery band reads
+  "Locked: Journeyman mastery required.". A profession book's per-tier line
+  counts these recipes ("T3: 4 locked"); Basics keeps its per-tier
+  "Undiscovered" count. A station's book button lists only what the player
+  can craft there. Greyed recipes are browsable but are never
+  ingredient-navigation targets.
+- The crafting page carries two primary book slots, one fixed slot for each
+  framework secondary (Cooking, then Alchemy; Round 33), and the always-open
+  **Basics** book below them. Empty learnable slots say **learn at a
+  trainer**. Riding does not acquire a book slot.
+- The Basics book derives its entries from existing non-profession engine and
+  dual-furnace recipes. Those recipes remain registered by their owning mods
+  and are not re-registered by the profession framework.
+  A Basics recipe's tier (its "Undiscovered" count and sort order) is its
+  output's material tier: the item's own tier, else its gear bracket, else
+  its registered ingredient tier, else its item-level band; an output with
+  none of these takes the highest tier among its inputs (a pick, block or
+  rod takes its bar's tier), else T1 (Round 29).
+- **Basics visibility (user decision 2026-09-20):** an explicit starter set is
+  visible immediately: bootstrap wood/stick/torch/chest/furnace/wooden-hoe
+  routes, every universal T1 weapon/tool/shield and metal/cloth/leather armor,
+  the universal arrow, and T1 profession-free feedstock preparations. Additional
+  universal recipes become visible after the first acquisition of their
+  explicitly declared main material, rather than requiring every auxiliary
+  ingredient to have been seen. Declarations are keyed by complete station,
+  output, method/shape and input signature; missing, stale or ambiguous routes
+  fail the catalog audit. Concrete acquired item names are persisted from all
+  player-owned inventory lists, and group declarations match any acquired
+  concrete member. This discovery remains recorded. Visibility
+  never gates crafting: a level-1 character with the inputs may craft an
+  Abyssal Steel base item. Character level does not reveal recipe tiers;
+  material tier remains a catalog classification and item-level use/equip
+  restrictions remain separate. Professional recipes keep their owning books.
+- Every furnace, dual furnace and brewing stand carries the same book button,
+  filtered to recipes for that station. Grid recipes remain beside the normal
+  3×3 grid.
+- **Ingredient navigation (decided 2026-09-28):** an ingredient cell of the
+  selected recipe is clickable when the ingredient has a recipe the player's
+  books already list (Basics, the primary professions, Cooking, Alchemy); its tooltip
+  gains "Click to view recipe". A group ingredient uses the item the cell
+  shows. The click keeps the current book when that view lists the
+  ingredient; otherwise it opens the first of those books that does, and a
+  station-filtered view falls back to that book's full view. It clears the
+  search, selects the ingredient's first route and turns to its page. A Back
+  button then restores the previous book, station, page, search, recipe and
+  route (up to 20 steps). The grid looks unchanged at rest and on hover; raw,
+  undiscovered and locked ingredients stay inert. Navigation ignores
+  **inverse routes**: a route making X from one distinct ingredient Y, when
+  some route makes Y from X alone with more slots (slab/stair back to block,
+  block back to bar or lump). So mined materials such as cobble, sand, coal
+  lump or snow stay inert, while bars (smelting) and planks (trees) stay
+  clickable. Inverse routes remain listed and browsable in the book.
+- **The craft gate:** a profession recipe is craftable only when the player
+  has learned the profession, its effective profession tier is at least the
+  recipe tier, and the character's mastery band is at least the recipe's
+  `mastery_required` where it declares one (§1.1; `grug_jobs.recipe_progress_unlocked`).
+  Universal base recipes (`items_crafting.md` §3.0.3) remain craftable by
+  everyone.
+- Unlearning removes the book immediately and wipes that profession's level
+  and current-tier count. Learning it again starts at T1.
+
+### 1.3 Tier ingredients (revised 2026-09-18)
+
+- Every profession recipe of tier N declares at least one tier-N ingredient.
+  Lower-tier ingredients may accompany it; a higher-tier ingredient may not
+  be hidden in a lower-tier recipe. Ingredient tier is registered explicitly
+  through `grug_jobs.register_ingredient_tier(item, tier)` before the recipe.
+- The former keystone tables are retired historical design data. No keystone
+  item is registered or consumed and no workbench redemption advances a book.
+  Regional ingredients still create travel and trade demand as recipe inputs,
+  not as a second unlock state.
+
+### 1.4 Pacing check (10–20 h to level 60; revised 2026-09-18)
+
+~10–20 min per character level keeps each ten-level profession cap open for
+roughly 100–200 minutes. The five current-tier craft thresholds are
+10 / 15 / 20 / 25 / 30 (§1), so a player who works two professions beside
+questing has a predictable craft goal in every band without a separate
+redemption item or discovery grind. A pure fighter instead buys enchanted gear
+from crafters; both paths remain inside the 10–20 h envelope.
+**Intended gear cadence: a visible upgrade every 45–90 min** (quest
+rewards + the world drops of `items_crafting.md` §5.1 between the six material
+tiers), and at 60 the professions stay load-bearing via consumables
+(elixirs/potions) and named enchant application/replacement
+(`items_crafting.md` §6b, §7). V1 repair is universal and money-only (§2.2);
+material/profession repair remains later work
+([durability_repair.md](durability_repair.md)).
+
+### 1.5 Stations, production and progress
+
+- **Station recipes:** each profession station is a T3 grid
+  recipe of exactly one owning profession, with Steel Bars as its declared
+  T3 ingredient, and awards no progress: the Forge is the Weaponsmith's, the
+  Tanning Rack the Leatherworker's, the Tailor Bench the Tailor's, the Carving
+  Bench the Woodcarver's, the Jeweller's Bench the Goldsmith's and the Brewing
+  Stand Alchemy's (`grug_jobs/station_nodes.lua`, `grug_alchemy/recipes.lua`).
+  The Armorsmith works at the shared Forge but has no Forge recipe of its own.
+- All automatic furnace, dual-furnace and brewing completion is universal and
+  gives no profession progress, and neither does crafting a station or an
+  intermediate (§1). Only qualified cooks assemble profession dishes. Only
+  qualified alchemists assemble potion mixtures, in the player's own 3x3 grid;
+  anyone may finish those mixtures at a Brewing Stand. Direct grid dishes
+  still require Cooking and grant progress once; the six Hearty dishes that
+  have a raw assembly come only from that "Raw X" in a furnace (Round 28
+  ruling 27). Simple meat/fish/grain roasting is universal, belongs to Basics
+  and gives no profession progress.
+- Profession progression belongs to the eligible taker of the protected
+  preparation/craft and requires exact equality of recipe tier and current
+  effective profession tier. No inserting-player ownership is recorded. Book
+  provenance for profession dishes/mixtures includes their universal finishing
+  instructions; simple universal roasting appears only in Basics.
 
 ## 2. MVP roster — six primaries and two secondaries, cut by material
 
 Two free main professions per player, unchanged, plus the two secondaries
 Cooking and Alchemy. The roster is organised **by material, never by class**.
 
-| Profession | Material chain T1–T6 | Owns exclusively |
+| Profession (id) | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
-| **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Sword, dagger and battle-axe enchantments and upgrades (the Scout's melee blade too); plain weapons and tools are Basics |
-| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments and upgrades; plain shields are Basics |
-| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor and bow enchantments and upgrades, leather bags; plain bows are Basics |
-| **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and spellbook enchantments and upgrades, spellbooks, cloth bags |
-| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff and wand enchantments and upgrades; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
-| **Goldsmith** | Gold + the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Both trinket slots (enchants and upgrades), gem refinement, Settings |
-
-| **Alchemy** (secondary) | healing herbs + spices | Potions and elixirs — **gathers its own herbs** |
+| **Weaponsmith** (`weaponsmith`) | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Sword, dagger and battle-axe enchantments and upgrades (the Scout's melee blade too); plain weapons and tools are Basics |
+| **Armorsmith** (`armorsmith`) | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments and upgrades; plain shields are Basics |
+| **Leatherworker** (`leatherworker`) | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor and bow enchantments and upgrades, leather bags; plain bows are Basics |
+| **Tailor** (`tailor`) | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and spellbook enchantments and upgrades, spellbooks, cloth bags |
+| **Woodcarver** (`woodcarver`) | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff and wand enchantments and upgrades; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
+| **Goldsmith** (`goldsmith`) | Settings from tin, iron, steel + copper, gold, embersteel + gold and abyssal steel + gold bars; the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Trinkets for both trinket slots (craft, enchants and upgrades), gem refinement, Settings |
+| **Alchemy** (`alchemist`, secondary) | the four Alchemy herbs plus ungated reagents and mob loot | Potion and elixir mixtures — **gathers its own herbs** |
+| **Cooking** (`cooking`, secondary) | farmed and gathered food plants, meat and fish | Dishes and raw dish assemblies (`items_crafting.md` §3.7) |
 
 Two professions dress every class in armour, weapon and offhand (Round 33,
 [item_tiers.md](item_tiers.md) §3.3): Warrior Armorsmith + Weaponsmith, Scout
@@ -122,8 +305,9 @@ That is the property the re-cut was made for, and it is checkable:
   improves them; the Tailor makes and improves spellbooks (Round 33, before
   the Goldsmith). The Scout's offhand is its melee
   blade, and its quiver is a slot, not an item (Round 28).
-- **Consumables** are Alchemy's alone. Tailor owns cloth bags and
-  Leatherworker owns equal-capacity leather bags.
+- **Potions and elixirs** are Alchemy's alone, dishes Cooking's (vendors
+  still sell the Weak Healing Potion, `items_crafting.md` §3.7). Tailor owns cloth
+  bags and Leatherworker owns equal-capacity leather bags.
 
 ### 2.2 Why material-cut and not class-cut
 
@@ -132,9 +316,9 @@ three classes and **breaks the moment Phase 2 adds four more** — every
 new class needs either a new profession or an awkward second home in an
 old one, and the roster grows with the class list forever.
 
-A material cut does not move when the class list does: Phase 2's Rogue
-wants leather, which already has a maker; the Warlock wants cloth and a
-wand, which already have makers.
+A material cut does not move when the class list does: a later class that
+wears leather finds a maker already there, and one that wants cloth and a
+wand finds both makers already there.
 
 It is also the only cut that keeps **§4's social supply chain** alive. A
 profession that serves exactly one class serves exactly one customer per
@@ -144,15 +328,17 @@ online. Trade stays voluntary: since Round 28 no profession needs another
 profession's product (§3 below).
 
 V1 repair is the explicit exception to profession ownership: every profession
-trainer repairs every repairable item for gold only. Housing craft stations
-gain the same universal service later. Material-matched repair is backlog work,
-not a hidden benefit of learning the item's owning profession; see
-[durability_repair.md](durability_repair.md).
+trainer repairs every repairable item of a player of its faction for money
+only. Player-placed stations inside an active Claim Stone claim offer the same
+service ([durability_repair.md](durability_repair.md)). Material-matched
+repair is backlog work, not a hidden benefit of learning the item's owning
+profession.
 
 ### 2.3 Two professions were merged away
 
-- **Herbalism merges into Alchemy.** Alchemy gathers its own herbs; the old
-  gathering gate becomes Alchemy's own book group (`items_crafting.md` §3.6).
+- **Herbalism merges into Alchemy.** Alchemy gathers its own herbs: learning
+  it authorizes all four Alchemy herbs (§1, gathering split); there is no
+  separate herb book group or per-tier herb gate (`items_crafting.md` §3.6).
 - **Gem Hunter merges into the Goldsmith.** Its useful gathering identity
   survives as bonus yield from a successfully harvested natural gem node (`items_crafting.md` §3.6b): **10% base chance at Apprentice, 20%
   from Journeyman onward**, rolled once after a valid harvest and granting one
@@ -162,10 +348,9 @@ not a hidden benefit of learning the item's owning profession; see
   given a continental radar role.
 
 Both disappear as separate professions. They were the two asymmetric
-stubs in the old roster — three tiers and two tiers against everyone
-else's four — and burning one of a player's two main slots on a pure
-gathering skill was never a real choice. **Every profession is now
-symmetric: four mastery tiers each, six material groups each.**
+stubs in the old roster, and burning one of a player's two main slots on a
+pure gathering skill was never a real choice. **Every profession is now
+symmetric: six profession tiers each, six material groups each.**
 
 ### 2.4 The Woodcarver closes a real hole
 
@@ -195,16 +380,19 @@ bolts, graded wood) are not profession products.
 ## 4. Vendor supply rule
 
 **Vendors sell supplies, consumables, tools, the Common gear floor and a
-few T1 basics. They never sell an enchant input, and never a crafting
+few T1 basics. They never sell an enchant input — a signature loot item or
+family input of `grug_professions/data/enchants.json` — and never a crafting
 ingredient above T1** (user ruling 1 of 2026-10-02,
-[economy plan](../planning/economy-vendor-plan.md) §2). Every ingredient
-from T2 up and every enchant input comes from loot, mining or gathering:
-the hunt is the game. T1 basics stay buyable because T1 is the tutorial
-band. A load audit in `grug_traders` drops and reports any shelf entry that
-breaks the rule; it judges a food by its own raw tier (`items_crafting.md`
-§3.7, so the baker's T1 melon passes) and anything else by the higher of its
-own tier and its profession ingredient tier. Flavour shelves (the mason's blocks, candles, food to eat)
-stay. (Also anchored in economy.md §2.)
+[economy plan](../planning/economy-vendor-plan.md) §2). A T1 own material
+may be sold (the smith and the armourer sell the Bronze Bar, the tanner Light
+Leather). Every ingredient from T2 up and every enchant input comes from
+loot, mining or gathering: the hunt is the game. T1 basics stay buyable
+because T1 is the tutorial band. A load audit in `grug_traders` drops and
+reports any shelf entry that breaks the rule; it judges a food by its own raw
+tier (`items_crafting.md` §3.7, so the baker's T1 melon passes) and anything
+else by the higher of its own tier and its profession ingredient tier.
+Flavour shelves (the mason's blocks, candles, food to eat) stay. (Also
+anchored in economy.md §2.)
 
 The gear floor (revised 2026-08-07 twice over):
 
@@ -216,19 +404,15 @@ The gear floor (revised 2026-08-07 twice over):
   Base and enchanted items have the same material lifetime; enchantments add
   the explicitly chosen stats, with no hidden refinement bonus.
 
-The [current station/enchant contract](crafting_equipment_revision.md) defines
-all fixed-tier operations and their costs. Profession progress comes from the
-qualified preparation/craft, only at the character's current profession tier.
-Automatic furnace, dual-furnace and brewing completion is universal and grants
-no progress. Alchemists prepare mixtures in their inventory 3x3 grid; cooks
-prepare profession dishes before universal baking. Simple roasting is Basics.
-Stations and intermediates grant no progress either (§1).
+Enchant and upgrade operations and their inputs are `items_crafting.md` §6b
+and [item_tiers.md](item_tiers.md) §2–§3; production and progress are §1.5.
 
 ## 5. Phase 2+
 
 The former Blacksmith is split in the current roster. Weaponsmith and Armorsmith
 use one shared physical Forge but have separate trainers, books, progression and
-recipe ownership. The six primaries still compete for two slots; a metal user
+recipe ownership (the Forge's own recipe is the Weaponsmith's, §1.5). The six
+primaries still compete for two slots; a metal user
 who wants both specialties spends both slots, matching the two-profession cost
 of cloth or leather users who also want a professionally improved weapon.
 
