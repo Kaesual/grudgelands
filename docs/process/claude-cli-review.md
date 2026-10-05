@@ -105,7 +105,7 @@ Before any long acceptance runner that will eventually promote a file into a
 repository or sibling worktree, use the **same command-runner sandbox and
 permission profile as the real run** to create, close and remove a real
 `mktemp` file in the exact target directory. This probe must happen before the
-long LuaJIT work and before a final-only PUC process. Writability of the main
+long LuaJIT work. Writability of the main
 repository, `/tmp` or another worktree does not prove that the target worktree
 is writable; a failed probe stops the run immediately.
 
