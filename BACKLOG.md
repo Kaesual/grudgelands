@@ -21,8 +21,19 @@ WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 36 "The main questline"](docs/planning/round36-plan.md#completion-2026-10-05)
-  complete and pushed** (2026-10-05, `0f169898` with the follow-up lanes;
+  [Round 37 "Audit fixes"](docs/planning/round37-plan.md#completion-2026-10-06)
+  complete locally, not pushed** (2026-10-06, `27e5db87` and lane D; no new
+  world beyond Round 36's; GUI test open): the
+  [October 2026 audit](docs/audit-2026-10/README.md)'s code packages P1–P5
+  (the combat hot path, mob behaviour, mob persistence and bosses, the
+  interaction bugs, per-player polling), MGT-02 with P7 (mapgen), P9
+  (sound) and the documentation packages A–F, plus the user's rulings of
+  2026-10-06 (start zones fight alone, the Reef Lurker, the minimap at
+  normal quality, mob projectiles push)
+  ([Round 37](#round-37--audit-fixes),
+  [carry-overs](#round-37-carry-overs)).
+- [Round 36 "The main questline"](docs/planning/round36-plan.md#completion-2026-10-05)
+  (2026-10-05, pushed 2026-10-05 as `0f169898` with the follow-up lanes;
   needs a world made on `fef94a6a` or later; GUI test open): WP9
   delivered — each faction's main line from its fortress Warmaster in
   three chapters (41, 46, 53) and a group finale at 60 on the
@@ -42,7 +53,7 @@ example E5) are cited below.
   [carry-overs](#round-36-carry-overs)).
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user,
   2026-10-05, [Round 37 plan](docs/planning/round37-plan.md) §2.3.5);
-  Round 36 is open ([project status](docs/STATUS.md)).
+  Rounds 36 and 37 are open ([project status](docs/STATUS.md)).
 - [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
   (2026-10-05, pushed 2026-10-05; its first GUI findings fed Round 36): the user's
   Round 34 GUI findings — the server's aiming rays test rotated selection
@@ -441,7 +452,9 @@ playtest of the front quests and bounties.
 - Six of the 195 sub-types appear in no recipe (measured 2026-10-02): the
   optional cap-1 elites `causeway_construct`, `siege_war_construct`,
   `seam_mesa_golem`, `seam_stone_golem` and `crown_stone_golem` (a recipe
-  roster cannot cap a role at one) and the Salt Reef Lurker.
+  roster cannot cap a role at one) and the Salt Reef Lurker. **The Reef
+  Lurker is placed since Round 37 F** (the 51–60 shores of Gravesalt and
+  Skyglass, user ruling 2026-10-06); the War Constructs are DW-04 below.
 
 **Spawn regions:**
 
@@ -754,6 +767,8 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   (768p 186 → 159, 1440p 345 → 358); high quality keeps its size but draws
   a base pixel about one screen pixel wide at 1080p and shows less detail
   than it could (`REDUCE.high` stays 2). The user decides after the test.
+  **High settled in Round 37 F:** the minimap always shows normal quality
+  (user ruling 2026-10-06); the normal bezel is unchanged.
 - **Location sample** (F1 review): 34.7 → 53.9 µs per player and second;
   the territory status repeats two zone queries `grug_pvp`'s own location
   tick already makes (could share them). Standing exactly at y −501 can
@@ -773,7 +788,11 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   glide (13–25 ms/s) — re-measure both first, F2 and F1 changed those files;
   R8 the quest-marker memo's 1 s expiry; R9 the tracker's bag scan; R10
   vegetation renewal bursts; R11 the discovery scan; R12 tag carriers in
-  crowded places; R13 royal and garrison NPC steps.
+  crowded places; R13 royal and garrison NPC steps. **R7, R8, R9 and R11
+  done in Round 37 PO** (audit CORE-04, PLY-06, PLY-05): the minimap places
+  only on change (21.0 → 9.9 ms/s at 100 stand-ins), the marker memo lives
+  until something changes, the tracker reads no bags without an item
+  objective, discovery scans in slots; R6, R10, R12 and R13 stay.
 - **Playtest server operations** (R4, R5): serve media through
   `remote_media` (about 13.8 MB per first join); give the server at least
   4 GB of RAM and swap (2.9–3.3 GB after the first mapgen). Later: the two
@@ -1080,8 +1099,9 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   advance for the other faction's rows, which it never sees or earns
   (harmless; no unlock).
 - **Isquarre's spawn** is a plain `add_entity` under mobs_redo's mob cap,
-  so on a crowded server he may appear late (R review). Mobs that end up in
-  the void take a flat 300 per second (players 11 %).
+  so on a crowded server he may appear late (R review). **Done in Round 37
+  MP:** he is an authored actor outside the cap. Mobs that end up in the
+  void take a flat 300 per second (players 11 %).
 - **The finale's kill target is no zone recipe's:** `validate.py` warns on
   both finales (`W-role-not-in-zone`, `W-recipe-target`) and does not check
   the boss's level against the quest; the quest lanes set it by hand.
@@ -1095,6 +1115,112 @@ none blocks the GUI test. Numbers are comparisons, never targets.
 - **Roads (RD review):** with `C_STEP` 0.5 one Dur Brannoc lane on seed 42
   became infeasible and the planner took its next option (plots
   unchanged).
+
+### Round 37 — audit fixes
+
+**Delivered locally 2026-10-06, not pushed**
+([completion](docs/planning/round37-plan.md#completion-2026-10-06), plan
+[round37-plan.md](docs/planning/round37-plan.md), the
+[audit](docs/audit-2026-10/README.md)); every code lane and every
+non-trivial docs lane independently reviewed by Opus; 106 fixtures pass,
+`validate.py --game` 0 errors, `income.py --check` passes; the mapgen's
+code changed without changing its output (`seed_fleet quick` 100 of 100,
+rosters unchanged), so no new world is needed beyond Round 36's.
+
+- **Combat hot path** (CB; PLY-01, CORE-01, CMB-02, ITM-01, PLY-02,
+  CMB-06, CMB-01, CMB-04, CMB-03, ITM-14): durability as its own cheap
+  event, the max-HP clamp is not damage, the PvP Strike fallback on the
+  current path, one knockback rule (mob projectiles push, user ruling
+  2026-10-06), the dead WP38 tool and fist path removed.
+- **Mob behaviour** (MB; MOB-01, MOB-04, MOB-07, MOB-02, MOB-05, MOB-16):
+  retargeting only through threat, the held swing, the wind-up freeze, the
+  `follow` scan, staticdata, the pathfinding setting.
+- **Mob persistence and bosses** (MP; MOC-01, MOB-03, MOC-03, MOB-06,
+  MOC-02, MOC-06, MOC-04, MOC-05): one liveness rule for rares and dragons,
+  authored actors outside the mob cap, restarts keep mobs, Bone Call's cap
+  and faction, royal guards return, straight side shots, patches only into
+  air.
+- **Interaction fixes** (IX; ITM-03, ITM-02, PLY-03/X-01, X-02, CORE-02,
+  ITM-10) and **per-player polling** (PO; CORE-04, CORE-05 measured,
+  PLY-04, PLY-05, PLY-06, PLY-16/X-13).
+- **Mapgen** (MG; MGT-02, MGT-01, MGS-02, MGT-07/MGS-10; MGT-03
+  documented) and **sound** (SN; MOC-07, the `cast_ice_nova` id).
+- **The user's rulings of 2026-10-06** (F): start zones fight alone, the
+  Salt Reef Lurker on the 51–60 coasts, the minimap always at normal
+  quality, stale code comments.
+- **Documentation** (DA, DB, DC, DD, DE, DF, D): status sync, AGENTS.md as
+  working rules with the round workflow and one owner per fact, the player
+  README with CHANGELOG.md and version 0.37.0, the world, player and item
+  design docs against the code.
+
+### Round 37 carry-overs
+
+**Noted 2026-10-06** ([completion](docs/planning/round37-plan.md#completion-2026-10-06));
+none blocks the GUI test. Numbers are comparisons, never targets.
+
+- **Quest kill credit** (the user's playtest, 2026-10-06): a kill objective
+  with an area counts only mobs that *spawned* in that region
+  (`grug_quests/state.lua` `mob_counts`, `_grug_area == target.area`),
+  while the same role spawns under the same name in other regions of the
+  zone; about one in three nearby Small Plague Boars and Large Grave Rats
+  in Stillgrave Hollow does not count (seed 42), and 214 of 301 area kill objectives
+  can meet it (quest drops follow the same rule). The fix comes with
+  [Round 38](docs/planning/round38-mob-names-plan.md)'s names per belt.
+- **PLY-11** (CB): a Scout shot still rebuilds the Character page (its
+  arrow total); a poll would save little, the fix takes the total off the
+  cached page, which is a UI change for the user.
+- **Cave mobs under the start zones** still call each other (open
+  question): the base Giant Rats, Zombies, Spiders, Spiderlings and Goblin
+  Miners of the cave rows (about y −40 to −175, depth level 10 or below)
+  are no recipe roles, so the start-zone rule does not reach them; lane F
+  would leave them (caves are the depth domain).
+- **Start-zone camps fight alone** too (lane F's reading of the ruling:
+  bandits, poachers and their chiefs; every member still attacks on
+  sight); to confirm with the user.
+- **`tools/r31_pvp`'s engine probe crashes since Round 34** (the hp-change
+  chain plays a sound on a fake player) and its `run.sh` still points at
+  the Round 31 queue; CB measured with a scratch copy. AGENTS.md's PvP
+  combat-path rule names this probe.
+- **`minimap_view.lua` keeps its high-quality rows** (8-pixel grid, halved
+  texture), unused since Round 37 F; the `tools/r27_minimap` geometry
+  fixture still tests them.
+- **Mob behaviour notes** (MB review): after a wind-up a dogshoot elite in
+  shooting range can fire at once (the cone resets `punch_timer`, not the
+  shot timer `self.timer`); a zero-damage hit on a mob fighting an NPC no
+  longer pulls it; long punch clips (Shore Crab 2.0 s, some start-zone
+  families 1.4–1.7 s) hold the punch pose while the mob chases (GUI
+  check); a shot from beyond 40 m no longer pulls a bound actor that
+  already fights. A dodged PvP swing still pushes (CB review).
+- **Interaction notes** (IX and its review): a tall-crop top lost on its
+  own leaves the root undiggable until the next block load; mobs with
+  `fly_in = "air"` fail their flight check inside a water barrier; the
+  right-click forwarding of `grug_core.node_rightclick` is repeated in
+  `grug_abilities/init.lua` and `grug_housing/stone.lua`; inside a Claim
+  Stone's arrival cube a flow can still loop (no barrier there).
+- **Polling notes** (PO and its review): a player with an active item
+  objective still reads the inventory every 0.5 s; `raw_weapon_controls`
+  is never cleared on leave (a rejoin with dig held skips one hint).
+- **Sound notes** (SN review): mobs_redo's `tnt_explode` fallback in
+  `mobs:boom` stays unreachable (no such file ships); `mobs_spell` is still
+  called by the vendored protector rune and `lucky_block.lua`, neither of
+  which loads.
+- **Mob persistence notes** (MP review): if mod storage lags the map after a
+  crash, a newer-generation copy removes itself (healed by the next spawn);
+  an object finishing deactivation into a block that just turned active
+  again can read as lost (a reset, never a duplicate); a royal guard killed
+  early in a King attempt longer than 15 minutes returns mid-fight; Throng
+  city guards still fight the King's raiders (`attack_monsters`); with the
+  King's faction the raiders' loot follows the faction-NPC rule.
+- **Shore kind** (F review): the new shore regions reshape the coasts a
+  little; Gravesalt `whitewall`, a target of two front quests, shrinks from
+  7.9 % to 6.4 % of land (seed 7) and from 5.7 % to 4.2 % (seed 2026) but
+  exists on every seed; two `item_tiers.md` availability grades moved from
+  common to regular by the formula only (Last-Pay Talisman, Unbroken
+  Weapon Strap).
+- **Tools** (MG review): the harnesses that compare a branch with an older
+  tree now load `world_assembly.lua` from that tree, so they cannot run
+  against trees before Round 37 (`r25_capital_plots`, `r26`,
+  `r28_zone_atlas` and `r28_world --before`).
 
 ### Audit 2026-10 open questions
 
@@ -1174,13 +1300,18 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
   `grug_gathering` and `grug_farming` go, now that fixtures guard the
   content? ([cross-cutting code](docs/audit-2026-10/code/10-cross-cutting.md))
 - **CTX-14** — the per-package calibration records of
-  `agent-model-policy.md` §7: still wanted? ([agent context](docs/audit-2026-10/docs/02-agent-context.md))
+  `agent-model-policy.md` §7: still wanted? **Decided 2026-10-06:**
+  dropped (`700dd5f6`). ([agent context](docs/audit-2026-10/docs/02-agent-context.md))
 - **CTX-26** — where do the decided Nether rules of `TODO-design-nether.md`
   live (a TODO holds only open questions)? ([agent context](docs/audit-2026-10/docs/02-agent-context.md))
 - **RDM-08** — name the six peoples in the README under their generic
-  names now, or wait for flavour names? ([README](docs/audit-2026-10/docs/01-readme-player.md))
+  names now, or wait for flavour names? **Decided 2026-10-06, done in
+  Round 37 D:** named as the game shows them (Human, Dwarf, Elf; Orc,
+  Troll, Undead). ([README](docs/audit-2026-10/docs/01-readme-player.md))
 - **README and PvP NPCs** — should the README say that Kings, Generals and
-  guards attack enemy players regardless of the flag? ([README](docs/audit-2026-10/docs/01-readme-player.md))
+  guards attack enemy players regardless of the flag? **Done in Round 37
+  D:** one sentence in the PvP bullet (as `pvp.md` §4 and the faction veto
+  in `grug_mobs/init.lua`). ([README](docs/audit-2026-10/docs/01-readme-player.md))
 - **D18, swimmer exhaustion** (deferred ocean survival) — what, if anything,
   does "Exhausted" do to an unmounted swimmer? Today the ocean's deterrents
   are the Kraken Guard, immutable deep-ocean terrain and the boat-threat rules
