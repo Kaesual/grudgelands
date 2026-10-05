@@ -807,6 +807,10 @@ function grug_mobs.register_mob(name, def)
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		grug_mobs.tick_speed_effects(self, dtime)
 		grug_mobs.leash_tick(self, dtime)
+		-- A night mob by day leaves (dawn.lua); one field test for the rest.
+		if grug_mobs.dawn_tick(self, dtime) then
+			return false
+		end
 
 		if (self._grug_stun_left or 0) > 0 then
 			local velocity = self.object:get_velocity()
@@ -947,6 +951,7 @@ grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/spawn_abms.lua")
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
+dofile(modpath .. "/dawn.lua")
 dofile(modpath .. "/roam_avoid.lua")
 dofile(modpath .. "/idle_health.lua")
 dofile(modpath .. "/flight.lua")

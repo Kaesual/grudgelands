@@ -395,7 +395,7 @@ before Round 33.
 | 2 | Bitter Venom | 0/4/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 2 | Blunt Crocodile Tooth | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 2 | Brush Fox Tail | 3/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
-| 2 | Clear Crab Eye | 3/3/0 | common | enchant Int prefix; enchant Mana prefix; upgrade goldsmith; Elixir of Focus II | 5.0 | enchant |
+| 2 | Clear Crab Eye | 3/3/0 | regular | enchant Int prefix; enchant Mana prefix; upgrade goldsmith; Elixir of Focus II | 5.0 | enchant |
 | 2 | Dense Rat Fur | 3/3/0 | common | enchant Dodge prefix; enchant Armor prefix; upgrade armorsmith; upgrade leatherworker | 6.5 | enchant |
 | 2 | Fang | 6/2/0 | common | enchant Str suffix; enchant Crit suffix; upgrade weaponsmith; Swiftness Draught | 5.0 | recipe |
 | 2 | Foul Flesh | 6/6/0 | common | enchant HP prefix; upgrade leatherworker | 4.0 | enchant |
@@ -450,14 +450,14 @@ before Round 33.
 | 4 | Veined Core | 1/0/0 | one faction | sell-only: no regular source (one unique elite) | 0.0 | — |
 | 4 | Warpack Fang | 3/2/0 | common | enchant Str suffix; enchant Speed suffix | 2.0 | — |
 | 5 | Ash Feather | 0/0/2 | regular | enchant Int suffix; enchant Dodge suffix; upgrade woodcarver | 3.8 | — |
-| 5 | Clenched Jaw | 0/0/2 | common | enchant Str prefix; enchant Crit prefix; enchant Armor suffix; upgrade goldsmith | 4.8 | enchant |
+| 5 | Clenched Jaw | 0/0/2 | regular | enchant Str prefix; enchant Crit prefix; enchant Armor suffix; upgrade goldsmith | 4.8 | enchant |
 | 5 | Scorch Venom | 0/0/2 | regular | enchant Speed suffix; upgrade weaponsmith; upgrade tailor | 4.5 | — |
 | 5 | Scorched Flesh | 0/0/2 | common | enchant HP prefix; enchant HP suffix; upgrade leatherworker; Elixir of Vigor V | 6.5 | enchant |
 | 5 | Siege Bone | 0/0/2 | regular | enchant Armor prefix; upgrade armorsmith; Stoneskin Elixir V | 4.2 | — |
 | 5 | Siege Cat Claw | 0/0/1 | scarce | upgrade weaponsmith | 1.5 | — |
 | 5 | Siege Core | 0/0/2 | scarce | sell-only: no regular source (two unique elites) | 0.0 | — |
 | 5 | Siege Talisman | 0/0/2 | regular | enchant Int prefix; enchant Mana prefix; enchant Mana suffix; upgrade tailor; upgrade goldsmith | 7.5 | enchant |
-| 5 | Siege Weapon Strap | 0/0/2 | common | enchant Dex prefix; enchant Dex suffix; enchant Speed prefix; enchant Dodge prefix; upgrade armorsmith; upgrade leatherworker | 8.8 | enchant |
+| 5 | Siege Weapon Strap | 0/0/2 | regular | enchant Dex prefix; enchant Dex suffix; enchant Speed prefix; enchant Dodge prefix; upgrade armorsmith; upgrade leatherworker | 8.8 | enchant |
 | 5 | Siegepack Fang | 0/0/2 | regular | enchant Str suffix; enchant Crit suffix; upgrade woodcarver; Elixir of Precision V | 5.0 | — |
 | 6 | Abyssal Crab Shell | 0/0/0 | none | sell-only: no placed source (the reef lurker is not in a spawn recipe) | 0.0 | — |
 | 6 | Glass Cat Claw | 0/0/3 | regular | enchant Crit suffix; enchant Dodge suffix | 1.8 | — |

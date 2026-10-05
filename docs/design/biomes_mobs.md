@@ -574,7 +574,7 @@ and the Mage take damage sooner"):
 |-----|------|-----------|-------|-------|-------|
 | Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.6 (WP6 retune to 4.4, band raise 2026-09-16) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
-| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | the zombie band table (Round 28, "Loot by band"): rotting flesh 1/2; linen scrap 1/2; the band's flesh 1/2 (T3+ also its tooth 1/3) and cloth (linen cloth from band 2, heavy cloth from band 3) 1/2; the band's tier bar 1/50. Static fallback, unused while the table covers every band: zombie flesh 1/1; linen scrap 1/2; iron bar 1/10 | mobs_mc_zombie (have) |
+| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | the zombie band table (Round 28, "Loot by band"): rotting flesh 1/2; linen scrap 1/2; the band's flesh 1/2 in bands 1–2 and 1/3 from band 3, where its tooth adds 1/6 (Round 35) and cloth (linen cloth from band 2, heavy cloth from band 3) 1/2; the band's tier bar 1/50. Static fallback, unused while the table covers every band: zombie flesh 1/1; linen scrap 1/2; iron bar 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
 | **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
@@ -874,7 +874,8 @@ gone in Round 30). If a named zone exposes fewer than two explicit
 night-role families, the policy admits its palette fallback: Zombie for
 settled/war, Skeleton Archer for forest/mountain, Jungle Spider for jungle,
 or Bog Ooze for swamp. Capitals retain empty palettes and never receive a
-fallback; mobs already alive at a clock boundary are not despawned.
+fallback; an ABM-row mob alive at a clock boundary is not despawned (free
+region mobs spawned for the night leave at dawn: "Dawn departure" below).
 
 **`aoc` is per entity NAME, not per family** (mobs_redo counts objects
 of that one name inside a 128-node sphere). Two spawn rows of the same
@@ -1157,6 +1158,18 @@ gate, protected surface).
   composed look, such as bandits) has its level, stats and composed look
   re-derived at once. The tier never changes. Its wander leash is the
   ordinary one: 32 nodes around its spawn point (`combat_stats.md`).
+- **Dawn departure** (Round 35). By day a free region mob spawned for the
+  night (`_grug_spawn_clock = "night"` and a kind's tag; camp members,
+  leaders, rares, bosses, summons and tamed or owned mobs never carry both)
+  leaves: it is removed quietly with mobs_redo's despawn smoke puff, without
+  drops, XP or kill credit, unless it is in combat (a target, the attack or
+  runaway state, an engagement or the evade run home) or a player is within
+  **32 nodes**; then it leaves as soon as neither holds. Day is the spawn
+  clock's day phase (04:30–19:30). 32 nodes lies beyond the 24-node spawn
+  distance and every ambient mob's view range (at most 18) and inside the
+  active-block range, so a night mob whose block wakes by day leaves before a
+  player reaches it. Each night mob checks once a second
+  (`grug_mobs/dawn.lua`); every other mob pays one field test per step.
 - **Drift band.** No aggressive role spawns within 16 nodes of a road,
   bridge, village, PvP fortress or war camp (Round 31), start town or
   capital city (the spot and two rings of
@@ -1516,13 +1529,16 @@ static rows above apply only outside them:
 - **Boar** (bands 1–3): meat 1/1 ×1 (was ×1–2), light leather 1/2, the band's
   tusk 1/3 (Boar Tusk, Ridged, Gnarled).
 - **Zombie** (all bands): see its row above; the guaranteed flesh becomes 1/2
-  and the bar 1/10 becomes the band's tier bar at 1/50.
-- **Fox** (bands 1–3): meat 1/1, leather 1/3 (was 1/2), Fang 1/3 kept in bands
-  1–2 (quests ask for it), the band's tail 1/3 (Fox Tail, Brush, Silver-Tip).
+  (1/3 from band 3, Round 35) and the bar 1/10 becomes the band's tier bar at
+  1/50.
+- **Fox** (bands 1–3): meat 1/1, leather 1/3 (was 1/2), Fang 1/6 in band 1
+  and 1/3 in band 2 (a T2 item; Round 35 halved the band-1 chance), the
+  band's tail 1/3 (Fox Tail, Brush, Silver-Tip).
 - **Bear** (bands 3, 4, 6): meat 1/1 ×1 (was ×2), heavy leather 1/3 (was
   1/2), Bear Claw 1/3 (was 1/4), from band 4 also the band's claw 1/3.
-- **Crocodile** (bands 2–3): meat 1/1, Crocodile Tooth 1/3 and the band's
-  tooth 1/3; no guaranteed Scaled Hide any more.
+- **Crocodile** (bands 2–3): meat 1/1, Crocodile Tooth 1/6 (a T4 item no
+  recipe uses; 1/3 before Round 35) and the band's tooth 1/3; no guaranteed
+  Scaled Hide any more.
 - **Wisp** (bands 2–4): the band's mote 1/3 (it had no drops).
 - **Mirefolk** (bands 2–3): linen cloth (band 2) or heavy cloth (band 3) 1/2,
   the band's reed pearl 1/3, Shiny Scale 1/4; no Raw Fish any more.
