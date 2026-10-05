@@ -2,13 +2,20 @@
 
 Updated 2026-10-05. This is the delivery pointer, not another game specification.
 
-- **Round 36 "The main questline" (WP9) delivered locally**
+- **Round 36 "The main questline" (WP9) delivered and pushed**
   (2026-10-05, [plan, completion and GUI checklist](planning/round36-plan.md#completion-2026-10-05)).
-  Every lane is merged on local main (last the text pass T, `5069b5a5`),
-  each code and data lane independently reviewed by Opus; 93 fixtures pass,
-  `validate.py --game` 0 errors; not pushed. **A fresh world is required**
-  (the decor pass and the dragon arenas are world generation; `seed_fleet
-  quick` 100 of 100 for both lanes). WP9 delivered, and WP13's POI review.
+  Every lane is merged on main (last the text pass T, `5069b5a5`, then the
+  follow-up lanes below, last RD `fef94a6a`), each code and data lane
+  independently reviewed by Opus (W2, which only turns blocks, without a
+  separate review); 96 fixtures pass, `validate.py --game` 0
+  errors; pushed by the user on 2026-10-05 (`1e8a975d`, then `0f169898`
+  with the follow-up lanes). GUI test open. **A fresh world is required**,
+  made on `fef94a6a` or later (the decor pass, the dragon arenas and the
+  follow-up lanes' benches, ground cover and roads are world generation).
+  Seed fleet: `quick` 100 of 100 for lanes G, W, W3 and RD; the round-end
+  `full` owed after W3 and RD ran at the start of Round 37 on `0f169898`:
+  **303 of 303 seeds build**, 0 failed ([Round 37 plan](planning/round37-plan.md)
+  §7). WP9 delivered, and WP13's POI review.
   - **The main line (S, E, Q0, Q-A, Q-T, T):** each faction's three
     chapters from its fortress Warmaster at 41, 46 and 53 and a group
     finale at 60, on the approved
@@ -43,9 +50,20 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     ([settlements.md](design/settlements.md) "Decor pass").
   - Prices re-derived after the new quest copper (Expert Riding 1g29s,
     Master Riding 7g38s, the 41–50 respec 5s25c, the crown 1g48s). A second
-    text review of the other quest texts is in progress.
+    text review of the other quest texts landed as `6794af6e` (136 Opus
+    suggestions, all accepted by the user; catalogue regenerated in
+    `1e8a975d`).
+  - **Follow-up lanes from the user's first look** (merged 2026-10-05
+    evening, [completion](planning/round36-plan.md#follow-up-lanes-2026-10-05-evening)):
+    an LMB held across a hotbar switch goes on with the new skill after it
+    stayed selected 0.2 s, and digging goes on across a switch (F2); every
+    bench keeps its back to the wall beside it and looks out (W2); the
+    protected band round start towns and capitals grows low ground cover,
+    still no trees (W3); roads no longer trace the ground's one-node dither
+    (`C_STEP` 0.05 → 0.5, no lone half-step bumps or holes; RD).
   - Next: the user's GUI test (desktop and web build, two clients for the
-    rift); the main-menu background waits for the user's screenshot.
+    rift), under way; its findings join Round 37's lane F. The main-menu
+    background waits for the user's screenshot.
 
 - **Round 35 "Fixes and character creation" delivered**
   (2026-10-05, [plan, completion and GUI checklist](planning/round35-plan.md#completion-2026-10-05)).
@@ -79,9 +97,9 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   - Next was the user's GUI test (desktop and web build); its first
     findings joined Round 36 (lane F).
 
-- **Round 34 "Sound" delivered locally**
+- **Round 34 "Sound" delivered**
   (2026-10-04, [plan, completion and GUI checklist](planning/round34-plan.md#completion-2026-10-04)).
-  Every lane is merged on local main (last lane S1b, `b0d648f5`), each code
+  Every lane is merged on main (last lane S1b, `b0d648f5`), each code
   lane independently reviewed by Opus; every shipped sound was picked by the
   user on a listening page; 77 fixtures pass; pushed by the user on
   2026-10-05 (`86d7c4c5`). No mapgen change.
@@ -113,13 +131,13 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   - Next was the user's GUI test (desktop and web build); its findings
     became Round 35.
 
-- **Round 33 "Items, professions and achievements" delivered locally**
+- **Round 33 "Items, professions and achievements" delivered**
   (2026-10-04, [plan, completion and GUI checklist](planning/round33-plan.md#completion-2026-10-04)).
-  Every lane is merged on local main (last lane C5, `16c498b9`), each code
+  Every lane is merged on main (last lane C5, `16c498b9`), each code
   lane independently reviewed by Opus; the data lane DS approved by the user
   through its preview; 72 fixtures pass, `income.py --check` passes again;
-  pushed by the user on 2026-10-04 with Rounds 30–32. **A fresh world is required** (the cultural materials leave
-  the mapgen). Numbers in [item_tiers.md](design/item_tiers.md).
+  pushed by the user on 2026-10-04, after Rounds 30–32. **A fresh world is
+  required** (the cultural materials leave the mapgen). Numbers in [item_tiers.md](design/item_tiers.md).
   - **Drops (C1):** at most one item per kill, normal 5/2/1 % white/blue/gold,
     named, elite, zone leaders and war-camp captains 10/10/5 %; Kings,
     dragons and the General two blue or gold items at item level 65/70 with
@@ -146,9 +164,9 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   - Next was the user's GUI test (with Rounds 30–32); its findings and the
     Bag of Coins became Round 34's fix lanes beside sound.
 
-- **Round 32 "Fixes, preparation and research" delivered locally**
+- **Round 32 "Fixes, preparation and research" delivered**
   (2026-10-03, [plan, completion and GUI checklist](planning/round32-plan.md#completion-2026-10-03)).
-  Every code lane is merged on local main (last lane F4, `2f709fbc`), each
+  Every code lane is merged on main (last lane F4, `2f709fbc`), each
   independently reviewed by Opus (F3's third pass and F2's last small
   commit checked by the coordinator); 66 fixtures pass; pushed 2026-10-04. No
   mapgen change: the Round 31 fresh world serves the GUI test.
@@ -181,14 +199,15 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     [sound research](research/sound-research-2026-10.md) (sound is V1; seven
     decisions open), [items and professions analysis](research/items-professions-analysis-2026-10.md)
     (16 questions for a design session).
-  - Next: the user's GUI test (with Rounds 30 and 31); the items design
-    session became Round 33, sound Round 34.
+  - The user tested it with Rounds 30, 31 and 33 (the findings fed Round
+    34); the round counts as GUI-accepted (the user, 2026-10-05). The
+    items design session became Round 33, sound Round 34.
 
-- **Round 31 "PvP, appearance and clean-up" delivered locally** (2026-10-03,
+- **Round 31 "PvP, appearance and clean-up" delivered** (2026-10-03,
   [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).
-  Every lane is merged on local main (last lane Q, `699a2002`), each
+  Every lane is merged on main (last lane Q, `699a2002`), each
   independently reviewed by Opus except the small follow-ups M2 and G2
-  (checked by the coordinator); pushed 2026-10-04. WP41 delivered and WP42's
+  (checked by the coordinator); pushed 2026-10-03. WP41 delivered and WP42's
   PvP-POI part; rules in [pvp.md](design/pvp.md). A fresh world is required.
   - **Geographic PvP (P1, P2, P1b, P1c; WP41):** PvP only between two
     flagged enemy players; the flag comes from contested ground or enemy
@@ -232,14 +251,15 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     Nova replace another game's spell names; neutral wording instead of a
     commercial MMO's terms; captain and General names by GPT-6 Astra.
   - Final engine check (2026-10-03, main 699a2002, seed 42): PASS 7/7 — boot clean (cold 38.3 s to listening, heap 111 MiB; second boot 7.3 s, 67 MiB); both fortresses 19/19 NPCs with mixed faction races, camps with leader-captains (×1.5 HP, ×1.15 size), gate trails, protection margin, 7th waystone, no hostile spawns inside; flag logic 9/9 incl. y −500/−501 under a capital; faction filter (enemy settlement icons hidden, 8/8 enemy war camps shown, enemy givers/vendors refuse); looks persist and vary (13/13); enchant colours on dropped, wielded and worn gear; Wyrmglass arena floor of local ground, hazards and protection to ±40; 515 quests load. Cosmetic: frost terraces merge into the floor where the ground reaches their height (57 of 409 columns); fortress quest givers' nametags fixed after the check.
-  - Next: the user's two-client GUI test on a fresh world (the Round 30
-    test is still open and can share it). Seed-dependent POI placement was
-    set aside (2026-10-03); Round 32 followed.
+  - The user tested it with Rounds 30, 32 and 33 (the findings fed Round
+    34); the round counts as GUI-accepted (the user, 2026-10-05).
+    Seed-dependent POI placement was set aside (2026-10-03); Round 32
+    followed.
 
-- **Round 30 "Performance and clean-up" delivered locally** (2026-10-02,
+- **Round 30 "Performance and clean-up" delivered** (2026-10-02,
   [plan, completion and playtest checklist](planning/round30-plan.md#completion-2026-10-02)).
-  Every lane is merged on local main (last lane P2, `b64709d7`), each
-  independently reviewed by Opus; pushed 2026-10-04. Numbers are each lane's
+  Every lane is merged on main (last lane P2, `b64709d7`), each
+  independently reviewed by Opus; pushed 2026-10-03. Numbers are each lane's
   before/after comparison on its own probe, never targets.
   - **Quest state and map UI (P1, P1b):** a decoded quest-state cache and one
     marker pass for all givers (minimap 55.8 → 9.3 ms/s, quest HUD 17.1 →
@@ -282,8 +302,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     cave and bay spawns with at most one mob per merged trigger;
     Dawnmere 13 NPCs, no duplicates after reloads; boxed-in target given
     up and searches drop to 0, a target on a bottom slab is chased.
-    The user's GUI test of Round 30 is still open (it can share Round 31's
-    fresh world).
+    The user tested it with Rounds 31–33 (the findings fed Round 34); the
+    round counts as GUI-accepted (the user, 2026-10-05).
 
 - **Round 29 "Economy and travel" complete and pushed** (2026-10-02,
   [plan, completion and playtest checklist](planning/round29-plan.md#completion-2026-10-02)).
@@ -397,11 +417,12 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     inside a pewter bezel; about 880 nodes, one texture per 6 (normal) or 16
     (high) base-pixel cell, high at half resolution; about 3.7–3.9 times the
     snapped HUD traffic.
-  - Next: short playtest.
+  - The user's playtest led to the glide follow-up; the round counts as
+    GUI-accepted (the user, 2026-10-05).
 
-- **Round 26 delivered locally** (2026-09-29,
+- **Round 26 delivered** (2026-09-29,
   [plan, completion and playtest checklist](planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)).
-  All lanes are merged on local main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). Pushed.
+  All lanes are merged on main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). Pushed.
   - **S:** a placed Claim Stone is a half-transparent draft that protects
     nothing and crumbles after 5 minutes unless activated with 5 lumps; the
     only lock is 12 hours without pick-up after activation; the Housing
@@ -425,9 +446,10 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     [work-package audit](planning/wp-audit-2026-09-29.md) and its
     [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29),
     then the lane facts.
-  - Next: fresh world and playtest.
+  - Playtested 2026-09-29; the round counts as GUI-accepted (the user,
+    2026-10-05).
 
-- **Round 25 delivered locally:** Claim Stone housing (WP24,
+- **Round 25 delivered:** Claim Stone housing (WP24,
   [housing.md](design/housing.md)): one free, soulbound stone from the
   Housing Steward in each capital from level 20; a 101 × 101 claim column from
   y = −100 up in the own L11–30 home zones, 16 nodes clear of settlement cores
@@ -439,10 +461,11 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   cores are protected for everyone, with hint reasons ("Road – protected").
   The capital planner places required and named buildings before fill: load
   failures 1.3 % of seeds → 0 of 200, capital layouts changed. All nine lanes
-  merged on local main (`7ca48666`), independently reviewed and synchronized
+  merged on main (`7ca48666`), independently reviewed and synchronized
   to Luanti on 2026-09-29. Pushed.
   [Plan, completion and playtest checklist](planning/round25-housing-plan.md#completion-2026-09-29).
-  The first playtest has started; its follow-up rulings 30–33 feed Round 26.
+  Its first playtest's follow-up rulings 30–33 fed Round 26; the round
+  counts as GUI-accepted (the user, 2026-10-05).
 
 - **Round 24 delivered, pushed and accepted:** tier rocks with engine-native pick gating
   replace depth bounds and shatter (loose ground by hand or shovel, axe and
@@ -461,7 +484,7 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   user.
   [Plan, completion and playtest checklist](planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
 
-- **Round 23 delivered locally:** full-column world preparation (a finished
+- **Round 23 delivered:** full-column world preparation (a finished
   full-world preparation leaves nothing to generate for walking, diving or
   flying; fast path for air chunks), habitat-driven vegetation renewal
   replacing the exact-baseline ecology (saplings behind `grug_tree_regrowth`),
@@ -469,44 +492,51 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   taller cores, closed Nhal Veyr bars, walls end at lake shores). All lanes
   independently reviewed, merged and synchronized to Luanti.
   [Completion and GUI checklist](research/round23-completion.md),
-  [plan](planning/round23-world-life-plan.md). No push. Phase 2 (tree line
+  [plan](planning/round23-world-life-plan.md). Phase 2 (tree line
   with shrub band and snow caps, forests and clearings) and the lake-wall
-  playtest fix are merged (`f54c299d`) and synchronized.
+  playtest fix are merged (`f54c299d`) and synchronized. Pushed 2026-09-28.
 
-- **Playtest fixes 2026-09-28 delivered locally:** food click/hold input,
+- **Playtest fixes 2026-09-28 delivered:** food click/hold input,
   server-side node UIs, crosshair range feedback with own crosshair, 2.5 s bow
   draw with damage curve and power ring, eating visual, movement stances,
   swimmers stay in water, fish drop, first-person rod, recipe-book ingredient
   navigation, Blink targeting; follow-up bow tuning, eating ring and immediate
   combat exit. Eight lanes independently reviewed, all probes and a headless
   boot passed on merged main `fede63db`; synchronized to Luanti.
-  [Receipt and GUI checklist](research/playtest-fixes-2026-09-28.md). No push.
+  [Receipt and GUI checklist](research/playtest-fixes-2026-09-28.md). Pushed
+  2026-09-28.
 
 - **Round 21 startup correction:** fixed the missing fish disposition and native
   arrow recipe catalog binding; real isolated server startup and 200-arrow craft
   passed. Merged as `f00433c7` and synchronized.
-  [Receipt](research/round21-startup-fix.md). No remote push.
-- **Round 21 delivered locally:** terrain/POI access, resource calibration,
+  [Receipt](research/round21-startup-fix.md). Pushed 2026-09-24.
+- **Round 21 delivered:** terrain/POI access, resource calibration,
   furnaces, aquatic detail and feedback fixes. Independently reviewed, final
   gates passed, merged as `96c40fa3` and synchronized to Luanti on 2026-09-24.
   [Receipt](research/round21-completion.md), [playtest](research/round21-playtest.md),
-  [execution state](planning/round21-state.md). No remote push.
-- **Round 20 delivered locally:** 240 quests, all 100 anchor art slots, contextual
+  [execution state](planning/round21-state.md). Pushed 2026-09-24.
+- **Round 20 delivered:** 240 quests, all 100 anchor art slots, contextual
   input and equipment/UX fixes. Independently reviewed, final gates passed,
-  merged as `8308229f` and synchronized to Luanti on 2026-09-24. No push.
+  merged as `8308229f` and synchronized to Luanti on 2026-09-24. Pushed
+  2026-09-24.
   [Completion receipt](research/round20-completion.md),
   [playtest checklist](research/round20-playtest.md),
   schematic POI gallery (`tools/r20/evidence/pois/`, retired in Round 22;
   git history keeps it).
 - **Documentation consolidation:** complete with independent Astra PASS;
-  [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
-  and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 36, which includes Rounds 20–35
-  and the 2026-09-28 playtest fixes. Round 35 is the latest pushed state
-  (2026-10-05); Round 29 was tested by the user on a fresh world
-  (2026-10-02), the user's Round 33 findings became Round 34's fix lanes,
-  the Round 34 findings Round 35 and the first Round 35 findings Round 36's
-  lane F; Round 24 is the latest formally accepted one. The 2026-09-30 playtest with friends fed Round 28,
+  [receipt and coverage](maintenance/documentation-round.md). Its findings
+  list is [archived](archive/maintenance/findings.md) (its open items are
+  fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
+  ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
+- **Latest game:** main carries Round 36 with its follow-up lanes
+  (`0f169898`), which includes Rounds 20–35 and the 2026-09-28 playtest
+  fixes. All of it is pushed: the user pushed Round 36 on 2026-10-05
+  (`1e8a975d`, then `0f169898` with the follow-up lanes); origin/main then
+  took the October 2026 audit and the Round 37 plan (`211229e2`). Round 29
+  was tested by the user on a fresh world (2026-10-02), the user's Round 33
+  findings became Round 34's fix lanes, the Round 34 findings Round 35 and
+  the first Round 35 findings Round 36's lane F; Rounds 25–35 count as
+  GUI-accepted (below). The 2026-09-30 playtest with friends fed Round 28,
   the 2026-10-02 spawn playtest Round 29. Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
@@ -517,16 +547,22 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   matched steady interval. Completed preparation remains inactive during later
   on-demand cave generation; engine tick/thread settings are unchanged.
   Independent review, native comparison, two-pending stop/resume and final
-  interpreter parity passed. Merged to local main and synchronized. Receipt:
-  [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
-  claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
-- **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 36 checklist](planning/round36-plan.md#gui-playtest-checklist)
+  interpreter parity passed. Merged to main and synchronized; pushed
+  2026-09-23. Receipt:
+  [full-speed follow-up](research/pregen-fullspeed.md). Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
+- **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user's
+  ruling of 2026-10-05, [Round 37 plan](planning/round37-plan.md) §2.3.5);
+  Round 24 was accepted earlier, and its build contains Rounds 20–23 and
+  the 2026-09-28 playtest fixes. **Round 36 is open**, with its follow-up
+  lanes F2, W2, W3 and RD (the user's test is under way): the
+  [Round 36 checklist](planning/round36-plan.md#gui-playtest-checklist)
   covers both main lines from 41 to the finale, quest objects and places,
   the corrupted sub-types, the commanders, the rift and Isquarre (two
   clients), achievements and cloaks, the evading mobs and the talent-point
-  banner, Priest heals, the dragon arenas, the decor pass and the new
-  prices (desktop and web build, a fresh world); the
+  banner, Priest heals, the dragon arenas, the decor pass, the new
+  prices, and the follow-up lanes' held button across a hotbar switch,
+  benches, ground cover and roads (desktop and web build, a world made on
+  `fef94a6a` or later). The accepted rounds' checklists: the
   [Round 35 checklist](planning/round35-plan.md#gui-playtest-checklist)
   covers aiming at turned mobs, gear breaking, the empty hand, dig sounds,
   the quest dialog, night mobs at dawn, loot, talent tooltips, capital
@@ -552,8 +588,9 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** Rounds 30–35 are pushed (origin/main
-  `7c4cad0a`, 2026-10-05); Round 36 is local only.
+- **Remote observation:** every round up to Round 36 and its follow-up
+  lanes is pushed (origin/main `0f169898`, 2026-10-05; `211229e2` since with
+  the audit and the Round 37 plan).
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

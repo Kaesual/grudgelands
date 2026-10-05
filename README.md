@@ -69,8 +69,8 @@ at a rift on the front. What waits below is a story for a later expansion.
 
 The systems above are implemented and installed in the local development build.
 [Round 36](docs/planning/round36-plan.md#completion-2026-10-05), "The main
-questline", is complete locally and awaits a playtest on a fresh world, on
-desktop and in the browser. Each faction now has its main story from level
+questline", is complete and pushed and awaits a playtest on a fresh world,
+on desktop and in the browser. Each faction now has its main story from level
 41 to 60: three chapters from its fortress's Warmaster that follow branded
 pay through the front's worst villains, an errand behind enemy lines, a
 traitor in its own ranks and a finale for two or three players against
@@ -118,7 +118,7 @@ potions heal a fixed amount per tier, critical hits deal double, and a Decor
 Merchant sells blocks and lights for your home. Alchemy is learned next to
 Cooking, and achievements unlock cloaks that swing on your character.
 [Round 32](docs/planning/round32-plan.md#completion-2026-10-03), "Fixes,
-preparation and research", is complete and pushed and awaits a playtest. The
+preparation and research", is complete, pushed and accepted. The
 minimap zooms in twice as far, so quest givers and trainers are easier to
 tell apart, and hostile camps get their own red mark on the world map. Zone
 names now show in green, yellow or red for friendly, contested or enemy
@@ -131,17 +131,17 @@ players at once more evenly, and three studies prepare the next steps:
 performance with 50 to 100 players, sound and music for the first release,
 and items and professions.
 [Round 31](docs/planning/round31-plan.md#completion-2026-10-03), "PvP,
-appearance and clean-up", is complete and pushed and awaits a two-player test
-on a fresh world. Players of the two factions can fight each other only when
-both are flagged: contested lands and enemy territory flag you, and a button
-flags you for a minute anywhere ([PvP rules](docs/design/pvp.md)). Each
+appearance and clean-up", is complete, pushed and accepted. Players of
+the two factions can fight each other only when both are flagged: contested
+lands and enemy territory flag you, and a button flags you for a minute
+anywhere ([PvP rules](docs/design/pvp.md)). Each
 faction has a fortress near the Battlegrounds with a General, a waystone
 and quests to raid the enemy's war camps. You now choose your character's
 face, hair and features at creation, townsfolk and guards look different
 from each other, enchantments show as coloured accents on your gear, and
 both dragons fight in round arenas with ice or ember hazards.
 [Round 30](docs/planning/round30-plan.md#completion-2026-10-02), "Performance
-and clean-up", is complete and pushed and awaits a playtest on a fresh world.
+and clean-up", is complete, pushed and accepted.
 Quest markers, the world map, the minimap, crafting and the crosshair cost
 the server much less, a second start of a world takes about half as long,
 and mobs give up a player they cannot reach and walk home. Return home now
@@ -163,7 +163,7 @@ with levels that rise toward the next zone, loot that matches their level
 and named leaders at their camps; leveling follows a gentler curve, and a
 message feed, per-class offhands and Scout slots ship alongside.
 [Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
-awaits a short playtest. Our own round minimap
+is accepted. Our own round minimap
 replaces the built-in one: north up, drawn from the world map, it shows quest
 givers with their state, trainers, innkeepers, the Housing Steward, your home
 and your party, with arrows on the rim for members out of view, and can be
@@ -171,7 +171,7 @@ switched off on the Map tab. The world map shows height more clearly with
 stronger shading, contour lines and lighter high ground, and a server can
 choose a sharper high-quality map.
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
-awaits a playtest on a fresh world. A placed Claim Stone now starts as a draft that you activate with
+is accepted. A placed Claim Stone now starts as a draft that you activate with
 five lumps of coal within five minutes, and the Housing Steward hands it out.
 Buffs and debuffs show as icons above the skill bar, the combat state as an
 icon next to the health bar, with a new Effects tab on the Character page and
@@ -221,16 +221,16 @@ increment is
 [Round 36](docs/planning/round36-plan.md#completion-2026-10-05)
 (the main story from level 41 with its finale at the rift, quest objects,
 the decor pass over every point of interest, the evading-mob and banner
-fixes, Priest heals, the dragon arenas), independently reviewed and merged
-locally, after Round 35 (aiming at turned creatures, capital music, small
+fixes, Priest heals, the dragon arenas), independently reviewed, merged
+and pushed, after Round 35 (aiming at turned creatures, capital music, small
 item and quest fixes, the one-window character creation, night mobs at
 dawn, level-proof talents), Round 34
 (sound effects, creature voices, ambience and music, mobs in water, the Bag
 of Coins), Round 33 (drops, enchant tiers and upgrades, the crown, vendors,
 potions, cloaks and achievements), Round 32 (map and HUD fixes, the held
 left click, notices in the feed), Round 31 (PvP, looks, dragon arenas) and
-Round 30 (performance); Round 35 is the latest pushed state and Round 24
-the latest formally accepted one.
+Round 30 (performance); everything up to Round 36 is pushed, Rounds 25–35
+count as accepted and Round 36 awaits its playtest.
 [Project status](docs/STATUS.md) records acceptance, and the
 [Round 36](docs/planning/round36-plan.md#gui-playtest-checklist),
 [Round 35](docs/planning/round35-plan.md#gui-playtest-checklist),
