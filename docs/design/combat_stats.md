@@ -791,11 +791,23 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   home/post/encounter bounds and lifecycle. The old 40 m chase-origin drag,
   15-second contact and 45 m give-up rules apply only where these actors already
   used them; explicit encounter overrides remain authoritative.
-- **Evade:** reset clears threat, target and drop tag and heals the mob. Ambient
-  mobs more than about four nodes from home run back visibly at 1.5× run speed,
-  untouchable and without reacquiring targets. Arriving ends evade; a blocked
-  return teleports home after about 40 seconds. Bound actors keep their prior
-  return thresholds. Incoming NPC damage does not create player reward credit.
+- **Evade:** reset clears threat, target and drop tag and heals the mob.
+  Ambient (free, damage-pursuit) mobs reset **inside their 32-node wander
+  radius** (`grug_mobs.WANDER_RADIUS`, below) only do that: no run, no
+  untouchable state, they may idle there anyway (Round 36 §2.14.2). Reset
+  **outside** it they run back visibly at 1.5× run speed, untouchable and
+  without reacquiring targets, and are a normal mob again as soon as they are
+  back inside the wander radius. A blocked return teleports home after about
+  40 seconds. Bound actors (camp members, guards, rares, bosses, royals) keep
+  their prior return threshold, their leash radius (25 for a camp member, 30
+  for a guard, 40 by default), and end the run within about four nodes of
+  home; patrollers and dragons never evade.
+  Incoming NPC damage does not create player reward credit.
+- **Evading feedback:** an evading mob is no target. The crosshair stays
+  neutral on it, a press does not lock or hit it, and a fresh press, or a
+  player's projectile or cast that still reaches it, shows a short
+  "Evading" in the flash line, at most once per 1.5 s per player (Round 36
+  §2.14.1, `grug_mobs.evade_notice`; classes.md §2b).
 - **Mobs in water** (Round 34): every mob that floats and does not fly swims.
   Idle roaming on land keeps treating water as a drop; in combat (attacking,
   fleeing, the evade run home) a mob follows its target into harmless water
@@ -1227,8 +1239,11 @@ pursuit; outgoing mob attacks never sustain or end the clock.
 
 Dead/unavailable targets and abandoned no-target encounters retain existing
 cleanup; temporary pack flight without a target must not pin an expired fight.
-Sampling state is runtime-only and cleared with the encounter. Return retains
-existing healing, invulnerability and the 40-second teleport fallback.
+Sampling state is runtime-only and cleared with the encounter. A reset heals
+the mob; it runs home (invulnerable, with the 40-second teleport fallback) only
+when the reset finds it outside its wander radius below, and only until it is
+back inside that radius (Round 36 §2.14.2, §4 Evade). The 15-second clock
+still starts at the first aggro.
 Bosses/retinue, fixed guards, camp-owned mobs and location-bound rares keep their
 existing encounter/post lifecycle and bounds. No additional terrain is loaded
 to preserve a distant target.
