@@ -85,4 +85,3 @@ was applied on 2026-09-29: README links the [documentation guide](../../README.m
 and [project status](../../STATUS.md), routes `playtest_quality_revision.md` as
 historical decision routing, and shows BACKLOG's counts (39 delivered, 3
 canceled, 12 open of 54 after the work-package audit, WP28 and the new WP50).
-

@@ -65,7 +65,7 @@ example E5) are cited below.
   fit, encounter adds, thin ice (F2)
   ([Round 34](#round-34--sound), [carry-overs](#round-34-carry-overs)).
 - [Round 33 "Items, professions and achievements"](docs/planning/round33-plan.md#completion-2026-10-04)
-  (2026-10-04, pushed with Rounds 30–32 on 2026-10-04; needs a fresh world): the
+  (2026-10-04, pushed 2026-10-04 after Rounds 30–32; needs a fresh world): the
   items design session's rulings and their data
   ([item_tiers.md](docs/design/item_tiers.md), DS); drops by quality with
   boss double drops, bag drops and the level requirement on all gear (C1);
@@ -88,7 +88,7 @@ example E5) are cited below.
   ([Round 32](#round-32--fixes-preparation-and-research),
   [carry-overs](#round-32-carry-overs)).
 - [Round 31 "PvP, appearance and clean-up"](docs/planning/round31-plan.md#completion-2026-10-03)
-  (2026-10-03, pushed 2026-10-04, GUI-accepted): WP41 geographic PvP (the
+  (2026-10-03, pushed 2026-10-03, GUI-accepted): WP41 geographic PvP (the
   per-player flag, the PvP tab and markers, the NPC faction filter, PvP from
   depth tier T4), WP42's PvP-POI part (a fortress per faction, 16
   Battlegrounds war camps, garrisons with Generals and named captains, 24
@@ -98,7 +98,7 @@ example E5) are cited below.
   ([Round 31](#round-31--pvp-appearance-and-clean-up),
   [carry-overs](#round-31-carry-overs)).
 - [Round 30 "Performance and clean-up"](docs/planning/round30-plan.md#completion-2026-10-02)
-  (2026-10-02, pushed 2026-10-04, GUI-accepted): the
+  (2026-10-02, pushed 2026-10-03, GUI-accepted): the
   [performance review](docs/research/perf-review-2026-10.md)'s lanes P1–P4
   (quest-state cache and Map tab every 2 s, the region-map file cache and boot
   memory, the per-step A* budget with the give-up of unreachable targets and

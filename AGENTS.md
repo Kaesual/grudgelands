@@ -117,8 +117,8 @@ cooking costs, thin ice). Rules: [sound.md](docs/design/sound.md), credits:
 random seeds) and the seed fleet. The user's GUI test fed Round 35.
 [Plan, completion and GUI checklist](docs/planning/round34-plan.md#completion-2026-10-04).
 
-**Round 33 complete, 2026-10-04 (pushed with Rounds 30–32).** "Items,
-professions and achievements", the items design session's rulings: drops by
+**Round 33 complete, 2026-10-04 (pushed 2026-10-04, after Rounds
+30–32).** "Items, professions and achievements", the items design session's rulings: drops by
 quality (normal 5/2/1 %, named, elite, leaders and captains 10/10/5 %,
 bosses two blue or gold items at item level 65/70), the level requirement on
 all gear; enchant values by item level up to the tier's cap with the tier
@@ -147,7 +147,7 @@ Sound is V1; WP9 moved to a later round; the items design session became
 Round 33.
 [Plan, completion and GUI checklist](docs/planning/round32-plan.md#completion-2026-10-03).
 
-**Round 31 complete, 2026-10-03 (pushed 2026-10-04).** "PvP, appearance and
+**Round 31 complete, 2026-10-03 (pushed 2026-10-03).** "PvP, appearance and
 clean-up": geographic PvP (WP41: `grug_pvp`'s per-player flag, the PvP tab,
 icons, banner and target frame, PvP from depth T4), the NPC faction filter
 for services and map markers, WP42's PvP-POI part (a fortress per faction
@@ -159,7 +159,7 @@ Round 30 clean-up items and a fixture runner. Rules: [pvp.md](docs/design/pvp.md
 Seed-dependent POI placement was set aside.
 [Plan, completion and playtest checklist](docs/planning/round31-plan.md#completion-2026-10-03).
 
-**Round 30 complete, 2026-10-02 (pushed 2026-10-04).** "Performance and
+**Round 30 complete, 2026-10-02 (pushed 2026-10-03).** "Performance and
 clean-up" from the [performance review](docs/research/perf-review-2026-10.md):
 the quest-state cache and the Map tab at most every 2 s (P1, with Return home
 moved to the Character page and quest markers that follow held items and

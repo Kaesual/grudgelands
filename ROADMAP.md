@@ -219,7 +219,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Round 36 is open
   crafting lookups, crosshair and name tags; Return home on the Character
   page; piers and beaches at the dragon-island landings; the legacy quest
   fields removed and the Dawnmere NPC duplication fixed; band-4/5 loot
-  smoothing with recomputed prices. Pushed 2026-10-04; GUI-accepted.
+  smoothing with recomputed prices. Pushed 2026-10-03; GUI-accepted.
 - [x] **Round 31 "PvP, appearance and clean-up"**
   ([completion](docs/planning/round31-plan.md#completion-2026-10-03)):
   **WP41 geographic PvP** (the per-player flag, the PvP tab, icons, banner
@@ -231,7 +231,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Round 36 is open
   face window, equal hitboxes, enchant colours on gear); the **dragon
   arenas** redesigned (round leash arenas, ice and ember hazards, the
   dragon's wrath); the Round 30 clean-up items and a fixture runner. Pushed
-  2026-10-04; GUI-accepted.
+  2026-10-03; GUI-accepted.
 - [x] **Round 32 "Fixes, preparation and research"**
   ([completion](docs/planning/round32-plan.md#completion-2026-10-03)): the
   minimap zoomed ×2, hostile camps marked on the Map tab, zone names

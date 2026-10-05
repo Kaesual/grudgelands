@@ -906,9 +906,9 @@ before and after (comparisons, never targets).
 
 From the user's first look at the round, merged after this section was
 written (`git log 1e8a975d..0f169898`). F2, W3 and RD were independently
-reviewed by Opus (MERGE; the notes applied before the merge); no separate
-review is recorded for W2, which only turns blocks. After them `tools/run_fixtures.sh`
-passes **96 of 96**, `check_fresh_server.py` passes and a smoke boot of
+reviewed by Opus (MERGE; the notes applied, or closed by the user, before
+the merge); no separate review is recorded for W2, which only turns
+blocks. After them `tools/run_fixtures.sh` passes **96 of 96**, `check_fresh_server.py` passes and a smoke boot of
 main passed. W2, W3 and RD change world generation: **the GUI test needs a
 world made on `fef94a6a` or later** (W3 and RD each ran `seed_fleet quick`,
 100 of 100; W2 turns blocks only). The round-end `seed_fleet full` owed
@@ -947,7 +947,7 @@ seeds build ([Round 37 plan](round37-plan.md) §7).
   [world_zones.md](../design/world_zones.md) "Grade"): a level change in a
   road profile costs `C_STEP` **0.5** instead of 0.05, so roads no longer
   trace the ground's one-node dither with lone half-step bumps and holes
-  (about 500 per world before, 0 on the measured seeds).
+  (about 490–610 per seed before, 0 on the measured seeds).
 
 ### The user's choices during the round
 

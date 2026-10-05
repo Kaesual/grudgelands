@@ -136,8 +136,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   Every lane is merged on main (last lane C5, `16c498b9`), each code
   lane independently reviewed by Opus; the data lane DS approved by the user
   through its preview; 72 fixtures pass, `income.py --check` passes again;
-  pushed by the user on 2026-10-04 with Rounds 30–32. **A fresh world is required** (the cultural materials leave
-  the mapgen). Numbers in [item_tiers.md](design/item_tiers.md).
+  pushed by the user on 2026-10-04, after Rounds 30–32. **A fresh world is
+  required** (the cultural materials leave the mapgen). Numbers in [item_tiers.md](design/item_tiers.md).
   - **Drops (C1):** at most one item per kill, normal 5/2/1 % white/blue/gold,
     named, elite, zone leaders and war-camp captains 10/10/5 %; Kings,
     dragons and the General two blue or gold items at item level 65/70 with
@@ -207,7 +207,7 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).
   Every lane is merged on main (last lane Q, `699a2002`), each
   independently reviewed by Opus except the small follow-ups M2 and G2
-  (checked by the coordinator); pushed 2026-10-04. WP41 delivered and WP42's
+  (checked by the coordinator); pushed 2026-10-03. WP41 delivered and WP42's
   PvP-POI part; rules in [pvp.md](design/pvp.md). A fresh world is required.
   - **Geographic PvP (P1, P2, P1b, P1c; WP41):** PvP only between two
     flagged enemy players; the flag comes from contested ground or enemy
@@ -259,7 +259,7 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
 - **Round 30 "Performance and clean-up" delivered** (2026-10-02,
   [plan, completion and playtest checklist](planning/round30-plan.md#completion-2026-10-02)).
   Every lane is merged on main (last lane P2, `b64709d7`), each
-  independently reviewed by Opus; pushed 2026-10-04. Numbers are each lane's
+  independently reviewed by Opus; pushed 2026-10-03. Numbers are each lane's
   before/after comparison on its own probe, never targets.
   - **Quest state and map UI (P1, P1b):** a decoded quest-state cache and one
     marker pass for all givers (minimap 55.8 → 9.3 ms/s, quest HUD 17.1 →
