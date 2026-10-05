@@ -407,19 +407,14 @@ local function loader(directory)
 			buf:clear(x0, 1, z0, x1, clear_to, z1)
 			parts.stamp(buf, part, ox, 0, oz, turns)
 		end
-		-- 6b. A plot marked `dress` gives its building the decor kit's small
-		-- touches (Round 36), clear of every socket and the cell before it.
-		if plot.dress then
-			local brush = decor.brush(buf, palette.race, palette)
-			local opts = {ground = decor.open_ground(palette, {palette.node("foundation")}),
-				wall_light = true,
-				blocked = decor.blocked_sockets(sockets)}
-			for _, house in ipairs(decor.houses_from(
-					decor.rooms_from_corners(points.room_corner), points.doors or {})) do
-				decor.dress_house(brush, house, opts)
-			end
-		end
 		services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+		-- 6c. Every closed room's small touches (Round 36 decor kit): a
+		-- barrel or a pot by the door, flowers under the windows, a wood pile
+		-- or a barrel against a side wall; never on a socket or the cell
+		-- before it.
+		decor.dress_rooms(buf, palette, decor.rooms_from_corners(points.room_corner),
+			points.doors or {}, sockets, {palette.node("foundation"),
+				palette.node("path"), palette.maybe("ground_straw")})
 		parts.resolve_panes(buf)
 
 		local source, count = buf:cells()

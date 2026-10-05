@@ -77,6 +77,7 @@ local function loader(directory)
 	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local dwarf = dofile(directory .. "/dwarf_dressing.lua")(directory)
 
 	local M = {}
@@ -413,6 +414,13 @@ local function loader(directory)
 			parts.stamp(buf, part, ox, 0, oz, turns)
 		end
 		services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+		-- 6c. Every closed room's small touches (Round 36 decor kit): a
+		-- barrel or a pot by the door, flowers under the windows, a wood pile
+		-- or a barrel against a side wall; never on a socket or the cell
+		-- before it.
+		decor.dress_rooms(buf, palette, decor.rooms_from_corners(points.room_corner),
+			points.doors or {}, sockets, {palette.node("foundation"),
+				palette.node("path"), palette.maybe("ground_straw")})
 		parts.resolve_panes(buf)
 
 		local source, count = buf:cells()
