@@ -132,7 +132,9 @@ local main_timer_interval = tonumber(settings:get("mob_main_timer_interval") or 
 
 -- pathfind settings
 
-local pathfinding_enable = settings:get_bool("mob_pathfinding_enable") or true
+-- GRUG PATCH (Round 37 MB, MOB-16): upstream's `get_bool(...) or true` read
+-- an explicit `false` as true, so the switch could never turn A* off.
+local pathfinding_enable = settings:get_bool("mob_pathfinding_enable", true)
 local pathfinding_stuck_timeout = tonumber(
 		settings:get("mob_pathfinding_stuck_timeout")) or 3.0
 local pathfinding_stuck_path_timeout = tonumber(
@@ -2307,7 +2309,12 @@ end
 function mob_class:follow_flop(dtime)
 
 	-- find player to follow
-	if (self.follow ~= "" or self.order == "follow") and not self.following
+	-- GRUG PATCH (Round 37 MB, MOB-02): no mob definition sets `follow`, and
+	-- nil passed upstream's `~= ""` test, so every idle mob scanned all
+	-- players once a second only to drop the find again below. A nil or empty
+	-- `follow` scans only for an owner's "follow" order.
+	if ((self.follow and self.follow ~= "") or self.order == "follow")
+	and not self.following
 	and self.state ~= "attack" and self.state ~= "runaway" then
 
 		local s = self.object:get_pos() ; if not s then return end
@@ -4013,15 +4020,22 @@ function mob_class:mob_staticdata()
 	end
 
 	self.remove_ok = true
-	self.attack = nil
-	self.following = nil
-	self.state = "stand"
 
 	if use_cmi then
 		self.serialized_cmi_components = cmi.serialize_components(self._cmi_components)
 	end
 
-	return core.serialize(clean_staticdata(self))
+	-- GRUG PATCH (Round 37 MB, MOB-05): the engine also asks for staticdata
+	-- while the mob stays active (right after add_entity, and when it moved
+	-- three mapblocks from its static block), so the reset that upstream
+	-- wrote into the live mob dropped a chasing mob's target mid-fight. It
+	-- now goes into the saved copy only; a reloaded mob still starts calm.
+	local data = clean_staticdata(self)
+	data.attack = nil
+	data.following = nil
+	data.state = "stand"
+
+	return core.serialize(data)
 end
 -- list of items used in initial_properties
 
