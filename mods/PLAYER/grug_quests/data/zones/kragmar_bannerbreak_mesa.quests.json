@@ -547,7 +547,7 @@
         "throng_main_05"
       ],
       "title": "Whispers About Fire",
-      "text": "Mardra sold our dead, and somebody is still buying. Vaska Ashlistener sends word that the dead of Gravesalt Escarpment whisper about fire, and the Kiln-Whisper Hexers are the ones doing the whispering. Kill three at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, then go to Vaska at Ashveil Watch and tell her what they stopped saying.",
+      "text": "Mardra sold our dead, and somebody is still buying. Vaska Ashlistener sends word that the dead of Gravesalt Escarpment whisper about fire, and the Kiln-Whisper Hexers do the whispering: kill three at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and tell Vaska at Ashveil Watch what they stopped saying. Then find Nalo Pathdrum in Kezamba; he has been watching Paymaster Chirr's archers in The Skyglass Canopy, and the paymaster is ours too.",
       "objectives": [
         {
           "type": "kill",
