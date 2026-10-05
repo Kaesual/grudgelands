@@ -7,8 +7,32 @@ and engine pitfalls; [living design](../design/README.md) owns game rules and
 origins, not permission to restore superseded behavior. Source paths in code
 spans are repository-relative. This is not a fresh certification of every API.
 
-Related technical references: [Lua/engine constraints](../research/luanti-lua.md),
-[reference projects](../reference_projects.md), [vendor patches](../../VENDOR.md).
+Which mod owns what: the [mod ownership map](mod-map.md). Related technical
+references: [Lua/engine constraints](luanti-lua.md),
+[reference projects](../reference_projects.md), [vendor patches](../../VENDOR.md),
+[upstream workarounds](upstream-workarounds.md).
+
+Sections: [Factions and character creation](#factions-and-character-creation),
+[PvP](#pvp), [XP and levels](#xp-and-levels), [Professions](#professions),
+[Crop registration](#crop-registration), [Skills
+catalogue](#skills-catalogue), [Mount runtime](#mount-runtime), [R7 audit
+boundary](#r7-audit-boundary), [Trinkets](#trinkets), [Combat and
+classes](#combat-and-classes), [Mobs](#mobs), [Mob sub-types, loot and spawn
+regions](#mob-sub-types-loot-and-spawn-regions), [PvP garrisons and dragon
+arenas](#pvp-garrisons-and-dragon-arenas), [The rift](#the-rift), [Mob
+voices](#mob-voices), [Dawn departure](#dawn-departure), [Mobs in
+water](#mobs-in-water), [Enchantments](#enchantments), [Materials and
+tier-rock gating](#materials-and-tier-rock-gating), [Traders and
+money](#traders-and-money), [Quests](#quests), [Parties](#parties),
+[Housing](#housing), [Travel](#travel), [Atlas](#atlas),
+[Preparation](#preparation), [Fishing](#fishing), [Mapgen and
+biomes](#mapgen-and-biomes), [World atlas rules](#world-atlas-rules),
+[Sound](#sound), [UI and formspecs](#ui-and-formspecs), [Player model and
+skins](#player-model-and-skins), [Looks and enchant
+colours](#looks-and-enchant-colours), [Cloaks and
+achievements](#cloaks-and-achievements).
+
+## Factions and character creation
 
 - **Factions**: pattern from Lord of the Test `lottclasses` — faction as a
   **privilege** + ally matrix + predicates (`*_same_race_or_ally`),
@@ -35,6 +59,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   profession vendor takes its settlement's faction), trainer, innkeeper,
   steward, Shipwright and waystone asks it with the NPC's faction, never
   the place; fixtures load it on a fake faction table (`tools/r31_n`).
+
+## PvP
+
 - **PvP (Round 31, WP41):** `mods/PLAYER/grug_pvp` owns the flag. `rules.lua`
   is pure (the record, the timers 60/60/10/15 s, `credited`); `init.lua`
   keeps one record per online player, samples the location once a second
@@ -62,6 +89,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   zone checks, tick cost), `tools/r31_p2`, `tools/r31_p1b`, `tools/r32_f1`
   (the territory line). Rules:
   [pvp.md](../design/pvp.md).
+
+## XP and levels
+
 - **XP/levels**: template VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
   pipeline, HUD bar. Round 18: no death XP loss; cumulative XP caps at level 60,
@@ -75,6 +105,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   level-up banner's second line counts the talent points the jump earned
   through `grug_classes.talent_points_at(level)`, the one point rule (read
   at runtime: grug_classes loads after grug_xp).
+
+## Professions
+
 - **Professions**: `grug_jobs` owns the exact six primaries — Weaponsmith,
   Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith — plus the
   secondaries Cooking and Alchemy (`alchemist`; Round 33), two primary slots,
@@ -132,6 +165,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   built by `grug_jobs/character_tab.lua`; `grug_inventory` owns the tab row
   and asks for the body, because `grug_jobs` depends on `grug_inventory`. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
   with an authenticated Riding socket, never the generic profession hook.
+
+## Crop registration
+
 - **Crop registration**: `grug_nodes` registers complete `grug_farming:soil` and
   `soil_wet` definitions before synchronous mapgen compilation, and exports
   `crop_visual(key, stage, sounds)` and `bind_crop_soil_callbacks`. FARM binds
@@ -144,6 +180,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Since Round 30 soil without a growing crop checks its water once a minute
   (15 s under a growing crop; planting and regrowth re-arm 15 s), and the
   crop geometry LBM leaves a plant whose helpers already stand untouched.
+
+## Skills catalogue
+
 - **Skills catalogue**: `grug_skills` lists unlocked active class/talent
   abilities and every purchased mount tier. Entitlement is authoritative;
   inventory stacks are disposable bound representations. Drop/catalog return
@@ -160,6 +199,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `inventory:get_location()` (type and player name), then the allowed list and
   current entitlement. Cross-inventory tests must include both callback sides
   in engine order, not only direct catalogue callbacks.
+
+## Mount runtime
+
 - **Mount runtime**: ownership is player meta; the summoned controller and its
   visible child are ephemeral. The child is hidden only from its local rider in
   first person. `grug_mounts.dismount` is the shared cleanup path for manual,
@@ -177,16 +219,25 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Round 30 section H the riding-tier purchases at the shipped prices). The
   flight-border sweep reads the faction once and each column's zone id
   (`grug_zones.id_at`), never a copied zone record per sample (Round 30).
+
+## R7 audit boundary
+
 - **R7 audit boundary**: the 157-file R7 source-audit roster is frozen
   historical evidence and is not a current-source gate. Its audit script was
   retired in Round 22 and WP49, the planned replacement, is canceled
   (2026-09-29); never refresh or cite the old baseline-derived list as current
   certification.
+
+## Trinkets
+
 - **Trinkets**: `grug_trinkets` owns the six special consumers and rebuilds an
   event-driven per-character equipment cache through the equipment-change seam;
   hot mana/heal/hit/kill/potion paths read that cache and never rescan slots.
   The same trinket identity cannot occupy both slots. Last Light uses one
   shared 120-second cooldown and maximum shield lifetime.
+
+## Combat and classes
+
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
   punch-interval factor. **Damage pipeline lives in `grug_core/combat.lua`**
   (WP4): `deal_ability_damage` (crit ×`CRIT_MULTIPLIER` = 2 since Round 33,
@@ -470,6 +521,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   selected proc's threat multiplier. The current server ray is the sole
   authoritative hostile ability target while LMB is held; enemy memory is
   UI-only.
+
+## Mobs
+
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1853-2017) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
@@ -638,6 +692,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     combat packet calls the Core input/acquisition seam and returns before all
     mobs_redo combat side effects; only the exact-target, claim-once token of a
     server-owned full punch may continue.
+
+## Mob sub-types, loot and spawn regions
+
 - **Mob sub-types, loot and spawn regions (Round 28):** all in `grug_mobs`,
   data under `data/` (JSON; a missing file means "no data", a broken one
   fails the load).
@@ -686,6 +743,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     (world view, border fit; `border_rule.py`), the catalogue checks
     `tools/r28_design/validate.py` and `tools/r28_names/build_review.py
     --check`.
+
+## PvP garrisons and dragon arenas
+
 - **PvP garrisons and dragon arenas (Round 31):** `grug_mobs/pvp_garrison.lua`
   (pure; built in `init.lua` before `guard.lua` from the mapgen catalogue
   `r31_pvp_catalog.lua` and `data/pvp_names.json`) answers per socket which
@@ -719,6 +779,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`,
   `tools/r36_g` (the wider hazards, the refreeze, the gust; `engine.sh` the
   hazard counts and a push on a stand-in).
+
+## The rift
+
 - **The rift (Round 36):** `grug_mobs/rift_core.lua` (pure: the site
   constant `SITE`, each candidate's crack waypoints and `crack_cells`, the
   respawn and particle numbers) and `rift.lua` (the void node, the one-time
@@ -736,6 +799,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   nil from the cached state, cheap enough for a once-a-second pass; with
   grug_quests absent everyone is eligible).
   Fixtures `tools/r36_r` (with `numbers.py` and `engine.sh`), `tools/r33_c1`.
+
+## Mob voices
+
 - **Mob voices (Round 34 S1b):** `grug_mobs/voices.lua` holds `VOICES`, the
   families (humanoid, goblin, undead, mummy, skeleton, spirit, giant,
   elemental, canine, feline, boar, beast, grazer, bird, crow, critter,
@@ -749,6 +815,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `war_cry`. `telegraph.lua` plays the family's `telegraph` cue at a
   wind-up (only the humanoids have one); the dragons play `telegraph` from
   `boss_dragons.lua`. Fixture `tools/r34_s1b`.
+
+## Dawn departure
+
 - **Dawn departure (Round 35 E):** `grug_mobs/dawn.lua`
   (`grug_mobs.dawn_tick`, called from the shared `do_custom` wrapper right
   after `leash_tick`; a `false` return ends the step of a mob that left)
@@ -759,11 +828,17 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `DAWN_INTERVAL` (1 s) per night mob. Camp members (their tag's unit is a
   camp) and every mob without the clock stay. Fixture and engine probe
   `tools/r35_e`.
+
+## Mobs in water
+
 - **Mobs in water (Round 34 F1):** the wading rule lives in the vendored
   probe (`grug_may_wade`, see the `GRUG PATCH` list); the way back to land is
   `grug_mobs/aggro.lua` `shore_check` in the 1 Hz leash tick (an idle
   floating mob in water swims toward its home). `floats` is a boolean in
   every definition. Fixture and engine probe `tools/r34_f1`.
+
+## Enchantments
+
 - **Enchantments**: every enchant stores its stat, channel and tier (1–7) in
   `grug_ench`; its value is `grug_items.enchant_value(stat, ilvl, tier)`
   (`docs/design/item_tiers.md` §1.1), derived on write by grug_quality's one
@@ -795,6 +870,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   tier) and, since Round 33, `upgrades.json`, checked by the pure
   `enchant_data.lua` (`grug_professions/data/README.md`); the family owners
   are `grug_professions.FAMILY_OWNERS`.
+
+## Materials and tier-rock gating
+
 - **Materials & tier-rock gating** (`items_crafting.md` §3.0,
   `world.md` §2 R6):
   - **Contract (WP43, Round 24):** Bronze, Iron, Steel, Silversteel,
@@ -860,6 +938,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     `grug_smelting.RECIPES` surface is consumed by the trader anti-loop audit
     because engine craft inspection cannot see dual-furnace recipes. Recipe
     ownership and remaining economy work are tracked in BACKLOG.
+
+## Traders and money
+
 - **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
   `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
   (binding):**
@@ -957,6 +1038,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     priced inputs (the §3.8 anti-loop rule — the real case was smelting
     a 3c iron lump into a 5c steel ingot). Add prices, don't disable
     them.
+
+## Quests
+
 - **Quests (Round 14):** `grug_quests` owns a strict registry, 20-slot player-meta
   journal, kill/item/talk/use objectives and claim-once turn-in with main/owned-bag
   inventory preflight. The per-mob eligible damage/effective-heal participant
@@ -1025,6 +1109,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   catalog requires only V1 overworld content; the Nether is reserved for the
   first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
+
+## Parties
+
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
   members and their leader in mod storage. Offline membership/leadership lasts
   indefinitely. Invitations are ephemeral inviter-bound records; a second
@@ -1038,6 +1125,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   no view built) and recomputes the row layout only on a window change
   (fixture `tools/r32_f4`). Current geometry and offline presentation:
   [parties.md](../design/parties.md).
+
+## Housing
+
 - **Housing (Round 25, Round 26 drafts):** `mods/PLAYER/grug_housing` implements
   [housing.md](../design/housing.md). One global `grug_housing`; each file has
   one owner lane so the lanes work in parallel:
@@ -1073,6 +1163,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     role id `housing_manager`) and the character-page status.
   - Home-stone travel (Lane D) lives in `grug_home`, which reads the claim
     through the contract above.
+
+## Travel
+
 - **Travel (Round 29, WP17):** `grug_home/travel.lua` owns one travel path
   (dismount, emerge, deferred re-validation, safe arrival) used by home
   return, respawn and waystone travel (`grug_home.travel(player, trip)`).
@@ -1092,6 +1185,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Fuel arithmetic is fixed in housing.md §4 (26 160 s per lump; displayed
   stack `ceil`, pick-up return `floor`). Road and POI protection (Lane E)
   lives in the zone authority and `grug_core`, not in `grug_housing`.
+
+## Atlas
+
 - **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x/8x
   zoom, native scrollbars and an independent marker layer. Formspec v4 wraps
   the shared legacy inventory window; only Map content switches to real
@@ -1165,6 +1261,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   static markers on `register_on_faction_chosen`. Fixtures `tools/r31_n`,
   `tools/r31_m`.
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
+
+## Preparation
+
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a
   success-only cursor; dispatch occurs in throttled globalstep, not callbacks.
@@ -1180,10 +1279,16 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   keeps the retry form). Both creation and reconnect use
   the shared waiting/stasis gate. Native tests
   use isolated tiny bounds; never run production full generation as a test.
+
+## Fishing
+
 - **Fishing (Round 14):** transient bobber, manual reel in a 1.5-second bite
   window, missed bites rearm; only successful catches wear the returned rod.
   `grug_abilities.notify` shares the neutral latest-message HUD token, no catch
   chat spam. Death, leave, shutdown, invalid water/rod and distance clean up.
+
+## Mapgen and biomes
+
 - **Mapgen/biomes.** The **WP40 R7 pipeline is the only mapgen owner** since
   the production cutover: `mods/MAPGEN/grug_mapgen/init.lua` registers the protected POI display
   palette, then loads `wp40/r7_loader.lua`, whose header says it plainly — "Legacy
@@ -1364,9 +1469,25 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   endpoint apex camp has no renewable sockets (renewable ores are removed,
   2026-09-29); its small functional anchor and building-core box are
   protected, while the rest of the camp shell remains mutable.
+- **Mapgen boundaries that tests must cross** (moved from AGENTS.md,
+  2026-10-05): a change to the R7 content projection or the planner column
+  tuple is tested through the real consumers, `r7_manifest.new` and the
+  planner's `plan_slice` (`wp40/r7_manifest.lua`, `wp40/planner.lua`); a
+  self-built receipt passed to `validate`, or a fixture of the source tuple
+  alone, does not prove them. Resource roots: `docs/design/world_zones.md`
+  §11 (demand-driven sampling, adopted by the user on 2026-09-13) is the
+  root-selection rule of both the VM writer and the resource census; the
+  per-host root SHA ranking in the frozen R6 contract and artifacts is
+  historical evidence, not an output oracle, and is not restored.
+
+## World atlas rules
+
 - **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
   with no fog of war and independent future-interactive markers. It needs no
   generated-terrain bitmap and never unlocks waypoint travel.
+
+## Sound
+
 - **Sound (Round 34; rules [sound.md](../design/sound.md)):**
   - **`grug_sounds`** (`mods/CORE/grug_sounds/init.lua`) is the one play
     path for effects: `grug_sounds.play(event, target)` with a player, an
@@ -1422,6 +1543,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     for the engine probes `tools/r34_s2/engine.sh` and `tools/r35_m/engine.sh`;
     fixtures `tools/r34_s2` (beds, calls, loops, files) and `tools/r35_m`
     (capital music, either music or the bed, settings).
+
+## UI and formspecs
+
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
   coordinate mode deliberately. Map retains the shared legacy outer window and
@@ -1438,9 +1562,15 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   personal notice goes there too. Chat keeps deaths, rare sightings, boss
   and dragon warnings and the one-time no-weapon hint
   ([inventory_equipment.md](../design/inventory_equipment.md) "Message feed").
+
+## Player model and skins
+
 - **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
   textures={...}}`; texture layering (skin/armor/wielditem) following
   LotT `lottarmor/multiskin.lua`.
+
+## Looks and enchant colours
+
 - **Looks and enchant colours (Round 31):** `grug_visuals/looks.lua` (pure)
   holds the option tables per race, `normalize_look`, `roll_look`,
   `look_from_seed`, `npc_look` and `look_texture` (layer order, the helmet
@@ -1466,6 +1596,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `armor_layers`; NPC specs may carry `weapon_colors` (kings, Generals).
   Fixtures `tools/r31_a` (incl. the equal hitbox), `tools/r31_b`; rules
   [character_visuals.md](../design/character_visuals.md).
+
+## Cloaks and achievements
+
 - **Cloaks and achievements (Round 33):** players wear
   `grug_visuals/models/grug_visuals_character.b3d`, `character.b3d` with a
   cloak box on a keyed `Cloak` bone and its own mesh buffer appended

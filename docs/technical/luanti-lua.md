@@ -1,0 +1,486 @@
+# The Lua environment inside Luanti
+
+Deeper reference for the AGENTS.md section "Lua & Luanti environment"; its
+rules are binding (moved here from `docs/research/` on 2026-10-05). All file
+references point into `reference_projects/luanti` (5.17.0-dev, commit
+`df04879`) unless a URL is given.
+
+**Planning note.** If you are briefing, scheduling or costing any task that
+*executes* Lua, read "Interpreter and test strategy" at the end of this file
+first: plain-5.1 *syntax* is checked on every change, every executable run
+uses LuaJIT, and there is no PUC runtime run during development (user ruling
+2026-09-25; at most one optional PUC crash smoke test at the end).
+
+## What the version pin means (read this first)
+
+Two different version numbers are in play. Do not conflate them:
+
+- **Luanti 5.17.0-dev** is the *engine* version of the reference checkout
+  in `reference_projects/luanti`. It exists so every claim below can be
+  quoted as `file:line` and re-checked. It is a **read-only source
+  reference**, not an API floor we target.
+- **Lua 5.1** is the *language* version we write. It is decoupled from the
+  engine version and **never rises with it** — a newer Luanti still embeds
+  Lua 5.1.5 (`lib/lua/src/lua.h:20`). Bumping the engine checkout does not
+  unlock `goto`, `//`, `table.unpack` or any other 5.2+/5.3+ syntax.
+
+So: "the engine is at 5.17" says nothing about which syntax is allowed.
+The allowed syntax is fixed by the section "Language level & safe feature
+set" below, and it is Lua 5.1 — *plain* 5.1, not LuaJIT's superset,
+because the fallback build ships plain PUC 5.1.5 (see "Which Lua exactly").
+
+## Where the real code lives
+
+The engine's own Lua **is checked out in this repo** — never guess at
+engine behaviour, read it. All paths are relative to
+`reference_projects/luanti`:
+
+| What | Path |
+| --- | --- |
+| **The Lua the engine ships and runs before any mod** | `builtin/init.lua` (bootstrap + load order) |
+| Stdlib extensions & helpers | `builtin/common/` — `math.lua`, `vector.lua`, `vector2.lua`, `strict.lua`, `serialize.lua`, `misc_helpers.lua`, `after.lua`, `metatable.lua`, `register.lua`, `mod_storage.lua`, `item_s.lua`, `chatcommands.lua` |
+| Server-side game layer (the `core.*` behaviour mods sit on) | `builtin/game/` — `item.lua`, `falling.lua`, `register.lua`, `hud.lua`, `knockback.lua`, `features.lua`, `deprecated.lua`, `privileges.lua`, `static_spawn.lua`, `voxelarea.lua`, … |
+| Async / mapgen (emerge) environments | `builtin/async/game.lua`, `builtin/emerge/` |
+| Engine-sanctioned usage examples | `builtin/common/tests/*_spec.lua`, `builtin/game/tests/` |
+| Setting names, types and defaults | `builtin/settingtypes.txt` |
+| **The interpreter itself** (fallback build) | `lib/lua/src/` — PUC Lua 5.1.5 |
+| `bit` library when there is no LuaJIT | `lib/bitop/` |
+| `string.pack`/`unpack`/`packsize` backport | `lib/lstrpack/` |
+| **C++ binding layer** — the truth when the docs are silent | `src/script/lua_api/l_*.cpp` (one file per API area: `l_env`, `l_object`, `l_item`, `l_inventory`, `l_mapgen`, `l_noise`, `l_vmanip`, `l_util`, …) |
+| Bootstrap, sandbox whitelist, callback dispatch | `src/script/cpp_api/` — `s_base.cpp`, `s_security.cpp`, `s_entity.cpp`, `s_player.cpp`, … |
+| **The API spec** (~12,700 lines) | `doc/lua_api.md` |
+| Other docs | `doc/breakages.md`, `doc/builtin_entities.md`, `doc/world_format.md`, `doc/client_lua_api.md`, `doc/menu_lua_api.md` |
+
+Lookup order that works: `doc/lua_api.md` for the contract → `builtin/`
+for what the engine actually does in Lua → `src/script/lua_api/l_*.cpp`
+for anything the other two leave open (mapgen order, biome selection,
+punch handling, nametag rendering). Quote `file:line` in findings so the
+next agent can re-verify.
+
+## Which Lua exactly
+
+- The engine **prefers LuaJIT but does not require it**. `ENABLE_LUAJIT` is
+  `TRUE` by default; if LuaJIT is not found the build silently falls back to
+  the **bundled PUC Lua** — `cmake/Modules/FindLua.cmake:4-28`.
+- The bundled interpreter is **Lua 5.1.5** (`lib/lua/src/lua.h:20`), patched
+  with a custom `lua_atccall` hook so C++ exceptions can cross the Lua stack
+  (`src/script/cpp_api/s_base.cpp:105-110`); system-wide PUC Lua is rejected
+  at configure time for that reason (`src/CMakeLists.txt:908-921`).
+- LuaJIT: anything older than ~March 2021 only warns
+  (`src/CMakeLists.txt:890-906`). Luanti links a *system* LuaJIT, so
+  compile-time LuaJIT flags are set by the distro, not by us.
+- **Practical consequence: write code that runs on plain Lua 5.1.5.** Both
+  configurations ship in the wild (aarch64/macOS builds regularly use the
+  bundled Lua), and the engine's own builtin code stays 5.1-compatible —
+  e.g. it feature-detects `table.move` instead of assuming it:
+  `builtin/common/misc_helpers.lua:572-580` (`if table.move then -- LuaJIT`).
+
+## Language level & safe feature set
+
+Baseline is **Lua 5.1** syntax. LuaJIT adds 5.2/5.3 features on top, but
+those are *not* available in the fallback build:
+
+| Feature | plain 5.1 | LuaJIT 2.1 | verdict |
+| --- | --- | --- | --- |
+| `goto` / `::label::` | no | yes (unconditional) | **avoid** |
+| `\u{XXXX}` string escape | no | yes (5.3 ext) | **avoid** |
+| `\x41`, `\z` escapes | no | yes | **avoid** |
+| `table.move`, `coroutine.isyieldable` | no | yes | avoid or guard |
+| `table.unpack` / `table.pack` | no | only with `LUAJIT_ENABLE_LUA52COMPAT` | **never use** |
+| `__len` on tables, `__pairs`, `rawlen` | no | only with `LUA52COMPAT` | never use |
+| integer division `//` | no | no | never (use `math.floor(a/b)`) |
+| bitwise operators `& \| ~ >> <<` | no | no | never (use `bit.*`) |
+| `unpack`, `setfenv`, `getfenv`, `loadstring` | yes | yes | fine |
+
+Sources for the LuaJIT columns: <https://luajit.org/extensions.html>
+(sections "Extensions from Lua 5.2" / "from Lua 5.3" and the
+`-DLUAJIT_ENABLE_LUA52COMPAT` list).
+
+Always available regardless of interpreter, because the engine injects them:
+
+- **`bit` (Lua BitOp)** — with LuaJIT it is built in; without it the engine
+  compiles `lib/bitop` and opens it manually
+  (`CMakeLists.txt:288-290`, `src/script/cpp_api/s_base.cpp:80-84`).
+  API: `bit.tobit/tohex/bnot/band/bor/bxor/lshift/rshift/arshift/rol/ror/bswap`
+  (`doc/lua_api.md:12705-12710`). Operates on **32-bit** values.
+- **`string.pack` / `string.unpack` / `string.packsize`** — backported from
+  PUC Lua 5.4 as a vendored C file (`lib/lstrpack/lstrpack.c:1-3`,
+  registered in `src/script/cpp_api/s_base.cpp:87`, documented at
+  `doc/lua_api.md:4597-4600`).
+
+**Numbers**: no integer type; everything is a C double. The safe integer
+range is `[slua] = ±(2^53−1)` and the API docs use that notation
+(`doc/lua_api.md:86-104`). Note LuaJIT's 64-bit `bit` cdata semantics do not
+exist in the fallback build — do not rely on them.
+
+## Engine additions to the standard library
+
+Loaded before any mod, in this order: `math.lua`, `vector.lua`,
+`vector2.lua`, `strict.lua`, `serialize.lua`, `misc_helpers.lua`
+(`builtin/init.lua:45-50`).
+
+- `print` is redirected to the engine log/terminal; `core.debug(...)` logs
+  (`builtin/init.lua:17-27`). `math.randomseed` is seeded at startup
+  (`builtin/init.lua:29-35`) — do **not** reseed globally.
+- `minetest = core` alias (`builtin/init.lua:38`) — we always write `core.*`.
+- **string**: `string.split(str, sep, include_empty, max_splits, sep_is_pattern)`
+  (`builtin/common/misc_helpers.lua:252`), `string:trim()` (`:300`).
+- **table**: `table.indexof` (`:280`, returns `-1` when absent, not `nil`),
+  `table.keyof` (`:290`), `table.copy` (`:564`, **strips metatables**),
+  `table.copy_with_metatables` (`:568`), `table.insert_all` (`:572`),
+  `table.key_value_swap` (`:583`), `table.shuffle` (`:592`). `table.copy`
+  handles cycles but copies *keys* recursively too.
+- **math**: `math.hypot`, `math.sign(x, tolerance)`, `math.factorial`,
+  `math.round` (half away from zero), `math.isfinite`
+  (`builtin/common/math.lua:8-50`).
+- **dump / dump2**: value dump with cycle handling
+  (`builtin/common/misc_helpers.lua:72,120`) — use this for logging, not
+  `core.serialize`.
+- **vector / vector2**: metatable-based (`builtin/common/vector.lua:12-30`).
+  Operators `== - + - * /` work **only if all operands carry the metatable**
+  (`doc/lua_api.md:4263`) — Lua 5.1 fires `__eq` only when both tables share
+  one metatable. A literal `{x=1,y=2,z=3}` compared with `==` against an
+  engine-returned position is therefore *silently false*; use
+  `vector.equals()` (`builtin/common/vector.lua:73-78`). `#v` is **not**
+  overloaded (5.1 has no `__len` for tables) — use `vector.length()`
+  (`builtin/common/vector.lua:82-85`). `vector.metatable` must not be
+  modified (`doc/lua_api.md:4252`).
+- **`core.serialize` / `core.deserialize`** (`builtin/common/serialize.lua:216,234`):
+  emits Lua source (`return {...}`), supports cycles and shared references.
+  Only nil/boolean/number/string/table (+ deprecated functions) — **userdata
+  and threads raise "unsupported type"** (`:31-33`). `deserialize` runs the
+  chunk via `loadstring` in an env of `{inf, nan, loadstring}` — sandboxed but
+  **not safe against untrusted input** (`doc/lua_api.md:8122-8135`).
+- **`core.parse_json` / `core.write_json`** (`doc/lua_api.md:8092-8104`):
+  `parse_json` returns `nil` + logs on failure unless `return_error` is set;
+  JSON `null` maps to `nullvalue` (default `nil`).
+- **`core.after(sec, func, ...)`** (`builtin/common/after.lua:156`): jobs run
+  from a globalstep (`:117`), so `sec` is a **lower bound** measured in
+  globalstep dtime, never a precise timer (`doc/lua_api.md:7596-7605`).
+- **`core.global_exists(name)`** — the only way to test a global without
+  tripping the strict warning (`builtin/common/strict.lua:3`).
+
+## strict.lua and mod structure
+
+`builtin/common/strict.lua:16-49` puts a metatable on `_G`. It **warns, never
+errors**:
+
+- Reading an undeclared global → `core.log("warning", "Undeclared global
+  variable %q accessed at %s:%d")`.
+- Assigning to an undeclared global **from inside a function** → warning.
+  Assignment from a file's main chunk (`info.what == "main"`) is exempt and
+  marks the name as declared (`:24-27`).
+- Each source-line/name pair warns only once.
+
+Consequences: **all mods share one global table** — there is no per-mod
+environment, `loadScript` just `pcall`s the chunk in the shared state
+(`src/script/cpp_api/s_base.cpp:257-280`). So: exactly one global per mod
+(the mod table, assigned at file top level), everything else `local`.
+Assigning your mod table lazily inside a function will warn.
+
+## Async & mapgen (emerge) environments
+
+Separate Lua states with **no access to map, entities, players, or your
+globals** (`doc/lua_api.md:7617-7621`).
+
+- Async: `core.handle_async(func, callback, ...)` and
+  `core.register_async_dofile(path)` — `func` must be self-contained; its
+  upvalues are *not* transferred. Available: `string/table/math/bit`,
+  logging/filesystem/encoding/hashing/compression helpers, `core.settings`,
+  read-only `core.registered_items/nodes/tools/craftitems/aliases` **with all
+  functions and userdata replaced by `true`**, IPC, and the classes
+  `ItemStack`, `VoxelManip`, `ValueNoise(Map)`, `PseudoRandom`, `PcgRandom`,
+  `SecureRandom`, `AreaStore`, `VoxelArea`, `Settings`
+  (`doc/lua_api.md:7640-7675`, impl. `builtin/async/game.lua`).
+- Mapgen/emerge: `core.register_mapgen_script(path)`, callback
+  `core.register_on_generated(vmanip, minp, maxp, blockseed)`. No globalstep,
+  no timers, **no node metadata**; `core.get_node`/`set_node` only touch the
+  current chunk (`doc/lua_api.md:7676-7757`).
+- Tables crossing the boundary lose their metatables unless registered with
+  `core.register_portable_metatable(name, mt)` **in both environments**
+  (`doc/lua_api.md:8304-8313`, `builtin/common/metatable.lua:3-19`; `vector`
+  is pre-registered as `__builtin:vector`).
+
+## Sandbox (`secure.enable_security`, default true)
+
+Default `true` (`builtin/settingtypes.txt:1936-1939`). The engine builds a
+fresh global table and copies only whitelisted names into it
+(`src/script/cpp_api/s_security.cpp:122-336`):
+
+- Full copies: `coroutine`, `string`, `table`, `math`, `bit` (`:155-159`) —
+  copies, so patching `string.format` cannot reach the insecure env; also the
+  `""` string metatable is replaced (`:111-119`).
+- `io` keeps only `close/flush/read/type/write`; `open/input/output/lines` are
+  path-checked wrappers (`:166-172, 276-279`). **No `io.popen`.**
+- `os` keeps only `clock/date/difftime/getenv/time`; `remove/rename/setlocale`
+  are wrapped. **`os.execute`, `os.exit`, `os.tmpname` are gone** (`:173-179`).
+- `debug` keeps `gethook/traceback/upvalueid/sethook/debug`, wrapped
+  `getinfo`; `getlocal`, `getupvalue`, `setmetatable`, `getregistry` are gone
+  (`:180-186`).
+- `package` keeps only `config/cpath/path/searchpath`; **`require()` is
+  disabled outright**, not path-restricted (`:1024-1028`).
+- `jit` is trimmed to `arch/flush/off/on/opt/os/status/version/version_num`
+  (`:193-203`) — no `jit.util`, no `jit.attach`.
+- `load`/`loadstring`/`loadfile`/`dofile` are wrapped and **refuse Lua
+  bytecode** (`:657-666`).
+- Path rules (`:824-897`): **read** access to `builtin/`, the game dir and
+  *all* mod dirs (not just your own); **read/write** in the world dir and the
+  mod-data dir, except `worldmods/`, the world's `game/`, any `.git/` path and
+  the settings file. So `dofile(core.get_modpath("grug_core").."/x.lua")` is
+  fine; reading a sibling mod's file is technically allowed too.
+- `core.request_insecure_environment()` needs `secure.trusted_mods` and only
+  works from the mod's main scope at init time (`doc/lua_api.md:8292-8300`).
+  **We never use it.**
+
+## Floating point: LuaJIT interpreter vs compiled code
+
+LuaJIT interprets a function until it is hot, then runs compiled traces.
+*Which* code runs compiled depends on history (hot counters, trace aborts,
+blacklisting, flushes), so it differs between the main and the emerge
+environment, between the engine and an offline tool (or a `-joff` run), and
+from boot to boot. Any operation whose bits differ between the two modes
+therefore makes a result depend on that history.
+
+Measured 2026-09-27 on the engine's LuaJIT (OpenResty luajit2
+2.1.1784272936, main and emerge environments) and on Fedora's
+2.1.1767980792 (same behaviour); probes and IR dumps in
+`grudgelands-orchestration/r22/pow-exact/`:
+
+- **`x ^ 2` differs.** The JIT folds a constant exponent 2 into `x * x`
+  (IR `MUL`); the interpreter calls libm `pow()`, which is not correctly
+  rounded for every input. The last bit differed for 154 of 400 k
+  non-quantized floats in the engine (608 of 400 k in the Fedora probe).
+  Integer and k/16-quantized bases are exact either way.
+- The same fold applies to everything the recorder sees as the constant 2:
+  `x ^ 2.0`, `x ^ (1 + 1)`, `math.pow(x, 2)`, and `x ^ K` where `K` is a
+  local or an immutable upvalue holding 2 (the recorder constifies it).
+- **Identical in both modes:** every other exponent (`^3`, `^4`, `^8`,
+  `^-1`, `^-2`, `^0.5`, `^1.4`, `^1.5` stay `pow()` calls in compiled code;
+  `^0` and `^1` fold to exact results), `x ^ k` with a run-time `k`, `exp`,
+  `log`, `sin`, `cos`, `atan2`, `fmod`, `%`, `sqrt`, `/`, and `min`/`max`
+  with ±0 and NaN. `a * b + c` stays identical only because LuaJIT 2.1 does
+  not fuse multiply-add unless FMA is enabled (`jit.opt.start("+fma")`) —
+  never enable it.
+
+Why it matters: main and emerge each build the same layouts, offline tools
+rebuild them, and a world must come out identical on every boot. A 1-ulp
+difference only changes a result at a tie, but mapgen is full of ties: an
+argmin or heap order, a `<=` threshold, a `floor()` at an integer. Before
+the fix 82 of 2.45 M road A* heap pops (seed 1) carried a different cost
+with the JIT on vs `-joff`; after replacing all 108 literal `^ 2` in
+`grug_mapgen` by multiplications, none did.
+
+**Rule:** in deterministic code (all of `mods/MAPGEN`, and anything else whose
+result must agree across processes), write `x * x`, never `x ^ 2` or
+`math.pow(x, 2)`; bind an expression base to a local first
+(`local dx = a - b` … `dx * dx`). Do not hide the 2 in a variable either.
+Other exponents are safe. `tools/check_lua.sh` enforces this for files under
+`mods/MAPGEN` (sweep 6): it reads the `luac51` bytecode listing and fails on
+a `POW` whose exponent is the constant 2 — as an RK operand or, in a
+function with more than 256 constants (or `local k = 2`), a register a
+`LOADK … ; 2` set earlier in the same function — and on any `math.pow`. Its
+limit: a value that is 2 only at run time (a parameter, a table field, a
+register set before a jump) is beyond a static check. This covers LuaJIT's two modes on one machine only;
+libm results (`pow`, `exp`, `sin`, ...) can still differ between platforms.
+
+## Table order: `pairs` differs between processes
+
+LuaJIT seeds its string hash per Lua state, so `pairs()` over string keys
+walks the same table in a different order in another process, and in the
+main and the emerge environment of one server (re-measured 2026-10-05 with
+the system LuaJIT 2.1.1767980792: six runs of one 10-key table gave five
+orders). Plain 5.1 has its own order again. Integer array parts walked with
+`ipairs` or an index loop are stable.
+
+**Rule:** never let a `pairs` order over string keys reach output that must
+agree across processes: a layout, a hash or identity, a cache file, an
+emitted list, an RNG draw sequence, a tie break. Collect the keys, sort
+them, then iterate. Sort strings by byte order (a `less_bytes` comparator
+like the mapgen's) rather than with `<` where it matters: LuaJIT compares
+bytes, while the PUC fallback uses `strcoll` and Luanti sets the locale from
+the environment, so a pair such as `x_b` / `xa` may collate differently. A
+`pairs` loop that only fills a set or sums values is fine. This bites
+hardest in mapgen: emerge rebuilds a lazy capital composition and compares
+its hash with main's, so an order-dependent builder stops the server (audit
+2026-10, MGS-11).
+
+## Do-not-write checklist
+
+Every "write instead" below is plain 5.1 and runs on both builds.
+
+1. No `goto` / `::labels::` — LuaJIT-only. Write instead: `break` out of an
+   `if`, or restructure into a helper function with an early `return`.
+2. No `\u{...}`, `\x..`, `\z` string escapes — LuaJIT-only. Write instead:
+   the UTF-8 bytes literally in the source (`"§"`), or `string.char(0xC2, 0xA7)`;
+   decimal escapes like `"\65"` are 5.1 and fine.
+3. No `table.unpack` / `table.pack` / `rawlen` / `__len` on tables /
+   `__pairs` — these need `LUAJIT_ENABLE_LUA52COMPAT`, which we cannot
+   assume. Write instead: `unpack(t, 1, n)`, `#t` (arrays without holes),
+   and track counts explicitly in a field (`t.n = n`).
+4. No `table.move`, `coroutine.isyieldable`, `math.type`, `math.tointeger`,
+   `utf8.*` — LuaJIT/5.3-only. Write instead: `table.insert_all` (engine
+   helper) or an index loop; `x % 1 == 0` for the integer test.
+5. No `//`, no `&`/`|`/`~`/`<<`/`>>` — write instead `math.floor(a / b)` and
+   `bit.band/bor/bxor/bnot/lshift/rshift(a, b)` (32-bit). No integers above
+   2^53−1.
+6. No `require`, `io.popen`, `os.execute`, `os.exit`, no bytecode loading —
+   blocked by the sandbox.
+7. No `==` between vectors unless both sides came from `vector.*`; use
+   `vector.equals`. No `#vec`; use `vector.length`.
+8. No `core.serialize` on userdata/`ItemStack`/entities, and never
+   `core.deserialize` on player-supplied strings.
+9. No globals except the single mod table, assigned at file top level
+   (strict.lua warns otherwise). Use `core.global_exists` for probing.
+10. No reliance on `core.after` for precise timing; it is globalstep-bound.
+11. No upvalue capture in `core.handle_async` functions; no `core.get_node`
+    or player access in async/mapgen environments.
+12. Always `core.*`, never `minetest.*`.
+13. No `x ^ 2` / `math.pow(x, 2)` in mapgen or other deterministic code —
+    LuaJIT's interpreter and compiled code round it differently. Write
+    instead: `x * x` (see "Floating point: LuaJIT interpreter vs compiled
+    code"; checked by `tools/check_lua.sh` sweep 6).
+14. No `pairs` order over string keys in output that must agree across
+    processes (layouts, hashes, caches, emitted lists, RNG sequences).
+    Write instead: collect the keys, sort them (byte order), iterate the
+    sorted list (see "Table order: `pairs` differs between processes").
+15. No discovery of known names by walking `core.registered_nodes` or
+    `core.registered_items` with `pairs`: aliases are not keys there. Write
+    instead: `core.registered_nodes[name]` and `core.get_content_id(name)`
+    (see "Engine traps").
+
+## Engine traps
+
+Engine behaviour that has cost us time; each was read in the reference
+checkout.
+
+- **Aliases are invisible to `pairs`.** `core.registered_nodes` and
+  `core.registered_items` carry an `__index` that resolves an alias
+  (`builtin/game/register.lua:34-35`, the emerge copy in
+  `builtin/emerge/register.lua:37-38`), so `registered_nodes[name]` finds an
+  alias, while `pairs` and `rawget` see only the real names. Code that builds
+  a name list by walking the table silently misses every alias and takes its
+  "node not available" fallback (a WP40 probe degraded to zero writes this
+  way, without an error). Today's aliases include the engine's `mapgen_*`
+  names (`mods/BASE/default/mapgen.lua`) and the twelve former `default:`
+  tool names (`grug_materials.TOOL_ALIASES`). An alias resolves to the
+  *target's* content id and definition: read properties from the target.
+- **The block send front stalls behind the nearest pending emerge.** The
+  server walks Chebyshev shells of 16-node blocks around each player
+  (`src/server/clientiface.cpp`, `getNextBlocks`): it generates only up to
+  `max_block_generate_distance` (default 10 blocks), sends up to
+  `max_block_send_distance` (12), and never sends an all-air block beyond
+  `block_send_optimize_distance` (4; `:339`). While a block in view at
+  distance d waits for its emerge, the next pass restarts at d. So
+  ungenerated air or stone near a player delays sending the prepared surface
+  further out, and a generate distance below the send distance minus 2
+  freezes loading for good, because requests for blocks the server may not
+  generate are dropped and asked again every step. **Lowering
+  `max_block_generate_distance` is not a lever for loading speed.** Flying
+  mounts reach y = 600 and generate air chunks on demand.
+- **More than one emerge thread loses ores and caves** at chunk edges in v7
+  (upstream issue #9357); `minetest.conf` pins `num_emerge_threads = 1`
+  ([upstream workarounds](upstream-workarounds.md)).
+
+## Verifying a change
+
+### The right interpreter: `tools/bin/luac51`, not `luajit`
+
+**`luajit -e 'assert(loadfile(f))'` does NOT prove 5.1 compatibility.**
+LuaJIT is a *superset*: it accepts exactly what the fallback build rejects.
+Run `tools/build_lua51.sh` once per machine — it compiles the **engine's
+own bundled PUC Lua 5.1.5** out of `reference_projects/luanti/lib/lua/src`
+(no package, no network, only a C compiler) into `tools/bin/lua51` and
+`tools/bin/luac51`. That parser *is* the fallback build's parser.
+
+```sh
+find mods/*/grug_* -name '*.lua' | xargs tools/bin/luac51 -p   # syntax gate
+tools/bin/luac51 -l -p <file> | grep SETGLOBAL                 # global writes
+```
+
+The former `tools/biomecheck/dump_biomes.lua` invocation was retired with
+WP40 R7. It modeled the removed Lua-biome pipeline and is not a current
+compatibility or mapgen check.
+
+`luac51 -p` parses without emitting bytecode; `-l -p` lists opcodes, so
+`SETGLOBAL` is the plain-5.1 equivalent of `luajit -bl … | grep GSET` for
+the strict.lua check — expect exactly one line, the mod table.
+
+### Escapes are a *silent* divergence — only grep finds them
+
+Neither parser errors on `\x`/`\u{}`/`\z`: Lua 5.1 keeps unknown escapes as
+literal characters, so the same source means different things per build.
+Measured, same file, both interpreters:
+
+| source | LuaJIT | PUC 5.1.5 |
+| --- | --- | --- |
+| `"\x41"` | `A` (1 byte) | `x41` (3 bytes) |
+| `"\u{41}"` | `A` | `u{41}` |
+| `"a\z  b"` | `ab` (2) | `az  b` (5) |
+
+An aarch64 player would see the literal text `u{41}` in the HUD, with no
+error anywhere. `goto` at least fails loudly under `luac51`; these do not.
+
+### The grep sweeps
+
+Plain-5.1 conformance beyond syntax is checked by **grep**, against our own
+mods only (`mods/*/grug_*`; `mods/BASE/*` and `mods/ENTITIES/mobs` are
+vendored upstream code — see VENDOR.md — and legitimately use `minetest.*`):
+
+```sh
+# 1. goto / labels
+grep -rnE '(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::' mods/*/grug_* --include=*.lua
+# 2. LuaJIT-only string escapes
+grep -rnE '\\u\{|\\x[0-9A-Fa-f]|\\z' mods/*/grug_* --include=*.lua
+# 3. 5.2+/5.3 stdlib
+grep -rnE 'table\.(unpack|pack|move)|rawlen|coroutine\.isyieldable|math\.(type|tointeger)|utf8\.' mods/*/grug_* --include=*.lua
+# 4. integer division / bitwise operator syntax
+grep -rnE '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]' mods/*/grug_* --include=*.lua
+# 5. sandbox-blocked calls and the wrong namespace
+grep -rnE '\brequire[[:space:]]*\(|io\.popen|os\.(execute|exit)|\bminetest\.' mods/*/grug_* --include=*.lua
+```
+
+Run by hand like this, the sweeps also match prose in comments and strings
+(`|` in a design-doc table row or a `"a|b"` key, C++ `Class::method`
+references). Sweep 4's operators are parse errors for `luac51` in code
+anyway; the sweep is there for the grep-only view.
+
+`bash tools/check_lua.sh <files>` runs the parser, the `SETGLOBAL` listing
+and these five sweeps on stripped copies of each file
+(`tools/check_lua_strip.awk`, line numbers kept): comments are removed for
+all five, and string literals become `""` for sweeps 1, 3, 4 and 5. Sweep 2
+keeps short strings, since escapes only matter there, and drops long-bracket
+strings, where neither build processes escapes. Any hit it prints is code and
+fails the check. It adds **sweep 6** on files under `mods/MAPGEN`: a
+`POW` with the exponent 2 (constant operand, or a register loaded with 2)
+or a `math.pow` in the `luac51` bytecode listing (no comment or string
+matches) fails with the file and line — see "Floating point: LuaJIT
+interpreter vs compiled code".
+
+### Interpreter and test strategy
+
+Decided by the user: plain Lua 5.1 compatibility of the **code** is a hard
+rule (2026-08-06), and **PUC runtime testing is ignored during development**
+(2026-09-25 for mapgen, Round 22 D1; every lane's rule since Round 29;
+confirmed for the repository in Round 37). LuaJIT owns every executable run.
+
+1. **Every Lua change:** `bash tools/check_lua.sh <changed files>` from the
+   repository root, Lua under `tools/` included: the `luac51 -p` parser, the
+   `SETGLOBAL` listing, the five grep sweeps above and sweep 6 (`x ^ 2` /
+   `math.pow` under `mods/MAPGEN`). It needs ripgrep and fails fast without
+   it. This is the whole plain-5.1 gate during development.
+2. **Every executable check** (fixtures, seed fleet, probes, populations,
+   benchmarks) runs under LuaJIT. A new harness with non-trivial runtime
+   defaults to LuaJIT; one hardwired to PUC is a defect.
+3. **No PUC runtime run** in a lane, a review or a round-end gate: no PUC
+   fixture, no PUC/LuaJIT parity digest, no PUC seed fleet. A plan that
+   schedules one is a planning defect. The former "final micro-KAT" pair
+   (one PUC and one LuaJIT run on frozen bytes) is retired; no tool for it
+   exists, and its records (WP40 R1–R8) are historical evidence.
+4. **At the end, optional:** at most one "does it run on PUC without a
+   crash?" smoke test once the mapgen is finished and the user is satisfied
+   (BACKLOG release checks). A real fallback-engine test is a separate
+   user-run check; standalone interpreters have no `builtin/`, sandbox or
+   `core.*`.
+
+Execution limits (the 8-process cap, idle scheduling, no wall-clock kill)
+are in AGENTS.md "Lua & Luanti environment".
