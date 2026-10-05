@@ -119,7 +119,9 @@ thing.
   So no T1 spellbook can be made in the T1 band (levels 1–10); from level 16
   it counts only for a Tailor still at profession tier 1. The 32-slot bags
   need level 46 inside the T5 band 41–50. No enchant, upgrade, gem, setting,
-  trinket, potion or dish declares a mastery band.
+  trinket, potion or dish declares a mastery band. The one other reader of
+  the band is the Goldsmith's gem bonus yield (10 % at Apprentice, 20 % from
+  Journeyman, §2.3).
 
 Three consequences:
 
