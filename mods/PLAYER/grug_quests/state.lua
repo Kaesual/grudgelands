@@ -7,7 +7,7 @@ Q.MAX_TRACKED = 10
 -- so a bounty is ready again after the same wait whether or not the server
 -- was running in between. Fixtures replace the clock.
 Q.clock = os.time
-local callbacks, busy = {}, {}
+local callbacks, turn_in_callbacks, busy = {}, {}, {}
 -- The decoded state per player name, keyed by the raw meta string it came
 -- from (Round 30, perf review #1): {raw = string, state = table}. Readers
 -- share the cached table, so a table `load` returns is never written to;
@@ -64,6 +64,10 @@ core.register_on_leaveplayer(function(player)
 	cache[name], marker_memo[name] = nil, nil
 end)
 function Q.register_on_change(callback) callbacks[#callbacks + 1] = callback end
+-- fn(player, quest_id, def) once per completed turn-in (a repeatable at each
+-- of its turn-ins), after the state and the rewards are stored (Round 36:
+-- grug_achievements counts quests and quest tags with it).
+function Q.register_on_turn_in(callback) turn_in_callbacks[#turn_in_callbacks + 1] = callback end
 local function owned_lists(player)
 	local lists, inv = {"main"}, player:get_inventory()
 	for i = 1, grug_inventory.BAG_COUNT do
@@ -157,14 +161,15 @@ local function progress(player, def, active, snapshot)
 	for index, objective in ipairs(def.objectives) do
 		local count
 		if objective.type == "talk" then count = objective.count
-		elseif objective.type == "kill" then count = active[index] or 0
+		elseif objective.type == "kill" or objective.type == "use" then count = active[index] or 0
 		else
 			count = 0
 			for _, amount in pairs(allocation[index]) do count = count + amount end
 		end
 		rows[index] = {type = objective.type, item = objective.item, group = objective.group,
 			mobs = objective.mobs, zones = objective.zones, npc = objective.npc, count = count,
-			required = objective.count, description = objective.description, levels = objective.levels}
+			required = objective.count, description = objective.description, levels = objective.levels,
+			label = objective.label, place_name = objective.place_name}
 		if count < objective.count then ready = false end
 	end
 	return rows, ready, allocation
@@ -443,8 +448,16 @@ function Q.turn_in(player, id)
 	-- reward observer failed.
 	changed(player)
 	grug_sounds.play("quest_complete", player)
+	-- The turn-in hook, once per turn-in; one failing observer keeps
+	-- neither the others nor the reward errors from running.
+	local hook_error
+	for _, callback in ipairs(turn_in_callbacks) do
+		local ok, err = pcall(callback, player, id, def)
+		if not ok and not hook_error then hook_error = err end
+	end
 	if not money_ok then error(money_error, 0) end
 	if not xp_ok then error(xp_error, 0) end
+	if hook_error then error(hook_error, 0) end
 	return true
 end
 -- Does this mob count for a kill objective or quest drop? The entity name is
@@ -482,6 +495,61 @@ function Q.credit_kill(player, mob, pos)
 		end
 	end
 	if copy then save(player, copy); changed(player) end
+end
+-- "Use at a place" (Round 36). A use point is one act at one place: the
+-- objective's place, object kind and label, as one key. Every active,
+-- permitted quest with an unfinished use objective of that key is credited
+-- by one finished hold (use.lua).
+function Q.use_key(objective)
+	return objective.place .. "|" .. objective.object .. "|" .. objective.label
+end
+-- player name -> {raw, needs}: the use points the player still needs, per
+-- quest state string (use.lua asks every second).
+local use_memo = {}
+core.register_on_leaveplayer(function(player) use_memo[player:get_player_name()] = nil end)
+-- The use points the player still needs, as a list of objectives (shared,
+-- read-only), one per key.
+function Q.use_needs(player)
+	local state, raw = load(player)
+	local name = player:get_player_name()
+	local memo = use_memo[name]
+	if memo and memo.raw == raw then return memo.needs end
+	local needs, seen = {}, {}
+	for id, counters in pairs(state.active) do
+		local def = Q.registered_quests[id]
+		if def and permitted(player, def, state) then
+			for index, objective in ipairs(def.objectives) do
+				if objective.type == "use" and (counters[index] or 0) < objective.count then
+					local key = Q.use_key(objective)
+					if not seen[key] then
+						seen[key] = true
+						needs[#needs + 1] = objective
+					end
+				end
+			end
+		end
+	end
+	table.sort(needs, function(a, b) return Q.use_key(a) < Q.use_key(b) end)
+	use_memo[name] = {raw = raw, needs = needs}
+	return needs
+end
+-- Credits one finished use at `key`; true when a counter rose.
+function Q.credit_use(player, key)
+	local state, copy = load(player), nil
+	for id, counters in pairs(state.active) do
+		local def = Q.registered_quests[id]
+		if def and permitted(player, def, state) then
+			for index, objective in ipairs(def.objectives) do
+				if objective.type == "use" and Q.use_key(objective) == key and
+						(counters[index] or 0) < objective.count then
+					copy = copy or editable(player)
+					copy.active[id][index] = objective.count
+				end
+			end
+		end
+	end
+	if copy then save(player, copy); changed(player) end
+	return copy ~= nil
 end
 -- Into the player's inventory and bags; what does not fit drops at the feet.
 local function give(player, item)

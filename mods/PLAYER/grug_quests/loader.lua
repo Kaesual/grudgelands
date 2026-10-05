@@ -49,6 +49,13 @@ local function definition(file, quest)
 		elseif objective.type == "item" then
 			row.item = objective.item
 			row.group = objective.group and objective.group:gsub("^group:", "") or nil
+		elseif objective.type == "use" then
+			-- The place in its canonical form and its name (labels.lua); an
+			-- unknown place keeps its reference for the world check to refuse.
+			local place = Q.use_place(objective.place, file.zone)
+			row.place = place and place.ref or objective.place
+			row.place_name = place and place.name or nil
+			row.object, row.label, row.hold = objective.object, objective.label, objective.hold
 		else
 			row.npc = objective.npc
 		end
@@ -73,7 +80,7 @@ local function definition(file, quest)
 		objectives = objectives, quest_drops = drops,
 		repeatable = quest.repeatable and {cooldown = quest.repeatable.cooldown} or nil,
 		rewards = {weight = rewards.weight, copper = copper, items = items},
-		zone = file.zone, line = quest.line, source = "zones/" .. file.name,
+		zone = file.zone, line = quest.line, source = "zones/" .. file.name, tags = quest.tags,
 	}
 end
 
@@ -219,6 +226,8 @@ local function world_view()
 		-- Quest text placeholders (labels.lua): a target and a named place.
 		placeholder_target = Q.placeholder_target,
 		place = function(ref) return areas.place(ref) end,
+		-- A "use at a place" objective's place (labels.lua, Round 36).
+		use_place = Q.use_place,
 		group = function(name)
 			if not groups then
 				groups = {}

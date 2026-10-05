@@ -187,6 +187,9 @@ local function install_world(mobs_root)
 	end
 	function seams.leader(role) return leaders[role] end
 	seams.place = place
+	-- Round 36: no quest place or clash site in this fixture.
+	function seams.zone_place() return nil end
+	function seams.clash_site() return nil end
 	grug_mobs = {
 		register_on_eligible_kill = function() end,
 		register_participant_drop_hook = function() end,

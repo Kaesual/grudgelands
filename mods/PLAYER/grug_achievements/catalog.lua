@@ -26,6 +26,10 @@
 --   boss:king, boss:dragon, boss:<boss id>   ledger kills (bosses.lua),
 --                         e.g. boss:dragon:stormscale, boss:king:human
 --   pvp:<stat>            a grug_pvp.stats counter, e.g. pvp:guards
+--   quest:<quest id>      turn-ins of that quest (Round 36; a one-time quest
+--                         counts once, so `at = 1` reads "completed")
+--   quest_tag:<tag>       turn-ins of quests whose `tags` list the tag, e.g.
+--                         every quest of a questline (Round 36)
 --
 return {
 	defaults = {"none", "plain_grey"},

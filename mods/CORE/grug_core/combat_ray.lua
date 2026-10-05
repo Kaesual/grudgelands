@@ -466,6 +466,14 @@ local function is_drop(ref)
 	return entity ~= nil and entity.name == "__builtin:item"
 end
 
+-- An object shown only to some players (set_observers) that this player is
+-- not one of: a quest object (grug_quests use.lua, Round 36) is never an
+-- invisible blocker for anyone else. Objects without observers return nil.
+local function unseen(ref, player)
+	local observers = player and player.is_player and player:is_player() and ref:get_observers()
+	return type(observers) == "table" and not observers[player:get_player_name()]
+end
+
 local function nearer_terminal(candidate, candidate_is_node, best,
 		best_is_node)
 	if not best then
@@ -515,9 +523,10 @@ function grug_core.combat_ray(player, range, opts)
 		if pointed.type == "object" and pointed.ref == player then
 			-- The eye begins inside the player's own selection box. Self is not a
 			-- combat blocker; keep advancing this same ray.
-		elseif pointed.type == "object" and is_drop(pointed.ref) then
-			-- Dropped loot never hides a hostile behind it (Round 28): the ray
-			-- passes through it like the player's own body.
+		elseif pointed.type == "object" and (is_drop(pointed.ref) or unseen(pointed.ref, player)) then
+			-- Dropped loot never hides a hostile behind it (Round 28), nor does
+			-- an object the player cannot see: the ray passes through it like
+			-- the player's own body.
 		elseif pointed.type == "node" then
 			local node = pointed.under and core.get_node_or_nil(pointed.under)
 			local def = node and core.registered_nodes[node.name]

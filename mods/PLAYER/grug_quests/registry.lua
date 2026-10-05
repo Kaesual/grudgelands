@@ -16,12 +16,17 @@ function grug_quests.register_npc(id, def)
 	grug_quests.npc_by_socket[key] = id
 	npcs[id] = table.copy(def)
 end
+-- The hold of a "use at a place" objective, in whole seconds.
+grug_quests.USE_HOLD_MIN, grug_quests.USE_HOLD_MAX = 1, 15
 -- Objectives (Round 28 rulings 39 and 41): `kill` names `mobs` (entity
 -- names; the loader turns design `roles` into them), optionally limited to
 -- one spawn `area` ("zone/area", credited by the mob's `_grug_area` tag),
 -- and `zones`, the zone each target's label names it in (labels.lua);
 -- `item` names one `item` or an item `group`; `talk` is a travel quest's
--- only objective.
+-- only objective; `use` (Round 36) names a `place` (a clash site's
+-- settlement key or a recipe quest place "zone/id", use.lua), the `object`
+-- kind shown there, the `label` of the act and its `hold` in seconds, and
+-- counts once.
 function grug_quests.register_quest(id, def)
 	assert(type(id) == "string" and not quests[id], "Duplicate quest")
 	assert(type(def.title) == "string" and type(def.description) == "string")
@@ -43,7 +48,8 @@ function grug_quests.register_quest(id, def)
 	assert(type(def.objectives) == "table" and #def.objectives > 0)
 	for _, objective in ipairs(def.objectives) do
 		assert(integer(objective.count) and objective.count > 0)
-		assert(objective.type == "item" or objective.type == "kill" or objective.type == "talk")
+		assert(objective.type == "item" or objective.type == "kill" or objective.type == "talk" or
+			objective.type == "use")
 		if objective.type == "item" then
 			assert((type(objective.item) == "string") ~= (type(objective.group) == "string"),
 				"An item objective names one item or one group")
@@ -52,6 +58,12 @@ function grug_quests.register_quest(id, def)
 				"A conversation objective names one destination NPC")
 			assert(#def.objectives == 1 and objective.npc == def.turnin_npc,
 				"Travel handoffs contain only a conversation at their turn-in NPC")
+		elseif objective.type == "use" then
+			assert(type(objective.place) == "string" and type(objective.label) == "string" and
+				objective.label ~= "" and grug_quests.use_objects[objective.object] and
+				integer(objective.hold) and objective.hold >= grug_quests.USE_HOLD_MIN and
+				objective.hold <= grug_quests.USE_HOLD_MAX and objective.count == 1,
+				"A use objective names its place, object, label and hold and counts once")
 		else
 			assert(type(objective.mobs) == "table" and #objective.mobs > 0, "A kill objective names its mobs")
 		end
@@ -149,6 +161,8 @@ function grug_quests.validate_registry()
 				assert(not objective.item or core.registered_items[objective.item], "Unknown quest item: " .. id)
 			elseif objective.type == "talk" then
 				assert(npcs[objective.npc], "Unknown conversation NPC: " .. id)
+			elseif objective.type == "use" then
+				assert(grug_quests.use_place(objective.place), "Unknown use place: " .. id)
 			else
 				for _, mob in ipairs(objective.mobs) do
 					assert(core.registered_entities[mob], "Unknown quest mob: " .. id)

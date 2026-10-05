@@ -231,6 +231,7 @@ local function new_player(name, faction, pos)
 	function p:get_meta() return self.meta end
 	function p:is_player() return true end
 	function p:get_luaentity() return nil end
+	function p:get_observers() return nil end -- unmanaged: seen by everyone
 	function p:punch(attacker, _, caps)
 		self.punched = self.punched + 1
 		local damage = caps.damage_groups.fleshy

@@ -173,6 +173,9 @@ local regions = {
 	end,
 	leader = function(role) return leaders[role] end,
 	place = function(ref) return PLACES[ref] end,
+	-- Round 36: no quest place or clash site in this fixture.
+	zone_place = function() return nil end,
+	clash_site = function() return nil end,
 	describe = function(zone, target, mode, ref)
 		describe_calls = describe_calls + 1
 		if describe_broken then return nil, "no region map" end
