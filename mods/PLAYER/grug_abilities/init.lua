@@ -2222,11 +2222,11 @@ end)
 -- before ours could matter); hostile pairs are ours. Neither vetoes the
 -- other — this one never returns true outside the hostile path.
 --
--- Knockback is deliberately not fed our damage (MVP): builtin's own
--- on_punchplayer (builtin/game/knockback.lua:25-48) applies knockback
--- velocity to punched players off the ENGINE's `damage` argument — for a
--- handled punch that is the pre-pipeline hitparams.hp the callbacks
--- receive. Routing OUR damage into core.calculate_knockback is deferred.
+-- Knockback: builtin's own on_punchplayer (builtin/game/knockback.lua:25-48)
+-- runs before this one and pushes off the ENGINE's `damage` argument (the
+-- pre-pipeline hitparams.hp). Whether a punch pushes at all is decided there,
+-- by grug_core.knockback_pushes (Round 37): only an authoritative swing on a
+-- player this hitter may harm, never a refused or suppressed packet.
 --
 -- enable_pvp = false means this callback never fires at all: PlayerSAO::punch
 -- returns before the script callback when PvP is off (player_sao.cpp:463-470),

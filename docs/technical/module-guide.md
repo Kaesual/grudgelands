@@ -469,9 +469,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   packet firehose. Base mob threat still takes raw fractional damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
-  knockback on players keeps coming from builtin off the engine's damage
-  argument (deferred, MVP): acquisition caps are zero, while the one
-  authoritative punch supplies the real full caps. Tools/fists keep their wielded source and wear;
+  knockback on players is builtin's push off the engine's damage argument,
+  gated by the one `core.calculate_knockback` override
+  `grug_core.knockback_pushes` (Round 37: PvP melee swings and mob hits only;
+  refused punches, casts, arrows and projectiles push nothing): acquisition
+  caps are zero, while the one authoritative punch supplies the real full
+  caps. Tools/fists keep their wielded source and wear;
   swing ability items use the slot source, do not wear and can carry the
   selected proc's threat multiplier. The current server ray is the sole
   authoritative hostile ability target while LMB is held; enemy memory is
