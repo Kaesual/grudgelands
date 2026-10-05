@@ -2,12 +2,12 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-The game ships 515 quests, one data file per zone (`quests.md`, "Quest
+The game ships 540 quests, one data file per zone (`quests.md`, "Quest
 data"): Round 29's 491 — one track per race from the start zone to its
 heartland, the contested 31–40 zones and the 41–60 front with its repeatable
-and island bounties, replacing the 240 quests of Rounds 14, 15 and 20 — and
-Round 31's 24 PvP fortress quests (§4). The broader
-named-zone WP9 story remains open.
+and island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
+Round 31's 24 PvP fortress quests (§4) and Round 36's 25 for the main line
+of levels 41–60 (WP9, `story.md` §2a).
 
 ## 1. Leveling pace
 
@@ -145,7 +145,10 @@ Revised 2026-09-23, Round 18:
 
 ## 4. Quest structure & level gates
 
-- Main-questline beats use hard `min_level` gates (`story.md`).
+- Main-questline beats use hard `min_level` gates (`story.md`): each
+  faction's chapters open at 41, 46 and 53 and the finale at 60, each
+  chapter after the previous one's last turn-in (Round 36,
+  [quests.md](quests.md) "The main line").
 - Quest descriptions show their minimum level and named prerequisite quests.
 - Quest XP uses the authored reward level rather than the receiver's level
   and does not scale at hand-in. Every quest authors a weight in kill

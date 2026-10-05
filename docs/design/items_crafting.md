@@ -1507,7 +1507,8 @@ invulnerable.
 The authored war front feeds crafting only through the existing
 player-involvement war-trophy/heavy-cloth rules and later explicit quests.
 WP42 ships no refilling supply crate. Each contested zone reserves one
-non-loot quest-interaction slot for WP9; it is not a free material source.
+non-loot quest-interaction slot for WP9 (filled since Round 36 by the "use
+at a place" objective, `quests.md`); it is not a free material source.
 The two endpoint apex camps add no renewable gem sockets: renewable ores are
 removed entirely, camps included (user decision 2026-09-29, WP audit E5).
 
