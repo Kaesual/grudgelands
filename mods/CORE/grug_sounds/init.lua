@@ -44,8 +44,9 @@ grug_sounds.HOOKS = {
 	-- Crafting, station operations, the crown and repair.
 	"craft", "craft_smithy", "craft_cooking", "craft_alchemy", "enchant",
 	"upgrade", "crown", "repair",
-	-- Items.
-	"equip", "cloak", "potion_drink",
+	-- Items. gear_break (Round 35): equipped gear or a tool wearing into
+	-- broken (grug_repair); it has no spec until the user picks its file.
+	"equip", "cloak", "potion_drink", "gear_break",
 	-- Mounts and boats, repeated while moving (their interval is the clip).
 	"mount_gallop", "mount_wings", "boat_splash",
 	-- Travel and the PvP button.
