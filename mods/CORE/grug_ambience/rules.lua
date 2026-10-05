@@ -124,8 +124,9 @@ end
 -- Hysteresis: a new bed must be wanted on two passes in a row before it
 -- replaces the playing one, so walking along a river bank or a town edge
 -- does not swap beds every pass; diving in or coming up changes at once, and
--- so does music starting or ending (the bed gives way to it, or comes back,
--- without a gap or an overlap).
+-- so does music starting or ending: the bed and the track then crossfade
+-- (the bed over D.crossfade, the track's fade-in or D.music.fade_out), a
+-- short fade, never a hard cut.
 -- `b` is the player's bed state {key, want, seen, underwater, music};
 -- `wanted` a key or false (silence); `underwater` and `music` this pass's
 -- flags. Returns true when the bed should change to `wanted` now.

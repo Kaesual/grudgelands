@@ -122,8 +122,9 @@ D.emitter_reach = {x = 12, y = 5, z = 12}
 
 -- Music. Tracks: id -> file (in music/) and length in seconds (the shipped
 -- file's; the scheduler has no other way to know when a track ends). Every
--- shipped track is listed, also one no rotation names (kept for a possible
--- music tab, round35-plan.md §2.8).
+-- shipped track is listed, also one no rotation names: Master of the Feast
+-- (too fast and high-energy for a town, the user's listening check of Round
+-- 35), kept for a possible music tab (round35-plan.md §2.8).
 D.tracks = {
 	memories_of_stone = {file = "grug_music_memories_of_stone.ogg", seconds = 331}, -- R32 M1
 	achaidh_cheide = {file = "grug_music_achaidh_cheide.ogg", seconds = 135}, -- R32 M2
@@ -148,21 +149,18 @@ D.tracks = {
 
 -- One rotation per capital (settlement key -> track ids, played in this
 -- order from a random start on entering; a track may sit in several). By
--- the capital's people (Round 35 proposal; the user confirms the lists):
+-- the capital's people (Round 35, confirmed by the user after listening):
 D.rotations = {
 	-- Humans: the stately main theme and the court and market consorts.
 	highcourt = {"fantasy_orchestral_theme", "town_theme", "village_consort",
 		"minstrel_guild"},
-	-- Dwarves: the fiddle over stone, the feast hall, a thatched village tune
-	-- and the mountain cold.
-	dur_brannoc = {"memories_of_stone", "master_of_the_feast",
-		"thatched_villagers", "permafrost"},
+	-- Dwarves: the fiddle over stone, a thatched village tune and the
+	-- mountain cold.
+	dur_brannoc = {"memories_of_stone", "thatched_villagers", "permafrost"},
 	-- Elves: calm Celtic airs, soft strings and a lullaby.
 	lethariel = {"achaidh_cheide", "soliloquy", "folk_round", "a_dragons_lullaby"},
-	-- Orcs: the wide horizon of the steppe, the war feast, campfire tales, a
-	-- dramatic march.
-	gor_drazhak = {"the_great_sea", "master_of_the_feast", "teller_of_the_tales",
-		"forest_walk"},
+	-- Orcs: the wide horizon of the steppe, campfire tales, a dramatic march.
+	gor_drazhak = {"the_great_sea", "teller_of_the_tales", "forest_walk"},
 	-- Trolls: forest and water round the cenote, a lullaby, a lively village.
 	kezamba = {"forest_walk", "the_great_sea", "a_dragons_lullaby",
 		"thatched_villagers"},

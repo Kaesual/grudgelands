@@ -472,7 +472,7 @@ function grug_ambience.set(player, channel, on, volume)
 	end
 	local audible = R.audible(st[key_on], st[key_volume])
 	if channel == "music" then
-		-- Off: the track fades out and the capital's bed returns on the next
+		-- Off: the track fades out and the capital's bed fades in on the next
 		-- pass; on: the next pass starts the capital's rotation.
 		if audible ~= was_audible then
 			if R.music_set_on(st.music, audible) == "stop" then

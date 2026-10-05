@@ -236,9 +236,11 @@ broke the immersion).
   town by its anchor slot in the settlement registry.
 - **One rotation per capital** (`D.rotations`, by settlement key), chosen by
   the capital's people; entering starts it at a random place and plays its
-  tracks in turn with a pause of about 5 s between two. Leaving the city, or
-  switching music off, fades the track out over 3 s; the bed comes back at
-  once (§4.2).
+  tracks in turn with a pause of about 5 s between two. Leaving the city
+  fades the track out over 3 s while the bed fades back in (a 3 s crossfade);
+  switching music off does the same, the bed following on the next pass
+  (within 2 s); entering, the bed fades out while the first track fades in
+  once its download is there. A short fade, never a hard cut (§4.2).
 - **On-demand delivery:** music files stay out of every `sounds/` folder, so
   the first join downloads none of them. A track is pushed to that one player
   with `core.dynamic_add_media` (`client_cache`, not ephemeral) and plays in
@@ -250,7 +252,8 @@ broke the immersion).
   persist across server restarts.
 - **Not played by default:** the Round 34 region pools (Land, Front and sea,
   Underground) are gone; tracks no rotation names stay in the game (`D.tracks`)
-  for a possible music tab.
+  for a possible music tab. *Master of the Feast* is in no rotation (too fast
+  and high-energy for a town, the user's listening check of Round 35).
 - **The main-menu theme** is `menu/theme.ogg` (the client plays it in the main
   menu), the same piece as *Fantasy Orchestral Theme*.
 - Track list and lengths: `D.tracks`; credits in [CREDITS.md](../../CREDITS.md).

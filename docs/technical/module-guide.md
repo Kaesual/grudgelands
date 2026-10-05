@@ -1275,7 +1275,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     loops (node names from `D.emitter_nodes` plus every flowing liquid whose
     source is default or river water, filled on `register_on_mods_loaded`).
     Only names with a shipped file play (`available` from the `sounds/`
-    listing, pools filtered by `music/`), so data may name a file that does
+    listing, the capital rotations filtered by `music/`), so data may name a file that does
     not ship. Music files live in `music/` (never `sounds/`) and are pushed
     per player with `core.dynamic_add_media` (`to_player`, not ephemeral,
     `client_cache`), playing in the callback through `music_delivered`; music

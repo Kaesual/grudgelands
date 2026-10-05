@@ -22,7 +22,8 @@
 --      the bed back; leaving fades the music out; default volume 35 %, the
 --      Help dropdown in 5 % steps, /music help;
 --   D  data: one rotation for each of the six capitals, every track known
---      and shipped, no region pools, the Help text.
+--      and shipped, Master of the Feast in none, no region pools, the Help
+--      text.
 -- Prints "R35 M PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -473,13 +474,19 @@ do
 	run(20)
 	check(#filter(sounds, is_bed) == 1, "R no bed while music plays")
 
+	-- a volume change fades the playing track
+	fades = {}
+	commands.music.func("ana", "50")
+	check(#fades == 1 and fades[1].handle == track_handle and
+		math.abs(fades[1].gain - D.gains.music * 0.5) < 1e-9, "R /music 50 fades the track to half")
 	-- music off: the track fades out, the town bed returns on the next pass
 	fades = {}
 	local ok, msg = commands.music.func("ana", "off")
 	local off = fades_of(track_handle, 0)
 	check(ok and msg:find("off") and #off == 1 and
-		math.abs(off[1].step - D.gains.music * 0.35 / D.music.fade_out) < 1e-9,
+		math.abs(off[1].step - D.gains.music * 0.5 / D.music.fade_out) < 1e-9,
 		"R /music off fades the track out over fade_out s")
+	check(store["grug_ambience:music_off"] == "1", "R music off stored in player meta")
 	run(2)
 	beds = filter(sounds, is_bed)
 	check(#beds == 2 and math.abs(beds[2].spec.gain - D.gains.bed * D.gains.town_bed) < 1e-9,
@@ -513,6 +520,7 @@ do
 	check(#pushes == 0 and #filter(sounds, is_music) == 2, "R outside: no music")
 
 	-- settings: 5 % steps, an unchanged dropdown does nothing, /music on after 0
+	commands.music.func("ana", "35")
 	local fs = A.settings_formspec(ana, 0.2, 1.0)
 	local items = fs:match("grug_ambience_music_volume;([^;]*);")
 	local n_items = 0
@@ -552,6 +560,12 @@ do
 	local rotations = 0
 	for _ in pairs(D.rotations) do rotations = rotations + 1 end
 	check(rotations == 6, "D one rotation per capital, nothing else")
+	local feast = false
+	for _, rotation in pairs(D.rotations) do
+		for _, id in ipairs(rotation) do if id == "master_of_the_feast" then feast = true end end
+	end
+	check(not feast and D.tracks.master_of_the_feast ~= nil,
+		"D Master of the Feast in no rotation, still in the game")
 	local used = {}
 	for _, key in ipairs(capitals) do
 		local rotation = D.rotations[key]
