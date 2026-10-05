@@ -39,14 +39,17 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 
 - Base at level 1: **10 / 10 / 10** (Str/Int/Dex), all classes.
 - Growth per level (4 points): **Warrior +3 Str / +1 Dex · Mage +3 Int /
-  +1 Dex · Priest +1 Str / +2 Int / +1 Dex.**
+  +1 Dex · Priest +1 Str / +2 Int / +1 Dex · Scout +1 Str / +1 Int / +2
+  Dex** ([scout.md](scout.md)).
 
 ## 2. Player formulas
 
 - **Class-neutral base pool** `P(L)` =
   `round(20 + 5×L + 0.66×L²)`, with `L` clamped to 1–60.
 - **Max HP** = `round(P(L) × class factor × (1 + gear% + talent%))`.
-  Class factors are Warrior **1.20**, Priest **1.00**, Mage **0.90**.
+  Class factors are Warrior **1.20**, Priest **1.00**, Mage **0.90**; the
+  Scout has no factor of its own and takes the default **1.00**
+  (`grug_classes.get_hp_class_factor`).
 - **Mana** = `round(P(L) × (1 + gear% + talent%))` for Mage/Priest.
   The Warrior uses flat Rage 0–100. Strength never adds HP and Intelligence
   never adds mana.
@@ -104,8 +107,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Higher-mob-level damage malus**: against a mob more than five levels above
   the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
   player level − 5))`. It is part of the same final damage multiplication and
-  is floored only once with the level scalar
-  (`mods/CORE/grug_core/combat.lua:29-65`).
+  is floored only once with the level scalar (`grug_core.level_malus`).
 - **Crit** = 5% + 0.05%×Dex, **cap 30%**; a crit deals **×2** damage, and a
   healing crit heals ×2 (Round 33, [item_tiers.md](item_tiers.md) §1.0)
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
@@ -496,11 +498,8 @@ Normal tier at level L:
   deep-sea Kraken Guard runs **10** inside a deep-ocean column and **5**
   elsewhere (`world.md` §2b). The ordinary 4.6 band keeps
   the Swiftness Draught below it (4.0 × 1.10 = 4.4), and continues to feed the
-  pursuit policy of §4. Current definition
-  sites for the changed families: `grug_mobs/stag.lua:21`, `ram.lua:26`, `zebra.lua:20`,
-  `carrion_crow.lua:54`, `zombie.lua:29` and `golem.lua:87`; the exceptions
-  are `bandit_archer.lua:81`, `skeleton_archer.lua:88`,
-  `skeleton_raider.lua:52`, `bog_ooze.lua:38` and `kraken.lua`.
+  pursuit policy of §4. Each value is the `run_velocity` field of the
+  family's definition in `grug_mobs/<family>.lua`.
 - **Roaming pace (Round 24):** every mob roams at a calm walk and uses its
   full speed only in combat. mobs_redo moves an idle mob at `walk_velocity`
   and a fighting one at `run_velocity`, so `walk_velocity` is at most
@@ -518,17 +517,11 @@ Normal tier at level L:
   its model-specific **4 m** and non-combatant villagers keep 0. The mobs_redo
   contact run remains `reach × 0.6`, hence **1.8 m** for an ordinary attacker.
   Telegraphs continue to derive their geometry from the live reach; the
-  ordinary elite/rare cone therefore reaches **4.5 m**
-  (`grug_abilities/kits.lua:308,379,417`; `mobs/api.lua:2709-2838`;
-  `grug_mobs/telegraph.lua:93,181`). The explicit ordinary reach sites are
-  `grug_mobs/bandit.lua:61`, `bear.lua:23`, `boar.lua:10`,
-  `boar_variants.lua:22`, `bog_ooze.lua:23`, `crocodile.lua:43`,
-  `eagle.lua:39`, `golem.lua:56`, `guard.lua:180`, `hyena.lua:21`,
-  `jungle_ape.lua:27`, `jungle_lynx.lua:30`, `mirefolk.lua:28`,
-  `panther.lua:25`, `serpent.lua:23`, `skeleton_archer.lua:55`,
-  `skeleton_raider.lua:27`, `spider.lua:19`, `wolf.lua:19` and
-  `zombie.lua:21`; the exceptions are `kraken.lua:34` and
-  `start_villagers.lua:936`.
+  ordinary elite/rare cone therefore reaches **4.5 m** (the swing skills'
+  `range` in `grug_abilities/kits.lua`, the contact run in `mobs/api.lua`,
+  the cone in `grug_mobs/telegraph.lua`). A mob's reach is the `reach` field
+  of its definition in `grug_mobs/<family>.lua` (the villagers in
+  `start_villagers.lua`).
 - **Knockback: player melee swings only** (Round 28 ruling 7). Strike and the
   melee swing skills (Mighty Blow, Hamstring, Opening: every authoritative
   swing) push a normal mob back by **`c × swing interval`** with
@@ -572,7 +565,8 @@ Normal tier at level L:
   (`grug_core/combat.lua`).
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
-  actor-on-actor climbing (`grug_core/init.lua:70`). The visible overlap is
+  actor-on-actor climbing (the player's `collide_with_objects` in
+  `grug_core/init.lua`). The visible overlap is
   limited by **separation** (Round 28 ruling 5, kept deliberately simple): an
   engaged ground melee mob does not enter its target's own column — the
   contact run stops while a visible target is within the two collision radii
@@ -622,10 +616,11 @@ Normal tier at level L:
   only participants who are online and within 40 m count; divide the award by
   that eligible count after calculating the cap and gray rule per recipient. A
   player receives no XP from a mob of their own faction
-  (`mods/ENTITIES/grug_mobs/init.lua:87-215`). Settlement occurs once at the
+  (`grug_mobs.award_kill_xp`). Settlement occurs once at the
   shared mobs_redo death boundary regardless of whether a player, NPC, mob or
   the environment dealt the final damage, without replacing the mob's death
-  callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:887-975`).
+  callback, animation or smoke fallback (`check_for_death` in
+  `mods/ENTITIES/mobs/api.lua`).
 - **Death never removes XP** (Round 18), regardless of level or cause.
 - **Player-tag drop rule** (decided 2026-08-06, WP6): a mob drops loot
   only if a player damaged it (`do_punch` sets a tag) — **the tag expires after ~60 s
@@ -803,10 +798,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
 
 - threat += damage dealt.
 - Healing adds **0.5×healing** as threat to all mobs in combat with the
-  group (within 30 m) — the healer pulls aggro if the tank sleeps. Until
-  WP20 ships real parties, "the group" is the MVP pair **healer + heal
-  target**: the threat lands on every mob within 30 m that is currently
-  fighting one of those two.
+  group (within 30 m) — the healer pulls aggro if the tank sleeps. "The
+  group" is the **healer and the heal target**: the threat lands on every
+  mob within 30 m that is currently fighting one of those two. Parties do
+  not change it ([parties.md](parties.md)).
 - Tank abilities generate **×3 threat**; **taunt** sets threat to
   top×1.1 and forces the mob onto the tank for 3 s (8 s cooldown).
 - A mob switches targets only when a rival exceeds **120%** of the
@@ -877,8 +872,8 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   top of the dogfight branch and caps the backlog at one; the in-reach branch
   runs to `reach × 0.6` while retaining the cliff guard; the final punch
   claims the timer only after line of sight succeeds. A blocked ready swing
-  therefore stays banked (`mobs/api.lua:2491-2819`;
-  `mobs/grug_obstacle.lua:4-237`).
+  therefore stays banked (the dogfight branch of `do_states` in
+  `mobs/api.lua`; `mobs/grug_obstacle.lua`).
 - **Hits never stall a mob's attack clock** (Round 28 ruling 8). No player
   hit — melee swing, arrow or ability, with or without knockback — pauses the
   mob. mobs_redo set a 0.25 s pause on every landed hit, which skipped the
@@ -945,9 +940,7 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   instead (`world.md` §4b, Round 31). The patrol path nudge shares the budget and
   the waits (1, 2, 4, 8 s, then 8 s) but never gives anything up
   (`mobs/grug_obstacle.lua`, `mobs/api.lua` `smart_mobs`,
-  `grug_mobs/aggro.lua` `give_up_target`). The contact run retains its existing `at_cliff` guard
-  (`mobs/grug_obstacle.lua:4-15,26-196,209-235`;
-  `mobs/api.lua:157-218,887-975,2176-2864,2491-2819,2927-3538`).
+  `grug_mobs/aggro.lua` `give_up_target`). The contact run retains its existing `at_cliff` guard.
   *Rationale, because the defect was invisible on paper*: the following
   pre-patch coordinates refer to commit `77261837` (2026-09-15). Vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
@@ -1084,7 +1077,11 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   **`max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)`**; the Troll
   perk does not apply. Cold Focus multiplies whichever in-combat term wins by
   **`1 + 2 × bonus`**: +40 % per rank since Round 35 (rank 5 triples the
-  combat rate).
+  combat rate). Trinket mana regeneration (`grug_core.trinket_mana_regen`)
+  adds on top in and out of combat; it and the other trinket specials
+  (Battlebeat rage, the Reclaimer's Mark, Last Light) are owned by
+  `items_crafting.md` §6.2
+  ([trinket exception](items_crafting.md#trinket-exception-one-prefix-one-suffix-one-special)).
 - The Troll perk (`ooc_regen_mult`, ×1.5) also multiplies food healing,
   instant and per tick (`grug_food.heal_multiplier`, Round 26).
 - Food regeneration and pool bonuses are percent-based, but consumables now
@@ -1107,8 +1104,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - Nametag and Target Frame HP use one compact formatter: values below 1000 are
   full integers, 1000–9999 use one truncated decimal (`2300 → 2.3k`), and
   values from 10000 round to whole thousands (`51234 → 51k`;
-  `mods/CORE/grug_core/combat.lua:109-123`,
-  `mods/ENTITIES/grug_mobs/levels.lua`).
+  `grug_core.format_k`, used by `mods/ENTITIES/grug_mobs/levels.lua`).
 - **Nametag visibility is proximity-capped per viewer** (25/30 m decided
   2026-08-07; per-viewer carrier mechanism decided 2026-09-18). A tag becomes
   visible when that viewer moves inside **25 m** of its parent, becomes hidden
@@ -1158,9 +1154,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 
 ## 7. Offhand
 
-- The engine has **no native offhand**; we build `grug_offhand` after
-  VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
-  slot).
+- The engine has **no native offhand**; the offhand is the `grug_offhand`
+  inventory list of `grug_inventory` (after VoxeLibre's `mcl_offhand`
+  pattern; [inventory_equipment.md](inventory_equipment.md) §2).
 - **The offhand is per class** (Round 28 ruling 25): **Warrior** — a shield
   (only Warriors equip shields); **Mage and Priest** — the "Caster offhand",
   a Tailor spellbook; **Scout** — its **melee weapon** (sword or dagger),
@@ -1168,7 +1164,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   bow. **Both hand items always count toward stats for every class.** Strike,
   Opening and every melee skill swing the Scout's Melee item (bare hand when
   empty); its bow skills read Ranged. There is no dual-wield: no class
-  swings two weapons at once, and no Rogue path in V1.
+  swings two weapons at once, and no dual-wield class path in V1.
 - Equip rules (enforced centrally): occupied hands total at most two.
   Shields, spellbooks, the bow and every one-hand weapon count one hand;
   staff and greataxe require an empty offhand.
