@@ -34,5 +34,17 @@
   {
     "id": "bone_weevil",
     "texture": "grug_mobs_bone_weevil.png"
+  },
+  {
+    "id": "ember_light",
+    "modifier": "^[colorize:#B4472A:80"
+  },
+  {
+    "id": "ember",
+    "modifier": "^[colorize:#B4472A:110"
+  },
+  {
+    "id": "ember_strong",
+    "modifier": "^[colorize:#B4472A:140"
   }
 ]

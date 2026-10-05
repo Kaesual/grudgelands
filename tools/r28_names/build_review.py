@@ -184,7 +184,10 @@ def validate(d):
                                   % (where, name, want))
 
     # Siblings: roles of one family sharing a zone (outside the start band)
-    # must differ in more than their first word.
+    # must differ in more than their first word, except the pairs the
+    # proposal's meta lists (Round 36: the corrupted sub-types).
+    excepted = {frozenset(pair) for pair in
+                (d.proposal["meta"].get("sibling_exceptions") or {}).get("pairs", [])}
     for zid in d.zones:
         here = [s for s in d.subtypes if s["role"] in d.roles and zid in d.roles[s["role"]]["zones"]
                 and not d.is_start_role(s)]
@@ -193,7 +196,7 @@ def validate(d):
                 if a["family"] != b["family"]:
                     continue
                 na, nb = d.name_in_zone(a["role"], zid), d.name_in_zone(b["role"], zid)
-                if words(na)[1:] == words(nb)[1:]:
+                if words(na)[1:] == words(nb)[1:] and frozenset((a["role"], b["role"])) not in excepted:
                     errors.append("%s: siblings %r (%s) and %r (%s) differ only in the first word"
                                   % (d.zone_name(zid), na, a["role"], nb, b["role"]))
 
