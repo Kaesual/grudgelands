@@ -14,7 +14,10 @@ tools/r36_p/dump.lua, so it passes `r7_settlement.prepare` and lane P's
 exactness check in both trees), or a WP13 piece:
 
     start:<name>[:x1,z1,x2,z2]        a start composition, optionally a region
-    plot:<capital>:<plot id>[,...]     capital plots side by side
+    core:<capital>[:x1,z1,x2,z2]       a capital core, optionally a region
+    plot:<capital>:<plot id>[,...][:x1,z1,x2,z2]
+                                       capital plots side by side, optionally
+                                       the same region of each
     ...@N                              cut away every cell above y = N
 
 Writes OUT_DIR/img/<item>.webp and OUT_DIR/items.json. Needs Pillow (WebP)
@@ -74,6 +77,8 @@ local bp
 if kind == "start" then
 	bp = dofile(wp40 .. "/r7_" .. a .. "_blueprint.lua")
 	if type(bp) == "function" then bp = bp() end
+elseif kind == "core" then
+	bp = dofile(wp40 .. "/r7_capital_blueprint.lua").kit(a).core.build()
 else
 	local kit = dofile(wp40 .. "/r7_capital_blueprint.lua").kit(a)
 	for _, p in ipairs(kit.plots) do if p.id == b then bp = p.build() end end
@@ -175,20 +180,22 @@ def main():
             ymax = int(cut)
         parts = item.split(":")
         name = item.replace(":", "_").replace(",", "_")
-        if parts[0] == "start":
+        if parts[0] in ("start", "core"):
             region = [int(v) for v in parts[2].split(",")] if len(parts) > 2 else None
-            cells = [cut_above(crop(wp13_cells(t, "start", parts[1], None, script), region), ymax)
+            cells = [cut_above(crop(wp13_cells(t, parts[0], parts[1], None, script), region), ymax)
                      for t in (opts.before, REPO)]
             img = picture(cells[0], cells[1], [], b, work)
         elif parts[0] == "plot":
+            region = [int(v) for v in parts[3].split(",")] if len(parts) > 3 else None
+            size = 560 if region else 440
             rows = []
             for plot in parts[2].split(","):
-                cells = [cut_above(wp13_cells(t, "plot", parts[1], plot, script), ymax)
+                cells = [cut_above(crop(wp13_cells(t, "plot", parts[1], plot, script), region), ymax)
                          for t in (opts.before, REPO)]
                 rows.append(cells)
             # the plots in a row, before above after
-            befores = side_by_side([p_render.iso(c[0], b, "sw", 440, 440)[0] for c in rows])
-            afters = side_by_side([p_render.iso(c[1], b, "sw", 440, 440)[0] for c in rows])
+            befores = side_by_side([p_render.iso(c[0], b, "sw", size, size)[0] for c in rows])
+            afters = side_by_side([p_render.iso(c[1], b, "sw", size, size)[0] for c in rows])
             img = Image.new("RGB", (max(befores.width, afters.width),
                                     befores.height + afters.height + 30), BACKGROUND)
             img.paste(befores, (0, 0))
