@@ -166,9 +166,14 @@ return function(spec)
 		if n>2 then put(x+1,2,z,"grug_decor:xdecor_barrel") end
 	end
 	-- Stacked timber under a plank cap (Round 36: two bare log courses
-	-- read as random wood blocks).
+	-- read as random wood blocks). The cap goes only into air: a stack
+	-- built against a house must not replace its corner post.
 	local function timber(x,z,n)
-		for i=0,n-1 do fill(x+i,1,z,x+i,2,z,p.post); put(x+i,3,z,p.roof) end
+		for i=0,n-1 do
+			fill(x+i,1,z,x+i,2,z,p.post)
+			local above=by_pos[key(x+i,3,z)]
+			if above==nil or above.name=="air" then put(x+i,3,z,p.roof) end
+		end
 	end
 	local function tree(x,z)
 		fill(x,1,z,x,4,z,p.post)
