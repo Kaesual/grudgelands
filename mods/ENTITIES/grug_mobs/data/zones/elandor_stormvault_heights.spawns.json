@@ -54,7 +54,7 @@
       {"role": "split_seam_warden", "at": {"kind": "stormcrags", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
     "places": [
-      {"id": "snowfield_cairn", "name": "Snowfield Cairn", "at": {"kind": "snowfields", "pick": "farthest_from_roads"}}
+      {"id": "brandscar_cairn", "name": "Brandscar Cairn", "at": {"kind": "snowfields", "pick": "farthest_from_roads"}}
     ],
     "critters": ["gull"]
   }

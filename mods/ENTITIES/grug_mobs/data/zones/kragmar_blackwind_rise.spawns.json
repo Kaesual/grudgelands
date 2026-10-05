@@ -81,7 +81,7 @@
       {"role": "hollowbell_treant", "at": {"kind": "hollowwood", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
     "places": [
-      {"id": "gravemoor_stones", "name": "Gravemoor Stones", "at": {"kind": "gravemoor", "pick": "farthest_from_roads"}}
+      {"id": "ashen_grave", "name": "Ashen Grave", "at": {"kind": "gravemoor", "pick": "farthest_from_roads"}}
     ],
     "critters": ["bone_weevil", "gull"]
   }
