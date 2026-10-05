@@ -9,18 +9,35 @@ not additional current contracts. No behavior changes are authorized by this cle
 ## Readiness
 
 There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.
-**45 delivered**, **3 canceled** (WP16, WP37, WP49), **6 open or partial**.
+**47 delivered**, **3 canceled** (WP16, WP37, WP49), **4 open or partial**
+(WP34, WP42, WP46, WP48).
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
 WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
 WP28 followed in Round 26, WP50 in Round 27, WP17 and WP44 in Round 29, WP41
-in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33. The audit's letters and numbers (for
+in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33, WP9 and
+WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
-  complete locally** (2026-10-05, not pushed; GUI test open): the user's
+  [Round 36 "The main questline"](docs/planning/round36-plan.md#completion-2026-10-05)
+  complete locally** (2026-10-05, not pushed; needs a fresh world; GUI test
+  open): WP9 delivered — each faction's main line from its fortress
+  Warmaster in three chapters (41, 46, 53) and a group finale at 60 on the
+  approved [story bible](docs/planning/round36/story-bible.md), the "use at
+  a place" objective with quest objects, the turn-in hook and three
+  achievements (E, Q0, Q-A, Q-T, T, A); the rift with Isquarre the
+  Tithe-Eater and two war commanders (R); WP13's POI review on a render
+  page (P) and the decor pass over every POI, start town and capital house
+  (W); one target predicate with "Evading", free mobs evading only from
+  outside their wander radius, the talent-point banner (F); Priest heals
+  with gear Intelligence, the Scout's Dexterity curve, spell rounding (K);
+  the dragons' wider hazards and wing gust (G)
+  ([Round 36](#round-36--the-main-questline),
+  [carry-overs](#round-36-carry-overs)).
+- [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
+  (2026-10-05, pushed 2026-10-05; its first GUI findings fed Round 36): the user's
   Round 34 GUI findings — the server's aiming rays test rotated selection
   boxes in Lua (T, with the
   [upstream-workaround list](docs/technical/upstream-workarounds.md)); music
@@ -28,7 +45,7 @@ example E5) are cited below.
   broken look, empty hand, dig sounds, flint removed, the quest list colours
   and read-only quest text (F); character creation in one window (C); night
   mobs leave at dawn and the drop audit (E); level-proof talents and the
-  user's review picks (B). Next: the GUI test, then WP9
+  user's review picks (B)
   ([Round 35](#round-35--fixes-and-character-creation),
   [carry-overs](#round-35-carry-overs)).
 - [Round 34 "Sound"](docs/planning/round34-plan.md#completion-2026-10-04)
@@ -148,14 +165,14 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Round 31 adds NPC look rolls, the PvP garrisons (Generals, bodyguards, camp captains) and the round dragon arenas. Current rules: topic design. | — |
 | WP7 | Ledger currency and traders | Delivered; Round 29 (WP44) replaced its price curve and 25% buy-back. | — |
 | WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Round 30: the legacy fields removed (unknown fields stop the load), the decoded-state cache and markers that follow held items and levels. Round 31: givers serve only their faction, PvP garrison kill objectives, PvP POIs as placeholder targets. Broader story remains WP9. | — |
-| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties; Round 31 adds 24 PvP fortress quests (515 in total); Round 32 names kill targets by their zone's mob name. **V1:** the main storyline 41–60 and the finale remain open, moved to a round of its own after Round 34 (sound). | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
+| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | **V1. Delivered in Round 36** ([completion](docs/planning/round36-plan.md#completion-2026-10-05), rules [quests.md](docs/design/quests.md) "The main line", [story.md](docs/design/story.md)): each faction's main line 41–60 from its fortress Warmaster (chapters at 41, 46, 53, the group finale at 60 on the rift boss) on the approved [story bible](docs/planning/round36/story-bible.md), the front climaxes folded in, the "use at a place" objective filling each contested zone's quest-interaction slot, ten corrupted sub-types, three achievements with cloaks; the rift at Tombroad Ambush. Before: Round 29's 491 quests on the Round 28 framework (a track per race, the contested 31–40 zones, the front with bounties), Round 31's 24 fortress quests; 540 quests now. GUI test pending. | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
 | WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | **Delivered in Round 33** ([completion](docs/planning/round33-plan.md#completion-2026-10-04)): six primaries and the secondaries Cooking and Alchemy; progress only from real recipes; enchant recipes per channel and tier and one upgrade per profession and tier give 68 of 94 signatures a use; two professions dress each class (bows with the Leatherworker, spellbooks with the Tailor); fixed potions and elixirs T1–T6. Cultural finishing and its helper NPCs were removed by the user (round33-plan §2.8). Round 28 made every profession self-contained. | WP5 ✅, WP26 ✅, WP33 ✅, WP43 ✅, WP44 ✅ |
 | WP11 | [Talent trees](docs/planning/work-package-scopes.md#wp11) | Delivered; closed 2026-09-29, respec price merged into WP44 (C2) and set in Round 29. | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Scout class and talent trees | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-Speed | Shared movement modifiers | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waystone markers came with WP17 (Round 29). | — |
-| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground; Round 23 walls all six capitals. `bandit_frontier` core stays 16 (E1); Round 26 gives every capital its own outline and character (D72); Round 31 adds the PvP fortress and camp blueprints. Remaining: a separate POI walk (E2). | WP40 ✅, WP43 ✅ |
+| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | **Delivered** with Round 36's POI review: Round 20 completes roster art; Round 21 improves access/ground; Round 23 walls all six capitals. `bandit_frontier` core stays 16 (E1); Round 26 gives every capital its own outline and character (D72); Round 31 adds the PvP fortress and camp blueprints. Round 36: the separate POI walk (E2) became a render page of all 106 POIs with the user's verdicts, and the decor pass it asked for (a theme per POI kind, house touches in POIs, start towns and capitals; [settlements.md](docs/design/settlements.md) "Decor pass"); GUI check in the Round 36 checklist. | WP40 ✅, WP43 ✅ |
 | WP14 | [Offhands](docs/planning/work-package-scopes.md#wp14) | Delivered; closed 2026-09-29. Carried light canceled (C5). | WP3 ✅ |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |
@@ -759,7 +776,8 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   C5:** the estimate carries the Round 33 terms (gear sales, repair ×1.00)
   and the prices follow (Apprentice Riding and the boat 1s5c, Expert
   Riding 1g32s, Master 7g37s, respec 41–50 5s50c, the crown fee 1g47s);
-  the check passes.
+  the check passes. Round 36 re-derived them after the main line's quest
+  copper (1g29s, 7g38s, 5s25c, 1g48s).
 - **Real-client performance test:** stand-ins do not cover the engine's
   block and object sending, physics or client work; a short test with a
   handful of real clients, perhaps at the end of the next round.
@@ -804,11 +822,13 @@ none blocks the GUI test. Numbers are comparisons, never targets.
 
 - **Map markers for the capital services:** done in Round 34 F2 (kind
   `service` on the Map tab and the minimap).
-- **Scout damage set above the ceiling:** a full damage set gives the Scout
-  +55 % at item level 60 and +82 % at 70, above the +50–60 % the stat
-  check aims for (Warrior +47 %, Mage +45 %; item_tiers §1.2).
-- **Priest heals barely use Intelligence** (user choice 2A): Heal scales
-  with `1 + Int/1000`; a heal-formula change (2B) would be a later round.
+- **Scout damage set above the ceiling:** done in Round 36 lane K: the
+  Dexterity curve's c 0.0019 → 0.0011 gives the Scout's set +49 / +59 /
+  +69 % at item level 60 / 65 / 70, the Warrior's +47 / +57 / +69 %.
+- **Priest heals barely use Intelligence:** done in Round 36 lane K (2B):
+  support amounts multiply by `1 + gear Int / 10 / B(L)`, so a full
+  Intelligence set adds what it adds to a Mage's Fireball (+35 % at item
+  level 60); without Intelligence gear the listed pool share is exact.
 - **Ruination under ×2 crits:** the capstone's window rises from +9 % to
   +18 % damage, a hit at its 50 % cap averages ×1.5 instead of ×1.25; a
   playtest number. Round 35 made the window 15 s every 60 s (about +4 %
@@ -925,17 +945,17 @@ independently reviewed by Opus, the break sound on the approval list
 **Noted 2026-10-05** ([completion](docs/planning/round35-plan.md#completion-2026-10-05));
 none blocks the GUI test. Numbers are comparisons, never targets.
 
-- **Spell formulas round before the level scalar:** `grug_abilities/kits.lua`
-  (~124–127) rounds a spell's raw damage to an integer before the level
-  scalar, up to ±4 damage at level 60 — the issue the user fixed for Loose
-  in this round (Mighty Blow and Opening floor weapon damage by design).
-- **Ability items show the static cooldown** (`def.cooldown`): Shield with
-  Second Skin, Swift Word, Grudge and Quick Step show their base cooldown
-  in the item's timing line.
-- **Scout crit above the cap:** a fully geared level-60 Scout (Dexterity on
-  all eight items, two crit enchants, Cold Eye 4/4) reaches 34–35 % and is
-  held at the 30 % cap; the cap does its job. Optional: "(30 % cap holds)"
-  in Cold Eye's text, as Keen Edge has.
+- **Spell formulas round before the level scalar:** done in Round 36 lane
+  K: every spell (Smite included) floors once after the level scalar, like
+  Loose and the melee hits; Mighty Blow and Opening still floor their
+  weapon part by design.
+- **Ability items show the static cooldown:** done in Round 36 lane F: the
+  timing line of Grudge, Onset, Quick Step, Swift Word, Second Skin and
+  Slip Away shows the effective cooldown.
+- **Scout crit above the cap:** a fully geared level-60 Scout still exceeds
+  the 30 % cap (about 33 % raw with the new Dexterity curve) and is held at
+  it; since Round 36 Cold Eye, Firebrand and Hard Faith say "(30 % cap
+  holds)" like Keen Edge.
 - **Recompense's internal cooldown** (6 s) is a per-session timer; a relog
   resets it (not exploitable: a relog takes longer and leaves combat).
 - **Opening on rooted targets** works in PvP too: a Scout can root a player
@@ -968,6 +988,92 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   check, and the mob then stays until the player leaves.
 - **Band 3 below its income target** (median 16.7c against 19c); the
   crocodile change lowers that family further, the median does not move.
+
+### Round 36 — the main questline
+
+**Delivered locally 2026-10-05**
+([completion](docs/planning/round36-plan.md#completion-2026-10-05), plan
+[round36-plan.md](docs/planning/round36-plan.md), the
+[story bible](docs/planning/round36/story-bible.md)); every code and data
+lane independently reviewed by Opus, art and texts checked by the
+coordinator, the texts reviewed by Opus with the user's picks; 93 fixtures
+pass, `validate.py --game` 0 errors, `quest_targets.py` 1207 targets on six
+seeds; world generation changed (lanes G and W, `seed_fleet quick` 100 of
+100 each), so a fresh world is required. WP9 and WP13 delivered:
+
+- **Quest engine** (E): the "use at a place" objective (a quest object at a
+  clash site or a recipe's quest place, seen only by its quest's holders,
+  a held right-click that damage interrupts), the turn-in hook, quest tags
+  and the achievement counters `quest:` / `quest_tag:`, `W-chain-gate`.
+- **Shared data** (Q0) and **art** (A): ten corrupted sub-types with one
+  ember tint, twelve quest-object kinds, the four quest places named for
+  their uses, three achievements with cloaks and the faction rule, the two
+  captains' orders; 21 textures by GPT-6 Astra.
+- **The main line** (Q-A, Q-T, T): "Every Name Accounted For" and "Our
+  Oaths Are Ours", chapters at 41, 46 and 53 and the finale at 60, the
+  front climaxes folded in, the solo captain's orders on The Shattered
+  Line, the commanders as optional "Group:" hunts; 540 quests (+25); texts
+  by GPT-6 Astra with 28 review picks; prices re-derived.
+- **The rift** (R): the void crack at Tombroad Ambush (11 % of the maximum
+  HP per second), Isquarre the Tithe-Eater (2 × an elite's HP, 5-minute
+  return, 24-hour loot lockout, only for a player with the finale), war
+  commanders Greyvow and Stonegrudge.
+- **POI review and decor pass** (P, W): renders of all 106 POIs for the
+  user's verdicts; a theme per POI kind, house touches on every POI, start
+  town and capital house, benches, window, headroom and lane rules.
+- **Fixes and classes** (F, K, G): one target predicate with "Evading",
+  free mobs evading only from outside their wander radius, the talent-point
+  banner, the effective cooldown; the support factor from gear
+  Intelligence, the Dexterity curve, spells floored once; wider dragon
+  hazards, a 2-minute refreeze and the wing gust.
+
+### Round 36 carry-overs
+
+**Noted 2026-10-05** ([completion](docs/planning/round36-plan.md#completion-2026-10-05));
+none blocks the GUI test. Numbers are comparisons, never targets.
+
+- **Float floor in `scale_player_damage`** (K review): a value that should
+  land on an integer can floor one below it (±1, also for melee since
+  before Round 36); a small epsilon in the shared seam (`floor(x + 1e-9)`)
+  would settle it.
+- **The Tombroad tally-stone sits on Isquarre's spot:** both chapter-3
+  uses at Tombroad Ambush stand on the site's centre, where the boss
+  appears; a chapter-3 player there can be hit only while a finale group
+  has him up (the spawn rule needs a finale holder near). Quest places have
+  no offset field (lane E's format).
+- **The ledger counts the Throng captain's kill twice**
+  (`throng_main_04`: the kill and the orders it drops), and it still counts
+  the island bounties' kill XP in 50 → 60 although quests.md says they
+  count nothing (round36-plan §7).
+- **Quest share above the old level:** with the main line the solo share
+  (`ledger.py --repeat 2`) rose to 106–112 % (40 → 50) and 105–125 %
+  (50 → 60) per race, Human highest (reported, not gated; plan §2.8).
+- **Decor nodes that do not exist yet** (lane W): a thin banner cloth
+  (banners are a whole wool block), weapons for the racks, a tent, rails
+  and an ore cart, an ember node, a grave cross, a window flower box.
+- **The captains' orders** use a placeholder icon.
+- **Main-menu background:** none of lane AM's candidates; the user's own
+  in-game screenshot follows (`menu/background.png` with a
+  `LICENSE-media.md` row).
+- **Hidden achievement rows still count:** a character's counters also
+  advance for the other faction's rows, which it never sees or earns
+  (harmless; no unlock).
+- **Isquarre's spawn** is a plain `add_entity` under mobs_redo's mob cap,
+  so on a crowded server he may appear late (R review). Mobs that end up in
+  the void take a flat 300 per second (players 11 %).
+- **The finale's kill target is no zone recipe's:** `validate.py` warns on
+  both finales (`W-role-not-in-zone`, `W-recipe-target`) and does not check
+  the boss's level against the quest; the quest lanes set it by hand.
+- **Names and places:** two corrupted sub-types share their family noun
+  with a sibling of their zone (the bible's names, listed as exceptions);
+  the Kiln-Whisper Hexer's `mourning_mire` row is missing on one quest seed
+  (`tomb_fen` is reliable); Ashen Grave and Coinpit Hollow fall back to
+  the belt's woods on some seeds (their names fit either ground).
+- **Decor ways:** a dressed composition keeps every way within a detour of
+  up to six steps (accepted by the coordinator).
+- **Generated catalogue:** `docs/planning/round28/items/existing.json`
+  (`tools/r28_design/dump_items.sh`) carries the quest titles; the second
+  text review's data commit makes them stale again until the next dump.
 
 ### Character creation in one window (user, 2026-10-05; delivered in Round 35)
 

@@ -991,7 +991,7 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 | `grug_mobs:rabbit` | Rabbit | animal | critter | mobs:meat_raw 1 |
 | `grug_mobs:reed_angelfish` | Reed Angelfish | animal | critter | grug_mobs:raw_fish 1 |
 | `grug_mobs:reef_lurker` | Reef Lurker | animal | neutral | mobs:meat_raw 1, grug_mobs:scaled_hide 2 |
-| `grug_mobs:rift_boss` | Rift Boss | monster | aggressive |  |
+| `grug_mobs:rift_boss` | Isquarre the Tithe-Eater | monster | aggressive |  |
 | `grug_mobs:rift_spawn` | Rift Spawn | monster | aggressive | grug_mobs:slime_gel 2 |
 | `grug_mobs:royal_guard_dwarf` | King of Dur Brannoc Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
 | `grug_mobs:royal_guard_elf` | King of Lethariel Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |

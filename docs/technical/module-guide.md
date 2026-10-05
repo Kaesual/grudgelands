@@ -71,7 +71,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   to L + 1, `xp_for_level(L)` the cumulative start of L, and
   `quest_reward(level, weight)` turns a quest weight into XP; kill XP
   (`mob_xp × tier`) lives in `grug_mobs/levels.lua`. Positive grants feed
-  `grug_core.feed_xp` unless the caller passes `quiet`.
+  `grug_core.feed_xp` unless the caller passes `quiet`. Since Round 36 the
+  level-up banner's second line counts the talent points the jump earned
+  through `grug_classes.talent_points_at(level)`, the one point rule (read
+  at runtime: grug_classes loads after grug_xp).
 - **Professions**: `grug_jobs` owns the exact six primaries — Weaponsmith,
   Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith — plus the
   secondaries Cooking and Alchemy (`alchemist`; Round 33), two primary slots,
@@ -210,7 +213,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   damage scalar; the talent cache holds only the percentage sums. Helpers of
   that round: `grug_abilities.clear_cooldown(player, id)` (Last Word resets
   Word of Ruin a step after the cast) and `grug_core.is_rooted(player)`
-  (Opening's held target). Abilities = hotbar tools in `grug_abilities` (item `range` =
+  (Opening's held target). **Support factor (Round 36):**
+  `grug_classes.get_support_factor(player)` (`stats.lua`) is `1 + gear Int /
+  10 / B(L)`, gear Int being the Intelligence above the class's own level
+  growth; `kits.lua` `support_value` multiplies every pool-derived heal and
+  absorb by it (spell power stays the flat damage term), and
+  `spell_damage_value` and Smite return unrounded amounts that
+  `deal_ability_damage` floors once after the level scalar (fixture
+  `tools/r36_k`). Abilities = hotbar tools in `grug_abilities` (item `range` =
   targeting range, wear bar = cooldown display for cast skills, charge
   bar for swing skills since WP38); kits/numbers:
   `docs/design/classes.md`. WP19 added the 8 s target-memory store (separate
@@ -652,6 +662,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     but no step weighs every camp against every player (fixture
     `tools/r28_s1`, section "Round 32 F4"). Rules: [spawn_regions.md](../design/spawn_regions.md),
     [biomes_mobs.md](../design/biomes_mobs.md) §4.2.
+  - Since Round 36 a relevel recomposes a humanoid's skin and
+    `grug_mobs.refresh_visual` puts the zone tint (the corrupted sub-types'
+    ember) back on top through `grug_mobs.reapply_zone_variant`
+    (`subtypes.lua`; fixture `tools/r36_q0`).
   - `env_damage.lua` (percent environmental damage, read by the
     `grug_env_damage` GRUG PATCH), `roam_avoid.lua` (idle aggressive mobs
     walk away from roads and towns), `separation.lua` (separation and melee
@@ -708,6 +722,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   The void's player damage is the node group `grug_pool_damage` (a percent
   of the pool per second), applied in grug_core's central hp modifier through
   `grug_core.node_pool_damage` (`environment_damage.lua`), lava's pattern.
+  The boss rises only for an eligible player near (`rift_core.FINALE_QUESTS`
+  through `grug_quests.quest_held`, `state.lua`: "active", "completed" or
+  nil from the cached state, cheap enough for a once-a-second pass; with
+  grug_quests absent everyone is eligible).
   Fixtures `tools/r36_r` (with `numbers.py` and `engine.sh`), `tools/r33_c1`.
 - **Mob voices (Round 34 S1b):** `grug_mobs/voices.lua` holds `VOICES`, the
   families (humanoid, goblin, undead, mummy, skeleton, spirit, giant,
@@ -1263,6 +1281,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `CONTESTED_DEPTH_Y = −501` in `zones.lua` (PvP and territory). Fixtures
   `tools/r31_s`, `tools/r31_m` (incl. `spacing_check.lua` over six seeds,
   `engine.sh`), `tools/r31_da2`, `tools/r24_protection_depth`.
+  **Round 36 mapgen (decor pass):** `wp13/decor_kit.lua` (pure) owns the
+  pieces (`M.piece` in the race's palette), the whole-or-error placement of
+  an authored row (`M.place`: open ground only, never a path, built cell,
+  socket or the cell before it, a door's approach, the central actor
+  clearance or before a window) and the house touches (`M.dress_house`,
+  `M.houses_from`, `decor_kit.dress_rooms` in the start-town and capital
+  plot builders). The Round 20 catalogue's `props` rows and the Round 14
+  builder's `DECOR` table are kit pieces; the four rift candidates keep
+  their four `props` positions (`rift_core.lua` reads them) and carry the
+  rest as `decor`. Fixture `tools/r36_w` (every composition's bounds,
+  airspace and sockets against `baseline.tsv`, windows, headroom, ways,
+  benches); renders `tools/r36_w/render.py`, the whole roster
+  `tools/r36_p`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air

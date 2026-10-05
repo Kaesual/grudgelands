@@ -139,16 +139,18 @@ precedence over preserving the exact mathematical ratio.
   ratio; WP44 obtains the rate from a simple income estimate (D1),
   `tools/r29_e4/income.py`, recorded with its assumptions in the
   [economy plan](../planning/economy-vendor-plan.md#e4-completion-2026-10-02)
-  (loot per kill after the Round 30 band-4/5 smoothing):
+  (loot per kill after the Round 30 band-4/5 smoothing; quest copper of the
+  shipped quests, Round 36's main line included):
 
   | Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
   |---|---:|---:|---:|---:|---:|---:|
-  | Net solo income per hour | 1s72c | 4s28c | 9s11c | 24s40c | 66s3c | 1g47s35c |
+  | Net solo income per hour | 1s72c | 4s28c | 9s11c | 24s40c | 64s48c | 1g47s64c |
 
   Since Round 33 the estimate also counts every normal kill's gear drop sold
   (white 5 % / blue 2 % / gold 1 % at ×1 / ×3 / ×6, an upper bound) and repair
   at factor 1.00 ([item_tiers.md](item_tiers.md) §6.5); `income.py` prints
-  the change per band (−3.1 % at 1–10 to +1.6 % at 51–60).
+  the change per band (−3.1 % at 1–10 to +1.5 % at 51–60). The table above
+  is the estimate with those terms; the prices below come from it.
 
 ## 4. Sinks
 
@@ -218,8 +220,8 @@ Apprentice Riding and the Improved Boat as much as Journeyman Riding
 |---|---:|---|---:|
 | Apprentice Riding | 15 | 15 min | 1s5c |
 | Journeyman Riding | 30 | 45 min | 7s |
-| Expert Riding | 45 | 2 h | 1g32s |
-| Master Riding | 60 | 5 h | 7g37s |
+| Expert Riding | 45 | 2 h | 1g29s |
+| Master Riding | 60 | 5 h | 7g38s |
 | Boat | 15 | as Apprentice | 1s5c |
 | Improved Boat | 30 | as Journeyman | 7s |
 
