@@ -270,6 +270,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Round 11 adds the optional `reason = "durability_metadata"` for same-item
   wear/remainder/capability bookkeeping and first persistent action identity.
   Forward that third argument through every wrapper (including quality).
+  Since Round 37 it is pure wear only, its own cheap event: the use that
+  breaks an item notifies a full change (reason nil). On the reason the
+  armour and affix caches stay (only the named slot's cached copy is
+  dropped), and the stats, look, Character page and ability mana/HUD/
+  description/skin consumers return at once; grug_repair writes only the
+  tooltip's "Durability: N / M" line (`grug_repair.refresh_durability`).
   Held swings and bow draws refresh their usable same-item snapshot without
   restarting cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**

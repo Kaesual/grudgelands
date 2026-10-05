@@ -90,3 +90,24 @@ function grug_repair.refresh_stack(stack, player)
  meta:set_string("description", grug_repair.decorate_description(stack, description))
  return stack:to_string() ~= before
 end
+
+-- Pure wear changes one number (Round 37, PLY-01/ITM-01): rewrite only the
+-- "Durability: N / M" line of the stack's own description, once per use. A
+-- break changes the look and the line's suffix, and a stack whose description
+-- carries no such line yet (still the definition's) has nothing to rewrite:
+-- both take the full refresh_stack.
+function grug_repair.refresh_durability(stack, player)
+ local meta = stack:get_meta()
+ local description = meta:get_string("description")
+ local line = description ~= "" and not grug_core.equipment_is_broken(stack) and
+  grug_repair.durability_line(stack)
+ if line then
+  local rewritten, count = ("\n" .. description):gsub("\nDurability:[^\n]*",
+   function() return "\n" .. line end, 1)
+  if count == 1 then
+   meta:set_string("description", rewritten:sub(2))
+   return true
+  end
+ end
+ return grug_repair.refresh_stack(stack, player)
+end

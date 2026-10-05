@@ -1921,6 +1921,22 @@ end
 -- The full pass costs one walk of `main` with a token compare per ability
 -- stack, and writes only what actually changed.
 grug_core.register_on_equipment_change(function(player, listname, reason)
+	if reason == "durability_metadata" then
+		-- Pure wear or a projectile identity on the same stack (Round 37): no
+		-- pool, description or skin reads it, and a break is a full change.
+		-- Only the swing clock's comparison snapshot follows the melee stack,
+		-- so the next swing does not take the worn copy for a weapon swap.
+		local entry = swing_progress[player:get_player_name()]
+		if entry and (listname == nil or
+				listname == grug_inventory.melee_list(player)) then
+			local weapon = grug_core.get_melee_weapon(player)
+			if weapon and not entry.weapon:is_empty() and
+					entry.weapon:get_name() == weapon:get_name() then
+				entry.weapon = ItemStack(weapon)
+			end
+		end
+		return
+	end
 	clamp_mana(player)
 	hud_update(player)
 	-- Every equipment list may carry rolled attributes; weapon changes also
@@ -1941,14 +1957,7 @@ grug_core.register_on_equipment_change(function(player, listname, reason)
 		local name = player:get_player_name()
 		local entry = swing_progress[name]
 		local weapon = grug_core.get_melee_weapon(player) or ItemStack("")
-		if reason == "durability_metadata" and entry and
-				not entry.weapon:is_empty() and not weapon:is_empty() and
-				entry.weapon:get_name() == weapon:get_name() then
-			-- Wear, its integer remainder and the persistent projectile identity
-			-- belong to this same concrete equipped stack. Refresh the comparison
-			-- snapshot without disturbing due-time late carry or the input latch.
-			entry.weapon = ItemStack(weapon)
-		elseif (entry and not entry.weapon:equals(weapon))
+		if (entry and not entry.weapon:equals(weapon))
 				or (not entry and listname == melee_list) then
 			local _, fpi = grug_abilities.swing_stats(player, weapon)
 			grug_core.reset_accumulated_melee(player)

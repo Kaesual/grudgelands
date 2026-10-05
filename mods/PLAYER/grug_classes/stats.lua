@@ -207,7 +207,10 @@ grug_core.get_ranged_bonus = grug_classes.get_ranged_bonus
 --
 -- Keep the wrapper: registering apply_stats directly would pass `listname` as
 -- its `heal_gain` argument and turn an equipment drag into unintended healing.
-grug_core.register_on_equipment_change(function(player, listname)
+-- Pure wear changes no stat (grug_inventory.equipment_changed); a break is a
+-- full change.
+grug_core.register_on_equipment_change(function(player, listname, reason)
+	if reason == "durability_metadata" then return end
 	grug_classes.apply_stats(player)
 end)
 
