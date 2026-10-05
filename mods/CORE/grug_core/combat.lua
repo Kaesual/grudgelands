@@ -808,10 +808,10 @@ end
 -- Engagement backstop, run once a second per mob that holds engagements
 -- (grug_mobs.leash_tick; a mob without any pays one field test there).
 -- A mob without a target on TWO consecutive ticks has left its fight: every
--- edge goes. That covers paths that bypass stop_attack (mobs_redo's
--- get_staticdata clears `attack` when the engine re-saves a moved mob; a
--- passive critter never takes a target) and a group fight whose mob gave up
--- its target and found no new one. One tick of grace, because mobs_redo's
+-- edge goes. That covers paths that bypass stop_attack (the death reset in
+-- mobs_redo's check_for_death; a passive critter never takes a target) and
+-- a group fight whose mob gave up its target and found no new one. One
+-- tick of grace, because mobs_redo's
 -- reacquisition (general_attack) also runs only once a second. A flopping
 -- (stranded) mob counts as targetless; only the runaway state, bounded by
 -- mobs_redo's runaway_timer, is exempt. A mob that is
@@ -1320,6 +1320,45 @@ function grug_core.end_authoritative_swing(token)
 		return true
 	end
 	return false
+end
+
+--
+-- Knockback on players (Round 37 ruling 2.1.3, CMB-04). Builtin pushes every
+-- punched player off the engine's pre-callback damage (builtin/game/
+-- knockback.lua), and its on_punchplayer is registered before any mod's, so
+-- it pushes before our callbacks refuse or suppress the punch. One override
+-- therefore decides by the source, ahead of them:
+--   * a player's melee pushes only as the authoritative swing at this exact
+--     target, not yet claimed (builtin runs first), on a pair grug_pvp lets
+--     harm each other -- PvP melee. A refused click, an ally, an unflagged
+--     player, an ordinary tool or fist packet and a nested punch push nothing;
+--   * a mob's own hit pushes (melee and its area hits, the mob as hitter);
+--   * casts, arrows and all ability damage (`in_ability_punch`), and every
+--     projectile entity (mob arrows, breath, hex bottles) push nothing.
+-- The wrappers around it keep their own zero: attached riders (player_api)
+-- and the dragon's slam (grug_mobs boss_dragons.lua).
+function grug_core.knockback_pushes(player, hitter)
+	if grug_core.in_ability_punch or not hitter then
+		return false
+	end
+	if hitter:is_player() then
+		local token = authoritative_swing
+		return token ~= nil and not token.claimed and token.player == hitter
+			and token.target == player and grug_core.pvp_can_harm ~= nil
+			and grug_core.pvp_can_harm(hitter, player) == true
+	end
+	local entity = hitter:get_luaentity()
+	return entity ~= nil and entity._cmi_is_mob == true
+end
+
+local engine_knockback = core.calculate_knockback
+if engine_knockback then
+	function core.calculate_knockback(player, hitter, ...)
+		if not grug_core.knockback_pushes(player, hitter) then
+			return 0
+		end
+		return engine_knockback(player, hitter, ...)
+	end
 end
 
 --

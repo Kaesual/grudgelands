@@ -24,8 +24,10 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   does not unite them: each side fights the darkness on its own,
   in parallel and in competition. (Cross-faction cooperation is NOT part
   of the MVP story.)
-- In V1, scorched breaches, twisted vegetation and corruption set pieces
-  foreshadow a connection from below; no Nether portal or crossing is built.
+- In V1 the rift's crack at Tombroad Ambush and ten ember-tinted corrupted
+  creatures (§2a) foreshadow a connection from below; no Nether portal or
+  crossing is built. Scorched breaches and twisted vegetation are not built
+  (an open question, BACKLOG "Audit 2026-10 open questions", DW-08).
   V2 introduces the portals and the walkable Nether, revealing that
   **something opened the connections from the other side.**
 
@@ -36,17 +38,17 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   B7): the main questline through levels 41–60 and its finale are part of
   V1 (WP9, shipped in Round 36, §2a); only the Nether payoff below waits
   for V2.
-- One equivalent but faction-specific main questline per side carries the premise:
-  early quests are local and mundane (boars, bandits, guard duty), then
-  signs of corruption appear, and the questline progressively reveals
-  the demonic influence behind local troubles.
+- One equivalent but faction-specific main questline per side carries the
+  premise: it runs through levels 41–60 (§2a), while the 11–30 debt and
+  forgery chains only foreshadow it, and it progressively reveals the
+  influence behind the front's troubles.
 - **Quests have minimum levels** (core mechanic, WP8): every quest can
-  carry a `min_level`; main-questline beats use them as hard level
-  gates — e.g. only at level 30 comes the order to kill a corrupted
-  outpost leader that advances the main story.
-- Existing mandatory-quest beats (fight at the contested land front, kill
-  enemy war-front guards, elite kill in hostile territory — ROADMAP 1.5) get
-  framed by this premise:
+  carry a `min_level`; the main line's chapters open at 41, 46 and 53 and
+  its finale at 60 (its quests' `min_level`, with `requires` on the step
+  before; [quests.md](quests.md) "The main line").
+- Mandatory-quest beats at the front (fight at the contested land front,
+  kill enemy war-front guards, the PvP fortress quests; [quests.md](quests.md))
+  get framed by this premise:
   the enemy faction is suspected of dealings with the darkness,
   intelligence must be gathered behind enemy lines, etc.
 - **Housing** is a level-20 civic service, separate from royal combat. The
@@ -127,8 +129,9 @@ threat, beats, objects, cloaks), the quest structure is in
 ## 3. Environmental storytelling hooks
 
 - Corruption visuals at overworld breaches (scorched ground, twisted
-  vegetation) — the darkness leaks through. There are no Nether portals in
-  V1.
+  vegetation) — the darkness leaks through. Not built in V1, whose only
+  corruption is the rift's crack and the ember-tinted creatures (§2a; open
+  question DW-08 in BACKLOG). There are no Nether portals in V1.
 - Distinct from the Undead race's blight home region (§7 world.md):
   the Undead are a *faction people*, not the demon threat — their blight
   is old death, the Nether corruption is fresh, fiery evil.

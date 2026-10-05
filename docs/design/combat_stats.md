@@ -256,7 +256,8 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is
   punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
-  damage** (nor the dragon's wrath); other sources (hits, suffocation, authored ground effects such as
+  damage** (nor the dragon's wrath, nor the max-HP clamp of an expiring HP
+  buff or a gear swap, which is no damage at all); other sources (hits, suffocation, authored ground effects such as
   dragon scorch) still consume it. Both shares round up and deal at least 1 HP
   for any positive pool.
 - **Mobs** (Round 28 ruling 6): environmental damage to a Grudgelands mob is a
@@ -548,6 +549,18 @@ Normal tier at level L:
   hit, because without the hit pause the next AI step overwrites the
   velocity. Implementation: `grug_mobs/separation.lua`, called from
   `mobs/api.lua` `on_punch`.
+- **Knockback on players** (Round 37 ruling 2.1.3): only **player melee in
+  PvP** and **mob hits** push a player, with the engine's own push (builtin
+  `knockback.lua`, off the hit's raw damage). Player melee pushes only as an
+  accepted swing (Strike or a melee swing skill) on a player the attacker may
+  harm (both flagged, enemy factions). A refused or suppressed punch pushes
+  nothing: an ally, an unflagged player, a native tool or fist click. Casts,
+  arrows and every other ability damage push nothing, in PvP too, and so do
+  mob projectiles (arrows, breath, hex bottles); a mob's melee and its area
+  hits push. Riders are never pushed, nor is a player hit by the dragon's
+  slam (it has its own arena push). Implementation: one
+  `core.calculate_knockback` override, `grug_core.knockback_pushes`
+  (`grug_core/combat.lua`).
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing (`grug_core/init.lua:70`). The visible overlap is
@@ -629,6 +642,11 @@ Normal tier at level L:
   specials, and the dragons growl at their own wind-ups) then a ×3 damage hit into a
   **90° frontal cone** of **reach + 1.5 m** (normally **4.5 m**) that requires **line of
   sight** — stepping aside, out of range or behind cover is a clean miss.
+  "Stop" means the mob does nothing else while it winds up (Round 37,
+  user ruling): its facing freezes at the start, so the cone points where
+  the target stood then, and its ordinary swings and shots pause; the next
+  ordinary swing follows one attack interval after the cone hit
+  (`mobs/api.lua` `grug_winding_up`, `grug_mobs/telegraph.lua`).
   Cadence: the first wind-up needs **4 s of MELEE engagement** (a fight
   always opens with normal swings, and a ranged elite at distance never
   winds up into empty air), afterwards one every **10 s**. The same
@@ -788,6 +806,13 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   within the ordinary **threat candidate radius of 40 m**; active ambient
   pursuit follows the Round 18 exception below. A
   stale entry from someone who left the fight can never pull the mob.
+- **A hit changes the target only through threat** (Round 37, user ruling):
+  a player's hit on a mob that is already fighting adds threat and asks the
+  switch rule above (120 %, the taunt lock); it never retargets the mob by
+  itself. A mob without a target takes its first attacker, a hit from a mob
+  or an NPC still turns the mob onto that hitter, and the group alert below
+  is unchanged (`mobs/api.lua` `on_punch`'s retaliation tail,
+  `grug_core/combat.lua` `check_switch`).
 - **Ambient pursuit (Round 18):** ordinary free-roaming combat mobs, including
   Zombies and their ambient variants, use a 15-second clock since incoming
   effective player/guard damage. Initial aggro seeds the clock. Outgoing hits,

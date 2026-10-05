@@ -30,8 +30,9 @@ the zone name; this increment introduces no separate town name.
 The first settlement received focused visual and walkability playtests before
 its architecture was extended to other places. That extension has since
 happened: the other five starts landed on 2026-09-14 and all six capitals by
-2026-09-16 ("Capitals in the world" below). The remaining village, outpost and
-camp roster is tracked in BACKLOG WP13. The six kings and their
+2026-09-16 ("Capitals in the world" below), and WP13 delivered the rest of
+the roster ("Round 20 authored regional places" below; Round 36's decor
+pass). The six kings and their
 royal guards are already delivered; their encounter rules live in `world.md`
 and `world_zones.md`.
 
@@ -637,8 +638,9 @@ and have a map marker on that faction's Map tab and minimap (Round 34).
 
 ## Round 20 authored regional places
 
-The 100-anchor roster retains its six starts, six capitals and eighteen earlier
-regional compositions. The remaining 70 art slots receive individually authored
+The roster's first 100 anchors (the Round 31 PvP anchors 101–118 follow
+below) keep their six starts, six capitals and eighteen earlier regional
+compositions. The remaining 70 art slots receive individually authored
 building placement, entrances and cultural palettes: six villages, eighteen
 outposts, six frontier bandit camps, six mines, four mirefolk camps, sixteen
 clash sites, two dragon arenas, two apex camps and ten rare-route pads. Inhabited

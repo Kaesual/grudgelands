@@ -1,9 +1,11 @@
 # Farming and wild plant renewal
 
-Decided 2026-09-20. The material and recipe catalog remains in
-[items_crafting.md](items_crafting.md); these rules govern farming, renewable
-wild plants and the water-only bucket. They supersede the former blanket
-non-renewal wording for plants, but never authorize renewable natural minerals.
+Decided 2026-09-20. This file owns farming and its Basics recipes (hoes,
+bucket, seeds), renewable wild plants and the water-only bucket; the food and
+material catalog remains in [items_crafting.md](items_crafting.md) §3.7. These
+rules supersede the former blanket non-renewal wording for plants, but never
+authorize renewable natural minerals in the wild (the cultivated Salt Crust
+basin below is the one deliberate farm exception).
 
 ## Cultivation and tools
 
@@ -11,6 +13,8 @@ All seventeen shipped crop families retain their growth and hydration timings.
 Cultivated crops and their seeds remain distinct from natural source nodes.
 Seeds use recognizable seed silhouettes from licensed references, rather than
 recolored harvest icons. Reusing an appropriate seed silhouette is allowed.
+**Seeds:** any player crafts one harvest item of a family into two of its
+seeds (a shapeless Basics recipe, every family).
 
 Every family has four logical stages at 200 seconds per advance. Growth runs
 only above wet crop soil; drying pauses exact partial progress and rewetting
@@ -32,14 +36,19 @@ must be replanted. Yield is deterministic and remains one ingredient.
 Corn grows to three nodes at maturity. Sugar Cane reaches four nodes including
 its root; Bamboo reaches three. The bottom node exclusively owns stage, timer,
 metadata and drops. Upper nodes are hidden helpers. Digging any segment removes
-the complete organism once, except the explicit mature upper harvest of Sugar
-Cane or Bamboo, which preserves and resets the root. Every multi-node placement,
+the complete organism once, Sugar Cane and Bamboo included. The
+root-preserving harvest of a mature Sugar Cane or Bamboo is the right-click
+harvest below: it takes the upper growth and resets the root. A root that goes
+any other way (its soil dug away, a block placed on it, a flood) takes its
+upper nodes with it; an upper node left without its root can still be dug and
+drops nothing. Every multi-node placement,
 growth, dig and harvest preflights all changed loaded positions and protection;
 a blocker or unloaded/protected position causes no partial mutation. The root
 retries blocked growth through its ordinary bounded timer.
 
-Right-click harvests a mature regrowing crop in place. Sneak-right-click bypasses
-that crop action. Removing the rooted plant remains the explicit way to recover
+Right-click harvests a mature regrowing crop in place, also with seeds, a bucket
+or the fishing rod in hand (their own use runs only on nodes without a
+right-click action). Sneak-right-click bypasses that crop action. Removing the rooted plant remains the explicit way to recover
 its seed; mature removal also returns its one ingredient. Cultivated regrowth is
 independent of the wild-plant renewal below; crops and farm soil never count as
 wild habitat.
@@ -78,7 +87,8 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
   **per species**, at `1 / initial_denominator` per eligible column (cave rows:
   per eligible cave-floor node), with each row's zone, biome, support, level or
   depth and shore predicates. Rock Salt and Salt Crust are minerals and never
-  renew.
+  renew in the wild; the cultivated Salt Crust basin (above) is the
+  deliberate farm exception.
 - *Ground cover* (grass, dry grass, ferns, junglegrass, dry shrubs) counts **as
   one total** at the sum of the biome's decoration rates
   ([biomes_mobs.md](biomes_mobs.md) §2.1), thinned per support exactly like the
@@ -104,10 +114,11 @@ nodes (3-D) from every player; unloaded nodes are skipped and nothing is caught
 up for unvisited areas. A spot needs an open support the habitat accepts
 (player-made ground of the same node counts) and, above the planned surface,
 natural noon light 10 (13 for a sapling). Never on farm soil, capital hard
-rows or ground whose territory rule refuses natural change
-(`grug_core.natural_ground_alterable`: towns, landmarks, immutable ground).
-Inside an active Claim Stone claim there is no natural renewal (wild plants,
-trees); an expired claim renews like any other ground (Round 25 rulings 14
+rows or where `grug_core.natural_renewal_allowed` refuses: ground whose
+territory rule refuses natural change (`grug_core.natural_ground_alterable`:
+towns, landmarks, immutable ground) or a natural renewal guard. The one guard
+is the Claim Stone's: inside an active claim there is no natural renewal (wild
+plants, trees); an expired claim renews like any other ground (Round 25 rulings 14
 and 19, `housing.md` §6.4). Other
 player protection is never consulted. Each class keeps its
 own writer's claim exclusions: resource plants the full territory rule
@@ -164,15 +175,21 @@ layout. There is no profession, character-level or Housing prerequisite.
 
 Fill only from actual ordinary or river water sources. Preserve that family in
 filled-stack metadata and place the same source family again. Invalid/missing
-metadata, flowing water, lava and protected decorative water are refused.
-Check reach and the player's protection at the node removed/placed. Exchange
+metadata, flowing water, lava and protected decorative water are refused, and
+a filled bucket never replaces an existing liquid. Check reach and the
+player's protection at the node removed/placed; both filling and placing are
+also refused wherever `grug_core.world_alterable` is false (ground whose
+territory rule refuses natural change — towns, landmarks, the open sea and
+other immutable ground — and a Claim Stone's arrival cube). Exchange
 empty and filled stacks only when the node mutation succeeds; full inventory or
 failed mutation cannot consume or duplicate either water or the bucket.
 
 ## Water protection prerequisite
 
-The bucket requires a narrow shared water-flow guard. At protected authored and
-claimed positions, veto non-air flooding before destruction/drops, preserving
+The bucket requires a narrow shared water-flow guard. Where
+`grug_core.world_alterable` is false (protected authored ground and Claim
+Stone arrival cubes; a claim itself lets water flow), veto non-air flooding
+before destruction/drops, preserving
 the original node callback elsewhere. For air and liquid transformations,
 restore the exact old node including param2 through the engine's liquid change
 callback. Never remove an allowed outside source to suppress retries.

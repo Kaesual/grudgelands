@@ -2,9 +2,13 @@
 
 **Living content catalog.** Named-zone geography is defined in
 [world_zones.md](world_zones.md); biome properties, mobs, gathering, woods and
-materials are specified below. Historical radial geometry is archived rather
-than used as current placement authority. Future depth-pulse and deferred
-content requirements remain explicitly separate from delivered behavior.
+materials are specified below. This file says what each mob family is and
+does; where it spawns is the zones' spawn recipes, the placement authority
+([spawn_regions.md](spawn_regions.md)), and [zone_mobs.md](zone_mobs.md) is
+the table generated from them, per zone and per family. Historical radial
+geometry is archived rather than used as current placement authority. Future
+depth-pulse and deferred content requirements remain explicitly separate from
+delivered behavior.
 
 ## 0. Decided framework (recap, binding)
 
@@ -34,7 +38,8 @@ content requirements remain explicitly separate from delivered behavior.
   user ruling 2), heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
   elites **and rares** telegraph (2 s wind-up, combat_stats §3); named
-  rares broadcast. Implementation: `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
+  rares broadcast. Implementation: `mods/ENTITIES/grug_mobs/levels.lua`
+  (`TIERS`, `grug_mobs.tier_telegraphs`).
 - **Player-tag drop rule** (combat_stats §3) applies to every drop
   table below.
 - Identical base drops cross-continent: universal biomes are literally
@@ -66,39 +71,6 @@ content requirements remain explicitly separate from delivered behavior.
 - Target patch model: logical biomes vary only inside their zone-owned
   weighted palette. Fixed village/outpost/camp slots come from
   `world_zones.md` §§8/11; Elves keep tree-integrated settlements.
-
-### Round 18 surface eligibility and regional identities
-
-Ordinary surface spawns require their natural minimum level to fit the actual
-local difficulty query. The level field still rises toward the warfront on both
-continents; a species cannot clamp itself upward into an easier band. This gate
-does not change depth populations or authored encounters. Settlement spawn
-protection is unchanged and does not prevent an already spawned mob from
-walking into a town.
-
-A named zone selects one interchangeable regional wildlife tint. Host nodes and
-day/night clocks remain additional requirements, not alternative authorities.
-
-| Family | Current zone selection |
-|---|---|
-| Boar | Base in the nine Accord/Orc settled zones (including Whitebridge); Plague in Stillgrave/Mournfen; Jungle in Kapok/Raincall |
-| Zombie / Husk | Husk in Sunscar, Redtusk and Shattered Line; Zombie elsewhere |
-| Spider | Jungle in Glassroot, Thunderroot, Skyglass and Stormscale; existing faction forest tint on its exclusive hosts elsewhere |
-| Lynx / Panther / Snow Leopard | Panther in those four mixed/high-jungle zones; Lynx in jungle-edge start/home zones at L4+ (band 2 of Kapok, Round 24); Snow Leopard in its named mountain zones |
-| Skeleton archer tints | Raider in war zones; Frost Stray in Wyrmglass; Archer in other eligible forest/mountain zones |
-
-Distinct combat roles such as Goblin melee/ranged members and Bog Witch remain
-separate creatures. The same imported mesh does not by itself equate differently
-shaped/scaled bird species or visibly different combat roles. NPC/guard model
-reuse is unrestricted. Existing spawn caps/rates, dispositions and drop tables
-remain; this revision does not add a density multiplier.
-
-Troll early Lynx kill objectives use Tapir, while the later Raincall outpost Lynx
-objective remains. The Orc chain's night patrol hunts Husks; the Husk spawns
-in Sunscar from band 2 of the start-zone gradient (L4+, Round 24), so that
-quest is level 5 with the level-5 reward of 180 XP (`progression.md` §4; the
-other races' Zombie patrols stay level 4 at 140 XP: the Zombie spawns from L3).
-Counts and copper rewards are unchanged.
 
 Stats quick reference (normal tier; compute, don't copy):
 
@@ -136,8 +108,8 @@ frontier and Stormscale palettes, not a transfer of Orc cultural ownership.
 
 The coastal habitat follows the authored shelf; planned inland water keeps its
 zone classification. Coral, kelp and wild-source details follow
-`world_zones.md`'s Round 10 source/reef rules. Shore Crab and Reef Lurker live
-on sandy sea shore near water (§3.1, §4). Registered node/biome names
+`world_zones.md`'s Round 10 source/reef rules. The recipes' crab roles live
+on sandy sea shore near water (§3.1, §4.2). Registered node/biome names
 must resolve before they are used by ore or decoration definitions.
 
 ### 1.4 Settlements
@@ -177,9 +149,9 @@ split in two**:
 | `[herb Tn]` | **healing herb** — Alchemy only, tier n | **never** |
 | `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by Alchemy **and** by Cooking | yes |
 
-Both plant lines keep the same ring tiers: T1 inner (10–25), T2 outer
-(25–45), T3 coast/deep (45–60), and each line has exactly one plant per
-tier, reachable on both continents.
+Both plant lines keep the same three tiers: T1 (levels 10–25), T2 (25–45)
+and T3 (45–60), and each line has exactly one plant per tier, reachable on
+both continents.
 
 **Where the line runs**: healing herbs grow on ground no plough will
 ever touch — bare stone, gravel and mesa clay, dead wood, the deep
@@ -361,19 +333,20 @@ its four named high/endpoint zones and does not require `grug_beach` or sand.
 own recipe book with T1–T6 groups, `items_crafting.md`; the tiers tie to
 the region an ingredient comes from):
 
-- Low and middle tiers come out of the settled rings and the swamp:
+- Low and middle tiers come out of the settled zones and the swamp:
   potato, corn, apples, berries, melon, mushrooms, sunleaf, marshbloom,
   plus meat and fish from anywhere.
-- **T6 needs ingredients from level 50+ ground, and the coast/outer
-  rows do carry them**: **wild cocoa places only in the level-51–60
+- **T6 needs ingredients from level 50+ ground, and the 51–60 zones
+  do carry them**: **wild cocoa places only in the level-51–60
   jungle-palette zones** (tightened 2026-08-13 so the T6 gate claim is
   literally true — today exactly The Skyglass Canopy on the shared
   contested front, both factions on foot, plus Stormscale Summit as the
   island bonus; the WP40 authored surface pass owns the zone binding),
   **stormkelp** and **rock salt** on the coast-zone beaches
-  (45–60), and the meat of the outer/coast families (bear, jungle ape,
-  panther, crocodile), whose level comes from `mob_level_at` and is
-  45–60 out there. Every one of them is reachable by both factions
+  (45–60), and the meat of the 51–60 zones' jungle ape and panther (The
+  Skyglass Canopy, Stormscale Summit) and plaguehide bear (Gravesalt
+  Escarpment; [zone_mobs.md](zone_mobs.md)). Every one of them is reachable
+  by both factions
   (§6) — every level-41+ zone is contested and shared — so neither
   faction is cut off from the top of the cooking ladder.
 - **Deliberately found-only** (never a crop): mushrooms, wild cocoa and
@@ -438,10 +411,10 @@ the four additions the 2026-08-08 asset survey found on disk: **Cave Bat**
 and a **cave crawler** (both `underground` — the caves had no critter at
 all), **Bone Weevil** (bone forest + blight, the "creepy" biomes, day) and
 **Bog Fowl** (swamp, day). The **Carrion Crow is deliberately NOT a
-critter** — it is the last feather source and the entire daytime population
-of the war coast, so it moves to the passive-prey class below instead
-(same mesh, ~1.0 nodes tall, level 20–30 there). They are scenery with a
-use, not content:
+critter** — it is the last feather source and a common daytime animal of the
+31–60 zones ([zone_mobs.md](zone_mobs.md)), so it moves to the passive-prey
+class below instead (same mesh, ~1.0 nodes tall). The critters are scenery
+with a use, not content:
 
 - **Always level 1, always 1 HP**, whatever the level field says at their
   position. This is the second documented exception to §0's "stats derived,
@@ -477,7 +450,7 @@ is normalized into the def at registration time, next to `armor` and for the
 same reason (mobs_redo copies an explicit def-field whitelist, and a nil
 there falls through to its default of `true`). The telegraph gate is a
 positive `telegraph = true` flag on the elite and rare rows, asked through
-one predicate (`mods/ENTITIES/grug_mobs/levels.lua:89-95`) that both the
+one predicate (`grug_mobs.tier_telegraphs` in `levels.lua`) that both the
 `do_custom` gate and `telegraph_tick` call, and `set_tier` refuses to promote a
 critter at all.
 
@@ -546,7 +519,7 @@ Consequence for the material map (§6): plain **feather** loses its critter
 source and moves to the **bird-of-prey table** (crag eagle / vulture), so
 arrow fletching stays behind a real fight. Meat stays universal. The Carrion
 Crow **keeps** its feather — it is prey, not a critter, and that drop is
-what makes the war coast worth walking by day.
+what makes the front worth walking by day.
 
 ### 3.1 Families by biome group
 
@@ -571,7 +544,7 @@ and the Mage take damage sooner"):
   Free-roaming mobs end a fight by the ambient pursuit clock instead, so for
   them a longer sight only means pulls from further away.
 
-**Settled biomes, all six (core + inner, L1–25):**
+**Settled biomes, all six:**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
@@ -581,19 +554,19 @@ and the Mage take damage sooner"):
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
 | **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
-**Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (outer,
-25–60; Throng names in parentheses, same drop tables):
+**Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (Throng names
+in parentheses, same drop tables):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Wolf (Blightfang Wolf) — also inner pine-hills/meadows patches from L10 | hunts in packs; flees low, returns with pack | 24 h | 4.6 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
+| Wolf (Blightfang Wolf) | hunts in packs; flees low, returns with pack | 24 h | 4.6 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
 | Bear (Plaguehide Bear) — elite variant "Elder" ×1.4 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | raw silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 4.6 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
-| Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
+| Skeleton Archer | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
 | **Bone Weevil** — bone forest **and blight** (the two "creepy" biomes; one entity name, one `aoc` budget, per-biome tint stamped at spawn) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_silverfish, bone-pale + blight tints |
 
-**Mountain pair — grug_crags (A) ↔ grug_badlands (T)** (outer, 25–60):
+**Mountain pair — grug_crags (A) ↔ grug_badlands (T):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
@@ -605,8 +578,7 @@ and the Mage take damage sooner"):
 The Ram's Throng mirror, the **Dust Hare**, is not a badlands critter of
 its own: it is the dust-tinted variant of the settled Rabbit/Hare row
 above (dry grass, blight, rainforest litter) and shares that row's
-numbers and drops. The badlands therefore carry no critter — Hyena,
-Vulture and Mesa Golem only.
+numbers and drops. The badlands therefore carry no critter of their own.
 
 Air fliers have a gentle near-ground tendency outside attack, runaway,
 following, evade and root steering. A staggered 0.75-second probe checks at
@@ -620,24 +592,23 @@ bias and clears the terrain cache; existing combat targeting owns pursuit.
 Water fliers and ground mobs are excluded.
 
 
-**Savanna extras (grug_savanna inner, L10–25):** Hyena (above, from
-L10); Zebra — grazes (**passive prey**, §3.0, exactly like the Stag it
+**Savanna extras (grug_savanna):** Hyena (above); Zebra — grazes (**passive prey**, §3.0, exactly like the Stag it
 mirrors), meat ×2 + leather 1/2 `[leather]`, animalworld zebra (Accord
 mirror = Stag in meadows-adjacent forest patches: same table).
 
-**Jungle group — grug_deep_jungle (T) ↔ grug_jungle_fringe (A)** (outer/
-coast, 38–60) + grug_jungle_edge inner (10–25):
+**Jungle group — grug_deep_jungle (T) ↔ grug_jungle_fringe (A)**, with
+grug_jungle_edge:
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| **Jungle Lynx** (the Raptor slot) — jungle_edge from L4 (Kapok band 2, Round 24; was L10), deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; Small Cat Claw 1/3 (`raptor_claw` item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
+| **Jungle Lynx** (the Raptor slot) | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; Small Cat Claw 1/3 (`raptor_claw` item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.6 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
 | Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
 | Giant Spider (jungle tint) | webs | night | 4.6 | spider table | mobs_monster spider |
 | Parrot — jungle_edge critter | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (feather moved to the bird-of-prey table) | mobs_mc_parrot |
 
-**grug_swamp (universal, 25–45):**
+**grug_swamp (universal):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
@@ -653,67 +624,66 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 | Shore Crab | retaliates (pinches when punched) | 24 h | 3.4 | meat 1/1; scaled hide 1/2 | `grug_mobs_shore_crab.b3d` |
 | Gull | flees (**critter**, §3.0) | day | 3.4 fly | meat 1/1 — food only | animalia song bird retexture |
 
-Crabs spawn on dry `default:sand` at y 0–20 with water at or below the sea
-surface (y ≤ 1) within 6 nodes, so the wide coastal sand band and inland
-sand, lake and river shores above sea level included, stay crab-free
-(Round 22 D36).
-The local level splits every such shore: the Shore Crab below level 45, and
-from 45 to 60 the **elite** "Reef Lurker" (same model, ×3 drops).
+The recipes' crab roles (§4.2) spawn on dry `default:sand` with water at or
+below the sea surface (y ≤ 1) within 6 nodes, so the wide coastal sand band
+and inland sand, lake and river shores above sea level included, stay
+crab-free (Round 22 D36).
+The **elite** "Reef Lurker" (same model, ×3 drops) was the 45–60 shore's
+crab under the retired ABM rows; no recipe uses it, so it does not spawn
+(§4).
 
-**War coast (20–30, both continents):** local settled-biome roster
-continues; plus Skeleton Raider (dogshoot, night — battlefield dead;
+**Front families:** Skeleton Raider (dogshoot, night — battlefield dead;
 skeleton table + heavy cloth 1/3) and Carrion Crow (**passive prey**,
-§3.0 — grazes/scavenges, no aggro, retaliates; feather 1/1, and it is the
-whole daytime population of the war coast).
+§3.0 — grazes/scavenges, no aggro, retaliates; feather 1/1).
 Faction NPC outposts/guards are WP6, not part of this catalog.
 
 **Round 8 zero-asset variants:** these families reuse shipped animated meshes
-and apply texture modifiers at runtime; they add no media file.
+and apply texture modifiers at runtime; they add no media file. On the
+surface the recipes place them ([zone_mobs.md](zone_mobs.md)); the cave
+column gives the underground rows.
 
-| Mob | Verb | Clock | Zones / level band | Drops | Visual source |
-|-----|------|-------|--------------------|-------|---------------|
-| Poacher | dogshoot, roaming | night | Goldmead, Whitebridge, Ashenward, Starbough, Moonfall; Silverleaf band 3 and Lorindor | Bandit table + arrows 1/3 | Bandit Archer / dark skin modifier |
-| Frost Stray | dogshoot | night | Stormvault and Wyrmglass, L31–60 | Skeleton table | Skeleton Archer / ice-blue modifier |
-| Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | Redtusk and Shattered Line; Sunscar from band 2, L4–50 | Zombie table | Zombie / sand-gold modifier |
-| Song Bird | flees (**critter**) | day | Silverleaf, L1 fixed | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
+| Mob | Verb | Clock | Cave row | Drops | Visual source |
+|-----|------|-------|----------|-------|---------------|
+| Poacher | dogshoot, roaming | night | — | Bandit table + arrows 1/3 | Bandit Archer / dark skin modifier |
+| Frost Stray | dogshoot | night | — | Skeleton table | Skeleton Archer / ice-blue modifier |
+| Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | — | Zombie table | Zombie / sand-gold modifier |
+| Song Bird | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
 | Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | raw silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
 | Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
 | Stone Mite | swarms | any (cave) | y ≤ −700, L42–60 | stone core 1/8 | Cave Crawler / stone-grey modifier, ×1.33 |
 
-**Round 8 start-zone families:** family rows are closed named-zone routes,
-not biome-wide grants. In a start zone, a band-2 family begins at L4 and
-continues through band 3; a band-1 family is present through the full start
-zone. Giant Rat also occupies the entrance and middle caves from y −40 to
-−300, where the surface clock is ignored.
+**Round 8 start-zone families** (on the surface placed by the recipes,
+[zone_mobs.md](zone_mobs.md)). Giant Rat also occupies the entrance and
+middle caves from y −40 to −300, where the surface clock is ignored.
 
-| Mob | Verb | Clock | Zones / level band | Drops | Visual source |
-|-----|------|-------|--------------------|-------|---------------|
-| Fox | darts; a landed bite triggers a 6 m/s retreat with a 4 s lockout | day | Hearthpine, Dawnmere and Silverleaf from L4; Copperfell, Goldmead, Starbough | wolf table | animalia fox, MIT |
-| Ibex | grazes (**passive prey**) | day | Hearthpine from L4; Copperfell, Frostbarrow, Stormvault | stag table | animalworld ibex, MIT |
-| Wild Turkey | flees (**critter**) | day | Dawnmere and Goldmead, L1 fixed | meat 1/1 — food only | animalia turkey, MIT |
-| Plains Runner | grazes (**passive prey**: fights back when attacked; Round 24, was a critter) | day | Sunscar, zone level | meat 1/1 | animalworld nandu, MIT |
-| Tapir | grazes (**passive prey**) | day | Kapok from L4; Raincall, Whispering Reedlands, Totemwater | stag table | animalworld tapir, MIT |
-| Giant Rat | swarms; one pull calls nearby rats | night on surface; any in caves | all six starts; caves y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
-| Scorpion | poisons (1 damage / 2 s for 6 s) | night; 24 h in Sunscar (Round 24) | Sunscar from L4; Redtusk, Speargrass, Bannerbreak, Shattered Line | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
-| Viper | poisons (1 damage / 2 s for 6 s) | night; 24 h in Kapok (Round 24) | Kapok from L4; Raincall | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
+| Mob | Verb | Clock | Cave row | Drops | Visual source |
+|-----|------|-------|----------|-------|---------------|
+| Fox | darts; a landed bite triggers a 6 m/s retreat with a 4 s lockout | day | — | wolf table | animalia fox, MIT |
+| Ibex | grazes (**passive prey**) | day | — | stag table | animalworld ibex, MIT |
+| Wild Turkey | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | animalia turkey, MIT |
+| Plains Runner | grazes (**passive prey**: fights back when attacked; Round 24, was a critter) | day | — | meat 1/1 | animalworld nandu, MIT |
+| Tapir | grazes (**passive prey**) | day | — | stag table | animalworld tapir, MIT |
+| Giant Rat | swarms; one pull calls nearby rats | night on surface; any in caves | y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
+| Scorpion | poisons (1 damage / 2 s for 6 s) | night (Sunscar's recipe also has it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
+| Viper | poisons (1 damage / 2 s for 6 s) | night (Kapok's and the Causeway's recipes also have it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
 
 **Round 8 level-11+ night families:** Goblin Raider Hounds are members of
 the Goblin Raider family, not an independent zone cast. The raider group is
 leashless and alerts nearby members; one ranged Slinger and one hound row
 give it mixed silhouettes. Wisp blink destinations must have two open nodes, never a liquid (Round 34: a blink after a swimming target left it under water).
 
-| Mob | Verb | Clock | Zones / level band | Drops | Visual source |
-|-----|------|-------|--------------------|-------|---------------|
-| Goblin Raider / Slinger / Raider Hound | group raid, leashless; Slinger dogshoots the Golem stone; hound rushes | night | Copperfell, Frostbarrow, Stormvault, Speargrass, Bannerbreak | linen scrap; purse or arrows; hound meat | goblins goblin + gobdog, CC BY-SA 3.0 |
-| Snow Leopard | stalks (silent approach, pounce) | night | Frostbarrow, Stormvault, Wyrmglass | panther table | animalworld Snowleopard mesh and original skin, MIT |
-| Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | Whitebridge, Ashenward, Lorindor, Moonfall, Glassroot, Mournfen, Whispering Reedlands, Totemwater | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
-| Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | Ashenward / Ossuary and Blackwind | apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
+| Mob | Verb | Clock | Drops | Visual source |
+|-----|------|-------|-------|---------------|
+| Goblin Raider / Slinger / Raider Hound | group raid, leashless; Slinger dogshoots the Golem stone; hound rushes | night | linen scrap; purse or arrows; hound meat | goblins goblin + gobdog, CC BY-SA 3.0 |
+| Snow Leopard | stalks (silent approach, pounce) | night | panther table | animalworld Snowleopard mesh and original skin, MIT |
+| Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
+| Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
 
-Bog Witch is deferred from this wave. The pinned VoxeLibre witch mesh has
-keyed frames only in 1..41, while its required shooting and death behaviours
-name frames 50..82 and 145; shipping it would violate the animated-mesh rule.
-It remains absent until a licensed mesh with the required keyed behaviours is
-pinned. The package KAT keeps `blocked=bog_witch` as the regression record.
+**Bog Witch** (shipped in Round 9): a ranged night family on the shipped skeleton
+humanoid mesh with its real keyed shoot (70..90) and die (160..170) clips,
+not the pinned VoxeLibre witch mesh, whose keyed frames lack them
+(`grug_mobs/bog_witch.lua`). Its hex bottle is a homing arrow that poisons
+or slows a player hit (even odds).
 
 **Round 8 fixed bosses:** these are authored encounters and have no ambient
 spawn row or palette membership.
@@ -798,9 +768,8 @@ the depth term never touches them — a level-60 bat is not a thing.
 | jungle tables (panther/serpent) | jungle fringe (east flank) | deep jungle |
 | swamp/beach/boar/zombie/bandit/skeleton | identical biomes both sides | identical |
 
-*The Jungle Lynx also exists Throng-side inner (jungle edge) — the
-Accord inner pack hunter is the Wolf; base drops match via the shared
-wolf table.
+*The Jungle Lynx is the Throng's jungle-edge pack hunter — the Accord's
+is the Wolf; base drops match via the shared wolf table.
 
 **What "shared table" binds** (resolved in WP6): the first two slots —
 the food/meat drop and the leather tier with its chance — are identical
@@ -839,8 +808,8 @@ are refused and the spawn regions of §4.2 spawn instead.
 2026-10 #11):** a surface row that no zone can use registers no ABM
 (`spawn_policy.lua` `spawn_row_kept`): every zone has a recipe, and the only
 land outside every zone is dragon-channel floor under water, so on the
-surface only the recipes' critters and the Rift Spawn's surface row stay.
-The surface tables below are therefore history for every other family. The
+surface only the recipes' critters and the Rift Spawn's surface row stay
+(the list below; the pre-recipe row table is archived). The
 remaining rows run through three merged ABMs, one per node set: underground
 (stone and strata, y ≤ −40), water (Kraken, Reed Angelfish) and surface
 (`grug_mobs/spawn_abms.lua`). A merged ABM takes its rows' shortest interval
@@ -874,11 +843,11 @@ they retain only their explicit light filter, and they never receive a
 `day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
 and chance stay unchanged; the Rift Spawn's surface row states its final
 chance 4000 and cap 3 (the effective numbers of its Round 24 palette budget,
-gone in Round 30). If a named zone exposes fewer than two explicit
-night-role families, the policy admits its palette fallback: Zombie for
-settled/war, Skeleton Archer for forest/mountain, Jungle Spider for jungle,
-or Bog Ooze for swamp. Capitals retain empty palettes and never receive a
-fallback; an ABM-row mob alive at a clock boundary is not despawned (free
+gone in Round 30). The zone-palette path (a named zone with fewer than two
+explicit night-role families admits a fallback: Zombie for settled/war,
+Skeleton Archer for forest/mountain, Jungle Spider for jungle, or Bog Ooze for
+swamp) runs only in a zone without a recipe, and every zone has one since
+Round 28. An ABM-row mob alive at a clock boundary is not despawned (free
 region mobs spawned for the night leave at dawn: "Dawn departure" below).
 
 **`aoc` is per entity NAME, not per family** (mobs_redo counts objects
@@ -907,109 +876,27 @@ means `chance ÷ 0.75`; the old wording "multiply `chance` by 0.75" was
 inverted and would have raised density. Cave rows (Giant Spider, Stone/Mesa
 Golem, Cave Bat, Cave Crawler) and the Kraken Guard were never part of it.
 
-The `chance` column below still prints the never-shipped values of
-2026-08-08 for the other rows, computed with that inverted multiplication. It
-is historical, not the runtime table; the shipped row values are in
-`mods/ENTITIES/grug_mobs/*.lua` (their `-- §4 row` comments quote them).
+**Rows that still run** (`spawn_policy.lua` `spawn_row_kept`; their numbers
+are in the mob files): the critters the recipes keep (Rabbit, Hare, Gull on
+beach ground, Parrot, Bone Weevil, Bog Fowl, Wild Turkey and Song Bird;
+[zone_mobs.md](zone_mobs.md) lists them per zone), the Rift Spawn's surface
+row (Gravesalt, Skyglass and both islands), every underground row (y ≤ −40,
+the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken Guard,
+Reed Angelfish). Every other surface row registers no ABM, the Shore Crab's
+and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
+(§4.2), and the Reef Lurker, which no recipe uses, does not spawn at all.
+Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
 
-| Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
-|-----|------------------|----------|--------|-----|-------|-------|
-| Boar (all tints) | all six settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (core/inner filler); the **Jungle Boar** additionally carries **canopy litter** — deep-jungle patches in `inner` (§1.5) | 20 | 1125 | 5 | min 10 | core, inner |
-| Rabbit/Hare | settled tops **+ the filler tops of its own continent** — Rabbit: forest litter, gravel, snowblock, mud, sand; Hare: mud, sand (no mesa_clay, §3.1 "the badlands carry no critter"). Split by a `territory_at` check | 20 | 1350 | 3 | min 10 | core, inner |
-| Zombie | settled tops **+ forest litter, canopy litter, mesa_clay, gravel, snowblock, mud, sand** (night filler) | 20 | 1200 | 4 | max 5 (blight: any) | core, inner, war_coast |
-| Wolf/Blightfang | coniferous litter, forest litter, bone litter, grass | 20 | 1125 | 5 | any | inner, outer |
-| Hyena | dry grass, mesa_clay | 20 | 1125 | 5 | any | inner, outer |
-| Jungle Lynx (Raptor slot) | rainforest litter **+ canopy litter** | 20 | 1125 | 5 | min 10 | inner, outer |
-| Bear/Plaguehide | forest litter **+ silver litter, coniferous litter, grass** (Bear) / bone litter **+ blight_dirt, dry grass** (Plaguehide) | 20 | 2100 | 2 | min 10 | outer, coast |
-| Jungle Ape | rainforest litter **+ canopy litter** | 20 | 2100 | 2 | min 10 | outer, coast |
-| Giant Spider (all) | forest litter **+ silver litter, coniferous litter, grass** (Giant) / bone litter **+ blight_dirt, dry grass** (Pale) / rainforest litter **+ canopy litter** (Jungle) | 20 | 1800 | 4 | max 5 | outer, coast, underground |
-| Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry grass | 20 | 1350 | 3 | min 10 | inner, outer |
-| Skeleton Archer | bone litter, blight_dirt, settled tops (war coast) | 20 | 1500 | 3 | max 5 | outer, war_coast |
-| Skeleton Raider | **every land top** + sand (war_coast-exclusive) | 20 | 1500 | 3 | max 5 | war_coast |
-| Crag Eagle/Vulture | gravel, **snowblock**, mesa_clay | 20 | 1500 | 3 | min 10 | outer, coast |
-| Stone/Mesa Golem (elite) | gravel, **snowblock**, stone, mesa_clay | 30 | 9000 (Stone Golem above y 300: 12000, Round 22 Phase 6 — bare high crags offer ~1.3× the hosts per area) | 1 | any | outer, coast, underground |
-| Ram | gravel, **snowblock** | 20 | 1650 | 2 | min 10 | outer |
-| Panther | rainforest litter **+ canopy litter** | 20 | 1350 | 4 | max 5 | outer, coast |
-| Serpent | rainforest litter **+ canopy litter**, mud | 20 | 1350 | 4 | min 10 | outer, coast |
-| Crocodile | mud (only) | 20 | 1350 | 3 | any | outer |
-| Bog Ooze | mud | 20 | 1500 | 3 | any | outer |
-| Parrot | rainforest litter | 20 | 1875 | 2 | min 10 | core, inner |
-| Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
-| Shore Crab | sand within 6 nodes of sea-level water, y 0–20 | 20 | 300 | 3 | any | level below 45 (§3.1) |
-| Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
-| **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
-| **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
-| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 2933 | 2 | min 10 | (none — the node gates) |
-| **Bog Fowl** (critter) | mud (only) | 20 | 2933 | 2 | min 10 | (none — the node gates) |
-| **Poacher** | grass, forest litter, silver litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
-| **Frost Stray** | gravel, snowblock | 20 | 2400 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
-| **Sun-Dried Husk** | dry grass, mesa clay | 20 | 2000 | **5 at night** (base 4 ×1.25) | night | exact named-zone palette |
-| **Song Bird** (critter) | silver litter | 20 | 2200 | 2 | day | Silverleaf exact family row |
-| **Spiderling** | stone + `group:grug_stratum`, y −40…−100 | 20 | 2400 | 3 | max 5, clock ignored | underground |
-| **Blood Bat** | stone + `group:grug_stratum`, y −101…−300 | 20 | 2200 | 4 | max 5, clock ignored | underground |
-| **Stone Mite** | `group:grug_stratum`, y ≤ −700 | 20 | 2000 | 5 | max 5, clock ignored | underground |
-| **Fox** | grass, coniferous litter, silver litter | 20 | 1900 | 3 | day | exact named-zone routes; L4 start gate |
-| **Ibex** | coniferous litter, gravel, snowblock | 20 | 1900 | 3 | day | Dwarf column; L4 start gate |
-| **Wild Turkey** (critter) | grass | 20 | 2100 | 2 | day | Dawnmere, Goldmead |
-| **Plains Runner** (passive prey) | dry grass | 20 | 2100 | 2 | day | Sunscar |
-| **Tapir** | rainforest litter, canopy litter | 20 | 1900 | 3 | day | Troll column; L4 start gate |
-| **Giant Rat** | six settled tops / stone + `group:grug_stratum` | 20 | 1600 surface / 1800 cave | **5 at night** surface (base 4 ×1.25) / 4 cave | night surface; max 5 underground | all starts / y −40…−300 |
-| **Scorpion** | dry grass, mesa clay | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a daylight row (min light 10, day toggle) with the same values, admitted only in Sunscar by the zone clock (Round 24) | Orc column and Shattered Line; L4 start gate |
-| **Viper** | rainforest litter | 20 | 1800 | **5 at night** (base 4 ×1.25) | night; plus a daylight row (min light 10, day toggle) with the same values, admitted only in Kapok by the zone clock (Round 24) | Kapok and Raincall; L4 start gate |
-| **Goblin Raider** | coniferous litter, gravel, snowblock, dry grass, mesa clay | 20 | 2400 | **3 at night** (base 2 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
-| **Goblin Slinger / Raider Hound** | same Goblin-Raid tops | 20 | 2400 | **2 each at night** (base 1 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
-| **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |
-| **Wisp** | mud, silver/forest/bone/canopy/rainforest litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone routes |
-| **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
-| Reef Lurker (elite crab) | sand within 6 nodes of sea-level water, y 0–20 | 30 | 1100 | 1 | any | level 45–60 (§3.1) |
-| Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
-| Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 30–60 s (Round 28 ruling 37), dormant catch-up; in a zone with a spawn recipe a recipe camp (§4.2) replaces the fire | — | — | 3–5 per camp | — | camp pos |
-| Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
+**Registered but placed nowhere** (open questions, [BACKLOG "Audit 2026-10
+open questions"](../../BACKLOG.md#audit-2026-10-open-questions)): the ambient
+War Construct sub-types `causeway_construct` and `siege_war_construct` are in
+the catalogue (`data/subtypes.json`) but in no recipe, so the War Construct
+appears only as the two leaders (DW-04); the elite Reef Lurker is registered
+(`shore_crab.lua`) but has no recipe role and no ABM row, so it never spawns.
 
-**The Bandit Archer costs no spawn budget** (2026-09-16). It has no row of its
-own: the bandit camp's slot roll picks it **1 in 3** per slot, so the camp is
-still the 3–5 of the Bandits/Mirefolk row above and simply not all of one
-kind. Both families count against that one head count
-(`grug_mobs/camps.lua`), which is why an archer can never make a camp grow.
-It is also why ruling 3's "more ranged mobs" reaches the INNER ring, where the
-four pre-existing ranged mobs — Skeleton Archer, Skeleton Raider, Stone Golem,
-Mesa Golem — never went: before this, a player met no ranged enemy at all
-below roughly level 25.
-
-Row notes:
-- **Crocodile spawns on mud only.** "Water at mud" is not expressible:
-  the spawn ABM's `nodes` list is the node it spawns ON and `neighbors`
-  is an OR set, so "water AND mud" cannot be written. The lurking-in-
-  water half of the verb is delivered by `floats` instead — the croc
-  spawns on the mud bank and drifts into the pool.
-- The **Skeleton Raider** reuses the Skeleton Archer's numbers
-  (20 / 1500 / 3, night); it is the war-coast family, so its
-  `war_coast`-only zone does all the gating and it needs no extra
-  check. Its table is the skeleton table **plus heavy cloth 1/3**.
-- **Parrot** and **Carrion Crow** are priced like the Gull, the other
-  "flees" bird: 20 / 1875 / 2. Neither creates a new peak. The Crow's
-  move to passive prey (§3.0) changed **no** spawn number — same row,
-  same `aoc`, same zone.
-- **The four critters of §3.0** (added 2026-08-08) were all authored at
-  the WP6-style **interval 20 / chance 2200 / aoc 2**. The table above
-  prints them **split by zone**, because the 0.75 density cut is a
-  *surface* rule: the two surface rows (**Bone Weevil**, **Bog Fowl** — day,
-  `min 10`, y 0…200) ship at **2933** since Round 26 (2200 ÷ 0.75), while
-  the two `underground`-only rows (**Cave Bat**, **Cave Crawler**) keep their
-  shipped **2200**, since they are excluded from the cut for the same reason the Giant Spider and
-  the Golems are (see the header: cave pressure belongs to §4.1's depth
-  pulse). There is also **one exception that is pure arithmetic**: the
-  **Cave Crawler ships at `aoc` 1**. The underground cell was
-  Zombie 4 + Giant Spider 4 + one Golem 1 = **9 / 9**; two cave critters
-  at 2 each would make it 13 / 13, one over the world night peak of 12,
-  so 2 + 1 lands it exactly on **12 / 12**. The two surface critters
-  raise no cell above 14 against the day peak of 16
-  (`wp6_spawn_budget.md` §2.2). The **Bone Weevil is deliberately ONE
-  entity name with two spawn rows** — `aoc` counts per name, so the bone
-  forest and the blight share its budget of 2 the way the Skeleton
-  Archer's two node lists share theirs, while an `on_spawn` stamp still
-  gives each biome its own tint. Two registrations would have been two
-  budgets.
+The pre-recipe row table that the mob files' `-- §4 row` comments quote, with
+the camp fires' Bandit Archer slot rule and its row notes, is archived in
+[the biomes and mobs history](../archive/design/biomes-mobs-history.md).
 
 Current spawn budgeting retains per-entity-name local caps, throttled spawn
 work (the three merged spawn ABMs above) and separate authored camp/rare
@@ -1339,10 +1226,9 @@ linen, frontier bandit camps for heavy cloth, and mirefolk camps for linen.
 The camp supply is therefore the whole cloth economy, and WP6 ships **12
 deterministic bandit camps**. WP40 migrates them to the catalog's exact two
 per race region: one home-zone linen camp and one frontier heavy-cloth camp
-(`world_zones.md` §8). The
-patch-driven camps of §1.4 — the ones rolled per settlement candidate —
-land with WP13's structure pass and thicken that supply; they do not
-create it.
+(`world_zones.md` §8). Since Round 28 the recipe camps (§4.2), on those camp
+POIs or placed by rule, are the camp populations; [zone_mobs.md](zone_mobs.md)
+lists each zone's camps.
 
 ## 7. Asset shopping list (models; licenses per docs/research/assets/mobs_animals.md — re-verify in source repo before import, AGENTS.md rule)
 

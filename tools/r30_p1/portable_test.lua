@@ -15,10 +15,11 @@
 --      changed (deep comparison with a copy taken when it entered the
 --      cache) and every cache entry equals a fresh decode of its raw string;
 --   M  Q.marker_states: one table for all NPCs, equal to the most urgent
---      row of Q.npc_quests for each; memoized for a second (same table,
---      same version, no holdings scan), refreshed at once by a state change
---      or a quest change callback, after a second by an inventory change;
---      the version rises only when a marker differs;
+--      row of Q.npc_quests for each; memoized (same table, same version, no
+--      holdings scan) until a state change, a quest change callback, the
+--      tracker's held-item signal, a level change or a cooldown's end
+--      (Round 37: no longer for a second only); the version rises only when
+--      a marker differs;
 --   T  NPC tag callback: a parent that is no quest NPC allocates nothing
 --      and asks nothing; a quest NPC asks marker_states once per observer;
 --   H  tracker HUD: the journal is built only when Q.journal_key changes
@@ -27,7 +28,7 @@
 --      over five 0.1 s slots and each is polled once per 0.5 s;
 --   I  markers without a quest change (Round 30 lane P1b): picking up the
 --      last objective item shows the ready marker after the next HUD slot
---      and dropping it takes it back, inside the memo's second; a level-up
+--      and dropping it takes it back; a level-up
 --      unlocks at once; a quiet HUD poll or a non-objective item keeps the
 --      memo (no deserialization, no inventory scan beyond the poll's own);
 --      both tell the minimap to ask its static markers again;
@@ -383,7 +384,7 @@ local function best_row(player, npc)
 end
 -- marker_states equals the most urgent npc_quests row for every NPC.
 local function markers_agree(label)
-	us = us + 1100000 -- past the memo
+	us = us + 1100000 -- the memo outlives a second (Round 37)
 	local states = op("marker_states " .. label, Q.marker_states, ann)
 	local agree = true
 	for _, npc in ipairs({"elder", "hunter", "envoy", "smith"}) do
@@ -422,7 +423,10 @@ states = markers_agree("after accept")
 ann:give("grug_food:raw_meat 2")
 eq(Q.marker_states(ann).elder, "active", "M an inventory change waits for the memo")
 us = us + 1100000
-eq(Q.marker_states(ann).elder, "ready", "M ...and shows after a second")
+eq(Q.marker_states(ann).elder, "active", "M ...also after a second (Round 37)")
+-- the tracker's next poll (hud.lua, five 0.1 s slots) sees the held item
+for _ = 1, 5 do registered.register_globalstep[1](0.1) end
+eq(Q.marker_states(ann).elder, "ready", "M ...and shows after the tracker's poll")
 check(op("turn in intro", Q.turn_in, ann, "intro"), "C turn in intro")
 eq(Q.status(ann, "intro"), "completed", "C completed after the turn-in")
 states = markers_agree("after turn-in")
@@ -457,7 +461,7 @@ do
 	eq(Q.marker_states(ann).envoy, "ready", "M a quest drop (changed callback) shows at once")
 	local _, after = Q.marker_states(ann)
 	check(after > version, "M the version rose with the change")
-	us = us + 1100000
+	Q.markers_changed(ann)
 	local _, later = Q.marker_states(ann)
 	eq(later, after, "M a recompute without a change keeps the version")
 end
@@ -490,10 +494,10 @@ end
 check(op("abandon logs", Q.abandon, ann, "logs"), "C abandon")
 eq(Q.status(ann, "logs"), "available", "C available again after abandoning")
 markers_agree("after abandon")
-level = 5
+level_up(ann, 5)
 markers_agree("level 5")
-eq(Q.marker_states(ann).envoy, "available", "M a level-up unlocks after the memo")
-level = 1
+eq(Q.marker_states(ann).envoy, "available", "M a level-up unlocks at once")
+level_up(ann, 1)
 
 -- The audit itself notices a write into a cached table.
 do

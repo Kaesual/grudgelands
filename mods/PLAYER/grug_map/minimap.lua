@@ -8,7 +8,7 @@
 -- 28 M1, location.lua).
 --
 -- Glide (test variant for the playtest): the arrow stays in the centre and
--- the map moves under it pixel by pixel, every server step. The map is ONE
+-- the map moves under it pixel by pixel. The map is ONE
 -- image element whose texture is the player's grid cell (ruling 9: the
 -- client builds a new texture only on entering a new cell); the element is
 -- moved so the player's own pixel lies at the centre, and an opaque bezel
@@ -17,6 +17,13 @@
 -- are separate elements that move with the map. hud_change sends a packet
 -- on every call, so every element keeps what was last sent and only
 -- differences (whole screen pixels) are sent.
+--
+-- Every server step only the cheap test runs (Round 37, audit CORE-04): the
+-- map and its markers are placed again only when the map moved by a whole
+-- screen pixel, the cell, the markers or the window changed; the party
+-- arrows only then or when a member moved or turned to another of the 16
+-- heading frames. A player standing still with a still party costs one
+-- position read per step.
 
 local atlas = grug_map.atlas
 local layout = grug_core.hud_layout
@@ -27,12 +34,14 @@ grug_map.minimap = M
 -- Ruling 10: a per-player switch on the Map tab, stored in player meta, on
 -- by default.
 local META = "grug_map:minimap_hidden"
--- The map, markers and party members move every server step. The static
+-- The map, markers and party members are checked every server step. The static
 -- markers are asked from their providers when the quest markers change
 -- (grug_quests.markers_changed: a quest change, held objective items, a
--- level), on joining and every SLOW seconds (a repeatable's cooldown ends),
--- each player in its own phase; the ones near the window are picked on each
--- new cell.
+-- level), on joining, and when the SLOW check (every SLOW seconds, each
+-- player in its own phase) finds their key changed: the quest markers'
+-- version (a repeatable's cooldown ends), the home, the discovered
+-- waystones or the faction (Round 37); the ones near the window are picked
+-- on each new cell.
 local SLOW = 5.0
 -- The window size and the location line are read again every WINDOW
 -- seconds, not every step (Round 30, perf review #12): a resize relayouts
@@ -68,9 +77,30 @@ local LOCATION_GAP, LOCATION_COLOR = 4, 0xf0e6c8
 
 local base, view -- set by M.install
 local players = {}
+-- Positions read once per server step (`step`), shared by every party
+-- member's minimap: name -> {step, player, x, z, frame}; the heading frame
+-- is read only when a party arrow needs it.
+local where, step = {}, 0
+local function locate(name, player)
+	local row = where[name]
+	if row and row.step == step then return row end
+	player = player or core.get_player_by_name(name)
+	if not player then return nil end
+	local at = player:get_pos()
+	row = row or {}
+	where[name] = row
+	row.step, row.player, row.x, row.z, row.frame = step, player, at.x, at.z, nil
+	return row
+end
+local function heading(row)
+	if not row.frame then row.frame = atlas.heading_frame(row.player:get_look_horizontal()) end
+	return row.frame
+end
 -- `bytes` estimates what the hud_changes cost on the wire: a reliable
--- TOCLIENT_HUDCHANGE is about 18 bytes of headers plus its value.
-M.stats = {updates = 0, us = 0, changes = 0, bytes = 0, textures = 0}
+-- TOCLIENT_HUDCHANGE is about 18 bytes of headers plus its value. `drawn`
+-- counts the updates that placed the map and markers again, `party` those
+-- that placed the party arrows again.
+M.stats = {updates = 0, us = 0, changes = 0, bytes = 0, textures = 0, drawn = 0, party = 0}
 local function sent(bytes)
 	M.stats.bytes = M.stats.bytes + 18 + bytes
 	return 1
@@ -206,6 +236,10 @@ local function create(player, state)
 	end
 	state.hud, state.cell_x, state.cell_y, state.static = hud, nil, nil, nil
 	state.near, state.box, state.window = nil, nil, nil
+	-- what the map, markers and party arrows were last drawn for
+	state.mx, state.my, state.drawn_near, state.drawn_frame = nil, nil, nil, nil
+	state.party_shown, state.seen, state.members = nil, {}, {}
+	for i = 1, PARTY_SLOTS do state.seen[i] = {} end
 end
 
 -- The markers that do not move by themselves (ruling 8): quest givers with
@@ -224,6 +258,17 @@ local function static_markers(player)
 		end
 	end
 	return result
+end
+
+-- What the static markers depend on besides the faction's fixed service and
+-- giver lists, read without asking the providers: the parts of the Map
+-- tab's signature (page.lua) that are markers.
+local function static_key(player)
+	local _, version = grug_quests.marker_states(player)
+	local home = grug_home.get(player)
+	local parts = {version, home and home.id or "", grug_factions.get_faction(player) or ""}
+	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
+	return table.concat(parts, "|")
 end
 
 -- The other members' names, asked from grug_parties only when the party
@@ -295,55 +340,14 @@ local function update_window(player, state)
 		frame.center_x, frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud)
 end
 
--- `window` asks for the window and location check (every WINDOW seconds).
-local function update(player, state, slow, window)
-	if state.enabled == nil then state.enabled = M.enabled(player) end
-	if not state.enabled then
-		remove(player, state)
-		return 0
-	end
-	if not state.hud then create(player, state) end
-	local hud, changes = state.hud, 0
-	if window or slow or not state.box then
-		changes = changes + update_window(player, state)
-	end
-	local frame = state.frame
-	local pos = player:get_pos()
-	local cx, cy = V.cell(view, pos.x, pos.z)
-	if cx ~= state.cell_x or cy ~= state.cell_y then
-		state.cell_x, state.cell_y = cx, cy
-		state.ox, state.oy = V.origin(view, cx, cy)
-		state.texture = V.texture(view, state.ox, state.oy, M.mask)
-		state.near = nil
-		M.stats.textures = M.stats.textures + 1
-	end
-	if slow or not state.static then
-		state.static, state.near, state.party = static_markers(player), nil, nil
-	end
-	if not state.near then
-		-- the static markers under the cell's texture, in draw order
-		state.near = {}
-		local size = view.texture
-		for _, marker in ipairs(state.static) do
-			local px, py = V.base_pixel(view, marker.x, marker.z)
-			if px >= state.ox and px <= state.ox + size and
-					py >= state.oy and py <= state.oy + size then
-				state.near[#state.near + 1] = marker
-			end
-		end
-	end
-
-	-- The map: texture and position change in the same step, so a new cell
-	-- lines up with the old one to the pixel.
-	local px, py = V.base_pixel(view, pos.x, pos.z)
-	local mx, my = V.map_corner(view, frame, state.cell_x, state.cell_y, px, py)
-	changes = changes + show(player, frame, hud.map, state.texture, mx, my,
+-- The map element and the markers inside the hole, for the map corner
+-- mx/my. The rows are reused from step to step (`state.rows`), so a draw
+-- builds no tables.
+local function draw_map(player, state, frame, mx, my)
+	local hud = state.hud
+	local changes = show(player, frame, hud.map, state.texture, mx, my,
 		exact(frame.drawn, view.pixels, frame))
-
-	-- The markers inside the hole, in rows reused from step to step
-	-- (`state.rows`), so a step builds no tables.
-	local hud_px = frame.hud
-	local limit = frame.hole - ICON / 2 * hud_px
+	local limit = frame.hole - ICON / 2 * frame.hud
 	local rows, visible, count = state.rows, state.visible, 0
 	for index, marker in ipairs(state.near) do
 		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
@@ -375,34 +379,109 @@ local function update(player, state, slow, window)
 	for i = count + 1, MARKER_SLOTS do
 		changes = changes + show(player, frame, hud.markers[i], "")
 	end
+	return changes
+end
 
-	local inside, slot = frame.hole - PARTY_ARROW / 2 * hud_px, 0
+-- The party members' arrows: placed again when the map moved (`moved`) or
+-- a member came, went, moved or turned to another heading frame since the
+-- last draw (`state.seen`, one reused row per slot).
+local function draw_party(player, state, frame, mx, my, moved)
+	local members, seen, slot = state.members, state.seen, 0
+	local same = not moved
 	for _, member in ipairs(party_names(player, state)) do
-		local other = slot < PARTY_SLOTS and core.get_player_by_name(member)
-		if other then
+		local row = slot < PARTY_SLOTS and locate(member)
+		if row then
 			slot = slot + 1
-			local at = other:get_pos()
-			local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
-				at.x, at.z)
-			if distance <= inside then
-				changes = changes + show(player, frame, hud.party[slot],
-					PARTY_TEXTURE[atlas.heading_frame(other:get_look_horizontal())], x, y,
-					PARTY_ARROW / 32)
-			else
-				-- On the bezel, above it and its N plate (a party member due
-				-- north matters more than the letter), filling the ring.
-				local rx, ry, index = V.rim(frame, x - frame.center_x, y - frame.center_y)
-				local ring = frame.diameter / 2 - frame.hole
-				local size = RIM_FILL * ring / RIM_EXTENT
-				changes = changes + show(player, frame, hud.party[slot],
-					RIM_TEXTURE[index], rx, ry, size / (32 * hud_px))
+			members[slot] = row
+			local last, facing = seen[slot], heading(row)
+			if last.name ~= member or last.x ~= row.x or last.z ~= row.z or
+					last.frame ~= facing then
+				last.name, last.x, last.z, last.frame, same = member, row.x, row.z, facing, false
 			end
+		end
+	end
+	if same and slot == state.party_shown then return 0 end
+	state.party_shown = slot
+	M.stats.party = M.stats.party + 1
+	local hud, hud_px, changes = state.hud, frame.hud, 0
+	local inside = frame.hole - PARTY_ARROW / 2 * hud_px
+	for i = 1, slot do
+		local row = members[i]
+		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my, row.x, row.z)
+		if distance <= inside then
+			changes = changes + show(player, frame, hud.party[i], PARTY_TEXTURE[heading(row)],
+				x, y, PARTY_ARROW / 32)
+		else
+			-- On the bezel, above it and its N plate (a party member due
+			-- north matters more than the letter), filling the ring.
+			local rx, ry, index = V.rim(frame, x - frame.center_x, y - frame.center_y)
+			local ring = frame.diameter / 2 - frame.hole
+			local size = RIM_FILL * ring / RIM_EXTENT
+			changes = changes + show(player, frame, hud.party[i], RIM_TEXTURE[index], rx, ry,
+				size / (32 * hud_px))
 		end
 	end
 	for i = slot + 1, PARTY_SLOTS do
 		changes = changes + show(player, frame, hud.party[i], "")
 	end
 	return changes
+end
+
+-- `window` asks for the window and location check (every WINDOW seconds).
+local function update(player, state, slow, window)
+	if state.enabled == nil then state.enabled = M.enabled(player) end
+	if not state.enabled then
+		remove(player, state)
+		return 0
+	end
+	if not state.hud then create(player, state) end
+	local changes = 0
+	if window or slow or not state.box then
+		changes = changes + update_window(player, state)
+	end
+	local frame = state.frame
+	local pos = locate(player:get_player_name(), player)
+	local cx, cy = V.cell(view, pos.x, pos.z)
+	if cx ~= state.cell_x or cy ~= state.cell_y then
+		state.cell_x, state.cell_y = cx, cy
+		state.ox, state.oy = V.origin(view, cx, cy)
+		state.texture = V.texture(view, state.ox, state.oy, M.mask)
+		state.near = nil
+		M.stats.textures = M.stats.textures + 1
+	end
+	if slow then state.party = nil end
+	if slow or not state.static then
+		local key = static_key(player)
+		if not state.static or key ~= state.static_key then
+			state.static, state.static_key, state.near = static_markers(player), key, nil
+		end
+	end
+	if not state.near then
+		-- the static markers under the cell's texture, in draw order
+		state.near = {}
+		local size = view.texture
+		for _, marker in ipairs(state.static) do
+			local px, py = V.base_pixel(view, marker.x, marker.z)
+			if px >= state.ox and px <= state.ox + size and
+					py >= state.oy and py <= state.oy + size then
+				state.near[#state.near + 1] = marker
+			end
+		end
+	end
+
+	-- The map: texture and position change in the same step, so a new cell
+	-- lines up with the old one to the pixel. Nothing to place when the map
+	-- corner, the markers near the cell and the frame are what was drawn.
+	local px, py = V.base_pixel(view, pos.x, pos.z)
+	local mx, my = V.map_corner(view, frame, state.cell_x, state.cell_y, px, py)
+	local moved = mx ~= state.mx or my ~= state.my or state.near ~= state.drawn_near or
+		frame ~= state.drawn_frame
+	if moved then
+		state.mx, state.my, state.drawn_near, state.drawn_frame = mx, my, state.near, frame
+		M.stats.drawn = M.stats.drawn + 1
+		changes = changes + draw_map(player, state, frame, mx, my)
+	end
+	return changes + draw_party(player, state, frame, mx, my, moved)
 end
 
 -- Redraw one player's minimap now (the Map tab's switch, a quest change).
@@ -473,7 +552,8 @@ core.register_on_joinplayer(function(player)
 		rows = {}, visible = {}}
 end)
 core.register_on_leaveplayer(function(player)
-	players[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	players[name], where[name] = nil, nil
 end)
 grug_parties.register_on_change(function(name)
 	local state = players[name]
@@ -492,6 +572,7 @@ end)
 
 core.register_globalstep(function(dtime)
 	if not view then return end
+	step = step + 1
 	for _, player in ipairs(core.get_connected_players()) do
 		local state = players[player:get_player_name()]
 		if state then

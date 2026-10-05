@@ -24,7 +24,11 @@ local function allowed(user, pos)
 	return true
 end
 
+-- Doors, chests and stations take the click first (grug_core.node_rightclick):
+-- a full bucket never pours in front of a chest.
 local function fill(stack, user, pointed)
+	local clicked = grug_core.node_rightclick(stack, user, pointed)
+	if clicked then return clicked end
 	if stack:get_count() ~= 1 or not pointed or pointed.type ~= "node" then
 		return stack
 	end
@@ -40,6 +44,8 @@ local function fill(stack, user, pointed)
 end
 
 local function place(stack, user, pointed)
+	local clicked = grug_core.node_rightclick(stack, user, pointed)
+	if clicked then return clicked end
 	if stack:get_count() ~= 1 or not pointed or pointed.type ~= "node" then
 		return stack
 	end

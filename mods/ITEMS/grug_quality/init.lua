@@ -1018,7 +1018,10 @@ end
 
 local original_equipment_changed = grug_inventory.equipment_changed
 grug_inventory.equipment_changed = function(player, listname, reason)
-	if player and player.get_player_name then
+	-- Pure wear keeps the affix totals: they depend on the broken state only,
+	-- and the breaking use is a full change (grug_inventory.equipment_changed).
+	if player and player.get_player_name and
+			not (reason == "durability_metadata" and listname) then
 		aggregate_cache[player:get_player_name()] = nil
 	end
 	return original_equipment_changed(player, listname, reason)

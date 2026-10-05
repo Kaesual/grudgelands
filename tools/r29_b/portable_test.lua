@@ -188,6 +188,10 @@ local statuses = {}
 local feed_lines = {}
 grug_core = {
 	FLIGHT_CEILING = 600,
+	-- Mirrors grug_core.is_max_hp_clamp (environment_damage.lua; tools/r37_cb).
+	is_max_hp_clamp = function(reason)
+		return reason ~= nil and reason.type == "set_hp" and reason.from == "engine"
+	end,
 	FLASH_COLOR = {error = 1, notice = 2},
 	in_combat = function(player) return combat[player:get_player_name()] == true end,
 	set_status = function(player, id, def) statuses[player:get_player_name()] = def end,

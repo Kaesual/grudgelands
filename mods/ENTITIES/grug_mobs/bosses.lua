@@ -747,8 +747,7 @@ local function warn_dragon(id, row, now, due, pos)
 			end
 		end
 	end
-	core.sound_play("mobs_spell", {pos = pos, gain = 1.0,
-		max_hear_distance = 160}, true)
+	grug_sounds.play("dragon_return", pos)
 	core.add_particlespawner({
 		amount = 180, time = 8,
 		pos = {min = {x = pos.x - 5, y = pos.y, z = pos.z - 5},

@@ -135,6 +135,7 @@ do
 		eligible = function(stack) return stack and not stack:is_empty() and stack:get_name() ~= "test:skill" end,
 		maximum_durability = function() return 3 end,
 		refresh_stack = function() end,
+		refresh_durability = function() end,
 		decorate_description = function(_, description) return description end,
 	}
 	local lists = {grug_weapon = {ItemStack("test:sword")}, grug_offhand = {ItemStack("")},

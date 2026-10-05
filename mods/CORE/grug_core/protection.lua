@@ -43,6 +43,15 @@ function grug_core.natural_ground_alterable(pos)
 		territory == "contested_land"
 end
 
+-- Whether the vendored ground growth (grass spreading onto dirt, moss on
+-- cobble; default/functions.lua) may change pos (Round 37, X-02): the
+-- territory rule above, and never on a road or bridge or in a village, camp,
+-- fortress, war camp or POI core. Claims do not stop it.
+function grug_core.ground_growth_allowed(pos)
+	return grug_core.natural_ground_alterable(pos) and
+		grug_core.world_feature_at(pos) == nil
+end
+
 -- Whether natural renewal (grug_farming/renewal.lua) may place here: the
 -- territory rule plus every natural renewal guard.
 function grug_core.natural_renewal_allowed(pos)

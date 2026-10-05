@@ -82,15 +82,31 @@ end
 -- boss_dragons.lua, Round 31): never soaked by a shield.
 grug_core.DRAGON_WRATH_CUSTOM_TYPE = "grug_mobs:dragon_wrath"
 
+-- The max-HP clamp (Round 37, PLY-02/CMB-06): when hp_max drops below the
+-- current HP (a pool buff expires, gear with +HP % comes off), the engine
+-- itself lowers HP with an engine-origin "set_hp" (read_object_properties,
+-- src/script/common/c_content.cpp:344-347); every mod set_hp carries
+-- from = "mod". grug_classes.apply_stats' own clamp (a join) carries the
+-- custom type below. Neither is damage: no dismount, no interrupted hold, no
+-- shield soaks it.
+grug_core.MAX_HP_CLAMP_CUSTOM_TYPE = "grug_core:max_hp_clamp"
+
+function grug_core.is_max_hp_clamp(reason)
+	return reason ~= nil and reason.type == "set_hp" and (reason.from == "engine" or
+		reason.custom_type == grug_core.MAX_HP_CLAMP_CUSTOM_TYPE)
+end
+
 -- The environmental sources the absorb shield never soaks (ruling 24):
--- fall, engine lava and this file's drowning tick; and the dragon's wrath.
+-- fall, engine lava and this file's drowning tick; the dragon's wrath; and
+-- the max-HP clamp, which is no damage at all.
 function grug_core.bypasses_absorb(reason)
 	if not reason then
 		return false
 	end
 	return reason.type == "fall" or reason.type == "drown" or
 		grug_core.is_engine_lava_damage(reason) or
-		reason.custom_type == grug_core.DRAGON_WRATH_CUSTOM_TYPE
+		reason.custom_type == grug_core.DRAGON_WRATH_CUSTOM_TYPE or
+		grug_core.is_max_hp_clamp(reason)
 end
 
 -- Mirrors the engine's drowning condition (src/server/player_sao.cpp:154-170):

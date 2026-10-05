@@ -596,8 +596,10 @@ end)
 
 -- Ghost icons mirror slot occupancy, so an equipment change re-renders an
 -- open Character page (inventory_equipment.md §1). Rare event; refresh()
--- itself no-ops on any other page.
-grug_core.register_on_equipment_change(function(player, listname)
+-- itself no-ops on any other page. Pure wear changes nothing the page shows
+-- (the slots' wear bars and tooltips update with the list itself).
+grug_core.register_on_equipment_change(function(player, listname, reason)
+	if reason == "durability_metadata" then return end
 	grug_inventory.refresh(player)
 end)
 
