@@ -113,8 +113,10 @@ player protection is never consulted. Each class keeps its
 own writer's claim exclusions: resource plants the full territory rule
 (settlements, POIs with their collars, start and capital blend envelopes,
 roads, inland water and water banks; shoreline species ignore the bank,
-gathering sources the dry island coast envelopes), ground cover and trees the decoration rule (the planner's vegetation
-exclusions and road corridors; banks allowed). Cave plants follow the
+gathering sources the dry island coast envelopes), trees and shrubs the decoration rule (the planner's vegetation
+exclusions and road corridors; banks allowed), ground cover the same rule with
+the seeded share of a start's or capital's treeless band open (Round 36 W3;
+the band itself is a town and never renews). Cave plants follow the
 generator's own cave rule (`r6_settlement.lua` `r30_cave_limit`): they stay
 out of occupied ground and of planned-water and coast shapes, and below a
 town's or POI's protected floor (placement height − 100, Round 24 ruling

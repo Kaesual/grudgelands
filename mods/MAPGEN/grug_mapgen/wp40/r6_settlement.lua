@@ -1095,7 +1095,10 @@ local function settlement_factory()
 		-- engine's own schematics (mg_schematic.cpp blitToVManip): a non-force
 		-- cell (a leaf) that would hit ground is skipped instead of rejecting
 		-- the whole bush, so the shrub band survives on slopes. Force-placed
-		-- cells (the stem) keep the full rule.
+		-- cells (the stem) keep the full rule. The one-node ground cover is
+		-- checked against the "cover" exclusion purpose, which opens a share of
+		-- a start's or capital's bare band (Round 36 W3, habitat_registry.lua
+		-- band_cover); every other row against "vegetation".
 		do
 			local rule = content.vegetation_rule(full_seed, planner_source)
 			for index = 1, #decorations do
@@ -1103,6 +1106,7 @@ local function settlement_factory()
 				local class = rule.decoration_class(row)
 				row.partial_leaves = row.kind == "template" and
 					(class == "shrub" or class == "shrub_band") or nil
+				row.plant_purpose = rule.band_cover(row) and "cover" or "vegetation"
 			end
 		end
 		local projection = content.wp43_projection()
@@ -1155,7 +1159,8 @@ local function settlement_factory()
 		-- D78: the 128-node pad and a bare 12-node band, the same shape as its
 		-- envelope), as do the road corridors, planned water and the coast
 		-- projection, so the pad, the band, the blueprint volume and the road
-		-- surfaces stay clear.
+		-- surfaces stay clear. Ground cover passes "cover", which also opens a
+		-- hashed share of the start's or capital's band (Round 36 W3).
 		local function static_exclusion_reason(x, z, purpose)
 			local _, id = horizontal.static_exclusion_values_at(x, z, purpose)
 			if not id then return nil end
@@ -1176,7 +1181,7 @@ local function settlement_factory()
 		local function exclusion_reason(x, z, purpose)
 			local reason, id = static_exclusion_reason(x, z, purpose)
 			if reason then return reason, id end
-			if purpose == "vegetation" then
+			if purpose == "vegetation" or purpose == "cover" then
 				if planner_source.overlay_exclusion_at(x, z) == "road_corridor" then
 					return "route_or_water", overlay_exclusion_id.road_corridor
 				end
@@ -1954,7 +1959,7 @@ local function settlement_factory()
 							for z = candidate.z + min_fz, candidate.z + max_fz do
 								for y = candidate.y + min_fy, candidate.y + max_fy do
 									for x = candidate.x + min_fx, candidate.x + max_fx do
-										local excluded = exclusion_reason(x, z, "vegetation")
+										local excluded = exclusion_reason(x, z, row.plant_purpose)
 										if excluded then flags[excluded] = true end
 										local occupant = occupied[occupied_key(x, y, z)]
 										if occupant == 1 then flags.occupied_collision = true
@@ -3220,7 +3225,8 @@ local function settlement_factory()
 											if original_data[index] == contract.ignore_cid then
 												flags.content_ignore = true
 											end
-											local excluded = helpers.exclusion_reason(x, z, "vegetation")
+											local excluded = helpers.exclusion_reason(x, z,
+												row.plant_purpose)
 											if excluded then flags[excluded] = true end
 											if occupancy[index] == 1 then flags.occupied_collision = true
 											elseif occupancy[index] >= 2 and

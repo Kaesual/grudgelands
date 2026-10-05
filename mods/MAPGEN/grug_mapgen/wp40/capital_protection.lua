@@ -31,8 +31,9 @@ local M = {}
 -- the wall line; turrets (radius 5) and wall faces (half 2-3) reach less
 -- (`capital_planner.lua` M.EDGE, `wp13/city_edge.lua`).
 M.EDGE_REACH = 9
--- The band beyond that structure (D76: 10-20 nodes): no trees, no ground
--- cover, so a player sees where the protection ends. With the reach above it
+-- The band beyond that structure (D76: 10-20 nodes): no trees, so a player
+-- sees where the protection ends; since Round 36 W3 a share of it grows the
+-- zone's ground cover, thinning toward the wall. With the reach above it
 -- lies 21 from the wall line: ~12 beyond a gatehouse corner, 16 beyond a
 -- turret, 17.5-18.5 beyond a wall face.
 M.BAND = 12
@@ -196,6 +197,29 @@ function M.build(layout, lake)
 		end
 		return false
 	end
+	-- The squared distance of a world column's centre from the inside rows
+	-- (the measure the band dilation above uses: a column is a member exactly
+	-- when it is at most `reach` squared), 0 inside, nil beyond `reach`.
+	-- Ground cover in the band asks it (Round 36 W3, `simple_map.lua`
+	-- band_cover); `edge_reach` and `band` say where the band lies.
+	function shape.distance2(x, z)
+		local lx, lz = x - AX, z - AZ
+		local best
+		for dz = -reach, reach do
+			local xs = inside[lz + dz]
+			if xs then
+				for i = 1, #xs, 2 do
+					local dx = xs[i] - lx
+					if dx < 0 then dx = max(lx - xs[i + 1], 0) end
+					local d2 = dx * dx + dz * dz
+					if best == nil or d2 < best then best = d2 end
+				end
+			end
+		end
+		if best ~= nil and best <= reach * reach then return best end
+		return nil
+	end
+	shape.edge_reach, shape.band = M.EDGE_REACH, M.BAND
 	-- inside the wall line or the civic lake (the band excluded)
 	function shape.inside(x, z)
 		local xs = inside[z - AZ]

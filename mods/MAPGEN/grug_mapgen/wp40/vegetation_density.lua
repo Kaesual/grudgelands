@@ -408,10 +408,12 @@ return function(deps)
 	end
 
 	-- Whether the writer keeps a column's planned surface bare of vegetation
-	-- (r6_planner.lua `p7_support`): an anchor platform, any land grade
-	-- except a dry anchor grade outside the vegetation exclusion (the natural
-	-- skin around starts and capitals), a sealed river or lake column, and a
-	-- surface cave mouth cutting the planned surface.
+	-- (r6_planner.lua `p7_support` and `cover_support`): an anchor platform,
+	-- any land grade except a dry anchor grade outside the "cover" exclusion
+	-- (the natural skin around starts and capitals, and since Round 36 W3 the
+	-- hashed share of their bare band that grows ground cover only), a sealed
+	-- river or lake column, and a surface cave mouth cutting the planned
+	-- surface.
 	local function writer_bare(x, z, terrain_y, water_y, river_id,
 			functional_kind, functional_feature_id)
 		if river_id ~= nil then return true end
@@ -420,7 +422,7 @@ return function(deps)
 			local dry_anchor_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
 				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and not wet and
-				deps.static_exclusion_values_at(x, z, "vegetation") == nil
+				deps.static_exclusion_values_at(x, z, "cover") == nil
 			if not dry_anchor_grade then return true end
 		end
 		local cave_low, cave_high = deps.surface_cave_run_at(x, z)
@@ -462,9 +464,10 @@ return function(deps)
 	--    shore (true for a shoreline row), divisor (tree and shrub: marker
 	--    columns per plant)}.
 	-- Each class keeps its own writer's claim exclusions: resources the full
-	-- territory rule, decorations the "vegetation" rule (road
-	-- corridors too, water banks not). Cave rows follow the writer's "cave"
-	-- rule. Round 24 ruling 30 addendum (optional deps, all or none):
+	-- territory rule, trees and shrubs the "vegetation" rule, ground cover the
+	-- "cover" rule (road corridors too, water banks not; Round 36 W3: a share
+	-- of a start's or capital's bare band). Cave rows follow the writer's
+	-- "cave" rule. Round 24 ruling 30 addendum (optional deps, all or none):
 	-- `cave_limit` is the writer's own column rule (r6_settlement.lua
 	-- `r30_cave_limit`, with `protected_floor_at`),
 	-- so cave rows regrow exactly where the generator places them, below a
@@ -499,7 +502,7 @@ return function(deps)
 			return nil, "writer_bare"
 		end
 		if not cave and (light or 0) < M.SURFACE_MIN_LIGHT then return nil, "dark" end
-		local overlay, territory_id, vegetation_excluded
+		local overlay, territory_id, vegetation_excluded, cover_excluded
 		local below_floor, below_floor_p9g = false, false
 		if not cave then
 			overlay = deps.overlay_exclusion_at(x, z)
@@ -512,6 +515,8 @@ return function(deps)
 			end
 			vegetation_excluded = overlay == "road_corridor" or
 				deps.static_exclusion_values_at(x, z, "vegetation") ~= nil
+			cover_excluded = overlay == "road_corridor" or (vegetation_excluded and
+				deps.static_exclusion_values_at(x, z, "cover") ~= nil)
 		end
 		local values = {x = x, y = y, z = z, zone = zone, biome = biome,
 			terrain_y = terrain_y, support = support,
@@ -542,13 +547,15 @@ return function(deps)
 		-- skips it; the cap's snowblock is no host anyway).
 		if not cave and terrain_y >= 1 and
 				rule.snow_class(x, z, terrain_y, biome, zone) == 0 then
-			if vegetation_excluded then
+			if cover_excluded then
 				excluded = true
 			else
 				local factors = {rule.factors(x, z, terrain_y, biome, zone)}
 				result[#result + 1] = decoration_category("cover", cover[biome], values,
 					factors)
-				if (light or 0) >= M.WOODY_MIN_LIGHT then
+				if vegetation_excluded then
+					excluded = true
+				elseif (light or 0) >= M.WOODY_MIN_LIGHT then
 					result[#result + 1] = decoration_category("tree", tree[biome], values,
 						factors)
 					result[#result + 1] = decoration_category("shrub", shrub[biome], values,

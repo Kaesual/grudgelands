@@ -61,11 +61,14 @@ return function(zone_field)
 		-- A start town (plan D78): the pad, a centred half-open square of even
 		-- width `pad`, and every column within `band` of it (true distance
 		-- between column centres, so the corners are rounded quarter circles).
-		local function start_town_member(x, z, center, pad, band)
+		local function start_town_distance2(x, z, center, pad)
 			local half = pad / 2
 			local ex = max(center.x - half - x, x - (center.x + half - 1), 0)
 			local ez = max(center.z - half - z, z - (center.z + half - 1), 0)
-			return ex * ex + ez * ez <= band * band
+			return ex * ex + ez * ez
+		end
+		local function start_town_member(x, z, center, pad, band)
+			return start_town_distance2(x, z, center, pad) <= band * band
 		end
 
 		local function point_on_segment(x, z, a, b)
@@ -499,13 +502,15 @@ return function(zone_field)
 				elseif recipe == "exclude_active_core_v1" and
 						hard_recipe_by_id[record.recipe_id].shape == "capital_city_outline" then
 					-- A capital's protected city (plan D76): every purpose refuses
-					-- it, vegetation included, so the band stays bare.
+					-- it, vegetation included, so the band grows no trees; "cover"
+					-- opens a share of the band to ground cover (Round 36 W3).
 					shape.kind = "capital_city" shape.anchor_id = record.source_anchor_id
 					shape.center = record.center
 				elseif recipe == "exclude_active_core_v1" and
 						hard_recipe_by_id[record.recipe_id].shape == "start_town_outline" then
 					-- A start town (plan D78): every purpose refuses it, vegetation
-					-- included, so the band stays bare.
+					-- included, so the band grows no trees; "cover" opens a share
+					-- of the band to ground cover (Round 36 W3).
 					shape.kind = "start_town" shape.center = record.center
 				elseif recipe == "exclude_active_core_v1" then
 					shape.kind = "square" shape.center = record.center
@@ -565,10 +570,51 @@ return function(zone_field)
 				return false
 			end
 
+			-- Ground cover in the bare band round a start town or a capital
+			-- (Round 36 W3, the "cover" purpose): the band keeps no trees, but a
+			-- seeded column hash admits a share of its columns to the one-node
+			-- ground cover (habitat_registry.lua band_cover), rising from a third
+			-- at the band's inner edge to all at its outer edge, so the cover
+			-- thins toward the town and runs on into the zone's own beyond.
+			-- `d2` is the column's squared distance from the pad or the wall
+			-- line, the band runs from `inner` to `inner + band`.
+			local cover_salt = 0
+			for index = 1, #full_seed_string do
+				cover_salt = (cover_salt * 131 + string.byte(full_seed_string, index)) % 1048573
+			end
+			local function band_cover_admits(x, z, d2, inner, band)
+				if d2 <= inner * inner then return false end
+				local h = (x * 83492791 + z * 50331653 + cover_salt) % 1048573
+				h = (h * h + 40503) % 1048573
+				h = (h * h + 7919) % 1048573
+				-- admitted with share (band + 2 (d - inner)) / (3 band)
+				local t = inner + band * (3 * h / 1048573 - 1) / 2
+				return t <= inner or d2 > t * t
+			end
+			local function band_cover(shape, x, z)
+				if shape.kind == "start_town" then
+					return band_cover_admits(x, z,
+						start_town_distance2(x, z, shape.center, START_PAD), 0, START_BAND)
+				elseif shape.kind == "capital_city" then
+					local city = capital_protection.shapes[shape.anchor_id]
+					if type(city.distance2) ~= "function" then
+						fail("capital protection distance missing: " .. tostring(shape.anchor_id))
+					end
+					-- inside the wall line distance2 is 0 and never admits;
+					-- skip its row scan there
+					if city.inside(x, z) then return false end
+					local d2 = city.distance2(x, z)
+					return d2 ~= nil and band_cover_admits(x, z, d2, city.edge_reach,
+						city.band)
+				end
+				return false
+			end
+
 			local function static_exclusion_values_at(x, z, purpose)
 				local grid_row = exclusion_grid[floor(z / exclusion_cell)]
 				local candidates = grid_row and grid_row[floor(x / exclusion_cell)] or nil
 				if not candidates then return nil end
+				local plants = purpose == "vegetation" or purpose == "cover"
 				for index = 1, #candidates do
 					local shape = candidates[index]
 					if purpose == "cave" and shape.cave_core_width and
@@ -579,18 +625,19 @@ return function(zone_field)
 					elseif purpose == "cave" and shape.cave_dry_coast and
 							classification_values_at(x, z) == "land" then
 						-- Island/channel coast claims do not occupy their dry interior.
-					elseif shape.anchor_blend and purpose == "vegetation" then
+					elseif shape.anchor_blend and plants then
 						-- Skipped: the remaining shapes in this bucket still answer.
-					elseif purpose == "vegetation" and shape.vegetation_radius and
+					elseif plants and shape.vegetation_radius and
 							(x - shape.center.x) * (x - shape.center.x) +
 							(z - shape.center.z) * (z - shape.center.z) >
 							shape.vegetation_radius * shape.vegetation_radius then
 						-- Skipped: outside a dragon arena's round floor.
-					elseif purpose == "vegetation" and shape.vegetation_width and
+					elseif plants and shape.vegetation_width and
 							not in_centered_half_open_square(x, z, shape.center,
 								shape.vegetation_width, 0) then
 						-- Skipped the same way: outside a POI's core and margin.
-					elseif in_rectangle(x, z, shape.bounds, 0) and shape_member(shape, x, z) then
+					elseif in_rectangle(x, z, shape.bounds, 0) and shape_member(shape, x, z) and
+							not (purpose == "cover" and band_cover(shape, x, z)) then
 						return shape.numeric_id, shape.id
 					end
 				end
@@ -731,11 +778,14 @@ return function(zone_field)
 
 			-- `purpose`: nil is the territory rule (every exclusion answers);
 			-- "vegetation" skips the start/capital claim envelopes (their hard
-			-- cores, the same town or city, still answer) and POI collars; "cave"
-			-- skips terrain fitting outside building cores and dry island
-			-- interiors.
+			-- cores, the same town or city, still answer) and POI collars;
+			-- "cover" (the one-node ground cover, Round 36 W3) is "vegetation"
+			-- with the hashed share of a start's or capital's bare band open
+			-- (`band_cover` above); "cave" skips terrain fitting outside building
+			-- cores and dry island interiors.
 			function session.static_exclusion_values_at(x, z, purpose)
-				if purpose ~= nil and purpose ~= "vegetation" and purpose ~= "cave" then
+				if purpose ~= nil and purpose ~= "vegetation" and purpose ~= "cover" and
+						purpose ~= "cave" then
 					fail("static exclusion purpose differs")
 				end
 				if not in_rectangle(x, z, QUERY_BOUNDS, 0) then return nil end

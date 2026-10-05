@@ -92,10 +92,15 @@ blueprints are unchanged by them.
   rule an ordinary road carries ([world.md](world.md) §2 R1b).
 - **The start town's surroundings (Round 22 D78, 2026-09-27).** Replaces the
   blend-ring and apron rules of 2026-09-14/15. The protected band round the
-  pad (12 nodes, rounded corners) grows no trees and no ground cover, so
-  players see where the protection ends; right beyond it the biome's trees,
-  plants and ground cover grow normally, and resources and caves follow the
-  zone's ordinary rules (starting zones hold no claims). The band carries the
+  pad (12 nodes, rounded corners) grows no trees, bushes or resource plants,
+  so players see where the protection ends; since Round 36 (W3, the user's
+  playtest: the bare ring looked odd) it grows the zone's own one-node ground
+  cover (grass, ferns, dry grass, junglegrass, dry shrubs, bone piles) on a
+  seeded share of its columns that rises from a third at the pad to all at
+  the band's edge, so the cover thins toward the town; never on the pad, a
+  road or its corridor. Right beyond the band the biome's trees, plants and
+  ground cover grow normally, and resources and caves follow the zone's
+  ordinary rules (starting zones hold no claims). The band carries the
   town's own ground (the pad's ground node of its race palette) 2–10 nodes out from the
   pad along a smooth noise outline with a dithered edge, then the biome's
   surface, so no straight edge or corner of the pad shows. The same world
