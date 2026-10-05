@@ -426,7 +426,7 @@ for _, ach in ipairs(book.achievements) do
 	local c = ach.counter
 	local ok = c == "kill:animal" or c == "kill:zombie" or c:find("^boss:") or
 		c:find("^pvp:guards$") or c == "craft:cooking" or c == "craft:alchemist" or
-		c == "death:fall"
+		c == "death:fall" or c:find("^quest:[a-z][a-z0-9_]*$") or c:find("^quest_tag:[a-z][a-z0-9_]*$")
 	local family = c:match("^kill:family:(.+)$")
 	local group = c:match("^kill:group:(.+)$")
 	local rare = c:match("^kill:rare:(.+)$")

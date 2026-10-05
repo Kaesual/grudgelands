@@ -7,7 +7,9 @@ Round 28 questing redesign, 2026-10-01 (rulings 29, 39–45;
 and quest copper by Round 29 Lane Q1, 2026-10-02
 ([quests plan](../planning/round29-quests-plan.md) §3–4); the Round 29
 quest files and the front bounty baseline
-([round plan](../planning/round29-plan.md#completion-2026-10-02)).
+([round plan](../planning/round29-plan.md#completion-2026-10-02)); the "use at
+a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
+2026-10-05 ([plan](../planning/round36-plan.md) §2.5, §2.7).
 
 
 ### Confirmed by the user
@@ -31,13 +33,16 @@ quest files and the front bounty baseline
   longest title at a full-HD window; quest texts are read-only (Round 35).
 - A quest HUD toggle lives in this tab, defaults on and is saved per player.
   No active quests means no quest HUD, without changing the saved preference.
-- Objective families are **item turn-in**, **kill** and **travel**
-  (conversation); see "Objectives" below. A crafting lesson requests the
-  resulting item, never provenance. Travel handoffs contain exactly one
+- Objective families are **item turn-in**, **kill**, **travel**
+  (conversation) and, since Round 36, **use at a place** (a quest object
+  held at a place; user ruling 2026-10-05, round36-plan §2.5); see
+  "Objectives" below. A crafting lesson requests the resulting item, never
+  provenance. Travel handoffs contain exactly one
   conversation with the named destination NPC, who also accepts the turn-in.
   No hidden item, secondary errand, arrival-radius check or return trip. The
   ordinary Complete button at the destination awards rewards. No crafting,
-  mining, node-interaction, arrival or escort objective engine exists.
+  mining, node-digging, arrival or escort objective engine exists; "use at
+  a place" writes no node (its object is an entity).
 - Kill credit uses the same per-mob damage/effective-healing participation and
   eligibility mechanism as shared XP, never a killing-blow test and never
   party membership. Players from different parties are not a special case.
@@ -166,7 +171,7 @@ quests like every front quest.
 
 Progress appears in the message feed (`inventory_equipment.md`, "Message
 feed"): whenever an objective count rises (kill credit, an item gained, a
-conversation), the quest posts one line with every objective as
+conversation, a finished use), the quest posts one line with every objective as
 "<name> n/m" ("Small Boar 3/10"), replacing that quest's previous line.
 Accepting a quest and falling item counts post nothing; nothing goes to chat.
 
@@ -231,6 +236,42 @@ instead of 2.
 - **Travel**: one conversation, the quest's only objective, credited on
   accept (Ruling 39): the destination NPC shows its yellow "?" at once and the
   HUD reads "Travel to <NPC>". The turn-in still needs the visit.
+- **Use at a place** (Round 36, round36-plan §2.5): the player goes to a
+  place and holds an interaction there. The objective names the `place`, the
+  `object` kind shown there, the act's `label` ("Light the signal fire") and
+  its `hold` (whole seconds, 1–15); it counts once (`count` 1 or left out).
+  - **Place:** a clash site by its settlement key (`r20_anchor_071` …
+    `r20_anchor_086`, world_zones.md §16: Ashenward March, Bannerbreak Mesa,
+    the four Battlegrounds zones and both islands), or a quest place of a
+    spawn recipe, `zone_id/place_id` (a bare id: the quest file's zone),
+    placed per seed like a kind leader ([spawn_regions.md](spawn_regions.md)
+    step 8 and `places`); the four contested zones without a clash site have
+    one each. No mapgen writes.
+  - **Quest object:** an entity at the place, added while a player who still
+    needs the objective is within 48 nodes (the active-block reach) and seen
+    only by such players (`set_observers`); several players with the quest
+    see and use the same object, the last one leaving removes it, it is
+    never saved. It stands on walkable ground under open air (grass and
+    flowers allowed) at the place, the n-th act at one place 2 nodes beside
+    the first. Its nametag is the label. The object's look is a kind of
+    `grug_quests/data/use_objects.json` (one texture and a size per kind,
+    the one place the texture names live; today placeholders for
+    `signal_fire`, `banner`, `burnt_mark`). Combat rays of players who do not
+    see it pass through it.
+  - **The hold:** a right-click within 5 nodes starts it, the message feed
+    counts the seconds ("Light the signal fire: 2/3 s"); letting go of the
+    button, stepping more than 5 nodes away or the object vanishing stops it
+    ("stopped.", "too far away."), any damage interrupts it ("interrupted.").
+    A finished hold credits that player only, every active quest of theirs
+    with the same place, object and label at once, and hides the object from
+    them. Labels: "Light the signal fire at Saltgate Remnant" in the
+    dialogue, the quest log and the HUD; "Light the signal fire 0/1" in the
+    feed's compact line.
+  - Checks: an unknown place (`E-use-place`) or object kind
+    (`E-use-object`), a hold outside 1–15 s, a count other than 1, a missing
+    label, and kill or item fields on it (or its fields on another kind) stop
+    the load (`E-objective`). The ledger counts no XP for it: the trip and
+    the hold are the quest's time, paid by its reward weight.
 - **Several objectives per quest**: the dialogue and the quest log show one
   line per objective, the HUD one compact line.
 - **Quest-only drops** (`quest_drops`): an item that drops only while the
@@ -269,7 +310,8 @@ Quest content is data, one file per zone, read at load by
   `min_level`, reward `level`, `requires` across zones, `objectives`,
   `quest_drops`, `repeatable`, `rewards` with `weight`, optional `copper`
   and `items`; the design notes `lesson`, `duration_min`, `optional`,
-  `climax`, `group` and `notes` are allowed and not read). Any other field
+  `climax`, `group` and `notes` are allowed and not read; `tags`, Round 36,
+  is a list of snake_case names the achievements count, below). Any other field
   of a quest, an objective, its rewards or a quest drop stops the load
   (`E-unknown-key`): fixed reward `xp`, `faction`/`race` gates and kill
   objectives by entity names (`mobs`) or zone filter (`zone`) were retired
@@ -291,6 +333,20 @@ Quest content is data, one file per zone, read at load by
   design files, plus the atlas checks.
 - Item objectives allocate held items exact items first, then groups; the
   turn-in takes exactly what the progress counted.
+- **Chapter chains** (Round 36): `requires` crosses files, and a quest whose
+  `min_level` is below a prerequisite's opens only at the prerequisite's
+  level, so its shown gate would be wrong: `validate.py` warns
+  (`W-chain-gate`; two shipped bounties carry it, one level apart). The
+  main line's chapter gates (41, 46, 53, 60) follow from it.
+- **Turn-in hook and tags** (Round 36): `grug_quests.register_on_turn_in(fn)`
+  calls `fn(player, quest_id, def)` once per completed turn-in (a
+  repeatable at each), after the state and the rewards are stored; a refused
+  turn-in calls nothing, and a failing observer keeps neither the others nor
+  the turn-in from completing. `grug_achievements` counts through it
+  `quest:<quest id>` (that quest's turn-ins; a one-time quest's achievement
+  has `at = 1`) and `quest_tag:<tag>` (turn-ins of quests whose `tags` list
+  it), each only while an achievement asks for it
+  ([character_visuals.md](character_visuals.md) §5b).
 - **Zone files depend on each other.** `requires` crosses
   zones: a race's home-zone file requires quests of its start zone, and a
   front file needs its host's `front` line. Removing a required quest or a host's `front` line
@@ -315,11 +371,14 @@ regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
 | `{zone_area:T}` | "in the southeast of Dawnmere Fields", "in the heart of Dawnmere Fields" | open kinds spread over many patches |
 | `{name:T}` | "Dawnmere Meadows", "Crumb" | the display name of a kind, camp or leader |
 
-- `T` is a kind or camp of a spawn recipe, a leader role or a PvP POI (a
-  fortress or Battlegrounds camp by its settlement key, Round 31). A bare id
-  means the quest file's zone; another zone's kind or camp is written
-  `zone_id/id` (`{zone_area:elandor_whitebridge_shire/oakwood}`); a
-  leader role and a PvP POI are found in any zone. A PvP POI reads its label
+- `T` is a kind or camp of a spawn recipe, a leader role, a PvP POI (a
+  fortress or Battlegrounds camp by its settlement key, Round 31), or a
+  place of a "use at a place" objective (Round 36: a recipe's quest place,
+  `{name:snowfield_cairn}` "Snowfield Cairn", or a clash site by its key,
+  `{name:r20_anchor_076}` "Saltgate Remnant"). A bare id
+  means the quest file's zone; another zone's kind, camp or quest place is
+  written `zone_id/id` (`{zone_area:elandor_whitebridge_shire/oakwood}`); a
+  leader role, a PvP POI and a clash site are found in any zone. A PvP POI reads its label
   (`{name:pvp_fortress_accord}` "Ashenward Bastion") and points at its
   anchor.
 - `P` is a settlement key or anchor id: `highcourt`, `goldmead_village`,

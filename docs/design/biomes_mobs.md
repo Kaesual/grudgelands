@@ -1114,7 +1114,7 @@ gate, protected surface).
   either `palette` (the zone's named-zone palette of §4 /
   `world_zones.md` §8 as data: `families`, Lorindor's `exact_mobs` and
   `night_fallback`, the zone's `boar` tint and its `lookalikes` per family)
-  or `recipe` (belts, kinds, camps, leaders, critters). A missing file means
+  or `recipe` (belts, kinds, camps, leaders, quest places, critters). A missing file means
   no palette and no recipe; a file without a recipe needs its palette (the
   load fails otherwise).
 - **Trigger:** a zone without a recipe keeps its palette and the level field

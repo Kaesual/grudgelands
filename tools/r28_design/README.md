@@ -99,7 +99,7 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   `E-placeholder` (a brace outside a well-formed placeholder, an unknown
   placeholder, a wrong argument count, a direction placeholder in a title),
   `E-placeholder-target` (not a kind or camp of the zone's recipe, a
-  leader or a PvP POI), `E-placeholder-place` (not a settlement key or anchor id; with
+  leader, a quest place, a clash site or a PvP POI), `E-placeholder-place` (not a settlement key or anchor id; with
   `--atlas`), `W-placeholder-spread` (`{dir_from_giver:...}` on an open kind),
   `E-compass` (a fixed compass word in a title or text). The game checks the
   same at load (`grug_quests/validate.lua`).
@@ -165,6 +165,16 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   targets are met only in another zone under another name. An item
   objective's named source must drop that item in a band of the levels it is
   met at (`E-item-source-drop`).
+- "Use at a place" objectives (Round 36, as `grug_quests/validate.lua`):
+  `E-use-place` (the place is no clash site key `r20_anchor_071`…`086` and
+  no recipe quest place `zone/id`, a bare id the file's zone),
+  `E-use-object` (not a kind of `grug_quests/data/use_objects.json`),
+  `E-objective` (a hold outside 1–15 whole seconds, a count other than 1,
+  no label, kill or item fields on it, or its fields on another kind).
+  Recipe `places` (`id`, `name`, `at` `{kind, pick}`) are checked like kind
+  leaders (`E-recipe`, `E-recipe-ref`, `E-recipe-key`). Quest `tags` are a
+  list of distinct snake_case names (`E-tags`). `W-chain-gate`: a quest's
+  `min_level` below a prerequisite's (its shown gate would be wrong).
 - Leaders: a kill objective or quest drop on a leader role finds the leader
   in the zone's recipe `leaders`, else in any zone's (leader roles are
   unique), and uses its computed level; it names no area (`E-leader-area`),
