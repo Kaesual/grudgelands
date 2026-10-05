@@ -55,23 +55,27 @@ end
 
 -- The dragon's push (Round 36, the wing gust and the dive's slam): a player
 -- in the air brakes at the engine's default air acceleration (AIR_BRAKE nodes
--- per s², Luanti `movement_acceleration_air`), so a push of `speed` carries
--- him speed² / (2 * AIR_BRAKE) nodes; slowed to SLOW_FLOOR he brakes less and
--- slides 1 / SLOW_FLOOR as far. The push never carries even such a player
--- beyond radius - PUSH_EDGE (the hazards' edge margin), so nobody is pushed
--- out of the arena into the wrath or over the floor's outer edge.
+-- per s², Luanti `movement_acceleration_air`) times his own physics
+-- override's `speed` and `acceleration_air` (localplayer.cpp: incH * speed),
+-- so a push of `speed` carries him speed² / (2 * AIR_BRAKE * brake) nodes.
+-- The push never carries him beyond radius - PUSH_EDGE (the hazards' edge
+-- margin), so nobody is pushed out of the arena into the wrath or over the
+-- floor's outer edge; SLOW_FLOOR more covers a slow that lands during the
+-- flight.
 M.AIR_BRAKE, M.SLOW_FLOOR, M.PUSH_EDGE = 20, 0.6, 4
 
--- How far a push of `speed` (nodes per second) carries an unslowed player.
-function M.push_travel(speed)
-	return speed * speed / (2 * M.AIR_BRAKE)
+-- How far a push of `speed` (nodes per second) carries a player whose
+-- braking factor is `brake` (1, or nil: unslowed).
+function M.push_travel(speed, brake)
+	return speed * speed / (2 * M.AIR_BRAKE * (brake or 1))
 end
 
 -- The velocity that pushes a player at `pos` away from `origin` (horizontal,
 -- plus `lift` upward), weakened so he stays inside the arena; nil when there
--- is no direction or less than one node of room is left. `arena` nil: the
--- full push.
-function M.push(arena, origin, pos, speed, lift)
+-- is no direction or less than one node of room is left. `brake`: the
+-- player's live braking factor (physics override speed x acceleration_air;
+-- nil: 1). `arena` nil: the full push.
+function M.push(arena, origin, pos, speed, lift, brake)
 	if not origin or not pos then return nil end
 	local dx, dz = pos.x - origin.x, pos.z - origin.z
 	local length = math.sqrt(dx * dx + dz * dz)
@@ -87,7 +91,8 @@ function M.push(arena, origin, pos, speed, lift)
 		local c = px * px + pz * pz - limit * limit
 		local room = 0
 		if c < 0 then room = -b + math.sqrt(b * b - c) end
-		room = room * M.SLOW_FLOOR
+		-- In nodes an unslowed player would travel: less for a slower one.
+		room = room * M.SLOW_FLOOR * math.max(0, math.min(1, brake or 1))
 		if room < 1 then return nil end
 		local travel = M.push_travel(speed)
 		if room < travel then scale = math.sqrt(room / travel) end

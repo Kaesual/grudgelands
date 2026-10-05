@@ -685,7 +685,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   due `ICE_BREAK_DELAY` (1 s) later, keyed server-wide by node position, a
   pending node never reset or postponed; `ice_due` pops the events that are
   due; since Round 36 `push`, the velocity of the wing gust and the dive's
-  slam, weakened so that even a slowed player stays within radius − 4);
+  slam, weakened by the player's live braking so that he stays within
+  radius − 4; `boss_dragons.lua` turns the engine's punch knockback off for
+  the slam's hit through a `core.calculate_knockback` wrapper);
   `boss_dragons.lua` applies them (one `ice_break` sound per event):
   `_grug_target_veto` (a hook in the `init.lua` acquisition veto, honoured by
   `grug_core`'s `valid_target`, `add_threat` and `taunt`), the once-a-second

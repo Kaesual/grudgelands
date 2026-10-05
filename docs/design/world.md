@@ -659,9 +659,12 @@ combat damage for the ordinary five-second combat window.
   gust's reach and a feed line "… spreads its wings: get clear!" for hostile
   players within 16 nodes. Then everyone within 8 nodes is pushed away from
   it (16 nodes per second and 5 up, about **6 nodes**), without damage or
-  slow. The push never carries a player beyond the arena radius − 4, even
-  one slowed to 60 %: near the edge it is weakened, with less than a node of
-  room it is dropped; the dive's slam knockback follows the same rule. No
+  slow. The push never carries a player beyond the arena radius − 4: it
+  reads his live braking (physics speed × air acceleration, so stacked slows
+  down to the 0.1 floor count) and leaves room for a further 60 % slow during
+  the flight; near the edge it is weakened, with less than a node of room it
+  is dropped. The dive's slam knockback follows the same rule, and the
+  engine's own punch knockback is off for the slam's hit. No
   chain with the dive: the gust waits at least 4 s after a slam, and breath,
   lightning and dive wait 2 s after a gust.
 

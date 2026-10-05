@@ -630,12 +630,33 @@ local function lightning_impact(self, snapshot)
 		2, 8, 0.25)
 end
 
+-- A player's live braking factor: the client brakes at the default air
+-- acceleration times the override's speed and acceleration_air (the
+-- grug_core movement aggregator is the only writer of both).
+local function braking(player)
+	local override = player.get_physics_override and player:get_physics_override()
+	if not override then return 1 end
+	return (override.speed or 1) * (override.acceleration_air or 1)
+end
+
 -- A push away from `origin`, kept inside the dragon's arena
 -- (dragon_arena.lua `push`).
 local function push_player(self, player, origin, speed, lift)
 	local velocity = arena_rules.push(arena_of(self), origin, player:get_pos(),
-		speed, lift)
+		speed, lift, braking(player))
 	if velocity then player:add_velocity(velocity) end
+end
+
+-- The dive's slam pushes only through push_player: the engine's own
+-- knockback (builtin knockback.lua, off every punch) is off for its hit,
+-- since it would carry a player past the arena limit.
+local slam_hit = false
+local engine_knockback = core.calculate_knockback
+if engine_knockback then
+	function core.calculate_knockback(player, ...)
+		if slam_hit then return 0 end
+		return engine_knockback(player, ...)
+	end
 end
 
 local function slam_knockback(self, player, origin)
@@ -773,8 +794,10 @@ local function finish_dive(self, state)
 	local pos = self.object and self.object:get_pos()
 	if pos then
 		for _, player in ipairs(hostile_players(pos, 7)) do
+			slam_hit = true
 			player:punch(self.object, 1, {full_punch_interval = 1,
 				damage_groups = {fleshy = self.damage * 3}}, nil)
+			slam_hit = false
 			slam_knockback(self, player, pos)
 		end
 		burst(pos, 120, "default_item_smoke.png^[colorize:#ffd24a:190", 8,

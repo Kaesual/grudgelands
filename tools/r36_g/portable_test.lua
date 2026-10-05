@@ -20,8 +20,10 @@
 --    after 5 s instead of freezing.
 -- C. The push rule (grug_mobs/dragon_arena.lua): the full push (16 nodes per
 --    second and 5 up, about 6.4 nodes of travel) away from the dragon; near
---    the edge it is weakened so that even a player slowed to 60 % stays within
---    radius - 4, and with less than a node of room there is none.
+--    the edge it is weakened by the player's live braking (physics speed x
+--    acceleration_air: unslowed, 60 %, a bow draw 0.5 x a slow 0.6, the 0.1
+--    floor) so that he stays within radius - 4 even when a further 60 % slow
+--    lands in flight, and with less than a node of room there is none.
 -- D. boss_dragons.lua, the real file, on a fake engine: on the ground, with
 --    a hostile player within 8 nodes and the gust ready, the dragon winds up
 --    (the growl, the flight clip, a 40-particle ring at 8 nodes for the
@@ -29,8 +31,11 @@
 --    during the wind-up, then everyone within 8 (not beyond) with 16 / 5 and
 --    holds its breath back 2 s; no gust in flight or with nobody in reach;
 --    a dive's slam delays the gust to at least 4 s and its own knockback
---    (7 / 2.8) stays inside the arena too; near the edge the gust's push is
---    weakened or dropped; at most a few hundred particles per gust.
+--    (7 / 2.8) stays inside the arena too, and the engine's own punch
+--    knockback (builtin knockback.lua, emulated by the fake player's punch)
+--    is off for the slam's hit but not for other punches; near the edge the
+--    gust's push is weakened or dropped, also for slowed players (their live
+--    physics override); at most a few hundred particles per gust.
 -- Prints "R36 G PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
 local checks = 0
@@ -288,8 +293,10 @@ do
 	check(rules.push(ARENA, {x = 1, y = 0, z = 1}, {x = 1, y = 5, z = 1}, 16, 5) == nil, "C no direction, no push")
 	v = rules.push(nil, {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 1}, 16, 5)
 	check(v and math.abs(v.z - 16) < 1e-9, "C no arena: the full push")
-	-- every direction and distance: a player slowed to 60 % lands within the limit
+	-- every direction, distance and live braking: the player lands within
+	-- the limit, even when a further 60 % slow lands during the flight
 	local pushed, weakened, dropped = 0, 0, 0
+	for _, brake in ipairs({1, 0.6, 0.5 * 0.6, 0.1}) do
 	for r10 = 0, 395, 5 do
 		local r = r10 / 10
 		for deg = 0, 350, 10 do
@@ -298,12 +305,13 @@ do
 			for odeg = 0, 270, 90 do
 				local o = odeg * math.pi / 180
 				local origin = {x = pos.x + 3 * math.cos(o), y = 0, z = pos.z + 3 * math.sin(o)}
-				local vel = rules.push(ARENA, origin, pos, 16, 5)
+				local vel = rules.push(ARENA, origin, pos, 16, 5, brake)
 				if vel then
 					local h = math.sqrt(vel.x * vel.x + vel.z * vel.z)
-					local travel = rules.push_travel(h) / rules.SLOW_FLOOR
+					local travel = rules.push_travel(h, brake * rules.SLOW_FLOOR)
 					local ex, ez = pos.x - ARENA.x + vel.x / h * travel, pos.z - ARENA.z + vel.z / h * travel
-					check(ex * ex + ez * ez <= LIMIT * LIMIT + 1e-6, "C even a slowed player stays within radius - 4")
+					check(ex * ex + ez * ez <= LIMIT * LIMIT + 1e-6,
+						"C a player braking at " .. brake .. " stays within radius - 4")
 					pushed = pushed + 1
 					if h < 16 - 1e-9 then weakened = weakened + 1 end
 				else
@@ -312,6 +320,7 @@ do
 			end
 		end
 	end
+	end
 	check(pushed > 0 and weakened > 0 and dropped > 0, "C full, weakened and dropped pushes all occur")
 	v = rules.push(ARENA, {x = ARENA.x + 28, y = 0, z = ARENA.z}, {x = ARENA.x + 34, y = 0, z = ARENA.z}, 16, 5)
 	check(v and v.x > 0 and v.x < 16, "C at radius 34 outward: weakened")
@@ -319,6 +328,23 @@ do
 		"C at radius 35.5 outward: none")
 	v = rules.push(ARENA, {x = ARENA.x + 38, y = 0, z = ARENA.z}, {x = ARENA.x + 34, y = 0, z = ARENA.z}, 16, 5)
 	check(v and math.abs(v.x + 16) < 1e-9, "C at radius 34 pushed inward: the full push")
+	-- the reviewer's case: a bow draw (0.5) under ice water (0.6)
+	local origin = {x = ARENA.x + 20, y = 0, z = ARENA.z}
+	local pos = {x = ARENA.x + 24, y = 0, z = ARENA.z}
+	local full = rules.push(ARENA, origin, pos, 16, 5)
+	local slowed = rules.push(ARENA, origin, pos, 16, 5, 0.3)
+	check(full.x == 16 and slowed.x < 16, "C a 0.3-slowed player at radius 24 gets a weaker push")
+	check(24 + rules.push_travel(slowed.x, 0.3) <= LIMIT + 1e-6, "C ...and lands within radius - 4")
+	check(24 + rules.push_travel(full.x, 0.3) > ARENA.radius, "C (the unweakened push would carry him out)")
+	local floor = rules.push(ARENA, {x = ARENA.x + 8, y = 0, z = ARENA.z}, {x = ARENA.x + 12, y = 0, z = ARENA.z}, 16, 5, 0.1)
+	check(floor and floor.x < 16 and 12 + rules.push_travel(floor.x, 0.1) <= LIMIT + 1e-6,
+		"C the 0.1 floor at radius 12: weakened, inside")
+	check(rules.push(ARENA, origin, pos, 16, 5, 0.1) == nil, "C the 0.1 floor at radius 24: no push")
+	check(rules.push(ARENA, origin, {x = ARENA.x + 34, y = 0, z = ARENA.z}, 16, 5, 0.1) == nil,
+		"C the 0.1 floor at radius 34: no push")
+	check(rules.push(ARENA, origin, pos, 16, 5, 0) == nil, "C no braking value: no push")
+	local rooted = rules.push(ARENA, origin, {x = ARENA.x + 34, y = 0, z = ARENA.z}, 16, 5, 1e6)
+	check(rooted and rooted.x < 16, "C a hard-braking (rooted) player is treated as unslowed")
 end
 
 -- ---------------------------------------------------------------------------
@@ -334,7 +360,22 @@ function Player:get_player_name() return self.name end
 function Player:is_player() return true end
 function Player:get_luaentity() return nil end
 function Player:add_velocity(v) self.pushes[#self.pushes + 1] = v end
-function Player:punch() self.punched = (self.punched or 0) + 1 end
+function Player:get_physics_override() return {speed = self.speed or 1, acceleration_air = 1} end
+-- The engine's punch runs builtin's on_punchplayer: knockback.lua pushes the
+-- player off the hit's damage through core.calculate_knockback.
+function Player:punch(hitter, _, caps)
+	self.punched = (self.punched or 0) + 1
+	local from = hitter and hitter.get_pos and hitter:get_pos()
+	if not from then return end
+	local dx, dy, dz = self.pos.x - from.x, self.pos.y - from.y, self.pos.z - from.z
+	local d = math.sqrt(dx * dx + dy * dy + dz * dz)
+	if d <= 0 then return end
+	local damage = caps and caps.damage_groups and caps.damage_groups.fleshy or 0
+	local k = core.calculate_knockback(self, hitter, 1, caps, {x = dx / d, y = dy / d, z = dz / d}, d, damage)
+	if k >= 1 then
+		self.pushes[#self.pushes + 1] = {x = dx / d * k, y = dy / d * k, z = dz / d * k, engine = true}
+	end
+end
 local function new_player(name, pos)
 	local p = setmetatable({name = name, pos = pos, hp = 50000, pushes = {}}, Player)
 	players[#players + 1] = p
@@ -372,6 +413,13 @@ core = {
 	add_particle = function(def) particles[#particles + 1] = {amount = 1, pos = def.pos, life = def.expirationtime} end,
 	add_entity = function() end, chat_send_player = function() end,
 	sound_play = function() end,
+	-- builtin knockback.lua
+	calculate_knockback = function(_, _, _, _, _, distance, damage)
+		if damage == 0 then return 0 end
+		local res = 8 - 8 * math.exp(-0.17328 * damage)
+		if distance < 2 then res = res * 1.1 elseif distance > 4 then res = res * 0.9 end
+		return res
+	end,
 }
 vector = {round = function(p) return {x = math.floor(p.x + 0.5), y = math.floor(p.y + 0.5), z = math.floor(p.z + 0.5)} end}
 mobs = {has_priv = function() return false end}
@@ -543,8 +591,12 @@ do
 	end
 	check(st.action == nil and st.mode == "landing", "D3 the dive slammed down")
 	check(st.gust >= T.gust_after_dive - 0.2, "D3 the gust waits after the slam (" .. st.gust .. ")")
-	check(push_count(close) == 1 and math.abs(close.pushes[1].x - 7) < 1e-9 and
-		math.abs(close.pushes[1].y - 2.8) < 1e-9, "D3 the slam's knockback, 7 and 2.8")
+	check(close.punched == 1, "D3 the slam hit the close player")
+	check(push_count(close) == 1 and not close.pushes[1].engine and math.abs(close.pushes[1].x - 7) < 1e-9 and
+		math.abs(close.pushes[1].y - 2.8) < 1e-9, "D3 the slam's knockback, 7 and 2.8, no engine knockback")
+	local other = new_player("other", {x = ARENA.x + 2, y = ARENA.y, z = ARENA.z})
+	other:punch(d.object, 1, {full_punch_interval = 1, damage_groups = {fleshy = 150}})
+	check(push_count(other) == 1 and other.pushes[1].engine, "D3 other punches keep the engine knockback")
 	-- the slam near the edge: a player at radius 35.5 is not knocked out
 	players = {}
 	local edge_target = new_player("edge_t", {x = ARENA.x + 35, y = ARENA.y, z = ARENA.z + 14})
@@ -564,6 +616,32 @@ do
 	end
 	check(es.action == nil and edge.punched == 1, "D3 the slam hit the player at the edge")
 	check(push_count(edge) == 0, "D3 ...without a knockback past radius - 4")
+	-- a 0.3-slowed player: the slam's whole push (no engine part) lands
+	-- inside, even with a further slow in flight
+	players = {}
+	local t2 = new_player("t2", {x = ARENA.x + 26, y = ARENA.y, z = ARENA.z + 14})
+	local slowed = new_player("slowed", {x = ARENA.x + 32, y = ARENA.y, z = ARENA.z})
+	slowed.speed = 0.3
+	local f = new_dragon(29)
+	f.attack = t2
+	tick(f)
+	local fs = f.temp.grug_dragon
+	fs.primary, fs.gust = 99, 99
+	tick(f)
+	fs.primary = 0
+	tick(f)
+	for _ = 1, 50 do
+		if not fs.action then break end
+		tick(f)
+	end
+	check(slowed.punched == 1, "D3 the slam hit the slowed player")
+	local vx = 0
+	for _, v in ipairs(slowed.pushes) do
+		check(not v.engine, "D3 no engine knockback on the slowed player")
+		vx = vx + v.x
+	end
+	check(32 + rules.push_travel(math.abs(vx), 0.3 * rules.SLOW_FLOOR) <= LIMIT + 1e-6,
+		"D3 the slowed player stays within radius - 4")
 end
 
 -- D4 the gust near the edge: weakened or dropped
@@ -584,6 +662,26 @@ do
 	check(34 + rules.push_travel(h) / rules.SLOW_FLOOR <= LIMIT + 1e-6, "D4 ...and stays within radius - 4")
 	check(push_count(inner) == 1 and math.abs(inner.pushes[1].z - 16) < 1e-9,
 		"D4 a player with room is pushed in full")
+	-- the same gust on players slowed to 0.3 and to the 0.1 floor
+	players = {}
+	local s3 = new_player("s3", {x = ARENA.x + 30, y = ARENA.y, z = ARENA.z})
+	local s1 = new_player("s1", {x = ARENA.x + 24, y = ARENA.y, z = ARENA.z + 4})
+	s3.speed, s1.speed = 0.3, 0.1
+	local g = new_dragon(24)
+	g.attack = s3
+	tick(g)
+	local gs = g.temp.grug_dragon
+	gs.gust, gs.primary = 0, 99
+	tick(g, 14)
+	check(push_count(s3) == 1 and push_count(s1) == 1, "D4 both slowed players pushed")
+	local a = s3.pushes[1]
+	check(30 + rules.push_travel(math.abs(a.x), 0.3 * rules.SLOW_FLOOR) <= LIMIT + 1e-6,
+		"D4 the 0.3-slowed player stays within radius - 4")
+	local b = s1.pushes[1]
+	local bh = math.sqrt(b.x * b.x + b.z * b.z)
+	local tr = rules.push_travel(bh, 0.1 * rules.SLOW_FLOOR)
+	local ex, ez = 24 + b.x / bh * tr, 4 + b.z / bh * tr
+	check(ex * ex + ez * ez <= LIMIT * LIMIT + 1e-6, "D4 the 0.1-floor player stays within radius - 4")
 end
 
 print(("R36 G PORTABLE PASS checks=%d"):format(checks))
