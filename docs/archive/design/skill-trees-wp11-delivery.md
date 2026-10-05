@@ -14,6 +14,9 @@ living design. The current rules and numbers are
 maintained afterwards; in October 2026 most of them pointed at unrelated
 lines. Never edit code by these numbers; find the symbol instead.
 
+The X1/X2 (phase 1) record is
+[wp11-talents-phase1.md](../../research/wp11-talents-phase1.md).
+
 Section numbers inside the copied text (§1–§7) are the revision's own: §1–§2
 and the current-rule summaries of §3 live on in skill_trees.md under the
 same numbers; §2.11 is section C here and §7 is section F.

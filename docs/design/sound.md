@@ -49,14 +49,14 @@ pages in Round 37 and now play their approved files (§3.4, §3.5);
 `mobs_spell` ships with mobs_redo but the game no longer plays it. Its
 licence: the source page (Little Robot Sound Factory, "Spell_01.wav") says CC
 BY 4.0 while mobs_redo's `license.txt` says CC0, so
-[CREDITS.md](../../CREDITS.md) credits it under CC BY 4.0. Four call sites in
+[CREDITS.md](../../CREDITS.md) credits it under CC BY 4.0. Five call sites in
 three mods still play inherited or pre-gate files directly with
 `core.sound_play` instead of through `grug_sounds.play`, and are accepted as
 part of the set: the hoe's till (`default_dig_crumbly`,
 `grug_farming/hoes.lua`), planting (`default_place_node`,
 `grug_farming/init.lua`), the fishing bite (`default_water_footstep`,
-`grug_fishing`) and eating (the looped `grug_food_eat` and a placed food's
-own place sound, `grug_food`).
+`grug_fishing`) and two in `grug_food`: the looped eating sound
+(`grug_food_eat`) and a food placed by a click (its node's own place sound).
 
 ## 2. Conventions
 

@@ -310,7 +310,7 @@ dismount rule above.
 rider mostly has to walk into a melee swing to lose the mount, but
 skeleton archers already fight at range (`dogshoot`, `combat_stats.md`
 §3), bows are fully catalogued as a Phase-2 enabler
-(`items_crafting.md` §9) and the Rogue/Hunter direction is deferred
+(`items_crafting.md` §9) and a ranged/stealth class direction is deferred
 Phase-2 work (`classes.md` §6). From that point on a rider crossing
 hostile or enemy ground can be **brought down at range**, which is
 exactly the counterplay a permanent speed buff needs — and in PvP it is
