@@ -49,3 +49,7 @@ tools/seed_fleet/run.sh quick 20      # plus 20 random seeds (printed)
   misreads rotated selection boxes (prints `FIXED` or `BUG PRESENT`); run it
   at every engine version change with the rest of
   `docs/technical/upstream-workarounds.md`.
+- `python3 tools/r36_p/render.py OUT_DIR`: renders every POI as the runtime
+  builds it (isometric view, top-down plan, two other race palettes;
+  `page.py` makes the review page); `tools/r36_w/render.py` and `page.py`
+  the before/after pages of a decor change.

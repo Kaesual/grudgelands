@@ -64,7 +64,23 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 35 complete locally, 2026-10-05 (not pushed).** "Fixes and
+**Round 36 complete locally, 2026-10-05 (not pushed).** "The main
+questline" (WP9): each faction's main line from its fortress Warmaster in
+three chapters (41, 46, 53) and a group finale at 60 on the approved
+[story bible](docs/planning/round36/story-bible.md) (the Undertithe and its
+branded coin), the front climaxes folded in, the "use at a place"
+objective with quest objects, ten corrupted sub-types, a turn-in hook and
+three achievements; the rift at Tombroad Ambush with Isquarre the
+Tithe-Eater and two war commanders; WP13's POI review and a decor pass over
+every POI, start town and capital house; the Round 35 GUI fixes (one target
+predicate, free mobs evading only beyond their wander radius, the
+talent-point banner), Priest heals with gear Intelligence and the Scout's
+Dexterity curve, the dragons' wider hazards and wing gust. Needs a fresh
+world. Next: the GUI test (desktop and web build, two clients for the
+rift).
+[Plan, completion and GUI checklist](docs/planning/round36-plan.md#completion-2026-10-05).
+
+**Round 35 complete, 2026-10-05 (pushed 2026-10-05).** "Fixes and
 character creation" from the user's Round 34 GUI test: the server's aiming
 rays test rotated selection boxes in Lua (`grug_core.aim_raycast`, an
 engine bug since Luanti 5.12; the
@@ -75,8 +91,8 @@ a skill without a weapon, dig sounds for ores and sand, flint removed,
 quest lists coloured by status with read-only text; character creation in
 one window with nothing stored before "Create character"; night mobs leave
 at dawn and a drop audit against the income targets; level-proof talents
-and the user's picks from a review of all 64. Next: the GUI test (desktop
-and web build), then WP9.
+and the user's picks from a review of all 64. The user's first GUI
+findings fed Round 36.
 [Plan, completion and GUI checklist](docs/planning/round35-plan.md#completion-2026-10-05).
 
 **Round 34 complete, 2026-10-04 (pushed 2026-10-05).** "Sound", V1's
@@ -776,6 +792,53 @@ current state). It is **derived, never authoritative**:
   real receive-fields chain; `e` the dawn rule, `engine.sh` rats across a
   dawn; `b` the level-proof talents and the picks, `numbers.py` the
   conversion, review and decided tables).
+
+### Main questline, rift and decor (since Round 36)
+
+- **The main line's story lives in the
+  [story bible](docs/planning/round36/story-bible.md)** (approved v2; a
+  summary in [story.md](docs/design/story.md) §2a): names, the threat's
+  rules, beats, objects and cloaks. A main-line quest carries its faction's
+  tag (`accord_main`, `throng_main`), the final turn-in ids
+  `accord_main_final` / `throng_main_final` are fixed (achievements count
+  them), and the chapter gates (41, 46, 53, 60) come from `requires` on the
+  previous chapter's last turn-in ([quests.md](docs/design/quests.md) "The
+  main line"). Only the finale and optional branches carry "Group:".
+- **"Use at a place"** is a quest objective, never a node: its object is an
+  entity per use point seen only by players who still need it
+  (`grug_quests/use.lua`, kinds in `data/use_objects.json`); a place is a
+  clash site by its settlement key or a recipe's `places` row. Every server
+  aiming ray skips an object the player cannot see (`grug_core.unseen_by`).
+  Other mods hear turn-ins through `grug_quests.register_on_turn_in`, never
+  a second completion path; `grug_quests.quest_held` is the cheap "has it
+  or did it" query.
+- **The rift is runtime content**, not mapgen (`grug_mobs/rift_core.lua`,
+  `rift.lua`): the site is one constant, the crack is written once per
+  world and recorded, and it is the one recorded exception to POI
+  protection ([world.md](docs/design/world.md) §4b). A node that hurts by a
+  share of the pool joins the group `grug_pool_damage`.
+- **Decor is a kit** (`grug_mapgen/wp13/decor_kit.lua`): a POI's dressing
+  is authored rows of kit pieces placed whole or failing the build, plus the
+  house touches; it never changes a composition's bounds, sockets or
+  protection box, never blocks a window or a way, and `tools/r36_w`
+  holds every composition to the record in `baseline.tsv`
+  ([settlements.md](docs/design/settlements.md) "Decor pass"). A change is
+  world generation (`seed_fleet quick`).
+- **Support amounts** multiply by `grug_classes.get_support_factor` (gear
+  Intelligence over a base hit); spells floor once after the level scalar
+  like every hit ([combat_stats.md](docs/design/combat_stats.md) §2).
+- Round 36 fixtures and probes live in `tools/r36_<lane>/` (`f` the target
+  predicate, evade rule, banner and timing line, `engine.sh` a reset inside
+  and outside the wander radius; `k` the support factor, Dexterity curve
+  and spell rounding, `numbers.py` the decision tables; `e` the use
+  objective, objects, hook and tags, `engine.sh` a quest object; `r` the
+  rift, boss, lockout, leash and commanders, `numbers.py` the boss's time to
+  kill, `engine.sh` the site; `g` the arena hazards, refreeze and gust,
+  `engine.sh`; `q0` the shared data against the bible, `engine.sh`; `qa`,
+  `qt` each faction's line; `w` the decor rules and the composition record,
+  `render.py`/`page.py` before/after pages, `author.lua` row proposals;
+  `p` the POI renders and review page (`dump.lua`, `render.py`,
+  `page.py`); `a` `paint_art.py`, the reproducible textures).
 
 ## Task-specific implementation references
 
