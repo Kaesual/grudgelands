@@ -3,6 +3,46 @@
 -- only the guaranteed flat core above one existing anchor.
 -- Plain Lua 5.1, no globals.
 
+-- The Round 36 decor kit (wp13/decor_kit.lua): each composition's `DECOR`
+-- rows and the touches its houses get.
+local info = debug and debug.getinfo and debug.getinfo(1, "S")
+local here = type(info) == "table" and type(info.source) == "string" and
+	info.source:sub(1, 1) == "@" and info.source:sub(2):match("^(.*)[/\\][^/\\]*$")
+if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40" end
+local wp13 = dofile(here .. "/r7_wp13_library.lua").path()
+local decor = dofile(wp13 .. "/decor_kit.lua")(wp13)
+
+-- Decor rows per kind and race: piece, x, z[, face[, size]] (the kit's
+-- pieces, placed whole on open ground by `decor.place`; Round 36, authored
+-- with tools/r36_w/author.lua). `spec.decor` replaces a composition's rows
+-- (the authoring aid passes none).
+local DECOR = {
+	village = {
+		dwarf = {{"well",4,-1,3},{"flowers",6,-11,0},{"craft",-11,3,1},{"lamp",1,4,2},{"woodpile",-11,-1,1}},
+		human = {{"well",-8,-2,1},{"flowers",-11,3,1},{"craft",4,-11,0},{"lamp",2,-4,0},{"woodpile",-11,-1,1}},
+		elf = {{"well",4,-1,3},{"flowers",-11,1,1},{"craft",1,8,2},{"lamp",-2,-4,0},{"woodpile",4,11,2}},
+		undead = {{"well",4,-1,3},{"flowers",-6,-11,0},{"craft",7,0,3},{"lamp",-1,4,2},{"woodpile",-12,-5,1}},
+		orc = {{"well",-5,0,1},{"flowers",5,10,2},{"craft",10,-1,3},{"lamp",-2,-4,0},{"woodpile",-5,11,2}},
+		troll = {{"well",6,3,3},{"flowers",-5,-9,0},{"craft",-1,11,2},{"lamp",-4,1,1},{"woodpile",-5,11,2}},
+	},
+	outpost = {
+		dwarf = {{"banner",-2,-4,0},{"rack",-5,-4,1},{"stores",-7,4,1}},
+		human = {{"banner",-2,-4,0},{"rack",-5,-4,1},{"stores",0,4,2}},
+		elf = {{"banner",-4,-2,1},{"rack",3,-5,0},{"stores",-4,3,2}},
+		undead = {{"banner",-4,-2,1},{"rack",-4,-5,0},{"stores",2,5,2}},
+		orc = {{"banner",-2,-4,0},{"rack",-5,-4,1},{"stores",6,4,3}},
+		troll = {{"banner",0,4,2},{"rack",3,-5,0},{"stores",-5,6,2}},
+	},
+	camp = {
+		dwarf = {{"palisade",10,1,3},{"rack",2,7,2},{"lean_to",7,-2,3},{"ashpit",-7,-4,1}},
+		human = {{"palisade",10,-1,3},{"rack",-7,6,1},{"lean_to",-7,0,1},{"ashpit",4,-8,0}},
+		elf = {{"palisade",-1,10,2},{"rack",-7,1,1},{"lean_to",7,0,3},{"ashpit",-7,5,1}},
+		undead = {{"palisade",10,1,3},{"rack",2,7,2},{"lean_to",7,-2,3},{"ashpit",-7,-5,1}},
+		orc = {{"palisade",-1,10,2},{"rack",7,2,3},{"lean_to",7,-2,3},{"ashpit",-7,-3,1}},
+		troll = {{"palisade",-10,-1,1},{"rack",-7,1,1},{"lean_to",7,-2,3},{"ashpit",-3,-7,0}},
+	},
+}
+
 return function(spec)
 	local palettes = {
 		dwarf={ground="default:dirt_with_coniferous_litter",foundation="default:stonebrick",wall="default:pine_wood",post="default:pine_tree",roof="stairs:slab_pine_wood",accent="default:copperblock"},
@@ -29,7 +69,7 @@ return function(spec)
 	local function fill(x1,y1,z1,x2,y2,z2,name)
 		for z=z1,z2 do for y=y1,y2 do for x=x1,x2 do put(x,y,z,name) end end end
 	end
-	local structures={}
+	local structures,dressed={},{}
 	local function record(label,x,z,w,d,h)
 		local entry={label=label,x=x,z=z,w=w,d=d,h=h or 4}
 		structures[#structures+1]=entry
@@ -46,10 +86,29 @@ return function(spec)
 		local building=record(label,cx,cz,w,d,h)
 		local raised=spec.race=="troll" and 1 or 0
 		building.interior={x=cx,y=raised+1,z=cz}
-		local function at(x,y,z,n,param2)
+		local function turned(x,z)
 			for _=1,turn or 0 do x,z=-z,x end
-			put(cx+x,y+raised,cz+z,n,param2)
+			return cx+x,cz+z
 		end
+		local function at(x,y,z,n,param2)
+			x,z=turned(x,z)
+			put(x,y+raised,z,n,param2)
+		end
+		-- the house as the decor kit reads it: its room, its three door
+		-- cells, and the two cells (a step and a stand for a troll's stair)
+		-- in front of them
+		local ax,az=turned(-w+1,-d+1)
+		local bx,bz=turned(w-1,d-1)
+		local doors={}
+		for x=-1,1 do
+			local dx,dz=turned(x,-d)
+			doors[#doors+1]={x=dx,z=dz}
+		end
+		local ox,oz=turned(0,-d-1)
+		local ix,iz=turned(0,-d)
+		dressed[#dressed+1]={room={min={x=math.min(ax,bx),z=math.min(az,bz)},
+			max={x=math.max(ax,bx),z=math.max(az,bz)}},doors=doors,floor_y=raised,ground_y=0,
+			out={ox-ix,oz-iz},seed=cx*7+cz*3+#dressed}
 		for x=-w,w do for z=-d,d do at(x,0,z,p.foundation) end end
 		if raised>0 then
 			for _,x in ipairs({-w,w}) do for _,z in ipairs({-d,d}) do at(x,-1,z,p.post) end end
@@ -106,8 +165,10 @@ return function(spec)
 		for i=0,n-1 do put(x+i,1,z,"grug_decor:xdecor_barrel") end
 		if n>2 then put(x+1,2,z,"grug_decor:xdecor_barrel") end
 	end
+	-- Stacked timber under a plank cap (Round 36: two bare log courses
+	-- read as random wood blocks).
 	local function timber(x,z,n)
-		for i=0,n-1 do fill(x+i,1,z,x+i,2,z,p.post) end
+		for i=0,n-1 do fill(x+i,1,z,x+i,2,z,p.post); put(x+i,3,z,p.roof) end
 	end
 	local function tree(x,z)
 		fill(x,1,z,x,4,z,p.post)
@@ -229,7 +290,6 @@ return function(spec)
 			lookout(5,4,1,2,false); canopy("observation niche",5,-5,1,2,2)
 		elseif race=="orc" then
 			lookout(-4,3,2,4,true); canopy("guard stores",4,4,2,2,2)
-			for _,q in ipairs({{-7,-5},{-6,-5},{-5,-4},{-4,-4},{-3,-3}}) do fill(q[1],1,q[2],q[1],3,q[2],p.post) end
 			stores(3,5,3)
 		else
 			lookout(4,3,2,4,true); canopy("dry equipment",-5,3,2,3,2)
@@ -290,6 +350,28 @@ return function(spec)
 		record("open captive enclosure",9,9,2,2,2)
 		sockets={{id="quest_captive",role="quest",x=10,y=1,z=10,dir={x=0,z=-1}}}
 	else error("POI kind differs",0) end
+
+	-- The decor rows, then the houses' touches, on the open ground the
+	-- authored scene left: never on a socket or the cell before it, the
+	-- central actor clearance or in front of a door.
+	local brush=decor.brush(decor.view(put,function(x,y,z) return by_pos[key(x,y,z)] end),spec.race)
+	brush.display=p.accent
+	local reserved={}
+	for z=-2,2 do for x=-2,2 do reserved[x..":"..z]=true end end
+	decor.blocked_sockets(sockets,reserved)
+	for _,house_info in ipairs(dressed) do
+		decor.reserve_door(reserved,(function()
+			local list={}
+			for _,c in ipairs(house_info.doors) do list[#list+1]={c.x,c.z} end
+			return list
+		end)(),house_info.out[1],house_info.out[2],2)
+	end
+	local rules={ground={[p.ground]=true},reserved=reserved,label=spec.schema,
+		inside=function(x,y,z) return x>=low and x<=high and z>=low and z<=high and y>=0 and y<=8 end}
+	for _,q in ipairs(spec.decor or DECOR[spec.kind][race]) do decor.place(brush,q,rules) end
+	for _,house_info in ipairs(dressed) do
+		decor.dress_house(brush,house_info,{ground={[p.ground]=true},blocked=reserved})
+	end
 
 	local grass=spec.race=="orc" and "default:dry_shrub" or "default:fern_1"
 	for _,q in ipairs({{low+1,low+1},{high-1,low+1},{low+1,high-1}}) do

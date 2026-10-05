@@ -8,6 +8,9 @@
 --
 --   luajit tools/r36_w/author.lua REPO KEY[,KEY...] [RECIPE]
 --
+-- KEY is a Round 20 anchor key or r14:<village|outpost|camp>:<race> (the
+-- rows of the Round 14 builder's DECOR table).
+--
 -- RECIPE overrides the kind's theme: "piece:zone,piece:zone,...", a zone
 -- being court (round the centre), wall (against a building), edge (by the
 -- composition's rim) or open (between them). For the four rift candidates
@@ -45,8 +48,96 @@ local function parse(text)
 	return out
 end
 
+-- The Round 14 compositions (KEY "r14:<kind>:<race>"): each try builds the
+-- real composition with the rows so far plus the candidate, so the
+-- builder's own rules decide; the candidate's new cells must keep a node
+-- clear of the earlier pieces.
+local R14_THEMES = {
+	village = "well:court,flowers:wall,craft:wall,lamp:court,woodpile:wall",
+	outpost = "banner:court,rack:open,stores:wall",
+	camp = "palisade:edge,rack:open,lean_to:open,ashpit:open",
+}
+local function author_r14(kind, race, recipe_text)
+	local build = dofile(wp40 .. "/r14_poi_blueprint.lua")
+	local function make(rows)
+		return build({schema = "grug_r14_author_v1", race = race, kind = kind, decor = rows})
+	end
+	local function grid(bp)
+		local g = {}
+		for _, c in ipairs(bp.cells) do g[c.x .. ":" .. c.y .. ":" .. c.z] = c end
+		return g, bp
+	end
+	local rows = {}
+	local current, bp = grid(make(rows))
+	local lo, hi = bp.bounds.min.x, bp.bounds.max.x
+	local half = (hi - lo + 1) / 2
+	local taken = {}
+	local function built(x, z)
+		local c = current[x .. ":1:" .. z]
+		return c ~= nil and c.name ~= "air"
+	end
+	for _, item in ipairs(parse(recipe_text or R14_THEMES[kind])) do
+		local piece, zone = item[1], item[2]
+		local tries = {}
+		for z = lo, hi do for x = lo, hi do for face = 0, 3 do
+			local r = math.max(math.abs(x), math.abs(z))
+			local fx, fz = parts.facedir_step(face)
+			local toward = -(fx * x + fz * z) / math.max(1, math.sqrt(x * x + z * z))
+			local walls = 0
+			for dz = -2, 2 do for dx = -2, 2 do
+				if built(x + dx, z + dz) then walls = walls + 1 end
+			end end
+			local score
+			if zone == "court" then score = -math.abs(r - 4) * 2 + toward * 2 - walls
+			elseif zone == "wall" then score = math.min(walls, 6) - (walls > 9 and 4 or 0) + toward
+			elseif zone == "edge" then score = -math.abs(r - (half - 2)) * 2 + toward - walls * 0.5
+			else score = -math.abs(r - half * 0.6) - walls + toward end
+			score = score + parts.position_hash(x * 4 + face, z + #rows * 7) / 32768 * 0.5
+			tries[#tries + 1] = {score, x, z, face}
+		end end end
+		table.sort(tries, function(a, b)
+			if a[1] ~= b[1] then return a[1] > b[1] end
+			if a[2] ~= b[2] then return a[2] < b[2] end
+			if a[3] ~= b[3] then return a[3] < b[3] end
+			return a[4] < b[4]
+		end)
+		local placed
+		for _, t in ipairs(tries) do
+			local try = {}
+			for i, r in ipairs(rows) do try[i] = r end
+			try[#try + 1] = {piece, t[2], t[3], t[4]}
+			local ok, result = pcall(make, try)
+			if ok then
+				local g = grid(result)
+				local new, clash = {}, false
+				for k, c in pairs(g) do
+					local old = current[k]
+					if (old == nil or old.name ~= c.name) and c.name ~= "air" then
+						new[#new + 1] = c
+						if taken[c.x .. ":" .. c.z] then clash = true end
+					end
+				end
+				if not clash then
+					for _, c in ipairs(new) do
+						for dz = -1, 1 do for dx = -1, 1 do taken[(c.x + dx) .. ":" .. (c.z + dz)] = true end end
+					end
+					current, rows, placed = g, try, true
+					break
+				end
+			end
+		end
+		if not placed then io.stderr:write("r14 " .. kind .. " " .. race .. ": no room for " .. piece .. "\n") end
+	end
+	local out = {}
+	for _, r in ipairs(rows) do out[#out + 1] = ('{"%s",%d,%d,%d}'):format(r[1], r[2], r[3], r[4]) end
+	print(("r14:%s:%s\t%s = {%s},"):format(kind, race, race, table.concat(out, ",")))
+end
+
 local want = {}
-for k in keys:gmatch("[^,]+") do want[k] = true end
+for k in keys:gmatch("[^,]+") do
+	local kind, race = k:match("^r14:(%a+):(%a+)$")
+	if kind then author_r14(kind, race, recipe_arg) else want[k] = true end
+end
 for _, profile in ipairs(settlement.roster) do
 	if want[profile.key] then
 		local art = profile.art
