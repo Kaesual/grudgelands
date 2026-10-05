@@ -325,7 +325,7 @@ nothing below tier 3 modifies a skill the player may not have yet.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Heavy Hand** | Hammer | 1 | 5 | — | Mighty Blow ×1.5 → ×1.6 / 1.7 / 1.8 / 1.9 / 2.0 weapon damage | `kits.lua:384-391` | `mighty_blow_multiplier_add` |
-| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8) | `grug_abilities/init.lua:90-99` and its authoritative/proportional callers | `rage_per_swing_add` |
+| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8) | `grug_abilities/init.lua` `swing_rage` and its authoritative callers | `rage_per_swing_add` |
 | 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **replaces Mighty Blow** | Mighty Blow also strikes every other hostile within 3 m for **half** its total, rounded down, at ×3 threat — the game's first melee cleave, on the key Mighty Blow already occupies | `kits.lua:384-391` plus a hostile-radius loop | `mighty_blow_cleave` |
 | 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **15 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 15 s, **60 s cooldown** on the trigger.* | `grug_classes/stats.lua:122-140` | `crit_cap_override` |
 | 5 | **Keen Edge** | Lash | 1 | 5 | — | +2 / 4 / 6 / 8 / 10 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:122-137` | `crit_chance_add` |

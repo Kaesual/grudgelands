@@ -30,8 +30,11 @@
 --      melee_damage_add), settles one outgoing action (weapon wear), one
 --      trinket proc and the rage; an unclaimed packet lands nothing;
 --   N  knockback per source (ruling 2.1.3): refused punch, ally, unflagged
---      player, nested punch, PvP cast, arrow, nil hitter push 0; PvP melee
---      and a mob hit push; a rider and the dragon slam push 0.
+--      player, nested punch, PvP cast or player arrow, nil hitter push 0;
+--      PvP melee, a mob hit and a mob projectile push; a rider and the
+--      dragon slam push 0;
+--   R  the unreachable WP38 tool/fist accumulator, wear accumulator and
+--      ordinary-input seam are gone (CMB-03), with no caller left.
 -- Prints "R37 CB PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -636,7 +639,7 @@ do
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N ability damage never pushes")
 	grug_core.in_ability_punch = false
 	eq(push(b, mob({_cmi_is_mob = true})), 5, "N a mob hit pushes")
-	eq(push(b, mob({name = "grug_mobs:arrow"})), 0, "N a mob arrow pushes 0")
+	eq(push(b, mob({name = "grug_mobs:arrow"})), 5, "N a mob projectile pushes (ruling 2026-10-06)")
 	eq(push(b, nil), 0, "N a punch without hitter pushes 0")
 	player_attached.b = true
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N a rider is not pushed")
@@ -644,6 +647,26 @@ do
 	slam_hit = true
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N the dragon slam pushes 0")
 	slam_hit = false
+end
+
+------------------------------------------------------------------------------
+-- R: the WP38 tool/fist machinery is gone (CMB-03).
+------------------------------------------------------------------------------
+do
+	for _, name in ipairs({"prepare_accumulated_melee", "commit_accumulated_melee",
+			"apply_accumulated_melee", "reset_accumulated_melee", "invalidate_melee_target",
+			"register_ordinary_melee_input_handler", "handle_ordinary_melee_input",
+			"melee_wear_due", "forget_melee_wear"}) do
+		eq(grug_core[name], nil, "R grug_core." .. name .. " is gone")
+	end
+	for _, file in ipairs({"mods/ENTITIES/mobs/api.lua", "mods/PLAYER/grug_abilities/init.lua",
+			"mods/CORE/grug_core/combat.lua", "mods/ENTITIES/grug_mobs/init.lua"}) do
+		local text = read(file)
+		for _, word in ipairs({"accumulated_melee", "melee_wear", "ordinary_melee",
+				"invalidate_melee_target", "grug_fraction"}) do
+			check(not text:find(word, 1, true), "R no " .. word .. " left in " .. file)
+		end
+	end
 end
 
 if failures > 0 then
