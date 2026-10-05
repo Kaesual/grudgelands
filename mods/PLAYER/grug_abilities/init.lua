@@ -2265,7 +2265,6 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		-- let a synchronous same-attacker punch become a second damage/proc path.
 		return true
 	end
-	local selected = selected_swing_def(hitter)
 	if not authoritative_token then
 		-- The handler sets the enemy/ally lock as appropriate. A direct hostile
 		-- packet sets one latch for the next throttled attack pass even after release;
@@ -2318,7 +2317,11 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 
 	-- Build the full-swing equivalent first. Ability swings are always one
 	-- full authoritative interval; native tools/fists retain tflp scaling.
-	local authoritative = authoritative_token ~= nil and selected ~= nil
+	-- The claimed token alone makes the swing authoritative (Round 37,
+	-- CMB-01): the Strike fallback with Loose or a cast skill wielded is the
+	-- same transaction as a wielded swing skill (its melee_damage_add, weapon
+	-- wear and trinket proc), whatever the hand holds.
+	local authoritative = authoritative_token ~= nil
 	if not authoritative then
 		-- Preserve the pre-existing ordinary tool/fist PvP acquisition and combat
 		-- marking semantics. Ability swings already acquired on their input packet
