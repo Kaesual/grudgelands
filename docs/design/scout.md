@@ -59,8 +59,8 @@ since Round 33), through a
 new `grug_classes.get_ranged_bonus` (`skill_trees.md` §7, task 9).
 
 Ruling 12 rules out poison and traps outright, and ruling 7 already did for
-poison: "no new combat mechanic". `classes.md:475-487` planned poison as "the
-**Rogue's** signature damage type" for a Phase-2 Rogue class; **that plan is
+poison: "no new combat mechanic". `classes.md` once planned poison as the signature
+damage type of a planned Phase-2 melee class; **that plan is
 superseded by the Scout** and the correction is made in `classes.md`'s own
 commit.
 
@@ -161,7 +161,7 @@ The following
 quoted passage records the older baseline and is not current implementation:
 
 > "leather — the Leatherworker's six leather grades (§3.4). Registered
-> **`false`** below (its only wearer, the Rogue, is Phase 2) but **NAMED**
+> **`false`** below (its only wearer was a planned Phase-2 melee class) but **NAMED**
 > here, so the day it registers nothing is invented."
 
 The six grades are `light / cured / heavy / scaled / sleek / nightscale`, one
@@ -178,7 +178,7 @@ The downstream contract is:
   is created; the Scout is an intended wearer.
 - `character_visuals.md` §3 defines leather as its own complete armor family.
   SCOUT reuses those shipped overlays without adding or borrowing art.
-- `items_crafting.md` §10 P2 records that the old Phase-2 Rogue/signature-
+- `items_crafting.md` §10 P2 records that the old Phase-2 melee-class/signature-
   mirror assumption is superseded; the Scout does not revive that scope.
 
 
@@ -248,7 +248,7 @@ Ruling 12 in one table. Nothing here is rejected; it is sequenced.
 | Left out | Ruling | Where it went |
 |---|---|---|
 | **Invisibility** | 12: "no invisibility in version 1" | §8, whole, with rulings 8's detection rules and the three blocking conflicts it carries. The Veil capstone is **Untouchable** instead (`skill_trees.md` §2.8) — a strong, time-limited dodge window built from a stat the game already rolls |
-| **Poison** | 7 and 12 | nowhere. `classes.md:475-487`'s Phase-2 Rogue plan is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
+| **Poison** | 7 and 12 | nowhere. `classes.md`'s plan for a Phase-2 melee class is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
 | **Traps** | 12 | nowhere. Ruling 7 allowed them "if cheap"; ruling 12 removed the option, and they were the one idea in the class that needed a placed-entity lifecycle |
 | **A third resource** | 14: the Scout uses mana | nowhere; §1 |
 | **A quiver item** | removed in Round 28 (ruling 26) | the quiver is a Scout-only slot that every Scout has from the start (§3) |

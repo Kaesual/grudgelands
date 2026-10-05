@@ -1104,7 +1104,7 @@ main profession slot (professions.md §1).
   registrations land with WP29's catalog merge. Under the §3.0.3 merge
   this covers the **craft** ladder too — one catalog, so the line ships
   vendor and craft at once (§3.4). The Scout replaces the retired separate
-  Rogue plan; no later Rogue wearer is implied.
+  Phase-2 melee-class plan; no later leather wearer of that plan is implied.
 - Cultural-region vendor presentation and the same-race purchase discount
   layer on top without changing catalog strength or buy-back
   ([economy.md](economy.md) §2).

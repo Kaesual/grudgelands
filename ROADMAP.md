@@ -350,8 +350,8 @@ ends fresh-server development mode.
 
 ## Phase 2 — Expansion
 
-- [ ] Paladin, Rogue, Warlock and Shaman. Scout already owns the delivered bow
-  and melee class paths; its stealth remains deferred.
+- [ ] Further classes, names open. Scout already owns the delivered bow and
+  melee class paths; its stealth remains deferred.
 - [ ] Further coastal-shelf life and shore wildlife inside the editable shelf,
   without redefining deep ocean or dragon channels. Shallow coral/kelp and
   fishing already shipped in bounded rounds; missing roster/media remains future.
