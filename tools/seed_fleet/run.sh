@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Seed fleet (Round 34 F3): the portable world (tools/r28_zone_atlas/world.lua,
-# ~16-18 s per seed under LuaJIT) over a fixed list of seeds, so a change to
-# world generation shows every seed that no longer builds, with its error.
+# Seed fleet (Round 34 F3, per-chunk sample since Round 37): the real mapgen
+# runtime as main builds it plus five chunks planned and written against a
+# fake VoxelManip (tools/seed_fleet/seed.lua, ~20-25 s per seed under LuaJIT)
+# over a fixed list of seeds, so a change to world generation shows every seed
+# that no longer builds, with its error.
 #   tools/seed_fleet/run.sh [quick|full] [EXTRA]
 #     quick   the first 100 seeds of seeds.txt (default)
 #     full    every seed of seeds.txt (about 300)
