@@ -54,8 +54,9 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   gives you a Claim Stone: a protected 101 × 101 plot in your faction's
   level 11–30 lands (not in a capital's zone), kept running with coal or
   charcoal, with access for the friends you choose.
-- **Adventure together.** Choose one of two factions and six peoples, shape
-  your character's look, earn cloaks through achievements, then form a
+- **Adventure together.** Choose one of two factions and one of six
+  peoples (Human, Dwarf or Elf for The Accord; Orc, Troll or Undead for
+  The Throng), shape your character's look, earn cloaks through achievements, then form a
   party with up to ten players of your faction. Party health displays and
   atlas markers help you stay together while exploring and fighting.
 - **A world you can hear.** Creatures, spells, crafting and the people you
@@ -64,8 +65,9 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   music.
 - **Fight the other faction when you choose to.** Contested lands and enemy
   territory flag you for PvP, a button flags you anywhere, and only two
-  flagged players can harm each other. Each faction holds a fortress at the
-  front and sends its players to raid the enemy's war camps.
+  flagged players can harm each other. The other faction's kings, Generals
+  and guards attack you whatever your flag. Each faction holds a fortress
+  at the front and sends its players to raid the enemy's war camps.
 
 The Accord and The Throng live on rival continents, Elandor and Kragmar,
 divided by an old conflict. A rising threat beneath the world gives both
@@ -102,16 +104,19 @@ stats, and the sound controls. The short version:
 
 ## Current state
 
-*Last updated: 2026-10-05. The current version is the newest entry of the
+*Last updated: 2026-10-06. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 36, "The main questline": each
-faction's main story from level 41 to 60, with its finale against Isquarre
-at the rift, and decoration for every village, camp and point of interest.
-Round 37 fixes what an October 2026 review of the code and the
-documentation found. Worlds made before Round 36 and its last fixes miss
-part of it (the decoration, the dragon arenas, benches, ground cover and
-roads are made with the world), so start a new world.
+The latest finished round is Round 37, "Audit fixes": what an October 2026
+review of the code and the documentation found, from creatures that keep
+to the player holding their attention in a group fight to mounts that no
+longer throw you off when a buff runs out, plus calmer start zones and
+less server work per player. Round 36 before it brought each faction's
+main story from level 41 to 60, with its finale against Isquarre at the
+rift, and decoration for every village, camp and point of interest.
+Worlds made before Round 36 and its last fixes miss part of it (the
+decoration, the dragon arenas, benches, ground cover and roads are made
+with the world), so start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the
@@ -255,7 +260,7 @@ investigations and delivery records.
 | World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns and capitals; [story](docs/design/story.md): factions and the campaign. |
 | Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
-| Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
+| Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags and crafting stations; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps, minimap and markers. |
 | Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
