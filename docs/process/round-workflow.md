@@ -98,15 +98,15 @@ the end, once the mapgen is finished
 
 **Seed fleet** (user decisions 2026-10-04 and 2026-10-05; POIs stay at fixed
 anchors, so robustness across seeds comes from testing).
-`tools/seed_fleet/run.sh` builds the portable world (the load path up to the
-R7 anchor roster) for the fixed seeds of `tools/seed_fleet/seeds.txt`, 8 in
-parallel under idle scheduling, never with a wall-clock kill, prints every
-failed seed with its error and exits 1. `quick` (100 seeds, about 4–5
-minutes) runs before merge only for a change to the terrain, placement
+`tools/seed_fleet/run.sh` builds the real mapgen runtime (up to the R7
+anchor roster) and plans and writes five chunks per seed for the fixed seeds
+of `tools/seed_fleet/seeds.txt`, 8 in parallel under idle scheduling, never
+with a wall-clock kill, prints every failed seed with its error and exits 1.
+`quick` (100 seeds, about 6 minutes) runs before merge only for a change to the terrain, placement
 (anchors, water, roads, capitals, zones), footprints (composition bounds,
 plots, protection shapes) or the world writer's logic; a change that only
 swaps or turns nodes (decor rows, a bench's facing, a material) needs no
-run. `full` (about 300 seeds, about 13 minutes) runs at the end of a round
+run. `full` (about 300 seeds, about 17 minutes) runs at the end of a round
 only when such a change merged since the last `full`. The reviewer checks
 the run's summary line (all seeds build) and that a changed seed list is
 explained.

@@ -393,8 +393,18 @@ The topic rules below name the one path to use; the
 - The **seed fleet** gates world-generation changes
   ([round workflow](docs/process/round-workflow.md#3-gates)); a change that only
   places, swaps or turns nodes needs no run.
-<!-- Round 37: lane MG's paragraph on the treeless chunk-border bands
-(MGT-03) goes here. -->
+- **One layout assembly** (Round 37): `wp40/world_assembly.lua` is the world's
+  layout wiring; `r7_runtime.lua`, every portable tool and the seed fleet build
+  on it, never on a copy. The seed fleet (`tools/seed_fleet/runtime.lua`)
+  builds the real runtime and plans and writes five chunks per seed through
+  `plan_slice` and the writer against a fake VoxelManip, about 25 s per seed
+  (`quick` about 6 minutes at 6–8 parallel, `full` about 17 minutes); a
+  `fail()` on the per-chunk path still stops the server and must pass `quick`.
+- **Decorations are owner-only:** tall trees are lost in height bands
+  (emergent jungle trees: no ground at y ≡ 15..50 mod 80) and on 2–4-node
+  lines along chunk borders
+  ([R6 contract](docs/research/wp40-simple-map-r6-contract.md) §8.2,
+  "Treeless bands"); the fix is a BACKLOG item.
 
 ## Licenses
 

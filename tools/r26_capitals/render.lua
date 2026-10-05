@@ -23,8 +23,7 @@ local floor, sqrt, max, min, abs = math.floor, math.sqrt, math.max, math.min, ma
 local t0 = os.clock()
 local run = W.plan(seed)
 local texts = W.planner.split(run.text .. "\n")
-io.stderr:write(("seed %s: session %.1f s, planning total %.1f s\n"):format(seed,
-	run.seconds.session, run.seconds.total))
+io.stderr:write(("seed %s: planning total %.1f s\n"):format(seed, run.seconds.total))
 
 -- minimal JSON
 local function json(v, out)

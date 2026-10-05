@@ -2,10 +2,11 @@
 --
 --   local W = dofile(repo .. "/tools/r25_road_poi/world.lua")(repo, seed)
 --
--- Builds the real zones.lua / simple_map.lua / height.lua session with the
--- water and ROAD layouts (the network roads and trails; the capital streets
--- are not planned here, and the capitals' protected cities are stood in by a
--- 241-node square round each capital anchor), the R7 anchor roster and
+-- Builds the real zones.lua / simple_map.lua / height.lua session through the
+-- shared `wp40/world_assembly.lua` with the water and ROAD layouts (the
+-- network roads and trails; the capital streets are not planned here, and the
+-- capitals' protected cities are stood in by a 241-node square round each
+-- capital anchor), the R7 anchor roster and
 -- functional-anchor overlay, main's preparation of every POI, village and
 -- camp blueprint (`r7_settlement.prepare`, as `r7_runtime.lua` does), and
 -- the world protection exactly as `r7_loader.lua` builds it. Returns
@@ -18,54 +19,19 @@
 --   sha (raw SHA-256), seconds = {world, blueprints, protection}.
 return function(repo, seed)
 	local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	_G.core = _G.core or {}
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local sha = common.new_sha256()
-	local tdata = dofile(dir .. "/terrain_data.lua")
-	local source = dofile(dir .. "/source/simple_map.lua")
-	local simple_map_factory = dofile(dir .. "/simple_map.lua")(dofile(dir .. "/zone_field.lua"))
-	local CITY_HALF = 120
-	local shapes = {}
-	for index = 1, #source.anchors do
-		local anchor = source.anchors[index]
-		if anchor.slot_id == "capital" then
-			local ax, az = anchor.position.x, anchor.position.z
-			shapes[anchor.id] = {member = function(x, z)
-				return math.abs(x - ax) <= CITY_HALF and math.abs(z - az) <= CITY_HALF
-			end}
-		end
-	end
-	local protection_holder = {shapes = shapes}
-	local function horizontal_factory(deps)
-		local bound = {}
-		for k, v in pairs(deps) do bound[k] = v end
-		bound.capital_protection = protection_holder
-		return simple_map_factory(bound)
-	end
-	local water = {module = dofile(dir .. "/water_layout.lua")(tdata.water),
-		authored = dofile(dir .. "/water_authored.lua")(tdata.water), plot_rects = {}}
-	local roads = {module = dofile(dir .. "/road_layout.lua")}
-	local hf = dofile(dir .. "/height.lua")
-	_G.core = _G.core or {}
-	local settlement = dofile(dir .. "/r7_settlement.lua")
-	local palette = dofile(dir .. "/../wp13/palette.lua")
-	local TWIN = {["default:dirt_with_dry_grass"] = "default:dry_dirt_with_dry_grass"}
-	local start_grounds = {}
-	for _, profile in ipairs(settlement.roster) do
-		if profile.slot == "start" then
-			local ground = palette.races[profile.race].ground
-			start_grounds[profile.anchor_id] = {ground = TWIN[ground] or ground}
-		end
-	end
+	local A = dofile(dir .. "/world_assembly.lua")(dir, sha)
+	local source, settlement, index128 = A.source, A.settlement, A.index128
+	local W = A.world(seed, nil, {protection = A.square_cities(120)})
+	local roads = W.roads
 	-- the height session itself is kept for the tools that ask the natural
 	-- (pre-fitting) ground (`natural_height_at`)
 	local held = {}
-	local function height_factory(deps)
-		local bound = {}
-		for k, v in pairs(deps) do bound[k] = v end
-		bound.water = water
-		bound.roads = roads
-		bound.start_grounds = start_grounds
-		local module = hf(bound)
+	local height_factory = W.height_factory
+	W.height_factory = function(deps)
+		local module = height_factory(deps)
 		local new_runtime = module.new_runtime
 		if type(new_runtime) == "function" then
 			module.new_runtime = function(...)
@@ -77,15 +43,8 @@ return function(repo, seed)
 		end
 		return module
 	end
-	local index128 = dofile(dir .. "/index128.lua")
 	local t0 = os.clock()
-	local zones = dofile(dir .. "/zones.lua")({source = source,
-		schemas = dofile(dir .. "/schemas.lua"), canonical = dofile(dir .. "/canonical.lua"),
-		deterministic = dofile(dir .. "/deterministic.lua"),
-		index128 = index128, horizontal_factory = horizontal_factory,
-		height_factory = height_factory,
-		terrain_field = dofile(dir .. "/terrain_field.lua")(tdata), raw_sha256 = sha})
-	local raw_session, planner_source = zones.new_with_planner_source_runtime(seed, 1)
+	local raw_session, planner_source = W.zones().new_with_planner_source_runtime(seed, 1)
 	local roster = dofile(dir .. "/r7_anchor_roster.lua")(source, raw_session,
 		planner_source, sha)
 	local session = dofile(dir .. "/r7_zone_overlay.lua")(raw_session, roster)

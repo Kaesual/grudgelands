@@ -176,7 +176,7 @@ return function(dependencies)
 		local planner, planner_fixture = planner_constructor({
 			full_seed_string = full_seed_string, planner_source = planner_source,
 			r5_planner = r5_planner, horizontal = horizontal,
-			content = content_module, templates = templates_module, hash = hash,
+			content = content_module, hash = hash,
 			source = dependencies.source, construction_identity = identity_holder,
 			counting_allocator = planner_allocator,
 		})

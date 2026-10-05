@@ -4,7 +4,9 @@ local function planner_factory()
 	local MAX_SAFE = 9007199254740991
 	local MAX_AXIS = 80
 	local MAX_COLUMNS = 6400
-	local MAX_CELLS = 100
+	-- An 80-node slice touches at most 6 x 6 of the 16-node decoration cells
+	-- (a chunk exactly its 5 x 5).
+	local MAX_CELLS = 36
 	local MAX_CANDIDATES = 65536
 	local COLUMN_STRIDE = 12
 	local CELL_STRIDE = 4
@@ -17,6 +19,17 @@ local function planner_factory()
 
 	local function fail(code, message)
 		error(code .. ": " .. message, 0)
+	end
+
+	-- The error handler of the transaction wrapper below: a failure keeps its
+	-- stack (once, however deeply the wrappers nest), so a seed-fleet run and
+	-- a server log both show where it failed.
+	local function with_traceback(message)
+		if type(message) ~= "string" or message:find("\nstack traceback:", 1, true) or
+				type(debug) ~= "table" or type(debug.traceback) ~= "function" then
+			return message
+		end
+		return debug.traceback(message, 2)
 	end
 
 	local function integer(value, label, minimum, maximum)
@@ -69,7 +82,7 @@ local function planner_factory()
 		local runtime_mode = construction_mode == "runtime"
 		exact_fields(dependencies, {
 			full_seed_string = true, planner_source = true, r5_planner = true,
-			horizontal = true, content = true, templates = true, hash = true,
+			horizontal = true, content = true, hash = true,
 			source = true, construction_identity = true, counting_allocator = true,
 		}, "planner dependencies")
 		local full_seed = dependencies.full_seed_string
@@ -80,7 +93,6 @@ local function planner_factory()
 		local r5_planner = dependencies.r5_planner
 		local horizontal = dependencies.horizontal
 		local content = dependencies.content
-		local templates = dependencies.templates
 		local hash = dependencies.hash
 		local source = dependencies.source
 		local identity_holder = dependencies.construction_identity
@@ -96,7 +108,7 @@ local function planner_factory()
 				type(r5_planner) ~= "table" or type(r5_planner.plan_slice) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
-				type(content) ~= "table" or type(templates) ~= "table" or
+				type(content) ~= "table" or
 			type(hash) ~= "table" or type(source) ~= "table" or
 			type(identity_holder) ~= "table" or identity_holder.value == nil then
 			fail("fail_source", "planner construction seam differs")
@@ -203,11 +215,6 @@ local function planner_factory()
 			local zone = source.zones[index]
 			if zone.primary_relief_id == "mountain" then mountain_zone[zone.id] = true end
 		end
-		local max_footprint_x, _, max_footprint_z = templates.maximum_footprint()
-		local halo_x = math.ceil(math.max(0, max_footprint_x - 1) / 16)
-		local halo_z = math.ceil(math.max(0, max_footprint_z - 1) / 16)
-		if halo_x > 2 or halo_z > 2 then fail("fail_bound", "candidate halo differs") end
-
 		local candidate_capacity = (evidence_only or runtime_mode) and 16384 or
 			MAX_CANDIDATES
 		local column_values = retained_array("r6_planner_column_values",
@@ -676,10 +683,14 @@ local function planner_factory()
 					column_values[base + 12] = surface and surface.dust_ref or 0
 				end
 			end
-			local first_cell_x = floor_div(min_x, 16) - halo_x
-			local last_cell_x = floor_div(max_x, 16) + halo_x
-			local first_cell_z = floor_div(min_z, 16) - halo_z
-			local last_cell_z = floor_div(max_z, 16) + halo_z
+			-- Only the slice's own cells: a cell's roots are its own 16 x 16
+			-- columns and the writer places only roots inside its owner (Round 37,
+			-- audit MGT-02: the former 2-cell halo around the slice built
+			-- candidates nothing ever placed). Cells keep their z-then-x order.
+			local first_cell_x = floor_div(min_x, 16)
+			local last_cell_x = floor_div(max_x, 16)
+			local first_cell_z = floor_div(min_z, 16)
+			local last_cell_z = floor_div(max_z, 16)
 			local cell_count, candidate_count = 0, 0
 			for cell_z = first_cell_z, last_cell_z do
 				for cell_x = first_cell_x, last_cell_x do
@@ -730,8 +741,9 @@ local function planner_factory()
 				fail("fail_bound", "slice bounds differ")
 			end
 			allocator:enter_hotpath("r6_plan_slice")
-			local ok, result, generation = pcall(plan_slice_core, min_x, min_y, min_z,
-				max_x, max_y, max_z)
+			local ok, result, generation = xpcall(function()
+				return plan_slice_core(min_x, min_y, min_z, max_x, max_y, max_z)
+			end, with_traceback)
 			allocator:leave_hotpath("r6_plan_slice")
 			if not ok then error(result, 0) end
 			return result, generation
@@ -748,7 +760,6 @@ local function planner_factory()
 				peak_candidates = metrics.peak_candidates,
 				peak_column_value_cells = metrics.peak_column_value_cells,
 				peak_candidate_value_cells = metrics.peak_candidate_value_cells,
-				candidate_halo_x_cells = halo_x, candidate_halo_z_cells = halo_z,
 				candidate_scratch_capacity = candidate_capacity,
 				runtime_column_cache_limit =
 					source_metrics.runtime_column_cache_limit or 0,

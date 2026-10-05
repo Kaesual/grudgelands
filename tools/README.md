@@ -28,17 +28,24 @@ A new fixture follows the same contract: it takes the repository path as
 
 ## Seed fleet
 
-`tools/seed_fleet/run.sh` builds the portable world (`r28_zone_atlas/world.lua`,
-the load path up to the R7 anchor roster) for the fixed seeds of
-`tools/seed_fleet/seeds.txt`, eight at a time under idle scheduling and without
-a wall-clock limit, prints each failed seed with its error and a summary, and
-exits 1 on any failure (the [round workflow](../docs/process/round-workflow.md#3-gates)
-says when each size is required).
+`tools/seed_fleet/run.sh` builds, for the fixed seeds of
+`tools/seed_fleet/seeds.txt`, the real mapgen runtime as main builds it on a
+world's first start (`seed_fleet/runtime.lua`: `r7_runtime.lua` and its
+`build`, up to the R7 anchor roster and every settlement's configuration) and
+plans and writes five chunks per seed (a corner, a coast, a river mouth, a
+capital edge, a settlement collar) through the real per-chunk path against a
+fake VoxelManip, about 25 s per seed. It runs eight seeds at a time under idle
+scheduling and without a wall-clock limit, prints each failed seed with its
+error (a chunk failure names the chunk and keeps the traceback) and a summary,
+and exits 1 on any failure (the
+[round workflow](../docs/process/round-workflow.md#3-gates) says when each
+size is required).
 
 ```sh
-tools/seed_fleet/run.sh quick         # the first 100 seeds (about 4 minutes)
-tools/seed_fleet/run.sh full          # every seed, about 300 (about 13 minutes)
+tools/seed_fleet/run.sh quick         # the first 100 seeds (about 6 minutes at 6-8 parallel)
+tools/seed_fleet/run.sh full          # every seed, about 300 (about 17 minutes)
 tools/seed_fleet/run.sh quick 20      # plus 20 random seeds (printed)
+RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result line
 ```
 
 ## Other checks

@@ -1,9 +1,9 @@
 -- Round 26 Lane W: the capital planning phase of a world's first boot, per
--- seed, without the engine (LuaJIT). Mirrors `r7_runtime.lua` exactly as
--- tools/r25_capital_plots/harness.lua does: the horizontal + height session,
--- inland water, road layout, main's plot preparations, `r7_capitals.plan_all`
--- -- against the repo tree given as <repo>, so the same file runs main and a
--- branch.
+-- seed, without the engine (LuaJIT), built as the runtime builds it (the
+-- shared `wp40/world_assembly.lua`, like tools/r25_capital_plots/harness.lua):
+-- the horizontal + height session, inland water, road layout, main's plot
+-- preparations, `r7_capitals.plan_all` -- against the repo tree given as
+-- <repo>, so the same file runs main and a branch.
 --
 --   local W = dofile(".../tools/r26_capitals/world.lua")(repo)
 --   local run = W.plan(seed)   -- {session, plans = {key -> plan}, inputs,
@@ -19,44 +19,16 @@ return function(repo)
 	_G.core = _G.core or {}
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local raw_sha256 = common.new_sha256()
-
-	local source = dofile(dir .. "/source/simple_map.lua")
-	local schemas = dofile(dir .. "/schemas.lua")
-	local canonical = dofile(dir .. "/canonical.lua")
-	local deterministic = dofile(dir .. "/deterministic.lua")
-	local terrain_data = dofile(dir .. "/terrain_data.lua")
-	local terrain_field = dofile(dir .. "/terrain_field.lua")(terrain_data)
-	local simple_map_factory = dofile(dir .. "/simple_map.lua")(dofile(dir .. "/zone_field.lua"))
-	local height_module_factory = dofile(dir .. "/height.lua")
-	local settlement = dofile(dir .. "/r7_settlement.lua")
-	local capitals = dofile(dir .. "/r7_capitals.lua")(dir)
+	local A = dofile(dir .. "/world_assembly.lua")(dir, raw_sha256)
+	local capitals = A.capitals
 	local planner = capitals.planner
-	local palette = dofile(dir .. "/../wp13/palette.lua")
-	local TWIN = {["default:dirt_with_dry_grass"] = "default:dry_dirt_with_dry_grass"}
-	local start_grounds = {}
-	for _, profile in ipairs(settlement.roster) do
-		if profile.slot == "start" then
-			local ground = palette.races[profile.race].ground
-			start_grounds[profile.anchor_id] = {ground = TWIN[ground] or ground}
-		end
-	end
-
+	local key_of = {}
+	for _, profile in ipairs(A.capital_profiles) do key_of[profile.anchor_id] = profile.key end
 	-- plot preparations are seed-independent: once per process
-	local profiles, kits, prepared, key_of = {}, {}, {}, {}
-	for _, profile in ipairs(settlement.roster) do
-		if profile.slot == "capital" then
-			profiles[#profiles + 1] = profile
-			key_of[profile.anchor_id] = profile.key
-			local kit = capitals.source.kit(profile.key)
-			kits[profile.key] = kit
-			for _, plot in ipairs(kit.plots) do
-				prepared[profile.key .. "_" .. plot.id] = settlement.prepare_plot(profile, plot, raw_sha256)
-			end
-		end
-	end
+	A.capital_plots()
 
-	local W = {planner = planner, capitals = capitals, profiles = profiles, kits = kits,
-		key_of = key_of, source = source, sha256 = raw_sha256}
+	local W = {planner = planner, capitals = capitals, profiles = A.capital_profiles,
+		kits = A.capital_kits, key_of = key_of, source = A.source, sha256 = raw_sha256}
 
 	function W.plan(seed)
 		local plans, inputs, order = {}, {}, {}
@@ -85,40 +57,14 @@ return function(repo)
 			return plan
 		end
 		local t0 = os.clock()
-		local water = {module = dofile(dir .. "/water_layout.lua")(terrain_data.water),
-			authored = dofile(dir .. "/water_authored.lua")(terrain_data.water)}
-		local roads = {module = dofile(dir .. "/road_layout.lua")}
-		local reuse = {}
-		local protection_holder = {}
-		local function horizontal_factory(deps)
-			local bound = {}
-			for k, v in pairs(deps) do bound[k] = v end
-			bound.capital_protection = protection_holder
-			return simple_map_factory(bound)
-		end
-		local function height_factory(deps)
-			local bound = {}
-			for k, v in pairs(deps) do bound[k] = v end
-			bound.water, bound.roads, bound.reuse = water, roads, reuse
-			bound.start_grounds = start_grounds
-			return height_module_factory(bound)
-		end
-		local horizontal = horizontal_factory({source = source, schemas = schemas,
-			canonical = canonical, deterministic = deterministic,
-			raw_sha256 = raw_sha256}).new(seed)
-		local session = height_factory({source = source, canonical = canonical,
-			deterministic = deterministic, raw_sha256 = raw_sha256,
-			horizontal_session = horizontal, terrain_field = terrain_field}).new_runtime(seed)
-		local t_session = os.clock() - t0
-		local ok, text, rows, stats = pcall(capitals.plan_all, {seed = seed, session = session,
-			roads = roads.module, anchors = source.anchors, profiles = profiles, kits = kits,
-			prepared = prepared, authored = water.authored,
-			simplex = terrain_field.simplex, proxy = terrain_data.water.LAKE_PROXY})
+		local world = A.world(seed)
+		local ok, err = pcall(world.plan_capitals)
 		planner.plan = original_plan
-		if not ok then error(text, 0) end
-		return {session = session, horizontal = horizontal, plans = plans, inputs = inputs,
-			order = order, text = text, rows = rows, stats = stats, water = water,
-			seconds = {session = t_session, total = os.clock() - t0}}
+		if not ok then error(err, 0) end
+		return {session = world.planning_session, horizontal = world.planning_horizontal,
+			plans = plans, inputs = inputs, order = order, text = world.capital_layout_text,
+			rows = world.capital_rows, stats = world.capital_stats, water = world.water,
+			seconds = {total = os.clock() - t0}}
 	end
 
 	return W

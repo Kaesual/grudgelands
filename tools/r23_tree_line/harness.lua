@@ -127,24 +127,6 @@ function H.new(repo)
 			habitat_module or habitat)
 	end
 
-	-- Template footprints from the MTS headers (the planner's halo only).
-	function B.templates()
-		local mx, my, mz = 1, 1, 1
-		for _, row in ipairs(manifest.decorations) do
-			if row.kind == "template" then
-				local dir = row.asset_or_node:match("^grug_gravewood_") and
-					"/mods/ITEMS/grug_trees/schematics/" or "/mods/BASE/default/schematics/"
-				local bytes = common.read_file(repo .. dir .. row.asset_or_node)
-				local function u16(o) local a, b = bytes:byte(o, o + 1) return a * 256 + b end
-				assert(bytes:sub(1, 4) == "MTSM")
-				local sx, sy, sz = u16(7), u16(9), u16(11)
-				mx, mz = math.max(mx, sx, sz), math.max(mz, sx, sz)
-				my = math.max(my, sy)
-			end
-		end
-		return {maximum_footprint = function() return mx, my, mz end}
-	end
-
 	-- The real R6 planner over a planner source; the R5 planner is a stub
 	-- (the decoration rows do not read its plan).
 	function B.planner(full_seed, planner_source, content, source)
@@ -156,7 +138,7 @@ function H.new(repo)
 			r5_planner = {plan_slice = function()
 				return {construction_identity = identity}, 1
 			end},
-			horizontal = planner_source, content = content, templates = B.templates(),
+			horizontal = planner_source, content = content,
 			hash = dofile(wp40 .. "/r6_hash.lua")(sha), source = source or {zones = {}},
 			construction_identity = {value = false},
 			counting_allocator = allocator_factory.new("grug_wp40_r6_planner_allocator_v1"),

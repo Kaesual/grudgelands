@@ -1351,6 +1351,16 @@ achievements](#cloaks-and-achievements).
   reach **`emax.y`**, not `maxp.y`, because the engine places decorations up to
   the emerged top edge (`mg_decoration.cpp:424`) — clamping to `maxp.y` is what
   once left floating tree crowns over the water.
+  **One layout assembly** (Round 37): inland water, roads, the start towns'
+  ground, the capital planning and joins, and the horizontal and height
+  factories live in `wp40/world_assembly.lua`, which `r7_runtime.lua` and
+  every portable tool and the seed fleet build on (`tools/seed_fleet/
+  runtime.lua` runs the real runtime and its per-chunk path against a fake
+  VoxelManip); a tool never copies that wiring. **Decorations are
+  owner-only**: a tree whose rotated footprint leaves its root's 80-node
+  chunk is dropped, so tall trees thin out in height bands and along chunk
+  borders (`docs/research/wp40-simple-map-r6-contract.md` §8.2, "Treeless
+  bands").
   **Current zone/level queries** (published by `grug_core/zone_authority.lua`,
   which is also the sole publisher of the `grug_zones` global — it refuses to
   install if something else already published it) — this is the whole
