@@ -629,6 +629,11 @@ Normal tier at level L:
   specials, and the dragons growl at their own wind-ups) then a ×3 damage hit into a
   **90° frontal cone** of **reach + 1.5 m** (normally **4.5 m**) that requires **line of
   sight** — stepping aside, out of range or behind cover is a clean miss.
+  "Stop" means the mob does nothing else while it winds up (Round 37,
+  user ruling): its facing freezes at the start, so the cone points where
+  the target stood then, and its ordinary swings and shots pause; the next
+  ordinary swing follows one attack interval after the cone hit
+  (`mobs/api.lua` `grug_winding_up`, `grug_mobs/telegraph.lua`).
   Cadence: the first wind-up needs **4 s of MELEE engagement** (a fight
   always opens with normal swings, and a ranged elite at distance never
   winds up into empty air), afterwards one every **10 s**. The same
