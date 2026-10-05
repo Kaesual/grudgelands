@@ -1020,7 +1020,10 @@ On that condition, post one message-feed line alongside the "Reached level N!"
 level-up banner (`grug_xp/init.lua`, a large centre message since Round 28
 ruling 20, no longer a chat line) only when at least one point is unspent, directing
 the player to Inventory > Talents. No new globalstep, no new HUD element, no
-new packet.
+new packet. The banner itself names the points the jump earned in a second
+line, "You gained +1 Talent Point" (or "+N Talent Points" over several
+levels; Round 36 §2.14.4); both read the one rule
+`grug_classes.talent_points_at(level)` = floor(level / 2).
 
 ### 3.7 The KAT
 
