@@ -1,13 +1,13 @@
 --
--- The look step of character creation (round31-plan.md §2.1.5): after the
--- class, the last step before the arrival teleport. One page: previous/next
--- per category, a random button, a rotating full-body preview and one
--- confirm that stores the look for good (apply.lua `set_look`).
+-- The look part of the character-creation window (round35-plan.md §2.9):
+-- previous/next per category, a random button and a full-body preview the
+-- player turns with the mouse (no auto-rotation, no weapon).
 --
--- grug_classes owns the creation flow and asks this step whether it is done,
--- for its dialog and to act on its fields (`register_look_step`). The choice
--- in progress is a per-session draft; it is stored only on confirm, so a
--- player who leaves half-way starts the step again with a fresh draft.
+-- grug_classes owns the window and the draft, a session-only table, and asks
+-- this panel for a random look when the race changes, for its part of the
+-- formspec and for what its fields change (`register_look_panel`). The look
+-- is stored only by "Create character" (apply.lua `set_look`, once and for
+-- good).
 --
 
 local esc = core.formspec_escape
@@ -18,23 +18,21 @@ local LABEL = {tone = "Skin tone", hair = "Hair colour", style = "Hairstyle",
 local FEATURE_LABEL = {human = "Beard", dwarf = "Beard", elf = "Ears",
 	orc = "Tusks", troll = "Tusks", undead = "Face"}
 
--- player name -> draft look (indices), until confirmed or the player leaves
-local drafts = {}
+-- The panel's geometry inside its area: the preview on the left, then the
+-- selector rows (label, ‹, colour, option, ›) and Random.
+local MODEL_W = 3.4
+local GAP = 0.3
+local ROW = 0.75
+local LABEL_W = 2.3
+local STEP_W = 0.6
 
-local function draft(player)
-	local name = player:get_player_name()
-	local race = grug_classes.get_race(player)
-	local look = drafts[name]
-	if not look then
-		-- A random start, so the confirm button never hands out a default
-		-- every careless player shares.
-		look = grug_visuals.roll_look(race) or {}
-		drafts[name] = look
+local function category_label(race, category)
+	if category == "eyes" and race == "undead" then
+		return "Eye glow"
+	elseif category == "feature" then
+		return FEATURE_LABEL[race] or "Feature"
 	end
-	-- Normalized against the race each time: an admin may change it.
-	look = grug_visuals.normalize_look(race, look)
-	drafts[name] = look
-	return look, race
+	return LABEL[category]
 end
 
 local function option_text(def, category, index)
@@ -45,93 +43,86 @@ local function option_text(def, category, index)
 	return index .. " / " .. #def.options[category]
 end
 
-local function formspec(player, background)
-	local look, race = draft(player)
+local function roll(race)
+	return grug_visuals.roll_look(race)
+end
+
+local function formspec(race, look, x, y, w, h)
 	local def = grug_visuals.LOOKS[race]
+	if not def then
+		return ""
+	end
+	look = grug_visuals.normalize_look(race, look)
 	local texture = grug_visuals.compose({race = race, look = look}).textures[1]
 	local fs = {
-		"formspec_version[4]",
-		"size[11,8.4]",
-		background,
-		"label[0.5,0.6;Choose your appearance!]",
-		"label[0.5,1.1;" .. esc("Your look is set once, here. It cannot be " ..
-			"changed later.") .. "]",
-		-- Rotating, standing: `continuous` turns the model, frames 0..79 are
-		-- player_api's stand animation of character.b3d.
-		("model[0.4,1.5;3.8,6.6;look_preview;character.b3d;%s;0,180;true;false;0,79;30]")
-			:format(esc(texture)),
+		-- Standing, turned by the mouse only: frames 0..79 are player_api's
+		-- stand animation of character.b3d. The engine rebuilds the model with
+		-- every formspec, so a change resets the turn (accepted, BACKLOG).
+		("model[%.2f,%.2f;%.2f,%.2f;look_preview;character.b3d;%s;0,160;false;true;0,79;30]")
+			:format(x, y, MODEL_W, h, esc(texture)),
+		("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, y, MODEL_W, h,
+			esc("Drag with the mouse to turn your character.")),
 	}
+	local sx = x + MODEL_W + GAP
+	local next_x = x + w - STEP_W
 	for index, category in ipairs(CATEGORIES) do
-		local y = 1.6 + (index - 1) * 0.9
-		local label = LABEL[category]
-		if category == "eyes" and race == "undead" then
-			label = "Eye glow"
-		elseif category == "feature" then
-			label = FEATURE_LABEL[race] or "Feature"
-		end
-		fs[#fs + 1] = ("label[4.6,%.2f;%s]"):format(y + 0.35, esc(label))
-		fs[#fs + 1] = ("button[6.6,%.2f;0.7,0.7;look_prev_%s;<]"):format(y, category)
+		local row_y = y + (index - 1) * ROW
+		local label = category_label(race, category)
+		local lower = label:lower()
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(sx, row_y + 0.3, esc(label))
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;look_prev_%s;<]"):format(
+			sx + LABEL_W, row_y, STEP_W, category)
+		fs[#fs + 1] = ("tooltip[look_prev_%s;%s]"):format(category,
+			esc("Previous " .. lower))
 		local colour = category ~= "style" and category ~= "feature" and
 			def.options[category][look[category]] or nil
+		local text_x = sx + LABEL_W + STEP_W + 0.1
 		if colour then
-			fs[#fs + 1] = ("box[7.5,%.2f;0.5,0.5;%s]"):format(y + 0.1, colour)
+			fs[#fs + 1] = ("box[%.2f,%.2f;0.45,0.45;%s]"):format(text_x, row_y + 0.08,
+				colour)
+			text_x = text_x + 0.55
 		end
-		fs[#fs + 1] = ("label[%.1f,%.2f;%s]"):format(colour and 8.15 or 7.5,
-			y + 0.35, esc(option_text(def, category, look[category])))
-		fs[#fs + 1] = ("button[9.9,%.2f;0.7,0.7;look_next_%s;>]"):format(y, category)
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(text_x, row_y + 0.3,
+			esc(option_text(def, category, look[category])))
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;look_next_%s;>]"):format(
+			next_x, row_y, STEP_W, category)
+		fs[#fs + 1] = ("tooltip[look_next_%s;%s]"):format(category,
+			esc("Next " .. lower))
 	end
-	fs[#fs + 1] = "button[4.6,6.3;6,0.8;look_random;Random]"
-	fs[#fs + 1] = "button[4.6,7.3;6,0.8;look_confirm;" ..
-		esc("Confirm \226\128\148 cannot be changed later") .. "]"
+	fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.7;look_random;Random]"):format(sx,
+		y + #CATEGORIES * ROW + 0.1, x + w - sx)
+	fs[#fs + 1] = "tooltip[look_random;" .. esc("Roll a random look.") .. "]"
 	return table.concat(fs)
 end
 
-local function handles(fields)
-	if fields.look_random or fields.look_confirm then
-		return true
-	end
-	for field in pairs(fields) do
-		if field:match("^look_prev_") or field:match("^look_next_") then
-			return true
-		end
-	end
-	return false
-end
-
-local function act(player, fields)
-	local look, race = draft(player)
-	local name = player:get_player_name()
-	if fields.look_confirm then
-		if grug_visuals.set_look(player, look) then
-			drafts[name] = nil
-		end
-		return
+-- The look after these fields, or nil when none of them is the panel's.
+local function act(race, look, fields)
+	local def = grug_visuals.LOOKS[race]
+	if not def then
+		return nil
 	end
 	if fields.look_random then
-		drafts[name] = grug_visuals.roll_look(race)
-		return
+		return grug_visuals.roll_look(race)
 	end
-	local def = grug_visuals.LOOKS[race]
+	look = grug_visuals.normalize_look(race, look)
 	for _, category in ipairs(CATEGORIES) do
 		local count = #def.options[category]
 		if fields["look_prev_" .. category] then
 			look[category] = (look[category] - 2) % count + 1
+			return look
 		elseif fields["look_next_" .. category] then
 			look[category] = look[category] % count + 1
+			return look
 		end
 	end
-	drafts[name] = look
+	return nil
 end
 
--- Kept on the mod table too, so an engine probe can drive the step.
-grug_visuals.creation_step = {
-	done = grug_visuals.has_look,
+-- Kept on the mod table too, so an engine probe can drive the panel.
+grug_visuals.creation_panel = {
+	roll = roll,
 	formspec = formspec,
-	handles = handles,
 	act = act,
+	store = grug_visuals.set_look,
 }
-grug_classes.register_look_step(grug_visuals.creation_step)
-
-core.register_on_leaveplayer(function(player)
-	drafts[player:get_player_name()] = nil
-end)
+grug_classes.register_look_panel(grug_visuals.creation_panel)

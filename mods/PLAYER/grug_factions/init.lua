@@ -6,7 +6,6 @@ end
 
 local META_FACTION = "grug_factions:faction"
 local META_KIT = "grug_factions:kit_given"
-local FORMNAME = "grug_factions:select"
 
 -- Starter kit per faction; granted exactly once.
 --
@@ -182,9 +181,9 @@ end
 
 local faction_chosen_callbacks = {}
 
--- func(player, faction_id) — called after every successful faction set,
--- including the selection dialog and the admin command. grug_classes chains
--- the race/class creation steps and re-binds the pending start identity here.
+-- func(player, faction_id) — called after every successful faction set:
+-- "Create character" (grug_classes/selection.lua) and the admin command.
+-- grug_classes re-binds the start identity of an arriving character here.
 function grug_factions.register_on_faction_chosen(func)
 	table.insert(faction_chosen_callbacks, func)
 end
@@ -282,53 +281,6 @@ function grug_factions.teleport_to_spawn(player)
 			p:set_pos(spawn)
 		end
 	end)
-end
-
---
--- Faction selection UI. grug_classes/selection.lua owns the creation flow
--- (Round 24 ruling 32): it shows this form as a dialog or as the player's
--- inventory formspec, routes both kinds of submission here and never re-opens
--- a dismissed dialog by itself.
---
-
-grug_factions.SELECTION_FORM = FORMNAME
-
-function grug_factions.selection_formspec()
-	return table.concat({
-		"formspec_version[4]",
-		"size[8.6,4.6]",
-		"no_prepend[]", grug_sounds.CLICK_STYLE,
-		"bgcolor[#080808FF;both;#000000FF]",
-		"label[0.5,0.7;", core.formspec_escape("Choose your faction!"), "]",
-		"label[0.5,1.3;", core.formspec_escape("This decision is final."), "]",
-		"style[choose_accord;bgcolor=", grug_core.factions.accord.color, "]",
-		"style[choose_throng;bgcolor=", grug_core.factions.throng.color, "]",
-		"button[0.5,2.1;3.6,1.6;choose_accord;The Accord]",
-		"button[4.5,2.1;3.6,1.6;choose_throng;The Throng]",
-	})
-end
-
--- Applies a faction choice from submitted selection fields and returns true
--- when a faction was set. Form fields are client input: the caller has
--- already checked that the faction step is the current one (world preparation
--- ready, no faction yet), so a stale or forged packet cannot commit early.
-function grug_factions.choose_from_fields(player, fields)
-	if grug_factions.get_faction(player) then
-		return false
-	end
-	local chosen
-	if fields.choose_accord then
-		chosen = "accord"
-	elseif fields.choose_throng then
-		chosen = "throng"
-	end
-	if not chosen then
-		return false
-	end
-	local def = grug_core.factions[chosen]
-	core.chat_send_player(player:get_player_name(),
-		core.colorize(def.color, "Welcome to the " .. def.name .. "!"))
-	return grug_factions.set_faction(player, chosen)
 end
 
 core.register_on_joinplayer(function(player)
