@@ -27,22 +27,29 @@ M.PERCHES = {{0, 0}, {18, 8}, {-15, 12}}
 -- No hazard nearer the spawn than this; none beyond radius - EDGE_MARGIN.
 M.SPAWN_CLEAR, M.EDGE_MARGIN = 9, 4
 
--- Breaking ice: blobs of a main circle and a smaller offset one {x, z, r}.
+-- Breaking ice: blobs of a main circle and a smaller offset one {x, z, r}
+-- (Round 36: one node wider than Round 31's 4.5 and 4).
 local ICE = {
-	{-12, -12, 4.5}, {13, -20, 4.5}, {26, -4, 4.5}, {-28, 6, 4},
-	{8, 26, 4}, {-6, -31, 4}, {-30, -6, 4},
+	{-12, -12, 5.5}, {13, -20, 5.5}, {26, -4, 5.5}, {-28, 6, 5},
+	{8, 26, 5}, {-6, -30, 5}, {-30, -6, 5},
 }
+M.ICE = ICE
+-- Broken ice (ice water) freezes back this many seconds after it broke, once
+-- nobody stands in it (grug_mapgen world_nodes.lua; Round 36: 2 minutes).
+M.ICE_REFREEZE = 120
 -- Frost terraces: level-1 circles and the level-2 circles inside them.
 local TERRACES = {
 	{outer = {{-22, -18, 6}, {-17, -24, 4}}, inner = {{-21, -20, 3}}},
 	{outer = {{26, 16, 5}, {21, 23, 4}}, inner = {{25, 18, 3}}},
 	{outer = {{-12, 26, 5}, {-5, 30, 4}}, inner = {{-10, 27, 3}}},
 }
--- Ember fissures {x1, z1, x2, z2, width}; the zigzag offsets across them.
+-- Ember fissures {x1, z1, x2, z2, width}; the zigzag offsets across them
+-- (Round 36: three and four nodes wide instead of one and two).
 local FISSURES = {
-	{-30, -10, -16, -4, 2}, {4, -32, 9, -17, 2}, {30, -6, 18, -1, 1},
-	{-10, 30, -6, 18, 1}, {20, 26, 28, 16, 2}, {-22, -24, -12, -29, 1},
+	{-30, -10, -16, -4, 4}, {4, -32, 9, -17, 4}, {30, -6, 18, -1, 3},
+	{-10, 30, -6, 18, 3}, {19, 25, 26, 15, 4}, {-22, -24, -12, -29, 3},
 }
+M.FISSURES = FISSURES
 local ZIGZAG = {0, 1, 1, 0, -1, -1, 0, 1, 0, -1}
 -- Fallen trunks, one node high {x, z, length, axis}.
 local TRUNKS = {

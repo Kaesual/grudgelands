@@ -94,8 +94,11 @@ return function(engine, directory, nodes, gathering)
  -- can be dug or blown up (the arena is protected as well). grug_mobs deals
  -- their damage and breaks the ice (boss_dragons.lua); textures are tinted
  -- default textures.
- local arena=dofile(directory.."/wp40/arena_layout.lua").NODES
- local REFREEZE=20
+ local layout=dofile(directory.."/wp40/arena_layout.lua")
+ local arena=layout.NODES
+ -- Broken ice freezes back after ICE_REFREEZE seconds (Round 36: 2 minutes);
+ -- while a player still stands in it, it looks again every RECHECK seconds.
+ local REFREEZE,RECHECK=layout.ICE_REFREEZE,5
  local function hazard(name, def)
   def.groups=def.groups or {}
   def.groups.not_in_creative_inventory=1
@@ -116,7 +119,8 @@ return function(engine, directory, nodes, gathering)
   sounds=default.node_sound_glass_defaults(),
  })
  -- Broken ice: a node to wade in (not a liquid, so it never flows), slowed
- -- like water; it freezes back once nobody stands in it.
+ -- like water; it freezes back REFREEZE seconds later, once nobody stands in
+ -- it.
  hazard(arena.ice_water, {
   description="Ice Water",
   drawtype="glasslike",
@@ -133,7 +137,10 @@ return function(engine, directory, nodes, gathering)
   on_construct=function(pos) engine.get_node_timer(pos):start(REFREEZE) end,
   on_timer=function(pos)
    for _,object in ipairs(engine.get_objects_inside_radius(pos,1.2)) do
-    if object:is_player() then return true end
+    if object:is_player() then
+     engine.get_node_timer(pos):start(RECHECK)
+     return false
+    end
    end
    engine.set_node(pos,{name=arena.thin_ice})
    return false

@@ -292,7 +292,7 @@ local function is_thin_ice(pos)
 end
 
 -- One break event: its nodes that are still thin ice turn to ice water (it
--- freezes back 20 s later once nobody stands in it, grug_mapgen's
+-- freezes back 2 minutes later once nobody stands in it, grug_mapgen's
 -- world_nodes.lua); one sound per event, not per node.
 local function break_ice(event)
 	local broke = false
