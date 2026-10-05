@@ -14,7 +14,13 @@
 --   D. the tooltip (talent_description_for) shows the amounts at the
 --      viewer's level, and a pool talent keeps its own line;
 --   E. the consumers: Whitehot's damage and Longshot's hit read the talent
---      keys, no literal +6 / +4 is left.
+--      keys, no literal +6 / +4 is left;
+--   F. the user's phase-2 picks (2026-10-05): every changed talent's values,
+--      Cold Focus x1.4 per rank, the consumers of Heavy Hand, Ruination,
+--      Whitehot, Second Skin, Recompense's 6 s internal cooldown, Last Word's
+--      cooldown reset (the real clear_cooldown cut out of init.lua), Charge at
+--      12 % of a base hit, Opening on a rooted or stunned target (the real
+--      held_target cut out of scout.lua) and Loose without a pre-scalar floor.
 --
 -- Usage (repo root): luajit tools/r35_b/portable_test.lua [REPO]
 local ROOT = arg[1] or "."
@@ -205,11 +211,11 @@ do
 		1, true) ~= nil, "D Ironbound at level 60: " .. ironbound)
 	local whitehot = grug_classes.talent_description_for(new_player("mage", 50),
 		grug_classes.registered_talents.whitehot)
-	check(whitehot:find("At your level a base hit is 240 damage: +38 damage.",
+	check(whitehot:find("At your level a base hit is 240 damage: +72 damage.",
 		1, true) ~= nil, "D Whitehot at level 50: " .. whitehot)
 	local weathered = grug_classes.talent_description_for(new_player("warrior", 30),
 		grug_classes.registered_talents.weathered)
-	check(weathered:find("At your level: 1.5% = ", 1, true) ~= nil and
+	check(weathered:find("At your level: 2.5% = ", 1, true) ~= nil and
 		not weathered:find("base hit", 1, true), "D a pool talent keeps its line")
 	local keen = grug_classes.registered_talents.keen_edge
 	check(grug_classes.talent_description_for(new_player("warrior", 30), keen)
@@ -231,6 +237,120 @@ do
 	local icons = read("mods/CORE/grug_core/status_icons.lua")
 	check(not icons:find("+15 armor rating", 1, true),
 		"E the Unbroken status names no fixed rating")
+end
+
+-- F. The phase-2 picks.
+do
+	local function same(values, expected)
+		if #values ~= #expected then return false end
+		for i = 1, #values do
+			if math.abs(values[i] - expected[i]) > 1e-12 then return false end
+		end
+		return true
+	end
+	local PICKS = {
+		ironbound = {"armor_percent_add", {3, 6, 9, 12, 15}},
+		unbroken = {"armor_rating_add_low_hp", {33}},
+		tinder = {"fireball_damage_add", {4, 8, 12, 16, 20}},
+		brand = {"fireball_splash", {6, 9, 12}},
+		cinderfall = {"cinderfall_damage", {15, 20, 25}},
+		sharpened_word = {"smite_damage_add", {4, 8, 12, 16, 20}},
+		warded_wrath = {"smite_damage_while_shielded_add", {4, 8, 12, 16}},
+		word_of_ruin = {"word_of_ruin_damage", {18, 24, 30}},
+		strong_draw = {"loose_damage_add", {4, 8, 12, 16, 20}},
+		longshot = {"longshot_damage_add", {11}},
+		fine_edge = {"melee_damage_add", {4, 8, 12, 16, 20}},
+		recompense = {"smite_absorb", {6, 9, 12}},
+		fletching = {"draw_time_sub", {0.125, 0.25, 0.375, 0.5}},
+		twin_shot = {"loose_second_arrow", {40, 50, 60}},
+		swift_word = {"smite_cooldown_sub", {0.1, 0.2, 0.3, 0.4}},
+		hardened = {"max_hp_percent_add", {2, 4, 6}},
+		second_skin = {"shield_cooldown_sub", {1, 2, 3}},
+		weathered = {"max_hp_percent_add", {2.5, 5, 7.5, 10}},
+		heavy_hand = {"mighty_blow_multiplier_add", {0.1, 0.2, 0.3, 0.4, 0.5}},
+		cold_focus = {"combat_mana_regen_add", {0.2, 0.4, 0.6, 0.8, 1.0}},
+		shifting_weight = {"dodge_chance_add", {2, 4, 6}},
+		keen_edge = {"crit_chance_add", {2, 4, 6, 8, 10}},
+		firebrand = {"crit_chance_add", {2, 4, 6, 8}},
+		hard_faith = {"crit_chance_add", {2, 4, 6, 8, 10}},
+		cold_eye = {"crit_chance_add", {2, 4, 6, 8}},
+		whitehot = {"whitehot_damage", {30}},
+		rimebite = {"control_damage_add", {25}},
+	}
+	for id, pick in pairs(PICKS) do
+		local def = grug_classes.registered_talents[id]
+		check(def and def.effects[pick[1]] and same(def.effects[pick[1]], pick[2]),
+			"F " .. id .. " carries the picked " .. pick[1])
+	end
+	check(grug_classes.TALENT_EFFECT_KEYS.shield_duration_add == nil,
+		"F Second Skin's duration key is gone")
+	-- Cold Focus: in-combat regeneration x(1 + 2 x bonus) in mana_regen_rate.
+	local init = read("mods/PLAYER/grug_abilities/init.lua")
+	check(init:find("combat_rate * (1 + 2 * bonus)", 1, true) ~= nil,
+		"F mana_regen_rate still doubles the Cold Focus bonus")
+	for rank, value in ipairs(PICKS.cold_focus[2]) do
+		near(1 + 2 * value, 1 + 0.4 * rank, "F Cold Focus rank " .. rank .. " is x" ..
+			(1 + 0.4 * rank))
+	end
+	local kits = read("mods/PLAYER/grug_abilities/kits.lua")
+	check(kits:find('local mult = 1.5 + grug_classes.get_talent_bonus(user,', 1, true),
+		"F Mighty Blow adds Heavy Hand's multiplier directly (x2.0 at 5/5)")
+	check(kits:find('try_trigger_talent_window(user, "ruination", 15, 60)', 1, true),
+		"F Ruination: 15 s window, 60 s cooldown")
+	check(kits:find('"whitehot_window", 8), 60)', 1, true), "F Whitehot: 60 s cooldown")
+	check(kits:find('cooldown_talent = "shield_cooldown_sub"', 1, true) and
+		not kits:find("shield_duration_add", 1, true), "F Second Skin shortens Shield's cooldown")
+	check(kits:find("local RECOMPENSE_ICD = 6", 1, true) and
+		kits:find("now >= (recompense_ready[name] or 0)", 1, true),
+		"F Recompense grants at most once every 6 s")
+	check(kits:find('try_trigger_talent_window(user, "last_word", 12, 180) then', 1, true) and
+		kits:find('grug_abilities.clear_cooldown(player, "word_of_ruin")', 1, true),
+		"F Last Word: 12 s window, the trigger resets Word of Ruin")
+	check(kits:find("return {damage = 0.12 * grug_core.baseline_melee_total(", 1, true),
+		"F Charge deals 12 % of a base hit")
+	near(0.12 * grug_core.baseline_melee_total(30), 2.964, "F Charge at level 30 ~ the former 3")
+	-- clear_cooldown, cut out of init.lua: the record expires now.
+	local helper = init:match("\n(function grug_abilities%.clear_cooldown%(player, id%).-\nend)\n")
+	check(helper ~= nil, "F clear_cooldown is found in init.lua")
+	local cooldowns = {p = {word_of_ruin = {expiry = 99e6, duration = 12}}}
+	grug_abilities = {}
+	local env = setmetatable({cooldowns = cooldowns}, {__index = _G})
+	local chunk = assert(loadstring(helper))
+	setfenv(chunk, env)()
+	now_us = 5e6
+	grug_abilities.clear_cooldown({get_player_name = function() return "p" end}, "word_of_ruin")
+	check(cooldowns.p.word_of_ruin.expiry == 5e6, "F clear_cooldown ends the cooldown now")
+	grug_abilities.clear_cooldown({get_player_name = function() return "q" end}, "word_of_ruin")
+	-- Opening's held_target, cut out of scout.lua.
+	local scout = read("mods/PLAYER/grug_abilities/scout.lua")
+	local held = scout:match("\n(local function held_target%(target%).-\nend)\n")
+	check(held ~= nil, "F held_target is found in scout.lua")
+	local states = {}
+	grug_core.is_stunned = function(p) return states[p] == "stun" end
+	grug_core.is_rooted = function(p) return states[p] == "root" end
+	local held_target = assert(loadstring(held .. "\nreturn held_target"))()
+	local function mob(fields)
+		return {is_player = function() return false end,
+			get_luaentity = function() return fields end}
+	end
+	local function pl(state)
+		local p = {is_player = function() return true end}
+		states[p] = state
+		return p
+	end
+	check(held_target(mob({_grug_root_left = 1.5})), "F a rooted mob is held")
+	check(held_target(mob({_grug_stun_left = 0.5})), "F a stunned mob is held")
+	check(not held_target(mob({})), "F a free mob is not held")
+	check(not held_target(mob({_grug_root_left = 0})), "F a spent root holds nothing")
+	check(held_target(pl("stun")) and held_target(pl("root")) and not held_target(pl(nil)),
+		"F players: stunned or rooted is held")
+	check(scout:find("if not behind_target(user, target) and not held_target(target) then",
+		1, true), "F Opening lands from behind or on a held target")
+	check(not scout:find("math.floor((base_damage", 1, true) and
+		not scout:find("math.floor(damage * effect.second_percent", 1, true),
+		"F Loose leaves the one floor to the level scalar")
+	check(read("mods/CORE/grug_core/movement.lua"):find("function grug_core.is_rooted(player)",
+		1, true), "F grug_core.is_rooted exists")
 end
 
 print(("r35_b portable test: %d checks passed"):format(checks))

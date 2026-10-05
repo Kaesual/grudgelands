@@ -9,7 +9,12 @@ level_scale, armor_k) and the class growth of grug_classes/init.lua; the
 portable fixture (portable_test.lua) checks the real code against the same
 rule, so a drift between the two shows up there.
 
-Usage: python3 tools/r35_b/numbers.py [conversion|review]
+Usage: python3 tools/r35_b/numbers.py [conversion|review|decided]
+
+`conversion` shows the shipped values (phase 2: Whitehot 30 % and Rimebite
+25 % by the user's picks; the phase-1 proposal was 16 % and 13 %). `review`
+keeps the phase-1 figures the user decided on; `decided` prints them before
+and after the user's picks and the crit-cap check.
 """
 import math
 import sys
@@ -78,9 +83,9 @@ TALENTS = [
      lambda L: B(L), "Fireball"),
     ("word_of_ruin", "Word of Ruin (base)", 3, [6, 8, 10], [18, 24, 30], "damage",
      smite, "Smite"),
-    ("rimebite", "Rimebite (base)", 4, [5], [13], "damage",
+    ("rimebite", "Rimebite (base)", 4, [5], [25], "damage",
      lambda L: B(L) / 4, "Ice Nova"),
-    ("whitehot", "Whitehot (window damage)", 4, [6], [16], "damage",
+    ("whitehot", "Whitehot (window damage)", 4, [6], [30], "damage",
      lambda L: B(L), "Fireball"),
     ("longshot", "Longshot (hit beyond 25 m)", 4, [4], [11], "damage",
      lambda L: (bw(L) + scout_dex10(L)) * 2.25, "Loose at full draw"),
@@ -260,6 +265,74 @@ def review():
         print()
 
 
+def decided():
+    """The review figures the user's phase-2 picks change, before -> after."""
+    print("| Level | Figure | Before (phase 1) | After (picked) |")
+    print("|---|---|---|---|")
+    for L in (30, 60):
+        strength = (10 + 3 * (L - 1)) / 10
+        crit_w = 0.05 + 0.0005 * (10 + (L - 1))
+
+        def warrior(heavy_step, heavy=0, crit=0.0):
+            f = min(1.0, 11 / 25)
+            mb = math.floor(bw(L) * (1.5 + heavy_step * heavy)) + strength
+            return (B(L) + f * (mb - B(L))) * (1 + min(0.30, crit_w + crit))
+        base = warrior(0)
+        row = lambda fig, a, b: print("| %d | %s | %s | %s |" % (L, fig, a, b))
+        row("Heavy Hand 5/5", "%+.1f%% DPS" % (100 * (warrior(0.05, 5) / base - 1)),
+            "%+.1f%% DPS" % (100 * (warrior(0.10, 5) / base - 1)))
+        row("Keen Edge 5/5", "%+.1f%% DPS" % (100 * (warrior(0, crit=0.05) / base - 1)),
+            "%+.1f%% DPS" % (100 * (warrior(0, crit=0.10) / base - 1)))
+        arrow = bw(L) + scout_dex10(L)
+        q_old = (arrow + 0.2 * B(L)) * 2.25 * 1.7 / 1.5
+        q_new = (arrow + 0.2 * B(L)) * 2.25 * 1.6 / 2.0
+        row("Quarry draw chain vs a Warrior", "%.1f raw/s = %.1fx" % (q_old, q_old / base),
+            "%.1f raw/s = %.1fx" % (q_new, q_new / base))
+        cloth = 2.3 + 0.222 * L
+        inc = math.floor(P(L) / 27) * (1 - cloth / (cloth + K(L)))
+        rec = 0.12 * P(L) * (1 + priest_sp(L) / 100)
+        row("Recompense 3/3 vs one mob's damage", "%.0f%% (every Smite, 2 s)" % (100 * rec / (2 * inc)),
+            "%.0f%% (at most every 6 s)" % (100 * rec / (6 * inc)))
+        row("Swift Word 4/4", "+43% Smite rate", "+25% Smite rate")
+        rui_old, rui_new = 10 * 0.20 / 120, 15 * 0.20 / 60
+        row("Ruination", "%+.1f%% DPS" % (100 * rui_old * B(L) / base), "%+.1f%% DPS" % (100 * rui_new * B(L) / base))
+        if L >= 42:
+            wh_old, wh_new = 8 * 0.16 / 120, 8 * 0.30 / 60
+            row("Whitehot", "%+.1f%% DPS, 24%% of the pool per 120 s" % (100 * wh_old),
+                "%+.1f%% DPS, 24%% of the pool per 60 s" % (100 * wh_new))
+            sp = mage_sp(L)
+            row("Rimebite, one target", "%+.1f%% DPS" % (100 * (0.13 * B(L) + sp / 2) / 12 / B(L)),
+                "%+.1f%% DPS" % (100 * (0.25 * B(L) + sp / 2) / 12 / B(L)))
+            wor = (0.30 * B(L) + priest_sp(L)) * scale(L)
+            row("Last Word per trigger (extra healing)", "%d HP = %.0f%% of HP" % (wor, 100 * wor / P(L)),
+                "%d HP = %.0f%% of HP (a second cast drains 150%%)" % (2.5 * wor, 250 * wor / P(L)))
+        row("Hardened 3/3", "+0.9% HP", "+6% HP")
+        row("Weathered 4/4", "+6% HP", "+10% HP")
+        row("Cold Focus 5/5 time to OOM", "%+.0f%%" % (100 * (oom_time(L, 1.0, 0.5) - 1)),
+            "%+.0f%%" % (100 * (oom_time(L, 1.0, 1.0) - 1)))
+        row("Charge damage (after the scalar)", "%.1f" % (3 * scale(L)), "%.1f" % (0.12 * B(L) * scale(L)))
+    print()
+    print("Crit with full crit enchants at level 60 (two Crit enchants of the damage set, item level 60 / 70;")
+    print("Elixir of Precision VI +8.6):")
+    print()
+    print("| Class | Base (Dex) | + 2 Crit enchants | + talent (2/rank) | + Elixir VI |")
+    print("|---|---|---|---|---|")
+    for cls, dex, talent in (("Warrior", 69, 10), ("Mage", 69, 8), ("Priest", 69, 10),
+                             ("Scout (Dex on all eight items)", 128 + 8 * 15, 8)):
+        base = 5 + 0.05 * dex
+        print("| %s | %.1f %% | %.1f / %.1f %% | %.1f / %.1f %% | %.1f / %.1f %% (cap 30) |" % (
+            cls, base, base + 8.6, base + 9.6, base + 8.6 + talent, base + 9.6 + talent,
+            base + 8.6 + talent + 8.6, base + 9.6 + talent + 8.6))
+
+
+def oom_time(L, pool_mult, cold_focus):
+    """Time to empty at one Fireball per second, relative to no talent."""
+    def t(pool, cf):
+        regen = max(0.25 * (1 + 0.15 * L), 0.0025 * pool) * (1 + 2 * cf)
+        return pool / (round(0.06 * P(L)) - regen)
+    return t(pool_mult * P(L), cold_focus) / t(P(L), 0)
+
+
 if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "conversion"
-    {"conversion": conversion, "review": review}[what]()
+    {"conversion": conversion, "review": review, "decided": decided}[what]()

@@ -184,8 +184,10 @@ local function launch(player, ability, count, effect, captured)
 		+ (grug_classes.get_race_perk(player, "ability_range_bonus") or 0)
 	-- The damage multiplier is the draw curve for Loose and 1 for the
 	-- fixed-power shots.
-	local damage = math.floor((base_damage + (effect.damage_add or 0)) *
-		(effect.multiplier or 1))
+	-- Not floored here: deal_ability_damage floors once after the level
+	-- scalar, like every other damage path (Round 35).
+	local damage = (base_damage + (effect.damage_add or 0)) *
+		(effect.multiplier or 1)
 	local common = {
 		origin = vector.new(origin),
 		direction = vector.new(direction),
@@ -196,7 +198,7 @@ local function launch(player, ability, count, effect, captured)
 	for index = 1, count do
 		local shot_damage = damage
 		if index == 2 then
-			shot_damage = math.floor(damage * effect.second_percent / 100)
+			shot_damage = damage * effect.second_percent / 100
 		end
 		launches[index] = {
 			owner = player,
@@ -569,15 +571,29 @@ local function behind_target(user, target)
 		vector.normalize(toward_user)) < 0
 end
 
+-- Opening also lands on a target that cannot turn to face the Scout: rooted
+-- or stunned (Round 35; solo, a mob faces its attacker).
+local function held_target(target)
+	if target:is_player() then
+		return grug_core.is_stunned(target) or grug_core.is_rooted(target)
+	end
+	local ent = target:get_luaentity()
+	return ent ~= nil and ((ent._grug_root_left or 0) > 0
+		or (ent._grug_stun_left or 0) > 0)
+end
+
 grug_abilities.register_ability({
 	id = "opening", class = "scout", name = "Opening", kind = "swing",
 	target_kind = "hostile", talent_gated = true, color = "#876b49",
 	cost = {mana_percent = 15}, charge = 12,
 	charge_talent = "opening_charge_sub", melee = true, range = 3,
-	description = "A charged swing of your Melee-slot weapon from behind " ..
+	description = "A charged swing of your Melee-slot weapon from behind, " ..
+		"or at a rooted or stunned target, " ..
 		"for increased weapon damage. Unlocked via talents.",
 	proc_swing = function(user, target, ctx)
-		if not behind_target(user, target) then return nil end
+		if not behind_target(user, target) and not held_target(target) then
+			return nil
+		end
 		local percent = grug_classes.get_talent_bonus(user,
 			"opening_multiplier")
 		return math.floor(ctx.weapon_damage * percent / 100)

@@ -69,7 +69,7 @@ local EFFECT_KEYS = {
 	blink_distance_add = "grug_abilities/kits.lua Blink",
 	heal_add = "grug_abilities/kits.lua Heal",
 	shield_absorb_add = "grug_abilities/kits.lua Shield",
-	shield_duration_add = "grug_abilities/kits.lua Shield",
+	shield_cooldown_sub = "grug_abilities/init.lua effective_cooldown",
 	smite_damage_add = "grug_abilities/kits.lua Smite",
 	smite_damage_while_shielded_add = "grug_abilities/kits.lua Smite",
 	combat_mana_regen_add = "grug_abilities/init.lua in-combat mana regen",
@@ -391,8 +391,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "weathered", tree = "bulwark", chain = "wall", tier = 2,
 	name = "Weathered",
-	description = "Maximum health +1.5% of your class base pool per rank.",
-	effects = {max_hp_percent_add = {1.5, 3, 4.5, 6}},
+	description = "Maximum health +2.5% of your class base pool per rank.",
+	effects = {max_hp_percent_add = {2.5, 5, 7.5, 10}},
 })
 grug_classes.register_talent({
 	id = "hold_ground", tree = "bulwark", chain = "wall", tier = 3,
@@ -415,7 +415,8 @@ grug_classes.register_talent({
 	id = "unbroken", tree = "bulwark", chain = "wall", tier = 4,
 	capstone = true, window = true,
 	name = "Unbroken",
-	description = "+65% total armor rating. Once every 180 s, a hit that " ..
+	description = "+65% total armor rating, which counts most against " ..
+		"stronger foes (the 70% reduction cap holds). Once every 180 s, a hit that " ..
 		"would take you below 20% health grants armor rating +33% of the " ..
 		"armor constant for 8 s.",
 	effects = {armor_rating_add_low_hp = {33}},
@@ -458,8 +459,8 @@ grug_classes.register_talent({
 	id = "heavy_hand", tree = "ruin", chain = "hammer", tier = 1,
 	name = "Heavy Hand",
 	description = "Mighty Blow x1.5 weapon damage becomes " ..
-		"x1.55 / 1.60 / 1.65 / 1.70 / 1.75.",
-	effects = {mighty_blow_multiplier_add = {1, 2, 3, 4, 5}},
+		"x1.6 / 1.7 / 1.8 / 1.9 / 2.0.",
+	effects = {mighty_blow_multiplier_add = {0.1, 0.2, 0.3, 0.4, 0.5}},
 })
 grug_classes.register_talent({
 	id = "stoke", tree = "ruin", chain = "hammer", tier = 2,
@@ -479,15 +480,15 @@ grug_classes.register_talent({
 	id = "ruination", tree = "ruin", chain = "hammer", tier = 4,
 	capstone = true, window = true,
 	name = "Ruination",
-	description = "Once every 120 s, a landed Mighty Blow grants 10 s of " ..
+	description = "Once every 60 s, a landed Mighty Blow grants 15 s of " ..
 		"+20 crit chance with the cap raised to 50%.",
 	effects = {crit_chance_add_window = {20}, crit_cap_override = {50}},
 })
 grug_classes.register_talent({
 	id = "keen_edge", tree = "ruin", chain = "lash", tier = 1,
 	name = "Keen Edge",
-	description = "+1 percentage point crit chance per rank (30% cap holds).",
-	effects = {crit_chance_add = {1, 2, 3, 4, 5}},
+	description = "+2 percentage points crit chance per rank (30% cap holds).",
+	effects = {crit_chance_add = {2, 4, 6, 8, 10}},
 })
 grug_classes.register_talent({
 	id = "onset", tree = "ruin", chain = "lash", tier = 2,
@@ -527,8 +528,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "firebrand", tree = "ember", chain = "blaze", tier = 2,
 	name = "Firebrand",
-	description = "+1 percentage point crit chance per rank.",
-	effects = {crit_chance_add = {1, 2, 3, 4}},
+	description = "+2 percentage points crit chance per rank.",
+	effects = {crit_chance_add = {2, 4, 6, 8}},
 })
 grug_classes.register_talent({
 	id = "brand", tree = "ember", chain = "blaze", tier = 3,
@@ -542,10 +543,10 @@ grug_classes.register_talent({
 	id = "whitehot", tree = "ember", chain = "blaze", tier = 4,
 	capstone = true, window = true,
 	name = "Whitehot",
-	description = "Once every 120 s, the first Fireball that crits starts " ..
+	description = "Once every 60 s, the first Fireball that crits starts " ..
 		"8 s in which Fireball costs 3% instead of 6% base mana and deals " ..
-		"+16% of a base hit.",
-	effects = {whitehot_window = {8}, whitehot_damage = {16}},
+		"+30% of a base hit.",
+	effects = {whitehot_window = {8}, whitehot_damage = {30}},
 })
 grug_classes.register_talent({
 	id = "deep_well", tree = "ember", chain = "cinder", tier = 1,
@@ -607,16 +608,16 @@ grug_classes.register_talent({
 	id = "rimebite", tree = "rime", chain = "frost", tier = 4,
 	capstone = true,
 	name = "Rimebite",
-	description = "Every root Ice Nova applies also deals 13% of a base " ..
+	description = "Every root Ice Nova applies also deals 25% of a base " ..
 		"hit plus half your spell power on application.",
-	effects = {control_damage_add = {13}},
+	effects = {control_damage_add = {25}},
 })
 grug_classes.register_talent({
 	id = "cold_focus", tree = "rime", chain = "ward", tier = 1,
 	name = "Cold Focus",
 	description = "In-combat mana regeneration is increased by " ..
-		"20 / 40 / 60 / 80 / 100%.",
-	effects = {combat_mana_regen_add = {0.1, 0.2, 0.3, 0.4, 0.5}},
+		"40 / 80 / 120 / 160 / 200%.",
+	effects = {combat_mana_regen_add = {0.2, 0.4, 0.6, 0.8, 1.0}},
 })
 grug_classes.register_talent({
 	id = "quick_step", tree = "rime", chain = "ward", tier = 2,
@@ -699,8 +700,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "second_skin", tree = "mercy", chain = "aegis", tier = 4,
 	name = "Second Skin",
-	description = "The Shield spell lasts 15 s -> 18 / 21 / 24 s.",
-	effects = {shield_duration_add = {3, 6, 9}},
+	description = "The Shield spell's cooldown 10 s becomes 9 / 8 / 7 s.",
+	effects = {shield_cooldown_sub = {1, 2, 3}},
 })
 
 grug_classes.register_tree({
@@ -719,8 +720,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "swift_word", tree = "reckoning", chain = "word", tier = 2,
 	name = "Swift Word",
-	description = "Smite cooldown 2 s becomes 1.85 / 1.7 / 1.55 / 1.4 s.",
-	effects = {smite_cooldown_sub = {0.15, 0.3, 0.45, 0.6}},
+	description = "Smite cooldown 2 s becomes 1.9 / 1.8 / 1.7 / 1.6 s.",
+	effects = {smite_cooldown_sub = {0.1, 0.2, 0.3, 0.4}},
 })
 grug_classes.register_talent({
 	id = "word_of_ruin", tree = "reckoning", chain = "word", tier = 3,
@@ -735,15 +736,16 @@ grug_classes.register_talent({
 	id = "last_word", tree = "reckoning", chain = "word", tier = 4,
 	capstone = true, window = true,
 	name = "Last Word",
-	description = "Below 25% health, Word of Ruin's drain heals for 150% " ..
-		"of the damage dealt. 8 s per trigger, 180 s cooldown.",
+	description = "Below 25% health, Word of Ruin's cooldown resets and its " ..
+		"drain heals for 150% of the damage dealt. 12 s per trigger, 180 s " ..
+		"cooldown.",
 	effects = {drain_ratio_override = {150}},
 })
 grug_classes.register_talent({
 	id = "hard_faith", tree = "reckoning", chain = "wrath", tier = 1,
 	name = "Hard Faith",
-	description = "+1 percentage point crit chance per rank.",
-	effects = {crit_chance_add = {1, 2, 3, 4, 5}},
+	description = "+2 percentage points crit chance per rank.",
+	effects = {crit_chance_add = {2, 4, 6, 8, 10}},
 })
 grug_classes.register_talent({
 	id = "warded_wrath", tree = "reckoning", chain = "wrath", tier = 2,
@@ -756,15 +758,16 @@ grug_classes.register_talent({
 	id = "recompense", tree = "reckoning", chain = "wrath", tier = 3,
 	keystone = true, replaces = "smite",
 	name = "Recompense",
-	description = "Smite costs 6% instead of 5% base mana and grants an " ..
-		"absorb of 6% / 9% / 12% of the base pool plus spell power.",
+	description = "Smite costs 6% instead of 5% base mana and, at most once " ..
+		"every 6 s, grants an absorb of 6% / 9% / 12% of the base pool plus " ..
+		"spell power.",
 	effects = {smite_absorb = {6, 9, 12}},
 })
 grug_classes.register_talent({
 	id = "hardened", tree = "reckoning", chain = "wrath", tier = 4,
 	name = "Hardened",
-	description = "Maximum health +0.3% of your class base pool per rank.",
-	effects = {max_hp_percent_add = {0.3, 0.6, 0.9}},
+	description = "Maximum health +2% of your class base pool per rank.",
+	effects = {max_hp_percent_add = {2, 4, 6}},
 })
 
 dofile(core.get_modpath(core.get_current_modname()) .. "/scout_talents.lua")

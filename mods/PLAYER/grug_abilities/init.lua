@@ -933,8 +933,8 @@ end
 
 -- The cooldown this player's cast actually earns. Same reason as get_range
 -- above: `cooldown` in a kit table is a load-time constant with no player in
--- scope, so the four talents that shorten one (Grudge, Onset, Quick Step,
--- Swift Word -- skill_trees.md §3.2) are read HERE, at the one
+-- scope, so the talents that shorten one (Grudge, Onset, Quick Step, Swift
+-- Word, Second Skin, Slip Away -- skill_trees.md §3.2) are read HERE, at the one
 -- arm_cooldown(user, def, def.cooldown) call the game has. Without a ranked
 -- talent this returns def.cooldown exactly.
 function grug_abilities.effective_cooldown(player, def)
@@ -965,6 +965,16 @@ function grug_abilities.arm_cooldown(player, def, duration)
 	wear_steps[name] = wear_steps[name] or {}
 	wear_steps[name][def.id] = WEAR_STEPS
 	set_item_wear(player, def.id, 65534)
+end
+
+-- End a running cooldown now (Last Word resets Word of Ruin's, Round 35).
+-- The ticker clears the record and the wear bar on its next pass.
+function grug_abilities.clear_cooldown(player, id)
+	local cds = cooldowns[player:get_player_name()]
+	local rec = cds and cds[id]
+	if rec then
+		rec.expiry = core.get_us_time()
+	end
 end
 
 --

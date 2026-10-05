@@ -395,6 +395,11 @@ function grug_core.is_stunned(player)
 	return rec ~= nil and (rec.stun or 0) > now()
 end
 
+function grug_core.is_rooted(player)
+	local _, rec = peek(player)
+	return rec ~= nil and (rec.root or 0) > now()
+end
+
 -- A bounded one-shot burst at the accepted stun seam, shared by players and
 -- mobs. No extra entity, recurring scan or per-frame particle maintenance.
 function grug_core.emit_stun_particles(object, duration)
