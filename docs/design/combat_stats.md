@@ -34,7 +34,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 | Attribute | Effects |
 |-----------|---------|
 | Strength | non-Scout melee damage |
-| Intelligence | spell damage; percentage bonus to healing/absorbs |
+| Intelligence | spell damage; from gear also healing/absorbs |
 | Dexterity | crit chance, dodge chance, Scout melee/ranged damage |
 
 - Base at level 1: **10 / 10 / 10** (Str/Int/Dex), all classes.
@@ -59,9 +59,14 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   sword-type skill, with **no fallback to the wielded item**. An empty slot
   swings for the **bare-handed baseline**: the hand's own damage and its
   own interval, read from the registered hand item rather than assumed.
-- **Spell power** = Int/10, fractions included (Round 33). It is a flat term
-  for damaging spells and a percentage bonus for pool-derived healing and
-  absorbs; a spell's damage is rounded once where its formula settles.
+- **Spell power** = Int/10, fractions included (Round 33). It is the flat
+  term of damaging spells; like every damage it is floored once after the
+  level scalar (Round 36: spells no longer round before it).
+- **Support factor** (Round 36) = `1 + gear Int / 10 / B(L)` on
+  pool-derived healing and absorbs, where gear Int is the Intelligence above
+  the class's own level growth (`grug_classes.get_support_factor`). Gear
+  Intelligence counts as it counts for a Mage's Fireball; without it a
+  character heals or absorbs exactly the listed pool share.
 - **Timed spell damage** is a separate percentage multiplier on the fully
   assembled hostile spell formula. It never enters spell power and therefore
   never raises healing or absorbs.
@@ -77,7 +82,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   ([skill_trees.md](skill_trees.md) §2.10, Round 35).
 - **Support values are already level-derived and are never level-scaled a
   second time.** Heal and Shield are each 25% of `P(L)`; each Mend tick
-  is 8%. Multiply that pool share by `1 + spell power/100`, then pass the
+  is 8%. Multiply that pool share by the support factor, then pass the
   resulting absolute amount unchanged through `scale_player_value` and the
   existing `heal_player`/`add_absorb` seams. Percentage consumables likewise
   derive once from the relevant final pool and bypass the damage scalar.
@@ -93,7 +98,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   Enchant values grow with item level ([item_tiers.md](item_tiers.md) §1.1):
   a fully damage-enchanted level-60 Warrior gains about **+47 % / +57 % /
   +69 %** at item level 60 / 65 / 70, the order of the intended +50–60 %
-  ceiling (the Scout's set reaches +55 % / +82 %, item_tiers §1.3). These
+  ceiling; the Scout's set +49 / +59 / +69 % (Round 36's Dexterity curve)
+  and the Priest's heal set match it (item_tiers §1.3). These
   are itemization ceilings, not extra level-curve terms.
 - **Higher-mob-level damage malus**: against a mob more than five levels above
   the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
