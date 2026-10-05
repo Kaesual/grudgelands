@@ -1,9 +1,14 @@
 # Round 36 — The main questline (WP9): round plan
 
 Coordinator: Claude (Opus 5.5), planned 2026-10-05 in a separate planning
-session while Round 35 was running. Status: **approved by the user
-(2026-10-05)**, with the two documentation corrections of §2.13 added at
-the user's request.
+session while Round 35 was running. Status: **complete locally 2026-10-05**
+([completion and GUI checklist](#completion-2026-10-05)); approved by the
+user 2026-10-05, with the two documentation corrections of §2.13 added at
+the user's request. The approved [story bible](round36/story-bible.md) and
+the user's choices during the round
+([completion](#the-users-choices-during-the-round)) win over the earlier
+sections (for example §2.3's chapter-2 camp and the boss's health); the
+design as built is in `docs/design/`.
 
 This round builds V1's last missing content: WP9, the faction main
 questline for levels 41–60 and its finale
@@ -616,3 +621,450 @@ hints, verify before relying on them):
 - **Pages:** lane P's review page and lane K's decision table are published
   privately by the coordinator (German, like Round 35's pages); verdicts and
   picks in `~/projects/grudgelands-orchestration/r36/`.
+
+## Completion (2026-10-05)
+
+Every lane below is merged on local main (last the text pass T, `5069b5a5`,
+and its fixture `d133c3fc`); not pushed. Each code and data lane was
+independently reviewed by Opus once: F, K, E and R said MERGE with notes
+(each note fixed before the merge except the carry-overs below), G, W, Q-T
+and Q-A MERGE AFTER FIXES (all fixed and merged), Q0 MERGE (one finding
+fixed); lane A's art and lane T's texts were checked by the coordinator
+(T's JSON diff without `title` and `text`: no other change) and T's texts
+reviewed by Opus with improvement suggestions the user picked. After each
+merge the coordinator ran the portable fixtures, `check_fresh_server.py`
+and `validate.py --game`; `tools/run_fixtures.sh` passes **93 of 93** on
+main (re-run on this lane's branch), `validate.py --game` reports 0 errors
+and 7 warnings (the finale's rift boss is no zone's recipe target: four;
+two chain gates one level apart; no atlas given), `income.py --check`
+passes after the re-derived prices. One boot of main after wave 1 (seed
+5423894902269011374) passed. Lanes G and W changed world generation: each
+ran `tools/seed_fleet/run.sh quick` (100 of 100 seeds); **a fresh world is
+required** for the decor pass and the dragon arenas. A second text review
+(Opus suggestions on the other quest texts) is in progress and lands later
+as a data-only commit.
+
+### Shipped, by lane
+
+Numbers are each lane's own probe, fixture or model, same seed and method
+before and after (comparisons, never targets).
+
+- **F fixes from the Round 35 GUI test** (merge `2b51e74d`;
+  [combat_stats.md](../design/combat_stats.md) §4,
+  [classes.md](../design/classes.md) §2b,
+  [inventory_equipment.md](../design/inventory_equipment.md)): **one target
+  predicate** — `grug_abilities.valid_target` refuses a mob evading home,
+  and the LMB hold's `fightable` is that predicate, so the crosshair turns
+  red exactly where a press would act; a fresh press at an evader shows
+  "Evading" in the flash line at most once per 1.5 s per player (a held
+  press stays quiet, a self or support skill still fires); a ray at a
+  mount means its rider; no skill colour while the player cannot act.
+  **Free mobs** (damage pursuit) reset inside their 32-node wander radius
+  only heal and drop the target; reset outside it they run home
+  untouchable and are a normal mob again once back inside the radius, not
+  at 4 m. Camp members, guards, rares, bosses, patrollers, royals and
+  dragons keep their thresholds; the 15 s damage clock still starts at the
+  first aggro. Engine probe (`tools/r36_f/engine.sh`, a wolf on a moving
+  stand-in): reset 12.9 nodes from home, no evade; reset 50.7 nodes out,
+  evade ended at 28.1 nodes and did not start again. **Level-up banner:** a
+  level that earns talent points adds "You gained +1 Talent Point" (or
+  "+N Talent Points" over a jump), from one rule
+  `grug_classes.talent_points_at`. Also the Round 35 carry-over: the timing
+  line of Grudge, Onset, Quick Step, Swift Word, Second Skin and Slip Away
+  shows the effective cooldown.
+- **K class fine-tuning** (phase 1 `f77d41e9`, merge `778533a7`;
+  [combat_stats.md](../design/combat_stats.md) §2,
+  [item_tiers.md](../design/item_tiers.md) regenerated,
+  [classes.md](../design/classes.md), [skill_trees.md](../design/skill_trees.md)):
+  the decided table (`tools/r36_k/numbers.py`), all as recommended:
+
+  | Change | Before | After |
+  |---|---|---|
+  | Support factor (Heal, Hearten, Mend, Shield, Recompense, Glacial Ward) | `1 + Int / 1000` | `1 + gear Int / 10 / B(L)` (`grug_classes.get_support_factor`) |
+  | Priest Heal per cast, level 60, no Intelligence gear | 760 | 674 (−11.3 %; −6.4 % at 30, −8.9 % at 45) |
+  | Priest Heal, Intelligence set, item level 60 / 70 | 862 / 889 | 908 / 970 |
+  | What the Intelligence set adds to Heal, 60 / 60 and 60 / 70 | +13.5 % / +17.0 % | +34.8 % / +43.9 % (the Mage's Fireball column) |
+  | Dexterity enchant curve `0.8 + 0.13 L + c L²` | c 0.0019 (T6 top 15) | c 0.0011 (T6 top 13) |
+  | Scout full damage set, item level 30 / 45 / 60 / 65 / 70 | +35.2 / +44.8 / +55.0 / +68.3 / +81.7 % | +35.2 / +41.2 / +49.0 / +59.3 / +69.4 % (Warrior +33.5 / +40.2 / +47.0 / +57.4 / +69.4 %) |
+  | Spell rounding | to an integer before the level scalar | floored once after it (up to ±4 at 60, Smite with Sharpened Word ±7) |
+  | "(30 % cap holds)" | Keen Edge only | also Cold Eye, Firebrand, Hard Faith |
+
+  Two help lines in `grug_inventory/help.lua` follow. Fixture
+  `tools/r36_k`; the Round 33 models in `tools/r33_ds` follow.
+- **P POI review page** (merge `e846db72`, tools only): `tools/r36_p`
+  renders all **106 POIs** as the runtime builds them (villages 6, outposts
+  18, bandit camps 6, mines 6, Mirefolk camps 4, clash sites 16, apex camps
+  2, rare pads 10, the Round 14/15 compositions 18, fortresses 2,
+  Battlegrounds camps 16, dragon arenas 2): an isometric in-game view, a
+  top-down plan and the two most different other palettes, on a private
+  German page with a verdict per POI and the rift pick. The user answered
+  in chat (the decor pass below).
+- **E quest engine** (merge `94ccdb6d`; [quests.md](../design/quests.md),
+  [spawn_regions.md](../design/spawn_regions.md)): the objective **"use at a
+  place"** (`place`, `object`, `label`, `hold` 1–15 s): a quest object, an
+  entity at a clash site or at a recipe's quest place (placed per seed like
+  a kind leader, at least 64 nodes from every leader, camp and other place;
+  region-map cache format v2), added while a player who still needs it is
+  within 48 nodes and seen only by such players; a right-click within 5
+  nodes starts the hold, the feed counts the seconds, letting go, stepping
+  away or any damage stops it; every aiming ray of a player who does not see
+  the object passes through it (`grug_core.unseen_by`). One working place
+  in each contested zone without a clash site. **Turn-in hook**
+  `grug_quests.register_on_turn_in(fn(player, id, def))`, quest `tags`, and
+  the achievement counters `quest:<id>` and `quest_tag:<tag>`; the
+  validator's `W-chain-gate`. `quest_targets.py`: 1124 targets ok on the
+  six seeds; engine probe with a quest object PASS.
+- **R the rift and the war commanders** (merge `c564dd95`, boss health
+  `e0ec800b`; [world.md](../design/world.md) §4b,
+  [items_crafting.md](../design/items_crafting.md) §5.3b,
+  [pvp.md](../design/pvp.md) §6.2): **the rift** at Tombroad Ambush
+  (`r20_anchor_077`, the only candidate in the 58–60 belt on all six
+  seeds; the user's pick): a jagged crack of 70 void nodes two deep,
+  written once per world into the site's protected floor and recorded;
+  the void is not walkable, a player sinks in, loses **11 % of his
+  maximum HP per second** (about 9 s from full, the new node group
+  `grug_pool_damage`) and swims out; dark motes for each player within 48
+  nodes (about 80 per 5 s, about 50 alive). **Isquarre the
+  Tithe-Eater**, a level-60 elite on the Dungeon Master's mesh (voice
+  `giant`) at **2 × an elite's HP** (16,176; the user: no harder than a
+  dragon): void bolts, the elite frontal wind-up and a void pulse every
+  14 s (×2 hit within 6 nodes); a 24-node leash and its own evade home
+  round the crack; back **5 minutes** after its death; the boss ledger's
+  **24-hour lockout** (two blue or gold items at item level 65, an elite's
+  roll inside the lockout); achievement counter `boss:rift`. Since Q-T it
+  appears only when a player within 48 nodes has a faction's finale in
+  the log or turned in (`rift_core.FINALE_QUESTS`, `grug_quests.quest_held`).
+  `tools/r36_r/numbers.py` (level-60 players):
+
+  | Encounter | HP | 1 player | 2 players | 3 players |
+  |---|---:|---|---|---|
+  | Isquarre, 2 × elite HP (shipped) | 16,176 | 60 s / 5.5 pools | 30 s / 2.6 | 20 s / 1.9 |
+  | Isquarre, 3 × (the first proposal) | 24,264 | 90 s / 8.4 | 45 s / 4.0 | 30 s / 2.6 |
+  | Dragon (level 70) | 18,000 | 107 s / 7.4 | 53 s / 3.7 | 36 s / 2.5 |
+  | Front elite (Glass-Throat, 59) | 11,756 | 44 s / 4.2 | 22 s / 2.1 | 15 s / 1.4 |
+  | War commander (60) | 12,132 | 45 s / 4.5 | 22 s / 2.3 | 15 s / 1.5 |
+
+  Time to kill / damage to the tank in level-60 pools. **War commanders:**
+  War Commander Greyvow in the Accord War Camp of The Skyglass Canopy, War
+  Commander Stonegrudge in the Throng War Camp of Gravesalt Escarpment,
+  level-60 elites with the leaders' factors, five nodes beside the captain,
+  respawning after 270–330 s, counted as captains on the PvP tab, each in
+  his faction's tabard over the camp race's guard look. Engine probe at the
+  site (crack, boss, void damage, reset, return) PASS.
+- **G dragon arenas** (added lane, merge `89e8462d`;
+  [world.md](../design/world.md) §4b): Stormscale's six ember fissures
+  three or four wide (ember cells 121 → 279; never a 5 × 5 block, so the
+  wyvern cannot stand in one; at most two steps from floor), Wyrmglass's
+  seven thin-ice fields one node wider (437 → 673 cells), ice water
+  refreezes **2 minutes** after it broke (was 20 s; rechecked every 5 s
+  while someone stands in it). **The wing gust:** every 12 s on the ground
+  with a hostile player within 8 nodes, a 1.25 s wind-up (growl, beating
+  wings, a wind ring, "… spreads its wings: get clear!"), then a push of
+  about 6 nodes (16 nodes per second and 5 up), no damage or slow, never
+  past the arena radius − 4 (it reads the player's live braking); no chain
+  with the dive. `seed_fleet quick` 100 of 100; fixture and engine probe
+  `tools/r36_g`.
+- **A art** (GPT-6 Astra, merge `2afdb73b`): **21 textures**, CC0, made
+  reproducibly by `tools/r36_a/paint_art.py`: the three cloaks (Mantle of
+  the Unburnt Roll, The Unbought Banner, Mantle of the Broken Due),
+  Isquarre's skin on the Dungeon Master's UV layout, two commander tabard
+  overlays, the void node, the rift particle and the void bolt, and twelve
+  quest-object sprites. The main-menu background (lane AM) did not ship
+  (deviations below).
+- **Q0 shared data** (added lane, merge `20302c38`;
+  [biomes_mobs.md](../design/biomes_mobs.md),
+  [quests.md](../design/quests.md),
+  [character_visuals.md](../design/character_visuals.md) §5b): the bible's
+  **ten corrupted sub-types** (Coal-Purse Factor, Brandbound Collector,
+  Tallow-Sealed Husk in The Broken Causeway and The Shattered Line;
+  Ash-Writ Bowman, Kiln-Whisper Hexer, Debtjaw Hound, Embergrit Gnawer in
+  Gravesalt Escarpment; Dunshade Prowler, Furnace-Coil Serpent, Sootlace
+  Spinner in The Skyglass Canopy; the bowman also at Chirr's camp) as the
+  minor role of front kinds and camps, all with **one ember tint**
+  `#B4472A` at three strengths (the tint now returns after a relevel); the
+  **twelve object kinds** of the bible; the four quest places renamed for
+  their uses (Brandscar Cairn, Courier's Stump, Ashen Grave, Coinpit
+  Hollow); **three achievements** with their cloaks — Every Name Accounted
+  For (`quest:accord_main_final`, The Accord's), Our Oaths Are Ours
+  (`quest:throng_main_final`, The Throng's), The Last Claim Denied
+  (`boss:rift`, shared) — and the **faction rule** (the user): a faction
+  row is hidden from, and never earned by, the other faction; the two
+  captains' orders as quest items. Ledger unchanged, `quest_targets.py`
+  1124 ok, region renders of the eight changed zones, engine probe.
+- **Q-A and Q-T the main line** (merges `966c557a`, `bfceba75`;
+  [quests.md](../design/quests.md) "The main line",
+  [story.md](../design/story.md) §2a): the spine at each fortress
+  Warmaster's second line, the front climaxes folded in as required steps
+  (new `requires`, tags and corrupted kill roles; Senn's Archshadow chain
+  opens two levels earlier), the finale on Isquarre at 60, the last line at
+  the Warmaster. **540 quests** (+25: The Accord 13, The Throng 12; 14
+  front quests changed beyond their text). The Accord, "Every Name
+  Accounted For" (tag `accord_main`):
+
+  | Ch. | Quest (min level) | Giver → turn-in | Step |
+  |---|---|---|---|
+  | 1 | Bring Me the Account (41) | Warmaster → Toren Waterbarrel | unseal the impounded pay at Ashen Wheelbreak |
+  | 1 | Warm Coin, Cold Supper (41) | Toren Waterbarrel | five Coal-Purse Factors |
+  | 1 | A Stamp for Archsight (44) | Toren Waterbarrel → Alna Archsight | travel |
+  | 1 | The Burn Beneath the Stamp (45) | Alna Archsight | siege bones; a rubbing of the brand at Brandscar Cairn |
+  | 1 | Collection Ends Here (46) | Alna Archsight | Toll-Taker Senn; the toll-box at Causeway Toll Ruin |
+  | 1 | Good Paper, Bad Company (46) | Alna Archsight → Warmaster | travel |
+  | 2 | The Price of a Salute (46) | Warmaster → Nella Hedgeward | three Brandbound Collectors; the pledged standard at Siege Ramp Foot |
+  | 2 | Nobody Left to Rally (47) | Nella Hedgeward | Standard-Bearer Ninepins |
+  | 2 | Read Before Accusing (47) | Warmaster | the Throng Captain's Orders, solo, Throng high war camp on The Shattered Line |
+  | 2 | A Quiet Audit (47) | Warmaster | Odren Vell's courier ledger at Courier's Stump |
+  | 3 | Following Vell's Pay (53) | Warmaster → Borin Splitbolt | four Debtjaw Hounds |
+  | 3 | The Last Watch Ends (57) | Borin Splitbolt | Watch-Captain Huskell |
+  | 3 | The Clerk at the Foot (57) | Borin Splitbolt → Eriath Boughwarden | travel |
+  | 3 | The Price of Another War (58) | Eriath Boughwarden | Paymaster Chirr |
+  | 3 | Names Beyond His Reach (58) | Eriath Boughwarden → Warmaster | the rootmark at Skyroot Crossing; the tally-stone at Tombroad Ambush |
+  | F | Group: The Collector Comes Due (60) | Warmaster | Isquarre the Tithe-Eater |
+  | F | Every Name Accounted For (60) | Warmaster | the report and the last line |
+
+  Optional: Group: Stonegrudge's Inquiry (57), Group: Nothing Left to Count
+  (Salt-Counter, 58), the island uses Optional: No Claim on the Crown
+  (Crystal Landing Scar) and Optional: A Chest Overboard (Thunder Shore
+  Wreck) at 60 from the Dur Brannoc and Highcourt envoys. The Throng, "Our
+  Oaths Are Ours" (tag `throng_main`):
+
+  | Ch. | Quest (min level) | Giver → turn-in | Step |
+  |---|---|---|---|
+  | 1 | Too Warm for Wages (41) | Warmaster → Drek Rampbinder | break the false requisition seal at Bannerfall Pocket; three Coal-Purse Factors |
+  | 1 | Payment in Full (46) | Drek Rampbinder | Toll-Taker Senn; the toll-box at Causeway Toll Ruin |
+  | 1 | A Coin for Orrel (46) | Drek Rampbinder → Orrel Hollowstep | travel |
+  | 1 | The Fire Is New (46) | Orrel Hollowstep → Warmaster | wash the ash slab at Ashen Grave |
+  | 2 | An Oath in Hock (46) | Warmaster → Yarra Standardmender | three Brandbound Collectors; the pledged standard at West Trench Mouth |
+  | 2 | Let That Banner Fall (46) | Yarra Standardmender → Warmaster | Standard-Bearer Ninepins |
+  | 2 | Find the Hand That Signed (47) | Warmaster | the Accord captain and his orders, solo, Accord high war camp on The Shattered Line |
+  | 2 | Our Tallykeeper's Treason (48) | Warmaster | bury the branded pay at Coinpit Hollow (Mardra named) |
+  | 3 | Still Buying Our Dead (53) | Warmaster → Vaska Ashlistener | three Kiln-Whisper Hexers |
+  | 3 | Dismissed, Captain (57) | Vaska Ashlistener | Watch-Captain Huskell |
+  | 3 | Promises with Bowstrings (57) | Nalo Pathdrum | Paymaster Chirr; the rootmark at Skyroot Crossing |
+  | 3 | No Names Left to Own (57) | Vaska Ashlistener → Warmaster | burn the names off the tally-stone at Tombroad Ambush |
+  | F | Group: No Claim on Our Dead (60) | Warmaster → Vaska Ashlistener | Isquarre the Tithe-Eater |
+  | F | The Answering Blow (60) | Vaska Ashlistener → Warmaster | the report and the last line |
+
+  Optional: Group: Greyvow's Last Filing (57), Optional: No New Volume and
+  Optional: Sink the Wages on the islands at 60 (Nhal Veyr and Gor
+  Drazhak envoys). The old optional elites (Last-Toll, Engine Nine,
+  Glass-Throat, Salt-Counter) stay optional; the fortress raids on the two
+  commander camps warn of him ("Under Stonegrudge's Eye", "Greyvow Has
+  Company"). Ledger (`ledger.py --track <race> --repeat 2`, today's tool on
+  the data before and after; reported, not gated):
+
+  | Race | 40 → 50 solo | 50 → 60 solo | 40 → 50 duo | 50 → 60 duo |
+  |---|---|---|---|---|
+  | Human | 104 → 112 % | 119 → 125 % | 79 → 86 % | 106 → 120 % |
+  | Dwarf, Elf | 98 → 106 % | 115 → 120 % | 76 → 83 % | 102 → 114 % |
+  | Orc | 98 → 107 % | 101 → 105 % | 75 → 83 % | 86 → 95 % |
+  | Troll, Undead | 98 → 106 % | 101 → 106 % | 73 → 81 % | 86 → 95 % |
+
+  `quest_targets.py` on the six seeds after both lanes: 1207 targets ok.
+  Fixtures `tools/r36_qa`, `tools/r36_qt` (chain, gates, tags, the final
+  turn-in and its last line, the solo rule, the places). The quest copper
+  moved the income model: **re-derived prices** (`income.py`,
+  `8f4d5638`): Expert Riding 1g32s → 1g29s, Master Riding 7g37s → 7g38s,
+  the 41–50 respec 5s50c → 5s25c, the crown fee 1g47s → 1g48s.
+- **W decor pass** (widened lane, merge `1c43968a`;
+  [settlements.md](../design/settlements.md) "Decor pass"): one kit,
+  `grug_mapgen/wp13/decor_kit.lua`, with pieces in each race's palette
+  and the house touches; a theme per kind instead of the old block
+  formations on **68 Round 20 POIs** (villages 6: a hamlet; outposts 18: a
+  watch post; bandit camps 6: a hideout; mines 6: a working dig; Mirefolk
+  camps 4: a fen camp; clash sites 16: the remains of a battle; rare pads
+  10: the beast's lair; apex camps 2: the prospectors' camp) and the **18
+  Round 14/15 compositions**; the house touches (a torch beside a door
+  without light, a barrel or pot by the door, flowers under a window, a
+  wood pile or barrel on a side wall) on every closed building of those,
+  of the **6 start towns** and of **155 capital plots**; war camps,
+  pickets, fortresses and dragon arenas untouched. Rules: no solid node
+  before or behind a window (144 such cells in 51 compositions moved), two
+  nodes of headroom in every closed room (Redtusk Village's annex 2 → 3
+  courses), every way stays walkable within a detour of a few steps
+  (barrels that cut porches in Lethariel and long detours in Highcourt, Dur
+  Brannoc and Nhal Veyr fixed), the rift site's crack untouched. **Benches**
+  look across their bench: Stillgrave's court settles, the temple pews of
+  every capital, the court bench of Dur Brannoc, Gor Drazhak and Nhal Veyr,
+  Dawnmere's end benches. Footprints, positions, protection boxes and
+  sockets of all 402 compositions held to main's record
+  (`tools/r36_w/baseline.tsv`); `seed_fleet quick` 100 of 100, mapgen time
+  about +2 %. Before/after pages from `tools/r36_w/render.py`, `page.py`.
+- **T quest texts** (GPT-6 Astra, merge `5069b5a5`): titles and texts of
+  45 quests (The Accord 25, The Throng 20: both main lines and the folded
+  front quests) in the bible's voices; then an Opus review with **28
+  suggestions** (9 wit, 8 clarity, 5 voice, 3 story, 3 title), all accepted
+  by the user and applied by script. `validate.py --game`: 0 errors.
+- **D:** this section, the status files, story.md, the corrections of
+  §2.13 and §7, AGENTS.md and the module guide, the regenerated
+  existing-items catalogue.
+
+### The user's choices during the round
+
+1. **Rift site:** Tombroad Ambush (`r20_anchor_077`), lane R's constant.
+2. **Story bible v2** approved after an independent Opus review the user
+   worked through: the Undertithe, the Tithe-Brand, Isquarre the
+   Tithe-Eater, Greyvow and Stonegrudge, the traitors Odren Vell and
+   Mardra (text only), twelve objects.
+3. **Chapter 2, variant A:** the solo captain in the enemy's high war camp
+   on The Shattered Line (47–49), not in the 58–60 camps of §2.3; the
+   commanders stay there as optional "Group:" hunts.
+4. **Last lines** one per faction (the bible's §5).
+5. **Boss health 2 ×** an elite's (lane R proposed 3 ×): no harder than a
+   dragon.
+6. **Achievement faction rule:** a faction's achievement is hidden from
+   the other faction and never earned by it.
+7. **Decor pass** instead of a rework of single POIs (POI verdict in chat:
+   buildings good, non-building decor bad, clash sites and rare pads
+   themeless, apex camps empty, war camps good), widened to the start towns
+   and capital houses, the stair benches turned 90° as a bug; approved
+   after the sample page with decisions 1–4 (the themes per kind; a torch
+   at every door without light plus one to three lanterns; banners as a
+   whole wool block; the same touches in start towns, capitals and the
+   Round 14/15 places).
+8. **Windows and Redtusk:** no full block in front of a window (flowers
+   are fine); Redtusk Village's low annex gets a third course.
+9. **Dragon feedback:** wider ember fissures, slightly larger ice fields,
+   a noticeable push-away attack for both dragons, ice water back after
+   2 minutes (lane G).
+10. **Lane K all as recommended** (decisions 1–4 of the phase-1 page).
+11. **Main-menu background:** none of lane AM's three candidates; the user
+    takes an in-game screenshot later, which the coordinator installs.
+12. **Text review:** all 28 Opus suggestions on the main-line texts.
+
+### Deviations from the plan
+
+- **Lane AM** (wave 1, GPT-6 Astra): the main-menu background of §2.14.3
+  as its own lane instead of lane A's: three candidates (a voxel scene from
+  the game's textures, a pixel panorama, an engraving) and three prompts
+  for a local image generator on a preview page; the user picked none
+  (choice 11). Nothing shipped; `menu/` is unchanged.
+- **Lane G added** for the user's dragon feedback (choice 9), a mapgen
+  lane beside W.
+- **Lane W widened** from reworking the POIs marked on lane P's page to a
+  decor pass over every Round 20 POI (but war camps, pickets, fortresses
+  and dragon arenas), the Round 14/15 places, the start towns and the
+  capital houses, in two phases (kit and samples, then everything).
+- **Lane Q0 added:** the data both quest lanes share (sub-types and
+  recipes, object kinds, achievements, the orders, art wiring) as one lane
+  before Q-A and Q-T ran in parallel.
+- **The story bible was revised** (v2) after an independent review: v1's
+  names clashed with existing places and chains, and its chapter 2 put a
+  level-60 captain into the 46–52 chapter (choice 3).
+- **Prices re-derived** after the main line's quest copper (Q lanes'
+  ledger); the first commit went in with a stale fixture and table, fixed
+  in the next one.
+- Lane S got a worktree of its own (the Astra runner needs one); the
+  Round 35 carry-overs joined lanes K (spell rounding, the cap texts) and
+  F (the effective cooldown).
+
+### Open notes
+
+In the [BACKLOG](../../BACKLOG.md#round-36-carry-overs); none blocks the
+GUI test. Numbers are comparisons, never targets.
+
+- The tally-stone at Tombroad Ambush sits on Isquarre's spot; a chapter-3
+  player there can be hit only while a finale group has him up.
+- The ledger counts the Throng captain's kill twice; it still counts island
+  bounties' kill XP in 50 → 60.
+- Missing decor nodes (thin banner cloth, weapons for racks, a tent, rails
+  and ore cart, an ember node, a grave cross, a window flower box); the
+  captains' orders use a placeholder icon; the main-menu background waits
+  for the user's screenshot.
+- The float floor (±1) in `scale_player_damage`; hidden achievement rows
+  still count; Isquarre's spawn is subject to the mob cap.
+
+### GUI playtest checklist
+
+Desktop client and the web build, **a fresh world** (the decor pass and the
+dragon arenas are world generation); **two clients** for the rift and PvP.
+Helpers: `/xp give`, `/teleport`, `/giveme`, `/time`, `/money`
+(privileges `server`, `give`, `settime`). Places: Ashenward Bastion
+(136, −488), Bannerbreak Warhold (−80, 632), the Shattered Line high war
+camps (Throng 648, 48; Accord 944, −16), the Gravesalt Throng camp
+(−1464, 24), the Skyglass Accord camp (2080, −56), Tombroad Ambush
+(−1768, 64). Say what looks or reads wrong.
+
+The main line (Q-A, Q-T, E, Q0):
+
+1. **The gate:** at level 40 the Warmaster shows chapter 1 as locked, at
+   41 it can be accepted; the fortress quests and the other front quests
+   are unchanged. Chapter 2 opens at 46 only after chapter 1, chapter 3 at
+   53, the finale at 60.
+2. **Read each line through** (one character per faction, `/xp give`
+   between chapters): one thread, no unfilled `{…}`, no fixed compass
+   word, the burnt brand and the suspicion of the other faction early,
+   each step sent where the last was turned in.
+3. **Behind the lines (solo):** in the enemy's high war camp on The
+   Shattered Line kill the captain; his orders drop (only with the quest);
+   the traitor is named after it (Odren Vell / Mardra) and again on
+   Huskell's roll in chapter 3.
+4. **Quest objects:** at a clash site (Ashen Wheelbreak or Bannerfall
+   Pocket) the object shows only with the quest (a second player without
+   it sees nothing and can click through it); holding right-click fills
+   the seconds in the feed and completes it; letting go, walking away and
+   a hit stop it; the HUD, the log and the feed name the act.
+5. **The four rule-placed places:** Brandscar Cairn (Stormvault Heights),
+   Courier's Stump (Glassroot Wilds), Ashen Grave (Blackwind Rise),
+   Coinpit Hollow (Thunderroot Wilds): the object stands on open ground
+   and the text's direction points there.
+6. **Corrupted sub-types** at the front (Coal-Purse Factor, Debtjaw Hound,
+   Sootlace Spinner …): their names and the ember tint, also after they
+   change level.
+7. **The commanders:** Stonegrudge in the Gravesalt Throng camp and
+   Greyvow in the Skyglass Accord camp, each beside the captain in his
+   faction's tabard; the optional "Group:" quest on him; the old fortress
+   raid on that camp still finishes.
+
+The rift (R, two clients):
+
+8. **Isquarre appears only for an eligible player:** a chapter-3 player
+   alone at the tally-stone meets no boss; a player with the finale in the
+   log calls him up within 48 nodes; once up he stays.
+9. **The crack:** visible across the site, particles modest; stepping in
+   sinks you, costs about a tenth of your health per second, and you can
+   swim up and step out; the crack cannot be dug.
+10. **The fight:** a group of two or three kills him (the void pulse is
+    telegraphed); dragged away he resets and walks home round the crack;
+    he drops two blue or gold items once; a second kill within 24 hours
+    gives an elite's loot only; he returns about 5 minutes after his
+    death.
+11. **Both factions at the rift:** PvP contact as in pvp.md, no shared
+    turn-in.
+12. **Achievements and cloaks:** each faction's line unlocks its cloak,
+    the kill the shared one; the other faction's row is not on your tab.
+13. **The last lines** at each Warmaster point below without naming any
+    Nether place or item.
+
+Fixes, classes and dragons (F, K, G):
+
+14. **An evading mob:** reset a mob far from home (lead it more than 32
+    nodes away): the crosshair stays neutral on it, a click shows
+    "Evading" once, a held button stays quiet; it is a normal mob again
+    once back within 32 nodes of its spot. A mob reset close to home only
+    heals and drops you.
+15. **Level-up banner:** "You gained +1 Talent Point" on every even level,
+    "+2 Talent Points" over a jump; the timing line of Swift Word, Quick
+    Step or Grudge shows the shortened cooldown.
+16. **Priest heals:** Heal with and without Intelligence gear (the tooltip
+    and the healed amount: lower without, clearly higher with); the
+    Scout's damage set feels in line with the Warrior's.
+17. **Dragons:** Stormscale's fissures three or four wide, Wyrmglass's
+    ice fields larger; the gust's wind-up (wings, ring, feed line), then a
+    push of about 6 nodes that never throws you out of the arena; broken
+    ice comes back after 2 minutes.
+
+The decor pass (W):
+
+18. **One of each:** a village (Whitebridge Market Close), a mine (Tarncut
+    Mine), a clash site, a rare pad (Whitefang's Cold Den), an apex camp
+    (Wyrmglass Fault Camp), a start town (Dawnmere) and a capital lane
+    (Highcourt): the themes look as on the preview page, a few lights per
+    place.
+19. **No window blocked** by a barrel, crate or log; benches face across
+    their seats (Stillgrave, the capital temples); Redtusk Village's annex
+    has headroom; porches and lanes can be walked.
+
+Prices:
+
+20. **The new prices:** Expert Riding 1g29s, Master Riding 7g38s, the
+    41–50 talent reset 5s25c, the crown 1g48s.
