@@ -342,7 +342,9 @@ for faction, zone in pairs(FORT) do
 	end
 	local camps, ordinary, entry = {}, 0, 0
 	for _, quest in ipairs(quests) do
-		local fortress = givers[quest.giver] or givers[quest.turnin]
+		-- The Round 31 set lives on the line `front`; the Warmaster's second
+		-- line holds the Round 36 main line (its own fixtures).
+		local fortress = (givers[quest.giver] or givers[quest.turnin]) and quest.line == "front"
 		if fortress then
 			check(quest.min_level >= 40, quest.id .. ": a PvP quest starts at 40 or later (ruling 15)")
 			if not givers[quest.giver] then entry = entry + 1 end
