@@ -364,8 +364,8 @@
       "min_level": 41,
       "level": 42,
       "requires": [],
-      "title": "Coin That Will Not Cool",
-      "text": "My Outrider's riders dropped a pay box at {name:r20_anchor_074}, {dir_from_giver:r20_anchor_074}, because the coin inside burned through their gloves. It carries an Accord requisition seal: break it and see what the Accord is paying for. The Coal-Purse Factors who carried it work the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}; kill three by day, then take what you found to Drek Rampbinder at Red Ramp Post, whose crews keep digging the same boxes out of the Causeway.",
+      "title": "Too Warm for Wages",
+      "text": "Our riders left an intercepted pay box at {name:r20_anchor_074}, {dir_from_giver:r20_anchor_074}, when its coins burned through their gloves. Break the requisition seal: The Accord has put its stamp on something it ought to explain. Kill three Coal-Purse Factors by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Report to Drek Rampbinder at Red Ramp Post; his crews keep digging up boxes like it.",
       "objectives": [
         {
           "type": "use",
@@ -402,8 +402,8 @@
       "requires": [
         "throng_main_02"
       ],
-      "title": "A Banner on Credit",
-      "text": "An Accord seal on grave coin and a toll-taker who kept our dead on the road: the Accord is buying itself a cheaper army, and I want the proof in my hand. Yarra Standardmender says the dead on The Shattered Line rally round a standard somebody keeps paying for. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and unpick the pledged standard at {name:r20_anchor_081}, then bring the stitching to Yarra; she reads cloth the way I read a liar.",
+      "title": "An Oath in Hock",
+      "text": "Grave coin under a seal of The Accord: they are buying themselves a cheaper army. Yarra Standardmender says the dead on The Shattered Line salute a standard pledged against the next payment. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}. Unpick the pledged standard at {name:r20_anchor_081} and report to Yarra at Tornstandard Hold; she will know what those stitches promise.",
       "objectives": [
         {
           "type": "kill",
@@ -440,8 +440,8 @@
       "requires": [
         "bb_front_torn_05"
       ],
-      "title": "Orders Under Their Seal",
-      "text": "Pledge slips with Accord stamps, and the Accord's high war camp sits right on The Shattered Line: if they pay for those banners, its captain carries the orders. Go to the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, kill its captain and bring me the Accord Captain's Orders. Go in fast and come out faster; I need the paper more than a story about the fight.",
+      "title": "Find the Hand That Signed",
+      "text": "A bought oath is a debt with a blade on it. Ours were never for sale. Ninepins's pledge slips bear seals of The Accord; the captain of its high camp on The Shattered Line should know whose hand signed them. Kill the Accord Captain at the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, and bring me the Accord Captain's Orders.",
       "objectives": [
         {
           "type": "kill",
@@ -486,8 +486,8 @@
       "requires": [
         "throng_main_04"
       ],
-      "title": "Spent on Nobody",
-      "text": "The Accord is hunting the same soot factors and burying its own burned soldiers. Worse, its orders list the seized coin by our war-chest tally marks, entered by Tallykeeper Mardra, who left last winter 'to collect what the dead were owed'; I struck her from the Warhold's roll before the whole drill yard. A bought oath is a debt with a blade on it, and ours were never for sale. Bury the branded pay we seized at {name:kragmar_thunderroot_wilds/coinpit_hollow}, {dir_of:r20_anchor_048:kragmar_thunderroot_wilds/coinpit_hollow}, unspent, before the Accord impounds it along with the truth.",
+      "title": "Our Tallykeeper's Treason",
+      "text": "The Accord's orders demand a hunt for the soot factors and list its own soldiers burned by their pay. The seized grave coin carries our war-chest tally marks, entered by Tallykeeper Mardra, who left last winter 'to collect what the dead were owed'. I struck her name from our roll before the whole drill yard; everyone heard who sold our dead. Bury the seized branded pay unspent at {name:kragmar_thunderroot_wilds/coinpit_hollow}, {dir_of:r20_anchor_048:kragmar_thunderroot_wilds/coinpit_hollow}; The Accord will not lock our shame in its evidence chest.",
       "objectives": [
         {
           "type": "use",
@@ -516,8 +516,8 @@
       "requires": [
         "throng_main_05"
       ],
-      "title": "Group: The Gate Called Greyvow",
-      "text": "The Accord's orders end with a name: War Commander Greyvow, posted to the {name:pvp_camp_skyglass_canopy_accord_high}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_high}, to run their hunt for the soot factors. If anyone reaches the payers first, it will not be a commander who files our dead under evidence. Gather a group and bring him down; he fights beside that camp's garrison and is no work for one blade.",
+      "title": "Group: Greyvow's Last Filing",
+      "text": "The captured orders send War Commander Greyvow to run The Accord's hunt from the {name:pvp_camp_skyglass_canopy_accord_high}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_high}. He means to seize the payers and every scrap that tells what they did to our dead. Gather a group and kill him among his garrison; he is an elite commander with plenty of blades behind his paperwork. We will tell our own story in our own yard.",
       "objectives": [
         {
           "type": "kill",
@@ -546,8 +546,8 @@
       "requires": [
         "throng_main_05"
       ],
-      "title": "Whispers About Fire",
-      "text": "Mardra sold our dead, and somebody is still buying. Vaska Ashlistener sends word that the dead of Gravesalt Escarpment whisper about fire, and the Kiln-Whisper Hexers do the whispering: kill three at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and tell Vaska at Ashveil Watch what they stopped saying. Then find Nalo Pathdrum in Kezamba; he has been watching Paymaster Chirr's archers in The Skyglass Canopy, and the paymaster is ours too.",
+      "title": "Still Buying Our Dead",
+      "text": "Mardra sold our dead, and the payments are still going through. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she has heard fresh orders among their whispers. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy as well, and will have work for you once Vaska has your report.",
       "objectives": [
         {
           "type": "kill",
@@ -577,8 +577,8 @@
       "requires": [
         "throng_main_07"
       ],
-      "title": "Group: The Collector Comes Due",
-      "text": "So the thing that bought our dead comes to collect them itself: Isquarre the Tithe-Eater, at {name:r20_anchor_077}. He will not have even Mardra; that debt is ours to judge, not his. Take two or three fighters you trust, break him where the ground is cracked and stay out of the crack; if the Accord turns up, it came for its own reasons. Then let Vaska Ashlistener listen to what is left.",
+      "title": "Group: No Claim on Our Dead",
+      "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a group of two or three and kill him beside the burning crack; The Accord can answer for its own banner. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
       "objectives": [
         {
           "type": "kill",

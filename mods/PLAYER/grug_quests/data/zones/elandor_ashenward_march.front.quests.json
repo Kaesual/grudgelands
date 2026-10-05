@@ -97,8 +97,8 @@
         "cinderline_front_01",
         "accord_main_impounded"
       ],
-      "title": "Toll Collectors in the Alderwood",
-      "text": "The coins you brought from the wheelbreak carry a burnt ring, and my drivers have seen that ring before, on the brigands who charge them for the alderwood road. Defeat five Causeway Brigands or Coal-Purse Factors by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. The factors are the soot-black ones with the warm purses; the brigands only work for them.",
+      "title": "Warm Coin, Cold Supper",
+      "text": "That broken circle, with two hooks curling into the gap, is burned into the toll money my drivers keep seeing. The Coal-Purse Factors call themselves soot factors; the Causeway Brigands collect for them while our carts stand idle. Defeat five Causeway Brigands or Coal-Purse Factors in all, by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Supper is getting cold while their purses stay warm.",
       "objectives": [
         {
           "type": "kill",
@@ -131,8 +131,8 @@
         "cinderline_front_03",
         "cinderline_front_05"
       ],
-      "title": "Cinderline Still Stands",
-      "text": "Speak with Alna Archsight at Archshadow Post in Stormvault Heights and give her our report: Cinderline Watch still stands. Show her the burnt coins as well; her runesmiths read a stamp the way I read weather, and this one worries me. If she asks whether we're cheerful, tell her we're fed; she'll understand.",
+      "title": "A Stamp for Archsight",
+      "text": "Speak with Alna Archsight at Archshadow Post in Stormvault Heights about the brand on the convoy pay. Her runesmiths can read a stamp better than my drivers can describe one. Tell her Cinderline Watch still stands, and that the road now charges us in burnt coin as well as lost meals.",
       "objectives": [
         {
           "type": "talk",
@@ -276,7 +276,7 @@
         "accord_main_standard"
       ],
       "title": "Nobody Left to Rally",
-      "text": "That stitching was a pledge: {name:standard_bearer_ninepins} borrows against every payment still to come, and his Siege Skeleton Raiders and Brandbound Collectors gather at the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins} to collect it. Defeat five of them after dark and their standard-bearer with them. Then tell the Warmaster; I'd like the next thing our watch hears from that breach to be the wind.",
+      "text": "Those stitches pledge every soldier under the standard against another payment; fresh wages keep renewing their watch. Defeat five Siege Skeleton Raiders or Brandbound Collectors in all, after dark at the {name:front_shattered_line/breach}. Find {name:standard_bearer_ninepins}, {dir_from_giver:standard_bearer_ninepins}, and end his command as well. Report back to me, then seek the Warmaster's orders; my sentries would like to hear a night without that roll call.",
       "objectives": [
         {
           "type": "kill",
@@ -317,7 +317,7 @@
         "lasthedge_front_04"
       ],
       "title": "Group: An End to the Grinding",
-      "text": "I can hear {name:siege_engine_nine} grinding along the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, even when I close my eyes; it still grinds forward on orders somebody keeps paying for. Gather a group and destroy that elite war construct. Before you go, learn each other's names; I want everyone answering to them when you get back.",
+      "text": "{name:siege_engine_nine} still grinds over the {name:front_shattered_line/siegecrest}, {dir_from_giver:siege_engine_nine}; someone keeps paying for the orders it follows. Gather a group and destroy that elite war construct. I can account for the soldiers Ninepins kept on duty; I will not start a new list beneath the machine's wheels.",
       "objectives": [
         {
           "type": "kill",
@@ -752,8 +752,8 @@
       "requires": [
         "ashenward_bastion_warcamp_skyglass"
       ],
-      "title": "Reckoning at the {name:pvp_camp_gravesalt_escarpment_throng_high}",
-      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_high}, {zone_area:pvp_camp_gravesalt_escarpment_throng_high}, anchors the Throng's strength in a country already thick with old graves. Defeat five Throng Guards and the Throng Captain there. War Commander Stonegrudge now fights beside that garrison, so this is a harder assignment than it was; watch your back and bring yourself home.",
+      "title": "Under Stonegrudge's Eye",
+      "text": "War Commander Stonegrudge now fights beside the garrison at the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. Your assignment is five Throng Guards and the Throng Captain in that camp. Defeat them with a group if needed; the elite commander makes this a harder raid. A casualty caused by ignoring the briefing is still a casualty, however brave the report sounds.",
       "objectives": [
         {
           "type": "kill",

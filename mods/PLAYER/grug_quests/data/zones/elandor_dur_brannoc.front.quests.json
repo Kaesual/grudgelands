@@ -106,8 +106,8 @@
       "requires": [
         "accord_main_roll"
       ],
-      "title": "Optional: Wrong Ink on the Survey",
-      "text": "Somebody pressed a branded coin into the capstone of the survey cairn at {name:r20_anchor_075} on the Wyrmglass Crown, as if to sign the island into their own books. Take a boat from the Shipwright at our stables, keep to the shelf and the channel, and pry the coin out. The clan's records have no line for a debt to the ground itself, and I intend to keep it that way.",
+      "title": "Optional: No Claim on the Crown",
+      "text": "A branded coin has been wedged into the survey cairn at {name:r20_anchor_075} on The Wyrmglass Crown, as though a capstone could sign away an island. Take a boat from the Shipwright at our stables, follow the shelf and channel, and pry the brand-coin out of the cairn. The clan paid for a survey; it did not authorise a sale.",
       "objectives": [
         {
           "type": "use",

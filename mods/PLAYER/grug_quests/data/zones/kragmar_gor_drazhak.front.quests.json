@@ -108,8 +108,8 @@
       "requires": [
         "throng_main_06"
       ],
-      "title": "Optional: Wages for the Sea",
-      "text": "A pay chest split open on the wreck at {name:r20_anchor_086} on Stormscale Summit, and the coins inside still carry that brand. Take a boat from the Shipwright, sail to the island and give the wreck's pay to the sea before some salvage crew takes it as wages. The sea already has the sailors; it can keep their money too.",
+      "title": "Optional: Sink the Wages",
+      "text": "There is branded pay in the wreck at {name:r20_anchor_086} on Stormscale Summit, waiting for a salvage crew to call it wages. Take a boat from the Shipwright and give the wreck's pay to the sea before anyone accepts it. Gor Drazhak owes its sailors their pay; a burning chest will not settle that debt for us.",
       "objectives": [
         {
           "type": "use",

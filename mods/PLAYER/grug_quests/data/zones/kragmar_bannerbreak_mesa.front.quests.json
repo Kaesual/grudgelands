@@ -95,8 +95,8 @@
         "bb_front_ramp_03",
         "throng_main_01"
       ],
-      "title": "Payment in Full",
-      "text": "Every box we dig out holds coin stripped from old graves with a fresh burn across its face, and every one leads back to Toll-Taker Senn. Find him at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}, kill four Aqueduct Bowmen or Coal-Purse Factors there, and kill Senn. Then turn out his branded toll-box at {name:r20_anchor_078}; I want to know who pays a toll-taker to keep a road deadly.",
+      "title": "Senn's Other Employer",
+      "text": "My crews dig up grave coin with a fresh broken circle burned through it, and Toll-Taker Senn keeps finding more dead to pay. Kill four Aqueduct Bowmen or Coal-Purse Factors in all at the {name:front_broken_causeway/toll_camp}, {dir_from_giver:front_broken_causeway/toll_camp}, where they guard his money day and night, and kill Senn. Turn out his branded toll-box at {name:r20_anchor_078}; I want the name of whoever pays a man to make my road impassable.",
       "objectives": [
         {
           "type": "kill",
@@ -142,8 +142,8 @@
       "requires": [
         "bb_front_ramp_04"
       ],
-      "title": "A Name Worth Sending",
-      "text": "Senn paid his dead in that branded coin to keep corpses on the road, and his toll-box held a remittance from Paymaster Chirr in The Skyglass Canopy, promising more for every crossing made unsafe. I know mud, not the dead. Take one of those coins to Orrel Hollowstep at Hollowarch Station in Blackwind Rise and tell him Drek Rampbinder sent you; he'll complain about the fingerprints, but he'll read it.",
+      "title": "A Coin for Orrel",
+      "text": "Senn paid the dead to keep them on the road, then sent the tolls back to the soot factors for another burning. Paymaster Chirr in The Skyglass Canopy promised fresh payments for every crossing kept deadly; apparently a corpse earns better than a bridge. Speak with Orrel Hollowstep at Hollowarch Station in Blackwind Rise about that coin and its two hooked burn marks; he knows when the dead are being cheated.",
       "objectives": [
         {
           "type": "talk",
@@ -329,7 +329,7 @@
         "throng_main_03"
       ],
       "title": "Let That Banner Fall",
-      "text": "That stitching is a pledge: Standard-Bearer Ninepins pawned his banner against the next payment, then the one after that, and the dead keep saluting whoever pays. He waves it over the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}. Destroy four Siege Skeleton Raiders there at night and kill Ninepins, then report to the Warmaster: the pledge slips carry Accord stamps.",
+      "text": "Standard-Bearer Ninepins pledged his banner against the next payment, then the next, until every salute became another debt. Kill four Siege Skeleton Raiders at night in the {name:front_shattered_line/breach} and defeat Ninepins, {dir_from_giver:standard_bearer_ninepins}. Report to the Warmaster: the pledge slips bear seals of The Accord, and I will not stitch our fallen into a pawnbroker's inventory.",
       "objectives": [
         {
           "type": "kill",
@@ -367,8 +367,8 @@
       "requires": [
         "bb_front_torn_05"
       ],
-      "title": "Group: Break the War Machine",
-      "text": "War Construct Engine Nine is still grinding through the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, on orders somebody keeps paying for. Gather a group and destroy it; one fighter will only add to the dents. I want all of you back to boast about this.",
+      "title": "Group: Break the Paid Machine",
+      "text": "War Construct Engine Nine keeps grinding across the {name:front_shattered_line/siegecrest}, {dir_from_giver:siege_engine_nine}, because somebody is still paying for its orders. Gather a group and destroy the elite construct. Ninepins pawned a banner; this thing will grind the cloth, the pole and everyone standing under it.",
       "objectives": [
         {
           "type": "kill",
@@ -800,8 +800,8 @@
       "requires": [
         "bannerbreak_warhold_warcamp_gravesalt"
       ],
-      "title": "Answer the {name:pvp_camp_skyglass_canopy_accord_high}",
-      "text": "The Accord troops at the {name:pvp_camp_skyglass_canopy_accord_high}, {zone_area:pvp_camp_skyglass_canopy_accord_high}, have learned to fight in country that catches blades and swallows war cries. Defeat five Accord Guards and the Accord Captain in that camp; War Commander Greyvow now fights beside their garrison, so draw the captain away from him or bring friends. Keep your eyes on the trees as well as the enemy; the Throng needs fighters who come back to argue over who fought best.",
+      "title": "Greyvow Has Company",
+      "text": "The {name:pvp_camp_skyglass_canopy_accord_high}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_high}, now has War Commander Greyvow fighting beside its garrison. Kill five Accord Guards and the Accord Captain in that camp. The elite commander makes the raid harder, so bring help if you need it; your courage does not oblige me to replace you. Come back with the job done and enough breath to argue about it.",
       "objectives": [
         {
           "type": "kill",

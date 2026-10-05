@@ -293,7 +293,7 @@
         "throng_main_06"
       ],
       "title": "Dismissed, Captain",
-      "text": "Watch-Captain Huskell is still calling the roll in the {name:front_gravesalt_escarpment/ossuary_wood} {dir_from_giver:watch_captain_huskell}, and I have listened to it: that is no muster list. It is a page of the roll the branded coin feeds, soldiers of both armies re-enlisted with fresh pay so their names never leave it. Destroy four Last-Watch Skeleton Raiders there at night and put Huskell to rest; he has mistaken obedience for peace long enough.",
+      "text": "Watch-Captain Huskell calls soldiers of both armies from the Undertithe's roll; each fresh payment buys their names for another watch. Kill four Last-Watch Skeleton Raiders at night in the {name:front_gravesalt_escarpment/ossuary_wood} and defeat Huskell, {dir_from_giver:watch_captain_huskell}. I have listened long enough to hear the same names twice; let me hear where his list ends.",
       "objectives": [
         {
           "type": "kill",
@@ -400,8 +400,8 @@
       "requires": [
         "bb_front_ramp_05"
       ],
-      "title": "Fresh Ash on Old Stone",
-      "text": "Old death I know: it smells of dust and patience. This coin smells of a furnace, and someone has burned the same mark across a grave slab at the {name:ashen_grave}, {dir_from_giver:ashen_grave}. Wash the fresh ash from the old stone and you will see new work over old names, entered the way Mortuary Clerk Hush once wrote our dead into his ledger as debtors, except that Hush never had fire. Take that to the Warmaster before somebody calls it Undead business.",
+      "title": "The Fire Is New",
+      "text": "This Tithe-Brand is fresh furnace work; Mortuary Clerk Hush once entered our dead as debtors without needing a fire. Accept its coin as pay and it owns you, living or dead; a living holder cannot throw it away or cool it except by paying for another death. Wash the fresh ash from the old stone at the {name:ashen_grave}, {dir_from_giver:ashen_grave}, to see the brand laid over the names. Report to the Warmaster; being Undead has never made us somebody's property.",
       "objectives": [
         {
           "type": "use",
@@ -431,8 +431,8 @@
         "bw_front_ashveil_04",
         "kz_front_04"
       ],
-      "title": "Burn Them Off the Tally",
-      "text": "Huskell's roll and Chirr's payroll are pages of one book, and the newest name on Huskell's was Mardra. A tally-stone at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, keeps the count for whatever holds that book; burn our dead off it. When the names are gone the debt has nothing left to hold, and I can already hear the collector coming for it in person. Tell the Warmaster that.",
+      "title": "No Names Left to Own",
+      "text": "Huskell's roll ends with Mardra in fresh ink, and Chirr's payroll claims the same dead for the Undertithe. Burn our dead off the tally-stone at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}; leave it no names to own. With the names gone from root and stone, the debt has nothing to hold, and its collector will come to the stone in person. Tell the Warmaster what we have called up.",
       "objectives": [
         {
           "type": "use",
@@ -462,7 +462,7 @@
         "throng_main_finale"
       ],
       "title": "The Answering Blow",
-      "text": "I put my ear to the crack after he fell, and the Warmaster should hear it from you before the drill yard hears it from anyone else. Tell it word for word: His last blow struck the ground. The answering blow came from underneath.",
+      "text": "His body is broken, but the crack still burns and I can hear movement below it. Carry my account to the Warmaster at Bannerbreak Warhold, where the drill yard can hear it too. His last blow struck the ground. The answering blow came from underneath.",
       "objectives": [
         {
           "type": "talk",

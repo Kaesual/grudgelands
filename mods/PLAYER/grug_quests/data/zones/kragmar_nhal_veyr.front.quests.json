@@ -99,8 +99,8 @@
       "requires": [
         "throng_main_06"
       ],
-      "title": "Optional: A Coin in the Capstone",
-      "text": "Someone pressed a branded coin into the capstone of the survey cairn at {name:r20_anchor_075} on The Wyrmglass Crown, as if to enter the island in somebody's books. Get a boat from the Shipwright, cross to the island and pry the brand-coin out. I keep the registers of our dead, and I will not see an island registered to anything else.",
+      "title": "Optional: Strike the Island Out",
+      "text": "Someone has pressed a branded coin into the survey cairn at {name:r20_anchor_075} on The Wyrmglass Crown, entering an island in the books as though it were another debtor. Get a boat from the Shipwright, cross to the island and pry the brand-coin from the capstone. I have spent centuries correcting the registers of the dead; I refuse to open a new volume for mountains.",
       "objectives": [
         {
           "type": "use",
