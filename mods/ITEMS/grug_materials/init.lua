@@ -56,6 +56,7 @@ dofile(modpath .. "/derivatives.lua")
 dofile(modpath .. "/tools.lua")
 dofile(modpath .. "/overrides.lua")
 dofile(modpath .. "/content_curation.lua")
+dofile(modpath .. "/dig_sounds.lua")
 dofile(modpath .. "/tool_lifetimes.lua")
 -- Round 24 ruling 29: "Requires level N" on every T2+ pick, axe and shovel,
 -- after the lifetime pass has written their final descriptions.
