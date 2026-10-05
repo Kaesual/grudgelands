@@ -4,7 +4,9 @@ How a zone's surface mobs are placed: a **recipe** of rules per zone, turned
 into **regions** on the zone's own terrain for whatever seed the world has.
 Decided with the user on 2026-10-02 (Round 28 Lane S1); the runtime rules
 (spawner, light, protected ground, density, camps, leaders) are in
-[biomes_mobs.md §4.2](biomes_mobs.md#42-spawn-regions-round-28-rulings-3-34-37-38-lane-s1).
+[biomes_mobs.md §4.2](biomes_mobs.md#42-spawn-regions-round-28-rulings-3-34-37-38-lane-s1),
+and [zone_mobs.md](zone_mobs.md) is the table of every zone's families
+generated from the recipes (`tools/r37_dd/zone_mobs.lua`).
 
 ## Why
 
@@ -212,8 +214,9 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
 ## The recipe
 
 `mods/ENTITIES/grug_mobs/data/zones/<zone_id>.spawns.json` holds
-`{"zone", "recipe"}`; a zone without a recipe holds `{"zone", "palette"}`
-(today's spawning). Every load error names the zone and the path.
+`{"zone", "recipe"}`; a zone without a recipe would hold `{"zone",
+"palette"}` (the palette spawning of before Round 28; every zone has a recipe
+since then). Every load error names the zone and the path.
 
 ```json
 "recipe": {

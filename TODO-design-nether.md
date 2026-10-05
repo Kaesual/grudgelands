@@ -50,7 +50,9 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
   WP40's authored land fronts or WP41's PvP eligibility. Enemy-side exits must
   land in a contested zone, force a visible PvP state such as "Rift-Touched",
   or use another explicitly authored interception rule. Pick the exact rule in
-  Phase 2 planning after WP40/WP41 define the shared APIs.
+  Phase 2 planning after WP40/WP41 define the shared APIs. ("Rift-Touched" is
+  a placeholder; "rift" already names V1 content, the Round 36 rift and the
+  Rift Spawn: open question DW-26 in BACKLOG.)
 
 ## Open (to spec before the Phase 2 WP)
 
@@ -59,7 +61,7 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
 
 - Nether materials in the tier table and world-boss drops, to be specified
   alongside `docs/design/items_crafting.md`; the **Nether dragon
-  lord** is the Phase 3 capstone boss (world.md §4b).
+  lord** is the V2 capstone boss (world.md §4b).
 - Challenge design for reaching world bosses (jump/lava puzzles? kill
   gates? key items?).
 

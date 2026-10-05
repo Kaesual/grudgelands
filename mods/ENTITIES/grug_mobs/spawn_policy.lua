@@ -207,11 +207,12 @@ local RACE_FACTIONS = {
 -- comparisons: at most six boxes and one distance, no allocation.
 --
 -- Capitals (their protected cities, plan D76) are hard-protected too and are
--- deliberately NOT covered here: their named zones' mob palettes are empty,
--- so no ordinary row reaches the city or the ground around it anyway. Round
--- 28 ruling 3 adds the capital city for every ambient non-critter spawn
--- (grug_mobs.protected_spawn_surface below), which spawn regions in a capital
--- zone's outskirts need.
+-- deliberately NOT covered here: every capital zone has a spawn recipe, so
+-- spawn_policy_allows refuses its surface rows (none keeps critters or the
+-- Rift Spawn there), and Round 28 ruling 3 refuses the capital city itself
+-- for every ambient non-critter spawn, ABM row or region
+-- (grug_mobs.protected_spawn_surface below). Only the city is protected: the
+-- rest of a capital zone carries its recipe's hostile regions.
 local START_PAD_LOW = 64 -- the pad: anchor - 64 .. anchor + 63, half-open
 local START_PAD_HIGH = 63
 local START_BAND = 12
