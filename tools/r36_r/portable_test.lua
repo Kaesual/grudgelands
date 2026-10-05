@@ -754,7 +754,7 @@ do
 	grug_mobs.roam_avoid_tick = noop
 	dofile(mobs_dir .. "/aggro.lua")
 	local def = core.registered_entities[BOSS]
-	boss.hp_max, boss.health = 24264, 9000
+	boss.hp_max, boss.health = 16176, 9000
 	boss.temp = {}
 	boss.object.pos = {x = anchor.x, y = anchor.y + 1, z = anchor.z}
 	boss.stop_attack = function(self) self.attack = nil; self.state = "stand" end
@@ -775,7 +775,7 @@ do
 	boss.object.pos = {x = anchor.x + 25, y = anchor.y + 1, z = anchor.z}
 	mono = mono + 1
 	grug_mobs.leash_tick(boss, 1)
-	eq(boss.health, 24264, "R dragged past 24 nodes: healed")
+	eq(boss.health, 16176, "R dragged past 24 nodes: healed")
 	eq(boss.attack, nil, "R ...the target dropped")
 	check(boss.temp.grug_evading ~= nil, "R ...and running home untouchable")
 	mono = mono + 1
@@ -791,7 +791,7 @@ do
 	grug_mobs.leash_tick(boss, 1)
 	mono = mono + grug_mobs.LEASH_TIMEOUT + 1
 	grug_mobs.leash_tick(boss, 1)
-	eq(boss.health, 24264, "R no contact for 15 s: reset")
+	eq(boss.health, 16176, "R no contact for 15 s: reset")
 	eq(boss.temp.grug_evading, nil, "R ...inside its radius: no run")
 	boss.object:remove()
 end

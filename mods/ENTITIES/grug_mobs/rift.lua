@@ -193,13 +193,13 @@ end
 -- The rift boss.
 --
 local BOSS = "grug_mobs:rift_boss"
--- Its numbers (the lane's proposal, tools/r36_r/numbers.py): three times a
+-- Its numbers (tools/r36_r/numbers.py; the user: no harder than a dragon): twice a
 -- level-60 elite's HP, sized for two or three level-60 players; the leash
 -- radius around its spot; the void pulse every PULSE_INTERVAL seconds of a
 -- fight (the first after PULSE_FIRST), a PULSE_WINDUP wind-up, then
 -- PULSE_MULT times its hit to every player within PULSE_RADIUS with a
 -- knockback, on top of the elite's frontal wind-up hit and its void bolts.
-local HP_SCALE = 3
+local HP_SCALE = 2
 local LEASH = 24
 local HOME_REACH = 4
 local PULSE_FIRST = 8
