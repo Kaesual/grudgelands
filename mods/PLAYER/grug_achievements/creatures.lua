@@ -46,7 +46,7 @@ C.OTHERS = set({
 	"crystal_shard", "dungeon_master", "ember_wisp", "frost_stray",
 	"goblin_miner", "goblin_miner_slinger", "goblin_raider", "goblin_slinger",
 	"gravewood_treant", "ice_dragon", "ice_whelp", "jungle_wyvern",
-	"lava_flan", "mesa_golem", "mirefolk", "oerkki", "poacher", "rift_spawn",
+	"lava_flan", "mesa_golem", "mirefolk", "oerkki", "poacher", "rift_boss", "rift_spawn",
 	"skeleton_archer", "skeleton_raider", "stone_golem", "storm_whelp",
 	"war_construct", "wisp",
 })
@@ -78,7 +78,7 @@ C.RARE_GROUPS = {
 
 -- Settlement and faction NPCs, by role name.
 local NPC_ROLES = {"^guard_", "^royal_guard_", "^king_", "^villager_",
-	"^elder_", "^captain_", "^general_", "^bodyguard_", "^land_guard$"}
+	"^elder_", "^captain_", "^commander_", "^general_", "^bodyguard_", "^land_guard$"}
 
 local function role_of(name)
 	return type(name) == "string" and name:match("^grug_mobs:(.+)$") or nil

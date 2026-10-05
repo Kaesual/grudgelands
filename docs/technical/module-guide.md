@@ -669,8 +669,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   NPC stands there (`G.slot`: entity, levels, tier, respawn, royal, leader,
   name, mixed, area), the quest area `"<zone>/<settlement key>"` and its
   roles (`G.area_roles`, read by `grug_quests` and `tools/r28_design`).
-  `guard.lua` registers the camp captains (the guard chassis, normal tier,
-  `grug_mobs.LEADER` factors from `levels.lua` in the definition),
+  Round 36: the war commander of the two camps `pvp_names.json`'s
+  `commanders` names (`G.commander`, the role `commander` in `G.slot`); he
+  has no blueprint socket, so `start_npcs.lua` appends the post
+  `M.commander_socket` derives from the captain and the west yard post.
+  `guard.lua` registers the camp captains and the commanders (the guard
+  chassis, `grug_mobs.LEADER` factors from `levels.lua` in the definition),
   `bosses.lua` the Generals from `king_def` (the seat race from
   `catalog.SEAT_RACE`) and their bodyguards; `start_npcs.lua` serves a PvP
   POI as its own settlement kind and books the respawn slots (the General's
@@ -686,6 +690,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   arena tick (threat prune, reset and flight home, hazards and the wrath
   through `set_hp`; `grug_core.bypasses_absorb` covers the wrath), the
   participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`.
+- **The rift (Round 36):** `grug_mobs/rift_core.lua` (pure: the site
+  constant `SITE`, each candidate's crack waypoints and `crack_cells`, the
+  respawn and particle numbers) and `rift.lua` (the void node, the one-time
+  crack behind the storage key `rift_crack:<site>`, the particles, the rift
+  boss and its once-a-second pass; `grug_mobs.rift_players` is the probe's
+  seam for stand-in players). The boss settles through `bosses.lua`'s ledger
+  (`grug_mobs.boss_settle`); a boss reward hook is `fn(self, boss_id, player,
+  locked)`, `locked` for a kill inside the character's lockout (grug_quality
+  rolls `BOSS_DROPS.locked`'s tier, the rift boss's elite row, else nothing).
+  The void's player damage is the node group `grug_pool_damage` (a percent
+  of the pool per second), applied in grug_core's central hp modifier through
+  `grug_core.node_pool_damage` (`environment_damage.lua`), lava's pattern.
+  Fixtures `tools/r36_r` (with `numbers.py` and `engine.sh`), `tools/r33_c1`.
 - **Mob voices (Round 34 S1b):** `grug_mobs/voices.lua` holds `VOICES`, the
   families (humanoid, goblin, undead, mummy, skeleton, spirit, giant,
   elemental, canine, feline, boar, beast, grazer, bird, crow, critter,
@@ -963,7 +980,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Unknown quest fields stop the load (`E-unknown-key`, Round 30). Round 31:
   quest NPCs get their faction at load and serve only it; a kill objective's
   area may be a PvP garrison (`pvp_garrison.area_roles`, guard and captain
-  roles only, the giver of the other faction: `E-garrison-faction`); kill
+  roles, since Round 36 the war commander where a camp has one, the giver of
+  the other faction: `E-garrison-faction`); kill
   credit needs nothing new (the `_grug_area` tag). Placeholders may name a
   PvP POI by its settlement key. The design tools mirror it
   (`tools/r28_design`: `r28common.pvp_pois` reads the tiers from

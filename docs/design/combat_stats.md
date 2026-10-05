@@ -233,6 +233,11 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   strongest damaging node among the player's body points, so standing in
   several lava nodes is still one hit per second. A full pool therefore lasts
   at most five ticks.
+- **Pool-damage nodes** (Round 36): a node in the group `grug_pool_damage`
+  hurts by that percent of the maximum HP per second, rounded up, the same
+  replacement of the engine's flat tick as lava (`grug_core.node_pool_damage`).
+  The rift's void is **11 %**, about nine ticks from a full pool at any level;
+  armour never reduces it, the absorb shield soaks it.
 - **Drowning** (ruling 24): once the engine has run the breath out (it removes
   one breath every 2 s while the head is in a `drowning` node), the player
   takes **ceil(10% of maximum HP) per second** — at most ten ticks from a full

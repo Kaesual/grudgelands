@@ -333,7 +333,8 @@ local FAMILY = {guard_post = "guards", guard_patrol = "guards",
 	idle = "flair", work = "flair", trainer = "flair", innkeeper = "flair",
 	housing_manager = "flair", vendor = "vendor",
 	quest = "quest", king = "royal",
-	general = "royal", bodyguard = "royal", captain = "guards"}
+	general = "royal", bodyguard = "royal", captain = "guards",
+	commander = "guards"}
 local FAMILY_ORDER = {"guards", "flair", "vendor", "quest", "royal"}
 
 local ROYAL_GUARD_SOCKET = {
@@ -653,6 +654,18 @@ local function build_rows()
 			if kind == "pvp_camp" then
 				local zone = grug_zones.get(garrison.poi(record.key).zone_id)
 				band = {zone.level_min, zone.level_max}
+				-- Round 36: a war commander has no authored socket; his post
+				-- joins this camp's sockets (pvp_garrison.lua commander_socket).
+				-- `sockets` is the registry's copy.
+				if garrison.commander_name(record.key) then
+					local post = garrison.commander_socket(sockets)
+					if post then
+						sockets[#sockets + 1] = post
+					else
+						core.log("error", "[grug_mobs] settlement npcs: " .. record.key ..
+							" has no captain and west yard post for its war commander")
+					end
+				end
 			end
 			local row = {race_id = record.race_id, faction_id = faction_id,
 				key = record.key, kind = kind, anchor = record.anchor,
@@ -1216,7 +1229,8 @@ local function install(entity, row, slot)
 		-- it, this covers the time before the first tick.
 		entity._grug_boss_id = slot.boss_id
 	end
-	if slot.role == "guard_post" or slot.role == "captain" then
+	if slot.role == "guard_post" or slot.role == "captain" or
+			slot.role == "commander" then
 		-- `_grug_home` is where aggro.lua's evade runs a guard back to after a
 		-- chase; the post fields are what guard.lua's tick holds it at while
 		-- idle. Deliberately NO `_grug_camp_pos`: that field switches on

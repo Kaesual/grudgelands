@@ -2,6 +2,8 @@
 -- on each capital's authored throne sockets.  None has an ambient spawn row.
 -- Round 31 adds the two fortress Generals (pvp-plan ruling 17): the king
 -- chassis without a crown, with two bodyguards on the royal guards' rules.
+-- Round 36 adds the rift boss (rift.lua), which settles through the same
+-- ledger and lockout.
 
 local storage = core.get_mod_storage()
 local RESPAWN_DRAGON = 30 * 60
@@ -164,9 +166,12 @@ function grug_mobs.register_boss_reward_hook(fn)
 	table.insert(boss_reward_hooks, fn)
 end
 
-local function give_hook_rewards(player, id, self)
+-- fn(self, boss_id, player, locked): `locked` is true for a kill inside the
+-- player's loot lockout, which gives what that boss gives then (the rift
+-- boss an elite's loot, the others nothing; grug_quality).
+local function give_hook_rewards(player, id, self, locked)
 	for _, fn in ipairs(boss_reward_hooks) do
-		local rewards = fn(self, id, player) or {}
+		local rewards = fn(self, id, player, locked) or {}
 		for index = 1, #rewards do
 			give_or_queue(player, rewards[index])
 		end
@@ -193,9 +198,10 @@ local function lockout_key(id)
 	return "grug_boss_lockout:" .. id
 end
 
--- fn(player, boss_id) for every player the ledger credits with a King's or a
--- dragon's kill, whether or not the loot lockout lets them loot it
--- (grug_achievements counts the kills).
+-- fn(player, boss_id) for every player the ledger credits with a King's, a
+-- dragon's or the rift boss's kill ("rift:<site key>", Round 36), whether or
+-- not the loot lockout lets them loot it (grug_achievements counts the
+-- kills).
 local boss_kill_callbacks = {}
 
 function grug_mobs.register_on_boss_kill(fn)
@@ -229,17 +235,21 @@ local function settle_boss(id, self, race)
 			if meta:get_int(key) <= now then
 				if race then
 					give_or_queue(player, crown_stack(race))
-				else
+				elseif id:find("^dragon:") then
 					give_or_queue(player, ItemStack("grug_mobs:scaled_hide 4"))
 				end
-				give_hook_rewards(player, id, self)
+				give_hook_rewards(player, id, self, false)
 				meta:set_int(key, now + LOOT_LOCKOUT)
+			else
+				give_hook_rewards(player, id, self, true)
 			end
 		end
 	end
 	ledgers[id] = nil
 	grug_mobs.clear_boss_activity(id)
 end
+-- The rift boss's death settles here too (rift.lua).
+grug_mobs.boss_settle = settle_boss
 
 function grug_mobs.boss_attempt_reset(id)
 	if id then
@@ -258,7 +268,8 @@ function grug_mobs.boss_leash_reset(self)
 		end
 		return
 	elseif self and self._grug_boss_id then
-		if grug_mobs.cancel_dragon_action then
+		if grug_mobs.cancel_dragon_action and
+				self._grug_boss_id:find("^dragon:") then
 			grug_mobs.cancel_dragon_action(self)
 		end
 		grug_mobs.boss_attempt_reset(self._grug_boss_id)
@@ -322,6 +333,9 @@ local function hit_players(self, radius, multiplier, cone, knockback, faction)
 		end
 	end
 end
+
+-- The kings' shatter and cleave, also the rift boss's void pulse (rift.lua).
+grug_mobs.boss_hit_players = hit_players
 
 -- A dragon's arena (Round 31 DA2): its spawn point and the arena radius,
 -- by boss id ("dragon:<id>"); nil for any other id. Cached once the zone

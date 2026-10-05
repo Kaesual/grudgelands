@@ -3,6 +3,10 @@
     "accord": "General Haldren Ashward",
     "throng": "General Grask Oathscar"
   },
+  "commanders": {
+    "pvp_camp_gravesalt_escarpment_throng_high": "Throng War Commander",
+    "pvp_camp_skyglass_canopy_accord_high": "Accord War Commander"
+  },
   "captains": {
     "pvp_camp_gravesalt_escarpment_accord_low": {
       "human": "Captain Werric Fenholt",

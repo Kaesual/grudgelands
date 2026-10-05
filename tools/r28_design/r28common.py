@@ -932,6 +932,7 @@ def zone_records(source=SIMPLE_MAP):
 
 PVP_CATALOG = REPO / "mods" / "MAPGEN" / "grug_mapgen" / "wp40" / "r31_pvp_catalog.lua"
 PVP_GARRISON = REPO / "mods" / "ENTITIES" / "grug_mobs" / "pvp_garrison.lua"
+PVP_NAMES = REPO / "mods" / "ENTITIES" / "grug_mobs" / "data" / "pvp_names.json"
 QUEST_NPCS = REPO / "mods" / "PLAYER" / "grug_quests" / "npcs.lua"
 PVP_FACTION_NAME = {"accord": "Accord", "throng": "Throng"}
 
@@ -1008,20 +1009,26 @@ def _slot_tiers(source, where):
     return out
 
 
-def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None):
+def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None, names=PVP_NAMES):
     """{settlement key: {"key", "label", "zone", "faction", "kind"
     ("pvp_fortress" | "pvp_camp"), "band" ("low" | "high" | None), "roles"
     ({role: [lo, hi]}), "tiers" ({role: "normal" | "elite"})}} of every PvP
     POI, as the game's catalogue builds them; the garrison roles, levels and
-    tiers as pvp_garrison.lua's area_roles and slot place them. A partial
-    parse of either file fails loudly (LoadError)."""
+    tiers as pvp_garrison.lua's area_roles and slot place them, with the
+    Round 36 war commander in the camps the names file names one for. A
+    partial parse of either file fails loudly (LoadError)."""
     text = Path(catalog).read_text(encoding="utf-8")
     source = Path(garrison).read_text(encoding="utf-8")
     levels = dict((k, int(v)) for k, v in re.findall(r"M\.(\w+_LEVEL)\s*=\s*(\d+)", source))
-    for name in ("FORTRESS_GUARD_LEVEL", "BODYGUARD_LEVEL", "GENERAL_LEVEL"):
+    for name in ("FORTRESS_GUARD_LEVEL", "BODYGUARD_LEVEL", "GENERAL_LEVEL", "COMMANDER_LEVEL"):
         if name not in levels:
             raise LoadError("%s: M.%s not found" % (garrison, name))
     tiers = _slot_tiers(source, garrison)
+    m = re.search(r'M\.COMMANDER_TIER\s*=\s*"(normal|elite)"', source)
+    if not m:
+        raise LoadError("%s: M.COMMANDER_TIER not found" % garrison)
+    tiers[("pvp_camp", "commander")] = m.group(1)
+    commanders = read_json(names).get("commanders") or {}
     records = records or zone_records()
     rows = []
     fortresses = re.findall(r"\{key = \"pvp_fortress_\w+\"[^}]*\}", text)
@@ -1057,6 +1064,8 @@ def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None):
             lo, hi = records[row["zone"]]["levels"]
             low, high = (lo, lo + 2) if row["band"] == "low" else (hi - 2, hi)
             row["roles"] = {"guard_" + fac: [low, high], "captain_" + fac: [high, high]}
+            if row["key"] in commanders:
+                row["roles"]["commander_" + fac] = [levels["COMMANDER_LEVEL"]] * 2
         row["tiers"] = {role: tiers[(row["kind"], role[:-len(fac) - 1])] for role in row["roles"]}
         out[row["key"]] = row
     return out

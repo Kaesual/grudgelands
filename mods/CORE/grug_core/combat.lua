@@ -1869,6 +1869,12 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		if max_hp > 0 then
 			hp_change = -grug_core.lava_damage(max_hp)
 		end
+	elseif reason.type == "node_damage" then
+		-- The same for a pool-damage node (Round 36, the rift's void).
+		local properties = player:get_properties() or {}
+		local share = grug_core.node_pool_damage(reason,
+			tonumber(properties.hp_max) or 0)
+		if share and share > 0 then hp_change = -share end
 	end
 	-- Absorb shield soaks the remaining damage of every source except fall,
 	-- lava and drowning (ruling 24).
