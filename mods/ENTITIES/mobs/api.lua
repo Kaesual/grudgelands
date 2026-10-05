@@ -558,6 +558,18 @@ function mob_class:set_animation(anim, force)
 
 	if not self.animation or not anim then return end
 
+	-- GRUG PATCH (Round 37 MB, MOB-04): the swing plays to its end. The
+	-- contact run (do_states, 2026-09-16 cadence patch) writes "stand" or
+	-- "run" every step and cut the punch after one server step; while the
+	-- clip runs, a plain movement animation waits. Forced writes, hit and
+	-- death animations pass.
+	local temp = self.temp
+	if not force and temp and temp.grug_punch_until
+	and (anim == "stand" or anim == "walk" or anim == "run") then
+		if core.get_us_time() / 1000000 < temp.grug_punch_until then return end
+		temp.grug_punch_until = nil
+	end
+
 	local current = self.animation_current or ""
 	local anims = self.animation
 
@@ -582,9 +594,17 @@ function mob_class:set_animation(anim, force)
 
 	self.animation_current = anim
 
+	local speed = anims[anim .. "_speed"] or anims.speed_normal or 15
+
+	-- GRUG PATCH (Round 37 MB, MOB-04): remember when this swing's clip ends.
+	if anim:sub(1, 5) == "punch" and speed > 0 and temp then
+		temp.grug_punch_until = core.get_us_time() / 1000000
+				+ (anims[anim .. "_end"] - anims[anim .. "_start"]) / speed
+	end
+
 	self.object:set_animation(
 			{x = anims[anim .. "_start"], y = anims[anim .. "_end"]},
-			anims[anim .. "_speed"] or anims.speed_normal or 15, anims.frame_blend,
+			speed, anims.frame_blend,
 			anims[anim .. "_loop"] ~= false)
 end
 
