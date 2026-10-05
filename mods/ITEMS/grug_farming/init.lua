@@ -340,11 +340,28 @@ local function give_harvest(player, pos, item)
 	if not leftover:is_empty() then core.add_item(pos, leftover) end
 end
 
+-- The owned helpers standing on a tall crop's root at `pos`, removed with it.
+local function remove_helpers(pos, row)
+	for level = 1, math.max(unpack(row.profile.heights)) - 1 do
+		local upper = copy_pos(pos, level)
+		local node = core.get_node_or_nil(upper)
+		if not node or not owned_helper(node.name, pos, upper, row) then return end
+		core.remove_node(upper)
+	end
+end
+
 local function dig_crop(pos, node, digger)
 	if not digger or not digger:is_player() then return end
 	local root, state = root_for(pos, node.name)
-	if not root then return end
 	local name = digger:get_player_name()
+	if not root then
+		-- An orphaned upper node (its root went without dig_crop: the soil
+		-- dug away, a block placed on it, a flood): it goes, without drops.
+		if helper_by_node[node.name] and protection_ok(pos, name) then
+			core.remove_node(pos)
+		end
+		return
+	end
 	local positions = whole_crop_positions(root, state)
 	if not positions then return end
 	for index = 1, #positions do
@@ -433,6 +450,18 @@ for index = 1, #crops do
 		local definition = grug_nodes.crop_visual(row.key, stage,
 			default.node_sound_leaves_defaults(),
 			{mode = "cultivated", segment = 0})
+		-- A root that goes any other way than dig_crop takes its upper nodes
+		-- along (Round 37, ITM-02): removed or replaced (the attached drop
+		-- when its soil is dug, a block placed on it) or flooded. A stage
+		-- change swaps the root and calls neither.
+		local after_destruct, on_flood
+		if row.profile.heights then
+			after_destruct = function(pos) remove_helpers(pos, row) end
+			on_flood = function(pos)
+				remove_helpers(pos, row)
+				return false
+			end
+		end
 		local gameplay = {
 			description = row.description .. " Crop" .. (mature and "" or
 				" (Stage " .. stage .. ")"),
@@ -440,6 +469,8 @@ for index = 1, #crops do
 			drop = drop,
 			on_construct = on_construct,
 			on_timer = on_timer,
+			after_destruct = after_destruct,
+			on_flood = on_flood,
 			on_dig = dig_crop,
 			on_rightclick = harvest_crop,
 			_grug_crop = row.key,
