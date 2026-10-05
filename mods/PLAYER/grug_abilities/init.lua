@@ -782,7 +782,8 @@ function grug_abilities.register_ability(def)
 		-- without player context can never advertise a false value.
 		description = def._grug_description_prefix .. def.description,
 		inventory_image = skill_icon,
-		-- An empty weapon slot keeps its neutral baseline placeholder; action
+		-- The neutral fallback before the first skin sync; the skin shows the
+		-- slot's item, or the bare hand for an empty slot (apply_skin). Action
 		-- artwork must not masquerade as an equipped weapon in the hand.
 		wield_image = "grug_abilities_orb.png^[multiply:" .. def.color,
 		range = 4, -- Native pointing/digging has hand reach; casts use server rays.
@@ -1536,13 +1537,13 @@ end
 -- cooldown-wear path above is so stingy (D2/2). Without it, dragging any item
 -- would rewrite four stacks.
 --
--- Shape: "<version>|<wield source>", or the empty
--- string for "no skin" (which is also what an untouched stack answers, so a
--- weaponless character never writes anything).
+-- Shape: "<version>|<wield source>"; an empty slot is "<version>|", so a
+-- freshly granted stack of a weaponless character is written once (it shows
+-- the bare hand, below) and never again.
 --
 -- The resolved source rather than just the item name is included because a
 -- per-stack wield override must update an already-granted ability stack.
-local SKIN_VERSION = 3
+local SKIN_VERSION = 4
 local SKIN_TOKEN_KEY = "grug_skin"
 
 -- The equipment list behind each ability slot. This is grug_inventory's
@@ -1688,11 +1689,17 @@ local function skin_wield_image(src)
 end
 
 local function skin_token(src)
-	if src == "" then
-		return ""
-	end
 	return SKIN_VERSION .. "|" .. src
 end
+
+-- With nothing in the skill's slot the first-person view shows the bare hand,
+-- not the skill orb the engine would fall back to (the item definition's
+-- wield_image): the engine hand's own image and default's hand scale
+-- (builtin register.lua, default tools.lua). The engine draws the hand item
+-- from that image, not from the player's skin, so this is the hand a player
+-- sees with an empty hotbar slot too.
+local EMPTY_HAND_IMAGE = "wieldhand.png"
+local EMPTY_HAND_SCALE = "(1, 1, 2.5)"
 
 -- Skin one ability stack IN PLACE; returns true only when something actually
 -- changed, i.e. only when the caller has to spend an inventory write.
@@ -1707,11 +1714,13 @@ local function apply_skin(stack, def, src)
 	end
 	local wield_img = skin_wield_image(src)
 	-- Inventory and catalogue presentation always resolve from the registered
-	-- semantic skill icon. Only the wield override follows the equipped item.
-	-- Writing "" removes old weapon-overlay metadata and restores the registered
-	-- icon for an empty slot.
+	-- semantic skill icon. Only the wield override follows the equipped item;
+	-- an empty slot shows the bare hand (a source the client cannot compose
+	-- keeps the registered orb, as before).
+	local empty = src == ""
 	meta:set_string("inventory_image", "")
-	meta:set_string("wield_image", wield_img or "")
+	meta:set_string("wield_image", empty and EMPTY_HAND_IMAGE or wield_img or "")
+	meta:set_string("wield_scale", empty and EMPTY_HAND_SCALE or "")
 	meta:set_string(SKIN_TOKEN_KEY, token)
 	return true
 end

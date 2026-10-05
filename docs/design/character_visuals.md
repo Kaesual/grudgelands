@@ -152,7 +152,9 @@ read off the hotbar, in three cases:
    hand shows the weapon. Since Round 28 the slot is per skill and class: a
    Scout's bow skills show the bow from its Ranged slot, its Strike and
    Opening the sword or dagger from its Melee slot; every other class's
-   skills show the Weapon slot;
+   skills show the Weapon slot. With nothing in that slot the character holds
+   nothing, and the first-person view shows the bare hand, not the skill's orb
+   (Round 35);
 2. **any other item** in hand shows that item — a pickaxe is a pickaxe, a torch
    is a torch;
 3. an **empty hand** shows nothing.
