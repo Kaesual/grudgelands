@@ -32,12 +32,13 @@
 --      what the character does not own;
 --   F  the dropdown lists owned cloaks with the selected one marked; the
 --      page's resubmission of the same name changes nothing, a new name
---      selects and redraws; the tab pages its 17 achievements;
+--      selects and redraws; the tab pages its 20 achievements;
 --   C  every mob grug_mobs registers in the source (and every sub-type base)
 --      is classified, the lists are disjoint, every family, role and rare id
 --      exists in the source, every catalogue counter is one a hook produces,
---      every cloak has its texture file and the 41 Astra ids are exactly the
---      catalogue's textured cloaks.
+--      every cloak has its texture file and the 44 Astra ids are exactly the
+--      catalogue's textured cloaks (Round 36 added three, one per main-line
+--      achievement, named after the cloak).
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 
@@ -434,8 +435,8 @@ for _, ach in ipairs(book.achievements) do
 		(rare and C.RARE_GROUPS[rare])
 	check(ok, "C counter " .. c .. " of " .. ach.id .. " is produced by a hook")
 end
--- Every textured cloak has its file, and the ids are exactly Astra's 41.
-local ASTRA = {"plain_grey"}
+-- Every textured cloak has its file, and the ids are exactly Astra's 44.
+local ASTRA = {"plain_grey", "unburnt_roll", "unbought_banner", "broken_due"}
 for _, row in ipairs({{"hunter", 3}, {"kingslayer", 3}, {"wyvernslayer", 3},
 		{"dragonslayer", 3}, {"honored", 3}, {"zombie_slayer", 3}, {"boaring_work", 3},
 		{"rat_race", 2}, {"suppers_ready", 3}, {"bottle_service", 3}, {"loose_bones", 3},
@@ -453,18 +454,21 @@ for _, cloak in ipairs(book.cloaks) do
 		if handle then handle:close() end
 	end
 end
-eq(#ASTRA, 41, "C Astra's list")
+eq(#ASTRA, 44, "C Astra's list")
 for _, id in ipairs(ASTRA) do check(textured[id], "C catalogue has " .. id) end
 local count = 0
 for _ in pairs(textured) do count = count + 1 end
-eq(count, 41, "C no cloak beyond Astra's list")
--- Tier N of an achievement unlocks <id>_N.
+eq(count, 44, "C no cloak beyond Astra's list")
+-- Tier N of an achievement unlocks <id>_N; the Round 36 three unlock their
+-- one cloak by its own name (story bible §6).
+local NAMED = {every_name_accounted_for = "unburnt_roll", our_oaths_are_ours = "unbought_banner",
+	last_claim_denied = "broken_due"}
 for _, ach in ipairs(book.achievements) do
 	for t, tier in ipairs(ach.tiers) do
-		eq(tier.cloak, ach.id .. "_" .. t, "C " .. ach.id .. " tier " .. t .. " cloak")
+		eq(tier.cloak, NAMED[ach.id] or (ach.id .. "_" .. t), "C " .. ach.id .. " tier " .. t .. " cloak")
 	end
 end
-eq(#book.achievements, 17, "C seventeen achievements")
+eq(#book.achievements, 20, "C twenty achievements")
 
 print(("%d checks, %d failures"):format(checks, failures))
 if failures > 0 then error("R33 C3 PORTABLE FAIL") end

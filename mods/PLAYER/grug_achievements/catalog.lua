@@ -117,6 +117,13 @@ return {
 			texture = "grug_achievements_cloak_last_word_1.png"}, -- A22 C22.1
 		{id = "grounded_1", name = "Hard Landing",
 			texture = "grug_achievements_cloak_grounded_1.png"}, -- A24 C24.1
+		-- Round 36 (story bible §6): one cloak each, named after the cloak.
+		{id = "unburnt_roll", name = "Mantle of the Unburnt Roll",
+			texture = "grug_achievements_cloak_unburnt_roll.png"},
+		{id = "unbought_banner", name = "The Unbought Banner",
+			texture = "grug_achievements_cloak_unbought_banner.png"},
+		{id = "broken_due", name = "Mantle of the Broken Due",
+			texture = "grug_achievements_cloak_broken_due.png"},
 	},
 	achievements = {
 		-- U1
@@ -207,5 +214,22 @@ return {
 			text_one = "Die from a fall.",
 			flavour = "The ground was exactly where you left it.",
 			tiers = {{at = 1, cloak = "grounded_1"}}},
+		-- Round 36, the main questline (story bible §6). The two final quest
+		-- ids are fixed: each faction's last Warmaster turn-in; only that
+		-- faction's Warmaster gives it, so only its characters can earn it.
+		{id = "every_name_accounted_for", name = "Every Name Accounted For",
+			counter = "quest:accord_main_final",
+			text_one = "Complete The Accord's main questline.",
+			flavour = "You brought back the names the enemy meant to turn into numbers.",
+			tiers = {{at = 1, cloak = "unburnt_roll"}}},
+		{id = "our_oaths_are_ours", name = "Our Oaths Are Ours",
+			counter = "quest:throng_main_final",
+			text_one = "Complete The Throng's main questline.",
+			flavour = "Let them keep their coin. Nobody else speaks for our dead.",
+			tiers = {{at = 1, cloak = "unbought_banner"}}},
+		{id = "last_claim_denied", name = "The Last Claim Denied", counter = "boss:rift",
+			text_one = "Defeat Isquarre the Tithe-Eater.",
+			flavour = "The collector came for both armies. You sent him away empty.",
+			tiers = {{at = 1, cloak = "broken_due"}}},
 	},
 }
