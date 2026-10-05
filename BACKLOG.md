@@ -19,14 +19,26 @@ in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33. The audit's le
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 34 "Sound"](docs/planning/round34-plan.md#completion-2026-10-04)
-  complete locally** (2026-10-04, not pushed; GUI test open): V1's sound
-  ([sound.md](docs/design/sound.md), [CREDITS.md](CREDITS.md)), every file
-  picked by the user — effects, hits, ability cues and mob voices (S1a,
-  S1b), ambience beds for every zone, loops, dragon-island thunder, music
-  pools pushed on demand and the settings (S2); mobs in water (F1); text
-  boxes, cooking costs, the Bag of Coins, service markers, the damage fit,
-  encounter adds, thin ice (F2). Next: the GUI test, then WP9
+  [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
+  complete locally** (2026-10-05, not pushed; GUI test open): the user's
+  Round 34 GUI findings — the server's aiming rays test rotated selection
+  boxes in Lua (T, with the
+  [upstream-workaround list](docs/technical/upstream-workarounds.md)); music
+  only in the six capitals, either music or the bed (M); the break sound,
+  broken look, empty hand, dig sounds, flint removed, the quest list colours
+  and read-only quest text (F); character creation in one window (C); night
+  mobs leave at dawn and the drop audit (E); level-proof talents and the
+  user's review picks (B). Next: the GUI test, then WP9
+  ([Round 35](#round-35--fixes-and-character-creation),
+  [carry-overs](#round-35-carry-overs)).
+- [Round 34 "Sound"](docs/planning/round34-plan.md#completion-2026-10-04)
+  (2026-10-04, pushed 2026-10-05; the user's GUI test fed Round 35): V1's
+  sound ([sound.md](docs/design/sound.md), [CREDITS.md](CREDITS.md)), every
+  file picked by the user — effects, hits, ability cues and mob voices
+  (S1a, S1b), ambience beds for every zone, loops, dragon-island thunder,
+  music pools pushed on demand and the settings (S2); mobs in water (F1);
+  text boxes, cooking costs, the Bag of Coins, service markers, the damage
+  fit, encounter adds, thin ice (F2)
   ([Round 34](#round-34--sound), [carry-overs](#round-34-carry-overs)).
 - [Round 33 "Items, professions and achievements"](docs/planning/round33-plan.md#completion-2026-10-04)
   (2026-10-04, pushed with Rounds 30–32 on 2026-10-04; needs a fresh world): the
@@ -799,7 +811,8 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   with `1 + Int/1000`; a heal-formula change (2B) would be a later round.
 - **Ruination under ×2 crits:** the capstone's window rises from +9 % to
   +18 % damage, a hit at its 50 % cap averages ×1.5 instead of ×1.25; a
-  playtest number. Whitehot fires a little later (less crit from
+  playtest number. Round 35 made the window 15 s every 60 s (about +4 %
+  damage overall). Whitehot fires a little later (less crit from
   Dexterity).
 - **Decor Merchant's light bands** hold one item each (lantern, hanging
   lantern); no Candle, which the Embalmer sells at 4c (C5 review).
@@ -829,7 +842,8 @@ approval list, 77 fixtures pass, no mapgen change:
 - **Ambience and music** (S2): `grug_ambience`, beds per region, night,
   cave, deep and sea (half gain in towns), dragon-island thunder, forge,
   fire and flowing-water loops, four music pools with 16 tracks pushed on
-  demand, the main-menu theme, Help → Sound, `/music`, `/ambience`.
+  demand (capital rotations since Round 35), the main-menu theme, Help →
+  Sound, `/music`, `/ambience`.
 - **Mobs in water** (F1): combat follows through harmless water, idle mobs
   swim home, a one-node bank is climbed.
 - **Fixes and the Bag of Coins** (F2): text boxes, cooking costs per tier,
@@ -846,11 +860,15 @@ none blocks the GUI test. Numbers are comparisons, never targets.
 - **Public town furnaces** use the vendored furnace form, so taking a dish
   out of one plays no cooking cue.
 - **Music push cost** is unmeasured (the engine hashes the file on the main
-  thread, a few milliseconds per push).
-- **Town pool under capitals:** the town flag is by x/z only, so a cave
-  below a capital plays the Town pool and the half-gain bed.
-- **Volume rounding:** a `/music` or `/ambience` volume off the 10 % grid
-  shows rounded on the Help page's dropdown.
+  thread, a few milliseconds per push); since Round 35 pushes happen only
+  in the capitals.
+- **Town pool under capitals:** resolved differently in Round 35: the Town
+  pool is gone and the capital is found by x/z, so a cave below a capital
+  plays that capital's rotation (bed silent), with music off its cave bed
+  at half gain; below a start town the half-gain bed plays.
+- **Volume rounding:** a `/music` or `/ambience` volume off the dropdown's
+  grid (5 % steps since Round 35) shows at the nearest step on the Help
+  page; the stored value is kept.
 - **Licence rows** of the incompetech tracks point at the catalogue, not at
   each track's page.
 - **Water probe:** with the sea bed shipped it reads 33 nodes per
@@ -869,7 +887,95 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   reach it today (note, not a task).
 - The Round 32 real-client performance test stays optional.
 
-### Character creation in one window (user, 2026-10-05; Round 35 candidate)
+### Round 35 — fixes and character creation
+
+**Delivered locally 2026-10-05**
+([completion](docs/planning/round35-plan.md#completion-2026-10-05), plan
+[round35-plan.md](docs/planning/round35-plan.md)); every code lane
+independently reviewed by Opus, the break sound on the approval list
+(`tools/r35_f/approved.txt`), 84 fixtures pass, no mapgen change:
+
+- **Aiming** (T): `grug_core.aim_raycast` tests `rotate = true` selection
+  boxes in Lua for every server-side aiming ray (the engine misreads them
+  since Luanti 5.12); zombie and crocodile probe misses 62 and 32 → 0;
+  [upstream-workarounds.md](docs/technical/upstream-workarounds.md) with
+  this entry and the emerge-thread pin.
+- **Capital music** (M): music only in the six capitals, one rotation each
+  (Master of the Feast in none), either music or the bed with a 3 s
+  crossfade, 5 s pauses, the next track pushed ahead, 35 % by default
+  ([sound.md](docs/design/sound.md)).
+- **Small fixes** (F): the break sound (the user's pick B1.2, once at the
+  break), the drained and cracked broken look, the bare hand for a skill
+  without a weapon, dig sounds for 42 ore, gem, coal, sand and loose nodes,
+  flint removed, quest dialog and log coloured by status with "(R)" and a
+  read-only description.
+- **Character creation** (C): one window, a session-only draft, everything
+  stored at "Create character", a reconnect during the arrival wait
+  resumes it.
+- **Mobs and economy** (E): night region mobs leave at dawn unless fighting
+  or a player is within 32 nodes; the rat, crab, band-1 fox, crocodile,
+  zombie and outlaw drop outliers lowered, band medians unchanged.
+- **Talents** (B): 13 flat values become a percentage of the base hit or
+  the armour constant at the player's level; the user's picks from the
+  review of all 64 talents ([skill_trees.md](docs/design/skill_trees.md)
+  §2.10).
+
+### Round 35 carry-overs
+
+**Noted 2026-10-05** ([completion](docs/planning/round35-plan.md#completion-2026-10-05));
+none blocks the GUI test. Numbers are comparisons, never targets.
+
+- **Spell formulas round before the level scalar:** `grug_abilities/kits.lua`
+  (~124–127) rounds a spell's raw damage to an integer before the level
+  scalar, up to ±4 damage at level 60 — the issue the user fixed for Loose
+  in this round (Mighty Blow and Opening floor weapon damage by design).
+- **Ability items show the static cooldown** (`def.cooldown`): Shield with
+  Second Skin, Swift Word, Grudge and Quick Step show their base cooldown
+  in the item's timing line.
+- **Scout crit above the cap:** a fully geared level-60 Scout (Dexterity on
+  all eight items, two crit enchants, Cold Eye 4/4) reaches 34–35 % and is
+  held at the 30 % cap; the cap does its job. Optional: "(30 % cap holds)"
+  in Cold Eye's text, as Keen Edge has.
+- **Recompense's internal cooldown** (6 s) is a per-session timer; a relog
+  resets it (not exploitable: a relog takes longer and leaves combat).
+- **Opening on rooted targets** works in PvP too: a Scout can root a player
+  with Pinning Shot and follow with a 280 % Opening (the user's pick; a
+  note, not a bug).
+- **Admin `/faction`** on an existing character re-enters the full creation
+  window: the player may pick another faction than the admin set, and the
+  class and look picks are ignored; on a player still drafting it stores
+  faction and starter kit before Create. Admin-only; a possible fix locks
+  the faction row and hides class and look when a class is stored.
+- **Broken capture probes:** `tools/r26_map`, `tools/r26_status_icons` and
+  `tools/r27_minimap` still drive the removed creation fields
+  (`choose_accord`, `choose_*`); broken since Round 31's look step.
+- **Music tab** (a personal playlist in the inventory; the user leans
+  towards "not now"): lane M's study estimates about 450 lines (page about
+  180, playlist storage 40, scheduler and "play now" 70, fixture 150, docs);
+  the open question is where it plays (everywhere would undo the immersion
+  ruling), plus a "loading" note, a push rate limit, up to about 29 MB of
+  downloads per player and no seeking in the engine.
+- **Long war-camp quest titles** are cut in the quest list below about 1080p
+  (at 720p about 95 % of titles fit).
+- **Aim-ray cost:** about 1–2.5 ms of server time per second per fighting
+  player in the worst case (20 rotated mobs round every ray); the
+  workaround goes once upstream fixes the engine
+  ([upstream-workarounds.md](docs/technical/upstream-workarounds.md)).
+  Limit: a "blocking" node or non-rotated object does not hold back rotated
+  hits behind it (none exists in the game).
+- **Night mobs by day:** a player may see one vanish in a puff 32–64 nodes
+  away; a player on a fast mount may come within 32 nodes before its first
+  check, and the mob then stays until the player leaves.
+- **Band 3 below its income target** (median 16.7c against 19c); the
+  crocodile change lowers that family further, the median does not move.
+
+### Character creation in one window (user, 2026-10-05; delivered in Round 35)
+
+**Done:** delivered in Round 35 lane C
+([completion](docs/planning/round35-plan.md#completion-2026-10-05)); the
+rules are [world.md](docs/design/world.md) §7 and
+[character_visuals.md](docs/design/character_visuals.md) §1.1. The request
+as written:
 
 Faction, race, class and look in one dialog with a live preview, replacing
 today's four separate steps (`grug_factions` faction form, `grug_classes`
