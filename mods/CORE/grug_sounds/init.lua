@@ -61,7 +61,7 @@ grug_sounds.HOOKS = {
 	"player_death",
 	-- Abilities: one cue per theme at the caster (grug_abilities.CAST_SOUNDS);
 	-- a projectile sounds at launch and at its hit (grug_projectiles.register).
-	"cast_charge", "cast_taunt", "cast_guard", "cast_frost_nova",
+	"cast_charge", "cast_taunt", "cast_guard", "cast_ice_nova",
 	"cast_frost_ward", "cast_cinderfall", "cast_holy", "cast_heal",
 	"cast_shield", "cast_shadow", "cast_evade",
 	"fireball_launch", "fireball_hit", "bow_shot", "arrow_hit",
@@ -160,7 +160,7 @@ local EVENTS = {
 	cast_charge = {name = "grug_sounds_cast_charge", gain = 0.7},
 	cast_taunt = {name = "grug_sounds_cast_taunt", gain = 0.8, distance = 20},
 	cast_guard = {name = "grug_sounds_cast_guard", gain = 0.7},
-	cast_frost_nova = {name = "grug_sounds_cast_frost_nova", gain = 0.7},
+	cast_ice_nova = {name = "grug_sounds_cast_ice_nova", gain = 0.7},
 	cast_frost_ward = {name = "grug_sounds_cast_frost_ward", gain = 0.6},
 	cast_cinderfall = {name = "grug_sounds_cast_cinderfall", gain = 0.8, distance = 20},
 	cast_holy = {name = "grug_sounds_cast_holy", gain = 0.7},
