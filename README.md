@@ -30,7 +30,8 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   lead each people from its starting town through its homelands and the
   contested borderlands to the war front at level 60, with repeatable
   bounties, a journal, quest tracker, world atlas and minimap to help you
-  find your way.
+  find your way. From level 41 each faction's main story follows a
+  burning debt across the front to a shared finale for a small group.
 - **Crafting and equipment.** Make basic gear, choose two of six primary
   professions, and improve your equipment with enchantments and upgrades.
   Weaponsmith, Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith
@@ -57,7 +58,9 @@ from the Luanti community's games and mods into a shared fantasy adventure.
 
 The Accord and the Throng live on rival continents, divided by an old
 conflict. A rising threat beneath the world gives both sides something else
-to fear. Their story will grow as more regions and encounters are completed.
+to fear: coins branded with its mark buy the dead of both armies, and each
+faction hunts the payers on its own until the collector itself takes shape
+at a rift on the front. What waits below is a story for a later expansion.
 
 ## Current State
 
@@ -65,9 +68,26 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 36](docs/planning/round36-plan.md#completion-2026-10-05), "The main
+questline", is complete locally and awaits a playtest on a fresh world, on
+desktop and in the browser. Each faction now has its main story from level
+41 to 60: three chapters from its fortress's Warmaster that follow branded
+pay through the front's worst villains, an errand behind enemy lines, a
+traitor in its own ranks and a finale for two or three players against
+Isquarre the Tithe-Eater at a burning crack in the ground, with an
+achievement and a cloak for each faction's story and for the finale
+([story](docs/design/story.md)). Some quest steps ask you to do something
+at a place, such as breaking a seal or taking a rubbing, and their objects
+appear only to players on that quest. Corrupted creatures with an ember
+glow roam the front, and a war commander guards two enemy camps. Every
+village, outpost, camp, mine, battlefield and lair got fitting decoration,
+and every house in the towns and capitals small touches such as a torch by
+the door or flowers under a window. Creatures running home can no longer be
+mistaken for targets, priests heal more with Intelligence gear, and the
+dragons push players away with a warning and have larger hazards.
 [Round 35](docs/planning/round35-plan.md#completion-2026-10-05), "Fixes and
-character creation", is complete locally and awaits a playtest on desktop
-and in the browser. Held spells and attacks no longer miss zombies,
+character creation", is complete and pushed; its first playtest findings
+fed Round 36. Held spells and attacks no longer miss zombies,
 crocodiles and other creatures that have turned away; gear that breaks makes
 a sound and looks clearly broken, ores, gems and sand sound when you dig
 them, and quest lists show each quest's state by colour. Music now plays
@@ -187,29 +207,32 @@ longer-term balancing remain ongoing. A [startup correction](docs/research/round
 fixes the new fish registration and native arrow recipe binding; isolated server
 startup and the 200-arrow Basics recipe are verified.
 
-The scripted war-front battles are still unfinished, and the main story
-from level 41 to 60 with its finale is still to come on top of the front
-quests.
+The scripted war-front battles are still unfinished; the story's
+continuation below the world waits for the underworld expansion.
 
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 45 of 54 tracked work-package identities are complete, 3 are
-canceled and 6 are open, several with playable portions (after the
+**Delivered:** 47 of 54 tracked work-package identities are complete, 3 are
+canceled and 4 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 35](docs/planning/round35-plan.md#completion-2026-10-05)
-(aiming at turned creatures, capital music, small item and quest fixes,
-the one-window character creation, night mobs at dawn, level-proof
-talents), independently reviewed and merged locally, after Round 34
+[Round 36](docs/planning/round36-plan.md#completion-2026-10-05)
+(the main story from level 41 with its finale at the rift, quest objects,
+the decor pass over every point of interest, the evading-mob and banner
+fixes, Priest heals, the dragon arenas), independently reviewed and merged
+locally, after Round 35 (aiming at turned creatures, capital music, small
+item and quest fixes, the one-window character creation, night mobs at
+dawn, level-proof talents), Round 34
 (sound effects, creature voices, ambience and music, mobs in water, the Bag
 of Coins), Round 33 (drops, enchant tiers and upgrades, the crown, vendors,
 potions, cloaks and achievements), Round 32 (map and HUD fixes, the held
 left click, notices in the feed), Round 31 (PvP, looks, dragon arenas) and
-Round 30 (performance); Round 34 is the latest pushed state and Round 24
+Round 30 (performance); Round 35 is the latest pushed state and Round 24
 the latest formally accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 36](docs/planning/round36-plan.md#gui-playtest-checklist),
 [Round 35](docs/planning/round35-plan.md#gui-playtest-checklist),
 [Round 34](docs/planning/round34-plan.md#gui-playtest-checklist),
 [Round 33](docs/planning/round33-plan.md#gui-playtest-checklist),
@@ -222,13 +245,14 @@ the latest formally accepted one.
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 playtests remain separate.
 
-**Ready for further work:** the first release still needs the main story
-from level 41 to 60 with its finale (WP9, next). A later look at Priest
-healing and a possible music tab are noted, and the deep spawn pulse stays
-for later. Points of interest stay at fixed positions (per-world
+**Ready for further work:** with the main story in place, the first
+release needs the playtests of the recent rounds, balance and the release
+checks. A possible music tab, a few missing decoration pieces and the
+main-menu background are noted, and the deep spawn pulse stays for later. Points of interest stay at fixed positions (per-world
 placement set aside); the [roadmap](ROADMAP.md) records the V1 scope and order.
 
-**Caveats:** Round 33 needs a fresh world (Rounds 34 and 35 play on it);
+**Caveats:** Round 36 needs a fresh world (its decoration and the dragon
+arenas are part of world generation);
 sound volumes and the new looks are tuned from playtests. Quests never ask you to kill
 players; PvP quests target enemy camp garrisons. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
@@ -236,7 +260,8 @@ deferred. Round 32's [performance review](docs/research/perf-review-2026-10-r32.
 measured 50 and 100 simulated players; a test with real clients and
 first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round35-plan.md#gui-playtest-checklist),
+the [latest playtest checklist](docs/planning/round36-plan.md#gui-playtest-checklist),
+the [Round 35 checklist](docs/planning/round35-plan.md#gui-playtest-checklist),
 the [Round 34 checklist](docs/planning/round34-plan.md#gui-playtest-checklist),
 the [Round 33 checklist](docs/planning/round33-plan.md#gui-playtest-checklist),
 the [Round 32 checklist](docs/planning/round32-plan.md#gui-playtest-checklist),
@@ -255,10 +280,9 @@ and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#
 The [full roadmap](ROADMAP.md) separates planned features from delivered work.
 There are no fixed release dates yet.
 
-- **Toward the first release:** the main story up to level 60 and its
-  finale.
-  Performance with many players, balance and reliable everyday play are
-  part of that work too.
+- **Toward the first release:** playtests of the main story and its
+  finale, performance with many players, balance and reliable everyday
+  play.
 - **Later adventures:** a walkable underworld expansion with its own story,
   creatures and terrain, and scripted faction clashes on the war front. Other
   plans include further classes, dungeons, regional bosses, reputation and

@@ -2,11 +2,57 @@
 
 Updated 2026-10-05. This is the delivery pointer, not another game specification.
 
-- **Round 35 "Fixes and character creation" delivered locally**
+- **Round 36 "The main questline" (WP9) delivered locally**
+  (2026-10-05, [plan, completion and GUI checklist](planning/round36-plan.md#completion-2026-10-05)).
+  Every lane is merged on local main (last the text pass T, `5069b5a5`),
+  each code and data lane independently reviewed by Opus; 93 fixtures pass,
+  `validate.py --game` 0 errors; not pushed. **A fresh world is required**
+  (the decor pass and the dragon arenas are world generation; `seed_fleet
+  quick` 100 of 100 for both lanes). WP9 delivered, and WP13's POI review.
+  - **The main line (S, E, Q0, Q-A, Q-T, T):** each faction's three
+    chapters from its fortress Warmaster at 41, 46 and 53 and a group
+    finale at 60, on the approved
+    [story bible](planning/round36/story-bible.md) (the Undertithe and its
+    branded coin): the front climaxes folded in, a solo captain's orders
+    from an enemy war camp on The Shattered Line, a traitor in each
+    fortress's own pay line, ten corrupted sub-types with one ember tint,
+    the "use at a place" objective with twelve quest objects seen only by
+    their quest's holders, a turn-in hook and three achievements with
+    cloaks (a faction's row hidden from the other faction); 540 quests
+    (+25). Texts by GPT-6 Astra, reviewed by Opus with the user's picks
+    ([quests.md](design/quests.md), [story.md](design/story.md)).
+  - **The rift (R):** a void crack at Tombroad Ambush (11 % of the maximum
+    HP per second, swim out) and Isquarre the Tithe-Eater, a level-60
+    elite at twice an elite's health for two or three players, back after
+    5 minutes, two blue or gold items once per 24 hours; war commanders
+    Greyvow and Stonegrudge in two enemy war camps
+    ([world.md](design/world.md) §4b, [pvp.md](design/pvp.md) §6.2).
+  - **Fixes (F) and classes (K):** crosshair and click share one target
+    predicate with an "Evading" notice; free mobs run home only from
+    outside their 32-node wander radius; the level-up banner names talent
+    points; Priest heals and absorbs grow with gear Intelligence, the
+    Scout's damage set matches the Warrior's, spells floor once after the
+    level scalar ([combat_stats.md](design/combat_stats.md)).
+  - **Dragons (G):** wider ember fissures, larger ice fields, ice water
+    back after 2 minutes and a telegraphed wing gust that pushes players
+    about 6 nodes.
+  - **Decor pass (P, W; WP13):** every POI rendered on a review page for
+    the user's verdicts, then a theme per POI kind instead of the old block
+    formations, small touches on every house of the POIs, start towns and
+    capitals, benches turned the right way, no window blocked
+    ([settlements.md](design/settlements.md) "Decor pass").
+  - Prices re-derived after the new quest copper (Expert Riding 1g29s,
+    Master Riding 7g38s, the 41–50 respec 5s25c, the crown 1g48s). A second
+    text review of the other quest texts is in progress.
+  - Next: the user's GUI test (desktop and web build, two clients for the
+    rift); the main-menu background waits for the user's screenshot.
+
+- **Round 35 "Fixes and character creation" delivered**
   (2026-10-05, [plan, completion and GUI checklist](planning/round35-plan.md#completion-2026-10-05)).
-  Every code lane is merged on local main (last lane B, `a15bd0ae`), each
-  independently reviewed by Opus; 84 fixtures pass; not pushed. No mapgen
-  change. The fixes come from the user's Round 34 GUI test.
+  Every code lane is merged on main (last lane B, `a15bd0ae`), each
+  independently reviewed by Opus; 84 fixtures pass; pushed by the user on
+  2026-10-05 (`7c4cad0a`). No mapgen change. The fixes come from the user's
+  Round 34 GUI test.
   - **Aiming (T):** the server's aiming rays test rotated selection boxes
     in Lua (an engine bug since Luanti 5.12 misreads them), so held casts
     and swings no longer miss zombies, crocodiles and other turned mobs
@@ -30,7 +76,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   - **Talents (B):** 13 flat talent values became level-proof percentages,
     and the user's picks from a review of all 64 talents
     ([skill_trees.md](design/skill_trees.md) §2.10).
-  - Next: the user's GUI test (desktop and web build); then WP9.
+  - Next was the user's GUI test (desktop and web build); its first
+    findings joined Round 36 (lane F).
 
 - **Round 34 "Sound" delivered locally**
   (2026-10-04, [plan, completion and GUI checklist](planning/round34-plan.md#completion-2026-10-04)).
@@ -454,12 +501,12 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 35, which includes Rounds 20–34
-  and the 2026-09-28 playtest fixes. Round 34 is the latest pushed state
+- **Latest game:** local main carries Round 36, which includes Rounds 20–35
+  and the 2026-09-28 playtest fixes. Round 35 is the latest pushed state
   (2026-10-05); Round 29 was tested by the user on a fresh world
-  (2026-10-02), the user's Round 33 findings became Round 34's fix lanes and
-  the Round 34 findings Round 35; Round 24 is the latest formally accepted
-  one. The 2026-09-30 playtest with friends fed Round 28,
+  (2026-10-02), the user's Round 33 findings became Round 34's fix lanes,
+  the Round 34 findings Round 35 and the first Round 35 findings Round 36's
+  lane F; Round 24 is the latest formally accepted one. The 2026-09-30 playtest with friends fed Round 28,
   the 2026-10-02 spawn playtest Round 29. Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
@@ -474,7 +521,13 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 35 checklist](planning/round35-plan.md#gui-playtest-checklist)
+  The [Round 36 checklist](planning/round36-plan.md#gui-playtest-checklist)
+  covers both main lines from 41 to the finale, quest objects and places,
+  the corrupted sub-types, the commanders, the rift and Isquarre (two
+  clients), achievements and cloaks, the evading mobs and the talent-point
+  banner, Priest heals, the dragon arenas, the decor pass and the new
+  prices (desktop and web build, a fresh world); the
+  [Round 35 checklist](planning/round35-plan.md#gui-playtest-checklist)
   covers aiming at turned mobs, gear breaking, the empty hand, dig sounds,
   the quest dialog, night mobs at dawn, loot, talent tooltips, capital
   music and the new character creation (desktop and web build); the
@@ -496,10 +549,11 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   [Round 26 checklist](planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
   the capitals and Claim Stone activation, the
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
-  the rest of housing; earlier rounds keep their own checklists. The
-  user wants a separate walk of the Round 20 POI art (audit E2).
-- **Remote observation:** Rounds 30–34 are pushed (origin/main
-  `86d7c4c5`, 2026-10-05); Round 35 is local only.
+  the rest of housing; earlier rounds keep their own checklists. The walk
+  of the Round 20 POI art (audit E2) became Round 36's review page and
+  decor pass; the reworked places are in its checklist.
+- **Remote observation:** Rounds 30–35 are pushed (origin/main
+  `7c4cad0a`, 2026-10-05); Round 36 is local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

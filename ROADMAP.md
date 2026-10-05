@@ -103,10 +103,14 @@ Earlier delivery narratives are preserved in the
   four island landings have piers (Round 30).
 - **Story remains light and environmental.** The Accord–Throng war is old; an
   ancient demonic threat reaches upward through the Nether. Both factions face
-  it in parallel without becoming allies.
+  it in parallel without becoming allies. Since Round 36 each faction's main
+  line from level 41 follows that threat's branded pay across the front to a
+  shared finale at the rift, whose last line points below
+  ([story.md](docs/design/story.md)).
 
 **Scope versus delivery:** this vision includes approved future systems, not just
-running code. The WP9 story from level 41 remains unfinished; V1's sound is
+running code. The WP9 story from level 41 with its finale is delivered in
+Round 36 (GUI test pending); V1's sound is
 delivered in Round 34 (tested by the user; Round 35 made music a capital
 feature); the items
 and professions revision (WP5, WP10) is delivered in Round 33; WP41 PvP and
@@ -279,8 +283,23 @@ B1–B7) settle the rest:
   character creation in one window with nothing stored before "Create
   character"; night mobs leave at dawn, a drop audit against the income
   targets; level-proof talents and the user's picks from a review of all
-  64. Local, not pushed. Next: the GUI test on desktop and in the web
-  build.
+  64. Pushed 2026-10-05; the user's first GUI findings fed Round 36.
+- [x] **Round 36 "The main questline" (WP9)**
+  ([completion](docs/planning/round36-plan.md#completion-2026-10-05)), V1's
+  last missing content: each faction's main line from its fortress
+  Warmaster in three chapters (41, 46, 53) and a group finale at 60 on the
+  approved [story bible](docs/planning/round36/story-bible.md), with the
+  front climaxes folded in, a solo step behind enemy lines, the "use at a
+  place" objective with quest objects, ten corrupted sub-types, a turn-in
+  hook and three achievements with cloaks; the rift at Tombroad Ambush with
+  its void crack and Isquarre the Tithe-Eater, war commanders in two enemy
+  camps; WP13's POI review on a render page and a decor pass over every POI,
+  start town and capital house; fixes from the Round 35 GUI test (one target
+  predicate, free mobs evading only from outside their wander radius, talent
+  points in the level-up banner); Priest heals with gear Intelligence and
+  the Scout's damage set; the dragons' wider hazards and wing gust. Local,
+  not pushed; needs a fresh world. Next: the GUI test on desktop and in the
+  web build, two clients for the rift.
 
 ### Remaining work
 
@@ -288,18 +307,20 @@ B1–B7) settle the rest:
   whether POIs, camps, outposts, mines and the PvP fortresses are placed per
   world instead of at fixed positions
   ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
-- [ ] **WP9 (V1), next:** the level-41–60 main questline and the finale, a
-  round of its own after Round 35.
-  Round 29's front quests and bounties carry the 41–60 leveling; the main
-  storyline and the finale are reassessed on top of them.
+- [x] **WP9 (V1):** the level-41–60 main questline and the finale,
+  delivered in Round 36 on top of Round 29's front quests and bounties.
 - Round 34's late fix: the ~1 % seed load failure is fixed (F3, rivers never
-  cover a POI core; a seed fleet guards world-generation changes). Round 33's to 35's other
-  open notes (Priest healing and Intelligence, the playtest's crit numbers,
-  sound balance, spell rounding, the music tab study) are in the
+  cover a POI core; a seed fleet guards world-generation changes). Round 33's to 36's other
+  open notes (sound balance, the music tab study, the main line's ledger
+  and decor notes, the main-menu background) are in the
   [Round 33](BACKLOG.md#round-33-carry-overs),
-  [Round 34](BACKLOG.md#round-34-carry-overs) and
-  [Round 35](BACKLOG.md#round-35-carry-overs) carry-overs.
-- [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
+  [Round 34](BACKLOG.md#round-34-carry-overs),
+  [Round 35](BACKLOG.md#round-35-carry-overs) and
+  [Round 36](BACKLOG.md#round-36-carry-overs) carry-overs; Round 36 settled
+  Priest healing, the Scout's set and spell rounding.
+- [x] **WP13:** the POI review (audit E2) done in Round 36 as a render page
+  with the user's verdicts instead of a walk, and the decor pass it asked
+  for; the reworked places are in the Round 36 GUI checklist.
 - [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
   roster stay open in TODO-design-depth.md. Renewable camp resources are
   removed; the T6 lava lakes stay planned.
