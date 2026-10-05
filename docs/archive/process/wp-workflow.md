@@ -1,23 +1,29 @@
 # Autonomous WP Workflow
 
+> **Archived 2026-10-05 (Round 37 lane DB).** Historical: this was the
+> process for one work package per session on a `wp<NN>-<slug>` branch,
+> used until 2026-09-20. Its PUC micro-KAT steps were retired by the user's
+> ruling of 2026-09-25 and its workstation cap reference is stale. Current
+> process: [round workflow](../../process/round-workflow.md).
+
 Decided 2026-08-06. How a work package (WP) gets implemented
 autonomously. AGENTS.md links here; this file is the detailed contract.
 
 ## Roles (revised 2026-08-22)
 
 Model selection defaults come from
-[agent-model-policy.md](agent-model-policy.md); the user overrides them per
+[agent-model-policy.md](../../process/agent-model-policy.md); the user overrides them per
 session (its "Day-to-day routing rule"). A WP, research note, or package
 contract must not invent a local model priority.
 
 - **The coordinator is architect, tracker, and integration judge.** Its model
-  is selected under [agent-model-policy.md](agent-model-policy.md). It
+  is selected under [agent-model-policy.md](../../process/agent-model-policy.md). It
   maintains the task graph, writes implementation plans (mandatory for large
   WPs) and tight per-task briefs, tracks dependencies and worktree ownership,
   reads every returned diff and its evidence, decides accepted findings, and
   performs final integration.
 - **Implementation and review models follow the model policy.** Select them
-  under [agent-model-policy.md](agent-model-policy.md); this process document
+  under [agent-model-policy.md](../../process/agent-model-policy.md); this process document
   does not restate its routing table.
 - **Independent strong-agent review is the mandatory quality gate.** The
   policy defines the trigger, independence, and model route; the checklist
@@ -46,7 +52,7 @@ budget, and stop conditions.
    the step-5 review. A WP with an unresolved design blocker is not started.
 2. **Branch**: `wp<NN>-<slug>` off current `main` (e.g. `wp18-continents`).
 3. **Implement** on the branch with the model selected by
-   [agent-model-policy.md](agent-model-policy.md), working from the
+   [agent-model-policy.md](../../process/agent-model-policy.md), working from the
    coordinator's brief; the coordinator reviews each returned diff before
    building on it. Project conventions (AGENTS.md),
    syntax check per changed file with **`tools/bin/luac51 -p`** (the
@@ -76,12 +82,12 @@ budget, and stop conditions.
    performance rules (globalstep throttling, inventory churn, 100-player
    target).
 5. **Mandatory code review**: under **Independent review** in
-   [agent-model-policy.md](agent-model-policy.md), run at least one full
+   [agent-model-policy.md](../../process/agent-model-policy.md), run at least one full
    independent strong-agent review of the WP diff using the checklist below.
    Native agents run through the coordinator's native delegation interface;
    use its normal completion notifications and wait mechanism rather than
    imposing CLI-style foreground/background process rules. Cross-provider CLI
-   review follows [claude-cli-review.md](claude-cli-review.md), which owns its
+   review follows [claude-cli-review.md](../../process/claude-cli-review.md), which owns its
    process, JSONL stream and result parsing. Larger WPs: split lenses
    across 2–3 independent strong agents (correctness / Lua+perf /
    design-adherence) and adversarially verify High findings. Findings are
@@ -96,7 +102,7 @@ budget, and stop conditions.
    insights → AGENTS.md or docs/; design-doc deltas folded in. The durable
    completion record also carries the model and review calibration fields
    required by **Calibration and policy maintenance** in
-   [agent-model-policy.md](agent-model-policy.md).
+   [agent-model-policy.md](../../process/agent-model-policy.md).
 7. **Merge to main** after the review is clean (merge commit, no
    squash — keep the step history). Then sync to Luanti.
 8. **Completion summary to the user** always includes a **runtime test

@@ -1,19 +1,15 @@
 # The Lua environment inside Luanti
 
-Deeper reference for the AGENTS.md section "Lua & Luanti environment".
-All file references point into `reference_projects/luanti` (5.17.0-dev,
-commit `df04879`) unless a URL is given.
+Deeper reference for the AGENTS.md section "Lua & Luanti environment"; its
+rules are binding (moved here from `docs/research/` on 2026-10-05). All file
+references point into `reference_projects/luanti` (5.17.0-dev, commit
+`df04879`) unless a URL is given.
 
 **Planning note.** If you are briefing, scheduling or costing any task that
-*executes* Lua — harness runs, gates, KATs, scans, reproductions — read
-"Interpreter and test strategy" at the end of this file before writing the
-plan. It fixes which interpreter owns which layer (LuaJIT for development and
-all high-volume/exhaustive work, PUC 5.1 for the static gates and one bounded
-final runtime micro-KAT). WP40 R1-R4 retain their historical targeted-PUC
-evidence. Beginning with R5, one final PUC process runs a compact fixture and
-compares its canonical digest with one LuaJIT run; fixed-layout and seed
-populations remain LuaJIT-only. The former PCC/F1/F2 rule belongs only to the
-retired exact-T2 evidence schema.
+*executes* Lua, read "Interpreter and test strategy" at the end of this file
+first: plain-5.1 *syntax* is checked on every change, every executable run
+uses LuaJIT, and there is no PUC runtime run during development (user ruling
+2026-09-25; at most one optional PUC crash smoke test at the end).
 
 ## What the version pin means (read this first)
 
@@ -287,6 +283,27 @@ limit: a value that is 2 only at run time (a parameter, a table field, a
 register set before a jump) is beyond a static check. This covers LuaJIT's two modes on one machine only;
 libm results (`pow`, `exp`, `sin`, ...) can still differ between platforms.
 
+## Table order: `pairs` differs between processes
+
+LuaJIT seeds its string hash per Lua state, so `pairs()` over string keys
+walks the same table in a different order in another process, and in the
+main and the emerge environment of one server (re-measured 2026-10-05 with
+the system LuaJIT 2.1.1767980792: six runs of one 10-key table gave five
+orders). Plain 5.1 has its own order again. Integer array parts walked with
+`ipairs` or an index loop are stable.
+
+**Rule:** never let a `pairs` order over string keys reach output that must
+agree across processes: a layout, a hash or identity, a cache file, an
+emitted list, an RNG draw sequence, a tie break. Collect the keys, sort
+them, then iterate. Sort strings by byte order (a `less_bytes` comparator
+like the mapgen's) rather than with `<` where it matters: LuaJIT compares
+bytes, while the PUC fallback uses `strcoll` and Luanti sets the locale from
+the environment, so a pair such as `x_b` / `xa` may collate differently. A
+`pairs` loop that only fills a set or sums values is fine. This bites
+hardest in mapgen: emerge rebuilds a lazy capital composition and compares
+its hash with main's, so an order-dependent builder stops the server (audit
+2026-10, MGS-11).
+
 ## Do-not-write checklist
 
 Every "write instead" below is plain 5.1 and runs on both builds.
@@ -322,6 +339,47 @@ Every "write instead" below is plain 5.1 and runs on both builds.
     LuaJIT's interpreter and compiled code round it differently. Write
     instead: `x * x` (see "Floating point: LuaJIT interpreter vs compiled
     code"; checked by `tools/check_lua.sh` sweep 6).
+14. No `pairs` order over string keys in output that must agree across
+    processes (layouts, hashes, caches, emitted lists, RNG sequences).
+    Write instead: collect the keys, sort them (byte order), iterate the
+    sorted list (see "Table order: `pairs` differs between processes").
+15. No discovery of known names by walking `core.registered_nodes` or
+    `core.registered_items` with `pairs`: aliases are not keys there. Write
+    instead: `core.registered_nodes[name]` and `core.get_content_id(name)`
+    (see "Engine traps").
+
+## Engine traps
+
+Engine behaviour that has cost us time; each was read in the reference
+checkout.
+
+- **Aliases are invisible to `pairs`.** `core.registered_nodes` and
+  `core.registered_items` carry an `__index` that resolves an alias
+  (`builtin/game/register.lua:34-35`, the emerge copy in
+  `builtin/emerge/register.lua:37-38`), so `registered_nodes[name]` finds an
+  alias, while `pairs` and `rawget` see only the real names. Code that builds
+  a name list by walking the table silently misses every alias and takes its
+  "node not available" fallback (a WP40 probe degraded to zero writes this
+  way, without an error). Today's aliases include the engine's `mapgen_*`
+  names (`mods/BASE/default/mapgen.lua`) and the twelve former `default:`
+  tool names (`grug_materials.TOOL_ALIASES`). An alias resolves to the
+  *target's* content id and definition: read properties from the target.
+- **The block send front stalls behind the nearest pending emerge.** The
+  server walks Chebyshev shells of 16-node blocks around each player
+  (`src/server/clientiface.cpp`, `getNextBlocks`): it generates only up to
+  `max_block_generate_distance` (default 10 blocks), sends up to
+  `max_block_send_distance` (12), and never sends an all-air block beyond
+  `block_send_optimize_distance` (4; `:339`). While a block in view at
+  distance d waits for its emerge, the next pass restarts at d. So
+  ungenerated air or stone near a player delays sending the prepared surface
+  further out, and a generate distance below the send distance minus 2
+  freezes loading for good, because requests for blocks the server may not
+  generate are dropped and asked again every step. **Lowering
+  `max_block_generate_distance` is not a lever for loading speed.** Flying
+  mounts reach y = 600 and generate air chunks on demand.
+- **More than one emerge thread loses ores and caves** at chunk edges in v7
+  (upstream issue #9357); `minetest.conf` pins `num_emerge_threads = 1`
+  ([upstream workarounds](upstream-workarounds.md)).
 
 ## Verifying a change
 
@@ -400,72 +458,29 @@ interpreter vs compiled code".
 
 ### Interpreter and test strategy
 
-LuaJIT is the preferred interpreter for as much development and exhaustive
-iteration as a harness supports. It is substantially faster on the large
-deterministic WP40 oracles, which makes complete search-space checks practical
-while code and fixtures are still changing. That speed does **not** make
-LuaJIT a compatibility gate: it remains a superset of the language accepted by
-the fallback build.
+Decided by the user: plain Lua 5.1 compatibility of the **code** is a hard
+rule (2026-08-06), and **PUC runtime testing is ignored during development**
+(2026-09-25 for mapgen, Round 22 D1; every lane's rule since Round 29;
+confirmed for the repository in Round 37). LuaJIT owns every executable run.
 
-The operating principle, decided 2026-08-16 and updated for WP40's simple-map
-rebase on 2026-08-25 and its R5 delivery on 2026-08-28: **plain PUC 5.1 owns
-the static `luac51`/grep gates on every Lua change and one compact executable
-micro-KAT on a package's frozen final bytes. LuaJIT owns development and every
-long, repeated or exhaustive run.** Consequently every
-new harness with non-trivial runtime must support interpreter selection (the
-`WP40_LUA_BIN` pattern) and must default to LuaJIT; an expensive runner
-hardwired to PUC is a defect, not a conservative choice.
-`run_t2_s1_authority.sh` was the live example — 111 s hardwired PUC against
-21 s under LuaJIT, measured and fixed the day the principle was written down.
+1. **Every Lua change:** `bash tools/check_lua.sh <changed files>` from the
+   repository root, Lua under `tools/` included: the `luac51 -p` parser, the
+   `SETGLOBAL` listing, the five grep sweeps above and sweep 6 (`x ^ 2` /
+   `math.pow` under `mods/MAPGEN`). It needs ripgrep and fails fast without
+   it. This is the whole plain-5.1 gate during development.
+2. **Every executable check** (fixtures, seed fleet, probes, populations,
+   benchmarks) runs under LuaJIT. A new harness with non-trivial runtime
+   defaults to LuaJIT; one hardwired to PUC is a defect.
+3. **No PUC runtime run** in a lane, a review or a round-end gate: no PUC
+   fixture, no PUC/LuaJIT parity digest, no PUC seed fleet. A plan that
+   schedules one is a planning defect. The former "final micro-KAT" pair
+   (one PUC and one LuaJIT run on frozen bytes) is retired; no tool for it
+   exists, and its records (WP40 R1–R8) are historical evidence.
+4. **At the end, optional:** at most one "does it run on PUC without a
+   crash?" smoke test once the mapgen is finished and the user is satisfied
+   (BACKLOG release checks). A real fallback-engine test is a separate
+   user-run check; standalone interpreters have no `builtin/`, sandbox or
+   `core.*`.
 
-Use these layers together, in this order:
-
-1. **Every Lua change:** run `bash tools/check_lua.sh <changed files>`: the
-   `luac51 -p` parser, the `SETGLOBAL` listing for changed mod files, the
-   five grep sweeps above and sweep 6 (`x ^ 2` / `math.pow` under
-   `mods/MAPGEN`). These checks are mandatory even when every executable
-   test uses LuaJIT.
-2. **Development and exhaustive checks:** run the complete applicable search,
-   seed corpus, geometry scan or other expensive suite under LuaJIT whenever
-   the harness supports selecting it.
-3. **Intermediate milestones:** use LuaJIT plus the mandatory static PUC parser
-   and source gates. Do not run PUC runtime at an intermediate checkpoint.
-   Re-running an unchanged accepted R1-R4 or other pre-existing package KAT
-   runner solely to reproduce immutable historical evidence is not an
-   intermediate gate and creates no new or current acceptance evidence.
-4. **Final executable conformance:** once the candidate Lua bytes are frozen,
-   run exactly one bounded PUC process over a compact fixture that loads every
-   changed production module and exercises the changed arithmetic, control
-   flow, canonical ordering and boundary conditions. Run that same fixture
-   once under LuaJIT and require a byte-identical canonical digest. If relevant
-   Lua bytes change afterward, the new final candidate earns one replacement
-   pair (one PUC and one LuaJIT run). An additional PUC runtime is justified
-   only by a concrete interpreter-specific finding or an explicitly identified
-   uncovered plain-5.1 risk; habit, seed count and reviewer duplication are not
-   justifications.
-5. **WP40 simple-map milestones:** R1-R4 retain the targeted PUC evidence with
-   which they were accepted. R5-R8 use the single final micro-KAT rule above.
-   Fixed-layout, seed populations and complete layout/VM evidence are LuaJIT
-   work. The old exact-T2 PCC/F1/F2/full-`W` rounds remain historical evidence
-   and do not run on the simple schema.
-   For R5-R8 this paragraph supersedes the older intermediate/targeted-PUC
-   scheduling wording in `docs/research/wp40-simple-map-rebase-plan.md` Section
-   8, `docs/research/wp40-engineering-brief.md` Sections 5 and 8 and
-   `docs/design/world_zones.md`. Those statements remain factual only for the
-   R1-R4 evidence accepted under the former schedule; no game-design or map
-   semantic rule is superseded.
-6. **Review:** a reviewer checks the immutable final micro-KAT input/output,
-   logs, interpreter evidence and hashes and does not duplicate the PUC run.
-   A missing gate, changed final byte or concrete interpreter-specific finding
-   blocks acceptance and requires the one final micro-KAT pair (one PUC and one
-   LuaJIT run) to be regenerated on the corrected bytes; it never authorizes a
-   PUC population or seed fleet.
-7. **Engine fallback:** a real fallback-engine runtime test remains a separate
-   release/runtime gate. Neither standalone interpreter has Luanti's
-   `builtin/`, sandbox or `core.*`, so offline equality cannot replace it.
-
-The vendored `tools/bin/lua51` and `tools/bin/luac51` therefore remain the
-plain-5.1 authority, but they are used deliberately: the parser and static
-checks on every change and one compact executable conformance check on final
-bytes. LuaJIT owns the feedback loop and exhaustive populations, not the
-language contract.
+Execution limits (the 8-process cap, idle scheduling, no wall-clock kill)
+are in AGENTS.md "Lua & Luanti environment".
