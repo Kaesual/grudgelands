@@ -180,9 +180,11 @@ function grug_decor.register_shapes(subname, def)
 					p2 = p2 + 20
 				end
 
-				-- else attempt to place node with proper param2
-				core.item_place_node(ItemStack(wield_item), placer, pointed_thing, p2)
-				if not core.is_creative_enabled(player_name) then
+				-- else attempt to place node with proper param2; a refused
+				-- placement (protected, occupied) keeps the slab (ITM-10)
+				local _, placed = core.item_place_node(ItemStack(wield_item), placer,
+					pointed_thing, p2)
+				if placed and not core.is_creative_enabled(player_name) then
 					itemstack:take_item()
 				end
 				return itemstack

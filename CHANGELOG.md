@@ -1,0 +1,208 @@
+# Changelog
+
+What changed in the game, newest first, one entry per development round.
+The game shows its version on Help → About; versions count
+`0.<round>.<patch>` and start with Round 37 (earlier rounds had none). An
+entry that says **new world** needs a world created on that round or later:
+some of its changes are part of world generation.
+
+The development record behind each round (reviews, tests, acceptance) is in
+the [project status](docs/STATUS.md) and the round plans.
+
+## 0.37.0 — Round 37, "Audit fixes" (in progress)
+
+Fixes for what an October 2026 review of the code and the documentation
+found.
+
+- The New World dialog no longer offers the map generator checkboxes the
+  game cannot use (a changed box stopped the world from loading); the
+  README explains the settings to leave alone.
+- The game has a version, shown on Help → About.
+- This changelog, and a README written for players.
+
+## Round 36 — "The main questline" (2026-10-05, new world)
+
+- Each faction's main story from level 41 to 60: three chapters from its
+  fortress's Warmaster that follow branded pay through the front's worst
+  villains, an errand behind enemy lines and a traitor in its own ranks,
+  and a finale for two or three players against Isquarre the Tithe-Eater
+  at a burning crack in the ground. Each faction's story and the finale
+  give an achievement and a cloak.
+- Some quest steps ask you to do something at a place, such as breaking a
+  seal or taking a rubbing; their objects appear only to players on that
+  quest.
+- Corrupted creatures with an ember glow roam the front, and two war camps
+  on the front, one of each faction, have a war commander.
+- Every village, outpost, camp, mine, battlefield and lair got fitting
+  decoration, and every house in the towns and capitals small touches such
+  as a torch by the door or flowers under a window. Benches face away from
+  the wall behind them.
+- Creatures running home can no longer be mistaken for targets; priests
+  heal more with Intelligence gear; the dragons have larger hazards and a
+  wing gust that pushes players away after a warning.
+- Holding the left button across a hotbar switch goes on with the new
+  skill; the treeless strip round towns and capitals grows grass and low
+  plants; roads no longer follow every small bump of the ground.
+
+## Round 35 — "Fixes and character creation" (2026-10-05)
+
+- Held spells and attacks no longer miss zombies, crocodiles and other
+  creatures that have turned away.
+- Gear that breaks makes a sound and looks clearly broken; ores, gems and
+  sand sound when you dig them; quest lists show each quest's state by
+  colour.
+- Music plays only in the six capitals, each with its own pieces, in place
+  of the town ambience.
+- You create your character in a single window, and nothing is kept until
+  you confirm it.
+- Creatures of the night leave at dawn, a few creatures drop less valuable
+  loot, and talents keep their strength at every level, with several
+  talents rebalanced.
+
+## Round 34 — "Sound" (2026-10-04)
+
+- The game has sound: clicks and cues when you talk to people, trade,
+  craft and level up, hits that sound like the weapon you swing, spells,
+  creature voices and roaring dragons.
+- A quiet ambience for every region by day and night, the sea and the
+  caves, forges, hearths and running water, and calm music that is only
+  downloaded while music is on. Help → Sound, `/music` and `/ambience` set
+  the volumes.
+- Creatures follow you across streams, a Bag of Coins lets you hand money
+  to another player, and the Crownbinder and Decor Merchant show on the map.
+
+## Round 33 — "Items, professions and achievements" (2026-10-04, new world)
+
+- Gear drops in white, blue and gold; named creatures and elites drop more,
+  and every boss gives two blue or gold pieces. You can wear gear only once
+  you reach its level.
+- Enchantments grow with the item's level and show their tier; each
+  profession can upgrade the items it makes; a Crownbinder in every capital
+  crowns one item beyond its tier for a Fallen Crown and a fee.
+- Vendors sell only first-tier gear, repairs cost more, potions heal a
+  fixed amount per tier, critical hits deal double damage, and a Decor
+  Merchant sells blocks and lights for your home.
+- Alchemy is learned next to Cooking, and achievements unlock cloaks that
+  swing on your character.
+
+## Round 32 — "Fixes, preparation and research" (2026-10-03)
+
+- The minimap zooms in twice as far, and hostile camps get their own red
+  mark on the world map.
+- Zone names show in green, yellow or red for friendly, contested or enemy
+  territory, with a line saying which.
+- Holding the left button while mining fights a creature that walks into
+  your aim and goes back to mining once it is gone.
+- Quest objectives name creatures as you meet them in that zone, and short
+  notices such as "You dodge!" appear above your bars instead of in chat.
+- The server handles many players at once more evenly.
+
+## Round 31 — "PvP, appearance and clean-up" (2026-10-03, new world)
+
+- Players of the two factions can fight each other only when both are
+  flagged: contested lands and enemy territory flag you, and a button flags
+  you for a minute anywhere. A PvP tab shows your state and statistics.
+- Each faction has a fortress near the Battlegrounds with a General, a
+  waystone and quests to raid the enemy's war camps.
+- You choose your character's face, hair and features at creation;
+  townsfolk and guards look different from each other; enchantments show
+  as coloured accents on your gear.
+- Both dragons fight in round arenas with ice or ember hazards.
+- People of the other faction no longer serve you.
+
+## Round 30 — "Performance and clean-up" (2026-10-02)
+
+- Quest markers, the world map, the minimap, crafting and the crosshair
+  cost the server much less, and a second start of a world takes about
+  half as long.
+- Creatures give up a player they cannot reach and walk home.
+- Return home sits on the Character page.
+- Each dragon island has a small beach and a wooden pier at its boat
+  landings.
+
+## Round 29 — "Economy and travel" (2026-10-02, new world)
+
+- New quests take every people from its starting town to the war front,
+  with directions that fit each world and repeatable bounties at the front
+  and on the dragon islands.
+- Vendors buy loot and materials at prices set by tier; mounts, boats and
+  talent resets cost what a player earns in a set time.
+- Boats, sold by a Shipwright in every capital, are the way to the dragon
+  islands; waystones in every starting town and capital connect your
+  faction's homes.
+- Gems lie at their own depth, and the Battlegrounds are wider with a road
+  across the middle.
+
+## Round 28 — "Questing and leveling" (2026-10-02)
+
+- Every zone's creatures live where the world's own terrain suits them,
+  with levels that rise toward the next zone, loot that matches their level
+  and named leaders at their camps.
+- Leveling follows a gentler curve; the quest log shows each objective's
+  level range, and the minimap names the zone or town you are in.
+- A message feed above your bars, a class offhand slot (shield, spellbook,
+  or the Scout's melee weapon) and the Scout's quiver.
+
+## Round 27 — "Minimap" (2026-09-30)
+
+- A round minimap of our own replaces the built-in one: north up, drawn
+  from the world map, with quest givers and their state, trainers,
+  innkeepers, the Housing Steward, your home and your party, with arrows on
+  the rim for members out of view. It can be switched off on the Map tab.
+- The world map shows height more clearly, and a server can choose a
+  sharper map.
+
+## Round 26 — "Capitals, housing and clean-up" (2026-09-29)
+
+- A placed Claim Stone starts as a draft that you activate with five lumps
+  of coal within five minutes; the Housing Steward hands it out.
+- Buffs and debuffs show as icons above the skill bar, combat as an icon
+  next to the health bar, with an Effects tab on the Character page and
+  class icons in the party display.
+- The six capitals get more irregular walls and each its own character: a
+  royal river city, an angular mountain hold, a necropolis, a war camp, a
+  lakeside city and a jungle city round its cenote.
+
+## Round 25 — "Housing" (2026-09-29)
+
+- From level 20 a Housing Steward in your capital hands out a Claim Stone.
+  Placed in your faction's level 11–30 lands and fuelled with coal or
+  charcoal, it protects a 101 × 101 home, lets you grant friends access and
+  can be your travel home.
+- Roads and the cores of villages, camps and points of interest are
+  protected for everyone.
+
+## Round 24 — "Mining, underground and creatures" (2026-09-29)
+
+- Stone gets harder with depth: a pick that is too weak cannot dig it,
+  loose ground digs by hand or shovel, and better tools need a minimum
+  level.
+- Shallow tunnels find coal and other ores, and mountains and cliffs show
+  rock layers.
+- Start zones get a gentle level gradient and more creatures, which roam
+  calmly near where they spawned.
+- Mining ores and gems and catching fish give XP, up to ten quests can be
+  tracked, lava and drowning scale with health, and character creation can
+  be paused.
+
+## Round 23 — "World life" (2026-09-28)
+
+- Full-world preparation covers everything players can see from the
+  surface, underwater or in flight.
+- Wild plants, ground cover and trees regrow around players up to their
+  natural density.
+- Mountains get a tree line with shrubs, alpine meadows and snow caps, and
+  forests alternate with clearings. All six capitals get walls.
+
+## Earlier rounds (up to 2026-09-28)
+
+The rounds before built the game's foundation: the world of two continents
+with its zones, towns, capitals, villages, camps and points of interest;
+the four classes with their skills and talents; the six peoples;
+professions, crafting, smelting and enchanting; the first quests; mounts,
+fishing and farming; creatures and their behaviour; and world preparation
+before the first entry. Their last steps (Rounds 20 and 21 and the
+playtest fixes of 2026-09-28) brought contextual combat and digging
+controls, better terrain round points of interest and capitals, furnace
+and fuel rules, bronze arrows, lakes and coasts with aquatic plants and
+fish, a timed bow draw and the eating animation.

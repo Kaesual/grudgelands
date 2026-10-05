@@ -38,13 +38,17 @@ its root; Bamboo reaches three. The bottom node exclusively owns stage, timer,
 metadata and drops. Upper nodes are hidden helpers. Digging any segment removes
 the complete organism once, Sugar Cane and Bamboo included. The
 root-preserving harvest of a mature Sugar Cane or Bamboo is the right-click
-harvest below: it takes the upper growth and resets the root. Every multi-node placement,
+harvest below: it takes the upper growth and resets the root. A root that goes
+any other way (its soil dug away, a block placed on it, a flood) takes its
+upper nodes with it; an upper node left without its root can still be dug and
+drops nothing. Every multi-node placement,
 growth, dig and harvest preflights all changed loaded positions and protection;
 a blocker or unloaded/protected position causes no partial mutation. The root
 retries blocked growth through its ordinary bounded timer.
 
-Right-click harvests a mature regrowing crop in place. Sneak-right-click bypasses
-that crop action. Removing the rooted plant remains the explicit way to recover
+Right-click harvests a mature regrowing crop in place, also with seeds, a bucket
+or the fishing rod in hand (their own use runs only on nodes without a
+right-click action). Sneak-right-click bypasses that crop action. Removing the rooted plant remains the explicit way to recover
 its seed; mature removal also returns its one ingredient. Cultivated regrowth is
 independent of the wild-plant renewal below; crops and farm soil never count as
 wild habitat.

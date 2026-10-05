@@ -1445,6 +1445,6 @@ marked delivered. Reconcile it against current design and the domain findings;
 if still open, retain an owner here. The current documentation round records its
 coverage and remaining uncertainties rather than declaring every old claim verified.
 
-For execution use [WP workflow](docs/process/wp-workflow.md), current topic rules
+For execution use the [round workflow](docs/process/round-workflow.md), current topic rules
 and a refreshed bounded task brief. Historical research briefs are starting
 material, not permission to restore superseded requirements.

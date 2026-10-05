@@ -826,6 +826,9 @@ function grug_jobs.open_book(player, book, station, page)
 	elseif page then
 		state.page = page
 	end
+	-- Discovery first (Round 37): the book shows what the player holds now,
+	-- not what the last slotted scan saw (discovery.lua).
+	if grug_jobs._scan_discovery then grug_jobs._scan_discovery(player, true) end
 	local formspec = make_formspec(player, book, station, state)
 	core.show_formspec(name, BOOK_FORM, formspec)
 end

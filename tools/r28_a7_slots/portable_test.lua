@@ -656,8 +656,10 @@ do
 	local p = new_player("raw", "warrior", 30)
 	join(p)
 	local dig = false
-	function p:get_player_control() return {dig = dig} end
-	function p:get_wielded_item() return ItemStack("grug_gear:sword_steel") end
+	-- Round 37 (PLY-16): the poll reads the control bits; dig is bit 7.
+	function p:get_player_control_bits() return dig and 128 or 0 end
+	local wield_reads = 0
+	function p:get_wielded_item() wield_reads = wield_reads + 1; return ItemStack("grug_gear:sword_steel") end
 	connected = {p}
 	local chat_before = #chat
 	local function step(pressed)
@@ -680,6 +682,15 @@ do
 	mono = 104
 	step(true)
 	eq(#feed_lines, 2, "raw weapon hint: a fresh press after 3 s repeats it")
+	-- Round 37 (PLY-16): the wielded item is read on a fresh press only
+	wield_reads = 0
+	step(true)
+	step(true)
+	step(false)
+	step(false)
+	eq(wield_reads, 0, "raw weapon hint: a held or released button reads no wielded item")
+	step(true)
+	eq(wield_reads, 1, "raw weapon hint: a fresh press reads it once")
 	eq(#chat, chat_before, "raw weapon hint: nothing in chat")
 	connected = {}
 end
