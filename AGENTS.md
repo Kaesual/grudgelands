@@ -116,8 +116,8 @@ tour; it never carries design or WP detail that does not already live in
 
 ## Project structure
 
-- A **standalone game** (not a mod pack, not a fork of minetest_game or
-  VoxeLibre). The repository root is the game (`game.conf`, `menu/`, `mods/`,
+- A **standalone game** (not a mod pack, not a fork of another Luanti
+  game). The repository root is the game (`game.conf`, `menu/`, `mods/`,
   `settingtypes.txt`). **Standard unmodified Luanti clients are required:** no
   client or engine fork, no dependency on an upstream PR, no required client
   mod.
@@ -213,7 +213,7 @@ tour; it never carries design or WP detail that does not already live in
 - **Performance basics:** throttle every `register_globalstep` with a dtime
   accumulator; node timers for stations; LBMs only for current-version
   activation; ABMs only for ambient events (`chance`/`interval`, `catch_up =
-  false`); content ids and VoxelManip in hot loops.
+  false`); `core.get_node_raw`, content ids and VoxelManip in hot loops.
 
 The topic rules below name the one path to use; the
 [module guide](docs/technical/module-guide.md) holds the seams behind them.
