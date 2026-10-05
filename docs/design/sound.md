@@ -3,7 +3,8 @@
 The game's sound as built in Round 34 ([plan](../planning/round34-plan.md),
 [completion](../planning/round34-plan.md#completion-2026-10-04)): effects at
 the game's events, mob voices by family, quiet ambience beds per region, loops
-at forges, hearths and flowing water, calm music in pools, and per-player
+at forges, hearths and flowing water, music in the six capitals (since
+Round 35, [plan](../planning/round35-plan.md) §2.8), and per-player
 settings. Sound is part of V1. Two mods own it: `mods/CORE/grug_sounds`
 (effects, the play helper, the formspec click) and `mods/CORE/grug_ambience`
 (beds, calls, loops, music, settings). Numbers that change with tuning (gains,
@@ -162,10 +163,10 @@ family.
 Every online player is evaluated once every 2 s in one of eight slots of
 0.25 s, so no step handles every player. A pass reads the atmosphere mood the
 player already carries (`grug_core.get_atmosphere`), day or night from the
-world clock, the town flag of the location sampler
-(`grug_map.location.in_town`), one water probe and, above ground, one node
-search for the loops (§4.4). A forced `/atmosphere <mood>` preset drives the
-bed and the music pool like the zone would; a preset that is no mood keeps
+world clock, the town flag and the capital of the location sampler
+(`grug_map.location.in_town`, `capital_of`), one water probe and, above
+ground, one node search for the loops (§4.4). A forced `/atmosphere <mood>`
+preset drives the bed like the zone would; a preset that is no mood keeps
 what the player had.
 
 ### 4.2 Which bed
@@ -184,13 +185,16 @@ for every bed) times the player's volume:
   bed (one or two variants). **At night** humans, elves, trolls and orcs
   switch to the night bed (crickets and night forest); the other regions keep
   their day bed.
-- **In start towns and capitals** the bed plays at half gain; the Town music
-  pool carries their mood (the user: music instead of market noise).
+- **In start towns and capitals** the bed plays at half gain.
+- **Either music or the bed, never both** (Round 35): where music plays — in
+  a capital with music on — the bed is silent; with music off the capital's
+  bed plays again. Outside the capitals there is no music and the beds play
+  as above. Calls and the loops of §4.4 are not affected.
 - A mood without a row has no bed.
 
 A new bed must be wanted on two passes in a row before it replaces the playing
 one (walking a shore or a town edge does not swap beds every pass); diving in
-or surfacing changes at once. A change crossfades over 3 s. Which file plays
+or surfacing changes at once, and so does music starting or ending. A change crossfades over 3 s. Which file plays
 for which mood: `D.beds` and `D.region` in `data.lua`.
 
 ### 4.3 Calls
@@ -221,35 +225,47 @@ itself.
 
 ## 5. Music
 
-- **Pools** by the player's region group (`D.pools`, `D.music_groups`):
-  **Land** (the six race regions), **Front and sea** (Battlegrounds, dragon
-  islands, open ocean), **Underground**, and **Town** inside start towns and
-  capitals. A track may sit in several pools.
-- **Scheduler** (`rules.lua` `music_step`): the first track 30–90 s after
-  joining, then one track and a random 3–8 minute pause; the next track is
-  picked from the pool of that moment. A running track is never cut — not on a
-  group change, not in combat (no combat switch). If the player moved to a
-  group whose pool lacks the pick when the pause ends, the pick is redone once.
+Music is a capital feature (user ruling, Round 35: music every few minutes
+broke the immersion).
+
+- **Only in the six capitals**, not in start towns, nowhere else. A player
+  counts as in a capital from the first step into its city (its protected
+  footprint, where the location line names the city) until about 8 nodes
+  beyond it (`grug_map/location_view.lua` `capital_at`), so walking along the
+  border does not switch the music on and off. A capital is told from a start
+  town by its anchor slot in the settlement registry.
+- **One rotation per capital** (`D.rotations`, by settlement key), chosen by
+  the capital's people; entering starts it at a random place and plays its
+  tracks in turn with a pause of about 5 s between two. Leaving the city, or
+  switching music off, fades the track out over 3 s; the bed comes back at
+  once (§4.2).
 - **On-demand delivery:** music files stay out of every `sounds/` folder, so
-  the first join downloads none of them. About 60 s before a pause ends the
-  picked file is pushed to that one player with `core.dynamic_add_media`
-  (`client_cache`, not ephemeral) and plays in the push callback; a push not
-  confirmed within 120 s is dropped and a new pause starts. A player with
-  music off is never pushed anything. Pushed files do not persist across
-  server restarts.
+  the first join downloads none of them. A track is pushed to that one player
+  with `core.dynamic_add_media` (`client_cache`, not ephemeral) and plays in
+  the push callback: the first track after entering waits for its download;
+  the next one is pushed 60 s before the playing track ends, so its download
+  hides behind it. A push not confirmed within 120 s is given up and the
+  rotation moves on; a refused one holds pushes for 30 s. A player with music
+  off, or outside the capitals, is never pushed anything. Pushed files do not
+  persist across server restarts.
+- **Not played by default:** the Round 34 region pools (Land, Front and sea,
+  Underground) are gone; tracks no rotation names stay in the game (`D.tracks`)
+  for a possible music tab.
 - **The main-menu theme** is `menu/theme.ogg` (the client plays it in the main
-  menu), the same piece as the Land pool's *Fantasy Orchestral Theme*.
+  menu), the same piece as *Fantasy Orchestral Theme*.
 - Track list and lengths: `D.tracks`; credits in [CREDITS.md](../../CREDITS.md).
 
 ## 6. Settings and commands
 
 - Per player, in player meta: **music** and **ambience**, each on or off and a
-  volume of 0–100 %. Defaults: both on at 100 %. A volume of 0 counts as off;
-  switching a channel on at volume 0 restores 100 %.
+  volume of 0–100 %. Defaults: both on, music at 35 %, ambience at 100 %. A
+  volume of 0 counts as off; switching a channel on at volume 0 restores its
+  default.
 - **Help → Sound** (a sub-page of the Help tab): a checkbox and a volume
-  dropdown in 10 % steps per channel, applied at once (fades of 0.5 s).
+  dropdown in 5 % steps per channel, applied at once (fades of 0.5 s).
 - **Chat:** `/music [on|off|<0-100>]` and `/ambience [on|off|<0-100>]`; without
   a word they report the current setting.
-- Switching music off stops a playing track and all further pushes; switching
-  ambience off fades the bed and the loops out. The client's own volume
+- Switching music off stops a playing track and all further pushes (in a
+  capital the bed returns); switching ambience off fades the bed and the loops
+  out. The client's own volume
   applies on top.

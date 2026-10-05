@@ -1037,7 +1037,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   shows the banner like a zone change (fixture `tools/r32_f1`). Since
   Round 34 the sample also records whether the player stands in a start
   town or capital (`location.in_town(name)`, by x/z only), which
-  `grug_ambience` reads for the Town music pool and the quieter bed.
+  `grug_ambience` reads for the quieter bed; since Round 35 also the capital
+  (`location.capital_of(name)`, the settlement key of a town row whose anchor
+  slot is `capital`, kept while the city is within `L.CAPITAL_MARGIN` nodes:
+  `location_view.lua` `capital_at`, up to eight footprint queries per sample
+  only while leaving), which decides where music plays.
   Round 31: NPC markers carry their NPC's faction and the service and
   quest-giver lists are split per viewer faction once at load (the kings and
   dragons stay for everyone); `settlement_icons.lua` (pure, `HIDDEN`) decides
@@ -1260,9 +1264,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     check call sites, specs, files and `approved.txt`); fixtures that load a
     hooked file get a silent stub.
   - **`grug_ambience`** (`mods/CORE/grug_ambience`): `rules.lua` is pure
-    (bed choice and hysteresis, calls, the music scheduler, the emitter
-    choice, settings words; the fixture loads the real file), `data.lua` is
-    data (bed, loop and call names, gains, pools, track lengths, timings),
+    (bed choice and hysteresis, the either-music-or-bed rule, calls, the
+    capital music scheduler, the emitter choice, settings words; the fixtures
+    load the real file), `data.lua` is data (bed, loop and call names, gains,
+    one track rotation per capital, track lengths, timings),
     `init.lua` the runtime: an eight-slot pass of 0.25 s per player
     (`states[name].slot`, assigned on join), one `get_node_raw` probe for
     under water (33 reads while a sea or stream bed exists), one
@@ -1273,15 +1278,18 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     listing, pools filtered by `music/`), so data may name a file that does
     not ship. Music files live in `music/` (never `sounds/`) and are pushed
     per player with `core.dynamic_add_media` (`to_player`, not ephemeral,
-    `client_cache`), playing in the callback through `music_delivered`; the
-    scheduler never cuts a playing track. Settings are player meta
+    `client_cache`), playing in the callback through `music_delivered`; music
+    plays only in a capital (`grug_map.location.capital_of`) and ends with a
+    fade on leaving. Settings are player meta
     (`grug_ambience:music_off`, `…_volume`, `ambience_off`, `…_volume`);
     `grug_ambience.set/get` is the one entry for the Help page's Sound
     sub-page (`settings_formspec`, `handle_settings_fields`, called from
     `grug_inventory/help.lua`) and `/music`, `/ambience`. A personal
     positional sound ignores `max_hear_distance`, so the emitter choice
     drops far nodes itself. `grug_ambience.stats` holds comparison figures
-    for the engine probe `tools/r34_s2/engine.sh`; fixture `tools/r34_s2`.
+    for the engine probes `tools/r34_s2/engine.sh` and `tools/r35_m/engine.sh`;
+    fixtures `tools/r34_s2` (beds, calls, loops, files) and `tools/r35_m`
+    (capital music, either music or the bed, settings).
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
   coordinate mode deliberately. Map retains the shared legacy outer window and
