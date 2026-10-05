@@ -44,14 +44,6 @@ local palettes = dofile(wp13 .. "/palette.lua")
 local parts = dofile(wp13 .. "/parts.lua")
 local RACES = {"dwarf", "human", "elf", "undead", "orc", "troll"}
 
--- The two sit sockets of Lethariel's crossing face the backrest of the
--- benches they sit on (main since Round 26). The benches are right (their
--- backs to the crossing's lantern pillars, looking into the crossing);
--- turning the sockets changes tools/r36_w/baseline.tsv, which this lane
--- keeps, so the turn waits for the coordinator (lane W2 report).
-local KNOWN_SITTERS = {["lethariel/core crossing_work_west"] = true,
-	["lethariel/core crossing_work_east"] = true}
-
 -- The nodes ------------------------------------------------------------------
 local SEAT = {["grug_decor:cottages_bench"] = true, ["grug_decor:xdecor_chair"] = true}
 local FIRE = {["default:coalblock"] = true}
@@ -193,7 +185,7 @@ local function benches(label, bp)
 	end
 	for _, s in ipairs(bp.landmarks and bp.landmarks.sockets or {}) do
 		local c = seat_at[s.x .. "," .. (s.y - 1) .. "," .. s.z]
-		if c and s.activity == "sit" and s.dir and not KNOWN_SITTERS[label .. " " .. s.id] then
+		if c and s.activity == "sit" and s.dir then
 			local l = look(c).look
 			if s.dir.x ~= l[1] or s.dir.z ~= l[2] then
 				fails[#fails + 1] = ("%s: %s sits on the seat at %d,%d,%d facing %d,%d, the seat looks %d,%d")
