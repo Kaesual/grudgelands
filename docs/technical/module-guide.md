@@ -262,6 +262,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_core.combat_ray(player, range, opts)` are the shared server-side
   acquisition seam: the latter returns one physically ordered structured ray
   result for combat and diagnostics, so callers do not raycast again for logs.
+  Every server-side aiming ray (the combat ray, the hold ray, right-click
+  interaction, the Target Frame) iterates `grug_core.aim_raycast` instead of
+  `core.raycast`: it tests `rotate = true` selection boxes in Lua because the
+  server's raycast misreads them since Luanti 5.12
+  ([upstream workarounds](upstream-workarounds.md) §1).
   The held clock attacks only a live hostile returned by that current server
   eye/look ray while `get_player_control().dig` is true. When due, no
   target/friendly/blocker/out-of-range aim is an **aim miss** and leaves the

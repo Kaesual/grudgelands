@@ -11,7 +11,7 @@ reading every development round.
 | What are the broader goals? | [ROADMAP](../ROADMAP.md) |
 | What decisions remain open? | Root `TODO-*.md` files; unresolved audit findings below |
 | How should work be performed? | [AGENTS](../AGENTS.md), then the relevant [workflow](process/wp-workflow.md) |
-| Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](research/luanti-lua.md) |
+| Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](research/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
 | Why was something decided or how was it tested? | [Research and historical evidence](research/README.md) |
 | What changed during documentation cleanup? | [Consolidation record](maintenance/documentation-round.md) |
 
