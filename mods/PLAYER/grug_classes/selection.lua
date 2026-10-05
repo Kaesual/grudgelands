@@ -265,7 +265,7 @@ local function create_button(fs, ready)
 	-- Inactive: not a button at all, so there is nothing to click.
 	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#2a2a2aff]"):format(CREATE_X, CREATE_Y,
 		CREATE_W, CREATE_H)
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(CREATE_X + 0.55, CREATE_Y + 0.4,
+	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(CREATE_X + 0.25, CREATE_Y + 0.4,
 		esc(core.colorize("#808080", "Create character")))
 	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(CREATE_X, CREATE_Y,
 		CREATE_W, CREATE_H, esc("Choose a faction, race and class first."))
