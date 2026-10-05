@@ -1446,8 +1446,11 @@ one-cell settlement checks are unchanged.
   band of at least 12 nodes beyond the edge's outermost structure (a gatehouse
   corner: gatehouses stay compass-aligned while their gates slide along the
   wall) — 21 nodes from the
-  wall line, about 17.5 beyond a stone wall's face. The band grows no trees and
-  no ground cover, so players see where the protection ends; beyond it the
+  wall line, about 17.5 beyond a stone wall's face. The band grows no trees,
+  so players see where the protection ends; beyond the edge's reach (9 nodes
+  from the wall line) it grows the zone's one-node ground cover on a seeded
+  share of its columns rising from a third to all toward its outer edge
+  (Round 36 W3, as round a start town); beyond it the
   zone's ordinary rules apply (vegetation, ground cover, resources, caves;
   capital zones hold no claims, `housing.md` §2). The shape is computed
   once per world start from the capital layout
@@ -1632,8 +1635,10 @@ one-cell settlement checks are unchanged.
   152 nodes across on the axes, about 23 k m² instead of the former 148
   square plus the 256-node claim square). Spawn, waypoint, graveyard and
   every service platform lie inside it; `world.md` §2 R1 owns the
-  protection semantics. The band grows no trees and no ground cover, so
-  players see where the protection ends, and carries the town's own ground
+  protection semantics. The band grows no trees, so players see where the
+  protection ends, but the zone's one-node ground cover on a seeded share of
+  its columns, a third at the pad rising to all at its outer edge (Round 36
+  W3; `simple_map.lua` purpose "cover"), and carries the town's own ground
   out into the natural surface: the pad's ground node reaches 2–10 nodes
   into the band along a smooth noise outline with a dithered edge, beyond it
   the biome's surface, so no straight edge or corner of the pad shows. The
