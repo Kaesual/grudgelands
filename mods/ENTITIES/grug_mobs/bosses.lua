@@ -258,13 +258,15 @@ function grug_mobs.boss_attempt_reset(id)
 	end
 end
 
+local royal_reset -- a King's or General's encounter reset (below)
+
 function grug_mobs.boss_leash_reset(self)
 	if self and self._grug_royal_race then
 		-- The king alone owns the five-NPC encounter. A guard may individually
 		-- leash, heal and resume following, but must never clear participation
 		-- or recreate the retinue underneath a live king attempt.
 		if self._grug_royal_king and grug_mobs.royal_encounter_reset then
-			grug_mobs.royal_encounter_reset(self)
+			royal_reset(self)
 		end
 		return
 	elseif self and self._grug_boss_id then
@@ -371,6 +373,56 @@ local function royal_objects(id, radius, pos)
 	return result
 end
 
+-- Bone Call (the Undead King's signature) keeps at most BONE_CALL_CAP raiders
+-- of his encounter standing: each cast tops up to it, two at a time (Round 37
+-- MP, MOC-02). They belong to the King's faction and leave when his encounter
+-- resets or he dies (remove_royal_summons).
+local BONE_CALL_CAP = 4
+local SUMMON_RANGE = 80
+
+local function royal_summons(self, pos)
+	local result = {}
+	for _, object in ipairs(core.get_objects_inside_radius(pos, SUMMON_RANGE)) do
+		local ent = object:get_luaentity()
+		if ent and ent._grug_royal_summon == self._grug_boss_id and
+				(ent.health or 0) > 0 then
+			result[#result + 1] = object
+		end
+	end
+	return result
+end
+
+local function remove_royal_summons(self)
+	local pos = self.object and self.object:get_pos()
+	if not pos then return end
+	for _, object in ipairs(royal_summons(self, pos)) do object:remove() end
+end
+
+local function bone_call(self, faction)
+	local pos = self.object:get_pos()
+	local count = #royal_summons(self, pos)
+	for _, dx in ipairs({-2, 2}) do
+		if count >= BONE_CALL_CAP then return end
+		local object = core.add_entity({x = pos.x + dx, y = pos.y,
+			z = pos.z + 2}, "grug_mobs:skeleton_raider")
+		local ent = object and object:get_luaentity()
+		if ent then
+			ent._grug_royal_summon = self._grug_boss_id
+			-- The King's own people are no target (init.lua's faction veto
+			-- reads an instance faction too).
+			ent._grug_faction = faction
+			count = count + 1
+		end
+	end
+end
+
+-- The encounter reset of a King or General (evade, leash): the retinue comes
+-- back (start_npcs.lua) and the summons go.
+royal_reset = function(self)
+	grug_mobs.royal_encounter_reset(self)
+	remove_royal_summons(self)
+end
+
 local function royal_signature(self, race, target, start_health)
 	local kit = RACES[race].kit
 	local faction = RACES[race].faction
@@ -400,13 +452,7 @@ local function royal_signature(self, race, target, start_health)
 		shoot(self, target, "grug_mobs:arrow_entity", 0)
 		shoot(self, target, "grug_mobs:arrow_entity", 0.16)
 	elseif kit == "bone_call" then
-		local pos = self.object:get_pos()
-		for _, dx in ipairs({-2, 2}) do
-			local object = core.add_entity({x = pos.x + dx, y = pos.y,
-				z = pos.z + 2}, "grug_mobs:skeleton_raider")
-			local ent = object and object:get_luaentity()
-			if ent then ent._grug_royal_summon = self._grug_boss_id end
-		end
+		bone_call(self, faction)
 	elseif kit == "cleave" then
 		hit_players(self, 6, 3, true, 0, faction)
 	elseif kit == "regrowth" and self.health >= start_health then
@@ -429,7 +475,7 @@ local function king_tick(self, dtime, race, boss_id)
 	if self.temp.grug_evading then
 		if not self.temp.grug_royal_reset then
 			self.temp.grug_royal_reset = true
-			grug_mobs.royal_encounter_reset(self)
+			royal_reset(self)
 		end
 	else
 		self.temp.grug_royal_reset = nil
@@ -504,15 +550,7 @@ local function king_def(race, row)
 		do_custom = function(self, dtime) return king_tick(self, dtime, race) end,
 		on_die = function(self)
 			settle_boss("king:" .. race, self, race)
-			local pos = self.object and self.object:get_pos()
-			if pos then
-				for _, object in ipairs(core.get_objects_inside_radius(pos, 80)) do
-					local ent = object:get_luaentity()
-					if ent and (ent._grug_royal_summon == self._grug_boss_id) then
-						object:remove()
-					end
-				end
-			end
+			remove_royal_summons(self)
 			grug_mobs.royal_king_died(self)
 		end,
 	}

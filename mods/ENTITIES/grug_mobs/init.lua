@@ -818,13 +818,15 @@ function grug_mobs.register_mob(name, def)
 	-- players either. Those are brand-new characters who have not chosen a
 	-- side yet (still on the spawn platform); letting faction guards hunt
 	-- them would be pure griefing. Monsters have no faction and are
-	-- unaffected.
-	local function faction_veto(player)
-		if not faction then
+	-- unaffected -- unless their spawner hands one an instance faction (the
+	-- Undead King's Bone Call raiders, bosses.lua; Round 37 MP).
+	local function faction_veto(s, player)
+		local own = faction or s._grug_faction
+		if not own then
 			return false
 		end
 		local pf = grug_core.get_player_faction(player:get_player_name())
-		return pf == nil or pf == faction
+		return pf == nil or pf == own
 	end
 
 	local visual_cfg = def._grug_visual
@@ -926,7 +928,7 @@ function grug_mobs.register_mob(name, def)
 				-- outside its arena (boss_dragons.lua).
 				return grug_mobs.gave_up_on(s, player)
 					or (night_truce and truce_active(s, player))
-					or faction_veto(player)
+					or faction_veto(s, player)
 					or (s._grug_target_veto ~= nil and s._grug_target_veto(s, player))
 			end
 		end
@@ -940,15 +942,16 @@ function grug_mobs.register_mob(name, def)
 				self:stop_attack()
 			end
 		end
-		if faction then
+		if faction and not self._grug_faction then
 			-- Store the faction on the entity (every activation, first tick)
 			-- so other systems can read it via get_object_faction.
-			if not self._grug_faction then
-				self._grug_faction = faction
-			end
+			self._grug_faction = faction
+		end
+		if self._grug_faction then
 			-- Never attack the own faction (e.g. after provoking/group_attack).
 			if self.state == "attack" and self.attack and
-					grug_factions.get_object_faction(self.attack) == faction then
+					grug_factions.get_object_faction(self.attack) ==
+						self._grug_faction then
 				self:stop_attack()
 			end
 		end
