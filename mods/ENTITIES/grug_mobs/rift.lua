@@ -14,7 +14,8 @@
 --   * dark particles over the crack while a player is near (per player, one
 --     spawner per crack stretch every few seconds; rift_core.lua's budget);
 --   * the rift boss: a demonic level-60 elite on the Dungeon Master's mesh,
---     spawned like a leader when a player comes near, bound to the site by
+--     spawned like a leader when a player who may fight him comes near (the
+--     finale in his quest log or done, rift_core.lua's eligible), bound to the site by
 --     its own leash (aggro.lua's chase leash and evade home, with this boss's
 --     radius) and an idle walk home, back about five minutes after its death;
 --     loot through bosses.lua's ledger and 24-hour lockout (boss loot once a
@@ -451,6 +452,21 @@ function grug_mobs.rift_players()
 	return core.get_connected_players()
 end
 
+-- Whether `player` may call the boss up (R.eligible): asked of grug_quests,
+-- which loads after grug_mobs and stays optional (without it, everyone).
+local function eligible(player)
+	local quests = rawget(_G, "grug_quests")
+	if not (quests and quests.quest_held) then return true end
+	return R.eligible(function(id) return quests.quest_held(player, id) end)
+end
+
+local function any_eligible(players)
+	for _, player in ipairs(players) do
+		if eligible(player) then return true end
+	end
+	return false
+end
+
 local clock, particle_clock = 0, {}
 core.register_globalstep(function(dtime)
 	clock = clock + dtime
@@ -484,7 +500,7 @@ core.register_globalstep(function(dtime)
 	end
 	particle_clock = next_clock
 	local due = tonumber(storage:get_string(due_key(R.SITE))) or 0
-	if R.may_spawn(boss_alive(), due, os.time()) then
+	if R.may_spawn(boss_alive(), due, os.time()) and any_eligible(near) then
 		spawn_boss(s, near)
 	end
 end)

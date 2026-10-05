@@ -51,6 +51,16 @@ core.register_on_mods_loaded(function()
 	grug_mobs.rift_players = function()
 		return standin and {standin} or {}
 	end
+	-- The boss rises only for a player with the finale (rift_core.lua's
+	-- eligible): the stand-in carries the Throng's finale in its log.
+	local quests = rawget(_G, "grug_quests")
+	local held = quests and quests.quest_held
+	if held then
+		quests.quest_held = function(player, id)
+			if player == standin then return id == "throng_main_finale" and "active" or nil end
+			return held(player, id)
+		end
+	end
 end)
 
 local function forceload(a)
