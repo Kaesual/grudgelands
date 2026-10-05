@@ -684,12 +684,18 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   node of the 3×3×3 cube around a sampled player's feet as one break event
   due `ICE_BREAK_DELAY` (1 s) later, keyed server-wide by node position, a
   pending node never reset or postponed; `ice_due` pops the events that are
-  due); `boss_dragons.lua` applies them (one `ice_break` sound per event):
+  due; since Round 36 `push`, the velocity of the wing gust and the dive's
+  slam, weakened by the player's live braking so that he stays within
+  radius − 4; `boss_dragons.lua` turns the engine's punch knockback off for
+  the slam's hit through a `core.calculate_knockback` wrapper);
+  `boss_dragons.lua` applies them (one `ice_break` sound per event):
   `_grug_target_veto` (a hook in the `init.lua` acquisition veto, honoured by
   `grug_core`'s `valid_target`, `add_threat` and `taunt`), the once-a-second
   arena tick (threat prune, reset and flight home, hazards and the wrath
   through `set_hp`; `grug_core.bypasses_absorb` covers the wrath), the
-  participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`.
+  participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`,
+  `tools/r36_g` (the wider hazards, the refreeze, the gust; `engine.sh` the
+  hazard counts and a push on a stand-in).
 - **The rift (Round 36):** `grug_mobs/rift_core.lua` (pure: the site
   constant `SITE`, each candidate's crack waypoints and `crack_cells`, the
   respawn and particle numbers) and `rift.lua` (the void node, the one-time
