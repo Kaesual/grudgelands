@@ -710,3 +710,29 @@ re-export check). AI generation itself is not deterministic.
 | `textures/grug_mobs_veined_core.png` | Own work; GPT-6 Astra-generated icon (Veined Core); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_warpack_fang.png` | Own work; GPT-6 Astra-generated icon (Warpack Fang); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_wisp_mote.png` | Own work; GPT-6 Astra-generated icon (Wisp Mote); export treatment above | CC0-1.0 |
+
+## Main questline mob and rift textures — Round 36
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-05, following the approved Round 36 story bible. Hand-placed pixel
+shapes written with Python/Pillow; no image-generation service, downloaded
+art or third-party source pixels. The project dedicates any rights it holds
+in these originals to CC0-1.0. The reproducible generator is kept as
+provenance at `tools/r36_a/paint_art.py`.
+
+Isquarre is a fresh painting on the existing Dungeon Master UV layout at
+exactly twice its atlas resolution (62×78). The original mesh and reference
+texture remain credited to Pavel_S / PilzAdam under WTFPL in §9.1 above.
+Their pixels are not copied into the new texture. Commander overlays are
+original 64×32 RGBA masks on `character.b3d`: torso and shoulders only; all
+other pixels are transparent. The guard skin is used only in the uncommitted
+contact-sheet comparison; none of its pixels enter these overlays.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `textures/grug_mobs_rift_void.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; 16×16 seamless dark void and faint ember veins; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_mobs_rift_particle.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; 8×8 soft ash/ember mote with graded alpha; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_mobs_rift_bolt.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; 16×16 dark ember projectile with transparent background; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_mobs_isquarre.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Isquarre the Tithe-Eater, original painting on the unchanged Dungeon Master UV layout; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_mobs_commander_accord_overlay.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Greyvow's steel/blue tabard, closed gate and upright bar; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_mobs_commander_throng_overlay.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Stonegrudge's oxblood/ochre tabard, split stone and three cords; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
