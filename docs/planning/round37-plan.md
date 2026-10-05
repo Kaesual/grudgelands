@@ -1,8 +1,8 @@
 # Round 37 — Audit fixes: round plan
 
 Coordinator: Claude (Opus 5.5), planned 2026-10-05 from the
-[October 2026 audit](../audit-2026-10/README.md). Status: **draft, awaiting
-the user's approval**.
+[October 2026 audit](../audit-2026-10/README.md). Status: **approved by the
+user on 2026-10-05 ("go")**.
 
 A large fix round. It works through the audit's code packages P1–P5, the
 cheapest mapgen win (MGT-02) and the mapgen robustness package P7, the sound
