@@ -1221,11 +1221,12 @@ end
 -- grug_xp level-change registration in stats.lua, so the order against
 -- apply_stats is fixed rather than incidental.
 --
--- An admin level drop (/xp can lower a level) would otherwise leave more
--- ranks spent than floor(level / 2) allows. Rather than blocking spends or
+-- A level drop would otherwise leave more ranks spent than floor(level / 2)
+-- allows. Only a direct grug_xp.set_xp to less XP lowers a level (/xp only
+-- grants XP; no game path takes any away). Rather than blocking spends or
 -- refunding cheapest-first, the talent state is wiped and every point
--- returned -- free, because /xp is an admin command and the simplest correct
--- behaviour wins.
+-- returned -- free, because no player action can lower a level and the
+-- simplest correct behaviour wins.
 function grug_classes.on_level_change_talents(player, old_level, new_level)
 	cache[player:get_player_name()] = nil
 	if old_level == nil then

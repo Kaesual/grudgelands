@@ -409,9 +409,9 @@ grug_abilities.register_ability({
 --
 -- TALENT-GATED since ruling 19 (2026-09-16, skill_trees.md §2.2/§3.4): every
 -- class starts with Strike plus three, so Hamstring leaves the Warrior's base
--- kit and returns as Ruin's new-skill keystone. Until lane X3 wires the grant,
--- NO Warrior has it -- the same predicate that has kept Mend out of the kit
--- since WP19 keeps this one out too.
+-- kit and returns as Ruin's new-skill keystone (talent `hamstring`): a
+-- Warrior has it once that talent has a rank (grug_abilities.is_unlocked,
+-- the same predicate that gates Mend).
 grug_abilities.register_ability({
 	id = "hamstring",
 	kind = "swing",

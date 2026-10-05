@@ -892,8 +892,9 @@ end
 
 -- Healing threat (combat_stats §4): 0.5×effective healing on the HEALER,
 -- applied to every grug mob within 30 m of the healer that is currently
--- fighting the healer or the heal target. MVP group = healer + target; real
--- party membership arrives with WP20 (parties) and replaces this pair.
+-- fighting the healer or the heal target. The group is that pair: the
+-- parties of WP20 did not widen it, so a mob fighting another party member
+-- gains no healing threat.
 -- Event-driven get_objects_inside_radius is fine here: heals are rare
 -- (ability casts), this is not a globalstep.
 function grug_core.add_heal_threat(healer, target, amount)
