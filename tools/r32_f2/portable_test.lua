@@ -188,9 +188,11 @@ local inventory = {
 	end,
 }
 
-grug_mobs = {disposition = function(ent) return ent._grug_disposition end}
+grug_mobs = {disposition = function(ent) return ent._grug_disposition end,
+	evade_notice = function() end}
 grug_core = {
 	combat_eye_pos = function() return vector.copy(EYE) end,
+	combat_actor = function(ref) return ref end,
 	-- The aiming ray (grug_core.aim_raycast, tested in tools/r35_t): the
 	-- engine ray here.
 	aim_raycast = function(o, d, liquids) return core.raycast(o, d, true, liquids) end,
@@ -235,10 +237,14 @@ grug_abilities = {
 	registered = defs,
 	is_unlocked = function() return true end,
 	get_range = function(_, def) return def.id == "fireball" and 20 or 3 end,
+	-- The real predicate refuses a mob evading home (Round 36 §2.14.1); the
+	-- combat ray above still reports it as a hostile target, as the real one
+	-- does.
 	valid_target = function(_, ref, kind)
 		if kind == "friendly" then return ref.kind == "ally" end
-		return kind == "hostile" and hostile(ref)
+		return kind == "hostile" and hostile(ref) and not ref.evading
 	end,
+	evading_target = function(_, ref) return ref.kind == "mob" and alive(ref) and ref.evading == true end,
 	-- An ally the PvP flag forbids supporting (Round 31 ruling 9).
 	support_refused = function(_, ref) return ref.kind == "refused" end,
 	flash = function() end,

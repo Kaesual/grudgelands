@@ -86,6 +86,24 @@ grug_core.get_player_level = grug_xp.get_level
 
 local hud_update -- forward (defined below)
 
+-- The level-up banner (Round 28 ruling 20): "Reached level N!", plus a second
+-- line naming the talent points the jump earned (Round 36 §2.14.4), "+1 Talent
+-- Point" or "+2 Talent Points" over several levels. grug_classes owns the
+-- point rule (talent_points_at) and loads after grug_xp, hence the runtime
+-- global probe, as in add_xp below.
+function grug_xp.level_up_text(old_level, new_level)
+	local text = "Reached level " .. new_level .. "!"
+	if core.global_exists("grug_classes") and grug_classes.talent_points_at then
+		local gained = grug_classes.talent_points_at(new_level)
+			- grug_classes.talent_points_at(old_level)
+		if gained > 0 then
+			text = text .. "\nYou gained +" .. gained ..
+				(gained == 1 and " Talent Point" or " Talent Points")
+		end
+	end
+	return text
+end
+
 function grug_xp.set_xp(player, xp)
 	if type(xp) ~= "number" or xp ~= xp or
 			xp == math.huge or xp == -math.huge then
@@ -101,7 +119,7 @@ function grug_xp.set_xp(player, xp)
 		run_level_callbacks(player, old_level, new_level)
 		if new_level > old_level then
 			-- Round 28 ruling 20: a large centre announcement, no chat line.
-			grug_core.banner(player, "Reached level " .. new_level .. "!",
+			grug_core.banner(player, grug_xp.level_up_text(old_level, new_level),
 				grug_core.hud_layout.COLOR.xp)
 			grug_sounds.play("level_up", player)
 			local pos = player:get_pos()

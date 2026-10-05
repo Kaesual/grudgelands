@@ -229,6 +229,23 @@ function grug_abilities.get_target(player, ally)
 	return rec.obj
 end
 
+-- A live mob that may fight this user (faction and non-combatant rules), and
+-- whether it is evading home after a leash reset (grug_mobs aggro.lua).
+local function hostile_mob(user, ent)
+	if not ent or not ent._cmi_is_mob or (ent.health or 0) <= 0 then
+		return false
+	end
+	if grug_mobs.is_noncombatant(ent) then
+		return false
+	end
+	return not (ent._grug_faction and
+		ent._grug_faction == grug_factions.get_faction(user))
+end
+
+local function evading(ent)
+	return ent.temp ~= nil and ent.temp.grug_evading ~= nil
+end
+
 -- One relation predicate for every ability target. `target_kind` describes
 -- the button's acquisition authority, not every object an area effect may
 -- later touch: Ice Nova is self-targeted even though its effect visits
@@ -236,7 +253,10 @@ end
 -- and civic NPCs are not party members and cannot receive player heals.
 -- Players are gated by the PvP flag (pvp-plan rulings 1, 5, 6): an enemy only
 -- while both are flagged, an ally not when the ally is flagged and the user
--- is not.
+-- is not. It is the ONE predicate of the crosshair, the LMB hold, swings and
+-- casts (Round 36 §2.14.1), so the crosshair is red exactly when a press would
+-- act: a mob evading home after a leash reset (grug_mobs aggro.lua) takes no
+-- hit and is therefore no target (`evading_target` names that case).
 function grug_abilities.valid_target(user, obj, target_kind)
 	if target_kind == "self" then
 		return obj == user and user:get_hp() > 0
@@ -257,14 +277,17 @@ function grug_abilities.valid_target(user, obj, target_kind)
 			and grug_pvp.can_harm(user, obj)
 	end
 	local ent = obj:get_luaentity()
-	if not ent or not ent._cmi_is_mob or (ent.health or 0) <= 0 then
+	return hostile_mob(user, ent) and not evading(ent)
+end
+
+-- A mob that would be a valid hostile for `user` but is evading home now: the
+-- press at it answers "Evading" (grug_mobs.evade_notice) instead of silence.
+function grug_abilities.evading_target(user, obj)
+	if not obj or obj == user or not obj:get_pos() or obj:is_player() then
 		return false
 	end
-	if grug_mobs.is_noncombatant(ent) then
-		return false
-	end
-	return not (ent._grug_faction and
-		ent._grug_faction == grug_factions.get_faction(user))
+	local ent = obj:get_luaentity()
+	return hostile_mob(user, ent) and evading(ent)
 end
 
 local function invalidate_target_locks(obj)
@@ -834,6 +857,12 @@ function grug_abilities.description_prefix(player, def)
 	local timing = def._grug_timing_line
 	if player and def.kind == "swing" and def.charge then
 		timing = grug_abilities.effective_charge(player, def) .. " s charge"
+	elseif player and def.cooldown_talent and not def.cast_interval then
+		-- The cooldown this player's cast earns (Second Skin, Swift Word,
+		-- Grudge, Quick Step ...); refreshed with every talent change.
+		local cooldown = grug_abilities.effective_cooldown(player, def)
+		timing = cooldown > 0 and string.format("%g s cooldown", cooldown)
+			or "no cooldown"
 	end
 	return def.name .. " (" .. def._grug_owner_line .. ")\n" ..
 		cost_line .. ", " .. timing .. "\n"

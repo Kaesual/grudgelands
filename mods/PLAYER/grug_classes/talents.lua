@@ -785,9 +785,14 @@ local cache = {} -- player name -> {ranks, tree_points, spent, static, windowed}
 local windows = {} -- player name -> {talent id -> expiry in us}
 local META_UNBROKEN_READY = "grug_classes:unbroken_ready"
 
+-- The points a character of `level` has earned in total: the one rule, also
+-- read by the level-up banner (grug_xp) and the level-change notice below.
+function grug_classes.talent_points_at(level)
+	return math.floor(level / grug_classes.TALENT_LEVELS_PER_POINT)
+end
+
 function grug_classes.talent_points_total(player)
-	return math.floor(grug_xp.get_level(player)
-		/ grug_classes.TALENT_LEVELS_PER_POINT)
+	return grug_classes.talent_points_at(grug_xp.get_level(player))
 end
 
 -- Trees of a class, in registration order. Nil class = no trees.
@@ -1244,8 +1249,8 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 	-- old_level is nil on join (grug_xp/init.lua:32-33). Arithmetic on nil
 	-- here would error on every single join, which is why the guard above is
 	-- not optional.
-	local per = grug_classes.TALENT_LEVELS_PER_POINT
-	if math.floor(new_level / per) > math.floor(old_level / per) then
+	if grug_classes.talent_points_at(new_level)
+			> grug_classes.talent_points_at(old_level) then
 		local left = grug_classes.talent_points_available(player)
 		if left > 0 then
 			-- In the message feed beside the level-up's XP line, never chat.

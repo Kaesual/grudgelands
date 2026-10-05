@@ -328,6 +328,7 @@ local inventory = {
 
 grug_core = {
 	combat_eye_pos = function() return vector.new(0, 1.47, 0) end,
+	combat_actor = function(ref) return ref end,
 	-- The aiming ray (grug_core.aim_raycast, tested in tools/r35_t): the
 	-- engine ray here.
 	aim_raycast = function(o, d, liquids) return core.raycast(o, d, true, liquids) end,
@@ -376,6 +377,7 @@ grug_abilities = {
 	is_unlocked = function() return true end,
 	get_range = function() return 20 end,
 	valid_target = function(_, ref, kind) return ref == mob and kind == "hostile" end,
+	evading_target = function() return false end,
 	support_refused = function() return false end,
 	flash = function(_, msg) flashes[#flashes + 1] = msg end,
 	cancel_bow_draw = function() end,
