@@ -265,6 +265,9 @@ end
 
 local function place_seed(row)
 	return function(itemstack, placer, pointed_thing)
+		-- Doors, chests, stations and regrowing crops take the click first.
+		local clicked = grug_core.node_rightclick(itemstack, placer, pointed_thing)
+		if clicked then return clicked end
 		if not pointed_thing or pointed_thing.type ~= "node" then
 			return itemstack
 		end
