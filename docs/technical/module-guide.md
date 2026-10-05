@@ -1002,14 +1002,17 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   state keyed by the raw meta string: readers share that table and must
   never write into it, mutating paths take a copy (`editable`) and `save`
   re-caches. Marker consumers ask `Q.marker_states(player)` once for every
-  giver (memoized for a second, the memo reset by `Q.markers_changed`): the
+  giver (memoized until the raw state changes, `Q.markers_changed` resets it
+  or the earliest running repeatable cooldown ends, Round 37): the
   minimap, the only consumer that registers
   `Q.register_on_markers_changed`; the Map tab, which compares the
   `marker_states` version in its signature; the NPC tags, read on the 1 Hz
   carrier pass. `Q.markers_changed` fires on a
   quest change, a held objective-item change (the tracker's `Q.journal_key`
   poll, `hud.lua`, five 0.1 s slots; counts capped at what one quest takes,
-  Round 31) and a level change (fixtures `tools/r30_p1`, `tools/r31_c`).
+  Round 31; without an active item objective the poll reads no inventory,
+  Round 37) and a level change (fixtures `tools/r30_p1`, `tools/r31_c`,
+  `tools/r37_po`).
   Unknown quest fields stop the load (`E-unknown-key`, Round 30). Round 31:
   quest NPCs get their faction at load and serve only it; a kill objective's
   area may be a PvP garrison (`pvp_garrison.area_roles`, guard and captain
@@ -1112,7 +1115,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   only while the button text changes).
   Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
   it as 512 px tiles; `minimap.lua` (HUD state, marker slots, change-only
-  `hud_change` per whole screen pixel, every server step) and the pure
+  `hud_change` per whole screen pixel; every server step only a cheap test,
+  and the map, markers or party arrows placed again only when what they
+  show changed, Round 37) and the pure
   `minimap_view.lua` (window, snap grid and per-cell disc texture, the
   seam-free scale and map corner under the centred arrow, bezel frame,
   placement, rim arrows) draw the gliding minimap in
@@ -1124,7 +1129,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   measures the traffic and the location sample on a player stand-in. Since Round 30 the window size, the frame-only elements and the
   location line are handled every 0.5 s or on a window change, and the
   static markers are re-asked on `grug_quests.register_on_markers_changed`
-  and every 5 s. The minimap asks only the quest, service, home and (since Round 29)
+  and, when their key (quest version, home, waystones, faction) changed, at
+  a 5 s check. The minimap asks only the quest, service, home and (since Round 29)
   waypoint marker providers (`atlas.collect_markers(player, only)`); the
   `waypoint` provider shows the player's discovered waystones on both maps.
   Fixture:
