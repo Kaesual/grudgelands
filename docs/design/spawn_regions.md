@@ -281,10 +281,13 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
   (snake_case, used by no kind, camp, leader or other place of the recipe),
   `name` (what quest texts read) and `at` `{"kind": id, "pick":
   "farthest_from_roads"}`; placed by step 8 after the leaders. Today one per
-  contested zone without a clash site (Stormvault Heights `snowfield_cairn`,
-  Glassroot Wilds `tangle_clearing`, Blackwind Rise `gravemoor_stones`,
-  Thunderroot Wilds `split_oak_glade`, each in the zone's 34–37 open kind;
-  working names). `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
+  contested zone without a clash site, each in the zone's 34–37 open kind and
+  named for its main-line use (Round 36 story bible §4): Stormvault Heights
+  `brandscar_cairn` "Brandscar Cairn", Glassroot Wilds `couriers_stump`
+  "Courier's Stump", Blackwind Rise `ashen_grave` "Ashen Grave" and
+  Thunderroot Wilds `coinpit_hollow` "Coinpit Hollow" (the last two fall
+  back to the belt's woods on some seeds, so their names suit either
+  ground). `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
   from the recipe, `place_spot(zone, id)` its spot on the world.
 - `critters`: ambient critters that keep their ABM rows in the zone.
 

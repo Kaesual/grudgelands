@@ -720,7 +720,7 @@ spawn row or palette membership.
 | Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L70 boss | three perches in a round arena of radius 40 that is its leash (`world.md` §4b); 2 s breath-line / ground-slam telegraphs; a telegraphed wing gust that pushes players about 6 nodes (Round 36); persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
 | Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L70 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
 | Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d`, drawn from the race look layers with the royal tabard and crown ([character_visuals.md](character_visuals.md) §1.1) |
-| Rift boss (Round 36) | any | the rift's clash site (`world.md` §4b), fixed L60 elite, 2 × an elite's HP (no harder than a dragon, user) | spawned like a leader when a player is within 48 nodes (none within 6 of its spot), never saved with the map; void bolts (`dogshoot`), the elite frontal wind-up, a void pulse every 14 s (2 s wind-up, ×2 hit to every player within 6 nodes, knockback); its own 24-node leash and evade home; back 5 min of wall-clock time after its death; loot through the boss ledger (`items_crafting.md` §5.3b) | the Dungeon Master's mesh, a dark placeholder tint until its own texture; voice family `giant` |
+| Rift boss (Round 36) | any | the rift's clash site (`world.md` §4b), fixed L60 elite, 2 × an elite's HP (no harder than a dragon, user) | spawned like a leader when a player is within 48 nodes (none within 6 of its spot), never saved with the map; void bolts (`dogshoot`), the elite frontal wind-up, a void pulse every 14 s (2 s wind-up, ×2 hit to every player within 6 nodes, knockback); its own 24-node leash and evade home; back 5 min of wall-clock time after its death; loot through the boss ledger (`items_crafting.md` §5.3b) | the Dungeon Master's mesh with its own texture (Isquarre the Tithe-Eater, `grug_mobs_isquarre.png`); voice family `giant` |
 | Two fortress Generals (Round 31) | any | authored `general` socket of each PvP fortress, fixed L65 elite | the king chassis without a crown: the seat race's king's signature (Accord Rally, Throng Cleave); two fixed L60 elite bodyguards; the king's group reset and 15 min respawn; guard drops (war trophies to an enemy player's kill) plus two gear items at item level 65, each blue or gold at even odds (`items_crafting.md` §5.1), no reward ledger | `character.b3d`, one fixed look of the seat race with the royal tabard and no crown; the bodyguards any race of the faction in guard armour ([character_visuals.md](character_visuals.md) §1.1) |
 
 The current gear catalogue has sword, dagger, greataxe and staff visuals only;
@@ -1437,9 +1437,10 @@ formats in the design frame §4.1–§4.3. All of it is data in
 `items.json`, `drops.json`), loaded by `grug_mobs/subtypes.lua` after every
 mob file. A missing or empty file means no data, and without data every mob
 behaves as before. The shipped files are copies of the reviewed design
-catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 188 sub-types
-(49 leaders), 9 tints, 119 items (94 signatures, of which 89 new, and 25
-existing generic materials) and 24 drop families. The catalogue is the
+catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 205 sub-types
+(49 leaders, 10 corrupted, below), 12 tints, 120 items (94 signatures, of
+which 89 new, 24 existing generic materials and 2 quest items) and 24 drop
+families. The catalogue is the
 source; edit both together.
 
 **Sub-types.** Each record registers `grug_mobs:<role>` as a copy of its
@@ -1486,7 +1487,34 @@ sub-types burn like the Zombie).
   mesh's first non-blank texture; blank overlay and held-item slots keep
   theirs) or a texture modifier appended to it. Elite and rare tints layer
   on top. The entity name stays the role, so quest kill matching, density
-  weights and spawn palettes stay per role.
+  weights and spawn palettes stay per role. A humanoid's skin is composed
+  again when its level changes (a region spawn is relevelled right after its
+  first activation); the tint goes back on top of the new skin.
+
+**Corrupted sub-types** (Round 36, the main line's story bible §3): ten
+normal-tier variants of front families, marked only by **one shared ember
+tint `#B4472A`** (`tints.json` `ember_light` 80, `ember` 110,
+`ember_strong` 140 of 255 as `[colorize`, so each body stays readable), in
+each zone they spawn in. Each joins its zone's mix as the minor role (25 %)
+of a kind or camp whose replaced role stays elsewhere in the zone:
+
+| Role | Name | Family / base | Levels | Where (kind, clock; belt) |
+|---|---|---|---|---|
+| `coal_purse_factor` | Coal-Purse Factor | outlaw / bandit | 41–50 | Causeway `alderwood` day (41–43), `toll_camp` (48–50); Shattered Line `trenches` and `ramparts` day (44–47) |
+| `brandbound_collector` | Brandbound Collector | skeleton / skeleton raider | 41–50 | Causeway `floodmeadows`, `battlefield`, `toll_fields` night (41–50); Shattered Line `trenches`, `breach` night (44–50) |
+| `tallow_sealed_husk` | Tallow-Sealed Husk | zombie / sun-dried husk | 41–50 | Causeway `floodmeadows`, `toll_fields` day (and their bank kinds; 41–43, 48–50); Shattered Line `ramparts`, `siegecrest` night (44–50) |
+| `ash_writ_bowman` | Ash-Writ Bowman | outlaw / bandit archer | 51–60 | Gravesalt `saltroad_cliffs`, `watch_heights` night (54–60); Skyglass `paymaster_camp` (58–60) |
+| `kiln_whisper_hexer` | Kiln-Whisper Hexer | skeleton / bog witch | 51–60 | Gravesalt `tomb_fen`, `mourning_mire` night (54–60) |
+| `debtjaw_hound` | Debtjaw Hound | wolf / blightfang wolf | 51–60 | Gravesalt `tombwood`, `ossuary_wood` day (54–60) |
+| `embergrit_gnawer` | Embergrit Gnawer | weevil / stone mite | 51–60 | Gravesalt `blight_terraces`, `whitewall` day (54–60) |
+| `dunshade_prowler` | Dunshade Prowler | cat / panther | 51–60 | Skyglass `cloudwood` (51–53), `high_canopy` (58–60) night |
+| `furnace_coil_serpent` | Furnace-Coil Serpent | serpent / serpent | 51–60 | Skyglass `rootways` day (54–57) |
+| `sootlace_spinner` | Sootlace Spinner | spider / jungle spider | 51–60 | Skyglass `rootways` night (54–57) |
+
+Two of them share their family noun with a sibling of their zone
+(Tallow-Sealed and Mire-Cured Husk, Furnace-Coil and Glass-Fang Serpent): the
+approved bible's names, told apart by the tint; the names check lists them as
+exceptions (`names-proposal.json` `meta.sibling_exceptions`).
 
 **Families.** A sub-type belongs to its `family`; an existing mob's family is
 its own role (`zombie`, `giant_rat`, `boar` …), so a design puts sub-types

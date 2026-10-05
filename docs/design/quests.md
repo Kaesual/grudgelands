@@ -257,8 +257,12 @@ instead of 2.
     10 s), the n-th act at one place 2 nodes beside
     the first. Its nametag is the label. The object's look is a kind of
     `grug_quests/data/use_objects.json` (one texture and a size per kind,
-    the one place the texture names live; today placeholders for
-    `signal_fire`, `banner`, `burnt_mark`). Every aiming ray of a player who
+    the one place the texture names live): the story bible's twelve objects
+    (Round 36), `impounded_pay`, `false_requisition`, `brand_rubbing`,
+    `ash_slab`, `toll_box`, `courier_ledger`, `branded_pay_pit`,
+    `pledged_standard`, `tally_stone`, `rootmark`, `survey_cairn` and
+    `wreck_pay_chest`, each drawn by `grug_quests_obj_<kind>.png` 1–1.4
+    nodes wide. Every aiming ray of a player who
     does not see it (combat, hand clicks and the crosshair's interact colour,
     a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
@@ -377,7 +381,7 @@ regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
 - `T` is a kind or camp of a spawn recipe, a leader role, a PvP POI (a
   fortress or Battlegrounds camp by its settlement key, Round 31), or a
   place of a "use at a place" objective (Round 36: a recipe's quest place,
-  `{name:snowfield_cairn}` "Snowfield Cairn", or a clash site by its key,
+  `{name:brandscar_cairn}` "Brandscar Cairn", or a clash site by its key,
   `{name:r20_anchor_076}` "Saltgate Remnant"). A bare id
   means the quest file's zone; another zone's kind, camp or quest place is
   written `zone_id/id` (`{zone_area:elandor_whitebridge_shire/oakwood}`); a
