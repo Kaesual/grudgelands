@@ -33,6 +33,31 @@ a bad sound"). Process for any new or changed sound:
 5. Gains and pacing are tuned in the user's GUI check; swapping a file goes
    through a page again.
 
+**The inherited set** (user decision 2026-10-05). The sounds that came with
+the vendored code and the older cues from before the gate are accepted as
+they are, without a listening page and outside the approval lists: the
+minetest_game files (`mods/BASE/default/sounds`, 77 files: footsteps,
+digging, placing, furnaces, `player_damage`), the doors and xpanes door
+sounds (8 and 2 files), mobs_redo's `mobs_punch`, `mobs_swing` and
+`mobs_spell`, and the old eat and drink cues (`grug_food_eat.1`–`.3`,
+`grug_alchemy_drink`). They are accepted at the kind of event they already
+had (Round 35's ore digs reuse `default_dig_cracky` this way). A file used as
+the cue of a new game event goes through a page like any other: the three
+cues that once repurposed inherited files — the dragon-return warning
+(`mobs_spell`) and the Rift Spawn fuse and burst — were picked on lane SN's
+pages in Round 37 and now play their approved files (§3.4, §3.5);
+`mobs_spell` ships with mobs_redo but the game no longer plays it. Its
+licence: the source page (Little Robot Sound Factory, "Spell_01.wav") says CC
+BY 4.0 while mobs_redo's `license.txt` says CC0, so
+[CREDITS.md](../../CREDITS.md) credits it under CC BY 4.0. Four call sites in
+three mods still play inherited or pre-gate files directly with
+`core.sound_play` instead of through `grug_sounds.play`, and are accepted as
+part of the set: the hoe's till (`default_dig_crumbly`,
+`grug_farming/hoes.lua`), planting (`default_place_node`,
+`grug_farming/init.lua`), the fishing bite (`default_water_footstep`,
+`grug_fishing`) and eating (the looped `grug_food_eat` and a placed food's
+own place sound, `grug_food`).
+
 ## 2. Conventions
 
 - **Format:** Ogg Vorbis. Effects and everything positional are mono
@@ -104,7 +129,7 @@ formspecs that drop the prepend. The client plays it at the file's own level
 - **Mounts and boats:** gallop, wing beats and the boat's splash, repeated at
   their clip length while moving.
 - **Travel** (waystone, home), **fishing** cast and catch (the splash), and
-  the **Enable PvP button**.
+  the **"Flag me for PvP" button**.
 - **Combat:** the swing into the air (the swing skills' item sound, played by
   the client); a player's hit by the equipped melee weapon's kind (swords and
   greataxes blade, daggers a lighter blade, staffs and wands blunt, the bare
@@ -121,8 +146,8 @@ formspecs that drop the prepend. The client plays it at the file's own level
 
 Quest accept and quest progress, talent learned, achievement, enchant (its
 hook stays, without a sound, and may get one later), blue, gold, bag and boss
-drops, mount summon and dismount, respawn, the zone banner, PvP off and every
-automatic PvP flag change, critical hits, Blink, Sprint, and every refusal or
+drops, mount summon and dismount, respawn, the zone banner, every automatic
+PvP flag change, critical hits, Blink, Sprint, and every refusal or
 error (no refusal cue). *Why:* fewer layers, so the sounds that remain can be
 told apart in play; a refusal already shows its reason as text.
 
