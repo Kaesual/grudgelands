@@ -283,26 +283,22 @@ exists. The implementer cannot choose it retrospectively.
 
 ## 7. Calibration and policy maintenance
 
-Evaluate the Sol/Opus boundary after roughly every six to ten independently
-reviewed packages using lightweight project evidence: specification
-deviations, Critical/High findings, number of fix rounds, elapsed delivery
-time, and coordination overhead. Each such package records its implementing
-and reviewing model, Critical/High count, fix-round count, and observed elapsed
-wall time (or `unknown`) in its durable completion record — normally its
-BACKLOG completion summary, its package contract when it has no BACKLOG row,
-this section when the reviewed change amends this policy, or the commit message
-when none of those locations applies. Calibration reads those records rather
-than relying on recollection.
-Adjust this policy in one reviewed documentation commit when repeated evidence
-supports a change; do not create local WP exceptions.
+Per-package calibration records are no longer kept (user ruling
+2026-10-06): the user decides the routing per session, and packages record
+no implementing/reviewing model, finding counts or wall times for
+calibration. Adjust this policy in one reviewed documentation commit when
+experience supports a change; do not create local WP exceptions.
 
 Model context limits, pricing, and product behavior change over time and are
 not policy invariants. Record durable observed working characteristics and
 routing outcomes rather than hard-coding transient vendor claims. A version
 update presented under one of the adopted labels retains that role
-provisionally and is checked through calibration; a new or renamed model class
+provisionally and is checked in use; a new or renamed model class
 is not used for consequential work until its project role is explicitly added
 here. GPT-6 Astra's role was added in Section 2.5 on 2026-10-01.
+
+The three records below are historical (kept from before the 2026-10-06
+ruling).
 
 **Adoption-package calibration record (2026-08-22):** implementing model
 GPT-5.6 Sol; reviewing model Claude Opus; classification: non-trivial (model

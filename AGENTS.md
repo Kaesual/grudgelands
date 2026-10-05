@@ -30,7 +30,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
   Accord** and **The Throng**, in chat too, never translated. Never name an
   existing game as a reference — no titles, studios, or their faction, class,
   ability or place names — in docs, code comments, ids, briefs, pages or chat;
-  describe mechanics in neutral words ("MMO-inspired").
+  describe mechanics in neutral words ("MMO-inspired"). Provenance is not a
+  reference (user ruling 2026-10-06): code and licence provenance (VENDOR.md,
+  LICENSE-media.md, CREDITS.md, `docs/reference_projects.md`, source
+  citations) names the Luanti projects we vendor or read; the rule covers
+  design inspiration.
 - **The web build is a target system** next to desktop: both are tested, and
   effects keep the particle budget ("Performance").
 - **Agent execution channel (2026-09-20):** models of the coordinator's own

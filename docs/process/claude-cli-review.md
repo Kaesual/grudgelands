@@ -127,8 +127,5 @@ SHA-256 of an uncommitted reviewed diff or immutable artifact when applicable,
 prompt SHA-256, JSONL SHA-256, Claude CLI version, SHA-256 of the captured
 `cli-help.txt`, exact model and effort, independence statement, verdict, and
 counts for every severity. Capturing the version and help is a coordinator
-preflight and does not require the read-only reviewer to have shell access. The
-calibration fields required by
-[agent-model-policy.md](agent-model-policy.md) live in the package record or
-its documented commit-message fallback. Then remove only the exact temporary
-directories created for the review.
+preflight and does not require the read-only reviewer to have shell access.
+Then remove only the exact temporary directories created for the review.

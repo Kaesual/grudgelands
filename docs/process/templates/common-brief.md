@@ -92,7 +92,11 @@ bigger than planned, report it (the coordinator splits it with the user).
 - **Naming:** the factions are The Accord and The Throng. No references to
   existing games or their makers (titles, studios, their faction, class or
   ability names) anywhere in the repository, briefs, reports or pages;
-  describe mechanics in neutral words.
+  describe mechanics in neutral words. Provenance is not a reference (user
+  ruling 2026-10-06): code and licence provenance (VENDOR.md,
+  LICENSE-media.md, CREDITS.md, `docs/reference_projects.md`, source
+  citations) names the Luanti projects we vendor or read; the rule covers
+  design inspiration.
 - **Sounds:** no new sound file ships without the user's pick on a listening
   page. Downloaded sound source folders in the orchestration folder are
   read-only for everyone: copy, never delete, move or rewrite.
