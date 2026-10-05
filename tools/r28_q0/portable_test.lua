@@ -187,20 +187,22 @@ local function install_world(mobs_root)
 	end
 	function seams.leader(role) return leaders[role] end
 	seams.place = place
-	-- Round 36: the recipes' quest places and the clash sites (the
-	-- settlement roster's anchors of kind "clash"), as spawn_regions.lua's
-	-- zone_place and clash_site; the shipped quests use both.
+	-- Round 36: the recipes' quest places and the roster's clash sites, as
+	-- spawn_regions.lua answers them (the shipped files use both).
 	function seams.zone_place(zone, id)
-		local spot = recipes[zone] and recipes[zone].place_by_id[id]
-		return spot and {zone = zone, id = id, name = spot.name} or nil
+		local place = recipes[zone] and recipes[zone].place_by_id[id]
+		return place and {zone = zone, id = id, name = place.name} or nil
 	end
+	local clash_rows
 	function seams.clash_site(key)
-		for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
-			if row.key == key and row.art and row.art.kind == "clash" then
-				return {key = row.key, zone = row.zone_id, name = row.label}
+		if not clash_rows then
+			clash_rows = {}
+			for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
+				if row.art and row.art.kind == "clash" then clash_rows[row.key] = row end
 			end
 		end
-		return nil
+		local row = clash_rows[key]
+		return row and {key = row.key, zone = row.zone_id, name = row.label} or nil
 	end
 	grug_mobs = {
 		register_on_eligible_kill = function() end,
@@ -307,18 +309,15 @@ end
 -- if given, runs before them, as init.lua's NPC factions do).
 local function load_quests(quest_root, mobs_root, register, prepare)
 	grug_quests = {}
-	-- use.lua's object kinds (Round 36): shipped quests name them in their
-	-- "use at a place" objectives; the harness does not run use.lua itself.
-	grug_quests.use_objects = {}
-	for kind, row in pairs(read_json("mods/PLAYER/grug_quests/data/use_objects.json")) do
-		if kind ~= "notes" then grug_quests.use_objects[kind] = {texture = row.texture, size = row.size or 1} end
-	end
 	install_world(mobs_root)
 	register = register or register_named
 	register(quest_root, mobs_root)
 	mod_paths.grug_quests = quest_root
 	local base = "mods/PLAYER/grug_quests/"
-	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "validate", "loader", "ui", "hud"}) do
+	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader", "ui", "hud"}) do
+		-- use.lua reads the quest-object kinds the quest files may name
+		-- (Round 36): always the shipped data/use_objects.json.
+		mod_paths.grug_quests = file == "use" and "mods/PLAYER/grug_quests" or quest_root
 		dofile(base .. file .. ".lua")
 	end
 	if prepare then prepare(grug_quests) end
@@ -532,8 +531,9 @@ for _, id in ipairs(ids) do
 			if objective.levels then ranged_items = ranged_items + 1 end
 		end
 		rows[index] = {type = objective.type, item = objective.item, group = objective.group,
-			mobs = objective.mobs, zones = objective.zones, npc = objective.npc, label = objective.label,
-			place_name = objective.place_name, count = 0, required = objective.count, levels = objective.levels}
+			mobs = objective.mobs, zones = objective.zones, npc = objective.npc, count = 0,
+			required = objective.count, levels = objective.levels,
+			label = objective.label, place_name = objective.place_name}
 	end
 	if not Q.is_travel(def) then
 		-- The tracker line at 0 progress, without and with each range.

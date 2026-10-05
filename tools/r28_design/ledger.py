@@ -50,8 +50,8 @@ import r28common as C  # noqa: E402
 class Route:
     """The zones in play order: a --route spec ("zone_a,zone_b:lo-hi"), or
     `entries` [(zone, lines, levels, label)] of r28common.track_route (lines
-    None = every line but `front`; levels = a host's front quests of one
-    band only)."""
+    None = every line but `front`, FRONT_HOST_LINES = every line; levels =
+    only the quests whose reward level lies in that band)."""
 
     def __init__(self, spec="", atlas=None, entries=None):
         self.atlas = atlas
@@ -255,21 +255,11 @@ class Ledger:
             return acc
         lines = set(lines) if lines else self.lines
         quests = self.design.zone_quests(zone, lines)
-        # Round 36: on a track route a host zone's own lines above its band
-        # (the fortress Warmaster's main line, 41-60) count with the front
-        # quests of their band, where the player meets them, not in the
-        # zone's own entry.
-        own_top = (gameplay_band(zone) or (None, None))[1] if label else None
         if not lines or "front" not in lines:
             # Front quests (front files, line `front`) belong to the front
             # ledger; a race or contested route counts them only when
             # --lines names `front`.
             quests = [q for q in quests if q.get("line") != "front"]
-            if own_top is not None:
-                quests = [q for q in quests if (q.get("level") or 1) <= own_top]
-        elif levels and own_top is not None:
-            quests = quests + [q for q in self.design.zone_quests(zone)
-                               if q.get("line") != "front" and (q.get("level") or 1) > own_top]
         if levels:
             quests = [q for q in quests if levels[0] <= (q.get("level") or 1) <= levels[1]]
         one_time = [q for q in quests if not q.get("repeatable")]
@@ -760,7 +750,8 @@ def self_test():
                   ("front_broken_causeway", "front"), ("front_shattered_line", "front"),
                   ("front_gravesalt_escarpment", "front"), ("front_skyglass_canopy", "front")],
           "human track: own zones, sister, the three contested zones, 41-50 and 51-60 (%s)" % own)
-    hosts = sorted({zone for zone, lines, levels, _ in entries if lines == ("front",) and levels == (41, 50)})
+    hosts = sorted({zone for zone, lines, levels, _ in entries
+                    if lines == C.FRONT_HOST_LINES and levels == (41, 50)})
     check(hosts == ["elandor_ashenward_march", "elandor_dur_brannoc", "elandor_glassroot_wilds",
                     "elandor_highcourt", "elandor_lethariel", "elandor_stormvault_heights"],
           "front quests from the faction's contested zones and capitals (%s)" % hosts)
