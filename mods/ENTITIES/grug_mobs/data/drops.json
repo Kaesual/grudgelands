@@ -77,13 +77,13 @@
         },
         {
           "item": "grug_mobs:rat_tail",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:rat_fur_patch",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         }
@@ -97,13 +97,13 @@
         },
         {
           "item": "grug_mobs:sinewy_rat_tail",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:dense_rat_fur",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         }
@@ -458,7 +458,7 @@
         },
         {
           "item": "grug_mobs:fang",
-          "chance": 3,
+          "chance": 6,
           "min": 1,
           "max": 1
         },
@@ -1151,7 +1151,7 @@
         },
         {
           "item": "grug_mobs:croc_tooth",
-          "chance": 3,
+          "chance": 6,
           "min": 1,
           "max": 1
         }
@@ -1171,7 +1171,7 @@
         },
         {
           "item": "grug_mobs:croc_tooth",
-          "chance": 3,
+          "chance": 6,
           "min": 1,
           "max": 1
         }

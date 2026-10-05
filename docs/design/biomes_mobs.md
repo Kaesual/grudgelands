@@ -1517,12 +1517,14 @@ static rows above apply only outside them:
   tusk 1/3 (Boar Tusk, Ridged, Gnarled).
 - **Zombie** (all bands): see its row above; the guaranteed flesh becomes 1/2
   and the bar 1/10 becomes the band's tier bar at 1/50.
-- **Fox** (bands 1–3): meat 1/1, leather 1/3 (was 1/2), Fang 1/3 kept in bands
-  1–2 (quests ask for it), the band's tail 1/3 (Fox Tail, Brush, Silver-Tip).
+- **Fox** (bands 1–3): meat 1/1, leather 1/3 (was 1/2), Fang 1/6 in band 1
+  and 1/3 in band 2 (a T2 item; Round 35 halved the band-1 chance), the
+  band's tail 1/3 (Fox Tail, Brush, Silver-Tip).
 - **Bear** (bands 3, 4, 6): meat 1/1 ×1 (was ×2), heavy leather 1/3 (was
   1/2), Bear Claw 1/3 (was 1/4), from band 4 also the band's claw 1/3.
-- **Crocodile** (bands 2–3): meat 1/1, Crocodile Tooth 1/3 and the band's
-  tooth 1/3; no guaranteed Scaled Hide any more.
+- **Crocodile** (bands 2–3): meat 1/1, Crocodile Tooth 1/6 (a T4 item no
+  recipe uses; 1/3 before Round 35) and the band's tooth 1/3; no guaranteed
+  Scaled Hide any more.
 - **Wisp** (bands 2–4): the band's mote 1/3 (it had no drops).
 - **Mirefolk** (bands 2–3): linen cloth (band 2) or heavy cloth (band 3) 1/2,
   the band's reed pearl 1/3, Shiny Scale 1/4; no Raw Fish any more.
