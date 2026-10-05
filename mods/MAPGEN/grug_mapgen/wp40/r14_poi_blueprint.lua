@@ -258,7 +258,7 @@ return function(spec)
 			lamp(3,1); put(4,1,-5,"grug_decor:cottages_shelf")
 		elseif race=="orc" then
 			house("earth longhouse",6,3,5,3,3,3,"flat")
-			house("low annex",-6,7,3,2,2,0,"flat")
+			house("low annex",-6,7,3,2,3,0,"flat")
 			canopy("cooking court",-7,-6,3,2,3); stores(-9,-5,3)
 			fill(4,1,-8,7,1,-8,p.foundation); timber(8,-4,2)
 			put(-7,1,-6,"grug_decor:xdecor_cauldron"); path(-6,2,1,3); path(-7,-3,0,-2); path(0,1,2,4)
