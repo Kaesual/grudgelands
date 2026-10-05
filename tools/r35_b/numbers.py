@@ -157,6 +157,107 @@ def review():
         print("| %d | %d | %.1f | %.2f | %d | %.1f | %.0f | %.1f%% | %.1f%% |" % (
             L, P(L), B(L), scale(L), math.floor(B(L) * scale(L)), K(L), R,
             100 * warrior_reduction(R, L), 100 * warrior_reduction(1.65 * R, L)))
+    print()
+    for L in [30, 60]:
+        print("### Level %d (same-level normal mob, own-level gear, no enchants)" % L)
+        print()
+        rows = []
+        # Warrior: Strike every second, Mighty Blow whenever 25 rage is there.
+        strength = (10 + 3 * (L - 1)) / 10
+        dex_w = 10 + (L - 1)
+        crit_w = 0.05 + 0.0005 * dex_w
+
+        def warrior_dps(stoke=0, spite=0, heavy=0, crit=0.0):
+            income = 8 + stoke + 3 + spite  # one swing and one hit taken per second
+            f = min(1.0, income / 25)
+            mb = math.floor(bw(L) * (1.5 + 0.05 * heavy)) + strength
+            return (B(L) + f * (mb - B(L))) * (1 + min(0.30, crit_w + crit))
+        base = warrior_dps()
+        rows.append(("Warrior", "baseline raw/s (Strike + Mighty Blow, crit)", "%.1f" % base))
+        for label, kw in [("Heavy Hand 5/5", dict(heavy=5)), ("Stoke 4/4", dict(stoke=4)),
+                          ("Spite 5/5", dict(spite=5)), ("Keen Edge 5/5", dict(crit=0.05))]:
+            rows.append(("Warrior", label, "%+.1f%% DPS" % (100 * (warrior_dps(**kw) / base - 1))))
+        rui = 10 * B(L) * 0.20 / 120  # ten swings at +20 crit points each 120 s
+        rows.append(("Warrior", "Ruination (capstone)", "%+.1f%% DPS" % (100 * rui / base)))
+        R = 2 * metal_set(L)
+        red = warrior_reduction(R, L)
+        ehp = lambda r: 1 / (1 - r)
+        rows.append(("Warrior", "plate+shield reduction", "%.1f%%" % (100 * red)))
+        rows.append(("Warrior", "Ironbound 5/5 (proposed) EHP",
+                     "%+.1f%%" % (100 * (ehp(warrior_reduction(R + 0.15 * K(L), L)) / ehp(red) - 1))))
+        rows.append(("Warrior", "Unbroken x1.65 EHP vs same level",
+                     "%+.1f%%" % (100 * (ehp(warrior_reduction(1.65 * R, L)) / ehp(red) - 1))))
+        Kb = 50 + 8.5 * 10  # a level-70 dragon
+        boss = lambda r: min(0.70, r / (r + Kb))
+        rows.append(("Warrior", "Unbroken x1.65 EHP vs a level-70 dragon",
+                     "%+.1f%% (%.0f%% -> %.0f%%)" % (100 * (ehp(boss(1.65 * R)) / ehp(boss(R)) - 1),
+                                                    100 * boss(R), 100 * boss(1.65 * R))))
+        rows.append(("Warrior", "Weathered 4/4 EHP", "+6.0%"))
+        hold = 0.40 * P(L)
+        incoming = math.floor(P(L) / 27) * (1 - red)
+        rows.append(("Warrior", "Hold Ground 3/3 absorb vs one mob's hits",
+                     "%d absorb = %.0f s of one mob" % (hold, hold / incoming)))
+        # Mage: Fireball each second while mana lasts.
+        sp_m = mage_sp(L)
+        regen = lambda pool, cf=0: max(0.25 * (1 + 0.15 * L), 0.0025 * pool) * (1 + 2 * cf)
+        cost = round(0.06 * P(L))
+        oom = lambda pool, cf=0, c=cost: pool / (c - regen(pool, cf))
+        t0 = oom(P(L))
+        rows.append(("Mage", "Fireball casts before out of mana", "%.1f s" % t0))
+        rows.append(("Mage", "Deep Well 5/5 time to OOM", "%+.0f%%" % (100 * (oom(1.15 * P(L)) / t0 - 1))))
+        rows.append(("Mage", "Cold Focus 5/5 time to OOM", "%+.0f%%" % (100 * (oom(P(L), 0.5) / t0 - 1))))
+        rows.append(("Mage", "Tinder 5/5 (proposed)", "+20%% of a base hit = %+.0f%% Fireball" % (100 * 0.2 * B(L) / B(L))))
+        crit_m = 0.05 + 0.0005 * (10 + (L - 1))
+        rows.append(("Mage", "Firebrand 4/4", "%+.1f%% DPS" % (100 * 0.04 / (1 + crit_m))))
+        wh = 8 * 0.16 * B(L) / 120
+        rows.append(("Mage", "Whitehot (capstone): damage / mana per 120 s",
+                     "%+.1f%% DPS; saves %.0f%% of the pool" % (100 * wh / B(L), 8 * 3)))
+        rb = (0.13 * B(L) + sp_m / 2) / 12
+        rows.append(("Mage", "Rimebite (capstone), one target", "%+.1f%% DPS" % (100 * rb / B(L))))
+        cf = 0.25 * B(L) + sp_m
+        rows.append(("Mage", "Cinderfall 3/3 per target (proposed)", "%.0f%% of a Fireball, 2x its mana" % (100 * cf / B(L))))
+        rows.append(("Mage", "Glacial Ward 3/3", "%.0f%% of Mage HP per 30 s" % (100 * 0.20 * (1 + sp_m / 100) / 0.9)))
+        # Priest
+        sp_p = priest_sp(L)
+        sm = smite(L)
+        rows.append(("Priest", "Smite raw / cast (2 s)", "%d" % sm))
+        rows.append(("Priest", "Swift Word 4/4 (2 s -> 1.4 s)", "%+.0f%% Smite DPS, %+.0f%% mana per second" % (100 * (2 / 1.4 - 1), 100 * (2 / 1.4 - 1))))
+        rows.append(("Priest", "Sharpened Word 5/5 (proposed)", "%+.0f%% Smite" % (100 * 0.2 * B(L) / sm)))
+        cloth = 2.3 + 0.222 * L
+        inc_p = math.floor(P(L) / 27) * (1 - cloth / (cloth + K(L)))
+        rec = 0.12 * P(L) * (1 + sp_p / 100)
+        rows.append(("Priest", "Recompense 3/3 absorb per Smite vs one mob",
+                     "%d per 2 s = %.0f%% of the mob's %d per 2 s" % (rec, 100 * rec / (2 * inc_p), 2 * inc_p)))
+        mend = 4 * 0.10 * P(L) * (1 + sp_p / 100)
+        heal = 0.30 * P(L) * (1 + sp_p / 100)
+        rows.append(("Priest", "Mend 3/3 vs Heal (Gentle Hand 5/5): heal per mana",
+                     "%.1f vs %.1f" % (mend / round(0.06 * P(L)), heal / round(0.08 * P(L)))))
+        wor = 0.30 * B(L) + sp_p
+        wor_eff = wor * scale(L)
+        rows.append(("Priest", "Last Word (capstone): extra healing per 180 s",
+                     "%d HP = %.0f%% of Priest HP" % (wor_eff, 100 * wor_eff / P(L))))
+        # Scout
+        dex_s = scout_dex10(L)
+        arrow = bw(L) + dex_s
+        loose = arrow * 2.25 / 2.5
+        rows.append(("Scout", "Loose full draw raw/s (2.5 s)", "%.1f (%.0f%% of Strike)" % (loose, 100 * loose / B(L))))
+        rows.append(("Scout", "Fletching 4/4 (1.5 s)", "%+.0f%% Loose DPS" % (100 * (2.5 / 1.5 - 1))))
+        rows.append(("Scout", "Twin Shot 3/3", "+70% per full draw, two arrows"))
+        q = (arrow + 0.2 * B(L)) * 2.25 * 1.7 / 1.5
+        rows.append(("Scout", "Quarry draw chain (Strong Draw, Fletching, Twin Shot)",
+                     "%.1f raw/s = %.1fx a warrior's %.1f" % (q, q / base, base)))
+        sword = bw(L) + dex_s
+        op = math.floor(bw(L) * 2.8) + dex_s - sword
+        rows.append(("Scout", "Opening 3/3 + Follow Through 3/3 from behind",
+                     "%+.0f%% melee DPS when it lands" % (100 * op / 6 / sword)))
+        dodge = 0.001 * (10 + 2 * (L - 1))
+        rows.append(("Scout", "base dodge; Light Step 5/5 + Shifting Weight 3/3",
+                     "%.1f%% -> %.1f%%" % (100 * dodge, 100 * min(0.30, dodge + 0.08))))
+        print("| Class | Figure | Value |")
+        print("|---|---|---|")
+        for r in rows:
+            print("| %s | %s | %s |" % r)
+        print()
 
 
 if __name__ == "__main__":
