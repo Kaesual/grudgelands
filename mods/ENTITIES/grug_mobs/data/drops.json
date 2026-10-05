@@ -123,13 +123,13 @@
         },
         {
           "item": "grug_mobs:crab_eye",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:crab_leg",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         }
@@ -143,7 +143,7 @@
         },
         {
           "item": "grug_mobs:clear_crab_eye",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
@@ -287,13 +287,13 @@
         },
         {
           "item": "grug_mobs:pickled_flesh",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:stubborn_molar",
-          "chance": 3,
+          "chance": 6,
           "min": 1,
           "max": 1
         },
@@ -325,13 +325,13 @@
         },
         {
           "item": "grug_mobs:leathery_flesh",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:gritted_teeth",
-          "chance": 3,
+          "chance": 6,
           "min": 1,
           "max": 1
         },
@@ -363,13 +363,13 @@
         },
         {
           "item": "grug_mobs:scorched_flesh",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:clenched_jaw",
-          "chance": 3,
+          "chance": 6,
           "min": 1,
           "max": 1
         },
@@ -401,13 +401,13 @@
         },
         {
           "item": "grug_mobs:salt_cured_flesh",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:last_laugh_dentures",
-          "chance": 3,
+          "chance": 6,
           "min": 1,
           "max": 1
         },
@@ -576,13 +576,13 @@
         },
         {
           "item": "grug_mobs:coded_talisman",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:balanced_weapon_strap",
-          "chance": 1,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
@@ -608,13 +608,13 @@
         },
         {
           "item": "grug_mobs:campaign_talisman",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:reinforced_weapon_strap",
-          "chance": 1,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
@@ -640,13 +640,13 @@
         },
         {
           "item": "grug_mobs:siege_talisman",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:siege_weapon_strap",
-          "chance": 1,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
@@ -678,13 +678,13 @@
         },
         {
           "item": "grug_mobs:last_pay_talisman",
-          "chance": 2,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
         {
           "item": "grug_mobs:unbroken_weapon_strap",
-          "chance": 1,
+          "chance": 3,
           "min": 1,
           "max": 1
         },
