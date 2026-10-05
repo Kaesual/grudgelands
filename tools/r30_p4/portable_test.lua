@@ -139,6 +139,8 @@ do
 		sapling_growth_defs = {}}
 	_G.grug_materials = {TIERS = {}}
 	_G.grug_core = {natural_renewal_allowed = function() return true end}
+	-- The seeds' on_place asks it first (Round 37, ITM-03).
+	dofile(repo .. "/mods/CORE/grug_core/node_rightclick.lua")
 	_G.grug_mapgen = {wp40 = {vegetation = {}, planner_source = {}}}
 	_G.grug_nodes = {
 		bind_crop_soil_callbacks = function(callbacks) soil_callbacks = callbacks end,
