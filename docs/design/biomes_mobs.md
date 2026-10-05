@@ -1507,9 +1507,9 @@ of a kind or camp whose replaced role stays elsewhere in the zone:
 | `kiln_whisper_hexer` | Kiln-Whisper Hexer | skeleton / bog witch | 51–60 | Gravesalt `tomb_fen`, `mourning_mire` night (54–60) |
 | `debtjaw_hound` | Debtjaw Hound | wolf / blightfang wolf | 51–60 | Gravesalt `tombwood`, `ossuary_wood` day (54–60) |
 | `embergrit_gnawer` | Embergrit Gnawer | weevil / stone mite | 51–60 | Gravesalt `blight_terraces`, `whitewall` day (54–60) |
-| `dunshade_prowler` | Dunshade Prowler | cat / panther | 51–60 | Skyglass `cloudwood` (51–53), `high_canopy` (58–60) night |
-| `furnace_coil_serpent` | Furnace-Coil Serpent | serpent / serpent | 51–60 | Skyglass `rootways` day (54–57) |
-| `sootlace_spinner` | Sootlace Spinner | spider / jungle spider | 51–60 | Skyglass `rootways` night (54–57) |
+| `dunshade_prowler` | Dunshade Prowler | cat / panther | 51–60 | Skyglass `cloudwood` night (51–53) |
+| `furnace_coil_serpent` | Furnace-Coil Serpent | serpent / serpent | 51–60 | Skyglass `rootways` night (54–57) |
+| `sootlace_spinner` | Sootlace Spinner | spider / jungle spider | 51–60 | Skyglass `high_canopy` night (58–60) |
 
 Two of them share their family noun with a sibling of their zone
 (Tallow-Sealed and Mire-Cured Husk, Furnace-Coil and Glass-Fang Serpent): the

@@ -149,8 +149,18 @@ local KEPT = {
 	front_gravesalt_escarpment = {"salt_antler_stag", "salt_boring_weevil", "salt_hide_bear",
 		"last_watch_husk", "last_watch_zombie", "saltroad_deserter", "last_watch_skeleton_raider"},
 	front_skyglass_canopy = {"last_watch_skeleton_raider", "last_watch_zombie", "saltbound_zombie",
-		"last_watch_husk"},
+		"last_watch_husk", "saltbound_husk"},
 }
+-- The Skyglass rootways keep the Saltbound Husk by day: the 54-57 belt's
+-- only daylight zombie (its catalogue note: mandatory where daylight lacks
+-- blight-ground zombies).
+local husk_by_day = false
+for _, r in ipairs(rosters) do
+	if r.where == "front_skyglass_canopy/rootways day" then
+		for _, entry in ipairs(r.list) do husk_by_day = husk_by_day or entry.role == "saltbound_husk" end
+	end
+end
+check(husk_by_day, "S the Skyglass rootways keep the Saltbound Husk by day")
 for zone, list in pairs(KEPT) do
 	for _, role in ipairs(list) do
 		check(spawns[zone][role], "S " .. role .. " still spawns in " .. zone)
