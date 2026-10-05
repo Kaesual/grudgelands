@@ -26,10 +26,14 @@ local DISTANCE_TIE_EPSILON = 0.000001
 -- point p is drawn at p * M). get_rotation() is that rotation in radians
 -- (pitch and roll included); mobs set no automatic yaw (automatic_rotate
 -- only spins a dying, unpointable mob).
--- Candidates: the engine's own rule, the objects in the ray's box widened by
--- 5 nodes (getSelectedActiveObjects). Pieces of the ray would not be
--- narrower for the usual near-level ray: their widened boxes overlap.
-local AIM_MARGIN = 5
+-- Candidates: the objects in the ray's box widened by the engine's 5 nodes
+-- (getSelectedActiveObjects) or, when larger, by the farthest reach of any
+-- registered rotated box (a dragon's wing tip lies about 6.2 nodes from its
+-- origin; the client has no such limit), found once on the first ray, when
+-- every entity is registered. Pieces of the ray would not be narrower for
+-- the usual near-level ray: their widened boxes overlap.
+local ENGINE_MARGIN = 5
+local aim_margin -- nil until the first ray
 
 -- The box a rotated-box object starts from, or nil when its box is not
 -- rotated: a mobs_redo mob keeps its live box in `base_selbox` (scale_mob
@@ -44,21 +48,47 @@ local function rotated_hint(ent)
 	return box ~= nil and box.rotate and box or nil
 end
 
+-- How far a box turned about its origin can reach: the farthest corner.
+local function box_reach(box)
+	local reach2 = 0
+	for i = 1, 3 do
+		local e = math.max(math.abs(box[i]), math.abs(box[i + 3]))
+		reach2 = reach2 + e * e
+	end
+	return math.sqrt(reach2)
+end
+
+local function margin()
+	if not aim_margin then
+		aim_margin = ENGINE_MARGIN
+		local function widen(box)
+			if type(box) == "table" and box.rotate then
+				aim_margin = math.max(aim_margin, box_reach(box))
+			end
+		end
+		for _, def in pairs(core.registered_entities or {}) do
+			widen(def.base_selbox)
+			widen(def.initial_properties and def.initial_properties.selectionbox)
+		end
+	end
+	return aim_margin
+end
+
 local function is_rotated_object(ref)
 	local ent = ref and ref.get_luaentity and ref:get_luaentity()
 	return ent ~= nil and rotated_hint(ent) ~= nil
 end
 
--- The engine's pointability of an object: its `pointable` property unless
--- the ray's pointabilities name the entity, else one of its armour groups
--- (Pointabilities::matchObject / matchGroups: true before false before
--- "blocking").
+-- The engine's pointability of an object (true, false or "blocking"): its
+-- `pointable` property unless the ray's pointabilities name the entity, else
+-- one of its armour groups (Pointabilities::matchObject / matchGroups: true
+-- before false before "blocking").
 local function pointable(obj, ent, props, pointabilities)
 	local rules = pointabilities and pointabilities.objects
 	if rules then
 		local own = rules[ent.name]
 		if own ~= nil then
-			return own ~= false
+			return own
 		end
 		local groups, found = obj:get_armor_groups(), nil
 		for key, value in pairs(rules) do
@@ -71,10 +101,13 @@ local function pointable(obj, ent, props, pointabilities)
 			end
 		end
 		if found ~= nil then
-			return found ~= false
+			return found
 		end
 	end
-	return props.pointable ~= false
+	if props.pointable == nil then
+		return true
+	end
+	return props.pointable
 end
 
 -- One axis of the segment/box test (the slab method): the entry interval
@@ -174,9 +207,10 @@ local function box_hit(box, pos, rot, origin, dir, ref)
 	}, t * vector.length(dir)
 end
 
+-- get_properties() returns the box as 32-bit floats (0.45 -> 0.4499999881).
 local function same_box(a, b)
 	for i = 1, 6 do
-		if a[i] ~= b[i] then
+		if math.abs(a[i] - b[i]) > 1e-4 then
 			return false
 		end
 	end
@@ -186,46 +220,44 @@ end
 -- Every rotated-box object the segment hits, nearest first, each with its
 -- distance in `_distance`. Cheap work first: no luaentity or no rotated box
 -- ends it, then the distance from the segment, then the hit on the hint box;
--- only a hit reads the live properties (pointable, visible, the box itself,
--- which differs from the hint only for a half-size mob child).
+-- only a hit reads the live properties (pointable, visible, the box itself:
+-- the hint is the live box except for a half-size mob child). A "blocking"
+-- hit carries `_blocking`: the ray ends there (aim_raycast).
 local function rotated_hits(origin, destination, pointabilities)
 	local dir = vector.subtract(destination, origin)
 	local length = vector.length(dir)
 	if length == 0 then
 		return nil
 	end
-	local minp = vector.new(math.min(origin.x, destination.x) - AIM_MARGIN,
-		math.min(origin.y, destination.y) - AIM_MARGIN,
-		math.min(origin.z, destination.z) - AIM_MARGIN)
-	local maxp = vector.new(math.max(origin.x, destination.x) + AIM_MARGIN,
-		math.max(origin.y, destination.y) + AIM_MARGIN,
-		math.max(origin.z, destination.z) + AIM_MARGIN)
+	local m = margin()
+	local minp = vector.new(math.min(origin.x, destination.x) - m,
+		math.min(origin.y, destination.y) - m, math.min(origin.z, destination.z) - m)
+	local maxp = vector.new(math.max(origin.x, destination.x) + m,
+		math.max(origin.y, destination.y) + m, math.max(origin.z, destination.z) + m)
 	local hits
 	for _, obj in ipairs(core.get_objects_in_area(minp, maxp)) do
 		local ent = obj:get_luaentity()
 		local hint = ent and rotated_hint(ent)
 		local pos = hint and obj:get_pos()
 		if pos then
-			-- Turning keeps every box point within sqrt(reach2) of the object.
-			local reach2 = 0
-			for i = 1, 3 do
-				local e = math.max(math.abs(hint[i]), math.abs(hint[i + 3]))
-				reach2 = reach2 + e * e
-			end
+			-- Turning keeps every box point within its reach of the object.
+			local reach = box_reach(hint)
 			local rx, ry, rz = pos.x - origin.x, pos.y - origin.y, pos.z - origin.z
 			local t = math.max(0, math.min(1,
 				(rx * dir.x + ry * dir.y + rz * dir.z) / (length * length)))
 			local cx, cy, cz = rx - dir.x * t, ry - dir.y * t, rz - dir.z * t
-			local rot = cx * cx + cy * cy + cz * cz <= reach2 and obj:get_rotation()
+			local rot = cx * cx + cy * cy + cz * cz <= reach * reach and obj:get_rotation()
 			local hit, distance
 			if rot then
 				hit, distance = box_hit(hint, pos, rot, origin, dir, obj)
 			end
+			local can
 			if hit then
 				local props = obj:get_properties()
 				local box = props.selectionbox
-				if props.is_visible == false or not box or
-						not pointable(obj, ent, props, pointabilities) then
+				can = box and props.is_visible ~= false and
+					pointable(obj, ent, props, pointabilities)
+				if not can then
 					hit = nil
 				elseif not same_box(box, hint) then
 					hit, distance = box_hit(box, pos, box.rotate and rot or nil,
@@ -234,6 +266,7 @@ local function rotated_hits(origin, destination, pointabilities)
 			end
 			if hit then
 				hit._distance = distance
+				hit._blocking = can == "blocking" or nil
 				hits = hits or {}
 				hits[#hits + 1] = hit
 			end
@@ -252,13 +285,16 @@ end
 -- by the engine (see the top of this file). Order follows the engine's
 -- (nearest first, an object preferred by one node squared over a node, its
 -- RaycastSort); the rotated hits slot in by their distance, so a wall in
--- front still comes first.
+-- front still comes first. A "blocking" rotated object ends the ray there
+-- with nothing, as the engine ends it (Environment::continueRaycast); a
+-- blocking node or other object ends the engine's part the same way, but
+-- rotated hits behind it are not held back (no such node or object exists).
 function grug_core.aim_raycast(origin, destination, liquids, pointabilities)
 	local ray = core.raycast(origin, destination, true, liquids == true,
 		pointabilities)
 	local extra = rotated_hits(origin, destination, pointabilities)
 	local index = 1
-	local pending
+	local pending, ended
 	local function engine_next()
 		while true do
 			local pointed = ray()
@@ -269,6 +305,9 @@ function grug_core.aim_raycast(origin, destination, liquids, pointabilities)
 		end
 	end
 	return function()
+		if ended then
+			return nil
+		end
 		local own = extra and extra[index]
 		if not own then
 			if pending then
@@ -293,6 +332,10 @@ function grug_core.aim_raycast(origin, destination, liquids, pointabilities)
 			end
 		end
 		index = index + 1
+		if own._blocking then
+			ended = true
+			return nil
+		end
 		return own
 	end
 end

@@ -87,6 +87,8 @@ end
 ------------------------------------------------------------------------------
 -- The fake engine.
 ------------------------------------------------------------------------------
+local ffi = require("ffi")
+local function f32(v) return tonumber(ffi.new("float", v)) end
 local objects, nodes = {}, {}
 local area_queries, area_volume, property_reads = 0, 0, 0
 
@@ -114,8 +116,10 @@ local function new_object(o)
 	function o:get_hp() return 20 end
 	function o:get_properties()
 		property_reads = property_reads + 1
-		local b = self.box
-		return {selectionbox = {b[1], b[2], b[3], b[4], b[5], b[6], rotate = b.rotate == true},
+		-- The engine hands the box over as 32-bit floats (0.45 -> 0.4499999881).
+		local b = {}
+		for i = 1, 6 do b[i] = f32(self.box[i]) end
+		return {selectionbox = {b[1], b[2], b[3], b[4], b[5], b[6], rotate = self.box.rotate == true},
 			pointable = self.pointable, is_visible = self.is_visible}
 	end
 	objects[#objects + 1] = o
@@ -186,6 +190,16 @@ core = {
 		return nil
 	end,
 	registered_nodes = {stone = {walkable = true}},
+	-- The registered rotated boxes set the candidate margin (the largest
+	-- reach, here a dragon's, about 6.25 nodes, beyond the engine's 5).
+	registered_entities = {
+		["grug_mobs:zombie"] = {initial_properties = {selectionbox =
+			{-0.45, -0.05, -0.3, 0.45, 1.8, 0.65, rotate = true}}},
+		["grug_mobs:dragon"] = {initial_properties = {selectionbox =
+			{-3, -0.65, -4.8, 3, 2.65, 3, rotate = true}}},
+		["grug_mounts:horse"] = {initial_properties = {selectionbox =
+			{-9, 0, -9, 9, 9, 9}}},
+	},
 }
 grug_core = {
 	get_player_faction = function() return nil end,
@@ -381,12 +395,26 @@ do
 	check(#hits == 2 and hits[1].ref == dying and hits[2].ref == behind,
 		"U a group rule makes the unpointable mob pointable (as the engine)")
 	dying.armor = {fleshy = 100, undead = 1}
+	behind.armor = {stone = 1}
 	hits = all_hits(vec(0, 1, 0), vec(0, 1, 12),
 		{objects = {["group:fleshy"] = "blocking", ["group:undead"] = false}})
 	check(#hits == 1 and hits[1].ref == behind, "U a false group rule wins over a blocking one")
 	hits = all_hits(vec(0, 1, 0), vec(0, 1, 12),
 		{objects = {["group:fleshy"] = "blocking", ["group:undead"] = true}})
 	check(#hits == 2 and hits[1].ref == dying, "U a true group rule wins over everything")
+	-- "blocking" ends the ray there with nothing, as the engine does
+	-- (Environment::continueRaycast): no hit for that mob or anything behind.
+	dying.armor = {fleshy = 100}
+	hits = all_hits(vec(0, 1, 0), vec(0, 1, 12), {objects = {["group:fleshy"] = "blocking"}})
+	check(#hits == 0, "U a blocking turned mob ends the ray with nothing (" .. #hits .. ")")
+	dying.pointable = "blocking"
+	hits = all_hits(vec(0, 1, 0), vec(0, 1, 12))
+	check(#hits == 0, "U pointable = \"blocking\" ends the ray too")
+	nodes[1] = vec(0, 1, 2)
+	hits = all_hits(vec(0, 1, 0), vec(0, 1, 12))
+	check(#hits == 1 and hits[1].type == "node", "U a node in front of a blocking mob is still yielded")
+	nodes = {}
+	dying.pointable = false
 	-- A turned mob whose box is not rotated any more (rotate false) is tested
 	-- unturned, like the engine would.
 	reset()
@@ -394,7 +422,7 @@ do
 	local mob = new_object({pos = vec(0, 0, 4), rot = vec(0, math.rad(90), 0), box = flat, base = ZOMBIE})
 	hits = all_hits(vec(0, 1, 0), vec(0, 1, 12))
 	check(#hits == 1 and hits[1].ref == mob and
-		math.abs(vector.distance(vec(0, 1, 0), hits[1].intersection_point) - 3.7) < 1e-9,
+		math.abs(vector.distance(vec(0, 1, 0), hits[1].intersection_point) - 3.7) < 1e-6,
 		"U a live box without rotate is tested unturned")
 	-- A half-size child (scale_mob without perma): base_selbox keeps the
 	-- adult box, the live box is half; the live box decides.
@@ -404,7 +432,7 @@ do
 	check(#all_hits(vec(0, 1.5, 0), vec(0, 1.5, 12)) == 0, "U a child's adult hint alone hits nothing")
 	hits = all_hits(vec(0, 0.5, 0), vec(0, 0.5, 12))
 	check(#hits == 1 and hits[1].ref == child and
-		math.abs(vector.distance(vec(0, 0.5, 0), hits[1].intersection_point) - (4 - 0.325)) < 1e-9,
+		math.abs(vector.distance(vec(0, 0.5, 0), hits[1].intersection_point) - (4 - 0.325)) < 1e-6,
 		"U a child is hit on its own live box")
 end
 
@@ -423,8 +451,21 @@ do
 	check(#hits == 1 and hits[1].ref == on, "C the mob on the ray is hit, no other")
 	check(property_reads == 1, "C only the mob within reach of the ray reads its properties (" ..
 		property_reads .. " of 31)")
-	check(area_queries == 1 and math.abs(area_volume - 10 * 10 * 30) < 1e-9,
-		"C one candidate query: the ray's box widened by 5 nodes, as the engine's")
+	local m = math.sqrt(3 * 3 + 2.65 * 2.65 + 4.8 * 4.8)
+	check(area_queries == 1 and math.abs(area_volume - (2 * m) * (2 * m) * (20 + 2 * m)) < 1e-6,
+		("C one candidate query: the ray's box widened by the largest rotated reach (%.2f)"):format(m))
+	-- A dragon turned 45 deg: its tail corner reaches 5.5 nodes out in x; a
+	-- falling ray there lies outside the engine's 5-node area but inside the
+	-- dragon's client box, and still hits.
+	reset()
+	local DRAGON = {-3, -0.65, -4.8, 3, 2.65, 3, rotate = true}
+	local dragon = new_object({name = "grug_mobs:dragon", pos = vec(0, 0, 0),
+		rot = vec(0, math.rad(45), 0), box = DRAGON, base = DRAGON})
+	local from, to = vec(5.4, 4, -1.2), vec(5.4, 1, -1.2)
+	check(client_entry(DRAGON, dragon.pos, math.rad(45), from, to) ~= nil,
+		"C the dragon's turned tail covers the ray (client)")
+	hits = all_hits(from, to)
+	check(#hits == 1 and hits[1].ref == dragon, "C a ray at the dragon's tail tip 5.4 nodes out hits it")
 	-- A zero-length ray hits nothing and asks no area.
 	reset()
 	new_object({pos = vec(0, 0, 0), box = ZOMBIE, base = ZOMBIE, rot = vec(0, 1, 0)})
