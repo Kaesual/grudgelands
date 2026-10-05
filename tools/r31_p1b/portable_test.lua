@@ -90,6 +90,7 @@ do
 	grug_classes = {
 		get_talent_bonus = function() return 0 end,
 		get_spell_power_bonus = function() return 0 end,
+		get_support_factor = function() return 1 end,
 		talent_rank = function() return 0 end,
 		-- kits.lua reads Mend's display name from its talent keystone.
 		registered_talents = {mend = {name = "Mend"}},

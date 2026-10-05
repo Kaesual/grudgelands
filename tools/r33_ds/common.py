@@ -35,6 +35,12 @@ def baseline_weapon(level):
     return rnd(4 + 0.35 * level)
 
 
+def base_hit(level):
+    """B(L) = grug_core.baseline_melee_total: Bw(L) + the Warrior's Str/10."""
+    level = max(1, min(60, level))
+    return baseline_weapon(level) + (10 + 3 * (level - 1)) / 10.0
+
+
 def armor_k(attacker_level):
     """K(L) of the armor formula, combat_stats.md section 2."""
     return 20 + 0.5 * min(attacker_level, 60) + 8.5 * max(attacker_level - 60, 0)

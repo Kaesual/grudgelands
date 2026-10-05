@@ -20,6 +20,11 @@ stat_values.py), which mirror the shipped code (item_tiers.md Appendix A);
 the fit block (base pool, baseline weapon, a base hit, level scalar) is the
 one of grug_core/combat.lua. Numbers are comparisons, never targets.
 
+Phase 2 shipped the proposals (the user's picks, 2026-10-05): "today" is
+the Round 35 state kept as constants here (DEX_TODAY, factor_today); tables
+that read the r33_ds curves directly (the main-stat sets, the Scout split)
+now show the shipped Dexterity curve.
+
 Usage: python3 tools/r36_k/numbers.py [heal|set|scout|spells|all]
 """
 import math
@@ -38,7 +43,7 @@ HEAL_SHARE = 25.0     # Heal: 25 % of P(L), kits.lua
 HEAL_COST = 8         # % of P(L)
 HEAL_COOLDOWN = 4.0   # s
 FIGHT = M.FIGHT       # the 60 s mana-bound fight of item_tiers.md
-DEX_TODAY = S.CURVES["dex"]
+DEX_TODAY = (0.8, 0.13, 0.0019, 0, 1)  # Round 33-35
 DEX_PROPOSED = (0.8, 0.13, 0.0011, 0, 1)  # only c changes: 0.0019 -> 0.0011
 
 
