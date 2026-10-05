@@ -1,0 +1,3 @@
+# Round 35 lane F: files the user approved (file name, page number, source).
+# User pick 2026-10-05 on https://claude.ai/artifact/1SXCxuHWaMRB4vCrtue5n6:
+grug_sounds_gear_break.ogg, R35 B1.2, bfh1_metal_falling_02.ogg (rubberduck, CC0 1.0, https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx; converted to mono Ogg q3, peak -3 dBFS; r35/previews/f/work/ogg/B1.2.ogg sha256 ed5e07f668aff869)

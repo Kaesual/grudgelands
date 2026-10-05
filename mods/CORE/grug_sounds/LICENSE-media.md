@@ -3,7 +3,8 @@
 Every file in `sounds/` was approved by the user on a listening page (Round
 34 approval gate, `docs/planning/round34-plan.md` §1); the lists with page
 numbers are `tools/r34_s1a/approved.txt` (lane S1a, events) and
-`tools/r34_s1b/approved.txt` (lane S1b, combat and creatures). Licences were checked on each
+`tools/r34_s1b/approved.txt` (lane S1b, combat and creatures), and since
+Round 35 `tools/r35_f/approved.txt` (the break sound). Licences were checked on each
 source page: the Kenney packs' `License.txt` (CC0), the OpenGameArt entries
 of rubberduck and artisticdude (CC0) and Little Robot Sound Factory (CC BY
 3.0), and each Freesound page (CC0, no GenAI tag). Freesound sources are the
@@ -164,3 +165,4 @@ same licence.
 | `sounds/grug_sounds_cast_charge.ogg` | S1b R3.3 | "Running Dirt Tennis Shoes.wav" (Freesound 319225, HQ preview, 128 kbit MP3) | [worthahep88](https://freesound.org/people/worthahep88/sounds/319225/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to mono Ogg Vorbis q3, cut 1.05-2.05 s, fade-in 0.02 s, fade-out 0.25 s, peak-normalised to -3 dBFS | `54653868d148faba` |
 | `sounds/grug_sounds_voice_humanoid_death.1.ogg` | S1b R4.3 | "Medium Male Pain Grunts" (Freesound 610998, HQ preview, 128 kbit MP3) | [unfa](https://freesound.org/people/unfa/sounds/610998/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to mono Ogg Vorbis q3, cut 19.26-20.76 s, fade-in 0.02 s, fade-out 0.40 s, peak-normalised to -3 dBFS | `a2b10c474b87407c` |
 | `sounds/grug_sounds_voice_humanoid_death.2.ogg` | S1b R4.4 | "male pain sound effects.wav" (Freesound 442288, HQ preview, 128 kbit MP3) | [rockittt](https://freesound.org/people/rockittt/sounds/442288/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to mono Ogg Vorbis q3, cut 6.41-7.61 s, fade-in 0.02 s, fade-out 0.35 s, peak-normalised to -3 dBFS | `5e79fc325302f5fe` |
+| `sounds/grug_sounds_gear_break.ogg` | R35 B1.2 | `bfh1_metal_falling_02.ogg` | [rubberduck](https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to mono Ogg Vorbis q3, start silence trimmed, peak-normalised to -3 dBFS | `ed5e07f668aff869` |

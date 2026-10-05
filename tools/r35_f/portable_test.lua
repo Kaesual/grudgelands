@@ -9,8 +9,8 @@
 --      play "gear_break" exactly once, at the use that wears the stack into
 --      broken, never on a later use of the broken item and never in
 --      creative; gear_break is a declared hook of grug_sounds, and its spec
---      (if any) names a file on tools/r35_f/approved.txt or the shipped
---      default_tool_breaks (approval gate);
+--      names a mono file on tools/r35_f/approved.txt that ships in
+--      grug_sounds (approval gate; tools/r34_s1a fails on an unlisted .ogg);
 --   L  the broken look (grug_gear/permissions.lua): drained of colour,
 --      darkened and cracked in one balanced modifier, empty stays empty;
 --   H  the empty hand (grug_abilities/init.lua, skin_token and apply_skin
@@ -218,8 +218,14 @@ do
 		check(listed ~= nil, "B gear_break's file is on tools/r35_f/approved.txt: " .. spec.name)
 		check(not spec.personal and (spec.distance or 16) <= 12,
 			"B gear_break is positional with a short hearing distance")
+		local path = ROOT .. "/mods/CORE/grug_sounds/sounds/" .. spec.name .. ".ogg"
+		local data = read(path)
+		check(data ~= nil, "B gear_break's file ships: " .. spec.name)
+		-- The identification header: the channel count of the Ogg Vorbis file.
+		local start = data and 28 + data:byte(27)
+		eq(data and data:byte(start + 11), 1, "B gear_break's file is mono")
 	else
-		print("note: gear_break has no spec yet (phase 1, silent until the user's pick)")
+		check(false, "B gear_break has a spec (the user picked R35 B1.2)")
 	end
 end
 

@@ -22,7 +22,8 @@ a bad sound"). Process for any new or changed sound:
    (mono Ogg rendered as MP3), numbered, with source and licence.
 2. The user picks; the coordinator records the pick (file name, page number,
    source) in the lane's approval list, which ships as
-   `tools/r34_<lane>/approved.txt`.
+   `tools/r34_<lane>/approved.txt` (or a later round's list, e.g.
+   `tools/r35_f/approved.txt`).
 3. Only listed files ship. Each lane's fixture fails on an `.ogg` its list
    does not name. A changed cut (shorter, trimmed, re-looped) is a new file and
    needs a new approval.
@@ -96,7 +97,9 @@ formspecs that drop the prepend. The client plays it at the file's own level
   and the crown; repair. A dish or potion taken out of a furnace or brewing
   stand plays the cooking or alchemy cue; smelting stays silent.
 - **Items:** equip, the cloak choice, drinking (every potion path; the
-  VoxeLibre drinking sound), eating (`grug_food`).
+  VoxeLibre drinking sound), eating (`grug_food`), and gear breaking (Round
+  35: once, when equipped gear, a bow, a tool or a hoe wears into broken,
+  never on later uses of the broken item; heard on the wearer up to 8 nodes).
 - **Mounts and boats:** gallop, wing beats and the boat's splash, repeated at
   their clip length while moving.
 - **Travel** (waystone, home), **fishing** cast and catch (the splash), and

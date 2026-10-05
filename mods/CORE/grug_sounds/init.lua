@@ -45,7 +45,7 @@ grug_sounds.HOOKS = {
 	"craft", "craft_smithy", "craft_cooking", "craft_alchemy", "enchant",
 	"upgrade", "crown", "repair",
 	-- Items. gear_break (Round 35): equipped gear or a tool wearing into
-	-- broken (grug_repair); it has no spec until the user picks its file.
+	-- broken (grug_repair).
 	"equip", "cloak", "potion_drink", "gear_break",
 	-- Mounts and boats, repeated while moving (their interval is the clip).
 	"mount_gallop", "mount_wings", "boat_splash",
@@ -132,6 +132,9 @@ local EVENTS = {
 	repair = {name = "grug_sounds_repair", gain = 0.6, distance = 16},
 	equip = {name = "grug_sounds_equip", gain = 0.4, personal = true, pitch = 0.05},
 	cloak = {name = "grug_sounds_cloak", gain = 0.5, personal = true},
+	-- Round 35 (tools/r35_f/approved.txt): metal breaking with falling pieces,
+	-- heard by the wearer and players right beside them.
+	gear_break = {name = "grug_sounds_gear_break", gain = 0.7, distance = 8},
 	-- The existing drinking sound of grug_alchemy (VoxeLibre, CC0).
 	potion_drink = {name = "grug_alchemy_drink", personal = true},
 	mount_gallop = {name = "grug_sounds_mount_gallop", gain = 0.5, distance = 24, interval = 2.35},
