@@ -316,7 +316,7 @@ the binding design table states. Dust ref is nonzero only for
 
 `candidate_cell_values` lists every globally anchored 16-by-16 x/z cell whose
 closed extent intersects the central x/z owner or its computed discovery
-halo. Its stride 4 is `cell_x, cell_z, first_candidate, after_candidate` and
+halo (since Round 37 the owner's cells only, section 8.2). Its stride 4 is `cell_x, cell_z, first_candidate, after_candidate` and
 is ordered cell z then cell x. Negative cells use mathematical
 `floor(coordinate/16)`.
 
@@ -738,6 +738,37 @@ containment therefore makes neighbor-owner candidates outcome-inert: the
 computed discovery halo is retained as diagnostic coverage/proof of the
 largest rotated footprint, but settlement never imports or re-settles a root
 from another 80-owner.
+
+**Round 37 update (2026-10-05): no halo.** The runtime planner no longer
+builds the discovery halo (audit MGT-02): `candidate_cell_values` lists only
+the cells of the central owner (its 5 x 5; an 80-node slice touches at most
+6 x 6), in the same cell z, cell x order. No halo cell's root ever lay in the
+owner, so the written chunks are byte-identical (131 chunk columns of seed 1
+and one engine region, `tools/r37_mg`).
+
+**Treeless bands (Round 37, audit MGT-03; documented, not changed).** Because
+a decoration needs its whole rotated footprint inside its root's owner and a
+rejection has no retry, the loss is not spread evenly; it draws lines:
+
+- *Height bands.* Owners start at y = -32 + 80k. The emergent jungle tree
+  (rows -4..32 round its root) survives only for a root 4..47 nodes above the
+  owner's bottom, 44 of 80 heights: on ground at y = 15..50 modulo 80 (y
+  15..50, 95..130, 175..210, ...) no emergent tree grows, which shows as
+  treeless contour bands on jungle hillsides. The other tall templates
+  (jungle tree 17, pine 16, aspen 14 nodes tall) lose a band of their own
+  height below every owner top (ground just under y = 47 modulo 80), the
+  narrower the shorter the tree.
+- *Border lines.* A 5- or 7-node-wide footprint needs its root 2 or 3 nodes
+  inside the owner on x and z, so dense forest has a 2-4-node treeless line
+  along every 80-node chunk border (between x or z = 47 and 48 modulo 80).
+- *Measured loss* (seed 1, `wp40-simple-map-r6-artifact.tsv`): 746 of 1,599
+  emergent jungle tree candidates (47 %) and 27 % of the `jungle_tree`
+  candidates are rejected `clipped_owner`; the audit estimates 20-30 % for the
+  other tall trees. Runtime renewal (`grug_tree_regrowth`) refills only near
+  players, slowly.
+
+A fix (acceptance as a pure function of the plan, every chunk writing its
+part of each accepted tree) changes the world and is a BACKLOG item.
 
 ### 8.3 Immutable templates
 
