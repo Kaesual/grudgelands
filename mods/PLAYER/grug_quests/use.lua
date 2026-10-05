@@ -296,9 +296,10 @@ core.register_entity(ENTITY, {
 	on_punch = function() return true end,
 })
 
--- Any damage interrupts a hold.
-core.register_on_player_hpchange(function(player, hp_change)
-	if hp_change < 0 and holds[player:get_player_name()] then
+-- Any damage interrupts a hold; the max-HP clamp is no damage.
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	if hp_change < 0 and holds[player:get_player_name()] and
+			not grug_core.is_max_hp_clamp(reason) then
 		stop(player:get_player_name(), "interrupted.")
 	end
 end)

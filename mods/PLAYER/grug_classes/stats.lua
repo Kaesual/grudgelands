@@ -170,6 +170,11 @@ end
 -- the final maximum -- ONLY for real level-ups/class picks; the join callback
 -- must not pass it (properties reset to engine defaults every session, so a
 -- join refill would make relogging a free heal).
+--
+-- Lowering hp_max below the current HP clamps HP in the engine itself. The
+-- one case it misses is a join: the stored HP loads raw, above an unchanged
+-- default maximum. That clamp carries grug_core's clamp marker, so neither
+-- it nor the engine's reads as damage (grug_core.is_max_hp_clamp).
 function grug_classes.apply_stats(player, fill_hp)
 	local max_hp = grug_classes.get_max_hp(player)
 	local old_max = player:get_properties().hp_max
@@ -180,7 +185,8 @@ function grug_classes.apply_stats(player, fill_hp)
 	if fill_hp and hp > 0 then
 		player:set_hp(max_hp)
 	elseif hp > max_hp then
-		player:set_hp(max_hp)
+		player:set_hp(max_hp, {type = "set_hp",
+			custom_type = grug_core.MAX_HP_CLAMP_CUSTOM_TYPE})
 	end
 end
 
@@ -207,7 +213,10 @@ grug_core.get_ranged_bonus = grug_classes.get_ranged_bonus
 --
 -- Keep the wrapper: registering apply_stats directly would pass `listname` as
 -- its `heal_gain` argument and turn an equipment drag into unintended healing.
-grug_core.register_on_equipment_change(function(player, listname)
+-- Pure wear changes no stat (grug_inventory.equipment_changed); a break is a
+-- full change.
+grug_core.register_on_equipment_change(function(player, listname, reason)
+	if reason == "durability_metadata" then return end
 	grug_classes.apply_stats(player)
 end)
 

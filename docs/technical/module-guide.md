@@ -323,6 +323,12 @@ achievements](#cloaks-and-achievements).
   Round 11 adds the optional `reason = "durability_metadata"` for same-item
   wear/remainder/capability bookkeeping and first persistent action identity.
   Forward that third argument through every wrapper (including quality).
+  Since Round 37 it is pure wear only, its own cheap event: the use that
+  breaks an item notifies a full change (reason nil). On the reason the
+  armour and affix caches stay (only the named slot's cached copy is
+  dropped), and the stats, look, Character page and ability mana/HUD/
+  description/skin consumers return at once; grug_repair writes only the
+  tooltip's "Durability: N / M" line (`grug_repair.refresh_durability`).
   Held swings and bow draws refresh their usable same-item snapshot without
   restarting cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**
@@ -516,9 +522,12 @@ achievements](#cloaks-and-achievements).
   packet firehose. Base mob threat still takes raw fractional damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
-  knockback on players keeps coming from builtin off the engine's damage
-  argument (deferred, MVP): acquisition caps are zero, while the one
-  authoritative punch supplies the real full caps. Tools/fists keep their wielded source and wear;
+  knockback on players is builtin's push off the engine's damage argument,
+  gated by the one `core.calculate_knockback` override
+  `grug_core.knockback_pushes` (Round 37: PvP melee swings and mob hits only;
+  refused punches, casts, arrows and projectiles push nothing): acquisition
+  caps are zero, while the one authoritative punch supplies the real full
+  caps. Tools/fists keep their wielded source and wear;
   swing ability items use the slot source, do not wear and can carry the
   selected proc's threat multiplier. The current server ray is the sole
   authoritative hostile ability target while LMB is held; enemy memory is

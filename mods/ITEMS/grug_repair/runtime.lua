@@ -45,10 +45,15 @@ local function wear_stack(player, list, index)
 	stack:set_wear(math.min(65535, stack:get_wear() + whole))
 	disable_broken_operation(stack)
 	announce_break(player, stack)
-	grug_repair.refresh_stack(stack, player)
+	grug_repair.refresh_durability(stack, player)
 	inv:set_stack(list, index, stack)
 	if grug_inventory.is_equipment_list(list) then
-		grug_inventory.equipment_changed(player, list, "durability_metadata")
+		-- Pure wear is its own cheap event (Round 37 ruling 2.1.2): the
+		-- "durability_metadata" reason keeps the armour and enchant caches and
+		-- the stat, look, ability and Character page consumers return on it.
+		-- The use that breaks the stack changes stats and looks: a full change.
+		grug_inventory.equipment_changed(player, list,
+			not grug_core.equipment_is_broken(stack) and "durability_metadata" or nil)
 	end
 	return true
 end
@@ -205,7 +210,13 @@ core.register_on_mods_loaded(function()
 					end
 					disable_broken_operation(stack)
 					announce_break(user, stack)
-					grug_repair.refresh_stack(stack, user)
+					-- A dig is pure wear unless a foreign after_use ran
+					-- (ITM-14): only the durability line changes.
+					if original then
+						grug_repair.refresh_stack(stack, user)
+					else
+						grug_repair.refresh_durability(stack, user)
+					end
 					return stack
 				end})
 			end

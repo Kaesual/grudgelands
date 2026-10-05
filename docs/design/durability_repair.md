@@ -94,7 +94,9 @@ with extra rules or hidden profession benefits.
 ## Wear presentation
 
 Tooltips show whole remaining durability against the authoritative item lifetime,
-including the fractional wear remainder, rounded upward. Native wear bars are
+including the fractional wear remainder, rounded upward. Each use rewrites only
+that line; it is no equipment change for stats, looks or the Character page.
+The use that breaks the item, a repair and a swap are (Round 37). Native wear bars are
 available for armor and offhands as well as weapons and tools. Skill charge bars
 remain cooldown indicators and are not equipment durability.
 

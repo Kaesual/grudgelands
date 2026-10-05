@@ -197,20 +197,28 @@ local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 -- join), and a writer that remembered one and forgot the other would leave a
 -- swapped weapon dealing the old damage until relog.
 --
--- `listname` and `reason` are optional and pass through to hook consumers.
--- `reason = "durability_metadata"` identifies a same-stack wear/identity write;
--- consumers must still treat a broken-state transition as a concrete change.
+-- `listname` and `reason` are optional and pass through to hook consumers
 -- (see grug_core.register_on_equipment_change): the one equipment list that
--- changed, or nil for "unknown / more than one". The CACHES are always dropped
--- wholesale regardless -- two table writes are cheaper than a caller who names
--- one list and quietly wrote two.
+-- changed, or nil for "unknown / more than one". The CACHES are dropped
+-- wholesale -- two table writes are cheaper than a caller who names one list
+-- and quietly wrote two.
+--
+-- The one exception is `reason = "durability_metadata"` (Round 37): a
+-- same-stack wear or identity write by grug_repair on the named list, never a
+-- break (the breaking use is a full change). The armour total depends on the
+-- broken state only, so it stays; only that slot's cached copy is stale.
+-- Consumers that do not read wear or the projectile identity return on it.
 function grug_inventory.equipment_changed(player, listname, reason)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
 	local name = player:get_player_name()
-	armor_cache[name] = nil
-	slot_cache[name] = nil
+	if reason == "durability_metadata" and listname then
+		if slot_cache[name] then slot_cache[name][listname] = nil end
+	else
+		armor_cache[name] = nil
+		slot_cache[name] = nil
+	end
 	grug_core.notify_equipment_change(player, listname, reason)
 end
 

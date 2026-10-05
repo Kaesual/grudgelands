@@ -246,6 +246,10 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   period**: geographic warnings exist because a player cannot see an exact
   rules boundary, while a hit is unambiguous and the whole point of this rule
   is that it lands at the moment of the hit.
+- **A lower maximum HP is not damage** (Round 37): when an HP buff (food,
+  the Elixir of Vigor) runs out or gear with +HP % comes off, the engine
+  lowers HP to the new maximum; the rider stays mounted, also in flight
+  (`grug_core.is_max_hp_clamp`).
 - The dismount uses the **same detach path** as every other one (§3), so
   the rider is set down on a free neighbouring node rather than inside
   the mount's model. The hard geographic mid-air dismount is the exception:
