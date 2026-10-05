@@ -31,7 +31,9 @@
 --      trinket proc and the rage; an unclaimed packet lands nothing;
 --   N  knockback per source (ruling 2.1.3): refused punch, ally, unflagged
 --      player, nested punch, PvP cast, arrow, nil hitter push 0; PvP melee
---      and a mob hit push; a rider and the dragon slam push 0.
+--      and a mob hit push; a rider and the dragon slam push 0;
+--   R  the unreachable WP38 tool/fist accumulator, wear accumulator and
+--      ordinary-input seam are gone (CMB-03), with no caller left.
 -- Prints "R37 CB PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -644,6 +646,26 @@ do
 	slam_hit = true
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N the dragon slam pushes 0")
 	slam_hit = false
+end
+
+------------------------------------------------------------------------------
+-- R: the WP38 tool/fist machinery is gone (CMB-03).
+------------------------------------------------------------------------------
+do
+	for _, name in ipairs({"prepare_accumulated_melee", "commit_accumulated_melee",
+			"apply_accumulated_melee", "reset_accumulated_melee", "invalidate_melee_target",
+			"register_ordinary_melee_input_handler", "handle_ordinary_melee_input",
+			"melee_wear_due", "forget_melee_wear"}) do
+		eq(grug_core[name], nil, "R grug_core." .. name .. " is gone")
+	end
+	for _, file in ipairs({"mods/ENTITIES/mobs/api.lua", "mods/PLAYER/grug_abilities/init.lua",
+			"mods/CORE/grug_core/combat.lua", "mods/ENTITIES/grug_mobs/init.lua"}) do
+		local text = read(file)
+		for _, word in ipairs({"accumulated_melee", "melee_wear", "ordinary_melee",
+				"invalidate_melee_target", "grug_fraction"}) do
+			check(not text:find(word, 1, true), "R no " .. word .. " left in " .. file)
+		end
+	end
 end
 
 if failures > 0 then

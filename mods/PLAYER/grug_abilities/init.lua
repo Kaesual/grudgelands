@@ -94,8 +94,7 @@ grug_abilities.RAGE_PER_SWING = 8
 grug_abilities.RAGE_PER_HIT_TAKEN = 3
 grug_abilities.RAGE_DECAY_PER_SECOND = 5
 
--- Rage for one landed full swing, Stoke included. Every proportional site
--- scales THIS value by its native packet fraction.
+-- Rage for one landed full swing, Stoke included.
 local function swing_rage(player)
 	return grug_abilities.RAGE_PER_SWING
 		+ grug_classes.get_talent_bonus(player, "rage_per_swing_add")
@@ -1081,7 +1080,6 @@ swing_progress = {}
 -- player name -> {
 --   weapon = ItemStack copy, next_due = monotonic us time,
 --   inactive = true while no swing item is active,
---   ordinary = true while tool/fist packets own the transition,
 -- }
 
 -- A due swing lands on the next throttled attack pass: the accumulator threshold
@@ -1092,36 +1090,26 @@ swing_progress = {}
 -- backlog burst.
 local SWING_CATCHUP = 0.1
 
+-- Cast/wield boundaries use reset_swing_boundary below and preserve the
+-- weapon clock.
 clear_swing_progress = function(player)
 	local name = player:get_player_name()
-	-- Tool/fist fractional damage is a different input path, but an owner
-	-- lifecycle/class reset must not preserve its bank either. Cast/wield
-	-- boundaries use reset_swing_boundary below and preserve the weapon clock.
-	grug_core.reset_accumulated_melee(player)
 	swing_progress[name] = nil
 	swing_input_latch[name] = nil
 	set_ready_reticle(player, false)
 end
 
--- A non-swing/cast boundary stops the loop and discards tool fractions, but
--- deliberately preserves the current weapon due time. Otherwise
--- swing -> tool/cast -> swing would recreate the old instant-hit exploit.
+-- A non-swing/cast boundary stops the loop, but deliberately preserves the
+-- current weapon due time. Otherwise swing -> tool/cast -> swing would
+-- recreate the old instant-hit exploit.
 reset_swing_boundary = function(player)
 	local name = player:get_player_name()
 	local entry = swing_progress[name]
 	swing_input_latch[name] = nil
 	set_ready_reticle(player, false)
-	if not entry then
-		grug_core.reset_accumulated_melee(player)
-		return
+	if entry then
+		entry.inactive = true
 	end
-	if not entry.inactive or entry.ordinary then
-		-- This transition clears a live tool bank once. Repeated cast/on_use and
-		-- watcher observations see inactive=true and do not clear it again.
-		grug_core.reset_accumulated_melee(player)
-	end
-	entry.inactive = true
-	entry.ordinary = nil
 end
 
 grug_core.register_on_stun(function(player)
@@ -1134,16 +1122,11 @@ local function selected_swing_def(player)
 		grug_abilities.is_unlocked(player, def.id)) and def or nil
 end
 
-local function valid_swing_enemy(player, target, def)
-	return grug_abilities.valid_target(player, target,
-		(def and def.target_kind) or "hostile")
-end
-
 -- Proc preparation still uses the two-phase grug_core seam because mobs_redo
 -- can reject a punch through do_punch or CMI after damage was calculated. The
 -- context is now one whole authoritative swing, never a native packet
 -- fraction; only the accepted finish phase may pay/reset/apply an effect.
-local function prepare_authoritative_swing(player, target, fraction, token)
+local function prepare_authoritative_swing(player, target, token)
 	if not grug_core.valid_authoritative_swing(token, player, target) then
 		return nil
 	end
@@ -1284,20 +1267,13 @@ attempt_swing = function(player, selected, held, latched)
 		swing_progress[name] = entry
 	elseif not entry.weapon:equals(weapon) then
 		-- A concrete slot swap never grants an instant attack. Start the new
-		-- weapon's own full interval and discard any unrelated tool remainder.
-		grug_core.reset_accumulated_melee(player)
+		-- weapon's own full interval.
 		entry = {
 			weapon = ItemStack(weapon),
 			next_due = now + fpi * 1e6,
 		}
 		swing_progress[name] = entry
 		return false
-	end
-	if entry.ordinary then
-		-- The first swing after a tool/fist stream discards that stream's bank.
-		-- Later swing passes see ordinary=nil and do not keep resetting it.
-		grug_core.reset_accumulated_melee(player)
-		entry.ordinary = nil
 	end
 	entry.inactive = nil
 	if grug_core.combat_debug_due(name, "swing:readiness", 0.25) then
@@ -1399,8 +1375,8 @@ attempt_swing = function(player, selected, held, latched)
 		post = post,
 		threat_mult = threat_mult,
 		-- The complete gear + flat Strength amount crosses the one player-level
-		-- scalar and target-level malus here, before the punch can reach crit,
-		-- armor, fractional packet handling or an accumulator.
+		-- scalar and target-level malus here, before the punch can reach crit
+		-- or armor.
 		scaled_damage = grug_core.scale_player_damage(player, target, raw_damage),
 		debug_name = grug_core.combat_debug_enabled(name) and name or nil,
 	}
@@ -1449,39 +1425,6 @@ grug_core.register_native_swing_input_handler(function(player, target)
 	return true
 end)
 
--- A real hostile tool/fist packet remains proportional, but it competes with
--- the full ability stream for one weapon clock. Each packet pushes the next
--- ability swing at least one EQUIPPED-weapon interval out. Transition cleanup
--- is exactly once: subsequent packets keep their own fractional bank alive.
-grug_core.register_ordinary_melee_input_handler(function(player, target)
-	if not valid_swing_enemy(player, target) then
-		return
-	end
-	local name = player:get_player_name()
-	local now = core.get_us_time()
-	local weapon = grug_core.get_melee_weapon(player) or ItemStack("")
-	local _, fpi = grug_abilities.swing_stats(player, weapon)
-	local entry = swing_progress[name]
-	local bank_clean = false
-	if not entry or not entry.weapon:equals(weapon) then
-		grug_core.reset_accumulated_melee(player)
-		bank_clean = true
-		entry = {
-			weapon = ItemStack(weapon),
-			next_due = now + fpi * 1e6,
-			inactive = true,
-		}
-		swing_progress[name] = entry
-	end
-	if not entry.ordinary and not entry.inactive and not bank_clean then
-		grug_core.reset_accumulated_melee(player)
-	end
-	entry.ordinary = true
-	entry.inactive = true
-	entry.next_due = math.max(entry.next_due, now + fpi * 1e6)
-	swing_input_latch[name] = nil
-end)
-
 -- Why `user` cannot cast `def` right now (class, unlock, cooldown, cast
 -- interval, resource), or nil when nothing stands in the way. One wording for
 -- the dispatcher below and the contextual input gate (input.lua), which asks
@@ -1515,8 +1458,8 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 		grug_abilities.flash(user, message)
 	end
 	-- A cast is a synchronous boundary even if the player switches back before
-	-- the 0.5 s wield watcher sees it. Stop swing input and discard ordinary tool
-	-- remainder before affordability, while preserving the anti-spam due time.
+	-- the 0.5 s wield watcher sees it. Stop swing input before affordability,
+	-- while preserving the anti-spam due time.
 	if def.kind == "cast" then
 		reset_swing_boundary(user)
 	end
@@ -1960,7 +1903,6 @@ grug_core.register_on_equipment_change(function(player, listname, reason)
 		if (entry and not entry.weapon:equals(weapon))
 				or (not entry and listname == melee_list) then
 			local _, fpi = grug_abilities.swing_stats(player, weapon)
-			grug_core.reset_accumulated_melee(player)
 			swing_progress[name] = {
 				weapon = ItemStack(weapon),
 				next_due = core.get_us_time() + fpi * 1e6,
@@ -2178,42 +2120,24 @@ grug_core.register_on_status_modifiers_changed(function(player)
 end)
 
 --
--- Rage generation (classes.md §1/§3, WP38): one accepted authoritative
--- ability swing grants RAGE_PER_SWING through finish_authoritative_swing.
--- Native input packets never reach this accepted hook. Ordinary
--- tools/fists retain a proportional share of the same value because their
--- client punch packets still use the fractional
--- melee accumulator. An accepted hit also refreshes the enemy lock; immunity
--- and sub-1 non-accumulated damage are not landed hits.
+-- Rage generation (classes.md §1/§3): one accepted authoritative swing grants
+-- RAGE_PER_SWING through finish_authoritative_swing; native packets deal
+-- nothing and ability punches grant none. An accepted hit also refreshes the
+-- enemy lock; immunity and sub-1 damage are not landed hits.
 --
 
-grug_core.register_on_player_hit_mob(function(player, mob_ent, damage, applied, fraction)
-	local landed
-	if applied ~= nil then
-		landed = (damage or 0) > 0 -- fractional tool/fist bank is real damage
-	else
-		landed = math.floor(damage or 0) >= 1
-	end
-	if landed and mob_ent.object and (mob_ent.health or 0) > 0 then
+grug_core.register_on_player_hit_mob(function(player, mob_ent, damage)
+	if math.floor(damage or 0) >= 1 and mob_ent.object and
+			(mob_ent.health or 0) > 0 then
 		grug_abilities.set_target(player, mob_ent.object, false)
-	end
-	if grug_core.in_ability_punch then
-		return
-	end
-	if grug_core.authoritative_swing_active(player) then
-		-- The two-phase authoritative finish owns its cost, charge, proc and +12.
-		return
-	end
-	if landed then
-		grug_abilities.add_rage(player, swing_rage(player) * (fraction or 1))
 	end
 end)
 
 --
--- PvP melee (combat_stats.md §2, WP38 runtime correction). A direct native
--- swing-item packet is acquisition/input only and is always suppressed here;
--- the nested authoritative punch uses one full slot-fed swing. Ordinary
--- tools/fists retain the proportional native-packet accumulator below.
+-- PvP melee (combat_stats.md §2). A direct native packet (a swing item, a
+-- tool, the fist) is acquisition/input only and is always suppressed here;
+-- the nested authoritative punch from attempt_swing is the one damage path:
+-- one full slot-fed swing, whatever the hand holds.
 --
 -- MODE_OR composition (reference_projects/luanti/src/script/cpp_api/
 -- s_player.cpp:63): ANY callback returning true marks the punch handled
@@ -2252,8 +2176,8 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	-- Gathering tools never authorize native PvP damage or Strength bonuses.
 	if core.get_item_group(hitter:get_wielded_item():get_name(),
 			"grug_gathering_tool") > 0 then return true end
-	-- Mounted native tool/fist packets are refused before they can claim a
-	-- swing, move clocks, accumulate damage, grant rage or refresh targeting.
+	-- A mounted hitter is refused before it can claim a swing or refresh
+	-- targeting (attempt_swing refuses mounted attacks as well).
 	local mounts = rawget(_G, "grug_mounts")
 	if mounts and mounts.is_mounted and mounts.is_mounted(hitter) then
 		return true
@@ -2268,27 +2192,17 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	if not authoritative_token then
 		-- The handler sets the enemy/ally lock as appropriate. A direct hostile
 		-- packet sets one latch for the next throttled attack pass even after release;
-		-- suppress original engine damage for every swing item, including neutral
-		-- targets.
+		-- suppress original engine damage for every native packet, including
+		-- neutral targets.
 		grug_core.handle_native_swing_input(hitter, player)
 		return true
-	end
-	if grug_factions.same_faction(hitter, player) then
-		-- Ally heal targeting, kept from the old hook. This branch DOES run
-		-- for same-faction pairs: MODE_OR (mode 4, builtin/common/
-		-- register.lua:29-33) runs EVERY callback and keeps the first truthy
-		-- return — only OR_SC short-circuits — so grug_factions' `return
-		-- true` suppresses the damage (player_sao.cpp:482-490) without
-		-- stopping this handler. Never return true here: the suppression is
-		-- grug_factions' job, and a second true buys nothing.
-		grug_abilities.set_target(hitter, player, true)
-		return
 	end
 	if not grug_factions.hostile(hitter, player) then
 		-- Factionless/neutral pairs keep the engine's damage, exactly as
 		-- before this WP: hostile() requires BOTH sides to have a faction
 		-- (grug_factions/init.lua:87-91), so two factionless players are
-		-- neutral, not hostile.
+		-- neutral, not hostile. Same-faction pairs are grug_factions' to
+		-- suppress.
 		return
 	end
 	-- Impact re-check (pvp-plan ruling 5): the swing chose a flagged pair, but
@@ -2297,114 +2211,28 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	if not grug_pvp.can_harm(hitter, player) then
 		return true
 	end
-	if not authoritative_token then
-		-- Move the shared ability clock before the proportional tool/fist
-		-- accumulator. Repeated packets keep that accumulator; only transitions
-		-- between ordinary and ability input clear it.
-		grug_core.handle_ordinary_melee_input(hitter, player)
-	end
 
-	-- Hostile pair from here on. For an authoritative ability swing these are
-	-- the slot-fed capabilities built by attempt_swing; tools/fists retain the
-	-- native callback's own capabilities.
-	local caps = tool_capabilities or
-		hitter:get_wielded_item():get_tool_capabilities()
-	local fleshy = caps.damage_groups and caps.damage_groups.fleshy or 0
-	local fpi = caps.full_punch_interval
-	if not (type(fpi) == "number" and fpi > 0) then
-		fpi = 1.4
-	end
-
-	-- Build the full-swing equivalent first. Ability swings are always one
-	-- full authoritative interval; native tools/fists retain tflp scaling.
-	-- The claimed token alone makes the swing authoritative (Round 37,
-	-- CMB-01): the Strike fallback with Loose or a cast skill wielded is the
-	-- same transaction as a wielded swing skill (its melee_damage_add, weapon
-	-- wear and trinket proc), whatever the hand holds.
-	local authoritative = authoritative_token ~= nil
-	if not authoritative then
-		-- Preserve the pre-existing ordinary tool/fist PvP acquisition and combat
-		-- marking semantics. Ability swings already acquired on their input packet
-		-- and refresh only after accepted HP loss below.
-		grug_abilities.set_target(hitter, player, false)
-		grug_core.mark_in_combat(hitter)
-	end
-	local fraction = authoritative and 1 or
-		math.max(0, math.min(1, (tflp or 0.2) / fpi))
-	local proc_context = grug_core.prepare_native_melee(hitter, player, fraction,
+	-- The claimed token is the swing (Round 37, CMB-01): the Strike fallback
+	-- with Loose or a cast skill wielded is the same transaction as a wielded
+	-- swing skill, with its melee_damage_add, weapon wear and trinket proc.
+	-- The transaction was scaled once before target:punch.
+	local proc_context = grug_core.prepare_native_melee(hitter, player,
 		authoritative_token)
-	local raw_full_damage = fleshy + grug_core.get_melee_bonus(hitter)
-	local full_damage
-	if authoritative and proc_context then
-		-- The authoritative transaction was scaled once before target:punch.
-		full_damage = proc_context.scaled_damage
-	else
-		-- Ordinary tools/fists do not have a transaction, so this callback is
-		-- their one central scaling seam. Players receive the level scalar but
-		-- no mob-level malus.
-		full_damage = grug_core.scale_player_damage(hitter, player,
-			raw_full_damage)
+	if not proc_context then
+		return true
 	end
 	local crit_damage, _, critical = grug_core.roll_melee_crit(
-		hitter, full_damage)
-	local armored_damage = grug_core.apply_player_armor(player, crit_damage,
+		hitter, proc_context.scaled_damage)
+	local raw = grug_core.apply_player_armor(player, crit_damage,
 		grug_core.get_player_level(hitter))
-	local proc_extra = 0
-	local raw = armored_damage * fraction + proc_extra
-	if authoritative then
-		local applied = math.floor(raw)
-		local landed = false
-		if applied >= 1 then
-			local hp_before = player:get_hp()
-			player:set_hp(hp_before - applied, {
-				type = "punch",
-				object = hitter,
-				custom_type = grug_core.ARMOR_APPLIED_CUSTOM_TYPE,
-			})
-			landed = player:get_hp() < hp_before
-		end
-		if landed then
-			if critical then
-				grug_core.emit_melee_crit(player:get_pos())
-			end
-			if player:get_hp() > 0 then
-				grug_abilities.set_target(hitter, player, false)
-			end
-			grug_core.mark_in_combat(hitter)
-		end
-		grug_core.finish_native_melee(proc_context, {
-			landed = landed,
-			damage = raw,
-			proc_extra = proc_extra,
-			grant_rage = true,
-		})
-		return true
-	end
-
-	-- Ordinary hostile tool/fist PvP is unchanged: proportional packet damage
-	-- accumulates, armor resolves on the full equivalent, and rage is credited
-	-- only when the integer commit actually lowers HP.
-	if critical then
-		grug_core.emit_melee_crit(player:get_pos())
-	end
-	local accumulation = grug_core.prepare_accumulated_melee(
-		hitter, player, raw, fraction)
-	local applied = accumulation.applied
-	local committed_fraction = accumulation.committed_fraction
-	if not grug_core.commit_accumulated_melee(accumulation) then
-		return true
-	end
-	-- Bank-only packets pay nothing. At an integer commit the accumulator
-	-- returns ALL fractions since the previous commit and clears them at once;
-	-- a dodge or full absorb then discards that credit, while any real HP loss
-	-- (including after a partial absorb) pays it in full.
+	local applied = math.floor(raw)
 	local landed = false
 	if applied >= 1 then
 		local hp_before = player:get_hp()
 		-- set_hp with the punch reason routes through the central hp-change
-		-- modifier ONCE (player_sao.cpp:519): dodge happens here and the
-		-- absorb shield follows. Armor already ran on the full-swing
-		-- equivalent, so the official custom_type skips ONLY that step.
+		-- modifier ONCE (player_sao.cpp:519): dodge happens there and the
+		-- absorb shield follows. Armor already ran above, so the official
+		-- custom_type skips ONLY that step.
 		player:set_hp(hp_before - applied, {
 			type = "punch",
 			object = hitter,
@@ -2412,11 +2240,21 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		})
 		landed = player:get_hp() < hp_before
 	end
-	if landed and applied >= 1 and committed_fraction > 0 then
-		-- Across any number of bank-only packets this integrates to one full
-		-- swing's rage per total native tool/fist swing fraction 1.
-		grug_abilities.add_rage(hitter, swing_rage(hitter) * committed_fraction)
+	if landed then
+		if critical then
+			grug_core.emit_melee_crit(player:get_pos())
+		end
+		if player:get_hp() > 0 then
+			grug_abilities.set_target(hitter, player, false)
+		end
+		grug_core.mark_in_combat(hitter)
 	end
+	grug_core.finish_native_melee(proc_context, {
+		landed = landed,
+		damage = raw,
+		proc_extra = 0,
+		grant_rage = true,
+	})
 	-- The engine's own damage is suppressed on the hostile path ALWAYS —
 	-- even when nothing landed (applied 0, absorbed, dodged): the
 	-- pipeline is ours now.
@@ -2621,7 +2459,6 @@ core.register_on_joinplayer(function(player)
 end)
 
 core.register_on_dieplayer(function(player)
-	grug_core.invalidate_melee_target(player)
 	-- Player GUIDs survive respawn, while ObjectRefs can survive long enough for
 	-- the killing callback to resume. Clear every owner's lock synchronously;
 	-- the accepted swing's proc is already held in its local context.
@@ -2643,7 +2480,6 @@ end)
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	grug_core.invalidate_melee_target(player)
 	-- Reconnecting with the same name creates a new combat identity for locks.
 	invalidate_target_locks(player)
 	clear_swing_progress(player)
