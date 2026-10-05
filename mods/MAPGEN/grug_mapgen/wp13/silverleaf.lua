@@ -446,7 +446,7 @@ local function loader(directory)
 				dressing.flower_bed(buf, palette, bed[1], bed[2], bed[3], bed[4])
 			end)
 		end
-		for _, seat in ipairs({{-8, 4, 2}, {6, 4, 2}, {-8, -9, 0}, {6, -9, 0}}) do
+		for _, seat in ipairs({{-8, 4, 2}, {6, 4, 2}, {-8, -9, 2}, {6, -9, 2}}) do
 			paved_prop("bench", seat[1], seat[2], seat[1] + 2, seat[2],
 				function()
 					dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "x")

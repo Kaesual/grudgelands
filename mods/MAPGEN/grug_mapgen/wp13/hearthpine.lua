@@ -344,7 +344,7 @@ local function loader(directory)
 				dressing.planter(buf, palette, bed[1], bed[2], bed[3], bed[4])
 			end)
 		end
-		for _, seat in ipairs({{-33, 25, 0, "x"}, {12, 16, 2, "x"},
+		for _, seat in ipairs({{-33, 25, 2, "x"}, {12, 16, 2, "x"},
 				{-16, 12, 2, "x"}, {26, 10, 0, "x"}}) do
 			prop(seat[1], seat[2], seat[1] + 2, seat[2], function()
 				dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "x")
