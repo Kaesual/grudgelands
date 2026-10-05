@@ -24,6 +24,11 @@ quest files and the front bounty baseline
   empty line each, and below it one row with "Track on HUD" on the left and
   Abandon on the right; while Confirm abandon and Cancel are shown they take
   the row alone (Round 32).
+- Quest lists (the quest giver's dialog and the Quest tab) show each quest's
+  status as the entry's colour, explained by a legend or the list's tooltip:
+  available gold, ready to complete green, in progress blue, locked grey; a
+  repeatable quest ends in "(R)". The giver's dialog is wide enough for the
+  longest title at a full-HD window; quest texts are read-only (Round 35).
 - A quest HUD toggle lives in this tab, defaults on and is saved per player.
   No active quests means no quest HUD, without changing the saved preference.
 - Objective families are **item turn-in**, **kill** and **travel**
