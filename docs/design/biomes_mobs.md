@@ -874,7 +874,8 @@ gone in Round 30). If a named zone exposes fewer than two explicit
 night-role families, the policy admits its palette fallback: Zombie for
 settled/war, Skeleton Archer for forest/mountain, Jungle Spider for jungle,
 or Bog Ooze for swamp. Capitals retain empty palettes and never receive a
-fallback; mobs already alive at a clock boundary are not despawned.
+fallback; an ABM-row mob alive at a clock boundary is not despawned (free
+region mobs spawned for the night leave at dawn: "Dawn departure" below).
 
 **`aoc` is per entity NAME, not per family** (mobs_redo counts objects
 of that one name inside a 128-node sphere). Two spawn rows of the same
@@ -1157,6 +1158,18 @@ gate, protected surface).
   composed look, such as bandits) has its level, stats and composed look
   re-derived at once. The tier never changes. Its wander leash is the
   ordinary one: 32 nodes around its spawn point (`combat_stats.md`).
+- **Dawn departure** (Round 35). By day a free region mob spawned for the
+  night (`_grug_spawn_clock = "night"` and a kind's tag; camp members,
+  leaders, rares, bosses, summons and tamed or owned mobs never carry both)
+  leaves: it is removed quietly with mobs_redo's despawn smoke puff, without
+  drops, XP or kill credit, unless it is in combat (a target, the attack or
+  runaway state, an engagement or the evade run home) or a player is within
+  **32 nodes**; then it leaves as soon as neither holds. Day is the spawn
+  clock's day phase (04:30–19:30). 32 nodes lies beyond the 24-node spawn
+  distance and every ambient mob's view range (at most 18) and inside the
+  active-block range, so a night mob whose block wakes by day leaves before a
+  player reaches it. Each night mob checks once a second
+  (`grug_mobs/dawn.lua`); every other mob pays one field test per step.
 - **Drift band.** No aggressive role spawns within 16 nodes of a road,
   bridge, village, PvP fortress or war camp (Round 31), start town or
   capital city (the spot and two rings of
