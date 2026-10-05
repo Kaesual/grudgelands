@@ -1205,6 +1205,9 @@ local function dragon_def(id, opts, callbacks)
 		animation = opts.animation,
 		drops = {}, water_damage = 0, lava_damage = 0, light_damage = 0,
 		do_punch = arena_punch,
+		-- Only the dragon's current instance gets here: a stale or second copy
+		-- removed itself first (init.lua's after_activate wrapper, Round 37 MP
+		-- liveness.lua).
 		after_activate = function(self)
 			self._grug_boss_id = "dragon:" .. id
 			callbacks.storage:set_string("boss:dragon:" .. id .. ":alive", "1")

@@ -704,11 +704,17 @@ function grug_mobs.dragon_map_markers()
 	return result
 end
 
+-- The dragon's liveness key (liveness.lua) is its boss id.
 local function spawn_dragon(id, row)
 	local pos = dragon_pos(row)
 	local node = core.get_node_or_nil(pos)
 	if not node or node.name == "ignore" then return false end
-	local object = core.add_entity(pos, row.entity)
+	-- The next generation, handed in as staticdata so the first activation
+	-- already claims it (Round 37 MP): an older copy still on disk is stale
+	-- and removes itself when its block loads.
+	local key = "dragon:" .. id
+	local object = core.add_entity(pos, row.entity, core.serialize({
+		_grug_live_key = key, _grug_live_gen = grug_mobs.liveness.next_generation(key)}))
 	local ent = object and object:get_luaentity()
 	if not ent then return false end
 	ent._grug_boss_id = "dragon:" .. id
@@ -761,14 +767,32 @@ local function warn_dragon(id, row, now, due, pos)
 	})
 end
 
+-- A dragon removed without its on_die (the admin's /clear_mobs, a crash
+-- between the storage write and the map save) left `alive` set forever
+-- (MOC-03). Its liveness record now tells (liveness.lua): missing for a
+-- minute while its last known place is active, it counts as lost and gets the
+-- ordinary warned return.
+local function dragon_lost(id, row, now)
+	storage:set_string("boss:dragon:" .. id .. ":alive", "")
+	storage:set_string("boss:dragon:" .. id .. ":due", tostring(now))
+	storage:set_string("boss:dragon:" .. id .. ":warned", "")
+	core.log("action", "[grug_mobs] " .. row.name ..
+		" lost without a recorded kill, return released")
+end
+
+local BOSS_PASS = 10
 local boss_clock = 0
 core.register_globalstep(function(dtime)
 	boss_clock = boss_clock + dtime
-	if boss_clock < 10 then return end
-	boss_clock = boss_clock - 10
+	if boss_clock < BOSS_PASS then return end
+	boss_clock = boss_clock - BOSS_PASS
 	local now = os.time()
 	for id, row in pairs(DRAGONS) do
-		if storage:get_string("boss:dragon:" .. id .. ":alive") ~= "1" then
+		if storage:get_string("boss:dragon:" .. id .. ":alive") == "1" then
+			if grug_mobs.liveness.watch("dragon:" .. id, BOSS_PASS) == "lost" then
+				dragon_lost(id, row, now)
+			end
+		else
 			local due = tonumber(storage:get_string("boss:dragon:" .. id .. ":due")) or 0
 			local warned = storage:get_string("boss:dragon:" .. id .. ":warned") == "1"
 			local loaded, pos = dragon_lair_loaded(row)

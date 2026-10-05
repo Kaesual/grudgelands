@@ -47,9 +47,10 @@ if not grug_core.zone_authority_installed() then
 	error("[grug_mobs] validated R7 zone authority was not installed")
 end
 
--- Mod-wide persistence (AGENTS.md: fetch at load time). Two writers: the
--- named-rare spawner (rares.lua) and the start settlements' one marker per
--- occupied NPC socket (start_npcs.lua).
+-- Mod-wide persistence (AGENTS.md: fetch at load time). Its writers include
+-- the named-rare spawner (rares.lua), the liveness records of the rares and
+-- dragons (liveness.lua) and the start settlements' one marker per occupied
+-- NPC socket (start_npcs.lua).
 grug_mobs.storage = core.get_mod_storage()
 
 -- Builds one texture entry per MATERIAL SLOT of a mesh (wp6_model_notes §0.3).
@@ -840,6 +841,9 @@ function grug_mobs.register_mob(name, def)
 
 	local old_tag_after_activate = def.after_activate
 	def.after_activate = function(self, staticdata, mob_def, dtime)
+		-- A stale or second copy of a named rare or a dragon removes itself
+		-- before anything else runs (liveness.lua).
+		if not grug_mobs.live_claim(self) then return end
 		if old_tag_after_activate then
 			old_tag_after_activate(self, staticdata, mob_def, dtime)
 		end
@@ -1019,6 +1023,8 @@ dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/voices.lua")
 dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")
+-- Round 37 MP: liveness of the named rares and the dragons (MOC-01, MOC-03).
+dofile(modpath .. "/liveness.lua")
 dofile(modpath .. "/patrol.lua")
 dofile(modpath .. "/target_frame.lua")
 dofile(modpath .. "/items.lua")
