@@ -129,7 +129,7 @@
         "archshadow_front_03"
       ],
       "title": "Good Paper, Bad Company",
-      "text": "Senn was paid to keep the road deadly, and his tolls went back to the factors for branding and another round of wages. A remittance from Paymaster Chirr in The Skyglass Canopy promises more payments. The bundle bears a requisition seal of The Throng on paper fit for a fortress pay office. Report these findings to the Warmaster at {name:pvp_fortress_accord}; paper this good deserves an awkward question.",
+      "text": "Senn's accounts say more than he ever did: he was paid to keep the road deadly, and his tolls went back to the factors for another branding and another round of wages. A remittance from Paymaster Chirr in The Skyglass Canopy promises more of the same. The bundle came wrapped in a requisition under a seal of The Throng, on paper fit for a fortress pay office. Take all of it to the Warmaster at {name:pvp_fortress_accord}; paper this good deserves an awkward question, and I'd rather it came from someone whose job it is.",
       "objectives": [
         {
           "type": "talk",
@@ -417,7 +417,7 @@
         "accord_main_roll"
       ],
       "title": "The Last Watch Ends",
-      "text": "Fresh branded pay reaches the {name:front_gravesalt_escarpment/ossuary_wood}, and the Last-Watch Skeleton Raiders shoulder their weapons for another night. Destroy five there after dark, then defeat {name:watch_captain_huskell}, {dir_from_giver:watch_captain_huskell}. His roll should explain who keeps renewing the watch; even a dwarf knows when a shift has ended.",
+      "text": "Fresh branded pay reaches the {name:front_gravesalt_escarpment/ossuary_wood}, and the Last-Watch Skeleton Raiders shoulder their weapons for another night. Destroy five there after dark, then defeat {name:watch_captain_huskell}, {dir_from_giver:watch_captain_huskell}. His roll should tell us who keeps paying for the watch; somebody has to relieve it, and it may as well be you.",
       "objectives": [
         {
           "type": "kill",
@@ -456,8 +456,8 @@
       "requires": [
         "splitbolt_front_08"
       ],
-      "title": "Group: Erase the Salt-Counter",
-      "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell kept them working; she is already adding up what they might fetch. Gather a group and kill the elite witch. I'd like one set of figures out there to stop growing.",
+      "title": "Group: Nothing Left to Count",
+      "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell kept them working; she is already adding up what they might fetch. Gather a group and kill the elite witch. I'd like the next count in that mire to come out at nothing.",
       "objectives": [
         {
           "type": "kill",
@@ -519,7 +519,7 @@
         "splitbolt_front_08"
       ],
       "title": "The Clerk at the Foot",
-      "text": "Huskell's muster is a page of the Undertithe's roll: soldiers from both armies, each name claimed through branded pay. Odren Vell is written at the foot in fresh ink; the coin has collected its own clerk. Speak with Eriath Boughwarden in Lethariel about that page and Chirr's payments in The Skyglass Canopy. He remembers the old forged bough-seals, and I would like his opinion before he finds a graceful way to say mine.",
+      "text": "Huskell's roll is no muster list but a page of the Undertithe's own: soldiers from both armies, each name bought back onto duty with branded pay. Odren Vell is written at the foot in fresh ink; the coin has collected its own clerk. Take the page to Eriath Boughwarden in Lethariel, who remembers the old forged bough-seals and whose watchers keep an eye on Chirr's payments in The Skyglass Canopy. He'll need three graceful sentences to agree with me.",
       "objectives": [
         {
           "type": "talk",

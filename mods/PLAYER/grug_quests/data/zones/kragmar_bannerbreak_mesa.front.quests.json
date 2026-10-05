@@ -95,7 +95,7 @@
         "bb_front_ramp_03",
         "throng_main_01"
       ],
-      "title": "Senn's Other Employer",
+      "title": "Payment in Full",
       "text": "My crews dig up grave coin with a fresh broken circle burned through it, and Toll-Taker Senn keeps finding more dead to pay. Kill four Aqueduct Bowmen or Coal-Purse Factors in all at the {name:front_broken_causeway/toll_camp}, {dir_from_giver:front_broken_causeway/toll_camp}, where they guard his money day and night, and kill Senn. Turn out his branded toll-box at {name:r20_anchor_078}; I want the name of whoever pays a man to make my road impassable.",
       "objectives": [
         {
@@ -143,7 +143,7 @@
         "bb_front_ramp_04"
       ],
       "title": "A Coin for Orrel",
-      "text": "Senn paid the dead to keep them on the road, then sent the tolls back to the soot factors for another burning. Paymaster Chirr in The Skyglass Canopy promised fresh payments for every crossing kept deadly; apparently a corpse earns better than a bridge. Speak with Orrel Hollowstep at Hollowarch Station in Blackwind Rise about that coin and its two hooked burn marks; he knows when the dead are being cheated.",
+      "text": "Senn paid the dead to keep them on the road, then sent the tolls back to the soot factors for another burning; a remittance from Paymaster Chirr in The Skyglass Canopy promises fresh payments for every crossing kept deadly. Apparently a corpse earns better than a bridge. I know mud, not the dead, so take one of those coins to Orrel Hollowstep at Hollowarch Station in Blackwind Rise. He'll complain about the fingerprints, but he'll read it.",
       "objectives": [
         {
           "type": "talk",

@@ -112,7 +112,7 @@
         "throng_main_06"
       ],
       "title": "Promises with Bowstrings",
-      "text": "Paymaster Chirr promises wages for holding land, then pays his archers to burn the brand into living roots. His payroll lists both banners; the forest is being made to hold the debt for their dead. Kill four Last-Pay Archers or Ash-Writ Bowmen in all at the {name:front_skyglass_canopy/paymaster_camp}, {dir_from_giver:front_skyglass_canopy/paymaster_camp}, by day or night, and kill Chirr. Smother the burning rootmark at {name:r20_anchor_084} to erase the names scorched there; the roots have carried his promises long enough.",
+      "text": "Paymaster Chirr promises his archers wages for holding land, then pays them in branded coin for every mark they burn into living roots. His payroll lists both banners, and he makes the forest carry the debt for their dead. Kill four Last-Pay Archers or Ash-Writ Bowmen in all at the {name:front_skyglass_canopy/paymaster_camp}, {dir_from_giver:front_skyglass_canopy/paymaster_camp}, by day or night, and kill Chirr. Smother the burning rootmark at {name:r20_anchor_084} to erase the names scorched there; the roots have complained about it louder than the spirits.",
       "objectives": [
         {
           "type": "kill",

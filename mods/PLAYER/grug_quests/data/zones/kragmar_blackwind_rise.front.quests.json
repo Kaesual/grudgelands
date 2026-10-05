@@ -401,7 +401,7 @@
         "bb_front_ramp_05"
       ],
       "title": "The Fire Is New",
-      "text": "This Tithe-Brand is fresh furnace work; Mortuary Clerk Hush once entered our dead as debtors without needing a fire. Accept its coin as pay and it owns you, living or dead; a living holder cannot throw it away or cool it except by paying for another death. Wash the fresh ash from the old stone at the {name:ashen_grave}, {dir_from_giver:ashen_grave}, to see the brand laid over the names. Report to the Warmaster; being Undead has never made us somebody's property.",
+      "text": "Old death I know: it smells of dust and patience, and this Tithe-Brand smells of a furnace; Mortuary Clerk Hush entered our dead as debtors, but Hush never had fire. Take its coin as pay and it owns you, living or dead; the living cannot even throw it away, only pass it on as pay for another death. Wash the fresh ash from the old stone at the {name:ashen_grave}, {dir_from_giver:ashen_grave}, and you will see the brand laid over the names. Report to the Warmaster; being Undead has never made us somebody's property.",
       "objectives": [
         {
           "type": "use",
@@ -462,7 +462,7 @@
         "throng_main_finale"
       ],
       "title": "The Answering Blow",
-      "text": "His body is broken, but the crack still burns and I can hear movement below it. Carry my account to the Warmaster at Bannerbreak Warhold, where the drill yard can hear it too. His last blow struck the ground. The answering blow came from underneath.",
+      "text": "I put my ear to the crack after he fell and listened longer than I meant to; it still burns, and he will come back to collect. Carry my account to the Warmaster at Bannerbreak Warhold word for word, so the drill yard hears it too. His last blow struck the ground. The answering blow came from underneath.",
       "objectives": [
         {
           "type": "talk",

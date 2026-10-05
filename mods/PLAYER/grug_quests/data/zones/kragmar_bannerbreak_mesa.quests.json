@@ -403,7 +403,7 @@
         "throng_main_02"
       ],
       "title": "An Oath in Hock",
-      "text": "Grave coin under a seal of The Accord: they are buying themselves a cheaper army. Yarra Standardmender says the dead on The Shattered Line salute a standard pledged against the next payment. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}. Unpick the pledged standard at {name:r20_anchor_081} and report to Yarra at Tornstandard Hold; she will know what those stitches promise.",
+      "text": "Grave coin under a seal of The Accord: they are buying themselves a cheaper army, and I want the proof in my fist. Yarra Standardmender says the dead on The Shattered Line salute a standard pledged against the next payment. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}. Unpick the pledged standard at {name:r20_anchor_081} and take the stitching to Yarra at Tornstandard Hold; she reads cloth the way I read a liar.",
       "objectives": [
         {
           "type": "kill",
@@ -441,7 +441,7 @@
         "bb_front_torn_05"
       ],
       "title": "Find the Hand That Signed",
-      "text": "A bought oath is a debt with a blade on it. Ours were never for sale. Ninepins's pledge slips bear seals of The Accord; the captain of its high camp on The Shattered Line should know whose hand signed them. Kill the Accord Captain at the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, and bring me the Accord Captain's Orders.",
+      "text": "A bought oath is a debt with a blade on it. Ours were never for sale. Ninepins's pledge slips bear seals of The Accord; the captain of The Accord's high camp on The Shattered Line should know whose hand signed them. Kill the Accord Captain at the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, and bring me the Accord Captain's Orders; I need the paper more than a story about the fight.",
       "objectives": [
         {
           "type": "kill",
@@ -487,7 +487,7 @@
         "throng_main_04"
       ],
       "title": "Our Tallykeeper's Treason",
-      "text": "The Accord's orders demand a hunt for the soot factors and list its own soldiers burned by their pay. The seized grave coin carries our war-chest tally marks, entered by Tallykeeper Mardra, who left last winter 'to collect what the dead were owed'. I struck her name from our roll before the whole drill yard; everyone heard who sold our dead. Bury the seized branded pay unspent at {name:kragmar_thunderroot_wilds/coinpit_hollow}, {dir_of:r20_anchor_048:kragmar_thunderroot_wilds/coinpit_hollow}; The Accord will not lock our shame in its evidence chest.",
+      "text": "The Accord's orders call for a hunt on the soot factors and list their own soldiers burned by the factors' pay: they have been robbed and burned too. Worse, the seized grave coin carries our own war-chest tally marks, entered by Tallykeeper Mardra, who left last winter 'to collect what the dead were owed'. I struck her name from our roll before the whole drill yard; everyone heard who sold our dead. Bury the seized branded pay unspent at {name:kragmar_thunderroot_wilds/coinpit_hollow}, {dir_of:r20_anchor_048:kragmar_thunderroot_wilds/coinpit_hollow}; The Accord will not lock our shame in its evidence chest.",
       "objectives": [
         {
           "type": "use",
@@ -547,7 +547,7 @@
         "throng_main_05"
       ],
       "title": "Still Buying Our Dead",
-      "text": "Mardra sold our dead, and the payments are still going through. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she has heard fresh orders among their whispers. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy as well, and will have work for you once Vaska has your report.",
+      "text": "Mardra sold our dead, and somebody is still buying. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she says the fen's dead whisper about fire, and the hexers do the whispering. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy and will have work for you once Vaska has your report.",
       "objectives": [
         {
           "type": "kill",
@@ -578,7 +578,7 @@
         "throng_main_07"
       ],
       "title": "Group: No Claim on Our Dead",
-      "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a group of two or three and kill him beside the burning crack; The Accord can answer for its own banner. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
+      "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a group of two or three, kill him beside the burning crack and stay out of it; if The Accord turns up, it can carry its own banner home, and we will carry ours. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
       "objectives": [
         {
           "type": "kill",

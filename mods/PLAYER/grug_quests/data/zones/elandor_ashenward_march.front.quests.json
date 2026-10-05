@@ -98,7 +98,7 @@
         "accord_main_impounded"
       ],
       "title": "Warm Coin, Cold Supper",
-      "text": "That broken circle, with two hooks curling into the gap, is burned into the toll money my drivers keep seeing. The Coal-Purse Factors call themselves soot factors; the Causeway Brigands collect for them while our carts stand idle. Defeat five Causeway Brigands or Coal-Purse Factors in all, by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Supper is getting cold while their purses stay warm.",
+      "text": "The coins you brought carry a broken circle with two hooks curling into the gap, and my drivers have seen it before, on the brigands who charge them tolls along the Causeway. The Coal-Purse Factors in the smoke-dark coats call themselves soot factors; the Causeway Brigands only collect for them while our carts stand idle. Defeat five Causeway Brigands or Coal-Purse Factors in all, by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Supper is getting cold while their purses stay warm.",
       "objectives": [
         {
           "type": "kill",
@@ -276,7 +276,7 @@
         "accord_main_standard"
       ],
       "title": "Nobody Left to Rally",
-      "text": "Those stitches pledge every soldier under the standard against another payment; fresh wages keep renewing their watch. Defeat five Siege Skeleton Raiders or Brandbound Collectors in all, after dark at the {name:front_shattered_line/breach}. Find {name:standard_bearer_ninepins}, {dir_from_giver:standard_bearer_ninepins}, and end his command as well. Report back to me, then seek the Warmaster's orders; my sentries would like to hear a night without that roll call.",
+      "text": "That stitching is a pledge: every soldier under the standard is borrowed against the next payment, and fresh wages keep them rallying to a war lost long ago. Defeat five Siege Skeleton Raiders or Brandbound Collectors in all, after dark at the {name:front_shattered_line/breach}. Find {name:standard_bearer_ninepins}, {dir_from_giver:standard_bearer_ninepins}, and end his command as well. Report back to me, then seek the Warmaster's orders; I'd like the next thing our watch hears from that breach to be the wind.",
       "objectives": [
         {
           "type": "kill",
@@ -753,7 +753,7 @@
         "ashenward_bastion_warcamp_skyglass"
       ],
       "title": "Under Stonegrudge's Eye",
-      "text": "War Commander Stonegrudge now fights beside the garrison at the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. Your assignment is five Throng Guards and the Throng Captain in that camp. Defeat them with a group if needed; the elite commander makes this a harder raid. A casualty caused by ignoring the briefing is still a casualty, however brave the report sounds.",
+      "text": "War Commander Stonegrudge now fights beside the garrison at the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. Defeat five Throng Guards and the Throng Captain in that camp, and take a group if you need one; the elite commander makes this a harder raid. A casualty caused by ignoring the briefing is still a casualty, however brave the report sounds.",
       "objectives": [
         {
           "type": "kill",
