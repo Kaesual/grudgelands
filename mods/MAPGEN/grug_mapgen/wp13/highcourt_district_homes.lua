@@ -77,18 +77,21 @@ local function loader(directory)
 			end},
 		-- 4-6. The three houses of the lane: a gabled cottage, a hip-roofed
 		-- one twice as wide, and one that opens on its side street.
+		-- Round 36: the lane's houses carry the decor kit's house touches
+		-- (`dress`, highcourt_plot.lua).
 		{id = "homes_house_gable", module = "buildings", make = "cottage",
-			order = 4, spec = {w = 9, d = 7, wall_h = 4, infill = true}},
+			order = 4, dress = true,
+			spec = {w = 9, d = 7, wall_h = 4, infill = true}},
 		{id = "homes_house_hip", module = "buildings", make = "cottage",
-			order = 5,
+			order = 5, dress = true,
 			spec = {w = 11, d = 9, wall_h = 4, roof = "hip", infill = true}},
 		{id = "homes_house_lane", module = "buildings", make = "cottage",
-			order = 6, turns = 3,
+			order = 6, turns = 3, dress = true,
 			spec = {w = 9, d = 9, wall_h = 4, infill = true}},
 		-- 7. The tenement: one long saltbox roof over the row. Door index 4,
 		-- single leaf, for the `store` kit's post rhythm.
 		{id = "homes_tenement", module = "buildings", make = "longhouse",
-			order = 7,
+			order = 7, dress = true,
 			spec = {w = 11, d = 17, wall_h = 5, door_side = "z-",
 				door_index = 4, infill = true}},
 		-- 8. The bakehouse. A workshop, turned, opening in its x- wall for
@@ -115,7 +118,7 @@ local function loader(directory)
 		-- activity in section 8.2 and an oven node in the palette, not a
 		-- socket here pointing at the wrong thing.
 		{id = "homes_bakehouse", module = "buildings", make = "workshop",
-			order = 8, turns = 3,
+			order = 8, turns = 3, dress = true,
 			spec = {w = 11, d = 11, wing = 5, wall_h = 4, door_side = "x-",
 				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)

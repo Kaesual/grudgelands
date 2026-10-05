@@ -21,6 +21,7 @@ local function loader(directory)
 	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
+	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 
 	local RADIUS = 63
 	local SCHEMA = "grug_wp13_dawnmere_blueprint_v1"
@@ -385,10 +386,15 @@ local function loader(directory)
 		end)
 		-- Settles along the green's edges. None may reach the road (x -2 to 2)
 		-- or the green's own brick kerb, which are not open ground.
+		-- A bench runs along its axis and looks across it (Round 36: the two
+		-- end settles were laid along x, so their stairs looked along the
+		-- bench and read as a stair, not a seat).
 		for _, seat in ipairs({{-7, 6, 2, "x"}, {-5, -8, 0, "x"},
 				{3, -8, 0, "x"}, {-10, -1, 1, "z"}, {8, -1, 3, "z"}}) do
-			prop("bench", seat[1], seat[2], seat[1] + 2, seat[2], function()
-				dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "x")
+			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
+			local z2 = (seat[4] == "z") and seat[2] + 2 or seat[2]
+			prop("bench", seat[1], seat[2], x2, z2, function()
+				dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, seat[4])
 			end)
 		end
 		-- Stepping stones across the turf, from the green's kerb to the well
@@ -529,6 +535,23 @@ local function loader(directory)
 
 		-- 12b. The waypoint pad, before the flora so nothing grows on it.
 		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "dawnmere")
+
+		-- 12c. The cottage lane's houses get their small touches (Round 36
+		-- decor kit): a barrel or a pot by the door, flowers under the
+		-- windows, a wood pile against a side wall. Sockets and the cells in
+		-- front of them stay free; the door torches are the houses' own.
+		do
+			local brush = decor.brush(buf, "human", palette)
+			local ground = decor.open_ground(palette, {palette.node("foundation"),
+				palette.maybe("ground_straw")})
+			local opts = {ground = ground, wall_light = true,
+				blocked = decor.blocked_sockets(SOCKETS)}
+			for _, house in ipairs(decor.houses_from(rooms, doorways,
+					{"orchard_cottage", "lane_cottage", "green_cottage",
+						"field_cottage"})) do
+				decor.dress_house(brush, house, opts)
+			end
+		end
 
 		-- 13. Meadow flora on whatever open turf is left.
 		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 4)

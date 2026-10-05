@@ -26,6 +26,15 @@ local function sort_cells_zyx(cells, less)
 	for index = 1, #keys do cells[index] = by_key[keys[index]] end
 end
 
+-- The Round 36 decor kit (wp13/decor_kit.lua): the pieces a composition's
+-- `decor` rows name and the touches its houses get when `dress` is set.
+local info = debug and debug.getinfo and debug.getinfo(1, "S")
+local here = type(info) == "table" and type(info.source) == "string" and
+	info.source:sub(1, 1) == "@" and info.source:sub(2):match("^(.*)[/\\][^/\\]*$")
+if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40" end
+local wp13 = dofile(here .. "/r7_wp13_library.lua").path()
+local decor = dofile(wp13 .. "/decor_kit.lua")(wp13)
+
 return function(options, profile)
 	local spec = assert(profile and profile.art, "Round 20 art profile missing")
 	local palettes = {
@@ -62,7 +71,7 @@ return function(options, profile)
 		fill(lo,0,lo,hi,0,hi,p.ground)
 		fill(lo,1,lo,hi,spec.height,hi,"air")
 	end
-	local footprints={}
+	local footprints,dressed={},{}
 	local function house(b,index)
 		local cx,cz,w,d,h,turn,form=unpack(b)
 		local raised=spec.race=="troll" and 1 or 0
@@ -105,6 +114,11 @@ return function(options, profile)
 		for step=0,1 do
 			for y=raised+1,raised+3 do put(ex+dx*step,y,ez+dz*step,"air") end
 			if raised>0 then put(ex+dx*step,1,ez+dz*step,"stairs:stair_junglewood",(4-turn)%4) end
+		end
+		if not open then
+			dressed[#dressed+1]={room={min={x=cx-w+1,z=cz-d+1},max={x=cx+w-1,z=cz+d-1}},
+				floor_y=raised,ground_y=0,seed=spec.number*7+index,
+				doors={{x=ex,z=ez},{x=ex+dx,z=ez+dz}}}
 		end
 		structures[#structures].entry={x=ex,y=raised+1,z=ez}
 		-- Small rooms keep their centre and entry empty. Windows are opposite
@@ -284,6 +298,19 @@ return function(options, profile)
 		else error("Round 20 unknown scenery: "..tostring(kind)) end
 	end
 	for _,q in ipairs(spec.props) do prop(q) end
+	-- Decor pieces, then the houses' own touches, which take only the open
+	-- ground the pieces and the paths left (never the central clearance).
+	local brush=decor.brush(decor.view(put,function(x,y,z)
+		if x>=lo and x<=hi and z>=lo and z<=hi and y>=0 and y<=spec.height then return by_pos[key(x,y,z)] end
+	end),spec.race)
+	for _,q in ipairs(spec.decor or {}) do decor.piece(brush,q[1],q[2],q[3],q[4],q[5]) end
+	if spec.dress then
+		local blocked={}
+		for z=-3,3 do for x=-3,3 do blocked[x..":"..z]=true end end
+		for _,house_info in ipairs(dressed) do
+			decor.dress_house(brush,house_info,{ground={[p.ground]=true},blocked=blocked})
+		end
+	end
 	-- Actor roots and the host approach are invariant across all authored art.
 	-- No duplicate camp fire, banner, dragon, rare or resource is authored here.
 	for z=-2,2 do for x=-2,2 do for y=1,3 do

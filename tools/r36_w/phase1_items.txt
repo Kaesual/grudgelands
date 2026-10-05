@@ -1,0 +1,14 @@
+# Round 36 lane W phase 1: the samples (one per kind) and the bench fixes
+r20_anchor_016
+r20_anchor_036
+r20_anchor_061
+r20_anchor_060
+r20_anchor_069
+r20_anchor_073
+r20_anchor_092
+r20_anchor_089
+start:dawnmere:-32,-32,34,-12
+plot:highcourt:homes_house_gable,homes_house_hip,homes_house_lane,homes_tenement,homes_bakehouse
+start:dawnmere:-14,-5,14,5@4
+start:stillgrave:-13,-1,13,6@4
+plot:dur_brannoc:deep_hall_of_record@3
