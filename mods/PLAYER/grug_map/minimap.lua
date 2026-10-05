@@ -506,12 +506,15 @@ local function native_off(player)
 	player:set_minimap_modes({{type = "off", label = "Minimap off"}}, 0)
 end
 
--- Called from init.lua with base.lua's result. Without tiles (the base failed
--- to render) or without its mask (the world folder cannot be written) the
--- native minimap stays off and ours is not shown; the Map tab says so.
+-- Called from init.lua with base.lua's result; the minimap shows its
+-- `minimap` base (normal size on every server, user ruling 2026-10-06).
+-- Without tiles (the base failed to render) or without its mask (the world
+-- folder cannot be written) the native minimap stays off and ours is not
+-- shown; the Map tab says so.
 function M.install(installed)
-	if not installed.tiles then return end
-	local candidate = V.new(installed, atlas.view())
+	local mini = installed.minimap
+	if not mini or not mini.tiles then return end
+	local candidate = V.new(mini, atlas.view())
 	local ok, err = pcall(function()
 		grug_map.base.add_media(grug_map.base.MASK,
 			grug_map.base.mask_png(candidate.pixels, 0))
@@ -520,7 +523,7 @@ function M.install(installed)
 		core.log("error", "[grug_map] minimap unavailable: " .. tostring(err))
 		return
 	end
-	base, view, M.mask = installed, candidate, grug_map.base.MASK
+	base, view, M.mask = mini, candidate, grug_map.base.MASK
 	BACKGROUND = M.mask .. "^[multiply:" .. SEA
 end
 

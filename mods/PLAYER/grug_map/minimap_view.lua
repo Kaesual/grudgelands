@@ -58,8 +58,11 @@ V.REDUCE = {normal = 1, high = 2}
 -- soft edge, nearest sampling and the half pixel of rounding need them.
 V.COVER = 1.5
 
--- `base` is what base.lua's install returned (quality, width, height,
--- tiles); `bounds` the atlas world bounds.
+-- `base` is the `minimap` base of base.lua's install (quality, width,
+-- height, tiles): normal size on every server since Round 37 (user ruling
+-- 2026-10-06), so the game uses the normal rows above; the high rows still
+-- describe a high-size base for the geometry fixture. `bounds` the atlas
+-- world bounds.
 function V.new(base, bounds)
 	local npp = (bounds.max_x - bounds.min_x) / base.width
 	local crop = math.floor(V.WINDOW_NODES / npp + 0.5)

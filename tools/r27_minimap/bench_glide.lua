@@ -132,6 +132,7 @@ grug_map.base = base
 local installed = {quality = "normal", width = 1080, height = 960,
 	tiles = base.tiles(1080, 960)}
 installed.texture = base.combined_texture(1080, 960, installed.tiles)
+installed.minimap = installed -- normal quality: the minimap shows the base itself
 grug_map.atlas.set_base_texture(installed.texture)
 dofile(tree .. "/mods/PLAYER/grug_map/minimap.lua")
 grug_map.minimap.install(installed)

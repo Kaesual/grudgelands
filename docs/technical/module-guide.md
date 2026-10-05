@@ -1218,7 +1218,8 @@ achievements](#cloaks-and-achievements).
   since Round 30 (`grug_inventory/pages.lua`, its 1 s pass re-sends that page
   only while the button text changes).
   Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
-  it as 512 px tiles; `minimap.lua` (HUD state, marker slots, change-only
+  it as 512 px tiles (at high also a normal-size copy for the minimap,
+  scaled down in the same pass, Round 37); `minimap.lua` (HUD state, marker slots, change-only
   `hud_change` per whole screen pixel; every server step only a cheap test,
   and the map, markers or party arrows placed again only when what they
   show changed, Round 37) and the pure
@@ -1228,7 +1229,8 @@ achievements](#cloaks-and-achievements).
   `grug_core.hud_layout.minimap_box`. Keep the texture and position change
   in the same step and the scale a whole multiple of 1/grid, or cell swaps
   jump. Round 32 halved the window (`V.WINDOW_NODES` 440) and the cell grid
-  (`V.GRID` 2 base pixels at normal, 8 at high) so the bezel still covers
+  (`V.GRID` 2 base pixels at normal, 8 for a high-size base, which the game
+  no longer passes since Round 37) so the bezel still covers
   the overhang (geometry in `tools/r27_minimap`); `tools/r32_f1/engine.sh`
   measures the traffic and the location sample on a player stand-in. Since Round 30 the window size, the frame-only elements and the
   location line are handled every 0.5 s or on a window change, and the
