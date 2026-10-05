@@ -69,13 +69,13 @@ local LAST_LINE = "We closed his account. Beneath us, someone turned a fresh pag
 local SPINE = {
 	{"accord_main_impounded", 1}, {"cinderline_front_05", 1}, {"cinderline_front_04", 1},
 	{"archshadow_front_02", 1}, {"archshadow_front_03", 1}, {"accord_main_accounts", 1},
-	{"accord_main_orders", 2}, {"lasthedge_front_04", 2}, {"accord_main_audit", 2},
+	{"accord_main_standard", 2}, {"lasthedge_front_04", 2}, {"accord_main_orders", 2}, {"accord_main_audit", 2},
 	{"accord_main_roll", 3}, {"splitbolt_front_08", 3}, {"splitbolt_front_06", 3},
 	{"lethariel_front_04", 3}, {"accord_main_tally", 3},
 	{"accord_main_collector", 4}, {FINAL, 4},
 }
 local GATE = {41, 46, 53, 60}
-local OPENER = {"accord_main_impounded", "accord_main_orders", "accord_main_roll", "accord_main_collector"}
+local OPENER = {"accord_main_impounded", "accord_main_standard", "accord_main_roll", "accord_main_collector"}
 local LAST = {"accord_main_accounts", "accord_main_audit", "accord_main_tally", FINAL}
 -- The bible's folded climaxes and the chapter they carry.
 local CLIMAX = {archshadow_front_03 = 1, lasthedge_front_04 = 2, splitbolt_front_08 = 3, lethariel_front_04 = 3}
@@ -107,12 +107,13 @@ for index, row in ipairs(SPINE) do
 	if check(q ~= nil, "C spine quest " .. id .. " exists") then
 		if index > 1 then
 			local prev = SPINE[index - 1][1]
-			-- Chapter 2's two steps run side by side after chapter 1.
-			local link = (id == "lasthedge_front_04") and "accord_main_accounts" or
-				(id == "accord_main_audit") and "accord_main_orders" or prev
-			check(has(q.requires, link), "C " .. id .. " requires " .. link)
-			if id == "accord_main_audit" then
-				check(has(q.requires, "lasthedge_front_04"), "C the audit also requires Ninepins' fall")
+			check(has(q.requires, prev), "C " .. id .. " requires " .. prev)
+			-- The thread: each step is given where the one before was turned
+			-- in, or the one before sends the player on by name.
+			local before = quests[prev]
+			if before and before.turnin ~= q.giver then
+				check(q.giver == WM and before.text:find("Warmaster", 1, true) ~= nil,
+					"C " .. prev .. " sends the player on to " .. id .. "'s giver " .. q.giver)
 			end
 		end
 		check(q.min_level >= GATE[chapter] and (chapter == 4 or q.min_level <= GATE[chapter + 1]),
@@ -276,8 +277,9 @@ for _, row in ipairs(USES) do
 			check(places[use.obj.place], "P " .. use.id .. ": " .. kind .. " at its zone's place (" ..
 				tostring(use.obj.place) .. ")")
 			if chapter == "island" then
-				check(use.q.optional == true and not required[use.id],
+				check(use.q.optional == true and not required[use.id] and use.q.title:match("^Optional: ") ~= nil,
 					"P " .. use.id .. ": an island use is an optional extension")
+				check(closure(use.id).accord_main_roll, "P " .. use.id .. ": open once chapter 3 has begun")
 			else
 				eq(in_spine[use.id], chapter, "P " .. use.id .. ": " .. kind .. " in chapter " .. chapter)
 			end
