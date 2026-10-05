@@ -244,10 +244,12 @@ def talent_check():
     rows = ["| Talent | Effect | Class | Gain today (×1.5) | Gain new (×2) |",
             "|---|---|---|---:|---:|"]
     base = {"warrior": 69, "mage": 69, "scout": 128}
-    cases = (("Keen Edge 5/5", "+5 crit points", "warrior", 5, 30),
-             ("Firebrand 4/4", "+4 crit points", "mage", 4, 30),
-             ("Cold Eye 4/4", "+4 crit points", "scout", 4, 30),
-             ("Ruination window", "+20 crit points, cap 50 %, 10 s per 120 s", "warrior", 20, 50))
+    # Round 35 doubled the crit talents to 2 points per rank and gave
+    # Ruination a 15 s window every 60 s (skill_trees.md).
+    cases = (("Keen Edge 5/5", "+10 crit points", "warrior", 10, 30),
+             ("Firebrand 4/4", "+8 crit points", "mage", 8, 30),
+             ("Cold Eye 4/4", "+8 crit points", "scout", 8, 30),
+             ("Ruination window", "+20 crit points, cap 50 %, 15 s per 60 s", "warrior", 20, 50))
     for name, effect, cls, pp, cap in cases:
         cells = []
         for per_dex, mult in ((C.TODAY_CRIT_PER_DEX, C.TODAY_CRIT_MULT), (C.CRIT_PER_DEX, C.CRIT_MULT)):

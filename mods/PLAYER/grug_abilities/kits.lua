@@ -300,8 +300,11 @@ grug_abilities.register_ability({
 	target_kind = "hostile",
 	description = "Dash to an enemy up to 12 m away; damage scales with your level\n" ..
 		"generating 15 rage and stunning eligible targets for 1.5 s.",
+	-- 12 % of a base hit before the damage scalar (Round 35): the former flat
+	-- 3 was exactly that at level 30 and faded with every level above it.
 	values = function(user)
-		return {damage = 3}
+		return {damage = 0.12 * grug_core.baseline_melee_total(
+			math.max(1, math.min(60, grug_core.get_player_level(user))))}
 	end,
 	description_for = function(user, def)
 		return ("Dash to an enemy up to 12 m away, dealing %d damage\n" ..
@@ -378,9 +381,9 @@ grug_abilities.register_ability({
 	-- hit; it was every other swing at the old +12).
 	proc_swing = function(user, target, ctx)
 		local tpos = target:get_pos() -- before the punch (lethal invalidates refs)
-		-- Heavy Hand (skill_trees.md §2.2): +0.05 weapon-damage multiplier per
+		-- Heavy Hand (skill_trees.md §2.2): +0.1 weapon-damage multiplier per
 		-- rank; 1.5 exactly without it. Broadstroke's cleave is lane X3's.
-		local mult = 1.5 + 0.05 * grug_classes.get_talent_bonus(user,
+		local mult = 1.5 + grug_classes.get_talent_bonus(user,
 			"mighty_blow_multiplier_add")
 		local damage = math.floor(ctx.weapon_damage * mult) + ctx.melee_bonus
 		return damage, 3, function(action_id)
@@ -393,7 +396,7 @@ grug_abilities.register_ability({
 					end
 				end
 			end
-			grug_classes.try_trigger_talent_window(user, "ruination", 10, 120)
+			grug_classes.try_trigger_talent_window(user, "ruination", 15, 60)
 		end
 	end,
 })
@@ -527,7 +530,7 @@ grug_projectiles.register("fireball", {
 					if not critical then return end
 					grug_classes.try_trigger_talent_window(owner,
 						"whitehot", talent_rank_value(owner, "whitehot",
-							"whitehot_window", 8), 120)
+							"whitehot_window", 8), 60)
 				end})
 		local splash = data.splash or 0
 		if splash > 0 then
@@ -544,8 +547,10 @@ grug_projectiles.register("fireball", {
 -- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana plus a
 -- server-authoritative one-second cast cadence instead of a talent-visible
 -- cooldown. Release locks the current crosshair target; enemy memory is never aim.
+-- Tinder and Whitehot's window damage are level-proof talent amounts
+-- (grug_classes.talent_level_amount); Whitehot's is 0 outside its window.
 local function fireball_values(user)
-	local window = grug_classes.talent_window_active(user, "whitehot") and 6 or 0
+	local window = grug_classes.get_talent_bonus(user, "whitehot_damage")
 	return {
 		damage = spell_damage_value(user,
 			grug_core.baseline_weapon_damage(
@@ -735,6 +740,10 @@ grug_abilities.register_ability({
 -- Priest (mana)
 --
 
+-- Recompense's internal cooldown: player name -> next us time it may grant.
+local RECOMPENSE_ICD = 6
+local recompense_ready = {}
+
 grug_abilities.register_ability({
 	id = "smite",
 	class = "priest",
@@ -781,11 +790,16 @@ grug_abilities.register_ability({
 		beam(user, target, "default_item_smoke.png^[multiply:#ffe9a0")
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0")
 		-- Sharpened Word, and Warded Wrath while an absorb is up
-		-- (skill_trees.md §2.6). Recompense's absorb is lane X3's.
+		-- (skill_trees.md §2.6). Recompense's absorb has a 6 s internal
+		-- cooldown (Round 35): refreshed on every Smite it outlasted the damage
+		-- of two same-level mobs.
 		local absorb = grug_classes.get_talent_bonus(user, "smite_absorb")
 		grug_core.deal_ability_damage(user, target, def.values(user).damage, {
 			on_accepted = function(_, _, action_id)
-				if absorb > 0 then
+				local name = user:get_player_name()
+				local now = core.get_us_time()
+				if absorb > 0 and now >= (recompense_ready[name] or 0) then
+					recompense_ready[name] = now + RECOMPENSE_ICD * 1e6
 					grug_core.add_absorb(user, "recompense", support_value(user, absorb),
 						15, user, action_id)
 				end
@@ -876,6 +890,7 @@ grug_abilities.register_ability({
 	color = "#e8e07a",
 	cost = {mana_percent = 8},
 	cooldown = 10,
+	cooldown_talent = "shield_cooldown_sub", -- Second Skin (skill_trees.md §2.5)
 	range = 15,
 	cast = function(user, pointed, def)
 		local target, err = grug_abilities.resolve_friendly_target(
@@ -886,11 +901,11 @@ grug_abilities.register_ability({
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
-		-- Warding Faith and Second Skin (skill_trees.md §2.5); their flat add
-		-- joins the base before the central level scalar. The 15 s duration is
-		-- unscaled. Turn Aside's dodge window is lane X3's.
+		-- Warding Faith (skill_trees.md §2.5) adds base-pool points; Second
+		-- Skin shortens the cooldown through cooldown_talent. Turn Aside's
+		-- dodge window is lane X3's.
 		if grug_core.add_absorb(target, "shield_spell", def.values(user).absorb,
-				15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {},
+				15, user, {},
 				{dodge_percent = talent_rank_value(user, "turn_aside", "dodge_chance_window", 0)})
 				> 0 then
 			grug_pvp.support_contact(user, target)
@@ -992,6 +1007,7 @@ end)
 
 core.register_on_leaveplayer(function(player)
 	mends[player:get_player_name()] = nil
+	recompense_ready[player:get_player_name()] = nil
 end)
 
 core.register_on_dieplayer(function(player)
@@ -1080,8 +1096,18 @@ grug_abilities.register_ability({
 		grug_core.deal_ability_damage(user, target, damage, {
 			on_accepted = function(dealt, _, action_id)
 				local properties = user:get_properties() or {}
-				if user:get_hp() < (tonumber(properties.hp_max) or 0) * 0.25 then
-					grug_classes.try_trigger_talent_window(user, "last_word", 8, 180)
+				if user:get_hp() < (tonumber(properties.hp_max) or 0) * 0.25 and
+						grug_classes.try_trigger_talent_window(user, "last_word", 12, 180) then
+					-- The trigger also resets Word of Ruin's cooldown (Round 35).
+					-- try_cast arms the cooldown after this cast returns, so the
+					-- reset runs on the next server step.
+					local name = user:get_player_name()
+					core.after(0, function()
+						local player = core.get_player_by_name(name)
+						if player then
+							grug_abilities.clear_cooldown(player, "word_of_ruin")
+						end
+					end)
 				end
 				local ratio = grug_classes.get_talent_bonus(user, "drain_ratio_override")
 				if ratio <= 0 then ratio = 50 end

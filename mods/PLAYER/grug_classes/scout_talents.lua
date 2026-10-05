@@ -10,29 +10,31 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "strong_draw", tree = "quarry", chain = "draw", tier = 1,
 	name = "Strong Draw",
-	description = "Loose damage +1 per rank.",
-	effects = {loose_damage_add = {1, 2, 3, 4, 5}},
+	description = "Loose damage +4% of a base hit per rank, before the " ..
+		"draw multiplier.",
+	effects = {loose_damage_add = {4, 8, 12, 16, 20}},
 })
 grug_classes.register_talent({
 	id = "cold_eye", tree = "quarry", chain = "draw", tier = 2,
 	name = "Cold Eye",
-	description = "+1 percentage point crit chance per rank.",
-	effects = {crit_chance_add = {1, 2, 3, 4}},
+	description = "+2 percentage points crit chance per rank.",
+	effects = {crit_chance_add = {2, 4, 6, 8}},
 })
 grug_classes.register_talent({
 	id = "twin_shot", tree = "quarry", chain = "draw", tier = 3,
 	keystone = true, replaces = "loose",
 	name = "Twin Shot",
 	description = "A full Loose draw fires two arrows. The second deals " ..
-		"50 / 60 / 70% damage and the action costs two arrows.",
-	effects = {loose_second_arrow = {50, 60, 70}},
+		"40 / 50 / 60% damage and the action costs two arrows.",
+	effects = {loose_second_arrow = {40, 50, 60}},
 })
 grug_classes.register_talent({
 	id = "longshot", tree = "quarry", chain = "draw", tier = 4,
 	capstone = true, replaces = "loose",
 	name = "Longshot",
-	description = "Loose reaches 33 m; a hit beyond 25 m deals +4 damage.",
-	effects = {loose_range_add = {8}},
+	description = "Loose reaches 33 m; a hit beyond 25 m deals +11% of a " ..
+		"base hit.",
+	effects = {loose_range_add = {8}, longshot_damage_add = {11}},
 })
 grug_classes.register_talent({
 	id = "quiver", tree = "quarry", chain = "ranging", tier = 1,
@@ -44,8 +46,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "fletching", tree = "quarry", chain = "ranging", tier = 2,
 	name = "Fletching",
-	description = "Loose reaches full draw in 2.25 / 2.0 / 1.75 / 1.5 s.",
-	effects = {draw_time_sub = {0.25, 0.50, 0.75, 1.00}},
+	description = "Loose reaches full draw in 2.375 / 2.25 / 2.125 / 2.0 s.",
+	effects = {draw_time_sub = {0.125, 0.25, 0.375, 0.5}},
 })
 grug_classes.register_talent({
 	id = "pinning_shot", tree = "quarry", chain = "ranging", tier = 3,
@@ -58,8 +60,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "shifting_weight", tree = "quarry", chain = "ranging", tier = 4,
 	name = "Shifting Weight",
-	description = "+1 percentage point dodge chance per rank.",
-	effects = {dodge_chance_add = {1, 2, 3}},
+	description = "+2 percentage points dodge chance per rank.",
+	effects = {dodge_chance_add = {2, 4, 6}},
 })
 
 grug_classes.register_tree({
@@ -72,8 +74,8 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "fine_edge", tree = "veil", chain = "blade", tier = 1,
 	name = "Fine Edge",
-	description = "+1 damage per rank on a landed authoritative swing.",
-	effects = {melee_damage_add = {1, 2, 3, 4, 5}},
+	description = "+4% of a base hit per rank on a landed authoritative swing.",
+	effects = {melee_damage_add = {4, 8, 12, 16, 20}},
 })
 grug_classes.register_talent({
 	id = "deep_focus", tree = "veil", chain = "blade", tier = 2,
@@ -85,7 +87,8 @@ grug_classes.register_talent({
 	id = "opening", tree = "veil", chain = "blade", tier = 3,
 	keystone = true, ability = "opening",
 	name = "Opening",
-	description = "New skill: a 15% base-mana swing from behind for " ..
+	description = "New skill: a 15% base-mana swing from behind, or at a " ..
+		"rooted or stunned target, for " ..
 		"220 / 250 / 280% Melee-slot weapon damage plus melee bonus; 12 s charge.",
 	effects = {opening_multiplier = {220, 250, 280}},
 })
