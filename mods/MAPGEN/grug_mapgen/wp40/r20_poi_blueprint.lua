@@ -26,6 +26,15 @@ local function sort_cells_zyx(cells, less)
 	for index = 1, #keys do cells[index] = by_key[keys[index]] end
 end
 
+-- The Round 36 decor kit (wp13/decor_kit.lua): the pieces a composition's
+-- `props` and `decor` rows name and the touches its closed houses get.
+local info = debug and debug.getinfo and debug.getinfo(1, "S")
+local here = type(info) == "table" and type(info.source) == "string" and
+	info.source:sub(1, 1) == "@" and info.source:sub(2):match("^(.*)[/\\][^/\\]*$")
+if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40" end
+local wp13 = dofile(here .. "/r7_wp13_library.lua").path()
+local decor = dofile(wp13 .. "/decor_kit.lua")(wp13)
+
 return function(options, profile)
 	local spec = assert(profile and profile.art, "Round 20 art profile missing")
 	local palettes = {
@@ -62,7 +71,7 @@ return function(options, profile)
 		fill(lo,0,lo,hi,0,hi,p.ground)
 		fill(lo,1,lo,hi,spec.height,hi,"air")
 	end
-	local footprints={}
+	local footprints,dressed={},{}
 	local function house(b,index)
 		local cx,cz,w,d,h,turn,form=unpack(b)
 		local raised=spec.race=="troll" and 1 or 0
@@ -105,6 +114,11 @@ return function(options, profile)
 		for step=0,1 do
 			for y=raised+1,raised+3 do put(ex+dx*step,y,ez+dz*step,"air") end
 			if raised>0 then put(ex+dx*step,1,ez+dz*step,"stairs:stair_junglewood",(4-turn)%4) end
+		end
+		if not open then
+			dressed[#dressed+1]={room={min={x=cx-w+1,z=cz-d+1},max={x=cx+w-1,z=cz+d-1}},
+				floor_y=raised,ground_y=0,seed=spec.number*7+index,
+				doors={{x=ex,z=ez},{x=ex+dx,z=ez+dz}}}
 		end
 		structures[#structures].entry={x=ex,y=raised+1,z=ez}
 		-- Small rooms keep their centre and entry empty. Windows are opposite
@@ -195,95 +209,28 @@ return function(options, profile)
 		else edge_z=first.z<0 and lo or hi end
 		connection(edge_x,edge_z,first.x,first.z,spec.number%2==0 and 2 or -2,true)
 	end
-	local function prop(q)
-		local kind,x,z=q[1],q[2],q[3]
-		local function at(dx,y,dz,name,param2) put(x+dx,y,z+dz,name,param2) end
-		local function column(dx,dz,h,name) for y=1,h do at(dx,y,dz,name) end end
-		if kind=="wall" or kind=="ruin" or kind=="hedge" or kind=="fence" then
-			local material=kind=="hedge" and "default:leaves" or kind=="fence" and "default:fence_wood" or p.stone
-			for dx=-1,1 do column(dx,0,kind=="fence" and 1 or (dx==-1 and 3 or 1),material) end
-			if kind=="ruin" then column(-1,1,2,p.stone) end
-		elseif kind=="arch" then
-			column(-1,0,4,p.stone);column(1,0,3,p.stone)
-			at(0,4,0,p.slab);at(1,4,0,p.slab)
-		elseif kind=="pier" or kind=="rock_tooth" or kind=="menhir" then
-			column(0,0,kind=="rock_tooth" and 5 or 3,p.stone)
-			column(1,0,kind=="rock_tooth" and 3 or 1,p.stone)
-			at(0,1,1,p.stone)
-		elseif kind=="cairn" or kind=="scree" or kind=="bones" then
-			for _,v in ipairs({{-1,0},{0,0},{1,0},{0,1}}) do at(v[1],1,v[2],kind=="bones" and "grug_nodes:bone_pile" or p.slab) end
-			if kind=="cairn" then at(0,2,0,p.stone) end
-		elseif kind=="stump" or kind=="fallen_tree" or kind=="timber" then
-			for dx=-1,1 do at(dx,1,0,p.post,12) end
-			if kind=="stump" then column(0,0,3,p.post);at(1,2,0,p.post)
-			elseif kind=="fallen_tree" then at(-1,2,0,p.post,12);at(1,1,1,p.post,12) end
-		elseif kind=="cart" or kind=="wheel" then
-			for dx=-1,1 do at(dx,1,0,p.post,12) end
-			at(-1,1,-1,p.slab);at(1,1,1,p.slab)
-			if kind=="cart" then
-				for dx=-1,1 do at(dx,2,0,p.slab);at(dx,2,1,p.slab) end
-				at(0,1,-1,p.post,12)
-			end
-		elseif kind=="ramp" or kind=="platform" then
-			for dx=-1,1 do at(dx,1,0,p.post);at(dx,2,0,p.slab);at(dx,1,1,p.slab) end
-			if kind=="platform" then column(-1,0,4,p.post);at(-1,4,1,p.slab) end
-		elseif kind=="rack" or kind=="trellis" or kind=="pipes" or kind=="chime" or kind=="hook" then
-			column(-1,0,3,p.post);column(1,0,3,p.post)
-			at(0,3,0,p.post,12)
-			if kind=="trellis" then at(0,1,0,"default:leaves");at(0,2,0,"default:leaves")
-			elseif kind=="chime" or kind=="pipes" then at(0,2,0,"default:fence_wood")
-			elseif kind=="rack" then at(0,1,0,"grug_decor:cottages_straw_mat") end
-		elseif kind=="banner" or kind=="fallen_banner" or kind=="brand" then
-			local cloth="grug_mapgen:poi_display_"..spec.race
-			if kind=="banner" then column(0,0,3,p.post);at(1,3,0,cloth)
-			elseif kind=="fallen_banner" then at(0,1,0,p.post,12);at(1,1,0,cloth)
-			else at(0,1,0,cloth) end
-		elseif kind=="table" or kind=="press" or kind=="altar" then
-			column(-1,0,1,p.post);column(1,0,1,p.post)
-			for dx=-1,1 do at(dx,2,0,p.slab) end
-			if kind=="press" then column(-1,0,4,p.post);column(1,0,4,p.post);at(0,4,0,p.post)
-			elseif kind=="altar" then at(0,3,0,"grug_decor:xdecor_candle",1) end
-		elseif kind=="shelf" or kind=="board" or kind=="samples" then
-			column(-1,0,3,p.post);column(1,0,3,p.post)
-			at(0,1,0,p.slab);at(0,3,0,p.slab)
-			at(0,2,0,kind=="board" and "grug_mapgen:poi_display_"..spec.race or p.stone)
-			if kind=="samples" then
-				-- Six fixed sample squares. They are ordinary masonry, never
-				-- collectible gems or replacements for the twelve resource roots.
-				for dx=-1,1 do for y=1,2 do at(dx,y,1,"grug_mapgen:poi_display_"..spec.race) end end
-			end
-		elseif kind=="trough" or kind=="hoard" then
-			for dx=-1,1 do at(dx,1,0,p.slab) end
-			at(-1,1,1,p.stone);at(1,1,1,p.stone)
-		elseif kind=="coil" or kind=="crescent" or kind=="marks" then
-			for _,v in ipairs({{-1,0},{0,1},{1,0}}) do at(v[1],0,v[2],p.stone) end
-		elseif kind=="web" then
-			column(0,0,2,"default:fence_wood");at(1,2,0,"default:fence_wood")
-		elseif kind=="cocoon" then column(0,0,2,"default:silver_sandstone")
-		elseif kind=="feathers" or kind=="grass" then
-			at(0,1,0,"default:dry_shrub",4);at(1,1,0,"default:dry_shrub",4)
-		elseif kind=="flower" then
-			at(0,1,0,"grug_decor:xdecor_potted_viola");at(1,1,0,"grug_decor:xdecor_potted_dandelion_yellow")
-		elseif kind=="slab" then
-			for dz=-1,1 do at(0,1,dz,p.slab) end
-		elseif kind=="grave" then column(0,0,2,p.stone);at(0,1,1,p.slab)
-		elseif kind=="totem" then column(0,0,3,p.post);at(0,3,0,"grug_mapgen:poi_display_"..spec.race)
-		elseif kind=="rail" or kind=="oar" or kind=="tools" then
-			for dz=-1,1 do at(0,1,dz,p.post,4) end
-			if kind=="rail" then for dz=-1,1 do at(1,1,dz,p.post,4) end end
-		elseif kind=="crates" or kind=="crate" or kind=="jars" or kind=="baskets" then
-			at(0,1,0,"grug_decor:xdecor_barrel")
-			if kind~="crate" then at(1,1,0,"grug_decor:xdecor_barrel") end
-		elseif kind=="bench" then at(0,1,0,"grug_decor:cottages_bench",2);at(1,1,0,"grug_decor:cottages_bench",2)
-		elseif kind=="candle" then at(0,1,0,p.stone);at(0,2,0,"grug_decor:xdecor_candle",1)
-		elseif kind=="lantern" then column(0,0,2,p.post);at(0,3,0,"grug_decor:xdecor_lantern")
-		elseif kind=="bowl" then at(0,1,0,"grug_decor:xdecor_cauldron")
-		elseif kind=="shield" or kind=="coins" or kind=="shutter" then at(0,1,0,"grug_mapgen:poi_display_"..spec.race)
-		elseif kind=="drum" then at(0,1,0,"grug_decor:xdecor_barrel");at(0,2,0,p.slab)
-		elseif kind=="bollard" then column(0,0,2,p.post)
-		else error("Round 20 unknown scenery: "..tostring(kind)) end
+	-- Decor pieces (wp13/decor_kit.lua), each placed whole on open ground,
+	-- never on the central actor clearance or in front of a doorway; then
+	-- the houses' own touches on the open ground the pieces and the paths
+	-- left.
+	local brush=decor.brush(decor.view(put,function(x,y,z)
+		if x>=lo and x<=hi and z>=lo and z<=hi and y>=0 and y<=spec.height then return by_pos[key(x,y,z)] end
+	end),spec.race)
+	brush.display="grug_mapgen:poi_display_"..spec.race
+	local reserved={}
+	for z=-2,2 do for x=-2,2 do reserved[x..":"..z]=true end end
+	for _,s in ipairs(structures) do
+		local e,turn=s.entry,s.entry_turn
+		local ox,oz=({0,1,0,-1})[turn+1],({-1,0,1,0})[turn+1]
+		decor.reserve_door(reserved,{{e.x,e.z},{e.x+math.abs(oz),e.z+math.abs(ox)}},ox,oz,2)
 	end
-	for _,q in ipairs(spec.props) do prop(q) end
+	local rules={ground={[p.ground]=true},reserved=reserved,label=spec.key,
+		inside=function(x,y,z) return x>=lo and x<=hi and z>=lo and z<=hi and y>=0 and y<=spec.height end}
+	for _,q in ipairs(spec.props) do decor.place(brush,q,rules) end
+	for _,q in ipairs(spec.decor or {}) do decor.place(brush,q,rules) end
+	for _,house_info in ipairs(dressed) do
+		decor.dress_house(brush,house_info,{ground={[p.ground]=true},blocked=reserved})
+	end
 	-- Actor roots and the host approach are invariant across all authored art.
 	-- No duplicate camp fire, banner, dragon, rare or resource is authored here.
 	for z=-2,2 do for x=-2,2 do for y=1,3 do

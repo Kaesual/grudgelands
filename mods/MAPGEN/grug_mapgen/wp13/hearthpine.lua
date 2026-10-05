@@ -13,6 +13,7 @@ local function loader(directory)
 	local palettes = dofile(directory .. "/palette.lua")
 	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 
 	local RADIUS = 63
@@ -368,6 +369,13 @@ local function loader(directory)
 		-- 8. Planting: the pine wood the clearing was cut from, then
 		-- scattered undergrowth on whatever soil is still open.
 		layout.plant_wood(buf, palette, RADIUS, 5)
+
+		-- 8c. Every house's small touches (Round 36 decor kit): a barrel or a
+		-- pot by the door, flowers under the windows, a wood pile or a barrel
+		-- against a side wall; never on a socket or the cell before it.
+		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
+
 		dressing.vale_undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
 
 		-- 9. Pane shapes. `xpanes` settles a pane's node and param2 from its

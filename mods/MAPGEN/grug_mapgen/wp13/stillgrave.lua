@@ -31,6 +31,7 @@ local function loader(directory)
 	local palettes = dofile(directory .. "/palette.lua")
 	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 
 	local RADIUS = 63
@@ -432,12 +433,17 @@ local function loader(directory)
 						cairn[3])
 				end)
 		end
+		-- A settle runs along its axis and looks across it (Round 36: the two
+		-- end settles were laid along x and read as a stair; the court settle
+		-- now looks at its idle socket, the east one runs along z).
 		for _, seat in ipairs({{-5, 10, 2, "x"}, {-6, -6, 0, "x"},
-				{4, -6, 0, "x"}, {-10, 3, 1, "z"}, {9, 1, 3, "z"}}) do
-			paved_prop("stone settle", seat[1], seat[2], seat[1] + 1, seat[2],
+				{4, -6, 0, "x"}, {-10, 3, 0, "x"}, {9, 1, 3, "z"}}) do
+			local x2 = (seat[4] == "x") and seat[1] + 1 or seat[1]
+			local z2 = (seat[4] == "z") and seat[2] + 1 or seat[2]
+			paved_prop("stone settle", seat[1], seat[2], x2, z2,
 				function()
 					dressing.bench(buf, palette, seat[1], seat[2], seat[3], 2,
-						"x")
+						seat[4])
 				end)
 		end
 		stepping(-6, 5, -6, 8)
@@ -569,6 +575,12 @@ local function loader(directory)
 
 		-- 9b. The waypoint pad, before the bone piles so nothing grows on it.
 		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "stillgrave")
+
+		-- 9c. Every house's small touches (Round 36 decor kit): a barrel or a
+		-- pot by the door, flowers under the windows, a wood pile or a barrel
+		-- against a side wall; never on a socket or the cell before it.
+		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
 
 		-- 10. Bone piles and dead shrubs on whatever open blight is left:
 		-- thin over the basin, thicker where the ground is already turned.

@@ -637,8 +637,8 @@ regional compositions. The remaining 70 art slots receive individually authored
 building placement, entrances and cultural palettes: six villages, eighteen
 outposts, six frontier bandit camps, six mines, four mirefolk camps, sixteen
 clash sites, two dragon arenas, two apex camps and ten rare-route pads. Inhabited
-sites have multiple structures; encounter clearings and rare pads intentionally
-remain open. Villages include four to six buildings. Shared building components
+sites have multiple structures; encounter clearings and rare pads have no
+buildings and keep their centres open (their dressing: "Decor pass" below). Villages include four to six buildings. Shared building components
 are allowed; an identical rotated town layout is not the design.
 
 Art uses the existing settlement projection, actor-root priority and reserved
@@ -654,6 +654,75 @@ quest host. Hostile new camps do not gain friendly residents. Each starting
 town and capital has a separate cook questgiver near its oven, distinct from
 the Cooking profession trainer. Capitals reuse existing quest shells for their
 envoy. Quest identities and journey structure belong to `quests.md`.
+
+## Decor pass (Round 36)
+
+Every settlement composition carries dressing that fits its style (user
+review of 2026-10-05 on the POI review page; WP13 rework, plan §2.11). The
+pieces and rules live in one module, `grug_mapgen/wp13/decor_kit.lua`; every
+node comes from the race's settlement palette (`wp13/palette.lua`), so a dwarf
+well looks dwarf. Footprints, positions, paths, protection boxes, sockets
+and the world plan are unchanged; only cells inside each composition's own
+volume change.
+
+**A theme per kind.** The Round 20 and Round 14/15 compositions name their
+pieces as authored rows (`r20_poi_catalog.lua` `props`, the Round 14
+builder's `DECOR` table); the old block formations (walls, ruins, menhirs,
+cairns, bare log stacks) are gone.
+
+| Kind | Theme | Pieces |
+|---|---|---|
+| Village | a lived-in hamlet | well with its lamp, crafting corner (workbench, wood pile, barrel, table), flower bed, stores, kitchen garden, lantern post, bench |
+| Outpost | a watch post | banner pole with a torch, weapon rack, stores, lantern post, bench |
+| Frontier bandit camp | a robbers' hideout | loot stores, lean-to with sleeping mats, weapon rack, broken palisade, drying rack (the camp fire stays the centre) |
+| Mine | a working dig | ore heap and ore cart before the adit, pit timber, crafting corner, tool rack, stores, lantern post |
+| Mirefolk camp | a fen camp | drying racks, baskets on mud, totem, cold hearth, lantern post |
+| Clash site | the remains of a battle | broken palisade, banner pole, thrown-down banner, weapon rack, fresh graves (one with a candle), burnt cart on ash, fallen masonry |
+| Rare pad | the beast's lair | stone den, nest, bones, claw scrapes, a traveller's remains; per beast webs (spider), a nest (bird), churned earth (boar), ash (fire), a toll barricade (the captain) |
+| Apex camp | the gem prospectors' camp | shelters, hearth with a bench, sorting table, ore heaps and cart, crafting corner, stores, lamps along the way; the sample wall stays |
+| Start-zone village / outpost / camp (Round 14/15) | as their kind | well, flower bed, crafting corner, lamp, wood pile / banner pole, weapon rack, stores / palisade, rack, lean-to, cold hearth |
+
+**Placement rules.** An authored piece lands whole or the composition fails
+to build (`decor_kit.place`): it stands only on the composition's open
+ground, never on a path, a built cell, a socket or the cell in front of it,
+the two cells before a doorway, or the central actor clearance (the 5 × 5
+round the anchor where actors, the quest host, the anchor's camp fire or
+banner and a clash site's quest objects stand). Nothing solid (a barrel,
+a crate, a log, a post, a bench) stands directly before or behind a
+window at the window's height; plants, pots, mats and lights may. The
+four rift-site
+candidates keep their four `props` rows at the positions the crack plan
+avoids and carry their other pieces as `decor` rows off the crack;
+Tombroad Ambush's crack cells and the two nodes below them are untouched.
+
+**House touches.** Every closed building of a POI, a start town and a
+capital district plot gets small touches from its own door, walls and
+windows (`decor_kit.dress_house`): a torch beside a door without one, a
+barrel, two stacked or a pot plant by the door, pot plants under a window,
+a short wood pile or a barrel against a side wall. They stand on open
+ground or on the paving round the house: its apron and, in a start town
+or a capital plot, the edge of the lane along its wall. A solid touch is
+placed only where the lane past it stays open (the cells outward of it and
+of both its wall-side neighbours are free ground two nodes high), never
+before a window, on a socket or the cell before it.
+
+**Light.** A few lights per POI: the door torches and one to three lantern
+posts or banner torches. The settlement writer relights every chunk it
+writes from the light sources (`r6_settlement.lua` `calc_lighting`), so a
+mapgen-placed torch lights at once.
+
+**Rooms and ways.** Every closed room keeps at least two nodes of air
+over its walkable floor (Redtusk Village's low annex, the one two-course
+Round 14 house, has three since Round 36), and every place a player can
+walk to from a composition's arrival without its dressing stays reachable
+with it, within a detour of a few steps.
+
+**Benches.** A bench of stair seats runs along its axis and every seat
+looks across it; temple pews look at the altar. `tools/r36_w/
+portable_test.lua` checks every start and capital for a seat that looks
+along its own bench, holds every composition's bounds, airspace and
+sockets to main's record from before the pass, and checks the windows,
+the headroom and the ways above over every composition.
 
 ## Round 21 ground and access correction
 

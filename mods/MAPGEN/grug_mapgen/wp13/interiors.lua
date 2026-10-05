@@ -674,8 +674,8 @@ function M.kits.barracks(buf, parts, palette, room, spec)
 	return lights
 end
 
--- A temple or shrine: a runner up the middle, benches either side, and an
--- altar of the race's own board and candlelight at the far end.
+-- A temple or shrine: a runner up the middle, benches either side looking
+-- at the altar of the race's own board and candlelight at the far end.
 function M.kits.temple(buf, parts, palette, room, spec)
 	local lights = {}
 	local cx = math.floor((room.x1 + room.x2) / 2)
@@ -684,8 +684,8 @@ function M.kits.temple(buf, parts, palette, room, spec)
 	end
 	local rows = 0
 	for z = room.z1 + 2, room.z2 - 4, 2 do
-		M.settle(buf, parts, palette, room, cx - 2, z, "x", 2, 1)
-		M.settle(buf, parts, palette, room, cx + 1, z, "x", 2, 3)
+		M.settle(buf, parts, palette, room, cx - 2, z, "x", 2, 0)
+		M.settle(buf, parts, palette, room, cx + 1, z, "x", 2, 0)
 		rows = rows + 1
 	end
 	if rows == 0 then error("wp13 interiors: temple with no bench row", 0) end
