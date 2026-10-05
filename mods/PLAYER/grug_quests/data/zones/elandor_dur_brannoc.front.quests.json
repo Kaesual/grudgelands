@@ -10,7 +10,7 @@
       "level": 60,
       "requires": [],
       "title": "Optional: A Blank Space on the Clan's Map",
-      "text": "Our chart leaves the {name:front_wyrmglass_crown/spires} on the Wyrmglass Crown {dir_from_giver:front_wyrmglass_crown/spires} blank, which offends me as a dwarf and a keeper of records. Reach the island by boat from the Shipwright at our stables, keeping to the shelf and the channel, away from the Kraken's deep water. Kill six Crown Crag Eagles on those spires by day, and pry the branded coin out of the survey cairn at {name:r20_anchor_075}; somebody has been signing our survey in the wrong ink.",
+      "text": "Our chart leaves the {name:front_wyrmglass_crown/spires} on the Wyrmglass Crown {dir_from_giver:front_wyrmglass_crown/spires} blank, which offends me as a dwarf and a keeper of records. Reach the island by boat; the Shipwright at our stables sells them. Keep to the shelf and the channel on the crossing, away from the Kraken's deep water. Kill six Crown Crag Eagles on those spires by day so a surveyor can look at the stone without being pecked for it.",
       "objectives": [
         {
           "type": "kill",
@@ -19,13 +19,6 @@
           ],
           "count": 6,
           "area": "front_wyrmglass_crown/spires"
-        },
-        {
-          "type": "use",
-          "place": "r20_anchor_075",
-          "object": "survey_cairn",
-          "label": "Pry the brand-coin from the survey cairn",
-          "hold": 5
         }
       ],
       "rewards": {
@@ -101,6 +94,36 @@
       },
       "lesson": "Island salvage bounty: coin at the cap.",
       "duration_min": 25,
+      "optional": true
+    },
+    {
+      "id": "accord_main_island_cairn",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "accord_main_roll"
+      ],
+      "title": "Optional: Wrong Ink on the Survey",
+      "text": "Somebody pressed a branded coin into the capstone of the survey cairn at {name:r20_anchor_075} on the Wyrmglass Crown, as if to sign the island into their own books. Take a boat from the Shipwright at our stables, keep to the shelf and the channel, and pry the coin out. The clan's records have no line for a debt to the ground itself, and I intend to keep it that way.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_075",
+          "object": "survey_cairn",
+          "label": "Pry the brand-coin from the survey cairn",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 300,
+        "items": []
+      },
+      "lesson": "Optional island extension of the main line (chapter 3 on): one use, coin only.",
+      "duration_min": 30,
       "optional": true
     }
   ]

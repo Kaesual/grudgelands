@@ -468,17 +468,56 @@
       ]
     },
     {
+      "id": "accord_main_standard",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 46,
+      "level": 47,
+      "requires": [
+        "accord_main_accounts"
+      ],
+      "title": "Borrowed Against the Dead",
+      "text": "A Throng seal on Senn's bundle is a suggestion, and a dead toll-taker's purse is not a witness. Nella Hedgeward says the dead on The Shattered Line rally on the same burnt pay. Kill three Brandbound Collectors after dark in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, unpick the pledged standard at {name:r20_anchor_082}, and take the stitching to Nella at Last Hedge Redoubt.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "brandbound_collector"
+          ],
+          "count": 3,
+          "area": "front_shattered_line/trenches"
+        },
+        {
+          "type": "use",
+          "place": "r20_anchor_082",
+          "object": "pledged_standard",
+          "label": "Unpick the pledged standard",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Main line, chapter 2 (46): the opener; a corrupted sub-type in the Shattered Line trenches by night and a use at its clash site, turned in at Last Hedge Redoubt.",
+      "duration_min": 15,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
       "id": "accord_main_orders",
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r31_accord_warmaster",
-      "min_level": 46,
-      "level": 48,
+      "min_level": 47,
+      "level": 49,
       "requires": [
-        "accord_main_accounts"
+        "lasthedge_front_04"
       ],
       "title": "In Their Own Words",
-      "text": "A Throng seal on a pay bundle is a suggestion, and a dead toll-taker's purse is not a witness. The Throng Captain at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, carries his orders on him; defeat him and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
+      "text": "Ninepins pledged his standard against the next payment, and the Throng's high war camp sits on the same line. The Throng Captain at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, carries his orders on him; defeat him and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
       "objectives": [
         {
           "type": "item",
@@ -504,7 +543,7 @@
         "weight": 3,
         "items": []
       },
-      "lesson": "Main line, chapter 2 (46): behind the lines, solo; the captain of the enemy war camp on The Shattered Line drops his orders (quest drop).",
+      "lesson": "Main line, chapter 2 (47): behind the lines, solo; the captain of the enemy war camp on The Shattered Line drops his orders (quest drop).",
       "duration_min": 20,
       "tags": [
         "accord_main"
@@ -518,11 +557,10 @@
       "min_level": 47,
       "level": 49,
       "requires": [
-        "accord_main_orders",
-        "lasthedge_front_04"
+        "accord_main_orders"
       ],
       "title": "A Quiet Audit",
-      "text": "The Throng's orders list pay they seized from the same factors, wrapped in genuine Ashenward requisition forms and countersigned by Requisition Clerk Odren Vell, who left this Bastion last season \"to settle arrears\". The forged Throng requisition was written on our own paper. Vell's couriers kept their pay ledger at {name:elandor_glassroot_wilds/couriers_stump} {dir_of:r20_anchor_036:elandor_glassroot_wilds/couriers_stump}; copy it and bring the copy to me and to nobody else, because this finding stays under seal.",
+      "text": "The Throng's orders list pay they seized from the same factors, wrapped in genuine Ashenward requisition forms and countersigned by Requisition Clerk Odren Vell, who left this Bastion last season \"to settle arrears\"; the forged Throng requisition was written on our own paper. Vell's couriers kept their pay ledger at {name:elandor_glassroot_wilds/couriers_stump} {dir_of:r20_anchor_036:elandor_glassroot_wilds/couriers_stump}; copy it and bring the copy to me and to nobody else. This finding stays under seal, and when you can hold your own on Gravesalt's salt, come back for your next orders.",
       "objectives": [
         {
           "type": "use",
@@ -537,6 +575,38 @@
         "items": []
       },
       "lesson": "Main line, chapter 2 (last turn-in): the traitor named; a use at Glassroot Wilds' quest place.",
+      "duration_min": 15,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "accord_main_roll",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 53,
+      "level": 55,
+      "requires": [
+        "accord_main_audit"
+      ],
+      "title": "Hounds for the Debtors",
+      "text": "Vell's couriers ran their pay toward Gravesalt Escarpment, and Borin Splitbolt writes that the Saltroad Deserters there have found a use for branded coin. Their Debtjaw Hounds run the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}, with the same ember in their coats; put down four by day. Then report to Borin at Splitbolt Station; he has something to show you about the Last-Watch dead.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "debtjaw_hound"
+          ],
+          "count": 4,
+          "area": "front_gravesalt_escarpment/tombwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Main line, chapter 3 (53): the Warmaster's opener, a corrupted sub-type in the Tombwood by day, turned in at Splitbolt Station.",
       "duration_min": 15,
       "tags": [
         "accord_main"
@@ -584,7 +654,7 @@
         "accord_main_tally"
       ],
       "title": "Group: The Collector Comes Due",
-      "text": "I entered Odren Vell in the Bastion's roll myself, with the cause beside his name. Every name accounted for. His too. The unpaid balance has gathered at {name:r20_anchor_077} {dir_from_giver:r20_anchor_077}, and the thing that came to collect it calls itself Isquarre the Tithe-Eater; take two or three companions and break it there, before the Throng claims the site and the story with it.",
+      "text": "I entered Odren Vell in the Bastion's roll myself, with the cause beside his name. Every name accounted for. His too. The unpaid balance has gathered at {name:r20_anchor_077} {dir_from_giver:r20_anchor_077}, and the thing that came to collect it calls itself Isquarre the Tithe-Eater; gather a group of two or three and break it there, before the Throng claims the site and the story with it.",
       "objectives": [
         {
           "type": "kill",

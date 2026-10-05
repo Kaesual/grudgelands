@@ -61,11 +61,11 @@
         }
       ],
       "rewards": {
-        "weight": 5,
+        "weight": 5.5,
         "items": []
       },
       "lesson": "The top belt of the Causeway at night.",
-      "duration_min": 14,
+      "duration_min": 18,
       "tags": [
         "accord_main"
       ]
@@ -286,38 +286,6 @@
       },
       "lesson": "Gravesalt entry by night, in the same outing.",
       "duration_min": 12
-    },
-    {
-      "id": "accord_main_roll",
-      "line": "front",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 53,
-      "level": 55,
-      "requires": [
-        "accord_main_audit"
-      ],
-      "title": "Hounds for the Debtors",
-      "text": "The Warmaster's letter says you can tell a branded coin from an honest one; good, because the Saltroad Deserters have found a use for that coin. Their Debtjaw Hounds run the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}, with the same ember in their coats, and they hunt my crews like overdue accounts. Put down four by day; then we'll talk about the Last-Watch dead who signed on again.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "debtjaw_hound"
-          ],
-          "count": 4,
-          "area": "front_gravesalt_escarpment/tombwood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Main line, chapter 3 (53): Borin's opener, a corrupted sub-type in the Tombwood by day.",
-      "duration_min": 12,
-      "tags": [
-        "accord_main"
-      ]
     },
     {
       "id": "splitbolt_front_03",

@@ -273,10 +273,10 @@
       "level": 49,
       "requires": [
         "lasthedge_front_07",
-        "accord_main_accounts"
+        "accord_main_standard"
       ],
       "title": "Nobody Left to Rally",
-      "text": "Every night {name:standard_bearer_ninepins} rallies Siege Skeleton Raiders and fire-stained Brandbound Collectors at the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}, on fresh pay for a war that was lost long ago. Defeat five of them after dark and their standard-bearer with them. His standard lies pledged against the next payment at {name:r20_anchor_082}; unpick the stitching, so nobody can borrow against it again.",
+      "text": "That stitching was a pledge: {name:standard_bearer_ninepins} borrows against every payment still to come, and his Siege Skeleton Raiders and Brandbound Collectors gather at the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins} to collect it. Defeat five of them after dark and their standard-bearer with them. Then tell the Warmaster; I'd like the next thing our watch hears from that breach to be the wind.",
       "objectives": [
         {
           "type": "kill",
@@ -293,13 +293,6 @@
             "standard_bearer_ninepins"
           ],
           "count": 1
-        },
-        {
-          "type": "use",
-          "place": "r20_anchor_082",
-          "object": "pledged_standard",
-          "label": "Unpick the pledged standard",
-          "hold": 5
         }
       ],
       "rewards": {
