@@ -17,7 +17,8 @@
 --      never hide it); gather otherwise (a hand-diggable or protected node,
 --      a dropped item, air, a node bare hands cannot dig); combat holds
 --      zero the pointing range once and never dig, gather holds never swing;
---      the grace for a native press; slot change, leave and join restore; the
+--      the grace for a native press; slot change (the old stack; a held press
+--      goes on with the new item, tools/r36_f2), leave and join restore; the
 --      bow shares the zero range. The Round 32 gather -> combat switch within
 --      a hold is tools/r32_f2's.
 -- Prints "R28 A4 PORTABLE PASS checks=<n>" or the failures.
@@ -777,10 +778,11 @@ do -- L7 a slot change mid-hold restores the old stack.
 	press()
 	check(range_of(1) == "0", "L7 combat on slot 1")
 	wield_index = 2
-	step() -- carried press into a new item: cancel
-	check(range_of(1) == "" and writes[#writes].via == "set_stack" and
-		writes[#writes].index == 1, "L7 slot 1 restored by set_stack after the switch")
-	check(range_of(2) == "", "L7 the new item is untouched")
+	step() -- a press carried into a new item goes on with it (Round 36 F2)
+	check(range_of(1) == "" and writes[#writes - 1].via == "set_stack" and
+		writes[#writes - 1].index == 1, "L7 slot 1 restored by set_stack after the switch")
+	check(range_of(2) == "0" and writes[#writes].via == "wield" and #writes == 3,
+		"L7 the new item takes the combat lock on the foe still in the crosshair")
 	release()
 	hold(4)
 	wield_index = 1

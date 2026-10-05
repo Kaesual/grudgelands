@@ -22,9 +22,9 @@
 --      evading after a leash reset) or fled beyond 2 x reach returns it to
 --      gather (briefly out of reach keeps the lock), and the same foe back in
 --      reach locks it again; a hostile in sight then keeps combat without a
---      range rewrite; release and a slot change reset; a key-down on air is
---      gather; cost: no combat ray while the crosshair rests on a solid node,
---      one per step behind a plant, loot or an actor.
+--      range rewrite; release resets, a slot change settles the old stack;
+--      a key-down on air is gather; cost: no combat ray while the crosshair
+--      rests on a solid node, one per step behind a plant, loot or an actor.
 --   L  quest labels: every shipped kill objective names each target by its
 --      zone display name (a leader's zone, else the area's zone, else the
 --      quest's zone); how many quests and zones that changes (30 and 13 at
@@ -396,7 +396,8 @@ do -- G1 a gather hold switches to combat on a hostile in the crosshair and reac
 	release()
 end
 
-do -- G8 a slot change resets everything.
+do -- G8 a slot change settles the old stack; the held press goes on with the
+	-- new item (Round 36 F2, tools/r36_f2), here at the foe still in sight.
 	select("strike")
 	main[2] = new_stack("grug_abilities:fireball")
 	aim(NODE)
@@ -406,7 +407,8 @@ do -- G8 a slot change resets everything.
 	check(range0(), "G8 switched on slot 1")
 	wield_index = 2
 	hold()
-	check(main[1].meta.range == nil and main[2].meta.range == nil, "G8 slot change restores the old stack")
+	check(main[1].meta.range == nil and main[2].meta.range == "0",
+		"G8 slot change restores the old stack, the new one fights on")
 	release()
 	aim(NODE)
 	press()

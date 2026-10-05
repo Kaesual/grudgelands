@@ -231,15 +231,43 @@ differs:
   self or support skill still fires on the fresh press as it would at a
   hostile. A ray at a mount means its rider, for the press as for the
   crosshair.
+- **A hotbar switch while held** (Round 36, the user's playtest finding of
+  2026-10-05): an LMB held across a switch to another item is the same
+  press, decided again for the new item as if it had been pressed with it,
+  once the new item has stayed wielded 0.2 s (real time; a further
+  switch restarts the wait, a release inside it acts for nothing). So a
+  slot the scroll wheel only passes never fires its skill (Blink mid-fight).
+  While it waits the hold acts on nothing (no Strike either), but digging
+  does not wait, and a combat lock waits with its zero range. Then
+  the start rule above decides gather or combat, except that a combat lock
+  keeps its foe while that foe is not gone for the new skill's reach (a
+  miss beside it still digs nothing). The new skill then acts as on a fresh
+  press: an attacking skill casts or swings (Strike if it is not
+  ready), a self or support skill fires once where a fresh press would (at
+  a hostile, an ally or air; while a combat lock is kept, also at a node
+  beside the foe), Loose strikes. Besides the
+  wait, two things differ from a real press: it reports nothing (refusals and "Evading"; a
+  held press stays quiet), and it has no tap window, so a gather hold digs
+  on at once and a quick release casts nothing. Cooldowns, resources and the
+  weapon clock are untouched (back to a skill on cooldown only strikes). A
+  switch to an ordinary tool or an empty slot ends the skill mode (both
+  stacks point again, the tool or hand digs natively); a switch back is
+  decided again. Digging goes on in both directions: the client keeps its
+  crack time across a wield change and the server accepts that dig, also
+  during the wait and across a fast scroll. A held RMB across a switch stays
+  cancelled until both buttons are released (its native place or
+  interaction belongs to the old item), as does a hold a stun or death
+  cancelled.
 
 The check costs a held gather step nothing on a solid node or air, one
 combat ray behind a plant, loot or an actor, and nothing at all with a self
 or support skill selected.
 
-The mode ends on release, cancel, item or slot change, death and leave; the
-pointing range returns then. A release seen within 0.15 s of the decision
-keeps the mode (a native punch can report a press before the control report
-does). The zero range reaches the client one round trip after the server
+The mode ends on release, cancel, death and leave and on a switch to an item
+that is no skill; the pointing range returns then. A switch to another skill
+decides it again (above) and moves the zero range to the new stack. A
+release seen within 0.15 s of the decision keeps the mode (a native punch
+can report a press before the control report does). The zero range reaches the client one round trip after the server
 sees the press: a press on a mob within 4 m reports itself at once and the
 client does not dig for 0.15 s after a punch anyway, but a press on a mob
 beyond 4 m is seen with the next control report, and a switch from gather
@@ -358,14 +386,17 @@ A skill that cannot act says why in the red flash line ("Fireball is not
 ready.", "Not enough mana.", "No room to blink.", "Not enough room at
 target.", "You need an arrow.", ...) — on a fresh press only: the key-down
 decision, the single empty-space or tap cast of a press, or the RMB press that
-starts a bow draw. Held repeats never report. The same message shows at most
+starts a bow draw. Held repeats never report, nor does the decision of a press
+carried across a hotbar switch. The same message shows at most
 once per second per player; a different message shows at once (Round 28
 ruling 13). A refused skill on a hostile still falls back to Strike, as
 before.
 
 ### Cancellation and native-client limits
 
-Stun, death and item swap cancel pending actions. Our own NPC/node interactions
+Stun and death cancel pending actions. An item swap drops the old item's
+pending actions (a tap, a bow draw, eating); an LMB held across it goes on
+with the new item (hold modes above). Our own NPC/node interactions
 cancel before opening. Native inventory, pause, chat and focus loss are observed
 as ordinary release: they may launch a drawn bow or resolve a pending short
 skill click. Very fast air clicks (under roughly 90 ms at the default server
