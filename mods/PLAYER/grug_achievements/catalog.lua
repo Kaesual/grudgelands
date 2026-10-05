@@ -11,7 +11,9 @@
 -- tier's `at` earns it (once) and unlocks its cloak. `text` is the condition
 -- with %d for the next tier's `at`; `text_one` replaces it while that `at` is
 -- 1 (and is the only text of a one-kill achievement). `flavour` shows in the
--- tab's tooltip. Names, flavour and cloak names are GPT-6 Astra's proposals
+-- tab's tooltip. An optional `faction` ("accord" or "throng") gives a row to
+-- that faction's characters only: the others never see or earn it (nor does
+-- a character without a faction yet); a row without it is everyone's. Names, flavour and cloak names are GPT-6 Astra's proposals
 -- (Round 33); the selection and tiers are the user's (2026-10-04). Counters:
 --   kill:animal           every wild animal: critters and hostile beasts,
 --                         no humanoids (creatures.lua)
@@ -215,15 +217,15 @@ return {
 			flavour = "The ground was exactly where you left it.",
 			tiers = {{at = 1, cloak = "grounded_1"}}},
 		-- Round 36, the main questline (story bible §6). The two final quest
-		-- ids are fixed: each faction's last Warmaster turn-in; only that
-		-- faction's Warmaster gives it, so only its characters can earn it.
+		-- ids are fixed: each faction's last Warmaster turn-in; each row is
+		-- its faction's alone (user, 2026-10-05).
 		{id = "every_name_accounted_for", name = "Every Name Accounted For",
-			counter = "quest:accord_main_final",
+			faction = "accord", counter = "quest:accord_main_final",
 			text_one = "Complete The Accord's main questline.",
 			flavour = "You brought back the names the enemy meant to turn into numbers.",
 			tiers = {{at = 1, cloak = "unburnt_roll"}}},
 		{id = "our_oaths_are_ours", name = "Our Oaths Are Ours",
-			counter = "quest:throng_main_final",
+			faction = "throng", counter = "quest:throng_main_final",
 			text_one = "Complete The Throng's main questline.",
 			flavour = "Let them keep their coin. Nobody else speaks for our dead.",
 			tiers = {{at = 1, cloak = "unbought_banner"}}},

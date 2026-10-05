@@ -26,7 +26,9 @@
 --     quest:<quest id> and quest_tag:<tag> for each of the quest's `tags`,
 --     each only while an achievement asks for it.
 -- Every achievement is also settled once at join, so a counter that moved
--- without a hook (an admin edit) still earns its tier.
+-- without a hook (an admin edit) still earns its tier. A row with a
+-- `faction` (catalog.lua) is never shown to, settled for or earned by a
+-- character of the other faction or one without a faction yet.
 --
 -- Public API:
 --   grug_achievements.add(player, counter[, amount])  count and settle
@@ -80,7 +82,15 @@ local function announce(player, rows)
 	grug_inventory.refresh_character(player)
 end
 
+-- The character's faction (nil while it has none, in character creation).
+local function faction_of(player)
+	return grug_core.get_player_faction(player:get_player_name())
+end
+
 local function settle(player, ach)
+	if not R.visible(ach, faction_of(player)) then
+		return false
+	end
 	local rows = R.settle(book, player:get_meta(), ach, value_of(player, ach.counter))
 	if #rows > 0 then
 		announce(player, rows)
@@ -115,7 +125,7 @@ end
 
 core.register_on_joinplayer(function(player)
 	local meta = player:get_meta()
-	for _, ach in ipairs(book.achievements) do
+	for _, ach in ipairs(R.visible_list(book, faction_of(player))) do
 		local rows = R.settle(book, meta, ach, value_of(player, ach.counter))
 		if #rows > 0 then
 			announce(player, rows)
@@ -339,18 +349,21 @@ function grug_achievements.row(player, ach)
 	return title, status, text, image, tip
 end
 
-local function page_count()
-	return math.max(1, math.ceil(#book.achievements / PER_PAGE))
+-- Only the character's own achievements are listed and paged: a row of the
+-- other faction is never shown.
+local function page_count(list)
+	return math.max(1, math.ceil(#list / PER_PAGE))
 end
 
 function grug_achievements.character_achievements_formspec(player, context)
-	local pages = page_count()
+	local list = R.visible_list(book, faction_of(player))
+	local pages = page_count(list)
 	local page = math.max(1, math.min(context.grug_achievements_page or 1, pages))
 	context.grug_achievements_page = page
 	local fs = {}
 	local first = (page - 1) * PER_PAGE
 	for slot = 1, PER_PAGE do
-		local ach = book.achievements[first + slot]
+		local ach = list[first + slot]
 		if not ach then
 			break
 		end
@@ -383,7 +396,8 @@ function grug_achievements.handle_tab_fields(player, context, fields)
 	if fields.grug_ach_prev or fields.grug_ach_next then
 		local page = (context.grug_achievements_page or 1) +
 			(fields.grug_ach_next and 1 or -1)
-		context.grug_achievements_page = math.max(1, math.min(page, page_count()))
+		context.grug_achievements_page = math.max(1, math.min(page,
+			page_count(R.visible_list(book, faction_of(player)))))
 		sfinv.set_player_inventory_formspec(player, context)
 		return true
 	end
