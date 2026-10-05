@@ -123,9 +123,9 @@ grug_mobs.apply_voice("grug_mobs:panther", panther)
 check(panther.sounds and panther.sounds.damage == "voice_feline_damage",
 	"V a feline gets its damage voice")
 check(panther.sounds and panther.sounds.war_cry == nil, "V the panther gets no war_cry")
-local rift = {_grug_voice = "spirit", sounds = {fuse = "default_cool_lava", death = "own_death"}}
+local rift = {_grug_voice = "spirit", sounds = {fuse = "rift_fuse", death = "own_death"}}
 grug_mobs.apply_voice("grug_mobs:rift_spawn", rift)
-check(rift.sounds.fuse == "default_cool_lava" and rift.sounds.death == "own_death" and
+check(rift.sounds.fuse == "rift_fuse" and rift.sounds.death == "own_death" and
 	rift.sounds.damage == "voice_spirit_damage", "V explicit sounds win, the family fills the rest")
 EVENTS.voice_canine_damage = nil
 local wolf = {_grug_voice = "canine"}
