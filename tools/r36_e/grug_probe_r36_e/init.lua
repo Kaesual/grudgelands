@@ -55,6 +55,7 @@ local function fake(name, pos)
 	end
 	local inv = {}
 	function inv:get_list() return {} end
+	function inv:get_stack() return ItemStack("") end
 	function p:get_inventory() return inv end
 	fakes[name] = p
 	return p
@@ -122,8 +123,12 @@ end)
 local t, phase, phase_t = 0, "start", 0
 local ann, bob, cid, dan, fire, banner
 local function set_phase(p) phase, phase_t = p, 0; log("phase -> " .. p) end
+-- The engine's hp-change call for a stand-in: only grug_quests' callback
+-- (the others want a real player's inventory and HUD).
 local function hurt(p, amount)
-	for _, fn in ipairs(core.registered_on_player_hpchanges.loggers) do fn(p, -amount, {type = "punch"}) end
+	for _, fn in ipairs(core.registered_on_player_hpchanges.loggers) do
+		if debug.getinfo(fn, "S").source:find("grug_quests/use.lua", 1, true) then fn(p, -amount, {type = "punch"}) end
+	end
 end
 local function near(p, object, dx)
 	local at = object:get_pos()

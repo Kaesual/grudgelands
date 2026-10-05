@@ -84,6 +84,7 @@ local current_mod = "grug_quests"
 local serial, players, entities, objects = {}, {}, {}, {}
 local hp_callbacks, joins = {}, {}
 local now_us = 0
+local unloaded = false
 local GROUND_Y = 10 -- every column: walkable dirt up to here, air above
 core = {
 	registered_items = {}, registered_aliases = {}, registered_entities = entities,
@@ -111,7 +112,10 @@ core = {
 	register_entity = function(name, def) entities[name] = def end,
 	register_on_player_hpchange = function(fn) hp_callbacks[#hp_callbacks + 1] = fn end,
 	register_on_joinplayer = function(fn) joins[#joins + 1] = fn end,
+	-- Blocks high above the ground are not loaded (out of the active range);
+	-- `unloaded` unloads everything.
 	get_node_or_nil = function(pos)
+		if unloaded or pos.y > GROUND_Y + 20 then return nil end
 		if pos.y <= GROUND_Y then return {name = "default:dirt"} end
 		if pos.y == GROUND_Y + 1 and pos.x % 2 == 1 then return {name = "default:grass_1"} end
 		return {name = "air"}
@@ -439,8 +443,12 @@ advance(3.0)
 eq(row_of(dan, "e_fire").objectives[1].count + row_of(dan, "e_fire_too").objectives[1].count, 2,
 	"D one hold credits both quests")
 dan.pos = at(CAIRN, 3, 0)
+unloaded = true
 Q.use_pass(dan)
 local ckey = Q.use_key(cairn)
+check(points[ckey] and not points[ckey].object, "D unloaded ground: the point waits without an object")
+unloaded = false
+Q.use_pass(dan)
 local cpoint = points[ckey]
 check(cpoint and cpoint.object and cpoint.object.observers.dan, "D the rule-placed place shows its object")
 check(cpoint and math.abs(cpoint.object.pos.x - CAIRN.x) <= 3 and math.abs(cpoint.object.pos.z - CAIRN.z) <= 3,

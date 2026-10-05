@@ -75,20 +75,26 @@ end
 
 -- The stand position on walkable ground in column (x, z): the highest
 -- walkable node that is no leaf or trunk, under a node that is neither
--- walkable nor liquid (air, grass, flowers). Nil when the column is not
--- loaded or has none.
+-- walkable nor liquid (air, grass, flowers). Nil when the column has none or
+-- is not loaded down to the terrain height (unloaded blocks above it, out
+-- of the active range, are skipped).
 local function column_ground(x, z)
 	local y0 = math.floor(grug_zones.terrain_height_at(x, z) + 0.5)
 	local open_above = false
 	for y = y0 + SCAN, y0 - SCAN, -1 do
 		local node = core.get_node_or_nil({x = x, y = y, z = z})
-		if not node or node.name == "ignore" then return nil end
-		local def = core.registered_nodes[node.name]
-		local plant = core.get_item_group(node.name, "leaves") > 0 or core.get_item_group(node.name, "tree") > 0
-		if def and def.walkable and not plant then
-			return open_above and {x = x, y = y + 1, z = z} or nil
+		if not node or node.name == "ignore" then
+			if y <= y0 then return nil end
+			open_above = false
+		else
+			local def = core.registered_nodes[node.name]
+			local plant = core.get_item_group(node.name, "leaves") > 0 or
+				core.get_item_group(node.name, "tree") > 0
+			if def and def.walkable and not plant then
+				return open_above and {x = x, y = y + 1, z = z} or nil
+			end
+			open_above = def ~= nil and not def.walkable and not plant and (def.liquidtype or "none") == "none"
 		end
-		open_above = def ~= nil and not def.walkable and not plant and (def.liquidtype or "none") == "none"
 	end
 	return nil
 end
