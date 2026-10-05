@@ -249,7 +249,7 @@ local function loader(directory)
 			for _, lamp in ipairs({{x0, z0 + 1}, {x1, z0 + 1}}) do
 				dressing.path_light(buf, palette, lamp[1], lamp[2])
 			end
-			dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
+			dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 		end
 
 		-- 3. Whatever this plot alone wants on its own ground. It runs BEFORE

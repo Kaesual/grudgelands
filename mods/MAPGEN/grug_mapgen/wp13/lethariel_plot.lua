@@ -264,7 +264,7 @@ local function loader(directory)
 			for _, lamp in ipairs({{x0 + 2, z0 + 2}, {x1 - 2, z0 + 2}}) do
 				dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
 			end
-			dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
+			dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 		end
 
 		-- 5b. A garden plot plants the ring its wider ground bought: a
