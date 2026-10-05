@@ -234,7 +234,7 @@ differs:
 - **A hotbar switch while held** (Round 36, the user's playtest finding of
   2026-10-05): an LMB held across a switch to another item is the same
   press, decided again for the new item as if it had been pressed with it,
-  once the new item has stayed wielded 0.2 s (four input passes; a further
+  once the new item has stayed wielded 0.2 s (real time; a further
   switch restarts the wait, a release inside it acts for nothing). So a
   slot the scroll wheel only passes never fires its skill (Blink mid-fight).
   While it waits the hold acts on nothing (no Strike either), but digging
@@ -244,7 +244,8 @@ differs:
   miss beside it still digs nothing). The new skill then acts as on a fresh
   press: an attacking skill casts or swings (Strike if it is not
   ready), a self or support skill fires once where a fresh press would (at
-  a hostile, an ally or air, never at a node), Loose strikes. Besides the
+  a hostile, an ally or air; while a combat lock is kept, also at a node
+  beside the foe), Loose strikes. Besides the
   wait, two things differ from a real press: it reports nothing (refusals and "Evading"; a
   held press stays quiet), and it has no tap window, so a gather hold digs
   on at once and a quick release casts nothing. Cooldowns, resources and the

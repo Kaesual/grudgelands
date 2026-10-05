@@ -18,7 +18,7 @@ return function(api)
 	-- one dedicated_server_step later) does.
 	local MODE_GRACE_US = 150000
 	-- A press held across a hotbar switch acts only once the new item has
-	-- stayed wielded this long (four 0.05 s input passes): a slot the wheel
+	-- stayed wielded this long (real time; two to four input passes): a slot the wheel
 	-- only passes while scrolling never fires its skill. Digging does not
 	-- wait (Round 36 F2).
 	local SETTLE_US = 200000
@@ -487,7 +487,7 @@ return function(api)
 		end
 		s.slot, s.item = slot, item
 		if not down and not right and s.cancelled then
-			s.cancelled, s.down, s.rmb = nil, false, false
+			s.cancelled, s.down, s.rmb, s.settle = nil, false, false, nil
 			return
 		end
 		if s.cancelled then s.down, s.rmb = down, right; return end
