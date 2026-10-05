@@ -1071,7 +1071,7 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "glacial_ward", class = "mage", talent_gated = true,
 	kind = "cast", target_kind = "self", name = "Glacial Ward",
-	description = "Surround yourself with a spell-powered absorb for 10 s.",
+	description = "Surround yourself with an absorb raised by gear Intelligence for 10 s.",
 	color = "#8bd8f0", cost = {mana_percent = 10}, cooldown = 30, range = 4,
 	values = function(user)
 		return {absorb = support_value(user,

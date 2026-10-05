@@ -127,7 +127,7 @@ Core principles:
   **13/16**, 8% = **13/12**, and 10% = **8/9**. Pool enchants and talents do
   not increase costs. Heal therefore supplies at least 12 casts at
   either endpoint; four untalented 25% casts equal one neutral health pool
-  before spell power, leaving capacity for a normal fight and another.
+  before the support factor, leaving capacity for a normal fight and another.
 - **HUD: one thin bar per resource, directly above the hotbar slots**
   (user ruling 2026-09-16, shipped in round 4; it replaces the colored
   resource *line* this bullet used to describe). Every class has exactly one

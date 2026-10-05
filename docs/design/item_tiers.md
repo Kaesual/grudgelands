@@ -280,7 +280,7 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   36): healing and absorbs are multiplied by `1 + gear Int / 10 / B(L)`,
   where gear Int is the Intelligence above the class's own level growth and
   B(L) a base hit (43.7 at level 60). A Priest without Intelligence gear
-  heals exactly the listed pool share (until Round 35 `1 + Int / 1000`, so 6 /
+  heals exactly the listed pool share (before Round 36 `1 + Int / 1000`, so 6 /
   9 / 11 % more at levels 30 / 45 / 60); one Intelligence enchant adds
   2.4–5.5 % (formerly 0.2–2.1 %), the Mage's Intelligence column, and a full
   Intelligence set +35 % at item level 60 and +44 % at 70 (formerly +13 % /
