@@ -1,5 +1,6 @@
 -- Ambience and music rules (Round 34 lane S2; round34-plan.md §2.1 rulings
--- 3-6, §4.2). PURE Lua: it calls nothing from `core`, so the portable fixture
+-- 3-6, §4.2; Round 35 lane M, round35-plan.md §2.8: music only in the
+-- capitals, either music or the bed). PURE Lua: it calls nothing from `core`, so the portable fixture
 -- (tools/r34_s2/portable_test.lua) loads the real file. init.lua is the
 -- runtime around it: the per-player slots, the water and node probes, the
 -- sound calls, the music push and the settings.
@@ -18,7 +19,8 @@ R.SLOT_PERIOD = 0.25
 -- Settings
 -- ---------------------------------------------------------------------------
 
-R.DEFAULT_VOLUME = 100
+-- The volume a player starts with, per channel (Round 35: music quieter).
+R.DEFAULT_VOLUME = {music = 35, ambience = 100}
 
 -- A volume in whole percent 0-100, or nil when `value` is not a number.
 function R.clamp_volume(value)
@@ -111,16 +113,26 @@ function R.bed_sound(data, key, available, rand)
 	end
 end
 
+-- Either music or the bed (Round 35): where music plays (R.music_active)
+-- the bed is silent, else the bed the state asks for. `wanted` is
+-- pick_bed's result (nil keeps the bed).
+function R.bed_wanted(wanted, music)
+	if music then return false end
+	return wanted
+end
+
 -- Hysteresis: a new bed must be wanted on two passes in a row before it
 -- replaces the playing one, so walking along a river bank or a town edge
--- does not swap beds every pass; diving in or coming up changes at once.
--- `b` is the player's bed state {key, want, seen, underwater}; `wanted` a
--- key or false (silence); `underwater` this pass's flag. Returns true when
--- the bed should change to `wanted` now.
-function R.bed_should_change(b, wanted, underwater)
-	underwater = underwater == true
-	local flipped = underwater ~= (b.underwater == true)
-	b.underwater = underwater
+-- does not swap beds every pass; diving in or coming up changes at once, and
+-- so does music starting or ending (the bed gives way to it, or comes back,
+-- without a gap or an overlap).
+-- `b` is the player's bed state {key, want, seen, underwater, music};
+-- `wanted` a key or false (silence); `underwater` and `music` this pass's
+-- flags. Returns true when the bed should change to `wanted` now.
+function R.bed_should_change(b, wanted, underwater, music)
+	underwater, music = underwater == true, music == true
+	local flipped = underwater ~= (b.underwater == true) or music ~= (b.music == true)
+	b.underwater, b.music = underwater, music
 	if wanted == b.key then
 		b.want, b.seen = nil, 0
 		return false
@@ -141,8 +153,9 @@ function R.bed_should_change(b, wanted, underwater)
 	return false
 end
 
--- The bed's gain: the base gain, the player's volume, quieter in towns
--- (the Town music pool carries their mood; user, round34-plan.md §2.2).
+-- The bed's gain: the base gain, the player's volume, quieter in start
+-- towns and capitals (user, round34-plan.md §2.2; in a capital the bed plays
+-- only with music off).
 function R.bed_gain(data, volume, town)
 	return data.gains.bed * volume / 100 * (town and data.gains.town_bed or 1)
 end
@@ -175,130 +188,126 @@ end
 -- Music
 -- ---------------------------------------------------------------------------
 
--- The pool a state draws from: Town inside start towns and capitals, else
--- by the atmosphere mood (§2.1 ruling 3); nil for a mood the table does not
--- know (the caller keeps the last group).
-function R.music_group(data, mood, town)
-	if town then return "town" end
-	return mood and data.music_groups[mood] or nil
+-- Music plays for a player only in a capital (round35-plan.md §2.8), one
+-- rotation per capital; the runtime passes the capital the player counts as
+-- in (grug_map.location.capital_of, with its border hysteresis) and that
+-- capital's rotation of shipped tracks.
+--
+-- Music state: on (music audible), capital (where it plays now, nil:
+-- nowhere), phase ("idle", "wait" for the pick to start, "play"), track (the
+-- pick waiting or playing), next (the pick after it, pushed while `track`
+-- plays), index (position in the rotation), delivered (track -> true once
+-- the client has the file), pushing and push_at (the push in flight), hold
+-- (no push before this time, after a refused one), start_at, ends_at.
+
+-- A new player's music state: silent until the player is in a capital.
+function R.music_new(on)
+	return {on = on, phase = "idle", delivered = {}, hold = 0}
 end
 
-local function contains(list, value)
-	for index = 1, #list do
-		if list[index] == value then return true end
-	end
-	return false
+-- Whether music has the player's ear now: music on and in a capital with a
+-- rotation. The bed is silent then (R.bed_wanted).
+function R.music_active(m)
+	return m.on and m.capital ~= nil
 end
 
--- A random track of `pool`, not `last` when the pool has another one.
-local function pick_track(pool, last, rand)
-	if #pool == 1 then return pool[1] end
-	local candidates = {}
-	for index = 1, #pool do
-		if pool[index] ~= last then candidates[#candidates + 1] = pool[index] end
-	end
-	return candidates[rand(1, #candidates)]
-end
-
--- A new player's music state. `on` is whether music is audible; the first
--- track starts 30-90 s after joining (ruling 3).
-function R.music_new(data, now, on, rand)
-	return {on = on, phase = "wait", delivered = {},
-		start_at = now + rand(data.music.first[1], data.music.first[2])}
-end
-
-local function begin(m, data, now)
-	local track = m.track
-	m.phase, m.ends_at, m.last, m.track = "play", now + data.tracks[track].seconds, track, nil
-	return "play", track
+local function next_track(m, rotation)
+	m.index = m.index % #rotation + 1
+	return rotation[m.index]
 end
 
 local function push(m, track, now)
-	m.track, m.pushing, m.push_at = track, track, now
+	m.pushing, m.push_at = track, now
 	return "push", track
 end
 
--- One pass of the scheduler. `pool` is the list of track ids for the
--- player's group now. Returns an action and a track id: "push" (send the
--- file to the player), "play", or nil.
---   * a playing track is never cut (no switch on a group change, none in
---     combat); when it ends a random 3-8 min pause starts;
---   * PUSH_LEAD seconds before the pause ends the next track is picked from
---     the pool of that moment and pushed if the player does not have it yet;
---   * when the pause ends and the player has meanwhile moved to a group whose
---     pool does not hold the pick, the pick is redone once from the new pool;
---   * the track plays as soon as the pause is over and the file is there
---     (the push callback calls music_delivered for the same rule);
---   * a push that is not confirmed within push_timeout seconds is dropped
---     and a new pause starts; an empty pool retries after empty_retry s.
+local function begin(m, data, now)
+	m.phase, m.ends_at = "play", now + data.tracks[m.track].seconds
+	return "play", m.track
+end
+
+-- One pass of the scheduler. Returns an action and a track id: "push" (send
+-- the file to the player), "play", "stop" (fade the playing track out), or
+-- nil.
+--   * entering a capital starts its rotation at a random place: the first
+--     track plays at once, or as soon as its push arrives;
+--   * leaving it (or a capital with no shipped track) stops the playing
+--     track with a fade and forgets every pick;
+--   * PUSH_LEAD seconds before a track ends the next one of the rotation is
+--     pushed if the player does not have it yet; after a track a pause of
+--     data.music.pause, then the next track plays (or as soon as its push
+--     arrives);
+--   * a push not confirmed within push_timeout seconds is given up and the
+--     rotation moves on; a refused one holds every push for retry seconds.
 -- Nothing is pushed or played while music is off.
-function R.music_step(m, data, now, pool, rand)
+function R.music_step(m, data, now, capital, rotation, rand)
 	if not m.on then return nil end
+	if capital and #rotation == 0 then capital = nil end
+	if capital ~= m.capital then
+		local playing = m.phase == "play"
+		m.capital, m.track, m.next, m.pushing = capital, nil, nil, nil
+		if capital then
+			m.phase, m.start_at, m.index = "wait", now, rand(1, #rotation) - 1
+		else
+			m.phase = "idle"
+		end
+		if playing then return "stop" end
+	end
 	if m.phase == "play" then
-		if now < m.ends_at then return nil end
-		m.phase, m.track, m.pushing = "wait", nil, nil
-		m.start_at = now + rand(data.music.pause[1], data.music.pause[2])
+		if now >= m.ends_at then
+			m.phase, m.start_at = "wait", now + data.music.pause
+			m.track, m.next = m.next, nil
+		elseif not m.next and now >= m.ends_at - data.music.push_lead and now >= m.hold then
+			m.next = next_track(m, rotation)
+			if not m.delivered[m.next] then return push(m, m.next, now) end
+		end
 		return nil
 	end
+	if m.phase ~= "wait" then return nil end
 	if not m.track then
-		if now < m.start_at - data.music.push_lead then return nil end
-		if #pool == 0 then
-			m.start_at = math.max(m.start_at, now + data.music.empty_retry)
-			return nil
-		end
-		local track = pick_track(pool, m.last, rand)
-		if not m.delivered[track] then return push(m, track, now) end
-		m.track = track
+		if now < m.hold then return nil end
+		m.track = next_track(m, rotation)
+		if not m.delivered[m.track] then return push(m, m.track, now) end
 	end
 	if now < m.start_at then return nil end
-	if not m.repicked and #pool > 0 and not contains(pool, m.track) then
-		m.repicked = true
-		local track = pick_track(pool, m.last, rand)
-		if not m.delivered[track] then return push(m, track, now) end
-		m.track = track
-	end
-	if m.delivered[m.track] then
-		m.repicked = nil
-		return begin(m, data, now)
-	end
-	if not m.pushing or now - m.push_at > data.music.push_timeout then
-		m.track, m.pushing, m.repicked = nil, nil, nil
-		m.start_at = now + rand(data.music.pause[1], data.music.pause[2])
+	if m.delivered[m.track] then return begin(m, data, now) end
+	if m.pushing ~= m.track or now - m.push_at > data.music.push_timeout then
+		-- Never pushed (a hold came between), lost or refused: move on.
+		m.track, m.pushing = nil, nil
 	end
 	return nil
 end
 
 -- The push of `track` arrived at the client. Returns "play", track when it
--- should start now (the pause is over and it is still the pick).
+-- should start now (the pick waits and its start time has come).
 function R.music_delivered(m, data, track, now)
 	m.delivered[track] = true
 	if m.pushing == track then m.pushing = nil end
 	if m.on and m.phase == "wait" and m.track == track and now >= m.start_at then
-		m.repicked = nil
 		return begin(m, data, now)
 	end
 	return nil
 end
 
--- A push that the engine refused: forget the pick, start a new pause.
-function R.music_push_failed(m, data, now, rand)
-	m.track, m.pushing, m.repicked = nil, nil, nil
-	m.start_at = now + rand(data.music.pause[1], data.music.pause[2])
+-- A push that the engine refused: forget it and push nothing for a while;
+-- the pick it was for is skipped.
+function R.music_push_failed(m, data, track, now)
+	if m.pushing == track then m.pushing = nil end
+	if m.track == track and m.phase == "wait" then m.track = nil end
+	if m.next == track then m.next = nil end
+	m.hold = now + data.music.retry
 end
 
 -- Music switched off or on (on/off or a volume of 0). Off: returns "stop"
 -- when a track plays; nothing is pushed until it is on again. On: the next
--- track comes after a short delay (data.music.resume).
-function R.music_set_on(m, data, on, now, rand)
+-- pass starts the capital's rotation if the player is in one.
+function R.music_set_on(m, on)
 	if on == m.on then return nil end
 	m.on = on
 	local playing = m.phase == "play"
-	m.phase, m.track, m.pushing, m.repicked = "wait", nil, nil, nil
-	if on then
-		m.start_at = now + rand(data.music.resume[1], data.music.resume[2])
-		return nil
-	end
-	return playing and "stop" or nil
+	m.phase, m.capital, m.track, m.next, m.pushing = "idle", nil, nil, nil, nil
+	if not on and playing then return "stop" end
+	return nil
 end
 
 -- ---------------------------------------------------------------------------
