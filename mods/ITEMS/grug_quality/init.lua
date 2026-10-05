@@ -84,13 +84,17 @@ grug_items.DROP_CHANCES = {
 	rare = ELITE_DROPS,
 }
 
--- Bosses: the Kings and the dragons through their reward ledger, a fortress
--- General on every enemy player's kill of him (Round 31: he has no ledger).
--- Always `count` items, each gold at `gold` percent, else blue, at a fixed
--- item level. Their other loot (Fallen Crown, Scaled Hide, war trophies)
--- comes from their own code.
+-- Bosses: the Kings, the dragons and the rift boss (Round 36) through their
+-- reward ledger, a fortress General on every enemy player's kill of him
+-- (Round 31: he has no ledger). Always `count` items, each gold at `gold`
+-- percent, else blue, at a fixed item level. Their other loot (Fallen Crown,
+-- Scaled Hide, war trophies) comes from their own code. `locked`: what a kill
+-- inside the character's 24-hour loot lockout gives instead, by boss kind --
+-- the rift boss an elite's roll at its level (round36-plan.md §2.1), every
+-- other boss nothing.
 grug_items.BOSS_DROPS = {count = 2, gold = 50,
-	ilvl = {king = 65, general = 65, dragon = 70}}
+	ilvl = {king = 65, general = 65, dragon = 70, rift = 65},
+	locked = {rift = "elite"}}
 
 -- A bag from any mob, independent of the gear roll: `chance` percent per
 -- kill, the size by the mob's level.
@@ -833,13 +837,14 @@ local function gear_stack(itemname, ilvl, quality, rng, seed)
 	return stack
 end
 
--- "king", "dragon" or "general" for a boss that rolls BOSS_DROPS, else nil.
--- The General leads a "general:" encounter; his bodyguards share the id but
--- are no leader, and a King's royal guards share his.
+-- "king", "dragon", "general" or "rift" for a boss that rolls BOSS_DROPS,
+-- else nil. The General leads a "general:" encounter; his bodyguards share
+-- the id but are no leader, and a King's royal guards share his.
 local function boss_kind(self)
 	local id = self._grug_boss_id
 	if type(id) ~= "string" then return nil end
 	if id:match("^dragon:") then return "dragon" end
+	if id:match("^rift:") then return "rift" end
 	if not self._grug_royal_king then return nil end
 	if id:match("^king:") then return "king" end
 	if id:match("^general:") then return "general" end
@@ -865,11 +870,18 @@ end
 
 -- What one kill drops (round33-plan.md §2.1): at most one gear item by the
 -- mob's tier at its level, two at a boss's fixed item level, and,
--- independently, a bag. A list of ItemStacks and the seed used.
-function grug_items.roll_mob_gear(self, seed)
+-- independently, a bag. `locked`: a boss kill inside the player's loot
+-- lockout, which rolls BOSS_DROPS.locked's tier instead, or nothing. A list
+-- of ItemStacks and the seed used.
+function grug_items.roll_mob_gear(self, seed, locked)
 	if not self or self._grug_no_quality_loot then return {} end
 	local tier = self._grug_tier or "normal"
 	local boss = boss_kind(self)
+	if boss and locked then
+		tier = grug_items.BOSS_DROPS.locked[boss]
+		if not tier then return {} end
+		boss = nil
+	end
 	local level = math.max(1, math.floor(tonumber(self._grug_level) or 1))
 	local ilvl = boss and grug_items.BOSS_DROPS.ilvl[boss] or math.min(level, 60)
 	-- The pool of the item level's material tier; boss drops above 60 are T6.
@@ -931,8 +943,8 @@ grug_mobs.register_kill_loot_hook(function(self, tagger_name)
 	end
 end)
 
-grug_mobs.register_boss_reward_hook(function(self, id, player)
-	local rewards = grug_items.roll_mob_gear(self)
+grug_mobs.register_boss_reward_hook(function(self, id, player, locked)
+	local rewards = grug_items.roll_mob_gear(self, nil, locked)
 	for index = 1, #rewards do
 		local stack = rewards[index]
 		if grug_gear and
