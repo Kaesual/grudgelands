@@ -29,7 +29,7 @@ local DECOR = {
 		dwarf = {{"banner",-2,-4,0},{"rack",-5,-4,1},{"stores",-7,4,1}},
 		human = {{"banner",-2,-4,0},{"rack",-5,-4,1},{"stores",0,4,2}},
 		elf = {{"banner",-4,-2,1},{"rack",3,-5,0},{"stores",-4,3,2}},
-		undead = {{"banner",-4,-2,1},{"rack",-4,-5,0},{"stores",2,5,2}},
+		undead = {{"banner",-4,-2,1},{"rack",-4,-5,0},{"stores",-7,2,1}},
 		orc = {{"banner",-2,-4,0},{"rack",-5,-4,1},{"stores",6,4,3}},
 		troll = {{"banner",0,4,2},{"rack",3,-5,0},{"stores",-5,6,2}},
 	},

@@ -11,7 +11,10 @@
 --      prop rows, and every clash site the quest object's open square;
 --   D. the decor kit: every piece builds in every race on open ground, and a
 --      house's touches never take a blocked cell, a path or the cells in
---      front of its door.
+--      front of its door;
+--   E. over every POI, start, capital core and plot: no solid cell the kit
+--      writes stands before or behind a window at the window's height, and
+--      every closed room keeps two nodes of air over its walkable floor.
 --
 -- Usage (repo root): luajit tools/r36_w/portable_test.lua [REPO]
 local repo = arg[1] or "."
@@ -189,6 +192,121 @@ do
 		end
 	end
 	check(#brush.lights == 1, "one door torch")
+end
+
+-- E. windows and headroom over every composition -------------------------
+-- Every cell the decor kit writes (an authored piece or a house touch) is
+-- recorded through its brush; no such cell that is not `decor.soft` may
+-- stand directly before or behind a window at the window's height. And
+-- every closed room keeps two nodes of air over its walkable floor.
+do
+	local real_dofile = dofile
+	local written
+	local function recording(buf)
+		local rec = {}
+		function rec:put(x, y, z, name, param2)
+			if written then written[#written + 1] = {x = x, y = y, z = z, name = name} end
+			return buf:put(x, y, z, name, param2)
+		end
+		function rec:at(x, y, z) return buf:at(x, y, z) end
+		function rec:fill(x1, y1, z1, x2, y2, z2, name, param2)
+			for z = z1, z2 do for y = y1, y2 do for x = x1, x2 do self:put(x, y, z, name, param2) end end end
+		end
+		function rec:clear(x1, y1, z1, x2, y2, z2) self:fill(x1, y1, z1, x2, y2, z2, "air", 0) end
+		return rec
+	end
+	dofile = function(path, ...)
+		local result = real_dofile(path, ...)
+		if type(path) == "string" and path:match("/decor_kit%.lua$") then
+			local loader = result
+			return function(dir)
+				local M = loader(dir)
+				local brush = M.brush
+				M.brush = function(buf, race, palette, lights)
+					return brush(recording(buf), race, palette, lights)
+				end
+				return M
+			end
+		end
+		return result
+	end
+	local comps = {}
+	local function add(label, build)
+		written = {}
+		local bp = build()
+		comps[#comps + 1] = {label = label, bp = bp, written = written}
+		written = nil
+	end
+	for _, profile in ipairs(settlement.roster) do
+		local file = profile.blueprint_file
+		if (file == "r20_poi_blueprint.lua" and profile.art.kind ~= "dragon") or
+				(file:match("^r7_.*_blueprint%.lua$") and profile.slot ~= "capital" and
+					profile.slot ~= "start") then
+			add(profile.key, function()
+				local bp = dofile(wp40 .. "/" .. file)(options, profile)
+				if type(bp) == "function" then bp = bp(options) end
+				return bp
+			end)
+		end
+	end
+	for _, name in ipairs({"dawnmere", "hearthpine", "kapok", "silverleaf", "stillgrave", "sunscar"}) do
+		add(name, function()
+			local bp = dofile(wp40 .. "/r7_" .. name .. "_blueprint.lua")
+			if type(bp) == "function" then bp = bp() end
+			return bp
+		end)
+	end
+	local capital2 = dofile(wp40 .. "/r7_capital_blueprint.lua")
+	for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak", "kezamba"}) do
+		local kit = capital2.kit(key)
+		add(key .. " core", kit.core.build)
+		for _, plot in ipairs(kit.plots) do add(key .. " " .. plot.id, plot.build) end
+	end
+	dofile = real_dofile
+	local decor_mod = decor
+	local recorded = 0
+	for _, c in ipairs(comps) do
+		local by = {}
+		for _, cell in ipairs(c.bp.cells) do by[cell.x .. "," .. cell.y .. "," .. cell.z] = cell.name end
+		local view = {at = function(_, x, y, z)
+			local n = by[x .. "," .. y .. "," .. z]
+			return n and {name = n} or nil
+		end}
+		for _, w in ipairs(c.written) do
+			recorded = recorded + 1
+			if w.y >= 1 and by[w.x .. "," .. w.y .. "," .. w.z] == w.name and not decor_mod.soft(w.name) then
+				check(not decor_mod.faces_window(view, w.x, w.y, w.z),
+					c.label .. ": " .. w.name .. " blocks a window at " .. w.x .. "," .. w.y .. "," .. w.z)
+			end
+		end
+		-- headroom: the room's standing course, flooded inside its box
+		local function air(x, y, z) local n = by[x .. "," .. y .. "," .. z]; return n == nil or n == "air" end
+		local rooms = {}
+		for _, s in ipairs(c.bp.landmarks.structures or {}) do
+			if s.interior and s.kind ~= "canopy" and s.w and s.d then
+				local w, d = s.w, s.d
+				if air(s.x + w, s.interior.y + 1, s.z) and not air(s.x + d, s.interior.y + 1, s.z) then w, d = d, w end
+				rooms[#rooms + 1] = {s.label, s.interior.y, s.x - w + 1, s.z - d + 1, s.x + w - 1, s.z + d - 1}
+			end
+		end
+		for _, r in ipairs(c.bp.landmarks.rooms or {}) do
+			if r.closed then
+				rooms[#rooms + 1] = {r.id or "room", r.min.y + 1, r.min.x, r.min.z, r.max.x, r.max.z}
+			end
+		end
+		for _, r in ipairs(rooms) do
+			local y, floor, low = r[2], 0, 0
+			for z = r[4], r[6] do for x = r[3], r[5] do
+				if air(x, y, z) and not air(x, y - 1, z) then
+					floor = floor + 1
+					if not air(x, y + 1, z) then low = low + 1 end
+				end
+			end end
+			check(floor > 0 and low * 4 <= floor, c.label .. " " .. tostring(r[1]) ..
+				": two nodes of headroom over the floor (" .. low .. " of " .. floor .. " cells lower)")
+		end
+	end
+	check(recorded > 1000, "decor cells recorded (" .. recorded .. ")")
 end
 
 print(("r36_w portable test: %d checks passed"):format(checks))

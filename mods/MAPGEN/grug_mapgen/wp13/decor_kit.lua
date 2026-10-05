@@ -62,6 +62,35 @@ local function loader(directory)
 	}
 	M.NODES = N
 
+	-- Is the cell a window? Panes (`xpanes:`), glass and the troll bars.
+	local WINDOW = {["default:glass"] = true, ["grug_decor:darkage_wood_bars"] = true,
+		["grug_decor:cottages_glass_pane"] = true,
+		["grug_decor:cottages_glass_pane_side"] = true}
+	function M.is_window(name)
+		return WINDOW[name] == true or name:sub(1, 7) == "xpanes:"
+	end
+
+	-- What may stand before a window (Round 36, user): a plant, a pot, a
+	-- flat mat, a light. Everything else (a barrel, a crate, a log, a post,
+	-- a bench) blocks the window and is refused at the window's height.
+	function M.soft(name)
+		return name == parts.AIR or name:find("potted_", 1, true) ~= nil or
+			name:find("^default:grass_") ~= nil or name:find("^default:fern_") ~= nil or
+			name:find("^default:dry_grass_") ~= nil or name == "default:dry_shrub" or
+			name == "default:junglegrass" or name == "default:torch" or
+			name == "default:torch_wall" or name == N.candle or name == N.mat
+	end
+
+	-- Does a cell at (x, y, z) stand directly before or behind a window, at
+	-- the window's own height?
+	function M.faces_window(buf, x, y, z)
+		for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+			local c = buf:at(x + d[1], y, z + d[2])
+			if c ~= nil and M.is_window(c.name) then return true end
+		end
+		return false
+	end
+
 	-- A WP13 buffer view over a builder that only has `put(x, y, z, name,
 	-- param2)` and `get(x, y, z) -> cell or nil`. A missing param2 takes the
 	-- engine's own placement value, as `Buffer:put` does.
@@ -624,6 +653,8 @@ local function loader(directory)
 	--             composition's authored volume
 	--   keep      optional set of "x:z" keys no cell at any height may take
 	--   label     the composition, for the error
+	-- A cell that is not `M.soft` never stands before a window at the
+	-- window's height.
 	-- Raises naming the piece and the cell when anything differs, so a
 	-- misplaced row is an authoring error, never a hole in the scene.
 	function M.place(brush, row, rules)
@@ -666,6 +697,9 @@ local function loader(directory)
 				if rules.reserved[c.x .. ":" .. c.z] then
 					refuse("takes the reserved cell " .. c.x .. "," .. c.z)
 				end
+				if not M.soft(c.name) and M.faces_window(real, c.x, c.y, c.z) then
+					refuse("blocks a window at " .. c.x .. "," .. c.y .. "," .. c.z)
+				end
 				if c.y == 1 then
 					local below = real:at(c.x, 0, c.z)
 					if below == nil or not rules.ground[below.name] then
@@ -694,14 +728,6 @@ local function loader(directory)
 	end
 
 	-- House dressing -----------------------------------------------------
-
-	-- Is the cell a window? Panes (`xpanes:`), glass and the troll bars.
-	local WINDOW = {["default:glass"] = true, ["grug_decor:darkage_wood_bars"] = true,
-		["grug_decor:cottages_glass_pane"] = true,
-		["grug_decor:cottages_glass_pane_side"] = true}
-	function M.is_window(name)
-		return WINDOW[name] == true or name:sub(1, 7) == "xpanes:"
-	end
 
 	-- One building as the dressing reads it:
 	--   room     interior box {min = {x, z}, max = {x, z}}: the walls are its
@@ -740,9 +766,16 @@ local function loader(directory)
 		end
 		-- A solid prop must leave the lane past it open: the cell beyond it
 		-- is free ground too.
-		local function free_solid(x, z, ox, oz)
-			return free(x, z) and ground_ok(x + ox, z + oz) and
-				empty(buf, x + ox, gy + 1, z + oz)
+		-- `h` (default 1) courses of a solid prop: none before a window.
+		local function free_solid(x, z, ox, oz, h)
+			if not (free(x, z) and ground_ok(x + ox, z + oz) and
+					empty(buf, x + ox, gy + 1, z + oz)) then
+				return false
+			end
+			for y = gy + 1, gy + (h or 1) do
+				if not empty(buf, x, y, z) or M.faces_window(buf, x, y, z) then return false end
+			end
+			return true
 		end
 		local function take(x, z) taken[x .. ":" .. z] = true end
 		-- the wall run of side s: cells (wall x, wall z, outward ox, oz)
@@ -802,7 +835,7 @@ local function loader(directory)
 					local kind = seed % 3
 					if kind == 0 and free_solid(ex, ez, ox, oz) then
 						buf:put(ex, gy + 1, ez, p.node("storage"))
-					elseif kind == 1 and free_solid(ex, ez, ox, oz) then
+					elseif kind == 1 and free_solid(ex, ez, ox, oz, 2) then
 						buf:put(ex, gy + 1, ez, p.node("storage"))
 						buf:put(ex, gy + 2, ez, p.node("storage"))
 					elseif kind == 2 and free(ex, ez) then
@@ -864,8 +897,8 @@ local function loader(directory)
 					if a and b then
 						local ax, az = a[1] + ox, a[2] + oz
 						local bx, bz = b[1] + ox, b[2] + oz
-						if (seed % 2 == 0) and free_solid(ax, az, ox, oz) and
-								free_solid(bx, bz, ox, oz) then
+						if (seed % 2 == 0) and free_solid(ax, az, ox, oz, 3) and
+								free_solid(bx, bz, ox, oz, 3) then
 							for _, q in ipairs({{ax, az}, {bx, bz}}) do
 								buf:put(q[1], gy + 1, q[2], p.node("tree_log"))
 								buf:put(q[1], gy + 2, q[2], p.node("tree_log"))
