@@ -30,9 +30,10 @@
 --  4. Profile: a DP over levels in 1/16 node along the 1-node centreline,
 --     fitted to the carved natural ground at the centre and both edges; the
 --     slope bound keeps every pair of neighbouring road columns within 1/2
---     node after rounding to half steps (D49), hairpins and junction mouths
---     are flat, bridges clear the water by CLEAR, shallow water may be
---     forded. Where two roads' surfaces touch outside a junction mouth (or a
+--     node after rounding to half steps (D49), a level change has a cost of
+--     its own so the profile does not follow the ground's 1-node dither with
+--     lone half-step bumps and holes, hairpins and junction mouths are
+--     flat, bridges clear the water by CLEAR, shallow water may be forded. Where two roads' surfaces touch outside a junction mouth (or a
 --     road's own legs do), the later one targets the earlier one's level
 --     (contacts, D49); a road stays at or above water just beyond its edges
 --     where it would otherwise be cut below it (the raster's bank guard
@@ -75,7 +76,12 @@ local DEFAULT_P = {
 	CUT_DEEP = 6, C_DEEP = 1.5,
 	K_SCAR = 0.5, SCAR_SMAX = 0.8, -- half gallery over deep uphill cut (D67)
 	CLEAR = 2, FORD_DEPTH = 2, C_BRIDGE = 4, C_FORD = 2, C_WET_SIDE = 12,
-	C_STEP = 0.05,
+	-- a level change costs C_STEP at every point where the level changes,
+	-- whatever the size of the change: 0.05 let the profile follow every
+	-- 1-node dither of the integer ground with lone half-step slabs and
+	-- gaps (user playtest, Round 36); 0.5 leaves almost none (0 on the
+	-- measured seeds) for about 5 % more cut and fill
+	C_STEP = 0.5,
 	DP_BELOW = 10, DP_ABOVE = 8, Q = 16,
 	DECK_GAP = 4, DECK_MIN = 4,
 	-- contacts (D49): where a road's surface touches an earlier road's (or
