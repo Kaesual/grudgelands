@@ -160,11 +160,15 @@ grug_classes = {get_race = function() return race end}
 grug_xp = {get_level = function() return 60 end, quest_reward = function(_, weight) return weight end,
 	register_on_level_change = function() end}
 -- Quest texts fill their placeholders (labels.lua); a stand-in region map
--- names every kind or camp by its id and every direction "nearby" (this test
--- reads item names).
+-- names every kind or camp, quest place and clash site (Round 36) by its id
+-- and every direction "nearby" (this test reads item names).
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end,
 	spawn_regions = {leader = function() return nil end, get_area = function(_, id) return {name = id} end,
-		describe = function() return {phrase = "nearby"} end}}
+		zone_place = function(zone, id) return {zone = zone, id = id, name = id} end,
+		clash_site = function(key)
+			return key:match("^r20_anchor_%d+$") and {key = key, zone = "front", name = key} or nil
+		end,
+		describe = function() return {phrase = "nearby"} end, LEADER_RANGE = 48}}
 grug_money = {format = function(copper) return copper .. " copper" end}
 grug_zones = {get = function(zone) return {display_name = zone} end}
 -- The quest content is the per-zone quest files (Round 28 Lane B4), read by
@@ -185,7 +189,7 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 	get_page = function() return "" end, pages = pages, pages_unordered = {}}
 grug_quests = {}
 local Q = grug_quests
-for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "validate", "loader",
+for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader",
 		"ui", "hud"}) do
 	dofile(ROOT .. "/mods/PLAYER/grug_quests/" .. file .. ".lua")
 end
