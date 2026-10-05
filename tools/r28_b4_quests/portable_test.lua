@@ -114,6 +114,7 @@ core = {
 	get_player_by_name = function(name) return players[name] end,
 	add_item = function(pos, stack) dropped[#dropped + 1] = ItemStack(stack):to_string() end,
 	formspec_escape = function(text) return text end,
+	colorize = function(color, text) return text end,
 	show_formspec = function(_, _, form) shown[#shown + 1] = form end,
 	close_formspec = function() end,
 	get_connected_players = function() return {} end,
@@ -482,13 +483,13 @@ check(Q.turn_in(ann, "fx_pantry_01"), "ann turns in the pages")
 local clock = 1000
 Q.clock = function() return clock end
 form = dialogue(ann, "r20_human_start_cook", "fx_kitchen_bounty")
-has(form, "Rats in the Larder [Repeatable] (available)", "dialogue list labels Repeatable")
+has(form, "Rats in the Larder (R)", "dialogue list labels Repeatable")
 has(form, "Repeatable (every 30 min)", "dialogue detail labels the cooldown")
 check(Q.accept(ann, "fx_kitchen_bounty"), "accept the bounty")
 row = journal_row(ann, "fx_kitchen_bounty")
 eq(Q.hud_line(row, 400), "Repeatable: 0/2 Defeat Large Rat", "HUD labels Repeatable")
 log = pages["grug_quests:quests"].get(nil, ann, {grug_quest_selected = "fx_kitchen_bounty"})
-has(log, "Rats in the Larder [Repeatable]", "quest log list labels Repeatable")
+has(log, "Rats in the Larder (R)", "quest log list labels Repeatable")
 has(log, "Rats in the Larder (Repeatable)", "quest log title labels Repeatable")
 for _ = 1, 2 do Q.credit_kill(ann, mob("large_rat", "elandor_dawnmere_fields/home_fields_night"), AT) end
 check(Q.turn_in(ann, "fx_kitchen_bounty"), "turn in the bounty")

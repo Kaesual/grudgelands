@@ -67,6 +67,7 @@ core = {
 	show_formspec = function(name, formname) shown[#shown + 1] = name .. " " .. formname end,
 	close_formspec = function() end,
 	formspec_escape = function(text) return text end,
+	colorize = function(color, text) return text end,
 	get_player_by_name = function(name) return players[name] end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
 	get_current_modname = function() return "grug_map" end,

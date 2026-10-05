@@ -54,6 +54,7 @@ core = {
 	registered_items = {}, registered_aliases = {}, registered_entities = {},
 	get_translated_string = engine_translate,
 	formspec_escape = function(text) return (text:gsub("[\\%[%];,$]", formspec_escapes)) end,
+	colorize = function(color, text) return text end,
 	serialize = function(value) serial[#serial + 1] = deep_copy(value); return tostring(#serial) end,
 	deserialize = function(text) return deep_copy(serial[tonumber(text)]) end,
 	show_formspec = function(name, formname, form) shown[#shown + 1] = {name = name, formname = formname, form = form} end,
@@ -318,7 +319,7 @@ for _, id in ipairs(ids) do
 	if check(selected ~= nil, "offer listed by giver: " .. id) then
 		shown = {}
 		check(Q.open_npc(player, entity_for(def.npc), selected), "dialogue opens: " .. id)
-		local detail = shown[1] and element(shown[1].form, "textarea[4.7,0.9;6.8,6.4;description;;")
+		local detail = shown[1] and element(shown[1].form, "textarea[7.8,0.9;7.8,6;;;")
 		if check(detail ~= nil, "dialogue detail present: " .. id) then
 			check(stat_hit(detail) == nil, "dialogue free of stats: " .. id .. " " .. tostring(stat_hit(detail)))
 			check(not detail:find(ESC, 1, true), "dialogue free of escapes: " .. id)
@@ -354,7 +355,7 @@ for _, id in ipairs(ids) do
 	local form = pages["grug_quests:quests"].get(nil, player, {grug_quest_selected = id})
 	-- One text field (Round 32): description, an empty line, one line per
 	-- objective, an empty line, the reward line.
-	local detail = element(form, "textarea[4.10,1.05;6.00,4.75;;;")
+	local detail = element(form, "textarea[5.10,1.05;5.00,4.75;;;")
 	if check(detail ~= nil, "quest log text field present: " .. id) then
 		local detail_lines = lines_of(detail)
 		local count = #detail_lines

@@ -98,6 +98,7 @@ core = {
 		return def and def.groups and def.groups[group] or 0
 	end,
 	formspec_escape = function(text) return text end,
+	colorize = function(color, text) return text end,
 	show_formspec = function(_, _, form) shown[#shown + 1] = form end,
 	log = function() end,
 }
