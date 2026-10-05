@@ -1231,6 +1231,9 @@ enchant of that tier (§6.3); only its stats are rolled.
 Vendors buy a blue item at **×3** and a gold item at **×6** of its Common
 buy-back ([economy.md](economy.md) §2).
 
+Whether a found-gear versus crafted-demand audit is still wanted after WP5 is
+open ([BACKLOG](../../BACKLOG.md#audit-2026-10-open-questions), DI-10).
+
 
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
 

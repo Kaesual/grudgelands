@@ -863,7 +863,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     because engine craft inspection cannot see dual-furnace recipes. Recipe
     ownership and remaining economy work are tracked in BACKLOG.
 - **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
-  `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
+  `items_crafting.md` §3.8, `world.md` §7). **WP7 patterns
   (binding):**
   - **`grug_money` is the ONLY money API.** One integer in copper units
     in player meta (100c = 1s, 100s = 1g, conversion display-only);

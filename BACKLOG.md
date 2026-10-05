@@ -1116,9 +1116,10 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
 - **DW-40** — "never overlaid": `grug_core.surface_mob_level_at` returns the
   region overlay, only `grug_zones.*` is the pure field; which does the
   rule mean? ([world docs](docs/audit-2026-10/docs/03-design-world.md))
-- **DI-14** — spellbooks (and the T5 32-slot bags) need Journeyman mastery
-  (level 16+) at every tier, so the T1 spellbook never counts as T1
-  progress: keep the gate? ([item docs](docs/audit-2026-10/docs/05-design-items.md))
+- **DI-14** — spellbooks need Journeyman mastery (level 16+) at every tier
+  (the T5 32-slot bags Master, level 46+), so the T1 spellbook is out of
+  reach in the T1 band (levels 1–10) and counts only from level 16 for a
+  Tailor still at profession tier 1: keep the gate? ([item docs](docs/audit-2026-10/docs/05-design-items.md))
 - **DI-17** — station recipes belong to one profession each, so only the
   Weaponsmith crafts a Forge: may the Armorsmith craft one too?
   ([item docs](docs/audit-2026-10/docs/05-design-items.md))

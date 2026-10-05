@@ -679,7 +679,8 @@ eight King kills, next to Master Riding's five hours.
 - Names count by tier with Roman numerals, like today's elixirs. Level
   requirement: the tier's first level.
 - **The vendor's Weak Healing Potion** heals a fixed 35 HP (half of Healing
-  Potion I) at its 8c price; today it heals 15 % of maximum HP at every level.
+  Potion I) at its 8c price; before Round 33 it healed 15 % of maximum HP at
+  every level.
 - Recipes avoid one-faction reagents: Slime Gel and Crocodile Tooth (Throng
   only) leave the Cave Draught, Deepwater Elixir, Elixir of Vigor IV and
   Stoneskin Elixir (v2: Stoneskin IV takes Shiny Scale).
