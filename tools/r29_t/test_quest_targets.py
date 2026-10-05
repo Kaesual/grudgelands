@@ -98,13 +98,13 @@ QUESTS = [
     quest("q_any_role_mixed", [kill(["small_boar", "wolf"])]),
     quest("q_mobs_area", [{"type": "kill", "mobs": ["grug_mobs:small_boar"], "area": "meadows", "count": 1}]),
     quest("q_mobs", [{"type": "kill", "mobs": ["grug_mobs:deer"], "count": 1}]),
-    quest("q_use_clash", [{"type": "use", "place": "r20_anchor_071", "object": "banner", "label": "Plant", "hold": 3}],
+    quest("q_use_clash", [{"type": "use", "place": "r20_anchor_071", "object": "pledged_standard", "label": "Plant", "hold": 3}],
           "Plant it at the {name:r20_anchor_071}."),
-    quest("q_use_place", [{"type": "use", "place": "old_well", "object": "banner", "label": "Plant", "hold": 3}],
+    quest("q_use_place", [{"type": "use", "place": "old_well", "object": "pledged_standard", "label": "Plant", "hold": 3}],
           "The {name:old_well} lies {dir_from_giver:old_well}."),
-    quest("q_use_gap", [{"type": "use", "place": "elandor_alpha_fields/dry_well", "object": "banner",
+    quest("q_use_gap", [{"type": "use", "place": "elandor_alpha_fields/dry_well", "object": "pledged_standard",
                          "label": "Plant", "hold": 3}]),
-    quest("q_use_unknown", [{"type": "use", "place": "nowhere_well", "object": "banner", "label": "Plant", "hold": 3}]),
+    quest("q_use_unknown", [{"type": "use", "place": "nowhere_well", "object": "pledged_standard", "label": "Plant", "hold": 3}]),
 ]
 
 

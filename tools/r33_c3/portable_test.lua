@@ -32,12 +32,16 @@
 --      what the character does not own;
 --   F  the dropdown lists owned cloaks with the selected one marked; the
 --      page's resubmission of the same name changes nothing, a new name
---      selects and redraws; the tab pages its 17 achievements;
+--      selects and redraws; the tab pages its 20 achievements;
 --   C  every mob grug_mobs registers in the source (and every sub-type base)
 --      is classified, the lists are disjoint, every family, role and rare id
 --      exists in the source, every catalogue counter is one a hook produces,
---      every cloak has its texture file and the 41 Astra ids are exactly the
---      catalogue's textured cloaks.
+--      every cloak has its texture file and the 44 Astra ids are exactly the
+--      catalogue's textured cloaks (Round 36 added three, one per main-line
+--      achievement, named after the cloak);
+--   G  the faction rule (Round 36): a row with a `faction` is listed, paged,
+--      settled and earned only for that faction's characters; a character
+--      without a faction yet sees and earns only the shared rows.
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 
@@ -108,9 +112,10 @@ ItemStack = function(text)
 	return {get_count = function() return count end}
 end
 grug_jobs = {register_on_award_progress = function(fn) award = fn end}
+local factions = {} -- player name -> faction (none: still in creation)
 grug_core = {feed = function(player, kind, text, key)
 	feed[#feed + 1] = {name = player:get_player_name(), text = text, key = key}
-end}
+end, get_player_faction = function(name) return factions[name] end}
 grug_inventory = {
 	refresh_character = function() refreshed = refreshed + 1 end,
 	refresh_character_tab = function(_, tab)
@@ -434,8 +439,8 @@ for _, ach in ipairs(book.achievements) do
 		(rare and C.RARE_GROUPS[rare])
 	check(ok, "C counter " .. c .. " of " .. ach.id .. " is produced by a hook")
 end
--- Every textured cloak has its file, and the ids are exactly Astra's 41.
-local ASTRA = {"plain_grey"}
+-- Every textured cloak has its file, and the ids are exactly Astra's 44.
+local ASTRA = {"plain_grey", "unburnt_roll", "unbought_banner", "broken_due"}
 for _, row in ipairs({{"hunter", 3}, {"kingslayer", 3}, {"wyvernslayer", 3},
 		{"dragonslayer", 3}, {"honored", 3}, {"zombie_slayer", 3}, {"boaring_work", 3},
 		{"rat_race", 2}, {"suppers_ready", 3}, {"bottle_service", 3}, {"loose_bones", 3},
@@ -453,18 +458,75 @@ for _, cloak in ipairs(book.cloaks) do
 		if handle then handle:close() end
 	end
 end
-eq(#ASTRA, 41, "C Astra's list")
+eq(#ASTRA, 44, "C Astra's list")
 for _, id in ipairs(ASTRA) do check(textured[id], "C catalogue has " .. id) end
 local count = 0
 for _ in pairs(textured) do count = count + 1 end
-eq(count, 41, "C no cloak beyond Astra's list")
--- Tier N of an achievement unlocks <id>_N.
+eq(count, 44, "C no cloak beyond Astra's list")
+-- Tier N of an achievement unlocks <id>_N; the Round 36 three unlock their
+-- one cloak by its own name (story bible §6).
+local NAMED = {every_name_accounted_for = "unburnt_roll", our_oaths_are_ours = "unbought_banner",
+	last_claim_denied = "broken_due"}
 for _, ach in ipairs(book.achievements) do
 	for t, tier in ipairs(ach.tiers) do
-		eq(tier.cloak, ach.id .. "_" .. t, "C " .. ach.id .. " tier " .. t .. " cloak")
+		eq(tier.cloak, NAMED[ach.id] or (ach.id .. "_" .. t), "C " .. ach.id .. " tier " .. t .. " cloak")
 	end
 end
-eq(#book.achievements, 17, "C seventeen achievements")
+eq(#book.achievements, 20, "C twenty achievements")
+
+-- G: the faction rule.
+do
+	local ACCORD, THRONG = "Every Name Accounted For", "Our Oaths Are Ours"
+	local SHARED = "The Last Claim Denied"
+	local function all_pages(player)
+		local context, text = {}, ""
+		for _ = 1, 4 do
+			text = text .. A.character_achievements_formspec(player, context)
+			A.handle_tab_fields(player, context, {grug_ach_next = true})
+		end
+		return text
+	end
+	local function shows(text, name) return text:find(name, 1, true) ~= nil end
+	local ada, tor, neu = new_player("ada", new_meta()), new_player("tor", new_meta()),
+		new_player("neu", new_meta())
+	factions.ada, factions.tor = "accord", "throng"
+	for _, p in ipairs({ada, tor, neu}) do for _, fn in ipairs(joins) do fn(p) end end
+	local text = all_pages(ada)
+	check(shows(text, ACCORD) and not shows(text, THRONG) and shows(text, SHARED),
+		"G the Accord character sees its row and the shared one, not the Throng's")
+	text = all_pages(tor)
+	check(shows(text, THRONG) and not shows(text, ACCORD) and shows(text, SHARED),
+		"G the Throng character sees its row and the shared one, not the Accord's")
+	text = all_pages(neu)
+	check(not shows(text, THRONG) and not shows(text, ACCORD) and shows(text, SHARED),
+		"G a character without a faction sees only shared rows")
+	eq(#R.visible_list(book, nil), #book.achievements - 2, "G the shared rows")
+	eq(#R.visible_list(book, "accord"), #book.achievements - 1, "G the Accord's rows")
+	-- Earning: the other faction's counter never earns the row or its cloak.
+	A.add(tor, "quest:accord_main_final", 1)
+	eq(R.earned(tor:get_meta(), book.achievement.every_name_accounted_for), 0,
+		"G the Throng character never earns the Accord's row")
+	check(not R.has_cloak(book, tor:get_meta(), "unburnt_roll"), "G ...nor its cloak")
+	for _, fn in ipairs(joins) do fn(tor) end
+	eq(R.earned(tor:get_meta(), book.achievement.every_name_accounted_for), 0,
+		"G ...not at a later join either")
+	A.add(neu, "quest:throng_main_final", 1)
+	eq(R.earned(neu:get_meta(), book.achievement.our_oaths_are_ours), 0,
+		"G a character without a faction earns no faction row")
+	A.add(ada, "quest:accord_main_final", 1)
+	eq(R.earned(ada:get_meta(), book.achievement.every_name_accounted_for), 1,
+		"G the Accord character earns its row")
+	check(R.has_cloak(book, ada:get_meta(), "unburnt_roll"), "G ...and its cloak")
+	for _, p in ipairs({ada, tor}) do
+		A.add(p, "boss:rift", 1)
+		eq(R.earned(p:get_meta(), book.achievement.last_claim_denied), 1,
+			"G the shared row is earned by " .. factions[p:get_player_name()])
+	end
+	local ok = pcall(R.build, {cloaks = {{id = "none", name = "No cloak"}}, defaults = {},
+		achievements = {{id = "x", name = "X", counter = "c", faction = "rebels", text_one = "x",
+			tiers = {{at = 1}}}}})
+	check(not ok, "G an unknown faction is a load error")
+end
 
 print(("%d checks, %d failures"):format(checks, failures))
 if failures > 0 then error("R33 C3 PORTABLE FAIL") end

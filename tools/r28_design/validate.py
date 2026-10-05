@@ -1824,7 +1824,7 @@ def _mutations():
     # Round 36: "use at a place" objectives, quest tags and chapter gates.
     def use(**fields):
         def change(d):
-            row = {"type": "use", "place": "r20_anchor_071", "object": "signal_fire",
+            row = {"type": "use", "place": "r20_anchor_071", "object": "toll_box",
                    "label": "Light the signal fire", "hold": 5}
             row.update(fields)
             quest(d, "sample_hunt_01")["objectives"].append({k: v for k, v in row.items() if v is not None})
@@ -2223,7 +2223,7 @@ def _scenarios():
         data = _load(target / Q_FILE)
         for q in data["quests"]:
             if q["id"] == "sample_hunt_01":
-                q["objectives"].append({"type": "use", "place": "old_well", "object": "banner",
+                q["objectives"].append({"type": "use", "place": "old_well", "object": "pledged_standard",
                                         "label": "Plant the banner", "hold": 3})
                 q["text"] = "Plant it at the {name:old_well}, {dir_from_giver:old_well}. Then come back."
         _save(target / Q_FILE, data)

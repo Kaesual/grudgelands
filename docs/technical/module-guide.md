@@ -1427,8 +1427,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   builtin `blank.png`), the cloak part of the redraw key. `mods/PLAYER/
   grug_achievements` owns the rest: `core.lua` (pure: counters, tiers,
   unlocked cloaks and the selected cloak in player meta, i.e. per
-  character), `catalog.lua` (data: 17 achievements, tier N of `<id>`
-  unlocks cloak `<id>_N`, defaults `none` and `plain_grey`), `creatures.lua`
+  character), `catalog.lua` (data: 20 achievements, tier N of `<id>`
+  unlocks cloak `<id>_N` (the three of Round 36 a cloak of its own name),
+  an optional `faction` hides and withholds a row from the other faction
+  (the faction from `grug_core.get_player_faction`), defaults `none` and
+  `plain_grey`), `creatures.lua`
   (pure: wild animals, zombies, families, named leaders by role, rares by
   registry id; a load audit logs any unclassified mob) and `init.lua` (the
   hooks, the Achievements tab body and the cloak dropdown that

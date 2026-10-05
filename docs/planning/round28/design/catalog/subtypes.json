@@ -3132,5 +3132,189 @@
     "drops": "outlaw",
     "notes": "Unique fixed spot in front_skyglass_canopy. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Stolen pay packets lead to the deserter paying everyone in promises.",
     "leader": true
+  },
+  {
+    "role": "coal_purse_factor",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Coal-Purse Factor",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "outlaw",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. A soot factor: brigand silhouette, smoke-dark clothing. The Broken Causeway (alderwood, Senn's toll camp) and The Shattered Line, by day.",
+    "tint_by_zone": {
+      "front_broken_causeway": "ember_light",
+      "front_shattered_line": "ember_light"
+    }
+  },
+  {
+    "role": "brandbound_collector",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_raider",
+    "display": "Brandbound Collector",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "skeleton",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Old bones newly fire-stained, raised on branded pay. The Broken Causeway and The Shattered Line, by night.",
+    "tint_by_zone": {
+      "front_broken_causeway": "ember",
+      "front_shattered_line": "ember"
+    }
+  },
+  {
+    "role": "tallow_sealed_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Tallow-Sealed Husk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "zombie",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Preserved flesh with a waxy furnace cast. The Broken Causeway by day, The Shattered Line by night.",
+    "tint_by_zone": {
+      "front_broken_causeway": "ember",
+      "front_shattered_line": "ember"
+    }
+  },
+  {
+    "role": "ash_writ_bowman",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit_archer",
+    "display": "Ash-Writ Bowman",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "outlaw",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. A heat-stained hired bowman. Gravesalt Escarpment and Paymaster Chirr's camp in The Skyglass Canopy.",
+    "tint_by_zone": {
+      "front_gravesalt_escarpment": "ember_light",
+      "front_skyglass_canopy": "ember_light"
+    }
+  },
+  {
+    "role": "kiln_whisper_hexer",
+    "family": "skeleton",
+    "base": "grug_mobs:bog_witch",
+    "display": "Kiln-Whisper Hexer",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "witch",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. The bog witch steeped in fresh heat. Gravesalt Escarpment's fens, by night.",
+    "tint_by_zone": {
+      "front_gravesalt_escarpment": "ember"
+    }
+  },
+  {
+    "role": "debtjaw_hound",
+    "family": "wolf",
+    "base": "grug_mobs:blightfang_wolf",
+    "display": "Debtjaw Hound",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "canid",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Blighted coat under the ember tint. Gravesalt Escarpment's woods, by day.",
+    "tint_by_zone": {
+      "front_gravesalt_escarpment": "ember"
+    }
+  },
+  {
+    "role": "embergrit_gnawer",
+    "family": "weevil",
+    "base": "grug_mobs:stone_mite",
+    "display": "Embergrit Gnawer",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "weevil",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Stone shell like hot clinker. Gravesalt Escarpment's open ground, by day.",
+    "tint_by_zone": {
+      "front_gravesalt_escarpment": "ember"
+    }
+  },
+  {
+    "role": "dunshade_prowler",
+    "family": "cat",
+    "base": "grug_mobs:panther",
+    "display": "Dunshade Prowler",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "feline",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Sleek coat with an ember cast. The Skyglass Canopy's cloudwood, by night, beside the panthers.",
+    "tint_by_zone": {
+      "front_skyglass_canopy": "ember"
+    }
+  },
+  {
+    "role": "furnace_coil_serpent",
+    "family": "serpent",
+    "base": "grug_mobs:serpent",
+    "display": "Furnace-Coil Serpent",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "venomous",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Heated-metal scales. The Skyglass Canopy's rootways, by night (the day keeps the Saltbound Husk, the belt's daylight zombie).",
+    "tint_by_zone": {
+      "front_skyglass_canopy": "ember"
+    }
+  },
+  {
+    "role": "sootlace_spinner",
+    "family": "spider",
+    "base": "grug_mobs:jungle_spider",
+    "display": "Sootlace Spinner",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "spider",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Legs and body dulled as if smoke-cured (the strong tint: a green body). The Skyglass Canopy's high canopy, by night.",
+    "tint_by_zone": {
+      "front_skyglass_canopy": "ember_strong"
+    }
   }
 ]

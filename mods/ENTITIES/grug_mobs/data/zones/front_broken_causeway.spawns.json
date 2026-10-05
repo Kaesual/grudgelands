@@ -8,8 +8,8 @@
         "id": "l41_43", "share": 30, "levels": [41, 43],
         "kinds": {
           "open": {"id": "floodmeadows", "name": "Causeway Floodmeadows",
-            "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_ford_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "bank": {"id": "fords", "name": "Causeway Fords",
             "day": "open",
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
@@ -17,7 +17,7 @@
             "day": [{"role": "causeway_sinkmire_viper", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "alderwood", "name": "Causeway Alderwood",
-            "day": [{"role": "causeway_brigand", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "day": [{"role": "causeway_brigand", "weight": 3}, {"role": "coal_purse_factor", "weight": 1}],
             "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "causeway_brigand", "weight": 1}], "density": "normal"},
           "highland": {"id": "dikes", "name": "Causeway Dikes",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
@@ -29,7 +29,7 @@
         "kinds": {
           "open": {"id": "battlefield", "name": "Causeway Battlefield",
             "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "causeway_brigand", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_ford_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "bank": {"id": "wreck_fords", "name": "Causeway Wreck Fords",
             "day": "open",
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
@@ -48,8 +48,8 @@
         "id": "l48_50", "share": 30, "levels": [48, 50],
         "kinds": {
           "open": {"id": "toll_fields", "name": "Causeway Toll Fields",
-            "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_ford_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "bank": {"id": "last_ford", "name": "Causeway Last Ford",
             "day": "open",
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
@@ -67,7 +67,7 @@
     ],
     "camps": [
       {"id": "toll_camp", "name": "Causeway Toll Camp", "belt": "l48_50",
-       "roster": [{"role": "causeway_aqueduct_bowman", "weight": 3}, {"role": "causeway_brigand", "weight": 1}],
+       "roster": [{"role": "causeway_aqueduct_bowman", "weight": 3}, {"role": "coal_purse_factor", "weight": 1}],
        "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
     ],
     "leaders": [

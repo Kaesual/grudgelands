@@ -69,7 +69,7 @@
       {"role": "bottle_keeper_zek", "at": {"kind": "stormglades", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
     "places": [
-      {"id": "split_oak_glade", "name": "Split Oak Glade", "at": {"kind": "glades", "pick": "farthest_from_roads"}}
+      {"id": "coinpit_hollow", "name": "Coinpit Hollow", "at": {"kind": "glades", "pick": "farthest_from_roads"}}
     ],
     "critters": []
   }

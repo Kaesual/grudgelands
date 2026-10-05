@@ -203,6 +203,16 @@ local function apply_zone_variant(self, sub)
 	end
 end
 
+-- A level change recomposes a humanoid's skin without its tint
+-- (grug_mobs.refresh_visual: a region spawn is relevelled right after its
+-- first activation), so the tint goes back on top of the new skin.
+function grug_mobs.reapply_zone_variant(self)
+	local sub = self and self.name and SUBTYPES[role_of(self.name)]
+	if sub then
+		apply_zone_variant(self, sub)
+	end
+end
+
 --
 -- Loot items (frame §4.2). Kinds `signature` and `quest` are registered here
 -- unless the id already exists (an existing item used as signature loot keeps

@@ -3,7 +3,7 @@
 -- "Use at a place" in the real engine (round36-plan.md §2.5): a probe quest
 -- file (never shipped) with one use objective at a clash site (Saltgate
 -- Remnant, r20_anchor_076) and one at the rule-placed quest place of
--- Stormvault Heights (snowfield_cairn), loaded through grug_quests'
+-- Stormvault Heights (brandscar_cairn), loaded through grug_quests'
 -- loader and world checks. Both places are emerged and forceloaded; player
 -- stand-ins (tables with the ObjectRef calls the quest code makes; the
 -- server has no client) walk up:
@@ -22,7 +22,7 @@ local SR = grug_mobs.spawn_regions
 
 local GIVER = "r20_anchor_027_host"
 local CLASH = "r20_anchor_076"
-local SPOT = "elandor_stormvault_heights/snowfield_cairn"
+local SPOT = "elandor_stormvault_heights/brandscar_cairn"
 local function use(place, label, object)
 	return {type = "use", place = place, object = object, label = label, hold = 3}
 end
@@ -33,8 +33,8 @@ end
 local FILES = {{name = "elandor_stormvault_heights.quests.json", zone = "elandor_stormvault_heights",
 	front = false, data = {zone = "elandor_stormvault_heights",
 		hubs = {{id = "probe", givers = {{npc = GIVER, lines = {"probe"}}}}},
-		quests = {quest("r36e_fire", use(CLASH, "Light the signal fire", "signal_fire")),
-			quest("r36e_banner", use("snowfield_cairn", "Plant the banner", "banner"))}}}}
+		quests = {quest("r36e_fire", use(CLASH, "Light the signal fire", "toll_box")),
+			quest("r36e_banner", use("brandscar_cairn", "Plant the banner", "pledged_standard"))}}}}
 Q.load_quest_files(table.copy(FILES))
 
 -- Player stand-ins.

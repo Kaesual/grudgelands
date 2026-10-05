@@ -27,13 +27,13 @@ grug_mobs.rift_rules = R
 local storage = grug_mobs.storage
 local catalog = dofile(core.get_modpath("grug_mapgen") .. "/wp40/r20_poi_catalog.lua")
 
--- Placeholder looks until lane A's art (round36-plan.md §4.9): every texture
--- of the rift is named here and nowhere else.
+-- Lane A's art (round36-plan.md §4.9, story bible §3): every texture of the
+-- rift is named here and nowhere else.
 local TEXTURES = {
-	void = "default_obsidian.png^[colorize:#0a0012:230",
-	particle = "default_item_smoke.png^[colorize:#1c0030:220",
-	boss = "grug_mobs_dungeon_master.png^[colorize:#2a0840:170",
-	bolt = "mobs_tnt_smoke.png^[colorize:#46107a:200",
+	void = "grug_mobs_rift_void.png",
+	particle = "grug_mobs_rift_particle.png",
+	boss = "grug_mobs_isquarre.png",
+	bolt = "grug_mobs_rift_bolt.png",
 }
 
 local VOID = "grug_mobs:rift_void"

@@ -314,12 +314,21 @@ end
 -- level (60) and the elite tier are written at placement like every
 -- garrison's (start_npcs.lua install_garrison), so the elite x1.4 scale
 -- adds to the leader's. He holds his post beside the captain, respawns
--- like a captain and counts as one in grug_pvp.
+-- like a captain and counts as one in grug_pvp. His look is the camp race's
+-- guard with his own tabard (story bible §3) over skin and chest armour,
+-- under the helmet: grug_visuals' layer seam of the chest piece.
 for _, faction in ipairs({"accord", "throng"}) do
 	local name = garrison.commander_entity(faction)
+	local tabard = "grug_mobs_commander_" .. faction .. "_overlay.png"
 	local def = guard_def(faction,
 		(faction == "accord" and "Accord" or "Throng") .. " War Commander",
-		"grug_mobs_guard_" .. faction .. ".png")
+		"grug_mobs_guard_" .. faction .. ".png^" .. tabard)
+	local guard_look = def._grug_visual
+	def._grug_visual = function(self)
+		local spec = guard_look(self)
+		spec.armor_layers = {chest = tabard}
+		return spec
+	end
 	local size = grug_mobs.LEADER.size
 	def.visual_size = {x = def.visual_size.x * size, y = def.visual_size.y * size}
 	for index = 1, 6 do def.collisionbox[index] = def.collisionbox[index] * size end

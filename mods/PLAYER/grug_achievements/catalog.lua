@@ -11,7 +11,9 @@
 -- tier's `at` earns it (once) and unlocks its cloak. `text` is the condition
 -- with %d for the next tier's `at`; `text_one` replaces it while that `at` is
 -- 1 (and is the only text of a one-kill achievement). `flavour` shows in the
--- tab's tooltip. Names, flavour and cloak names are GPT-6 Astra's proposals
+-- tab's tooltip. An optional `faction` ("accord" or "throng") gives a row to
+-- that faction's characters only: the others never see or earn it (nor does
+-- a character without a faction yet); a row without it is everyone's. Names, flavour and cloak names are GPT-6 Astra's proposals
 -- (Round 33); the selection and tiers are the user's (2026-10-04). Counters:
 --   kill:animal           every wild animal: critters and hostile beasts,
 --                         no humanoids (creatures.lua)
@@ -117,6 +119,13 @@ return {
 			texture = "grug_achievements_cloak_last_word_1.png"}, -- A22 C22.1
 		{id = "grounded_1", name = "Hard Landing",
 			texture = "grug_achievements_cloak_grounded_1.png"}, -- A24 C24.1
+		-- Round 36 (story bible §6): one cloak each, named after the cloak.
+		{id = "unburnt_roll", name = "Mantle of the Unburnt Roll",
+			texture = "grug_achievements_cloak_unburnt_roll.png"},
+		{id = "unbought_banner", name = "The Unbought Banner",
+			texture = "grug_achievements_cloak_unbought_banner.png"},
+		{id = "broken_due", name = "Mantle of the Broken Due",
+			texture = "grug_achievements_cloak_broken_due.png"},
 	},
 	achievements = {
 		-- U1
@@ -207,5 +216,22 @@ return {
 			text_one = "Die from a fall.",
 			flavour = "The ground was exactly where you left it.",
 			tiers = {{at = 1, cloak = "grounded_1"}}},
+		-- Round 36, the main questline (story bible §6). The two final quest
+		-- ids are fixed: each faction's last Warmaster turn-in; each row is
+		-- its faction's alone (user, 2026-10-05).
+		{id = "every_name_accounted_for", name = "Every Name Accounted For",
+			faction = "accord", counter = "quest:accord_main_final",
+			text_one = "Complete The Accord's main questline.",
+			flavour = "You brought back the names the enemy meant to turn into numbers.",
+			tiers = {{at = 1, cloak = "unburnt_roll"}}},
+		{id = "our_oaths_are_ours", name = "Our Oaths Are Ours",
+			faction = "throng", counter = "quest:throng_main_final",
+			text_one = "Complete The Throng's main questline.",
+			flavour = "Let them keep their coin. Nobody else speaks for our dead.",
+			tiers = {{at = 1, cloak = "unbought_banner"}}},
+		{id = "last_claim_denied", name = "The Last Claim Denied", counter = "boss:rift",
+			text_one = "Defeat Isquarre the Tithe-Eater.",
+			flavour = "The collector came for both armies. You sent him away empty.",
+			tiers = {{at = 1, cloak = "broken_due"}}},
 	},
 }

@@ -671,6 +671,11 @@ function grug_mobs.refresh_visual(self)
 	local cfg = self and visual_configs[self.name]
 	if cfg then
 		apply_visual(self, cfg)
+		-- A sub-type's zone tint goes back on top of the recomposed skin
+		-- (subtypes.lua, loaded after this file).
+		if grug_mobs.reapply_zone_variant then
+			grug_mobs.reapply_zone_variant(self)
+		end
 	end
 end
 

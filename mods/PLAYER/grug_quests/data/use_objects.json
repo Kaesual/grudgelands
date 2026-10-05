@@ -1,6 +1,15 @@
 {
-  "notes": "Quest-object kinds of \"use at a place\" objectives (Round 36, docs/design/quests.md). A kind's `texture` is the one texture of its object, drawn as a square sprite `size` nodes wide (default 1). The [fill] textures are placeholders: the art lane's file replaces one row's texture name, nothing else changes. The game (grug_quests/use.lua) and tools/r28_design/validate.py read this file.",
-  "signal_fire": {"texture": "[fill:16x16:#3a2414^[fill:10x10:3,3:#ff8a20", "size": 1.2},
-  "banner": {"texture": "[fill:16x16:#3a1010^[fill:6x14:5,1:#d8c060", "size": 1.4},
-  "burnt_mark": {"texture": "[fill:16x16:#1c1a18^[fill:8x8:4,4:#a03010", "size": 1.0}
+  "notes": "Quest-object kinds of \"use at a place\" objectives (Round 36, docs/design/quests.md; the twelve objects of the story bible §4). A kind's `texture` is the one texture of its object, drawn as a square sprite `size` nodes wide (default 1) standing on the ground. The game (grug_quests/use.lua) and tools/r28_design/validate.py read this file.",
+  "impounded_pay": {"texture": "grug_quests_obj_impounded_pay.png", "size": 1.0},
+  "false_requisition": {"texture": "grug_quests_obj_false_requisition.png", "size": 1.0},
+  "brand_rubbing": {"texture": "grug_quests_obj_brand_rubbing.png", "size": 1.2},
+  "ash_slab": {"texture": "grug_quests_obj_ash_slab.png", "size": 1.2},
+  "toll_box": {"texture": "grug_quests_obj_toll_box.png", "size": 1.3},
+  "courier_ledger": {"texture": "grug_quests_obj_courier_ledger.png", "size": 1.2},
+  "branded_pay_pit": {"texture": "grug_quests_obj_branded_pay_pit.png", "size": 1.2},
+  "pledged_standard": {"texture": "grug_quests_obj_pledged_standard.png", "size": 1.4},
+  "tally_stone": {"texture": "grug_quests_obj_tally_stone.png", "size": 1.4},
+  "rootmark": {"texture": "grug_quests_obj_rootmark.png", "size": 1.1},
+  "survey_cairn": {"texture": "grug_quests_obj_survey_cairn.png", "size": 1.4},
+  "wreck_pay_chest": {"texture": "grug_quests_obj_wreck_pay_chest.png", "size": 1.2}
 }

@@ -60,7 +60,7 @@
       {"role": "basket_biter", "at": {"kind": "serpent_pools", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
     "places": [
-      {"id": "tangle_clearing", "name": "Tangle Clearing", "at": {"kind": "tangle", "pick": "farthest_from_roads"}}
+      {"id": "couriers_stump", "name": "Courier's Stump", "at": {"kind": "tangle", "pick": "farthest_from_roads"}}
     ],
     "critters": []
   }

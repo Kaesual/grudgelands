@@ -22,14 +22,14 @@
         "id": "l44_47", "share": 40, "levels": [44, 47],
         "kinds": {
           "open": {"id": "trenches", "name": "Shattered Line Trenches",
-            "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "siege_deserter", "weight": 1}],
-            "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "siege_deserter_archer", "weight": 1}], "density": "normal"},
+            "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "coal_purse_factor", "weight": 1}],
+            "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "swamp": {"id": "mudholes", "name": "Shattered Line Mudholes",
             "day": [{"role": "siege_husk", "weight": 3}, {"role": "unburied_husk", "weight": 1}],
             "night": [{"role": "war_stinger", "weight": 3}, {"role": "unburied_husk", "weight": 1}], "density": "sparse"},
           "highland": {"id": "ramparts", "name": "Shattered Line Ramparts",
-            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "unburied_husk", "weight": 1}], "density": "normal"}
+            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "coal_purse_factor", "weight": 1}],
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal"}
         }
       },
       {
@@ -37,13 +37,13 @@
         "kinds": {
           "open": {"id": "breach", "name": "Shattered Line Breach",
             "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "siege_deserter_archer", "weight": 1}],
-            "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "siege_deserter_archer", "weight": 1}], "density": "normal"},
+            "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "swamp": {"id": "bloodmire", "name": "Shattered Line Bloodmire",
             "day": [{"role": "unburied_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
             "night": [{"role": "unburied_husk", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "sparse"},
           "highland": {"id": "siegecrest", "name": "Shattered Line Siegecrest",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "unburied_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal"}
         }
       }
     ],

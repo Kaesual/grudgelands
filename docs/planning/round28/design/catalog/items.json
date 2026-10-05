@@ -1494,5 +1494,29 @@
       "quest"
     ],
     "notes": "Existing recipe feedstock; retain its current registration, name and icon."
+  },
+  {
+    "id": "grug_mobs:throng_captains_orders",
+    "name": "Throng Captain's Orders",
+    "tier": 5,
+    "kind": "quest",
+    "description": "Sealed orders from a Throng war camp on The Shattered Line.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A folded oxblood-sealed despatch tied with ochre cord, a scorch mark across one corner. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+    "notes": "Round 36 main line, chapter 2 (story bible \u00a72): the Accord's quest drop from the captain of pvp_camp_shattered_line_throng_high."
+  },
+  {
+    "id": "grug_mobs:accord_captains_orders",
+    "name": "Accord Captain's Orders",
+    "tier": 5,
+    "kind": "quest",
+    "description": "Sealed orders from an Accord war camp on The Shattered Line.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A folded steel-blue despatch with a pale wax seal and a brass clasp, a scorch mark across one corner. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+    "notes": "Round 36 main line, chapter 2 (story bible \u00a72): the Throng's quest drop from the captain of pvp_camp_shattered_line_accord_high."
   }
 ]

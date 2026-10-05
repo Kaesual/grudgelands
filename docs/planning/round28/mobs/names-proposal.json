@@ -9,7 +9,20 @@
    "Disposition is shown by the yellow/red name tag, not by the name. Named leaders keep \"Title Name\"."
   ],
   "zones_note": "zones = where the catalogue notes and world.md cast tables place the role (capital-band outlaw and undead roles may also appear in selected heartlands). Areas are designed later by the zone lanes.",
-  "generator": "tools/r28_names/build_review.py validates this file and renders catalogue-review.html."
+  "generator": "tools/r28_names/build_review.py validates this file and renders catalogue-review.html.",
+  "sibling_exceptions": {
+   "note": "Round 36 story bible v2 (approved by the user, 2026-10-05): the corrupted sub-types keep their family noun beside the zone's sibling and are told apart by the shared ember tint, so these pairs may differ only in the first word.",
+   "pairs": [
+    [
+     "causeway_mire_husk",
+     "tallow_sealed_husk"
+    ],
+    [
+     "glass_fang_serpent",
+     "furnace_coil_serpent"
+    ]
+   ]
+  }
  },
  "signal_words": {
   "size": [
@@ -2276,6 +2289,90 @@
    "zones": [
     "front_skyglass_canopy"
    ]
+  },
+  {
+   "role": "coal_purse_factor",
+   "current": "Coal-Purse Factor",
+   "proposed": "Coal-Purse Factor",
+   "zones": [
+    "front_broken_causeway",
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "brandbound_collector",
+   "current": "Brandbound Collector",
+   "proposed": "Brandbound Collector",
+   "zones": [
+    "front_broken_causeway",
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "tallow_sealed_husk",
+   "current": "Tallow-Sealed Husk",
+   "proposed": "Tallow-Sealed Husk",
+   "zones": [
+    "front_broken_causeway",
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "ash_writ_bowman",
+   "current": "Ash-Writ Bowman",
+   "proposed": "Ash-Writ Bowman",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy"
+   ]
+  },
+  {
+   "role": "kiln_whisper_hexer",
+   "current": "Kiln-Whisper Hexer",
+   "proposed": "Kiln-Whisper Hexer",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "debtjaw_hound",
+   "current": "Debtjaw Hound",
+   "proposed": "Debtjaw Hound",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "embergrit_gnawer",
+   "current": "Embergrit Gnawer",
+   "proposed": "Embergrit Gnawer",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "dunshade_prowler",
+   "current": "Dunshade Prowler",
+   "proposed": "Dunshade Prowler",
+   "zones": [
+    "front_skyglass_canopy"
+   ]
+  },
+  {
+   "role": "furnace_coil_serpent",
+   "current": "Furnace-Coil Serpent",
+   "proposed": "Furnace-Coil Serpent",
+   "zones": [
+    "front_skyglass_canopy"
+   ]
+  },
+  {
+   "role": "sootlace_spinner",
+   "current": "Sootlace Spinner",
+   "proposed": "Sootlace Spinner",
+   "zones": [
+    "front_skyglass_canopy"
+   ]
   }
  ],
  "items": [
@@ -2871,6 +2968,16 @@
    "id": "grug_mobs:shiny_scale",
    "current": "Shiny Scale",
    "proposed": "Shiny Scale"
+  },
+  {
+   "id": "grug_mobs:throng_captains_orders",
+   "current": "Throng Captain's Orders",
+   "proposed": "Throng Captain's Orders"
+  },
+  {
+   "id": "grug_mobs:accord_captains_orders",
+   "current": "Accord Captain's Orders",
+   "proposed": "Accord Captain's Orders"
   }
  ]
 }

@@ -284,8 +284,10 @@ are kept per character, and so is the choice.
 
 - **Achievements** count something the character did; each tier is earned
   once, never taken back, and unlocks its own cloak (tier N of achievement
-  `<id>` unlocks cloak `<id>_N`). The set (user's picks, 2026-10-04; names,
-  flavour and cloak names by GPT-6 Astra):
+  `<id>` unlocks cloak `<id>_N`; the three Round 36 achievements unlock a
+  cloak named after itself). The set (user's picks, 2026-10-04; names,
+  flavour and cloak names by GPT-6 Astra; the Round 36 three from the main
+  line's story bible §6):
 
   | Achievement | Condition | Tiers |
   | --- | --- | --- |
@@ -306,6 +308,9 @@ are kept per character, and so is the choice.
   | No More Orders | kill the rare Captain Bonerattle (either one) | 1 |
   | Last Word | kill Watch-Captain Huskell or Paymaster Chirr | 1 |
   | Grounded | die from a fall | 1 |
+  | Every Name Accounted For | complete The Accord's main questline (`quest:accord_main_final`); cloak Mantle of the Unburnt Roll | 1 |
+  | Our Oaths Are Ours | complete The Throng's main questline (`quest:throng_main_final`); cloak The Unbought Banner | 1 |
+  | The Last Claim Denied | defeat the rift boss, Isquarre the Tithe-Eater (`boss:rift`); cloak Mantle of the Broken Due | 1 |
 
   "Wild animals" are every animal mob, critters and hostile beasts included,
   but no humanoid, construct, spirit or slime, and not the dragons or their
@@ -317,7 +322,12 @@ are kept per character, and so is the choice.
   `boss:rift:<site>`). Since Round 36 an achievement can also count quest
   turn-ins (grug_quests' turn-in hook, [quests.md](quests.md)): one quest's
   (`quest:<id>`, "completed" at 1) or every quest carrying a tag
-  (`quest_tag:<tag>`, e.g. a questline).
+  (`quest_tag:<tag>`, e.g. a questline). An achievement may belong to one
+  faction (user, 2026-10-05): a character of the other faction never sees
+  it on the tab and never earns it, and a character without a faction yet
+  (in creation) sees and earns only the shared ones. Every Name Accounted
+  For is The Accord's, Our Oaths Are Ours The Throng's; The Last Claim
+  Denied is shared.
 - The Character page has an **Achievements** tab: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, two columns of six per page. Under the

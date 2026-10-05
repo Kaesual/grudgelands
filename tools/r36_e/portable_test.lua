@@ -155,6 +155,7 @@ end}
 ------------------------------------------------------------------------------
 local fed = {}
 grug_core = {register_tag_visibility = function() end,
+	get_player_faction = function() return nil end,
 	settlement_socket_anchor = function() return nil end,
 	hud_layout = {side_text_width = function() return 400 end, QUEST_WRAP = 400, anchors = {quest_list = {}}},
 	feed_item = function() end,
@@ -204,12 +205,12 @@ grug_mobs = {
 			return ref == "r20_anchor_076" and {x = SALTGATE.x, z = SALTGATE.z, name = "Saltgate Remnant"} or nil
 		end,
 		zone_place = function(zone, id)
-			return zone == "elandor_stormvault_heights" and id == "snowfield_cairn" and
-				{zone = zone, id = id, name = "Snowfield Cairn"} or nil
+			return zone == "elandor_stormvault_heights" and id == "brandscar_cairn" and
+				{zone = zone, id = id, name = "Brandscar Cairn"} or nil
 		end,
 		place_spot = function(zone, id)
-			return zone == "elandor_stormvault_heights" and id == "snowfield_cairn" and
-				{x = CAIRN.x, z = CAIRN.z, name = "Snowfield Cairn"} or nil
+			return zone == "elandor_stormvault_heights" and id == "brandscar_cairn" and
+				{x = CAIRN.x, z = CAIRN.z, name = "Brandscar Cairn"} or nil
 		end,
 		get_area = function() return nil end,
 		area_roles = function() return nil end,
@@ -228,12 +229,12 @@ for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "val
 	dofile(repo .. "/mods/PLAYER/grug_quests/" .. file .. ".lua")
 end
 local Q = grug_quests
-check(Q.use_objects.signal_fire and Q.use_objects.banner and Q.use_objects.burnt_mark,
+check(Q.use_objects.toll_box and Q.use_objects.pledged_standard and Q.use_objects.rootmark,
 	"the object kinds come from data/use_objects.json")
 
 local GIVER = "r20_anchor_027_host" -- Splitbolt Station (npcs.lua)
 local function use(place, label, extra)
-	local row = {type = "use", place = place, object = "signal_fire", label = label, hold = 3}
+	local row = {type = "use", place = place, object = "toll_box", label = label, hold = 3}
 	for k, v in pairs(extra or {}) do row[k] = v end
 	return row
 end
@@ -246,11 +247,11 @@ end
 local QUESTS = {
 	quest("e_fire", {use("r20_anchor_076", "Light the signal fire")}, {tags = {"main_line"}}),
 	quest("e_fire_too", {use("r20_anchor_076", "Light the signal fire")}),
-	quest("e_flag", {use("r20_anchor_076", "Plant the banner", {object = "banner"})}),
-	quest("e_cairn", {use("snowfield_cairn", "Plant the banner", {object = "banner", hold = 2})},
-		{text = "The {name:snowfield_cairn} lies {dir_from_giver:snowfield_cairn}. The {name:r20_anchor_076} too."}),
-	quest("e_bounty", {use("elandor_stormvault_heights/snowfield_cairn", "Burn the mark",
-		{object = "burnt_mark", count = 1})}, {repeatable = {cooldown = 60}, tags = {"main_line", "bounties"}}),
+	quest("e_flag", {use("r20_anchor_076", "Plant the banner", {object = "pledged_standard"})}),
+	quest("e_cairn", {use("brandscar_cairn", "Plant the banner", {object = "pledged_standard", hold = 2})},
+		{text = "The {name:brandscar_cairn} lies {dir_from_giver:brandscar_cairn}. The {name:r20_anchor_076} too."}),
+	quest("e_bounty", {use("elandor_stormvault_heights/brandscar_cairn", "Burn the mark",
+		{object = "rootmark", count = 1})}, {repeatable = {cooldown = 60}, tags = {"main_line", "bounties"}}),
 }
 local FILE = {name = "elandor_stormvault_heights.quests.json", zone = "elandor_stormvault_heights",
 	front = false, data = {zone = "elandor_stormvault_heights",
@@ -268,10 +269,10 @@ local fire = Q.registered_quests.e_fire.objectives[1]
 eq(fire.place, "r20_anchor_076", "A a clash site keeps its key")
 eq(fire.place_name, "Saltgate Remnant", "A the clash site's name")
 local cairn = Q.registered_quests.e_cairn.objectives[1]
-eq(cairn.place, "elandor_stormvault_heights/snowfield_cairn", "A a bare quest place is the file zone's")
+eq(cairn.place, "elandor_stormvault_heights/brandscar_cairn", "A a bare quest place is the file zone's")
 eq(Q.registered_quests.e_bounty.objectives[1].place, cairn.place, "A a qualified place reads the same")
 eq(Q.objective_action(fire), "Light the signal fire at Saltgate Remnant", "A the action names the place")
-has(Q.quest_text(Q.registered_quests.e_cairn, true), "The Snowfield Cairn lies nearby. The Saltgate Remnant too.",
+has(Q.quest_text(Q.registered_quests.e_cairn, true), "The Brandscar Cairn lies nearby. The Saltgate Remnant too.",
 	"A placeholders name a quest place and a clash site")
 
 local function make_player(name, pos)
@@ -329,8 +330,9 @@ local object = point and point.object
 check(object and object:is_valid(), "B the quest object exists")
 eq(object and object.observers and object.observers.ann, true, "B ann observes it")
 eq(count_keys(object and object.observers), 1, "B only ann: bob has no quest, cid is far away")
-eq(object and object.pos.y, GROUND_Y + 1 - 0.5 + 1.2 / 2, "B it stands on the ground (sprite of 1.2)")
-eq(object and object.props.textures[1], Q.use_objects.signal_fire.texture, "B its texture is the kind's")
+eq(object and object.pos.y, GROUND_Y + 1 - 0.5 + Q.use_objects.toll_box.size / 2,
+	"B it stands on the ground (the kind's sprite size)")
+eq(object and object.props.textures[1], Q.use_objects.toll_box.texture, "B its texture is the kind's")
 eq(object and object.props.nametag, "Light the signal fire", "B its nametag is the act")
 check(object and object.armor and object.armor.immortal == 1, "B it takes no damage")
 cid.pos = at(SALTGATE, 30, 0)
@@ -457,8 +459,9 @@ local cpoint = points[ckey]
 check(cpoint and cpoint.object and cpoint.object.observers.dan, "D the rule-placed place shows its object")
 check(cpoint and math.abs(cpoint.object.pos.x - CAIRN.x) <= 3 and math.abs(cpoint.object.pos.z - CAIRN.z) <= 3,
 	"D at the place's spot")
-eq(cpoint and cpoint.object.pos.y, GROUND_Y + 1 - 0.5 + 1.4 / 2, "D on the dirt under the grass (banner 1.4)")
-eq(cpoint and cpoint.object.props.textures[1], Q.use_objects.banner.texture, "D the banner kind's texture")
+eq(cpoint and cpoint.object.pos.y, GROUND_Y + 1 - 0.5 + Q.use_objects.pledged_standard.size / 2,
+	"D on the dirt under the grass (the pledged standard's size)")
+eq(cpoint and cpoint.object.props.textures[1], Q.use_objects.pledged_standard.texture, "D the pledged standard kind's texture")
 check(Q.start_use(dan, cpoint.object), "D dan plants the banner")
 advance(2.0)
 eq(Q.status(dan, "e_cairn"), "ready", "D credited after its own 2 s hold")
@@ -565,7 +568,7 @@ local function first(f) return f[1].data.quests[1] end
 local cases = {
 	{"unknown place", "E-use-place", function(f) first(f).objectives[1].place = "r20_anchor_014" end},
 	{"a quest place of another zone, bare", "E-use-place", function(f)
-		first(f).objectives[1].place = "front_gravesalt_escarpment/snowfield_cairn" end},
+		first(f).objectives[1].place = "front_gravesalt_escarpment/brandscar_cairn" end},
 	{"unknown object kind", "E-use-object", function(f) first(f).objectives[1].object = "statue" end},
 	{"no object kind", "E-use-object", function(f) first(f).objectives[1].object = nil end},
 	{"hold 0", "E-objective", function(f) first(f).objectives[1].hold = 0 end},
@@ -603,7 +606,7 @@ for _, case in ipairs(cases) do
 end
 -- The registry refuses what the loader would never hand it.
 ok = pcall(Q.register_quest, "e_raw", {title = "Raw", description = "Raw.", npc = GIVER,
-	objectives = {{type = "use", place = "r20_anchor_076", object = "signal_fire", label = "x", hold = 30,
+	objectives = {{type = "use", place = "r20_anchor_076", object = "toll_box", label = "x", hold = 30,
 		count = 1}}, rewards = {weight = 1}})
 check(not ok, "G the registry refuses a hold of 30 s")
 
