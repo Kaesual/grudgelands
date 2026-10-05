@@ -1,8 +1,9 @@
 # Round 36 — The main questline (WP9): round plan
 
 Coordinator: Claude (Opus 5.5), planned 2026-10-05 in a separate planning
-session while Round 35 was running. Status: **complete locally 2026-10-05**
-([completion and GUI checklist](#completion-2026-10-05)); approved by the
+session while Round 35 was running. Status: **complete and pushed
+2026-10-05** ([completion and GUI checklist](#completion-2026-10-05), with
+the [follow-up lanes](#follow-up-lanes-2026-10-05-evening)); approved by the
 user 2026-10-05, with the two documentation corrections of §2.13 added at
 the user's request. The approved [story bible](round36/story-bible.md) and
 the user's choices during the round
@@ -624,8 +625,10 @@ hints, verify before relying on them):
 
 ## Completion (2026-10-05)
 
-Every lane below is merged on local main (last the text pass T, `5069b5a5`,
-and its fixture `d133c3fc`); not pushed. Each code and data lane was
+Every lane below is merged on main (last the text pass T, `5069b5a5`,
+and its fixture `d133c3fc`); the user pushed the round on 2026-10-05
+(`1e8a975d`) and the [follow-up lanes](#follow-up-lanes-2026-10-05-evening)
+the same evening (`0f169898`). Each code and data lane was
 independently reviewed by Opus once: F, K, E and R said MERGE with notes
 (each note fixed before the merge except the carry-overs below), G, W, Q-T
 and Q-A MERGE AFTER FIXES (all fixed and merged), Q0 MERGE (one finding
@@ -641,8 +644,9 @@ passes after the re-derived prices. One boot of main after wave 1 (seed
 5423894902269011374) passed. Lanes G and W changed world generation: each
 ran `tools/seed_fleet/run.sh quick` (100 of 100 seeds); **a fresh world is
 required** for the decor pass and the dragon arenas. A second text review
-(Opus suggestions on the other quest texts) is in progress and lands later
-as a data-only commit.
+(Opus suggestions on the other quest texts) landed after this section as
+the data-only commit `6794af6e` (136 suggestions, all accepted by the
+user), with the catalogue regenerated in `1e8a975d`.
 
 ### Shipped, by lane
 
@@ -898,6 +902,53 @@ before and after (comparisons, never targets).
   §2.13 and §7, AGENTS.md and the module guide, the regenerated
   existing-items catalogue.
 
+### Follow-up lanes (2026-10-05 evening)
+
+From the user's first look at the round, merged after this section was
+written (`git log 1e8a975d..0f169898`). F2, W3 and RD were independently
+reviewed by Opus (MERGE; the notes applied before the merge); no separate
+review is recorded for W2, which only turns blocks. After them `tools/run_fixtures.sh`
+passes **96 of 96**, `check_fresh_server.py` passes and a smoke boot of
+main passed. W2, W3 and RD change world generation: **the GUI test needs a
+world made on `fef94a6a` or later** (W3 and RD each ran `seed_fleet quick`,
+100 of 100; W2 turns blocks only). The round-end `seed_fleet full` owed
+after W3 and RD ran at the start of Round 37 on `0f169898`: 303 of 303
+seeds build ([Round 37 plan](round37-plan.md) §7).
+
+- **F2 held button across a hotbar switch** (merge `4b224ccd`;
+  [classes.md](../design/classes.md) §2b): an LMB held across a switch to
+  another skill is the same press, decided again for the new item once it
+  has stayed wielded **0.2 s** (a further switch restarts the wait, a
+  release inside it acts for nothing), so a slot the scroll wheel only
+  passes never fires; a kept combat foe stays while it is in the new
+  skill's reach; digging goes on across a switch in both directions and
+  never waits. Fixture and engine probe `tools/r36_f2` (digs across a
+  switch: 3 of 6 accepted before, 6 of 6 after, 7 of 7 across a fast
+  scroll).
+- **W2 benches** (merge `4b53dec8`;
+  [settlements.md](../design/settlements.md) "Benches"): a bench keeps its
+  back to the house or wall beside it and looks out to the lane, a well, a
+  fire or a table; a sitter faces where the bench looks. Turned: the bench
+  before every capital plot's door, eight Round 20 outposts' benches, both
+  fortress barracks benches, court benches in Hearthpine, Silverleaf, Dur
+  Brannoc, Nhal Veyr and Gor Drazhak, Gor Drazhak's clan-house sitter and
+  Lethariel's two crossing sitters (on main 165 benches and the clan-house
+  sitter failed the rule). Fixture over every composition `tools/r36_w2`.
+- **W3 ground cover in the treeless band** (merge `9883782a`;
+  [world_zones.md](../design/world_zones.md) §12,
+  [settlements.md](../design/settlements.md)): the protected band round
+  start towns and capitals keeps no trees, bushes or resource plants but
+  grows the zone's one-node ground cover on a seeded share of its columns,
+  a third at the town rising to all at the band's outer edge; never on the
+  pad, a road or its corridor (Dawnmere 0 → 16.9 and Sunscar 0 → 18.2
+  covered columns per 100 in the engine probe). Fixture and probe
+  `tools/r36_w3`.
+- **RD roads** (merge `fef94a6a`;
+  [world_zones.md](../design/world_zones.md) "Grade"): a level change in a
+  road profile costs `C_STEP` **0.5** instead of 0.05, so roads no longer
+  trace the ground's one-node dither with lone half-step bumps and holes
+  (about 500 per world before, 0 on the measured seeds).
+
 ### The user's choices during the round
 
 1. **Rift site:** Tombroad Ambush (`r20_anchor_077`), lane R's constant.
@@ -975,8 +1026,10 @@ GUI test. Numbers are comparisons, never targets.
 
 ### GUI playtest checklist
 
-Desktop client and the web build, **a fresh world** (the decor pass and the
-dragon arenas are world generation); **two clients** for the rift and PvP.
+Desktop client and the web build, **a fresh world** made on `fef94a6a` or
+later (the decor pass, the dragon arenas and the follow-up lanes' benches,
+ground cover and roads are world generation); **two clients** for the rift
+and PvP.
 Helpers: `/xp give`, `/teleport`, `/giveme`, `/time`, `/money`
 (privileges `server`, `give`, `settime`). Places: Ashenward Bastion
 (136, −488), Bannerbreak Warhold (−80, 632), the Shattered Line high war
@@ -1068,3 +1121,20 @@ Prices:
 
 20. **The new prices:** Expert Riding 1g29s, Master Riding 7g38s, the
     41–50 talent reset 5s25c, the crown 1g48s.
+
+The follow-up lanes (F2, W2, W3, RD):
+
+21. **A held button across a hotbar switch:** hold LMB on a mob and switch
+    to another skill: it acts once it has stayed selected about 0.2 s;
+    scrolling quickly past Blink, Heal or Ward fires nothing; digging goes
+    on across a switch from the empty hand to a skill and back (the node
+    does not come back).
+22. **Benches:** the bench before a capital plot's door has its back to the
+    house; benches in start towns, outposts and the fortress barracks never
+    face a wall; Lethariel's crossing sitters look the way their benches
+    look.
+23. **Ground cover round towns:** the protected band round a start town
+    (Dawnmere, Sunscar) and outside a capital wall has grass and low plants,
+    sparse near the town and denser outward, but no trees or bushes; roads
+    stay bare.
+24. **Roads:** no lone half-node bumps or holes along a road.
