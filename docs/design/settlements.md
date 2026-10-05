@@ -718,11 +718,20 @@ walk to from a composition's arrival without its dressing stays reachable
 with it, within a detour of a few steps.
 
 **Benches.** A bench of stair seats runs along its axis and every seat
-looks across it; temple pews look at the altar. `tools/r36_w/
-portable_test.lua` checks every start and capital for a seat that looks
-along its own bench, holds every composition's bounds, airspace and
-sockets to main's record from before the pass, and checks the windows,
-the headroom and the ways above over every composition.
+looks across it; temple pews look at the altar. A seat looks away from its
+raised half, the backrest (the stair's upper half lies along the facedir
+of its param2, so the sitter looks along param2 + 2). A bench keeps its
+back to the house or wall beside it and its seat toward the lane: the
+bench before a capital plot's door, the benches against a POI house and a
+fortress barracks wall (Round 36 playtest: they faced the houses). A
+bench beside a well, a fire or a table looks at it, and a resident who
+sits on a bench faces where it looks. `tools/r36_w/portable_test.lua`
+checks every start and capital for a seat that looks along its own bench,
+holds every composition's bounds, airspace and sockets to main's record
+from before the pass, and checks the windows, the headroom and the ways
+above over every composition; `tools/r36_w2/portable_test.lua` holds every
+bench of every composition to the rule (no wall ahead it could have its
+back to, no fire or well behind it without something to look at ahead).
 
 ## Round 21 ground and access correction
 

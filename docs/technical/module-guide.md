@@ -1292,8 +1292,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   their four `props` positions (`rift_core.lua` reads them) and carry the
   rest as `decor`. Fixture `tools/r36_w` (every composition's bounds,
   airspace and sockets against `baseline.tsv`, windows, headroom, ways,
-  benches); renders `tools/r36_w/render.py`, the whole roster
-  `tools/r36_p`.
+  benches); `tools/r36_w2` (which way every bench of every composition
+  looks: a seat looks away from its stair's raised half, along facedir
+  param2 + 2, never at a wall it could have its back to; `engine.sh`
+  measures the raised half of Highcourt's seats in the engine); renders
+  `tools/r36_w/render.py`, the whole roster `tools/r36_p`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air
