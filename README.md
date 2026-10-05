@@ -48,8 +48,8 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   while exploring and fighting.
 - **A world you can hear.** Creatures, spells, crafting and the people you
   talk to have their own sounds; every region has a quiet ambience by day
-  and night, forges ring and rivers run, and calm music plays now and then,
-  with volume settings for both.
+  and night, forges ring and rivers run, and each capital has its own calm
+  music, with volume settings for both.
 - **Fight the other faction when you choose to.** Contested lands and enemy
   territory flag you for PvP, a button flags you anywhere, and only two
   flagged players can harm each other. Each faction holds a fortress at the
@@ -61,23 +61,34 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-10-04. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-10-05. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 35](docs/planning/round35-plan.md#completion-2026-10-05), "Fixes and
+character creation", is complete locally and awaits a playtest on desktop
+and in the browser. Held spells and attacks no longer miss zombies,
+crocodiles and other creatures that have turned away; gear that breaks makes
+a sound and looks clearly broken, ores, gems and sand sound when you dig
+them, and quest lists show each quest's state by colour. Music now plays
+only in the six capitals, each with its own tunes, and takes the place of
+the town ambience while it plays. You create your character in a single window, and nothing is
+kept until you confirm it. Creatures of the night leave at dawn, a few
+creatures drop less valuable loot, and talents keep their strength at
+every level, with several talents rebalanced.
 [Round 34](docs/planning/round34-plan.md#completion-2026-10-04), "Sound", is
-complete locally and awaits a listening playtest on desktop and in the
-browser. The game now has sound: clicks and cues when you talk to people,
+complete and pushed; its listening playtest fed Round 35. The game now has
+sound: clicks and cues when you talk to people,
 trade, craft and level up, hits that sound like the weapon you swing, spells,
 creature voices and roaring dragons, a quiet ambience for every region by
-day and night, and calm music that changes with where you are and is only
+day and night, and calm music that is only
 downloaded while music is on ([sound](docs/design/sound.md),
 [credits](CREDITS.md)). Creatures now follow you across streams, a Bag of
 Coins lets you hand money to another player, and the Crownbinder and Decor
 Merchant show on the map.
 [Round 33](docs/planning/round33-plan.md#completion-2026-10-04), "Items,
-professions and achievements", is complete and pushed and awaits a playtest on
-a fresh world. Gear now drops in white, blue and gold, named creatures and
+professions and achievements", is complete and pushed; its playtest on a
+fresh world fed Round 34. Gear now drops in white, blue and gold, named creatures and
 elites drop more, and every boss gives two blue or gold pieces; you can wear
 gear only once you reach its level. Enchantments grow with the item's level and
 show their tier, each profession can upgrade the items it makes, and a
@@ -188,15 +199,18 @@ canceled and 6 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 34](docs/planning/round34-plan.md#completion-2026-10-04)
+[Round 35](docs/planning/round35-plan.md#completion-2026-10-05)
+(aiming at turned creatures, capital music, small item and quest fixes,
+the one-window character creation, night mobs at dawn, level-proof
+talents), independently reviewed and merged locally, after Round 34
 (sound effects, creature voices, ambience and music, mobs in water, the Bag
-of Coins), independently reviewed and merged locally, after Round 33
-(drops, enchant tiers and upgrades, the crown, vendors, potions, cloaks and
-achievements), Round 32 (map and HUD fixes, the held left click, notices in
-the feed), Round 31 (PvP, looks, dragon arenas) and Round 30 (performance);
-Round 33 is the latest pushed state and Round 24 the latest formally
-accepted one.
+of Coins), Round 33 (drops, enchant tiers and upgrades, the crown, vendors,
+potions, cloaks and achievements), Round 32 (map and HUD fixes, the held
+left click, notices in the feed), Round 31 (PvP, looks, dragon arenas) and
+Round 30 (performance); Round 34 is the latest pushed state and Round 24
+the latest formally accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 35](docs/planning/round35-plan.md#gui-playtest-checklist),
 [Round 34](docs/planning/round34-plan.md#gui-playtest-checklist),
 [Round 33](docs/planning/round33-plan.md#gui-playtest-checklist),
 [Round 32](docs/planning/round32-plan.md#gui-playtest-checklist),
@@ -209,21 +223,21 @@ accepted one.
 playtests remain separate.
 
 **Ready for further work:** the first release still needs the main story
-from level 41 to 60 with its finale (WP9, next). A rare world-generation
-failure on about 1 % of random seeds is diagnosed and waits for a fix; a
-later look at Priest healing is noted, and the deep spawn pulse stays for
-later. Points of interest stay at fixed positions (per-world
+from level 41 to 60 with its finale (WP9, next). A later look at Priest
+healing and a possible music tab are noted, and the deep spawn pulse stays
+for later. Points of interest stay at fixed positions (per-world
 placement set aside); the [roadmap](ROADMAP.md) records the V1 scope and order.
 
-**Caveats:** Round 33 needs a fresh world (Round 34 plays on it); the
-sound's volume balance is tuned after the listening playtest. Quests never ask you to kill
+**Caveats:** Round 33 needs a fresh world (Rounds 34 and 35 play on it);
+sound volumes and the new looks are tuned from playtests. Quests never ask you to kill
 players; PvP quests target enemy camp garrisons. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
 deferred. Round 32's [performance review](docs/research/perf-review-2026-10-r32.md)
 measured 50 and 100 simulated players; a test with real clients and
 first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round34-plan.md#gui-playtest-checklist),
+the [latest playtest checklist](docs/planning/round35-plan.md#gui-playtest-checklist),
+the [Round 34 checklist](docs/planning/round34-plan.md#gui-playtest-checklist),
 the [Round 33 checklist](docs/planning/round33-plan.md#gui-playtest-checklist),
 the [Round 32 checklist](docs/planning/round32-plan.md#gui-playtest-checklist),
 the [Round 31 checklist](docs/planning/round31-plan.md#gui-playtest-checklist),

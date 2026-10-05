@@ -45,3 +45,7 @@ tools/seed_fleet/run.sh quick 20      # plus 20 random seeds (printed)
 - `python3 tools/check_fresh_server.py`: the fresh-server source audit.
 - `tools/luanti_headless.sh`: an isolated headless engine boot (never the
   personal Luanti folder; options in the script header).
+- `tools/r35_t/upstream_check.sh`: whether the installed engine still
+  misreads rotated selection boxes (prints `FIXED` or `BUG PRESENT`); run it
+  at every engine version change with the rest of
+  `docs/technical/upstream-workarounds.md`.

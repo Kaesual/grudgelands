@@ -1,12 +1,43 @@
 # Project status
 
-Updated 2026-10-04. This is the delivery pointer, not another game specification.
+Updated 2026-10-05. This is the delivery pointer, not another game specification.
+
+- **Round 35 "Fixes and character creation" delivered locally**
+  (2026-10-05, [plan, completion and GUI checklist](planning/round35-plan.md#completion-2026-10-05)).
+  Every code lane is merged on local main (last lane B, `a15bd0ae`), each
+  independently reviewed by Opus; 84 fixtures pass; not pushed. No mapgen
+  change. The fixes come from the user's Round 34 GUI test.
+  - **Aiming (T):** the server's aiming rays test rotated selection boxes
+    in Lua (an engine bug since Luanti 5.12 misreads them), so held casts
+    and swings no longer miss zombies, crocodiles and other turned mobs
+    (zombie 62 of 288 probe rays → 0, crocodile 32 of 192 → 0); about
+    +22–45 µs per ray. The new
+    [upstream-workaround list](technical/upstream-workarounds.md) records it
+    with the emerge-thread pin.
+  - **Music (M):** only in the six capitals, one rotation each, either music
+    or the ambience bed (a 3 s crossfade), 5 s between tracks, 35 % by
+    default; no music in start towns or elsewhere
+    ([sound.md](design/sound.md)).
+  - **Small fixes (F):** a break sound when gear breaks (the user's pick),
+    a clearly broken look, the bare hand for a skill without a weapon, dig
+    sounds for ores, coal, gems and sand, flint removed, quest lists
+    coloured by status with "(R)" and read-only quest text.
+  - **Character creation (C):** faction, race, class and look in one window;
+    nothing is stored before "Create character" ([world.md](design/world.md) §7).
+  - **Mobs and economy (E):** night mobs leave at dawn unless fighting or
+    within 32 nodes of a player; the rat, crab, fox, crocodile, zombie and
+    outlaw drop outliers lowered, band medians unchanged.
+  - **Talents (B):** 13 flat talent values became level-proof percentages,
+    and the user's picks from a review of all 64 talents
+    ([skill_trees.md](design/skill_trees.md) §2.10).
+  - Next: the user's GUI test (desktop and web build); then WP9.
 
 - **Round 34 "Sound" delivered locally**
   (2026-10-04, [plan, completion and GUI checklist](planning/round34-plan.md#completion-2026-10-04)).
   Every lane is merged on local main (last lane S1b, `b0d648f5`), each code
   lane independently reviewed by Opus; every shipped sound was picked by the
-  user on a listening page; 77 fixtures pass; not pushed. No mapgen change.
+  user on a listening page; 77 fixtures pass; pushed by the user on
+  2026-10-05 (`86d7c4c5`). No mapgen change.
   Rules: [sound.md](design/sound.md); credits: [CREDITS.md](../CREDITS.md).
   - **Effects (S1a, S1b):** `grug_sounds` with a one-line play helper and
     the formspec click; cues for NPC roles, quests, trade, progression,
@@ -18,9 +49,10 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
   - **Ambience and music (S2):** `grug_ambience`: a quiet bed per region,
     night, cave, deep underground and sea (towns at half gain), distant
     thunder on the dragon islands, loops at forges, hearths and flowing
-    water; four music pools (Land, Front and sea, Underground, Town) whose
-    16 tracks are pushed to a player only while music is on; a main-menu
-    theme; Help → Sound, `/music`, `/ambience`. First-join media 14.10 →
+    water; four music pools (Land, Front and sea, Underground, Town; since
+    Round 35 music plays only in the capitals) whose 16 tracks are pushed
+    to a player only while music is on; a main-menu theme; Help → Sound,
+    `/music`, `/ambience`. First-join media 14.10 →
     20.82 MB; the music (30 MB) is never part of it.
   - **Fixes (F1, F2):** mobs follow their target through water in combat and
     swim back to land; text boxes sized to their text; each tier's Caster
@@ -31,7 +63,8 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
   - Late fixes: rivers never cover a POI core (about 1 % of random seeds
     failed to load since Round 29), a reusable seed fleet
     (`tools/seed_fleet/run.sh`), the Wisp's blink never lands in water.
-  - Next: the user's GUI test (desktop and web build); then WP9.
+  - Next was the user's GUI test (desktop and web build); its findings
+    became Round 35.
 
 - **Round 33 "Items, professions and achievements" delivered locally**
   (2026-10-04, [plan, completion and GUI checklist](planning/round33-plan.md#completion-2026-10-04)).
@@ -421,11 +454,12 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 34, which includes Rounds 20–33
-  and the 2026-09-28 playtest fixes. Round 33 is the latest pushed state
-  (with Rounds 30–32, 2026-10-04); Round 29 was tested by the user on a
-  fresh world (2026-10-02), the user's Round 33 findings became Round 34's
-  fix lanes; Round 24 is the latest formally accepted one. The 2026-09-30 playtest with friends fed Round 28,
+- **Latest game:** local main carries Round 35, which includes Rounds 20–34
+  and the 2026-09-28 playtest fixes. Round 34 is the latest pushed state
+  (2026-10-05); Round 29 was tested by the user on a fresh world
+  (2026-10-02), the user's Round 33 findings became Round 34's fix lanes and
+  the Round 34 findings Round 35; Round 24 is the latest formally accepted
+  one. The 2026-09-30 playtest with friends fed Round 28,
   the 2026-10-02 spawn playtest Round 29. Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
@@ -440,7 +474,11 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 34 checklist](planning/round34-plan.md#gui-playtest-checklist)
+  The [Round 35 checklist](planning/round35-plan.md#gui-playtest-checklist)
+  covers aiming at turned mobs, gear breaking, the empty hand, dig sounds,
+  the quest dialog, night mobs at dawn, loot, talent tooltips, capital
+  music and the new character creation (desktop and web build); the
+  [Round 34 checklist](planning/round34-plan.md#gui-playtest-checklist)
   covers sound (desktop and web build), mobs in water, the text boxes, the
   Bag of Coins, the service markers and the thin ice; the Round 31–33
   checklists are linked from their entries above; the
@@ -460,9 +498,8 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
-- **Remote observation:** Rounds 30–33 are pushed (origin/main
-  `35af4ede`, 2026-10-04, which also carries the Round 34 plan); Round 34 is
-  local only.
+- **Remote observation:** Rounds 30–34 are pushed (origin/main
+  `86d7c4c5`, 2026-10-05); Round 35 is local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

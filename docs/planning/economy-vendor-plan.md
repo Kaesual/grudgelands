@@ -149,7 +149,10 @@ price lane tunes **only the five class values** once so the per-band
 median lands near the target; the formula stays. Outliers (scavenger and
 stone families in bands 3–4, outlaws in 5–6) are left alone unless they
 exceed roughly four times the target. *Why:* the user prefers rough
-targets over per-item tuning.
+targets over per-item tuning. Round 35's drop audit (its plan §2.6) then
+lowered the rat, crab, band-1 fox, crocodile, zombie and outlaw outliers
+by loot-table chances, with every band median unchanged
+([completion](round35-plan.md#completion-2026-10-05)).
 
 Rough band check for band 1: about 45 route kills plus free play at ~3c
 ≈ 150c, quest copper ≈ 70c, total ≈ two T1 vendor sets of 105c (ruling 6).
@@ -542,10 +545,11 @@ trash (37–39c), so the median moves only when several of them gain a drop;
 a T4 generic of their own tier is the smallest such change. Band 5 sat
 above its target because of a T6 generic that no band-5 recipe needs.
 
-Band-3 outliers: Crocodile Tooth (crocodiles, bands 2–3, 1/3) and Shiny
-Scale (mirefolk, bands 2–3, 1/4) are T4 items in lower bands. No fitting
-T3 item exists, so they stay; both are T4 alchemy inputs and Crocodile Tooth
-is also the goldsmith's T4 ornament reagent.
+Band-3 outliers: Crocodile Tooth (crocodiles, bands 2–3, then 1/3) and
+Shiny Scale (mirefolk, bands 2–3, 1/4) are T4 items in lower bands. No
+fitting T3 item exists, so they stay. Since Round 33 no recipe uses
+Crocodile Tooth (one-faction vendor loot; `item_tiers.md` §3.4), and
+Round 35 halved its chance to 1/6.
 
 Prices after the smoothing (`income.py --check` passes):
 

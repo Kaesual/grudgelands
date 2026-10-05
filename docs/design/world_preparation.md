@@ -193,9 +193,9 @@ stasis, allowing the native menu on a subsequent Escape. Nothing reopens it by
 itself: progress and a new failure update an open waiting screen or, when it was
 dismissed, only the screen hint and the inventory formspec (which always shows
 the current step, including the retry form; world.md §7, Round 24 ruling 32).
-Readiness replaces an open waiting screen with the next creation step, changes
-only the hint when it was dismissed, and releases an existing complete character
-without regranting its kit.
+Readiness replaces an open waiting screen with the creation window (one
+window since Round 35), changes only the hint when it was dismissed, and
+releases an existing complete character without regranting its kit.
 
 ## Air-chunk fast path (emerge environment)
 

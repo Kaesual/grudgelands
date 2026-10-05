@@ -107,7 +107,8 @@ Earlier delivery narratives are preserved in the
 
 **Scope versus delivery:** this vision includes approved future systems, not just
 running code. The WP9 story from level 41 remains unfinished; V1's sound is
-delivered in Round 34 (GUI test pending); the items
+delivered in Round 34 (tested by the user; Round 35 made music a capital
+feature); the items
 and professions revision (WP5, WP10) is delivered in Round 33; WP41 PvP and
 the PvP POIs of WP42 are delivered (Round 31, GUI test pending), WP17
 boats/waypoints and the WP44 economy too (Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
@@ -125,7 +126,8 @@ B1–B7) settle the rest:
   `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale;
   **sound** (the user, 2026-10-03): effects for the game's events, mob
   voices, ambience and calm background music without a combat switch
-  (delivered in Round 34, [sound.md](docs/design/sound.md)).
+  (delivered in Round 34, [sound.md](docs/design/sound.md); since Round 35
+  music plays only in the six capitals).
 - **After V1:** WP42's scripted NPC battles on the war front. The small PvP
   POIs shipped in V1 (Round 31).
 - **Not V1:** the walkable Nether, the first expansion (V2).
@@ -259,12 +261,26 @@ B1–B7) settle the rest:
   voices in 22 families, dragon and King cues; quiet ambience beds per
   region, night, cave, deep and sea, thunder on the dragon islands, loops at
   forges, hearths and flowing water; four music pools pushed to a player
-  only while music is on, a main-menu theme, volume and off switches per
-  player. Two fix lanes from the Round 33 test: mobs follow through water
-  in combat; text boxes, cooking costs, the Bag of Coins, service map
-  markers, the damage fit, no gear from encounter adds, thin ice breaking
-  behind a runner. Local, not pushed. Next: the GUI test on desktop and in
-  the web build.
+  only while music is on (replaced by capital rotations in Round 35), a
+  main-menu theme, volume and off switches per player. Two fix lanes from
+  the Round 33 test: mobs follow through water in combat; text boxes,
+  cooking costs, the Bag of Coins, service map markers, the damage fit, no
+  gear from encounter adds, thin ice breaking behind a runner. Pushed
+  2026-10-05; the user's GUI test fed Round 35.
+- [x] **Round 35 "Fixes and character creation"**
+  ([completion](docs/planning/round35-plan.md#completion-2026-10-05)), the
+  user's Round 34 GUI findings: the server's aiming rays test rotated
+  selection boxes in Lua (an engine bug since Luanti 5.12), recorded in the
+  new [upstream-workaround list](docs/technical/upstream-workarounds.md);
+  music only in the six capitals with a rotation each, either music or the
+  ambience bed, 35 % by default; a break sound and a clearer broken look,
+  the bare hand for a skill without a weapon, dig sounds for ores and sand,
+  flint removed, quest lists coloured by status with read-only text;
+  character creation in one window with nothing stored before "Create
+  character"; night mobs leave at dawn, a drop audit against the income
+  targets; level-proof talents and the user's picks from a review of all
+  64. Local, not pushed. Next: the GUI test on desktop and in the web
+  build.
 
 ### Remaining work
 
@@ -273,15 +289,16 @@ B1–B7) settle the rest:
   world instead of at fixed positions
   ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
 - [ ] **WP9 (V1), next:** the level-41–60 main questline and the finale, a
-  round of its own after Round 34 (sound).
+  round of its own after Round 35.
   Round 29's front quests and bounties carry the 41–60 leveling; the main
   storyline and the finale are reassessed on top of them.
 - Round 34's late fix: the ~1 % seed load failure is fixed (F3, rivers never
-  cover a POI core; a seed fleet guards world-generation changes). Round 33's and 34's other
+  cover a POI core; a seed fleet guards world-generation changes). Round 33's to 35's other
   open notes (Priest healing and Intelligence, the playtest's crit numbers,
-  sound balance) are in the
-  [Round 33](BACKLOG.md#round-33-carry-overs) and
-  [Round 34](BACKLOG.md#round-34-carry-overs) carry-overs.
+  sound balance, spell rounding, the music tab study) are in the
+  [Round 33](BACKLOG.md#round-33-carry-overs),
+  [Round 34](BACKLOG.md#round-34-carry-overs) and
+  [Round 35](BACKLOG.md#round-35-carry-overs) carry-overs.
 - [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
 - [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
   roster stay open in TODO-design-depth.md. Renewable camp resources are

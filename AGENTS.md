@@ -64,7 +64,22 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 34 complete locally, 2026-10-04 (not pushed).** "Sound", V1's
+**Round 35 complete locally, 2026-10-05 (not pushed).** "Fixes and
+character creation" from the user's Round 34 GUI test: the server's aiming
+rays test rotated selection boxes in Lua (`grug_core.aim_raycast`, an
+engine bug since Luanti 5.12; the
+[upstream-workaround list](docs/technical/upstream-workarounds.md));
+music only in the six capitals, one rotation each, either music or the bed,
+35 % by default; the break sound, a clearer broken look, the bare hand for
+a skill without a weapon, dig sounds for ores and sand, flint removed,
+quest lists coloured by status with read-only text; character creation in
+one window with nothing stored before "Create character"; night mobs leave
+at dawn and a drop audit against the income targets; level-proof talents
+and the user's picks from a review of all 64. Next: the GUI test (desktop
+and web build), then WP9.
+[Plan, completion and GUI checklist](docs/planning/round35-plan.md#completion-2026-10-05).
+
+**Round 34 complete, 2026-10-04 (pushed 2026-10-05).** "Sound", V1's
 sound: every file picked by the user on a listening page (the approval
 gate); `grug_sounds` (one-line play helper, formspec click, cues at the
 game's events, many silent by choice), hits by weapon kind, one cue per
@@ -74,8 +89,8 @@ thunder, forge, hearth and flowing-water loops, four music pools pushed on
 demand, the menu theme, Help → Sound, `/music`, `/ambience`); fix lanes for
 mobs in water and the Round 33 findings (Bag of Coins, service markers,
 cooking costs, thin ice). Rules: [sound.md](docs/design/sound.md), credits:
-[CREDITS.md](CREDITS.md). Next: the GUI test (desktop and web build), the
-seed failures (about 1 % of random seeds), then WP9.
+[CREDITS.md](CREDITS.md). Late fix: the seed failures (about 1 % of
+random seeds) and the seed fleet. The user's GUI test fed Round 35.
 [Plan, completion and GUI checklist](docs/planning/round34-plan.md#completion-2026-10-04).
 
 **Round 33 complete, 2026-10-04 (pushed with Rounds 30–32).** "Items,
@@ -428,6 +443,12 @@ current state). It is **derived, never authoritative**:
   checkout after 5.16). That pin is the *engine* version of a read-only
   source reference — **the language version is decoupled and stays Lua
   5.1**; a newer engine never unlocks newer syntax.
+- **Engine workarounds are listed in
+  [docs/technical/upstream-workarounds.md](docs/technical/upstream-workarounds.md)**
+  (Round 35 ruling §2.10): each with the upstream problem, our workaround
+  and where it lives, how to tell upstream fixed it and what to remove.
+  Check it at every engine version change and at the start of each round;
+  a new workaround for an engine bug gets an entry there.
 - **The engine's own Lua is checked out in this repo — read it, never
   guess.** `reference_projects/luanti/builtin/` (what runs before any
   mod), `lib/lua/src/` (the bundled 5.1.5 interpreter),
@@ -720,6 +741,41 @@ current state). It is **derived, never authoritative**:
   `engine.sh`, the pass cost and flowing-water census; `f1` the wading rule
   and `engine.sh`, a mob at real water crossings; `f2` the Bag of Coins, the
   sell refusal, the damage fit, the cooking order and `render_icons.py`).
+
+### Fixes and character creation (since Round 35)
+
+- **Every server-side aiming ray goes through `grug_core.aim_raycast`**
+  (`grug_core/combat_ray.lua`), never `core.raycast` with objects: the
+  engine misreads `rotate = true` selection boxes since 5.12
+  ([upstream-workarounds.md](docs/technical/upstream-workarounds.md) §1).
+  Rays that point only at nodes (blink, homing, mob line of sight) keep the
+  engine's raycast.
+- **Talent values are level-proof:** a damage or armour value that adds
+  before the level scalar is stored as a percentage of the base hit
+  (`grug_core.baseline_melee_total`) or the armour constant `K(L)`, listed
+  in `grug_classes` `LEVEL_SCALED_KEYS`; `get_talent_bonus` returns the
+  amount at the player's level and the tooltip shows it
+  ([skill_trees.md](docs/design/skill_trees.md) §2.10). A new flat "+N"
+  talent value is a design error.
+- **Music plays only in the capitals** (`grug_ambience` `D.rotations`,
+  `grug_map.location.capital_of`): either music or the bed; a rotation
+  change is a data edit, a new track still needs the user's pick.
+- **Character creation** is one window (`grug_classes/selection.lua`) with
+  a session-only draft; nothing is stored before "Create character", and
+  the look comes from `grug_classes.register_look_panel`.
+- **Night region mobs leave at dawn** (`grug_mobs/dawn.lua`): a mob spawned
+  under the night clock leaves by day unless it fights or a player is
+  within 32 nodes; mobs without the clock are never touched.
+- Round 35 fixtures and probes live in `tools/r35_<lane>/` (`t` the rotated
+  boxes, `engine.sh` the turning-mob sweep and ray cost,
+  `upstream_check.sh` the engine bug, FIXED or BUG PRESENT; `f` the break
+  hook, broken look, empty hand, dig sounds, flint and quest lists, its
+  approval list `approved.txt` and `engine.sh`; `m` the capital scheduler
+  and either/or rule, `engine.sh` the location and ambience passes; `c` the
+  creation draft and window geometry, `engine.sh` a creation through the
+  real receive-fields chain; `e` the dawn rule, `engine.sh` rats across a
+  dawn; `b` the level-proof talents and the picks, `numbers.py` the
+  conversion, review and decided tables).
 
 ## Task-specific implementation references
 
