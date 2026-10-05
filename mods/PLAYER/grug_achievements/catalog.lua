@@ -13,7 +13,8 @@
 -- 1 (and is the only text of a one-kill achievement). `flavour` shows in the
 -- tab's tooltip. An optional `faction` ("accord" or "throng") gives a row to
 -- that faction's characters only: the others never see or earn it (nor does
--- a character without a faction yet); a row without it is everyone's. Names, flavour and cloak names are GPT-6 Astra's proposals
+-- a character without a faction yet); a row without it is everyone's.
+-- Names, flavour and cloak names are GPT-6 Astra's proposals
 -- (Round 33); the selection and tiers are the user's (2026-10-04). Counters:
 --   kill:animal           every wild animal: critters and hostile beasts,
 --                         no humanoids (creatures.lua)
