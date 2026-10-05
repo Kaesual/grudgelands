@@ -326,8 +326,7 @@ end
 -- both do_punch and CMI decline to cancel, but before health subtraction. All
 -- irreversible player-hit work lives here: a cancelled custom mob cannot be
 -- provoked/tagged, gain threat, award rage/XP or schedule a rare respawn.
-function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction,
-		crit_pos)
+function grug_mobs.accepted_player_punch(self, hitter, damage, crit_pos)
 	-- The multiplier was already resolved before the custom/CMI gates; only
 	-- its captured visual waits for acceptance.
 	grug_core.emit_melee_crit(crit_pos)
@@ -338,18 +337,17 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 	self.temp.grug_provoked[hitter:get_player_name()] = true
 	-- Loot rights: every accepted player hit renews the 60 s tag.
 	grug_mobs.tag_player(self, hitter)
-	local dealt_damage = (applied ~= nil and applied >= 1)
-		or (applied == nil and math.floor(damage or 0) >= 1)
-	if dealt_damage then
+	-- Every hit is whole: the floored damage is what the subtraction removes.
+	local dealt = math.floor(damage or 0)
+	if dealt >= 1 then
 		grug_mobs.mark_xp_participant(self, hitter)
 	end
-	-- Base threat, combat marking, target lock and non-swing rage. Native swing
-	-- rage is deferred to the proc finish after the same acceptance gates.
-	grug_core.run_player_hit_mob(hitter, self, damage or 0, applied, fraction)
-	-- The health subtraction immediately after this hook uses the same
-	-- accumulated integer. Ability/immune paths have nil and keep the original
-	-- floored-damage behavior.
-	local lethal = self.health - (applied or math.floor(damage or 0)) <= 0
+	-- Base threat, combat marking and target lock. Swing rage is deferred to
+	-- the proc finish after the same acceptance gates.
+	grug_core.run_player_hit_mob(hitter, self, damage or 0)
+	-- The health subtraction immediately after this hook removes the same
+	-- floored damage.
+	local lethal = self.health - dealt <= 0
 	if lethal and self._grug_rare_id and
 			not self.temp.grug_rare_death_sent then
 		self.temp.grug_rare_death_sent = true

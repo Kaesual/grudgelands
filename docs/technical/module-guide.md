@@ -368,9 +368,8 @@ achievements](#cloaks-and-achievements).
   most 0.1 s and half an FPI of ordinary lateness, and never replays a backlog.
   Swing-to-swing selection reads the proc live; non-swing/cast boundaries keep
   the due time; lifecycle clears it; a concrete weapon swap starts one full new
-  interval. Every hostile ordinary tool/fist packet pushes the full ability
-  swing to at least `now + equipped FPI`, with one-time bank cleanup at path
-  transitions.
+  interval. Native tool/fist packets deal nothing and do not move the clock
+  (Round 37 removed WP38's proportional tool/fist path).
   Swing ItemStacks continue to mirror equipped-slot FPI compare-first with
   `fleshy = 0`, empty `groupcaps`, `max_drop_level = 0`,
   `punch_attack_uses = 0` and blocking hand/dig_immediate node pointabilities.
@@ -493,43 +492,30 @@ achievements](#cloaks-and-achievements).
   `grug_jobs.has(player, "alchemist")`; Cave Cap remains universal food.
   The former real-code Lua 5.1 regressions under `tools/wp39/` were retired in
   Round 22 (D22); git history keeps them.
-  **Ordinary tool WEAR is spent per swing, not per punch**
-  (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
-  `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's
-  partial wear to B, returning to A resumes it, and empty/non-tool,
-  creative/use-0 punches neither assign an id nor consume state. The wear
-  block in api.lua now runs on all ~5 packets/s, and
-  paying a full swing's wear each time both wears the tool `1/fraction`
-  times faster and fires `set_wielded_item` — a full inventory
-  serialization plus packet — per punch, ~500/s at the 100-player target.
   **PvP melee runs through the same pipeline** (the on_punchplayer
   handler in grug_abilities): an authoritative ability swing builds the
   slot-fed full swing, adds Strength/proc, rolls crit once, applies
   `grug_core.apply_player_armor` with attacker-level provenance and the
   rating formula capped at 70% reduction, then enters
-  dodge/absorb once. A native swing-item packet is suppressed and never
-  authorizes the final target. Ordinary tools/fists still scale their wielded-stack full
-  equivalent by `fraction` and accumulate. Their integer commit uses `set_hp`
-  with `type="punch"`/`object` and
+  dodge/absorb once. Every native packet (swing item, tool, fist) is
+  suppressed and never authorizes the final target; the claimed token alone
+  makes a swing authoritative, so the Strike fallback with Loose or a cast
+  skill wielded is the same transaction (Round 37, CMB-01). The hit uses
+  `set_hp` with `type="punch"`/`object` and
   `custom_type="grug_core:player_armor_applied"`; the central modifier skips
   only the already-run armor step while dodge and absorb still run once.
-  `return true` always suppresses handled hostile engine damage. Tool/fist PvP fractions bank
-  with the damage remainder and pay `12 × committed_pending_fraction` only
-  when a commit actually lowers HP; bank-only packets pay nothing, target
-  switches discard both banks, and dodge/full absorb consume the credit for
-  0 rage (partial absorb with HP loss still lands). Thus unmitigated fractions
-  totalling 1 pay +8 independent of weapon damage, without the old 60 rage/s
-  packet firehose. Base mob threat still takes raw fractional damage.
+  `return true` always suppresses handled hostile engine damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
   knockback on players is builtin's push off the engine's damage argument,
   gated by the one `core.calculate_knockback` override
-  `grug_core.knockback_pushes` (Round 37: PvP melee swings and mob hits only;
-  refused punches, casts, arrows and projectiles push nothing): acquisition
+  `grug_core.knockback_pushes` (Round 37: PvP melee swings and mob hits,
+  their projectiles included; refused punches and a player's casts, arrows
+  and ability damage push nothing): acquisition
   caps are zero, while the one authoritative punch supplies the real full
-  caps. Tools/fists keep their wielded source and wear;
-  swing ability items use the slot source, do not wear and can carry the
-  selected proc's threat multiplier. The current server ray is the sole
+  caps. Swing ability items use the slot source, do not wear (the equipped
+  weapon wears through REPAIR's settled action) and can carry the selected
+  proc's threat multiplier. The current server ray is the sole
   authoritative hostile ability target while LMB is held; enemy memory is
   UI-only.
 
@@ -670,28 +656,19 @@ achievements](#cloaks-and-achievements).
     attacker's `attack_npcs` on a civilian's behalf.
     WP35's 21st: the `set_wielded_item` write-back at
     the end of the wear block runs only when wear/toolranks changed the stack
-    or WP38's per-stack wear id was newly assigned (on a player that call is a
-    full inventory serialization plus packet; the skipped no-op ability writes
-    were ~140/s at the 100-player target). WP38
+    (on a player that call is a full inventory serialization plus packet; the
+    skipped no-op ability writes were ~140/s at the 100-player target). WP38
     reshaped the melee patches: the 2026-08-07 cadence gate is deleted;
     the player-melee flag is `grug_melee`, the damage loop keeps
-    vanilla's `tflp/fpi` factor (that IS the proportional model) and
-    adds the Strength bonus before armor scaling, the crit roll is
-    unfloored (the accumulator floors at application), knockback fires
-    when the accumulated hit lands (`subtract >= 1`), and the
-    feedback/subtraction split moves hit sound/blood/flash in front of
-    the `damage >= 1` gate while the health subtraction and
-    `check_for_death` run on the accumulated integer (passed directly to the
-    post-cancellation accepted-hit hook for its lethal check).
-    The WP38 review added two more: `grug_fraction` (the punch's
-    clamp(tflp/fpi, 0, 1), computed once from the normalized `tflp`) and
-    the wear gate that spends a swing's wear only when
-    `grug_core.melee_wear_due` says that concrete stack's fractions add up
-    to a whole swing — placed AFTER the item-type, creative and
-    `punch_attack_uses` adjustments, so a wear-free punch never gets an id or
-    consumes the accumulator. A newly assigned id is written back once even before wear is
-    due; a broken stack's runtime entry and every leaving player's table are
-    cleared. The 2026-08-10 native-input correction added two sites: full
+    vanilla's `tflp/fpi` factor (the authoritative swing supplies
+    `tflp == fpi`) and adds the Strength bonus before armor scaling, the
+    crit roll follows the `immune_to` loop, and knockback fires when the hit
+    lands (`subtract >= 1`). Round 37 (CMB-03) removed WP38's proportional
+    tool/fist path: the remainder accumulator, its preview and commit, the
+    ordinary-input clock seam and the per-stack wear accumulator
+    (`grug_fraction`, `_grug_melee_wear_id`); native tool and fist packets
+    already returned at the input seam, so none of it was reachable. The
+    2026-08-10 native-input correction added two sites: full
     authoritative proc preparation folds the selected skill's replacement
     delta into the same punch before crit, and accepted finish after
     `do_punch`/CMI is the only place that pays/resets/applies it. The review

@@ -556,10 +556,10 @@ Normal tier at level L:
   `knockback.lua`, off the hit's raw damage). Player melee pushes only as an
   accepted swing (Strike or a melee swing skill) on a player the attacker may
   harm (both flagged, enemy factions). A refused or suppressed punch pushes
-  nothing: an ally, an unflagged player, a native tool or fist click. Casts,
-  arrows and every other ability damage push nothing, in PvP too, and so do
-  mob projectiles (arrows, breath, hex bottles); a mob's melee and its area
-  hits push. Riders are never pushed, nor is a player hit by the dragon's
+  nothing: an ally, an unflagged player, a native tool or fist click. A
+  player's casts, arrows and every other ability damage push nothing, in PvP
+  too. A mob's melee, its area hits and its projectiles (arrows, hex bottles,
+  dragon breath and side shots; user ruling 2026-10-06) push. Riders are never pushed, nor is a player hit by the dragon's
   slam (it has its own arena push). Implementation: one
   `core.calculate_knockback` override, `grug_core.knockback_pushes`
   (`grug_core/combat.lua`).

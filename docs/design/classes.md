@@ -111,7 +111,7 @@ Core principles:
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
 | Mana | Mage, Priest | `round(20 + 5L + 0.66L²)`, before mana-percent gear/talents (combat_stats §2) | `1 + 0.15 × level` mana/s out of combat, a lower in-combat rate (combat_stats §5) |
-| Rage | Warrior | 0–100, starts at 0 | **+8** per landed §2b authoritative swing; ordinary tools/fists retain proportional native credit (combat_stats §2); **+3** per hit taken, +15 from Charge; decays **5/s** out of combat. Ruling 25 of 2026-09-16 lowered the income and raised the decay — the ledger and what it buys are in §3 |
+| Rage | Warrior | 0–100, starts at 0 | **+8** per landed §2b authoritative swing (native tool and fist packets deal nothing and earn none, combat_stats §2); **+3** per hit taken, +15 from Charge; decays **5/s** out of combat. Ruling 25 of 2026-09-16 lowered the income and raised the decay — the ledger and what it buys are in §3 |
 
 - **Rage is granted on damage that actually landed**, not on a swing
   attempted: a target that cancels the punch (a vendor NPC, an evading
@@ -635,7 +635,7 @@ the resource is effectively unlimited". Ruling 25 answers it with **option
 
 | Source | Rage | Note |
 |--------|------|------|
-| a landed full swing | **+8** | was +12. Paid proportionally by an ordinary tool or fist: a native packet worth fraction *f* of a swing pays 8·*f*, so the accumulator still integrates to one swing's grant per whole swing. |
+| a landed full swing | **+8** | was +12. Only an authoritative swing (Strike or a swing skill) lands; native tool and fist packets deal nothing and pay nothing. |
 | a hit taken | **+3** | was +4. The orc race passive adds +1 (`world.md` §7). |
 | Charge | +15 | unchanged; it is an engage tool, not income. |
 | out of combat | **−5 per second** | was −2 per second, on the shared `grug_core.in_combat` state (combat_stats §5). |
