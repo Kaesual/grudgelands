@@ -22,6 +22,13 @@
 --             captain                   the named captain at the top of the
 --                                       band: no elite, a leader's size and
 --                                       HP (grug_mobs.LEADER, guard.lua)
+--             commander                 Round 36 (round36-plan.md §2.3): in
+--                                       the camps data/pvp_names.json names
+--                                       one for, a named level-60 elite
+--                                       with a leader's size and HP; no
+--                                       authored socket -- he stands across
+--                                       the captain from the west yard post
+--                                       (M.commander_socket)
 -- Looks (round31-plan §1, lane A's contract at grug_visuals.npc_race): a
 -- camp's people are of the camp's race and the General of his fortress's seat
 -- race, both the race their settlement registered as; fortress guards and
@@ -34,6 +41,8 @@ local M = {}
 M.FORTRESS_GUARD_LEVEL = 60
 M.BODYGUARD_LEVEL = 60
 M.GENERAL_LEVEL = 65
+M.COMMANDER_LEVEL = 60
+M.COMMANDER_TIER = "elite"
 
 -- Respawn slots (world.md §4a), seconds of world time, one refill rolled in
 -- [min, max]. A fortress guard keeps the guard-post rhythm; the camps take the
@@ -45,6 +54,8 @@ M.RESPAWN = {
 	fortress_guard = {180, 360},
 	camp_guard = {100, 140},
 	captain = {270, 330},
+	-- Round 36: like the captains.
+	commander = {270, 330},
 }
 
 -- The entity of each garrison role and faction.
@@ -52,11 +63,14 @@ function M.guard_entity(faction) return "grug_mobs:guard_" .. faction end
 function M.captain_entity(faction) return "grug_mobs:captain_" .. faction end
 function M.general_entity(faction) return "grug_mobs:general_" .. faction end
 function M.bodyguard_entity(faction) return "grug_mobs:bodyguard_" .. faction end
+function M.commander_entity(faction) return "grug_mobs:commander_" .. faction end
 
 -- What grug_pvp counts a kill of each garrison entity as (its NPC counters,
--- ruling 16); the faction guards are counted by name already.
+-- ruling 16); the faction guards are counted by name already. A war
+-- commander counts as a camp's captain.
 function M.pvp_kind(entity)
 	if entity:find("^grug_mobs:captain_") then return "captain" end
+	if entity:find("^grug_mobs:commander_") then return "captain" end
 	if entity:find("^grug_mobs:general_") then return "general" end
 	if entity:find("^grug_mobs:bodyguard_") then return "guard" end
 	return nil
@@ -66,10 +80,28 @@ local function fail(message)
 	error("grug_mobs PvP garrison: " .. message, 0)
 end
 
+-- The war commander's post (Round 36): no socket of its own, so a camp's
+-- sockets give it -- the captain's position mirrored through the west yard
+-- post (a higher camp has no east yard post, so that spot is open floor
+-- beside the command tent), at the captain's height and facing. A socket
+-- in the registry's form ({id, role, pos, yaw}), or nil without both posts.
+function M.commander_socket(sockets)
+	local captain, yard
+	for _, socket in ipairs(sockets) do
+		if socket.role == "captain" then captain = socket end
+		if socket.id == "yard_west" then yard = socket end
+	end
+	if not captain or not yard then return nil end
+	local c, y = captain.pos, yard.pos
+	return {id = "commander", role = "commander", yaw = captain.yaw,
+		pos = {x = 2 * c.x - y.x, y = c.y, z = 2 * c.z - y.z}}
+end
+
 -- `catalog` is r31_pvp_catalog.lua's table, `names` the decoded
 -- data/pvp_names.json ({generals = {accord, throng}, captains = {<camp key> =
--- {<race> = name}}}). Fails loudly when a General or any captain a camp can
--- roll has no name.
+-- {<race> = name}}, commanders = {<camp key> = name}}). Fails loudly when a
+-- General or any captain a camp can roll has no name, or a commander names
+-- no higher camp.
 function M.new(catalog, names)
 	if type(catalog) ~= "table" or type(catalog.rows) ~= "table" or
 			type(catalog.FACTION_RACES) ~= "table" or type(catalog.SEAT_RACE) ~= "table" or
@@ -82,6 +114,8 @@ function M.new(catalog, names)
 	end
 	-- The instance answers the module's constants and entity names too.
 	local G = setmetatable({catalog = catalog, names = names}, {__index = M})
+	local commanders = names.commanders or {}
+	if type(commanders) ~= "table" then fail("commander names differ") end
 	local by_key = {}
 	for _, row in ipairs(catalog.rows) do
 		local races = catalog.FACTION_RACES[row.faction]
@@ -101,6 +135,13 @@ function M.new(catalog, names)
 				end
 			end
 		end
+	end
+	for key, name in pairs(commanders) do
+		local row = by_key[key]
+		if not row or row.kind ~= "pvp_camp_high" then
+			fail("a commander for " .. tostring(key) .. ", which is no higher war camp")
+		end
+		if type(name) ~= "string" or name == "" then fail("no commander name for " .. key) end
 	end
 
 	-- The catalogue row of a settlement key, or nil (not a PvP POI).
@@ -140,6 +181,9 @@ function M.new(catalog, names)
 		local low, high = catalog.camp_levels(band[1], band[2], row.band)
 		out[role(M.guard_entity(faction))] = {low, high}
 		out[role(M.captain_entity(faction))] = {high, high}
+		if commanders[key] then
+			out[role(M.commander_entity(faction))] = {M.COMMANDER_LEVEL, M.COMMANDER_LEVEL}
+		end
 		return out
 	end
 
@@ -150,6 +194,21 @@ function M.new(catalog, names)
 	function G.captain_name(key, race)
 		local captains = names.captains[key]
 		return captains and captains[race] or nil
+	end
+
+	-- The war commander's name in a camp, or nil (no commander there).
+	function G.commander_name(key)
+		return commanders[key]
+	end
+
+	-- The war commander of a camp (Round 36), in G.slot's form, or nil.
+	function G.commander(key)
+		local row, name = by_key[key], commanders[key]
+		if not row or not name then return nil end
+		return {entity = M.commander_entity(row.faction), faction = row.faction,
+			area = G.area(key), name = name,
+			level_min = M.COMMANDER_LEVEL, level_max = M.COMMANDER_LEVEL,
+			tier = M.COMMANDER_TIER, respawn = M.RESPAWN.commander}
 	end
 
 	-- The garrison of one socket, or nil when the socket is no garrison post
@@ -186,6 +245,7 @@ function M.new(catalog, names)
 			end
 			return spec
 		end
+		if role == "commander" then return G.commander(key) end
 		if role ~= "guard_post" and role ~= "captain" then return nil end
 		if type(band) ~= "table" or type(band[1]) ~= "number" or type(band[2]) ~= "number" then
 			fail(key .. ": the zone's level band differs")

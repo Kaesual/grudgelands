@@ -307,3 +307,23 @@ for _, faction in ipairs({"accord", "throng"}) do
 	-- counter reads its kind off the registered prototype.
 	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)
 end
+
+-- Round 36: a higher war camp's war commander (round36-plan.md §2.3), the
+-- optional group fight of the main line in the two camps pvp_names.json
+-- names one for. The captain's chassis with a leader's size and HP; his
+-- level (60) and the elite tier are written at placement like every
+-- garrison's (start_npcs.lua install_garrison), so the elite x1.4 scale
+-- adds to the leader's. He holds his post beside the captain, respawns
+-- like a captain and counts as one in grug_pvp.
+for _, faction in ipairs({"accord", "throng"}) do
+	local name = garrison.commander_entity(faction)
+	local def = guard_def(faction,
+		(faction == "accord" and "Accord" or "Throng") .. " War Commander",
+		"grug_mobs_guard_" .. faction .. ".png")
+	local size = grug_mobs.LEADER.size
+	def.visual_size = {x = def.visual_size.x * size, y = def.visual_size.y * size}
+	for index = 1, 6 do def.collisionbox[index] = def.collisionbox[index] * size end
+	def._grug_hp_scale = grug_mobs.LEADER.hp
+	grug_mobs.register_mob(name, def)
+	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)
+end
