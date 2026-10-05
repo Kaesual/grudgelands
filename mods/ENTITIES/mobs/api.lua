@@ -3849,8 +3849,17 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	and not (is_player(hitter) and hitter_name == self.owner)
 	and not is_invisible(self, hitter_name) and self.object ~= hitter then
 
-		self.state = ""
-		self:do_attack(hitter) -- attack whoever punched mob
+		-- GRUG PATCH (Round 37 MB, MOB-01, combat_stats.md §4): a player's hit
+		-- on a grug mob already in a fight changes its target only through
+		-- threat. The accepted-hit hook above added the threat and asked
+		-- grug_core's check_switch (120 % hysteresis, taunt lock); resetting
+		-- the state here made do_attack retarget on every hit. A mob without
+		-- a target still takes its first attacker, and a mob or NPC hitter
+		-- still draws retaliation; the group alert below always runs.
+		if not (grug_mob_hit and self.attack and self.state == "attack") then
+			self.state = ""
+			self:do_attack(hitter) -- attack whoever punched mob
+		end
 
 		-- alert others to the attack
 		local objs = core.get_objects_inside_radius(hitter:get_pos(), self.view_range)

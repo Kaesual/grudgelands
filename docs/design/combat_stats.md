@@ -788,6 +788,13 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   within the ordinary **threat candidate radius of 40 m**; active ambient
   pursuit follows the Round 18 exception below. A
   stale entry from someone who left the fight can never pull the mob.
+- **A hit changes the target only through threat** (Round 37, user ruling):
+  a player's hit on a mob that is already fighting adds threat and asks the
+  switch rule above (120 %, the taunt lock); it never retargets the mob by
+  itself. A mob without a target takes its first attacker, a hit from a mob
+  or an NPC still turns the mob onto that hitter, and the group alert below
+  is unchanged (`mobs/api.lua` `on_punch`'s retaliation tail,
+  `grug_core/combat.lua` `check_switch`).
 - **Ambient pursuit (Round 18):** ordinary free-roaming combat mobs, including
   Zombies and their ambient variants, use a 15-second clock since incoming
   effective player/guard damage. Initial aggro seeds the clock. Outgoing hits,
