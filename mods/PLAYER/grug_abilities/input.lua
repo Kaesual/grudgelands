@@ -55,7 +55,9 @@ return function(api)
 		local destination = vector.add(origin, vector.multiply(player:get_look_dir(), range))
 		local best, distance
 		for hit in grug_core.aim_raycast(origin, destination, false) do
-			if hit.type ~= "object" or hit.ref ~= player then
+			-- Neither the player nor an object they cannot see (a quest
+			-- object of another player's quest) is hit.
+			if hit.type ~= "object" or (hit.ref ~= player and not grug_core.unseen_by(hit.ref, player)) then
 				local d = hit.intersection_point and vector.distance(origin, hit.intersection_point)
 				if d and (not distance or d < distance or
 						(d == distance and hit.type == "node")) then

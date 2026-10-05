@@ -277,7 +277,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   result for combat and diagnostics, so callers do not raycast again for logs.
   The combat ray passes dropped items and, since Round 36, any object whose
   observer set leaves the player out (a quest object, `grug_quests/use.lua`):
-  nobody is blocked by what they cannot see.
+  nobody is blocked by what they cannot see. The same test,
+  `grug_core.unseen_by(ref, player)`, filters the hand ray of contextual
+  input (hand clicks and the crosshair's interact colour) and the skill
+  item's right-click ray (`ability_on_secondary_use`), so a door behind
+  another player's quest object still opens.
   Every server-side aiming ray (the combat ray, the hold ray, right-click
   interaction, the Target Frame) iterates `grug_core.aim_raycast` instead of
   `core.raycast`: it tests `rotate = true` selection boxes in Lua because the
@@ -904,7 +908,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     a 3c iron lump into a 5c steel ingot). Add prices, don't disable
     them.
 - **Quests (Round 14):** `grug_quests` owns a strict registry, 20-slot player-meta
-  journal, kill/item objectives and claim-once turn-in with main/owned-bag
+  journal, kill/item/talk/use objectives and claim-once turn-in with main/owned-bag
   inventory preflight. The per-mob eligible damage/effective-heal participant
   set grants credit independently of party membership and gray-XP suppression.
   `npc_by_socket` keys actual settlement identity plus socket id, never terrain

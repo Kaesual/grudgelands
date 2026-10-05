@@ -53,7 +53,21 @@ local RING = {{0, 0}, {2, 0}, {0, 2}, {-2, 0}, {0, -2}, {2, 2}, {-2, 2}, {2, -2}
 -- The ground is searched this far above and below the terrain height, in
 -- the place's column and then a few beside it.
 local SCAN = 40
-local COLUMNS = {{0, 0}, {2, 0}, {-2, 0}, {0, 2}, {0, -2}, {3, 3}, {-3, 3}, {3, -3}, {-3, -3}}
+-- The place's column first, then rings up to 6 nodes out on a 2-node grid,
+-- nearest first.
+local COLUMNS = {}
+for dx = -6, 6, 2 do
+	for dz = -6, 6, 2 do COLUMNS[#COLUMNS + 1] = {dx, dz, dx * dx + dz * dz} end
+end
+table.sort(COLUMNS, function(a, b)
+	if a[3] ~= b[3] then return a[3] < b[3] end
+	if a[1] ~= b[1] then return a[1] < b[1] end
+	return a[2] < b[2]
+end)
+-- A place whose loaded ground has no stand is searched again only this
+-- often (microseconds), and warned about once.
+local RETRY_US = 10000000
+local warned = {} -- use key -> true: logged once per server run
 
 -- key -> {objective, place (canonical ref), object = ObjectRef or nil,
 -- observers = {name = true}, count}
@@ -75,16 +89,16 @@ end
 
 -- The stand position on walkable ground in column (x, z): the highest
 -- walkable node that is no leaf or trunk, under a node that is neither
--- walkable nor liquid (air, grass, flowers). Nil when the column has none or
--- is not loaded down to the terrain height (unloaded blocks above it, out
--- of the active range, are skipped).
+-- walkable nor liquid (air, grass, flowers). Nil when the column has none,
+-- or nil and "unloaded" when it is not loaded down to the terrain height
+-- (unloaded blocks above it, out of the active range, are skipped).
 local function column_ground(x, z)
 	local y0 = math.floor(grug_zones.terrain_height_at(x, z) + 0.5)
 	local open_above = false
 	for y = y0 + SCAN, y0 - SCAN, -1 do
 		local node = core.get_node_or_nil({x = x, y = y, z = z})
 		if not node or node.name == "ignore" then
-			if y <= y0 then return nil end
+			if y <= y0 then return nil, "unloaded" end
 			open_above = false
 		else
 			local def = core.registered_nodes[node.name]
@@ -99,13 +113,17 @@ local function column_ground(x, z)
 	return nil
 end
 
+-- The nearest stand round (x, z); nil and whether a column was not loaded.
 local function ground(x, z)
+	local unloaded = false
 	for _, o in ipairs(COLUMNS) do
-		local pos = column_ground(x + o[1], z + o[2])
+		local pos, why = column_ground(x + o[1], z + o[2])
 		if pos then return pos end
+		unloaded = unloaded or why == "unloaded"
 	end
-	return nil
+	return nil, unloaded
 end
+Q._use_ground = ground -- read by the fixture
 
 -- The first slot no other point at this place holds.
 local function free_slot(place)
@@ -123,9 +141,26 @@ end
 local function ensure_object(point)
 	if point.object and point.object:is_valid() then return point.object end
 	point.object = nil
+	local now = core.get_us_time()
+	if point.retry_at and now < point.retry_at then return nil end
 	local offset = RING[(point.slot - 1) % #RING + 1]
-	local pos = ground(math.floor(point.xz.x + offset[1] + 0.5), math.floor(point.xz.z + offset[2] + 0.5))
-	if not pos then return nil end
+	local x, z = math.floor(point.xz.x + offset[1] + 0.5), math.floor(point.xz.z + offset[2] + 0.5)
+	local pos, unloaded = ground(x, z)
+	if not pos then
+		-- Unloaded ground waits for the next pass; loaded ground without a
+		-- stand (water, a wall, a dense wood) is a data or world problem.
+		if not unloaded then
+			point.retry_at = now + RETRY_US
+			if not warned[point.key] then
+				warned[point.key] = true
+				core.log("warning", ("[grug_quests] use place %s: no open walkable ground within 6 nodes " ..
+					"of (%d, %d) for \"%s\"; the quest object cannot appear"):format(point.place, x, z,
+					point.objective.label))
+			end
+		end
+		return nil
+	end
+	point.retry_at = nil
 	local kind = Q.use_objects[point.objective.object]
 	local object = core.add_entity({x = pos.x, y = pos.y - 0.5 + kind.size / 2, z = pos.z}, ENTITY)
 	if not object then return nil end

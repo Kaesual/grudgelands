@@ -85,11 +85,14 @@ local serial, players, entities, objects = {}, {}, {}, {}
 local hp_callbacks, joins = {}, {}
 local now_us = 0
 local unloaded = false
+local flood -- fn(pos) -> true where a column is under water (section I)
+local logged = {}
 local GROUND_Y = 10 -- every column: walkable dirt up to here, air above
 core = {
 	registered_items = {}, registered_aliases = {}, registered_entities = entities,
 	registered_nodes = {["default:dirt"] = {walkable = true}, air = {walkable = false},
-		["default:grass_1"] = {walkable = false}},
+		["default:grass_1"] = {walkable = false},
+		["default:water_source"] = {walkable = false, liquidtype = "source"}},
 	get_us_time = function() return now_us end,
 	get_modpath = function(name) return MOD_PATHS[name] end,
 	get_current_modname = function() return current_mod end,
@@ -106,7 +109,7 @@ core = {
 	close_formspec = function() end,
 	get_connected_players = function() return {} end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
-	log = function() end,
+	log = function(level, text) logged[#logged + 1] = level .. " " .. text end,
 	chat_send_player = function() end,
 	get_player_window_information = function() return nil end,
 	register_entity = function(name, def) entities[name] = def end,
@@ -117,6 +120,7 @@ core = {
 	get_node_or_nil = function(pos)
 		if unloaded or pos.y > GROUND_Y + 20 then return nil end
 		if pos.y <= GROUND_Y then return {name = "default:dirt"} end
+		if flood and pos.y <= GROUND_Y + 3 and flood(pos) then return {name = "default:water_source"} end
 		if pos.y == GROUND_Y + 1 and pos.x % 2 == 1 then return {name = "default:grass_1"} end
 		return {name = "air"}
 	end,
@@ -604,18 +608,135 @@ ok = pcall(Q.register_quest, "e_raw", {title = "Raw", description = "Raw.", npc 
 check(not ok, "G the registry refuses a hold of 30 s")
 
 ------------------------------------------------------------------------------
--- H. The combat ray passes an object the player cannot see.
+-- I. Placement: the stand is searched up to 6 nodes round the place; loaded
+--    ground without one is warned about once and searched again only every
+--    10 s, unloaded ground waits silently.
 ------------------------------------------------------------------------------
 do
-	local source = assert(io.open(repo .. "/mods/CORE/grug_core/combat_ray.lua")):read("*a")
-	local unseen = assert(loadstring(source:match("\n(local function unseen%(ref, player%).-\nend)\n") ..
-		"\nreturn unseen"))()
+	local fay = make_player("fay", at(SALTGATE, 3, 0))
+	-- Water within 5 nodes of the place: the stand is beyond the old 3-node
+	-- search. (Taking
+	-- a quest runs the pass at once.)
+	flood = function(pos)
+		local dx, dz = pos.x - SALTGATE.x, pos.z - SALTGATE.z
+		return dx * dx + dz * dz <= 25
+	end
+	check(Q.accept(fay, "e_fire"), "I fay accepts the signal fire")
+	local point = points[key]
+	local d = point and point.object and math.sqrt((point.object.pos.x - SALTGATE.x) ^ 2 +
+		(point.object.pos.z - SALTGATE.z) ^ 2)
+	check(d and d > 5 and d < 6, "I the widened ring finds the nearest dry column, (4, 4) out (" ..
+		tostring(d) .. ")")
+	Q.abandon(fay, "e_fire")
+	check(points[key] == nil, "I gone with its quest")
+	-- Water everywhere: no stand at all.
+	flood = function() return true end
+	logged = {}
+	check(Q.accept(fay, "e_fire"), "I fay takes it again")
+	point = points[key]
+	check(point and not point.object, "I flooded ground: no object")
+	local warnings = 0
+	for _, line in ipairs(logged) do
+		if line:find("^warning %[grug_quests%] use place r20_anchor_076: no open walkable ground") then
+			warnings = warnings + 1
+		end
+	end
+	eq(warnings, 1, "I one warning names the place")
+	local reads = 0
+	local real_get = core.get_node_or_nil
+	core.get_node_or_nil = function(pos) reads = reads + 1; return real_get(pos) end
+	Q.use_pass(fay)
+	eq(reads, 0, "I no new search before 10 s")
+	now_us = now_us + 10000001
+	Q.use_pass(fay)
+	check(reads > 0, "I searched again after 10 s")
+	eq(#logged, 1, "I and not warned again")
+	core.get_node_or_nil = real_get
+	flood = nil
+	now_us = now_us + 10000001
+	Q.use_pass(fay)
+	check(points[key] and points[key].object and points[key].object:is_valid(), "I dry ground: the object appears")
+	Q.abandon(fay, "e_fire")
+	-- Unloaded ground: no warning.
+	logged = {}
+	unloaded = true
+	check(Q.accept(fay, "e_fire"), "I fay takes it a third time")
+	eq(#logged, 0, "I unloaded ground waits without a warning")
+	unloaded = false
+	Q.abandon(fay, "e_fire")
+end
+
+------------------------------------------------------------------------------
+-- H. No server ray a player aims meets an object that player cannot see:
+--    the shared helper (grug_core.unseen_by, combat_ray.lua), the hand ray
+--    (grug_abilities/input.lua, the crosshair's interact colour and hand
+--    clicks) and the skill item's right-click ray (grug_abilities/init.lua
+--    ability_on_secondary_use): a door behind another player's quest object
+--    still opens.
+------------------------------------------------------------------------------
+do
+	local function source(path)
+		local handle = assert(io.open(repo .. "/" .. path))
+		local text = handle:read("*a")
+		handle:close()
+		return text
+	end
+	local helper = source("mods/CORE/grug_core/combat_ray.lua")
+		:match("\n(function grug_core%.unseen_by%(ref, player%).-\nend)\n")
+	check(helper ~= nil, "H the shared helper is in combat_ray.lua")
+	assert(loadstring(helper))()
+	local unseen = grug_core.unseen_by
 	local hidden = {get_observers = function() return {ann = true} end}
 	local open = {get_observers = function() return nil end}
 	eq(unseen(hidden, bob), true, "H bob's ray passes ann's quest object")
 	eq(unseen(hidden, ann), false, "H ann's ray meets it")
 	eq(unseen(open, bob), false, "H an object everyone sees blocks as before")
 	eq(unseen(hidden, nil), false, "H a ray without a player passes nothing")
+	check(source("mods/CORE/grug_core/combat_ray.lua"):find("local unseen = grug_core.unseen_by", 1, true),
+		"H the combat ray uses the helper")
+	-- One ray along +x: the hidden object at 1 node, a door node at 2.
+	local door = {type = "node", under = {x = 2, y = 0, z = 0}, intersection_point = {x = 2, y = 0, z = 0}}
+	local function hits(object)
+		return {{type = "object", ref = object, intersection_point = {x = 1, y = 0, z = 0}}, door}
+	end
+	local current
+	grug_core.combat_eye_pos = function() return {x = 0, y = 0, z = 0} end
+	grug_core.aim_raycast = function()
+		local i = 0
+		return function() i = i + 1; return current[i] end
+	end
+	vector.add = function(a, b) return {x = a.x + b.x, y = a.y + b.y, z = a.z + b.z} end
+	vector.multiply = function(a, n) return {x = a.x * n, y = a.y * n, z = a.z * n} end
+	vector.normalize = function(a) return a end
+	for _, p in ipairs({ann, bob}) do p.get_look_dir = function() return {x = 1, y = 0, z = 0} end end
+	-- The hand ray, cut out of input.lua.
+	local ray_src = source("mods/PLAYER/grug_abilities/input.lua")
+		:match("\n\t(local function ray%(player, range, origin%).-\n\tend)\n")
+	check(ray_src ~= nil, "H the hand ray is in input.lua")
+	local ray = assert(loadstring(ray_src .. "\nreturn ray"))()
+	current = hits(hidden)
+	eq(ray(bob, 4).type, "node", "H bob's hand ray reaches the door behind ann's object")
+	eq(ray(ann, 4).type, "object", "H ann's hand ray meets her object")
+	current = hits(open)
+	eq(ray(bob, 4).type, "object", "H an object everyone sees still blocks the hand ray")
+	-- The skill item's right-click, cut out of init.lua with its upvalues.
+	local click_src = source("mods/PLAYER/grug_abilities/init.lua")
+		:match("\n(local function ability_on_secondary_use%(.-\nend)\n")
+	check(click_src ~= nil, "H ability_on_secondary_use is in init.lua")
+	local env = "local NODE_INTERACT_RANGE = 4\nlocal function sneaking() return false end\n" ..
+		"local function pass_to_node(pos) PASSED = pos end\n"
+	local click = assert(loadstring(env .. click_src .. "\nreturn ability_on_secondary_use"))()
+	grug_abilities = {}
+	local clicked = 0
+	hidden.get_luaentity = function() return {on_rightclick = function() clicked = clicked + 1 end} end
+	current = hits(hidden)
+	PASSED = nil
+	click("stack", bob, {type = "nothing"})
+	check(PASSED == door.under and clicked == 0, "H bob's right-click opens the door, not ann's object")
+	PASSED = nil
+	click("stack", ann, {type = "nothing"})
+	check(PASSED == nil and clicked == 1, "H ann's right-click uses her object")
+	grug_abilities, PASSED = nil, nil
 end
 
 print(("%d checks, %d failures"):format(checks, failures))

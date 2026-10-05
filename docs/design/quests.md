@@ -252,12 +252,15 @@ instead of 2.
     only by such players (`set_observers`); several players with the quest
     see and use the same object, the last one leaving removes it, it is
     never saved. It stands on walkable ground under open air (grass and
-    flowers allowed) at the place, the n-th act at one place 2 nodes beside
+    flowers allowed) at the place or the nearest such column within 6 nodes
+    (a place without one logs a warning once and is searched again every
+    10 s), the n-th act at one place 2 nodes beside
     the first. Its nametag is the label. The object's look is a kind of
     `grug_quests/data/use_objects.json` (one texture and a size per kind,
     the one place the texture names live; today placeholders for
-    `signal_fire`, `banner`, `burnt_mark`). Combat rays of players who do not
-    see it pass through it.
+    `signal_fire`, `banner`, `burnt_mark`). Every aiming ray of a player who
+    does not see it (combat, hand clicks and the crosshair's interact colour,
+    a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
     counts the seconds ("Light the signal fire: 2/3 s"); letting go of the
     button, stepping more than 5 nodes away or the object vanishing stops it

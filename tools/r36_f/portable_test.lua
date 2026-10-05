@@ -241,6 +241,7 @@ do
 		function p:get_hp() return self.hp end
 		function p:get_pos() return self.pos or vector.new(0, 0, 0) end
 		function p:get_luaentity() return nil end
+		function p:get_observers() return nil end -- seen by everyone (Round 36 E)
 		function p:get_attach() return self.attached end
 		for k, v in pairs(fields or {}) do p[k] = v end
 		return p
@@ -264,6 +265,7 @@ do
 		function o:get_pos() return self.pos end
 		function o:is_player() return false end
 		function o:get_luaentity() return self.ent end
+		function o:get_observers() return nil end -- seen by everyone (Round 36 E)
 		return o
 	end
 	-- Put `obj` at distance z in front of the eye (a solid node behind it).
@@ -404,6 +406,7 @@ do
 	function horse:get_pos() return self.pos end
 	function horse:is_player() return false end
 	function horse:get_luaentity() return self.ent end
+	function horse:get_observers() return nil end
 	local rider = player_ref("pal2", {attached = horse})
 	horse.ent._grug_rider = rider
 	place(horse, 10)

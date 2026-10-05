@@ -473,11 +473,15 @@ end
 
 -- An object shown only to some players (set_observers) that this player is
 -- not one of: a quest object (grug_quests use.lua, Round 36) is never an
--- invisible blocker for anyone else. Objects without observers return nil.
-local function unseen(ref, player)
+-- invisible blocker for anyone else. Every server ray a player aims (the
+-- combat ray, the hand ray and the skill item's right-click, grug_abilities)
+-- skips such an object: the client never had it to point at. False for an
+-- object everyone sees (unmanaged observers) or without a player.
+function grug_core.unseen_by(ref, player)
 	local observers = player and player.is_player and player:is_player() and ref:get_observers()
 	return type(observers) == "table" and not observers[player:get_player_name()]
 end
+local unseen = grug_core.unseen_by
 
 local function nearer_terminal(candidate, candidate_is_node, best,
 		best_is_node)
