@@ -2224,7 +2224,7 @@ local function height_factory(dependencies)
 		return session
 	end
 
-	-- `dependencies.reuse` (optional, `r7_runtime.lua`): a session main built
+	-- `dependencies.reuse` (optional, `world_assembly.lua`): a session main built
 	-- for the capital planner and brought up to date (streets and canals
 	-- added, memos flushed) is handed to the first request for the same seed
 	-- instead of building a second one; later requests build their own.

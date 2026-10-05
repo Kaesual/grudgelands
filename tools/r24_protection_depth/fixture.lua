@@ -54,63 +54,20 @@ local sha = common.new_sha256()
 local settlement = dofile(dir .. "/r6_settlement.lua")
 
 -- ---------------------------------------------------------------------------
--- World (as tools/r23_tree_line/world_source.lua, with stand-in capital cities)
+-- World (as tools/r23_tree_line/world_source.lua, with stand-in capital
+-- cities), through the shared wp40/world_assembly.lua
 -- ---------------------------------------------------------------------------
 local CITY_HALF = 120
 local function build_world(seed)
-	local tdata = dofile(dir .. "/terrain_data.lua")
-	local source = dofile(dir .. "/source/simple_map.lua")
-	local simple_map_factory = dofile(dir .. "/simple_map.lua")(dofile(dir .. "/zone_field.lua"))
-	local shapes = {}
-	for index = 1, #source.anchors do
-		local anchor = source.anchors[index]
-		if anchor.slot_id == "capital" then
-			local ax, az = anchor.position.x, anchor.position.z
-			shapes[anchor.id] = {member = function(x, z)
-				return math.abs(x - ax) <= CITY_HALF and math.abs(z - az) <= CITY_HALF
-			end}
-		end
-	end
-	local protection_holder = {shapes = shapes}
-	local function horizontal_factory(deps)
-		local bound = {}
-		for k, v in pairs(deps) do bound[k] = v end
-		bound.capital_protection = protection_holder
-		return simple_map_factory(bound)
-	end
-	local water = {module = dofile(dir .. "/water_layout.lua")(tdata.water),
-		authored = dofile(dir .. "/water_authored.lua")(tdata.water), plot_rects = {}}
-	local hf = dofile(dir .. "/height.lua")
 	_G.core = _G.core or {}
-	local settlement = dofile(dir .. "/r7_settlement.lua")
-	local palette = dofile(dir .. "/../wp13/palette.lua")
-	local TWIN = {["default:dirt_with_dry_grass"] = "default:dry_dirt_with_dry_grass"}
-	local start_grounds = {}
-	for _, profile in ipairs(settlement.roster) do
-		if profile.slot == "start" then
-			local ground = palette.races[profile.race].ground
-			start_grounds[profile.anchor_id] = {ground = TWIN[ground] or ground}
-		end
-	end
-	local function height_factory(deps)
-		local bound = {}
-		for k, v in pairs(deps) do bound[k] = v end
-		bound.water = water
-		bound.start_grounds = start_grounds
-		return hf(bound)
-	end
-	local zones = dofile(dir .. "/zones.lua")({source = source,
-		schemas = dofile(dir .. "/schemas.lua"), canonical = dofile(dir .. "/canonical.lua"),
-		deterministic = dofile(dir .. "/deterministic.lua"),
-		index128 = dofile(dir .. "/index128.lua"), horizontal_factory = horizontal_factory,
-		height_factory = height_factory,
-		terrain_field = dofile(dir .. "/terrain_field.lua")(tdata), raw_sha256 = sha})
-	local session, planner_source = zones.new_with_planner_source_runtime(seed, 1)
-	local roster = dofile(dir .. "/r7_anchor_roster.lua")(source, session,
+	local A = dofile(dir .. "/world_assembly.lua")(dir, sha)
+	local W = A.world(seed, nil, {roads = false, protection = A.square_cities(CITY_HALF)})
+	local session, planner_source = W.zones().new_with_planner_source_runtime(seed, 1)
+	local roster = dofile(dir .. "/r7_anchor_roster.lua")(A.source, session,
 		planner_source, sha)
 	local overlay = dofile(dir .. "/r7_zone_overlay.lua")(session, roster)
 	return {session = session, overlay = overlay, planner_source = planner_source,
-		source = source, roster = roster}
+		source = A.source, roster = roster}
 end
 
 -- ---------------------------------------------------------------------------
