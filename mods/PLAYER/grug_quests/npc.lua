@@ -12,6 +12,35 @@ local function in_reach(player, entity)
 	local pp = player:get_pos()
 	return pos and pp and vector.distance(pos, pp) <= 6
 end
+-- A quest list row (Round 35): the status is the entry's colour, not a text
+-- that cut the title off; a repeatable quest ends in a short "(R)". The quest
+-- giver's dialog and the quest log share the colours and the legend.
+Q.STATUS_COLORS = {available = "#ffd24a", ready = "#7ee06a", active = "#8fc1ff", locked = "#9a9a9a"}
+local STATUS_ORDER = {"available", "ready", "active", "locked"}
+local STATUS_NAMES = {available = {"Available", "gold"}, ready = {"Ready to complete", "green"},
+	active = {"In progress", "blue"}, locked = {"Locked", "grey"}}
+function Q.list_entry(title, status, repeatable)
+	return Q.STATUS_COLORS[status] .. core.formspec_escape(title .. (repeatable and " (R)" or ""))
+end
+-- The legend as one coloured line, and as the list's tooltip (escaped).
+function Q.status_legend(statuses)
+	local parts = {}
+	for _, status in ipairs(statuses or STATUS_ORDER) do
+		parts[#parts + 1] = core.colorize(Q.STATUS_COLORS[status], STATUS_NAMES[status][1])
+	end
+	return core.formspec_escape(table.concat(parts, "   ") .. "   (R) Repeatable")
+end
+function Q.status_tooltip(statuses)
+	local lines = {}
+	for _, status in ipairs(statuses or STATUS_ORDER) do
+		lines[#lines + 1] = STATUS_NAMES[status][1] .. ": " .. STATUS_NAMES[status][2]
+	end
+	lines[#lines + 1] = "(R): repeatable"
+	return core.formspec_escape(table.concat(lines, "\n"))
+end
+
+-- The dialog is wide enough for the longest quest title in the list at a
+-- full-HD window (the title column is 7 of 16 units).
 function Q.open_npc(player, entity, selected, notice)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
@@ -25,8 +54,7 @@ function Q.open_npc(player, entity, selected, notice)
 	if #rows == 0 then return false end
 	local esc, entries = core.formspec_escape, {}
 	for _, row in ipairs(rows) do
-		entries[#entries + 1] = esc(row.title .. (row.repeatable and " [Repeatable]" or "") ..
-			" (" .. row.status .. ")")
+		entries[#entries + 1] = Q.list_entry(row.title, row.status, row.repeatable)
 	end
 	-- The first open of the dialog plays its cue; a redraw (another quest
 	-- chosen, after Accept or Complete) does not.
@@ -49,12 +77,15 @@ function Q.open_npc(player, entity, selected, notice)
 		local stack = ItemStack(item)
 		detail = detail .. "\n" .. grug_core.item_name(stack) .. " × " .. stack:get_count()
 	end
-	local form = "formspec_version[6]size[12,9]label[0.4,0.4;" .. esc(npc.title or id) .. "]" ..
-		"textlist[0.4,0.9;4,6;quests;" .. table.concat(entries, ",") .. ";" .. selected .. ";false]" ..
-		"textarea[4.7,0.9;6.8,6.4;description;;" .. esc(detail) .. "]" ..
-		"label[0.4,7.4;" .. esc(notice or row.reason or "") .. "]button_exit[9.2,8;2.3,0.7;close;Close]"
-	if row.status == "available" then form = form .. "button[4.7,8;2,0.7;accept;Accept]" end
-	if row.status == "ready" then form = form .. "button[4.7,8;2,0.7;turnin;Complete]" end
+	-- The description is a read-only text (no field name).
+	local form = "formspec_version[6]size[16,9.4]label[0.4,0.4;" .. esc(npc.title or id) .. "]" ..
+		"textlist[0.4,0.9;7,6;quests;" .. table.concat(entries, ",") .. ";" .. selected .. ";false]" ..
+		"tooltip[quests;" .. Q.status_tooltip() .. "]" ..
+		"label[0.4,7.3;" .. Q.status_legend() .. "]" ..
+		"textarea[7.8,0.9;7.8,6;;;" .. esc(detail) .. "]" ..
+		"label[0.4,7.9;" .. esc(notice or row.reason or "") .. "]button_exit[13.3,8.4;2.3,0.7;close;Close]"
+	if row.status == "available" then form = form .. "button[7.8,8.4;2,0.7;accept;Accept]" end
+	if row.status == "ready" then form = form .. "button[7.8,8.4;2,0.7;turnin;Complete]" end
 	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected}
 	if not redraw then grug_sounds.play("npc_quest", player) end
 	core.show_formspec(player:get_player_name(), FORM, form)

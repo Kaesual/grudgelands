@@ -478,7 +478,7 @@ check(has(layered, "((grug_visuals_metal_head_iron.png^(hA.png^[multiply:#aa0000
 	grug_visuals.HELMET_WINDOW .. ")"), "helmet layers cut by the face window")
 local broken = grug_visuals.compose({race = "human", armor = {chest = "test:metal_chest_2"},
 	armor_broken = {chest = true}, armor_layers = {chest = "(cA.png)"}}).textures[1]
-check(has(broken, "((grug_visuals_metal_chest_iron.png^(cA.png))^[cracko:1:4)"),
+check(has(broken, "((grug_visuals_metal_chest_iron.png^(cA.png))" .. grug_gear.BROKEN_MODIFIER .. ")"),
 	"a broken piece cracks with its layers")
 
 -- Royal attire.

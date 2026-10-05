@@ -68,7 +68,7 @@ local FREE = {
 	["default:gravel"] = true, ["default:clay"] = true,
 	["default:clay_lump"] = true, ["default:glass"] = true,
 	["default:snow"] = true, ["default:snowblock"] = true,
-	["default:ice"] = true, ["default:flint"] = true,
+	["default:ice"] = true,
 }
 
 -- Groups whose rating is the item's tier.

@@ -31,13 +31,16 @@ end
 -- legacy coordinates: a textarea[] is drawn PADDING (0.3 units) left of its
 -- given x (guiFormSpecMenu.cpp parseTextArea: `pos -= padding`), while
 -- textlist[], label[], checkbox[] and button[] are not shifted. The list
--- ends at 0.15 + 3.45 = 3.60, so text drawn from TEXT_X keeps a visible
+-- ends at 0.15 + LIST_W, so text drawn from TEXT_X keeps a visible
 -- DETAIL_GAP from it, and every other element of the column uses COLUMN_X
--- to start at the same edge as the text. The right edge stays where it was.
+-- to start at the same edge as the text. The right edge stays where it was:
+-- the list is one unit wider since Round 35 (titles fit better), the text
+-- column one unit narrower (it wraps).
 local PADDING, DETAIL_GAP = 0.3, 0.2
-local TEXT_X = 3.60 + PADDING + DETAIL_GAP
+local LIST_W = 4.45
+local TEXT_X = 0.15 + LIST_W + PADDING + DETAIL_GAP
 local COLUMN_X = TEXT_X - PADDING
-local TEXT_W = 6.0
+local TEXT_W = 5.0
 -- One text field holds the description, the objective lines and the reward
 -- line (Round 32), so all of it shares the column and the field scrolls
 -- only when everything together does not fit. Below it one row: "Track on
@@ -81,15 +84,16 @@ local function content(player, context)
 	context.grug_quest_rows = {}
 	for index, row in ipairs(journal.quests) do
 		context.grug_quest_rows[index] = row.id
-		rows[#rows + 1] = esc((tracked(journal, row.id) and "* " or "") ..
-			row.title .. (row.repeatable and " [Repeatable]" or "") .. (row.ready and " [Ready]" or ""))
+		rows[#rows + 1] = grug_quests.list_entry((tracked(journal, row.id) and "* " or "") .. row.title,
+			row.ready and "ready" or "active", row.repeatable)
 	end
 	local fs = {
 		("label[0.15,0.18;Active quests: %d/20]"):format(#journal.quests),
 		("checkbox[7.65,0.08;grug_quest_hud;Quest HUD;%s]")
 			:format(journal.hud_enabled and "true" or "false"),
-		("textlist[0.15,0.65;3.45,5.95;grug_quest_list;%s;%d;false]")
-			:format(table.concat(rows, ","), selected_index or 1),
+		("textlist[0.15,0.65;%.2f,5.95;grug_quest_list;%s;%d;false]")
+			:format(LIST_W, table.concat(rows, ","), selected_index or 1),
+		("tooltip[grug_quest_list;%s]"):format(grug_quests.status_tooltip({"active", "ready"})),
 	}
 	if not quest then
 		fs[#fs + 1] = ("textarea[%.2f,0.65;%.2f,2.0;;;%s]"):format(TEXT_X, TEXT_W + 0.1,

@@ -152,7 +152,9 @@ read off the hotbar, in three cases:
    hand shows the weapon. Since Round 28 the slot is per skill and class: a
    Scout's bow skills show the bow from its Ranged slot, its Strike and
    Opening the sword or dagger from its Melee slot; every other class's
-   skills show the Weapon slot;
+   skills show the Weapon slot. With nothing in that slot the character holds
+   nothing, and the first-person view shows the bare hand, not the skill's orb
+   (Round 35);
 2. **any other item** in hand shows that item — a pickaxe is a pickaxe, a torch
    is a torch;
 3. an **empty hand** shows nothing.
@@ -379,8 +381,8 @@ less than one second. No fitted shell or persistent decorative entity is used.
 
 ## Broken equipment
 
-Cosmetic hand attachments retain broken equipped items with a crack overlay;
-combat eligibility remains disabled. Worn armor cracks affect only the broken
-slot's texture layer, not skin or intact equipment. Repair removes the overlay
+Cosmetic hand attachments retain broken equipped items, drawn drained of
+colour, darkened and cracked (Round 35); combat eligibility remains disabled.
+The broken look of worn armor affects only the broken slot's texture layer, not skin or intact equipment. Repair removes the overlay
 and preserves the item's current enchantment appearance (its enchant colours,
 §5a).

@@ -35,6 +35,10 @@ local REMOVED_GEMS_AND_LIGHTS = {
 	"default:diamond", "default:diamondblock",
 }
 
+-- Flint has no use in this game (Round 35, user): gravel drops only gravel
+-- (below), and the item goes with the other curated removals.
+local REMOVED_UNUSED = {"default:flint"}
+
 grug_materials.CURATED_VENDOR_REMOVALS = {}
 local function append_removals(items)
 	for _, item_name in ipairs(items) do
@@ -45,6 +49,8 @@ end
 append_removals(REMOVED_TOOLS)
 append_removals(REMOVED_PROCESSED)
 append_removals(REMOVED_GEMS_AND_LIGHTS)
+append_removals(REMOVED_UNUSED)
+core.override_item("default:gravel", {drop = "default:gravel"})
 for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
 	grug_materials.CURATED_VENDOR_REMOVALS[
 		#grug_materials.CURATED_VENDOR_REMOVALS + 1] = derivative.source

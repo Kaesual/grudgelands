@@ -78,7 +78,7 @@ copies of Lord of the Test's `stamina_eat` files, recorded by sonictechtonic
 
 **CC0, with thanks:** **Kenney** (RPG Audio, Interface Sounds, Impact
 Sounds, Music Jingles), **rubberduck** (the CC0 RPG, creature, water-splash
-and SFX packs on OpenGameArt), **artisticdude** (RPG Sound Pack),
+and SFX packs and the breaking/falling/hit pack on OpenGameArt), **artisticdude** (RPG Sound Pack),
 **Ogrebane** (Monster Sound Effects Pack), the VoxeLibre contributors (the
 drinking sound), and the Freesound authors whose recordings became our
 effects, voices, beds and loops: Abyssmal, adamgryu, bajko, Bikkit99,

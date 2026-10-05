@@ -132,6 +132,9 @@ local function check_registry()
 			fail("removed vendor item remains registered: " .. item_name)
 		end
 	end
+	if (core.registered_nodes["default:gravel"] or {}).drop ~= "default:gravel" then
+		fail("gravel must drop only gravel (Round 35: no flint)")
+	end
 	for _, item_name in ipairs(grug_materials.REMOVED_MOBS_UTILITIES) do
 		if core.registered_items[item_name] then
 			fail("removed mobs utility remains registered: " .. item_name)

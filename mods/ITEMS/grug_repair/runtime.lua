@@ -19,6 +19,16 @@ local function creative(player)
 	return core.is_creative_enabled(player:get_player_name())
 end
 
+-- The break cue (Round 35): once, at the use that wears a stack into broken.
+-- Every caller below returns early for a stack that was broken already, so
+-- the later uses of a broken item never reach it. Silent while the event has
+-- no approved file (grug_sounds' approval gate).
+local function announce_break(player, stack)
+	if grug_core.equipment_is_broken(stack) then
+		grug_sounds.play("gear_break", player)
+	end
+end
+
 
 local function wear_stack(player, list, index)
 	if creative(player) then return false end
@@ -34,6 +44,7 @@ local function wear_stack(player, list, index)
 	meta:set_int(WEAR_REMAINDER, amount % lifetime)
 	stack:set_wear(math.min(65535, stack:get_wear() + whole))
 	disable_broken_operation(stack)
+	announce_break(player, stack)
 	grug_repair.refresh_stack(stack, player)
 	inv:set_stack(list, index, stack)
 	if grug_inventory.is_equipment_list(list) then
@@ -170,6 +181,7 @@ core.register_on_mods_loaded(function()
 						if grug_core.equipment_is_broken(stack) then return stack end
 						stack = on_use(stack, user, pointed) or stack
 						disable_broken_operation(stack)
+						announce_break(user, stack)
 						grug_repair.refresh_stack(stack, user)
 						return stack
 					end})
@@ -192,6 +204,7 @@ core.register_on_mods_loaded(function()
 						end
 					end
 					disable_broken_operation(stack)
+					announce_break(user, stack)
 					grug_repair.refresh_stack(stack, user)
 					return stack
 				end})

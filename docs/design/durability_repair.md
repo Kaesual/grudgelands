@@ -98,8 +98,9 @@ including the fractional wear remainder, rounded upward. Native wear bars are
 available for armor and offhands as well as weapons and tools. Skill charge bars
 remain cooldown indicators and are not equipment durability.
 
-A broken item retains its model and receives a crack overlay in inventory,
-first-person and third-person presentation. Only the affected worn armor layer
-is cracked. Cosmetic equipment reads include broken items; combat/stat reads
+A broken item retains its model and is drawn broken in inventory,
+first-person and third-person presentation, including the weapon a held skill
+shows: drained of colour, darkened and cracked (Round 35; one modifier,
+`grug_gear.broken_image`). Only the affected worn armor layer is drawn broken. Cosmetic equipment reads include broken items; combat/stat reads
 still reject them. Repair restores the current base or enchanted appearance;
 it does not remove or reroll enchantments.

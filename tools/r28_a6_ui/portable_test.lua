@@ -387,6 +387,9 @@ grug_core.feed = function(p, kind, text, key)
 end
 local journal_state
 grug_quests = {MAX_TRACKED = 10, registered_npcs = {elder = {title = "Elder Maren"}},
+	-- npc.lua's list helpers (Round 35), checked in tools/r35_f.
+	list_entry = function(title, _, repeatable) return fs_escape(title .. (repeatable and " (R)" or "")) end,
+	status_tooltip = function() return "" end,
 	register_on_change = function(fn) grug_quests._changed = fn end,
 	journal = function() return deep_copy(journal_state) end,
 	-- The tracker builds the journal only when this key changes (Round 30).
