@@ -596,7 +596,7 @@ local function loader(directory)
 					buf:put(spot[1], 1, spot[2], dwarf.node("workbench"))
 				end)
 		end
-		for _, seat in ipairs({{44, 36, 0, "z"}, {22, 28, 1, "z"}}) do
+		for _, seat in ipairs({{44, 36, 3, "z"}, {22, 28, 1, "z"}}) do
 			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
 			local z2 = (seat[4] == "z") and seat[2] + 2 or seat[2]
 			paved_prop("court_bench", seat[1], seat[2], x2, z2, function()

@@ -432,12 +432,17 @@ local function loader(directory)
 						cairn[3])
 				end)
 		end
+		-- A settle runs along its axis and looks across it (Round 36: the two
+		-- end settles were laid along x and read as a stair; the court settle
+		-- now looks at its idle socket, the east one runs along z).
 		for _, seat in ipairs({{-5, 10, 2, "x"}, {-6, -6, 0, "x"},
-				{4, -6, 0, "x"}, {-10, 3, 1, "z"}, {9, 1, 3, "z"}}) do
-			paved_prop("stone settle", seat[1], seat[2], seat[1] + 1, seat[2],
+				{4, -6, 0, "x"}, {-10, 3, 0, "x"}, {9, 1, 3, "z"}}) do
+			local x2 = (seat[4] == "x") and seat[1] + 1 or seat[1]
+			local z2 = (seat[4] == "z") and seat[2] + 1 or seat[2]
+			paved_prop("stone settle", seat[1], seat[2], x2, z2,
 				function()
 					dressing.bench(buf, palette, seat[1], seat[2], seat[3], 2,
-						"x")
+						seat[4])
 				end)
 		end
 		stepping(-6, 5, -6, 8)
