@@ -302,7 +302,13 @@ local function shoot(self, target, arrow, offset_angle)
 	local object = core.add_entity(from, arrow)
 	local ent = object and object:get_luaentity()
 	if not ent then return end
-	grug_mobs.stamp_arrow_damage(ent, self)
+	-- The volley's middle arrow homes on the target, the two side arrows fly
+	-- straight and may hit a bystander (Round 37 MP, MOC-04).
+	if offset_angle and offset_angle ~= 0 then
+		grug_mobs.stamp_straight_arrow(ent, self)
+	else
+		grug_mobs.stamp_arrow_damage(ent, self)
+	end
 	ent._grug_damage = self.damage
 	ent._grug_attacker_level = self._grug_level
 	ent.owner_id = tostring(self.object)
