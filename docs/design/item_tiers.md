@@ -624,7 +624,7 @@ Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
 - **Fee: one hour of band-6 net solo income**, rounded by
   [economy.md](economy.md) §4.1, from the same income estimate as the mount
   prices (`tools/r29_e4/income.py`): 1g 45s on the estimate before Round 33.
-  **As built: 1g 47s** (`grug_traders.CROWN_FEE`), the same rule on the
+  **As built: 1g 48s** (`grug_traders.CROWN_FEE`), the same rule on the
   estimate with the Round 33 terms (column "after" below; accepted by the
   coordinator). The Fallen Crown stays unsellable.
 - Re-enchanting a crowned item uses T1–T6 recipes only; the station preview

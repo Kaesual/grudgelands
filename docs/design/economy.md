@@ -169,12 +169,12 @@ precedence over preserving the exact mathematical ratio.
   `progression.md` §2). The price is **five minutes of measured reliable net
   solo income** at the character's own bracket, rounded by §4.1's rule
   (ruling 22), and **the first respec of a character is free**: **15c, 35c,
-  75c, 2s, 5s50c and 12s** for the brackets 1–10 to 51–60
+  75c, 2s, 5s25c and 12s** for the brackets 1–10 to 51–60
   (`grug_classes.RESPEC_PRICES`). This retires "repeatable at the class
   trainer, rising with level".
 - **The crown** (Round 33, [item_tiers.md](item_tiers.md) §4): the
   Crownbinder at the gate of every capital's goldsmith hall applies one Fallen Crown to one item for one
-  hour of band-6 income, **1g 47s** (`grug_traders.CROWN_FEE`, checked by
+  hour of band-6 income, **1g 48s** (`grug_traders.CROWN_FEE`, checked by
   `income.py`). Once per item; the operation refuses where it would change
   nothing.
 - **Culture vendor** (Round 33, [item_tiers.md](item_tiers.md) §6.4): the

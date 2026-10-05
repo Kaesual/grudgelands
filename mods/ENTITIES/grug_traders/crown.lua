@@ -8,7 +8,7 @@
 -- economy.md §4.1), derived and checked by tools/r29_e4/income.py, plus the
 -- Fallen Crown itself.
 
-grug_traders.CROWN_FEE = 14700
+grug_traders.CROWN_FEE = 14800
 grug_traders.CROWN_ITEM = "grug_mobs:fallen_crown"
 
 local FORM_PREFIX = "grug_traders:crown:"

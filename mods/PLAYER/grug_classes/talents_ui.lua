@@ -8,7 +8,7 @@ local META_RESPEC_USED = "grug_classes:respec_used"
 -- Respec copper price per level bracket (1-10 ... 51-60): five minutes of
 -- reliable net solo income (economy.md section 4), derived and checked by
 -- tools/r29_e4/income.py (economy plan, E4). The first respec is free.
-grug_classes.RESPEC_PRICES = {15, 35, 75, 200, 550, 1200}
+grug_classes.RESPEC_PRICES = {15, 35, 75, 200, 525, 1200}
 
 local function esc(text)
 	return core.formspec_escape(tostring(text or ""))

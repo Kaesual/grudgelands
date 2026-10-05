@@ -90,7 +90,7 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   - **Vendors, combat and capitals (C5):** vendors sell T1 bases only and buy
     back all gear; repair ×1.00; Healing and Mana Potions I–VI with one 60 s
     cooldown; crit ×2 with 0.05 % per Dexterity point; the Crownbinder (crown
-    1g 47s plus a Fallen Crown) and the Decor Merchant in every capital
+    1g 48s plus a Fallen Crown) and the Decor Merchant in every capital
     ([economy.md](design/economy.md), [combat_stats.md](design/combat_stats.md)).
   - **Cloaks and achievements (C3):** 17 per-character achievements unlock
     41 cosmetic cloaks painted by GPT-6 Astra; an Achievements tab and a

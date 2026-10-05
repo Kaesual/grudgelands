@@ -1874,7 +1874,7 @@ rows are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
   quote: since Round 33 the full reference price times the missing
   durability (factor 1.00).
 - **The crown:** the Crownbinder in every capital applies one Fallen Crown to
-  one item for one hour of band-6 income, **1g 47s** (`grug_traders.CROWN_FEE`,
+  one item for one hour of band-6 income, **1g 48s** (`grug_traders.CROWN_FEE`,
   checked by `tools/r29_e4/income.py`; [item_tiers.md](item_tiers.md) §4).
 - **Culture vendor:** the Decor Merchant in every capital sells cosmetic,
   non-craftable blocks and lights in four bands: accent blocks 25c, small
