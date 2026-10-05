@@ -687,7 +687,10 @@ to build (`decor_kit.place`): it stands only on the composition's open
 ground, never on a path, a built cell, a socket or the cell in front of it,
 the two cells before a doorway, or the central actor clearance (the 5 × 5
 round the anchor where actors, the quest host, the anchor's camp fire or
-banner and a clash site's quest objects stand). The four rift-site
+banner and a clash site's quest objects stand). Nothing solid (a barrel,
+a crate, a log, a post, a bench) stands directly before or behind a
+window at the window's height; plants, pots, mats and lights may. The
+four rift-site
 candidates keep their four `props` rows at the positions the crack plan
 avoids and carry their other pieces as `decor` rows off the crack;
 Tombroad Ambush's crack cells and the two nodes below them are untouched.
@@ -696,20 +699,30 @@ Tombroad Ambush's crack cells and the two nodes below them are untouched.
 capital district plot gets small touches from its own door, walls and
 windows (`decor_kit.dress_house`): a torch beside a door without one, a
 barrel, two stacked or a pot plant by the door, pot plants under a window,
-a short wood pile or a barrel against a side wall. They take only open
-ground or the house's own apron, keep a passage free beside every solid
-prop and never take a socket or the cell before it.
+a short wood pile or a barrel against a side wall. They stand on open
+ground or on the paving round the house: its apron and, in a start town
+or a capital plot, the edge of the lane along its wall. A solid touch is
+placed only where the lane past it stays open (the cells outward of it and
+of both its wall-side neighbours are free ground two nodes high), never
+before a window, on a socket or the cell before it.
 
 **Light.** A few lights per POI: the door torches and one to three lantern
 posts or banner torches. The settlement writer relights every chunk it
 writes from the light sources (`r6_settlement.lua` `calc_lighting`), so a
 mapgen-placed torch lights at once.
 
+**Rooms and ways.** Every closed room keeps at least two nodes of air
+over its walkable floor (Redtusk Village's low annex, the one two-course
+Round 14 house, has three since Round 36), and every place a player can
+walk to from a composition's arrival without its dressing stays reachable
+with it, within a detour of a few steps.
+
 **Benches.** A bench of stair seats runs along its axis and every seat
 looks across it; temple pews look at the altar. `tools/r36_w/
 portable_test.lua` checks every start and capital for a seat that looks
-along its own bench, and holds every composition's bounds, airspace and
-sockets to main's record from before the pass.
+along its own bench, holds every composition's bounds, airspace and
+sockets to main's record from before the pass, and checks the windows,
+the headroom and the ways above over every composition.
 
 ## Round 21 ground and access correction
 
