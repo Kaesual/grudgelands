@@ -254,6 +254,46 @@ corrects the Markdown.
   status); the new main line does not bring it back under that name unless
   the story bible chooses to.
 
+### 2.14 Round 35 GUI findings (user, 2026-10-05)
+
+Added by the coordinator after the plan's approval, from the user's first
+Round 35 GUI test; lane F (§4.6) and lane A (§4.9) carry them.
+
+1. **A mob running home is not shown as a target.** At the night-to-day
+   change the user could not attack a rat: the crosshair turned red, the
+   Fireball did not fire, no message. Cause (coordinator investigation):
+   the rat was in its evade run home, untouchable by design. The crosshair
+   (`grug_abilities.aimed_target` → `valid_target`, `crosshair.lua` ~154,
+   `grug_abilities/init.lua` ~240–266) ignores `temp.grug_evading`; the
+   click needs `fightable` (`input.lua` ~214–218), which rejects evaders, so
+   the hold stays in "gather" and `activate` returns silently (`input.lua`
+   ~357–360). Present since Round 32 F2, not caused by Round 35's dawn rule
+   (which waits for the evade to end). **Ruling:** crosshair and click use
+   one target predicate (an evading mob does not turn the crosshair red),
+   and a click at an evading mob shows a short "Evading" (the TODO at
+   `grug_mobs/init.lua` ~741–742).
+2. **Free mobs run home only from outside their wander area.** The pursuit
+   rule is implemented as decided (no distance limit while effective player
+   damage arrives within 15 s; `combat_stats.md` "Ambient pursuit policy").
+   But after a reset a free mob more than **4 m** from its spawn point runs
+   home untouchable for up to 40 s (`aggro.lua` ~256–275, `EVADE_ARRIVED`
+   ~290), although outside combat it may idle anywhere within its 32-node
+   wander radius (`WANDER_RADIUS`). **Ruling:** a free (damage-pursuit) mob
+   reset inside its wander radius only heals and drops its target (no run,
+   no untouchable state); outside it, it runs home and becomes a normal mob
+   again as soon as it is back inside the wander radius. Camp mobs, guards,
+   rares, bosses, patrollers and royals keep their own thresholds. Not
+   changed (user): the 15 s damage clock still starts at the first aggro.
+3. **A background image for the Luanti main menu.** `menu/` holds only
+   `icon.png` and `theme.ogg`; add `menu/background.png` (optionally
+   `header.png`), with a `LICENSE-media.md` row; the user picks from a
+   preview.
+4. **The level-up banner names the talent point.** On every level that
+   grants a talent point (`floor(level / 2)`, so every even level) the
+   centre banner (`grug_core.banner` in `grug_xp/init.lua` ~103) gets a
+   second line "You gained +1 Talent Point"; a jump over several levels
+   names the right number ("+2 Talent Points").
+
 ## 3. Shared conventions
 
 - Fresh-server mode: no migrations, aliases or compatibility code.
@@ -356,8 +396,14 @@ corrects the Markdown.
 
 ### 4.6 F Fixes (wave 1)
 
-The findings of the user's Round 35 GUI test; the coordinator fills the
-list at the start and assigns each finding to F or the lane it belongs to.
+The findings of the user's Round 35 GUI test (§2.14): one target predicate
+for crosshair and click with the "Evading" feedback (§2.14.1); free mobs run
+home only from outside their wander radius, with `combat_stats.md` and the
+evade fixtures updated (§2.14.2); the talent-point line in the level-up
+banner (§2.14.4). The main-menu background (§2.14.3) is lane A's. Further
+findings from the ongoing test join at the start; the coordinator assigns
+each to F or the lane it belongs to. Fixture cases for each item; one engine
+run with a reset free mob inside and outside its wander radius.
 
 ### 4.7 Q-A / Q-T Main questline (wave 2, one lane per faction)
 
@@ -389,7 +435,9 @@ Opus re-validates (JSON diff without `title`/`text`).
 Three cloaks (32×32, outer face left, lining right), the void node and
 rift dressing textures, the quest-object textures, the rift boss's and the
 commanders' looks (texture on an existing mesh), each with its
-`LICENSE-media.md` row.
+`LICENSE-media.md` row. Also the main-menu background (§2.14.3): two or
+three candidates on a preview page, the user picks one; it does not wait
+for the story bible.
 
 ### 4.10 W POI rework (wave 2)
 
@@ -465,9 +513,11 @@ a fresh world (desktop and web build; two clients for the rift):
   `~/projects/grudgelands-orchestration/run_astra.sh 36 <lane>`; log in
   `r28/HANDOVER.md` under "ROUND 36". Check
   `docs/technical/upstream-workarounds.md` at the start.
-- **Decided at the start:** lane F's list; the Round 35 carry-overs that
-  join a lane; whether lane K needs Round 35 lane B's final talent values
-  (it builds on main after Round 35).
+- **Decided at the start:** further Round 35 GUI findings beyond §2.14;
+  the Round 35 carry-overs that join a lane (BACKLOG "Round 35
+  carry-overs"; e.g. spell formulas rounding before the level scalar could
+  join K). Lane K builds on main after Round 35, which already holds lane
+  B's final talent values (merged a15bd0ae).
 - **Decided during the round:** the story bible (user); the rift site (user,
   on lane P's page); the POIs to rework (user, page); lane K's values
   (user); a sample of each faction's texts (user).
