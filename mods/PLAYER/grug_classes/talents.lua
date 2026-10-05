@@ -528,7 +528,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "firebrand", tree = "ember", chain = "blaze", tier = 2,
 	name = "Firebrand",
-	description = "+2 percentage points crit chance per rank.",
+	description = "+2 percentage points crit chance per rank (30% cap holds).",
 	effects = {crit_chance_add = {2, 4, 6, 8}},
 })
 grug_classes.register_talent({
@@ -630,7 +630,8 @@ grug_classes.register_talent({
 	keystone = true, ability = "glacial_ward",
 	name = "Glacial Ward",
 	description = "New skill: 10% base mana, 30 s cooldown, self; absorbs " ..
-		"10% / 15% / 20% of the base pool plus spell power for 10 s.",
+		"10% / 15% / 20% of the base pool, raised by Intelligence from gear, " ..
+		"for 10 s.",
 	effects = {glacial_ward_absorb = {10, 15, 20}},
 })
 grug_classes.register_talent({
@@ -744,7 +745,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "hard_faith", tree = "reckoning", chain = "wrath", tier = 1,
 	name = "Hard Faith",
-	description = "+2 percentage points crit chance per rank.",
+	description = "+2 percentage points crit chance per rank (30% cap holds).",
 	effects = {crit_chance_add = {2, 4, 6, 8, 10}},
 })
 grug_classes.register_talent({
@@ -759,8 +760,8 @@ grug_classes.register_talent({
 	keystone = true, replaces = "smite",
 	name = "Recompense",
 	description = "Smite costs 6% instead of 5% base mana and, at most once " ..
-		"every 6 s, grants an absorb of 6% / 9% / 12% of the base pool plus " ..
-		"spell power.",
+		"every 6 s, grants an absorb of 6% / 9% / 12% of the base pool, " ..
+		"raised by Intelligence from gear.",
 	effects = {smite_absorb = {6, 9, 12}},
 })
 grug_classes.register_talent({

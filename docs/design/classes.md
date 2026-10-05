@@ -680,9 +680,9 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (baseline weapon + spell power), then the damage fit. Solo viability. |
-| Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
-| Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool plus the spell-power percentage for 15 s or until consumed. |
-| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
+| Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool times the support factor (gear Intelligence, `combat_stats.md` §2; exactly 25% without Intelligence gear). Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
+| Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool times the support factor for 15 s or until consumed. |
+| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool times the support factor every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 

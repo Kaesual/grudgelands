@@ -1677,7 +1677,7 @@ mastery never unlocks a suffix or scales a crafted value.
 The endgame budget follows [item_tiers.md](item_tiers.md) §1.1: one enchant
 is worth about 1.6 % + 0.04 % × L in its kind, and a fully damage-enchanted
 level-60 Warrior gains about **+47 % / +57 % / +69 %** at item level 60 / 65 /
-70 (Scout +55 % / +68 % / +82 %), the order of the intended +50–60 % fully
+70 (Scout +49 % / +59 % / +69 % since Round 36), the order of the intended +50–60 % fully
 equipped ceiling ([combat_stats.md](combat_stats.md) §2).
 
 **Combined cap policy (revised 2026-09-20).** Ordinary affixes, trinket
