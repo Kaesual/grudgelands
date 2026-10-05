@@ -124,7 +124,7 @@
         "hearthpine_hunt_01"
       ],
       "title": "The Unpaid Night Crew",
-      "text": "Our timber has acquired a night crew with teeth and no respect for joinery. Kill eight Large Rats {zone_area:timberline} after dark. A red name means they'll attack on sight, and a rat's squeal brings nearby rats running; pick your fights before they pick you.",
+      "text": "Our timber has acquired a night crew with teeth and no respect for joinery. Kill eight Large Rats {zone_area:timberline} after dark. A red name means they'll attack on sight; pick your fights before they pick you.",
       "objectives": [
         {
           "type": "kill",
@@ -139,7 +139,7 @@
         "weight": 3,
         "items": []
       },
-      "lesson": "Night clock and red names; rats call nearby rats.",
+      "lesson": "Night clock and red names; a red name attacks on sight.",
       "duration_min": 8
     },
     {

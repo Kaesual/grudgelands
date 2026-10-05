@@ -671,7 +671,7 @@ middle caves from y −40 to −300, where the surface clock is ignored.
 | Wild Turkey | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | animalia turkey, MIT |
 | Plains Runner | grazes (**passive prey**: fights back when attacked; Round 24, was a critter) | day | — | meat 1/1 | animalworld nandu, MIT |
 | Tapir | grazes (**passive prey**) | day | — | stag table | animalworld tapir, MIT |
-| Giant Rat | swarms; one pull calls nearby rats | night on surface; any in caves | y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
+| Giant Rat | swarms; one pull calls nearby rats (the start-zone roles fight alone) | night on surface; any in caves | y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
 | Scorpion | poisons (1 damage / 2 s for 6 s) | night (Sunscar's recipe also has it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
 | Viper | poisons (1 damage / 2 s for 6 s) | night (Kapok's and the Causeway's recipes also have it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
 
@@ -1422,11 +1422,15 @@ exceptions (`names-proposal.json` `meta.sibling_exceptions`).
 **Families.** A sub-type belongs to its `family`; an existing mob's family is
 its own role (`zombie`, `giant_rat`, `boar` …), so a design puts sub-types
 next to an existing mob by naming that role as the family. Group alert, the
-pack call and the camp swarm answer the same entity name as before and, in
-addition, mobs of the same family when both take part in group alerts
-(`group_attack`). A neutral mob never answers or calls anyone, not even its
-own name (a neutral sub-type of a pack or swarm family stays a single pull;
-`combat_stats.md` §4).
+pack call and the camp swarm answer the same entity name and, in addition,
+mobs of the same family; the caller and the answering mob both take part in
+group alerts (`group_attack`). A neutral mob never answers or calls anyone,
+not even its own name (a neutral sub-type of a pack or swarm family stays a
+single pull; `combat_stats.md` §4). **Start zones fight alone** (user ruling
+2026-10-06): a sub-type whose levels end at 10 or below — exactly the roles
+the six start zones' recipes place, camp defenders and chiefs included —
+takes no part in group alerts, so it neither calls nor answers anyone; from
+level 11 on nothing changes.
 
 **Loot items.** `items.json` entries of kind `signature` and `quest` whose id
 is not registered yet become craft items (`grug_mobs:` ids; an id in another

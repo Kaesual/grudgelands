@@ -1346,7 +1346,7 @@
       7
     ],
     "drops": "feline",
-    "notes": "Day; Kapok. Hostile pack lesson; do not label Small/Young or turn this pack-calling base neutral."
+    "notes": "Day; Kapok. Hostile lesson; do not label Small/Young or turn this base neutral. A start-band role, so it calls no pack (start zones fight alone)."
   },
   {
     "role": "reed_jungle_lynx",

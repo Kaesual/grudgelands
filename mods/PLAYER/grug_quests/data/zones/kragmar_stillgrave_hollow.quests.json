@@ -124,7 +124,7 @@
         "stillgrave_hunt_01"
       ],
       "title": "Family Comes Running",
-      "text": "At night the Large Grave Rats take over the {name:dead_furrows}, and the sound of their teeth carries all the way to my chair. Kill eight after dark. Pick your fights well apart: one squeal brings the relatives, who are distressingly prompt about visiting.",
+      "text": "At night the Large Grave Rats take over the {name:dead_furrows}, and the sound of their teeth carries all the way to my chair. Kill eight after dark. They bite at anything they see, so look before you step; I would rather not carve your name this early.",
       "objectives": [
         {
           "type": "kill",
@@ -139,7 +139,7 @@
         "weight": 3,
         "items": []
       },
-      "lesson": "The night roster of one area; rats answer each other's calls.",
+      "lesson": "The night roster of one area; red names attack on sight.",
       "duration_min": 8
     },
     {
@@ -346,7 +346,7 @@
         "stillgrave_hunt_03"
       ],
       "title": "The Moor Changes Tenants",
-      "text": "Watch the {name:blightmoor}, which lies {zone_area:blightmoor}, at dusk: the grazing stops, and then the squealing begins. Kill eight Aggressive Grave Rats there after dark; they attack on sight and call others into the fight. The Young Gaunt Stags graze there by day, and I have no complaint against them to add to your duties.",
+      "text": "Watch the {name:blightmoor}, which lies {zone_area:blightmoor}, at dusk: the grazing stops, and then the squealing begins. Kill eight Aggressive Grave Rats there after dark; they attack on sight. The Young Gaunt Stags graze there by day, and I have no complaint against them to add to your duties.",
       "objectives": [
         {
           "type": "kill",
@@ -361,7 +361,7 @@
         "weight": 3.5,
         "items": []
       },
-      "lesson": "Aggressive packs at night next to neutral grazers by day.",
+      "lesson": "Aggressive hunters at night next to neutral grazers by day.",
       "duration_min": 10
     },
     {

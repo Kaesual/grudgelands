@@ -62,7 +62,7 @@
         "sunscar_hunt_01"
       ],
       "title": "Hides Are Not Bedding",
-      "text": "Kill eight Large Dust Rats in the {name:wellfields} after dark; they are chewing the clan's drying hides into bedding. Listen for the squeal that brings their kin running, and keep your feet under you.",
+      "text": "Kill eight Large Dust Rats in the {name:wellfields} after dark; they are chewing the clan's drying hides into bedding. Their red names mean they come at you on sight, so keep your feet under you.",
       "objectives": [
         {
           "type": "kill",
@@ -77,7 +77,7 @@
         "weight": 3,
         "items": []
       },
-      "lesson": "Night rosters differ from day ones; rats call nearby rats.",
+      "lesson": "Night rosters differ from day ones; red names attack on sight.",
       "duration_min": 8
     },
     {

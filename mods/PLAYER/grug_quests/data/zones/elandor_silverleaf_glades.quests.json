@@ -124,7 +124,7 @@
         "silverleaf_hunt_01"
       ],
       "title": "The Ferns Have Teeth",
-      "text": "Listen beneath the ferns after dark: that scratching is no woodland lullaby. Kill eight Large Rats in the glades {dir_of:silverleaf:home_glades}, before they gnaw through another season's planting. Draw them out carefully; one frightened squeal brings the neighbours.",
+      "text": "Listen beneath the ferns after dark: that scratching is no woodland lullaby. Kill eight Large Rats in the glades {dir_of:silverleaf:home_glades}, before they gnaw through another season's planting. Watch the shadows; a rat that sees you will not wait to be asked.",
       "objectives": [
         {
           "type": "kill",
@@ -139,7 +139,7 @@
         "weight": 3,
         "items": []
       },
-      "lesson": "The night clock in the same area; rats call nearby rats.",
+      "lesson": "The night clock in the same area; red names attack on sight.",
       "duration_min": 8
     },
     {

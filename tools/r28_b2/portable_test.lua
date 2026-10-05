@@ -317,14 +317,16 @@ do
 			local ea = {name = a, group_attack = da.group_attack, _grug_disposition = da._grug_disposition}
 			local eb = {name = b, group_attack = db.group_attack, _grug_disposition = db._grug_disposition}
 			-- Today a neutral mob never helps (group_attack is off, and no
-			-- neutral family carries the pack or swarm verb).
+			-- neutral family carries the pack or swarm verb), and only a mob
+			-- that takes part in group alerts calls its own name (Round 37 F).
 			local today = a == b and da._grug_disposition ~= "neutral"
+				and da.group_attack == true
 			if grug_mobs.alert_kin(ea, eb) ~= today then all_equal = false end
 			if da._grug_disposition == "neutral" and da.group_attack ~= false then all_equal = false end
 		end
 	end
 	check(fam_equal, "no data: every mob is its own family (its role)")
-	check(all_equal, "no data: alert kin == same entity name (never neutral) for every pair (" ..
+	check(all_equal, "no data: alert kin == same entity name with group_attack (never neutral) for every pair (" ..
 		#w.order .. " mobs)")
 	local static_ok = true
 	for _, name in ipairs(w.order) do
@@ -419,8 +421,12 @@ check(grug_mobs.disposition("grug_mobs:young_wolf") == "neutral", "young wolf ne
 check(small.group_attack == false and small.attack_players == false,
 	"neutral: no group alert, no acquisition")
 local aggr = R["grug_mobs:aggressive_boar"]
-check(aggr.group_attack == true and aggr.attack_players == true,
-	"aggressive boar: group alert and acquisition (boar def keeps group_attack)")
+-- Round 37 F (user ruling 2026-10-06): a start-band role (levels end at 10
+-- or below) fights alone; the 12-14 grizzled wolf keeps its base's alert.
+check(aggr.group_attack == false and aggr.attack_players == true,
+	"aggressive boar (start band): acquisition, no group alert")
+check(R["grug_mobs:grizzled_wolf"].group_attack == true,
+	"grizzled wolf (12-14): the wolf def's group_attack stays")
 check(boar.group_attack == false, "base boar still neutral")
 check(R["grug_mobs:young_wolf"].group_attack == false, "young wolf: no group alert")
 check(R["grug_mobs:wolf"].group_attack == true, "base wolf keeps its group alert")
@@ -531,22 +537,28 @@ end
 check(grug_mobs.family_of("grug_mobs:small_boar") == "boar"
 	and grug_mobs.family_of("small_boar") == "boar"
 	and grug_mobs.family_of("grug_mobs:boar") == "boar", "family_of: sub-type, role, existing")
-check(grug_mobs.alert_kin(ent("grug_mobs:aggressive_boar"), ent("grug_mobs:boar_matriarch")),
-	"aggressive boar and matriarch help each other")
+check(not grug_mobs.alert_kin(ent("grug_mobs:aggressive_boar"), ent("grug_mobs:boar_matriarch")),
+	"start band: aggressive boar and matriarch fight alone")
+check(grug_mobs.alert_kin(ent("grug_mobs:grizzled_wolf"), ent("grug_mobs:wolf"))
+	and grug_mobs.alert_kin(ent("grug_mobs:wolf"), ent("grug_mobs:grizzled_wolf")),
+	"grizzled wolf and wolf share the family")
 check(not grug_mobs.alert_kin(ent("grug_mobs:small_boar"), ent("grug_mobs:aggressive_boar")),
 	"a neutral small boar does not pull aggressive boars")
 check(not grug_mobs.alert_kin(ent("grug_mobs:aggressive_boar"), ent("grug_mobs:small_boar")),
 	"aggressive boars do not pull a neutral small boar")
-check(grug_mobs.alert_kin(ent("grug_mobs:braindead_zombie"), ent("grug_mobs:zombie")),
-	"braindead zombie and zombie share the family")
-check(grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:rat_king_odo")),
-	"large rat calls the rat king")
+check(not grug_mobs.alert_kin(ent("grug_mobs:braindead_zombie"), ent("grug_mobs:zombie"))
+	and not grug_mobs.alert_kin(ent("grug_mobs:zombie"), ent("grug_mobs:braindead_zombie")),
+	"start band: the braindead zombie neither calls nor answers the zombie")
+check(not grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:rat_king_odo")),
+	"start band: the large rat does not call the rat king")
 check(not grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:giant_rat")),
 	"family rat does not include the giant rat (its own family)")
 check(not grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:braindead_zombie")),
 	"other family: no alert")
-check(grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:large_rat")),
-	"same name (today's rule)")
+check(not grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:large_rat")),
+	"start band: not even the same name")
+check(grug_mobs.alert_kin(ent("grug_mobs:giant_rat"), ent("grug_mobs:giant_rat")),
+	"same name with group_attack")
 check(not grug_mobs.alert_kin(ent("grug_mobs:young_wolf"), ent("grug_mobs:young_wolf")),
 	"neutral: not even the same name")
 
@@ -568,7 +580,7 @@ for _, e in ipairs({caller, king, giant, zomb}) do
 	w.objects[#w.objects + 1] = {get_luaentity = function() return e end}
 end
 large.do_custom(caller, 1)
-check(king.called == player, "swarm: the rat king answers the large rat")
+check(king.called == nil, "swarm: a start-band large rat calls nobody")
 check(giant.called == nil and zomb.called == nil, "swarm: giant rat and zombie stay")
 
 -- The pack verb (wolf base): a fleeing wolf calls wolves, never a young wolf.
