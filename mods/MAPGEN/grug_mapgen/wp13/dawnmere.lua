@@ -263,9 +263,29 @@ local function loader(directory)
 		end
 
 		-- A prop on open ground: clear space, and nothing built underneath.
+		-- A socket's own cell and the cell it faces are where its resident
+		-- stands and looks: no prop takes either (Round 36 review: the west
+		-- end bench stood on the green's west guard waypoint's front cell).
+		-- A socket tagged for a feature (a bench, work, a fire) faces that
+		-- feature on purpose, so only its own cell is kept.
+		local socket_cells = {}
+		for _, s in ipairs(SOCKETS) do
+			socket_cells[s.x .. ":" .. s.z] = s.id
+			if not s.tags then
+				socket_cells[(s.x + s.dir.x) .. ":" .. (s.z + s.dir.z)] = s.id
+			end
+		end
 		local function prop(name, x1, z1, x2, z2, build)
 			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
 				refuse(name, x1, z1, "the space is taken")
+			end
+			for z = z1, z2 do
+				for x = x1, x2 do
+					if socket_cells[x .. ":" .. z] then
+						refuse(name, x1, z1, "it takes the cell of socket " ..
+							socket_cells[x .. ":" .. z])
+					end
+				end
 			end
 			for z = z1, z2 do
 				for x = x1, x2 do
@@ -388,13 +408,15 @@ local function loader(directory)
 		-- or the green's own brick kerb, which are not open ground.
 		-- A bench runs along its axis and looks across it (Round 36: the two
 		-- end settles were laid along x, so their stairs looked along the
-		-- bench and read as a stair, not a seat).
-		for _, seat in ipairs({{-7, 6, 2, "x"}, {-5, -8, 0, "x"},
-				{3, -8, 0, "x"}, {-10, -1, 1, "z"}, {8, -1, 3, "z"}}) do
-			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
-			local z2 = (seat[4] == "z") and seat[2] + 2 or seat[2]
+		-- bench and read as a stair, not a seat). The west end settle has two
+		-- seats: the green's west guard waypoint (-9, 0) looks at (-10, 0).
+		for _, seat in ipairs({{-7, 6, 2, "x", 3}, {-5, -8, 0, "x", 3},
+				{3, -8, 0, "x", 3}, {-10, -2, 1, "z", 2}, {8, -1, 3, "z", 3}}) do
+			local len = seat[5]
+			local x2 = (seat[4] == "x") and seat[1] + len - 1 or seat[1]
+			local z2 = (seat[4] == "z") and seat[2] + len - 1 or seat[2]
 			prop("bench", seat[1], seat[2], x2, z2, function()
-				dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, seat[4])
+				dressing.bench(buf, palette, seat[1], seat[2], seat[3], len, seat[4])
 			end)
 		end
 		-- Stepping stones across the turf, from the green's kerb to the well
