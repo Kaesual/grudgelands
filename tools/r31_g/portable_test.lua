@@ -103,7 +103,10 @@ do
 		for k in pairs(b) do if a[k] == nil then return false end end
 		return true
 	end
-	check(same(names, astra), "N the shipped names are the Astra file")
+	-- Round 36 adds the war commanders' working names (tools/r36_r), which
+	-- the Round 31 Astra file does not carry.
+	check(same({generals = names.generals, captains = names.captains}, astra),
+		"N the shipped Generals and captains are the Astra file")
 	local seen, count, keys = {}, 0, 0
 	local function name_ok(name, label)
 		check(type(name) == "string" and name ~= "" and not seen[name], "N " .. label .. " named once")

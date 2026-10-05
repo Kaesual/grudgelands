@@ -7,10 +7,12 @@
 --   A. drop rates over many simulated kills: normal 5/2/1 % white/blue/gold,
 --      elite and named rare 10/10/5 %, never more than one gear item per kill,
 --      critters none; the quality is the enchant count plus one;
---   B. bosses: a King, a dragon and a General always drop two items, blue or
---      gold at about even odds, at item level 65 / 70 / 65; the kill-loot hook
---      leaves Kings and royal guards to the ledger and drops the General's;
---      encounter adds (whelps, summoned raiders) drop no gear and no bag;
+--   B. bosses: a King, a dragon, a General and the rift boss (Round 36) always
+--      drop two items, blue or gold at about even odds, at item level 65 / 70 /
+--      65 / 65; the kill-loot hook leaves Kings, royal guards and the rift boss
+--      to the ledger and drops the General's; encounter adds (whelps, summoned
+--      raiders) drop no gear and no bag; inside the loot lockout the rift boss
+--      gives an elite's roll, a King and a dragon nothing;
 --   C. deep sea: the Kraken (no quality loot) drops nothing;
 --   D. bags: about 0.1 % per kill, the size by mob level (8/16/24/32 slots,
 --      read from grug_inventory's bags.lua);
@@ -239,6 +241,9 @@ do
 		{label = "General", ilvl = 65, mob = {name = "grug_mobs:general_accord",
 			_grug_boss_id = "general:accord", _grug_royal_king = true, _grug_tier = "elite",
 			_grug_level = 65}},
+		-- Round 36: the rift boss, through its ledger like a dragon.
+		{label = "rift boss", ilvl = 65, mob = {name = "grug_mobs:rift_boss",
+			_grug_boss_id = "rift:r20_anchor_077", _grug_tier = "elite", _grug_level = 60}},
 	}
 	for _, boss in ipairs(bosses) do
 		local blue, gold, n, shape_ok = 0, 0, 2000, true
@@ -297,6 +302,30 @@ do
 	local gear = 0
 	for _, stack in ipairs(rewards) do if not is_bag(stack) then gear = gear + 1 end end
 	check(gear == 2, "B the reward hook gives a dragon's two items")
+	check(hook_drops(bosses[4].mob, 20) == 0, "B the kill hook leaves the rift boss to its ledger")
+	-- Inside the 24-hour lockout (Round 36): the rift boss gives an elite's
+	-- roll at its level (at most one item, about 25 %), a King and a dragon
+	-- nothing.
+	local function locked_gear(mob, id, n)
+		local items, most, ilvl_ok = 0, 0, true
+		for _ = 1, n do
+			local count = 0
+			for _, stack in ipairs(reward_hook(mob, id, nil, true)) do
+				if not is_bag(stack) then
+					count = count + 1
+					ilvl_ok = ilvl_ok and stack:get_meta():get_int("grug_ilvl") == 60
+				end
+			end
+			items, most = items + count, math.max(most, count)
+		end
+		return items, most, ilvl_ok
+	end
+	local items, most, ilvl_ok = locked_gear(bosses[4].mob, "rift:r20_anchor_077", 4000)
+	check(most <= 1 and near(items / 4000, 0.25, 0.03),
+		("B a locked rift kill: an elite's roll (%.1f %% gear, at most one)"):format(100 * items / 4000))
+	check(ilvl_ok, "B ...at its own level 60")
+	check(select(1, locked_gear(bosses[1].mob, "king:human", 200)) == 0, "B a locked King kill: nothing")
+	check(select(1, locked_gear(bosses[2].mob, "dragon:ice", 200)) == 0, "B a locked dragon kill: nothing")
 end
 
 ------------------------------------------------------------------------------
