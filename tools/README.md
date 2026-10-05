@@ -131,3 +131,25 @@ pattern; the shared Round 28 tools are `r28_design`, `r28_regions`,
   starts and capitals, `engine.sh` the band on a fresh world; `p` the POI
   renders and review page (`dump.lua`, `render.py`, `page.py`); `a`
   `paint_art.py`, the reproducible textures. Lane RD (roads) added no folder.
+- **Round 37** (`r37_<lane>`): `cb` durability, the max-HP clamp, the PvP
+  Strike fallback, knockback per source and no WP38 caller left,
+  `engine.sh` the cost of a wear event and a taken hit; `mb` threat-only
+  retargeting, the held punch clip, the wind-up freeze, the follow scan,
+  staticdata and the pathfinding switch; `ix` right-click routing, tall
+  crops, the furnace form, ground growth, the water barrier and slabs,
+  `engine.sh` the water guard's reverts at a capital edge and a coast;
+  `po` the minimap change test, quest markers, tracker, discovery, the
+  Claim Stone scan cache and the weapon hint, `engine.sh` the crowd probe
+  at 50 and 100 stand-ins, `texture_growth.lua` the minimap's client
+  textures per quality; `mg` a chunk's own cells, the halo-free writer and
+  the wrappers' tracebacks, `halo_evidence.lua` and `engine.sh` the
+  before/after pair; `sn` the three cues, the approval list `approved.txt`
+  and the `cast_ice_nova` rename, `engine.sh` every spec names a shipped
+  file; `dc` the version, the New World keys, Help → About, the settings
+  lines and the README and CHANGELOG links, `engine.sh` the smoke boot and
+  the first-start wait; `dd` `zone_mobs.lua`, the generator of
+  `docs/design/zone_mobs.md` (`--check`), and its fixture; `mp` the mob
+  limit and authored actors, shutdown, rare and dragon liveness, Bone
+  Call, royal guards, the fan's shots and the patches, `engine.sh` a
+  two-boot restart test; `f` the start-zone alert rule, the Reef Lurker's
+  shore kind and the minimap's normal base.
