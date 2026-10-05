@@ -85,6 +85,17 @@ function api.session_pos(name)
 	return session and vector.new(session.pos.x, session.pos.y, session.pos.z)
 end
 
+-- [player name] = the name of the form the server showed last, until it is
+-- closed (Round 37, PLY-03): whoever re-shows a form on a timer asks
+-- `api.shown_form` first, so it never pops back over another form.
+local shown = {}
+
+-- The form the server last showed `name` and that is still open, or nil.
+-- Forms the client opens itself (the player inventory) are not seen.
+function api.shown_form(name)
+	return shown[name]
+end
+
 -- The client holds one formspec at a time: a form shown by anyone else
 -- replaces ours silently, and a later refresh must not pop ours back over it.
 -- A close (empty formspec; builtin core.close_formspec calls this) mirrors the
@@ -93,14 +104,17 @@ local show_formspec = core.show_formspec
 function core.show_formspec(playername, formname, formspec)
 	if formspec == "" then
 		if formname == "" or formname == FORMNAME then sessions[playername] = nil end
-	elseif formname ~= FORMNAME then
-		sessions[playername] = nil
+		if formname == "" or formname == shown[playername] then shown[playername] = nil end
+	else
+		if formname ~= FORMNAME then sessions[playername] = nil end
+		shown[playername] = formname
 	end
 	return show_formspec(playername, formname, formspec)
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
+	if fields.quit and shown[name] == formname then shown[name] = nil end
 	local session = sessions[name]
 	if formname ~= FORMNAME then
 		-- Fields from another form: ours is no longer open.
@@ -124,4 +138,5 @@ end)
 
 core.register_on_leaveplayer(function(player)
 	sessions[player:get_player_name()] = nil
+	shown[player:get_player_name()] = nil
 end)

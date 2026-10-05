@@ -440,6 +440,15 @@ vendored node stores its UI in metadata any more; each opens the same UI from
 
 No migration: fresh worlds never carry a stored meta formspec.
 
+## Round 37 IX — authored ground and the open form (2026-10-05)
+
+- `default/node_formspec.lua` (its whole-file marker): the `core.show_formspec`
+  wrapper also records the form the server last showed each player, cleared
+  by a close of that form (or of any form) and by that form's "quit" fields;
+  `default.node_formspec.shown_form(name)` returns it. A re-show on a timer
+  (`grug_jobs/workspaces.lua`, PLY-03) asks it first, so a station form never
+  pops back over the recipe book or any other form.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world
