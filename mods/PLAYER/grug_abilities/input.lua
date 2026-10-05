@@ -167,19 +167,21 @@ return function(api)
 	local function silent() end
 	-- `fresh`: this attempt is the press's own decision (key-down, its
 	-- single empty-space or tap cast), so a refusal is reported; held
-	-- repeats stay silent.
-	local function cast(player, def, s, hit, fresh)
+	-- repeats stay silent, and so does a fresh decision `quiet` marks (a
+	-- press carried across a hotbar switch).
+	local function cast(player, def, s, hit, fresh, quiet)
 		if not castable(def, s) then return false end
+		local loud = fresh and not quiet
 		local refusal = api.cast_refusal(player, def)
 		if refusal then
-			if fresh then report(player, s, refusal) end
+			if loud then report(player, s, refusal) end
 			return false
 		end
 		local now = core.get_us_time()
 		s.failed = s.failed or {}
 		local failed = s.failed[def.id]
 		if not fresh and failed and now - failed < RETRY_US then return false end
-		local notify = fresh and function(message) report(player, s, message) end or silent
+		local notify = loud and function(message) report(player, s, message) end or silent
 		if Q.try_cast(player, def, hit, notify) then
 			s.failed[def.id] = nil
 			if def.repeat_policy == "once" then s.used = true end
@@ -203,7 +205,8 @@ return function(api)
 	-- valid target (a PvP flag dropped, evading home), or farther than
 	-- FLEE_REACH times the reach (a foe briefly stepping out of reach keeps
 	-- the lock). Combat never digs (zero pointing range, can_dig
-	-- refuses); gather never attacks.
+	-- refuses); gather never attacks. A hotbar switch while held keeps the
+	-- press and decides it again for the new item (see step).
 	local FLEE_REACH = 2
 	local function combat_reach(player, def)
 		-- Loose's LMB is Strike or hand digging; its bow range is RMB's.
@@ -323,7 +326,10 @@ return function(api)
 			food.click(player, f.target, native_rightclick)
 		end
 	end
-	local function activate(player, s, def, hit, distance, fresh)
+	-- `carried`: the fresh decision of a press held across a hotbar switch
+	-- (see step): it acts like a press of the new item, but reports nothing
+	-- and has no tap window, because the button went down before the item.
+	local function activate(player, s, def, hit, distance, fresh, carried)
 		local now = core.get_us_time()
 		if fresh and hit and hit.type == "object" and distance <= HAND_RANGE then
 			local ent = hit.ref and hit.ref:get_luaentity()
@@ -354,7 +360,7 @@ return function(api)
 			if Q.valid_target(player, ref, "friendly") then
 				if fresh then s.ally = ref end
 				if support(def) and not def.offensive and s.ally == ref then
-					cast(player, def, s, hit, fresh)
+					cast(player, def, s, hit, fresh, carried)
 				end
 				return
 			end
@@ -364,12 +370,12 @@ return function(api)
 				if s.mode == "gather" then return end
 				if def.kind == "swing" then
 					local refusal = api.swing_refusal(player, def)
-					if refusal and fresh then report(player, s, refusal) end
+					if refusal and fresh and not carried then report(player, s, refusal) end
 					api.swing(player, refusal and Q.registered.strike or def)
 				-- A self or support skill fires once per fresh press; held, the
 				-- hold strikes.
 				elseif (support(def) and not def.offensive and not fresh) or
-						not cast(player, def, s, hit, fresh) then
+						not cast(player, def, s, hit, fresh, carried) then
 					api.swing(player, Q.registered.strike)
 				end
 				return
@@ -377,12 +383,13 @@ return function(api)
 			-- A mob evading home takes no hit (Round 36 §2.14.1): a fresh press
 			-- at it says so instead of answering with silence; a self or support
 			-- skill, which needs no hostile, still fires as it would at one. A
-			-- held press stays quiet, and the notice itself is rate-limited.
+			-- held press stays quiet (a carried one too), and the notice itself
+			-- is rate-limited.
 			if Q.evading_target(player, ref) then
 				if fresh then
 					if support(def) then
-						cast(player, def, s, hit, true)
-					else
+						cast(player, def, s, hit, true, carried)
+					elseif not carried then
 						grug_mobs.evade_notice(player)
 					end
 				end
@@ -391,7 +398,7 @@ return function(api)
 			-- An ally the PvP flag forbids: the cast refuses (and reports) at
 			-- no cost, never healing the caster instead (Round 31 ruling 9).
 			if Q.support_refused(player, ref) then
-				if fresh and def.target_kind == "friendly" then cast(player, def, s, hit, fresh) end
+				if fresh and def.target_kind == "friendly" then cast(player, def, s, hit, fresh, carried) end
 				return
 			end
 			-- Actors block action on anything behind them, including drops after
@@ -402,8 +409,9 @@ return function(api)
 			if not s.dig or not same(s.dig.pos, hit.under) then
 				s.dig = {pos = vector.copy(hit.under), started = now}
 			end
-			-- Readiness is checked at the tap, which reports a refusal.
-			if fresh and support(def) and castable(def, s) then
+			-- Readiness is checked at the tap, which reports a refusal. A
+			-- carried press is no tap: it digs on.
+			if fresh and not carried and support(def) and castable(def, s) then
 				s.pending = {pos = vector.copy(hit.under), started = now, id = def.id,
 					node = core.get_node_or_nil(hit.under).name}
 			end
@@ -415,7 +423,7 @@ return function(api)
 			-- A gather press on a node the hand may not dig (protected town
 			-- ground): a short tap still casts a self/support skill (Blink in a
 			-- town); holding only earns the protection hint.
-			if fresh and support(def) and castable(def, s) then
+			if fresh and not carried and support(def) and castable(def, s) then
 				s.pending = {pos = vector.copy(hit.under), started = now, id = def.id,
 					node = core.get_node_or_nil(hit.under).name}
 			end
@@ -423,7 +431,7 @@ return function(api)
 		end
 		-- Nothing to act on (air, out of reach, a node bare hands cannot dig):
 		-- a self/support skill activates on the fresh press only.
-		if fresh and support(def) then cast(player, def, s, nil, true) end
+		if fresh and support(def) then cast(player, def, s, nil, true, carried) end
 	end
 	local M = {}
 	local stepping = {} -- player name -> true while that player's step runs
@@ -441,17 +449,34 @@ return function(api)
 		-- One native RMB action per physical press (see M.food_native).
 		if not right then s.native_seen = nil end
 		local changed = s.slot and (s.slot ~= slot or s.item ~= item)
-		-- A press the previous step already saw, carried over into a new item.
-		local carried = (right and s.rmb) or (down and s.down)
-		if not allowed(player) or (changed and carried) then
+		-- An RMB press the previous step already saw, carried over into a new
+		-- item, is cancelled: its native place or interaction belongs to the
+		-- old item.
+		local carried_right = changed and right and s.rmb
+		-- An LMB hold carried over into a new item (Round 36 F2) goes on as the
+		-- same press, decided again for the new item below.
+		local carried = changed and down and s.down and not carried_right
+		if not allowed(player) or carried_right then
 			cancel(player, s)
 			-- A carried-over press is not a new press: the engine's repeated
 			-- place must not act for the new item either.
-			if changed and right and s.rmb then s.native_seen = true end
+			if carried_right then s.native_seen = true end
 		elseif changed then
-			-- Switch and a fresh press in the same step (or no press): settle
-			-- the old item without latching, so the new press begins normally.
+			-- Settle the old item without latching (its pending tap, its zero
+			-- range). A switch with a fresh press in the same step (or no press)
+			-- then begins normally. A carried hold takes the new item's key-down
+			-- decision (s.down cleared): gather or combat as at a press, except
+			-- that a combat lock keeps its foe while that foe is not gone for
+			-- the new skill's reach (a miss beside it still digs nothing).
+			local mode, foe = s.mode, s.foe
 			reset(player, s)
+			if carried then
+				s.down = false
+				if mode == "combat" and def and not foe_gone(player, foe, combat_reach(player, def)) then
+					s.mode, s.mode_at, s.foe = "combat", core.get_us_time(), foe
+					hold_range(player, "combat", true)
+				end
+			end
 		end
 		s.slot, s.item = slot, item
 		if not down and not right and s.cancelled then
@@ -512,7 +537,7 @@ return function(api)
 		end
 		if down and not s.down then
 			s.used, s.cast_press, s.ally = false, false, nil
-			if def then activate(player, s, def, hit, distance, true) end
+			if def then activate(player, s, def, hit, distance, true, carried) end
 		elseif down and def then
 			activate(player, s, def, hit, distance, false)
 		elseif not down then
