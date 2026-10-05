@@ -2,9 +2,9 @@
 # Round 36 lane F2 engine probe (grug_probe_r36_f2, staged into a throwaway
 # game copy, never shipped): a stand-in player holds the dig on a dirt node,
 # switches its wield index (empty hand -> Strike, Strike -> empty hand, empty
-# hand -> Blink, Strike -> Fireball, and two cases without a switch) and keeps
-# holding; then the node's on_dig runs as DIGGING_COMPLETED runs it, and the
-# node is logged. A behaviour run, not a timing run, so it boots directly
+# hand -> Blink, Strike -> Fireball, a fast scroll completed inside the settle
+# window, and two cases without a switch) and keeps holding; then the node's
+# on_dig runs as DIGGING_COMPLETED runs it, and the node is logged. A behaviour run, not a timing run, so it boots directly
 # (idle priority). Copies the probe lines to OUT_DIR.
 #
 # Usage (worktree root): tools/r36_f2/engine.sh OUT_DIR

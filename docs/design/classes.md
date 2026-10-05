@@ -233,26 +233,30 @@ differs:
   crosshair.
 - **A hotbar switch while held** (Round 36, the user's playtest finding of
   2026-10-05): an LMB held across a switch to another item is the same
-  press, decided again for the new item as if it had been pressed with it.
-  The start rule above decides gather or combat, except that a combat lock
+  press, decided again for the new item as if it had been pressed with it,
+  once the new item has stayed wielded 0.2 s (four input passes; a further
+  switch restarts the wait, a release inside it acts for nothing). So a
+  slot the scroll wheel only passes never fires its skill (Blink mid-fight).
+  While it waits the hold acts on nothing (no Strike either), but digging
+  does not wait, and a combat lock waits with its zero range. Then
+  the start rule above decides gather or combat, except that a combat lock
   keeps its foe while that foe is not gone for the new skill's reach (a
   miss beside it still digs nothing). The new skill then acts as on a fresh
-  press: an attacking skill casts or swings at once (Strike if it is not
+  press: an attacking skill casts or swings (Strike if it is not
   ready), a self or support skill fires once where a fresh press would (at
-  a hostile, an ally or air, never at a node), Loose strikes. Two things
-  differ from a real press: it reports nothing (refusals and "Evading"; a
+  a hostile, an ally or air, never at a node), Loose strikes. Besides the
+  wait, two things differ from a real press: it reports nothing (refusals and "Evading"; a
   held press stays quiet), and it has no tap window, so a gather hold digs
   on at once and a quick release casts nothing. Cooldowns, resources and the
   weapon clock are untouched (back to a skill on cooldown only strikes). A
   switch to an ordinary tool or an empty slot ends the skill mode (both
   stacks point again, the tool or hand digs natively); a switch back is
   decided again. Digging goes on in both directions: the client keeps its
-  crack time across a wield change and the server accepts that dig. The
-  server sees the wielded item once per input pass (0.05 s), so a slot the
-  scroll wheel rests on for a whole pass counts as pressed. A held RMB
-  across a switch stays cancelled until both buttons are released (its
-  native place or interaction belongs to the old item), as does a hold a
-  stun or death cancelled.
+  crack time across a wield change and the server accepts that dig, also
+  during the wait and across a fast scroll. A held RMB across a switch stays
+  cancelled until both buttons are released (its native place or
+  interaction belongs to the old item), as does a hold a stun or death
+  cancelled.
 
 The check costs a held gather step nothing on a solid node or air, one
 combat ray behind a plant, loot or an actor, and nothing at all with a self

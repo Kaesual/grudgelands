@@ -10,7 +10,8 @@
 -- no client, so a stand-in player (a table the engine's Lua accepts as a
 -- player, core.is_player) holds the dig: the real input pass
 -- (grug_abilities.input.step) runs on it every server step while it presses,
--- switches its wield index and keeps holding; then the probe runs exactly
+-- switches its wield index (once, or a fast scroll over several slots) and
+-- keeps holding; then the probe runs exactly
 -- what DIGGING_COMPLETED runs, the node's registered on_dig (our input
 -- wrapper around core.node_dig), and logs the node afterwards. Air: the dig
 -- was accepted; dirt: refused (the client's node reappears).
@@ -27,6 +28,8 @@ local SLOT = {strike = 1, hand = 2, blink = 3, fireball = 4}
 local CASES = {
 	{"hand", "hand"}, {"strike", "strike"}, -- no switch: both dig
 	{"hand", "strike"}, {"strike", "hand"}, {"hand", "blink"}, {"strike", "fireball"},
+	-- A fast scroll: one server step on each slot, completed at the last one.
+	{"hand", "blink", "fireball", "strike", "hand", "strike"},
 }
 
 -- The stand-in's player meta: mod storage is a real metadata ref (only
@@ -101,7 +104,7 @@ local function finish_case()
 	local accepted = after == "air"
 	results[#results + 1] = accepted
 	log(("CASE %s -> %s: held dig, switched, DIGGING_COMPLETED: on_dig %s; node after: %s (%s)"):format(
-		c[1], c[2], ok and "ran" or ("raised: " .. tostring(err)), after,
+		c[1], table.concat(c, " -> ", 2), ok and "ran" or ("raised: " .. tostring(err)), after,
 		accepted and "dig accepted" or "dig refused, the client's node reappears"))
 end
 
@@ -129,8 +132,13 @@ core.register_globalstep(function()
 			wield = SLOT[CASES[case_index][2]]
 		end
 	elseif phase == "held" then
+		-- A scroll case moves on one slot per step and completes the dig in
+		-- the step that sees its last slot (inside the 0.2 s settle window);
+		-- a plain switch holds 4 steps first.
+		local c = CASES[case_index]
+		if c[t + 2] then wield = SLOT[c[t + 2]] end
 		input_step()
-		if t >= 4 then
+		if t >= (#c > 2 and #c - 2 or 4) then
 			finish_case()
 			phase, t, controls.dig = "release", 0, false
 		end

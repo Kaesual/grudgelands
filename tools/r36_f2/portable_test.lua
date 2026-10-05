@@ -14,14 +14,17 @@
 -- would, no tap is pending (the press began before the item), nothing is
 -- reported (a held press stays quiet: refusals and "Evading"), clocks and
 -- cooldowns stay, and digging goes on in both directions (can_dig accepts
--- the node the client keeps digging).
+-- the node the client keeps digging). The new item acts only once it has
+-- stayed wielded 0.2 s (coordinator decision on S15): a slot the wheel only
+-- passes never fires, a further switch restarts the wait, digging never
+-- waits.
 --   S  combat holds switched to every kind of item (attack cast and swing,
 --      self, support, movement, the bow, a cooldown, a tool, an empty slot
 --      and back, a miss beside the foe, an evading foe, a scroll through a
---      self skill, switching back to a skill on cooldown);
+--      self skill, switching back to a skill on cooldown, the settle window);
 --   D  digging holds switched both ways (empty hand, a tool, attack, self
 --      and support skills; a pending tap; a threat in the crosshair; air;
---      a dropped item);
+--      a dropped item; a fast scroll);
 --   K  what stays as it was: a carried right button, a stun, a switch in the
 --      same step as a fresh press, the zero range on exactly one stack.
 -- Prints "R36 F2 PORTABLE PASS checks=<n>" or the failures.
@@ -277,8 +280,11 @@ local function start(slot)
 	log_reset()
 end
 local function to(slot) wield_index = SLOTS[slot] end
--- Switch and let the server see it in one step, as the 0.05 s input pass does.
-local function switch(slot) to(slot); step() end
+-- A switch the server sees in one input pass (a scroll wheel passing it).
+local function flick(slot) to(slot); step() end
+-- A switch that stays: the pass that sees it and four more (0.2 s settle).
+local SETTLE_STEPS = 4
+local function switch(slot) flick(slot); hold(SETTLE_STEPS) end
 local function range0(slot) return main[SLOTS[slot]].meta.range == "0" end
 local function zeroed()
 	local list = {}
@@ -460,19 +466,57 @@ do -- S14 healing an ally: Strike -> Heal at the ally heals it and repeats on it
 	release()
 end
 
-do -- S15 the scroll wheel passing Ward on the way to Fireball.
+do -- S15 the scroll wheel with the button held: a slot only passed never fires.
 	local m = new_mob("s15")
 	fighting(m)
-	switch("ward")
-	switch("fireball")
-	case("S15", "Strike->Ward->Fireball, one step each: " .. seen())
-	check(list(casts) == "ward,fireball", "S15 a skill the server sees for one step is pressed once")
-	release()
-	fighting(m)
-	to("ward")
-	to("fireball") -- both inside one 0.05 s pass: the server sees Fireball only
+	for _, slot in ipairs({"blink", "heal", "ward", "fireball"}) do flick(slot) end -- 0.05 s each
+	local passed = seen()
+	hold(SETTLE_STEPS - 1)
+	local waiting = #casts + #swings
 	step()
-	check(list(casts) == "fireball", "S15 a slot skipped between two passes is never pressed")
+	case("S15", "Strike->Blink->Heal->Ward->Fireball, 0.05 s each: " .. passed .. " | rested 0.2 s: casts=" ..
+		list(casts))
+	check(passed:find("casts=- swings=-", 1, true) ~= nil and waiting == 0,
+		"S15 nothing fires while scrolling or before the last slot has stayed 0.2 s")
+	check(list(casts) == "fireball" and range0("fireball"), "S15 the slot that stays acts once")
+	release()
+	-- Two passes (0.1 s) on each self or support skill: still nothing.
+	fighting(m)
+	for _, slot in ipairs({"blink", "heal", "ward"}) do flick(slot); step() end
+	check(#casts == 0 and #swings == 0, "S15 0.1 s on Blink, Heal and Ward fires none of them")
+	hold(SETTLE_STEPS - 1)
+	check(list(casts) == "ward" and #swings == 0, "S15 Ward, resting 0.2 s, fires once")
+	hold(3)
+	check(list(casts) == "ward" and #swings == 3, "S15 then the hold strikes (Ward never repeats)")
+	release()
+	-- A further switch inside the window restarts it.
+	fighting(m)
+	flick("fireball")
+	hold(SETTLE_STEPS - 1)
+	flick("blink")
+	hold(SETTLE_STEPS - 1)
+	check(#casts == 0, "S15 a switch inside the window restarts it: nothing yet")
+	step()
+	check(list(casts) == "blink", "S15 Blink fires once it has stayed 0.2 s")
+	release()
+	-- A release inside the window acts for nothing; the next press is an
+	-- ordinary fresh press (it reports again).
+	fighting(m)
+	flick("blink")
+	controls.dig = false
+	hold(4)
+	check(#casts == 0, "S15 released inside the window: nothing fires")
+	cooldown_until.fireball = clock + 10000000
+	to("fireball")
+	step()
+	press()
+	check(#flashes == 1, "S15 the next real press is loud again")
+	release()
+	-- The combat lock waits with the new stack: no dig beside the foe.
+	fighting(m)
+	aim(NODE)
+	flick("ward")
+	check(range0("ward") and not can_dig() and #casts == 0, "S15 waiting in combat: zero range, no dig")
 	release()
 end
 
@@ -486,21 +530,22 @@ do -- D1-D3 the empty hand digging, then a skill.
 		press()
 		hold(2)
 		local before = can_dig()
-		switch(id)
+		flick(id)
 		local o = seen()
-		hold(2)
+		hold(SETTLE_STEPS + 2)
 		local later = can_dig()
 		release()
 		local label = ({strike = "D1", blink = "D2", heal = "D3", fireball = "D4"})[id]
-		case(label, "hand digging ->" .. defs[id].name .. ": " .. o .. " | 0.1 s later dig=" .. tostring(later))
+		case(label, "hand digging ->" .. defs[id].name .. ": " .. o .. " | after the window dig=" .. tostring(later))
 		check(before, label .. " setup: the hand digs")
-		check(later and #casts == 0 and #swings == 0, label .. " " .. id .. ": the dig goes on, nothing fires")
+		check(o:find("dig=true", 1, true) and later and #casts == 0 and #swings == 0,
+			label .. " " .. id .. ": the dig goes on at once and after the window, nothing fires")
 	end
 	-- No tap after a carried switch: a quick release does not blink.
 	start("empty")
 	aim(NODE)
 	press()
-	switch("blink")
+	flick("blink")
 	check(can_dig(), "D2 no pending tap blocks the dig at the switch")
 	controls.dig = false
 	step()
@@ -516,12 +561,12 @@ do -- D5 a skill digging, then the empty hand or a tool; D6 a tool, then a skill
 		press()
 		hold(5) -- past a support skill's tap window
 		local before = can_dig()
-		switch(pair[2])
+		flick(pair[2])
 		local o = seen()
-		hold(2)
+		hold(SETTLE_STEPS + 2)
 		local later = can_dig()
 		case(pair[3], pair[1] .. " digging ->" .. pair[2] .. ": " .. o .. " | later dig=" .. tostring(later))
-		check(before and later and #casts == 0, pair[3] .. " " .. pair[1] .. "->" .. pair[2] .. ": the dig goes on")
+		check(before and o:find("dig=true", 1, true) and later and #casts == 0, pair[3] .. " " .. pair[1] .. "->" .. pair[2] .. ": the dig goes on")
 		release()
 	end
 end
@@ -531,7 +576,7 @@ do -- D8 a pending tap (Blink pressed on a node), switched within 200 ms.
 	aim(NODE)
 	press()
 	check(not can_dig(), "D8 setup: the tap window holds the dig")
-	switch("strike")
+	flick("strike")
 	local o = seen()
 	release()
 	case("D8", "Blink tap pending ->Strike: " .. o .. " | released: casts=" .. list(casts))
@@ -539,7 +584,7 @@ do -- D8 a pending tap (Blink pressed on a node), switched within 200 ms.
 	start("blink")
 	aim(NODE)
 	press()
-	switch("strike")
+	flick("strike")
 	check(can_dig(), "D8 Strike digs at once after the switch")
 	release()
 end
@@ -577,6 +622,23 @@ do -- D11 held on a dropped item: one pickup attempt for the new item.
 	hold(3)
 	case("D11", "hand on loot ->Strike, held 3: " .. seen())
 	check(pickups == 1, "D11 one pickup attempt, as a fresh press makes")
+	release()
+end
+
+do -- D12 digging across a fast scroll through Blink, Heal and Ward to Strike.
+	start("empty")
+	aim(NODE)
+	press()
+	local all = true
+	for _, slot in ipairs({"blink", "heal", "ward", "strike"}) do
+		flick(slot)
+		all = all and can_dig()
+	end
+	hold(SETTLE_STEPS + 2)
+	case("D12", "hand digging, Blink->Heal->Ward->Strike 0.05 s each: dig every pass=" .. tostring(all) ..
+		" | settled: " .. seen())
+	check(all and can_dig() and #casts == 0 and #swings == 0,
+		"D12 the dig is accepted on every pass of the scroll and after it, nothing fires")
 	release()
 end
 

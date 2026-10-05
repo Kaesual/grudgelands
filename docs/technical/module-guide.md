@@ -361,9 +361,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (mounted, stunned). Fixture `tools/r36_f`.
   Also since Round 36 (lane F2) a slot change with LMB held is no cancel:
   `step` settles the old item (`reset`), keeps a combat foe that is not
-  `foe_gone` for the new skill's reach and clears `s.down`, so the new item
-  takes the key-down decision; `activate`'s `carried` flag keeps that
-  decision quiet (`cast`'s `quiet`) and without a tap window (`s.pending`).
+  `foe_gone` for the new skill's reach and records `s.settle`; once the new
+  item has stayed `SETTLE_US` (0.2 s; a further switch restarts it) `s.down`
+  is cleared, so the new item takes the key-down decision (digging never
+  waits: `can_dig` does not read `s.settle`); `activate`'s `carried` flag
+  keeps that decision quiet (`cast`'s `quiet`) and without a tap window
+  (`s.pending`).
   A carried RMB press still cancels. Fixture and engine probe `tools/r36_f2`.
   It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log

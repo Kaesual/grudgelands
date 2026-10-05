@@ -17,6 +17,11 @@ return function(api)
 	-- native punch reports the press before the next control report (up to
 	-- one dedicated_server_step later) does.
 	local MODE_GRACE_US = 150000
+	-- A press held across a hotbar switch acts only once the new item has
+	-- stayed wielded this long (four 0.05 s input passes): a slot the wheel
+	-- only passes while scrolling never fires its skill. Digging does not
+	-- wait (Round 36 F2).
+	local SETTLE_US = 200000
 	local pickup_delegate
 	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
 	local function food_api() return rawget(_G, "grug_food") end
@@ -123,7 +128,7 @@ return function(api)
 	local function reset(player, s)
 		end_food_hold(player)
 		end_mode(player, s)
-		s.pending, s.dig, s.right, s.food = nil, nil, nil, nil
+		s.pending, s.dig, s.right, s.food, s.settle = nil, nil, nil, nil, nil
 		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
 	end
 	-- ... and latch the cancellation until both buttons are released.
@@ -464,14 +469,16 @@ return function(api)
 		elseif changed then
 			-- Settle the old item without latching (its pending tap, its zero
 			-- range). A switch with a fresh press in the same step (or no press)
-			-- then begins normally. A carried hold takes the new item's key-down
-			-- decision (s.down cleared): gather or combat as at a press, except
-			-- that a combat lock keeps its foe while that foe is not gone for
-			-- the new skill's reach (a miss beside it still digs nothing).
+			-- then begins normally. A carried hold waits SETTLE_US (a further
+			-- switch restarts the wait), then takes the new item's key-down
+			-- decision (below): gather or combat as at a press, except that a
+			-- combat lock keeps its foe while that foe is not gone for the new
+			-- skill's reach (a miss beside it still digs nothing, also while it
+			-- waits).
 			local mode, foe = s.mode, s.foe
 			reset(player, s)
 			if carried then
-				s.down = false
+				s.settle = core.get_us_time()
 				if mode == "combat" and def and not foe_gone(player, foe, combat_reach(player, def)) then
 					s.mode, s.mode_at, s.foe = "combat", core.get_us_time(), foe
 					hold_range(player, "combat", true)
@@ -486,13 +493,20 @@ return function(api)
 		if s.cancelled then s.down, s.rmb = down, right; return end
 		if not down and not right and not s.pending then
 			release_right(player, s)
-			s.down, s.rmb, s.dig = false, false, nil
+			s.down, s.rmb, s.dig, s.settle = false, false, nil, nil
 			return
 		end
 		if not def and not is_food(item) then
 			s.down, s.rmb = down, right
 			return
 		end
+		if s.settle and down and not right then
+			-- A carried hold waiting for the new item to stay: no action and no
+			-- mode decision; gather digs on (can_dig asks nothing of it).
+			if core.get_us_time() - s.settle < SETTLE_US then return end
+			s.down, carried = false, true -- settled: the key-down decision now
+		end
+		s.settle = nil
 		-- Food decides from the native pointed thing, never from this ray. A
 		-- held combat press acts on the combat ray alone (below).
 		local hit, distance
