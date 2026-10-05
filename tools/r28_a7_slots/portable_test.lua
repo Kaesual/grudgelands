@@ -656,7 +656,8 @@ do
 	local p = new_player("raw", "warrior", 30)
 	join(p)
 	local dig = false
-	function p:get_player_control() return {dig = dig} end
+	-- Round 37 (PLY-16): the poll reads the control bits; dig is bit 7.
+	function p:get_player_control_bits() return dig and 128 or 0 end
 	function p:get_wielded_item() return ItemStack("grug_gear:sword_steel") end
 	connected = {p}
 	local chat_before = #chat
