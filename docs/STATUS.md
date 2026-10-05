@@ -6,7 +6,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   (2026-10-05, [plan, completion and GUI checklist](planning/round36-plan.md#completion-2026-10-05)).
   Every lane is merged on main (last the text pass T, `5069b5a5`, then the
   follow-up lanes below, last RD `fef94a6a`), each code and data lane
-  independently reviewed by Opus; 96 fixtures pass, `validate.py --game` 0
+  independently reviewed by Opus (W2, which only turns blocks, without a
+  separate review); 96 fixtures pass, `validate.py --game` 0
   errors; pushed by the user on 2026-10-05 (`1e8a975d`, then `0f169898`
   with the follow-up lanes). GUI test open. **A fresh world is required**,
   made on `fef94a6a` or later (the decor pass, the dragon arenas and the
@@ -199,8 +200,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     decisions open), [items and professions analysis](research/items-professions-analysis-2026-10.md)
     (16 questions for a design session).
   - The user tested it with Rounds 30, 31 and 33 (the findings fed Round
-    34); the round counts as GUI-accepted (the user, 2026-10-05). The items design session became
-    Round 33, sound Round 34.
+    34); the round counts as GUI-accepted (the user, 2026-10-05). The
+    items design session became Round 33, sound Round 34.
 
 - **Round 31 "PvP, appearance and clean-up" delivered** (2026-10-03,
   [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).
@@ -251,8 +252,9 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     commercial MMO's terms; captain and General names by GPT-6 Astra.
   - Final engine check (2026-10-03, main 699a2002, seed 42): PASS 7/7 — boot clean (cold 38.3 s to listening, heap 111 MiB; second boot 7.3 s, 67 MiB); both fortresses 19/19 NPCs with mixed faction races, camps with leader-captains (×1.5 HP, ×1.15 size), gate trails, protection margin, 7th waystone, no hostile spawns inside; flag logic 9/9 incl. y −500/−501 under a capital; faction filter (enemy settlement icons hidden, 8/8 enemy war camps shown, enemy givers/vendors refuse); looks persist and vary (13/13); enchant colours on dropped, wielded and worn gear; Wyrmglass arena floor of local ground, hazards and protection to ±40; 515 quests load. Cosmetic: frost terraces merge into the floor where the ground reaches their height (57 of 409 columns); fortress quest givers' nametags fixed after the check.
   - The user tested it with Rounds 30, 32 and 33 (the findings fed Round
-    34); the round counts as GUI-accepted (the user, 2026-10-05). Seed-dependent POI placement was
-    set aside (2026-10-03); Round 32 followed.
+    34); the round counts as GUI-accepted (the user, 2026-10-05).
+    Seed-dependent POI placement was set aside (2026-10-03); Round 32
+    followed.
 
 - **Round 30 "Performance and clean-up" delivered** (2026-10-02,
   [plan, completion and playtest checklist](planning/round30-plan.md#completion-2026-10-02)).
@@ -415,7 +417,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     inside a pewter bezel; about 880 nodes, one texture per 6 (normal) or 16
     (high) base-pixel cell, high at half resolution; about 3.7–3.9 times the
     snapped HUD traffic.
-  - The user's playtest led to the glide follow-up; the round counts as GUI-accepted (the user, 2026-10-05).
+  - The user's playtest led to the glide follow-up; the round counts as
+    GUI-accepted (the user, 2026-10-05).
 
 - **Round 26 delivered** (2026-09-29,
   [plan, completion and playtest checklist](planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)).
@@ -443,7 +446,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     [work-package audit](planning/wp-audit-2026-09-29.md) and its
     [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29),
     then the lane facts.
-  - Playtested 2026-09-29; the round counts as GUI-accepted (the user, 2026-10-05).
+  - Playtested 2026-09-29; the round counts as GUI-accepted (the user,
+    2026-10-05).
 
 - **Round 25 delivered:** Claim Stone housing (WP24,
   [housing.md](design/housing.md)): one free, soulbound stone from the
@@ -521,8 +525,8 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   git history keeps it).
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Its findings
-  list is [archived](archive/maintenance/findings.md) (closed in code by
-  Round 36); open design questions are in the BACKLOG
+  list is [archived](archive/maintenance/findings.md) (its open items are
+  fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
 - **Latest game:** main carries Round 36 with its follow-up lanes
   (`0f169898`), which includes Rounds 20–35 and the 2026-09-28 playtest

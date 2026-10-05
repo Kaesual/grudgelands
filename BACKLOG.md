@@ -1007,7 +1007,8 @@ none blocks the GUI test. Numbers are comparisons, never targets.
 [round36-plan.md](docs/planning/round36-plan.md), the
 [story bible](docs/planning/round36/story-bible.md)); every code and data
 lane independently reviewed by Opus, art and texts checked by the
-coordinator, the texts reviewed by Opus with the user's picks; 96 fixtures
+coordinator, the texts reviewed by Opus with the user's picks (of the
+follow-up lanes F2, W3 and RD reviewed, W2 turns blocks only); 96 fixtures
 pass with the follow-up lanes, `validate.py --game` 0 errors,
 `quest_targets.py` 1207 targets on six seeds; world generation changed
 (lanes G, W, W2, W3 and RD; `seed_fleet quick` 100 of 100 for G, W, W3 and
