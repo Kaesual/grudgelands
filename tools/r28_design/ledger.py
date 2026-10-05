@@ -50,8 +50,8 @@ import r28common as C  # noqa: E402
 class Route:
     """The zones in play order: a --route spec ("zone_a,zone_b:lo-hi"), or
     `entries` [(zone, lines, levels, label)] of r28common.track_route (lines
-    None = every line but `front`; levels = a host's front quests of one
-    band only)."""
+    None = every line but `front`, FRONT_HOST_LINES = every line; levels =
+    only the quests whose reward level lies in that band)."""
 
     def __init__(self, spec="", atlas=None, entries=None):
         self.atlas = atlas
@@ -750,7 +750,8 @@ def self_test():
                   ("front_broken_causeway", "front"), ("front_shattered_line", "front"),
                   ("front_gravesalt_escarpment", "front"), ("front_skyglass_canopy", "front")],
           "human track: own zones, sister, the three contested zones, 41-50 and 51-60 (%s)" % own)
-    hosts = sorted({zone for zone, lines, levels, _ in entries if lines == ("front",) and levels == (41, 50)})
+    hosts = sorted({zone for zone, lines, levels, _ in entries
+                    if lines == C.FRONT_HOST_LINES and levels == (41, 50)})
     check(hosts == ["elandor_ashenward_march", "elandor_dur_brannoc", "elandor_glassroot_wilds",
                     "elandor_highcourt", "elandor_lethariel", "elandor_stormvault_heights"],
           "front quests from the faction's contested zones and capitals (%s)" % hosts)

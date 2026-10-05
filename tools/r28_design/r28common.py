@@ -230,12 +230,13 @@ class Design:
 
     def zone_quests(self, zone, lines=None):
         """The zone's own quests plus its front file's, optionally only the
-        given lines. Each quest is returned as stored."""
+        given lines (EVERY_LINE among them: all lines). Each quest is
+        returned as stored."""
         out = []
         for data in (self.quests.get(zone), self.front.get(zone)):
             if isinstance(data, dict):
                 out.extend(q for q in data.get("quests") or [] if isinstance(q, dict))
-        if lines:
+        if lines and EVERY_LINE not in lines:
             out = [q for q in out if q.get("line") in lines]
         return out
 
@@ -1103,11 +1104,13 @@ def track_route(race, sister=None, records=None):
     section 3.1) as [(zone, lines, levels, label)] in play order: start zone
     (1-10), home zone (11-20), own capital and heartland zone(s) (20-30) plus
     an optional sister zone of the faction, the faction's three contested
-    zones (31-40, own race's first), then the two 41-50 and the two 51-60
-    zones together with the faction's front quests (line `front` of its
-    contested zones and capitals) of that band. `lines` is None (every line
-    but `front`) or ("front",); `levels` limits a host entry to the quests
-    whose reward level lies in that band."""
+    zones (31-40, own race's first; their quests of reward level 31-40),
+    then the two 41-50 and the two 51-60 zones together with the faction's
+    front quests of that band: every quest of its contested zones and
+    capitals whose reward level lies in that band, the line `front` and
+    (Round 36) a fortress giver's main line. `lines` is None (every line
+    but `front`) or FRONT_HOST_LINES (every line); `levels` limits an entry
+    to the quests whose reward level lies in that band."""
     records = records or zone_records()
     faction = RACE_FACTION.get(race)
     if faction is None:
@@ -1131,12 +1134,19 @@ def track_route(race, sister=None, records=None):
     contested = pick(lambda r: r["faction"] is None and r["levels"] == (31, 40) and
                      RACE_FACTION.get(r["race"]) == faction)
     contested.sort(key=lambda z: records[z]["race"] != race)
-    route += [(z, None, None, "contested") for z in contested]
+    route += [(z, None, (31, 40), "contested") for z in contested]
     hosts = contested + pick(lambda r: r["faction"] == faction and r["capital"])
     for band in ((41, 50), (51, 60)):
         route += [(z, None, None, "front") for z in pick(lambda r: r["faction"] is None and r["levels"] == band)]
-        route += [(z, ("front",), band, "front quests") for z in hosts]
+        route += [(z, FRONT_HOST_LINES, band, "front quests") for z in hosts]
     return route
+
+
+# Quest lines: EVERY_LINE among a filter's lines keeps every line; a front
+# host's entry on a track counts every line (Round 36: the main line on a
+# fortress giver's second line sits beside the `front` line).
+EVERY_LINE = "*"
+FRONT_HOST_LINES = ("front", EVERY_LINE)
 
 
 # --- zone atlas (optional) ------------------------------------------------

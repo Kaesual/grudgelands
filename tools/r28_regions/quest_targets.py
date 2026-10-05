@@ -19,6 +19,8 @@ the Round 28 quest format on every seed:
     {dir_from_giver:T}, {dir_of:P:T}, {zone_area:T}): the kind or camp
     forms a region, the leader (any zone) or quest place is placed; else the
     text reads "in <zone>" without a direction on that seed;
+  * the rift boss (Round 36) stands at the rift, a clash site, on every
+    seed;
   * every "use at a place" objective (Round 36): its place is a clash site
     (a fixed anchor on every seed, r28common.clash_sites) or a quest place of
     a recipe (`zone/id`, a bare id is the file's zone) that is placed on
@@ -120,6 +122,18 @@ CLOCK_WORDS = {
 }
 
 
+# The rift boss (Round 36, grug_mobs/rift.lua) is no recipe role: it stands
+# at the rift, rift_core.lua's SITE, a clash site and so a fixed anchor on
+# every seed, by day and by night.
+RIFT_BOSS = "rift_boss"
+RIFT_CORE = REPO / "mods/ENTITIES/grug_mobs/rift_core.lua"
+
+
+def rift_site():
+    m = re.search(r'^M\.SITE = "([a-z0-9_]+)"', RIFT_CORE.read_text(encoding="utf-8"), re.M)
+    return m.group(1) if m else None
+
+
 class World:
     def __init__(self, spawns, root, seeds):
         self.seeds = seeds
@@ -127,6 +141,7 @@ class World:
         self.leader_zone = {}
         self.pois = C.pvp_pois()
         self.clash_sites = C.clash_sites()
+        self.fixed_roles = {RIFT_BOSS} if rift_site() in self.clash_sites else set()
         for path in sorted(Path(spawns).glob("*.spawns.json")):
             data = json.loads(path.read_text())
             if not data.get("recipe"):
@@ -194,7 +209,9 @@ class World:
         """(gaps, clocks, problems) for roles without an area: a kill of any
         of them counts, so a seed has the target when one of them is a placed
         leader (any zone) or stands in a kind or camp of `zone` that forms a
-        region there."""
+        region there; the rift boss is met on every seed."""
+        if roles & self.fixed_roles:
+            return [], set(CLOCKS), []
         units = self.recipes.get(zone, ({}, set(), set()))[0]
         leaders = {r for r in roles if r in self.leader_zone}
         holding = {u: c for u, c in units.items() if roles & (c["day"] | c["night"])}

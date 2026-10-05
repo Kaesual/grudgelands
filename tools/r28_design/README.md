@@ -254,9 +254,11 @@ python3 tools/r28_design/ledger.py \
   frame §2.1 and the [quests plan](../../docs/planning/round29-quests-plan.md)
   §3.1 define it: start zone, home zone, own capital and heartland zone(s)
   plus the optional sister zone (another race's 20–30 zone of the faction),
-  the faction's three contested zones (own race's first), then The Broken
-  Causeway and The Shattered Line with the faction's front quests of reward
-  level 41–50 (line `front` of its contested zones and capitals), then
+  the faction's three contested zones (own race's first; their quests of
+  reward level 31–40), then The Broken Causeway and The Shattered Line with
+  the faction's front quests of reward level 41–50 (every quest of its
+  contested zones and capitals in that band: the line `front` and, since
+  Round 36, the main line on a fortress giver's second line), then
   Gravesalt Escarpment and The Skyglass Canopy with those of 51–60. Every
   band is reported, also one without quests yet, and 20 → 30 adds the share
   of its questing XP from the own capital and heartland (target about
