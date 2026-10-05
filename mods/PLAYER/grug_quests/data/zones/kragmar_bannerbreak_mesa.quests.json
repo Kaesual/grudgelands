@@ -69,7 +69,7 @@
       "min_level": 29,
       "level": 31,
       "requires": [],
-      "title": "The Last Laugh",
+      "title": "Breath to Spare",
       "text": "My crews haul siege timbers all day. The Warpack Hyenas laugh at them from the {name:badlands}, which lie {zone_area:badlands}. Get out there in daylight and kill four. Anything with that much breath to spare can pull a rope or stop making noise.",
       "objectives": [
         {
@@ -98,7 +98,7 @@
         "bannerbreak_ramp_01"
       ],
       "title": "A Blade for Yarra",
-      "text": "Yarra Standardmender keeps Tornstandard Hold standing with patched banners and fighters too stubborn to fall. Report to her and say Drek sent you. I can spare a blade here; she needs every one she can get against the Accord.",
+      "text": "Yarra Standardmender keeps Tornstandard Hold standing with patched banners and fighters too stubborn to fall. Report to her and say Drek sent you. I can spare one blade from my ramp; she needs every one she can get against the Accord.",
       "objectives": [
         {
           "type": "talk",
@@ -122,7 +122,7 @@
         "bannerbreak_ramp_01"
       ],
       "title": "Rattle's Bad Arithmetic",
-      "text": "Provisioner Rattle counts our stolen wagonloads as profit at the {name:supply_camp} {dir_from_giver:supply_camp}. Kill four Siege Goblins or Siege Goblin Slingers in any combination, and kill Rattle as well. Let him work out what a dead quartermaster earns.",
+      "text": "At the {name:supply_camp} {dir_from_giver:supply_camp}, Provisioner Rattle counts our stolen wagonloads as profit. Kill four Siege Goblins or Siege Goblin Slingers in any combination, and kill Rattle as well. Let him work out what a dead provisioner earns.",
       "objectives": [
         {
           "type": "kill",
@@ -189,7 +189,7 @@
       "level": 31,
       "requires": [],
       "title": "Inspect Your Bedroll",
-      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the War-Stinger Scorpions after dark in the {name:badlands}, which lie {zone_area:badlands}. Kill four and bring me two Venom Sacs. My fighters have earned a night's sleep without armour.",
+      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the War-Stinger Scorpions after dark in the {name:badlands}, which lie {zone_area:badlands}. Kill four and bring me two Venom Sacs. My fighters have earned one night's sleep out of their armour.",
       "objectives": [
         {
           "type": "kill",
@@ -249,7 +249,7 @@
       "requires": [
         "bannerbreak_standard_01"
       ],
-      "title": "A Scout Is Worth More",
+      "title": "Who Watches the Scouts",
       "text": "My scouts watch for Accord patrols; the Tallgrass Tigers have learned to watch my scouts. Kill four of those tigers by day in the {name:warplains}, which lie {zone_area:warplains}. It takes years to teach a fighter when to stay quiet. I will not spend those years feeding cats.",
       "objectives": [
         {
@@ -334,7 +334,7 @@
       "requires": [
         "bannerbreak_standard_04"
       ],
-      "title": "Bounty: Arrows from {name:sunderstrap_camp}",
+      "title": "Bounty: More Holes to Patch",
       "text": "The Entrenched Bandit Archers at the {name:sunderstrap_camp} {dir_from_giver:sunderstrap_camp} keep putting arrows through supplies my fighters bled to bring here. Kill six and collect your bounty. Twenty minutes after payment you can take it again; I will keep paying as long as they keep drawing bows.",
       "objectives": [
         {

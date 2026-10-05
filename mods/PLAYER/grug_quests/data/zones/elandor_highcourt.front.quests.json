@@ -10,7 +10,7 @@
       "level": 60,
       "requires": [],
       "title": "Optional: Beyond the Ink",
-      "text": "The crown's chart of Stormscale Summit, {dir_from_giver:front_stormscale_summit/wreck_shore} across the water, has more empty space than I'm comfortable signing. Take a boat from the coast; the Shipwright at the stables sells them. Follow the shelf and the channel to avoid the Kraken in deep water, then defeat six Last Watchmen on the {name:front_stormscale_summit/wreck_shore} after dark. I'd like the next expedition to find somewhere to land, and you to come home to your payment.",
+      "text": "The crown's chart of Stormscale Summit, {dir_from_giver:front_stormscale_summit/wreck_shore} across the water, has more empty space than I'm comfortable signing. Take a boat from the coast; the Shipwright at the stables sells them. Follow the shelf and the channel to avoid the Kraken in deep water, then defeat six Overgrown Watchmen on the {name:front_stormscale_summit/wreck_shore} after dark. I'd like the next expedition to find somewhere to land, and you to come home to your payment.",
       "objectives": [
         {
           "type": "kill",
@@ -40,7 +40,7 @@
       "requires": [
         "highcourt_front_01"
       ],
-      "title": "Group: An Audience Nobody Requested",
+      "title": "Group: An Unrequested Audience",
       "text": "{name:last_offering_ape} receives visitors in the {name:front_stormscale_summit/thunderwood} {dir_from_giver:last_offering_ape}, and the survivors describe an appalling welcome. Take a full group by boat to Stormscale Summit and defeat that elite ape. For once, the crown is prepared to reward a complete failure of diplomacy.",
       "objectives": [
         {

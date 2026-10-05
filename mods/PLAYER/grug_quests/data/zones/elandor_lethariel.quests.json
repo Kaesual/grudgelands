@@ -232,7 +232,7 @@
       "requires": [
         "lethariel_wardens_02"
       ],
-      "title": "Optional: A Forester's Right of Way",
+      "title": "Optional: A Forester's Path",
       "text": "Our foresters know which roots will trip them; it is the teeth between the roots that trouble me. Kill six Redfang Vixens by day in the {name:greatwood} {dir_of:lethariel:greatwood}. They attack passing travellers, so tend to your wounds before seeking the next.",
       "objectives": [
         {
@@ -262,7 +262,7 @@
         "lethariel_wardens_02"
       ],
       "title": "Optional: The Last Collection",
-      "text": "The lord is long dead, his claim forgotten, yet the Tithe Revenants still come to collect. Lay six to rest at night in the {name:greatwood} {dir_of:lethariel:greatwood}. They endure more punishment than the Debtbound Zombies, so approach them prepared. Let this be the last service anyone performs in that lord's name.",
+      "text": "A lord once claimed a tithe on this wood; he is long dead and his claim forgotten, yet the Tithe Revenants still come to collect. Lay six to rest at night in the {name:greatwood} {dir_of:lethariel:greatwood}. They endure more punishment than the Debtbound Zombies, so approach them prepared. Let this be the last service anyone performs in that lord's name.",
       "objectives": [
         {
           "type": "kill",
@@ -290,7 +290,7 @@
       "requires": [
         "lethariel_provisions_01"
       ],
-      "title": "Optional: The Hall Notices Everything",
+      "title": "Optional: Streaks in the Glaze",
       "text": "A councillor who overlooked a forged seal spent ten minutes discussing the streaks in my glaze. Bring me two Silver-Tip Fox Tails from Redfang Vixens in the {name:greatwood} {dir_of:lethariel:greatwood} by day, and I can replace my brushes. At least the vixens make their objections quickly.",
       "objectives": [
         {

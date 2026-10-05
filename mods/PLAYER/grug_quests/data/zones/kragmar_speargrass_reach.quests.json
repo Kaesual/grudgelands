@@ -49,8 +49,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "Still Using Those Ankles",
-      "text": "Kill eight Dust-Stinger Scorpions after dark on the {name:plains}, {zone_area:plains}; they burrow into the cut grass and our cutters come home limping and swearing at every shadow. Tell those scorpions my cutters are still using their ankles, if you think they will listen.",
+      "title": "Nothing Under the Sheaves",
+      "text": "Dust-Stinger Scorpions crawl under the cut sheaves on the {name:plains}, {zone_area:plains}, and every cutter who lifts one after dark lifts a scorpion with it. Kill eight there at night. A spear shaft should leave the Wellhold with no sting attached.",
       "objectives": [
         {
           "type": "kill",
@@ -78,7 +78,7 @@
         "speargrass_grass_01"
       ],
       "title": "Optional: Count the Cutters Home",
-      "text": "I count every cutter who leaves the Wellhold, and lately the returning count has been short. Kill eight Tallgrass Tigers by day in the {name:tallgrass}, {zone_area:tallgrass}. Let our people keep their eyes on their work for once.",
+      "text": "I count every cutter who leaves the Wellhold, and lately the returning count has been short. Kill eight Tallgrass Tigers by day in the {name:tallgrass}, {zone_area:tallgrass}. A cutter should be watching the blade, not the grass behind them.",
       "objectives": [
         {
           "type": "kill",
@@ -278,7 +278,7 @@
         "speargrass_watch_02"
       ],
       "title": "Stand Where the Ash Falls",
-      "text": "Vaska Ashlistener needs fighters at Ashveil Watch on Blackwind Rise, where the Throng is fighting to hold its ground. Go and report to Vaska. I have watched you protect the people who put spears in our hands; now carry that strength to the line.",
+      "text": "Vaska Ashlistener needs fighters at Ashveil Watch on Blackwind Rise, where the Throng holds its ground against the Accord. Go and report to Vaska. Rakk tried to sell us our own colours; out there, make the Accord pay full price for every step it takes.",
       "objectives": [
         {
           "type": "talk",

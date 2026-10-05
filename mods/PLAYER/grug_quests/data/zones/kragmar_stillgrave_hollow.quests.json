@@ -59,7 +59,7 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Hands to Work",
+      "title": "Mind the New Fingers",
       "text": "Make a Wooden Axe and a Wooden Pickaxe and bring them to me for inspection. I will give you a pair in return; even a second life deserves a proper start. Mind your fingers while you work, especially any you have only recently acquired.",
       "objectives": [
         {
@@ -507,7 +507,7 @@
       "requires": [
         "stillgrave_hunt_05"
       ],
-      "title": "Repeatable: A Census With Teeth",
+      "title": "Bounty: A Census With Teeth",
       "text": "The Monstrous Grave Rats in the {name:deadlands}, which lies {zone_area:deadlands}, have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
       "objectives": [
         {

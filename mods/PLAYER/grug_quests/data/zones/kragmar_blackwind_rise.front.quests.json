@@ -9,7 +9,7 @@
       "min_level": 47,
       "level": 49,
       "requires": [],
-      "title": "No Names Left to Call",
+      "title": "Nameless, Still on Duty",
       "text": "Mud has taken the names from their coats, but the Mire-Cured Husks still report for duty. Lay five to rest by day in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}. Accord or Throng, a body deserves better than another shift in that mud.",
       "objectives": [
         {
@@ -332,7 +332,7 @@
         "bw_front_ashveil_04"
       ],
       "title": "Group: Nobody's Number",
-      "text": "Bog Witch Salt-Counter holds court {dir_from_giver:salt_counter_witch}, counting soldiers as though they were grains of salt. Gather a group and kill her; her power is more than one fighter can bear. I remember names, and I would prefer not to add yours to the list I mourn.",
+      "text": "Bog Witch Salt-Counter holds court {dir_from_giver:salt_counter_witch}, counting soldiers like grains of salt and never once by name. Gather a group and kill her; alone, you would only be one more grain on her scale. I remember names, and I would prefer not to add yours to the list I mourn.",
       "objectives": [
         {
           "type": "kill",

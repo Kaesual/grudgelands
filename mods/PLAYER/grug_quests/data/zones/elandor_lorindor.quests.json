@@ -192,7 +192,7 @@
         "lorindor_berries_03"
       ],
       "title": "Accounts on the Border",
-      "text": "With Iss gone, Lorindor's accounts balance for the first time in a season, and it is time you kept accounts somewhere harder. Toren Waterbarrel at Cinderline Watch in Ashenward March feeds a garrison on the contested border and could use someone who counts as carefully as you fight. Follow the road out of Lorindor into the march, and finish your training first; the Accord's seal grows thin there.",
+      "text": "With Iss gone, Lorindor's accounts balance for the first time in a season, and you have earned harder sums than ours. Toren Waterbarrel at Cinderline Watch in Ashenward March feeds a garrison on the contested border and could use someone who counts as carefully as you fight. Follow the road out of Lorindor into the march, and finish your training first; the Accord's seal grows thin there.",
       "objectives": [
         {
           "type": "talk",
@@ -320,7 +320,7 @@
       "requires": [
         "lorindor_wardenry_01"
       ],
-      "title": "Optional: A Light Between Every Root",
+      "title": "Optional: Lights Between Roots",
       "text": "Among the {name:paleroots}, which lie {zone_area:paleroots}, Wandering Wisps make every gap look like a welcoming doorway. Extinguish six at night. I would rather our travellers find their way by the stars than trust anything so eager to lead them astray.",
       "objectives": [
         {
@@ -349,7 +349,7 @@
       "requires": [
         "lorindor_cutting_01"
       ],
-      "title": "Optional: What the Bark Cannot Bear",
+      "title": "Optional: Antlers in the Bark",
       "text": "The Moss-Antler Stags are stripping bark faster than the roots can mend, and affection alone will not save the trees. Cull six by day in the {name:paleroots}, which lie {zone_area:paleroots}. Their yellow names mean they will not attack first; choose your quarry, and take no more than I ask.",
       "objectives": [
         {
@@ -378,7 +378,7 @@
       "requires": [
         "lorindor_berries_02"
       ],
-      "title": "Bounty: Keep a Song in the Branches",
+      "title": "Bounty: A Song in the Branches",
       "text": "The Unlicensed Poachers return to the {name:berrywoods} {dir_of:r20_anchor_018:berrywoods} whenever they think we have stopped listening. Defeat six after dark and return to me for Berrycourt's payment. This bounty remains available for further hunts; I intend to hear birds here next harvest too.",
       "objectives": [
         {
@@ -410,7 +410,7 @@
         "lorindor_wardenry_01"
       ],
       "title": "Bounty: The Wardens' Night Watch",
-      "text": "We cannot leave a lamp beside every traveller, but we can put out the lights that deceive them. Extinguish six Wandering Wisps at night in the {name:elderwood} and return for the Wardenry's payment. Further watches carry the same bounty.",
+      "text": "We cannot leave a lamp beside every traveller, but we can put out the lights that deceive them. Extinguish six Wandering Wisps at night in the {name:elderwood} and return for the Wardenry's payment. The wisps never tire of their trick, so the bounty stands for every watch you care to keep.",
       "objectives": [
         {
           "type": "kill",
@@ -440,7 +440,7 @@
       "requires": [
         "lorindor_cutting_02"
       ],
-      "title": "Bounty: A Little Help for Old Roots",
+      "title": "Bounty: Help for Old Roots",
       "text": "Even roots that have held for centuries appreciate a brace before they need it. Bring me four Steel Bars here at the cutting for payment; this is a standing order you may fill again. I would rather replace a prop than write a song about the tunnel it failed to hold.",
       "objectives": [
         {

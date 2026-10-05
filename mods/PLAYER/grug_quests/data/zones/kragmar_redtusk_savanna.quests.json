@@ -58,8 +58,8 @@
       "requires": [
         "sunscar_departure"
       ],
-      "title": "Waste Nothing With Stripes",
-      "text": "Bring down eight Waterhole Zebras by day in the {name:grasslands}, {zone_area:grasslands}. Redtusk fills bellies and hide racks from the same hunt; waste any of it and the tanners will tan you instead.",
+      "title": "Every Stripe Has a Use",
+      "text": "Gara Stonevoice says your hands are good and your boasts are louder; the zebras can judge both. Bring down eight Waterhole Zebras by day in the {name:grasslands}, {zone_area:grasslands}. Redtusk fills bellies and hide racks from the same hunt; waste any of it and the tanners will tan you instead.",
       "objectives": [
         {
           "type": "kill",
@@ -342,7 +342,7 @@
         "redtusk_watch_02"
       ],
       "title": "Rokka Is Still Counting",
-      "text": "The bandits have Rokka Emberhand captive, and Rokka has been counting every stolen barrel that rolls past. Find Rokka in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and hear what those thieves would rather keep quiet. They should have put a sack over the barrels.",
+      "text": "The bandits have Rokka Emberhand captive, and Rokka has been counting every stolen barrel that rolls past. Find Rokka in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and hear what those thieves would rather keep quiet. Bandits who roll their loot past a prisoner deserve every word that prisoner remembers.",
       "objectives": [
         {
           "type": "talk",

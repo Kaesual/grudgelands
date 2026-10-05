@@ -61,7 +61,7 @@
       "requires": [
         "sunscar_hunt_01"
       ],
-      "title": "No Hides for Rat Beds",
+      "title": "Hides Are Not Bedding",
       "text": "Kill eight Large Dust Rats in the {name:wellfields} after dark; they are chewing the clan's drying hides into bedding. Listen for the squeal that brings their kin running, and keep your feet under you.",
       "objectives": [
         {
@@ -147,7 +147,7 @@
         "sunscar_hunt_04"
       ],
       "title": "The Last Drop Is Ours",
-      "text": "We share water with a thirsty stranger; these thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six of the thieves and {name:water_thief_chief} himself. Let Sunscar fill its cups without looking over its shoulder.",
+      "text": "We share water with any thirsty stranger; the Confused Water Thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six of them and {name:water_thief_chief} himself. Let Sunscar fill its cups without looking over its shoulder.",
       "objectives": [
         {
           "type": "kill",

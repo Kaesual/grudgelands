@@ -66,7 +66,7 @@
       "requires": [
         "nv_front_02"
       ],
-      "title": "Bounty: An Island's Unfinished Dead",
+      "title": "Bounty: Older Than the Records",
       "text": "The Crown Frost Strays on The Wyrmglass Crown have outlasted every record I can find of them. Get a boat from the Shipwright and sail across the channel to the island, then destroy eight at night in the {name:front_wyrmglass_crown/scree}, which lies {zone_area:front_wyrmglass_crown/scree}. Return for your payment in coin; the bounty becomes available again one hour after turn-in. Do return in person, please, rather than as another entry.",
       "objectives": [
         {

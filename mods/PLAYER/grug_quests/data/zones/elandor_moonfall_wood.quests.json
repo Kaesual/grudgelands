@@ -162,7 +162,7 @@
         "moonfall_snares_02"
       ],
       "title": "A Warden in Name Alone",
-      "text": "Follow enough false marks and you find the hand that makes them: {name:snarewarden_bracken}. Vetch and Rusk answered to him, and he waits {dir_from_giver:snarewarden_bracken}, by day and night. Find and defeat him. A warden should leave the wood alive behind him, not measured out in snares.",
+      "text": "Follow enough false marks and you find the hand that makes them: {name:snarewarden_bracken}. Vetch and Rusk answered to him, and he waits in the {name:elderwood} {dir_from_giver:snarewarden_bracken}, by day and night. Find him and defeat him; a warden should leave the wood alive behind him, not measured out in snares.",
       "objectives": [
         {
           "type": "kill",
@@ -244,7 +244,7 @@
       "requires": [
         "moonfall_snares_02"
       ],
-      "title": "Optional: Teeth Along the Trail",
+      "title": "Optional: Bears Along the Trail",
       "text": "The marks continue into the {name:elderwood}, which lies {zone_area:elderwood}, where Bramble Bears make daylight travel a costly undertaking. Kill six by day to ease the search for whoever lays those snares. I doubt the bears care whose business they protect; that does little to comfort the searchers.",
       "objectives": [
         {

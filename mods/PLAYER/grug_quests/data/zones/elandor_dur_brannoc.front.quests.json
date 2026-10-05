@@ -9,8 +9,8 @@
       "min_level": 60,
       "level": 60,
       "requires": [],
-      "title": "Optional: A Blank Space on the Clan's Map",
-      "text": "Our chart leaves the {name:front_wyrmglass_crown/spires} on the Wyrmglass Crown {dir_from_giver:front_wyrmglass_crown/spires} blank, which offends me as a dwarf and a keeper of records. Reach the island by boat; the Shipwright at our stables sells them. Keep to the shelf and the channel on the crossing, away from the Kraken's deep water. Kill six Crown Crag Eagles on those spires by day so a surveyor can look at the stone without being pecked for it.",
+      "title": "Optional: A Blank on the Chart",
+      "text": "Our chart leaves the {name:front_wyrmglass_crown/spires} {dir_from_giver:front_wyrmglass_crown/spires} blank, which offends me as a dwarf and as a keeper of records. Reach the Wyrmglass Crown by boat; the Shipwright at our stables sells them, and the crossing is safe on the shelf and the channel, away from the Kraken's deep water. Kill six Crown Crag Eagles on those spires by day so a surveyor can look at the stone without being pecked for it.",
       "objectives": [
         {
           "type": "kill",
@@ -41,7 +41,7 @@
         "durbrannoc_front_01"
       ],
       "title": "Group: Silence for the Clan",
-      "text": "There's an elite stone golem, {name:rime_bell_warden}, guarding the {name:front_wyrmglass_crown/spires} {dir_from_giver:rime_bell_warden}, and the clan wants its bell silenced. Gather a full group, take a boat each to the Wyrmglass Crown and destroy the golem. I've a payment ready and a space in the record for everyone who comes back.",
+      "text": "{name:rime_bell_warden} tolls over the {name:front_wyrmglass_crown/spires} {dir_from_giver:rime_bell_warden}, and the clan wants that bell silenced. That golem is an elite: gather a full group, take a boat each to the Wyrmglass Crown and break it. I've a payment ready and a space in the record for everyone who comes back.",
       "objectives": [
         {
           "type": "kill",

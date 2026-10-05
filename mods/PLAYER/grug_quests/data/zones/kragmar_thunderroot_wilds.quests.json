@@ -201,7 +201,7 @@
         "thunderroot_rainchar_01"
       ],
       "title": "A Debt at {name:rainchar_camp}",
-      "text": "The bandits at the {name:rainchar_camp} {dir_from_giver:rainchar_camp} sell our stolen supplies while Thunderstep's fighters make do with scraps. Kill four Entrenched Bandit Archers there. Hungry fighters hold no line, whatever the spirits promise.",
+      "text": "The bandits at the {name:rainchar_camp} {dir_from_giver:rainchar_camp} sell our stolen supplies back to us and call the bill a debt, while Thunderstep's fighters make do with scraps. Kill four Entrenched Bandit Archers there; Raincall Basin once had collectors like these, selling farmers their own rain. Hungry fighters hold no line, whatever the spirits promise.",
       "objectives": [
         {
           "type": "kill",

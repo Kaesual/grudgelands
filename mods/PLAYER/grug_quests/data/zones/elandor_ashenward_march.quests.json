@@ -191,7 +191,7 @@
         "ashenward_rations_03"
       ],
       "title": "An Answer for Faeris",
-      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds keeps sending water, even when all I send back is an apology. Tell her the barrels are coming again, and ask where she needs help. I've work to send you to in Stormvault Heights as well; the forest and the mountain are keeping this same army on its feet.",
+      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds has had nothing from my carts lately but apologies. Tell her the barrels are rolling again, and ask where she needs help. I've work for you in Stormvault Heights as well; the forest and the mountain are keeping this same army on its feet.",
       "objectives": [
         {
           "type": "talk",
@@ -241,7 +241,7 @@
         "ashenward_rations_01"
       ],
       "title": "Bounty: No Rations for the Dead",
-      "text": "Every night, March Skeleton Raiders haunt the ration road through the {name:ashfields}, which lie {zone_area:ashfields}, despite having no use for supper. Break six of them after dark and give my drivers a chance to deliver it. This bounty is repeatable, twenty minutes after you turn it in.",
+      "text": "Every night, March Skeleton Raiders haunt the ration road through the {name:ashfields}, which lie {zone_area:ashfields}, though not one of them has a stomach left to fill. Break six of them after dark so my drivers can deliver supper to someone who'll eat it. This bounty is repeatable, twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -329,7 +329,7 @@
         "ashenward_hedge_webs"
       ],
       "title": "A Uniform Is Not a Target",
-      "text": "Entrenched Bandit Archers at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Approach carefully; courage has its uses, but it doesn't stop an arrow.",
+      "text": "Entrenched Bandit Archers at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Keep low on the approach; I'd rather read your report than have you delivered as one.",
       "objectives": [
         {
           "type": "kill",
@@ -387,7 +387,7 @@
         "ashenward_hedge_03"
       ],
       "title": "Group: The Last Receipt",
-      "text": "{name:red_receipt_marshal} still runs the trade from the {name:poacher_camp} {dir_from_giver:red_receipt_marshal}, signing away our soldiers' supper in red ink. Gather a group and kill the marshal; a fighter that dangerous is no job for one exhausted hero. I want all of you back to share the meal when this is done.",
+      "text": "{name:red_receipt_marshal} still runs the trade from the {name:poacher_camp} {dir_from_giver:red_receipt_marshal}, signing away our soldiers' supper in red ink. Gather a group and kill the elite marshal; I've written enough letters this season without starting one about you. Bring everyone back, and the first supper he can no longer sell is yours.",
       "objectives": [
         {
           "type": "kill",

@@ -59,7 +59,7 @@
         "dawnmere_departure"
       ],
       "title": "A Harvest Worth Stealing",
-      "text": "Crumb's accounts name Requisitioner Hobb as the man he answered to. Hobb's collectors will find precious little to steal if we cannot bring the harvest in. Hunt eight Bracken Foxes by day in the {name:orchards}, which lie {zone_area:orchards}; the pickers need room to work. We will untangle Hobb's business once ours is back on its feet.",
+      "text": "Crumb's accounts name Requisitioner Hobb as the man he answered to, but Hobb can wait and the harvest cannot. Hunt eight Bracken Foxes by day in the {name:orchards}, which lie {zone_area:orchards}, so the pickers have room to work. We will untangle Hobb's business once ours is back on its feet.",
       "objectives": [
         {
           "type": "kill",
@@ -117,7 +117,7 @@
         "goldmead_harvest_02"
       ],
       "title": "Tusks in the Wheat",
-      "text": "Ridgeback Tuskers are flattening the {name:wheatfields}, {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
+      "text": "Ridgeback Tuskers are flattening the {name:wheatfields}, which lie {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
       "objectives": [
         {
           "type": "kill",
@@ -291,7 +291,7 @@
       "requires": [
         "goldmead_harvest_03"
       ],
-      "title": "Bounty: Burrow Gnawers",
+      "title": "Bounty: Fresh Ventilation",
       "text": "I mend the sacks; the Burrow Gnawers put in fresh ventilation. Kill eight after dark in the {name:hedgerows}, which run {zone_area:hedgerows}, and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
       "objectives": [
         {
@@ -406,7 +406,7 @@
       "requires": [
         "goldmead_watch_03"
       ],
-      "title": "Bounty: Roadside Bandits",
+      "title": "Bounty: Steady Employment",
       "text": "Another batch of Roadside Bandits is collecting at the {name:bandit_camp} {dir_from_giver:bandit_camp}; apparently robbery offers steady employment. Defeat eight and report back for payment, by day or night. You can take this bounty again twenty minutes after turning it in.",
       "objectives": [
         {

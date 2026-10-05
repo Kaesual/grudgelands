@@ -186,7 +186,7 @@
       "min_level": 21,
       "level": 23,
       "requires": [],
-      "title": "Optional: Lights Over the Fish Traps",
+      "title": "Optional: Lights Over the Traps",
       "text": "After dark the Wandering Wisps drift through the {name:jungle} and lead my fishers off the path to the traps. Put out six of them. The knots say nothing about this one; I simply prefer my fishers to come home the way they left.",
       "objectives": [
         {

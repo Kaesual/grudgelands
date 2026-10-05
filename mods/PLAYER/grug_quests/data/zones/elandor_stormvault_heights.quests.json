@@ -266,7 +266,7 @@
       "requires": [
         "stormvault_sighting_02"
       ],
-      "title": "A Toll Paid in Arrows",
+      "title": "Thieves Without Favourites",
       "text": "The Entrenched Bandit Archers at {name:slatehook} {dir_from_giver:slatehook} rob the Accord and the Throng with admirable fairness. Defeat five of them before they strip another supply train. Use what cover you can; I want a report, not a demonstration of their aim.",
       "objectives": [
         {

@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "A Sentry Needs Both Feet",
-      "text": "Gor Drazhak's sentries should be watching for enemy banners, yet half their night goes to watching their ankles. Kill eight Dust-Stinger Scorpions after dark on the {name:steppe}, {dir_of:gor_drazhak:steppe}. The Throng needs its guards standing firm.",
+      "text": "Gor Drazhak's sentries should be watching for enemy banners, yet half their night goes to watching their ankles. Kill eight Dust-Stinger Scorpions after dark on the {name:steppe}, {dir_of:gor_drazhak:steppe}. A sentry hopping on one foot frightens nobody.",
       "objectives": [
         {
           "type": "kill",
@@ -60,7 +60,7 @@
       "requires": [
         "gor_drazhak_muster_01"
       ],
-      "title": "Optional: The Last Laugh Costs Extra",
+      "title": "Optional: Lunch Is Not Included",
       "text": "Kill eight Dustpack Hyenas by day in the {name:badlands}, {dir_of:gor_drazhak:badlands}, and keep our supply carts moving. They follow the rations as though we packed lunch for them; if they want a meal from the Throng, they can learn to carry a spear.",
       "objectives": [
         {
@@ -90,7 +90,7 @@
         "gor_drazhak_muster_01"
       ],
       "title": "His Profit, Our Empty Bowls",
-      "text": "Bandit Ration-Broker Garr buys Korr's stolen supplies and charges hungry fighters for the privilege of getting them back. At the {name:tollcamp}, {dir_of:gor_drazhak:tollcamp}, kill six Toll Bandit Archers and Garr himself. The hands that fill our war bands' bowls deserve better than this.",
+      "text": "Bandit Ration-Broker Garr buys Korr's stolen supplies and charges hungry fighters for the privilege of getting them back. At the {name:tollcamp}, {dir_of:gor_drazhak:tollcamp}, kill six Toll Bandit Archers and Garr himself. Let Garr learn what the Throng charges for stealing its supper.",
       "objectives": [
         {
           "type": "kill",
@@ -126,7 +126,7 @@
         "gor_drazhak_muster_03"
       ],
       "title": "Your Place in the Line",
-      "text": "You have seen what it takes to keep the Throng fed and marching. Now report to Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa, where our fighters hold the line. Stand with them as you stood for the people behind these walls.",
+      "text": "You have seen what it takes to keep the Throng fed and marching. Now report to Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa, where our fighters hold the line. Drek judges fighters by what they carry up the ramp, not by what they say at the bottom of it.",
       "objectives": [
         {
           "type": "talk",

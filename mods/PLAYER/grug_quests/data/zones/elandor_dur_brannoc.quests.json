@@ -276,7 +276,7 @@
         "durbrannoc_gate_02"
       ],
       "title": "Close Brakk's Account",
-      "text": "Every crooked entry leads to the {name:goblin_camp} {dir_from_giver:goblin_camp}, where Goblin Ore-Factor Brakk buys the stolen ore. Recover two Clasped Purses from his Ore-Thieving Goblins or Rubble Goblin Slingers, and kill Brakk himself. Draw him out alone if you can; we've lost enough honest folk balancing his books.",
+      "text": "Every crooked entry in my register, and every purse wearing a Dur Brannoc counting-house stamp, leads to the {name:goblin_camp} {dir_from_giver:goblin_camp}, where Goblin Ore-Factor Brakk buys the stolen ore. Recover two Clasped Purses from his Ore-Thieving Goblins or Rubble Goblin Slingers, and kill Brakk himself. Draw him out alone if you can; we've lost enough honest folk balancing his books.",
       "objectives": [
         {
           "type": "kill",
@@ -372,7 +372,7 @@
         "durbrannoc_gate_03"
       ],
       "title": "Beyond Our Own Gate",
-      "text": "Dur Brannoc's walls are sound, but the Accord cannot shelter behind them all at once. Report to Toren Waterbarrel at Cinderline Watch in Ashenward March; he needs capable hands on that contested ground. We keep our word to our allies by turning up when the work gets hard.",
+      "text": "Dur Brannoc's walls are sound, but they only shelter Dur Brannoc. Report to Toren Waterbarrel at Cinderline Watch in Ashenward March; he needs capable hands on that contested ground. We keep our word to our allies by turning up when the work gets hard.",
       "objectives": [
         {
           "type": "talk",

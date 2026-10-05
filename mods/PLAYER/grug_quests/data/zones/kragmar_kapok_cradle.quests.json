@@ -91,7 +91,7 @@
         "kapok_hunt_02"
       ],
       "title": "The Roots Remember Feet",
-      "text": "Listen in the {name:rootways} after dark, {zone_area:rootways}: rats scurry, but Braindead Zombies drag their feet. Kill six zombies before they shuffle into somebody's doorway. Sunlight burns them, but I would rather trust your hands than wait for a clear morning.",
+      "text": "After dark, listen in the {name:rootways}, which lies {zone_area:rootways}: rats scurry, but Braindead Zombies drag their feet. Kill six zombies before they shuffle into somebody's doorway. Sunlight burns them, but I would rather trust your hands than wait for a clear morning.",
       "objectives": [
         {
           "type": "kill",
@@ -248,7 +248,7 @@
         "kapok_tools_01"
       ],
       "title": "A Lesson Under the Moss",
-      "text": "Moss makes every rock look welcoming; your pick will tell you which ones mean it. Use your Wooden Pickaxe on rock it can break outside town, then craft a Stone Axe and a Stone Pickaxe. Bring me one of each, and I will give you a pair back for the digging ahead.",
+      "text": "Moss makes every rock look welcoming; your pick will tell you which ones mean it. Take your Wooden Pickaxe to the plain stone outside town, then craft a Stone Axe and a Stone Pickaxe. Bring me one of each, and I will give you a pair back for the digging ahead.",
       "objectives": [
         {
           "type": "item",
@@ -288,7 +288,7 @@
         "kapok_tools_02"
       ],
       "title": "What the Fire Leaves",
-      "text": "You have learned to read roots; now read the rock beneath them. Mine copper and tin outside town, smelt the lumps in a furnace, and bring me three Copper Bars and three Tin Bars. One lump makes one bar, which is the sort of honest accounting I wish we had at feasts.",
+      "text": "You have learned to read roots; now read the rock beneath them. Mine copper and tin outside town, smelt the lumps in a furnace, and bring me three Copper Bars and three Tin Bars. One lump makes one bar, which is the sort of honest accounting I wish we had at feasts, and a Dual Furnace waits for you when you are done.",
       "objectives": [
         {
           "type": "item",
@@ -302,8 +302,13 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_smelting:dual_furnace",
+            "count": 1
+          }
+        ]
       },
       "lesson": "Mining and the furnace: one lump, one bar.",
       "duration_min": 10
@@ -319,7 +324,7 @@
         "kapok_tools_03"
       ],
       "title": "Two Voices in the Fire",
-      "text": "Copper and tin must share a dual furnace for this lesson. Smelt them together and bring me three Bronze Bars. Think of it as a song with two voices, only neither voice can wander off halfway through.",
+      "text": "Copper and tin must share your Dual Furnace for this lesson. Smelt them together, bring me three Bronze Bars, and a Bronze Pickaxe is yours. Think of it as a song with two voices, only neither voice can wander off halfway through.",
       "objectives": [
         {
           "type": "item",
@@ -329,7 +334,12 @@
       ],
       "rewards": {
         "weight": 2,
-        "items": []
+        "items": [
+          {
+            "item": "grug_materials:pick_bronze",
+            "count": 1
+          }
+        ]
       },
       "lesson": "The dual furnace makes alloys.",
       "duration_min": 10
@@ -421,8 +431,8 @@
       "requires": [
         "kapok_hunt_02"
       ],
-      "title": "You Chew It, You Patch It",
-      "text": "My yam sacks have more holes than sack, thanks to the Large Kapok Rats. Hunt them after dark in the {name:yam_beds} {dir_of:kapok:yam_beds} and bring me two Rat Fur Patches for repairs. Keep any spare patches for armour; tonight those rats are supplying two trades and ruining neither.",
+      "title": "More Holes Than Sack",
+      "text": "My yam sacks have more holes than sack, thanks to the Large Kapok Rats. Hunt them after dark in the {name:yam_beds} {dir_of:kapok:yam_beds} and bring me two Rat Fur Patches for repairs. Keep any spares for your armour; the rats chewed the holes, so the rats can pay for the patches.",
       "objectives": [
         {
           "type": "item",
@@ -482,7 +492,7 @@
         "kapok_pantry_02"
       ],
       "title": "Supper Above the Mud",
-      "text": "One loose knot and my drying racks will serve supper to the mud. Bring me two Fine Sinews from the Young Tapirs grazing by day {zone_area:broadleaf_wood}, in the {name:broadleaf_wood}. The tapirs wait for you to start trouble; the Aggressive Jungle Lynxes sharing their ground do not.",
+      "text": "One loose knot and my drying racks will serve supper to the mud. Bring me two Fine Sinew from the Young Tapirs that graze the {name:broadleaf_wood} by day, {zone_area:broadleaf_wood}. The tapirs wait for you to start trouble; the Aggressive Jungle Lynxes sharing their ground do not.",
       "objectives": [
         {
           "type": "item",

@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "A Century Down the Snout",
-      "text": "We planted those saplings for children yet unborn; the Small Boars consider them breakfast. Cull eight by day {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. The boars are not our only trouble, though: some stems out there were cut clean, and no snout cuts clean.",
+      "text": "We planted those saplings for children yet unborn; the Small Boars consider them breakfast. Cull eight by day in the {name:home_glades} {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. The boars are not our only trouble, though: some stems out there were cut clean, and no snout cuts clean.",
       "objectives": [
         {
           "type": "kill",
@@ -437,7 +437,7 @@
         "silverleaf_tools_03"
       ],
       "title": "The Third Metal",
-      "text": "Copper and tin each have their virtues; put them together and you gain another. Use your Dual Furnace to alloy three Bronze Bars and bring them here, gathering fresh materials because the earlier bars went into our hinges. A Bronze Pickaxe awaits you in exchange, for the rock beyond these glades has lessons of its own.",
+      "text": "Copper and tin each have their virtues; put them together and you gain a third. Our hinges kept the last bars, so gather fresh ore, alloy three Bronze Bars in your Dual Furnace and bring them here. A Bronze Pickaxe awaits you in exchange, for the rock beyond these glades has lessons of its own.",
       "objectives": [
         {
           "type": "item",

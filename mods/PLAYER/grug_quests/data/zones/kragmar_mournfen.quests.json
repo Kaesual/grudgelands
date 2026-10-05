@@ -430,7 +430,7 @@
       "requires": [
         "mournfen_fen_03"
       ],
-      "title": "Repeatable: The Graves Need Minding",
+      "title": "Bounty: The Graves Need Minding",
       "text": "Each night the Grave Gnawers burrow into the {name:barrowfields}, undoing another day's careful burial work. Kill six and return to me. You may take this task again twenty minutes after handing it in; eternal rest has proved surprisingly demanding to maintain.",
       "objectives": [
         {
@@ -462,7 +462,7 @@
       "requires": [
         "mournfen_watch_04"
       ],
-      "title": "Repeatable: Six Fewer False Lights",
+      "title": "Bounty: Six Fewer False Lights",
       "text": "Wandering Wisps are gathering over the {name:deepfen}, which lies {zone_area:deepfen}, after dark, and I have no wish to drag another hopeful traveller out of the reeds. Put out six and report to me. The watch offers this task again twenty-five minutes after you hand it in; until then, distrust anything that glows and beckons.",
       "objectives": [
         {

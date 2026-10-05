@@ -103,7 +103,7 @@
       "requires": [
         "ossuary_names_01"
       ],
-      "title": "Optional: The Trees Have Taken to Walking",
+      "title": "Optional: The Trees Went Walking",
       "text": "The Lichen Gravewood Treants in the {name:bonewood} spend their nights walking through the burial rows, dragging roots across generations of careful work. Fell eight after dark, and watch for the Grave-Web Bonelurker Spiders among them. I planted trees to shade the dead; I never expected to have to explain that they should stay beside the graves.",
       "objectives": [
         {
@@ -266,7 +266,7 @@
       "level": 28,
       "requires": [],
       "title": "Filed Under Theft",
-      "text": "You will find the {name:marrow_archivist} in the {name:deepwood} {dir_from_giver:marrow_archivist}, giving every bone it collects the same name: its own. Kill it, and destroy four Grave-Web Bonelurker Spiders in that wood at night. Those people had names long before it found a use for them. I intend to see those names stay theirs.",
+      "text": "The chisel that cut those new names over the old ones was stolen from this dig. You will find the {name:marrow_archivist} in the {name:deepwood} {dir_from_giver:marrow_archivist}, giving every bone it collects the same name: its own. Kill it, and destroy four Grave-Web Bonelurker Spiders in that wood at night. Those people had names long before it found a use for them.",
       "objectives": [
         {
           "type": "kill",
@@ -327,7 +327,7 @@
       "requires": [
         "ossuary_names_01"
       ],
-      "title": "Repeatable: Teeth in the Catalogue",
+      "title": "Bounty: Teeth in the Catalogue",
       "text": "Briarpack Blightfang Wolves hunt the {name:ashfields}, which lies {zone_area:ashfields}, after dark, and I cannot keep revising the catalogue to account for digestion. Kill six and report back. This task is available again twenty minutes after you hand it in; the shelves will stay labelled, even if I have to keep filling them.",
       "objectives": [
         {

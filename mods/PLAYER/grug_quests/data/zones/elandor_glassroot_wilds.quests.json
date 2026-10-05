@@ -165,8 +165,8 @@
       "requires": [
         "glassroot_canopy_02"
       ],
-      "title": "Years Felled for Arrows",
-      "text": "I remember planting glassroots that the Entrenched Bandit Archers at {name:rootsnare} {dir_from_giver:rootsnare} now fell for arrow shafts. Defeat five of those archers and stop them cutting deeper into the grove. An afternoon with an axe has undone years of tending; I find I have very little patience left for their excuses.",
+      "title": "Centuries Felled for Arrows",
+      "text": "I remember planting the glassroots that the Entrenched Bandit Archers at {name:rootsnare} {dir_from_giver:rootsnare} now fell for arrow shafts. Defeat five of those archers before they cut deeper into the grove. Three centuries of tending, undone in an afternoon with an axe; my patience has grown shorter than the stumps.",
       "objectives": [
         {
           "type": "kill",
@@ -279,7 +279,7 @@
         "glassroot_canopy_03"
       ],
       "title": "Bounty: Leave a Path Unspun",
-      "text": "Each night the Canopy-Web Jungle Spiders stitch shut the {name:canopy}, which lies {zone_area:canopy}, with no regard for anyone's need to pass. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; such diligent weavers will keep us occupied.",
+      "text": "Each night the Canopy-Web Jungle Spiders stitch the {name:canopy}, which lies {zone_area:canopy}, shut like a sack someone means to carry off. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; weavers this diligent never run short of thread.",
       "objectives": [
         {
           "type": "kill",

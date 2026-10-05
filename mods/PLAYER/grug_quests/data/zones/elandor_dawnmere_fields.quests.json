@@ -91,7 +91,7 @@
         "dawnmere_hunt_02"
       ],
       "title": "Foxes Before Breakfast",
-      "text": "Our hens have taken to sleeping with one eye open, thanks to the Young Foxes in the {name:pastures}, {zone_area:pastures}. Hunt eight by day. Watch for Aggressive Boars among them: a red name means the creature will start the fight without waiting for you.",
+      "text": "Our hens have taken to sleeping with one eye open, thanks to the Young Foxes in the {name:pastures}, which lie {zone_area:pastures}. Hunt eight by day. Watch for Aggressive Boars among them: a red name means the creature will start the fight without waiting for you.",
       "objectives": [
         {
           "type": "kill",
@@ -249,7 +249,7 @@
         "dawnmere_tools_01"
       ],
       "title": "A Stone Edge",
-      "text": "Those wooden tools have earned their keep; let us put a better edge on your next day's work. Use your wooden pick on suitable rock outside Dawnmere, then make a Stone Axe and a Stone Pickaxe and bring both to me. I will check them and give you a working pair for the ore work ahead.",
+      "text": "Those wooden tools have earned their keep; let us put a better edge on your next day's work. Use your wooden pick on suitable rock outside Dawnmere, then make a Stone Axe and a Stone Pickaxe and bring both to me. In return you get a pair that has already proved itself on Dawnmere's rock; the ore ahead deserves tools with a little experience.",
       "objectives": [
         {
           "type": "item",
@@ -324,7 +324,7 @@
       "requires": [
         "dawnmere_tools_03"
       ],
-      "title": "An Edge for the Road",
+      "title": "Bronze for the Road",
       "text": "You have helped mend the town; now we ought to see you properly equipped for the road. Make three Bronze Bars from fresh copper and tin in your Dual Furnace and bring them to me. The earlier bars went into our repairs, so you will need another batch. A Bronze Pickaxe will be your share of the work.",
       "objectives": [
         {

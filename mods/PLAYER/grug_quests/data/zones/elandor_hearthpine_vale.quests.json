@@ -218,7 +218,7 @@
       "requires": [
         "hearthpine_hunt_02"
       ],
-      "title": "You Chew It, You Patch It",
+      "title": "Mending at the Rats' Expense",
       "text": "The rats have eaten at my expense and chewed through my flour sacks, so they can pay for the mending. Bring me two Rat Fur Patches from the Large Rats in the {name:timberline} after nightfall.",
       "objectives": [
         {
@@ -340,7 +340,7 @@
         "hearthpine_tools_02"
       ],
       "title": "Fittings Before Fortune",
-      "text": "A shaft prop is only as trustworthy as its fittings, and miners put their lives beneath ours. Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. I'll give you a Dual Furnace for your own work. Place it outside protected ground.",
+      "text": "A shaft prop is only as trustworthy as its fittings, and miners put their lives beneath ours. Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. I'll give you a Dual Furnace for your own work; set it up outside protected ground, because the hall has rules about open fires and I wrote most of them.",
       "objectives": [
         {
           "type": "item",
@@ -440,7 +440,7 @@
         "hearthpine_hunt_04"
       ],
       "title": "Bracket Doesn't Add Up",
-      "text": "Bracket has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, where his crew lurks day and night, and defeat seven Confused Ore Thieves and Confused Ore Chief Bracket himself. Draw the chief away from his crew if you can; you've done enough honest work to know the value of coming home.",
+      "text": "Bracket has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, where his crew lurks day and night, and defeat seven Confused Ore Thieves and Confused Ore Chief Bracket himself. Draw the chief away from his crew if you can; I'd like his ledger closed without your name entered in it.",
       "objectives": [
         {
           "type": "kill",

@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "The Dead Cannot Owe Toll",
-      "text": "There are Debtbound Zombies wandering the {name:commons}, {zone_area:commons}, at night, still burdened with somebody's unpaid tolls. Put five to rest after dark. Penn's name keeps appearing in the complaints, and I intend to learn why. Highcourt can surely spare the dead another demand for payment.",
+      "text": "Debtbound Zombies wander the {name:commons}, which lies {zone_area:commons}, still burdened with somebody's unpaid tolls. Put five to rest after dark. Penn's name keeps appearing in the complaints, and I intend to learn why; in the meantime, the dead have paid quite enough.",
       "objectives": [
         {
           "type": "kill",
@@ -185,7 +185,7 @@
       "requires": [
         "highcourt_provisions_01"
       ],
-      "title": "Optional: Venison for the Long Table",
+      "title": "Optional: The Long Table",
       "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Moss-Antler Stags by day on the {name:commons}. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
       "objectives": [
         {
@@ -245,8 +245,8 @@
       "requires": [
         "highcourt_provisions_02"
       ],
-      "title": "Bounty: Razorbacks",
-      "text": "The gardeners are replanting the {name:outer_fields}, {zone_area:outer_fields}, yet again, and the Razorbacks appear to regard this as attentive service. Bring down six by day and return for your bounty. I can pay for another hunt twenty-five minutes after you turn this one in.",
+      "title": "Bounty: Replanted, Again",
+      "text": "Yet again the gardeners are replanting the {name:outer_fields}, which lie {zone_area:outer_fields}, and the Razorbacks appear to regard this as attentive service. Bring down six by day and return for your bounty. I can pay for another hunt twenty-five minutes after you turn this one in.",
       "objectives": [
         {
           "type": "kill",

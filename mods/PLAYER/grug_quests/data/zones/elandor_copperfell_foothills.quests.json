@@ -207,7 +207,7 @@
       "requires": [
         "copperfell_survey_02"
       ],
-      "title": "Bounty: Accounts Receivable, Barely",
+      "title": "Bounty: Accounts Receivable",
       "text": "Another page chewed, another bounty posted; at least this expense is easy to explain. Kill six Granary Rats in the {name:lower_pines} at night, then return for payment. This bounty is repeatable twenty minutes after you hand it in.",
       "objectives": [
         {
@@ -268,7 +268,7 @@
       "requires": [
         "copperfell_survey_03"
       ],
-      "title": "Surefoot, Someone Else's Problem",
+      "title": "Sure Feet, Falling Slate",
       "text": "Surefoot Ibex never seem to fall, but everything they stand on does. Cull eight on the {name:pine_slopes} by day before another load of slate comes down on the carters.",
       "objectives": [
         {
@@ -442,7 +442,7 @@
         "copperfell_dig_01"
       ],
       "title": "Our Wages, Nog's Problem",
-      "text": "Goblin Foreman Nog pays his crew out of Stolen Purses, which makes every carter here an unwilling investor. Bring back three Stolen Purses from Rubble Goblin Slingers at the {name:goblin_dig} and kill Nog himself there. Draw him away from his crew if you can. I'd like our wages back without owing you a funeral.",
+      "text": "Goblin Foreman Nog pays his crew out of Stolen Purses, which makes every carter here an unwilling investor. Bring back three of those purses from the Rubble Goblin Slingers at the {name:goblin_dig} and kill Nog himself there; draw him away from his crew if you can, because I'd like our wages back without owing you a funeral. And look at the purses before you hand them over: goblins don't stamp their money, but somebody stamped these.",
       "objectives": [
         {
           "type": "kill",
@@ -480,7 +480,7 @@
         "copperfell_dig_02"
       ],
       "title": "A Familiar Stamp",
-      "text": "I know the counting-house stamp on Nog's purses, and someone in Dur Brannoc has been putting a respectable seal on rotten business. Follow the main road to the capital and tell Dorrin Gateledger what we found.",
+      "text": "That stamp on Nog's purses belongs to a Dur Brannoc counting-house; someone in the capital has been putting a respectable seal on rotten business. Follow the main road there and tell Dorrin Gateledger what we found. He keeps the gate's ledger, and nothing will offend him more than our own seal on stolen ore.",
       "objectives": [
         {
           "type": "talk",

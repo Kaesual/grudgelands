@@ -57,7 +57,7 @@
         "silverleaf_departure"
       ],
       "title": "Hunger Beneath the Boughs",
-      "text": "A fox at the door is a question the forest cannot answer. Poachers have emptied the hunting grounds, and Bracken Foxes now trouble our homes; cull eight by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}. I can ask you to quiet the hunger here, but we must still find who caused it.",
+      "text": "When foxes come to the door, the forest has run out of something to give them. Poachers have emptied the hunting grounds, and the hungry Bracken Foxes now trouble our homes; cull eight by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}. That will quiet the hunger here, but someone set those snares, and I mean to find them.",
       "objectives": [
         {
           "type": "kill",
@@ -420,7 +420,7 @@
         "starbough_testimony_02"
       ],
       "title": "The Hand Behind the Knot",
-      "text": "I watched {name:snarekeeper_vetch} tie that knot so often I could do it with my eyes shut. Find him {dir_from_giver:snarekeeper_vetch}, by day or night, and defeat him. Let the next hands that learn the pattern use it to support a sapling.",
+      "text": "I watched {name:snarekeeper_vetch} tie that knot so often I could do it with my eyes shut. Find him in the {name:high_boughs} {dir_from_giver:snarekeeper_vetch}, by day or night, and defeat him. Let the next hands that learn the pattern use it to support a sapling.",
       "objectives": [
         {
           "type": "kill",

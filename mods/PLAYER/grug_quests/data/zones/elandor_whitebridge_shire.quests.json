@@ -80,7 +80,7 @@
         "whitebridge_baskets_01"
       ],
       "title": "The Pack at the Back Door",
-      "text": "I sent the carts around Thorn's buyers, only to hear that Briarpack Wolves hunt the {name:meadows}, {zone_area:meadows}, at night. Defeat five there after dark so our drivers have a fighting chance. Hurt one and the pack comes running; work from the edge, with room to retreat.",
+      "text": "I routed the carts around Thorn's buyers and straight through the {name:meadows}, which lie {zone_area:meadows}, where Briarpack Wolves hunt at night. Defeat five there after dark so our drivers have a fighting chance. Hurt one and the pack comes running; work from the edge, with room to retreat.",
       "objectives": [
         {
           "type": "kill",
@@ -270,7 +270,7 @@
         "whitebridge_materials_01"
       ],
       "title": "A Survey for the Heights",
-      "text": "Borin Splitbolt needs our survey work before he can plan supplies through Stormvault Heights. Visit him at Splitbolt Station there and pass on my findings. Reach level 30 before you set out into that contested country. The Accord needs people who can bring a sound plan home as well as carry one out.",
+      "text": "Borin Splitbolt needs our survey work before he can plan supplies through Stormvault Heights. Take my findings to him at Splitbolt Station, and reach level 30 before you set out into that contested country. Measure twice before you climb, as I always say; up there, nobody gets to cut again.",
       "objectives": [
         {
           "type": "talk",
@@ -378,7 +378,7 @@
       "requires": [
         "whitebridge_river_01"
       ],
-      "title": "Bounty: Briar-Web Spiders",
+      "title": "Bounty: Webs Enough for a Wagon",
       "text": "The Briar-Web Spiders have strung the {name:thornwood}, which lies {zone_area:thornwood}, with enough web to wrap a wagon. Kill six there after dark and report back for your bounty. I can offer the job again twenty-five minutes after you turn it in; bring yourself back, and leave the spiders where they fall.",
       "objectives": [
         {

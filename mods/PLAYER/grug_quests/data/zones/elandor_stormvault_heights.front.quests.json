@@ -157,7 +157,7 @@
         "archshadow_front_03"
       ],
       "title": "Group: No More Toll",
-      "text": "Whoever built {name:last_toll_construct} in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct} did solid work and left miserable instructions. The elite war construct is still enforcing its toll. Gather a group and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
+      "text": "Whoever built {name:last_toll_construct} in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct} did solid work and left miserable instructions. Senn is dead, yet the elite war construct still collects his toll from anyone who passes. Gather a group and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
       "objectives": [
         {
           "type": "kill",
@@ -187,7 +187,7 @@
         "archshadow_front_03"
       ],
       "title": "Bounty: An Arrow Too Many",
-      "text": "Senn's Aqueduct Bowmen are still at work in the {name:front_broken_causeway/gallows_wood}, which lies {zone_area:front_broken_causeway/gallows_wood}, despite the change in management. Defeat five there by day for a bounty. I can pay for another five twenty-five minutes after each turn-in; I've a budget for clearing the road and every intention of spending it.",
+      "text": "Senn's Aqueduct Bowmen are still at work in the {name:front_broken_causeway/gallows_wood}, which lies {zone_area:front_broken_causeway/gallows_wood}, despite the change in management. Defeat five there by day for a bounty. The bounty stands again twenty-five minutes after each turn-in; I've a budget for clearing the road and every intention of spending it.",
       "objectives": [
         {
           "type": "kill",
@@ -357,7 +357,7 @@
       "requires": [
         "splitbolt_front_04"
       ],
-      "title": "An Overdue Dismissal",
+      "title": "Last Pay, Final Notice",
       "text": "Last-Pay Archers still loose arrows from the {name:front_gravesalt_escarpment/saltroad_cliffs}, which lie {zone_area:front_gravesalt_escarpment/saltroad_cliffs}, every night. Defeat five there after dark so our road crews can work. Their paymaster got his money's worth; everyone else has been paying for it ever since.",
       "objectives": [
         {
@@ -486,7 +486,7 @@
       "requires": [
         "splitbolt_front_05"
       ],
-      "title": "Bounty: Keep the Night Shift Moving",
+      "title": "Bounty: Cobwebs Are a Hazard",
       "text": "My crews keep finding fresh webs in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Kill five Salt-Web Bonelurker Spiders there at night and collect a bounty. The job is available again twenty-five minutes after each turn-in. I'd sooner budget for you than keep replacing workers' boots with the workers still in them.",
       "objectives": [
         {

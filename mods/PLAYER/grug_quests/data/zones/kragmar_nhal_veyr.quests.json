@@ -90,7 +90,7 @@
       "requires": [
         "nhal_veyr_vigil_01"
       ],
-      "title": "Send My Regards, They Keep Better",
+      "title": "My Regards Keep Better",
       "text": "Sovel Namekeeper at Ossuary Ledgerstead needs help: the Gravewood around the archive has begun waking, which cannot be good for quiet study. Go and speak with Sovel, and pass along my regards. I would send a meal, but Sovel never eats, and I refuse to have my cooking filed for posterity.",
       "objectives": [
         {
@@ -175,7 +175,7 @@
       "requires": [
         "nhal_veyr_vigil_02"
       ],
-      "title": "Sister Errand: Hands for the Wellhold",
+      "title": "Sister Errand: Hands Attached",
       "text": "Brakka Jarward at Speargrass Wellhold in Speargrass Reach could use another pair of hands. Go and speak with Brakka; do keep the hands attached, since our allies tend to find the alternative unsettling. Choose one of my three sister errands to follow; I am sending you for work, not trying to misplace you.",
       "objectives": [
         {
@@ -200,7 +200,7 @@
       "requires": [
         "nhal_veyr_vigil_02"
       ],
-      "title": "Sister Errand: Someone to Walk the Roads",
+      "title": "Sister Errand: Someone Turns Up",
       "text": "Thorga Roadspeaker in Gor Drazhak complains that everyone wants good roads and nobody turns up to help keep them. Go and speak with Thorga; you have made a fine habit of turning up where you are needed. One of my three sister errands is enough, even if you do have an eternity to fill.",
       "objectives": [
         {
@@ -312,8 +312,8 @@
       "requires": [
         "nhal_veyr_provisions_02"
       ],
-      "title": "Repeatable: The Kitchen Keeps Going",
-      "text": "Plague Razorbacks root through the {name:gravefields}, which lies {zone_area:gravefields}, by day, and the kitchen has another hunt to pay for. Kill six and report back; this order calls for news of the hunt, so keep whatever meat you gather. I can offer it again thirty minutes after you hand it in, by which time someone will certainly be asking about supper.",
+      "title": "Bounty: The Kitchen Keeps Going",
+      "text": "Plague Razorbacks root through the {name:gravefields}, which lies {zone_area:gravefields}, by day, and the kitchen pays for every hunt that keeps them off the mourners' paths. Kill six and come back with the news; keep whatever meat you carve, since I am paying for the quiet, not the pork. I can offer this again thirty minutes after you hand it in, by which time someone will certainly be asking about supper.",
       "objectives": [
         {
           "type": "kill",

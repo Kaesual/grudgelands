@@ -158,7 +158,7 @@
       "requires": [
         "frostbarrow_sleds_01"
       ],
-      "title": "Bounty: Pawprints Beside the Runners",
+      "title": "Bounty: Pawprints by the Runners",
       "text": "Fresh pawprints beside the sled marks, close enough to make my beard bristle. Kill six Crag Snow Leopards in the {name:pinewood} at night and report back for your bounty. You can repeat it twenty minutes after handing it in.",
       "objectives": [
         {
@@ -249,7 +249,7 @@
         "frostbarrow_cutting_02"
       ],
       "title": "Bring Yourself Back Too",
-      "text": "Use your Steel Pickaxe to look for Rough Garnet deep beneath these mines, below the copper and jade, and bring me two pieces. Pack food and see that you have light. Keep a route back to the surface. I count a trip successful when the stone and the miner both come back up; one without the other is just paperwork.",
+      "text": "Take your Steel Pickaxe deep beneath these mines, below the copper and jade, and bring me two pieces of Rough Garnet. Pack food, carry light and keep a route back to the surface. I count a trip successful when the stone and the miner both come back up; one without the other is just paperwork.",
       "objectives": [
         {
           "type": "item",

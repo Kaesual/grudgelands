@@ -171,7 +171,7 @@
         "kezamba_offerings_04"
       ],
       "title": "A Voice for Ashveil",
-      "text": "The drums call for help beyond our jungle, too. Travel to Ashveil Watch on Blackwind Rise and speak with Vaska Ashlistener; our undead kin hold a front there. Let Vaska hear what Kezamba can offer the Throng.",
+      "text": "The drums call for help beyond our jungle, too. Travel to Ashveil Watch on Blackwind Rise and speak with Vaska Ashlistener; our undead kin hold a front there. They say Vaska can hear the ash speak, so give it something good to say about Kezamba.",
       "objectives": [
         {
           "type": "talk",
@@ -222,7 +222,7 @@
         "kezamba_smokehouse_01"
       ],
       "title": "Keep Supper Hanging",
-      "text": "My smokehouse racks need new hooks, and I have quite enough to hold without hanging supper from my own tusks. Bring me two Gnarled Boar Tusks from the Jungle Razorbacks in the {name:vinewood}. If Nalo has you hunting them by day already, remember that hungry people have prayers too.",
+      "text": "My smokehouse racks need new hooks, and I have quite enough to hold without hanging supper from my own tusks. Bring me two Gnarled Boar Tusks from the Jungle Razorbacks in the {name:vinewood}. If Nalo already has you chasing them off the shrine paths by day, let the same hunt answer a few hungry prayers too.",
       "objectives": [
         {
           "type": "item",
@@ -282,7 +282,7 @@
         "kezamba_smokehouse_02"
       ],
       "title": "Optional: The Debt That Walks",
-      "text": "The Tithe Revenants wander the {name:wildwood} at night, {zone_area:wildwood}, still trying to pay what they owed when they died. They have started knocking at the smokehouse shutters as if I kept the ledger. Kill six of them, and let the poor things rest with the account closed.",
+      "text": "The Tithe Revenants wander the {name:wildwood} at night, {zone_area:wildwood}, demanding payment on debts nobody in Kezamba ever owed. They have started knocking at the smokehouse shutters as if I kept their ledger. Kill six of them, and close their accounts for good.",
       "objectives": [
         {
           "type": "kill",

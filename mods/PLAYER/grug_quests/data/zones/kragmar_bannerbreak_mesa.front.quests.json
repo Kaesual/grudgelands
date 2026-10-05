@@ -10,7 +10,7 @@
       "level": 42,
       "requires": [],
       "title": "Make the Mud Keep Them",
-      "text": "A road is for marching, and I will not have the dead setting our pace. Break five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows}, which lie {zone_area:front_broken_causeway/floodmeadows}. The Accord can count footprints; give the Throng something worth counting.",
+      "text": "A road is for marching, and I will not have the dead setting our pace. Break five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows}, which lie {zone_area:front_broken_causeway/floodmeadows}. The mud kept them once already; this time, make it keep them for good.",
       "objectives": [
         {
           "type": "kill",
@@ -65,7 +65,7 @@
       "requires": [
         "bb_front_ramp_01"
       ],
-      "title": "Teeth in the Dark",
+      "title": "Footsteps That Aren't Ours",
       "text": "Our scouts keep hearing paws where they ought to hear their own footsteps. Hunt down five Fenrunner Wolves at night in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}. Save the boasting for when you can see what is listening.",
       "objectives": [
         {
@@ -170,7 +170,7 @@
         "bb_front_ramp_04"
       ],
       "title": "Bounty: Bad Career Choices",
-      "text": "Another lot of Causeway Brigands thinks robbing the Throng will pay. Kill five by day in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and come back for your reward. You can take this bounty again twenty minutes after turning it in; apparently word travels slower than greed.",
+      "text": "Another lot of Causeway Brigands thinks robbing the Throng will pay. Kill five by day in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and come back for your reward. You can take this bounty again twenty minutes after turning it in; somebody out there keeps hiring.",
       "objectives": [
         {
           "type": "kill",
@@ -290,7 +290,7 @@
         "bb_front_torn_02"
       ],
       "title": "Stings for Our Side",
-      "text": "The archers want venom, and for once their request comes with its own legs. War-Stinger Scorpions crawl at night over the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}; kill five and bring me two Scorch Venom. Try to keep the stings out of our side of the war.",
+      "text": "The archers want venom, and for once their request comes with its own legs. War-Stinger Scorpions crawl at night over the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}; kill five and bring me two Scorch Venom. Carry it home in a pouch, please, not in your leg.",
       "objectives": [
         {
           "type": "kill",
@@ -397,7 +397,7 @@
         "bb_front_torn_05"
       ],
       "title": "Send a Fighter, Save a Banner",
-      "text": "I could send Kezamba a banner listing what you have done, but I am running short of cloth. Go speak with Nalo Pathdrum in Kezamba; he sends fighters into The Skyglass Canopy. Tell him Yarra Standardmender vouches for you, and mind that you keep earning it.",
+      "text": "I would send Kezamba a banner listing what you have done, but you would need a longer pole. Go and speak with Nalo Pathdrum there; he sends fighters into The Skyglass Canopy, where Paymaster Chirr's archers draw their pay. Tell him Yarra Standardmender vouches for you, and mind that you keep earning it.",
       "objectives": [
         {
           "type": "talk",
@@ -421,7 +421,7 @@
         "bb_front_torn_05"
       ],
       "title": "Bounty: Stripes at the Front",
-      "text": "Tallgrass Tigers care very little whose colours a soldier wears, which makes them a nuisance to everybody. Kill five by day on the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, and collect your reward from me. The bounty is available again twenty minutes after turn-in.",
+      "text": "Tallgrass Tigers care very little whose colours a soldier wears, which makes them the one thing on this front both armies agree about. Kill five by day on the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, and collect your reward from me. The bounty is available again twenty minutes after turn-in.",
       "objectives": [
         {
           "type": "kill",
@@ -449,7 +449,7 @@
       "min_level": 40,
       "level": 41,
       "requires": [],
-      "title": "Room Under the Banner at {name:pvp_fortress_throng}",
+      "title": "Room Under the Banner",
       "text": "I can keep stitching this standard, but somebody has to give the Accord a reason to fear it. Go to {name:pvp_fortress_throng}, {dir_from_giver:pvp_fortress_throng}, and report to the Warmaster for the fight against their Battlegrounds camps. Tell the Warmaster I sent a fighter; I have no spare cloth for a letter.",
       "objectives": [
         {
@@ -472,7 +472,7 @@
       "min_level": 40,
       "level": 41,
       "requires": [],
-      "title": "Four Bars Beat a Boast",
+      "title": "Nobody Sings About Bolts",
       "text": "Every loudmouth in this hold promises to be our shield, yet the Quartermaster still has to mend the gate. Bring me four Silversteel Bars for gate bolts and arrowheads. There is honour in keeping a warband armed, even if nobody sings about the bolts.",
       "objectives": [
         {
@@ -521,7 +521,7 @@
       "level": 42,
       "requires": [],
       "title": "No Toll for the Throng",
-      "text": "Causeway Brigands keep stopping my scouts to ask what their lives are worth. Kill five of those brigands by day in the {name:front_broken_causeway/alderwood}, {zone_area:front_broken_causeway/alderwood}. We have Accord camps to watch, and I will not have our riders held up haggling with thieves.",
+      "text": "Causeway Brigands keep stopping my scouts to ask what their lives are worth. Kill five of those brigands by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. We have Accord camps to watch, and I will not have our riders held up haggling with thieves.",
       "objectives": [
         {
           "type": "kill",
@@ -547,8 +547,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Rattle the {name:pvp_camp_shattered_line_accord_low}",
-      "text": "The {name:pvp_camp_shattered_line_accord_low}, {zone_area:pvp_camp_shattered_line_accord_low}, watches our movements like a cook watching the last joint of meat. Kill four Accord Guards and the Accord Captain at that camp. Give them a fight to handle while my riders get on with their work.",
+      "title": "Rattle the Picket Line",
+      "text": "The {name:pvp_camp_shattered_line_accord_low}, which lies {zone_area:pvp_camp_shattered_line_accord_low}, watches our movements like a cook watching the last joint of meat. Kill four Accord Guards and the Accord Captain at that camp. Give them a fight to handle while my riders get on with their work.",
       "objectives": [
         {
           "type": "kill",
@@ -584,8 +584,8 @@
       "requires": [
         "bannerbreak_warhold_picket_shattered"
       ],
-      "title": "Trouble for the {name:pvp_camp_broken_causeway_accord_low}",
-      "text": "Now the {name:pvp_camp_broken_causeway_accord_low}, {zone_area:pvp_camp_broken_causeway_accord_low}, is making our scouts earn every muddy step. Defeat four Accord Guards and the Accord Captain there. The marsh already takes a toll on our boots; the Accord does not get to take one on our riders.",
+      "title": "Every Muddy Step",
+      "text": "Now the {name:pvp_camp_broken_causeway_accord_low}, which lies {zone_area:pvp_camp_broken_causeway_accord_low}, is making our scouts earn every muddy step. Defeat four Accord Guards and the Accord Captain there. The marsh already takes a toll on our boots; the Accord does not get to take one on our riders.",
       "objectives": [
         {
           "type": "kill",
@@ -619,8 +619,8 @@
       "min_level": 47,
       "level": 49,
       "requires": [],
-      "title": "Challenge the {name:pvp_camp_shattered_line_accord_high}",
-      "text": "The soldiers at the {name:pvp_camp_shattered_line_accord_high}, {zone_area:pvp_camp_shattered_line_accord_high}, have drilled until they can probably march in their sleep. Defeat five Accord Guards and the Accord Captain at that camp. Keep your feet when they hit back; a fighter who stumbles is just a future warning.",
+      "title": "Marching in Their Sleep",
+      "text": "The soldiers at the {name:pvp_camp_shattered_line_accord_high}, which lies {zone_area:pvp_camp_shattered_line_accord_high}, have drilled until they can probably march in their sleep. Defeat five Accord Guards and the Accord Captain at that camp. Keep your feet when they hit back; a fighter who stumbles is just a future warning.",
       "objectives": [
         {
           "type": "kill",
@@ -657,7 +657,7 @@
         "bannerbreak_warhold_warcamp_shattered"
       ],
       "title": "Shake the {name:pvp_camp_broken_causeway_accord_high}",
-      "text": "The {name:pvp_camp_broken_causeway_accord_high}, {zone_area:pvp_camp_broken_causeway_accord_high}, keeps the Accord's war machine marching through all that mud. Kill five Accord Guards and the Accord Captain commanding the camp. They have discipline; show them one Throng fighter can stand firm too.",
+      "text": "The {name:pvp_camp_broken_causeway_accord_high}, which lies {zone_area:pvp_camp_broken_causeway_accord_high}, keeps the Accord's war machine marching through all that mud. Kill five Accord Guards and the Accord Captain commanding the camp. They have discipline; show them one Throng fighter can stand firm too.",
       "objectives": [
         {
           "type": "kill",
@@ -692,7 +692,7 @@
       "level": 52,
       "requires": [],
       "title": "Lean on the {name:pvp_camp_gravesalt_escarpment_accord_low}",
-      "text": "My riders have enough trouble finding safe ground among the salt and old graves without the Accord measuring them for more. Strike the {name:pvp_camp_gravesalt_escarpment_accord_low}, {zone_area:pvp_camp_gravesalt_escarpment_accord_low}, killing four Accord Guards and the Accord Captain there. I need a way through for the scouts, and I need you back to tell them it is open.",
+      "text": "My riders have enough trouble finding safe ground among the salt and old graves without the Accord measuring them for more. Strike the {name:pvp_camp_gravesalt_escarpment_accord_low}, which lies {zone_area:pvp_camp_gravesalt_escarpment_accord_low}, and kill four Accord Guards and the Accord Captain there. I need a way through for the scouts, and I need you back to tell them it is open.",
       "objectives": [
         {
           "type": "kill",
@@ -728,8 +728,8 @@
       "requires": [
         "bannerbreak_warhold_picket_gravesalt"
       ],
-      "title": "A Roar for the {name:pvp_camp_skyglass_canopy_accord_low}",
-      "text": "There is a great deal of forest to hide in, yet the {name:pvp_camp_skyglass_canopy_accord_low}, {zone_area:pvp_camp_skyglass_canopy_accord_low}, keeps spotting our scouts. Defeat four Accord Guards and the Accord Captain at that camp. Let them hear the Throng coming for once; my riders can use the distraction.",
+      "title": "Let Them Hear Us Coming",
+      "text": "There is a great deal of forest to hide in, yet the {name:pvp_camp_skyglass_canopy_accord_low}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_low}, keeps spotting our scouts. Defeat four Accord Guards and the Accord Captain at that camp. Let them hear the Throng coming for once; my riders can use the distraction.",
       "objectives": [
         {
           "type": "kill",
@@ -763,8 +763,8 @@
       "min_level": 57,
       "level": 59,
       "requires": [],
-      "title": "Stand Against the {name:pvp_camp_gravesalt_escarpment_accord_high}",
-      "text": "The {name:pvp_camp_gravesalt_escarpment_accord_high}, {zone_area:pvp_camp_gravesalt_escarpment_accord_high}, holds fighters who have survived more than a few brave charges. Kill five Accord Guards and the Accord Captain there. You owe the Throng a steady blade and a clear head; save the roaring for when you are back.",
+      "title": "A Steady Blade at Gravesalt",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_accord_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_accord_high}, holds fighters who have survived more than a few brave charges. Kill five Accord Guards and the Accord Captain there. You owe the Throng a steady blade and a clear head; save the roaring for when you are back.",
       "objectives": [
         {
           "type": "kill",
