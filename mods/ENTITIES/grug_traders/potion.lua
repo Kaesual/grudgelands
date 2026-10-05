@@ -1,4 +1,4 @@
--- Weak Healing Potion (items_crafting.md §3.6 + §8.2, item_tiers.md §5).
+-- Weak Healing Potion (items_crafting.md §3.6, economy.md §2, item_tiers.md §5).
 --
 -- The vendor's potion: a fixed 35 HP, half of the Alchemist's Healing Potion
 -- I, 8c at the vendor (professions.md §4: the vendor sells the lowest tier of

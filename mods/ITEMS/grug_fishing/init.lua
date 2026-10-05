@@ -14,7 +14,7 @@
 --     level at the cast position, independent of faction and water salinity.
 --
 -- What is deliberately NOT here: the T4 Marshbloom Chowder and T5 Salt-Crusted
--- Fish recipes and the Well Fed buff model of `items_crafting.md` §2.3. Those
+-- Fish recipes and the Well Fed buff model of `items_crafting.md` §3.7. Those
 -- belong to **WP10** (professions, which owns free Cooking and the six cooking
 -- groups); this mod ships the plain T1 dish the furnace can already make and
 -- nothing that would pre-empt that design.
@@ -116,7 +116,7 @@ for index = 1, #BAND_FISH do
 	mobs.add_eatable(name, 3)
 end
 
--- COOKED FISH -- the T1 dish of `items_crafting.md` §2.3's cooking ladder,
+-- COOKED FISH -- the T1 dish of `items_crafting.md` §3.7's cooking ladder,
 -- with the numbers of the cooked meat it sits next to (`mobs/crafts.lua`:
 -- eat 8, cooktime 5) and no food buff, because the Well Fed model is WP10's.
 --

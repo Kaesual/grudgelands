@@ -157,8 +157,10 @@ achievements](#cloaks-and-achievements).
   the complete runtime catalog is audited against `basics_routes.lua` at startup.
   Discovery changes visibility only. Bread, Cooked Meat and Cooked Fish are
   universal Basics roasting; protected Cooking dishes keep their book provenance.
-  `docs/design/crafting_equipment_revision.md` governs current stations, named
-  tiered enchantments (including trinkets), equipment separation and wear.
+  Stations and workspaces are `docs/design/inventory_equipment.md` §4 and
+  `professions.md` §1.5, named tiered enchantments (including trinkets)
+  `items_crafting.md` §6b, equipment separation `items_crafting.md` §3.0.3–§3.0.4
+  and wear `durability_repair.md`.
   Station icons appear below the recipe arrow, outside ingredient slots.
   `grug_jobs.open_trainer(player, profession, pos)` serves the six primaries,
   Cooking and Alchemy. The Character page's Professions tab (Round 28 ruling 23) is
@@ -942,7 +944,7 @@ achievements](#cloaks-and-achievements).
 ## Traders and money
 
 - **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
-  `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
+  `items_crafting.md` §3.8, `world.md` §7). **WP7 patterns
   (binding):**
   - **`grug_money` is the ONLY money API.** One integer in copper units
     in player meta (100c = 1s, 100s = 1g, conversion display-only);

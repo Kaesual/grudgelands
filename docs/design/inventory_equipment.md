@@ -287,17 +287,28 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   enchanting station shows the colour legend. Other profession recipes retain their explicit grid,
   furnace, dual-furnace or brewing-stand route.
 - Authored capital/POI stations are personal workspaces keyed by player and
-  physical station. Player-placed stations share node inventories; inside an
+  physical station: durable inputs, outputs, fuel and processing state per
+  player. Player-placed stations share node inventories; inside an
   active Claim Stone claim, access follows the claim's permission list
-  (`housing.md` §6), with no station-specific owner or ACL. Shared 3×3
+  (`housing.md` §6), with no station-specific owner or ACL; outside protected
+  areas they have no individual owner. The station UI shows its mode with a
+  short explanation. Authored loot chests are outside this model. Shared 3×3
   inputs are common while each viewer's output preview is qualified
-  independently. A successful take revalidates recipe, station,
+  independently; an ineligible viewer sees no craftable result. A successful
+  take revalidates recipe, station,
   distance, access, inputs, profession tier and capacity before consuming or
   awarding progress. Partial transfers retain produced remainder without a
   second debit or progress award, and closing a UI loses no contents.
-  Digging a player-placed station is allowed whenever protection allows it
-  and drops all of its contents and every player's saved workspace record
-  (`crafting_equipment_revision.md`, Round 28 ruling 18).
+- Player-placed furnaces, dual furnaces, brewing stands and profession
+  stations can be dug at any time by anyone the normal protection allows
+  (Round 28 ruling 18): in the open world there is no extra rule, inside a
+  claim the claim's rights apply and in foreign home territory the territory
+  rule applies. Digging drops every node list **and** every player's saved
+  workspace record together with the station itself (to the digger's
+  inventory, overflow on the ground), exactly what an explosion releases. A
+  station is never undiggable because it still holds items, including other
+  players' invisible leftovers. Authored public stations stay undiggable and
+  blast-immune.
 - Personal processing state, fuel, inputs and outputs persist in the physical
   node. Elapsed server game time may catch up lazily after unload/restart but
   does not promise work during shutdown. Automatic furnace, dual-furnace and
@@ -430,7 +441,7 @@ them.
   posts every positive grant itself; a caller that names the XP in its own
   line passes `quiet`.
 
-## 5. Skills page and bound representations
+## 6. Skills page and bound representations
 
 The sfinv **Skills** page follows Talents and lists all currently unlocked active
 abilities plus every purchased riding tier. Its detached catalogue is an

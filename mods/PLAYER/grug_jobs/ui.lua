@@ -420,7 +420,7 @@ end
 -- True when `book` lists a CRAFTABLE recipe for `item` for this player:
 -- listed as listed_records decides with an empty search, and not locked. A
 -- greyed (locked) profession recipe is listed but never a navigation target,
--- so locked ingredients stay inert (items_crafting.md section 2.2).
+-- so locked ingredients stay inert (professions.md section 1.2).
 -- `station` filters like book_records does.
 local function book_knows(player, book, item, station)
 	local list = book_output_index(book)[item]
@@ -599,7 +599,7 @@ function grug_jobs._book_recipe_background_cells(recipe)
 end
 
 -- Why a listed profession recipe is greyed: the tier it needs and the
--- character-band floor of that tier (items_crafting.md section 2.2), or the
+-- character-band floor of that tier (professions.md section 1.2), or the
 -- mastery reason the progression gate gives.
 local LOCKED_COLOR = "#8a8a8a"
 
