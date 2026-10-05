@@ -549,8 +549,9 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 - **Royal guards are the decided exception:** the living king is authoritative,
   all four guards always path toward it, its evade/teleport relocates the group,
   and its death makes survivors retreat/despawn. The entire five-NPC encounter
-  returns together after the persistent 15-minute respawn; royal guard slots
-  never refill independently (`world_zones.md` §12). A PvP fortress's General
+  returns together after the persistent 15-minute respawn; a guard killed
+  outside a reset or the king's death returns on its own after the same
+  15 minutes (Round 37, `world_zones.md` §12). A PvP fortress's General
   and his two bodyguards (Round 31) are the same encounter on the same rules.
 - **Respawn slots**: every anchor has a configured **maximum population**
   and refills toward it one NPC at a time. Each refill takes a
@@ -680,6 +681,15 @@ combat damage for the ordinary five-second combat window.
 - An overworld dragon is a PvP world boss from its first stage, not a private
   home-continent boss. Its skill sketch remains ranged breath line
   (`dogshoot` + telegraph) plus ground-slam AoE.
+- **The breath** (Round 37 ruling, `round37-plan.md` §2.1.5) is a fan of
+  three projectiles at −15°, 0° and +15°: the middle one homes on the target
+  and hits it once (the homing rule of `combat_stats.md`), the two side ones
+  fly straight, hit the first player in their line whom the dragon would
+  attack (never the target itself) or land on the ground, and are gone after
+  2 s. Each hit leaves a rime (Wyrmglass) or scorch (Stormscale) patch where
+  it lands, for 8 or 6 s; a patch lies only in air above walkable ground, so
+  snow, plants and water are never replaced, and the protection rule above
+  still decides where one may lie.
 - Each dragon owns a separate rolling 24-hour, wall-clock boss-loot lockout per
   character. Receiving one dragon's personal boss reward starts only that
   dragon's timer; players may still join repeat kills without another reward,
@@ -697,6 +707,11 @@ combat damage for the ordinary five-second combat window.
   unloaded when that warning should begin, its next activation starts the full
   warning and the spawn is delayed until the warning completes. The returning
   dragon receives no temporary invulnerability.
+- A dragon that vanished without dying (an admin removal, a crash between
+  the storage write and the map save) counts as lost once it has been missing
+  for a minute while its last known place is active (a player is near), and
+  returns through the same 60-second warning. Each spawn is a new generation:
+  an older copy that loads later removes itself (Round 37).
 - A dragon island is contested at all times, whether its dragon is alive, dead
   or in the respawn warning. The warning merely concentrates both factions at
   a predictable objective; it never enables, disables or changes the island's

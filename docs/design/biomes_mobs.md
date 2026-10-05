@@ -407,7 +407,15 @@ despawns on unload; between 48 and 128 nodes the unload chance rises linearly
 from 0 to 1. Distance is three-dimensional and the nearest player wins. NPCs,
 tamed mobs, attacking mobs and mobs with `lifetimer >= 20000` retain their
 existing exemptions. `remove_far_mobs = true` owns this distance policy;
-`mob_expire()` does not run in that mode. The distance model follows the pinned
+`mob_expire()` does not run in that mode. A server shutdown makes no unload
+decision (Round 37): the engine saves the objects after the players are
+gone, so the decision would cull every eligible mob; a restart keeps the
+world's mobs. mobs_redo's active-mob limit (`mob_active_limit`, 600 in the
+game's `minetest.conf`) refuses ordinary spawns and removes an ordinary mob
+that reactivates at the limit; **authored actors** — every NPC (residents,
+guards, kings, Generals, captains, traders), the dragons, the rift boss,
+named rares and leaders — neither count against it nor are removed by it
+(`mobs/api.lua` `grug_authored`). The distance model follows the pinned
 VoxeLibre boundaries: its natural-spawn shell is 24–128 nodes
 (`reference_projects/VoxeLibre/mods/ENTITIES/mcl_mobs/spawning.lua:60-64,394-453`)
 and its nearby-player lifetime refresh uses 47 nodes
@@ -811,7 +819,12 @@ identical third item would erase the flavor for no balance gain.
 ### 3.3 Named rares (rare tier: armor 70, ×5 HP, ×2.2 dmg, ×6 XP, ×2 scale + tint, faction-wide spawn broadcast)
 
 Spawned by a scheduled spawner (not ABM): respawn 2–4 h after kill, patrol
-route between 2–3 fixed zone anchors. They inherit their base family's drop
+route between 2–3 fixed zone anchors. A rare that vanished without a kill
+(lava, an admin) is released after a minute missing at its last known place
+while that place is active (a player is near); time nobody is near never
+counts. Each spawn is a new generation, and an older or second copy removes
+itself when it loads, so a rare never stands twice (Round 37,
+`grug_mobs/liveness.lua`). They inherit their base family's drop
 table (×6 XP and the rare multipliers are the reward WP6 ships); special loot
 rolls ride on WP5's item/enchantment tables.
 

@@ -1606,7 +1606,16 @@ one-cell settlement checks are unchanged.
   its anchor and all four guards are moved with it in the same reset. A guard
   whose own path fails snaps to the king's current position; it never moves or
   overrides the king. A full reset restores all four guard slots together, so
-  raiders cannot permanently dismantle the retinue one guard at a time.
+  raiders cannot permanently dismantle the retinue one guard at a time. A
+  guard killed without either a reset or the king's death (picked off from
+  beyond the king's view) returns on its own after 15 minutes, a persistent
+  wall-clock time like the group's (Round 37).
+- The Undead King's Bone Call keeps at most **four** of his skeleton raiders
+  standing (each cast tops up to four, two at a time); they belong to the
+  king's faction, so they never target the Throng, and they vanish on his
+  encounter reset and at his death. The Elf King's volley follows the dragon
+  breath's fan (`world.md` §4b): the middle arrow homes on the target, the
+  two side arrows fly straight and may hit a bystander (Round 37).
 - Killing the king wins the encounter immediately. Any surviving royal guards
   retreat and despawn without additional loot. The king and all four guards
   respawn together at full health after 15 minutes. The absolute wall-clock
