@@ -61,10 +61,10 @@ fails while the file is stale.
 | 31 | Totemwater Reach | 21–30 | Bog Ooze, Crocodile, Jungle Lynx, Shore Crab, Tapir | Bog Ooze, Crocodile, Wisp | – | Crocodile Reed-Maw | Bog Fowl, Parrot |
 | 32 | Thunderroot Wilds | 31–40 | Jungle Ape, Serpent, Shore Crab | Bandit, Bog Witch, Jungle Spider, Panther, Serpent, Zombie | Bandit Archer | Bog Witch Storm-Bottle, Bottle-Keeper Zek | – |
 | 33 | The Wyrmglass Crown | 60 | Bandit Archer, Carrion Crow, Crag Eagle, Mountain Ram, Sun-Dried Husk | Bandit Archer, Frost Stray, Snow Leopard, Zombie | – | Stone Golem Rime-Bell | Gull |
-| 34 | Gravesalt Escarpment | 51–60 | Bandit, Bandit Archer, Blightfang Wolf, Carrion Crow, Gaunt Stag, Plaguehide Bear, Stone Mite, Sun-Dried Husk | Bandit, Bandit Archer, Bog Witch, Pale Spider, Skeleton Raider, Zombie | – | Watch-Captain Huskell, Bog Witch Salt-Counter | Bone Weevil, Gull |
+| 34 | Gravesalt Escarpment | 51–60 | Bandit, Bandit Archer, Blightfang Wolf, Carrion Crow, Gaunt Stag, Plaguehide Bear, Reef Lurker, Stone Mite, Sun-Dried Husk | Bandit, Bandit Archer, Bog Witch, Pale Spider, Skeleton Raider, Zombie | – | Watch-Captain Huskell, Bog Witch Salt-Counter | Bone Weevil, Gull |
 | 35 | The Broken Causeway | 41–50 | Bandit, Bandit Archer, Carrion Crow, Sun-Dried Husk, Viper | Bandit, Bandit Archer, Skeleton Raider, Viper, Wolf, Zombie | Bandit, Bandit Archer | Toll-Taker Senn, War Construct Last-Toll | Gull |
 | 36 | The Shattered Line | 41–50 | Bandit, Bandit Archer, Carrion Crow, Hyena, Speargrass Tiger, Sun-Dried Husk, Vulture | Bandit, Scorpion, Skeleton Raider, Sun-Dried Husk | – | Standard-Bearer Ninepins, War Construct Engine Nine | – |
-| 37 | The Skyglass Canopy | 51–60 | Bandit, Carrion Crow, Jungle Ape, Serpent, Sun-Dried Husk | Jungle Spider, Panther, Serpent, Skeleton Raider, Zombie | Bandit Archer | Paymaster Chirr, Serpent Glass-Throat | – |
+| 37 | The Skyglass Canopy | 51–60 | Bandit, Carrion Crow, Jungle Ape, Reef Lurker, Serpent, Sun-Dried Husk | Jungle Spider, Panther, Serpent, Skeleton Raider, Zombie | Bandit Archer | Paymaster Chirr, Serpent Glass-Throat | – |
 | 38 | Stormscale Summit | 60 | Bandit Archer, Carrion Crow, Jungle Ape, Serpent, Sun-Dried Husk | Bandit Archer, Bog Witch, Jungle Spider, Panther, Skeleton Raider, Zombie | – | Jungle Ape Last-Offering | Gull |
 
 ## By family
@@ -103,6 +103,7 @@ fails while the file is stale.
 | Plaguehide Bear | Gravesalt Escarpment | – | – | – |
 | Plains Runner | Sunscar Flats | – | – | – |
 | Poacher | – | Goldmead Vale, Whitebridge Shire, Starbough Vale, Lethariel, Lorindor, Moonfall Wood | Ashenward March, Silverleaf Glades, Lethariel | Whitebridge Shire, Ashenward March, Silverleaf Glades, Starbough Vale, Lethariel, Moonfall Wood |
+| Reef Lurker | Gravesalt Escarpment, The Skyglass Canopy | – | – | – |
 | Scorpion | Sunscar Flats | Sunscar Flats, Redtusk Savanna, Gor Drazhak, Speargrass Reach, Bannerbreak Mesa, The Shattered Line | – | – |
 | Serpent | Glassroot Wilds, Thunderroot Wilds, The Skyglass Canopy, Stormscale Summit | Glassroot Wilds, Thunderroot Wilds, The Skyglass Canopy | – | Glassroot Wilds, The Skyglass Canopy |
 | Shore Crab | Hearthpine Vale, Copperfell Foothills, Frostbarrow Shelf, Stormvault Heights, Dawnmere Fields, Goldmead Vale, Whitebridge Shire, Silverleaf Glades, Starbough Vale, Lorindor, Moonfall Wood, Glassroot Wilds, Stillgrave Hollow, Mournfen, Ossuary Reach, Blackwind Rise, Sunscar Flats, Redtusk Savanna, Speargrass Reach, Kapok Cradle, Raincall Basin, Whispering Reedlands, Totemwater Reach, Thunderroot Wilds | – | – | – |

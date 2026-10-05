@@ -487,13 +487,13 @@ before Round 33.
 | 5 | Siege Talisman | 0/0/2 | regular | enchant Int prefix; enchant Mana prefix; enchant Mana suffix; upgrade tailor; upgrade goldsmith | 7.5 | enchant |
 | 5 | Siege Weapon Strap | 0/0/2 | regular | enchant Dex prefix; enchant Dex suffix; enchant Speed prefix; enchant Dodge prefix; upgrade armorsmith; upgrade leatherworker | 8.8 | enchant |
 | 5 | Siegepack Fang | 0/0/2 | regular | enchant Str suffix; enchant Crit suffix; upgrade woodcarver; Elixir of Precision V | 5.0 | — |
-| 6 | Abyssal Crab Shell | 0/0/0 | none | sell-only: no placed source (the reef lurker is not in a spawn recipe) | 0.0 | — |
+| 6 | Abyssal Crab Shell | 0/0/2 | scarce | sell-only: scarce (an optional elite on two shores); a hunter's trophy | 0.0 | — |
 | 6 | Glass Cat Claw | 0/0/3 | regular | enchant Crit suffix; enchant Dodge suffix | 1.8 | — |
 | 6 | Glass Spider Silk | 0/0/3 | regular | enchant Dodge prefix; upgrade tailor | 3.2 | — |
 | 6 | Glass Venom | 0/0/2 | regular | enchant Speed suffix; upgrade tailor | 3.0 | — |
 | 6 | Last-Hex Shard | 0/0/2 | regular | enchant Int suffix; upgrade goldsmith; Elixir of Focus VI | 4.0 | — |
 | 6 | Last-Laugh Dentures | 0/0/4 | regular | enchant Str prefix; enchant Crit prefix | 2.5 | enchant |
-| 6 | Last-Pay Talisman | 0/0/4 | common | enchant Int prefix; enchant Mana prefix; upgrade goldsmith | 4.0 | enchant |
+| 6 | Last-Pay Talisman | 0/0/4 | regular | enchant Int prefix; enchant Mana prefix; upgrade goldsmith | 4.0 | enchant |
 | 6 | Rime Sinew | 0/0/2 | scarce | upgrade woodcarver | 1.5 | — |
 | 6 | Salt-Barbed Feather | 0/0/4 | regular | enchant Mana suffix; upgrade woodcarver | 2.5 | — |
 | 6 | Salt Bear Claw | 0/0/1 | scarce | upgrade weaponsmith | 1.5 | — |
@@ -501,7 +501,7 @@ before Round 33.
 | 6 | Salt-Cured Flesh | 0/0/4 | common | enchant HP prefix; enchant HP suffix; upgrade leatherworker; Elixir of Vigor VI | 6.5 | enchant |
 | 6 | Saltpack Fang | 0/0/1 | scarce | sell-only: scarce (one zone, few hounds); a hunter's trophy | 0.0 | — |
 | 6 | Silver Ape Hair | 0/0/2 | regular | enchant Dex suffix; upgrade leatherworker | 3.8 | — |
-| 6 | Unbroken Weapon Strap | 0/0/4 | common | enchant Dex prefix; enchant Speed prefix; enchant Armor prefix; upgrade armorsmith | 5.0 | enchant |
+| 6 | Unbroken Weapon Strap | 0/0/4 | regular | enchant Dex prefix; enchant Speed prefix; enchant Armor prefix; upgrade armorsmith | 5.0 | enchant |
 | 6 | Unquiet Bone | 0/0/4 | common | enchant Str suffix; enchant Armor suffix; upgrade weaponsmith; upgrade armorsmith; Stoneskin Elixir VI | 7.2 | — |
 
 Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
@@ -512,12 +512,12 @@ Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
 - **One faction (20):** their families live only in one faction's zones, so a
   recipe needing them would lock the other faction out. They keep their quest
   uses.
-- **No placed source (4):** Chipped Core and Veined Core (the stone golems
-  are no spawn-recipe mob; Veined Core only from one unique elite), Siege Core
-  (two unique elites on 300 s respawn), Abyssal Crab Shell (the reef lurker
-  is in no spawn recipe).
-- **Scarce trophies (2):** Saltpack Fang and Salt Chitin come from one zone's
-  rare mob; a recipe would turn them into a bottleneck.
+- **No placed source (3):** Chipped Core and Veined Core (the stone golems
+  are no spawn-recipe mob; Veined Core only from one unique elite) and Siege
+  Core (two unique elites on 300 s respawn).
+- **Scarce trophies (3):** Saltpack Fang and Salt Chitin come from one zone's
+  rare mob, Abyssal Crab Shell from the optional Salt Reef Lurker elite of
+  the two 51–60 shores; a recipe would turn them into a bottleneck.
 
 ## 3. Profession upgrades
 

@@ -183,7 +183,7 @@ SELL_ONLY = {
     "chipped_core": "no placed source (stone golems are not in a spawn recipe)",
     "veined_core": "no regular source (one unique elite)",
     "siege_core": "no regular source (two unique elites)",
-    "abyssal_crab_shell": "no placed source (the reef lurker is not in a spawn recipe)",
+    "abyssal_crab_shell": "scarce (an optional elite on two shores); a hunter's trophy",
     "saltpack_fang": "scarce (one zone, few hounds); a hunter's trophy",
     "salt_chitin": "scarce (one zone, rare weevil); a hunter's trophy",
 }

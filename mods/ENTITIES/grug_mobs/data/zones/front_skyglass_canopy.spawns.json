@@ -12,7 +12,10 @@
             "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "saltbound_zombie", "weight": 1}], "density": "normal"},
           "forest": {"id": "cloudwood", "name": "Skyglass Cloudwood",
             "day": [{"role": "glass_knuckle_ape", "weight": 3}, {"role": "saltroad_deserter", "weight": 1}],
-            "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "dunshade_prowler", "weight": 1}], "density": "normal"}
+            "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "dunshade_prowler", "weight": 1}], "density": "normal"},
+          "shore": {"id": "glass_strand", "name": "Skyglass Glass Strand",
+            "day": [{"role": "glass_fang_serpent", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
+            "night": "open", "density": "normal"}
         }
       },
       {
@@ -23,7 +26,10 @@
             "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "saltbound_zombie", "weight": 1}], "density": "normal"},
           "forest": {"id": "rootways", "name": "Skyglass Rootways",
             "day": [{"role": "glass_fang_serpent", "weight": 3}, {"role": "saltbound_husk", "weight": 1}],
-            "night": [{"role": "glass_web_spider", "weight": 3}, {"role": "furnace_coil_serpent", "weight": 1}], "density": "normal"}
+            "night": [{"role": "glass_web_spider", "weight": 3}, {"role": "furnace_coil_serpent", "weight": 1}], "density": "normal"},
+          "shore": {"id": "root_shore", "name": "Skyglass Root Shore",
+            "day": [{"role": "glass_fang_serpent", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
+            "night": "open", "density": "normal"}
         }
       },
       {
@@ -34,7 +40,10 @@
             "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "normal"},
           "forest": {"id": "high_canopy", "name": "Skyglass High Canopy",
             "day": [{"role": "glass_knuckle_ape", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
-            "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "sootlace_spinner", "weight": 1}], "density": "normal"}
+            "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "sootlace_spinner", "weight": 1}], "density": "normal"},
+          "shore": {"id": "skyfall_strand", "name": "Skyglass Skyfall Strand",
+            "day": [{"role": "glass_fang_serpent", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
+            "night": "open", "density": "normal"}
         }
       }
     ],
