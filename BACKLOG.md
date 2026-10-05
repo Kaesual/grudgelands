@@ -1180,6 +1180,13 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
   names now, or wait for flavour names? ([README](docs/audit-2026-10/docs/01-readme-player.md))
 - **README and PvP NPCs** — should the README say that Kings, Generals and
   guards attack enemy players regardless of the flag? ([README](docs/audit-2026-10/docs/01-readme-player.md))
+- **D18, swimmer exhaustion** (deferred ocean survival) — what, if anything,
+  does "Exhausted" do to an unmounted swimmer? Today the ocean's deterrents
+  are the Kraken Guard, immutable deep-ocean terrain and the boat-threat rules
+  ([boats.md](docs/design/boats.md)); flyers use their warning band and
+  no-flight columns ([mounts.md](docs/design/mounts.md)), and no swimmer
+  mechanic is authorized. Moved from the dissolved
+  `TODO-design-crafting-rework.md` in Round 37 (DI-12). ([item docs](docs/audit-2026-10/docs/05-design-items.md))
 
 ### Audit 2026-10 later fix packages
 
