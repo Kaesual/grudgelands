@@ -11,10 +11,12 @@
 -- position, so the route points in the registrations below decide the level
 -- — see the level check comments there.
 --
--- Persistence: one mod-storage record per rare id (next_spawn / alive /
--- spawned_at, all in core.get_gametime() seconds so the timer counts played
--- world time and survives restarts). Runtime work is ONE globalstep
--- throttled to 10 s over the whole registry — no ABM, no per-mob polling.
+-- Persistence: one mod-storage record per rare id (alive / next_spawn, the
+-- latter in core.get_gametime() seconds so the timer counts played world time
+-- and survives restarts), plus the liveness record of its key "rare:<id>"
+-- (liveness.lua: the instance's generation, its last known place, absence).
+-- Runtime work is ONE globalstep throttled to 10 s over the whole registry —
+-- no ABM, no per-mob polling.
 --
 
 local storage = grug_mobs.storage
@@ -26,35 +28,22 @@ local CHECK_INTERVAL = 10 -- s between spawner passes
 -- an inactive block would be pointless. Slightly under 128 so the check we
 -- make and the check add_mob makes agree.
 local PLAYER_RANGE = 120
--- Anti-duplicate / "is it still out there" scan radius around each route
--- point.
---
--- It does NOT cover the full drag allowance: a rare may be pulled up to
--- RARE_LEASH_RANGE = 300 from where the fight started (aggro.lua), so a rare
--- in a long running fight can be outside every route point's 100 m sphere and
--- read as gone. What keeps that from turning into a duplicate is the other
--- half of the leash: when the chase does end, leash_reset's evade sends a rare
--- that strayed further than its family radius back to `_grug_home` —
--- its spawn point, which is ON the route. So the blind window lasts as long as
--- one over-long fight and closes by itself, and rare_watch additionally
--- requires a FULL respawn_max (2-4 h) of no sighting before it releases a
--- respawn. Raising this to 300 instead would mean scanning a 300 m sphere
--- three times per pass per rare, for a window that already closes.
-local SCAN_RADIUS = 100
 local BROADCAST_COLOR = "#ffb733" -- amber (combat_stats §3)
 
 grug_mobs.registered_rares = {} -- id -> spec
 
--- id -> {alive = bool, next_spawn = n, spawned_at = n, seen_at = n}
--- The first three are mirrored into mod storage; `seen_at` is runtime only
--- (see rare_watch).
+-- id -> {alive = bool, next_spawn = n}, mirrored into mod storage.
 local state = {}
+local liveness = grug_mobs.liveness
+
+local function live_key(id)
+	return "rare:" .. id
+end
 
 local function save(id)
 	local st = state[id]
 	storage:set_int("rare_alive:" .. id, st.alive and 1 or 0)
 	storage:set_int("rare_next:" .. id, st.next_spawn)
-	storage:set_int("rare_born:" .. id, st.spawned_at)
 end
 
 --
@@ -82,7 +71,6 @@ function grug_mobs.register_rare(id, spec)
 	state[id] = {
 		alive = storage:get_int("rare_alive:" .. id) == 1,
 		next_spawn = storage:get_int("rare_next:" .. id),
-		spawned_at = storage:get_int("rare_born:" .. id),
 	}
 end
 
@@ -100,10 +88,16 @@ local function route_pos(pt)
 	return pt
 end
 
+-- The players the spawner works around: a seam so the engine probe can stand
+-- in a point for a player (like rift.lua's grug_mobs.rift_players).
+function grug_mobs.rare_players()
+	return core.get_connected_players()
+end
+
 -- Horizontal player proximity to a route point. Horizontal on purpose: the
 -- stable route y does not affect whether a player keeps its mapblock loaded.
 local function player_near_xz(pt, range)
-	local players = core.get_connected_players()
+	local players = grug_mobs.rare_players()
 	for i = 1, #players do
 		local pp = players[i]:get_pos()
 		if pp then
@@ -114,33 +108,6 @@ local function player_near_xz(pt, range)
 		end
 	end
 	return false
-end
-
-local function route_has_player(spec)
-	for i = 1, #spec.route do
-		if player_near_xz(spec.route[i], PLAYER_RANGE) then
-			return true
-		end
-	end
-	return false
-end
-
--- Is a rare with this id already loaded somewhere along its route? Covers
--- both the "alive flag lost" case (world file rolled back, storage cleared)
--- and the fallback respawn below — a second Grimtusk would be a bug, not a
--- feature.
-local function find_existing(id, spec)
-	for i = 1, #spec.route do
-		local pos = spec.route[i]
-		local objs = core.get_objects_inside_radius(pos, SCAN_RADIUS)
-		for n = 1, #objs do
-			local ent = objs[n]:get_luaentity()
-			if ent and ent._grug_rare_id == id then
-				return ent
-			end
-		end
-	end
-	return nil
 end
 
 --
@@ -169,15 +136,12 @@ local function broadcast(spec, pos)
 	end
 end
 
-local function mark_alive(id, now)
-	local st = state[id]
-	st.alive = true
-	st.spawned_at = now
-	st.seen_at = now
+local function mark_alive(id)
+	state[id].alive = true
 	save(id)
 end
 
-local function try_spawn(id, spec, now)
+local function try_spawn(id, spec)
 	-- Only route points that actually have somebody near them are
 	-- candidates; picking blindly would waste most passes on the far end of
 	-- the route. Which of the viable ones is used stays random, so a rare
@@ -193,9 +157,9 @@ local function try_spawn(id, spec, now)
 		return -- nobody there; retry on the next pass
 	end
 	local pt = viable[math.random(n)]
-	if find_existing(id, spec) then
+	if liveness.instance(live_key(id)) then
 		-- Already out there (stale alive flag): adopt it, never duplicate.
-		mark_alive(id, now)
+		mark_alive(id)
 		return
 	end
 	local pos = route_pos(pt)
@@ -211,10 +175,20 @@ local function try_spawn(id, spec, now)
 	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
 	-- — without it the golem- and spider-based rares spawn sunk into the
 	-- ground.
+	-- The next generation of this rare: any older copy still on disk is stale
+	-- and removes itself when its block loads (liveness.lua). Its identity
+	-- goes into the first staticdata, so the add-time static copy has it too.
+	local key = live_key(id)
+	local gen = liveness.next_generation(key)
 	local ent = grug_mobs.add_mob(pos, {
 		name = spec.mob,
 		texture = spec.texture,
 		ignore_count = true, -- a rare ignores the family's spawn cap
+		-- ... and mobs_redo's active-mob limit, which it does not count
+		-- against either (Round 37 MP, mobs/api.lua grug_authored).
+		_grug_authored = true,
+		_grug_staticdata = {_grug_rare_id = id, _grug_live_key = key,
+			_grug_live_gen = gen, lifetimer = 30000, description = spec.name},
 	})
 	if not ent then
 		return
@@ -225,6 +199,7 @@ local function try_spawn(id, spec, now)
 	-- refreshes the tag.
 	ent.description = spec.name
 	ent._grug_rare_id = id
+	liveness.adopt(ent, key, gen)
 	-- Named rares must not evaporate when the last player walks away:
 	-- mobs_redo deletes an unloading mob whose lifetimer is below 20000
 	-- (mob_staticdata) and expires it on a timer below the same threshold
@@ -251,7 +226,7 @@ local function try_spawn(id, spec, now)
 	-- from the ground position, not from where the mob stands, so this second
 	-- call simply lands it correctly with the box it actually has now.
 	grug_mobs.place_on_ground(ent.object, pos)
-	mark_alive(id, now)
+	mark_alive(id)
 	broadcast(spec, pos)
 	core.log("action", "[grug_mobs] rare " .. spec.name .. " spawned at " ..
 		core.pos_to_string(vector.round(pos)))
@@ -274,29 +249,20 @@ function grug_mobs.rare_killed(id)
 	save(id)
 end
 
--- Watchdog for deaths nobody reported: lava, fall damage, a guard NPC, or a
--- mob deleted by an admin/world edit. Without it such a rare would be gone
--- for good, because `alive` would stay true forever.
+-- Watchdog for a rare that left without dying: deleted by an admin or a
+-- world edit, lost in a crash. Every death, whoever caused it, books the
+-- ordinary respawn through rare_killed (the lethal player hit, or init.lua's
+-- settle_mob_death for a guard, lava or a fall). Without the watchdog such a
+-- rare would be gone for good, because `alive` would stay true forever.
 --
--- The trap is that get_objects_inside_radius is BLIND in inactive areas, so
--- "scan found nothing" alone would happily conjure a second Grimtusk while
--- the first one stands two route points away in an unloaded block. Hence:
---   * we only scan while a player is near the route (area active);
---   * a successful scan stamps a runtime-only `seen_at` — deliberately not
---     persisted, so a restart falls back to spawned_at instead of writing
---     mod storage every ten seconds;
---   * the respawn is only released once a full respawn_max has passed
---     WITHOUT a sighting despite players being around.
+-- liveness.lua decides (Round 37 MP, MOC-01): the rare counts as missing
+-- only while its last known place is an active mapblock and no instance
+-- stands, and as lost after a minute of that. The old watchdog aged the rare
+-- by game time, also while nobody was near, and scanned only around the route
+-- points, so the next visitor could meet a second Grimtusk.
 local function rare_watch(id, spec, now)
 	local st = state[id]
-	if not route_has_player(spec) then
-		return
-	end
-	if find_existing(id, spec) then
-		st.seen_at = now
-		return
-	end
-	if now - math.max(st.spawned_at, st.seen_at or 0) <= spec.respawn_max then
+	if liveness.watch(live_key(id), CHECK_INTERVAL) ~= "lost" then
 		return
 	end
 	st.alive = false
@@ -325,7 +291,7 @@ core.register_globalstep(function(dtime)
 		if st.alive then
 			rare_watch(id, spec, now)
 		elseif now >= st.next_spawn then
-			try_spawn(id, spec, now)
+			try_spawn(id, spec)
 		end
 	end
 end)
@@ -641,8 +607,8 @@ grug_mobs.register_rare("bonerattle_south", {
 -- not z-symmetric (see above). Two instances of ONE legend: §3.3 lists
 -- "Captain Bonerattle (x2, one per continent)", so both carry the same
 -- `name` and only the registry ids differ. The ids keep them apart where it
--- matters: find_existing/rare_watch match on `_grug_rare_id`, so the northern
--- captain can never be mistaken for the southern one.
+-- matters: the liveness key is "rare:<id>", so the northern captain can never
+-- be mistaken for the southern one.
 grug_mobs.register_rare("bonerattle_north", {
 	name = "Captain Bonerattle",
 	mob = "grug_mobs:skeleton_raider",

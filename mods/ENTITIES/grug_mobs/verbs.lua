@@ -591,30 +591,131 @@ end
 -- never carries a hand-written number.
 -- Keep the existing impact callbacks (including source/level attribution),
 -- replacing only flight and interception. Every shipped mob arrow uses this.
+--
+-- A fan's side shot (Round 37 MP, MOC-04, round37-plan.md §2.1.5): the
+-- dragon breath and a King's volley fire three projectiles. The middle one
+-- homes on the locked target (stamp_arrow_damage); the two side ones
+-- (stamp_straight_arrow) fly their launch velocity straight. A side shot hits
+-- the first living player on its way whom the shooter would attack (not a
+-- peaceful or invisible one, nor one its veto spares) -- never
+-- the locked target, so that target takes one hit, not three -- or the first
+-- walkable node, where `hit_node` runs (the breath's ground patch), and it is
+-- gone after its `lifetime` or with its shooter. Nodes are tested with a
+-- node-only ray, players by their distance to the step's segment.
+local STRAIGHT_REACH = 0.7 -- horizontal distance to a player's body axis
+local STRAIGHT_BODY = {0, 1.8} -- a player's height range above the feet
+
+-- mobs_redo's acquisition skips these players too (general_attack).
+local PEACEFUL_ALL = core.settings:get_bool("enable_peaceful_player") == true
+local function spared(shooter, player)
+	local name = player:get_player_name()
+	return PEACEFUL_ALL or mobs.has_priv(name, "peaceful_player")
+		or mobs:is_invisible(shooter, name)
+		or (shooter._grug_ignore_player ~= nil and shooter:_grug_ignore_player(player))
+end
+
+-- The player the segment a -> b passes (the closest along it), or nil.
+local function straight_victim(self, a, b)
+	local source = self._grug_source
+	local shooter = source and source:get_luaentity()
+	local dx, dy, dz = b.x - a.x, b.y - a.y, b.z - a.z
+	local length2 = dx * dx + dy * dy + dz * dz
+	local mid = {x = (a.x + b.x) / 2, y = (a.y + b.y) / 2, z = (a.z + b.z) / 2}
+	local best, best_t
+	for _, object in ipairs(core.get_objects_inside_radius(mid,
+			math.sqrt(length2) / 2 + 2.5)) do
+		local p = core.is_player(object) and object ~= self._grug_skip and
+			object:get_hp() > 0 and object:get_pos()
+		if p and not spared(shooter, object) then
+			-- The closest point of the segment to the body's middle.
+			local cy = p.y + (STRAIGHT_BODY[1] + STRAIGHT_BODY[2]) / 2
+			local t = length2 > 0 and ((p.x - a.x) * dx + (cy - a.y) * dy +
+				(p.z - a.z) * dz) / length2 or 0
+			t = math.max(0, math.min(1, t))
+			local x, y, z = a.x + dx * t, a.y + dy * t, a.z + dz * t
+			local hx, hz = x - p.x, z - p.z
+			if hx * hx + hz * hz <= STRAIGHT_REACH * STRAIGHT_REACH and
+					y >= p.y + STRAIGHT_BODY[1] and y <= p.y + STRAIGHT_BODY[2] and
+					(not best_t or t < best_t) then
+				best, best_t = object, t
+			end
+		end
+	end
+	return best, best_t
+end
+
+-- One step of a side shot; true when it ended.
+local function straight_step(self, dtime, def)
+	local pos = self.object:get_pos()
+	local source = self._grug_source
+	self.timer = (self.timer or 0) + dtime
+	if not pos or not (source and source:get_luaentity()) or
+			self.timer > (self.lifetime or 4.5) then
+		self.object:remove()
+		return true
+	end
+	local last = self._grug_last or pos
+	self._grug_last = pos
+	local victim, victim_t = straight_victim(self, last, pos)
+	local length = vector.distance(last, pos)
+	for pointed in core.raycast(last, pos, false, false) do
+		if pointed.type == "node" then
+			local node = core.get_node_or_nil(pointed.under)
+			local node_def = node and core.registered_nodes[node.name]
+			if not node_def or node_def.walkable then
+				-- A player before the wall takes the shot; an unloaded node
+				-- (nil) only ends it.
+				if victim and victim_t * length <=
+						vector.distance(last, pointed.intersection_point) then
+					break
+				end
+				if node_def and def.hit_node then def.hit_node(self, pointed.above) end
+				self.object:remove()
+				return true
+			end
+		end
+	end
+	if victim then
+		if def.hit_player then def.hit_player(self, victim) end
+		self.object:remove()
+		return true
+	end
+	return false
+end
+
 function grug_mobs.register_homing_arrow(name, def)
 	def.physical = false
 	def.collide_with_objects = false
 	def.on_step = function(self, dtime)
 		if self._grug_settled then return end
-		local destination, arrived = grug_core.homing_step(self._grug_lock, dtime)
-		if not destination then
-			self._grug_settled = true
-			self.object:remove()
-			return
-		end
-		if arrived then
-			self._grug_settled = true
-			local target = self._grug_lock.target
-			local hit = target:is_player() and def.hit_player or def.hit_mob
-			if hit then hit(self, target) end
-			self.object:remove()
-			return
+		local destination, arrived
+		if self._grug_straight then
+			if straight_step(self, dtime, def) then
+				self._grug_settled = true
+				return
+			end
+		else
+			destination, arrived = grug_core.homing_step(self._grug_lock, dtime)
+			if not destination then
+				self._grug_settled = true
+				self.object:remove()
+				return
+			end
+			if arrived then
+				self._grug_settled = true
+				local target = self._grug_lock.target
+				local hit = target:is_player() and def.hit_player or def.hit_mob
+				if hit then hit(self, target) end
+				self.object:remove()
+				return
+			end
 		end
 		if def.do_custom then def.do_custom(self, dtime) end
 		if def.tail == 1 and def.tail_texture then
 			core.add_particle({pos = self.object:get_pos(), expirationtime = 0.25,
 				size = 2, texture = def.tail_texture, glow = def.glow or 0})
 		end
+		if not destination then return end -- a side shot keeps its velocity
 		local remaining = math.max(0.01, self._grug_lock.duration - self._grug_lock.age)
 		self.object:set_velocity(vector.multiply(vector.subtract(destination,
 			self.object:get_pos()), 1 / remaining))
@@ -636,6 +737,20 @@ function grug_mobs.stamp_arrow_damage(ent, mob)
 	ent._grug_source = mob and mob.object
 	ent._grug_damage = mob and mob.damage or nil
 	ent._grug_attacker_level = mob and mob._grug_level or nil
+end
+
+-- A fan's side shot (see register_homing_arrow): no lock, the velocity the
+-- caller sets, never a hit on the shooter's locked target `mob.attack`.
+function grug_mobs.stamp_straight_arrow(ent, mob)
+	if not ent then
+		return
+	end
+	ent._grug_straight = true
+	ent._grug_skip = mob.attack
+	ent._grug_last = ent.object:get_pos()
+	ent._grug_source = mob.object
+	ent._grug_damage = mob.damage
+	ent._grug_attacker_level = mob._grug_level
 end
 
 -- opts: texture (sprite, required), label (readable name for death messages,

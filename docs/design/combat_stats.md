@@ -397,6 +397,15 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   distance/speed. The visual converges on the moving target. Later movement out
   of range, intervening actors or terrain do not intercept it. Cover protects
   before launch only. No ballistic obstacle navigation or endless pursuit.
+- **A mob's fan has one homing shot** (Round 37, user ruling,
+  `round37-plan.md` §2.1.5): the dragon breath and a King's volley fire
+  three projectiles; only the middle one homes on the locked target, so that
+  target takes one hit. The two side projectiles fly their launch direction
+  straight: they hit the first living player on their way whom the shooter
+  would attack (its acquisition veto), never the locked target, end on the
+  first walkable node (the breath leaves its ground patch there) and expire
+  after their lifetime or with their shooter (`grug_mobs/verbs.lua`
+  `stamp_straight_arrow`). Numbers before and after: `tools/r36_r/numbers.py`.
 - **Damage settles once at impact**, through existing armor, dodge, absorb,
   immunity, PvP/evade, attribution, threat and action/wear rules. Geometric
   arrival does not guarantee HP loss. Lost/dead/unloaded/teleported targets

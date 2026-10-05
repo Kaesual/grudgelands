@@ -810,6 +810,26 @@ achievements](#cloaks-and-achievements).
   nil from the cached state, cheap enough for a once-a-second pass; with
   grug_quests absent everyone is eligible).
   Fixtures `tools/r36_r` (with `numbers.py` and `engine.sh`), `tools/r33_c1`.
+- **Authored actors and their liveness (Round 37 MP):** `mobs/api.lua`'s
+  `grug_authored` (a GRUG PATCH) exempts every NPC and every mob marked
+  `_grug_authored` from the active-mob limit's count and removal: by its
+  definition (the dragons, the rift boss; `grug_mobs.register_mob` publishes
+  the field on the prototype) or by its spawner through `mobs:add_mob`'s def
+  (rares, leaders), which hands the mark in as staticdata. A shutdown makes
+  no unload despawn decision (`grug_shutting_down`). `grug_mobs/liveness.lua`
+  is the one "is it still out there" rule for the actors that persist with
+  the map without a socket, the named rares (`"rare:<id>"`) and the dragons
+  (`"dragon:<id>"`): a spawn takes `next_generation(key)` and stamps
+  `_grug_live_key`/`_grug_live_gen` (a dragon through `add_entity`'s
+  staticdata, a rare through `add_mob`'s `_grug_staticdata`); the first statement of
+  `init.lua`'s after_activate wrapper, `grug_mobs.live_claim`, removes a stale
+  or second copy; a class-level `on_deactivate` records the last place; the
+  callers' 10 s passes ask `watch(key, dt)`, which counts absence only while
+  that place is an active mapblock and answers `"lost"` after
+  `LOST_AFTER` (60 s) of it; a rare's death by any cause books its ordinary
+  respawn first (`settle_mob_death`), so "lost" covers removals only. Royal summons, whelps and other
+  encounter adds are not authored. Fixture `tools/r37_mp` (with `engine.sh`,
+  the restart test).
 
 ## Mob voices
 

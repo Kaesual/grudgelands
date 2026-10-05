@@ -227,16 +227,20 @@ local function protected_for_actor(pos, actor_name)
 	return grug_core.ground_effect_protected(pos, actor_name)
 end
 
+-- A patch goes only into air (or onto a patch it renews) above walkable
+-- ground, and its timer turns it back into air (Round 37 MP, MOC-05; user
+-- default round37-plan.md §2.4): snow, plants, bone piles and water are never
+-- replaced. Every other buildable_to node used to be, and the timer left air
+-- where it had stood.
 local function find_effect_pos(impact)
 	local top = math.floor(impact.y + 0.1) + 1
 	for y = top, top - 4, -1 do
 		local pos = rounded_column(impact, y)
 		local node = core.get_node_or_nil(pos)
 		local below = core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
-		local def = node and core.registered_nodes[node.name]
 		local below_def = below and core.registered_nodes[below.name]
-		if node and def and below and below_def and
-				(node.name == "air" or def.buildable_to) and below_def.walkable then
+		if node and below_def and (node.name == "air" or node.name == RIME or
+				node.name == SCORCH) and below_def.walkable then
 			return pos, node.name
 		end
 	end
@@ -572,6 +576,9 @@ local function shoot_breath(self, action, opts)
 	if not from or not to then return end
 	from = {x = from.x, y = from.y + opts.eye_height, z = from.z}
 	to = {x = to.x, y = to.y + 1, z = to.z}
+	-- The middle shot homes on the target, the two at +-15 degrees fly
+	-- straight and hit a bystander or the ground (Round 37 MP, MOC-04,
+	-- grug_mobs.stamp_straight_arrow): the target takes one hit, not three.
 	for _, degrees in ipairs({-15, 0, 15}) do
 		local angle = degrees * math.pi / 180
 		local dx, dy, dz = to.x - from.x, to.y - from.y, to.z - from.z
@@ -582,7 +589,11 @@ local function shoot_breath(self, action, opts)
 			local object = core.add_entity(from, opts.arrow)
 			local ent = object and object:get_luaentity()
 			if ent then
-				grug_mobs.stamp_arrow_damage(ent, self)
+				if degrees == 0 then
+					grug_mobs.stamp_arrow_damage(ent, self)
+				else
+					grug_mobs.stamp_straight_arrow(ent, self)
+				end
 				ent._grug_damage = self.damage
 				ent._grug_attacker_level = self._grug_level
 				ent._grug_source = self.object
@@ -1184,6 +1195,9 @@ local function dragon_def(id, opts, callbacks)
 		clock = "any", type = "monster",
 		_grug_fixed_level = 70, _grug_tier = "boss",
 		_grug_no_far_despawn = true,
+		-- Authored (Round 37 MP): never removed by or counted against
+		-- mobs_redo's active-mob limit (mobs/api.lua grug_authored).
+		_grug_authored = true,
 		-- No distance or contact leash: the arena edge ends the fight
 		-- (dragon_tick, Round 31 DA2).
 		_grug_no_leash = true,
@@ -1202,6 +1216,9 @@ local function dragon_def(id, opts, callbacks)
 		animation = opts.animation,
 		drops = {}, water_damage = 0, lava_damage = 0, light_damage = 0,
 		do_punch = arena_punch,
+		-- Only the dragon's current instance gets here: a stale or second copy
+		-- removed itself first (init.lua's after_activate wrapper, Round 37 MP
+		-- liveness.lua).
 		after_activate = function(self)
 			self._grug_boss_id = "dragon:" .. id
 			callbacks.storage:set_string("boss:dragon:" .. id .. ":alive", "1")

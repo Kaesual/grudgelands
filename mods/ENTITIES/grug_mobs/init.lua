@@ -47,9 +47,10 @@ if not grug_core.zone_authority_installed() then
 	error("[grug_mobs] validated R7 zone authority was not installed")
 end
 
--- Mod-wide persistence (AGENTS.md: fetch at load time). Two writers: the
--- named-rare spawner (rares.lua) and the start settlements' one marker per
--- occupied NPC socket (start_npcs.lua).
+-- Mod-wide persistence (AGENTS.md: fetch at load time). Its writers include
+-- the named-rare spawner (rares.lua), the liveness records of the rares and
+-- dragons (liveness.lua) and the start settlements' one marker per occupied
+-- NPC socket (start_npcs.lua).
 grug_mobs.storage = core.get_mod_storage()
 
 -- Builds one texture entry per MATERIAL SLOT of a mesh (wp6_model_notes §0.3).
@@ -100,6 +101,11 @@ end
 --                          Kraken/royal actors retain their encounter rules)
 --   def._grug_soft_deaggro — false: opt out of the 25 m walk-speed rule
 --                          (GRUG PATCH in mobs/api.lua do_states)
+--   def._grug_authored    — true: an authored actor (the dragons, the rift
+--                          boss): never counted against or removed by the
+--                          active-mob limit (GRUG PATCH in mobs/api.lua);
+--                          NPCs are authored by their type, spawned rares and
+--                          leaders by mobs:add_mob's def
 --   def.walk_velocity     — the idle roaming pace (mobs_redo stand/walk
 --                          states); at most grug_mobs.CALM_WALK_MAX, see
 --                          below. Combat movement uses run_velocity.
@@ -297,6 +303,14 @@ function grug_mobs.settle_mob_death(self)
 	-- very step unless another live mob still holds them (grug_core).
 	grug_core.disengage_mob(self)
 	self.temp = self.temp or {}
+	-- A named rare's death by any cause (a guard, lava, a fall, another mob)
+	-- books its ordinary 2-4 h respawn; the lethal player hit booked it
+	-- already. Liveness's "lost" (liveness.lua) is then only for a rare that
+	-- vanished without dying (Round 37 MP review).
+	if self._grug_rare_id and not self.temp.grug_rare_death_sent then
+		self.temp.grug_rare_death_sent = true
+		grug_mobs.rare_killed(self._grug_rare_id)
+	end
 	if not self.temp.grug_kill_loot_settled then
 		self.temp.grug_kill_loot_settled = true
 		local tagger = grug_mobs.player_drop_tagger
@@ -812,13 +826,15 @@ function grug_mobs.register_mob(name, def)
 	-- players either. Those are brand-new characters who have not chosen a
 	-- side yet (still on the spawn platform); letting faction guards hunt
 	-- them would be pure griefing. Monsters have no faction and are
-	-- unaffected.
-	local function faction_veto(player)
-		if not faction then
+	-- unaffected -- unless their spawner hands one an instance faction (the
+	-- Undead King's Bone Call raiders, bosses.lua; Round 37 MP).
+	local function faction_veto(s, player)
+		local own = faction or s._grug_faction
+		if not own then
 			return false
 		end
 		local pf = grug_core.get_player_faction(player:get_player_name())
-		return pf == nil or pf == faction
+		return pf == nil or pf == own
 	end
 
 	local visual_cfg = def._grug_visual
@@ -835,6 +851,9 @@ function grug_mobs.register_mob(name, def)
 
 	local old_tag_after_activate = def.after_activate
 	def.after_activate = function(self, staticdata, mob_def, dtime)
+		-- A stale or second copy of a named rare or a dragon removes itself
+		-- before anything else runs (liveness.lua).
+		if not grug_mobs.live_claim(self) then return end
 		if old_tag_after_activate then
 			old_tag_after_activate(self, staticdata, mob_def, dtime)
 		end
@@ -917,7 +936,7 @@ function grug_mobs.register_mob(name, def)
 				-- outside its arena (boss_dragons.lua).
 				return grug_mobs.gave_up_on(s, player)
 					or (night_truce and truce_active(s, player))
-					or faction_veto(player)
+					or faction_veto(s, player)
 					or (s._grug_target_veto ~= nil and s._grug_target_veto(s, player))
 			end
 		end
@@ -931,15 +950,16 @@ function grug_mobs.register_mob(name, def)
 				self:stop_attack()
 			end
 		end
-		if faction then
+		if faction and not self._grug_faction then
 			-- Store the faction on the entity (every activation, first tick)
 			-- so other systems can read it via get_object_faction.
-			if not self._grug_faction then
-				self._grug_faction = faction
-			end
+			self._grug_faction = faction
+		end
+		if self._grug_faction then
 			-- Never attack the own faction (e.g. after provoking/group_attack).
 			if self.state == "attack" and self.attack and
-					grug_factions.get_object_faction(self.attack) == faction then
+					grug_factions.get_object_faction(self.attack) ==
+						self._grug_faction then
 				self:stop_attack()
 			end
 		end
@@ -983,6 +1003,12 @@ function grug_mobs.register_mob(name, def)
 	if disposition then
 		core.registered_entities[name]._grug_disposition = disposition
 	end
+	-- An authored actor by definition (the dragons, the rift boss): exempt
+	-- from mobs_redo's active-mob limit and its count (Round 37 MP, the GRUG
+	-- PATCH `grug_authored` in mobs/api.lua).
+	if def._grug_authored then
+		core.registered_entities[name]._grug_authored = true
+	end
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
@@ -1008,6 +1034,8 @@ dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/voices.lua")
 dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")
+-- Round 37 MP: liveness of the named rares and the dragons (MOC-01, MOC-03).
+dofile(modpath .. "/liveness.lua")
 dofile(modpath .. "/patrol.lua")
 dofile(modpath .. "/target_frame.lua")
 dofile(modpath .. "/items.lua")

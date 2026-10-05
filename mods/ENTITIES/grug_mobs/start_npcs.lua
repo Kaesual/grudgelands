@@ -148,9 +148,9 @@
 --
 --   AND A MARKER IS NEVER LEFT STANDING ALONE. `on_die` is reached only from
 --   `check_for_death` (api.lua:887-975), so it is not the only way an entity
---   can leave: `/clearobjects`, the `mob_active_limit` removal inside
---   `mob_activate` (api.lua:3638-3769) and a shutdown between the mod-storage
---   flush and the map flush all end with a marker and no NPC, and without a
+--   can leave: `/clearobjects` and a shutdown between the mod-storage flush
+--   and the map flush end with a marker and no NPC (the `mob_active_limit`
+--   removal no longer touches NPCs since Round 37), and without a
 --   re-check that socket would stay empty for the life of the world. So a pass
 --   over a socket whose own mapblock is ACTIVE -- the only state in which the
 --   scan can answer at all -- also frees a marked socket that nothing holds,
@@ -1698,7 +1698,9 @@ function grug_mobs.start_guard_died(self)
 		slot.id .. " lost its guard, refill due at " .. slot.due)
 end
 
-local ROYAL_HOLD = 2147483647
+-- A royal guard's or bodyguard's return after its death, in wall-clock
+-- seconds, the King's own interval (Round 37 MP, MOC-06).
+local ROYAL_RETURN = 15 * 60
 
 -- A king and his throne guards, a General and his bodyguards (`slot.royal`).
 local function royal_slots(row)
@@ -1715,10 +1717,14 @@ end
 -- A fallen retinue member stays down for the current attempt.  The king's
 -- full reset restores all four slots together; killing the king instead books
 -- one shared absolute wall-clock timestamp for the complete five-NPC group.
+-- A guard killed without either (picked off from beyond the king's view, his
+-- target dead before any reset) returns on its own after ROYAL_RETURN, a
+-- persisted wall-clock time like the group's (Round 37 MP, MOC-06; until
+-- then it was held until a reset or the king's death that might never come).
 function grug_mobs.royal_guard_died(self)
 	local row = by_key[self._grug_start]
 	local slot = row and row.by_socket[self._grug_socket]
-	if slot and slot.placed then mark_free(row, slot, ROYAL_HOLD) end
+	if slot and slot.placed then mark_free(row, slot, os.time() + ROYAL_RETURN) end
 end
 
 function grug_mobs.royal_encounter_reset(self)
@@ -1744,7 +1750,7 @@ end
 function grug_mobs.royal_king_died(self)
 	local row = by_key[self._grug_start]
 	if not row then return end
-	local due = os.time() + 15 * 60
+	local due = os.time() + ROYAL_RETURN
 	local claims = claims_of(row.key)
 	for _, slot in ipairs(royal_slots(row)) do
 		local holder = claims[slot.id]

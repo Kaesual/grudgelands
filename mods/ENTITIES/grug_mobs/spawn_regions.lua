@@ -1042,7 +1042,10 @@ function SR.leader_tick(now, players, zone_ids)
 				local pos = leader_ground(spot, family == "zombie" and SR.BLIGHT_GROUND or nil)
 				if pos and SR.players_clear(pos, SR.LEADER_CLEAR, players) and
 						not grug_mobs.claim_refuses_spawn(name, pos) then
-					local ent = grug_mobs.add_mob(pos, {name = name, ignore_count = true})
+					-- Authored (Round 37 MP): placed at mobs_redo's active-mob
+					-- limit too and not counted against it.
+					local ent = grug_mobs.add_mob(pos, {name = name, ignore_count = true,
+						_grug_authored = true})
 					if ent then
 						ent._grug_leader = true
 						local below = core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
