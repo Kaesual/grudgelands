@@ -22,6 +22,11 @@
 --      roll), after 24 h boss loot again; every credited kill reaches
 --      register_on_boss_kill as "rift:<site>"; a reset clears the ledger and
 --      never runs the dragon's cancel;
+--   V  the void's damage: a share of the victim's own pool a second through
+--      grug_core's REAL node_pool_damage (about 9 s at any level), lava
+--      untouched; the void pulse: an evading or targetless boss never lands
+--      a pulse it was winding up; a boss knocked off its way home drops the
+--      route and asks again;
 --   R  leash and reset through the REAL aggro.lua: the boss is no free
 --      (damage-pursuit) mob, is dragged at most its own 24 nodes, then heals,
 --      forgets, clears its ledger and runs home untouchable, and is a normal
@@ -649,6 +654,94 @@ do
 end
 
 ------------------------------------------------------------------------------
+-- V. The void's damage, the pulse after a reset, the route.
+------------------------------------------------------------------------------
+do
+	-- grug_core's real environment_damage.lua (its once-a-second pass is not run).
+	core.get_item_group = function(name, group)
+		local def = registered_nodes[name]
+		return def and def.groups and def.groups[group] or 0
+	end
+	local saved_steps = steps
+	steps = {}
+	dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
+	steps = saved_steps
+	local function share(node, pool)
+		return grug_core.node_pool_damage({type = "node_damage", from = "engine", node = node}, pool)
+	end
+	local percent = registered_nodes[VOID].groups.grug_pool_damage
+	check(percent and percent > 0, "V the void hurts by a share of the pool")
+	for _, level in ipairs({41, 50, 60}) do
+		local pool = math.floor(20 + 5 * level + 0.66 * level * level + 0.5)
+		local hit = share(VOID, pool)
+		local seconds = pool / hit
+		check(hit and seconds >= 8 and seconds <= 10,
+			("V a level-%d pool (%d) lasts %.1f s in the void (%d a second)"):format(level, pool, seconds, hit or 0))
+	end
+	registered_nodes["default:lava_source"] = {groups = {lava = 3}}
+	eq(share("default:lava_source", 2696), nil, "V lava keeps its own rule")
+	eq(share(VOID, 0), 0, "V no pool, no share")
+	eq(grug_core.node_pool_damage({type = "punch"}, 2696), nil, "V a punch is no node damage")
+	local combat = read(repo .. "/mods/CORE/grug_core/combat.lua")
+	check(combat:find("grug_core.node_pool_damage(reason", 1, true) ~= nil,
+		"V the central hp modifier applies it")
+
+	-- The real stall clock (patrol.lua), which the way home uses.
+	local patrol = read(mobs_dir .. "/patrol.lua")
+	local progress = patrol:match("\nlocal PROGRESS = ([%d%.]+)")
+	local clock_src = patrol:match("\n(function grug_mobs%.stall_clock%(.-\nend)\n")
+	local clear_src = patrol:match("\n(function grug_mobs%.stall_clear%(.-\nend)\n")
+	check(progress and clock_src and clear_src, "V the stall clock found")
+	assert(loadstring("local PROGRESS = " .. progress .. "\n" .. clock_src .. "\n" .. clear_src))()
+	-- The pulse.
+	local hits = 0
+	local real_hit = grug_mobs.boss_hit_players
+	grug_mobs.boss_hit_players = function() hits = hits + 1 end
+	local tick = core.registered_entities[BOSS].do_custom
+	local function prepare(ent)
+		ent.set_velocity = noop
+		ent.set_animation = noop
+		ent.update_tag = noop
+		ent.temp = ent.temp or {}
+	end
+	prepare(boss)
+	boss.state, boss.attack = "attack", players[1]
+	boss.temp.grug_rift_pulse = 0
+	tick(boss, 0.1)
+	check(boss.temp.grug_rift_cast ~= nil and boss.temp.grug_telegraph, "V a fight winds the pulse up")
+	tick(boss, 1); tick(boss, 1.1)
+	eq(hits, 1, "V ...and lands it on a target")
+	boss.temp.grug_rift_pulse = 0
+	tick(boss, 0.1)
+	check(boss.temp.grug_rift_cast ~= nil, "V a second wind-up")
+	boss.temp.grug_evading = {started = 0}
+	boss.attack, boss.state = nil, "stand"
+	tick(boss, 1); tick(boss, 1.1)
+	eq(hits, 1, "V an evading boss never lands it")
+	check(boss.temp.grug_rift_cast == nil and not boss.temp.grug_telegraph, "V ...the wind-up and its mark are gone")
+	boss.temp.grug_evading = nil
+	boss.state, boss.attack = "attack", players[1]
+	boss.temp.grug_rift_pulse = 0
+	tick(boss, 0.1)
+	boss.attack, boss.state = nil, "stand"
+	tick(boss, 2.5)
+	eq(hits, 1, "V nor a boss that lost its target")
+	grug_mobs.boss_hit_players = real_hit
+
+	-- The route: a boss that does not move.
+	boss.temp = {}
+	boss._walked_to = nil
+	local home = boss._grug_home
+	boss.object.pos = {x = home.x + 12, y = home.y, z = home.z}
+	boss.temp.grug_rift_route = {i = 1, {x = home.x + 9, y = home.y, z = home.z},
+		{x = home.x + 5, y = home.y, z = home.z}}
+	tick(boss, 1)
+	check(boss._walked_to and boss._walked_to.x == home.x + 9, "V an idle boss follows its route")
+	for _ = 1, 4 do tick(boss, 1) end
+	eq(boss.temp.grug_rift_route, nil, "V knocked off it (no progress for 2 s): the route is dropped")
+end
+
+------------------------------------------------------------------------------
 -- R. Leash and reset (the real aggro.lua).
 ------------------------------------------------------------------------------
 do
@@ -663,6 +756,7 @@ do
 	local def = core.registered_entities[BOSS]
 	boss.hp_max, boss.health = 24264, 9000
 	boss.temp = {}
+	boss.object.pos = {x = anchor.x, y = anchor.y + 1, z = anchor.z}
 	boss.stop_attack = function(self) self.attack = nil; self.state = "stand" end
 	grug_mobs.apply_aggro_fields(boss, {damage_pursuit = false, leash_range = def._grug_leash_range})
 	eq(grug_mobs.damage_pursuit(boss), false, "R the boss is no free (damage-pursuit) mob")

@@ -705,9 +705,10 @@ contact there is intended.
   whose floor is not open ground stays floor.
 - **The void node:** not walkable, not pointable, unbreakable, never in a
   player's hands; a player sinks in, moves as in a liquid (no breath lost),
-  takes **300 damage per second** (node damage: armour does not reduce it)
-  and swims up and steps out at the edge. Mobs avoid it like any damaging
-  node.
+  loses **11 % of his maximum HP per second** (about 9 s from full at any
+  level, like lava's share rule, `combat_stats.md`; armour does not reduce
+  it) and swims up and steps out at the edge. Mobs avoid it like any
+  damaging node (one that ends up in it takes a flat 300 per second).
 - **Particles:** dark motes over the crack for each player within 48 nodes,
   one spawner per stretch of the crack every 5 s, about 80 particles per
   player and period, about 50 alive at once per player.
@@ -716,10 +717,11 @@ contact there is intended.
   site's centre like a leader when a player is within 48 nodes and none
   within 6 of its spot, and is never saved with the map. Its leash is its
   own: dragged more than **24 nodes** from where its fight began, or 15 s
-  without contact, it resets (full health, threat and its ledger cleared)
-  and runs home untouchable (the evade of `combat_stats.md` §4), taking an
-  A* way round the crack when a straight run stalls; idle it walks back to
-  its spot. It returns **5 minutes** of wall-clock time after its death.
+  without contact, it resets (full health, threat and its ledger cleared, a
+  void pulse it was winding up cancelled) and runs home untouchable (the
+  evade of `combat_stats.md` §4), taking an A* way round the crack when a
+  straight run stalls (and a new one when knocked off it); idle it walks
+  back to its spot the same way. It returns **5 minutes** of wall-clock time after its death.
   Loot through the boss ledger (`items_crafting.md` §5.3b); every credited
   kill reaches `grug_mobs.register_on_boss_kill` as `rift:<site key>`.
 

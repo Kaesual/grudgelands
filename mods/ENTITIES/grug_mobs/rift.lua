@@ -37,9 +37,12 @@ local TEXTURES = {
 }
 
 local VOID = "grug_mobs:rift_void"
--- Node damage per second, like the dragon arenas' hazards (world.md §4b):
--- a fixed amount, so armour does not reduce it; at level 60 about a ninth of
--- the neutral pool.
+-- A player in the void loses VOID_PERCENT of his own pool a second, like lava
+-- (grug_core node_pool_damage through the group below): about 9 s at any
+-- level, armour never reduces it. The node's flat damage_per_second only
+-- switches the engine's tick on; it is what a mob that ends up in the void
+-- takes (mobs avoid damaging nodes).
+local VOID_PERCENT = 11
 local VOID_DPS = 300
 
 core.register_node(VOID, {
@@ -62,7 +65,7 @@ core.register_node(VOID, {
 	damage_per_second = VOID_DPS,
 	post_effect_color = {a = 190, r = 16, g = 0, b = 28},
 	drop = "",
-	groups = {not_in_creative_inventory = 1},
+	groups = {not_in_creative_inventory = 1, grug_pool_damage = VOID_PERCENT},
 	on_blast = function() end,
 })
 
@@ -263,6 +266,17 @@ local function go_home(self, t, pos, dtime)
 		end
 		if step then
 			grug_mobs.walk_toward(self, step.x, step.z, pos)
+			-- Knocked off the route (no progress toward its step): drop it,
+			-- so the walk below stalls again and asks for a new way.
+			t.grug_rift_walk = (t.grug_rift_walk or 0) + dtime
+			if t.grug_rift_walk >= 1 then
+				local elapsed = t.grug_rift_walk
+				t.grug_rift_walk = 0
+				if grug_mobs.stall_clock(self, step.x, step.z, pos, elapsed) >= STALL then
+					t.grug_rift_route = nil
+					grug_mobs.stall_clear(self)
+				end
+			end
 			return
 		end
 		t.grug_rift_route = nil
@@ -294,6 +308,13 @@ local function boss_tick(self, dtime)
 	self.temp = self.temp or {}
 	local t = self.temp
 	local cast = t.grug_rift_cast
+	-- A reset (leash, give-up, idle heal) or a lost target ends the pulse's
+	-- wind-up: an evading boss never lands it.
+	if cast and (t.grug_evading or not self.attack) then
+		t.grug_rift_cast, cast = nil, nil
+		t.grug_telegraph = nil
+		if self.update_tag then self:update_tag() end
+	end
 	if cast then
 		self:set_velocity(0)
 		cast.left = cast.left - dtime

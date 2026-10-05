@@ -50,6 +50,21 @@ function grug_core.lava_damage(hp_max)
 	return pool_share(hp_max, LAVA_PERCENT)
 end
 
+-- A node in the group `grug_pool_damage` (Round 36: the rift's void) hurts by
+-- that percent of the actual pool per second, like lava, so a visitor of any
+-- level has the same seconds to climb out. The engine's tick names the node;
+-- its flat damage_per_second only switches the tick on. nil for any other
+-- reason.
+function grug_core.node_pool_damage(reason, hp_max)
+	if not reason or reason.type ~= "node_damage" or reason.from ~= "engine" or
+			type(reason.node) ~= "string" then
+		return nil
+	end
+	local percent = core.get_item_group(reason.node, "grug_pool_damage")
+	if percent <= 0 then return nil end
+	return pool_share(hp_max, percent)
+end
+
 function grug_core.drowning_damage(hp_max)
 	return pool_share(hp_max, DROWNING_PERCENT)
 end

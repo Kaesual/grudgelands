@@ -692,6 +692,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (`grug_mobs.boss_settle`); a boss reward hook is `fn(self, boss_id, player,
   locked)`, `locked` for a kill inside the character's lockout (grug_quality
   rolls `BOSS_DROPS.locked`'s tier, the rift boss's elite row, else nothing).
+  The void's player damage is the node group `grug_pool_damage` (a percent
+  of the pool per second), applied in grug_core's central hp modifier through
+  `grug_core.node_pool_damage` (`environment_damage.lua`), lava's pattern.
   Fixtures `tools/r36_r` (with `numbers.py` and `engine.sh`), `tools/r33_c1`.
 - **Mob voices (Round 34 S1b):** `grug_mobs/voices.lua` holds `VOICES`, the
   families (humanoid, goblin, undead, mummy, skeleton, spirit, giant,
