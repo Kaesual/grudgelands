@@ -320,7 +320,7 @@ from `grug_gear`. Consequences, all binding:
   shipped under the adjectives *Crude / Plain / Tempered / Reinforced /
   Superior / Grand* merge into that one ladder. **Shipped 2026-09-15**
   (WP13 playtest round 2): the exact names are below, the generator, the six
-  bracket catalogs, the prices and the ilvl anchors of §3.8/§8.2 are
+  bracket catalogs, the prices and the ilvl anchors of §3.8 and economy.md §2 are
   unchanged by the rename, and no old-stack migration was implemented
   (fresh-server development).
 
@@ -557,8 +557,9 @@ shovel, axe and the hand. No other mod hard-codes a stratum node name, tier
 level or harvest tier.
 
 Pick profiles retain their authored monotonic ladder. Hoe identities, uses,
-soil conversion, water buckets and wild renewal are authoritative in
-[farming.md](farming.md); this document owns only their Basics recipes.
+soil conversion, water buckets, seeds and wild renewal are authoritative in
+[farming.md](farming.md), their Basics recipes (hoes, bucket, seeds)
+included.
 
 #### 3.0.5 Boats have no recipe
 
@@ -915,10 +916,16 @@ main profession slot (professions.md §1).
   `_grug_ilvl` gates eating independently. There is no Cooking Fire.
 
   **Food restore values** (recovery amended 2026-09-22). A serving lasts **300 s**, ticks every **5 s**,
-  and the newest food replaces the old one. Eating is refused before consumption while the player is in combat.
+  and the newest food replaces the old one. Eating is a 1.5 s hold (Round 21)
+  with continuous bite feedback: a looping eating sound at 0.5 gain and a
+  modest moving HUD food image in place of the wield image, both cleaned up
+  when the hold ends or is cancelled. In combat the hold is refused at once,
+  before any sound. The level requirement and the mana-pool check refuse at
+  the end of the hold, so their sound has already played; a Caster dish is
+  refused for a character without a mana pool ("Mana food has no effect
+  without a mana pool."). Nothing is consumed on a refusal.
   Accepted food heals instantly; its regeneration pauses during later combat,
-  while secondary modifiers remain active. Successful eating plays one shared
-  eating sound at 0.5 gain; rejected attempts play no sound.
+  while secondary modifiers remain active.
 
   | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
   |---|---:|---:|---:|---|---|---|
@@ -940,22 +947,22 @@ main profession slot (professions.md §1).
 
   | Item | Raw tier | Recipe tier | Food rule | Planned source |
   |---|---:|---:|---|---|
-  | Wild Grain | T1 | T1 | raw HP food | start-zone clearings |
+  | Wild Grain | T1 | T1 | raw HP food | the six starts and six home zones, level 4–20 |
   | Carrot / Cassava | T1 | T1 | raw HP food | Accord / Throng start palettes |
   | Wild Onion / Fire Pepper | T1 | T1 | inedible spice | faction start and home palettes |
-  | Pumpkin | T2 | T2 | raw HP food | level 11–20 margins |
+  | Pumpkin | T2 | T2 | raw HP food | the six home zones, level 11–20 |
   | Blightberry / Sunberry / Jungle Berry | T2 | T2 | raw HP food | Throng level 11–20 palettes |
   | Frost Melon | T3 | T4 | raw HP food | Frostbarrow and Whitebridge, level 21–30 |
   | Sugar Cane | T1 | T2 | inedible sweetener | fresh and salt shores in every band |
   | Bamboo Shoot | T1 | T1 | raw HP food | jungle and swamp shores |
   | Cave Cap | T3 | T3 | raw HP food | caves at y −100…−500 |
-  | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 41–50 |
+  | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 44–50 |
   | Ember Moss | T5 | T5 | inedible Alchemy reagent | T5 stone (`grug_materials:t5_stone`) at y ≤ −701 |
 
-  Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, ordinary
-  Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom T3 and Wild Cocoa T6.
-  The five band fish are T2–T6 respectively. Cooked Meat, Cooked Fish and Bread
-  are T1 Hearty dishes.
+  Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, the Raw
+  Meat Block T1, ordinary Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom
+  T3 and Wild Cocoa T6. The five band fish are T2–T6 respectively. Cooked
+  Meat, Cooked Fish, Bread and the Meat Block are T1 Hearty dishes.
 
   **Cooking book.** Every row is a profession recipe at the crafting grid and
   contains at least one ingredient registered at its own recipe tier. The
@@ -1017,58 +1024,22 @@ main profession slot (professions.md §1).
   supplies — thread/parchment/vial) plus the **T1 catalog** of §3.8.
   Profession shelves carry their trade's supplies, food and T1 basics
   ([economy plan](../planning/economy-vendor-plan.md) §2.3); no shelf sells
-  an enchant input or an ingredient above T1, which a load audit enforces.
+  an enchant input (signature loot or family input) or an ingredient above
+  T1, which a load audit enforces (`professions.md` §4).
 
-### 3.8 Vendor bracket catalogs (decided 2026-08-07)
+### 3.8 Vendor bracket catalogs (decided 2026-08-07; shelf since Round 33)
 
-**Round 33 ([round33-plan.md](../planning/round33-plan.md) §2.6): vendors sell
-the T1 catalog only** — all six weapon families and the three armour lines
-at their T1 slot prices, at every level, with no rotation and no rotating
-Uncommon item. From T2 the bases come from Basics crafting (mined and
-gathered materials) or drops. The six catalogs below stay the craft ladder,
-the drop pool and the reference prices of buy-back and repair (§8.2). The
-historical reading that follows (a moving floor, hourly rotation) is
-superseded where it says vendors sell a bracket.
-
-Revises the old "one floor at ilvl ≤ 5" model. The vendor floor rule
-stands — vendors sell the lowest tier of each category — but **the floor
-moves with the player** instead of freezing at the starter set.
-
-**Merged with the base craft ladder** (2026-08-07, §3.0.3). A bracket is
-a **material tier** (§3.0.1), and the items in it are the base items
-everybody can craft. Two consequences, and nothing else in this section
-changes:
-
-- **The items are material-named**, never bracket-named. The old
-  adjective naming — *Crude / Plain / Tempered / Reinforced / Superior /
-  Grand* over the six brackets — was replaced by the material the item is
-  actually made of: **metal items take the lead metal** of §3.0.1
-  (Bronze Sword, Iron Helm, Steel Chestplate, Silversteel Greaves,
-  Embersteel Sabatons, Abyssal Steel Greataxe), **cloth items take their
-  bolt grade** and **leather items their leather grade** (§3.4/§3.5) —
-  Patch Robe, Silkweave Cowl. The slot nouns are unchanged (Helm /
-  Chestplate / Greaves / Sabatons, Cowl / Robe / Leggings / Slippers),
-  and so are the generator, the prices, the ilvl anchors and the bracket
-  boundaries. **Shipped 2026-09-15** with WP13's round-2 merge, together
-  with the merge into `default`'s tool ladder; the exact ladder is §3.0.3's
-  table and `grug_gear.MATERIALS`.
-- **Selling a base item is not selling "the low tier of crafting".** It
-  is selling the same item a crafter starts from. What a vendor can never
-  sell is a **enchanted** item (§6b) — that is the whole
-  of the crafting advantage now, stated as a rule instead of as a number
-  comparison.
-
-- **Six catalogs, one per 10 levels**: 1–10, 11–20, 21–30, 31–40, 41–50,
-  51–60 — the same bands as the six material tiers. A player sees their
-  own bracket **and every bracket below** (tabs in the trade formspec),
-  so starter goods stay buyable and a new shelf opens every 10 levels — a
-  deliberate reward beat on a level curve that otherwise only pays out
-  talent points (progression.md §2). The bands are **1-based**: bracket 1
-  is levels 1–10, never 0–9.
-- **Binding strength rule**: *a bracket's gear is exactly what a normal
-  mob of that bracket drops — guaranteed, but expensive.* The floor, not
-  the ceiling. Item level per bracket **3 / 10 / 20 / 30 / 40 / 50**,
-  always **Common**, therefore always without enchants (§6.1).
+- **Vendors sell the T1 catalog only** ([round33-plan.md](../planning/round33-plan.md)
+  §2.6): all six weapon families and the three armour lines at their T1 slot
+  prices, Common, at every level, with no rotation and no vendor Uncommon.
+  From T2 the bases come from Basics crafting (mined and gathered materials)
+  or drops. The superseded moving floor, bracket tabs and hourly rotation are
+  [archived](../archive/design/items-history.md#38-vendor-brackets-before-round-33-superseded).
+- **Six catalogs, one per material tier**, 1-based (bracket 1 is levels
+  1–10, never 0–9): they are the base craft ladder (§3.0.3), the drop pool of
+  their tier (§5.1) and the reference prices of buy-back and repair
+  ([economy.md](economy.md) §2). A catalog item is Common, without enchants,
+  at its bracket's item level:
 
 | Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
 |---|---|---|---|---|---|---|
@@ -1076,58 +1047,16 @@ changes:
 | ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
 | 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
 
-  **No gem base cost.** Ordinary crafted combat weapons, armor
+- **No gem base cost.** Ordinary crafted combat weapons, armor
   pieces and offhands at every tier use only their universal material
   recipe (bars, cloth, leather, wood). The former T4–T6 Cut-gem surcharge on
   base equipment is retired (Round 10 ruling 7: "There is no additional high-tier
   regional-gem surcharge on base equipment"). Gem demand comes from trinkets
   (§3.6b/§6.2) and enchant inputs (§6b). Dropped/vendor gear
   stays a usable floor.
-
-  Rationale for having the vendor ladder at all: on a small server the
-  crafter for your armor class may simply not exist — the floor stops a
-  player from going naked, it does not compete. Superseded 2026-08-07:
-  the old "±15 % of crafted gear of the same era" comparison, and the
-  older "10–15 % behind" before it. Under the merge there is nothing to
-  compare — vendor gear and base crafted gear are the same item, and the
-  crafter's edge is enchantments (§6b), not a base number.
-- **Rotation**: the core stock is fixed; each bracket additionally shows
-  a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
-  rotation in five carries a single Uncommon item**, rolled like a found
-  item (§6.3: the enchant has the item level's tier and the rule's value) and priced above the Common
-  baseline by the authoritative quality multiplier. That is
-  the "today the trader had something good" moment, without a second
-  gear source.
-
-  **Implemented reading** (decided 2026-08-07):
-  - The bracket's **fixed floor is always on sale**: the 1H sword plus a
-    full set in each of the three shipped armor lines = **13 items**. That is what
-    "guaranteed, but expensive … the floor, not the ceiling" requires,
-    and the rotation may never touch it.
-  - On top of it sit the **rotating slots**, drawn hourly from the
-    **extra weapon families**, so **one family is withheld every
-    rotation**. Withholding is what makes it a rotation: with one slot
-    per extra the whole catalog would be on the shelf every hour and the
-    re-roll would only permute the display order. The slot count is
-    **always strictly below the pool size** — that is the rule, the
-    number follows from §3.2.
-    The active extra pool is **five** families — dagger, greataxe, staff, wand
-    and bow — with fewer rotating slots than families. Scepters and orbs are
-    not aliases or visual variants.
-  - The **1-in-5 Uncommon is rolled per vendor and per bracket** (so two
-    vendors in the same hour differ, and a player's own brackets differ
-    from each other), replaces one of the rotating slots and is priced
-    by the final enchanted/quality purchase multiplier.
-  - The Uncommon is **only offered once WP5's enchant roller exists.**
-    Common is enchant-free by definition, so an Uncommon without rolls
-    is mechanically identical to the Common beside it while costing
-    more than the Common beside it — a blue-named trap, not a luxury. The
-    quality/description machinery ships regardless; WP5 lights it up only
-    after the economy/loot pass fixes the multiplier. Round 33 removed
-    the rotation and the Uncommon with it.
-  - The rotation is **deterministic**: a pure function of (real hour,
-    vendor, bracket). Two players at the same vendor in the same hour
-    see the same shelf, and a restart does not re-roll it.
+- **A vendor never sells an enchanted item** (§6b): vendor gear and base
+  crafted gear are the same item, and the crafter's edge is the enchantment,
+  not a base number.
 - Catalogs are **generated from the curves** of §3.1/§3.2, not authored
   by hand — six brackets cost the same as three.
 - **Shipped armor lines: metal, cloth and leather** (leather decided
@@ -1145,7 +1074,8 @@ changes:
   vendor and craft at once (§3.4). The Scout replaces the retired separate
   Rogue plan; no later Rogue wearer is implied.
 - Cultural-region vendor presentation and the same-race purchase discount
-  layer on top without changing catalog strength or buy-back (§8.2).
+  layer on top without changing catalog strength or buy-back
+  ([economy.md](economy.md) §2).
 
 Every craft output follows the **anti-loop rule: the payout of a crafted
 item is at most the summed payout of its ingredients** (economy.md §2) —
@@ -1268,9 +1198,6 @@ enchant of that tier (§6.3); only its stats are rolled.
 
 Vendors buy a blue item at **×3** and a gold item at **×6** of its Common
 buy-back ([economy.md](economy.md) §2).
-
-WP5 still owes the loot/economy audit: found gear must not erase demand for
-crafted gear. No removed masterwork/temper workflow is assumed by that audit.
 
 
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
@@ -1642,103 +1569,25 @@ random crafted application rolls or separate refinement steps.
 
 ## 8. Prices and money pacing
 
-This section specifies the economy as shipped since the WP44 cutover (Round
-29); [economy.md](economy.md) §2 owns the payout rules and
-[durability_repair.md](durability_repair.md) the repair quotes.
+Money is owned by [economy.md](economy.md); this section kept a copy of its
+tables until Round 37. All values use ledger copper (100c = 1s, 100s = 1g);
+no creature, NPC or world node drops currency or a physical coin, and
+physical Gold is a separate Goldsmith/build material (economy.md §1).
 
-All values use ledger copper (100c = 1s, 100s = 1g). No creature, NPC or
-world node drops currency or a physical coin. Tiered combat income is the
-expected vendor value of sellable loot; physical Gold remains a separate
-Goldsmith/build material.
+- §8.1 income and reference values, the loot and gathered payouts and the
+  anti-loop audit → economy.md §2 and §3;
+- §8.2 the Common slot price ladder, the T1-only vendor shelf and the 5 %
+  buy-back → economy.md §2; the sale values of dropped gear →
+  [item_tiers.md](item_tiers.md) §6.1;
+- §8.3 the recurring sinks (repair, the crown, the culture vendor, respec,
+  job supplies) → economy.md §4; repair → [durability_repair.md](durability_repair.md),
+  the crown fee and the culture prices → item_tiers.md §4 and §6.4;
+- §8.4 services, claims and mounts → [housing.md](housing.md) (the Claim
+  Stone and its fuel) and economy.md §4.1–§4.2 (mount and boat prices).
 
-### 8.1 Income and reference values
-
-- Ordinary quest rewards and expected level-appropriate loot value rise on the
-  same approximate **×2.5 tier index** as Common gear. Scaling both preserves
-  baseline time-to-buy. Elites and named encounters improve item/source
-  budgets rather than bypassing the ledger with direct money drops.
-- Reliable net solo income is measured after routine tier-appropriate repair
-  and consumables, excluding rare jackpots, boss rewards and player trade.
-  Mount, boat and respec prices derive from those tier rates (`economy.md`
-  §3, §4).
-- Every mob drop and every gathered good has a positive payout from the loot
-  formula of economy.md §2 (class value × tier factor); processed goods pay
-  their cheapest recipe's inputs. Material values rise with tier, while player
-  trade remains their intended high-value market. Zero means unsellable.
-- Every craft/cook and service path passes the anti-loop audit: an output pays
-  at most its consumed inputs (break-even allowed).
-
-### 8.2 Vendor prices and buy-back
-
-The exact unenchanted Common slot ladder is:
-
-| Common slot | T1 | T2 | T3 | T4 | T5 | T6 |
-|---|---:|---:|---:|---:|---:|---:|
-| Weapon | 25c | 65c | 1s60c | 4s | 10s | 25s |
-| Chest | 20c | 50c | 1s30c | 3s20c | 8s | 20s |
-| Offhand/head/legs/feet | 15c | 35c | 80c | 2s | 5s | 12s50c |
-
-The table prices slots, not weapon families. Quality/enchanted gear costs more
-than Common, but no premium may alter these baseline references. Vendors sell
-only the T1 column (Round 33); the other columns are reference prices.
-
-Vendor buy-back is capped at **5% of the purchase price, rounded up to the
-next copper**, and applies to goods a vendor sells and, since Round 33, to
-every equippable of the gear catalog by its reference price — T2+ bases,
-shields, spellbooks and trinkets (the "other" slot; [item_tiers.md](item_tiers.md)
-§6.1); a blue item pays ×3, a gold one ×6. A T1 Common weapon
-therefore returns 2c and a T6 weapon returns 1s25c; a crafted good never
-returns more than its cheapest recipe's inputs. Same-race purchase discounts
-never raise buy-back. Loot and gathered goods are paid by the formula of
-economy.md §2, never by a reference price; zero means unsellable.
-
-Core supplies remain simple fixed-price goods. No profession book is sold or
-replaced: the UI book reflects player-meta progression directly. Finder-item
-rows are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
-
-### 8.3 Recurring sinks
-
-- **Repair:** [durability_repair.md](durability_repair.md) is authoritative for
-  eligible identities, exact wear events, non-destruction, the current
-  tier-specific lifetime tables, all-trainer service and the money-only
-  quote: since Round 33 the full reference price times the missing
-  durability (factor 1.00).
-- **The crown:** the Crownbinder in every capital applies one Fallen Crown to
-  one item for one hour of band-6 income, **1g 48s** (`grug_traders.CROWN_FEE`,
-  checked by `tools/r29_e4/income.py`; [item_tiers.md](item_tiers.md) §4).
-- **Culture vendor:** the Decor Merchant in every capital sells cosmetic,
-  non-craftable blocks and lights in four bands: accent blocks 25c, small
-  lights 1s, large lights 10s, showpieces 1g ([item_tiers.md](item_tiers.md)
-  §6.4; the shelf is in `grug_traders/stock.lua`).
-- **Respec:** repeatable **in the talent UI, with no class trainer and no
-  NPC** (ruling 4 of 2026-09-16, `skill_trees.md` §5). It costs **five
-  minutes of measured reliable net solo income** at the character's bracket,
-  rounded by §8.1's money axis and `economy.md` §4.1, and **the first respec
-  of a character is free** (ruling 22). Retires "repeatable at the class
-  trainer and rising with level".
-- Job supplies and vendor consumables provide the ordinary steady drain.
-
-### 8.4 Services, claims and mounts
-
-Private housing isles, paid depth rights and the complete guild system are
-retired. Housing has no money price, tiers, upgrades or additional stones
-(Round 25; [housing.md](housing.md) owns the complete contract):
-
-- **Claim Stone** `grug_housing:claim_stone`: one per player, soulbound (never
-  in chests, bags, trades or mail; kept on death; destroyed when dropped), not
-  craftable and not sold. The Housing Steward in every capital hands it out
-  free from level 20 while the player has none, carried or placed.
-- **Upkeep fuel:** the placed stone accepts only coal lumps
-  (`default:coal_lump`) and charcoal (`grug_smelting:charcoal`), both burning
-  7 h 16 min (26 160 s) per lump, at most 99 in its slot (≈ 30 days). Coal
-  blocks are refused. Inserted fuel cannot be taken out; picking the stone up
-  returns only the whole unburnt lumps.
-
-Mounts at levels 15/30/45/60 cost **15 minutes / 45 minutes / 2 hours /
-5 hours** of reliable tier-appropriate net solo income: **1s5c, 7s, 1g29s and
-7g38s** (Round 36); the Boat costs 1s5c and the Improved Boat 7s, like the two land
-tiers (`economy.md` §4.2). The retired fixed 1s/8s/30s/60s table is not a
-fallback.
+Core supplies remain simple fixed-price goods. No profession book
+([professions.md](professions.md) §1.2), Dowsing Rod or Gem Detector is sold
+or crafted.
 
 ## 9. Bow and arrow item foundation
 
@@ -1769,7 +1618,9 @@ consumer are active:
   replaced the 200 of the 2026-09-20 playtest ruling); new Scouts receive 200
   in their quiver slot, which holds up to 500 (`inventory_equipment.md` §3). Ammo also has a targeted projectile entity;
   one Basics craft fills one stack of 100 from 1 bronze bar + 2 sticks
-  (Round 28 ruling 26). Arrows cost 3c each
+  diagonally (`--M / -S- / S--`; Round 28 ruling 26), without feathers or a
+  profession; there is no other metal recipe and no bonus-damage ammunition
+  tier (Round 21). Arrows cost 3c each
   (2c after the same-race discount) at every race vendor and the Bowyer;
   traders do not buy them back, because the basic craft makes a full stack
   from one bar (economy.md §2).
@@ -1795,13 +1646,3 @@ See [archived §10.2](../archive/design/items-history.md#102-2026-08-07-crafting
 ### 10.3 2026-08-08
 
 See [archived §10.3](../archive/design/items-history.md#103-2026-08-08).
-
-### Round 21 visual and basic-ammunition decisions
-
-Approved 2026-09-24: a valid 1.5s food hold provides
-continuous bite feedback at gain 0.5; a modest moving HUD food image may
-substitute for the native wield image with full cancellation cleanup. Keep
-consumption timing and interaction priority. Basic arrows craft 200 (100 since
-Round 28: one craft fills one stack) from one
-Bronze Bar and two Sticks diagonally (`--M / -S- / S--`), without feathers or
-a profession. No other metal recipe or bonus-damage ammo tier is included.
