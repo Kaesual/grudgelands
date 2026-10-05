@@ -568,6 +568,43 @@ function grug_mobs.place_on_ground(obj, pos)
 end
 
 --
+-- "Evading" (Round 36 §2.14.1): a press at, or a hit on, a mob evading home
+-- after a leash reset (aggro.lua) tells the player why nothing happens, in the
+-- one-line flash the skill refusals use. At most once per EVADE_NOTICE_US per
+-- player, so a held button or a burst of hits cannot repeat it.
+--
+local EVADE_NOTICE_US = 1500000 -- the flash's own lifetime
+local evade_notices = {} -- player name -> core.get_us_time() of the last one
+
+function grug_mobs.evade_notice(player)
+	local name = player:get_player_name()
+	local now = core.get_us_time()
+	local last = evade_notices[name]
+	if last and now - last < EVADE_NOTICE_US then
+		return false
+	end
+	evade_notices[name] = now
+	grug_core.flash(player, "Evading")
+	return true
+end
+
+-- A hit the evade cancels (the do_punch wrapper below): only a cast or a
+-- projectile already under way (`grug_core.in_ability_punch`) says
+-- "Evading". A press answers in grug_abilities/input.lua, on a fresh press
+-- only; the native punch packets a held button keeps sending never do, so a
+-- held press stays quiet (classes.md §2b).
+function grug_mobs.evade_hit_notice(hitter)
+	if hitter and core.is_player(hitter) and grug_core.in_ability_punch then
+		return grug_mobs.evade_notice(hitter)
+	end
+	return false
+end
+
+core.register_on_leaveplayer(function(player)
+	evade_notices[player:get_player_name()] = nil
+end)
+
+--
 -- Hand placement of a mob (rares.lua, camps.lua): mobs:add_mob plus the
 -- ground correction above, which add_mob skips.
 --
@@ -738,10 +775,13 @@ function grug_mobs.register_mob(name, def)
 		-- Environmental damage (lava, drowning) bypasses on_punch altogether
 		-- and is not an "attack"; it still applies.
 		--
-		-- TODO (future WP, needs a combat-text system): float an "Evade!" over
-		-- the mob here instead of answering with silence.
+		-- A player's cast or projectile that still reaches an evader (presses
+		-- never aim at one, grug_abilities valid_target) answers with the same
+		-- "Evading" notice as a press (Round 36 §2.14.1), never with silence;
+		-- a held button's punch packets stay quiet (evade_hit_notice).
 		--
 		if self.temp and self.temp.grug_evading then
+			grug_mobs.evade_hit_notice(hitter)
 			return true
 		end
 		-- A mob can be punched before its first do_custom tick, and the XP

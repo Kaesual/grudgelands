@@ -17,7 +17,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "cold_eye", tree = "quarry", chain = "draw", tier = 2,
 	name = "Cold Eye",
-	description = "+2 percentage points crit chance per rank.",
+	description = "+2 percentage points crit chance per rank (30% cap holds).",
 	effects = {crit_chance_add = {2, 4, 6, 8}},
 })
 grug_classes.register_talent({

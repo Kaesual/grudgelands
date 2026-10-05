@@ -402,6 +402,11 @@ local function rider_proxy(target)
 	return target
 end
 
+-- The actor a hit object stands for: a live mount's rider, else the object
+-- itself. Contextual input (grug_abilities/input.lua) reads its own hand ray
+-- through this, so it names the same actor as the combat ray and crosshair.
+grug_core.combat_actor = rider_proxy
+
 local function classify_object(player, origin, range, pointed)
 	local target = rider_proxy(pointed.ref)
 	local distance = intersection_distance(origin, pointed, target)

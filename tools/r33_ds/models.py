@@ -73,11 +73,13 @@ def mage_damage(level, ilvl, add=None):
 
 
 def priest_healing(level, ilvl, add=None):
-    """Heal until the fight's mana runs out: 25 % P x (1 + Int/1000), 8 % P
-    per cast, heals crit like damage (kits.lua:797-850, combat.lua:1554)."""
+    """Heal until the fight's mana runs out: 25 % P x the support factor
+    1 + gear Int / 10 / B(L) (Round 36; Round 33 had 1 + Int/1000), 8 % P
+    per cast, heals crit like damage (kits.lua support_value,
+    grug_classes/stats.lua get_support_factor, combat.lua heal_player)."""
     a = C.attributes("priest", level)
     casts = _fight_mana(level, add) / _cost(level, 8)
-    amount = 0.25 * C.pool(level) * (1 + (a["int"] + _add(add, "int")) / 1000.0)
+    amount = 0.25 * C.pool(level) * (1 + _add(add, "int") / 10.0 / C.base_hit(level))
     crit = C.crit_chance(a["dex"] + _add(add, "dex"), _add(add, "crit_percent"))
     return casts * amount * C.crit_factor(crit)
 

@@ -12,7 +12,11 @@ trinket gem (the Cut Quartz recipe goes). The user's rulings are
 [round33-plan.md](../planning/round33-plan.md) §2; this file turns them into
 the numbers lanes C4 (enchant tiers, upgrades, crown) and C5 (vendors,
 potions, economy) implemented in Round 33; where the shipped game differs,
-an "As built" note says so.
+an "As built" note says so. **Round 36 (lane K, the user's picks
+2026-10-05):** gear Intelligence now raises heals and absorbs like a Mage's
+Fireball (§1.3, Appendix A), replacing the "Intelligence stays weak" choice
+above, and the Dexterity curve's `c` fell from 0.0019 to 0.0011 so the
+Scout's full set sits at the Warrior's (§1.3, §1.4).
 Every table between `generated` markers is printed by a script in
 [`tools/r33_ds/`](../../tools/r33_ds/) and refreshed by
 `python3 tools/r33_ds/build_doc.py` (`--check` fails when this file is stale).
@@ -93,7 +97,7 @@ value is recomputed whenever the item level or the enchant tier changes
 | Stat | a | b | c | decimals | minimum |
 |---|---:|---:|---:|---:|---:|
 | Strength | 0.8 | 0.15 | 0.0025 | 0 | 1 |
-| Dexterity | 0.8 | 0.13 | 0.0019 | 0 | 1 |
+| Dexterity | 0.8 | 0.13 | 0.0011 | 0 | 1 |
 | Intelligence | 0.8 | 0.15 | 0.0025 | 0 | 1 |
 | Crit % | 1.7 | 0.044 | 0 | 1 | 0 |
 | Attack speed % | 1.6 | 0.04 | 0 | 1 | 0 |
@@ -123,7 +127,7 @@ and +69 % at 70 (table "A full set at level 60"), the order of the design's
 | Stat | Formula | T1 (10) | T2 (20) | T3 (30) | T4 (40) | T5 (50) | T6 (60) | T7 (65) | T7 (70) | Today T1 → T6 |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
 | Strength | 0.8 + 0.15 × L + 0.0025 × L², whole number, at least 1 | 3 | 5 | 8 | 11 | 15 | 19 | 21 | 24 | 2 / 3 / 5 / 7 / 9 / 10 |
-| Dexterity | 0.8 + 0.13 × L + 0.0019 × L², whole number, at least 1 | 2 | 4 | 6 | 9 | 12 | 15 | 17 | 19 | 2 / 3 / 5 / 7 / 9 / 10 |
+| Dexterity | 0.8 + 0.13 × L + 0.0011 × L², whole number, at least 1 | 2 | 4 | 6 | 8 | 10 | 13 | 14 | 15 | 2 / 3 / 5 / 7 / 9 / 10 |
 | Intelligence | 0.8 + 0.15 × L + 0.0025 × L², whole number, at least 1 | 3 | 5 | 8 | 11 | 15 | 19 | 21 | 24 | 2 / 3 / 5 / 7 / 9 / 10 |
 | Crit % | 1.7 + 0.044 × L, one decimal | 2.1 | 2.6 | 3.0 | 3.5 | 3.9 | 4.3 | 4.6 | 4.8 | 0.5 / 0.8 / 1.2 / 1.6 / 2 / 2.5 |
 | Attack speed % | 1.6 + 0.04 × L, one decimal | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 | 4.0 | 4.2 | 4.4 | 4 / 6 / 8 / 10 / 12 / 14 |
@@ -137,7 +141,7 @@ and +69 % at 70 (table "A full set at level 60"), the order of the design's
 | Stat | T1 (3) | T2 (10) | T3 (20) | T4 (30) | T5 (40) | T6 (50) |
 |---|---:|---:|---:|---:|---:|---:|
 | Strength | 1 | 3 | 5 | 8 | 11 | 15 |
-| Dexterity | 1 | 2 | 4 | 6 | 9 | 12 |
+| Dexterity | 1 | 2 | 4 | 6 | 8 | 10 |
 | Intelligence | 1 | 3 | 5 | 8 | 11 | 15 |
 | Crit % | 1.8 | 2.1 | 2.6 | 3.0 | 3.5 | 3.9 |
 | Attack speed % | 1.7 | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 |
@@ -150,9 +154,9 @@ and +69 % at 70 (table "A full set at level 60"), the order of the design's
 
 | Item level | Warrior, damage set | Scout, damage set | Mage, damage set (short fight / mana-bound) | Warrior, 5 × HP |
 |---:|---:|---:|---:|---:|
-| 60 | +47 % | +55 % | +45 % / +80 % | +20 % |
-| 65 | +57 % | +68 % | +50 % / +88 % | +27 % |
-| 70 | +69 % | +82 % | +57 % / +97 % | +32 % |
+| 60 | +47 % | +49 % | +45 % / +80 % | +20 % |
+| 65 | +57 % | +59 % | +50 % / +88 % | +27 % |
+| 70 | +69 % | +69 % | +57 % / +97 % | +32 % |
 
 Damage sets: an attribute on every one of the eight items, two Crit enchants, Attack speed on the weapon (Warrior, Scout); the Mage's remaining six channels Mana. Against the same character in plain item-level-60 gear (Appendix A).
 <!-- end generated -->
@@ -179,14 +183,14 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 | T2 top | 2.4 | 2.5 | 2.4 | 2.3 | 1.8 | 2.4 | 2.3 | 2.4 | 3.0 | 2.1 | 2.0 | 0.2 | 0.4 |
 | T3 mid | 2.6 | 2.5 | 2.6 | 2.5 | 1.8 | 2.6 | 2.5 | 2.6 | 3.4 | 2.3 | 2.2 | 0.2 | 0.5 |
 | T3 top | 2.8 | 2.9 | 2.8 | 2.7 | 2.1 | 2.8 | 2.7 | 2.8 | 3.6 | 2.4 | 2.4 | 0.3 | 0.6 |
-| T4 mid | 3.0 | 2.9 | 3.0 | 2.9 | 2.2 | 3.0 | 2.9 | 3.0 | 3.8 | 2.5 | 2.5 | 0.3 | 0.8 |
-| T4 top | 3.2 | 3.2 | 3.3 | 3.1 | 2.4 | 3.3 | 3.1 | 3.2 | 4.0 | 2.7 | 2.6 | 0.4 | 1.0 |
-| T5 mid | 3.4 | 3.4 | 3.4 | 3.3 | 2.5 | 3.4 | 3.2 | 3.4 | 4.1 | 2.7 | 2.7 | 0.4 | 1.1 |
-| T5 top | 3.6 | 3.5 | 3.6 | 3.5 | 2.7 | 3.6 | 3.4 | 3.6 | 4.3 | 2.8 | 2.7 | 0.5 | 1.3 |
-| T6 mid | 3.8 | 3.8 | 3.8 | 3.7 | 2.8 | 3.8 | 3.6 | 3.8 | 4.3 | 1.8 | 2.8 | 0.6 | 1.5 |
-| T6 top | 4.0 | 3.9 | 4.0 | 3.9 | 2.9 | 4.0 | 3.8 | 4.0 | 4.4 | 0.4 | 2.3 | 0.6 | 1.6 |
-| T7 65 | 4.2 | 4.1 | 4.2 | 4.1 | 3.0 | 4.2 | 4.0 | 4.2 | 4.6 | 0.0 | 2.4 | 0.7 | 1.9 |
-| T7 70 | 4.4 | 4.5 | 4.4 | 4.3 | 3.3 | 4.4 | 4.2 | 4.4 | 4.8 | 0.0 | 2.5 | 0.8 | 2.1 |
+| T4 mid | 3.0 | 2.9 | 3.0 | 2.9 | 2.2 | 3.0 | 2.9 | 3.0 | 3.8 | 2.5 | 2.5 | 0.3 | 0.7 |
+| T4 top | 3.2 | 3.2 | 3.3 | 3.1 | 2.4 | 3.3 | 3.1 | 3.2 | 4.0 | 2.7 | 2.6 | 0.3 | 0.8 |
+| T5 mid | 3.4 | 3.4 | 3.4 | 3.3 | 2.5 | 3.4 | 3.2 | 3.4 | 4.1 | 2.7 | 2.7 | 0.4 | 1.0 |
+| T5 top | 3.6 | 3.5 | 3.6 | 3.5 | 2.7 | 3.6 | 3.4 | 3.6 | 4.3 | 2.8 | 2.7 | 0.4 | 1.1 |
+| T6 mid | 3.8 | 3.8 | 3.8 | 3.7 | 2.8 | 3.8 | 3.6 | 3.8 | 4.3 | 1.8 | 2.8 | 0.5 | 1.2 |
+| T6 top | 4.0 | 3.9 | 4.0 | 3.9 | 2.9 | 4.0 | 3.8 | 4.0 | 4.4 | 0.4 | 2.3 | 0.6 | 1.4 |
+| T7 65 | 4.2 | 4.1 | 4.2 | 4.1 | 3.0 | 4.2 | 4.0 | 4.2 | 4.6 | 0.0 | 2.4 | 0.6 | 1.5 |
+| T7 70 | 4.4 | 4.5 | 4.4 | 4.3 | 3.3 | 4.4 | 4.2 | 4.4 | 4.8 | 0.0 | 2.5 | 0.6 | 1.6 |
 
 #### Scout
 
@@ -200,14 +204,14 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 | T2 top | 2.4 | 2.7 | 2.4 | 2.4 | 2.4 | 2.3 | 0.4 |
 | T3 mid | 2.6 | 2.9 | 2.6 | 2.6 | 2.6 | 2.5 | 0.5 |
 | T3 top | 2.8 | 3.0 | 2.8 | 2.8 | 2.8 | 2.8 | 0.6 |
-| T4 mid | 3.0 | 3.7 | 2.9 | 3.0 | 3.0 | 2.9 | 0.9 |
-| T4 top | 3.2 | 3.8 | 3.2 | 3.2 | 3.2 | 3.2 | 1.0 |
-| T5 mid | 3.4 | 3.8 | 3.4 | 3.4 | 3.4 | 3.3 | 1.1 |
-| T5 top | 3.6 | 4.2 | 3.5 | 3.6 | 3.6 | 3.6 | 1.4 |
-| T6 mid | 3.8 | 4.7 | 3.7 | 3.8 | 3.8 | 3.9 | 1.6 |
-| T6 top | 4.0 | 4.7 | 3.9 | 4.0 | 4.0 | 4.1 | 1.8 |
-| T7 65 | 4.2 | 5.1 | 4.1 | 4.2 | 4.2 | 4.3 | 2.0 |
-| T7 70 | 4.4 | 5.4 | 4.3 | 4.4 | 4.4 | 4.4 | 2.2 |
+| T4 mid | 3.0 | 3.3 | 2.9 | 3.0 | 3.0 | 2.9 | 0.8 |
+| T4 top | 3.2 | 3.4 | 3.2 | 3.2 | 3.2 | 3.2 | 0.9 |
+| T5 mid | 3.4 | 3.4 | 3.4 | 3.4 | 3.4 | 3.3 | 1.0 |
+| T5 top | 3.6 | 3.5 | 3.5 | 3.6 | 3.6 | 3.6 | 1.1 |
+| T6 mid | 3.8 | 3.7 | 3.7 | 3.8 | 3.8 | 3.9 | 1.3 |
+| T6 top | 4.0 | 4.0 | 3.9 | 4.0 | 4.0 | 4.1 | 1.5 |
+| T7 65 | 4.2 | 4.2 | 4.1 | 4.2 | 4.2 | 4.3 | 1.6 |
+| T7 70 | 4.4 | 4.3 | 4.3 | 4.4 | 4.4 | 4.4 | 1.8 |
 
 #### Mage
 
@@ -236,20 +240,20 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 
 | Point | Target | healing: Int | healing: Crit | healing: Mana | damage (Smite): Int | damage (Smite): Crit | damage (Smite): Mana | survival: HP |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| T1 mid | 1.8 | 0.2 | 1.8 | 1.7 | 2.6 | 1.8 | 1.7 | 1.8 |
-| T1 top | 2.0 | 0.3 | 2.0 | 2.0 | 2.8 | 2.0 | 2.0 | 2.0 |
-| T2 mid | 2.2 | 0.4 | 2.3 | 2.3 | 3.1 | 2.3 | 2.3 | 2.2 |
-| T2 top | 2.4 | 0.5 | 2.4 | 2.4 | 3.2 | 2.4 | 2.4 | 2.4 |
-| T3 mid | 2.6 | 0.6 | 2.6 | 3.0 | 3.2 | 2.6 | 3.0 | 2.6 |
-| T3 top | 2.8 | 0.7 | 2.8 | 3.1 | 3.7 | 2.8 | 3.1 | 2.8 |
-| T4 mid | 3.0 | 0.8 | 3.0 | 3.3 | 3.8 | 3.0 | 3.3 | 3.0 |
-| T4 top | 3.2 | 1.0 | 3.3 | 3.4 | 4.1 | 3.3 | 3.4 | 3.2 |
-| T5 mid | 3.4 | 1.2 | 3.4 | 3.6 | 4.4 | 3.4 | 3.6 | 3.4 |
-| T5 top | 3.6 | 1.4 | 3.6 | 3.7 | 4.6 | 3.6 | 3.7 | 3.6 |
-| T6 mid | 3.8 | 1.5 | 3.8 | 3.9 | 4.9 | 3.8 | 3.9 | 3.8 |
-| T6 top | 4.0 | 1.7 | 4.0 | 4.0 | 5.0 | 4.0 | 4.0 | 4.0 |
-| T7 65 | 4.2 | 1.9 | 4.2 | 4.2 | 5.6 | 4.2 | 4.2 | 4.2 |
-| T7 70 | 4.4 | 2.1 | 4.4 | 4.3 | 6.3 | 4.4 | 4.3 | 4.4 |
+| T1 mid | 1.8 | 2.4 | 1.8 | 1.7 | 2.6 | 1.8 | 1.7 | 1.8 |
+| T1 top | 2.0 | 2.6 | 2.0 | 2.0 | 2.8 | 2.0 | 2.0 | 2.0 |
+| T2 mid | 2.2 | 2.8 | 2.3 | 2.3 | 3.1 | 2.3 | 2.3 | 2.2 |
+| T2 top | 2.4 | 2.8 | 2.4 | 2.4 | 3.2 | 2.4 | 2.4 | 2.4 |
+| T3 mid | 2.6 | 2.8 | 2.6 | 3.0 | 3.2 | 2.6 | 3.0 | 2.6 |
+| T3 top | 2.8 | 3.2 | 2.8 | 3.1 | 3.7 | 2.8 | 3.1 | 2.8 |
+| T4 mid | 3.0 | 3.3 | 3.0 | 3.3 | 3.8 | 3.0 | 3.3 | 3.0 |
+| T4 top | 3.2 | 3.6 | 3.3 | 3.4 | 4.1 | 3.3 | 3.4 | 3.2 |
+| T5 mid | 3.4 | 3.8 | 3.4 | 3.6 | 4.4 | 3.4 | 3.6 | 3.4 |
+| T5 top | 3.6 | 4.0 | 3.6 | 3.7 | 4.6 | 3.6 | 3.7 | 3.6 |
+| T6 mid | 3.8 | 4.2 | 3.8 | 3.9 | 4.9 | 3.8 | 3.9 | 3.8 |
+| T6 top | 4.0 | 4.3 | 4.0 | 4.0 | 5.0 | 4.0 | 4.0 | 4.0 |
+| T7 65 | 4.2 | 4.8 | 4.2 | 4.2 | 5.6 | 4.2 | 4.2 | 4.2 |
+| T7 70 | 4.4 | 5.5 | 4.4 | 4.3 | 6.3 | 4.4 | 4.3 | 4.4 |
 <!-- end generated -->
 
 ### 1.3 What the check shows
@@ -257,7 +261,8 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 - **No stat dominates.** Per class and kind the checked stats stay within
   ×1.35 of each other from T1 to T7: Strength, Crit and Attack speed for the
   Warrior; Dexterity, Crit and Attack speed for the Scout; Intelligence,
-  Crit and Mana for the Mage; Crit and Mana for the Priest's healing; HP,
+  Crit and Mana for the Mage; Intelligence, Crit and Mana for the Priest's
+  healing (since Round 36); HP,
   Armor and Dodge for survival. Attack speed falls from today's 4–14 % to
   1.7–4.4 %, Crit moves from 0.5–2.5 to 1.8–4.8 percentage points (v2).
 - **Crit reaches its 30 % cap after about five enchants** at level 60
@@ -271,10 +276,16 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   same-level foe from about level 55 with plain gear (metal set plus shield).
   From there an armor enchant counts only against stronger foes (a level-65
   King: +2.3–2.4 % effective HP per enchant). This is today's armor formula.
-- **The Priest's healing barely uses Intelligence:** spell power adds 1 % of
-  healing per 10 Intelligence, so one Intelligence enchant gives the Priest's
-  heals 0.2–2.1 %, against 1.7–4.4 % for Crit or Mana. Intelligence stays the
-  Priest's Smite stat. Healers pick Mana and Crit.
+- **The Priest's healing uses Intelligence like a Mage's Fireball** (Round
+  36): healing and absorbs are multiplied by `1 + gear Int / 10 / B(L)`,
+  where gear Int is the Intelligence above the class's own level growth and
+  B(L) a base hit (43.7 at level 60). A Priest without Intelligence gear
+  heals exactly the listed pool share (before Round 36 `1 + Int / 1000`, so 6 /
+  9 / 11 % more at levels 30 / 45 / 60); one Intelligence enchant adds
+  2.4–5.5 % (formerly 0.2–2.1 %), the Mage's Intelligence column, and a full
+  Intelligence set +35 % at item level 60 and +44 % at 70 (formerly +13 % /
+  +17 %). Heal, Hearten's splash, Mend, Shield, Recompense and the Mage's
+  Glacial Ward share the factor.
 - **Mana's curve starts higher than HP's:** at low levels the flat part of
   in-combat regeneration dominates small pools, so the same percentage would
   be worth less there; with its own curve Mana meets the target from T1.
@@ -283,17 +294,24 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   at all in a short fight. A fully damage-enchanted level-60 Mage gains +45 %
   in short fights and +80 % in mana-bound ones (table "A full set at level
   60").
-- **The Scout's full damage set** gains +55 % at item level 60 (Warrior +47 %):
-  its Dexterity on all eight items also raises Crit (§1.4).
+- **The Scout's full damage set** gains +49 / +59 / +69 % at item level 60 /
+  65 / 70 (Warrior +47 / +57 / +69 %). Its Dexterity on all eight items also
+  raises Crit (§1.4), which the Warrior's Strength does not; with the Round 33
+  curve (`c` = 0.0019) that made +55 / +68 / +82 %. Round 36 lowered `c` to
+  0.0011; the band at item levels 65 and 70 is "no higher than the Warrior"
+  (user, 2026-10-05), since the item-level-70 weapon alone lifts every set
+  above +60 %.
 
 ### 1.4 Dexterity (v2)
 
 Dexterity is three things for a Scout (bow and blade damage, Crit, Dodge) and
 two small things for everyone else (0.05 points of Crit and 0.1 of Dodge per
-point). Its curve is the largest that keeps the Scout's check: a Scout's
-Dexterity enchant is worth 1.0–1.26 Crit enchants in damage, plus its dodge.
-For a Warrior, Mage or Priest it then gives about **half a Dodge enchant**
-from level 60 (a third at 40) and a sixth of a Crit enchant:
+point). Round 33 chose the largest curve that kept the Scout's check; Round
+36 lowered it (`c` 0.0019 → 0.0011) so the Scout's full set matches the
+Warrior's: a Scout's Dexterity enchant is now worth about one Crit enchant in
+damage (×0.99–1.12), plus its dodge. For a Warrior, Mage or Priest it gives
+about **0.4 of a Dodge enchant** from level 60 (0.3 at 40) and a sixth of a
+Crit enchant:
 
 <!-- generated: dexsplit -->
 | Item level | Dexterity | Crit points (share of a Crit enchant) | Dodge points (share of a Dodge enchant) | Scout: damage vs a Crit enchant |
@@ -301,10 +319,10 @@ from level 60 (a third at 40) and a sixth of a Crit enchant:
 | 10 | 2 | 0.10 (0.05) | 0.2 (0.11) | ×0.99 |
 | 20 | 4 | 0.20 (0.08) | 0.4 (0.19) | ×1.12 |
 | 30 | 6 | 0.30 (0.10) | 0.6 (0.24) | ×1.10 |
-| 40 | 9 | 0.45 (0.13) | 0.9 (0.32) | ×1.18 |
-| 50 | 12 | 0.60 (0.15) | 1.2 (0.39) | ×1.20 |
-| 60 | 15 | 0.75 (0.17) | 1.5 (0.44) | ×1.21 |
-| 70 | 19 | 0.95 (0.20) | 1.9 (0.51) | ×1.26 |
+| 40 | 8 | 0.40 (0.11) | 0.8 (0.29) | ×1.05 |
+| 50 | 10 | 0.50 (0.13) | 1.0 (0.32) | ×1.00 |
+| 60 | 13 | 0.65 (0.15) | 1.3 (0.38) | ×1.05 |
+| 70 | 15 | 0.75 (0.16) | 1.5 (0.41) | ×0.99 |
 <!-- end generated -->
 
 The plan's "half a Crit plus half a Dodge enchant" holds for the Dodge half
@@ -809,9 +827,10 @@ All from the shipped code (Round 33 survey, verified by hand):
   second; the fight's mana is the pool plus 60 s of in-combat regeneration
   `max(0.25 (1 + 0.15 L), 0.0025 × max mana)` (`kits.lua:545-620`,
   `init.lua:131-145`).
-- **Priest:** Heal `25 % P(L) × (1 + Int/1000)`, 8 % P(L), heals crit ×2 (v2);
-  Smite `1.5 (Bw + Int/10)`, 5 %, every 2 s (`kits.lua:737-850`,
-  `grug_core/combat.lua:1554`).
+- **Priest:** Heal `25 % P(L) × (1 + gear Int / 10 / B(L))` (Round 36;
+  `grug_classes/stats.lua` `get_support_factor`, `kits.lua` `support_value`),
+  8 % P(L), heals crit ×2 (v2); Smite `1.5 (Bw + Int/10)`, 5 %, every 2 s
+  (`kits.lua`, `grug_core/combat.lua` `heal_player`).
 - **Crit** `5 % + 0.05 % Dex + gear`, cap 30 %, ×2 on every swing, spell, arrow
   and heal (v2; before Round 33 0.1 % and ×1.5); **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**
   `min(0.70, R / (R + K))`, `K(L) = 20 + 0.5 min(L, 60) + 8.5 max(L − 60, 0)`

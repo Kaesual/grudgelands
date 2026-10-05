@@ -528,7 +528,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "firebrand", tree = "ember", chain = "blaze", tier = 2,
 	name = "Firebrand",
-	description = "+2 percentage points crit chance per rank.",
+	description = "+2 percentage points crit chance per rank (30% cap holds).",
 	effects = {crit_chance_add = {2, 4, 6, 8}},
 })
 grug_classes.register_talent({
@@ -630,7 +630,8 @@ grug_classes.register_talent({
 	keystone = true, ability = "glacial_ward",
 	name = "Glacial Ward",
 	description = "New skill: 10% base mana, 30 s cooldown, self; absorbs " ..
-		"10% / 15% / 20% of the base pool plus spell power for 10 s.",
+		"10% / 15% / 20% of the base pool, raised by Intelligence from gear, " ..
+		"for 10 s.",
 	effects = {glacial_ward_absorb = {10, 15, 20}},
 })
 grug_classes.register_talent({
@@ -744,7 +745,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "hard_faith", tree = "reckoning", chain = "wrath", tier = 1,
 	name = "Hard Faith",
-	description = "+2 percentage points crit chance per rank.",
+	description = "+2 percentage points crit chance per rank (30% cap holds).",
 	effects = {crit_chance_add = {2, 4, 6, 8, 10}},
 })
 grug_classes.register_talent({
@@ -759,8 +760,8 @@ grug_classes.register_talent({
 	keystone = true, replaces = "smite",
 	name = "Recompense",
 	description = "Smite costs 6% instead of 5% base mana and, at most once " ..
-		"every 6 s, grants an absorb of 6% / 9% / 12% of the base pool plus " ..
-		"spell power.",
+		"every 6 s, grants an absorb of 6% / 9% / 12% of the base pool, " ..
+		"raised by Intelligence from gear.",
 	effects = {smite_absorb = {6, 9, 12}},
 })
 grug_classes.register_talent({
@@ -785,9 +786,14 @@ local cache = {} -- player name -> {ranks, tree_points, spent, static, windowed}
 local windows = {} -- player name -> {talent id -> expiry in us}
 local META_UNBROKEN_READY = "grug_classes:unbroken_ready"
 
+-- The points a character of `level` has earned in total: the one rule, also
+-- read by the level-up banner (grug_xp) and the level-change notice below.
+function grug_classes.talent_points_at(level)
+	return math.floor(level / grug_classes.TALENT_LEVELS_PER_POINT)
+end
+
 function grug_classes.talent_points_total(player)
-	return math.floor(grug_xp.get_level(player)
-		/ grug_classes.TALENT_LEVELS_PER_POINT)
+	return grug_classes.talent_points_at(grug_xp.get_level(player))
 end
 
 -- Trees of a class, in registration order. Nil class = no trees.
@@ -1244,8 +1250,8 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 	-- old_level is nil on join (grug_xp/init.lua:32-33). Arithmetic on nil
 	-- here would error on every single join, which is why the guard above is
 	-- not optional.
-	local per = grug_classes.TALENT_LEVELS_PER_POINT
-	if math.floor(new_level / per) > math.floor(old_level / per) then
+	if grug_classes.talent_points_at(new_level)
+			> grug_classes.talent_points_at(old_level) then
 		local left = grug_classes.talent_points_available(player)
 		if left > 0 then
 			-- In the message feed beside the level-up's XP line, never chat.

@@ -420,7 +420,9 @@ them.
   arena's warnings, a boss's return warning and the one-time no-weapon hint
   (too long for the feed's 2.5 s).
 - **Level-up** is a separate large centre announcement ("Reached level N!",
-  double font size, 3 s), not a feed line.
+  double font size, 3 s), not a feed line. A level that earns talent points
+  (every even level) adds a second line, "You gained +1 Talent Point", or
+  "+N Talent Points" when one grant crosses several (Round 36 §2.14.4).
 - **API** (`grug_core/feed.lua`): `grug_core.feed(player, kind, text, key)`
   (a line with the key of a shown line replaces it),
   `grug_core.feed_xp(player, amount)`, `grug_core.feed_item(player, item,

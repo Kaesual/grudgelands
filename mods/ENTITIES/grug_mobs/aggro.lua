@@ -235,7 +235,8 @@ function grug_mobs.leash_reset(self)
 	-- hold in the worst case, just a little later.
 	--
 	-- Threshold is the DEF radius: 25 for a camp mob, 30 for a guard, the 40 m
-	-- default otherwise — i.e. "further from your post than your post reaches".
+	-- default otherwise — i.e. "further from your post than your post reaches";
+	-- a free mob's is its wander radius (below).
 	-- Horizontal only (a mob on a ledge above its home is not stray). A mob
 	-- that is already INSIDE its radius does not evade at all: there is nothing
 	-- to walk back, exactly as before.
@@ -250,6 +251,13 @@ function grug_mobs.leash_reset(self)
 	--
 	-- Bespoke Kraken/royal actors carry `_grug_no_leash` and therefore never reach this
 	-- function at all — they can never evade, unchanged for them.
+	--
+	-- A FREE (damage-pursuit) mob's radius is its wander radius (Round 36
+	-- §2.14.2): outside a fight it may idle anywhere within WANDER_RADIUS of its
+	-- spawn point anyway, so a reset inside that radius only heals and drops the
+	-- target (above) and there is nothing to run back to; outside it the mob
+	-- runs home and is a normal mob again once it is back inside the radius
+	-- (evade_radius below).
 	local home = self._grug_home
 	local pos = self.object and self.object:get_pos()
 	-- A dragon reset at its arena edge (boss_dragons.lua) owns its own way
@@ -257,7 +265,7 @@ function grug_mobs.leash_reset(self)
 	local dragon = type(self._grug_boss_id) == "string" and
 		self._grug_boss_id:find("^dragon:") ~= nil
 	if home and pos and not self._grug_patrol_route and not dragon then
-		local range = grug_mobs.damage_pursuit(self) and 4
+		local range = grug_mobs.damage_pursuit(self) and grug_mobs.WANDER_RADIUS
 			or self._grug_leash_range or grug_mobs.LEASH_RANGE
 		local dx, dz = pos.x - home.x, pos.z - home.z
 		if dx * dx + dz * dz > range * range then
@@ -288,9 +296,18 @@ end
 --   * acquires no targets — `_grug_ignore_player` vetoes every player in
 --     general_attack (init.lua), and stop_attack below sweeps up the
 --     acquisition paths that bypass it;
---   * becomes a normal mob again the instant it arrives.
+--   * becomes a normal mob again the instant it arrives: within EVADE_ARRIVED
+--     of `_grug_home`, a free (damage-pursuit) mob already back inside its
+--     wander radius (Round 36 §2.14.2, the same radius leash_reset sent it
+--     home from).
 --
 local EVADE_ARRIVED = 4 -- m horizontal from `_grug_home` counts as home
+
+-- The horizontal distance from `_grug_home` at which this evader has arrived.
+local function evade_radius(self)
+	return grug_mobs.damage_pursuit(self) and grug_mobs.WANDER_RADIUS
+		or EVADE_ARRIVED
+end
 local EVADE_TIMEOUT = 40 -- s before the old teleport snap takes over
 -- Read by init.lua's tick_speed_effects (public because that is where the
 -- speed fields are owned); combat_stats §4's "1.5x its run speed".
@@ -331,7 +348,8 @@ local function evade_tick(self)
 	-- roam cap. Checked BEFORE the timeout so a mob that makes it home on the
 	-- very last tick is not snapped anyway.
 	local dx, dz = pos.x - home.x, pos.z - home.z
-	if dx * dx + dz * dz <= EVADE_ARRIVED * EVADE_ARRIVED then
+	local arrived = evade_radius(self)
+	if dx * dx + dz * dz <= arrived * arrived then
 		-- Instantly a normal mob again: attackable, targeting, and its speeds
 		-- restored by the next tick_speed_effects (init.lua).
 		self.temp.grug_evading = nil
@@ -592,9 +610,10 @@ local function roam_check(self)
 	else
 		return
 	end
-	-- An evading mob is already running home, faster and to a stricter target
-	-- radius (4 nodes, not 20): evade_tick owns the movement in that state and
-	-- this rule would only issue the very same nudge a second time.
+	-- An evading mob is already running home, faster and to the same or a
+	-- stricter target radius (4 nodes for a camp member, the wander radius for
+	-- a free roamer): evade_tick owns the movement in that state and this rule
+	-- would only issue the very same nudge a second time.
 	if self.temp and self.temp.grug_evading then
 		return
 	end

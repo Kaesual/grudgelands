@@ -208,13 +208,12 @@ return function(api)
 		if def.id == "loose" then return HAND_RANGE end
 		return math.max(HAND_RANGE, Q.get_range(player, def))
 	end
-	-- A hostile this hold may fight: what combat accepts (Q.valid_target:
-	-- alive, loaded, hostile, PvP-harmable), range aside, and not a mob that
-	-- is evading home after a leash reset (it takes no damage).
+	-- A hostile this hold may fight: what combat accepts, range aside. It is
+	-- Q.valid_target itself (alive, loaded, hostile, PvP-harmable, not evading
+	-- home after a leash reset), the crosshair's predicate too (Round 36
+	-- §2.14.1), so the crosshair is red exactly when a press would act.
 	local function fightable(player, ref)
-		if not Q.valid_target(player, ref, "hostile") then return false end
-		local ent = ref:get_luaentity()
-		return not (ent and ent.temp and ent.temp.grug_evading)
+		return Q.valid_target(player, ref, "hostile")
 	end
 	-- The fightable hostile the crosshair finds within `reach`, or nil. `hit`
 	-- is the step's hand ray, which reaches at least as far: a walkable node
@@ -344,17 +343,20 @@ return function(api)
 		end
 		if hit and hit.type == "object" then
 			s.dig = nil
+			-- A ray at a mount means its rider (the combat ray's rule, so the
+			-- crosshair and the press name the same actor).
+			local ref = grug_core.combat_actor(hit.ref)
 			-- A support skill acts on the ally a fresh press aims at, and while
 			-- held on that same ally only; an ally passing the crosshair of a
 			-- held press is never healed.
-			if Q.valid_target(player, hit.ref, "friendly") then
-				if fresh then s.ally = hit.ref end
-				if support(def) and not def.offensive and s.ally == hit.ref then
+			if Q.valid_target(player, ref, "friendly") then
+				if fresh then s.ally = ref end
+				if support(def) and not def.offensive and s.ally == ref then
 					cast(player, def, s, hit, fresh)
 				end
 				return
 			end
-			if Q.valid_target(player, hit.ref, "hostile") then
+			if Q.valid_target(player, ref, "hostile") then
 				-- Gather never attacks: a hostile to fight has made the hold combat
 				-- (unless it is out of reach or a support skill is selected).
 				if s.mode == "gather" then return end
@@ -370,9 +372,23 @@ return function(api)
 				end
 				return
 			end
+			-- A mob evading home takes no hit (Round 36 §2.14.1): a fresh press
+			-- at it says so instead of answering with silence; a self or support
+			-- skill, which needs no hostile, still fires as it would at one. A
+			-- held press stays quiet, and the notice itself is rate-limited.
+			if Q.evading_target(player, ref) then
+				if fresh then
+					if support(def) then
+						cast(player, def, s, hit, true)
+					else
+						grug_mobs.evade_notice(player)
+					end
+				end
+				return
+			end
 			-- An ally the PvP flag forbids: the cast refuses (and reports) at
 			-- no cost, never healing the caster instead (Round 31 ruling 9).
-			if Q.support_refused(player, hit.ref) then
+			if Q.support_refused(player, ref) then
 				if fresh and def.target_kind == "friendly" then cast(player, def, s, hit, fresh) end
 				return
 			end
@@ -560,6 +576,9 @@ return function(api)
 		return interactive(hit, distance) and true or false,
 			def ~= nil and def.walkable and true or false
 	end
+	-- May a press act at all now (alive, interact, not stunned, mounted or in
+	-- character creation)? The crosshair shows no skill state otherwise.
+	M.allowed = allowed
 	function M.interaction(player)
 		local s = state(player)
 		end_food_hold(player)
