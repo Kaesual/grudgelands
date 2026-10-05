@@ -1905,8 +1905,8 @@ retired. Housing has no money price, tiers, upgrades or additional stones
   returns only the whole unburnt lumps.
 
 Mounts at levels 15/30/45/60 cost **15 minutes / 45 minutes / 2 hours /
-5 hours** of reliable tier-appropriate net solo income: **1s5c, 7s, 1g32s and
-7g37s**; the Boat costs 1s5c and the Improved Boat 7s, like the two land
+5 hours** of reliable tier-appropriate net solo income: **1s5c, 7s, 1g29s and
+7g38s** (Round 36); the Boat costs 1s5c and the Improved Boat 7s, like the two land
 tiers (`economy.md` §4.2). The retired fixed 1s/8s/30s/60s table is not a
 fallback.
 

@@ -714,8 +714,9 @@ combat damage for the ordinary five-second combat window.
 **The rift** (Round 36, round36-plan.md §2.1): the finale place of both
 factions' main line, at **one clash site** of the 51–60 front — one constant
 (`grug_mobs/rift_core.lua` `SITE`) among Saltgate Remnant, Tombroad Ambush,
-Skyroot Crossing and Cloudwatch Fall; Tombroad Ambush until the user's pick
-(its surroundings lie in the 58–60 belt on all six quest seeds). Runtime
+Skyroot Crossing and Cloudwatch Fall: **Tombroad Ambush**, the user's pick
+(2026-10-05; its surroundings lie in the 58–60 belt on all six quest
+seeds). Runtime
 content, no mapgen; the place stays contested like the whole front, so PvP
 contact there is intended.
 

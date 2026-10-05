@@ -245,7 +245,8 @@ Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
   [world.md](world.md) §4b).
 - The fixed `dragon` anchors are the encounter authority: the Wyrmglass Ice
   Dragon stands at **(-3260, -40)** and the Stormscale Jungle Wyvern at
-  **(+3260, -40)**. Each is a clock-independent fixed-level-60 boss with three
+  **(+3260, -40)**. Each is a clock-independent fixed-level-70 boss (the
+  islands themselves stay level-60 zones) with three
   arena perches, a telegraphed breath line and ground slam, and a persistent
   30-minute wall-clock respawn. An active lair receives the final 60-second
   local visual/audio warning; a lair loaded late receives the whole minute.
@@ -1940,7 +1941,11 @@ and quests are in [pvp.md](pvp.md) §6–§7.
 - NPC-only kills produce no drops. With enemy-player involvement, existing
   guard war-trophy/heavy-cloth rules apply; own-faction units never become a
   farm. The MVP has no refilling supply crates. Every contested zone reserves
-  a non-loot quest-interaction slot for WP9 instead.
+  a non-loot quest-interaction slot for WP9 instead; since Round 36 the
+  "use at a place" objective fills it ([quests.md](quests.md)): a quest
+  object at the zone's clash site, or at a rule-placed quest place in the
+  four contested zones without one (Stormvault Heights, Glassroot Wilds,
+  Blackwind Rise, Thunderroot Wilds).
 - Clash outcomes do not move borders, alter zone ownership, disable roads or
   grant a persistent buff. WP13 supplies walls, forts and siege art; WP42 owns
   units, schedules and place-bound encounter state only.

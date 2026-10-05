@@ -29,9 +29,29 @@ Remaining: one per-stack cultural-finish channel and one separate target-race Pv
 
 **Dependencies:** WP6 ✅, WP8 ✅, WP40 ✅; WP41 only for quests that need the PvP tag.
 
-**Status:** open; **V1 scope** (B7): story levels 41–60 and the finale are part of V1. Round 14 ships the starter story (nine quests per culture ending at the Cinder Mark clue) and Round 20 extends the catalog to 240 starter/capital/regional quests up to level 40, including the frontier guard-kill quests in the contested zones. Round 29 replaces those 240 quests with 491 on the Round 28 framework ([completion](round29-plan.md#completion-2026-10-02)): one track per race to level 30, the contested 31–40 zones and front quests 41–60 from the 31–40 outposts and capitals, with repeatable and island bounties; the new format has no enemy-guard objective. All deaths cost no XP (`progression.md` §3), so no PvP XP exemption remains.
+**Status:** **delivered in Round 36** (2026-10-05,
+[completion](round36-plan.md#completion-2026-10-05)); **V1 scope** (B7):
+story levels 41–60 and the finale are part of V1. History: Round 14 shipped
+a starter story (nine quests per culture ending at the Cinder Mark clue);
+that clue was removed on purpose with the Round 28–29 quest rewrite and
+does not ship (the main line does not bring it back). Round 20 extended the
+catalog to 240 starter/capital/regional quests up to level 40. Round 29
+replaces those 240 quests with 491 on the Round 28 framework
+([completion](round29-plan.md#completion-2026-10-02)): one track per race
+to level 30, the contested 31–40 zones and front quests 41–60 from the
+31–40 outposts and capitals, with repeatable and island bounties. Round 31
+adds kill objectives on enemy war-camp garrisons (guards and captains, never
+players) and 24 fortress quests. Round 36 adds each faction's main line
+41–60 from its fortress Warmaster (chapters at 41, 46 and 53, the group
+finale at 60 on the rift boss at Tombroad Ambush), the front climaxes
+folded in, a solo step behind enemy lines, the "use at a place" objective
+for each contested zone's quest-interaction slot (`world_zones.md` §16) and
+the corrupted sub-types (`docs/design/story.md` §2a,
+`docs/design/quests.md` "The main line"). All deaths cost no XP
+(`progression.md` §3), so no PvP XP exemption remains.
 
-Remaining: the level-41–60 faction main questline on top of Round 29's front quests (corruption chapters, The Broken Causeway and Battlegrounds beats, elite and hostile-territory kills, level gates), the non-loot quest-interaction slot per contested zone (`world_zones.md` §16) and a finale. The finale is V1; its form is not decided yet. The Nether payoff stays V2 (`story.md`)
+Remaining: none in V1. The Nether payoff the finale points at stays V2
+(`story.md`)
 
 ## WP10
 
@@ -91,8 +111,12 @@ and functional anchors are preserved. Do not schedule these as 70 empty sites. T
 - **The `bandit_frontier` building core is 16 nodes** (E1): the Round 20 art
   and the code stay; the design was corrected. The core also sets the camp's
   protected POI box and the Claim Stone keep-out.
-- **Separate POI walk** (E2): the user wants to walk the Round 20 POI art
-  apart from ordinary playtests; that walk is its GUI acceptance.
+- **Separate POI walk** (E2): done in Round 36 as a review page instead of
+  a walk (round36-plan §2.11): renders of all 106 POIs with the user's
+  verdicts, then the decor pass they asked for (a theme per POI kind and
+  house touches in POIs, start towns and capitals;
+  `docs/design/settlements.md` "Decor pass"). The reworked places are in the
+  Round 36 GUI checklist.
 - The Round 22 D72 follow-up ("capitals look too alike", infill houses) is
   done: Round 26 Lane W gave every capital a more irregular outline and its
   own character, with fields and houses between the outer ring and the wall
