@@ -181,7 +181,7 @@ do
 		"\n(local function valid_ally%(.-\nfunction grug_abilities%.aimed_target%(.-\nend)\n",
 		"aimed_target"), "aimed_target")
 	run(cut("mods/ENTITIES/grug_mobs/init.lua",
-		"\n(local EVADE_NOTICE_US.-\nfunction grug_mobs%.evade_notice%(.-\nend)\n",
+		"\n(local EVADE_NOTICE_US.-\nfunction grug_mobs%.evade_hit_notice%(.-\nend)\n",
 		"evade_notice"), "evade_notice")
 
 	-- The casts: a hostile cast lands on the aimed target (kits.lua
@@ -332,7 +332,27 @@ do
 	for _ = 1, 40 do step() end -- held for two seconds
 	eq(#flashes, 1, "P a held press never repeats it")
 	eq(#acted, 0, "P a held press at the evader never acts")
+	-- The native punch packets a held button keeps sending: the input seam
+	-- (input.press) and the do_punch cancel (evade_hit_notice), for 3 s.
+	for _ = 1, 12 do
+		clock = clock + 250000
+		input.press(me)
+		grug_mobs.evade_hit_notice(me)
+	end
+	eq(#flashes, 1, "P a held press's native punches stay quiet")
 	release()
+	-- A cast or projectile already under way that reaches the evader says so.
+	clock = clock + 1500000
+	grug_core.in_ability_punch = true
+	check(grug_mobs.evade_hit_notice(me), "P a projectile hitting the evader says Evading")
+	grug_core.in_ability_punch = nil
+	eq(flashes[#flashes], "Evading", "P ... in the flash line")
+	check(not grug_mobs.evade_hit_notice({}), "P a non-player hitter says nothing")
+	check(read("mods/ENTITIES/grug_mobs/init.lua"):find(
+		"grug_core.flash(player, \"Evading\")", 1, true) and
+		read("mods/ENTITIES/grug_mobs/init.lua"):match(
+		"if self%.temp and self%.temp%.grug_evading then%s+grug_mobs%.evade_hit_notice%(hitter%)%s+return true"),
+		"P the do_punch cancel goes through evade_hit_notice")
 	_, did = probe("ward")
 	eq(did, "cast:ward", "P a self skill still fires at an evader")
 	eq(#flashes, 0, "P ... without the Evading notice")

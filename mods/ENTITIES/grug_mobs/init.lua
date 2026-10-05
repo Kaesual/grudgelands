@@ -588,6 +588,18 @@ function grug_mobs.evade_notice(player)
 	return true
 end
 
+-- A hit the evade cancels (the do_punch wrapper below): only a cast or a
+-- projectile already under way (`grug_core.in_ability_punch`) says
+-- "Evading". A press answers in grug_abilities/input.lua, on a fresh press
+-- only; the native punch packets a held button keeps sending never do, so a
+-- held press stays quiet (classes.md §2b).
+function grug_mobs.evade_hit_notice(hitter)
+	if hitter and core.is_player(hitter) and grug_core.in_ability_punch then
+		return grug_mobs.evade_notice(hitter)
+	end
+	return false
+end
+
 core.register_on_leaveplayer(function(player)
 	evade_notices[player:get_player_name()] = nil
 end)
@@ -763,15 +775,13 @@ function grug_mobs.register_mob(name, def)
 		-- Environmental damage (lava, drowning) bypasses on_punch altogether
 		-- and is not an "attack"; it still applies.
 		--
-		-- A player's hit that still reaches an evader (a projectile or cast
-		-- already under way; presses never aim at one, grug_abilities
-		-- valid_target) answers with the same "Evading" notice as a press
-		-- (Round 36 §2.14.1), never with silence.
+		-- A player's cast or projectile that still reaches an evader (presses
+		-- never aim at one, grug_abilities valid_target) answers with the same
+		-- "Evading" notice as a press (Round 36 §2.14.1), never with silence;
+		-- a held button's punch packets stay quiet (evade_hit_notice).
 		--
 		if self.temp and self.temp.grug_evading then
-			if hitter and core.is_player(hitter) then
-				grug_mobs.evade_notice(hitter)
-			end
+			grug_mobs.evade_hit_notice(hitter)
 			return true
 		end
 		-- A mob can be punched before its first do_custom tick, and the XP

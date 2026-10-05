@@ -11,7 +11,7 @@
 --            target and never evade;
 --   OUTSIDE  the target walks to 55-60 nodes from home: the mob must evade
 --            (untouchable, running home) and be a normal mob again once back
---            inside the wander radius, not at 4 nodes, and then stay there.
+--            inside the wander radius, not at 4 nodes, and not evade again.
 -- Once a second each case logs the mob's state, grug_evading, its distance to
 -- home and its health. Every line carries "[r36f]"; the probe ends the server.
 local P = "[r36f] "
@@ -136,7 +136,7 @@ local function finish_case()
 	else
 		ok = c.reset_t ~= nil and c.evaded and c.reset_dist ~= nil and c.reset_dist > 32 and
 			c.evade_end_dist ~= nil and c.evade_end_dist > 24 and c.evade_end_dist <= 32.5 and
-			c.after_min ~= nil and c.after_min > 20
+			not c.evaded_again
 	end
 	log(("%s summary: target dropped at %s s, reset at %s s (%s nodes from home, hp %s/%s after a hit to %s), evaded %s, " ..
 		"evade ended at %s nodes after %s s, nearest home after it %s; %s"):format(c.name,
@@ -145,7 +145,8 @@ local function finish_case()
 		tostring(c.reset_hp), tostring(c.hp_max), tostring(c.hp_hit), tostring(c.evaded == true),
 		c.evade_end_dist and ("%.1f"):format(c.evade_end_dist) or "-",
 		c.evade_len and ("%.1f"):format(c.evade_len) or "-",
-		c.after_min and ("%.1f"):format(c.after_min) or "-", ok and "PASS" or "FAIL"))
+		c.after_min and ("%.1f"):format(c.after_min) or "-",
+		c.evaded_again and "evaded again; FAIL" or (ok and "PASS" or "FAIL")))
 	results[#results + 1] = ok
 	if c.target and c.target:get_pos() then c.target:remove() end
 	if c.mob.object:get_pos() then c.mob.object:remove() end
@@ -191,6 +192,9 @@ local function case_step(dtime)
 	end
 	if c.evade_end_dist then
 		c.after_min = math.min(c.after_min or d, d)
+		-- Normal again: it may idle anywhere (also toward home), but it must
+		-- not evade again.
+		if evading then c.evaded_again = true end
 	end
 	c.log_t = c.log_t + dtime
 	if c.log_t >= 1 then
