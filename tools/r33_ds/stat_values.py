@@ -22,7 +22,7 @@ import models as M
 CURVES = {
     "str": (0.8, 0.15, 0.0025, 0, 1),
     "int": (0.8, 0.15, 0.0025, 0, 1),
-    "dex": (0.8, 0.13, 0.0019, 0, 1),
+    "dex": (0.8, 0.13, 0.0011, 0, 1),  # c 0.0019 until Round 36 (lane K)
     "crit_percent": (1.7, 0.044, 0.0, 1, 0),
     "attack_speed_percent": (1.6, 0.04, 0.0, 1, 0),
     "max_hp_percent": (1.6, 0.04, 0.0, 1, 0),
@@ -153,11 +153,12 @@ def class_rows(cls, level, ilvl):
 
 # Kinds the spread check covers, with the stats it compares; the rest is
 # reported, not checked (the documented exceptions of item_tiers.md section
-# 3.4: the battle axe's flat Strength, the shield at the 70 % armor cap, the
-# Dexterity rider, the Priest's healing Intelligence and Smite).
+# 1.3: the battle axe's flat Strength, the shield at the 70 % armor cap, the
+# Dexterity rider and Smite). Since Round 36 the Priest's healing
+# Intelligence is checked with Crit and Mana.
 CHECKED = {("warrior", "damage"): None, ("warrior", "survival"): ("HP", "Armor (2H)"),
            ("scout", "damage"): None, ("scout", "survival"): None,
-           ("mage", "damage"): None, ("priest", "healing"): ("Crit", "Mana")}
+           ("mage", "damage"): None, ("priest", "healing"): None}
 SPREAD_T1_MID = 1.5  # one or two attribute points cannot be finer
 
 

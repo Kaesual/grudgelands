@@ -108,14 +108,26 @@ function grug_classes.get_ranged_bonus(player)
 	return grug_classes.get_attributes(player).dex / 10
 end
 
--- Intelligence-derived spell power is a flat damage term and a percentage
--- bonus on pool-derived healing/absorb values.
+-- Intelligence-derived spell power is the flat damage term of spells.
 function grug_classes.get_spell_power_bonus(player)
 	return grug_classes.get_attributes(player).int / 10
 end
 
+-- Multiplier on pool-derived healing and absorbs (Round 36, item_tiers.md
+-- §1.2): gear Intelligence (above the class's own level growth) counts like
+-- a Mage's on Fireball, Int/10 over a base hit, so a character without
+-- Intelligence gear gets exactly the listed pool share.
+function grug_classes.get_support_factor(player)
+	local level = grug_xp.get_level(player)
+	local def = grug_classes.get_class_def(player)
+	local own = BASE_ATTR + (def and def.growth and def.growth.int or 0) * (level - 1)
+	local gear = grug_classes.get_attributes(player).int - own
+	return 1 + gear / 10 / grug_core.baseline_melee_total(math.max(1, math.min(60, level)))
+end
+
 -- Timed spell-damage modifiers multiply hostile spell formulas only. They do
--- not feed spell power because that accessor also scales healing and absorbs.
+-- not feed spell power or the support factor, so healing and absorbs ignore
+-- them.
 function grug_classes.get_spell_damage_percent(player)
 	return grug_core.status_modifier_sum(player, "spell_damage_percent")
 end

@@ -98,10 +98,12 @@ Core principles:
   changing only the current shield state does not change its tooltip. The
   registered item definition keeps a number-free fallback; the player's
   ability ItemStack carries the effective description and refreshes on kit
-  sync, level change and talent change. Strike's player-specific rage sentence
-  is additionally resource-gated as decided on 2026-09-18: only a rage-resource
-  class receives it; mana-resource and class-less characters retain the
-  class-neutral swing text (§2b).
+  sync, level change and talent change. Its timing line shows the player's
+  effective cooldown (a talent that shortens it, such as Grudge or Swift
+  Word, shows in it) and a swing skill's effective charge. Strike's
+  player-specific rage sentence is additionally resource-gated as decided on
+  2026-09-18: only a rage-resource class receives it; mana-resource and
+  class-less characters retain the class-neutral swing text (§2b).
 
 ## 1. Resources
 
@@ -125,7 +127,7 @@ Core principles:
   **13/16**, 8% = **13/12**, and 10% = **8/9**. Pool enchants and talents do
   not increase costs. Heal therefore supplies at least 12 casts at
   either endpoint; four untalented 25% casts equal one neutral health pool
-  before spell power, leaving capacity for a normal fight and another.
+  before the support factor, leaving capacity for a normal fight and another.
 - **HUD: one thin bar per resource, directly above the hotbar slots**
   (user ruling 2026-09-16, shipped in round 4; it replaces the colored
   resource *line* this bullet used to describe). Every class has exactly one
@@ -222,6 +224,13 @@ differs:
   hostile in the crosshair at that moment becomes the new foe instead. Then
   the gather rules apply again, including the switch back to combat, also
   for the same foe once it is back in the crosshair and reach.
+- **A mob evading home** after a leash reset takes no hit and is no target
+  (one predicate, `grug_abilities.valid_target`, for the crosshair, the hold,
+  swings and casts; Round 36 §2.14.1): a fresh press at it shows "Evading" in
+  the flash line, at most once per 1.5 s, a held press stays quiet; a selected
+  self or support skill still fires on the fresh press as it would at a
+  hostile. A ray at a mount means its rider, for the press as for the
+  crosshair.
 
 The check costs a held gather step nothing on a solid node or air, one
 combat ray behind a plant, loot or an actor, and nothing at all with a self
@@ -392,8 +401,12 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   authority finds a valid hostile within the skill's effective range: the
   current server ray to `get_range` (swing skills 3 m, Taunt 8, Charge 12,
   Fireball/Smite 20, Loose 25 or 33 with Longshot, plus the race bonus where
-  it applies) and the skill's target rule. The overlay reads that authority
+  it applies) and the skill's target rule, the same predicate a press uses
+  (a mob evading home is no target). The overlay reads that authority
   without its side effects: no Target Frame memory, no cast diagnostics.
+- **Red or green only where a press would act:** no skill state while the
+  player cannot act (mounted, stunned, in character creation); the ray still
+  feeds the Target Frame.
 - **Friendly (green):** the selected skill is a friendly heal/buff and a valid
   visible ally is pointed within its range (the ally rule of the friendly
   casts, without their side effects).
@@ -667,9 +680,9 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (baseline weapon + spell power), then the damage fit. Solo viability. |
-| Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
-| Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool plus the spell-power percentage for 15 s or until consumed. |
-| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
+| Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool times the support factor (gear Intelligence, `combat_stats.md` §2; exactly 25% without Intelligence gear). Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
+| Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool times the support factor for 15 s or until consumed. |
+| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool times the support factor every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 

@@ -119,7 +119,7 @@ end
 -- to its tier's top; T7 (boss drops, the crown) reaches item level 70.
 local CURVES = {
 	str = {a = 0.8, b = 0.15, c = 0.0025, minimum = 1},
-	dex = {a = 0.8, b = 0.13, c = 0.0019, minimum = 1},
+	dex = {a = 0.8, b = 0.13, c = 0.0011, minimum = 1},
 	int = {a = 0.8, b = 0.15, c = 0.0025, minimum = 1},
 	crit_percent = {a = 1.7, b = 0.044, c = 0, minimum = 0},
 	attack_speed_percent = {a = 1.6, b = 0.04, c = 0, minimum = 0},

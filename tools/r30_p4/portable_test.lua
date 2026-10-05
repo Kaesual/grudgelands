@@ -759,7 +759,8 @@ do
 		hud_layout = {image_element = function(_, d) return d end},
 	}
 	_G.grug_abilities = {
-		input = {aims_at_interactive = function() return false, walled end},
+		input = {aims_at_interactive = function() return false, walled end,
+			allowed = function() return true end},
 		is_unlocked = function() return true end,
 		aimed_target = function()
 			rays = rays + 1

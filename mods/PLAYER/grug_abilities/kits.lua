@@ -121,15 +121,18 @@ local function effective_support_number(amount)
 	return math.floor(amount)
 end
 
+-- Not rounded here: deal_ability_damage floors once after the level scalar,
+-- like Loose and every swing (Round 36).
 local function spell_damage_value(player, amount)
 	local percent = grug_classes.get_spell_damage_percent(player)
-	return math.floor(amount * (1 + percent / 100) + 0.5)
+	return amount * (1 + percent / 100)
 end
 
+-- Heal, Mend, Shield, Recompense and Glacial Ward: a share of the base pool
+-- times the support factor (gear Intelligence, grug_classes stats.lua).
 local function support_value(player, percent)
 	local base = grug_core.base_pool(grug_core.get_player_level(player))
-	local spell_power_percent = grug_classes.get_spell_power_bonus(player)
-	return base * percent / 100 * (1 + spell_power_percent / 100)
+	return base * percent / 100 * grug_classes.get_support_factor(player)
 end
 
 --
@@ -752,9 +755,9 @@ grug_abilities.register_ability({
 	target_kind = "hostile",
 	description = "Smites an enemy up to 20 m away; damage scales with your level.",
 	values = function(user, assume_shielded)
-		local damage = math.floor((grug_core.baseline_weapon_damage(
+		local damage = (grug_core.baseline_weapon_damage(
 				grug_core.get_player_level(user))
-			+ grug_classes.get_spell_power_bonus(user)) * 1.5 + 0.5)
+			+ grug_classes.get_spell_power_bonus(user)) * 1.5
 			+ grug_classes.get_talent_bonus(user, "smite_damage_add")
 		if assume_shielded == nil then
 			assume_shielded = grug_core.get_absorb(user) > 0
@@ -1068,7 +1071,7 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "glacial_ward", class = "mage", talent_gated = true,
 	kind = "cast", target_kind = "self", name = "Glacial Ward",
-	description = "Surround yourself with a spell-powered absorb for 10 s.",
+	description = "Surround yourself with an absorb raised by gear Intelligence for 10 s.",
 	color = "#8bd8f0", cost = {mana_percent = 10}, cooldown = 30, range = 4,
 	values = function(user)
 		return {absorb = support_value(user,

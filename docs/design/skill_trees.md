@@ -360,7 +360,7 @@ because the fix belongs to `classes.md` §3 rather than to WP11.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `baseline weapon + spell power` raw value gains 4 / 8 / 12 / 16 / 20 % of a base hit before the damage fit (§2.10) | `kits.lua` | `fireball_damage_add` |
-| 2 | **Firebrand** | Blaze | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
+| 2 | **Firebrand** | Blaze | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
 | 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `6 / 9 / 12 % of a base hit + spell power / 2` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same homing flight | `kits.lua` (the projectile's on-hit) plus its radius loop | `fireball_splash` |
 | 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+30 % of a base hit**. *Limit: 8 s, **60 s cooldown** on the trigger.* | the central cost seam and Fireball values | `whitehot_window`, `whitehot_damage` |
 | 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
@@ -383,7 +383,7 @@ besides its capstone — see §2.9's note on the bounded pass.
 | 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | Ice Nova adds `25 % of a base hit + spell power / 2` to its quarter-Fireball baseline before spell scaling, once per accepted hit | `kits.lua:581-598` | `control_damage_add` |
 | 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration ×1.4 / ×1.8 / ×2.2 / ×2.6 / ×3.0 (the base rate is `max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)` mana/s, combat_stats.md §5) | `grug_abilities/init.lua` mana-regeneration ticker | `combat_mana_regen_add` |
 | 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `blink_cooldown_sub` |
-| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.add_absorb` | — |
+| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool times the support factor (gear Intelligence) for 10 s | new; `grug_core.add_absorb` | — |
 | 8 | **Far Step** | Ward | 4 | 3 | — | Blink distance 10 m → 12 / 14 / 16 m | `kits.lua:623-641` (inside the cast body, player in scope) | `blink_distance_add` |
 
 Rime also takes no rule-breaker besides its capstone, and its capstone does
@@ -396,7 +396,7 @@ as §2.1: Glacial Ward and Shield no longer overwrite each other — ruling 23, 
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Gentle Hand** | Balm | 1 | 5 | — | Heal's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `heal_add` |
 | 2 | **Quiet Steps** | Balm | 2 | 4 | — | heal threat factor 0.5 → 0.45 / 0.40 / 0.35 / 0.30 (`combat_stats.md` §4) | `grug_core/combat.lua:355`, read inside `add_heal_threat` at `:518-535` | `heal_threat_factor_sub` |
-| 3 | **Mend** *(keystone)* | Balm | 3 | 3 | **new skill** *(already registered)* | the shipped ability, granted at rank 1 exactly as `classes.md` §5 specifies (6% base mana, 8 s cooldown, 8% of the base pool plus spell-power percentage every 3 s for 12 s); ranks 2 and 3 raise the tick to 9% and 10% | `kits.lua`; the grant gate is `talent_gated = true` | `mend_tick_add` |
+| 3 | **Mend** *(keystone)* | Balm | 3 | 3 | **new skill** *(already registered)* | the shipped ability, granted at rank 1 exactly as `classes.md` §5 specifies (6% base mana, 8 s cooldown, 8% of the base pool times the support factor every 3 s for 12 s); ranks 2 and 3 raise the tick to 9% and 10% | `kits.lua`; the grant gate is `talent_gated = true` | `mend_tick_add` |
 | 4 | **Hearten** *(capstone)* | Balm | 4 | **1** | **replaces Heal** | Heal also heals every **other** ally within 8 m for **65 %** of the amount. Same key, same 8% base-mana cost, same 4 s cooldown — the Priest's group heal, without a group-heal button | `kits.lua` plus its radius loop | `heal_splash` |
 | 5 | **Warding Faith** | Aegis | 1 | 5 | — | Shield's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `shield_absorb_add` |
 | 6 | **Deep Reserve** | Aegis | 2 | 4 | — | max mana +3 / 6 / 9 / 12 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
@@ -417,9 +417,9 @@ sentence stays true apart from the tree's name.
 | 2 | **Swift Word** | Word | 2 | 4 | — | Smite cooldown 2 s → 1.9 / 1.8 / 1.7 / 1.6 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `smite_cooldown_sub` |
 | 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8% base mana, 12 s cooldown, 20 m; `18 / 24 / 30 % of a base hit + spell power` damage, healing the Priest for 50 % of it | new; `grug_core.deal_ability_damage` returns the post-crit amount, healed back with `grug_core.heal_player(…, {no_crit = true})` | — |
 | 4 | **Last Word** *(capstone)* | Word | 4 | **1** | **effect** ‼ | while the Priest is below 25 % max HP, Word of Ruin's drain heals for **150 %** of the damage dealt — above the 100 % the pipeline otherwise allows — and the trigger resets Word of Ruin's cooldown, so a second cast drains inside the window. *Limit: 12 s per trigger, **180 s cooldown**.* | the drain half of the Word of Ruin registration | `drain_ratio_override` |
-| 5 | **Hard Faith** | Wrath | 1 | 5 | — | +2 / 4 / 6 / 8 / 10 percentage points crit chance | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
+| 5 | **Hard Faith** | Wrath | 1 | 5 | — | +2 / 4 / 6 / 8 / 10 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
 | 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+4 / 8 / 12 / 16 % of a base hit` | `kits.lua:677-717`, gated on `grug_core.get_absorb(user) > 0` (`grug_core/combat.lua:1168`) | `smite_damage_while_shielded_add` |
-| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool plus the spell-power percentage on a landed cast at most once every 6 s (internal cooldown, Round 35), refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement and `grug_core.add_absorb` | `smite_absorb` |
+| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool times the support factor on a landed cast at most once every 6 s (internal cooldown, Round 35), refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement and `grug_core.add_absorb` | `smite_absorb` |
 | 8 | **Hardened** | Wrath | 4 | 3 | — | max HP +2 / 4 / 6% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
 
 Word of Ruin's drain is specified as "50 % of the damage dealt **before the
@@ -445,7 +445,7 @@ game already runs.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Key |
 |---|---|---|---|---|---|---|---|
 | 1 | **Strong Draw** | Draw | 1 | 5 | — | Loose damage `+4 / 8 / 12 / 16 / 20 % of a base hit`, before the draw multiplier | `loose_damage_add` |
-| 2 | **Cold Eye** | Draw | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance | `crit_chance_add` |
+| 2 | **Cold Eye** | Draw | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance (30 % cap holds) | `crit_chance_add` |
 | 3 | **Twin Shot** *(keystone)* | Draw | 3 | 3 | **replaces Loose** | a full draw looses two arrows, the second for `40 / 50 / 60 %` damage; costs 2 arrows. Same key | `loose_second_arrow` |
 | 4 | **Longshot** *(capstone)* | Draw | 4 | **1** | **replaces Loose** | Loose's range 25 m → **33 m**, and a hit landed beyond 25 m deals **+11 % of a base hit** | `loose_range_add`, `longshot_damage_add` |
 | 5 | **Quiver** | Ranging | 1 | 5 | — | Loose's arrow is not consumed 10 / 20 / 30 / 40 / 50 % of the time | `arrow_refund_chance` |
@@ -588,8 +588,9 @@ shows every rank's amount at the viewer's level (damage after the scalar,
 before crit). The derivation and tables are in `tools/r35_b/numbers.py`.
 
 Healing and absorb talents instead add percentage points to the ability's
-class-neutral base-pool share; spell power is applied as a percentage bonus
-and `scale_player_value` remains an identity. Applying the damage scalar to
+class-neutral base-pool share; the support factor (gear Intelligence over a
+base hit, `combat_stats.md` §2, Round 36) multiplies the result and
+`scale_player_value` remains an identity. Applying the damage scalar to
 those completed support values would double their level growth.
 
 **Nine talents deliberately break a decided rule, and every one states its
@@ -1020,7 +1021,10 @@ On that condition, post one message-feed line alongside the "Reached level N!"
 level-up banner (`grug_xp/init.lua`, a large centre message since Round 28
 ruling 20, no longer a chat line) only when at least one point is unspent, directing
 the player to Inventory > Talents. No new globalstep, no new HUD element, no
-new packet.
+new packet. The banner itself names the points the jump earned in a second
+line, "You gained +1 Talent Point" (or "+N Talent Points" over several
+levels; Round 36 §2.14.4); both read the one rule
+`grug_classes.talent_points_at(level)` = floor(level / 2).
 
 ### 3.7 The KAT
 

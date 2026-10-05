@@ -11,7 +11,9 @@
 --   over the engine crosshair: hostile (red) and friendly (green) when the
 --   selected skill's own aim authority (`grug_abilities.aimed_target`, the
 --   ray and target rule the real cast uses, without its Target Frame memory
---   or diagnostics) finds a valid target in the skill's effective range;
+--   or diagnostics) finds a valid target in the skill's effective range and
+--   contextual input may act (`input.allowed`: not mounted, stunned ...), so
+--   the colour shows exactly where a press would act (Round 36 §2.14.1);
 --   otherwise interact (light blue) when contextual input would interact
 --   with the first thing within hand reach (`input.aims_at_interactive`);
 -- * one progress ring, one frame per sixteenth, shared by two owners: the
@@ -156,7 +158,12 @@ return function(api)
 				last_rays[name] = {eye = eye, look = look, id = def.id, at = now,
 					object = ray.pointed ~= nil and ray.pointed.type == "object",
 					aim = aims[name]}
-				if target then return def.target_kind end
+				-- Red or green only where a press would act (Round 36 §2.14.1):
+				-- never while mounted, stunned or otherwise held back from input.
+				-- The ray above still feeds the Target Frame.
+				if target and (not input or input.allowed(player)) then
+					return def.target_kind
+				end
 			end
 		end
 		return interact and "interact" or nil

@@ -12,7 +12,9 @@
 --             water (out of reach from the water); the mob attacks it and must
 --             cross the water, climb out and reach it.
 --   RETURN    the target vanishes: the fight ends, the mob runs home (the
---             evade) and must stand on land at home again.
+--             evade) and must stand on land at home again. (Since Round 36 a
+--             free mob reset inside its 32-node wander radius only heals and
+--             stays: a crossing narrower than that reports evade_seen=false.)
 --   STRANDED  an idle second mob set down in the middle of the water (its
 --             home on the near bank) must reach land.
 -- COST: every mob's is_at_cliff (the support probe) and grug_mobs.leash_tick

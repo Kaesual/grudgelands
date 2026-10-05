@@ -334,6 +334,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   evading, or beyond `FLEE_REACH` × the reach) returns it to gather.
   `end_mode` clears mode, foe and ally on release, cancel, slot change,
   death and leave. Fixture `tools/r32_f2`; rules `classes.md` §2b.
+  Since Round 36 `fightable` is `grug_abilities.valid_target` itself, which
+  refuses a mob evading home, so the crosshair, the hold, swings and casts
+  share one predicate; `grug_abilities.evading_target` names the evader a
+  fresh press answers with `grug_mobs.evade_notice` ("Evading", rate-limited
+  per player, also from the do_punch cancel), the hand ray's object goes
+  through `grug_core.combat_actor` (a mount's rider, as in the combat ray),
+  and the crosshair shows no skill state while `input.allowed` refuses
+  (mounted, stunned). Fixture `tools/r36_f`.
   It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.
