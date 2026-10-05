@@ -223,6 +223,13 @@ local function formspec(ctx)
 		default.get_hotbar_bg(1, 6) .. grug_jobs.station_book_button(ctx.station, 10.3, 2.3)
 end
 
+-- Whether the station's own form is the one open (default/node_formspec.lua
+-- records the last form shown): a re-show never pops it back over the recipe
+-- book or any other form (Round 37, PLY-03).
+local function form_open(ctx)
+	return default.node_formspec.shown_form(ctx.name) == FORM
+end
+
 refresh = function(ctx, show)
 	local player = core.get_player_by_name(ctx.name)
 	if not accessible(ctx, player) then
@@ -237,7 +244,7 @@ refresh = function(ctx, show)
 		ctx.warning = warning
 		set_output(ctx, output)
 	end
-	if show then core.show_formspec(ctx.name, FORM, formspec(ctx)) end
+	if show and form_open(ctx) then core.show_formspec(ctx.name, FORM, formspec(ctx)) end
 end
 
 local function refresh_position(pos)
@@ -342,7 +349,8 @@ function workspaces.open(pos, player)
 	end
 	viewers[name] = ctx
 	advance(ctx)
-	refresh(ctx, true)
+	refresh(ctx, false)
+	core.show_formspec(name, FORM, formspec(ctx))
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -351,7 +359,12 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not ctx then return true end
 	if fields.quit then detach(ctx) return true end
 	if not accessible(ctx, player) then return true end
-	if fields.grug_jobs_book then grug_jobs.open_book(player, "station", ctx.station) return true end
+	if fields.grug_jobs_book then
+		-- The book replaces the station form; the session ends as for repair.
+		detach(ctx)
+		grug_jobs.open_book(player, "station", ctx.station)
+		return true
+	end
 	if fields.grug_jobs_repair then
 		local repair = rawget(_G, "grug_repair")
 		if repair then
@@ -394,7 +407,11 @@ core.register_globalstep(function(dtime)
 	if accumulator < 1 then return end
 	accumulator = 0
 	for _, ctx in pairs(viewers) do
-		if accessible(ctx, core.get_player_by_name(ctx.name)) then
+		-- Another form replaced the station's (no "quit" reaches us then):
+		-- the session is over.
+		if not form_open(ctx) then
+			detach(ctx)
+		elseif accessible(ctx, core.get_player_by_name(ctx.name)) then
 			advance(ctx)
 			refresh(ctx, ctx.station == "furnace" or ctx.station == "dual_furnace")
 		end

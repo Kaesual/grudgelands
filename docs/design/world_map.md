@@ -257,18 +257,25 @@ drawn from the base image above. The gliding version (approved in playtest,
   the bezel pointing toward them (16 directions) when they are outside it.
   Rim arrows fill 85 % of the bezel's band and are drawn above the "N".
 - **Updates:** the map, markers and party members are checked every server
-  step. Static markers are asked from their providers on joining, whenever
-  the quest markers may have changed (`grug_quests.markers_changed`: a quest
-  change, held objective items as the quest tracker sees them every 0.5 s,
-  a level change) and every 5 s (each player in their own phase; a
-  repeatable's cooldown ending shows then); party member
-  names are read again only on a party change and that 5 s refresh. The
-  window size and the location line are read every 0.5 s (Round 30, perf
-  review #12); a window change then resends every element's position. Only
-  changed HUD values are sent; a standing player costs no packets. The quest
-  givers' states come from one `grug_quests.marker_states` call per player
-  (one decoded quest state for all givers, memoized for a second or until
-  `markers_changed`).
+  step, and placed again only when something the player sees changed
+  (Round 37): the map and its markers when the map moves by a whole screen
+  pixel, the cell, the markers or the window change; the party arrows then
+  or when a member comes, goes, moves or turns to another of the 16 heading
+  frames. A player standing still with a still party costs one position read
+  per step and sends nothing. Static markers are asked from their providers
+  on joining, whenever the quest markers may have changed
+  (`grug_quests.markers_changed`: a quest change, held objective items as
+  the quest tracker sees them every 0.5 s, a level change), and at a check
+  every 5 s (each player in their own phase) only when their key changed:
+  the quest markers' version (a repeatable's cooldown ending shows then),
+  the home, the discovered waystones or the faction. Party member names are
+  read again only on a party change and that 5 s check. The window size and
+  the location line are read every 0.5 s (Round 30, perf review #12); a
+  window change then resends every element's position. Only changed HUD
+  values are sent. The quest givers' states come from one
+  `grug_quests.marker_states` call per player (one decoded quest state for
+  all givers, memoized until the quest state, held objective items, the
+  level or the end of a repeatable's cooldown change it).
 - **Cost** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
   (LuaJIT, no engine; one player, 0.09 s server steps, about ten markers in
   the window, two party members moving along) measures about 18 HUD packets

@@ -67,6 +67,8 @@ dofile(modpath .. "/starts_preload.lua")
 -- from it, and grug_mapgen fills it once the authority is installed.
 dofile(modpath .. "/settlement_sockets.lua")
 dofile(modpath .. "/protection.lua")
+-- The pointed node's on_rightclick for items with their own on_place.
+dofile(modpath .. "/node_rightclick.lua")
 dofile(modpath .. "/water_guard.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")
