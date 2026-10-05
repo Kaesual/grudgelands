@@ -819,10 +819,11 @@ identical third item would erase the flavor for no balance gain.
 ### 3.3 Named rares (rare tier: armor 70, ×5 HP, ×2.2 dmg, ×6 XP, ×2 scale + tint, faction-wide spawn broadcast)
 
 Spawned by a scheduled spawner (not ABM): respawn 2–4 h after kill, patrol
-route between 2–3 fixed zone anchors. A rare that vanished without a kill
-(lava, an admin) is released after a minute missing at its last known place
-while that place is active (a player is near); time nobody is near never
-counts. Each spawn is a new generation, and an older or second copy removes
+route between 2–3 fixed zone anchors. Every death books that respawn,
+also one without a player's kill (a guard, lava, a fall). A rare removed
+without dying (an admin, a crash) is released after a minute missing at its
+last known place while that place is active (a player is near); time nobody
+is near never counts. Each spawn is a new generation, and an older or second copy removes
 itself when it loads, so a rare never stands twice (Round 37,
 `grug_mobs/liveness.lua`). They inherit their base family's drop
 table (×6 XP and the rare multipliers are the reward WP6 ships); special loot

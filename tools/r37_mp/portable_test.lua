@@ -406,7 +406,10 @@ local function load_rares()
 	grug_mobs.place_on_ground = function() end
 	grug_mobs.add_mob = function(pos, def)
 		local ent = {name = def.name, _grug_authored = def._grug_authored}
+		for k, v in pairs(def._grug_staticdata or {}) do ent[k] = v end
 		ent.object = new_object(pos, ent)
+		-- The first activation inside add_entity (init.lua's wrapper).
+		grug_mobs.live_claim(ent)
 		return ent
 	end
 	dofile(repo .. "/mods/ENTITIES/grug_mobs/liveness.lua")
@@ -516,6 +519,31 @@ list[1].object.removed = true
 deactivate(list[1], true)
 for _ = 1, 700 do pass(rare_step, 10) end -- about 1.9 h
 check(#rares_of("grimtusk") == 0, "R15 after a kill nothing returns before the respawn")
+for _ = 1, 100 do pass(rare_step, 10) end -- past 2 h: the booked respawn
+list = rares_of("grimtusk")
+check(#list <= 1, "R16 never two at once")
+if #list == 0 then for _ = 1, 800 do pass(rare_step, 10) end list = rares_of("grimtusk") end
+check(#list == 1 and list[1]._grug_rare_id == "grimtusk" and list[1]._grug_live_gen == 3 and
+	list[1].description == "Grimtusk" and list[1].lifetimer == 30000,
+	"R17 the respawned rare carries its identity and generation from its first staticdata")
+-- A death without a player's lethal hit (a guard, lava, a fall) goes through
+-- the shared death boundary, which books the ordinary respawn.
+local settle = load_in("local kill_loot_hooks = {}\n" ..
+	cut(read("mods/ENTITIES/grug_mobs/init.lua"), "function grug_mobs.settle_mob_death(self)",
+		"\nend\n", "settle") .. "return grug_mobs.settle_mob_death\n",
+	{grug_core = {disengage_mob = function() end}}, "settle")
+grug_mobs.award_kill_xp = function() end
+local victim = list[1]
+settle(victim)
+victim.object.removed = true
+deactivate(victim, true)
+local due = storage:get_int("rare_next:grimtusk")
+check(storage:get_int("rare_alive:grimtusk") == 0 and due >= gametime + 7200 and
+	due <= gametime + 14400, "R18 a rare killed by a guard or lava books its 2-4 h respawn")
+for _ = 1, 30 do pass(rare_step, 10) end
+check(#rares_of("grimtusk") == 0, "R19 and no fresh rare a minute later (the liveness 'lost' is for removals only)")
+settle(victim)
+check(storage:get_int("rare_next:grimtusk") == due, "R20 a second settle books nothing twice")
 for i = #objects, 1, -1 do objects[i] = nil end
 for i = #players, 1, -1 do players[i] = nil end
 
@@ -683,7 +711,9 @@ dofile(repo .. "/mods/CORE/grug_core/homing.lua")
 local verbs = read("mods/ENTITIES/grug_mobs/verbs.lua")
 local arrow_defs = {}
 grug_mobs = {scale_attack_damage = function(x) return x end}
-mobs = {register_arrow = function(_, name, def)
+mobs = {has_priv = function(name) return name == "peaceful" end,
+	is_invisible = function() return false end,
+	register_arrow = function(_, name, def)
 	arrow_defs[name] = def
 	core.registered_entities[name] = {initial_properties = {}}
 end}
@@ -764,6 +794,8 @@ local function breath_scene(all_homing)
 	local bystander = new_player("bystander", vec(p_by.x, 1, p_by.z), "accord")
 	local p_veto = side_point(from, to, -15, 0.8)
 	local outsider = new_player("outsider", vec(p_veto.x, p_veto.y - 0.9, p_veto.z), "accord")
+	local p_calm = side_point(from, to, 15, 0.6)
+	local peaceful = new_player("peaceful", vec(p_calm.x, p_calm.y - 0.9, p_calm.z), "accord")
 	local dragon = shooter(vec(0, 1, 0), target, outsider)
 	local real = grug_mobs.stamp_straight_arrow
 	if all_homing then grug_mobs.stamp_straight_arrow = grug_mobs.stamp_arrow_damage end
@@ -771,11 +803,12 @@ local function breath_scene(all_homing)
 		{eye_height = 5, arrow = "grug_mobs:ice_breath", effect = "rime"})
 	grug_mobs.stamp_straight_arrow = real
 	fly(3)
-	return target, bystander, outsider
+	return target, bystander, outsider, peaceful
 end
 local target, bystander, outsider = breath_scene(true)
 check(target.punched == 3, "F1 before: three homing shots, the locked target takes three hits")
-target, bystander, outsider = breath_scene(false)
+local peaceful
+target, bystander, outsider, peaceful = breath_scene(false)
 local homing, straight = 0, 0
 for _, s in ipairs(shots) do
 	if s._grug_lock then homing = homing + 1 elseif s._grug_straight then straight = straight + 1 end
@@ -783,7 +816,8 @@ end
 check(#shots == 3 and homing == 1 and straight == 2, "F2 now: the middle shot homes, the two side shots fly straight")
 check(target.punched == 1, "F3 the locked target takes one hit")
 check(bystander.punched == 1, "F4 a side shot hits a bystander in its line")
-check(outsider.punched == 0, "F5 a player the shooter would not attack is passed")
+check(outsider.punched == 0 and peaceful.punched == 0,
+	"F5 a player the shooter would not attack (its veto, a peaceful player) is passed")
 local ground = 0
 for _, p in ipairs(placed) do
 	if world[key(p)] and world[key(p)].name == "grug_mobs:dragon_rime" and p.y == 1 then
@@ -875,6 +909,15 @@ check(cut(regions, "function SR.leader_tick(now, players, zone_ids)", "\nend\n",
 local rares_src = read("mods/ENTITIES/grug_mobs/rares.lua")
 check(cut(rares_src, "local function try_spawn(id, spec)", "\nend\n", "try_spawn"):find(
 	"_grug_authored = true", 1, true) ~= nil, "W6 the rares are placed as authored")
+local api_now = read("mods/ENTITIES/mobs/api.lua")
+local branch = cut(api_now, "-- or are we a mob?", "objs[n] = nil", "mob branch")
+check(branch:find("or (self._grug_faction and ent._grug_faction == self._grug_faction)", 1, true) ~= nil,
+	"W8 general_attack's mob branch skips a mob of the own faction")
+local same = load_in("return function(self, ent) return (self._grug_faction and " ..
+	"ent._grug_faction == self._grug_faction) == true end", {}, "faction filter")
+check(same({_grug_faction = "throng"}, {_grug_faction = "throng"}) and
+	not same({_grug_faction = "throng"}, {}) and not same({}, {_grug_faction = "throng"}),
+	"W9 a Throng guard skips the King's raiders, a factionless mob nobody")
 check(cut(bosses, "local function spawn_dragon(id, row)", "\nend\n", "spawn_dragon"):find(
 	"_grug_live_gen = grug_mobs.liveness.next_generation(key)", 1, true) ~= nil,
 	"W7 a dragon's spawn hands in its next generation")

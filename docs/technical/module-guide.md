@@ -752,7 +752,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   or second copy; a class-level `on_deactivate` records the last place; the
   callers' 10 s passes ask `watch(key, dt)`, which counts absence only while
   that place is an active mapblock and answers `"lost"` after
-  `LOST_AFTER` (60 s) of it. Royal summons, whelps and other
+  `LOST_AFTER` (60 s) of it; a rare's death by any cause books its ordinary
+  respawn first (`settle_mob_death`), so "lost" covers removals only. Royal summons, whelps and other
   encounter adds are not authored. Fixture `tools/r37_mp` (with `engine.sh`,
   the restart test).
 - **Mob voices (Round 34 S1b):** `grug_mobs/voices.lua` holds `VOICES`, the

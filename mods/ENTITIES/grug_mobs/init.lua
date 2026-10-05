@@ -303,6 +303,14 @@ function grug_mobs.settle_mob_death(self)
 	-- very step unless another live mob still holds them (grug_core).
 	grug_core.disengage_mob(self)
 	self.temp = self.temp or {}
+	-- A named rare's death by any cause (a guard, lava, a fall, another mob)
+	-- books its ordinary 2-4 h respawn; the lethal player hit booked it
+	-- already. Liveness's "lost" (liveness.lua) is then only for a rare that
+	-- vanished without dying (Round 37 MP review).
+	if self._grug_rare_id and not self.temp.grug_rare_death_sent then
+		self.temp.grug_rare_death_sent = true
+		grug_mobs.rare_killed(self._grug_rare_id)
+	end
 	if not self.temp.grug_kill_loot_settled then
 		self.temp.grug_kill_loot_settled = true
 		local tagger = grug_mobs.player_drop_tagger

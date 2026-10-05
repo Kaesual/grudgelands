@@ -2191,6 +2191,11 @@ function mob_class:general_attack()
 			-- viable target instead of re-acquiring the vetoed one forever --
 			-- the same reason the _grug_ignore_player hook above sits here.
 			or ent._grug_noncombatant
+			-- GRUG PATCH (Round 37 MP review): never a mob of the own faction
+			-- (a Throng guard and the Undead King's raiders, which carry his
+			-- faction). grug_mobs' do_custom drops such a target again, so
+			-- without this filter the two re-acquired each other every pass.
+			or (self._grug_faction and ent._grug_faction == self._grug_faction)
 			or (self.specific_attack and not check_for(ent.name, self.specific_attack)) then
 				objs[n] = nil
 			end
@@ -4669,7 +4674,8 @@ function mobs:add_mob(pos, def)
 
 	-- GRUG PATCH (Round 37 MP, MOB-03): `def._grug_authored` (a named rare, a
 	-- leader) is placed at the limit too and carries the mark into its first
-	-- activation as staticdata (grug_authored).
+	-- activation as staticdata (grug_authored), together with any
+	-- `def._grug_staticdata` fields.
 	if at_limit() and not def._grug_authored then
 --print("--- active mob limit reached", active_mobs, active_limit)
 		return
@@ -4690,8 +4696,16 @@ function mobs:add_mob(pos, def)
 		return
 	end
 
-	local mob = core.add_entity(pos, def.name, def._grug_authored
-			and core.serialize({_grug_authored = true}) or nil)
+	-- ... and `def._grug_staticdata` (a rare's identity and generation)
+	-- goes into the same first staticdata, so even the add-time static copy
+	-- carries it.
+	local grug_data = def._grug_staticdata and table_copy(def._grug_staticdata)
+	if def._grug_authored then
+		grug_data = grug_data or {}
+		grug_data._grug_authored = true
+	end
+	local mob = core.add_entity(pos, def.name,
+			grug_data and core.serialize(grug_data) or nil)
 
 --print("[mobs] Spawned " .. def.name .. " at " .. core.pos_to_string(pos))
 

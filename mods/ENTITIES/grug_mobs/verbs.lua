@@ -596,13 +596,23 @@ end
 -- dragon breath and a King's volley fire three projectiles. The middle one
 -- homes on the locked target (stamp_arrow_damage); the two side ones
 -- (stamp_straight_arrow) fly their launch velocity straight. A side shot hits
--- the first living player on its way whom the shooter would attack -- never
+-- the first living player on its way whom the shooter would attack (not a
+-- peaceful or invisible one, nor one its veto spares) -- never
 -- the locked target, so that target takes one hit, not three -- or the first
 -- walkable node, where `hit_node` runs (the breath's ground patch), and it is
 -- gone after its `lifetime` or with its shooter. Nodes are tested with a
 -- node-only ray, players by their distance to the step's segment.
 local STRAIGHT_REACH = 0.7 -- horizontal distance to a player's body axis
 local STRAIGHT_BODY = {0, 1.8} -- a player's height range above the feet
+
+-- mobs_redo's acquisition skips these players too (general_attack).
+local PEACEFUL_ALL = core.settings:get_bool("enable_peaceful_player") == true
+local function spared(shooter, player)
+	local name = player:get_player_name()
+	return PEACEFUL_ALL or mobs.has_priv(name, "peaceful_player")
+		or mobs:is_invisible(shooter, name)
+		or (shooter._grug_ignore_player ~= nil and shooter:_grug_ignore_player(player))
+end
 
 -- The player the segment a -> b passes (the closest along it), or nil.
 local function straight_victim(self, a, b)
@@ -616,8 +626,7 @@ local function straight_victim(self, a, b)
 			math.sqrt(length2) / 2 + 2.5)) do
 		local p = core.is_player(object) and object ~= self._grug_skip and
 			object:get_hp() > 0 and object:get_pos()
-		if p and not (shooter._grug_ignore_player and
-				shooter:_grug_ignore_player(object)) then
+		if p and not spared(shooter, object) then
 			-- The closest point of the segment to the body's middle.
 			local cy = p.y + (STRAIGHT_BODY[1] + STRAIGHT_BODY[2]) / 2
 			local t = length2 > 0 and ((p.x - a.x) * dx + (cy - a.y) * dy +

@@ -148,9 +148,9 @@
 --
 --   AND A MARKER IS NEVER LEFT STANDING ALONE. `on_die` is reached only from
 --   `check_for_death` (api.lua:887-975), so it is not the only way an entity
---   can leave: `/clearobjects`, the `mob_active_limit` removal inside
---   `mob_activate` (api.lua:3638-3769) and a shutdown between the mod-storage
---   flush and the map flush all end with a marker and no NPC, and without a
+--   can leave: `/clearobjects` and a shutdown between the mod-storage flush
+--   and the map flush end with a marker and no NPC (the `mob_active_limit`
+--   removal no longer touches NPCs since Round 37), and without a
 --   re-check that socket would stay empty for the life of the world. So a pass
 --   over a socket whose own mapblock is ACTIVE -- the only state in which the
 --   scan can answer at all -- also frees a marked socket that nothing holds,

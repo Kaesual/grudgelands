@@ -175,6 +175,11 @@ local function try_spawn(id, spec)
 	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
 	-- — without it the golem- and spider-based rares spawn sunk into the
 	-- ground.
+	-- The next generation of this rare: any older copy still on disk is stale
+	-- and removes itself when its block loads (liveness.lua). Its identity
+	-- goes into the first staticdata, so the add-time static copy has it too.
+	local key = live_key(id)
+	local gen = liveness.next_generation(key)
 	local ent = grug_mobs.add_mob(pos, {
 		name = spec.mob,
 		texture = spec.texture,
@@ -182,6 +187,8 @@ local function try_spawn(id, spec)
 		-- ... and mobs_redo's active-mob limit, which it does not count
 		-- against either (Round 37 MP, mobs/api.lua grug_authored).
 		_grug_authored = true,
+		_grug_staticdata = {_grug_rare_id = id, _grug_live_key = key,
+			_grug_live_gen = gen, lifetimer = 30000, description = spec.name},
 	})
 	if not ent then
 		return
@@ -192,9 +199,7 @@ local function try_spawn(id, spec)
 	-- refreshes the tag.
 	ent.description = spec.name
 	ent._grug_rare_id = id
-	-- The next generation of this rare: any older copy still on disk is stale
-	-- and removes itself when its block loads (liveness.lua).
-	liveness.adopt(ent, live_key(id), liveness.next_generation(live_key(id)))
+	liveness.adopt(ent, key, gen)
 	-- Named rares must not evaporate when the last player walks away:
 	-- mobs_redo deletes an unloading mob whose lifetimer is below 20000
 	-- (mob_staticdata) and expires it on a timer below the same threshold
@@ -244,9 +249,11 @@ function grug_mobs.rare_killed(id)
 	save(id)
 end
 
--- Watchdog for deaths nobody reported: lava, fall damage, a guard NPC, or a
--- mob deleted by an admin/world edit. Without it such a rare would be gone
--- for good, because `alive` would stay true forever.
+-- Watchdog for a rare that left without dying: deleted by an admin or a
+-- world edit, lost in a crash. Every death, whoever caused it, books the
+-- ordinary respawn through rare_killed (the lethal player hit, or init.lua's
+-- settle_mob_death for a guard, lava or a fall). Without the watchdog such a
+-- rare would be gone for good, because `alive` would stay true forever.
 --
 -- liveness.lua decides (Round 37 MP, MOC-01): the rare counts as missing
 -- only while its last known place is an active mapblock and no instance
