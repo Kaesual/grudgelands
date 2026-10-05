@@ -13,9 +13,9 @@ completion record.
 (neighbors and roads), the capital ingress rule of §12 and §14 (acceptance)
 were rewritten for natural terrain, borders, roads and water
 (`../planning/round22-natural-world-plan.md`); §§1–3, the §8 and §11 intros
-and §13.2 were aligned. The rewritten text describes the **target**; the
-running mapgen follows as Round 22 Phases 3–5 land. The replaced WP40 text is
-in this file as of commit `082982da`.
+and §13.2 were aligned. Phases 3–5 landed with the R7 production cutover:
+§7–§14 describe the running mapgen. The replaced WP40 text is in this file as
+of commit `082982da`.
 
 ## 1. Authored macro-map, procedural local detail
 
@@ -46,8 +46,8 @@ in this file as of commit `082982da`.
 - Each zone definition owns: display name and id, stable hub, macro region,
   optional ownership bias, `territory_rule`, exactly one `race_region`, level
   range, PvP rule, allowed biome
-  list, signature terrain/property, mob and gathering palette, and reserved
-  POI slots. `race_region` means cultural/geological provenance;
+  list, signature terrain/property, gathering palette, spawn recipe (its
+  surface mobs, [zone_mobs.md](zone_mobs.md)) and reserved POI slots. `race_region` means cultural/geological provenance;
   it selects architecture, regional loot and one signature wood (gems are depth-tiered and the same everywhere, §11), but
   does not
   make a contested zone safe or politically controlled. `territory_rule`
@@ -103,7 +103,9 @@ in this file as of commit `082982da`.
   ([spawn_regions.md](spawn_regions.md#one-level-truth)).
 - The Battlegrounds zones rise from both continent-facing sides toward the
   middle of the band. Wyrmglass and Stormscale are flat level 60. Capital
-  zones use their published ranges but retain `civic_no_hostiles`.
+  zones use their published ranges (20–30). Their zone record's
+  `civic_no_hostiles` flag only keeps Claim Stones out of them
+  (`grug_housing`); no spawn code reads it (§3).
 - **Inner start band (decided 2026-09-17):** surface mob level is exactly
   **1** at integer horizontal Euclidean distance 0–100 nodes from each of the
   six authored start anchors and exactly **2** at distance 101–150 nodes.
@@ -136,10 +138,11 @@ in this file as of commit `082982da`.
   surface mob takes a level in its role's range of the spawn region it came
   from, named leaders the top of their region; the three sub-ranges toward
   the front above no longer apply to mobs there. Gameplay asks the surface
-  level through `grug_core.mob_level_at`, which returns the region's level
-  there (the level overlay); zones without a recipe keep the field. The
-  field itself is never overlaid: it serves the mapgen's level-banded
-  content, the depth floor and guards everywhere.
+  level through `grug_core.mob_level_at` and `grug_core.surface_mob_level_at`,
+  which return the region's level there (the level overlay); zones without a
+  recipe keep the field. The zone field itself (`grug_zones.mob_level_at`,
+  `grug_zones.surface_mob_level_at`) is never overlaid: it serves the
+  mapgen's level-banded content, the depth floor and guards everywhere.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
@@ -160,16 +163,20 @@ in this file as of commit `082982da`.
 ## 3. Starting zones and capitals
 
 - Every race has its own **outer level-1–10 starting zone and starting
-  settlement**. New characters start there rather than in a capital. Until
-  local graveyards exist, ordinary respawns return to that race's safe
-  starting settlement.
+  settlement**. New characters start there rather than in a capital.
+  Respawns follow the bound innkeeper home, by default the starting town's
+  ([home_travel.md](home_travel.md)).
 - There are **six race capitals**, one for every race and three per faction.
   Every capital has its own named city zone in the central part of its
   continent.
-- A capital zone is a peaceful, safe civic hub with **no hostile ambient
-  enemies**; it is peaceful, so its own faction is never flagged there by
-  location (an enemy visitor is, [pvp.md](pvp.md) §1). Its guards and important faction NPCs
-  are level 60. The city itself is not a level-60 hostile leveling area.
+- A capital zone is a peaceful civic hub; it is peaceful, so its own faction
+  is never flagged there by location (an enemy visitor is, [pvp.md](pvp.md)
+  §1). Its guards and important faction NPCs are level 60. The capital
+  **city** (inside the wall line, the wall and its band, §12) has no hostile
+  ambient spawns; the rest of the capital zone carries a 20–30 spawn recipe
+  (night zombies and bandits, a camp and a named leader, Round 28;
+  [spawn_regions.md](spawn_regions.md), [zone_mobs.md](zone_mobs.md)). The
+  city itself is not a level-60 hostile leveling area.
 - Each race has its own king, for **six kings total**. The race's capital is
   that king's seat. Housing is not a royal grant: the Housing Steward in
   every capital hands out the free Claim Stone from level 20 (`housing.md`;
@@ -184,7 +191,7 @@ in this file as of commit `082982da`.
   destinations reached from the starting zones, not spawn bubbles.
 - Capital zones use the same zone-based level rule as every other
   non-summit zone.
-  Their exact level-60 guard rule and absence of ambient hostiles remain
+  Their exact level-60 guard rule and the spawn-protected city remain
   separate civic policy; no 20/25/30 gate/core progression profile exists.
 
 ## 4. PvP zones
@@ -212,9 +219,10 @@ Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
 - Faction NPC battles occur only through dedicated, bounded war-front
   populations and encounter anchors. Ordinary guards do not globally acquire
   every NPC.
-- War-front squads have fixed population caps, place-bound respawn slots and
-  authored clash points. They fight the opposing war-front faction, hostile
-  players and dangerous local creatures.
+- War-front squads (WP42, after V1, §16; no war-unit runtime exists) have
+  fixed population caps, place-bound respawn slots and authored clash points.
+  They fight the opposing war-front faction, hostile players and dangerous
+  local creatures.
 - The MVP front is strategically static: NPC skirmishes do not permanently
   capture zones or move the faction boundary. Later quests may trigger local
   assaults without changing the macro-map.
@@ -261,9 +269,8 @@ Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
 ## 7. Horizontal and vertical world model
 
 Rewritten for Round 22 (2026-09-25, `../planning/round22-natural-world-plan.md`
-D1–D19). This section describes the target world. Until Round 22 Phases 3–5
-land, the running mapgen still implements the WP40 model that this section
-replaced; git history before this rewrite records that model.
+D1–D19). This section describes the running mapgen; git history before this
+rewrite records the WP40 model it replaced.
 
 ### 7.1 Frame, hubs and fixed anchors
 
@@ -342,8 +349,11 @@ replaced; git history before this rewrite records that model.
 
 - The six starting-settlement centres are (-1800, -2550), (0, -2550),
   (+1800, -2550), (-1800, +2550), (0, +2550) and (+1800, +2550).
-  Each owns a centred **600 by 500 start core** wholly inside its starting
-  zone, dry except for explicitly authored civic water.
+  Each **start town** (the 128-node pad and its 12-node band, 152 nodes
+  across, §12) lies wholly inside its starting zone, and no natural river or
+  lake comes within about 300 nodes of the start (`terrain_data.lua`
+  `start_keepout`); only authored civic water (Dawnmere's pond, Sunscar's
+  waterholes, §7.4) lies nearer.
 - The six capital centres are (-1800, -1500), (0, -1500), (+1800, -1500),
   (-1800, +1500), (0, +1500) and (+1800, +1500). Each **512 by 512 build
   envelope** belongs wholly to its capital zone. The surrounding terrain blend
@@ -373,7 +383,7 @@ replaced; git history before this rewrite records that model.
   composition stay culturally distinct while progression, resource and access
   budgets stay equivalent.
 - Everything that must stay on a known side of the water keeps its place:
-  start cores, capital envelopes, harbours, island landings and boat-route
+  start towns, capital envelopes, harbours, island landings and boat-route
   ends. The coast is pushed out or its warp
   damped locally there. Correctness comes from that local shaping in one pass,
   not from a repair pass, a topology census or an alternate layout.
@@ -404,7 +414,7 @@ replaced; git history before this rewrite records that model.
   in their zones; Coalbrand Yard and Sunderstrap Camp also moved to
   |x| = 96 so the middle road (§9.2) runs straight.
 - The warp is damped near every fixed anchor, so each anchor's footprint
-  (start core, capital envelope, village, outpost, camp, mine, clash site,
+  (start town, capital envelope, village, outpost, camp, mine, clash site,
   dragon arena) stays inside its own zone. If an anchor would still leave its
   zone, the fix is stronger damping or a smaller warp, never a repair pass.
 - Every zone stays one connected region. This is checked (§14), not solved.
@@ -421,8 +431,8 @@ replaced; git history before this rewrite records that model.
   both the palette-zone and the biome-patch lookup (Round 22 Phase 3).
 - Surface level follows the owning zone (§2). Warped borders therefore move
   level and PvP status together; there is no separate difficulty geometry.
-  Capital guard floors, depth progression, civic hostility policy and
-  fixed-level entities remain independent.
+  Capital guard floors, depth progression, the spawn-protected capital
+  cities and fixed-level entities remain independent.
 
 ### 7.4 Water, coast and islands
 
@@ -432,7 +442,10 @@ replaced; git history before this rewrite records that model.
   same coast warp as the rest of the shore; their authored centrelines live
   in the source data.
 - **Water classes.** Every column is land, inland water (rivers, lakes, civic
-  water), bay water, coastal shelf, deep ocean or dragon channel. The old
+  water), bay water, coastal shelf, deep ocean or dragon channel. The coastal
+  shelf is the 80-node band beyond the land shapes (`source.shelf_width`);
+  bay water beyond each bay mouth's cut at z = ±3000 (`deep_ocean_cut_z`) is
+  deep ocean ([world.md](world.md) §2 R3). The old
   hydrology rows were removed at the start of Round 22 Phase 5, which lays out
   all inland water anew: rivers and lakes from the terrain's drainage, civic
   water as authored lakes (below). Inland and
@@ -537,10 +550,10 @@ replaced; git history before this rewrite records that model.
   vertices bend round the core to the junction in an arc. A core
   a river's water could still reach stops the world's creation with the
   river and the POI named. Rivers and lakes
-  may cross the rest of a capital's reserved area: plots or lanes standing in
-  water there are allowed until the capital planner (plan D60) builds the
-  capital around its water, and the capital's and a start's terrace grading
-  leave a river's trough untouched. A river starts and ends at the shore of
+  may cross the rest of a capital's reserved area; the capital planner builds
+  the city around its water (§12: plots never stand in water, walls cross
+  rivers as arcades or decks), and the capital's and a start's grading leave
+  a river's trough untouched. A river starts and ends at the shore of
   its lake (no trough across the lake bed). Civic water and Moonfall's
   crescent lake are authored lakes in the same format.
 - **Civic water (Round 22, D26, D34, D42).** Authored lakes sit on the fitted
@@ -578,9 +591,12 @@ replaced; git history before this rewrite records that model.
   (bed patches, shore material, biome top). A native cave of a neighbouring mapchunk generated later can
   still cut up to about 13 nodes into an already generated one (engine
   behaviour); forced-order engine tests found no bed cut open that way.
-- Wet inland beds vary in depth with the terrain detail; continental bays are
-  6–10 nodes deep; the coastal shelf slopes from the shore to deep water; deep
-  ocean and dragon channels are 24 nodes deep.
+- Wet inland beds vary in depth with the terrain detail. Sea, bays and
+  dragon channels share one sea-floor profile by distance from the coast
+  (`terrain_field.lua`, Round 22 D35): shallow at the shore, a gently
+  deepening shelf, then down to about 32 nodes below the water surface in
+  deep water. The 24-node floor (`height.lua` `OUTSIDE_FLOOR`) applies only
+  outside the query bounds.
 - Wet beds use deterministic patches of their bed material, sand, gravel and
   stone; mud remains the dominant swamp bed. Dry continental beaches are
   plain sand (no gravel speckles; Round 22 Phase 6).
@@ -628,7 +644,7 @@ replaced; git history before this rewrite records that model.
   surface, checked analytically against the planned centreline segments.
   Claims may contain roads; the corridor stays protected inside them.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
-  96-node civic core and terrace contract (§12).
+  flat 96-node civic core and its 40-node collar (§12).
 - **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps its
   x/z, and its height comes from the terrain: the lower median of the natural
   ground under its building core (village and home bandit camp 24; frontier
@@ -680,19 +696,24 @@ replaced; git history before this rewrite records that model.
   300–500 nodes along a warped distance, so no terrace or step appears at a
   zone border. Race accents are mild: dwarf lands a little more rugged, human
   lands gentler, and so on, without making a whole region one landform. The
-  six character ids and their typical elevation above water level are:
+  presets are `wp40/terrain_data.lua` `data.relief` (the race accents are
+  `data.race`); their main channels, in nodes above water for the base and
+  as amplitudes for hills and ridges, are:
 
-  | Character id | Typical elevation above water |
-  |---|---:|
-  | `wetland_delta` | +2..+24 |
-  | `lowland` | +8..+56 |
-  | `rolling_hills` | +24..+96 |
-  | `plateau` | +56..+144 |
-  | `highland` | +96..+224 |
-  | `mountain` | +160..+360 |
+  | Character id | Base | Hill | Ridge | Ridge share |
+  |---|---:|---:|---:|---:|
+  | `wetland_delta` | 10 | 10 | 20 | 0.10 |
+  | `lowland` | 30 | 20 | 30 | 0.20 |
+  | `rolling_hills` | 52 | 30 | 55 | 0.35 |
+  | `plateau` | 72 | 26 | 70 | 0.40 |
+  | `highland` | 100 | 28 | 150 | 0.65 |
+  | `mountain` | 130 | 32 | 200 | 0.95 |
 
-  These are typical ranges, not hard limits; noise and landmarks may leave
-  them locally. Biome patches do not change relief.
+  The further channels (fBm gain, cliff share, erosion, small-scale
+  roughness, coast ramp width) are in the same table; the older
+  `source.relief_profiles` of `source/simple_map.lua` is not read. Noise and
+  landmarks shape the ground around these values. Biome patches do not
+  change relief.
 - **Landmarks** are one or two strong features per zone (§8.4). Each is a
   soft field of one of the §8.4 types with a warped outline and free
   orientation. A landmark changes
@@ -922,20 +943,17 @@ labels one variable-area logical-biome patch, so these weights are not surface-
 area quotas and a generated seed need not realize every palette entry in every
 zone. Every result belongs to its owning zone's palette; spot checks may
 record realized shares. Nothing rerolls or repairs a zone to meet an area
-percentage. The faction resource audit in §11 remains binding. “Settled”,
-“forest”, “mountain”, “savanna”, “jungle”, “swamp” and “war” refer to the
-existing mob families and paired drop tables in `biomes_mobs.md` §3. A
-palette does not automatically enable every gatherable or mob of that biome:
-the zone's level and explicit content palette still gate them.
+percentage. The faction resource audit in §11 remains binding. A palette
+does not automatically enable every gatherable of that biome: the zone's
+level and explicit content palette still gate them.
 
-Mob families additionally carry the day/night role defined in
-`biomes_mobs.md` §4. The closed palette is resolved at the current clock; a
-non-capital palette with fewer than two explicit night families admits its
-documented family fallback. Empty capital palettes remain
-`civic_no_hostiles`, and the start towns (pad and band, §12) still refuse hostile spawns
-before palette or fallback authority is considered, from the town's protected floor
-upward (its placement height − 100, Round 24 ruling 30); caves deeper
-under a start town keep their ordinary population.
+Mobs are not part of this catalog: each zone's spawn recipe places its
+surface mobs ([spawn_regions.md](spawn_regions.md)), and
+[zone_mobs.md](zone_mobs.md) is the table generated from the recipes, per
+zone and per family. The start towns (pad and band, §12) refuse hostile
+spawns from the town's protected floor upward (its placement height − 100,
+Round 24 ruling 30); caves deeper under a start town keep their ordinary
+population. A capital city refuses every ambient non-critter spawn (§3).
 
 POI abbreviations:
 
@@ -964,43 +982,43 @@ or rights (§7.1).
 
 | Stable id | Display name | Race | Level / PvP | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
-| `elandor_hearthpine_vale` | Hearthpine Vale | Dwarf | 1–10 peaceful | pine hills 90 / crags 10 | Sheltered pine bowl, warm springs and a novice quarry; settled mobs; day Fox/Ibex from band 2, night Giant Rat; **S** |
-| `elandor_copperfell_foothills` | Copperfell Foothills | Dwarf | 11–20 peaceful | pine hills 75 / crags 25 | Copper-stained streams, switchback road and pine terraces; settled mobs; day Fox/Ibex, night Goblin Raid; gravemoss; **V, O, B** |
-| `elandor_dur_brannoc` | Dur Brannoc | Dwarf | capital, civic L20–30 profile, peaceful | pine hills 60 / crags 40 | Terraced granite citadel around a forge chasm; no ambient hostiles; **C** |
-| `elandor_frostbarrow_shelf` | Frostbarrow Shelf | Dwarf | 21–30 peaceful | pine hills 55 / crags 40 / swamp 5 | Wind shelf, burial cairns and frozen tarns; mountain mobs and day Ibex; night Goblin Raid/Snow Leopard; dragonweed; **V, O, M** |
-| `elandor_stormvault_heights` | Stormvault Heights | Dwarf | 31–40 **contested** | crags 75 / snowy crags 25 | Lightning-scarred ridge and a giant natural arch; mountain mobs; day Ibex, night Frost Stray/Goblin Raid/Snow Leopard; **O×2, B, R:Korgan's Bane** |
-| `elandor_dawnmere_fields` | Dawnmere Fields | Human | 1–10 peaceful | meadows 85 / deep forest 5 / swamp 10 | Sunrise fields, ponds and hedgerows; settled mobs; day Wild Turkey and band-2 Fox, night Giant Rat; **S** |
-| `elandor_goldmead_vale` | Goldmead Vale | Human | 11–20 peaceful | meadows 65 / deep forest 20 / swamp 15 | River mills, orchards and old farm roads; settled mobs, day Fox/Wild Turkey, sunleaf; night Poacher; **V, O, B, R:Grimtusk** |
-| `elandor_highcourt` | Highcourt | Human | capital, civic L20–30 profile, peaceful | meadows 80 / deep forest 20 | Brick-and-white-stone city on a river fork; no ambient hostiles; **C** |
-| `elandor_whitebridge_shire` | Whitebridge Shire | Human | 21–30 peaceful | meadows 50 / deep forest 35 / swamp 15 | Old arched bridge, oak copses and market villages; settled/forest mobs, marshbloom; night Poacher/Wisp; **V, O, M, W** |
-| `elandor_ashenward_march` | Ashenward March | Human | 31–40 **contested** | deep forest 50 / meadows 30 / swamp 20 | Burned woodland, trenches and the first active frontier; forest/war mobs; night Poacher/Wisp/Ashen Treant; **O×2, B, K×2, F, R:Old Whitefang** |
-| `elandor_silverleaf_glades` | Silverleaf Glades | Elf | 1–10 peaceful | elf forest 95 / deep forest 5 | Pale trees, clear streams and circular glades; settled mobs; day Song Bird and band-2 Fox, night Giant Rat and band-3 Poacher; **S** |
-| `elandor_starbough_vale` | Starbough Vale | Elf | 11–20 peaceful | elf forest 80 / deep forest 20 | Terraced silverwood slopes and early canopy paths; settled mobs, day Fox, sunleaf; night Poacher; **V, O, B** |
-| `elandor_lethariel` | Lethariel | Elf | capital, civic L20–30 profile, peaceful | elf forest 90 / deep forest 10 | Treehouse crown around a lake and white-marble roots; no ambient hostiles; **C** |
-| `elandor_lorindor` | Lorindor | Elf | 21–30 peaceful | elf forest 50 / deep forest 30 / swamp 20 | Small woodland state southwest of Lethariel, remembered for pale stags, silverwood orchards, white flowers and marsh-fed berry terraces; night Poacher/Wisp; **V, O, M, W** |
-| `elandor_moonfall_wood` | Moonfall Wood | Elf | 21–30 peaceful | elf forest 40 / deep forest 45 / swamp 15 | Crescent lake beneath a fallen great silverwood; forest mobs; night Poacher/Wisp; **O** |
-| `elandor_glassroot_wilds` | Glassroot Wilds | Elf | 31–40 **contested** | deep forest 45 / jungle fringe 35 / elf forest 10 / swamp 10 | Huge roots gripping glassy pale cliffs; forest and lower-jungle mobs; night Wisp; **O, B** |
+| `elandor_hearthpine_vale` | Hearthpine Vale | Dwarf | 1–10 peaceful | pine hills 90 / crags 10 | Sheltered pine bowl, warm springs and a novice quarry; **S** |
+| `elandor_copperfell_foothills` | Copperfell Foothills | Dwarf | 11–20 peaceful | pine hills 75 / crags 25 | Copper-stained streams, switchback road and pine terraces; gravemoss; **V, O, B** |
+| `elandor_dur_brannoc` | Dur Brannoc | Dwarf | capital, civic L20–30 profile, peaceful | pine hills 60 / crags 40 | Terraced granite citadel around a forge chasm; the city has no hostile spawns, the zone around it a 20–30 spawn recipe (§3); **C** |
+| `elandor_frostbarrow_shelf` | Frostbarrow Shelf | Dwarf | 21–30 peaceful | pine hills 55 / crags 40 / swamp 5 | Wind shelf, burial cairns and frozen tarns; dragonweed; **V, O, M** |
+| `elandor_stormvault_heights` | Stormvault Heights | Dwarf | 31–40 **contested** | crags 75 / snowy crags 25 | Lightning-scarred ridge and a giant natural arch; **O×2, B, R:Korgan's Bane** |
+| `elandor_dawnmere_fields` | Dawnmere Fields | Human | 1–10 peaceful | meadows 85 / deep forest 5 / swamp 10 | Sunrise fields, ponds and hedgerows; **S** |
+| `elandor_goldmead_vale` | Goldmead Vale | Human | 11–20 peaceful | meadows 65 / deep forest 20 / swamp 15 | River mills, orchards and old farm roads; sunleaf; **V, O, B, R:Grimtusk** |
+| `elandor_highcourt` | Highcourt | Human | capital, civic L20–30 profile, peaceful | meadows 80 / deep forest 20 | Brick-and-white-stone city on a river fork; the city has no hostile spawns, the zone around it a 20–30 spawn recipe (§3); **C** |
+| `elandor_whitebridge_shire` | Whitebridge Shire | Human | 21–30 peaceful | meadows 50 / deep forest 35 / swamp 15 | Old arched bridge, oak copses and market villages; marshbloom; **V, O, M, W** |
+| `elandor_ashenward_march` | Ashenward March | Human | 31–40 **contested** | deep forest 50 / meadows 30 / swamp 20 | Burned woodland, trenches and the first active frontier; **O×2, B, K×2, F, R:Old Whitefang** |
+| `elandor_silverleaf_glades` | Silverleaf Glades | Elf | 1–10 peaceful | elf forest 95 / deep forest 5 | Pale trees, clear streams and circular glades; **S** |
+| `elandor_starbough_vale` | Starbough Vale | Elf | 11–20 peaceful | elf forest 80 / deep forest 20 | Terraced silverwood slopes and early canopy paths; sunleaf; **V, O, B** |
+| `elandor_lethariel` | Lethariel | Elf | capital, civic L20–30 profile, peaceful | elf forest 90 / deep forest 10 | Treehouse crown around a lake and white-marble roots; the city has no hostile spawns, the zone around it a 20–30 spawn recipe (§3); **C** |
+| `elandor_lorindor` | Lorindor | Elf | 21–30 peaceful | elf forest 50 / deep forest 30 / swamp 20 | Small woodland state southwest of Lethariel, remembered for pale stags, silverwood orchards, white flowers and marsh-fed berry terraces; **V, O, M, W** |
+| `elandor_moonfall_wood` | Moonfall Wood | Elf | 21–30 peaceful | elf forest 40 / deep forest 45 / swamp 15 | Crescent lake beneath a fallen great silverwood; **O** |
+| `elandor_glassroot_wilds` | Glassroot Wilds | Elf | 31–40 **contested** | deep forest 45 / jungle fringe 35 / elf forest 10 / swamp 10 | Huge roots gripping glassy pale cliffs; **O, B** |
 
 ### 8.2 Kragmar — Throng
 
 | Stable id | Display name | Race | Level / PvP | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
-| `kragmar_stillgrave_hollow` | Stillgrave Hollow | Undead | 1–10 peaceful | blight 90 / bone forest 5 / swamp 5 | Quiet cemetery basin and sheltered gravewood; settled mobs; night Giant Rat; **S** |
-| `kragmar_mournfen` | Mournfen | Undead | 11–20 peaceful | blight 60 / bone forest 10 / swamp 30 | Drowned grave roads, black reeds and low mist; settled/swamp mobs, night Wisp, gravemoss; **V, O, B, W** |
-| `kragmar_nhal_veyr` | Nhal Veyr | Undead | capital, civic L20–30 profile, peaceful | blight 75 / bone forest 25 | Black-stone necropolis on stepped terraces; no ambient hostiles; **C** |
-| `kragmar_ossuary_reach` | Ossuary Reach | Undead | 21–30 peaceful | blight 40 / bone forest 50 / swamp 10 | Fossil ridges and gravewood copses; forest mobs, night Gravewood Treant, dragonweed; **V, O, M** |
-| `kragmar_blackwind_rise` | Blackwind Rise | Undead | 31–40 **contested** | bone forest 65 / blight 30 / swamp 5 | Ash-wind upland crossed by natural bone arches; forest mobs, night Gravewood Treant; **O×2, B, R:Marrowclaw** |
-| `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; settled mobs; day Plains Runner (fighting prey) and band-2 Scorpion, night Giant Rat and band-2 Scorpion and Sun-Dried Husk; **S** |
-| `kragmar_redtusk_savanna` | Redtusk Savanna | Orc | 11–20 peaceful | savanna 75 / badlands 25 | Red gullies, acacia wells and hunting roads; settled/savanna mobs, sunleaf; night Scorpion and Sun-Dried Husk; **V, O, B, R:Ashmaw** |
-| `kragmar_gor_drazhak` | Gor Drazhak | Orc | capital, civic L20–30 profile, peaceful | savanna 60 / badlands 40 | Adobe-and-basalt fortress at a mesa crossroads; no ambient hostiles; **C** |
-| `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; day Speargrass Tiger; night Scorpion/Goblin Raid; **V, O, M** |
-| `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; mountain/war mobs, night Scorpion/Goblin Raid, dragonweed; **O×2, B, K×2, F, R:Dustwing** |
-| `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; settled/jungle-edge mobs; day band-2 Tapir, Viper and Jungle Lynx, night Giant Rat and band-2 Viper; **S** |
-| `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools on stepped slopes; settled/jungle-edge mobs, day Tapir, night Viper, sunleaf; **V, O, B** |
-| `kragmar_kezamba` | Kezamba | Troll | capital, civic L20–30 profile, peaceful | jungle edge 75 / deep jungle 20 / swamp 5 | Stilt-and-stone city around a stepped cenote; no ambient hostiles; **C** |
-| `kragmar_whispering_reedlands` | Whispering Reedlands | Troll | 21–30 peaceful | jungle edge 45 / deep jungle 25 / swamp 30 | Flooded reed maze crossed by raised totem paths; jungle-edge/swamp mobs, day Tapir, night Wisp, marshbloom; **V, O, M, W** |
-| `kragmar_totemwater_reach` | Totemwater Reach | Troll | 21–30 peaceful | jungle edge 35 / deep jungle 45 / swamp 20 | Broad river mouth and marsh ponds marked by colossal carved totems; jungle-edge/swamp mobs, day Tapir, night Wisp; **O** |
-| `kragmar_thunderroot_wilds` | Thunderroot Wilds | Troll | 31–40 **contested** | deep jungle 55 / east badlands 30 / swamp 15 | Storm forest with exposed roots and ochre stone islands; jungle mobs; night Bog Witch; **O, B** |
+| `kragmar_stillgrave_hollow` | Stillgrave Hollow | Undead | 1–10 peaceful | blight 90 / bone forest 5 / swamp 5 | Quiet cemetery basin and sheltered gravewood; **S** |
+| `kragmar_mournfen` | Mournfen | Undead | 11–20 peaceful | blight 60 / bone forest 10 / swamp 30 | Drowned grave roads, black reeds and low mist; gravemoss; **V, O, B, W** |
+| `kragmar_nhal_veyr` | Nhal Veyr | Undead | capital, civic L20–30 profile, peaceful | blight 75 / bone forest 25 | Black-stone necropolis on stepped terraces; the city has no hostile spawns, the zone around it a 20–30 spawn recipe (§3); **C** |
+| `kragmar_ossuary_reach` | Ossuary Reach | Undead | 21–30 peaceful | blight 40 / bone forest 50 / swamp 10 | Fossil ridges and gravewood copses; dragonweed; **V, O, M** |
+| `kragmar_blackwind_rise` | Blackwind Rise | Undead | 31–40 **contested** | bone forest 65 / blight 30 / swamp 5 | Ash-wind upland crossed by natural bone arches; **O×2, B, R:Marrowclaw** |
+| `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; **S** |
+| `kragmar_redtusk_savanna` | Redtusk Savanna | Orc | 11–20 peaceful | savanna 75 / badlands 25 | Red gullies, acacia wells and hunting roads; sunleaf; **V, O, B, R:Ashmaw** |
+| `kragmar_gor_drazhak` | Gor Drazhak | Orc | capital, civic L20–30 profile, peaceful | savanna 60 / badlands 40 | Adobe-and-basalt fortress at a mesa crossroads; the city has no hostile spawns, the zone around it a 20–30 spawn recipe (§3); **C** |
+| `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; **V, O, M** |
+| `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; dragonweed; **O×2, B, K×2, F, R:Dustwing** |
+| `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; **S** |
+| `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools on stepped slopes; sunleaf; **V, O, B** |
+| `kragmar_kezamba` | Kezamba | Troll | capital, civic L20–30 profile, peaceful | jungle edge 75 / deep jungle 20 / swamp 5 | Stilt-and-stone city around a stepped cenote; the city has no hostile spawns, the zone around it a 20–30 spawn recipe (§3); **C** |
+| `kragmar_whispering_reedlands` | Whispering Reedlands | Troll | 21–30 peaceful | jungle edge 45 / deep jungle 25 / swamp 30 | Flooded reed maze crossed by raised totem paths; marshbloom; **V, O, M, W** |
+| `kragmar_totemwater_reach` | Totemwater Reach | Troll | 21–30 peaceful | jungle edge 35 / deep jungle 45 / swamp 20 | Broad river mouth and marsh ponds marked by colossal carved totems; **O** |
+| `kragmar_thunderroot_wilds` | Thunderroot Wilds | Troll | 31–40 **contested** | deep jungle 55 / east badlands 30 / swamp 15 | Storm forest with exposed roots and ochre stone islands; **O, B** |
 
 ### 8.3 Battlegrounds and offshore dragon islands
 
@@ -1012,12 +1030,12 @@ and terrain rules without deriving political ownership from cultural origin.
 
 | Stable id | Display name | Race region | Level | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
-| `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard/Rift Spawn; **D/M6, K×1** |
-| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–60 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2, P×4** |
-| `front_broken_causeway` | The Broken Causeway | Human | 41–50 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Tollroad Skeleton/Fordwater Zombie; **K×3, P×4, R:Captain Bonerattle** |
-| `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, P×4, R:Captain Bonerattle** |
-| `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–60 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, P×4, R:Silkfang** |
-| `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs; night Bog Witch/Rift Spawn; stormkelp; **D/M6, K×1, R:Emerald Coil** |
+| `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and the dragon lair; **D/M6, K×1** |
+| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–60 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; stormkelp; **K×2, P×4** |
+| `front_broken_causeway` | The Broken Causeway | Human | 41–50 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; **K×3, P×4, R:Captain Bonerattle** |
+| `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; **K×3, P×4, R:Captain Bonerattle** |
+| `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–60 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; crimson lotus; **K×2, P×4, R:Silkfang** |
+| `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and the dragon lair; stormkelp; **D/M6, K×1, R:Emerald Coil** |
 
 The identity column is flavour. Routes, trenches, siege ramps, galleries and
 approaches named there may appear as POI or dressing content (§8.4); the road
@@ -1039,8 +1057,9 @@ spawning, and flying families have no near-ground bias.
 
 Rewritten for Round 22 (D13). Every zone keeps its relief character id
 (§7.6) and has one or two strong landmark features. Each terrain landmark is
-a soft field of one type—ridge band, escarpment, mesa, valley or dry river,
-basin or lake, dome, caldera or peak—with a warped outline, free orientation
+a soft field of one type—ridge band, ring, escarpment, mesa, valley or dry
+river, basin or lake, dome, caldera or peak—with a warped outline, free
+orientation
 and a soft fade (§7.6). A capital's named feature is part of its civic
 blueprint and fitting, not a terrain field, because the capital damping would
 flatten a field anyway. Landmarks never block a road or a fixed anchor, and
@@ -1068,7 +1087,7 @@ player-visible today: `kezamba_cenote` (quest "Smoke Above the Cenote"),
 | Lorindor | `rolling_hills` | `lorindor_silverorchards` (dome): gentle orchard hills; `lorindor_berrymarsh` (basin): the marsh depression with berry terraces |
 | Moonfall Wood | `lowland` | `moonfall_crescent` (lake): the crescent lake beneath the fallen great silverwood |
 | Glassroot Wilds | `highland` | `glassroot_pale_cliffs` (escarpment): pale glassy cliff steps rising toward the front |
-| Stillgrave Hollow | `lowland` | `stillgrave_basin` (basin): the quiet cemetery basin around the start; `stillgrave_ringbarrows` (ridge band): a broken ring of low grave mounds around the basin, which the start dressing refers to |
+| Stillgrave Hollow | `lowland` | `stillgrave_basin` (basin): the quiet cemetery basin around the start; `stillgrave_ringbarrows` (ring): a broken ring of low grave mounds around the basin, which the start dressing refers to |
 | Mournfen | `wetland_delta` | `mournfen_drowned_roads` (basin): the black-reed marsh with its drowned grave roads |
 | Nhal Veyr | `plateau` | `nhal_veyr_necropolis` (civic): the raised necropolis of grave terraces |
 | Ossuary Reach | `rolling_hills` | `ossuary_spine` (ridge band): one prominent fossil ridge across the zone |
@@ -1102,8 +1121,7 @@ ramps, rootways, hanging ways, tomb galleries, war-coast strips, fault fields
 and gem terraces. None
 is player-visible. Their flavor (trenches, siege ramps, colossi, galleries)
 may return as POI or dressing content; anchors that stood in them, such as the
-apex mining camps, keep their positions. Content that only referenced a retired
-id is adjusted when the new mapgen lands.
+apex mining camps, keep their positions.
 
 ## 9. Zone neighbors, roads and trails
 
@@ -1462,9 +1480,10 @@ one-cell settlement checks are unchanged.
   the reserved square and the capital zone (the zone field keeps the 532-node
   square round the reserved area in-zone on land). It replaces the former
   532-node protected square and the 704-node claim square. Capital lookup
-  uses the same zone-based level rule as other land. Hostile ambient spawning
-  is disabled (the capital zones' mob palettes are empty) and level-60 guards
-  remain explicit.
+  uses the same zone-based level rule as other land. The protected city is
+  protected spawn surface: no ambient non-critter spawn stands there
+  (`grug_mobs.protected_spawn_surface`), while the rest of the capital zone
+  carries its 20–30 spawn recipe; level-60 guards remain explicit.
 - Capital grading flattens only the dry capital-owned 96×96 civic core.
   The target reference interval for natural height N is [N-24, N+16],
   intersected over core columns with water lower bounds. A feasible interval
@@ -1585,10 +1604,13 @@ one-cell settlement checks are unchanged.
 - Four district roles: Market/Professions, Martial/Garrison, Lore/Spiritual
   and Residential/Cultural. Which quarter each takes is the planner's choice
   (by room, with the pinned lake districts above).
-- Terrain forms differ by race: Dur Brannoc is a granite terrace, Highcourt a
-  gentle river plateau, Lethariel a terraced grove, Nhal Veyr a raised
-  necropolis, Gor Drazhak a mesa shelf and Kezamba a drained/stilted cenote
-  terrace. None is allowed to depend on accidental v7 land.
+- Capital ground differs by race only through the calm bowl's per-race
+  target band above water (`terrain_data.lua` `data.capital_target`: dwarf
+  24–70, human 14–40, elf 16–55, undead 14–45, orc 18–60, troll 10–36) and
+  its long-wave amplitude (`data.capital_wave`, ±8–12 nodes), around the flat
+  96-node civic core and its 40-node collar; there are no per-race terrace
+  forms (the anchor profiles' `shape` names are not read). None depends on
+  accidental v7 land.
 - The six kings are equal civic rulers and killable level-65 elite NPCs. Every
   king has exactly four level-60 elite royal guards. The king is the tallest
   figure in his hall: final `visual_size` 1.6 (2.72 nodes, box and model
@@ -1664,8 +1686,10 @@ one-cell settlement checks are unchanged.
   route and policy products. The native heightmap is not planner input or
   global height authority; the adapter may use it only for the local pre-cave
   owner-slice preservation distinction fixed above.
-- At R7 cutover, native registration is closed at zero Lua biomes, one retained
-  gravel blob and the five T2--T6 strata, with zero engine decorations. The
+- Since the R7 cutover, native registration is closed at zero Lua biomes, one
+  retained gravel blob, the five T2--T6 strata and the three decorative-nest
+  blobs of slate, granite and basalt (Round 24, §7.6; nine native ores,
+  `r7_native.lua`), with zero engine decorations. The
   legacy clay, silver-sand and dirt blobs, every scatter resource and every
   engine decoration are absent. The six existing v7 terrain/climate
   NoiseParams remain the exact authenticated native baseline in both main and
@@ -1691,10 +1715,10 @@ one-cell settlement checks are unchanged.
   substrate below `T` otherwise survives, project-native content at/on/above
   the authored surface is replaceable where R3 height/water requires it, and
   deep dungeons remain vertically disjoint.
-- The new evaluator, compatibility adapters and consolidated VoxelManip
-  callback remain disabled until one atomic production cutover removes both
-  legacy WP18 geography writers. Two Grudgelands surface-writing pipelines are
-  never enabled in one build.
+- The R7 production cutover (`grug_mapgen/init.lua` loads only
+  `wp40/r7_loader.lua`) removed both legacy WP18 geography writers in one
+  step; two Grudgelands surface-writing pipelines are never enabled in one
+  build.
 
 ### 13.2 Public `grug_zones` surface
 
@@ -1703,9 +1727,11 @@ The final registry exposes:
 - defensive-copy `get(id)`, `at(pos)`, `neighbors(id)` (geometric land
   neighbors, §9.1) and `anchor(zone_id,slot_id)`;
 - allocation-free `id_at`, `biome_at`, `race_region_at`, `faction_at`,
-  `territory_rule_at`, `pvp_rule_at`, `surface_mob_level_at`,
-  `mob_level_at`, `guard_level_at`, `terrain_height_at` and
-  `water_class_at`.
+  `territory_rule_at`, `hard_protection_kind_at`, `pvp_rule_at`,
+  `surface_mob_level_at`, `mob_level_at`, `guard_level_at`,
+  `terrain_height_at` and `water_class_at`;
+- `hard_footprint_in`, the hard-protected footprints in an area
+  (`grug_core/zone_authority.lua` `PUBLIC_METHODS` is the list).
 
 The mask-based `housing_eligible_at` centre predicate is removed with the
 housing masks (Round 25 ruling 4). `grug_housing` validates a claim itself
@@ -1725,9 +1751,11 @@ numeric-truncated seed.
 
 ### 13.3 Policy and consumer adapters
 
-- `surface_mob_level_at` means the zone-based surface level of §2 (the zone
-  field plus the inner start band, and in the six starting zones the
-  start-zone gradient); the mapgen's level-banded content reads it.
+- `grug_zones.surface_mob_level_at` means the zone-based surface level of §2
+  (the zone field plus the inner start band, and in the six starting zones
+  the start-zone gradient); the mapgen's level-banded content reads it.
+  `grug_core.surface_mob_level_at` returns the spawn-region level in a zone
+  with a recipe and this field elsewhere ([spawn_regions.md](spawn_regions.md#one-level-truth)).
   `terrain_height_at` means elevation. Existing
   `grug_core.surface_level_at(x,z)` already means terrain height and retains
   that semantic through the `terrain_height_at` adapter.
@@ -1759,7 +1787,9 @@ numeric-truncated seed.
 - All fixed placements resolve through stable zone anchor ids. Slot vocabulary
   remains `start`, `capital`, `village_<n>`, `outpost_<n>`,
   `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,
-  `apex_mine` and `rare_<stable_rare_id>`. An absent slot returns nil;
+  `apex_mine` and `rare_<stable_rare_id>`, plus the Round 31 PvP slots
+  `pvp_fortress`, `pvp_accord_low`, `pvp_accord_high`, `pvp_throng_low` and
+  `pvp_throng_high` (§16). An absent slot returns nil;
   consumers never synthesize a replacement coordinate.
 - Zone lookup scans only the small eligible macro-region set. Hot paths do
   not scan every feature record and reuse one x/z classification for the
