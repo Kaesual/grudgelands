@@ -54,7 +54,7 @@ return function(api)
 		origin = origin or grug_core.combat_eye_pos(player)
 		local destination = vector.add(origin, vector.multiply(player:get_look_dir(), range))
 		local best, distance
-		for hit in core.raycast(origin, destination, true, false) do
+		for hit in grug_core.aim_raycast(origin, destination, false) do
 			if hit.type ~= "object" or hit.ref ~= player then
 				local d = hit.intersection_point and vector.distance(origin, hit.intersection_point)
 				if d and (not distance or d < distance or

@@ -328,6 +328,9 @@ local inventory = {
 
 grug_core = {
 	combat_eye_pos = function() return vector.new(0, 1.47, 0) end,
+	-- The aiming ray (grug_core.aim_raycast, tested in tools/r35_t): the
+	-- engine ray here.
+	aim_raycast = function(o, d, liquids) return core.raycast(o, d, true, liquids) end,
 	is_stunned = function() return false end,
 	player_has_live_mount = function() return false end,
 	register_on_stun = function() end,
