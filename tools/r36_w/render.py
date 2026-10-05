@@ -168,6 +168,7 @@ def main():
     poi_dirs = None
     meta = []
     for item in items:
+        label = item
         ymax = None
         if "@" in item:
             item, cut = item.split("@")
@@ -186,8 +187,8 @@ def main():
                          for t in (opts.before, REPO)]
                 rows.append(cells)
             # the plots in a row, before above after
-            befores = side_by_side([p_render.iso(c[0], b, "sw", 520, 520)[0] for c in rows])
-            afters = side_by_side([p_render.iso(c[1], b, "sw", 520, 520)[0] for c in rows])
+            befores = side_by_side([p_render.iso(c[0], b, "sw", 440, 440)[0] for c in rows])
+            afters = side_by_side([p_render.iso(c[1], b, "sw", 440, 440)[0] for c in rows])
             img = Image.new("RGB", (max(befores.width, afters.width),
                                     befores.height + afters.height + 30), BACKGROUND)
             img.paste(befores, (0, 0))
@@ -204,7 +205,7 @@ def main():
             name += "_cut%d" % ymax
         rel = "img/%s.webp" % name
         img.save(os.path.join(opts.out, rel), "WEBP", quality=opts.quality, method=6)
-        meta.append({"item": item, "image": rel, "size": [img.width, img.height]})
+        meta.append({"item": label, "image": rel, "size": [img.width, img.height]})
         sys.stderr.write("%-40s %dx%d\n" % (item, img.width, img.height))
     with open(os.path.join(opts.out, "items.json"), "w", encoding="utf-8") as fh:
         json.dump(meta, fh, indent=1)

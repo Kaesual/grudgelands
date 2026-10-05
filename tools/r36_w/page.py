@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Round 36 lane W phase 1: the German preview page of the decor pass.
 
-    python3 tools/r36_w/page.py OUT_DIR
+    python3 tools/r36_w/page.py OUT_DIR                 (phase 1, the samples)
+    python3 tools/r36_w/page.py OUT_DIR --phase2 INDEX  (phase 2, the rollout)
 
 Reads OUT_DIR/items.json (tools/r36_w/render.py) and writes OUT_DIR/index.html:
-the theme table, per sample the picture (before left, after right, the plans
-underneath) with what changed, and the bench fix. No form; the user answers
-in chat.
+phase 1 the theme table, per sample the picture (before left, after right,
+the plans underneath) with what changed, and the bench fix; phase 2 every
+changed POI grouped by kind (INDEX: tools/r36_p/dump.lua's index.tsv for
+names, zones and races), the start towns, a capital overview and the bench
+fixes. No form; the user answers in chat.
 """
 import html
 import json
@@ -38,6 +41,9 @@ THEMES = [
     ("Apex-Lager", "Edelsteinsucher-Camp",
      "Unterstände, Feuerstelle mit Bank, Sortiertisch, Erzhaufen und Karren vor dem Stollen, "
      "Werkecke, Vorräte, Laternen am Weg; die Probenwand bleibt"),
+    ("Startgebiet (Runde 14/15)", "wie ihre Art",
+     "Dorf: Brunnen, Blumenbeet, Werkecke, Laterne, Holzstapel; Außenposten: Bannerstange, "
+     "Waffenständer, Vorräte; Lager: Palisadenrest, Waffenständer, Unterstand, kalte Feuerstelle"),
     ("Jedes Haus", "Kleine Handgriffe",
      "Fackel neben der Tür (wo noch keine hängt), Fass, zwei Fässer oder ein Topf neben der "
      "Tür, Blumen unter dem Fenster, Holzstapel oder Fass an einer Seitenwand"),
@@ -152,8 +158,90 @@ def card(entry, kind, name, race, text, legend=True):
                             esc(name)))
 
 
+GROUPS2 = [
+    ("village", "Dörfer"), ("outpost", "Außenposten"), ("bandit_frontier", "Banditenlager"),
+    ("mine", "Minen"), ("mirefolk", "Moorvolk-Lager"), ("clash", "Schlachtfelder"),
+    ("rare_route", "Rare-Plätze"), ("apex_mine", "Apex-Lager"),
+    ("r14_village", "Startgebiet: Dörfer"), ("r14_outpost", "Startgebiet: Außenposten"),
+    ("r14_bandit", "Startgebiet: Banditenlager"),
+]
+RACE_DE = {"dwarf": "Zwerg", "human": "Mensch", "elf": "Elf", "undead": "Untote",
+           "orc": "Ork", "troll": "Troll"}
+STARTS = {"dawnmere": "Dawnmere (Mensch)", "hearthpine": "Hearthpine (Zwerg)",
+          "silverleaf": "Silverleaf (Elf)", "stillgrave": "Stillgrave (Untote)",
+          "sunscar": "Sunscar (Ork)", "kapok": "Kapok Cradle (Troll)"}
+CAPITALS = {"highcourt": "Highcourt (Mensch)", "dur_brannoc": "Dur Brannoc (Zwerg)",
+            "lethariel": "Lethariel (Elf)", "nhal_veyr": "Nhal Veyr (Untote)",
+            "gor_drazhak": "Gor Drazhak (Ork)", "kezamba": "Kezamba (Troll)"}
+RIFT = {"r20_anchor_076", "r20_anchor_077", "r20_anchor_084", "r20_anchor_085"}
+
+
+def phase2(out, index):
+    with open(os.path.join(out, "items.json"), encoding="utf-8") as fh:
+        items = {e["item"]: e for e in json.load(fh)}
+    with open(index, encoding="utf-8") as fh:
+        rows = [l.rstrip("\n").split("\t") for l in fh if l.strip()]
+    pois = [dict(zip(rows[0], r)) for r in rows[1:]]
+    body = ['<h1>Runde 36 · Deko-Durchgang, Phase 2</h1>',
+            '<p class="lead">Der Baukasten aus Phase 1 auf allen Orten: jedes Dorf, jeder Außenposten, '
+            'jedes Lager, jede Mine, jedes Schlachtfeld, jeder Rare-Platz und beide Apex-Lager (nicht '
+            'die Kriegslager, Vorposten, Festungen und Drachenarenen), die 18 Orte der Startgebiete, '
+            'alle Häuser der sechs Startstädte und der Hauptstädte. Links vorher, rechts nachher, '
+            'darunter der Grundriss. Größe, Lage, Wege, Schutzbereich und NPC-Plätze sind unverändert '
+            '(ein Test hält jeden Ort gegen den Stand vor dem Durchgang). Klick öffnet groß.</p>',
+            '<h2>Themen je Art</h2><table><tr><th>Art</th><th>Thema</th><th>Stücke</th></tr>']
+    for kind, theme, pieces in THEMES:
+        body.append('<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (esc(kind), esc(theme), esc(pieces)))
+    body.append('</table><nav class="lead">%s · <a href="#starts">Startstädte</a> · '
+                '<a href="#capitals">Hauptstädte</a> · <a href="#benches">Bänke</a></nav>'
+                % " · ".join('<a href="#%s">%s</a>' % (g, esc(t)) for g, t in GROUPS2))
+    for group, title in GROUPS2:
+        body.append('<h2 id="%s">%s</h2>' % (group, esc(title)))
+        for poi in pois:
+            if poi["group"] != group or poi["key"] not in items:
+                continue
+            zone = poi["zone_name"]
+            note = ""
+            if poi["key"] in RIFT:
+                note = (" Riss-Kandidat: die vier alten Stücke bleiben an ihren Stellen (der Riss "
+                        "weicht ihnen aus), alles andere liegt neben dem Riss.")
+                if poi["key"] == "r20_anchor_077":
+                    note = (" Der Ort des Risses: die Rissfelder und die Mitte bleiben offener Boden.")
+            body.append(card(items[poi["key"]], title, poi["label"], "%s · %s, Stufe %s–%s" % (
+                RACE_DE.get(poi["race"], poi["race"]), zone, poi["level_min"], poi["level_max"]),
+                note.strip()))
+    body.append('<h2 id="starts">Startstädte</h2><p class="lead">Jedes Haus bekommt Fass oder Topf '
+                'an der Tür, Blumen unter den Fenstern, Holzstapel oder Fass an einer Seitenwand. Die '
+                'Türfackeln hatten sie schon. Ganze Stadt, links vorher, rechts nachher.</p>')
+    for key, name in STARTS.items():
+        if "start:" + key in items:
+            body.append(card(items["start:" + key], "Startstadt", name, "", ""))
+    body.append('<h2 id="capitals">Hauptstädte</h2><p class="lead">Alle Gebäude der Stadtviertel '
+                '(155 Bauplätze) bekommen dieselben Handgriffe; hier je Stadt einige Bauplätze, oben '
+                'vorher, unten nachher. Im Spiel stehen sie an den Gassen der Viertel.</p>')
+    for item, entry in items.items():
+        if item.startswith("plot:") and "@" not in item:
+            key = item.split(":")[1]
+            if key in CAPITALS and "deep_hall" not in item:
+                body.append(card(entry, "Hauptstadt", CAPITALS[key], "", "", legend=False))
+    body.append('<h2 id="benches">Bänke aus Treppenstufen</h2><p class="lead">Schon in Phase 1 '
+                'behoben; ein Test prüft jede Startstadt und Hauptstadt.</p>')
+    for key, (name, text) in BENCHES.items():
+        if key in items:
+            body.append(card(items[key], "Bankfix", name, "", text, legend=not key.startswith("plot:")))
+    page = ('<!doctype html><html lang="de"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<title>Deko-Durchgang Phase 2</title><style>%s</style></head><body><main>%s</main>'
+            '</body></html>' % (CSS, "\n".join(body)))
+    with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as fh:
+        fh.write(page)
+    return 0
+
+
 def main():
     out = sys.argv[1]
+    if len(sys.argv) > 3 and sys.argv[2] == "--phase2":
+        return phase2(out, sys.argv[3])
     with open(os.path.join(out, "items.json"), encoding="utf-8") as fh:
         items = {e["item"]: e for e in json.load(fh)}
     body = ['<h1>Runde 36 · Deko-Durchgang, Phase 1</h1>',
