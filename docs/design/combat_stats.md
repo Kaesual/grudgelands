@@ -642,6 +642,11 @@ Normal tier at level L:
   specials, and the dragons growl at their own wind-ups) then a ×3 damage hit into a
   **90° frontal cone** of **reach + 1.5 m** (normally **4.5 m**) that requires **line of
   sight** — stepping aside, out of range or behind cover is a clean miss.
+  "Stop" means the mob does nothing else while it winds up (Round 37,
+  user ruling): its facing freezes at the start, so the cone points where
+  the target stood then, and its ordinary swings and shots pause; the next
+  ordinary swing follows one attack interval after the cone hit
+  (`mobs/api.lua` `grug_winding_up`, `grug_mobs/telegraph.lua`).
   Cadence: the first wind-up needs **4 s of MELEE engagement** (a fight
   always opens with normal swings, and a ranged elite at distance never
   winds up into empty air), afterwards one every **10 s**. The same
@@ -801,6 +806,13 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   within the ordinary **threat candidate radius of 40 m**; active ambient
   pursuit follows the Round 18 exception below. A
   stale entry from someone who left the fight can never pull the mob.
+- **A hit changes the target only through threat** (Round 37, user ruling):
+  a player's hit on a mob that is already fighting adds threat and asks the
+  switch rule above (120 %, the taunt lock); it never retargets the mob by
+  itself. A mob without a target takes its first attacker, a hit from a mob
+  or an NPC still turns the mob onto that hitter, and the group alert below
+  is unchanged (`mobs/api.lua` `on_punch`'s retaliation tail,
+  `grug_core/combat.lua` `check_switch`).
 - **Ambient pursuit (Round 18):** ordinary free-roaming combat mobs, including
   Zombies and their ambient variants, use a 15-second clock since incoming
   effective player/guard damage. Initial aggro seeds the clock. Outgoing hits,

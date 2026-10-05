@@ -8,9 +8,9 @@ code and its patches are in [VENDOR.md](VENDOR.md). Where this file and a
 `LICENSE-media.md` row ever disagree, the row is right.
 
 Grudgelands' own code is GPL-3.0-or-later ([LICENSE.txt](LICENSE.txt)); the
-combined game is GPL-3.0 because it includes GPL-3.0-only code from cottages
-([license overview](docs/research/licensing.md)). Media keep their own
-licences.
+combined game is GPL-3.0-only because it includes GPL-3.0-only code from
+cottages ([license overview](docs/research/licensing.md)). Media keep their
+own licences.
 
 ## Music
 

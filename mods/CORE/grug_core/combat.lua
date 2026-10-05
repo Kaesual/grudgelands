@@ -808,10 +808,10 @@ end
 -- Engagement backstop, run once a second per mob that holds engagements
 -- (grug_mobs.leash_tick; a mob without any pays one field test there).
 -- A mob without a target on TWO consecutive ticks has left its fight: every
--- edge goes. That covers paths that bypass stop_attack (mobs_redo's
--- get_staticdata clears `attack` when the engine re-saves a moved mob; a
--- passive critter never takes a target) and a group fight whose mob gave up
--- its target and found no new one. One tick of grace, because mobs_redo's
+-- edge goes. That covers paths that bypass stop_attack (the death reset in
+-- mobs_redo's check_for_death; a passive critter never takes a target) and
+-- a group fight whose mob gave up its target and found no new one. One
+-- tick of grace, because mobs_redo's
 -- reacquisition (general_attack) also runs only once a second. A flopping
 -- (stranded) mob counts as targetless; only the runaway state, bounded by
 -- mobs_redo's runaway_timer, is exempt. A mob that is

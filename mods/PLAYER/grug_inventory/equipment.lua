@@ -1073,9 +1073,12 @@ grug_classes.register_on_class_chosen(arm_weapon_hint)
 -- A weapon carried on the hotbar is storage, not the combat authority. Watch
 -- the player's ordinary use control without consuming it or changing any item
 -- callback, damage path or equip state, and explain the intended route once
--- per press with a small anti-spam interval.
+-- per press with a small anti-spam interval. The poll reads the control bits
+-- (an integer) and the wielded item only on a fresh press (Round 37, audit
+-- PLY-16).
 local raw_weapon_controls = {}
 local RAW_WEAPON_HINT_INTERVAL = 3
+local DIG_BIT = 128 -- get_player_control_bits: bit 7 is dig
 local raw_weapon_elapsed = 0
 
 core.register_globalstep(function(dtime)
@@ -1085,10 +1088,14 @@ core.register_globalstep(function(dtime)
 	local now = grug_core.mono_time()
 	for _, player in ipairs(core.get_connected_players()) do
 		local name = player:get_player_name()
-		local row = raw_weapon_controls[name] or {pressed = false, warned = -1000}
-		local pressed = player:get_player_control().dig == true
-		local wielded = player:get_wielded_item()
-		if pressed and not row.pressed and not wielded:is_empty() and
+		local row = raw_weapon_controls[name]
+		if not row then
+			row = {pressed = false, warned = -1000}
+			raw_weapon_controls[name] = row
+		end
+		local pressed = bit.band(player:get_player_control_bits(), DIG_BIT) ~= 0
+		local wielded = pressed and not row.pressed and player:get_wielded_item()
+		if wielded and not wielded:is_empty() and
 				core.get_item_group(wielded:get_name(), "grug_equip_weapon") > 0 and
 				now - row.warned >= RAW_WEAPON_HINT_INTERVAL then
 			-- One short message-feed line, never chat.
@@ -1098,7 +1105,6 @@ core.register_globalstep(function(dtime)
 			row.warned = now
 		end
 		row.pressed = pressed
-		raw_weapon_controls[name] = row
 	end
 end)
 

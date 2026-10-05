@@ -1,6 +1,13 @@
 local META_SEEN = "grug_jobs:seen_items"
-local SCAN_INTERVAL = 2
-local cached, accumulator = {}, 0
+-- When the inventory is scanned (Round 37, audit PLY-05/X-13): the seen set
+-- only grows and only the recipe books show it, and opening a book scans
+-- first (grug_jobs.open_book), so a book always shows what the player holds.
+-- Otherwise each player is scanned in its slot of SLOTS x SLOT_PERIOD =
+-- 0.5 s after an inventory action, and every SWEEP seconds for items that
+-- arrived without one (digging, pickups, rewards), never all players in one
+-- step.
+local SLOTS, SLOT_PERIOD, SWEEP = 5, 0.1, 10
+local cached = {}
 local function player_name(player) return player and player.get_player_name and player:get_player_name() or "" end
 local function load_seen(player)
 	local name = player_name(player); if cached[name] then return cached[name] end
@@ -47,7 +54,8 @@ function grug_jobs.mark_seen(player, items)
 	if changed then save_seen(player, seen) end
 	return changed
 end
-local function scan_player(player)
+-- `quiet`: do not redraw an open book (the caller is about to draw it).
+local function scan_player(player, quiet)
 	if not player or not player.get_inventory then return false end
 	local inventory = player:get_inventory(); if not inventory then return false end
 	local all_lists = inventory.get_lists and inventory:get_lists() or {
@@ -61,22 +69,45 @@ local function scan_player(player)
 	end
 	if changed then
 		save_seen(player, seen)
-		if grug_jobs.refresh_open_book then grug_jobs.refresh_open_book(player) end
+		if not quiet and grug_jobs.refresh_open_book then grug_jobs.refresh_open_book(player) end
 	end
 	return changed
 end
-if core.register_on_player_inventory_action then
-	core.register_on_player_inventory_action(function(player) core.after(0, function(name)
-		local current = core.get_player_by_name(name); if current then scan_player(current) end
-	end, player:get_player_name()) end)
-end
-core.register_globalstep(function(dtime)
-	accumulator = accumulator + dtime; if accumulator < SCAN_INTERVAL then return end
-	accumulator = accumulator % SCAN_INTERVAL
-	for _, player in ipairs(core.get_connected_players and core.get_connected_players() or {}) do scan_player(player) end
+-- player name -> its slot (1..SLOTS), whether an inventory action is
+-- pending, and the slot visits since its last scan.
+local slot_of, dirty, visits = {}, {}, {}
+local joined, accumulator, current_slot = 0, 0, 0
+local SWEEP_VISITS = SWEEP / (SLOTS * SLOT_PERIOD)
+core.register_on_joinplayer(function(player)
+	local name = player:get_player_name()
+	joined = joined + 1
+	slot_of[name], dirty[name], visits[name] = joined % SLOTS + 1, true, 0
 end)
-core.register_on_leaveplayer(function(player) cached[player_name(player)] = nil end)
+core.register_on_player_inventory_action(function(player) dirty[player:get_player_name()] = true end)
+core.register_globalstep(function(dtime)
+	accumulator = accumulator + dtime
+	if accumulator < SLOT_PERIOD then return end
+	-- A stall longer than one period collapses to a single slot.
+	accumulator = accumulator - SLOT_PERIOD
+	if accumulator > SLOT_PERIOD then accumulator = 0 end
+	current_slot = current_slot % SLOTS + 1
+	for name, slot in pairs(slot_of) do
+		if slot == current_slot then
+			visits[name] = visits[name] + 1
+			if dirty[name] or visits[name] >= SWEEP_VISITS then
+				local player = core.get_player_by_name(name)
+				if player then scan_player(player) end
+				dirty[name], visits[name] = nil, 0
+			end
+		end
+	end
+end)
+core.register_on_leaveplayer(function(player)
+	local name = player_name(player)
+	cached[name], slot_of[name], dirty[name], visits[name] = nil, nil, nil, nil
+end)
 grug_jobs.DISCOVERY_META_KEY = META_SEEN
-grug_jobs.DISCOVERY_SCAN_INTERVAL = SCAN_INTERVAL
+grug_jobs.DISCOVERY_SWEEP = SWEEP
+-- Scans the player's lists now; `quiet` as above (open_book, probes).
 grug_jobs._scan_discovery = scan_player
 grug_jobs._discovery_token_matches = token_matches_item

@@ -11,7 +11,8 @@ authorize restoring removed systems, migrations or old test campaigns.
 
 ## Useful technical references
 
-- [Lua and engine constraints](luanti-lua.md): active technical requirements.
+- [Lua and engine constraints](../technical/luanti-lua.md): active technical
+  requirements (moved to `docs/technical/` on 2026-10-05).
 - [License compatibility research](licensing.md): retained provenance and constraints.
 - [Engine API research](luanti_engine_api.md), [mobs_redo](mobs_redo.md),
   [VoxeLibre/Minetest Game](voxelibre_minetest_game.md),

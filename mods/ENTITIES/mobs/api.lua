@@ -132,7 +132,9 @@ local main_timer_interval = tonumber(settings:get("mob_main_timer_interval") or 
 
 -- pathfind settings
 
-local pathfinding_enable = settings:get_bool("mob_pathfinding_enable") or true
+-- GRUG PATCH (Round 37 MB, MOB-16): upstream's `get_bool(...) or true` read
+-- an explicit `false` as true, so the switch could never turn A* off.
+local pathfinding_enable = settings:get_bool("mob_pathfinding_enable", true)
 local pathfinding_stuck_timeout = tonumber(
 		settings:get("mob_pathfinding_stuck_timeout")) or 3.0
 local pathfinding_stuck_path_timeout = tonumber(
@@ -513,9 +515,22 @@ local function shortest_rotation(from, to)
 	return diff
 end
 
+-- GRUG PATCH (Round 37 MB, MOB-07, combat_stats.md §3): an elite or rare
+-- winding up in a fight (grug_mobs/telegraph.lua counts `temp.grug_tg_left`)
+-- stops: its facing stays where it was when the wind-up began, so the cone
+-- points at the target's old spot and stepping aside dodges, and its
+-- ordinary swings and shots pause until the cone resolves (do_states).
+local function grug_winding_up(self)
+	local temp = self.temp
+	return temp ~= nil and temp.grug_tg_left ~= nil and self.state == "attack"
+end
+
 -- set and return valid yaw, pitch or roll
 
 function mob_class:set_yaw(yaw, delay)
+
+	-- GRUG PATCH (Round 37 MB, MOB-07): no turn of any kind during a wind-up.
+	if grug_winding_up(self) then return self.object:get_yaw() or 0 end
 
 	yaw = (yaw or 0) % (2 * pi) -- clamp yaw
 
@@ -558,6 +573,18 @@ function mob_class:set_animation(anim, force)
 
 	if not self.animation or not anim then return end
 
+	-- GRUG PATCH (Round 37 MB, MOB-04): the swing plays to its end. The
+	-- contact run (do_states, 2026-09-16 cadence patch) writes "stand" or
+	-- "run" every step and cut the punch after one server step; while the
+	-- clip runs, a plain movement animation waits. Forced writes, hit and
+	-- death animations pass.
+	local temp = self.temp
+	if not force and temp and temp.grug_punch_until
+	and (anim == "stand" or anim == "walk" or anim == "run") then
+		if core.get_us_time() / 1000000 < temp.grug_punch_until then return end
+		temp.grug_punch_until = nil
+	end
+
 	local current = self.animation_current or ""
 	local anims = self.animation
 
@@ -582,9 +609,17 @@ function mob_class:set_animation(anim, force)
 
 	self.animation_current = anim
 
+	local speed = anims[anim .. "_speed"] or anims.speed_normal or 15
+
+	-- GRUG PATCH (Round 37 MB, MOB-04): remember when this swing's clip ends.
+	if anim:sub(1, 5) == "punch" and speed > 0 and temp then
+		temp.grug_punch_until = core.get_us_time() / 1000000
+				+ (anims[anim .. "_end"] - anims[anim .. "_start"]) / speed
+	end
+
 	self.object:set_animation(
 			{x = anims[anim .. "_start"], y = anims[anim .. "_end"]},
-			anims[anim .. "_speed"] or anims.speed_normal or 15, anims.frame_blend,
+			speed, anims.frame_blend,
 			anims[anim .. "_loop"] ~= false)
 end
 
@@ -2274,7 +2309,12 @@ end
 function mob_class:follow_flop(dtime)
 
 	-- find player to follow
-	if (self.follow ~= "" or self.order == "follow") and not self.following
+	-- GRUG PATCH (Round 37 MB, MOB-02): no mob definition sets `follow`, and
+	-- nil passed upstream's `~= ""` test, so every idle mob scanned all
+	-- players once a second only to drop the find again below. A nil or empty
+	-- `follow` scans only for an owner's "follow" order.
+	if ((self.follow and self.follow ~= "") or self.order == "follow")
+	and not self.following
 	and self.state ~= "attack" and self.state ~= "runaway" then
 
 		local s = self.object:get_pos() ; if not s then return end
@@ -3022,7 +3062,10 @@ function mob_class:do_states(dtime)
 			-- but it is never called until canonical target LOS succeeds.
 			-- A terrain-blocked LOS no longer consumes it: the ready swing stays
 			-- banked until the detour or sidestep exposes the target.
+			-- GRUG PATCH (Round 37 MB, MOB-07): no ordinary swing while an
+			-- elite or rare winds up; the cone hit is its attack.
 			local ready = self.punch_timer >= self.punch_interval
+					and not grug_winding_up(self)
 			local in_reach = dist <= (self.reach + (self.reach_ext or 0))
 			local strike_in_sight = in_sight
 			if ready and in_reach then
@@ -3064,7 +3107,9 @@ function mob_class:do_states(dtime)
 
 			self:yaw_to_pos(p) ; self:set_velocity(0)
 
+			-- GRUG PATCH (Round 37 MB, MOB-07): nor a shot during a wind-up.
 			if self.shoot_interval and self.timer > self.shoot_interval
+			and not grug_winding_up(self)
 			and random(100) <= 60 then
 
 				self.timer = 0
@@ -3849,8 +3894,17 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	and not (is_player(hitter) and hitter_name == self.owner)
 	and not is_invisible(self, hitter_name) and self.object ~= hitter then
 
-		self.state = ""
-		self:do_attack(hitter) -- attack whoever punched mob
+		-- GRUG PATCH (Round 37 MB, MOB-01, combat_stats.md §4): a player's hit
+		-- on a grug mob already in a fight changes its target only through
+		-- threat. The accepted-hit hook above added the threat and asked
+		-- grug_core's check_switch (120 % hysteresis, taunt lock); resetting
+		-- the state here made do_attack retarget on every hit. A mob without
+		-- a target still takes its first attacker, and a mob or NPC hitter
+		-- still draws retaliation; the group alert below always runs.
+		if not (grug_mob_hit and self.attack and self.state == "attack") then
+			self.state = ""
+			self:do_attack(hitter) -- attack whoever punched mob
+		end
 
 		-- alert others to the attack
 		local objs = core.get_objects_inside_radius(hitter:get_pos(), self.view_range)
@@ -3966,15 +4020,22 @@ function mob_class:mob_staticdata()
 	end
 
 	self.remove_ok = true
-	self.attack = nil
-	self.following = nil
-	self.state = "stand"
 
 	if use_cmi then
 		self.serialized_cmi_components = cmi.serialize_components(self._cmi_components)
 	end
 
-	return core.serialize(clean_staticdata(self))
+	-- GRUG PATCH (Round 37 MB, MOB-05): the engine also asks for staticdata
+	-- while the mob stays active (right after add_entity, and when it moved
+	-- three mapblocks from its static block), so the reset that upstream
+	-- wrote into the live mob dropped a chasing mob's target mid-fight. It
+	-- now goes into the saved copy only; a reloaded mob still starts calm.
+	local data = clean_staticdata(self)
+	data.attack = nil
+	data.following = nil
+	data.state = "stand"
+
+	return core.serialize(data)
 end
 -- list of items used in initial_properties
 

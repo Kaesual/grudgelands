@@ -612,6 +612,14 @@ end
 -- Convert default:dirt to something that fits the environment
 --
 
+-- GRUG PATCH: grass spread and moss growth leave authored ground alone
+-- (Round 37, X-02): towns, capitals, landmarks, villages, camps, POIs and
+-- roads keep their dirt and cobble (grug_core.ground_growth_allowed, the
+-- territory rule plus the road and POI layer); elsewhere both run as upstream.
+local function growth_allowed(pos)
+	return grug_core.ground_growth_allowed(pos)
+end
+
 minetest.register_abm({
 	label = "Grass spread",
 	nodenames = {"default:dirt"},
@@ -631,6 +639,7 @@ minetest.register_abm({
 		if (minetest.get_node_light(above) or 0) < 13 then
 			return
 		end
+		if not growth_allowed(pos) then return end -- GRUG PATCH (X-02)
 
 		-- Look for spreading dirt-type neighbours
 		local p2 = minetest.find_node_near(pos, 1, "group:spreading_dirt_type")
@@ -704,6 +713,7 @@ minetest.register_abm({
 	chance = 200,
 	catch_up = false,
 	action = function(pos, node)
+		if not growth_allowed(pos) then return end -- GRUG PATCH (X-02)
 		node.name = moss_correspondences[node.name]
 		if node.name then
 			minetest.set_node(pos, node)

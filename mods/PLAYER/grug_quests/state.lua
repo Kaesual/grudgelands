@@ -40,7 +40,8 @@ local function save(player, state)
 end
 -- For fixtures: the cache, to prove that no reader writes into it.
 Q._state_cache = cache
--- player name -> {raw, at, states, version}: Q.marker_states' memo.
+-- player name -> {raw, fresh, expires, states, version}: Q.marker_states'
+-- memo.
 local marker_memo, marker_callbacks = {}, {}
 -- The markers may differ: the next marker_states call recomputes, and the
 -- consumers that keep their own copy (the minimap) are told. Called on every
@@ -48,7 +49,7 @@ local marker_memo, marker_callbacks = {}, {}
 -- tracker HUD's journal_key, hud.lua) or the level does (below).
 function Q.markers_changed(player)
 	local memo = marker_memo[player:get_player_name()]
-	if memo then memo.at = nil end
+	if memo then memo.fresh = false end
 	for _, callback in ipairs(marker_callbacks) do callback(player) end
 end
 function Q.register_on_markers_changed(callback) marker_callbacks[#marker_callbacks + 1] = callback end
@@ -59,9 +60,12 @@ local function changed(player)
 end
 -- A level unlocks quests (min_level) without a quest change.
 grug_xp.register_on_level_change(function(player) Q.markers_changed(player) end)
+-- player name -> {raw, quests}: the item objectives of the active quests,
+-- per raw state (Q.journal_key).
+local item_memo = {}
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	cache[name], marker_memo[name] = nil, nil
+	cache[name], marker_memo[name], item_memo[name] = nil, nil, nil
 end)
 function Q.register_on_change(callback) callbacks[#callbacks + 1] = callback end
 -- fn(player, quest_id, def) once per completed turn-in (a repeatable at each
@@ -100,8 +104,11 @@ local function cooldown_left(def, state)
 	local ready_at = def.repeatable and state.cooldowns[def.id]
 	return ready_at and math.max(0, ready_at - Q.clock()) or 0
 end
-local function permitted(player, def, state)
-	if grug_xp.get_level(player) < def.min_level then return false, "Requires level " .. def.min_level .. "." end
+-- `level`, if given, is the player's level read once for a whole pass.
+local function permitted(player, def, state, level)
+	if (level or grug_xp.get_level(player)) < def.min_level then
+		return false, "Requires level " .. def.min_level .. "."
+	end
 	for _, id in ipairs(def.prerequisites) do
 		if not state.completed[id] then return false, "Complete the preceding quest first." end
 	end
@@ -109,7 +116,7 @@ local function permitted(player, def, state)
 end
 -- Accept gate: `permitted` plus not active, not done (a repeatable after its
 -- cooldown counts as not done).
-local function offerable(player, def, state)
+local function offerable(player, def, state, level)
 	if state.active[def.id] then return false, "This quest is not available." end
 	if state.completed[def.id] then
 		if not def.repeatable then return false, "This quest is not available." end
@@ -118,7 +125,7 @@ local function offerable(player, def, state)
 			return false, ("Repeatable again in %s."):format(Q.cooldown_text(left))
 		end
 	end
-	return permitted(player, def, state)
+	return permitted(player, def, state, level)
 end
 -- Item objectives draw from one snapshot, so two objectives never count the
 -- same item twice: exact items first, then groups (matching names in sorted
@@ -196,8 +203,8 @@ function Q.quest_held(player, id)
 end
 -- What quest `def` shows at `npc` for this player: "ready", "active",
 -- "available" or "locked" (with the reason), or nil when it is not listed
--- there. `pass` carries one holdings snapshot through the pass
--- (`pass.counts`).
+-- there. `pass` carries one holdings snapshot and one level read through
+-- the pass (`pass.counts`, `pass.level`).
 local function status_at(player, npc, def, state, pass)
 	local id = def.id
 	if state.completed[id] and def.repeatable == nil then return nil end
@@ -211,7 +218,8 @@ local function status_at(player, npc, def, state, pass)
 		local _, ready = progress(player, def, active, pass.counts)
 		return ready and "ready" or "active"
 	end
-	local allowed, reason = offerable(player, def, state)
+	pass.level = pass.level or grug_xp.get_level(player)
+	local allowed, reason = offerable(player, def, state, pass.level)
 	return allowed and "available" or "locked", reason
 end
 -- One bounded state/holdings snapshot for one NPC viewer.
@@ -230,20 +238,21 @@ function Q.npc_quests(player, npc)
 end
 -- The marker of every quest NPC for this player (Round 30, perf review #1):
 -- NPC id -> the most urgent status of its rows in Q.npc_quests (ready, then
--- available, active, locked); NPCs without rows are absent. One state load
--- and one holdings snapshot for all NPCs, memoized per player for a second
--- and until the state changes or Q.markers_changed says otherwise (only a
--- repeatable's cooldown ending waits for the second). Also
--- returns a version that rises whenever the markers differ from the
+-- available, active, locked); NPCs without rows are absent. One state load,
+-- one level read and one holdings snapshot for all NPCs. Memoized per
+-- player until something it depends on changes (Round 37, audit PLY-06):
+-- the raw state (a quest change), Q.markers_changed (held objective items,
+-- the level) or the end of the earliest repeatable cooldown still running.
+-- Also returns a version that rises whenever the markers differ from the
 -- previous result, for cheap change tests (the Map tab). Read-only: the
 -- table is shared until the next change.
 local MARKER_PRIORITY = {ready = 1, available = 2, active = 3, locked = 4}
-local MARKER_MEMO_US = 1000000
 function Q.marker_states(player)
 	local name = player:get_player_name()
 	local state, raw = load(player)
-	local now, memo = core.get_us_time(), marker_memo[name]
-	if memo and memo.at and memo.raw == raw and now - memo.at < MARKER_MEMO_US then
+	local memo = marker_memo[name]
+	if memo and memo.fresh and memo.raw == raw and
+			(not memo.expires or Q.clock() < memo.expires) then
 		return memo.states, memo.version
 	end
 	local states, pass = {}, {}
@@ -255,6 +264,12 @@ function Q.marker_states(player)
 		end
 		states[npc] = best
 	end
+	-- A repeatable turns available when its cooldown ends: the earliest end
+	-- still ahead (cooldown_left's clock) ends the memo.
+	local clock, expires = Q.clock(), nil
+	for _, ready_at in pairs(state.cooldowns) do
+		if ready_at > clock and (not expires or ready_at < expires) then expires = ready_at end
+	end
 	local same = memo ~= nil
 	if same then
 		for npc, status in pairs(memo.states) do
@@ -264,12 +279,11 @@ function Q.marker_states(player)
 			if memo.states[npc] == nil then same = false; break end
 		end
 	end
-	if same then
-		memo.raw, memo.at = raw, now
-	else
-		memo = {states = states, version = (memo and memo.version or 0) + 1, raw = raw, at = now}
+	if not same then
+		memo = {states = states, version = (memo and memo.version or 0) + 1}
 		marker_memo[name] = memo
 	end
+	memo.raw, memo.fresh, memo.expires = raw, true, expires
 	return memo.states, memo.version
 end
 function Q.accept(player, id)
@@ -351,14 +365,25 @@ end
 function Q.journal_key(player)
 	local state, raw = load(player)
 	if not next(state.active) then return raw, "" end
-	local counts, quests, names = holdings(player), {}, {}
-	for id in pairs(state.active) do
-		local objectives = {}
-		for _, objective in ipairs(Q.registered_quests[id].objectives) do
-			if objective.type == "item" then objectives[#objectives + 1] = objective end
+	-- The active quests' item objectives, per raw state. Without any, no
+	-- held item can change the journal or a marker (Round 37, audit
+	-- PLY-05): no inventory read, and an empty snapshot for Q.journal.
+	local memo = item_memo[player:get_player_name()]
+	if not memo or memo.raw ~= raw then
+		local quests = {}
+		for id in pairs(state.active) do
+			local objectives = {}
+			for _, objective in ipairs(Q.registered_quests[id].objectives) do
+				if objective.type == "item" then objectives[#objectives + 1] = objective end
+			end
+			if #objectives > 0 then quests[#quests + 1] = objectives end
 		end
-		if #objectives > 0 then quests[#quests + 1] = objectives end
+		memo = {raw = raw, quests = quests}
+		item_memo[player:get_player_name()] = memo
 	end
+	local quests = memo.quests
+	if #quests == 0 then return raw, "", {} end
+	local counts, names = holdings(player), {}
 	for name, count in pairs(counts) do
 		if count > 0 then
 			-- The most any one quest takes of this item (each quest's

@@ -397,6 +397,10 @@ return function(api)
 	--                        `margin` nodes (in x and in z) of the inclusive
 	--                        rectangle, or nil; exact or conservative
 	--   cube_clear(pos)      true when the 3 x 3 x 3 cube above pos is air
+	--   fixed                true when the four column queries above never
+	--                        change their answer (the engine's world: the
+	--                        zone layout is fixed per world); the zone scan's
+	--                        result is then kept per faction and column
 	--
 	-- Zone check: every column of the square's border (400 columns) first,
 	-- then an interior lattice of spacing SAMPLE_STEP (1: every column, so the
@@ -476,7 +480,46 @@ return function(api)
 	end
 	M.SAMPLE_COUNT = #sample_offsets.x
 
-	-- Returns true, or false, code, message.
+	-- The zone scan of the square around column x/z: the first problem code
+	-- in the fixed column order, or nil.
+	local function scan(faction, x, z, world)
+		local home = faction .. "_home"
+		local offsets_x, offsets_z = sample_offsets.x, sample_offsets.z
+		for index = 1, #offsets_x do
+			local sx, sz = x + offsets_x[index], z + offsets_z[index]
+			local water = world.water_class_at(sx, sz)
+			local zone = world.zone_at(sx, sz)
+			local territory = zone and world.territory_at(sx, sz) or nil
+			local problem = zone_problem(faction, home, water, zone, territory)
+			if problem then return problem end
+		end
+		return nil
+	end
+
+	-- The scan's answer per faction and column for a `fixed` world (Round
+	-- 37, audit PLY-04): a held right-click repeats on_place about four
+	-- times a second, and a spot is scanned once. The scan reads no y, so a
+	-- stone placed higher or lower on the same column shares the answer.
+	-- At most SCAN_CACHE entries, then it starts empty again.
+	M.SCAN_CACHE = 64
+	local scans, scan_count = {}, 0
+	local function scan_problem(faction, x, z, world)
+		if not world.fixed then return scan(faction, x, z, world) end
+		local key = faction .. "|" .. x .. "|" .. z
+		local known = scans[key]
+		if known ~= nil then return known or nil end
+		local problem = scan(faction, x, z, world)
+		if scan_count >= M.SCAN_CACHE then scans, scan_count = {}, 0 end
+		scans[key], scan_count = problem or false, scan_count + 1
+		return problem
+	end
+
+	-- Returns true, or false, code, message. The refusals keep this order:
+	-- the cheap ones first (depth, faction, one claim, overlap with another
+	-- claim, settlements), then the zone scan, and last the arrival cube,
+	-- the one refusal the player can fix on the spot. A spot that fails
+	-- the scan and the cube shows the scan's message, so the cube cannot
+	-- spare the scan; the per-column result above spares its repeats.
 	function M.validate(name, faction, pos, world)
 		local function refuse(code, message)
 			return false, code, message or MESSAGES[code]
@@ -500,17 +543,8 @@ return function(api)
 		local kind = world.feature_in(x - RADIUS, z - RADIUS, x + RADIUS,
 			z + RADIUS, M.SETTLEMENT_MARGIN)
 		if kind then return refuse(MESSAGES[kind] and kind or "site") end
-		local home = faction .. "_home"
-		local offsets_x, offsets_z = sample_offsets.x, sample_offsets.z
-		for index = 1, #offsets_x do
-			local sx, sz = x + offsets_x[index], z + offsets_z[index]
-			local water = world.water_class_at(sx, sz)
-			local zone = world.zone_at(sx, sz)
-			local territory = zone and world.territory_at(sx, sz) or nil
-			local problem = zone_problem(faction, home, water, zone, territory)
-			if problem then return refuse(problem) end
-		end
-		-- Last: the one refusal the player can fix on the spot.
+		local problem = scan_problem(faction, x, z, world)
+		if problem then return refuse(problem) end
 		if not world.cube_clear({x = x, y = y, z = z}) then return refuse("cube") end
 		return true
 	end

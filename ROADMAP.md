@@ -110,11 +110,11 @@ Earlier delivery narratives are preserved in the
 
 **Scope versus delivery:** this vision includes approved future systems, not just
 running code. The WP9 story from level 41 with its finale is delivered in
-Round 36 (GUI test pending); V1's sound is
+Round 36 (GUI test open); V1's sound is
 delivered in Round 34 (tested by the user; Round 35 made music a capital
 feature); the items
 and professions revision (WP5, WP10) is delivered in Round 33; WP41 PvP and
-the PvP POIs of WP42 are delivered (Round 31, GUI test pending), WP17
+the PvP POIs of WP42 are delivered (Round 31, GUI-accepted), WP17
 boats/waypoints and the WP44 economy too (Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
 
 ## V1 scope
@@ -140,6 +140,9 @@ B1–B7) settle the rest:
 
 ### Delivered foundation
 
+Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Round 36 is open
+([project status](docs/STATUS.md)).
+
 - [x] Standalone game, faction/race/class creation, progression and four classes
   including Scout; current-ray combat, equipped weapons, talents and shared movement.
 - [x] Named-zone world foundation, six starts and capitals, gathering/materials,
@@ -161,23 +164,22 @@ B1–B7) settle the rest:
   Round 31 adds 24 PvP fortress quests with garrison objectives.
 - [x] World atlas with zoom/scroll, self/party/quest/service markers and, since
   Round 27, our own round minimap with the same markers; innkeeper home
-  return and respawn; riding/flight (WP31) and farming (WP32, GUI acceptance
-  pending). No fog-of-war or waypoint prerequisite.
+  return and respawn; riding/flight (WP31) and farming (WP32). No
+  fog-of-war or waypoint prerequisite.
 - [x] Surface-following optional full-world preparation, resumable bounded scheduling
   and shared creation/reconnect waiting flow.
 - [x] **WP24 Housing** (Round 25): Claim Stones, claim protection and
   permissions, the stone as travel home, and road and POI protection.
-  Playtest under way: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
+  GUI-accepted: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
 - [x] **Round 26** ([completion](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)):
   Claim Stone draft and activation with the Housing Steward, the registration
   cleanup (WP28), the status icons and organic capitals with a character per
-  capital. Next: fresh world and playtest.
+  capital. GUI-accepted.
 - [x] **WP50 own minimap and map quality** (Round 27,
   [completion](docs/planning/round27-minimap-plan.md#completion-2026-09-30)):
   a round, north-up minimap drawn from the world map with quest-giver,
   service, home and party markers in place of the native one; the
-  `grug_map_quality` setting (normal/high); readable relief. Next: short
-  playtest.
+  `grug_map_quality` setting (normal/high); readable relief. GUI-accepted.
 - [x] **Round 28 questing and leveling framework**
   ([completion](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)):
   the 2026-09-30 playtest fixes (mob behaviour near roads, environmental
@@ -217,8 +219,7 @@ B1–B7) settle the rest:
   crafting lookups, crosshair and name tags; Return home on the Character
   page; piers and beaches at the dragon-island landings; the legacy quest
   fields removed and the Dawnmere NPC duplication fixed; band-4/5 loot
-  smoothing with recomputed prices. Pushed 2026-10-04. Next: fresh world
-  and GUI test.
+  smoothing with recomputed prices. Pushed 2026-10-03; GUI-accepted.
 - [x] **Round 31 "PvP, appearance and clean-up"**
   ([completion](docs/planning/round31-plan.md#completion-2026-10-03)):
   **WP41 geographic PvP** (the per-player flag, the PvP tab, icons, banner
@@ -230,7 +231,7 @@ B1–B7) settle the rest:
   face window, equal hitboxes, enchant colours on gear); the **dragon
   arenas** redesigned (round leash arenas, ice and ember hazards, the
   dragon's wrath); the Round 30 clean-up items and a fixture runner. Pushed
-  2026-10-04. Next: fresh world and the two-client GUI test.
+  2026-10-03; GUI-accepted.
 - [x] **Round 32 "Fixes, preparation and research"**
   ([completion](docs/planning/round32-plan.md#completion-2026-10-03)): the
   minimap zoomed ×2, hostile camps marked on the Map tab, zone names
@@ -243,7 +244,7 @@ B1–B7) settle the rest:
   studies: a [performance review](docs/research/perf-review-2026-10-r32.md)
   at 50 and 100 stand-ins, the [sound research](docs/research/sound-research-2026-10.md),
   the [items and professions analysis](docs/research/items-professions-analysis-2026-10.md).
-  Pushed 2026-10-04. Next: the GUI test.
+  Pushed 2026-10-04; GUI-accepted.
 - [x] **Round 33 "Items, professions and achievements"**
   ([completion](docs/planning/round33-plan.md#completion-2026-10-04)), the
   items design session's rulings (**WP5 and WP10 delivered**): gear drops by
@@ -297,9 +298,12 @@ B1–B7) settle the rest:
   start town and capital house; fixes from the Round 35 GUI test (one target
   predicate, free mobs evading only from outside their wander radius, talent
   points in the level-up banner); Priest heals with gear Intelligence and
-  the Scout's damage set; the dragons' wider hazards and wing gust. Local,
-  not pushed; needs a fresh world. Next: the GUI test on desktop and in the
-  web build, two clients for the rift.
+  the Scout's damage set; the dragons' wider hazards and wing gust; after
+  the user's first look a held button across a hotbar switch, benches with
+  their back to the wall, ground cover in the protected band round towns
+  and smoother roads. Pushed 2026-10-05; needs a world made on `fef94a6a`
+  or later. Next: the GUI test on desktop and in the web build, two clients
+  for the rift (under way).
 
 ### Remaining work
 
