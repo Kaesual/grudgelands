@@ -322,10 +322,12 @@ are kept per character, and so is the choice.
   `boss:rift:<site>`). Since Round 36 an achievement can also count quest
   turn-ins (grug_quests' turn-in hook, [quests.md](quests.md)): one quest's
   (`quest:<id>`, "completed" at 1) or every quest carrying a tag
-  (`quest_tag:<tag>`, e.g. a questline). The catalogue has no faction rule:
-  a faction's questline achievement counts that faction's last Warmaster
-  turn-in, which only its own characters can take (the giver serves its
-  faction), so the other faction's characters see it but cannot earn it.
+  (`quest_tag:<tag>`, e.g. a questline). An achievement may belong to one
+  faction (user, 2026-10-05): a character of the other faction never sees
+  it on the tab and never earns it, and a character without a faction yet
+  (in creation) sees and earns only the shared ones. Every Name Accounted
+  For is The Accord's, Our Oaths Are Ours The Throng's; The Last Claim
+  Denied is shared.
 - The Character page has an **Achievements** tab: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, two columns of six per page. Under the

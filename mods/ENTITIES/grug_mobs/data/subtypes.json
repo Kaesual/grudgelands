@@ -3276,7 +3276,7 @@
       60
     ],
     "drops": "feline",
-    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Sleek coat with an ember cast. The Skyglass Canopy's woods, by night, beside the panthers.",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Sleek coat with an ember cast. The Skyglass Canopy's cloudwood, by night, beside the panthers.",
     "tint_by_zone": {
       "front_skyglass_canopy": "ember"
     }
@@ -3294,7 +3294,7 @@
       60
     ],
     "drops": "venomous",
-    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Heated-metal scales. The Skyglass Canopy's rootways, by day, beside the serpents.",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Heated-metal scales. The Skyglass Canopy's rootways, by night (the day keeps the Saltbound Husk, the belt's daylight zombie).",
     "tint_by_zone": {
       "front_skyglass_canopy": "ember"
     }
@@ -3312,7 +3312,7 @@
       60
     ],
     "drops": "spider",
-    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Legs and body dulled as if smoke-cured (the strong tint: a green body). The Skyglass Canopy's rootways, by night, beside the spiders.",
+    "notes": "Round 36 corrupted sub-type (story bible \u00a73): the Undertithe's ember tint. Legs and body dulled as if smoke-cured (the strong tint: a green body). The Skyglass Canopy's high canopy, by night.",
     "tint_by_zone": {
       "front_skyglass_canopy": "ember_strong"
     }

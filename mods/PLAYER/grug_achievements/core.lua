@@ -48,6 +48,8 @@ function R.build(catalog)
 			"grug_achievements: achievement " .. index .. " needs a unique id")
 		assert(type(ach.counter) == "string" and ach.counter ~= "",
 			"grug_achievements: " .. ach.id .. " needs a counter")
+		assert(ach.faction == nil or ach.faction == "accord" or ach.faction == "throng",
+			"grug_achievements: " .. ach.id .. " has an unknown faction")
 		assert(type(ach.tiers) == "table" and #ach.tiers >= 1 and #ach.tiers <= #ROMAN,
 			"grug_achievements: " .. ach.id .. " needs 1.." .. #ROMAN .. " tiers")
 		local last = 0
@@ -68,6 +70,25 @@ function R.build(catalog)
 		book.by_counter[ach.counter] = list
 	end
 	return book
+end
+
+-- Does a character of `faction` (nil: none yet, still in creation) have
+-- achievement `ach`? A row with a `faction` belongs to that faction's
+-- characters only: the others never see or earn it; a row without one is
+-- everyone's.
+function R.visible(ach, faction)
+	return ach.faction == nil or ach.faction == faction
+end
+
+-- The achievements a character of `faction` has, in catalogue order.
+function R.visible_list(book, faction)
+	local list = {}
+	for _, ach in ipairs(book.achievements) do
+		if R.visible(ach, faction) then
+			list[#list + 1] = ach
+		end
+	end
+	return list
 end
 
 --
