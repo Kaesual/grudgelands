@@ -5,13 +5,14 @@ reading every development round.
 
 | Question | Read |
 |---|---|
-| What is the current game delivery? | [Project status](STATUS.md) |
+| What is the current game delivery, push and acceptance state? | [Project status](STATUS.md) |
 | What has been decided? | [Design topic index](design/README.md) |
 | What is still to implement? | [BACKLOG](../BACKLOG.md) |
 | What are the broader goals? | [ROADMAP](../ROADMAP.md) |
-| What decisions remain open? | Root `TODO-*.md` files; unresolved audit findings below |
-| How should work be performed? | [AGENTS](../AGENTS.md), then the relevant [workflow](process/wp-workflow.md) |
-| Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](research/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
+| What decisions remain open? | Root `TODO-*.md` files; [BACKLOG open questions](../BACKLOG.md#audit-2026-10-open-questions) |
+| How should work be performed? | [AGENTS](../AGENTS.md), then the [round workflow](process/round-workflow.md) (gates, review checklist, [templates](process/round-workflow.md#7-templates)) |
+| Which mod owns a concern? | [Mod ownership map](technical/mod-map.md) |
+| Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](technical/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
 | Why was something decided or how was it tested? | [Research and historical evidence](research/README.md) |
 | What changed during documentation cleanup? | [Consolidation record](maintenance/documentation-round.md) |
 

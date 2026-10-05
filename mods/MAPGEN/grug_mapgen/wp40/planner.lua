@@ -374,6 +374,17 @@ local function planner_factory(allocator_factory)
 		error(code .. ": " .. message, 0)
 	end
 
+	-- The error handler of the plan_slice wrapper below: a failure keeps its
+	-- stack (once, however deeply the wrappers nest), so a seed-fleet run and
+	-- a server log both show where it failed.
+	local function with_traceback(message)
+		if type(message) ~= "string" or message:find("\nstack traceback:", 1, true) or
+				type(debug) ~= "table" or type(debug.traceback) ~= "function" then
+			return message
+		end
+		return debug.traceback(message, 2)
+	end
+
 	local function safe_integer(value, label, minimum, maximum, code)
 		minimum = minimum or -MAX_SAFE
 		maximum = maximum or MAX_SAFE
@@ -1003,8 +1014,10 @@ local function planner_factory(allocator_factory)
 				fail("fail_bound", "slice axis/count bound differs")
 			end
 			counting_allocator:enter_hotpath(HOTPATH_NAME)
-			local ok, result, generation = pcall(plan_slice_core, min_x, min_y,
-				min_z, max_x, max_y, max_z, x_count, z_count)
+			local ok, result, generation = xpcall(function()
+				return plan_slice_core(min_x, min_y, min_z, max_x, max_y, max_z,
+					x_count, z_count)
+			end, with_traceback)
 			counting_allocator:leave_hotpath(HOTPATH_NAME)
 			if not ok then error(result, 0) end
 			return result, generation

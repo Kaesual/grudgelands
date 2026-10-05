@@ -196,8 +196,11 @@ function stairs.register_slab(subname, recipeitem, groups, images, description,
 				end
 
 				-- else attempt to place node with proper param2
-				minetest.item_place_node(ItemStack(wield_item), placer, pointed_thing, p2)
-				if not minetest.is_creative_enabled(player_name) then
+				-- GRUG PATCH: a refused placement keeps the slab (Round 37,
+				-- ITM-10; current upstream checks the result the same way).
+				local _, placed = minetest.item_place_node(ItemStack(wield_item),
+					placer, pointed_thing, p2)
+				if placed and not minetest.is_creative_enabled(player_name) then
 					itemstack:take_item()
 				end
 				return itemstack

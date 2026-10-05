@@ -19,13 +19,16 @@ limit does not authorize a same-provider CLI workaround.
 **Day-to-day routing rule (decided 2026-09-14):** the role assignments below
 are *defaults*, not mandates. The user decides per session which model
 coordinates, implements and reviews, depending on how they plan their credits
-over the week, and states that at session start. A session-level instruction
-such as "today only Claude: Fable coordinates, Opus implements" replaces the
+over the week, and states that at session start; a coordinator takes that
+routing, not the table below, and uses the table only when the user names
+none. Practice since Round 24: Claude coordinates, Opus implements and
+reviews; Astra (Section 2.5) generates art and writes quest texts. A
+session-level instruction such as "today only Claude: Fable coordinates, Opus implements" replaces the
 routing table for that session without a policy amendment. What does not
 relax: every non-trivial change still receives one independent review by an
 agent that did not author it (Section 5), destructive-action safeguards, and
-the technical checklist in `wp-workflow.md`. Model names in that review record
-are whatever the user chose that day. Where this
+the technical checklist in [round-workflow.md](round-workflow.md#5-reviewing).
+Model names in that review record are whatever the user chose that day. Where this
 policy and a process document overlap on non-model process, the process
 document governs; this policy governs model choice. At adoption, the model
 labels mean GPT-5.6 Sol, Claude Opus ("Opus"), Claude Fable ("Fable"), and
@@ -42,7 +45,8 @@ brief; the policy applies to every context started afterward.
 - Route work by task risk, ambiguity, duration, reversibility, and the observed
   working characteristics of a model, not by a claim that one model is
   universally more intelligent than another.
-- GPT-5.6 Sol is the default long-lived project coordinator. Continuity,
+- When the user names no routing, GPT-5.6 Sol is the default long-lived
+  project coordinator. Continuity,
   explicit task tracking, exact contract adherence, and reliable integration
   across long sessions matter more in that role than peak one-shot insight.
 - GPT-5.6 Sol and Opus are the normal strong implementation and review models.
@@ -249,8 +253,8 @@ below the capability its risk requires.
 - Terra may prepare inventories or evidence for a review but cannot be its sole
   decision-maker.
 - The project-specific technical checklist in
-  [wp-workflow.md](wp-workflow.md) remains mandatory regardless of reviewer
-  model.
+  [round-workflow.md](round-workflow.md#5-reviewing) remains mandatory
+  regardless of reviewer model.
 
 A change is trivial only if it is comment-, formatting-, or documentation-only
 with no effect on decided design, process authority, contracts, acceptance
@@ -279,26 +283,22 @@ exists. The implementer cannot choose it retrospectively.
 
 ## 7. Calibration and policy maintenance
 
-Evaluate the Sol/Opus boundary after roughly every six to ten independently
-reviewed packages using lightweight project evidence: specification
-deviations, Critical/High findings, number of fix rounds, elapsed delivery
-time, and coordination overhead. Each such package records its implementing
-and reviewing model, Critical/High count, fix-round count, and observed elapsed
-wall time (or `unknown`) in its durable completion record — normally its
-BACKLOG completion summary, its package contract when it has no BACKLOG row,
-this section when the reviewed change amends this policy, or the commit message
-when none of those locations applies. Calibration reads those records rather
-than relying on recollection.
-Adjust this policy in one reviewed documentation commit when repeated evidence
-supports a change; do not create local WP exceptions.
+Per-package calibration records are no longer kept (user ruling
+2026-10-06): the user decides the routing per session, and packages record
+no implementing/reviewing model, finding counts or wall times for
+calibration. Adjust this policy in one reviewed documentation commit when
+experience supports a change; do not create local WP exceptions.
 
 Model context limits, pricing, and product behavior change over time and are
 not policy invariants. Record durable observed working characteristics and
 routing outcomes rather than hard-coding transient vendor claims. A version
 update presented under one of the adopted labels retains that role
-provisionally and is checked through calibration; a new or renamed model class
+provisionally and is checked in use; a new or renamed model class
 is not used for consequential work until its project role is explicitly added
 here. GPT-6 Astra's role was added in Section 2.5 on 2026-10-01.
+
+The three records below are historical (kept from before the 2026-10-06
+ruling).
 
 **Adoption-package calibration record (2026-08-22):** implementing model
 GPT-5.6 Sol; reviewing model Claude Opus; classification: non-trivial (model

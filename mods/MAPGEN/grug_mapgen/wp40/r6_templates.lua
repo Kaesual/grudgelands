@@ -92,7 +92,6 @@ return function(hash, content, template_source)
 	local definitions = content.decorations()
 	local source_cache = {}
 	local records, by_id = {}, {}
-	local maximum_x, maximum_y, maximum_z = 0, 0, 0
 
 	local function replacement_for(definition, name)
 		if definition.id == "elf_forest_silverwood" then
@@ -341,11 +340,7 @@ return function(hash, content, template_source)
 				local record = rotate_record(definition, rotation, sx, sy, sz, yslice, cells)
 				rotations[rotation + 1] = record
 				local span_x = record.max_x - record.min_x + 1
-				local span_y = record.max_y - record.min_y + 1
 				local span_z = record.max_z - record.min_z + 1
-				if span_x > maximum_x then maximum_x = span_x end
-				if span_y > maximum_y then maximum_y = span_y end
-				if span_z > maximum_z then maximum_z = span_z end
 				if span_x > 5 or span_z > 5 then computed_class = 1 end
 			end
 			if definition.id == "emergent_jungle_tree" or
@@ -402,9 +397,6 @@ return function(hash, content, template_source)
 		integer(rotation, "rotation index", 0, 3)
 		local record = by_id[definition_id]
 		return record and record.rotations[rotation + 1] or nil
-	end
-	function module.maximum_footprint()
-		return maximum_x, maximum_y, maximum_z
 	end
 	function module.probability_include(...)
 		return probability_include(...)

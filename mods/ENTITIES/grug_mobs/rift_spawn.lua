@@ -66,10 +66,7 @@ local function burst_due(self, dtime)
 		exptime = {min = 0.3, max = 0.8}, size = {min = 2, max = 5},
 		texture = "mobs_tnt_smoke.png^[colorize:#6d36b5:70", glow = 5,
 	})
-	core.sound_play(self.sounds.explode, {
-		pos = pos,
-		max_hear_distance = self.sounds.distance or 32,
-	}, true)
+	grug_sounds.play("rift_burst", pos)
 	self.object:remove()
 	return false
 end
@@ -83,7 +80,9 @@ local rift = {
 	stepheight = 1.1, fear_height = 6, view_range = 14,
 	explosion_radius = 0, explosion_damage_radius = 0,
 	explosion_timer = 2, allow_fuse_reset = true, stop_to_explode = true,
-	sounds = {fuse = "default_cool_lava", explode = "default_item_smoke"},
+	-- The fuse is a grug_sounds event (mobs_redo's mob_sound routes it); the
+	-- burst plays in burst_due, so mobs_redo's own boom never runs.
+	sounds = {fuse = "rift_fuse"},
 	do_custom = burst_due,
 	visual = "mesh", mesh = "grug_mobs_rift_spawn.b3d", glow = 3,
 	textures = {{"grug_mobs_rift_spawn.png", "grug_mobs_blank.png"}},

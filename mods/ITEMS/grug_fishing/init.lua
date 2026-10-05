@@ -14,7 +14,7 @@
 --     level at the cast position, independent of faction and water salinity.
 --
 -- What is deliberately NOT here: the T4 Marshbloom Chowder and T5 Salt-Crusted
--- Fish recipes and the Well Fed buff model of `items_crafting.md` §2.3. Those
+-- Fish recipes and the Well Fed buff model of `items_crafting.md` §3.7. Those
 -- belong to **WP10** (professions, which owns free Cooking and the six cooking
 -- groups); this mod ships the plain T1 dish the furnace can already make and
 -- nothing that would pre-empt that design.
@@ -69,7 +69,11 @@ core.register_tool("grug_fishing:rod", {
 	-- Far enough to fish from a bank rather than from inside the pond, and the
 	-- same distance the line may then be left at (`REEL_RANGE`).
 	range = REEL_RANGE,
+	-- Doors, chests and stations take a node click first
+	-- (grug_core.node_rightclick); with sneak the rod's own use runs.
 	on_place = function(itemstack, player, pointed_thing)
+		local clicked = grug_core.node_rightclick(itemstack, player, pointed_thing)
+		if clicked then return clicked end
 		return cast_or_reel(itemstack, player, pointed_thing)
 	end,
 	on_secondary_use = function(itemstack, player, pointed_thing)
@@ -112,7 +116,7 @@ for index = 1, #BAND_FISH do
 	mobs.add_eatable(name, 3)
 end
 
--- COOKED FISH -- the T1 dish of `items_crafting.md` §2.3's cooking ladder,
+-- COOKED FISH -- the T1 dish of `items_crafting.md` §3.7's cooking ladder,
 -- with the numbers of the cooked meat it sits next to (`mobs/crafts.lua`:
 -- eat 8, cooktime 5) and no food buff, because the Well Fed model is WP10's.
 --

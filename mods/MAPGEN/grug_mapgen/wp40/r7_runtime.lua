@@ -111,59 +111,29 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		return seed
 	end
 
-	local source = dofile(wp40_directory .. "/source/simple_map.lua")
-	local schemas = dofile(wp40_directory .. "/schemas.lua")
-	local canonical = dofile(wp40_directory .. "/canonical.lua")
-	local deterministic = dofile(wp40_directory .. "/deterministic.lua")
-	local index128 = dofile(wp40_directory .. "/index128.lua")
-	-- The capitals' protected cities (plan D76) are a function of the capital
-	-- layouts, which main plans after the first horizontal session exists; every
-	-- horizontal session this runtime builds shares this holder, filled below
-	-- once the layouts are parsed (before any claim or protection query).
-	local capital_protection = dofile(wp40_directory .. "/capital_protection.lua")
-	local protection_holder = {}
-	local simple_map_factory = dofile(wp40_directory .. "/simple_map.lua")(
-		dofile(wp40_directory .. "/zone_field.lua"))
-	local function horizontal_factory(dependencies)
-		local bound = {}
-		for key, value in pairs(dependencies) do bound[key] = value end
-		bound.capital_protection = protection_holder
-		return simple_map_factory(bound)
-	end
-	local terrain_data = dofile(wp40_directory .. "/terrain_data.lua")
-	local terrain_field = dofile(wp40_directory .. "/terrain_field.lua")(terrain_data)
-	-- Inland water: one layout per environment, shared by every height session
-	-- this runtime builds (main builds it once, emerge deserializes main's).
-	local water = {module = dofile(wp40_directory .. "/water_layout.lua")(
-		terrain_data.water), text = water_layout_text,
-		-- the planned canals are appended below, before any world session
-		authored = dofile(wp40_directory .. "/water_authored.lua")(terrain_data.water)}
-	-- Roads (Round 22 Phase 4): one layout per environment like the water,
-	-- routed once in main after it, deserialized in emerge.
-	-- The capital planner's streets and connectors join this layout (main:
-	-- `height.lua` add_roads; emerge: already in the text), its squares are
-	-- set below from the capital layouts.
-	local roads = {module = dofile(wp40_directory .. "/road_layout.lua"),
-		text = road_layout_text}
-	-- Main plans the capitals on a height session of its own before the world
-	-- is built; that session (streets and canals added, memos flushed) is
-	-- handed to the world build's first height session request instead of
-	-- building a second one (`height.lua` new_runtime).
-	local reuse = {}
-	-- The start towns' own ground (plan D78), filled below from the WP13
-	-- palettes before any height session exists.
-	local start_grounds = {}
-	local height_module_factory = dofile(wp40_directory .. "/height.lua")
-	local function height_factory(dependencies)
-		local bound = {}
-		for key, value in pairs(dependencies) do bound[key] = value end
-		bound.water = water
-		bound.roads = roads
-		bound.reuse = reuse
-		bound.start_grounds = start_grounds
-		return height_module_factory(bound)
-	end
-	local zones_factory = dofile(wp40_directory .. "/zones.lua")
+	-- THE SEED IS VALIDATED HERE ONCE. The capital layouts are a function of it
+	-- (main plans them from it; emerge takes main's text), and `build` refuses
+	-- to run if its own validation answers anything else, so both environments
+	-- agree about where a capital stands exactly when they agree about
+	-- `full_seed`, the check `r7_mapgen.lua` makes.
+	local construction_seed = validate_live_scalars()
+	-- The world's layout assembly, shared with the portable tools
+	-- (`world_assembly.lua`): inland water and roads (one layout each per
+	-- environment, main builds them, emerge deserializes main's), the start
+	-- towns' ground, the capitals, and the horizontal and height factories
+	-- every session of this runtime is built with.
+	local assembly = dofile(wp40_directory .. "/world_assembly.lua")(wp40_directory,
+		raw_sha256)
+	local world = assembly.world(construction_seed, {water = water_layout_text,
+		road = road_layout_text, capital = capital_layout_text})
+	local source, schemas, canonical = assembly.source, assembly.schemas,
+		assembly.canonical
+	local deterministic, index128 = assembly.deterministic, assembly.index128
+	local terrain_field = assembly.terrain_field
+	local horizontal_factory, height_factory = world.horizontal_factory,
+		world.height_factory
+	local water, roads = world.water, world.roads
+	local zones_factory = assembly.zones_factory
 	local r5_planner_factory = dofile(wp40_directory .. "/planner.lua")
 	local r5_adapter_factory = dofile(wp40_directory .. "/map_adapter.lua")
 	local r5_manifest_module = dofile(wp40_directory .. "/mapgen_manifest.lua")
@@ -187,30 +157,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		wp40_directory .. "/r7_anchor_roster.lua")
 	local r7_anchor_activation_factory = dofile(
 		wp40_directory .. "/r7_anchor_activation.lua")
-	local r7_settlement_module = dofile(wp40_directory .. "/r7_settlement.lua")
-	-- The ground node each start's blueprint lays on its pad (its race's WP13
-	-- palette), which the band round the pad carries out into the natural
-	-- surface (plan D78). Both environments read the same files, so they agree.
-	do
-		-- The band's top is a mapgen surface node of the R6 content contract.
-		-- Sunscar's `default:dirt_with_dry_grass` is not one; its mapgen twin
-		-- shows the same top texture (default_dry_grass.png).
-		local SURFACE_TWIN = {
-			["default:dirt_with_dry_grass"] = "default:dry_dirt_with_dry_grass",
-		}
-		local wp13_palette = dofile(wp40_directory .. "/../wp13/palette.lua")
-		for index = 1, #r7_settlement_module.roster do
-			local profile = r7_settlement_module.roster[index]
-			if profile.slot == "start" then
-				local race = wp13_palette.races[profile.race]
-				if type(race) ~= "table" or type(race.ground) ~= "string" then
-					fail("start town ground missing: " .. profile.key)
-				end
-				start_grounds[profile.anchor_id] = {
-					ground = SURFACE_TWIN[race.ground] or race.ground}
-			end
-		end
-	end
+	local r7_settlement_module = assembly.settlement
 	local r7_successor_factory = dofile(wp40_directory .. "/r7_successor.lua")
 	local r7_zone_overlay_factory = dofile(wp40_directory .. "/r7_zone_overlay.lua")
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
@@ -246,59 +193,22 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- 100,000-cell buffer. Emerge builds only the starts and the city edge
 	-- overlays here; every other blueprint's preparation comes from main's
 	-- handover and is checked when its cells are first rebuilt.
-	--
-	-- THE SEED IS VALIDATED HERE ONCE. The capital layouts are a function of it
-	-- (main plans them from it; emerge takes main's text), and `build` refuses
-	-- to run if its own validation answers anything else, so both environments
-	-- agree about where a capital stands exactly when they agree about
-	-- `full_seed`, the check `r7_mapgen.lua` makes.
-	local construction_seed = validate_live_scalars()
 	local blueprint_options = {full_seed = construction_seed,
 		raw_sha256 = raw_sha256}
 
-	-- THE CAPITAL LAYOUTS (Round 22 capital planner, plan D60, D69-D73).
-	-- Every capital's plots are prepared first (identity and bounds do not
-	-- depend on where a plot stands); main then plans the six capitals on a
-	-- height session of its own, after height, water and roads, and both
+	-- THE CAPITAL LAYOUTS (Round 22 capital planner, plan D60, D69-D73):
+	-- main plans the six capitals on a height session of its own, after
+	-- height, water and roads (none when the text came in), and both
 	-- environments build the capitals from the parsed payload text.
-	local capitals = dofile(wp40_directory .. "/r7_capitals.lua")(wp40_directory)
-	local capital_profiles, capital_kits, capital_plots = {}, {}, {}
-	for index = 1, #r7_settlement_module.roster do
-		local profile = r7_settlement_module.roster[index]
-		if profile.slot == "capital" then
-			capital_profiles[#capital_profiles + 1] = profile
-			local kit = capitals.source.kit(profile.key)
-			capital_kits[profile.key] = kit
-			if capital_layout_text == nil then
-				for _, plot in ipairs(kit.plots) do
-					capital_plots[profile.key .. "_" .. plot.id] =
-						r7_settlement_module.prepare_plot(profile, plot, raw_sha256)
-				end
-			end
-		end
-	end
-	-- CPU seconds of main's layout builds (nil when the texts came in: emerge,
-	-- or main on a world-folder cache hit), for the cache's log line.
-	local capital_stats, layout_seconds
-	if capital_layout_text == nil then
-		local planning_horizontal = horizontal_factory({source = source,
-			schemas = schemas, canonical = canonical, deterministic = deterministic,
-			raw_sha256 = raw_sha256}).new(construction_seed)
-		local planning_session = height_factory({source = source,
-			canonical = canonical, deterministic = deterministic,
-			raw_sha256 = raw_sha256, horizontal_session = planning_horizontal,
-			terrain_field = terrain_field}).new_runtime(construction_seed)
-		-- The canal rows plan_all returns are not needed here: it already
-		-- hands them to the planning session, and the rows below are
-		-- re-derived from the layout text like in emerge.
-		local _
-		capital_layout_text, _, capital_stats = capitals.plan_all({
-			seed = construction_seed, session = planning_session,
-			roads = roads.module, anchors = source.anchors,
-			profiles = capital_profiles, kits = capital_kits,
-			prepared = capital_plots, authored = water.authored,
-			simplex = terrain_field.simplex, proxy = terrain_data.water.LAKE_PROXY})
-		reuse.session, reuse.seed = planning_session, construction_seed
+	world.capitals()
+	capital_layout_text = world.capital_layout_text
+	local capitals, capital_kits = assembly.capitals, assembly.capital_kits
+	local capital_layouts, capital_plots = world.capital_layouts, world.capital_plots
+	-- Main's planner statistics and the CPU seconds of its layout builds, for
+	-- the cache's log line (nil when the texts came in: emerge, or main on a
+	-- world-folder cache hit).
+	local capital_stats, layout_seconds = world.capital_stats, nil
+	if capital_stats then
 		local capitals_seconds = 0
 		for _, st in ipairs(capital_stats) do capitals_seconds = capitals_seconds + st.seconds end
 		local water_stats = water.cache and water.cache.stats
@@ -306,38 +216,6 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		layout_seconds = {water = water_stats and water_stats.t_total or 0,
 			roads = road_stats and road_stats.t_total or 0, capitals = capitals_seconds}
 	end
-	local capital_layouts = capitals.parse(capital_layout_text)
-	-- the protected cities (plan D76), each with its civic lake if it has one
-	local civic_lakes = {}
-	for _, profile in ipairs(capital_profiles) do
-		local lake_id = capital_kits[profile.key].cfg.lake
-		if lake_id then
-			for _, row in ipairs(water.authored) do
-				if row.id == lake_id then civic_lakes[profile.anchor_id] = row end
-			end
-			if not civic_lakes[profile.anchor_id] then
-				fail("civic lake missing: " .. lake_id)
-			end
-		end
-	end
-	capital_protection.install(protection_holder, capital_layouts, civic_lakes)
-	local all_squares = {}
-	for _, profile in ipairs(capital_profiles) do
-		local entry = capital_layouts[profile.anchor_id]
-		if not entry then fail("capital layout missing: " .. profile.key) end
-		if entry.layout.anchor.x ~= profile.x or entry.layout.anchor.z ~= profile.z then
-			fail("capital layout anchor differs: " .. profile.key)
-		end
-		if entry.layout.canal then
-			water.authored[#water.authored + 1] = capitals.canal_row(
-				"canal_" .. profile.key, entry.layout.anchor, entry.layout.canal,
-				terrain_data.water.LAKE_PROXY)
-		end
-		for _, q in ipairs(capitals.squares(entry.layout)) do
-			all_squares[#all_squares + 1] = q
-		end
-	end
-	if road_layout_text ~= nil then roads.squares = all_squares end
 	local settlements = {}
 	local settlement_palette, settlement_seen = {}, {}
 	local settlement_keys, settlement_order = {}, {}
@@ -736,7 +614,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	end
 	-- The protected cities (plan D76): {anchor id -> capital_protection shape}.
 	function module.capital_protection()
-		return protection_holder.shapes
+		return world.protection_holder.shapes
 	end
 	-- Main's layout build CPU seconds {water, roads, capitals}; nil when the
 	-- layout texts were handed in.

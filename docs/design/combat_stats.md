@@ -256,7 +256,8 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is
   punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
-  damage** (nor the dragon's wrath); other sources (hits, suffocation, authored ground effects such as
+  damage** (nor the dragon's wrath, nor the max-HP clamp of an expiring HP
+  buff or a gear swap, which is no damage at all); other sources (hits, suffocation, authored ground effects such as
   dragon scorch) still consume it. Both shares round up and deal at least 1 HP
   for any positive pool.
 - **Mobs** (Round 28 ruling 6): environmental damage to a Grudgelands mob is a
@@ -557,6 +558,18 @@ Normal tier at level L:
   hit, because without the hit pause the next AI step overwrites the
   velocity. Implementation: `grug_mobs/separation.lua`, called from
   `mobs/api.lua` `on_punch`.
+- **Knockback on players** (Round 37 ruling 2.1.3): only **player melee in
+  PvP** and **mob hits** push a player, with the engine's own push (builtin
+  `knockback.lua`, off the hit's raw damage). Player melee pushes only as an
+  accepted swing (Strike or a melee swing skill) on a player the attacker may
+  harm (both flagged, enemy factions). A refused or suppressed punch pushes
+  nothing: an ally, an unflagged player, a native tool or fist click. Casts,
+  arrows and every other ability damage push nothing, in PvP too, and so do
+  mob projectiles (arrows, breath, hex bottles); a mob's melee and its area
+  hits push. Riders are never pushed, nor is a player hit by the dragon's
+  slam (it has its own arena push). Implementation: one
+  `core.calculate_knockback` override, `grug_core.knockback_pushes`
+  (`grug_core/combat.lua`).
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing (`grug_core/init.lua:70`). The visible overlap is

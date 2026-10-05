@@ -197,20 +197,28 @@ local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 -- join), and a writer that remembered one and forgot the other would leave a
 -- swapped weapon dealing the old damage until relog.
 --
--- `listname` and `reason` are optional and pass through to hook consumers.
--- `reason = "durability_metadata"` identifies a same-stack wear/identity write;
--- consumers must still treat a broken-state transition as a concrete change.
+-- `listname` and `reason` are optional and pass through to hook consumers
 -- (see grug_core.register_on_equipment_change): the one equipment list that
--- changed, or nil for "unknown / more than one". The CACHES are always dropped
--- wholesale regardless -- two table writes are cheaper than a caller who names
--- one list and quietly wrote two.
+-- changed, or nil for "unknown / more than one". The CACHES are dropped
+-- wholesale -- two table writes are cheaper than a caller who names one list
+-- and quietly wrote two.
+--
+-- The one exception is `reason = "durability_metadata"` (Round 37): a
+-- same-stack wear or identity write by grug_repair on the named list, never a
+-- break (the breaking use is a full change). The armour total depends on the
+-- broken state only, so it stays; only that slot's cached copy is stale.
+-- Consumers that do not read wear or the projectile identity return on it.
 function grug_inventory.equipment_changed(player, listname, reason)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
 	local name = player:get_player_name()
-	armor_cache[name] = nil
-	slot_cache[name] = nil
+	if reason == "durability_metadata" and listname then
+		if slot_cache[name] then slot_cache[name][listname] = nil end
+	else
+		armor_cache[name] = nil
+		slot_cache[name] = nil
+	end
 	grug_core.notify_equipment_change(player, listname, reason)
 end
 
@@ -1065,9 +1073,12 @@ grug_classes.register_on_class_chosen(arm_weapon_hint)
 -- A weapon carried on the hotbar is storage, not the combat authority. Watch
 -- the player's ordinary use control without consuming it or changing any item
 -- callback, damage path or equip state, and explain the intended route once
--- per press with a small anti-spam interval.
+-- per press with a small anti-spam interval. The poll reads the control bits
+-- (an integer) and the wielded item only on a fresh press (Round 37, audit
+-- PLY-16).
 local raw_weapon_controls = {}
 local RAW_WEAPON_HINT_INTERVAL = 3
+local DIG_BIT = 128 -- get_player_control_bits: bit 7 is dig
 local raw_weapon_elapsed = 0
 
 core.register_globalstep(function(dtime)
@@ -1077,10 +1088,14 @@ core.register_globalstep(function(dtime)
 	local now = grug_core.mono_time()
 	for _, player in ipairs(core.get_connected_players()) do
 		local name = player:get_player_name()
-		local row = raw_weapon_controls[name] or {pressed = false, warned = -1000}
-		local pressed = player:get_player_control().dig == true
-		local wielded = player:get_wielded_item()
-		if pressed and not row.pressed and not wielded:is_empty() and
+		local row = raw_weapon_controls[name]
+		if not row then
+			row = {pressed = false, warned = -1000}
+			raw_weapon_controls[name] = row
+		end
+		local pressed = bit.band(player:get_player_control_bits(), DIG_BIT) ~= 0
+		local wielded = pressed and not row.pressed and player:get_wielded_item()
+		if wielded and not wielded:is_empty() and
 				core.get_item_group(wielded:get_name(), "grug_equip_weapon") > 0 and
 				now - row.warned >= RAW_WEAPON_HINT_INTERVAL then
 			-- One short message-feed line, never chat.
@@ -1090,7 +1105,6 @@ core.register_globalstep(function(dtime)
 			row.warned = now
 		end
 		row.pressed = pressed
-		raw_weapon_controls[name] = row
 	end
 end)
 

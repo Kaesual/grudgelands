@@ -149,12 +149,19 @@ chase to one war cry.
   wind-up, a King's and a General's signature attack play the humanoid
   special-attack cue; **every other elite's or rare's wind-up is silent**
   (user). The wind-up cue is the family's `telegraph` entry.
+- **The Rift Spawn** (Round 37): its 2 s fuse plays the lava-cooling hiss
+  (one of three variants) once when the fuse starts, heard to 10 nodes, and
+  again if a reset fuse starts anew; the burst plays an explosion once where
+  it bursts, heard to 32 nodes. Both are `grug_sounds` events (`rift_fuse`
+  through mobs_redo's fuse sound, `rift_burst` in the burst itself).
 
 ### 3.5 Bosses
 
 Dragons: roar (war cry and enrage), growl on damage, death, fire and frost
 breath, the arena lightning, the dragon's wrath (personal, to each player it
-hits) and the wind-up growl at most every 10 s. Wyrmglass thin ice: one
+hits) and the wind-up growl at most every 10 s; the return warning (Round
+37): a gong at the lair once, a minute before a slain dragon returns, heard
+as far as its chat line (160 nodes). Wyrmglass thin ice: one
 breaking sound per break, at most one a second while a run keeps breaking ice.
 Kings and the General: the signature attack. The Kraken has its own voice
 family.

@@ -41,34 +41,14 @@ local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 _G.core = _G.core or {}
 local function build(seed)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
-	local tdata = dofile(dir .. "/terrain_data.lua")
-	local source = dofile(dir .. "/source/simple_map.lua")
-	local simple_map_factory = dofile(dir .. "/simple_map.lua")(dofile(dir .. "/zone_field.lua"))
-	-- the capitals' protected cities stood in by squares (as r25 world.lua)
-	local shapes = {}
-	for _, anchor in ipairs(source.anchors) do
-		if anchor.slot_id == "capital" then
-			local ax, az = anchor.position.x, anchor.position.z
-			shapes[anchor.id] = {member = function(x, z)
-				return math.abs(x - ax) <= 120 and math.abs(z - az) <= 120
-			end}
-		end
-	end
-	local function horizontal_factory(deps)
-		local bound = {}
-		for k, v in pairs(deps) do bound[k] = v end
-		bound.capital_protection = {shapes = shapes}
-		return simple_map_factory(bound)
-	end
-	local water = {module = dofile(dir .. "/water_layout.lua")(tdata.water),
-		authored = dofile(dir .. "/water_authored.lua")(tdata.water), plot_rects = {}}
-	local hf = dofile(dir .. "/height.lua")
+	-- the shared world assembly, the capitals' protected cities stood in by
+	-- squares (as r25 world.lua), no roads
+	local A = dofile(dir .. "/world_assembly.lua")(dir, common.new_sha256())
+	local W = A.world(seed, nil, {roads = false, protection = A.square_cities(120)})
 	local held = {}
-	local function height_factory(deps)
-		local bound = {}
-		for k, v in pairs(deps) do bound[k] = v end
-		bound.water = water
-		local module = hf(bound)
+	local height_factory = W.height_factory
+	W.height_factory = function(deps)
+		local module = height_factory(deps)
 		local new_runtime = module.new_runtime
 		module.new_runtime = function(s)
 			local session = new_runtime(s)
@@ -78,15 +58,8 @@ local function build(seed)
 		module.new = module.new_runtime
 		return module
 	end
-	local zones = dofile(dir .. "/zones.lua")({source = source,
-		schemas = dofile(dir .. "/schemas.lua"), canonical = dofile(dir .. "/canonical.lua"),
-		deterministic = dofile(dir .. "/deterministic.lua"),
-		index128 = dofile(dir .. "/index128.lua"), horizontal_factory = horizontal_factory,
-		height_factory = height_factory,
-		terrain_field = dofile(dir .. "/terrain_field.lua")(tdata),
-		raw_sha256 = common.new_sha256()})
-	local session, planner_source = zones.new_with_planner_source_runtime(seed, 1)
-	return session, planner_source, held.height, source
+	local session, planner_source = W.zones().new_with_planner_source_runtime(seed, 1)
+	return session, planner_source, held.height, A.source
 end
 
 -- road_writer.lua under a stub engine: content ids are the node names.

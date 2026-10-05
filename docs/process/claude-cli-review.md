@@ -105,7 +105,7 @@ Before any long acceptance runner that will eventually promote a file into a
 repository or sibling worktree, use the **same command-runner sandbox and
 permission profile as the real run** to create, close and remove a real
 `mktemp` file in the exact target directory. This probe must happen before the
-long LuaJIT work and before a final-only PUC process. Writability of the main
+long LuaJIT work. Writability of the main
 repository, `/tmp` or another worktree does not prove that the target worktree
 is writable; a failed probe stops the run immediately.
 
@@ -127,8 +127,5 @@ SHA-256 of an uncommitted reviewed diff or immutable artifact when applicable,
 prompt SHA-256, JSONL SHA-256, Claude CLI version, SHA-256 of the captured
 `cli-help.txt`, exact model and effort, independence statement, verdict, and
 counts for every severity. Capturing the version and help is a coordinator
-preflight and does not require the read-only reviewer to have shell access. The
-calibration fields required by
-[agent-model-policy.md](agent-model-policy.md) live in the package record or
-its documented commit-message fallback. Then remove only the exact temporary
-directories created for the review.
+preflight and does not require the read-only reviewer to have shell access.
+Then remove only the exact temporary directories created for the review.

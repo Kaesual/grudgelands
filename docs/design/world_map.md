@@ -15,10 +15,11 @@ Decided 2026-09-21; Round 14 user Go.
   sends it to clients as dynamic media. Markers stay separate as before.
   The base shows land/water, zone areas in race-region colours with borders
   and a hillshade (stronger relief since Round 27, below); roads join it in
-  Phase 4. Lakes show as water pixels; rivers (3–25 nodes wide, below one
-  map pixel at normal quality) are stroked from the water layout's
-  centrelines onto land, one pixel wide and three pixels from 11 nodes of
-  channel width (Phase 5). The cache key includes the
+  Phase 4. Lakes show as water pixels; rivers (about 7.5–30 nodes of water
+  width, `terrain_data.lua`) are stroked from the water layout's centrelines
+  onto land at about their water width at the image scale, at least three
+  pixels wide from 18 nodes (`grug_map/base.lua` `RIVER_WIDE`; Map quality
+  and relief below). The cache key includes the
   water layout, so a changed layout re-renders the base. The relief samples
   terrain height on one fixed grid per map quality on every server (D29: no
   time budget, hardware never changes the image); the render is paid once per
@@ -38,11 +39,11 @@ Decided 2026-09-21; Round 14 user Go.
 
 Decided 2026-09-21: viewer position is a gold directional triangle; online
 party members use cyan directional triangles, with names and hover tooltips.
-Only positions within the selected view appear; offline members have no live
-map position. The viewer draws above other markers. Refresh at most twice per
-second while the atlas is open, only for changed visible state. Retain view,
-selection and stable click identity across updates while the selected marker
-remains visible; clear selection when it disappears or leaves the current view. Closing the atlas resets
+Offline members have no live map position. The viewer draws above other
+markers. Refresh at most every 2 s while the atlas is open, only for changed
+visible state (Atlas navigation below). Retain zoom, scroll, selection and
+stable click identity across updates while the selected marker remains;
+clear selection when it disappears. Closing the atlas resets
 the inventory page to Character. A later explicit Map click starts a new live
 session; closed maps receive no polling or formspec refreshes.
 
@@ -127,7 +128,8 @@ open, the arrows and markers are brought up to date at most every 2 seconds
 (Round 30 ruling, perf review #3), with current scroll values: a cheap
 signature (zoom, selection, location label, minimap switch, each arrow's place
 on a 0.02-unit grid and heading frame, the quest markers' version, which
-location is the home, the discovered waystones) is compared, and the form is built
+location is the home, the discovered waystones, the viewer's faction) is
+compared, and the form is built
 and sent only when it changed. Since Round 32 (perf review R1) the poll runs
 every 0.1 s and reads at most 8 signatures and builds at most 2 forms per pass;
 viewers that are due wait longest-first, so each keeps its own phase and many
@@ -257,18 +259,25 @@ drawn from the base image above. The gliding version (approved in playtest,
   the bezel pointing toward them (16 directions) when they are outside it.
   Rim arrows fill 85 % of the bezel's band and are drawn above the "N".
 - **Updates:** the map, markers and party members are checked every server
-  step. Static markers are asked from their providers on joining, whenever
-  the quest markers may have changed (`grug_quests.markers_changed`: a quest
-  change, held objective items as the quest tracker sees them every 0.5 s,
-  a level change) and every 5 s (each player in their own phase; a
-  repeatable's cooldown ending shows then); party member
-  names are read again only on a party change and that 5 s refresh. The
-  window size and the location line are read every 0.5 s (Round 30, perf
-  review #12); a window change then resends every element's position. Only
-  changed HUD values are sent; a standing player costs no packets. The quest
-  givers' states come from one `grug_quests.marker_states` call per player
-  (one decoded quest state for all givers, memoized for a second or until
-  `markers_changed`).
+  step, and placed again only when something the player sees changed
+  (Round 37): the map and its markers when the map moves by a whole screen
+  pixel, the cell, the markers or the window change; the party arrows then
+  or when a member comes, goes, moves or turns to another of the 16 heading
+  frames. A player standing still with a still party costs one position read
+  per step and sends nothing. Static markers are asked from their providers
+  on joining, whenever the quest markers may have changed
+  (`grug_quests.markers_changed`: a quest change, held objective items as
+  the quest tracker sees them every 0.5 s, a level change), and at a check
+  every 5 s (each player in their own phase) only when their key changed:
+  the quest markers' version (a repeatable's cooldown ending shows then),
+  the home, the discovered waystones or the faction. Party member names are
+  read again only on a party change and that 5 s check. The window size and
+  the location line are read every 0.5 s (Round 30, perf review #12); a
+  window change then resends every element's position. Only changed HUD
+  values are sent. The quest givers' states come from one
+  `grug_quests.marker_states` call per player (one decoded quest state for
+  all givers, memoized until the quest state, held objective items, the
+  level or the end of a repeatable's cooldown change it).
 - **Cost** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
   (LuaJIT, no engine; one player, 0.09 s server steps, about ten markers in
   the window, two party members moving along) measures about 18 HUD packets

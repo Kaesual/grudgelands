@@ -22,6 +22,17 @@ local function settlement_factory()
 		error(code .. ": " .. message, 0)
 	end
 
+	-- The error handler of the transaction wrapper below: a failure keeps its
+	-- stack (once, however deeply the wrappers nest), so a seed-fleet run and
+	-- a server log both show where it failed.
+	local function with_traceback(message)
+		if type(message) ~= "string" or message:find("\nstack traceback:", 1, true) or
+				type(debug) ~= "table" or type(debug.traceback) ~= "function" then
+			return message
+		end
+		return debug.traceback(message, 2)
+	end
+
 	local function integer(value, label, minimum, maximum, code)
 		if type(value) ~= "number" or value ~= value or value == math.huge or
 				value == -math.huge or value % 1 ~= 0 or math.abs(value) > MAX_SAFE or
@@ -3800,8 +3811,9 @@ local function settlement_factory()
 			end
 			if evidence_only then fail("fail_status", "evidence fixture has no VM writer") end
 			allocator:enter_hotpath("r6_settlement_apply")
-			local ok, result = pcall(apply_impl, vm, minp, maxp, plan, generation,
-				call_mode)
+			local ok, result = xpcall(function()
+				return apply_impl(vm, minp, maxp, plan, generation, call_mode)
+			end, with_traceback)
 			allocator:leave_hotpath("r6_settlement_apply")
 			if not ok then error(result, 0) end
 			return result

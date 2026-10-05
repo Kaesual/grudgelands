@@ -713,7 +713,7 @@ grug_abilities.CAST_SOUNDS = {
 	-- Warrior.
 	charge = "cast_charge", taunt = "cast_taunt", hold_ground = "cast_guard",
 	-- Mage: frost, the arcane blink, fire.
-	ice_nova = "cast_frost_nova", glacial_ward = "cast_frost_ward",
+	ice_nova = "cast_ice_nova", glacial_ward = "cast_frost_ward",
 	blink = "silent", cinderfall = "cast_cinderfall",
 	-- Priest: holy, healing, the shield, shadow.
 	smite = "cast_holy", heal = "cast_heal", mend = "cast_heal",
@@ -1921,6 +1921,22 @@ end
 -- The full pass costs one walk of `main` with a token compare per ability
 -- stack, and writes only what actually changed.
 grug_core.register_on_equipment_change(function(player, listname, reason)
+	if reason == "durability_metadata" then
+		-- Pure wear or a projectile identity on the same stack (Round 37): no
+		-- pool, description or skin reads it, and a break is a full change.
+		-- Only the swing clock's comparison snapshot follows the melee stack,
+		-- so the next swing does not take the worn copy for a weapon swap.
+		local entry = swing_progress[player:get_player_name()]
+		if entry and (listname == nil or
+				listname == grug_inventory.melee_list(player)) then
+			local weapon = grug_core.get_melee_weapon(player)
+			if weapon and not entry.weapon:is_empty() and
+					entry.weapon:get_name() == weapon:get_name() then
+				entry.weapon = ItemStack(weapon)
+			end
+		end
+		return
+	end
 	clamp_mana(player)
 	hud_update(player)
 	-- Every equipment list may carry rolled attributes; weapon changes also
@@ -1941,14 +1957,7 @@ grug_core.register_on_equipment_change(function(player, listname, reason)
 		local name = player:get_player_name()
 		local entry = swing_progress[name]
 		local weapon = grug_core.get_melee_weapon(player) or ItemStack("")
-		if reason == "durability_metadata" and entry and
-				not entry.weapon:is_empty() and not weapon:is_empty() and
-				entry.weapon:get_name() == weapon:get_name() then
-			-- Wear, its integer remainder and the persistent projectile identity
-			-- belong to this same concrete equipped stack. Refresh the comparison
-			-- snapshot without disturbing due-time late carry or the input latch.
-			entry.weapon = ItemStack(weapon)
-		elseif (entry and not entry.weapon:equals(weapon))
+		if (entry and not entry.weapon:equals(weapon))
 				or (not entry and listname == melee_list) then
 			local _, fpi = grug_abilities.swing_stats(player, weapon)
 			grug_core.reset_accumulated_melee(player)
@@ -2213,11 +2222,11 @@ end)
 -- before ours could matter); hostile pairs are ours. Neither vetoes the
 -- other — this one never returns true outside the hostile path.
 --
--- Knockback is deliberately not fed our damage (MVP): builtin's own
--- on_punchplayer (builtin/game/knockback.lua:25-48) applies knockback
--- velocity to punched players off the ENGINE's `damage` argument — for a
--- handled punch that is the pre-pipeline hitparams.hp the callbacks
--- receive. Routing OUR damage into core.calculate_knockback is deferred.
+-- Knockback: builtin's own on_punchplayer (builtin/game/knockback.lua:25-48)
+-- runs before this one and pushes off the ENGINE's `damage` argument (the
+-- pre-pipeline hitparams.hp). Whether a punch pushes at all is decided there,
+-- by grug_core.knockback_pushes (Round 37): only an authoritative swing on a
+-- player this hitter may harm, never a refused or suppressed packet.
 --
 -- enable_pvp = false means this callback never fires at all: PlayerSAO::punch
 -- returns before the script callback when PvP is off (player_sao.cpp:463-470),
@@ -2256,7 +2265,6 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		-- let a synchronous same-attacker punch become a second damage/proc path.
 		return true
 	end
-	local selected = selected_swing_def(hitter)
 	if not authoritative_token then
 		-- The handler sets the enemy/ally lock as appropriate. A direct hostile
 		-- packet sets one latch for the next throttled attack pass even after release;
@@ -2309,7 +2317,11 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 
 	-- Build the full-swing equivalent first. Ability swings are always one
 	-- full authoritative interval; native tools/fists retain tflp scaling.
-	local authoritative = authoritative_token ~= nil and selected ~= nil
+	-- The claimed token alone makes the swing authoritative (Round 37,
+	-- CMB-01): the Strike fallback with Loose or a cast skill wielded is the
+	-- same transaction as a wielded swing skill (its melee_damage_add, weapon
+	-- wear and trinket proc), whatever the hand holds.
+	local authoritative = authoritative_token ~= nil
 	if not authoritative then
 		-- Preserve the pre-existing ordinary tool/fist PvP acquisition and combat
 		-- marking semantics. Ability swings already acquired on their input packet

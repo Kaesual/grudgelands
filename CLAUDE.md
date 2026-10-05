@@ -9,4 +9,6 @@ defaults: the user decides per session which model coordinates, implements
 and reviews (policy "Day-to-day routing rule", 2026-09-14). Independent
 review of non-trivial changes remains mandatory regardless of model.
 
-Project goals and current status: **[ROADMAP.md](ROADMAP.md)**.
+How a round runs: **[round workflow](docs/process/round-workflow.md)**.
+Current status: **[docs/STATUS.md](docs/STATUS.md)**; goals:
+**[ROADMAP.md](ROADMAP.md)**.

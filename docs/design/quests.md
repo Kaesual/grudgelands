@@ -315,7 +315,8 @@ instead of 2.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
     counts the seconds ("Light the signal fire: 2/3 s"); letting go of the
     button, stepping more than 5 nodes away or the object vanishing stops it
-    ("stopped.", "too far away."), any damage interrupts it ("interrupted.").
+    ("stopped.", "too far away."), any damage interrupts it ("interrupted.");
+    a lower maximum HP from an expiring buff or a gear swap is no damage.
     A finished hold credits that player only, every active quest of theirs
     with the same place, object and label at once, and hides the object from
     them. Labels: "Light the signal fire at Saltgate Remnant" in the

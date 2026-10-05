@@ -487,8 +487,9 @@ end)
 -- because a mutual optional_depends is a dependency cycle. AGENTS.md allows
 -- exactly one page-refresh consumer, so the fix is the order, not a second
 -- refresh.
-grug_core.register_on_equipment_change(function(player, listname)
-	if listname and IRRELEVANT_LIST[listname] then
+grug_core.register_on_equipment_change(function(player, listname, reason)
+	-- Pure wear does not change the look; the break that does is a full change.
+	if (listname and IRRELEVANT_LIST[listname]) or reason == "durability_metadata" then
 		return
 	end
 	grug_visuals.apply(player)

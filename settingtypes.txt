@@ -10,31 +10,29 @@
 
 [Atmosphere]
 
-#    Master switch for the server-side atmosphere layer: dynamic shadows,
-#    bloom, exposure and saturation sent per player with player:set_lighting.
-#    With this off, grug_core.set_atmosphere does nothing and joining players
-#    are left at the engine's own lighting defaults — i.e. the look a player
-#    gets without the game asking for anything. Turn it off to compare, or if
-#    a client's post-processing pipeline misbehaves.
-#    Render settings themselves stay the player's own (Settings > Graphics);
-#    this switch only decides whether the game asks for anything at all.
+#    The game's lighting presets: dynamic shadows, bloom, exposure and
+#    saturation, sent to every player. Turn this off to keep the engine's own
+#    lighting, for example to compare, or when a client's post-processing
+#    misbehaves. Each player's render settings (Settings > Graphics) still
+#    decide what their client draws; this switch only decides whether the
+#    game asks for anything at all.
 grug_atmosphere_enabled (Enable Grudgelands atmosphere presets) bool true
 
-#    Zone-driven moods on top of the preset layer above: one sky, fog and
-#    lighting mood per race region (dwarf, human, elf, undead, orc, troll),
-#    plus underground, open ocean, the shared Battlegrounds and the two
-#    dragon islands. A globalstep re-checks each player's zone about every
-#    two seconds and sends one lighting, sky and cloud packet only when the
-#    mood actually changes; a standing player costs nothing.
-#    With this off the moods stay available as manual /atmosphere presets,
-#    but nobody is moved between them automatically.
-#    Requires the master switch above.
+#    The sky, fog and light follow the region a player is in: one mood for
+#    each people's lands (dwarf, human, elf, undead, orc, troll), plus
+#    underground, the open ocean, the shared Battlegrounds and the two dragon
+#    islands. The game looks at each player's region about every two seconds
+#    and sends a change only when the mood changes.
+#    With this off, admins can still pick a mood with /atmosphere, but nobody
+#    is moved between them automatically.
+#    Needs the setting above.
 grug_atmosphere_zones (Drive the atmosphere from the player's zone) bool true
 
 [Nameplates]
 
-#    Global category colors used by observer-managed nametags. Each value is
-#    an RGBA color; the last byte controls opacity. These are startup settings.
+#    Colours of the name tags above creatures, guards, NPCs and players, one
+#    pair per kind. Each value is an RGBA colour; the last byte sets the
+#    opacity. Read when the server starts; restart after a change.
 grug_nametag_aggressive_foreground (Aggressive nametag foreground) string #ff4b4b
 grug_nametag_aggressive_background (Aggressive nametag background) string #00000040
 grug_nametag_neutral_foreground (Neutral nametag foreground) string #ffd447
@@ -48,22 +46,27 @@ grug_nametag_player_background (Player nametag background) string #00000040
 grug_nametag_critter_foreground (Critter nametag foreground) string #ffffff
 grug_nametag_critter_background (Critter nametag background) string #00000040
 
-#    Show a small green sprite bar above injured combat mobs and guards. The
-#    existing per-viewer nametag range and hysteresis also control this bar.
+#    Show a small green health bar above injured aggressive and neutral
+#    creatures and guards. It appears and disappears at the same distance as
+#    their name tags.
 grug_injured_mob_hp_bars (Show injured mob health bars) bool true
 
 [World preparation]
 
-#    Prepare the bounded world surface before entry instead of only the six
-#    starts. Full progress counts finished horizontal tiles; mountains can take
-#    longer. Deep mining, ocean depths and arbitrary flight are not prepared. Read once on the first fresh-world boot; changing this later does
-#    not change that world's mode. Normal shutdown saves progress for restart.
+#    Prepare the whole world before anyone can enter, instead of only the six
+#    starting areas. This takes several hours. The progress counts finished
+#    map tiles; mountains take longer. Afterwards only deep mining, building
+#    or flying very high up and places outside the world's bounds are still
+#    generated when someone gets there.
+#    Read once, at the first start of a new world: changing it later does not
+#    change that world. A normal shutdown keeps the progress for the next
+#    start.
 grug_prepare_full_world (Prepare full world before entry) bool false
 
-#    Development diagnostic: at every server start, walk the ground under each
-#    placed capital plot on the world's final terrain and log a warning where a
-#    plot no longer stands on it (water, a fall or a rise beyond its limits).
-#    It changes nothing in the world and costs a few seconds of start time.
+#    (Developers) At every server start, check the ground under each building
+#    plot of the capitals and log a warning where a plot no longer stands on
+#    it (water, a drop or a rise beyond its limits). It changes nothing in the
+#    world and adds a few seconds to the start.
 grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool false
 
 [World map]
@@ -78,9 +81,10 @@ grug_map_quality (World map quality) enum normal normal,high
 
 [Combat]
 
-# Multiplier for all non-player combat attack damage, including fixed DoTs,
-# auras and boss ground attacks. Player/environmental damage is unchanged.
-# Loaded at startup; restart after changing. 1.0 restores base attack damage.
+#    Multiplier for all damage from creatures and NPCs, including damage over
+#    time, auras and boss ground attacks. Damage from players and from the
+#    environment stays the same. Read when the server starts; restart after a
+#    change. 1.0 is the base damage.
 grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10
 
 [World life]
@@ -88,6 +92,6 @@ grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10
 #    Trees and bushes grow back: around players, where the natural tree density
 #    of a biome has been cut down, the game plants saplings of the species that
 #    grow there, never within about 10 nodes of anything built or of farm soil.
-#    The saplings then grow through their ordinary growth timers. Grass, ferns
+#    The saplings then grow like any other sapling. Grass, ferns
 #    and wild resource plants renew regardless of this switch.
 grug_tree_regrowth (Regrow trees from saplings) bool true

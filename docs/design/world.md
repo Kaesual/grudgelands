@@ -3,9 +3,10 @@
 Decided spec (2026-08-05/06; continent redesign 2026-08-06; named-zone
 redesign 2026-08-10; R6 camp quantity 2026-08-29), with later approved
 playtest revisions folded into the relevant sections. The current surface is
-the WP40 named-zone map. Structure delivery and outstanding content are tracked
-in BACKLOG WP13; the binding macro-map is in `world_zones.md`, the PvP rules
-in [pvp.md](pvp.md).
+the WP40 named-zone map. WP13 delivered the structure roster (Round 20 roster
+art, Round 36 decor pass; `settlements.md` "Round 20 authored regional
+places"); the binding macro-map is in `world_zones.md`, the PvP rules in
+[pvp.md](pvp.md).
 Planned travel, housing and depth mechanics below remain approved scope, not a
 claim that their work packages are complete.
 
@@ -93,7 +94,7 @@ faction front:
 | Central heartland | 21–30 | safe capital approaches and middle progression |
 | Frontier and Battlegrounds | 31–40 / 41–50 / 51–60 | contested war infrastructure and dangerous wildlife |
 | Offshore dragon islands | 60 | contested apex mining and world-boss destinations |
-| Capital city zones | no hostile ambient enemies | safe hubs; level-60 guards and important NPCs |
+| Capital zones | 20–30 | safe hubs; the capital city has no hostile ambient spawns, the rest of the zone carries a 20–30 spawn recipe ([spawn_regions.md](spawn_regions.md)); level-60 guards and important NPCs |
 
 No level-1–30 zone is contested. Every level-31–40 frontier zone and every
 higher ordinary zone is contested ground, which flags every player for PvP
@@ -156,8 +157,10 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   and POI boxes below, village, outpost and camp shells, ruins, tents, fences
   and battlefield dressing are generated once and may be changed under their
   zone's terrain rule. A start settlement needs no runtime pit or flood
-  detection: by construction of `world_zones.md` §7's 600×500 dry start core
-  (no planned water, forced cliff or ravine; gentle start grading only), an
+  detection: by construction (`world_zones.md` §7) the 152-node start town
+  lies in its zone, no natural river or lake comes within about 300 nodes
+  (Dawnmere's pond and Sunscar's waterholes are authored civic water), and
+  only gentle start grading applies, so an
   enclosed or flooded start cannot generate.
   - **Shape of a hard-protected world volume** (Round 24 ruling 30): its
     authored x/z footprint is exact and protection runs upward without limit
@@ -178,7 +181,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     falling nodes, terrain-changing mobs, machines and scripted effects cannot
     alter protected state; inside hard-protected world content no player
     permission exists, so every such path is suppressed or the affected nodes
-    are restored. There is no rollback system: protected volumes need none,
+    are restored. Guarded air that water flowed into is restored as an
+    invisible, air-like water barrier whose own flood callback refuses the
+    next flow, so the flow is not retried every liquid tick (Round 37).
+    Grass spreading onto dirt and moss on cobble stop in towns, capitals,
+    landmarks, villages, camps, POI cores and on roads (Round 37). There is
+    no rollback system: protected volumes need none,
     and destruction of the mutable layer deliberately persists.
   - **World-content registry**: every hard-protected non-capital anchor
     registers a stable id and final x/z extent rather than hard-coding a zone.
@@ -414,14 +422,19 @@ Each sits in its own central named city zone and is protected
 the wall line, the wall or palisade with its
 gatehouses and turrets, and a band at least 12 nodes beyond the edge's outermost
 structure (21 nodes from the wall line, 12–18 beyond gatehouses, turrets and
-wall faces) that carries no trees and no ground
-cover, so players see where the protection ends (Round 22, D76;
-`world_zones.md` §12). It runs upward without limit and downward through the
+wall faces) that carries no trees, so players see where the protection ends;
+beyond the edge's reach (9 nodes from the wall line) a seeded share of its
+columns grows the zone's one-node ground cover, rising from a third to all
+toward its outer edge (Round 22, D76; Round 36 W3; `world_zones.md` §12). It runs upward without limit and downward through the
 capital anchor's placement height − 100 (Round 24 ruling 30); below that the
 capital zone's ordinary territory rule applies, and the contested deep rule
 from y = −501.
 
-- A capital is a safe civic hub with **no hostile ambient enemies**.
+- A capital is a safe civic hub: its city has **no hostile ambient
+  spawns** (protected spawn surface, `biomes_mobs.md` §4.2). The rest of the
+  capital zone carries a 20–30 spawn recipe with night zombies and bandits, a
+  camp and a named leader, like every other zone (Round 28;
+  [zone_mobs.md](zone_mobs.md)).
 - All six capitals are walled (Round 23 ruling 2026-09-28, which walled
   Lethariel and Kezamba as well; `settlements.md`).
 - Its guards and important faction NPCs are level 60; the killable race king
@@ -466,8 +479,8 @@ Military outposts, road forts and war-front anchors are reserved by named
 zones. They watch roads and frontiers and make the zone's strategic role
 visible:
 
-- Roles: guard spawner/anchor, quest hub, graveyard/respawn point for the
-  own faction, protector of resource-rich mining sites (e.g. a dwarven
+- Roles: guard spawner/anchor, quest hub, protector of resource-rich
+  mining sites (e.g. a dwarven
   mining camp — resource site + conflict point in one). Such a site is
   **world content, not a purchasable claim**: it is guarded, never owned,
   and anyone permitted by the zone rule who fights past the garrison may mine
@@ -494,9 +507,7 @@ visible:
   the HP of his level, like the start zones' leaders (`grug_mobs.LEADER`;
   `grug_mobs/pvp_garrison.lua`).
 - Each named zone reserves its required outposts, patrols and special camps
-  explicitly. The old fixed minimum of 24 ring outposts is not a target
-  budget; the complete zone catalog must replace it with equivalent faction
-  coverage before any old anchor is removed.
+  explicitly (the authored anchor roster, `world_zones.md` §8).
 - **Ordinary guards attack enemy players and monsters, never arbitrary NPCs**
   (`attack_npcs = false`). Dedicated war-front soldiers are the scoped
   exception: their authored encounter anchors may target the opposing
@@ -519,9 +530,10 @@ visible:
   has a waystone (§6). A camp holds 4 (lower) or 5 (higher) guards of its
   race and band and its named captain, a leader of the band's top level, not
   an elite; a fortress 12 level-60 elite guards and its General's group.
-- War-front squads use fixed population caps, place-bound respawn slots and
-  fixed clash points. Their fights are ambient life only and do not capture a
-  zone or move the faction boundary in the MVP (`world_zones.md` §5).
+- War-front squads (WP42, after V1; no war-unit runtime exists) are to use
+  fixed population caps, place-bound respawn slots and fixed clash points.
+  Their fights are ambient life only and do not capture a zone or move the
+  faction boundary (`world_zones.md` §5, §16).
 - **Rare patrol mobs**: some areas have hard-to-kill rare mobs with
   limited/low spawn rates and special loot — a deliberate incentive for
   cross-faction raids (loot details: items/crafting design).
@@ -559,9 +571,8 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   range rolled per refill). Slots are independent: if 2 of 4 bodyguards
   die, exactly 2 refills queue up. The royal encounter is the explicit
   group-reset/group-respawn exception above. Intervals in force today:
-  bandit/mirefolk camps **30–60 s** per slot (Round 28 ruling 37,
-  biomes_mobs.md §4; the recipe camps of biomes_mobs.md §4.2 use the same
-  slot model without a node),
+  bandit/mirefolk camps **30–60 s** per slot (Round 28 ruling 37: the
+  recipe camps of biomes_mobs.md §4.2, the same slot model without a node),
   guard posts **180–360 s** — clearing an outpost buys a while of open
   road; a PvP fortress's guards keep that rhythm, a Battlegrounds camp's
   guards return after **100–140 s** and its captain after **270–330 s**
@@ -782,8 +793,9 @@ T6 is a destination as well as the last material band. Regular mobs remain
 capped at level 60; danger beyond the cap comes from the environment and the
 player-centric depth-arrival pulse in `biomes_mobs.md` §4.1, not level-80
 statistics. Flat connected lava lakes with an air dome and a usable shore are
-the authored environment example. Cheap `ore_type = "blob"` lava pockets may
-add ambience, but do not replace the lake pass. Pure chunk-local voxel work
+the authored environment example (planned, BACKLOG E3; no lava-lake pass
+exists yet). Cheap `ore_type = "blob"` lava pockets may add ambience, but do
+not replace the lake pass. Pure chunk-local voxel work
 belongs in the mapgen environment and uses a y-range fast path above the band.
 
 Deep mining pays in raw materials rather than a separate gear-drop layer. The
@@ -980,8 +992,8 @@ territory.
   regeneration and food healing (`grug_food.heal_multiplier`, instant and per
   tick); there is no natural HP regeneration (WP21 closed 2026-09-29), and
   rage decay is unaffected. The
-  human bonus is a latent hook (`grug_classes.get_xp_bonus`)
-  that activates when WP8's quests tag their XP with source="quest".
+  human +10 % applies to quest rewards: quest turn-ins pass source "quest"
+  to `grug_xp.add_xp`, which applies `grug_classes.get_xp_bonus`.
 - **The vendor perk, quantified** (decided 2026-08-07 in WP7 — the perk
   was named above but never given numbers):
   - **One race-exclusive vendor per race**, standing in that race's
@@ -998,16 +1010,18 @@ territory.
 - Universal base recipes and professions are never race-exclusive; there is
   no cultural finishing (removed in Round 33). Equipment remains tradeable
   and wearable by every race.
-- **No class restrictions per race in the MVP** (only 3 classes — locks
+- **No class restrictions per race in the MVP** (only four classes — locks
   would frustrate more than they flavor); revisit in Phase 2 with 7
   classes.
 - Small race villages in the named race zones (traders, flavor, later
-  race-specific job trainers) — content for WP13 after WP40 fixes their slots.
+  race-specific job trainers): the six villages of the WP13 roster
+  (`settlements.md` "Round 20 authored regional places").
 
 ## 8. Nature biomes (shared wilderness)
 
-The full biome/mob inventory lives in `biomes_mobs.md`; WP40 assigns that
-inventory to named-zone palettes without changing its cross-faction material
+The full biome/mob inventory lives in `biomes_mobs.md`; WP40 assigns its
+biomes to named-zone palettes and the zones' spawn recipes place its mobs
+([zone_mobs.md](zone_mobs.md)), without changing its cross-faction material
 symmetry.
 
 - Nature biomes are **unsettled** (no faction NPCs except passing
@@ -1041,9 +1055,11 @@ local compositions need not mirror.
 
 The 24 outpost anchors and 12 bandit camps are live, and since WP40 R7 they
 are no longer ring-derived: their positions come from the authored anchor
-layout (`grug_mobs/camps.lua`, `grug_core.outpost_at`). The delivered regional
-structure subset is six villages, six outposts and six bandit camps
-(`settlements.md`); BACKLOG WP13 tracks the remaining roster.
+layout (`grug_mobs/camps.lua`, `grug_core.outpost_at`). WP13 is delivered:
+the full regional roster (villages, outposts, camps, mines, clash sites,
+arenas, apex camps and rare pads) is in `settlements.md` "Round 20 authored
+regional places", the Round 31 PvP fortresses and camps in
+`world_zones.md` §16.
 
 Life measures (cheap on a voxel budget): named NPCs with one-liner barks,
 visible patrols, light/smoke details and a quest board per village. Ordinary

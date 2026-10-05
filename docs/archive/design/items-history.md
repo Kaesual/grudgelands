@@ -144,6 +144,116 @@ Key implementation patterns we adopt:
   colour overlay baked onto the armor texture. That is the visual
   treatment for our special variants (§6b.7).
 
+## 3.8 Vendor brackets before Round 33 (superseded)
+
+Archived from `items_crafting.md` §3.8 in Round 37 (October 2026 audit,
+DI-02). Since Round 33 vendors sell the T1 catalog only
+(`grug_traders/stock.lua`, `GEAR_BRACKET = 1`); the moving floor, the
+bracket tabs, the 13-item fixed floor, the hourly rotation and the 1-in-5
+Uncommon described below are no longer in the game. The living rule is
+[items_crafting.md §3.8](../../design/items_crafting.md#38-vendor-bracket-catalogs-decided-2026-08-07-shelf-since-round-33).
+Section references below point at the living document's numbering of that
+time.
+
+Revises the old "one floor at ilvl ≤ 5" model. The vendor floor rule
+stands — vendors sell the lowest tier of each category — but **the floor
+moves with the player** instead of freezing at the starter set.
+
+**Merged with the base craft ladder** (2026-08-07, §3.0.3). A bracket is
+a **material tier** (§3.0.1), and the items in it are the base items
+everybody can craft. Two consequences, and nothing else in this section
+changes:
+
+- **The items are material-named**, never bracket-named. The old
+  adjective naming — *Crude / Plain / Tempered / Reinforced / Superior /
+  Grand* over the six brackets — was replaced by the material the item is
+  actually made of: **metal items take the lead metal** of §3.0.1
+  (Bronze Sword, Iron Helm, Steel Chestplate, Silversteel Greaves,
+  Embersteel Sabatons, Abyssal Steel Greataxe), **cloth items take their
+  bolt grade** and **leather items their leather grade** (§3.4/§3.5) —
+  Patch Robe, Silkweave Cowl. The slot nouns are unchanged (Helm /
+  Chestplate / Greaves / Sabatons, Cowl / Robe / Leggings / Slippers),
+  and so are the generator, the prices, the ilvl anchors and the bracket
+  boundaries. **Shipped 2026-09-15** with WP13's round-2 merge, together
+  with the merge into `default`'s tool ladder; the exact ladder is §3.0.3's
+  table and `grug_gear.MATERIALS`.
+- **Selling a base item is not selling "the low tier of crafting".** It
+  is selling the same item a crafter starts from. What a vendor can never
+  sell is a **enchanted** item (§6b) — that is the whole
+  of the crafting advantage now, stated as a rule instead of as a number
+  comparison.
+
+- **Six catalogs, one per 10 levels**: 1–10, 11–20, 21–30, 31–40, 41–50,
+  51–60 — the same bands as the six material tiers. A player sees their
+  own bracket **and every bracket below** (tabs in the trade formspec),
+  so starter goods stay buyable and a new shelf opens every 10 levels — a
+  deliberate reward beat on a level curve that otherwise only pays out
+  talent points (progression.md §2). The bands are **1-based**: bracket 1
+  is levels 1–10, never 0–9.
+- **Binding strength rule**: *a bracket's gear is exactly what a normal
+  mob of that bracket drops — guaranteed, but expensive.* The floor, not
+  the ceiling. Item level per bracket **3 / 10 / 20 / 30 / 40 / 50**,
+  always **Common**, therefore always without enchants (§6.1).
+
+| Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
+|---|---|---|---|---|---|---|
+| Material tier | T1 | T2 | T3 | T4 | T5 | T6 |
+| ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
+| 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
+
+  **No gem base cost.** Ordinary crafted combat weapons, armor
+  pieces and offhands at every tier use only their universal material
+  recipe (bars, cloth, leather, wood). The former T4–T6 Cut-gem surcharge on
+  base equipment is retired (Round 10 ruling 7: "There is no additional high-tier
+  regional-gem surcharge on base equipment"). Gem demand comes from trinkets
+  (§3.6b/§6.2) and enchant inputs (§6b). Dropped/vendor gear
+  stays a usable floor.
+
+  Rationale for having the vendor ladder at all: on a small server the
+  crafter for your armor class may simply not exist — the floor stops a
+  player from going naked, it does not compete. Superseded 2026-08-07:
+  the old "±15 % of crafted gear of the same era" comparison, and the
+  older "10–15 % behind" before it. Under the merge there is nothing to
+  compare — vendor gear and base crafted gear are the same item, and the
+  crafter's edge is enchantments (§6b), not a base number.
+- **Rotation**: the core stock is fixed; each bracket additionally shows
+  a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
+  rotation in five carries a single Uncommon item**, rolled like a found
+  item (§6.3: the enchant has the item level's tier and the rule's value) and priced above the Common
+  baseline by the authoritative quality multiplier. That is
+  the "today the trader had something good" moment, without a second
+  gear source.
+
+  **Implemented reading** (decided 2026-08-07):
+  - The bracket's **fixed floor is always on sale**: the 1H sword plus a
+    full set in each of the three shipped armor lines = **13 items**. That is what
+    "guaranteed, but expensive … the floor, not the ceiling" requires,
+    and the rotation may never touch it.
+  - On top of it sit the **rotating slots**, drawn hourly from the
+    **extra weapon families**, so **one family is withheld every
+    rotation**. Withholding is what makes it a rotation: with one slot
+    per extra the whole catalog would be on the shelf every hour and the
+    re-roll would only permute the display order. The slot count is
+    **always strictly below the pool size** — that is the rule, the
+    number follows from §3.2.
+    The active extra pool is **five** families — dagger, greataxe, staff, wand
+    and bow — with fewer rotating slots than families. Scepters and orbs are
+    not aliases or visual variants.
+  - The **1-in-5 Uncommon is rolled per vendor and per bracket** (so two
+    vendors in the same hour differ, and a player's own brackets differ
+    from each other), replaces one of the rotating slots and is priced
+    by the final enchanted/quality purchase multiplier.
+  - The Uncommon is **only offered once WP5's enchant roller exists.**
+    Common is enchant-free by definition, so an Uncommon without rolls
+    is mechanically identical to the Common beside it while costing
+    more than the Common beside it — a blue-named trap, not a luxury. The
+    quality/description machinery ships regardless; WP5 lights it up only
+    after the economy/loot pass fixes the multiplier. Round 33 removed
+    the rotation and the Uncommon with it.
+  - The rotation is **deterministic**: a pure function of (real hour,
+    vendor, bracket). Two players at the same vendor in the same hour
+    see the same shelf, and a restart does not re-roll it.
+
 ## 10. Historical decision log (non-authoritative)
 
 This section records how shipped and staged work reached the current design.
@@ -332,3 +442,26 @@ there would have been a third top source — beside crafted-masterwork
 come from crafting and hard bosses — and the band already pays the
 endgame *material* that the crafted endgame item is made of. Rejected:
 T6 gear drops on the level-60 deep roster.
+
+## Protection calibration of the 2026-09-21 equipment revision
+
+Archived from `crafting_equipment_revision.md` in Round 37, when that file
+became a redirect. The living rule (Unbroken multiplies the aggregated
+armor rating by 1.65 and never raises the 70 % reduction cap) is
+[combat_stats.md](../../design/combat_stats.md) §2; the worked example
+below used the values of its time.
+
+Unbroken multiplies aggregated armor rating by 1.65 (replacing 1.40), retains
+its +15 emergency rating, and never raises the universal 70% reduction cap.
+Concrete item-level base armor applies equally to plate and shields. An ilvl75
+plate set (71), matching shield (71), five T6 armor enchants (30), Ironbound (5)
+and Stoneskin (4) total 181 before specialization. Against L70, K=135:
+Protection reaches 298.65 rating / 68.87% reduction, or 313.65 / 69.91% in its
+emergency window. The same equipment/sources without Unbroken reach 57.28%.
+This calibration changes only the Protection multiplier, not plain item bases.
+It used the values of its time; since Round 33 the top item level is 70, a T6
+armor enchant gives 4.8 and Stoneskin Elixir VI +4.8
+([item_tiers.md](../../design/item_tiers.md) §1.1, §5), and the multiplier was not
+recalibrated. Since Round 35 Ironbound and the emergency rating are
+percentages of `K(L)` at the Warrior's level ([skill_trees.md](../../design/skill_trees.md)
+§2.10): 7.5 and 16.5 rating at level 60.

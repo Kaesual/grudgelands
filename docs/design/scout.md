@@ -43,9 +43,11 @@ decided specifications under the shared arithmetic in `skill_trees.md`.
 | **Attributes** | Dexterity-led; growth **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
 | **Role** | ranged damage that can also fight at knife range; the most evasive class in the game |
 
-At level 60 the growth gives Dex `10 + 2 × 59 = 128`, so
-`combat_stats.md:55-56`'s formulas put the Scout at **17.8 % crit** and
-**12.8 % dodge** from attributes alone — the highest of any class, and still
+At level 60 the growth gives Dex `10 + 2 × 59 = 128`, so the Dexterity
+formulas (`item_tiers.md` §1.0: crit 5 % + 0.05 points per Dex, dodge 0.1
+points per Dex; `grug_classes/stats.lua`) put the Scout at **11.4 % crit**
+and **12.8 % dodge** from attributes alone — the highest of any class (the
+Warrior: 8.45 % crit), and still
 far under the 30 % caps, which is what leaves room for the dodge talents and
 the dodge windows of §2.
 
@@ -67,14 +69,14 @@ commit.
 `classes.md:59` — "Three to four abilities per class in the MVP" — and ruling
 12 names all four and requires each to be built from a mechanic the game
 already runs. Four class abilities plus the universal Strike
-(`kits.lua:288-310`) put the Scout on keys 1-5, and `skill_trees.md` §3.4's
+(`strike_def` in `grug_abilities/kits.lua`) put the Scout on keys 1-5, and `skill_trees.md` §3.4's
 ceiling of two talent buttons puts the worst case at 7 of 8.
 
 | Ability | Kind | Cost | Cooldown | Effect | Existing mechanic it reuses |
 |---|---|---|---|---|---|
 | **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the Ranged slot. A **homing** arrow locked to the current crosshair hostile at release, initially within 25 m. Full draw **2.5 s**; damage = (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for draw fraction f (tap ×0.2, half ×0.7125, full ×2.25); nominal speed 40 + 15 f m/s (tap 40, full draw 55) | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`) |
-| **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`kits.lua:421-430`) |
-| **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:128-140`) and the timed-window table of `skill_trees.md` §3.2 |
+| **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`hamstring` in `grug_abilities/kits.lua`) |
+| **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua`) and the timed-window table of `skill_trees.md` §3.2 |
 | **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
 
 **Sprint is a rule-breaker in the base kit, and it is the clearest example of
@@ -113,9 +115,10 @@ Historical baseline measured before Round 11:
 > already says 'there is no bow/quiver item yet') and the castle ARROWSLIT
 > nodes, which are masonry."
 
-The bowyer shelf therefore sells arrows, sticks and feathers
-(`stock.lua:474-479`) and gets no bracket tab, "there is no ranged family in
-`grug_gear` to reach".
+At that time the bowyer shelf sold only arrows, sticks and feathers, with no
+gear tab, because "there is no ranged family in `grug_gear` to reach". Since
+Round 11 the bowyer also sells the T1 bow (`grug_traders/stock.lua`, the
+`bowyer = "bow"` gear tab beside its `profession_shelf` goods; §7.1).
 
 The active contract is:
 
@@ -139,6 +142,8 @@ The active contract is:
   Loose LMB uses melee Strike or hand digging. Draw affects damage (the curve
   above) and nominal speed (linear, 40 to 55 m/s); a draw ring at the crosshair shows the
   fraction (`classes.md` §2b). No valid release-time target means no shot or ammo payment.
+- Drawing or holding a drawn bow is a self-imposed movement stance of ×0.5
+  (`skill_trees.md` §3.9 "Stances"; `grug_core.set_move_stance`).
 - The six bow identities and their dedicated centre-grip wield pose are
   delivered from licensed LotT arc sprites. The Scout runtime consumes those
   registrations; it does not regenerate their art.
@@ -268,7 +273,7 @@ restoring to `speed = 1` when its own effect ends, "so an overlapping mob web
 shared owner in `grug_core`**". That comment counts **two** — mob webs
 (`verbs.lua:140-169`) and the ability movement aggregator seam
 (`kits.lua:149-201`) — and
-`mounts.md:128-133` and the former `boats.md` §5 (2026-08-13 text) both repeat the count. **Measured,
+`mounts.md` §3 (its 2026-09-16 text) and the former `boats.md` §5 (2026-08-13 text) both repeat the count. **Measured,
 there are three**: `grug_classes/selection.lua:52` freezes a player during
 character creation with `{speed = 0, jump = 0, gravity = 0}`, re-asserts it
 whenever it drifts (`:49-53`), and restores a **snapshot** at `:91` — which
@@ -285,9 +290,11 @@ that must keep moving while its attack clock runs is the other consumer. The
 Scout's former "speed and stealth" lane collapses into the class lane once it
 exists.
 
-Sprint appears in the central status HUD as `Sprint (+50% Speed)` with its
-remaining 10-second duration. The status is display-only; the movement modifier
-is the effect authority, and absence/expiry/death/disconnect removes the display.
+Sprint appears in the central status HUD as the Sprint icon with its
+remaining 10-second countdown, and on the Effects tab as "Sprint" / "+50%
+movement speed" (`grug_core/status_icons.lua` `scout_sprint`). The status is
+display-only; the movement modifier is the effect authority, and
+absence/expiry/death/disconnect removes the display.
 
 ### 6.2 Sprint is a deliberate, bounded speed exception
 
@@ -409,7 +416,10 @@ The implementation and focused verification are recorded in
 
 ## 8. Deferred: stealth v2
 
-**Nothing in this chapter is part of version 1.** Ruling 12 removed
+**Nothing in this chapter is part of version 1.** Its file and line
+references and counts (such as the GRUG PATCH count in `api.lua`) are as of
+2026-09-16 and have drifted since; the function and field names are the
+anchors. Ruling 12 removed
 invisibility from the Scout's first release; rulings 8's stealth rules and the
 research behind them are kept here **verbatim and complete**, so that the day
 the user wants stealth the design, the seam, the detection arithmetic and the

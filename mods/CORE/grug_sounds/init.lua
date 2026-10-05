@@ -61,7 +61,7 @@ grug_sounds.HOOKS = {
 	"player_death",
 	-- Abilities: one cue per theme at the caster (grug_abilities.CAST_SOUNDS);
 	-- a projectile sounds at launch and at its hit (grug_projectiles.register).
-	"cast_charge", "cast_taunt", "cast_guard", "cast_frost_nova",
+	"cast_charge", "cast_taunt", "cast_guard", "cast_ice_nova",
 	"cast_frost_ward", "cast_cinderfall", "cast_holy", "cast_heal",
 	"cast_shield", "cast_shadow", "cast_evade",
 	"fireball_launch", "fireball_hit", "bow_shot", "arrow_hit",
@@ -93,6 +93,9 @@ grug_sounds.HOOKS = {
 	-- and Generals' signature, the humanoid elites' wind-up).
 	"telegraph", "dragon_breath_frost", "dragon_breath_fire", "dragon_lightning",
 	"dragon_enrage", "dragon_wrath", "ice_break", "king_signature",
+	-- Round 37 (lane SN): the dragon's return warning at its lair and the
+	-- Rift Spawn's fuse (its mobs_redo fuse sound) and burst.
+	"dragon_return", "rift_fuse", "rift_burst",
 }
 -- Silent by the user's choice (plan §2.2a), so without a call site: quest
 -- accept and progress, talent, achievement, drops, mount summon and dismount,
@@ -160,7 +163,7 @@ local EVENTS = {
 	cast_charge = {name = "grug_sounds_cast_charge", gain = 0.7},
 	cast_taunt = {name = "grug_sounds_cast_taunt", gain = 0.8, distance = 20},
 	cast_guard = {name = "grug_sounds_cast_guard", gain = 0.7},
-	cast_frost_nova = {name = "grug_sounds_cast_frost_nova", gain = 0.7},
+	cast_ice_nova = {name = "grug_sounds_cast_ice_nova", gain = 0.7},
 	cast_frost_ward = {name = "grug_sounds_cast_frost_ward", gain = 0.6},
 	cast_cinderfall = {name = "grug_sounds_cast_cinderfall", gain = 0.8, distance = 20},
 	cast_holy = {name = "grug_sounds_cast_holy", gain = 0.7},
@@ -239,6 +242,15 @@ local EVENTS = {
 	-- A king's or General's signature attack and a humanoid elite's wind-up
 	-- (the humanoid voice's telegraph); a king does both, so once in 3 s.
 	king_signature = {name = "grug_sounds_king_signature", gain = 0.8, distance = 24, interval = 3},
+	-- Round 37 SN (tools/r37_sn/approved.txt). The return warning plays once,
+	-- a minute before a dragon returns, heard as far as its chat line goes;
+	-- the fuse is today's lava hiss (three variants) on the Rift Spawn, the
+	-- burst an explosion where it bursts. Both position cues play at most
+	-- once per dragon or Rift Spawn, so no interval: two of them in one step
+	-- share the "pos" key and must not drop each other.
+	dragon_return = {name = "grug_sounds_dragon_return", gain = 1, distance = 160, interval = 0},
+	rift_fuse = {name = "grug_sounds_rift_fuse", gain = 1, distance = 10, pitch = 0.05},
+	rift_burst = {name = "grug_sounds_rift_burst", gain = 0.9, distance = 32, interval = 0},
 }
 grug_sounds.EVENTS = EVENTS
 

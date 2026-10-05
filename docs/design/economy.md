@@ -1,9 +1,11 @@
 # Economy — Currency & Money Flow
 
 Decided spec (established 2026-08-06; material and housing economy rebased
-2026-08-12). Concrete item and service prices are catalogued in
-`items_crafting.md` §8; this file owns the currency rules, shared price axis,
-income relationship and sink structure.
+2026-08-12). This file owns the currency rules, the shared price axis and
+buy-back, the income relationship and the sinks with their prices
+(`items_crafting.md` §8 only points here); the item numbers it uses (sale
+values, repair math, the crown fee, culture prices) are printed in
+[item_tiers.md](item_tiers.md) §4 and §6.
 
 The price axis in §2 is live since the WP44 cutover (Round 29 lane E1,
 [economy plan](../planning/economy-vendor-plan.md) §2–§3): traders, loot and
@@ -45,7 +47,7 @@ axis (D2).
   and stored like any item, despawns on the ground after the engine's item
   lifetime and burns in lava or fire; no transfer is logged.
 - Physical Gold is a separate universal luxury/jewelry/build material. Gold
-  ore, ingots and blocks never add to the money balance, and a ledger payment
+  ore, bars and blocks never add to the money balance, and a ledger payment
   never consumes inventory Gold.
 - Vendors sell the T1 Common bases only (Round 33): every weapon family and
   armour piece of the first material tier, Common and unenchanted, at every
@@ -70,7 +72,9 @@ precedence over preserving the exact mathematical ratio.
   it and may never redefine the table.
 - **Vendor rule** ([professions.md](professions.md) §4): vendors sell
   supplies, consumables, tools, the Common gear floor and a few T1 basics,
-  never an enchant input and never a crafting ingredient above T1.
+  never an enchant input (a signature loot item or family input of
+  `enchants.json`; a T1 own material such as the Bronze Bar may be sold) and
+  never a crafting ingredient above T1.
 - A vendor's **buy-back is capped at 5%** of the item's purchase price,
   **rounded up to the next copper**, and applies to goods a vendor also
   sells (gear, supplies) and to every equippable of the gear catalog by the

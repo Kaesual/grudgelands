@@ -1,4 +1,4 @@
-# Item tiers: enchant values, recipes, upgrades, the crown, potions and money
+# Item numbers: enchant values, recipes, upgrades, the crown, potions and money
 
 **Status: approved by the user, version 2** (Round 33 lane DS, 2026-10-04;
 version 2 follows the user's rulings of the same day on Crit and Dexterity,
@@ -21,14 +21,23 @@ Every table between `generated` markers is printed by a script in
 [`tools/r33_ds/`](../../tools/r33_ds/) and refreshed by
 `python3 tools/r33_ds/build_doc.py` (`--check` fails when this file is stale).
 
-Since Round 33 this file replaces the fixed crafted values and the found
-roll windows of [items_crafting.md](items_crafting.md) §6.3, §6b.2 and
-[crafting_equipment_revision.md](crafting_equipment_revision.md#enchanting),
-the alchemy table of items_crafting.md §3.6, the 20 % repair factor of
-[durability_repair.md](durability_repair.md#price) and
-[economy.md](economy.md) §4, the crit rules of
-[combat_stats.md](combat_stats.md) §2 (§1.0 below) and the bow and spellbook
-ownership of [professions.md](professions.md) §2 (§3.3 below).
+**This file owns every item number** (one owner per fact, Round 37):
+
+- the enchant values by stat, tier and item level, with the class check
+  (§1; the crit and Dexterity curve of §1.0);
+- the enchant inputs and loot per channel, and every signature's use (§2);
+- the profession upgrades, their inputs and the own material per tier (§3);
+- the crown and its fee (§4);
+- the potions and elixirs, their recipes, amounts and durations (§5);
+- the sale values of dropped gear, the repair math, the upgrade costs, the
+  culture vendor prices and the income effect (§6).
+
+The rules these numbers serve live elsewhere:
+[items_crafting.md](items_crafting.md) (the item model, enchant operations,
+loot), [professions.md](professions.md) (progression, mastery, stations),
+[economy.md](economy.md) (prices, buy-back, sinks),
+[durability_repair.md](durability_repair.md#price) (wear and repair) and
+[combat_stats.md](combat_stats.md) §2 (how crit and armor resolve).
 
 Tiers: T1 = item or character level 1–10 … T6 = 51–60, T7 = 61–70 (boss
 drops and crowned items only).
@@ -568,21 +577,26 @@ a new base would have to buy again.
 
 Two professions dress every class in armour, weapon and offhand:
 
-| Profession | Makes, enchants and upgrades | Class pairs |
-|---|---|---|
-| Weaponsmith | swords, daggers, battle axes (also the Scout's melee blade) | Warrior, Scout |
-| Armorsmith | metal armour, shields | Warrior |
-| Woodcarver | staves, wands | Mage, Priest |
-| Leatherworker | leather armour, **bows** (from the Woodcarver) | Scout |
-| Tailor | cloth armour, **spellbooks** (from the Goldsmith) | Mage, Priest |
-| Goldsmith | trinkets for everyone; gems and settings | all |
+| Profession | Enchants and upgrades | Makes | Class pairs |
+|---|---|---|---|
+| Weaponsmith | swords, daggers, battle axes (also the Scout's melee blade) | — | Warrior, Scout |
+| Armorsmith | metal armour, shields | — | Warrior |
+| Woodcarver | staves, wands | — | Mage, Priest |
+| Leatherworker | leather armour, **bows** (from the Woodcarver) | leather bags | Scout |
+| Tailor | cloth armour, **spellbooks** (from the Goldsmith) | spellbooks, cloth bags | Mage, Priest |
+| Goldsmith | trinkets for everyone | trinkets; cut gems and settings | all |
+
+The plain weapons, armour, shields, bows, staves and wands are universal
+Basics recipes everyone crafts (items_crafting.md §3.0.3); a profession
+makes only the items in its "Makes" column.
 
 Warrior: Armorsmith + Weaponsmith. Scout: Leatherworker + Weaponsmith.
 Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
 
 - **The Tailor's spellbook** (replaces the Goldsmith's Setting + Parchment):
   `2 × the bolt of tier T + 1 Parchment` at the Tailor Bench, Journeyman
-  mastery as today; it counts as a progression craft. Item, tier and stats of
+  mastery as today (character level 16+ at every tier,
+  [professions.md](professions.md) §1.1); it counts as a progression craft. Item, tier and stats of
   the six spellbooks are unchanged.
 - Bow enchants and upgrades take the Leatherworker's leather grade of the
   tier; spellbook enchants and upgrades the Tailor's bolt. Family inputs and
@@ -599,6 +613,12 @@ Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
 | Tailor | cloth armour, spellbook | enchants, upgrade, spellbook, 8-slot bag | enchants, upgrade, spellbook, 16-slot bag | enchants, upgrade, spellbook | enchants, upgrade, spellbook, 24-slot bag | enchants, upgrade, spellbook, 32-slot bag | enchants, upgrade, spellbook |
 | Goldsmith | trinket | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets |
 <!-- end generated -->
+
+The bags and spellbooks in this table also need their mastery band
+([professions.md](professions.md) §1.1): the spellbooks from character level
+16 at every tier, so the T1 spellbook is out of reach in the T1 band
+(levels 1–10) and counts later only for a Tailor still at profession tier 1;
+the 32-slot bags (T5) from level 46.
 
 ### 3.4 Two Goldsmith leftovers (v2, approved: user choices 11A, 12A)
 
@@ -659,7 +679,8 @@ eight King kills, next to Master Riding's five hours.
 - Names count by tier with Roman numerals, like today's elixirs. Level
   requirement: the tier's first level.
 - **The vendor's Weak Healing Potion** heals a fixed 35 HP (half of Healing
-  Potion I) at its 8c price; today it heals 15 % of maximum HP at every level.
+  Potion I) at its 8c price; before Round 33 it healed 15 % of maximum HP at
+  every level.
 - Recipes avoid one-faction reagents: Slime Gel and Crocodile Tooth (Throng
   only) leave the Cave Draught, Deepwater Elixir, Elixir of Vigor IV and
   Stoneskin Elixir (v2: Stoneskin IV takes Shiny Scale).

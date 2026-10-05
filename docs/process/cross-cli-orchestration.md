@@ -4,8 +4,8 @@ Decided 2026-09-17. This note records only execution mechanics: how one CLI
 launches, controls, monitors and cleans up after the other, in both
 directions. Model choice and authorization stay with
 [agent-model-policy.md](agent-model-policy.md) (the user routes per session),
-the package flow and review checklist stay with
-[wp-workflow.md](wp-workflow.md), and read-only Claude reviews launched from
+the round flow, gates and review checklist stay with
+[round-workflow.md](round-workflow.md), and read-only Claude reviews launched from
 Codex keep their own procedure in
 [claude-cli-review.md](claude-cli-review.md). An orchestrator reads this file
 when it is about to delegate across CLIs; AGENTS.md carries only the pointer
@@ -56,11 +56,10 @@ not re-measured here.
   runs go through `tools/luanti_headless.sh` with an explicit port, under `nice -n 19`, and end with
   `pgrep -f '^luanti.bin'` showing only the user's client.
 - The worker's final report is a **hypothesis**. The orchestrator reruns the
-  static PUC gates and the LuaJIT suites itself and checks the lane's final
-  micro-KAT pair (one PUC run, one LuaJIT run, byte-identical digest). It
-  regenerates that one pair only when the bytes changed after the lane's run
-  or the evidence is missing. This follows the
-  [interpreter strategy](../research/luanti-lua.md#interpreter-and-test-strategy).
+  lane's gates itself (`check_lua.sh`, the LuaJIT fixtures and the other
+  [round-workflow gates](round-workflow.md#3-gates)); there is no PUC
+  runtime run
+  ([interpreter strategy](../technical/luanti-lua.md#interpreter-and-test-strategy)).
 - Ignored coordinator state (`.claude/`, `.codex/`, `.kilo/`,
   `tools/wp40/results/`) is not project authority for either CLI and must not
   be searched or cited as repository content.
@@ -175,7 +174,7 @@ what the worker claims, the commits are what it did.
 ### 2.4 Review and fix round
 
 Reviews use a fresh Codex context with a review brief that names the lenses
-from the wp-workflow checklist and the required verdict (`MERGE`,
+from the [review checklist](round-workflow.md#5-reviewing) and the required verdict (`MERGE`,
 `FIX FIRST`, `REJECT`) with findings as severity + `file:line` + defect +
 failure scenario + correction. Independence is the separate context and a
 brief the implementer never saw; the same model on both sides is allowed when
@@ -230,19 +229,12 @@ branch after `git branch --contains` shows it in main, remove the lane's
 temporary directories, and confirm `pgrep -f '^luanti.bin'` shows only the
 user's client.
 
-### 2.6 Round-end engine validation (orchestrator, main checkout)
+### 2.6 Round-end validation
 
-After the last merge of a round, before the sync (measured 2026-09-17/18):
-
-- the six capitals: a headless boot (`tools/luanti_headless.sh`) that emerges
-  the capitals' reserved squares, with `grep -c ERROR` = 0 (the old
-  `tools/wp13/run_capital.sh` and its probe were retired with the fixed
-  capital layout in Round 22; the capital planner's disposable probe lives in
-  the orchestration folder, `r22/capital-int/engine/`);
-- the six starts: `tools/wp13/run_engine.sh` (six-start digest gate) and
-  `tools/wp40/quality/final_micro.sh` (PUC/LuaJIT micro pair) were retired in
-  Round 22 (D22); a headless boot through `tools/luanti_headless.sh` is the
-  registration smoke test.
+The round-end gates (seed fleet when owed, fixtures, one boot of main, the
+sync, the user's GUI check) are in the
+[round workflow](round-workflow.md#3-gates). The former capital, six-start
+and PUC/LuaJIT micro-pair runners were retired in Round 22 (D22).
 
 ## 3. Codex orchestrating Claude workers
 
