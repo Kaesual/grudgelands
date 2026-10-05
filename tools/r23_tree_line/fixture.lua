@@ -378,8 +378,9 @@ do
 	check((counts.crags_pine_bush or 0) > 0 and (counts.deep_forest_bush or 0) > 0,
 		"band-only shrubs grow in the crags and the deep forest band")
 	check((counts.crags_snowy_pine or 0) > 0, "the crags snowy pine still grows")
-	-- Seams: a cell is the same whichever planner built it first, and two
-	-- plan slices sharing halo cells publish identical rows for them.
+	-- Seams: a cell is the same whichever planner built it first, a chunk's
+	-- plan is the same whichever planner slices it, and a plan holds only its
+	-- own 5 x 5 cells (no halo since Round 37, audit MGT-02).
 	local _, fixture_b = B.planner(SEEDS[1], ramp, B.content())
 	local seam_ok = true
 	for _, cell in ipairs({{5, 40}, {4, 40}, {5, 39}, {16, 44}, {15, 44}}) do
@@ -414,15 +415,17 @@ do
 	local west = slice_rows(planner, 0, 560)
 	local planner_c = B.planner(SEEDS[1], ramp, B.content())
 	local east = slice_rows(planner_c, 80, 560)
-	local shared = 0
+	local west_c = slice_rows(planner_c, 0, 560)
+	local west_cells, east_cells, shared = 0, 0, 0
 	for key, value in pairs(west) do
-		if east[key] ~= nil then
-			shared = shared + 1
-			if east[key] ~= value then seam_ok = false end
-		end
+		west_cells = west_cells + 1
+		if west_c[key] ~= value then seam_ok = false end
+		if east[key] ~= nil then shared = shared + 1 end
 	end
-	check(seam_ok and shared > 0, "chunk seams: shared cells identical across planners and " ..
-		"slices (" .. shared .. " shared cells)")
+	for _ in pairs(east) do east_cells = east_cells + 1 end
+	check(seam_ok and shared == 0 and west_cells == 25 and east_cells == 25,
+		"chunk seams: plans identical across planners, 25 own cells per chunk (" ..
+		west_cells .. " and " .. east_cells .. ", " .. shared .. " shared)")
 end
 
 -- Density: flat worlds below the lines. Realized trees against the catalog

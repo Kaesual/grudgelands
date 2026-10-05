@@ -277,6 +277,17 @@ local function adapter_factory(allocator_factory)
 		error(code .. ": " .. message, 0)
 	end
 
+	-- The error handler of the transaction wrapper below: a failure keeps its
+	-- stack (once, however deeply the wrappers nest), so a seed-fleet run and
+	-- a server log both show where it failed.
+	local function with_traceback(message)
+		if type(message) ~= "string" or message:find("\nstack traceback:", 1, true) or
+				type(debug) ~= "table" or type(debug.traceback) ~= "function" then
+			return message
+		end
+		return debug.traceback(message, 2)
+	end
+
 	local function safe_integer(value, label, minimum, maximum, code)
 		minimum = minimum or -MAX_SAFE
 		maximum = maximum or MAX_SAFE
@@ -1254,8 +1265,10 @@ local function adapter_factory(allocator_factory)
 			end
 			local entered = pcall(allocator.enter_hotpath, allocator, K.HOTPATH_NAME)
 			if not entered then fail("fail_status", "adapter is not sealed") end
-			local ok, result = pcall(apply_impl, vm, minp, maxp, plan,
-				plan_generation, call_mode, lighting_owner)
+			local ok, result = xpcall(function()
+				return apply_impl(vm, minp, maxp, plan, plan_generation, call_mode,
+					lighting_owner)
+			end, with_traceback)
 			local left = pcall(allocator.leave_hotpath, allocator, K.HOTPATH_NAME)
 			if not left then fail("fail_status", "adapter hotpath is unbalanced") end
 			if not ok then error(result, 0) end

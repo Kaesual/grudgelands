@@ -277,9 +277,12 @@ obstructed or unloaded growth volumes retry without removing the sapling. Simple
 settled entry per named variant at the displayed fill.
 
 Candidate cells are globally anchored 16-column squares. Deterministic
-per-world placement and rotation, with a neighbor halo large enough for
-rotated footprints, replace engine randomness and the legacy emergent-tree
-`sidelen = 80`; the code specifies the hashing and ranking. Emergent/other
+per-world placement and rotation replace engine randomness and the legacy
+emergent-tree `sidelen = 80`; the code specifies the hashing and ranking. A
+decoration is placed only when its whole rotated footprint lies inside the
+80-node chunk of its root, so tall trees thin out in bands along chunk
+borders (docs/research/wp40-simple-map-r6-contract.md §8.2, "Treeless
+bands"). Emergent/other
 large templates settle first, followed by ordinary trees, simple multi-node
 trunks and ground cover. Wrong hosts,
 exclusions, clearance or collisions reject without movement, retry or
