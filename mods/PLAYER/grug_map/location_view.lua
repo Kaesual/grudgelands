@@ -21,36 +21,81 @@ L.OPEN_SEA = "Open sea"
 -- `opts`:
 --   zone_at(x, z)      -> zone id or nil (grug_zones.id_at)
 --   names              zone id -> display name
---   towns              {{name, x, z, footprint}, ...}: the start towns and
---                      capital cities, `footprint` the id of the hard
---                      footprint that holds them
+--   towns              {{name, x, z, footprint, capital}, ...}: the start
+--                      towns and capital cities, `footprint` the id of the
+--                      hard footprint that holds them, `capital` the
+--                      settlement key of a capital city (nil for a start
+--                      town)
 --   reach              half the largest town footprint's square: a town is
 --                      only asked about inside this box round its anchor
 --   footprint_at(x, z) -> id of the hard footprint holding the column, or
 --                      nil (grug_zones.hard_footprint_in on the one column)
--- Returns function(x, z) -> the text: the town's name inside a start town or
--- a capital city, else the zone's display name, else OPEN_SEA; and true as a
--- second value inside a town (grug_ambience's Town music pool, Round 34).
+-- Returns two functions:
+--   resolve(x, z) -> the text: the town's name inside a start town or a
+--     capital city, else the zone's display name, else OPEN_SEA; inside a
+--     town also true (grug_ambience's quieter town bed, Round 34) and the
+--     town's row (its `capital` key: Round 35's capital music);
+--   town_at(x, z) -> the town row whose footprint holds the column, or nil.
 function L.resolver(opts)
 	local zone_at, names, towns = opts.zone_at, opts.names, opts.towns
 	local reach, footprint_at = opts.reach, opts.footprint_at
 	local by_footprint = {}
-	for _, town in ipairs(towns) do by_footprint[town.footprint] = town.name end
-	return function(x, z)
+	for _, town in ipairs(towns) do by_footprint[town.footprint] = town end
+	local function town_at(x, z)
 		for index = 1, #towns do
 			local town = towns[index]
 			if math.abs(x - town.x) <= reach and math.abs(z - town.z) <= reach then
 				-- Inside one town's box: one exact query decides. Towns are far
 				-- apart, so no other box can hold the point too.
-				local name = by_footprint[footprint_at(x, z) or false]
-				if name then return name, true end
-				break
+				return by_footprint[footprint_at(x, z) or false]
 			end
 		end
+		return nil
+	end
+	local function resolve(x, z)
+		local town = town_at(x, z)
+		if town then return town.name, true, town end
 		local id = zone_at(x, z)
 		if not id then return L.OPEN_SEA end
 		return names[id] or id
 	end
+	return resolve, town_at
+end
+
+-- ---------------------------------------------------------------------------
+-- Which capital a player counts as in (Round 35, capital music)
+-- ---------------------------------------------------------------------------
+
+-- Hysteresis at a capital's border, in nodes: a player who counted as in a
+-- capital stays in it while its city is within this distance.
+L.CAPITAL_MARGIN = 8
+local CAPITAL_RING = {}
+do
+	local m, d = L.CAPITAL_MARGIN, math.floor(L.CAPITAL_MARGIN * 0.7071 + 0.5)
+	for _, offset in ipairs({{m, 0}, {-m, 0}, {0, m}, {0, -m}, {d, d}, {d, -d},
+			{-d, d}, {-d, -d}}) do
+		CAPITAL_RING[#CAPITAL_RING + 1] = offset
+	end
+end
+
+-- The capital (settlement key) a player at (x, z) counts as in, or nil.
+-- `here` is the town row at the column (resolve's third value, or nil),
+-- `prev` the capital the player counted as in at the last sample, `town_at`
+-- the resolver's second function. Inside a city: that city's capital (a
+-- start town: none). Outside every city: `prev` while one of eight columns
+-- on a ring of CAPITAL_MARGIN nodes round the player lies in `prev`'s city
+-- (up to eight footprint queries, only while leaving), else none. So the
+-- music starts on the first step into the city and ends a few nodes out,
+-- and walking along the border does not toggle it.
+function L.capital_at(town_at, prev, x, z, here)
+	if here then return here.capital end
+	if not prev then return nil end
+	for index = 1, #CAPITAL_RING do
+		local offset = CAPITAL_RING[index]
+		local town = town_at(x + offset[1], z + offset[2])
+		if town and town.capital == prev then return prev end
+	end
+	return nil
 end
 
 -- ---------------------------------------------------------------------------

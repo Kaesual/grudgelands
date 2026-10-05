@@ -7,6 +7,10 @@
 --     protected footprint, grug_zones.hard_footprint_in); villages, outposts,
 --     camps and POIs keep the zone's name;
 --   * the line under the minimap shows it (minimap.lua reads text_of);
+--   * whether the player stands in a start town or capital (in_town, the
+--     quieter town bed of grug_ambience) and in which capital, with a few
+--     nodes of hysteresis at the city border (capital_of, Round 35: music
+--     plays only in the six capitals);
 --   * the territory status at the same position (Round 32: friendly,
 --     contested or enemy, grug_pvp.territory_at, sampled with the name)
 --     colours the minimap line and both banner lines;
@@ -44,7 +48,7 @@ local COLOR = grug_core.FEED_COLOR.notice
 -- Comparison figures for the report: samples and their summed cost.
 M.stats = {samples = 0, us = 0}
 
-local resolve
+local resolve, town_at
 local zone_markers = {}
 
 local function zone_names()
@@ -58,7 +62,8 @@ end
 
 -- The start towns and capital cities: every registered settlement whose
 -- anchor column lies in a hard "town" footprint (villages, outposts and
--- camps have none).
+-- camps have none). A capital is told from a start town by its anchor slot
+-- in the settlement registry and carries its settlement key.
 local function build_resolver()
 	if not grug_core.zone_authority_installed() then return nil end
 	local towns = {}
@@ -67,14 +72,14 @@ local function build_resolver()
 		local id, kind = grug_zones.hard_footprint_in(a.x, a.z, a.x, a.z)
 		if kind == "town" then
 			towns[#towns + 1] = {name = row.display_name or row.key, x = a.x, z = a.z,
-				footprint = id}
+				footprint = id, capital = row.slot == "capital" and row.key or nil}
 		end
 	end
 	return L.resolver({zone_at = grug_zones.id_at, names = zone_names(),
 		towns = towns, reach = TOWN_REACH,
 		footprint_at = function(x, z) return (grug_zones.hard_footprint_in(x, z, x, z)) end})
 end
-resolve = build_resolver()
+resolve, town_at = build_resolver()
 
 -- The location text at a position ("" before the world authority exists).
 function M.text_at(pos)
@@ -261,8 +266,8 @@ atlas.register_marker_provider("zone", function() return zone_markers end)
 -- Per-player location and the entry banner
 -- ---------------------------------------------------------------------------
 
--- player name -> {state, text, status, next_sample, banner, line, offset_y,
--- shown_text, shown_line, shown_color}
+-- player name -> {state, text, status, town, capital, next_sample, banner,
+-- line, offset_y, shown_text, shown_line, shown_color}
 local players = {}
 -- player name -> true while a banner display runs
 local busy = {}
@@ -290,18 +295,29 @@ local function territory(player, pos)
 end
 
 -- Whether the player stood inside a start town or capital city at the last
--- sample (grug_ambience, Round 34: the Town music pool and a quieter bed).
+-- sample (grug_ambience, Round 34: a quieter bed).
 function M.in_town(name)
 	local rec = players[name]
 	return rec ~= nil and rec.town == true
+end
+
+-- The settlement key of the capital the player counted as in at the last
+-- sample (with the border hysteresis of location_view.lua capital_at), or
+-- nil (grug_ambience, Round 35: music plays only in the capitals).
+function M.capital_of(name)
+	local rec = players[name]
+	return rec and rec.capital or nil
 end
 
 -- Returns the location text (nil for none) and the territory status.
 local function sample(player, rec)
 	local started = core.get_us_time()
 	local pos = player:get_pos()
-	local text, town = "", false
-	if resolve then text, town = resolve(pos.x, pos.z) end
+	local text, town, here = "", false, nil
+	if resolve then
+		text, town, here = resolve(pos.x, pos.z)
+		rec.capital = L.capital_at(town_at, rec.capital, pos.x, pos.z, here)
+	end
 	local status = territory(player, pos)
 	M.stats.samples = M.stats.samples + 1
 	M.stats.us = M.stats.us + (core.get_us_time() - started)
