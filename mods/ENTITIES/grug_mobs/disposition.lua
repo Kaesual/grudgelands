@@ -36,7 +36,7 @@ classify("aggressive", {
 	"goblin_slinger", "gravewood_treant", "hyena", "ice_dragon",
 	"ice_whelp", "jungle_ape", "jungle_lynx", "jungle_spider",
 	"jungle_wyvern", "kraken", "lava_flan", "mesa_golem", "mirefolk",
-	"oerkki", "pale_spider", "panther", "plaguehide_bear", "poacher", "rift_spawn",
+	"oerkki", "pale_spider", "panther", "plaguehide_bear", "poacher", "rift_boss", "rift_spawn",
 	"scorpion", "serpent", "skeleton_archer", "skeleton_raider",
 	"snow_leopard", "speargrass_tiger", "spiderling", "stone_golem",
 	"stone_mite", "storm_whelp", "sun_dried_husk", "viper", "vulture",
@@ -62,6 +62,7 @@ local function guard_role(name)
 		or name == "grug_mobs:land_guard"
 		or name:match("^grug_mobs:royal_guard_") ~= nil
 		or name:match("^grug_mobs:captain_") ~= nil
+		or name:match("^grug_mobs:commander_") ~= nil
 		or name:match("^grug_mobs:bodyguard_") ~= nil
 end
 

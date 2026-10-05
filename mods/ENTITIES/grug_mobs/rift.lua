@@ -235,6 +235,59 @@ local function pulse_particles(pos, radius, amount, time)
 	grug_mobs.rift_stats.particles = grug_mobs.rift_stats.particles + amount
 end
 
+-- The way home. aggro.lua's evade run (and the idle walk below) steer
+-- straight, and a mob never steps into a damage node, so the crack stops a
+-- run that crosses it. A run that makes no progress for STALL seconds asks
+-- once for an A* way round (within mobs_redo's per-step path budget, as
+-- patrol.lua's path_nudge does; no drop deeper than a node, so never into the
+-- crack) and then follows its steps each server step; the evade's 40 s snap
+-- home stays the backstop.
+local STALL = 2
+local PATH_REACH = 40
+
+local function go_home(self, t, pos, dtime)
+	local home = self._grug_home
+	local dx, dz = pos.x - home.x, pos.z - home.z
+	if dx * dx + dz * dz <= HOME_REACH * HOME_REACH then
+		t.grug_rift_route, t.grug_rift_walk = nil, nil
+		grug_mobs.stall_clear(self)
+		return
+	end
+	local route = t.grug_rift_route
+	if route then
+		local step = route[route.i]
+		while step and (step.x - pos.x) * (step.x - pos.x) +
+				(step.z - pos.z) * (step.z - pos.z) <= 1 do
+			route.i = route.i + 1
+			step = route[route.i]
+		end
+		if step then
+			grug_mobs.walk_toward(self, step.x, step.z, pos)
+			return
+		end
+		t.grug_rift_route = nil
+	end
+	t.grug_rift_walk = (t.grug_rift_walk or 0) + dtime
+	if t.grug_rift_walk < 1 then return end
+	local elapsed = t.grug_rift_walk
+	t.grug_rift_walk = 0
+	-- The evade steers itself once a second; the idle walk is ours.
+	if not t.grug_evading then grug_mobs.walk_toward(self, home.x, home.z, pos) end
+	if grug_mobs.stall_clock(self, home.x, home.z, pos, elapsed) < STALL then return end
+	local obstacle = mobs.grug_obstacle
+	if not obstacle.spare_path_budget() then return end
+	local feet = (self.collisionbox and self.collisionbox[2]) or 0
+	local from = vector.round({x = pos.x, y = pos.y + feet, z = pos.z})
+	local started = core.get_us_time()
+	local path = core.find_path(from, vector.round(home), PATH_REACH, 1, 1, "A*_noprefetch")
+	obstacle.note_path_cost(core.get_us_time() - started)
+	grug_mobs.stall_clear(self)
+	if path then
+		path.i = 1
+		t.grug_rift_route = path
+	end
+end
+
 local function boss_tick(self, dtime)
 	local s = current_site()
 	self._grug_boss_id = s and s.id or self._grug_boss_id
@@ -264,19 +317,14 @@ local function boss_tick(self, dtime)
 	if not pos then return end
 	if self.state ~= "attack" or not self.attack or t.grug_evading then
 		t.grug_rift_pulse = nil
-		-- Idle: back to its spot (a reset inside the leash leaves it where the
-		-- fight ended), once a second like the roam cap.
-		local home = self._grug_home
-		t.grug_rift_home = (t.grug_rift_home or 0) + dtime
-		if home and not t.grug_evading and not self.attack and t.grug_rift_home >= 1 then
-			t.grug_rift_home = 0
-			local dx, dz = pos.x - home.x, pos.z - home.z
-			if dx * dx + dz * dz > HOME_REACH * HOME_REACH then
-				grug_mobs.walk_toward(self, home.x, home.z, pos)
-			end
+		-- Idle or evading: back to its spot (a reset inside the leash leaves
+		-- it where the fight ended).
+		if self._grug_home and (t.grug_evading or not self.attack) then
+			go_home(self, t, pos, dtime)
 		end
 		return
 	end
+	t.grug_rift_route, t.grug_rift_walk = nil, nil
 	t.grug_rift_pulse = (t.grug_rift_pulse or PULSE_FIRST) - dtime
 	if t.grug_rift_pulse > 0 or t.grug_tg_left then return end
 	t.grug_rift_cast = {left = PULSE_WINDUP}
@@ -303,7 +351,7 @@ for index = 1, 6 do
 end
 select_box.rotate = true
 
-grug_mobs.register_mob(BOSS, {
+grug_mobs.register_mob("grug_mobs:rift_boss", {
 	description = R.BOSS_NAME, clock = "any", type = "monster",
 	-- An approved voice family (the Dungeon Master's), no new sound.
 	_grug_voice = "giant",
@@ -376,6 +424,12 @@ end
 --
 -- The one throttled pass: once a second, only while a player is near.
 --
+-- The players the pass works around: a seam so the engine probe can stand in
+-- a point for a player (like spawn_regions.lua's SR.players).
+function grug_mobs.rift_players()
+	return core.get_connected_players()
+end
+
 local clock, particle_clock = 0, {}
 core.register_globalstep(function(dtime)
 	clock = clock + dtime
@@ -385,7 +439,7 @@ core.register_globalstep(function(dtime)
 	local s = current_site()
 	if not s then return end
 	local near, range = {}, math.max(R.SPAWN_RANGE, R.PARTICLE_RANGE)
-	for _, player in ipairs(core.get_connected_players()) do
+	for _, player in ipairs(grug_mobs.rift_players()) do
 		local p = player:get_pos()
 		local dx, dz = p.x - s.anchor.x, p.z - s.anchor.z
 		if dx * dx + dz * dz <= range * range and math.abs(p.y - s.anchor.y) <= range then

@@ -100,8 +100,10 @@ local function category_for(parent)
 	if name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
 			or name == "grug_mobs:land_guard"
 			or name:match("^grug_mobs:royal_guard_")
-			-- Round 31 PvP garrisons: a camp captain, a General's bodyguard.
+			-- Round 31 PvP garrisons: a camp captain, a General's bodyguard;
+			-- Round 36 a war camp's commander.
 			or name:match("^grug_mobs:captain_")
+			or name:match("^grug_mobs:commander_")
 			or name:match("^grug_mobs:bodyguard_") then
 		return "guard"
 	end
