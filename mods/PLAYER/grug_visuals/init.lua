@@ -8,8 +8,8 @@
 -- `wield_geometry.lua` is the hand attachment derived from the mesh's own bone
 -- tree (engine-free, so a fixture can read the same numbers), `apply.lua` is
 -- the engine side (player hooks, the stored look, the attached wield entity,
--- the entity applier the mob mods call) and `creation.lua` the look step of
--- character creation.
+-- the entity applier the mob mods call) and `creation.lua` the look panel of
+-- the character-creation window.
 grug_visuals = {}
 
 local modpath = core.get_modpath(core.get_current_modname())

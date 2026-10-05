@@ -242,8 +242,8 @@ local function player_entry(name)
 end
 
 --
--- THE STORED LOOK (round31-plan.md §2.1.5). Written ONCE, by the look step at
--- the end of character creation (creation.lua), and never again: there is no
+-- THE STORED LOOK (round31-plan.md §2.1.5). Written ONCE, by the look panel
+-- when "Create character" is clicked (creation.lua), and never again: there is no
 -- command and no wardrobe. The indices are read against the character's race
 -- at draw time, so an admin `/race` switch keeps a valid look. A character
 -- without one is drawn with option 1 everywhere.

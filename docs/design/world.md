@@ -841,37 +841,45 @@ territory.
   race geography is not required to be a geometric mirror. A character begins
   in its race's outer starting settlement and reaches its central capital
   through the safe early-level roads.
-- Race choice at character creation (after faction, before class), stored
-  in player meta. The look follows the class
-  ([character_visuals.md](character_visuals.md) §1.1).
-- Until faction, race and class are all complete, the player is held in
+- **Character creation is one window** (Round 35): the faction row at the
+  top; below it a narrow race column on the left (the races of the chosen
+  faction, the chosen race's description under the list) and on the right
+  the class row (the chosen class's description in one line), the look
+  ([character_visuals.md](character_visuals.md) §1.1) with a preview the
+  player turns with the mouse, and "Create character" at the bottom right,
+  active once faction, race and class are chosen. The choices are
+  highlighted and every button has a tooltip. Before a faction is chosen
+  everything below it is empty with a hint; before a race is chosen no model
+  is drawn. Every class is open to every race. Changing the faction clears
+  race and look (the class stays); changing the race rolls a new random
+  look.
+- **Nothing is stored before "Create character".** The choices are a draft
+  that lives only in the server session; a disconnect starts over. Create
+  stores faction, race, look and class at once and marks the character as
+  *arriving*; only then is the arrival area (the race's start, generated at
+  server start) loaded, while the window shows a short wait. The single
+  teleport to the start clears the mark. A reconnect during that wait
+  resumes it; a second Create does nothing.
+- Until the character has arrived, the player is held in
   **character-creation stasis**: movement, jumping and gravity are frozen,
   current velocity is cancelled and engine immortality prevents damage and
-  drowning. The mandatory faction → race → class → look forms use an opaque dark
-  backdrop; no physical lobby or generated holding room exists. Choosing a
-  race starts an asynchronous emerge of that race's start behind the remaining
-  UI. The first class choice is stored at once as a *pending* class; only when
-  that emerge succeeds is the player positioned exactly once, the class
-  persisted as the character's class and the pre-stasis physics/immortality
-  state restored. Disconnects reconstruct stasis from the still-incomplete
-  identity (a pending class does not complete it), stale callbacks cannot
-  release a later session, and emerge failure stays safe with an explicit
-  retry.
+  drowning. The window and the waiting screen use an opaque dark backdrop;
+  no physical lobby or generated holding room exists. The window is offered
+  only once the world preparation at server start is complete. Disconnects
+  reconstruct stasis from the arriving mark, stale callbacks cannot release
+  a later session, and an emerge failure stays safe with an explicit retry.
 - **Character creation can always be paused** (Round 24 ruling 32). Esc
-  really closes every creation dialog (faction, race, class, look, waiting
-  screen)
-  and nothing reopens it by itself, so the next Esc reaches the native game
-  menu; the player stays in stasis. While creation is unfinished the player's
-  inventory formspec is the current step (the inventory key continues), and a
-  screen hint says "Character creation paused – press I to continue" while no
-  dialog is open ("World ready – press I to continue" once preparation
-  finished meanwhile, a retry hint after a failure). When preparation finishes
-  while the waiting screen is open, the next step replaces it; when it was
-  dismissed only the hint changes; a failure never forces the dialog open.
-  Faction, race, the pending class and the confirmed look are stored in player
-  meta at once (a look in progress is not), so a reconnect continues at the
-  first missing step. There is no kick button.
-  After completion the normal inventory returns.
+  really closes the window (and the waiting screen) and nothing reopens it by
+  itself, so the next Esc reaches the native game menu; the player stays in
+  stasis and the draft is kept for the session. While creation is unfinished
+  the player's inventory formspec is the window (the inventory key
+  continues), and a screen hint says "Character creation paused – press I to
+  continue" while no dialog is open ("World ready – press I to continue" once
+  preparation finished meanwhile, a retry hint after a failure). When
+  preparation finishes while the waiting screen is open, the window replaces
+  it; when it was dismissed only the hint changes; a failure never forces the
+  dialog open. There is no kick button. After the arrival the normal
+  inventory returns.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives

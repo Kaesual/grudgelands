@@ -13,16 +13,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
 - **Factions**: pattern from Lord of the Test `lottclasses` — faction as a
   **privilege** + ally matrix + predicates (`*_same_race_or_ally`),
   selection formspec on join, starter-kit dispatch. Our creation flow differs
-  on abort (Round 24 ruling 32): `grug_classes/selection.lua` owns faction,
-  race, class and waiting forms (`grug_factions.selection_formspec` and
-  `choose_from_fields` supply the faction step). Esc closes a form for good;
-  the current step is always the player's inventory formspec, while sfinv is
-  suspended through the vendored `sfinv.inventory_suspended` hook (VENDOR.md),
-  and "" submissions route to the same step handlers; a HUD hint at
-  `hud_layout.anchors.creation_hint` shows while no dialog is open. The class
-  chosen before the arrival emerge is persisted as
-  `grug_classes:pending_class` and becomes `grug_classes:class` only at the
-  teleport; release re-runs sfinv for the player.
+  (Round 35): `grug_classes/selection.lua` owns one window
+  (`grug_classes:create`: faction, race, class and the look panel
+  grug_visuals registers) and the waiting screen (`grug_classes:loading`).
+  The choices are a session-only draft (`session.draft`, checked again at
+  Create); "Create character" calls `set_faction`, `set_race`, the panel's
+  `store` and `set_class` at once and sets `grug_classes:arriving`, which
+  keeps the character in stasis until the arrival teleport clears it. Esc
+  closes a form for good (Round 24 ruling 32); the current window is always
+  the player's inventory formspec, while sfinv is suspended through the
+  vendored `sfinv.inventory_suspended` hook (VENDOR.md), and "" submissions
+  route to the same handlers; a HUD hint at
+  `hud_layout.anchors.creation_hint` shows while no dialog is open; release
+  re-runs sfinv for the player. Fixture and engine probe: `tools/r35_c`.
   LotT has NO per-faction spawns and no player-PvP gating — we build those
   ourselves (`core.register_on_punchplayer` /
   `register_on_player_hpchange`).
@@ -1324,8 +1327,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `_grug_look_seed` in their staticdata; `npc_race(entity, faction, opts)`
   gives the settlement's race, or with `{mixed = true}` /
   `_grug_mixed_race` a race of the faction (fortress garrisons).
-  `creation.lua` is the look step, registered with
-  `grug_classes.register_look_step`; `release_player` closes its form.
+  `creation.lua` is the look panel of the creation window
+  (`roll`, `formspec`, `act`, `store`), registered with
+  `grug_classes.register_look_panel`.
   Enchant colours: `grug_gear/enchant_colors.lua` (`ENCHANT_COLORS`,
   `ENCHANT_OPACITY` 128, `enchant_image`, `enchant_layers`,
   `strip_enchant`; masks `<texture>_ench.png` from

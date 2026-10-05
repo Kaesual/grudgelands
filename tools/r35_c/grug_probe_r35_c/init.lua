@@ -1,22 +1,23 @@
--- Disposable engine probe (Round 24 Lane H, ruling 32: pausable character
--- creation). Never shipped: tools/r24_creation_pause/run.sh stages it through
--- tools/luanti_headless.sh.
+-- Disposable engine probe (Round 35 Lane C: character creation in one
+-- window). Never shipped: tools/r35_c/engine.sh stages it through
+-- tools/luanti_headless.sh. The harness is Round 24's creation probe.
 --
 -- A headless server has no client, so each "player" is a probe entity whose
 -- ObjectRef answers the player accessors character creation uses (name, meta,
 -- inventory, armor groups, HUD, inventory formspec, physics, position). The
 -- engine parts are real: preparation progress/readiness from grug_core's
--- scheduler, the arrival emerge, the start positions, and the whole
--- core.registered_on_player_receive_fields chain (sfinv first, then every
--- mod's handler) for dialog and inventory ("") submissions. The probe calls
--- only the join/newplayer/leave callbacks of grug_classes/selection.lua and
--- sfinv, and records show_formspec/close_formspec for its names.
+-- scheduler, the arrival emerge, the start positions, the real look panel and
+-- the whole core.registered_on_player_receive_fields chain (sfinv first, then
+-- every mod's handler) for dialog and inventory ("") submissions, driven with
+-- the fields a client sends. The probe calls only the join/newplayer/leave
+-- callbacks of grug_classes/selection.lua and sfinv, and records
+-- show_formspec/close_formspec for its names.
 --
 -- Choice consumers of other mods (kit grants, visuals, skills page ...) run
 -- on the probe object inside pcall; their errors on a fake player are logged
 -- as notes, not failures.
 
-local P = "[creation_pause_probe] "
+local P = "[r35_c_probe] "
 local BASE = vector.new(0, 120, 0)
 local failures, checks = 0, 0
 local clock = 0
@@ -30,17 +31,18 @@ local function check(ok, msg)
 		failures = failures + 1
 		core.log("error", P .. "FAIL " .. msg)
 	end
+	return ok
 end
 
-local RACE_FORM, CLASS_FORM = "grug_classes:race", "grug_classes:class"
-local LOADING_FORM, FACTION_FORM = "grug_classes:loading", "grug_factions:select"
+local CREATE_FORM, LOADING_FORM = "grug_classes:create", "grug_classes:loading"
 local PAUSED = "Character creation paused \226\128\147 press I to continue"
 local READY = "World ready \226\128\147 press I to continue"
-local WAITING = "Preparing the world \226\128\147 press I to see progress"
+local IDENTITY = {"grug_factions:faction", "grug_classes:race", "grug_classes:class",
+	"grug_visuals:look", "grug_classes:arriving"}
 
 core.register_globalstep(function(dtime) clock = clock + dtime end)
 
-core.register_entity("grug_probe_creation_pause:hero", {
+core.register_entity("grug_probe_r35_c:hero", {
 	initial_properties = {
 		physical = false, pointable = false, static_save = false,
 		hp_max = 20, visual = "sprite", textures = {"blank.png"},
@@ -137,12 +139,12 @@ end
 local holders = {} -- name -> ItemStack whose meta stands in for player meta
 
 local function make_ref(name)
-	local ref = core.add_entity(BASE, "grug_probe_creation_pause:hero")
+	local ref = core.add_entity(BASE, "grug_probe_r35_c:hero")
 	assert(ref, "probe entity was not added")
 	install(ref)
 	holders[name] = holders[name] or ItemStack("default:stick")
-	local inv = core.get_inventory({type = "detached", name = "grug_probe_cp_" .. name}) or
-		core.create_detached_inventory("grug_probe_cp_" .. name, {})
+	local inv = core.get_inventory({type = "detached", name = "grug_probe_r35c_" .. name}) or
+		core.create_detached_inventory("grug_probe_r35c_" .. name, {})
 	inv:set_size("main", 32)
 	local fake = {
 		name = name, ref = ref, holder = holders[name], inv = inv,
@@ -182,8 +184,6 @@ local function join(name, is_new)
 	local ref, fake = make_ref(name)
 	if is_new then run_list(core.registered_on_newplayers, "newplayer", ref) end
 	local n = run_list(core.registered_on_joinplayers, "join", ref)
-	-- sfinv's own join write (before creation's lock on a reconnect) is not
-	-- the hand-back this probe counts.
 	restores[name] = 0
 	log(("joined %s (new=%s, %d callbacks)"):format(name, tostring(is_new), n))
 	return ref, fake
@@ -235,19 +235,28 @@ local function last_show(name)
 end
 
 local function meta(name, key) return holders[name]:get_meta():get_string(key) end
+local function nothing_stored(name)
+	for _, key in ipairs(IDENTITY) do
+		if meta(name, key) ~= "" then return false end
+	end
+	return true
+end
+local function inv_has(name, needle)
+	return fakes[name].inventory_formspec:find(needle, 1, true) ~= nil
+end
 
 -- Choice setters: the flow is ours; other mods' consumers on a fake player
 -- are best-effort (pcall), and the persisted meta decides the result.
-local function guard_setter(tbl, field, key)
+local function guard(tbl, field, done)
 	local original = tbl[field]
-	tbl[field] = function(player, id, ...)
+	tbl[field] = function(player, value, ...)
 		local fake = fakes[player]
-		if not fake then return original(player, id, ...) end
-		local ok, result = pcall(original, player, id, ...)
+		if not fake then return original(player, value, ...) end
+		local ok, result = pcall(original, player, value, ...)
 		if not ok then
 			log(("note: a %s consumer failed on the probe object: %s"):format(
 				field, tostring(result)))
-			return meta(fake.name, key) == id
+			return done(fake.name, value)
 		end
 		return result
 	end
@@ -265,7 +274,7 @@ local function run_stage(index)
 	if not s then
 		log(("RESULT %s checks=%d failures=%d t=%.1fs"):format(
 			failures == 0 and "PASS" or "FAIL", checks, failures, clock))
-		core.after(1, function() core.request_shutdown("creation pause probe done") end)
+		core.after(1, function() core.request_shutdown("r35 c probe done") end)
 		return
 	end
 	log(("stage %d: %s (t=%.1fs)"):format(index, s.label, clock))
@@ -295,166 +304,167 @@ local function delay(seconds)
 	return function() return clock >= target end, seconds + 5
 end
 
-stage("join during preparation", function()
+stage("join, wait for the world", function()
 	ready_at_start = grug_core.world_preparation_status().ready
 	log("preparation ready at join: " .. tostring(ready_at_start))
-	join("probe_new", true)
-	join("probe_open", true)
-	if not ready_at_start then
-		-- An existing complete character reconnecting during preparation.
-		holders.probe_done = ItemStack("default:stick")
-		local m = holders.probe_done:get_meta()
-		m:set_string("grug_factions:faction", "accord")
-		m:set_string("grug_classes:race", "human")
-		m:set_string("grug_classes:class", "warrior")
-		join("probe_done", false)
-	end
+	join("probe_a", true)
+	join("probe_b", true)
+	-- The join dialog opens one server step later (core.after(0)).
 	return delay(0.5)
 end)
 
 stage("Esc on the waiting screen", function()
-	if ready_at_start then
-		log("note: preparation was already ready; the engine run cannot observe the readiness transition (portable test covers it)")
-		check(last_show("probe_new") == FACTION_FORM, "join after readiness opens the faction dialog")
-		marks.new = #shows
-		check(submit("probe_new", FACTION_FORM, {quit = "true"}) == "grug_classes",
-			"Esc on the faction dialog handled by grug_classes")
-		return delay(1.5)
+	if not ready_at_start then
+		check(last_show("probe_a") == LOADING_FORM, "a new player waits for the world")
+		check(fakes.probe_a.armor.immortal == 1, "stasis while the world is prepared")
+		check(submit("probe_a", LOADING_FORM, {quit = "true"}) == "grug_classes",
+			"Esc on the waiting screen")
+		check(hint("probe_a") == PAUSED, "paused hint: " .. hint("probe_a"))
 	end
-	check(last_show("probe_new") == LOADING_FORM, "new player sees the waiting screen")
-	check(fakes.probe_new.inventory_formspec:find("Preparing", 1, true) ~= nil,
-		"inventory formspec = waiting screen")
-	check(fakes.probe_new.armor.immortal == 1, "new player immortal in stasis")
-	check(last_show("probe_done") == LOADING_FORM, "complete character waits during preparation")
-	marks.new = #shows
-	check(submit("probe_new", LOADING_FORM, {quit = "true"}) == "grug_classes",
-		"Esc on the waiting screen handled by grug_classes")
-	check(submit("probe_done", LOADING_FORM, {quit = "true"}) == "grug_classes",
-		"Esc on the complete character's waiting screen handled")
-	check(hint("probe_new") == PAUSED, "paused hint: " .. hint("probe_new"))
-	check(hint("probe_done") == WAITING, "preparation-only hint: " .. hint("probe_done"))
 	return function() return grug_core.world_preparation_status().ready end, 200
 end)
 
-stage("after readiness", function()
-	check(#shows_since(marks.new, "probe_new") == 0, "nothing re-opened for probe_new")
+stage("the window after readiness", function()
+	check(last_show("probe_b") == CREATE_FORM, "the open dialog becomes the window")
 	if ready_at_start then
-		check(hint("probe_new") == PAUSED, "paused hint on the faction step")
+		log("note: preparation was already ready; the readiness transition is the portable test's")
+		check(submit("probe_a", CREATE_FORM, {quit = "true"}) == "grug_classes", "Esc on the window")
+		check(hint("probe_a") == PAUSED, "paused hint on the window")
 	else
-		check(#shows_since(marks.new, "probe_done") == 0, "release opened nothing for probe_done")
-		check(hint("probe_new") == READY, "ready hint while dismissed: " .. hint("probe_new"))
-		check(last_show("probe_open") == FACTION_FORM, "open waiting screen replaced by the faction step")
-		check(hint("probe_open") == "", "no hint while the dialog is open")
-		check(fakes.probe_done.armor.immortal == nil, "complete character released")
-		check((restores.probe_done or 0) >= 1, "complete character's inventory handed back to sfinv")
-		check(hint("probe_done") == "", "complete character's hint removed")
-		check(vector.equals(fakes.probe_done.pos, BASE), "complete character not teleported")
+		check(hint("probe_a") == READY, "ready hint while dismissed: " .. hint("probe_a"))
 	end
-	check(fakes.probe_new.inventory_formspec:find("choose_accord", 1, true) ~= nil,
-		"inventory formspec = faction step")
+	check(inv_has("probe_a", "faction_accord"), "the inventory is the window")
+	check(inv_has("probe_a", "bgcolor[#080808FF;both;#000000FF]"), "the dark backdrop")
 	return nil
 end)
 
 local set_player_inventory_formspec
-stage("inventory key: faction and race", function()
-	local writes = fakes.probe_new.inventory_writes
-	set_player_inventory_formspec(by_name.probe_new)
-	check(fakes.probe_new.inventory_writes == writes, "sfinv writes nothing during creation")
-	check(submit("probe_new", "", {choose_accord = "The Accord"}) == "grug_classes",
-		"inventory faction choice handled by grug_classes (sfinv passed)")
-	check(meta("probe_new", "grug_factions:faction") == "accord", "faction persisted")
-	check(last_show("probe_new") == RACE_FORM, "race dialog follows")
-	marks.new = #shows
-	check(submit("probe_new", RACE_FORM, {quit = "true"}) == "grug_classes", "Esc on race")
-	check(hint("probe_new") == PAUSED, "paused hint on the race step")
+stage("the draft through the inventory key", function()
+	local writes = fakes.probe_a.inventory_writes
+	set_player_inventory_formspec(by_name.probe_a)
+	check(fakes.probe_a.inventory_writes == writes, "sfinv writes nothing during creation")
+	check(submit("probe_a", "", {faction_accord = "The Accord"}) == "grug_classes",
+		"faction from the inventory handled by grug_classes (sfinv passed)")
+	check(last_show("probe_a") == CREATE_FORM, "the window opens again")
+	check(not inv_has("probe_a", "model["), "no model before a race")
+	submit("probe_a", "", {race_human = "Human"})
+	check(inv_has("probe_a", "grug_visuals_human_body.png"), "the human preview (real look panel)")
+	check(inv_has("probe_a", ";false;true;0,79;30]"), "mouse rotation on, auto-rotation off")
+	submit("probe_a", "", {race_dwarf = "Dwarf"})
+	check(inv_has("probe_a", "grug_visuals_dwarf_body.png"), "a race change redraws the preview")
+	submit("probe_a", "", {class_mage = "Mage"})
+	check(inv_has("probe_a", "create_character"), "Create active")
+	submit("probe_a", "", {faction_throng = "The Throng"})
+	check(not inv_has("probe_a", "model[") and not inv_has("probe_a", "create_character"),
+		"a faction change clears race and look")
+	submit("probe_a", "", {race_human = "Human"})
+	check(not inv_has("probe_a", "model["), "a forged race of the other faction is refused")
+	submit("probe_a", "", {race_orc = "Orc"})
+	check(inv_has("probe_a", "style[class_mage;bgcolor=#8a6a1e;font=bold]"),
+		"the class stayed through the faction change")
+	local before = fakes.probe_a.inventory_formspec
+	submit("probe_a", "", {look_next_tone = ">"})
+	check(fakes.probe_a.inventory_formspec ~= before, "a look button changes the draft")
+	submit("probe_a", "", {look_random = "Random"})
+	marks.a = #shows
+	check(submit("probe_a", CREATE_FORM, {quit = "true"}) == "grug_classes", "Esc on the window")
+	check(hint("probe_a") == PAUSED, "paused hint")
+	check(nothing_stored("probe_a"), "nothing stored before Create")
 	return delay(1.5)
 end)
 
-stage("race and class from the inventory, then disconnect", function()
-	check(#shows_since(marks.new, "probe_new") == 0, "race dialog not re-opened")
-	check(fakes.probe_new.inventory_formspec:find("choose_human", 1, true) ~= nil,
-		"inventory formspec = race step")
-	submit("probe_new", "", {choose_human = "Human"})
-	check(meta("probe_new", "grug_classes:race") == "human", "race persisted")
-	check(last_show("probe_new") == CLASS_FORM, "class dialog follows")
-	-- All in this server step: the arrival emerge the race choice started
-	-- cannot have completed yet, so the class stays pending.
-	check(submit("probe_new", CLASS_FORM, {quit = "true"}) == "grug_classes", "Esc on class")
-	check(fakes.probe_new.inventory_formspec:find("choose_mage", 1, true) ~= nil,
-		"inventory formspec = class step")
-	submit("probe_new", "", {choose_mage = "Mage"})
-	check(meta("probe_new", "grug_classes:pending_class") == "mage", "pending class persisted at once")
-	check(meta("probe_new", "grug_classes:class") == "", "class not applied before the arrival")
-	check(last_show("probe_new") == LOADING_FORM, "arrival waiting screen after the class choice")
-	leave("probe_new")
+stage("Create, a second Create, then disconnect mid-load", function()
+	check(#shows_since(marks.a, "probe_a") == 0, "the window was not re-opened")
+	check(inv_has("probe_a", "style[race_orc;bgcolor=#8a6a1e;font=bold]"), "the draft survived Esc")
+	check(submit("probe_a", "", {create_character = "Create character"}) == "grug_classes",
+		"Create from the inventory")
+	check(meta("probe_a", "grug_factions:faction") == "throng", "faction stored")
+	check(meta("probe_a", "grug_classes:race") == "orc", "race stored")
+	check(meta("probe_a", "grug_classes:class") == "mage", "class stored")
+	check(meta("probe_a", "grug_visuals:look"):match("^%d,%d,%d,%d,%d$") ~= nil,
+		"look stored: " .. meta("probe_a", "grug_visuals:look"))
+	check(meta("probe_a", "grug_classes:arriving") == "1", "marked arriving")
+	check(last_show("probe_a") == LOADING_FORM, "the waiting screen after Create")
+	local look = meta("probe_a", "grug_visuals:look")
+	check(submit("probe_a", CREATE_FORM, {create_character = "Create character"}) == "grug_classes",
+		"a second Create is swallowed")
+	submit("probe_a", "", {faction_accord = "The Accord"})
+	check(meta("probe_a", "grug_factions:faction") == "throng" and
+		meta("probe_a", "grug_visuals:look") == look, "a second Create changes nothing")
+	-- All in this server step: the arrival emerge cannot have completed yet.
+	leave("probe_a")
 	return delay(3)
 end)
 
-stage("reconnect with a pending class", function()
-	check(meta("probe_new", "grug_classes:class") == "", "still no class after the disconnect")
-	check(meta("probe_new", "grug_classes:pending_class") == "mage", "pending class survived")
-	marks.new = #shows
-	join("probe_new", false)
-	check(fakes.probe_new.armor.immortal == 1, "reconnect is back in stasis")
-	return function()
-		return meta("probe_new", "grug_classes:class") ~= ""
-	end, 90
+stage("reconnect during the arrival wait", function()
+	check(meta("probe_a", "grug_classes:arriving") == "1", "still arriving after the disconnect")
+	marks.a = #shows
+	join("probe_a", false)
+	check(fakes.probe_a.armor.immortal == 1, "reconnect is back in stasis")
+	return function() return meta("probe_a", "grug_classes:arriving") == "" end, 90
 end)
 
 stage("arrival after the reconnect", function()
-	local s = shows_since(marks.new, "probe_new")
-	local saw_class = false
+	local s = shows_since(marks.a, "probe_a")
+	local saw_window = false
 	for _, row in ipairs(s) do
-		if row.formname == CLASS_FORM then saw_class = true end
+		if row.formname == CREATE_FORM then saw_window = true end
 	end
-	check(s[1] and s[1].formname == LOADING_FORM, "reconnect opened the arrival waiting screen")
-	check(not saw_class, "reconnect did not ask for the class again")
-	check(meta("probe_new", "grug_classes:class") == "mage", "persisted pending class applied")
-	check(meta("probe_new", "grug_classes:pending_class") == "", "pending class cleared")
-	local start = grug_core.start_position("accord", "human")
-	check(start and vector.equals(fakes.probe_new.pos, start), "teleported to the human start " ..
-		core.pos_to_string(fakes.probe_new.pos))
-	check(fakes.probe_new.armor.immortal == nil, "stasis released")
-	check(hint("probe_new") == "", "hint removed")
-	check((restores.probe_new or 0) >= 1, "inventory handed back to sfinv")
-	check(not sfinv.inventory_suspended(by_name.probe_new), "sfinv no longer suspended")
-	check(submit("probe_new", "", {grug_probe_unknown = "x"}) ~= "grug_classes",
+	check(s[1] and s[1].formname == LOADING_FORM, "the reconnect resumed the arrival wait")
+	check(not saw_window, "the reconnect did not show the window again")
+	local start = grug_core.start_position("throng", "orc")
+	check(start and vector.equals(fakes.probe_a.pos, start), "teleported to the orc start " ..
+		core.pos_to_string(fakes.probe_a.pos))
+	check(meta("probe_a", "grug_classes:class") == "mage", "still a mage")
+	check(fakes.probe_a.armor.immortal == nil, "stasis released")
+	check(hint("probe_a") == "", "hint removed")
+	check((restores.probe_a or 0) >= 1, "inventory handed back to sfinv")
+	check(not sfinv.inventory_suspended(by_name.probe_a), "sfinv no longer suspended")
+	check(submit("probe_a", "", {grug_probe_unknown = "x"}) ~= "grug_classes",
 		"inventory submissions no longer reach creation")
 	return nil
 end)
 
-stage("named dialogs, Esc on class", function()
-	check(submit("probe_open", FACTION_FORM, {choose_throng = "The Throng"}) == "grug_classes",
-		"faction dialog choice handled")
-	check(last_show("probe_open") == RACE_FORM, "race dialog follows")
-	submit("probe_open", RACE_FORM, {choose_orc = "Orc"})
-	check(last_show("probe_open") == CLASS_FORM, "class dialog follows")
-	marks.open = #shows
-	check(submit("probe_open", CLASS_FORM, {quit = "true"}) == "grug_classes", "Esc on class")
-	check(hint("probe_open") == PAUSED, "paused hint on the class step")
-	return delay(1.5)
+stage("the named dialog to an arrival", function()
+	submit("probe_b", CREATE_FORM, {faction_accord = "The Accord"})
+	submit("probe_b", CREATE_FORM, {race_elf = "Elf"})
+	submit("probe_b", CREATE_FORM, {create_character = "Create character"})
+	check(nothing_stored("probe_b"), "Create refused without a class")
+	submit("probe_b", CREATE_FORM, {class_scout = "Scout"})
+	check(submit("probe_b", CREATE_FORM, {create_character = "Create character"}) ==
+		"grug_classes", "Create from the dialog")
+	return function() return meta("probe_b", "grug_classes:arriving") == "" and
+		meta("probe_b", "grug_classes:class") ~= "" end, 90
 end)
 
-stage("class from the inventory with the arrival loaded", function()
-	check(#shows_since(marks.open, "probe_open") == 0, "class dialog not re-opened")
-	submit("probe_open", "", {choose_warrior = "Warrior"})
-	return function() return meta("probe_open", "grug_classes:class") ~= "" end, 90
-end)
-
-stage("named flow result", function()
-	check(meta("probe_open", "grug_classes:class") == "warrior", "class applied")
-	local start = grug_core.start_position("throng", "orc")
-	check(start and vector.equals(fakes.probe_open.pos, start), "teleported to the orc start")
-	check((restores.probe_open or 0) >= 1, "inventory handed back to sfinv")
-	check(fakes.probe_open.armor.immortal == nil, "stasis released")
-	check(hint("probe_open") == "", "hint removed")
+stage("named flow result, then a draft disconnect", function()
+	local start = grug_core.start_position("accord", "elf")
+	check(start and vector.equals(fakes.probe_b.pos, start), "teleported to the elf start")
+	check(meta("probe_b", "grug_classes:class") == "scout", "a scout")
+	check(fakes.probe_b.armor.immortal == nil, "stasis released")
+	check((restores.probe_b or 0) >= 1, "inventory handed back to sfinv")
+	join("probe_c", true)
+	submit("probe_c", "", {faction_accord = "The Accord"})
+	submit("probe_c", "", {race_human = "Human"})
+	submit("probe_c", "", {class_priest = "Priest"})
+	leave("probe_c")
+	join("probe_c", false)
+	check(inv_has("probe_c", "Choose your faction"), "a disconnect before Create starts over")
+	check(nothing_stored("probe_c"), "nothing stored for the abandoned draft")
+	check(fakes.probe_c.armor.immortal == 1, "the new draft is in stasis")
+	leave("probe_c")
 	return nil
 end)
 
 core.register_on_mods_loaded(function()
-	guard_setter(grug_factions, "set_faction", "grug_factions:faction")
-	guard_setter(grug_classes, "set_race", "grug_classes:race")
-	guard_setter(grug_classes, "set_class", "grug_classes:class")
+	guard(grug_factions, "set_faction", function(name, id)
+		return meta(name, "grug_factions:faction") == id end)
+	guard(grug_classes, "set_race", function(name, id)
+		return meta(name, "grug_classes:race") == id end)
+	guard(grug_classes, "set_class", function(name, id)
+		return meta(name, "grug_classes:class") == id end)
+	guard(grug_visuals.creation_panel, "store", function(name)
+		return meta(name, "grug_visuals:look") ~= "" end)
 	set_player_inventory_formspec = sfinv.set_player_inventory_formspec
 	sfinv.set_player_inventory_formspec = function(player, context)
 		local fake = fakes[player]

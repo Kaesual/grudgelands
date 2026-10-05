@@ -2,12 +2,12 @@
 -- on a real world, over two boots of the same world (tools/r31_a/engine.sh).
 --
 -- Boot 1:
---   1. The look step of character creation, driven through its real
---      functions on a player stand-in (a headless server has no client): the
---      dialog builds with a model[] preview, next/random change the draft,
---      confirm stores the look, a second confirm cannot change it. The
---      stand-in's meta lives in this mod's storage, so it survives the reboot
---      the way a real player's meta does.
+--   1. The look panel of the character-creation window (Round 35), driven
+--      through its real functions on a player stand-in (a headless server
+--      has no client): the panel builds with a model[] preview, next/random
+--      change the draft, store keeps the look, a second store cannot change
+--      it. The stand-in's meta lives in this mod's storage, so it survives
+--      the reboot the way a real player's meta does.
 --   2. A start settlement (the first fully placed one) after its NPCs: its
 --      blocks are force-loaded so every NPC activates, and every humanoid NPC
 --      there is read -- race drawn (the settlement's), a rolled seed, a
@@ -89,35 +89,36 @@ end
 
 local function player_part()
 	local player = stand_in()
-	local step = grug_visuals.creation_step
+	local panel = grug_visuals.creation_panel
 	if boot == 1 then
 		player:get_meta():set_string("grug_factions:faction", "throng")
 		player:get_meta():set_string("grug_classes:race", "troll")
 		check(grug_classes.get_race(player) == "troll", "stand-in is a troll")
-		check(not step.done(player), "no look before the step")
-		local form = step.formspec(player, "")
-		check(form:find("model[", 1, true) ~= nil, "the dialog has a model[] preview")
+		check(not grug_visuals.has_look(player), "no look before creation")
+		local look = panel.roll("troll")
+		local form = panel.formspec("troll", look, 3.8, 4.7, 10.8, 5.5)
+		check(form:find("model[", 1, true) ~= nil, "the panel has a model[] preview")
 		check(form:find("grug_visuals_troll_body.png", 1, true) ~= nil,
 			"the preview draws the troll's layers")
-		check(step.handles({look_next_style = "1"}) and step.handles({look_confirm = "1"}) and
-			not step.handles({choose_mage = "1"}), "the step knows its fields")
-		step.act(player, {look_next_style = ">"})
-		local after_next = step.formspec(player, "")
-		check(after_next ~= form, "next changes the draft")
-		step.act(player, {look_random = "Random"})
-		step.act(player, {look_confirm = "Confirm"})
-		check(step.done(player), "confirm stores the look")
+		check(panel.act("troll", look, {class_mage = "1"}) == nil,
+			"the panel ignores fields that are not its own")
+		local after_next = panel.act("troll", look, {look_next_style = ">"})
+		check(after_next ~= nil and
+			panel.formspec("troll", after_next, 3.8, 4.7, 10.8, 5.5) ~= form,
+			"next changes the draft")
+		local rolled = panel.act("troll", after_next, {look_random = "Random"})
+		check(panel.store(player, rolled), "store keeps the look")
+		check(grug_visuals.has_look(player), "the look is stored")
 		local stored = player:get_meta():get_string("grug_visuals:look")
 		check(stored:match("^%d,%d,%d,%d,%d$") ~= nil, "stored look " .. stored)
-		step.act(player, {look_next_tone = ">"})
-		step.act(player, {look_confirm = "Confirm"})
+		check(not panel.store(player, panel.roll("troll")), "a second store is refused")
 		check(player:get_meta():get_string("grug_visuals:look") == stored,
 			"a stored look cannot be changed")
 		local texture = grug_visuals.compose(grug_visuals.player_spec(player)).textures[1]
 		storage:set_string("player_texture", texture)
 		log("stand-in look " .. stored .. ", texture " .. #texture .. " chars")
 	else
-		check(step.done(player), "the look is still stored")
+		check(grug_visuals.has_look(player), "the look is still stored")
 		local texture = grug_visuals.compose(grug_visuals.player_spec(player)).textures[1]
 		check(texture == storage:get_string("player_texture"),
 			"the stand-in is drawn the same after the reboot")
