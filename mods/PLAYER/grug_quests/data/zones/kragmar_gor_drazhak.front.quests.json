@@ -97,6 +97,35 @@
       },
       "duration_min": 30,
       "optional": true
+    },
+    {
+      "id": "throng_main_island_wreck",
+      "line": "front",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "throng_main_06"
+      ],
+      "title": "Optional: Wages for the Sea",
+      "text": "A pay chest split open on the wreck at {name:r20_anchor_086} on Stormscale Summit, and the coins inside still carry that brand. Take a boat from the Shipwright, sail to the island and give the wreck's pay to the sea before some salvage crew takes it as wages. The sea already has the sailors; it can keep their money too.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_086",
+          "object": "wreck_pay_chest",
+          "label": "Give the wreck's pay to the sea",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 300,
+        "items": []
+      },
+      "duration_min": 30,
+      "optional": true
     }
   ]
 }
