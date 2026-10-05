@@ -636,7 +636,7 @@ lives.
   first successful reset and 1 thereafter. It persists across reconnects so
   the free reset is granted once per character; paid resets leave it at 1.
 - Parsed once per join into a per-player runtime cache, invalidated on spend,
-  respec, the first class pick and leave.
+  respec, a level change, the first class pick and leave.
 - **The read path validates, it does not trust.** Unknown ids are dropped,
   ranks are clamped to the talent's own rank count, a rank whose tier gate or
   hard chain is not satisfied is dropped **together with everything below it
@@ -870,7 +870,8 @@ grug_core.get_absorb(target)        -- the total
   leave of the caster remove (`grug_core.clear_absorb_modifiers`); the absorb
   itself keeps its lifetime.
 
-Writers: the Priest's Shield, Glacial Ward, Hold Ground and Recompense.
+Writers: the Priest's Shield, Glacial Ward, Hold Ground, Recompense and the
+Last Light Locket's trinket special (`items_crafting.md` §6.2).
 
 ---
 
