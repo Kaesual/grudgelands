@@ -822,8 +822,9 @@ current state). It is **derived, never authoritative**:
   house touches; it never changes a composition's bounds, sockets or
   protection box, never blocks a window or a way, and `tools/r36_w`
   holds every composition to the record in `baseline.tsv`
-  ([settlements.md](docs/design/settlements.md) "Decor pass"). A change is
-  world generation (`seed_fleet quick`).
+  ([settlements.md](docs/design/settlements.md) "Decor pass"). A change
+  that only places, swaps or turns kit nodes needs no seed fleet run (see
+  "Seed fleet" below); one that moves bounds or sockets does.
 - **Support amounts** multiply by `grug_classes.get_support_factor` (gear
   Intelligence over a base hit); spells floor once after the level scalar
   like every hit ([combat_stats.md](docs/design/combat_stats.md) §2).
@@ -895,11 +896,14 @@ behavior from an old completion report or source-line citation.
   (`tools/seed_fleet/seeds.txt`: the seeds that once failed, then seeds below
   and above 2^53), 8 in parallel under idle scheduling, never with a
   wall-clock kill; it prints every failed seed with its error and exits 1.
-  `quick` (100 seeds, about 4 minutes on this workstation) is required
-  before merge for every lane that touches world generation (`mods/MAPGEN`,
-  the anchors, water, roads, capitals, zones); `full` (about 300 seeds,
-  about 13 minutes) once at the end of every round that changed world
-  generation. An optional count of random extra seeds follows the size.
+  When to run it (user decision 2026-10-05): `quick` (100 seeds, about
+  4–5 minutes on this workstation) before merge only for a change to the
+  terrain, placement (anchors, water, roads, capitals, zones), footprints
+  (composition bounds, plots, protection shapes) or the world writer's
+  logic; a change that only swaps nodes or turns them (decor rows, a
+  bench's facing, a material) needs no run. `full` (about 300 seeds, about
+  13 minutes) at the end of a round only when such a change merged since
+  the last `full`. An optional count of random extra seeds follows the size.
   The reviewer checks the run's summary line (all seeds build) and that a
   changed seed list is explained.
 - Take `strict.lua` warnings (undeclared global) seriously — usually typos.
