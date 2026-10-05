@@ -179,7 +179,7 @@ do
 	local alive = R.particles_alive()
 	check(alive >= 20 and alive <= 300, "S about " .. alive .. " particles alive per player (hundreds at most)")
 	eq(R.boss_id("r20_anchor_077"), "rift:r20_anchor_077", "S the encounter id")
-	eq(R.BOSS_NAME, "Rift Boss", "S the working name")
+	eq(R.BOSS_NAME, "Isquarre the Tithe-Eater", "S the story bible name")
 end
 
 ------------------------------------------------------------------------------
@@ -539,7 +539,7 @@ do
 	eq(def._grug_tier, "elite", "B ...an elite")
 	eq(def.mesh, "grug_mobs_dungeon_master.b3d", "B ...on an existing mesh")
 	eq(def._grug_voice, "giant", "B ...with an approved voice family")
-	eq(def.description, R.BOSS_NAME, "B ...under the working name")
+	eq(def.description, R.BOSS_NAME, "B ...under its story bible name")
 	eq(def._grug_leash_range, 24, "B its own leash radius")
 	check((def._grug_hp_scale or 1) > 1, "B sized for a group")
 	players[1].pos = at_site(60, 0)
@@ -754,7 +754,7 @@ do
 	grug_mobs.roam_avoid_tick = noop
 	dofile(mobs_dir .. "/aggro.lua")
 	local def = core.registered_entities[BOSS]
-	boss.hp_max, boss.health = 24264, 9000
+	boss.hp_max, boss.health = 16176, 9000
 	boss.temp = {}
 	boss.object.pos = {x = anchor.x, y = anchor.y + 1, z = anchor.z}
 	boss.stop_attack = function(self) self.attack = nil; self.state = "stand" end
@@ -775,7 +775,7 @@ do
 	boss.object.pos = {x = anchor.x + 25, y = anchor.y + 1, z = anchor.z}
 	mono = mono + 1
 	grug_mobs.leash_tick(boss, 1)
-	eq(boss.health, 24264, "R dragged past 24 nodes: healed")
+	eq(boss.health, 16176, "R dragged past 24 nodes: healed")
 	eq(boss.attack, nil, "R ...the target dropped")
 	check(boss.temp.grug_evading ~= nil, "R ...and running home untouchable")
 	mono = mono + 1
@@ -791,7 +791,7 @@ do
 	grug_mobs.leash_tick(boss, 1)
 	mono = mono + grug_mobs.LEASH_TIMEOUT + 1
 	grug_mobs.leash_tick(boss, 1)
-	eq(boss.health, 24264, "R no contact for 15 s: reset")
+	eq(boss.health, 16176, "R no contact for 15 s: reset")
 	eq(boss.temp.grug_evading, nil, "R ...inside its radius: no run")
 	boss.object:remove()
 end
@@ -817,8 +817,8 @@ do
 			eq(spec.tier, "elite", where .. " an elite")
 			check(spec.respawn[1] == 270 and spec.respawn[2] == 330, where .. " back like a captain")
 			eq(spec.area, row.zone_id .. "/" .. row.key, where .. " the camp's quest area")
-			eq(spec.name, (row.faction == "accord" and "Accord" or "Throng") .. " War Commander",
-				where .. " the working name")
+			eq(spec.name, row.faction == "accord" and "War Commander Greyvow"
+				or "War Commander Stonegrudge", where .. " the story bible's name")
 			local roles = G.area_roles(row.key, band_of(row))
 			check(roles["commander_" .. row.faction] and roles["commander_" .. row.faction][1] == 60,
 				where .. " a kill objective may name him")

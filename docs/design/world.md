@@ -712,7 +712,7 @@ contact there is intended.
 - **Particles:** dark motes over the crack for each player within 48 nodes,
   one spawner per stretch of the crack every 5 s, about 80 particles per
   player and period, about 50 alive at once per player.
-- **The rift boss:** a demonic level-60 elite (`biomes_mobs.md`, Round 8
+- **The rift boss, Isquarre the Tithe-Eater:** a demonic level-60 elite (`biomes_mobs.md`, Round 8
   bosses table), sized for two or three level-60 players. It appears on the
   site's centre like a leader when a player is within 48 nodes and none
   within 6 of its spot, and is never saved with the map. Its leash is its
