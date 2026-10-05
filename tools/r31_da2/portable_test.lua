@@ -7,8 +7,9 @@
 --    arenas of the real source map: the radius is the mapgen profile's and
 --    grug_mobs' (dragon_arena.lua) and lies inside the protected core square;
 --    every hazard lies inside radius - 4, at least 9 from the spawn and 4.6
---    from every perch (the dragon's half width plus a margin); no 3 x 3 block
---    is all ember (a fissure is never wide enough for the dragon); a terrace
+--    from every perch (the dragon's half width plus a margin); no 5 x 5 block
+--    is all ember (a fissure, three or four wide since Round 36, never fits
+--    the wyvern's 4.8-node body); a terrace
 --    is level 1 or 2; the theme decides the hazards; the rim stones stand
 --    only on the radius, sparse.
 -- B. The rules (grug_mobs/dragon_arena.lua): inside at any height of the
@@ -89,10 +90,10 @@ for _, a in ipairs(arenas) do
 		local x, z = key:match("^(-?%d+),(-?%d+)$")
 		x, z = tonumber(x), tonumber(z)
 		local full = true
-		for ez = 0, 2 do for ex = 0, 2 do
+		for ez = 0, 4 do for ex = 0, 4 do
 			if not ember[(x + ex) .. "," .. (z + ez)] then full = false end
 		end end
-		check(not full, a.id .. " no 3 x 3 ember block at " .. key)
+		check(not full, a.id .. " no 5 x 5 ember block at " .. key)
 	end
 	if a.id == "wyrmglass" then
 		check((kinds.thin_ice or 0) > 100 and (kinds.frost or 0) > 100, "A wyrmglass: ice and terraces")

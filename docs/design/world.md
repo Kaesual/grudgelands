@@ -623,7 +623,9 @@ combat damage for the ordinary five-second combat window.
   chat warning on leaving, a "Dragon's Wrath" status and its own death
   message. The flags end together, at once, when the dragon dies or resets;
   a participant's death or logout drops only that player.
-- **Wyrmglass hazards:** patches of thin ice flush with the floor. Each
+- **Wyrmglass hazards:** seven patches of thin ice flush with the floor
+  (each a circle of radius 5 or 5.5 with a smaller offset one; Round 36:
+  one node wider than before). Each
   0.25 s sample of the hazard pass marks every thin-ice node in the 3×3×3
   cube around a player's feet inside the arena, and a marked node breaks
   into ice water **1 s later, always**, also when the player has moved on
@@ -632,17 +634,39 @@ combat damage for the ordinary five-second combat window.
   band. A node keeps at most one pending break, server-wide: marking it
   again never resets or postpones it. One breaking sound per sample's
   break, at most one a second while a run keeps breaking ice.
-  The water freezes again 20 s after nobody stands in it; ice water deals
+  The water freezes again **2 minutes** after it broke (Round 36, was 20 s),
+  once nobody stands in it (while someone does, it looks again every 5 s); ice water deals
   **250 damage per second** and slows. Three flat frost-stone
   terraces one and two nodes high, clearly distinct from the ice.
-- **Stormscale hazards:** six glowing ember fissures one node deep and one or
-  two wide, framed by basalt, dealing **350 damage per second**, no slow; five
+- **Stormscale hazards:** six glowing ember fissures one node deep and
+  **three or four wide** (Round 36, were one or two; zigzag edges, never wide
+  enough for the wyvern's body: no 5 × 5 block of ember), framed by basalt,
+  dealing **350 damage per second**, no slow; a player is never more than two
+  steps from solid floor and jumps out; five
   fallen trunks one node high (players jump over them, the wyvern walks or
   flies over them; not cover).
 - Hazard damage is a fixed amount per second through `set_hp` (node damage),
   so armour does not reduce it and it is never PvP contact; the absorb
   shield still soaks it, as it soaks dragon scorch. No hazard lies within 9
-  nodes of the spawn, within 4.6 of a perch or within 4 of the edge.
+  nodes of the spawn, within 4.6 of a perch or within 4 of the edge; every
+  floor cell, terrace and trunk is reachable from the spawn without stepping
+  on ember or thin ice.
+- **The wing gust** (Round 36, user feedback 2026-10-05): every 12 s (8.4 s
+  enraged), only while the dragon stands on the ground and a hostile player
+  is within **8 nodes**, it stops and winds up for **1.25 s**: the growl (the
+  wind-up cue, at most one in 10 s), its
+  wings beating (the flight clip), a ring of wind on the ground at the
+  gust's reach and a feed line "… spreads its wings: get clear!" for hostile
+  players within 16 nodes. Then everyone within 8 nodes is pushed away from
+  it (16 nodes per second and 5 up, about **6 nodes**), without damage or
+  slow. The push never carries a player beyond the arena radius − 4: it
+  reads his live braking (physics speed × air acceleration, so stacked slows
+  down to the 0.1 floor count) and leaves room for a further 60 % slow during
+  the flight; near the edge it is weakened, with less than a node of room it
+  is dropped. The dive's slam knockback follows the same rule, and the
+  engine's own punch knockback is off for the slam's hit. No
+  chain with the dive: the gust waits at least 4 s after a slam, and breath,
+  lightning and dive wait 2 s after a gust.
 
 - The old stage-one rule **one dragon per continent is retired**. The world
   gets two offshore overworld dragons, one beyond each Battlegrounds endpoint,

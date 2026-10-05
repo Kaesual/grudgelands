@@ -53,6 +53,53 @@ function M.clamp(arena, pos, margin)
 	return {x = arena.x + dx * f, y = pos.y, z = arena.z + dz * f}
 end
 
+-- The dragon's push (Round 36, the wing gust and the dive's slam): a player
+-- in the air brakes at the engine's default air acceleration (AIR_BRAKE nodes
+-- per s², Luanti `movement_acceleration_air`) times his own physics
+-- override's `speed` and `acceleration_air` (localplayer.cpp: incH * speed),
+-- so a push of `speed` carries him speed² / (2 * AIR_BRAKE * brake) nodes.
+-- The push never carries him beyond radius - PUSH_EDGE (the hazards' edge
+-- margin), so nobody is pushed out of the arena into the wrath or over the
+-- floor's outer edge; SLOW_FLOOR more covers a slow that lands during the
+-- flight.
+M.AIR_BRAKE, M.SLOW_FLOOR, M.PUSH_EDGE = 20, 0.6, 4
+
+-- How far a push of `speed` (nodes per second) carries a player whose
+-- braking factor is `brake` (1, or nil: unslowed).
+function M.push_travel(speed, brake)
+	return speed * speed / (2 * M.AIR_BRAKE * (brake or 1))
+end
+
+-- The velocity that pushes a player at `pos` away from `origin` (horizontal,
+-- plus `lift` upward), weakened so he stays inside the arena; nil when there
+-- is no direction or less than one node of room is left. `brake`: the
+-- player's live braking factor (physics override speed x acceleration_air;
+-- nil: 1). `arena` nil: the full push.
+function M.push(arena, origin, pos, speed, lift, brake)
+	if not origin or not pos then return nil end
+	local dx, dz = pos.x - origin.x, pos.z - origin.z
+	local length = math.sqrt(dx * dx + dz * dz)
+	if length <= 1e-6 then return nil end
+	dx, dz = dx / length, dz / length
+	local scale = 1
+	if arena then
+		-- The room along the push to the circle of radius - PUSH_EDGE: the
+		-- positive root t of |pos - centre + t * dir| = limit.
+		local limit = (arena.radius or M.RADIUS) - M.PUSH_EDGE
+		local px, pz = pos.x - arena.x, pos.z - arena.z
+		local b = px * dx + pz * dz
+		local c = px * px + pz * pz - limit * limit
+		local room = 0
+		if c < 0 then room = -b + math.sqrt(b * b - c) end
+		-- In nodes an unslowed player would travel: less for a slower one.
+		room = room * M.SLOW_FLOOR * math.max(0, math.min(1, brake or 1))
+		if room < 1 then return nil end
+		local travel = M.push_travel(speed)
+		if room < travel then scale = math.sqrt(room / travel) end
+	end
+	return {x = dx * speed * scale, y = lift, z = dz * speed * scale}
+end
+
 -- Whether the fight ends now: the dragon was engaged and no hostile living
 -- player is left inside its arena.
 function M.should_reset(engaged, hostiles_inside)

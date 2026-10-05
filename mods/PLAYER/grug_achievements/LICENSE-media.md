@@ -56,3 +56,21 @@ the outer face's 1-px border is the cloak's edge colour.
 | `grug_achievements_cloak_no_more_orders_1.png` | GPT-6 Astra (Grudgelands) | Own work; "Quiet Captain" (A20, proposal C20.1) | CC0-1.0 |
 | `grug_achievements_cloak_last_word_1.png` | GPT-6 Astra (Grudgelands) | Own work; "Final Seal" (A22, proposal C22.1) | CC0-1.0 |
 | `grug_achievements_cloak_grounded_1.png` | GPT-6 Astra (Grudgelands) | Own work; "Hard Landing" (A24, proposal C24.1) | CC0-1.0 |
+
+## Main questline cloaks — Round 36
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-05, following the approved Round 36 story bible. Hand-placed pixel
+shapes written with Python/Pillow; no image-generation service, downloaded
+art or third-party source pixels. The project dedicates any rights it holds
+in these originals to CC0-1.0. The reproducible generator is kept as
+provenance at `tools/r36_a/paint_art.py`.
+
+All three files are 32×32 RGBA and fully opaque: outer face in columns
+0–15, a 1-px edge-colour border, plain darker lining in columns 16–31.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `grug_achievements_cloak_unburnt_roll.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Mantle of the Unburnt Roll; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_unbought_banner.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; The Unbought Banner; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_broken_due.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Mantle of the Broken Due; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |

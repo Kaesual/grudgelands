@@ -18,9 +18,19 @@ local TUNING = {
 	lightning_cooldown = 8,
 	dive_windup = 1,
 	dive_cooldown = 6,
+	-- The wing gust (Round 36): on the ground, a wind-up the players see (a
+	-- wind ring at its reach, spread wings, the growl, a feed line), then a
+	-- push of gust_push nodes per second (about 6 nodes, dragon_arena.lua)
+	-- with gust_lift upward to everyone within gust_radius. It waits
+	-- gust_after_dive after a dive's slam and holds the breath, lightning and
+	-- dive back gust_recover after it, so push and slam never chain.
 	gust_cooldown = 12,
-	gust_radius = 5,
-	gust_slow = 2,
+	gust_windup = 1.25,
+	gust_radius = 8,
+	gust_push = 16,
+	gust_lift = 5,
+	gust_after_dive = 4,
+	gust_recover = 2,
 	enrage_fraction = 0.5,
 	enrage_cooldown_factor = 0.7,
 	whelp_level = 20,
@@ -292,7 +302,7 @@ local function is_thin_ice(pos)
 end
 
 -- One break event: its nodes that are still thin ice turn to ice water (it
--- freezes back 20 s later once nobody stands in it, grug_mapgen's
+-- freezes back 2 minutes later once nobody stands in it, grug_mapgen's
 -- world_nodes.lua); one sound per event, not per node.
 local function break_ice(event)
 	local broke = false
@@ -620,25 +630,37 @@ local function lightning_impact(self, snapshot)
 		2, 8, 0.25)
 end
 
-local function slam_knockback(player, origin)
-	local target = player:get_pos()
-	local dx, dz = target.x - origin.x, target.z - origin.z
-	local length = math.sqrt(dx * dx + dz * dz)
-	if length > 0 then
-		player:add_velocity({x = dx * 7 / length, y = 7 * 0.4,
-			z = dz * 7 / length})
+-- A player's live braking factor: the client brakes at the default air
+-- acceleration times the override's speed and acceleration_air (the
+-- grug_core movement aggregator is the only writer of both).
+local function braking(player)
+	local override = player.get_physics_override and player:get_physics_override()
+	if not override then return 1 end
+	return (override.speed or 1) * (override.acceleration_air or 1)
+end
+
+-- A push away from `origin`, kept inside the dragon's arena
+-- (dragon_arena.lua `push`).
+local function push_player(self, player, origin, speed, lift)
+	local velocity = arena_rules.push(arena_of(self), origin, player:get_pos(),
+		speed, lift, braking(player))
+	if velocity then player:add_velocity(velocity) end
+end
+
+-- The dive's slam pushes only through push_player: the engine's own
+-- knockback (builtin knockback.lua, off every punch) is off for its hit,
+-- since it would carry a player past the arena limit.
+local slam_hit = false
+local engine_knockback = core.calculate_knockback
+if engine_knockback then
+	function core.calculate_knockback(player, ...)
+		if slam_hit then return 0 end
+		return engine_knockback(player, ...)
 	end
 end
 
-local function gust(self)
-	local pos = self.object and self.object:get_pos()
-	if not pos then return end
-	for _, player in ipairs(hostile_players(pos, TUNING.gust_radius)) do
-		slam_knockback(player, pos)
-		grug_mobs.slow_player(player, TUNING.gust_slow, 0.6)
-	end
-	burst(pos, 96, "default_item_smoke.png^[colorize:#d8eef4:150", 3,
-		5, 3, 0.4)
+local function slam_knockback(self, player, origin)
+	push_player(self, player, origin, 7, 7 * 0.4)
 end
 
 local function remove_whelps(self)
@@ -726,13 +748,57 @@ local function begin_dive(self, state, target, target_pos)
 		5, 4, TUNING.dive_windup)
 end
 
+local GUST_TEXTURE = "default_item_smoke.png^[colorize:#d8eef4:150"
+
+-- The gust's wind-up (Round 36): the dragon stops and beats its spread wings
+-- (the flight clip) with the growl, a ring of wind marks its reach on the
+-- ground for the whole wind-up, and every hostile player near it reads a
+-- feed line.
+local function begin_gust(self, state, target, target_pos, opts)
+	begin_action(self, state, "gust", target, target_pos, TUNING.gust_windup)
+	if self.set_animation then self:set_animation("fly", true) end
+	local pos = self.object:get_pos()
+	for index = 0, 39 do
+		local angle = index * math.pi * 2 / 40
+		core.add_particle({
+			pos = {x = pos.x + math.cos(angle) * TUNING.gust_radius, y = pos.y + 0.2,
+				z = pos.z + math.sin(angle) * TUNING.gust_radius},
+			velocity = {x = 0, y = 0.3, z = 0},
+			expirationtime = TUNING.gust_windup,
+			size = 4,
+			texture = GUST_TEXTURE,
+			glow = 6,
+		})
+	end
+	if grug_core.feed then
+		for _, player in ipairs(hostile_players(pos, TUNING.gust_radius + 8)) do
+			grug_core.feed(player, "combat", opts.description ..
+				" spreads its wings: get clear!", "dragon_gust")
+		end
+	end
+end
+
+-- The gust itself: everyone within its reach is pushed away; breath,
+-- lightning and dive wait gust_recover.
+local function release_gust(self, state)
+	local pos = self.object and self.object:get_pos()
+	if not pos then return end
+	for _, player in ipairs(hostile_players(pos, TUNING.gust_radius)) do
+		push_player(self, player, pos, TUNING.gust_push, TUNING.gust_lift)
+	end
+	burst(pos, 96, GUST_TEXTURE, 3, TUNING.gust_radius, 3, 0.4)
+	state.primary = math.max(state.primary or 0, TUNING.gust_recover)
+end
+
 local function finish_dive(self, state)
 	local pos = self.object and self.object:get_pos()
 	if pos then
 		for _, player in ipairs(hostile_players(pos, 7)) do
+			slam_hit = true
 			player:punch(self.object, 1, {full_punch_interval = 1,
 				damage_groups = {fleshy = self.damage * 3}}, nil)
-			slam_knockback(player, pos)
+			slam_hit = false
+			slam_knockback(self, player, pos)
 		end
 		burst(pos, 120, "default_item_smoke.png^[colorize:#ffd24a:190", 8,
 			7, 5, 0.3)
@@ -740,6 +806,7 @@ local function finish_dive(self, state)
 	state.action = nil
 	state.mode = "landing"
 	state.primary = cooldown(self, TUNING.dive_cooldown)
+	state.gust = math.max(state.gust or 0, TUNING.gust_after_dive)
 	set_flight(self, false)
 end
 
@@ -797,6 +864,9 @@ local function tick_action(self, state, dtime, moveresult, opts)
 		lightning_impact(self, action.snapshot)
 		state.action = nil
 		state.primary = cooldown(self, TUNING.lightning_cooldown)
+	elseif action.kind == "gust" then
+		state.action = nil
+		release_gust(self, state)
 	end
 	return true
 end
@@ -982,10 +1052,6 @@ local function dragon_tick(self, dtime, moveresult, opts)
 		local above = {x = target_pos.x, y = target_pos.y + 6, z = target_pos.z}
 		return arena and arena_rules.clamp(arena, above, 4) or above
 	end
-	if state.gust <= 0 then
-		gust(self)
-		state.gust = cooldown(self, TUNING.gust_cooldown)
-	end
 	if state.mode == "landing" then
 		set_flight(self, false)
 		if grounded(self, moveresult) then
@@ -1007,6 +1073,12 @@ local function dragon_tick(self, dtime, moveresult, opts)
 			burst(pos, 48, "default_item_smoke.png^[colorize:#d8eef4:130", 3,
 				4, 3, 0.4)
 			steer(self, above_target(), TUNING.fly, TUNING.run)
+			return false
+		end
+		-- The gust only on the ground and only with someone in its reach.
+		if state.gust <= 0 and #hostile_players(pos, TUNING.gust_radius) > 0 then
+			state.gust = cooldown(self, TUNING.gust_cooldown)
+			begin_gust(self, state, target, target_pos, opts)
 			return false
 		end
 		if state.primary <= 0 then
