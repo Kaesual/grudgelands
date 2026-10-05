@@ -77,33 +77,42 @@ local function pointable(obj, ent, props, pointabilities)
 	return props.pointable ~= false
 end
 
+-- One axis of the segment/box test (the slab method): the entry interval
+-- [t0, t1] narrowed by the slab lo..hi, the entry axis and its face sign
+-- updated, or nil when the segment misses the slab.
+local function slab(t0, t1, axis, sign, i, lo, hi, s, d)
+	if d == 0 then
+		if s < lo or s > hi then
+			return nil
+		end
+		return t0, t1, axis, sign
+	end
+	local a, b = (lo - s) / d, (hi - s) / d
+	if a > b then
+		a, b = b, a
+	end
+	if a > t0 then
+		t0, axis, sign = a, i, d > 0 and -1 or 1
+	end
+	if b < t1 then
+		t1 = b
+	end
+	if t0 > t1 then
+		return nil
+	end
+	return t0, t1, axis, sign
+end
+
 -- Where the segment start + t * dir (t in [0, 1]) enters `box` (six numbers,
 -- relative to the object; a start inside counts at t = 0, as in the engine's
 -- boxLineCollision): t and the entry face's axis (1..3) and sign, or nil.
 local function enter_box(box, sx, sy, sz, dx, dy, dz)
-	local s, d = {sx, sy, sz}, {dx, dy, dz}
-	local t0, t1, axis, sign = 0, 1, 0, 0
-	for i = 1, 3 do
-		local lo, hi = box[i], box[i + 3]
-		if d[i] == 0 then
-			if s[i] < lo or s[i] > hi then
-				return nil
-			end
-		else
-			local a, b = (lo - s[i]) / d[i], (hi - s[i]) / d[i]
-			if a > b then
-				a, b = b, a
-			end
-			if a > t0 then
-				t0, axis, sign = a, i, d[i] > 0 and -1 or 1
-			end
-			if b < t1 then
-				t1 = b
-			end
-			if t0 > t1 then
-				return nil
-			end
-		end
+	local t0, t1, axis, sign = slab(0, 1, 0, 0, 1, box[1], box[4], sx, dx)
+	if t0 then
+		t0, t1, axis, sign = slab(t0, t1, axis, sign, 2, box[2], box[5], sy, dy)
+	end
+	if t0 then
+		t0, t1, axis, sign = slab(t0, t1, axis, sign, 3, box[3], box[6], sz, dz)
 	end
 	return t0, axis, sign
 end
@@ -165,10 +174,20 @@ local function box_hit(box, pos, rot, origin, dir, ref)
 	}, t * vector.length(dir)
 end
 
+local function same_box(a, b)
+	for i = 1, 6 do
+		if a[i] ~= b[i] then
+			return false
+		end
+	end
+	return (a.rotate and true or false) == (b.rotate and true or false)
+end
+
 -- Every rotated-box object the segment hits, nearest first, each with its
--- distance in `_distance`. Cheap rejections come first: no luaentity, no
--- rotated box, farther from the segment than the box reaches; only the rest
--- read their live properties.
+-- distance in `_distance`. Cheap work first: no luaentity or no rotated box
+-- ends it, then the distance from the segment, then the hit on the hint box;
+-- only a hit reads the live properties (pointable, visible, the box itself,
+-- which differs from the hint only for a half-size mob child).
 local function rotated_hits(origin, destination, pointabilities)
 	local dir = vector.subtract(destination, origin)
 	local length = vector.length(dir)
@@ -197,19 +216,26 @@ local function rotated_hits(origin, destination, pointabilities)
 			local t = math.max(0, math.min(1,
 				(rx * dir.x + ry * dir.y + rz * dir.z) / (length * length)))
 			local cx, cy, cz = rx - dir.x * t, ry - dir.y * t, rz - dir.z * t
-			if cx * cx + cy * cy + cz * cz <= reach2 then
+			local rot = cx * cx + cy * cy + cz * cz <= reach2 and obj:get_rotation()
+			local hit, distance
+			if rot then
+				hit, distance = box_hit(hint, pos, rot, origin, dir, obj)
+			end
+			if hit then
 				local props = obj:get_properties()
 				local box = props.selectionbox
-				if props.is_visible ~= false and box and
-						pointable(obj, ent, props, pointabilities) then
-					local hit, distance = box_hit(box, pos,
-						box.rotate and obj:get_rotation() or nil, origin, dir, obj)
-					if hit then
-						hit._distance = distance
-						hits = hits or {}
-						hits[#hits + 1] = hit
-					end
+				if props.is_visible == false or not box or
+						not pointable(obj, ent, props, pointabilities) then
+					hit = nil
+				elseif not same_box(box, hint) then
+					hit, distance = box_hit(box, pos, box.rotate and rot or nil,
+						origin, dir, obj)
 				end
+			end
+			if hit then
+				hit._distance = distance
+				hits = hits or {}
+				hits[#hits + 1] = hit
 			end
 		end
 	end
