@@ -156,7 +156,7 @@ local function loader(directory)
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.totem(buf, palette, area.x0 + 2, area.z1 - 2, 4)
-				dressing.bench(buf, palette, area.x1 - 5, area.z1 - 2, 2, 3,
+				dressing.bench(buf, palette, area.x1 - 5, area.z1 - 2, 0, 3,
 					"x")
 			end,
 			extra_sockets = function(area)

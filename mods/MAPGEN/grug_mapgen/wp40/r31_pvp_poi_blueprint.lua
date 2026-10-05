@@ -240,7 +240,7 @@ return function(options, profile)
 		for z=-5,9,2 do put(-21,1,z,"grug_decor:cottages_straw_mat") end
 		for z=-5,9,4 do put(-17,1,z,"grug_decor:cottages_straw_mat") end
 		put(-15,1,9,"grug_decor:xdecor_barrel"); put(-16,1,9,"grug_decor:xdecor_barrel")
-		put(-15,1,-5,"grug_decor:cottages_bench"); put(-16,1,-5,"grug_decor:cottages_bench")
+		put(-15,1,-5,"grug_decor:cottages_bench",2); put(-16,1,-5,"grug_decor:cottages_bench",2)
 		-- North-west: stores beside the keep.
 		for _,q in ipairs({{-21,13},{-20,13},{-21,14},{-21,15},{-19,13}}) do put(q[1],1,q[2],"grug_decor:xdecor_barrel") end
 		put(-21,2,13,"grug_decor:xdecor_barrel")

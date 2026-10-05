@@ -695,7 +695,7 @@ local function loader(directory)
 					dressing.crates(buf, orc, stack[1], stack[2], 2)
 				end)
 		end
-		for _, seat in ipairs({{44, 36, 3, "z"}, {22, 28, 1, "z"}}) do
+		for _, seat in ipairs({{44, 36, 3, "z"}, {22, 28, 3, "z"}}) do
 			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
 			local z2 = (seat[4] == "z") and seat[2] + 2 or seat[2]
 			paved_prop("court_bench", seat[1], seat[2], x2, z2, function()

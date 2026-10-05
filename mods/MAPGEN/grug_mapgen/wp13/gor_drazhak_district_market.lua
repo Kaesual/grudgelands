@@ -113,7 +113,7 @@ local function loader(directory)
 				end
 				buf:put(area.x0 + 3, 1, area.z1 - 4,
 					palette.node("storage"))
-				dressing.bench(buf, palette, area.x1 - 5, area.z1 - 2, 2, 3,
+				dressing.bench(buf, palette, area.x1 - 5, area.z1 - 2, 0, 3,
 					"x")
 				dressing.wood_pile(buf, palette, area.x1 - 2, area.z0 + 3,
 					3, "z")
@@ -240,7 +240,7 @@ local function loader(directory)
 				dressing.totem(buf, palette, area.x1 - 2, area.z0 + 3, 4)
 				buf:put(area.x0 + 3, 1, area.z1 - 2, palette.node("tree_log"))
 				buf:put(area.x0 + 3, 2, area.z1 - 2, palette.node("tree_log"))
-				dressing.bench(buf, palette, area.x1 - 5, area.z1 - 2, 2, 3,
+				dressing.bench(buf, palette, area.x1 - 5, area.z1 - 2, 0, 3,
 					"x")
 			end,
 			extra_sockets = function(area)

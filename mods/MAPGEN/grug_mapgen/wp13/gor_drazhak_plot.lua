@@ -340,11 +340,12 @@ local function loader(directory)
 			end
 
 			-- 5. Two lamps on the street corners of the plot, and a bench
-			-- beside the door.
+			-- beside the door, its back to the house and its seat to the
+			-- street (face 2: it looks along -z).
 			for _, lamp in ipairs({{x0 + 1, z0 + 1}, {x1 - 1, z0 + 1}}) do
 				dressing.path_light(buf, palette, lamp[1], lamp[2])
 			end
-			dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
+			dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 		end
 
 		-- 6. Whatever this plot alone wants on its own ground. It is handed the

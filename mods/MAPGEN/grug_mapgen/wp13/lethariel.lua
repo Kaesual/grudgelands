@@ -803,9 +803,11 @@ local function loader(directory)
 		socket("shore_work_beds", "work", 9, 1, 16, 0, {activity = "tend"})
 		socket("shore_work_stone", "work", 13, 1, 16, 0, {activity = "carve"})
 		socket("shore_work_sweep", "work", -4, 1, 19, 0, {activity = "sweep"})
-		socket("crossing_work_west", "work", -5, 2, -4, 2,
+		-- The two sitters face where their benches look: into the crossing,
+		-- their backs to the lantern pillars (Round 36 lane W2).
+		socket("crossing_work_west", "work", -5, 2, -4, 0,
 			{activity = "sit", tags = {"bench"}})
-		socket("crossing_work_east", "work", 5, 2, -4, 2,
+		socket("crossing_work_east", "work", 5, 2, -4, 0,
 			{activity = "sit", tags = {"bench"}})
 		-- TEN SPARE spots. `spawn = false` is the sockets contract's own word
 		-- for them (playtest round 2): a real authored standing position that

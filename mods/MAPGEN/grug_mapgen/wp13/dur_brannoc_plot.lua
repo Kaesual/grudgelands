@@ -319,11 +319,12 @@ local function loader(directory)
 			points = parts.stamp(buf, part, ox, 0, oz, turns)
 
 			-- 5. Two lamps on the street corners of the plot, and a bench
-			-- beside the door.
+			-- beside the door, its back to the house and its seat to the
+			-- street (face 2: it looks along -z).
 			for _, lamp in ipairs({{x0 + 1, z0 + 1}, {x1 - 1, z0 + 1}}) do
 				dressing.path_light(buf, palette, lamp[1], lamp[2])
 			end
-			dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
+			dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 		end
 
 		-- 5b. A garden plot plants the ring its wider ground bought. Pines, and
