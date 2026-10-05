@@ -95,6 +95,36 @@
       "lesson": "Island salvage bounty: coin at the cap.",
       "duration_min": 25,
       "optional": true
+    },
+    {
+      "id": "accord_main_island_cairn",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "accord_main_roll"
+      ],
+      "title": "Optional: Wrong Ink on the Survey",
+      "text": "Somebody pressed a branded coin into the capstone of the survey cairn at {name:r20_anchor_075} on the Wyrmglass Crown, as if to sign the island into their own books. Take a boat from the Shipwright at our stables, keep to the shelf and the channel, and pry the coin out. The clan's records have no line for a debt to the ground itself, and I intend to keep it that way.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_075",
+          "object": "survey_cairn",
+          "label": "Pry the brand-coin from the survey cairn",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 300,
+        "items": []
+      },
+      "lesson": "Optional island extension of the main line (chapter 3 on): one use, coin only.",
+      "duration_min": 30,
+      "optional": true
     }
   ]
 }

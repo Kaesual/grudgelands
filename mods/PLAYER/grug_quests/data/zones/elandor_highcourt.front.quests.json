@@ -95,6 +95,36 @@
       "lesson": "Island salvage bounty: coin at the cap.",
       "duration_min": 25,
       "optional": true
+    },
+    {
+      "id": "accord_main_island_wreck",
+      "line": "front",
+      "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "accord_main_roll"
+      ],
+      "title": "Optional: Pay for the Sea",
+      "text": "A wrecked pay chest lies at {name:r20_anchor_086} on Stormscale Summit, its coins warm in the surf and every one of them branded. Take a boat from the Shipwright at the stables, follow the shelf and the channel away from the Kraken, and give that pay to the sea. Branded coin should not wash up anywhere a soldier can spend it.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_086",
+          "object": "wreck_pay_chest",
+          "label": "Give the wreck's pay to the sea",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 300,
+        "items": []
+      },
+      "lesson": "Optional island extension of the main line (chapter 3 on): one use, coin only.",
+      "duration_min": 30,
+      "optional": true
     }
   ]
 }

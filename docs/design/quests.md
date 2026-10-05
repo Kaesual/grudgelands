@@ -196,6 +196,22 @@ host's main line in the front bands (`ledger.py --track`).
   and `throng_main_final` at the Warmaster. Optional: War Commander
   Greyvow (57, Group:), the survey cairn and the wreck's pay chest on the
   islands (60, from the Nhal Veyr and Gor Drazhak envoys).
+- **The Accord** ("Every Name Accounted For", tag `accord_main`, the
+  Warmaster's line `main`): chapter 1 (41) the impounded pay at Ashen
+  Wheelbreak, Toren Waterbarrel's Coal-Purse Factors, Alna Archsight's
+  rubbing at Brandscar Cairn and Toll-Taker Senn with his toll-box at
+  Causeway Toll Ruin (her Senn chain opens at 46, two levels earlier, so
+  chapter 2 can open at 46); chapter 2 (46) the Brandbound Collectors and
+  the pledged standard at Siege Ramp Foot, Nella Hedgeward's Ninepins, the
+  Throng Captain's Orders from the Throng's high war camp on The Shattered
+  Line (47), the courier's pay ledger at Courier's Stump; chapter 3 (53)
+  the Debtjaw Hounds, turned in at Borin Splitbolt, his Huskell, Eriath
+  Boughwarden's Chirr, the rootmark at Skyroot Crossing and the
+  tally-stone at Tombroad Ambush; then the finale at the Warmaster and
+  `accord_main_final`, a report given and taken there. Optional: War
+  Commander Stonegrudge (57, Group:), Salt-Counter (58, Group:, Borin),
+  the survey cairn and the wreck's pay chest on the islands (60, from the
+  Dur Brannoc and Highcourt envoys, once chapter 3 has begun).
 
 ## Objective presentation
 

@@ -6,8 +6,8 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 45,
-      "level": 47,
+      "min_level": 44,
+      "level": 46,
       "requires": [],
       "title": "Bad Workmanship, Worse Company",
       "text": "I'd welcome a proper look at the old masonry, if Causeway Brigands and Aqueduct Bowmen would let our surveyors near it. Go by day to the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and defeat five of the brigands and bowmen lurking there. A dwarf should be able to criticise a crumbling arch in peace.",
@@ -34,13 +34,14 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 47,
-      "level": 49,
+      "min_level": 45,
+      "level": 47,
       "requires": [
-        "archshadow_front_01"
+        "archshadow_front_01",
+        "cinderline_front_04"
       ],
       "title": "A Runesmith's Awkward Questions",
-      "text": "Our runesmiths reckon they can trace whoever put the Tollroad Skeletons back on their feet. Bring me three Siege Bones from those skeletons in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}, after dark. I've given the smiths a bench of their own; their questions were spoiling everyone's supper.",
+      "text": "My runesmiths know this stamp: the old Copperfell counting-house pressed one like it into forged purses, but that was ink, and this is burned clean through the metal. Someone has scorched the same ring into the stones at {name:brandscar_cairn} {dir_from_giver:brandscar_cairn}; take a rubbing of it. Then bring me three Siege Bones from the Tollroad Skeletons in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}, after dark, so the smiths can see what keeps them on their feet.",
       "objectives": [
         {
           "type": "item",
@@ -50,32 +51,43 @@
             "causeway_toll_skeleton"
           ],
           "area": "front_broken_causeway/toll_fields"
+        },
+        {
+          "type": "use",
+          "place": "brandscar_cairn",
+          "object": "brand_rubbing",
+          "label": "Take a rubbing of the brand",
+          "hold": 5
         }
       ],
       "rewards": {
-        "weight": 5,
+        "weight": 5.5,
         "items": []
       },
       "lesson": "The top belt of the Causeway at night.",
-      "duration_min": 14
+      "duration_min": 18,
+      "tags": [
+        "accord_main"
+      ]
     },
     {
       "id": "archshadow_front_03",
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 48,
-      "level": 49,
+      "min_level": 46,
+      "level": 48,
       "requires": [
         "archshadow_front_02"
       ],
       "title": "Collection Ends Here",
-      "text": "The runesmiths have a name: {name:toll_taker_senn}, working out of the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}. Seems he raised the dead to collect his tolls, which explains the service. Defeat him and five of his Aqueduct Bowmen; the next coin spent on that road ought to repair it.",
+      "text": "The bones told the smiths what the coins do: {name:toll_taker_senn} pays his dead in that burnt coin, and it keeps them on the road. He works out of the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}; defeat him and five of the Aqueduct Bowmen or Coal-Purse Factors guarding his take. His toll-box stands at {name:r20_anchor_078}; turn it out, because I want his accounts more than his apologies.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "causeway_aqueduct_bowman"
+            "causeway_aqueduct_bowman",
+            "coal_purse_factor"
           ],
           "count": 5,
           "area": "front_broken_causeway/toll_camp"
@@ -86,15 +98,53 @@
             "toll_taker_senn"
           ],
           "count": 1
+        },
+        {
+          "type": "use",
+          "place": "r20_anchor_078",
+          "object": "toll_box",
+          "label": "Turn out the branded toll-box",
+          "hold": 5
         }
       ],
       "rewards": {
         "weight": 6,
         "items": []
       },
-      "lesson": "Causeway climax: a bowman camp and its named normal leader.",
+      "lesson": "Causeway climax and the main line's chapter 1 climax: a bowman camp, its named normal leader and Senn's toll-box.",
       "duration_min": 16,
-      "climax": true
+      "climax": true,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "accord_main_accounts",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 46,
+      "level": 47,
+      "requires": [
+        "archshadow_front_03"
+      ],
+      "title": "Senn's Accounts",
+      "text": "Senn's accounts say more than he did: he was paid to keep that road deadly, not merely to charge for it, and a Paymaster Chirr in The Skyglass Canopy promised him more. The pay bundle came wrapped in a requisition under a Throng seal, on very good paper, the kind a fortress keeps. Take all of it to the Warmaster at {name:pvp_fortress_accord}. I'd rather the accusations start with someone whose job it is.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r31_accord_warmaster"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Main line, chapter 1 (last turn-in): the handoff from Archshadow Post back to the Warmaster.",
+      "duration_min": 10,
+      "tags": [
+        "accord_main"
+      ]
     },
     {
       "id": "archshadow_front_04",
@@ -363,10 +413,11 @@
       "min_level": 57,
       "level": 59,
       "requires": [
-        "splitbolt_front_07"
+        "splitbolt_front_07",
+        "accord_main_roll"
       ],
       "title": "The Last Watch Ends",
-      "text": "{name:watch_captain_huskell} still commands the {name:front_gravesalt_escarpment/ossuary_wood} {dir_from_giver:watch_captain_huskell}, and his Last-Watch Skeleton Raiders march his rounds every night. Defeat five of the raiders after dark, then the captain himself. Somebody has to relieve that watch, and it may as well be you.",
+      "text": "{name:watch_captain_huskell} still commands the {name:front_gravesalt_escarpment/ossuary_wood} {dir_from_giver:watch_captain_huskell}, and his Last-Watch Skeleton Raiders march his rounds every night on fresh pay. Defeat five of the raiders after dark, then the captain himself, and bring me the roll he calls them by. Somebody has to relieve that watch, and it may as well be you.",
       "objectives": [
         {
           "type": "kill",
@@ -390,7 +441,40 @@
       },
       "lesson": "Gravesalt climax: its named normal leader at the heart of the escarpment.",
       "duration_min": 16,
-      "climax": true
+      "climax": true,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "splitbolt_front_09",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 58,
+      "level": 59,
+      "requires": [
+        "splitbolt_front_08"
+      ],
+      "title": "Group: Nothing Left to Count",
+      "text": "{name:salt_counter_witch} keeps her own count out in the Gravesalt mires {dir_from_giver:salt_counter_witch}, and every soldier in it is an entry she means to spend. She's an elite and she bites back, so gather a group before you go. I'd like the next count in that mire to come out at nothing.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "salt_counter_witch"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Optional group elite; the route reaches 60 without it.",
+      "duration_min": 12,
+      "optional": true,
+      "group": true
     },
     {
       "id": "splitbolt_front_bounty",
@@ -435,7 +519,7 @@
         "splitbolt_front_08"
       ],
       "title": "Someone Who Came Back",
-      "text": "Eriath Boughwarden in Lethariel asked for someone who'd walked Gravesalt Escarpment and come back with their wits. Speak with him there and give him my account; his people are watching The Skyglass Canopy. I've put in a good word for you, though he'll take three graceful sentences to say whether he agrees.",
+      "text": "Huskell's roll is no muster list: the page is headed 'the Undertithe', and it holds soldiers of both armies, bought back onto duty with fresh branded pay. At the bottom, in new ink, stands Odren Vell; the coin collected its own clerk. Take the page to Eriath Boughwarden in Lethariel, whose people are watching The Skyglass Canopy. He'll need three graceful sentences to agree with me.",
       "objectives": [
         {
           "type": "talk",
@@ -447,7 +531,10 @@
         "items": []
       },
       "lesson": "Handoff from Gravesalt to Skyglass.",
-      "duration_min": 15
+      "duration_min": 15,
+      "tags": [
+        "accord_main"
+      ]
     }
   ]
 }

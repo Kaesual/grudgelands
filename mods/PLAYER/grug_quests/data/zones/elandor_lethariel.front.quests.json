@@ -94,15 +94,17 @@
       "min_level": 58,
       "level": 59,
       "requires": [
-        "lethariel_front_03"
+        "lethariel_front_03",
+        "splitbolt_front_06"
       ],
       "title": "The Price of Another War",
-      "text": "{name:paymaster_chirr} pays his Last-Pay Archers with coin stripped from the dead of both banners at the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}. Defeat five of those archers and the paymaster himself. We have watched this forest grow through enough wars; he will not purchase another beneath its branches.",
+      "text": "I have seen this hand before, in Bough-Counter Rusk's false reckonings; in {name:paymaster_chirr} it has grown bold. He pays his Last-Pay Archers and Ash-Writ Bowmen in branded coin at the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}, and every name on his payroll is a name on that roll. Defeat five of those bowmen and the paymaster himself; he will not purchase another war beneath these branches.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "last_pay_archer"
+            "last_pay_archer",
+            "ash_writ_bowman"
           ],
           "count": 5,
           "area": "front_skyglass_canopy/paymaster_camp"
@@ -119,9 +121,50 @@
         "weight": 7,
         "items": []
       },
-      "lesson": "Front climax: the last named normal leader before 60.",
+      "lesson": "Front climax and the main line's chapter 3 climax: the last named normal leader before 60.",
       "duration_min": 18,
-      "climax": true
+      "climax": true,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "accord_main_tally",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 58,
+      "level": 59,
+      "requires": [
+        "lethariel_front_04"
+      ],
+      "title": "Struck from the Roll",
+      "text": "Chirr's purse held coin from the dead of both armies, and every coin is a name the roll still claims. Strike those names where the debt is written: smother the burning rootmark at {name:r20_anchor_084}, then strike the names from the tally-stone at {name:r20_anchor_077} in Gravesalt Escarpment. A debt with no names left to hold it will be collected in person, so take your report to the Warmaster at {name:pvp_fortress_accord} when it is done.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_084",
+          "object": "rootmark",
+          "label": "Smother the burning rootmark",
+          "hold": 5
+        },
+        {
+          "type": "use",
+          "place": "r20_anchor_077",
+          "object": "tally_stone",
+          "label": "Strike the names from the tally",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Main line, chapter 3 (last turn-in): two uses, at a Skyglass clash site and at Tombroad Ambush, then back to the Warmaster.",
+      "duration_min": 20,
+      "tags": [
+        "accord_main"
+      ]
     },
     {
       "id": "lethariel_front_05",
@@ -134,7 +177,7 @@
         "lethariel_front_04"
       ],
       "title": "Group: Beneath the Waiting Coils",
-      "text": "The branches bend beneath {name:glass_throat_serpent} in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}. Gather a group and slay that elite serpent before it takes another of our watchers. There is wisdom in a solitary walk, but this is a task for companions who will watch one another's backs.",
+      "text": "The branches bend beneath {name:glass_throat_serpent} in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}; it has grown fat on what the corruption leaves behind. Gather a group and slay that elite serpent before it takes another of our watchers. There is wisdom in a solitary walk, but this is a task for companions who will watch one another's backs.",
       "objectives": [
         {
           "type": "kill",
