@@ -8,8 +8,8 @@
 --      that exists in some mod's sounds/ (the name itself or its .1, .2 ...
 --      variants); every grug_sounds_* file is played by a spec (as itself or
 --      as a variant); every .ogg in grug_sounds/sounds is mono and on
---      tools/r34_s1a/approved.txt, tools/r34_s1b/approved.txt or
---      tools/r35_f/approved.txt (the user's
+--      tools/r34_s1a/approved.txt, tools/r34_s1b/approved.txt,
+--      tools/r35_f/approved.txt or tools/r37_sn/approved.txt (the user's
 --      picks; '#' lines are comments),
 --      and every listed file ships;
 --   C  the call sites (and grug_jobs' craft-sound table: real professions
@@ -120,10 +120,11 @@ for event, spec in pairs(EVENTS) do
 end
 
 -- Both sound lanes ship into this mod: lane S1b's picks (combat and
--- creatures) are listed in tools/r34_s1b/approved.txt, and Round 35 lane F's
--- break sound in tools/r35_f/approved.txt.
+-- creatures) are listed in tools/r34_s1b/approved.txt, Round 35 lane F's
+-- break sound in tools/r35_f/approved.txt and Round 37 lane SN's dragon
+-- return and Rift Spawn cues in tools/r37_sn/approved.txt.
 local approved = {}
-for _, lane in ipairs({"r34_s1a", "r34_s1b", "r35_f"}) do
+for _, lane in ipairs({"r34_s1a", "r34_s1b", "r35_f", "r37_sn"}) do
 	local approved_text = read(ROOT .. "/tools/" .. lane .. "/approved.txt")
 	check(approved_text ~= nil, "E tools/" .. lane .. "/approved.txt exists")
 	for line in (approved_text or ""):gmatch("[^\n]+") do

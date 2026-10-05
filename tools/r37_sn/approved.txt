@@ -1,0 +1,9 @@
+# Round 37 lane SN: files the user approved (file name, page number, source).
+# Picks of 2026-10-05 on the private listening pages r37/previews/sn (page 1:
+# dragon_return=D5, rift_fuse=heute) and r37/previews/sn2 (page 2:
+# rift_burst=E7); work = the page's work/ folder.
+grug_sounds_dragon_return.ogg, R37 SN D5, https://freesound.org/people/Logicogonist/sounds/207167/ (Logicogonist, CC0 1.0; "spooky gong.wav", HQ preview; first 4.0 s, start silence trimmed, fade-out 1.2 s; work/ogg/D5.ogg sha256 f174f0f9bc9f11ca)
+grug_sounds_rift_fuse.1.ogg, R37 SN heute (rift_fuse), default_cool_lava.1.ogg of the vendored Minetest Game default mod (celeron55, CC BY-SA 3.0; start silence trimmed, peak -3 dBFS; work/ogg/F_heute.1.ogg sha256 c53d80e2d8a3db67)
+grug_sounds_rift_fuse.2.ogg, R37 SN heute (rift_fuse), default_cool_lava.2.ogg of the vendored Minetest Game default mod (celeron55, CC BY-SA 3.0; start silence trimmed, peak -3 dBFS; work/ogg/F_heute.2.ogg sha256 aa1271803e4fbcfb)
+grug_sounds_rift_fuse.3.ogg, R37 SN heute (rift_fuse), default_cool_lava.3.ogg of the vendored Minetest Game default mod (celeron55, CC BY-SA 3.0; start silence trimmed, peak -3 dBFS; work/ogg/F_heute.3.ogg sha256 c562454d6e3ed82c)
+grug_sounds_rift_burst.ogg, R37 SN2 E7, https://freesound.org/people/animationIsaac/sounds/207322/ (animationIsaac, CC0 1.0; "Short Explosion.wav", HQ preview; start silence trimmed; work/ogg/E7.ogg sha256 da30ea21b94ae326)

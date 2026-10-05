@@ -72,6 +72,13 @@ converted to mono Ogg, cut to 2.5 s, normalised (Glacial Ward,
 `grug_sounds_cast_frost_ward.ogg`). This modified file is shared under the
 same licence.
 
+**celeron55 (Minetest Game)** — CC BY-SA 3.0. The lava-cooling hiss
+`default_cool_lava.1-3.ogg` of the Minetest Game `default` mod
+(<https://github.com/luanti-org/minetest_game>), licensed under CC BY-SA 3.0
+(https://creativecommons.org/licenses/by-sa/3.0/); converted to mono Ogg and
+normalised (the Rift Spawn's fuse, `grug_sounds_rift_fuse.1-3.ogg`). These
+modified files are shared under the same licence.
+
 **sonictechtonic** — CC BY 3.0. The eating sounds (`grug_food`), unchanged
 copies of Lord of the Test's `stamina_eat` files, recorded by sonictechtonic
 (<https://freesound.org/people/sonictechtonic/sounds/242215/>).
@@ -81,12 +88,12 @@ Sounds, Music Jingles), **rubberduck** (the CC0 RPG, creature, water-splash
 and SFX packs and the breaking/falling/hit pack on OpenGameArt), **artisticdude** (RPG Sound Pack),
 **Ogrebane** (Monster Sound Effects Pack), the VoxeLibre contributors (the
 drinking sound), and the Freesound authors whose recordings became our
-effects, voices, beds and loops: Abyssmal, adamgryu, bajko, Bikkit99,
+effects, voices, beds and loops: Abyssmal, adamgryu, animationIsaac, bajko, Bikkit99,
 Bradovic, Breviceps, cognito perceptu, corentin_faucher, craigsmith, csaszi,
 DBlover, denalwa, Duasun, EpicWizard, EricsSoundschmiede, Fission9,
 fribergmusic2024, GammaGool, Garuda1982, ItsThatRoboGuy, jaime_enrique,
 JelloApocalypse, JoelAudio, Jofae, Josh74000MC, Julien Matthey,
-keng-wai-chane-chick-te, Kinoton, leonelmail, LilMati, MacFerret_20,
+keng-wai-chane-chick-te, Kinoton, leonelmail, LilMati, Logicogonist, MacFerret_20,
 mhtaylor67, michorvath, mistersherlock, monsterthing, myrinvp, Mythmazter,
 newagesoup, nigelcoop, o_ciz, parnellij, Proxima4, Q.K., qubodup, Reitanna,
 rockittt, SamsterBirdies, saturdaysoundguy, Sauron974, schreibsel, sergeeo,
@@ -98,8 +105,13 @@ The footstep, digging, door and furnace sounds come with the vendored
 minetest_game mods; their authors (CC BY 3.0: cmusounddesign, Tomlija,
 lsprice, sonictechtonic, yadronoff, HerbertBoland, AGFX; CC BY-SA 3.0 and CC0
 authors) are listed in `mods/BASE/default/license.txt` and the other mods'
-licence files. mobs_redo's swing, spell and punch sounds are CC0 by qubodup,
-Little Robot Sound Factory and Merrick079 (`mods/ENTITIES/mobs/license.txt`).
+licence files. mobs_redo's swing and punch sounds are CC0 by qubodup and
+Merrick079 (`mods/ENTITIES/mobs/license.txt`). Its spell sound
+`mobs_spell.ogg` is "Spell_01.wav" by Little Robot Sound Factory
+(<https://freesound.org/people/LittleRobotSoundFactory/sounds/270396/>); the
+mod's licence file says CC0, the source page says CC BY 4.0
+(https://creativecommons.org/licenses/by/4.0/, checked 2026-10-05), so we
+credit it under CC BY 4.0. The game itself no longer plays it.
 
 ## Textures and models
 

@@ -713,7 +713,7 @@ grug_abilities.CAST_SOUNDS = {
 	-- Warrior.
 	charge = "cast_charge", taunt = "cast_taunt", hold_ground = "cast_guard",
 	-- Mage: frost, the arcane blink, fire.
-	ice_nova = "cast_frost_nova", glacial_ward = "cast_frost_ward",
+	ice_nova = "cast_ice_nova", glacial_ward = "cast_frost_ward",
 	blink = "silent", cinderfall = "cast_cinderfall",
 	-- Priest: holy, healing, the shield, shadow.
 	smite = "cast_holy", heal = "cast_heal", mend = "cast_heal",

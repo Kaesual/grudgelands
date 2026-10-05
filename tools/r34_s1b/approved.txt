@@ -89,7 +89,7 @@ grug_sounds_king_signature.1.ogg, S1b E5.3, https://freesound.org/people/WelvynZ
 # Usage notes: K1.3 = blade hit for swords and axes, K1.4 = blade hit for daggers; P2.1 = telegraph wind-up for DRAGONS ONLY; S3.1+S3.2, S4.1+S4.2, S9.1+S9.2, S29.2+S29.3, P3.1+P3.2 are variants.
 # Silent by choice: crit (K2), Blink (Z4), Sprint (Z9), wind-up of all non-dragon elites and bosses except humanoid specials (see recut).
 # Page 2 picks (https://claude.ai/artifact/UAB84sCv7b7eNK3Hh9f9Uk), user 2026-10-04; R2.3 serves the Taunt and, as a variant with E5.3, the humanoid specials:
-grug_sounds_cast_frost_nova.ogg, S1b R1.2, https://opengameart.org/content/fantasy-sound-effects-library (Little Robot Sound Factory, CC BY 3.0; work/ogg/R1.2.ogg sha256 d0567e8f35417ece)
+grug_sounds_cast_ice_nova.ogg, S1b R1.2 (renamed in Round 37 from grug_sounds_cast_frost_nova.ogg, same bytes), https://opengameart.org/content/fantasy-sound-effects-library (Little Robot Sound Factory, CC BY 3.0; work/ogg/R1.2.ogg sha256 d0567e8f35417ece)
 grug_sounds_cast_taunt.ogg, S1b R2.3, https://freesound.org/people/WelvynZPorterSamples/sounds/621352/ (WelvynZPorterSamples, CC0 1.0; work/ogg/R2.3.ogg sha256 4edb73f82f9032b0)
 grug_sounds_king_signature.2.ogg, S1b R2.3, https://freesound.org/people/WelvynZPorterSamples/sounds/621352/ (WelvynZPorterSamples, CC0 1.0; work/ogg/R2.3.ogg sha256 4edb73f82f9032b0)
 grug_sounds_cast_charge.ogg, S1b R3.3, https://freesound.org/people/worthahep88/sounds/319225/ (worthahep88, CC0 1.0; work/ogg/R3.3.ogg sha256 54653868d148faba)
