@@ -88,7 +88,7 @@ icons.STATUS = {
 	shield = def("buff", "Shield", "Absorbs damage", art("shield")),
 
 	-- Talent windows (skill_trees.md section 3.2).
-	talent_unbroken = def("buff", "Unbroken", "+15 armor rating",
+	talent_unbroken = def("buff", "Unbroken", "Extra armor rating",
 		art("talent_unbroken")),
 	talent_ruination = def("buff", "Ruination", "+20 crit chance",
 		art("talent_ruination")),

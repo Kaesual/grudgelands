@@ -544,8 +544,10 @@ grug_projectiles.register("fireball", {
 -- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana plus a
 -- server-authoritative one-second cast cadence instead of a talent-visible
 -- cooldown. Release locks the current crosshair target; enemy memory is never aim.
+-- Tinder and Whitehot's window damage are level-proof talent amounts
+-- (grug_classes.talent_level_amount); Whitehot's is 0 outside its window.
 local function fireball_values(user)
-	local window = grug_classes.talent_window_active(user, "whitehot") and 6 or 0
+	local window = grug_classes.get_talent_bonus(user, "whitehot_damage")
 	return {
 		damage = spell_damage_value(user,
 			grug_core.baseline_weapon_damage(

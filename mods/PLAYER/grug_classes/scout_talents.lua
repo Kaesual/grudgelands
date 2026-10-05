@@ -10,8 +10,9 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "strong_draw", tree = "quarry", chain = "draw", tier = 1,
 	name = "Strong Draw",
-	description = "Loose damage +1 per rank.",
-	effects = {loose_damage_add = {1, 2, 3, 4, 5}},
+	description = "Loose damage +4% of a base hit per rank, before the " ..
+		"draw multiplier.",
+	effects = {loose_damage_add = {4, 8, 12, 16, 20}},
 })
 grug_classes.register_talent({
 	id = "cold_eye", tree = "quarry", chain = "draw", tier = 2,
@@ -31,8 +32,9 @@ grug_classes.register_talent({
 	id = "longshot", tree = "quarry", chain = "draw", tier = 4,
 	capstone = true, replaces = "loose",
 	name = "Longshot",
-	description = "Loose reaches 33 m; a hit beyond 25 m deals +4 damage.",
-	effects = {loose_range_add = {8}},
+	description = "Loose reaches 33 m; a hit beyond 25 m deals +11% of a " ..
+		"base hit.",
+	effects = {loose_range_add = {8}, longshot_damage_add = {11}},
 })
 grug_classes.register_talent({
 	id = "quiver", tree = "quarry", chain = "ranging", tier = 1,
@@ -72,8 +74,8 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "fine_edge", tree = "veil", chain = "blade", tier = 1,
 	name = "Fine Edge",
-	description = "+1 damage per rank on a landed authoritative swing.",
-	effects = {melee_damage_add = {1, 2, 3, 4, 5}},
+	description = "+4% of a base hit per rank on a landed authoritative swing.",
+	effects = {melee_damage_add = {4, 8, 12, 16, 20}},
 })
 grug_classes.register_talent({
 	id = "deep_focus", tree = "veil", chain = "blade", tier = 2,

@@ -98,8 +98,9 @@ end
 
 -- The Strength term keeps its fraction like live melee damage since Round 33
 -- (grug_classes.get_melee_bonus), so same-level damage meets the fit exactly
--- (Round 34 ruling 6).
-local function baseline_melee_total(level)
+-- (Round 34 ruling 6). Public as "a base hit" before the scalar: level-proof
+-- talent values are percentages of it (grug_classes/talents.lua, Round 35).
+function grug_core.baseline_melee_total(level)
 	local strength = 10 + 3 * (level - 1)
 	return grug_core.baseline_weapon_damage(level) + strength / 10
 end
@@ -110,7 +111,7 @@ end
 -- to such an amount would square the level progression.
 function grug_core.level_scale(level)
 	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
-	return grug_core.base_pool(level) / (8 * baseline_melee_total(level))
+	return grug_core.base_pool(level) / (8 * grug_core.baseline_melee_total(level))
 end
 
 -- Higher-level mobs resist players who are more than five levels below them:

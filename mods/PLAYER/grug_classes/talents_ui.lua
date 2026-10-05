@@ -68,6 +68,41 @@ local function active_tree(player, context)
 	return tree, trees
 end
 
+local function level_number(value)
+	if value >= 10 then
+		return tostring(math.floor(value + 0.5))
+	end
+	return (string.format("%.1f", value):gsub("%.0$", ""))
+end
+
+-- Level-proof talents (Round 35) state a percentage of a base hit or of the
+-- armor constant; the tooltip adds every rank's amount at the viewer's level
+-- through the same talent_level_amount the consumers read. Damage is shown as
+-- dealt after the level scalar (before crit and the target-level malus), so a
+-- base hit reads as one eighth of the base pool.
+local function level_scaled_text(player, def)
+	for effect_key, values in pairs(def.effects) do
+		local unit = grug_classes.TALENT_LEVEL_SCALED_KEYS[effect_key]
+		if unit then
+			local level = grug_xp.get_level(player)
+			local factor = unit == "damage" and grug_core.level_scale(level) or 1
+			local ranks = {}
+			for _, value in ipairs(values) do
+				ranks[#ranks + 1] = "+" .. level_number(factor *
+					grug_classes.talent_level_amount(player, effect_key, value))
+			end
+			if unit == "damage" then
+				return (" At your level a base hit is %d damage: %s damage."):format(
+					math.floor(grug_core.base_pool(level) / 8),
+					table.concat(ranks, " / "))
+			end
+			return " At your level: " .. table.concat(ranks, " / ") ..
+				" armor rating."
+		end
+	end
+	return ""
+end
+
 -- Pool talents keep their compact rule text but append every rank's concrete
 -- value for the viewer's current level. The conversion is shared with future
 -- consumers such as Hold Ground, so UI and settlement cannot invent separate
@@ -75,7 +110,7 @@ end
 function grug_classes.talent_description_for(player, def)
 	local effect_key = grug_classes.pool_talent_effect_key(def)
 	if not effect_key then
-		return def.description
+		return def.description .. level_scaled_text(player, def)
 	end
 	local values = def.effects[effect_key]
 	local unit = effect_key == "max_mana_percent_add" and "mana"

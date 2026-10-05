@@ -132,8 +132,9 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 	},
 	on_hit = function(owner, target, data, point, attacker_level)
 		local damage = data.damage
+		-- Longshot's bonus is snapshotted at launch like the damage itself.
 		if data.longshot and vector.distance(data.origin, point) > 25 then
-			damage = damage + 4
+			damage = damage + data.longshot
 		end
 		local name = owner:get_player_name()
 		local per_player = pending_control[name]
@@ -206,7 +207,7 @@ local function launch(player, ability, count, effect, captured)
 			data = {
 				damage = shot_damage,
 				origin = common.origin,
-				longshot = effect.longshot,
+				longshot = effect.longshot and effect.longshot_damage or nil,
 				slow = effect.slow,
 				root = effect.root,
 				action_id = receipt,
@@ -235,6 +236,8 @@ local function loose_effect(player, full_draw)
 		second_percent = second,
 		range = longshot and 33 or 25,
 		longshot = longshot,
+		longshot_damage = grug_classes.get_talent_bonus(player,
+			"longshot_damage_add"),
 		refund = grug_classes.get_talent_bonus(player, "arrow_refund_chance"),
 		count = full_draw and second > 0 and 2 or 1,
 	}
