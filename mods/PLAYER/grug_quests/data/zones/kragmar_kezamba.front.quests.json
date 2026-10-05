@@ -108,15 +108,17 @@
       "level": 59,
       "requires": [
         "kz_front_02",
-        "kz_front_03"
+        "kz_front_03",
+        "throng_main_06"
       ],
       "title": "Promises with Bowstrings",
-      "text": "Paymaster Chirr has promised his Last-Pay Archers enough coin to buy the canopy, though he has yet to ask the trees. Find the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}, kill four Last-Pay Archers there, and kill Chirr. The spirits have heard enough of his bargaining.",
+      "text": "Paymaster Chirr promises his Last-Pay Archers wages for holding land, but what he pays is branded coin for every mark they burn into it, and his payroll holds names from both banners. Find the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}, kill four Last-Pay Archers or Ash-Writ Bowmen there, and kill Chirr. Then smother the burning rootmark at {name:r20_anchor_084}; the roots have complained about it louder than the spirits.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "last_pay_archer"
+            "last_pay_archer",
+            "ash_writ_bowman"
           ],
           "count": 4,
           "area": "front_skyglass_canopy/paymaster_camp"
@@ -127,14 +129,24 @@
             "paymaster_chirr"
           ],
           "count": 1
+        },
+        {
+          "type": "use",
+          "place": "r20_anchor_084",
+          "object": "rootmark",
+          "label": "Smother the burning rootmark",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 6.5,
+        "weight": 7,
         "items": []
       },
-      "duration_min": 15,
-      "climax": true
+      "duration_min": 20,
+      "climax": true,
+      "tags": [
+        "throng_main"
+      ]
     },
     {
       "id": "kz_front_05",
@@ -147,7 +159,7 @@
         "kz_front_04"
       ],
       "title": "Group: More Than One Voice",
-      "text": "Even the canopy spirits lower their voices around Serpent Glass-Throat in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}. Gather a group and slay it; one brave soul is a meal, and I would rather sing your victory than your funeral.",
+      "text": "Even the canopy spirits lower their voices around Serpent Glass-Throat in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}; it has grown fat on the burning roots. Gather a group and slay it; one brave soul is a meal, and I would rather sing your victory than your funeral.",
       "objectives": [
         {
           "type": "kill",

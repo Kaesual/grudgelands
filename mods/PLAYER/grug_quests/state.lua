@@ -185,6 +185,15 @@ function Q.status(player, id)
 	local allowed, reason = offerable(player, def, state)
 	return allowed and "available" or "locked", reason
 end
+-- Whether quest `id` is in the player's log ("active") or turned in
+-- ("completed"), else nil: the cached state only, no progress, so other
+-- mods may ask it every second (grug_mobs' rift boss, Round 36).
+function Q.quest_held(player, id)
+	local state = load(player)
+	if state.active[id] then return "active" end
+	if state.completed[id] then return "completed" end
+	return nil
+end
 -- What quest `def` shows at `npc` for this player: "ready", "active",
 -- "available" or "locked" (with the reason), or nil when it is not listed
 -- there. `pass` carries one holdings snapshot through the pass

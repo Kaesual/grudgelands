@@ -980,6 +980,53 @@ do
 		"W ...through the participant drop hook every eligible kill runs")
 end
 
+------------------------------------------------------------------------------
+-- E. Who calls the boss up (Round 36 review): only a player with a finale
+--    in the quest log or turned in (grug_quests.quest_held); a chapter-3
+--    player alone at the tally-stone meets no boss.
+------------------------------------------------------------------------------
+do
+	check(R.eligible(function(id) return id == "throng_main_finale" and "active" or nil end),
+		"E the Throng's finale in the log is eligible")
+	check(R.eligible(function(id) return id == "accord_main_final" and "completed" or nil end),
+		"E the Accord's finished line is eligible")
+	check(not R.eligible(function(id) return id == "throng_main_07" and "active" or nil end),
+		"E a chapter-3 step is not")
+	local held = {}
+	grug_quests = {quest_held = function(player, id)
+		local row = held[player:get_player_name()]
+		return row and row[id] or nil
+	end}
+	local function clear()
+		for _, entity in ipairs(bosses()) do entity.object:remove() end
+		store["rift_boss_due:" .. R.SITE] = nil
+		rift_pass(1)
+	end
+	for i = #players, 1, -1 do players[i] = nil end
+	players[1] = new_player("lone", "throng", at_site(30, 0))
+	held.lone = {throng_main_07 = "active"}
+	clear()
+	for _ = 1, 3 do rift_pass(1) end
+	eq(#bosses(), 0, "E a chapter-3 player alone: no boss")
+	held.lone = {throng_main_finale = "active"}
+	rift_pass(1)
+	eq(#bosses(), 1, "E with the finale active: the boss appears")
+	held.lone = {throng_main_07 = "active"}
+	rift_pass(1)
+	eq(#bosses(), 1, "E a boss already up stays")
+	clear()
+	held.lone = {throng_main_finale = "completed", throng_main_final = "completed"}
+	rift_pass(1)
+	eq(#bosses(), 1, "E a finished player still calls him (the lockout decides the loot)")
+	clear()
+	held.lone = {}
+	players[2] = new_player("ally", "accord", at_site(-30, 10))
+	held.ally = {accord_main_collector = "active"}
+	rift_pass(1)
+	eq(#bosses(), 1, "E one eligible player among the near ones is enough")
+	grug_quests = nil
+end
+
 if failures > 0 then
 	print(("R36 R PORTABLE FAIL %d of %d checks"):format(failures, checks))
 	os.exit(1)

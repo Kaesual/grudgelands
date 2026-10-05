@@ -167,6 +167,36 @@ PvP quests (pvp-plan rulings 14, 15 and 23). Its three quest givers
 No objective names a player or a General. The front ledger counts these
 quests like every front quest.
 
+## The main line (Round 36)
+
+Each faction's main line for levels 41–60 (round36-plan §2.2–§2.8, the
+[story bible](../planning/round36/story-bible.md)) runs from its fortress
+Warmaster's second line, travel handoffs and turn-ins at the existing
+givers the bible names, and the front climaxes folded in as required
+steps (their texts carry the thread; their other quests stay as they
+were). Chapters open at 41, 46 and 53, each with a quest that requires
+the previous chapter's last turn-in (a Warmaster turn-in); the finale
+"Group: The Collector Comes Due" opens at 60 on the rift boss, and the
+last turn-in at the Warmaster carries the bible's last line. Every step a
+chapter names carries the faction's tag; every required step is solo but
+the finale; optional branches (the war commander's "Group:" hunt, the
+islands' interactions) never block the line. The ledger counts a front
+host's main line in the front bands (`ledger.py --track`).
+
+- **The Throng** ("Our Oaths Are Ours", tag `throng_main`, the
+  Warmaster's line `oaths`): chapter 1 (41) the false requisition at
+  Bannerfall Pocket, Drek Rampbinder's Toll-Taker Senn with his toll-box
+  at Causeway Toll Ruin, Orrel Hollowstep's ash slab at Ashen Grave;
+  chapter 2 (46) the pledged standard at West Trench Mouth, Yarra
+  Standardmender's Ninepins, the Accord Captain's Orders from the Accord's
+  high war camp on The Shattered Line, the branded pay buried at Coinpit
+  Hollow; chapter 3 (53) the Kiln-Whisper Hexers, Vaska Ashlistener's
+  Huskell, Nalo Pathdrum's Chirr with the rootmark at Skyroot Crossing,
+  the tally-stone at Tombroad Ambush; then the finale, turned in at Vaska,
+  and `throng_main_final` at the Warmaster. Optional: War Commander
+  Greyvow (57, Group:), the survey cairn and the wreck's pay chest on the
+  islands (60, from the Nhal Veyr and Gor Drazhak envoys).
+
 ## Objective presentation
 
 Progress appears in the message feed (`inventory_equipment.md`, "Message
