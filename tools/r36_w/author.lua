@@ -1,5 +1,6 @@
 -- Round 36 lane W: an authoring aid for the Round 20 decor rows (LuaJIT, no
--- engine). It proposes `decor` rows for a composition from its kind's
+-- engine). It proposes `props` rows (`decor` for a rift candidate) for a
+-- composition from its kind's
 -- theme, placing each piece exactly as the builder will (`decor_kit.place`,
 -- the same open-ground, door and clearance rules) with one free cell round
 -- every piece, and prints them for the catalogue. The rows are then
@@ -52,7 +53,7 @@ for _, profile in ipairs(settlement.roster) do
 		local base = {}
 		for k, v in pairs(art) do base[k] = v end
 		local candidate = rift.CANDIDATES[profile.key]
-		base.decor, base.dress = {}, false
+		base.decor = {}
 		if not candidate then
 			-- an apex camp keeps its sample wall
 			base.props = {}
