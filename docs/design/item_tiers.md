@@ -468,7 +468,7 @@ before Round 33.
 | 4 | Storm Feather | 2/1/0 | common | enchant Int suffix; enchant Mana suffix; upgrade woodcarver | 4.0 | — |
 | 4 | Veined Core | 1/0/0 | one faction | sell-only: no regular source (one unique elite) | 0.0 | — |
 | 4 | Warpack Fang | 3/2/0 | common | enchant Str suffix; enchant Speed suffix | 2.0 | — |
-| 5 | Ash Feather | 0/0/2 | regular | enchant Int suffix; enchant Dodge suffix; upgrade woodcarver | 3.8 | — |
+| 5 | Ash Feather | 0/0/2 | scarce | enchant Int suffix; enchant Dodge suffix; upgrade woodcarver | 3.8 | — |
 | 5 | Clenched Jaw | 0/0/2 | regular | enchant Str prefix; enchant Crit prefix; enchant Armor suffix; upgrade goldsmith | 4.8 | enchant |
 | 5 | Scorch Venom | 0/0/2 | regular | enchant Speed suffix; upgrade weaponsmith; upgrade tailor | 4.5 | — |
 | 5 | Scorched Flesh | 0/0/2 | common | enchant HP prefix; enchant HP suffix; upgrade leatherworker; Elixir of Vigor V | 6.5 | enchant |
@@ -483,7 +483,7 @@ before Round 33.
 | 6 | Glass Spider Silk | 0/0/3 | regular | enchant Dodge prefix; upgrade tailor | 3.2 | — |
 | 6 | Glass Venom | 0/0/2 | regular | enchant Speed suffix; upgrade tailor | 3.0 | — |
 | 6 | Last-Hex Shard | 0/0/2 | regular | enchant Int suffix; upgrade goldsmith; Elixir of Focus VI | 4.0 | — |
-| 6 | Last-Laugh Dentures | 0/0/4 | common | enchant Str prefix; enchant Crit prefix | 2.5 | enchant |
+| 6 | Last-Laugh Dentures | 0/0/4 | regular | enchant Str prefix; enchant Crit prefix | 2.5 | enchant |
 | 6 | Last-Pay Talisman | 0/0/4 | common | enchant Int prefix; enchant Mana prefix; upgrade goldsmith | 4.0 | enchant |
 | 6 | Rime Sinew | 0/0/2 | scarce | upgrade woodcarver | 1.5 | — |
 | 6 | Salt-Barbed Feather | 0/0/4 | regular | enchant Mana suffix; upgrade woodcarver | 2.5 | — |
@@ -638,8 +638,8 @@ eight King kills, next to Master Riding's five hours.
 | Sink | Rule | Price (today's band-6 income) | Price (after) |
 |---|---|---:|---:|
 | Crown fee (option 1) | 30 min of band-6 income | 73s | 74s |
-| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 45s | 1g 47s |
-| Crown fee (option 3) | 2 h of band-6 income | 2g 90s | 2g 95s |
+| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 45s | 1g 48s |
+| Crown fee (option 3) | 2 h of band-6 income | 2g 91s | 2g 95s |
 <!-- end generated -->
 
 ## 5. Potions and elixirs
@@ -768,7 +768,7 @@ about 6–9 minutes of the band's income:
 | T2 | 36c | 0c–20c | up to 56c | 7.7 |
 | T3 | 90c | 0c–52c | up to 1s 42c | 9.3 |
 | T4 | 2s 24c | 0c–56c | up to 2s 80c | 6.9 |
-| T5 | 5s 60c | 0c–1s 60c | up to 7s 20c | 6.6 |
+| T5 | 5s 60c | 0c–1s 60c | up to 7s 20c | 6.7 |
 | T6 | 14s | 0c–1s 64c | up to 15s 64c | 6.5 |
 <!-- end generated -->
 
@@ -807,8 +807,8 @@ column shows a player in gold gear). Mount and respec prices move by less than
 | 10 → 20 | 4s 35c | 17c | 6c | 28c | 57c | 4s 28c | -1.4 % | 1.3 % → 6.2 % / 12.5 % |
 | 20 → 30 | 9s 18c | 35c | 11c | 53c | 1s 5c | 9s 11c | -0.8 % | 1.1 % → 5.5 % / 10.9 % |
 | 30 → 40 | 24s 39c | 85c | 21c | 1s 5c | 2s 10c | 24s 40c | +0.0 % | 0.9 % → 4.1 % / 8.3 % |
-| 40 → 50 | 65s 65c | 2s 14c | 44c | 2s 20c | 4s 40c | 66s 3c | +0.6 % | 0.7 % → 3.2 % / 6.5 % |
-| 50 → 60 | 1g 45s 4c | 5s 98c | 92c | 4s 60c | 9s 19c | 1g 47s 35c | +1.6 % | 0.6 % → 3.0 % / 6.0 % |
+| 40 → 50 | 64s 14c | 1s 93c | 40c | 1s 99c | 3s 98c | 64s 48c | +0.5 % | 0.6 % → 3.0 % / 6.0 % |
+| 50 → 60 | 1g 45s 46c | 5s 67c | 87c | 4s 35c | 8s 71c | 1g 47s 64c | +1.5 % | 0.6 % → 2.9 % / 5.7 % |
 <!-- end generated -->
 
 ## Appendix A: the models

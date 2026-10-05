@@ -560,7 +560,7 @@ do
 		grug_money.set(p, money)
 		return p
 	end
-	eq(grug_traders.CROWN_FEE, 14700, "F the fee is 1g 47s (income.py --check keeps it)")
+	eq(grug_traders.CROWN_FEE, 14800, "F the fee is 1g 48s (income.py --check keeps it)")
 	local sword = grug_gear.weapon_item("sword", 5)
 	local p = new_player(20000)
 	p.lists.grug_weapon[1] = ItemStack(sword)
@@ -576,9 +576,9 @@ do
 		"F refused without a Fallen Crown")
 	-- Not enough money: nothing changes.
 	p.lists.grug_bag_1[1] = ItemStack("grug_mobs:fallen_crown")
-	grug_money.set(p, 14699)
+	grug_money.set(p, 14799)
 	ok, message = grug_traders.crown_apply(p, rows[1])
-	check(not ok and message:find("^You need 1g 47s") ~= nil and
+	check(not ok and message:find("^You need 1g 48s") ~= nil and
 		p.lists.grug_bag_1[1]:get_name() == "grug_mobs:fallen_crown" and
 		p.lists.grug_weapon[1]:get_meta():get_string("grug_crowned") == "",
 		"F refused without the fee, crown and item untouched")
@@ -590,7 +590,7 @@ do
 	-- Success: fee, crown and item in one transaction.
 	rows = grug_traders.crown_rows(p)
 	ok, message = grug_traders.crown_apply(p, rows[1])
-	check(ok and grug_money.get(p) == 20000 - 14700, "F the fee is taken")
+	check(ok and grug_money.get(p) == 20000 - 14800, "F the fee is taken")
 	check(p.lists.grug_bag_1[1]:is_empty(), "F one Fallen Crown is consumed")
 	local crowned = p.lists.grug_weapon[1]
 	check(crowned:get_meta():get_int("grug_crowned") == 1 and
@@ -603,7 +603,7 @@ do
 	check(rows[1] and not rows[1].result and rows[1].reason == "This item is already crowned.",
 		"F a crowned item shows the refusal")
 	ok, message = grug_traders.crown_apply(p, rows[1])
-	check(not ok and grug_money.get(p) == 5300 and p.lists.main[2]:get_name() ==
+	check(not ok and grug_money.get(p) == 5200 and p.lists.main[2]:get_name() ==
 		"grug_mobs:fallen_crown", "F ...and crowning it again changes nothing")
 	-- A worn item must stay wearable: a level-55 Warrior's worn T6 sword
 	-- (requirement 60 once crowned) is not offered, and the apply path
