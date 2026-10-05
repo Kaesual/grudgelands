@@ -63,8 +63,9 @@ end
 
 local class_chosen_callbacks = {}
 
--- func(player, class_id) — called after a class was set (selection dialog
--- AND admin /class switches). grug_abilities grants the kit here.
+-- func(player, class_id) — called after a class was set: only by character
+-- creation (selection.lua); nothing changes a class later, admins included
+-- (no /class command, ruling 20). grug_abilities grants the kit here.
 function grug_classes.register_on_class_chosen(func)
 	table.insert(class_chosen_callbacks, func)
 end
@@ -74,7 +75,7 @@ function grug_classes.set_class(player, id)
 		return false
 	end
 	player:get_meta():set_string(META_CLASS, id)
-	-- heal_gain: a fresh character starts at full HP; admin switches are rare
+	-- heal_gain: a fresh character starts at full HP
 	grug_classes.apply_stats(player, true)
 	for _, func in ipairs(class_chosen_callbacks) do
 		func(player, id)

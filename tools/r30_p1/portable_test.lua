@@ -738,6 +738,7 @@ grug_map.base = dofile(repo .. "/mods/PLAYER/grug_map/base.lua")
 local installed = {quality = "normal", width = 1080, height = 960,
 	tiles = grug_map.base.tiles(1080, 960)}
 installed.texture = grug_map.base.combined_texture(1080, 960, installed.tiles)
+installed.minimap = installed -- normal quality: the minimap shows the base itself
 atlas.set_base_texture(installed.texture)
 local location_reads = 0
 -- Round 32: the line's colour follows the territory status (nil: neutral).

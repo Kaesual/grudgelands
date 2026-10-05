@@ -62,7 +62,7 @@
         "dawnmere_hunt_01"
       ],
       "title": "The Night Shift",
-      "text": "The day's work ends, and the gnawing begins: Large Rats come out after sunset in the {name:meadows}, which lie {zone_area:meadows}. Kill eight there at night. Leave space between your fights; one squeal can summon a family reunion you do not want to attend.",
+      "text": "The day's work ends, and the gnawing begins: Large Rats come out after sunset in the {name:meadows}, which lie {zone_area:meadows}. Kill eight there at night. Their red names mean they will not wait to be introduced, so watch the grass as well as the one in front of you.",
       "objectives": [
         {
           "type": "kill",
@@ -77,7 +77,7 @@
         "weight": 3,
         "items": []
       },
-      "lesson": "Night rosters differ from day rosters; rats call nearby rats.",
+      "lesson": "Night rosters differ from day rosters; red names attack on sight.",
       "duration_min": 8
     },
     {

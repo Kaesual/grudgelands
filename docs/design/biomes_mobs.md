@@ -637,8 +637,11 @@ below the sea surface (y ≤ 1) within 6 nodes, so the wide coastal sand band
 and inland sand, lake and river shores above sea level included, stay
 crab-free (Round 22 D36).
 The **elite** "Reef Lurker" (same model, ×3 drops) was the 45–60 shore's
-crab under the retired ABM rows; no recipe uses it, so it does not spawn
-(§4).
+crab under the retired ABM rows. Its sub-type `salt_reef_lurker` (Salt Reef
+Lurker, neutral elite, L51–59, crab loot by band) is the day minor role
+(weight 1 of 8, normal density) of the `shore` kind in every belt of
+Gravesalt Escarpment and The Skyglass Canopy, on the same sand host as the
+other crabs; the dragon islands have none.
 
 **Front families:** Skeleton Raider (dogshoot, night — battlefield dead;
 skeleton table + heavy cloth 1/3) and Carrion Crow (**passive prey**,
@@ -671,7 +674,7 @@ middle caves from y −40 to −300, where the surface clock is ignored.
 | Wild Turkey | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | animalia turkey, MIT |
 | Plains Runner | grazes (**passive prey**: fights back when attacked; Round 24, was a critter) | day | — | meat 1/1 | animalworld nandu, MIT |
 | Tapir | grazes (**passive prey**) | day | — | stag table | animalworld tapir, MIT |
-| Giant Rat | swarms; one pull calls nearby rats | night on surface; any in caves | y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
+| Giant Rat | swarms; one pull calls nearby rats (the start-zone roles fight alone) | night on surface; any in caves | y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
 | Scorpion | poisons (1 damage / 2 s for 6 s) | night (Sunscar's recipe also has it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
 | Viper | poisons (1 damage / 2 s for 6 s) | night (Kapok's and the Causeway's recipes also have it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
 
@@ -898,15 +901,16 @@ row (Gravesalt, Skyglass and both islands), every underground row (y ≤ −40,
 the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken Guard,
 Reed Angelfish). Every other surface row registers no ABM, the Shore Crab's
 and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
-(§4.2), and the Reef Lurker, which no recipe uses, does not spawn at all.
+(§4.2), the Reef Lurker only as its 51–60 shore sub-type.
 Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
 
 **Registered but placed nowhere** (open questions, [BACKLOG "Audit 2026-10
 open questions"](../../BACKLOG.md#audit-2026-10-open-questions)): the ambient
 War Construct sub-types `causeway_construct` and `siege_war_construct` are in
 the catalogue (`data/subtypes.json`) but in no recipe, so the War Construct
-appears only as the two leaders (DW-04); the elite Reef Lurker is registered
-(`shore_crab.lua`) but has no recipe role and no ABM row, so it never spawns.
+appears only as the two leaders (DW-04). The elite Reef Lurker spawns only as
+its sub-type on the 51–60 shores (§3, Round 37); its base entity
+`grug_mobs:reef_lurker` has no recipe role and no ABM row.
 
 The pre-recipe row table that the mob files' `-- §4 row` comments quote, with
 the camp fires' Bandit Archer slot rule and its row notes, is archived in
@@ -1422,11 +1426,15 @@ exceptions (`names-proposal.json` `meta.sibling_exceptions`).
 **Families.** A sub-type belongs to its `family`; an existing mob's family is
 its own role (`zombie`, `giant_rat`, `boar` …), so a design puts sub-types
 next to an existing mob by naming that role as the family. Group alert, the
-pack call and the camp swarm answer the same entity name as before and, in
-addition, mobs of the same family when both take part in group alerts
-(`group_attack`). A neutral mob never answers or calls anyone, not even its
-own name (a neutral sub-type of a pack or swarm family stays a single pull;
-`combat_stats.md` §4).
+pack call and the camp swarm answer the same entity name and, in addition,
+mobs of the same family; the caller and the answering mob both take part in
+group alerts (`group_attack`). A neutral mob never answers or calls anyone,
+not even its own name (a neutral sub-type of a pack or swarm family stays a
+single pull; `combat_stats.md` §4). **Start zones fight alone** (user ruling
+2026-10-06): a sub-type whose levels end at 10 or below — exactly the roles
+the six start zones' recipes place, camp defenders and chiefs included —
+takes no part in group alerts, so it neither calls nor answers anyone; from
+level 11 on nothing changes.
 
 **Loot items.** `items.json` entries of kind `signature` and `quest` whose id
 is not registered yet become craft items (`grug_mobs:` ids; an id in another

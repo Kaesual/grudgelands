@@ -18,7 +18,10 @@
             "night": [{"role": "salt_web_spider", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
           "highland": {"id": "tomb_galleries", "name": "Gravesalt Tomb Galleries",
             "day": [{"role": "saltroad_deserter", "weight": 3}, {"role": "salt_antler_stag", "weight": 1}],
-            "night": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"}
+            "night": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
+          "shore": {"id": "salt_strand", "name": "Gravesalt Salt Strand",
+            "day": [{"role": "salt_boring_weevil", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
+            "night": "open", "density": "normal"}
         }
       },
       {
@@ -35,7 +38,10 @@
             "night": [{"role": "salt_web_spider", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
           "highland": {"id": "saltroad_cliffs", "name": "Gravesalt Saltroad Cliffs",
             "day": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_pay_archer", "weight": 1}],
-            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal"}
+            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal"},
+          "shore": {"id": "brine_shore", "name": "Gravesalt Brine Shore",
+            "day": [{"role": "salt_boring_weevil", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
+            "night": "open", "density": "normal"}
         }
       },
       {
@@ -52,7 +58,10 @@
             "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "salt_web_spider", "weight": 1}], "density": "normal"},
           "highland": {"id": "watch_heights", "name": "Gravesalt Watch Heights",
             "day": [{"role": "last_pay_archer", "weight": 3}, {"role": "salt_hide_bear", "weight": 1}],
-            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal"}
+            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wreck_strand", "name": "Gravesalt Wreck Strand",
+            "day": [{"role": "last_watch_husk", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
+            "night": "open", "density": "normal"}
         }
       }
     ],

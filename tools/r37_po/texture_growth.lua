@@ -17,7 +17,8 @@
 --     tour inside the world bounds (straight legs of 150-600 nodes with
 --     random turns, reflected at the world's edge), so revisited cells count
 --     once, as on the client.
--- Prints one table per quality. Numbers are comparisons, not targets.
+-- Prints one table per server quality (the minimap's base is normal size on
+-- both since Round 37 F). Numbers are comparisons, not targets.
 local repo = arg[1] or "."
 local V = dofile(repo .. "/mods/PLAYER/grug_map/minimap_view.lua")
 -- the atlas world bounds (atlas.lua WORLD) and base sizes (base.lua QUALITY)
@@ -30,8 +31,10 @@ do
 	BOUNDS = {min_x = tonumber(x0), max_x = tonumber(x1), min_z = tonumber(z0), max_z = tonumber(z1)}
 	local base = io.open(repo .. "/mods/PLAYER/grug_map/base.lua"):read("*a")
 	for quality, row in pairs(QUALITY) do
-		local w, h = base:match(quality .. " = {width = (%d+), height = (%d+)")
+		local w, h, rest = base:match(quality .. " = {width = (%d+), height = (%d+)([^}]*)}")
 		row.width, row.height = tonumber(w), tonumber(h)
+		-- the minimap's own base size on such a server (Round 37 F)
+		row.minimap = rest:match('minimap = "(%a+)"')
 	end
 end
 
@@ -97,14 +100,16 @@ local function tour(v, speed, hours)
 end
 
 local SPEEDS = {{"walk", 4}, {"land mount", 6.4}, {"fast land / slow flying", 8}, {"fast flying", 12}}
-for _, quality in ipairs({"normal", "high"}) do
+for _, server in ipairs({"normal", "high"}) do
+	-- the minimap shows QUALITY[server].minimap's base where one is named
+	local quality = QUALITY[server].minimap or server
 	local base = QUALITY[quality]
 	local v = V.new({quality = quality, width = base.width, height = base.height, tiles = {}}, BOUNDS)
 	local bytes = v.pixels * v.pixels * 4
 	local padded = pow2(v.pixels) * pow2(v.pixels) * 4
 	local cell_nodes = v.grid * v.npp
-	print(("== %s: grid %d base px = %.1f nodes per cell, texture %dx%d px, %.1f KB RGBA8 (%.1f KB padded to %dx%d)"):format(
-		quality, v.grid, cell_nodes, v.pixels, v.pixels, bytes / 1024, padded / 1024, pow2(v.pixels), pow2(v.pixels)))
+	print(("== server %s, minimap base %s: grid %d base px = %.1f nodes per cell, texture %dx%d px, %.1f KB RGBA8 (%.1f KB padded to %dx%d)"):format(
+		server, quality, v.grid, cell_nodes, v.pixels, v.pixels, bytes / 1024, padded / 1024, pow2(v.pixels), pow2(v.pixels)))
 	local axis = straight(v, 1, 0, 1000)
 	local diagonal = straight(v, 1, 1, 1000)
 	print(("   straight 1,000 nodes: %d textures along an axis (%.2f MB), %d diagonally (%.2f MB)"):format(

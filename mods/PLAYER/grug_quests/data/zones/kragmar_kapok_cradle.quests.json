@@ -61,8 +61,8 @@
       "requires": [
         "kapok_hunt_01"
       ],
-      "title": "One Squeak, Many Cousins",
-      "text": "The boars sleep, the Large Kapok Rats wake, and our yams get no peace at all. Kill eight rats after dark in the {name:yam_beds} {dir_of:kapok:yam_beds}. Pick your fights carefully: one squeak calls nearby rats, and they are a very attentive family.",
+      "title": "No Peace for the Yams",
+      "text": "The boars sleep, the Large Kapok Rats wake, and our yams get no peace at all. Kill eight rats after dark in the {name:yam_beds} {dir_of:kapok:yam_beds}. Pick your fights carefully: a red-named rat bites first and never apologises.",
       "objectives": [
         {
           "type": "kill",
@@ -77,7 +77,7 @@
         "weight": 3,
         "items": []
       },
-      "lesson": "The same area holds a day and a night roster; rats call nearby rats.",
+      "lesson": "The same area holds a day and a night roster; red names attack on sight.",
       "duration_min": 8
     },
     {

@@ -143,10 +143,14 @@ pending marker changes must still appear afterward.
 
 ## Map quality and relief
 
-Round 27 (WP50, approved 2026-09-29). One base image serves the Map tab and
-the minimap. Its quality is the server setting `grug_map_quality` in
-`minetest.conf` (main menu: *World map › World map quality*), the same for
-every player on that server:
+Round 27 (WP50, approved 2026-09-29). The Map tab's base image has the
+quality of the server setting `grug_map_quality` in `minetest.conf` (main
+menu: *World map › World map quality*), the same for every player on that
+server. The minimap always shows normal quality (user ruling 2026-10-06):
+at `normal` it shows the same base, at `high` a normal-size copy
+(1080×960) that the render scales down from its own high image in the same
+pass, with no second terrain sampling (each high pixel goes to the normal
+pixel its centre lies in, which takes their mean):
 
 | Quality | Size | Nodes per pixel | Relief grid | Tiles | Download | First render |
 |---|---|---|---|---|---|---|
@@ -154,17 +158,23 @@ every player on that server:
 | `high` | 3600×3200 | 2 | 4 nodes | 56 | about 6.93 MB | about 56 s |
 
 Sizes and times are comparisons from one engine run each on the development
-workstation (2026-09-30), not targets. Before Round 27 the normal base was one
+workstation (2026-09-30), not targets. The minimap's copy at high adds 6
+tiles of about 1.09 MB to the download and about 0.09 s to the render
+(seed 42, 2026-10-06: the high render took 52.8 s before and 51.2 s after,
+within run-to-run noise). Before Round 27 the normal base was one
 PNG of about 0.56 MB in about the same time; high as one PNG would be about
 8.06 MB. No edge exceeds 4096 px, because some GPUs cannot hold larger
 textures. An unknown value warns and falls back to `normal`. The quality
-enters the cache key, so switching it re-renders the base at the next start.
+and the size of the minimap's copy enter the cache key, so switching it
+re-renders the base (and the copy) at the next start; both are cached in
+the world directory.
 
 **Tiles.** The base is sent as 512 px tiles (`grug_map_base_<col>_<row>.png`,
-edge tiles smaller), written to the world directory and announced as startup
-media; nothing else of the base is sent. The Map tab combines all tiles into
-one texture; the minimap combines only the at most four tiles each cell
-texture overlaps.
+edge tiles smaller), the minimap's copy at high as
+`grug_map_mini_<col>_<row>.png`, written to the world directory and
+announced as startup media; nothing else of the base is sent. The Map tab
+combines all its tiles into one texture; the minimap combines only the at
+most four tiles of its base each cell texture overlaps.
 
 **Relief** (both qualities, tuned on images of the user's world):
 - Hillshade: Lambert shading with light from the north-west (map top-left)
@@ -202,8 +212,7 @@ drawn from the base image above. The gliding version (approved in playtest,
   and dot marks at E, S and W) frames the map and covers the map texture's
   overhang, since HUD images are never clipped. The art is opaque out to
   0.975 of its radius and the hole is 0.83 of it; at 1920×1080 the bezel is
-  265 px across with a band of about 22.5 px at high quality and 239 px with
-  a band of about 20.5 px at normal (since Round 32's zoom the normal scale
+  239 px across with a band of about 20.5 px (since Round 32's zoom the scale
   steps by half a pixel, so the bezel fills 0.79–0.99 of the box by window
   size, 0.89 at 1080p, where it filled 0.88–0.98 before). The whole bezel sits inside the
   native box (top-right corners aligned), so the quest list's clearance below
@@ -214,32 +223,32 @@ drawn from the base image above. The gliding version (approved in playtest,
   server step: the map element is placed so the player's own pixel lies on
   the arrow's pixel, and a `hud_change` is sent only when that rounded pixel
   changes.
-- **One zoom level:** a window of about 440 nodes (66 base pixels at normal
-  quality, 220 at high). Round 32 halved it from 880 (the user, 2026-10-03):
+- **One zoom level:** a window of about 440 nodes (66 pixels of the
+  normal-size base). Round 32 halved it from 880 (the user, 2026-10-03):
   quest givers and trainers sit twice as far apart, so players can tell
   them apart; the base image, its tiles and their download stay the same,
   each base pixel is simply drawn twice as large.
 - **Cells:** the Luanti client never frees textures it builds from texture
   modifiers, so every distinct map texture stays in client memory. The map
-  therefore uses one texture per grid cell of 2 base pixels at normal
-  (about 13 nodes) and 8 at high (16 nodes): a disc large enough to cover the hole
+  therefore uses one texture per grid cell of 2 base pixels (about 13
+  nodes): a disc large enough to cover the hole
   wherever the player is in the cell, combined from the at most four tiles it
   overlaps. A new texture is built only when the player enters a new cell.
   The drawn scale is a whole multiple of 1/grid screen pixels per base pixel,
   so neighbouring cells' textures sit a whole number of pixels apart, and the
   texture and position change in the same step: a cell swap moves no pixel.
   The overhang under the bezel grows with the cell, so Round 32's zoom
-  halved the high grid (the same screen geometry as before) and took the
-  normal one from 6 to 2 base pixels (3 would reach about a pixel past the
-  bezel's opaque band).
-- **High quality at half resolution:** the high cell texture is combined at
-  239 base pixels and halved on the client with `[resize` to 120 px, a
-  quarter of the memory (one pixel short, so the resize steps exactly two
-  base pixels per texel and swaps stay seam-free). Since Round 32's zoom
-  the HUD draws a base pixel about one screen pixel wide at 1080p, so the
-  half-size texture is drawn larger than it is and high shows less detail
-  than it could, though still more than normal (three screen pixels per
-  base pixel of about 6.7 nodes at 1080p).
+  took the grid from 6 to 2 base pixels (3 would reach about a pixel past
+  the bezel's opaque band).
+- **Normal quality on every server** (Round 37): until then a high server's
+  minimap used the high base, with an 8-pixel grid (16 nodes) and the cell
+  texture halved on the client to 120 px. Since Round 32's zoom it showed
+  little more detail than normal, at more than twice the client memory:
+  by `tools/r37_po/texture_growth.lua`, an hour's walk built 1114 textures
+  of about 61.2 MB at high and builds 1333 of about 26.4 MB now (3 hours:
+  185.0 MB before, 79.9 MB now), the same as on a normal server. The
+  geometry code (`minimap_view.lua`) still takes either base size; the game
+  passes it the normal one.
 - **Markers** are separate HUD elements, never pixels of the map texture:
   quest givers with their per-player state (ready, available, active,
   locked), the Housing Steward, the Crownbinder and the Decor Merchant,

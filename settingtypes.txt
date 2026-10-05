@@ -71,12 +71,12 @@ grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool fals
 
 [World map]
 
-#    Quality of the world map image shown on the Map tab and the minimap, the
-#    same for every player. normal: 1080x960 (about 6.7 nodes per pixel).
-#    high: 3600x3200 (2 nodes per pixel); its first render at a world's start
-#    takes about a minute longer and clients download about 7 MB instead of
-#    about 1 MB. The image is cached in the world folder; changing the
-#    setting renders it again at the next start.
+#    Quality of the world map image shown on the Map tab, the same for every
+#    player; the minimap always shows normal quality. normal: 1080x960 (about
+#    6.7 nodes per pixel). high: 3600x3200 (2 nodes per pixel); its first
+#    render at a world's start takes about a minute longer and clients
+#    download about 8 MB instead of about 1 MB. The image is cached in the
+#    world folder; changing the setting renders it again at the next start.
 grug_map_quality (World map quality) enum normal normal,high
 
 [Combat]

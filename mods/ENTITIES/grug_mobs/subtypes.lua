@@ -94,20 +94,29 @@ function grug_mobs.subtype(name_or_role)
 end
 
 -- Do `a` and `b` answer each other's call for help (mobs_redo's group alert,
--- the pack_hunter and camp_swarm verbs)? A neutral mob never does, not even
--- with its own name: a neutral sub-type of a pack or swarm family stays a
--- single pull. Otherwise the same entity name always did and still does;
--- across a family both must take part in group alerts (`group_attack`).
+-- the pack_hunter and camp_swarm verbs)? Only when both take part in group
+-- alerts (`group_attack`), with the same entity name or across a family. A
+-- neutral mob never does, not even with its own name: a neutral sub-type of
+-- a pack or swarm family stays a single pull. Neither does a start-band role
+-- (START_BAND_MAX below): it calls nobody, not even its own kind.
 function grug_mobs.alert_kin(a, b)
 	if a._grug_disposition == "neutral" or b._grug_disposition == "neutral" then
 		return false
 	end
-	if a.name == b.name then
-		return true
+	if a.group_attack ~= true or b.group_attack ~= true then
+		return false
 	end
-	return a.group_attack == true and b.group_attack == true
-		and grug_mobs.family_of(a.name) == grug_mobs.family_of(b.name)
+	return a.name == b.name
+		or grug_mobs.family_of(a.name) == grug_mobs.family_of(b.name)
 end
+
+-- Start-zone mobs fight alone (user ruling 2026-10-06): a sub-type whose
+-- levels end at or below this, which is exactly a role the six start zones'
+-- recipes place (band 1-10), takes no part in group alerts, so neither
+-- mobs_redo's group alert nor the pack and swarm verbs pull its neighbours,
+-- and it answers no call. Camp defenders and leaders of a start zone too.
+local START_BAND_MAX = 10
+grug_mobs.START_BAND_MAX = START_BAND_MAX
 
 --
 -- Tints (frame §4.1): a baked texture replaces the body texture, a modifier
@@ -516,6 +525,9 @@ local function register_subtype(i, row)
 	end
 	if sub.leader then
 		def._grug_hp_scale = grug_mobs.LEADER.hp
+	end
+	if sub.levels[2] <= START_BAND_MAX then
+		def.group_attack = false
 	end
 	-- A critter disposition needs the critter tier (disposition.lua).
 	def._grug_tier = sub.disposition == "critter" and "critter" or tier

@@ -14,8 +14,11 @@
 -- minimap builds its round window with `[combine` from the at most four
 -- tiles it overlaps, so the client never copies the whole base per window
 -- (`[combine` copies each source image once, imagesource.cpp). The Map tab
--- shows every tile combined into one texture. Nothing else is sent, so the
--- download is the tiles alone.
+-- shows every tile combined into one texture. The minimap always shows a
+-- normal-size base (user ruling 2026-10-06): at high quality the render
+-- also sends a normal-size copy of its own image, scaled down in the same
+-- pass, as `grug_map_mini_*` tiles. Nothing else is sent, so the download
+-- is the tiles alone.
 
 local M = {}
 
@@ -26,10 +29,12 @@ local WORLD = core.get_worldpath()
 local CACHE_KEY = WORLD .. "/grug_map_base.key"
 M.TILE = 512
 M.MASK = "grug_map_minimap_mask.png"
--- Map quality (Round 27 rulings 1-3): a server setting, the same image for
--- the Map tab and the minimap. Both are 9:8 like the atlas bounds. Normal is
--- the Round 22 image, about 6.67 nodes per pixel; high is 2 nodes per pixel
--- and stays below 4096 px per edge (some GPUs hold no larger texture).
+-- Map quality (Round 27 rulings 1-3): a server setting for the Map tab's
+-- image. Both are 9:8 like the atlas bounds. Normal is the Round 22 image,
+-- about 6.67 nodes per pixel; high is 2 nodes per pixel and stays below 4096
+-- px per edge (some GPUs hold no larger texture). `minimap` names the size
+-- the minimap's base has when it is not the Map tab's own (user ruling
+-- 2026-10-06: the minimap shows normal quality on every server).
 --
 -- Relief samples terrain_height_at on one fixed grid per quality, the same
 -- on every server (Round 22 D29: hardware never changes what is produced).
@@ -39,7 +44,7 @@ M.MASK = "grug_map_minimap_mask.png"
 -- of the cache key, so changing one re-renders cached bases.
 M.QUALITY = {
 	normal = {width = 1080, height = 960, relief_step = 8},
-	high = {width = 3600, height = 3200, relief_step = 4},
+	high = {width = 3600, height = 3200, relief_step = 4, minimap = "normal"},
 }
 M.DEFAULT_QUALITY = "normal"
 -- Shown if rendering fails: plain sea, so the markers stay usable.
@@ -261,15 +266,81 @@ local function sea(class)
 end
 
 -- The render size and relief step of `quality` ("normal" or "high"; any
--- other value is normal). `override` replaces fields: offline tools render
--- crops of a view at their own size, or try other RELIEF values.
+-- other value is normal), and `minimap` {quality, width, height} when the
+-- minimap's base is a scaled-down copy (nil: the minimap shows this base).
+-- `override` replaces fields: offline tools render crops of a view at their
+-- own size, or try other RELIEF values.
 function M.spec(quality, override)
 	if not M.QUALITY[quality] then quality = M.DEFAULT_QUALITY end
 	local base = M.QUALITY[quality]
+	local mini = base.minimap and M.QUALITY[base.minimap]
 	local spec = {quality = quality, width = base.width, height = base.height,
-		relief_step = base.relief_step, relief = RELIEF}
+		relief_step = base.relief_step, relief = RELIEF,
+		minimap = mini and {quality = base.minimap, width = mini.width,
+			height = mini.height} or nil}
 	for key, value in pairs(override or {}) do spec[key] = value end
+	-- A crop at its own size is no world base: no minimap copy.
+	if override and (override.width or override.height) then spec.minimap = nil end
 	return spec
+end
+
+-- `pixels` (packed RGB, `width` x `height`) scaled down to `w` x `h`: each
+-- source pixel goes to the target pixel its centre lies in, and a target
+-- pixel is the rounded mean of its sources. Every target pixel gets at least
+-- one source while w <= width and h <= height. Pure.
+function M.downscale(pixels, width, height, w, h)
+	local floor = math.floor
+	local column = {}
+	for i = 0, width - 1 do column[i] = floor((i + 0.5) * w / width) end
+	local out, r, g, b, n = {}, {}, {}, {}, {}
+	local source = 0
+	for j = 0, h - 1 do
+		for i = 0, w - 1 do r[i], g[i], b[i], n[i] = 0, 0, 0, 0 end
+		while source < height and floor((source + 0.5) * h / height) == j do
+			local first = source * width + 1
+			for i = 0, width - 1 do
+				local packed, t = pixels[first + i], column[i]
+				r[t] = r[t] + floor(packed / 65536)
+				g[t] = g[t] + floor(packed / 256) % 256
+				b[t] = b[t] + packed % 256
+				n[t] = n[t] + 1
+			end
+			source = source + 1
+		end
+		local row = j * w + 1
+		for i = 0, w - 1 do
+			local count = n[i]
+			out[row + i] = (floor(r[i] / count + 0.5) * 256 +
+				floor(g[i] / count + 0.5)) * 256 + floor(b[i] / count + 0.5)
+		end
+	end
+	return out
+end
+
+-- Encodes `tiles` of the `width`-wide packed image as PNGs (tile.png) with
+-- one memoised 4-byte RGBA string per distinct colour; returns their bytes.
+local function encode_tiles(pixels, width, tiles)
+	local char, bytes_of, total = string.char, {}, 0
+	for _, tile in ipairs(tiles) do
+		local rows = {}
+		for j = tile.y, tile.y + tile.h - 1 do
+			local row, first = {}, j * width + tile.x
+			for i = 1, tile.w do
+				local packed = pixels[first + i]
+				local bytes = bytes_of[packed]
+				if not bytes then
+					bytes = char(math.floor(packed / 65536),
+						math.floor(packed / 256) % 256, packed % 256, 255)
+					bytes_of[packed] = bytes
+				end
+				row[i] = bytes
+			end
+			rows[#rows + 1] = table.concat(row)
+		end
+		tile.png = core.encode_png(tile.w, tile.h, table.concat(rows), 9)
+		total = total + #tile.png
+	end
+	return total
 end
 
 local function render(zones, view, spec)
@@ -392,47 +463,42 @@ local function render(zones, view, spec)
 		end
 	end
 
-	-- Encode each tile: one memoised 4-byte RGBA string per distinct colour.
-	local char, bytes_of = string.char, {}
-	local tiles, total = M.tiles(WIDTH, HEIGHT), 0
-	for _, tile in ipairs(tiles) do
-		local rows = {}
-		for j = tile.y, tile.y + tile.h - 1 do
-			local row, first = {}, j * WIDTH + tile.x
-			for i = 1, tile.w do
-				local packed = pixels[first + i]
-				local bytes = bytes_of[packed]
-				if not bytes then
-					bytes = char(math.floor(packed / 65536),
-						math.floor(packed / 256) % 256, packed % 256, 255)
-					bytes_of[packed] = bytes
-				end
-				row[i] = bytes
-			end
-			rows[#rows + 1] = table.concat(row)
-		end
-		tile.png = core.encode_png(tile.w, tile.h, table.concat(rows), 9)
-		total = total + #tile.png
+	local tiles = M.tiles(WIDTH, HEIGHT)
+	local total = encode_tiles(pixels, WIDTH, tiles)
+	local encoded = core.get_us_time()
+	-- The minimap's normal-size copy, from these pixels (no second sampling).
+	local mini, mini_total = spec.minimap, 0
+	local mini_tiles
+	if mini then
+		mini_tiles = M.tiles(mini.width, mini.height, M.MINI_PREFIX)
+		mini_total = encode_tiles(M.downscale(pixels, WIDTH, HEIGHT,
+			mini.width, mini.height), mini.width, mini_tiles)
 	end
 	local finished = core.get_us_time()
 	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
 		"(zones/water %.2f s, relief step %d %.2f s, colour+encode %.2f s, " ..
-		"%d tiles, %d bytes)"):
+		"%d tiles, %d bytes; minimap copy %s %.2f s, %d bytes)"):
 		format(WIDTH, HEIGHT, spec.quality, (finished - started) / 1e6,
 		(classified - started) / 1e6,
 		relief.step,
-		(shaded - classified) / 1e6, (finished - shaded) / 1e6, #tiles, total))
-	return tiles
+		(shaded - classified) / 1e6, (encoded - shaded) / 1e6, #tiles, total,
+		mini and (mini.width .. "x" .. mini.height) or "none",
+		(finished - encoded) / 1e6, mini_total))
+	return tiles, mini_tiles
 end
 
 -- The tiles of a width x height base, row by row: {name, col, row, x, y, w,
--- h} with x/y the tile's top-left base pixel. Edge tiles are smaller.
-function M.tiles(width, height)
+-- h} with x/y the tile's top-left base pixel. Edge tiles are smaller. Their
+-- names start with `prefix` (default the Map tab's base).
+M.BASE_PREFIX = "grug_map_base"
+M.MINI_PREFIX = "grug_map_mini"
+function M.tiles(width, height, prefix)
+	prefix = prefix or M.BASE_PREFIX
 	local result = {}
 	for row = 0, math.ceil(height / M.TILE) - 1 do
 		for col = 0, math.ceil(width / M.TILE) - 1 do
 			local x, y = col * M.TILE, row * M.TILE
-			result[#result + 1] = {name = ("grug_map_base_%d_%d.png"):format(col, row),
+			result[#result + 1] = {name = ("%s_%d_%d.png"):format(prefix, col, row),
 				col = col, row = row, x = x, y = y,
 				w = math.min(M.TILE, width - x), h = math.min(M.TILE, height - y)}
 		end
@@ -558,29 +624,41 @@ local function prepare(view)
 	local zones = grug_zones
 	local spec = M.spec(M.quality())
 	local tiles = M.tiles(spec.width, spec.height)
-	-- The quality enters the key (ruling 3), so switching it re-renders.
+	local mini = spec.minimap
+	local mini_tiles = mini and M.tiles(mini.width, mini.height, M.MINI_PREFIX)
+	-- The quality and the minimap copy's size enter the key (ruling 3), so
+	-- switching either re-renders both.
 	local key = core.sha256(spec.quality .. "\n" .. M.TILE .. "\n" ..
+		(mini and (mini.width .. "x" .. mini.height) or "-") .. "\n" ..
 		cache_key(zones, view))
 	local current = read_file(CACHE_KEY) == key
-	for _, tile in ipairs(tiles) do
-		current = current and read_file(WORLD .. "/" .. tile.name) ~= nil
+	for _, list in ipairs({tiles, mini_tiles or {}}) do
+		for _, tile in ipairs(list) do
+			current = current and read_file(WORLD .. "/" .. tile.name) ~= nil
+		end
 	end
 	if current then
 		core.log("action", "[grug_map] world map base cache is current")
 		for _, tile in ipairs(tiles) do M.add_media(tile.name) end
+		for _, tile in ipairs(mini_tiles or {}) do M.add_media(tile.name) end
 	else
-		for _, tile in ipairs(render(zones, view, spec)) do
-			M.add_media(tile.name, tile.png)
-		end
+		local rendered, rendered_mini = render(zones, view, spec)
+		for _, tile in ipairs(rendered) do M.add_media(tile.name, tile.png) end
+		for _, tile in ipairs(rendered_mini or {}) do M.add_media(tile.name, tile.png) end
 		assert(core.safe_file_write(CACHE_KEY, key), "cannot write " .. CACHE_KEY)
 	end
-	return {quality = spec.quality, width = spec.width, height = spec.height,
+	local result = {quality = spec.quality, width = spec.width, height = spec.height,
 		tiles = tiles,
 		texture = M.combined_texture(spec.width, spec.height, tiles)}
+	result.minimap = mini and {quality = mini.quality, width = mini.width,
+		height = mini.height, tiles = mini_tiles} or result
+	return result
 end
 
 -- Load-time entry point. Returns the base: {quality, width, height, tiles,
--- texture} with `texture` what the Map tab shows, or
+-- texture, minimap} with `texture` what the Map tab shows and `minimap` the
+-- base the minimap shows ({quality, width, height, tiles}: the normal-size
+-- copy at high quality, the base itself at normal), or
 -- {texture = fallback} without tiles if the base is unavailable. Startup
 -- media must be announced while mods load (dynamic_add_media without a
 -- callback), so init.lua calls this; grug_mapgen has installed the world

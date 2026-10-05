@@ -469,6 +469,7 @@ core.register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end
 local installed = {quality = "normal", width = 1080, height = 960,
 	tiles = base.tiles(1080, 960)}
 installed.texture = base.combined_texture(1080, 960, installed.tiles)
+installed.minimap = installed -- normal quality: the minimap shows the base itself
 atlas.set_base_texture(installed.texture)
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 local minimap = grug_map.minimap
