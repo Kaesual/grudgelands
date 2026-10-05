@@ -754,6 +754,8 @@ do
 	local def = {id = "fireball", target_kind = "hostile"}
 	_G.grug_core = {
 		combat_eye_pos = function() return {x = eye.x, y = eye.y, z = eye.z} end,
+		-- The aiming ray (grug_core.aim_raycast, tested in tools/r35_t).
+		aim_raycast = function(o, d, liquids) return core.raycast(o, d, true, liquids) end,
 		hud_layout = {image_element = function(_, d) return d end},
 	}
 	_G.grug_abilities = {

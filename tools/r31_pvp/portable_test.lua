@@ -98,6 +98,8 @@ core = {
 	get_modpath = function() return repo .. "/mods/PLAYER/grug_pvp" end,
 	get_current_modname = function() return "grug_pvp" end,
 	log = function() end,
+	-- No object near the ray has a rotated box (grug_core.aim_raycast).
+	get_objects_in_area = function() return {} end,
 	raycast = function()
 		local index = 0
 		return function()
@@ -118,6 +120,7 @@ vector = {
 	end,
 	offset = function(p, x, y, z) return vec(p.x + x, p.y + y, p.z + z) end,
 	add = function(a, b) return vec(a.x + b.x, a.y + b.y, a.z + b.z) end,
+	subtract = function(a, b) return vec(a.x - b.x, a.y - b.y, a.z - b.z) end,
 	multiply = function(a, s) return vec(a.x * s, a.y * s, a.z * s) end,
 	length = function(a) return math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z) end,
 	normalize = function(a)

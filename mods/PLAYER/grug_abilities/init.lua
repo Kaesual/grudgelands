@@ -644,7 +644,7 @@ local function ability_on_secondary_use(itemstack, user, pointed_thing)
 	-- pointability. Resolve both kinds by physical distance; never reach a door
 	-- through the first visible actor. Liquids stay excluded like hand clicks.
 	local nearest, nearest_distance
-	for pointed in core.raycast(origin, destination, true, false) do
+	for pointed in grug_core.aim_raycast(origin, destination, false) do
 		if pointed.type == "node" or
 				(pointed.type == "object" and pointed.ref ~= user) then
 			local point = pointed.intersection_point

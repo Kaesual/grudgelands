@@ -152,7 +152,7 @@ local function looked_at_target(player)
 	local eye = vector.offset(pos, 0,
 		player:get_properties().eye_height or 1.5, 0)
 	local dest = vector.add(eye, vector.multiply(player:get_look_dir(), RANGE))
-	for pointed in core.raycast(eye, dest, true, false) do
+	for pointed in grug_core.aim_raycast(eye, dest, false) do
 		if pointed.type == "node" then
 			local node = core.get_node(pointed.under)
 			local def = core.registered_nodes[node.name]
