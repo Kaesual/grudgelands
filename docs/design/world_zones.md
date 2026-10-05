@@ -45,9 +45,9 @@ of commit `082982da`.
   zone names, biome combinations and landmarks may differ.
 - Each zone definition owns: display name and id, stable hub, macro region,
   optional ownership bias, `territory_rule`, exactly one `race_region`, level
-  range, PvP rule, allowed biome
-  list, signature terrain/property, gathering palette, spawn recipe (its
-  surface mobs, [zone_mobs.md](zone_mobs.md)) and reserved POI slots. `race_region` means cultural/geological provenance;
+  range, PvP rule, allowed biome list, signature terrain/property, gathering
+  palette, spawn recipe (its surface mobs, [zone_mobs.md](zone_mobs.md)) and
+  reserved POI slots. `race_region` means cultural/geological provenance;
   it selects architecture, regional loot and one signature wood (gems are depth-tiered and the same everywhere, §11), but
   does not
   make a contested zone safe or politically controlled. `territory_rule`
@@ -1730,8 +1730,10 @@ The final registry exposes:
   `territory_rule_at`, `hard_protection_kind_at`, `pvp_rule_at`,
   `surface_mob_level_at`, `mob_level_at`, `guard_level_at`,
   `terrain_height_at` and `water_class_at`;
-- `hard_footprint_in`, the hard-protected footprints in an area
-  (`grug_core/zone_authority.lua` `PUBLIC_METHODS` is the list).
+- `hard_footprint_in(min_x, min_z, max_x, max_z)`: the id and kind of the
+  first hard-protected footprint holding a column of the rectangle, or nil
+  (Claim Stone placement; `grug_core/zone_authority.lua` `PUBLIC_METHODS` is
+  the list).
 
 The mask-based `housing_eligible_at` centre predicate is removed with the
 housing masks (Round 25 ruling 4). `grug_housing` validates a claim itself
