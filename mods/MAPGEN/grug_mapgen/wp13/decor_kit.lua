@@ -582,8 +582,9 @@ local function loader(directory)
 		buf:put(cx, 1, cz, N.mat)
 	end
 
-	-- A lean-to: three posts on the back line under a sloping slab roof,
-	-- a mat and a barrel under it (a bandit's or a prospector's shelter).
+	-- A lean-to: posts on the back line and poles at the front under a
+	-- slab roof two nodes up, mats under it (a bandit's or a prospector's
+	-- shelter); its open middle front lets a player walk in.
 	function P.lean_to(brush, x, z, face)
 		local at = frame(x, z, face)
 		local p, buf = brush.palette, brush.buf
@@ -594,8 +595,10 @@ local function loader(directory)
 			end
 			buf:put(bx, 3, bz, p.node("roof_slab"))
 			local fx, fz = at(u, 0)
-			buf:put(fx, 2, fz, p.node("roof_slab"))
-			if u ~= 0 then buf:put(fx, 1, fz, p.node("table_leg")) end
+			buf:put(fx, 3, fz, p.node("roof_slab"))
+			if u ~= 0 then
+				for y = 1, 2 do buf:put(fx, y, fz, p.node("table_leg")) end
+			end
 		end
 		local cx, cz = at(0, -1)
 		buf:put(cx, 1, cz, N.mat)
@@ -766,11 +769,20 @@ local function loader(directory)
 		end
 		-- A solid prop must leave the lane past it open: the cell beyond it
 		-- is free ground too.
-		-- `h` (default 1) courses of a solid prop: none before a window.
+		-- A solid prop against the wall at (x, z), `h` (default 1) courses
+		-- high: never before a window, and never cutting the lane along the
+		-- wall. The lane past it must stay open: the cell outward of it and
+		-- the cells outward of both its wall-side neighbours are open ground
+		-- with two free courses (Round 36 review: a barrel in a one-node
+		-- porch cut the way from the door to the porch bench).
 		local function free_solid(x, z, ox, oz, h)
-			if not (free(x, z) and ground_ok(x + ox, z + oz) and
-					empty(buf, x + ox, gy + 1, z + oz)) then
-				return false
+			if not free(x, z) then return false end
+			for _, k in ipairs({-1, 0, 1}) do
+				local lx, lz = x + ox + k * oz, z + oz + k * ox
+				if not (ground_ok(lx, lz) and empty(buf, lx, gy + 1, lz) and
+						empty(buf, lx, gy + 2, lz)) then
+					return false
+				end
 			end
 			for y = gy + 1, gy + (h or 1) do
 				if not empty(buf, x, y, z) or M.faces_window(buf, x, y, z) then return false end

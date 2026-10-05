@@ -14,7 +14,9 @@
 --      front of its door;
 --   E. over every POI, start, capital core and plot: no solid cell the kit
 --      writes stands before or behind a window at the window's height, and
---      every closed room keeps two nodes of air over its walkable floor.
+--      every closed room keeps two nodes of air over its walkable floor;
+--   F. over the same: every place a player can walk to from the arrival
+--      without the decor stays reachable with it, within a 6-step detour.
 --
 -- Usage (repo root): luajit tools/r36_w/portable_test.lua [REPO]
 local repo = arg[1] or "."
@@ -91,6 +93,32 @@ for _, profile in ipairs(settlement.roster) do
 	end
 end
 check(built.r20_anchor_016 and built.r20_anchor_089 and built.goldmead_village, "POIs found")
+-- Nothing the pass adds replaces a Round 14 house's frame: each house keeps
+-- its four corner posts to its eaves (Round 36 review: a timber stack's cap
+-- took Goldmead's granary corner).
+for _, profile in ipairs(settlement.roster) do
+	local file = profile.blueprint_file
+	if file:match("^r7_.*_blueprint%.lua$") and profile.slot ~= "capital" and profile.slot ~= "start" then
+		local bp = built[profile.key].bp
+		local by = {}
+		for _, c in ipairs(bp.cells) do by[c.x .. "," .. c.y .. "," .. c.z] = c.name end
+		local post = palettes.new(profile.race).node("post")
+		local raised = profile.race == "troll" and 1 or 0
+		for _, s in ipairs(bp.landmarks.structures) do
+			if s.interior and s.kind ~= "canopy" then
+				local w, d = s.w, s.d
+				if by[(s.x + w) .. "," .. (raised + 1) .. "," .. (s.z + d)] ~= post then w, d = d, w end
+				for _, c in ipairs({{-1, -1}, {1, -1}, {-1, 1}, {1, 1}}) do
+					for y = raised + 1, raised + s.h do
+						local k = (s.x + c[1] * w) .. "," .. y .. "," .. (s.z + c[2] * d)
+						check(by[k] == post, profile.key .. " " .. s.label .. ": corner post at " .. k ..
+							" is " .. tostring(by[k]))
+					end
+				end
+			end
+		end
+	end
+end
 do
 	local now = dofile(repo .. "/tools/r36_w/baseline.lua")(repo)
 	local f = assert(io.open(repo .. "/tools/r36_w/baseline.tsv", "rb"))
@@ -201,7 +229,7 @@ end
 -- every closed room keeps two nodes of air over its walkable floor.
 do
 	local real_dofile = dofile
-	local written
+	local written, bare
 	local function recording(buf)
 		local rec = {}
 		function rec:put(x, y, z, name, param2)
@@ -221,9 +249,15 @@ do
 			local loader = result
 			return function(dir)
 				local M = loader(dir)
-				local brush = M.brush
+				local brush, place, dress_house = M.brush, M.place, M.dress_house
 				M.brush = function(buf, race, palette, lights)
 					return brush(recording(buf), race, palette, lights)
+				end
+				-- a bare build: the composition without any decor
+				M.place = function(...) if not bare then return place(...) end end
+				M.dress_house = function(...)
+					if bare then return 0 end
+					return dress_house(...)
 				end
 				return M
 			end
@@ -232,9 +266,12 @@ do
 	end
 	local comps = {}
 	local function add(label, build)
+		bare = true
+		local before = build()
+		bare = false
 		written = {}
 		local bp = build()
-		comps[#comps + 1] = {label = label, bp = bp, written = written}
+		comps[#comps + 1] = {label = label, bp = bp, before = before, written = written}
 		written = nil
 	end
 	for _, profile in ipairs(settlement.roster) do
@@ -307,6 +344,85 @@ do
 		end
 	end
 	check(recorded > 1000, "decor cells recorded (" .. recorded .. ")")
+
+	-- F. reachability: every place a player could walk to inside a
+	-- composition without its decor stays reachable with it, from the
+	-- composition's arrival, within a small detour (DETOUR steps).
+	local DETOUR = 6
+	local function walk_grid(bp)
+		local by = {}
+		for _, cell in ipairs(bp.cells) do by[cell.x .. "," .. cell.y .. "," .. cell.z] = cell.name end
+		return by
+	end
+	local function passable(n)
+		return n == nil or decor_mod.soft(n) or n:sub(1, 6) == "doors:" or
+			n:find("stonepath", 1, true) ~= nil or n:find("wagon_wheel", 1, true) ~= nil or
+			n:find("cobweb", 1, true) ~= nil
+	end
+	local function distances(bp)
+		local by = walk_grid(bp)
+		local b = bp.bounds
+		local function pass(x, y, z) return passable(by[x .. "," .. y .. "," .. z]) end
+		-- A POI's core sits in a collar of open ground (world_zones.md): one
+		-- ring of it round the core is walkable at the core's level.
+		local collar = bp.landmarks.structures ~= nil
+		local function stand(x, y, z)
+			local inside = x >= b.min.x and x <= b.max.x and z >= b.min.z and z <= b.max.z
+			if not inside then
+				return collar and y == 1 and x >= b.min.x - 1 and x <= b.max.x + 1 and
+					z >= b.min.z - 1 and z <= b.max.z + 1
+			end
+			return y > b.min.y and y <= b.max.y and pass(x, y, z) and pass(x, y + 1, z) and
+				not pass(x, y - 1, z)
+		end
+		local a = bp.landmarks.arrival or {x = 0, y = 1, z = 0}
+		local start
+		for r = 0, 3 do
+			for dz = -r, r do for dx = -r, r do for dy = 0, 2 do
+				if not start and stand(a.x + dx, a.y + dy, a.z + dz) then
+					start = {a.x + dx, a.y + dy, a.z + dz}
+				end
+			end end end
+		end
+		local dist = {}
+		if not start then return dist, stand end
+		local queue, head = {start}, 1
+		dist[start[1] .. "," .. start[2] .. "," .. start[3]] = 0
+		while head <= #queue do
+			local q = queue[head]
+			head = head + 1
+			local d = dist[q[1] .. "," .. q[2] .. "," .. q[3]]
+			for _, m in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+				for _, dy in ipairs({0, 1, -1}) do
+					local x, y, z = q[1] + m[1], q[2] + dy, q[3] + m[2]
+					local k = x .. "," .. y .. "," .. z
+					if dist[k] == nil and stand(x, y, z) and
+							(dy ~= 1 or pass(q[1], q[2] + 2, q[3])) then
+						dist[k] = d + 1
+						queue[#queue + 1] = {x, y, z}
+						break
+					end
+				end
+			end
+		end
+		return dist, stand
+	end
+	for _, c in ipairs(comps) do
+		local before = distances(c.before)
+		local after, stand = distances(c.bp)
+		local worst, lost = 0, 0
+		for k, d in pairs(before) do
+			local x, y, z = k:match("^(-?%d+),(-?%d+),(-?%d+)$")
+			x, y, z = tonumber(x), tonumber(y), tonumber(z)
+			if stand(x, y, z) then
+				local d2 = after[k]
+				if d2 == nil then lost = lost + 1
+				elseif d2 - d > worst then worst = d2 - d end
+			end
+		end
+		check(lost == 0 and worst <= DETOUR, c.label .. ": decor keeps every walkable place reachable (" ..
+			lost .. " cut off, worst detour " .. worst .. " steps)")
+	end
 end
 
 print(("r36_w portable test: %d checks passed"):format(checks))
