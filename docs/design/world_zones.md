@@ -1158,7 +1158,10 @@ graph requirement may shape a zone, and nothing may require a graph to be
 - **Grade (Round 22, D49–D51, D67).** Roads are walkable by players and
   mounts without jumping: the profile runs in half-node steps with a slab on
   every half step, at most ½ node between neighboring road columns (max grade
-  1:2). Routing prefers grades gentler than about 1:4; hairpins and junction
+  1:2). A level change has a cost of its own, so the profile does not follow
+  the ground's one-node dither: no lone half-step bumps or holes (Round 36
+  playtest; `C_STEP` 0.05 → 0.5, a handful of such cells per world remain
+  instead of about 500). Routing prefers grades gentler than about 1:4; hairpins and junction
   mouths are flat. There are no stairs, also not on trails. The profile both
   cuts and fills and stays near the ground: no long ramps into flat land and
   no high fixed control points (junctions and start gates take their
