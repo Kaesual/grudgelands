@@ -1,8 +1,11 @@
 # Round 35 — Fixes and character creation: round plan
 
-Coordinator: Claude (Opus 5.5), planned 2026-10-05. Status: **approved by the
-user (2026-10-05)**, with the upstream-workaround list (§2.10) added at the
-user's request.
+Coordinator: Claude (Opus 5.5), planned 2026-10-05. Status: **complete
+locally 2026-10-05** ([completion and GUI checklist](#completion-2026-10-05));
+approved by the user 2026-10-05, with the upstream-workaround list (§2.10)
+added at the user's request. The user's choices during the round
+([completion](#the-users-choices-during-the-round)) win over the earlier
+sections; the design as built is in `docs/design/`.
 
 The user's first GUI test of Round 34 found a set of bugs and rough edges
 (§2); four read-only investigations explained each of them (coordinator log,
@@ -45,11 +48,14 @@ returns degrees, and the server raycast passes them to
 the server tips a `rotate = true` selection box over, so our server-side
 combat ray (`grug_core/combat_ray.lua`) misses the upper body of tall,
 narrow boxes (zombies, skeletons, felines, hyenas, the crocodile sideways)
-while the flat boar box almost always hits. The client is correct.
+while the flat boar box almost always hits. Every yaw but 0 is misread:
+elongated boxes (the crocodile) also miss at yaws inside ±90° (30°, 60°;
+Lane T's engine probe). The client is correct.
 **Ruling:** our combat ray tests rotated boxes itself in Lua instead of
 trusting the engine for them (cost reported, not gated; user, after
 discussing the cost). The coordinator wrote the upstream bug report (with a headless repro on
-5.17.0: 10 of 24 facings miss, all beyond ±90°) at
+5.17.0: 8 of 24 facings miss — 105, 120, 150, 180, 195, 225, 240 and 255°,
+all beyond ±90°; this plan first said "10 of 24", a miscount) at
 `/home/jan/Desktop/luanti-hitbox-issue.md`; the user files it.
 
 ### 2.2 Items and their display
@@ -370,3 +376,371 @@ character creation including a disconnect.
 - **Listening page:** lane F's break-sound page follows Round 34's pattern
   (German, data-URI audio, numbered, published privately by the coordinator;
   picks in `~/projects/grudgelands-orchestration/r35/approved/f.txt`).
+
+## Completion (2026-10-05)
+
+Every code lane below is merged on local main (last lane B, `a15bd0ae`);
+not pushed. Each code lane was independently reviewed by Opus once, and
+every review said MERGE: T after four small review fixes (blocking
+pointability, a float-tolerant box compare, the candidate margin, the cost
+lines), M with its review items and the user's rotation check, F's phase 1
+as reviewed (phase 2, the picked file, checked by the coordinator), C as
+reviewed (one stale comment fixed at the merge), E with the user's drop
+picks as a follow-up, B's phase 2 with four stale doc lines fixed at the
+merge. After each merge the coordinator ran the portable fixtures,
+`check_fresh_server.py`, `validate.py --game` and `income.py --check`;
+`tools/run_fixtures.sh` passes **84 of 84** on `a15bd0ae` (re-run on this
+lane's branch). One boot of main with T, M, F and C (seed
+6000697105738334415) passed. No mapgen change: a world of Round 33 or later
+serves the GUI test.
+
+### Shipped, by lane
+
+Numbers are each lane's own probe or fixture, same seed and method before
+and after (comparisons, never targets).
+
+- **T aiming at rotated boxes** (merge `6932e10b`;
+  [upstream workarounds](../technical/upstream-workarounds.md) §1,
+  [combat_stats.md](../design/combat_stats.md)): `grug_core.aim_raycast`
+  keeps the engine's raycast for nodes and every other object and tests
+  `rotate = true` selection boxes in Lua, turned as the client turns them;
+  the combat ray (held swings, skill targets, the crosshair colour,
+  projectile aim), the hold ray, right-click interaction and the Target
+  Frame use it. The independent review compared it with a C++ copy of the
+  client path on 400 000 random cases: 0 mismatches. **Misses** in the
+  engine probe (`tools/r35_t/engine.sh`, a mob turning through every yaw in
+  15° steps, rays at several heights and sides):
+
+  | Mob (rays) | Engine ray | Before: combat ray / Fireball | After: combat ray / Fireball |
+  |---|---|---|---|
+  | Zombie (288) | 62 | 62 / 62 | 0 / 0 |
+  | Crocodile (192) | 32 | 32 / 32 | 0 / 0 |
+
+  The crocodile also misses at 30° and 60° (§2.1). The upstream check
+  (`tools/r35_t/upstream_check.sh`) reports 8 of 24 yaws missing on Luanti
+  5.17.0. **Cost** per ray in a busy fight (20 zombies, six fake players;
+  µs, median / best, after the review fixes, each round alternating with the
+  plain engine ray):
+
+  | Ray | Engine ray only | With the workaround |
+  |---|---|---|
+  | `combat_ray` 4 m (melee hold) | 13.9 / 13.6 | 35.1 / 32.8 |
+  | `combat_ray` 20 m | 21.3 / 20.8 | 59.3 / 52.5 |
+  | `aimed_target` 20 m (Fireball) | 21.9 / 21.6 | 67.0 / 53.2 |
+  | the aim ray alone, 20 m | 15.6 / 15.4 | 47.9 / 44.1 |
+
+  Medians spread with garbage collection (the review measured the
+  `aimed_target` median at 137 µs, best 56 µs); the review's worst-case
+  estimate is about 1–2.5 ms of server time per second per fighting player
+  with 20 rotated mobs round every ray. `docs/technical/upstream-workarounds.md`
+  starts with this entry and the `num_emerge_threads = 1` pin (Luanti
+  #9357). Fixture 42 278 checks.
+- **M capital music** (merge `e2f323ab`; [sound.md](../design/sound.md)
+  §4–§6): music plays only in the six capitals, one rotation each
+  (`D.rotations`), from entering (the first track as soon as it is
+  downloaded) to leaving (8 nodes of hysteresis at the border); 5 s between
+  tracks, the next track pushed 60 s before the current one ends. Either
+  music or the bed: where music plays the bed is silent, with music off the
+  capital's bed returns; the change is a 3 s crossfade. Default music volume
+  35 %, the Help dropdown in 5 % steps, `/music` and the Help text name the
+  capitals. The region pools are gone; all 16 tracks stay. Probe
+  (`tools/r35_m/engine.sh`, seed 12345, 40 stand-ins, 60 s in Dawnmere, then
+  in Highcourt, about one in four walking across the city border):
+
+  | | Dawnmere before → after | Highcourt before → after |
+  |---|---|---|
+  | ambience evaluation without its node search | 8.2 → 8.7 µs | 6.5 → 10.0 µs |
+  | location sample | 7.9 → 8.8 µs | 7.6 → 10.8 µs |
+  | music pushes / plays | 24 / 19 → 0 / 0 | — → 20 / 11 |
+  | bed plays (Highcourt) | | 80 → 19 (the border walkers) |
+
+  The after run shared the machine with another lane (the unchanged
+  atmosphere pass rose 24 % and 62 %), so the cost differences are mostly
+  load; the review's re-run gave 10.2 µs per location sample in the capital
+  against 8.9 µs in the start town, and 16 pushes and 11 plays in
+  Highcourt. Rotations as confirmed by the user:
+
+  | Capital | Rotation |
+  |---|---|
+  | Highcourt | Fantasy Orchestral Theme, Town Theme, Village Consort, Minstrel Guild |
+  | Dur Brannoc | Memories of Stone, Thatched Villagers, Permafrost |
+  | Lethariel | Achaidh Cheide, Soliloquy, Folk Round, A Dragon's Lullaby |
+  | Gor Drazhak | The Great Sea, Teller of the Tales, Forest Walk |
+  | Kezamba | Forest Walk, The Great Sea, A Dragon's Lullaby, Thatched Villagers |
+  | Nhal Veyr | Katabasis I, Permafrost, Teller of the Tales, Soliloquy |
+
+  Master of the Feast stays in the game but in no rotation. **Music tab
+  study:** about 450 lines (an inventory page with the track table, volume
+  and "play now" about 180, the playlist in player meta about 40, the
+  scheduler source and the "play now" action about 70, a fixture about 150,
+  plus docs); open questions are where a playlist plays (everywhere would
+  undo the immersion ruling), a "loading" note for the first play, a push
+  rate limit, up to about 29 MB of downloads per player and no seeking in
+  the engine. The user decides later. Fixture 132 checks.
+- **F small fixes** (merge `c35f617d`; [sound.md](../design/sound.md)
+  §3.2, [durability_repair.md](../design/durability_repair.md),
+  [character_visuals.md](../design/character_visuals.md),
+  [quests.md](../design/quests.md)): **break sound** — equipped gear
+  (weapon, bow, armour, offhand) or a tool that wears into broken plays
+  `grug_sounds_gear_break` once, at the break (the user's pick B1.2,
+  rubberduck, CC0, mono; spec gain 0.7, positional on the player, heard
+  within 8 nodes); the hook sits in all three wear paths of
+  `grug_repair/runtime.lua`. **Broken look** — `^[hsl:0:-80:-35^[cracko:1:4`
+  (drained of colour, darkened, cracked) on the inventory icon, the held
+  weapon, the weapon a held skill shows and worn armour; a first version by
+  feel. **Empty hand** — a skill with an empty weapon slot shows
+  `wieldhand.png` at the engine hand's scale in first person
+  (`SKIN_VERSION` 4). **Dig sounds** — one load-time pass gives the 42
+  nodes dug through `grug_resource` (ores, coal, gem ores) the stone dig
+  (`default_dig_cracky`, gain 0.5) and those dug through `grug_loose` (sand
+  and the other loose ground) the crumbly dig (gain 0.4); gravel and snow
+  keep their own. **Flint** is gone (gravel drops gravel, no price row).
+  **Quest dialog** — `size[16,9.4]` with a 7-unit list; the status is the
+  entry's colour (available gold, ready to complete green, in progress
+  blue, locked grey) with a legend line and a tooltip, "(R)" for
+  repeatable, the description read-only; the quest log's list grew from
+  3.45 to 4.45 units. The longest resolved title (380 px at 16 px Arimo)
+  fits at about 1080p; at 720p about 95 % of titles fit. Fixture 98 checks;
+  no hot path changed, so no timings.
+- **C character creation in one window** (merge `70ded723`;
+  [world.md](../design/world.md) §7,
+  [character_visuals.md](../design/character_visuals.md) §1.1): one window
+  `grug_classes:create` (faction row, race column, class row, the look
+  panel, "Create character") with a session-only draft; Create stores
+  faction, race, look and class at once and marks the character as
+  arriving until the single arrival teleport. The faction, race, class and
+  look forms are gone. **Window size:** `formspec_version[4]`, real
+  coordinates, 15 × 10.6, no taller than the inventory (10.4 × 11.1), so
+  the window is never the one that shrinks the GUI: by the engine's scaling
+  (`calculateImgsize`) it gets 50.9 px per unit at 1024 × 600 (the
+  inventory 48.6), 764 × 540 px; a phone-like 2400 × 1080 at density 2.6
+  with a 14 pt font gets 91.7 px per unit, and the tight labels are sized
+  for that font (only the Scout's description may scroll there). Fixture 131
+  checks (the window's geometry included: everything inside, no clickable
+  overlap, a tooltip on every button); engine probe 73 checks through the
+  real receive-fields chain (seed 42). No per-step work, so no timings.
+- **E mobs and economy** (merge `e1facaeb`;
+  [biomes_mobs.md](../design/biomes_mobs.md), the generated grades in
+  [item_tiers.md](../design/item_tiers.md)): **dawn departure** — a free
+  region mob spawned under the night clock leaves by day with mobs_redo's
+  smoke puff, unless it is in combat or a player is within **32 nodes**
+  (beyond the 24-node spawn exclusion and every ambient mob's view range of
+  at most 18, inside the 48–64-node active range); camp members and every
+  mob without the night clock stay. One field test per mob step, a check
+  once a second per night mob: 0.61 µs per call (1.0 ms over about 45 s).
+  Engine run across a dawn (seed 12345): four night rats gone 0.7 s after
+  dawn, the fighting one stayed until its target was removed (20.1 s) and
+  left 0.14 s later, the day rat stayed. **Drop audit** by loot-table
+  chances only; band medians before = after (`band_payout.sh`), so the
+  income model and every derived price stay:
+
+  | Band | 1 | 2 | 3 | 4 | 5 | 6 |
+  |---|---:|---:|---:|---:|---:|---:|
+  | Target (c) | 3 | 8 | 19 | 48 | 120 | 300 |
+  | Median (c) | 4.3 | 9.0 | 16.7 | 43.6 | 119.5 | 239.3 |
+
+  Payout per kill, before → after (copper; every other family unchanged):
+
+  | Family | Band 1 | Band 2 | Band 3 | Band 4 | Band 5 | Band 6 |
+  |---|---:|---:|---:|---:|---:|---:|
+  | Rat (tail, fur 1/2 → 1/3) | 8.0 → 5.7 | 19.0 → 13.0 | – | – | – | – |
+  | Crab (eye, leg 1/2 → 1/3) | 8.0 → 5.7 | 16.0 → 13.0 | – | – | – | – |
+  | Fox (band-1 Fang 1/3 → 1/6) | 10.0 → 7.0 | – | – | – | – | – |
+  | Crocodile (Tooth 1/3 → 1/6) | – | 17.7 → 12.3 | 26.7 → 21.3 | – | – | – |
+  | Zombie (flesh 1/2 → 1/3, 2nd signature 1/3 → 1/6) | – | – | 45.0 → 30.0 | 101.0 → 63.7 | 241.3 → 148.0 | 592.1 → 358.8 |
+  | Outlaw (strap 1/1 → 1/3, talisman 1/2 → 1/3) | – | – | 74.5 → 37.0 | 175.2 → 81.8 | 429.0 → 195.6 | 1059.8 → 476.4 |
+
+  Expected kills for the affected quests: Crab Leg (four pantry quests, 2
+  needed) 4 → 6 and (two, 3 needed) 6 → 9; Pickled Flesh
+  (`nhal_veyr_provisions_02`, 4 needed) 8 → 12; Rat Fur Patch (five
+  `pantry_01` quests, 2 needed) 4 → 6, so after the 8-rat hunt a player
+  holds both furs 80 % of the time instead of 96.5 %. No quest asks for a
+  weapon strap or a band 3–6 signature. Fixture 79 checks.
+- **B level-proof talents** (merge `a15bd0ae`;
+  [skill_trees.md](../design/skill_trees.md) §2.10,
+  [combat_stats.md](../design/combat_stats.md), [classes.md](../design/classes.md),
+  [scout.md](../design/scout.md)): 13 flat talent values became a
+  percentage of a level reference at the player's level — of the base hit
+  `B(L)` (the same-level baseline hit before the damage scalar: 17 / 95 /
+  337 at levels 10 / 30 / 60) for damage, of the armour constant `K(L)` for
+  armour; each keeps today's strength at the middle of its tier's level
+  range (30 / 35 / 45 / 50). The tooltip shows each rank at the viewer's
+  level. Full ranks, share of the ability:
+
+  | Talent | Before at L10 / L30 / L60 | After (every level) |
+  |---|---|---|
+  | Tinder (Mage T1) | 43 / 20 / 11 % | 20 % |
+  | Sharpened Word (Priest T1) | 31 / 15 / 9 % | 15 % |
+  | Strong Draw, Fine Edge (Scout T1) | 46 / 23 / 13 % | 23 % |
+  | Ironbound (Warrior T1, armour) | +5 rating | 15 % of `K(L)` |
+  | Warded Wrath (Priest T2) | – / 12 / 7 % | 12 % |
+  | Brand splash (Mage T3) | – / 16 / 9 % | 12 % |
+  | Cinderfall (Mage T3) | – / 36 / 21 % | 25 % |
+  | Word of Ruin (Priest T3) | – / 30 / 18 % | 22–23 % |
+  | Rimebite (Mage T4) | – / – / 46 % of Ice Nova | 25 % of a base hit (100 % of Ice Nova) |
+  | Whitehot window (Mage T4) | – / – / 14 % | 30 % of a base hit |
+  | Longshot beyond 25 m (Scout T4) | – / – / 5 % | 6 % |
+  | Unbroken emergency rating (Warrior T4) | +15 rating | 33 % of `K(L)` |
+
+  The review of all 64 talents and the user's picks
+  (`tools/r35_b/numbers.py decided`; level 60, level 30 in brackets):
+
+  | Figure | Before | After |
+  |---|---|---|
+  | Scout Quarry draw chain vs a Warrior | 2.2× (2.3×) | 1.6× (1.6×) |
+  | Recompense vs one mob's damage | 242 % (220 %) | 81 % (73 %) |
+  | Whitehot | +1.1 % DPS | +4.0 % DPS, 24 % of the pool per 60 s |
+  | Ruination | +1.4 % DPS | +4.1 % DPS (+4.2 %) |
+  | Rimebite, one target | +2.9 % | +3.9 % |
+  | Last Word per trigger | 199 HP (7 % of HP) | 499 HP (19 %) |
+  | Heavy Hand 5/5 / Keen Edge 5/5 | +5.4 % / +4.6 % DPS | +11.7 % / +9.2 % DPS |
+  | Hardened 3/3 / Weathered 4/4 | +0.9 % / +6 % HP | +6 % / +10 % HP |
+  | Cold Focus 5/5, time until out of mana | +5 % | +10 % (+9 %) |
+  | Swift Word 4/4, Smite rate | +43 % | +25 % |
+  | Charge damage after the level scalar | 23.1 (11.6) | 40.4 (11.5) |
+
+  Crit at level 60 with two crit enchants and 2 points per crit-talent
+  rank: Warrior and Priest 27–28 %, Mage 25–26 %, a Scout with Dexterity on
+  all eight items 34–35 %, held at the 30 % cap; Elixir of Precision VI
+  takes every class to the cap. Fixture 386 checks; `get_talent_bonus`
+  gains one table lookup and a short formula, so no measuring run.
+- **D:** this section, the status files, AGENTS.md, the module guide and
+  the design index.
+
+### The user's choices during the round
+
+1. **Break sound:** B1.2 (rubberduck, metal breaking with falling pieces,
+   CC0) of four candidates; list `tools/r35_f/approved.txt`.
+2. **Talents "all as recommended"**, the eight decisions of the review
+   page: (1) the percentage is of the level's base hit, independent of
+   gear; (2) today's strength is kept at the middle of each tier's range
+   (30 / 35 / 45 / 50); (3) the 13 values as proposed; (4) too strong:
+   Recompense a 6 s internal cooldown, Fletching full draw 2.0 s, Twin Shot
+   40 / 50 / 60 %, Swift Word 1.6 s; (5) weak: Hardened 2 / 4 / 6 % of the
+   class's base pool, Second Skin shortens the Shield cooldown to 9 / 8 /
+   7 s, Weathered 2.5 % per rank, Heavy Hand Mighty Blow up to ×2.0, Cold
+   Focus +40 % mana regeneration per rank (×3.0 at 5/5), Shifting Weight and the four crit
+   talents 2 points per rank; (6) capstones: Whitehot a 60 s cooldown and
+   +30 % of a base hit, Ruination a 15 s window every 60 s, Last Word 12 s
+   and a Word of Ruin cooldown reset, Rimebite 25 % of a base hit, Unbroken
+   only a text change; (7) Charge 12 % of a base hit; (8) Opening also on
+   a rooted or stunned target. Also Loose floors once, after the level
+   scalar.
+3. **Rotations** confirmed as proposed, except **Master of the Feast**,
+   removed from every rotation (too energetic for a town); it stays in the
+   game.
+4. **The 3 s crossfade** between music and the bed stays (the
+   coordinator's call on the M review: "a short fade, no hard cut"), not a
+   strict gap.
+5. **Drops:** the rat (tail and fur 1/3), the Fox Fang (band 1, 1/6) and
+   the Crocodile Tooth (1/6) as the lane changed them, then the outlaw,
+   zombie and crab outliers as recommended.
+6. **Near distance** for dawn departure: 32 nodes.
+
+### Open notes
+
+In the [BACKLOG](../../BACKLOG.md#round-35-carry-overs); none blocks the
+GUI test. Numbers are comparisons, never targets.
+
+- **Spell formulas** still round to an integer before the level scalar
+  (`grug_abilities/kits.lua` ~124–127): up to ±4 damage at level 60, the
+  issue the user fixed for Loose (Mighty Blow and Opening floor by design).
+- **Ability items show the static cooldown** (Shield with Second Skin,
+  Swift Word, Grudge, Quick Step).
+- **Scout crit above the cap:** a fully geared Scout reaches 34–35 % and
+  is held at 30 %; optional "(30 % cap holds)" in Cold Eye's text.
+- **Recompense's internal cooldown** is per session (a relog resets it).
+- **Opening on rooted targets** also works in PvP (Pinning Shot, then
+  Opening).
+- **Admin `/faction`** on an existing character re-enters the full
+  creation window (its class and look picks are ignored).
+- **Capture probes** `tools/r26_map`, `tools/r26_status_icons`,
+  `tools/r27_minimap` still drive removed creation fields (broken since
+  Round 31).
+- **Music tab** study: about 450 lines; the user decides later.
+- **Long war-camp quest titles** are cut below about 1080p.
+- **Aim-ray cost:** about 1–2.5 ms/s per fighting player in the worst case;
+  rotated hits behind a "blocking" node or non-rotated object are not held
+  back (none exists).
+- **Night mobs** may vanish in a puff 32–64 nodes away by day; a fast mount
+  can reach one before its first check (it then stays).
+- **Band 3** stays below its income target (16.7c against 19c).
+
+### GUI playtest checklist
+
+Desktop client and the web build, a world of Round 33 or later (no mapgen change); helpers `/xp give`,
+`/teleport`, `/giveme`, `/time` (privileges `server`, `give`, `settime`).
+Say what looks or sounds wrong; looks are tuned from your notes.
+
+Aiming (T):
+
+1. **A held Fireball and held melee on Braindead Zombies** while walking
+   round them, so they face you from every side: the crosshair stays
+   coloured and every cast and swing lands; then the same on a
+   **crocodile** (including from the side and at a slant) and on a
+   **dragon**, aiming at a wing tip and the tail.
+2. **The crosshair colour** on a mob that turns away from you does not
+   drop to white while it is under the crosshair.
+
+Items, mining and quests (F):
+
+3. **Gear breaking:** wear a weapon, a bow, an armour piece and an offhand
+   down to broken: the break sound plays once (gain 0.7, also heard by a
+   player close by), not again on later use.
+4. **The broken look** (drained of colour, darkened, cracked) on the
+   inventory icon, the held weapon, the weapon shown while a skill is held,
+   and worn armour on the model.
+5. **A skill with an empty weapon slot** shows the bare hand in first
+   person, not the coloured orb; third person stays empty.
+6. **Digging:** iron and other ores, coal, a gem ore (stone dig sound);
+   sand and gravel with a shovel (crumbly sound); gravel drops only gravel,
+   never flint.
+7. **The quest dialog** at a quest giver: entries in gold, green, blue and
+   grey with the legend line and its tooltip, "(R)" on repeatables, the
+   description cannot be edited; the **quest log** list the same. Make the
+   window small and open a **war-camp quest** with a long title.
+
+Mobs and loot (E):
+
+8. **Night rats** (Large Grave Rats in Stillgrave Hollow) at dawn: rats
+   out of your reach leave in a puff in the distance; one you are fighting
+   stays until the fight ends, then leaves; one within 32 nodes stays
+   while you are near.
+9. **Start-zone loot** over a few kills (rats, crabs, a fox): fewer tails,
+   furs, eyes and legs than before; a pantry quest still finishes in a
+   handful of kills.
+
+Talents (B):
+
+10. **Talent tooltips** at your level: Tinder, Ironbound, Second Skin
+    (the Shield cooldown), Cold Focus each show the value per rank at your
+    level; check at two levels (`/xp give`).
+11. **Charge** damage at a low and a high level; **Opening** on a target
+    rooted by Pinning Shot (from the front); **Last Word** resetting Word
+    of Ruin's cooldown at once.
+
+Music (M):
+
+12. **Capital music:** enter each capital — music starts (after its
+    download the first time) and the town bed fades out; leave — the
+    music fades over 3 s and the bed returns; walk along the wall without
+    the music toggling.
+13. **No music in a start town** (Dawnmere and the others), only the
+    quiet bed.
+14. **Music off** (`/music off` or Help → Sound) in a capital: the bed
+    plays again; on again: music returns. `/music 50` changes a playing
+    track; the Help → Sound page shows **35 %** by default.
+
+Character creation (C):
+
+15. **The new creation window** at **1024 × 600**, in a **phone-like
+    window** and in the **web build**: the faction row, race column, class
+    row and the look area all readable; tooltips on every button; the
+    model turns with the mouse and holds no weapon.
+16. **Choices:** a faction change clears race and look and keeps the
+    class; a race change rolls a new look; "Create character" stays grey
+    until faction, race and class are chosen.
+17. **Esc and I** pause and resume with the draft kept; **disconnect
+    before Create** and reconnect: creation starts over with nothing
+    stored; **reconnect during the arrival wait** after Create: the
+    arrival resumes.
