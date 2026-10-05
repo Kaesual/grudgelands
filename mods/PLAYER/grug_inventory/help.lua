@@ -14,6 +14,21 @@
 local PAGE = "grug_inventory:help"
 local DEFAULT_SECTION = "start"
 
+-- The game's version has one source, the `version` line of game.conf
+-- (0.<round>.<patch>, CHANGELOG.md). The engine reads no such key; a mod may
+-- read the game directory (lua_api.md core.get_game_info).
+local function read_game_version()
+	local info = core.get_game_info()
+	local version = info and info.path and
+		Settings(info.path .. "/game.conf"):get("version")
+	if type(version) ~= "string" or not version:match("^%d+%.%d+%.%d+$") then
+		core.log("warning", "[grug_inventory] game.conf has no valid version line")
+		return nil
+	end
+	return version
+end
+grug_inventory.GAME_VERSION = read_game_version()
+
 local function esc(text)
 	return core.formspec_escape(text)
 end
@@ -137,7 +152,8 @@ local SECTIONS = {
 		"• Food regeneration pauses while you are in combat; its other bonuses stay active.",
 	})},
 	{id = "about", label = "About", x = 7.8, w = 1.4, text = body({
-		heading("About Grudgelands"),
+		heading("About Grudgelands" .. (grug_inventory.GAME_VERSION and
+			", version " .. grug_inventory.GAME_VERSION or "")),
 		"Grudgelands is open source and in active development. Use Discord for questions and feedback, GitHub issues for concrete bugs.",
 		"",
 		"Copy a link (desktop): click into it, press Ctrl+A, then Ctrl+C. Open asks before starting your browser.",
