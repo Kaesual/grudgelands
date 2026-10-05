@@ -255,11 +255,21 @@ class Ledger:
             return acc
         lines = set(lines) if lines else self.lines
         quests = self.design.zone_quests(zone, lines)
+        # Round 36: on a track route a host zone's own lines above its band
+        # (the fortress Warmaster's main line, 41-60) count with the front
+        # quests of their band, where the player meets them, not in the
+        # zone's own entry.
+        own_top = (gameplay_band(zone) or (None, None))[1] if label else None
         if not lines or "front" not in lines:
             # Front quests (front files, line `front`) belong to the front
             # ledger; a race or contested route counts them only when
             # --lines names `front`.
             quests = [q for q in quests if q.get("line") != "front"]
+            if own_top is not None:
+                quests = [q for q in quests if (q.get("level") or 1) <= own_top]
+        elif levels and own_top is not None:
+            quests = quests + [q for q in self.design.zone_quests(zone)
+                               if q.get("line") != "front" and (q.get("level") or 1) > own_top]
         if levels:
             quests = [q for q in quests if levels[0] <= (q.get("level") or 1) <= levels[1]]
         one_time = [q for q in quests if not q.get("repeatable")]
