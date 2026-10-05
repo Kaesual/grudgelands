@@ -396,6 +396,16 @@ do
 	check(#hits == 1 and hits[1].ref == mob and
 		math.abs(vector.distance(vec(0, 1, 0), hits[1].intersection_point) - 3.7) < 1e-9,
 		"U a live box without rotate is tested unturned")
+	-- A half-size child (scale_mob without perma): base_selbox keeps the
+	-- adult box, the live box is half; the live box decides.
+	reset()
+	local half = {-0.225, -0.025, -0.15, 0.225, 0.9, 0.325, rotate = true}
+	local child = new_object({pos = vec(0, 0, 4), rot = vec(0, math.pi, 0), box = half, base = ZOMBIE})
+	check(#all_hits(vec(0, 1.5, 0), vec(0, 1.5, 12)) == 0, "U a child's adult hint alone hits nothing")
+	hits = all_hits(vec(0, 0.5, 0), vec(0, 0.5, 12))
+	check(#hits == 1 and hits[1].ref == child and
+		math.abs(vector.distance(vec(0, 0.5, 0), hits[1].intersection_point) - (4 - 0.325)) < 1e-9,
+		"U a child is hit on its own live box")
 end
 
 ------------------------------------------------------------------------------
