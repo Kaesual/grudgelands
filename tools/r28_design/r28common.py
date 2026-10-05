@@ -296,6 +296,13 @@ class Design:
         return {row["role"]: {"role": row["role"], "level": row["level"], "respawn": row["respawn"],
                               "at": row["at"]} for row in parsed["leaders"]}
 
+    def places(self, zone):
+        """{id: {"id", "name", "at"}}: the recipe's quest places (Round 36)."""
+        parsed = self.recipe(zone)[0]
+        if parsed is None:
+            return {}
+        return {row["id"]: row for row in parsed["places"]}
+
     def find_leader(self, role, zone=None):
         """(zone, leader) for a leader role: the given zone first, then every
         zone (leader roles are unique fixed spots). None if no zone has it."""
@@ -362,7 +369,7 @@ MAX_MINOR = 0.25  # a roster's minor role: at most this share of the weight
 LEADER_PICKS = ("farthest_from_roads",)
 SPAWNS_FILE_KEYS = ("zone", "palette", "recipe", "notes")
 PALETTE_KEYS = ("families", "exact_mobs", "night_fallback", "boar", "lookalikes")
-RECIPE_KEYS = ("from", "to", "belts", "camps", "leaders", "critters", "notes")
+RECIPE_KEYS = ("from", "to", "belts", "camps", "leaders", "places", "critters", "notes")
 BELT_KEYS = ("id", "share", "levels", "max_from", "kinds", "notes")
 KIND_KEYS = ("id", "name", "day", "night", "density", "notes")
 CAMP_KEYS = ("id", "name", "belt", "site", "roster", "slots", "respawn", "min_player_distance", "apart",
@@ -371,6 +378,9 @@ CAMP_KEYS = ("id", "name", "belt", "site", "roster", "slots", "respawn", "min_pl
 # guard posts keep their guards.
 CAMP_POIS = ("bandit", "mirefolk")
 LEADER_KEYS = ("role", "at", "respawn", "notes")
+# A quest place (Round 36, a "use at a place" objective): placed like a
+# kind leader (spawn_regions_core.lua build step 8).
+PLACE_KEYS = ("id", "name", "at", "notes")
 
 
 class RecipeError(str):
@@ -510,7 +520,7 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
         return None, errors
     known(recipe, RECIPE_KEYS, "recipe")
     out = {"zone": zone, "from": None, "to": None, "belts": [], "kinds": [], "camps": [],
-           "leaders": [], "critters": []}
+           "leaders": [], "places": [], "critters": []}
     ids = {}  # kind and camp ids -> unit
     # from / to (Round 28 S2): `from` names anchors of the zone, the zones
     # whose land border is the entry, or both (a capital: the city and the
@@ -811,6 +821,39 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
             rng = role_range(role, belt["levels"], lpath)
             if rng:
                 leader["level"] = rng[1]
+    # quest places (Round 36)
+    places = recipe.get("places")
+    if places is not None and not isinstance(places, list):
+        err("E-recipe", "places", "places must be a list")
+        places = []
+    place_ids = set()
+    for i, row in enumerate(places or []):
+        ppath = "places[%d]" % i
+        if not isinstance(row, dict):
+            err("E-recipe", ppath, "place must be an object")
+            continue
+        known(row, PLACE_KEYS, ppath)
+        pid = row.get("id")
+        if not isinstance(pid, str) or not SNAKE.match(pid) or pid in ids or pid in place_ids or pid in placed:
+            err("E-recipe", ppath, "needs a snake_case id that no kind, camp, leader or place of the recipe uses")
+            continue
+        place_ids.add(pid)
+        ppath = "places[%s]" % pid
+        if not isinstance(row.get("name"), str) or not row["name"]:
+            err("E-recipe", ppath + ".name", "a place needs a name")
+        at = row.get("at")
+        if not isinstance(at, dict):
+            err("E-recipe", ppath + ".at", "needs at: {\"kind\": id, \"pick\": ...}")
+            continue
+        known(at, ("kind", "pick"), ppath + ".at")
+        unit = ids.get(at.get("kind")) if isinstance(at.get("kind"), str) else None
+        if unit is None or unit["unit"] != "kind":
+            err("E-recipe-ref", ppath + ".at.kind", "kind %r is not a kind of the recipe" % at.get("kind"))
+            continue
+        if at.get("pick") not in LEADER_PICKS:
+            err("E-recipe-ref", ppath + ".at.pick", "pick must be %s" % " or ".join(LEADER_PICKS))
+            continue
+        out["places"].append({"id": pid, "name": row.get("name"), "at": {"kind": at["kind"], "pick": at["pick"]}})
     # critters
     critters = recipe.get("critters")
     if critters is not None and not isinstance(critters, list):
@@ -896,6 +939,33 @@ PVP_FACTION_NAME = {"accord": "Accord", "throng": "Throng"}
 def _lua_fields(text):
     """{key: value} of `key = "value"` pairs in one Lua table row."""
     return dict(re.findall(r'(\w+)\s*=\s*"([^"]*)"', text))
+
+
+R20_CATALOG = REPO / "mods" / "MAPGEN" / "grug_mapgen" / "wp40" / "r20_poi_catalog.lua"
+USE_OBJECTS = REPO / "mods" / "PLAYER" / "grug_quests" / "data" / "use_objects.json"
+
+
+def clash_sites(catalog=R20_CATALOG):
+    """{settlement key: {"key", "label", "zone"}} of every clash site (a
+    Round 20 anchor of kind "clash"), the places of "use at a place"
+    objectives in the zones that have one (Round 36; the game's
+    grug_mobs.spawn_regions.clash_site). A fixed anchor on every seed."""
+    out = {}
+    for row in re.findall(r"\{number=\d+,key=\"r20_anchor_\d+\"[^\n]*", Path(catalog).read_text(encoding="utf-8")):
+        f = dict(re.findall(r'(\w+)="([^"]*)"', row))
+        if f.get("kind") == "clash":
+            out[f["key"]] = {"key": f["key"], "label": f["label"], "zone": f["zone_id"]}
+    if not out:
+        raise LoadError("%s: no clash site found" % catalog)
+    return out
+
+
+def use_objects(path=USE_OBJECTS):
+    """The quest-object kinds of "use at a place" objectives (Round 36):
+    {kind: row} of grug_quests/data/use_objects.json (the game reads the
+    same file)."""
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    return {k: v for k, v in data.items() if k != "notes"}
 
 
 # The branches of pvp_garrison.lua's G.slot that place each garrison role:

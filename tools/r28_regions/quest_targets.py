@@ -17,8 +17,12 @@ the Round 28 quest format on every seed:
     file's zone that forms a region;
   * every placeholder target of the title and text ({name:T},
     {dir_from_giver:T}, {dir_of:P:T}, {zone_area:T}): the kind or camp
-    forms a region, the leader (any zone) is placed; else the text reads
-    "in <zone>" without a direction on that seed.
+    forms a region, the leader (any zone) or quest place is placed; else the
+    text reads "in <zone>" without a direction on that seed;
+  * every "use at a place" objective (Round 36): its place is a clash site
+    (a fixed anchor on every seed, r28common.clash_sites) or a quest place of
+    a recipe (`zone/id`, a bare id is the file's zone) that is placed on
+    every seed.
 
 A Round 31 PvP POI (a fortress or Battlegrounds camp, by its settlement
 key) is a fixed catalogue anchor on every seed: as an area its garrison's
@@ -63,8 +67,8 @@ def short_name(zone):
 
 
 def recipe_units(recipe):
-    """{unit id: {"day": set, "night": set}} for kinds and camps, and the
-    set of leader roles."""
+    """{unit id: {"day": set, "night": set}} for kinds and camps, the set of
+    leader roles and the set of quest place ids."""
     units = {}
     for belt in recipe.get("belts") or []:
         kinds = belt.get("kinds") or {}
@@ -81,26 +85,28 @@ def recipe_units(recipe):
         roles = {row["role"] for row in camp.get("roster") or []}
         units[camp["id"]] = {"day": roles, "night": set(roles)}
     leaders = {row["role"] for row in recipe.get("leaders") or []}
-    return units, leaders
+    places = {row["id"] for row in recipe.get("places") or []}
+    return units, leaders, places
 
 
 ROW = re.compile(r"^\| [^|]*\(`([a-z0-9_]+)`\) \|")
 LEADER = re.compile(r"^- Leader .*\(`([a-z0-9_]+)`\) at \(")
+PLACE = re.compile(r"^- Quest place .*\(`([a-z0-9_]+)`\) at \(")
 
 
 def read_stats(path):
-    """({unit id: region count}, {placed leader role}) from a region stats
-    file."""
-    counts, leaders = {}, set()
+    """({unit id: region count}, {placed leader role or quest place id}) from
+    a region stats file."""
+    counts, placed = {}, set()
     for line in Path(path).read_text().splitlines():
         m = ROW.match(line)
         if m:
             cells = [c.strip() for c in line.strip().strip("|").split("|")]
             counts[m.group(1)] = int(cells[5])
-        m = LEADER.match(line)
+        m = LEADER.match(line) or PLACE.match(line)
         if m:
-            leaders.add(m.group(1))
-    return counts, leaders
+            placed.add(m.group(1))
+    return counts, placed
 
 
 # Placeholders of a title or text (grug_quests/labels.lua): the last
@@ -120,6 +126,7 @@ class World:
         self.recipes, self.stats, self.stale = {}, {}, []
         self.leader_zone = {}
         self.pois = C.pvp_pois()
+        self.clash_sites = C.clash_sites()
         for path in sorted(Path(spawns).glob("*.spawns.json")):
             data = json.loads(path.read_text())
             if not data.get("recipe"):
@@ -145,6 +152,21 @@ class World:
     def placed(self, role, seed):
         return role in self.stats[(self.leader_zone[role], seed)][1]
 
+    def place_target(self, zone, place):
+        """(gaps, problems) for a quest place of `zone`'s recipe: the seeds it
+        is not placed on."""
+        if place not in self.recipes.get(zone, ({}, set(), set()))[2]:
+            return [], ["%s is no quest place of %s's recipe" % (place, zone)]
+        return [s for s in self.seeds if place not in self.stats[(zone, s)][1]], []
+
+    def use_place(self, zone, ref):
+        """(gaps, problems) for a "use at a place" objective's place: a clash
+        site (fixed on every seed) or a recipe quest place."""
+        if "/" not in ref and ref in self.clash_sites:
+            return [], []
+        qualified, _, rest = ref.rpartition("/")
+        return self.place_target(qualified or zone, rest)
+
     def unit_target(self, zone, unit, roles):
         """(gaps, clocks, problems) for `roles` in one kind or camp: the seeds
         it forms no region on, the clocks a kill of any role counts at there,
@@ -155,7 +177,7 @@ class World:
             problems = ["%s does not stand in %s/%s" % (role, zone, unit)
                         for role in sorted(roles) if role not in poi["roles"]]
             return [], set(CLOCKS), problems
-        units = self.recipes.get(zone, ({}, set()))[0]
+        units = self.recipes.get(zone, ({}, set(), set()))[0]
         if unit not in units:
             return [], set(), ["%s is no kind or camp of %s's recipe" % (unit, zone)]
         problems = []
@@ -173,7 +195,7 @@ class World:
         of them counts, so a seed has the target when one of them is a placed
         leader (any zone) or stands in a kind or camp of `zone` that forms a
         region there."""
-        units = self.recipes.get(zone, ({}, set()))[0]
+        units = self.recipes.get(zone, ({}, set(), set()))[0]
         leaders = {r for r in roles if r in self.leader_zone}
         holding = {u: c for u, c in units.items() if roles & (c["day"] | c["night"])}
         if not leaders and not holding:
@@ -194,6 +216,10 @@ class World:
             return [s for s in self.seeds if not self.placed(rest, s)], []
         if rest in self.pois and (not qualified or qualified == self.pois[rest]["zone"]):
             return [], []
+        if rest in self.clash_sites and (not qualified or qualified == self.clash_sites[rest]["zone"]):
+            return [], []
+        if rest in self.recipes.get(qualified or zone, ({}, set(), set()))[2]:
+            return self.place_target(qualified or zone, rest)
         gaps, _, problems = self.unit_target(qualified or zone, rest, set())
         return gaps, problems
 
@@ -220,6 +246,15 @@ def check_quest(world, quest, file_zone, new):
             continue
         if obj.get("type") in ("kill", "item") and obj.get("roles"):
             sources.append(("obj %d" % n, obj))
+        if obj.get("type") == "use":
+            where = "%s obj %d (use at %s)" % (qid, n, obj.get("place"))
+            gaps, problems = world.use_place(file_zone, obj.get("place") or "")
+            if problems:
+                new["missing"].append("%s: %s" % (where, "; ".join(problems)))
+            elif gaps:
+                new["missing"].append("%s: not placed on seed %s" % (where, ", ".join(gaps)))
+            else:
+                new["ok"].append(where)
     for n, drop in enumerate(quest.get("quest_drops") or [], 1):
         if drop.get("roles"):
             sources.append(("quest drop %d" % n, drop))
