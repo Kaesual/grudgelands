@@ -1478,8 +1478,9 @@ one-cell settlement checks are unchanged.
   on this calm ground). The calm bowl is round and centred on the civic core:
   no fine detail out to 200 nodes, damping below 0.1 to about 255–265,
   full natural relief again by about 400–580 along an irregular,
-  noise-varied edge (no straight edge, no cliff ring); trees and ground cover
-  return right beyond the protected band (first bullet). Over 48 seeds the
+  noise-varied edge (no straight edge, no cliff ring); trees return right beyond the protected band, and low ground cover
+  already grows in the band, thinning toward the wall (first bullet; Round 36
+  W3). Over 48 seeds the
   planned wall reached at most 250 nodes from the anchor (95 % of the outline
   within 215), so every layout stands on calm ground. Only the civic core is
   flat; the ground around it keeps long-wave hills and hollows of limited

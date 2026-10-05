@@ -600,6 +600,9 @@ return function(zone_field)
 					if type(city.distance2) ~= "function" then
 						fail("capital protection distance missing: " .. tostring(shape.anchor_id))
 					end
+					-- inside the wall line distance2 is 0 and never admits;
+					-- skip its row scan there
+					if city.inside(x, z) then return false end
 					local d2 = city.distance2(x, z)
 					return d2 ~= nil and band_cover_admits(x, z, d2, city.edge_reach,
 						city.band)

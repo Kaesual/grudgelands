@@ -282,7 +282,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			end
 		end
 		core_api.log("action", "[grug_mapgen] protected capital cities (wall line + edge + " ..
-			"bare band): " .. table.concat(parts, ", "))
+			"treeless band): " .. table.concat(parts, ", "))
 	end
 
 	-- THE GROUND UNDER THE PLACED CAPITAL PLOTS, on THIS world's final
