@@ -536,22 +536,11 @@ local function loader(directory)
 		-- 12b. The waypoint pad, before the flora so nothing grows on it.
 		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "dawnmere")
 
-		-- 12c. The cottage lane's houses get their small touches (Round 36
-		-- decor kit): a barrel or a pot by the door, flowers under the
-		-- windows, a wood pile against a side wall. Sockets and the cells in
-		-- front of them stay free; the door torches are the houses' own.
-		do
-			local brush = decor.brush(buf, "human", palette)
-			local ground = decor.open_ground(palette, {palette.node("foundation"),
-				palette.maybe("ground_straw")})
-			local opts = {ground = ground, wall_light = true,
-				blocked = decor.blocked_sockets(SOCKETS)}
-			for _, house in ipairs(decor.houses_from(rooms, doorways,
-					{"orchard_cottage", "lane_cottage", "green_cottage",
-						"field_cottage"})) do
-				decor.dress_house(brush, house, opts)
-			end
-		end
+		-- 12c. Every house's small touches (Round 36 decor kit): a barrel or a
+		-- pot by the door, flowers under the windows, a wood pile or a barrel
+		-- against a side wall; never on a socket or the cell before it.
+		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
 
 		-- 13. Meadow flora on whatever open turf is left.
 		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 4)

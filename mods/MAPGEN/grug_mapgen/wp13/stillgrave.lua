@@ -31,6 +31,7 @@ local function loader(directory)
 	local palettes = dofile(directory .. "/palette.lua")
 	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 
 	local RADIUS = 63
@@ -574,6 +575,12 @@ local function loader(directory)
 
 		-- 9b. The waypoint pad, before the bone piles so nothing grows on it.
 		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "stillgrave")
+
+		-- 9c. Every house's small touches (Round 36 decor kit): a barrel or a
+		-- pot by the door, flowers under the windows, a wood pile or a barrel
+		-- against a side wall; never on a socket or the cell before it.
+		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
 
 		-- 10. Bone piles and dead shrubs on whatever open blight is left:
 		-- thin over the basin, thicker where the ground is already turned.

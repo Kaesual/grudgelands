@@ -891,28 +891,40 @@ local function loader(directory)
 	end
 
 	-- The houses of a WP13 composition from its own records: one entry per
-	-- closed room whose `id` is listed in `ids` (all closed rooms when `ids`
-	-- is nil), with the doors of that id.
-	function M.houses_from(rooms, doors, ids)
-		local wanted
-		if ids then
-			wanted = {}
-			for _, id in ipairs(ids) do wanted[id] = true end
-		end
+	-- closed room, with the door cells that lie in its wall ring (a door
+	-- belongs to the room whose wall it is in, whatever its id says).
+	function M.houses_from(rooms, doors)
 		local out = {}
 		for _, room in ipairs(rooms) do
-			if room.closed and (wanted == nil or wanted[room.id]) then
+			if room.closed then
+				local x1, z1 = room.min.x - 1, room.min.z - 1
+				local x2, z2 = room.max.x + 1, room.max.z + 1
 				local list = {}
 				for _, d in ipairs(doors) do
-					if d.id == nil or d.id == room.id then
-						list[#list + 1] = {x = d.x, z = d.z}
-					end
+					local on_x = (d.x == x1 or d.x == x2) and d.z > z1 and d.z < z2
+					local on_z = (d.z == z1 or d.z == z2) and d.x > x1 and d.x < x2
+					if on_x or on_z then list[#list + 1] = {x = d.x, z = d.z} end
 				end
 				out[#out + 1] = {room = room, doors = list, floor_y = room.min.y or 0,
 					ground_y = 0}
 			end
 		end
 		return out
+	end
+
+	-- Every closed room of a WP13 composition gets its touches: `ground` the
+	-- extra open-ground names beside the palette's own (a house's apron),
+	-- `sockets` the composition's sockets, which stay free with the cell
+	-- in front of each. The door torches are the houses' own.
+	function M.dress_rooms(buf, palette, rooms, doors, sockets, ground)
+		local brush = M.brush(buf, palette.race, palette)
+		local opts = {ground = M.open_ground(palette, ground), wall_light = true,
+			blocked = M.blocked_sockets(sockets)}
+		local count = 0
+		for _, house in ipairs(M.houses_from(rooms, doors)) do
+			count = count + M.dress_house(brush, house, opts)
+		end
+		return count
 	end
 
 	-- Room boxes from a stamped part's `room_corner` points (pairs of
