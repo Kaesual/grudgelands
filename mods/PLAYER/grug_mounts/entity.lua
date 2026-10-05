@@ -694,9 +694,11 @@ function grug_mounts.toggle(player, tier_id)
 end
 
 -- Any damage dismounts; a boat's rider stays in the water where the boat was.
-core.register_on_player_hpchange(function(player, hp_change)
+-- The max-HP clamp is no damage (an expiring pool buff, a gear swap): the
+-- rider stays up, also in flight.
+core.register_on_player_hpchange(function(player, hp_change, reason)
 	local record = hp_change < 0 and active[player:get_player_name()]
-	if record then
+	if record and not grug_core.is_max_hp_clamp(reason) then
 		grug_mounts.dismount(player, nil, record.mode == "water")
 	end
 end, false)

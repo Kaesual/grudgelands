@@ -256,7 +256,8 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is
   punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
-  damage** (nor the dragon's wrath); other sources (hits, suffocation, authored ground effects such as
+  damage** (nor the dragon's wrath, nor the max-HP clamp of an expiring HP
+  buff or a gear swap, which is no damage at all); other sources (hits, suffocation, authored ground effects such as
   dragon scorch) still consume it. Both shares round up and deal at least 1 HP
   for any positive pool.
 - **Mobs** (Round 28 ruling 6): environmental damage to a Grudgelands mob is a
