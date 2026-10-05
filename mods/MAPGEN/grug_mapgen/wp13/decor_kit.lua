@@ -310,7 +310,7 @@ local function loader(directory)
 
 	-- A broken palisade along the right hand: stakes of uneven height, one
 	-- gap, and the stake that fell lying in front.
-	local STAKES = {3, 2, 0, 3, 1}
+	local STAKES = {3, 3, 2, 0, 3}
 	function P.palisade(brush, x, z, face)
 		local at, rx = frame(x, z, face)
 		local p, buf = brush.palette, brush.buf
@@ -574,6 +574,28 @@ local function loader(directory)
 		buf:put(cx, 1, cz, N.mat)
 	end
 
+	-- The apex camps' sample wall: two posts carrying a shelf of the race's
+	-- display stone, and six display squares in front of it. Ordinary
+	-- masonry, never a collectible gem or a resource root. The display node
+	-- comes from the composition (`brush.display`).
+	function P.samples(brush, x, z, face)
+		local at = frame(x, z, face)
+		local p, buf = brush.palette, brush.buf
+		local display = assert(brush.display, "decor kit: samples need brush.display")
+		for _, u in ipairs({-1, 1}) do
+			local cx, cz = at(u, 0)
+			for y = 1, 3 do buf:put(cx, y, cz, p.node("post")) end
+		end
+		local cx, cz = at(0, 0)
+		buf:put(cx, 1, cz, p.node("roof_slab"))
+		buf:put(cx, 2, cz, display)
+		buf:put(cx, 3, cz, p.node("roof_slab"))
+		for u = -1, 1 do
+			local sx, sz = at(u, 1)
+			for y = 1, 2 do buf:put(sx, y, sz, display) end
+		end
+	end
+
 	-- A sorting table: a trestle counter of three with a barrel at its end.
 	function P.counter(brush, x, z, face)
 		local at, rx = frame(x, z, face)
@@ -588,6 +610,87 @@ local function loader(directory)
 		local fn = P[kind]
 		if fn == nil then error("decor kit: unknown piece " .. tostring(kind), 0) end
 		fn(brush, x, z, face or 0, size)
+	end
+
+	-- An AUTHORED piece, which must land whole on open ground: it is built
+	-- into an overlay first, and every cell it writes is checked before any
+	-- reaches the composition. `rules`:
+	--   ground    set of node names that are open ground: a cell on the
+	--             ground course may only replace one, and every standing
+	--             cell at y = 1 must stand on one
+	--   reserved  set of "x:z" keys no standing cell may take (sockets,
+	--             door approaches, the central actor clearance)
+	--   inside    function(x, y, z) -> true when the cell is inside the
+	--             composition's authored volume
+	--   keep      optional set of "x:z" keys no cell at any height may take
+	--   label     the composition, for the error
+	-- Raises naming the piece and the cell when anything differs, so a
+	-- misplaced row is an authoring error, never a hole in the scene.
+	function M.place(brush, row, rules)
+		local kind, x, z = row[1], row[2], row[3]
+		local real = brush.buf
+		local order, seen = {}, {}
+		local over = M.view(function(cx, cy, cz, name, param2)
+			local k = cx .. ":" .. cy .. ":" .. cz
+			if not seen[k] then order[#order + 1] = k end
+			seen[k] = {x = cx, y = cy, z = cz, name = name, param2 = param2}
+		end, function(cx, cy, cz)
+			return seen[cx .. ":" .. cy .. ":" .. cz] or real:at(cx, cy, cz)
+		end)
+		brush.buf = over
+		local ok, err = pcall(M.piece, brush, kind, x, z, row[4], row[5])
+		brush.buf = real
+		local function refuse(why)
+			error("decor kit: " .. tostring(rules.label) .. ": piece " .. tostring(kind) ..
+				" at " .. x .. "," .. z .. " " .. why, 0)
+		end
+		if not ok then refuse(tostring(err)) end
+		for _, k in ipairs(order) do
+			local c = seen[k]
+			if not rules.inside(c.x, c.y, c.z) then
+				refuse("leaves the composition at " .. c.x .. "," .. c.y .. "," .. c.z)
+			end
+			if rules.keep and rules.keep[c.x .. ":" .. c.z] then
+				refuse("touches the kept column " .. c.x .. "," .. c.z)
+			end
+			local old = real:at(c.x, c.y, c.z)
+			if c.y <= 0 then
+				if c.y < 0 or old == nil or not rules.ground[old.name] then
+					refuse("rewrites " .. (old and old.name or "nothing") .. " at " ..
+						c.x .. "," .. c.y .. "," .. c.z)
+				end
+			elseif c.name ~= parts.AIR then
+				if old ~= nil and old.name ~= parts.AIR then
+					refuse("takes " .. old.name .. " at " .. c.x .. "," .. c.y .. "," .. c.z)
+				end
+				if rules.reserved[c.x .. ":" .. c.z] then
+					refuse("takes the reserved cell " .. c.x .. "," .. c.z)
+				end
+				if c.y == 1 then
+					local below = real:at(c.x, 0, c.z)
+					if below == nil or not rules.ground[below.name] then
+						refuse("stands on " .. (below and below.name or "nothing") .. " at " ..
+							c.x .. "," .. c.z)
+					end
+				end
+			end
+		end
+		for _, k in ipairs(order) do
+			local c = seen[k]
+			real:put(c.x, c.y, c.z, c.name, c.param2)
+		end
+	end
+
+	-- The reserved cells in front of a doorway: `depth` cells straight out
+	-- of each of its cells. (x, z) are the door cells, (ox, oz) the outward
+	-- step.
+	function M.reserve_door(reserved, cells, ox, oz, depth)
+		for _, c in ipairs(cells) do
+			for k = 1, depth or 2 do
+				reserved[(c[1] + ox * k) .. ":" .. (c[2] + oz * k)] = true
+			end
+		end
+		return reserved
 	end
 
 	-- House dressing -----------------------------------------------------

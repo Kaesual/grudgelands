@@ -298,17 +298,27 @@ return function(options, profile)
 		else error("Round 20 unknown scenery: "..tostring(kind)) end
 	end
 	for _,q in ipairs(spec.props) do prop(q) end
-	-- Decor pieces, then the houses' own touches, which take only the open
-	-- ground the pieces and the paths left (never the central clearance).
+	-- Decor pieces (wp13/decor_kit.lua), each placed whole on open ground,
+	-- never on the central actor clearance or in front of a doorway; then
+	-- the houses' own touches on the open ground the pieces and the paths
+	-- left.
 	local brush=decor.brush(decor.view(put,function(x,y,z)
 		if x>=lo and x<=hi and z>=lo and z<=hi and y>=0 and y<=spec.height then return by_pos[key(x,y,z)] end
 	end),spec.race)
-	for _,q in ipairs(spec.decor or {}) do decor.piece(brush,q[1],q[2],q[3],q[4],q[5]) end
+	brush.display="grug_mapgen:poi_display_"..spec.race
+	local reserved={}
+	for z=-2,2 do for x=-2,2 do reserved[x..":"..z]=true end end
+	for _,s in ipairs(structures) do
+		local e,turn=s.entry,s.entry_turn
+		local ox,oz=({0,1,0,-1})[turn+1],({-1,0,1,0})[turn+1]
+		decor.reserve_door(reserved,{{e.x,e.z},{e.x+math.abs(oz),e.z+math.abs(ox)}},ox,oz,2)
+	end
+	local rules={ground={[p.ground]=true},reserved=reserved,label=spec.key,
+		inside=function(x,y,z) return x>=lo and x<=hi and z>=lo and z<=hi and y>=0 and y<=spec.height end}
+	for _,q in ipairs(spec.decor or {}) do decor.place(brush,q,rules) end
 	if spec.dress then
-		local blocked={}
-		for z=-3,3 do for x=-3,3 do blocked[x..":"..z]=true end end
 		for _,house_info in ipairs(dressed) do
-			decor.dress_house(brush,house_info,{ground={[p.ground]=true},blocked=blocked})
+			decor.dress_house(brush,house_info,{ground={[p.ground]=true},blocked=reserved})
 		end
 	end
 	-- Actor roots and the host approach are invariant across all authored art.

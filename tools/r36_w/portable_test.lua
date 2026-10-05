@@ -132,6 +132,7 @@ for _, race in ipairs(RACES) do
 			end, function(x, y, z) return cells[x .. "," .. y .. "," .. z] end)
 			buf:fill(-8, 0, -8, 8, 0, 8, p.node("ground"))
 			local brush = decor.brush(buf, race, p)
+			brush.display = "grug_mapgen:poi_display_" .. race
 			local ok, err = pcall(decor.piece, brush, kind, 0, 0, face)
 			check(ok, race .. " " .. kind .. " face " .. face .. ": " .. tostring(err))
 		end
