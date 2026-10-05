@@ -31,11 +31,11 @@ M.CANDIDATES = {
 }
 M.SITE = "r20_anchor_077"
 
--- The boss: its working name until the story bible names it (round36-plan.md
+-- The boss: its name from the story bible (round36-plan.md
 -- §2.9), its encounter id (bosses.lua's ledger; grug_achievements counts
 -- "boss:rift" and "boss:<id>") and its return after a death, seconds of
 -- wall-clock time like every boss's.
-M.BOSS_NAME = "Rift Boss"
+M.BOSS_NAME = "Isquarre the Tithe-Eater"
 M.RESPAWN = 5 * 60
 function M.boss_id(site_key)
 	return "rift:" .. site_key

@@ -179,7 +179,7 @@ do
 	local alive = R.particles_alive()
 	check(alive >= 20 and alive <= 300, "S about " .. alive .. " particles alive per player (hundreds at most)")
 	eq(R.boss_id("r20_anchor_077"), "rift:r20_anchor_077", "S the encounter id")
-	eq(R.BOSS_NAME, "Rift Boss", "S the working name")
+	eq(R.BOSS_NAME, "Isquarre the Tithe-Eater", "S the story bible name")
 end
 
 ------------------------------------------------------------------------------
@@ -539,7 +539,7 @@ do
 	eq(def._grug_tier, "elite", "B ...an elite")
 	eq(def.mesh, "grug_mobs_dungeon_master.b3d", "B ...on an existing mesh")
 	eq(def._grug_voice, "giant", "B ...with an approved voice family")
-	eq(def.description, R.BOSS_NAME, "B ...under the working name")
+	eq(def.description, R.BOSS_NAME, "B ...under its story bible name")
 	eq(def._grug_leash_range, 24, "B its own leash radius")
 	check((def._grug_hp_scale or 1) > 1, "B sized for a group")
 	players[1].pos = at_site(60, 0)
@@ -817,8 +817,8 @@ do
 			eq(spec.tier, "elite", where .. " an elite")
 			check(spec.respawn[1] == 270 and spec.respawn[2] == 330, where .. " back like a captain")
 			eq(spec.area, row.zone_id .. "/" .. row.key, where .. " the camp's quest area")
-			eq(spec.name, (row.faction == "accord" and "Accord" or "Throng") .. " War Commander",
-				where .. " the working name")
+			eq(spec.name, row.faction == "accord" and "War Commander Greyvow"
+				or "War Commander Stonegrudge", where .. " the story bible's name")
 			local roles = G.area_roles(row.key, band_of(row))
 			check(roles["commander_" .. row.faction] and roles["commander_" .. row.faction][1] == 60,
 				where .. " a kill objective may name him")

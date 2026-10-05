@@ -211,8 +211,9 @@ combat may follow its target in).
   captain on the PvP tab. He has no authored socket: he stands five nodes
   beside the captain, across from the camp's west yard post. He is the main
   line's optional group fight in that camp; the captain stays its solo
-  target. His name lives in `pvp_names.json` (`commanders`; working names
-  until the story bible names them).
+  target. His name lives in `pvp_names.json` (`commanders`): War Commander
+  Greyvow in the Accord camp, War Commander Stonegrudge in the Throng camp
+  (the Round 36 story bible).
 - Own-faction players find shelter: the guards treat them as friends; enemy
   guards are hostile. Kiting enemy guards to an own camp is accepted.
 
