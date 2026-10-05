@@ -189,10 +189,14 @@ local function planner_factory()
 		local vegetation = content.vegetation_rule(full_seed, planner_source)
 		local VEGETATION_ONE = vegetation.ONE
 		local decoration_vclass, decoration_fmax = {}, {}
+		-- The one-node ground cover also grows in a start's or capital's bare
+		-- band (Round 36 W3): those rows read the column's cover host.
+		local decoration_band_cover = {}
 		for index = 1, #decorations do
 			local class = vegetation.decoration_class(decorations[index])
 			decoration_vclass[index] = vegetation.class_index(class)
 			decoration_fmax[index] = vegetation.class_max(class)
+			decoration_band_cover[index] = vegetation.band_cover(decorations[index])
 		end
 		local mountain_zone = {}
 		for index = 1, #(source.zones or {}) do
@@ -224,6 +228,7 @@ local function planner_factory()
 			surface_kind = retained_array("r6_planner_scratch_surface_kind", 256, false),
 			support_name = retained_array("r6_planner_scratch_support_name", 256, false),
 			p7_support = retained_array("r6_planner_scratch_p7_support", 256, false),
+			cover_support = retained_array("r6_planner_scratch_cover_support", 256, false),
 			wet_bed = retained_array("r6_planner_scratch_wet_bed", 400, false),
 			-- a column with snow (cap or dust) hosts no decoration
 			snowy = retained_array("r6_planner_scratch_snowy", 256, false),
@@ -319,28 +324,42 @@ local function planner_factory()
 			-- protected city (plan D76: inside the wall, the edge and its bare
 			-- band) stays host-free and the land beyond the band grows its biome
 			-- again.
-			local dry_anchor_grade = functional_kind == "land_grade" and
+			--
+			-- ROUND 36 W3 (2026-10-05): the bare band looked odd, so the one-node
+			-- ground cover (habitat_registry.lua band_cover) has a host of its own,
+			-- `cover_support`: the "cover" purpose opens a hashed share of a
+			-- start's or capital's band (simple_map.lua band_cover), thinning
+			-- toward the town; the pad, the city and the trees stay as they were.
+			local anchor_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
-				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and
-				not wet and (not excluded or
-					horizontal.static_exclusion_values_at(x, z, "vegetation") == nil)
+				functional_feature_id:match("^anchor_%d%d%d$") ~= nil and not wet
+			local dry_anchor_grade = anchor_grade and (not excluded or
+				horizontal.static_exclusion_values_at(x, z, "vegetation") == nil)
+			local cover_grade = dry_anchor_grade or (anchor_grade and
+				horizontal.static_exclusion_values_at(x, z, "cover") == nil)
+			local cover_support = p7_support
 			-- (The column source publishes no other functional kind: the R5
 			-- ford, causeway and tunnel kinds went with the route catalog.)
 			if functional_kind == "anchor_platform" or
 					(functional_kind == "land_grade" and not dry_anchor_grade) then
 				p7_support = false
 			end
-			if river_id ~= nil then p7_support = false end
+			if functional_kind == "anchor_platform" or
+					(functional_kind == "land_grade" and not cover_grade) then
+				cover_support = false
+			end
+			if river_id ~= nil then p7_support, cover_support = false, false end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
 			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
-				p7_support = false
+				p7_support, cover_support = false, false
 			end
 			-- A wet sealed (river or lake) column's bed is its terrain
 			-- (planner.lua).
 			local wet_bed
 			if river_id ~= nil and wet then wet_bed = terrain_y end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
-				water_y, surface_kind, surface, support_name, p7_support, wet_bed
+				water_y, surface_kind, surface, support_name, p7_support, wet_bed,
+				cover_support
 		end
 
 		local function load_cell(cell_x, cell_z)
@@ -358,7 +377,7 @@ local function planner_factory()
 						count = count + 1
 						local water_class, zone_numeric, zone_id, biome, _, terrain_y,
 							water_y, surface_kind, surface, support_name, p7_support,
-							wet_bed = column_tuple(x, z)
+							wet_bed, cover_support = column_tuple(x, z)
 						scratch.x[count], scratch.z[count] = x, z
 						scratch.water_class[count] = water_class
 						scratch.zone_numeric[count], scratch.zone_id[count] = zone_numeric or false,
@@ -368,6 +387,7 @@ local function planner_factory()
 						scratch.surface_kind[count] = surface_kind
 						scratch.support_name[count], scratch.p7_support[count] = support_name,
 							p7_support
+						scratch.cover_support[count] = cover_support
 						scratch.snowy[count] = surface and surface.dust_ref ~= 0 or false
 						local factor = scratch.factor
 						if biome then
@@ -503,6 +523,8 @@ local function planner_factory()
 				local height_rule = decoration_height_rule[catalog]
 				local fmax = decoration_fmax[catalog]
 				local factors = scratch.factor[decoration_vclass[catalog]]
+				local hosts = decoration_band_cover[catalog] and scratch.cover_support or
+					scratch.p7_support
 				local eligible = 0
 				for column = 1, column_count do
 					local terrain_y = scratch.terrain_y[column]
@@ -520,7 +542,7 @@ local function planner_factory()
 					end
 					local cover = terrain_y >= 1 and special_ok and
 						decoration_biome[catalog][scratch.biome[column]] and
-						scratch.p7_support[column] and
+						hosts[column] and
 						content.decoration_cover(row.id, scratch.biome[column],
 							content.content_ref(scratch.support_name[column])) or 0
 					local factor = cover > 0 and not scratch.snowy[column] and

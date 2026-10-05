@@ -92,9 +92,12 @@ local planner = {
 	-- A settlement core at x < -60 (every purpose); its anchor-blend envelope
 	-- at x -60 .. -45, z 30 .. 45 answers only the territory rule (nil
 	-- purpose), as the writer's resource rule sees it; a dry island coast
-	-- envelope at x 65 .. 75, z -20 .. -10 answers territory and vegetation.
+	-- envelope at x 65 .. 75, z -20 .. -10 answers territory, vegetation and
+	-- cover (Round 36 W3: the cover purpose differs only in a start's or
+	-- capital's band, which this stand-in has none of).
 	static_exclusion_values_at = function(x, z, purpose)
-		assert(purpose == nil or purpose == "vegetation" or purpose == "cave")
+		assert(purpose == nil or purpose == "vegetation" or purpose == "cover" or
+			purpose == "cave")
 		if x < -60 then return 7, "exclude:anchor:test" end
 		if purpose == nil and x <= -45 and z >= 30 and z <= 45 then
 			return 8, "exclude:anchor:test:blend"

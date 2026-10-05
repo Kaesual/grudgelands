@@ -91,6 +91,16 @@ function M.decoration_class(row)
 	assert(type(row) == "table" and type(row.id) == "string")
 	return ROW_CLASS[row.id] or (row.kind == "template" and "tree" or "cover")
 end
+-- Whether an R6 decoration row also grows in the bare band round a start
+-- town or a capital (Round 36 W3): the one-node simple rows (grass, ferns,
+-- dry grass, junglegrass, dry shrubs, bone piles; a class-3 simple row would
+-- stand 2-4 nodes tall). Trees, bushes and the reeds stay out of the band.
+-- The planner, the writer and renewal read the band through the "cover"
+-- exclusion purpose (simple_map.lua) for these rows only.
+function M.band_cover(row)
+	assert(type(row) == "table" and type(row.id) == "string")
+	return row.kind == "simple" and row.settlement_class ~= 3
+end
 
 -- The rule for one world seed. `land_zone_at(x, z)` (the planner source's
 -- horizontal zone of a land column, nil elsewhere) is needed only by the
@@ -268,6 +278,7 @@ function M.vegetation_rule(full_seed, land_zone_at)
 		cover = 5}
 	rule.ONE = ONE
 	rule.decoration_class = M.decoration_class
+	rule.band_cover = M.band_cover
 	-- Position of a class in `factors`, and its densest factor in whole
 	-- multiples of the catalog density.
 	function rule.class_index(class)
