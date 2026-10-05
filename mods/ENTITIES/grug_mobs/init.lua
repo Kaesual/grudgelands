@@ -100,6 +100,11 @@ end
 --                          Kraken/royal actors retain their encounter rules)
 --   def._grug_soft_deaggro — false: opt out of the 25 m walk-speed rule
 --                          (GRUG PATCH in mobs/api.lua do_states)
+--   def._grug_authored    — true: an authored actor (the dragons, the rift
+--                          boss): never counted against or removed by the
+--                          active-mob limit (GRUG PATCH in mobs/api.lua);
+--                          NPCs are authored by their type, spawned rares and
+--                          leaders by mobs:add_mob's def
 --   def.walk_velocity     — the idle roaming pace (mobs_redo stand/walk
 --                          states); at most grug_mobs.CALM_WALK_MAX, see
 --                          below. Combat movement uses run_velocity.
@@ -982,6 +987,12 @@ function grug_mobs.register_mob(name, def)
 		aggro_cfg.damage_pursuit == true
 	if disposition then
 		core.registered_entities[name]._grug_disposition = disposition
+	end
+	-- An authored actor by definition (the dragons, the rift boss): exempt
+	-- from mobs_redo's active-mob limit and its count (Round 37 MP, the GRUG
+	-- PATCH `grug_authored` in mobs/api.lua).
+	if def._grug_authored then
+		core.registered_entities[name]._grug_authored = true
 	end
 end
 

@@ -277,6 +277,32 @@ local function at_limit()
 	and active_mobs and active_mobs >= active_limit then return true end
 end
 
+-- GRUG PATCH (Round 37 MP, MOB-03, round37-plan.md §2.1.6): authored actors
+-- neither count against mob_active_limit nor are removed by it. They are
+-- every NPC (start and capital residents, guards, kings, Generals, captains,
+-- traders) and every mob marked `_grug_authored`: by its definition (the
+-- island dragons, the rift boss; grug_mobs publishes the field on the
+-- prototype) or by its spawner through mobs:add_mob (named rares, leaders),
+-- which hands the mark in as staticdata so it is already set on the first
+-- activation and persists with the mob. `tmp` is the staticdata being
+-- activated: mob_activate asks before it copies the fields onto `self`.
+-- Upstream removed ANY untamed reactivating mob at the limit, with its static
+-- data: a dragon lost that way never came back, and settlement sockets
+-- re-placed and lost their NPCs every five seconds.
+local function grug_authored(self, tmp)
+	return self.type == "npc" or self._grug_authored == true
+		or (tmp ~= nil and tmp._grug_authored == true)
+end
+
+-- GRUG PATCH (Round 37 MP, MOB-06, round37-plan.md §2.1.6): a server shutdown
+-- makes no despawn decision. The engine runs the shutdown callbacks, then
+-- kicks the players, then saves every object (server.cpp ~Server), so
+-- mob_staticdata found no player and culled every eligible mob that was
+-- activated after the player joined; a restart now keeps the world's mobs.
+local grug_shutting_down = false
+
+core.register_on_shutdown(function() grug_shutting_down = true end)
+
 -- play sound
 
 function mob_class:mob_sound(sound)
@@ -4004,7 +4030,10 @@ function mob_class:mob_staticdata()
 	-- GRUG PATCH: authored world bosses own a persistent encounter slot. Far
 	-- culling them leaves that slot's alive ledger set while activation consumes
 	-- the terminal marker, so the boss can never return.
-	if remove_far and self.remove_ok and not self._grug_no_far_despawn
+	-- GRUG PATCH (Round 37 MP, MOB-06): never during a shutdown (see
+	-- grug_shutting_down).
+	if remove_far and not grug_shutting_down
+	and self.remove_ok and not self._grug_no_far_despawn
 	and self.type ~= "npc" and self.state ~= "attack"
 	and not self.tamed and self.lifetimer < 20000
 	and mobs:despawn_distance_decision(
@@ -4061,14 +4090,18 @@ function mob_class:mob_activate(staticdata, def, dtime)
 		return
 	end
 
-	if at_limit() and not self.tamed then -- remove any mobs not tamed when total reached
+	-- GRUG PATCH (Round 37 MP, MOB-03): an authored actor is exempt from the
+	-- limit's removal and from the count (grug_authored).
+	local authored = grug_authored(self, tmp)
+
+	if at_limit() and not self.tamed and not authored then -- remove any mobs not tamed when total reached
 --print("-- mob limit reached, removing " .. self.name)
 		remove_mob(self) ; return
 	end
 
 	-- Every accepted non-terminal activation is one active mob. dtime is not
 	-- a creation/reload discriminator: a static object can reactivate with 0.
-	set_active_mob_counted(self, true)
+	if not authored then set_active_mob_counted(self, true) end
 
 	-- load entity variables from staticdata into self.*
 	if tmp then
@@ -4634,7 +4667,10 @@ function mobs:add_mob(pos, def)
 		return
 	end
 
-	if at_limit() then
+	-- GRUG PATCH (Round 37 MP, MOB-03): `def._grug_authored` (a named rare, a
+	-- leader) is placed at the limit too and carries the mark into its first
+	-- activation as staticdata (grug_authored).
+	if at_limit() and not def._grug_authored then
 --print("--- active mob limit reached", active_mobs, active_limit)
 		return
 	end
@@ -4654,11 +4690,14 @@ function mobs:add_mob(pos, def)
 		return
 	end
 
-	local mob = core.add_entity(pos, def.name)
+	local mob = core.add_entity(pos, def.name, def._grug_authored
+			and core.serialize({_grug_authored = true}) or nil)
 
 --print("[mobs] Spawned " .. def.name .. " at " .. core.pos_to_string(pos))
 
-	local ent = mob:get_luaentity()
+	-- GRUG PATCH (Round 37 MP, MOB-03): add_entity returns nil for an object
+	-- its activation removed (the limit), which upstream indexed.
+	local ent = mob and mob:get_luaentity()
 
 	-- GRUG PATCH (Round 29 P1): no smoke puff on a placed spawn. Every
 	-- surface mob comes through here since the Round 28 spawn regions, so

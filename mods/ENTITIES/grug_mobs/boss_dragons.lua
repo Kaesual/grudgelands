@@ -1184,6 +1184,9 @@ local function dragon_def(id, opts, callbacks)
 		clock = "any", type = "monster",
 		_grug_fixed_level = 70, _grug_tier = "boss",
 		_grug_no_far_despawn = true,
+		-- Authored (Round 37 MP): never removed by or counted against
+		-- mobs_redo's active-mob limit (mobs/api.lua grug_authored).
+		_grug_authored = true,
 		-- No distance or contact leash: the arena edge ends the fight
 		-- (dragon_tick, Round 31 DA2).
 		_grug_no_leash = true,
