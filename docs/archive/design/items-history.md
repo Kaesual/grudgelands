@@ -442,3 +442,26 @@ there would have been a third top source — beside crafted-masterwork
 come from crafting and hard bosses — and the band already pays the
 endgame *material* that the crafted endgame item is made of. Rejected:
 T6 gear drops on the level-60 deep roster.
+
+## Protection calibration of the 2026-09-21 equipment revision
+
+Archived from `crafting_equipment_revision.md` in Round 37, when that file
+became a redirect. The living rule (Unbroken multiplies the aggregated
+armor rating by 1.65 and never raises the 70 % reduction cap) is
+[combat_stats.md](../../design/combat_stats.md) §2; the worked example
+below used the values of its time.
+
+Unbroken multiplies aggregated armor rating by 1.65 (replacing 1.40), retains
+its +15 emergency rating, and never raises the universal 70% reduction cap.
+Concrete item-level base armor applies equally to plate and shields. An ilvl75
+plate set (71), matching shield (71), five T6 armor enchants (30), Ironbound (5)
+and Stoneskin (4) total 181 before specialization. Against L70, K=135:
+Protection reaches 298.65 rating / 68.87% reduction, or 313.65 / 69.91% in its
+emergency window. The same equipment/sources without Unbroken reach 57.28%.
+This calibration changes only the Protection multiplier, not plain item bases.
+It used the values of its time; since Round 33 the top item level is 70, a T6
+armor enchant gives 4.8 and Stoneskin Elixir VI +4.8
+([item_tiers.md](../../design/item_tiers.md) §1.1, §5), and the multiplier was not
+recalibrated. Since Round 35 Ironbound and the emergency rating are
+percentages of `K(L)` at the Warrior's level ([skill_trees.md](../../design/skill_trees.md)
+§2.10): 7.5 and 16.5 rating at level 60.

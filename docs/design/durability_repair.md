@@ -11,8 +11,8 @@ Ordinary weapons, shields, spellbooks, four armor slots, gathering
 tools and hoes are repairable. Trinkets, bags, ability tokens, mount skills,
 consumables and decorative items do not wear.
 
-The material budgets and exact event rules are defined in
-[the equipment revision](crafting_equipment_revision.md#equipment-and-lifetime).
+This file owns the material budgets and the exact wear events (tools and
+weapons are disjoint, [items_crafting.md](items_crafting.md) §3.0.3–§3.0.4).
 Combat equipment has 1000/1500/2000/2500/3000/4000 qualifying uses across T1–T6.
 Outgoing settled damage or effective in-combat healing wears only the slot
 that acted, once per action: a synchronous swing or cast wears the melee slot

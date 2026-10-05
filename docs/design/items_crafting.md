@@ -349,8 +349,8 @@ from `grug_gear`. Consequences, all binding:
   material over one handle; greataxe = five material units symmetrically around
   two vertical handles. Wands and staves use ordinary sticks, matching metal
   bars and the approved mob component; bows use sticks, metal and Thread.
-  Their exact shapes and ingredient ladder are in
-  [`crafting_equipment_revision.md`](crafting_equipment_revision.md#plain-caster-weapons-and-bows). No
+  Their exact shapes and ingredient ladder are below
+  ([plain caster weapons and bows](#plain-caster-weapons-and-bows)). No
   base recipe adds a gem or professional component beyond those stated shapes.
   **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
   iron+ picks are smith products" (see the marked line there).
@@ -389,6 +389,37 @@ from `grug_gear`. Consequences, all binding:
 - A profession never gets a *parallel* item. What a profession adds on
   top of the base item is the **enchantment and the special
   variant** (§6b), plus its handful of exclusive recipes.
+
+##### Plain caster weapons and bows
+
+User-approved playtest revision, 2026-09-21. All six tiers of plain wands,
+staves and bows are profession-free Basics recipes. H means an ordinary
+`group:stick`, M one bar of the weapon's metal tier, O the occult component
+below and T `grug_professions:thread`. Dashes are empty grid slots.
+
+| Weapon | Top row | Middle row | Bottom row |
+|---|---|---|---|
+| Wand | `-O-` | `-M-` | `-H-` |
+| Staff | `OMO` | `-H-` | `-H-` |
+| Bow | `-HT` | `M-T` | `-HT` |
+| Mirrored bow | `TH-` | `T-M` | `TH-` |
+
+| Tier / metal | Occult component |
+|---|---|
+| T1 Bronze | Boar Tusk (`grug_mobs:boar_tusk`) |
+| T2 Iron | Rotting Flesh (`grug_mobs:zombie_flesh`) |
+| T3 Steel | Bone (`grug_mobs:bone`) |
+| T4 Silversteel | Bear Claw (`grug_mobs:bear_claw`) |
+| T5 Embersteel | Sharp Feather (`grug_mobs:sharp_feather`) |
+| T6 Abyssal Steel | Venom Sac (`grug_mobs:venom_sac`) |
+
+Each wand consumes one occult component; each staff consumes two. Bows need
+none. Graded wood and the former metal-rod wand alternative are absent from
+these base recipes; graded wood is the Woodcarver's enchant material (§3.6a).
+Components may be collected before their weapon tier, with metal providing
+the tier gate. Bronze recipes are visible from the start; later recipes are
+discovered by finding their matching metal bar. Discovery only affects book
+visibility, never crafting qualification or character-level restrictions.
 
 #### 3.0.4 Tier rock, harvest tier and loose ground
 
@@ -529,7 +560,8 @@ shovels need a character level by material tier; the tier is the tool's own
   cracks in this rare case (an engine limit, accepted); the server resets the
   node.
 - Tools are never weapons: their damage groups are zero
-  (`tool_lifetimes.lua`), they cannot enter the Weapon slot, a wielded hotbar
+  (`tool_lifetimes.lua`), they show no damage line, they cannot enter the
+  Weapon slot, a wielded hotbar
   tool is no damage source against mobs or players (the vendored raw-punch
   veto and the PvP handler), so the requirement needs no combat gate.
 
@@ -828,15 +860,15 @@ families: staff and wand (bows belong to the Leatherworker since Round 33,
 Basics.
 Plain weapons use ordinary sticks and matching-tier metal bars. Wands and
 staves additionally use the tier's ordinary mob component; bows use Thread.
-The exact shapes and six-component ladder are defined in
-[`crafting_equipment_revision.md`](crafting_equipment_revision.md#plain-caster-weapons-and-bows).
+The exact shapes and six-component ladder are in §3.0.3
+([plain caster weapons and bows](#plain-caster-weapons-and-bows)).
 
 **Material chain**: wood, including the per-race woods of biomes_mobs §5 —
 silverwood and gravewood among them. Signature woods are not a mandatory
 universal tier ladder. The six processed grades are decided
 (2026-08-13): **Seasoned → Polished → Hardened → Inlaid → Lacquered →
 Heartwood** (T1→T6), retained for enchanting rather than plain weapon recipes,
-each craftable from any `group:wood` — both continents
+each a universal Basics grid recipe from any `group:wood` — both continents
 reach every grade by construction, and the per-race woods stay a cosmetic
 skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
 for example Steel Staff (§3.8).
@@ -1481,12 +1513,25 @@ Apply enchantments at the owning profession station to the concrete stack.
 Everyone can craft base gear; qualified professionals can apply or replace its
 legal enchants. Tools are not weapons and receive no ordinary combat enchants.
 
+Each legal family/stat/channel combination has one named recipe at every
+enchant tier: 552 ordinary family/stat/channel/tier operations plus 36
+Goldsmith trinket operations (three choices per channel across six tiers).
+UI selection distinguishes operations without manufacturing ambiguous grid
+recipes. An application acts on the concrete equipment stack, preserves its
+other metadata and wear and leaves the other channel intact. Each stat has a
+fixed colour that the enchanted item shows as a small accent (prefix) and
+fitting (suffix) on its icon, in hand and on the body; every enchanting
+station shows the legend of the nine colours
+([character_visuals.md](character_visuals.md) §5a, Round 31).
+
+Found items roll which stats they carry; no crafted item rolls stats. There
+is no refined state, no refinement bonus or doubled lifetime and no separate
+Imbue/Temper path; the profession upgrade (§7) only raises the item level.
+
 ### 6b.2 Tier bonuses (Round 33)
 
 The nine stat curves and their tier caps are [item_tiers.md](item_tiers.md)
-§1.1; the 588 operations and their inputs
-[the current contract](crafting_equipment_revision.md#enchanting) and
-item_tiers.md §2. A bonus grows with the item's level up to `10 × tier`; an
+§1.1; the inputs of the 588 operations (§6b.1) item_tiers.md §2. A bonus grows with the item's level up to `10 × tier`; an
 upgrade (item_tiers.md §3) or the crown (§4) raises it accordingly. No extra
 base-damage or lifetime multiplier exists.
 
@@ -1506,10 +1551,19 @@ mining or gathering item for the equipment family (`family_input`), from
 | trinket | Goldsmith | Tin → Gold-filigreed Abyssal Steel Setting |
 
 Prefix and suffix of a stat take different loot; the trinket's prefix pool
-uses `prefix_loot`, its suffix pool `suffix_loot`. No input may be another profession's product (a Cut gem is a
-Goldsmith product, so other families use raw gems). Load fails on a missing entry, an unregistered item, an input declared
-above the enchant tier or a foreign
-product.
+uses `prefix_loot`, its suffix pool `suffix_loot`. No input may be another
+profession's product (a Cut gem is a Goldsmith product, so other families use
+raw gems). The table is `grug_professions/data/enchants.json` (one entry per
+tier; format in that folder's README) and is checked at load: every tier is
+present, every stat of every family pool has loot in both channels, every
+family has an input, every item is registered, no input has a declared
+ingredient tier above the enchant tier, and no profession recipe or enchant
+operation uses an item that another profession's recipe makes. Since Round 29
+every gem input is the depth-tiered gem of the enchant tier or a lower one
+(§3.0.1). Every loot input drops for both factions
+(`tools/r33_ds/allocation.py --check`, item_tiers.md §2.2), so none of the
+588 operations lacks its loot. There are no universal reagents (removed in
+Round 33).
 
 ### 6b.3 Eligibility
 
