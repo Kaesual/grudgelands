@@ -194,7 +194,7 @@ if check(final ~= nil and finale ~= nil, "F the finale and the final turn-in exi
 	check(#final.requires == 1 and final.requires[1] == FINALE, "F it follows the finale")
 	local last_line = "His last blow struck the ground. The answering blow came from underneath."
 	check(final.text:sub(-#last_line) == last_line, "F its text ends with the bible's last line")
-	eq(finale.title, "Group: The Collector Comes Due", "F the finale's title")
+	eq(finale.title, "Group: No Claim on Our Dead", "F the finale's title (unique in the game; The Accord keeps the bible's)")
 	check(finale.level >= 58 and finale.level <= 60 and finale.min_level == 60, "F the finale at 60")
 	local boss = finale.objectives[1]
 	check(#finale.objectives == 1 and boss.type == "kill" and boss.roles[1] == "rift_boss" and
