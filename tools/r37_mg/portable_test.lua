@@ -8,8 +8,9 @@
 --    the writer writes the same bytes from that plan as from the plan the
 --    former 2-cell halo made (the chunk's own rows with the eight neighbours'
 --    rows round them, 9 x 9 cells, as the old planner copied them).
--- 2. MGT-01: the three transaction wrappers (R6 planner, writer, R5 adapter)
---    keep the failure's traceback, once, naming the failing module.
+-- 2. MGT-01: the four transaction wrappers (R6 planner, R5 run planner,
+--    writer, R5 adapter) keep the failure's traceback, once, naming the
+--    failing module (the R5 planner case: the failing line).
 -- Prints "R37 MG PORTABLE PASS checks=<n>" or raises.
 local repo = assert(arg and arg[1], "usage: luajit portable_test.lua REPO")
 local checks = 0
@@ -162,6 +163,62 @@ do
 		{x = 47, y = 47, z = 47})
 	check(not ok and one_traceback(message, "r37 probe: R5 planner failed", "r6_planner.lua"),
 		"planner failure keeps one traceback")
+end
+
+do
+	-- the real R5 run planner (planner.lua through r5.lua over the shared
+	-- world assembly, as the runtime builds it), its column source answering
+	-- one column with an unknown water class: planner.lua's own check fails
+	-- inside plan_slice and the traceback names that line
+	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local A = dofile(wp40 .. "/world_assembly.lua")(wp40, R.sha)
+	local W = A.world("1", {water = R.main.water_layout_text(),
+		road = R.main.road_layout_text(), capital = R.main.capital_layout_text()})
+	W.capitals()
+	local BAD_X, BAD_Z = 0, 1850
+	local zones_factory = function(deps)
+		local module = A.zones_factory(deps)
+		local runtime = module.new_with_planner_source_runtime
+		module.new_with_planner_source_runtime = function(...)
+			local session, source = runtime(...)
+			local wrapped = {}
+			for key, value in pairs(source) do wrapped[key] = value end
+			wrapped.column_values_at = function(x, z)
+				if x == BAD_X and z == BAD_Z then return "no_such_water_class" end
+				return source.column_values_at(x, z)
+			end
+			return session, wrapped
+		end
+		return module
+	end
+	local r5 = dofile(wp40 .. "/r5.lua")({zones_factory = zones_factory,
+		planner_factory = dofile(wp40 .. "/planner.lua"),
+		adapter_factory = dofile(wp40 .. "/map_adapter.lua"),
+		manifest_module = dofile(wp40 .. "/mapgen_manifest.lua"),
+		allocator_factory = dofile(wp40 .. "/counting_allocator.lua"),
+		source = A.source, schemas = A.schemas, canonical = A.canonical,
+		deterministic = A.deterministic, index128 = A.index128,
+		horizontal_factory = W.horizontal_factory, height_factory = W.height_factory,
+		terrain_field = A.terrain_field, raw_sha256 = R.sha})
+	local production = R.built.content.production
+	local _, _, planner = r5.new_runtime("1", 1,
+		dofile(wp40 .. "/r7_r6_manifest.lua")().r5_manifest_values, production.r5,
+		R.built.mapgen_context, production.classify_runtime)
+	local minp = {x = R.origin(BAD_X), y = R.origin(R.ground_at(BAD_X, BAD_Z)),
+		z = R.origin(BAD_Z)}
+	local ok, message = pcall(planner.plan_slice, planner, minp,
+		{x = minp.x + 79, y = minp.y + 79, z = minp.z + 79})
+	local line
+	for number, text in ipairs((function()
+		local lines = {}
+		for l in io.lines(wp40 .. "/planner.lua") do lines[#lines + 1] = l end
+		return lines
+	end)()) do
+		if text:find('"unknown water class"', 1, true) then line = number end
+	end
+	check(not ok and one_traceback(message, "fail_source: unknown water class", "planner.lua") and
+		line and tostring(message):find("planner.lua:" .. line .. ":", 1, true) ~= nil,
+		"R5 planner failure keeps one traceback naming planner.lua:" .. tostring(line))
 end
 
 print("R37 MG PORTABLE PASS checks=" .. checks)
