@@ -7,7 +7,7 @@ front, 2026-09-18 for the Round-9 entity, border and safety rules, and
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
 Stone contract in `housing.md`, boats as the water mode in
-`boats.md`, the four mastery names in `items_crafting.md` §2.1,
+`boats.md`, the four mastery names in `professions.md` §1.1,
 universal skills `professions.md` §1, the mob speed pillar
 `combat_stats.md` §3 and the pursuit rules of `combat_stats.md` §4 and its
 "Ambient pursuit policy" (free-roaming mobs: incoming-damage clock, no chase
@@ -55,7 +55,7 @@ leash; bound actors: leash and give-up distance).
 ### 1.1 The four tiers
 
 Riding reuses the **names and order** of the four crafting mastery tiers
-(`items_crafting.md` §2.1), but its purchase levels are the exact travel
+(`professions.md` §1.1), but its purchase levels are the exact travel
 milestones 15/30/45/60. Riding and profession mastery remain independent
 character state:
 
@@ -310,7 +310,7 @@ dismount rule above.
 rider mostly has to walk into a melee swing to lose the mount, but
 skeleton archers already fight at range (`dogshoot`, `combat_stats.md`
 §3), bows are fully catalogued as a Phase-2 enabler
-(`items_crafting.md` §9) and the Rogue/Hunter direction is deferred
+(`items_crafting.md` §9) and a ranged/stealth class direction is deferred
 Phase-2 work (`classes.md` §6). From that point on a rider crossing
 hostile or enemy ground can be **brought down at range**, which is
 exactly the counterplay a permanent speed buff needs — and in PvP it is

@@ -13,8 +13,8 @@ Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 **The WP11 skill-tree design is decided.**
 [skill_trees.md](skill_trees.md) carries
 two trees per class derived from the kits below, the talents that improve
-their numbers, and the keystones and capstones that add new main skills —
-Mend among them, as §5 already decided. A **fourth class, the Scout**
+their numbers, and the keystones that add new main skills (at most one per
+tree) — Mend among them, as §5 already decided. A **fourth class, the Scout**
 ([scout.md](scout.md)): leather armour, a bow and a blade. The Scout carries
 its bow in the Weapon slot, shown as "Ranged", and its sword or dagger in the
 offhand, shown as "Melee" (Round 28 ruling 25): bow skills read Ranged,
@@ -84,8 +84,9 @@ Core principles:
   are friendly. A friendly skill's documented self fallback
   remains part of that skill, not a fourth target kind.
 - Three to four abilities per class in the MVP; **new active "main
-  skills" come from talent capstones** (WP11, progression.md) — talents
-  otherwise improve existing buttons rather than adding many new ones.
+  skills" come only from talent keystones**, at most one per tree
+  ([skill_trees.md](skill_trees.md) §2) — talents otherwise improve or
+  replace existing buttons rather than adding many new ones.
 - **Balance constraints** (decided 2026-08-06): group content is sized
   for **2–3 players**, and every encounter must be **beatable without a
   healer** (food/potions as the substitute) — the Priest makes groups
@@ -161,11 +162,10 @@ Core principles:
   input only, and the authoritative held loop builds a full slot-fed swing
   against the current server ray. Ordinary tools and fists do not initiate player combat; only selected
   skills may attack.
-- **Threat hooks are stubs in WP4** (`grug_core.add_threat`,
-  `add_heal_threat`): abilities already report their threat values
-  (combat_stats §4: tank abilities ×3, healing ×0.5); WP6 replaces the
-  stubs with the real threat table. Taunt's forced-target effect works
-  already via mobs_redo `do_attack(player, force)`.
+- **Threat** goes through `grug_core.add_threat` and `add_heal_threat`
+  into each mob's threat table (combat_stats §4: tank abilities ×3, healing
+  ×0.5); Taunt (`grug_core.taunt`) sets top×1.1 and forces the target
+  through mobs_redo `do_attack(player, force)`.
 
 ## 2b. Contextual skill input
 
@@ -613,7 +613,7 @@ Mighty Blow is the design working, not a bug.
 | Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 12 % of a base hit (`combat_stats.md` §2; the former flat 3 at level 30) and, on an accepted hit, a 1.5 s stun. Kings and dragons are stun-immune. Teleport movement is retained; no enemy-memory fallback. Destination below. |
 | Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
 | Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Mend has been since WP19. |
-| Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
+| Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4). |
 
 **Charge destination** (Round 28 ruling 12). The preferred spot is 1.3 m in
 front of the target on the line toward the caster, at the target's feet
@@ -640,6 +640,11 @@ the resource is effectively unlimited". Ruling 25 answers it with **option
 | Charge | +15 | unchanged; it is an engage tool, not income. |
 | out of combat | **−5 per second** | was −2 per second, on the shared `grug_core.in_combat` state (combat_stats §5). |
 | cap | 100 | unchanged. |
+
+Trinket specials add to this ledger: the Battlebeat Band's rage per accepted
+weapon hit and the Reclaimer's Mark's rage on an XP-eligible kill
+(`items_crafting.md` §6.2,
+[trinket exception](items_crafting.md#trinket-exception-one-prefix-one-suffix-one-special)).
 
 What that buys, from an empty bar: **13 landed swings to full** instead of 9,
 **4 swings per Mighty Blow** instead of 3, and a full bar bleeds out in
@@ -721,9 +726,11 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
   Round 34: one cue per ability theme, `grug_abilities.CAST_SOUNDS`.)
   (**Ability icons are no longer deferred**: Round 18 separates action icons from held weapon art; historically an ability
   item shows the equipped weapon plus its own color — §2c.)
-- Warrior shield abilities → after WP14 (offhand/shields).
-- Buffs/auras (e.g. Battle Shout) → with skill trees
-  (WP11) or later. (Shield moved into the base kit with the
+- Warrior shield abilities: none exist and none is scheduled; WP14
+  delivered the offhand shields without one (BACKLOG "Audit 2026-10 open
+  questions", DP-10).
+- Party buffs and auras (e.g. a party-wide war cry) → later; the skill
+  trees added none. (Shield moved into the base kit with the
   WP19 kit tuning, §5.) Party frames are implemented under the separate
   [party contract](parties.md).
 - The Scout has no player poison mechanic and no player poison stat. Its Veil
