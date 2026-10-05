@@ -98,10 +98,12 @@ Core principles:
   changing only the current shield state does not change its tooltip. The
   registered item definition keeps a number-free fallback; the player's
   ability ItemStack carries the effective description and refreshes on kit
-  sync, level change and talent change. Strike's player-specific rage sentence
-  is additionally resource-gated as decided on 2026-09-18: only a rage-resource
-  class receives it; mana-resource and class-less characters retain the
-  class-neutral swing text (§2b).
+  sync, level change and talent change. Its timing line shows the player's
+  effective cooldown (a talent that shortens it, such as Grudge or Swift
+  Word, shows in it) and a swing skill's effective charge. Strike's
+  player-specific rage sentence is additionally resource-gated as decided on
+  2026-09-18: only a rage-resource class receives it; mana-resource and
+  class-less characters retain the class-neutral swing text (§2b).
 
 ## 1. Resources
 

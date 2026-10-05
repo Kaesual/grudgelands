@@ -857,6 +857,12 @@ function grug_abilities.description_prefix(player, def)
 	local timing = def._grug_timing_line
 	if player and def.kind == "swing" and def.charge then
 		timing = grug_abilities.effective_charge(player, def) .. " s charge"
+	elseif player and def.cooldown_talent and not def.cast_interval then
+		-- The cooldown this player's cast earns (Second Skin, Swift Word,
+		-- Grudge, Quick Step ...); refreshed with every talent change.
+		local cooldown = grug_abilities.effective_cooldown(player, def)
+		timing = cooldown > 0 and string.format("%g s cooldown", cooldown)
+			or "no cooldown"
 	end
 	return def.name .. " (" .. def._grug_owner_line .. ")\n" ..
 		cost_line .. ", " .. timing .. "\n"
