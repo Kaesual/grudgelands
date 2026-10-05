@@ -1,0 +1,102 @@
+staged probe: grug_probe_r35_c
+headless boot: PASS (port 33834, 290 s)
+log: /tmp/grudgelands-headless.yiimy0/server.log
+seed = 42
+93:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33834.
+kept: /tmp/grudgelands-headless.yiimy0
+ACTION[Server]: [r35_c_probe] stage 1: join, wait for the world (t=5.1s)
+ACTION[Server]: [r35_c_probe] preparation ready at join: false
+ACTION[Server]: [r35_c_probe] ok   newplayer callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] joined probe_a (new=true, 2 callbacks)
+ACTION[Server]: [r35_c_probe] ok   newplayer callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] joined probe_b (new=true, 2 callbacks)
+ACTION[Server]: [r35_c_probe] stage 2: Esc on the waiting screen (t=5.9s)
+ACTION[Server]: [r35_c_probe] ok   a new player waits for the world
+ACTION[Server]: [r35_c_probe] ok   stasis while the world is prepared
+ACTION[Server]: [r35_c_probe] ok   Esc on the waiting screen
+ACTION[Server]: [r35_c_probe] ok   paused hint: Character creation paused – press I to continue
+ACTION[Server]: [r35_c_probe] stage 3: the window after readiness (t=35.8s)
+ACTION[Server]: [r35_c_probe] ok   the open dialog becomes the window
+ACTION[Server]: [r35_c_probe] ok   ready hint while dismissed: World ready – press I to continue
+ACTION[Server]: [r35_c_probe] ok   the inventory is the window
+ACTION[Server]: [r35_c_probe] ok   the dark backdrop
+ACTION[Server]: [r35_c_probe] stage 4: the draft through the inventory key (t=36.0s)
+ACTION[Server]: [r35_c_probe] ok   sfinv writes nothing during creation
+ACTION[Server]: [r35_c_probe] ok   faction from the inventory handled by grug_classes (sfinv passed)
+ACTION[Server]: [r35_c_probe] ok   the window opens again
+ACTION[Server]: [r35_c_probe] ok   no model before a race
+ACTION[Server]: [r35_c_probe] ok   the human preview (real look panel)
+ACTION[Server]: [r35_c_probe] ok   mouse rotation on, auto-rotation off
+ACTION[Server]: [r35_c_probe] ok   a race change redraws the preview
+ACTION[Server]: [r35_c_probe] ok   Create active
+ACTION[Server]: [r35_c_probe] ok   a faction change clears race and look
+ACTION[Server]: [r35_c_probe] ok   a forged race of the other faction is refused
+ACTION[Server]: [r35_c_probe] ok   the class stayed through the faction change
+ACTION[Server]: [r35_c_probe] ok   a look button changes the draft
+ACTION[Server]: [r35_c_probe] ok   Esc on the window
+ACTION[Server]: [r35_c_probe] ok   paused hint
+ACTION[Server]: [r35_c_probe] ok   nothing stored before Create
+ACTION[Server]: [r35_c_probe] stage 5: Create, a second Create, then disconnect mid-load (t=37.8s)
+ACTION[Server]: [r35_c_probe] ok   the window was not re-opened
+ACTION[Server]: [r35_c_probe] ok   the draft survived Esc
+ACTION[Server]: [r35_c_probe] note: a set_race consumer failed on the probe object: ...imy0/user/games/grudgelands/mods/BASE/player_api/api.lua:106: assertion failed!
+ACTION[Server]: [r35_c_probe] note: a store consumer failed on the probe object: ...imy0/user/games/grudgelands/mods/BASE/player_api/api.lua:106: assertion failed!
+ACTION[Server]: [r35_c_probe] ok   Create from the inventory
+ACTION[Server]: [r35_c_probe] ok   faction stored
+ACTION[Server]: [r35_c_probe] ok   race stored
+ACTION[Server]: [r35_c_probe] ok   class stored
+ACTION[Server]: [r35_c_probe] ok   look stored: 1,2,4,2,4
+ACTION[Server]: [r35_c_probe] ok   marked arriving
+ACTION[Server]: [r35_c_probe] ok   the waiting screen after Create
+ACTION[Server]: [r35_c_probe] ok   a second Create is swallowed
+ACTION[Server]: [r35_c_probe] ok   a second Create changes nothing
+ACTION[Server]: [r35_c_probe] ok   leave callback ran
+ACTION[Server]: [r35_c_probe] ok   leave callback ran
+ACTION[Server]: [r35_c_probe] left probe_a
+ACTION[Server]: [r35_c_probe] stage 6: reconnect during the arrival wait (t=41.2s)
+ACTION[Server]: [r35_c_probe] ok   still arriving after the disconnect
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] joined probe_a (new=false, 2 callbacks)
+ACTION[Server]: [r35_c_probe] ok   reconnect is back in stasis
+ACTION[Server]: [r35_c_probe] stage 7: arrival after the reconnect (t=41.7s)
+ACTION[Server]: [r35_c_probe] ok   the reconnect resumed the arrival wait
+ACTION[Server]: [r35_c_probe] ok   the reconnect did not show the window again
+ACTION[Server]: [r35_c_probe] ok   teleported to the orc start (0,38,2550)
+ACTION[Server]: [r35_c_probe] ok   still a mage
+ACTION[Server]: [r35_c_probe] ok   stasis released
+ACTION[Server]: [r35_c_probe] ok   hint removed
+ACTION[Server]: [r35_c_probe] ok   inventory handed back to sfinv
+ACTION[Server]: [r35_c_probe] ok   sfinv no longer suspended
+ACTION[Server]: [r35_c_probe] ok   inventory submissions no longer reach creation
+ACTION[Server]: [r35_c_probe] stage 8: the named dialog to an arrival (t=41.9s)
+ACTION[Server]: [r35_c_probe] ok   Create refused without a class
+ACTION[Server]: [r35_c_probe] note: a set_race consumer failed on the probe object: ...imy0/user/games/grudgelands/mods/BASE/player_api/api.lua:106: assertion failed!
+ACTION[Server]: [r35_c_probe] note: a store consumer failed on the probe object: ...imy0/user/games/grudgelands/mods/BASE/player_api/api.lua:106: assertion failed!
+ACTION[Server]: [r35_c_probe] ok   Create from the dialog
+ACTION[Server]: [r35_c_probe] stage 9: named flow result, then a draft disconnect (t=42.3s)
+ACTION[Server]: [r35_c_probe] ok   teleported to the elf start
+ACTION[Server]: [r35_c_probe] ok   a scout
+ACTION[Server]: [r35_c_probe] ok   stasis released
+ACTION[Server]: [r35_c_probe] ok   inventory handed back to sfinv
+ACTION[Server]: [r35_c_probe] ok   newplayer callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] joined probe_c (new=true, 2 callbacks)
+ACTION[Server]: [r35_c_probe] ok   leave callback ran
+ACTION[Server]: [r35_c_probe] ok   leave callback ran
+ACTION[Server]: [r35_c_probe] left probe_c
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] ok   join callback ran
+ACTION[Server]: [r35_c_probe] joined probe_c (new=false, 2 callbacks)
+ACTION[Server]: [r35_c_probe] ok   a disconnect before Create starts over
+ACTION[Server]: [r35_c_probe] ok   nothing stored for the abandoned draft
+ACTION[Server]: [r35_c_probe] ok   the new draft is in stasis
+ACTION[Server]: [r35_c_probe] ok   leave callback ran
+ACTION[Server]: [r35_c_probe] ok   leave callback ran
+ACTION[Server]: [r35_c_probe] left probe_c
+ACTION[Server]: [r35_c_probe] RESULT PASS checks=73 failures=0 t=42.5s
