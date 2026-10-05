@@ -38,9 +38,10 @@ failure names the chunk and keeps the traceback) and a summary, and exits 1 on
 any failure (AGENTS.md says when each size is required).
 
 ```sh
-tools/seed_fleet/run.sh quick         # the first 100 seeds (about 4 minutes)
-tools/seed_fleet/run.sh full          # every seed, about 300 (about 13 minutes)
+tools/seed_fleet/run.sh quick         # the first 100 seeds (about 6 minutes)
+tools/seed_fleet/run.sh full          # every seed, about 300 (about 17 minutes)
 tools/seed_fleet/run.sh quick 20      # plus 20 random seeds (printed)
+RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result line
 ```
 
 ## Other checks
