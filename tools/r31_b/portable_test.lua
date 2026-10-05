@@ -367,15 +367,15 @@ do
 	local broken = stack_with(sword, {{channel = "prefix", stat = "dex", tier = 3, value = 3}})
 	local meta = broken:get_meta()
 	local base = enchant_image(image, "dex", nil)
-	meta:set_string("inventory_image", "(" .. base .. ")^[cracko:1:4")
-	meta:set_string("_grug_broken_drawn_inventory_image", "(" .. base .. ")^[cracko:1:4")
+	meta:set_string("inventory_image", grug_gear.broken_image(base))
+	meta:set_string("_grug_broken_drawn_inventory_image", grug_gear.broken_image(base))
 	meta:set_string("_grug_broken_base_inventory_image", base)
 	check(grug_items.refresh_enchant_image(broken, grug_items.get_affixes(broken)) == false,
 		"broken stack with its image unchanged is left alone")
 	local broken_plain = stack_with(sword)
 	meta = broken_plain:get_meta()
-	meta:set_string("inventory_image", "(" .. image .. ")^[cracko:1:4")
-	meta:set_string("_grug_broken_drawn_inventory_image", "(" .. image .. ")^[cracko:1:4")
+	meta:set_string("inventory_image", grug_gear.broken_image(image))
+	meta:set_string("_grug_broken_drawn_inventory_image", grug_gear.broken_image(image))
 	check(grug_items.refresh_enchant_image(broken_plain, {}) == false,
 		"broken plain stack is left alone")
 	-- A trinket with affixes gets no image (no masks).
@@ -423,7 +423,7 @@ do
 		"worn layers use the overlay's mask")
 	local broken = grug_visuals.compose({race = "dwarf", armor = armor, armor_layers = layers,
 		armor_broken = {chest = true}})
-	check(broken.textures[1]:find("((" .. chest .. "^" .. layers.chest .. ")^[cracko", 1, true)
+	check(broken.textures[1]:find("((" .. chest .. "^" .. layers.chest .. ")" .. grug_gear.BROKEN_MODIFIER, 1, true)
 		~= nil, "a broken piece cracks together with its colours")
 	check(grug_visuals.armor_layer("grug_gear:sword_steel", "chest", "str", nil) == nil,
 		"a non-armour item has no worn layers")

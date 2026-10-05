@@ -379,8 +379,8 @@ less than one second. No fitted shell or persistent decorative entity is used.
 
 ## Broken equipment
 
-Cosmetic hand attachments retain broken equipped items with a crack overlay;
-combat eligibility remains disabled. Worn armor cracks affect only the broken
-slot's texture layer, not skin or intact equipment. Repair removes the overlay
+Cosmetic hand attachments retain broken equipped items, drawn drained of
+colour, darkened and cracked (Round 35); combat eligibility remains disabled.
+The broken look of worn armor affects only the broken slot's texture layer, not skin or intact equipment. Repair removes the overlay
 and preserves the item's current enchantment appearance (its enchant colours,
 §5a).

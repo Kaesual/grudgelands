@@ -48,8 +48,14 @@ function grug_gear.usable_by(stack)
   (#names > 0 and table.concat(names, ", ") or "No class"))
 end
 
--- Opaque pixels only: transparent silhouettes stay transparent.
+-- A broken item reads as broken at a glance (Round 35): drained of colour,
+-- darkened, then cracked; a crack alone hardly shows on a thin blade. The
+-- crack goes on last so its dark lines keep their contrast, and only on
+-- opaque pixels: transparent silhouettes stay transparent. The same string
+-- marks the inventory icon, the held item, the weapon a held skill shows and
+-- a broken piece worn on the body (grug_visuals compose).
+grug_gear.BROKEN_MODIFIER = "^[hsl:0:-80:-35^[cracko:1:4"
 function grug_gear.broken_image(image)
  if not image or image == "" then return image end
- return "(" .. image .. ")^[cracko:1:4"
+ return "(" .. image .. ")" .. grug_gear.BROKEN_MODIFIER
 end
