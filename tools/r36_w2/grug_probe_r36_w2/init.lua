@@ -8,8 +8,9 @@
 --           higher is the raised half, the backrest. It is compared with the
 --           seat's param2 (`core.facedir_to_dir`).
 --   WALLS   the cells on the raised side (behind the sitter) and on the low
---           side (before the sitter's knees): a wall when both the seat's
---           course and the one above it are walkable nodes.
+--           side (before the sitter's knees): a house wall when the three
+--           columns there (along the bench) are walkable blocks at the
+--           seat's course with a block, a pane or a door above.
 -- Each seat is counted as "back to a wall", "facing a wall", both or
 -- neither, and the first seats of each kind are logged in full. Every line
 -- carries "[r36w2]"; the probe ends the server when done.
@@ -26,6 +27,13 @@ local function walkable(name)
 end
 local function stair(name) return name:find("^stairs:stair") ~= nil end
 local function wall(name) return walkable(name) and not stair(name) end
+-- A block of a house wall: a walkable full node.
+local FULL = {normal = true, glasslike = true, glasslike_framed = true, allfaces = true,
+	allfaces_optional = true}
+local function block(name)
+	local def = core.registered_nodes[name]
+	return def ~= nil and def.walkable == true and FULL[def.drawtype or "normal"] == true
+end
 
 -- The height above the cell's floor where a ray straight down first meets
 -- the node at p, at the point (p.x + dx, p.z + dz).
@@ -115,8 +123,21 @@ local function run()
 								local b, f = STEP[d], STEP[(d + 2) % 4]
 								local back = {name_at(x + b[1], y, z + b[2]), name_at(x + b[1], y + 1, z + b[2])}
 								local front = {name_at(x + f[1], y, z + f[2]), name_at(x + f[1], y + 1, z + f[2])}
-								local bw = wall(back[1]) and wall(back[2])
-								local fw = wall(front[1]) and wall(front[2])
+								-- a house wall: three columns wide along the bench, each a
+								-- block at the seat's course and a block, a pane or a door
+								-- above it (a lone post, a lamp or a table is none)
+								local function house(s)
+									for k = -1, 1 do
+										local cx, cz = x + s[1] + k * s[2], z + s[2] + k * s[1]
+										local up = name_at(cx, y + 1, cz)
+										if not block(name_at(cx, y, cz)) or not (block(up) or
+												up:find("^xpanes:") or up:find("^doors:")) then
+											return false
+										end
+									end
+									return true
+								end
+								local bw, fw = house(b), house(f)
 								local kind = (bw and fw) and "both" or bw and "back" or fw and "front" or "neither"
 								counts[kind] = counts[kind] + 1
 								if shown[kind] and shown[kind] < 3 then
@@ -132,7 +153,7 @@ local function run()
 				end
 			end
 		end
-		log(("COUNT seats=%d raised-half-is-param2-dir=%d other=%d back-to-a-wall=%d facing-a-wall=%d both=%d neither=%d")
+		log(("COUNT seats=%d raised-half-is-param2-dir=%d other=%d back-to-a-house-wall=%d facing-a-house-wall=%d both=%d neither=%d")
 			:format(counts.seats, counts.agree, counts.disagree, counts.back, counts.front, counts.both,
 				counts.neither))
 		log("RESULT DONE")
