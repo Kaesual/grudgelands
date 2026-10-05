@@ -35,7 +35,8 @@
         {
           "npc": "r31_accord_warmaster",
           "lines": [
-            "front"
+            "front",
+            "main"
           ]
         },
         {
@@ -436,6 +437,202 @@
       "repeatable": {
         "cooldown": 1500
       }
+    },
+    {
+      "id": "accord_main_impounded",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 41,
+      "level": 42,
+      "requires": [],
+      "title": "Bring Me the Account",
+      "text": "A Causeway convoy's pay chest was impounded at {name:r20_anchor_071} {dir_from_giver:r20_anchor_071}, and the clerk who sealed it will not go near it again, because the purse inside is warm. Unseal it and take what you find to Toren Waterbarrel at Cinderline Watch; the pay was meant for his drivers. When there is an account worth bringing, bring it to me. I already have enough accusations.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_071",
+          "object": "impounded_pay",
+          "label": "Unseal the impounded pay",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Main line, chapter 1 (41): the Warmaster's first order; a use at Ashenward March's clash site, turned in at Cinderline Watch.",
+      "duration_min": 10,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "accord_main_orders",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 46,
+      "level": 48,
+      "requires": [
+        "accord_main_accounts"
+      ],
+      "title": "In Their Own Words",
+      "text": "A Throng seal on a pay bundle is a suggestion, and a dead toll-taker's purse is not a witness. The Throng Captain at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, carries his orders on him; defeat him and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:throng_captains_orders",
+          "count": 1,
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_shattered_line/pvp_camp_shattered_line_throng_high"
+        }
+      ],
+      "quest_drops": [
+        {
+          "item": "grug_mobs:throng_captains_orders",
+          "chance": 1,
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_shattered_line/pvp_camp_shattered_line_throng_high"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Main line, chapter 2 (46): behind the lines, solo; the captain of the enemy war camp on The Shattered Line drops his orders (quest drop).",
+      "duration_min": 20,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "accord_main_audit",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 47,
+      "level": 49,
+      "requires": [
+        "accord_main_orders",
+        "lasthedge_front_04"
+      ],
+      "title": "A Quiet Audit",
+      "text": "The Throng's orders list pay they seized from the same factors, wrapped in genuine Ashenward requisition forms and countersigned by Requisition Clerk Odren Vell, who left this Bastion last season \"to settle arrears\". The forged Throng requisition was written on our own paper. Vell's couriers kept their pay ledger at {name:elandor_glassroot_wilds/couriers_stump} {dir_of:r20_anchor_036:elandor_glassroot_wilds/couriers_stump}; copy it and bring the copy to me and to nobody else, because this finding stays under seal.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "elandor_glassroot_wilds/couriers_stump",
+          "object": "courier_ledger",
+          "label": "Copy the courier's pay ledger",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Main line, chapter 2 (last turn-in): the traitor named; a use at Glassroot Wilds' quest place.",
+      "duration_min": 15,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "accord_main_stonegrudge",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 57,
+      "level": 59,
+      "requires": [
+        "accord_main_orders"
+      ],
+      "title": "Group: The Name in the Orders",
+      "text": "The captain's orders also name War Commander Stonegrudge, who now runs the Throng's own hunt for the factors from the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. A rival investigation is no invitation to share intelligence, and I would rather theirs lost its head before it reaches the payers. He fights among his garrison as an elite; take a group, and bring back every name you left with.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "commander_throng"
+          ],
+          "count": 1,
+          "area": "front_gravesalt_escarpment/pvp_camp_gravesalt_escarpment_throng_high"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Optional group elite: the war commander the orders name, at his camp's level (raids there open at 57).",
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "accord_main_collector",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "accord_main_tally"
+      ],
+      "title": "Group: The Collector Comes Due",
+      "text": "I entered Odren Vell in the Bastion's roll myself, with the cause beside his name. Every name accounted for. His too. The unpaid balance has gathered at {name:r20_anchor_077} {dir_from_giver:r20_anchor_077}, and the thing that came to collect it calls itself Isquarre the Tithe-Eater; take two or three companions and break it there, before the Throng claims the site and the story with it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "rift_boss"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "Main line, the finale (60): the rift boss at Tombroad Ambush, for a group of two or three.",
+      "duration_min": 20,
+      "group": true,
+      "climax": true,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "accord_main_final",
+      "line": "main",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "accord_main_collector"
+      ],
+      "title": "Every Name Accounted For",
+      "text": "Isquarre broke at {name:r20_anchor_077}, and the crack he stood in is still warm. I have written it in the roll, with every name you brought back beside it. We closed his account. Beneath us, someone turned a fresh page.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r31_accord_warmaster"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Main line, the last Warmaster turn-in (the achievement counts this id).",
+      "duration_min": 2,
+      "tags": [
+        "accord_main"
+      ]
     }
   ]
 }
