@@ -16,7 +16,11 @@
 --                      so a fight always opens with normal swings.
 --   * grug_tg_cd       cooldown counting down after each resolved wind-up;
 --                      the next one may start INTERVAL seconds later.
---   * grug_tg_left     remaining wind-up time; non-nil == winding up.
+--   * grug_tg_left     remaining wind-up time; non-nil == winding up. While
+--                      it is set in a fight, mobs/api.lua freezes the facing
+--                      and pauses the ordinary swings and shots
+--                      (`grug_winding_up`), so the cone points where the
+--                      target stood at the start and stepping aside dodges.
 --
 -- Deliberately NOT core.after: the mob can die, be unloaded or leash-reset
 -- inside the two seconds (levels.lua/aggro.lua carry the same rule). A
@@ -166,6 +170,10 @@ function grug_mobs.telegraph_tick(self, dtime)
 		end
 		t.grug_tg_left = nil
 		resolve(self)
+		-- The cone hit was this attack: the ordinary swings, paused for the
+		-- wind-up (mobs/api.lua grug_winding_up), resume one interval later
+		-- instead of landing a banked swing right on top of it.
+		self.punch_timer = 0
 		t.grug_telegraph = nil
 		if type(self.update_tag) == "function" then
 			self:update_tag() -- drop the "!! " prefix again

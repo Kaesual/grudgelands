@@ -69,7 +69,11 @@ core.register_tool("grug_fishing:rod", {
 	-- Far enough to fish from a bank rather than from inside the pond, and the
 	-- same distance the line may then be left at (`REEL_RANGE`).
 	range = REEL_RANGE,
+	-- Doors, chests and stations take a node click first
+	-- (grug_core.node_rightclick); with sneak the rod's own use runs.
 	on_place = function(itemstack, player, pointed_thing)
+		local clicked = grug_core.node_rightclick(itemstack, player, pointed_thing)
+		if clicked then return clicked end
 		return cast_or_reel(itemstack, player, pointed_thing)
 	end,
 	on_secondary_use = function(itemstack, player, pointed_thing)

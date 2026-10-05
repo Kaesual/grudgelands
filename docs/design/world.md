@@ -181,7 +181,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     falling nodes, terrain-changing mobs, machines and scripted effects cannot
     alter protected state; inside hard-protected world content no player
     permission exists, so every such path is suppressed or the affected nodes
-    are restored. There is no rollback system: protected volumes need none,
+    are restored. Guarded air that water flowed into is restored as an
+    invisible, air-like water barrier whose own flood callback refuses the
+    next flow, so the flow is not retried every liquid tick (Round 37).
+    Grass spreading onto dirt and moss on cobble stop in towns, capitals,
+    landmarks, villages, camps, POI cores and on roads (Round 37). There is
+    no rollback system: protected volumes need none,
     and destruction of the mutable layer deliberately persists.
   - **World-content registry**: every hard-protected non-capital anchor
     registers a stable id and final x/z extent rather than hard-coding a zone.

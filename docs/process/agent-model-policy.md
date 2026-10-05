@@ -19,13 +19,16 @@ limit does not authorize a same-provider CLI workaround.
 **Day-to-day routing rule (decided 2026-09-14):** the role assignments below
 are *defaults*, not mandates. The user decides per session which model
 coordinates, implements and reviews, depending on how they plan their credits
-over the week, and states that at session start. A session-level instruction
-such as "today only Claude: Fable coordinates, Opus implements" replaces the
+over the week, and states that at session start; a coordinator takes that
+routing, not the table below, and uses the table only when the user names
+none. Practice since Round 24: Claude coordinates, Opus implements and
+reviews; Astra (Section 2.5) generates art and writes quest texts. A
+session-level instruction such as "today only Claude: Fable coordinates, Opus implements" replaces the
 routing table for that session without a policy amendment. What does not
 relax: every non-trivial change still receives one independent review by an
 agent that did not author it (Section 5), destructive-action safeguards, and
-the technical checklist in `wp-workflow.md`. Model names in that review record
-are whatever the user chose that day. Where this
+the technical checklist in [round-workflow.md](round-workflow.md#5-reviewing).
+Model names in that review record are whatever the user chose that day. Where this
 policy and a process document overlap on non-model process, the process
 document governs; this policy governs model choice. At adoption, the model
 labels mean GPT-5.6 Sol, Claude Opus ("Opus"), Claude Fable ("Fable"), and
@@ -42,7 +45,8 @@ brief; the policy applies to every context started afterward.
 - Route work by task risk, ambiguity, duration, reversibility, and the observed
   working characteristics of a model, not by a claim that one model is
   universally more intelligent than another.
-- GPT-5.6 Sol is the default long-lived project coordinator. Continuity,
+- When the user names no routing, GPT-5.6 Sol is the default long-lived
+  project coordinator. Continuity,
   explicit task tracking, exact contract adherence, and reliable integration
   across long sessions matter more in that role than peak one-shot insight.
 - GPT-5.6 Sol and Opus are the normal strong implementation and review models.
@@ -249,8 +253,8 @@ below the capability its risk requires.
 - Terra may prepare inventories or evidence for a review but cannot be its sole
   decision-maker.
 - The project-specific technical checklist in
-  [wp-workflow.md](wp-workflow.md) remains mandatory regardless of reviewer
-  model.
+  [round-workflow.md](round-workflow.md#5-reviewing) remains mandatory
+  regardless of reviewer model.
 
 A change is trivial only if it is comment-, formatting-, or documentation-only
 with no effect on decided design, process authority, contracts, acceptance

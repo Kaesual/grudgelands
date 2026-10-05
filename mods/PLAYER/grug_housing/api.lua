@@ -316,8 +316,10 @@ function grug_housing.arrival_pos(claim)
 end
 
 -- The world queries placement validation needs (registry.lua validate).
+-- `fixed`: the column answers come from the world's zone layout, which
+-- never changes while the server runs, so the registry keeps its scans.
 local zone_records = {}
-local world = {}
+local world = {fixed = true}
 
 function world.water_class_at(x, z)
 	return grug_zones.water_class_at(x, z)
