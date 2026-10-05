@@ -36,8 +36,9 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   burning debt across the front to a shared finale for a small group.
 - **Bosses.** Two dragons on their own islands at level 60, a king on the
   throne of each capital, a General in each faction's fortress and
-  Isquarre the Tithe-Eater at a rift on the front. Bosses always drop two
-  blue or gold items.
+  Isquarre the Tithe-Eater at a rift on the front. Each boss drops two
+  blue or gold items for you once a day; within that day you can still
+  help others kill it (Isquarre then drops what an elite drops).
 - **Crafting and equipment.** Make basic gear, choose two of six primary
   professions, and improve your equipment with enchantments and upgrades.
   Weaponsmith, Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith
@@ -101,15 +102,16 @@ stats, and the sound controls. The short version:
 
 ## Current state
 
-*Last updated: 2026-10-05. Version 0.37.0 ([changelog](CHANGELOG.md)).*
+*Last updated: 2026-10-05. The current version is the newest entry of the
+[changelog](CHANGELOG.md) and shows on Help → About.*
 
 The latest finished round is Round 36, "The main questline": each
 faction's main story from level 41 to 60, with its finale against Isquarre
 at the rift, and decoration for every village, camp and point of interest.
 Round 37 fixes what an October 2026 review of the code and the
-documentation found. Worlds made before Round 36 miss part of it (the
-decoration, the dragon arenas, benches, ground cover and roads are made with
-the world), so start a new world.
+documentation found. Worlds made before Round 36 and its last fixes miss
+part of it (the decoration, the dragon arenas, benches, ground cover and
+roads are made with the world), so start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the
@@ -148,7 +150,10 @@ uses mapgen **v7** and brings its own map settings.
 > checkboxes for this game, but it still writes the flags saved in your
 > Luanti settings: if you ever changed `mg_flags` or `mgv7_spflags`
 > (Caves, Dungeons, Decorations, Mountains, Rivers, Caverns, Floatlands),
-> set them back to their defaults first. Do not set `chunksize`,
+> set them back to their defaults first. They are in Luanti's settings
+> with *Show advanced settings* ticked, on the pages *Mapgen* ("Mapgen
+> flags") and *Mapgen V7* ("Mapgen V7 specific flags"); the reset button
+> beside a changed setting restores its default. Do not set `chunksize`,
 > `water_level`, `mapgen_limit`, `mgv7_dungeon_ymin`, `mgv7_dungeon_ymax`
 > or `num_emerge_threads` in your own `minetest.conf` either; none of them
 > is in the dialog.
@@ -160,7 +165,7 @@ shows the progress and the time left; you may disconnect and come back
 later. Later starts of the same world are much faster.
 
 **Hosting a server.** The game's settings are in Luanti's settings menu
-under *Games → Grudgelands*. The ones that matter most: the world map
+under *Content: Games → Grudgelands*. The ones that matter most: the world map
 quality (normal or high), *Prepare full world before entry* (off by
 default; on, the first start prepares the whole world and takes several
 hours), the damage multiplier for creatures and NPCs (1.5 by default) and
