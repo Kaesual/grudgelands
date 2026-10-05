@@ -34,9 +34,10 @@ local function register_derivative(derivative)
 				elseif param2 <= 3 and dir == 4 then
 					param2 = param2 + 20
 				end
-				core.item_place_node(ItemStack(itemstack:get_name()), placer,
-					pointed_thing, param2)
-				if not core.is_creative_enabled(player_name) then
+				-- A refused placement (protected, occupied) keeps the slab.
+				local _, placed = core.item_place_node(ItemStack(itemstack:get_name()),
+					placer, pointed_thing, param2)
+				if placed and not core.is_creative_enabled(player_name) then
 					itemstack:take_item()
 				end
 				return itemstack
