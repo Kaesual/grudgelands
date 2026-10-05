@@ -884,6 +884,13 @@ and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
 (§4.2), and the Reef Lurker, which no recipe uses, does not spawn at all.
 Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
 
+**Registered but placed nowhere** (open questions, [BACKLOG "Audit 2026-10
+open questions"](../../BACKLOG.md#audit-2026-10-open-questions)): the ambient
+War Construct sub-types `causeway_construct` and `siege_war_construct` are in
+the catalogue (`data/subtypes.json`) but in no recipe, so the War Construct
+appears only as the two leaders (DW-04); the elite Reef Lurker is registered
+(`shore_crab.lua`) but has no recipe role and no ABM row, so it never spawns.
+
 The pre-recipe row table that the mob files' `-- §4 row` comments quote, with
 the camp fires' Bandit Archer slot rule and its row notes, is archived in
 [the biomes and mobs history](../archive/design/biomes-mobs-history.md).

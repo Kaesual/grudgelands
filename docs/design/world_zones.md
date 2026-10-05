@@ -594,8 +594,8 @@ rewrite records the WP40 model it replaced.
 - Wet inland beds vary in depth with the terrain detail. Sea, bays and
   dragon channels share one sea-floor profile by distance from the coast
   (`terrain_field.lua`, Round 22 D35): shallow at the shore, a gently
-  deepening shelf, then down to about 32 nodes below the water surface in
-  deep water. The 24-node floor (`height.lua` `OUTSIDE_FLOOR`) applies only
+  deepening shelf, then down to 32 nodes below the water level in deep water
+  (the depth cap 31.7 + 0.3, with ±1.5 nodes of noise, so about 32–33). The 24-node floor (`height.lua` `OUTSIDE_FLOOR`) applies only
   outside the query bounds.
 - Wet beds use deterministic patches of their bed material, sand, gravel and
   stone; mud remains the dominant swamp bed. Dry continental beaches are
@@ -1732,8 +1732,9 @@ The final registry exposes:
   `terrain_height_at` and `water_class_at`;
 - `hard_footprint_in(min_x, min_z, max_x, max_z)`: the id and kind of the
   first hard-protected footprint holding a column of the rectangle, or nil
-  (Claim Stone placement; `grug_core/zone_authority.lua` `PUBLIC_METHODS` is
-  the list).
+  (Claim Stone placement in `grug_housing`, the town test of the location
+  line in `grug_map/location.lua`; `grug_core/zone_authority.lua`
+  `PUBLIC_METHODS` is the list).
 
 The mask-based `housing_eligible_at` centre predicate is removed with the
 housing masks (Round 25 ruling 4). `grug_housing` validates a claim itself
