@@ -70,8 +70,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   baseline sword plus Warrior melee bonus (the Strength term keeps its
   fraction like live damage, Round 34, so same-level damage meets the fit
   exactly). Damage assembles weapon/ability,
-  attribute and flat talent terms before this scalar and floors once at
+  attribute and talent terms before this scalar and floors once at
   settlement; a positive authored damage value settles to at least 1.
+  `B(L)` is also "a base hit": talent damage terms (and Charge's 12 %) are
+  percentages of it, so they keep their share at every level
+  ([skill_trees.md](skill_trees.md) §2.10, Round 35).
 - **Support values are already level-derived and are never level-scaled a
   second time.** Heal and Shield are each 25% of `P(L)`; each Mend tick
   is 8%. Multiply that pool share by `1 + spell power/100`, then pass the
@@ -119,8 +122,10 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     level and bypasses armor.
   - **Bulwark specialization:** learning the mutually exclusive 21-point
     Unbroken capstone multiplies the final aggregated rating by **1.65**. Its
-    existing low-HP trigger then adds **15 rating after that multiplier** for
-    8 seconds, at most once per 180 seconds. It never raises the 70% cap.
+    existing low-HP trigger then adds **33 % of `K(L)` at the Warrior's own
+    level as rating after that multiplier** (about 15 at level 50) for 8
+    seconds, at most once per 180 seconds. It never raises the 70% cap, so it
+    counts most against stronger foes.
   - It applies **only to `reason.type == "punch"`**. There is no
     damage-type system, so that IS the whole definition of "physical":
     fall damage has its own race perk (world.md §7) and drowning, lava
@@ -372,7 +377,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for
   draw fraction f — ×0.2 on a tap, ×0.7125 at half, ×2.25 at full draw (user
   ruling 2026-09-28, follow-up) — before Twin
-  Shot's second-arrow percentage and Longshot's +4. Loose's nominal arrow
+  Shot's second-arrow percentage and Longshot's +11 % of a base hit, all
+  floored once after the level scalar (Round 35). Loose's nominal arrow
   speed is linear in f, 40 m/s on a tap to 55 m/s at full draw. Snare Shot and
   Pinning Shot fire at ×1 and 40 m/s.
 - **Flight is homing with a launch-time duration** derived from initial
@@ -1020,8 +1026,8 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   `ooc_regen_mult` perk. In combat the untalented base rate is
   **`max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)`**; the Troll
   perk does not apply. Cold Focus multiplies whichever in-combat term wins by
-  **`1 + 2 × bonus`**, preserving its old +20% per-rank relative effect (rank
-  5 doubles the combat rate).
+  **`1 + 2 × bonus`**: +40 % per rank since Round 35 (rank 5 triples the
+  combat rate).
 - The Troll perk (`ooc_regen_mult`, ×1.5) also multiplies food healing,
   instant and per tick (`grug_food.heal_multiplier`, Round 26).
 - Food regeneration and pool bonuses are percent-based, but consumables now

@@ -233,4 +233,6 @@ This calibration changes only the Protection multiplier, not plain item bases.
 It used the values of its time; since Round 33 the top item level is 70, a T6
 armor enchant gives 4.8 and Stoneskin Elixir VI +4.8
 ([item_tiers.md](item_tiers.md) §1.1, §5), and the multiplier was not
-recalibrated.
+recalibrated. Since Round 35 Ironbound and the emergency rating are
+percentages of `K(L)` at the Warrior's level ([skill_trees.md](skill_trees.md)
+§2.10): 7.5 and 16.5 rating at level 60.

@@ -125,7 +125,9 @@ The active contract is:
   `_grug_bow_draw_time`), and the affix pool is Dex, Crit, attack/draw speed,
   HP and Mana. Loose multiplies (bow damage + Dexterity ranged bonus + Strong Draw) by
   `0.2 + 2.05 f²` of the draw fraction f (user ruling 2026-09-28); Twin Shot's
-  second-arrow percentage and Longshot's +4 apply after it. Fletching and the
+  second-arrow percentage and Longshot's +11 % of a base hit apply after it,
+  and the result is floored once after the level scalar (Round 35). Fletching
+  (to 2.0 s at 4/4) and the
   bow's OWN draw-speed (attack-speed) affix shorten the draw to at least 0.5 s;
   the Melee blade's affixes do not (Round 28). One bow per material tier,
   material-named under §3.0.3. Arrows craft 100 (one stack) per batch from 1

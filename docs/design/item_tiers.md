@@ -50,22 +50,23 @@ drops and crowned items only).
 | 60 | +2.4 % | +2.3 % | +2.4 % | +2.4 % | +2.4 % |
 <!-- end generated -->
 
-- **Crit talents** keep their numbers and are worth about twice as much: each
-  crit point now adds about 1 % damage instead of 0.5 %. The Warrior's
-  Ruination window (+20 points, cap 50 %, 10 s every 120 s) rises from +9 % to
+- **Crit talents** are worth about twice as much: each crit point now adds
+  about 1 % damage instead of 0.5 %; Round 35 then doubled their points to 2
+  per rank ([skill_trees.md](skill_trees.md)). The Warrior's Ruination window
+  (+20 points, cap 50 %, since Round 35 15 s every 60 s) rises from +9 % to
   +18 % damage while it lasts; a capstone burst, still bounded by its 50 %
   cap. Whitehot (triggered by a Fireball crit) fires a little later on
-  average, because base crit from Dexterity is lower. No talent needs a
-  change; at its 50 % cap a Ruination hit averages ×1.5 instead of ×1.25,
+  average, because base crit from Dexterity is lower. Round 33 changed no
+  talent for it; at its 50 % cap a Ruination hit averages ×1.5 instead of ×1.25,
   the one number to watch in a playtest.
 
 <!-- generated: talents -->
 | Talent | Effect | Class | Gain today (×1.5) | Gain new (×2) |
 |---|---|---|---:|---:|
-| Keen Edge 5/5 | +5 crit points | Warrior | +2.4 % | +4.6 % |
-| Firebrand 4/4 | +4 crit points | Mage | +1.9 % | +3.7 % |
-| Cold Eye 4/4 | +4 crit points | Scout | +1.8 % | +3.6 % |
-| Ruination window | +20 crit points, cap 50 %, 10 s per 120 s | Warrior | +9.4 % | +18.4 % |
+| Keen Edge 5/5 | +10 crit points | Warrior | +4.7 % | +9.2 % |
+| Firebrand 4/4 | +8 crit points | Mage | +3.8 % | +7.4 % |
+| Cold Eye 4/4 | +8 crit points | Scout | +3.7 % | +7.2 % |
+| Ruination window | +20 crit points, cap 50 %, 15 s per 60 s | Warrior | +9.4 % | +18.4 % |
 <!-- end generated -->
 
 ### 1.1 The rule
