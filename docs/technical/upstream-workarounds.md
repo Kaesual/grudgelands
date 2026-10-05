@@ -34,15 +34,37 @@ Engine reference for the line citations: `reference_projects/luanti` at
   engine's raycast for nodes and every other object, drops the engine's hits
   on objects with a rotated box, and tests those boxes in Lua, turned exactly
   as the client turns them (`setPitchYawRoll(-rotation)` from
-  `GenericCAO::updateNodePos`), merged by distance in the engine's order.
+  `GenericCAO::updateNodePos`), merged by distance in the engine's order
+  (a `"blocking"` one ends the ray, as in the engine). Its candidate area is
+  the ray's box widened by the engine's 5 nodes or by the largest registered
+  rotated reach when that is larger (a dragon's, about 6.2 nodes: with 5
+  nodes a ray at its wing tip or tail would be missed; the client has no
+  such limit).
   Every server-side aiming ray uses it: `grug_core.combat_ray` (held swings,
   skill targets through `grug_abilities.aimed_target`, the crosshair colour,
   projectiles' aim), the hold ray in `grug_abilities/input.lua` (`ray()`),
   the right-click interaction ray in `grug_abilities/init.lua`
   (`ability_on_secondary_use`) and the Target Frame's look ray
-  (`grug_mobs/target_frame.lua`). Cost: about +20 µs per 4 m ray and +35 to
-  +50 µs per 20 m ray in a dense 20-zombie fight (Round 35 Lane T report).
-  Fixture: `tools/r35_t/portable_test.lua`.
+  (`grug_mobs/target_frame.lua`). Fixture: `tools/r35_t/portable_test.lua`.
+- **Cost** (`tools/r35_t/engine.sh`: 20 frozen zombies in a 6 × 6 cluster,
+  six fake players 2.5 m from their own zombie; µs per ray, median / best,
+  each round alternating with the plain engine ray):
+
+  | Ray | Engine ray only | With the workaround |
+  |---|---|---|
+  | `combat_ray` 4 m (melee hold) | 13.9 / 13.6 | 35 / 33 |
+  | `combat_ray` 20 m | 21.3 / 20.8 | 59 / 52 |
+  | `aimed_target` (Fireball) 20 m | 21.9 / 21.6 | 67 / 53 |
+
+  Medians vary between runs because of garbage collection (the property
+  tables): the independent review measured the `aimed_target` 20 m median
+  at 137 µs against 22 µs before (best 56 µs). Parts: the candidate query
+  with one luaentity per object about 4 µs (40 objects), one
+  `get_properties()` about 1.6 µs per rotated hit, and a 20 m ray through
+  the cluster now hits 7.7 objects instead of 4.8 (correct hits are also
+  classified). Per server step the review estimates about 1–2.5 ms of
+  server time per second per fighting player in the worst case of 20
+  rotated mobs around every ray (crosshair refresh plus held-attack rays).
 - **How to tell upstream fixed it:** `tools/r35_t/upstream_check.sh` boots
   the installed engine headless with a disposable probe (the issue's repro:
   a tall rotated box turned through 0–345°, one ray per yaw through the
@@ -52,8 +74,9 @@ Engine reference for the line citations: `reference_projects/luanti` at
   SWEEP lines on a fixed engine.
 - **What to remove then:** in `combat_ray.lua` everything from the
   "Rotated selection boxes" comment down to `grug_core.aim_raycast`
-  (`AIM_MARGIN`, `rotated_hint`, `pointable`, `slab`, `enter_box`,
-  `box_matrix`, `box_hit`, `rotated_hits`); keep `grug_core.aim_raycast` as
+  (`ENGINE_MARGIN`, `aim_margin`, `rotated_hint`, `box_reach`, `margin`,
+  `is_rotated_object`, `pointable`, `slab`, `enter_box`, `box_matrix`,
+  `box_hit`, `same_box`, `rotated_hits`); keep `grug_core.aim_raycast` as
   a thin `core.raycast(origin, destination, true, liquids, pointabilities)`
   or put `core.raycast` back at its call sites; drop the fixture's rotated
   cases (`tools/r35_t/portable_test.lua`) and the `aim_raycast` stubs in
