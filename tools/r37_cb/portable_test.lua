@@ -30,8 +30,9 @@
 --      melee_damage_add), settles one outgoing action (weapon wear), one
 --      trinket proc and the rage; an unclaimed packet lands nothing;
 --   N  knockback per source (ruling 2.1.3): refused punch, ally, unflagged
---      player, nested punch, PvP cast, arrow, nil hitter push 0; PvP melee
---      and a mob hit push; a rider and the dragon slam push 0;
+--      player, nested punch, PvP cast or player arrow, nil hitter push 0;
+--      PvP melee, a mob hit and a mob projectile push; a rider and the
+--      dragon slam push 0;
 --   R  the unreachable WP38 tool/fist accumulator, wear accumulator and
 --      ordinary-input seam are gone (CMB-03), with no caller left.
 -- Prints "R37 CB PORTABLE PASS checks=<n>" or the failures.
@@ -638,7 +639,7 @@ do
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N ability damage never pushes")
 	grug_core.in_ability_punch = false
 	eq(push(b, mob({_cmi_is_mob = true})), 5, "N a mob hit pushes")
-	eq(push(b, mob({name = "grug_mobs:arrow"})), 0, "N a mob arrow pushes 0")
+	eq(push(b, mob({name = "grug_mobs:arrow"})), 5, "N a mob projectile pushes (ruling 2026-10-06)")
 	eq(push(b, nil), 0, "N a punch without hitter pushes 0")
 	player_attached.b = true
 	eq(push(b, mob({_cmi_is_mob = true})), 0, "N a rider is not pushed")

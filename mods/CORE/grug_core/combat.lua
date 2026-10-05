@@ -1161,9 +1161,11 @@ end
 --     target, not yet claimed (builtin runs first), on a pair grug_pvp lets
 --     harm each other -- PvP melee. A refused click, an ally, an unflagged
 --     player, an ordinary tool or fist packet and a nested punch push nothing;
---   * a mob's own hit pushes (melee and its area hits, the mob as hitter);
---   * casts, arrows and all ability damage (`in_ability_punch`), and every
---     projectile entity (mob arrows, breath, hex bottles) push nothing.
+--   * a mob's hit pushes: its melee and area hits (the mob as hitter) and its
+--     projectiles (arrows, hex bottles, dragon breath and side shots, the
+--     projectile entity as hitter; user ruling 2026-10-06);
+--   * a player's casts, arrows and all ability damage (`in_ability_punch`)
+--     push nothing.
 -- The wrappers around it keep their own zero: attached riders (player_api)
 -- and the dragon's slam (grug_mobs boss_dragons.lua).
 function grug_core.knockback_pushes(player, hitter)
@@ -1176,8 +1178,8 @@ function grug_core.knockback_pushes(player, hitter)
 			and token.target == player and grug_core.pvp_can_harm ~= nil
 			and grug_core.pvp_can_harm(hitter, player) == true
 	end
-	local entity = hitter:get_luaentity()
-	return entity ~= nil and entity._cmi_is_mob == true
+	-- Every other hitter is a mob or a mob's projectile.
+	return true
 end
 
 local engine_knockback = core.calculate_knockback

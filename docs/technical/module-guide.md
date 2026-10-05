@@ -509,8 +509,9 @@ achievements](#cloaks-and-achievements).
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
   knockback on players is builtin's push off the engine's damage argument,
   gated by the one `core.calculate_knockback` override
-  `grug_core.knockback_pushes` (Round 37: PvP melee swings and mob hits only;
-  refused punches, casts, arrows and projectiles push nothing): acquisition
+  `grug_core.knockback_pushes` (Round 37: PvP melee swings and mob hits,
+  their projectiles included; refused punches and a player's casts, arrows
+  and ability damage push nothing): acquisition
   caps are zero, while the one authoritative punch supplies the real full
   caps. Swing ability items use the slot source, do not wear (the equipped
   weapon wears through REPAIR's settled action) and can carry the selected
