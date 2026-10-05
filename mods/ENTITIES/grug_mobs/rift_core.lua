@@ -42,8 +42,9 @@ function M.boss_id(site_key)
 end
 
 -- The runtime triggers around the site's anchor (horizontal distance): the
--- boss appears when a player is within SPAWN_RANGE (the leaders' reach at the
--- default active block range) and none stands within SPAWN_CLEAR of its spot;
+-- boss appears when an eligible player (M.eligible, below) is within
+-- SPAWN_RANGE (the leaders' reach at the default active block range) and no
+-- player stands within SPAWN_CLEAR of its spot;
 -- the particles run while a player is within PARTICLE_RANGE.
 M.SPAWN_RANGE = 48
 M.SPAWN_CLEAR = 6
@@ -69,6 +70,19 @@ end
 
 function M.may_spawn(alive, due, now)
 	return not alive and now >= (due or 0)
+end
+
+-- Who calls the boss up (Round 36 review): only a player who may fight him,
+-- one with a faction's finale in the quest log or turned in (or the line's
+-- last turn-in), so a lone chapter-3 player at the site's tally-stone meets
+-- no group boss and a finished player can still return under the lockout.
+-- `held(id)` answers "active", "completed" or nil for that player.
+M.FINALE_QUESTS = {"throng_main_finale", "throng_main_final", "accord_main_collector", "accord_main_final"}
+function M.eligible(held)
+	for _, id in ipairs(M.FINALE_QUESTS) do
+		if held(id) then return true end
+	end
+	return false
 end
 
 -- The crack's depth: the floor node and the one below it become void, so a

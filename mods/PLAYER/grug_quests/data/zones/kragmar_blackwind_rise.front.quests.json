@@ -289,10 +289,11 @@
       "level": 59,
       "requires": [
         "bw_front_ashveil_02",
-        "bw_front_ashveil_03"
+        "bw_front_ashveil_03",
+        "throng_main_06"
       ],
       "title": "Dismissed, Captain",
-      "text": "Watch-Captain Huskell is still calling the roll in the {name:front_gravesalt_escarpment/ossuary_wood} {dir_from_giver:watch_captain_huskell}. Destroy four Last-Watch Skeleton Raiders there at night and put Huskell to rest. He has mistaken obedience for peace long enough.",
+      "text": "Watch-Captain Huskell is still calling the roll in the {name:front_gravesalt_escarpment/ossuary_wood} {dir_from_giver:watch_captain_huskell}, and I have listened to it: that is no muster list. It is a page of the roll the branded coin feeds, soldiers of both armies re-enlisted with fresh pay so their names never leave it. Destroy four Last-Watch Skeleton Raiders there at night and put Huskell to rest; he has mistaken obedience for peace long enough.",
       "objectives": [
         {
           "type": "kill",
@@ -315,7 +316,10 @@
         "items": []
       },
       "duration_min": 15,
-      "climax": true
+      "climax": true,
+      "tags": [
+        "throng_main"
+      ]
     },
     {
       "id": "bw_front_ashveil_05",
@@ -385,6 +389,94 @@
         "items": []
       },
       "duration_min": 12
+    },
+    {
+      "id": "throng_main_02",
+      "line": "front",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r31_throng_warmaster",
+      "min_level": 46,
+      "level": 47,
+      "requires": [
+        "bb_front_ramp_05"
+      ],
+      "title": "Fresh Ash on Old Stone",
+      "text": "Old death I know: it smells of dust and patience. This coin smells of a furnace, and someone has burned the same mark across a grave slab at the {name:ashen_grave}, {dir_from_giver:ashen_grave}. Wash the fresh ash from the old stone and you will see new work over old names, entered the way Mortuary Clerk Hush once wrote our dead into his ledger as debtors, except that Hush never had fire. Take that to the Warmaster before somebody calls it Undead business.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "kragmar_blackwind_rise/ashen_grave",
+          "object": "ash_slab",
+          "label": "Wash fresh ash from old stone",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 15,
+      "tags": [
+        "throng_main"
+      ]
+    },
+    {
+      "id": "throng_main_07",
+      "line": "front",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r31_throng_warmaster",
+      "min_level": 57,
+      "level": 59,
+      "requires": [
+        "bw_front_ashveil_04",
+        "kz_front_04"
+      ],
+      "title": "Burn Them Off the Tally",
+      "text": "Huskell's roll and Chirr's payroll are pages of one book, and the newest name on Huskell's was Mardra. A tally-stone at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, keeps the count for whatever holds that book; burn our dead off it. When the names are gone the debt has nothing left to hold, and I can already hear the collector coming for it in person. Tell the Warmaster that.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_077",
+          "object": "tally_stone",
+          "label": "Burn our dead off the tally",
+          "hold": 5
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 20,
+      "tags": [
+        "throng_main"
+      ]
+    },
+    {
+      "id": "throng_main_final",
+      "line": "front",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r31_throng_warmaster",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "throng_main_finale"
+      ],
+      "title": "The Answering Blow",
+      "text": "I put my ear to the crack after he fell, and the Warmaster should hear it from you before the drill yard hears it from anyone else. Tell it word for word: His last blow struck the ground. The answering blow came from underneath.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r31_throng_warmaster"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 15,
+      "tags": [
+        "throng_main"
+      ]
     }
   ]
 }

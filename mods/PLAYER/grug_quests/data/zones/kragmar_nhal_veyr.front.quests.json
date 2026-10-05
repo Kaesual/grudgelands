@@ -88,6 +88,35 @@
       },
       "duration_min": 30,
       "optional": true
+    },
+    {
+      "id": "throng_main_island_cairn",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "throng_main_06"
+      ],
+      "title": "Optional: A Coin in the Capstone",
+      "text": "Someone pressed a branded coin into the capstone of the survey cairn at {name:r20_anchor_075} on The Wyrmglass Crown, as if to enter the island in somebody's books. Get a boat from the Shipwright, cross to the island and pry the brand-coin out. I keep the registers of our dead, and I will not see an island registered to anything else.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_075",
+          "object": "survey_cairn",
+          "label": "Pry the brand-coin from the survey cairn",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 300,
+        "items": []
+      },
+      "duration_min": 30,
+      "optional": true
     }
   ]
 }

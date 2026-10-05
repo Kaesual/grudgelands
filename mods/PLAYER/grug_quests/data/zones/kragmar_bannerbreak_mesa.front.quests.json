@@ -92,15 +92,17 @@
       "level": 48,
       "requires": [
         "bb_front_ramp_02",
-        "bb_front_ramp_03"
+        "bb_front_ramp_03",
+        "throng_main_01"
       ],
       "title": "Payment in Full",
-      "text": "Toll-Taker Senn wants coin for every Throng boot that crosses his road. Find him at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}, kill four Aqueduct Bowmen there, and kill Senn. He can bill me for the trouble.",
+      "text": "Every box we dig out holds coin stripped from old graves with a fresh burn across its face, and every one leads back to Toll-Taker Senn. Find him at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}, kill four Aqueduct Bowmen or Coal-Purse Factors there, and kill Senn. Then turn out his branded toll-box at {name:r20_anchor_078}; I want to know who pays a toll-taker to keep a road deadly.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "causeway_aqueduct_bowman"
+            "causeway_aqueduct_bowman",
+            "coal_purse_factor"
           ],
           "count": 4,
           "area": "front_broken_causeway/toll_camp"
@@ -111,27 +113,37 @@
             "toll_taker_senn"
           ],
           "count": 1
+        },
+        {
+          "type": "use",
+          "place": "r20_anchor_078",
+          "object": "toll_box",
+          "label": "Turn out the branded toll-box",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 6,
+        "weight": 6.5,
         "items": []
       },
-      "duration_min": 15,
-      "climax": true
+      "duration_min": 20,
+      "climax": true,
+      "tags": [
+        "throng_main"
+      ]
     },
     {
       "id": "bb_front_ramp_05",
       "line": "front",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_040_host",
-      "min_level": 47,
+      "min_level": 46,
       "level": 48,
       "requires": [
         "bb_front_ramp_04"
       ],
       "title": "A Name Worth Sending",
-      "text": "You have put enough dents in the Causeway for me to send your name ahead. Speak with Orrel Hollowstep at Hollowarch Station in Blackwind Rise and tell him Drek Rampbinder sent you. He'll find work for hands like yours, even if he complains about the fingerprints.",
+      "text": "Senn paid his dead in that branded coin to keep corpses on the road, and his toll-box held a remittance from Paymaster Chirr in The Skyglass Canopy, promising more for every crossing made unsafe. I know mud, not the dead. Take one of those coins to Orrel Hollowstep at Hollowarch Station in Blackwind Rise and tell him Drek Rampbinder sent you; he'll complain about the fingerprints, but he'll read it.",
       "objectives": [
         {
           "type": "talk",
@@ -142,7 +154,10 @@
         "weight": 1,
         "items": []
       },
-      "duration_min": 8
+      "duration_min": 8,
+      "tags": [
+        "throng_main"
+      ]
     },
     {
       "id": "bb_front_ramp_bounty",
@@ -305,15 +320,16 @@
       "id": "bb_front_torn_05",
       "line": "front",
       "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
+      "turnin": "r31_throng_warmaster",
       "min_level": 46,
       "level": 48,
       "requires": [
         "bb_front_torn_03",
-        "bb_front_torn_04"
+        "bb_front_torn_04",
+        "throng_main_03"
       ],
       "title": "Let That Banner Fall",
-      "text": "Standard-Bearer Ninepins waves that rag of his over the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}, and the dead still salute. Destroy four Siege Skeleton Raiders there at night and kill Ninepins. I have spent my life keeping standards upright; I'll enjoy hearing about this one falling.",
+      "text": "That stitching is a pledge: Standard-Bearer Ninepins pawned his banner against the next payment, then the one after that, and the dead keep saluting whoever pays. He waves it over the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}. Destroy four Siege Skeleton Raiders there at night and kill Ninepins, then report to the Warmaster: the pledge slips carry Accord stamps.",
       "objectives": [
         {
           "type": "kill",
@@ -336,7 +352,10 @@
         "items": []
       },
       "duration_min": 15,
-      "climax": true
+      "climax": true,
+      "tags": [
+        "throng_main"
+      ]
     },
     {
       "id": "bb_front_torn_06",
@@ -349,7 +368,7 @@
         "bb_front_torn_05"
       ],
       "title": "Group: Break the War Machine",
-      "text": "War Construct Engine Nine is still grinding through the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, as if the war were a nail that needs more hammering. Gather a group and destroy it; one fighter will only add to the dents. I want all of you back to boast about this.",
+      "text": "War Construct Engine Nine is still grinding through the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, on orders somebody keeps paying for. Gather a group and destroy it; one fighter will only add to the dents. I want all of you back to boast about this.",
       "objectives": [
         {
           "type": "kill",
@@ -782,7 +801,7 @@
         "bannerbreak_warhold_warcamp_gravesalt"
       ],
       "title": "Answer the {name:pvp_camp_skyglass_canopy_accord_high}",
-      "text": "The Accord troops at the {name:pvp_camp_skyglass_canopy_accord_high}, {zone_area:pvp_camp_skyglass_canopy_accord_high}, have learned to fight in country that catches blades and swallows war cries. Defeat five Accord Guards and the Accord Captain in that camp. Keep your eyes on the trees as well as the enemy; the Throng needs fighters who come back to argue over who fought best.",
+      "text": "The Accord troops at the {name:pvp_camp_skyglass_canopy_accord_high}, {zone_area:pvp_camp_skyglass_canopy_accord_high}, have learned to fight in country that catches blades and swallows war cries. Defeat five Accord Guards and the Accord Captain in that camp; War Commander Greyvow now fights beside their garrison, so draw the captain away from him or bring friends. Keep your eyes on the trees as well as the enemy; the Throng needs fighters who come back to argue over who fought best.",
       "objectives": [
         {
           "type": "kill",

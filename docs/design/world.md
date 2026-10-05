@@ -739,7 +739,12 @@ contact there is intended.
 - **The rift boss, Isquarre the Tithe-Eater:** a demonic level-60 elite (`biomes_mobs.md`, Round 8
   bosses table), sized for two or three level-60 players. It appears on the
   site's centre like a leader when a player is within 48 nodes and none
-  within 6 of its spot, and is never saved with the map. Its leash is its
+  within 6 of its spot, and is never saved with the map. Only a player who
+  may fight him calls him up: one with a faction's finale in the quest log
+  or turned in, or the line's last turn-in (`throng_main_finale`,
+  `throng_main_final`, `accord_main_collector`, `accord_main_final`;
+  `grug_quests.quest_held`), so a lone chapter-3 player at the site's
+  tally-stone meets no group boss; once up, he stays for everyone. Its leash is its
   own: dragged more than **24 nodes** from where its fight began, or 15 s
   without contact, it resets (full health, threat and its ledger cleared, a
   void pulse it was winding up cancelled) and runs home untouchable (the
