@@ -12,6 +12,11 @@
 -- bed for every zone, all at one quiet gain; no ambient calls but distant
 -- thunder on the dragon islands. The code reads everything from these
 -- tables, so another bed is a name here (and a listening page), nothing else.
+--
+-- Round 35 (round35-plan.md §2.8): music is a capital feature. It plays only
+-- in the six capitals, each with its own rotation (D.rotations), and where it
+-- plays the bed is silent; the region pools of Round 34 are gone, their
+-- tracks stay in D.tracks.
 
 local D = {}
 
@@ -21,7 +26,8 @@ local D = {}
 -- level (the user: the pilot was good at 0.25, "maybe minimally quieter").
 D.gains = {
 	bed = 0.2,
-	-- Factor on the bed inside start towns and capitals.
+	-- Factor on the bed inside start towns and capitals (in a capital the
+	-- bed plays only while the player has music off).
 	town_bed = 0.5,
 	call = 0.35,
 	music = 0.6,
@@ -115,7 +121,10 @@ D.emitters = {
 D.emitter_reach = {x = 12, y = 5, z = 12}
 
 -- Music. Tracks: id -> file (in music/) and length in seconds (the shipped
--- file's; the scheduler has no other way to know when a track ends).
+-- file's; the scheduler has no other way to know when a track ends). Every
+-- shipped track is listed, also one no rotation names: Master of the Feast
+-- (too fast and high-energy for a town, the user's listening check of Round
+-- 35), kept for a possible music tab (round35-plan.md §2.8).
 D.tracks = {
 	memories_of_stone = {file = "grug_music_memories_of_stone.ogg", seconds = 331}, -- R32 M1
 	achaidh_cheide = {file = "grug_music_achaidh_cheide.ogg", seconds = 135}, -- R32 M2
@@ -138,36 +147,40 @@ D.tracks = {
 	permafrost = {file = "grug_music_permafrost.ogg", seconds = 449}, -- S2 M11
 }
 
--- Pools (§2.1 ruling 3 and 4; a track may sit in several).
-D.pools = {
-	land = {"memories_of_stone", "achaidh_cheide", "soliloquy",
-		"fantasy_orchestral_theme"},
-	front = {"forest_walk", "a_dragons_lullaby", "the_great_sea"},
-	underground = {"katabasis_i", "permafrost"},
-	town = {"town_theme", "thatched_villagers", "minstrel_guild",
-		"master_of_the_feast", "folk_round", "teller_of_the_tales",
-		"village_consort", "achaidh_cheide"},
+-- One rotation per capital (settlement key -> track ids, played in this
+-- order from a random start on entering; a track may sit in several). By
+-- the capital's people (Round 35, confirmed by the user after listening):
+D.rotations = {
+	-- Humans: the stately main theme and the court and market consorts.
+	highcourt = {"fantasy_orchestral_theme", "town_theme", "village_consort",
+		"minstrel_guild"},
+	-- Dwarves: the fiddle over stone, a thatched village tune and the
+	-- mountain cold.
+	dur_brannoc = {"memories_of_stone", "thatched_villagers", "permafrost"},
+	-- Elves: calm Celtic airs, soft strings and a lullaby.
+	lethariel = {"achaidh_cheide", "soliloquy", "folk_round", "a_dragons_lullaby"},
+	-- Orcs: the wide horizon of the steppe, campfire tales, a dramatic march.
+	gor_drazhak = {"the_great_sea", "teller_of_the_tales", "forest_walk"},
+	-- Trolls: forest and water round the cenote, a lullaby, a lively village.
+	kezamba = {"forest_walk", "the_great_sea", "a_dragons_lullaby",
+		"thatched_villagers"},
+	-- Undead: the descent, the cold, sombre tales and a lonely soliloquy.
+	nhal_veyr = {"katabasis_i", "permafrost", "teller_of_the_tales", "soliloquy"},
 }
 
--- Atmosphere mood -> pool.
-D.music_groups = {
-	human = "land", elf = "land", troll = "land", orc = "land",
-	dwarf = "land", undead = "land",
-	battlegrounds = "front", dragon_island = "front", ocean = "front",
-	underground = "underground",
-}
-
--- Scheduler timings in seconds (ruling 3): the first track 30-90 s after
--- joining, a 3-8 min pause after each track, the next file pushed 60 s
--- before the pause ends, a push given up after 120 s, an empty pool
--- retried after 30 s, music switched back on plays after 5-15 s.
+-- Scheduler timings in seconds (round35-plan.md §2.8): a pause of `pause`
+-- between two tracks; the next file pushed `push_lead` seconds before the
+-- playing track ends (so its download hides behind it; the first track after
+-- entering a capital may wait for its own); a push given up after
+-- `push_timeout`; after a refused push nothing is pushed for `retry`; the
+-- track fades out over `fade_out` on leaving the capital or switching music
+-- off.
 D.music = {
-	first = {30, 90},
-	pause = {180, 480},
+	pause = 5,
 	push_lead = 60,
 	push_timeout = 120,
-	empty_retry = 30,
-	resume = {5, 15},
+	retry = 30,
+	fade_out = 3,
 }
 
 return D

@@ -4,13 +4,9 @@
 --   luajit tools/r34_s2/portable_test.lua [repo]
 --
 -- Loads the REAL grug_ambience rules.lua and data.lua, and init.lua on a
--- fake engine (every data name shipped, so the runtime paths run). Checks:
---   S  scheduler: the first track 30-90 s after joining; the next file
---      pushed during the pause, before it plays; a playing track is never
---      cut on a group change; the pause after a track is 3-8 min; the pick
---      is redone once from the new pool when the group changed; music off
---      stops the track and every push, on again resumes; a lost push is
---      given up; the last track is not repeated;
+-- fake engine (every data name shipped, so the runtime paths run). Round 35
+-- made music a capital feature: its scheduler, the either-music-or-bed rule
+-- and the music settings are checked in tools/r35_m. Checks here:
 --   B  bed selection by state (underwater, underground and deep, sea and
 --      stream water, night beds, non-mood presets keep the bed), the
 --      fallback to a shipped bed, the two-pass hysteresis, town gain;
@@ -20,11 +16,9 @@
 --   P  settings: /music and /ambience words, volumes;
 --   R  runtime on a fake engine: one pass per player per 2 s in eight
 --      slots; a bed loop to the player only, crossfaded at night and under
---      water; emitters started and faded; music pushed with
---      dynamic_add_media (to_player, not ephemeral, client cache) from
---      music/, played in the callback; music off: no pushes for an hour;
---      the Help page fields and the chat command;
---   F  files: data integrity (every pool track, bed key, call and mood);
+--      water; emitters started and faded; no music outside a capital; the
+--      ambience settings through the Help page fields and the chat command;
+--   F  files: data integrity (every rotation track, bed key and call);
 --      every shipped .ogg of the mod is on tools/r34_s2/approved.txt; once
 --      that list exists, every name in data.lua is shipped.
 -- Prints "R34 S2 PORTABLE PASS checks=<n>" or the failures.
@@ -59,131 +53,6 @@ local function all_available()
 	return set
 end
 local AVAILABLE = all_available()
-
--- ---------------------------------------------------------------------------
--- S  scheduler
--- ---------------------------------------------------------------------------
-do
-	local lo, hi = math.huge, -math.huge
-	for seed = 1, 200 do
-		local m = R.music_new(D, 1000, true, seeded(seed))
-		local delay = m.start_at - 1000
-		lo, hi = math.min(lo, delay), math.max(hi, delay)
-	end
-	check(lo >= 30 and hi <= 90 and hi - lo > 40, "S first track 30-90 s after join")
-
-	local pool = {"memories_of_stone", "achaidh_cheide"}
-	local rand = seeded(7)
-	local m = R.music_new(D, 0, true, rand)
-	local start = m.start_at
-	local pushed, played
-	for t = 0, start + 10, 2 do
-		local action, track = R.music_step(m, D, t, pool, rand)
-		if action == "push" then
-			check(not pushed, "S one push before the first track")
-			pushed = {t = t, track = track}
-		elseif action == "play" then
-			played = {t = t, track = track}
-		end
-		if pushed and not m.delivered[pushed.track] and t >= pushed.t + 4 then
-			local a2, t2 = R.music_delivered(m, D, pushed.track, t)
-			check(a2 == nil, "S delivery before the pause ends does not play")
-			check(t2 == nil, "S no track returned early")
-		end
-	end
-	check(pushed and pushed.t >= start - D.music.push_lead - 2 and pushed.t < start,
-		"S the file is pushed during the pause, before it plays")
-	check(played and played.track == pushed.track and played.t >= start and played.t < start + 2,
-		"S the pushed track plays when the pause ends")
-	-- never cut: a group change while playing changes nothing
-	local ends = m.ends_at
-	check(ends == played.t + D.tracks[played.track].seconds, "S track end from its length")
-	local cut = false
-	for t = played.t + 2, ends - 2, 2 do
-		if R.music_step(m, D, t, {"forest_walk"}, rand) ~= nil then cut = true end
-	end
-	check(not cut and m.phase == "play", "S a group change never cuts the running track")
-	R.music_step(m, D, ends, {"forest_walk"}, rand)
-	local pause = m.start_at - ends
-	check(m.phase == "wait" and pause >= 180 and pause <= 480, "S a 3-8 min pause after a track")
-	-- the next pick comes from the new pool, pushed before it plays
-	local action, track = R.music_step(m, D, m.start_at - D.music.push_lead, {"forest_walk"}, rand)
-	check(action == "push" and track == "forest_walk", "S next track from the new pool")
-	check(R.music_step(m, D, m.start_at, {"forest_walk"}, rand) == nil,
-		"S waits for the delivery at the start time")
-	action, track = R.music_delivered(m, D, "forest_walk", m.start_at + 1)
-	check(action == "play" and track == "forest_walk", "S plays in the push callback")
-
-	-- pause ranges over many seeds
-	local plo, phi = math.huge, -math.huge
-	for seed = 1, 200 do
-		local mm = R.music_new(D, 0, true, seeded(seed))
-		mm.phase, mm.ends_at = "play", 10
-		R.music_step(mm, D, 10, pool, seeded(seed + 1))
-		plo, phi = math.min(plo, mm.start_at - 10), math.max(phi, mm.start_at - 10)
-	end
-	check(plo >= 180 and phi <= 480 and phi - plo > 200, "S pause range 180-480 s")
-
-	-- re-pick once at the start when the group changed during the pause
-	local r = seeded(3)
-	local mm = R.music_new(D, 0, true, r)
-	mm.delivered = {memories_of_stone = true, achaidh_cheide = true, forest_walk = true}
-	local a1 = R.music_step(mm, D, mm.start_at - 30, {"memories_of_stone"}, r)
-	check(a1 == nil and mm.track == "memories_of_stone", "S delivered pick needs no push")
-	local a2, t2 = R.music_step(mm, D, mm.start_at, {"forest_walk"}, r)
-	check(a2 == "play" and t2 == "forest_walk", "S pick redone from the new pool at the start")
-
-	-- the last track is not repeated
-	local repeats = 0
-	for seed = 1, 50 do
-		local q = R.music_new(D, 0, true, seeded(seed))
-		q.last = "memories_of_stone"
-		q.delivered = {memories_of_stone = true, achaidh_cheide = true}
-		local _, t = R.music_step(q, D, q.start_at, pool, seeded(seed))
-		if t == "memories_of_stone" then repeats = repeats + 1 end
-	end
-	check(repeats == 0, "S the last track is not picked again")
-
-	-- music off: stop, and no push for an hour; on again: resumes soon
-	local o = R.music_new(D, 0, true, r)
-	o.delivered = {memories_of_stone = true}
-	R.music_step(o, D, o.start_at, {"memories_of_stone"}, r)
-	check(o.phase == "play", "S off test: playing")
-	check(R.music_set_on(o, D, false, o.start_at + 5, r) == "stop", "S off stops the track")
-	local any = false
-	for t = o.start_at + 6, o.start_at + 3600, 2 do
-		if R.music_step(o, D, t, {"achaidh_cheide"}, r) ~= nil then any = true end
-	end
-	check(not any, "S music off: no push and no play for an hour")
-	local t_on = o.start_at + 3600
-	check(R.music_set_on(o, D, true, t_on, r) == nil, "S on returns no action")
-	check(o.start_at - t_on >= 5 and o.start_at - t_on <= 15, "S on again: next track after 5-15 s")
-	local a3 = R.music_step(o, D, o.start_at - 1, {"achaidh_cheide"}, r)
-	check(a3 == "push", "S on again: pushes again")
-	check(R.music_set_on(o, D, false, o.start_at, r) == nil and o.pushing == nil,
-		"S off while a push waits: forgotten, nothing to stop")
-	check(R.music_delivered(o, D, "achaidh_cheide", o.start_at + 1) == nil,
-		"S a late delivery while off plays nothing")
-
-	-- a lost push is given up and a new pause starts
-	local g = R.music_new(D, 0, true, r)
-	R.music_step(g, D, g.start_at - 10, {"soliloquy"}, r)
-	check(g.pushing == "soliloquy", "S lost push: pushing")
-	R.music_step(g, D, g.push_at + D.music.push_timeout + 1, {"soliloquy"}, r)
-	check(g.track == nil and g.pushing == nil and g.start_at > g.push_at + 100,
-		"S lost push given up, new pause")
-	-- an empty pool retries later
-	local e = R.music_new(D, 0, true, r)
-	check(R.music_step(e, D, e.start_at, {}, r) == nil and e.start_at >= D.music.empty_retry,
-		"S empty pool: nothing, retry later")
-	-- a refused push
-	local f = R.music_new(D, 0, true, r)
-	local refused_at = f.start_at - 5
-	R.music_step(f, D, refused_at, {"soliloquy"}, r)
-	R.music_push_failed(f, D, refused_at, r)
-	check(f.track == nil and f.pushing == nil and f.start_at >= refused_at + 180,
-		"S refused push forgotten, a new pause")
-end
 
 -- ---------------------------------------------------------------------------
 -- B  beds: the rules on a several-zone test table, then the shipped pilot
@@ -497,7 +366,8 @@ do
 		get_atmosphere = function(name) return mood[name] end,
 		is_day_phase = function(t) return t >= 0.1875 and t <= 0.8125 end,
 	})
-	rawset(_G, "grug_map", {location = {in_town = function(name) return in_town[name] == true end}})
+	rawset(_G, "grug_map", {location = {in_town = function(name) return in_town[name] == true end,
+		capital_of = function() return nil end}})
 	dofile(MOD .. "/init.lua")
 	for _, fn in ipairs(loaded) do fn() end
 	local A = rawget(_G, "grug_ambience")
@@ -585,7 +455,7 @@ do
 	node_at["0,12,0"] = nil
 	run(2)
 	beds = plays_to("ana", is_bed)
-	check(#beds == count + 1 and beds[#beds].spec.name == "grug_ambience_night_forest",
+	check(#beds == count + 1 and beds[#beds].spec.name:find("^grug_ambience_night_") ~= nil,
 		"R surfacing: the night bed again")
 	-- at night the elf zone shares the night bed: nothing restarts; the
 	-- dwarf zone keeps its own bed at night: a crossfade after two passes
@@ -650,55 +520,14 @@ do
 	for _, f in ipairs(fades) do if f.gain == 0 then loop_fades = loop_fades + 1 end end
 	check(loop_fades == 4, "R loops fade out when out of reach")
 
-	-- music: first push (during the first 90 s), delivery, play
-	sounds = {}
-	run(math.max(0, 92 - (us - joined_us) / 1e6))
-	check(#pushes == 1, "R one push before the first track (" .. #pushes .. ")")
-	local push = pushes[1]
-	check(push and push.options.to_player == "ana" and push.options.ephemeral == false and
-		push.options.client_cache == true and push.options.filepath:find("/music/grug_music_") ~= nil,
-		"R push: to the player, not ephemeral, client cache, from music/")
-	local track_file = push and push.options.filepath:match("([^/]+)%.ogg$")
-	check(#plays_to("ana", function(s) return s.spec.name == track_file end) == 0,
-		"R nothing plays before the delivery")
-	push.callback("ana")
-	local music_plays = plays_to("ana", function(s) return s.spec.name == track_file end)
-	check(#music_plays == 1 and not music_plays[1].params.loop, "R plays in the push callback")
-	-- volume change fades the playing track
-	fades = {}
-	commands.music.func("ana", "50")
-	check(#fades == 1 and math.abs(fades[1].gain - D.gains.music * 0.5) < 1e-9,
-		"R /music 50 fades the track to half")
-	-- music off: the track fades out, no pushes for an hour
-	fades = {}
-	local ok, msg = commands.music.func("ana", "off")
-	check(ok and msg:find("off") and #fades == 1 and fades[1].gain == 0, "R /music off stops the track")
-	check(ana._store["grug_ambience:music_off"] == "1", "R music off stored in player meta")
-	pushes = {}
-	run(3600)
-	check(#pushes == 0, "R music off: no push for an hour")
-	-- Help page: switch it on with the checkbox
-	local changed = A.handle_settings_fields(ana, {grug_ambience_music = "true",
-		grug_ambience_music_volume = "6", grug_ambience_ambience_volume = "11"})
-	check(changed and A.get(ana, "music").on and A.get(ana, "music").volume == 50,
-		"R Help checkbox switches music on, unchanged dropdown does nothing")
-	run(20)
-	check(#pushes == 1, "R music on again: the next track is pushed within 20 s")
-	local fs = A.settings_formspec(ana, 0.2, 1.0)
-	check(fs:find("checkbox%[[^]]*grug_ambience_music;Music;true%]") ~= nil and
-		fs:find("grug_ambience_music_volume;[^;]*;6;true%]") ~= nil,
-		"R Help controls show the current state")
+	-- no music outside a capital (Round 35; the music runtime: tools/r35_m)
+	run(600)
+	check(#pushes == 0, "R no music push outside a capital in 10 min")
 	-- "on" after a volume of 0 is never silent
-	commands.music.func("ana", "0")
-	check(not A.get(ana, "music").on and A.get(ana, "music").volume == 0, "R /music 0 switches off")
-	commands.music.func("ana", "on")
-	check(A.get(ana, "music").on and A.get(ana, "music").volume == R.DEFAULT_VOLUME,
-		"R /music on after 0 restores the default volume")
 	commands.ambience.func("ana", "0")
 	A.handle_settings_fields(ana, {grug_ambience_ambience = "true"})
-	check(A.get(ana, "ambience").on and A.get(ana, "ambience").volume == R.DEFAULT_VOLUME,
+	check(A.get(ana, "ambience").on and A.get(ana, "ambience").volume == R.DEFAULT_VOLUME.ambience,
 		"R the ambience checkbox after 0 restores the default volume")
-	commands.music.func("ana", "50")
 	run(2)
 	-- ambience off: the bed fades, nothing new plays
 	fades, sounds = {}, {}
@@ -724,32 +553,23 @@ do
 		if not s.params.pos or s.spec.name ~= "grug_ambience_call_thunder" then spread_ok = false end
 	end
 	check(spread_ok, "R thunder on a dragon island: positional, minutes apart (" .. #calls .. " in 30 min)")
-	-- leave: state gone, later callback harmless
 	players.ana = nil
 	for _, fn in ipairs(leaves) do fn(ana) end
-	local ok2 = pcall(push.callback, "ana")
-	check(ok2, "R a callback after leaving does nothing")
 end
 
 -- ---------------------------------------------------------------------------
 -- F  files and data integrity
 -- ---------------------------------------------------------------------------
 do
-	for group, pool in pairs(D.pools) do
-		for _, id in ipairs(pool) do check(D.tracks[id] ~= nil, "F pool " .. group .. " track " .. id) end
+	for capital, rotation in pairs(D.rotations) do
+		for _, id in ipairs(rotation) do
+			check(D.tracks[id] ~= nil, "F rotation " .. capital .. " track " .. id)
+		end
 	end
 	for mood, row in pairs(D.region) do
 		check(D.beds[row.day] ~= nil and (row.night == nil or D.beds[row.night] ~= nil),
 			"F region " .. mood .. " beds exist")
 	end
-	-- every atmosphere mood has a bed row and a music group
-	local zones = io.open(repo .. "/mods/CORE/grug_core/atmosphere_zones.lua"):read("*a")
-	local moods = 0
-	for m in zones:gmatch('\nmood%("([%w_]+)"') do
-		moods = moods + 1
-		check(D.music_groups[m] ~= nil, "F mood " .. m .. " has a music group")
-	end
-	check(moods == 10, "F ten atmosphere moods found (" .. moods .. ")")
 	for id, call in pairs(D.calls) do
 		check(call.distance[1] >= 8 and call.distance[2] >= call.distance[1], "F call " .. id .. " distance")
 	end

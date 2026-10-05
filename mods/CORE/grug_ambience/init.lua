@@ -5,8 +5,8 @@
 --     atmosphere mood the player already carries (grug_core.get_atmosphere),
 --     a night bed after dusk where crickets fit, sea and stream water near
 --     the player, under water, the underground and its deep band; in start
---     towns and capitals the bed plays at half gain and the Town music pool
---     carries the mood. A change crossfades (core.sound_fade);
+--     towns and capitals the bed plays at half gain. A change crossfades
+--     (core.sound_fade). Where music plays the bed is silent (Round 35);
 --   * sparse calls by mood and time of day, a per-player timer, placed at a
 --     point around the player (Round 34: distant thunder on the dragon
 --     islands only);
@@ -14,12 +14,15 @@
 --     (never at a water source) near the player: one find_nodes_in_area per
 --     pass above ground, the nearest two of each kind, positional, to that
 --     player only;
---   * calm music now and then from the pool of the player's region group
---     (rules.lua music_step). Music files live in music/, outside every
---     sounds/ folder, so the first join downloads none of them; each track is
---     pushed to one player with core.dynamic_add_media during the pause
---     before it plays, only while that player has music on, and plays in the
---     push callback (lua_api.md dynamic_add_media);
+--   * music only in the six capitals (Round 35, round35-plan.md §2.8): each
+--     capital's rotation plays from entering the city (grug_map's
+--     location.capital_of, with a few nodes of hysteresis at the border) with
+--     short pauses, and fades out on leaving (rules.lua music_step). Music
+--     files live in music/, outside every sounds/ folder, so the first join
+--     downloads none of them; each track is pushed to one player with
+--     core.dynamic_add_media (the next one while the current one plays),
+--     only while that player has music on, and plays in the push callback
+--     (lua_api.md dynamic_add_media);
 --   * music and ambience on/off and volume per player in player meta, applied
 --     at once; the Help page's Sound sub-page and /music, /ambience.
 --
@@ -33,12 +36,11 @@
 -- report (tools/r34_s2 probe).
 --
 -- A /atmosphere preset (atmosphere.lua, admin A/B test) pauses the zone
--- driver: a forced mood drives the bed and the music pool like the zone
--- would (so each mood's bed can be checked in place); a preset that is no
--- mood (default, off, godrays, hearthpine) keeps the bed and pool the player
--- had.
+-- driver: a forced mood drives the bed like the zone would (so each mood's
+-- bed can be checked in place); a preset that is no mood (default, off,
+-- godrays, hearthpine) keeps the bed the player had.
 --
--- Pure rules: rules.lua; names, gains and pools: data.lua.
+-- Pure rules: rules.lua; names, gains and rotations: data.lua.
 
 grug_ambience = {}
 
@@ -66,17 +68,19 @@ local music_files = {}
 for _, file in ipairs(core.get_dir_list(modpath .. "/music", false) or {}) do
 	music_files[file] = true
 end
-local pools = {}
-for group, list in pairs(D.pools) do
+local rotations = {}
+for capital, list in pairs(D.rotations) do
 	local shipped = {}
 	for _, id in ipairs(list) do
 		local track = D.tracks[id]
 		if track and music_files[track.file] then shipped[#shipped + 1] = id end
 	end
-	pools[group] = shipped
+	rotations[capital] = shipped
 end
--- Read by the engine probe (tools/r34_s2), which may mark names available.
-grug_ambience.available, grug_ambience.pools = available, pools
+local NO_ROTATION = {}
+-- Read by the engine probes (tools/r34_s2, tools/r35_m), which may mark
+-- names available.
+grug_ambience.available, grug_ambience.rotations = available, rotations
 
 -- Comparison figures: passes, their summed microseconds, the node searches,
 -- their microseconds and the positions they returned, sounds started,
@@ -94,9 +98,9 @@ end
 -- ---------------------------------------------------------------------------
 
 -- name -> {slot, music_on, music_volume, ambience_on, ambience_volume,
--- group, bed = {key, handle, gain, want, seen}, emitters = {[hash] =
--- {handle, gain, kind}}, next_call, music = rules music state, track_handle,
--- track_gain}
+-- bed = {key, handle, gain, want, seen, underwater, music}, emitters =
+-- {[hash] = {handle, gain, kind}}, next_call, music = rules music state,
+-- track_handle, track_gain}
 local states = {}
 
 local META = {
@@ -109,9 +113,10 @@ local META = {
 local function read_settings(player, st)
 	local meta = player:get_meta()
 	st.music_on = meta:get_int(META.music_off) ~= 1
-	st.music_volume = R.clamp_volume(meta:get(META.music_volume)) or R.DEFAULT_VOLUME
+	st.music_volume = R.clamp_volume(meta:get(META.music_volume)) or R.DEFAULT_VOLUME.music
 	st.ambience_on = meta:get_int(META.ambience_off) ~= 1
-	st.ambience_volume = R.clamp_volume(meta:get(META.ambience_volume)) or R.DEFAULT_VOLUME
+	st.ambience_volume = R.clamp_volume(meta:get(META.ambience_volume)) or
+		R.DEFAULT_VOLUME.ambience
 end
 
 local function music_audible(st) return R.audible(st.music_on, st.music_volume) end
@@ -130,7 +135,8 @@ end
 local function stop_bed(st)
 	local bed = st.bed
 	if bed.handle then fade(bed.handle, bed.gain, 0, D.crossfade) end
-	bed.handle, bed.key, bed.gain, bed.want, bed.seen, bed.underwater = nil, nil, 0, nil, 0, nil
+	bed.handle, bed.key, bed.gain, bed.want, bed.seen = nil, nil, 0, nil, 0
+	bed.underwater, bed.music = nil, nil
 end
 
 -- Crossfades to bed `key` (false: silence).
@@ -301,6 +307,8 @@ end
 -- Music
 -- ---------------------------------------------------------------------------
 
+local location = grug_map.location
+
 local function music_gain(st)
 	return D.gains.music * st.music_volume / 100
 end
@@ -316,7 +324,7 @@ local function play_track(name, st, track)
 end
 
 local function stop_track(st)
-	if st.track_handle then fade(st.track_handle, st.track_gain, 0, 2) end
+	if st.track_handle then fade(st.track_handle, st.track_gain, 0, D.music.fade_out) end
 	st.track_handle = nil
 end
 
@@ -333,7 +341,7 @@ local function push_track(name, st, track)
 	end)
 	stats.pushes = stats.pushes + 1
 	if not ok then
-		R.music_push_failed(st.music, D, now_seconds(), random)
+		R.music_push_failed(st.music, D, track, now_seconds())
 		if not push_warned then
 			push_warned = true
 			core.log("warning", "[grug_ambience] music push refused: " .. track)
@@ -341,13 +349,17 @@ local function push_track(name, st, track)
 	end
 end
 
+-- The music pass, before the bed's (the bed follows R.music_active).
 local function music_pass(name, st, now)
-	local action, track = R.music_step(st.music, D, now, pools[st.group] or pools.land,
-		random)
+	local capital = location.capital_of(name)
+	local action, track = R.music_step(st.music, D, now, capital,
+		capital and rotations[capital] or NO_ROTATION, random)
 	if action == "push" then
 		push_track(name, st, track)
 	elseif action == "play" then
 		play_track(name, st, track)
+	elseif action == "stop" then
+		stop_track(st)
 	end
 end
 
@@ -355,7 +367,6 @@ end
 -- The per-player pass
 -- ---------------------------------------------------------------------------
 
-local location = grug_map.location
 local scratch = {}
 
 local function evaluate(name, st, now, night)
@@ -366,14 +377,15 @@ local function evaluate(name, st, now, night)
 	local mood = grug_core.get_atmosphere(name)
 	if not MOODS[mood] then mood = nil end
 	local town = location.in_town(name)
-	st.group = R.music_group(D, mood, town) or st.group
+	music_pass(name, st, now)
 	if ambience_audible(st) then
 		local water, underwater = probe_water(pos)
 		scratch.mood, scratch.night, scratch.water = mood, night, water
 		scratch.underwater, scratch.deep = underwater, pos.y < D.deep_y
-		local wanted = R.pick_bed(D, R.bed_keys(D, scratch), available)
+		local music = R.music_active(st.music)
+		local wanted = R.bed_wanted(R.pick_bed(D, R.bed_keys(D, scratch), available), music)
 		local gain = R.bed_gain(D, st.ambience_volume, town)
-		if wanted ~= nil and R.bed_should_change(st.bed, wanted, underwater) then
+		if wanted ~= nil and R.bed_should_change(st.bed, wanted, underwater, music) then
 			switch_bed(name, st, wanted, gain)
 		elseif st.bed.handle and gain ~= st.bed.gain then
 			fade(st.bed.handle, st.bed.gain, gain, D.crossfade)
@@ -390,7 +402,6 @@ local function evaluate(name, st, now, night)
 			update_emitters(name, st, pos)
 		end
 	end
-	music_pass(name, st, now)
 	stats.passes = stats.passes + 1
 	stats.us = stats.us + (core.get_us_time() - started)
 end
@@ -421,11 +432,11 @@ core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
 	local now = now_seconds()
 	join_counter = join_counter + 1
-	local st = {slot = join_counter % R.SLOTS + 1, group = "land",
+	local st = {slot = join_counter % R.SLOTS + 1,
 		bed = {gain = 0, seen = 0}, emitters = {},
 		next_call = now + R.next_call_delay(D, random)}
 	read_settings(player, st)
-	st.music = R.music_new(D, now, music_audible(st), random)
+	st.music = R.music_new(music_audible(st))
 	states[name] = st
 end)
 
@@ -449,7 +460,7 @@ function grug_ambience.set(player, channel, on, volume)
 	-- Switching on a channel left at volume 0 restores the default volume,
 	-- so "on" is never silent.
 	if on == true and volume == nil and st[key_volume] == 0 then
-		volume = R.DEFAULT_VOLUME
+		volume = R.DEFAULT_VOLUME[channel]
 	end
 	if on ~= nil then
 		st[key_on] = on
@@ -461,8 +472,10 @@ function grug_ambience.set(player, channel, on, volume)
 	end
 	local audible = R.audible(st[key_on], st[key_volume])
 	if channel == "music" then
+		-- Off: the track fades out and the capital's bed fades in on the next
+		-- pass; on: the next pass starts the capital's rotation.
 		if audible ~= was_audible then
-			if R.music_set_on(st.music, D, audible, now_seconds(), random) == "stop" then
+			if R.music_set_on(st.music, audible) == "stop" then
 				stop_track(st)
 			end
 		elseif audible and st.track_handle then
@@ -502,11 +515,17 @@ local function status_line(label, setting)
 		setting.volume)
 end
 
+local COMMAND_HELP = {
+	music = "Music (it plays in the six capitals): switch on or off, or set the " ..
+		"volume in percent (default " .. R.DEFAULT_VOLUME.music .. ")",
+	ambience = "Ambience: switch on or off, or set the volume in percent",
+}
+
 for _, channel in ipairs({"music", "ambience"}) do
 	local label = channel == "music" and "Music" or "Ambience"
 	core.register_chatcommand(channel, {
 		params = "[on|off|<0-100>]",
-		description = label .. ": switch on or off, or set the volume in percent",
+		description = COMMAND_HELP[channel],
 		func = function(name, param)
 			local player = core.get_player_by_name(name)
 			if not player then return false, "Only an online player can change this." end
@@ -522,11 +541,19 @@ end
 
 -- The Help page's Sound sub-page (grug_inventory/help.lua): the controls in
 -- legacy formspec coordinates from (x, y), and the field handler. Volumes
--- are a dropdown in steps of 10 % (a scrollbar would send a field on every
--- drag step).
+-- are a dropdown in steps of 5 % (the music default is 35 %; a scrollbar
+-- would send a field on every drag step).
+local VOLUME_STEP = 5
 local VOLUME_STEPS = {}
-for step = 0, 10 do VOLUME_STEPS[#VOLUME_STEPS + 1] = (step * 10) .. " %" end
+for step = 0, 100 / VOLUME_STEP do
+	VOLUME_STEPS[#VOLUME_STEPS + 1] = (step * VOLUME_STEP) .. " %"
+end
 local VOLUME_ITEMS = table.concat(VOLUME_STEPS, ",")
+
+-- The dropdown entry showing `volume` (the nearest step).
+local function volume_index(volume)
+	return floor(volume / VOLUME_STEP + 0.5) + 1
+end
 
 local CONTROLS = {
 	{channel = "music", label = "Music"},
@@ -537,20 +564,20 @@ function grug_ambience.settings_formspec(player, x, y)
 	local fs = {}
 	for index, row in ipairs(CONTROLS) do
 		local setting = grug_ambience.get(player, row.channel) or
-			{on = true, volume = R.DEFAULT_VOLUME}
+			{on = true, volume = R.DEFAULT_VOLUME[row.channel]}
 		local top = y + (index - 1) * 0.9
 		fs[#fs + 1] = ("checkbox[%.2f,%.2f;grug_ambience_%s;%s;%s]"):format(x, top + 0.2,
 			row.channel, core.formspec_escape(row.label), setting.on and "true" or "false")
 		fs[#fs + 1] = ("label[%.2f,%.2f;Volume]"):format(x + 2.6, top + 0.1)
 		fs[#fs + 1] = ("dropdown[%.2f,%.2f;2.0;grug_ambience_%s_volume;%s;%d;true]"):format(
-			x + 3.8, top, row.channel, VOLUME_ITEMS,
-			floor(setting.volume / 10 + 0.5) + 1)
+			x + 3.8, top, row.channel, VOLUME_ITEMS, volume_index(setting.volume))
 	end
 	return table.concat(fs)
 end
 
 -- Applies the Sound sub-page's fields; true when something changed. A
--- dropdown is sent with every submit of the page, so only a new value acts.
+-- dropdown is sent with every submit of the page, so only a new entry acts
+-- (a volume between two steps, set with the chat command, stays).
 function grug_ambience.handle_settings_fields(player, fields)
 	local changed = false
 	for _, row in ipairs(CONTROLS) do
@@ -563,12 +590,10 @@ function grug_ambience.handle_settings_fields(player, fields)
 				changed = true
 			end
 			local index = tonumber(fields["grug_ambience_" .. channel .. "_volume"])
-			if index and index >= 1 and index <= #VOLUME_STEPS then
-				local volume = (index - 1) * 10
-				if volume ~= setting.volume then
-					grug_ambience.set(player, channel, nil, volume)
-					changed = true
-				end
+			if index and index >= 1 and index <= #VOLUME_STEPS and
+					index ~= volume_index(setting.volume) then
+				grug_ambience.set(player, channel, nil, (index - 1) * VOLUME_STEP)
+				changed = true
 			end
 		end
 	end

@@ -144,10 +144,11 @@ local SECTIONS = {
 	})},
 	{id = "sound", label = "Sound", x = 9.2, w = 1.2, text = body({
 		heading("Music and ambience"),
-		"• Music: calm pieces now and then, chosen by where you are: the lands, the front and the sea, the underground, or the towns. After each piece a few minutes of quiet.",
-		"• Each piece is downloaded once while music is on, a little before it plays. With music off nothing is downloaded.",
+		"• Music plays only in the six capitals, each with its own pieces, one after another with short pauses. It starts when you enter a capital and fades out when you leave.",
+		"• In a capital the music takes the place of the ambience; with music off you hear the capital's ambience instead.",
+		"• Each piece is downloaded once, while music is on and you are in a capital; the first one may take a moment. With music off nothing is downloaded.",
 		"• Ambience: the sound of the land around you by region, day and night, the sea and the caves, running water, and the forges and hearths of the settlements.",
-		"• In chat: /music on, /music off or /music 50 (volume in percent); /ambience works the same.",
+		"• In chat: /music on, /music off or /music 50 (volume in percent; music starts at 35); /ambience works the same.",
 		"• Your client's own volume setting still applies on top of these.",
 	})},
 }
