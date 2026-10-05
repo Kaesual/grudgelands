@@ -199,8 +199,18 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   grug_classes (`get_crit_chance_raw`: 5 % + 0.05 % per Dexterity point
   since Round 33; dodge 0.1 % per point). Attributes enter damage with their
   fraction (`Str/10`, floored once at the end); the damage-fit reference
-  `baseline_melee_total` still floors its Strength/10 (BACKLOG Round 33
-  carry-overs). Abilities = hotbar tools in `grug_abilities` (item `range` =
+  `grug_core.baseline_melee_total(level)` keeps it unfloored too (Round 34
+  F2) and is public since Round 35: it is the base hit `B(L)` of the
+  level-proof talents. **Talent values (Round 35, skill_trees.md §2.10):**
+  `grug_classes.get_talent_bonus(player, key)` returns, for a key in
+  `grug_classes.TALENT_LEVEL_SCALED_KEYS`, the stored percentage times
+  `B(L)` (damage) or `grug_core.armor_k(L)` (armour) at the player's level
+  (`talent_level_amount`, which the talent tooltip uses per rank), so every
+  consumer adds the amount where it once added a flat value, before the one
+  damage scalar; the talent cache holds only the percentage sums. Helpers of
+  that round: `grug_abilities.clear_cooldown(player, id)` (Last Word resets
+  Word of Ruin a step after the cast) and `grug_core.is_rooted(player)`
+  (Opening's held target). Abilities = hotbar tools in `grug_abilities` (item `range` =
   targeting range, wear bar = cooldown display for cast skills, charge
   bar for swing skills since WP38); kits/numbers:
   `docs/design/classes.md`. WP19 added the 8 s target-memory store (separate
@@ -674,6 +684,16 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `war_cry`. `telegraph.lua` plays the family's `telegraph` cue at a
   wind-up (only the humanoids have one); the dragons play `telegraph` from
   `boss_dragons.lua`. Fixture `tools/r34_s1b`.
+- **Dawn departure (Round 35 E):** `grug_mobs/dawn.lua`
+  (`grug_mobs.dawn_tick`, called from the shared `do_custom` wrapper right
+  after `leash_tick`; a `false` return ends the step of a mob that left)
+  removes a free region mob whose `_grug_spawn_clock` is `"night"` by day
+  (`SR.clock_now`) with mobs_redo's smoke puff — no drops, XP or kill
+  credit — unless it is in combat or a player is within
+  `grug_mobs.DAWN_NEAR` (32) nodes; one field test per step, a check every
+  `DAWN_INTERVAL` (1 s) per night mob. Camp members (their tag's unit is a
+  camp) and every mob without the clock stay. Fixture and engine probe
+  `tools/r35_e`.
 - **Mobs in water (Round 34 F1):** the wading rule lives in the vendored
   probe (`grug_may_wade`, see the `GRUG PATCH` list); the way back to land is
   `grug_mobs/aggro.lua` `shore_check` in the 1 Hz leash tick (an idle
@@ -804,7 +824,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     `bracket_for_level`, `get_price`, `catalog[b].fixed/.extras/.all`.
   - **Armor pipeline**: item `_grug_armor` values and every additive source
     aggregate as uncapped raw rating `A`. The deep Bulwark Unbroken capstone
-    multiplies that aggregate by 1.65 and its emergency window then adds 15.
+    multiplies that aggregate by 1.65 and its emergency window then adds
+    33 % of `K` at the Warrior's own level (Round 35; about 15 at level 50).
     For authoritative attacker level `L >= 1`, `K = 20 + 0.5*min(L,60) +
     8.5*max(L-60,0)` and reduction is `min(0.70, A/(A+K))`. Apply once to
     player combat damage before absorb, with the existing final `math.ceil`;
@@ -1267,9 +1288,13 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     projectiles through `sound_launch`/`sound_hit` on
     `grug_projectiles.register`, melee hits through
     `grug_core.melee_hit_sound(player)` (by `_grug_weapon_family`), voices
-    through `voices.lua`. Fixtures `tools/r34_s1a`, `tools/r34_s1b` (they
-    check call sites, specs, files and `approved.txt`); fixtures that load a
-    hooked file get a silent stub.
+    through `voices.lua`, gear breaking through `grug_repair/runtime.lua`
+    `announce_break` (Round 35: in the gear, tool and hoe wear paths, once
+    when a stack wears into broken; the broken look is
+    `grug_gear.BROKEN_MODIFIER` in `broken_image`). Fixtures
+    `tools/r34_s1a`, `tools/r34_s1b`, `tools/r35_f` (they check call sites,
+    specs, files and the approval lists); fixtures that load a hooked file
+    get a silent stub.
   - **`grug_ambience`** (`mods/CORE/grug_ambience`): `rules.lua` is pure
     (bed choice and hysteresis, the either-music-or-bed rule, calls, the
     capital music scheduler, the emitter choice, settings words; the fixtures
