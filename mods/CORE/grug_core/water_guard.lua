@@ -39,8 +39,11 @@ end
 -- (about once a second, each time with a block resend; measured at a
 -- capital edge, tools/r37_ix/engine.sh). The barrier looks and acts like
 -- air, but it is floodable, so its on_flood (wrapped below like every
--- floodable node's) refuses the flow before anything changes; once the guard
--- no longer applies there, a liquid floods it like air.
+-- floodable node's) refuses the flow before anything changes. It is used only
+-- where the fixed territory rule guards (towns, capitals, landmarks, the open
+-- sea), which never changes: a guard that can vanish (a Claim Stone's
+-- arrival cube) keeps the plain air revert, so no barrier outlives it in
+-- ordinary ground, where code that expects "air" would trip over it.
 local BARRIER = "grug_core:water_barrier"
 grug_core.WATER_BARRIER = BARRIER
 core.register_node(BARRIER, {
@@ -57,10 +60,12 @@ core.register_node(BARRIER, {
 	groups = {not_in_creative_inventory = 1},
 })
 
--- The node a guarded transform at a position is set back to: what was there,
--- except that air becomes the barrier.
-function grug_core.water_guard_revert_node(oldnode)
-	if oldnode.name == "air" then return {name = BARRIER} end
+-- The node a guarded transform at `pos` is set back to: what was there,
+-- except that air on fixed guarded territory becomes the barrier.
+function grug_core.water_guard_revert_node(pos, oldnode)
+	if oldnode.name == "air" and not grug_core.natural_ground_alterable(pos) then
+		return {name = BARRIER}
+	end
 	return oldnode
 end
 
@@ -104,11 +109,11 @@ core.register_on_liquid_transformed(function(positions, old_nodes)
 				guarded(pos) then
 			-- swap_node preserves metadata and performs ordinary lighting/liquid
 			-- updates without construction/destruction callbacks or item drops.
-			core.swap_node(pos, grug_core.water_guard_revert_node(oldnode))
+			core.swap_node(pos, grug_core.water_guard_revert_node(pos, oldnode))
 		elseif current and oldnode and
 				(other_liquids[current.name] or other_liquids[oldnode.name]) and
 				grug_core.world_alteration_guarded(pos) then
-			core.swap_node(pos, grug_core.water_guard_revert_node(oldnode))
+			core.swap_node(pos, oldnode)
 		end
 	end
 end)

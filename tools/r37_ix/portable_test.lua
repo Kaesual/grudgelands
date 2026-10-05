@@ -28,7 +28,7 @@
 --      the next flow before any change (a small liquid-tick model: one
 --      revert instead of one per tick); outside the guard the barrier floods
 --      like air and nothing is reverted; a guarded drain still restores the
---      water.
+--      water; a guard that can vanish (an arrival cube) reverts to plain air.
 --   S  slab on slab (ITM-10): grug_decor/shapes.lua and
 --      grug_materials/derivatives.lua keep the slab when the placement fails.
 -- Prints "R37 IX PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -682,10 +682,20 @@ do
 		fn({drained}, {{name = "default:river_water_flowing", param2 = 5}})
 	end
 	eq(c.get_node(drained).name, "default:river_water_flowing", "W a guarded drain is restored")
+	-- A guard that can vanish (a Claim Stone's arrival cube on open home
+	-- ground) keeps the plain air revert: no barrier outlives the cube.
+	local cube = P(-8, 37, 0)
+	grug_core.register_world_alteration_guard(function(pos)
+		return not vector.equals(pos, cube)
+	end)
+	eq(model(cube, 3), 3, "W a cube-only guard still reverts every flow")
+	eq(c.get_node(cube).name, "air", "W a cube-only guard reverts to plain air")
 	-- The decision itself.
-	local revert = grug_core.water_guard_revert_node or function(node) return node end
-	eq(revert({name = "air"}).name, BARRIER, "W reverted air becomes the barrier")
-	eq(revert({name = "default:water_source"}).name, "default:water_source",
+	local revert = grug_core.water_guard_revert_node or function(_, node) return node end
+	eq(revert(edge, {name = "air"}).name, BARRIER,
+		"W reverted air on fixed guarded territory becomes the barrier")
+	eq(revert(cube, {name = "air"}).name, "air", "W reverted air beside a cube stays air")
+	eq(revert(edge, {name = "default:water_source"}).name, "default:water_source",
 		"W reverted water stays water")
 end
 
