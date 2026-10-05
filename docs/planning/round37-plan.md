@@ -162,9 +162,10 @@ coordinator in the direction the audit recommends:
   never damaged; MOC-05's patches respect it).
 - No sound ships without the user's pick on a listening page; lane SN only
   wires what the user picked or silences.
-- Vendored code: every change under `mods/BASE` carries a `GRUG PATCH`
-  marker and a VENDOR.md entry (X-02, CMB-03, MOB-01, MOB-04, MOB-07,
-  MOB-02, MOB-05, MOB-03, MOB-06).
+- Vendored code (`mods/BASE` and the mobs_redo fork in
+  `mods/ENTITIES/mobs`): every change carries a `GRUG PATCH` marker and a
+  VENDOR.md entry (X-02, CMB-03, MOB-01, MOB-04, MOB-07, MOB-02, MOB-05,
+  MOB-03, MOB-06).
 - Docs: English; one owner per fact once lane DB has set the owners; no
   explicit reference to any existing game; the factions are The Accord and
   The Throng.
@@ -184,7 +185,8 @@ takes the current path (`melee_damage_add`, wear, trinket proc). CMB-04: one
 `core.calculate_knockback` override per §2.1.3, keeping the existing
 wrappers (riders, the dragon slam); `combat_stats.md`'s knockback section
 says what pushes players. Then CMB-03: delete the WP38 machinery (about 300
-lines) and its comments. PLY-11 (a Scout shot rebuilds the Character page)
+lines) and its comments, as a separate last commit (§7: its `mobs/api.lua`
+part merges after MP). PLY-11 (a Scout shot rebuilds the Character page)
 may join. Fixture cases for each item.
 
 ### 4.2 MB Mob behaviour (wave 1)
@@ -335,7 +337,7 @@ checks it at the start of the round.
 
 Each code lane: the re-check report (§3), its fixture and
 `tools/run_fixtures.sh`, `python3 tools/check_fresh_server.py`,
-`validate.py --game`, one smoke boot, an independent Opus review. Docs
+`tools/r28_design/validate.py --game`, one smoke boot, an independent Opus review. Docs
 lanes: an Opus review against the code (no number or rule changes without
 a code source). Lane MG: `seed_fleet quick`. End: `seed_fleet full`, one
 boot of main, `tools/sync_to_luanti.sh`, the user's GUI check (desktop and
@@ -390,16 +392,19 @@ needs one.
 
 **Shared files and merge order:**
 
-- `mods/ENTITIES/mobs/api.lua`: **MB, then MP, then CB's CMB-03 removal**;
-  each rebases on the one before.
+- `mods/ENTITIES/mobs/api.lua`: **MB, then MP**; MP rebases on MB. CB
+  merges its fixes when ready (after MB, see below); its CMB-03 removal is
+  a separate last commit that merges after MP, so CB is not held up.
 - `grug_core/combat.lua`: MB (threat) and CB (knockback, CMB-01); MB first.
 - `grug_mobs`: MB, then MP.
-- `combat_stats.md`: CB and MB edit their sections; DE after both.
-- `grug_sounds`, `approved.txt`, `sound.md`: SN; DE's inherited-set
-  paragraph merges before SN's cues.
-- `mods/BASE/default` and VENDOR.md: IX (X-02), CB and MB, MP (mobs);
-  VENDOR.md conflicts are resolved at merge.
-- Docs: **DA first**, then DB, DC, DD, DE, DF one after the other with a
-  rebase each (BACKLOG, ROADMAP and STATUS are shared); D last.
+- `combat_stats.md`: CB, MB and MP edit their own sections; DE starts
+  after CB and MB and rebases over MP's later change.
+- `grug_sounds`, `approved.txt`: SN only. `sound.md`: DE writes the
+  inherited-set paragraph, SN its cues; whichever merges second rebases.
+- VENDOR.md: IX (X-02 in `mods/BASE/default`), MB, MP and CB (mobs_redo
+  patches) each add their entries; conflicts are resolved at merge.
+- Docs: **DA merges first**; DB, DC, DD, DE and DF then work in parallel
+  and merge one after the other, each rebasing (BACKLOG, ROADMAP and STATUS
+  are shared); D last.
 - Pages: lane SN's listening page is published privately by the
   coordinator; picks in `~/projects/grudgelands-orchestration/r37/`.

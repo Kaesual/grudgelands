@@ -22,8 +22,10 @@ Engine reference for the line citations: `reference_projects/luanti` at
   of tall, narrow mobs (zombies, skeletons, felines, hyenas) and the side of
   long ones (the crocodile) while the client points at them. The client is
   right (it passes radians).
-- **Issue:** to be filed by the user (draft:
-  `/home/jan/Desktop/luanti-hitbox-issue.md`); link it here once filed.
+- **Issue:** filed by the user and **fixed on upstream master** (user,
+  2026-10-05); not yet in a release. The fix is expected in the next Luanti
+  version after 5.17.0. Remove the workaround once we require that version
+  and `upstream_check.sh` reports `FIXED` on it.
 - **Affected versions:** 5.12.0 and later, up to at least 5.17.0 and `master`
   at `df0487906`. Introduced by upstream commit `d74af2f1a` ("Use
   matrix4::getRotationRadians", 2025-01-30), which moved the degree
