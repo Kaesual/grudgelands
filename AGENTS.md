@@ -88,9 +88,11 @@ rules: [documentation maintenance](docs/process/documentation.md).
 3. **[BACKLOG.md](BACKLOG.md)** — work packages (WPs) and carry-overs; WPs
    reference `docs/design/` instead of inventing design.
 
-**[README.md](README.md)** is the human-facing entry point, **derived, never
-authoritative**: lane D updates its short current state at the end of each round
-([round
+**[README.md](README.md)** is the player-facing entry point, **derived, never
+authoritative**; it keeps only a short "Current state". The round log is the
+player changelog [CHANGELOG.md](CHANGELOG.md), one entry per round. At the end
+of each round lane D writes the round's CHANGELOG entry and updates the README's
+current state ([round
 workflow](docs/process/round-workflow.md#4-lane-d-and-the-post-merge-status-step));
 a design file added, removed or substantially changed also updates its design
 tour; it never carries design or WP detail that does not already live in
@@ -163,7 +165,10 @@ tour; it never carries design or WP detail that does not already live in
   fixture, parity digest or gate; at most one optional PUC crash smoke test at
   the end, once the mapgen is finished (BACKLOG release checks).
 - **At most 8 Lua processes at once on the workstation**, counted across all
-  agents, lanes and reviews (8 physical cores, user ruling). Fleets run under
+  agents, lanes and reviews (8 physical cores, user ruling). Parallel runs are
+  preferred: do not serialize independent seeds or partitions for
+  convenience, and do not parallelize jobs that share mutable output or whose
+  correctness depends on execution order. Fleets run under
   `chrt --idle 0` and `ionice -c3`, each process with its own output and a
   deterministic merge step. The host is the user's workstation: wall time is
   **never** a kill criterion (abort only on an intrinsic projection or lost

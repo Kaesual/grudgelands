@@ -199,7 +199,8 @@ Rules for plans and briefs (from mistakes that cost hours of compute):
   changed" with LuaJIT digests or fixtures; never add a heavier gate "to be
   safe".
 - **Bound the runs.** A run over about 10 minutes needs a projection first,
-  one over about 30 minutes the user's approval, and every long run reports
+  one over about 30 minutes the explicit approval of whoever wrote the brief
+  (the coordinator), given on that projection, and every long run reports
   progress so silence can be told from a hang. Runs over about 8 minutes run
   detached and are polled.
 - **Rough targets, not hard conditions** (user, 2026-09-25): write new rules
