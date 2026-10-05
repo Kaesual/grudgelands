@@ -222,6 +222,13 @@ differs:
   hostile in the crosshair at that moment becomes the new foe instead. Then
   the gather rules apply again, including the switch back to combat, also
   for the same foe once it is back in the crosshair and reach.
+- **A mob evading home** after a leash reset takes no hit and is no target
+  (one predicate, `grug_abilities.valid_target`, for the crosshair, the hold,
+  swings and casts; Round 36 §2.14.1): a fresh press at it shows "Evading" in
+  the flash line, at most once per 1.5 s, a held press stays quiet; a selected
+  self or support skill still fires on the fresh press as it would at a
+  hostile. A ray at a mount means its rider, for the press as for the
+  crosshair.
 
 The check costs a held gather step nothing on a solid node or air, one
 combat ray behind a plant, loot or an actor, and nothing at all with a self
@@ -392,8 +399,12 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   authority finds a valid hostile within the skill's effective range: the
   current server ray to `get_range` (swing skills 3 m, Taunt 8, Charge 12,
   Fireball/Smite 20, Loose 25 or 33 with Longshot, plus the race bonus where
-  it applies) and the skill's target rule. The overlay reads that authority
+  it applies) and the skill's target rule, the same predicate a press uses
+  (a mob evading home is no target). The overlay reads that authority
   without its side effects: no Target Frame memory, no cast diagnostics.
+- **Red or green only where a press would act:** no skill state while the
+  player cannot act (mounted, stunned, in character creation); the ray still
+  feeds the Target Frame.
 - **Friendly (green):** the selected skill is a friendly heal/buff and a valid
   visible ally is pointed within its range (the ally rule of the friendly
   casts, without their side effects).
