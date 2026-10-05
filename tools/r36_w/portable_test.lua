@@ -2,11 +2,13 @@
 --   A. benches: in every start and capital (core and every plot) no stair
 --      seat looks along its own bench -- a seat with a same-facing neighbour
 --      along its facing axis must belong to a bench running across it;
---   B. every Round 20 POI builds and passes `r7_settlement.prepare` with its
---      catalogue footprint (width x height) and its sockets (the quest host
---      exactly where `host` says);
---   C. the rift site keeps its crack: every crack cell (rift_core) is the
---      composition's own ground at y = 0 with air above it;
+--   B. every Round 14 and Round 20 POI builds and passes
+--      `r7_settlement.prepare`; every POI, start, capital core and plot
+--      keeps the bounds, cleared airspace and sockets main had before the
+--      decor pass (tools/r36_w/baseline.tsv, from baseline.lua);
+--   C. the four rift candidates keep their cracks (every crack cell is the
+--      composition's own ground with air above it), Tombroad Ambush its four
+--      prop rows, and every clash site the quest object's open square;
 --   D. the decor kit: every piece builds in every race on open ground, and a
 --      house's touches never take a blocked cell, a path or the cells in
 --      front of its door.
@@ -69,53 +71,78 @@ for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor
 	for _, plot in ipairs(kit.plots) do benches(key .. " " .. plot.id, plot.build()) end
 end
 
--- B. every Round 20 POI ----------------------------------------------------
+-- B. every POI builds and keeps its footprint and sockets ------------------
 local settlement = dofile(wp40 .. "/r7_settlement.lua")
 local sha = dofile(repo .. "/tools/wp40/r6/common.lua").new_sha256()
 local options = {raw_sha256 = sha, full_seed = "42"}
 local built = {}
 for _, profile in ipairs(settlement.roster) do
-	if profile.blueprint_file == "r20_poi_blueprint.lua" then
-		local art = profile.art
-		local bp = dofile(wp40 .. "/" .. profile.blueprint_file)(options, profile)
+	local file = profile.blueprint_file
+	if file == "r20_poi_blueprint.lua" or (file:match("^r7_.*_blueprint%.lua$") and
+			profile.slot ~= "capital" and profile.slot ~= "start") then
+		local bp = dofile(wp40 .. "/" .. file)(options, profile)
+		if type(bp) == "function" then bp = bp(options) end
 		local ok, err = pcall(settlement.prepare, profile, bp, sha)
 		check(ok, profile.key .. ": prepare: " .. tostring(err))
-		if art.kind ~= "dragon" then
-			local lo, hi = -art.width / 2, art.width / 2 - 1
-			check(bp.bounds.min.x == lo and bp.bounds.max.x == hi and bp.bounds.min.z == lo and
-				bp.bounds.max.z == hi and bp.bounds.min.y == 0 and bp.bounds.max.y == art.height,
-				profile.key .. ": footprint")
-		end
-		local sockets = bp.landmarks.sockets
-		if art.host then
-			check(#sockets == 1 and sockets[1].id == "quest_host" and sockets[1].x == 2 and
-				sockets[1].y == 1 and sockets[1].z == 0, profile.key .. ": quest host socket")
-		else
-			check(#sockets == 0, profile.key .. ": no sockets")
-		end
-		built[profile.key] = {bp = bp, art = art}
+		built[profile.key] = {bp = bp, art = profile.art}
 	end
 end
-check(built.r20_anchor_016 and built.r20_anchor_089, "Round 20 POIs found")
-
--- C. the rift site's crack -------------------------------------------------
-local rift = dofile(repo .. "/mods/ENTITIES/grug_mobs/rift_core.lua")
-local site = built[rift.SITE]
-check(site ~= nil, "rift site built")
+check(built.r20_anchor_016 and built.r20_anchor_089 and built.goldmead_village, "POIs found")
 do
+	local now = dofile(repo .. "/tools/r36_w/baseline.lua")(repo)
+	local f = assert(io.open(repo .. "/tools/r36_w/baseline.tsv", "rb"))
+	local was = {}
+	for l in f:lines() do was[#was + 1] = l end
+	f:close()
+	check(#now == #was, "baseline: " .. #now .. " compositions, " .. #was .. " recorded")
+	for i = 1, #was do
+		check(now[i] == was[i], "footprint and sockets unchanged: " .. tostring(was[i]):match("^[^\t]*"))
+	end
+end
+
+-- C. the rift candidates' cracks and every clash site's quest spot --------
+local rift = dofile(repo .. "/mods/ENTITIES/grug_mobs/rift_core.lua")
+local function grid(bp)
 	local by = {}
-	for _, c in ipairs(site.bp.cells) do by[c.x .. "," .. c.y .. "," .. c.z] = c.name end
-	local ground
-	local cells = rift.crack_cells(site.art, rift.CANDIDATES[rift.SITE])
-	check(#cells > 0, "crack has cells")
+	for _, c in ipairs(bp.cells) do by[c.x .. "," .. c.y .. "," .. c.z] = c.name end
+	return by
+end
+for key, waypoints in pairs(rift.CANDIDATES) do
+	local site = built[key]
+	check(site ~= nil, key .. " built")
+	local by = grid(site.bp)
+	local lo = -site.art.width / 2
+	local ground = by[lo .. ",0," .. lo]
+	local cells = rift.crack_cells(site.art, waypoints)
+	check(#cells >= 20, key .. ": crack has its cells")
 	for _, cell in ipairs(cells) do
-		local floor = by[cell[1] .. ",0," .. cell[2]]
-		ground = ground or floor
-		check(floor ~= nil and floor == ground, "crack floor at " .. cell[1] .. "," .. cell[2])
+		check(by[cell[1] .. ",0," .. cell[2]] == ground, key .. ": crack floor at " .. cell[1] .. "," .. cell[2])
 		for y = 1, 3 do
 			check(by[cell[1] .. "," .. y .. "," .. cell[2]] == "air",
-				"nothing stands on the crack at " .. cell[1] .. "," .. cell[2])
+				key .. ": nothing stands on the crack at " .. cell[1] .. "," .. cell[2])
 		end
+	end
+end
+-- Tombroad Ambush keeps its four prop rows where the crack plan has them.
+do
+	local props = built[rift.SITE].art.props
+	local at = {}
+	for _, q in ipairs(props) do at[#at + 1] = q[2] .. "," .. q[3] end
+	check(table.concat(at, " ") == "4,-5 -5,5 -5,-2 4,4", "the rift site's four prop rows stay")
+end
+-- The quest object stands on the clash site's own ground within two nodes
+-- of the anchor (grug_quests/use.lua RING): that square stays open floor.
+for key, site in pairs(built) do
+	if site.art and site.art.kind == "clash" then
+		local by = grid(site.bp)
+		local lo = -site.art.width / 2
+		local ground = by[lo .. ",0," .. lo]
+		for z = -2, 2 do for x = -2, 2 do
+			check(by[x .. ",0," .. z] == ground, key .. ": quest spot floor at " .. x .. "," .. z)
+			for y = 1, 3 do
+				check(by[x .. "," .. y .. "," .. z] == "air", key .. ": quest spot open at " .. x .. "," .. z)
+			end
+		end end
 	end
 end
 
