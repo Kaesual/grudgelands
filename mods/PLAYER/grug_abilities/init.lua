@@ -668,8 +668,8 @@ local function ability_on_secondary_use(itemstack, user, pointed_thing)
 	-- through the first visible actor. Liquids stay excluded like hand clicks.
 	local nearest, nearest_distance
 	for pointed in grug_core.aim_raycast(origin, destination, false) do
-		if pointed.type == "node" or
-				(pointed.type == "object" and pointed.ref ~= user) then
+		if pointed.type == "node" or (pointed.type == "object" and pointed.ref ~= user and
+				not grug_core.unseen_by(pointed.ref, user)) then
 			local point = pointed.intersection_point
 			local distance = point and vector.distance(origin, point) or math.huge
 			if not nearest_distance or distance < nearest_distance or

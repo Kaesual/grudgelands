@@ -8,7 +8,9 @@ no region on one seed, an unknown area, a role not in its area, a leader
 given an area, leaders of the file's zone and of another zone, item sources
 and quest drops, roles without an area (any listed role counts), placeholder
 targets, the clock note and CLOCK, objectives in the retired `mobs`
-format, and the exit status (1 MISSING, 2 stale stats, 0 clean).
+format, "use at a place" objectives and quest places (Round 36: a clash
+site, a quest place placed on every seed or not, an unknown place), and the
+exit status (1 MISSING, 2 stale stats, 0 clean).
 
 Usage (repo root): python3 tools/r29_t/test_quest_targets.py
 """
@@ -43,6 +45,8 @@ RECIPES = {
                        "density": "normal"}}}],
         "camps": [{"id": "camp", "name": "Camp", "belt": "b1", "roster": roster("bandit")}],
         "leaders": [{"role": "chief", "at": {"camp": "camp"}, "respawn": 300}],
+        "places": [{"id": "old_well", "name": "Old Well", "at": {"kind": "meadows", "pick": "farthest_from_roads"}},
+                   {"id": "dry_well", "name": "Dry Well", "at": {"kind": "meadows", "pick": "farthest_from_roads"}}],
     },
     "elandor_beta_wood": {
         "belts": [{"id": "b1", "share": 100, "levels": [1, 10], "kinds": {
@@ -52,10 +56,10 @@ RECIPES = {
                      "respawn": 300}],
     },
 }
-# Regions per seed (1, 2) and the leaders placed.
+# Regions per seed (1, 2) and the leaders and quest places placed.
 STATS = {
-    ("alpha", "1"): ({"meadows": 3, "copse": 2, "camp": 1}, ["chief"]),
-    ("alpha", "2"): ({"meadows": 3, "copse": 0, "camp": 1}, ["chief"]),
+    ("alpha", "1"): ({"meadows": 3, "copse": 2, "camp": 1}, ["chief", "old_well", "dry_well"]),
+    ("alpha", "2"): ({"meadows": 3, "copse": 0, "camp": 1}, ["chief", "old_well"]),
     ("beta", "1"): ({"oakwood": 1}, ["elder_wolf"]),
     ("beta", "2"): ({"oakwood": 1}, []),
 }
@@ -94,6 +98,13 @@ QUESTS = [
     quest("q_any_role_mixed", [kill(["small_boar", "wolf"])]),
     quest("q_mobs_area", [{"type": "kill", "mobs": ["grug_mobs:small_boar"], "area": "meadows", "count": 1}]),
     quest("q_mobs", [{"type": "kill", "mobs": ["grug_mobs:deer"], "count": 1}]),
+    quest("q_use_clash", [{"type": "use", "place": "r20_anchor_071", "object": "banner", "label": "Plant", "hold": 3}],
+          "Plant it at the {name:r20_anchor_071}."),
+    quest("q_use_place", [{"type": "use", "place": "old_well", "object": "banner", "label": "Plant", "hold": 3}],
+          "The {name:old_well} lies {dir_from_giver:old_well}."),
+    quest("q_use_gap", [{"type": "use", "place": "elandor_alpha_fields/dry_well", "object": "banner",
+                         "label": "Plant", "hold": 3}]),
+    quest("q_use_unknown", [{"type": "use", "place": "nowhere_well", "object": "banner", "label": "Plant", "hold": 3}]),
 ]
 
 
@@ -110,7 +121,10 @@ def write_world(root, quests, stats=STATS):
             lines.append("| %s (`%s`) | 1 | open | normal | 1.0 %% | %d | - | - |" % (unit.title(), unit, n))
         lines += ["", "## Camps and leaders", ""]
         for role in leaders:
-            lines.append("- Leader %s (`%s`) at (1, 2), level 10, respawn 300 s." % (role.title(), role))
+            if role.endswith("_well"):
+                lines.append("- Quest place %s (`%s`) at (1, 2)." % (role.title(), role))
+            else:
+                lines.append("- Leader %s (`%s`) at (1, 2), level 10, respawn 300 s." % (role.title(), role))
         (regions / short).mkdir(exist_ok=True)
         (regions / short / ("seed_%s.md" % seed)).write_text("\n".join(lines) + "\n")
     (qdir / "elandor_alpha_fields.quests.json").write_text(json.dumps({"zone": "elandor_alpha_fields",
@@ -143,6 +157,10 @@ with tempfile.TemporaryDirectory() as tmp:
         (("q_any_role obj 1 (large_rat, small_boar)",), "two roles without an area, day and night"),
         (("q_any_role_mixed obj 1 (small_boar, wolf) (day only)",), "any listed role counts without an area"),
         (("q_xleader text {dir_of:alpha:elandor_beta_wood/oakwood}",), "a kind of another zone"),
+        (("q_use_clash obj 1 (use at r20_anchor_071)",), "a use at a clash site"),
+        (("q_use_clash text {name:r20_anchor_071}",), "a clash site as a placeholder target"),
+        (("q_use_place obj 1 (use at old_well)",), "a use at a quest place of the file's zone"),
+        (("q_use_place text {dir_from_giver:old_well}",), "a quest place as a placeholder target"),
     ]:
         row = line_with(out, *parts)
         check(row is not None and not row.lstrip().startswith("MISSING"), label + ": ok")
@@ -159,6 +177,8 @@ with tempfile.TemporaryDirectory() as tmp:
         (("q_leader_area obj 1", "chief is a leader at a fixed spot, not in an area"), "a leader given an area"),
         (("q_mobs_area obj 1", "names entities (`mobs`)"), "a `mobs` objective with an area"),
         (("q_mobs obj 1", "names entities (`mobs`)"), "a `mobs` kill objective without an area"),
+        (("q_use_gap obj 1", "not placed on seed 2"), "a quest place not placed on seed 2"),
+        (("q_use_unknown obj 1", "nowhere_well is no quest place"), "an unknown use place"),
     ]:
         check(line_with(missing, *parts) is not None, label + ": MISSING")
     clock = out.split("CLOCK (", 1)[1].split("\nok:", 1)[0] if "CLOCK (" in out else ""

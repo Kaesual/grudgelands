@@ -8,7 +8,7 @@
 -- Pure rules: core.lua (counters, tiers, unlocks, selection) and
 -- creatures.lua (which kill counts as what).
 --
--- Counters come from five hooks, each O(1) per event:
+-- Counters come from six hooks, each O(1) per event:
 --   * grug_mobs' eligible kill (every credited participant of a mob death):
 --     kill:animal and kill:zombie, kill:family:<family>, kill:group:<group>
 --     (named leaders by role) and kill:rare:<group> (named rares by registry
@@ -21,7 +21,10 @@
 --   * grug_jobs' counted crafts (grug_jobs.register_on_award_progress):
 --     craft:<profession> by the recipe's output count (cooking: dishes,
 --     alchemist: potions and elixirs, both counted at their preparation);
---   * deaths: death:<reason type>, e.g. death:fall.
+--   * deaths: death:<reason type>, e.g. death:fall;
+--   * grug_quests' turn-ins (grug_quests.register_on_turn_in, Round 36):
+--     quest:<quest id> and quest_tag:<tag> for each of the quest's `tags`,
+--     each only while an achievement asks for it.
 -- Every achievement is also settled once at join, so a counter that moved
 -- without a hook (an admin edit) still earns its tier.
 --
@@ -193,6 +196,21 @@ if core.global_exists("grug_jobs") and grug_jobs.register_on_award_progress then
 		local counter = "craft:" .. tostring(recipe.profession)
 		if book.by_counter[counter] then
 			grug_achievements.add(player, counter, ItemStack(recipe.output):get_count())
+		end
+	end)
+end
+
+if core.global_exists("grug_quests") then
+	grug_quests.register_on_turn_in(function(player, id, def)
+		local counter = "quest:" .. id
+		if book.by_counter[counter] then
+			grug_achievements.add(player, counter, 1)
+		end
+		for _, tag in ipairs(def.tags or EMPTY) do
+			counter = "quest_tag:" .. tag
+			if book.by_counter[counter] then
+				grug_achievements.add(player, counter, 1)
+			end
 		end
 	end)
 end

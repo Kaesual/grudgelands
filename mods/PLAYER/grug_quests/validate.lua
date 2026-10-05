@@ -32,12 +32,15 @@ local function key_set(keys)
 end
 -- The fields a quest, an objective, its rewards and a quest drop may carry
 -- (design frame section 4.7; `lesson` ... `notes` are design notes the game
--- does not read). Any other field is refused, so a field nothing reads can
--- never sit in a file looking as if it did something.
+-- does not read; `tags`, Round 36, are what achievements count a quest as,
+-- grug_achievements "quest_tag:<tag>"). Any other field is refused, so a
+-- field nothing reads can never sit in a file looking as if it did
+-- something.
 V.QUEST_KEYS = key_set({"id", "line", "giver", "turnin", "min_level", "level", "requires", "title", "text",
 	"objectives", "rewards", "quest_drops", "repeatable", "lesson", "duration_min", "optional", "climax",
-	"group", "notes"})
-V.OBJECTIVE_KEYS = key_set({"type", "count", "roles", "area", "item", "group", "npc"})
+	"group", "notes", "tags"})
+V.OBJECTIVE_KEYS = key_set({"type", "count", "roles", "area", "item", "group", "npc", "place", "object",
+	"label", "hold"})
 V.REWARD_KEYS = key_set({"weight", "copper", "items"})
 V.DROP_KEYS = key_set({"item", "chance", "roles", "area"})
 
@@ -109,11 +112,44 @@ local function check_objective(add, where, quest, objective, index)
 	where = ("%s: objective %d"):format(where, index)
 	if type(objective) ~= "table" then add(where, "must be an object [E-objective]"); return end
 	unknown_keys(add, where, objective, V.OBJECTIVE_KEYS)
+	if objective.type ~= "use" then
+		for _, key in ipairs({"place", "object", "label", "hold"}) do
+			if objective[key] ~= nil then
+				add(where, ("only a use objective takes '%s' [E-objective]"):format(key))
+			end
+		end
+	end
 	if objective.type == "talk" then
 		if #quest.objectives ~= 1 then add(where, "a talk objective must be the quest's only objective [E-talk-only]") end
 		if objective.npc ~= quest.turnin then
 			add(where, ("travel quests turn in at the talk target (%s, not %s) [E-talk-turnin]")
 				:format(tostring(objective.npc), tostring(quest.turnin)))
+		end
+		return
+	end
+	if objective.type == "use" then
+		-- Round 36: one act at one place, done once (use.lua).
+		if objective.count ~= nil and objective.count ~= 1 then
+			add(where, "a use objective counts once: leave count out or write 1 [E-objective]")
+		end
+		if type(objective.place) ~= "string" or objective.place == "" then
+			add(where, "a use objective needs a 'place': a clash site key or a quest place [E-objective]")
+		end
+		if not text(objective.label) then
+			add(where, "a use objective needs a 'label', the act (\"Light the signal fire\") [E-objective]")
+		end
+		if not int(objective.hold, Q.USE_HOLD_MIN, Q.USE_HOLD_MAX) then
+			add(where, ("a use objective's hold is whole seconds %d..%d [E-objective]")
+				:format(Q.USE_HOLD_MIN, Q.USE_HOLD_MAX))
+		end
+		if not Q.use_objects[objective.object] then
+			add(where, ("object %s is not a kind of data/use_objects.json [E-use-object]")
+				:format(tostring(objective.object)))
+		end
+		for _, key in ipairs({"roles", "area", "item", "group", "npc"}) do
+			if objective[key] ~= nil then
+				add(where, ("a use objective takes no '%s' [E-objective]"):format(key))
+			end
 		end
 		return
 	end
@@ -138,7 +174,7 @@ local function check_objective(add, where, quest, objective, index)
 			add(where, "an item's source area is 'zone_id/area_id' next to its 'roles' [E-area]")
 		end
 	else
-		add(where, ("type %s must be kill, item or talk [E-objective]"):format(tostring(objective.type)))
+		add(where, ("type %s must be kill, item, talk or use [E-objective]"):format(tostring(objective.type)))
 	end
 end
 
@@ -313,6 +349,14 @@ function V.structure(files, npcs)
 			end
 			for _, required in ipairs(type(quest.requires) == "table" and quest.requires or {}) do
 				if not ids[required] then add(where, ("unknown quest %s in requires [E-unknown-requires]"):format(tostring(required))) end
+			end
+			if quest.tags ~= nil then
+				local seen, ok = {}, list(quest.tags)
+				for _, tag in ipairs(ok and quest.tags or {}) do
+					if type(tag) ~= "string" or not tag:match(SNAKE) or seen[tag] then ok = false end
+					if type(tag) == "string" then seen[tag] = true end
+				end
+				if not ok then add(where, "tags must be a list of distinct snake_case names [E-tags]") end
 			end
 			if not text(quest.title) then add(where, "title must be a non-empty string [E-text]") end
 			if not text(quest.text) then add(where, "text must be a non-empty string [E-text]") end
@@ -533,6 +577,9 @@ function V.world(files, world)
 					check_target(add, where, world, zone, name, area, quest.level, "kill target", faction)
 				end
 				check_recipe_targets(warn, where, world, zone, objective)
+			elseif objective.type == "use" then
+				local place, reason = world.use_place(objective.place, zone)
+				if not place then add(where, ("%s [E-use-place]"):format(tostring(reason))) end
 			elseif objective.type == "item" then
 				if objective.item then
 					check_item(add, where, world, objective.item, "item")

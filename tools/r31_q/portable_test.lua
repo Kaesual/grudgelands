@@ -181,6 +181,9 @@ grug_mobs = {
 		zone_area_ids = function() return {} end,
 		leader = function() return nil end,
 		place = function(ref) return places[ref] end,
+		-- Round 36: no quest place or clash site in this fixture.
+		zone_place = function() return nil end,
+		clash_site = function() return nil end,
 		describe = function(zone, target, mode, ref)
 			described[#described + 1] = {zone = zone, target = target, mode = mode}
 			local where = mode == "of" and places[ref] or ref

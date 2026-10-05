@@ -51,14 +51,18 @@ ITEM_REQUIRED = ("id", "name", "tier", "kind", "description")
 ITEM_KINDS = ("signature", "generic", "quest")
 QUEST_KEYS = {"id", "line", "giver", "turnin", "min_level", "level", "requires", "title", "text",
               "objectives", "rewards", "quest_drops", "repeatable", "lesson", "duration_min",
-              "optional", "climax", "group", "notes"}
+              "optional", "climax", "group", "notes", "tags"}
 QUEST_REQUIRED = ("id", "line", "giver", "turnin", "min_level", "level", "title", "text",
                   "objectives", "rewards")
 # The fields of an objective, its rewards and a quest drop. A quest, an
 # objective, its rewards or a quest drop with any other field is an error
 # (E-unknown-key), as in the game's loader: a field nothing reads must not
 # sit in a file looking as if it did something.
-OBJECTIVE_KEYS = {"type", "count", "roles", "area", "item", "group", "npc"}
+OBJECTIVE_KEYS = {"type", "count", "roles", "area", "item", "group", "npc", "place", "object", "label", "hold"}
+# A "use at a place" objective (Round 36, the game's validate.lua): its own
+# fields and its hold in whole seconds.
+USE_KEYS = ("place", "object", "label", "hold")
+USE_HOLD = (1, 15)
 REWARD_KEYS = {"weight", "copper", "items"}
 DROP_KEYS = {"item", "chance", "roles", "area"}
 DISPOSITIONS = ("neutral", "aggressive", "critter")
@@ -162,6 +166,10 @@ class Validator:
         self.catalog_items = {}
         self.drop_families = {}
         self.quest_ids = {}
+        self.quest_min_level = {}  # quest id -> its min_level (W-chain-gate)
+        # Round 36: the places and object kinds of "use at a place" objectives.
+        self.clash_sites = C.clash_sites()
+        self.use_objects = C.use_objects()
         self.ex_items = self.ex.get("items") or {}
         self.ex_entities = self.ex.get("entities") or {}
         self.ex_groups = self.ex.get("groups") or {}
@@ -785,6 +793,15 @@ class Validator:
         for req in requires:
             if req not in self.quest_ids:
                 self.E("E-unknown-requires", file, path + ".requires", "unknown quest %r" % req)
+            elif min_level and is_int(self.quest_min_level.get(req), 1) and self.quest_min_level[req] > min_level:
+                # Round 36 (chapter chains): the quest opens only after its
+                # prerequisite, so the gate it shows is the prerequisite's.
+                self.W("W-chain-gate", file, path + ".min_level", "min_level %d is below the min_level %d of "
+                       "its prerequisite %s" % (min_level, self.quest_min_level[req], req))
+        tags = q.get("tags")
+        if tags is not None and not (isinstance(tags, list) and all(isinstance(t, str) and C.SNAKE.match(t)
+                                                                    for t in tags) and len(set(tags)) == len(tags)):
+            self.E("E-tags", file, path + ".tags", "tags must be a list of distinct snake_case names")
         title, text = q.get("title"), q.get("text")
         if not isinstance(title, str) or not title.strip():
             self.E("E-text", file, path + ".title", "title must be a non-empty string")
@@ -805,6 +822,13 @@ class Validator:
                 continue
             self.unknown_keys(obj, OBJECTIVE_KEYS, file, opath, error=True)
             kind = obj.get("type")
+            if kind != "use":
+                for key in USE_KEYS:
+                    if key in obj:
+                        self.E("E-objective", file, opath, "only a use objective takes %r" % key)
+            if kind == "use":
+                self.use_objective(zone, obj, file, opath)
+                continue
             if kind == "talk":
                 if len(objectives) != 1:
                     self.E("E-talk-only", file, opath, "a talk objective must be the quest's only objective")
@@ -837,7 +861,7 @@ class Validator:
                 if "roles" in obj or "area" in obj:
                     self.item_source(zone, q, obj, level, file, opath, all_areas)
             else:
-                self.E("E-objective", file, opath, "type %r must be kill, item or talk" % kind)
+                self.E("E-objective", file, opath, "type %r must be kill, item, talk or use" % kind)
         drops = q.get("quest_drops") or []
         dropped = set()
         for j, drop in enumerate(drops if isinstance(drops, list) else []):
@@ -899,19 +923,61 @@ class Validator:
                 self.E("E-type", file, path + "." + key, "%s must be true or false" % key)
         self.check_destinations(zone, q, file, path)
 
+    def use_objective(self, zone, obj, file, path):
+        """Round 36: a "use at a place" objective, as the game's validate.lua:
+        counted once, a place (a clash site's settlement key, or a recipe's
+        quest place `zone/id`, a bare id the file's zone), the act's label,
+        its hold in whole seconds and a kind of grug_quests/data/
+        use_objects.json."""
+        if "count" in obj and obj["count"] != 1:
+            self.E("E-objective", file, path, "a use objective counts once: leave count out or write 1")
+        for key in ("roles", "area", "item", "group", "npc"):
+            if key in obj:
+                self.E("E-objective", file, path, "a use objective takes no %r" % key)
+        label = obj.get("label")
+        if not isinstance(label, str) or not label.strip():
+            self.E("E-objective", file, path, "a use objective needs a 'label', the act (\"Light the signal fire\")")
+        if not is_int(obj.get("hold"), *USE_HOLD):
+            self.E("E-objective", file, path, "a use objective's hold is whole seconds %d..%d" % USE_HOLD)
+        if obj.get("object") not in self.use_objects:
+            self.E("E-use-object", file, path, "object %r is not a kind of grug_quests/data/use_objects.json"
+                   % obj.get("object"))
+        ref = obj.get("place")
+        if not isinstance(ref, str) or not ref:
+            self.E("E-objective", file, path, "a use objective needs a 'place': a clash site key or a quest place")
+        elif self.use_place(zone, ref) is None:
+            self.E("E-use-place", file, path, "%s is no clash site and no quest place of %s" % (
+                ref, ref.split("/")[0] if "/" in ref else zone))
+
+    def use_place(self, zone, ref):
+        """A use objective's place: {"zone", "name"} of a clash site or a
+        recipe quest place, or None."""
+        qualified, _, rest = ref.partition("/")
+        if not rest and ref in self.clash_sites:
+            return {"zone": self.clash_sites[ref]["zone"], "name": self.clash_sites[ref]["label"]}
+        target_zone, pid = (qualified, rest) if rest else (zone, ref)
+        place = self.d.places(target_zone).get(pid)
+        return {"zone": target_zone, "name": place["name"]} if place else None
+
     def placeholder_target(self, zone, ref, all_areas):
         """A placeholder target: a leader role (any zone), else a kind or
-        camp of the zone's recipe (a bare id: the quest's zone). The area
-        summary, {"type": "leader"} or None."""
+        camp of the zone's recipe (a bare id: the quest's zone), a quest
+        place of it (Round 36), a PvP POI or a clash site. The area summary,
+        {"type": "leader"}, {"type": "place"} or None."""
         qualified, _, rest = ref.partition("/")
         target_zone, tid = (qualified, rest) if rest else (zone, ref)
         found = self.d.find_leader(tid, target_zone if rest else None)
         if found is not None and (not rest or found[0] == target_zone):
             return {"type": "leader"}
         area = (all_areas.get(target_zone) or {}).get(tid)
+        if area is None and tid in self.d.places(target_zone):
+            return {"type": "place"}
         if area is None and not rest:
-            # A PvP POI (Round 31) is found in any zone, as a leader.
+            # A PvP POI (Round 31) and a clash site (Round 36) are found in
+            # any zone, as a leader.
             area = self.d.garrisons().get(tid)
+            if area is None and tid in self.clash_sites:
+                area = {"type": "place"}
         return area
 
     def check_texts(self, zone, q, file, path, all_areas):
@@ -932,7 +998,8 @@ class Validator:
                            "belong in the text" % raw)
                 target = self.placeholder_target(zone, args[-1], all_areas)
                 if target is None:
-                    self.E("E-placeholder-target", file, kpath, "%s: %s is no kind, camp, leader or PvP POI of %s"
+                    self.E("E-placeholder-target", file, kpath, "%s: %s is no kind, camp, leader, quest place, "
+                           "clash site or PvP POI of %s"
                            % (raw, args[-1], args[-1].split("/")[0] if "/" in args[-1] else zone))
                 elif kind == "dir_from_giver" and target.get("type") == "open":
                     self.W("W-placeholder-spread", file, kpath, "%s: %s is an open kind spread over many "
@@ -1231,6 +1298,7 @@ class Validator:
                                    "quest id %s also in %s" % (q["id"], self.quest_ids[q["id"]][0]))
                         else:
                             self.quest_ids[q["id"]] = (zone, path)
+                            self.quest_min_level[q["id"]] = q.get("min_level")
         for zone, data in self.d.spawns.items():
             if not self.only_zones or zone in self.only_zones:
                 self.spawns(zone, data)
@@ -1753,6 +1821,25 @@ def _mutations():
             quest(d, qid)[key] = value
         return change
 
+    # Round 36: "use at a place" objectives, quest tags and chapter gates.
+    def use(**fields):
+        def change(d):
+            row = {"type": "use", "place": "r20_anchor_071", "object": "signal_fire",
+                   "label": "Light the signal fire", "hold": 5}
+            row.update(fields)
+            quest(d, "sample_hunt_01")["objectives"].append({k: v for k, v in row.items() if v is not None})
+        return change
+
+    def use_field_on_kill(d):
+        quest(d, "sample_hunt_01")["objectives"][0]["hold"] = 5
+
+    def place(**fields):
+        def change(d):
+            row = {"id": "old_well", "name": "Old Well", "at": {"kind": "meadows", "pick": "farthest_from_roads"}}
+            row.update(fields)
+            d["recipe"]["places"] = [row]
+        return change
+
     return [
         ("placeholder: unknown kind", Q, text_set("sample_hunt_01", "text", "Go {where:home_fields}. Now."),
          "E-placeholder"),
@@ -1877,6 +1964,28 @@ def _mutations():
         ("kill objective on a leader, no area", Q, kill_leader, "!W-role-not-in-zone"),
         ("kill objective on a leader with an area", Q, kill_leader_area, "E-leader-area"),
         ("unknown enchant family", "catalog/enchants.json", bad_family, "E-family"),
+        ("use at a clash site", Q, use(), None),
+        ("use at an unknown place", Q, use(place="r20_anchor_014"), "E-use-place"),
+        ("use at a quest place the zone lacks", Q, use(place="elandor_dawnmere_fields/old_well"), "E-use-place"),
+        ("use of an unknown object kind", Q, use(object="statue"), "E-use-object"),
+        ("use with a hold of 0 s", Q, use(hold=0), "E-objective"),
+        ("use with a hold of 16 s", Q, use(hold=16), "E-objective"),
+        ("use counted twice", Q, use(count=2), "E-objective"),
+        ("use without a label", Q, use(label=None), "E-objective"),
+        ("use with roles", Q, use(roles=["small_boar"]), "E-objective"),
+        ("a use field on a kill objective", Q, use_field_on_kill, "E-objective"),
+        ("quest tags", Q, text_set("sample_hunt_01", "tags", ["main_line", "chapter_1"]), None),
+        ("quest tags not snake_case", Q, text_set("sample_hunt_01", "tags", ["Main Line"]), "E-tags"),
+        ("quest tag twice", Q, text_set("sample_hunt_01", "tags", ["a", "a"]), "E-tags"),
+        ("min_level below its prerequisite's", Q, text_set("sample_hunt_04", "min_level", 2), "W-chain-gate"),
+        ("quest place deep in a kind", S, place(), None),
+        ("quest place at an unknown kind", S, place(at={"kind": "nowhere", "pick": "farthest_from_roads"}),
+         "E-recipe-ref"),
+        ("quest place at a camp", S, place(at={"kind": "border_bandits", "pick": "farthest_from_roads"}),
+         "E-recipe-ref"),
+        ("quest place with an unknown pick", S, place(at={"kind": "meadows", "pick": "random"}), "E-recipe-ref"),
+        ("quest place id equals a kind id", S, place(id="meadows"), "E-recipe"),
+        ("unknown field in a quest place", S, place(level=5), "E-recipe-key"),
     ]
 
 
@@ -2103,6 +2212,22 @@ def _scenarios():
         data["quests"][0]["requires"] = ["sample_front_01"]
         _save(path, data)
 
+    def use_quest_place(target):
+        """Round 36: a quest place of the zone's recipe, used by a bare id and
+        named in the text."""
+        spawns_file = target / "zones" / "elandor_dawnmere_fields.spawns.json"
+        spawns = _load(spawns_file)
+        spawns["recipe"]["places"] = [{"id": "old_well", "name": "Old Well",
+                                       "at": {"kind": "meadows", "pick": "farthest_from_roads"}}]
+        _save(spawns_file, spawns)
+        data = _load(target / Q_FILE)
+        for q in data["quests"]:
+            if q["id"] == "sample_hunt_01":
+                q["objectives"].append({"type": "use", "place": "old_well", "object": "banner",
+                                        "label": "Plant the banner", "hold": 3})
+                q["text"] = "Plant it at the {name:old_well}, {dir_from_giver:old_well}. Then come back."
+        _save(target / Q_FILE, data)
+
     def guard_kill(target):
         data = _load(target / Q_FILE)
         for q in data["quests"]:
@@ -2164,6 +2289,7 @@ def _scenarios():
         ("zone catalogue item collides with the global one", zone_cat(duplicate_item), "E-duplicate"),
         ("prerequisite cycle in a front file", front_cycle, "E-cycle"),
         ("guard as a designed kill role", guard_kill, "E-not-a-mob"),
+        ("use at a quest place of the zone, named in the text", use_quest_place, None),
     ]
 
 

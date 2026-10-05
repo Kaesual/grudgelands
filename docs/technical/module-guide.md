@@ -275,6 +275,13 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_core.combat_ray(player, range, opts)` are the shared server-side
   acquisition seam: the latter returns one physically ordered structured ray
   result for combat and diagnostics, so callers do not raycast again for logs.
+  The combat ray passes dropped items and, since Round 36, any object whose
+  observer set leaves the player out (a quest object, `grug_quests/use.lua`):
+  nobody is blocked by what they cannot see. The same test,
+  `grug_core.unseen_by(ref, player)`, filters the hand ray of contextual
+  input (hand clicks and the crosshair's interact colour) and the skill
+  item's right-click ray (`ability_on_secondary_use`), so a door behind
+  another player's quest object still opens.
   Every server-side aiming ray (the combat ray, the hold ray, right-click
   interaction, the Target Frame) iterates `grug_core.aim_raycast` instead of
   `core.raycast`: it tests `rotate = true` selection boxes in Lua because the
@@ -901,7 +908,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     a 3c iron lump into a 5c steel ingot). Add prices, don't disable
     them.
 - **Quests (Round 14):** `grug_quests` owns a strict registry, 20-slot player-meta
-  journal, kill/item objectives and claim-once turn-in with main/owned-bag
+  journal, kill/item/talk/use objectives and claim-once turn-in with main/owned-bag
   inventory preflight. The per-mob eligible damage/effective-heal participant
   set grants credit independently of party membership and gray-XP suppression.
   `npc_by_socket` keys actual settlement identity plus socket id, never terrain
@@ -929,7 +936,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Q1): titles (`{name:...}` only) at load, texts on first display through
   `grug_mobs.spawn_regions.describe`, cached per quest (`Q.quest_text`);
   `registry.lua` computes the copper of a quest without `rewards.copper`
-  (`quest_copper`). Since Round 30 `state.lua` caches each player's decoded
+  (`quest_copper`). Since Round 36 `use.lua` owns the "use at a place"
+  objective's runtime: the object kinds (`data/use_objects.json`, loaded
+  before the quest files), one quest object per use point (`Q.use_key`:
+  place, object, label) while a player who still needs it is within
+  `LEADER_RANGE`, its observers set per player, the per-player pass once a
+  second in five slots and the hold pass every 0.1 s only while a hold runs;
+  `state.lua` keeps the needed points per raw state (`Q.use_needs`) and
+  credits a finished hold (`Q.credit_use`); places resolve through
+  `labels.lua` `Q.use_place` (a clash site `grug_mobs.spawn_regions
+  .clash_site`, a recipe quest place `zone_place`/`place_spot`).
+  `Q.register_on_turn_in(fn(player, id, def))` fires once per completed
+  turn-in, after the state and rewards are stored (grug_achievements'
+  `quest:` and `quest_tag:` counters); fixture `tools/r36_e`. Since Round 30 `state.lua` caches each player's decoded
   state keyed by the raw meta string: readers share that table and must
   never write into it, mutating paths take a copy (`editable`) and `save`
   re-caches. Marker consumers ask `Q.marker_states(player)` once for every
@@ -1394,8 +1413,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_mobs.register_on_boss_kill(fn(player, boss_id))` (every player the
   boss ledger credits, independent of the loot lockout; `bosses.lua`
   `settle_boss`), `grug_pvp.register_on_stat`,
-  `grug_jobs.register_on_award_progress` and `register_on_dieplayer`; each
-  is O(1) per event. Cloak textures are 32×32 (outer face left, lining
+  `grug_jobs.register_on_award_progress`, `register_on_dieplayer` and, since
+  Round 36, `grug_quests.register_on_turn_in` (an optional dependency:
+  `quest:<id>`, `quest_tag:<tag>`); each is O(1) per event. Cloak textures are 32×32 (outer face left, lining
   right). Fixture `tools/r33_c3`; rules
   [character_visuals.md](../design/character_visuals.md) §5b.
 

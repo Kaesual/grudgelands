@@ -196,6 +196,8 @@ grug_core = {
 	-- The aiming ray (grug_core.aim_raycast, tested in tools/r35_t): the
 	-- engine ray here.
 	aim_raycast = function(o, d, liquids) return core.raycast(o, d, true, liquids) end,
+	-- Every object here is seen by everyone (grug_core.unseen_by, Round 36 E).
+	unseen_by = function() return false end,
 	is_stunned = function() return false end,
 	player_has_live_mount = function() return false end,
 	register_on_stun = function() end,

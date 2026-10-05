@@ -68,6 +68,9 @@
       {"role": "storm_bottle_witch", "at": {"kind": "heartwood", "pick": "farthest_from_roads"}, "respawn": 300},
       {"role": "bottle_keeper_zek", "at": {"kind": "stormglades", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "split_oak_glade", "name": "Split Oak Glade", "at": {"kind": "glades", "pick": "farthest_from_roads"}}
+    ],
     "critters": []
   }
 }

@@ -313,7 +313,10 @@ are kept per character, and so is the choice.
   2026-10-04). A sub-type counts as its base mob. A kill counts for every
   character the kill credits (the XP rule's participants). A King or a dragon
   counts for every character the boss ledger credits, whatever the loot
-  lockout says.
+  lockout says. Since Round 36 an achievement can also count quest turn-ins
+  (grug_quests' turn-in hook, [quests.md](quests.md)): one quest's
+  (`quest:<id>`, "completed" at 1) or every quest carrying a tag
+  (`quest_tag:<tag>`, e.g. a questline).
 - The Character page has an **Achievements** tab: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, two columns of six per page. Under the

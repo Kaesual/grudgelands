@@ -1,0 +1,6 @@
+{
+  "notes": "Quest-object kinds of \"use at a place\" objectives (Round 36, docs/design/quests.md). A kind's `texture` is the one texture of its object, drawn as a square sprite `size` nodes wide (default 1). The [fill] textures are placeholders: the art lane's file replaces one row's texture name, nothing else changes. The game (grug_quests/use.lua) and tools/r28_design/validate.py read this file.",
+  "signal_fire": {"texture": "[fill:16x16:#3a2414^[fill:10x10:3,3:#ff8a20", "size": 1.2},
+  "banner": {"texture": "[fill:16x16:#3a1010^[fill:6x14:5,1:#d8c060", "size": 1.4},
+  "burnt_mark": {"texture": "[fill:16x16:#1c1a18^[fill:8x8:4,4:#a03010", "size": 1.0}
+}

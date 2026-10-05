@@ -134,6 +134,13 @@ random numbers, no dependence on table order.
    next region).
    In the game a zombie-family leader steps to the nearest blight-dirt column
    within 16 nodes of its spot, where it is sunproof (biomes_mobs.md §4.2).
+   **Quest places** (Round 36) follow the leaders: each takes the first cell
+   of its kind's chain (the same chain and cell order as a kind leader) at
+   least 64 nodes from every leader, camp and earlier place, so a place never
+   moves a leader and a "use at a place" step is no leader fight
+   ([quests.md](quests.md#objectives-round-28)). A place without such a cell
+   is a logged problem; `quest_targets.py` fails a used place that is
+   missing on a seed.
 
 Unchanged by regions: underground and water spawns, the Rift Spawn's
 surface row (on its host ground at night, in the four zones whose palette
@@ -154,15 +161,16 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
   (`mods/ENTITIES/grug_mobs/spawn_regions_cache.lua`): the zone's cell grid
   as a byte string of region ids (two bytes per cell above 255 regions), the
   regions (kind or camp, belt, centroid, size; level and level range from the
-  recipe), camps and leaders by region id, the zone frame and the build's
+  recipe), camps, leaders and quest places by region id, the zone frame and the build's
   problems and warnings. `region_at` answers from the grid exactly as the
   built map does (a cell's region, else the nearest zone land cell among the
   eight around it). All 38 maps take under 0.2 MiB (the full maps about
   22 MiB). The full map (every cell with its fields, every region's cells)
   is `SR.full_map(zone)`, a fresh build for tools.
-- **File.** `<world>/grug_region_maps.txt` (`grug_region_maps_v1`): the key
-  lines, one block per zone (the SHA-256 of the zone's recipe file, then the
-  count line, the region, camp and leader rows with numbers as `%.17g`, the
+- **File.** `<world>/grug_region_maps.txt` (`grug_region_maps_v2`, since the
+  quest places of Round 36): the key lines, one block per zone (the SHA-256
+  of the zone's recipe file, then the count line, the region, camp, leader
+  and quest-place rows with numbers as `%.17g`, the
   problem and warning lines, the grid bytes), each framed by its length, and
   a final SHA-256 over everything before it. The encoding is byte-stable: two
   builds of the same world write the same bytes (about 110 KB).
@@ -183,7 +191,7 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
   atomically (`core.safe_file_write`). A missing file or one of another key
   or format is an action line; a damaged file (truncated, a hash or length
   that differs, a parse error) or a block that does not fit the recipe (an
-  unknown kind, camp or leader, a region id out of range, a grid of the
+  unknown kind, camp, leader or place, a region id out of range, a grid of the
   wrong length) is a warning; each rebuilds and never stops the load. A
   zone whose build fails stays without a map, as before. One summary line
   names the zones read and built, the time and the file size. Zones a probe
@@ -269,6 +277,15 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
   or `{"kind": id, "pick": "farthest_from_roads"}`, `respawn` seconds. Its
   level is fixed (ruling 38) and the same on every seed: its camp's stated
   belt, or its kind's belt.
+- `places` (Round 36): quest places of "use at a place" objectives, `id`
+  (snake_case, used by no kind, camp, leader or other place of the recipe),
+  `name` (what quest texts read) and `at` `{"kind": id, "pick":
+  "farthest_from_roads"}`; placed by step 8 after the leaders. Today one per
+  contested zone without a clash site (Stormvault Heights `snowfield_cairn`,
+  Glassroot Wilds `tangle_clearing`, Blackwind Rise `gravemoor_stones`,
+  Thunderroot Wilds `split_oak_glade`, each in the zone's 34–37 open kind;
+  working names). `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
+  from the recipe, `place_spot(zone, id)` its spot on the world.
 - `critters`: ambient critters that keep their ABM rows in the zone.
 
 ## Entry and exit borders (the border rule)
@@ -306,14 +323,17 @@ A quest's kill objective or quest drop limited to an area names
 `<zone>/<kind id>` (or a camp id): it credits by the mob's `_grug_area` tag,
 so it works on every seed however many patches the kind has. Its levels for
 the quest checks are the kind's (the union over its roles). A leader is
-named by its role, without an area.
+named by its role, without an area. A "use at a place" objective names a
+quest place of a recipe (`<zone>/<place id>`) or a clash site by its
+settlement key (Round 36, [quests.md](quests.md#objectives-round-28)).
 
 ## Directions
 
 Quest texts may name directions derived from the real placement of the
 seed (`grug_mobs.spawn_regions.describe(zone, target, mode, ref)`):
 
-- target: a leader role (its spot), a camp id (its centre) or a kind id —
+- target: a leader role (its spot), a quest place id (its spot, Round 36), a
+  camp id (its centre) or a kind id —
   the centroid of the kind's **largest** region, in every phrasing, so two
   placeholders of one quest never point at different patches; or a named
   place given as its `{x, z}` (Round 31: a PvP POI's anchor, quests.md);
@@ -354,7 +374,7 @@ recipe.
 
 `tools/r28_regions/run.sh [ZONE ...] [--seeds "SEED ..."] [--out ROOT]`
 renders zones' regions for several seeds (base map, regions by kind, belt
-borders and level labels, camps, leaders, legend with rosters, describe
+borders and level labels, camps, leaders, quest places, legend with rosters, describe
 phrases) and writes a stats file per seed, to
 `ROOT/<short>/seed_<seed>.png|md` (ROOT defaults to
 `docs/planning/round28/regions`; `<short>` is the zone id without its region
@@ -373,7 +393,9 @@ kind or camp, also of another zone, and it forms a region; without one: a
 kill of any listed role counts, so one of them is a placed leader or stands
 in a kind or camp of the file's zone that forms one), and every
 placeholder target of the title and text (else the text has no direction
-there). A target missing on some seed fails the run (MISSING). It notes
+there), and every "use at a place" objective's place (a clash site is
+always there; a quest place must be placed). A target missing on some seed
+fails the run (MISSING). It notes
 the clock a target is met at when only one, and lists under CLOCK a quest
 whose text names only the other clock ("after dark" for a day role). An
 objective that names entities (`mobs`, the format of the quests Round 29

@@ -170,7 +170,8 @@ local function render_zone(zone)
 	bin:close()
 	local raster_seconds = os.clock() - t2
 
-	-- Directions (describe) for the camp, the leaders and every kind.
+	-- Directions (describe) for the camp, the leaders, the quest places and
+	-- every kind.
 	local function phrases(target)
 		local out = {}
 		local a = from_place and core.describe(map, target, "of", from_place)
@@ -192,7 +193,7 @@ local function render_zone(zone)
 		from = from_place and {x = from_place.x, z = from_place.z, name = from_place.name},
 		to = recipe.to and recipe.to.border or {}, to_core = recipe.to and recipe.to.core,
 		from_border = recipe.from and recipe.from.border, giver = elder, places = places, cells = {}, regions = {}, kinds = {}, belts = {},
-		camps = {}, leaders = {}, roads = {}, phrases = {}, patches = {},
+		camps = {}, leaders = {}, quest_places = {}, roads = {}, phrases = {}, patches = {},
 		stats = core.stats(map), thresholds = {
 			shore_share = core.SHORE_SHARE, bank_share = core.BANK_SHARE,
 			high_slope = core.HIGH_SLOPE, high_rank = core.HIGH_RANK,
@@ -241,6 +242,11 @@ local function render_zone(zone)
 		doc.leaders[#doc.leaders + 1] = {role = l.role, name = display(l.role), x = l.x,
 			z = l.z, level = l.level, respawn = l.respawn, phrases = phrases(l.role),
 			fallback = l.fallback}
+	end
+	-- Quest places (Round 36): spots of "use at a place" objectives.
+	for _, p in ipairs(map.places) do
+		doc.quest_places[#doc.quest_places + 1] = {id = p.id, name = p.name, x = p.x, z = p.z,
+			phrases = phrases(p.id), fallback = p.fallback}
 	end
 	for _, line in ipairs(W.wp40.road_polylines) do
 		local pts, inside = {}, false

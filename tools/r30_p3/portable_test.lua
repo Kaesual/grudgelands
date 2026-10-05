@@ -17,8 +17,9 @@
 --   2. a cold start builds every recipe zone and stores the file;
 --   3. every zone's compact map equals a fresh full build: the region at every
 --      land cell and a one-cell ring (seven points each), every region's
---      fields, leaders, camps, kinds, the zone frame, problems and warnings,
---      and describe for every leader, camp and kind in all three modes;
+--      fields, leaders, quest places (Round 36), camps, kinds, the zone frame,
+--      problems and warnings, and describe for every leader, place, camp and
+--      kind in all three modes;
 --   4. a second build encodes byte-identically to the stored file;
 --   5. a warm start reads every zone from the file, writes nothing, and its
 --      maps equal the full builds again;
@@ -26,7 +27,7 @@
 --      byte-identical to the first;
 --   7. every corruption case of decode returns nil, a reason and the damaged
 --      flag and never raises; payloads that do not fit the recipe (unknown
---      kind, camp or leader, region id out of range) rebuild only their zone
+--      kind, camp, leader or place, region id out of range) rebuild only their zone
 --      with a warning; a damaged file rebuilds everything with a warning; each
 --      replaced file equals the first.
 -- Prints "R30 P3 PORTABLE PASS seed=<seed> checks=<n>" or raises.
@@ -186,7 +187,7 @@ check(#ids == 38, "38 recipe zones (" .. #ids .. ")")
 local hits, built = summary(cold)
 check(hits == 0 and built == #ids and cold.writes == 1, "cold start builds every zone and stores")
 local bytes1 = assert(read(FILE), "cache file stored")
-check(bytes1:sub(1, 20) == "grug_region_maps_v1\n", "file header")
+check(bytes1:sub(1, 20) == "grug_region_maps_v2\n", "file header")
 print(("cold start: %d zones built, file %d bytes"):format(built, #bytes1))
 
 -- ---------------------------------------------------------------------------
@@ -250,6 +251,12 @@ local function equal_maps(zone_id, full, map)
 			m.respawn == l.respawn and m.region.id == l.region.id and m.fallback == l.fallback,
 			where .. "leader " .. l.role)
 	end
+	check(#map.places == #full.places, where .. "place count")
+	for k, p in ipairs(full.places) do
+		local m = map.places[k]
+		check(m.id == p.id and m.name == p.name and m.x == p.x and m.z == p.z and
+			m.region.id == p.region.id and m.fallback == p.fallback, where .. "place " .. p.id)
+	end
 	check(#map.camps == #full.camps, where .. "camp count")
 	for k, u in ipairs(full.camps) do
 		local m = map.camps[k]
@@ -273,6 +280,7 @@ local function equal_maps(zone_id, full, map)
 	check(f1.x == f2.x and f1.z == f2.z and f1.hx == f2.hx and f1.hz == f2.hz, where .. "zone frame")
 	local targets = {}
 	for _, l in ipairs(map.recipe.leaders) do targets[#targets + 1] = l.role end
+	for _, p in ipairs(map.recipe.places) do targets[#targets + 1] = p.id end
 	for _, c in ipairs(map.recipe.camps) do targets[#targets + 1] = c.id end
 	for _, kd in ipairs(map.recipe.kinds) do targets[#targets + 1] = kd.id end
 	local hub = W.session.get(zone_id).hub or {x = 0, z = 0}
@@ -378,7 +386,7 @@ local head1 = bytes1:sub(1, #bytes1 - 69)
 local mid = math.floor(#bytes1 / 2)
 local cases = {
 	{"empty", "", true},
-	{"header only", "grug_region_maps_v1\n", true},
+	{"header only", "grug_region_maps_v2\n", true},
 	{"truncated key", bytes1:sub(1, 40), true},
 	{"truncated half", bytes1:sub(1, mid), true},
 	{"last byte missing", bytes1:sub(1, -2), true},
@@ -418,6 +426,13 @@ local unfit = {
 	{"unknown leader", function(p)
 		if p.leaders[1] then p.leaders[1].role = "no_such_leader" else p.regions[1].belt = 99 end
 	end},
+	-- In the first zone with a quest place (Round 36).
+	{"unknown place", function(p) p.places[1].id = "no_such_place" end, (function()
+		for _, zone_id in ipairs(ids) do
+			if #fulls[zone_id].places > 0 then return zone_id end
+		end
+		error("FAIL no recipe zone has a quest place")
+	end)()},
 	{"region id in the grid", function(p)
 		p.grid = string.char(#p.regions + 1) .. p.grid:sub(2)
 	end},
@@ -440,7 +455,7 @@ for _, case in ipairs(unfit) do
 		local ok, out, reason, damaged = pcall(CACHE.decode, CACHE.encode(parts, entries), parts)
 		check(ok and out == nil and damaged == true, "decode: grid length " .. tostring(reason))
 	else
-		rewrite(function(e) if e.zone == SMALL then case[2](e.payload) end end)
+		rewrite(function(e) if e.zone == (case[3] or SMALL) then case[2](e.payload) end end)
 		local G = start(case[1])
 		hits, built = summary(G)
 		check(hits == #ids - 1 and built == 1, case[1] .. ": only the zone rebuilds")

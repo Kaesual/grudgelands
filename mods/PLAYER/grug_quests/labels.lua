@@ -37,9 +37,31 @@ function Q.target_zones(mobs, area_ref, zone)
 	return zones
 end
 
+-- The place of a "use at a place" objective (Round 36): a clash site by its
+-- settlement key ("r20_anchor_076"), else a quest place of a spawn recipe,
+-- "zone_id/place_id" (a bare id: `zone`, the quest file's). Returns {ref
+-- (the canonical reference: the key, or "zone_id/place_id"), zone, id, name,
+-- clash}, or nil and the reason. Static: no region map is built.
+function Q.use_place(ref, zone)
+	if type(ref) ~= "string" or ref == "" then return nil, "a place is a clash site key or a quest place" end
+	local regions = grug_mobs.spawn_regions
+	local qualified, id = ref:match("^([^/]+)/(.+)$")
+	if not qualified then
+		local site = regions.clash_site(ref)
+		if site then return {ref = ref, zone = site.zone, id = ref, name = site.name, clash = true} end
+		qualified, id = zone, ref
+	end
+	local place = qualified and regions.zone_place(qualified, id)
+	if not place then
+		return nil, ("%s is no clash site and no quest place of %s"):format(ref, tostring(qualified))
+	end
+	return {ref = qualified .. "/" .. id, zone = qualified, id = id, name = place.name}
+end
+
 -- The short subject: "Wood Axe", "Any Tree", "Small Boar or Large Rat",
--- "Small Jungle Boar", "Elder Maren".
+-- "Small Jungle Boar", "Elder Maren", "Light the signal fire".
 function Q.objective_subject(objective)
+	if objective.type == "use" then return objective.label end
 	if objective.type == "item" then
 		if objective.item then return grug_core.item_name(objective.item) end
 		return "Any " .. title_case(objective.group)
@@ -54,8 +76,12 @@ function Q.objective_subject(objective)
 	return table.concat(names, " or ")
 end
 
--- The task: "Bring Wood Axe", "Defeat Small Boar", "Travel to Elder Maren".
+-- The task: "Bring Wood Axe", "Defeat Small Boar", "Travel to Elder Maren",
+-- "Light the signal fire at Saltgate Remnant".
 function Q.objective_action(objective)
+	if objective.type == "use" then
+		return objective.label .. (objective.place_name and " at " .. objective.place_name or "")
+	end
 	local verb = objective.type == "item" and "Bring " or
 		(objective.type == "talk" and "Travel to " or "Defeat ")
 	return verb .. Q.objective_subject(objective)
@@ -94,10 +120,12 @@ end
 --                       "in the heart of Dawnmere Fields"
 --   {name:T}            the display name: "Dawnmere Meadows", "Crumb"
 --
--- T is a kind or camp of a zone's spawn recipe, a leader role or a PvP POI
--- (Round 31: a fortress or Battlegrounds camp by its settlement key); a bare
--- id means the quest file's zone, "zone_id/id" another zone (a leader role
--- and a PvP POI are found in any zone). P is a settlement key or anchor id ("highcourt",
+-- T is a kind or camp of a zone's spawn recipe, a leader role, a PvP POI
+-- (Round 31: a fortress or Battlegrounds camp by its settlement key), or a
+-- quest place (Round 36: a recipe's quest place, or a clash site by its
+-- settlement key); a bare id means the quest file's zone, "zone_id/id"
+-- another zone (a leader role, a PvP POI and a clash site are found in any
+-- zone). P is a settlement key or anchor id ("highcourt",
 -- "goldmead_village", "anchor_015"). A fill that starts a sentence starts
 -- with a capital letter. Titles take only {name:T}: they are listed in the
 -- dialogue, the quest log and other quests' requirements, and are filled
@@ -197,9 +225,10 @@ function P.fill(text, resolve)
 	return table.concat(parts)
 end
 
--- What a placeholder target names: {zone, id, what = "leader" | "kind" |
--- "camp" | "poi", name, type (a kind's terrain type)}, or nil and the reason. `zone` is the quest file's zone.
--- Static: no region map is built.
+-- What a placeholder target names: {zone, id, what = "leader" | "place" |
+-- "kind" | "camp" | "poi", name, type (a kind's terrain type)}, or nil and
+-- the reason (a clash site reads as a "poi": it is described at its anchor).
+-- `zone` is the quest file's zone. Static: no region map is built.
 function Q.placeholder_target(zone, ref)
 	local regions = grug_mobs.spawn_regions
 	local qualified, id = ref:match("^([^/]+)/(.+)$")
@@ -209,13 +238,23 @@ function Q.placeholder_target(zone, ref)
 		return {zone = leader.zone, id = id, what = "leader", name = mob_label("grug_mobs:" .. id, leader.zone)}
 	end
 	local area = regions.get_area(qualified or zone, id)
+	local place = not area and regions.zone_place(qualified or zone, id)
+	if place then
+		return {zone = place.zone, id = id, what = "place", name = place.name}
+	end
 	if not area then
-		-- A PvP POI (Round 31) points at its anchor; its name is the POI's.
+		-- A PvP POI (Round 31) and a clash site (Round 36) point at their
+		-- anchor; the name is the POI's.
 		local poi = grug_mobs.pvp_garrison and grug_mobs.pvp_garrison.poi(id)
 		if poi and (not qualified or qualified == poi.zone_id) then
 			return {zone = poi.zone_id, id = id, what = "poi", name = poi.label}
 		end
-		return nil, ("%s is no kind, camp, leader or PvP POI of %s"):format(id, qualified or zone)
+		local site = regions.clash_site(id)
+		if site and (not qualified or qualified == site.zone) then
+			return {zone = site.zone, id = id, what = "poi", name = site.name}
+		end
+		return nil, ("%s is no kind, camp, leader, quest place, clash site or PvP POI of %s")
+			:format(id, qualified or zone)
 	end
 	return {zone = qualified or zone, id = id, what = area.is_camp and "camp" or "kind", name = area.name,
 		type = area.type}

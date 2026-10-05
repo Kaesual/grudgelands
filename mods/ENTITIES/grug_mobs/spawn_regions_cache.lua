@@ -11,10 +11,10 @@
 --
 -- THE COMPACT FORM of a built map (spawn_regions_core.build): the zone's cell
 -- grid as a byte string of region ids (one byte, two above 255 regions), the
--- regions {kind or camp, belt, centroid, size}, the camps and the leaders by
--- region id, the build's problems and warnings. `rehydrate` turns it back
+-- regions {kind or camp, belt, centroid, size}, the camps, the leaders and
+-- the quest places (Round 36) by region id, the build's problems and warnings. `rehydrate` turns it back
 -- into a map against the zone's freshly parsed recipe: the same regions,
--- camps, leaders and `region_at` answers as the built map, without its
+-- camps, leaders, places and `region_at` answers as the built map, without its
 -- `cells`, `order` and region `cells` (the tools read those from a fresh
 -- build, spawn_regions.lua `SR.full_map`).
 --
@@ -42,7 +42,7 @@ return function(deps)
 	local sha256, CELL = deps.sha256, deps.cell
 	local floor, huge = math.floor, math.huge
 	local byte, char, format = string.byte, string.char, string.format
-	local M = {FORMAT = "grug_region_maps_v1", FILE = "grug_region_maps.txt"}
+	local M = {FORMAT = "grug_region_maps_v2", FILE = "grug_region_maps.txt"}
 	local KEY_NAMES = {"format", "seed", "mapgen", "settings", "interpreter", "builder"}
 	-- The eight neighbours in the builder's order (its fringe fallback).
 	local N8 = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
@@ -92,17 +92,21 @@ return function(deps)
 			leaders[k] = {role = l.role, x = l.x, z = l.z, region = l.region.id,
 				fallback = l.fallback}
 		end
+		local places = {}
+		for k, p in ipairs(map.places) do
+			places[k] = {id = p.id, x = p.x, z = p.z, region = p.region.id, fallback = p.fallback}
+		end
 		local problems, warnings = {}, {}
 		for k, text in ipairs(map.problems) do problems[k] = text end
 		for k, text in ipairs(map.warnings) do warnings[k] = text end
 		return {i0 = i0, j0 = j0, w = w, h = h, wide = wide, grid = table.concat(parts),
-			regions = regions, camps = camps, leaders = leaders,
+			regions = regions, camps = camps, leaders = leaders, places = places,
 			problems = problems, warnings = warnings}
 	end
 
 	-- The runtime map of a payload against the zone's parsed recipe, or nil
 	-- and the reason when the payload does not fit the recipe (an unknown kind,
-	-- camp or leader, a region id out of range, a wrong grid length).
+	-- camp, leader or place, a region id out of range, a wrong grid length).
 	function M.rehydrate(zone_id, p, recipe)
 		local i0, j0, w, h, grid = p.i0, p.j0, p.w, p.h, p.grid
 		local width = p.wide and 2 or 1
@@ -167,6 +171,15 @@ return function(deps)
 			leaders[k] = {role = row.role, x = row.x, z = row.z, level = leader.level,
 				respawn = leader.respawn, region = region, fallback = row.fallback}
 		end
+		local places = {}
+		for k, row in ipairs(p.places) do
+			local place = recipe.place_by_id[row.id]
+			local region = regions[row.region]
+			if not place then return nil, "unknown place " .. tostring(row.id) end
+			if not region then return nil, "place " .. row.id .. " region out of range" end
+			places[k] = {id = row.id, name = place.name, x = row.x, z = row.z, region = region,
+				fallback = row.fallback}
+		end
 
 		-- The grid: every id in range; the zone frame (spawn_regions_core
 		-- zone_frame: centroid and bounding box of the land cell centres).
@@ -196,7 +209,7 @@ return function(deps)
 
 		local map = {zone = zone_id, recipe = recipe, compact = true, cell_count = n,
 			problems = p.problems, warnings = p.warnings, regions = regions,
-			by_kind = by_kind, camps = camps, leaders = leaders,
+			by_kind = by_kind, camps = camps, leaders = leaders, places = places,
 			frame = {x = sx / n, z = sz / n,
 				hx = math.max(CELL, (x1 - x0) / 2 + CELL / 2),
 				hz = math.max(CELL, (z1 - z0) / 2 + CELL / 2)}}
@@ -270,8 +283,9 @@ return function(deps)
 
 	-- One zone's block body: a count line, the rows, then the grid bytes.
 	local function encode_body(p)
-		local out = {format("grid %d %d %d %d %d %d %d %d %d %d\n", p.i0, p.j0, p.w, p.h,
-			p.wide and 2 or 1, #p.regions, #p.camps, #p.leaders, #p.problems, #p.warnings)}
+		local out = {format("grid %d %d %d %d %d %d %d %d %d %d %d\n", p.i0, p.j0, p.w, p.h,
+			p.wide and 2 or 1, #p.regions, #p.camps, #p.leaders, #p.places, #p.problems,
+			#p.warnings)}
 		for _, r in ipairs(p.regions) do
 			out[#out + 1] = format("r %s %d %d %s %s %d\n", token(r.id), r.camp and 1 or 0,
 				r.belt, num(r.x), num(r.z), r.size)
@@ -283,6 +297,10 @@ return function(deps)
 		for _, l in ipairs(p.leaders) do
 			out[#out + 1] = format("l %s %s %s %d %s\n", token(l.role), num(l.x), num(l.z),
 				l.region, l.fallback == nil and "-" or token(l.fallback))
+		end
+		for _, s in ipairs(p.places) do
+			out[#out + 1] = format("s %s %s %s %d %s\n", token(s.id), num(s.x), num(s.z),
+				s.region, s.fallback == nil and "-" or token(s.fallback))
 		end
 		for _, t in ipairs(p.problems) do out[#out + 1] = "p " .. text(t) .. "\n" end
 		for _, t in ipairs(p.warnings) do out[#out + 1] = "w " .. text(t) .. "\n" end
@@ -332,12 +350,12 @@ return function(deps)
 			return t
 		end
 		local head = line()
-		local i0, j0, w, h, width, nr, nc, nl, np, nw = (head or ""):match(
-			"^grid (%-?%d+) (%-?%d+) (%d+) (%d+) ([12]) (%d+) (%d+) (%d+) (%d+) (%d+)$")
+		local i0, j0, w, h, width, nr, nc, nl, ns, np, nw = (head or ""):match(
+			"^grid (%-?%d+) (%-?%d+) (%d+) (%d+) ([12]) (%d+) (%d+) (%d+) (%d+) (%d+) (%d+)$")
 		if not i0 then return nil, "grid line differs" end
 		local p = {i0 = tonumber(i0), j0 = tonumber(j0), w = tonumber(w), h = tonumber(h),
-			wide = width == "2", regions = {}, camps = {}, leaders = {}, problems = {},
-			warnings = {}}
+			wide = width == "2", regions = {}, camps = {}, leaders = {}, places = {},
+			problems = {}, warnings = {}}
 		for k = 1, tonumber(nr) do
 			local id, camp, belt, x, z, size = (line() or ""):match(
 				"^r (%S+) ([01]) (%d+) (%S+) (%S+) (%d+)$")
@@ -365,6 +383,14 @@ return function(deps)
 			x, z = parse_num(x), parse_num(z)
 			if not (role and x and z) then return nil, "leader row " .. k .. " differs" end
 			p.leaders[k] = {role = role, x = x, z = z, region = tonumber(region),
+				fallback = fallback ~= "-" and fallback or nil}
+		end
+		for k = 1, tonumber(ns) do
+			local id, x, z, region, fallback = (line() or ""):match(
+				"^s (%S+) (%S+) (%S+) (%d+) (%S+)$")
+			x, z = parse_num(x), parse_num(z)
+			if not (id and x and z) then return nil, "place row " .. k .. " differs" end
+			p.places[k] = {id = id, x = x, z = z, region = tonumber(region),
 				fallback = fallback ~= "-" and fallback or nil}
 		end
 		for k = 1, tonumber(np) do

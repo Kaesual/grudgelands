@@ -38,7 +38,8 @@
 --      range, a density class.
 --   7. Camps: on a camp POI of the world model (the cells the camp radius
 --      reaches), or scored by rule (a 3x3-cell region each).
---   8. Leaders: at a camp centre or deep inside the largest region of a kind.
+--   8. Leaders: at a camp centre or deep inside the largest region of a kind;
+--      then the recipe's quest places by the same rule, kept apart from them.
 -- Deterministic: no random numbers, no dependence on `pairs` order.
 --
 local M = {}
@@ -72,6 +73,9 @@ M.CAMP_RADIUS = 40    -- slot spots are drawn within this of the centre
 M.POI_MEMBER_RADIUS = 24 -- ... of a camp on a POI: near its tents (camps.lua)
 -- Leaders: two leaders of a zone stand at least this far apart (nodes).
 M.LEADER_SPACING = 32
+-- Quest places (Round 36) keep this far from every leader, camp and other
+-- place (nodes): a "use at a place" step is no leader fight.
+M.PLACE_SPACING = 64
 -- Camp POIs of the world model (the zone atlas's `camps`): the anchor
 -- template -> the POI type a recipe camp's site names. Guard posts are
 -- listed so a recipe naming one gets a clear error; they are no mob camp.
@@ -137,7 +141,7 @@ end
 --
 
 local RECIPE_KEYS = {from = true, to = true, belts = true, camps = true,
-	leaders = true, critters = true, notes = true}
+	leaders = true, places = true, critters = true, notes = true}
 local BELT_KEYS = {id = true, share = true, levels = true, max_from = true,
 	kinds = true, notes = true}
 local KIND_KEYS = {id = true, name = true, day = true, night = true,
@@ -146,6 +150,7 @@ local CAMP_KEYS = {id = true, name = true, belt = true, site = true, roster = tr
 	slots = true, respawn = true, min_player_distance = true, apart = true,
 	notes = true}
 local LEADER_KEYS = {role = true, at = true, respawn = true, notes = true}
+local PLACE_KEYS = {id = true, name = true, at = true, notes = true}
 local TYPE_SET = {}
 for _, t in ipairs(M.TYPES) do TYPE_SET[t] = true end
 
@@ -251,7 +256,8 @@ function M.parse_recipe(zone_id, recipe, ctx)
 	known_keys(recipe, RECIPE_KEYS, where)
 	local band = ctx.band or {1, 60}
 	local out = {zone = zone_id, belts = {}, kinds = {}, kind_by_id = {},
-		camps = {}, camp_by_id = {}, leaders = {}, critters = {}}
+		camps = {}, camp_by_id = {}, leaders = {}, places = {}, place_by_id = {},
+		critters = {}}
 	-- from / to (Round 28 S2): `from` names anchors of the zone, the zones
 	-- whose land border is the entry, or both (a capital: the city and the
 	-- home zone's border, Round 28 W1); `to` the exit border or the zone's
@@ -561,6 +567,32 @@ function M.parse_recipe(zone_id, recipe, ctx)
 		local range = role_range(ctx, row.role, belt.levels, lw)
 		leader.level = range[2]
 		out.leaders[#out.leaders + 1] = leader
+	end
+	-- places (Round 36): a quest place ("use at a place", grug_quests) in a
+	-- kind, placed by the leaders' rule after them (build step 8).
+	if recipe.places ~= nil and type(recipe.places) ~= "table" then
+		fail(where, "places must be a list")
+	end
+	for p = 1, #(recipe.places or {}) do
+		local row = recipe.places[p]
+		local pw = where .. " places[" .. p .. "]"
+		if type(row) ~= "table" then fail(pw, "place must be an object") end
+		known_keys(row, PLACE_KEYS, pw)
+		if not snake(row.id) or out.kind_by_id[row.id] or out.camp_by_id[row.id] or
+				out.place_by_id[row.id] or leader_roles[row.id] then
+			fail(pw, "needs a snake_case id that no kind, camp, leader or place of the recipe uses")
+		end
+		pw = where .. " place " .. row.id
+		if type(row.name) ~= "string" or row.name == "" then fail(pw, "needs a name") end
+		local at = row.at
+		if type(at) ~= "table" then fail(pw, "needs at: {kind, pick}") end
+		known_keys(at, {kind = true, pick = true}, pw .. " at")
+		local kind = out.kind_by_id[at.kind]
+		if not kind then fail(pw, "kind " .. tostring(at.kind) .. " is not a kind of the recipe") end
+		if at.pick ~= "farthest_from_roads" then fail(pw, "pick must be farthest_from_roads") end
+		local place = {id = row.id, name = row.name, kind = kind, pick = at.pick}
+		out.places[#out.places + 1] = place
+		out.place_by_id[place.id] = place
 	end
 	-- critters
 	if recipe.critters ~= nil and type(recipe.critters) ~= "table" then
@@ -1790,6 +1822,42 @@ function M.build(zone_id, q, recipe)
 			problems[#problems + 1] = "no spot for leader " .. leader.role
 		end
 	end
+	-- Quest places (Round 36): after the leaders, so a place never moves a
+	-- leader. A place takes the first cell of its kind's chain (the leaders'
+	-- chain and cell order) at least PLACE_SPACING from every leader, camp
+	-- and earlier place.
+	local taken = {}
+	for _, spot in ipairs(placed) do taken[#taken + 1] = spot end
+	for _, unit in ipairs(camps) do taken[#taken + 1] = unit end
+	local function apart(x, z)
+		local min2 = M.PLACE_SPACING * M.PLACE_SPACING
+		for _, p in ipairs(taken) do
+			local dx, dz = p.x - x, p.z - z
+			if dx * dx + dz * dz < min2 then return false end
+		end
+		return true
+	end
+	local places = {}
+	map.places = places
+	for _, place in ipairs(recipe.places) do
+		local spot
+		for _, r in ipairs(chain_for(place.kind, place.kind.belt.index)) do
+			for _, c in ipairs(ranked_cells(r)) do
+				if apart(c.x, c.z) then
+					spot = {id = place.id, name = place.name, x = floor(c.x), z = floor(c.z),
+						region = r, fallback = r.kind ~= place.kind and r.kind.id or nil}
+					break
+				end
+			end
+			if spot then break end
+		end
+		if spot then
+			places[#places + 1] = spot
+			taken[#taken + 1] = spot
+		else
+			problems[#problems + 1] = "no spot for place " .. place.id
+		end
+	end
 
 	-- The region at a point: its cell's, else the nearest zone land cell
 	-- among the eight around it (a coast fringe, a border notch).
@@ -1832,8 +1900,8 @@ end
 M.NEAR = 80    -- nodes: a target closer than this is "near" its reference
 M.HEART = 0.3  -- zone mode: within this share of the zone's half extent
 
--- Where a describe target stands: a leader role (its spot), a camp id (its
--- centre) or a kind id (the centroid of the kind's LARGEST region, ties to
+-- Where a describe target stands: a leader role (its spot), a quest place
+-- id (its spot, Round 36), a camp id (its centre) or a kind id (the centroid of the kind's LARGEST region, ties to
 -- the lower region id; one patch for every phrasing, so two placeholders in
 -- one quest never point at different patches), or a named place passed as
 -- its {x, z} (a Round 31 PvP POI). Nil when the map has none.
@@ -1844,6 +1912,11 @@ function M.target_of(map, target)
 	for _, l in ipairs(map.leaders) do
 		if l.role == target then
 			return {x = l.x, z = l.z, what = "leader", region = l.region}
+		end
+	end
+	for _, p in ipairs(map.places or {}) do
+		if p.id == target then
+			return {x = p.x, z = p.z, what = "place", region = p.region}
 		end
 	end
 	for _, unit in ipairs(map.camps) do
@@ -1937,7 +2010,7 @@ function M.stats(map)
 	local recipe = map.recipe
 	local n = #map.order
 	local out = {cells = n, belts = {}, kinds = {}, regions = #map.regions,
-		sizes = {}, islet_cells = map.islet_cells, camps = {}, leaders = {},
+		sizes = {}, islet_cells = map.islet_cells, camps = {}, leaders = {}, places = {},
 		problems = map.problems, warnings = map.warnings}
 	for b, belt in ipairs(recipe.belts) do
 		out.belts[b] = {id = belt.id, levels = belt.levels, cells = 0}
@@ -1979,6 +2052,10 @@ function M.stats(map)
 	for _, l in ipairs(map.leaders) do
 		out.leaders[#out.leaders + 1] = {role = l.role, x = l.x, z = l.z, level = l.level,
 			fallback = l.fallback}
+	end
+	for _, p in ipairs(map.places or {}) do
+		out.places[#out.places + 1] = {id = p.id, name = p.name, x = p.x, z = p.z,
+			fallback = p.fallback}
 	end
 	return out
 end

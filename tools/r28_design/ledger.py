@@ -18,6 +18,8 @@ simulated player, and reports real XP (never summed KE) per band and per zone:
                        drops from earlier quest kills are used first
   * gathering          ore/gem/fish units behind item objectives (bars and
                        alloys resolve to their ores)
+  * "use at a place" objectives (Round 36) add no XP: their trip and hold
+    are the quest's time (duration_min), paid by the reward weight
 
 against the XP needed to cross the band (XP(L->L+1) = round(M(L) k(L), tens)),
 for a solo player and a two-player party (kill XP is split, quest credit is
@@ -314,6 +316,11 @@ class Ledger:
                     "xp": gained, "species": self.species_mix(zone, obj.get("area"))})
             elif kind == "item":
                 self.item_objective(zone, q, obj, count, quest_drops, acc)
+            elif kind == "use":
+                # "Use at a place" (Round 36): the trip and the hold cost
+                # time (the quest's duration_min), no kill XP; the reward
+                # weight pays for it.
+                pass
         rewards = q.get("rewards") or {}
         xp = C.quest_xp(rewards.get("weight") or 0, q.get("level", 1), self.human)
         self.xp += xp

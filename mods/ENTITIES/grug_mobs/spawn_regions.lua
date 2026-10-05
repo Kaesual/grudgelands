@@ -8,7 +8,8 @@
 --                rows: a zone WITHOUT a recipe keeps today's spawning exactly
 --                (the trigger of ruling 34); or
 --   * `recipe`   the rules its spawn regions are built from (belts, kinds,
---                camps, leaders, critters; docs/design/spawn_regions.md). A
+--                camps, leaders, quest places, critters;
+--                docs/design/spawn_regions.md). A
 --                zone WITH a recipe spawns its surface mobs only from its
 --                regions; its ABM rows keep the recipe's critters.
 -- A recipe holds no coordinate: the world differs per seed. Every recipe
@@ -455,6 +456,25 @@ function SR.leader_pos(role)
 	return nil
 end
 
+-- {zone, id, name} of a quest place of the zone's recipe (Round 36, a
+-- "use at a place" objective), or nil. Static (no map build).
+function SR.zone_place(zone_id, id)
+	local rec = zones[zone_id]
+	local place = rec and rec.recipe and rec.recipe.place_by_id[id]
+	return place and {zone = zone_id, id = id, name = place.name} or nil
+end
+
+-- The quest place's spot {x, z, name} on this world (the zone's map), or nil.
+function SR.place_spot(zone_id, id)
+	local map = SR.map(zone_id)
+	for _, spot in ipairs(map and map.places or {}) do
+		if spot.id == id then
+			return {x = spot.x, z = spot.z, name = spot.name}
+		end
+	end
+	return nil
+end
+
 function SR.leader_roles()
 	local out = {}
 	for role in pairs(leader_by_role) do out[#out + 1] = role end
@@ -488,7 +508,8 @@ end
 -- Directions for quest texts (Lane S1, the user's brief of 2026-10-02)
 --
 -- describe(zone_id, target, mode, ref) -> result or nil, reason
---   target  a leader role, a camp id or a kind id of the zone's recipe;
+--   target  a leader role, a quest place id, a camp id or a kind id of the
+--           zone's recipe;
 --   mode    "of"   relative to a named place: ref = a settlement key or
 --                  anchor id ("highcourt", "anchor_008") or {x, z, name};
 --           "from" relative to the speaker: ref = {x, z} (the giver);
@@ -518,6 +539,21 @@ end
 -- {x, z, name} of a named place (a settlement key or anchor id), or nil:
 -- the "of" reference, also for checking quest placeholders at load.
 SR.place = place
+
+-- A clash site (a Round 20 anchor of kind "clash", world_zones.md §16) by
+-- its settlement key ("r20_anchor_076"): {key, zone, name}, or nil. A quest
+-- place of the zones that have one (Round 36); SR.place gives its position.
+local clash_rows
+function SR.clash_site(key)
+	if not clash_rows then
+		clash_rows = {}
+		for _, row in ipairs(roster()) do
+			if row.art and row.art.kind == "clash" then clash_rows[row.key] = row end
+		end
+	end
+	local row = clash_rows[key]
+	return row and {key = row.key, zone = row.zone_id, name = row.label} or nil
+end
 
 function SR.describe(zone_id, target, mode, ref)
 	local map = SR.map(zone_id)

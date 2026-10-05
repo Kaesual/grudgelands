@@ -8,11 +8,12 @@ writes <out>/seed_<seed>.png and <out>/seed_<seed>.md:
   * the regions coloured by kind (one hue per terrain type, darker with each
     belt), thin borders between regions, thick borders between belts, each
     region labelled with its level range;
-  * camps (tent) and leaders (skull) with their names;
+  * camps (tent), leaders (skull) and quest places (blue diamond, Round 36)
+    with their names;
   * a legend: per belt its level range and share of land, per kind its day
     and night roster with levels, density and share;
-  * the stats file: shares per belt and kind, region sizes, camp and leader
-    checks, the describe phrases and the patch directions.
+  * the stats file: shares per belt and kind, region sizes, camp, leader and
+    quest-place checks, the describe phrases and the patch directions.
 
 Usage: render.py --dump DIR --zone ZONE --seed SEED --out DIR
 Python 3 + numpy + Pillow (the atlas builder's dependencies).
@@ -77,6 +78,10 @@ def draw_skull(d, x, y, s=8):
     d.ellipse([x + s * 0.1, y - s * 0.35, x + s * 0.55, y + s * 0.1], fill=(0, 0, 0))
 
 
+def draw_place(d, x, y, s=7):
+    d.polygon([(x, y - s), (x + s, y), (x, y + s), (x - s, y)], fill=(40, 110, 230), outline=(0, 0, 0))
+
+
 def levels_text(lv):
     return "L%d" % lv[0] if lv[0] == lv[1] else "L%d-%d" % (lv[0], lv[1])
 
@@ -124,7 +129,8 @@ def main():
     dump = Path(args.dump)
     doc = json.load(open(dump / ("%s_%s.json" % (args.zone, args.seed))))
     # The Lua writer cannot tell an empty object from an empty list.
-    for row in doc["kinds"] + doc["camps"] + doc["leaders"]:
+    doc.setdefault("quest_places", [])
+    for row in doc["kinds"] + doc["camps"] + doc["leaders"] + doc["quest_places"]:
         if not row.get("phrases"):
             row["phrases"] = {}
     if not doc.get("phrases"):
@@ -261,6 +267,10 @@ def main():
         x, y = px(l["x"], l["z"])
         draw_skull(d, x + 10, y + 4)
         map_label(x, y - 4, "%s L%d" % (l["name"], l["level"]), f_bold, (120, 0, 0), dx=22)
+    for p in doc["quest_places"]:
+        x, y = px(p["x"], p["z"])
+        draw_place(d, x, y)
+        map_label(x, y - 4, p["name"], f_bold, (20, 60, 160), dx=10)
     # Title.
     title = "%s: spawn regions, seed %s" % (doc["zone_name"], doc["seed"])
     d.text((LEFT, 10), title, font=f_big, fill=(0, 0, 0))
@@ -315,6 +325,10 @@ def main():
         draw_skull(d, x0 + 8, y + 8, 6)
         d.text((x0 + 20, y), "%s, level %d, respawn %d s" % (l["name"], l["level"], l["respawn"]),
                font=f_med, fill=(0, 0, 0))
+        y += 18
+    for p in doc["quest_places"]:
+        draw_place(d, x0 + 8, y + 8, 6)
+        d.text((x0 + 20, y), "%s (quest place)" % p["name"], font=f_med, fill=(0, 0, 0))
         y += 18
     y += 8
     d.text((x0, y), "Directions (describe):", font=f_bold, fill=(0, 0, 0))
@@ -405,6 +419,11 @@ def write_stats(doc, path):
             l["name"], l["role"], l["x"], l["z"], l["level"], l["respawn"],
             " Its kind has no region on this seed: fallback to kind `%s` of the same belt." %
             l["fallback"] if l.get("fallback") else ""))
+    for p in doc["quest_places"]:
+        lines.append("- Quest place %s (`%s`) at (%d, %d).%s" % (
+            p["name"], p["id"], p["x"], p["z"],
+            " Its kind has no region on this seed: fallback to kind `%s` of the same belt." %
+            p["fallback"] if p.get("fallback") else ""))
     for p in st["problems"]:
         lines.append("- PROBLEM: %s" % p)
     for w in st.get("warnings") or []:
@@ -422,6 +441,7 @@ def write_stats(doc, path):
     lines.append("|---|---|---|---|")
     targets = [(c["name"], c["phrases"]) for c in doc["camps"]] + \
         [(l["name"], l["phrases"]) for l in doc["leaders"]] + \
+        [(p["name"], p["phrases"]) for p in doc["quest_places"]] + \
         [(k["name"], k["phrases"]) for k in doc["kinds"]]
     for name, ph in targets:
         def cell(key):
