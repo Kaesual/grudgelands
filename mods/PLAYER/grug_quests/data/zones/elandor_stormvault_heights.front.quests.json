@@ -9,8 +9,8 @@
       "min_level": 44,
       "level": 46,
       "requires": [],
-      "title": "Bad Workmanship, Worse Company",
-      "text": "I'd welcome a proper look at the old masonry, if Causeway Brigands and Aqueduct Bowmen would let our surveyors near it. Go by day to the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and defeat five of the brigands and bowmen lurking there. A dwarf should be able to criticise a crumbling arch in peace.",
+      "title": "An Arch Under Occupation",
+      "text": "Our surveyors cannot examine the old arches while Causeway Brigands and Aqueduct Bowmen use them for cover. Defeat five of those brigands and bowmen in all, by day in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}. I have several complaints about the masonry, and I prefer to deliver them without arrows coming back.",
       "objectives": [
         {
           "type": "kill",
@@ -40,8 +40,8 @@
         "archshadow_front_01",
         "cinderline_front_04"
       ],
-      "title": "A Runesmith's Awkward Questions",
-      "text": "My runesmiths know this stamp: the old Copperfell counting-house pressed one like it into forged purses, but that was ink, and this is burned clean through the metal. Someone has scorched the same ring into the stones at {name:brandscar_cairn} {dir_from_giver:brandscar_cairn}; take a rubbing of it. Then bring me three Siege Bones from the Tollroad Skeletons in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}, after dark, so the smiths can see what keeps them on their feet.",
+      "title": "The Burn Beneath the Stamp",
+      "text": "Copperfell's purse forgers used this style of stamp; the new Tithe-Brand burns where theirs left ink. Take a rubbing of the scorched mark at {name:brandscar_cairn}, {dir_from_giver:brandscar_cairn}. Bring me three Siege Bones from Tollroad Skeletons in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}, after dark. My runesmiths need to compare what the brand does to stone with what it does to a soldier.",
       "objectives": [
         {
           "type": "item",
@@ -81,7 +81,7 @@
         "archshadow_front_02"
       ],
       "title": "Collection Ends Here",
-      "text": "The bones told the smiths what the coins do: {name:toll_taker_senn} pays his dead in that burnt coin, and it keeps them on the road. He works out of the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}; defeat him and five of the Aqueduct Bowmen or Coal-Purse Factors guarding his take. His toll-box stands at {name:r20_anchor_078}; turn it out, because I want his accounts more than his apologies.",
+      "text": "The smiths found the same burn in the bones: {name:toll_taker_senn} pays dead soldiers in branded coin to keep them on duty. At the {name:front_broken_causeway/toll_camp}, {dir_from_giver:front_broken_causeway/toll_camp}, defeat five Aqueduct Bowmen or Coal-Purse Factors in all; they guard his takings day and night. Kill Senn as well, then turn out the branded toll-box at {name:r20_anchor_078}. I want to see who considers a road full of corpses a sound investment.",
       "objectives": [
         {
           "type": "kill",
@@ -128,8 +128,8 @@
       "requires": [
         "archshadow_front_03"
       ],
-      "title": "Senn's Accounts",
-      "text": "Senn's accounts say more than he did: he was paid to keep that road deadly, not merely to charge for it, and a Paymaster Chirr in The Skyglass Canopy promised him more. The pay bundle came wrapped in a requisition under a Throng seal, on very good paper, the kind a fortress keeps. Take all of it to the Warmaster at {name:pvp_fortress_accord}. I'd rather the accusations start with someone whose job it is.",
+      "title": "Good Paper, Bad Company",
+      "text": "Senn's accounts say more than he ever did: he was paid to keep the road deadly, and his tolls went back to the factors for another branding and another round of wages. A remittance from Paymaster Chirr in The Skyglass Canopy promises more of the same. The bundle came wrapped in a requisition under a seal of The Throng, on paper fit for a fortress pay office. Take all of it to the Warmaster at {name:pvp_fortress_accord}; paper this good deserves an awkward question, and I'd rather it came from someone whose job it is.",
       "objectives": [
         {
           "type": "talk",
@@ -417,7 +417,7 @@
         "accord_main_roll"
       ],
       "title": "The Last Watch Ends",
-      "text": "{name:watch_captain_huskell} still commands the {name:front_gravesalt_escarpment/ossuary_wood} {dir_from_giver:watch_captain_huskell}, and his Last-Watch Skeleton Raiders march his rounds every night on fresh pay. Defeat five of the raiders after dark, then the captain himself, and bring me the roll he calls them by. Somebody has to relieve that watch, and it may as well be you.",
+      "text": "Fresh branded pay reaches the {name:front_gravesalt_escarpment/ossuary_wood}, and the Last-Watch Skeleton Raiders shoulder their weapons for another night. Destroy five there after dark, then defeat {name:watch_captain_huskell}, {dir_from_giver:watch_captain_huskell}. His roll should tell us who keeps paying for the watch; somebody has to relieve it, and it may as well be you.",
       "objectives": [
         {
           "type": "kill",
@@ -457,7 +457,7 @@
         "splitbolt_front_08"
       ],
       "title": "Group: Nothing Left to Count",
-      "text": "{name:salt_counter_witch} keeps her own count out in the Gravesalt mires {dir_from_giver:salt_counter_witch}, and every soldier in it is an entry she means to spend. She's an elite and she bites back, so gather a group before you go. I'd like the next count in that mire to come out at nothing.",
+      "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell kept them working; she is already adding up what they might fetch. Gather a group and kill the elite witch. I'd like the next count in that mire to come out at nothing.",
       "objectives": [
         {
           "type": "kill",
@@ -518,8 +518,8 @@
       "requires": [
         "splitbolt_front_08"
       ],
-      "title": "Someone Who Came Back",
-      "text": "Huskell's roll is no muster list: the page is headed 'the Undertithe', and it holds soldiers of both armies, bought back onto duty with fresh branded pay. At the bottom, in new ink, stands Odren Vell; the coin collected its own clerk. Take the page to Eriath Boughwarden in Lethariel, whose people are watching The Skyglass Canopy. He'll need three graceful sentences to agree with me.",
+      "title": "The Clerk at the Foot",
+      "text": "Huskell's roll is no muster list but a page of the Undertithe's own: soldiers from both armies, each name bought back onto duty with branded pay. Odren Vell is written at the foot in fresh ink; the coin has collected its own clerk. Take the page to Eriath Boughwarden in Lethariel, who remembers the old forged bough-seals and whose watchers keep an eye on Chirr's payments in The Skyglass Canopy. He'll need three graceful sentences to agree with me.",
       "objectives": [
         {
           "type": "talk",

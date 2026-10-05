@@ -106,8 +106,8 @@
       "requires": [
         "accord_main_roll"
       ],
-      "title": "Optional: Pay for the Sea",
-      "text": "A wrecked pay chest lies at {name:r20_anchor_086} on Stormscale Summit, its coins warm in the surf and every one of them branded. Take a boat from the Shipwright at the stables, follow the shelf and the channel away from the Kraken, and give that pay to the sea. Branded coin should not wash up anywhere a soldier can spend it.",
+      "title": "Optional: A Chest Overboard",
+      "text": "The wreck at {name:r20_anchor_086} on Stormscale Summit holds a chest of branded pay that some fortunate salvager will mistake for wages. Reach it by boat from the Shipwright at the stables, keeping to the shelf and channel away from the Kraken's deep water. Give the wreck's pay to the sea before anyone accepts it; I can defend the loss of a chest more easily than the loss of its next crew.",
       "objectives": [
         {
           "type": "use",

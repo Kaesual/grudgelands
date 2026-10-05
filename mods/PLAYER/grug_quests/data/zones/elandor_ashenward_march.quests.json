@@ -447,7 +447,7 @@
       "level": 42,
       "requires": [],
       "title": "Bring Me the Account",
-      "text": "A Causeway convoy's pay chest was impounded at {name:r20_anchor_071} {dir_from_giver:r20_anchor_071}, and the clerk who sealed it will not go near it again, because the purse inside is warm. Unseal it and take what you find to Toren Waterbarrel at Cinderline Watch; the pay was meant for his drivers. When there is an account worth bringing, bring it to me. I already have enough accusations.",
+      "text": "A Causeway convoy's pay was impounded at {name:r20_anchor_071}, {dir_from_giver:r20_anchor_071}, and the clerk who sealed it will not go near it again: the purse is still warm. Unseal it and take what you find to Toren Waterbarrel at Cinderline Watch; the pay was meant for his drivers. Bring me the account. I already have enough accusations.",
       "objectives": [
         {
           "type": "use",
@@ -477,8 +477,8 @@
       "requires": [
         "accord_main_accounts"
       ],
-      "title": "Borrowed Against the Dead",
-      "text": "A Throng seal on Senn's bundle is a suggestion, and a dead toll-taker's purse is not a witness. Nella Hedgeward says the dead on The Shattered Line rally on the same burnt pay. Kill three Brandbound Collectors after dark in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, unpick the pledged standard at {name:r20_anchor_082}, and take the stitching to Nella at Last Hedge Redoubt.",
+      "title": "The Price of a Salute",
+      "text": "The Throng's seal warrants an inquiry; an Undead body proves nothing about who paid it. Nella Hedgeward reports that the dead on The Shattered Line rally to a standard pledged against the same warm coin. Defeat three Brandbound Collectors after dark in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and unpick the pledged standard at {name:r20_anchor_082}. Report to Nella at Last Hedge Redoubt with what the stitching reveals.",
       "objectives": [
         {
           "type": "kill",
@@ -516,8 +516,8 @@
       "requires": [
         "lasthedge_front_04"
       ],
-      "title": "In Their Own Words",
-      "text": "Ninepins pledged his standard against the next payment, and the Throng's high war camp sits on the same line. The Throng Captain at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, carries his orders on him; defeat him and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
+      "title": "Read Before Accusing",
+      "text": "Ninepins pledged his standard against the next payment, and The Throng's high war camp sits on the same line, but a seal does not tell us whose hand pressed it. Defeat the Throng Captain at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
       "objectives": [
         {
           "type": "item",
@@ -560,7 +560,7 @@
         "accord_main_orders"
       ],
       "title": "A Quiet Audit",
-      "text": "The Throng's orders list pay they seized from the same factors, wrapped in genuine Ashenward requisition forms and countersigned by Requisition Clerk Odren Vell, who left this Bastion last season \"to settle arrears\"; the forged Throng requisition was written on our own paper. Vell's couriers kept their pay ledger at {name:elandor_glassroot_wilds/couriers_stump} {dir_of:r20_anchor_036:elandor_glassroot_wilds/couriers_stump}; copy it and bring the copy to me and to nobody else. This finding stays under seal, and when you can hold your own on Gravesalt's salt, come back for your next orders.",
+      "text": "Their orders hunt the same soot factors and list their own soldiers burned by the seized pay, which came wrapped in genuine Ashenward requisitions countersigned by Requisition Clerk Odren Vell. The false seal of The Throng was stamped on our own paper. This finding stays under seal; The Throng must not learn whose office supplied it. Copy Vell's courier ledger at {name:elandor_glassroot_wilds/couriers_stump}, {dir_of:r20_anchor_036:elandor_glassroot_wilds/couriers_stump}, bring the copy to me and nobody else, and come back for your next orders when you can hold your own on Gravesalt's salt.",
       "objectives": [
         {
           "type": "use",
@@ -590,8 +590,8 @@
       "requires": [
         "accord_main_audit"
       ],
-      "title": "Hounds for the Debtors",
-      "text": "Vell's couriers ran their pay toward Gravesalt Escarpment, and Borin Splitbolt writes that the Saltroad Deserters there have found a use for branded coin. Their Debtjaw Hounds run the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}, with the same ember in their coats; put down four by day. Then report to Borin at Splitbolt Station; he has something to show you about the Last-Watch dead.",
+      "title": "Following Vell's Pay",
+      "text": "Odren Vell took over the convoy books after Quartermaster Scrip fell, then left last season 'to settle arrears', without saying whose. His courier ledger traces branded pay to the Saltroad Deserters in Gravesalt Escarpment, whose Debtjaw Hounds carry the same ember stain. Kill four Debtjaw Hounds by day in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Report to Borin Splitbolt at Splitbolt Station in Stormvault Heights; he is following the payments into the Last Watch.",
       "objectives": [
         {
           "type": "kill",
@@ -622,8 +622,8 @@
       "requires": [
         "accord_main_orders"
       ],
-      "title": "Group: The Name in the Orders",
-      "text": "The captain's orders also name War Commander Stonegrudge, who now runs the Throng's own hunt for the factors from the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. A rival investigation is no invitation to share intelligence, and I would rather theirs lost its head before it reaches the payers. He fights among his garrison as an elite; take a group, and bring back every name you left with.",
+      "title": "Group: Stonegrudge's Inquiry",
+      "text": "The captain's orders put War Commander Stonegrudge in charge of The Throng's hunt for the factors, from the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. A rival inquiry is no invitation to share intelligence, least of all one heading for our requisition office. Gather a group and defeat him among his garrison; he is an elite commander, and I expect a plan that accounts for everyone coming back.",
       "objectives": [
         {
           "type": "kill",
@@ -654,7 +654,7 @@
         "accord_main_tally"
       ],
       "title": "Group: The Collector Comes Due",
-      "text": "I entered Odren Vell in the Bastion's roll myself, with the cause beside his name. Every name accounted for. His too. The unpaid balance has gathered at {name:r20_anchor_077} {dir_from_giver:r20_anchor_077}, and the thing that came to collect it calls itself Isquarre the Tithe-Eater; gather a group of two or three and break it there, before the Throng claims the site and the story with it.",
+      "text": "I entered Odren Vell in the Bastion's roll anyway, with the cause beside his name: \"Every name accounted for. His too.\" Gather a group of two or three and defeat Isquarre the Tithe-Eater at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, where the unsecured debt has given its collector a body of slag and ash. Secure the site before The Throng claims authority over it; our own account of this affair will remain under seal.",
       "objectives": [
         {
           "type": "kill",
@@ -687,7 +687,7 @@
         "accord_main_collector"
       ],
       "title": "Every Name Accounted For",
-      "text": "Isquarre broke at {name:r20_anchor_077}, and the crack he stood in is still warm. I have written it in the roll, with every name you brought back beside it. We closed his account. Beneath us, someone turned a fresh page.",
+      "text": "Isquarre broke at {name:r20_anchor_077}, but the crack did not, and a collector who loses his body keeps the debt. I have sealed your report with the names you brought back, the clerk's among them. We closed his account. Beneath us, someone turned a fresh page.",
       "objectives": [
         {
           "type": "talk",
