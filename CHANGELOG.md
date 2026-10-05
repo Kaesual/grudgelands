@@ -9,11 +9,49 @@ some of its changes are part of world generation.
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.37.0 — Round 37, "Audit fixes" (in progress)
+## 0.37.0 — Round 37, "Audit fixes" (2026-10-06)
 
 Fixes for what an October 2026 review of the code and the documentation
-found.
+found, and a few wishes from playtests. No new world is needed: a world
+made with Round 36 and its last fixes keeps working.
 
+- In a group fight a creature stays on the player who holds its attention
+  instead of turning to whoever hit it last; a taunt holds. A creature
+  that is not fighting yet still turns on its first attacker.
+- Creatures show their whole attack swing. An elite winding up a heavy
+  blow no longer turns after you and does not strike during the wind-up,
+  so stepping aside dodges it.
+- A food or Vigor buff running out no longer throws you off your mount
+  (also in flight), interrupts a quest action or empties your shield.
+- Only melee between two players flagged for PvP and the attacks of
+  creatures push you back; spells, player arrows and an ally's punch do
+  not.
+- A dragon's breath and a King's volley: only the middle shot follows you,
+  the side shots fly straight and can hit whoever stands in their way, and
+  the breath leaves frost or embers on the ground again without replacing
+  snow, plants or water.
+- The Undead King calls at most four raiders, who vanish when the fight
+  resets; royal guards killed outside a King fight return after about
+  15 minutes.
+- Creatures are still there after a server restart, and a named rare
+  never stands twice.
+- With seeds, a bucket or the fishing rod in hand, right-click opens
+  doors, chests and stations and harvests regrowing crops; sneak to use
+  the item instead. Tall crops no longer leave floating tops, the furnace
+  no longer pops back over the recipe book, and a slab that cannot be
+  placed stays in your hand.
+- Grass and moss no longer creep over towns, capitals, roads and other
+  built places.
+- Creatures in the six starting areas fight alone: hitting one no longer
+  calls its neighbours. From level 11 on nothing changes.
+- The Salt Reef Lurker, an elite, now walks the beaches of the level 51–60
+  coasts by day.
+- The minimap always shows normal quality and uses less memory on servers
+  set to high map quality; the Map tab stays sharp.
+- New sounds: a gong when a dragon returns, and the Rift Spawn's hissing
+  fuse and explosion.
+- Less server work per hit, per player and for the minimap and quest
+  markers, which helps on busy servers.
 - The New World dialog no longer offers the map generator checkboxes the
   game cannot use (a changed box stopped the world from loading); the
   README explains the settings to leave alone.
