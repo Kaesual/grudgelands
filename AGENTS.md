@@ -64,7 +64,11 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 36 complete locally, 2026-10-05 (not pushed).** "The main
+Push and acceptance: every round up to Round 36 is pushed (origin/main
+`0f169898`, 2026-10-05); Rounds 25–35 count as GUI-accepted (the user,
+2026-10-05); Round 36 is open. Owner: [project status](docs/STATUS.md).
+
+**Round 36 complete, 2026-10-05 (pushed 2026-10-05).** "The main
 questline" (WP9): each faction's main line from its fortress Warmaster in
 three chapters (41, 46, 53) and a group finale at 60 on the approved
 [story bible](docs/planning/round36/story-bible.md) (the Undertithe and its
@@ -75,9 +79,13 @@ Tithe-Eater and two war commanders; WP13's POI review and a decor pass over
 every POI, start town and capital house; the Round 35 GUI fixes (one target
 predicate, free mobs evading only beyond their wander radius, the
 talent-point banner), Priest heals with gear Intelligence and the Scout's
-Dexterity curve, the dragons' wider hazards and wing gust. Needs a fresh
-world. Next: the GUI test (desktop and web build, two clients for the
-rift).
+Dexterity curve, the dragons' wider hazards and wing gust; then the
+follow-up lanes from the user's first look: a held LMB across a hotbar
+switch (F2, 0.2 s settle), benches with their back to the wall (W2), ground
+cover in the protected band of starts and capitals (W3), roads that no
+longer trace the ground's one-node dither (RD, `C_STEP` 0.05 → 0.5). Needs a world made on `fef94a6a`
+or later. The GUI test (desktop and web build, two clients for the rift)
+is under way.
 [Plan, completion and GUI checklist](docs/planning/round36-plan.md#completion-2026-10-05).
 
 **Round 35 complete, 2026-10-05 (pushed 2026-10-05).** "Fixes and
@@ -120,8 +128,8 @@ from real recipes, the cultural materials and finishes, grips, reagents and
 the Warding Draught removed; crit ×2 with 0.05 % per Dexterity point;
 T1-only vendor gear, repair ×1.00, potions I–VI with one cooldown, the Decor
 Merchant; per-character achievements that unlock cloaks. Numbers:
-[item_tiers.md](docs/design/item_tiers.md). Needs a fresh world. Next: the
-GUI test; its findings fed Round 34.
+[item_tiers.md](docs/design/item_tiers.md). Needs a fresh world. Its GUI
+test fed Round 34.
 [Plan, completion and GUI checklist](docs/planning/round33-plan.md#completion-2026-10-04).
 
 **Round 32 complete, 2026-10-03 (pushed 2026-10-04).** "Fixes,
@@ -148,8 +156,7 @@ named captains, 24 fortress quests from level 40), character looks at
 creation and NPC look rolls, enchant colours on gear, the dragon arenas
 redesigned (round leash arenas with hazards and the dragon's wrath), the
 Round 30 clean-up items and a fixture runner. Rules: [pvp.md](docs/design/pvp.md).
-Next: fresh world and the two-client GUI test (Round 30's is still open);
-seed-dependent POI placement was set aside.
+Seed-dependent POI placement was set aside.
 [Plan, completion and playtest checklist](docs/planning/round31-plan.md#completion-2026-10-03).
 
 **Round 30 complete, 2026-10-02 (pushed 2026-10-04).** "Performance and
@@ -162,8 +169,7 @@ give-up of unreachable targets, three merged spawn ABMs instead of 88 (P2),
 per-player ticks (P4: crafting index, crosshair, tag-carrier slots); a pier
 and a beach at the four dragon-island landings (L); the legacy quest fields
 removed, fixtures repaired and the Dawnmere NPC duplication fixed (C);
-band-4/5 loot smoothing with recomputed prices (E). Next: fresh world and
-GUI test (still open).
+band-4/5 loot smoothing with recomputed prices (E).
 [Plan, completion and playtest checklist](docs/planning/round30-plan.md#completion-2026-10-02).
 
 **Round 29 complete and pushed, 2026-10-02** (tested by the user). "Economy
@@ -194,7 +200,6 @@ the native minimap, the `grug_map_quality` setting (normal/high) for the Map
 tab and the minimap, readable relief and a tiled map base (Lane M), and the
 documentation (Lane D), then the gliding minimap with a pewter bezel after the
 user's playtest. Fully pushed (in `9dd85b6e`).
-Next: short playtest.
 [Plan, completion and playtest checklist](docs/planning/round27-minimap-plan.md#completion-2026-09-30).
 
 **Round 26 delivered, 2026-09-29.** Claim Stone draft/activation and
@@ -224,16 +229,15 @@ Opus implementation and independent reviews.
 Merged on main as `1e338503` and synchronized to Luanti; pushed as
 `d4eaffff` and accepted by the user.
 
-**Round 23 delivered locally, 2026-09-28.** Full-column world preparation,
+**Round 23 delivered, 2026-09-28.** Full-column world preparation,
 habitat-driven vegetation renewal and capital walls; coordinated by Claude with
 native Opus implementation and independent Opus reviews (user routing for that
 session). [Plan](docs/planning/round23-world-life-plan.md),
 [completion and GUI checklist](docs/research/round23-completion.md). Merged and
-synchronized; no remote push. Phase 2 (tree line, shrub band, snow, forests and
-clearings) and the lake-wall playtest fix are merged as `f54c299d`. Next: user
-preparation of a fresh production world and playtest.
+synchronized; pushed 2026-09-28. Phase 2 (tree line, shrub band, snow, forests and
+clearings) and the lake-wall playtest fix are merged as `f54c299d`.
 
-**Round 21 delivered locally, 2026-09-24.** Reviewed terrain/access, mining,
+**Round 21 delivered, 2026-09-24.** Reviewed terrain/access, mining,
 furnaces, aquatic detail and playtest fixes merged as `96c40fa3` and synchronized
 from main. [Receipt](docs/research/round21-completion.md),
 [playtest checklist](docs/research/round21-playtest.md),
@@ -241,29 +245,28 @@ from main. [Receipt](docs/research/round21-completion.md),
 native arrow catalog binding; real engine registration verified),
 [execution ledger](docs/planning/round21-state.md). All native implementation
 agents finished. Recorded larger mapgen checks cost about 95 CPU seconds; no
-full-world/census fleets. No remote push. Await user GUI acceptance.
+full-world/census fleets. Pushed 2026-09-24.
 
 
-**Round 20 delivered locally, 2026-09-24:** POI/quest expansion and playtest
+**Round 20 delivered, 2026-09-24:** POI/quest expansion and playtest
 fixes, including contextual input. Independent reviews and final static,
 portable-interpreter, real POI and isolated engine gates passed. Merged to main
-and synchronized; no remote push. Read [receipt](docs/research/round20-completion.md)
-and [playtest checklist](docs/research/round20-playtest.md). No implementation
-agent is still running; await user GUI feedback. No Claude tasks.
+and synchronized; pushed 2026-09-24. Read [receipt](docs/research/round20-completion.md)
+and [playtest checklist](docs/research/round20-playtest.md).
 
 
 The user approved maximum-throughput world preparation on 2026-09-23, retaining
 bounded shutdown and unchanged later on-demand cave generation. Current contract:
 [full-speed follow-up](docs/research/pregen-fullspeed-plan.md). Root Astra
 coordinates native Astra implementation/measurement and independent Sol review.
-Delivered on local main and synchronized; receipt:
+Delivered and synchronized, pushed 2026-09-23; receipt:
 [full-speed preparation](docs/research/pregen-fullspeed.md).
 (Historical: that round ran without Claude tasks; the restriction ended with
 the documentation round, [receipt](docs/maintenance/documentation-round.md).
 Current routing: [agent model policy](docs/process/agent-model-policy.md).)
 
 Game delivery and pending acceptance: [project status](docs/STATUS.md).
-Round 21 and earlier follow-ups are locally delivered; GUI acceptance remains user-run.
+Round 21 and earlier follow-ups are delivered and pushed; the accepted Round 24 build contains them.
 The current local-development Go does not authorize a remote push or bypass a recorded
 automatic approval-review rejection. Current local tracking evidence is in STATUS;
 older round receipts are historical delivery observations.
