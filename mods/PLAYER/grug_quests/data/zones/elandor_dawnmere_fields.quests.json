@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "Crop Thieves",
-      "text": "Small Boars are eating next winter's bread in the {name:home_fields} {dir_of:dawnmere:home_fields}. Hunt eight by day; their yellow names mean they fight back only when struck. A fellow called Crumb has been helping himself to our grain too, but let us begin with the thieves who cannot read.",
+      "text": "Barley Piglets are eating next winter's bread in the {name:home_fields} {dir_of:dawnmere:home_fields}. Hunt eight by day; their yellow names mean they fight back only when struck. A fellow called Crumb has been helping himself to our grain too, but let us begin with the thieves who cannot read.",
       "objectives": [
         {
           "type": "kill",
@@ -62,7 +62,7 @@
         "dawnmere_hunt_01"
       ],
       "title": "The Night Shift",
-      "text": "The day's work ends, and the gnawing begins: Large Rats come out after sunset in the {name:meadows}, which lie {zone_area:meadows}. Kill eight there at night. Their red names mean they will not wait to be introduced, so watch the grass as well as the one in front of you.",
+      "text": "The day's work ends, and the gnawing begins: Barn Rats come out after sunset in the {name:meadows}, which lie {zone_area:meadows}. Kill eight there at night. Their red names mean they will not wait to be introduced, so watch the grass as well as the one in front of you.",
       "objectives": [
         {
           "type": "kill",
@@ -91,7 +91,7 @@
         "dawnmere_hunt_02"
       ],
       "title": "Foxes Before Breakfast",
-      "text": "Our hens have taken to sleeping with one eye open, thanks to the Young Foxes in the {name:pastures}, which lie {zone_area:pastures}. Hunt eight by day. Watch for Aggressive Boars among them: a red name means the creature will start the fight without waiting for you.",
+      "text": "Our hens have taken to sleeping with one eye open, thanks to the Henthieves in the {name:pastures}, which lie {zone_area:pastures}. Hunt eight by day. Watch for Grunters among them: a red name means the creature will start the fight without waiting for you.",
       "objectives": [
         {
           "type": "kill",
@@ -120,7 +120,7 @@
         "dawnmere_hunt_03"
       ],
       "title": "Five Claws Too Many",
-      "text": "The fishermen came back from the {name:wreck_coast} {dir_from_giver:wreck_coast} with empty nets and some very firm opinions about Monstrous Crabs. Kill five there by day so our folk can try their luck again. Go while the sun is up; the drowned dead walk that shore after dark, and I would rather you came home for supper.",
+      "text": "The fishermen came back from the {name:wreck_coast} {dir_from_giver:wreck_coast} with empty nets and some very firm opinions about Wreck Snappers. Kill five there by day so our folk can try their luck again. Go while the sun is up; the drowned dead walk that shore after dark, and I would rather you came home for supper.",
       "objectives": [
         {
           "type": "kill",
@@ -149,7 +149,7 @@
         "dawnmere_hunt_04"
       ],
       "title": "Requisition for One Crumb",
-      "text": "{name:confused_bandit_chief} calls our missing grain a requisition, though he cannot say who requisitioned it. Find the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat seven Confused Bandits, then Crumb himself. They keep their posts day and night; draw the chief away from his collectors if you can. We planted that harvest, and our people ought to eat it.",
+      "text": "{name:confused_bandit_chief} calls our missing grain a requisition, though he cannot say who requisitioned it. Find the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat seven Grain Pilferers, then Crumb himself. They keep their posts day and night; draw the chief away from his collectors if you can. We planted that harvest, and our people ought to eat it.",
       "objectives": [
         {
           "type": "kill",
@@ -357,7 +357,7 @@
         "dawnmere_hunt_02"
       ],
       "title": "The Rats Can Mend It",
-      "text": "The Large Rats have chewed my grain sacks, and I intend to make them contribute to the repairs. Bring me two Rat Fur Patches from them in the {name:meadows} after dark; any you saved from your hunt will do. Yes, we are patching rat holes with rat fur. I call that good housekeeping.",
+      "text": "The Barn Rats have chewed my grain sacks, and I intend to make them contribute to the repairs. Bring me two Rat Fur Patches from them in the {name:meadows} after dark; any you saved from your hunt will do. Yes, we are patching rat holes with rat fur. I call that good housekeeping.",
       "objectives": [
         {
           "type": "item",
@@ -388,7 +388,7 @@
         "dawnmere_hunt_04"
       ],
       "title": "A Brush and a Better Supper",
-      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from the Monstrous Crabs on the {name:wreck_coast} {dir_from_giver:wreck_coast}, and one Fox Tail from the Young Foxes in the {name:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and keep the Crab Eyes for yourself. I have enough people watching me cook.",
+      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from the Wreck Snappers on the {name:wreck_coast} {dir_from_giver:wreck_coast}, and one Fox Tail from the Henthieves in the {name:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and keep the Crab Eyes for yourself. I have enough people watching me cook.",
       "objectives": [
         {
           "type": "item",

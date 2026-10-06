@@ -59,7 +59,7 @@
         "hearthpine_departure"
       ],
       "title": "The Surveyor Has Tusks",
-      "text": "I paid a surveyor to mark our claims, and the Rooting Boars have submitted their own revisions. Kill eight of them by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. We cannot run a mine on measurements taken by snout.",
+      "text": "I paid a surveyor to mark our claims, and the Rooters have submitted their own revisions. Kill eight of them by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. We cannot run a mine on measurements taken by snout.",
       "objectives": [
         {
           "type": "kill",
@@ -124,7 +124,7 @@
         "copperfell_survey_01"
       ],
       "title": "An Appetite for Figures",
-      "text": "A Granary Rat ate six months of accounts last night and left the cover, which I consider criticism. Kill eight Granary Rats in the {name:lower_pines} after dark. Those books record what the miners are owed, and teeth are no excuse for missing wages.",
+      "text": "A Packrat ate six months of accounts last night and left the cover, which I consider criticism. Kill eight Packrats in the {name:lower_pines} after dark. Those books record what the miners are owed, and teeth are no excuse for missing wages.",
       "objectives": [
         {
           "type": "kill",
@@ -153,7 +153,7 @@
         "copperfell_workyard_01"
       ],
       "title": "A Handle on the Problem",
-      "text": "Half the workyard is sharing one sound handle, and the other half is waiting to borrow it. Bring me three Ridged Boar Tusks from Rooting Boars in the {name:lower_pines} by day; any you saved will do. I'll see to the fitting, you see to the tusks.",
+      "text": "Half the workyard is sharing one sound handle, and the other half is waiting to borrow it. Bring me three Ridged Boar Tusks from Rooters in the {name:lower_pines} by day; any you saved will do. I'll see to the fitting, you see to the tusks.",
       "objectives": [
         {
           "type": "item",
@@ -208,7 +208,7 @@
         "copperfell_survey_02"
       ],
       "title": "Bounty: Accounts Receivable",
-      "text": "Another page chewed, another bounty posted; at least this expense is easy to explain. Kill six Granary Rats in the {name:lower_pines} at night, then return for payment. This bounty is repeatable twenty minutes after you hand it in.",
+      "text": "Another page chewed, another bounty posted; at least this expense is easy to explain. Kill six Packrats in the {name:lower_pines} at night, then return for payment. This bounty is repeatable twenty minutes after you hand it in.",
       "objectives": [
         {
           "type": "kill",
@@ -298,7 +298,7 @@
         "copperfell_watch_02"
       ],
       "title": "A Toll Paid in Bruises",
-      "text": "The last carter to refuse their 'road toll' came back without his cart. Go to the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat eight outlaws in all, counting Roadside Bandits and Bandit Lookouts. Use cover to close on the lookouts; an arrow doesn't care how stout your argument is.",
+      "text": "The last carter to refuse their 'road toll' came back without his cart. Go to the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat eight outlaws in all, counting Footpads and Bandit Lookouts. Use cover to close on the lookouts; an arrow doesn't care how stout your argument is.",
       "objectives": [
         {
           "type": "kill",
@@ -412,7 +412,7 @@
         "copperfell_watch_04"
       ],
       "title": "I Know Where They Sold It",
-      "text": "They tied my hands, not my ears; I heard the bandits selling our ore to the goblins at the {name:goblin_dig} {dir_from_giver:goblin_dig}. Defeat eight of the dig's guards in all, counting Rubble Goblin Slingers and Ore-Guard Hounds. The slingers throw rocks and the hounds rush in, so don't let one distract you from the other.",
+      "text": "They tied my hands, not my ears; I heard the bandits selling our ore to the goblins at the {name:goblin_dig} {dir_from_giver:goblin_dig}. Defeat eight of the dig's guards in all, counting Rubble Slingers and Ore-Guard Hounds. The slingers throw rocks and the hounds rush in, so don't let one distract you from the other.",
       "objectives": [
         {
           "type": "kill",
@@ -442,7 +442,7 @@
         "copperfell_dig_01"
       ],
       "title": "Our Wages, Nog's Problem",
-      "text": "Goblin Foreman Nog pays his crew out of Stolen Purses, which makes every carter here an unwilling investor. Bring back three of those purses from the Rubble Goblin Slingers at the {name:goblin_dig} and kill Nog himself there; draw him away from his crew if you can, because I'd like our wages back without owing you a funeral. And look at the purses before you hand them over: goblins don't stamp their money, but somebody stamped these.",
+      "text": "Goblin Foreman Nog pays his crew out of Stolen Purses, which makes every carter here an unwilling investor. Bring back three of those purses from the Rubble Slingers at the {name:goblin_dig} and kill Nog himself there; draw him away from his crew if you can, because I'd like our wages back without owing you a funeral. And look at the purses before you hand them over: goblins don't stamp their money, but somebody stamped these.",
       "objectives": [
         {
           "type": "kill",
@@ -505,7 +505,7 @@
         "copperfell_dig_02"
       ],
       "title": "Bounty: Rocks in Lieu of Rent",
-      "text": "More Rubble Goblin Slingers have moved into the {name:goblin_dig}, and they're still throwing our mountain at us. Defeat six there and come back for your pay. This bounty is repeatable thirty minutes after you hand it in; I'll keep the account open.",
+      "text": "More Rubble Slingers have moved into the {name:goblin_dig}, and they're still throwing our mountain at us. Defeat six there and come back for your pay. This bounty is repeatable thirty minutes after you hand it in; I'll keep the account open.",
       "objectives": [
         {
           "type": "kill",

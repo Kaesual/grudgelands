@@ -242,7 +242,7 @@
       "level": 52,
       "requires": [],
       "title": "No Shoring, No Sense",
-      "text": "Salt-Boring Weevils are tunnelling through the {name:front_gravesalt_escarpment/saltflats}, which lie {zone_area:front_gravesalt_escarpment/saltflats}, without a thought for what stands above them. Kill six there by day before another stretch gives way. Even my worst apprentice knew to brace a tunnel, and he once shored up his own beard.",
+      "text": "Brine Borers are tunnelling through the {name:front_gravesalt_escarpment/saltflats}, which lie {zone_area:front_gravesalt_escarpment/saltflats}, without a thought for what stands above them. Kill six there by day before another stretch gives way. Even my worst apprentice knew to brace a tunnel, and he once shored up his own beard.",
       "objectives": [
         {
           "type": "kill",
@@ -269,7 +269,7 @@
       "level": 52,
       "requires": [],
       "title": "Rope with Opinions",
-      "text": "A line strung between trees ought to help a traveller find the path. In the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, it helps Salt-Web Bonelurker Spiders find supper. Kill six of those spiders after dark; I'd like our crews to finish a night shift under their own power.",
+      "text": "A line strung between trees ought to help a traveller find the path. In the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, it helps Tomb Widows find supper. Kill six of those spiders after dark; I'd like our crews to finish a night shift under their own power.",
       "objectives": [
         {
           "type": "kill",
@@ -299,7 +299,7 @@
         "splitbolt_front_02"
       ],
       "title": "Something for the Mortar Crew",
-      "text": "The mortar crew has asked for Salt Chitin, and for once the request came without a lecture. Bring me three pieces from Salt-Boring Weevils on the {name:front_gravesalt_escarpment/blight_terraces}, which lie {zone_area:front_gravesalt_escarpment/blight_terraces}, by day. I'll keep them busy arguing over the mixing trough until you're back.",
+      "text": "The mortar crew has asked for Salt Chitin, and for once the request came without a lecture. Bring me three pieces from Brine Borers on the {name:front_gravesalt_escarpment/blight_terraces}, which lie {zone_area:front_gravesalt_escarpment/blight_terraces}, by day. I'll keep them busy arguing over the mixing trough until you're back.",
       "objectives": [
         {
           "type": "item",
@@ -329,7 +329,7 @@
         "splitbolt_front_03"
       ],
       "title": "Leave the Graves Out of It",
-      "text": "Salt-Hex Bog Witches gather after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, counting salt over the graves. Our ancestors earned their rest, and so did whoever lies there. Kill six of those witches at night before their muttering wakes something we have to bury twice.",
+      "text": "Brine Witches gather after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, counting salt over the graves. Our ancestors earned their rest, and so did whoever lies there. Kill six of those witches at night before their muttering wakes something we have to bury twice.",
       "objectives": [
         {
           "type": "kill",
@@ -417,7 +417,7 @@
         "accord_main_roll"
       ],
       "title": "The Last Watch Ends",
-      "text": "Fresh branded pay reaches the {name:front_gravesalt_escarpment/ossuary_wood}, and the Last-Watch Skeleton Raiders shoulder their weapons for another night. Destroy five there after dark, then defeat {name:watch_captain_huskell}, {dir_from_giver:watch_captain_huskell}. His roll should tell us who keeps paying for the watch; somebody has to relieve it, and it may as well be you.",
+      "text": "Fresh branded pay reaches the {name:front_gravesalt_escarpment/ossuary_wood}, and the Last-Watch Sentries shoulder their weapons for another night. Destroy five there after dark, then defeat {name:watch_captain_huskell}, {dir_from_giver:watch_captain_huskell}. His roll should tell us who keeps paying for the watch; somebody has to relieve it, and it may as well be you.",
       "objectives": [
         {
           "type": "kill",
@@ -487,7 +487,7 @@
         "splitbolt_front_05"
       ],
       "title": "Bounty: Cobwebs Are a Hazard",
-      "text": "My crews keep finding fresh webs in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Kill five Salt-Web Bonelurker Spiders there at night and collect a bounty. The job is available again twenty-five minutes after each turn-in. I'd sooner budget for you than keep replacing workers' boots with the workers still in them.",
+      "text": "My crews keep finding fresh webs in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Kill five Tomb Widows there at night and collect a bounty. The job is available again twenty-five minutes after each turn-in. I'd sooner budget for you than keep replacing workers' boots with the workers still in them.",
       "objectives": [
         {
           "type": "kill",

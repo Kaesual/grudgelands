@@ -60,7 +60,7 @@
         "stillgrave_departure"
       ],
       "title": "The Fen Gives Them Back",
-      "text": "Every morning the Rooting Plague Boars dig up another burial in the {name:blightfields}, which lies {zone_area:blightfields}, and I find myself burying old acquaintances again. Kill eight during the day. Some of the disturbed graves have tally marks beside them; even in Mournfen, I do not suspect the boars of bookkeeping.",
+      "text": "Every morning the Fen Rooters dig up another burial in the {name:blightfields}, which lies {zone_area:blightfields}, and I find myself burying old acquaintances again. Kill eight during the day. Some of the disturbed graves have tally marks beside them; even in Mournfen, I do not suspect the boars of bookkeeping.",
       "objectives": [
         {
           "type": "kill",
@@ -167,7 +167,7 @@
         "mournfen_watch_01"
       ],
       "title": "A Light Can Lie",
-      "text": "Mourners see the Wandering Wisps over the {name:wispfen}, which lies {zone_area:wispfen}, after dark and think someone has come to guide them home. Put out seven before more people follow them into the water. Go by night; by day you will find Plague Tuskers, whose intentions are at least easy to read.",
+      "text": "Mourners see the Corpse Candles over the {name:wispfen}, which lies {zone_area:wispfen}, after dark and think someone has come to guide them home. Put out seven before more people follow them into the water. Go by night; by day you will find Plague Tuskers, whose intentions are at least easy to read.",
       "objectives": [
         {
           "type": "kill",
@@ -196,7 +196,7 @@
         "mournfen_fen_02"
       ],
       "title": "Visiting Hours Are Cancelled",
-      "text": "The Plague Tuskers in the {name:barrowfields}, which lies {zone_area:barrowfields}, now greet daytime mourners with a charge. Kill seven so we can tend the graves without adding hurriedly to them. Watch for Cairn Sun-Dried Husks among the barrows; I have enough names awaiting entry without yours.",
+      "text": "The Plague Tuskers in the {name:barrowfields}, which lies {zone_area:barrowfields}, now greet daytime mourners with a charge. Kill seven so we can tend the graves without adding hurriedly to them. Watch for Peat Husks among the barrows; I have enough names awaiting entry without yours.",
       "objectives": [
         {
           "type": "kill",
@@ -256,7 +256,7 @@
         "mournfen_watch_02"
       ],
       "title": "A Flame Worth Keeping",
-      "text": "Bring me three Wisp Motes from the Wandering Wisps that appear in the {name:wispfen} after dark. I need them for the vigil candles. When the last visitor leaves, I like there to be a little light left behind.",
+      "text": "Bring me three Wisp Motes from the Corpse Candles that appear in the {name:wispfen} after dark. I need them for the vigil candles. When the last visitor leaves, I like there to be a little light left behind.",
       "objectives": [
         {
           "type": "item",
@@ -369,7 +369,7 @@
         "mournfen_watch_04"
       ],
       "title": "Strike Out the Counter",
-      "text": "I counted every sack they carried to the {name:mire_nests} {dir_from_giver:mire_nests}; there was precious little else to do from a cage. {name:reed_counter_silt} counts the bones there and pays the bandits in pearls. Kill five Reed Mirefolk at the nests and the Reed-Counter as well, then take word to Sera Vane at the outpost. I would dearly like my last memory of this place to be of their accounts failing to add up.",
+      "text": "I counted every sack they carried to the {name:mire_nests} {dir_from_giver:mire_nests}; there was precious little else to do from a cage. {name:reed_counter_silt} counts the bones there and pays the bandits in pearls. Kill five Mire Hagglers at the nests and the Reed-Counter as well, then take word to Sera Vane at the outpost. I would dearly like my last memory of this place to be of their accounts failing to add up.",
       "objectives": [
         {
           "type": "kill",
@@ -463,7 +463,7 @@
         "mournfen_watch_04"
       ],
       "title": "Bounty: Six Fewer False Lights",
-      "text": "Wandering Wisps are gathering over the {name:deepfen}, which lies {zone_area:deepfen}, after dark, and I have no wish to drag another hopeful traveller out of the reeds. Put out six and report to me. The watch offers this task again twenty-five minutes after you hand it in; until then, distrust anything that glows and beckons.",
+      "text": "Ghostlights are gathering over the {name:deepfen}, which lies {zone_area:deepfen}, after dark, and I have no wish to drag another hopeful traveller out of the reeds. Put out six and report to me. The watch offers this task again twenty-five minutes after you hand it in; until then, distrust anything that glows and beckons.",
       "objectives": [
         {
           "type": "kill",

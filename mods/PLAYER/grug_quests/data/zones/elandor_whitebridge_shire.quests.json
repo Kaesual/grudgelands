@@ -240,7 +240,7 @@
       "level": 26,
       "requires": [],
       "title": "Optional: Bears in the Stores",
-      "text": "Bramble Bears from the {name:briarwood} {dir_of:r20_anchor_062:briarwood} keep raiding our stores, and one of them has developed a taste for chalk-dusted biscuits. Bring down five by day. After dark the Briar-Web Spiders take that wood, and you are welcome to leave them to it.",
+      "text": "Bramble Bears from the {name:briarwood} {dir_of:r20_anchor_062:briarwood} keep raiding our stores, and one of them has developed a taste for chalk-dusted biscuits. Bring down five by day. After dark the Orbweavers take that wood, and you are welcome to leave them to it.",
       "objectives": [
         {
           "type": "kill",
@@ -293,7 +293,7 @@
       "level": 28,
       "requires": [],
       "title": "The Basket Toll",
-      "text": "Toll Mirefolk at the {name:ferry_camp} {dir_from_giver:ferry_camp} demand payment for every river basket, and Murk calls the whole business a ferry service. Defeat five of them, by day or night. They rush to help one another inside the camp, so fight from its edge. I can mend a cart, but I cannot keep mending our accounts after every crossing.",
+      "text": "Ferry Tollers at the {name:ferry_camp} {dir_from_giver:ferry_camp} demand payment for every river basket, and Murk calls the whole business a ferry service. Defeat five of them, by day or night. They rush to help one another inside the camp, so fight from its edge. I can mend a cart, but I cannot keep mending our accounts after every crossing.",
       "objectives": [
         {
           "type": "kill",
@@ -320,7 +320,7 @@
       "level": 22,
       "requires": [],
       "title": "Optional: The Siltbasket Toll",
-      "text": "Before Murk built his ferry business, his relatives set up the {name:siltbasket} {dir_from_giver:siltbasket}, and they still charge carters for the privilege of being robbed. Defeat six Toll Mirefolk there, by day or night. Fight from the edge of the camp; they rush to help each other.",
+      "text": "Before Murk built his ferry business, his relatives set up the {name:siltbasket} {dir_from_giver:siltbasket}, and they still charge carters for the privilege of being robbed. Defeat six Gillbacks there, by day or night. Fight from the edge of the camp; they rush to help each other.",
       "objectives": [
         {
           "type": "kill",
@@ -379,7 +379,7 @@
         "whitebridge_river_01"
       ],
       "title": "Bounty: Webs Enough for a Wagon",
-      "text": "The Briar-Web Spiders have strung the {name:thornwood}, which lies {zone_area:thornwood}, with enough web to wrap a wagon. Kill six there after dark and report back for your bounty. I can offer the job again twenty-five minutes after you turn it in; bring yourself back, and leave the spiders where they fall.",
+      "text": "The Orbweavers have strung the {name:thornwood}, which lies {zone_area:thornwood}, with enough web to wrap a wagon. Kill six there after dark and report back for your bounty. I can offer the job again twenty-five minutes after you turn it in; bring yourself back, and leave the spiders where they fall.",
       "objectives": [
         {
           "type": "kill",

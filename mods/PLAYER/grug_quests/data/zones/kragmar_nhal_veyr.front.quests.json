@@ -10,7 +10,7 @@
       "level": 55,
       "requires": [],
       "title": "Dressed for the Long Rest",
-      "text": "Our shroud cupboard is nearly bare, and I refuse to enter 'wrapped in a sack' beside another name. Bring me two Glass Spider Silk from the Glass-Web Jungle Spiders at night in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}. We may keep our dead for centuries; we can at least dress them properly.",
+      "text": "Our shroud cupboard is nearly bare, and I refuse to enter 'wrapped in a sack' beside another name. Bring me two Glass Spider Silk from the Gossamer Widows at night in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}. We may keep our dead for centuries; we can at least dress them properly.",
       "objectives": [
         {
           "type": "item",
@@ -67,7 +67,7 @@
         "nv_front_02"
       ],
       "title": "Bounty: Older Than the Records",
-      "text": "The Crown Frost Strays on The Wyrmglass Crown have outlasted every record I can find of them. Get a boat from the Shipwright and sail across the channel to the island, then destroy eight at night in the {name:front_wyrmglass_crown/scree}, which lies {zone_area:front_wyrmglass_crown/scree}. Return for your payment in coin; the bounty becomes available again one hour after turn-in. Do return in person, please, rather than as another entry.",
+      "text": "The Frostbones on The Wyrmglass Crown have outlasted every record I can find of them. Get a boat from the Shipwright and sail across the channel to the island, then destroy eight at night in the {name:front_wyrmglass_crown/scree}, which lies {zone_area:front_wyrmglass_crown/scree}. Return for your payment in coin; the bounty becomes available again one hour after turn-in. Do return in person, please, rather than as another entry.",
       "objectives": [
         {
           "type": "kill",

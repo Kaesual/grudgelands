@@ -54,7 +54,7 @@
         "totemwater_knots_01"
       ],
       "title": "Our Ancestors Are Not Cushions",
-      "text": "The carvers leave their totems in the {name:totemwood}, {zone_area:totemwood}, and the Reed Jungle Lynxes promptly curl up on them. Kill six lynxes there by day so the work can continue. An ancestor's face deserves better than a tail across the nose.",
+      "text": "The carvers leave their totems in the {name:totemwood}, {zone_area:totemwood}, and the Totem Lynxes promptly curl up on them. Kill six lynxes there by day so the work can continue. An ancestor's face deserves better than a tail across the nose.",
       "objectives": [
         {
           "type": "kill",
@@ -82,7 +82,7 @@
         "totemwater_knots_02"
       ],
       "title": "Read by Restless Light",
-      "text": "The next knot will not speak clearly by firelight, and I do not care for what that usually means. Bring me two Bound Wisp Motes from the Wandering Wisps in the {name:wispfen} {dir_from_giver:wispfen} after dark. I will read again by wisp-light; you keep your feet on a path you trust.",
+      "text": "The next knot will not speak clearly by firelight, and I do not care for what that usually means. Bring me two Bound Wisp Motes from the Marshlights in the {name:wispfen} {dir_from_giver:wispfen} after dark. I will read again by wisp-light; you keep your feet on a path you trust.",
       "objectives": [
         {
           "type": "item",
@@ -187,7 +187,7 @@
       "level": 23,
       "requires": [],
       "title": "Optional: Lights Over the Traps",
-      "text": "After dark the Wandering Wisps drift through the {name:jungle} and lead my fishers off the path to the traps. Put out six of them. The knots say nothing about this one; I simply prefer my fishers to come home the way they left.",
+      "text": "After dark the Marshlights drift through the {name:jungle} and lead my fishers off the path to the traps. Put out six of them. The knots say nothing about this one; I simply prefer my fishers to come home the way they left.",
       "objectives": [
         {
           "type": "kill",

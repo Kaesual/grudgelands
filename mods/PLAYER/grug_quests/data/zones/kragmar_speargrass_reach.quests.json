@@ -50,7 +50,7 @@
       "level": 22,
       "requires": [],
       "title": "Nothing Under the Sheaves",
-      "text": "Dust-Stinger Scorpions crawl under the cut sheaves on the {name:plains}, {zone_area:plains}, and every cutter who lifts one after dark lifts a scorpion with it. Kill eight there at night. A spear shaft should leave the Wellhold with no sting attached.",
+      "text": "Sheaf Stingers crawl under the cut sheaves on the {name:plains}, {zone_area:plains}, and every cutter who lifts one after dark lifts a scorpion with it. Kill eight there at night. A spear shaft should leave the Wellhold with no sting attached.",
       "objectives": [
         {
           "type": "kill",
@@ -241,7 +241,7 @@
       "level": 29,
       "requires": [],
       "title": "Our Colours Are Not for Sale",
-      "text": "Goblin Banner-Broker Rakk is selling our stolen war banners back to us from the {name:goblin_camp}, {dir_from_giver:goblin_camp}. Kill eight of his Ore-Thieving Goblins or Rubble Goblin Slingers in any mix, and kill Rakk himself. Orcs bled beneath those colours; he will not haggle over them.",
+      "text": "Goblin Banner-Broker Rakk is selling our stolen war banners back to us from the {name:goblin_camp}, {dir_from_giver:goblin_camp}. Kill eight of his Banner Looters or Stone Pelters in any mix, and kill Rakk himself. Orcs bled beneath those colours; he will not haggle over them.",
       "objectives": [
         {
           "type": "kill",

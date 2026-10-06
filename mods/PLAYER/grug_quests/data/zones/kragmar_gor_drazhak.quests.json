@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "A Sentry Needs Both Feet",
-      "text": "Gor Drazhak's sentries should be watching for enemy banners, yet half their night goes to watching their ankles. Kill eight Dust-Stinger Scorpions after dark on the {name:steppe}, {dir_of:gor_drazhak:steppe}. A sentry hopping on one foot frightens nobody.",
+      "text": "Gor Drazhak's sentries should be watching for enemy banners, yet half their night goes to watching their ankles. Kill eight Dust Stingers after dark on the {name:steppe}, {dir_of:gor_drazhak:steppe}. A sentry hopping on one foot frightens nobody.",
       "objectives": [
         {
           "type": "kill",
@@ -90,7 +90,7 @@
         "gor_drazhak_muster_01"
       ],
       "title": "His Profit, Our Empty Bowls",
-      "text": "Bandit Ration-Broker Garr buys Korr's stolen supplies and charges hungry fighters for the privilege of getting them back. At the {name:tollcamp}, {dir_of:gor_drazhak:tollcamp}, kill six Toll Bandit Archers and Garr himself. Let Garr learn what the Throng charges for stealing its supper.",
+      "text": "Bandit Ration-Broker Garr buys Korr's stolen supplies and charges hungry fighters for the privilege of getting them back. At the {name:tollcamp}, {dir_of:gor_drazhak:tollcamp}, kill six Toll Archers and Garr himself. Let Garr learn what the Throng charges for stealing its supper.",
       "objectives": [
         {
           "type": "kill",
@@ -150,7 +150,7 @@
         "gor_drazhak_muster_03"
       ],
       "title": "Bounty: A Toll Paid in Arrows",
-      "text": "More Toll Bandit Archers have settled into the {name:tollcamp}; evidently word travels slower than greed. Kill six and return for your bounty. You may take the job again twenty minutes after collecting your pay.",
+      "text": "More Toll Archers have settled into the {name:tollcamp}; evidently word travels slower than greed. Kill six and return for your bounty. You may take the job again twenty minutes after collecting your pay.",
       "objectives": [
         {
           "type": "kill",
@@ -180,7 +180,7 @@
       "level": 24,
       "requires": [],
       "title": "The Ladle Commands",
-      "text": "Warriors can argue about who leads the march; at supper, every last one answers to my ladle. Bring me eight pieces of Raw Meat and two Braided Sinew from the Waterhole Zebras that graze the {name:badlands} by day. We have ration bundles to tie and a hungry muster to fill them for.",
+      "text": "Warriors can argue about who leads the march; at supper, every last one answers to my ladle. Bring me eight pieces of Raw Meat and two Braided Sinew from the Quaggas that graze the {name:badlands} by day. We have ration bundles to tie and a hungry muster to fill them for.",
       "objectives": [
         {
           "type": "item",

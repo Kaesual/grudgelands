@@ -70,7 +70,7 @@
       "level": 31,
       "requires": [],
       "title": "Three Crates Out, Two Crates In",
-      "text": "Every third ration crate vanishes between the storehouse and the line, and my cooks are running out of ways to call hot water supper. Defeat five Entrenched Bandits at the {name:ration_camp} {dir_from_giver:ration_camp}, where our missing meals have found an appreciative audience. Someone is keeping those thieves very well supplied.",
+      "text": "Every third ration crate vanishes between the storehouse and the line, and my cooks are running out of ways to call hot water supper. Defeat five Ration Robbers at the {name:ration_camp} {dir_from_giver:ration_camp}, where our missing meals have found an appreciative audience. Someone is keeping those thieves very well supplied.",
       "objectives": [
         {
           "type": "kill",
@@ -99,7 +99,7 @@
         "ashenward_rations_01"
       ],
       "title": "The Trees Can Pay for That",
-      "text": "At night, Rootbound Ashen Treants roam the {name:cinderwood}, which lies {zone_area:cinderwood}, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
+      "text": "At night, Charred Oaks roam the {name:cinderwood}, which lies {zone_area:cinderwood}, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
       "objectives": [
         {
           "type": "kill",
@@ -241,7 +241,7 @@
         "ashenward_rations_01"
       ],
       "title": "Bounty: No Rations for the Dead",
-      "text": "Every night, March Skeleton Raiders haunt the ration road through the {name:ashfields}, which lie {zone_area:ashfields}, though not one of them has a stomach left to fill. Break six of them after dark so my drivers can deliver supper to someone who'll eat it. This bounty is repeatable, twenty minutes after you turn it in.",
+      "text": "Every night, Bone Levies haunt the ration road through the {name:ashfields}, which lie {zone_area:ashfields}, though not one of them has a stomach left to fill. Break six of them after dark so my drivers can deliver supper to someone who'll eat it. This bounty is repeatable, twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -271,7 +271,7 @@
       "level": 35,
       "requires": [],
       "title": "Honey Is Not Worth a Driver",
-      "text": "The Bramble Bears in the {name:hedgewood}, which lies {zone_area:hedgewood}, have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill four of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
+      "text": "The Bruins in the {name:hedgewood}, which lies {zone_area:hedgewood}, have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill four of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
       "objectives": [
         {
           "type": "kill",
@@ -300,7 +300,7 @@
         "ashenward_hedge_01"
       ],
       "title": "Webs Across the Wagon Road",
-      "text": "With the bears thinned, Briar-Web Spiders take the {name:hedgewood} at night and string our wagon road shut, horses and all. Kill four of them after dark. Cut the drivers loose first if you find any; the spiders will wait, they always do.",
+      "text": "With the bears thinned, Ash Widows take the {name:hedgewood} at night and string our wagon road shut, horses and all. Kill four of them after dark. Cut the drivers loose first if you find any; the spiders will wait, they always do.",
       "objectives": [
         {
           "type": "kill",
@@ -329,7 +329,7 @@
         "ashenward_hedge_webs"
       ],
       "title": "A Uniform Is Not a Target",
-      "text": "Entrenched Bandit Archers at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Keep low on the approach; I'd rather read your report than have you delivered as one.",
+      "text": "Hedge Bowmen at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Keep low on the approach; I'd rather read your report than have you delivered as one.",
       "objectives": [
         {
           "type": "kill",
@@ -517,7 +517,7 @@
         "lasthedge_front_04"
       ],
       "title": "Read Before Accusing",
-      "text": "Ninepins pledged his standard against the next payment, and The Throng's high war camp sits on the same line, but a seal does not tell us whose hand pressed it. Defeat the Throng Captain at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
+      "text": "Ninepins pledged his standard against the next payment, and The Throng's high war camp sits on the same line, but a seal does not tell us whose hand pressed it. Defeat {captain:pvp_camp_shattered_line_throng_high} at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
       "objectives": [
         {
           "type": "item",

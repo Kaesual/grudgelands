@@ -39,7 +39,7 @@
       "level": 31,
       "requires": [],
       "title": "Bad News Travels on Legs",
-      "text": "Bonewood Plaguehide Bears have taken to opening our dispatches, usually with the runner still attached. Hunt them by day in the {name:bonewood}, which lies {zone_area:bonewood}, and kill four. I prefer bad news delivered with all its limbs.",
+      "text": "Gale Bears have taken to opening our dispatches, usually with the runner still attached. Hunt them by day in the {name:bonewood}, which lies {zone_area:bonewood}, and kill four. I prefer bad news delivered with all its limbs.",
       "objectives": [
         {
           "type": "kill",
@@ -67,7 +67,7 @@
         "blackwind_ashes_01"
       ],
       "title": "Trees Without Leave",
-      "text": "Roots ought to stay buried, a rule the Lichen Gravewood Treants ignore after dark in the {name:bonewood}. Fell four and bring me two portions of Bitter Resin for Ashveil's lamps. Yes, I hear the irony; I am choosing to ignore it.",
+      "text": "Roots ought to stay buried, a rule the Blackthorns ignore after dark in the {name:bonewood}. Fell four and bring me two portions of Bitter Resin for Ashveil's lamps. Yes, I hear the irony; I am choosing to ignore it.",
       "objectives": [
         {
           "type": "kill",
@@ -152,7 +152,7 @@
         "blackwind_ashes_02"
       ],
       "title": "Bounty: A Recurring Appetite",
-      "text": "The Bonewood Plaguehide Bears in the {name:bonewood} remain unmoved by our casualty reports. Kill six during daylight and collect your pay. Twenty minutes after payment, I can offer the bounty again; apparently we are budgeting for an endless appetite.",
+      "text": "The Gale Bears in the {name:bonewood} remain unmoved by our casualty reports. Kill six during daylight and collect your pay. Twenty minutes after payment, I can offer the bounty again; apparently we are budgeting for an endless appetite.",
       "objectives": [
         {
           "type": "kill",
@@ -182,7 +182,7 @@
       "level": 35,
       "requires": [],
       "title": "Crates Before Glory",
-      "text": "Everyone wants a glorious last stand until they discover the supply crates have been eaten. Kill four Marrow Weevils by day in the {name:webwood}, which lies {zone_area:webwood}, before they chew through another shipment. I have already had one last stand, and I intend to provision this one properly.",
+      "text": "Everyone wants a glorious last stand until they discover the supply crates have been eaten. Kill four Sexton Beetles by day in the {name:webwood}, which lies {zone_area:webwood}, before they chew through another shipment. I have already had one last stand, and I intend to provision this one properly.",
       "objectives": [
         {
           "type": "kill",
@@ -210,7 +210,7 @@
         "blackwind_arch_01"
       ],
       "title": "An End to the Brokerage",
-      "text": "Grave-Broker Mute sells linen stolen from our dead at the {name:bandit_hideout} {dir_from_giver:bandit_hideout}. Kill four of his Entrenched Bandits or Entrenched Bandit Archers in any combination, and kill Mute as well. Some of us are still wearing what he considers stock.",
+      "text": "Grave-Broker Mute sells linen stolen from our dead at the {name:bandit_hideout} {dir_from_giver:bandit_hideout}. Kill four of his Shroud Robbers or Shroud Archers in any combination, and kill Mute as well. Some of us are still wearing what he considers stock.",
       "objectives": [
         {
           "type": "kill",
@@ -247,7 +247,7 @@
         "blackwind_arch_02"
       ],
       "title": "An Answer for {name:pallcloth_den}",
-      "text": "The Entrenched Bandit Archers at the {name:pallcloth_den} {dir_from_giver:pallcloth_den} take every Throng banner as an invitation to shoot. Kill four before another carrier has to crawl home beneath one; my people have enough trouble keeping their limbs attached.",
+      "text": "The Shroud Archers at the {name:pallcloth_den} {dir_from_giver:pallcloth_den} take every Throng banner as an invitation to shoot. Kill four before another carrier has to crawl home beneath one; my people have enough trouble keeping their limbs attached.",
       "objectives": [
         {
           "type": "kill",
@@ -304,7 +304,7 @@
         "blackwind_arch_03"
       ],
       "title": "Bounty: Webs on the Supply Line",
-      "text": "Night brings Grave-Web Bonelurker Spiders to the {name:hollowwood}, which lies {zone_area:hollowwood}, and by morning our supply routes look ready for embalming. Kill six and return for payment. The bounty opens again twenty minutes after you collect; I shall keep a line in the accounts for unwanted shrouds.",
+      "text": "Night brings Moor Widows to the {name:hollowwood}, which lies {zone_area:hollowwood}, and by morning our supply routes look ready for embalming. Kill six and return for payment. The bounty opens again twenty minutes after you collect; I shall keep a line in the accounts for unwanted shrouds.",
       "objectives": [
         {
           "type": "kill",

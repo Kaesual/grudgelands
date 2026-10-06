@@ -59,7 +59,7 @@
       "level": 21,
       "requires": [],
       "title": "Before the Speeches Begin",
-      "text": "The Star Hall has requested a meal worthy of its deliberations; I should prefer one ready before they end. Bring me five pieces of Raw Meat and one Braided Sinew, hunting Moss-Antler Stags by day in the {name:glades} {dir_of:lethariel:glades} for the sinew. Their yellow names mean they will not attack first, so choose your quarry with care.",
+      "text": "The Star Hall has requested a meal worthy of its deliberations; I should prefer one ready before they end. Bring me five pieces of Raw Meat and one Braided Sinew, hunting Brook Hinds by day in the {name:glades} {dir_of:lethariel:glades} for the sinew. Their yellow names mean they will not attack first, so choose your quarry with care.",
       "objectives": [
         {
           "type": "item",
@@ -93,7 +93,7 @@
         "lethariel_wardens_01"
       ],
       "title": "No Charge for the Grass",
-      "text": "Someone has decided that walking beneath Lethariel's trees requires a fee, complete with an imitation of our bough-seal. Defeat four Toll Bandits after dark in the {name:glades} {dir_of:lethariel:glades}; they appear only at night and are few enough to require a patient search. We planted shade for travellers, not a source of revenue for thieves.",
+      "text": "Someone has decided that walking beneath Lethariel's trees requires a fee, complete with an imitation of our bough-seal. Defeat four Lamplight Footpads after dark in the {name:glades} {dir_of:lethariel:glades}; they appear only at night and are few enough to require a patient search. We planted shade for travellers, not a source of revenue for thieves.",
       "objectives": [
         {
           "type": "kill",
@@ -171,7 +171,7 @@
         "lethariel_wardens_02"
       ],
       "title": "What the Seal Was For",
-      "text": "Our bough-seal once meant that a tree would be tended; at the {name:poacher_camp} {dir_from_giver:poacher_camp}, it marks trees for the axe. Defeat five Unlicensed Poachers there, then {name:bough_counter_rusk}, who records the theft. They keep the camp by day and night; separate the leader from his guards before you face him. Some of those trees shaded the hands that first carved our seal.",
+      "text": "Our bough-seal once meant that a tree would be tended; at the {name:poacher_camp} {dir_from_giver:poacher_camp}, it marks trees for the axe. Defeat five Timber Poachers there, then {name:bough_counter_rusk}, who records the theft. They keep the camp by day and night; separate the leader from his guards before you face him. Some of those trees shaded the hands that first carved our seal.",
       "objectives": [
         {
           "type": "kill",
@@ -233,7 +233,7 @@
         "lethariel_wardens_02"
       ],
       "title": "Optional: A Forester's Path",
-      "text": "Our foresters know which roots will trip them; it is the teeth between the roots that trouble me. Kill six Redfang Vixens by day in the {name:greatwood} {dir_of:lethariel:greatwood}. They attack passing travellers, so tend to your wounds before seeking the next.",
+      "text": "Our foresters know which roots will trip them; it is the teeth between the roots that trouble me. Kill six Silver-Tip Vixens by day in the {name:greatwood} {dir_of:lethariel:greatwood}. They attack passing travellers, so tend to your wounds before seeking the next.",
       "objectives": [
         {
           "type": "kill",
@@ -291,7 +291,7 @@
         "lethariel_provisions_01"
       ],
       "title": "Optional: Streaks in the Glaze",
-      "text": "A councillor who overlooked a forged seal spent ten minutes discussing the streaks in my glaze. Bring me two Silver-Tip Fox Tails from Redfang Vixens in the {name:greatwood} {dir_of:lethariel:greatwood} by day, and I can replace my brushes. At least the vixens make their objections quickly.",
+      "text": "A councillor who overlooked a forged seal spent ten minutes discussing the streaks in my glaze. Bring me two Silver-Tip Fox Tails from Silver-Tip Vixens in the {name:greatwood} {dir_of:lethariel:greatwood} by day, and I can replace my brushes. At least the vixens make their objections quickly.",
       "objectives": [
         {
           "type": "item",

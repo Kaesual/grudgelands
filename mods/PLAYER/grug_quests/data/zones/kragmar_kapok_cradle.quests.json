@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "A Boar Has No Use for Beads",
-      "text": "A root feeds a troll, a troll tends the roots; the Small Jungle Boars have skipped their half of the bargain. Kill eight by day in the {name:yam_beds} {dir_of:kapok:yam_beds}; their yellow names mean they leave you alone until you strike. Watch the rain offerings while you hunt, too. Yams go missing into bellies, but carved beads have been disappearing as well.",
+      "text": "A root feeds a troll, a troll tends the roots; the Yam Piglets have skipped their half of the bargain. Kill eight by day in the {name:yam_beds} {dir_of:kapok:yam_beds}; their yellow names mean they leave you alone until you strike. Watch the rain offerings while you hunt, too. Yams go missing into bellies, but carved beads have been disappearing as well.",
       "objectives": [
         {
           "type": "kill",
@@ -62,7 +62,7 @@
         "kapok_hunt_01"
       ],
       "title": "No Peace for the Yams",
-      "text": "The boars sleep, the Large Kapok Rats wake, and our yams get no peace at all. Kill eight rats after dark in the {name:yam_beds} {dir_of:kapok:yam_beds}. Pick your fights carefully: a red-named rat bites first and never apologises.",
+      "text": "The boars sleep, the Moss Rats wake, and our yams get no peace at all. Kill eight rats after dark in the {name:yam_beds} {dir_of:kapok:yam_beds}. Pick your fights carefully: a red-named rat bites first and never apologises.",
       "objectives": [
         {
           "type": "kill",
@@ -91,7 +91,7 @@
         "kapok_hunt_02"
       ],
       "title": "The Roots Remember Feet",
-      "text": "After dark, listen in the {name:rootways}, which lies {zone_area:rootways}: rats scurry, but Braindead Zombies drag their feet. Kill six zombies before they shuffle into somebody's doorway. Sunlight burns them, but I would rather trust your hands than wait for a clear morning.",
+      "text": "After dark, listen in the {name:rootways}, which lies {zone_area:rootways}: rats scurry, but Root Shufflers drag their feet. Kill six zombies before they shuffle into somebody's doorway. Sunlight burns them, but I would rather trust your hands than wait for a clear morning.",
       "objectives": [
         {
           "type": "kill",
@@ -120,7 +120,7 @@
         "kapok_hunt_03"
       ],
       "title": "Read the Tusks",
-      "text": "The {name:thornwood}, {zone_area:thornwood}, teaches a harsher lesson than the yam beds. Kill eight Aggressive Jungle Boars there by day; a red name means they will start the fight without asking. Take them one at a time, and watch for Monstrous Vipers among the vines. Wisdom is mostly noticing the second set of teeth.",
+      "text": "The {name:thornwood}, {zone_area:thornwood}, teaches a harsher lesson than the yam beds. Kill eight Bushpigs there by day; a red name means they will start the fight without asking. Take them one at a time, and watch for Vine Asps among the vines. Wisdom is mostly noticing the second set of teeth.",
       "objectives": [
         {
           "type": "kill",
@@ -149,7 +149,7 @@
         "kapok_hunt_04"
       ],
       "title": "Luck Stolen Twice",
-      "text": "Our rain beads have become lucky charms for sale at the {name:thieves_camp} {dir_from_giver:thieves_camp}. Kill six Confused Offering Thieves there and their leader, Confused Offering Thief Chief Tangle, at the camp's centre. More thieves will come to fill the gaps, so do not wait for an empty camp before you face Tangle. Let us see how much luck a stolen bead can buy.",
+      "text": "Our rain beads have become lucky charms for sale at the {name:thieves_camp} {dir_from_giver:thieves_camp}. Kill six Offering Thieves there and their leader, Thief-Chief Tangle, at the camp's centre. More thieves will come to fill the gaps, so do not wait for an empty camp before you face Tangle. Let us see how much luck a stolen bead can buy.",
       "objectives": [
         {
           "type": "kill",
@@ -432,7 +432,7 @@
         "kapok_hunt_02"
       ],
       "title": "More Holes Than Sack",
-      "text": "My yam sacks have more holes than sack, thanks to the Large Kapok Rats. Hunt them after dark in the {name:yam_beds} {dir_of:kapok:yam_beds} and bring me two Rat Fur Patches for repairs. Keep any spares for your armour; the rats chewed the holes, so the rats can pay for the patches.",
+      "text": "My yam sacks have more holes than sack, thanks to the Moss Rats. Hunt them after dark in the {name:yam_beds} {dir_of:kapok:yam_beds} and bring me two Rat Fur Patches for repairs. Keep any spares for your armour; the rats chewed the holes, so the rats can pay for the patches.",
       "objectives": [
         {
           "type": "item",
@@ -462,7 +462,7 @@
         "kapok_pantry_01"
       ],
       "title": "Guests with Pincers",
-      "text": "A feast needs Crab Legs, and I refuse to count the guests' legs as a substitute. Bring me two from the Small Crabs in the {name:shallows} {dir_from_giver:shallows}. They leave you be until you strike, so choose your crab before you start waving your hands.",
+      "text": "A feast needs Crab Legs, and I refuse to count the guests' legs as a substitute. Bring me two from the Fiddler Crabs in the {name:shallows} {dir_from_giver:shallows}. They leave you be until you strike, so choose your crab before you start waving your hands.",
       "objectives": [
         {
           "type": "item",
@@ -492,7 +492,7 @@
         "kapok_pantry_02"
       ],
       "title": "Supper Above the Mud",
-      "text": "One loose knot and my drying racks will serve supper to the mud. Bring me two Fine Sinew from the Young Tapirs that graze the {name:broadleaf_wood} by day, {zone_area:broadleaf_wood}. The tapirs wait for you to start trouble; the Aggressive Jungle Lynxes sharing their ground do not.",
+      "text": "One loose knot and my drying racks will serve supper to the mud. Bring me two Fine Sinew from the Tapir Calves that graze the {name:broadleaf_wood} by day, {zone_area:broadleaf_wood}. The tapirs wait for you to start trouble; the Ocelots sharing their ground do not.",
       "objectives": [
         {
           "type": "item",

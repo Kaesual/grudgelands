@@ -158,7 +158,7 @@
       "level": 42,
       "requires": [],
       "title": "Nobody's Laughing Here",
-      "text": "Warpack Hyenas have learned that a tired patrol makes easier hunting than a fresh one. Bring down five by day on the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. I promised those sentries they'd get home, and I intend to keep it.",
+      "text": "Siegepack Hyenas have learned that a tired patrol makes easier hunting than a fresh one. Bring down five by day on the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. I promised those sentries they'd get home, and I intend to keep it.",
       "objectives": [
         {
           "type": "kill",
@@ -187,7 +187,7 @@
         "lasthedge_front_01"
       ],
       "title": "The Fletchers' Bright Idea",
-      "text": "The fletchers have requested three Siege Cat Claws, very neatly written and without a single offer to fetch them. Hunt Tallgrass Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring the claws to me. I'll see that your name goes on the delivery.",
+      "text": "The fletchers have requested three Siege Cat Claws, very neatly written and without a single offer to fetch them. Hunt Ash Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring the claws to me. I'll see that your name goes on the delivery.",
       "objectives": [
         {
           "type": "item",
@@ -217,7 +217,7 @@
         "lasthedge_front_02"
       ],
       "title": "A Sentry Needs Somewhere to Stand",
-      "text": "My sentries will stare down an army, but they would like ramparts without scorpions in the cracks. Kill five War-Stinger Scorpions after dark on the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}. It seems a fair request from people who spend all night standing up for us.",
+      "text": "My sentries will stare down an army, but they would like ramparts without scorpions in the cracks. Kill five Siege Scorpions after dark on the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}. It seems a fair request from people who spend all night standing up for us.",
       "objectives": [
         {
           "type": "kill",
@@ -246,7 +246,7 @@
         "lasthedge_front_03"
       ],
       "title": "Dug for the Living",
-      "text": "Both armies dug the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and Siege Skeleton Raiders now man them every night. Break five of them after dark. I would like to hear what our scouts saw out there without first hearing what chased them home.",
+      "text": "Both armies dug the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and Rubble Skeletons now man them every night. Break five of them after dark. I would like to hear what our scouts saw out there without first hearing what chased them home.",
       "objectives": [
         {
           "type": "kill",
@@ -276,7 +276,7 @@
         "accord_main_standard"
       ],
       "title": "Nobody Left to Rally",
-      "text": "That stitching is a pledge: every soldier under the standard is borrowed against the next payment, and fresh wages keep them rallying to a war lost long ago. Defeat five Siege Skeleton Raiders or Brandbound Collectors in all, after dark at the {name:front_shattered_line/breach}. Find {name:standard_bearer_ninepins}, {dir_from_giver:standard_bearer_ninepins}, and end his command as well. Report back to me, then seek the Warmaster's orders; I'd like the next thing our watch hears from that breach to be the wind.",
+      "text": "That stitching is a pledge: every soldier under the standard is borrowed against the next payment, and fresh wages keep them rallying to a war lost long ago. Defeat five Rubble Skeletons or Brandbound Collectors in all, after dark at the {name:front_shattered_line/breach}. Find {name:standard_bearer_ninepins}, {dir_from_giver:standard_bearer_ninepins}, and end his command as well. Report back to me, then seek the Warmaster's orders; I'd like the next thing our watch hears from that breach to be the wind.",
       "objectives": [
         {
           "type": "kill",
@@ -347,7 +347,7 @@
         "lasthedge_front_04"
       ],
       "title": "Bounty: Room for a Lookout",
-      "text": "The Tallgrass Tigers have picked the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, for themselves, and I need it for a lookout. Bring down five there by day for a bounty. You can take the job again twenty-five minutes after each turn-in; apparently my sentries and the cats share a taste in views.",
+      "text": "The Crest Tigers have picked the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, for themselves, and I need it for a lookout. Bring down five there by day for a bounty. You can take the job again twenty-five minutes after each turn-in; apparently my sentries and the cats share a taste in views.",
       "objectives": [
         {
           "type": "kill",
@@ -473,7 +473,7 @@
       "level": 42,
       "requires": [],
       "title": "Intelligence with Teeth",
-      "text": "My scouts are meant to count Throng tents, but lately their reports contain more teeth than canvas. Kill five Warpack Hyenas by day on the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. A scout should finish a report with both boots still occupied.",
+      "text": "My scouts are meant to count Throng tents, but lately their reports contain more teeth than canvas. Kill five Siegepack Hyenas by day on the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. A scout should finish a report with both boots still occupied.",
       "objectives": [
         {
           "type": "kill",
@@ -500,7 +500,7 @@
       "level": 42,
       "requires": [],
       "title": "Blind the {name:pvp_camp_broken_causeway_throng_low}",
-      "text": "The {name:pvp_camp_broken_causeway_throng_low}, which lies {zone_area:pvp_camp_broken_causeway_throng_low}, has been counting our patrols with an accuracy I find offensive. Defeat four Throng Guards and the Throng Captain at that camp. Give our riders a chance to cross without becoming somebody else's morning report.",
+      "text": "The {name:pvp_camp_broken_causeway_throng_low}, which lies {zone_area:pvp_camp_broken_causeway_throng_low}, has been counting our patrols with an accuracy I find offensive. Defeat four Throng Pickets and {captain:pvp_camp_broken_causeway_throng_low}, who commands them. Give our riders a chance to cross without becoming somebody else's morning report.",
       "objectives": [
         {
           "type": "kill",
@@ -537,7 +537,7 @@
         "ashenward_bastion_picket_broken"
       ],
       "title": "A Gap at the {name:pvp_camp_shattered_line_throng_low}",
-      "text": "The {name:pvp_camp_shattered_line_throng_low}, which lies {zone_area:pvp_camp_shattered_line_throng_low}, watches every path our scouts would prefer to keep private. Kill four Throng Guards and the Throng Captain stationed there. A gap in their watch gives us room to work; keep your own guard up so we do not hand them one in return.",
+      "text": "The {name:pvp_camp_shattered_line_throng_low}, which lies {zone_area:pvp_camp_shattered_line_throng_low}, watches every path our scouts would prefer to keep private. Kill four Throng Pickets and {captain:pvp_camp_shattered_line_throng_low}, who is stationed there. A gap in their watch gives us room to work; keep your own guard up so we do not hand them one in return.",
       "objectives": [
         {
           "type": "kill",
@@ -572,7 +572,7 @@
       "level": 49,
       "requires": [],
       "title": "Dislodge the {name:pvp_camp_broken_causeway_throng_high}",
-      "text": "The troops at the {name:pvp_camp_broken_causeway_throng_high}, which lies {zone_area:pvp_camp_broken_causeway_throng_high}, have had time to settle in and learn their ground. Defeat five Throng Guards and the Throng Captain commanding that camp. Respect their preparation, check your own, and spare me the speech about how courage will cover the difference.",
+      "text": "The troops at the {name:pvp_camp_broken_causeway_throng_high}, which lies {zone_area:pvp_camp_broken_causeway_throng_high}, have had time to settle in and learn their ground. Defeat five Throng Regulars and {captain:pvp_camp_broken_causeway_throng_high}, who commands that camp. Respect their preparation, check your own, and spare me the speech about how courage will cover the difference.",
       "objectives": [
         {
           "type": "kill",
@@ -609,7 +609,7 @@
         "ashenward_bastion_warcamp_broken"
       ],
       "title": "Rout the {name:pvp_camp_shattered_line_throng_high}",
-      "text": "The {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, keeps the Throng's fighting strength on this front close at hand. Kill five Throng Guards and the Throng Captain there. You know the drill: pick your moment, finish the engagement, and count your wounds before you count your victories.",
+      "text": "The {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, keeps the Throng's fighting strength on this front close at hand. Kill five Throng Regulars and {captain:pvp_camp_shattered_line_throng_high} there. You know the drill: pick your moment, finish the engagement, and count your wounds before you count your victories.",
       "objectives": [
         {
           "type": "kill",
@@ -644,7 +644,7 @@
       "level": 52,
       "requires": [],
       "title": "No Cover for the {name:pvp_camp_skyglass_canopy_throng_low}",
-      "text": "A forest offers plenty of cover, and the Throng is making better use of it than I would like. Raid the {name:pvp_camp_skyglass_canopy_throng_low}, which lies {zone_area:pvp_camp_skyglass_canopy_throng_low}, and defeat four Throng Guards and the Throng Captain there. My scouts can handle roots and mist; give them fewer enemy sentries to worry about.",
+      "text": "A forest offers plenty of cover, and the Throng is making better use of it than I would like. Raid the {name:pvp_camp_skyglass_canopy_throng_low}, which lies {zone_area:pvp_camp_skyglass_canopy_throng_low}, and defeat four Throng Skirmishers and {captain:pvp_camp_skyglass_canopy_throng_low} there. My scouts can handle roots and mist; give them fewer enemy sentries to worry about.",
       "objectives": [
         {
           "type": "kill",
@@ -681,7 +681,7 @@
         "ashenward_bastion_picket_skyglass"
       ],
       "title": "Pressure on the {name:pvp_camp_gravesalt_escarpment_throng_low}",
-      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_low}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_low}, gives the Throng a watch on ground our scouts need to cross. Kill four Throng Guards and the Throng Captain at that post. We need breathing room out there, and the enemy has declined to provide it on request.",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_low}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_low}, gives the Throng a watch on ground our scouts need to cross. Kill four Throng Skirmishers and {captain:pvp_camp_gravesalt_escarpment_throng_low}, who keeps that post. We need breathing room out there, and the enemy has declined to provide it on request.",
       "objectives": [
         {
           "type": "kill",
@@ -716,7 +716,7 @@
       "level": 59,
       "requires": [],
       "title": "Test the {name:pvp_camp_skyglass_canopy_throng_high}",
-      "text": "At the {name:pvp_camp_skyglass_canopy_throng_high}, which lies {zone_area:pvp_camp_skyglass_canopy_throng_high}, the Throng has soldiers who know how to fight when the trees swallow every shouted order. Keep a steady hand and defeat five Throng Guards and the Throng Captain in that camp. Settle on your plan before you go; I have yet to see a fern relay a command correctly.",
+      "text": "At the {name:pvp_camp_skyglass_canopy_throng_high}, which lies {zone_area:pvp_camp_skyglass_canopy_throng_high}, the Throng has soldiers who know how to fight when the trees swallow every shouted order. Keep a steady hand and defeat five Throng Veterans and {captain:pvp_camp_skyglass_canopy_throng_high} in that camp. Settle on your plan before you go; I have yet to see a fern relay a command correctly.",
       "objectives": [
         {
           "type": "kill",
@@ -753,7 +753,7 @@
         "ashenward_bastion_warcamp_skyglass"
       ],
       "title": "Under Stonegrudge's Eye",
-      "text": "War Commander Stonegrudge now fights beside the garrison at the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. Defeat five Throng Guards and the Throng Captain in that camp, and take a group if you need one; the elite commander makes this a harder raid. A casualty caused by ignoring the briefing is still a casualty, however brave the report sounds.",
+      "text": "War Commander Stonegrudge now fights beside the garrison at the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. Defeat five Throng Veterans and {captain:pvp_camp_gravesalt_escarpment_throng_high} in that camp, and take a group if you need one; the elite commander makes this a harder raid. A casualty caused by ignoring the briefing is still a casualty, however brave the report sounds.",
       "objectives": [
         {
           "type": "kill",

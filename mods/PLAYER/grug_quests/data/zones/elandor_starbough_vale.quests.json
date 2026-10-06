@@ -114,7 +114,7 @@
         "starbough_boughs_01"
       ],
       "title": "Winter Has Enough Mouths",
-      "text": "The seed we set aside must last until the thaw, and Granary Rats have no respect for that agreement. Kill eight after dark in the {name:lower_boughs}, before their burrows reach our stores. Choose your fights carefully: their squeals invite company.",
+      "text": "The seed we set aside must last until the thaw, and Larder Rats have no respect for that agreement. Kill eight after dark in the {name:lower_boughs}, before their burrows reach our stores. Choose your fights carefully: their squeals invite company.",
       "objectives": [
         {
           "type": "kill",
@@ -142,7 +142,7 @@
         "starbough_boughs_02"
       ],
       "title": "One Knot, Many Hands",
-      "text": "Every wire beside the drinking places bears the same knot, tied as neatly as a gardener's binding. Defeat five Snaring Poachers at night in the {name:lower_boughs}; they are scattered, so give the search time. Someone taught those hands, and I intend to learn the teacher's name.",
+      "text": "Every wire beside the drinking places bears the same knot, tied as neatly as a gardener's binding. Defeat five Knot Snarers at night in the {name:lower_boughs}; they are scattered, so give the search time. Someone taught those hands, and I intend to learn the teacher's name.",
       "objectives": [
         {
           "type": "kill",
@@ -253,7 +253,7 @@
         "starbough_boughs_04"
       ],
       "title": "Unhelpful Allies",
-      "text": "Burrow Gnawers chew through the poachers' wires, then our bootlaces, without the slightest sense of allegiance. Kill seven after nightfall in the {name:greenwood}, which lies {zone_area:greenwood}. Watch for Cairn Zombies on the same ground; I would like this patrol to return breathing.",
+      "text": "Root Gnawers chew through the poachers' wires, then our bootlaces, without the slightest sense of allegiance. Kill seven after nightfall in the {name:greenwood}, which lies {zone_area:greenwood}. Watch for Moss Zombies on the same ground; I would like this patrol to return breathing.",
       "objectives": [
         {
           "type": "kill",
@@ -282,7 +282,7 @@
         "starbough_watch_02"
       ],
       "title": "Where the Wires Lead",
-      "text": "The trail ends at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Roadside Bandits buy the poachers' catch. Defeat eight of them; they conduct their trade by day and night alike. Nima Fern is held there, so keep your head: we need her alive to tell us what she has seen.",
+      "text": "The trail ends at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Cutpurses buy the poachers' catch. Defeat eight of them; they conduct their trade by day and night alike. Nima Fern is held there, so keep your head: we need her alive to tell us what she has seen.",
       "objectives": [
         {
           "type": "kill",
@@ -310,7 +310,7 @@
         "starbough_stores_02"
       ],
       "title": "A Ribbon Means We Remember",
-      "text": "A ribbon round a trunk tells our wardens which trees need watching. Bring me three pieces of Linen Cloth from the Roadside Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where you can find them day or night. Their stolen cloth can serve the wood for once.",
+      "text": "A ribbon round a trunk tells our wardens which trees need watching. Bring me three pieces of Linen Cloth from the Cutpurses at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where you can find them day or night. Their stolen cloth can serve the wood for once.",
       "objectives": [
         {
           "type": "item",
@@ -363,7 +363,7 @@
         "starbough_watch_04"
       ],
       "title": "An Audience We Can Spare",
-      "text": "I have learned quite enough here to make these people nervous, and I would rather not recite it within bowshot. Defeat four Bandit Lookouts at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night. Close the distance before their arrows settle the conversation, then return to me.",
+      "text": "I have learned quite enough here to make these people nervous, and I would rather not recite it within bowshot. Defeat four Bough Lookouts at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night. Close the distance before their arrows settle the conversation, then return to me.",
       "objectives": [
         {
           "type": "kill",
@@ -392,7 +392,7 @@
         "starbough_testimony_01"
       ],
       "title": "Bristles Before Vetch",
-      "text": "Vetch sells the snares, and he works the {name:high_boughs}, which lie {zone_area:high_boughs}, on ground that discourages questions. Cull eight Ridgeback Tuskers there by day. You will have fewer tusks to contend with when you go looking for him.",
+      "text": "Vetch sells the snares, and he works the {name:high_boughs}, which lie {zone_area:high_boughs}, on ground that discourages questions. Cull eight Bristlebacks there by day. You will have fewer tusks to contend with when you go looking for him.",
       "objectives": [
         {
           "type": "kill",
@@ -474,7 +474,7 @@
         "starbough_stores_03"
       ],
       "title": "Bounty: Teeth at the Roots",
-      "text": "I repair the root braces; the Burrow Gnawers return to inspect my work with their teeth. Kill eight at night in the {name:high_boughs}, which lie {zone_area:high_boughs}, and report back for payment. This is a standing bounty, since neither the trees nor I can afford to retire.",
+      "text": "I repair the root braces; the Root Gnawers return to inspect my work with their teeth. Kill eight at night in the {name:high_boughs}, which lie {zone_area:high_boughs}, and report back for payment. This is a standing bounty, since neither the trees nor I can afford to retire.",
       "objectives": [
         {
           "type": "kill",
@@ -536,7 +536,7 @@
         "starbough_testimony_01"
       ],
       "title": "Bounty: Unwelcome Successors",
-      "text": "Another bandit always seems eager to inherit a patch of stolen ground. Defeat six Roadside Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night, and return to me for Starbough's payment. You may take the bounty again; I have plenty of patience for making their trade unprofitable.",
+      "text": "Another bandit always seems eager to inherit a patch of stolen ground. Defeat six Cutpurses at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night, and return to me for Starbough's payment. You may take the bounty again; I have plenty of patience for making their trade unprofitable.",
       "objectives": [
         {
           "type": "kill",

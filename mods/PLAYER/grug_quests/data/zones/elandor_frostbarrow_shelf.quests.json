@@ -50,7 +50,7 @@
       "level": 22,
       "requires": [],
       "title": "No Bell on Those Cats",
-      "text": "I can hear a loaded sled through a gale, but a Crag Snow Leopard gives no warning before it pounces. Kill eight Crag Snow Leopards at night along the sled track in the {name:pinewood}, which lies {zone_area:pinewood}. Folk hauling our supplies deserve to arrive with nothing worse to complain of than cold toes.",
+      "text": "I can hear a loaded sled through a gale, but a Tarn Cat gives no warning before it pounces. Kill eight Tarn Cats at night along the sled track in the {name:pinewood}, which lies {zone_area:pinewood}. Folk hauling our supplies deserve to arrive with nothing worse to complain of than cold toes.",
       "objectives": [
         {
           "type": "kill",
@@ -159,7 +159,7 @@
         "frostbarrow_sleds_01"
       ],
       "title": "Bounty: Pawprints by the Runners",
-      "text": "Fresh pawprints beside the sled marks, close enough to make my beard bristle. Kill six Crag Snow Leopards in the {name:pinewood} at night and report back for your bounty. You can repeat it twenty minutes after handing it in.",
+      "text": "Fresh pawprints beside the sled marks, close enough to make my beard bristle. Kill six Tarn Cats in the {name:pinewood} at night and report back for your bounty. You can repeat it twenty minutes after handing it in.",
       "objectives": [
         {
           "type": "kill",
@@ -189,7 +189,7 @@
       "level": 25,
       "requires": [],
       "title": "Horns Have Right of Way",
-      "text": "I spent half the morning hauling a sled back onto the track while a Hill Ram watched me chew my beard. Cull six Hill Rams by day along the haul lane in the {name:snowpines}, which lie {zone_area:snowpines}. They graze quietly until challenged, so take your time choosing the fight; I've already supplied the temper.",
+      "text": "I spent half the morning hauling a sled back onto the track while a Curlhorn Ram watched me chew my beard. Cull six Curlhorn Rams by day along the haul lane in the {name:snowpines}, which lie {zone_area:snowpines}. They graze quietly until challenged, so take your time choosing the fight; I've already supplied the temper.",
       "objectives": [
         {
           "type": "kill",
@@ -356,7 +356,7 @@
         "frostbarrow_watch_01"
       ],
       "title": "Optional: Eyes in the Rimewood",
-      "text": "From the watch I count fresh tracks every night in the {name:rimewood}, which lies {zone_area:rimewood}, and every one of them belongs to a Crag Snow Leopard. Kill six there after dark if you've the nerve and the hours. Nobody will order you to, which is why I'm asking nicely.",
+      "text": "From the watch I count fresh tracks every night in the {name:rimewood}, which lies {zone_area:rimewood}, and every one of them belongs to a Tarn Cat. Kill six there after dark if you've the nerve and the hours. Nobody will order you to, which is why I'm asking nicely.",
       "objectives": [
         {
           "type": "kill",

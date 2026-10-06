@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "Please Leave the Residents Buried",
-      "text": "Small Plague Boars spend their days rooting through the {name:dead_furrows} {dir_of:stillgrave:dead_furrows}, scattering people I took considerable trouble to bury. Kill eight; their yellow names mean they will leave you alone until you strike. Someone is also stealing bones, but let us begin with the offenders who cannot carry a sack.",
+      "text": "Barrow Piglets spend their days rooting through the {name:dead_furrows} {dir_of:stillgrave:dead_furrows}, scattering people I took considerable trouble to bury. Kill eight; their yellow names mean they will leave you alone until you strike. Someone is also stealing bones, but let us begin with the offenders who cannot carry a sack.",
       "objectives": [
         {
           "type": "kill",
@@ -124,7 +124,7 @@
         "stillgrave_hunt_01"
       ],
       "title": "Teeth in the Furrows",
-      "text": "At night the Large Grave Rats take over the {name:dead_furrows}, and the sound of their teeth carries all the way to my chair. Kill eight after dark. They bite at anything they see, so look before you step; I would rather not carve your name this early.",
+      "text": "At night the Grave Rats take over the {name:dead_furrows}, and the sound of their teeth carries all the way to my chair. Kill eight after dark. They bite at anything they see, so look before you step; I would rather not carve your name this early.",
       "objectives": [
         {
           "type": "kill",
@@ -219,7 +219,7 @@
         "stillgrave_hunt_02"
       ],
       "title": "A Sack Ought to Hold Something",
-      "text": "Our shroud sacks have begun returning their contents to the floor. Bring me two Rat Fur Patches from the Large Grave Rats in the {name:dead_furrows}; anything you saved from your night hunt will do. Keep the spares for your armour enchants, and let me worry about dressing the storage.",
+      "text": "Our shroud sacks have begun returning their contents to the floor. Bring me two Rat Fur Patches from the Grave Rats in the {name:dead_furrows}; anything you saved from your night hunt will do. Keep the spares for your armour enchants, and let me worry about dressing the storage.",
       "objectives": [
         {
           "type": "item",
@@ -249,7 +249,7 @@
         "stillgrave_hunt_02"
       ],
       "title": "No Names to Call Them By",
-      "text": "Braindead Zombies wander the {name:ashfields}, which lies {zone_area:ashfields}, raised without anyone to remember who they were. I have read the burial rolls aloud; not one turned its head. Lay eight to rest, by day or night. The blight soil shelters them from the sun, so waiting for dawn is no kindness.",
+      "text": "Nameless Shufflers wander the {name:ashfields}, which lies {zone_area:ashfields}, raised without anyone to remember who they were. I have read the burial rolls aloud; not one turned its head. Lay eight to rest, by day or night. The blight soil shelters them from the sun, so waiting for dawn is no kindness.",
       "objectives": [
         {
           "type": "kill",
@@ -346,7 +346,7 @@
         "stillgrave_hunt_03"
       ],
       "title": "The Moor Changes Tenants",
-      "text": "Watch the {name:blightmoor}, which lies {zone_area:blightmoor}, at dusk: the grazing stops, and then the squealing begins. Kill eight Aggressive Grave Rats there after dark; they attack on sight. The Young Gaunt Stags graze there by day, and I have no complaint against them to add to your duties.",
+      "text": "Watch the {name:blightmoor}, which lies {zone_area:blightmoor}, at dusk: the grazing stops, and then the squealing begins. Kill eight Bone Gnawers there after dark; they attack on sight. The Gaunt Fawns graze there by day, and I have no complaint against them to add to your duties.",
       "objectives": [
         {
           "type": "kill",
@@ -376,7 +376,7 @@
         "stillgrave_hunt_04"
       ],
       "title": "Broth and Loose Ends",
-      "text": "For once, my shopping can be done in daylight. Bring me two Crab Legs from the Small Crabs on the {name:saltbones} {dir_of:stillgrave:saltbones}, and one Fine Sinew from the Young Gaunt Stags on the {name:blightmoor} by day. I have a broth to finish and brine sacks to tie shut; separate tasks, despite what you may have heard about my cooking.",
+      "text": "For once, my shopping can be done in daylight. Bring me two Crab Legs from the Ghost Crabs on the {name:saltbones} {dir_of:stillgrave:saltbones}, and one Fine Sinew from the Gaunt Fawns on the {name:blightmoor} by day. I have a broth to finish and brine sacks to tie shut; separate tasks, despite what you may have heard about my cooking.",
       "objectives": [
         {
           "type": "item",
@@ -446,7 +446,7 @@
         "stillgrave_hunt_04"
       ],
       "title": "Borrow Has Had Long Enough",
-      "text": "Our missing bones have led us to the {name:robbers_camp} {dir_from_giver:robbers_camp}, where {name:grave_robber_chief} has been treating the graves as a lending library. Kill six Confused Grave Robbers and their chief. Confusion might excuse digging the wrong hole once; arriving with sacks suggests a settled intention.",
+      "text": "Our missing bones have led us to the {name:robbers_camp} {dir_from_giver:robbers_camp}, where {name:grave_robber_chief} has been treating the graves as a lending library. Kill six Grave Robbers and their chief. An honest mourner might dig the wrong hole once; arriving with sacks suggests a settled intention.",
       "objectives": [
         {
           "type": "kill",
@@ -508,7 +508,7 @@
         "stillgrave_hunt_05"
       ],
       "title": "Bounty: A Census With Teeth",
-      "text": "The Monstrous Grave Rats in the {name:deadlands}, which lies {zone_area:deadlands}, have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
+      "text": "The Bone Gnawers in the {name:deadlands}, which lies {zone_area:deadlands}, have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
       "objectives": [
         {
           "type": "kill",
