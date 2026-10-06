@@ -329,7 +329,7 @@ are open ([project status](docs/STATUS.md)).
   mobs a quest means — a kill counts by the shown name, which fixes the
   quest kill-credit bug the user met; quest texts on the new names, the
   dragon whelps at level 60, the Kraken, twelve shorter item names and
-  Party instead of Group. Complete locally on 2026-10-06, not pushed; a
+  Party instead of Group. Complete and pushed on 2026-10-06; a
   fresh world for the test. Next: the GUI test, together with Rounds 36
   and 37.
 - [x] **Round 39 "Web data for the realm website"**
@@ -339,8 +339,8 @@ are open ([project status](docs/STATUS.md)).
   player meta as a documented external contract, an exported
   `tools/web_data/web_data.json` with the ids, names, frames, wield
   geometry, texture files and items a website needs, and the player model
-  as an animated glTF tested against the game's `.b3d`. Complete locally
-  on 2026-10-06, not pushed. Next: the GUI test, together with Rounds 36
+  as an animated glTF tested against the game's `.b3d`. Complete and
+  pushed on 2026-10-06. Next: the GUI test, together with Rounds 36
   to 38.
 
 ### Remaining work

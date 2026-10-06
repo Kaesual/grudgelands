@@ -2,8 +2,13 @@
 
 Updated 2026-10-06. This is the delivery pointer, not another game specification.
 
-- **Round 39 "Web data for the realm website" complete locally, not
-  pushed** (2026-10-06, [plan, completion and GUI checklist](planning/round39-web-data-plan.md#completion-2026-10-06)).
+- **Round 40 "Combat feel" running** (started 2026-10-06 from origin/main
+  `d018d866`, [plan](planning/round40-plan.md)): wave 1 builds the
+  acceptance pages and the GUI probe for the cooldown overlay, the
+  animations, the Charge dash and the particle effects.
+
+- **Round 39 "Web data for the realm website" complete and pushed**
+  (2026-10-06, [plan, completion and GUI checklist](planning/round39-web-data-plan.md#completion-2026-10-06)).
   No gameplay change: data for websites that host managed realms. Every
   lane is merged on main (WG `8953178d`, then WM and WE together
   `03a76229`, then this documentation lane D), each independently reviewed
@@ -27,12 +32,14 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
     (own converter after `assimp` failed the clips and materials), tested
     against the `.b3d` within about 1e-6; a probe mod for the GUI check.
   - Round end on main: every gate passed, synced. **GUI-accepted by the
-    user on 2026-10-06** (the look unchanged, the glTF probe); the user
-    pushes with Rounds 36–38, whose GUI tests are still open. The
+    user on 2026-10-06** (the look unchanged, the glTF probe); pushed by
+    the user on 2026-10-06 together with Rounds 36–38 (origin/main
+    `d018d866`, the Round 40 start), whose GUI tests are still open. The
     coordinator's report to the website names the level-key commit.
 
-- **Round 38 "Mob names" complete locally, not pushed**
+- **Round 38 "Mob names" complete and pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round38-mob-names-plan.md#completion-2026-10-06)).
+  Pushed by the user on 2026-10-06 with Round 39 (origin/main `d018d866`).
   Every lane is merged on main (last lane PR, `ec2e874c`, then this
   documentation lane D); each code lane independently reviewed by Opus
   (lane C, a checker option, without its own review), the naming lanes'

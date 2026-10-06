@@ -22,7 +22,7 @@ example E5) are cited below.
 
 - **Latest delivery:
   [Round 38 "Mob names"](docs/planning/round38-mob-names-plan.md#completion-2026-10-06)
-  complete locally, not pushed** (2026-10-06, `ec2e874c` and lane D; a
+  complete and pushed** (2026-10-06, `ec2e874c` and lane D; a
   fresh world for the test; GUI test open): new names for every mob slot
   from the user's picks, a kill counted by the shown name (the quest
   kill-credit bug fixed), quest texts on the names, the whelps at level
@@ -1233,7 +1233,7 @@ none blocks the GUI test. Numbers are comparisons, never targets.
 
 ### Round 38 — mob names
 
-**Delivered locally 2026-10-06, not pushed**
+**Delivered and pushed 2026-10-06**
 ([completion](docs/planning/round38-mob-names-plan.md#completion-2026-10-06),
 plan [round38-mob-names-plan.md](docs/planning/round38-mob-names-plan.md));
 every code lane independently reviewed by Opus (lane C without its own
@@ -1288,7 +1288,7 @@ none blocks the GUI test.
 
 ### Round 39 — web data for the realm website
 
-**Delivered locally 2026-10-06, not pushed**
+**Delivered and pushed 2026-10-06**
 ([completion](docs/planning/round39-web-data-plan.md#completion-2026-10-06),
 plan [round39-web-data-plan.md](docs/planning/round39-web-data-plan.md));
 every lane independently reviewed by Opus; 112 fixtures pass, the

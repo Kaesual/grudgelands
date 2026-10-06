@@ -2,7 +2,7 @@
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-06 from the requests of the
 kaesual.com website, which hosts managed Grudgelands realms, and the user's
-answers. Status: **complete locally on 2026-10-06, not pushed**
+answers. Status: **complete and pushed on 2026-10-06**
 ([completion and GUI checklist](#completion-2026-10-06)); approved and
 started on the user's "go" (2026-10-06).
 

@@ -3,7 +3,7 @@
 Coordinator: Claude (Opus 5.5), drafted 2026-10-06 from the user's naming
 request during Round 37 and the kill-credit bug found in the user's
 playtest; revised the same day with the user's answers. Status: **complete
-locally on 2026-10-06, not pushed** ([completion and GUI
+and pushed on 2026-10-06** ([completion and GUI
 checklist](#completion-2026-10-06)); approved and started on the user's "go"
 (2026-10-06); phases 0 and 1 (lanes I, V, M) ran together, since V and M do
 not need the finished inventory to begin.

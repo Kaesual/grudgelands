@@ -5,8 +5,8 @@ suggestions (taken from a friend's experimental build), a read-only
 research pass and the user's answers of the same day; revised after an
 independent Opus review (verdict "ready after fixes", every finding checked
 at the cited lines). Status: **draft, every question answered**; a focused
-re-review (fresh Opus context, "ready after fixes", no High) is folded in —
-ready for the user's "go".
+re-review (fresh Opus context, "ready after fixes", no High) is folded in;
+approved and started on the user's "go" (2026-10-06).
 
 The round makes combat read better: a cooldown overlay on the skill icons,
 better character animations, Charge as a real dash, and particle effects
