@@ -132,6 +132,24 @@ do
 		"T the settlement's name wins")
 	check(L.king_label("Aldric the Bold", "Highcourt") == "Aldric the Bold, King of Highcourt",
 		"T a named king keeps his name")
+	-- Round 38: every shipped king's name (data/names.json, mixed forms such
+	-- as "King of Highcourt" and "Dur Brannoc King") names his capital and
+	-- is shown as it is.
+	local names = dofile(repo .. "/tools/r38_b1/names_stub.lua").shipped(repo)
+	local source = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
+	local capital = {dwarf = "elandor_dur_brannoc", human = "elandor_highcourt", elf = "elandor_lethariel",
+		undead = "kragmar_nhal_veyr", orc = "kragmar_gor_drazhak", troll = "kragmar_kezamba"}
+	local city = {}
+	for _, zone in ipairs(source.zones) do city[zone.id] = zone.display_name end
+	local kings = 0
+	for race, zone in pairs(capital) do
+		local name = names.required("king_" .. race)
+		kings = kings + 1
+		check(city[zone] and name:find(city[zone], 1, true) ~= nil, "T " .. name .. " names " .. tostring(city[zone]))
+		check(L.king_label(name, city[zone]) == name, "T the shipped king " .. name .. " is shown as it is (" ..
+			tostring(L.king_label(name, city[zone])) .. ")")
+	end
+	check(kings == 6, "T six shipped kings")
 end
 
 -- ---------------------------------------------------------------------------
