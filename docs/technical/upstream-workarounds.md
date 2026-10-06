@@ -112,28 +112,51 @@ Engine reference for the line citations: `reference_projects/luanti` at
   under parallel emerge must be shown first). The pin, the manifest's
   `emerge_threads` field and its planner check change together.
 
-## 3. The first bone override snaps, and one back at identity is erased
+## 3. A bone override snaps when it is new and vanishes at identity
 
-- **Upstream problem:** the client interpolates a bone override only from an
-  override it already knows. The first `AO_CMD_SET_BONE_POSITION` for a bone
-  disables interpolation (`src/client/content_cao.cpp` `processMessage`,
-  "Disable interpolation"), so an override that starts a blend snaps instead;
-  and the client drops an override once it has finished blending back to
-  identity (`content_cao.cpp` `setOnAnimateCallback`, `BoneOverride::
-  isIdentity` in `src/activeobject.h`), so the next one is a first one again
-  and snaps too.
-- **Issue:** none filed; engine behaviour as of 5.17.0-dev (`df0487906`).
-- **Our workaround:** Charge's `Body` lead (`grug_abilities/charge.lua`,
-  Round 40) never starts from or returns to identity: every player gets a
-  `Body` position override of 0.01 model units (invisible) on joining, the
-  dash blends from it to the lead and back to it.
+- **Upstream problem:** the client interpolates a bone override only from
+  one it already holds for that bone: the first `set_bone_override` of a
+  bone jumps there without its `interpolation`
+  (`src/client/content_cao.cpp` `GenericCAO::processMessage`,
+  `AO_CMD_SET_BONE_POSITION`: no entry → "Disable interpolation"), and an
+  override that has come back to exactly identity (relative, zero position
+  and rotation, unit scale, interpolation finished) is erased from the
+  client's map (`src/activeobject.h` `BoneOverride::isIdentity`, erased in
+  the animate callback of `GenericCAO::addToScene`), so the next one snaps
+  again. A bone that should blend from rest into an override and back can
+  therefore never blend out of rest.
+- **Issue:** none filed; the behaviour is deliberate in the engine's code
+  (the erase keeps the map small), so it may stay.
+- **Affected versions:** relative, interpolated overrides exist since 5.9;
+  the code is unchanged up to `df0487906` (5.17.0-dev).
+- **Our workaround:** no override of ours starts from or returns to
+  identity; each player gets an invisible epsilon on joining (the snap is
+  unseen) and keeps it for the session, so every later value blends from
+  the one before:
+  - Charge's `Body` lead (`grug_abilities/charge.lua`, Round 40 lane CH): a
+    `Body` position override of 0.01 model units; the dash blends from it
+    to the lead and back to it.
+  - The head look (`grug_visuals/head_look.lua`, Round 40 lane AN2,
+    [character_visuals.md](../design/character_visuals.md) §5d): a level
+    head is a rotation of 0.001 rad (0.06°) about x, never identity.
+    Fixture: `tools/r40_an2/portable_test.lua` (E checks).
 - **How to tell upstream fixed it:** a first override with an interpolation
   time blends from the animated pose instead of snapping (the `else` branch
   in `processMessage` keeps the sent `interp_duration`); the erase at
   identity is harmless then.
-- **What to remove then:** the join-time epsilon in `charge.lua`; the lead
-  may then start from and end at no override (`set_bone_override("Body",
-  nil)` after the blend back).
+- **What to remove then:** the join-time epsilon in `charge.lua` (the lead
+  may then start from and end at no override, `set_bone_override("Body",
+  nil)` after the blend back); `EPSILON` in `head_look.lua` (write `0` for
+  a level head) and its join write, with the fixture's epsilon checks.
+- **Related, not a workaround:** every `set_bone_override` makes the server
+  send **all** of the object's overrides again (`src/server/unit_sao.cpp`
+  `UnitSAO::setBoneOverride` clears `m_bone_override_sent`,
+  `sendOutdatedData` re-sends each bone), and a re-sent override restarts
+  its blend from its own target (`previous = vector`), so a write to one
+  bone cuts short a blend still running on another bone of the same object.
+  The head look therefore writes no Head override while the Charge pose
+  runs or while Charge holds it (`grug_visuals.hold_head`) as the `Body`
+  lead blends back.
 
 ## Checked and not listed
 

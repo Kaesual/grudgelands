@@ -70,6 +70,20 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   export carries its frame range.
 - **Visual size.** The race's `visual_size` (in the appearance) scales the
   model per axis, as Luanti scales the mesh.
+- **Head look.** In the game the head follows the player's look pitch
+  ([character_visuals.md](../../../docs/design/character_visuals.md) §5d);
+  the file has no clip for it, so a website head that follows the mouse
+  rotates the `Head` node itself, on top of the playing clip. `Head` is a
+  child of `Body`, which stands turned 180° about y, and its rest rotation
+  under `Body` is the identity; its pivot is the neck. So the node's own +x
+  points to the **character's left**, and a pitch `p` (radians, positive =
+  looking up) is a rotation of **−p about the node's local x**, applied
+  after the clip has set the frame: in three.js `head.rotateX(-p)` after
+  `mixer.update()`. The game clamps `p` from **−50° (down) to +60° (up)**
+  and moves in 5° steps; a website may move smoothly within the same clamp.
+  (In the game's B3D frame the same pitch is +p about the Head bone's x: the
+  glb mirrors z, which turns the sign of a rotation about x.) No head yaw:
+  the game turns the whole character instead.
 
 ## How it was made and checked
 
