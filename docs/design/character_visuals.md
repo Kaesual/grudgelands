@@ -349,6 +349,69 @@ are kept per character, and so is the choice.
   take the outer face's border pixels. No cloak is the transparent
   `blank.png`.
 
+## 5c. Poses (Round 40)
+
+The user's picks on the animation preview page (round40-plan.md §2.14,
+`tools/r40_an/poses.json`) are clips of the player model, so they cost
+nothing per step on the server and every client plays them. NPCs keep
+`character.b3d` and have none.
+
+- **Clips.** Each pose exists twice: over the standing frame (its name) and
+  over the walk cycle (`<pose>_walk`), so a pose taken on the move keeps the
+  legs walking. They are appended after the base frames of
+  `grug_visuals_character.b3d` by `tools/r33_c3/gen_cloak_model.py` and
+  registered in `grug_visuals/apply.lua` (`POSE_CLIPS`, which the
+  generator's `--check` holds to the model):
+
+  | Pose | Picked | Plays on | Standing | Walking |
+  | --- | --- | --- | --- | --- |
+  | `cast1` | A, palm forward | Fireball, Smite, Word of Ruin, Cinderfall | 221–240 | 241–260 |
+  | `cast2` | B, arms raised | Ice Nova, Glacial Ward, Heal, Mend, Shield | 261–280 | 281–300 |
+  | `swing` | B, diagonal cut | a landed Mighty Blow, once | 301–314 | 315–334 |
+  | `bow` | A, drawn and held | while the Scout's bow is drawn | 335–354 | 355–374 |
+  | `block` | B, shield arm raised | Hold Ground | 375–394 | 395–414 |
+  | `charge` | B, shoulder first | the Charge dash (lane CH starts and stops it) | 415–434 | 435–454 |
+  | `flinch` | A, light flinch | a hit taken, once | 455–464 | 465–484 |
+
+  Held clips loop over 19 frames (the 20th repeats the first); `swing` and
+  `flinch` play once. A walking one-shot runs to the end of the walk cycle.
+- **When.** A pose plays only when its skill really fires: a cast when it
+  succeeds, Mighty Blow when its swing lands (a refused cast, a dodged swing
+  and the Strike fallback play none). Casts are instant, so `cast1` and
+  `cast2` hold **0.6 s** (a second cast extends it); Hold Ground's guard
+  holds **1.0 s**, not the whole 8 s buff, because the Warrior fights on
+  under it and a held guard would hide every swing. The bow pose lasts as
+  long as the draw; Charge's as long as the dash. The newest pose replaces a
+  running one; a second Mighty Blow restarts `swing`. `swing` starts at
+  its frame 4, the top of the swing, because the hit has already landed
+  when the pose fires; the blend raises the arm.
+- **The flinch** plays on a hit that does not kill, at most once per
+  **1.5 s**, and only over the plain stand, walk and punch animations: never
+  over another pose, the drawn bow, a seat or death.
+- **Blend and stride.** Every animation switch of a player blends over
+  **0.12 s**, so the arms move into a pose instead of jumping. Switching
+  between walking clips (walk, walk-and-punch, a pose's walking twin) keeps
+  the walk cycle's position, so taking or dropping a pose on the move does
+  not reset the legs; a one-shot switching between its standing and walking
+  twin keeps its progress. Sneaking halves the speed as for every animation.
+- **Cloak rule.** In a pose clip the cloak swings as in the clip it was
+  baked over (the standing frame, or the walk frame whose legs the clip
+  carries); where the torso leans back it hangs out by that lean too, so it
+  stays plumb instead of following the back into the legs; a torso twisting
+  on upright legs (bow, Charge, the diagonal cut) swings it out by a fifth of
+  the twist so its lower corner clears the leg. The clearance check covers
+  every pose frame: the closest leg gap of the pose clips is 0.43 model
+  units, the base clips' 0.40.
+- **Who sees them.** Every player sees every pose, the posing player in
+  third person too (in first person the engine draws no own body). A 5.17
+  client plays its own stand, walk and punch animations itself and ignores
+  a server animation with one of those four frame ranges, so the end of a
+  pose (its time running out, the dash or the draw ending) plays a
+  `<base>_resume` animation for one step: the base animation with its end
+  1/64 frame short, a range the client does not ignore that still loops
+  without a hitch. Without it the player's own
+  view would keep the pose until the movement changed.
+
 ## 6. Round 11 item and station presentation
 
 Decided 2026-09-20. Silversteel reads as bright neutral silver with subtle cold

@@ -73,6 +73,7 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	end
 	meta:set_string(META_UNTOUCHABLE_READY, tostring(now + 180))
 	grug_classes.start_talent_window(player, "untouchable", 6)
+	grug_core.proc_flash(player, "untouchable")
 end, false)
 
 local function clear_runtime(player)

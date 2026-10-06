@@ -130,17 +130,7 @@ function grug_xp.set_xp(player, xp)
 			grug_sounds.play("level_up", player)
 			local pos = player:get_pos()
 			if pos then
-				core.add_particlespawner({
-					amount = 18,
-					time = 0.2,
-					pos = {min = vector.offset(pos, -0.5, 0.2, -0.5),
-						max = vector.offset(pos, 0.5, 1.8, 0.5)},
-					vel = {min = vector.new(-1, 1, -1),
-						max = vector.new(1, 3, 1)},
-					exptime = {min = 0.35, max = 0.7},
-					size = {min = 1.5, max = 3},
-					texture = "default_item_smoke.png^[multiply:#ffd100",
-				})
+				grug_core.particles.play("level_up", {caster = pos})
 			end
 		end
 	end

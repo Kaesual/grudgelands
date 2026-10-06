@@ -57,7 +57,8 @@ local function windup_particles(self)
 	core.add_particlespawner({
 		amount = 24,
 		time = 0.4,
-		-- NB `radius` is not a particlespawner field — spread via pos range.
+		-- A pos range fills a box; the spawner's `radius` would place a shell
+		-- or a disc heavy at its edge (client/particles.cpp:384-396).
 		pos = {min = vector.offset(pos, -0.7, 0.2, -0.7),
 			max = vector.offset(pos, 0.7, 1.8, 0.7)},
 		vel = {min = vector.new(-0.5, 1, -0.5), max = vector.new(0.5, 3, 0.5)},

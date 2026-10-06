@@ -200,6 +200,8 @@ end
 ------------------------------------------------------------------------------
 do
 	grug_core = {}
+	-- Round 40: combat.lua plays its crit and absorb through the particle helper.
+	grug_core.particles = {play = function() end}
 	grug_core.get_crit_chance = nil
 	dofile(ROOT .. "/mods/CORE/grug_core/combat.lua")
 	local chance = 1

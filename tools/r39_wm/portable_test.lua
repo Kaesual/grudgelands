@@ -115,6 +115,8 @@ vector = permissive({offset = function(pos) return pos end, new = function(x, y,
 
 grug_core = permissive({
 	level_scale = function() return 1 end,
+	-- Round 40: the level-up burst plays through the particle helper.
+	particles = {play = function() end},
 	register_on_equipment_change = function(fn) equipment_consumers[#equipment_consumers + 1] = fn end,
 	hud_layout = permissive({XP_WIDTH = 100, COLOR = {}, rows = {xp = {height = 4}},
 		bar_fill = function(value, total, width) return math.floor(width * value / total) end}),
@@ -200,7 +202,9 @@ local book = R.build(dofile(ROOT .. "/mods/PLAYER/grug_achievements/catalog.lua"
 local textures_set = {}
 player_api = {
 	registered_models = {["character.b3d"] = {animation_speed = 30,
-		textures = {"character.png"}, animations = {stand = {x = 0, y = 79}},
+		textures = {"character.png"}, animations = {stand = {x = 0, y = 79},
+			walk = {x = 168, y = 187}, mine = {x = 189, y = 198},
+			walk_mine = {x = 200, y = 219}},
 		collisionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3}, stepheight = 0.6,
 		eye_height = 1.47}},
 	register_model = function() end,

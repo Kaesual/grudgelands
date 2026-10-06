@@ -87,6 +87,13 @@ grug_map_quality (World map quality) enum normal normal,high
 #    change. 1.0 is the base damage.
 grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10
 
+#    Scales the number of particles of the game's effects (skills, procs,
+#    critical hits and shields), the same for every player. 1.0 is the
+#    designed amount; 0.5 halves it (every part of an effect keeps at least
+#    one particle); 0 turns these effects' particles off. Lifetimes and shapes
+#    stay. Read when the server starts; restart after a change.
+grug_particle_scale (Particle amount scale) float 1.0 0 2
+
 [World life]
 
 #    Trees and bushes grow back: around players, where the natural tree density

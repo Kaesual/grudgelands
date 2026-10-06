@@ -128,6 +128,7 @@ function grug_trinkets.after_player_hit(player, hp_change, reason)
 	-- Section 6.2 names no separate shield lifetime. The authored 120-second
 	-- shared cooldown is therefore also the lifetime of an unconsumed shield.
 	grug_core.add_absorb(player, "last_light", amount, effect.cooldown, player)
+	grug_core.proc_flash(player, "last_light")
 end
 
 function grug_trinkets.xp_eligible_kill(player)
@@ -150,6 +151,7 @@ function grug_trinkets.xp_eligible_kill(player)
 	elseif class and class.resource == "rage" then
 		grug_abilities.add_rage(player, effect.rage or 0)
 	end
+	grug_core.proc_flash(player, "reclaimer")
 end
 
 grug_core.register_on_equipment_change(function(player, listname)

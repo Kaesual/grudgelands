@@ -5,6 +5,13 @@ local ARROW_PROJECTILE = "scout_arrow"
 -- ARROW_SPEED; Loose rises linearly from ARROW_SPEED on a tap to
 -- LOOSE_FULL_SPEED at full draw (user ruling 2026-09-28).
 local ARROW_SPEED, LOOSE_FULL_SPEED = 40, 55
+-- The skill-arrow trail's tint per shot (particle_effects.lua "skill_arrow";
+-- Twin Shot's second arrow is Loose's and trails the same).
+local ARROW_TRAILS = {
+	loose = {effect = "skill_arrow", color = "#e9e4d0"},
+	snare_shot = {effect = "skill_arrow", color = "#79a65a"},
+	pinning_shot = {effect = "skill_arrow", color = "#4f8f67"},
+}
 local DRAW_STEP = 0.05
 -- The shortest full draw any talent/affix combination may reach, in seconds.
 -- The base draw time is owned by the bow definition (`_grug_bow_draw_time`,
@@ -25,12 +32,24 @@ local DRAW_STAGE_SOURCE = {
 	["grug_gear_bow_alder.png"] = "^[colorize:#9b442f:75",
 }
 
+-- The drawn bow's pose clip (grug_visuals POSE_CLIPS `bow`, Round 40) while a
+-- draw runs, its walking twin on the move; it also keeps the held LMB from
+-- showing the generic mine pose. The step after a draw answers the resume
+-- animation, so the player's own client lets go of the bow pose too
+-- (grug_visuals apply.lua, `<base>_resume`).
+local bow_shown = {}
 player_api.register_control_animation_override(function(player, controls)
-	if not draws[player:get_player_name()] then return end
-	if controls.up or controls.down or controls.left or controls.right then
-		return "walk"
+	local name = player:get_player_name()
+	if not draws[name] then
+		if not bow_shown[name] then return end
+		bow_shown[name] = nil
+		return grug_visuals.resume_animation(controls)
 	end
-	return "stand"
+	bow_shown[name] = true
+	if controls.up or controls.down or controls.left or controls.right then
+		return "bow_walk"
+	end
+	return "bow"
 end)
 
 local function action_id(player, ability)
@@ -114,6 +133,12 @@ grug_core.register_on_settled_outgoing_action(function(player, action_id, kind)
 	per_player[action_id] = nil
 	if pending.slow then apply_slow(pending.target, pending.slow, 0.5) end
 	if pending.root then apply_root(pending.target, pending.root) end
+	-- The landed shot's mark: Snare Shot's ring, Pinning Shot's drop.
+	local tpos = pending.target:get_pos()
+	if tpos then
+		if pending.slow then grug_core.particles.play("snare_hit", {target = tpos}) end
+		if pending.root then grug_core.particles.play("pinning_hit", {target = tpos}) end
+	end
 end)
 
 grug_projectiles.register(ARROW_PROJECTILE, {
@@ -206,6 +231,7 @@ local function launch(player, ability, count, effect, captured)
 			direction = common.direction,
 			speed = common.speed,
 			max_distance = common.max_distance,
+			trail = ARROW_TRAILS[ability],
 			data = {
 				damage = shot_damage,
 				origin = common.origin,
@@ -470,6 +496,7 @@ core.register_on_joinplayer(function(player) reset_draw_stack(player) end)
 core.register_on_leaveplayer(function(player)
 	clear_draw(player)
 	pending_control[player:get_player_name()] = nil
+	bow_shown[player:get_player_name()] = nil
 end)
 
 grug_core.register_on_equipment_change(function(player, listname, reason)
@@ -517,6 +544,7 @@ grug_abilities.register_ability({
 	description = "Gain 15 percentage points of dodge for 4 s.",
 	cast = function(user)
 		grug_classes.start_sidestep(user)
+		grug_core.particles.play("sidestep", {caster = user:get_pos()})
 		return true
 	end,
 })
@@ -541,6 +569,8 @@ grug_abilities.register_ability({
 				return false
 			end,
 		})
+		grug_core.particles.play("sprint", {caster = user:get_pos(),
+			dir = grug_core.particles.facing(user)})
 		return true
 	end,
 })
@@ -596,8 +626,12 @@ grug_abilities.register_ability({
 		end
 		local percent = grug_classes.get_talent_bonus(user,
 			"opening_multiplier")
+		local tpos = target:get_pos() -- before the punch (lethal invalidates refs)
+		-- The flash is the landed proc's post, never the preparation.
 		return math.floor(ctx.weapon_damage * percent / 100)
-			+ ctx.melee_bonus + ctx.melee_damage_add
+			+ ctx.melee_bonus + ctx.melee_damage_add, nil, function()
+				grug_core.particles.play("opening", {target = tpos})
+			end
 	end,
 })
 

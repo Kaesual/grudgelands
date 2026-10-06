@@ -526,6 +526,26 @@ tools](#player-meta-read-by-external-tools).
   proc's threat multiplier. The current server ray is the sole
   authoritative hostile ability target while LMB is held; enemy memory is
   UI-only.
+- **Particle effects** (Round 40): every effect is a named emitter list in
+  `grug_core/particle_effects.lua`, played by
+  `grug_core.particles.play(id, frame)` (`particles.lua`, whose header
+  documents the emitter fields): every skill and proc effect, crits,
+  absorb soaks and the level-up burst. Still direct engine calls: the stun
+  cross and root crystals (`movement.lua`, sized from the object's box), the
+  food crumbs (a texture pool) and the mob and boss effects in `grug_mobs`.
+  `frame` names the anchors (`caster`, `target`), the facing `dir`
+  (`grug_core.particles.facing(player)`), and per call `from`/`to`/`time`
+  (a line over a flight), `reach` (a radius a ring lands on) and `color`.
+  The helper never attaches a spawner and clamps its time to (0, 1], so
+  only players near the effect receive it (`server.cpp:1739`), places exact
+  rings as single particles, and applies `grug_particle_scale` (read once at
+  load; spawner amounts and single counts, a floor of one per emitter, 0 =
+  off). `particles.register` checks each list's budget at load. Skill arrows
+  opt in per launch (`params.trail` in `grug_projectiles.spawn` and
+  `spawn_batch`, played after the batch commits); the shared proc flash is
+  `grug_core.proc_flash(player, proc)` with `grug_core.PROC_COLORS`; lane
+  CH's dash calls `grug_abilities.charge_dust(from, to, duration)`. Fixture:
+  `tools/r40_px/portable_test.lua`.
 
 ## Mobs
 

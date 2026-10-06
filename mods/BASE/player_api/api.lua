@@ -1,8 +1,11 @@
 player_api = {}
 
 -- Player animation blending
--- Note: This is currently broken due to a bug in Irrlicht, leave at 0
-local animation_blend = 0
+-- GRUG PATCH: every switch blends over 0.12 s (Round 40 ruling 14: a pose's
+-- arms would otherwise jump). Luanti 5.17 blends a B3D's bones
+-- (irr/src/SkinnedMesh.cpp, SkinnedMesh::animateMesh); upstream's "broken in
+-- Irrlicht, leave at 0" note predates that.
+local animation_blend = 0.12
 
 player_api.registered_models = {}
 
@@ -116,7 +119,26 @@ function player_api.set_texture(player, index, texture)
 	player_api.set_textures(player, textures)
 end
 
-function player_api.set_animation(player, anim_name, speed, loop)
+-- GRUG PATCH: the frame offset into `anim` the player's current animation has
+-- reached, from when and where it started and its speed (seconds of the
+-- server's clock, so a comparison with the client's playback, not a replica).
+local function frame_offset(player_data, anim, now)
+	local offset = player_data.grug_offset + (now - player_data.grug_started) / 1e6
+		* player_data.animation_speed
+	local length = anim.y - anim.x
+	if not player_data.animation_loop then
+		return math.max(0, math.min(offset, length))
+	end
+	return length > 0 and offset % length or 0
+end
+
+-- GRUG PATCH: `restart` plays the animation from its first frame (or from the
+-- frame offset it names) even when it is already playing (a one-shot fired
+-- again). Two animations sharing a
+-- `_grug_phase` group continue each other's frame offset instead of starting
+-- over: the walk cycle across walk, walk_mine and the pose clips' walking
+-- twins, a one-shot across its standing and walking twin (grug_visuals).
+function player_api.set_animation(player, anim_name, speed, loop, restart)
 	local player_data = get_player_data(player)
 	local model = models[player_data.model]
 	if not (model and model.animations[anim_name]) then
@@ -126,7 +148,8 @@ function player_api.set_animation(player, anim_name, speed, loop)
 	if loop == nil then
 		loop = true
 	end
-	if player_data.animation == anim_name
+	if not restart
+		and player_data.animation == anim_name
 		and player_data.animation_speed == speed
 		and player_data.animation_loop == loop
 	then
@@ -134,6 +157,13 @@ function player_api.set_animation(player, anim_name, speed, loop)
 	end
 	local previous_anim = model.animations[player_data.animation] or {}
 	local anim = model.animations[anim_name]
+	local now = core.get_us_time()
+	local offset = type(restart) == "number" and math.min(restart, anim.y - anim.x) or 0
+	if not restart and anim._grug_phase
+			and anim._grug_phase == previous_anim._grug_phase then
+		offset = math.min(frame_offset(player_data, previous_anim, now), anim.y - anim.x)
+	end
+	player_data.grug_started, player_data.grug_offset = now, offset
 	player_data.animation = anim_name
 	player_data.animation_speed = speed
 	player_data.animation_loop = loop
@@ -153,7 +183,15 @@ function player_api.set_animation(player, anim_name, speed, loop)
 		end
 	end
 	-- Set the animation seen by everyone else
-	player:set_animation(anim, speed, animation_blend, loop)
+	if offset > 0 then
+		-- GRUG PATCH: start inside the range (Luanti 5.17 play_animation; track 1
+		-- is the one set_animation drives).
+		player:play_animation(1, {min_frame = anim.x, max_frame = anim.y,
+			start_frame = anim.x + offset, speed = speed, blend = animation_blend,
+			loop = loop})
+	else
+		player:set_animation(anim, speed, animation_blend, loop)
+	end
 	-- Update related properties if they changed
 	if anim._equals ~= previous_anim._equals then
 		player:set_properties({
@@ -188,10 +226,14 @@ function player_api.register_control_animation_override(callback)
 	control_animation_overrides[#control_animation_overrides + 1] = callback
 end
 
+-- GRUG PATCH: an override answers the animation and optionally `loop` (false
+-- plays it once) and `restart` (replay it although it runs: true from the
+-- start, a number from that frame offset).
 local function control_animation_override(player, controls)
 	for index = 1, #control_animation_overrides do
-		local animation = control_animation_overrides[index](player, controls)
-		if animation then return animation end
+		local animation, loop, restart =
+			control_animation_overrides[index](player, controls)
+		if animation then return animation, loop, restart end
 	end
 end
 
@@ -223,9 +265,9 @@ function player_api.globalstep()
 			if player:get_hp() == 0 then
 				player_set_animation(player, "lay")
 			else
-				local override = control_animation_override(player, controls)
+				local override, loop, restart = control_animation_override(player, controls)
 				if override then
-					player_set_animation(player, override, animation_speed_mod)
+					player_set_animation(player, override, animation_speed_mod, loop, restart)
 				elseif controls.up or controls.down or controls.left or controls.right then
 					if controls.LMB or controls.RMB then
 						player_set_animation(player, "walk_mine", animation_speed_mod)
