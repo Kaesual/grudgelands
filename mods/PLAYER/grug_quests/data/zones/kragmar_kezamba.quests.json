@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "The Spirits Left Footprints",
-      "text": "The cenote receives our prayers, but someone with boots is receiving the offerings. Kill six Toll Bandits after dark in the {name:canopy}, which spreads {zone_area:canopy}, and mind the Reed-Fang Vipers sharing those paths. We shall see how generous the spirits seem when the thieves stop walking away with their gifts.",
+      "text": "The cenote receives our prayers, but someone with boots is receiving the offerings. Kill six Shrine Robbers after dark in the {name:canopy}, which spreads {zone_area:canopy}, and mind the Bushmasters sharing those paths. We shall see how generous the spirits seem when the thieves stop walking away with their gifts.",
       "objectives": [
         {
           "type": "kill",
@@ -62,7 +62,7 @@
         "kezamba_offerings_01"
       ],
       "title": "Tusks Between the Prayers",
-      "text": "Pilgrims have been dropping their offerings and fleeing Jungle Razorbacks on the shrine paths. Hunters are driving the beasts there on somebody's coin; this is no ill omen, just a cruel trick. Kill six Jungle Razorbacks by day in the {name:vinewood}, {zone_area:vinewood}, so our people can finish a prayer standing still.",
+      "text": "Pilgrims have been dropping their offerings and fleeing Vine Razorbacks on the shrine paths. Hunters are driving the beasts there on somebody's coin; this is no ill omen, just a cruel trick. Kill six Vine Razorbacks by day in the {name:vinewood}, {zone_area:vinewood}, so our people can finish a prayer standing still.",
       "objectives": [
         {
           "type": "kill",
@@ -90,7 +90,7 @@
         "kezamba_offerings_02"
       ],
       "title": "A Bow Behind Every Bargain",
-      "text": "Takka is paying the hunters, and Toll Bandit Archers guard the business at the {name:tollcamp} {dir_from_giver:tollcamp}. Kill six archers there. They will keep their distance, so close in or use the trees for cover; a blessing travels with you, but it is no substitute for a trunk.",
+      "text": "Takka is paying the hunters, and Toll Archers guard the business at the {name:tollcamp} {dir_from_giver:tollcamp}. Kill six archers there. They will keep their distance, so close in or use the trees for cover; a blessing travels with you, but it is no substitute for a trunk.",
       "objectives": [
         {
           "type": "kill",
@@ -222,7 +222,7 @@
         "kezamba_smokehouse_01"
       ],
       "title": "Keep Supper Hanging",
-      "text": "My smokehouse racks need new hooks, and I have quite enough to hold without hanging supper from my own tusks. Bring me two Gnarled Boar Tusks from the Jungle Razorbacks in the {name:vinewood}. If Nalo already has you chasing them off the shrine paths by day, let the same hunt answer a few hungry prayers too.",
+      "text": "My smokehouse racks need new hooks, and I have quite enough to hold without hanging supper from my own tusks. Bring me two Gnarled Boar Tusks from the Vine Razorbacks in the {name:vinewood}. If Nalo already has you chasing them off the shrine paths by day, let the same hunt answer a few hungry prayers too.",
       "objectives": [
         {
           "type": "item",
@@ -251,7 +251,7 @@
         "kezamba_smokehouse_02"
       ],
       "title": "Bounty: The Smoke Must Rise",
-      "text": "The fire settles down, a fresh queue forms, and back I go to feeding Kezamba. Kill six Jungle Razorbacks by day in the {name:vinewood} for this repeatable bounty. You can take it again twenty minutes after turning it in; the city's appetite has no such pause.",
+      "text": "The fire settles down, a fresh queue forms, and back I go to feeding Kezamba. Kill six Vine Razorbacks by day in the {name:vinewood} for this repeatable bounty. You can take it again twenty minutes after turning it in; the city's appetite has no such pause.",
       "objectives": [
         {
           "type": "kill",

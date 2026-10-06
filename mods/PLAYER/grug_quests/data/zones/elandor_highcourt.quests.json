@@ -62,7 +62,7 @@
         "highcourt_accounts_01"
       ],
       "title": "An Arrow Is Not a Receipt",
-      "text": "The complaints lead to Toll Bandit Archers in the {name:deer_park} {dir_of:highcourt:deer_park}, collecting after dark from anyone unfortunate enough to pass. Defeat five there at night. Their badges claim royal authority; the crown's instructions do not include shooting customers.",
+      "text": "The complaints lead to Toll Archers in the {name:deer_park} {dir_of:highcourt:deer_park}, collecting after dark from anyone unfortunate enough to pass. Defeat five there at night. Their badges claim royal authority; the crown's instructions do not include shooting customers.",
       "objectives": [
         {
           "type": "kill",
@@ -121,7 +121,7 @@
         "highcourt_accounts_02"
       ],
       "title": "The Last Unauthorised Stamp",
-      "text": "{name:tollmaster_penn} conducts his business at the {name:toll_camp} {dir_from_giver:toll_camp}, with enough borrowed ceremony to embarrass a coronation. Defeat five Toll Bandit Archers there and then Penn himself; his camp operates day and night. Keep clear of the other archers while you close on each one. I want him to discover that stamping a demand does not make it lawful.",
+      "text": "{name:tollmaster_penn} conducts his business at the {name:toll_camp} {dir_from_giver:toll_camp}, with enough borrowed ceremony to embarrass a coronation. Defeat five Toll Archers there and then Penn himself; his camp operates day and night. Keep clear of the other archers while you close on each one. I want him to discover that stamping a demand does not make it lawful.",
       "objectives": [
         {
           "type": "kill",
@@ -186,7 +186,7 @@
         "highcourt_provisions_01"
       ],
       "title": "Optional: The Long Table",
-      "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Moss-Antler Stags by day on the {name:commons}. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
+      "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Fallow Bucks by day on the {name:commons}. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
       "objectives": [
         {
           "type": "kill",
@@ -216,7 +216,7 @@
         "highcourt_provisions_01"
       ],
       "title": "Pies Have Consequences",
-      "text": "The palace expects fruit pies, while the pickers expect to keep their fingers; I find the second request entirely reasonable. Hunt five Redfang Vixens by day in the {name:orchards}, which lie {zone_area:orchards}. Mind their red names: they start fights, unlike the Orchard Foxes sharing that ground.",
+      "text": "The palace expects fruit pies, while the pickers expect to keep their fingers; I find the second request entirely reasonable. Hunt five Dog-Foxes by day in the {name:orchards}, which lie {zone_area:orchards}. Mind their red names: they start fights, unlike the Orchard Foxes sharing that ground.",
       "objectives": [
         {
           "type": "kill",

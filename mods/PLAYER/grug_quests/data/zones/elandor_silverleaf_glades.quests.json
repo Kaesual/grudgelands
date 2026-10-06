@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "A Century Down the Snout",
-      "text": "We planted those saplings for children yet unborn; the Small Boars consider them breakfast. Cull eight by day in the {name:home_glades} {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. The boars are not our only trouble, though: some stems out there were cut clean, and no snout cuts clean.",
+      "text": "We planted those saplings for children yet unborn; the Glade Piglets consider them breakfast. Cull eight by day in the {name:home_glades} {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. The boars are not our only trouble, though: some stems out there were cut clean, and no snout cuts clean.",
       "objectives": [
         {
           "type": "kill",
@@ -124,7 +124,7 @@
         "silverleaf_hunt_01"
       ],
       "title": "The Ferns Have Teeth",
-      "text": "Listen beneath the ferns after dark: that scratching is no woodland lullaby. Kill eight Large Rats in the glades {dir_of:silverleaf:home_glades}, before they gnaw through another season's planting. Watch the shadows; a rat that sees you will not wait to be asked.",
+      "text": "Listen beneath the ferns after dark: that scratching is no woodland lullaby. Kill eight Fern Rats in the glades {dir_of:silverleaf:home_glades}, before they gnaw through another season's planting. Watch the shadows; a rat that sees you will not wait to be asked.",
       "objectives": [
         {
           "type": "kill",
@@ -219,7 +219,7 @@
         "silverleaf_hunt_02"
       ],
       "title": "The Basket-Mender's Due",
-      "text": "Three generations of careful weaving, and a rat decides my seed baskets need doors. Hunt Large Rats after dark in the glades {dir_of:silverleaf:home_glades} and bring me two Rat Fur Patches. I shall mend the baskets; you may keep any extra patches for your own work.",
+      "text": "Three generations of careful weaving, and a rat decides my seed baskets need doors. Hunt Fern Rats after dark in the glades {dir_of:silverleaf:home_glades} and bring me two Rat Fur Patches. I shall mend the baskets; you may keep any extra patches for your own work.",
       "objectives": [
         {
           "type": "item",
@@ -249,7 +249,7 @@
         "silverleaf_hunt_02"
       ],
       "title": "Let the Grass Remember Footsteps",
-      "text": "Dune grass bends beneath a living foot and rises after it; the dead give it no such respite. Lay six Braindead Zombies to rest at night on the {name:strand}, which lies {zone_area:strand}. Go before sunrise, when the light takes them, and leave the shore its quiet.",
+      "text": "Dune grass bends beneath a living foot and rises after it; the dead give it no such respite. Lay six Dune Stumblers to rest at night on the {name:strand}, which lies {zone_area:strand}. Go before sunrise, when the light takes them, and leave the shore its quiet.",
       "objectives": [
         {
           "type": "kill",
@@ -278,7 +278,7 @@
         "silverleaf_pantry_01"
       ],
       "title": "A Shore Supper",
-      "text": "Even an ancient recipe needs someone willing to get their boots wet. By day, bring me two Crab Legs from the Small Crabs on the {name:strand}, which lies {zone_area:strand}. Their yellow names mean they will not attack first. Keep any Crab Eyes for an enchanter; I prefer supper to stop watching me.",
+      "text": "Even an ancient recipe needs someone willing to get their boots wet. By day, bring me two Crab Legs from the Sand Fiddlers on the {name:strand}, which lies {zone_area:strand}. Their yellow names mean they will not attack first. Keep any Crab Eyes for an enchanter; I prefer supper to stop watching me.",
       "objectives": [
         {
           "type": "item",
@@ -340,7 +340,7 @@
         "silverleaf_hunt_03"
       ],
       "title": "Eight Shadows in the Seedbeds",
-      "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Young Foxes by day in the {name:foxglades}, which lie {zone_area:foxglades}. Mind the Aggressive Boars nearby: a red name means the creature may start the fight itself.",
+      "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Russet Kits by day in the {name:foxglades}, which lie {zone_area:foxglades}. Mind the Acorn Grunters nearby: a red name means the creature may start the fight itself.",
       "objectives": [
         {
           "type": "kill",
@@ -406,7 +406,7 @@
         "silverleaf_hunt_04"
       ],
       "title": "Dust Is Not a Seasoning",
-      "text": "A little age improves a recipe, but it does nothing for the dust above my flour. Bring me two Fox Tails from Young Foxes in the {name:foxglades} by day. One brush for the shelf, one held in reserve: that is how a kitchen survives an elf's idea of a short visit.",
+      "text": "A little age improves a recipe, but it does nothing for the dust above my flour. Bring me two Fox Tails from Russet Kits in the {name:foxglades} by day. One brush for the shelf, one held in reserve: that is how a kitchen survives an elf's idea of a short visit.",
       "objectives": [
         {
           "type": "item",
@@ -469,7 +469,7 @@
         "silverleaf_hunt_04"
       ],
       "title": "A Forest Is Not a Woodpile",
-      "text": "Those clean cuts lead to the {name:poacher_camp} {dir_from_giver:poacher_camp}, occupied day and night by Confused Poachers and Confused Wood Thieves. Defeat seven of them in all, then their leader, {name:misguided_poacher_chief}; draw him apart from his guards if you can. He sees a week's firewood where we planted a century of shade.",
+      "text": "Those clean cuts lead to the {name:poacher_camp} {dir_from_giver:poacher_camp}, occupied day and night by Fern Poachers and Wood Thieves. Defeat seven of them in all, then their leader, {name:misguided_poacher_chief}; draw him apart from his guards if you can. He sees a week's firewood where we planted a century of shade.",
       "objectives": [
         {
           "type": "kill",

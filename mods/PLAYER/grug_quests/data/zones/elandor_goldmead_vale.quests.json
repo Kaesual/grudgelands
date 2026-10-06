@@ -117,7 +117,7 @@
         "goldmead_harvest_02"
       ],
       "title": "Tusks in the Wheat",
-      "text": "Ridgeback Tuskers are flattening the {name:wheatfields}, which lie {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
+      "text": "Bristlebacks are flattening the {name:wheatfields}, which lie {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
       "objectives": [
         {
           "type": "kill",
@@ -261,7 +261,7 @@
         "goldmead_watch_01"
       ],
       "title": "Cloth Around the Truth",
-      "text": "The Roadside Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp} are carrying our packing cloth as though they bought it. Bring me two lengths of Linen Cloth from them; cloth you saved from an earlier fight will do. Their camp is occupied day and night, so fit the errand around your other work. I would like one shipment to reach its buyer with both its wrapping and its contents intact.",
+      "text": "The False Bailiffs at the {name:bandit_camp} {dir_from_giver:bandit_camp} are carrying our packing cloth as though they bought it. Bring me two lengths of Linen Cloth from them; cloth you saved from an earlier fight will do. Their camp is occupied day and night, so fit the errand around your other work. I would like one shipment to reach its buyer with both its wrapping and its contents intact.",
       "objectives": [
         {
           "type": "item",
@@ -292,7 +292,7 @@
         "goldmead_harvest_03"
       ],
       "title": "Bounty: Fresh Ventilation",
-      "text": "I mend the sacks; the Burrow Gnawers put in fresh ventilation. Kill eight after dark in the {name:hedgerows}, which run {zone_area:hedgerows}, and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
+      "text": "I mend the sacks; the Sack Gnawers put in fresh ventilation. Kill eight after dark in the {name:hedgerows}, which run {zone_area:hedgerows}, and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -324,7 +324,7 @@
         "goldmead_harvest_04"
       ],
       "title": "Collectors Without a Collection",
-      "text": "Hobb's Roadside Bandits hold the {name:bandit_camp} {dir_from_giver:bandit_camp} day and night, demanding payment from people who have already paid. Defeat eight of them. Watch for their Bandit Lookouts and approach from the edge; a collector with a bow is much less persuasive once you are beside him.",
+      "text": "Hobb's False Bailiffs hold the {name:bandit_camp} {dir_from_giver:bandit_camp} day and night, demanding payment from people who have already paid. Defeat eight of them. Watch for their Bandit Lookouts and approach from the edge; a collector with a bow is much less persuasive once you are beside him.",
       "objectives": [
         {
           "type": "kill",
@@ -407,7 +407,7 @@
         "goldmead_watch_03"
       ],
       "title": "Bounty: Steady Employment",
-      "text": "Another batch of Roadside Bandits is collecting at the {name:bandit_camp} {dir_from_giver:bandit_camp}; apparently robbery offers steady employment. Defeat eight and report back for payment, by day or night. You can take this bounty again twenty minutes after turning it in.",
+      "text": "Another batch of False Bailiffs is collecting at the {name:bandit_camp} {dir_from_giver:bandit_camp}; apparently robbery offers steady employment. Defeat eight and report back for payment, by day or night. You can take this bounty again twenty minutes after turning it in.",
       "objectives": [
         {
           "type": "kill",

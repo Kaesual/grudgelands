@@ -60,7 +60,7 @@
       "level": 22,
       "requires": [],
       "title": "Optional: A Seat at the Table",
-      "text": "Bring me eight Raw Meat from the Moss-Antler Gaunt Stags grazing the {name:blightfields} by day. Some mourners have kept vigil so long they have forgotten there is a kitchen. I set places for them anyway; a warm bowl gives the hands something to do when they have run out of things to hold.",
+      "text": "Bring me eight Raw Meat from the Gaunt Harts grazing the {name:blightfields} by day. Some mourners have kept vigil so long they have forgotten there is a kitchen. I set places for them anyway; a warm bowl gives the hands something to do when they have run out of things to hold.",
       "objectives": [
         {
           "type": "item",

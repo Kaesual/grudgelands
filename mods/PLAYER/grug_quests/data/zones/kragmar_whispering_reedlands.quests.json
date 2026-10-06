@@ -50,7 +50,7 @@
       "level": 22,
       "requires": [],
       "title": "Do Not Follow Every Light",
-      "text": "Out here, a welcoming light can leave you waist-deep in water with someone demanding a toll. Kill six Wandering Wisps after dark in the {name:canopy}, {zone_area:canopy}. I cannot prove they work for the toll collectors, but the collectors certainly appreciate the business.",
+      "text": "Out here, a welcoming light can leave you waist-deep in water with someone demanding a toll. Kill six Marshlights after dark in the {name:canopy}, {zone_area:canopy}. I cannot prove they work for the toll collectors, but the collectors certainly appreciate the business.",
       "objectives": [
         {
           "type": "kill",
@@ -78,7 +78,7 @@
         "whispering_reeds_01"
       ],
       "title": "The Water Signed Nothing",
-      "text": "Toll Mirefolk have settled in the {name:hushwater_nests} {dir_from_giver:hushwater_nests} and decided every crossing belongs to them. Kill six before another traveller pays for the same stretch of water twice. I asked who gave them the river; they were strangely unwilling to introduce us.",
+      "text": "Gillbacks have settled in the {name:hushwater_nests} {dir_from_giver:hushwater_nests} and decided every crossing belongs to them. Kill six before another traveller pays for the same stretch of water twice. I asked who gave them the river; they were strangely unwilling to introduce us.",
       "objectives": [
         {
           "type": "kill",
@@ -152,7 +152,7 @@
       "level": 25,
       "requires": [],
       "title": "That Is No Floating Log",
-      "text": "Two carts and a mule lost, and still somebody says the Reed Crocodiles look like logs. Kill six in the {name:mudbanks} {dir_from_giver:mudbanks}, where we haul our stone. They wait there day and night; at least one thing around this quarry never misses a shift.",
+      "text": "Two carts and a mule lost, and still somebody insists the Logbacks are just logs. Kill six in the {name:mudbanks} {dir_from_giver:mudbanks}, where we haul our stone. They wait there day and night; at least one thing around this quarry never misses a shift.",
       "objectives": [
         {
           "type": "kill",
@@ -180,7 +180,7 @@
         "whispering_cut_01"
       ],
       "title": "Quiet the Pumps",
-      "text": "The quarry pumps squeal loud enough to drown out the frogs, and the frogs have put years into that chorus. Bring me two Slime Gel to grease them, taken from the Bubbling Bog Oozes in the {name:thicket}, {zone_area:thicket}. The oozes come out there after dark, making considerably less fuss than my machinery.",
+      "text": "The quarry pumps squeal loud enough to drown out the frogs, and the frogs have put years into that chorus. Bring me two Slime Gel to grease them, taken from the Sedge Oozes in the {name:thicket}, {zone_area:thicket}. The oozes come out there after dark, making considerably less fuss than my machinery.",
       "objectives": [
         {
           "type": "item",
@@ -209,7 +209,7 @@
         "whispering_cut_02"
       ],
       "title": "Bounty: Jaws on the Haul Path",
-      "text": "Every flood leaves fresh Reed Crocodiles in the {name:mudbanks} {dir_from_giver:mudbanks}, and none has offered to pull a cart. Kill six there, by day or night, for this repeatable bounty. It opens again twenty minutes after you turn it in; stone waits patiently, but my haulers should not have to.",
+      "text": "Every flood leaves fresh Logbacks in the {name:mudbanks} {dir_from_giver:mudbanks}, and none has offered to pull a cart. Kill six there, by day or night, for this repeatable bounty. It opens again twenty minutes after you turn it in; stone waits patiently, but my haulers should not have to.",
       "objectives": [
         {
           "type": "kill",
@@ -238,7 +238,7 @@
       "level": 28,
       "requires": [],
       "title": "Who Speaks for the Mire",
-      "text": "Listen to the {name:mire_nests} {dir_from_giver:mire_nests}: the reeds whisper, and the Toll Mirefolk shout over them. Kill six mirefolk there to weaken their tollkeeper's hold on these waters. We have heard quite enough about what we owe for crossing our own home.",
+      "text": "Listen to the {name:mire_nests} {dir_from_giver:mire_nests}: the reeds whisper, and the Mire Tollers shout over them. Kill six mirefolk there to weaken their tollkeeper's hold on these waters. We have heard quite enough about what we owe for crossing our own home.",
       "objectives": [
         {
           "type": "kill",

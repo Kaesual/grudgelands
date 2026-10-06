@@ -39,7 +39,7 @@
         "gd_front_01"
       ],
       "title": "Wear the Teeth This Time",
-      "text": "A recruit ought to wear a fang before a fang wears the recruit. Kill four Warpack Hyenas by day in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and bring me two Siegepack Fangs for the next recruits sent to the front.",
+      "text": "A recruit ought to wear a fang before a fang wears the recruit. Kill four Siegepack Hyenas by day in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and bring me two Siegepack Fangs for the next recruits sent to the front.",
       "objectives": [
         {
           "type": "kill",

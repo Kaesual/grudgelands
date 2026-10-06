@@ -91,7 +91,7 @@
       "level": 52,
       "requires": [],
       "title": "The Dead Are Not Rations",
-      "text": "I set the dead in order, and the Saltpack Blightfang Wolves scatter them again before the graves are ready. Kill five by day in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}. There is only so much dignity I can retrieve from a muzzle.",
+      "text": "I set the dead in order, and the Saltpack Wolves scatter them again before the graves are ready. Kill five by day in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}. There is only so much dignity I can retrieve from a muzzle.",
       "objectives": [
         {
           "type": "kill",
@@ -171,7 +171,7 @@
         "bw_front_hollow_05"
       ],
       "title": "Bounty: Premature Shrouds",
-      "text": "Salt-Web Bonelurker Spiders in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, begin their shrouding work after dark. They rarely wait for the occupant to stop objecting. Kill five there at night and return for payment; this bounty opens again twenty-five minutes after turn-in.",
+      "text": "Tomb Widows in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, begin their shrouding work after dark. They rarely wait for the occupant to stop objecting. Kill five there at night and return for payment; this bounty opens again twenty-five minutes after turn-in.",
       "objectives": [
         {
           "type": "kill",
@@ -200,7 +200,7 @@
       "level": 55,
       "requires": [],
       "title": "What the Salt Holds",
-      "text": "The salt has kept their bodies, but when I listen for their voices there is only the scrape of feet. Lay five Saltbound Sun-Dried Husks to rest by day in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}. Preserving someone ought to mean more than keeping them upright.",
+      "text": "The salt has kept their bodies, but when I listen for their voices there is only the scrape of feet. Lay five Saltbound Husks to rest by day in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}. Preserving someone ought to mean more than keeping them upright.",
       "objectives": [
         {
           "type": "kill",
@@ -226,7 +226,7 @@
       "level": 55,
       "requires": [],
       "title": "Let Me Have the Last Word",
-      "text": "The Salt-Hex Bog Witches whisper hexes over the dead, and the dead cannot rest while they listen. Kill four after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and bring me two Last-Hex Shards. I will read every hex carved into them, and then the dead can stop listening.",
+      "text": "The Brine Witches whisper hexes over the dead, and the dead cannot rest while they listen. Kill four after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and bring me two Last-Hex Shards. I will read every hex carved into them, and then the dead can stop listening.",
       "objectives": [
         {
           "type": "kill",
@@ -293,7 +293,7 @@
         "throng_main_06"
       ],
       "title": "Dismissed, Captain",
-      "text": "Watch-Captain Huskell calls soldiers of both armies from the Undertithe's roll; each fresh payment buys their names for another watch. Kill four Last-Watch Skeleton Raiders at night in the {name:front_gravesalt_escarpment/ossuary_wood} and defeat Huskell, {dir_from_giver:watch_captain_huskell}. I have listened long enough to hear the same names twice; let me hear where his list ends.",
+      "text": "Watch-Captain Huskell calls soldiers of both armies from the Undertithe's roll; each fresh payment buys their names for another watch. Kill four Last-Watch Sentries at night in the {name:front_gravesalt_escarpment/ossuary_wood} and defeat Huskell, {dir_from_giver:watch_captain_huskell}. I have listened long enough to hear the same names twice; let me hear where his list ends.",
       "objectives": [
         {
           "type": "kill",
@@ -361,7 +361,7 @@
         "bw_front_ashveil_04"
       ],
       "title": "Bounty: A Patient Listener",
-      "text": "Some of the dead need someone to hear them before they can be still. Destroy five Last-Watch Skeleton Raiders at night in the {name:front_gravesalt_escarpment/ossuary_wood}, which lies {zone_area:front_gravesalt_escarpment/ossuary_wood}, and bring me two Unquiet Bones. You may take this bounty again half an hour after turn-in; I can always make time to listen.",
+      "text": "Some of the dead need someone to hear them before they can be still. Destroy five Last-Watch Sentries at night in the {name:front_gravesalt_escarpment/ossuary_wood}, which lies {zone_area:front_gravesalt_escarpment/ossuary_wood}, and bring me two Unquiet Bones. You may take this bounty again half an hour after turn-in; I can always make time to listen.",
       "objectives": [
         {
           "type": "kill",

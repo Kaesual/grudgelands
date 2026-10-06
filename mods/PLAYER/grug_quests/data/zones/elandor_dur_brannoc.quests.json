@@ -86,7 +86,7 @@
         "durbrannoc_provisions_01"
       ],
       "title": "Optional: A Ram for the Roast",
-      "text": "Fish fills a pie, but a feast-day roast wants ram. If you have a spare afternoon, hunt six Hill Rams by day in the {name:uplands}, which lie {zone_area:uplands}. They stay quiet until someone starts the argument, so pick your ram and pick your moment.",
+      "text": "Fish fills a pie, but a feast-day roast wants ram. If you have a spare afternoon, hunt six Curlhorn Rams by day in the {name:uplands}, which lie {zone_area:uplands}. They stay quiet until someone starts the argument, so pick your ram and pick your moment.",
       "objectives": [
         {
           "type": "kill",
@@ -216,7 +216,7 @@
         "durbrannoc_gate_01"
       ],
       "title": "His Majesty Signed Nothing",
-      "text": "I checked the toll register twice; the king has granted these thieves precisely nothing. Defeat eight outlaws in all, counting Toll Bandit Archers and Toll Bandits, at night in the {name:tollwood}, which lies {zone_area:tollwood}. Deal with the archers before they put their objections in writing on your coat.",
+      "text": "I checked the toll register twice; the king has granted these thieves precisely nothing. Defeat eight outlaws in all, counting Toll Archers and Tollmen, at night in the {name:tollwood}, which lies {zone_area:tollwood}. Deal with the archers before they put their objections in writing on your coat.",
       "objectives": [
         {
           "type": "kill",
@@ -276,7 +276,7 @@
         "durbrannoc_gate_02"
       ],
       "title": "Close Brakk's Account",
-      "text": "Every crooked entry in my register, and every purse wearing a Dur Brannoc counting-house stamp, leads to the {name:goblin_camp} {dir_from_giver:goblin_camp}, where Goblin Ore-Factor Brakk buys the stolen ore. Recover two Clasped Purses from his Ore-Thieving Goblins or Rubble Goblin Slingers, and kill Brakk himself. Draw him out alone if you can; we've lost enough honest folk balancing his books.",
+      "text": "Every crooked entry in my register, and every purse wearing a Dur Brannoc counting-house stamp, leads to the {name:goblin_camp} {dir_from_giver:goblin_camp}, where Goblin Ore-Factor Brakk buys the stolen ore. Recover two Clasped Purses from his Goblin Smugglers or Slag Slingers, and kill Brakk himself. Draw him out alone if you can; we've lost enough honest folk balancing his books.",
       "objectives": [
         {
           "type": "kill",
@@ -315,7 +315,7 @@
         "durbrannoc_provisions_01"
       ],
       "title": "Bounty: Supper for a City",
-      "text": "The forge bell rings, the doors open, and suddenly every dwarf in Dur Brannoc is starving. Hunt six Hill Rams by day on the {name:heights}, which lie {zone_area:heights}, then come back for your bounty. It's repeatable twenty minutes after you hand it in; I've yet to meet a city that stays fed.",
+      "text": "The forge bell rings, the doors open, and suddenly every dwarf in Dur Brannoc is starving. Hunt six Bighorn Rams by day on the {name:heights}, which lie {zone_area:heights}, then come back for your bounty. It's repeatable twenty minutes after you hand it in; I've yet to meet a city that stays fed.",
       "objectives": [
         {
           "type": "kill",

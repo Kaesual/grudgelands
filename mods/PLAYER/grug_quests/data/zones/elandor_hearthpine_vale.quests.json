@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "A Pig's Breakfast",
-      "text": "Small Boars are rooting through our pit props {zone_area:timberline}, and I refuse to lose a miner to a pig's breakfast. Kill eight by day; a yellow name means they leave you be until you strike. Save any meat for Hilda, then we'll see about the ore thieves.",
+      "text": "Pine Piglets are rooting through our pit props {zone_area:timberline}, and I refuse to lose a miner to a pig's breakfast. Kill eight by day; a yellow name means they leave you be until you strike. Save any meat for Hilda, then we'll see about the ore thieves.",
       "objectives": [
         {
           "type": "kill",
@@ -124,7 +124,7 @@
         "hearthpine_hunt_01"
       ],
       "title": "The Unpaid Night Crew",
-      "text": "Our timber has acquired a night crew with teeth and no respect for joinery. Kill eight Large Rats {zone_area:timberline} after dark. A red name means they'll attack on sight; pick your fights before they pick you.",
+      "text": "Our timber has acquired a night crew with teeth and no respect for joinery. Kill eight Timber Rats {zone_area:timberline} after dark. A red name means they'll attack on sight; pick your fights before they pick you.",
       "objectives": [
         {
           "type": "kill",
@@ -219,7 +219,7 @@
         "hearthpine_hunt_02"
       ],
       "title": "Mending at the Rats' Expense",
-      "text": "The rats have eaten at my expense and chewed through my flour sacks, so they can pay for the mending. Bring me two Rat Fur Patches from the Large Rats in the {name:timberline} after nightfall.",
+      "text": "The rats have eaten at my expense and chewed through my flour sacks, so they can pay for the mending. Bring me two Rat Fur Patches from the Timber Rats in the {name:timberline} after nightfall.",
       "objectives": [
         {
           "type": "item",
@@ -249,7 +249,7 @@
         "hearthpine_hunt_02"
       ],
       "title": "The Dead Can Clock Out",
-      "text": "I know a dragging footstep after a hard shift, and those aren't tired miners. Kill eight Braindead Zombies on the {name:shingle} {dir_from_giver:shingle} after nightfall. They burn in sunlight, so get your daytime work done while you wait. The dead can have your next shift.",
+      "text": "I know a dragging footstep after a hard shift, and those aren't tired miners. Kill eight Pit Shufflers on the {name:shingle} {dir_from_giver:shingle} after nightfall. They burn in sunlight, so get your daytime work done while you wait. The dead can have your next shift.",
       "objectives": [
         {
           "type": "kill",
@@ -278,7 +278,7 @@
         "hearthpine_hunt_02"
       ],
       "title": "A Hard Hat Has Limits",
-      "text": "Young Ibex are kicking slate onto the path through the {name:high_pines}, which lie {zone_area:high_pines}. Hunt eight by day; they'll graze peaceably until you start the fight. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
+      "text": "Ibex Kids are kicking slate onto the path through the {name:high_pines}, which lie {zone_area:high_pines}. Hunt eight by day; they'll graze peaceably until you start the fight. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
       "objectives": [
         {
           "type": "kill",
@@ -376,7 +376,7 @@
         "hearthpine_pantry_01"
       ],
       "title": "The Feast Fights Back",
-      "text": "For once I'd like a feast that nobody can mistake for yesterday's stew. Bring me three Crab Legs from Small Crabs or Monstrous Crabs at the {name:rockpools} {dir_from_giver:rockpools} by day. Small Crabs leave you alone until provoked; Monstrous Crabs start the argument themselves, so keep all your fingers for the cutlery.",
+      "text": "For once I'd like a feast that nobody can mistake for yesterday's stew. Bring me three Crab Legs from Pebble Crabs or Boulder Crabs at the {name:rockpools} {dir_from_giver:rockpools} by day. Pebble Crabs leave you alone until provoked; Boulder Crabs start the argument themselves, so keep all your fingers for the cutlery.",
       "objectives": [
         {
           "type": "item",
@@ -440,7 +440,7 @@
         "hearthpine_hunt_04"
       ],
       "title": "Bracket Doesn't Add Up",
-      "text": "Bracket has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, where his crew lurks day and night, and defeat seven Confused Ore Thieves and Confused Ore Chief Bracket himself. Draw the chief away from his crew if you can; I'd like his ledger closed without your name entered in it.",
+      "text": "Bracket has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, where his crew lurks day and night, and defeat seven Ore Thieves and Ore Chief Bracket himself. Draw the chief away from his crew if you can; I'd like his ledger closed without your name entered in it.",
       "objectives": [
         {
           "type": "kill",

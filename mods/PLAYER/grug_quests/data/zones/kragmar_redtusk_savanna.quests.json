@@ -87,7 +87,7 @@
         "redtusk_herd_01"
       ],
       "title": "Bring the Herders Home",
-      "text": "A herder watching the herd should not have to watch both boots as well. Kill eight Dust-Stinger Scorpions in the {name:grasslands} after dark. I want our people coming home on their own feet.",
+      "text": "A herder watching the herd should not have to watch both boots as well. Kill eight Bark Scorpions in the {name:grasslands} after dark. I want our people coming home on their own feet.",
       "objectives": [
         {
           "type": "kill",
@@ -115,7 +115,7 @@
         "redtusk_herd_02"
       ],
       "title": "All Knot, No Rope",
-      "text": "I tied a pen shut last night and found the knot this morning, with precious little rope attached. Hunt the Dust Gnawers in the {name:tallgrass}, {zone_area:tallgrass}, and kill eight after dark. Give them something worse than rope to bite.",
+      "text": "I tied a pen shut last night and found the knot this morning, with precious little rope attached. Hunt the Rope Gnawers in the {name:tallgrass}, {zone_area:tallgrass}, and kill eight after dark. Give them something worse than rope to bite.",
       "objectives": [
         {
           "type": "kill",
@@ -195,7 +195,7 @@
         "redtusk_herd_02"
       ],
       "title": "Keep It Out of the Stew",
-      "text": "The hunters want three Bitter Venom for their spears, and I have promised to keep the cooks well away from it. Gather it from Dust-Stinger Scorpions in the {name:grasslands} at night and bring it straight to me. Straight to me, even if somebody offers you a clean bowl.",
+      "text": "The hunters want three Bitter Venom for their spears, and I have promised to keep the cooks well away from it. Gather it from Bark Scorpions in the {name:grasslands} at night and bring it straight to me. Straight to me, even if somebody offers you a clean bowl.",
       "objectives": [
         {
           "type": "item",
@@ -286,7 +286,7 @@
         "redtusk_herd_04"
       ],
       "title": "Tusks Across the Trail",
-      "text": "I can read a trail, but these Ridgeback Tuskers keep ploughing tusk marks through it. Kill eight by daylight in the {name:borderveld}, {zone_area:borderveld}. Get them before a caravan finds out how little a loaded cart helps against a charge.",
+      "text": "I can read a trail, but these Gully Tuskers keep ploughing tusk marks through it. Kill eight by daylight in the {name:borderveld}, {zone_area:borderveld}. Get them before a caravan finds out how little a loaded cart helps against a charge.",
       "objectives": [
         {
           "type": "kill",
@@ -314,7 +314,7 @@
         "redtusk_watch_01"
       ],
       "title": "Footprints That Never Rest",
-      "text": "Those Pauper Mummies tramp through the {name:borderveld}, {dir_of:redtusk_outpost:borderveld}, every night without resting. Kill six before they wander onto our supply trails; I would like one watch where every footprint belongs to something breathing.",
+      "text": "Those Parched Mummies tramp through the {name:borderveld}, {dir_of:redtusk_outpost:borderveld}, every night without resting. Kill six before they wander onto our supply trails; I would like one watch where every footprint belongs to something breathing.",
       "objectives": [
         {
           "type": "kill",
@@ -366,7 +366,7 @@
         "redtusk_watch_02"
       ],
       "title": "Bounty: Teeth in the Dark",
-      "text": "Dust Gnawers keep chewing their way through our night supplies on the {name:borderveld}. Kill six after dark and report back for your pay. The bounty is available again twenty minutes after you collect; I expect we will still have rats.",
+      "text": "Rope Gnawers keep chewing their way through our night supplies on the {name:borderveld}. Kill six after dark and report back for your pay. The bounty is available again twenty minutes after you collect; I expect we will still have rats.",
       "objectives": [
         {
           "type": "kill",

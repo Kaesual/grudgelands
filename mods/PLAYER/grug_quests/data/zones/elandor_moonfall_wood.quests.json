@@ -26,7 +26,7 @@
       "level": 22,
       "requires": [],
       "title": "The Stars Have No Need to Howl",
-      "text": "I have watched the heavens for years without hearing a star demand an answer; the Briarpack Wolves beneath my window are less considerate. Kill five in the {name:eaves}, which lie {zone_area:eaves}; they roam there by day and are more plentiful after dark. A wounded wolf calls its pack, so leave yourself room to retreat.",
+      "text": "I have watched the heavens for years without hearing a star demand an answer; the Dusk Howlers beneath my window are less considerate. Kill five in the {name:eaves}, which lie {zone_area:eaves}; they roam there by day and are more plentiful after dark. A wounded wolf calls its pack, so leave yourself room to retreat.",
       "objectives": [
         {
           "type": "kill",
@@ -108,7 +108,7 @@
         "moonfall_stars_02"
       ],
       "title": "One Light, Properly Accounted For",
-      "text": "The Wandering Wisps of the {name:deepwood} keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
+      "text": "The Mistlights of the {name:deepwood} keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
       "objectives": [
         {
           "type": "item",
@@ -274,7 +274,7 @@
         "moonfall_snares_02"
       ],
       "title": "Optional: Thread Across the Stars",
-      "text": "At night, Briar-Web Spiders stretch their webs through the {name:elderwood}, which lies {zone_area:elderwood}, giving the snare-setters convenient markers and everyone else a faceful of silk. Kill six after dark. I prefer to admire fine weaving when it is not attached to my eyebrows.",
+      "text": "At night, Gloam Weavers stretch their webs through the {name:elderwood}, which lies {zone_area:elderwood}, giving the snare-setters convenient markers and everyone else a faceful of silk. Kill six after dark. I prefer to admire fine weaving when it is not attached to my eyebrows.",
       "objectives": [
         {
           "type": "kill",
@@ -303,7 +303,7 @@
         "moonfall_stars_03"
       ],
       "title": "Bounty: Keep the View Clear",
-      "text": "Each clear night should add a little to our knowledge, not another layer of web to the lenses. Kill six Briar-Web Spiders after dark in the {name:deepwood} and return for the Observatory's payment. The bounty stands as long as the spiders keep weaving, which, judging by their diligence, will be some time.",
+      "text": "Each clear night should add a little to our knowledge, not another layer of web to the lenses. Kill six Gloam Weavers after dark in the {name:deepwood} and return for the Observatory's payment. The bounty stands as long as the spiders keep weaving, which, judging by their diligence, will be some time.",
       "objectives": [
         {
           "type": "kill",

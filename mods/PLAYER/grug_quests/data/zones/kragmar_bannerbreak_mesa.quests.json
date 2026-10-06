@@ -122,7 +122,7 @@
         "bannerbreak_ramp_01"
       ],
       "title": "Rattle's Bad Arithmetic",
-      "text": "At the {name:supply_camp} {dir_from_giver:supply_camp}, Provisioner Rattle counts our stolen wagonloads as profit. Kill four Siege Goblins or Siege Goblin Slingers in any combination, and kill Rattle as well. Let him work out what a dead provisioner earns.",
+      "text": "At the {name:supply_camp} {dir_from_giver:supply_camp}, Provisioner Rattle counts our stolen wagonloads as profit. Kill four Sappers or Ramp Slingers in any combination, and kill Rattle as well. Let him work out what a dead provisioner earns.",
       "objectives": [
         {
           "type": "kill",
@@ -189,7 +189,7 @@
       "level": 31,
       "requires": [],
       "title": "Inspect Your Bedroll",
-      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the War-Stinger Scorpions after dark in the {name:badlands}, which lie {zone_area:badlands}. Kill four and bring me two Venom Sacs. My fighters have earned one night's sleep out of their armour.",
+      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the Red Stingers after dark in the {name:badlands}, which lie {zone_area:badlands}. Kill four and bring me two Venom Sacs. My fighters have earned one night's sleep out of their armour.",
       "objectives": [
         {
           "type": "kill",
@@ -250,7 +250,7 @@
         "bannerbreak_standard_01"
       ],
       "title": "Who Watches the Scouts",
-      "text": "My scouts watch for Accord patrols; the Tallgrass Tigers have learned to watch my scouts. Kill four of those tigers by day in the {name:warplains}, which lie {zone_area:warplains}. It takes years to teach a fighter when to stay quiet. I will not spend those years feeding cats.",
+      "text": "My scouts watch for Accord patrols; the Tigresses have learned to watch my scouts. Kill four of those tigers by day in the {name:warplains}, which lie {zone_area:warplains}. It takes years to teach a fighter when to stay quiet. I will not spend those years feeding cats.",
       "objectives": [
         {
           "type": "kill",
@@ -335,7 +335,7 @@
         "bannerbreak_standard_04"
       ],
       "title": "Bounty: More Holes to Patch",
-      "text": "The Entrenched Bandit Archers at the {name:sunderstrap_camp} {dir_from_giver:sunderstrap_camp} keep putting arrows through supplies my fighters bled to bring here. Kill six and collect your bounty. Twenty minutes after payment you can take it again; I will keep paying as long as they keep drawing bows.",
+      "text": "The Trench Archers at the {name:sunderstrap_camp} {dir_from_giver:sunderstrap_camp} keep putting arrows through supplies my fighters bled to bring here. Kill six and collect your bounty. Twenty minutes after payment you can take it again; I will keep paying as long as they keep drawing bows.",
       "objectives": [
         {
           "type": "kill",
@@ -441,7 +441,7 @@
         "bb_front_torn_05"
       ],
       "title": "Find the Hand That Signed",
-      "text": "A bought oath is a debt with a blade on it. Ours were never for sale. Ninepins's pledge slips bear seals of The Accord; the captain of The Accord's high camp on The Shattered Line should know whose hand signed them. Kill the Accord Captain at the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, and bring me the Accord Captain's Orders; I need the paper more than a story about the fight.",
+      "text": "A bought oath is a debt with a blade on it. Ours were never for sale. Ninepins's pledge slips bear seals of The Accord; {captain:pvp_camp_shattered_line_accord_high}, who holds The Accord's high camp on The Shattered Line, should know whose hand signed them. Kill the captain at the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, and bring me the Accord Captain's Orders; I need the paper more than a story about the fight.",
       "objectives": [
         {
           "type": "kill",

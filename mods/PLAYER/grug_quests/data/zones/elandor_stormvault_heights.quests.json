@@ -39,7 +39,7 @@
       "level": 31,
       "requires": [],
       "title": "Postage and Talons",
-      "text": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Ridge Crag Eagles by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
+      "text": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Golden Eagles by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
       "objectives": [
         {
           "type": "kill",
@@ -68,7 +68,7 @@
         "stormvault_passes_01"
       ],
       "title": "The Mountain's Night Shift",
-      "text": "The eagles clock off at dusk, but don't put your weapon away. Rime Skeleton Strays climb out of the snow in the {name:eagle_crags} and loose arrows at our watch fires; break five of them at night. The mountain works two shifts, and neither of them sleeps.",
+      "text": "The eagles clock off at dusk, but don't put your weapon away. Rime Strays climb out of the snow in the {name:eagle_crags} and loose arrows at our watch fires; break five of them at night. The mountain works two shifts, and neither of them sleeps.",
       "objectives": [
         {
           "type": "kill",
@@ -178,7 +178,7 @@
         "stormvault_passes_02"
       ],
       "title": "Bounty: Bones Off the Road",
-      "text": "Every night, Rime Skeleton Strays insist on holding the {name:passes}, which lie {zone_area:passes}. Break six after dark; I want wagons rattling through there, not ribcages. This bounty is repeatable, twenty minutes after you turn it in.",
+      "text": "Every night, Rime Strays insist on holding the {name:passes}, which lie {zone_area:passes}. Break six after dark; I want wagons rattling through there, not ribcages. This bounty is repeatable, twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -208,7 +208,7 @@
       "level": 36,
       "requires": [],
       "title": "Some Assembly Stolen",
-      "text": "Our missing bolts are holding a goblin siege engine together, which is an insult to every smith who threaded them. Defeat six Siege Goblins or Siege Goblin Slingers at the {name:goblin_camp} {dir_from_giver:goblin_camp}. Watch the slingers while you work; they have a distressing knack for finding the gap in a helmet.",
+      "text": "Our missing bolts are holding a goblin siege engine together, which is an insult to every smith who threaded them. Defeat six Siege Goblins or Siege Slingers at the {name:goblin_camp} {dir_from_giver:goblin_camp}. Watch the slingers while you work; they have a distressing knack for finding the gap in a helmet.",
       "objectives": [
         {
           "type": "kill",
@@ -267,7 +267,7 @@
         "stormvault_sighting_02"
       ],
       "title": "Thieves Without Favourites",
-      "text": "The Entrenched Bandit Archers at {name:slatehook} {dir_from_giver:slatehook} rob the Accord and the Throng with admirable fairness. Defeat five of them before they strip another supply train. Use what cover you can; I want a report, not a demonstration of their aim.",
+      "text": "The Waylayers at {name:slatehook} {dir_from_giver:slatehook} rob the Accord and the Throng with admirable fairness. Defeat five of them before they strip another supply train. Use what cover you can; I want a report, not a demonstration of their aim.",
       "objectives": [
         {
           "type": "kill",

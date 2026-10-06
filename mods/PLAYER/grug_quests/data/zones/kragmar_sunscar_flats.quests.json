@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "A Drink Too Far",
-      "text": "Small Boars are ripping our waterskins in the {name:wellfields}, {dir_of:sunscar:wellfields}. Kill eight by day; their yellow names mean they wait for you to strike first. Make that first blow count.",
+      "text": "Scrub Piglets are ripping our waterskins in the {name:wellfields}, {dir_of:sunscar:wellfields}. Kill eight by day; their yellow names mean they wait for you to strike first. Make that first blow count.",
       "objectives": [
         {
           "type": "kill",
@@ -62,7 +62,7 @@
         "sunscar_hunt_01"
       ],
       "title": "Hides Are Not Bedding",
-      "text": "Kill eight Large Dust Rats in the {name:wellfields} after dark; they are chewing the clan's drying hides into bedding. Their red names mean they come at you on sight, so keep your feet under you.",
+      "text": "Kill eight Dust Rats in the {name:wellfields} after dark; they are chewing the clan's drying hides into bedding. Their red names mean they come at you on sight, so keep your feet under you.",
       "objectives": [
         {
           "type": "kill",
@@ -91,7 +91,7 @@
         "sunscar_hunt_02"
       ],
       "title": "Earn Your Breath",
-      "text": "The clan's cooking fires need feeding, and your hunting arm needs work. Bring down eight Young Plains Runners by day in the {name:runner_plains}, {zone_area:runner_plains}. Save the boasting for when you catch your breath.",
+      "text": "The clan's cooking fires need feeding, and your hunting arm needs work. Bring down eight Dustrunners by day in the {name:runner_plains}, {zone_area:runner_plains}. Save the boasting for when you catch your breath.",
       "objectives": [
         {
           "type": "kill",
@@ -119,7 +119,7 @@
         "sunscar_hunt_03"
       ],
       "title": "Let the Thirst End",
-      "text": "Even death has not quenched the Sluggish Sun-Dried Husks that wander the {name:saltflats} at night, {dir_from_giver:saltflats}. Put eight to rest before they reach our wells. Whatever they were, they have crawled through enough salt.",
+      "text": "Even death has not quenched the Sun-Dried Husks that wander the {name:saltflats} at night, {dir_from_giver:saltflats}. Put eight to rest before they reach our wells. Whatever they were, they have crawled through enough salt.",
       "objectives": [
         {
           "type": "kill",
@@ -147,7 +147,7 @@
         "sunscar_hunt_04"
       ],
       "title": "The Last Drop Is Ours",
-      "text": "We share water with any thirsty stranger; the Confused Water Thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six of them and {name:water_thief_chief} himself. Let Sunscar fill its cups without looking over its shoulder.",
+      "text": "We share water with any thirsty stranger; the Water Thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six of them and {name:water_thief_chief} himself. Let Sunscar fill its cups without looking over its shoulder.",
       "objectives": [
         {
           "type": "kill",
@@ -208,7 +208,7 @@
         "sunscar_hunt_05"
       ],
       "title": "Bounty: A Thirst for Trouble",
-      "text": "Every Confused Water Thief who wanders into the {name:thieves_camp} thinks the last lot merely lacked talent. Kill six and return for the clan's bounty. You can take the job again twenty minutes after collecting your pay; apparently the supply of fools needs less time.",
+      "text": "Every Water Thief who wanders into the {name:thieves_camp} thinks the last lot merely lacked talent. Kill six and return for the clan's bounty. You can take the job again twenty minutes after collecting your pay; apparently the supply of fools needs less time.",
       "objectives": [
         {
           "type": "kill",
@@ -380,7 +380,7 @@
       "level": 4,
       "requires": [],
       "title": "Supper Has Too Many Legs",
-      "text": "Supper is scuttling about on the {name:strand}, {dir_from_giver:strand}, and I have a pot to mind. Hunt Small Crabs there by day and bring me three Crab Legs. Their yellow names mean they wait for the first hit, which is more courtesy than I get from hungry hunters.",
+      "text": "Supper is scuttling about on the {name:strand}, {dir_from_giver:strand}, and I have a pot to mind. Hunt Fiddler Crabs there by day and bring me three Crab Legs. Their yellow names mean they wait for the first hit, which is more courtesy than I get from hungry hunters.",
       "objectives": [
         {
           "type": "item",
@@ -410,7 +410,7 @@
         "sunscar_hunt_03"
       ],
       "title": "Keep Dinner Off the Dirt",
-      "text": "Bring me three Fine Sinew from the Young Plains Runners that graze the {name:runner_plains} by day. My drying rack needs new bindings before it drops supper into the dirt, and those runners are too quick for an old cook with a ladle.",
+      "text": "Bring me three Fine Sinew from the Dustrunners that graze the {name:runner_plains} by day. My drying rack needs new bindings before it drops supper into the dirt, and those runners are too quick for an old cook with a ladle.",
       "objectives": [
         {
           "type": "item",
