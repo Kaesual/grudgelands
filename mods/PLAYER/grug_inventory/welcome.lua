@@ -9,7 +9,8 @@
 -- is three hypertext[] elements (title, body, footer); each line is its own
 -- paragraph with the engine's paragraph gap, so there are no blank lines.
 -- At 53 px per unit the body needs about 4.3 of its 4.6 units and the footer
--- 0.9 (1.3 at the 1024x600 minimum) of its 1.35; an overflowing box scrolls.
+-- 0.9 of its 1.35 (1024x600 also gives 53 px per unit); an overflowing box
+-- scrolls.
 -- The links are the Help -> About addresses plus the credits, as
 -- button_url[] (the client asks before opening a browser), in one row with
 -- "Got it".

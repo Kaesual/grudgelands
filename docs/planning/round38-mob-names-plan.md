@@ -379,6 +379,19 @@ test.
 - The welcome window after character creation is the user's separate lane
   (branch `r38-wc`), not merged in this round.
 
+### Follow-up lanes
+
+- **WC — the welcome window** (the user's second agent, own worktree,
+  merged after lane D as `f21aea6d`): a short window once per new
+  character, right after the arrival teleport (`grug_classes.register_on_arrival`
+  in `selection.lua`, `grug_inventory/welcome.lua`), with the Help -> About
+  links and the credits as link buttons (the client asks before opening a
+  browser). Reviewed independently; the review's one finding (text
+  overflowing its boxes) was fixed by a 14 x 9.3 window and re-reviewed
+  against the engine's formspec and Arimo font metrics (the body needs
+  about 226 of 245 px at 53 px per unit; it scrolls only below about
+  829 x 551 px). Fixture `tools/r38_wc`; 109 fixtures pass.
+
 ### GUI playtest checklist
 
 Desktop client and the web build, on **a fresh world** made on main after
@@ -411,3 +424,7 @@ this lane. Helpers: `/xp give`, `/teleport`, `/giveme`, `/time`
 10. **The Kraken's nametag** in deep ocean reads "Kraken".
 11. **A few rewritten quest texts:** `stillgrave_hunt_05` ("Borrow Has Had
     Long Enough") and a camp quest read naturally with the new names.
+12. **The welcome window (lane WC):** a new character sees it once, after
+    arriving in the start town; no scrollbars at your resolution; each link
+    button asks before opening the browser; "Got it" and Esc close it; it
+    does not appear again after a reconnect.

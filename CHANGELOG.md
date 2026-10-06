@@ -41,6 +41,9 @@ so their quests might not count them.
   Chitin and Layered Chitin.
 - "Group" is now "Party" wherever you read it: the Party tab, the invite
   notice, the help, the Priest's description and the "Party: …" quests.
+- New characters are greeted once by a short welcome window, right after
+  they arrive in their start town, with links to Discord, bug reports, the
+  source, the credits and support.
 
 ## 0.37.0 — Round 37, "Audit fixes" (2026-10-06)
 

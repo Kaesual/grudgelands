@@ -12,7 +12,12 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   --shipped` 0 problems, `guarantee.py --check` passes. No world
   generation changed (no seed fleet), but the GUI test wants **a fresh
   world**: garrison guards and named rares carry their name key from their
-  placement. Round end: …
+  placement. Round end (main 3607e9ae): 108/108 fixtures, the checks above,
+  one headless boot of main, synced. Follow-up lane WC (the user's second
+  agent, merged after lane D, `f21aea6d`): a welcome window once per new
+  character after its arrival; independently reviewed twice (its overflow
+  fix measured against the engine's font metrics); 109 fixtures pass;
+  boot of main and resync after the merge.
   - **Names (I, V, Z1–Z7, C, T, the page, B2):** new names for every mob
     slot in the user's picks from the
     [preview page](https://claude.ai/artifact/BaT3x8SHz3PiRduScz39aG):
