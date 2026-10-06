@@ -384,30 +384,46 @@ end
 -- E: the pass
 ------------------------------------------------------------------------------
 do
+	eq(H.PLAYERS_PER_PASS, 100, "E up to 100 active players keep the 0.1 s cadence")
 	local players = {}
-	for i = 1, 30 do
+	local function join(i)
 		local p = new_player("e" .. i)
 		p.main[1] = "grug_abilities:smite"
 		players[i] = p
 		H.track(p, "smite", {expiry = now_us + 60e6, duration = 60})
 	end
+	for i = 1, 100 do join(i) end
 	local visits = {}
 	local real = H.update
 	H.update = function(p, now)
 		visits[p.name] = (visits[p.name] or 0) + 1
 		return real(p, now)
 	end
+	local function distinct()
+		local n, twice = 0, 0
+		for _, v in pairs(visits) do
+			n = n + 1
+			if v > 1 then twice = twice + 1 end
+		end
+		return n, twice
+	end
 	step_fn(0.1)
-	local n = 0
-	for _ in pairs(visits) do n = n + 1 end
-	eq(n, H.PLAYERS_PER_PASS, "E one pass visits at most PLAYERS_PER_PASS players")
-	step_fn(0.1)
-	n = 0
-	for _ in pairs(visits) do n = n + 1 end
-	eq(n, 30, "E the next pass reaches the rest: every player within two passes")
-	-- Cadence: nine server steps of 0.09 s.
+	local n, twice = distinct()
+	eq(n, 100, "E 100 active players: one pass visits every one of them")
+	eq(twice, 0, "E 100 active players: nobody twice in one pass")
+	-- Beyond the cap the players take turns.
+	for i = 101, 130 do join(i) end
 	visits = {}
-	H.PLAYERS_PER_PASS = 100
+	step_fn(0.1)
+	n, twice = distinct()
+	eq(n, H.PLAYERS_PER_PASS, "E 130 active players: one pass visits PLAYERS_PER_PASS")
+	eq(twice, 0, "E 130 active players: nobody twice in one pass")
+	step_fn(0.1)
+	n = distinct()
+	eq(n, 130, "E the next pass reaches the rest: every player within two passes")
+	for i = 101, 130 do leave_fn(players[i]) end
+	-- Cadence: ten server steps of 0.09 s.
+	visits = {}
 	local passes = 0
 	for _ = 1, 10 do
 		local before = visits.e1 or 0
@@ -416,7 +432,7 @@ do
 	end
 	check(passes >= 8, "E 0.09 s server steps: about one pass per 0.1 s (" .. passes .. " in 0.9 s)")
 	H.update = real
-	for i = 1, 30 do leave_fn(players[i]) end
+	for i = 1, 100 do leave_fn(players[i]) end
 	eq(H.active_count(), 0, "E all gone")
 	visits = {}
 	step_fn(0.2)

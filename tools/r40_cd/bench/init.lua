@@ -16,7 +16,9 @@
 --   after   the real overlay (grug_abilities.cooldown_hud), one pass per
 --           0.1 s, when the running game has it
 -- Steady state over 60 s of simulated time: N cooldowns of 2, 5, 10, 30, 60,
--- 90, 120 and 300 s on hotbar slots 1..N, a finished one restarted at once.
+-- 90, 120 and 300 s on hotbar slots 1..N, a finished one restarted at once;
+-- then the whole pass with PLAYERS stand-ins of N cooldowns each (their
+-- start times staggered).
 
 local US = core.get_us_time
 local NAME = "r40cdbench"
@@ -24,6 +26,7 @@ local IDS = {"charge", "taunt", "fireball", "ice_nova", "blink", "smite",
 	"hold_ground", "glacial_ward"}
 local DURATIONS = {2, 5, 10, 30, 60, 90, 120, 300}
 local SECONDS = 60
+local PLAYERS = 100
 
 local function log(line)
 	core.log("action", "[r40 cd bench] " .. line)
@@ -75,15 +78,18 @@ end
 fill()
 
 local calls
-local fake = {
-	get_player_name = function() return NAME end,
-	get_inventory = function() return inv end,
-	hud_add = function() calls.add = calls.add + 1 return calls.add end,
-	hud_change = function() calls.change = calls.change + 1 end,
-	hud_remove = function() calls.remove = calls.remove + 1 end,
-	hud_get_hotbar_itemcount = function() return 8 end,
-	is_player = function() return true end,
-}
+local function stand_in(name)
+	return {
+		get_player_name = function() return name end,
+		get_inventory = function() return inv end,
+		hud_add = function() calls.add = calls.add + 1 return calls.add end,
+		hud_change = function() calls.change = calls.change + 1 end,
+		hud_remove = function() calls.remove = calls.remove + 1 end,
+		hud_get_hotbar_itemcount = function() return 8 end,
+		is_player = function() return true end,
+	}
+end
+local fake = stand_in(NAME)
 
 --
 -- Before: the wear ticker of main 44859742, behaviour for behaviour.
@@ -198,6 +204,108 @@ local function overlay_bench(H, n)
 		:format(n, avg, med, top, total / SECONDS, calls.add, calls.change, calls.remove)
 end
 
+-- PLAYERS players with n cooldowns each. Before: the 0.5 s pass ran the
+-- cooldown block for every connected player; after: H.pass, the overlay's
+-- whole pass (at most PLAYERS_PER_PASS players). Start times are staggered
+-- by 37 ms per player, as casts would be.
+local function wear_crowd(n)
+	writes = 0
+	local who = {}
+	for i = 1, PLAYERS do
+		local player = stand_in(NAME .. i)
+		local cds, steps = {}, {}
+		for slot = 1, n do
+			local start = i * 37e3
+			cds[IDS[slot]] = {expiry = start + DURATIONS[slot] * 1e6, duration = DURATIONS[slot]}
+			steps[IDS[slot]] = WEAR_STEPS
+		end
+		who[i] = {player = player, cds = cds, steps = steps}
+	end
+	local start_writes = writes
+	local samples = {}
+	local passes = SECONDS / 0.5
+	for k = 1, passes do
+		local now = 5e6 + k * 0.5e6
+		local c0 = US()
+		for _, w in ipairs(who) do
+			for id, rec in pairs(w.cds) do
+				local remaining = (rec.expiry - now) / 1e6
+				if remaining <= 0 then
+					w.cds[id] = nil
+					w.steps[id] = nil
+					set_item_wear(w.player, id, 0)
+				else
+					local step = math.max(1, math.min(WEAR_STEPS,
+						math.ceil(remaining / rec.duration * WEAR_STEPS)))
+					if step ~= w.steps[id] then
+						w.steps[id] = step
+						set_item_wear(w.player, id, math.floor(step / WEAR_STEPS * 65534))
+					end
+				end
+			end
+		end
+		samples[#samples + 1] = US() - c0
+		for _, w in ipairs(who) do
+			for slot = 1, n do
+				local id = IDS[slot]
+				if not w.cds[id] then
+					w.cds[id] = {expiry = now + DURATIONS[slot] * 1e6, duration = DURATIONS[slot]}
+					w.steps[id] = WEAR_STEPS
+					set_item_wear(w.player, id, 65534)
+				end
+			end
+		end
+	end
+	local avg, med, top = stats(samples)
+	return ("before, %d players x %d cooldowns (0.5 s pass): pass avg %.0f us, median %d us, max %d us; " ..
+		"%.0f inventory writes/s, up to %d inventory sends/s")
+		:format(PLAYERS, n, avg, med, top, (writes - start_writes) / SECONDS, 2 * PLAYERS)
+end
+
+local function overlay_crowd(H, n)
+	local real_info = H.window_info
+	H.window_info = function()
+		return {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
+	end
+	calls = {add = 0, change = 0, remove = 0}
+	local who = {}
+	for i = 1, PLAYERS do
+		local player = stand_in(NAME .. i)
+		local recs = {}
+		local start = i * 37e3
+		for slot = 1, n do
+			recs[slot] = {expiry = start + DURATIONS[slot] * 1e6, duration = DURATIONS[slot]}
+			H.track(player, IDS[slot], recs[slot], start)
+		end
+		who[i] = {player = player, recs = recs}
+	end
+	local active = H.active_count()
+	local start_calls = calls.add + calls.change + calls.remove
+	local samples = {}
+	local passes = SECONDS / 0.1
+	for k = 1, passes do
+		local now = 5e6 + k * 0.1e6
+		local c0 = US()
+		H.pass(now)
+		samples[#samples + 1] = US() - c0
+		for _, w in ipairs(who) do
+			for slot = 1, n do
+				if w.recs[slot].expiry <= now then
+					w.recs[slot] = {expiry = now + DURATIONS[slot] * 1e6, duration = DURATIONS[slot]}
+					H.track(w.player, IDS[slot], w.recs[slot], now)
+				end
+			end
+		end
+	end
+	local total = calls.add + calls.change + calls.remove - start_calls
+	for i = 1, PLAYERS do H.forget(NAME .. i) end
+	H.window_info = real_info
+	local avg, med, top = stats(samples)
+	return ("after, %d players x %d cooldowns (0.1 s pass, %d active, cap %d): pass avg %.0f us, " ..
+		"median %d us, max %d us; %.0f HUD writes/s")
+		:format(PLAYERS, n, active, H.PLAYERS_PER_PASS, avg, med, top, total / SECONDS)
+end
+
 -- The cast path: one arm_cooldown through the game's public call.
 local function arm_bench(H)
 	local def = grug_abilities.registered.charge
@@ -246,6 +354,11 @@ core.register_on_mods_loaded(function()
 			for _, n in ipairs({1, 4, 8}) do
 				log(overlay_bench(H, n))
 			end
+		end
+		for _, n in ipairs({1, 4}) do
+			fill()
+			log(wear_crowd(n))
+			if H then log(overlay_crowd(H, n)) end
 		end
 		fill()
 		log(arm_bench(H))

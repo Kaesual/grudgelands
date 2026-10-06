@@ -512,10 +512,11 @@ replaces the item wear bar, which no longer shows cooldowns or charges.
   split in a narrow window.
 - **Cost:** per shown slot two HUD image elements (the cover and the whole
   number as one image). One pass every 0.1 s visits only players with a
-  running cooldown or charge, at most 25 per pass (round robin, so a crowd
-  takes turns), and writes only a visible change: a new frame, a new
-  number, an element added or removed (a 300 s cooldown: 134 changes; a
-  pass with nothing new sends nothing). The hotbar is read again after an
+  running cooldown or charge, at most 100 per pass (up to 100 such players
+  keep the 0.1 s cadence; beyond that they take turns, round robin), and
+  writes only a visible change: a new frame, a new number, an element added
+  or removed (a 300 s cooldown: 134 changes; a pass with nothing new sends
+  nothing). The hotbar is read again after an
   inventory action, a new timer and every 0.5 s. The overlay never writes
   the inventory (the wear bar re-sent the whole `main` list on every
   visible step).

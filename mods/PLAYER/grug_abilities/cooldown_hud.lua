@@ -8,9 +8,9 @@
 -- element for the whole number, a [combine of the glyphs: one write per
 -- change instead of one per digit, no re-centring when "10" becomes "9").
 -- One throttled pass every INTERVAL visits only players with a running
--- timer, at most PLAYERS_PER_PASS of them (round robin, so many players
--- spread over several passes), and writes only a visible change: a new
--- frame, a new number, an element added or removed.
+-- timer, at most PLAYERS_PER_PASS of them (round robin: up to that many
+-- keep the 0.1 s cadence, more spread over several passes), and writes only
+-- a visible change: a new frame, a new number, an element added or removed.
 --
 -- The timer records are the callers' own {expiry = us time, duration = s}
 -- tables (cooldowns and charges in init.lua), so ending one early
@@ -25,7 +25,7 @@ local ability_of = ctx.ability_of -- item name -> ability id or nil
 local H = {}
 
 H.INTERVAL = 0.1        -- the pass (pick U1)
-H.PLAYERS_PER_PASS = 25 -- the spread: more active players take turns
+H.PLAYERS_PER_PASS = 100 -- the spread: beyond this many, players take turns
 H.LAYOUT_EVERY = 5      -- a player's passes between window/hotbar checks (0.5 s)
 H.Z_COVER, H.Z_NUMBER = 1, 2 -- above the builtin hotbar (z 0)
 local POSITION = {x = 0.5, y = 1} -- the builtin hotbar's
@@ -202,9 +202,13 @@ core.register_globalstep(function(dtime)
 	-- Keep the remainder, so a 0.09 s server step still averages 0.1 s.
 	acc = acc - H.INTERVAL
 	if acc > H.INTERVAL then acc = 0 end
+	H.pass(core.get_us_time())
+end)
+
+-- One pass at `now` (us) over at most PLAYERS_PER_PASS active players.
+function H.pass(now)
 	local n = #order
 	if n == 0 then return end
-	local now = core.get_us_time()
 	for _ = 1, math.min(n, H.PLAYERS_PER_PASS) do
 		if #order == 0 then break end
 		if cursor > #order then cursor = 1 end
@@ -212,7 +216,7 @@ core.register_globalstep(function(dtime)
 		-- A removed player leaves the slot to the last one: same cursor.
 		if H.update(states[name].player, now) then cursor = cursor + 1 end
 	end
-end)
+end
 
 return H
 end
