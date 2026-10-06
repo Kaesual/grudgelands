@@ -12,9 +12,11 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   mapgen win MGT-02 with P7, the sound question P9 and the documentation
   packages A–F. Lane MG changed the generator's code but not its output
   (`seed_fleet quick` 100 of 100, every roster hash unchanged), so **no
-  fresh world is needed beyond Round 36's**; the round-end `full` seed
-  fleet runs on `27e5db87` (its result: the completion's "Round end"
-  line).
+  fresh world is needed beyond Round 36's**. Round end
+  ([completion](planning/round37-plan.md#completion-2026-10-06)):
+  `seed_fleet full` on `27e5db87` **303 of 303 seeds build**, 0 failed
+  (16 min 31 s), every roster hash equal to the opening baseline; one boot
+  of main PASS; synced to the user's game after lane D's merge.
   - **Combat (CB, MB):** durability as its own cheap event (weapon wear
     217 → 14 µs, a taken hit with armour 296 → 31 µs), the max-HP clamp
     is not damage (mounts, the quest use-hold, shields), one knockback
@@ -43,7 +45,8 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
     and version 0.37.0, the world, player and item design docs against the
     code.
   - Next: the user's GUI test (desktop and web build, two clients for the
-    group fight and knockback), together with Round 36's, which is still
+    group fight, knockback, the breath fan's bystander and Bone Call's
+    raiders), together with Round 36's, which is still
     open; then Round 38 "Mob names"
     ([draft plan](planning/round38-mob-names-plan.md)), which also fixes
     the quest kill-credit bug the user met.
@@ -610,8 +613,8 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   growth, the minimap and Claim Stone, the New World dialog and Help →
   About, the new sounds, the start zones, the Reef Lurker and the
   minimap at high quality (desktop and web build, two clients). Round 36
-  with its follow-up lanes F2, W2, W3 and RD (the user's test is under
-  way): the
+  with its follow-up lanes F2, W2, W3 and RD (the user's test is still
+  open): the
   [Round 36 checklist](planning/round36-plan.md#gui-playtest-checklist)
   covers both main lines from 41 to the finale, quest objects and places,
   the corrupted sub-types, the commanders, the rift and Isquarre (two

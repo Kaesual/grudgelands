@@ -436,7 +436,12 @@ preparation identity, as after every mapgen edit). Lane F's Reef Lurker
 changes spawn recipes, whose region maps rebuild per zone on the next
 start.
 
-Round end: …
+Round end: `seed_fleet full` on `27e5db87` (MG merged): **303 of 303
+seeds build**, 0 failed (16 min 31 s, 8 parallel, about 25 s per seed with
+the five-chunk sample), all 303 roster hashes equal the round's opening
+baseline on `0f169898`; one boot of main `27e5db87`: PASS (random seed
+18146580515371515108); synced to the user's game after the merge of this
+lane.
 
 ### Shipped, by lane
 
@@ -504,15 +509,16 @@ before and after (comparisons, never targets).
   reads no inventory without an item objective; discovery scans in slots
   after an inventory action and every 10 s; the Claim Stone zone scan is
   cached per faction and column (refusal order unchanged); the weapon hint
-  reads the controls only on a fresh press. Engine probe
+  reads the wielded item only on a fresh press (the control bits every
+  time). Engine probe
   `tools/r37_po/engine.sh` (seed 12345, the Round 32 crowd scenario, 100
   stand-ins, walking / standing still): minimap **21.0 / 15.5 → 9.9 /
   5.5 ms/s**, marker recomputes **4.9 → 0.06 ms/s**, tracker 2.85 → 0.73,
   discovery 0.62 → 0.16, weapon hint 2.57 → 0.33, all Lua **98.9 →
   82.5 ms/s**; a repeated Claim Stone check on the same spot 9.3 ms →
   5.9 µs. CORE-05 (`texture_growth.lua`): the minimap's client textures
-  grow about 53–80 MB per hour at normal quality and 124–185 MB at high
-  (the user's answer is lane F's minimap).
+  grow about 53–80 MB per hour at normal quality and 124–185 MB at high,
+  at mount speeds (8–12 nodes/s) (the user's answer is lane F's minimap).
 - **MG mapgen** (merge `32d6a721`; MGT-02, MGT-01, MGS-02, MGT-07/MGS-10,
   MGT-03 documented; the
   [R6 contract](../research/wp40-simple-map-r6-contract.md) §8.2): the
@@ -601,25 +607,27 @@ before and after (comparisons, never targets).
 
 Besides §2 (2026-10-05):
 
-1. **Version scheme** `0.<round>.<patch>`, starting at 0.37.0 (lane DC).
-2. **Sounds** (lane SN, two pages): the dragon's return D5 (a gong); the
+1. **Version scheme** (2026-10-05) `0.<round>.<patch>`, starting at
+   0.37.0 (lane DC).
+2. **Sounds** (2026-10-05; lane SN, two pages): the dragon's return D5 (a gong); the
    Rift Spawn's fuse today's lava hiss; its burst first "a second page with
    explosions", then E7 there.
-3. **Calibration records** in the agent model policy are dropped; **code
+3. **Calibration records** (2026-10-06) in the agent model policy are dropped; **code
    and licence provenance** (VENDOR.md, LICENSE-media, CREDITS, the
    reference projects, source citations) is exempt from the naming rule
    (`700dd5f6`).
-4. **The seed fleet's cost** (+6 s per seed for the real per-chunk path)
+4. **The seed fleet's cost** (2026-10-06; +6 s per seed for the real per-chunk path)
    is accepted.
-5. **The six peoples are named in the README** (Human, Dwarf, Elf for The
+5. **The six peoples are named in the README** (2026-10-06; Human, Dwarf, Elf for The
    Accord; Orc, Troll, Undead for The Throng; lane D).
-6. **Mob projectiles push** players like mob melee (CB, `e99c26bf`).
-7. **The minimap always shows normal quality**; the Map tab keeps high
-   (lane F; the answer to CORE-05).
-8. **No group alerts in the 1–10 start zones**; from 11 on unchanged
-   (lane F).
-9. **The Reef Lurker** on the 51–60 coasts (lane F).
-10. **Mob names and kill credit** become Round 38: the quest kill-credit
+6. **Mob projectiles push** players like mob melee (2026-10-06; CB,
+   `e99c26bf`).
+7. **The minimap always shows normal quality** (2026-10-06); the Map tab
+   keeps high (lane F; the answer to CORE-05).
+8. **No group alerts in the 1–10 start zones** (2026-10-06); from 11 on
+   unchanged (lane F).
+9. **The Reef Lurker** on the 51–60 coasts (2026-10-06; lane F).
+10. **Mob names and kill credit** become Round 38 (2026-10-06): the quest kill-credit
     bug the user met (an area objective counts only mobs that spawned in
     that region) is fixed together with new names per belt
     ([draft plan](round38-mob-names-plan.md)).
@@ -660,7 +668,8 @@ test.
 ### GUI playtest checklist
 
 Desktop client and the web build, on a world made on `fef94a6a` or later
-(Round 36's world is fine); **two clients** for 1 and 6. Helpers:
+(Round 36's world is fine); **two clients** for 1, 6, 7 (the bystander)
+and 8 (raiders ignore Throng players). Helpers:
 `/xp give`, `/teleport`, `/giveme`, `/time` (privileges `server`, `give`,
 `settime`). Say what looks or reads wrong. Plan §6's points as shipped:
 

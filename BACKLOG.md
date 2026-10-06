@@ -1208,9 +1208,8 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   crash, a newer-generation copy removes itself (healed by the next spawn);
   an object finishing deactivation into a block that just turned active
   again can read as lost (a reset, never a duplicate); a royal guard killed
-  early in a King attempt longer than 15 minutes returns mid-fight; Throng
-  city guards still fight the King's raiders (`attack_monsters`); with the
-  King's faction the raiders' loot follows the faction-NPC rule.
+  early in a King attempt longer than 15 minutes returns mid-fight; with
+  the King's faction the raiders' loot follows the faction-NPC rule.
 - **Shore kind** (F review): the new shore regions reshape the coasts a
   little; Gravesalt `whitewall`, a target of two front quests, shrinks from
   7.9 % to 6.4 % of land (seed 7) and from 5.7 % to 4.2 % (seed 2026) but
