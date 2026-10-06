@@ -65,6 +65,32 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   `page.py` makes the review page); `tools/r36_w/render.py` and `page.py`
   the before/after pages of a decor change.
 
+## Web data
+
+`tools/web_data/` (Round 39) is what a website hosting a realm reads at the
+realm's commit, never running game code
+([README](web_data/README.md); the player-meta contract it describes is in
+the [module guide](../docs/technical/module-guide.md#player-meta-read-by-external-tools)):
+
+- `export.lua` and `build.lua`: the exporter (LuaJIT over the real
+  registration files on stubs) writes the committed `web_data.json`;
+  `--check` exits 1 when it is stale. Its fixture
+  `web_data/portable_test.lua` runs under `run_fixtures.sh`.
+- `model/` ([README](web_data/model/README.md)): the player model as
+  glTF, `grug_visuals_character.glb`, written by `build_glb.py` from the
+  `.b3d` and tested against it by `check_glb.py` (both Python standard
+  library); `probe/` is the GUI probe mod (`/glb_probe`) for a test world.
+
+The model's checks are Python, not portable fixtures (a LuaJIT wrapper
+would need `io.popen`, which check_lua's sweep 5 flags), so a round end, and
+a change to the `.b3d` or player_api's animations, runs them explicitly:
+
+```sh
+luajit tools/web_data/export.lua --check            # web_data.json is current
+python3 tools/web_data/model/build_glb.py --check   # the glb is current
+python3 tools/web_data/model/check_glb.py           # the glb matches the b3d
+```
+
 ## Lane folders
 
 Fixtures and probes by round (moved from AGENTS.md on 2026-10-05). A
@@ -170,3 +196,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   - `wc`: the portable test of the welcome window (its text, link buttons
     and Got it; the arrival callbacks run once, after the arriving mark is
     cleared).
+- **Round 39** (`r39_<lane>`): `wm` the player meta (`grug_xp:level` on
+  XP changes, join and the cap; the appearance for every loadout, its
+  writes, and every texture string within the caps and the closed
+  grammar; `examples` prints two values); `wg` the glTF probe mod on a
+  fake engine. Lane WE's fixture is `web_data/portable_test.lua` (above).

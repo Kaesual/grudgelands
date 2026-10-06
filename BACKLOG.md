@@ -1282,8 +1282,60 @@ none blocks the GUI test.
   reported, not errors.
 - **Eight three-word family items** keep their names (the user, plan §6
   item 16): the family word tells which mobs drop them.
-- **The welcome window** after character creation is the user's separate
-  lane (branch `r38-wc`), not part of Round 38 and not merged.
+- **The welcome window** after character creation came from the user's
+  separate lane WC and merged after lane D as a follow-up (`f21aea6d`;
+  [completion](docs/planning/round38-mob-names-plan.md#follow-up-lanes)).
+
+### Round 39 — web data for the realm website
+
+**Delivered locally 2026-10-06, not pushed**
+([completion](docs/planning/round39-web-data-plan.md#completion-2026-10-06),
+plan [round39-web-data-plan.md](docs/planning/round39-web-data-plan.md));
+every lane independently reviewed by Opus; 112 fixtures pass, the
+exporter's `--check`, `check_glb.py` and `build_glb.py --check` pass. No
+gameplay change, no world generation changed.
+
+- **Player meta** (WM): `grug_xp:level` and `grug_visuals:appearance`, the
+  external contract in the
+  [module guide](docs/technical/module-guide.md#player-meta-read-by-external-tools);
+  on main from `03a76229`.
+- **Export** (WE): `tools/web_data/web_data.json`, generated and checked by
+  `tools/web_data/export.lua`.
+- **Model** (WG): `tools/web_data/model/grug_visuals_character.glb`,
+  animated stand and walk, tested against the `.b3d`; a GUI probe mod.
+
+### Round 39 carry-overs
+
+**Noted 2026-10-06** ([completion](docs/planning/round39-web-data-plan.md#completion-2026-10-06)),
+from the reviews (backlog notes, no severity); none blocks the GUI test.
+
+- **The offhand is stored but not drawn** in game: the user wants it on
+  the character later; the appearance format already carries it.
+- **An unregistered item in a hand slot** would store an empty `image`
+  (`grug_visuals.hand_image` finds no definition); fresh-server mode rules
+  such an item out.
+- **Admin `/faction`** updates the stored appearance only at the
+  character's next apply.
+- **The grammar's `max_depth = 4`** is exactly the measured depth of
+  today's strings (no headroom; `tools/r39_wm` asserts the equality): a
+  composition nested deeper or shallower fails the fixture until the
+  grammar, and with it the contract, follows.
+- **The model test is not in `run_fixtures.sh`:** `check_glb.py` and
+  `build_glb.py --check` are Python (a LuaJIT wrapper would need
+  `io.popen`, which check_lua's sweep 5 flags), so a round that touches the `.b3d` or player_api's
+  animations runs them explicitly.
+- **Equippable items from another mod:** the exporter loads only
+  `grug_gear`'s registrations; a mod that starts registering equippable
+  items must be added to `tools/web_data/build.lua`.
+- **Further clips** (sit, lay, mine, walk_mine) are one entry each in
+  `build_glb.py`'s `CLIPS` plus the same name in `tools/web_data/build.lua`'s
+  animation list (the export's frame ranges).
+- **Exporter shell calls** put the repository path in single quotes
+  (`build.lua`'s directory listing, the fixture's `find`): a path with a
+  `'` in it breaks them.
+- **Square hand images:** the export's README describes a hand item as an
+  extruded square of its image; every shipped hand image is square, a
+  non-square one would need that description extended.
 
 ### Audit 2026-10 open questions
 

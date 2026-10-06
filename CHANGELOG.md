@@ -9,6 +9,13 @@ some of its changes are part of world generation.
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.39.0 — Round 39, "Web data for the realm website" (2026-10-06)
+
+Nothing changes in play. The game now keeps each character's level and
+current look where a realm's website can read them, so a website hosting
+a realm can show its players' characters with a 3D preview in their
+current equipment.
+
 ## 0.38.0 — Round 38, "Mob names" (2026-10-06)
 
 New names for the creatures of every zone, and kill quests that count

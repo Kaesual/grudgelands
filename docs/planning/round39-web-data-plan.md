@@ -2,7 +2,9 @@
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-06 from the requests of the
 kaesual.com website, which hosts managed Grudgelands realms, and the user's
-answers. Status: **approved and started on the user's "go" (2026-10-06)**.
+answers. Status: **complete locally on 2026-10-06, not pushed**
+([completion and GUI checklist](#completion-2026-10-06)); approved and
+started on the user's "go" (2026-10-06).
 
 The website shows each player's characters (faction, race, class, level)
 and a 3D preview of the character in its current equipment. It reads
@@ -256,3 +258,170 @@ GUI checklist (the user; an existing test world is enough):
 - Format deviations found during the round (a renamed field, a cap value,
   a dropped optional part, the model route) are collected for that
   message.
+
+## Completion (2026-10-06)
+
+Every lane is merged on main: WG first (`8953178d`), then WM and WE
+together (`03a76229`, plan §7); lane D (this section and the status
+documents) follows. Nothing of Round 39 is pushed yet (origin/main is
+`0ba677fe`, Round 38's start). Reviews, each by an independent Opus, all
+**MERGE**: WM with two Lows (the texture grammar's argument kinds only in
+prose; the module guide's hand-image order without
+`_grug_world_wield_image`) and a fixture check for the worst armour piece,
+all fixed in the lane (`5a5edfa2`); WG with one Low (the probe needs a test
+world of the Grudgelands game), fixed by the coordinator (`b4718f6f`); WE
+with three Lows (a partial export must fail; the bone in the README's
+transform; the visual size's `z`), fixed in the lane (`95397184`). Each
+lane ended with a smoke boot (PASS). On main's tree (`03a76229`): 112
+portable fixtures (WE's run 112 of 112), the exporter's `--check` current,
+`check_glb.py` OK and `build_glb.py --check` up to date.
+
+**The commit that introduces `grug_xp:level` on main is `03a76229`**, the
+merge of WM and WE; it is also the first commit with
+`tools/web_data/web_data.json`, so under the website's support rule it is
+the first commit that supports level and preview. (WM's branch commit
+`c8b3d4ef` wrote the key first but is not on main's first-parent line.)
+
+Round end: …
+
+### Shipped, by lane
+
+- **WM player meta** (in merge `03a76229`; [module guide, "Player meta
+  read by external tools"](../technical/module-guide.md#player-meta-read-by-external-tools)):
+  `grug_xp` writes `grug_xp:level` with `set_int` in `set_xp` and on every
+  join, from XP (capped at 60). `grug_visuals.apply` writes
+  `grug_visuals:appearance` in the §3 shape, built by the new pure
+  `appearance.lua`: it compares a small key on every apply, builds the
+  JSON only when that changed and writes only when the JSON differs from
+  the stored value; the wield poll never writes. The constants:
+  `APPEARANCE_VERSION` 1, `APPEARANCE_TEXTURE_MAX` **2,048** bytes
+  (measured worst case **1,382**, a body; a hand image 268, a cloak 44),
+  `APPEARANCE_JSON_MAX` **10,240** = 4 × 2,048 + `APPEARANCE_JSON_OVERHEAD`
+  2,048 (measured upper bound **2,964**, 1,002 outside the texture
+  strings). The closed grammar `grug_visuals.APPEARANCE_TEXTURE`, one
+  definition as data: `max_depth` **4**, nothing escaped, `^` overlays and
+  `(…)` groups, the modifiers `colorize`, `cracko`, `hsl`, `mask`,
+  `multiply`, `opacity` and `verticalframe` with their argument kinds
+  (int, color, file), files from three directories (`grug_visuals`,
+  `grug_achievements`, `grug_gear` textures) plus the engine file
+  `crack_anylength.png`. The module guide's new section documents all
+  five keys the website reads. Fixture `tools/r39_wm` (**64,737 checks**):
+  the level key on gains, losses, the cap, a refused change and a stale
+  value on join; the appearance for empty, plain, full, broken, enchanted,
+  spellbook, cloak and Scout loadouts; a hand slot's item, broken state and
+  enchant update it; no write on repeated applies, a rejoin, pure wear or
+  the wield poll; the wielded item never stored; every look of every race
+  (**10,152 bodies**, bare and under the worst armour), every cloak and
+  48 hand items × 91 enchant pairs × broken parsed by a parser built only
+  from the grammar and checked against both caps.
+- **WE exporter** (in merge `03a76229`;
+  [tools/web_data/README.md](../../tools/web_data/README.md)): the route
+  is LuaJIT with stubs: `build.lua` runs the real registration files
+  (`player_api`, `grug_xp`, `grug_factions`, `grug_classes`, `grug_gear`,
+  `grug_visuals`) in about 13 ms; a headless engine probe listed the same
+  156 equippable items with the same names and images.
+  `luajit tools/web_data/export.lua [--check]` writes the committed
+  `web_data.json` (**117,279 bytes**, sorted keys, ten significant
+  digits): `schema` 1, `appearance_version` 1, the byte caps, the level
+  start table (max level 60), the class, race and faction ids with
+  display names (class icons, faction colours, race visual sizes), the model (`.b3d` and
+  `.glb`, texture order, stand 0–79 and walk 168–187 at 30 fps), the wield
+  transform per race and pose (5 poses; the README maps it into the glTF
+  model), **526 texture files** (one of them the engine's), the grammar as
+  WM defines it, **48 hand items** (wield image and scale) and, the
+  optional part, **156 equippable items** (display name and inventory
+  image). Fixture `tools/web_data/portable_test.lua` (**2,924 checks**):
+  the committed file is current, versions and caps, every texture file
+  exists, levels, ids, model files and frames, the wield table per race and
+  pose, the items.
+- **WG player model as glTF** (merge `8953178d`;
+  [tools/web_data/model/README.md](../../tools/web_data/model/README.md)):
+  the **animated** variant (the static fallback was not needed).
+  `assimp` 6.0 was tried first and fails the test on the clips (one
+  221-frame clip at the file's 60 fps instead of the named ranges at 30
+  fps) and the materials (one shared material), so `build_glb.py` (Python
+  stdlib, deterministic, `--check`) writes the glb directly from the B3D
+  reader of `tools/r33_c3/gen_cloak_model.py`; it mirrors z and reverses
+  the triangle winding, which Luanti's glTF loader undoes. The file: two materials in the game's texture
+  order (`skin` 168 vertices, 84 triangles; `cloak` 24, 12), no images,
+  seven bones with `Cloak` under `Body`, rigid skinning, the clips `stand`
+  (80 keys, 2.6333 s) and `walk` (20 keys, 0.6333 s), faces −z, 10 units
+  = 1 node, **41,388 bytes**, CC BY-SA 3.0 recorded next to it and in
+  CREDITS.md. `check_glb.py` (stdlib) evaluates both files itself within
+  0.001 units: deviations about **1e-6** (rest pose 1.2e-8 bounding box,
+  4.8e-7 vertex; stand 9.1e-7 / 9.4e-7; walk 1.1e-6 / 1.3e-6, half frames
+  included); six mutations (no z mirror on rotations, conjugated
+  rotations, a frame shift, swapped materials, a missing clip, unreversed
+  winding) all fail it. Outside the repository the lane also loaded the
+  file in Blender 5.2 (within 2.9e-6) and three.js r186 (9.1e-7); the
+  Khronos validator reports 0 errors and 0 warnings. The probe mod
+  `tools/web_data/model/probe` (`/glb_probe`) and its fixture
+  `tools/r39_wg` (54 checks).
+- **D** (this lane): this section, STATUS, the AGENTS.md pointer, ROADMAP,
+  BACKLOG, README, CHANGELOG 0.39.0 and `game.conf` version 0.39.0, the
+  tools README and the documentation guide.
+
+### The user's and the website's choices during the round
+
+All on 2026-10-06:
+
+1. **The website's follow-up** (accepted by the user): a machine-readable
+   texture grammar, the engine's texture files in the export, a maximum for
+   the whole JSON value, and the **support rule** — a commit supports level
+   and preview exactly when `tools/web_data/web_data.json` exists at it.
+   So WM and WE **landed together** (WE resumed on the reviewed WM branch)
+   and no commit carries `grug_xp:level` without the export (§1, §7).
+2. **The static glb** (mesh, skeleton, both buffers, rest pose, no
+   animation) was pre-approved by the user and the website as WG's
+   fallback (§4.3); it was **not needed**.
+
+### Deviations from the plan
+
+- **The grammar is wider than §3's modifiers:** the stored strings also
+  use `(…)` groups, `[colorize`, `[verticalframe` and `[opacity` (enchant
+  layers) and `[cracko` (the broken look), which draws the engine file
+  `crack_anylength.png` without naming it (`engine_files`).
+- **The cloak source returns texture and id:** `grug_achievements`'
+  registered cloak source (`register_cloak_source`) now returns the
+  texture and the selected cloak id, a shared seam WM changed.
+- **The model test is not in `run_fixtures.sh`:** `check_glb.py` and
+  `build_glb.py --check` are Python; lane WG kept them out of the LuaJIT
+  fixture because a wrapper would need `io.popen`, which check_lua's
+  sweep 5 flags, so they run explicitly at the round end.
+- **Format clarifications within §3** (no field renamed): `enchant` lists
+  stat ids of `grug_gear.ENCHANT_ORDER`, the prefix's first; `race` is
+  the race the body is drawn as (`human` before "Create character");
+  `cloak` and `textures.cloak` are `none` without a cloak; the whole value
+  has a cap (`APPEARANCE_JSON_MAX`, choice 1).
+
+### For the website message
+
+The level-key commit `03a76229` (above); the grammar's extra modifiers and
+engine file; the caps 2,048 and 10,240 bytes with the measured 1,382 and
+2,964; the clarifications above; the model route (own converter, animated
+stand and walk, faces −z, no images, engine attachment offsets map z to
+−z, [model README](../../tools/web_data/model/README.md)).
+
+### Open notes
+
+In the [BACKLOG](../../BACKLOG.md#round-39-carry-overs); none blocks the GUI
+test. Whether Luanti draws the glb is proven only by the GUI check below;
+only stand and walk are exported; the offhand is stored but not drawn in
+game (the user wants it drawn later).
+
+### GUI playtest checklist
+
+Desktop client, on the synced game; an existing test world is enough
+(no world generation changed). Say what looks wrong.
+
+1. **The character looks unchanged** after join, after equipping and
+   removing armour, with a broken piece, with an enchanted piece and after
+   a cloak change.
+2. **The glTF probe** in a test world of the Grudgelands game (never a
+   world you play; steps in the
+   [model README](../../tools/web_data/model/README.md#the-luanti-probe-gui-check)):
+   copy the probe mod and the model into the world, join, type
+   `/glb_probe`: the glTF model (left) and the game's `.b3d` (right) stand
+   in your skin, cloak and size and switch between stand and walk every 4
+   seconds; they should look the same (body, cloak, both clips).
+   `/glb_probe clear` removes them; remove the probe folder afterwards.

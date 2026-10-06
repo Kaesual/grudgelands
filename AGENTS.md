@@ -12,10 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 38 "Mob names" is complete locally, not pushed;
-every round up to Round 37 is pushed (origin/main `0ba677fe`, 2026-10-06);
-Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); the GUI tests of
-Rounds 36–38 are open. Details: [STATUS](docs/STATUS.md).
+**Current state:** Round 39 "Web data for the realm website" is complete
+locally, not pushed (Round 38 neither); every round up to Round 37 is
+pushed (origin/main `0ba677fe`, 2026-10-06); Rounds 25–35 count as
+GUI-accepted (the user, 2026-10-05); the GUI tests of Rounds 36–39 are
+open. Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 
@@ -315,6 +316,13 @@ The topic rules below name the one path to use; the
   per NPC; look and enchant art comes from the generators
   (`tools/wp13/gen_character_visuals.py`, `tools/r31_b/gen_enchant_masks.py
   --check`). PvP POIs are rules in `grug_mapgen/wp40/r31_pvp_catalog.lua`.
+- **Realm websites read player meta** (the contract in the
+  [module guide](docs/technical/module-guide.md#player-meta-read-by-external-tools)):
+  those keys and the appearance format are not renamed without notice; a
+  format change raises `APPEARANCE_VERSION`. A change to items, factions,
+  classes, races or textures regenerates `tools/web_data/web_data.json`
+  (`export.lua --check`); a change to the player model or its animations
+  reruns `tools/web_data/model/build_glb.py --check` and `check_glb.py`.
 
 ### Combat, input and notices
 
