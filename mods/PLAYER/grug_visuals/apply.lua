@@ -285,19 +285,68 @@ end
 -- on its own bone and its own mesh buffer appended
 -- (tools/r33_c3/gen_cloak_model.py), so its texture list is {skin, cloak}.
 -- NPCs keep `character.b3d`. Same animations, boxes and eye height as the
--- base model, read from player_api's own registration.
+-- base model, read from player_api's own registration, plus the pose clips.
 --
 grug_visuals.PLAYER_MODEL = "grug_visuals_character.b3d"
 -- The engine's builtin transparent texture: the cloak buffer alpha-tests to
 -- nothing, the "No cloak" look.
 grug_visuals.CLOAK_NONE = "blank.png"
 
+-- The Round 40 pose clips (character_visuals.md §5c), players only: each pose
+-- baked over `stand` (the pose's name) and over `walk` (`<pose>_walk`) after
+-- the base frames by tools/r33_c3/gen_cloak_model.py, whose --check holds
+-- these ranges to the model. A held clip loops (its last frame repeats its
+-- first); a `once` clip plays one time (poses.lua says when each plays).
+grug_visuals.POSE_CLIPS = {
+	cast1 = {stand = {x = 221, y = 240}, walk = {x = 241, y = 260}},
+	cast2 = {stand = {x = 261, y = 280}, walk = {x = 281, y = 300}},
+	swing = {stand = {x = 301, y = 314}, walk = {x = 315, y = 334}, once = true},
+	bow = {stand = {x = 335, y = 354}, walk = {x = 355, y = 374}},
+	block = {stand = {x = 375, y = 394}, walk = {x = 395, y = 414}},
+	charge = {stand = {x = 415, y = 434}, walk = {x = 435, y = 454}},
+	flinch = {stand = {x = 455, y = 464}, walk = {x = 465, y = 484}, once = true},
+}
+
 do
 	local base = player_api.registered_models["character.b3d"]
+	local animations = table.copy(base.animations)
+	-- `_grug_phase` (player_api GRUG PATCH): a switch between two animations
+	-- of one group continues the frame offset instead of starting over. The
+	-- walking clips share the walk cycle, so a pose taken or dropped on the
+	-- move keeps the legs' stride; a one-shot's two twins share its progress.
+	animations.stand._grug_phase = "stand"
+	animations.walk._grug_phase = "walk"
+	animations.mine._grug_phase = "mine"
+	animations.walk_mine._grug_phase = "walk"
+	for pose, clip in pairs(grug_visuals.POSE_CLIPS) do
+		animations[pose] = {x = clip.stand.x, y = clip.stand.y,
+			_grug_phase = clip.once and pose or nil}
+		animations[pose .. "_walk"] = {x = clip.walk.x, y = clip.walk.y,
+			_grug_phase = clip.once and pose or "walk"}
+	end
+	-- The way back from a pose for the player's OWN client: a 5.17 client
+	-- applies a server animation to its own model only when the range is
+	-- none of its four local ones (stand, walk, mine, walk_mine;
+	-- content_cao.cpp GenericCAO::applyTrackAnimation), so a plain `stand`
+	-- after a pose would leave the pose looping in its own third-person view
+	-- until the movement changes. Each `<base>_resume` is its base with the
+	-- end 1/64 frame short: a range that client does not know (it compares
+	-- the floats exactly), while the loop stays seamless. The engine loops
+	-- over [min, max) and wraps max onto min (irr/src/AnimSpec.cpp
+	-- TrackAnimSpec::advance), so a whole frame off either end would drop
+	-- one frame step every cycle; 1/64 frame (exact in a float) drops half a
+	-- millisecond. poses.lua answers it for the one step a pose ends; the
+	-- shared group carries the frame offset on into the base, and since the
+	-- first frame is the base's, the stride carries over exactly.
+	for _, base_name in ipairs({"stand", "walk", "mine", "walk_mine"}) do
+		local a = animations[base_name]
+		animations[base_name .. "_resume"] = {x = a.x, y = a.y - 1 / 64,
+			_grug_phase = a._grug_phase}
+	end
 	player_api.register_model(grug_visuals.PLAYER_MODEL, {
 		animation_speed = base.animation_speed,
 		textures = {base.textures[1], grug_visuals.CLOAK_NONE},
-		animations = table.copy(base.animations),
+		animations = animations,
 		collisionbox = table.copy(base.collisionbox),
 		stepheight = base.stepheight,
 		eye_height = base.eye_height,
