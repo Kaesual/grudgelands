@@ -392,9 +392,10 @@ local init = read("mods/PLAYER/grug_abilities/init.lua")
 local finish_src = init:match("\n(local function finish_authoritative_swing%(context, result%).-\nend)\n")
 check(finish_src ~= nil, "B finish_authoritative_swing found in init.lua")
 local spent = 0
-local finish = assert(loadstring("local spend, swing_rage = ...\n" .. finish_src ..
+local finish = assert(loadstring("local spend, swing_rage, play_skill_pose = ...\n" .. finish_src ..
 	"\nreturn finish_authoritative_swing", "=finish"))(
-	function() spent = spent + 1; return true end, function() return 8 end)
+	function() spent = spent + 1; return true end, function() return 8 end,
+	function() end) -- the pose (lane AN1) has its own fixture
 grug_abilities.reset_charge = function() end
 
 -- Each swing skill's preparation plays nothing; its post plays its effect.
@@ -435,9 +436,10 @@ grug_abilities.CAST_SOUNDS = {}
 grug_classes.registered_classes = {warrior = {name = "Warrior"}, mage = {name = "Mage"},
 	priest = {name = "Priest"}, scout = {name = "Scout"}}
 assert(loadstring("local reset_swing_boundary, refuse_mounted_attack, cast_interval_ready, " ..
-	"affordable, spend, arm_cast_interval = ...\n" .. refusal_src .. "\n" .. try_src, "=try_cast"))(
+	"affordable, spend, arm_cast_interval, play_skill_pose = ...\n" .. refusal_src .. "\n" ..
+	try_src, "=try_cast"))(
 	function() end, function() return false end, function() return true end,
-	function() return true end, function() return true end, function() end)
+	function() return true end, function() return true end, function() end, function() end)
 
 local function cast(id, class, target_ray)
 	grug_classes.get_class = function() return class end

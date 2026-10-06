@@ -721,6 +721,24 @@ grug_abilities.CAST_SOUNDS = {
 	sidestep = "cast_evade", sprint = "silent",
 }
 
+-- The pose clip each skill plays when it really fires (Round 40, round40-plan
+-- §2.14; grug_visuals/poses.lua): a cast skill when try_cast succeeds, a swing
+-- skill's proc when it lands. A refused cast and the Strike fallback (a
+-- swing without a proc) play none. Charge's pose follows its dash (lane CH,
+-- grug_visuals.start_pose/stop_pose), the Scout's drawn bow is scout.lua's.
+grug_abilities.SKILL_POSES = {
+	fireball = "cast1", smite = "cast1", word_of_ruin = "cast1",
+	cinderfall = "cast1",
+	ice_nova = "cast2", glacial_ward = "cast2", heal = "cast2", mend = "cast2",
+	shield_spell = "cast2",
+	hold_ground = "block", mighty_blow = "swing",
+}
+
+local function play_skill_pose(player, def)
+	local pose = grug_abilities.SKILL_POSES[def.id]
+	if pose then grug_visuals.play_pose(player, pose) end
+end
+
 function grug_abilities.register_ability(def)
 	def.repeat_policy = def.repeat_policy or "repeat"
 	assert(def.repeat_policy == "repeat" or def.repeat_policy == "once")
@@ -1203,6 +1221,7 @@ local function finish_authoritative_swing(context, result)
 		return false
 	end
 	grug_abilities.reset_charge(context.player, context.proc)
+	play_skill_pose(context.player, context.proc)
 	if result.mob and context.threat_mult ~= 1 then
 		grug_core.add_threat(result.mob, context.player,
 			(result.damage or 0) * (context.threat_mult - 1))
@@ -1502,6 +1521,7 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 	if cue ~= "weapon" and cue ~= "projectile" and cue ~= "silent" then
 		grug_sounds.play(cue, user)
 	end
+	play_skill_pose(user, def)
 	arm_cast_interval(user, def)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))
