@@ -1410,7 +1410,7 @@ shows a single-colour particle effect, built from the accepted catalogue
   level-up particles and the boss and mob-special effects
   ([biomes_mobs.md](biomes_mobs.md) §3.1, Round 40 PM). What is not on the
   helper stays: the stun cross and root crystals (sized from the object's
-  box), the food crumbs, the rift's own particles, a dragon's return
-  warning, the tails of mob fireballs, embers and void bolts, and the mob
-  engine's blood, death and fall smoke. It exists to correct the amounts if
+  box), the food crumbs, the rift's own particles, the tails of mob
+  fireballs, embers and void bolts, and the mob engine's blood, death and
+  fall smoke. It exists to correct the amounts if
   web tests show a problem.

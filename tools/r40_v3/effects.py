@@ -20,13 +20,15 @@ per-effect and busy-fight totals of the build.
 
 Round 40 PM built the boss and mob cards the same way (marked "PM"): the
 rings that burst out to a radius (Shatter, the gust's release, the dive's
-slam) land on it, (R - r0) / life; the gust's warning ring keeps today's
+slam) land on it, (R - r0) / life; Cleave covers its real cone (120
+degrees, 6 m; the card's 60 degrees was a mistake); the gust's warning ring keeps today's
 look; the breath gathers at its launch point (eye height above the dragon's
 centre, where the bolts and the muzzle burst start). tools/r40_pm/costs.py
 prints the per-boss and per-mob totals of the build, with the looks PM moved
 onto the helper unchanged.
 """
 import json
+import math
 from pathlib import Path
 
 import cost_model as cm
@@ -136,6 +138,12 @@ SHATTER_RING = (6 - 0.6) / 0.34
 GUST_RING = (8 - 1.0) / 0.39
 DIVE_RING = (7 - 1.0) / 0.34
 GUST_KEPT = "default_item_smoke.png^[colorize:#d8eef4:150"
+# PM: Cleave's real cone, 60 degrees either side out to 6 m.
+CLEAVE_SQUARES = [(5 if d else 6, 3.48 * math.cos(math.radians(d)), 3.48 * math.sin(math.radians(d)))
+                  for d in (-40, 0, 40)]
+CLEAVE_CHORDS = [([6 * math.cos(math.radians(d)), 1.2, 6 * math.sin(math.radians(d))],
+                  [6 * math.cos(math.radians(d + 40)), 1.0, 6 * math.sin(math.radians(d + 40))])
+                 for d in (-60, -20, 20)]
 EFFECTS = [
     # ---------------------------------------------------------------- requested
     fx("ice_nova", "requested", "Ice Nova: frost ring", "Ice Nova (Frostbind: the same ring at the target)",
@@ -365,14 +373,15 @@ EFFECTS = [
                   size=(4.0, 4.0), glow=0, at="target")]),
        marker={"radius": 6, "at": "target"}, target=[0, 0, 0], pace=1 / 8, pace_text="every 8 s"),
     fx("king_cleave", "boss", "King Cleave: cone sweep", "Orc king's Cleave (and its wind-up)", "bosses.lua:469",
-       "nothing", "During the wind-up, red motes rise across the 60° cone in front of the king; on the hit a "
-       "red arc sweeps across the cone at 4 m.",
-       [sp(16, 1.0, "#c03030", ("box", [1.0, 0.1, -2.5], [6.0, 0.3, 2.5]), vel=[[0, 0.4, 0], [0, 1.0, 0]],
-           exp=(0.6, 0.9), size=(3.0, 4.0), glow=6),
-        sp(16, 1.0, "#c03030", ("box", [1.0, 0.1, -2.5], [6.0, 0.3, 2.5]), vel=[[0, 0.4, 0], [0, 1.0, 0]],
-           exp=(0.6, 0.9), size=(3.0, 4.0), glow=6, delay=1.0),
-        sp(30, 0.12, "#e03a3a", ("line", [3.5, 1.2, -2.0], [3.5, 1.0, 2.0]), exp=(0.3, 0.4), size=(3.5, 4.5),
-           glow=10, delay=2.0)],
+       "nothing", "During the wind-up, red motes rise across the 120° cone in front of the king; on the hit a "
+       "red arc sweeps across the cone at its 6 m edge.",
+       # PM: over the real cone (cos >= 0.5, 120 degrees) to its 6 m radius: three
+       # world-aligned squares per wind-up second and three 40 degree chords.
+       [sp(n, 1.0, "#c03030", ("box", [x - 1.74, 0.1, z - 1.74], [x + 1.74, 0.3, z + 1.74]),
+           vel=[[0, 0.4, 0], [0, 1.0, 0]], exp=(0.6, 0.9), size=(3.0, 4.0), glow=6, delay=d)
+        for d in (0.0, 1.0) for n, x, z in CLEAVE_SQUARES]
+       + [sp(10, 0.12, "#e03a3a", ("line", a, b), exp=(0.3, 0.4), size=(3.5, 4.5), glow=10, delay=2.0)
+          for a, b in CLEAVE_CHORDS],
        simple=simple("Only the hit arc, 16 motes.", [
            sp(16, 0.12, "#e03a3a", ("line", [3.5, 1.2, -2.0], [3.5, 1.0, 2.0]), exp=(0.3, 0.4), size=(4.0, 5.0),
               glow=10)]),

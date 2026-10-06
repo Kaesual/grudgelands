@@ -445,6 +445,7 @@ end
 -- their colour around the king and on each creature the resolve touched.
 local SIGNATURE_WINDUP = 2
 local SHATTER_RADIUS = 6
+local CLEAVE_RADIUS = 6
 local KIT_COLORS = {rally = "#e8c06a", regrowth = "#7ac943", bone_call = "#9aa88a",
 	volley = "#e6eef0"}
 local RESOLVE_BURSTS = 4
@@ -464,7 +465,8 @@ local function royal_windup(self, kit, first)
 				reach = SHATTER_RADIUS, time = SIGNATURE_WINDUP})
 		end
 	elseif kit == "cleave" then
-		grug_core.particles.play("king_cleave_windup", {caster = pos, dir = king_facing(self)})
+		grug_core.particles.play("king_cleave_windup", {caster = pos, dir = king_facing(self),
+			reach = CLEAVE_RADIUS})
 	else
 		grug_core.particles.play("king_aura", {caster = pos, color = KIT_COLORS[kit]})
 	end
@@ -515,10 +517,11 @@ local function royal_signature(self, race, target, start_health)
 			resolve_burst(kit, object, index)
 		end
 	elseif kit == "cleave" then
-		hit_players(self, 6, 3, true, 0, faction)
+		hit_players(self, CLEAVE_RADIUS, 3, true, 0, faction)
 		local pos = self.object:get_pos()
 		if pos then
-			grug_core.particles.play("king_cleave", {caster = pos, dir = king_facing(self)})
+			grug_core.particles.play("king_cleave", {caster = pos, dir = king_facing(self),
+				reach = CLEAVE_RADIUS})
 		end
 	elseif kit == "regrowth" and self.health >= start_health then
 		self.health = math.min(self.hp_max or self.health,
@@ -843,6 +846,8 @@ local function dragon_lair_loaded(row)
 	return node and node.name ~= "ignore", pos
 end
 
+local DRAGON_RETURN_PIECES = 8
+
 local function warn_dragon(id, row, now, due, pos)
 	-- The warning is local to the contested objective. If nobody has the lair
 	-- loaded when the base timer expires, `due` is moved forward here so the
@@ -863,16 +868,13 @@ local function warn_dragon(id, row, now, due, pos)
 		end
 	end
 	grug_sounds.play("dragon_return", pos)
-	core.add_particlespawner({
-		amount = 180, time = 8,
-		pos = {min = {x = pos.x - 5, y = pos.y, z = pos.z - 5},
-			max = {x = pos.x + 5, y = pos.y + 12, z = pos.z + 5}},
-		vel = {min = {x = -1, y = 2, z = -1},
-			max = {x = 1, y = 6, z = 1}},
-		exptime = {min = 1, max = 3}, size = {min = 4, max = 9},
-		texture = "default_item_smoke.png^[colorize:#ffd24a:220",
-		glow = 12,
-	})
+	-- The golden column (180 motes over 8 s) as eight 1 s pieces in a row on
+	-- the particle helper (Round 40 PM): the same look, sent only to the
+	-- players near the lair instead of one 8 s spawner to everyone.
+	for piece = 1, DRAGON_RETURN_PIECES do
+		core.after(piece - 1, grug_core.particles.play, "dragon_return",
+			{caster = pos, piece = piece})
+	end
 end
 
 -- A dragon removed without its on_die (the admin's /clear_mobs, a crash

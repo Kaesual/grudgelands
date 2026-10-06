@@ -271,16 +271,38 @@ register("king_shatter", {
 		acc = {0, -12, 0}, exp = {0.7, 0.9}, size = {3, 4}, glow = 0}),
 })
 
--- Cleave: red motes rise across the cone in front of the king, one 1 s
--- spawner per wind-up second, then a red arc sweeps across it at 3.5 m.
-register("king_cleave_windup", {
-	spawner(16, 1, {color = "#c03030", shape = {"box", {1, 0.1, -2.5}, {6, 0.3, 2.5}},
-		vel = {{0, 0.4, 0}, {0, 1, 0}}, exp = {0.6, 0.9}, size = {3, 4}, glow = 6}),
-})
-register("king_cleave", {
-	spawner(30, 0.12, {color = "#e03a3a", shape = {"line", {3.5, 1.2, -2}, {3.5, 1, 2}},
-		exp = {0.3, 0.4}, size = {3.5, 4.5}, glow = 10}),
-})
+-- Cleave hits a 120 degree cone (60 degrees either side of the facing) out
+-- to its radius (frame.reach, 6 m). Its wind-up: red motes rise across the
+-- cone, one 1 s spawner set per wind-up second; a spawner's box stays
+-- world-aligned, so three squares at 0.58 of the radius, at -40, 0 and +40
+-- degrees, cover the sector whatever the facing. On the hit a red arc
+-- sweeps across the cone at its radius: three 40 degree chords at once.
+local CLEAVE_ANGLES = {-40, 0, 40}
+register("king_cleave_windup", function(frame)
+	local reach = frame.reach or 6
+	local r, half = reach * 0.58, reach * 0.29
+	local list = {}
+	for index, degrees in ipairs(CLEAVE_ANGLES) do
+		local a = math.rad(degrees)
+		local x, z = r * math.cos(a), r * math.sin(a)
+		list[index] = spawner(index == 2 and 6 or 5, 1, {color = "#c03030",
+			shape = {"box", {x - half, 0.1, z - half}, {x + half, 0.3, z + half}},
+			vel = {{0, 0.4, 0}, {0, 1, 0}}, exp = {0.6, 0.9}, size = {3, 4}, glow = 6})
+	end
+	return list
+end, {reach = 6})
+register("king_cleave", function(frame)
+	local reach = frame.reach or 6
+	local list = {}
+	for index, degrees in ipairs({-60, -20, 20}) do
+		local a, b = math.rad(degrees), math.rad(degrees + 40)
+		list[index] = spawner(10, 0.12, {color = "#e03a3a",
+			shape = {"line", {reach * math.cos(a), 1.2, reach * math.sin(a)},
+				{reach * math.cos(b), 1, reach * math.sin(b)}},
+			exp = {0.3, 0.4}, size = {3.5, 4.5}, glow = 10})
+	end
+	return list
+end, {reach = 6})
 
 -- The other kits' wind-up: motes in the kit's colour (frame.color, bosses.lua
 -- KIT_COLORS) rise around the king, one 1 s spawner per wind-up second ...
@@ -411,6 +433,16 @@ register("enrage", {
 	spawner(96, 0.5, {at = "target", color = "#e03030", shape = {"box", {-7, 0, -7}, {7, 4, 7}},
 		vel = {{-3, 0.5, -3}, {3, 5, 3}}, exp = {0.4, 1.6}, size = {2, 6}, glow = 10}),
 })
+
+-- A dragon's return warning (bosses.lua), kept: a golden column of 180 motes
+-- over 8 s at the lair, played as eight 1 s pieces in a row (frame.piece
+-- 1..8: four of 23 and four of 22), so only nearby players receive it.
+register("dragon_return", function(frame)
+	return {spawner((frame.piece or 1) <= 4 and 23 or 22, 1, {
+		tex = "default_item_smoke.png^[colorize:#ffd24a:220", fade = false,
+		shape = {"box", {-5, 0, -5}, {5, 12, 5}}, vel = {{-1, 2, -1}, {1, 6, 1}},
+		exp = {1, 3}, size = {4, 9}, glow = 12})}
+end, {piece = 1})
 
 -- A dark puff where a whelp appears.
 register("whelp_arrival", {

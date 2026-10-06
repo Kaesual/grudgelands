@@ -776,8 +776,9 @@ Each fires only at its moment:
 
 - **Kings and Generals** (the 2 s signature wind-up): Shatter marks its 6 m
   blast radius with an exact ring of stone dust that lasts the whole wind-up,
-  then bursts out to it with thrown chunks; Cleave lights its cone with red
-  motes (one 1 s spawner per wind-up second) and sweeps a red arc on the hit;
+  then bursts out to it with thrown chunks; Cleave lights its 120° cone with
+  red motes (one 1 s spawner set per wind-up second) and sweeps a red arc
+  across it at its 6 m edge on the hit;
   Rally, Volley, Bone Call and Regrowth raise motes in the kit's colour (gold,
   pale, grey-green, green) around the king, and the resolve shows one rise on
   each creature it touched: each rallied guard (at most four), each raider
@@ -792,7 +793,9 @@ Each fires only at its moment:
   keeps its 40-mote warning ring at its reach and releases a pale ring blowing
   out to it; the dive keeps its wind-up and slams an exact gold ring out to
   its 7 m with a dust cloud; enrage a red burst of 96, a dark puff where each
-  whelp appears; take-off dust and the breath's ground patches as before.
+  whelp appears; take-off dust and the breath's ground patches as before;
+  the 60 s return warning keeps its golden column of 180 motes over 8 s,
+  played as eight 1 s pieces so only players near the lair receive it.
 - **The Kraken:** bubbles around the dragged player on each drag.
 - **Mob specials:** white strands at the legs on a spider's or spiderling's
   web (not on other slows); green bubbles when poisoned and two on each tick;

@@ -305,7 +305,7 @@
      "near_wire": 1430,
      "all_wire": 0,
      "lua_us": 31.059999999999995,
-     "near_us": 24.055249987185622,
+     "near_us": 24.203806657747673,
      "all_us": 0.0,
      "player_check_us": 0.48,
      "particles": 64,
@@ -316,7 +316,7 @@
      "near_wire": 1145,
      "all_wire": 0,
      "lua_us": 16.659999999999997,
-     "near_us": 15.487946696626022,
+     "near_us": 15.799639989668503,
      "all_us": 0.0,
      "player_check_us": 0.24,
      "particles": 32,
@@ -327,7 +327,7 @@
      "near_wire": 1026,
      "all_wire": 0,
      "lua_us": 9.459999999999999,
-     "near_us": 11.169079998570183,
+     "near_us": 11.729039976357793,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 16,
@@ -344,9 +344,9 @@
      "wire": 694,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 20.960019974131136,
+     "per_rx_us": 21.272909968175615,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.560019974131137
+     "zstd_us": 6.872909968175615
     },
     {
      "kind": "spawner",
@@ -1074,7 +1074,7 @@
     "near_wire": 1013,
     "all_wire": 0,
     "lua_us": 16.279999999999998,
-    "near_us": 14.815313324999686,
+    "near_us": 15.012339999868225,
     "all_us": 0.0,
     "player_check_us": 0.24,
     "particles": 36,
@@ -2206,7 +2206,7 @@
      "near_wire": 254,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 5.963679986959323,
+     "near_us": 6.3214700124536956,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -2217,7 +2217,7 @@
      "near_wire": 188,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.990410026644046,
+     "near_us": 5.095573322552566,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -2228,7 +2228,7 @@
      "near_wire": 168,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.681013369917248,
+     "near_us": 4.749236677524944,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -2245,9 +2245,9 @@
      "wire": 254,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 5.960576645517722,
+     "per_rx_us": 6.1181733053643255,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.160576645517722
+     "zstd_us": 4.318173305364326
     }
    ],
    "today_cost": {
@@ -2347,7 +2347,7 @@
      "near_wire": 338,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 7.186846702701102,
+     "near_us": 6.99716995768249,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -2358,7 +2358,7 @@
      "near_wire": 230,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.965546672791243,
+     "near_us": 5.015403329099838,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -2369,7 +2369,7 @@
      "near_wire": 193,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.646076646773144,
+     "near_us": 4.767469984774167,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -2386,9 +2386,9 @@
      "wire": 338,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.0017466330435125,
+     "per_rx_us": 6.279040023094664,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.201746633043513
+     "zstd_us": 4.479040023094664
     }
    ],
    "today_cost": {
@@ -2619,7 +2619,7 @@
      "near_wire": 616,
      "all_wire": 0,
      "lua_us": 24.0,
-     "near_us": 18.077016684381913,
+     "near_us": 18.372843345161527,
      "all_us": 0.0,
      "player_check_us": 0.4,
      "particles": 40,
@@ -2630,7 +2630,7 @@
      "near_wire": 371,
      "all_wire": 0,
      "lua_us": 12.0,
-     "near_us": 11.287283323317144,
+     "near_us": 11.223670013947412,
      "all_us": 0.0,
      "player_check_us": 0.2,
      "particles": 20,
@@ -2641,7 +2641,7 @@
      "near_wire": 265,
      "all_wire": 0,
      "lua_us": 6.0,
-     "near_us": 7.396146638706948,
+     "near_us": 7.444706670862312,
      "all_us": 0.0,
      "player_check_us": 0.1,
      "particles": 10,
@@ -2658,9 +2658,9 @@
      "wire": 616,
      "datagrams": 2,
      "lua_us": 24.0,
-     "per_rx_us": 18.06694996046523,
+     "per_rx_us": 18.310973355236154,
      "per_player_check_us": 0.4,
-     "zstd_us": 6.066949960465232
+     "zstd_us": 6.310973355236153
     }
    ]
   },
@@ -4624,7 +4624,7 @@
      "near_wire": 198,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 5.057813333828623,
+     "near_us": 5.14937330535613,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -4635,7 +4635,7 @@
      "near_wire": 175,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.678276688233018,
+     "near_us": 4.715269985049963,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -4646,7 +4646,7 @@
      "near_wire": 147,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 5.013110004862149,
+     "near_us": 4.361473349186902,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -4663,9 +4663,9 @@
      "wire": 198,
      "datagrams": 1,
      "lua_us": 1.7999999999999998,
-     "per_rx_us": 5.399610028384874,
+     "per_rx_us": 5.377403369188929,
      "per_player_check_us": 0.03,
-     "zstd_us": 4.499610028384875
+     "zstd_us": 4.477403369188929
     }
    ],
    "today_cost": {
@@ -5192,7 +5192,7 @@
      "near_wire": 311,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.725643337021271,
+     "near_us": 7.501040005683899,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5203,7 +5203,7 @@
      "near_wire": 222,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.339846666172768,
+     "near_us": 5.585506666343038,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5214,7 +5214,7 @@
      "near_wire": 175,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.685410037077963,
+     "near_us": 4.708203332483147,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5231,9 +5231,9 @@
      "wire": 311,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.740013353309283,
+     "per_rx_us": 6.825473355998595,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.340013353309283
+     "zstd_us": 4.425473355998595
     }
    ]
   },
@@ -5319,7 +5319,7 @@
      "near_wire": 343,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.7498466645057,
+     "near_us": 6.828103323637819,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5330,7 +5330,7 @@
      "near_wire": 233,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.340776679075012,
+     "near_us": 5.481069996068254,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5341,7 +5341,7 @@
      "near_wire": 181,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.640643349677945,
+     "near_us": 4.703103371259445,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5358,9 +5358,9 @@
      "wire": 343,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.743610004677127,
+     "per_rx_us": 6.902773323717216,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.343610004677127
+     "zstd_us": 4.502773323717217
     }
    ]
   },
@@ -5449,7 +5449,7 @@
      "near_wire": 406,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.801713376864791,
+     "near_us": 6.921139975016317,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5460,7 +5460,7 @@
      "near_wire": 260,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.318313372600824,
+     "near_us": 5.729370004699255,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5471,7 +5471,7 @@
      "near_wire": 190,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.6235766694725795,
+     "near_us": 4.71077334623163,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5488,9 +5488,9 @@
      "wire": 406,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.793346656191472,
+     "per_rx_us": 6.860169972541431,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.393346656191473
+     "zstd_us": 4.460169972541432
     }
    ]
   },
@@ -5576,7 +5576,7 @@
      "near_wire": 332,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 6.080780024904136,
+     "near_us": 6.138540020398795,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -5587,7 +5587,7 @@
      "near_wire": 225,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.993243333045394,
+     "near_us": 5.18127003639626,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -5598,7 +5598,7 @@
      "near_wire": 190,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.637513329725092,
+     "near_us": 4.9365400051698085,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5615,9 +5615,9 @@
      "wire": 332,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.08264330063636,
+     "per_rx_us": 7.398440038738772,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.2826433006363605
+     "zstd_us": 5.598440038738772
     }
    ]
   },
@@ -5703,7 +5703,7 @@
      "near_wire": 307,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.766780000661189,
+     "near_us": 6.912469992429639,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5714,7 +5714,7 @@
      "near_wire": 216,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.270946646000569,
+     "near_us": 5.344406654328729,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5725,7 +5725,7 @@
      "near_wire": 173,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.661976651428267,
+     "near_us": 4.7585033371423675,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5742,9 +5742,9 @@
      "wire": 307,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.762813294089089,
+     "per_rx_us": 6.8395399648540955,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.362813294089088
+     "zstd_us": 4.439539964854096
     }
    ]
   },
@@ -5879,7 +5879,7 @@
       "near_wire": 330,
       "all_wire": 0,
       "lua_us": 14.399999999999999,
-      "near_us": 12.297783335562174,
+      "near_us": 12.382240032202873,
       "all_us": 0.0,
       "player_check_us": 0.24,
       "particles": 24,
@@ -5890,7 +5890,7 @@
       "near_wire": 234,
       "all_wire": 0,
       "lua_us": 7.199999999999999,
-      "near_us": 7.996746662678197,
+      "near_us": 8.204340016764277,
       "all_us": 0.0,
       "player_check_us": 0.12,
       "particles": 12,
@@ -5901,7 +5901,7 @@
       "near_wire": 184,
       "all_wire": 0,
       "lua_us": 3.5999999999999996,
-      "near_us": 5.908243301743641,
+      "near_us": 6.1618366665517295,
       "all_us": 0.0,
       "player_check_us": 0.06,
       "particles": 6,
@@ -5928,7 +5928,7 @@
      "near_wire": 422,
      "all_wire": 0,
      "lua_us": 24.0,
-     "near_us": 17.418146659697715,
+     "near_us": 17.58920665450084,
      "all_us": 0.0,
      "player_check_us": 0.4,
      "particles": 40,
@@ -5939,7 +5939,7 @@
      "near_wire": 301,
      "all_wire": 0,
      "lua_us": 12.0,
-     "near_us": 10.582279992367452,
+     "near_us": 10.700036709740138,
      "all_us": 0.0,
      "player_check_us": 0.2,
      "particles": 20,
@@ -5950,7 +5950,7 @@
      "near_wire": 219,
      "all_wire": 0,
      "lua_us": 6.0,
-     "near_us": 7.237013296612228,
+     "near_us": 7.317069979151711,
      "all_us": 0.0,
      "player_check_us": 0.1,
      "particles": 10,
@@ -5967,9 +5967,9 @@
      "wire": 422,
      "datagrams": 1,
      "lua_us": 24.0,
-     "per_rx_us": 17.786983335080247,
+     "per_rx_us": 17.655506683979183,
      "per_player_check_us": 0.4,
-     "zstd_us": 5.786983335080246
+     "zstd_us": 5.655506683979183
     }
    ]
   },
@@ -6182,7 +6182,7 @@
       "near_wire": 485,
       "all_wire": 0,
       "lua_us": 19.2,
-      "near_us": 15.288816648519909,
+      "near_us": 15.484806693453962,
       "all_us": 0.0,
       "player_check_us": 0.32,
       "particles": 32,
@@ -6193,7 +6193,7 @@
       "near_wire": 336,
       "all_wire": 0,
       "lua_us": 9.6,
-      "near_us": 9.477313312034433,
+      "near_us": 9.646839971529939,
       "all_us": 0.0,
       "player_check_us": 0.16,
       "particles": 16,
@@ -6204,7 +6204,7 @@
       "near_wire": 244,
       "all_wire": 0,
       "lua_us": 4.8,
-      "near_us": 6.719810007776443,
+      "near_us": 6.930470032477752,
       "all_us": 0.0,
       "player_check_us": 0.08,
       "particles": 8,
@@ -6231,7 +6231,7 @@
      "near_wire": 1342,
      "all_wire": 0,
      "lua_us": 30.679999999999996,
-     "near_us": 24.029620038438587,
+     "near_us": 24.094243299231554,
      "all_us": 0.0,
      "player_check_us": 0.48,
      "particles": 60,
@@ -6242,7 +6242,7 @@
      "near_wire": 1056,
      "all_wire": 0,
      "lua_us": 16.279999999999998,
-     "near_us": 15.559883313455307,
+     "near_us": 15.676273314949746,
      "all_us": 0.0,
      "player_check_us": 0.24,
      "particles": 30,
@@ -6253,7 +6253,7 @@
      "near_wire": 937,
      "all_wire": 0,
      "lua_us": 9.079999999999998,
-     "near_us": 11.178446629845226,
+     "near_us": 11.244769990894323,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 15,
@@ -6270,9 +6270,9 @@
      "wire": 693,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 20.95128334377271,
+     "per_rx_us": 21.077676671339816,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.551283343772714
+     "zstd_us": 6.677676671339819
     },
     {
      "kind": "spawner",
@@ -6292,37 +6292,37 @@
    "skill": "Orc king's Cleave (and its wind-up)",
    "hook": "bosses.lua:469",
    "today": "nothing",
-   "look": "During the wind-up, red motes rise across the 60\u00b0 cone in front of the king; on the hit a red arc sweeps across the cone at 4 m.",
+   "look": "During the wind-up, red motes rise across the 120\u00b0 cone in front of the king; on the hit a red arc sweeps across the cone at its 6 m edge.",
    "emitters": [
     {
      "kind": "spawner",
-     "n": 16,
+     "n": 5,
      "time": 1.0,
      "color": "#c03030",
      "spawn": [
       "box",
       [
-       1.0,
+       0.9258346620540434,
        0.1,
-       -2.5
+       -3.976900881709157
       ],
       [
-       6.0,
+       4.405834662054043,
        0.3,
-       2.5
+       -0.4969008817091567
       ]
      ],
      "engine": {
       "pos": [
        [
-        1.0,
+        0.9258346620540434,
         0.1,
-        -2.5
+        -3.976900881709157
        ],
        [
-        6.0,
+        4.405834662054043,
         0.3,
-        2.5
+        -0.4969008817091567
        ]
       ],
       "tween": null,
@@ -6369,33 +6369,179 @@
     },
     {
      "kind": "spawner",
-     "n": 16,
+     "n": 6,
      "time": 1.0,
      "color": "#c03030",
      "spawn": [
       "box",
       [
-       1.0,
+       1.74,
        0.1,
-       -2.5
+       -1.74
       ],
       [
-       6.0,
+       5.22,
        0.3,
-       2.5
+       1.74
       ]
      ],
      "engine": {
       "pos": [
        [
-        1.0,
+        1.74,
         0.1,
-        -2.5
+        -1.74
        ],
        [
-        6.0,
+        5.22,
         0.3,
-        2.5
+        1.74
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0.4,
+       0
+      ],
+      [
+       0,
+       1.0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#c03030",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 5,
+     "time": 1.0,
+     "color": "#c03030",
+     "spawn": [
+      "box",
+      [
+       0.9258346620540434,
+       0.1,
+       0.4969008817091567
+      ],
+      [
+       4.405834662054043,
+       0.3,
+       3.976900881709157
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        0.9258346620540434,
+        0.1,
+        0.4969008817091567
+       ],
+       [
+        4.405834662054043,
+        0.3,
+        3.976900881709157
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0.4,
+       0
+      ],
+      [
+       0,
+       1.0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#c03030",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 5,
+     "time": 1.0,
+     "color": "#c03030",
+     "spawn": [
+      "box",
+      [
+       0.9258346620540434,
+       0.1,
+       -3.976900881709157
+      ],
+      [
+       4.405834662054043,
+       0.3,
+       -0.4969008817091567
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        0.9258346620540434,
+        0.1,
+        -3.976900881709157
+       ],
+       [
+        4.405834662054043,
+        0.3,
+        -0.4969008817091567
        ]
       ],
       "tween": null,
@@ -6442,34 +6588,326 @@
     },
     {
      "kind": "spawner",
-     "n": 30,
+     "n": 6,
+     "time": 1.0,
+     "color": "#c03030",
+     "spawn": [
+      "box",
+      [
+       1.74,
+       0.1,
+       -1.74
+      ],
+      [
+       5.22,
+       0.3,
+       1.74
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        1.74,
+        0.1,
+        -1.74
+       ],
+       [
+        5.22,
+        0.3,
+        1.74
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0.4,
+       0
+      ],
+      [
+       0,
+       1.0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#c03030",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 1.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 5,
+     "time": 1.0,
+     "color": "#c03030",
+     "spawn": [
+      "box",
+      [
+       0.9258346620540434,
+       0.1,
+       0.4969008817091567
+      ],
+      [
+       4.405834662054043,
+       0.3,
+       3.976900881709157
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        0.9258346620540434,
+        0.1,
+        0.4969008817091567
+       ],
+       [
+        4.405834662054043,
+        0.3,
+        3.976900881709157
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0.4,
+       0
+      ],
+      [
+       0,
+       1.0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#c03030",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 1.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 10,
      "time": 0.12,
      "color": "#e03a3a",
      "spawn": [
       "line",
       [
-       3.5,
+       3.000000000000001,
        1.2,
-       -2.0
+       -5.196152422706632
       ],
       [
-       3.5,
+       5.638155724715451,
        1.0,
-       2.0
+       -2.0521208599540124
       ]
      ],
      "engine": {
       "pos": null,
       "tween": [
        [
-        3.5,
+        3.000000000000001,
         1.2,
-        -2.0
+        -5.196152422706632
        ],
        [
-        3.5,
+        5.638155724715451,
         1.0,
-        2.0
+        -2.0521208599540124
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      3.5,
+      4.5
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e03a3a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 2.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 10,
+     "time": 0.12,
+     "color": "#e03a3a",
+     "spawn": [
+      "line",
+      [
+       5.638155724715451,
+       1.2,
+       -2.0521208599540124
+      ],
+      [
+       5.638155724715451,
+       1.0,
+       2.0521208599540124
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        5.638155724715451,
+        1.2,
+        -2.0521208599540124
+       ],
+       [
+        5.638155724715451,
+        1.0,
+        2.0521208599540124
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      3.5,
+      4.5
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e03a3a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 2.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 10,
+     "time": 0.12,
+     "color": "#e03a3a",
+     "spawn": [
+      "line",
+      [
+       5.638155724715451,
+       1.2,
+       2.0521208599540124
+      ],
+      [
+       3.000000000000001,
+       1.0,
+       5.196152422706632
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        5.638155724715451,
+        1.2,
+        2.0521208599540124
+       ],
+       [
+        3.000000000000001,
+        1.0,
+        5.196152422706632
        ]
       ],
       "radius": null
@@ -6644,40 +7082,94 @@
    "note": "",
    "cost": {
     "1.0": {
-     "near_wire": 2013,
+     "near_wire": 6039,
      "all_wire": 0,
-     "lua_us": 5.64,
-     "near_us": 9.0,
+     "lua_us": 16.919999999999995,
+     "near_us": 27.0,
      "all_us": 0.0,
      "player_check_us": 0.0,
      "particles": 62,
-     "spawners": 3,
+     "spawners": 9,
      "singles": 0
     },
     "0.5": {
-     "near_wire": 2013,
+     "near_wire": 6039,
      "all_wire": 0,
-     "lua_us": 5.64,
-     "near_us": 9.0,
+     "lua_us": 16.919999999999995,
+     "near_us": 27.0,
      "all_us": 0.0,
      "player_check_us": 0.0,
-     "particles": 31,
-     "spawners": 3,
+     "particles": 33,
+     "spawners": 9,
      "singles": 0
     },
     "0.25": {
-     "near_wire": 2013,
+     "near_wire": 6039,
      "all_wire": 0,
-     "lua_us": 5.64,
-     "near_us": 9.0,
+     "lua_us": 16.919999999999995,
+     "near_us": 27.0,
      "all_us": 0.0,
      "player_check_us": 0.0,
-     "particles": 16,
-     "spawners": 3,
+     "particles": 17,
+     "spawners": 9,
      "singles": 0
     }
    },
    "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
     {
      "kind": "spawner",
      "receivers": "near",
@@ -8097,7 +8589,7 @@
       "near_wire": 1284,
       "all_wire": 0,
       "lua_us": 10.799999999999999,
-      "near_us": 30.00288000293076,
+      "near_us": 30.850419925618915,
       "all_us": 0.0,
       "player_check_us": 0.18,
       "particles": 18,
@@ -8108,7 +8600,7 @@
       "near_wire": 906,
       "all_wire": 0,
       "lua_us": 5.3999999999999995,
-      "near_us": 23.91624012943357,
+      "near_us": 24.69924027081579,
       "all_us": 0.0,
       "player_check_us": 0.09,
       "particles": 9,
@@ -8119,7 +8611,7 @@
       "near_wire": 906,
       "all_wire": 0,
       "lua_us": 3.0,
-      "near_us": 22.67085998179391,
+      "near_us": 23.477020078338683,
       "all_us": 0.0,
       "player_check_us": 0.05,
       "particles": 5,
@@ -8143,7 +8635,7 @@
      "near_wire": 2568,
      "all_wire": 0,
      "lua_us": 21.599999999999998,
-     "near_us": 59.77291946690529,
+     "near_us": 73.96247978247702,
      "all_us": 0.0,
      "player_check_us": 0.36,
      "particles": 36,
@@ -8154,7 +8646,7 @@
      "near_wire": 1812,
      "all_wire": 0,
      "lua_us": 10.799999999999999,
-     "near_us": 47.550119552388786,
+     "near_us": 50.58807982094586,
      "all_us": 0.0,
      "player_check_us": 0.18,
      "particles": 18,
@@ -8165,7 +8657,7 @@
      "near_wire": 1812,
      "all_wire": 0,
      "lua_us": 5.3999999999999995,
-     "near_us": 44.8605195151642,
+     "near_us": 46.91484016347677,
      "all_us": 0.0,
      "player_check_us": 0.09,
      "particles": 9,
@@ -8182,16 +8674,16 @@
      "wire": 2568,
      "datagrams": 12,
      "lua_us": 21.599999999999998,
-     "per_rx_us": 59.890519896708426,
+     "per_rx_us": 61.70803955681622,
      "per_player_check_us": 0.36,
-     "zstd_us": 49.09051989670843
+     "zstd_us": 50.90803955681622
     }
    ],
    "today_cost": {
     "near_wire": 3906,
     "all_wire": 0,
     "lua_us": 32.4,
-    "near_us": 89.86883946815504,
+    "near_us": 92.43365992913023,
     "all_us": 0.0,
     "player_check_us": 0.54,
     "particles": 54,
@@ -8860,7 +9352,7 @@
       "near_wire": 1146,
       "all_wire": 0,
       "lua_us": 26.259999999999998,
-      "near_us": 20.39215000268693,
+      "near_us": 20.525540036614984,
       "all_us": 0.0,
       "player_check_us": 0.4,
       "particles": 80,
@@ -8871,7 +9363,7 @@
       "near_wire": 1028,
       "all_wire": 0,
       "lua_us": 14.26,
-      "near_us": 13.579379989687975,
+      "near_us": 13.711206662856664,
       "all_us": 0.0,
       "player_check_us": 0.2,
       "particles": 40,
@@ -8882,7 +9374,7 @@
       "near_wire": 949,
       "all_wire": 0,
       "lua_us": 8.26,
-      "near_us": 10.262246657162905,
+      "near_us": 10.36956999086154,
       "all_us": 0.0,
       "player_check_us": 0.1,
       "particles": 20,
@@ -8909,7 +9401,7 @@
      "near_wire": 1126,
      "all_wire": 0,
      "lua_us": 52.8,
-     "near_us": 38.308696663643545,
+     "near_us": 38.966383326581365,
      "all_us": 0.0,
      "player_check_us": 0.88,
      "particles": 88,
@@ -8920,7 +9412,7 @@
      "near_wire": 720,
      "all_wire": 0,
      "lua_us": 26.4,
-     "near_us": 23.370060025605685,
+     "near_us": 23.482876707303028,
      "all_us": 0.0,
      "player_check_us": 0.44,
      "particles": 44,
@@ -8931,7 +9423,7 @@
      "near_wire": 504,
      "all_wire": 0,
      "lua_us": 13.2,
-     "near_us": 15.398226675329107,
+     "near_us": 15.695346661827838,
      "all_us": 0.0,
      "player_check_us": 0.22,
      "particles": 22,
@@ -8948,9 +9440,9 @@
      "wire": 427,
      "datagrams": 1,
      "lua_us": 24.0,
-     "per_rx_us": 17.42338001347768,
+     "per_rx_us": 17.632906638008233,
      "per_player_check_us": 0.4,
-     "zstd_us": 5.423380013477678
+     "zstd_us": 5.632906638008232
     },
     {
      "kind": "single",
@@ -8960,16 +9452,16 @@
      "wire": 699,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 20.894016658204297,
+     "per_rx_us": 21.08037333525717,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.4940166582042975
+     "zstd_us": 6.680373335257173
     }
    ],
    "today_cost": {
     "near_wire": 1081,
     "all_wire": 0,
     "lua_us": 25.88,
-    "near_us": 20.439146674082927,
+    "near_us": 20.58133998614115,
     "all_us": 0.0,
     "player_check_us": 0.4,
     "particles": 136,
@@ -9190,7 +9682,7 @@
       "near_wire": 700,
       "all_wire": 0,
       "lua_us": 28.799999999999997,
-      "near_us": 20.91145329660115,
+      "near_us": 21.30420997367861,
       "all_us": 0.0,
       "player_check_us": 0.48,
       "particles": 48,
@@ -9201,7 +9693,7 @@
       "near_wire": 417,
       "all_wire": 0,
       "lua_us": 14.399999999999999,
-      "near_us": 12.618713311276707,
+      "near_us": 12.732106636868167,
       "all_us": 0.0,
       "player_check_us": 0.24,
       "particles": 24,
@@ -9212,7 +9704,7 @@
       "near_wire": 279,
       "all_wire": 0,
       "lua_us": 7.199999999999999,
-      "near_us": 8.087046680878847,
+      "near_us": 8.166703331268703,
       "all_us": 0.0,
       "player_check_us": 0.12,
       "particles": 12,
@@ -9239,7 +9731,7 @@
      "near_wire": 1370,
      "all_wire": 0,
      "lua_us": 30.679999999999996,
-     "near_us": 23.900316667370497,
+     "near_us": 24.210173314685623,
      "all_us": 0.0,
      "player_check_us": 0.48,
      "particles": 80,
@@ -9250,7 +9742,7 @@
      "near_wire": 1086,
      "all_wire": 0,
      "lua_us": 16.279999999999998,
-     "near_us": 15.559516653697937,
+     "near_us": 15.686373362752299,
      "all_us": 0.0,
      "player_check_us": 0.24,
      "particles": 40,
@@ -9261,7 +9753,7 @@
      "near_wire": 952,
      "all_wire": 0,
      "lua_us": 9.079999999999998,
-     "near_us": 11.096280016610399,
+     "near_us": 11.202539993356913,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 20,
@@ -9278,9 +9770,9 @@
      "wire": 699,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 20.90138666969724,
+     "per_rx_us": 21.40054001451159,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.50138666969724
+     "zstd_us": 7.000540014511595
     },
     {
      "kind": "spawner",
@@ -9896,7 +10388,7 @@
      "near_wire": 409,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.82234663447986,
+     "near_us": 7.158569994010032,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -9907,7 +10399,7 @@
      "near_wire": 266,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.322209987447907,
+     "near_us": 5.481273334830378,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -9918,7 +10410,7 @@
      "near_wire": 194,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.646380005699271,
+     "near_us": 4.8024700087495145,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -9935,9 +10427,9 @@
      "wire": 409,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.790613369954128,
+     "per_rx_us": 6.964340003222848,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.390613369954129
+     "zstd_us": 4.564340003222847
     }
    ]
   },
@@ -10023,7 +10515,7 @@
      "near_wire": 269,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 6.06031003977793,
+     "near_us": 6.231936686160043,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -10034,7 +10526,7 @@
      "near_wire": 202,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 5.02471330491826,
+     "near_us": 5.253473341325298,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -10045,7 +10537,7 @@
      "near_wire": 177,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.659746667432288,
+     "near_us": 4.856069999731456,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -10062,9 +10554,9 @@
      "wire": 269,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.026076659203197,
+     "per_rx_us": 6.197006656896943,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.226076659203197
+     "zstd_us": 4.397006656896943
     }
    ]
   },
@@ -10212,7 +10704,7 @@
      "near_wire": 668,
      "all_wire": 0,
      "lua_us": 7.199999999999999,
-     "near_us": 12.071523372766872,
+     "near_us": 12.342643306807926,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 12,
@@ -10223,7 +10715,7 @@
      "near_wire": 452,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 10.018756702262907,
+     "near_us": 10.325476635744174,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -10234,7 +10726,7 @@
      "near_wire": 380,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 9.27315664133057,
+     "near_us": 9.540943362175796,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -10251,9 +10743,9 @@
      "wire": 334,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.0120799965535605,
+     "per_rx_us": 6.163203333923593,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.212079996553561
+     "zstd_us": 4.363203333923593
     },
     {
      "kind": "single",
@@ -10263,9 +10755,9 @@
      "wire": 334,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.0103433224838225,
+     "per_rx_us": 6.165739975279817,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.210343322483823
+     "zstd_us": 4.365739975279817
     }
    ]
   },
@@ -10496,7 +10988,7 @@
      "near_wire": 245,
      "all_wire": 0,
      "lua_us": 3.0,
-     "near_us": 5.752813329609732,
+     "near_us": 5.96234000264667,
      "all_us": 0.0,
      "player_check_us": 0.05,
      "particles": 5,
@@ -10507,7 +10999,7 @@
      "near_wire": 201,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 5.011943320215989,
+     "near_us": 5.2281366621764995,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -10518,7 +11010,7 @@
      "near_wire": 149,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 4.200479981287693,
+     "near_us": 4.371706644026562,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -10535,9 +11027,9 @@
      "wire": 245,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.678576685565834,
+     "per_rx_us": 5.8657366768456995,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.178576685565834
+     "zstd_us": 4.3657366768456995
     }
    ]
   },
@@ -10626,7 +11118,7 @@
      "near_wire": 278,
      "all_wire": 0,
      "lua_us": 3.0,
-     "near_us": 5.655379962564136,
+     "near_us": 5.80860668226766,
      "all_us": 0.0,
      "player_check_us": 0.05,
      "particles": 5,
@@ -10637,7 +11129,7 @@
      "near_wire": 216,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.826743326398233,
+     "near_us": 4.99447001099276,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -10648,7 +11140,7 @@
      "near_wire": 147,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 4.214246675170338,
+     "near_us": 4.483106648270041,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -10665,9 +11157,9 @@
      "wire": 278,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.655276643966014,
+     "per_rx_us": 6.094636654170851,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.155276643966014
+     "zstd_us": 4.594636654170851
     }
    ]
   },
@@ -10950,7 +11442,7 @@
      "near_wire": 598,
      "all_wire": 0,
      "lua_us": 6.0,
-     "near_us": 11.292290003737435,
+     "near_us": 11.596243327095483,
      "all_us": 0.0,
      "player_check_us": 0.1,
      "particles": 10,
@@ -10961,7 +11453,7 @@
      "near_wire": 460,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 9.985623349466671,
+     "near_us": 11.285813352512195,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -10972,7 +11464,7 @@
      "near_wire": 302,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 8.357386677743246,
+     "near_us": 8.633676664733017,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -10989,9 +11481,9 @@
      "wire": 299,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.629643299772094,
+     "per_rx_us": 5.796936676837504,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.129643299772094
+     "zstd_us": 4.296936676837504
     },
     {
      "kind": "single",
@@ -11001,9 +11493,9 @@
      "wire": 299,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.630279994569719,
+     "per_rx_us": 5.7806733593655135,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.130279994569719
+     "zstd_us": 4.2806733593655135
     }
    ]
   },
@@ -11089,7 +11581,7 @@
      "near_wire": 300,
      "all_wire": 0,
      "lua_us": 3.0,
-     "near_us": 5.6597799766653525,
+     "near_us": 5.7882366687990725,
      "all_us": 0.0,
      "player_check_us": 0.05,
      "particles": 5,
@@ -11100,7 +11592,7 @@
      "near_wire": 232,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.97411003834568,
+     "near_us": 5.111840035471445,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -11111,7 +11603,7 @@
      "near_wire": 150,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 4.229376689484344,
+     "near_us": 4.38453667963234,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -11128,9 +11620,9 @@
      "wire": 300,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.671879991190508,
+     "per_rx_us": 5.94450667904069,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.171879991190508
+     "zstd_us": 4.44450667904069
     }
    ]
   }

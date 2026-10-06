@@ -535,8 +535,8 @@ tools](#player-meta-read-by-external-tools).
   `register_simple_arrow`). Still direct engine calls: the stun cross and
   root crystals (`movement.lua`, sized from the object's box), the food
   crumbs (a texture pool), the rift's per-player stretches and pulse
-  (`rift.lua`), a dragon's 8 s return warning (`bosses.lua`), the mob arrow
-  tail (`verbs.lua`) and the mob engine's own blood and smoke.
+  (`rift.lua`), the mob arrow tail (`verbs.lua`) and the mob engine's own
+  blood and smoke.
   `frame` names the anchors (`caster`, `target`), the facing `dir`
   (`grug_core.particles.facing(player)`), and per call `from`/`to`/`time`
   (a line over a flight), `reach` (a radius a ring lands on) and `color`.

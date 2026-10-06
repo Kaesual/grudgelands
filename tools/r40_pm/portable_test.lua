@@ -19,6 +19,8 @@
 --      Shatter's burst, Cleave's arc along the king's facing, a rise on each
 --      rallied guard (at most four), on each raider Bone Call summoned (none
 --      at the cap), on the troll only when Regrowth heals; Volley none.
+--      Cleave's wind-up and arc cover its real cone (120 degrees, 6 m). A
+--      dragon's return warning plays as eight 1 s pieces, 180 motes in all.
 --   C  the elite wind-up and cone hit (telegraph.lua, the real file): the
 --      smoke at the wind-up, the arc only at the resolve, also when the
 --      player stepped out of the cone.
@@ -276,7 +278,7 @@ local P = grug_core.particles
 -- A: the catalogue.
 ------------------------------------------------------------------------------
 local PM_IDS = {"king_windup_ring", "king_shatter", "king_cleave_windup", "king_cleave",
-	"king_aura", "king_resolve", "elite_windup", "elite_cone", "breath_windup",
+	"king_aura", "king_resolve", "dragon_return", "elite_windup", "elite_cone", "breath_windup",
 	"breath_burst_rime", "breath_burst_scorch", "breath_trail", "dragon_patch_rime",
 	"dragon_patch_scorch", "lightning_ring", "lightning_strike", "gust_windup", "gust_release",
 	"dragon_takeoff", "dive_windup", "dive_slam", "enrage", "whelp_arrival", "kraken_drag",
@@ -448,8 +450,33 @@ do
 	eq(resolve, "king_shatter", "B Shatter: the burst at the resolve")
 end
 
--- Cleave: a spawner at the start and one halfway, the arc on the hit along
--- the king's facing (yaw 0: +z).
+-- Cleave: a spawner set at the start and one halfway, the arc on the hit
+-- along the king's facing (yaw 0: +z), both over the real cone: 60 degrees
+-- either side of the facing (hit_players' cos >= 0.5) out to 6 m.
+local function cone_angle(king, p)
+	local dx, dz = p.x - king.object.pos.x, p.z - king.object.pos.z
+	return math.deg(math.atan2(dx, dz))
+end
+do
+	players, objects = {}, {}
+	local king = new_king("orc")
+	king.attack = new_player("t", vec(0, 5, 3))
+	reset()
+	king_tick(king, 0.1, "orc")
+	local set = spawners()
+	eq(#set, 3, "B Cleave's wind-up is three squares")
+	local amount, lo, hi = 0, 0, 0
+	for _, d in ipairs(set) do
+		amount = amount + d.amount
+		local centre = vector.multiply(vector.add(d.pos.min, d.pos.max), 0.5)
+		local a = cone_angle(king, centre)
+		lo, hi = math.min(lo, a - 20), math.max(hi, a + 20)
+		near(horizontal(centre, king.object.pos), 6 * 0.58, "B a wind-up square inside the radius")
+		eq(d.time, 1, "B a wind-up square lives 1 s")
+	end
+	eq(amount, 16, "B Cleave's wind-up keeps 16 motes a second")
+	check(lo <= -60 + 1e-6 and hi >= 60 - 1e-6, "B the wind-up spans the 120 degree cone")
+end
 do
 	local start, early, half, late, _, king = cast("orc")
 	eq(start, "king_cleave_windup", "B Cleave: the cone lights up at the start")
@@ -458,12 +485,23 @@ do
 	eq(late, "", "B Cleave: nothing more before the hit")
 	local resolve = plays_of("king_cleave")
 	eq(#resolve, 1, "B Cleave: the arc once on the hit")
-	local arc = spawners()[1]
-	if check(arc and arc.pos_tween, "B Cleave: the arc is a tweened line") then
-		near(arc.pos_tween[1].z - king.object.pos.z, 3.5, "B Cleave: the arc lies ahead of the king")
-		near(arc.pos_tween[1].x - king.object.pos.x, 2, "B Cleave: the arc starts on the king's right")
-		near(arc.pos_tween[2].x - king.object.pos.x, -2, "B Cleave: the arc ends on the king's left")
+	local arc = spawners()
+	eq(#arc, 3, "B Cleave: the arc is three chords")
+	local ends = {}
+	for _, d in ipairs(arc) do
+		if check(d.pos_tween, "B Cleave: a chord is a tweened line") then
+			for _, p in ipairs(d.pos_tween) do
+				near(horizontal(p, king.object.pos), 6, "B Cleave: the arc lies on the 6 m radius")
+				ends[#ends + 1] = cone_angle(king, p)
+			end
+		end
 	end
+	table.sort(ends)
+	near(ends[1], -60, "B Cleave: the arc reaches one edge of the cone", 1e-6)
+	near(ends[#ends], 60, "B Cleave: ... and the other", 1e-6)
+	local total = 0
+	for _, d in ipairs(arc) do total = total + d.amount end
+	eq(total, 30, "B Cleave: 30 motes in the arc")
 end
 
 -- The auras: a 1 s spawner at the start and one halfway, in the kit's colour.
@@ -540,6 +578,38 @@ do
 	local _, _, _, _, resolve = cast("elf")
 	eq(resolve, "", "B Volley shows no resolve effect")
 	eq(stamped, 3, "B Volley shot its three arrows")
+end
+
+-- A dragon's return warning: eight 1 s pieces in a row, 180 motes in all,
+-- each a spawner nearby players receive.
+do
+	local queue = {}
+	local real_after = core.after
+	core.after = function(seconds, fn, ...) queue[#queue + 1] = {seconds, fn, {...}} end
+	local warn_env = setmetatable({storage = {set_string = function() end},
+		grug_sounds = {play = function() end}}, {__index = _G})
+	local warn_chunk = assert(loadstring(cut(bosses_src, "local DRAGON_RETURN_PIECES = 8",
+		"\nend\n", "warn_dragon") .. "return warn_dragon\n", "=warn part"))
+	setfenv(warn_chunk, warn_env)
+	local warn_dragon = warn_chunk()
+	players, objects = {}, {}
+	reset()
+	warn_dragon("x", {name = "The Dragon"}, 1000, 1060, vec(0, 20, 0))
+	eq(#queue, 8, "B the return warning is eight pieces")
+	local seconds, amount = {}, 0
+	for _, job in ipairs(queue) do
+		seconds[#seconds + 1] = job[1]
+		job[2](unpack(job[3]))
+	end
+	eq(table.concat(seconds, ","), "0,1,2,3,4,5,6,7", "B ... one a second")
+	for _, d in ipairs(spawners()) do
+		amount = amount + d.amount
+		eq(d.time, 1, "B a piece lives 1 s")
+		near(d.pos.max.y - d.pos.min.y, 12, "B a piece fills the 12 m column")
+	end
+	eq(amount, 180, "B 180 motes in all, as before")
+	budget_ok("B the return warning")
+	core.after = real_after
 end
 
 ------------------------------------------------------------------------------
@@ -1151,10 +1221,9 @@ for _, file in ipairs({"skeleton_archer.lua", "golem.lua", "crystal_shard.lua", 
 		"F " .. file .. "'s projectile carries an impact tint")
 end
 -- The files that called the engine directly before this lane: what is left
--- are the rift's per-player stretches and its pulse (unchanged, rift.lua),
--- the dragon's 8 s return warning (bosses.lua) and the arrow tail
--- (verbs.lua).
-local KNOWN = {["bosses.lua"] = 1, ["rift.lua"] = 2, ["verbs.lua"] = 1, ["boss_dragons.lua"] = 0,
+-- are the rift's per-player stretches and its pulse (unchanged, rift.lua)
+-- and the arrow tail (verbs.lua).
+local KNOWN = {["bosses.lua"] = 0, ["rift.lua"] = 2, ["verbs.lua"] = 1, ["boss_dragons.lua"] = 0,
 	["telegraph.lua"] = 0, ["oerkki.lua"] = 0, ["bog_witch.lua"] = 0, ["rift_spawn.lua"] = 0}
 for file, expected in pairs(KNOWN) do
 	local n = 0
