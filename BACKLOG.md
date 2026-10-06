@@ -21,8 +21,16 @@ WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 37 "Audit fixes"](docs/planning/round37-plan.md#completion-2026-10-06)
-  complete locally, not pushed** (2026-10-06, `27e5db87` and lane D; no new
+  [Round 38 "Mob names"](docs/planning/round38-mob-names-plan.md#completion-2026-10-06)
+  complete locally, not pushed** (2026-10-06, `ec2e874c` and lane D; a
+  fresh world for the test; GUI test open): new names for every mob slot
+  from the user's picks, a kill counted by the shown name (the quest
+  kill-credit bug fixed), quest texts on the names, the whelps at level
+  60, the Kraken, twelve item names, Party instead of Group
+  ([Round 38](#round-38--mob-names),
+  [carry-overs](#round-38-carry-overs)).
+- [Round 37 "Audit fixes"](docs/planning/round37-plan.md#completion-2026-10-06)
+  (2026-10-06, `27e5db87` and lane D, pushed 2026-10-06 as `db848931`; no new
   world beyond Round 36's; GUI test open): the
   [October 2026 audit](docs/audit-2026-10/README.md)'s code packages P1–P5
   (the combat hot path, mob behaviour, mob persistence and bosses, the
@@ -36,7 +44,7 @@ example E5) are cited below.
   (2026-10-05, pushed 2026-10-05 as `0f169898` with the follow-up lanes;
   needs a world made on `fef94a6a` or later; GUI test open): WP9
   delivered — each faction's main line from its fortress Warmaster in
-  three chapters (41, 46, 53) and a group finale at 60 on the
+  three chapters (41, 46, 53) and a party finale at 60 on the
   approved [story bible](docs/planning/round36/story-bible.md), the "use at
   a place" objective with quest objects, the turn-in hook and three
   achievements (E, Q0, Q-A, Q-T, T, A); the rift with Isquarre the
@@ -53,7 +61,7 @@ example E5) are cited below.
   [carry-overs](#round-36-carry-overs)).
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user,
   2026-10-05, [Round 37 plan](docs/planning/round37-plan.md) §2.3.5);
-  Rounds 36 and 37 are open ([project status](docs/STATUS.md)).
+  Rounds 36, 37 and 38 are open ([project status](docs/STATUS.md)).
 - [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
   (2026-10-05, pushed 2026-10-05; its first GUI findings fed Round 36): the user's
   Round 34 GUI findings — the server's aiming rays test rotated selection
@@ -187,7 +195,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Round 31 adds NPC look rolls, the PvP garrisons (Generals, bodyguards, camp captains) and the round dragon arenas. Current rules: topic design. | — |
 | WP7 | Ledger currency and traders | Delivered; Round 29 (WP44) replaced its price curve and 25% buy-back. | — |
 | WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Round 30: the legacy fields removed (unknown fields stop the load), the decoded-state cache and markers that follow held items and levels. Round 31: givers serve only their faction, PvP garrison kill objectives, PvP POIs as placeholder targets. Broader story remains WP9. | — |
-| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | **V1. Delivered in Round 36** ([completion](docs/planning/round36-plan.md#completion-2026-10-05), rules [quests.md](docs/design/quests.md) "The main line", [story.md](docs/design/story.md)): each faction's main line 41–60 from its fortress Warmaster (chapters at 41, 46, 53, the group finale at 60 on the rift boss) on the approved [story bible](docs/planning/round36/story-bible.md), the front climaxes folded in, the "use at a place" objective filling each contested zone's quest-interaction slot, ten corrupted sub-types, three achievements with cloaks; the rift at Tombroad Ambush. Before: Round 29's 491 quests on the Round 28 framework (a track per race, the contested 31–40 zones, the front with bounties), Round 31's 24 fortress quests; 540 quests now. GUI test open (Round 36). | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
+| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | **V1. Delivered in Round 36** ([completion](docs/planning/round36-plan.md#completion-2026-10-05), rules [quests.md](docs/design/quests.md) "The main line", [story.md](docs/design/story.md)): each faction's main line 41–60 from its fortress Warmaster (chapters at 41, 46, 53, the party finale at 60 on the rift boss) on the approved [story bible](docs/planning/round36/story-bible.md), the front climaxes folded in, the "use at a place" objective filling each contested zone's quest-interaction slot, ten corrupted sub-types, three achievements with cloaks; the rift at Tombroad Ambush. Before: Round 29's 491 quests on the Round 28 framework (a track per race, the contested 31–40 zones, the front with bounties), Round 31's 24 fortress quests; 540 quests now. GUI test open (Round 36). | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
 | WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | **Delivered in Round 33** ([completion](docs/planning/round33-plan.md#completion-2026-10-04)): six primaries and the secondaries Cooking and Alchemy; progress only from real recipes; enchant recipes per channel and tier and one upgrade per profession and tier give 68 of 94 signatures a use; two professions dress each class (bows with the Leatherworker, spellbooks with the Tailor); fixed potions and elixirs T1–T6. Cultural finishing and its helper NPCs were removed by the user (round33-plan §2.8). Round 28 made every profession self-contained. | WP5 ✅, WP26 ✅, WP33 ✅, WP43 ✅, WP44 ✅ |
 | WP11 | [Talent trees](docs/planning/work-package-scopes.md#wp11) | Delivered; closed 2026-09-29, respec price merged into WP44 (C2) and set in Round 29. | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Scout class and talent trees | Delivered; historical receipt below. Current rules: topic design. | — |
@@ -1118,8 +1126,8 @@ none blocks the GUI test. Numbers are comparisons, never targets.
 
 ### Round 37 — audit fixes
 
-**Delivered locally 2026-10-06, not pushed**
-([completion](docs/planning/round37-plan.md#completion-2026-10-06), plan
+**Delivered 2026-10-06, pushed the same day** (`db848931`;
+[completion](docs/planning/round37-plan.md#completion-2026-10-06), plan
 [round37-plan.md](docs/planning/round37-plan.md), the
 [audit](docs/audit-2026-10/README.md)); every code lane and every
 non-trivial docs lane independently reviewed by Opus; 106 fixtures pass,
@@ -1164,8 +1172,10 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   while the same role spawns under the same name in other regions of the
   zone; about one in three nearby Small Plague Boars and Large Grave Rats
   in Stillgrave Hollow does not count (seed 42), and 214 of 301 area kill objectives
-  can meet it (quest drops follow the same rule). The fix comes with
-  [Round 38](docs/planning/round38-mob-names-plan.md)'s names per belt.
+  can meet it (quest drops follow the same rule). **Fixed in
+  [Round 38](docs/planning/round38-mob-names-plan.md#completion-2026-10-06):**
+  a kill counts by the name the mob shows (268 objectives with uncounted
+  same-named mobs → 0).
 - **PLY-11** (CB): a Scout shot still rebuilds the Character page (its
   arrow total); a poll would save little, the fix takes the total off the
   cached page, which is a UI change for the user.
@@ -1220,6 +1230,61 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   tree now load `world_assembly.lua` from that tree, so they cannot run
   against trees before Round 37 (`r25_capital_plots`, `r26`,
   `r28_zone_atlas` and `r28_world --before`).
+
+### Round 38 — mob names
+
+**Delivered locally 2026-10-06, not pushed**
+([completion](docs/planning/round38-mob-names-plan.md#completion-2026-10-06),
+plan [round38-mob-names-plan.md](docs/planning/round38-mob-names-plan.md));
+every code lane independently reviewed by Opus (lane C without its own
+review), the naming lanes' proposals by a taste review and the user's
+page; 108 fixtures pass, `validate.py --game` 0 errors,
+`check_rules.py --shipped` 0 problems, `guarantee.py --check` passes. No
+world generation changed; the GUI test wants a fresh world (garrison
+guards and named rares carry their name key from their placement).
+
+- **Inventory and rules** (I, C): 950 name slots, the rule checker
+  (`tools/r38_names/check_rules.py`, `--shipped` the naming gate) and the
+  quest-name guarantee validator (`guarantee.py`).
+- **Names** (V, Z1–Z7, T, the page, B2): the user's picks in
+  `grug_mobs/data/names.json`, 535 of 950 slots renamed, 356 → 513
+  distinct names, the plan's rule breaks 374 → 0; code-built names read
+  the file; the dragon whelps at level 60.
+- **The quest-name guarantee** (M/B1): a kill counts by the name the mob
+  shows; objectives with uncounted same-named mobs 268 → 0, captain
+  labels naming another mob 21 → 0.
+- **Texts and terms** (B3, NR, IT, IB, PR): 242 quest text fields on the
+  new names, the Kraken, twelve item display names, Party instead of
+  Group.
+
+### Round 38 carry-overs
+
+**Noted 2026-10-06** ([completion](docs/planning/round38-mob-names-plan.md#completion-2026-10-06));
+none blocks the GUI test.
+
+- **Dragon broadcasts** put "The " before the names file's dragon name in
+  code (`boss_dragons.lua`): a dragon renamed to a proper name would read
+  "The <Name>".
+- **Achievement short forms:** "Kill the Wyrmglass Dragon" and "Kill the
+  Stormscale Wyvern" (`grug_achievements/catalog.lua`) keep the short
+  forms from before Round 38; the mobs show "Wyrmglass Ice Dragon" and
+  "Stormscale Jungle Wyvern".
+- **Entity descriptions in Lua are fallbacks:** a family's registered
+  description (for example the spider family's) shows only where
+  `names.json` names no slot for the mob; reading them as the shown name
+  misleads.
+- **The level-60 whelps** make a dragon's enrage phase clearly harder than
+  before (HP 384 → 2696 each); watch it in playtests.
+- **The Rift Spawn's gap exemption** in `check_rules.py` (rule 4) holds
+  only while its name stays on the one story role.
+- **`guarantee.py` information:** `I-now-counts` (205 objectives now count
+  same-named mobs beyond their area: the fix) and `W-level-fit` (135
+  objectives whose counted name reaches beyond the quest level ±3) are
+  reported, not errors.
+- **Eight three-word family items** keep their names (the user, plan §6
+  item 16): the family word tells which mobs drop them.
+- **The welcome window** after character creation is the user's separate
+  lane (branch `r38-wc`), not part of Round 38 and not merged.
 
 ### Audit 2026-10 open questions
 
@@ -1313,7 +1378,7 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
   in `grug_mobs/init.lua`). ([README](docs/audit-2026-10/docs/01-readme-player.md))
 - **D18, swimmer exhaustion** (deferred ocean survival) — what, if anything,
   does "Exhausted" do to an unmounted swimmer? Today the ocean's deterrents
-  are the Kraken Guard, immutable deep-ocean terrain and the boat-threat rules
+  are the Kraken, immutable deep-ocean terrain and the boat-threat rules
   ([boats.md](docs/design/boats.md)); flyers use their warning band and
   no-flight columns ([mounts.md](docs/design/mounts.md)), and no swimmer
   mechanic is authorized. Moved from the dissolved
