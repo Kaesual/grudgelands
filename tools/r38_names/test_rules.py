@@ -110,6 +110,37 @@ def main():
     p = run(model, entries)[0]
     expect(len(p) == 1 and p[0].startswith("R4 ") and "T2,T3" in p[0], "R4 L20-23 with a L..20 slot: %s" % p)
 
+    # R4 gap exemption (coordinator's ruling, lane C): the Rift Spawn's point
+    # slots (L52, 56, 59, 60, all T6) share one name without a gap problem;
+    # the exemption holds only while every slot bearing the name is a rift
+    # spawn row.
+    gs, ss = "front_gravesalt_escarpment", "front_stormscale_summit"
+    rift = clean_names(model, {gs, ss})
+    rift_keys = sorted(k for k in rift if model.slot_by_key[k]["role"] == "rift_spawn")
+    expect(len(rift_keys) == 4, "four rift spawn slots in Gravesalt and Stormscale: %s" % rift_keys)
+    for k in rift_keys:
+        rift[k] = ("Rift Spawn", False, "fixture", "fixture")
+    p = run(model, rift)[0]
+    expect(p == [], "R4 Rift Spawn over L52, 56, 59, 60 passes: %s" % p)
+    other = [s["key"] for s in model.slots if s["zone"] == gs and s["role"] != "rift_spawn"
+             and s["levels"] == [58, 60]]
+    rift[other[0]] = ("Rift Spawn", False, "fixture", "fixture")
+    p = run(model, rift)[0]
+    expect(len(p) == 2 and all(x.startswith("R4 ") and "gap" in x for x in p),
+           "R4 Rift Spawn on another role loses the exemption (gaps 53-55, 57): %s" % p)
+
+    # --world-pending: every zone slot named, the world/ slots missing.
+    zoned = clean_names(model, {s["zone"] for s in model.slots if s["zone"]})
+    world = [s for s in model.slots if s["zone"] is None]
+    expect(world and run(model, zoned, partial=False)[0] and
+           len(run(model, zoned, partial=False)[0]) == len(world),
+           "full mode lists every unnamed world/ slot")
+    p = check_rules.check(model, zoned, world_pending=True)[0]
+    expect(p == [], "--world-pending: all zone slots named pass: %s" % p[:3])
+    del zoned[sg + "/hare/L1-1"]
+    p = check_rules.check(model, zoned, world_pending=True)[0]
+    expect(len(p) == 1 and "not named" in p[0], "--world-pending: a missing zone slot: %s" % p)
+
     # R0: unknown key, a missing slot, a keep with another name, no reason.
     p = broken(sg + "/no_such_role/L1-2", "Grave Hog")
     expect(len(p) == 1 and "unknown slot key" in p[0], "R0 unknown key: %s" % p)

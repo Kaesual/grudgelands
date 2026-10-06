@@ -188,10 +188,13 @@ Every slot is named exactly once over all files; `keep: true` keeps
 today's name. `check_rules.py` prints one line per problem (`R0` coverage,
 `R1` words, `R2` signal words, `R3` Piglet, `R4` level stretch) and exits 1
 on any; `--partial` checks only the zones the given files touch (rule 4
-then sees only those names). Rule 4 uses the effective tiers of "Drop
-tier" above. Notes (no exit status) flag a `*_hunt_01` start pig without
-"Piglet" and every slot whose own band spans tiers (with the tier rule 4
-counts it as).
+then sees only those names); `--world-pending` wants every zone slot and
+lets the `world/` slots be missing. Rule 4 uses the effective tiers of
+"Drop tier" above; the Rift Spawn is exempt from its gap test (not from
+the tier test): one story creature whose rows spawn at the belt middles
+L52, 56, 59 and 60 (the coordinator's ruling). Notes (no exit status)
+flag a `*_hunt_01` start pig without "Piglet" and every slot whose own band
+spans tiers (with the tier rule 4 counts it as).
 
 ## Name sources (file:line)
 
