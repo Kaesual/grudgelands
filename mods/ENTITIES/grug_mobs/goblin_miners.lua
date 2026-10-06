@@ -49,7 +49,7 @@ end
 grug_mobs.register_mob("grug_mobs:goblin_miner",
 	miner_def("Goblin Miner", "grug_mobs_goblin_raider.png", false))
 grug_mobs.register_mob("grug_mobs:goblin_miner_slinger",
-	miner_def("Goblin Miner Slinger", "grug_mobs_goblin_slinger.png", true))
+	miner_def("Goblin Pelter", "grug_mobs_goblin_slinger.png", true))
 
 for _, row in ipairs({
 	{name = "goblin_miner", chance = 2200, aoc = 3},

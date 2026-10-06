@@ -8,7 +8,7 @@ grug_mobs.register_simple_arrow("grug_mobs:dungeon_fireball", {
 })
 
 local master = {
-	description = "Dungeon Master", clock = "any", type = "monster",
+	description = "Fire Hurler", clock = "any", type = "monster",
 	_grug_voice = "giant",
 	_grug_tier = "normal", _grug_spawn_domains = {"underground"},
 	attack_type = "dogshoot", attack_players = true, group_attack = false,

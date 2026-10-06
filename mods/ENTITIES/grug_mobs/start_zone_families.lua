@@ -200,7 +200,7 @@ mobs:spawn({name = "grug_mobs:tapir",
 	active_object_count = 3, min_height = 0, max_height = 600})
 
 local rat = ground_defaults({
-	description = "Giant Rat", clock = "night", type = "monster",
+	description = "Pit Rat", clock = "night", type = "monster",
 	_grug_voice = "critter",
 	attack_players = true, group_attack = true, view_range = 10,
 	visual = "mesh", mesh = "grug_mobs_giant_rat.b3d",
