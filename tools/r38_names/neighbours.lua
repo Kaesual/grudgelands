@@ -7,9 +7,11 @@
 --
 --   luajit tools/r38_names/neighbours.lua <repo> > tools/r38_names/neighbours.tsv
 --
--- About 9 s per seed (LuaJIT); run it through the round's Lua queue.
--- Output: one line per seed and zone, "seed<TAB>zone<TAB>n1,n2,...",
--- zones in mapgen order, neighbours sorted.
+-- About 8 s per seed with LuaJIT (46 s for the six seeds, measured on
+-- 2026-10-06); run it through the round's Lua queue.
+-- Output: a header row "seed<TAB>zone<TAB>neighbours", then one line per
+-- seed and zone, "seed<TAB>zone<TAB>n1,n2,...", seeds in SEEDS order, zones
+-- in mapgen order (simple_map.lua), neighbours sorted.
 local repo = arg[1] or "."
 local SEEDS = {"42", "7", "2026", "1234", "99999", "314159"}
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
