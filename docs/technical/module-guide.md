@@ -30,7 +30,8 @@ biomes](#mapgen-and-biomes), [World atlas rules](#world-atlas-rules),
 [Sound](#sound), [UI and formspecs](#ui-and-formspecs), [Player model and
 skins](#player-model-and-skins), [Looks and enchant
 colours](#looks-and-enchant-colours), [Cloaks and
-achievements](#cloaks-and-achievements).
+achievements](#cloaks-and-achievements), [Player meta read by external
+tools](#player-meta-read-by-external-tools).
 
 ## Factions and character creation
 
@@ -1650,8 +1651,9 @@ achievements](#cloaks-and-achievements).
   (`tools/r33_c3/gen_cloak_model.py`, `--check` rebuilds and compares and the
   build proves the legs never cross the cloak); NPCs keep `character.b3d`.
   The player texture list is `{skin, cloak}`: `grug_visuals.apply` writes it
-  with the cloak from the one `register_cloak_source(fn)` (no cloak:
-  builtin `blank.png`), the cloak part of the redraw key. `mods/PLAYER/
+  with the cloak from the one `register_cloak_source(fn)`, `fn(player) ->
+  texture, selected id` (no cloak: builtin `blank.png`), the texture part
+  of the redraw key, the id part of the stored appearance. `mods/PLAYER/
   grug_achievements` owns the rest: `core.lua` (pure: counters, tiers,
   unlocked cloaks and the selected cloak in player meta, i.e. per
   character), `catalog.lua` (data: 20 achievements, tier N of `<id>`
@@ -1673,3 +1675,96 @@ achievements](#cloaks-and-achievements).
   right). Fixture `tools/r33_c3`; rules
   [character_visuals.md](../design/character_visuals.md) §5b.
 
+## Player meta read by external tools
+
+- **An external contract (Round 39):** the realm website reads these
+  player-meta keys straight from the world database's `player_metadata`
+  and never runs game code; it treats every value as untrusted. They are
+  **not renamed or reformatted without notice**: a change raises the
+  appearance's `v` or is announced to the website, and is documented here.
+  Values reach the database with the engine's player save (players whose
+  meta changed, every `server_map_save_interval`, and on leave). A missing
+  row is the state before the first write. Plan:
+  [round39-web-data-plan.md](../planning/round39-web-data-plan.md) §2–§3;
+  the exported tables (ids with display names, the grammar, the model):
+  [tools/web_data/README.md](../../tools/web_data/README.md).
+
+  | Key | Type | Values | Owner, writer |
+  |---|---|---|---|
+  | `grug_factions:faction` | string | `accord`, `throng` (`grug_core.factions`); missing: no faction yet | `grug_factions.set_faction`: "Create character" (`grug_classes/selection.lua`) and the admin `/faction` |
+  | `grug_classes:race` | string | `human`, `dwarf`, `elf` (The Accord), `orc`, `troll`, `undead` (The Throng); missing: none yet. The game counts a race of the other faction as unset (`grug_classes.get_race`), possible only after an admin `/faction` | `grug_classes.set_race`: "Create character" and the admin `/race` |
+  | `grug_classes:class` | string | `warrior`, `mage`, `priest`, `scout`; missing: none yet. Never changes once set (no class change, admins included) | `grug_classes.set_class`: "Create character" only |
+  | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a fresh world (no conversion) |
+  | `grug_visuals:appearance` | compact JSON string | the format below; missing: no apply yet (the first join writes it) | `grug_visuals.apply` (`apply.lua`, built in the pure `appearance.lua`) |
+
+- **The appearance** (`APPEARANCE_VERSION` 1): what the game draws, with
+  the final texture strings, so the website never ports the composition.
+  Keys in this order, compact (no whitespace):
+
+  ```json
+  {"v":1,"race":"dwarf","look":{"tone":2,"hair":3,"style":1,"eyes":2,"feature":4},
+   "cloak":"hunter_2","visual_size":{"x":0.9,"y":0.9,"z":0.9},
+   "textures":{"body":"(grug_visuals_skin_mask.png^[multiply:#d8a07c)^grug_visuals_dwarf_body.png^…",
+     "cloak":"grug_achievements_cloak_hunter_2.png"},
+   "slots":{"chest":{"item":"grug_gear:chest_leather_sleek","broken":true,"enchant":["dex"]},
+     "mainhand":{"item":"grug_gear:bow_embersteel","broken":false,
+       "enchant":["dex","attack_speed_percent"],"pose":"bow",
+       "image":"grug_gear_bow_alder.png^[colorize:#b94a24:38^(grug_gear_bow_alder_ench.png^[verticalframe:2:0^[multiply:#20dea2^[opacity:128)^…"}}}
+  ```
+
+  (shortened at `…`; whole values from `luajit tools/r39_wm/portable_test.lua
+  . examples`). `race` is the race the body is drawn as: a character without
+  one (before "Create character") is drawn `human`. `look` holds the five
+  option indices of that race (`grug_visuals.LOOKS`, option 1 where none is
+  stored). `cloak` is the selected cloak id of `grug_achievements`
+  (`catalog.lua`) or `none`; `textures.cloak` its texture or `none` (the game
+  then draws the builtin `blank.png`). `visual_size` is the race's stature on
+  all three axes (`grug_visuals.RACES`). `textures.body` is the model's first
+  texture, `textures.cloak` its second. `slots` holds the equipment slots
+  `head`, `chest`, `legs`, `feet`, `mainhand` (the Weapon slot; a Scout's
+  bow) and `offhand` (a shield, a spellbook, a Scout's melee blade), each
+  `{"item", "broken", "enchant"}`; an empty slot is absent. `enchant` lists
+  the piece's enchant stat ids (`grug_gear.ENCHANT_ORDER`: `str`, `dex`,
+  `int`, `max_hp_percent`, `max_mana_percent`, `crit_percent`,
+  `attack_speed_percent`, `dodge_percent`, `armor_rating`), the prefix's
+  first; an item has at most one per channel and never one stat twice. The
+  two hand slots add `pose` (`grug_visuals.POSE`: `tool`, `edge_down`,
+  `bow`, `upright`, `forward`) and `image`, the item's image as the engine's
+  wielditem draws it (the stack's wield image, else its inventory image,
+  stack meta over definition), enchant colours and the broken look
+  included. The offhand is stored though the game does not draw it beside
+  the weapon yet; the item a player holds (a pickaxe, a skill's slot item)
+  is never stored, and trinkets have no visual.
+- **When it is written:** `apply` runs on join, respawn, race and class
+  choice, the stored look, every equipment change but pure wear and
+  trinkets, a cloak choice and a dismount; it compares a small key
+  (compose's key, the cloak, the armour's item names and enchant ids, both
+  hand slots' item, broken state, enchant ids and image) and builds the
+  JSON only when that changed, then writes it only when it differs from the
+  stored value. The wield poll never writes it.
+- **Guarantees** (asserted by `tools/r39_wm` over every look of every race
+  bare and under the worst armour, every cloak and every hand item plain,
+  enchanted and broken): every texture string is at most
+  `grug_visuals.APPEARANCE_TEXTURE_MAX` = 2,048 bytes (measured worst case
+  1,382, a body; a hand image 268, a cloak 44) and the whole value at most
+  `APPEARANCE_JSON_MAX` = 4 × 2,048 + `APPEARANCE_JSON_OVERHEAD` 2,048 =
+  10,240 bytes (measured upper bound 2,964, 1,002 outside the texture
+  strings). Every texture string parses under the **closed grammar**
+  `grug_visuals.APPEARANCE_TEXTURE` (`appearance.lua`, the one definition):
+
+  ```
+  chain    = part { "^" part }        the first part is never a modifier
+  part     = file | "(" chain ")" | "[" modifier
+  modifier = name { ":" argument }
+  ```
+
+  Groups nest at most 4 deep (`max_depth`); nothing is escaped (no `\`, and
+  no file name or argument contains `^ : ( ) [`). A file is
+  `[a-z0-9_]+\.png` and exists in `mods/PLAYER/grug_visuals/textures`
+  (skin, look and armour layers), `mods/PLAYER/grug_achievements/textures`
+  (cloaks) or `mods/ITEMS/grug_gear/textures` (hand items and their enchant
+  masks). The modifiers with their arguments (`int`: an optional `-` and 1–3
+  digits; `color`: `#` and 6 lowercase hex digits): `[colorize:color:int`,
+  `[cracko:int:int`, `[hsl:int:int:int`, `[mask:file`, `[multiply:color`,
+  `[opacity:int`, `[verticalframe:int:int`. `[cracko` draws the engine's
+  `crack_anylength.png` (listed as `engine_files`), which no string names.
