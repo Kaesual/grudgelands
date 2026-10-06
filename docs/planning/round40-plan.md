@@ -617,7 +617,13 @@ last lanes 116–117 of 116–117 before their final main merge); main's tree ha
 changed: no seed fleet, and an existing world is enough for the GUI test
 (one check wants a new character, checklist item 1).
 
-Round end: …
+Round end: main checks all PASS on 2026-10-06 — `run_fixtures.sh` 119/119,
+`check_fresh_server.py`, `validate.py --game` (0 errors), `export.lua --check`,
+`build_glb.py --check`, `check_glb.py`, `gen_cloak_model.py --check`,
+`make_poses.py --check`, both texture generators' `--check`, `r37_dc`
+(game.conf 0.40.0), one headless boot of main (seed 783550970087056946; code
+as in `bd52bbf4`, the docs merge changes no code); synced to the Luanti
+folder. The user's GUI test is open.
 
 ### Shipped, by lane
 
