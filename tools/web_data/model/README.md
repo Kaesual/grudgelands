@@ -94,7 +94,8 @@ half frame, within 0.001 units. The measured deviation is about 1e-6.
 
 A server does not decode meshes, so whether Luanti draws the glb is a check
 in the client. `probe/` is a tiny mod (`grug_glb_probe`, not part of the
-game). Copy it and the model into a **test world** (never a world you play):
+game). Copy it and the model into a **test world of the Grudgelands game**
+(never a world you play; the probe needs the game's `grug_visuals`):
 
 ```sh
 W=~/.var/app/org.luanti.luanti/.minetest/worlds/<test world>
