@@ -104,7 +104,8 @@ star for rares, `Boss `; the prefix is not part of the name.
 - `today/<zone>.json`, `today/world.json`: today's names in the proposal
   format below (a template for the naming lanes).
 - `today_check.txt`: `check_rules.py` over today's names.
-- `summary.md`: one page of counts and findings.
+- `summary.md`: one page of counts and findings; `lists.md`: the full
+  name lists behind it.
 
 ## Drop tier
 
@@ -206,7 +207,8 @@ def summary(model):
                                                   for k in ("underground", "guard", "water", "unplaced")]))
     fam = Counter(s["family"] for s in slots if s["source"] in ("recipe", "leader"))
     lines.append("")
-    lines.append("Families (recipe and leader slots): " + ", ".join("%s %d" % kv for kv in fam.most_common()))
+    lines.append("Families (recipe and leader slots, %d): " % len(fam) +
+                 ", ".join("%s %d" % kv for kv in fam.most_common(14)) + " ... (all in `lists.md`)")
     # quests
     obj = model.objectives
     targeted = sum(1 for s in slots if s["quest_targets"])
@@ -255,19 +257,21 @@ def summary(model):
                         if any(s["words"] > 3 and inventory.TIER_WORDS[s["tier"]] == 3 for s in ss))
     lines.append("")
     lines.append("- Normal, critter or guard names with more than 2 words: %d names (%d slots), e.g. %s." % (
-        len(long_normal), sum(len(by_name[n]) for n in long_normal), "; ".join(long_normal[:6])))
-    lines.append("- Named, elite or boss names with more than 3 words: %d: %s." % (len(long_named), "; ".join(long_named)))
+        len(long_normal), sum(len(by_name[n]) for n in long_normal), "; ".join(long_normal[:4])))
+    lines.append("- Named, elite or boss names with more than 3 words: %d (the six \"Confused ... Chief\" start "
+                 "leaders, kings and royal guards, %s)." % (len(long_named), "; ".join(
+                     n for n in long_named if not n.startswith(("Confused", "King of")))))
     sig = Counter(w for s in slots for w in s["signal_words"])
     signed = sorted({s["name"] for s in slots if s["signal_words"]})
     lines.append("- Signal words: %d slots, %d names (%s)." % (
         sum(1 for s in slots if s["signal_words"]), len(signed), ", ".join("%s %d" % kv for kv in sig.most_common())))
     lines.append("- Rule 2.2.4 broken today by %d names (a gap or more than one drop tier across their bands), e.g. %s." % (
-        len(r4names), "; ".join(sorted(r4names)[:6])))
+        len(r4names), "; ".join(sorted(r4names)[:4])))
     keep3 = sorted({s["name"] for s in slots if s["tier"] in ("named", "elite", "boss") and s["words"] == 3})
     caps = [n for n in keep3 if n.startswith("Captain ")]
-    lines.append("- Three-word named, elite and boss names that keep their names (§2.2.1): %d: %s; and %d "
-                 "PvP captains (\"%s\" ...)." % (len(keep3), "; ".join(n for n in keep3 if n not in caps),
-                                                  len(caps), caps[0] if caps else ""))
+    lines.append("- Three-word named, elite and boss names that keep their names (§2.2.1): %d, %d of them "
+                 "PvP captains; e.g. %s (all in `lists.md`)." % (
+                     len(keep3), len(caps), "; ".join([n for n in keep3 if n not in caps][:5])))
     multi = [s for s in slots if len(s["drop_tiers"]) > 1]
     lines.append("")
     lines.append("**Findings worth a look**")
@@ -298,3 +302,36 @@ def summary(model):
     lines.append("- PvP captains are named per camp and race (%d names); which one a world shows depends on "
                  "its seed (one race per camp)." % sum(1 for s in slots if ".captain-" in s["key"]))
     return "\n".join(lines) + "\n"
+
+
+def lists(model):
+    """The full name lists behind summary.md."""
+    slots = model.slots
+    by_name = defaultdict(list)
+    for s in slots:
+        by_name[s["name"]].append(s)
+    problems, _ = check_rules.check(model, check_rules.today_entries(model))
+    r4 = sorted({p.split("'")[1] for p in problems if p.startswith("R4")})
+    out = ["# Round 38 name inventory: name lists", ""]
+
+    def section(title, names):
+        out.append("## %s (%d)" % (title, len(names)))
+        out.append("")
+        for n in names:
+            ss = by_name[n]
+            out.append("- %s: %s" % (n, ", ".join(sorted("%s L%d-%d" % (s["zone"] or "world", s["levels"][0],
+                                                                         s["levels"][1]) for s in ss))))
+        out.append("")
+    section("Normal, critter and guard names with more than 2 words", sorted(
+        n for n, ss in by_name.items() if any(inventory.TIER_WORDS[s["tier"]] == 2 and s["words"] > 2 for s in ss)))
+    section("Named, elite and boss names with more than 3 words", sorted(
+        n for n, ss in by_name.items() if any(inventory.TIER_WORDS[s["tier"]] == 3 and s["words"] > 3 for s in ss)))
+    section("Names with a signal word", sorted(n for n, ss in by_name.items() if ss[0]["signal_words"]))
+    section("Names breaking rule 2.2.4 today", r4)
+    section("Three-word named, elite and boss names (they keep their names)", sorted(
+        {s["name"] for s in slots if s["tier"] in ("named", "elite", "boss") and s["words"] == 3}))
+    fam = Counter(s["family"] for s in slots)
+    out.append("## Families (all slots)")
+    out.append("")
+    out.append(", ".join("%s %d" % kv for kv in sorted(fam.items())))
+    return "\n".join(out) + "\n"

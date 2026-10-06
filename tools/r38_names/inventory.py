@@ -1245,6 +1245,7 @@ def write(model, out):
     (out / "today_check.txt").write_text("\n".join(problems + notes) + "\n", encoding="utf-8")
     (out / "README.md").write_text(report.readme(model, meta), encoding="utf-8")
     (out / "summary.md").write_text(report.summary(model), encoding="utf-8")
+    (out / "lists.md").write_text(report.lists(model), encoding="utf-8")
 
 
 def main(argv=None):
