@@ -182,7 +182,7 @@ bone, skinning, and the stand animation; walk too if cheap. First route:
 proven by the test, not assumed. If it gets the skeleton or the animation
 wrong, the fallbacks are a script on the B3D reader in
 `tools/r33_c3/gen_cloak_model.py` or Blender 5.2 with a B3D import add-on;
-if the fallback becomes very laborious, the lane asks the user (§3). One
+if the animation becomes very laborious, the lane does not stop: one
 fallback is pre-approved (the user and the website, 2026-10-06): a static
 glb (mesh, skeleton including the Cloak bone, both buffers, rest pose, no
 animation), with the idle motion left to the website's JavaScript until an
