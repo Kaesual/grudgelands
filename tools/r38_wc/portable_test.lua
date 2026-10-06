@@ -106,7 +106,7 @@ check(shown[2] and unescape(shown[2].form):find(">Thorvin, Warrior</style>", 1, 
 	"W a missing race and faction are left out")
 
 -- M. Hypertext markup ---------------------------------------------------------------
-local TAGS = {style = true, b = true, bigger = true}
+local TAGS = {style = true, b = true, big = true}
 for body in form:gmatch("hypertext%[[^;]*;[^;]*;;(.-[^\\])%]") do
 	local text = unescape(body)
 	check(not text:find("\\", 1, true), "M no backslash in a hypertext")

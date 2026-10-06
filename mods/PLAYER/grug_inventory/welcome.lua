@@ -3,10 +3,16 @@
 -- no state of its own: the arrival happens exactly once, so a window closed
 -- with Esc or lost to a disconnect is never shown again.
 --
--- Real coordinates, 11 x 10.1. The text is two hypertext[] elements (they
--- scroll on their own if a large font overflows them); the links are the
--- Help -> About addresses plus the credits, as button_url[] (the client asks
--- before opening a browser).
+-- Real coordinates, 14 x 9.3: wide rather than tall, because a form unit is
+-- about 1/15 of the window height (at least 53 px at 96 dpi) while the font
+-- keeps its pixel size, so short boxes overflow on common screens. The text
+-- is three hypertext[] elements (title, body, footer); each line is its own
+-- paragraph with the engine's paragraph gap, so there are no blank lines.
+-- At 53 px per unit the body needs about 4.3 of its 4.6 units and the footer
+-- 0.9 (1.3 at the 1024x600 minimum) of its 1.35; an overflowing box scrolls.
+-- The links are the Help -> About addresses plus the credits, as
+-- button_url[] (the client asks before opening a browser), in one row with
+-- "Got it".
 
 local FORM = "grug_inventory:welcome"
 local CREDITS_URL = "https://github.com/Kaesual/grudgelands/blob/main/CREDITS.md"
@@ -31,7 +37,6 @@ end
 
 local BODY = table.concat({
 	"Two factions, one old grudge and a wide world between them. A few things to get you started:",
-	"",
 	point("Explore.", "Your start town lies on the quiet edge of your continent. " ..
 		"The closer you travel to the front, the more dangerous it gets."),
 	point("Level up.", "Creatures, quests, mining and fishing all give experience, up to level 60."),
@@ -39,7 +44,6 @@ local BODY = table.concat({
 	point("Use your skills.", "Drag skills from the Skills tab onto your hotbar, " ..
 		"select one and left-click."),
 	point("Team up.", "Invite friends of your faction on the Party tab and adventure together."),
-	"",
 	colored(MUTED_COLOR, "Everything else is explained on the Help tab of your inventory (I)."),
 }, "\n")
 
@@ -48,7 +52,7 @@ local FOOTER = colored(MUTED_COLOR, "Grudgelands is free and open source. " ..
 	"If you want to support development, you can buy me a coffee.")
 
 -- The link row: Help -> About's addresses by id, plus the credits. Widths
--- follow the labels; the row spans the text width (10.0).
+-- follow the labels; "Got it" ends the row at the right text edge.
 local LINK_ROW = {
 	{id = "discord", label = "Discord", w = 1.5},
 	{id = "issues", label = "Report a bug", w = 2.1},
@@ -62,27 +66,27 @@ for _, link in ipairs(grug_inventory.LINKS) do
 	URLS[link.id] = link.url
 end
 
-local LEFT, TEXT_W = 0.5, 10.0
+local LEFT, TEXT_W = 0.5, 13.0
 local LINK_GAP = 0.125
 
 -- Everything but the player's line is fixed, so it is built once.
 local function build_tail()
 	local fs = {
-		("hypertext[%.2f,1.55;%.2f,4.85;;%s]"):format(LEFT, TEXT_W, esc(BODY)),
-		("box[%.2f,6.55;%.2f,0.03;%s]"):format(LEFT, TEXT_W, RULE_COLOR),
-		("hypertext[%.2f,6.75;%.2f,1.2;;%s]"):format(LEFT, TEXT_W, esc(FOOTER)),
+		("hypertext[%.2f,1.8;%.2f,4.6;;%s]"):format(LEFT, TEXT_W, esc(BODY)),
+		("box[%.2f,6.5;%.2f,0.03;%s]"):format(LEFT, TEXT_W, RULE_COLOR),
+		("hypertext[%.2f,6.6;%.2f,1.35;;%s]"):format(LEFT, TEXT_W, esc(FOOTER)),
 	}
 	local x = LEFT
 	for _, link in ipairs(LINK_ROW) do
 		local url = link.url or URLS[link.id]
 		assert(url, "[grug_inventory] welcome: no address for link " .. link.id)
-		fs[#fs + 1] = ("button_url[%.2f,8.1;%.2f,0.6;grug_welcome_%s;%s;%s]"):format(
+		fs[#fs + 1] = ("button_url[%.2f,8.2;%.2f,0.6;grug_welcome_%s;%s;%s]"):format(
 			x, link.w, link.id, esc(link.label), esc(url))
 		x = x + link.w + LINK_GAP
 	end
 	fs[#fs + 1] = "style[grug_welcome_ok;bgcolor=#2f6a2a;font=bold]"
-	fs[#fs + 1] = ("button_exit[%.2f,9.05;2.6,0.8;grug_welcome_ok;Got it]"):format(
-		LEFT + TEXT_W - 2.6)
+	fs[#fs + 1] = ("button_exit[%.2f,8.1;2.5,0.8;grug_welcome_ok;Got it]"):format(
+		LEFT + TEXT_W - 2.5)
 	return table.concat(fs)
 end
 local TAIL = build_tail()
@@ -107,10 +111,10 @@ local function who(player)
 end
 
 function grug_inventory.welcome_formspec(player)
-	local head = "<bigger><b>" .. colored(HEADING_COLOR, "Welcome to Grudgelands") ..
-		"</b></bigger>\n" .. colored(MUTED_COLOR, who(player))
-	return "formspec_version[4]size[11,10.1]" ..
-		("hypertext[%.2f,0.4;%.2f,1.1;;%s]"):format(LEFT, TEXT_W, esc(head)) .. TAIL
+	local head = "<big><b>" .. colored(HEADING_COLOR, "Welcome to Grudgelands") ..
+		"</b></big>\n" .. colored(MUTED_COLOR, who(player))
+	return "formspec_version[4]size[14,9.3]" ..
+		("hypertext[%.2f,0.35;%.2f,1.4;;%s]"):format(LEFT, TEXT_W, esc(head)) .. TAIL
 end
 
 grug_classes.register_on_arrival(function(player)
