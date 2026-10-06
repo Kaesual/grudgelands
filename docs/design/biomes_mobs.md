@@ -767,6 +767,44 @@ the depth term never touches them — a level-60 bat is not a thing.
 | Cave Bat | flees (**critter**, §3.0), flier | any (cave dark) | 3.4 fly | meat 1/1 — food only | mobs_mc_bat |
 | Cave Crawler | flees (**critter**, §3.0) | any (cave dark) | 3.4 | meat 1/1 — food only | mobs_mc_silverfish |
 
+**Boss and mob-special effects (Round 40, round40-plan.md §2.15):** the
+`boss` and `mob` cards of the accepted catalogue (`tools/r40_v3/effects.py`),
+single-colour particles played through the one particle path
+(`grug_core/particle_effects.lua`, scaled by `grug_particle_scale` like the
+skill effects, [combat_stats.md](combat_stats.md#skill-particle-effects)).
+Each fires only at its moment:
+
+- **Kings and Generals** (the 2 s signature wind-up): Shatter marks its 6 m
+  blast radius with an exact ring of stone dust that lasts the whole wind-up,
+  then bursts out to it with thrown chunks; Cleave lights its cone with red
+  motes (one 1 s spawner per wind-up second) and sweeps a red arc on the hit;
+  Rally, Volley, Bone Call and Regrowth raise motes in the kit's colour (gold,
+  pale, grey-green, green) around the king, and the resolve shows one rise on
+  each creature it touched: each rallied guard (at most four), each raider
+  Bone Call summoned, the troll when Regrowth heals. Volley shows its arrows.
+- **Every elite and rare:** the wind-up's orange smoke, and on the cone hit
+  an orange arc across the 90° cone at the mob's reach, whether or not anyone
+  is still in it.
+- **The dragons:** frost or fire motes gather into the breath's launch point
+  during its wind-up, then the 54-mote muzzle burst; each bolt trails 12
+  motes (the bolt sprite is unchanged); the lightning keeps its 32-mote
+  warning ring and strikes as a white column with a ground burst; the gust
+  keeps its 40-mote warning ring at its reach and releases a pale ring blowing
+  out to it; the dive keeps its wind-up and slams an exact gold ring out to
+  its 7 m with a dust cloud; enrage a red burst of 96, a dark puff where each
+  whelp appears; take-off dust and the breath's ground patches as before.
+- **The Kraken:** bubbles around the dragged player on each drag.
+- **Mob specials:** white strands at the legs on a spider's or spiderling's
+  web (not on other slows); green bubbles when poisoned and two on each tick;
+  dust at a pounce's or a boar's charge take-off and where it lands; a splash
+  (in water) or dirt burst when an ambusher breaks cover; green bubbles within
+  the Bog Ooze's 2 m on an aura tick that hurt someone; brown leaves within a
+  treant's 3 m on every second aura tick while it slows someone; a puff where
+  an Oerkki or a Wisp blinks from and where it lands; a small impact puff
+  where a mob projectile hits, tinted per projectile (arrow splinters, rock
+  dust, cyan crystal glints, orange ember and fireball sparks, violet void
+  bolts). The hex bottle and the Rift Spawn's burst keep their look.
+
 ### 3.2 Cross-continent drop-table pairs (binding)
 
 | Shared table | Accord family | Throng family |

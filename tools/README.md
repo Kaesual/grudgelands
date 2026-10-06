@@ -217,3 +217,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   busy-fight cost of the built effects (`costs.py`, reads `r40_v3`'s
   `data.json`) and `bench/`, a disposable probe timing each skill's effect
   calls before and after the helper (`PROBE=tools/r40_px/bench`).
+  `r40_pm` the boss and mob-special effects' fixture (`portable_test.lua`:
+  each effect at its moment and only then, on the real catalogue and the
+  real mob code, the rings and the counts under the scale), `helper_stub.lua`
+  (the real particle helper for a fixture's fake engine, which the older mob
+  fixtures load too), the per-boss and per-mob cost of the build
+  (`costs.py`, reads `r40_v3`'s `data.json`) and `bench/`, a disposable probe
+  timing the effects' Lua before and after the helper
+  (`PROBE=tools/r40_pm/bench`).
