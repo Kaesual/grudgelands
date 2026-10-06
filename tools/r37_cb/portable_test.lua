@@ -218,6 +218,8 @@ vector = {
 }
 
 grug_core = {}
+-- Round 40: combat.lua plays its crit and absorb through the particle helper.
+grug_core.particles = {play = function() end}
 assert(loadfile(ROOT .. "/mods/CORE/grug_core/combat.lua"))()
 assert(loadfile(ROOT .. "/mods/CORE/grug_core/environment_damage.lua"))()
 function grug_core.is_stunned() return false end

@@ -66,6 +66,8 @@ vector = {offset = function(p, x, y, z) return {x = p.x + x, y = p.y + y, z = p.
 	new = function(x, y, z) return {x = x, y = y, z = z} end}
 
 grug_core = {}
+-- Round 40: combat.lua plays its crit and absorb through the particle helper.
+grug_core.particles = {play = function() end}
 dofile("mods/CORE/grug_core/hud_layout.lua")
 dofile("mods/CORE/grug_core/item_names.lua")
 dofile("mods/CORE/grug_core/combat.lua")
