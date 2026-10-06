@@ -1014,6 +1014,8 @@ local modpath = core.get_modpath(core.get_current_modname())
 -- spawn_policy.lua reads the palettes from it.
 dofile(modpath .. "/spawn_regions.lua")
 dofile(modpath .. "/spawn_policy.lua")
+-- Round 38: every mob's name by slot (data/names.json); levels.lua applies it.
+dofile(modpath .. "/names.lua")
 dofile(modpath .. "/density.lua")
 grug_mobs.install_spawn_clock_wrapper()
 -- Round 30: retired and merged spawn ABMs; before any mob file adds a row.

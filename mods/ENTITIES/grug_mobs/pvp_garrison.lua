@@ -206,7 +206,7 @@ function M.new(catalog, names)
 		local row, name = by_key[key], commanders[key]
 		if not row or not name then return nil end
 		return {entity = M.commander_entity(row.faction), faction = row.faction,
-			area = G.area(key), name = name,
+			area = G.area(key), name = name, name_key = key .. ".commander",
 			level_min = M.COMMANDER_LEVEL, level_max = M.COMMANDER_LEVEL,
 			tier = M.COMMANDER_TIER, respawn = M.RESPAWN.commander}
 	end
@@ -222,7 +222,8 @@ function M.new(catalog, names)
 	-- level), tier ("elite" | "normal"), respawn ({min, max}, nil for the
 	-- General's group), royal, leader, name, mixed (a race of the faction
 	-- instead of the settlement's),
-	-- area, faction}.
+	-- area, faction, name_key ("<settlement key>.<post>": the post's slot in
+	-- data/names.json, Round 38; a captain's "<key>.captain-<race>")}.
 	function G.slot(key, race_id, socket, band)
 		local row = by_key[key]
 		if not row then return nil end
@@ -230,6 +231,7 @@ function M.new(catalog, names)
 		local races = catalog.FACTION_RACES[faction]
 		local spec = {faction = faction, area = G.area(key)}
 		if row.kind == "pvp_fortress" then
+			spec.name_key = key .. "." .. (role == "guard_post" and "guard" or role)
 			if role == "guard_post" then
 				spec.entity = M.guard_entity(faction)
 				spec.level_min, spec.level_max = M.FORTRESS_GUARD_LEVEL, M.FORTRESS_GUARD_LEVEL
@@ -254,6 +256,7 @@ function M.new(catalog, names)
 		for _, race in ipairs(races) do of_faction = of_faction or race == race_id end
 		if not of_faction then fail(key .. ": race " .. tostring(race_id) .. " is not of " .. faction) end
 		local low, high = catalog.camp_levels(band[1], band[2], row.band)
+		spec.name_key = key .. "." .. (role == "captain" and "captain-" .. race_id or "guard")
 		if role == "captain" then
 			spec.entity = M.captain_entity(faction)
 			spec.level_min, spec.level_max = high, high

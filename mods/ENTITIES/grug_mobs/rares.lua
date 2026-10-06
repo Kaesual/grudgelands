@@ -67,6 +67,9 @@ function grug_mobs.register_rare(id, spec)
 		error("[grug_mobs] rare " .. id .. " has no stable R7 route")
 	end
 	spec.route = route
+	-- Round 38: data/names.json names the rare (its slot "rare.<id>"); the
+	-- broadcast and the nametag read the same name.
+	spec.name = grug_mobs.names and grug_mobs.names.lookup("rare." .. id, nil, nil) or spec.name
 	grug_mobs.registered_rares[id] = spec
 	state[id] = {
 		alive = storage:get_int("rare_alive:" .. id) == 1,
@@ -188,7 +191,8 @@ local function try_spawn(id, spec)
 		-- against either (Round 37 MP, mobs/api.lua grug_authored).
 		_grug_authored = true,
 		_grug_staticdata = {_grug_rare_id = id, _grug_live_key = key,
-			_grug_live_gen = gen, lifetimer = 30000, description = spec.name},
+			_grug_live_gen = gen, lifetimer = 30000, description = spec.name,
+			_grug_name_key = "rare." .. id},
 	})
 	if not ent then
 		return
@@ -199,6 +203,8 @@ local function try_spawn(id, spec)
 	-- refreshes the tag.
 	ent.description = spec.name
 	ent._grug_rare_id = id
+	-- Its slot "rare.<id>" in data/names.json (names.lua, Round 38).
+	ent._grug_name_key = "rare." .. id
 	liveness.adopt(ent, key, gen)
 	-- Named rares must not evaporate when the last player walks away:
 	-- mobs_redo deletes an unloading mob whose lifetimer is below 20000

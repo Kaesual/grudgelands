@@ -13,10 +13,6 @@
     ],
     "drops": "boar",
     "notes": "Day; all six starts. Charge retained. Neutral single pull; no group alert.",
-    "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Small Plague Boar",
-      "kragmar_kapok_cradle": "Small Jungle Boar"
-    },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "plague_boar",
       "kragmar_kapok_cradle": "jungle_boar"
@@ -36,10 +32,6 @@
     ],
     "drops": "boar",
     "notes": "Day; all six starts. Charge retained. Hostile successor to the local neutral boar.",
-    "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Aggressive Plague Boar",
-      "kragmar_kapok_cradle": "Aggressive Jungle Boar"
-    },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "plague_boar",
       "kragmar_kapok_cradle": "jungle_boar"
@@ -59,10 +51,6 @@
     ],
     "drops": "boar",
     "notes": "Day; all six homes. Charge retained. Neutral single pull; no group alert.",
-    "display_by_zone": {
-      "kragmar_mournfen": "Rooting Plague Boar",
-      "kragmar_raincall_basin": "Rooting Jungle Boar"
-    },
     "tint_by_zone": {
       "kragmar_mournfen": "plague_boar",
       "kragmar_raincall_basin": "jungle_boar"
@@ -82,10 +70,6 @@
     ],
     "drops": "boar",
     "notes": "Day; all six homes. Charge retained. Hostile successor to the local neutral boar.",
-    "display_by_zone": {
-      "kragmar_mournfen": "Plague Tusker",
-      "kragmar_raincall_basin": "Jungle Tusker"
-    },
     "tint_by_zone": {
       "kragmar_mournfen": "plague_boar",
       "kragmar_raincall_basin": "jungle_boar"
@@ -105,10 +89,6 @@
     ],
     "drops": "boar",
     "notes": "Day; Highcourt, Nhal Veyr, Kezamba and Whitebridge. Charge retained. Neutral single pull; no group alert.",
-    "display_by_zone": {
-      "kragmar_nhal_veyr": "Furrow Plague Boar",
-      "kragmar_kezamba": "Furrow Jungle Boar"
-    },
     "tint_by_zone": {
       "kragmar_nhal_veyr": "plague_boar",
       "kragmar_kezamba": "jungle_boar"
@@ -128,10 +108,6 @@
     ],
     "drops": "boar",
     "notes": "Day; Highcourt, Nhal Veyr, Kezamba and Whitebridge. Charge retained. Hostile successor to the local neutral boar.",
-    "display_by_zone": {
-      "kragmar_nhal_veyr": "Plague Razorback",
-      "kragmar_kezamba": "Jungle Razorback"
-    },
     "tint_by_zone": {
       "kragmar_nhal_veyr": "plague_boar",
       "kragmar_kezamba": "jungle_boar"
@@ -151,11 +127,6 @@
     ],
     "drops": "rat",
     "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
-    "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Large Grave Rat",
-      "kragmar_kapok_cradle": "Large Kapok Rat",
-      "kragmar_sunscar_flats": "Large Dust Rat"
-    },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "sallow",
       "kragmar_kapok_cradle": "moss",
@@ -176,11 +147,6 @@
     ],
     "drops": "rat",
     "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
-    "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Aggressive Grave Rat",
-      "kragmar_kapok_cradle": "Aggressive Kapok Rat",
-      "kragmar_sunscar_flats": "Aggressive Dust Rat"
-    },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "sallow",
       "kragmar_kapok_cradle": "moss",
@@ -201,11 +167,6 @@
     ],
     "drops": "rat",
     "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection. Optional inland finale-area animal, not another required hunt.",
-    "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Monstrous Grave Rat",
-      "kragmar_kapok_cradle": "Monstrous Kapok Rat",
-      "kragmar_sunscar_flats": "Monstrous Dust Rat"
-    },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "sallow",
       "kragmar_kapok_cradle": "moss",
@@ -226,11 +187,6 @@
     ],
     "drops": "rat",
     "notes": "Night in open fields of the six home zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
-    "display_by_zone": {
-      "kragmar_mournfen": "Granary Grave Rat",
-      "kragmar_raincall_basin": "Granary Kapok Rat",
-      "kragmar_redtusk_savanna": "Granary Dust Rat"
-    },
     "tint_by_zone": {
       "kragmar_mournfen": "sallow",
       "kragmar_raincall_basin": "moss",
@@ -251,11 +207,6 @@
     ],
     "drops": "rat",
     "notes": "Night in open fields of the six home zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
-    "display_by_zone": {
-      "kragmar_mournfen": "Grave Gnawer",
-      "kragmar_raincall_basin": "Kapok Gnawer",
-      "kragmar_redtusk_savanna": "Dust Gnawer"
-    },
     "tint_by_zone": {
       "kragmar_mournfen": "sallow",
       "kragmar_raincall_basin": "moss",
@@ -516,9 +467,6 @@
     ],
     "drops": "zombie",
     "notes": "Night in Gravesalt and Skyglass. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains.",
-    "display_by_zone": {
-      "front_skyglass_canopy": "Vinebound Zombie"
-    },
     "tint_by_zone": {
       "front_skyglass_canopy": "moss"
     }
@@ -537,10 +485,6 @@
     ],
     "drops": "zombie",
     "notes": "Night in Gravesalt and Skyglass; L60 roles also the islands. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains.",
-    "display_by_zone": {
-      "front_skyglass_canopy": "Overgrown Watchman",
-      "front_stormscale_summit": "Overgrown Watchman"
-    },
     "tint_by_zone": {
       "front_skyglass_canopy": "moss",
       "front_stormscale_summit": "moss"
@@ -904,15 +848,7 @@
       10
     ],
     "drops": "outlaw",
-    "notes": "Clock both at camps/hideouts in the six start zones; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer.",
-    "display_by_zone": {
-      "elandor_hearthpine_vale": "Confused Ore Thief",
-      "elandor_dawnmere_fields": "Confused Bandit",
-      "elandor_silverleaf_glades": "Confused Wood Thief",
-      "kragmar_stillgrave_hollow": "Confused Grave Robber",
-      "kragmar_sunscar_flats": "Confused Water Thief",
-      "kragmar_kapok_cradle": "Confused Offering Thief"
-    }
+    "notes": "Clock both at camps/hideouts in the six start zones; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
   },
   {
     "role": "quarrelsome_bandit",
@@ -1288,10 +1224,6 @@
     ],
     "drops": "grazer",
     "notes": "Day; Highcourt, Lethariel, Whitebridge, Lorindor, Moonfall; gaunt form Nhal Veyr/Ossuary.",
-    "display_by_zone": {
-      "kragmar_nhal_veyr": "Moss-Antler Gaunt Stag",
-      "kragmar_ossuary_reach": "Moss-Antler Gaunt Stag"
-    },
     "tint_by_zone": {
       "kragmar_nhal_veyr": "gaunt_stag",
       "kragmar_ossuary_reach": "gaunt_stag"
@@ -1311,9 +1243,6 @@
     ],
     "drops": "grazer",
     "notes": "Day; Ashenward, Glassroot; gaunt form Blackwind.",
-    "display_by_zone": {
-      "kragmar_blackwind_rise": "Blackwind Gaunt Stag"
-    },
     "tint_by_zone": {
       "kragmar_blackwind_rise": "gaunt_stag"
     }
@@ -1482,10 +1411,6 @@
     ],
     "drops": "canid",
     "notes": "Both clocks; Whitebridge/Moonfall/Ashenward/Glassroot; blight form Ossuary/Blackwind.",
-    "display_by_zone": {
-      "kragmar_ossuary_reach": "Briarpack Blightfang Wolf",
-      "kragmar_blackwind_rise": "Briarpack Blightfang Wolf"
-    },
     "tint_by_zone": {
       "kragmar_ossuary_reach": "blightfang_wolf",
       "kragmar_blackwind_rise": "blightfang_wolf"
@@ -1520,10 +1445,6 @@
     ],
     "drops": "bear",
     "notes": "Day; Whitebridge, Moonfall, Ashenward, Glassroot; plague form Ossuary/Blackwind. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier.",
-    "display_by_zone": {
-      "kragmar_ossuary_reach": "Bonewood Plaguehide Bear",
-      "kragmar_blackwind_rise": "Bonewood Plaguehide Bear"
-    },
     "tint_by_zone": {
       "kragmar_ossuary_reach": "plaguehide_bear",
       "kragmar_blackwind_rise": "plaguehide_bear"
