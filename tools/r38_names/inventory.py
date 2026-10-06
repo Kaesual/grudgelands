@@ -287,7 +287,7 @@ class Model:
         self.source("signal_words", "signal words (size, age, strength, temperament, wits, condition)",
                     r.cite(SIGNAL_SOURCE, r'"signal_words"') + "; rule text docs/design/biomes_mobs.md:" +
                     str(r.line_of("docs/design/biomes_mobs.md",
-                                  r.text("docs/design/biomes_mobs.md").index("**Names (user, 2026-10-02):**"))))
+                                  r.text("docs/design/biomes_mobs.md").index("**Names (Round 38"))))
         # dispositions
         disp = {}
         dtext = r.text(MOBS + "/disposition.lua")

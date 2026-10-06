@@ -1046,12 +1046,15 @@ spawning, and flying families have no near-ground bias.
 
 | Depth band | Level band | Cast |
 |---|---|---|
-| 0 to −100 | 1–6 | Cave Bat, Cave Crawler, Giant Rat and Spiderling |
-| −100 to −300 | 6–18 | Giant Spider, Lost Miner, Blood Bat, Goblin Miner and Goblin Miner Slinger |
+| 0 to −100 | 1–6 | Cave Bat, Cave Crawler, Pit Rat and Spiderling |
+| −100 to −300 | 6–18 | Crevice Spider, Buried Miner, Blood Bat, Goblin Miner and Goblin Pelter |
 | −300 to −500 | 18–30 | Stone Golem, Oerkki, Glowwing and Crystal Shard |
-| −500 to −700 | 30–42 contested T4 | Dungeon Master, Crystal Shard, Oerkki and Stone Golem |
-| −700 to −1000 | 42–60 contested T5 | Lava Flan, Ember Wisp, Dungeon Master and Stone Mite |
-| Below −1000 | 60 contested T6 | Lava Flan, Ember Wisp, Land Guard and Rift Spawn |
+| −500 to −700 | 30–42 contested T4 | Fire Hurler, Crystal Shard, Oerkki and Stone Golem |
+| −700 to −1000 | 42–60 contested T5 | Lava Seep, Ember Wisp, Fire Hurler and Stone Mite |
+| Below −1000 | 60 contested T6 | Lava Seep, Ember Wisp, Bedrock Sentinel and Rift Spawn |
+
+The cast's names are the Round 38 ones (`data/names.json`, one name per
+entity at every depth).
 
 ### 8.4 Relief character and landmarks
 

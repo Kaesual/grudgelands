@@ -182,9 +182,11 @@ def main():
         dup.write_text(json.dumps({"zone": sg, "slots": {key: {"keep": True, "reason": "x"}}}), encoding="utf-8")
         bad = subprocess.run(cmd + files + [str(dup)], capture_output=True, text=True)
         expect(bad.returncode == 1 and "named twice" in bad.stdout, "CLI: a twice-named slot exits 1")
-        today = subprocess.run([sys.executable, str(HERE / "check_rules.py"), "--repo", repo, "--today",
-                                "--quiet-notes"], capture_output=True, text=True)
-        expect(today.returncode == 1 and today.stdout.startswith("R"), "CLI: today's names break rules")
+        # Since lane B2 the shipped names are the accepted ones: the gate passes.
+        shipped = subprocess.run([sys.executable, str(HERE / "check_rules.py"), "--repo", repo, "--shipped",
+                                  "--quiet-notes"], capture_output=True, text=True)
+        expect(shipped.returncode == 0 and shipped.stdout.startswith("0 problems"),
+               "CLI: the shipped names pass (%s)" % shipped.stdout.strip()[-200:])
     print("test_rules: %d failure%s" % (len(FAILS), "" if len(FAILS) == 1 else "s"))
     return 1 if FAILS else 0
 

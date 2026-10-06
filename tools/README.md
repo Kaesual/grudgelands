@@ -160,4 +160,7 @@ pattern; the shared Round 28 tools are `r28_design`, `r28_regions`,
   `grug_mobs/data/names.json`, `--proposals` lays picks over today's
   names), `names_stub.lua` (`grug_mobs.names` for fixtures) and the
   portable test of names by slot, the Stillgrave kill credit, garrisons and
-  the kill path's cost.
+  the kill path's cost; `b2` the portable test of the accepted names in the
+  game (the code-built names equal `names.json`, every single-named entity
+  registers under it, the whelps at level 60). `check_rules.py --shipped`
+  is the naming gate since lane B2.
