@@ -152,3 +152,7 @@ Lua runs share the workstation cap of 8 through the round's queue
    exact quest target as a guarantee, the mechanism is part of the round
    (§2.1); the zone's picture and judgement in merging bands matter (§2.3);
    the round runs orchestrated and highly parallel (§3).
+7. Item objectives (2026-10-06, during the round): they do not fall under
+   the §2.1 guarantee. An item objective names the item; the mobs it
+   mentions are guidance. The quest drops tied to a mob (the captains'
+   orders) do fall under it.
