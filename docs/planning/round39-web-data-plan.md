@@ -183,9 +183,10 @@ proven by the test, not assumed. If it gets the skeleton or the animation
 wrong, the fallbacks are a script on the B3D reader in
 `tools/r33_c3/gen_cloak_model.py` or Blender 5.2 with a B3D import add-on;
 if the fallback becomes very laborious, the lane asks the user (§3). One
-option the user named for that case: a static glb first (mesh, skeleton,
-cloak, rest pose, no animation), with the animation left to the website's
-own JavaScript — the user decides; the lane does not pick it alone. The
+fallback is pre-approved (the user and the website, 2026-10-06): a static
+glb (mesh, skeleton including the Cloak bone, both buffers, rest pose, no
+animation), with the idle motion left to the website's JavaScript until an
+animated glb becomes cheap; the report states which variant shipped. The
 conversion command lives in `tools/web_data/model/` so it can be rerun. A
 stock glTF loader must be able to load the result.
 
