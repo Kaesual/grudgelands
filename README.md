@@ -107,9 +107,13 @@ stats, and the sound controls. The short version:
 *Last updated: 2026-10-06. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 39, "Web data for the realm website":
-nothing changes in play, but a realm's website can now show each
-character's level and a 3D preview in its current equipment. Round 38,
+The latest finished round is Round 40, "Combat feel": cooldowns show on
+the hotbar as a shade that clears like a clock hand, characters strike
+poses for their spells, blows and blocks and look up and down, Charge is a
+real dash that hops over steps and holes, and skills, bosses and creatures
+show particle effects. Round 39, "Web data for the realm website", changed
+nothing in play, but a realm's website can now show each character's
+level and a 3D preview in its current equipment. Round 38,
 "Mob names", gave the creatures of every zone short names that suit it,
 and a kill quest counts every creature that bears the name it asks for,
 wherever it came from; Group is now called Party. Round 37 fixed what an
@@ -177,8 +181,9 @@ later. Later starts of the same world are much faster.
 under *Content: Games → Grudgelands*. The ones that matter most: the world map
 quality (normal or high), *Prepare full world before entry* (off by
 default; on, the first start prepares the whole world and takes several
-hours), the damage multiplier for creatures and NPCs (1.5 by default) and
-tree regrowth. Damage is always on and creative mode is off. Details:
+hours), the damage multiplier for creatures and NPCs (1.5 by default), the
+particle amount of the combat effects (1.0 by default, the same for every
+player) and tree regrowth. Damage is always on and creative mode is off. Details:
 [world preparation](docs/design/world_preparation.md).
 
 <details>

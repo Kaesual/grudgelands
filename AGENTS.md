@@ -12,12 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 39 "Web data for the realm website" is complete
-and pushed with every earlier round (origin/main `d018d866`, 2026-10-06);
-Round 40 "Combat feel" runs ([plan](docs/planning/round40-plan.md)).
-Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
-(2026-10-06); the GUI tests of Rounds 36–38 are open. Details:
-[STATUS](docs/STATUS.md).
+**Current state:** Round 40 "Combat feel" is complete locally, not pushed
+([plan](docs/planning/round40-plan.md)); every round up to Round 39 is
+pushed (origin/main `d018d866`, 2026-10-06). Rounds 25–35 count as
+GUI-accepted (the user, 2026-10-05), Round 39 too (2026-10-06); the GUI
+tests of Rounds 36–38 and 40 are open. Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 

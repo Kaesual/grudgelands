@@ -201,10 +201,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   writes, and every texture string within the caps and the closed
   grammar; `examples` prints two values); `wg` the glTF probe mod on a
   fake engine. Lane WE's fixture is `web_data/portable_test.lua` (above).
-- **Round 40**: `r40_probe` the GUI probe mod `grug_r40_probe` (Charge
-  variants on test courses, the cooldown overlay on the hotbar, server-side
-  timings; never shipped, see its README); its `portable_test.lua` covers the
-  path planner, the overlay arithmetic and the cooldown number.
+- **Round 40** (`r40_<lane>`; V2's pose table is `r40_an`, V3's catalogue
+  `r40_v3`, V4's probe `r40_probe`): `r40_probe` the GUI probe mod
+  `grug_r40_probe` (Charge variants on test courses, the cooldown overlay on
+  the hotbar, server-side timings; never shipped, see its
+  [README](r40_probe/README.md)); its `portable_test.lua` covers the path
+  planner, the overlay arithmetic and the cooldown number, and
+  `gen_textures.py` (`--check`) draws its pie frames and digits.
   `r40_an` the pose proposals (`make_poses.py` bakes the readable spec into
   per-frame B3D keys, `poses.json`, `--check`), the table lane AN1 bakes into
   the player model. `r40_an1` the pose clips' triggers on the real

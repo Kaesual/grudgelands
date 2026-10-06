@@ -21,8 +21,21 @@ WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 38 "Mob names"](docs/planning/round38-mob-names-plan.md#completion-2026-10-06)
-  complete and pushed** (2026-10-06, `ec2e874c` and lane D; a
+  [Round 40 "Combat feel"](docs/planning/round40-plan.md#completion-2026-10-06)
+  complete locally, not pushed** (2026-10-06, `bd52bbf4` and lane D; no
+  new world needed; GUI test open): the cooldown overlay on the hotbar
+  instead of the wear bar, poses and the head look, Charge as a dash,
+  particle effects for player skills, bosses and mob specials with
+  `grug_particle_scale` ([Round 40](#round-40--combat-feel),
+  [carry-overs](#round-40-carry-overs)).
+- [Round 39 "Web data for the realm website"](docs/planning/round39-web-data-plan.md#completion-2026-10-06)
+  (2026-10-06, pushed 2026-10-06 as `d018d866`, GUI-accepted): no gameplay
+  change; the level and appearance in player meta, the exported web data
+  and the player model as glTF for realm websites
+  ([Round 39](#round-39--web-data-for-the-realm-website),
+  [carry-overs](#round-39-carry-overs)).
+- [Round 38 "Mob names"](docs/planning/round38-mob-names-plan.md#completion-2026-10-06)
+  (2026-10-06, `ec2e874c` and lane D, pushed 2026-10-06; a
   fresh world for the test; GUI test open): new names for every mob slot
   from the user's picks, a kill counted by the shown name (the quest
   kill-credit bug fixed), quest texts on the names, the whelps at level
@@ -60,8 +73,9 @@ example E5) are cited below.
   ([Round 36](#round-36--the-main-questline),
   [carry-overs](#round-36-carry-overs)).
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user,
-  2026-10-05, [Round 37 plan](docs/planning/round37-plan.md) §2.3.5);
-  Rounds 36, 37 and 38 are open ([project status](docs/STATUS.md)).
+  2026-10-05, [Round 37 plan](docs/planning/round37-plan.md) §2.3.5),
+  Round 39 too (2026-10-06); Rounds 36, 37, 38 and 40 are open
+  ([project status](docs/STATUS.md)).
 - [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
   (2026-10-05, pushed 2026-10-05; its first GUI findings fed Round 36): the user's
   Round 34 GUI findings — the server's aiming rays test rotated selection
@@ -1336,6 +1350,78 @@ from the reviews (backlog notes, no severity); none blocks the GUI test.
 - **Square hand images:** the export's README describes a hand item as an
   extruded square of its image; every shipped hand image is square, a
   non-square one would need that description extended.
+
+### Round 40 — combat feel
+
+**Delivered locally 2026-10-06, not pushed**
+([completion](docs/planning/round40-plan.md#completion-2026-10-06),
+plan [round40-plan.md](docs/planning/round40-plan.md)); every code lane
+independently reviewed by Opus, the wave 1 pages' numbers too; 119
+portable fixtures on main. No world generation changed.
+
+- **Acceptance material** (V1–V4, R): the cooldown, animation and
+  particle preview pages, the GUI probe `tools/r40_probe`, the accepted
+  pose table `tools/r40_an` and particle catalogue `tools/r40_v3`,
+  `character_anim` as a reference project.
+- **Cooldown overlay** (CD): a cover and image digits on hotbar slots
+  ([classes.md](docs/design/classes.md#the-cooldown-overlay)); the wear bar
+  shows no cooldown or charge.
+- **Poses and head look** (AN1, AN2):
+  [character_visuals.md](docs/design/character_visuals.md#5c-poses-round-40)
+  §5c and §5d.
+- **Charge as a dash** (CH): the planned path, the hole rule, the hit on
+  arrival ([classes.md](docs/design/classes.md#3-warrior-rage) §3).
+- **Particles** (PX, PM): one helper, `grug_particle_scale`, the player
+  skills ([combat_stats.md](docs/design/combat_stats.md#skill-particle-effects)),
+  the bosses and mob specials ([biomes_mobs.md](docs/design/biomes_mobs.md)
+  §3.1).
+
+### Round 40 carry-overs
+
+**Noted 2026-10-06** ([completion](docs/planning/round40-plan.md#completion-2026-10-06)),
+the user's open picks and the reviews' backlog notes (no severity); none
+blocks the GUI test.
+
+- **Sounds were out of this round** (plan §2.7), Smite's included: Smite
+  keeps the shared holy cast cue and Charge its cast cue; the dash, the
+  poses and the new effects add no sound. Any new sound goes through a
+  listening page ([sound.md](docs/design/sound.md) §1).
+- **Particle art order:** the effects are single-colour; the V3 page named
+  optional art for later (a snowflake sprite for Ice Nova and Glacial
+  Ward, animated fire for Fireball's splash, draconis ice and fire motes
+  for the dragon breath and its bolts, a four-point holy spark for Smite,
+  a slash streak for Mighty Blow). The user has flagged none yet.
+- **Cleave's wind-up** marks the cone with the facing frozen at the cast
+  (and halfway) while the hit tracks the target: existing behaviour the
+  motes now make visible; the user decides.
+- **The Charge arrival hold** (about 0.34 s without control on the stop)
+  stays for now; the user picks at the GUI test (the forward snap per hold
+  length: `tools/r40_ch/lag_replay.py`).
+- **Not on the particle helper:** the tails of mob fireballs, embers and
+  void bolts (one particle per step) and the stun cross and root crystals
+  (sized from the object's box), so `grug_particle_scale` does not reach
+  them.
+- **`--check` of the PNG generators** (`tools/r40_cd/gen_cooldown_textures.py`,
+  `tools/r40_probe/gen_textures.py`) compares bytes that depend on the
+  installed zlib's output; another zlib build could fail it with nothing
+  changed.
+- **The Kraken's drag** can push the Charge carrier off its path until the
+  next segment starts.
+- **A Charge miss shows no notice.**
+- **A skill moved by Lua** (not by an inventory action) and cast again
+  keeps its overlay on the old slot for up to 0.5 s, until the next
+  hotbar check.
+- **The overlay assumes `gui_scaling` 1 and `hud_hotbar_max_width` 1.0**
+  (the server cannot read them): about a pixel off where 48 × density is
+  not a whole number.
+- **A stale comment** in the vendored mobs fork (`mods/ENTITIES/mobs/api.lua`,
+  the wear-free punch write) still names the cooldown wear ticker, which
+  is gone.
+- **A sneak toggle in the middle of a one-shot pose** (swing, flinch):
+  the pose's end is estimated from the current animation speed.
+- **The probe** (`tools/r40_probe`, tools only) switches its carrier's
+  segments up to one server step late (corrected by an interpolated
+  `move_to`); the shipped dash is `grug_abilities/charge.lua`.
 
 ### Audit 2026-10 open questions
 

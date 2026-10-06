@@ -140,8 +140,8 @@ B1–B7) settle the rest:
 
 ### Delivered foundation
 
-Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Rounds 36 and 37
-are open ([project status](docs/STATUS.md)).
+Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
+(2026-10-06); Rounds 36–38 and 40 are open ([project status](docs/STATUS.md)).
 
 - [x] Standalone game, faction/race/class creation, progression and four classes
   including Scout; current-ray combat, equipped weapons, talents and shared movement.
@@ -340,8 +340,17 @@ are open ([project status](docs/STATUS.md)).
   `tools/web_data/web_data.json` with the ids, names, frames, wield
   geometry, texture files and items a website needs, and the player model
   as an animated glTF tested against the game's `.b3d`. Complete and
-  pushed on 2026-10-06. Next: the GUI test, together with Rounds 36
-  to 38.
+  pushed on 2026-10-06; GUI-accepted on 2026-10-06.
+- [x] **Round 40 "Combat feel"**
+  ([completion](docs/planning/round40-plan.md#completion-2026-10-06)),
+  from the user's four suggestions, each first shown on a preview page or
+  a GUI probe: a cooldown overlay on the hotbar instead of the wear bar,
+  seven poses baked into the player model and a head that follows the
+  look, Charge as a dash on a planned path with the user's hole rule, and
+  single-colour particle effects for every player skill but Strike, the
+  bosses and the mob specials through one helper with the server-wide
+  `grug_particle_scale`. Complete locally on 2026-10-06, not pushed; no
+  new world needed. Next: the GUI test on desktop and the web build.
 
 ### Remaining work
 
@@ -360,8 +369,11 @@ are open ([project status](docs/STATUS.md)).
   [Round 35](BACKLOG.md#round-35-carry-overs),
   [Round 36](BACKLOG.md#round-36-carry-overs),
   [Round 37](BACKLOG.md#round-37-carry-overs),
-  [Round 38](BACKLOG.md#round-38-carry-overs) and
-  [Round 39](BACKLOG.md#round-39-carry-overs) carry-overs; Round 36 settled
+  [Round 38](BACKLOG.md#round-38-carry-overs),
+  [Round 39](BACKLOG.md#round-39-carry-overs) and
+  [Round 40](BACKLOG.md#round-40-carry-overs) carry-overs (Round 40: the
+  sounds left out of it, a later particle art order, the Charge arrival
+  hold to pick); Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
   [open questions](BACKLOG.md#audit-2026-10-open-questions),
