@@ -163,4 +163,6 @@ pattern; the shared Round 28 tools are `r28_design`, `r28_regions`,
   the kill path's cost; `b2` the portable test of the accepted names in the
   game (the code-built names equal `names.json`, every single-named entity
   registers under it, the whelps at level 60). `check_rules.py --shipped`
-  is the naming gate since lane B2.
+  is the naming gate since lane B2. `wc` the portable test of the welcome
+  window (its text, link buttons and Got it; the arrival callbacks run once,
+  after the arriving mark is cleared).

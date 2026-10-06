@@ -180,6 +180,8 @@ local LINKS = {
 	{id = "coffee", label = "Support development: buy me a coffee",
 		url = "https://buymeacoffee.com/kaesual"},
 }
+-- The welcome window (welcome.lua) links the same addresses.
+grug_inventory.LINKS = LINKS
 
 -- Geometry (legacy coordinates, 10.4 wide; content must end before y = 7.0).
 -- In legacy units (S = one slot spacing, imgsize = 13/15 S, padding 0.325 S)
