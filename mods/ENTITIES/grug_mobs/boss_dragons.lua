@@ -33,7 +33,9 @@ local TUNING = {
 	gust_recover = 2,
 	enrage_fraction = 0.5,
 	enrage_cooldown_factor = 0.7,
-	whelp_level = 20,
+	-- The user's ruling of 2026-10-06 (plan §6 item 12): the whelps are
+	-- level-60 adds on the level-60 islands (until Round 38 a fixed 20).
+	whelp_level = 60,
 	trail_particles = 18,
 }
 grug_mobs.DRAGON_TUNING = TUNING
@@ -1166,7 +1168,8 @@ end
 
 local function whelp_def(opts)
 	return {
-		description = opts.description .. " Whelp",
+		-- data/names.json names the whelp (Round 38), not "<dragon> Whelp".
+		description = grug_mobs.names.required(opts.whelp:match("^grug_mobs:(.+)$")),
 		_grug_voice = "reptile",
 		clock = "any", type = "monster",
 		_grug_fixed_level = TUNING.whelp_level, _grug_tier = "normal",
@@ -1247,7 +1250,7 @@ function grug_mobs.register_dragon_bosses(callbacks)
 			callbacks.player_enemy_of(player, nil)
 	end
 	local ice = {
-		description = "Wyrmglass Ice Dragon",
+		description = grug_mobs.names.required("ice_dragon"),
 		mesh = "grug_mobs_ice_dragon.b3d",
 		textures = {"grug_mobs_ice_dragon.png^grug_mobs_dragon_shading.png"},
 		size = {x = 8, y = 8}, box = {-3, 0, -3, 3, 8, 3},
@@ -1273,7 +1276,7 @@ function grug_mobs.register_dragon_bosses(callbacks)
 		},
 	}
 	local storm = {
-		description = "Stormscale Jungle Wyvern",
+		description = grug_mobs.names.required("jungle_wyvern"),
 		mesh = "grug_mobs_jungle_wyvern.b3d",
 		textures = {"grug_mobs_jungle_wyvern.png"},
 		size = {x = 8, y = 8}, box = {-2.4, 0, -2.4, 2.4, 6.4, 2.4},
