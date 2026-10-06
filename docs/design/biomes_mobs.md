@@ -703,6 +703,7 @@ spawn row or palette membership.
 |-------------|-------|------------------|-----------|---------------|
 | Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L70 boss | three perches in a round arena of radius 40 that is its leash (`world.md` §4b); 2 s breath-line / ground-slam telegraphs; a telegraphed wing gust that pushes players about 6 nodes (Round 36); persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
 | Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L70 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
+| Dragon whelps (Ice Whelp, Wyvern Whelp) | any | two at a dragon's enrage, fixed **L60** normal (the user, 2026-10-06: until Round 38 a fixed L20 on the level-60 islands) | encounter adds: no gear, no bag, no drops; the island's level-60 kill XP each | the dragon's mesh, small |
 | Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d`, drawn from the race look layers with the royal tabard and crown ([character_visuals.md](character_visuals.md) §1.1) |
 | Rift boss (Round 36) | any | the rift's clash site (`world.md` §4b), fixed L60 elite, 2 × an elite's HP (no harder than a dragon, user) | spawned like a leader when a player with the finale active or done (or the main line finished) is within 48 nodes (none within 6 of its spot), never saved with the map; void bolts (`dogshoot`), the elite frontal wind-up, a void pulse every 14 s (2 s wind-up, ×2 hit to every player within 6 nodes, knockback); its own 24-node leash and evade home; back 5 min of wall-clock time after its death; loot through the boss ledger (`items_crafting.md` §5.3b) | the Dungeon Master's mesh with its own texture (Isquarre the Tithe-Eater, `grug_mobs_isquarre.png`); voice family `giant` |
 | Two fortress Generals (Round 31) | any | authored `general` socket of each PvP fortress, fixed L65 elite | the king chassis without a crown: the seat race's king's signature (Accord Rally, Throng Cleave); two fixed L60 elite bodyguards; the king's group reset and 15 min respawn; guard drops (war trophies to an enemy player's kill) plus two gear items at item level 65, each blue or gold at even odds (`items_crafting.md` §5.1), no reward ledger | `character.b3d`, one fixed look of the seat race with the royal tabard and no crown; the bodyguards any race of the faction in guard armour ([character_visuals.md](character_visuals.md) §1.1) |
@@ -1372,18 +1373,42 @@ sub-types burn like the Zombie).
   1-in-10 Elder Bear and Silverback rolls only apply to the base names), and
   the display name is put back if a roll renamed it. `leader: true` marks a
   named leader (normal tier in 1–30).
-- **Names (user, 2026-10-02):** words that announce size, age, strength,
-  temperament or wits appear only on start-zone roles (levels 1–10), as one
-  ladder shared by all six starts: Small/Young for neutral animals,
-  Large → Aggressive → Monstrous for hostile animals, Braindead → Sluggish →
-  Monstrous for zombies and husks, Confused for outlaws and the start
-  chiefs. Everywhere else every display name (including the zone names of
-  `data/names.json`) belongs to one role, avoids base-mob and rare names, has at most
-  three words (named leaders excepted) and describes the creature in its
-  place; roles of one family sharing a zone differ in more than their first
-  word. The name tag colour shows disposition. Full rule and ladder:
-  [Round 28 design frame §5](../planning/round28-design-frame.md#5-naming);
-  `tools/r28_names/build_review.py --check` enforces it on the data.
+- **Names (Round 38, the user's accepted names of 2026-10-06; plan
+  [§2.2](../planning/round38-mob-names-plan.md#22-name-rules-hard)):** every
+  mob's name is one slot's in `data/names.json` (zone, source, level band;
+  [quests.md](quests.md#the-quest-name-guarantee-round-38)), and a name is
+  the exact quest target. The rules:
+  1. **Words:** normal mobs, critters and guards at most two; named mobs,
+     elites and bosses at most three (the three-word names of Round 37 were
+     kept).
+  2. **No signal words** (Small, Large, Braindead, Confused …): size and the
+     coloured nametag carry the rank; the Round 28 start ladder is gone.
+  3. **Piglet** is reserved for the level 1–2 pigs of the six start zones
+     (the first kill quest, `*_hunt_01`), with the zone's flavour ("Barley
+     Piglet").
+  4. **One name, one level stretch within one drop tier:** a name may span
+     several bands only where they join without a gap inside one drop tier
+     (21–23 with 24–26, never 27–29 with 30–32 or 40–42 with 47–49), over
+     every zone that uses it. A capital's L20–23 slot counts as tier 3 (the
+     user, plan §6 item 11). The world slots (underground casts, water mobs,
+     the faction guards, unplaced sub-types; their level comes from the
+     place) are exempt (items 9, 10).
+  5. The faction names stay The Accord and The Throng; no name refers to an
+     existing game.
+
+  A name may be reused across zones; a family keeps a recognisable voice
+  (Piglet, Shoat, Porker …), the zone's flavour is a nudge. A PvP garrison's
+  guards carry their post's name, never the town guards' "Accord
+  Guard"/"Throng Guard". `tools/r38_names/check_rules.py --shipped` checks
+  the shipped names against rules 1–4 (the naming gate since Round 38; the
+  Round 28 `tools/r28_names/build_review.py` is retired),
+  `tools/r38_b1/gen_names.py --check` that names.json and the catalogue
+  displays are in sync. The name tag colour shows disposition. The family
+  and loot tables of this file keep the Round 28 entity names as family
+  labels (Giant Rat, Zombie, Giant Spider, Dungeon Master, Lava Flan, Land
+  Guard); what a player reads is the names file's name of each slot (the
+  base Giant Rat shows as Pit Rat, the base Zombie underground as Buried
+  Miner).
 - **Levels:** `levels` [lo, hi] clamps the level the mob gets at its first
   step (the floor is also the fallback where the level field has no value);
   a spawn region's belt narrows it further (§4.2).

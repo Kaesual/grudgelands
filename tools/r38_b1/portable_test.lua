@@ -14,9 +14,10 @@
 --   S  the Stillgrave playtest (hunt_01 boars, hunt_02 rats, 2026-10-06):
 --      the REAL grug_quests registry, state and labels over the shipped
 --      names and the shipped Stillgrave recipe: the label is the slot name;
---      a Small Plague Boar or Large Grave Rat from another kind of the zone
---      counts (the Round 37 bug); a mob of another name (a zombie of the
---      area, a Kapok boar) does not; never past the count.
+--      a rat of another kind of the zone under the same name counts (the
+--      Round 37 bug); a mob of another name (the L3-4 pigs, which carry
+--      their own accepted name since lane B2, a zombie of the area, a Kapok
+--      pig) does not; never past the count.
 --   G  garrisons: a picket quest's guards and captain read the names the
 --      mobs show on this world (the camp's race); a town guard and another
 --      camp's captain count nothing; quest drops roll by name.
@@ -85,7 +86,10 @@ grug_mobs = {register_on_eligible_kill = function() end,
 ------------------------------------------------------------------------------
 dofile(MOBS .. "/names.lua")
 local shipped = grug_mobs.names
-check(shipped.lookup("small_boar", STILL, 2) == "Small Plague Boar", "N the shipped names.json loads")
+check(shipped.lookup("small_boar", STILL, 2) ~= nil, "N the shipped names.json loads")
+-- The accepted names of the Stillgrave start slots (Round 38 lane B2).
+local PIGLET, SHOAT = shipped.lookup("small_boar", STILL, 2), shipped.lookup("small_boar", STILL, 3)
+local RAT_1, RAT_3 = shipped.lookup("large_rat", STILL, 2), shipped.lookup("large_rat", STILL, 3)
 local NC = shipped.core
 local index, errors = NC.build({
 	["zone_a/small_boar/L1-2"] = "Forest Piglet",
@@ -270,24 +274,29 @@ local function kill(ent) Q.credit_kill(player, ent, {x = 0, y = 0, z = 0}) end
 ------------------------------------------------------------------------------
 local hunt1 = quest("stillgrave_hunt_01", {"small_boar"}, STILL .. "/dead_furrows", STILL, 8)
 local hunt2 = quest("stillgrave_hunt_02", {"large_rat"}, STILL .. "/dead_furrows", STILL, 8)
-eq(Q.objective_subject(hunt1.objectives[1]), "Small Plague Boar", "S hunt_01's label is its slot's name")
-eq(Q.objective_subject(hunt2.objectives[1]), "Large Grave Rat", "S hunt_02's label is its slot's name")
+eq(Q.objective_subject(hunt1.objectives[1]), PIGLET, "S hunt_01's label is its slot's name")
+eq(Q.objective_subject(hunt2.objectives[1]), RAT_1, "S hunt_02's label is its slot's name")
+check(PIGLET ~= SHOAT and RAT_1 == RAT_3, "S the accepted names: the L3-4 pigs have their own name, " ..
+	"the rats one name over L1-4")
 take("stillgrave_hunt_01", "stillgrave_hunt_02")
 kill(spawned("small_boar", STILL .. "/dead_furrows", 2))
-eq(count("stillgrave_hunt_01"), 1, "S a boar of the furrows counts")
-kill(spawned("small_boar", STILL .. "/ashfields", 3))
-eq(count("stillgrave_hunt_01"), 2, "S a Small Plague Boar of the Ashfields counts (the playtest bug)")
-kill(spawned("small_boar", STILL .. "/barrow_hills", 4))
-eq(count("stillgrave_hunt_01"), 3, "S ...and one of the Barrow Hills")
+eq(count("stillgrave_hunt_01"), 1, "S a pig of the furrows counts")
+local ash_pig = spawned("small_boar", STILL .. "/ashfields", 3)
+eq(ash_pig.description, SHOAT, "S an Ashfields pig shows the L3-4 name")
+kill(ash_pig)
+eq(count("stillgrave_hunt_01"), 1, "S ...and, another name, does not count")
+kill(spawned("large_rat", STILL .. "/dead_furrows", 1))
+eq(count("stillgrave_hunt_02"), 1, "S a rat of the furrows counts")
 kill(spawned("large_rat", STILL .. "/ashfields", 4))
-eq(count("stillgrave_hunt_02"), 1, "S a Large Grave Rat of the Ashfields counts for the rats")
-eq(count("stillgrave_hunt_01"), 3, "S ...and not for the boars")
+eq(count("stillgrave_hunt_02"), 2, "S a rat of the Ashfields under the same name counts (the playtest bug)")
+eq(count("stillgrave_hunt_01"), 1, "S ...and not for the pigs")
 kill(spawned("braindead_zombie", STILL .. "/ashfields", 3))
-eq(count("stillgrave_hunt_01") .. "/" .. count("stillgrave_hunt_02"), "3/1", "S a zombie counts for neither")
+eq(count("stillgrave_hunt_01") .. "/" .. count("stillgrave_hunt_02"), "1/2", "S a zombie counts for neither")
 local kapok = spawned("small_boar", KAPOK .. "/yam_beds", 2, 50)
-eq(kapok.description, "Small Jungle Boar", "S a Kapok small boar shows its zone's name")
+eq(kapok.description, shipped.lookup("small_boar", KAPOK, 2), "S a Kapok pig shows its zone's name")
+check(kapok.description ~= PIGLET, "S ...another name than Stillgrave's")
 kill(kapok)
-eq(count("stillgrave_hunt_01"), 3, "S ...and does not count for Stillgrave's boars")
+eq(count("stillgrave_hunt_01"), 1, "S ...and does not count for Stillgrave's pigs")
 for _ = 1, 9 do kill(spawned("small_boar", STILL .. "/dead_furrows", 1)) end
 eq(count("stillgrave_hunt_01"), 8, "S never past the count")
 

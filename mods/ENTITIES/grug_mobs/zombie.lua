@@ -2,7 +2,7 @@
 -- and stronger than the boar, burns in daylight.
 
 grug_mobs.register_mob("grug_mobs:zombie", {
-	description = "Zombie",
+	description = "Buried Miner",
 	_grug_voice = "undead",
 	clock = {settled = "night", war = "night", blight = "any"},
 	type = "monster",

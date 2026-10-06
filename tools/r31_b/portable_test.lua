@@ -451,7 +451,7 @@ do
 	local bosses = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/bosses.lua")
 	local kings = 0
 	for race, weapon, prefix, suffix in bosses:gmatch(
-			"\n\t(%a+) = {name = \"King of [^\"]+\", faction = \"%a+\",%s*kit = \"[%a_]+\", " ..
+			"\n\t(%a+) = {faction = \"%a+\",%s*kit = \"[%a_]+\", " ..
 			"weapon = \"(%a+)\",%s*colors = {prefix = \"([%a_]+)\", suffix = \"([%a_]+)\"}}") do
 		kings = kings + 1
 		local pool = grug_items.POOLS[(weapon == "staff" or weapon == "wand") and

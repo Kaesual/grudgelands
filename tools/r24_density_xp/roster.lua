@@ -47,6 +47,14 @@ return function(repo)
 		get_translator = function() return function(s) return s end end,
 		global_exists = function() return false end,
 		colorize = function(_, s) return s end,
+		-- Round 38: names.lua reads data/names.json for real (bosses.lua,
+		-- boss_dragons.lua and rift.lua take their names from it); every
+		-- other data file stays the empty stub it was.
+		parse_json = function(text)
+			local data = dofile(repo .. "/tools/r28_b1/json.lua").parse(text)
+			if type(data) == "table" and type(data.names) == "table" then return data end
+			return permissive({})
+		end,
 	})
 	_G.core, _G.minetest = core_stub, core_stub
 	_G.mobs = permissive({mob_class = permissive({}), spawning_mobs = {},

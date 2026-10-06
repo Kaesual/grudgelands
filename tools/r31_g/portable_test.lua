@@ -104,9 +104,11 @@ do
 		return true
 	end
 	-- Round 36 adds the war commanders' working names (tools/r36_r), which
-	-- the Round 31 Astra file does not carry.
+	-- the Round 31 Astra file does not carry. Round 38 renamed one captain
+	-- (the user's accepted names, 2026-10-06); the rest are the Astra file.
+	astra.captains.pvp_camp_skyglass_canopy_throng_low.undead = "Captain Morveth Stillwake"
 	check(same({generals = names.generals, captains = names.captains}, astra),
-		"N the shipped Generals and captains are the Astra file")
+		"N the shipped Generals and captains are the Astra file (and Round 38's rename)")
 	local seen, count, keys = {}, 0, 0
 	local function name_ok(name, label)
 		check(type(name) == "string" and name ~= "" and not seen[name], "N " .. label .. " named once")
@@ -326,6 +328,8 @@ _G.grug_zones = {get = function(id) return zone_of[id] end}
 _G.mobs = {mob_class = {}}
 function mobs:remove(entity) entity.object:remove() end
 _G.grug_mobs = {
+	-- Round 38: the shipped names (bosses.lua reads them).
+	names = dofile(repo .. "/tools/r38_b1/names_stub.lua").shipped(repo),
 	storage = storage,
 	pvp_garrison = G,
 	place_on_ground = noop,
@@ -781,7 +785,6 @@ do
 end
 
 if failures > 0 then
-	print(("%d checks, %d failures"):format(checks, failures))
-	os.exit(1)
+	error(("%d checks, %d failures"):format(checks, failures), 0)
 end
 print(("R31 G PORTABLE PASS checks=%d"):format(checks))

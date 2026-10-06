@@ -410,7 +410,7 @@ them.
   dropped items) and boss loot entering the inventory as "+3 Light Leather",
   summed per item while that line is shown (also queued boss loot delivered
   on join and quest reward items at turn-in); quest progress as one line per
-  quest, every objective as "<name> n/m" joined by ", " ("Small Boar 3/10"),
+  quest, every objective as "<name> n/m" joined by ", " ("Barley Piglet 3/10"),
   a quest's newer line replacing its own older one, cut to the widest
   tracker line (38 characters, "..."); fishing catches as
   "Caught <fish> (+N XP)" (junk: "Caught <item>"); combat notices

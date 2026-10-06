@@ -82,7 +82,7 @@ per session). Cross-provider CLI mechanics:
 | `tools/run_fixtures.sh` (every portable fixture, LuaJIT) | — | yes | — | yes |
 | `python3 tools/r28_design/validate.py --game` | — | when quest, mob or catalogue data changed | — | yes |
 | `tools/r29_e4/income.py --check` | — | when loot, repair, quest copper or a price changed | — | yes |
-| The topic checks AGENTS.md names (`r28_regions/run.sh` after a recipe change, `r33_ds/build_doc.py --check`, `r28_names/build_review.py --check`, `r31_b/gen_enchant_masks.py --check`, `r33_c3/gen_cloak_model.py --check`) | — | when that topic changed | — | — |
+| The topic checks AGENTS.md names (`r28_regions/run.sh` after a recipe change, `r33_ds/build_doc.py --check`, `r38_names/check_rules.py --shipped` and `r38_names/guarantee.py --check` (names; Round 38, replacing the retired `r28_names/build_review.py --check`), `r31_b/gen_enchant_masks.py --check`, `r33_c3/gen_cloak_model.py --check`) | — | when that topic changed | — | — |
 | One smoke boot of the final branch (`tools/luanti_headless.sh`) | — | yes | — | one boot of main |
 | Seed fleet (below) | — | `quick` for world-generation changes | — | `full` when owed |
 | Before/after numbers on the same seed, area and probe | — | when the lane touches a hot path | — | — |

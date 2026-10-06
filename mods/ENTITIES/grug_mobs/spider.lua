@@ -77,7 +77,7 @@ end
 -- Giant Spider — grug_deep_forest (Accord)
 --
 
-local spider = spider_def("Giant Spider", "grug_mobs_spider.png")
+local spider = spider_def("Crevice Spider", "grug_mobs_spider.png")
 grug_mobs.melee_rider(spider, web_rider)
 grug_mobs.register_mob("grug_mobs:giant_spider", spider)
 

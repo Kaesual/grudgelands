@@ -17,25 +17,30 @@ local ledgers = {}
 -- §2.2.4), a prefix and a suffix stat from the weapon family's pool. Visual
 -- only: the king's rewards are rolled as before.
 local RACES = {
-	dwarf = {name = "King of Dur Brannoc", faction = "accord",
+	dwarf = {faction = "accord",
 		kit = "shatter", weapon = "greataxe",
 		colors = {prefix = "str", suffix = "max_hp_percent"}},
-	human = {name = "King of Highcourt", faction = "accord",
+	human = {faction = "accord",
 		kit = "rally", weapon = "sword",
 		colors = {prefix = "str", suffix = "crit_percent"}},
-	elf = {name = "King of Lethariel", faction = "accord",
+	elf = {faction = "accord",
 		kit = "volley", weapon = "staff",
 		colors = {prefix = "int", suffix = "crit_percent"}},
-	undead = {name = "King of Nhal Veyr", faction = "throng",
+	undead = {faction = "throng",
 		kit = "bone_call", weapon = "staff",
 		colors = {prefix = "int", suffix = "max_mana_percent"}},
-	orc = {name = "King of Gor Drazhak", faction = "throng",
+	orc = {faction = "throng",
 		kit = "cleave", weapon = "greataxe",
 		colors = {prefix = "attack_speed_percent", suffix = "str"}},
-	troll = {name = "King of Kezamba", faction = "throng",
+	troll = {faction = "throng",
 		kit = "regrowth", weapon = "staff",
 		colors = {prefix = "max_hp_percent", suffix = "max_mana_percent"}},
 }
+-- Each king's name is his slot's in data/names.json (Round 38: "King of
+-- Highcourt", "Dur Brannoc King"); his crown and broadcasts read it too.
+for race, row in pairs(RACES) do
+	row.name = grug_mobs.names.required("king_" .. race)
+end
 
 -- The fortress Generals: per faction its seat race, the race its fortress
 -- registers as (lane S's catalogue, read through pvp_garrison.lua), whose
@@ -45,12 +50,13 @@ local GENERALS = grug_mobs.pvp_garrison.catalog.SEAT_RACE
 
 local DRAGONS = {
 	wyrmglass = {
-		name = "The Wyrmglass Ice Dragon",
+		-- The broadcast's name: "The " and the dragon's (data/names.json).
+		name = "The " .. grug_mobs.names.required("ice_dragon"),
 		entity = "grug_mobs:ice_dragon",
 		x = -3260, z = -40,
 	},
 	stormscale = {
-		name = "The Stormscale Jungle Wyvern",
+		name = "The " .. grug_mobs.names.required("jungle_wyvern"),
 		entity = "grug_mobs:jungle_wyvern",
 		x = 3260, z = -40,
 	},
@@ -657,7 +663,7 @@ for race, row in pairs(RACES) do
 	grug_mobs.register_mob("grug_mobs:king_" .. race_id,
 		king_def(race_id, race_row))
 	local guard = grug_mobs.guard_definition(row.faction,
-		row.name .. " Royal Guard", "character.png")
+		grug_mobs.names.required("royal_guard_" .. race_id), "character.png")
 	local base_tick = guard.do_custom
 	guard._grug_fixed_level = 60
 	guard._grug_tier = "elite"
@@ -723,7 +729,7 @@ for faction, race in pairs(GENERALS) do
 
 	local bodyguard = garrison.bodyguard_entity(faction_id)
 	local guard = grug_mobs.guard_definition(faction_id,
-		(faction_id == "accord" and "Accord" or "Throng") .. " Bodyguard", texture)
+		grug_mobs.names.required("pvp_fortress_" .. faction_id .. ".bodyguard"), texture)
 	local base_tick = guard.do_custom
 	guard._grug_fixed_level = 60
 	guard._grug_tier = "elite"

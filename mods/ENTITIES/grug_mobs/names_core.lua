@@ -131,6 +131,12 @@ function M.names_in(index, source, zone, lo, hi)
 	return out
 end
 
+-- The one name every slot of `source` bears (any scope), or nil.
+function M.only(index, source)
+	local scopes = index.sources[source]
+	return scopes and only_name(scopes) or nil
+end
+
 -- {lo, hi}: the levels of every slot that bears `name`, or nil.
 function M.levels_of(index, name)
 	local range = index.levels[name]
@@ -145,6 +151,18 @@ function M.api(index)
 		lookup = function(source, zone, level) return M.lookup(index, source, zone, level) end,
 		names_in = function(source, zone, lo, hi) return M.names_in(index, source, zone, lo, hi) end,
 		levels_of = function(name) return M.levels_of(index, name) end,
+		only = function(source) return M.only(index, source) end,
+		-- The one name of `source`, or an error: a name the code shows
+		-- outside a nametag (a broadcast, a crown, a registered
+		-- description) reads the names file, never a second copy (Round 38
+		-- lane B2).
+		required = function(source)
+			local name = M.only(index, source)
+			if not name then
+				error("[grug_mobs] data/names.json names no single " .. tostring(source), 2)
+			end
+			return name
+		end,
 	}
 end
 

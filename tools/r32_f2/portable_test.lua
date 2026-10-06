@@ -778,27 +778,23 @@ for id in pairs(changed_quests) do
 end
 print(("labels: %d quests with a kill objective now named by its zone, %d item objectives with such a " ..
 	"source, %d zones"):format(kill_quests, #item_rows, n_changed_zones))
-eq(kill_quests, 30, "L kill quests whose label changes (Round 32 start)")
-eq(#item_rows, 4, "L item objectives naming such a source (Round 32 start)")
-eq(n_changed_zones, 13, "L zones affected (Round 32 start)")
+-- The counts were 30, 4 and 13 at the start of Round 32; since Round 38
+-- every slot has its own accepted name (data/names.json), so they are
+-- printed above, not pinned.
 for _, row in ipairs(item_rows) do
 	eq(row.label, row.expected, "L " .. row.id .. " shows the dropped item's own name")
 	check(not row.label:find(row.mob, 1, true), "L " .. row.id .. " is not renamed after the mob")
 end
--- Spot checks.
-local function subject(roles, zone, area)
-	local mobs = {}
-	for i, role in ipairs(roles) do mobs[i] = "grug_mobs:" .. role end
-	local names = {}
-	for i, role in ipairs(roles) do names[i] = {seen_name(role, zone, area)} end
-	return Q.objective_subject({type = "kill", mobs = mobs, names = names})
-end
-eq(subject({"small_boar"}, "kragmar_kapok_cradle", "kragmar_kapok_cradle/yam_beds"), "Small Jungle Boar",
-	"L Kapok's small boar")
-eq(subject({"small_boar"}, "elandor_dawnmere_fields"), "Small Boar", "L Dawnmere's small boar")
-eq(subject({"last_watch_zombie"}, "elandor_highcourt", "front_stormscale_summit/wreck_shore"),
-	"Overgrown Watchman", "L a front quest names the area's zone, not its file's")
-eq(subject({"small_boar"}, "kragmar_kapok_cradle"), "Small Jungle Boar", "L without an area: the quest's zone")
+-- Spot checks: a slot's name by zone and level (Round 38's accepted names;
+-- labels.lua Q.target_names selects them, fixtures r38_b1 and r28_q0).
+local N = grug_mobs.names
+eq(N.lookup("small_boar", "kragmar_kapok_cradle", 1), "Yam Piglet", "L Kapok's start pig")
+eq(N.lookup("small_boar", "elandor_dawnmere_fields", 2), "Barley Piglet", "L Dawnmere's start pig")
+eq(N.lookup("small_boar", "kragmar_kapok_cradle", 4), "Mud Shoat", "L the next band has its own name")
+eq(N.lookup("last_watch_zombie", "front_stormscale_summit", 60), "Last Watchman",
+	"L a front role by the front zone's slot")
+eq(Q.objective_subject({type = "kill", mobs = {"grug_mobs:small_boar"}, names = {{"Yam Piglet"}}}),
+	"Yam Piglet", "L a label reads its names")
 eq(Q.objective_subject({type = "kill", mobs = {"grug_mobs:small_boar"}}), "Small Boar",
 	"L a row without names: the entity's name")
 

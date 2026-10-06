@@ -692,6 +692,10 @@ function grug_mobs.refresh_visual(self)
 end
 
 function grug_mobs.register_mob(name, def)
+	-- Round 38: the registered description is the names file's one name for
+	-- the entity where it has one (names.lua), so no second copy shows.
+	local only = grug_mobs.names and grug_mobs.names.only(name:match("^grug_mobs:(.+)$") or name)
+	if only then def.description = only end
 	base_defs[name] = table.copy(def)
 	-- The family voice (voices.lua); a sub-type copies `_grug_voice` with its
 	-- base definition and gets the same voice here.

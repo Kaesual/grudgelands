@@ -2,6 +2,11 @@
 """Round 28 Lane N1: validate the catalogue name proposal and render the
 review page.
 
+RETIRED from routine use in Round 38: the Round 28 proposal it checks is
+history; the names the game ships are checked by
+`tools/r38_names/check_rules.py --shipped` (the plan's rules 1-4) and
+`tools/r38_names/guarantee.py --check`. Kept to rebuild the Round 28 page.
+
 Reads the shipped catalogue (mods/ENTITIES/grug_mobs/data/{subtypes,items,
 drops}.json, mods/ITEMS/grug_professions/data/enchants.json), the zone atlas
 (docs/planning/round28/zones/*.json), the base mob and rare names

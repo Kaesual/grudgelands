@@ -219,12 +219,12 @@ host's main line in the front bands (`ledger.py --track`).
 Progress appears in the message feed (`inventory_equipment.md`, "Message
 feed"): whenever an objective count rises (kill credit, an item gained, a
 conversation, a finished use), the quest posts one line with every objective as
-"<name> n/m" ("Small Boar 3/10"), replacing that quest's previous line.
+"<name> n/m" ("Barley Piglet 3/10"), replacing that quest's previous line.
 Accepting a quest and falling item counts post nothing; nothing goes to chat.
 
 Kill objectives name each target by the name the mob shows (Round 38, see
 "The quest-name guarantee" below): the names of the slots the objective's
-roles and area select ("Small Jungle Boar" in the Kapok Cradle); the
+roles and area select ("Yam Piglet" in the Kapok Cradle); the
 dialogue, the quest log, the tracker and the message feed share that label.
 A PvP camp's captain reads as he is named on this world (his camp's race).
 Item objectives show the concise item name, not description stat/durability
@@ -233,11 +233,11 @@ levels it is met (`E-item-source-drop`).
 Worn qualifying items remain acceptable. Starter kill/drop targets follow the
 minimum-level-aware local wildlife roster and remain locally achievable.
 
-**Level ranges** (Round 28 Lane Q0): signal words exist only in the start
-zones, so the offer dialogue and the quest log show each objective's target
-levels after it, in the objective's own colour: "Defeat Small Boar × 8
-(level 1–4)", "Defeat Small Boar: 0/8 (level 1–4)", "(level 10)" for one
-level. Per role, first match: a leader's fixed level; in the objective's
+**Level ranges** (Round 28 Lane Q0): names carry no signal words (Round 38,
+[biomes_mobs.md](biomes_mobs.md) "Names"), so the offer dialogue and the
+quest log show each objective's target levels after it, in the objective's
+own colour: "Defeat Barley Piglet × 8 (level 1–2)", "Defeat Barley Piglet:
+0/8 (level 1–2)", "(level 10)" for one level. Per role, first match: a leader's fixed level; in the objective's
 area that role's levels there (not the whole kind's); the role's levels in
 the kinds and camps of the quest zone's recipe; its catalogue levels within
 the quest level ±3; a base mob (no catalogue row) in a zone without a recipe:

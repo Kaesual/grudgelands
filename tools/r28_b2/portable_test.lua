@@ -641,8 +641,8 @@ grug_mobs.run_participant_drop_hooks(victim, {pl("guard_friend", true)}, {x = 0,
 grug_mobs.run_participant_drop_hooks(victim, {}, {x = 0, y = 0, z = 0})
 check(#got == 1, "no hook call without an eligible participant")
 local init_src = assert(real_open(ROOT .. "/mods/ENTITIES/grug_mobs/init.lua")):read("*a")
-check(init_src:find("function grug_mobs.register_mob(name, def)\n\tbase_defs[name] = table.copy(def)", 1, true)
-	~= nil, "init.lua keeps the base definition before any wrapper")
+check(init_src:find("\tif only then def.description = only end\n\tbase_defs[name] = table.copy(def)", 1, true)
+	~= nil, "init.lua keeps the base definition before any wrapper (named by data/names.json, Round 38)")
 check(init_src:find("grug_mobs.run_participant_drop_hooks(self, eligible, death_pos)", 1, true)
 	~= nil, "award_kill_xp runs the hooks with the quest credit's eligible list")
 check(api_src:find("grug_mobs.alert_kin(self, ent)", 1, true) ~= nil,

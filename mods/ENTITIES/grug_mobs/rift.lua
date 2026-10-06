@@ -373,8 +373,10 @@ for index = 1, 6 do
 end
 select_box.rotate = true
 
+-- The boss's name: its slot's in data/names.json (Round 38).
+local BOSS_NAME = grug_mobs.names.required("rift_boss")
 grug_mobs.register_mob("grug_mobs:rift_boss", {
-	description = R.BOSS_NAME, clock = "any", type = "monster",
+	description = BOSS_NAME, clock = "any", type = "monster",
 	-- An approved voice family (the Dungeon Master's), no new sound.
 	_grug_voice = "giant",
 	_grug_fixed_level = 60, _grug_tier = "elite",
@@ -441,7 +443,7 @@ local function spawn_boss(s, players)
 	pulse_particles(pos, 2, 60, 1.5)
 	for _, player in ipairs(players) do
 		core.chat_send_player(player:get_player_name(),
-			R.BOSS_NAME .. " rises from the rift.")
+			BOSS_NAME .. " rises from the rift.")
 	end
 	return true
 end

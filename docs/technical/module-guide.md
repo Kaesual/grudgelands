@@ -743,8 +743,10 @@ achievements](#cloaks-and-achievements).
   - Tools after a recipe change: `tools/r28_regions/run.sh` (images and
     stats per seed, then `quest_targets.py`), `tools/r28_world/run.sh`
     (world view, border fit; `border_rule.py`), the catalogue checks
-    `tools/r28_design/validate.py` and `tools/r28_names/build_review.py
-    --check`.
+    `tools/r28_design/validate.py` and, for the names since Round 38,
+    `tools/r38_names/check_rules.py --shipped`, `guarantee.py --check` and
+    `tools/r38_b1/gen_names.py --check` (`tools/r28_names/build_review.py`
+    is retired).
 
 ## PvP garrisons and dragon arenas
 
