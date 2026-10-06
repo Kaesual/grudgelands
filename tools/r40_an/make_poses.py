@@ -22,7 +22,7 @@ delta on a bone (the legs stay upright while the torso leans).
 
 Every pose is baked twice: over `stand` (unposed bones from stand frame 0)
 and over `walk` (unposed bones from walk frames 168-187, a one-shot running
-on through the walk cycle). The output `poses.json` holds, per pose and
+on to the end of the walk cycle). The output `poses.json` holds, per pose and
 base, one key per engine frame and bone in the B3D's own frame -- position
 (x, y, z) and rotation (w, x, y, z) in the parent's space, exactly what
 `tools/r33_c3/gen_cloak_model.py` writes into a KEYS chunk (engine frame
@@ -211,6 +211,21 @@ def delta(pitch, yaw, roll):
     return qmul(qaxis(YAW_AXIS, yaw), qmul(qaxis(PITCH_AXIS, pitch), qaxis(ROLL_AXIS, roll)))
 
 
+def slerp(a, b, t):
+    """Spherical interpolation between two unit quaternions, short way."""
+    dot = sum(x * y for x, y in zip(a, b))
+    if dot < 0:
+        b, dot = tuple(-c for c in b), -dot
+    if dot > 0.9995:
+        q = tuple(x + (y - x) * t for x, y in zip(a, b))
+    else:
+        th = math.acos(dot)
+        sa, sb = math.sin((1 - t) * th), math.sin(t * th)
+        q = tuple((x * sa + y * sb) / math.sin(th) for x, y in zip(a, b))
+    n = math.sqrt(sum(c * c for c in q))
+    return tuple(c / n for c in q)
+
+
 def b3d_quat(q):
     """The exact inverse of build_glb.gl_quat: glTF (x, y, z, w) -> B3D (w, x, y, z)."""
     x, y, z, w = q
@@ -225,6 +240,8 @@ def sample(keys, frame, period):
         return keys[0][1:]
     if period:
         frame = frame % period
+        if frame < keys[0][0]:
+            frame += period
         ext = keys + [[keys[0][0] + period] + keys[0][1:]]
     else:
         ext = keys
@@ -260,9 +277,19 @@ def load_rig():
 def bake(pose, base, rig):
     names, keys, parent_world, parents = rig
     oneshot = pose["kind"] == "oneshot"
-    length = pose["length"] if oneshot else HELD_LENGTH
-    period = None if oneshot else HELD_LENGTH
     walk_len = WALK[1] - WALK[0] + 1
+    length = pose["length"] if oneshot else HELD_LENGTH
+    # Luanti loops a range over max - min frames (irr/src/AnimSpec.cpp), so
+    # the last of HELD_LENGTH keys must equal the first: the spec wraps one
+    # frame early.
+    period = None if oneshot else HELD_LENGTH - 1
+    # A walking one-shot runs on to the end of the walk cycle (frame 187), so
+    # the walk it hands back to resumes at 168 like its own loop; `hold`
+    # bones fade from stand frame 0 back to the walk after the last key.
+    fade_from = None
+    if oneshot and base == "walk":
+        fade_from = length - 1
+        length = max(length, walk_len)
     out = {}
     for b, name in enumerate(names):
         spec = pose["bones"].get(name)
@@ -270,9 +297,13 @@ def bake(pose, base, rig):
         for i in range(length):
             clip_frame = STAND_FRAME if base == "stand" else WALK[0] + i % walk_len
             pos, _, rot = keys[b][clip_frame]
-            if spec and spec.get("mode") == "hold":
-                rot = keys[b][STAND_FRAME][2]
             q = tuple(bg.gl_quat(rot))
+            if spec and spec.get("mode") == "hold":
+                q0 = tuple(bg.gl_quat(keys[b][STAND_FRAME][2]))
+                if fade_from is not None and i > fade_from:
+                    q = slerp(q0, q, (i - fade_from) / (length - 1 - fade_from))
+                else:
+                    q = q0
             if spec:
                 d = delta(*sample(spec["keys"], i, period))
                 if spec.get("counter"):
