@@ -9,6 +9,38 @@ some of its changes are part of world generation.
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.40.0 — Round 40, "Combat feel" (2026-10-06)
+
+Combat reads better: cooldowns on the hotbar, poses for the characters,
+Charge as a real dash and particle effects for skills, bosses and
+creatures. No new world is needed.
+
+- A skill on cooldown is shaded on the hotbar; the shade clears clockwise
+  like a clock hand, and the time left sits in the middle of the icon (in
+  minutes above one minute, then in seconds). The bar under a skill's icon
+  is gone; a skill an older character already carries may still show a
+  leftover bar.
+- Characters strike poses: a hand thrust forward or both arms raised for a
+  spell, a diagonal cut for Mighty Blow, the drawn bow, a raised shield
+  arm for Hold Ground, shoulder first in a Charge and a short flinch when
+  hit. Poses work while walking and blend in smoothly, and heads follow
+  where their player looks, up and down.
+- Charge is a dash: the warrior runs at the target at high speed, hopping
+  over steps, low obstacles and holes up to four nodes wide, and hits, stuns
+  and gains rage when he arrives. A dash that ends short of the target (at
+  a wall, at the rim of a wider hole, or because the target moved) misses
+  but still uses the cooldown.
+- Player skills show particle effects: Ice Nova's frost ring, Fireball's
+  splash of embers, Smite's holy light falling onto its target, Mighty
+  Blow's red slash, trails behind skill arrows, and effects for almost
+  every other skill and talent proc. Strike has none.
+- Bosses and creatures show what they do: the kings' signature moves, an
+  elite's heavy blow, the dragons' breath, lightning, gust, dive and rage,
+  the Kraken's drag, webs, poison, pounces, ambushes, auras, blinks and
+  projectile hits.
+- Server owners can scale the number of particles with the new setting
+  *Particle amount scale* (1.0 by default).
+
 ## 0.39.0 — Round 39, "Web data for the realm website" (2026-10-06)
 
 Nothing changes in play. The game now keeps each character's level and
