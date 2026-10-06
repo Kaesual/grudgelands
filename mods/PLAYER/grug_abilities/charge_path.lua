@@ -203,6 +203,7 @@ local function plan(world, from, dest, speed)
 	local e, cut_at, cut_why = n, nil, nil
 	local jump, hole = {}, {} -- rim index -> far rim index; samples inside a hole
 	local pit, pit_level -- the rim of the last drop the path could not climb back
+	local pit_at = {[0] = false} -- that rim as it stood at each sample
 	local k = 1
 	while k <= n do
 		xs[k] = x_at(k)
@@ -222,6 +223,8 @@ local function plan(world, from, dest, speed)
 			end
 			jump[k - 1] = j
 			xs[j], hs[j] = x_at(j), gj
+			if pit and gj >= pit_level - FLAT then pit = nil end
+			for m = k, j do pit_at[m] = pit or false end
 			k = j + 1
 		elseif not g then
 			-- No ground within reach and no far rim: stop at the rim, or at
@@ -239,6 +242,7 @@ local function plan(world, from, dest, speed)
 			elseif pit and g >= pit_level - FLAT then
 				pit = nil
 			end
+			pit_at[k] = pit or false
 			k = k + 1
 		end
 	end
@@ -372,9 +376,33 @@ local function plan(world, from, dest, speed)
 				hop, a, b = longer, na, nb
 			end
 			if not hop then
-				-- Run up to the edge (or the rim) and stop there.
+				-- Run up to the edge (or the rim) and stop there; down in a
+				-- drop the path could not climb out of, at that drop's rim.
 				cut_at, cut_why = xs[i + 1], "no hop clears the edge"
 				e = i
+				local r = pit_at[i]
+				if r and hs[i] < hs[r] - FLAT then
+					e, cut_at, cut_why = r, xs[r + 1], "cannot climb out of the drop"
+					-- Keep only what lies before the rim; the hop over it
+					-- (the way down) becomes a run to the rim: its takeoff
+					-- lies on the level ground before that edge.
+					local kept = {}
+					for _, part in ipairs(parts) do
+						if part.j <= e then
+							kept[#kept + 1] = part
+						else
+							local last = kept[#kept]
+							if last and last.kind == "run" and last.j == part.i then
+								last.j = e
+							elseif part.i < e then
+								kept[#kept + 1] = {kind = "run", i = part.i, j = e}
+							end
+							break
+						end
+					end
+					parts = kept
+					run_start = #parts > 0 and parts[#parts].j or 0
+				end
 				break
 			end
 			if jump[i] then jumps = jumps + 1 end

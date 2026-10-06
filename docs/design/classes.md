@@ -655,7 +655,9 @@ ballistic hop, so uphill the dash reads as leaps.
   room) still costs nothing.
 - **Cancelled:** a stun or root on the warrior, death, logout and every
   travel (`grug_home/travel.lua`, before its teleport) end the dash at once
-  as a miss. A warrior rooted at the cast does not move.
+  as a miss, the warrior let go where the planned path is at that moment (a
+  logout mid-hop: on the hop's takeoff, never saved in the air). A warrior
+  rooted at the cast does not move.
 - **During the dash** hits reach the warrior (no immunity); knockback and
   pulls do not change where the dash ends. He keeps the charge pose; in third person and for
   others the model runs 0.5 m ahead of the camera on dashes of 3 m or more;

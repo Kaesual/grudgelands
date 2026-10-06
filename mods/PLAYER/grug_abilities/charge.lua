@@ -109,6 +109,9 @@ local function effects_end(run, player)
 		end)
 	end
 	grug_visuals.stop_pose(player, "charge")
+	-- Lane AN2's head look writes no Head override while the lead blends
+	-- out (every write re-sends all bone overrides and cuts a blend short).
+	if grug_visuals.hold_head then grug_visuals.hold_head(player, 0.2) end
 end
 
 -- Dust along a run segment, delayed by the client's drawn lag so it rises
@@ -194,16 +197,28 @@ local function stop(run, player, pos)
 	effects_end(run, player)
 end
 
--- Ends `name`'s dash now: before its arrival a miss (the rider is let go
--- where the carrier is), after it just the end of the hold. `keep` leaves
--- the position alone (a logout).
-local function cancel(name, keep)
+-- Where a dash cut off now lets its rider go: the plan's own position at
+-- the dash time (a spot the planner checked), never the carrier's, which
+-- entity physics may already have moved on along the last segment (down
+-- the old arc past a landing, or pushed by a pull). `ground` takes the last
+-- ground instead: the takeoff of a hop in flight (a logout is saved where
+-- it is let go).
+local function plan_place(run, ground)
+	local pos, _, _, index = path.state_at(run.plan, min(run.t, run.plan.total))
+	local seg = run.plan.segments[index]
+	if ground and seg and seg.kind == "hop" then return vector.new(seg.p0) end
+	return pos
+end
+
+-- Ends `name`'s dash now: before its arrival a miss (the rider is let go on
+-- the plan where the dash is), after it just the end of the hold. `ground`:
+-- on the last ground (a logout).
+local function cancel(name, ground)
 	local run = runs[name]
 	if not run then return end
 	if not run.stopped then
-		run.place = run.carrier and run.carrier:get_pos()
+		run.place = plan_place(run, ground)
 	end
-	if keep then run.place = nil end
 	release(run)
 end
 
@@ -220,11 +235,11 @@ local function carrier_step(self, dtime)
 		release(run)
 		return
 	end
+	run.t = run.t + dtime
 	if player:get_hp() <= 0 or grug_core.is_stunned(player) or grug_core.is_rooted(player) then
 		cancel(run.name)
 		return
 	end
-	run.t = run.t + dtime
 	if run.stopped then
 		if run.t - run.stop_t >= SETTLE then release(run) end
 		return
@@ -275,7 +290,10 @@ core.register_entity(CARRIER, {
 	on_punch = function(self, puncher, tflp, caps, dir)
 		local run = self._grug_run
 		local player = run and not run.done and core.get_player_by_name(run.name)
-		if puncher and player and player:get_attach() == self.object then
+		-- Not its own punches (mobs_redo's entity_physics hits every object
+		-- near a blast, the carrier included, with itself as the puncher).
+		if puncher and puncher ~= self.object and player and
+				player:get_attach() == self.object then
 			player:punch(puncher, tflp, caps, dir)
 		end
 		return true
@@ -292,7 +310,15 @@ end
 -- and a reason when it did not.
 function grug_abilities.charge_dash(user, target, dest, def)
 	local name = user:get_player_name()
-	if runs[name] then return false, "Charge is already running." end
+	local old = runs[name]
+	-- A carrier removed from outside (/clearobjects) never stepped again:
+	-- end its run so it neither blocks this one nor keeps lead, FOV or pose.
+	if old and not (old.carrier and old.carrier:get_pos()) then
+		old.place = nil
+		release(old)
+		old = nil
+	end
+	if old then return false, "Charge is already running." end
 	if user:get_attach() then return false, "Dismount before attacking." end
 	local from = user:get_pos()
 	gen = gen + 1

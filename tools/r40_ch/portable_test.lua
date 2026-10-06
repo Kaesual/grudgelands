@@ -241,6 +241,15 @@ p = plan(hole(3, 8, 3), {x = 12, y = -0.5, z = 0})
 check(p.cut and p.cut_why == "cannot climb out of the drop" and p.finish.x < 3 and
 	near(p.finish.y, -0.5), "A a pit 6 wide and 3 deep: stops at its rim, not inside")
 p = plan(function(x, y)
+	if x >= 5 and (y == 0 or y == 1) then return "solid" end
+	if x >= 6 then return y <= -3 and "solid" or nil end
+	if x >= 3 then return y <= -4 and "solid" or nil end
+	return ground(x, y)
+end, {x = 10, y = -2.5, z = 0})
+check(sound(p) and p.cut and p.cut_why == "cannot climb out of the drop" and
+	near(p.finish.y, -0.5) and p.finish.x < 3 and kinds(p) == "run",
+	"A down in a pit, a step no hop clears under a roof: stops at the pit's rim too")
+p = plan(function(x, y)
 	if x >= 3 then return y <= -4 and "solid" or nil end
 	return ground(x, y)
 end, {x = 10, y = -3.5, z = 0})
@@ -450,6 +459,7 @@ grug_mobs = {stun = function(ent, d) rec.mob_stuns[#rec.mob_stuns + 1] = {ent = 
 grug_visuals = {
 	start_pose = function(_, pose) rec.poses[#rec.poses + 1] = "start:" .. pose end,
 	stop_pose = function(_, pose) rec.poses[#rec.poses + 1] = "stop:" .. pose end,
+	hold_head = function(_, t) rec.poses[#rec.poses + 1] = "hold_head:" .. t end,
 }
 grug_abilities = {
 	valid_target = function(user, target, kind)
@@ -554,7 +564,8 @@ do
 	check(near(back.z, 0.01) and back.interpolation > 0, "B1 the lead blends back to the epsilon")
 	check(pl.fovs[2] and pl.fovs[2].f == 1 and pl.fovs[3] and pl.fovs[3].f == 0,
 		"B1 the FOV blends back, then the override is cleared")
-	check(rec.poses[#rec.poses] == "stop:charge", "B1 the pose stops")
+	check(rec.poses[#rec.poses - 1] == "stop:charge" and rec.poses[#rec.poses] == "hold_head:0.2",
+		"B1 the pose stops; the head look holds 0.2 s for the lead's blend-out")
 	check(carrier.moves <= 3, "B1 no per-step corrections on a straight run")
 end
 
@@ -619,13 +630,15 @@ local function cancel_case(label, act, keep)
 	check(pl:get_attach() == nil and not carrier.alive and not grug_abilities.charge_dashing(pl),
 		"B4 " .. label .. ": the rider is let go, the carrier removed")
 	if keep then
-		check(#pl.set_pos_calls == 0, "B4 " .. label .. ": the position is left alone")
+		local last = pl.set_pos_calls[1]
+		check(last and near(last.pos.y, -0.5) and last.pos.x >= at.x - 1e-9,
+			"B4 " .. label .. ": let go on the ground where the dash was")
 	else
 		local last = pl.set_pos_calls[1]
 		check(last and last.pos.x >= at.x - 1e-9 and last.pos.x < 10.7 - 1,
 			"B4 " .. label .. ": let go mid-dash, where the carrier was")
 	end
-	check(rec.poses[#rec.poses] == "stop:charge", "B4 " .. label .. ": the pose stops")
+	check(rec.poses[#rec.poses - 1] == "stop:charge", "B4 " .. label .. ": the pose stops")
 end
 cancel_case("stun", function(pl) stunned[pl.name] = true end)
 cancel_case("root", function(pl) rooted[pl.name] = true end)
@@ -648,6 +661,49 @@ do
 	check(pl.punched[1] == striker, "B4 a punch on the carrier reaches the rider")
 	run_out()
 	check(rec.rage == 15, "B4 and the dash still arrives")
+end
+
+-- B4b: a stun (and a logout) on every step of hop courses: the warrior is
+-- let go on the plan, never inside the terrain the carrier's own physics
+-- ran it into past a landing.
+local function inside(world, pos)
+	local x1, x2, y1, y2 = pos.x - 0.299, pos.x + 0.299, pos.y + 0.001, pos.y + 1.699
+	for nx = math.floor(x1 + 0.5), math.floor(x2 + 0.5) do
+		for ny = math.floor(y1 + 0.5), math.floor(y2 + 0.5) do
+			if world.xyz(nx, ny, 0) then return true end
+		end
+	end
+	return false
+end
+for _, name in ipairs({"wall", "step", "uphill", "ledge"}) do
+	local shape = shapes.LIST[name]
+	local world = shapes.table_world(shape)
+	local from, tf = shapes.start(shape), shapes.target(shape)
+	local dest = destinations.charge(from, EYE, BOX, tf, world)
+	local function solid(x, y) return world.xyz(x, y, 0) and "solid" or nil end
+	for _, mode in ipairs({"stun", "logout"}) do
+		local bad = 0
+		for k = 1, 6 do
+			local pl, mob = setup(solid, "w4b" .. name .. mode .. k, from, tf)
+			dash(pl, mob, dest)
+			for _ = 1, k - 1 do step() end
+			if mode == "stun" then
+				stunned[pl.name] = true
+				step()
+			else
+				for _, f in ipairs(callbacks.leave) do f(pl) end
+				players[pl.name] = nil
+			end
+			local placed = pl.set_pos_calls[1]
+			if not placed or inside(world, placed.pos) then bad = bad + 1 end
+			if mode == "logout" and placed and placed.pos.y - math.floor(placed.pos.y) ~= 0.5 then
+				bad = bad + 1
+			end
+			run_out(4)
+		end
+		check(bad == 0, "B4b " .. name .. ": a " .. mode .. " on any step lets go on the plan" ..
+			(mode == "logout" and ", on the ground" or "") .. " (" .. bad .. " bad)")
+	end
 end
 
 -- B5: the rim of a 5-wide hole: a miss at the rim.
@@ -712,6 +768,26 @@ do
 	pl, mob = setup(hole(0, 9), "w8b", nil, {x = 2, y = -0.5, z = 0})
 	check(dash(pl, mob, {x = 0.7, y = -0.5, z = 0}) == true and pl:get_attach() == nil and
 		rec.rage == 15, "B8 nowhere to go but in reach: the hit lands at once")
+end
+
+-- B9b: a carrier removed from outside (/clearobjects) does not block the
+-- next Charge, and its lead, FOV and pose end; the carrier's own punch
+-- (mobs_redo's entity_physics) is not forwarded.
+do
+	local pl, mob = setup(nil, "w9b")
+	dash(pl, mob)
+	local carrier = pl:get_attach()
+	step()
+	carrier:punch(carrier, 1, {damage_groups = {fleshy = 4}}, nil)
+	check(#pl.punched == 0, "B9b the carrier's own punch is not forwarded")
+	carrier.alive = false
+	local n_fov = #pl.fovs
+	check(dash(pl, mob) == true and grug_abilities.charge_dashing(pl),
+		"B9b a removed carrier: the next Charge starts")
+	check(pl.fovs[n_fov + 1] and pl.fovs[n_fov + 1].f == 1 and
+		rec.poses[2] == "stop:charge", "B9b the old run's FOV and pose ended")
+	run_out()
+	check(rec.rage == 15, "B9b the new dash arrives")
 end
 
 -- B9: a carrier without its run removes itself.
