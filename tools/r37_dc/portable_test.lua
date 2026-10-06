@@ -116,6 +116,7 @@ local SETTINGS = {
 	"grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool false",
 	"grug_map_quality (World map quality) enum normal normal,high",
 	"grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10",
+	"grug_particle_scale (Particle amount scale) float 1.0 0 2",
 	"grug_tree_regrowth (Regrow trees from saplings) bool true",
 }
 local INTERNALS = {"grug_", "globalstep", "observer", "set_lighting", "set_atmosphere",

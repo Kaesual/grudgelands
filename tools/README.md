@@ -211,3 +211,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`effects.py`, the emitters in engine terms; `cost_model.py`, the server
   cost from the engine's serialization; `data.json`, their output;
   `particle_cost_probe/`, the headless timing of the particle API calls).
+  `r40_px` the particle helper's fixture (`portable_test.lua`: the scale
+  arithmetic, exact rings, the budget of every catalogue effect, the
+  fallback rule on the real kits, settlement and cast dispatcher), the
+  busy-fight cost of the built effects (`costs.py`, reads `r40_v3`'s
+  `data.json`) and `bench/`, a disposable probe timing each skill's effect
+  calls before and after the helper (`PROBE=tools/r40_px/bench`).

@@ -55,6 +55,8 @@ _G.grug_core = {
 	hud_layout = {COLOR = {xp = 0}},
 	banner = function(_, text) banners[#banners + 1] = text end,
 	feed_xp = function(_, amount) fed[#fed + 1] = amount end,
+	-- Round 40: the level-up burst plays through the particle helper.
+	particles = {play = function() end},
 }
 
 local function make_player(name, level_xp, opts)

@@ -115,6 +115,8 @@ vector = permissive({offset = function(pos) return pos end, new = function(x, y,
 
 grug_core = permissive({
 	level_scale = function() return 1 end,
+	-- Round 40: the level-up burst plays through the particle helper.
+	particles = {play = function() end},
 	register_on_equipment_change = function(fn) equipment_consumers[#equipment_consumers + 1] = fn end,
 	hud_layout = permissive({XP_WIDTH = 100, COLOR = {}, rows = {xp = {height = 4}},
 		bar_fill = function(value, total, width) return math.floor(width * value / total) end}),

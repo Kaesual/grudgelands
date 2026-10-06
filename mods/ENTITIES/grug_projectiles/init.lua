@@ -259,8 +259,37 @@ local function spawn_one(id, params)
 	return object
 end
 
+-- An opt-in trail (params.trail = {effect = <grug_core.particles id>,
+-- color = <tint>}, the skill arrows): the effect plays along the launch
+-- line, from just ahead of the origin along the launch direction to the
+-- locked target's distance, over the flight time, as one unattached spawner
+-- of at most 1 s (particle_effects.lua "skill_arrow"), so only nearby
+-- players receive it. It plays once the launch is final: a batch whose
+-- commit fails rolls back without a trail.
+local function play_trail(params, object)
+	local trail = params.trail
+	local entity = trail and object:get_luaentity()
+	local lock = entity and entity._grug_lock
+	if not lock then
+		return
+	end
+	local origin = vector.new(params.origin)
+	local direction = vector.normalize(params.direction)
+	local distance = vector.distance(origin, lock.previous)
+	grug_core.particles.play(trail.effect, {
+		from = vector.add(origin, vector.multiply(direction, 0.3)),
+		to = vector.add(origin, vector.multiply(direction, distance)),
+		time = lock.duration,
+		color = trail.color,
+	})
+end
+
 function grug_projectiles.spawn(id, params)
-	return spawn_one(id, params) and true or false
+	local object = spawn_one(id, params)
+	if object then
+		play_trail(params, object)
+	end
+	return object and true or false
 end
 
 local function release_projectile(self)
@@ -308,6 +337,9 @@ function grug_projectiles.spawn_batch(id, launches, commit)
 			end
 			return false
 		end
+	end
+	for index = 1, #objects do
+		play_trail(launches[index], objects[index])
 	end
 	return true
 end
