@@ -4,9 +4,10 @@ Coordinator: Claude (Opus 5.5), drafted 2026-10-06 from the user's four
 suggestions (taken from a friend's experimental build), a read-only
 research pass and the user's answers of the same day; revised after an
 independent Opus review (verdict "ready after fixes", every finding checked
-at the cited lines). Status: **draft, every question answered**; a focused
-re-review (fresh Opus context, "ready after fixes", no High) is folded in;
-approved and started on the user's "go" (2026-10-06).
+at the cited lines); a focused re-review (fresh Opus context, "ready after
+fixes", no High) is folded in; approved and started on the user's "go"
+(2026-10-06). Status: **complete locally on 2026-10-06, not pushed; GUI
+test open** ([completion and GUI checklist](#completion-2026-10-06)).
 
 The round makes combat read better: a cooldown overlay on the skill icons,
 better character animations, Charge as a real dash, and particle effects
@@ -588,3 +589,304 @@ at 1.0 and reduced.
 None. Answered on 2026-10-06: the particle cost model (a) over a client
 measurement (§2.12); the overlay on the hotbar only (§2.9); the Charge
 distances clarified (§2.10). §2.11 is a coordinator default.
+
+## Completion (2026-10-06)
+
+Every lane is merged on main; lane D (this section and the status
+documents) follows. Nothing of Round 40 is pushed (origin/main is
+`d018d866`, the round's start). Main's first-parent line: the plan
+(`e3527ea1`), the post-push status step (`93371711`), lane R (`19782f49`),
+V2's pose table (`a7adb884`), V4 (`b93b3222`), the wave 1 picks with the
+accepted particle catalogue (`5e7539db`), the Charge rulings after the
+probe (`44859742`), PX (`a8b3f51e`), AN1 (`d96b615e`), CD (`9ecd7882`), PM
+(`92f861d8`), CH (`4c3fbd5a`), the Charge rulings after CH (`0a74b347`),
+CH's hold replay (`ec9e423b`) and AN2 (`bd52bbf4`).
+
+Reviews, each by an independent Opus: V2's frame conversion OK after fixes
+(exact); V3's cost model OK after fixes; V4 MERGE AFTER FIXES (one Medium,
+the course restore on unloaded blocks, and Lows; fixed in `e60770cd`); PX
+MERGE (wording fixes); AN1 MERGE AFTER FIXES (one Medium, the posing
+player's own third-person view, one Low, where the swing starts); CD MERGE;
+PM MERGE; CH MERGE AFTER FIXES (one Medium, where a cancelled dash lets the
+warrior go, and Lows; fixed in `e748d1d7`); AN2 MERGE (its Medium, the
+integration with CH's `Body` lead, done after CH's merge in `ef204ded`).
+Every code lane ended with a smoke boot (PASS) and a full fixture run (the
+last lanes 116 of 116 before their final main merge); main's tree has
+**119 portable fixtures** (112 at the start; new: `r40_probe`, `r40_px`,
+`r40_an1`, `r40_cd`, `r40_pm`, `r40_ch`, `r40_an2`). No world generation
+changed: no seed fleet, and an existing world is enough for the GUI test
+(one check wants a new character, checklist item 1).
+
+Round end: …
+
+### Shipped, by lane
+
+Wave 1 built no game feature; its pages and probe went to the user first.
+
+- **V1 cooldown page** ([page](https://claude.ai/artifact/DrcQecqfPty3vbff2q59cB),
+  coordinator): a mock hotbar with the real skill icons at three scales,
+  the 72-frame overlay live with the §2.1 number, text and image-digit
+  numbers, a ready flash, a charge skill. Pick in §2.13.
+- **V2 animation page** ([page](https://claude.ai/artifact/Xnwi6XiKvbYiEvinsgZVD4),
+  coordinator) and `tools/r40_an` (`make_poses.py`, `poses.json`,
+  `--check`): twelve pose variants, the head looks H1 and H2 and a
+  `character_anim` sample on the Round 39 glb, each standing and walking.
+  Its review found the conversion exact (engine against page within 9e-15)
+  and fixed the walking one-shots (they run to the walk cycle's end) and the
+  held loop period (19 frames).
+- **V3 particle page** ([page](https://claude.ai/artifact/FAqUhYazhHGvsHnaA5cJF8),
+  coordinator) and `tools/r40_v3`: 46 effect cards (the five requested, 18
+  further player-skill and proc cards, 14 boss and 9 mob cards), a simpler
+  variant for every complex one, the ten existing looks it keeps, art
+  proposals with their sprites and the rejected sprites; per card the
+  server cost of one use and of twenty players in one zone from the model
+  of §2.12 (a spawner
+  about 671 B per receiver whatever its amount, a single particle 10–40 B
+  compressed; headless Lua calls: a spawner 1.88 µs, 2.26 µs with
+  `attract`, `add_particle` 0.60 µs).
+- **V4 GUI probe** (`tools/r40_probe`, tools only, never shipped; its
+  README holds the install steps and the report form): test courses, the
+  Charge variants (teleport, ghost and physical carrier, the planned path,
+  push) with the `Body` lead and FOV options, the overlay on the real
+  hotbar; fixture 110 checks. Server-side numbers: the path planner 30–84
+  µs on a table world, 136–469 µs on the courses (median 195 µs on natural
+  terrain); the destination search 3–9 µs; the carrier 9–16 µs per step on
+  average (worst 77 µs); the overlay pass with 8 cooldowns 1.1–1.3 µs
+  (about 40 writes/s). The user's test fed §2.16; the overlay was accepted
+  provisionally.
+- **R** (`19782f49`): `character_anim` at `61b62ae` as a read-only
+  reference project with its row in
+  [reference_projects.md](../reference_projects.md) (MIT by its Readme).
+- **PX particle helper and player-skill effects** (`a8b3f51e`;
+  [combat_stats.md "Skill particle effects"](../design/combat_stats.md#skill-particle-effects)):
+  `grug_core/particles.lua` (plays a catalogue effect, applies the scale,
+  places exact rings, checks every registered effect's budget at load) and
+  the catalogue `grug_core/particle_effects.lua`; the setting
+  `grug_particle_scale` (*Combat*, default 1.0, 0–2, read at server start,
+  at least one particle per emitter, 0 turns the helper's effects off);
+  every player skill but Strike per its V3 card, one proc flash in a
+  colour per proc, the critical-hit, absorb and level-up particles on the
+  helper with their look; the stale `radius` comments fixed. Particles per
+  use at 1.0: Ice Nova 64 (the most), Fireball 38, Smite 36, skill arrow 30,
+  Mighty Blow 26, every other effect at most 40. Fixture 1,189 checks,
+  among them the fallback rule on the real kits (Strike, a refused cast, a
+  skill on cooldown, a prepared proc, a missed proc and a rolled-back arrow
+  batch play nothing). Lua per use, headless (before → after): Ice Nova
+  1.77 → 52.9 µs, Smite 11.0 → 4.8, Mighty Blow 1.75 → 4.1, Fireball's
+  impact 0 → 4.8, Heal 1.76 → 2.15, a skill arrow 0 → 2.2, a crit 1.71 →
+  1.89. **Busy fight** (`tools/r40_px/costs.py`, 20 players near, 100 on
+  the server, estimates): at scale 1.0 401 KB/s out of the server, **20.1
+  KB/s into each nearby player**, **about 2.6 ms/s main thread** (2.6–3.1
+  run to run), 556 particles/s; at 0.5 19.6 KB/s and 279 particles/s; at
+  0.25 19.3 KB/s and 147 particles/s (the scale cuts what clients draw, not
+  the bytes, §2.15); before the round 8.3 KB/s per player for the skills
+  that had particles.
+- **AN1 poses** (`d96b615e`;
+  [character_visuals.md §5c](../design/character_visuals.md#5c-poses-round-40)):
+  `tools/r33_c3/gen_cloak_model.py` bakes the seven picked poses, each
+  standing and walking, as 14 ranges after the base frames (engine frames
+  221–484), each with its cloak rule and through the clearance check (the
+  closest leg gap of a pose clip 0.43 model units, the base clips' 0.40);
+  frames up to 220 byte-identical, the model 84 → 166 KB, the website's glb
+  unchanged. `grug_visuals/poses.lua` and the pose clips in
+  `grug_visuals/apply.lua`; a player_api GRUG PATCH: every switch blends
+  over 0.12 s, the hook may pass loop and restart, walking clips keep the
+  walk phase. Casts hold 0.6 s, Hold Ground's guard 1.0 s, the flinch at
+  most once per 1.5 s. The pose hook's cost (`bench_hook.lua`, 100
+  stand-ins, ns per player per step, before → after): standing 11.0 →
+  11.3–12.1, walking 34.6 → 35.3–37.0, ten Scouts drawing 41.2 → 41.5–43.4,
+  **within run-to-run noise**; ten in a held pose 42.3–44.5; no new
+  globalstep.
+- **CD cooldown overlay** (`9ecd7882`;
+  [classes.md "The cooldown overlay"](../design/classes.md#the-cooldown-overlay)):
+  `tools/r40_cd/gen_cooldown_textures.py` (`--check`) draws the 72 cover
+  frames and the image digits (19 KB, own work, CC0);
+  `grug_abilities/cooldown_hud.lua` and `cooldown_math.lua` put two HUD
+  images per running slot on the engine's slot rectangles (the item count
+  and the two-row split followed); one pass every 0.1 s over players with
+  a running timer only, at most 100 per pass, writes only on a visible
+  change; the wear bar no longer shows cooldowns or charges. Fixture 233
+  checks. **Overlay against the wear bar** (Lua per pass, headless bench):
+  one player with 8 cooldowns 17 → 2.6 µs; 100 players with one cooldown
+  each 178 µs and 250 inventory writes/s → 161 µs (worst 417) and 1,196
+  HUD writes/s; 100 players with four each 942 µs (about 1.9 ms/s) and 790
+  inventory writes/s → 176 µs (worst 365, about 1.8 ms/s) and 3,533 HUD
+  writes/s. A wear write re-sent the whole main list (about 4.7 KB); a HUD
+  change is 40–100 B (estimate); the overlay writes no inventory.
+- **PM boss and mob-special effects** (`92f861d8`;
+  [biomes_mobs.md §3.1](../design/biomes_mobs.md)): every boss and mob card
+  on PX's helper at its moment (the kings' signatures, the elite cone hit,
+  the dragons, the Kraken, webs, poison, pounces, ambushes, auras, blinks,
+  projectile impacts); fixture 453 checks. Per fight
+  (`tools/r40_pm/costs.py`, 20 near, 100 on the server, scale 1.0,
+  estimates): the ice dragon 23.2 KB/s out, 1.16 KB/s into each nearby
+  player (1.21 before), 420 µs/s main thread; the storm dragon 16.9 KB/s,
+  0.84 KB/s (0.79 before), 305 µs/s; the kings 0.35–0.89 KB/s per player
+  (the Orc king's Cleave the most); an elite 0.13; the Kraken 0.35; the mob
+  specials at most 0.27. Lua per occurrence, e.g. the lightning strike
+  1.69 → 5.37 µs, the gust's release 1.95 → 44.8, the dive's slam 1.96 →
+  55.2, Shatter's ring (new) 62.5.
+- **CH Charge as a dash** (`4c3fbd5a`, review fixes `e748d1d7`;
+  [classes.md §3, Charge](../design/classes.md#3-warrior-rage)):
+  `grug_abilities/charge_path.lua` (the pure planner: runs and ballistic
+  hops, the hole rule, liquids as air, never refuses, cut short at a rim)
+  and `charge.lua` (the carrier, the arrival or miss in its own `on_step`,
+  the cancellations through `grug_core.cancel_dash`, punches forwarded to
+  the warrior, the 0.5 m `Body` lead on dashes of 3 m or more, the FOV kick
+  ×1.1, the charge pose, the dust); refusals unchanged,
+  `grug_core/movement.lua` untouched. Fixture 158 checks. Numbers (seed
+  4242, 32 targets at 6 and 11 m, headless): the destination search median
+  8 → 7 µs; the path plan median 148 µs (p90 243, max 273); the whole cast
+  start median 294 µs (max 548); the carrier per step mean 22.6 µs (median
+  17, max 84).
+- **CH hold replay** (`ec9e423b`, `tools/r40_ch/lag_replay.py`, no game
+  change): the uphill fix comes from the detach and the `set_pos` on the
+  stop, not from the hold; the hold only sizes the forward snap at the
+  release: on a 10.7 m dash 2.36 m with no hold, 0.47 m at 0.17 s, 0.25 m
+  at 0.23 s, **0.08 m at 0.34 s**.
+- **AN2 head look** (`bd52bbf4`;
+  [character_visuals.md §5d](../design/character_visuals.md#5d-head-look-round-40)):
+  `grug_visuals/head_look.lua`, H1: one relative `Head` override from the
+  look pitch in 5° steps, clamped 50° down to 60° up, blended over 0.15 s,
+  written only on a change by a round-robin pass that visits each player
+  about every 0.25 s; the 0.001 rad epsilon
+  ([upstream-workarounds.md](../technical/upstream-workarounds.md) §3);
+  no write during the charge pose and 0.2 s after it; the website head note
+  in [tools/web_data/model/README.md](../../tools/web_data/model/README.md).
+  Fixture 71 checks. Numbers: the pass for 100 stand-ins 0.26 µs per step
+  standing, 1.15 µs per step all looking around (400 writes/s); **3.7
+  writes/s per player looking around continuously, none standing still**;
+  about 60 B per write and observer, so twenty players in one zone all
+  looking around send about 89 KB/s, about 4.4 KB/s into each client
+  (estimates).
+- **D** (this lane): this section, STATUS, the AGENTS.md pointer, ROADMAP,
+  BACKLOG, README, CHANGELOG 0.40.0 and `game.conf` 0.40.0, the tools
+  README.
+
+### The user's picks and rulings during the round
+
+All on 2026-10-06 (§2.13–§2.17):
+
+1. **Overlay** `N3 B1 P1 F0 U1` (U2 first, U1 after the cost answer):
+   image digits, the whole square darkened, no ready signal, the 0.1 s
+   pass writing only a visible change. After the probe the user accepted
+   the overlay **only provisionally**; the GUI test decides.
+2. **Poses** `cast1=A cast2=B swing=B bow=A block=B charge=B flinch=A`,
+   the head **H1 instead of H2** (H2 was the first choice, dropped as not
+   worth its extra overrides); every pose switch blends.
+3. **Particles: take all**, the main proposal of every card, single
+   colour, no art sprite yet.
+4. **Charge after the probe:** carrier A on the planned path at **24
+   m/s**; the hole rule (a hop of at most 4 nodes, the landing at most one
+   node up, depth irrelevant, liquids as air, otherwise a stop at the rim,
+   a miss).
+5. **Charge after CH:** a dip wider than four nodes with ground in reach
+   is followed like terrain; the hole width is measured along the dash
+   line, so a hole crossed diagonally is wider; the 0.34 s hold after the
+   arrival stays **for now** after the hold replay; the user decides at
+   the GUI test.
+
+Coordinator defaults the user may overrule: hits during the dash reach the
+warrior (§2.11); Battlebeat gets no proc flash (below).
+
+### Deviations from the plan
+
+- **Merge order:** PX and AN1 merged before CD, PM and CH (plan §1: CD, PX,
+  PM, CH, AN1, AN2), because CD and CH waited for the user's probe test;
+  each later lane merged main before its review.
+- **The cost model** (§3.4) was corrected by V3's review before the picks
+  (§2.15): an `attract` strength is a rate; a spawner's `radius` gives a
+  disc, so rings that mark a radius are single particles placed by Lua; a
+  spawner's bytes do not shrink with its amount.
+- **Cleave** covers its real **120°** cone; the V3 card's 60° was a mistake.
+- **Battlebeat gets no proc flash:** it is not a proc (rage on every hit).
+- **AN1's resume clips:** a 5.17.0 client ignores a server animation with
+  its own stand, walk or punch range for the local player, so a pose's end
+  plays a `<base>_resume` clip for one step (the review's Medium); a landed
+  Mighty Blow's swing starts at its frame 4, the top of the swing; Hold
+  Ground's guard holds 1.0 s, not the whole 8 s buff.
+- **CH's hold:** the probe's uphill stop short was the client's drawn lag
+  (it draws the carrier about 2.7 m behind at 24 m/s and keeps that
+  position on detach), not the planner; the fix holds about 0.34 s, then
+  detaches and puts the warrior on the stop. A warrior rooted at the cast
+  does not move (a miss).
+- **CD** visits at most 100 players per pass (25 in its first version), so
+  the 0.1 s cadence holds up to 100 players; the bow keeps its draw-stage
+  wear (the draw's progress, not a cooldown).
+- **PX:** an arrow's trail plays after its launch batch commits (a
+  rolled-back shot leaves none); the Ice Nova and Bellow rings fly at the
+  speed that lands on the real radius.
+- **PM:** the web effect plays from spider and spiderling bites only (the
+  slow hook is shared with other slows); the treant aura's effect every
+  second tick; the dragon's 8 s return warning is played as eight 1 s
+  pieces, so only players near the lair receive it.
+- **V4 corrected §3:** the slot size is truncated (`s32(round(48 × density)
+  × hud_scaling)`); the hotbar splits into two rows only when wider than
+  the whole window; a moving entity's position is re-sent every server
+  step anyway; the client erases an identity bone override, so a lead
+  ends at the epsilon, which AN2 shares (a new §3 in upstream-workarounds).
+
+### Open notes
+
+In the [BACKLOG](../../BACKLOG.md#round-40-carry-overs); none blocks the
+GUI test.
+
+### GUI playtest checklist
+
+Desktop and the web build, both Luanti 5.17.0, on the synced game. No
+world generation changed: an existing world works; the last check of item
+1 wants a new character. Use a second client for what others see. Say what
+looks wrong.
+
+1. **Cooldown overlay** (accepted provisionally; this test decides): cast
+   skills: the cover appears at once over the whole icon, 50 % black,
+   clearing clockwise from twelve o'clock, the number in the middle; at
+   `hud_scaling` 1, 1.5 and an odd value such as 1.3 it sits exactly on
+   the icons; Sprint's five minutes read `5m` … `2m`, then `60` … `1`; a
+   short cooldown (Smite) runs smoothly; in a window narrower than the
+   hotbar (two rows) it follows within about half a second; a skill moved
+   to another slot, past slot 8 and back follows (a bag shows nothing);
+   Hamstring's and Opening's charges show the same way and a full charge
+   shows nothing; Last Word's reset of Word of Ruin clears its cover. **No
+   wear bar** on a skill item: check it with a **new character** (a skill
+   item an older character already carries may keep its old bar).
+2. **Poses**, each standing and walking, in your own third person and on a
+   second client: `cast1` (Fireball, Smite, Word of Ruin, Cinderfall) and
+   `cast2` (Ice Nova, Glacial Ward, Heal, Mend, Shield) for about 0.6 s;
+   Mighty Blow's diagonal cut once per landed blow, from the top of the
+   swing, again on a second blow; the drawn bow; Hold Ground's raised
+   shield arm for 1 s; the charge pose during the dash; the flinch on a hit
+   (at most every 1.5 s, never over another pose). The arms blend in, the
+   legs keep their stride, the pose ends and stand or walk returns in your
+   own third person; the cloak stays clear of the legs; a refused cast, a
+   dodged swing and the Strike fallback show no pose.
+3. **Head look** in third person and on a second client (also one that
+   joins later): the head follows the look up and down in steps with a
+   blend, stops at the clamps, sits right with every pose and while
+   mounted; nothing odd in first person; a dead player's head is level and
+   follows again after respawn; the cloak against the back of the head
+   looking up.
+4. **Charge**, in first and third person: long and short on flat ground;
+   uphill onto the last stair (arrives on top); over a step, off a ledge,
+   into a wall; trenches of 4 nodes (jumped) and 5 (stop at the rim, a
+   miss), a wide dip (followed down and up), a hole crossed diagonally,
+   water (crossed; a target in water: the dash ends on the shore); no line
+   of sight (refused, nothing spent); a mob hitting you mid-dash; the model
+   running ahead of the camera in third person and the FOV kick in first
+   person; the pose and the dust; PvP (flagged and unflagged targets); a
+   stun, root, logout or travel mid-dash; a miss (no notice); **the hold
+   on arrival** (about 0.34 s without control on the stop): keep it or ask
+   for a shorter one (the user's pick; the replay's snap sizes above).
+5. **Player-skill particles** at `grug_particle_scale` 1.0 and 0.5 (the
+   game's settings, section *Combat*; restart the server): every skill's
+   effect (Ice Nova's ring, Fireball's splash, Smite's holy fall, Mighty
+   Blow's slash, arrow trails, Charge's dust, and the rest per
+   combat_stats.md), the proc flashes; Strike shows nothing, and a skill
+   falling back to Strike
+   (on cooldown, no charge, no resource) shows nothing; on the web build
+   whether the amounts stay smooth.
+6. **Boss and mob effects** at 1.0 and 0.5: each king's signature, an
+   elite's cone hit, both dragons (breath wind-up and bolts, lightning,
+   gust, dive, enrage and whelps, the return warning near the lair), the
+   Kraken's drag, spider webs, poison, pounces, ambushes, the ooze and
+   treant auras, Oerkki and Wisp blinks, projectile impacts.
