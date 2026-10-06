@@ -263,8 +263,8 @@ Numbers come from the lanes' tools, run the same way before and after;
   test. Patterns set across lanes: garrison guards "<Faction> <rank>"
   (Accord Picket, Throng Veteran …), royal guards "Royal <noun>", a toll
   bandit voice per capital, one Bone Levy, Marching Zombie and Gallows
-  Crow, the Last Watch names only on L56–60, the six repeatable bounties
-  split where their levels broke rule 4.
+  Crow, the Last Watch names only on L56–60, split names for the six
+  repeatable bounties' targets.
 - **Z1–Z6 naming and T taste** (design): names for the 921 zone slots,
   one lane per race region with its zones, every name claimed in a shared
   register (a reuse with its reason), every merge or split of level bands
