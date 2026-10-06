@@ -1121,6 +1121,7 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	if now < (tonumber(meta:get_string(META_UNBROKEN_READY)) or 0) then return end
 	meta:set_string(META_UNBROKEN_READY, tostring(now + 180))
 	grug_classes.start_talent_window(player, "unbroken", 8)
+	grug_core.proc_flash(player, "unbroken")
 	local inventory = rawget(_G, "grug_inventory")
 	if inventory and inventory.refresh then inventory.refresh(player) end
 end, false)

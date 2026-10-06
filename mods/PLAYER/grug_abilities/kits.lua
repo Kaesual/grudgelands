@@ -136,41 +136,18 @@ local function support_value(player, percent)
 end
 
 --
--- Particle helpers (existing textures only; own effects are Phase 3).
+-- Particle effects: the catalogue in grug_core/particle_effects.lua, played
+-- through grug_core.particles (Round 40). Every call sits where the skill
+-- really fired -- after a cast's last refusal, in a proc's landed post --
+-- never on the Strike fallback (round40-plan.md §2.4).
 --
 
-local function beam(user, target, texture)
-	local from = user:get_pos()
-	from.y = from.y + (user:get_properties().eye_height or 1.5)
-	local to = vector.offset(target:get_pos(), 0, 1, 0)
-	local dist = vector.distance(from, to)
-	local steps = math.max(2, math.floor(dist * 2))
-	local dir = vector.direction(from, to)
-	for i = 1, steps do
-		core.add_particle({
-			pos = vector.add(from, vector.multiply(dir, i * dist / steps)),
-			velocity = vector.new(0, 0, 0),
-			expirationtime = 0.25,
-			size = 2.5,
-			texture = texture,
-			glow = 12,
-		})
-	end
+local function fx(id, frame)
+	grug_core.particles.play(id, frame)
 end
 
-local function burst(pos, texture, amount)
-	core.add_particlespawner({
-		amount = amount or 12,
-		time = 0.2,
-		-- NB `radius` is not a particlespawner field — spread via pos range.
-		pos = {min = vector.offset(pos, -0.5, 0, -0.5),
-			max = vector.offset(pos, 0.5, 1, 0.5)},
-		vel = {min = vector.new(-2, 0, -2), max = vector.new(2, 3, 2)},
-		exptime = {min = 0.3, max = 0.7},
-		size = {min = 1.5, max = 3},
-		texture = texture,
-		glow = 10,
-	})
+local function facing(player)
+	return grug_core.particles.facing(player)
 end
 
 --
@@ -342,6 +319,7 @@ grug_abilities.register_ability({
 		end
 		grug_core.invalidate_combat_identity(user)
 		user:set_pos(dest)
+		fx("charge_ring", {target = tpos})
 		grug_abilities.add_rage(user, 15)
 		grug_core.deal_ability_damage(user, target,
 			def.values(user).damage, {threat_mult = 3, on_accepted = function()
@@ -355,6 +333,17 @@ grug_abilities.register_ability({
 		return true
 	end,
 })
+
+-- The dust trail of a Charge dash for lane CH (round40-plan.md §4.2):
+-- dust kicked up along the ground from `from` to `to` (feet positions) over
+-- `duration` seconds, an unattached spawner of at most 1 s (a longer dash
+-- shows dust over its first second only). Charge teleports today and does
+-- not call it; the arrival ring above stays at the cast until the dash
+-- moves it to the arrival.
+function grug_abilities.charge_dust(from, to, duration)
+	fx("charge_dust", {from = vector.offset(from, 0, 0.1, 0),
+		to = vector.offset(to, 0, 0.1, 0), time = duration})
+end
 
 -- The rage dump (kit tuning 2026-08-06): no own cooldown — at the rage
 -- income of the day a cooldown left the Warrior permanently rage-capped.
@@ -390,7 +379,7 @@ grug_abilities.register_ability({
 			"mighty_blow_multiplier_add")
 		local damage = math.floor(ctx.weapon_damage * mult) + ctx.melee_bonus
 		return damage, 3, function(action_id)
-			burst(tpos, "mobs_blood.png", 6)
+			fx("mighty_blow", {caster = user:get_pos(), target = tpos, dir = facing(user)})
 			if grug_classes.get_talent_bonus(user, "mighty_blow_cleave") > 0 then
 				for _, obj in ipairs(core.get_objects_inside_radius(tpos, 3)) do
 					if obj ~= target and grug_abilities.valid_target(user, obj, "hostile") then
@@ -399,7 +388,9 @@ grug_abilities.register_ability({
 					end
 				end
 			end
-			grug_classes.try_trigger_talent_window(user, "ruination", 15, 60)
+			if grug_classes.try_trigger_talent_window(user, "ruination", 15, 60) then
+				grug_core.proc_flash(user, "ruination")
+			end
 		end
 	end,
 })
@@ -447,7 +438,7 @@ grug_abilities.register_ability({
 				grug_core.set_move_modifier(target, "hamstring", {speed = -0.5},
 					root_time + slow_time)
 			end
-			burst(tpos, "mobs_blood.png", 4)
+			fx("hamstring", {target = tpos, dir = facing(user)})
 		end
 	end,
 })
@@ -476,6 +467,9 @@ grug_abilities.register_ability({
 					end
 				end
 			end
+			if affected then
+				fx("bellow", {caster = user:get_pos(), reach = radius})
+			end
 			return affected, affected and nil or "No hostile target in range."
 		end
 		local target = current_enemy_target(user, def)
@@ -492,7 +486,7 @@ grug_abilities.register_ability({
 			return false, "That target cannot be taunted now."
 		end
 		ent:do_attack(user, true)
-		burst(target:get_pos(), "default_item_smoke.png^[multiply:#e07b39", 6)
+		fx("taunt", {target = target:get_pos()})
 		return true
 	end,
 })
@@ -527,13 +521,17 @@ grug_projectiles.register("fireball", {
 		glow = 12,
 	},
 	on_hit = function(owner, target, data, point, attacker_level)
+		-- The impact splash, before a lethal hit can remove the target.
+		fx("fireball", {target = target:get_pos() or point})
 		grug_core.deal_ability_damage(owner, target, data.damage,
 			{attacker_level = attacker_level, action_id = data.action_id,
 				on_accepted = function(_, critical)
 					if not critical then return end
-					grug_classes.try_trigger_talent_window(owner,
-						"whitehot", talent_rank_value(owner, "whitehot",
-							"whitehot_window", 8), 60)
+					if grug_classes.try_trigger_talent_window(owner,
+							"whitehot", talent_rank_value(owner, "whitehot",
+								"whitehot_window", 8), 60) then
+						grug_core.proc_flash(owner, "whitehot")
+					end
 				end})
 		local splash = data.splash or 0
 		if splash > 0 then
@@ -695,7 +693,7 @@ grug_abilities.register_ability({
 		-- No blanket combat mark: every hit above marks through
 		-- deal_ability_damage (timer for players, engagement for mobs), so a
 		-- nova that kills the last mob leaves combat like any other kill.
-		burst(pos, "default_item_smoke.png^[multiply:#aaddff", 20)
+		fx("ice_nova", {caster = pos, reach = radius})
 		return true
 	end,
 })
@@ -731,10 +729,9 @@ grug_abilities.register_ability({
 		if not dest then
 			return false, "No room to blink."
 		end
-		burst(from, "default_item_smoke.png^[multiply:#b06aff", 10)
 		grug_core.invalidate_combat_identity(user)
 		user:set_pos(dest)
-		burst(dest, "default_item_smoke.png^[multiply:#b06aff", 10)
+		fx("blink", {caster = from, target = dest})
 		return true
 	end,
 })
@@ -790,8 +787,8 @@ grug_abilities.register_ability({
 		if not target then
 			return false, "No hostile target in your crosshair."
 		end
-		beam(user, target, "default_item_smoke.png^[multiply:#ffe9a0")
-		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0")
+		-- No projectile: the holy fall on the target (replaces the beam).
+		fx("smite", {target = target:get_pos()})
 		-- Sharpened Word, and Warded Wrath while an absorb is up
 		-- (skill_trees.md §2.6). Recompense's absorb has a 6 s internal
 		-- cooldown (Round 35): refreshed on every Smite it outlasted the damage
@@ -855,14 +852,17 @@ grug_abilities.register_ability({
 		local splash = grug_classes.get_talent_bonus(user, "heal_splash")
 		if splash > 0 then
 			for _, obj in ipairs(core.get_objects_inside_radius(target:get_pos(), 8)) do
-				if obj ~= target and grug_abilities.valid_target(user, obj, "friendly") and
-						grug_core.heal_player(user, obj, math.floor(amount * splash / 100),
+				if obj ~= target and grug_abilities.valid_target(user, obj, "friendly") then
+					-- Hearten: four motes on each splashed ally.
+					fx("heal_splash", {target = obj:get_pos()})
+					if grug_core.heal_player(user, obj, math.floor(amount * splash / 100),
 							{action_id = action_id}) > 0 then
-					grug_pvp.support_contact(user, obj)
+						grug_pvp.support_contact(user, obj)
+					end
 				end
 			end
 		end
-		burst(target:get_pos(), "mobs_heart_particle.png", 8)
+		fx("heal", {target = target:get_pos()})
 		return true
 	end,
 })
@@ -913,7 +913,7 @@ grug_abilities.register_ability({
 				> 0 then
 			grug_pvp.support_contact(user, target)
 		end
-		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
+		fx("shield_spell", {target = target:get_pos()})
 		return true
 	end,
 })
@@ -972,7 +972,7 @@ grug_abilities.register_ability({
 		end
 		-- The cast is the application; the ticks are never contact (ruling 7b).
 		grug_pvp.support_contact(user, target)
-		burst(target:get_pos(), "mobs_heart_particle.png", 5)
+		fx("mend", {target = target:get_pos()})
 		return true
 	end,
 })
@@ -996,7 +996,7 @@ core.register_globalstep(function(dtime)
 			local healer = core.get_player_by_name(mend.healer) or target
 			grug_core.heal_player(healer, target, mend.amount,
 				{action_id = mend.action_id})
-			burst(target:get_pos(), "mobs_heart_particle.png", 3)
+			fx("mend", {target = target:get_pos()})
 			mend.ticks = mend.ticks - 1
 			if mend.ticks <= 0 then
 				mends[name] = nil
@@ -1034,7 +1034,7 @@ grug_abilities.register_ability({
 			user, {})
 		grug_core.set_move_immunity(user, 8)
 		grug_classes.start_talent_window(user, "hold_ground", 8)
-		burst(user:get_pos(), "default_item_smoke.png^[multiply:#c89b55", 14)
+		fx("hold_ground", {caster = user:get_pos()})
 		return true
 	end,
 })
@@ -1063,7 +1063,7 @@ grug_abilities.register_ability({
 					{action_id = action_id})
 			end
 		end
-		burst(pos, "mobs_fire_particle.png", 18)
+		fx("cinderfall", {target = pos, reach = radius})
 		return true
 	end,
 })
@@ -1080,7 +1080,7 @@ grug_abilities.register_ability({
 	cast = function(user, pointed, def)
 		grug_core.add_absorb(user, "glacial_ward", def.values(user).absorb, 10,
 			user, {})
-		burst(user:get_pos(), "mobs_bubble_particle.png^[multiply:#8bd8f0", 14)
+		fx("glacial_ward", {caster = user:get_pos()})
 		return true
 	end,
 })
@@ -1093,6 +1093,7 @@ grug_abilities.register_ability({
 	cast = function(user, pointed, def)
 		local target = current_enemy_target(user, def)
 		if not target then return false, "No hostile target in your crosshair." end
+		fx("word_of_ruin", {caster = user:get_pos(), target = target:get_pos()})
 		local damage = spell_damage_value(user,
 			grug_classes.get_talent_bonus(user, "word_of_ruin_damage")
 			+ grug_classes.get_spell_power_bonus(user))
@@ -1101,6 +1102,7 @@ grug_abilities.register_ability({
 				local properties = user:get_properties() or {}
 				if user:get_hp() < (tonumber(properties.hp_max) or 0) * 0.25 and
 						grug_classes.try_trigger_talent_window(user, "last_word", 12, 180) then
+					grug_core.proc_flash(user, "last_word")
 					-- The trigger also resets Word of Ruin's cooldown (Round 35).
 					-- try_cast arms the cooldown after this cast returns, so the
 					-- reset runs on the next server step.
