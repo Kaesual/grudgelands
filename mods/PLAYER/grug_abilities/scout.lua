@@ -25,12 +25,15 @@ local DRAW_STAGE_SOURCE = {
 	["grug_gear_bow_alder.png"] = "^[colorize:#9b442f:75",
 }
 
+-- The drawn bow's pose clip (grug_visuals POSE_CLIPS `bow`, Round 40) while a
+-- draw runs, its walking twin on the move; it also keeps the held LMB from
+-- showing the generic mine pose.
 player_api.register_control_animation_override(function(player, controls)
 	if not draws[player:get_player_name()] then return end
 	if controls.up or controls.down or controls.left or controls.right then
-		return "walk"
+		return "bow_walk"
 	end
-	return "stand"
+	return "bow"
 end)
 
 local function action_id(player, ability)

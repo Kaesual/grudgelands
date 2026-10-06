@@ -200,7 +200,8 @@ local book = R.build(dofile(ROOT .. "/mods/PLAYER/grug_achievements/catalog.lua"
 local textures_set = {}
 player_api = {
 	registered_models = {["character.b3d"] = {animation_speed = 30,
-		textures = {"character.png"}, animations = {stand = {x = 0, y = 79}},
+		textures = {"character.png"}, animations = {stand = {x = 0, y = 79},
+			walk = {x = 168, y = 187}, walk_mine = {x = 200, y = 219}},
 		collisionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3}, stepheight = 0.6,
 		eye_height = 1.47}},
 	register_model = function() end,

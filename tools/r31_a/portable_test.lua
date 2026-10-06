@@ -58,12 +58,14 @@ core = {
 	end,
 	formspec_escape = function(text) return text end,
 	calculate_knockback = function() return 0 end,
+	get_us_time = function() return 0 end,
 	get_connected_players = function() return {} end,
 	get_current_modname = function() return "grug_visuals" end,
 	register_entity = function() end,
 	register_globalstep = function() end,
 	register_on_joinplayer = function(fn) callbacks.join[#callbacks.join + 1] = fn end,
 	register_on_leaveplayer = function() end,
+	register_on_dieplayer = function() end,
 	register_on_respawnplayer = function() end,
 	register_on_mods_loaded = function() end,
 	get_item_group = function() return 0 end,
@@ -83,6 +85,7 @@ grug_classes = {
 grug_core = {
 	register_on_equipment_change = function(fn) callbacks.equipment[#callbacks.equipment + 1] = fn end,
 	equipment_is_broken = function() return false end,
+	register_on_settled_incoming_hit = function() end, -- the flinch (poses.lua)
 	settlement_socket_settlements = function()
 		return {{key = "start_dwarf", race_id = "dwarf"}, {key = "capital_troll", race_id = "troll"}}
 	end,
