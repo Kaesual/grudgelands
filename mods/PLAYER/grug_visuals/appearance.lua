@@ -61,11 +61,18 @@ grug_visuals.APPEARANCE_TEXTURE = {
 	},
 	-- Engine files a modifier draws without naming them.
 	engine_files = {cracko = "crack_anylength.png"},
-	-- Argument kinds.
+	-- Argument kinds: `pattern` is a Lua pattern of the whole argument (an
+	-- anchored regular expression reads the same: `%d` is [0-9], `%-` a
+	-- literal minus, `%.` a literal dot), the other fields its limits.
 	args = {
-		int = "an optional '-' and 1 to 3 decimal digits",
-		color = "'#' and 6 lowercase hexadecimal digits",
-		file = "a file name by the file rule",
+		int = {pattern = "^%-?%d%d?%d?$", signed = true, min_digits = 1,
+			max_digits = 3, min = -999, max = 999,
+			description = "an optional '-' and 1 to 3 decimal digits"},
+		color = {pattern = "^#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$",
+			form = "#rrggbb",
+			description = "'#' and 6 lowercase hexadecimal digits"},
+		file = {pattern = "^[a-z0-9_]+%.png$", max_length = 64,
+			description = "a file name by the file rule"},
 	},
 	modifiers = {
 		colorize = {"color", "int"},

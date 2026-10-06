@@ -404,7 +404,10 @@ local function file_known(name)
 	return file_dir[name]
 end
 local FILE_PATTERN = "^[" .. TEX.file.charset .. "]+" .. TEX.file.suffix:gsub("%.", "%%.")
-local ARG_PATTERN = {int = "^%-?%d%d?%d?$", color = "^#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"}
+-- Argument patterns straight from the data, and the file rule agreeing with
+-- the file kind.
+local ARG_PATTERN = {}
+for kind, spec in pairs(TEX.args) do ARG_PATTERN[kind] = spec.pattern end
 
 -- Returns nil or the reason the string is outside the grammar.
 local function grammar_error(text)
@@ -413,6 +416,9 @@ local function grammar_error(text)
 	local function file()
 		local name = text:match(FILE_PATTERN, pos)
 		if not name then return nil, "file expected at " .. pos end
+		if not name:find(ARG_PATTERN.file) or #name > TEX.args.file.max_length then
+			return nil, "file " .. name .. " outside the file kind"
+		end
 		if not file_known(name) then return nil, "file " .. name .. " in none of the directories" end
 		used_files[name] = true
 		pos = pos + #name
@@ -432,7 +438,9 @@ local function grammar_error(text)
 				if not ok then return nil, why end
 			else
 				local arg = text:match("^[^%^:%(%)%[]+", pos) or ""
-				if not arg:find(ARG_PATTERN[kind]) then
+				local value = tonumber(arg)
+				if not arg:find(ARG_PATTERN[kind]) or (kind == "int" and
+						(value < TEX.args.int.min or value > TEX.args.int.max)) then
 					return nil, name .. ": argument " .. arg .. " is no " .. kind
 				end
 				pos = pos + #arg
@@ -488,13 +496,19 @@ end
 
 -- [cracko draws the engine's crack_anylength.png
 -- (reference_projects/luanti/src/client/imagesource.cpp, "[crack").
+eq(TEX.args.color.form, "#rrggbb", "G the colour form")
+check(("#9a2b10"):find(TEX.args.color.pattern) and not ("#9A2B10"):find(TEX.args.color.pattern)
+	and ("-100"):find(TEX.args.int.pattern) and not ("1000"):find(TEX.args.int.pattern),
+	"G the argument patterns accept and refuse as described")
 eq(TEX.engine_files.cracko, "crack_anylength.png", "G [cracko's engine file")
 for name in pairs(TEX.engine_files) do
 	check(TEX.modifiers[name] ~= nil, "G engine file of a listed modifier: " .. name)
 end
 for _, spec in pairs(TEX.modifiers) do
 	for _, kind in ipairs(spec) do
-		check(TEX.args[kind] ~= nil, "G argument kind described: " .. kind)
+		local spec = TEX.args[kind]
+		check(spec ~= nil and type(spec.pattern) == "string" and type(spec.description) == "string",
+			"G argument kind defined: " .. kind)
 	end
 end
 
@@ -789,7 +803,10 @@ for _, slot in ipairs(V.SLOTS) do
 				for _, pair in ipairs(PAIRS) do
 					for _, broken in ipairs({false, true}) do
 						local piece = {name = name, prefix = pair[1], suffix = pair[2], broken = broken}
-						local length = #body_of("human", nil, {[slot] = piece}) - base_length
+						local body = body_of("human", nil, {[slot] = piece})
+						texture_ok("body", body, name .. " " .. tostring(pair[1]) .. "/" ..
+							tostring(pair[2]) .. (broken and " broken" or ""))
+						local length = #body - base_length
 						if length > best_length then best, best_length = piece, length end
 					end
 				end

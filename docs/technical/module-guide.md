@@ -1730,9 +1730,12 @@ tools](#player-meta-read-by-external-tools).
   first; an item has at most one per channel and never one stat twice. The
   two hand slots add `pose` (`grug_visuals.POSE`: `tool`, `edge_down`,
   `bow`, `upright`, `forward`) and `image`, the item's image as the engine's
-  wielditem draws it (the stack's wield image, else its inventory image,
-  stack meta over definition), enchant colours and the broken look
-  included. The offhand is stored though the game does not draw it beside
+  wielditem draws it: the stack meta's `wield_image`, else the
+  definition's `_grug_world_wield_image` (the image the game's hand entity
+  shows for an item whose own wield image is turned for the first-person
+  hand), else the definition's `wield_image`, else the stack meta's
+  `inventory_image`, else the definition's; enchant colours and the broken
+  look included. The offhand is stored though the game does not draw it beside
   the weapon yet; the item a player holds (a pickaxe, a skill's slot item)
   is never stored, and trinkets have no visual.
 - **When it is written:** `apply` runs on join, respawn, race and class
@@ -1764,7 +1767,8 @@ tools](#player-meta-read-by-external-tools).
   (skin, look and armour layers), `mods/PLAYER/grug_achievements/textures`
   (cloaks) or `mods/ITEMS/grug_gear/textures` (hand items and their enchant
   masks). The modifiers with their arguments (`int`: an optional `-` and 1–3
-  digits; `color`: `#` and 6 lowercase hex digits): `[colorize:color:int`,
+  digits, −999..999; `color`: `#rrggbb`, lowercase hex; each kind's Lua
+  pattern and limits are data in `APPEARANCE_TEXTURE.args`): `[colorize:color:int`,
   `[cracko:int:int`, `[hsl:int:int:int`, `[mask:file`, `[multiply:color`,
   `[opacity:int`, `[verticalframe:int:int`. `[cracko` draws the engine's
   `crack_anylength.png` (listed as `engine_files`), which no string names.
