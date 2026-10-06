@@ -26,10 +26,15 @@
 --   H  hold times: a cast holds 0.6 s, Hold Ground 1.0 s, a second cast
 --      extends without a restart; start_pose holds until stop_pose, which
 --      ignores another pose; death and logout clear;
---   O  one-shots: swing plays once (loop false), a second swing restarts it,
+--   O  one-shots: swing plays once (loop false) from frame 4 (the top of the
+--      swing: its damage landed already), a second swing restarts it,
 --      a twin switch mid-swing keeps its progress, it ends after its clip;
 --   F  the flinch: on a settled hit; at most one per 1.5 s; never over
---      another pose, the drawn bow, a seat; and the bow's own clips.
+--      another pose, the drawn bow, a seat; and the bow's own clips;
+--   K  the player's own client: every pose end (expiry, stop_pose, the bow
+--      draw's end) answers a `<base>_resume` animation for one step, whose
+--      range is none of the four local ones the 5.17 client ignores, then the
+--      plain base; the frame offset carries through.
 -- Prints "R40 AN1 PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -115,7 +120,7 @@ assert(loadstring(cut("mods/PLAYER/grug_visuals/apply.lua",
 dofile(ROOT .. "/mods/PLAYER/grug_visuals/poses.lua")
 local draws = {}
 assert(loadstring("local draws = ...\n" .. cut("mods/PLAYER/grug_abilities/scout.lua",
-	"\n(player_api%.register_control_animation_override%(function.-\nend%))\n",
+	"\n(local bow_shown = {}\nplayer_api%.register_control_animation_override%(function.-\nend%))\n",
 	"bow-draw hook"), "=scout.lua hook"))(draws)
 
 local GV = grug_visuals
@@ -167,7 +172,19 @@ do
 	eq(n, count, "R seven poses")
 	eq(A.walk._grug_phase, "walk", "R walk group")
 	eq(A.walk_mine._grug_phase, "walk", "R walk_mine group")
-	eq(A.stand._grug_phase, nil, "R stand has no group")
+	eq(A.stand._grug_phase, "stand", "R stand group")
+	eq(A.mine._grug_phase, "mine", "R mine group")
+	-- K: the resume variants the player's own 5.17 client applies: one frame
+	-- short of the base, so none of the four local ranges.
+	for _, base in ipairs({"stand", "walk", "mine", "walk_mine"}) do
+		local r = A[base .. "_resume"]
+		check(r and r.x == A[base].x and r.y == A[base].y - 1, "K " .. base .. "_resume range")
+		eq(r and r._grug_phase, A[base]._grug_phase, "K " .. base .. "_resume group")
+		for _, known in ipairs({"stand", "walk", "mine", "walk_mine"}) do
+			check(not (r.x == A[known].x and r.y == A[known].y),
+				"K " .. base .. "_resume is not the local " .. known)
+		end
+	end
 	eq(player_api.registered_models["character.b3d"].animations.walk._grug_phase, nil,
 		"R the NPC model's table stays player_api's own")
 	eq(player_api.registered_models["character.b3d"].animations.cast1, nil,
@@ -296,9 +313,12 @@ do
 	near(last(p).start, 241 + 7.5, "W a speed change keeps the offset")
 	p.controls = {up = true}
 	step(0.6) -- past the hold: 7.5 + 0.6 * 15 = 16.5 frames
-	eq(anim_of(p), "walk", "W after the hold back to walk")
-	near(last(p).start, 168 + 16.5, "W walk takes the stride back")
+	eq(anim_of(p), "walk_resume", "K after the hold walk_resume for one step")
+	near(last(p).start, 168 + 16.5, "W walk_resume takes the stride back")
 	eq(last(p).blend, 0.12, "W out of the pose blends")
+	step(0.1) -- 16.5 + 3 frames, wrapped at walk_resume's 18
+	eq(anim_of(p), "walk", "W then plain walk")
+	near(last(p).start, 168 + 1.5, "W walk continues the stride")
 	p.controls = {}
 	step(0.05)
 	eq(anim_of(p), "stand", "W standing again")
@@ -329,12 +349,14 @@ do
 	eq(anim_of(p), "cast1", "H a second cast extends the hold")
 	eq(#p.sent, sends, "H ... without a restart or any resend")
 	step(0.35)
-	eq(anim_of(p), "stand", "H the extended hold ends 0.6 s after the second cast")
+	eq(anim_of(p), "stand_resume", "H the extended hold ends 0.6 s after the second cast")
+	step(0.05)
+	eq(anim_of(p), "stand", "H then plain stand")
 	GV.play_pose(p, "block")
 	step(0.95)
 	eq(anim_of(p), "block", "H Hold Ground's guard holds near 1 s")
 	step(0.1)
-	eq(anim_of(p), "stand", "H ... and then ends")
+	eq(anim_of(p), "stand_resume", "H ... and then ends")
 	GV.start_pose(p, "charge")
 	step(5)
 	eq(anim_of(p), "charge", "H start_pose holds until stopped")
@@ -342,8 +364,16 @@ do
 	step(0.05)
 	eq(anim_of(p), "charge", "H stop_pose of another pose changes nothing")
 	GV.stop_pose(p, "charge")
+	eq(GV.current_pose(p), nil, "H stop_pose ends it at once")
 	step(0.05)
-	eq(anim_of(p), "stand", "H stop_pose ends it")
+	eq(anim_of(p), "stand_resume", "K stop_pose hands back through stand_resume")
+	p.controls = {LMB = true}
+	GV.start_pose(p, "charge")
+	step(0.05)
+	GV.stop_pose(p, "charge")
+	step(0.05)
+	eq(anim_of(p), "mine_resume", "K ... mine_resume while punching")
+	p.controls = {}
 	GV.start_pose(p, "charge")
 	for _, fn in ipairs(dies) do fn(p) end
 	eq(GV.current_pose(p), nil, "H death clears the pose")
@@ -361,29 +391,29 @@ do
 	step(0.05)
 	eq(anim_of(p), "swing", "O swing plays")
 	eq(last(p).loop, false, "O ... once")
-	eq(last(p).start, 301, "O ... from its first frame")
+	eq(last(p).start, 305, "O ... from frame 4, the top of the swing")
 	local sends = #p.sent
 	step(0.1)
 	eq(#p.sent, sends, "O a running one-shot is not resent")
 	GV.play_pose(p, "swing")
 	step(0.05)
 	eq(#p.sent, sends + 1, "O a second swing is sent again")
-	eq(last(p).start, 301, "O ... and restarts from the first frame")
+	eq(last(p).start, 305, "O ... and restarts from frame 4")
 	step(0.1)
 	p.controls = {up = true}
 	step(0.05) -- 0.15 s into the restarted swing: 4.5 frames
 	eq(anim_of(p), "swing_walk", "O on the move the walking twin")
-	near(last(p).start, 315 + 4.5, "O ... keeps the swing's progress")
+	near(last(p).start, 315 + 4 + 4.5, "O ... keeps the swing's progress")
 	eq(last(p).loop, false, "O ... still once")
-	step(0.6) -- 24 frames: past the walking twin's 19
-	eq(anim_of(p), "walk", "O the swing ends after its clip")
+	step(0.6) -- 4 + 24 frames: past the walking twin's 19
+	eq(anim_of(p), "walk_resume", "O the swing ends after its clip")
 	p.controls = {}
 	step(0.05)
 	GV.play_pose(p, "swing")
-	step(0.4) -- 12 of the stand clip's 13 frames
-	eq(anim_of(p), "swing", "O a standing swing runs 13 frames")
+	step(0.25) -- 4 + 7.5 of the stand clip's 13 frames
+	eq(anim_of(p), "swing", "O a standing swing runs from frame 4 to 13")
 	step(0.05)
-	eq(anim_of(p), "stand", "O ... then stands")
+	eq(anim_of(p), "stand_resume", "O ... then stands")
 end
 
 ------------------------------------------------------------------------------
@@ -397,7 +427,7 @@ do
 	eq(anim_of(p), "flinch", "F a settled hit flinches")
 	eq(last(p).loop, false, "F the flinch plays once")
 	step(0.4)
-	eq(anim_of(p), "stand", "F the flinch ends")
+	eq(anim_of(p), "stand_resume", "F the flinch ends")
 	GV.flinch(p)
 	step(0.05)
 	eq(anim_of(p), "stand", "F no second flinch within 1.5 s")
@@ -423,6 +453,10 @@ do
 	step(0.05)
 	eq(anim_of(p), "bow_walk", "F never over the drawn bow")
 	draws[p.name] = nil
+	step(0.05)
+	eq(anim_of(p), "walk_resume", "K the draw's end hands back through walk_resume")
+	step(0.05)
+	eq(anim_of(p), "walk", "K ... once")
 	p.controls = {}
 	step(2)
 	player_api.player_attached[p.name] = true

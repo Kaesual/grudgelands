@@ -132,8 +132,9 @@ local function frame_offset(player_data, anim, now)
 	return length > 0 and offset % length or 0
 end
 
--- GRUG PATCH: `restart` plays the animation from its first frame even when it
--- is already playing (a one-shot fired again). Two animations sharing a
+-- GRUG PATCH: `restart` plays the animation from its first frame (or from the
+-- frame offset it names) even when it is already playing (a one-shot fired
+-- again). Two animations sharing a
 -- `_grug_phase` group continue each other's frame offset instead of starting
 -- over: the walk cycle across walk, walk_mine and the pose clips' walking
 -- twins, a one-shot across its standing and walking twin (grug_visuals).
@@ -157,7 +158,7 @@ function player_api.set_animation(player, anim_name, speed, loop, restart)
 	local previous_anim = model.animations[player_data.animation] or {}
 	local anim = model.animations[anim_name]
 	local now = core.get_us_time()
-	local offset = 0
+	local offset = type(restart) == "number" and math.min(restart, anim.y - anim.x) or 0
 	if not restart and anim._grug_phase
 			and anim._grug_phase == previous_anim._grug_phase then
 		offset = math.min(frame_offset(player_data, previous_anim, now), anim.y - anim.x)
@@ -226,7 +227,8 @@ function player_api.register_control_animation_override(callback)
 end
 
 -- GRUG PATCH: an override answers the animation and optionally `loop` (false
--- plays it once) and `restart` (replay it from the start although it runs).
+-- plays it once) and `restart` (replay it although it runs: true from the
+-- start, a number from that frame offset).
 local function control_animation_override(player, controls)
 	for index = 1, #control_animation_overrides do
 		local animation, loop, restart =

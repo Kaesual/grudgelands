@@ -61,7 +61,7 @@ local model = poses_file and grug_visuals.PLAYER_MODEL or "character.b3d"
 
 local draws = {}
 local scout_hook = read("mods/PLAYER/grug_abilities/scout.lua"):match(
-	"\n(player_api%.register_control_animation_override%(function.-\nend%))\n")
+	"\n(local bow_shown = {}\nplayer_api%.register_control_animation_override%(function.-\nend%))\n")
 assert(loadstring("local draws = ...\n" .. scout_hook, "=scout.lua hook"))(draws)
 
 local sent = 0

@@ -314,13 +314,29 @@ do
 	-- of one group continues the frame offset instead of starting over. The
 	-- walking clips share the walk cycle, so a pose taken or dropped on the
 	-- move keeps the legs' stride; a one-shot's two twins share its progress.
+	animations.stand._grug_phase = "stand"
 	animations.walk._grug_phase = "walk"
+	animations.mine._grug_phase = "mine"
 	animations.walk_mine._grug_phase = "walk"
 	for pose, clip in pairs(grug_visuals.POSE_CLIPS) do
 		animations[pose] = {x = clip.stand.x, y = clip.stand.y,
 			_grug_phase = clip.once and pose or nil}
 		animations[pose .. "_walk"] = {x = clip.walk.x, y = clip.walk.y,
 			_grug_phase = clip.once and pose or "walk"}
+	end
+	-- The way back from a pose for the player's OWN client: a 5.17 client
+	-- applies a server animation to its own model only when the range is
+	-- none of its four local ones (stand, walk, mine, walk_mine;
+	-- content_cao.cpp GenericCAO::applyTrackAnimation), so a plain `stand`
+	-- after a pose would leave the pose looping in its own third-person view
+	-- until the movement changes. Each `<base>_resume` is its base one frame
+	-- shorter (the base's last frame repeats its first), a range that client
+	-- does not know; poses.lua answers it for the one step a pose ends, and
+	-- the shared group carries the frame offset on into the base.
+	for _, base_name in ipairs({"stand", "walk", "mine", "walk_mine"}) do
+		local a = animations[base_name]
+		animations[base_name .. "_resume"] = {x = a.x, y = a.y - 1,
+			_grug_phase = a._grug_phase}
 	end
 	player_api.register_model(grug_visuals.PLAYER_MODEL, {
 		animation_speed = base.animation_speed,

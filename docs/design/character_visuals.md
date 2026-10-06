@@ -382,7 +382,9 @@ nothing per step on the server and every client plays them. NPCs keep
   holds **1.0 s**, not the whole 8 s buff, because the Warrior fights on
   under it and a held guard would hide every swing. The bow pose lasts as
   long as the draw; Charge's as long as the dash. The newest pose replaces a
-  running one; a second Mighty Blow restarts `swing`.
+  running one; a second Mighty Blow restarts `swing`. `swing` starts at
+  its frame 4, the top of the swing, because the hit has already landed
+  when the pose fires; the blend raises the arm.
 - **The flinch** plays on a hit that does not kill, at most once per
   **1.5 s**, and only over the plain stand, walk and punch animations: never
   over another pose, the drawn bow, a seat or death.
@@ -400,11 +402,14 @@ nothing per step on the server and every client plays them. NPCs keep
   the twist so its lower corner clears the leg. The clearance check covers
   every pose frame: the closest leg gap of the pose clips is 0.43 model
   units, the base clips' 0.40.
-- **Who sees them.** Every other player sees every pose. In first person
-  the engine draws no own body; in a player's own third-person view the
-  client plays its own stand, walk and punch animations locally, so the
-  walking twins (and, depending on the client build, the standing poses)
-  may not show there.
+- **Who sees them.** Every player sees every pose, the posing player in
+  third person too (in first person the engine draws no own body). A 5.17
+  client plays its own stand, walk and punch animations itself and ignores
+  a server animation with one of those four frame ranges, so the end of a
+  pose (its time running out, the dash or the draw ending) plays a
+  `<base>_resume` animation for one step: the base animation one frame
+  shorter, a range the client does not ignore. Without it the player's own
+  view would keep the pose until the movement changed.
 
 ## 6. Round 11 item and station presentation
 
