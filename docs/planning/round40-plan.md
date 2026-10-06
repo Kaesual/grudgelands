@@ -156,6 +156,14 @@ The user (2026-10-06):
     cross them, but it never lands in a liquid. Otherwise the warrior stops
     at the rim, which counts as a miss (the cooldown is spent, §2.3).
 
+17. **Charge, after lane CH** (the user, 2026-10-06): a dip wider than four
+    nodes whose ground is in reach is followed (down, run, up), like
+    terrain; only a real hole stops the dash at the rim. The hole width is
+    measured along the dash line (a hole crossed diagonally is wider). The
+    hold of about 0.34 s after the arrival (it lets the client's drawn
+    carrier catch up, which fixed the uphill stop short) is accepted, if a
+    short check finds nothing shorter that keeps the uphill fix.
+
 ## 3. Research results (2026-10-06, verified at the cited lines)
 
 ### 3.1 Cooldown overlay
