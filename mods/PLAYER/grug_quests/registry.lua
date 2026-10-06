@@ -3,8 +3,9 @@ grug_quests.registered_quests = quests
 grug_quests.registered_npcs = npcs
 grug_quests.quests_by_npc = {}
 grug_quests.npc_by_socket = {}
--- Entity names any quest-only drop can come from (roll_quest_drops' early exit).
-grug_quests.quest_drop_mobs = {}
+-- Mob names any quest-only drop can come from (roll_quest_drops' early
+-- exit; Round 38: a drop counts by the name the mob shows).
+grug_quests.quest_drop_names = {}
 local function integer(n)
 	return type(n) == "number" and n >= 0 and n <= 2147483647 and n % 1 == 0
 end
@@ -19,9 +20,10 @@ end
 -- The hold of a "use at a place" objective, in whole seconds.
 grug_quests.USE_HOLD_MIN, grug_quests.USE_HOLD_MAX = 1, 15
 -- Objectives (Round 28 rulings 39 and 41): `kill` names `mobs` (entity
--- names; the loader turns design `roles` into them), optionally limited to
--- one spawn `area` ("zone/area", credited by the mob's `_grug_area` tag),
--- and `zones`, the zone each target's label names it in (labels.lua);
+-- names; the loader turns design `roles` into them), optionally one spawn
+-- `area` ("zone/area"); both only select `names` (per role, labels.lua
+-- Q.target_names) and `name_set`: a kill counts by the name the mob shows
+-- (Round 38);
 -- `item` names one `item` or an item `group`; `talk` is a travel quest's
 -- only objective; `use` (Round 36) names a `place` (a clash site's
 -- settlement key or a recipe quest place "zone/id", use.lua), the `object`
@@ -71,7 +73,7 @@ function grug_quests.register_quest(id, def)
 	for _, drop in ipairs(def.quest_drops) do
 		assert(type(drop.item) == "string" and integer(drop.chance) and drop.chance > 0 and
 			type(drop.mobs) == "table" and #drop.mobs > 0, "Invalid quest drop")
-		for _, name in ipairs(drop.mobs) do grug_quests.quest_drop_mobs[name] = true end
+		for name in pairs(drop.name_set or {}) do grug_quests.quest_drop_names[name] = true end
 	end
 	local requirements = {"Minimum level: " .. def.min_level}
 	if #def.prerequisites > 0 then

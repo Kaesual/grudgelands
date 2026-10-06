@@ -45,7 +45,9 @@ local function definition(file, quest)
 		if objective.type == "kill" then
 			row.mobs = V.target_names(objective)
 			row.area = V.area_ref(objective.area, file.zone)
-			row.zones = Q.target_zones(row.mobs, row.area, file.zone) -- labels.lua
+			-- Round 38: the names that count (labels.lua), per role and as a set.
+			row.names = Q.target_names(row.mobs, row.area, file.zone)
+			row.name_set = Q.name_set(row.names)
 		elseif objective.type == "item" then
 			row.item = objective.item
 			row.group = objective.group and objective.group:gsub("^group:", "") or nil
@@ -63,8 +65,10 @@ local function definition(file, quest)
 	end
 	local drops = {}
 	for index, drop in ipairs(quest.quest_drops or {}) do
-		drops[index] = {item = drop.item, chance = drop.chance, mobs = V.target_names(drop),
-			area = V.area_ref(drop.area, file.zone)}
+		local mobs, area = V.target_names(drop), V.area_ref(drop.area, file.zone)
+		local names = Q.target_names(mobs, area, file.zone)
+		drops[index] = {item = drop.item, chance = drop.chance, mobs = mobs, area = area,
+			names = names, name_set = Q.name_set(names)}
 	end
 	local rewards = quest.rewards
 	local copper = rewards.copper
@@ -220,6 +224,10 @@ local function world_view()
 			zone_cache[zone] = out
 			return out
 		end,
+		-- The names a kill objective or quest drop counts (labels.lua) and
+		-- a PvP camp's captain on this world (Round 38).
+		target_names = Q.target_names,
+		captain_name = Q.captain_name,
 		item = function(name)
 			return core.registered_items[name] ~= nil or core.registered_aliases[name] ~= nil
 		end,
@@ -263,7 +271,12 @@ function Q.validate_quest_data(files)
 	for _, row in ipairs(V.each_quest(files)) do
 		local def = Q.registered_quests[row.quest.id]
 		for index, objective in ipairs(def and row.quest.objectives or {}) do
-			def.objectives[index].levels = V.objective_levels(world, row.file.zone, row.quest, objective)
+			local levels = V.objective_levels(world, row.file.zone, row.quest, objective)
+			-- Round 38: a kill counts every mob of its names, so the log shows
+			-- the levels of every slot bearing them (data/names.json); a name
+			-- the file does not hold (a PvP captain) adds the selected levels.
+			if objective.type == "kill" then levels = Q.names_levels(def.objectives[index].names, levels) end
+			def.objectives[index].levels = levels
 		end
 	end
 end
