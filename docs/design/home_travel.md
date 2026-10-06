@@ -49,8 +49,8 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
 - This is the current V1 return/respawn mechanism. The waypoint network
   (WP17, Round 29, [world.md](world.md) §6) is a separate travel feature and
   adds no home points. It shares the one travel path of
-  `grug_home/travel.lua` (dismount, emerge, deferred re-validation, safe
-  arrival) through `grug_home.travel`, but never starts or reads the home
+  `grug_home/travel.lua` (a running Charge dash ended, dismount, emerge,
+  deferred re-validation, safe arrival) through `grug_home.travel`, but never starts or reads the home
   cooldown, and only one trip per player is prepared at a time.
 
 ## Claim Stone as travel home (Round 25)

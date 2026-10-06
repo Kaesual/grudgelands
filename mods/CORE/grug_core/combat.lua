@@ -61,6 +61,11 @@ core.register_on_leaveplayer(function(player)
 	mounted_refusal_notice[player:get_player_name()] = nil
 end)
 
+-- Ends a player's Charge dash now (installed by grug_abilities, charge.lua):
+-- travel calls it before its set_pos, which a player riding the dash's
+-- carrier would ignore. nil until installed.
+grug_core.cancel_dash = nil
+
 -- Shared minimum-level decision for every item-backed gate. Gear, food and
 -- future potions/elixirs all publish `_grug_ilvl`; callers own only their
 -- context-specific refusal text.

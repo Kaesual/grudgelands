@@ -724,7 +724,7 @@ grug_abilities.CAST_SOUNDS = {
 -- The pose clip each skill plays when it really fires (Round 40, round40-plan
 -- §2.14; grug_visuals/poses.lua): a cast skill when try_cast succeeds, a swing
 -- skill's proc when it lands. A refused cast and the Strike fallback (a
--- swing without a proc) play none. Charge's pose follows its dash (lane CH,
+-- swing without a proc) play none. Charge's pose follows its dash (charge.lua,
 -- grug_visuals.start_pose/stop_pose), the Scout's drawn bow is scout.lua's.
 grug_abilities.SKILL_POSES = {
 	fireball = "cast1", smite = "cast1", word_of_ruin = "cast1",
@@ -2390,6 +2390,10 @@ local destinations = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/blink.lua")
 grug_abilities.blink_destination = destinations.blink
 grug_abilities.charge_destination = destinations.charge
+-- Charge's dash: the pure path planner and the carrier (charge.lua).
+dofile(core.get_modpath(core.get_current_modname()) .. "/charge.lua")(
+	dofile(core.get_modpath(core.get_current_modname()) .. "/charge_path.lua"),
+	destinations.charge_reach)
 -- Crosshair state overlay and the progress ring; scout.lua (bow draw) and
 -- input.lua (eating) drive the ring.
 grug_abilities.crosshair = dofile(core.get_modpath(core.get_current_modname()) ..

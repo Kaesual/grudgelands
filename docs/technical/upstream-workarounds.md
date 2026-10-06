@@ -112,6 +112,29 @@ Engine reference for the line citations: `reference_projects/luanti` at
   under parallel emerge must be shown first). The pin, the manifest's
   `emerge_threads` field and its planner check change together.
 
+## 3. The first bone override snaps, and one back at identity is erased
+
+- **Upstream problem:** the client interpolates a bone override only from an
+  override it already knows. The first `AO_CMD_SET_BONE_POSITION` for a bone
+  disables interpolation (`src/client/content_cao.cpp` `processMessage`,
+  "Disable interpolation"), so an override that starts a blend snaps instead;
+  and the client drops an override once it has finished blending back to
+  identity (`content_cao.cpp` `setOnAnimateCallback`, `BoneOverride::
+  isIdentity` in `src/activeobject.h`), so the next one is a first one again
+  and snaps too.
+- **Issue:** none filed; engine behaviour as of 5.17.0-dev (`df0487906`).
+- **Our workaround:** Charge's `Body` lead (`grug_abilities/charge.lua`,
+  Round 40) never starts from or returns to identity: every player gets a
+  `Body` position override of 0.01 model units (invisible) on joining, the
+  dash blends from it to the lead and back to it.
+- **How to tell upstream fixed it:** a first override with an interpolation
+  time blends from the animated pose instead of snapping (the `else` branch
+  in `processMessage` keeps the sent `interp_duration`); the erase at
+  identity is harmless then.
+- **What to remove then:** the join-time epsilon in `charge.lua`; the lead
+  may then start from and end at no override (`set_bone_override("Body",
+  nil)` after the blend back).
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields
@@ -127,6 +150,15 @@ Engine reference for the line citations: `reference_projects/luanti` at
 - `grug_ambience` drops loop emitters beyond their hearing distance itself
   because `max_hear_distance` does not apply to a `to_player` sound: engine
   semantics, not a bug.
+- A fast attached ride leaves the client behind: the client draws an
+  entity through `SmoothTranslator`, which closes 0.8 of the gap per server
+  step (`content_cao.cpp` `SmoothTranslator::translate` and the
+  non-physical branch of `GenericCAO::step`), an attached local player
+  copies that drawn position (`localplayer.cpp` "Copy parent position if
+  local player is attached"), and on detach the client keeps it. Charge's
+  dash therefore holds on its stop for three time constants and puts the
+  player on it with `set_pos` after the detach (the engine sends the detach
+  first, `Server::SendMovePlayer`). Smoothing by design, not a bug.
 - Comments that describe engine behaviour our code follows (attached-node
   lamps in `grug_mapgen/wp13/parts.lua`, craft replacements in
   `grug_traders/prices.lua`, the client camera offset FIXME `#16221` in the

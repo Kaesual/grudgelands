@@ -371,6 +371,9 @@ grug_abilities = {
 		return kind == "hostile" and obj == mob
 	end,
 	charge_destination = function() return vector.new(0, 0, 4.7) end,
+	-- Round 40 CH: the dash starts here and plays the ring on arrival
+	-- (charge.lua, tools/r40_ch covers it): nothing plays at the cast.
+	charge_dash = function() return true end,
 	blink_destination = function() return vector.new(0, 0, 10) end,
 	add_rage = function() end,
 	crosshair = {set_ring = function() end},
@@ -449,7 +452,7 @@ local HIT = {status = "target", target = mob, reason = "target", distance = 6, r
 	pointed = {intersection_point = vector.new(0, 1, 6)}}
 local MISS = {status = "aim_miss", reason = "empty"}
 local CASTS = {
-	{"charge", "warrior", "charge_ring"}, {"taunt", "warrior", "taunt"},
+	{"charge", "warrior", ""}, {"taunt", "warrior", "taunt"},
 	{"hold_ground", "warrior", "hold_ground"}, {"ice_nova", "mage", "ice_nova"},
 	{"blink", "mage", "blink"}, {"cinderfall", "mage", "cinderfall"},
 	{"glacial_ward", "mage", "glacial_ward"}, {"smite", "priest", "smite"},
@@ -549,6 +552,7 @@ end
 ------------------------------------------------------------------------------
 P = load_helper(nil)
 local FILES = {"mods/PLAYER/grug_abilities/kits.lua", "mods/PLAYER/grug_abilities/scout.lua",
+	"mods/PLAYER/grug_abilities/charge.lua",
 	"mods/CORE/grug_core/combat.lua", "mods/CORE/grug_core/particle_effects.lua",
 	"mods/ENTITIES/grug_projectiles/init.lua", "mods/PLAYER/grug_xp/init.lua"}
 local seen = 0

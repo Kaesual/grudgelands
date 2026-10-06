@@ -613,7 +613,7 @@ Mighty Blow is the design working, not a bug.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 12 % of a base hit (`combat_stats.md` §2; the former flat 3 at level 30) and, on an accepted hit, a 1.5 s stun. Kings and dragons are stun-immune. Teleport movement is retained; no enemy-memory fallback. Destination below. |
+| Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away; on arrival within reach 12 % of a base hit (`combat_stats.md` §2; the former flat 3 at level 30), the 15 rage and, on an accepted hit, a 1.5 s stun. A dash that ends out of reach is a miss: the cooldown is spent, nothing else. Kings and dragons are stun-immune. No enemy-memory fallback. Destination, dash and arrival below. |
 | Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
 | Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Mend has been since WP19. |
 | Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4). |
@@ -629,6 +629,44 @@ stays at most 3 m (melee reach) horizontally from the target's centre. With
 no room the cast fails with "Not enough room at target." and costs neither
 rage nor cooldown. While LMB stays held on the target, a failed Charge is
 retried at most every 0.25 s; Strike swings in between.
+
+**Charge is a dash** (Round 40, rulings 3, 10, 11 and 16 of the
+[round plan](../planning/round40-plan.md)). The warrior rides an invisible
+carrier from the cast position to the destination at a constant **24 m/s**
+and cannot steer; the path is planned once at the cast from the ground along
+the line (`grug_abilities/charge_path.lua`): level ground is a straight run,
+every step, slope, low obstacle (at most 1.6 m) or drop (at most 4 m) is a
+ballistic hop, so uphill the dash reads as leaps.
+
+- **Holes:** where the ground drops away (no ground, a liquid, or ground
+  lower than the rim) and comes back within **4 nodes** (rim to far rim) at
+  most **one node above the rim**, the hole is crossed in **one hop**,
+  whatever its depth; shallow dips are jumped too. Liquids count as air: a
+  hop crosses them, but the dash never lands or stands in a liquid. A hole
+  that does not come back that way stops the dash **at its rim**; ground
+  within reach below is followed down (a ledge, a wide dip), and a dash that
+  then cannot climb out again stops at the rim of that drop.
+- **Arrival:** when the dash ends, the hit lands if the warrior's feet are
+  within **3 m** (`CHARGE_REACH`, the Strike range) of the target's
+  collision box and the target is still a valid hostile (re-fetched; the PvP
+  flags asked again): damage, the stun, the 15 rage and the dust ring at the
+  target. Otherwise it is a **miss** — a wall, a rim, a target that moved —
+  and only the cooldown is spent. A cast that cannot start (no target, no
+  room) still costs nothing.
+- **Cancelled:** a stun or root on the warrior, death, logout and every
+  travel (`grug_home/travel.lua`, before its teleport) end the dash at once
+  as a miss, the warrior let go where the planned path is at that moment (a
+  logout mid-hop: on the hop's takeoff, never saved in the air). A warrior
+  rooted at the cast does not move.
+- **During the dash** hits reach the warrior (no immunity); knockback and
+  pulls do not change where the dash ends. He keeps the charge pose; in third person and for
+  others the model runs 0.5 m ahead of the camera on dashes of 3 m or more;
+  first person gets a short FOV kick (×1.1). Dust rises along the level
+  stretches.
+- **The stop:** the warrior is held on the stop for about 0.34 s (three of
+  the client's smoothing time constants at the default 0.09 s server step)
+  and then put exactly on it, so the client's trailing drawn position
+  cannot leave him short (on a stair, the stair below).
 
 ### The rage ledger (ruling 25, 2026-09-16)
 

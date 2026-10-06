@@ -126,9 +126,9 @@ function grug_visuals.play_pose(player, pose, hold)
 	start(player, pose, core.get_us_time() + hold * 1e6)
 end
 
--- Holds `pose` until stop_pose: the seam for an action with its own end (lane
--- CH's Charge dash: start_pose(player, "charge") and stop_pose on arrival,
--- miss or cancel).
+-- Holds `pose` until stop_pose: the seam for an action with its own end
+-- (Charge's dash, grug_abilities/charge.lua: start_pose(player, "charge")
+-- and stop_pose at its stop or cancel).
 function grug_visuals.start_pose(player, pose)
 	start(player, pose, nil)
 end
