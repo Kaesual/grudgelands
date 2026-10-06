@@ -1247,7 +1247,7 @@ guards and named rares carry their name key from their placement).
   (`tools/r38_names/check_rules.py`, `--shipped` the naming gate) and the
   quest-name guarantee validator (`guarantee.py`).
 - **Names** (V, Z1–Z7, T, the page, B2): the user's picks in
-  `grug_mobs/data/names.json`, 535 of 950 slots renamed, 356 → 513
+  `grug_mobs/data/names.json`, 536 of 950 slots renamed, 356 → 513
   distinct names, the plan's rule breaks 374 → 0; code-built names read
   the file; the dragon whelps at level 60.
 - **The quest-name guarantee** (M/B1): a kill counts by the name the mob
@@ -1263,7 +1263,7 @@ guards and named rares carry their name key from their placement).
 none blocks the GUI test.
 
 - **Dragon broadcasts** put "The " before the names file's dragon name in
-  code (`boss_dragons.lua`): a dragon renamed to a proper name would read
+  code (`bosses.lua`): a dragon renamed to a proper name would read
   "The <Name>".
 - **Achievement short forms:** "Kill the Wyrmglass Dragon" and "Kill the
   Stormscale Wyvern" (`grug_achievements/catalog.lua`) keep the short

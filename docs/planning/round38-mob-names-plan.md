@@ -286,7 +286,7 @@ Numbers come from the lanes' tools, run the same way before and after;
 - **B2 the accepted names** (merge `6397120c`; [biomes_mobs.md
   "Names"](../design/biomes_mobs.md#round-28-sub-types-and-loot-by-band)):
   `names.json` from the picks of Z1–Z7 (`gen_names.py --proposals`):
-  **535 of 950 slots renamed**, **356 → 513 distinct names** (330 → 485
+  **536 of 950 slots renamed** (535 by lane B2, the Kraken by lane IB), **356 → 513 distinct names** (330 → 485
   on the zone slots), §2.2 breaks **374 → 0**. Kings, royal guards, the
   General's bodyguards, the dragons and their broadcast, the whelps and
   the rift boss read their names from the file, no second copy in code;
@@ -393,7 +393,7 @@ this lane. Helpers: `/xp give`, `/teleport`, `/giveme`, `/time`
    meaner one read as such without a signal word?
 4. **A PvP garrison quest** (for example `ashenward_bastion_picket_broken`,
    "Blind the …" at level 42): the text names the camp's guards (Throng
-   Pickets) and the captain by his own name; the guards and the captain
+   Pickets) and the captain by name; the guards and the captain
    count.
 5. **The Map tab's king markers:** "Dur Brannoc King" once, "King of
    Highcourt" as it is.

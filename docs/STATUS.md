@@ -16,7 +16,7 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   - **Names (I, V, Z1–Z7, C, T, the page, B2):** new names for every mob
     slot in the user's picks from the
     [preview page](https://claude.ai/artifact/BaT3x8SHz3PiRduScz39aG):
-    535 of 950 slots renamed, 356 → 513 distinct names, the plan's hard
+    536 of 950 slots renamed, 356 → 513 distinct names, the plan's hard
     name rules broken 374 → 0 times (at most two words for normal mobs,
     no signal words, Piglet only for the start pigs, one level stretch
     within one drop tier); kings, royal guards, dragons, whelps and the

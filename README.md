@@ -117,7 +117,7 @@ that no longer throw you off when a buff runs out, and Round 36 brought
 each faction's main story from level 41 to 60, with its finale against
 Isquarre at the rift. Start a new world: worlds made before Round 36 miss
 the decoration, the dragon arenas, benches, ground cover and roads, and
-guards and named creatures placed before Round 38 keep their old names.
+guards and named creatures placed before Round 38 may show a wrong name.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the

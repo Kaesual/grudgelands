@@ -13,8 +13,8 @@ the [project status](docs/STATUS.md) and the round plans.
 
 New names for the creatures of every zone, and kill quests that count
 every creature of the name they ask for. **New world:** guards and named
-creatures that an older world has already placed keep their old names, so
-their quests might not count them.
+creatures that an older world has already placed may show a wrong name,
+so their quests might not count them.
 
 - Creatures carry short names that suit their zone, such as the Barrow
   Piglet of Stillgrave Hollow or the Coconut Crab of Kapok Cradle, instead
@@ -33,7 +33,7 @@ their quests might not count them.
 - The two whelps a dragon calls when it rages are level 60 like their
   island, no longer level 20, and much tougher.
 - Underground you meet Pit Rats, Crevice Spiders, Buried Miners, Goblin
-  Pelters, Fire Hurlers, Lava Seeps, Bedrock Sentinels and Scree Golems;
+  Pelters, Fire Hurlers, Lava Seeps and Bedrock Sentinels;
   the deep ocean's Kraken Guard is now simply the Kraken.
 - Twelve loot items have shorter names: Cat Claw, Notched Cat Claw,
   Gleaming Cat Claw, Blighted Bear Claw, Pitted Crab Shell, Silver Mane,

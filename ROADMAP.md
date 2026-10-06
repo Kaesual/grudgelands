@@ -323,7 +323,7 @@ are open ([project status](docs/STATUS.md)).
 - [x] **Round 38 "Mob names"**
   ([completion](docs/planning/round38-mob-names-plan.md#completion-2026-10-06)):
   short names with the zone's feel instead of signal words for every mob
-  slot, picked by the user on a preview page (535 of 950 slots renamed,
+  slot, picked by the user on a preview page (536 of 950 slots renamed,
   rules for words, signal words, Piglet and level stretches checked by
   `check_rules.py --shipped`); a mob's name is the exact answer to which
   mobs a quest means — a kill counts by the shown name, which fixes the
