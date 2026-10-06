@@ -204,6 +204,7 @@ local function new_player(name)
 	local inv = {
 		get_size = function(_, list) return list == "main" and 32 or 0 end,
 		get_stack = function(_, list, i)
+			p.reads = (p.reads or 0) + 1
 			local item = list == "main" and p.main[i] or ""
 			return {get_name = function() return item end}
 		end,
@@ -365,6 +366,37 @@ do
 	eq(changes, 71 + 63, "D 300 s: one write per frame and per number change, nothing else")
 	eq(p.writes.add, 2, "D 300 s: the two elements added once")
 	eq(p.writes.remove, 2, "D 300 s: removed once at the end")
+end
+
+-- A restart of a skill already on the bar reads no stack; the periodic
+-- checks of players activated one after another fall on different passes.
+do
+	local p = new_player("restart")
+	p.main[4] = "grug_abilities:taunt"
+	H.track(p, "taunt", {expiry = now_us + 8e6, duration = 8})
+	local reads = p.reads
+	H.track(p, "taunt", {expiry = now_us + 8e6, duration = 8})
+	eq(p.reads, reads, "D a restart of a skill on the bar reads no stack")
+	p.main[4], p.main[2] = "", "grug_abilities:taunt"
+	inv_action(p)
+	pass(p)
+	check(covers(p)[2] ~= nil, "D after an inventory action the moved skill is read again")
+	leave_fn(p)
+	local phases = {}
+	for i = 1, H.LAYOUT_EVERY do
+		local q = new_player("phase" .. i)
+		q.main[1] = "grug_abilities:taunt"
+		H.track(q, "taunt", {expiry = now_us + 8e6, duration = 8})
+		phases[H.state(q.name).check] = true
+	end
+	local n = 0
+	for _ in pairs(phases) do n = n + 1 end
+	eq(n, H.LAYOUT_EVERY, "D five players activated in turn: five different check phases")
+	for i = 1, H.LAYOUT_EVERY do H.forget("phase" .. i) end
+	for _, c in ipairs(cases) do
+		local info = {size = {x = c.W, y = c.H}, real_hud_scaling = c.hud, real_gui_scaling = c.gui}
+		eq(M.layout_key(info, c.n), M.layout(info, c.n).key, "D layout_key is the layout's key")
+	end
 end
 
 -- A leave drops the state.

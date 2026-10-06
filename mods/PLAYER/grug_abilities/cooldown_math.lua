@@ -161,27 +161,42 @@ local function place(dx, dy, size, sf)
 	}
 end
 
--- The layout of `count` hotbar slots for a player's window information
--- (`info`, nil when the client sends none): {key, rows, slots = {[i] = place}}.
--- `key` changes whenever an input does, so a caller re-places its elements
--- only then. Without window information the slots are fixed HUD units for
--- density 1 and one row, which the engine scales (exact where its integer
--- rounding agrees: hud_scaling 1, 1.5, 2 ...).
-function M.layout(info, count)
+-- The window information a layout can use, or nil (none, or incomplete).
+local function usable(info)
 	local size_x = info and info.size and info.size.x
 	local hud = info and tonumber(info.real_hud_scaling)
 	local gui = info and tonumber(info.real_gui_scaling)
-	if not (size_x and hud and gui and hud > 0 and gui > 0) then
-		local out = {key = "plain " .. count, rows = 1, slots = {}}
+	if size_x and hud and gui and hud > 0 and gui > 0 then
+		return size_x, info.size.y, hud, gui
+	end
+end
+
+-- What a layout depends on, as a string: it changes whenever an input does,
+-- so a caller builds a new layout (and re-places its elements) only then.
+function M.layout_key(info, count)
+	local w, h, hud, gui = usable(info)
+	if not w then return "plain " .. count end
+	return ("%d %d %.4f %.4f %d"):format(w, h, hud, gui, count)
+end
+
+-- The layout of `count` hotbar slots for a player's window information
+-- (`info`, nil when the client sends none): {key, rows, slots = {[i] = place}}.
+-- Without window information the slots are fixed HUD units for density 1
+-- and one row, which the engine scales (exact where its integer rounding
+-- agrees: hud_scaling 1, 1.5, 2 ...).
+function M.layout(info, count)
+	local key = M.layout_key(info, count)
+	local w, h, hud, gui = usable(info)
+	if not w then
+		local out = {key = key, rows = 1, slots = {}}
 		for i = 1, count do
 			local x = -count * 28 + 4 + (i - 1) * 56
 			out.slots[i] = place(x, -56, M.ICON, 1)
 		end
 		return out
 	end
-	local key = ("%d %d %.4f %.4f %d"):format(size_x, info.size.y, hud, gui, count)
 	local density = gui
-	local g = M.engine_slots({width = size_x, height = info.size.y,
+	local g = M.engine_slots({width = w, height = h,
 		density = density, hud_scaling = hud / density, count = count})
 	local out = {key = key, rows = g.rows, slots = {}}
 	for i, s in ipairs(g.slots) do

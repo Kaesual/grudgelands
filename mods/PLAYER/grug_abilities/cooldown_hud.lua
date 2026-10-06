@@ -85,10 +85,10 @@ end
 local function check_layout(player, st)
 	local count = math.min(player:hud_get_hotbar_itemcount(),
 		player:get_inventory():get_size("main"))
-	local layout = M.layout(H.window_info(player:get_player_name()), count)
-	if not st.layout or layout.key ~= st.layout.key then
+	local info = H.window_info(player:get_player_name())
+	if not st.layout or M.layout_key(info, count) ~= st.layout.key then
 		clear_shown(player, st)
-		st.layout, st.count = layout, count
+		st.layout, st.count = M.layout(info, count), count
 	end
 end
 
@@ -164,15 +164,25 @@ function H.track(player, id, rec, now)
 	if not rec or not (rec.duration > 0) then return end
 	local name = player:get_player_name()
 	local st = states[name]
-	if not st then
+	local fresh = not st
+	if fresh then
 		st = {player = player, timers = {}, slots = {}, shown = {}, count = 0,
 			check = 0, scan = true}
 		states[name] = st
 		activate(name)
 	end
 	st.timers[id] = rec
-	st.scan = true
+	-- A restart of a skill already found on the bar needs no new read.
+	local known = false
+	for _, slot_id in pairs(st.slots) do
+		if slot_id == id then known = true break end
+	end
+	if not known then st.scan = true end
 	H.update(player, now or core.get_us_time())
+	if fresh then
+		-- Spread the periodic checks of many players over the passes.
+		st.check = 1 + #order % H.LAYOUT_EVERY
+	end
 end
 
 function H.forget(name)
