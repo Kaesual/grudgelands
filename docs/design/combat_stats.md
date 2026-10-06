@@ -1405,5 +1405,6 @@ shows a single-colour particle effect, built from the accepted catalogue
   per-player amount or toggle and no client detection. It multiplies every
   spawner's amount and every single-particle count, rounded, with at least
   one particle per emitter; lifetimes, shapes and speeds stay. 0 turns
-  particles off entirely. It exists to correct the amounts if web tests show
+  the skill, proc, crit and shield particles off (effects not yet on the
+  helper, such as the stun cross, root crystals and mob effects, stay). It exists to correct the amounts if web tests show
   a problem.

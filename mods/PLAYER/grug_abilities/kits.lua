@@ -336,8 +336,9 @@ grug_abilities.register_ability({
 
 -- The dust trail of a Charge dash for lane CH (round40-plan.md §4.2):
 -- dust kicked up along the ground from `from` to `to` (feet positions) over
--- `duration` seconds, an unattached spawner of at most 1 s (a longer dash
--- shows dust over its first second only). Charge teleports today and does
+-- `duration` seconds, an unattached spawner of at most 1 s (the helper caps
+-- the time, so for a dash longer than 1 s the dust would run ahead of the
+-- warrior: call it per piece of at most 1 s). Charge teleports today and does
 -- not call it; the arrival ring above stays at the cast until the dash
 -- moves it to the arrival.
 function grug_abilities.charge_dust(from, to, duration)
