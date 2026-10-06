@@ -2,10 +2,35 @@
 
 Updated 2026-10-06. This is the delivery pointer, not another game specification.
 
-- **Round 40 "Combat feel" running** (started 2026-10-06 from origin/main
-  `d018d866`, [plan](planning/round40-plan.md)): wave 1 builds the
-  acceptance pages and the GUI probe for the cooldown overlay, the
-  animations, the Charge dash and the particle effects.
+- **Round 40 "Combat feel" complete locally, not pushed**
+  (2026-10-06, [plan, completion and GUI checklist](planning/round40-plan.md#completion-2026-10-06)).
+  Started from origin/main `d018d866`; wave 1 built the acceptance pages
+  and a GUI probe, wave 2 the user's picks. Every lane is merged on main
+  (last AN2, `bd52bbf4`, then this documentation lane D), each code lane
+  independently reviewed by Opus (MERGE or MERGE AFTER FIXES, the fixes
+  made before the merge) and ended with a smoke boot; main has 119
+  portable fixtures. No world generation changed (no seed fleet): an
+  existing world is enough for the GUI test, a new character for the
+  check that skill items show no wear bar.
+  - **Cooldown overlay (CD):** a 50 % black cover clearing clockwise and
+    the time left as image digits on hotbar slots, replacing the wear bar;
+    a 0.1 s pass over players with a running timer, writing only visible
+    changes and no inventory.
+  - **Poses and head look (AN1, AN2):** seven poses baked into the player
+    model, standing and walking, blended over 0.12 s; the head follows the
+    look pitch in 5° steps (at most about four writes a second per
+    player, none standing still).
+  - **Charge (CH):** a dash at 24 m/s on a path planned at the cast, with
+    the user's hole rule; the hit, stun and rage on arrival, a miss spends
+    only the cooldown; the arrival hold of about 0.34 s stays until the
+    user's GUI pick.
+  - **Particles (PX, PM):** one helper and `grug_particle_scale` for every
+    effect; every player skill but Strike, the bosses and the mob
+    specials; a busy fight about 20 KB/s into each nearby player and about
+    2.6 ms/s of main thread at scale 1.0 (model estimates).
+  - Next: the round-end gates on main, the sync, and the user's GUI test
+    (desktop and web build); the overlay is accepted only provisionally
+    until then.
 
 - **Round 39 "Web data for the realm website" complete and pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round39-web-data-plan.md#completion-2026-10-06)).
@@ -653,12 +678,10 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 37 (`27e5db87` and lane D), on top
-  of Round 36 with its follow-up lanes (`0f169898`), Rounds 20–35 and the
-  2026-09-28 playtest fixes. Round 37 is not pushed; everything up to it
-  is: the user pushed Round 36 on 2026-10-05 (`1e8a975d`, then `0f169898`
-  with the follow-up lanes); origin/main then took the October 2026 audit
-  and the Round 37 plan (`211229e2`). Round 29
+- **Latest game:** main carries Round 40 (`bd52bbf4` and lane D), on top
+  of Rounds 36–39 (pushed by the user on 2026-10-06, origin/main
+  `d018d866`), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 40
+  is not pushed. Round 29
   was tested by the user on a fresh world (2026-10-02), the user's Round 33
   findings became Round 34's fix lanes, the Round 34 findings Round 35 and
   the first Round 35 findings Round 36's lane F; Rounds 25–35 count as
@@ -679,7 +702,11 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user's
   ruling of 2026-10-05, [Round 37 plan](planning/round37-plan.md) §2.3.5);
   Round 24 was accepted earlier, and its build contains Rounds 20–23 and
-  the 2026-09-28 playtest fixes. **Rounds 36 and 37 are open.** The
+  the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06.
+  **Rounds 36, 37, 38 and 40 are open** (Round 40's
+  [checklist](planning/round40-plan.md#gui-playtest-checklist) covers the
+  cooldown overlay, the poses and head look, the Charge dash and every
+  particle effect at two scales, desktop and web build). The
   [Round 37 checklist](planning/round37-plan.md#gui-playtest-checklist)
   covers group fights and taunts, the elite wind-up, the swing animation,
   mounts and shields when a buff runs out, durability, knockback, the
@@ -723,9 +750,8 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** every round up to Round 36 and its follow-up
-  lanes is pushed (origin/main `0f169898`, 2026-10-05; `211229e2` since with
-  the audit and the Round 37 plan); Round 37 is local.
+- **Remote observation:** every round up to Round 39 is pushed
+  (origin/main `d018d866`, 2026-10-06); Round 40 is local.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.
