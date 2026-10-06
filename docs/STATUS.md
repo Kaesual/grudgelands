@@ -2,9 +2,44 @@
 
 Updated 2026-10-06. This is the delivery pointer, not another game specification.
 
-- **Round 37 "Audit fixes" complete locally, not pushed**
+- **Round 38 "Mob names" complete locally, not pushed**
+  (2026-10-06, [plan, completion and GUI checklist](planning/round38-mob-names-plan.md#completion-2026-10-06)).
+  Every lane is merged on main (last lane PR, `ec2e874c`, then this
+  documentation lane D); each code lane independently reviewed by Opus
+  (lane C, a checker option, without its own review), the naming lanes'
+  proposals by a taste review and the user's page; 108 fixtures pass,
+  `validate.py --game` 0 errors (the same 7 warnings), `check_rules.py
+  --shipped` 0 problems, `guarantee.py --check` passes. No world
+  generation changed (no seed fleet), but the GUI test wants **a fresh
+  world**: garrison guards and named rares carry their name key from their
+  placement. Round end: …
+  - **Names (I, V, Z1–Z7, C, T, the page, B2):** new names for every mob
+    slot in the user's picks from the
+    [preview page](https://claude.ai/artifact/BaT3x8SHz3PiRduScz39aG):
+    535 of 950 slots renamed, 356 → 513 distinct names, the plan's hard
+    name rules broken 374 → 0 times (at most two words for normal mobs,
+    no signal words, Piglet only for the start pigs, one level stretch
+    within one drop tier); kings, royal guards, dragons, whelps and the
+    rift boss read the names file; the dragon whelps at level 60
+    ([biomes_mobs.md](design/biomes_mobs.md#round-28-sub-types-and-loot-by-band)
+    "Names").
+  - **The quest-name guarantee (M/B1):** a kill counts by the name the mob
+    shows, wherever it spawned; objectives leaving same-named mobs
+    uncounted 268 → 0, captain labels naming another mob 21 → 0
+    ([quests.md](design/quests.md#the-quest-name-guarantee-round-38)); the
+    kill path 0.73 → 0.30 µs per kill that credits nothing.
+  - **Texts and terms (B3, IB, PR):** 242 quest text fields on the new
+    names (texts that never say a counted name 216 → 0), the Kraken,
+    twelve shorter item names, Group becomes Party (the tab, the invite,
+    20 "Party: …" quest titles).
+  - Next: the user's GUI test (desktop and web build, a fresh world),
+    together with Rounds 36 and 37, which are still open.
+
+- **Round 37 "Audit fixes" complete and pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round37-plan.md#completion-2026-10-06)).
-  Every lane is merged on main (last lane F, `27e5db87`, then this
+  Pushed on 2026-10-06 with the Round 38 plan (`db848931`; origin/main
+  is now `0ba677fe`, Round 38's start). Every lane is merged on main (last
+  lane F, `27e5db87`, then this
   documentation lane D), each code lane and each non-trivial docs lane
   independently reviewed by Opus; 106 fixtures pass, `validate.py --game`
   0 errors, `income.py --check` passes. The round fixes the
@@ -45,11 +80,10 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
     and version 0.37.0, the world, player and item design docs against the
     code.
   - Next: the user's GUI test (desktop and web build, two clients for the
-    group fight, knockback, the breath fan's bystander and Bone Call's
+    party fight, knockback, the breath fan's bystander and Bone Call's
     raiders), together with Round 36's, which is still
-    open; then Round 38 "Mob names"
-    ([draft plan](planning/round38-mob-names-plan.md)), which also fixes
-    the quest kill-credit bug the user met.
+    open; Round 38 "Mob names" followed and fixed the quest kill-credit
+    bug the user met.
 
 - **Round 36 "The main questline" (WP9) delivered and pushed**
   (2026-10-05, [plan, completion and GUI checklist](planning/round36-plan.md#completion-2026-10-05)).
@@ -66,7 +100,7 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   **303 of 303 seeds build**, 0 failed ([Round 37 plan](planning/round37-plan.md)
   §7). WP9 delivered, and WP13's POI review.
   - **The main line (S, E, Q0, Q-A, Q-T, T):** each faction's three
-    chapters from its fortress Warmaster at 41, 46 and 53 and a group
+    chapters from its fortress Warmaster at 41, 46 and 53 and a party
     finale at 60, on the approved
     [story bible](planning/round36/story-bible.md) (the Undertithe and its
     branded coin): the front climaxes folded in, a solo captain's orders
