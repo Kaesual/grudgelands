@@ -976,7 +976,12 @@ name (as before) and mobs of the same family when the hit mob has
 `group_attack` too. The pack call (a fleeing pack hunter) and the camp swarm
 use the same rule. A neutral mob never answers or calls anyone, not even a
 mob of its own name (the disposition also switches `group_attack` off), so it
-is always a single pull. Families
+is always a single pull. **Start zones fight alone** (Round 37, user
+ruling 2026-10-06): a sub-type whose levels end at 10 or below (every role
+the six start zones' recipes place, camp defenders and chiefs included)
+takes no part in group alerts. It neither calls nor answers mobs_redo's
+group alert, the pack call or the camp swarm. From level 11 on nothing
+changes (`grug_mobs/subtypes.lua` `alert_kin`, `START_BAND_MAX`). Families
 and sub-types: `biomes_mobs.md` "Round 28 sub-types and loot by band".
 
 ## 5. Recovery (solo path)

@@ -1,6 +1,55 @@
 # Project status
 
-Updated 2026-10-05. This is the delivery pointer, not another game specification.
+Updated 2026-10-06. This is the delivery pointer, not another game specification.
+
+- **Round 37 "Audit fixes" complete locally, not pushed**
+  (2026-10-06, [plan, completion and GUI checklist](planning/round37-plan.md#completion-2026-10-06)).
+  Every lane is merged on main (last lane F, `27e5db87`, then this
+  documentation lane D), each code lane and each non-trivial docs lane
+  independently reviewed by Opus; 106 fixtures pass, `validate.py --game`
+  0 errors, `income.py --check` passes. The round fixes the
+  [October 2026 audit](audit-2026-10/README.md)'s code packages P1–P5, the
+  mapgen win MGT-02 with P7, the sound question P9 and the documentation
+  packages A–F. Lane MG changed the generator's code but not its output
+  (`seed_fleet quick` 100 of 100, every roster hash unchanged), so **no
+  fresh world is needed beyond Round 36's**. Round end
+  ([completion](planning/round37-plan.md#completion-2026-10-06)):
+  `seed_fleet full` on `27e5db87` **303 of 303 seeds build**, 0 failed
+  (16 min 31 s), every roster hash equal to the opening baseline; one boot
+  of main PASS; synced to the user's game after lane D's merge.
+  - **Combat (CB, MB):** durability as its own cheap event (weapon wear
+    217 → 14 µs, a taken hit with armour 296 → 31 µs), the max-HP clamp
+    is not damage (mounts, the quest use-hold, shields), one knockback
+    rule, the dead WP38 path removed; a hit retargets a mob only through
+    threat, the full swing animation, the elite wind-up freezes its facing
+    and pauses its attacks ([combat_stats.md](design/combat_stats.md)).
+  - **Mobs and bosses (MP, F):** one liveness rule for named rares and
+    dragons, authored actors outside the mob cap, a restart keeps the
+    world's mobs, Bone Call capped, royal guards return, the side shots of
+    the breath fan and the King's volley fly straight; start zones fight
+    alone, the Salt Reef Lurker on the 51–60 coasts.
+  - **Interaction and polling (IX, PO, F):** right-click with seeds, a
+    bucket or the rod, tall crops, the furnace form, grass and moss on
+    authored ground, the water-guard loop (1560 reverts in 120 s → 0);
+    the minimap and quest markers update only on change, the tracker,
+    discovery and Claim Stone scan do less (all Lua at 100 stand-ins
+    98.9 → 82.5 ms/s); the minimap always at normal quality.
+  - **Mapgen (MG):** no decoration halo (planner −8 %, byte-identical),
+    one shared world assembly, tracebacks kept, the seed fleet plans and
+    writes five real chunks per seed (about 25 s per seed).
+  - **Sound (SN):** the user's picks for the dragon's return and the Rift
+    Spawn's fuse and burst.
+  - **Documentation (DA–DF):** status synced, AGENTS.md slimmed to working
+    rules with the [round workflow](process/round-workflow.md) and one
+    owner per fact, a player README with [CHANGELOG.md](../CHANGELOG.md)
+    and version 0.37.0, the world, player and item design docs against the
+    code.
+  - Next: the user's GUI test (desktop and web build, two clients for the
+    group fight, knockback, the breath fan's bystander and Bone Call's
+    raiders), together with Round 36's, which is still
+    open; then Round 38 "Mob names"
+    ([draft plan](planning/round38-mob-names-plan.md)), which also fixes
+    the quest kill-credit bug the user met.
 
 - **Round 36 "The main questline" (WP9) delivered and pushed**
   (2026-10-05, [plan, completion and GUI checklist](planning/round36-plan.md#completion-2026-10-05)).
@@ -62,8 +111,9 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
     still no trees (W3); roads no longer trace the ground's one-node dither
     (`C_STEP` 0.05 → 0.5, no lone half-step bumps or holes; RD).
   - Next: the user's GUI test (desktop and web build, two clients for the
-    rift), under way; its findings join Round 37's lane F. The main-menu
-    background waits for the user's screenshot.
+    rift), still open; Round 37's lane F took the user's rulings of
+    2026-10-06 instead. The main-menu background waits for the user's
+    screenshot.
 
 - **Round 35 "Fixes and character creation" delivered**
   (2026-10-05, [plan, completion and GUI checklist](planning/round35-plan.md#completion-2026-10-05)).
@@ -528,11 +578,12 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 36 with its follow-up lanes
-  (`0f169898`), which includes Rounds 20–35 and the 2026-09-28 playtest
-  fixes. All of it is pushed: the user pushed Round 36 on 2026-10-05
-  (`1e8a975d`, then `0f169898` with the follow-up lanes); origin/main then
-  took the October 2026 audit and the Round 37 plan (`211229e2`). Round 29
+- **Latest game:** main carries Round 37 (`27e5db87` and lane D), on top
+  of Round 36 with its follow-up lanes (`0f169898`), Rounds 20–35 and the
+  2026-09-28 playtest fixes. Round 37 is not pushed; everything up to it
+  is: the user pushed Round 36 on 2026-10-05 (`1e8a975d`, then `0f169898`
+  with the follow-up lanes); origin/main then took the October 2026 audit
+  and the Round 37 plan (`211229e2`). Round 29
   was tested by the user on a fresh world (2026-10-02), the user's Round 33
   findings became Round 34's fix lanes, the Round 34 findings Round 35 and
   the first Round 35 findings Round 36's lane F; Rounds 25–35 count as
@@ -553,8 +604,17 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user's
   ruling of 2026-10-05, [Round 37 plan](planning/round37-plan.md) §2.3.5);
   Round 24 was accepted earlier, and its build contains Rounds 20–23 and
-  the 2026-09-28 playtest fixes. **Round 36 is open**, with its follow-up
-  lanes F2, W2, W3 and RD (the user's test is under way): the
+  the 2026-09-28 playtest fixes. **Rounds 36 and 37 are open.** The
+  [Round 37 checklist](planning/round37-plan.md#gui-playtest-checklist)
+  covers group fights and taunts, the elite wind-up, the swing animation,
+  mounts and shields when a buff runs out, durability, knockback, the
+  breath fan and volley, Bone Call and royal guards, a server restart,
+  right-click with seeds, buckets and the rod, the furnace book, ground
+  growth, the minimap and Claim Stone, the New World dialog and Help →
+  About, the new sounds, the start zones, the Reef Lurker and the
+  minimap at high quality (desktop and web build, two clients). Round 36
+  with its follow-up lanes F2, W2, W3 and RD (the user's test is still
+  open): the
   [Round 36 checklist](planning/round36-plan.md#gui-playtest-checklist)
   covers both main lines from 41 to the finale, quest objects and places,
   the corrupted sub-types, the commanders, the rift and Isquarre (two
@@ -590,7 +650,7 @@ Updated 2026-10-05. This is the delivery pointer, not another game specification
   decor pass; the reworked places are in its checklist.
 - **Remote observation:** every round up to Round 36 and its follow-up
   lanes is pushed (origin/main `0f169898`, 2026-10-05; `211229e2` since with
-  the audit and the Round 37 plan).
+  the audit and the Round 37 plan); Round 37 is local.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

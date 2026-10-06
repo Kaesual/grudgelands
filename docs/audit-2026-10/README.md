@@ -162,3 +162,14 @@ Four points need a runtime check inside their lane:
    answered with a listening page this round, so P9 is lane SN.
 3. Round 37 is planned in [round37-plan.md](../planning/round37-plan.md).
 4. This folder was committed as Round 37's first commit.
+
+**Status (2026-10-06, Round 37 complete locally, not pushed):** Round 37
+did the code packages P1–P5 (P4's MOC-05 in lane MP), MGT-02 and P7 in
+the mapgen lane, P9 (the sound picks) and the documentation packages A–F;
+what each lane fixed, its numbers and its re-check are in the
+[Round 37 completion](../planning/round37-plan.md#completion-2026-10-06).
+Not done: P6 beyond MGT-02, P8, the MGT-03 tree fix and most Lows (BACKLOG
+[later fix packages](../../BACKLOG.md#audit-2026-10-later-fix-packages)),
+PLY-11 ([carry-overs](../../BACKLOG.md#round-37-carry-overs)); the design
+questions that block no fix are the BACKLOG
+[open questions](../../BACKLOG.md#audit-2026-10-open-questions).

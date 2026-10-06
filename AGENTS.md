@@ -12,9 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** every round up to Round 36 is pushed (origin/main `0f169898`,
-2026-10-05); Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Round
-36's GUI test is open. Details: [STATUS](docs/STATUS.md).
+**Current state:** Round 37 is complete locally, not pushed; every round up to
+Round 36 is pushed (origin/main `0f169898`, 2026-10-05); Rounds 25–35 count as
+GUI-accepted (the user, 2026-10-05); the GUI tests of Rounds 36 and 37 are
+open; next is Round 38 "Mob names". Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 
@@ -45,6 +46,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 - **Model routing:** the user decides per session which model coordinates,
   implements and reviews; the policy's roles are defaults. Independent review of
   every non-trivial change stays mandatory.
+- **Version (user, 2026-10-05):** `game.conf`'s `version` counts
+  `0.<round>.<patch>` (0.37.0 first); it is the one source Help → About
+  and the newest [CHANGELOG](CHANGELOG.md) entry show (`tools/r37_dc`
+  checks both).
 - **Only the user pushes.** Agents never push.
 
 ## Fresh-server development mode

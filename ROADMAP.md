@@ -140,8 +140,8 @@ B1–B7) settle the rest:
 
 ### Delivered foundation
 
-Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Round 36 is open
-([project status](docs/STATUS.md)).
+Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Rounds 36 and 37
+are open ([project status](docs/STATUS.md)).
 
 - [x] Standalone game, faction/race/class creation, progression and four classes
   including Scout; current-ray combat, equipped weapons, talents and shared movement.
@@ -303,10 +303,31 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Round 36 is open
   their back to the wall, ground cover in the protected band round towns
   and smoother roads. Pushed 2026-10-05; needs a world made on `fef94a6a`
   or later. Next: the GUI test on desktop and in the web build, two clients
-  for the rift (under way).
+  for the rift (still open).
+- [x] **Round 37 "Audit fixes"**
+  ([completion](docs/planning/round37-plan.md#completion-2026-10-06)), the
+  [October 2026 audit](docs/audit-2026-10/README.md)'s fix round: combat
+  without the per-hit equipment fan-out, mounts and shields that survive an
+  expiring buff, one knockback rule; mobs that retarget only through
+  threat, show their swing and freeze their wind-up; named rares and
+  dragons that never stand twice, a restart that keeps the world's mobs,
+  capped Bone Call, returning royal guards, straight side shots; the
+  right-click, crop, furnace, ground-growth and water-guard fixes; the
+  minimap and quest markers only on change; the mapgen without its dead
+  halo and a seed fleet over real chunks; the picked dragon and Rift
+  Spawn sounds; after the user's rulings start zones that fight alone,
+  the Salt Reef Lurker and a minimap always at normal quality; a player
+  README with a changelog and version 0.37.0, and the agent and design
+  documents set to one owner per fact. Complete locally on 2026-10-06, not
+  pushed; no new world needed beyond Round 36's. Next: the GUI test,
+  together with Round 36's.
 
 ### Remaining work
 
+- [ ] **Round 38 "Mob names"** ([draft plan](docs/planning/round38-mob-names-plan.md),
+  awaiting the user's answers): mob names with flair instead of signal
+  words, and with them the fix of the quest kill-credit bug (an area
+  objective counts only mobs that spawned in its region).
 - [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03):
   whether POIs, camps, outposts, mines and the PvP fortresses are placed per
   world instead of at fixed positions
@@ -319,9 +340,13 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); Round 36 is open
   and decor notes, the main-menu background) are in the
   [Round 33](BACKLOG.md#round-33-carry-overs),
   [Round 34](BACKLOG.md#round-34-carry-overs),
-  [Round 35](BACKLOG.md#round-35-carry-overs) and
-  [Round 36](BACKLOG.md#round-36-carry-overs) carry-overs; Round 36 settled
-  Priest healing, the Scout's set and spell rounding.
+  [Round 35](BACKLOG.md#round-35-carry-overs),
+  [Round 36](BACKLOG.md#round-36-carry-overs) and
+  [Round 37](BACKLOG.md#round-37-carry-overs) carry-overs; Round 36 settled
+  Priest healing, the Scout's set and spell rounding. The audit's design
+  questions and later fix packages:
+  [open questions](BACKLOG.md#audit-2026-10-open-questions),
+  [later packages](BACKLOG.md#audit-2026-10-later-fix-packages).
 - [x] **WP13:** the POI review (audit E2) done in Round 36 as a render page
   with the user's verdicts instead of a walk, and the decor pass it asked
   for; the reworked places are in the Round 36 GUI checklist.

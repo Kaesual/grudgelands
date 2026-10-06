@@ -6,6 +6,7 @@ reading every development round.
 | Question | Read |
 |---|---|
 | What is the current game delivery, push and acceptance state? | [Project status](STATUS.md) |
+| What changed for players, round by round? | [CHANGELOG](../CHANGELOG.md) (the version shows on Help → About) |
 | What has been decided? | [Design topic index](design/README.md) |
 | What is still to implement? | [BACKLOG](../BACKLOG.md) |
 | What are the broader goals? | [ROADMAP](../ROADMAP.md) |
