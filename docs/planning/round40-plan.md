@@ -145,6 +145,17 @@ The user (2026-10-06):
     single particles 10–40 B each compressed; `grug_particle_scale` lowers
     spawner amounts (what clients draw) but not their bytes.
 
+16. **Charge after the probe (V4):** carrier A with the planned path at
+    **24 m/s**; every course worked except `uphill`, where the dash stops
+    about two nodes short of the target on the last stair (a bug for CH).
+    Before a self-built wall with a one-node hole the warrior stops cleanly.
+    **Holes** (the user, 2026-10-06): a hole is jumped over in one hop when
+    the hop is at most **4 nodes** wide and the landing lies at most one node
+    above the takeoff; the hole's depth does not matter, only the hop's
+    width; shallow dips are jumped too. Liquids count as air: the hop may
+    cross them, but it never lands in a liquid. Otherwise the warrior stops
+    at the rim, which counts as a miss (the cooldown is spent, §2.3).
+
 ## 3. Research results (2026-10-06, verified at the cited lines)
 
 ### 3.1 Cooldown overlay
