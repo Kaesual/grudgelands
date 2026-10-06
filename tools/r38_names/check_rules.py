@@ -24,13 +24,17 @@ Checked (one line per problem, exit 1 on any):
   R2  no signal word (tools/r28_names' list: Small, Large, Braindead ...)
   R3  "Piglet" only on the start pigs the `*_hunt_01` quests target
   R4  per name (case-insensitive, across every zone using it): its slots'
-      level bands join without a gap, and when it spans more than one band
-      every level lies in one drop tier
+      level bands join without a gap, and all its slots lie in one drop
+      tier. A zone slot whose own band spans two tiers counts as the tier
+      holding most of its levels, the higher on a tie (coordinator's default
+      ruling: a capital's L20-23 slot is T3, so it may share a name with
+      L24+ slots, never with L19 or lower); a world/ slot keeps every tier
+      its levels touch (pending the user)
   R0  every slot named exactly once, no unknown slot key, no empty name or
       reason; with --partial only the zones the given files touch must be
       complete
-Notes (no exit status): a Piglet slot without "Piglet", and slots whose own
-level band spans several drop tiers (no name can fix those).
+Notes (no exit status): a Piglet slot without "Piglet", and every slot whose
+own level band spans several drop tiers (with the tier rule 4 counts it as).
 """
 import argparse
 import json
@@ -127,12 +131,12 @@ def check(model, entries, partial=False):
     for lname, slots in sorted(by_name.items()):
         bands = sorted({tuple(s["levels"]) for s in slots})
         shown = names[slots[0]["key"]]
-        for b in bands:
-            if len(inventory.tiers_of(*b)) > 1 and len(bands) == 1:
-                for s in slots:
-                    if tuple(s["levels"]) == b:
-                        notes.append("note R4 %s: %r - the band L%d-%d spans drop tiers %s on its own" % (
-                            s["key"], shown, b[0], b[1], ",".join("T%d" % t for t in inventory.tiers_of(*b))))
+        for s in slots:
+            own = inventory.tiers_of(*s["levels"])
+            if len(own) > 1:
+                notes.append("note R4 %s: %r - the band L%d-%d spans drop tiers %s on its own%s" % (
+                    s["key"], shown, s["levels"][0], s["levels"][1], ",".join("T%d" % t for t in own),
+                    "" if s["zone"] is None else " (counts as T%d)" % effective_tier(s)))
         if len(bands) < 2:
             continue
         reach = bands[0][1]
@@ -141,11 +145,31 @@ def check(model, entries, partial=False):
                 problems.append("R4 %r: level gap L%d-L%d between its bands (%s)" % (
                     shown, reach + 1, lo - 1, band_list(bands, slots)))
             reach = max(reach, hi)
-        tiers = inventory.tiers_of(min(b[0] for b in bands), max(b[1] for b in bands))
+        tiers = sorted({t for s in slots for t in slot_tiers(s)})
         if len(tiers) > 1:
             problems.append("R4 %r: its bands span drop tiers %s (%s)" % (
                 shown, ",".join("T%d" % t for t in tiers), band_list(bands, slots)))
     return problems, notes
+
+
+def effective_tier(slot):
+    """The drop tier rule 4 counts a slot as (the coordinator's default
+    ruling, Round 38; the user may overrule it): the tier that holds most of
+    the slot's levels, the higher one on a tie. A capital's L20-23 slot
+    (one level T2, three T3) counts as T3."""
+    levels = defaultdict(int)
+    for level in range(slot["levels"][0], slot["levels"][1] + 1):
+        levels[inventory.drop_tier(level)] += 1
+    return max(levels, key=lambda t: (levels[t], t))
+
+
+def slot_tiers(slot):
+    """The tiers rule 4 sees for a slot: its effective tier; a world/ slot
+    (no zone: underground casts, guards, unplaced sub-types) keeps every
+    tier its levels touch, pending the user's ruling."""
+    if slot["zone"] is None:
+        return inventory.tiers_of(*slot["levels"])
+    return [effective_tier(slot)]
 
 
 def band_list(bands, slots):

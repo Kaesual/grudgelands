@@ -94,6 +94,22 @@ def main():
     entries[mf[0]] = ("Grave Hog", False, "fixture", "fixture")
     p = run(model, entries)[0]
     expect(len(p) == 1 and p[0].startswith("R4 ") and "T1,T2" in p[0], "R4 two tiers across zones: %s" % p)
+    # R4 effective tier (coordinator's default ruling): a capital's L20-23
+    # slot counts as T3, so it joins L24-27 but not a L18-20 slot.
+    hc, gm = "elandor_highcourt", "elandor_goldmead_vale"
+    cap = clean_names(model, {hc, gm})
+    low = [s["key"] for s in model.slots if s["zone"] == gm and s["levels"][1] == 20 and s["source"] == "recipe"]
+    entries = dict(cap)
+    entries[hc + "/moss_antler_stag/L20-23"] = ("Court Hart", False, "fixture", "fixture")
+    entries[hc + "/moss_antler_stag/L24-27"] = ("Court Hart", False, "fixture", "fixture")
+    p, notes = run(model, entries)
+    expect(p == [], "R4 capital L20-23 joins L24-27 (T3): %s" % p)
+    expect(any("moss_antler_stag/L20-23" in n and "counts as T3" in n for n in notes),
+           "R4 note flags the L20-23 slot itself")
+    entries[low[0]] = ("Court Hart", False, "fixture", "fixture")
+    p = run(model, entries)[0]
+    expect(len(p) == 1 and p[0].startswith("R4 ") and "T2,T3" in p[0], "R4 L20-23 with a L..20 slot: %s" % p)
+
     # R0: unknown key, a missing slot, a keep with another name, no reason.
     p = broken(sg + "/no_such_role/L1-2", "Grave Hog")
     expect(len(p) == 1 and "unknown slot key" in p[0], "R0 unknown key: %s" % p)
