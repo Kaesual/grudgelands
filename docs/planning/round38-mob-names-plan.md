@@ -171,3 +171,14 @@ Lua runs share the workstation cap of 8 through the round's queue
 13. The kings stay mixed ("King of Highcourt", "Dur Brannoc King").
 14. Quest texts: no reading page; an independent review agent checks that
     the new names are set correctly everywhere.
+15. "Kraken Guard" becomes "Kraken" (2026-10-06): "Guard" sounds as if it
+    guarded something on someone's behalf.
+16. Item names (2026-10-06, lane IT's study): twelve display-only renames,
+    ids unchanged — Cat Claw, Notched Cat Claw, Gleaming Cat Claw, Blighted
+    Bear Claw, Pitted Crab Shell, Silver Mane, Glass Silk, Guttering Wisp
+    Mote, Lichen Resin, Drilled Bone, Ivory Chitin, Layered Chitin (the
+    shorter alternatives instead of the long hyphen compounds); the
+    three-word family items keep their names (the family word tells which
+    mobs drop them).
+17. "Group" becomes "Party" everywhere the player sees it (2026-10-06),
+    in this round.
