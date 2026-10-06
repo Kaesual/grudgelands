@@ -19,7 +19,8 @@ core = {
 	get_objects_inside_radius = function() return {} end,
 	is_player = function() return false end,
 }
-grug_core = {invalidate_combat_identity = function() end}
+grug_core = {invalidate_combat_identity = function() end,
+	particles = dofile(repo .. "/tools/r40_pm/helper_stub.lua")(repo)} -- Round 40 PM
 local defs = {}
 grug_mobs = {
 	register_mob = function(name, def) defs[name] = def end,

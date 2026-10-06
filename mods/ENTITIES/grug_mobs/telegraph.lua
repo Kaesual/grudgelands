@@ -47,26 +47,15 @@ local function facing_dir(self)
 	return core.yaw_to_dir(yaw + (self.rotate or 0))
 end
 
--- Short, loud warning burst at the mob. ~0.4 s so it is gone well before
--- the hit lands and can never accumulate.
+-- Short, loud warning burst at the mob ("elite_windup" in
+-- grug_core/particle_effects.lua). ~0.4 s so it is gone well before the hit
+-- lands and can never accumulate.
 local function windup_particles(self)
 	local pos = self.object:get_pos()
 	if not pos then
 		return
 	end
-	core.add_particlespawner({
-		amount = 24,
-		time = 0.4,
-		-- A pos range fills a box; the spawner's `radius` would place a shell
-		-- or a disc heavy at its edge (client/particles.cpp:384-396).
-		pos = {min = vector.offset(pos, -0.7, 0.2, -0.7),
-			max = vector.offset(pos, 0.7, 1.8, 0.7)},
-		vel = {min = vector.new(-0.5, 1, -0.5), max = vector.new(0.5, 3, 0.5)},
-		exptime = {min = 0.3, max = 0.7},
-		size = {min = 2.5, max = 4},
-		texture = "default_item_smoke.png^[multiply:#ff5a1e",
-		glow = 8,
-	})
+	grug_core.particles.play("elite_windup", {caster = pos})
 end
 
 local function start_windup(self)
@@ -105,6 +94,9 @@ local function resolve(self)
 	if base_damage <= 0 then return end
 	local dmg = math.max(1, math.floor(base_damage * DAMAGE_MULT + 0.5))
 	local dir = facing_dir(self)
+	-- The hit itself: an arc sweeps across the cone at the mob's reach,
+	-- whether or not anyone is still standing in it (Round 40 PM).
+	grug_core.particles.play("elite_cone", {caster = pos, dir = dir, reach = self.reach or 3})
 	local players = core.get_connected_players()
 	for i = 1, #players do
 		local p = players[i]

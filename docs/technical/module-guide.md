@@ -530,9 +530,15 @@ tools](#player-meta-read-by-external-tools).
   `grug_core/particle_effects.lua`, played by
   `grug_core.particles.play(id, frame)` (`particles.lua`, whose header
   documents the emitter fields): every skill and proc effect, crits,
-  absorb soaks and the level-up burst. Still direct engine calls: the stun
-  cross and root crystals (`movement.lua`, sized from the object's box), the
-  food crumbs (a texture pool) and the mob and boss effects in `grug_mobs`.
+  absorb soaks, the level-up burst and the boss and mob-special effects
+  (Round 40 PM: `grug_mobs` plays them from the kings' signature, the
+  elite telegraph, the dragons, the Kraken, the mob verbs and families;
+  mob projectiles name their impact tint as `impact` in
+  `register_simple_arrow`). Still direct engine calls: the stun cross and
+  root crystals (`movement.lua`, sized from the object's box), the food
+  crumbs (a texture pool), the rift's per-player stretches and pulse
+  (`rift.lua`), the mob arrow tail (`verbs.lua`) and the mob engine's own
+  blood and smoke.
   `frame` names the anchors (`caster`, `target`), the facing `dir`
   (`grug_core.particles.facing(player)`), and per call `from`/`to`/`time`
   (a line over a flight), `reach` (a radius a ring lands on) and `color`.

@@ -255,6 +255,7 @@ local spiderling = common_ground({
 })
 grug_mobs.melee_rider(spiderling, function(_, target)
 	grug_mobs.slow_player(target, 2, 0.8)
+	grug_mobs.web_particles(target)
 end)
 grug_mobs.register_mob("grug_mobs:spiderling", spiderling)
 

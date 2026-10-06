@@ -16,15 +16,7 @@ local function hex_hit(self, object)
 		end
 	end
 	local pos = object:get_pos()
-	if pos then
-		core.add_particlespawner({
-			amount = 16, time = 0.25,
-			pos = {min = vector.offset(pos, -0.4, 0, -0.4),
-				max = vector.offset(pos, 0.4, 1.4, 0.4)},
-			exptime = {min = 0.2, max = 0.6}, size = {min = 1, max = 2.5},
-			texture = "default_item_smoke.png^[multiply:#7b2fa3", glow = 5,
-		})
-	end
+	if pos then grug_core.particles.play("hex_bottle", {target = pos}) end
 end
 
 grug_mobs.register_homing_arrow("grug_mobs:hex_bottle", {

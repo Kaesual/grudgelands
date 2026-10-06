@@ -227,6 +227,7 @@ grug_core = {
 	ground_effect_protected = function() return false end,
 	mark_in_combat = function() combat_marks = combat_marks + 1 end,
 	set_status = function(_, id) statuses[#statuses + 1] = id end,
+	particles = dofile(repo .. "/tools/r40_pm/helper_stub.lua")(repo), -- Round 40 PM
 }
 local resets = 0
 grug_mobs = {

@@ -71,6 +71,7 @@ end
 
 local function web_rider(self, target)
 	grug_mobs.slow_player(target, WEB_SECONDS, WEB_FACTOR)
+	grug_mobs.web_particles(target)
 end
 
 --
