@@ -1328,7 +1328,8 @@ from the reviews (backlog notes, no severity); none blocks the GUI test.
   `grug_gear`'s registrations; a mod that starts registering equippable
   items must be added to `tools/web_data/build.lua`.
 - **Further clips** (sit, lay, mine, walk_mine) are one entry each in
-  `build_glb.py`'s `CLIPS`.
+  `build_glb.py`'s `CLIPS` plus the same name in `tools/web_data/build.lua`'s
+  animation list (the export's frame ranges).
 - **Exporter shell calls** put the repository path in single quotes
   (`build.lua`'s directory listing, the fixture's `find`): a path with a
   `'` in it breaks them.

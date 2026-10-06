@@ -65,7 +65,9 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   back to `x` (no blend between them), which is what a repeating player does
   at the clip's end. In Luanti 5.17 the clips play by name:
   `obj:play_animation("walk", {speed = 1})`. The other player_api animations
-  (sit, lay, mine, walk_mine) are one entry in `build_glb.py`'s `CLIPS` away.
+  (sit, lay, mine, walk_mine) are one entry in `build_glb.py`'s `CLIPS` away,
+  plus the same name in `tools/web_data/build.lua`'s animation list so the
+  export carries its frame range.
 - **Visual size.** The race's `visual_size` (in the appearance) scales the
   model per axis, as Luanti scales the mesh.
 

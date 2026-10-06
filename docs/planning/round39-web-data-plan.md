@@ -379,8 +379,8 @@ All on 2026-10-06:
 
 - **The grammar is wider than §3's modifiers:** the stored strings also
   use `(…)` groups, `[colorize`, `[verticalframe` and `[opacity` (enchant
-  layers) and `[cracko` (the broken look), and name the engine file
-  `crack_anylength.png`.
+  layers) and `[cracko` (the broken look), which draws the engine file
+  `crack_anylength.png` without naming it (`engine_files`).
 - **The cloak source returns texture and id:** `grug_achievements`'
   registered cloak source (`register_cloak_source`) now returns the
   texture and the selected cloak id, a shared seam WM changed.

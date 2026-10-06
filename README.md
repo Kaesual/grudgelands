@@ -107,7 +107,7 @@ stats, and the sound controls. The short version:
 *Last updated: 2026-10-06. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 39, "Web data for realm websites":
+The latest finished round is Round 39, "Web data for the realm website":
 nothing changes in play, but a realm's website can now show each
 character's level and a 3D preview in its current equipment. Round 38,
 "Mob names", gave the creatures of every zone short names that suit it,

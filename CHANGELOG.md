@@ -9,7 +9,7 @@ some of its changes are part of world generation.
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.39.0 — Round 39, "Web data for realm websites" (2026-10-06)
+## 0.39.0 — Round 39, "Web data for the realm website" (2026-10-06)
 
 Nothing changes in play. The game now keeps each character's level and
 current look where a realm's website can read them, so a website hosting
