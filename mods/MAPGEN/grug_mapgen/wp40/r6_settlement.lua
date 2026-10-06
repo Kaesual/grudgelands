@@ -263,9 +263,9 @@ local function settlement_factory()
 	end
 
 	-- Round 24 ruling 30: whether a column admits a P8 resource at `y`.
-	-- `column_state` bit 1: the resource is allowed on the column (water class
-	-- and region); bit 2: the column is fixed/protected ground, which stays
-	-- ore-free only inside its protected volume, from `floor_y` upward.
+	-- `column_state` bit 1: the resource is allowed on the column (water
+	-- class); bit 2: the column lies in a hard-protected footprint, which
+	-- stays ore-free only inside its protected volume, from `floor_y` upward.
 	local function r30_resource_column_open(column_state, floor_y, y)
 		if column_state % 2 == 0 then return false end
 		return column_state < 2 or y < floor_y
@@ -1060,7 +1060,7 @@ local function settlement_factory()
 				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(planner_source.overlay_exclusion_at) ~= "function" or
-				type(planner_source.protection_floor_y) ~= "function" or
+				type(planner_source.ore_floor_at) ~= "function" or
 				type(planner_source.protected_floor_at) ~= "function" or
 				type(planner_source.protected_only_floor_at) ~= "function" or
 				type(source) ~= "table" or
@@ -2892,17 +2892,16 @@ local function settlement_factory()
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
-					-- Only fixed/protected ground matters here, so the overlay
-					-- (water) kinds are not asked.
-					local reason, id = helpers.static_exclusion_reason(x, z)
-					-- The capital ingress corridors are retired (Round 22, D9).
-					local excluded = reason == "fixed_or_protected"
-					-- Bit 2 is the protected exclusion, from the column's protected
-					-- floor upward (Round 24 ruling 30). Bit 1 is filled for each
-					-- resource below from immutable water/race column values.
-					resource_column_state[column] = excluded and 2 or 0
-					resource_protected_floor[column] = excluded and
-						planner_source.protection_floor_y(id, x, z) or 0
+					-- Only a hard-protected volume (a start town or a capital's
+					-- city, exact footprint) keeps resources out, from its floor
+					-- upward: wherever digging is allowed the ordinary
+					-- distribution holds (user ruling 2026-10-07).
+					local floor = planner_source.ore_floor_at(x, z)
+					-- Bit 2 is that protected exclusion (Round 24 ruling 30). Bit 1
+					-- is filled for each resource below from the immutable water
+					-- class of the column.
+					resource_column_state[column] = floor and 2 or 0
+					resource_protected_floor[column] = floor or 0
 				end
 			end
 			-- With no predecessor runs, the live predicate is already cheap;
@@ -2964,7 +2963,11 @@ local function settlement_factory()
 							local column = column_index(x, z)
 							local base = (column - 1) * COLUMN_STRIDE
 							local water_class = plan.column_values[base + 1]
-							local allowed = water_class == 1 or water_class == 2
+							-- Land, planned water and the coastal shelf: every column
+							-- a player may dig (deep ocean and the dragon channel
+							-- are immutable).
+							local allowed = water_class == 1 or water_class == 2 or
+								water_class == 3
 							if allowed then allowed_columns = allowed_columns + 1 end
 							resource_column_state[column] =
 								resource_column_state[column] >= 2 and

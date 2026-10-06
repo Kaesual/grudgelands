@@ -337,7 +337,7 @@ local function planner_factory(allocator_factory)
 		road_column_at = true,
 		functional_surface_values_at = true,
 		hard_row_at = true,
-		protection_floor_y = true,
+		ore_floor_at = true,
 		protected_floor_at = true,
 		protected_only_floor_at = true,
 		metrics = true,

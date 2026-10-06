@@ -1559,13 +1559,8 @@ local function zones_factory(dependencies)
 			end
 			-- The protected floor of a fixed/protected column (Round 24 ruling
 			-- 30): the lowest floor of every anchor envelope, hard core and hard
-			-- footprint holding it. `exclusion_id` (the id
-			-- `static_exclusion_values_at` answered for the column) only names a
-			-- failure; a route or water id counts only through a hard footprint
-			-- (a hard foundation). Mapgen keeps ore out of the column from here up.
-			-- The same floor, or nil where no anchor envelope, hard core or hard
-			-- footprint holds the column (the ruling 30 addendum's cave rule asks
-			-- it for any column the cave-content exclusion covers).
+			-- footprint holding it, or nil where none holds the column. The
+			-- ruling 30 addendum's cave rule and the surface writers ask it.
 			local function protected_floor_at(x, z)
 				-- Every anchor envelope and hard core holding the column, not only
 				-- the one shape `static_exclusion_values_at` answered first.
@@ -1596,12 +1591,13 @@ local function zones_factory(dependencies)
 				end
 				return protected_floor_at(x, z)
 			end
-			function planner_source.protection_floor_y(exclusion_id, x, z)
-				local result = protected_floor_at(x, z)
-				if result == nil then
-					fail("protection floor missing: " .. tostring(exclusion_id))
-				end
-				return result
+			-- The floor of the hard-protected volume holding a column (a start
+			-- town or a capital's city, exact footprint), or nil. The P8 resource
+			-- pass keeps ore, coal and gems out of the column from here up and
+			-- nowhere else (user ruling 2026-10-07): ground anyone may dig gets
+			-- the ordinary distribution, an anchor's blend envelope included.
+			function planner_source.ore_floor_at(x, z)
+				return hard_floor_at(x, z)
 			end
 
 			function planner_source.metrics()

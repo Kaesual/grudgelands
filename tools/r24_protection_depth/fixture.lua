@@ -14,10 +14,14 @@
 --      unbounded upward; below the bound the zone's own territory rule
 --      answers, and the contested deep starts at y = -501 (Round 31);
 --   2. the capital guard level is 60 inside the capital's volume only;
---   3. mapgen: the protected floor planner_source.protection_floor_y hands
---      the P8 resource pass for every anchor envelope,
---      and the P8 column predicate r30_resource_column_open (production
---      code of r6_settlement.lua) above, at and below that floor;
+--   3. mapgen: the P8 resource floor planner_source.ore_floor_at (user
+--      ruling 2026-10-07: ore, coal and gems stay out of a hard-protected
+--      volume only) agrees column by column with the session's hard
+--      protection around every start town and capital, and is absent at
+--      every other anchor's centre and in the blend envelope beyond the
+--      footprint; the cave/surface floor protected_floor_at of overlapping
+--      envelopes; and the P8 column predicate r30_resource_column_open
+--      (production code of r6_settlement.lua) above, at and below a floor;
 --   4. ruling 30 addendum (below the floor everything is ordinary ground):
 --      the shared cave rule r30_cave_limit; the strata and layer passes on a
 --      synthetic owner with protection-only, non-protection and unexcluded
@@ -254,22 +258,90 @@ local function contested_depth_checks(W)
 end
 
 -- ---------------------------------------------------------------------------
--- 3. Mapgen: the P8 floor of every anchor envelope, and the column predicate
+-- 3. Mapgen: the P8 resource floor (hard-protected volumes only), the
+-- cave/surface floor of overlapping envelopes, and the column predicate
 -- ---------------------------------------------------------------------------
 local function mapgen_checks(W)
 	local S, P, source = W.session, W.planner_source, W.source
 	local anchor_by_id = {}
 	for _, a in ipairs(source.anchors) do anchor_by_id[a.id] = a end
+	-- The P8 resource floor is the session's hard protection, column by
+	-- column: a column has a floor exactly when the session protects it, the
+	-- volume starts at that floor, and the blend envelope beyond the
+	-- footprint carries none. (The 36 functional outpost/bandit columns of
+	-- the R7 overlay are protected but keep their ore, a ruled exception.)
+	local ring_columns, ring_open = 0, 0
+	for index = 1, 12 do
+		local a = source.anchors[index]
+		local record = S.anchor(source.zones[a.zone_numeric_id].id, a.slot_id)
+		local bound = record.y - DEPTH
+		check(P.ore_floor_at(a.position.x, a.position.z) == bound,
+			a.id .. " P8 floor at the centre")
+		-- the whole blend envelope (704 capital, 256 start), every 4th column,
+		-- plus the axis columns from the pad's edge out to the envelope's
+		local half = a.slot_id == "capital" and 352 or 128
+		local columns = {}
+		for dx = -half, half - 1, 4 do
+			for dz = -half, half - 1, 4 do columns[#columns + 1] = {dx, dz} end
+		end
+		for d = 60, half - 1 do
+			columns[#columns + 1] = {d, 0}
+			columns[#columns + 1] = {-d, 0}
+			columns[#columns + 1] = {0, d}
+			columns[#columns + 1] = {0, -d}
+		end
+		for _, o in ipairs(columns) do
+			local x, z = a.position.x + o[1], a.position.z + o[2]
+			local floor = P.ore_floor_at(x, z)
+			local protected = S.territory_rule_at({x = x, y = 30000, z = z}) ==
+				"hard_protected"
+			check((floor ~= nil) == protected, ("%s P8 floor %s vs hard protection %s" ..
+				" at %d,%d"):format(a.id, tostring(floor), tostring(protected), x, z))
+			if floor then
+				check(S.territory_rule_at({x = x, y = floor, z = z}) == "hard_protected" and
+					S.territory_rule_at({x = x, y = floor - 1, z = z}) ~= "hard_protected",
+					a.id .. " P8 floor is the volume's floor at " .. x .. "," .. z)
+			else
+				ring_open = ring_open + 1
+			end
+			ring_columns = ring_columns + 1
+		end
+		if a.slot_id == "start" then
+			-- beyond the band (pad -64..+63, band 12) the envelope is open
+			check(P.ore_floor_at(a.position.x + 80, a.position.z) == nil and
+				P.ore_floor_at(a.position.x + 127, a.position.z + 127) == nil,
+				a.id .. " envelope beyond the town has no P8 floor")
+			check(P.ore_floor_at(a.position.x + 70, a.position.z) == bound,
+				a.id .. " band column keeps the town's P8 floor")
+		end
+	end
+	lines[#lines + 1] = ("P8 floor = hard protection on %d envelope columns of the" ..
+		" starts and capitals, %d of them open"):format(ring_columns, ring_open)
+	check(ring_open > 0, "the blend envelopes have open columns")
+	-- Every other anchor (POI, village, camp, outpost, mine ...): no P8 floor
+	-- at its centre unless a start's or capital's footprint holds it.
+	local others = 0
+	for index = 13, #source.anchors do
+		local a = source.anchors[index]
+		local protected = S.territory_rule_at({x = a.position.x, y = 30000,
+			z = a.position.z}) == "hard_protected"
+		check((P.ore_floor_at(a.position.x, a.position.z) ~= nil) == protected,
+			a.id .. " P8 floor only under hard protection")
+		if not protected then others = others + 1 end
+	end
+	check(others > 0, "anchors outside the hard footprints exist")
+	-- The cave/surface floor (protected_floor_at, ruling 30 addendum): every
+	-- anchor envelope holds one, at most its anchor's own floor.
 	local envelopes = 0
 	for _, exclusion in ipairs(source.claim_exclusions) do
 		if exclusion.recipe_id == "exclude_anchor_blend_v1" then
 			local a = anchor_by_id[exclusion.source_id]
 			local record = S.anchor(source.zones[a.zone_numeric_id].id, a.slot_id)
-			local floor = P.protection_floor_y(exclusion.id, a.position.x, a.position.z)
+			local floor = P.protected_floor_at(a.position.x, a.position.z)
 			-- at most the anchor's own floor: an overlapping envelope may hold
 			-- the centre with a lower one (exact values below)
-			check(floor <= record.y - DEPTH, exclusion.id .. " P8 floor " .. floor ..
-				" vs anchor y " .. record.y)
+			check(floor ~= nil and floor <= record.y - DEPTH, exclusion.id ..
+				" envelope floor " .. tostring(floor) .. " vs anchor y " .. record.y)
 			envelopes = envelopes + 1
 		end
 	end
@@ -305,7 +377,7 @@ local function mapgen_checks(W)
 				expected = other.floor
 			end
 		end
-		check(P.protection_floor_y(sq.id, x, z) == expected, sq.id .. " centre floor")
+		check(P.protected_floor_at(x, z) == expected, sq.id .. " centre floor")
 	end
 	local pairs_found, overlap_columns, first_would_differ = {}, 0, 0
 	for i = 1, #squares do
@@ -326,9 +398,9 @@ local function mapgen_checks(W)
 							end
 						end
 						local _, first = P.static_exclusion_values_at(x, z)
-						local floor = P.protection_floor_y(first, x, z)
-						check(floor == expected, ("overlap %s/%s at %d,%d: floor %d vs %d"):format(
-							a.id, b.id, x, z, floor, expected))
+						local floor = P.protected_floor_at(x, z)
+						check(floor == expected, ("overlap %s/%s at %d,%d: floor %s vs %d"):format(
+							a.id, b.id, x, z, tostring(floor), expected))
 						if floor_by_id[first] and floor_by_id[first] ~= expected then
 							first_would_differ = first_would_differ + 1
 						end
@@ -352,7 +424,7 @@ local function mapgen_checks(W)
 	check(orc.position.x == 0 and orc.position.z == 2550, "anchor_005 is the Orc start")
 	local _, id = P.static_exclusion_values_at(0, 2550)
 	local orc_y = placement_y(P, 0, 2550)
-	local orc_floor = P.protection_floor_y(id, 0, 2550)
+	local orc_floor = P.ore_floor_at(0, 2550)
 	check(orc_floor == orc_y - DEPTH, "Orc start P8 floor")
 	-- Ruling 30 addendum: the cave-content rule's view of the same column.
 	-- Its "cave" shape is a protected one (not route/water), and its floor is
@@ -367,13 +439,6 @@ local function mapgen_checks(W)
 		local limit = settlement.r30_cave_limit(water, cave_id, fkind, hard,
 			P.protected_floor_at, 0, 2550)
 		check(limit == orc_floor, "Orc start cave limit is the town floor")
-	end
-	-- every anchor centre: the non-failing floor equals the P8 floor
-	for _, a in ipairs(source.anchors) do
-		local _, id_at = P.static_exclusion_values_at(a.position.x, a.position.z)
-		check(P.protected_floor_at(a.position.x, a.position.z) ==
-			P.protection_floor_y(id_at, a.position.x, a.position.z),
-			a.id .. " protected_floor_at")
 	end
 	lines[#lines + 1] = ("Orc start (0,%d,2550): exclusion %s, P8 floor %d"):format(
 		orc_y, id, orc_floor)
