@@ -560,6 +560,11 @@ steps = {}
 local dragon_env = {
 	os = {time = function() return wall end},
 	grug_zones = {terrain_height_at = function() return 0 end},
+	-- Round 40 PM: the return warning plays through the real particle helper.
+	-- (its eight pieces are tools/r40_pm's to check; here they are dropped).
+	grug_core = setmetatable({particles = dofile(repo .. "/tools/r40_pm/helper_stub.lua")(repo)},
+		{__index = grug_core}),
+	core = setmetatable({after = function() end}, {__index = core}),
 }
 core.add_entity = function(pos, name, staticdata)
 	local ent = {name = name}
