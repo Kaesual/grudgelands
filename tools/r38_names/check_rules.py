@@ -67,7 +67,7 @@ def piglet_slots(model):
     out = set()
     for o in model.objectives:
         if o["quest"].endswith("_hunt_01") and o["kind"] == "kill":
-            out.update(o["targets"])
+            out.update(o.get("selected", o["targets"]))
     return out
 
 

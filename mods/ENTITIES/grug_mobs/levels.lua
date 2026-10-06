@@ -507,6 +507,9 @@ function grug_mobs.ensure_init(self)
 		-- the central one-second pass assigns nearby viewers.
 		self.update_tag = update_tag
 		self._grug_tag = nil
+		-- Once per activation, with the level settled above: the name the
+		-- names file gives this mob (names.lua, Round 38).
+		if grug_mobs.apply_name then grug_mobs.apply_name(self) end
 		update_tag(self)
 	end
 end
@@ -560,8 +563,8 @@ end
 -- first tick only the field is written and ensure_init applies it; a mob
 -- that already levelled (families with a composed look level during
 -- activation) gets its stats re-derived at the same wounded fraction, its
--- tag refreshed and its composed look (armour bracket) recomposed. Unlike set_tier it applies to every tier, authored
--- sub-types included.
+-- name and tag refreshed and its composed look (armour bracket) recomposed.
+-- Unlike set_tier it applies to every tier, authored sub-types included.
 function grug_mobs.relevel(ent, level)
 	if not ent or not ent.object then
 		return
@@ -572,6 +575,8 @@ function grug_mobs.relevel(ent, level)
 	end
 	ent._grug_level = level
 	apply_stats(ent, true)
+	-- A name may change with the level band (names.lua, Round 38).
+	if grug_mobs.apply_name then grug_mobs.apply_name(ent) end
 	update_tag(ent)
 	if grug_mobs.refresh_visual then
 		grug_mobs.refresh_visual(ent)

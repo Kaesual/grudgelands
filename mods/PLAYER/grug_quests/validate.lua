@@ -537,6 +537,20 @@ local function check_recipe_targets(warn, where, world, zone, objective)
 	warn(where, ("no kill target is spawned by %s's spawn recipe [W-recipe-target]"):format(zone))
 end
 
+-- Round 38: a kill objective or quest drop counts the names its roles and
+-- area select (labels.lua Q.target_names); a role that selects no name
+-- could never be credited. tools/r38_names/guarantee.py proves the rest.
+local function check_names(add, where, world, zone, row)
+	local mobs = V.target_names(row)
+	if #mobs == 0 or not world.target_names then return end
+	for i, list in ipairs(world.target_names(mobs, V.area_ref(row.area, zone), zone)) do
+		if #list == 0 and world.entity(mobs[i]) then
+			add(where, ("%s selects no mob name: no slot of data/names.json and no garrison name " ..
+				"[E-no-name]"):format(mobs[i]:match("^grug_mobs:(.+)$") or mobs[i]))
+		end
+	end
+end
+
 -- Every placeholder's target (a kind or camp of the zone's recipe, a leader
 -- or a PvP POI) and place (a settlement key or anchor id) exists. "From here"
 -- points at a compact target: an open kind spreads over many patches, so it
@@ -548,6 +562,8 @@ local function check_placeholders(add, warn, where, world, zone, quest)
 			local target, reason = world.placeholder_target(zone, ref)
 			if not target then
 				add(where, ("%s: %s: %s [E-placeholder-target]"):format(key, p.raw, tostring(reason)))
+			elseif p.kind == "captain" and not (target.what == "poi" and world.captain_name(target.id)) then
+				add(where, ("%s: %s: %s is no PvP camp with a captain [E-placeholder-target]"):format(key, p.raw, ref))
 			elseif p.kind == "dir_from_giver" and target.type == "open" then
 				warn(where, ("%s: %s: %s is an open kind spread over many patches; use {zone_area:...} or " ..
 					"{dir_of:<place>:...} [W-placeholder-spread]"):format(key, p.raw, ref))
@@ -577,6 +593,7 @@ function V.world(files, world)
 					check_target(add, where, world, zone, name, area, quest.level, "kill target", faction)
 				end
 				check_recipe_targets(warn, where, world, zone, objective)
+				check_names(add, where, world, zone, objective)
 			elseif objective.type == "use" then
 				local place, reason = world.use_place(objective.place, zone)
 				if not place then add(where, ("%s [E-use-place]"):format(tostring(reason))) end
@@ -599,6 +616,7 @@ function V.world(files, world)
 				check_target(add, where, world, zone, name, V.area_ref(drop.area, zone), quest.level,
 					"quest-drop source", faction)
 			end
+			check_names(add, where, world, zone, drop)
 		end
 		for _, item in ipairs(quest.rewards.items or {}) do
 			check_item(add, row.where, world, item.item, "reward item")

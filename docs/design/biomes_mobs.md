@@ -1377,8 +1377,8 @@ sub-types burn like the Zombie).
   ladder shared by all six starts: Small/Young for neutral animals,
   Large → Aggressive → Monstrous for hostile animals, Braindead → Sluggish →
   Monstrous for zombies and husks, Confused for outlaws and the start
-  chiefs. Everywhere else every display name (including `display_by_zone`
-  variants) belongs to one role, avoids base-mob and rare names, has at most
+  chiefs. Everywhere else every display name (including the zone names of
+  `data/names.json`) belongs to one role, avoids base-mob and rare names, has at most
   three words (named leaders excepted) and describes the creature in its
   place; roles of one family sharing a zone differ in more than their first
   word. The name tag colour shows disposition. Full rule and ladder:
@@ -1387,14 +1387,17 @@ sub-types burn like the Zombie).
 - **Levels:** `levels` [lo, hi] clamps the level the mob gets at its first
   step (the floor is also the fallback where the level field has no value);
   a spawn region's belt narrows it further (§4.2).
-- **Zone name and tint:** `display_by_zone` and `tint_by_zone` are read from
-  the zone of the spawn position on the first activation; the zone is
-  persisted with the mob. A tint id from `tints.json` is either a baked
+- **Name and zone tint:** since Round 38 every mob's name comes from
+  `data/names.json`, one name per slot (zone, source, level band; `names.lua`,
+  [quests.md](quests.md#the-quest-name-guarantee-round-38)), and `display`
+  is the fallback; `tint_by_zone` is read from the zone of the spawn tag,
+  else of the spawn position on the first activation; the zone is persisted
+  with the mob. A tint id from `tints.json` is either a baked
   texture that replaces the body texture (every material slot carrying the
   mesh's first non-blank texture; blank overlay and held-item slots keep
   theirs) or a texture modifier appended to it. Elite and rare tints layer
-  on top. The entity name stays the role, so quest kill matching, density
-  weights and spawn palettes stay per role. A humanoid's skin is composed
+  on top. The entity name stays the role, so density weights and spawn
+  palettes stay per role; quest kills count by the shown name. A humanoid's skin is composed
   again when its level changes (a region spawn is relevelled right after its
   first activation); the tint goes back on top of the new skin.
 

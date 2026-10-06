@@ -174,7 +174,7 @@ local function progress(player, def, active, snapshot)
 			for _, amount in pairs(allocation[index]) do count = count + amount end
 		end
 		rows[index] = {type = objective.type, item = objective.item, group = objective.group,
-			mobs = objective.mobs, zones = objective.zones, npc = objective.npc, count = count,
+			mobs = objective.mobs, names = objective.names, npc = objective.npc, count = count,
 			required = objective.count, description = objective.description, levels = objective.levels,
 			label = objective.label, place_name = objective.place_name}
 		if count < objective.count then ready = false end
@@ -494,17 +494,14 @@ function Q.turn_in(player, id)
 	if hook_error then error(hook_error, 0) end
 	return true
 end
--- Does this mob count for a kill objective or quest drop? The entity name is
--- the role; an area limit is matched by the area tag the mob spawned with
--- (`_grug_area` = "<zone>/<kind or camp>", spawn_regions.lua; a PvP
--- garrison's guards and captain "<zone>/<settlement key>", start_npcs.lua),
--- never by where it died. Leaders carry no area.
+-- Does this mob count for a kill objective or quest drop? Round 38, the
+-- quest-name guarantee: a mob counts when the name it shows is one of the
+-- target's names (labels.lua Q.target_names, resolved at load from the
+-- roles and area), whatever its area, level or spawn place; no mob of
+-- another name counts. The name is the mob's description, the text its
+-- nametag prints after the tier prefix (grug_mobs names.lua).
 local function mob_counts(target, mob)
-	if target.area and mob._grug_area ~= target.area then return false end
-	for _, name in ipairs(target.mobs) do
-		if name == mob.name then return true end
-	end
-	return false
+	return target.name_set[mob.description] == true
 end
 -- Most kills credit nothing: the shared state is only read, and copied
 -- once a counter actually rises. A kill of the player's own faction (its
@@ -601,7 +598,7 @@ end
 -- participant drop hook: the same set kill credit uses).
 function Q.roll_quest_drops(mob, participants, pos)
 	-- Most kills drop nothing for quests: one set lookup ends them here.
-	if not Q.quest_drop_mobs[mob.name] then return end
+	if not Q.quest_drop_names[mob.description] then return end
 	for _, name in ipairs(participants) do
 		local player = core.get_player_by_name(name)
 		if player then

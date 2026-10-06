@@ -692,6 +692,20 @@ achievements](#cloaks-and-achievements).
     drops by level band from `drops.json`. Quest-only drops go through
     `grug_mobs.register_participant_drop_hook` (`aggro.lua`), rolled per
     eligible participant.
+  - `names.lua` (Round 38, `grug_mobs.names` over the pure
+    `names_core.lua`) reads `data/names.json` (slot key
+    `<zone or world>/<source>/L<lo>-<hi>` -> name, written by
+    `tools/r38_b1/gen_names.py` from `tools/r38_names/inventory.py`; two
+    names overlapping in one source and scope fail the load) and names every
+    mob by (source, zone, level): `grug_mobs.apply_name`, called by
+    `levels.lua` once per activation (with the level settled) and on every
+    `relevel`, and by `start_npcs.lua` at a garrison placement. The source is
+    `_grug_name_key` (a rare's `rare.<id>`, a garrison post's
+    `<settlement key>.<post>`, from `pvp_garrison.lua` `G.slot`) or the
+    entity role; a source the file does not name keeps its description (the
+    PvP captains, commanders and Generals keep their `pvp_names.json`
+    names). The quest kill credit compares this name (fixture
+    `tools/r38_b1`).
   - `spawn_regions.lua` (`grug_mobs.spawn_regions`) reads
     `data/zones/<zone>.spawns.json`: a `recipe` (every shipped zone) or a
     `palette` (the old ABM path, kept for a zone without recipe). It builds
@@ -707,8 +721,8 @@ achievements](#cloaks-and-achievements).
     builder's files: **a new file the build reads must join that key**, or
     `tools/r30_p3` (input coverage) fails. API: `region_at`, `level_at`,
     `describe` (direction phrases for quest texts), `area_roles`,
-    `leader_pos`; every spawned mob carries `_grug_area` for area kill
-    credit. Its one throttled globalstep runs one ambient attempt per
+    `leader_pos`; every spawned mob carries `_grug_area` (dawn, density,
+    camp head counts, the zone of its name). Its one throttled globalstep runs one ambient attempt per
     player per second in four player slices and, since Round 32 (perf
     review R3), the camp slots (`grug_mobs.region_camp_tick`, `camps.lua`)
     and leaders (`SR.leader_tick`) in `SR.SLOW_SLICES` (20) zone slices of
@@ -1061,19 +1075,21 @@ achievements](#cloaks-and-achievements).
   `<zone>.front.quests.json`, read by `loader.lua`, checked by `validate.lua`
   (structure at load, roles/areas/levels/items once every mod loaded; every
   finding names file and quest); quest NPCs bound to sockets are in
-  `npcs.lua`, new givers at free quest sockets come from the files. Area kill
-  credit reads the mob's `_grug_area` tag (`<zone>/<kind or camp>` of the
-  zone's spawn recipe, `grug_mobs/spawn_regions.lua`,
-  [spawn_regions.md](../design/spawn_regions.md)); quest-only drops use
+  `npcs.lua`, new givers at free quest sockets come from the files. Since
+  Round 38 kill credit and quest drops count by the mob's shown name
+  (`state.lua` `mob_counts`: `objective.name_set[mob.description]`); the
+  roles and area (`<zone>/<kind or camp>` of the zone's spawn recipe,
+  [spawn_regions.md](../design/spawn_regions.md)) select those names once at
+  load (`labels.lua` `Q.target_names`, kept as the objective's `names` and
+  `name_set`; `E-no-name` when a role selects none); quest-only drops use
   `grug_mobs.register_participant_drop_hook`; weight rewards
   `grug_xp.quest_reward`. `labels.lua` words an objective for the dialogue,
   log, tracker and feed (item names only, never tooltip text) and carries
   each objective's target level range, computed once at load by
-  `validate.lua` (Lane Q0); since Round 32 a kill target is named by its
-  sub-type's zone display name (`display_by_zone`), the zone resolved once
-  at load by `Q.target_zones` (a leader's zone, else the area's, else the
-  quest's) and kept as the objective's `zones` (fixture `tools/r32_f2`;
-  `tools/r28_design/validate.py` `E-label-name`, `E-item-source-drop`). It
+  `validate.lua` (Lane Q0), widened for a kill to every slot bearing its
+  names; a kill target is named by those names (fixtures `tools/r32_f2`,
+  `tools/r38_b1`; the guarantee `tools/r38_names/guarantee.py`;
+  `tools/r28_design/validate.py` `E-item-source-drop`). It
   also fills the quest text placeholders (Round 29
   Q1): titles (`{name:...}` only) at load, texts on first display through
   `grug_mobs.spawn_regions.describe`, cached per quest (`Q.quest_text`);
@@ -1110,7 +1126,9 @@ achievements](#cloaks-and-achievements).
   area may be a PvP garrison (`pvp_garrison.area_roles`, guard and captain
   roles, since Round 36 the war commander where a camp has one, the giver of
   the other faction: `E-garrison-faction`); kill
-  credit needs nothing new (the `_grug_area` tag). Placeholders may name a
+  credit counts the garrison post's name (Round 38: `G.slot`'s `name_key`,
+  the guards' slot in `data/names.json`, a captain's race name;
+  `{captain:<camp key>}` in texts). Placeholders may name a
   PvP POI by its settlement key. The design tools mirror it
   (`tools/r28_design`: `r28common.pvp_pois` reads the tiers from
   `G.slot`); fixture `tools/r31_q`. The

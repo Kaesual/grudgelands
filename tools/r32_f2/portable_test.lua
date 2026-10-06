@@ -25,11 +25,12 @@
 --      range rewrite; release resets, a slot change settles the old stack;
 --      a key-down on air is gather; cost: no combat ray while the crosshair
 --      rests on a solid node, one per step behind a plant, loot or an actor.
---   L  quest labels: every shipped kill objective names each target by its
---      zone display name (a leader's zone, else the area's zone, else the
---      quest's zone); how many quests and zones that changes (30 and 13 at
---      the start of Round 32); the item objectives that name such a source
---      show the item's own name.
+--   L  quest labels: every shipped kill objective names each target by the
+--      name it shows in its zone (since Round 38 data/names.json by slot:
+--      a leader's zone, else the area's zone, else the quest's zone); how
+--      many quests and zones differ from the catalogue display (30 and 13
+--      at the start of Round 32); the item objectives that name such a
+--      source show the item's own name.
 -- Prints "R32 F2 PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -702,10 +703,8 @@ for _, row in ipairs(read_json(MOBS .. "/items.json")) do core.registered_items[
 grug_core = {}
 dofile(ROOT .. "/mods/CORE/grug_core/item_names.lua")
 grug_mobs = {
-	subtype = function(name)
-		local row = subtypes[name:match("^grug_mobs:(.+)$") or name]
-		return row and {display = row.display, display_by_zone = row.display_by_zone or {}} or nil
-	end,
+	-- Round 38: the shipped mob names by slot.
+	names = dofile(ROOT .. "/tools/r38_b1/names_stub.lua").shipped(ROOT),
 	spawn_regions = {
 		leader = function(role) return leader_zone[role] and {zone = leader_zone[role]} or nil end,
 	},
@@ -722,7 +721,7 @@ local function seen_name(role, quest_zone, area)
 		return def and def.description
 	end
 	local zone = leader_zone[role] or (area and area:match("^([^/]+)/")) or quest_zone
-	return (row.display_by_zone or {})[zone] or row.display
+	return grug_mobs.names.lookup(role, zone, nil) or row.display
 end
 
 local changed_quests, changed_zones, item_rows = {}, {}, {}
@@ -747,7 +746,9 @@ for _, name in ipairs(list_dir(QUESTS)) do
 				garrison_kills = garrison_kills + 1
 			elseif objective.type == "kill" then
 				kills = kills + 1
-				local row = {type = "kill", mobs = mobs, zones = Q.target_zones(mobs, area, zone)}
+				local names = {}
+				for i in ipairs(mobs) do names[i] = {expected[i]} end
+				local row = {type = "kill", mobs = mobs, names = names}
 				eq(Q.objective_subject(row), table.concat(expected, " or "),
 					("L %s objective %d names its targets as met"):format(quest.id, index))
 			elseif objective.type == "item" and differs then
@@ -788,7 +789,9 @@ end
 local function subject(roles, zone, area)
 	local mobs = {}
 	for i, role in ipairs(roles) do mobs[i] = "grug_mobs:" .. role end
-	return Q.objective_subject({type = "kill", mobs = mobs, zones = Q.target_zones(mobs, area, zone)})
+	local names = {}
+	for i, role in ipairs(roles) do names[i] = {seen_name(role, zone, area)} end
+	return Q.objective_subject({type = "kill", mobs = mobs, names = names})
 end
 eq(subject({"small_boar"}, "kragmar_kapok_cradle", "kragmar_kapok_cradle/yam_beds"), "Small Jungle Boar",
 	"L Kapok's small boar")
@@ -797,7 +800,7 @@ eq(subject({"last_watch_zombie"}, "elandor_highcourt", "front_stormscale_summit/
 	"Overgrown Watchman", "L a front quest names the area's zone, not its file's")
 eq(subject({"small_boar"}, "kragmar_kapok_cradle"), "Small Jungle Boar", "L without an area: the quest's zone")
 eq(Q.objective_subject({type = "kill", mobs = {"grug_mobs:small_boar"}}), "Small Boar",
-	"L a row without zones: the generic display name")
+	"L a row without names: the entity's name")
 
 if failures == 0 then
 	print("R32 F2 PORTABLE PASS checks=" .. checks)

@@ -1167,6 +1167,10 @@ local function install_garrison(entity, spec)
 	-- The quest credit's area (grug_quests matches a kill objective's `area`
 	-- against the tag a mob carries): "<zone>/<settlement key>".
 	entity._grug_area = spec.area
+	-- Round 38: the post's slot in data/names.json names the guards and
+	-- bodyguards (names.lua); a captain, commander and General keep the
+	-- pvp_names.json name below, which the names file does not hold.
+	entity._grug_name_key = spec.name_key
 	if spec.name then
 		-- What the nametag and the target frame print (levels.lua tag_text).
 		entity.description = spec.name
@@ -1180,6 +1184,9 @@ local function install_garrison(entity, spec)
 	if spec.level_min then
 		grug_mobs.relevel(entity, math.random(spec.level_min, spec.level_max))
 	end
+	-- Placement may follow the first activation (a composed look levels
+	-- there), which named the entity by its role: name it by its post.
+	if grug_mobs.apply_name then grug_mobs.apply_name(entity) end
 	if entity.update_tag then
 		entity:update_tag()
 	end

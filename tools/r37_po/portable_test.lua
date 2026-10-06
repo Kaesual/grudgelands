@@ -313,16 +313,16 @@ local function quest(id, def)
 	def.rewards = def.rewards or {weight = 1, copper = 5}
 	Q.register_quest(id, def)
 end
-quest("hunt", {npc = "elder", objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 2}}})
+quest("hunt", {npc = "elder", objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 2}}})
 quest("meat", {npc = "elder", prerequisites = {"hunt"},
 	objectives = {{type = "item", item = "grug_food:raw_meat", count = 2}}})
 quest("logs", {npc = "hunter", objectives = {{type = "item", group = "log", count = 2}}})
 quest("bounty", {npc = "hunter", repeatable = {cooldown = 60},
-	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
-quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
+	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
+quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 local clock = 1000
 Q.clock = function() return clock end
-local boar = {name = "grug_mobs:boar", object = {}}
+local boar = {name = "grug_mobs:boar", description = "Boar", object = {}}
 
 -- ---------------------------------------------------------------------------
 -- K: quest markers

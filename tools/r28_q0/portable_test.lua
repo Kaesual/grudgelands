@@ -213,15 +213,28 @@ local function install_world(mobs_root)
 			return "aggressive"
 		end,
 		spawn_regions = seams,
-		-- A sub-type's display names (Round 32: labels name a mob as its zone
-		-- shows it); the fixture's catalogue rows have none (entity
-		-- descriptions name them).
-		subtype = function(name)
-			local row = catalogue[name:match("^grug_mobs:(.+)$") or name]
-			return row and row.display and {display = row.display, display_by_zone = row.display_by_zone or {}}
-				or nil
-		end,
 	}
+	-- Round 38: the mob names by slot (grug_mobs names.lua): the shipped
+	-- data/names.json over the shipped recipes, else every fixture slot
+	-- named after its role.
+	local stub = dofile("tools/r38_b1/names_stub.lua")
+	if mobs_root == "mods/ENTITIES/grug_mobs" then
+		grug_mobs.names = stub.shipped(".")
+	else
+		local zones, roles = {}, {}
+		for zone in pairs(recipes) do zones[#zones + 1] = zone end
+		for role in pairs(leaders) do roles[#roles + 1] = role end
+		local map = stub.slot_map(seams, zones, function(role)
+			return (role:gsub("_", " "):gsub("(%a)([%w']*)", function(a, b) return a:upper() .. b end))
+		end, roles)
+		-- The base boar and the catalogue-only Ridge Boar where the fixture's
+		-- quests meet them outside the recipes (their own names, so the
+		-- level ranges stay each quest's).
+		map["elandor_dawnmere_fields/boar/L1-4"] = "Boar"
+		map["elandor_goldmead_vale/boar/L15-20"] = "Vale Boar"
+		map["elandor_goldmead_vale/ridge_boar/L12-15"] = "Ridge Boar"
+		grug_mobs.names = stub.of(".", map)
+	end
 	grug_zones = {get = function(zone) return BANDS[zone] end, id_at = function() return "elandor_dawnmere_fields" end}
 	mod_paths.grug_mobs = mobs_root
 	return catalogue
@@ -287,6 +300,13 @@ local function register_real(_, mobs_root)
 	end
 	grug_mobs.pvp_garrison = garrison
 	grug_mobs.disposition = function() return nil end
+	-- The settlement records (a PvP camp's race names its captain, read at
+	-- load since Round 38), as resolve_factions below.
+	local records = {}
+	for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
+		records[#records + 1] = {key = row.key, race_id = row.race}
+	end
+	grug_core.settlement_socket_settlements = function() return records end
 end
 
 -- Every quest NPC's faction from its settlement's race (the roster), as
@@ -531,7 +551,7 @@ for _, id in ipairs(ids) do
 			if objective.levels then ranged_items = ranged_items + 1 end
 		end
 		rows[index] = {type = objective.type, item = objective.item, group = objective.group,
-			mobs = objective.mobs, zones = objective.zones, npc = objective.npc, count = 0,
+			mobs = objective.mobs, names = objective.names, npc = objective.npc, count = 0,
 			required = objective.count, levels = objective.levels,
 			label = objective.label, place_name = objective.place_name}
 	end
@@ -604,5 +624,5 @@ for _, id in ipairs({"r14_human_01_boars_beyond_the_fence", "r14_human_04_shapes
 end
 
 print(("%d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(failures .. " failure(s)", 0) end
 print("R28 Q0 PORTABLE PASS checks=" .. checks)

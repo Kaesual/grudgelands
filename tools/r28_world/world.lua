@@ -59,6 +59,15 @@ local function read(path)
 	return text
 end
 
+-- Round 38: the mob names by slot (data/names.json, grug_mobs names_core.lua):
+-- a role's one name in a zone, else its names by level band.
+local names_core = dofile(repo .. "/mods/ENTITIES/grug_mobs/names_core.lua")
+local NAMES = names_core.api((names_core.build(json.parse(read(repo ..
+	"/mods/ENTITIES/grug_mobs/data/names.json")).names)))
+local function slot_names(zone, role, fallback)
+	return NAMES.lookup(role, zone, nil) or table.concat(NAMES.names_in(role, zone, 1, 70), " / "):match("^(.+)$")
+		or fallback
+end
 local catalogue = {}
 do
 	local data = json.parse(read(repo .. "/mods/ENTITIES/grug_mobs/data/subtypes.json"))
@@ -155,7 +164,7 @@ end
 local function display(zone, role)
 	local row = catalogue[role]
 	if not row then return role end
-	return row.display_by_zone and row.display_by_zone[zone] or row.display
+	return slot_names(zone, role, row.display)
 end
 
 -- Every zone's map.

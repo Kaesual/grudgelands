@@ -181,28 +181,37 @@ local function same_list(a, b)
 	return true
 end
 
--- Zone display name and tint (frame §4.1). The zone is the one of the spawn
--- position, read on the first activation and persisted as a plain field;
--- every later activation re-applies the same name and tint (grug_visuals
--- recomposes a humanoid skin on each activation, so the tint goes on top of
--- it each time). Runs after the base's own after_activate. The name is kept
--- in self.temp for the per-step guard below.
+-- Name and zone tint (frame §4.1; Round 38). The zone is the one the mob's
+-- name is read in (names.lua zone_of: its spawn tag's zone, else its first
+-- activation position, persisted); every later activation re-applies the
+-- same tint (grug_visuals recomposes a humanoid skin on each activation, so
+-- the tint goes on top of it each time). Runs after the base's own
+-- after_activate. The name is the names file's (data/names.json; before
+-- the first level it is the one name of the zone's slots, if they share
+-- one), else the catalogue display; levels.lua applies the name of the
+-- mob's level once it has one. It is kept in self.temp for the per-step
+-- guard below.
 local function apply_zone_variant(self, sub)
-	local zone = ""
-	if next(sub.display_by_zone) or next(sub.tint_by_zone) then
+	local names = grug_mobs.names
+	local zone
+	if names then
+		zone = names.zone_of(self)
+	else
+		-- Without names.lua (a fixture loading this file alone): the zone
+		-- of the first activation position, as names.lua reads it.
 		if self._grug_variant_zone == nil then
 			local pos = self.object and self.object:get_pos()
 			self._grug_variant_zone = pos and grug_zones.id_at(pos.x, pos.z) or ""
 		end
 		zone = self._grug_variant_zone
 	end
-	local display = sub.display_by_zone[zone] or sub.display
+	local display = names and names.name_of(self) or sub.display
 	self.temp = self.temp or {}
 	self.temp.grug_display = display
 	if self.description ~= display then
 		self.description = display
 	end
-	local tint = TINTS[sub.tint_by_zone[zone] or ""]
+	local tint = TINTS[sub.tint_by_zone[zone or ""] or ""]
 	local pristine = self._grug_base_texture or self.base_texture
 	if tint and type(pristine) == "table" then
 		local textures = grug_mobs.tint_textures(pristine, tint)
@@ -499,7 +508,6 @@ local function register_subtype(i, row)
 		drops = type(row.drops) == "string" and row.drops ~= ""
 			and row.drops or row.family,
 		display = row.display,
-		display_by_zone = string_map(row.display_by_zone, file, role, "display_by_zone"),
 		tint_by_zone = string_map(row.tint_by_zone, file, role, "tint_by_zone"),
 		size = size,
 		disposition = row.disposition,
@@ -514,7 +522,9 @@ local function register_subtype(i, row)
 		end
 	end
 
-	-- The base's model, animations, verbs and static drops, resized.
+	-- The base's model, animations, verbs and static drops, resized. The
+	-- display is the fallback name; data/names.json names the mob per zone
+	-- and level (names.lua).
 	def.description = sub.display
 	local vs = def.visual_size or {x = 1, y = 1}
 	def.visual_size = {x = vs.x * size, y = vs.y * size, z = vs.z and vs.z * size}

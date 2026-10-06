@@ -434,11 +434,9 @@ class Model:
 
     def sub_fields(self, role, zone):
         sub = self.subtypes[role]
-        by_zone = sub.get("display_by_zone") or {}
-        if zone in by_zone:
-            name, src = by_zone[zone], "subtypes.json display_by_zone"
-        else:
-            name, src = sub["display"], "subtypes.json display"
+        # The catalogue display is the fallback; data/names.json, read in
+        # apply_names_file, names every slot it lists (Round 38).
+        name, src = sub["display"], "subtypes.json display"
         leader = bool(sub.get("leader"))
         tier = "named" if leader else ("elite" if sub["tier"] == "elite" else "normal")
         return {"name": name, "name_source": src, "name_where": self.sub_line[role],
@@ -456,8 +454,10 @@ class Model:
                     r.cite(MOBS + "/camps.lua", r"function grug_mobs\.region_camp_tick"))
         self.source("recipe_leaders", "named leaders at a camp or kind, fixed level, no area tag",
                     r.cite(MOBS + "/spawn_regions.lua", r"-- Leaders \(ruling 38\)"))
-        self.source("zone_display", "zone display name of a sub-type (display_by_zone, read at first activation)",
-                    r.cite(MOBS + "/subtypes.lua", r"local function apply_zone_variant"))
+        self.source("names_file", "every mob's name per slot key (data/names.json), by (source, zone, level) "
+                    "at activation and relevel",
+                    r.cite(MOBS + "/names.lua", r"function grug_mobs\.apply_name") + ", " +
+                    r.cite(MOBS + "/levels.lua", r"grug_mobs\.apply_name\(self\)"))
         self.source("subtype_registration", "sub-type description = display",
                     r.cite(MOBS + "/subtypes.lua", r"def\.description = sub\.display"))
         self.source("critters", "a recipe zone keeps its critter ABM rows (critter tier: level 1)",
@@ -891,15 +891,33 @@ class Model:
         return sub["family"] if sub else entity
 
     # quests --------------------------------------------------------------------
+    def apply_names_file(self):
+        """data/names.json (Round 38 lane B1) is the game's one source of mob
+        names: every slot it lists takes its name from there. The PvP
+        captains, war commanders and Generals keep their pvp_names.json name."""
+        rel = MOBS + "/data/names.json"
+        if not (self.repo.root / rel).exists():
+            return
+        names = self.repo.json(rel)["names"]
+        for s in self.slots:
+            name = names.get(s["key"])
+            if name is None:
+                continue
+            s["name"], s["name_source"] = name, "names.json"
+            s["name_where"] = self.repo.cite(rel, re.escape('"%s"' % s["key"]))
+            s["words"] = len(words(name))
+            s["signal_words"] = [t for t in tokens(name) if t.lower() in self.signal]
+
     def build_quests(self):
         r = self.repo
         self.quest_files = sorted(p.name for p in (r.root / QUESTS).glob("*.json"))
-        self.source("quest_kill_credit", "kill credit: role match, area tag match (`_grug_area`)",
+        self.source("quest_kill_credit", "kill credit: the mob's shown name is one of the objective's names "
+                    "(Round 38: every mob of that name counts, wherever it spawned)",
                     r.cite("mods/PLAYER/grug_quests/state.lua", r"local function mob_counts"))
-        self.source("quest_label", "objective label = the role's display name in its target zone "
-                    "(leader zone, else the area's zone, else the quest's zone)",
-                    r.cite("mods/PLAYER/grug_quests/labels.lua", r"local function mob_label") + ", " +
-                    r.cite("mods/PLAYER/grug_quests/labels.lua", r"function Q\.target_zones"))
+        self.source("quest_label", "objective names = the names of the slots its roles and area select "
+                    "(a leader's slot, else the area's, else the quest zone's kinds and camps; a PvP "
+                    "captain: this world's race name), resolved once at load",
+                    r.cite("mods/PLAYER/grug_quests/labels.lua", r"function Q\.target_names"))
         self.source("quest_items", "an item objective counts held items only (no mob, no area): its roles "
                     "are guidance (plan §6.7); the items are family drops by drop tier",
                     r.cite("mods/PLAYER/grug_quests/loader.lua", r'elseif objective\.type == "item" then') + ", " +
@@ -928,18 +946,29 @@ class Model:
                         continue
                     kind = o.get("type", "quest_drop")
                     area = o.get("area")
-                    targets, labels = [], {}
+                    # The selector (labels.lua Q.target_names): a leader's
+                    # slot; else the slots of the area; else the quest
+                    # zone's kinds and camps (else any slot of the role).
+                    # The label is the selected slots' names (a captain's
+                    # race names: one of them stands there on a world).
+                    targets, labels, label_names, selected = [], {}, set(), []
                     for role in roles:
-                        tzone = leaders.get(role) or (area.split("/")[0] if area else qzone)
-                        sub = self.subtypes.get(role)
-                        if sub:
-                            label = (sub.get("display_by_zone") or {}).get(tzone, sub["display"])
-                        elif role in self.label_alias_of:
-                            label = self.label_alias_of[role]
+                        cands = by_role.get(role, [])
+                        if role in leaders:
+                            pick = [s for s in cands if s["source"] == "leader"]
+                        elif area:
+                            pick = [s for s in cands if area in s["tags"]]
                         else:
-                            cands = [s for s in by_role.get(role, []) if s["zone"] == tzone] or by_role.get(role, [])
-                            label = cands[0]["name"] if cands else role
-                        labels[role] = label
+                            pick = ([s for s in cands if s["zone"] == qzone and s["tags"]] or
+                                    runtime_fallback(cands, qzone))
+                        pick = sorted(pick, key=lambda s: (s["levels"], s["key"]))
+                        selected += pick
+                        shown = []
+                        for s in pick:
+                            if s["name"] not in shown:
+                                shown.append(s["name"])
+                        labels[role] = (" / " if role in self.label_alias_of else " or ").join(shown) or role
+                        label_names |= {n.lower() for n in shown}
                     # A spawn source is (slot, area tag); a leader, rare,
                     # critter or cave mob carries no tag (None).
                     def sources(s):
@@ -968,11 +997,11 @@ class Model:
                                 "drops_item": key in obj["drop_slots"], "same_name_not_counted": [],
                                 "same_name_not_counted_in_zone": [], "counted_other_name": []})
                         continue
-                    counted = [(s, t) for role in roles for s in by_role.get(role, []) for s, t in sources(s)
-                               if area is None or t == area]
+                    # Round 38: a mob counts by its shown name, so every
+                    # source of every label name counts.
+                    counted = [(s, t) for n in label_names for s0 in by_name.get(n, []) for s, t in sources(s0)]
                     counted_ids = {(s["key"], t) for s, t in counted}
                     targets = sorted({s["key"] for s, _ in counted})
-                    label_names = {v.lower() for v in labels.values()}
                     target_zones = {leaders.get(role) or (area.split("/")[0] if area else qzone) for role in roles}
 
                     def ref(s, t):
@@ -986,6 +1015,7 @@ class Model:
                     obj = {"quest": q["id"], "file": rel, "quest_zone": qzone, "path": "%s[%d]" % (field, oi),
                            "kind": kind, "relation": "counts", "item": o.get("item"), "roles": roles, "area": area,
                            "count": o.get("count"), "labels": labels, "targets": targets,
+                           "selected": sorted({s["key"] for s in selected}),
                            "same_name_not_counted": same_not, "same_name_not_counted_in_zone": same_not_zone,
                            "counted_other_name": other, "title": q.get("title", "")}
                     self.objectives.append(obj)
@@ -1141,12 +1171,20 @@ class Model:
     def finish(self):
         self.slots.sort(key=lambda s: s["key"])
         for s in self.slots:
-            if s["role"] in self.label_alias_of:
-                s["quest_label"] = self.label_alias_of[s["role"]]
-        for s in self.slots:
             s["quest_targets"].sort(key=lambda q: (q["file"], q["quest"], q["path"]))
             s["quest_mentions"].sort(key=lambda q: (q["file"], q["path"]))
         self.sources.sort(key=lambda s: s["id"])
+
+
+def runtime_fallback(cands, zone):
+    """labels.lua Q.target_names for a role with no leader, no area and no
+    kind or camp in the quest's zone: grug_mobs.names.lookup(role, zone, nil)
+    (names_core.lua: the zone's slots, else the "world" slots, else every
+    slot of the role) gives a name only when those slots share one; two
+    names give none (the game's load check E-no-name)."""
+    scoped = ([s for s in cands if s["key"].split("/")[0] == zone] or
+              [s for s in cands if s["key"].split("/")[0] == "world"] or cands)
+    return scoped if len({s["name"] for s in scoped}) == 1 else []
 
 
 def natural(text):
@@ -1184,6 +1222,7 @@ def build(repo=REPO, surfaces=True):
     m.cite_rules()
     m.build_recipe_slots()
     m.build_special_slots()
+    m.apply_names_file()
     m.build_quests()
     if surfaces:
         m.build_surfaces()

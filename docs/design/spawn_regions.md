@@ -325,10 +325,13 @@ creates is neutral. `tools/r28_world/border_rule.py` derives every zone's
 
 ## Quests
 
-A quest's kill objective or quest drop limited to an area names
-`<zone>/<kind id>` (or a camp id): it credits by the mob's `_grug_area` tag,
-so it works on every seed however many patches the kind has. Its levels for
-the quest checks are the kind's (the union over its roles). A leader is
+A quest's kill objective or quest drop with an area names `<zone>/<kind id>`
+(or a camp id): the area selects the names the objective counts (its roles'
+slot names there), and every mob of those names counts, wherever it spawned
+(Round 38, [quests.md](quests.md#the-quest-name-guarantee-round-38)). The
+mob's `_grug_area` tag stays for the dawn, density and camp head counts and
+names the zone its name is read in. Its levels for the quest checks are the
+kind's (the union over its roles). A leader is
 named by its role, without an area. A "use at a place" objective names a
 quest place of a recipe (`<zone>/<place id>`) or a clash site by its
 settlement key (Round 36, [quests.md](quests.md#objectives-round-28)).

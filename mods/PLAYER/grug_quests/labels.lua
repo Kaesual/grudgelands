@@ -8,33 +8,95 @@ local function title_case(text)
 	return (text:gsub("_", " "):gsub("(%a)([%w']*)", function(a, b) return a:upper() .. b end))
 end
 
--- The name a mob shows in `zone`: a sub-type's zone display name
--- (grug_mobs subtypes.lua, apply_zone_variant: "Small Jungle Boar" in the
--- Kapok Cradle), else its own display name or entity description.
-local function mob_label(name, zone)
-	local sub = grug_mobs.subtype and grug_mobs.subtype(name)
-	local by_zone = sub and zone and sub.display_by_zone
-	if sub then return plain(by_zone and by_zone[zone] or sub.display) end
+-- An entity's registered name: the fallback when the names file names no
+-- slot of it (grug_mobs names.lua).
+local function entity_label(name)
 	local def = core.registered_entities[name]
 	local label = def and def.description
 	if not label or label == "" then label = title_case(name:match("[^:]+$") or name) end
 	return plain(label)
 end
 
--- The zone each kill target (`mobs`, entity names) is met in, so its label
--- reads as the mob does there: a named leader's own zone, else the area's
--- zone ("zone/area"), else the quest's zone. Resolved once at load (the
--- loader keeps it as the objective's `zones`); rendering never reads the
--- world.
-function Q.target_zones(mobs, area_ref, zone)
-	local regions = grug_mobs.spawn_regions
-	local area_zone = area_ref and area_ref:match("^([^/]+)/")
-	local zones = {}
-	for i, name in ipairs(mobs) do
-		local leader = regions and regions.leader(name:match("^grug_mobs:(.+)$") or name)
-		zones[i] = leader and leader.zone or area_zone or zone
+-- The race a PvP camp registered as on this world (the settlement registry,
+-- as start_npcs.lua places its garrison), or nil.
+local camp_races
+local function camp_race(key)
+	if not camp_races then
+		camp_races = {}
+		for _, record in ipairs(grug_core.settlement_socket_settlements()) do
+			camp_races[record.key] = record.race_id
+		end
 	end
-	return zones
+	return camp_races[key]
+end
+
+-- The name a PvP camp's captain shows on this world (data/pvp_names.json
+-- by the camp's race), or nil.
+function Q.captain_name(key)
+	local garrison = grug_mobs.pvp_garrison
+	local race = camp_race(key)
+	return race and garrison and garrison.captain_name(key, race) or nil
+end
+
+-- The name a PvP POI's garrison `role` shows: the captain's, commander's
+-- and General's pvp_names.json name, the guards' and bodyguards' slot
+-- "<POI key>.<post>" of the names file.
+local function garrison_name(poi, role, zone)
+	local garrison = grug_mobs.pvp_garrison
+	if role:find("^captain_") then return Q.captain_name(poi.key) end
+	if role:find("^commander_") then return garrison.commander_name(poi.key) end
+	if role:find("^general_") then return garrison.general_name(poi.faction) end
+	local post = role:match("^(%a+)_")
+	return post and grug_mobs.names.lookup(poi.key .. "." .. post, zone, nil) or nil
+end
+
+-- Round 38, the quest-name guarantee: the names a kill objective or quest
+-- drop counts. Its roles and area only SELECT them; a mob then counts by
+-- the name it shows, wherever it spawned (state.lua mob_counts). Per role,
+-- in level order: a named leader's slot; else the slots of the area (a
+-- kind or camp: the role's levels there; a PvP garrison: its post's name);
+-- else the slots of the quest zone's kinds and camps; else the role's name
+-- in that zone. Resolved once at load (the loader keeps it as the
+-- objective's `names`); an empty list is a load error (validate.lua
+-- E-no-name). Returns {per role {name, ...}}.
+function Q.target_names(mobs, area_ref, zone)
+	local regions = grug_mobs.spawn_regions
+	local names = grug_mobs.names
+	local area_zone, area_id = (area_ref or ""):match("^([^/]+)/(.+)$")
+	local out = {}
+	for i, name in ipairs(mobs) do
+		local role = name:match("^grug_mobs:(.+)$") or name
+		local leader = regions.leader(role)
+		local list, seen
+		if leader then
+			local found = names.lookup(role, leader.zone, leader.level)
+			list = found and {found} or {}
+		elseif area_id then
+			local unit = regions.get_area(area_zone, area_id)
+			local range = unit and unit.levels_by_role[role]
+			if range then
+				list = names.names_in(role, area_zone, range[1], range[2])
+			else
+				local poi = grug_mobs.pvp_garrison and grug_mobs.pvp_garrison.poi(area_id)
+				local found = poi and poi.zone_id == area_zone and garrison_name(poi, role, area_zone)
+				list = found and {found} or {}
+			end
+		else
+			list, seen = {}, {}
+			for _, id in ipairs(regions.zone_area_ids(zone)) do
+				local range = regions.get_area(zone, id).levels_by_role[role]
+				for _, found in ipairs(range and names.names_in(role, zone, range[1], range[2]) or {}) do
+					if not seen[found] then seen[found] = true; list[#list + 1] = found end
+				end
+			end
+			if #list == 0 then
+				local found = names.lookup(role, zone, nil)
+				list = found and {found} or {}
+			end
+		end
+		out[i] = list
+	end
+	return out
 end
 
 -- The place of a "use at a place" objective (Round 36): a clash site by its
@@ -58,8 +120,35 @@ function Q.use_place(ref, zone)
 	return {ref = qualified .. "/" .. id, zone = qualified, id = id, name = place.name}
 end
 
+-- {name = true} of every name of Q.target_names' result.
+function Q.name_set(by_role)
+	local set = {}
+	for _, list in ipairs(by_role) do
+		for _, name in ipairs(list) do set[name] = true end
+	end
+	return set
+end
+
+-- {lo, hi} over every slot bearing one of the names (grug_mobs names.lua)
+-- and `selected` (the selection's own levels, kept for a name the names
+-- file does not hold), or nil.
+function Q.names_levels(by_role, selected)
+	local lo, hi = selected and selected[1], selected and selected[2]
+	for _, list in ipairs(by_role or {}) do
+		for _, name in ipairs(list) do
+			local range = grug_mobs.names.levels_of(name)
+			if range then
+				lo, hi = math.min(lo or range[1], range[1]), math.max(hi or range[2], range[2])
+			end
+		end
+	end
+	return lo and {lo, hi} or nil
+end
+
 -- The short subject: "Wood Axe", "Any Tree", "Small Boar or Large Rat",
--- "Small Jungle Boar", "Elder Maren", "Light the signal fire".
+-- "Small Jungle Boar", "Elder Maren", "Light the signal fire". A kill's
+-- subject is the names it counts (Q.target_names); a role the names file
+-- does not name reads as its entity.
 function Q.objective_subject(objective)
 	if objective.type == "use" then return objective.label end
 	if objective.type == "item" then
@@ -71,8 +160,15 @@ function Q.objective_subject(objective)
 		return npc and npc.title or tostring(objective.npc)
 	end
 	local names = {}
-	local zones = objective.zones or {}
-	for i, name in ipairs(objective.mobs or {}) do names[i] = mob_label(name, zones[i]) end
+	local by_role = objective.names or {}
+	for i, name in ipairs(objective.mobs or {}) do
+		local list = by_role[i] or {}
+		if #list == 0 then
+			names[#names + 1] = entity_label(name)
+		else
+			for _, shown in ipairs(list) do names[#names + 1] = plain(shown) end
+		end
+	end
 	return table.concat(names, " or ")
 end
 
@@ -119,6 +215,9 @@ end
 --   {zone_area:T}       "in the southeast of Dawnmere Fields",
 --                       "in the heart of Dawnmere Fields"
 --   {name:T}            the display name: "Dawnmere Meadows", "Crumb"
+--   {captain:T}         the captain of PvP camp T (its settlement key) by
+--                       the name he shows on this world (Round 38: the
+--                       name depends on the camp's race), "Captain Vrakk"
 --
 -- T is a kind or camp of a zone's spawn recipe, a leader role, a PvP POI
 -- (Round 31: a fortress or Battlegrounds camp by its settlement key), or a
@@ -135,7 +234,7 @@ end
 local P = {}
 Q.placeholders = P
 -- Placeholder -> its number of arguments.
-P.KINDS = {dir_from_giver = 1, dir_of = 2, zone_area = 1, name = 1}
+P.KINDS = {dir_from_giver = 1, dir_of = 2, zone_area = 1, name = 1, captain = 1}
 P.DIRECTIONS = {dir_from_giver = true, dir_of = true, zone_area = true}
 
 -- Fixed compass words are never written into a quest text: every
@@ -235,7 +334,8 @@ function Q.placeholder_target(zone, ref)
 	id = id or ref
 	local leader = regions.leader(id)
 	if leader and (not qualified or qualified == leader.zone) then
-		return {zone = leader.zone, id = id, what = "leader", name = mob_label("grug_mobs:" .. id, leader.zone)}
+		return {zone = leader.zone, id = id, what = "leader",
+			name = plain(grug_mobs.names.lookup(id, leader.zone, leader.level) or entity_label("grug_mobs:" .. id))}
 	end
 	local area = regions.get_area(qualified or zone, id)
 	local place = not area and regions.zone_place(qualified or zone, id)
@@ -260,12 +360,13 @@ function Q.placeholder_target(zone, ref)
 		type = area.type}
 end
 
--- {name:T} only: a title's fill (at load).
+-- {name:T} and {captain:T} only: a title's fill (at load).
 function Q.fill_names(text, zone)
 	return P.fill(text, function(p)
-		if p.kind ~= "name" then return nil end
-		local target = Q.placeholder_target(zone, p.args[1])
-		return target and target.name or nil
+		local target = (p.kind == "name" or p.kind == "captain") and Q.placeholder_target(zone, p.args[1])
+		if not target then return nil end
+		if p.kind == "captain" then return target.what == "poi" and Q.captain_name(target.id) or nil end
+		return target.name
 	end)
 end
 
@@ -300,6 +401,12 @@ local function placeholder_value(def, p, at_giver)
 		return nil
 	end
 	if p.kind == "name" then return target.name end
+	if p.kind == "captain" then
+		local name = target.what == "poi" and Q.captain_name(target.id)
+		if name then return name end
+		core.log("warning", ("[grug_quests] %s: %s names no PvP camp's captain on this world"):format(def.id, p.raw))
+		return nil
+	end
 	local regions = grug_mobs.spawn_regions
 	-- A PvP POI is described at its anchor ({x, z}, spawn_regions.place).
 	local subject = target.what == "poi" and regions.place(target.id) or target.id

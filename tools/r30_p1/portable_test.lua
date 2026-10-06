@@ -321,13 +321,13 @@ local function quest(id, def)
 end
 quest("intro", {npc = "elder", objectives = {{type = "item", item = "grug_food:raw_meat", count = 2}}})
 quest("next", {npc = "elder", turnin_npc = "hunter", prerequisites = {"intro"},
-	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 2}}})
+	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 2}}})
 quest("logs", {npc = "hunter", objectives = {{type = "item", group = "log", count = 3}}})
 quest("bounty", {npc = "hunter", repeatable = {cooldown = 60},
-	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
+	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 quest("tusk", {npc = "envoy", objectives = {{type = "item", item = "grug_mobs:tusk", count = 1}},
-	quest_drops = {{item = "grug_mobs:tusk", mobs = {"grug_mobs:boar"}, chance = 1}}})
-quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
+	quest_drops = {{item = "grug_mobs:tusk", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, chance = 1}}})
+quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 local clock = 1000
 Q.clock = function() return clock end
 
@@ -432,7 +432,7 @@ eq(Q.status(ann, "intro"), "completed", "C completed after the turn-in")
 states = markers_agree("after turn-in")
 eq(states.elder, "available", "M the follow-up quest unlocks at the elder")
 check(op("accept next", Q.accept, ann, "next"), "C accept next")
-local boar = {name = "grug_mobs:boar", object = {}}
+local boar = {name = "grug_mobs:boar", description = "Boar", object = {}}
 op("kill credit", Q.credit_kill, ann, boar, {x = 0, y = 0, z = 0})
 local function row_of(id)
 	for _, row in ipairs(Q.journal(ann).quests) do if row.id == id then return row end end
@@ -444,7 +444,7 @@ do
 	local raw = ann.meta["grug_quests:state"]
 	op("kill credit at the cap", Q.credit_kill, ann, boar, {x = 0, y = 0, z = 0})
 	eq(ann.meta["grug_quests:state"], raw, "C a kill that changes no counter saves nothing")
-	local wolf = {name = "grug_mobs:wolf", object = {}}
+	local wolf = {name = "grug_mobs:wolf", description = "Wolf", object = {}}
 	op("kill credit no match", Q.credit_kill, ann, wolf, {x = 0, y = 0, z = 0})
 	eq(ann.meta["grug_quests:state"], raw, "C a kill matching nothing saves nothing")
 end
