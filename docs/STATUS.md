@@ -2,6 +2,34 @@
 
 Updated 2026-10-06. This is the delivery pointer, not another game specification.
 
+- **Round 39 "Web data for the realm website" complete locally, not
+  pushed** (2026-10-06, [plan, completion and GUI checklist](planning/round39-web-data-plan.md#completion-2026-10-06)).
+  No gameplay change: data for websites that host managed realms. Every
+  lane is merged on main (WG `8953178d`, then WM and WE together
+  `03a76229`, then this documentation lane D), each independently reviewed
+  by Opus (all MERGE, their Lows fixed before the merge); 112 fixtures, the
+  exporter's `--check`, `check_glb.py` and `build_glb.py --check` pass.
+  **`grug_xp:level` lands on main with `03a76229`**, the first commit with
+  `tools/web_data/web_data.json` (the website's support rule). No world
+  generation changed: an existing world is enough for the GUI test.
+  - **Player meta (WM):** `grug_xp:level` on every XP change and join;
+    `grug_visuals:appearance` (slot items only, the composed body and
+    cloak textures, hand images and poses), written only on a real change;
+    texture strings at most 2,048 bytes (measured 1,382), the value at most
+    10,240 (measured 2,964), a closed texture grammar; the five keys the
+    website reads in the
+    [module guide](technical/module-guide.md#player-meta-read-by-external-tools).
+  - **Export (WE):** `tools/web_data/web_data.json` (117 KB; ids and
+    names, levels, the model's frames, the wield geometry, 526 texture
+    files, 48 hand and 156 equippable items), LuaJIT over the real
+    registration files, `--check` as a fixture.
+  - **Model (WG):** `grug_visuals_character.glb`, animated stand and walk
+    (own converter after `assimp` failed the clips and materials), tested
+    against the `.b3d` within about 1e-6; a probe mod for the GUI check.
+  - Next: the round-end gates on main; the user's GUI test (the look
+    unchanged, the glTF probe), together with Rounds 36–38, which are still
+    open; the coordinator reports the level-key commit to the website.
+
 - **Round 38 "Mob names" complete locally, not pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round38-mob-names-plan.md#completion-2026-10-06)).
   Every lane is merged on main (last lane PR, `ec2e874c`, then this

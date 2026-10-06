@@ -332,6 +332,16 @@ are open ([project status](docs/STATUS.md)).
   Party instead of Group. Complete locally on 2026-10-06, not pushed; a
   fresh world for the test. Next: the GUI test, together with Rounds 36
   and 37.
+- [x] **Round 39 "Web data for the realm website"**
+  ([completion](docs/planning/round39-web-data-plan.md#completion-2026-10-06)),
+  for websites that host managed realms, with no gameplay change: each
+  character's level and appearance (slot items, the composed textures) in
+  player meta as a documented external contract, an exported
+  `tools/web_data/web_data.json` with the ids, names, frames, wield
+  geometry, texture files and items a website needs, and the player model
+  as an animated glTF tested against the game's `.b3d`. Complete locally
+  on 2026-10-06, not pushed. Next: the GUI test, together with Rounds 36
+  to 38.
 
 ### Remaining work
 
@@ -349,8 +359,9 @@ are open ([project status](docs/STATUS.md)).
   [Round 34](BACKLOG.md#round-34-carry-overs),
   [Round 35](BACKLOG.md#round-35-carry-overs),
   [Round 36](BACKLOG.md#round-36-carry-overs),
-  [Round 37](BACKLOG.md#round-37-carry-overs) and
-  [Round 38](BACKLOG.md#round-38-carry-overs) carry-overs; Round 36 settled
+  [Round 37](BACKLOG.md#round-37-carry-overs),
+  [Round 38](BACKLOG.md#round-38-carry-overs) and
+  [Round 39](BACKLOG.md#round-39-carry-overs) carry-overs; Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
   [open questions](BACKLOG.md#audit-2026-10-open-questions),

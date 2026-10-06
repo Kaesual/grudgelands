@@ -12,10 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 38 "Mob names" is complete locally, not pushed;
-every round up to Round 37 is pushed (origin/main `0ba677fe`, 2026-10-06);
-Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); the GUI tests of
-Rounds 36–38 are open. Details: [STATUS](docs/STATUS.md).
+**Current state:** Round 39 "Web data for the realm website" is complete
+locally, not pushed (Round 38 neither); every round up to Round 37 is
+pushed (origin/main `0ba677fe`, 2026-10-06); Rounds 25–35 count as
+GUI-accepted (the user, 2026-10-05); the GUI tests of Rounds 36–39 are
+open. Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 
