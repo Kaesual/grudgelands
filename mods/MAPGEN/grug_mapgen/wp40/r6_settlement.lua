@@ -244,8 +244,14 @@ local function settlement_factory()
 			intent_opcode == 0 and r5_opcode == R24_FILL_OPCODE
 	end
 
-	-- Base eligibility of one voxel as a P8 resource host (ruling 10).  Native
-	-- host rock keeps the pre-Round-24 rule; fill stone is a host of the
+	-- Base eligibility of one voxel as a P8 resource host (ruling 10, widened
+	-- by the user ruling of 2026-10-07: ground anyone may dig carries the
+	-- ordinary distribution).  Native host rock is a host unless a hydrology
+	-- seal (priority 3) or water (priority 6) holds it; an anchor's grading
+	-- or platform (4) and a hard foundation (2) are ordinary rock, the
+	-- hard-protected volume above its floor is kept out by the column
+	-- predicate instead.  Stone R5 wrote into native void (terrain fill 27,
+	-- an anchor's grading fill 21, a foundation fill 15) is a host of the
 	-- default:stone tier only.  A voxel P8 already claimed (opcode 24) keeps
 	-- its base eligibility, so the per-cell count does not depend on order.
 	local function r24_resource_host_base(original_cid, final_cid,
@@ -256,10 +262,10 @@ local function settlement_factory()
 			return false
 		end
 		if original_cid == host_cid then
-			return priority ~= 2 and priority ~= 3 and priority ~= 4 and
-				priority ~= 6
+			return priority ~= 3 and priority ~= 6
 		end
-		return host_cid == fill_host_cid and r5_opcode == R24_FILL_OPCODE
+		return host_cid == fill_host_cid and (r5_opcode == R24_FILL_OPCODE or
+			r5_opcode == 21 or r5_opcode == 15)
 	end
 
 	-- Round 24 ruling 30: whether a column admits a P8 resource at `y`.
