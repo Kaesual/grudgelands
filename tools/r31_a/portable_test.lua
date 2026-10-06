@@ -89,6 +89,7 @@ grug_core = {
 }
 grug_inventory = {
 	get_cosmetic_weapon = function() return nil end,
+	get_cosmetic_offhand = function() return nil end,
 	get_cosmetic_hand = function() return nil end,
 }
 grug_gear = {

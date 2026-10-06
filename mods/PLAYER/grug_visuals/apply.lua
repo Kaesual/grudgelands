@@ -228,8 +228,8 @@ local IRRELEVANT_LIST = {
 	grug_trinket2 = true,
 }
 
--- player name -> {key, stature, _grug_wield_obj, _grug_wield_item,
--- _grug_wield_stature, _grug_wield_pose}
+-- player name -> {key, appearance_key, stature, _grug_wield_obj,
+-- _grug_wield_item, _grug_wield_stature, _grug_wield_pose}
 local players = {}
 
 local function player_entry(name)
@@ -304,9 +304,10 @@ do
 	})
 end
 
--- The one source of the cloak texture a player wears: a function(player) ->
--- texture or nil (grug_achievements installs it). Read on every apply; the
--- texture is part of the redraw key below.
+-- The one source of the cloak a player wears: a function(player) -> texture
+-- or nil, and the selected cloak's id (grug_achievements installs it). Read on
+-- every apply; the texture is part of the redraw key below, the id part of the
+-- stored appearance (appearance.lua).
 local cloak_source = nil
 
 function grug_visuals.register_cloak_source(fn)
@@ -340,6 +341,12 @@ function grug_visuals.player_spec(player)
 		-- Enchant colours on the worn pieces (enchant.lua; nil when plain).
 		armor_layers = grug_visuals.armor_layers(worn),
 		weapon = weapon and weapon:get_name() or nil,
+		-- For the stored appearance only (appearance.lua); compose reads none
+		-- of them: the worn pieces with their affixes and both hand-slot
+		-- stacks, never the wielded item.
+		worn = worn,
+		mainhand = weapon,
+		offhand = grug_inventory.get_cosmetic_offhand(player),
 	}
 end
 
@@ -385,10 +392,15 @@ function grug_visuals.apply(player)
 	end
 	local name = player:get_player_name()
 	local entry = player_entry(name)
-	local result = grug_visuals.compose(grug_visuals.player_spec(player))
+	local spec = grug_visuals.player_spec(player)
+	local result = grug_visuals.compose(spec)
 	-- Remembered for the poll below, which has no composed result of its own.
 	entry.stature = result.stature
-	local cloak = cloak_source and cloak_source(player) or grug_visuals.CLOAK_NONE
+	local cloak, cloak_id
+	if cloak_source then
+		cloak, cloak_id = cloak_source(player)
+	end
+	cloak = cloak or grug_visuals.CLOAK_NONE
 	local key = result.key .. ";" .. cloak
 	if entry.key ~= key then
 		entry.key = key
@@ -410,6 +422,20 @@ function grug_visuals.apply(player)
 		-- texture list is the expensive write and stays guarded; this one is a
 		-- two-number property.
 		player:set_properties({visual_size = result.visual_size})
+	end
+	-- The stored appearance (appearance.lua): its own key, because it also
+	-- covers what the drawn skin does not (the offhand, the hand items'
+	-- enchants and broken state, the cloak id). The first pass after a join
+	-- builds it and writes only if the stored value differs.
+	local appearance_key = grug_visuals.appearance_key(spec, result.key, cloak, cloak_id)
+	if entry.appearance_key ~= appearance_key then
+		entry.appearance_key = appearance_key
+		local json = grug_visuals.appearance_json(
+			grug_visuals.appearance(spec, result, cloak, cloak_id))
+		local meta = player:get_meta()
+		if meta:get_string(grug_visuals.APPEARANCE_META) ~= json then
+			meta:set_string(grug_visuals.APPEARANCE_META, json)
+		end
 	end
 	sync_wield(entry, player, shown_item(player), result.stature)
 	return result
