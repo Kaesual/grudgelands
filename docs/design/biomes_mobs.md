@@ -509,7 +509,7 @@ go back to being gated by travel. It costs nothing at rest: mobs_redo
 calls A* only from the attack branch, which prey reaches only after a
 player punch. **The Carrion Crow is the exception and stays unset** — it
 is a flier, `core.find_path` is a ground search, and every other flier in
-the roster (crag eagle, vulture, gull, parrot, Kraken Guard) follows the
+the roster (crag eagle, vulture, gull, parrot, Kraken) follows the
 same rule.
 
 The Carrion Crow's three decided changes, all zero-cost: `visual_size`
@@ -721,7 +721,7 @@ authority, while the closest shipped wield silhouette is:
 | Orc | great axe; Cleave | greataxe | none |
 | Troll | totem; Regrowth | staff | no totem visual; closest caster silhouette |
 
-**Deep sea (world.md §2b):** Kraken Guard, a level-70 elite, fixed (hand-set —
+**Deep sea (world.md §2b):** Kraken, a level-70 elite, fixed (hand-set —
 the one exception, it is a deterrent not content; user ruling, Round 33, in
 place of the former L100 normal): mobs_mc_squid at visual_size ×6 (×1.4 as an
 elite), verb: drags under (pulls target down, heavy melee, the elite wind-up),
@@ -892,14 +892,14 @@ surface critter rows keep the old cut: **Bone Weevil** (both rows) and
 Lane R). mobs_redo's `chance` is one spawn per N tries, so 0.75 × density
 means `chance ÷ 0.75`; the old wording "multiply `chance` by 0.75" was
 inverted and would have raised density. Cave rows (Giant Spider, Stone/Mesa
-Golem, Cave Bat, Cave Crawler) and the Kraken Guard were never part of it.
+Golem, Cave Bat, Cave Crawler) and the Kraken were never part of it.
 
 **Rows that still run** (`spawn_policy.lua` `spawn_row_kept`; their numbers
 are in the mob files): the critters the recipes keep (Rabbit, Hare, Gull on
 beach ground, Parrot, Bone Weevil, Bog Fowl, Wild Turkey and Song Bird;
 [zone_mobs.md](zone_mobs.md) lists them per zone), the Rift Spawn's surface
 row (Gravesalt, Skyglass and both islands), every underground row (y ≤ −40,
-the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken Guard,
+the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken,
 Reed Angelfish). Every other surface row registers no ABM, the Shore Crab's
 and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
 (§4.2), the Reef Lurker only as its 51–60 shore sub-type.
@@ -1326,7 +1326,7 @@ share this correction. Other families are adjusted from specific playtest report
 
 Reed Angelfish are passive freshwater critters, with no XP or quality loot; a
 kill drops exactly one ordinary Raw Fish (better fish only from fishing). Like
-the Kraken Guard they never leave the water: no climbing onto a bank, shore
+the Kraken they never leave the water: no climbing onto a bank, shore
 plants and waterlilies do not count as water, and a swimmer displaced out of
 the water swims back if water is adjacent or otherwise flops in place. Their
 habitat is planned natural inland water, with source water at the spawn

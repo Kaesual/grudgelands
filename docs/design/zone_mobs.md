@@ -128,6 +128,6 @@ fails while the file is stale.
 
 - **Rift Spawn**, its own night ABM row on its host ground (`spawn_policy.lua`
   `RECIPE_ZONE_ROWS`): The Wyrmglass Crown, Gravesalt Escarpment, The Skyglass Canopy, Stormscale Summit.
-- Not placed by recipes: the underground rows, the water rows (Kraken Guard,
+- Not placed by recipes: the underground rows, the water rows (Kraken,
   Reed Angelfish), named rares, bosses and kings, guards and the PvP
   garrisons ([biomes_mobs.md](biomes_mobs.md) §3, §4).

@@ -22,7 +22,7 @@ local function set(names)
 end
 
 -- Animals: beasts, birds, fish, crabs, snakes, spiders and other crawlers,
--- and the Kraken Guard (user ruling 2026-10-04).
+-- and the Kraken (user ruling 2026-10-04).
 C.ANIMALS = set({
 	"bear", "blightfang_wolf", "blood_bat", "boar", "bog_fowl", "bone_weevil",
 	"carrion_crow", "cave_bat", "cave_crawler", "crag_eagle", "crocodile",

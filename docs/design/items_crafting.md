@@ -1139,7 +1139,7 @@ Bosses are the exception (Round 33): the race Kings and the fortress Generals
 drop item level **65**, the dragons item level **70** (§5.1). Their ilvl above
 60 feeds the same weapon base-damage curve as every other weapon, not a second
 combat multiplier, and their enchants are tier T7 (§6.3). The
-Kraken Guard (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the enchant value and the
+Kraken (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the enchant value and the
 enchant tier follow the item's ilvl, that one number is all a drop needs: a
 drop has no crafter whose mastery could be read instead. Named zone → materials is
 binding through each zone's fixed biome/gathering palette; the level band adds
@@ -1206,7 +1206,7 @@ General's bodyguards, the dragons' whelps and the raiders a King calls in his
 fight. Their ordinary drops stay (the guards' war trophies and heavy cloth on
 an enemy player's kill; the raiders' skeleton materials; whelps have none).
 
-**Bags** drop from any mob at **0.1%** per kill (not from the Kraken Guard and
+**Bags** drop from any mob at **0.1%** per kill (not from the Kraken and
 the Reed Angelfish, which drop no quality loot at all), independent of the gear roll,
 sized by the mob's level: 1–15 → 8 slots, 16–30 → 16, 31–45 → 24, 46+ → 32
 (the cloth bag line of `grug_inventory`). The 8-slot bag stays on sale; larger

@@ -361,14 +361,14 @@ occupying a position (`world_zones.md` §7):
   capped/rounded depth level alone.
 - **Deep ocean:** every ordinary ocean column beyond the shelf plus the four
   declared outer bay-mouth caps, immutable at every y. This remains the
-  deliberately deadly open sea patrolled by the Kraken Guard, a level-70
+  deliberately deadly open sea patrolled by the Kraken, a level-70
   elite (no drops or XP). It has no ordinary surface, guard or mob-level result: the
   Kraken is a hand-set fixed entity outside those resolvers. Boat acquisition,
   summoning, movement and damage are decided in [boats.md](boats.md);
   what this world-geometry rule owns is the pursuit contract below.
 - **Dragon channels:** separate full-column immutable masks between the
   mainland and the two offshore islands. They are required boat routes and
-  carry no Kraken Guard at all. Their warning and
+  carry no Kraken at all. Their warning and
   hard-flight bands come from the same 2D distance field. Each channel carries
   two boat approaches, one northern and one southern, joining its
   Battlegrounds endpoint to two inward-shore island beaches at fixed landing
@@ -377,17 +377,17 @@ occupying a position (`world_zones.md` §7):
   equalizes travel from Kragmar and Elandor. They have no ordinary surface,
   guard or mob-level result.
 
-**Kraken Guard pursuit** (travel plan ruling 7, user 2026-10-02; supersedes
+**Kraken pursuit** (travel plan ruling 7, user 2026-10-02; supersedes
 the residual-allowance model decided 2026-08-13). The deep sea is dangerous
-because of what the guard does, not because water damages a boat:
+because of what the Kraken does, not because water damages a boat:
 
-- The Kraken Guard **spawns only in `deep_ocean`**. Neither the coastal shelf,
+- The Kraken **spawns only in `deep_ocean`**. Neither the coastal shelf,
   nor planned zone water, nor a dragon channel ever spawns one.
 - **It swims 10 nodes/s while it stands in a deep-ocean column and 5 nodes/s
   everywhere else**, with a view range of 40. Ten is above the improved
   boat's 8, and any hit ejects a boat's rider into the water (`boats.md` §6),
-  so a guard that sees a boat in deep ocean catches it and ends the trip.
-- **The leash is simple:** the guard ignores the generic leash and soft
+  so a Kraken that sees a boat in deep ocean catches it and ends the trip.
+- **The leash is simple:** the Kraken ignores the generic leash and soft
   de-aggro, and once a second it checks its own position; outside deep ocean
   it drops its target and holds position. Shelf water, planned zone water and
   the dragon channels are therefore never pursued into beyond the deep-ocean
