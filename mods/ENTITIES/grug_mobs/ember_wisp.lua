@@ -6,6 +6,7 @@ grug_mobs.register_simple_arrow("grug_mobs:ember_entity", {
 	texture = "mobs_tnt_smoke.png^[colorize:#ff5a1e:170", velocity = 10,
 	size = {x = 0.6, y = 0.6}, glow = 10, tail = true,
 	tail_texture = "mobs_tnt_smoke.png^[colorize:#ff5a1e:170", lifetime = 5,
+	impact = "#ff8a2a", -- orange sparks (Round 40 PM)
 })
 
 local wisp = {

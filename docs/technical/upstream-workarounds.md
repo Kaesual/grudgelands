@@ -118,36 +118,45 @@ Engine reference for the line citations: `reference_projects/luanti` at
   one it already holds for that bone: the first `set_bone_override` of a
   bone jumps there without its `interpolation`
   (`src/client/content_cao.cpp` `GenericCAO::processMessage`,
-  `AO_CMD_SET_BONE_POSITION`: no entry → interpolation 0), and an override
-  that has come back to exactly identity (relative, zero position and
-  rotation, unit scale, interpolation finished) is erased from the client's
-  map (`src/activeobject.h` `BoneOverride::isIdentity`, erased in the
-  animate callback of `GenericCAO::addToScene`), so the next one snaps
+  `AO_CMD_SET_BONE_POSITION`: no entry → "Disable interpolation"), and an
+  override that has come back to exactly identity (relative, zero position
+  and rotation, unit scale, interpolation finished) is erased from the
+  client's map (`src/activeobject.h` `BoneOverride::isIdentity`, erased in
+  the animate callback of `GenericCAO::addToScene`), so the next one snaps
   again. A bone that should blend from rest into an override and back can
   therefore never blend out of rest.
 - **Issue:** none filed; the behaviour is deliberate in the engine's code
   (the erase keeps the map small), so it may stay.
 - **Affected versions:** relative, interpolated overrides exist since 5.9;
   the code is unchanged up to `df0487906` (5.17.0-dev).
-- **Our workaround:** the head look (`grug_visuals/head_look.lua`, Round 40
-  lane AN2, [character_visuals.md](../design/character_visuals.md) §5d)
-  never writes identity: a level head is a rotation of 0.001 rad (0.06°)
-  about x, written unblended when the player joins (the snap is invisible)
-  and kept for the rest of the session, so every later angle blends from
-  the one before. Fixture: `tools/r40_an2/portable_test.lua` (E checks).
-  Any later override that must blend from rest (lane CH's `Body` lead, if it
-  ships) needs the same epsilon.
-- **How to tell upstream fixed it:** `processMessage` interpolates a new
-  entry from identity (sets `previous` to the identity values and keeps the
-  interpolation) and `isIdentity` no longer erases a relative override.
-- **What to remove then:** `EPSILON` in `head_look.lua` (write `0` for a
-  level head) and the join write; the fixture's epsilon checks.
+- **Our workaround:** no override of ours starts from or returns to
+  identity; each player gets an invisible epsilon on joining (the snap is
+  unseen) and keeps it for the session, so every later value blends from
+  the one before:
+  - Charge's `Body` lead (`grug_abilities/charge.lua`, Round 40 lane CH): a
+    `Body` position override of 0.01 model units; the dash blends from it
+    to the lead and back to it.
+  - The head look (`grug_visuals/head_look.lua`, Round 40 lane AN2,
+    [character_visuals.md](../design/character_visuals.md) §5d): a level
+    head is a rotation of 0.001 rad (0.06°) about x, never identity.
+    Fixture: `tools/r40_an2/portable_test.lua` (E checks).
+- **How to tell upstream fixed it:** a first override with an interpolation
+  time blends from the animated pose instead of snapping (the `else` branch
+  in `processMessage` keeps the sent `interp_duration`); the erase at
+  identity is harmless then.
+- **What to remove then:** the join-time epsilon in `charge.lua` (the lead
+  may then start from and end at no override, `set_bone_override("Body",
+  nil)` after the blend back); `EPSILON` in `head_look.lua` (write `0` for
+  a level head) and its join write, with the fixture's epsilon checks.
 - **Related, not a workaround:** every `set_bone_override` makes the server
   send **all** of the object's overrides again (`src/server/unit_sao.cpp`
   `UnitSAO::setBoneOverride` clears `m_bone_override_sent`,
   `sendOutdatedData` re-sends each bone), and a re-sent override restarts
   its blend from its own target (`previous = vector`), so a write to one
   bone cuts short a blend still running on another bone of the same object.
+  The head look therefore writes no Head override while the Charge pose
+  runs or while Charge holds it (`grug_visuals.hold_head`) as the `Body`
+  lead blends back.
 
 ## Checked and not listed
 
@@ -164,6 +173,15 @@ Engine reference for the line citations: `reference_projects/luanti` at
 - `grug_ambience` drops loop emitters beyond their hearing distance itself
   because `max_hear_distance` does not apply to a `to_player` sound: engine
   semantics, not a bug.
+- A fast attached ride leaves the client behind: the client draws an
+  entity through `SmoothTranslator`, which closes 0.8 of the gap per server
+  step (`content_cao.cpp` `SmoothTranslator::translate` and the
+  non-physical branch of `GenericCAO::step`), an attached local player
+  copies that drawn position (`localplayer.cpp` "Copy parent position if
+  local player is attached"), and on detach the client keeps it. Charge's
+  dash therefore holds on its stop for three time constants and puts the
+  player on it with `set_pos` after the detach (the engine sends the detach
+  first, `Server::SendMovePlayer`). Smoothing by design, not a bug.
 - Comments that describe engine behaviour our code follows (attached-node
   lamps in `grug_mapgen/wp13/parts.lua`, craft replacements in
   `grug_traders/prices.lua`, the client camera offset FIXME `#16221` in the

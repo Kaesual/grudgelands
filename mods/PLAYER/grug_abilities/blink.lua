@@ -1,8 +1,9 @@
--- Teleport destinations: Blink (docs/design/classes.md §5, Blink row and its
--- targeting note) and Charge (§3, Charge row). Returns
+-- Destinations: Blink's teleport (docs/design/classes.md §5, Blink row and
+-- its targeting note) and the end of Charge's dash (§3, Charge row). Returns
 --
 --   {blink = function(eye, dir, distance, eye_height, box[, world]) -> feet | nil,
---    charge = function(from, eye_height, box, target[, world]) -> feet | nil}
+--    charge = function(from, eye_height, box, target[, world]) -> feet | nil,
+--    charge_reach = CHARGE_REACH (the arrival rule of charge.lua)}
 --
 -- Both know nothing about the caster beyond those arguments and read the map
 -- only through `world` (default: the live map), so probes and fixtures can
@@ -250,4 +251,4 @@ local function charge(from, eye_height, box, target, world)
 	return nil
 end
 
-return {blink = blink, charge = charge}
+return {blink = blink, charge = charge, charge_reach = CHARGE_REACH}

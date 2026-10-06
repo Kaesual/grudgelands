@@ -217,12 +217,34 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`effects.py`, the emitters in engine terms; `cost_model.py`, the server
   cost from the engine's serialization; `data.json`, their output;
   `particle_cost_probe/`, the headless timing of the particle API calls).
+  `r40_cd` the cooldown overlay: `gen_cooldown_textures.py` (the 72 cover
+  frames and the image digits in `grug_abilities/textures`, `--check`),
+  `portable_test.lua` (number, frame, the slot geometry against the
+  engine's pixel arithmetic, slot tracking, writes only on change, the
+  pass), `bench/` (a headless probe mod: the wear bar's Lua cost before and
+  the overlay's after, `PROBE=tools/r40_cd/bench tools/luanti_headless.sh
+  150`).
   `r40_px` the particle helper's fixture (`portable_test.lua`: the scale
   arithmetic, exact rings, the budget of every catalogue effect, the
   fallback rule on the real kits, settlement and cast dispatcher), the
   busy-fight cost of the built effects (`costs.py`, reads `r40_v3`'s
   `data.json`) and `bench/`, a disposable probe timing each skill's effect
   calls before and after the helper (`PROBE=tools/r40_px/bench`).
+  `r40_pm` the boss and mob-special effects' fixture (`portable_test.lua`:
+  each effect at its moment and only then, on the real catalogue and the
+  real mob code, the rings and the counts under the scale), `helper_stub.lua`
+  (the real particle helper for a fixture's fake engine, which the older mob
+  fixtures load too), the per-boss and per-mob cost of the build
+  (`costs.py`, reads `r40_v3`'s `data.json`) and `bench/`, a disposable probe
+  timing the effects' Lua before and after the helper
+  (`PROBE=tools/r40_pm/bench`).
+  `r40_ch` Charge's dash (`portable_test.lua`: the shipped planner on the
+  probe's courses and the hole rule's lanes, the dash on a fake engine --
+  arrival and miss, cancellations, punch forwarding, the hold and the
+  placement on the stop, lead, FOV, pose and dust -- and the kits.lua cast's
+  refusals) and `bench/`, a disposable probe timing the cast's map work and
+  the carrier per step on natural terrain (`PROBE=tools/r40_ch/bench`, run
+  on the base and the branch).
   `r40_an2` the head look's fixture (`portable_test.lua`: the sign proven
   on the model file with the engine's override composition, the 5° steps
   and the clamp, the epsilon, the rate cap, the spread pass and death),

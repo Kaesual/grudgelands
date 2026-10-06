@@ -48,13 +48,8 @@ local oerkki = {
 			grug_core.invalidate_combat_identity(self.object)
 			self.object:set_pos(dest)
 			self.temp.grug_oerkki_blink = 0
-			core.add_particlespawner({
-				amount = 12, time = 0.2,
-				pos = {min = vector.offset(dest, -0.4, 0, -0.4),
-					max = vector.offset(dest, 0.4, 1.4, 0.4)},
-				exptime = {min = 0.2, max = 0.5}, size = {min = 1, max = 2},
-				texture = "default_item_smoke.png^[multiply:#7030a0", glow = 4,
-			})
+			-- A puff where it leaves and where it arrives (Round 40 PM).
+			grug_core.particles.play("oerkki_blink", {caster = pos, target = dest})
 		end
 	end,
 }

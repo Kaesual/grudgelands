@@ -645,8 +645,9 @@ Normal tier at level L:
   where the mob's voice family names one — the user keeps it to humanoid
   specials, and the dragons growl at their own wind-ups) then a ×3 damage hit into a
   **90° frontal cone** of **reach + 1.5 m** (normally **4.5 m**) that requires **line of
-  sight** — stepping aside, out of range or behind cover is a clean miss.
-  "Stop" means the mob does nothing else while it winds up (Round 37,
+  sight** — stepping aside, out of range or behind cover is a clean miss;
+  an orange arc sweeps across the cone at the mob's reach on the hit
+  (Round 40, [biomes_mobs.md](biomes_mobs.md) §3.1). "Stop" means the mob does nothing else while it winds up (Round 37,
   user ruling): its facing freezes at the start, so the cone points where
   the target stood then, and its ordinary swings and shots pause; the next
   ordinary swing follows one attack interval after the cone hit
@@ -1405,6 +1406,11 @@ shows a single-colour particle effect, built from the accepted catalogue
   per-player amount or toggle and no client detection. It multiplies every
   spawner's amount and every single-particle count, rounded, with at least
   one particle per emitter; lifetimes, shapes and speeds stay. 0 turns
-  the skill, proc, crit and shield particles off (effects not yet on the
-  helper, such as the stun cross, root crystals and mob effects, stay). It exists to correct the amounts if web tests show
-  a problem.
+  every effect on the helper off: the skill, proc, crit, shield and
+  level-up particles and the boss and mob-special effects
+  ([biomes_mobs.md](biomes_mobs.md) §3.1, Round 40 PM). What is not on the
+  helper stays: the stun cross and root crystals (sized from the object's
+  box), the food crumbs, the rift's own particles, the tails of mob
+  fireballs, embers and void bolts, and the mob engine's blood, death and
+  fall smoke. It exists to correct the amounts if
+  web tests show a problem.

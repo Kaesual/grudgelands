@@ -280,8 +280,10 @@ tools](#player-meta-read-by-external-tools).
   `spell_damage_value` and Smite return unrounded amounts that
   `deal_ability_damage` floors once after the level scalar (fixture
   `tools/r36_k`). Abilities = hotbar tools in `grug_abilities` (item `range` =
-  targeting range, wear bar = cooldown display for cast skills, charge
-  bar for swing skills since WP38); kits/numbers:
+  targeting range; cooldowns and charges show as the hotbar overlay of
+  `cooldown_hud.lua` since Round 40: `arm_cooldown` and `reset_charge` hand
+  it their `{expiry, duration}` records, `cooldown_math.lua` is its pure
+  arithmetic, fixture `tools/r40_cd`); kits/numbers:
   `docs/design/classes.md`. WP19 added the 8 s target-memory store (separate
   enemy/ally slots via `grug_abilities.get_target(player, ally)`). **WP39's
   decided rule supersedes its hostile fallback:** enemy memory is Target-Frame/
@@ -528,9 +530,15 @@ tools](#player-meta-read-by-external-tools).
   `grug_core/particle_effects.lua`, played by
   `grug_core.particles.play(id, frame)` (`particles.lua`, whose header
   documents the emitter fields): every skill and proc effect, crits,
-  absorb soaks and the level-up burst. Still direct engine calls: the stun
-  cross and root crystals (`movement.lua`, sized from the object's box), the
-  food crumbs (a texture pool) and the mob and boss effects in `grug_mobs`.
+  absorb soaks, the level-up burst and the boss and mob-special effects
+  (Round 40 PM: `grug_mobs` plays them from the kings' signature, the
+  elite telegraph, the dragons, the Kraken, the mob verbs and families;
+  mob projectiles name their impact tint as `impact` in
+  `register_simple_arrow`). Still direct engine calls: the stun cross and
+  root crystals (`movement.lua`, sized from the object's box), the food
+  crumbs (a texture pool), the rift's per-player stretches and pulse
+  (`rift.lua`), the mob arrow tail (`verbs.lua`) and the mob engine's own
+  blood and smoke.
   `frame` names the anchors (`caster`, `target`), the facing `dir`
   (`grug_core.particles.facing(player)`), and per call `from`/`to`/`time`
   (a line over a flight), `reach` (a radius a ring lands on) and `color`.
@@ -541,9 +549,23 @@ tools](#player-meta-read-by-external-tools).
   off). `particles.register` checks each list's budget at load. Skill arrows
   opt in per launch (`params.trail` in `grug_projectiles.spawn` and
   `spawn_batch`, played after the batch commits); the shared proc flash is
-  `grug_core.proc_flash(player, proc)` with `grug_core.PROC_COLORS`; lane
-  CH's dash calls `grug_abilities.charge_dust(from, to, duration)`. Fixture:
-  `tools/r40_px/portable_test.lua`.
+  `grug_core.proc_flash(player, proc)` with `grug_core.PROC_COLORS`;
+  Charge's dash (`grug_abilities/charge.lua`) calls
+  `grug_abilities.charge_dust(from, to, duration)` per run segment and plays
+  `charge_ring` on arrival. Fixture: `tools/r40_px/portable_test.lua`.
+- **Charge's dash** (Round 40, [classes.md](../design/classes.md) §3):
+  `kits.lua` keeps the cast's target, destination and refusals and calls
+  `grug_abilities.charge_dash(user, target, dest, def)`. The planner
+  `charge_path.lua` is pure (map through `boxes`/`liquid`, like `blink.lua`);
+  `charge.lua` owns the carrier entity `grug_abilities:charge_carrier` (blank
+  visible sprite, not pointable, not saved, removes itself without its
+  rider, never `_grug_rider` or `player_attached`), the arrival and miss
+  rule in the carrier's own `on_step` (no globalstep), punch forwarding and
+  the cancellations. Travel cancels through the seam `grug_core.cancel_dash`
+  (declared nil in `grug_core/combat.lua`, installed by `charge.lua`).
+  Every player carries a `Body` bone-override epsilon from joining on
+  ([upstream-workarounds.md](upstream-workarounds.md) §3). Fixture
+  `tools/r40_ch/portable_test.lua`; headless bench `tools/r40_ch/bench`.
 
 ## Mobs
 

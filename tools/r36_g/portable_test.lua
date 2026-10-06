@@ -429,6 +429,7 @@ grug_core = {
 	clear_status = function() end, disengage_target = function() end,
 	ground_effect_protected = function() return false end,
 	mark_in_combat = function() end, set_status = function() end,
+	particles = dofile(repo .. "/tools/r40_pm/helper_stub.lua")(repo), -- Round 40 PM
 	feed = function(player, kind, text, k)
 		feeds[#feeds + 1] = {name = player.name, kind = kind, text = text, key = k}
 		return true

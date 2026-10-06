@@ -159,6 +159,14 @@ function grug_mobs.slow_player(player, duration, factor)
 		{speed = factor - 1}, duration)
 end
 
+-- A spider's web landing on a player (Round 40 PM): white strands at the
+-- legs. The spiders' riders call it next to slow_player, which other slows
+-- (the treant's aura, the dragons' ice, the hex) share without strands.
+function grug_mobs.web_particles(player)
+	local pos = player and player:get_pos()
+	if pos then grug_core.particles.play("web", {target = pos}) end
+end
+
 -- A relog inside a slow window must leave neither a permanently slowed
 -- player nor a stale record. The aggregator's own joinplayer handler drops
 -- the whole record (physics overrides are not persisted by the engine), so
@@ -240,6 +248,9 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 		label = "Poisoned",
 		expiry_us = running and math.max(running.expiry_us, ends) or ends,
 	})
+	-- Green bubbles on the application and two on each tick (Round 40 PM).
+	local pos = player:get_pos()
+	if pos then grug_core.particles.play("poison", {target = pos}) end
 	local finished = false
 	local function finish()
 		if finished then return end
@@ -269,6 +280,8 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 			return -- already dead: stop the chain
 		end
 		p:set_hp(hp - dmg_per_tick, {type = "set_hp", from = "mod"})
+		local pos = p:get_pos()
+		if pos then grug_core.particles.play("poison_tick", {target = pos}) end
 		left = left - 1
 		if left > 0 then
 			core.after(interval, tick)
@@ -397,8 +410,13 @@ end
 -- The POUNCE half is here: while closing on a target between min_dist and
 -- max_dist with line of sight, throw the mob at it once per cooldown.
 --
+-- Dust kicks up at the take-off and where the pounce lands (Round 40 PM):
+-- the first step on the ground after the mob left it, within LAND_WINDOW
+-- seconds of the take-off (`temp.grug_pounce_land`, the take-off's time).
+--
 -- opts: min_dist 4, max_dist 8, cooldown 6, speed 8 (horizontal impulse),
 --       up 4 (vertical impulse)
+local LAND_WINDOW = 2
 function grug_mobs.stalker(def, opts)
 	opts = opts or {}
 	local min_dist = opts.min_dist or 4
@@ -406,7 +424,22 @@ function grug_mobs.stalker(def, opts)
 	local cooldown = opts.cooldown or 6
 	local speed = opts.speed or 8
 	local up = opts.up or 4
-	chain_do_custom(def, function(self, dtime)
+	chain_do_custom(def, function(self, dtime, moveresult)
+		local land = self.temp and self.temp.grug_pounce_land
+		if land then
+			local grounded = moveresult and moveresult.touching_ground
+			if not grounded then
+				self.temp.grug_pounce_airborne = true
+			elseif self.temp.grug_pounce_airborne then
+				self.temp.grug_pounce_land, self.temp.grug_pounce_airborne = nil, nil
+				local pos = self.object and self.object:get_pos()
+				if pos then grug_core.particles.play("pounce", {target = pos}) end
+			end
+			if self.temp.grug_pounce_land and
+					grug_core.mono_time() - land > LAND_WINDOW then
+				self.temp.grug_pounce_land, self.temp.grug_pounce_airborne = nil, nil
+			end
+		end
 		if not due(self, "grug_stalk_acc", dtime, 1) then
 			return
 		end
@@ -435,6 +468,8 @@ function grug_mobs.stalker(def, opts)
 		self.temp.grug_pounce_until = now + cooldown
 		local dir = vector.direction(pos, tpos)
 		self.object:add_velocity(vector.new(dir.x * speed, up, dir.z * speed))
+		self.temp.grug_pounce_land, self.temp.grug_pounce_airborne = now, nil
+		grug_core.particles.play("pounce", {caster = pos})
 	end)
 end
 
@@ -452,7 +487,16 @@ end
 -- is acquired, otherwise the mob would freeze mid-attack; that release is
 -- checked on every step (two comparisons), only the re-arming is throttled.
 --
+-- Breaking cover plays a splash, or a dirt burst on land (Round 40 PM).
+--
 -- opts: trigger_range 6
+local AMBUSH_DIRT = "#8a7350"
+local function in_liquid(pos)
+	local node = core.get_node_or_nil(pos)
+	local node_def = node and core.registered_nodes[node.name]
+	return node_def ~= nil and (node_def.liquidtype or "none") ~= "none"
+end
+
 function grug_mobs.ambusher(def, opts)
 	opts = opts or {}
 	local trigger_range = opts.trigger_range or 6
@@ -460,6 +504,11 @@ function grug_mobs.ambusher(def, opts)
 		if self.state == "attack" and self.attack then
 			if self.order == "stand" then
 				self.order = "" -- burst: hand movement back to do_states
+				local pos = self.object and self.object:get_pos()
+				if pos then
+					grug_core.particles.play("ambush", {target = pos,
+						color = not in_liquid(pos) and AMBUSH_DIRT or nil})
+				end
 			end
 			return
 		end
@@ -547,7 +596,8 @@ end
 --
 -- Aura (Bog Ooze: "engulfs" — touch damage)
 --
--- opts: radius 2, damage 2, interval 1
+-- opts: radius 2, damage 2, interval 1, effect (a particle effect played at
+--       the mob's feet on a tick that hurt someone, frame.reach = radius)
 --
 -- Damage goes through object:punch from the MOB, so armor groups, the
 -- dodge roll and absorb shields all apply exactly as for a melee swing.
@@ -570,11 +620,16 @@ function grug_mobs.damage_aura(def, opts)
 			return
 		end
 		local victims = players_near(pos, radius)
+		local hurt = false
 		for i = 1, #victims do
+			if victims[i]:get_hp() > 0 then hurt = true end
 			victims[i]:punch(self.object, 1.0, {
 				full_punch_interval = 1.0,
 				damage_groups = {fleshy = damage},
 			}, nil)
+		end
+		if hurt and opts.effect then
+			grug_core.particles.play(opts.effect, {target = pos, reach = radius})
 		end
 	end)
 end
@@ -644,6 +699,16 @@ local function straight_victim(self, a, b)
 	return best, best_t
 end
 
+-- A mob projectile's impact puff where it hits (`at`, default the
+-- projectile; Round 40 PM): `def.impact` is its tint, a projectile without
+-- one shows none.
+local function impact(self, def, at)
+	local pos = def.impact and (at or self.object:get_pos())
+	if pos then
+		grug_core.particles.play("projectile_impact", {caster = pos, color = def.impact})
+	end
+end
+
 -- One step of a side shot; true when it ended.
 local function straight_step(self, dtime, def)
 	local pos = self.object:get_pos()
@@ -669,7 +734,10 @@ local function straight_step(self, dtime, def)
 						vector.distance(last, pointed.intersection_point) then
 					break
 				end
-				if node_def and def.hit_node then def.hit_node(self, pointed.above) end
+				if node_def then
+					if def.hit_node then def.hit_node(self, pointed.above) end
+					impact(self, def, pointed.intersection_point)
+				end
 				self.object:remove()
 				return true
 			end
@@ -677,6 +745,7 @@ local function straight_step(self, dtime, def)
 	end
 	if victim then
 		if def.hit_player then def.hit_player(self, victim) end
+		impact(self, def)
 		self.object:remove()
 		return true
 	end
@@ -706,6 +775,7 @@ function grug_mobs.register_homing_arrow(name, def)
 				local target = self._grug_lock.target
 				local hit = target:is_player() and def.hit_player or def.hit_mob
 				if hit then hit(self, target) end
+				impact(self, def)
 				self.object:remove()
 				return
 			end
@@ -756,7 +826,8 @@ end
 -- opts: texture (sprite, required), label (readable name for death messages,
 --       e.g. "an arrow"), velocity (default 14), size, glow,
 --       tail (bool -> particle trail), tail_texture, lifetime,
---       damage (fallback only, when no shooter stamped one)
+--       damage (fallback only, when no shooter stamped one),
+--       impact (the colour of its impact puff, Round 40 PM)
 function grug_mobs.register_simple_arrow(name, opts)
 	local fallback = grug_mobs.scale_attack_damage(opts.damage or 1)
 	local function hit(self, obj)
@@ -779,7 +850,7 @@ function grug_mobs.register_simple_arrow(name, opts)
 		tail_texture = opts.tail_texture or opts.texture,
 		hit_player = hit,
 		hit_mob = hit,
-
+		impact = opts.impact,
 	})
 end
 

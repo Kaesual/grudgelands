@@ -58,14 +58,7 @@ local function burst_due(self, dtime)
 			}, pos)
 		end
 	end
-	core.add_particlespawner({
-		amount = 32, time = 0.25,
-		pos = {min = vector.offset(pos, -0.5, 0, -0.5),
-			max = vector.offset(pos, 0.5, 1.5, 0.5)},
-		vel = {min = {x = -3, y = 0, z = -3}, max = {x = 3, y = 5, z = 3}},
-		exptime = {min = 0.3, max = 0.8}, size = {min = 2, max = 5},
-		texture = "mobs_tnt_smoke.png^[colorize:#6d36b5:70", glow = 5,
-	})
+	grug_core.particles.play("rift_spawn_burst", {caster = pos})
 	grug_sounds.play("rift_burst", pos)
 	self.object:remove()
 	return false

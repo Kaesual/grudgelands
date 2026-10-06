@@ -317,30 +317,19 @@ grug_abilities.register_ability({
 		if not dest then
 			return false, "Not enough room at target."
 		end
-		grug_core.invalidate_combat_identity(user)
-		user:set_pos(dest)
-		fx("charge_ring", {target = tpos})
-		grug_abilities.add_rage(user, 15)
-		grug_core.deal_ability_damage(user, target,
-			def.values(user).damage, {threat_mult = 3, on_accepted = function()
-				if target:is_player() then
-					grug_core.set_stun(target, 1.5)
-				else
-					local ent = mob_ent(target)
-					if ent then grug_mobs.stun(ent, 1.5) end
-				end
-			end})
-		return true
+		-- The dash (charge.lua): damage, stun, rage and the dust ring land on
+		-- arrival within reach; a dash that ends short is a miss, and the
+		-- cooldown is spent either way.
+		return grug_abilities.charge_dash(user, target, dest, def)
 	end,
 })
 
--- The dust trail of a Charge dash for lane CH (round40-plan.md §4.2):
--- dust kicked up along the ground from `from` to `to` (feet positions) over
--- `duration` seconds, an unattached spawner of at most 1 s (the helper caps
--- the time, so for a dash longer than 1 s the dust would run ahead of the
--- warrior: call it per piece of at most 1 s). Charge teleports today and does
--- not call it; the arrival ring above stays at the cast until the dash
--- moves it to the arrival.
+-- The dust trail of a Charge dash (charge.lua): dust kicked up along the
+-- ground from `from` to `to` (feet positions) over `duration` seconds, an
+-- unattached spawner of at most 1 s (the helper caps the time, so for a dash
+-- longer than 1 s the dust would run ahead of the warrior: call it per piece
+-- of at most 1 s). The dash plays it per run segment and its arrival ring
+-- on arrival.
 function grug_abilities.charge_dust(from, to, duration)
 	fx("charge_dust", {from = vector.offset(from, 0, 0.1, 0),
 		to = vector.offset(to, 0, 0.1, 0), time = duration})
