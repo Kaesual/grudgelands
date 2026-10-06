@@ -15,8 +15,8 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 **Current state:** Round 39 "Web data for the realm website" is complete
 locally, not pushed (Round 38 neither); every round up to Round 37 is
 pushed (origin/main `0ba677fe`, 2026-10-06); Rounds 25–35 count as
-GUI-accepted (the user, 2026-10-05); the GUI tests of Rounds 36–39 are
-open. Details: [STATUS](docs/STATUS.md).
+GUI-accepted (the user, 2026-10-05), Round 39 too (2026-10-06); the GUI
+tests of Rounds 36–38 are open. Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 

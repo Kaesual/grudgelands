@@ -26,9 +26,10 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   - **Model (WG):** `grug_visuals_character.glb`, animated stand and walk
     (own converter after `assimp` failed the clips and materials), tested
     against the `.b3d` within about 1e-6; a probe mod for the GUI check.
-  - Next: the round-end gates on main; the user's GUI test (the look
-    unchanged, the glTF probe), together with Rounds 36–38, which are still
-    open; the coordinator reports the level-key commit to the website.
+  - Round end on main: every gate passed, synced. **GUI-accepted by the
+    user on 2026-10-06** (the look unchanged, the glTF probe); the user
+    pushes with Rounds 36–38, whose GUI tests are still open. The
+    coordinator's report to the website names the level-key commit.
 
 - **Round 38 "Mob names" complete locally, not pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round38-mob-names-plan.md#completion-2026-10-06)).
