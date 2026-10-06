@@ -412,6 +412,39 @@ nothing per step on the server and every client plays them. NPCs keep
   without a hitch. Without it the player's own
   view would keep the pose until the movement changed.
 
+## 5d. Head look (Round 40)
+
+A player's head follows the look up and down (the user's pick H1,
+round40-plan.md §2.14). The engine already turns the whole player with the
+camera, so there is no head yaw and no lagging body; NPCs have no head look.
+
+- **What it is.** One relative rotation override on the model's `Head`
+  bone (`grug_visuals/head_look.lua`), on top of whatever clip plays: the
+  small head moves of the pose clips (§5c) stay and the look adds to them.
+  It turns the head about its own sideways axis at the neck.
+- **Steps and clamp.** The look pitch is rounded to **5° steps** and
+  clamped from **50° down to 60° up** (the angles accepted on the animation
+  page): at 50° down the chin's lower edge still stands in front of the
+  chest, at 60° up the back of the head reaches the back's plane. A new step
+  blends over **0.2 s**.
+- **When it is written.** Only when the step changes, so a steady look sends
+  nothing. A pass looks at each player about every **0.25 s** (a round robin
+  spread over the server steps, never all players in one step), so a player
+  looking around is written at most about **four times a second**.
+- **Level, never rest.** A level head is a tilt of 0.001 rad, written
+  unblended when the player joins, never the plain rest pose: the client
+  snaps an override it does not hold yet and drops one that returns to rest
+  ([upstream-workarounds.md](../technical/upstream-workarounds.md) §3).
+- **Death.** A dead player's head goes level and stays level until
+  respawn; the look resumes after it.
+- **Who sees it.** Every player near the looking one, and the player itself
+  in third person (first person draws no own body). Each write sends about
+  60 bytes to each of them, plus the player's other bone overrides if any
+  (the engine re-sends all of an object's overrides on any change).
+- **The realm website** rotates the glb's `Head` node itself for a head that
+  follows the mouse (axis and clamp: `tools/web_data/model/README.md`);
+  nothing is stored for it.
+
 ## 6. Round 11 item and station presentation
 
 Decided 2026-09-20. Silversteel reads as bright neutral silver with subtle cold

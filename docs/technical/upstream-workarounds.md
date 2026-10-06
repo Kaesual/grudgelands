@@ -112,6 +112,43 @@ Engine reference for the line citations: `reference_projects/luanti` at
   under parallel emerge must be shown first). The pin, the manifest's
   `emerge_threads` field and its planner check change together.
 
+## 3. A bone override snaps when it is new and vanishes at identity
+
+- **Upstream problem:** the client interpolates a bone override only from
+  one it already holds for that bone: the first `set_bone_override` of a
+  bone jumps there without its `interpolation`
+  (`src/client/content_cao.cpp` `GenericCAO::processMessage`,
+  `AO_CMD_SET_BONE_POSITION`: no entry → interpolation 0), and an override
+  that has come back to exactly identity (relative, zero position and
+  rotation, unit scale, interpolation finished) is erased from the client's
+  map (`src/activeobject.h` `BoneOverride::isIdentity`, erased in the
+  animate callback of `GenericCAO::addToScene`), so the next one snaps
+  again. A bone that should blend from rest into an override and back can
+  therefore never blend out of rest.
+- **Issue:** none filed; the behaviour is deliberate in the engine's code
+  (the erase keeps the map small), so it may stay.
+- **Affected versions:** relative, interpolated overrides exist since 5.9;
+  the code is unchanged up to `df0487906` (5.17.0-dev).
+- **Our workaround:** the head look (`grug_visuals/head_look.lua`, Round 40
+  lane AN2, [character_visuals.md](../design/character_visuals.md) §5d)
+  never writes identity: a level head is a rotation of 0.001 rad (0.06°)
+  about x, written unblended when the player joins (the snap is invisible)
+  and kept for the rest of the session, so every later angle blends from
+  the one before. Fixture: `tools/r40_an2/portable_test.lua` (E checks).
+  Any later override that must blend from rest (lane CH's `Body` lead, if it
+  ships) needs the same epsilon.
+- **How to tell upstream fixed it:** `processMessage` interpolates a new
+  entry from identity (sets `previous` to the identity values and keeps the
+  interpolation) and `isIdentity` no longer erases a relative override.
+- **What to remove then:** `EPSILON` in `head_look.lua` (write `0` for a
+  level head) and the join write; the fixture's epsilon checks.
+- **Related, not a workaround:** every `set_bone_override` makes the server
+  send **all** of the object's overrides again (`src/server/unit_sao.cpp`
+  `UnitSAO::setBoneOverride` clears `m_bone_override_sent`,
+  `sendOutdatedData` re-sends each bone), and a re-sent override restarts
+  its blend from its own target (`previous = vector`), so a write to one
+  bone cuts short a blend still running on another bone of the same object.
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields

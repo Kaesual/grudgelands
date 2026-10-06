@@ -557,6 +557,10 @@ local function fake_player(name_text)
 	function player:get_inventory() return nil end
 	function player:get_wielded_item() return {get_name = function() return "" end} end
 	function player:get_pos() return {x = 0, y = 0, z = 0} end
+	-- The head look's join (Round 40 AN2, grug_visuals/head_look.lua).
+	function player:get_hp() return 20 end
+	function player:get_look_vertical() return 0 end
+	function player:set_bone_override() end
 	return player, props
 end
 local boxes = {}

@@ -223,3 +223,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   busy-fight cost of the built effects (`costs.py`, reads `r40_v3`'s
   `data.json`) and `bench/`, a disposable probe timing each skill's effect
   calls before and after the helper (`PROBE=tools/r40_px/bench`).
+  `r40_an2` the head look's fixture (`portable_test.lua`: the sign proven
+  on the model file with the engine's override composition, the 5° steps
+  and the clamp, the epsilon, the rate cap, the spread pass and death),
+  `bench_pass.lua`, the pass for 100 stand-in players, and `engine.sh` with
+  the disposable probe `grug_probe_r40_an2`, the engine cost of the look
+  read and the override write.
