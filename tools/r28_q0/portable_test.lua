@@ -578,20 +578,21 @@ for _, id in ipairs(ids) do
 end
 check(ranged_kills > 0 and ranged_kills <= kills, "shipped kill objectives get ranges")
 -- Round 32: kill targets read as their zone shows them, through the
--- loader's per-target zones and the quest state's rows (tracker).
-eq(Q.objective_action(Q.registered_quests.kapok_hunt_01.objectives[1]), "Defeat Small Jungle Boar",
+-- loader's names and the quest state's rows (tracker); since Round 38 the
+-- names are the accepted ones of data/names.json.
+eq(Q.objective_action(Q.registered_quests.kapok_hunt_01.objectives[1]), "Defeat Yam Piglet",
 	"shipped: Kapok's small boar by its zone name")
 do
 	local objectives = Q.registered_quests.kapok_hunt_05.objectives
 	eq(Q.objective_subject(objectives[1]) .. ", " .. Q.objective_subject(objectives[2]),
-		"Confused Offering Thief, Confused Offering Thief Chief Tangle",
+		"Offering Thief, Thief-Chief Tangle",
 		"shipped: Kapok's bandit by its zone name, its leader")
 end
 -- The journal fills the quest text; this fixture builds no region map.
 grug_mobs.spawn_regions.describe = function() return nil, "no region map in this fixture" end
 for key in pairs(meta) do meta[key] = nil end -- section 2's quests are not shipped ones
 check(Q.accept(player, "kapok_hunt_01"), "shipped: accept kapok_hunt_01")
-eq(hud("kapok_hunt_01"), "0/8 Defeat Small Jungle Boar", "shipped: the tracker line names the zone's boar")
+eq(hud("kapok_hunt_01"), "0/8 Defeat Yam Piglet", "shipped: the tracker line names the zone's boar")
 -- What the one-time computation costs at load (reported, not a target).
 do
 	local world, real = nil, Q.validate.world

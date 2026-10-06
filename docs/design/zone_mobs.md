@@ -28,33 +28,33 @@ fails while the file is stale.
 
 | # | Zone | Band | Day | Night | Camps | Leaders | Critters |
 |---|---|---|---|---|---|---|---|
-| 1 | Hearthpine Vale | 1–10 | Boar, Fox, Ibex, Shore Crab | Giant Rat, Zombie | Bandit | Confused Ore Chief Bracket | Rabbit |
+| 1 | Hearthpine Vale | 1–10 | Boar, Fox, Ibex, Shore Crab | Giant Rat, Zombie | Bandit | Ore Chief Bracket | Rabbit |
 | 2 | Copperfell Foothills | 11–20 | Boar, Fox, Ibex, Shore Crab | Giant Rat, Goblin Raider, Zombie | Bandit, Bandit Archer, Goblin Hound, Goblin Slinger | Goblin Foreman Nog | Rabbit |
 | 3 | Dur Brannoc (capital) | 20–30 | Ibex, Mountain Ram | Bandit, Bandit Archer, Zombie | Goblin Raider, Goblin Slinger | Goblin Ore-Factor Brakk | – |
 | 4 | Frostbarrow Shelf | 21–30 | Crag Eagle, Ibex, Mountain Ram, Shore Crab | Goblin Hound, Goblin Raider, Goblin Slinger, Snow Leopard | – | Goblin Powder-Counter Nib | – |
 | 5 | Stormvault Heights | 31–40 | Crag Eagle, Ibex, Mountain Ram, Shore Crab | Frost Stray, Snow Leopard, Zombie | Bandit Archer, Goblin Raider, Goblin Slinger | Bolt-Chewer, Stone Golem Split-Seam | Gull |
-| 6 | Dawnmere Fields | 1–10 | Boar, Fox, Shore Crab | Giant Rat, Zombie | Bandit | Confused Bandit Chief Crumb | Rabbit, Wild Turkey |
+| 6 | Dawnmere Fields | 1–10 | Boar, Fox, Shore Crab | Giant Rat, Zombie | Bandit | Bandit Chief Crumb | Rabbit, Wild Turkey |
 | 7 | Goldmead Vale | 11–20 | Boar, Fox, Shore Crab | Giant Rat, Poacher, Zombie | Bandit, Bandit Archer | Bandit Requisitioner Hobb | Rabbit, Wild Turkey |
 | 8 | Highcourt (capital) | 20–30 | Boar, Fox, Stag | Bandit, Bandit Archer, Zombie | Bandit Archer | Bandit Tollmaster Penn | – |
 | 9 | Whitebridge Shire | 21–30 | Bear, Boar, Shore Crab, Stag | Giant Spider, Poacher, Wisp, Wolf | Mirefolk | Basket-Poacher Thorn, Mirefolk Ferryman Murk | Rabbit |
 | 10 | Ashenward March | 31–40 | Bear, Carrion Crow, Stag, Wolf | Ashen Treant, Giant Spider, Skeleton Raider, Wisp, Zombie | Bandit, Bandit Archer, Poacher | Quartermaster Scrip, Poacher Marshal Red-Receipt | – |
-| 11 | Silverleaf Glades | 1–10 | Boar, Fox, Shore Crab | Giant Rat, Zombie | Bandit, Poacher | Confused Poacher Chief Twig | Rabbit, Song Bird |
+| 11 | Silverleaf Glades | 1–10 | Boar, Fox, Shore Crab | Giant Rat, Zombie | Bandit, Poacher | Poacher Chief Twig | Rabbit, Song Bird |
 | 12 | Starbough Vale | 11–20 | Boar, Fox, Shore Crab | Giant Rat, Poacher, Zombie | Bandit, Bandit Archer | Poacher Snarekeeper Vetch | Rabbit |
 | 13 | Lethariel (capital) | 20–30 | Fox, Stag | Bandit, Poacher, Zombie | Poacher | Poacher Bough-Counter Rusk | – |
 | 14 | Lorindor | 21–30 | Shore Crab, Stag | Poacher, Wisp | Mirefolk | Mirefolk Pearl-Counter Iss | – |
 | 15 | Moonfall Wood | 21–30 | Bear, Shore Crab, Stag, Wolf | Giant Spider, Poacher, Wisp, Wolf | – | Poacher Snarewarden Bracken | – |
 | 16 | Glassroot Wilds | 31–40 | Bear, Jungle Ape, Serpent, Shore Crab, Stag, Wolf | Bandit, Jungle Spider, Panther, Serpent, Wisp, Wolf, Zombie | Bandit Archer | Jungle Ape Canopy-Knuckle, Basket-Biter | – |
-| 17 | Stillgrave Hollow | 1–10 | Boar, Shore Crab, Stag, Zombie | Giant Rat, Zombie | Bandit | Confused Grave Robber Chief Borrow | Hare |
+| 17 | Stillgrave Hollow | 1–10 | Boar, Shore Crab, Stag, Zombie | Giant Rat, Zombie | Bandit | Robber-Chief Borrow | Hare |
 | 18 | Mournfen | 11–20 | Boar, Bog Ooze, Crocodile, Shore Crab, Sun-Dried Husk | Bandit, Bog Ooze, Crocodile, Giant Rat, Wisp, Zombie | Bandit Archer, Crocodile, Mirefolk | Mirefolk Reed-Counter Silt | Bog Fowl, Hare |
 | 19 | Nhal Veyr (capital) | 20–30 | Boar, Stag, Sun-Dried Husk | Bandit, Zombie | – | Zombie Mortuary-Clerk Hush | – |
 | 20 | Ossuary Reach | 21–30 | Bear, Shore Crab, Stag, Stone Mite, Wolf | Gravewood Treant, Pale Spider, Skeleton Archer, Wolf | – | Skeleton Marrow Archivist | Bone Weevil |
 | 21 | Blackwind Rise | 31–40 | Bear, Shore Crab, Stag, Stone Mite, Sun-Dried Husk, Wolf | Gravewood Treant, Pale Spider, Skeleton Raider, Wolf, Zombie | Bandit, Bandit Archer | Grave-Broker Mute, Gravewood Treant Hollowbell | Bone Weevil, Gull |
-| 22 | Sunscar Flats | 1–10 | Boar, Plains Runner, Scorpion, Shore Crab, Sun-Dried Husk | Giant Rat, Scorpion, Sun-Dried Husk | Bandit | Confused Water Thief Chief Lastdrop | Hare |
+| 22 | Sunscar Flats | 1–10 | Boar, Plains Runner, Scorpion, Shore Crab, Sun-Dried Husk | Giant Rat, Scorpion, Sun-Dried Husk | Bandit | Water Chief Lastdrop | Hare |
 | 23 | Redtusk Savanna | 11–20 | Boar, Hyena, Shore Crab, Sun-Dried Husk, Zebra | Bandit, Giant Rat, Hyena, Scorpion, Sun-Dried Husk | Bandit Archer | Bandit Water-Broker Korr | Hare |
 | 24 | Gor Drazhak (capital) | 20–30 | Hyena, Sun-Dried Husk, Zebra | Bandit, Hyena, Scorpion, Sun-Dried Husk | Bandit Archer | Bandit Ration-Broker Garr | – |
 | 25 | Speargrass Reach | 21–30 | Hyena, Shore Crab, Speargrass Tiger, Vulture, Zebra | Hyena, Scorpion | Goblin Raider, Goblin Slinger | Goblin Banner-Broker Rakk | – |
 | 26 | Bannerbreak Mesa | 31–40 | Carrion Crow, Hyena, Speargrass Tiger, Sun-Dried Husk, Vulture | Bandit, Carrion Crow, Hyena, Scorpion, Skeleton Raider, Sun-Dried Husk | Bandit Archer, Goblin Hound, Goblin Raider, Goblin Slinger | Provisioner Rattle, Goblin Banner-Eater | – |
-| 27 | Kapok Cradle | 1–10 | Boar, Jungle Lynx, Shore Crab, Tapir, Viper | Giant Rat, Viper, Zombie | Bandit | Confused Offering Thief Chief Tangle | Hare, Parrot |
+| 27 | Kapok Cradle | 1–10 | Boar, Jungle Lynx, Shore Crab, Tapir, Viper | Giant Rat, Viper, Zombie | Bandit | Thief-Chief Tangle | Hare, Parrot |
 | 28 | Raincall Basin | 11–20 | Boar, Jungle Lynx, Shore Crab, Tapir | Bandit, Giant Rat, Viper, Zombie | Bandit Archer | Bandit Tithe-Keeper Vek | Hare, Parrot |
 | 29 | Kezamba (capital) | 20–30 | Boar, Jungle Lynx, Tapir | Bandit, Viper, Zombie | Bandit Archer | Bandit Offering-Broker Takka | – |
 | 30 | Whispering Reedlands | 21–30 | Bog Ooze, Crocodile, Jungle Lynx, Shore Crab, Tapir | Bog Ooze, Crocodile, Wisp | Mirefolk | Mirefolk Tollkeeper Ush | Bog Fowl, Parrot |
@@ -63,7 +63,7 @@ fails while the file is stale.
 | 33 | The Wyrmglass Crown | 60 | Bandit Archer, Carrion Crow, Crag Eagle, Mountain Ram, Sun-Dried Husk | Bandit Archer, Frost Stray, Snow Leopard, Zombie | – | Stone Golem Rime-Bell | Gull |
 | 34 | Gravesalt Escarpment | 51–60 | Bandit, Bandit Archer, Blightfang Wolf, Carrion Crow, Gaunt Stag, Plaguehide Bear, Reef Lurker, Stone Mite, Sun-Dried Husk | Bandit, Bandit Archer, Bog Witch, Pale Spider, Skeleton Raider, Zombie | – | Watch-Captain Huskell, Bog Witch Salt-Counter | Bone Weevil, Gull |
 | 35 | The Broken Causeway | 41–50 | Bandit, Bandit Archer, Carrion Crow, Sun-Dried Husk, Viper | Bandit, Bandit Archer, Skeleton Raider, Viper, Wolf, Zombie | Bandit, Bandit Archer | Toll-Taker Senn, War Construct Last-Toll | Gull |
-| 36 | The Shattered Line | 41–50 | Bandit, Bandit Archer, Carrion Crow, Hyena, Speargrass Tiger, Sun-Dried Husk, Vulture | Bandit, Scorpion, Skeleton Raider, Sun-Dried Husk | – | Standard-Bearer Ninepins, War Construct Engine Nine | – |
+| 36 | The Shattered Line | 41–50 | Bandit, Bandit Archer, Carrion Crow, Hyena, Speargrass Tiger, Sun-Dried Husk, Vulture | Bandit, Scorpion, Skeleton Raider, Sun-Dried Husk | – | Standard-Bearer Ninepins, Engine Nine | – |
 | 37 | The Skyglass Canopy | 51–60 | Bandit, Carrion Crow, Jungle Ape, Reef Lurker, Serpent, Sun-Dried Husk | Jungle Spider, Panther, Serpent, Skeleton Raider, Zombie | Bandit Archer | Paymaster Chirr, Serpent Glass-Throat | – |
 | 38 | Stormscale Summit | 60 | Bandit Archer, Carrion Crow, Jungle Ape, Serpent, Sun-Dried Husk | Bandit Archer, Bog Witch, Jungle Spider, Panther, Skeleton Raider, Zombie | – | Jungle Ape Last-Offering | Gull |
 

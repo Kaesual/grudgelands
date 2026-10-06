@@ -179,7 +179,8 @@ do
 	local alive = R.particles_alive()
 	check(alive >= 20 and alive <= 300, "S about " .. alive .. " particles alive per player (hundreds at most)")
 	eq(R.boss_id("r20_anchor_077"), "rift:r20_anchor_077", "S the encounter id")
-	eq(R.BOSS_NAME, "Isquarre the Tithe-Eater", "S the story bible name")
+	eq(dofile(repo .. "/tools/r38_b1/names_stub.lua").shipped(repo).required("rift_boss"), "Isquarre the Tithe-Eater",
+		"S the story bible name (names.json)")
 end
 
 ------------------------------------------------------------------------------
@@ -348,6 +349,8 @@ _G.mobs = {mob_class = {}}
 function mobs:remove(entity) entity.object:remove() end
 local settled, resets, dragon_cancels = {}, {}, 0
 _G.grug_mobs = {
+	-- Round 38: the shipped names (bosses.lua and rift.lua read them).
+	names = dofile(repo .. "/tools/r38_b1/names_stub.lua").shipped(repo),
 	storage = storage,
 	pvp_garrison = G,
 	place_on_ground = function(object, pos) object:set_pos(pos) end,
@@ -539,7 +542,7 @@ do
 	eq(def._grug_tier, "elite", "B ...an elite")
 	eq(def.mesh, "grug_mobs_dungeon_master.b3d", "B ...on an existing mesh")
 	eq(def._grug_voice, "giant", "B ...with an approved voice family")
-	eq(def.description, R.BOSS_NAME, "B ...under its story bible name")
+	eq(def.description, "Isquarre the Tithe-Eater", "B ...under its story bible name")
 	eq(def._grug_leash_range, 24, "B its own leash radius")
 	check((def._grug_hp_scale or 1) > 1, "B sized for a group")
 	players[1].pos = at_site(60, 0)
@@ -1029,7 +1032,6 @@ do
 end
 
 if failures > 0 then
-	print(("R36 R PORTABLE FAIL %d of %d checks"):format(failures, checks))
-	os.exit(1)
+	error(("R36 R PORTABLE FAIL %d of %d checks"):format(failures, checks), 0)
 end
 print(("R36 R PORTABLE PASS checks=%d"):format(checks))

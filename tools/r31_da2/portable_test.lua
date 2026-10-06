@@ -230,6 +230,8 @@ grug_core = {
 }
 local resets = 0
 grug_mobs = {
+	-- Round 38: the shipped names (boss_dragons.lua reads them).
+	names = dofile(repo .. "/tools/r38_b1/names_stub.lua").shipped(repo),
 	register_homing_arrow = function() end,
 	register_mob = function(name, def) defs[name] = def end,
 	scale_attack_damage = function(v) return v * 1.5 end,

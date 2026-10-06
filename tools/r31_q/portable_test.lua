@@ -264,16 +264,17 @@ end
 eq(kill("guard_throng", nil, "throng"), "0/0", "an untagged Throng guard (a town's) counts nothing")
 eq(kill("guard_throng", "front_broken_causeway/pvp_camp_broken_causeway_throng_high", "throng"), "0/0",
 	"a guard of the zone's other camp counts nothing")
-eq(kill("guard_throng", "front_shattered_line/pvp_camp_shattered_line_throng_low", "throng"), "0/0",
-	"a guard of another zone's picket counts nothing")
-eq(kill("guard_accord", "front_broken_causeway/pvp_camp_broken_causeway_accord_low", "accord"), "0/0",
+-- Round 38: the Shattered Line picket's guards bear the same accepted name
+-- ("Throng Picket", the same levels): by the guarantee they count too.
+eq(kill("guard_throng", "front_shattered_line/pvp_camp_shattered_line_throng_low", "throng"), "1/0",
+	"a guard of another zone's picket under the same name counts")
+eq(kill("guard_accord", "front_broken_causeway/pvp_camp_broken_causeway_accord_low", "accord"), "1/0",
 	"an own-faction guard counts nothing")
-eq(kill("guard_throng", CAMP, "throng"), "1/0", "a guard of the camp counts")
-eq(kill("captain_throng", "front_broken_causeway/pvp_camp_broken_causeway_throng_high", "throng"), "1/0",
+eq(kill("guard_throng", CAMP, "throng"), "2/0", "a guard of the camp counts")
+eq(kill("captain_throng", "front_broken_causeway/pvp_camp_broken_causeway_throng_high", "throng"), "2/0",
 	"another camp's captain counts nothing")
-eq(kill("captain_throng", CAMP, "throng"), "1/1", "the camp's captain counts")
-eq(kill("guard_throng", nil, "throng", CAMP), "2/1", "a guard of the camp's name counts wherever it stands")
-eq(kill("guard_throng", CAMP, "throng"), "2/1", "no count past the objective")
+eq(kill("captain_throng", CAMP, "throng"), "2/1", "the camp's captain counts")
+eq(kill("guard_throng", nil, "throng", CAMP), "2/1", "no count past the objective")
 eq(Q.status(player, "q31_picket"), "ready", "the quest is ready to turn in")
 
 ------------------------------------------------------------------------------
@@ -423,7 +424,6 @@ end
 
 if #failures > 0 then
 	for _, label in ipairs(failures) do print("FAIL " .. label) end
-	print(("%d checks, %d failures"):format(checks, #failures))
-	os.exit(1)
+	error(("%d checks, %d failures"):format(checks, #failures), 0)
 end
 print("R31 Q PORTABLE PASS checks=" .. checks)
