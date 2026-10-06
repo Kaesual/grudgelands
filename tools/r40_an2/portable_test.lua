@@ -13,7 +13,7 @@
 --      dead player's head stays level);
 --   Q  quantization: 5° steps, rounded to the nearest, clamped at 50° down
 --      and 60° up; the written override is the Head bone, a relative rotation
---      about x only, the step's angle in radians, blended over 0.2 s;
+--      about x only, the step's angle in radians, blended over 0.15 s;
 --   E  the epsilon: the join writes the level head unblended, a level head is
 --      the epsilon, never identity (no write is ever all zero);
 --   R  the rate cap: a player looking around without pause is written at most
@@ -21,8 +21,12 @@
 --      nothing after the join;
 --   P  the spread: with 100 players no step visits all of them, each is
 --      visited about every 0.25 s, and one long step visits each once;
---   L  lifecycle: death levels the head and stops the visits, respawn resumes
---      them, a player joining dead is not visited, leaving drops the player.
+--   L  lifecycle: the pass levels a dead player's head and stops reading its
+--      look, respawn resumes it, a player joining dead stays level, leaving
+--      drops the player;
+--   H  holds: no Head write while the charge pose runs or while hold_head
+--      holds (lane CH's Body lead blends back), a longer hold stays, the look
+--      catches up on the first visit after.
 -- Prints "R40 AN2 PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -44,14 +48,17 @@ end
 
 -- --- the stand-in engine --------------------------------------------------------
 local steps, joins, leaves, deaths, respawns = {}, {}, {}, {}, {}
+local now_us = 0
 core = {
 	register_globalstep = function(fn) steps[#steps + 1] = fn end,
 	register_on_joinplayer = function(fn) joins[#joins + 1] = fn end,
 	register_on_leaveplayer = function(fn) leaves[#leaves + 1] = fn end,
 	register_on_dieplayer = function(fn) deaths[#deaths + 1] = fn end,
 	register_on_respawnplayer = function(fn) respawns[#respawns + 1] = fn end,
+	get_us_time = function() return now_us end,
 }
-grug_visuals = {}
+-- poses.lua's query (the charge pose blocks writes): a field of the stand-in.
+grug_visuals = {current_pose = function(player) return player.pose end}
 dofile(ROOT .. "/mods/PLAYER/grug_visuals/head_look.lua")
 eq(#steps, 1, "one globalstep")
 
@@ -79,7 +86,10 @@ local function join(p) for _, fn in ipairs(joins) do fn(p) end end
 local function leave(p) for _, fn in ipairs(leaves) do fn(p) end end
 local function die(p) for _, fn in ipairs(deaths) do fn(p) end end
 local function respawn(p) for _, fn in ipairs(respawns) do fn(p) end end
-local function step(dtime) steps[1](dtime) end
+local function step(dtime)
+	now_us = now_us + math.floor(dtime * 1e6 + 0.5)
+	steps[1](dtime)
+end
 
 local HL = grug_visuals.HEAD_LOOK
 local rad = math.rad
@@ -258,7 +268,8 @@ check(math.abs(up_write.x - rad(30)) < 1e-12 and up_write.y == 0 and up_write.z 
 	"Q x only, the step in radians")
 check(not up_write.absolute and up_write.position == nil and up_write.scale == nil,
 	"Q a relative rotation, nothing else")
-eq(up_write.interpolation, 0.2, "Q blended over 0.2 s")
+eq(up_write.interpolation, 0.15, "Q blended over 0.15 s")
+check(HL.blend < 2 * 0.09, "Q the blend ends before the next write (two default steps)")
 
 -- --- E: the epsilon -------------------------------------------------------------
 writes = {}
@@ -361,13 +372,14 @@ do
 	step(1)
 	eq(#p.writes, 2, "L looking up written")
 	die(p)
-	eq(#p.writes, 3, "L death writes")
-	eq(p.writes[3].x, HL.epsilon, "L death levels the head")
-	eq(p.writes[3].interpolation, 0.2, "L blended")
+	eq(#p.writes, 2, "L death itself writes nothing")
 	p.looks = 0
+	step(1)
+	eq(#p.writes, 3, "L the pass levels a dead player's head")
+	eq(p.writes[3].x, HL.epsilon, "L to the epsilon")
+	eq(p.writes[3].interpolation, HL.blend, "L blended")
 	for _ = 1, 20 do step(0.09) end
-	eq(p.looks, 0, "L a dead player is not visited")
-	die(p)
+	eq(p.looks, 0, "L a dead player's look is not read")
 	eq(#p.writes, 3, "L a level head is not written again")
 	respawn(p)
 	step(1)
@@ -378,11 +390,48 @@ do
 	join(d)
 	eq(#d.writes, 1, "L joining dead: the level head")
 	step(1)
-	eq(d.looks, 0, "L joining dead: not visited")
+	eq(d.looks, 0, "L joining dead: the look is not read")
+	eq(#d.writes, 1, "L joining dead: stays level")
 	respawn(d)
 	step(1)
 	check(d.looks > 0, "L joining dead: visited after respawn")
 	leave(d)
+end
+
+-- --- H: holds -------------------------------------------------------------------
+do
+	local p = new_player("h")
+	join(p)
+	p.pose = "charge"
+	p.look = -rad(30)
+	for _ = 1, 20 do step(0.09) end
+	eq(#p.writes, 1, "H no Head write while the charge pose runs")
+	p.pose = "cast1"
+	step(1)
+	eq(#p.writes, 2, "H another pose does not hold")
+	p.pose = nil
+	-- CH's effects_end: the pose stops and the head is held (one player and
+	-- 0.25 s steps: one visit per step).
+	grug_visuals.hold_head(p, 0.6)
+	p.look = -rad(45)
+	step(0.25)
+	eq(#p.writes, 2, "H no write during the hold")
+	grug_visuals.hold_head(p, 0.1) -- a shorter hold does not cut the longer
+	step(0.25)
+	eq(#p.writes, 2, "H a shorter hold leaves the running one")
+	step(0.25)
+	eq(#p.writes, 3, "H after the hold the look catches up")
+	check(math.abs(p.writes[3].x - rad(45)) < 1e-12, "H to the current step")
+	grug_visuals.hold_head(new_player("nobody"), 1) -- not joined: no error
+	-- A dead player under the charge pose levels only after it.
+	p.pose = "charge"
+	die(p)
+	step(1)
+	eq(#p.writes, 3, "H death waits for the charge pose too")
+	p.pose = nil
+	step(1)
+	eq(p.writes[4].x, HL.epsilon, "H then levels")
+	leave(p)
 end
 
 -- No write anywhere was identity.

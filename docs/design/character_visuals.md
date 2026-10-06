@@ -426,16 +426,20 @@ camera, so there is no head yaw and no lagging body; NPCs have no head look.
   clamped from **50° down to 60° up** (the angles accepted on the animation
   page): at 50° down the chin's lower edge still stands in front of the
   chest, at 60° up the back of the head reaches the back's plane. A new step
-  blends over **0.2 s**.
+  blends over **0.15 s**.
 - **When it is written.** Only when the step changes, so a steady look sends
   nothing. A pass looks at each player about every **0.25 s** (a round robin
   spread over the server steps, never all players in one step), so a player
   looking around is written at most about **four times a second**.
+- **Charge.** While the Charge pose runs and for 0.2 s after it (the `Body`
+  lead blending back, `grug_visuals.hold_head`) the head is not written: a
+  write re-sends every bone override of the player and would cut the lead's
+  blend short. The look catches up on the next visit after.
 - **Level, never rest.** A level head is a tilt of 0.001 rad, written
   unblended when the player joins, never the plain rest pose: the client
   snaps an override it does not hold yet and drops one that returns to rest
   ([upstream-workarounds.md](../technical/upstream-workarounds.md) §3).
-- **Death.** A dead player's head goes level and stays level until
+- **Death.** The pass levels a dead player's head, which stays level until
   respawn; the look resumes after it.
 - **Who sees it.** Every player near the looking one, and the player itself
   in third person (first person draws no own body). Each write sends about

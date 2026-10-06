@@ -21,8 +21,9 @@ core = {
 	register_on_leaveplayer = function() end,
 	register_on_dieplayer = function() end,
 	register_on_respawnplayer = function() end,
+	get_us_time = function() return 0 end,
 }
-grug_visuals = {}
+grug_visuals = {current_pose = function() return nil end}
 dofile(ROOT .. "/mods/PLAYER/grug_visuals/head_look.lua")
 local pass = steps[1]
 

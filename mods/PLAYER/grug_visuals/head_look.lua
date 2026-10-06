@@ -39,17 +39,18 @@ local STEP = 5
 local DOWN, UP = -50, 60
 -- Each player is looked at about this often (seconds).
 local PERIOD = 0.25
--- A new angle blends over this long; shorter than PERIOD, so a blend has
--- ended before the next write starts one.
-local BLEND = 0.2
+-- A new angle blends over this long; shorter than two server steps (0.18 s
+-- at the default 0.09 s, the closest two visits of a player come), so a
+-- blend has ended before the next write starts one.
+local BLEND = 0.15
 -- The level head: radians, far below anything visible, never identity.
 local EPSILON = 0.001
 
 grug_visuals.HEAD_LOOK = {step = STEP, down = DOWN, up = UP, period = PERIOD,
 	blend = BLEND, epsilon = EPSILON}
 
--- player name -> row {player, deg (the step last written), dead}; `order`
--- holds the same rows for the round robin.
+-- player name -> row {player, deg (the step last written), dead,
+-- hold_until (us)}; `order` holds the same rows for the round robin.
 local rows = {}
 local order = {}
 local cursor = 0
@@ -76,11 +77,35 @@ function grug_visuals.head_step(look_vertical)
 end
 local head_step = grug_visuals.head_step
 
+-- No write while another bone of the player blends: every write re-sends
+-- all of its overrides, which cuts that blend short (upstream-workarounds.md
+-- §3, "Related"). Charge's `Body` lead blends in while the charge pose runs
+-- and out under a hold (hold_head). The look waits; the next visit after
+-- catches up.
+local function held(row)
+	if row.hold_until then
+		if core.get_us_time() < row.hold_until then return true end
+		row.hold_until = nil
+	end
+	return grug_visuals.current_pose(row.player) == "charge"
+end
+
 local function visit(row)
-	if row.dead then return end
-	local deg = head_step(row.player:get_look_vertical())
-	if deg ~= row.deg then
+	-- A dead body lies with its head level; the look returns on respawn.
+	local deg = row.dead and 0 or head_step(row.player:get_look_vertical())
+	if deg ~= row.deg and not held(row) then
 		write(row, deg, BLEND)
+	end
+end
+
+-- Holds the head's writes for `seconds` (a longer running hold stays): for
+-- a blend on another bone of the player (lane CH's lead blending back).
+function grug_visuals.hold_head(player, seconds)
+	local row = rows[player:get_player_name()]
+	if not row then return end
+	local until_us = core.get_us_time() + seconds * 1e6
+	if not row.hold_until or until_us > row.hold_until then
+		row.hold_until = until_us
 	end
 end
 
@@ -128,14 +153,10 @@ core.register_on_leaveplayer(function(player)
 	end
 end)
 
--- A dead body lies with its head level; the look returns on respawn.
+-- The pass levels a dead player's head (visit).
 core.register_on_dieplayer(function(player)
 	local row = rows[player:get_player_name()]
-	if not row then return end
-	row.dead = true
-	if row.deg ~= 0 then
-		write(row, 0, BLEND)
-	end
+	if row then row.dead = true end
 end)
 
 core.register_on_respawnplayer(function(player)
