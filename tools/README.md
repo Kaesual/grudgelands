@@ -201,3 +201,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   writes, and every texture string within the caps and the closed
   grammar; `examples` prints two values); `wg` the glTF probe mod on a
   fake engine. Lane WE's fixture is `web_data/portable_test.lua` (above).
+- **Round 40**: `r40_probe` the GUI probe mod `grug_r40_probe` (Charge
+  variants on test courses, the cooldown overlay on the hotbar, server-side
+  timings; never shipped, see its README); its `portable_test.lua` covers the
+  path planner, the overlay arithmetic and the cooldown number.
