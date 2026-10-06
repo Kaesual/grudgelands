@@ -211,7 +211,11 @@ guards and a named rare carry their name key from their placement
 world has already placed show a fallback name (fresh-server mode, no
 migration).
 
-Round end: …
+Round end (main 3607e9ae, 2026-10-06): run_fixtures 108/108; check_fresh_server PASS;
+validate.py --game 0 errors (7 warnings, as at the start); check_rules.py --shipped 0
+problems over 950 slots; guarantee.py --check PASS; income.py --check PASS; one
+headless boot of main PASS (seed 8443766144962855401); no seed fleet owed (no mapgen
+change); synced to the user's game.
 
 ### Shipped, by lane
 
