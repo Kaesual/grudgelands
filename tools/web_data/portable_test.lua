@@ -97,7 +97,9 @@ for index, entry in ipairs(data.texture_files) do
 		check(entry.engine == false and type(entry.path) == "string" and
 			entry.path:sub(-#entry.name - 1) == "/" .. entry.name and exists(entry.path),
 			label .. " exists at its path")
-		check(entry.name:match(file_pattern) ~= nil, label .. " follows the grammar's file rule")
+		check(entry.name:match(file_pattern) ~= nil and
+			#entry.name <= data.texture_grammar.args.file.max_length,
+			label .. " follows the grammar's file rule")
 	end
 	texture_names[entry.name] = true
 end
