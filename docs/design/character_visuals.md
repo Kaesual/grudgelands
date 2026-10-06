@@ -407,8 +407,9 @@ nothing per step on the server and every client plays them. NPCs keep
   client plays its own stand, walk and punch animations itself and ignores
   a server animation with one of those four frame ranges, so the end of a
   pose (its time running out, the dash or the draw ending) plays a
-  `<base>_resume` animation for one step: the base animation one frame
-  shorter, a range the client does not ignore. Without it the player's own
+  `<base>_resume` animation for one step: the base animation with its end
+  1/64 frame short, a range the client does not ignore that still loops
+  without a hitch. Without it the player's own
   view would keep the pose until the movement changed.
 
 ## 6. Round 11 item and station presentation

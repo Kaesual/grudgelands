@@ -32,9 +32,10 @@
 --   F  the flinch: on a settled hit; at most one per 1.5 s; never over
 --      another pose, the drawn bow, a seat; and the bow's own clips;
 --   K  the player's own client: every pose end (expiry, stop_pose, the bow
---      draw's end) answers a `<base>_resume` animation for one step, whose
---      range is none of the four local ones the 5.17 client ignores, then the
---      plain base; the frame offset carries through.
+--      draw's end) answers a `<base>_resume` animation for one step (the
+--      base's range with the end 1/64 frame short, none of the four local
+--      ones the 5.17 client ignores), then the plain base; the frame offset
+--      carries through.
 -- Prints "R40 AN1 PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -174,11 +175,11 @@ do
 	eq(A.walk_mine._grug_phase, "walk", "R walk_mine group")
 	eq(A.stand._grug_phase, "stand", "R stand group")
 	eq(A.mine._grug_phase, "mine", "R mine group")
-	-- K: the resume variants the player's own 5.17 client applies: one frame
-	-- short of the base, so none of the four local ranges.
+	-- K: the resume variants the player's own 5.17 client applies: the base's
+	-- first frame, the end 1/64 frame short, so none of the four local ranges.
 	for _, base in ipairs({"stand", "walk", "mine", "walk_mine"}) do
 		local r = A[base .. "_resume"]
-		check(r and r.x == A[base].x and r.y == A[base].y - 1, "K " .. base .. "_resume range")
+		check(r and r.x == A[base].x and r.y == A[base].y - 1 / 64, "K " .. base .. "_resume range")
 		eq(r and r._grug_phase, A[base]._grug_phase, "K " .. base .. "_resume group")
 		for _, known in ipairs({"stand", "walk", "mine", "walk_mine"}) do
 			check(not (r.x == A[known].x and r.y == A[known].y),
@@ -316,9 +317,9 @@ do
 	eq(anim_of(p), "walk_resume", "K after the hold walk_resume for one step")
 	near(last(p).start, 168 + 16.5, "W walk_resume takes the stride back")
 	eq(last(p).blend, 0.12, "W out of the pose blends")
-	step(0.1) -- 16.5 + 3 frames, wrapped at walk_resume's 18
+	step(0.1) -- 16.5 + 3 frames, wrapped at walk_resume's 19 - 1/64
 	eq(anim_of(p), "walk", "W then plain walk")
-	near(last(p).start, 168 + 1.5, "W walk continues the stride")
+	near(last(p).start, 168 + 19.5 - (19 - 1 / 64), "W walk continues the stride")
 	p.controls = {}
 	step(0.05)
 	eq(anim_of(p), "stand", "W standing again")

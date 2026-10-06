@@ -329,13 +329,18 @@ do
 	-- none of its four local ones (stand, walk, mine, walk_mine;
 	-- content_cao.cpp GenericCAO::applyTrackAnimation), so a plain `stand`
 	-- after a pose would leave the pose looping in its own third-person view
-	-- until the movement changes. Each `<base>_resume` is its base one frame
-	-- shorter (the base's last frame repeats its first), a range that client
-	-- does not know; poses.lua answers it for the one step a pose ends, and
-	-- the shared group carries the frame offset on into the base.
+	-- until the movement changes. Each `<base>_resume` is its base with the
+	-- end 1/64 frame short: a range that client does not know (it compares
+	-- the floats exactly), while the loop stays seamless. The engine loops
+	-- over [min, max) and wraps max onto min (irr/src/AnimSpec.cpp
+	-- TrackAnimSpec::advance), so a whole frame off either end would drop
+	-- one frame step every cycle; 1/64 frame (exact in a float) drops half a
+	-- millisecond. poses.lua answers it for the one step a pose ends; the
+	-- shared group carries the frame offset on into the base, and since the
+	-- first frame is the base's, the stride carries over exactly.
 	for _, base_name in ipairs({"stand", "walk", "mine", "walk_mine"}) do
 		local a = animations[base_name]
-		animations[base_name .. "_resume"] = {x = a.x, y = a.y - 1,
+		animations[base_name .. "_resume"] = {x = a.x, y = a.y - 1 / 64,
 			_grug_phase = a._grug_phase}
 	end
 	player_api.register_model(grug_visuals.PLAYER_MODEL, {
