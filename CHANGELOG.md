@@ -27,7 +27,7 @@ so their quests might not count them.
   the right name did not count because they had spawned in the next field
   over.
 - Quests against a war camp name the camp's guards and its captain by
-  his own name, and both count.
+  name, and both count.
 - Quest texts use the new names; a few jokes that rested on an old name
   are new.
 - The two whelps a dragon calls when it rages are level 60 like their
