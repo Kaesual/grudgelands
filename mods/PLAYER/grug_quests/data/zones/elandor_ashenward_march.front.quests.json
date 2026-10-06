@@ -316,8 +316,8 @@
       "requires": [
         "lasthedge_front_04"
       ],
-      "title": "Group: An End to the Grinding",
-      "text": "{name:siege_engine_nine} still grinds over the {name:front_shattered_line/siegecrest}, {dir_from_giver:siege_engine_nine}; someone keeps paying for the orders it follows. Gather a group and destroy that elite war construct. I can account for the soldiers Ninepins kept on duty; I will not start a new list beneath the machine's wheels.",
+      "title": "Party: An End to the Grinding",
+      "text": "{name:siege_engine_nine} still grinds over the {name:front_shattered_line/siegecrest}, {dir_from_giver:siege_engine_nine}; someone keeps paying for the orders it follows. Gather a party and destroy that elite war construct. I can account for the soldiers Ninepins kept on duty; I will not start a new list beneath the machine's wheels.",
       "objectives": [
         {
           "type": "kill",
@@ -753,7 +753,7 @@
         "ashenward_bastion_warcamp_skyglass"
       ],
       "title": "Under Stonegrudge's Eye",
-      "text": "War Commander Stonegrudge now fights beside the garrison at the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. Defeat five Throng Veterans and {captain:pvp_camp_gravesalt_escarpment_throng_high} in that camp, and take a group if you need one; the elite commander makes this a harder raid. A casualty caused by ignoring the briefing is still a casualty, however brave the report sounds.",
+      "text": "War Commander Stonegrudge now fights beside the garrison at the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. Defeat five Throng Veterans and {captain:pvp_camp_gravesalt_escarpment_throng_high} in that camp, and take a party if you need one; the elite commander makes this a harder raid. A casualty caused by ignoring the briefing is still a casualty, however brave the report sounds.",
       "objectives": [
         {
           "type": "kill",

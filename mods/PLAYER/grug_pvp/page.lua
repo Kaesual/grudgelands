@@ -87,9 +87,9 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
--- Right after Group. Each tab's hook moves only its own page, right after its
+-- Right after Party. Each tab's hook moves only its own page, right after its
 -- predecessor as it stands when the hook runs, and the hooks run in mod load
--- order; grug_pvp loads after grug_parties (optional dependency), so Group has
+-- order; grug_pvp loads after grug_parties (optional dependency), so Party has
 -- found its place when this runs and nothing moves it afterwards.
 core.register_on_mods_loaded(function()
 	local page, ordered, inserted = sfinv.pages[PAGE], {}, false

@@ -157,7 +157,7 @@ grug_classes.register_class({
 grug_classes.register_class({
 	id = "priest",
 	name = "Priest",
-	description = "Healer and support. Keeps the group alive —\n" ..
+	description = "Healer and support. Keeps the party alive —\n" ..
 		"and pulls aggro if the tank sleeps.",
 	growth = {str = 1, int = 2, dex = 1},
 	resource = "mana",

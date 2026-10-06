@@ -274,8 +274,8 @@
       "requires": [
         "blackwind_arch_03"
       ],
-      "title": "Group: Silence for Hollowbell",
-      "text": "The Gravewood Treant Hollowbell tolls in the {name:hollowwood}, {dir_from_giver:hollowbell_treant}, as though the whole station were overdue for burial. Gather a group and kill it; even the dead should know better than to face that thing alone. I would like to hear the wind through the arches again.",
+      "title": "Party: Silence for Hollowbell",
+      "text": "The Gravewood Treant Hollowbell tolls in the {name:hollowwood}, {dir_from_giver:hollowbell_treant}, as though the whole station were overdue for burial. Gather a party and kill it; even the dead should know better than to face that thing alone. I would like to hear the wind through the arches again.",
       "objectives": [
         {
           "type": "kill",

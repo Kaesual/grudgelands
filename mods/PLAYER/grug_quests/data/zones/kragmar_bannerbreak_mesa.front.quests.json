@@ -367,8 +367,8 @@
       "requires": [
         "bb_front_torn_05"
       ],
-      "title": "Group: Break the Paid Machine",
-      "text": "Engine Nine keeps grinding across the {name:front_shattered_line/siegecrest}, {dir_from_giver:siege_engine_nine}, because somebody is still paying for its orders. Gather a group and destroy the elite construct. Ninepins pawned a banner; this thing will grind the cloth, the pole and everyone standing under it.",
+      "title": "Party: Break the Paid Machine",
+      "text": "Engine Nine keeps grinding across the {name:front_shattered_line/siegecrest}, {dir_from_giver:siege_engine_nine}, because somebody is still paying for its orders. Gather a party and destroy the elite construct. Ninepins pawned a banner; this thing will grind the cloth, the pole and everyone standing under it.",
       "objectives": [
         {
           "type": "kill",

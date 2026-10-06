@@ -17,7 +17,7 @@
 -- poison and a PvP tag (no WP41 mechanics exist yet; neutral gold frame).
 -- The party is a STAGED view (grug_parties.view replaced for this client
 -- only): one member per class, so the class icons can be seen.
--- It logs "[status_icons_probe] READY", then opens the Group page (GROUP),
+-- It logs "[status_icons_probe] READY", then opens the Party page (GROUP),
 -- the Character page's Effects tab (EFFECTS) and its Stats tab (STATS) as
 -- the real sfinv formspecs, and shuts the server down SHUTDOWN_AFTER seconds
 -- after READY.
@@ -140,7 +140,7 @@ core.register_globalstep(function(dtime)
 		hold_target()
 		local since = (core.get_us_time() - state.ready_at) / 1e6
 		-- The two inventory pages, shown as the real sfinv formspecs: the
-		-- Group page (class icons in the member table) and the Character
+		-- Party page (class icons in the member table) and the Character
 		-- page's Effects tab. capture.sh grabs a frame after each log line.
 		if since > 14 and not state.group then
 			state.group = true

@@ -305,8 +305,8 @@
       "requires": [
         "bannerbreak_standard_04"
       ],
-      "title": "Group: No Banner for Supper",
-      "text": "I stitch the names of our fallen into our standards, and the Goblin Banner-Eater at the {name:goblin_warcamp} {dir_from_giver:goblin_warcamp} eats them, poles and all. Gather a group and kill it; pride alone will not win that fight. Those names belong above our heads.",
+      "title": "Party: No Banner for Supper",
+      "text": "I stitch the names of our fallen into our standards, and the Goblin Banner-Eater at the {name:goblin_warcamp} {dir_from_giver:goblin_warcamp} eats them, poles and all. Gather a party and kill it; pride alone will not win that fight. Those names belong above our heads.",
       "objectives": [
         {
           "type": "kill",
@@ -516,8 +516,8 @@
       "requires": [
         "throng_main_05"
       ],
-      "title": "Group: Greyvow's Last Filing",
-      "text": "The captured orders send War Commander Greyvow to run The Accord's hunt from the {name:pvp_camp_skyglass_canopy_accord_high}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_high}. He means to seize the payers and every scrap that tells what they did to our dead. Gather a group and kill him among his garrison; he is an elite commander with plenty of blades behind his paperwork. We will tell our own story in our own yard.",
+      "title": "Party: Greyvow's Last Filing",
+      "text": "The captured orders send War Commander Greyvow to run The Accord's hunt from the {name:pvp_camp_skyglass_canopy_accord_high}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_high}. He means to seize the payers and every scrap that tells what they did to our dead. Gather a party and kill him among his garrison; he is an elite commander with plenty of blades behind his paperwork. We will tell our own story in our own yard.",
       "objectives": [
         {
           "type": "kill",
@@ -577,8 +577,8 @@
       "requires": [
         "throng_main_07"
       ],
-      "title": "Group: No Claim on Our Dead",
-      "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a group of two or three, kill him beside the burning crack and stay out of it; if The Accord turns up, it can carry its own banner home, and we will carry ours. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
+      "title": "Party: No Claim on Our Dead",
+      "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a party of two or three, kill him beside the burning crack and stay out of it; if The Accord turns up, it can carry its own banner home, and we will carry ours. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
       "objectives": [
         {
           "type": "kill",

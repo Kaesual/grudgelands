@@ -321,8 +321,8 @@
       "requires": [
         "stormvault_sighting_03"
       ],
-      "title": "Group: A Crack Is Not a Weakness",
-      "text": "{name:split_seam_warden} roams the {name:stormcrags} {dir_from_giver:split_seam_warden}, with a crack wide enough to tempt any dwarf with a hammer. Don't mistake that seam for an easy job; this golem can flatten a squad. Bring a group and destroy it, and leave the single-handed masonry to the workshop.",
+      "title": "Party: A Crack Is Not a Weakness",
+      "text": "{name:split_seam_warden} roams the {name:stormcrags} {dir_from_giver:split_seam_warden}, with a crack wide enough to tempt any dwarf with a hammer. Don't mistake that seam for an easy job; this golem can flatten a squad. Bring a party and destroy it, and leave the single-handed masonry to the workshop.",
       "objectives": [
         {
           "type": "kill",

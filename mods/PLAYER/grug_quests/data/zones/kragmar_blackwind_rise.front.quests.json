@@ -63,8 +63,8 @@
       "requires": [
         "bw_front_hollow_01"
       ],
-      "title": "Group: Close the Account",
-      "text": "War Construct Last-Toll waits in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct}; whoever built it neglected to include a closing hour. Take a group and destroy it, because it will make spare parts of a lone fighter. We have quite enough spare parts here already.",
+      "title": "Party: Close the Account",
+      "text": "War Construct Last-Toll waits in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct}; whoever built it neglected to include a closing hour. Take a party and destroy it, because it will make spare parts of a lone fighter. We have quite enough spare parts here already.",
       "objectives": [
         {
           "type": "kill",
@@ -331,8 +331,8 @@
       "requires": [
         "bw_front_ashveil_04"
       ],
-      "title": "Group: Nobody's Number",
-      "text": "Bog Witch Salt-Counter holds court {dir_from_giver:salt_counter_witch}, counting soldiers like grains of salt and never once by name. Gather a group and kill her; alone, you would only be one more grain on her scale. I remember names, and I would prefer not to add yours to the list I mourn.",
+      "title": "Party: Nobody's Number",
+      "text": "Bog Witch Salt-Counter holds court {dir_from_giver:salt_counter_witch}, counting soldiers like grains of salt and never once by name. Gather a party and kill her; alone, you would only be one more grain on her scale. I remember names, and I would prefer not to add yours to the list I mourn.",
       "objectives": [
         {
           "type": "kill",

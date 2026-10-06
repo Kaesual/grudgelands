@@ -264,8 +264,8 @@
       "requires": [
         "thunderroot_rainchar_03"
       ],
-      "title": "Group: A Storm Too Many",
-      "text": "The Bog Witch Storm-Bottle waits in the {name:heartwood}, {dir_from_giver:storm_bottle_witch}, clutching enough stolen thunder to make even the spirits keep their distance. Bring a group and kill her; no one should face that storm alone. Courage is easier to find with friends standing in the rain beside you.",
+      "title": "Party: A Storm Too Many",
+      "text": "The Bog Witch Storm-Bottle waits in the {name:heartwood}, {dir_from_giver:storm_bottle_witch}, clutching enough stolen thunder to make even the spirits keep their distance. Bring a party and kill her; no one should face that storm alone. Courage is easier to find with friends standing in the rain beside you.",
       "objectives": [
         {
           "type": "kill",

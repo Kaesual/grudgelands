@@ -332,7 +332,7 @@ end
 -- P: placeholders on a PvP POI.
 ------------------------------------------------------------------------------
 local def = Q.registered_quests.q31_picket
-eq(def.title, "Group: Pull Up the Causeway Throng Picket", "title {name:<camp key>} is the camp's label")
+eq(def.title, "Party: Pull Up the Causeway Throng Picket", "title {name:<camp key>} is the camp's label")
 local target = Q.placeholder_target("elandor_ashenward_march", "pvp_camp_broken_causeway_throng_low")
 eq(target and target.what, "poi", "a camp key is a PvP POI target from any zone")
 eq(target and target.zone, "front_broken_causeway", "the POI's own zone")
@@ -403,8 +403,8 @@ for faction, zone in pairs(FORT) do
 				eq(captain.area, area, quest.id .. ": both in the camp")
 				check(roles["guard_" .. enemy][1] >= quest.level - 3 and roles["captain_" .. enemy][2] <= quest.level + 3,
 					quest.id .. ": the camp's band fits the reward level")
-				-- Solo quests (user, round31-plan §6 item 16): no Group flag or prefix.
-				check(quest.group == nil and quest.optional == nil and not quest.title:match("^Group: "),
+				-- Solo quests (user, round31-plan §6 item 16): no group flag or "Party:" prefix.
+				check(quest.group == nil and quest.optional == nil and not quest.title:match("^Party: "),
 					quest.id .. ": a solo quest")
 				check(quest.turnin == quest.giver, quest.id .. ": turned in where given")
 			elseif givers[quest.giver] then

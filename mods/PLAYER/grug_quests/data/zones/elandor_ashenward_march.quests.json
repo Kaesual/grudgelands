@@ -386,8 +386,8 @@
       "requires": [
         "ashenward_hedge_03"
       ],
-      "title": "Group: The Last Receipt",
-      "text": "{name:red_receipt_marshal} still runs the trade from the {name:poacher_camp} {dir_from_giver:red_receipt_marshal}, signing away our soldiers' supper in red ink. Gather a group and kill the elite marshal; I've written enough letters this season without starting one about you. Bring everyone back, and the first supper he can no longer sell is yours.",
+      "title": "Party: The Last Receipt",
+      "text": "{name:red_receipt_marshal} still runs the trade from the {name:poacher_camp} {dir_from_giver:red_receipt_marshal}, signing away our soldiers' supper in red ink. Gather a party and kill the elite marshal; I've written enough letters this season without starting one about you. Bring everyone back, and the first supper he can no longer sell is yours.",
       "objectives": [
         {
           "type": "kill",
@@ -622,8 +622,8 @@
       "requires": [
         "accord_main_orders"
       ],
-      "title": "Group: Stonegrudge's Inquiry",
-      "text": "The captain's orders put War Commander Stonegrudge in charge of The Throng's hunt for the factors, from the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. A rival inquiry is no invitation to share intelligence, least of all one heading for our requisition office. Gather a group and defeat him among his garrison; he is an elite commander, and I expect a plan that accounts for everyone coming back.",
+      "title": "Party: Stonegrudge's Inquiry",
+      "text": "The captain's orders put War Commander Stonegrudge in charge of The Throng's hunt for the factors, from the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. A rival inquiry is no invitation to share intelligence, least of all one heading for our requisition office. Gather a party and defeat him among his garrison; he is an elite commander, and I expect a plan that accounts for everyone coming back.",
       "objectives": [
         {
           "type": "kill",
@@ -653,8 +653,8 @@
       "requires": [
         "accord_main_tally"
       ],
-      "title": "Group: The Collector Comes Due",
-      "text": "I entered Odren Vell in the Bastion's roll anyway, with the cause beside his name: \"Every name accounted for. His too.\" Gather a group of two or three and defeat Isquarre the Tithe-Eater at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, where the unsecured debt has given its collector a body of slag and ash. Secure the site before The Throng claims authority over it; our own account of this affair will remain under seal.",
+      "title": "Party: The Collector Comes Due",
+      "text": "I entered Odren Vell in the Bastion's roll anyway, with the cause beside his name: \"Every name accounted for. His too.\" Gather a party of two or three and defeat Isquarre the Tithe-Eater at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, where the unsecured debt has given its collector a body of slag and ash. Secure the site before The Throng claims authority over it; our own account of this affair will remain under seal.",
       "objectives": [
         {
           "type": "kill",
