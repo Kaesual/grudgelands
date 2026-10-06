@@ -960,7 +960,7 @@ class Model:
                             pick = [s for s in cands if area in s["tags"]]
                         else:
                             pick = ([s for s in cands if s["zone"] == qzone and s["tags"]] or
-                                    [s for s in cands if s["zone"] == qzone] or cands)
+                                    runtime_fallback(cands, qzone))
                         pick = sorted(pick, key=lambda s: (s["levels"], s["key"]))
                         selected += pick
                         shown = []
@@ -1174,6 +1174,17 @@ class Model:
             s["quest_targets"].sort(key=lambda q: (q["file"], q["quest"], q["path"]))
             s["quest_mentions"].sort(key=lambda q: (q["file"], q["path"]))
         self.sources.sort(key=lambda s: s["id"])
+
+
+def runtime_fallback(cands, zone):
+    """labels.lua Q.target_names for a role with no leader, no area and no
+    kind or camp in the quest's zone: grug_mobs.names.lookup(role, zone, nil)
+    (names_core.lua: the zone's slots, else the "world" slots, else every
+    slot of the role) gives a name only when those slots share one; two
+    names give none (the game's load check E-no-name)."""
+    scoped = ([s for s in cands if s["key"].split("/")[0] == zone] or
+              [s for s in cands if s["key"].split("/")[0] == "world"] or cands)
+    return scoped if len({s["name"] for s in scoped}) == 1 else []
 
 
 def natural(text):

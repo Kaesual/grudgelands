@@ -160,7 +160,8 @@ def check_objectives(model):
         for role in o["roles"]:
             mine = [s for s in selected if s["role"] == role]
             if not mine:
-                out.append(("E-no-bearer", where, "%s selects no slot" % role))
+                out.append(("E-no-bearer", where, "%s selects no slot (the game refuses to load: E-no-name)"
+                            % role))
                 continue
             groups = {s["key"].split("/")[1].split(".captain-")[0] if ".captain-" in s["key"] else s["name"]
                       for s in mine}
@@ -243,6 +244,18 @@ def self_test():
          {"f/camp.guard/L41-43": "Guard", "world/guard/L20-60": "Guard"},
          [obj(["guard"], ["f/camp.guard/L41-43"], {"guard": "Guard"})], {"E-garrison-name"}, None),
     ]
+    # The selector itself (inventory.runtime_fallback, labels.lua): a role
+    # met only in other zones under two names selects nothing.
+    import inventory as inv
+    two = [slot("x/bear/L5-6", "Bear"), slot("y/bear/L5-6", "Old Bear")]
+    one = [slot("x/bear/L5-6", "Bear"), slot("y/bear/L5-6", "Bear")]
+    cases.append(("a role of other zones under two names selects nothing", two,
+                  {s["key"]: s["name"] for s in two},
+                  [obj(["bear"], [s["key"] for s in inv.runtime_fallback(two, "z")], {"bear": "bear"})],
+                  {"E-no-bearer"}, None))
+    cases.append(("...under one name selects its slots", one, {s["key"]: s["name"] for s in one},
+                  [obj(["bear"], [s["key"] for s in inv.runtime_fallback(one, "z")], {"bear": "Bear"})],
+                  set(), None))
     failed = 0
     for label, slots, names, objectives, want, want_all in cases:
         m = model(slots, objectives, quest)
