@@ -15,7 +15,7 @@ the FOV kick) and lane CD (the overlay layout and the number variant).
    (Flatpak: `~/.var/app/org.luanti.luanti/.minetest/worlds/<world>/worldmods/grug_r40_probe`).
    The folder name should match the mod name.
 3. Start the world. The log shows
-   `[grug_r40_probe] loaded: /psetup /pdummy /pcharge /plead /pcd /pbench`.
+   `[grug_r40_probe] loaded, commands registered: /psetup /pdummy /pcharge /plead /pcd /pbench`.
 4. For the web build: the server the web client joins needs the same
    `worldmods` copy; the second client (to watch the `Body` lead from
    outside) joins the same server.

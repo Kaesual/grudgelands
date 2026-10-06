@@ -238,6 +238,11 @@ function course.build(player, key, mob)
 		key, shape.text, #nodes)
 end
 
+-- Remove the target and the striker; a course's nodes stay.
+function course.remove_targets(name)
+	remove_entities(state[name])
+end
+
 function course.start_of(name)
 	local st = state[name]
 	return st and st.start

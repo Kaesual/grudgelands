@@ -74,8 +74,8 @@ core.register_chatcommand("pdummy", {
 		if not player then return false, err end
 		local w = words(param)
 		if w[1] == "clear" then
-			P.course.clear(name)
-			return true, "targets removed"
+			P.course.remove_targets(name)
+			return true, "targets removed (a course stays until /psetup clear)"
 		end
 		local dist = tonumber(w[1]) or 8
 		local k = tonumber(w[1]) and 2 or 1
@@ -203,4 +203,8 @@ core.register_chatcommand("pbench", {
 	end,
 })
 
-core.log("action", "[" .. MOD .. "] loaded: /psetup /pdummy /pcharge /plead /pcd /pbench")
+local registered = {}
+for _, c in ipairs({"psetup", "pdummy", "pcharge", "plead", "pcd", "pbench"}) do
+	if core.registered_chatcommands[c] then registered[#registered + 1] = "/" .. c end
+end
+core.log("action", "[" .. MOD .. "] loaded, commands registered: " .. table.concat(registered, " "))
