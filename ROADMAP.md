@@ -47,7 +47,7 @@ Earlier delivery narratives are preserved in the
   named zone. An editable 80-node coastal shelf follows the analytic outer
   perimeter; immutable deep ocean begins beyond it. Two immutable channels
   separate the offshore level-60 dragon islands and keep them boat-only.
-  Deep ocean is deadly through the Kraken Guard, which never breaks off a
+  Deep ocean is deadly through the Kraken, which never breaks off a
   pursuit while it stands in open water and leashes normally everywhere else.
 - **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
   Summit are contested offshore dragon islands, each with a dragon lair and an
@@ -288,7 +288,7 @@ are open ([project status](docs/STATUS.md)).
 - [x] **Round 36 "The main questline" (WP9)**
   ([completion](docs/planning/round36-plan.md#completion-2026-10-05)), V1's
   last missing content: each faction's main line from its fortress
-  Warmaster in three chapters (41, 46, 53) and a group finale at 60 on the
+  Warmaster in three chapters (41, 46, 53) and a party finale at 60 on the
   approved [story bible](docs/planning/round36/story-bible.md), with the
   front climaxes folded in, a solo step behind enemy lines, the "use at a
   place" objective with quest objects, ten corrupted sub-types, a turn-in
@@ -318,16 +318,23 @@ are open ([project status](docs/STATUS.md)).
   Spawn sounds; after the user's rulings start zones that fight alone,
   the Salt Reef Lurker and a minimap always at normal quality; a player
   README with a changelog and version 0.37.0, and the agent and design
-  documents set to one owner per fact. Complete locally on 2026-10-06, not
-  pushed; no new world needed beyond Round 36's. Next: the GUI test,
-  together with Round 36's.
+  documents set to one owner per fact. Pushed 2026-10-06; no new world
+  needed beyond Round 36's. Next: the GUI test, together with Round 36's.
+- [x] **Round 38 "Mob names"**
+  ([completion](docs/planning/round38-mob-names-plan.md#completion-2026-10-06)):
+  short names with the zone's feel instead of signal words for every mob
+  slot, picked by the user on a preview page (536 of 950 slots renamed,
+  rules for words, signal words, Piglet and level stretches checked by
+  `check_rules.py --shipped`); a mob's name is the exact answer to which
+  mobs a quest means — a kill counts by the shown name, which fixes the
+  quest kill-credit bug the user met; quest texts on the new names, the
+  dragon whelps at level 60, the Kraken, twelve shorter item names and
+  Party instead of Group. Complete locally on 2026-10-06, not pushed; a
+  fresh world for the test. Next: the GUI test, together with Rounds 36
+  and 37.
 
 ### Remaining work
 
-- [ ] **Round 38 "Mob names"** ([draft plan](docs/planning/round38-mob-names-plan.md),
-  awaiting the user's answers): mob names with flair instead of signal
-  words, and with them the fix of the quest kill-credit bug (an area
-  objective counts only mobs that spawned in its region).
 - [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03):
   whether POIs, camps, outposts, mines and the PvP fortresses are placed per
   world instead of at fixed positions
@@ -341,8 +348,9 @@ are open ([project status](docs/STATUS.md)).
   [Round 33](BACKLOG.md#round-33-carry-overs),
   [Round 34](BACKLOG.md#round-34-carry-overs),
   [Round 35](BACKLOG.md#round-35-carry-overs),
-  [Round 36](BACKLOG.md#round-36-carry-overs) and
-  [Round 37](BACKLOG.md#round-37-carry-overs) carry-overs; Round 36 settled
+  [Round 36](BACKLOG.md#round-36-carry-overs),
+  [Round 37](BACKLOG.md#round-37-carry-overs) and
+  [Round 38](BACKLOG.md#round-38-carry-overs) carry-overs; Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
   [open questions](BACKLOG.md#audit-2026-10-open-questions),

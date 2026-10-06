@@ -2,9 +2,9 @@
 
 Coordinator: Claude (Opus 5.5), planned 2026-10-05 from the
 [October 2026 audit](../audit-2026-10/README.md). Status: **complete
-locally on 2026-10-06, not pushed** ([completion and GUI
-checklist](#completion-2026-10-06)); approved by the user on 2026-10-05
-("go").
+on 2026-10-06, pushed by the user the same day** (`db848931`;
+[completion and GUI checklist](#completion-2026-10-06)); approved by the
+user on 2026-10-05 ("go").
 
 A large fix round. It works through the audit's code packages P1–P5, the
 cheapest mapgen win (MGT-02) and the mapgen robustness package P7, the sound
@@ -414,8 +414,9 @@ needs one.
 ## Completion (2026-10-06)
 
 Every lane is merged on main, last lane F (`27e5db87`); lane D (this
-section and the status documents) follows. Nothing of Round 37 is pushed
-yet (origin/main is `211229e2`, the plan). Each code lane and each
+section and the status documents) follows. Nothing of Round 37 was pushed
+then (origin/main was `211229e2`, the plan); the user pushed it later on
+2026-10-06 together with the Round 38 plan (`db848931`). Each code lane and each
 non-trivial docs lane was independently reviewed by Opus once: DA, MB, IX,
 PO, DC, DD, SN and CB (both parts) said MERGE with notes, DB, DF, MG, MP,
 DE and F MERGE AFTER FIXES; every required fix was made before the merge,

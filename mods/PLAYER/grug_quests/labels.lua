@@ -145,8 +145,8 @@ function Q.names_levels(by_role, selected)
 	return lo and {lo, hi} or nil
 end
 
--- The short subject: "Wood Axe", "Any Tree", "Small Boar or Large Rat",
--- "Small Jungle Boar", "Elder Maren", "Light the signal fire". A kill's
+-- The short subject: "Wood Axe", "Any Tree", "Barrow Piglet or Grave Rat",
+-- "Yam Piglet", "Elder Maren", "Light the signal fire". A kill's
 -- subject is the names it counts (Q.target_names); a role the names file
 -- does not name reads as its entity.
 function Q.objective_subject(objective)
@@ -172,7 +172,7 @@ function Q.objective_subject(objective)
 	return table.concat(names, " or ")
 end
 
--- The task: "Bring Wood Axe", "Defeat Small Boar", "Travel to Elder Maren",
+-- The task: "Bring Wood Axe", "Defeat Barrow Piglet", "Travel to Elder Maren",
 -- "Light the signal fire at Saltgate Remnant".
 function Q.objective_action(objective)
 	if objective.type == "use" then
