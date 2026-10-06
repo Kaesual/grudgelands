@@ -86,6 +86,8 @@ do
 			return amount
 		end,
 		set_status = function() end,
+		-- Round 40: the casts play their effects through the particle helper.
+		particles = {play = function() end, facing = function() end},
 	}
 	grug_classes = {
 		get_talent_bonus = function() return 0 end,

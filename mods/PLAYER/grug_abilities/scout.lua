@@ -5,6 +5,13 @@ local ARROW_PROJECTILE = "scout_arrow"
 -- ARROW_SPEED; Loose rises linearly from ARROW_SPEED on a tap to
 -- LOOSE_FULL_SPEED at full draw (user ruling 2026-09-28).
 local ARROW_SPEED, LOOSE_FULL_SPEED = 40, 55
+-- The skill-arrow trail's tint per shot (particle_effects.lua "skill_arrow";
+-- Twin Shot's second arrow is Loose's and trails the same).
+local ARROW_TRAILS = {
+	loose = {effect = "skill_arrow", color = "#e9e4d0"},
+	snare_shot = {effect = "skill_arrow", color = "#79a65a"},
+	pinning_shot = {effect = "skill_arrow", color = "#4f8f67"},
+}
 local DRAW_STEP = 0.05
 -- The shortest full draw any talent/affix combination may reach, in seconds.
 -- The base draw time is owned by the bow definition (`_grug_bow_draw_time`,
@@ -126,6 +133,12 @@ grug_core.register_on_settled_outgoing_action(function(player, action_id, kind)
 	per_player[action_id] = nil
 	if pending.slow then apply_slow(pending.target, pending.slow, 0.5) end
 	if pending.root then apply_root(pending.target, pending.root) end
+	-- The landed shot's mark: Snare Shot's ring, Pinning Shot's drop.
+	local tpos = pending.target:get_pos()
+	if tpos then
+		if pending.slow then grug_core.particles.play("snare_hit", {target = tpos}) end
+		if pending.root then grug_core.particles.play("pinning_hit", {target = tpos}) end
+	end
 end)
 
 grug_projectiles.register(ARROW_PROJECTILE, {
@@ -218,6 +231,7 @@ local function launch(player, ability, count, effect, captured)
 			direction = common.direction,
 			speed = common.speed,
 			max_distance = common.max_distance,
+			trail = ARROW_TRAILS[ability],
 			data = {
 				damage = shot_damage,
 				origin = common.origin,
@@ -530,6 +544,7 @@ grug_abilities.register_ability({
 	description = "Gain 15 percentage points of dodge for 4 s.",
 	cast = function(user)
 		grug_classes.start_sidestep(user)
+		grug_core.particles.play("sidestep", {caster = user:get_pos()})
 		return true
 	end,
 })
@@ -554,6 +569,8 @@ grug_abilities.register_ability({
 				return false
 			end,
 		})
+		grug_core.particles.play("sprint", {caster = user:get_pos(),
+			dir = grug_core.particles.facing(user)})
 		return true
 	end,
 })
@@ -609,8 +626,12 @@ grug_abilities.register_ability({
 		end
 		local percent = grug_classes.get_talent_bonus(user,
 			"opening_multiplier")
+		local tpos = target:get_pos() -- before the punch (lethal invalidates refs)
+		-- The flash is the landed proc's post, never the preparation.
 		return math.floor(ctx.weapon_damage * percent / 100)
-			+ ctx.melee_bonus + ctx.melee_damage_add
+			+ ctx.melee_bonus + ctx.melee_damage_add, nil, function()
+				grug_core.particles.play("opening", {target = tpos})
+			end
 	end,
 })
 

@@ -1010,17 +1010,7 @@ end
 local CRIT_MULTIPLIER = 2
 
 local function crit_particles(pos)
-	core.add_particlespawner({
-		amount = 8,
-		time = 0.15,
-		-- NB `radius` is not a particlespawner field — spread via pos range.
-		pos = {min = vector.offset(pos, -0.4, 0.6, -0.4),
-			max = vector.offset(pos, 0.4, 1.4, 0.4)},
-		vel = {min = vector.new(-1, 1, -1), max = vector.new(1, 3, 1)},
-		exptime = {min = 0.3, max = 0.6},
-		size = {min = 2, max = 3},
-		texture = "default_item_smoke.png^[multiply:#ffd100",
-	})
+	grug_core.particles.play("crit", {target = pos})
 end
 
 --
@@ -1524,17 +1514,7 @@ if grug_core.register_status_source then
 end
 
 local function absorb_particles(pos)
-	core.add_particlespawner({
-		amount = 6,
-		time = 0.15,
-		-- NB `radius` is not a particlespawner field — spread via pos range.
-		pos = {min = vector.offset(pos, -0.4, 0.4, -0.4),
-			max = vector.offset(pos, 0.4, 1.4, 0.4)},
-		vel = {min = vector.new(-1, 0, -1), max = vector.new(1, 2, 1)},
-		exptime = {min = 0.2, max = 0.5},
-		size = {min = 1.5, max = 2.5},
-		texture = "default_item_smoke.png^[multiply:#ffe9a0",
-	})
+	grug_core.particles.play("absorb", {target = pos})
 end
 
 core.register_on_dieplayer(function(player)

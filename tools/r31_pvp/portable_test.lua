@@ -157,6 +157,8 @@ grug_zones = {
 }
 
 grug_core = {}
+-- Round 40: combat.lua plays its crit and absorb through the particle helper.
+grug_core.particles = {play = function() end}
 dofile(repo .. "/mods/CORE/grug_core/combat_ray.lua")
 dofile(repo .. "/mods/CORE/grug_core/combat.lua")
 dofile(repo .. "/mods/CORE/grug_core/death_messages.lua")

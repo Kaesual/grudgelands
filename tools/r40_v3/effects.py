@@ -9,6 +9,14 @@ at TARGET unless an emitter says otherwise; y is up. Sizes are the engine's
 microseconds; the preview page (V3) read data.json.
 
     python3 effects.py   # writes data.json
+
+Round 40 PX built this catalogue in grug_core/particle_effects.lua. Where the
+build differs, the emitters here carry the built numbers (marked "PX"): the
+exact rings that mark a radius (Ice Nova, Bellow) fly at the speed that lands
+on the radius, (R - 0.4) / life; Mighty Blow's kept blood keeps today's look
+(no fade); Heal adds Hearten's four motes on a splashed ally; Mend plays on
+the cast as well as on each tick. tools/r40_px/costs.py prints the
+per-effect and busy-fight totals of the build.
 """
 import json
 from pathlib import Path
@@ -110,14 +118,18 @@ def simple(why, emitters):
 T = TARGET
 # Today's blood on a landed Mighty Blow (kits.lua:393), kept with the slash.
 BLOOD6 = sp(6, 0.2, "#a01010", ("box", [-0.5, 0, -0.5], [0.5, 1, 0.5]), vel=[[-2, 0, -2], [2, 3, 2]],
-            exp=(0.3, 0.7), size=(1.5, 3.0), glow=10, tex="mobs_blood.png", at="target", kept=True)
+            exp=(0.3, 0.7), size=(1.5, 3.0), glow=10, tex="mobs_blood.png", at="target", kept=True,
+            fade=False)  # PX: today's look, no fade
+# PX: an exact ring that marks radius R flies at (R - r0) / life.
+NOVA_RING = (5 - 0.4) / 0.34
+BELLOW_RING = (8 - 0.4) / 0.4
 EFFECTS = [
     # ---------------------------------------------------------------- requested
     fx("ice_nova", "requested", "Ice Nova: frost ring", "Ice Nova (Frostbind: the same ring at the target)",
        "kits.lua:698 (the burst today)", "20 pale smoke puffs within 1 m; the 5 m radius is invisible",
        "A flat ring of pale-blue frost motes shoots out from the mage's feet to the 5 m edge in a third "
        "of a second and fades there, over a low mist that spreads more slowly.",
-       [single(48, "#bfe8ff", ("disc", [0, 0.25, 0], 0.4, True), radial=(14, 14), exp=(0.34, 0.34),
+       [single(48, "#bfe8ff", ("disc", [0, 0.25, 0], 0.4, True), radial=(NOVA_RING, NOVA_RING), exp=(0.34, 0.34),
                size=(2.5, 2.5), glow=10),
         sp(16, 0.1, "#e6f6ff", ("disc", [0, 0.15, 0], 0.6, False), radial=(3, 5), exp=(0.6, 0.8),
            size=(4.0, 6.0), glow=4)],
@@ -211,7 +223,7 @@ EFFECTS = [
        pace=1 / 8, pace_text="once per 8 s cooldown"),
     fx("bellow", "player", "Bellow: shout wave", "Taunt with the Bellow talent (6–10 m)", "kits.lua:468-479",
        "nothing", "An orange shock ring runs along the ground from the warrior out to the Bellow radius.",
-       [single(40, "#ff8a3a", ("disc", [0, 0.2, 0], 0.4, True), radial=(20, 20), exp=(0.4, 0.4),
+       [single(40, "#ff8a3a", ("disc", [0, 0.2, 0], 0.4, True), radial=(BELLOW_RING, BELLOW_RING), exp=(0.4, 0.4),
                size=(2.5, 2.5), glow=10)],
        simple=simple("One spawner of 20: less server time, a disc instead of an exact ring.",
                      [sp(20, 0.05, "#ff8a3a", ("disc", [0, 0.2, 0], 0.4, True), radial=(20, 21),
@@ -255,6 +267,9 @@ EFFECTS = [
     fx("heal", "player", "Heal: rising light", "Heal (Hearten: four motes on each splashed ally)",
        "kits.lua:865", "8 hearts", "Golden-green motes rise around the healed player.",
        [sp(12, 0.1, "#d8f0a0", ("disc", [0, 0.1, 0], 0.5, False), vel=[[0, 1.5, 0], [0, 2.5, 0]],
+           exp=(0.7, 0.9), size=(2.0, 2.5), glow=12, at="target"),
+        # PX: Hearten's splash, four motes on each splashed ally (one shown).
+        sp(4, 0.1, "#d8f0a0", ("disc", [0, 0.1, 0], 0.5, False), vel=[[0, 1.5, 0], [0, 2.5, 0]],
            exp=(0.7, 0.9), size=(2.0, 2.5), glow=12, at="target")],
        simple=simple("Today's hearts (8): no change.", [
            sp(8, 0.2, "#ff6080", ("box", [-0.5, 0, -0.5], [0.5, 1, 0.5]), vel=[[-2, 0, -2], [2, 3, 2]],
@@ -271,7 +286,7 @@ EFFECTS = [
        "5 hearts on the cast, 3 per tick", "Three golden-green motes rise from the player on each tick.",
        [single(3, "#d8f0a0", ("disc", [0, 0.6, 0], 0.4, False), vel=[[0, 1.2, 0], [0, 1.8, 0]], exp=(0.6, 0.8),
                size=(2.0, 2.5), glow=12, at="target")],
-       target=[4, 0, 0], pace=1 / 3, pace_text="one tick per 3 s while it runs",
+       target=[4, 0, 0], pace=5 / 12, pace_text="the cast and four ticks per 12 s while it runs (PX)",
        note="Three particles are cheaper as single particles than as a spawner."),
     fx("word_of_ruin", "player", "Word of Ruin: drain", "Word of Ruin", "kits.lua:1093-1122", "nothing",
        "Dark violet motes peel off the target and stream to the priest.",
