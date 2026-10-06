@@ -16,6 +16,14 @@
   **CC0**. Re-run the script to change them. The eating progress ring uses
   the same frames tinted at runtime (`^[multiply`, `crosshair.lua`).
 
+- `grug_abilities_cd_pie_00.png` … `_71.png` (96×96, the cooldown overlay's
+  72 cover frames, 50 % black clearing clockwise) and
+  `grug_abilities_cd_digit_0.png` … `_9.png`, `grug_abilities_cd_digit_m.png`
+  (28×36, the overlay's image digits: 5×7 glyphs, white with a black
+  outline): drawn procedurally by `tools/r40_cd/gen_cooldown_textures.py`
+  (Python standard library; own work, Round 40, 2026-10-06), **CC0**. Re-run
+  the script to change them (`--check` verifies them).
+
 ## Round 18 active-skill action icons — CC0
 
 All 22 `textures/grug_abilities_skill_*.png` files were generated for this
