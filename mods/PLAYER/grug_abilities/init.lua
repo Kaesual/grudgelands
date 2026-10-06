@@ -724,7 +724,7 @@ grug_abilities.CAST_SOUNDS = {
 -- The pose clip each skill plays when it really fires (Round 40, round40-plan
 -- §2.14; grug_visuals/poses.lua): a cast skill when try_cast succeeds, a swing
 -- skill's proc when it lands. A refused cast and the Strike fallback (a
--- swing without a proc) play none. Charge's pose follows its dash (lane CH,
+-- swing without a proc) play none. Charge's pose follows its dash (charge.lua,
 -- grug_visuals.start_pose/stop_pose), the Scout's drawn bow is scout.lua's.
 grug_abilities.SKILL_POSES = {
 	fireball = "cast1", smite = "cast1", word_of_ruin = "cast1",

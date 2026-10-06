@@ -345,7 +345,6 @@ core = {
 		timers[#timers + 1] = {at = now + t, f = f, args = {...}}
 	end,
 	dir_to_yaw = function(d) return math.atan2(-d.x, d.z) end,
-	global_exists = function(name) return rawget(_G, name) ~= nil end,
 	get_node_or_nil = function(pos)
 		local c = cell(pos.x, pos.y)
 		return {name = c == "solid" and "stone" or c == "water" and "water" or "air"}

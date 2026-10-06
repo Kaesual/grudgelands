@@ -370,7 +370,7 @@ nothing per step on the server and every client plays them. NPCs keep
   | `swing` | B, diagonal cut | a landed Mighty Blow, once | 301–314 | 315–334 |
   | `bow` | A, drawn and held | while the Scout's bow is drawn | 335–354 | 355–374 |
   | `block` | B, shield arm raised | Hold Ground | 375–394 | 395–414 |
-  | `charge` | B, shoulder first | the Charge dash (lane CH starts and stops it) | 415–434 | 435–454 |
+  | `charge` | B, shoulder first | the Charge dash (`charge.lua` starts it and stops it at the stop) | 415–434 | 435–454 |
   | `flinch` | A, light flinch | a hit taken, once | 455–464 | 465–484 |
 
   Held clips loop over 19 frames (the 20th repeats the first); `swing` and

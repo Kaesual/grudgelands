@@ -81,13 +81,8 @@ core.register_on_joinplayer(function(player)
 	set_lead(player, EPS_LEAD, 0)
 end)
 
-local function pose(player, on)
-	if not core.global_exists("grug_visuals") then return end
-	local f = on and grug_visuals.start_pose or grug_visuals.stop_pose
-	if f then f(player, "charge") end
-end
-
--- Lead, FOV kick and the charge pose (lane AN1's grug_visuals seam).
+-- Lead, FOV kick and the charge pose (grug_visuals/poses.lua, held until
+-- the stop).
 local function effects_start(run, player)
 	if run.plan.dist >= LEAD_FROM then
 		set_lead(player, lead_units(player), LEAD_IN)
@@ -95,7 +90,7 @@ local function effects_start(run, player)
 	end
 	player:set_fov(FOV, true, FOV_IN)
 	run.fov = true
-	pose(player, true)
+	grug_visuals.start_pose(player, "charge")
 end
 
 local function effects_end(run, player)
@@ -113,7 +108,7 @@ local function effects_end(run, player)
 			if p and not (now and now.fov) then p:set_fov(0, false, 0) end
 		end)
 	end
-	pose(player, false)
+	grug_visuals.stop_pose(player, "charge")
 end
 
 -- Dust along a run segment, delayed by the client's drawn lag so it rises
