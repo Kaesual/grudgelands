@@ -222,12 +222,11 @@ conversation, a finished use), the quest posts one line with every objective as
 "<name> n/m" ("Small Boar 3/10"), replacing that quest's previous line.
 Accepting a quest and falling item counts post nothing; nothing goes to chat.
 
-Kill objectives name each target as the player sees the mob where it is met
-(Round 32): its zone display name ("Small Jungle Boar" in the Kapok Cradle),
-taken from a named leader's zone, else the objective's area's zone, else the
-quest's zone; the dialogue, the quest log, the tracker and the message feed
-share that label. `validate.py` fails a kill objective whose targets are met
-only in another zone under another name (`E-label-name`).
+Kill objectives name each target by the name the mob shows (Round 38, see
+"The quest-name guarantee" below): the names of the slots the objective's
+roles and area select ("Small Jungle Boar" in the Kapok Cradle); the
+dialogue, the quest log, the tracker and the message feed share that label.
+A PvP camp's captain reads as he is named on this world (his camp's race).
 Item objectives show the concise item name, not description stat/durability
 lines; an item objective's named source must really drop that item at the
 levels it is met (`E-item-source-drop`).
@@ -243,7 +242,10 @@ area that role's levels there (not the whole kind's); the role's levels in
 the kinds and camps of the quest zone's recipe; its catalogue levels within
 the quest level ±3; a base mob (no catalogue row) in a zone without a recipe:
 the zone's level band within the quest level ±3 (a base mob adds nothing in a
-recipe zone). The objective shows the union over its roles. An item
+recipe zone). The objective shows the union over its roles; since Round 38
+a kill objective also adds the levels of every slot that bears its names
+(every such mob counts). The load check's level fit (`E-level-fit`) stays on
+the selected levels. An item
 objective shows the range of its quest drops' roles and of its named source
 (below); plain gathering,
 crafting and travel objectives show none. The ranges are computed once at
@@ -251,15 +253,33 @@ load. The HUD tracker keeps its compact line without a range: added, it
 would cut 22 of the 204 shipped tracker lines at the 38-character width
 instead of 2.
 
+## The quest-name guarantee (Round 38)
+
+For the player, a mob's name is the exact answer to "which mobs does this
+quest mean?" (round38-mob-names-plan.md §2.1). Every mob takes its name from
+`grug_mobs/data/names.json`, one name per slot (`<zone>/<source>/L<lo>-<hi>`,
+written by `tools/r38_b1/gen_names.py`): by its source (its role, a rare's
+`rare.<id>`, a garrison post's `<settlement key>.<post>`), its zone (its
+spawn tag's, else its first activation position's) and its level, at every
+activation and level change. A kill objective or quest drop resolves its
+roles and area once at load into the names of the slots they select
+(`labels.lua` `Q.target_names`); a kill counts when the mob's name is one of
+them (`state.lua` `mob_counts`), whatever its area, level or spawn place, and
+no mob of another name counts. Item objectives name items; their mobs are
+guidance (the user, 2026-10-06). A role that selects no name stops the load
+(`E-no-name`); `tools/r38_names/guarantee.py --check` proves the rest over
+every slot and quest (overlapping names, a critter or a town guard sharing a
+counted name, names the text never says).
+
 ## Objectives (Round 28)
 
 - **Kill**: a list of roles (entity `grug_mobs:<role>`; a sub-type is its own
   role, so a quest meaning a whole family lists its roles) and a count,
-  optionally limited to one area: a kind or a camp of the zone's spawn
-  recipe (`zone_id/kind_id`, [spawn_regions.md](spawn_regions.md)). An
-  area-limited objective counts a kill only when the mob carries that tag
-  (set when it spawned from a region of that kind or from that camp), never
-  by where it died. A named leader stands at a rule-placed spot without an
+  optionally with one area: a kind or a camp of the zone's spawn recipe
+  (`zone_id/kind_id`, [spawn_regions.md](spawn_regions.md)). The roles and
+  the area **select names**, they do not limit the count: the objective
+  counts every mob that shows one of the selected names, wherever it spawned
+  (Round 38, below). A named leader stands at a rule-placed spot without an
   area; its kill objective names no area. In a zone with a spawn recipe only
   the recipe's roles appear on the surface; a kill objective there whose
   roles the recipe never spawns and none of which is a leader (a leader of
@@ -279,7 +299,10 @@ instead of 2.
   faction's guard and captain (a camp, at the camp's band; the captain at
   its top) or guard, bodyguard and General (a fortress); a guard or captain
   is a kill target only there, and only for a quest whose giver serves the
-  other faction (`E-garrison-faction`). Own-faction kills never count.
+  other faction (`E-garrison-faction`). Own-faction kills never count. A
+  garrison's guards carry their post's name (never the town guards'
+  "Accord Guard"/"Throng Guard"), its captain his race's name; a quest text
+  writes the captain as `{captain:<camp key>}`.
 - **Travel**: one conversation, the quest's only objective, credited on
   accept (Ruling 39): the destination NPC shows its yellow "?" at once and the
   HUD reads "Travel to <NPC>". The turn-in still needs the visit.
@@ -331,7 +354,8 @@ instead of 2.
   line per objective, the HUD one compact line.
 - **Quest-only drops** (`quest_drops`): an item that drops only while the
   quest is active and the player still needs it, from the listed roles
-  (optionally one area), with a 1-in-N chance. It is rolled **per eligible
+  (optionally one area; like a kill, they select the names it drops from),
+  with a 1-in-N chance. It is rolled **per eligible
   participant** who has the quest (the participants of kill credit), goes
   straight into that player's inventory or bags (dropped at the feet when
   full) and posts a loot line to the message feed, so a group never competes
@@ -425,6 +449,7 @@ regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
 | `{dir_of:P:T}` | "southeast of Highcourt", "near Highcourt" | any target, from a named place |
 | `{zone_area:T}` | "in the southeast of Dawnmere Fields", "in the heart of Dawnmere Fields" | open kinds spread over many patches |
 | `{name:T}` | "Dawnmere Meadows", "Crumb" | the display name of a kind, camp or leader |
+| `{captain:T}` | "Captain Vrakk" | a PvP camp's captain (T its settlement key) as named on this world (Round 38) |
 
 - `T` is a kind or camp of a spawn recipe, a leader role, a PvP POI (a
   fortress or Battlegrounds camp by its settlement key, Round 31), or a
