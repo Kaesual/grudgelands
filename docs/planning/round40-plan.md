@@ -119,6 +119,32 @@ The user (2026-10-06):
     number marked as an estimate. A measurement with real clients under
     Xvfb runs only if a number later looks critical.
 
+### Wave 1 picks (the user, 2026-10-06)
+
+13. **Cooldown overlay (V1):** `N3 B1 P1 F0 U1`: the number as image digits
+    that scale with the icon; the cover darkens the whole square (P1); no
+    ready signal; the update pass every 0.1 s, writing only on a visible
+    change (frame or number).
+14. **Poses (V2):** `cast1=A cast2=B swing=B bow=A block=B charge=B
+    flinch=A head=H1` from `tools/r40_an/poses.json` (reviewed: the frame
+    conversion is exact). H1 is the pitch-only head look (one Head override,
+    5° steps, a rate cap of about four updates per second per player); the
+    user preferred H2 at first, then dropped it as not worth its extra
+    overrides. Every pose switch blends over about 0.1–0.15 s (the arms would
+    otherwise start in the wrong place); keeping the walk phase with
+    `play_animation`'s `start_frame` on top is AN1's call by look. The web
+    build is Luanti 5.17.0 as well.
+15. **Particles (V3):** take all, the main proposal of every card, single
+    colour, no art sprite yet. The accepted catalogue is
+    `tools/r40_v3/effects.py` (emitters in engine terms; `data.json` its
+    costs). Its review fixed the model: an `attract` strength is a rate (speed
+    = strength × distance, set at birth; with `die_on_contact` the life is at
+    most 1/strength), a spawner's `radius` gives a disc denser at the edge,
+    not a ring, so exact rings that mark a radius are single particles placed
+    by Lua; a spawner costs about 0.67 KB per receiver whatever its amount,
+    single particles 10–40 B each compressed; `grug_particle_scale` lowers
+    spawner amounts (what clients draw) but not their bytes.
+
 ## 3. Research results (2026-10-06, verified at the cited lines)
 
 ### 3.1 Cooldown overlay

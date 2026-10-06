@@ -1,0 +1,11122 @@
+{
+ "effects": [
+  {
+   "id": "ice_nova",
+   "group": "requested",
+   "name": "Ice Nova: frost ring",
+   "skill": "Ice Nova (Frostbind: the same ring at the target)",
+   "hook": "kits.lua:698 (the burst today)",
+   "today": "20 pale smoke puffs within 1 m; the 5 m radius is invisible",
+   "look": "A flat ring of pale-blue frost motes shoots out from the mage's feet to the 5 m edge in a third of a second and fades there, over a low mist that spreads more slowly.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 48,
+     "time": 0.0,
+     "color": "#bfe8ff",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.25,
+       0
+      ],
+      0.4,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.34,
+      0.34
+     ],
+     "size": [
+      2.5,
+      2.5
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1,
+     "radial": [
+      14,
+      14
+     ]
+    },
+    {
+     "kind": "spawner",
+     "n": 16,
+     "time": 0.1,
+     "color": "#e6f6ff",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.15,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.15,
+        0
+       ],
+       [
+        0,
+        0.15,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.6,
+       0,
+       0.6
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.8
+     ],
+     "size": [
+      4.0,
+      6.0
+     ],
+     "glow": 4,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e6f6ff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "radial": [
+      3,
+      5
+     ],
+     "pull": {
+      "origin": [
+       0,
+       0.15,
+       0
+      ],
+      "strength": -8.333333333333334,
+      "strength_min": -5.0,
+      "kill": false
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": {
+    "why": "One spawner of 24: fewer bytes and much less server time, but a spawner fills the ring into a disc that is denser at the edge, and no mist.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 24,
+      "time": 0.05,
+      "color": "#bfe8ff",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.25,
+        0
+       ],
+       0.4,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.25,
+         0
+        ],
+        [
+         0,
+         0.25,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        0.4,
+        0,
+        0.4
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.33,
+       0.36
+      ],
+      "size": [
+       2.5,
+       3.5
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false,
+      "radial": [
+       14,
+       15
+      ],
+      "pull": {
+       "origin": [
+        0,
+        0.25,
+        0
+       ],
+       "strength": -37.5,
+       "strength_min": -35.0,
+       "kill": false
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 24,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 12,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 6,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": "Snowflake sprite (VoxeLibre weather_pack_snow_snowflake1/2, 5\u00d75, CC BY-SA 3.0 TeddyDesTodes) for the ring; draconis ice motes (3\u00d73, MIT) as glitter.",
+   "marker": {
+    "radius": 5
+   },
+   "pace": 0.08333333333333333,
+   "pace_text": "once per 12 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "The ring is 48 single particles placed by Lua on an exact circle, all at the same speed: about the bytes of one spawner, which could only make a disc.",
+   "cost": {
+    "1.0": {
+     "near_wire": 1432,
+     "all_wire": 0,
+     "lua_us": 31.059999999999995,
+     "near_us": 32.135336687105394,
+     "all_us": 0.0,
+     "player_check_us": 0.48,
+     "particles": 64,
+     "spawners": 1,
+     "singles": 48
+    },
+    "0.5": {
+     "near_wire": 1148,
+     "all_wire": 0,
+     "lua_us": 16.659999999999997,
+     "near_us": 25.10647002356127,
+     "all_us": 0.0,
+     "player_check_us": 0.24,
+     "particles": 32,
+     "spawners": 1,
+     "singles": 24
+    },
+    "0.25": {
+     "near_wire": 1025,
+     "all_wire": 0,
+     "lua_us": 9.459999999999999,
+     "near_us": 13.409503344508508,
+     "all_us": 0.0,
+     "player_check_us": 0.12,
+     "particles": 16,
+     "spawners": 1,
+     "singles": 12
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 606,
+     "raw": 9264,
+     "wire": 696,
+     "datagrams": 2,
+     "lua_us": 28.799999999999997,
+     "per_rx_us": 24.508970018336548,
+     "per_player_check_us": 0.48,
+     "zstd_us": 10.10897001833655
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 20,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "fireball",
+   "group": "requested",
+   "name": "Fireball: fiery splash",
+   "skill": "Fireball impact (Brand's 2 m splash reuses it)",
+   "hook": "kits.lua:529 (on_hit)",
+   "today": "nothing on impact",
+   "look": "Embers spray out of the impact point in a half dome and fall back, with a short dark smoke puff.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 28,
+     "time": 0.05,
+     "color": "#ff8a2a",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.2,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.2,
+        0.8,
+        -0.2
+       ],
+       [
+        0.2,
+        1.2,
+        0.2
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -5,
+       1,
+       -5
+      ],
+      [
+       5,
+       6,
+       5
+      ]
+     ],
+     "acc": [
+      0,
+      -12,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.8
+     ],
+     "size": [
+      1.0,
+      2.0
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "mobs_fire_particle.png",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 10,
+     "time": 0.1,
+     "color": "#3a2a22",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.4,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.4,
+        0.6,
+        -0.4
+       ],
+       [
+        0.4,
+        1.4,
+        0.4
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -0.6,
+       0.5,
+       -0.6
+      ],
+      [
+       0.6,
+       1.5,
+       0.6
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.8,
+      1.2
+     ],
+     "size": [
+      3.0,
+      5.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#3a2a22",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "The embers alone, 20 of them: one spawner instead of two.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 20,
+      "time": 0.05,
+      "color": "#ff8a2a",
+      "spawn": [
+       "sphere",
+       [
+        0,
+        1.0,
+        0
+       ],
+       0.2,
+       false
+      ],
+      "engine": {
+       "pos": [
+        [
+         -0.2,
+         0.8,
+         -0.2
+        ],
+        [
+         0.2,
+         1.2,
+         0.2
+        ]
+       ],
+       "tween": null,
+       "radius": null
+      },
+      "vel": [
+       [
+        -5,
+        1,
+        -5
+       ],
+       [
+        5,
+        6,
+        5
+       ]
+      ],
+      "acc": [
+       0,
+       -12,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.4,
+       0.8
+      ],
+      "size": [
+       1.5,
+       2.5
+      ],
+      "glow": 14,
+      "attached": false,
+      "texture": "mobs_fire_particle.png",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 653,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 20,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 653,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 10,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 653,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": "draconis_fire_animated (16\u00d7128, 8 frames, MIT) for the splash.",
+   "marker": null,
+   "pace": 0.6666666666666666,
+   "pace_text": "about one cast per 1.5 s (no cooldown)",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1324,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 38,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1324,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 19,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1324,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 10,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 563,
+     "wire": 653,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "smite",
+   "group": "requested",
+   "name": "Smite: holy fall",
+   "skill": "Smite",
+   "hook": "kits.lua:793-794 (beam and burst today)",
+   "today": "a line of ~2 single particles per metre from priest to target plus a 12-mote burst",
+   "look": "No projectile. Yellow-white motes appear in a ring 2.5 m above the target, slam down onto it and vanish on contact; a small flash ring at its feet.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 24,
+     "time": 0.12,
+     "color": "#fff4c2",
+     "spawn": [
+      "disc",
+      [
+       0,
+       3.3,
+       0
+      ],
+      0.9,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        3.3,
+        0
+       ],
+       [
+        0,
+        3.3,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.9,
+       0,
+       0.9
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.25,
+      0.3
+     ],
+     "size": [
+      2.0,
+      3.0
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#fff4c2",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "pull": {
+      "origin": [
+       0,
+       1.0,
+       0
+      ],
+      "strength": 5,
+      "strength_min": 5,
+      "kill": true
+     },
+     "attract": "point"
+    },
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.05,
+     "color": "#ffe9a0",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.15,
+       0
+      ],
+      0.3,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.15,
+        0
+       ],
+       [
+        0,
+        0.15,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.3,
+       0,
+       0.3
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.2,
+      0.3
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ffe9a0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "radial": [
+      4,
+      5
+     ],
+     "pull": {
+      "origin": [
+       0,
+       0.15,
+       0
+      ],
+      "strength": -16.666666666666668,
+      "strength_min": -13.333333333333334,
+      "kill": false
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": {
+    "why": "The fall alone, 16 motes: one spawner.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 16,
+      "time": 0.12,
+      "color": "#fff4c2",
+      "spawn": [
+       "disc",
+       [
+        0,
+        3.3,
+        0
+       ],
+       0.8,
+       false
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         3.3,
+         0
+        ],
+        [
+         0,
+         3.3,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        0.8,
+        0,
+        0.8
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.25,
+       0.3
+      ],
+      "size": [
+       2.5,
+       3.5
+      ],
+      "glow": 14,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#fff4c2",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "pull": {
+       "origin": [
+        0,
+        1.0,
+        0
+       ],
+       "strength": 5,
+       "strength_min": 5,
+       "kill": true
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 16,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 8,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 4,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": "A small four-point holy spark (art order).",
+   "marker": null,
+   "pace": 0.5,
+   "pace_text": "once per 2 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "Replaces today's beam (about 24 single particles at 12 m) and burst.",
+   "cost": {
+    "1.0": {
+     "near_wire": 1472,
+     "all_wire": 0,
+     "lua_us": 4.52,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 36,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1472,
+     "all_wire": 0,
+     "lua_us": 4.52,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 18,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1472,
+     "all_wire": 0,
+     "lua_us": 4.52,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 9,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 1013,
+    "all_wire": 0,
+    "lua_us": 16.279999999999998,
+    "near_us": 17.125169970296945,
+    "all_us": 0.0,
+    "player_check_us": 0.24,
+    "particles": 36,
+    "spawners": 1,
+    "singles": 24
+   }
+  },
+  {
+   "id": "mighty_blow",
+   "group": "requested",
+   "name": "Mighty Blow: red slash",
+   "skill": "Mighty Blow (a landed swing)",
+   "hook": "kits.lua:392 (post)",
+   "today": "6 blood drops on the target (kept)",
+   "look": "A diagonal trail of red particles hangs in the air in front of the warrior, from upper right to lower left, about 1.6 m long; it does not move and fades within a third of a second.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 20,
+     "time": 0.08,
+     "color": "#d8263a",
+     "spawn": [
+      "line",
+      [
+       1.2,
+       2.0,
+       -0.5
+      ],
+      [
+       1.2,
+       0.6,
+       0.6
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        1.2,
+        2.0,
+        -0.5
+       ],
+       [
+        1.2,
+        0.6,
+        0.6
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#d8263a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 6,
+     "time": 0.2,
+     "color": "#a01010",
+     "spawn": [
+      "box",
+      [
+       -0.5,
+       0,
+       -0.5
+      ],
+      [
+       0.5,
+       1,
+       0.5
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.5,
+        0,
+        -0.5
+       ],
+       [
+        0.5,
+        1,
+        0.5
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -2,
+       0,
+       -2
+      ],
+      [
+       2,
+       3,
+       2
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.7
+     ],
+     "size": [
+      1.5,
+      3.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "mobs_blood.png",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": true
+    }
+   ],
+   "simple": {
+    "why": "Ten bigger motes: the same single spawner, half the particles on screen (the server cost does not change: a spawner's packet is the same size).",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 10,
+      "time": 0.08,
+      "color": "#d8263a",
+      "spawn": [
+       "line",
+       [
+        1.2,
+        2.0,
+        -0.5
+       ],
+       [
+        1.2,
+        0.6,
+        0.6
+       ]
+      ],
+      "engine": {
+       "pos": null,
+       "tween": [
+        [
+         1.2,
+         2.0,
+         -0.5
+        ],
+        [
+         1.2,
+         0.6,
+         0.6
+        ]
+       ],
+       "radius": null
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.4
+      ],
+      "size": [
+       4.0,
+       5.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#d8263a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     },
+     {
+      "kind": "spawner",
+      "n": 6,
+      "time": 0.2,
+      "color": "#a01010",
+      "spawn": [
+       "box",
+       [
+        -0.5,
+        0,
+        -0.5
+       ],
+       [
+        0.5,
+        1,
+        0.5
+       ]
+      ],
+      "engine": {
+       "pos": [
+        [
+         -0.5,
+         0,
+         -0.5
+        ],
+        [
+         0.5,
+         1,
+         0.5
+        ]
+       ],
+       "tween": null,
+       "radius": null
+      },
+      "vel": [
+       [
+        -2,
+        0,
+        -2
+       ],
+       [
+        2,
+        3,
+        2
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.7
+      ],
+      "size": [
+       1.5,
+       3.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "mobs_blood.png",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": true
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 1316,
+      "all_wire": 0,
+      "lua_us": 3.76,
+      "near_us": 6.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 16,
+      "spawners": 2,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 1316,
+      "all_wire": 0,
+      "lua_us": 3.76,
+      "near_us": 6.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 8,
+      "spawners": 2,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 1316,
+      "all_wire": 0,
+      "lua_us": 3.76,
+      "near_us": 6.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 2,
+      "singles": 0
+     }
+    }
+   },
+   "art": "A stretched slash-streak sprite (art order).",
+   "marker": null,
+   "pace": 0.3333333333333333,
+   "pace_text": "about every 3 s (rage-bound)",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1316,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 26,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1316,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 13,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1316,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 7,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 555,
+     "wire": 645,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 645,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 6,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "skill_arrow",
+   "group": "requested",
+   "name": "Skill arrow trail",
+   "skill": "Loose, Snare Shot, Pinning Shot (and Twin Shot)",
+   "hook": "grug_projectiles spawn_one after add_entity (opt-in per skill)",
+   "today": "nothing",
+   "look": "A thin trail of motes behind the arrow, tinted per skill (Loose pale, Snare Shot green, Pinning Shot teal); the motes drift a little and fade within 0.4 s.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 30,
+     "time": 0.55,
+     "color": "#e9e4d0",
+     "spawn": [
+      "line",
+      [
+       0.3,
+       1.45,
+       0
+      ],
+      [
+       25,
+       1.2,
+       0
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        0.3,
+        1.45,
+        0
+       ],
+       [
+        25,
+        1.2,
+        0
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       -0.2,
+       -0.1,
+       -0.2
+      ],
+      [
+       0.2,
+       0.2,
+       0.2
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.45
+     ],
+     "size": [
+      1.0,
+      1.5
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e9e4d0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "Twelve motes along the same line.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 12,
+      "time": 0.55,
+      "color": "#e9e4d0",
+      "spawn": [
+       "line",
+       [
+        0.3,
+        1.45,
+        0
+       ],
+       [
+        25,
+        1.2,
+        0
+       ]
+      ],
+      "engine": {
+       "pos": null,
+       "tween": [
+        [
+         0.3,
+         1.45,
+         0
+        ],
+        [
+         25,
+         1.2,
+         0
+        ]
+       ],
+       "radius": null
+      },
+      "vel": [
+       [
+        -0.2,
+        -0.1,
+        -0.2
+       ],
+       [
+        0.2,
+        0.2,
+        0.2
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.45
+      ],
+      "size": [
+       1.5,
+       2.0
+      ],
+      "glow": 6,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#e9e4d0",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 12,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 6,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 3,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 1,
+   "pace_text": "about one shot per second",
+   "target": [
+    25,
+    0,
+    0
+   ],
+   "note": "Arrows fly 40-55 m/s, so the trail's spawner lives about half a second. Built as an unattached spawner along the launch line (time = flight time, at most 1 s), so only nearby players receive it. A spawner attached to the arrow follows a curving flight exactly but goes to every player on the server.",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 30,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 15,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 8,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "charge",
+   "group": "player",
+   "name": "Charge: dust trail and impact",
+   "skill": "Charge (the dash)",
+   "hook": "CH's carrier (wave 2)",
+   "today": "nothing (today a teleport)",
+   "look": "Dust kicked up along the ground path of the dash, and on arrival a low dust ring around the target.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 18,
+     "time": 0.5,
+     "color": "#b8a27a",
+     "spawn": [
+      "line",
+      [
+       0,
+       0.1,
+       0
+      ],
+      [
+       4.7,
+       0.1,
+       0
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        4.7,
+        0.1,
+        0
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       -0.5,
+       0.3,
+       -0.5
+      ],
+      [
+       0.5,
+       1.2,
+       0.5
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.7
+     ],
+     "size": [
+      2.5,
+      4.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 14,
+     "time": 0.05,
+     "color": "#b8a27a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      0.5,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.5,
+       0,
+       0.5
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.45
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "radial": [
+      4,
+      5
+     ],
+     "pull": {
+      "origin": [
+       0,
+       0.1,
+       0
+      ],
+      "strength": -10.0,
+      "strength_min": -8.0,
+      "kill": false
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": {
+    "why": "Only the arrival ring: one spawner.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 14,
+      "time": 0.05,
+      "color": "#b8a27a",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.1,
+        0
+       ],
+       0.5,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.1,
+         0
+        ],
+        [
+         0,
+         0.1,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        0.5,
+        0,
+        0.5
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.45
+      ],
+      "size": [
+       3.0,
+       4.0
+      ],
+      "glow": 0,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#b8a27a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "radial": [
+       4,
+       5
+      ],
+      "pull": {
+       "origin": [
+        0,
+        0.1,
+        0
+       ],
+       "strength": -10.0,
+       "strength_min": -8.0,
+       "kill": false
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 14,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 7,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 4,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.1,
+   "pace_text": "once per 10 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "The path is known at the cast, so the trail is an unattached spawner along it (nearby players only).",
+   "cost": {
+    "1.0": {
+     "near_wire": 1407,
+     "all_wire": 0,
+     "lua_us": 4.14,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 32,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1407,
+     "all_wire": 0,
+     "lua_us": 4.14,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 16,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1407,
+     "all_wire": 0,
+     "lua_us": 4.14,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 9,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "hamstring",
+   "group": "player",
+   "name": "Hamstring: leg cut",
+   "skill": "Hamstring (landed)",
+   "hook": "kits.lua:450 (blood today)",
+   "today": "4 blood drops",
+   "look": "A short low red cut across the target's legs at shin height.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 6,
+     "time": 0.0,
+     "color": "#c0303f",
+     "spawn": [
+      "line",
+      [
+       -0.4,
+       0.4,
+       -0.3
+      ],
+      [
+       0.4,
+       0.35,
+       0.3
+      ]
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.25,
+      0.3
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 8,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#c0303f",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.16666666666666666,
+   "pace_text": "once per 6 s charge",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 254,
+     "all_wire": 0,
+     "lua_us": 3.5999999999999996,
+     "near_us": 7.77236668302988,
+     "all_us": 0.0,
+     "player_check_us": 0.06,
+     "particles": 6,
+     "spawners": 0,
+     "singles": 6
+    },
+    "0.5": {
+     "near_wire": 188,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 6.734536665740112,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.25": {
+     "near_wire": 168,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 6.340600026911124,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 215,
+     "raw": 1158,
+     "wire": 254,
+     "datagrams": 1,
+     "lua_us": 3.5999999999999996,
+     "per_rx_us": 7.7849699997964,
+     "per_player_check_us": 0.06,
+     "zstd_us": 5.9849699997964
+    }
+   ],
+   "today_cost": {
+    "near_wire": 645,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 4,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "taunt",
+   "group": "player",
+   "name": "Taunt: mark above the target",
+   "skill": "Taunt (single target)",
+   "hook": "kits.lua:495",
+   "today": "6 orange smoke puffs",
+   "look": "A few orange motes jump up above the target's head and hang there briefly.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 6,
+     "time": 0.0,
+     "color": "#ff8a3a",
+     "spawn": [
+      "box",
+      [
+       -0.2,
+       2.1,
+       -0.2
+      ],
+      [
+       0.2,
+       2.3,
+       0.2
+      ]
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -0.2,
+       1.2,
+       -0.2
+      ],
+      [
+       0.2,
+       2.0,
+       0.2
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.5,
+      0.7
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ff8a3a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.125,
+   "pace_text": "once per 8 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 338,
+     "all_wire": 0,
+     "lua_us": 3.5999999999999996,
+     "near_us": 8.178666682091231,
+     "all_us": 0.0,
+     "player_check_us": 0.06,
+     "particles": 6,
+     "spawners": 0,
+     "singles": 6
+    },
+    "0.5": {
+     "near_wire": 230,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 6.761736669127519,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.25": {
+     "near_wire": 193,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 6.396766636194661,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 299,
+     "raw": 1158,
+     "wire": 338,
+     "datagrams": 1,
+     "lua_us": 3.5999999999999996,
+     "per_rx_us": 8.188403320064147,
+     "per_player_check_us": 0.06,
+     "zstd_us": 6.388403320064147
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 6,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "bellow",
+   "group": "player",
+   "name": "Bellow: shout wave",
+   "skill": "Taunt with the Bellow talent (6\u201310 m)",
+   "hook": "kits.lua:468-479",
+   "today": "nothing",
+   "look": "An orange shock ring runs along the ground from the warrior out to the Bellow radius.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 40,
+     "time": 0.0,
+     "color": "#ff8a3a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      0.4,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.4
+     ],
+     "size": [
+      2.5,
+      2.5
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ff8a3a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1,
+     "radial": [
+      20,
+      20
+     ]
+    }
+   ],
+   "simple": {
+    "why": "One spawner of 20: less server time, a disc instead of an exact ring.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 20,
+      "time": 0.05,
+      "color": "#ff8a3a",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.2,
+        0
+       ],
+       0.4,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.2,
+         0
+        ],
+        [
+         0,
+         0.2,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        0.4,
+        0,
+        0.4
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.38,
+       0.42
+      ],
+      "size": [
+       3.0,
+       4.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#ff8a3a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false,
+      "radial": [
+       20,
+       21
+      ],
+      "pull": {
+       "origin": [
+        0,
+        0.2,
+        0
+       ],
+       "strength": -52.5,
+       "strength_min": -50.0,
+       "kill": false
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 20,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 10,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "radius": 8
+   },
+   "pace": 0.125,
+   "pace_text": "once per 8 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 616,
+     "all_wire": 0,
+     "lua_us": 24.0,
+     "near_us": 21.013270027935505,
+     "all_us": 0.0,
+     "player_check_us": 0.4,
+     "particles": 40,
+     "spawners": 0,
+     "singles": 40
+    },
+    "0.5": {
+     "near_wire": 371,
+     "all_wire": 0,
+     "lua_us": 12.0,
+     "near_us": 13.577166688861325,
+     "all_us": 0.0,
+     "player_check_us": 0.2,
+     "particles": 20,
+     "spawners": 0,
+     "singles": 20
+    },
+    "0.25": {
+     "near_wire": 265,
+     "all_wire": 0,
+     "lua_us": 6.0,
+     "near_us": 9.383403330498066,
+     "all_us": 0.0,
+     "player_check_us": 0.1,
+     "particles": 10,
+     "spawners": 0,
+     "singles": 10
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 526,
+     "raw": 7720,
+     "wire": 616,
+     "datagrams": 2,
+     "lua_us": 24.0,
+     "per_rx_us": 21.20406998678421,
+     "per_player_check_us": 0.4,
+     "zstd_us": 9.204069986784209
+    }
+   ]
+  },
+  {
+   "id": "hold_ground",
+   "group": "player",
+   "name": "Hold Ground: golden stance",
+   "skill": "Hold Ground",
+   "hook": "kits.lua:1037",
+   "today": "14 tan smoke puffs",
+   "look": "A golden ring of motes at the warrior's feet that rises slowly.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 24,
+     "time": 0.1,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      1.0,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       1.0,
+       0,
+       1.0
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0.5,
+       0
+      ],
+      [
+       0,
+       1.2,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.7,
+      0.9
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "Twelve motes.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 12,
+      "time": 0.1,
+      "color": "#e8c06a",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.1,
+        0
+       ],
+       1.0,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.1,
+         0
+        ],
+        [
+         0,
+         0.1,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        1.0,
+        0,
+        1.0
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0.5,
+        0
+       ],
+       [
+        0,
+        1.2,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.7,
+       0.9
+      ],
+      "size": [
+       2.5,
+       3.0
+      ],
+      "glow": 12,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#e8c06a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 12,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 6,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 3,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.016666666666666666,
+   "pace_text": "once per 60 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 24,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 12,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 6,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 14,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "blink",
+   "group": "player",
+   "name": "Blink: implode and burst",
+   "skill": "Blink",
+   "hook": "kits.lua:734, 737",
+   "today": "10 violet puffs at each end",
+   "look": "Violet motes rush into the spot the mage leaves and vanish there; at the arrival point a violet burst.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 14,
+     "time": 0.1,
+     "color": "#b06aff",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      1.0,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        1.0,
+        0
+       ],
+       [
+        0,
+        1.0,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       1.0,
+       1.0,
+       1.0
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b06aff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "pull": {
+      "origin": [
+       0,
+       1.0,
+       0
+      ],
+      "strength": 3,
+      "strength_min": 3,
+      "kill": true
+     },
+     "attract": "point"
+    },
+    {
+     "kind": "spawner",
+     "n": 14,
+     "time": 0.05,
+     "color": "#b06aff",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.2,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.2,
+        0.8,
+        -0.2
+       ],
+       [
+        0.2,
+        1.2,
+        0.2
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b06aff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "radial": [
+      3,
+      4
+     ],
+     "pull": {
+      "origin": [
+       0,
+       1.0,
+       0
+      ],
+      "strength": -20.0,
+      "strength_min": -15.0,
+      "kill": false
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": {
+    "why": "Today's two bursts, recoloured only (same cost as today).",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 10,
+      "time": 0.2,
+      "color": "#b06aff",
+      "spawn": [
+       "box",
+       [
+        -0.5,
+        0,
+        -0.5
+       ],
+       [
+        0.5,
+        1,
+        0.5
+       ]
+      ],
+      "engine": {
+       "pos": [
+        [
+         -0.5,
+         0,
+         -0.5
+        ],
+        [
+         0.5,
+         1,
+         0.5
+        ]
+       ],
+       "tween": null,
+       "radius": null
+      },
+      "vel": [
+       [
+        -2,
+        0,
+        -2
+       ],
+       [
+        2,
+        3,
+        2
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.7
+      ],
+      "size": [
+       1.5,
+       3
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#b06aff",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     },
+     {
+      "kind": "spawner",
+      "n": 10,
+      "time": 0.2,
+      "color": "#b06aff",
+      "spawn": [
+       "box",
+       [
+        -0.5,
+        0,
+        -0.5
+       ],
+       [
+        0.5,
+        1,
+        0.5
+       ]
+      ],
+      "engine": {
+       "pos": [
+        [
+         -0.5,
+         0,
+         -0.5
+        ],
+        [
+         0.5,
+         1,
+         0.5
+        ]
+       ],
+       "tween": null,
+       "radius": null
+      },
+      "vel": [
+       [
+        -2,
+        0,
+        -2
+       ],
+       [
+        2,
+        3,
+        2
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.7
+      ],
+      "size": [
+       1.5,
+       3
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#b06aff",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 1342,
+      "all_wire": 0,
+      "lua_us": 3.76,
+      "near_us": 6.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 20,
+      "spawners": 2,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 1342,
+      "all_wire": 0,
+      "lua_us": 3.76,
+      "near_us": 6.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 10,
+      "spawners": 2,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 1342,
+      "all_wire": 0,
+      "lua_us": 3.76,
+      "near_us": 6.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 6,
+      "spawners": 2,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.06666666666666667,
+   "pace_text": "once per 15 s cooldown",
+   "target": [
+    10,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1472,
+     "all_wire": 0,
+     "lua_us": 4.52,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 28,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1472,
+     "all_wire": 0,
+     "lua_us": 4.52,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 14,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1472,
+     "all_wire": 0,
+     "lua_us": 4.52,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 8,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 1342,
+    "all_wire": 0,
+    "lua_us": 3.76,
+    "near_us": 6.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 20,
+    "spawners": 2,
+    "singles": 0
+   }
+  },
+  {
+   "id": "cinderfall",
+   "group": "player",
+   "name": "Cinderfall: ember rain",
+   "skill": "Cinderfall",
+   "hook": "kits.lua:1066",
+   "today": "18 fire sprites within 1 m (the 3 m radius is invisible)",
+   "look": "Embers rain into the real 3 m circle from four metres up and wink out on the ground.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 36,
+     "time": 0.4,
+     "color": "#ff7a2a",
+     "spawn": [
+      "box",
+      [
+       -2.1,
+       4.0,
+       -2.1
+      ],
+      [
+       2.1,
+       4.0,
+       2.1
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        -2.1,
+        4.0,
+        -2.1
+       ],
+       [
+        2.1,
+        4.0,
+        2.1
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -0.3,
+       -10,
+       -0.3
+      ],
+      [
+       0.3,
+       -8,
+       0.3
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.5
+     ],
+     "size": [
+      1.5,
+      2.5
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "mobs_fire_particle.png",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "Eighteen embers, the count of today.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 18,
+      "time": 0.4,
+      "color": "#ff7a2a",
+      "spawn": [
+       "box",
+       [
+        -2.1,
+        4.0,
+        -2.1
+       ],
+       [
+        2.1,
+        4.0,
+        2.1
+       ]
+      ],
+      "engine": {
+       "pos": [
+        [
+         -2.1,
+         4.0,
+         -2.1
+        ],
+        [
+         2.1,
+         4.0,
+         2.1
+        ]
+       ],
+       "tween": null,
+       "radius": null
+      },
+      "vel": [
+       [
+        -0.3,
+        -10,
+        -0.3
+       ],
+       [
+        0.3,
+        -8,
+        0.3
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.4,
+       0.5
+      ],
+      "size": [
+       2.0,
+       3.0
+      ],
+      "glow": 14,
+      "attached": false,
+      "texture": "mobs_fire_particle.png",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 653,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 18,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 653,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 9,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 653,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "radius": 3,
+    "at": "target"
+   },
+   "pace": 0.1,
+   "pace_text": "once per 10 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 653,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 36,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 653,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 18,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 653,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 9,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 563,
+     "wire": 653,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 653,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 18,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "glacial_ward",
+   "group": "player",
+   "name": "Glacial Ward: frost shell",
+   "skill": "Glacial Ward",
+   "hook": "kits.lua:1083",
+   "today": "14 blue bubbles",
+   "look": "Frost motes appear on a shell around the mage and drift inward onto it.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 20,
+     "time": 0.2,
+     "color": "#bfe8ff",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      1.1,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        1.0,
+        0
+       ],
+       [
+        0,
+        1.0,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       1.1,
+       1.1,
+       1.1
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.5
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "pull": {
+      "origin": [
+       0,
+       1.0,
+       0
+      ],
+      "strength": 2.5,
+      "strength_min": 2.5,
+      "kill": true
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": {
+    "why": "Ten motes.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 10,
+      "time": 0.2,
+      "color": "#bfe8ff",
+      "spawn": [
+       "sphere",
+       [
+        0,
+        1.0,
+        0
+       ],
+       1.1,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         1.0,
+         0
+        ],
+        [
+         0,
+         1.0,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        1.1,
+        1.1,
+        1.1
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.4,
+       0.5
+      ],
+      "size": [
+       2.5,
+       3.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false,
+      "pull": {
+       "origin": [
+        0,
+        1.0,
+        0
+       ],
+       "strength": 2.5,
+       "strength_min": 2.5,
+       "kill": true
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 10,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 3,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": "Snowflake sprite as for Ice Nova.",
+   "marker": null,
+   "pace": 0.03333333333333333,
+   "pace_text": "once per 30 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 20,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 10,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 5,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 14,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "heal",
+   "group": "player",
+   "name": "Heal: rising light",
+   "skill": "Heal (Hearten: four motes on each splashed ally)",
+   "hook": "kits.lua:865",
+   "today": "8 hearts",
+   "look": "Golden-green motes rise around the healed player.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.1,
+     "color": "#d8f0a0",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      0.5,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.5,
+       0,
+       0.5
+      ]
+     },
+     "vel": [
+      [
+       0,
+       1.5,
+       0
+      ],
+      [
+       0,
+       2.5,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.7,
+      0.9
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#d8f0a0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "Today's hearts (8): no change.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 8,
+      "time": 0.2,
+      "color": "#ff6080",
+      "spawn": [
+       "box",
+       [
+        -0.5,
+        0,
+        -0.5
+       ],
+       [
+        0.5,
+        1,
+        0.5
+       ]
+      ],
+      "engine": {
+       "pos": [
+        [
+         -0.5,
+         0,
+         -0.5
+        ],
+        [
+         0.5,
+         1,
+         0.5
+        ]
+       ],
+       "tween": null,
+       "radius": null
+      },
+      "vel": [
+       [
+        -2,
+        0,
+        -2
+       ],
+       [
+        2,
+        3,
+        2
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.7
+      ],
+      "size": [
+       1.5,
+       3
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "mobs_heart_particle.png",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 654,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 8,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 654,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 4,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 654,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 2,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.25,
+   "pace_text": "once per 4 s cooldown",
+   "target": [
+    4,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 12,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 6,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 3,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 654,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 8,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "shield_spell",
+   "group": "player",
+   "name": "Shield: golden shell",
+   "skill": "Shield",
+   "hook": "kits.lua:916",
+   "today": "8 pale gold puffs",
+   "look": "A pale-gold shell of motes flashes around the shielded player.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 18,
+     "time": 0.05,
+     "color": "#ffe9a0",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.9,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        1.0,
+        0
+       ],
+       [
+        0,
+        1.0,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.9,
+       0.9,
+       0.9
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.35,
+      0.45
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ffe9a0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "Ten motes.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 10,
+      "time": 0.05,
+      "color": "#ffe9a0",
+      "spawn": [
+       "sphere",
+       [
+        0,
+        1.0,
+        0
+       ],
+       0.9,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         1.0,
+         0
+        ],
+        [
+         0,
+         1.0,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        0.9,
+        0.9,
+        0.9
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.35,
+       0.45
+      ],
+      "size": [
+       2.5,
+       3.0
+      ],
+      "glow": 12,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#ffe9a0",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 10,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 3,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.1,
+   "pace_text": "once per 10 s cooldown",
+   "target": [
+    4,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 18,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 9,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 5,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 8,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "mend",
+   "group": "player",
+   "name": "Mend: small rising light per tick",
+   "skill": "Mend (each of 4 ticks)",
+   "hook": "kits.lua:975, 999",
+   "today": "5 hearts on the cast, 3 per tick",
+   "look": "Three golden-green motes rise from the player on each tick.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 3,
+     "time": 0.0,
+     "color": "#d8f0a0",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.6,
+       0
+      ],
+      0.4,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       1.2,
+       0
+      ],
+      [
+       0,
+       1.8,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.8
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#d8f0a0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.3333333333333333,
+   "pace_text": "one tick per 3 s while it runs",
+   "target": [
+    4,
+    0,
+    0
+   ],
+   "note": "Three particles are cheaper as single particles than as a spawner.",
+   "cost": {
+    "1.0": {
+     "near_wire": 198,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 6.825769995277128,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.5": {
+     "near_wire": 175,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 6.348866678914055,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    },
+    "0.25": {
+     "near_wire": 147,
+     "all_wire": 0,
+     "lua_us": 0.6,
+     "near_us": 5.870736684603616,
+     "all_us": 0.0,
+     "player_check_us": 0.01,
+     "particles": 1,
+     "spawners": 0,
+     "singles": 1
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 159,
+     "raw": 579,
+     "wire": 198,
+     "datagrams": 1,
+     "lua_us": 1.7999999999999998,
+     "per_rx_us": 6.78296665227972,
+     "per_player_check_us": 0.03,
+     "zstd_us": 5.88296665227972
+    }
+   ],
+   "today_cost": {
+    "near_wire": 654,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 3,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "word_of_ruin",
+   "group": "player",
+   "name": "Word of Ruin: drain",
+   "skill": "Word of Ruin",
+   "hook": "kits.lua:1093-1122",
+   "today": "nothing",
+   "look": "Dark violet motes peel off the target and stream to the priest.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 16,
+     "time": 0.3,
+     "color": "#6a2a9a",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.5,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.5,
+        0.5,
+        -0.5
+       ],
+       [
+        0.5,
+        1.5,
+        0.5
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.7
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#6a2a9a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "pull": {
+      "origin": [
+       -6,
+       1.2,
+       0
+      ],
+      "strength": 2,
+      "strength_min": 2,
+      "kill": true
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": {
+    "why": "A dark burst on the target only.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 10,
+      "time": 0.05,
+      "color": "#6a2a9a",
+      "spawn": [
+       "sphere",
+       [
+        0,
+        1.0,
+        0
+       ],
+       0.3,
+       false
+      ],
+      "engine": {
+       "pos": [
+        [
+         -0.3,
+         0.7,
+         -0.3
+        ],
+        [
+         0.3,
+         1.3,
+         0.3
+        ]
+       ],
+       "tween": null,
+       "radius": null
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.4,
+       0.5
+      ],
+      "size": [
+       2.5,
+       3.0
+      ],
+      "glow": 6,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#6a2a9a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "radial": [
+       2,
+       3
+      ],
+      "pull": {
+       "origin": [
+        0,
+        1.0,
+        0
+       ],
+       "strength": -10.0,
+       "strength_min": -6.666666666666667,
+       "kill": false
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 10,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 3,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.08333333333333333,
+   "pace_text": "once per 12 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 16,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 8,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 4,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "snare_hit",
+   "group": "player",
+   "name": "Snare Shot: net on the legs",
+   "skill": "Snare Shot (landed)",
+   "hook": "scout.lua:115",
+   "today": "nothing",
+   "look": "A green ring of motes springs out around the target's legs and hangs a moment.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 10,
+     "time": 0.05,
+     "color": "#79a65a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.4,
+       0
+      ],
+      0.2,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.4,
+        0
+       ],
+       [
+        0,
+        0.4,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.2,
+       0,
+       0.2
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.5
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#79a65a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "radial": [
+      2,
+      2.5
+     ],
+     "pull": {
+      "origin": [
+       0,
+       0.4,
+       0
+      ],
+      "strength": -12.5,
+      "strength_min": -10.0,
+      "kill": false
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.08333333333333333,
+   "pace_text": "once per 12 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 10,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 5,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 3,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "pinning_hit",
+   "group": "player",
+   "name": "Pinning Shot: pinned",
+   "skill": "Pinning Shot (landed)",
+   "hook": "scout.lua:116",
+   "today": "nothing",
+   "look": "Teal motes drop onto the target's feet and stay a moment.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 8,
+     "time": 0.0,
+     "color": "#4f8f67",
+     "spawn": [
+      "disc",
+      [
+       0,
+       1.6,
+       0
+      ],
+      0.5,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       -8,
+       0
+      ],
+      [
+       0,
+       -6,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.2,
+      0.25
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 8,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#4f8f67",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.03333333333333333,
+   "pace_text": "once per 30 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 311,
+     "all_wire": 0,
+     "lua_us": 4.8,
+     "near_us": 8.783003346854821,
+     "all_us": 0.0,
+     "player_check_us": 0.08,
+     "particles": 8,
+     "spawners": 0,
+     "singles": 8
+    },
+    "0.5": {
+     "near_wire": 222,
+     "all_wire": 0,
+     "lua_us": 2.4,
+     "near_us": 7.110400019881006,
+     "all_us": 0.0,
+     "player_check_us": 0.04,
+     "particles": 4,
+     "spawners": 0,
+     "singles": 4
+    },
+    "0.25": {
+     "near_wire": 175,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 6.310703311099981,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 272,
+     "raw": 1544,
+     "wire": 311,
+     "datagrams": 1,
+     "lua_us": 4.8,
+     "per_rx_us": 8.955333335806305,
+     "per_player_check_us": 0.08,
+     "zstd_us": 6.5553333358063055
+    }
+   ]
+  },
+  {
+   "id": "sidestep",
+   "group": "player",
+   "name": "Sidestep: shimmer",
+   "skill": "Sidestep",
+   "hook": "grug_classes/scout.lua:20-33",
+   "today": "status icon only",
+   "look": "A pale-green shimmer around the scout for a moment.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 8,
+     "time": 0.0,
+     "color": "#a8e0c0",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.6,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0.2,
+       0
+      ],
+      [
+       0,
+       0.6,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.35,
+      0.45
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#a8e0c0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.03333333333333333,
+   "pace_text": "once per 30 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 343,
+     "all_wire": 0,
+     "lua_us": 4.8,
+     "near_us": 8.756069983060783,
+     "all_us": 0.0,
+     "player_check_us": 0.08,
+     "particles": 8,
+     "spawners": 0,
+     "singles": 8
+    },
+    "0.5": {
+     "near_wire": 233,
+     "all_wire": 0,
+     "lua_us": 2.4,
+     "near_us": 7.111370002043745,
+     "all_us": 0.0,
+     "player_check_us": 0.04,
+     "particles": 4,
+     "spawners": 0,
+     "singles": 4
+    },
+    "0.25": {
+     "near_wire": 181,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 6.282233313564211,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 304,
+     "raw": 1544,
+     "wire": 343,
+     "datagrams": 1,
+     "lua_us": 4.8,
+     "per_rx_us": 8.68853333182633,
+     "per_player_check_us": 0.08,
+     "zstd_us": 6.288533331826329
+    }
+   ]
+  },
+  {
+   "id": "sprint",
+   "group": "player",
+   "name": "Sprint: dust kick",
+   "skill": "Sprint",
+   "hook": "scout.lua:529-545",
+   "today": "status icon only",
+   "look": "A puff of dust kicked up behind the scout as the sprint starts.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 8,
+     "time": 0.0,
+     "color": "#b8a27a",
+     "spawn": [
+      "box",
+      [
+       -0.6,
+       0.05,
+       -0.3
+      ],
+      [
+       -0.2,
+       0.2,
+       0.3
+      ]
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -2,
+       0.5,
+       -0.5
+      ],
+      [
+       -1,
+       1.5,
+       0.5
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.6
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.0033333333333333335,
+   "pace_text": "once per 300 s cooldown",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 406,
+     "all_wire": 0,
+     "lua_us": 4.8,
+     "near_us": 8.8788033584288,
+     "all_us": 0.0,
+     "player_check_us": 0.08,
+     "particles": 8,
+     "spawners": 0,
+     "singles": 8
+    },
+    "0.5": {
+     "near_wire": 260,
+     "all_wire": 0,
+     "lua_us": 2.4,
+     "near_us": 17.60204000674809,
+     "all_us": 0.0,
+     "player_check_us": 0.04,
+     "particles": 4,
+     "spawners": 0,
+     "singles": 4
+    },
+    "0.25": {
+     "near_wire": 190,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 6.299366641541322,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 367,
+     "raw": 1544,
+     "wire": 406,
+     "datagrams": 1,
+     "lua_us": 4.8,
+     "per_rx_us": 18.760169975087045,
+     "per_player_check_us": 0.08,
+     "zstd_us": 16.360169975087047
+    }
+   ]
+  },
+  {
+   "id": "opening",
+   "group": "player",
+   "name": "Opening: flash",
+   "skill": "Opening (landed)",
+   "hook": "scout.lua:593-601",
+   "today": "nothing",
+   "look": "A brief white flash of sparks at the target.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 6,
+     "time": 0.0,
+     "color": "#ffffff",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.1,
+       0
+      ],
+      0.15,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -2,
+       -1,
+       -2
+      ],
+      [
+       2,
+       2,
+       2
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.15,
+      0.2
+     ],
+     "size": [
+      1.5,
+      2.0
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ffffff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.08333333333333333,
+   "pace_text": "once per 12 s charge",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 332,
+     "all_wire": 0,
+     "lua_us": 3.5999999999999996,
+     "near_us": 17.727173371892423,
+     "all_us": 0.0,
+     "player_check_us": 0.06,
+     "particles": 6,
+     "spawners": 0,
+     "singles": 6
+    },
+    "0.5": {
+     "near_wire": 225,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 6.782869979056219,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.25": {
+     "near_wire": 190,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 6.339433351360882,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 293,
+     "raw": 1158,
+     "wire": 332,
+     "datagrams": 1,
+     "lua_us": 3.5999999999999996,
+     "per_rx_us": 8.231403356449057,
+     "per_player_check_us": 0.06,
+     "zstd_us": 6.431403356449057
+    }
+   ]
+  },
+  {
+   "id": "proc",
+   "group": "player",
+   "name": "Proc flash (shared)",
+   "skill": "Ruination, Whitehot, Last Word, Unbroken, Untouchable, Last Light, Reclaimer, Battlebeat",
+   "hook": "the proc sites (kits.lua:402, 534, 1103; talents.lua:1123; grug_classes/scout.lua:75; grug_trinkets/init.lua:115-143)",
+   "today": "status icons only",
+   "look": "A quick ring of motes in the proc's colour rises around the player.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 8,
+     "time": 0.0,
+     "color": "#ffcf40",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.3,
+       0
+      ],
+      0.6,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       1.5,
+       0
+      ],
+      [
+       0,
+       2.2,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.5
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ffcf40",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.06666666666666667,
+   "pace_text": "rare: about once per 15 s",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 307,
+     "all_wire": 0,
+     "lua_us": 4.8,
+     "near_us": 18.173370008294782,
+     "all_us": 0.0,
+     "player_check_us": 0.08,
+     "particles": 8,
+     "spawners": 0,
+     "singles": 8
+    },
+    "0.5": {
+     "near_wire": 216,
+     "all_wire": 0,
+     "lua_us": 2.4,
+     "near_us": 7.055836692110946,
+     "all_us": 0.0,
+     "player_check_us": 0.04,
+     "particles": 4,
+     "spawners": 0,
+     "singles": 4
+    },
+    "0.25": {
+     "near_wire": 173,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 16.63967000846751,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 268,
+     "raw": 1544,
+     "wire": 307,
+     "datagrams": 1,
+     "lua_us": 4.8,
+     "per_rx_us": 19.625940003603073,
+     "per_player_check_us": 0.08,
+     "zstd_us": 17.225940003603075
+    }
+   ]
+  },
+  {
+   "id": "king_windup_ring",
+   "group": "boss",
+   "name": "King wind-up: ground ring",
+   "skill": "Dwarf king's Shatter wind-up (2 s)",
+   "hook": "bosses.lua:508-514",
+   "today": "sound and animation only",
+   "look": "A ring of stone dust marks the 6 m blast radius on the ground for the whole wind-up, rising a little.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 40,
+     "time": 0.0,
+     "color": "#b0a090",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      6.0,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0.1,
+       0
+      ],
+      [
+       0,
+       0.1,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      2.0,
+      2.0
+     ],
+     "size": [
+      3.5,
+      3.5
+     ],
+     "glow": 4,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b0a090",
+     "sprite": "sq",
+     "fade": false,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": {
+    "why": "Twenty-four motes, the same exact ring.",
+    "emitters": [
+     {
+      "kind": "single",
+      "n": 24,
+      "time": 0.0,
+      "color": "#b0a090",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.1,
+        0
+       ],
+       6.0,
+       true
+      ],
+      "engine": null,
+      "vel": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       2.0,
+       2.0
+      ],
+      "size": [
+       4.5,
+       4.5
+      ],
+      "glow": 4,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#b0a090",
+      "sprite": "sq",
+      "fade": false,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "steps": 1
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 330,
+      "all_wire": 0,
+      "lua_us": 14.399999999999999,
+      "near_us": 28.73947333378407,
+      "all_us": 0.0,
+      "player_check_us": 0.24,
+      "particles": 24,
+      "spawners": 0,
+      "singles": 24
+     },
+     "0.5": {
+      "near_wire": 234,
+      "all_wire": 0,
+      "lua_us": 7.199999999999999,
+      "near_us": 9.921136655363565,
+      "all_us": 0.0,
+      "player_check_us": 0.12,
+      "particles": 12,
+      "spawners": 0,
+      "singles": 12
+     },
+     "0.25": {
+      "near_wire": 184,
+      "all_wire": 0,
+      "lua_us": 3.5999999999999996,
+      "near_us": 21.518040033088376,
+      "all_us": 0.0,
+      "player_check_us": 0.06,
+      "particles": 6,
+      "spawners": 0,
+      "singles": 6
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "radius": 6,
+    "at": "target"
+   },
+   "pace": 0.125,
+   "pace_text": "every 8 s",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "Single particles placed by Lua on an exact circle, each living the whole two seconds: a spawner's radius gives a disc, not a ring, and a spawner longer than 1 s would go to every player on the server. Nearly stationary single particles compress well.",
+   "cost": {
+    "1.0": {
+     "near_wire": 422,
+     "all_wire": 0,
+     "lua_us": 24.0,
+     "near_us": 25.251036677199103,
+     "all_us": 0.0,
+     "player_check_us": 0.4,
+     "particles": 40,
+     "spawners": 0,
+     "singles": 40
+    },
+    "0.5": {
+     "near_wire": 301,
+     "all_wire": 0,
+     "lua_us": 12.0,
+     "near_us": 12.752766639692709,
+     "all_us": 0.0,
+     "player_check_us": 0.2,
+     "particles": 20,
+     "spawners": 0,
+     "singles": 20
+    },
+    "0.25": {
+     "near_wire": 219,
+     "all_wire": 0,
+     "lua_us": 6.0,
+     "near_us": 23.891040039714426,
+     "all_us": 0.0,
+     "player_check_us": 0.1,
+     "particles": 10,
+     "spawners": 0,
+     "singles": 10
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 383,
+     "raw": 7720,
+     "wire": 422,
+     "datagrams": 1,
+     "lua_us": 24.0,
+     "per_rx_us": 25.273303338792175,
+     "per_player_check_us": 0.4,
+     "zstd_us": 13.273303338792175
+    }
+   ]
+  },
+  {
+   "id": "king_shatter",
+   "group": "boss",
+   "name": "King Shatter: ground burst",
+   "skill": "Dwarf king's Shatter",
+   "hook": "bosses.lua:442",
+   "today": "nothing",
+   "look": "Stone dust bursts outward along the ground to 6 m, with chunks thrown up.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 48,
+     "time": 0.0,
+     "color": "#b0a090",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      0.6,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.34,
+      0.34
+     ],
+     "size": [
+      3.5,
+      3.5
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b0a090",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1,
+     "radial": [
+      17,
+      17
+     ]
+    },
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.05,
+     "color": "#7a6a5a",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       0.3,
+       0
+      ],
+      1.0,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -1.0,
+        -0.7,
+        -1.0
+       ],
+       [
+        1.0,
+        1.3,
+        1.0
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -3,
+       4,
+       -3
+      ],
+      [
+       3,
+       7,
+       3
+      ]
+     ],
+     "acc": [
+      0,
+      -12,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.7,
+      0.9
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "grug_mobs_rock.png",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "The exact ring only, 32 motes, no thrown chunks.",
+    "emitters": [
+     {
+      "kind": "single",
+      "n": 32,
+      "time": 0.0,
+      "color": "#b0a090",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.2,
+        0
+       ],
+       0.6,
+       true
+      ],
+      "engine": null,
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.34,
+       0.34
+      ],
+      "size": [
+       4.0,
+       4.0
+      ],
+      "glow": 0,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#b0a090",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "steps": 1,
+      "radial": [
+       17,
+       17
+      ]
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 485,
+      "all_wire": 0,
+      "lua_us": 19.2,
+      "near_us": 34.24857335629252,
+      "all_us": 0.0,
+      "player_check_us": 0.32,
+      "particles": 32,
+      "spawners": 0,
+      "singles": 32
+     },
+     "0.5": {
+      "near_wire": 336,
+      "all_wire": 0,
+      "lua_us": 9.6,
+      "near_us": 23.817473338559893,
+      "all_us": 0.0,
+      "player_check_us": 0.16,
+      "particles": 16,
+      "spawners": 0,
+      "singles": 16
+     },
+     "0.25": {
+      "near_wire": 244,
+      "all_wire": 0,
+      "lua_us": 4.8,
+      "near_us": 13.199103329190985,
+      "all_us": 0.0,
+      "player_check_us": 0.08,
+      "particles": 8,
+      "spawners": 0,
+      "singles": 8
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "radius": 6,
+    "at": "target"
+   },
+   "pace": 0.125,
+   "pace_text": "every 8 s",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1343,
+     "all_wire": 0,
+     "lua_us": 30.679999999999996,
+     "near_us": 29.26296998639591,
+     "all_us": 0.0,
+     "player_check_us": 0.48,
+     "particles": 60,
+     "spawners": 1,
+     "singles": 48
+    },
+    "0.5": {
+     "near_wire": 1059,
+     "all_wire": 0,
+     "lua_us": 16.279999999999998,
+     "near_us": 36.41367336056816,
+     "all_us": 0.0,
+     "player_check_us": 0.24,
+     "particles": 30,
+     "spawners": 1,
+     "singles": 24
+    },
+    "0.25": {
+     "near_wire": 933,
+     "all_wire": 0,
+     "lua_us": 9.079999999999998,
+     "near_us": 18.577703349354366,
+     "all_us": 0.0,
+     "player_check_us": 0.12,
+     "particles": 15,
+     "spawners": 1,
+     "singles": 12
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 604,
+     "raw": 9264,
+     "wire": 694,
+     "datagrams": 2,
+     "lua_us": 28.799999999999997,
+     "per_rx_us": 33.480606677259004,
+     "per_player_check_us": 0.48,
+     "zstd_us": 19.08060667725901
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 559,
+     "wire": 649,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "king_cleave",
+   "group": "boss",
+   "name": "King Cleave: cone sweep",
+   "skill": "Orc king's Cleave (and its wind-up)",
+   "hook": "bosses.lua:469",
+   "today": "nothing",
+   "look": "During the wind-up, red motes rise across the 60\u00b0 cone in front of the king; on the hit a red arc sweeps across the cone at 4 m.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 16,
+     "time": 1.0,
+     "color": "#c03030",
+     "spawn": [
+      "box",
+      [
+       1.0,
+       0.1,
+       -2.5
+      ],
+      [
+       6.0,
+       0.3,
+       2.5
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        1.0,
+        0.1,
+        -2.5
+       ],
+       [
+        6.0,
+        0.3,
+        2.5
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0.4,
+       0
+      ],
+      [
+       0,
+       1.0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#c03030",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 16,
+     "time": 1.0,
+     "color": "#c03030",
+     "spawn": [
+      "box",
+      [
+       1.0,
+       0.1,
+       -2.5
+      ],
+      [
+       6.0,
+       0.3,
+       2.5
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        1.0,
+        0.1,
+        -2.5
+       ],
+       [
+        6.0,
+        0.3,
+        2.5
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0.4,
+       0
+      ],
+      [
+       0,
+       1.0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#c03030",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 1.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 30,
+     "time": 0.12,
+     "color": "#e03a3a",
+     "spawn": [
+      "line",
+      [
+       3.5,
+       1.2,
+       -2.0
+      ],
+      [
+       3.5,
+       1.0,
+       2.0
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        3.5,
+        1.2,
+        -2.0
+       ],
+       [
+        3.5,
+        1.0,
+        2.0
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      3.5,
+      4.5
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e03a3a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 2.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "Only the hit arc, 16 motes.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 16,
+      "time": 0.12,
+      "color": "#e03a3a",
+      "spawn": [
+       "line",
+       [
+        3.5,
+        1.2,
+        -2.0
+       ],
+       [
+        3.5,
+        1.0,
+        2.0
+       ]
+      ],
+      "engine": {
+       "pos": null,
+       "tween": [
+        [
+         3.5,
+         1.2,
+         -2.0
+        ],
+        [
+         3.5,
+         1.0,
+         2.0
+        ]
+       ],
+       "radius": null
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.4
+      ],
+      "size": [
+       4.0,
+       5.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#e03a3a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 16,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 8,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 4,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "cone": [
+     6,
+     60
+    ]
+   },
+   "pace": 0.125,
+   "pace_text": "every 8 s",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 2013,
+     "all_wire": 0,
+     "lua_us": 5.64,
+     "near_us": 9.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 62,
+     "spawners": 3,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 2013,
+     "all_wire": 0,
+     "lua_us": 5.64,
+     "near_us": 9.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 31,
+     "spawners": 3,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 2013,
+     "all_wire": 0,
+     "lua_us": 5.64,
+     "near_us": 9.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 16,
+     "spawners": 3,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "king_aura",
+   "group": "boss",
+   "name": "King wind-up: aura",
+   "skill": "Human, elf, undead and troll kings' wind-up",
+   "hook": "bosses.lua:508-514",
+   "today": "sound and animation only",
+   "look": "Motes in the race's colour rise around the king during the wind-up (gold for Rally, green for Regrowth, grey-green for Bone Call, pale for Volley).",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 20,
+     "time": 1.0,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      1.0,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.2,
+        0
+       ],
+       [
+        0,
+        0.2,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       1.0,
+       0,
+       1.0
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0.8,
+       0
+      ],
+      [
+       0,
+       1.6,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.7,
+      0.9
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 20,
+     "time": 1.0,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      1.0,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.2,
+        0
+       ],
+       [
+        0,
+        0.2,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       1.0,
+       0,
+       1.0
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0.8,
+       0
+      ],
+      [
+       0,
+       1.6,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.7,
+      0.9
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 1.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "The first second only.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 20,
+      "time": 1.0,
+      "color": "#e8c06a",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.2,
+        0
+       ],
+       1.0,
+       false
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.2,
+         0
+        ],
+        [
+         0,
+         0.2,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        1.0,
+        0,
+        1.0
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0.8,
+        0
+       ],
+       [
+        0,
+        1.6,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.9,
+       1.2
+      ],
+      "size": [
+       2.5,
+       3.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#e8c06a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 20,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 10,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 5,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.125,
+   "pace_text": "every 8 s",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1342,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 40,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1342,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 20,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1342,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 10,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "king_resolve",
+   "group": "boss",
+   "name": "Rally, Regrowth, Bone Call: the moment",
+   "skill": "The resolve of the other kits",
+   "hook": "bosses.lua:443-474",
+   "today": "nothing",
+   "look": "On the resolve: a gold rise on every rallied guard, a green spiral up the troll, a grey-green dust eruption at each summoned raider. Shown here: one burst per affected creature (up to four).",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.1,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.6,
+       0,
+       0.6
+      ]
+     },
+     "vel": [
+      [
+       0,
+       1.5,
+       0
+      ],
+      [
+       0,
+       2.5,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.8
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.1,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.6,
+       0,
+       0.6
+      ]
+     },
+     "vel": [
+      [
+       0,
+       1.5,
+       0
+      ],
+      [
+       0,
+       2.5,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.8
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.1,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.6,
+       0,
+       0.6
+      ]
+     },
+     "vel": [
+      [
+       0,
+       1.5,
+       0
+      ],
+      [
+       0,
+       2.5,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.8
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.1,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.1,
+        0
+       ],
+       [
+        0,
+        0.1,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.6,
+       0,
+       0.6
+      ]
+     },
+     "vel": [
+      [
+       0,
+       1.5,
+       0
+      ],
+      [
+       0,
+       2.5,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.8
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "One burst on the king only.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 16,
+      "time": 0.1,
+      "color": "#e8c06a",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.1,
+        0
+       ],
+       0.8,
+       false
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.1,
+         0
+        ],
+        [
+         0,
+         0.1,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        0.8,
+        0,
+        0.8
+       ]
+      },
+      "vel": [
+       [
+        0,
+        1.5,
+        0
+       ],
+       [
+        0,
+        2.5,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.6,
+       0.8
+      ],
+      "size": [
+       2.5,
+       3.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#e8c06a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 16,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 8,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 4,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": null,
+   "pace": 0.125,
+   "pace_text": "every 8 s",
+   "target": [
+    3,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 2684,
+     "all_wire": 0,
+     "lua_us": 7.52,
+     "near_us": 12.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 48,
+     "spawners": 4,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 2684,
+     "all_wire": 0,
+     "lua_us": 7.52,
+     "near_us": 12.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 24,
+     "spawners": 4,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 2684,
+     "all_wire": 0,
+     "lua_us": 7.52,
+     "near_us": 12.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 12,
+     "spawners": 4,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "elite_cone",
+   "group": "boss",
+   "name": "Elite cone hit",
+   "skill": "Every elite and rare (kings, guards, golems, the Kraken, the rift boss, named rares)",
+   "hook": "telegraph.lua:95-148 (resolve)",
+   "today": "smoke during the wind-up, nothing on the hit",
+   "look": "An orange arc sweeps across the 90\u00b0 cone in front of the elite at its reach.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 20,
+     "time": 0.12,
+     "color": "#ff6a2a",
+     "spawn": [
+      "line",
+      [
+       3.0,
+       1.1,
+       -2.6
+      ],
+      [
+       3.0,
+       1.0,
+       2.6
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        3.0,
+        1.1,
+        -2.6
+       ],
+       [
+        3.0,
+        1.0,
+        2.6
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ff6a2a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "Twelve motes.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 12,
+      "time": 0.12,
+      "color": "#ff6a2a",
+      "spawn": [
+       "line",
+       [
+        3.0,
+        1.1,
+        -2.6
+       ],
+       [
+        3.0,
+        1.0,
+        2.6
+       ]
+      ],
+      "engine": {
+       "pos": null,
+       "tween": [
+        [
+         3.0,
+         1.1,
+         -2.6
+        ],
+        [
+         3.0,
+         1.0,
+         2.6
+        ]
+       ],
+       "radius": null
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.4
+      ],
+      "size": [
+       4.0,
+       5.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#ff6a2a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 12,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 6,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 671,
+      "all_wire": 0,
+      "lua_us": 1.88,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 3,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "cone": [
+     4.5,
+     90
+    ]
+   },
+   "pace": 0.1,
+   "pace_text": "about every 10 s per elite in a fight",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 20,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 10,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 5,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "breath_windup",
+   "group": "boss",
+   "name": "Dragon breath wind-up",
+   "skill": "Both dragons, breath (1.25 s)",
+   "hook": "boss_dragons.lua:733-747",
+   "today": "growl and animation only",
+   "look": "Glowing motes (frost or fire) gather at the dragon's mouth and vanish into it.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 20,
+     "time": 1.0,
+     "color": "#8ee8ff",
+     "spawn": [
+      "sphere",
+      [
+       2.5,
+       3.5,
+       0
+      ],
+      1.6,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        2.5,
+        3.5,
+        0
+       ],
+       [
+        2.5,
+        3.5,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       1.6,
+       1.6,
+       1.6
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.7,
+      0.9
+     ],
+     "size": [
+      2.5,
+      3.5
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#8ee8ff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "pull": {
+      "origin": [
+       2.5,
+       3.5,
+       0
+      ],
+      "strength": 1.5,
+      "strength_min": 1.5,
+      "kill": true
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": null,
+   "art": "draconis ice and fire motes (MIT).",
+   "marker": null,
+   "pace": 0.16666666666666666,
+   "pace_text": "about every 6 s",
+   "target": [
+    6.0,
+    0.0,
+    0.0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 20,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 10,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 736,
+     "all_wire": 0,
+     "lua_us": 2.26,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 5,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "breath_bolt",
+   "group": "boss",
+   "name": "Dragon breath bolts",
+   "skill": "Both dragons, the three breath bolts",
+   "hook": "boss_dragons.lua:403-446",
+   "today": "a tinted rock sprite with up to 18 single trail particles each",
+   "look": "The bolts get a frost or fire sprite instead of the tinted rock; the trail keeps single particles but fewer (12 per bolt).",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 36,
+     "time": 0.0,
+     "color": "#8ee8ff",
+     "spawn": [
+      "line",
+      [
+       3,
+       3.5,
+       0
+      ],
+      [
+       12,
+       0.5,
+       0
+      ]
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -0.3,
+       -0.3,
+       -0.3
+      ],
+      [
+       0.3,
+       0.3,
+       0.3
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.5
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#8ee8ff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 12
+    }
+   ],
+   "simple": {
+    "why": "The sprite only; six trail particles per bolt.",
+    "emitters": [
+     {
+      "kind": "single",
+      "n": 18,
+      "time": 0.0,
+      "color": "#8ee8ff",
+      "spawn": [
+       "line",
+       [
+        3,
+        3.5,
+        0
+       ],
+       [
+        12,
+        0.5,
+        0
+       ]
+      ],
+      "engine": null,
+      "vel": [
+       [
+        -0.3,
+        -0.3,
+        -0.3
+       ],
+       [
+        0.3,
+        0.3,
+        0.3
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.5
+      ],
+      "size": [
+       3.5,
+       4.5
+      ],
+      "glow": 12,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#8ee8ff",
+      "sprite": "sq",
+      "fade": true,
+      "at": "caster",
+      "delay": 0.0,
+      "kept": false,
+      "steps": 6
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 1284,
+      "all_wire": 0,
+      "lua_us": 10.799999999999999,
+      "near_us": 40.624400053266434,
+      "all_us": 0.0,
+      "player_check_us": 0.18,
+      "particles": 18,
+      "spawners": 0,
+      "singles": 18
+     },
+     "0.5": {
+      "near_wire": 906,
+      "all_wire": 0,
+      "lua_us": 5.3999999999999995,
+      "near_us": 266.6690801152028,
+      "all_us": 0.0,
+      "player_check_us": 0.09,
+      "particles": 9,
+      "spawners": 0,
+      "singles": 9
+     },
+     "0.25": {
+      "near_wire": 906,
+      "all_wire": 0,
+      "lua_us": 3.0,
+      "near_us": 179.67565996665508,
+      "all_us": 0.0,
+      "player_check_us": 0.05,
+      "particles": 5,
+      "spawners": 0,
+      "singles": 5
+     }
+    }
+   },
+   "art": "draconis_ice_particle / draconis_fire_particle as the bolt sprite.",
+   "marker": null,
+   "pace": 0.16666666666666666,
+   "pace_text": "about every 6 s",
+   "target": [
+    12,
+    0,
+    0
+   ],
+   "note": "The trail adds one particle per bolt and server step, so each step is its own compressed packet per player. A spawner attached to each bolt would follow the homing bolt exactly, but goes to every player on the server. The 54-mote burst when the breath fires (boss_dragons.lua:612-614) stays.",
+   "cost": {
+    "1.0": {
+     "near_wire": 2568,
+     "all_wire": 0,
+     "lua_us": 21.599999999999998,
+     "near_us": 81.08840016573667,
+     "all_us": 0.0,
+     "player_check_us": 0.36,
+     "particles": 36,
+     "spawners": 0,
+     "singles": 36
+    },
+    "0.5": {
+     "near_wire": 1812,
+     "all_wire": 0,
+     "lua_us": 10.799999999999999,
+     "near_us": 465.9241597164422,
+     "all_us": 0.0,
+     "player_check_us": 0.18,
+     "particles": 18,
+     "spawners": 0,
+     "singles": 18
+    },
+    "0.25": {
+     "near_wire": 1812,
+     "all_wire": 0,
+     "lua_us": 5.3999999999999995,
+     "near_us": 66.1652003645897,
+     "all_us": 0.0,
+     "player_check_us": 0.09,
+     "particles": 9,
+     "spawners": 0,
+     "singles": 9
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 2100,
+     "raw": 6948,
+     "wire": 2568,
+     "datagrams": 12,
+     "lua_us": 21.599999999999998,
+     "per_rx_us": 286.3104802781716,
+     "per_player_check_us": 0.36,
+     "zstd_us": 275.5104802781716
+    }
+   ],
+   "today_cost": {
+    "near_wire": 3906,
+    "all_wire": 0,
+    "lua_us": 32.4,
+    "near_us": 300.80232017096125,
+    "all_us": 0.0,
+    "player_check_us": 0.54,
+    "particles": 54,
+    "spawners": 0,
+    "singles": 54
+   }
+  },
+  {
+   "id": "lightning_strike",
+   "group": "boss",
+   "name": "Storm lightning: the strike",
+   "skill": "Stormscale, lightning impact",
+   "hook": "boss_dragons.lua:632-644",
+   "today": "a burst of 96 yellow motes",
+   "look": "A white-yellow bolt column drops from 8 m onto the spot, with a smaller ground burst (48).",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 24,
+     "time": 0.08,
+     "color": "#ffffff",
+     "spawn": [
+      "line",
+      [
+       0,
+       8,
+       0
+      ],
+      [
+       0,
+       0.2,
+       0
+      ]
+     ],
+     "engine": {
+      "pos": null,
+      "tween": [
+       [
+        0,
+        8,
+        0
+       ],
+       [
+        0,
+        0.2,
+        0
+       ]
+      ],
+      "radius": null
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.15,
+      0.25
+     ],
+     "size": [
+      4.0,
+      5.0
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#ffffff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 48,
+     "time": 0.05,
+     "color": "#fff27a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      0.4,
+      true
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.2,
+        0
+       ],
+       [
+        0,
+        0.2,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.4,
+       0,
+       0.4
+      ]
+     },
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.4
+     ],
+     "size": [
+      2.5,
+      3.5
+     ],
+     "glow": 14,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#fff27a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "radial": [
+      6,
+      7
+     ],
+     "pull": {
+      "origin": [
+       0,
+       0.2,
+       0
+      ],
+      "strength": -17.5,
+      "strength_min": -15.0,
+      "kill": false
+     },
+     "attract": "point"
+    }
+   ],
+   "simple": {
+    "why": "The ground burst of 48 alone.",
+    "emitters": [
+     {
+      "kind": "spawner",
+      "n": 48,
+      "time": 0.05,
+      "color": "#fff27a",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.2,
+        0
+       ],
+       0.4,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.2,
+         0
+        ],
+        [
+         0,
+         0.2,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        0.4,
+        0,
+        0.4
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.3,
+       0.4
+      ],
+      "size": [
+       2.5,
+       3.5
+      ],
+      "glow": 14,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#fff27a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "radial": [
+       6,
+       7
+      ],
+      "pull": {
+       "origin": [
+        0,
+        0.2,
+        0
+       ],
+       "strength": -17.5,
+       "strength_min": -15.0,
+       "kill": false
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 48,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.5": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 24,
+      "spawners": 1,
+      "singles": 0
+     },
+     "0.25": {
+      "near_wire": 736,
+      "all_wire": 0,
+      "lua_us": 2.26,
+      "near_us": 3.0,
+      "all_us": 0.0,
+      "player_check_us": 0.0,
+      "particles": 12,
+      "spawners": 1,
+      "singles": 0
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "radius": 2,
+    "at": "target"
+   },
+   "pace": 0.125,
+   "pace_text": "about every 8 s",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1407,
+     "all_wire": 0,
+     "lua_us": 4.14,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 72,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1407,
+     "all_wire": 0,
+     "lua_us": 4.14,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 36,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1407,
+     "all_wire": 0,
+     "lua_us": 4.14,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 18,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 646,
+     "wire": 736,
+     "datagrams": 2,
+     "lua_us": 2.26,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 96,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "gust",
+   "group": "boss",
+   "name": "Wing gust",
+   "skill": "Both dragons, wing gust",
+   "hook": "boss_dragons.lua:770-804",
+   "today": "a 40-particle single ring (wind-up) and a burst of 96",
+   "look": "The 8 m warning ring stays as today (40 single particles, an exact circle); on release a pale ring of 48 blows outward to 8 m, instead of today's 96-mote burst.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 40,
+     "time": 0.0,
+     "color": "#d8eef4",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.3,
+       0
+      ],
+      8.0,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      1.25,
+      1.25
+     ],
+     "size": [
+      3.5,
+      3.5
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#d8eef4",
+     "sprite": "sq",
+     "fade": false,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    },
+    {
+     "kind": "single",
+     "n": 48,
+     "time": 0.0,
+     "color": "#d8eef4",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.5,
+       0
+      ],
+      1.0,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.39,
+      0.39
+     ],
+     "size": [
+      3.5,
+      3.5
+     ],
+     "glow": 6,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#d8eef4",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 1.25,
+     "kept": false,
+     "steps": 1,
+     "radial": [
+      18,
+      18
+     ]
+    }
+   ],
+   "simple": {
+    "why": "The wind-up ring and a release spawner of 40 (a disc, less server time).",
+    "emitters": [
+     {
+      "kind": "single",
+      "n": 40,
+      "time": 0.0,
+      "color": "#d8eef4",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.3,
+        0
+       ],
+       8.0,
+       true
+      ],
+      "engine": null,
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       1.25,
+       1.25
+      ],
+      "size": [
+       3.5,
+       3.5
+      ],
+      "glow": 6,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#d8eef4",
+      "sprite": "sq",
+      "fade": false,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "steps": 1
+     },
+     {
+      "kind": "spawner",
+      "n": 40,
+      "time": 0.05,
+      "color": "#d8eef4",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.5,
+        0
+       ],
+       1.0,
+       true
+      ],
+      "engine": {
+       "pos": [
+        [
+         0,
+         0.5,
+         0
+        ],
+        [
+         0,
+         0.5,
+         0
+        ]
+       ],
+       "tween": null,
+       "radius": [
+        1.0,
+        0,
+        1.0
+       ]
+      },
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.4,
+       0.45
+      ],
+      "size": [
+       3.5,
+       4.5
+      ],
+      "glow": 6,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#d8eef4",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 1.25,
+      "kept": false,
+      "radial": [
+       18,
+       19
+      ],
+      "pull": {
+       "origin": [
+        0,
+        0.5,
+        0
+       ],
+       "strength": -19.0,
+       "strength_min": -18.0,
+       "kill": false
+      },
+      "attract": "point"
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 1146,
+      "all_wire": 0,
+      "lua_us": 26.259999999999998,
+      "near_us": 40.22251001209952,
+      "all_us": 0.0,
+      "player_check_us": 0.4,
+      "particles": 80,
+      "spawners": 1,
+      "singles": 40
+     },
+     "0.5": {
+      "near_wire": 1028,
+      "all_wire": 0,
+      "lua_us": 14.26,
+      "near_us": 15.676533327360326,
+      "all_us": 0.0,
+      "player_check_us": 0.2,
+      "particles": 40,
+      "spawners": 1,
+      "singles": 20
+     },
+     "0.25": {
+      "near_wire": 949,
+      "all_wire": 0,
+      "lua_us": 8.26,
+      "near_us": 12.11190334893763,
+      "all_us": 0.0,
+      "player_check_us": 0.1,
+      "particles": 20,
+      "spawners": 1,
+      "singles": 10
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "radius": 8,
+    "at": "target"
+   },
+   "pace": 0.1,
+   "pace_text": "about every 10 s",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1110,
+     "all_wire": 0,
+     "lua_us": 52.8,
+     "near_us": 72.19801330692134,
+     "all_us": 0.0,
+     "player_check_us": 0.88,
+     "particles": 88,
+     "spawners": 0,
+     "singles": 88
+    },
+    "0.5": {
+     "near_wire": 709,
+     "all_wire": 0,
+     "lua_us": 26.4,
+     "near_us": 46.685076661842565,
+     "all_us": 0.0,
+     "player_check_us": 0.44,
+     "particles": 44,
+     "spawners": 0,
+     "singles": 44
+    },
+    "0.25": {
+     "near_wire": 492,
+     "all_wire": 0,
+     "lua_us": 13.2,
+     "near_us": 38.9700433364138,
+     "all_us": 0.0,
+     "player_check_us": 0.22,
+     "particles": 22,
+     "spawners": 0,
+     "singles": 22
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 371,
+     "raw": 7720,
+     "wire": 410,
+     "datagrams": 1,
+     "lua_us": 24.0,
+     "per_rx_us": 29.682936692532774,
+     "per_player_check_us": 0.4,
+     "zstd_us": 17.682936692532774
+    },
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 610,
+     "raw": 9264,
+     "wire": 700,
+     "datagrams": 2,
+     "lua_us": 28.799999999999997,
+     "per_rx_us": 33.906239962841696,
+     "per_player_check_us": 0.48,
+     "zstd_us": 19.506239962841693
+    }
+   ],
+   "today_cost": {
+    "near_wire": 1081,
+    "all_wire": 0,
+    "lua_us": 25.88,
+    "near_us": 27.664436702228464,
+    "all_us": 0.0,
+    "player_check_us": 0.4,
+    "particles": 136,
+    "spawners": 1,
+    "singles": 40
+   }
+  },
+  {
+   "id": "dive",
+   "group": "boss",
+   "name": "Dragon dive slam",
+   "skill": "Both dragons, dive",
+   "hook": "boss_dragons.lua:755-824",
+   "today": "80 gold motes at the wind-up and 120 at the slam",
+   "look": "Keep the wind-up; the slam as an exact ground ring out to 7 m (48) and a dust cloud (32) instead of 120.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 48,
+     "time": 0.0,
+     "color": "#e8c06a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      1.0,
+      true
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.34,
+      0.34
+     ],
+     "size": [
+      4.0,
+      4.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e8c06a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1,
+     "radial": [
+      18,
+      18
+     ]
+    },
+    {
+     "kind": "spawner",
+     "n": 32,
+     "time": 0.2,
+     "color": "#a89a80",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      3.0,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.2,
+        0
+       ],
+       [
+        0,
+        0.2,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       3.0,
+       0,
+       3.0
+      ]
+     },
+     "vel": [
+      [
+       -1,
+       0.5,
+       -1
+      ],
+      [
+       1,
+       2,
+       1
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.8,
+      1.2
+     ],
+     "size": [
+      5.0,
+      7.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#a89a80",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": {
+    "why": "The ring only.",
+    "emitters": [
+     {
+      "kind": "single",
+      "n": 48,
+      "time": 0.0,
+      "color": "#e8c06a",
+      "spawn": [
+       "disc",
+       [
+        0,
+        0.2,
+        0
+       ],
+       1.0,
+       true
+      ],
+      "engine": null,
+      "vel": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ],
+      "acc": [
+       0,
+       0,
+       0
+      ],
+      "drag": [
+       0,
+       0,
+       0
+      ],
+      "exp": [
+       0.34,
+       0.34
+      ],
+      "size": [
+       4.0,
+       4.0
+      ],
+      "glow": 10,
+      "attached": false,
+      "texture": "default_item_smoke.png^[multiply:#e8c06a",
+      "sprite": "sq",
+      "fade": true,
+      "at": "target",
+      "delay": 0.0,
+      "kept": false,
+      "steps": 1,
+      "radial": [
+       18,
+       18
+      ]
+     }
+    ],
+    "cost": {
+     "1.0": {
+      "near_wire": 700,
+      "all_wire": 0,
+      "lua_us": 28.799999999999997,
+      "near_us": 30.100106693354125,
+      "all_us": 0.0,
+      "player_check_us": 0.48,
+      "particles": 48,
+      "spawners": 0,
+      "singles": 48
+     },
+     "0.5": {
+      "near_wire": 417,
+      "all_wire": 0,
+      "lua_us": 14.399999999999999,
+      "near_us": 26.981673327088355,
+      "all_us": 0.0,
+      "player_check_us": 0.24,
+      "particles": 24,
+      "spawners": 0,
+      "singles": 24
+     },
+     "0.25": {
+      "near_wire": 279,
+      "all_wire": 0,
+      "lua_us": 7.199999999999999,
+      "near_us": 23.146136657785007,
+      "all_us": 0.0,
+      "player_check_us": 0.12,
+      "particles": 12,
+      "spawners": 0,
+      "singles": 12
+     }
+    }
+   },
+   "art": null,
+   "marker": {
+    "radius": 7,
+    "at": "target"
+   },
+   "pace": 0.06666666666666667,
+   "pace_text": "about every 15 s",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1371,
+     "all_wire": 0,
+     "lua_us": 30.679999999999996,
+     "near_us": 27.727870016529536,
+     "all_us": 0.0,
+     "player_check_us": 0.48,
+     "particles": 80,
+     "spawners": 1,
+     "singles": 48
+    },
+    "0.5": {
+     "near_wire": 1088,
+     "all_wire": 0,
+     "lua_us": 16.279999999999998,
+     "near_us": 19.98703668806702,
+     "all_us": 0.0,
+     "player_check_us": 0.24,
+     "particles": 40,
+     "spawners": 1,
+     "singles": 24
+    },
+    "0.25": {
+     "near_wire": 950,
+     "all_wire": 0,
+     "lua_us": 9.079999999999998,
+     "near_us": 23.91750337057747,
+     "all_us": 0.0,
+     "player_check_us": 0.12,
+     "particles": 20,
+     "spawners": 1,
+     "singles": 12
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 610,
+     "raw": 9264,
+     "wire": 700,
+     "datagrams": 2,
+     "lua_us": 28.799999999999997,
+     "per_rx_us": 37.22467336044647,
+     "per_player_check_us": 0.48,
+     "zstd_us": 22.824673360446468
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 120,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "enrage",
+   "group": "boss",
+   "name": "Dragon enrage",
+   "skill": "Both dragons at half health",
+   "hook": "boss_dragons.lua:710-731",
+   "today": "a burst of 180 red motes",
+   "look": "The same red burst with 96 motes.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 96,
+     "time": 0.5,
+     "color": "#e03030",
+     "spawn": [
+      "box",
+      [
+       -7,
+       0,
+       -7
+      ],
+      [
+       7,
+       4,
+       7
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        -7,
+        0,
+        -7
+       ],
+       [
+        7,
+        4,
+        7
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -3,
+       0.5,
+       -3
+      ],
+      [
+       3,
+       5,
+       3
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      1.6
+     ],
+     "size": [
+      2.0,
+      6.0
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#e03030",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0,
+   "pace_text": "once per fight",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 96,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 48,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 24,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ],
+   "today_cost": {
+    "near_wire": 671,
+    "all_wire": 0,
+    "lua_us": 1.88,
+    "near_us": 3.0,
+    "all_us": 0.0,
+    "player_check_us": 0.0,
+    "particles": 180,
+    "spawners": 1,
+    "singles": 0
+   }
+  },
+  {
+   "id": "whelps",
+   "group": "boss",
+   "name": "Whelp arrival",
+   "skill": "Dragon enrage summon",
+   "hook": "boss_dragons.lua:691-708",
+   "today": "nothing",
+   "look": "A dark puff where each of the two whelps appears.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 16,
+     "time": 0.1,
+     "color": "#40384a",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       0.8,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.6,
+        0.20000000000000007,
+        -0.6
+       ],
+       [
+        0.6,
+        1.4,
+        0.6
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -1,
+       0.5,
+       -1
+      ],
+      [
+       1,
+       2,
+       1
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      4.0,
+      6.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#40384a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    },
+    {
+     "kind": "spawner",
+     "n": 16,
+     "time": 0.1,
+     "color": "#40384a",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       0.8,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.6,
+        0.20000000000000007,
+        -0.6
+       ],
+       [
+        0.6,
+        1.4,
+        0.6
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -1,
+       0.5,
+       -1
+      ],
+      [
+       1,
+       2,
+       1
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.6,
+      0.9
+     ],
+     "size": [
+      4.0,
+      6.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#40384a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0,
+   "pace_text": "once per fight",
+   "target": [
+    3,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 1342,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 32,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 1342,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 16,
+     "spawners": 2,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 1342,
+     "all_wire": 0,
+     "lua_us": 3.76,
+     "near_us": 6.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 8,
+     "spawners": 2,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    },
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "kraken_drag",
+   "group": "boss",
+   "name": "Kraken drag",
+   "skill": "The Kraken's landed drag",
+   "hook": "kraken.lua:121-131",
+   "today": "nothing",
+   "look": "A burst of bubbles around the dragged player.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 16,
+     "time": 0.1,
+     "color": "#cfe8ff",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.6,
+        0.4,
+        -0.6
+       ],
+       [
+        0.6,
+        1.6,
+        0.6
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -0.5,
+       1.0,
+       -0.5
+      ],
+      [
+       0.5,
+       2.5,
+       0.5
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.5,
+      0.8
+     ],
+     "size": [
+      2.0,
+      3.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "mobs_bubble_particle.png",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.3333333333333333,
+   "pace_text": "on each landed hit, about every 3 s",
+   "target": [
+    2,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 655,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 16,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 655,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 8,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 655,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 4,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 565,
+     "wire": 655,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "web",
+   "group": "mob",
+   "name": "Web on the legs",
+   "skill": "Crevice, Bonelurker and Jungle Spider, spiderlings",
+   "hook": "verbs.lua:149-160 (slow_player)",
+   "today": "nothing",
+   "look": "White strands burst at the player's legs and sink slowly.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 8,
+     "time": 0.0,
+     "color": "#f0f0f0",
+     "spawn": [
+      "box",
+      [
+       -0.3,
+       0.2,
+       -0.3
+      ],
+      [
+       0.3,
+       0.6,
+       0.3
+      ]
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -1,
+       -0.2,
+       -1
+      ],
+      [
+       1,
+       0.3,
+       1
+      ]
+     ],
+     "acc": [
+      0,
+      -1,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.7,
+      0.9
+     ],
+     "size": [
+      2.0,
+      3.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#f0f0f0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.3333333333333333,
+   "pace_text": "on a landed bite, about every 3 s",
+   "target": [
+    1.5,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 409,
+     "all_wire": 0,
+     "lua_us": 4.8,
+     "near_us": 16.068603302600483,
+     "all_us": 0.0,
+     "player_check_us": 0.08,
+     "particles": 8,
+     "spawners": 0,
+     "singles": 8
+    },
+    "0.5": {
+     "near_wire": 266,
+     "all_wire": 0,
+     "lua_us": 2.4,
+     "near_us": 7.2102699596124395,
+     "all_us": 0.0,
+     "player_check_us": 0.04,
+     "particles": 4,
+     "spawners": 0,
+     "singles": 4
+    },
+    "0.25": {
+     "near_wire": 194,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 22.164239965906987,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 370,
+     "raw": 1544,
+     "wire": 409,
+     "datagrams": 1,
+     "lua_us": 4.8,
+     "per_rx_us": 19.41866999307337,
+     "per_player_check_us": 0.08,
+     "zstd_us": 17.01866999307337
+    }
+   ]
+  },
+  {
+   "id": "poison",
+   "group": "mob",
+   "name": "Poison: apply and tick",
+   "skill": "Serpent, Scorpion, Viper",
+   "hook": "verbs.lua:216-280",
+   "today": "a status icon only",
+   "look": "Green bubbles rise from the player when poisoned, and two on each tick.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 6,
+     "time": 0.0,
+     "color": "#7ac943",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.8,
+       0
+      ],
+      0.4,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0.8,
+       0
+      ],
+      [
+       0,
+       1.4,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.5,
+      0.7
+     ],
+     "size": [
+      2.0,
+      2.5
+     ],
+     "glow": 4,
+     "attached": false,
+     "texture": "mobs_bubble_particle.png^[multiply:#7ac943",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.5,
+   "pace_text": "apply plus a tick about every 2 s",
+   "target": [
+    1.5,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 269,
+     "all_wire": 0,
+     "lua_us": 3.5999999999999996,
+     "near_us": 18.471139989436292,
+     "all_us": 0.0,
+     "player_check_us": 0.06,
+     "particles": 6,
+     "spawners": 0,
+     "singles": 6
+    },
+    "0.5": {
+     "near_wire": 202,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 6.8270699663708605,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.25": {
+     "near_wire": 177,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 12.057270011305809,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 230,
+     "raw": 1170,
+     "wire": 269,
+     "datagrams": 1,
+     "lua_us": 3.5999999999999996,
+     "per_rx_us": 18.30813666249936,
+     "per_player_check_us": 0.06,
+     "zstd_us": 16.50813666249936
+    }
+   ]
+  },
+  {
+   "id": "pounce",
+   "group": "mob",
+   "name": "Pounce and charge",
+   "skill": "Panther, Speargrass Tiger, Snow Leopard, Boar",
+   "hook": "verbs.lua:402-439",
+   "today": "nothing",
+   "look": "Dust at the take-off and a dust puff where the pounce lands.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 6,
+     "time": 0.0,
+     "color": "#b8a27a",
+     "spawn": [
+      "box",
+      [
+       -0.4,
+       0.05,
+       -0.4
+      ],
+      [
+       0.4,
+       0.2,
+       0.4
+      ]
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -1.5,
+       0.4,
+       -1.5
+      ],
+      [
+       1.5,
+       1.2,
+       1.5
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.6
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    },
+    {
+     "kind": "single",
+     "n": 6,
+     "time": 0.0,
+     "color": "#b8a27a",
+     "spawn": [
+      "box",
+      [
+       -0.4,
+       0.05,
+       -0.4
+      ],
+      [
+       0.4,
+       0.2,
+       0.4
+      ]
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -1.5,
+       0.4,
+       -1.5
+      ],
+      [
+       1.5,
+       1.2,
+       1.5
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.6
+     ],
+     "size": [
+      3.0,
+      4.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.125,
+   "pace_text": "about every 8 s per stalker",
+   "target": [
+    5,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 668,
+     "all_wire": 0,
+     "lua_us": 7.199999999999999,
+     "near_us": 17.431103327296054,
+     "all_us": 0.0,
+     "player_check_us": 0.12,
+     "particles": 12,
+     "spawners": 0,
+     "singles": 12
+    },
+    "0.5": {
+     "near_wire": 452,
+     "all_wire": 0,
+     "lua_us": 3.5999999999999996,
+     "near_us": 32.56234332790288,
+     "all_us": 0.0,
+     "player_check_us": 0.06,
+     "particles": 6,
+     "spawners": 0,
+     "singles": 6
+    },
+    "0.25": {
+     "near_wire": 380,
+     "all_wire": 0,
+     "lua_us": 2.4,
+     "near_us": 16.062103319804493,
+     "all_us": 0.0,
+     "player_check_us": 0.04,
+     "particles": 4,
+     "spawners": 0,
+     "singles": 4
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 295,
+     "raw": 1158,
+     "wire": 334,
+     "datagrams": 1,
+     "lua_us": 3.5999999999999996,
+     "per_rx_us": 9.731003347039223,
+     "per_player_check_us": 0.06,
+     "zstd_us": 7.931003347039223
+    },
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 295,
+     "raw": 1158,
+     "wire": 334,
+     "datagrams": 1,
+     "lua_us": 3.5999999999999996,
+     "per_rx_us": 8.090270005896066,
+     "per_player_check_us": 0.06,
+     "zstd_us": 6.290270005896067
+    }
+   ]
+  },
+  {
+   "id": "ambush",
+   "group": "mob",
+   "name": "Ambush release",
+   "skill": "Crocodile",
+   "hook": "verbs.lua:459-475",
+   "today": "nothing",
+   "look": "A splash (water) or dirt burst where the ambusher breaks cover.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 14,
+     "time": 0.05,
+     "color": "#9cc8e0",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.2,
+       0
+      ],
+      0.6,
+      false
+     ],
+     "engine": {
+      "pos": [
+       [
+        0,
+        0.2,
+        0
+       ],
+       [
+        0,
+        0.2,
+        0
+       ]
+      ],
+      "tween": null,
+      "radius": [
+       0.6,
+       0,
+       0.6
+      ]
+     },
+     "vel": [
+      [
+       -2,
+       2,
+       -2
+      ],
+      [
+       2,
+       4,
+       2
+      ]
+     ],
+     "acc": [
+      0,
+      -10,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.5,
+      0.7
+     ],
+     "size": [
+      2.5,
+      3.5
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#9cc8e0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0,
+   "pace_text": "once per ambush",
+   "target": [
+    2,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 14,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 7,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 4,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "ooze_aura",
+   "group": "mob",
+   "name": "Ooze damage aura",
+   "skill": "Bog Ooze (2 m, every 1 s)",
+   "hook": "verbs.lua:559-580",
+   "today": "nothing",
+   "look": "On each aura tick that hurts someone, a few green bubbles pop on the ground within 2 m.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 5,
+     "time": 0.0,
+     "color": "#6aa83a",
+     "spawn": [
+      "disc",
+      [
+       0,
+       0.1,
+       0
+      ],
+      2.0,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       0,
+       0.3,
+       0
+      ],
+      [
+       0,
+       0.8,
+       0
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.5,
+      0.7
+     ],
+     "size": [
+      2.5,
+      3.5
+     ],
+     "glow": 2,
+     "attached": false,
+     "texture": "mobs_bubble_particle.png^[multiply:#6aa83a",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": {
+    "radius": 2,
+    "at": "target"
+   },
+   "pace": 1,
+   "pace_text": "once per second while it hurts someone",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 245,
+     "all_wire": 0,
+     "lua_us": 3.0,
+     "near_us": 7.501666673303892,
+     "all_us": 0.0,
+     "player_check_us": 0.05,
+     "particles": 5,
+     "spawners": 0,
+     "singles": 5
+    },
+    "0.5": {
+     "near_wire": 201,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 6.8853032871615145,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.25": {
+     "near_wire": 149,
+     "all_wire": 0,
+     "lua_us": 0.6,
+     "near_us": 6.546666695612172,
+     "all_us": 0.0,
+     "player_check_us": 0.01,
+     "particles": 1,
+     "spawners": 0,
+     "singles": 1
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 206,
+     "raw": 975,
+     "wire": 245,
+     "datagrams": 1,
+     "lua_us": 3.0,
+     "per_rx_us": 7.919336665809776,
+     "per_player_check_us": 0.05,
+     "zstd_us": 6.419336665809776
+    }
+   ]
+  },
+  {
+   "id": "treant_aura",
+   "group": "mob",
+   "name": "Treant slowing aura",
+   "skill": "Ashen and Gravewood Treant (3 m)",
+   "hook": "night_families.lua:205-222",
+   "today": "nothing",
+   "look": "Brown leaves drift down within the 3 m aura while a player is slowed by it.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 5,
+     "time": 0.0,
+     "color": "#7a5a32",
+     "spawn": [
+      "disc",
+      [
+       0,
+       3.0,
+       0
+      ],
+      3.0,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -0.3,
+       -0.8,
+       -0.3
+      ],
+      [
+       0.3,
+       -0.5,
+       0.3
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      1.8,
+      2.2
+     ],
+     "size": [
+      2.5,
+      3.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#7a5a32",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": {
+    "radius": 3,
+    "at": "target"
+   },
+   "pace": 0.5,
+   "pace_text": "every 2 s while it slows someone",
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 278,
+     "all_wire": 0,
+     "lua_us": 3.0,
+     "near_us": 7.699636651823918,
+     "all_us": 0.0,
+     "player_check_us": 0.05,
+     "particles": 5,
+     "spawners": 0,
+     "singles": 5
+    },
+    "0.5": {
+     "near_wire": 216,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 7.172933290650448,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.25": {
+     "near_wire": 147,
+     "all_wire": 0,
+     "lua_us": 0.6,
+     "near_us": 10.414836671467251,
+     "all_us": 0.0,
+     "player_check_us": 0.01,
+     "particles": 1,
+     "spawners": 0,
+     "singles": 1
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 239,
+     "raw": 965,
+     "wire": 278,
+     "datagrams": 1,
+     "lua_us": 3.0,
+     "per_rx_us": 7.574866687413305,
+     "per_player_check_us": 0.05,
+     "zstd_us": 6.074866687413305
+    }
+   ]
+  },
+  {
+   "id": "oerkki_blink",
+   "group": "mob",
+   "name": "Oerkki blink origin",
+   "skill": "Oerkki",
+   "hook": "oerkki.lua:51-56",
+   "today": "12 violet puffs at the arrival only",
+   "look": "A matching violet puff where the Oerkki leaves.",
+   "emitters": [
+    {
+     "kind": "spawner",
+     "n": 12,
+     "time": 0.2,
+     "color": "#7030a0",
+     "spawn": [
+      "box",
+      [
+       -0.5,
+       0,
+       -0.5
+      ],
+      [
+       0.5,
+       1,
+       0.5
+      ]
+     ],
+     "engine": {
+      "pos": [
+       [
+        -0.5,
+        0,
+        -0.5
+       ],
+       [
+        0.5,
+        1,
+        0.5
+       ]
+      ],
+      "tween": null,
+      "radius": null
+     },
+     "vel": [
+      [
+       -2,
+       0,
+       -2
+      ],
+      [
+       2,
+       3,
+       2
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.7
+     ],
+     "size": [
+      1.5,
+      3
+     ],
+     "glow": 10,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#7030a0",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.2,
+   "pace_text": "every 5 s",
+   "target": [
+    3,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 12,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.5": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 6,
+     "spawners": 1,
+     "singles": 0
+    },
+    "0.25": {
+     "near_wire": 671,
+     "all_wire": 0,
+     "lua_us": 1.88,
+     "near_us": 3.0,
+     "all_us": 0.0,
+     "player_check_us": 0.0,
+     "particles": 3,
+     "spawners": 1,
+     "singles": 0
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "spawner",
+     "receivers": "near",
+     "data": 581,
+     "wire": 671,
+     "datagrams": 2,
+     "lua_us": 1.88,
+     "per_rx_us": 3.0
+    }
+   ]
+  },
+  {
+   "id": "wisp_blink",
+   "group": "mob",
+   "name": "Wisp blink",
+   "skill": "Wisp (2.5 m step every 4 s)",
+   "hook": "night_families.lua:160-178",
+   "today": "nothing",
+   "look": "Pale puffs where the wisp leaves and arrives.",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 5,
+     "time": 0.0,
+     "color": "#dff4ff",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.3,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -0.8,
+       0,
+       -0.8
+      ],
+      [
+       0.8,
+       1,
+       0.8
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.6
+     ],
+     "size": [
+      2.0,
+      3.0
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#dff4ff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "caster",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    },
+    {
+     "kind": "single",
+     "n": 5,
+     "time": 0.0,
+     "color": "#dff4ff",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.3,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -0.8,
+       0,
+       -0.8
+      ],
+      [
+       0.8,
+       1,
+       0.8
+      ]
+     ],
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.4,
+      0.6
+     ],
+     "size": [
+      2.0,
+      3.0
+     ],
+     "glow": 12,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#dff4ff",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.25,
+   "pace_text": "every 4 s",
+   "target": [
+    2.5,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 598,
+     "all_wire": 0,
+     "lua_us": 6.0,
+     "near_us": 15.8392733555908,
+     "all_us": 0.0,
+     "player_check_us": 0.1,
+     "particles": 10,
+     "spawners": 0,
+     "singles": 10
+    },
+    "0.5": {
+     "near_wire": 460,
+     "all_wire": 0,
+     "lua_us": 3.5999999999999996,
+     "near_us": 14.04940332273642,
+     "all_us": 0.0,
+     "player_check_us": 0.06,
+     "particles": 6,
+     "spawners": 0,
+     "singles": 6
+    },
+    "0.25": {
+     "near_wire": 302,
+     "all_wire": 0,
+     "lua_us": 1.2,
+     "near_us": 12.927603326411916,
+     "all_us": 0.0,
+     "player_check_us": 0.02,
+     "particles": 2,
+     "spawners": 0,
+     "singles": 2
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 260,
+     "raw": 965,
+     "wire": 299,
+     "datagrams": 1,
+     "lua_us": 3.0,
+     "per_rx_us": 7.840733331550533,
+     "per_player_check_us": 0.05,
+     "zstd_us": 6.340733331550533
+    },
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 260,
+     "raw": 965,
+     "wire": 299,
+     "datagrams": 1,
+     "lua_us": 3.0,
+     "per_rx_us": 8.272003301496927,
+     "per_player_check_us": 0.05,
+     "zstd_us": 6.772003301496928
+    }
+   ]
+  },
+  {
+   "id": "projectile_impact",
+   "group": "mob",
+   "name": "Mob projectile impact",
+   "skill": "Arrows, rocks, crystal shards, embers, fire hurls",
+   "hook": "the arrows' hit callbacks (verbs.lua register_simple_arrow / register_homing_arrow)",
+   "today": "nothing on impact",
+   "look": "A small puff where a mob projectile hits: splinters (arrow), grey dust (rock), cyan glints (shard), orange sparks (ember, fire).",
+   "emitters": [
+    {
+     "kind": "single",
+     "n": 5,
+     "time": 0.0,
+     "color": "#a08860",
+     "spawn": [
+      "sphere",
+      [
+       0,
+       1.0,
+       0
+      ],
+      0.15,
+      false
+     ],
+     "engine": null,
+     "vel": [
+      [
+       -1.5,
+       -0.5,
+       -1.5
+      ],
+      [
+       1.5,
+       1.5,
+       1.5
+      ]
+     ],
+     "acc": [
+      0,
+      -8,
+      0
+     ],
+     "drag": [
+      0,
+      0,
+      0
+     ],
+     "exp": [
+      0.3,
+      0.45
+     ],
+     "size": [
+      1.5,
+      2.0
+     ],
+     "glow": 0,
+     "attached": false,
+     "texture": "default_item_smoke.png^[multiply:#a08860",
+     "sprite": "sq",
+     "fade": true,
+     "at": "target",
+     "delay": 0.0,
+     "kept": false,
+     "steps": 1
+    }
+   ],
+   "simple": null,
+   "art": null,
+   "marker": null,
+   "pace": 0.5,
+   "pace_text": "about every 2 s per ranged mob",
+   "target": [
+    1,
+    0,
+    0
+   ],
+   "note": "",
+   "cost": {
+    "1.0": {
+     "near_wire": 300,
+     "all_wire": 0,
+     "lua_us": 3.0,
+     "near_us": 7.824003334157169,
+     "all_us": 0.0,
+     "player_check_us": 0.05,
+     "particles": 5,
+     "spawners": 0,
+     "singles": 5
+    },
+    "0.5": {
+     "near_wire": 232,
+     "all_wire": 0,
+     "lua_us": 1.7999999999999998,
+     "near_us": 7.122733354661614,
+     "all_us": 0.0,
+     "player_check_us": 0.03,
+     "particles": 3,
+     "spawners": 0,
+     "singles": 3
+    },
+    "0.25": {
+     "near_wire": 150,
+     "all_wire": 0,
+     "lua_us": 0.6,
+     "near_us": 6.017470000187556,
+     "all_us": 0.0,
+     "player_check_us": 0.01,
+     "particles": 1,
+     "spawners": 0,
+     "singles": 1
+    }
+   },
+   "emitter_costs": [
+    {
+     "kind": "single",
+     "receivers": "near",
+     "data": 261,
+     "raw": 965,
+     "wire": 300,
+     "datagrams": 1,
+     "lua_us": 3.0,
+     "per_rx_us": 8.066133330731342,
+     "per_player_check_us": 0.05,
+     "zstd_us": 6.566133330731342
+    }
+   ]
+  }
+ ],
+ "unchanged": [
+  [
+   "Storm lightning warning ring",
+   "boss_dragons.lua:617-630",
+   "stays 32 single particles: an exact circle, and about 0.36 KB per nearby player against 0.67 KB as a spawner"
+  ],
+  [
+   "Critical hit sparks",
+   "combat.lua:1012-1024",
+   "8 gold motes"
+  ],
+  [
+   "Absorb soak",
+   "combat.lua:1527-1538",
+   "6 pale-gold motes"
+  ],
+  [
+   "Stun cross",
+   "movement.lua:409-424",
+   "procedural yellow cross"
+  ],
+  [
+   "Root crystals",
+   "movement.lua:439-453",
+   "procedural pale-blue crystal"
+  ],
+  [
+   "Rift pulse, spawn and crack",
+   "rift.lua:173-191, 230-240, 443",
+   "already spawners"
+  ],
+  [
+   "Hex bottle",
+   "bog_witch.lua:20-27",
+   "16 violet puffs"
+  ],
+  [
+   "Dragon ground patches",
+   "boss_dragons.lua:251-266",
+   "36 per patch"
+  ],
+  [
+   "Rift Spawn explosion",
+   "rift_spawn.lua:46-71",
+   "32 violet smoke"
+  ],
+  [
+   "Blood, death and fall smoke (mob engine)",
+   "mobs/api.lua:1074, 3259, 3648-3664",
+   "as today"
+  ]
+ ],
+ "rejected_art": "VoxeLibre's crit, totem, effect and generic smoke sprites come from a resource pack made for a commercial game; using them would copy that game's particle look (AGENTS.md: never copy assets one to one).",
+ "constants": {
+  "lua_spawner_us": 1.88,
+  "lua_spawner_attract_us": 2.26,
+  "lua_particle_us": 0.6,
+  "est_spawner_send_us": 3.0,
+  "est_particle_serialize_us": 0.3,
+  "est_distance_check_us": 0.01,
+  "spawner_wire": 671
+ },
+ "scales": [
+  "1.0",
+  "0.5",
+  "0.25"
+ ]
+}

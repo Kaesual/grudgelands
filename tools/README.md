@@ -205,3 +205,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   variants on test courses, the cooldown overlay on the hotbar, server-side
   timings; never shipped, see its README); its `portable_test.lua` covers the
   path planner, the overlay arithmetic and the cooldown number.
+  `r40_an` the pose proposals (`make_poses.py` bakes the readable spec into
+  per-frame B3D keys, `poses.json`, `--check`), the table lane AN1 bakes into
+  the player model. `r40_v3` the accepted particle effect catalogue
+  (`effects.py`, the emitters in engine terms; `cost_model.py`, the server
+  cost from the engine's serialization; `data.json`, their output;
+  `particle_cost_probe/`, the headless timing of the particle API calls).
