@@ -93,7 +93,7 @@ against `texture_grammar` and `texture_files` and rejects anything else.
 | `model.gltf` | Repository path of the same model as glTF binary ([`model/`](model/)). |
 | `model.textures` | The model's texture slots in order: `body` (the appearance's `textures.body`), `cloak` (`textures.cloak`). |
 | `model.fps` | Animation frames per second. |
-| `model.animations.stand`, `.walk` | Frame ranges (`start`, `end`, inclusive) in model frames, looped. |
+| `model.animations.stand`, `.walk` | Frame ranges (`start`, `end`, inclusive) in model frames, looped. In the glTF clip of the same name, frame `f` is at `(f − start) / fps` seconds. |
 
 ### Hand attachment
 
@@ -119,6 +119,10 @@ Frames and units, as the engine applies them (derivation:
   centred on the entity's origin) whose edge is 20 × `size` × `wield_scale`
   model units (the engine's extrusion factor 40, halved by the entity's
   visual size).
+- In the glTF model ([`model/`](model/README.md)) z is mirrored: an engine
+  position `(x, y, z)`, `pos` included, is `(x, y, −z)` there, and the
+  rotation matrix R built from `rot` becomes S·R·S with S = diag(1, 1, −1);
+  units (10 = 1 node) and bone names are the same.
 - The model's own `visual_size` (the race's) scales the attachment as well:
   item transform = S(race) · T(pos) · R(rot) · S(size). The per-race values
   already contain the compensation that makes the item equally large in every
