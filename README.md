@@ -109,7 +109,7 @@ stats, and the sound controls. The short version:
 
 The latest finished round is Round 37, "Audit fixes": what an October 2026
 review of the code and the documentation found, from creatures that keep
-to the player holding their attention in a party fight to mounts that no
+to the player holding their attention when several players fight them to mounts that no
 longer throw you off when a buff runs out, plus calmer start zones and
 less server work per player. Round 36 before it brought each faction's
 main story from level 41 to 60, with its finale against Isquarre at the
