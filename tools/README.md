@@ -207,7 +207,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   path planner, the overlay arithmetic and the cooldown number.
   `r40_an` the pose proposals (`make_poses.py` bakes the readable spec into
   per-frame B3D keys, `poses.json`, `--check`), the table lane AN1 bakes into
-  the player model. `r40_v3` the accepted particle effect catalogue
+  the player model. `r40_an1` the pose clips' triggers on the real
+  player_api, poses.lua and the cut trigger sites (`portable_test.lua`: pose
+  per skill, never on a refusal or the Strike fallback, the walking twin
+  and its walk phase, hold times, one-shot restart, the flinch's rate limit
+  and precedence) and `bench_hook.lua`, the animation pass with the pose
+  hooks for 100 stand-in players (run it on the base and the branch).
+  `r40_v3` the accepted particle effect catalogue
   (`effects.py`, the emitters in engine terms; `cost_model.py`, the server
   cost from the engine's serialization; `data.json`, their output;
   `particle_cost_probe/`, the headless timing of the particle API calls).

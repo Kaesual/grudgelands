@@ -32,12 +32,24 @@ local DRAW_STAGE_SOURCE = {
 	["grug_gear_bow_alder.png"] = "^[colorize:#9b442f:75",
 }
 
+-- The drawn bow's pose clip (grug_visuals POSE_CLIPS `bow`, Round 40) while a
+-- draw runs, its walking twin on the move; it also keeps the held LMB from
+-- showing the generic mine pose. The step after a draw answers the resume
+-- animation, so the player's own client lets go of the bow pose too
+-- (grug_visuals apply.lua, `<base>_resume`).
+local bow_shown = {}
 player_api.register_control_animation_override(function(player, controls)
-	if not draws[player:get_player_name()] then return end
-	if controls.up or controls.down or controls.left or controls.right then
-		return "walk"
+	local name = player:get_player_name()
+	if not draws[name] then
+		if not bow_shown[name] then return end
+		bow_shown[name] = nil
+		return grug_visuals.resume_animation(controls)
 	end
-	return "stand"
+	bow_shown[name] = true
+	if controls.up or controls.down or controls.left or controls.right then
+		return "bow_walk"
+	end
+	return "bow"
 end)
 
 local function action_id(player, ability)
@@ -484,6 +496,7 @@ core.register_on_joinplayer(function(player) reset_draw_stack(player) end)
 core.register_on_leaveplayer(function(player)
 	clear_draw(player)
 	pending_control[player:get_player_name()] = nil
+	bow_shown[player:get_player_name()] = nil
 end)
 
 grug_core.register_on_equipment_change(function(player, listname, reason)
