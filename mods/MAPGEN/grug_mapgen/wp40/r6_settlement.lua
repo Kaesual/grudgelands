@@ -1195,8 +1195,14 @@ local function settlement_factory()
 		-- R5). Content that seeks a shore (P9G and world-content shore rows)
 		-- ignores the bank id. Vegetation sees only the road corridor (nothing
 		-- grows on a road or its side slopes); cave skins see none of them.
+		-- "gathering" (user ruling 2026-10-07) is the natural content's rule
+		-- (P9G sources, world-content plants and their renewal): the static
+		-- shapes as trees see them -- no anchor blend envelope, a POI only
+		-- with its core and margin -- and every overlay kind as the territory
+		-- rule adds them.
 		local function exclusion_reason(x, z, purpose)
-			local reason, id = static_exclusion_reason(x, z, purpose)
+			local reason, id = static_exclusion_reason(x, z,
+				purpose == "gathering" and "vegetation" or purpose)
 			if reason then return reason, id end
 			if purpose == "vegetation" or purpose == "cover" then
 				if planner_source.overlay_exclusion_at(x, z) == "road_corridor" then
@@ -1204,7 +1210,7 @@ local function settlement_factory()
 				end
 				return nil
 			end
-			if purpose ~= nil then return nil end
+			if purpose ~= nil and purpose ~= "gathering" then return nil end
 			local kind = planner_source.overlay_exclusion_at(x, z)
 			if kind == nil then return nil end
 			id = overlay_exclusion_id[kind]
@@ -3410,8 +3416,11 @@ local function settlement_factory()
 				-- places at; below the column's protected-only floor the claim
 				-- exclusion does not apply. `dry_island_open`: P9G's view of the
 				-- dragon islands' coast envelopes (nonblocking on dry land).
-				function successor_context.exclusion_at(x, z, y, dry_island_open)
-					local reason, id = helpers.exclusion_reason(x, z)
+				-- `purpose`: nil (the territory rule) or "gathering" (see
+				-- `exclusion_reason`).
+				function successor_context.exclusion_at(x, z, y, dry_island_open,
+						purpose)
+					local reason, id = helpers.exclusion_reason(x, z, purpose)
 					if y ~= nil and reason == "fixed_or_protected" and
 							y < (dry_island_open and
 								(planner_source.protected_only_floor_at(x, z, true) or

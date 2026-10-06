@@ -79,7 +79,9 @@ return function(catalog, content, habitat)
     for x=ctx.min_x,ctx.max_x do
      local water,_,zone,biome,_,ground,water_y,river_id,_,_,_,_,_,step=
       ctx.column_values_at(x,z)
-     local excluded,excluded_id=ctx.exclusion_at(x,z)
+     -- Natural content keeps the trees' claim rule (user ruling
+     -- 2026-10-07): no anchor blend envelope, a POI's core and margin only.
+     local excluded,excluded_id=ctx.exclusion_at(x,z,nil,nil,"gathering")
      -- Inland water and its banks (stale-rule R5) are claim exclusions of
      -- their own: freshwater plants belong in that water, and shore rows
      -- on the bank; everything else keeps off both.
@@ -88,7 +90,8 @@ return function(catalog, content, habitat)
      -- Round 24 ruling 30 addendum: a surface row below the column's
      -- protected floor stands on ordinary ground.
      local surface_excluded=excluded
-     if excluded=="fixed_or_protected" and ctx.exclusion_at(x,z,ground+1)==nil then
+     if excluded=="fixed_or_protected" and
+      ctx.exclusion_at(x,z,ground+1,nil,"gathering")==nil then
       surface_excluded=nil
      end
      if water=="land" and not surface_excluded then

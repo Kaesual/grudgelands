@@ -314,8 +314,11 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				value.prior_aux = context.settled_at(x, y, z)
 			-- `y` (Round 24 ruling 30 addendum): below the column's protected
 			-- floor an anchor envelope's exclusion does not apply (the dry
-			-- island coast envelopes stay nonblocking, as below).
-			local exclusion, exclusion_id = context.exclusion_at(x, z, y, true)
+			-- island coast envelopes stay nonblocking, as below). Gathering
+			-- sources keep the trees' claim rule (user ruling 2026-10-07): no
+			-- anchor blend envelope, a POI's core and margin only.
+			local exclusion, exclusion_id = context.exclusion_at(x, z, y, true,
+				"gathering")
 			-- The two island coast records are claim envelopes over the complete
 			-- island polygon, not occupied world cells.  Their physically dry P7
 			-- surface remains the ratified host for endpoint gathering sources.
