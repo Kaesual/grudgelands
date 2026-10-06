@@ -495,7 +495,7 @@ Normal tier at level L:
   Stone/Mesa Golem. The Bandit Archer and two Skeleton ranged families remain
   **4.0**; harmless critters that never attack remain **3.4**. The Bog Ooze
   remains **2.6** because its roster role is explicitly the one slow tank. The
-  deep-sea Kraken Guard runs **10** inside a deep-ocean column and **5**
+  deep-sea Kraken runs **10** inside a deep-ocean column and **5**
   elsewhere (`world.md` §2b). The ordinary 4.6 band keeps
   the Swiftness Draught below it (4.0 × 1.10 = 4.4), and continues to feed the
   pursuit policy of §4. Each value is the `run_velocity` field of the
@@ -685,7 +685,7 @@ Normal tier at level L:
   remains nil and permits no guard post. Ordinary and royal guards inside
   remain exactly 60. `_grug_fixed_level` is the sole explicit fixed-entity
   mechanism and bypasses positional and post-role fields only for a deliberately
-  designed fixed entity. Its implemented uses are the Kraken Guard (an elite)
+  designed fixed entity. Its implemented uses are the Kraken (an elite)
   at L70 and every WP13 king at L65. No second king-specific fixed-level path exists.
 
 | Mob level | HP | Dmg/hit | Kill XP (normal, solo) | Elite / rare XP |

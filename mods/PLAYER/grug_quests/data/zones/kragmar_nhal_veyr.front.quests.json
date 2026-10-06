@@ -10,7 +10,7 @@
       "level": 55,
       "requires": [],
       "title": "Dressed for the Long Rest",
-      "text": "Our shroud cupboard is nearly bare, and I refuse to enter 'wrapped in a sack' beside another name. Bring me two Glass Spider Silk from the Gossamer Widows at night in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}. We may keep our dead for centuries; we can at least dress them properly.",
+      "text": "Our shroud cupboard is nearly bare, and I refuse to enter 'wrapped in a sack' beside another name. Bring me two Glass Silk from the Gossamer Widows at night in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}. We may keep our dead for centuries; we can at least dress them properly.",
       "objectives": [
         {
           "type": "item",

@@ -453,7 +453,7 @@
   },
   {
     "id": "grug_mobs:storm_crab_shell",
-    "name": "Storm Crab Shell",
+    "name": "Pitted Crab Shell",
     "tier": 4,
     "family": "crab",
     "kind": "signature",
@@ -573,7 +573,7 @@
   },
   {
     "id": "grug_mobs:raptor_claw",
-    "name": "Small Cat Claw",
+    "name": "Cat Claw",
     "tier": 1,
     "family": "feline",
     "kind": "signature",
@@ -581,7 +581,7 @@
     "uses": [
       "quest"
     ],
-    "notes": "Existing id and icon retained; deliberately relabel Raptor Claw as Small Cat Claw because its authored sources are cats. No raptor source or alias is added."
+    "notes": "Existing id and icon retained; deliberately relabel Raptor Claw as Cat Claw because its authored sources are cats. No raptor source or alias is added."
   },
   {
     "id": "grug_mobs:hooked_cat_claw",
@@ -621,7 +621,7 @@
   },
   {
     "id": "grug_mobs:siege_cat_claw",
-    "name": "Siege Cat Claw",
+    "name": "Notched Cat Claw",
     "tier": 5,
     "family": "feline",
     "kind": "signature",
@@ -633,7 +633,7 @@
   },
   {
     "id": "grug_mobs:glass_cat_claw",
-    "name": "Glass Cat Claw",
+    "name": "Gleaming Cat Claw",
     "tier": 6,
     "family": "feline",
     "kind": "signature",
@@ -731,7 +731,7 @@
   },
   {
     "id": "grug_mobs:salt_bear_claw",
-    "name": "Salt Bear Claw",
+    "name": "Blighted Bear Claw",
     "tier": 6,
     "family": "bear",
     "kind": "signature",
@@ -840,7 +840,7 @@
   },
   {
     "id": "grug_mobs:restless_wisp_mote",
-    "name": "Flickering Wisp Mote",
+    "name": "Guttering Wisp Mote",
     "tier": 4,
     "family": "wisp",
     "kind": "signature",
@@ -852,7 +852,7 @@
   },
   {
     "id": "grug_mobs:mourning_resin",
-    "name": "Gravewood Resin",
+    "name": "Lichen Resin",
     "tier": 3,
     "family": "treant",
     "kind": "signature",
@@ -876,7 +876,7 @@
   },
   {
     "id": "grug_mobs:bone_chitin",
-    "name": "Bone Chitin",
+    "name": "Ivory Chitin",
     "tier": 3,
     "family": "weevil",
     "kind": "signature",
@@ -888,11 +888,11 @@
   },
   {
     "id": "grug_mobs:layered_bone_chitin",
-    "name": "Layered Bone Chitin",
+    "name": "Layered Chitin",
     "tier": 4,
     "family": "weevil",
     "kind": "signature",
-    "description": "Stacked plates from an older, larger weevil.",
+    "description": "Stacked plates from an older, larger beetle.",
     "uses": [
       "quest"
     ],
@@ -924,7 +924,7 @@
   },
   {
     "id": "grug_mobs:silver_ape_hair",
-    "name": "Silver Ape Hair",
+    "name": "Silver Mane",
     "tier": 6,
     "family": "ape",
     "kind": "signature",
@@ -1034,7 +1034,7 @@
   },
   {
     "id": "grug_mobs:glass_spider_silk",
-    "name": "Glass Spider Silk",
+    "name": "Glass Silk",
     "tier": 6,
     "family": "spider",
     "kind": "signature",
@@ -1094,7 +1094,7 @@
   },
   {
     "id": "grug_mobs:marching_bone",
-    "name": "Marching Bone",
+    "name": "Drilled Bone",
     "tier": 4,
     "family": "skeleton",
     "kind": "signature",

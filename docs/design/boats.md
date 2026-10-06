@@ -6,10 +6,10 @@ rulings 1–8 and the confirmed defaults of §1.1), which retired the placed,
 craftable and decaying boat. Implemented in Round 29 (lane B) in
 `mods/PLAYER/grug_mounts`.
 
-Neighbouring rules: ocean classes and the Kraken Guard's pursuit in `world.md`
+Neighbouring rules: ocean classes and the Kraken's pursuit in `world.md`
 §2b, the authored channel geometry and both offshore islands in
 `world_zones.md` §7 and §9.4, waypoints and home travel in `world.md` §6, the
-mount contract this file reuses in `mounts.md` §3, and the Kraken Guard's
+mount contract this file reuses in `mounts.md` §3, and the Kraken's
 values in `biomes_mobs.md` §3.1.
 
 ## 1. A boat is a water mount
@@ -136,17 +136,17 @@ shows the tier name and its speed ("4 nodes/s on water").
 
 ## 7. Ocean danger and the dragon islands
 
-The water classes, the Kraken Guard's pursuit rules and the dragon channels
+The water classes, the Kraken's pursuit rules and the dragon channels
 are owned by `world.md` §2b. What matters for a boat:
 
 - **The dragon islands are reachable by boat only** (ruling 2). Flying mounts
   stay forbidden over every ocean column, including the dragon channels, and
   on both islands (`mounts.md` §4.1/§4.2).
-- **Deep ocean is not survivable in a boat.** The Kraken Guard swims 10
+- **Deep ocean is not survivable in a boat.** The Kraken swims 10
   nodes/s inside deep-ocean columns, above the Improved Boat's 8, with a view
   range of 40 (ruling 7); one hit ejects the rider into deep water.
 - **The coastal shelf and the dragon channels are safe boat water.** No
-  Kraken Guard spawns there, and a guard outside deep ocean drops its target
+  Kraken spawns there, and a Kraken outside deep ocean drops its target
   and holds position, so it never pursues a boat beyond the deep-ocean edge.
 - Both approaches to either island (`world_zones.md` §7.4) are required boat
   routes; a crossing is about 390–420 nodes, roughly 100 s by Boat and 50 s by

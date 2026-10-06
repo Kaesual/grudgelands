@@ -187,7 +187,7 @@
         "lasthedge_front_01"
       ],
       "title": "The Fletchers' Bright Idea",
-      "text": "The fletchers have requested three Siege Cat Claws, very neatly written and without a single offer to fetch them. Hunt Ash Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring the claws to me. I'll see that your name goes on the delivery.",
+      "text": "The fletchers have requested three Notched Cat Claws, very neatly written and without a single offer to fetch them. Hunt Ash Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring the claws to me. I'll see that your name goes on the delivery.",
       "objectives": [
         {
           "type": "item",

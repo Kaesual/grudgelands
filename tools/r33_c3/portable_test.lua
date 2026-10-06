@@ -203,7 +203,7 @@ check(A.kill_counters("grug_mobs:boar") == A.kill_counters("grug_mobs:boar"),
 eq(#A.kill_counters("grug_mobs:bandit"), 0, "K a bandit feeds no counter")
 eq(#A.kill_counters(nil), 0, "K a nameless entity feeds no counter")
 eligible_kill(anna, {})
-eq(A.kill_counters("grug_mobs:kraken")[1], "kill:animal", "K the Kraken Guard is a wild animal")
+eq(A.kill_counters("grug_mobs:kraken")[1], "kill:animal", "K the Kraken is a wild animal")
 eq(A.kill_counters("grug_mobs:salt_hex_witch")[1], "kill:family:skeleton", "K a witch is a skeleton")
 eq(A.kill_counters("grug_mobs:seam_mesa_golem")[1], "kill:family:golem", "K a golem sub-type")
 eq(A.kill_counters("grug_mobs:war_construct")[1], "kill:family:construct", "K a construct")

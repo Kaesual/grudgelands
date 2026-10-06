@@ -80,7 +80,7 @@ character state:
   does not override it).
 - **Every tier is faster than ordinary aggressive mobs** — they run 4.6
   (`combat_stats.md` §3), while the slowest mount runs 6.4. Bespoke encounters
-  such as the Kraken Guard keep their separate speed rules.
+  such as the Kraken keep their separate speed rules.
   **Incoming damage dismounts the rider** (§3.1): the travel speed is
   permanent, the immunity to the mob game is not.
 - The two flying tiers are the late-game milestones. Expert matches the

@@ -1,4 +1,4 @@
--- Kraken Guard: the deep-sea deterrent of the open sea (world.md §2b,
+-- Kraken: the deep-sea deterrent of the open sea (world.md §2b,
 -- biomes_mobs.md §3.1). A level-70 elite, HAND-SET — the one exception to the
 -- level field (grug_zones.mob_level_at returns nil on the open water
 -- surface; user ruling, Round 33). It exists to make sea travel a bad idea,
@@ -26,7 +26,7 @@ local function set_run_velocity(self, speed)
 end
 
 grug_mobs.register_mob("grug_mobs:kraken", {
-	description = "Kraken Guard",
+	description = "Kraken",
 	_grug_voice = "kraken",
 	clock = "any",
 	type = "monster",

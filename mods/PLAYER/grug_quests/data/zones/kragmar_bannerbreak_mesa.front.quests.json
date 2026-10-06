@@ -253,7 +253,7 @@
         "bb_front_torn_01"
       ],
       "title": "A Standard with Claws",
-      "text": "This banner has survived arrows, rain, and a cook who mistook it for a towel. It deserves teeth of its own: kill four Ash Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring me two Siege Cat Claws. Let's give the Accord something new to stare at.",
+      "text": "This banner has survived arrows, rain, and a cook who mistook it for a towel. It deserves teeth of its own: kill four Ash Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring me two Notched Cat Claws. Let's give the Accord something new to stare at.",
       "objectives": [
         {
           "type": "kill",

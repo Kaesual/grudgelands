@@ -314,7 +314,7 @@ are kept per character, and so is the choice.
 
   "Wild animals" are every animal mob, critters and hostile beasts included,
   but no humanoid, construct, spirit or slime, and not the dragons or their
-  whelps (bosses and boss adds); the Kraken Guard counts (user ruling
+  whelps (bosses and boss adds); the Kraken counts (user ruling
   2026-10-04). A sub-type counts as its base mob. A kill counts for every
   character the kill credits (the XP rule's participants). A King or a dragon
   counts for every character the boss ledger credits, whatever the loot
