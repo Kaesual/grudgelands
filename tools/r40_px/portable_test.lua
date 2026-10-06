@@ -218,7 +218,7 @@ local FRAME = {caster = CASTER, target = vector.new(16, 5, -20), dir = vector.ne
 local IDS = {"ice_nova", "fireball", "smite", "mighty_blow", "skill_arrow", "charge_ring",
 	"charge_dust", "hamstring", "taunt", "bellow", "hold_ground", "blink", "cinderfall",
 	"glacial_ward", "heal", "heal_splash", "shield_spell", "mend", "word_of_ruin", "snare_hit",
-	"pinning_hit", "sidestep", "sprint", "opening", "proc", "crit", "absorb"}
+	"pinning_hit", "sidestep", "sprint", "opening", "proc", "crit", "absorb", "level_up"}
 local per_effect = {}
 for _, id in ipairs(IDS) do
 	local effect = P.registered(id)
@@ -548,7 +548,7 @@ end
 P = load_helper(nil)
 local FILES = {"mods/PLAYER/grug_abilities/kits.lua", "mods/PLAYER/grug_abilities/scout.lua",
 	"mods/CORE/grug_core/combat.lua", "mods/CORE/grug_core/particle_effects.lua",
-	"mods/ENTITIES/grug_projectiles/init.lua"}
+	"mods/ENTITIES/grug_projectiles/init.lua", "mods/PLAYER/grug_xp/init.lua"}
 local seen = 0
 for _, path in ipairs(FILES) do
 	local text = read(path)

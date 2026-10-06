@@ -1358,3 +1358,52 @@ boss action cancellation and encounter ownership rules.
 An accepted stun emits one small, bounded golden particle burst above its
 target. Rejected, immune and dead targets emit none. This is feedback for the
 existing stun result, not a separate control effect or damage source.
+
+## Skill particle effects
+
+Round 40 (round40-plan.md §2.4–§2.6, §2.15): every player skill but Strike
+shows a single-colour particle effect, built from the accepted catalogue
+`tools/r40_v3/effects.py`. One path plays every effect: the named emitters in
+`grug_core/particle_effects.lua`, played by `grug_core.particles`
+([module guide](../technical/module-guide.md#combat-and-classes)).
+
+- **When:** an effect fires only when the skill really fires: a cast that
+  passed every refusal, a swing proc that landed (its post), a proc window
+  that opened, an arrow launch that committed. Never on the Strike fallback
+  of a skill on cooldown, without charge or without its resource, and
+  never on a refused cast. **Strike** has no effect.
+- **The effects:** Ice Nova (and Frostbind's ranged nova) a flat frost ring
+  out to the nova's radius over a slower mist; Fireball an ember splash and a
+  dark puff on impact (Brand's splash shows through it); Smite no projectile,
+  holy motes falling onto the target and a flash ring at its feet; Mighty
+  Blow a red slash hanging diagonally in front of the warrior plus the six
+  blood drops; Loose, Twin Shot, Snare Shot and Pinning Shot a trail along
+  the launch line over the flight time, tinted per skill; Charge a dust ring
+  around the target on arrival (the dash's dust trail is
+  `grug_abilities.charge_dust`); Hamstring a red cut across the legs; Taunt
+  motes above the target; Bellow an orange ring out to its radius; Hold
+  Ground a rising golden ring; Blink an implosion where the mage leaves and a
+  burst where it arrives; Cinderfall embers raining into its real circle;
+  Glacial Ward frost motes drifting onto a shell; Heal rising motes (Hearten:
+  four on each splashed ally); Shield a pale-gold shell; Mend three rising
+  motes on the cast and on each tick; Word of Ruin violet motes streaming
+  from the target to the priest; the landed Snare Shot a green ring at the
+  legs, the landed Pinning Shot teal motes dropping onto the feet; Sidestep
+  a pale-green shimmer; Sprint a dust kick behind the scout; the landed
+  Opening a white flash. **Procs** (Ruination, Unbroken, Whitehot, Last
+  Word, Untouchable, the Last Light and Reclaimer trinkets) share one flash,
+  a ring of eight motes rising around the player, in a colour per proc
+  (`grug_core.PROC_COLORS`). Critical hits, absorb soaks and the level-up
+  burst keep their look.
+- **Budget:** at most 64 particles per occurrence (Ice Nova); every spawner
+  is unattached and lives at most 1 s, so only players near the effect
+  receive it; rings that mark a radius are single particles placed on the
+  exact circle. Per-effect and busy-fight server costs:
+  `tools/r40_px/costs.py`.
+- **`grug_particle_scale`** (main menu, section *Combat*; default 1.0,
+  0–2, read at server start): one factor for every player, with no
+  per-player amount or toggle and no client detection. It multiplies every
+  spawner's amount and every single-particle count, rounded, with at least
+  one particle per emitter; lifetimes, shapes and speeds stay. 0 turns
+  particles off entirely. It exists to correct the amounts if web tests show
+  a problem.

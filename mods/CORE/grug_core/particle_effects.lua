@@ -225,8 +225,8 @@ function grug_core.proc_flash(player, proc)
 	end
 end
 
--- Unchanged looks moved onto the helper (combat.lua): the critical hit's
--- gold sparks and the absorb shield's soak.
+-- Unchanged looks moved onto the helper: the critical hit's gold sparks and
+-- the absorb shield's soak (combat.lua), the level-up burst (grug_xp).
 register("crit", {
 	spawner(8, 0.15, {at = "target", color = "#ffd100", fade = false,
 		shape = {"box", {-0.4, 0.6, -0.4}, {0.4, 1.4, 0.4}}, vel = {{-1, 1, -1}, {1, 3, 1}},
@@ -236,4 +236,9 @@ register("absorb", {
 	spawner(6, 0.15, {at = "target", color = "#ffe9a0", fade = false,
 		shape = {"box", {-0.4, 0.4, -0.4}, {0.4, 1.4, 0.4}}, vel = {{-1, 0, -1}, {1, 2, 1}},
 		exp = {0.2, 0.5}, size = {1.5, 2.5}}),
+})
+register("level_up", {
+	spawner(18, 0.2, {color = "#ffd100", fade = false,
+		shape = {"box", {-0.5, 0.2, -0.5}, {0.5, 1.8, 0.5}}, vel = {{-1, 1, -1}, {1, 3, 1}},
+		exp = {0.35, 0.7}, size = {1.5, 3}}),
 })
