@@ -10,6 +10,8 @@ local function notify(player, message) core.chat_send_player(name_of(player), me
 -- a dead client's position packets), and subtracting it launched a respawned
 -- player upward by about the speed of the lethal fall.
 local function teleport(player, position)
+ -- A Charge dash ends first: an attached player ignores set_pos.
+ if grug_core.cancel_dash then grug_core.cancel_dash(player) end
  grug_mounts.dismount(player, nil, true)
  grug_core.invalidate_combat_identity(player)
  player:set_pos(position)

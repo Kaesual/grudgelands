@@ -2521,6 +2521,10 @@ local destinations = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/blink.lua")
 grug_abilities.blink_destination = destinations.blink
 grug_abilities.charge_destination = destinations.charge
+-- Charge's dash: the pure path planner and the carrier (charge.lua).
+dofile(core.get_modpath(core.get_current_modname()) .. "/charge.lua")(
+	dofile(core.get_modpath(core.get_current_modname()) .. "/charge_path.lua"),
+	destinations.charge_reach)
 -- Crosshair state overlay and the progress ring; scout.lua (bow draw) and
 -- input.lua (eating) drive the ring.
 grug_abilities.crosshair = dofile(core.get_modpath(core.get_current_modname()) ..
