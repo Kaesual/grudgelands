@@ -13,7 +13,7 @@
 --      optional branch;
 --   F  the final turn-in: id throng_main_final at the Warmaster, after the
 --      finale on the rift boss, ending with the bible's last line;
---   S  the solo rule: no "Group:" title or group flag on a required step
+--   S  the solo rule: no "Party:" title or group flag on a required step
 --      but the finale; the optional branches keep their prefixes;
 --   P  the bible's interaction places (§4: the Throng's rows and the "Both"
 --      rows): each object at the place of its zone, in a quest of its
@@ -100,7 +100,7 @@ local function has_tag(q)
 	return false
 end
 local function is_group(q)
-	return q.group == true or (q.title or ""):find("^Group:") ~= nil
+	return q.group == true or (q.title or ""):find("^Party:") ~= nil
 end
 
 ------------------------------------------------------------------------------
@@ -194,7 +194,7 @@ if check(final ~= nil and finale ~= nil, "F the finale and the final turn-in exi
 	check(#final.requires == 1 and final.requires[1] == FINALE, "F it follows the finale")
 	local last_line = "His last blow struck the ground. The answering blow came from underneath."
 	check(final.text:sub(-#last_line) == last_line, "F its text ends with the bible's last line")
-	eq(finale.title, "Group: No Claim on Our Dead", "F the finale's title (unique in the game; The Accord keeps the bible's)")
+	eq(finale.title, "Party: No Claim on Our Dead", "F the finale's title (unique in the game; The Accord keeps the bible's)")
 	check(finale.level >= 58 and finale.level <= 60 and finale.min_level == 60, "F the finale at 60")
 	local boss = finale.objectives[1]
 	check(#finale.objectives == 1 and boss.type == "kill" and boss.roles[1] == "rift_boss" and
@@ -211,7 +211,7 @@ for id in pairs(required) do
 		check(not is_group(q) and not q.optional, "S required step " .. id .. " is solo and not optional")
 	end
 end
-check(is_group(quests.throng_main_greyvow), "S the commander hunt is a Group: quest")
+check(is_group(quests.throng_main_greyvow), "S the commander hunt is a Party: quest")
 for _, id in ipairs({"throng_main_island_wreck", "throng_main_island_cairn"}) do
 	check(quests[id] and quests[id].title:find("^Optional: ") ~= nil, "S " .. id .. " keeps the Optional: prefix")
 end
@@ -294,7 +294,7 @@ if check(hunt ~= nil, "B the commander hunt exists") then
 		target.area == "front_skyglass_canopy/pvp_camp_skyglass_canopy_accord_high",
 		"B the hunt names the Accord's commander in the Skyglass war camp")
 	check(hunt.optional == true and hunt.group == true and hunt.min_level >= 57,
-		"B the hunt is optional, Group: and at the camp's level")
+		"B the hunt is optional, Party: and at the camp's level")
 	check(hunt.requires[1] == "throng_main_05", "B the hunt opens with the orders' reading")
 end
 local raid = quests.bannerbreak_warhold_warcamp_skyglass

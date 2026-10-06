@@ -630,7 +630,7 @@ other. Two questions no decided file answers:
 1. Is a stealthed Scout invisible to **enemy players**? If yes, the same
    `grug_visuals` composition path hides them from everybody — there is no
    per-observer texture in Luanti without one entity per viewer — so it also
-   hides them from their **own faction**, which is a PvP and a group-play
+   hides them from their **own faction**, which is a PvP and a party-play
    decision, not a rendering detail.
 2. Does entering stealth **tag** the Scout? Under `combat_stats.md:274-275` a
    voluntary hostile action tags; stealth is not damage, but stealthing into a

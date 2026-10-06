@@ -80,7 +80,7 @@ achievements](#cloaks-and-achievements).
   credited at leave, applied at the next join (`grug_pvp:logout_death`);
   a shutdown sets no mark. NPC kills count through `_grug_pvp_kind` on the
   garrison prototypes and grug_mobs' eligible-kill hook. `page.lua` (sfinv
-  page after Group; texts in the pure `view.lua`) and `hud.lua` (one status
+  page after Party; texts in the pure `view.lua`) and `hud.lua` (one status
   source) are P2's; the zone banner's territory line and colour ask
   `territory_at` (Round 32: the position's territory by the flag's own
   rule, never the flag) in `grug_map/location.lua`, the target frame
@@ -1140,10 +1140,10 @@ achievements](#cloaks-and-achievements).
 
 ## Parties
 
-- **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
+- **Parties (Round 14):** `grug_parties` persists parties of 2–10 same-faction
   members and their leader in mod storage. Offline membership/leadership lasts
   indefinitely. Invitations are ephemeral inviter-bound records; a second
-  member creates the group, one remaining member dissolves it. No party XP,
+  member creates the party, one remaining member dissolves it. No party XP,
   loot or quest-credit rules. UI actions resolve rendered stable identities,
   then core APIs revalidate current authority. HUD HP writes are compare-first.
   The saved color preference defaults to By class; an explicit All green choice

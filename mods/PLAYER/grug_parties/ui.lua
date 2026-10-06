@@ -141,7 +141,7 @@ local function content(player, context)
 	return table.concat(fs)
 end
 
-sfinv.register_page(PAGE, {title = "Group", on_enter = function(_, player, context)
+sfinv.register_page(PAGE, {title = "Party", on_enter = function(_, player, context)
 	rebuild_roster(player, context)
 end, get = function(_, player, context)
 	return sfinv.make_formspec(player, context, content(player, context), true)

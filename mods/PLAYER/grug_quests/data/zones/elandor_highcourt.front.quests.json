@@ -40,8 +40,8 @@
       "requires": [
         "highcourt_front_01"
       ],
-      "title": "Group: An Unrequested Audience",
-      "text": "{name:last_offering_ape} receives visitors in the {name:front_stormscale_summit/thunderwood} {dir_from_giver:last_offering_ape}, and the survivors describe an appalling welcome. Take a full group by boat to Stormscale Summit and defeat that elite ape. For once, the crown is prepared to reward a complete failure of diplomacy.",
+      "title": "Party: An Unrequested Audience",
+      "text": "{name:last_offering_ape} receives visitors in the {name:front_stormscale_summit/thunderwood} {dir_from_giver:last_offering_ape}, and the survivors describe an appalling welcome. Take a full party by boat to Stormscale Summit and defeat that elite ape. For once, the crown is prepared to reward a complete failure of diplomacy.",
       "objectives": [
         {
           "type": "kill",

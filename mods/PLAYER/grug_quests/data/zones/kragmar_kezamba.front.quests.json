@@ -158,8 +158,8 @@
       "requires": [
         "kz_front_04"
       ],
-      "title": "Group: More Than One Voice",
-      "text": "Serpent Glass-Throat has grown fat among the burnt roots of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. The canopy spirits stop talking whenever its coils move; even my drum gets a very careful answer. Gather a group and kill the elite serpent, so the next song from those branches can use more than a whisper.",
+      "title": "Party: More Than One Voice",
+      "text": "Serpent Glass-Throat has grown fat among the burnt roots of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. The canopy spirits stop talking whenever its coils move; even my drum gets a very careful answer. Gather a party and kill the elite serpent, so the next song from those branches can use more than a whisper.",
       "objectives": [
         {
           "type": "kill",

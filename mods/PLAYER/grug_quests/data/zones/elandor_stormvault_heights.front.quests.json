@@ -156,8 +156,8 @@
       "requires": [
         "archshadow_front_03"
       ],
-      "title": "Group: No More Toll",
-      "text": "Whoever built {name:last_toll_construct} in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct} did solid work and left miserable instructions. Senn is dead, yet the elite war construct still collects his toll from anyone who passes. Gather a group and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
+      "title": "Party: No More Toll",
+      "text": "Whoever built {name:last_toll_construct} in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct} did solid work and left miserable instructions. Senn is dead, yet the elite war construct still collects his toll from anyone who passes. Gather a party and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
       "objectives": [
         {
           "type": "kill",
@@ -456,8 +456,8 @@
       "requires": [
         "splitbolt_front_08"
       ],
-      "title": "Group: Nothing Left to Count",
-      "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell kept them working; she is already adding up what they might fetch. Gather a group and kill the elite witch. I'd like the next count in that mire to come out at nothing.",
+      "title": "Party: Nothing Left to Count",
+      "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell kept them working; she is already adding up what they might fetch. Gather a party and kill the elite witch. I'd like the next count in that mire to come out at nothing.",
       "objectives": [
         {
           "type": "kill",

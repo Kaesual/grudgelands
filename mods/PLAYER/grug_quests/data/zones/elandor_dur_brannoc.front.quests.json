@@ -40,8 +40,8 @@
       "requires": [
         "durbrannoc_front_01"
       ],
-      "title": "Group: Silence for the Clan",
-      "text": "{name:rime_bell_warden} tolls over the {name:front_wyrmglass_crown/spires} {dir_from_giver:rime_bell_warden}, and the clan wants that bell silenced. That golem is an elite: gather a full group, take a boat each to the Wyrmglass Crown and break it. I've a payment ready and a space in the record for everyone who comes back.",
+      "title": "Party: Silence for the Clan",
+      "text": "{name:rime_bell_warden} tolls over the {name:front_wyrmglass_crown/spires} {dir_from_giver:rime_bell_warden}, and the clan wants that bell silenced. That golem is an elite: gather a full party, take a boat each to the Wyrmglass Crown and break it. I've a payment ready and a space in the record for everyone who comes back.",
       "objectives": [
         {
           "type": "kill",

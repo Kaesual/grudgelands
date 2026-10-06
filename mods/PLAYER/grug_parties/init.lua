@@ -222,7 +222,7 @@ function grug_parties.invite(player, recipient)
 	last_send[name] = time
 	list[name] = time + 120
 	incoming[recipient] = list
-	core.chat_send_player(recipient, name .. " invited you to a party. Open Group to respond.")
+	core.chat_send_player(recipient, name .. " invited you to a party. Open Party to respond.")
 	emit({[recipient] = true}, "invitation")
 	return true, "Invitation sent."
 end

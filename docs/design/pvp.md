@@ -109,7 +109,7 @@ eligibility and flag".
 
 ## 5. Interface
 
-- **PvP tab** (Character UI, right after Group): the "Flag me for PvP"
+- **PvP tab** (Character UI, right after Party): the "Flag me for PvP"
   button; the state — "Safe", "Flagged: Contested Territory", "Flagged:
   Enemy Territory" or "Flagged for N s" (button or contact) — with one
   explanatory line; "In PvP combat: no mount, food or travel." while it
@@ -210,7 +210,7 @@ combat may follow its target in).
   guard chassis, respawning after 270–330 s like a captain and counted as a
   captain on the PvP tab. He has no authored socket: he stands five nodes
   beside the captain, across from the camp's west yard post. He is the main
-  line's optional group fight in that camp; the captain stays its solo
+  line's optional party fight in that camp; the captain stays its solo
   target. His name lives in `pvp_names.json` (`commanders`): War Commander
   Greyvow in the Accord camp, War Commander Stonegrudge in the Throng camp
   (the Round 36 story bible). He looks like a guard of the camp's race with

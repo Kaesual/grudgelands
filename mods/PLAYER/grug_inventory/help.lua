@@ -129,7 +129,7 @@ local SECTIONS = {
 		"• In every capital the Crownbinder lifts one item with a Fallen Crown and a fee: its item level rises to its tier's top + 5 and its enchants one tier, once per item. The Decor Merchant there sells decorative blocks and lights.",
 		"• Set your home at an innkeeper in a start town or capital of your faction. The Character page has Return home (every 30 minutes, not in combat).",
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
-		"• The Group tab makes a party of up to 10 players of your faction.",
+		"• The Party tab makes a party of up to 10 players of your faction.",
 	})},
 	{id = "formulas", label = "Formulas", x = 6.1, w = 1.7, text = body({
 		heading("Character formulas"),

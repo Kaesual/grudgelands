@@ -176,8 +176,8 @@
       "requires": [
         "lethariel_front_04"
       ],
-      "title": "Group: Beneath the Waiting Coils",
-      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Chirr is dead, but our watchers still cannot cross beneath those coils. Gather a group and slay the elite serpent; freeing a forest includes making room for someone to walk through it.",
+      "title": "Party: Beneath the Waiting Coils",
+      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Chirr is dead, but our watchers still cannot cross beneath those coils. Gather a party and slay the elite serpent; freeing a forest includes making room for someone to walk through it.",
       "objectives": [
         {
           "type": "kill",

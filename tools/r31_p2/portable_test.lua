@@ -18,8 +18,8 @@
 --      counters; every element above the shared inventory (y 7.0) and
 --      inside the page width; the button flags and re-sends; the 1 s poll
 --      re-sends only while the open tab's text changes; another page gets
---      nothing; nav order: right after Group for every order of the other
---      tabs' hooks (ours runs after Group's, it loads after grug_parties);
+--      nothing; nav order: right after Party for every order of the other
+--      tabs' hooks (ours runs after Party's, it loads after grug_parties);
 --   B  the banner's second line (since Round 32 the territory line,
 --      tested in tools/r32_f1): layout only, the line under the banner,
 --      the flight warning under it and above the level-up banner;
@@ -338,7 +338,7 @@ do
 	-- Nav order: grug_inventory's order, then the other tabs' hooks (each moves
 	-- its page right after its predecessor) in every order, ours last (it
 	-- loads after grug_parties); the start lists both load positions of Skills
-	-- seen in practice. PvP must follow Group directly.
+	-- seen in practice. PvP must follow Party directly.
 	local reorder = loaded[1]
 	local function move_after(name, after)
 		return function()
@@ -400,7 +400,7 @@ do
 		end
 	end
 	eq(runs, 48, "P nav: every hook order on both load orders")
-	check(all_ok, "P PvP follows Group for every hook order")
+	check(all_ok, "P PvP follows Party for every hook order")
 end
 
 -- ---------------------------------------------------------------------------

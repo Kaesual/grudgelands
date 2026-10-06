@@ -9,12 +9,12 @@
 --   T  the tag accord_main on every spine quest and on nothing else;
 --   F  the final id accord_main_final: the Warmaster's turn-in, after the
 --      finale, ending with the bible's last line; the finale on the rift
---      boss, "Group:", level 58-60;
---   S  the solo rule: no quest the final turn-in requires carries "Group:",
+--      boss, "Party:", level 58-60;
+--   S  the solo rule: no quest the final turn-in requires carries "Party:",
 --      `group` or `optional`, except the finale;
 --   B  behind the lines: the Throng captain's orders from the captain of
 --      the Throng war camp on The Shattered Line, a sure quest drop; the
---      optional "Group:" hunt on the war commander in his camp; the raid on
+--      optional "Party:" hunt on the war commander in his camp; the raid on
 --      that camp warns of him;
 --   P  the bible's interaction uses for The Accord and both factions, each
 --      in a quest at its place; the island uses only in optional quests.
@@ -180,7 +180,7 @@ if check(final ~= nil, "F " .. FINAL .. " exists") then
 	check(has(final.requires, "accord_main_collector"), "F the report follows the finale")
 end
 if check(finale ~= nil, "F the finale exists") then
-	eq(finale.title, "Group: The Collector Comes Due", "F the finale's title")
+	eq(finale.title, "Party: The Collector Comes Due", "F the finale's title")
 	check(finale.group == true and finale.optional == nil, "F the finale is a required group quest")
 	eq(finale.objectives[1].type, "kill", "F the finale is a kill")
 	eq(finale.objectives[1].roles[1], "rift_boss", "F on the rift boss")
@@ -203,7 +203,7 @@ required[FINAL] = true
 for id in pairs(required) do
 	local q = quests[id]
 	if check(q ~= nil, "S required quest " .. tostring(id) .. " is an Accord quest") then
-		local grouped = q.title:match("^Group: ") ~= nil or q.group == true
+		local grouped = q.title:match("^Party: ") ~= nil or q.group == true
 		if id == "accord_main_collector" then
 			check(grouped, "S the finale is the group step")
 		else
@@ -227,12 +227,12 @@ if orders then
 	local drop = (orders.quest_drops or {})[1]
 	check(drop and drop.item == obj.item and drop.chance == 1 and has(drop.roles, "captain_throng") and
 		drop.area == CAMP, "B a sure quest drop of the camp's captain")
-	check(not orders.title:match("^Group: ") and not orders.group, "B the captain step is solo")
+	check(not orders.title:match("^Party: ") and not orders.group, "B the captain step is solo")
 end
 local hunt = quests.accord_main_stonegrudge
 if check(hunt ~= nil, "B the commander hunt exists") then
-	check(hunt.title:match("^Group: ") and hunt.group == true and hunt.optional == true,
-		"B the commander hunt is an optional Group: quest")
+	check(hunt.title:match("^Party: ") and hunt.group == true and hunt.optional == true,
+		"B the commander hunt is an optional Party: quest")
 	eq(hunt.objectives[1].roles[1], "commander_throng", "B on the Throng war commander")
 	eq(hunt.objectives[1].area, "front_gravesalt_escarpment/pvp_camp_gravesalt_escarpment_throng_high",
 		"B in his camp")

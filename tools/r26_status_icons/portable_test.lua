@@ -17,7 +17,7 @@
 --     GUI-scaled captions, expiry, movement
 --     flags as a source, idle refreshes writing nothing, the combat icon;
 --   * the Character page Effects tab (content, empty state, refresh policy,
---     tab switch) and the Group page member table with class icons.
+--     tab switch) and the Party page member table with class icons.
 --
 -- Usage (repo root): luajit tools/r26_status_icons/portable_test.lua
 
@@ -573,7 +573,7 @@ eq(context.grug_character_tab, "effects", "effects button selects the tab")
 eq(set_pages[1], "grug_inventory:character", "tab switch rebuilds the page")
 
 --
--- 10. Group page: the member table carries class icons (ruling 22).
+-- 10. Party page: the member table carries class icons (ruling 22).
 --
 grug_factions = {get_faction = function() return "accord" end}
 grug_parties = {

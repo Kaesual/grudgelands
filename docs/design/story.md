@@ -90,7 +90,7 @@ threat, beats, objects, cloaks), the quest structure is in
 - **Shape:** each faction's line runs from its fortress Warmaster
   (Ashenward Bastion, Bannerbreak Warhold) with handoffs to the front's
   givers; chapters open at **41, 46 and 53**, the finale at **60**; every
-  step is solo but the finale, and optional "Group:" hunts never block the
+  step is solo but the finale, and optional "Party:" hunts never block the
   line. Some steps are done **at a place** with a quest object only the
   quest's holders see (breaking a seal, taking a rubbing, burning names off
   a tally-stone).
@@ -116,7 +116,7 @@ threat, beats, objects, cloaks), the quest structure is in
   competition and never together, defeat him under their own commission.
   He can return (the respawn); the crack stays. The traitors are named in
   texts only, never placed. War Commanders **Greyvow** and **Stonegrudge**
-  guard two enemy war camps as optional group fights.
+  guard two enemy war camps as optional party fights.
 - **The last lines** point below without naming a place: The Accord, "We
   closed his account. Beneath us, someone turned a fresh page."; The
   Throng, "His last blow struck the ground. The answering blow came from

@@ -223,8 +223,8 @@
       "requires": [
         "glassroot_canopy_04"
       ],
-      "title": "Group: No More Broken Bows",
-      "text": "{name:canopy_knuckle} holds the {name:canopy} {dir_from_giver:canopy_knuckle}; three wardens have returned with their bows snapped across its knee. Gather a group and kill the ape before someone fails to return at all. Bows can be grown and bent anew, but I will not spend my wardens so carelessly.",
+      "title": "Party: No More Broken Bows",
+      "text": "{name:canopy_knuckle} holds the {name:canopy} {dir_from_giver:canopy_knuckle}; three wardens have returned with their bows snapped across its knee. Gather a party and kill the ape before someone fails to return at all. Bows can be grown and bent anew, but I will not spend my wardens so carelessly.",
       "objectives": [
         {
           "type": "kill",
