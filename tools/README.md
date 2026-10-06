@@ -223,3 +223,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   busy-fight cost of the built effects (`costs.py`, reads `r40_v3`'s
   `data.json`) and `bench/`, a disposable probe timing each skill's effect
   calls before and after the helper (`PROBE=tools/r40_px/bench`).
+  `r40_ch` Charge's dash (`portable_test.lua`: the shipped planner on the
+  probe's courses and the hole rule's lanes, the dash on a fake engine --
+  arrival and miss, cancellations, punch forwarding, the hold and the
+  placement on the stop, lead, FOV, pose and dust -- and the kits.lua cast's
+  refusals) and `bench/`, a disposable probe timing the cast's map work and
+  the carrier per step on natural terrain (`PROBE=tools/r40_ch/bench`, run
+  on the base and the branch).
