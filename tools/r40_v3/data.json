@@ -305,7 +305,7 @@
      "near_wire": 1430,
      "all_wire": 0,
      "lua_us": 31.059999999999995,
-     "near_us": 24.14894001955787,
+     "near_us": 24.055249987185622,
      "all_us": 0.0,
      "player_check_us": 0.48,
      "particles": 64,
@@ -316,7 +316,7 @@
      "near_wire": 1145,
      "all_wire": 0,
      "lua_us": 16.659999999999997,
-     "near_us": 15.737973338505252,
+     "near_us": 15.487946696626022,
      "all_us": 0.0,
      "player_check_us": 0.24,
      "particles": 32,
@@ -327,7 +327,7 @@
      "near_wire": 1026,
      "all_wire": 0,
      "lua_us": 9.459999999999999,
-     "near_us": 11.279136667012548,
+     "near_us": 11.169079998570183,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 16,
@@ -344,9 +344,9 @@
      "wire": 694,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 21.133903331526867,
+     "per_rx_us": 20.960019974131136,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.733903331526866
+     "zstd_us": 6.560019974131137
     },
     {
      "kind": "spawner",
@@ -1074,7 +1074,7 @@
     "near_wire": 1013,
     "all_wire": 0,
     "lua_us": 16.279999999999998,
-    "near_us": 15.487273331002022,
+    "near_us": 14.815313324999686,
     "all_us": 0.0,
     "player_check_us": 0.24,
     "particles": 36,
@@ -2206,7 +2206,7 @@
      "near_wire": 254,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 5.983569981250912,
+     "near_us": 5.963679986959323,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -2217,7 +2217,7 @@
      "near_wire": 188,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.99840329666622,
+     "near_us": 4.990410026644046,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -2228,7 +2228,7 @@
      "near_wire": 168,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.842206681131695,
+     "near_us": 4.681013369917248,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -2245,9 +2245,9 @@
      "wire": 254,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.839503303123638,
+     "per_rx_us": 5.960576645517722,
      "per_player_check_us": 0.06,
-     "zstd_us": 5.039503303123638
+     "zstd_us": 4.160576645517722
     }
    ],
    "today_cost": {
@@ -2347,7 +2347,7 @@
      "near_wire": 338,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 6.702203315092872,
+     "near_us": 7.186846702701102,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -2358,7 +2358,7 @@
      "near_wire": 230,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.914070000266657,
+     "near_us": 4.965546672791243,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -2369,7 +2369,7 @@
      "near_wire": 193,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.803573334962129,
+     "near_us": 4.646076646773144,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -2386,9 +2386,9 @@
      "wire": 338,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.0573033230534445,
+     "per_rx_us": 6.0017466330435125,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.257303323053445
+     "zstd_us": 4.201746633043513
     }
    ],
    "today_cost": {
@@ -2619,7 +2619,7 @@
      "near_wire": 616,
      "all_wire": 0,
      "lua_us": 24.0,
-     "near_us": 18.168673329132922,
+     "near_us": 18.077016684381913,
      "all_us": 0.0,
      "player_check_us": 0.4,
      "particles": 40,
@@ -2630,7 +2630,7 @@
      "near_wire": 371,
      "all_wire": 0,
      "lua_us": 12.0,
-     "near_us": 11.140469972199451,
+     "near_us": 11.287283323317144,
      "all_us": 0.0,
      "player_check_us": 0.2,
      "particles": 20,
@@ -2641,7 +2641,7 @@
      "near_wire": 265,
      "all_wire": 0,
      "lua_us": 6.0,
-     "near_us": 7.619273337690781,
+     "near_us": 7.396146638706948,
      "all_us": 0.0,
      "player_check_us": 0.1,
      "particles": 10,
@@ -2658,9 +2658,9 @@
      "wire": 616,
      "datagrams": 2,
      "lua_us": 24.0,
-     "per_rx_us": 18.09867003125449,
+     "per_rx_us": 18.06694996046523,
      "per_player_check_us": 0.4,
-     "zstd_us": 6.09867003125449
+     "zstd_us": 6.066949960465232
     }
    ]
   },
@@ -4624,7 +4624,7 @@
      "near_wire": 198,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 5.061436663707719,
+     "near_us": 5.057813333828623,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -4635,7 +4635,7 @@
      "near_wire": 175,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 5.024136665572102,
+     "near_us": 4.678276688233018,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -4646,7 +4646,7 @@
      "near_wire": 147,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 4.279736648034304,
+     "near_us": 5.013110004862149,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -4663,9 +4663,9 @@
      "wire": 198,
      "datagrams": 1,
      "lua_us": 1.7999999999999998,
-     "per_rx_us": 5.064503334322945,
+     "per_rx_us": 5.399610028384874,
      "per_player_check_us": 0.03,
-     "zstd_us": 4.164503334322944
+     "zstd_us": 4.499610028384875
     }
    ],
    "today_cost": {
@@ -5192,7 +5192,7 @@
      "near_wire": 311,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 7.044740013948951,
+     "near_us": 6.725643337021271,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5203,7 +5203,7 @@
      "near_wire": 222,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.599903361142302,
+     "near_us": 5.339846666172768,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5214,7 +5214,7 @@
      "near_wire": 175,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.681736648610482,
+     "near_us": 4.685410037077963,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5231,9 +5231,9 @@
      "wire": 311,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 7.183970022496457,
+     "per_rx_us": 6.740013353309283,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.783970022496457
+     "zstd_us": 4.340013353309283
     }
    ]
   },
@@ -5319,7 +5319,7 @@
      "near_wire": 343,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.854239970073104,
+     "near_us": 6.7498466645057,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5330,7 +5330,7 @@
      "near_wire": 233,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.33403666849869,
+     "near_us": 5.340776679075012,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5341,7 +5341,7 @@
      "near_wire": 181,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.687770018183316,
+     "near_us": 4.640643349677945,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5358,9 +5358,9 @@
      "wire": 343,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.712536669507001,
+     "per_rx_us": 6.743610004677127,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.3125366695070015
+     "zstd_us": 4.343610004677127
     }
    ]
   },
@@ -5449,7 +5449,7 @@
      "near_wire": 406,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.723303340546165,
+     "near_us": 6.801713376864791,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5460,7 +5460,7 @@
      "near_wire": 260,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.330833306893085,
+     "near_us": 5.318313372600824,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5471,7 +5471,7 @@
      "near_wire": 190,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.662406660523265,
+     "near_us": 4.6235766694725795,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5488,9 +5488,9 @@
      "wire": 406,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.719736666123692,
+     "per_rx_us": 6.793346656191472,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.319736666123693
+     "zstd_us": 4.393346656191473
     }
    ]
   },
@@ -5576,7 +5576,7 @@
      "near_wire": 332,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 6.055003295838833,
+     "near_us": 6.080780024904136,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -5587,7 +5587,7 @@
      "near_wire": 225,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 5.006503329239786,
+     "near_us": 4.993243333045394,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -5598,7 +5598,7 @@
      "near_wire": 190,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.620366662492355,
+     "near_us": 4.637513329725092,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5615,9 +5615,9 @@
      "wire": 332,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.051906648278236,
+     "per_rx_us": 6.08264330063636,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.251906648278236
+     "zstd_us": 4.2826433006363605
     }
    ]
   },
@@ -5703,7 +5703,7 @@
      "near_wire": 307,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.797070006234572,
+     "near_us": 6.766780000661189,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -5714,7 +5714,7 @@
      "near_wire": 216,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.273536692885682,
+     "near_us": 5.270946646000569,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -5725,7 +5725,7 @@
      "near_wire": 173,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.6690033347345885,
+     "near_us": 4.661976651428267,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -5742,9 +5742,9 @@
      "wire": 307,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.795573341753334,
+     "per_rx_us": 6.762813294089089,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.395573341753334
+     "zstd_us": 4.362813294089088
     }
    ]
   },
@@ -5879,7 +5879,7 @@
       "near_wire": 330,
       "all_wire": 0,
       "lua_us": 14.399999999999999,
-      "near_us": 11.9075066928907,
+      "near_us": 12.297783335562174,
       "all_us": 0.0,
       "player_check_us": 0.24,
       "particles": 24,
@@ -5890,7 +5890,7 @@
       "near_wire": 234,
       "all_wire": 0,
       "lua_us": 7.199999999999999,
-      "near_us": 7.965303320810198,
+      "near_us": 7.996746662678197,
       "all_us": 0.0,
       "player_check_us": 0.12,
       "particles": 12,
@@ -5901,7 +5901,7 @@
       "near_wire": 184,
       "all_wire": 0,
       "lua_us": 3.5999999999999996,
-      "near_us": 5.925536700788264,
+      "near_us": 5.908243301743641,
       "all_us": 0.0,
       "player_check_us": 0.06,
       "particles": 6,
@@ -5928,7 +5928,7 @@
      "near_wire": 422,
      "all_wire": 0,
      "lua_us": 24.0,
-     "near_us": 17.352303366332006,
+     "near_us": 17.418146659697715,
      "all_us": 0.0,
      "player_check_us": 0.4,
      "particles": 40,
@@ -5939,7 +5939,7 @@
      "near_wire": 301,
      "all_wire": 0,
      "lua_us": 12.0,
-     "near_us": 10.522736659661557,
+     "near_us": 10.582279992367452,
      "all_us": 0.0,
      "player_check_us": 0.2,
      "particles": 20,
@@ -5950,7 +5950,7 @@
      "near_wire": 219,
      "all_wire": 0,
      "lua_us": 6.0,
-     "near_us": 7.574706690618768,
+     "near_us": 7.237013296612228,
      "all_us": 0.0,
      "player_check_us": 0.1,
      "particles": 10,
@@ -5967,9 +5967,9 @@
      "wire": 422,
      "datagrams": 1,
      "lua_us": 24.0,
-     "per_rx_us": 17.37456997941869,
+     "per_rx_us": 17.786983335080247,
      "per_player_check_us": 0.4,
-     "zstd_us": 5.37456997941869
+     "zstd_us": 5.786983335080246
     }
    ]
   },
@@ -6038,8 +6038,8 @@
      "kept": false,
      "steps": 1,
      "radial": [
-      17,
-      17
+      15.882352941176471,
+      15.882352941176471
      ]
     },
     {
@@ -6182,7 +6182,7 @@
       "near_wire": 485,
       "all_wire": 0,
       "lua_us": 19.2,
-      "near_us": 15.220269997355839,
+      "near_us": 15.288816648519909,
       "all_us": 0.0,
       "player_check_us": 0.32,
       "particles": 32,
@@ -6193,7 +6193,7 @@
       "near_wire": 336,
       "all_wire": 0,
       "lua_us": 9.6,
-      "near_us": 9.479803338755543,
+      "near_us": 9.477313312034433,
       "all_us": 0.0,
       "player_check_us": 0.16,
       "particles": 16,
@@ -6204,7 +6204,7 @@
       "near_wire": 244,
       "all_wire": 0,
       "lua_us": 4.8,
-      "near_us": 6.6949699854943905,
+      "near_us": 6.719810007776443,
       "all_us": 0.0,
       "player_check_us": 0.08,
       "particles": 8,
@@ -6228,10 +6228,10 @@
    "note": "",
    "cost": {
     "1.0": {
-     "near_wire": 1343,
+     "near_wire": 1342,
      "all_wire": 0,
      "lua_us": 30.679999999999996,
-     "near_us": 24.075106657591338,
+     "near_us": 24.029620038438587,
      "all_us": 0.0,
      "player_check_us": 0.48,
      "particles": 60,
@@ -6239,10 +6239,10 @@
      "singles": 48
     },
     "0.5": {
-     "near_wire": 1059,
+     "near_wire": 1056,
      "all_wire": 0,
      "lua_us": 16.279999999999998,
-     "near_us": 15.509006664901971,
+     "near_us": 15.559883313455307,
      "all_us": 0.0,
      "player_check_us": 0.24,
      "particles": 30,
@@ -6250,10 +6250,10 @@
      "singles": 24
     },
     "0.25": {
-     "near_wire": 933,
+     "near_wire": 937,
      "all_wire": 0,
      "lua_us": 9.079999999999998,
-     "near_us": 11.116003342966238,
+     "near_us": 11.178446629845226,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 15,
@@ -6265,14 +6265,14 @@
     {
      "kind": "single",
      "receivers": "near",
-     "data": 604,
+     "data": 603,
      "raw": 9264,
-     "wire": 694,
+     "wire": 693,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 20.84927335088141,
+     "per_rx_us": 20.95128334377271,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.449273350881413
+     "zstd_us": 6.551283343772714
     },
     {
      "kind": "spawner",
@@ -7824,8 +7824,8 @@
      "spawn": [
       "sphere",
       [
-       2.5,
-       3.5,
+       0,
+       5.0,
        0
       ],
       1.6,
@@ -7834,13 +7834,13 @@
      "engine": {
       "pos": [
        [
-        2.5,
-        3.5,
+        0,
+        5.0,
         0
        ],
        [
-        2.5,
-        3.5,
+        0,
+        5.0,
         0
        ]
       ],
@@ -7891,8 +7891,8 @@
      "kept": false,
      "pull": {
       "origin": [
-       2.5,
-       3.5,
+       0,
+       5.0,
        0
       ],
       "strength": 1.5,
@@ -8097,7 +8097,7 @@
       "near_wire": 1284,
       "all_wire": 0,
       "lua_us": 10.799999999999999,
-      "near_us": 30.212420015223326,
+      "near_us": 30.00288000293076,
       "all_us": 0.0,
       "player_check_us": 0.18,
       "particles": 18,
@@ -8108,7 +8108,7 @@
       "near_wire": 906,
       "all_wire": 0,
       "lua_us": 5.3999999999999995,
-      "near_us": 23.994819889590143,
+      "near_us": 23.91624012943357,
       "all_us": 0.0,
       "player_check_us": 0.09,
       "particles": 9,
@@ -8119,7 +8119,7 @@
       "near_wire": 906,
       "all_wire": 0,
       "lua_us": 3.0,
-      "near_us": 23.000219882000238,
+      "near_us": 22.67085998179391,
       "all_us": 0.0,
       "player_check_us": 0.05,
       "particles": 5,
@@ -8143,7 +8143,7 @@
      "near_wire": 2568,
      "all_wire": 0,
      "lua_us": 21.599999999999998,
-     "near_us": 59.76843980532139,
+     "near_us": 59.77291946690529,
      "all_us": 0.0,
      "player_check_us": 0.36,
      "particles": 36,
@@ -8154,7 +8154,7 @@
      "near_wire": 1812,
      "all_wire": 0,
      "lua_us": 10.799999999999999,
-     "near_us": 52.47764019258321,
+     "near_us": 47.550119552388786,
      "all_us": 0.0,
      "player_check_us": 0.18,
      "particles": 18,
@@ -8165,7 +8165,7 @@
      "near_wire": 1812,
      "all_wire": 0,
      "lua_us": 5.3999999999999995,
-     "near_us": 45.792839769087735,
+     "near_us": 44.8605195151642,
      "all_us": 0.0,
      "player_check_us": 0.09,
      "particles": 9,
@@ -8182,16 +8182,16 @@
      "wire": 2568,
      "datagrams": 12,
      "lua_us": 21.599999999999998,
-     "per_rx_us": 59.83687979094684,
+     "per_rx_us": 59.890519896708426,
      "per_player_check_us": 0.36,
-     "zstd_us": 49.03687979094684
+     "zstd_us": 49.09051989670843
     }
    ],
    "today_cost": {
     "near_wire": 3906,
     "all_wire": 0,
     "lua_us": 32.4,
-    "near_us": 89.84585995674134,
+    "near_us": 89.86883946815504,
     "all_us": 0.0,
     "player_check_us": 0.54,
     "particles": 54,
@@ -8598,7 +8598,7 @@
       "disc",
       [
        0,
-       0.3,
+       0.2,
        0
       ],
       8.0,
@@ -8608,12 +8608,12 @@
      "vel": [
       [
        0,
-       0,
+       0.3,
        0
       ],
       [
        0,
-       0,
+       0.3,
        0
       ]
      ],
@@ -8632,12 +8632,12 @@
       1.25
      ],
      "size": [
-      3.5,
-      3.5
+      4.0,
+      4.0
      ],
      "glow": 6,
      "attached": false,
-     "texture": "default_item_smoke.png^[multiply:#d8eef4",
+     "texture": "default_item_smoke.png^[colorize:#d8eef4:150",
      "sprite": "sq",
      "fade": false,
      "at": "target",
@@ -8701,8 +8701,8 @@
      "kept": false,
      "steps": 1,
      "radial": [
-      18,
-      18
+      17.94871794871795,
+      17.94871794871795
      ]
     }
    ],
@@ -8860,7 +8860,7 @@
       "near_wire": 1146,
       "all_wire": 0,
       "lua_us": 26.259999999999998,
-      "near_us": 20.322036643822987,
+      "near_us": 20.39215000268693,
       "all_us": 0.0,
       "player_check_us": 0.4,
       "particles": 80,
@@ -8871,7 +8871,7 @@
       "near_wire": 1028,
       "all_wire": 0,
       "lua_us": 14.26,
-      "near_us": 13.609806686251735,
+      "near_us": 13.579379989687975,
       "all_us": 0.0,
       "player_check_us": 0.2,
       "particles": 40,
@@ -8882,7 +8882,7 @@
       "near_wire": 949,
       "all_wire": 0,
       "lua_us": 8.26,
-      "near_us": 10.273236700100824,
+      "near_us": 10.262246657162905,
       "all_us": 0.0,
       "player_check_us": 0.1,
       "particles": 20,
@@ -8906,10 +8906,10 @@
    "note": "",
    "cost": {
     "1.0": {
-     "near_wire": 1110,
+     "near_wire": 1126,
      "all_wire": 0,
      "lua_us": 52.8,
-     "near_us": 38.292040007902926,
+     "near_us": 38.308696663643545,
      "all_us": 0.0,
      "player_check_us": 0.88,
      "particles": 88,
@@ -8917,10 +8917,10 @@
      "singles": 88
     },
     "0.5": {
-     "near_wire": 709,
+     "near_wire": 720,
      "all_wire": 0,
      "lua_us": 26.4,
-     "near_us": 23.16197336159336,
+     "near_us": 23.370060025605685,
      "all_us": 0.0,
      "player_check_us": 0.44,
      "particles": 44,
@@ -8928,10 +8928,10 @@
      "singles": 44
     },
     "0.25": {
-     "near_wire": 492,
+     "near_wire": 504,
      "all_wire": 0,
      "lua_us": 13.2,
-     "near_us": 15.330810028888905,
+     "near_us": 15.398226675329107,
      "all_us": 0.0,
      "player_check_us": 0.22,
      "particles": 22,
@@ -8943,33 +8943,33 @@
     {
      "kind": "single",
      "receivers": "near",
-     "data": 371,
-     "raw": 7720,
-     "wire": 410,
+     "data": 388,
+     "raw": 7880,
+     "wire": 427,
      "datagrams": 1,
      "lua_us": 24.0,
-     "per_rx_us": 17.341903355050214,
+     "per_rx_us": 17.42338001347768,
      "per_player_check_us": 0.4,
-     "zstd_us": 5.341903355050212
+     "zstd_us": 5.423380013477678
     },
     {
      "kind": "single",
      "receivers": "near",
-     "data": 610,
+     "data": 609,
      "raw": 9264,
-     "wire": 700,
+     "wire": 699,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 20.86703667977514,
+     "per_rx_us": 20.894016658204297,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.467036679775143
+     "zstd_us": 6.4940166582042975
     }
    ],
    "today_cost": {
     "near_wire": 1081,
     "all_wire": 0,
     "lua_us": 25.88,
-    "near_us": 20.305239998657875,
+    "near_us": 20.439146674082927,
     "all_us": 0.0,
     "player_check_us": 0.4,
     "particles": 136,
@@ -9042,8 +9042,8 @@
      "kept": false,
      "steps": 1,
      "radial": [
-      18,
-      18
+      17.64705882352941,
+      17.64705882352941
      ]
     },
     {
@@ -9190,7 +9190,7 @@
       "near_wire": 700,
       "all_wire": 0,
       "lua_us": 28.799999999999997,
-      "near_us": 20.842606633451453,
+      "near_us": 20.91145329660115,
       "all_us": 0.0,
       "player_check_us": 0.48,
       "particles": 48,
@@ -9201,7 +9201,7 @@
       "near_wire": 417,
       "all_wire": 0,
       "lua_us": 14.399999999999999,
-      "near_us": 12.545769992951925,
+      "near_us": 12.618713311276707,
       "all_us": 0.0,
       "player_check_us": 0.24,
       "particles": 24,
@@ -9212,7 +9212,7 @@
       "near_wire": 279,
       "all_wire": 0,
       "lua_us": 7.199999999999999,
-      "near_us": 8.16557337505122,
+      "near_us": 8.087046680878847,
       "all_us": 0.0,
       "player_check_us": 0.12,
       "particles": 12,
@@ -9236,10 +9236,10 @@
    "note": "",
    "cost": {
     "1.0": {
-     "near_wire": 1371,
+     "near_wire": 1370,
      "all_wire": 0,
      "lua_us": 30.679999999999996,
-     "near_us": 23.8876733328371,
+     "near_us": 23.900316667370497,
      "all_us": 0.0,
      "player_check_us": 0.48,
      "particles": 80,
@@ -9247,10 +9247,10 @@
      "singles": 48
     },
     "0.5": {
-     "near_wire": 1088,
+     "near_wire": 1086,
      "all_wire": 0,
      "lua_us": 16.279999999999998,
-     "near_us": 15.530303344332303,
+     "near_us": 15.559516653697937,
      "all_us": 0.0,
      "player_check_us": 0.24,
      "particles": 40,
@@ -9258,10 +9258,10 @@
      "singles": 24
     },
     "0.25": {
-     "near_wire": 950,
+     "near_wire": 952,
      "all_wire": 0,
      "lua_us": 9.079999999999998,
-     "near_us": 11.868073291517794,
+     "near_us": 11.096280016610399,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 20,
@@ -9273,14 +9273,14 @@
     {
      "kind": "single",
      "receivers": "near",
-     "data": 610,
+     "data": 609,
      "raw": 9264,
-     "wire": 700,
+     "wire": 699,
      "datagrams": 2,
      "lua_us": 28.799999999999997,
-     "per_rx_us": 20.88210664318564,
+     "per_rx_us": 20.90138666969724,
      "per_player_check_us": 0.48,
-     "zstd_us": 6.482106643185641
+     "zstd_us": 6.50138666969724
     },
     {
      "kind": "spawner",
@@ -9896,7 +9896,7 @@
      "near_wire": 409,
      "all_wire": 0,
      "lua_us": 4.8,
-     "near_us": 6.81693666895541,
+     "near_us": 6.82234663447986,
      "all_us": 0.0,
      "player_check_us": 0.08,
      "particles": 8,
@@ -9907,7 +9907,7 @@
      "near_wire": 266,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 5.519103318266571,
+     "near_us": 5.322209987447907,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -9918,7 +9918,7 @@
      "near_wire": 194,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.626503302156925,
+     "near_us": 4.646380005699271,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -9935,9 +9935,9 @@
      "wire": 409,
      "datagrams": 1,
      "lua_us": 4.8,
-     "per_rx_us": 6.825470009058092,
+     "per_rx_us": 6.790613369954128,
      "per_player_check_us": 0.08,
-     "zstd_us": 4.425470009058093
+     "zstd_us": 4.390613369954129
     }
    ]
   },
@@ -10023,7 +10023,7 @@
      "near_wire": 269,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 6.067439993175989,
+     "near_us": 6.06031003977793,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -10034,7 +10034,7 @@
      "near_wire": 202,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 5.047903334038953,
+     "near_us": 5.02471330491826,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -10045,7 +10045,7 @@
      "near_wire": 177,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 4.6771699665735165,
+     "near_us": 4.659746667432288,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -10062,9 +10062,9 @@
      "wire": 269,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.055136688395093,
+     "per_rx_us": 6.026076659203197,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.255136688395093
+     "zstd_us": 4.226076659203197
     }
    ]
   },
@@ -10212,7 +10212,7 @@
      "near_wire": 668,
      "all_wire": 0,
      "lua_us": 7.199999999999999,
-     "near_us": 12.01267334180884,
+     "near_us": 12.071523372766872,
      "all_us": 0.0,
      "player_check_us": 0.12,
      "particles": 12,
@@ -10223,7 +10223,7 @@
      "near_wire": 452,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 10.016509983564417,
+     "near_us": 10.018756702262907,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -10234,7 +10234,7 @@
      "near_wire": 380,
      "all_wire": 0,
      "lua_us": 2.4,
-     "near_us": 9.251073333869378,
+     "near_us": 9.27315664133057,
      "all_us": 0.0,
      "player_check_us": 0.04,
      "particles": 4,
@@ -10251,9 +10251,9 @@
      "wire": 334,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 6.006169978715479,
+     "per_rx_us": 6.0120799965535605,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.206169978715479
+     "zstd_us": 4.212079996553561
     },
     {
      "kind": "single",
@@ -10263,9 +10263,9 @@
      "wire": 334,
      "datagrams": 1,
      "lua_us": 3.5999999999999996,
-     "per_rx_us": 5.970803343489145,
+     "per_rx_us": 6.0103433224838225,
      "per_player_check_us": 0.06,
-     "zstd_us": 4.170803343489145
+     "zstd_us": 4.210343322483823
     }
    ]
   },
@@ -10496,7 +10496,7 @@
      "near_wire": 245,
      "all_wire": 0,
      "lua_us": 3.0,
-     "near_us": 5.682273308591297,
+     "near_us": 5.752813329609732,
      "all_us": 0.0,
      "player_check_us": 0.05,
      "particles": 5,
@@ -10507,7 +10507,7 @@
      "near_wire": 201,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 5.0398699977435175,
+     "near_us": 5.011943320215989,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -10518,7 +10518,7 @@
      "near_wire": 149,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 4.17316996542116,
+     "near_us": 4.200479981287693,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -10535,9 +10535,9 @@
      "wire": 245,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.684069985058159,
+     "per_rx_us": 5.678576685565834,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.184069985058159
+     "zstd_us": 4.178576685565834
     }
    ]
   },
@@ -10626,7 +10626,7 @@
      "near_wire": 278,
      "all_wire": 0,
      "lua_us": 3.0,
-     "near_us": 5.629870018611351,
+     "near_us": 5.655379962564136,
      "all_us": 0.0,
      "player_check_us": 0.05,
      "particles": 5,
@@ -10637,7 +10637,7 @@
      "near_wire": 216,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.808570021546135,
+     "near_us": 4.826743326398233,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -10648,7 +10648,7 @@
      "near_wire": 147,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 4.214606641046703,
+     "near_us": 4.214246675170338,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -10665,9 +10665,9 @@
      "wire": 278,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.594836670750131,
+     "per_rx_us": 5.655276643966014,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.094836670750131
+     "zstd_us": 4.155276643966014
     }
    ]
   },
@@ -10950,7 +10950,7 @@
      "near_wire": 598,
      "all_wire": 0,
      "lua_us": 6.0,
-     "near_us": 11.195073363215972,
+     "near_us": 11.292290003737435,
      "all_us": 0.0,
      "player_check_us": 0.1,
      "particles": 10,
@@ -10961,7 +10961,7 @@
      "near_wire": 460,
      "all_wire": 0,
      "lua_us": 3.5999999999999996,
-     "near_us": 9.932573372373978,
+     "near_us": 9.985623349466671,
      "all_us": 0.0,
      "player_check_us": 0.06,
      "particles": 6,
@@ -10972,7 +10972,7 @@
      "near_wire": 302,
      "all_wire": 0,
      "lua_us": 1.2,
-     "near_us": 8.317876627187555,
+     "near_us": 8.357386677743246,
      "all_us": 0.0,
      "player_check_us": 0.02,
      "particles": 2,
@@ -10989,9 +10989,9 @@
      "wire": 299,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.592803331635272,
+     "per_rx_us": 5.629643299772094,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.092803331635272
+     "zstd_us": 4.129643299772094
     },
     {
      "kind": "single",
@@ -11001,9 +11001,9 @@
      "wire": 299,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.620703330651547,
+     "per_rx_us": 5.630279994569719,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.120703330651547
+     "zstd_us": 4.130279994569719
     }
    ]
   },
@@ -11089,7 +11089,7 @@
      "near_wire": 300,
      "all_wire": 0,
      "lua_us": 3.0,
-     "near_us": 5.684936648622776,
+     "near_us": 5.6597799766653525,
      "all_us": 0.0,
      "player_check_us": 0.05,
      "particles": 5,
@@ -11100,7 +11100,7 @@
      "near_wire": 232,
      "all_wire": 0,
      "lua_us": 1.7999999999999998,
-     "near_us": 4.955803340937322,
+     "near_us": 4.97411003834568,
      "all_us": 0.0,
      "player_check_us": 0.03,
      "particles": 3,
@@ -11111,7 +11111,7 @@
      "near_wire": 150,
      "all_wire": 0,
      "lua_us": 0.6,
-     "near_us": 4.261170004913584,
+     "near_us": 4.229376689484344,
      "all_us": 0.0,
      "player_check_us": 0.01,
      "particles": 1,
@@ -11128,9 +11128,9 @@
      "wire": 300,
      "datagrams": 1,
      "lua_us": 3.0,
-     "per_rx_us": 5.62844000190186,
+     "per_rx_us": 5.671879991190508,
      "per_player_check_us": 0.05,
-     "zstd_us": 4.12844000190186
+     "zstd_us": 4.171879991190508
     }
    ]
   }

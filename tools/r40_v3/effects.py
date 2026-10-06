@@ -17,6 +17,14 @@ on the radius, (R - 0.4) / life; Mighty Blow's kept blood keeps today's look
 (no fade); Heal adds Hearten's four motes on a splashed ally; Mend plays on
 the cast as well as on each tick. tools/r40_px/costs.py prints the
 per-effect and busy-fight totals of the build.
+
+Round 40 PM built the boss and mob cards the same way (marked "PM"): the
+rings that burst out to a radius (Shatter, the gust's release, the dive's
+slam) land on it, (R - r0) / life; the gust's warning ring keeps today's
+look; the breath gathers at its launch point (eye height above the dragon's
+centre, where the bolts and the muzzle burst start). tools/r40_pm/costs.py
+prints the per-boss and per-mob totals of the build, with the looks PM moved
+onto the helper unchanged.
 """
 import json
 from pathlib import Path
@@ -123,6 +131,11 @@ BLOOD6 = sp(6, 0.2, "#a01010", ("box", [-0.5, 0, -0.5], [0.5, 1, 0.5]), vel=[[-2
 # PX: an exact ring that marks radius R flies at (R - r0) / life.
 NOVA_RING = (5 - 0.4) / 0.34
 BELLOW_RING = (8 - 0.4) / 0.4
+# PM: the boss rings that burst out to a radius, the same way.
+SHATTER_RING = (6 - 0.6) / 0.34
+GUST_RING = (8 - 1.0) / 0.39
+DIVE_RING = (7 - 1.0) / 0.34
+GUST_KEPT = "default_item_smoke.png^[colorize:#d8eef4:150"
 EFFECTS = [
     # ---------------------------------------------------------------- requested
     fx("ice_nova", "requested", "Ice Nova: frost ring", "Ice Nova (Frostbind: the same ring at the target)",
@@ -343,8 +356,8 @@ EFFECTS = [
             "server. Nearly stationary single particles compress well."),
     fx("king_shatter", "boss", "King Shatter: ground burst", "Dwarf king's Shatter", "bosses.lua:442",
        "nothing", "Stone dust bursts outward along the ground to 6 m, with chunks thrown up.",
-       [single(48, "#b0a090", ("disc", [0, 0.2, 0], 0.6, True), radial=(17, 17), exp=(0.34, 0.34),
-               size=(3.5, 3.5), glow=0, at="target"),
+       [single(48, "#b0a090", ("disc", [0, 0.2, 0], 0.6, True), radial=(SHATTER_RING, SHATTER_RING),
+               exp=(0.34, 0.34), size=(3.5, 3.5), glow=0, at="target"),  # PM: lands on 6 m
         sp(12, 0.05, "#7a6a5a", ("sphere", [0, 0.3, 0], 1.0, False), vel=[[-3, 4, -3], [3, 7, 3]],
            acc=[0, -12, 0], exp=(0.7, 0.9), size=(3.0, 4.0), glow=0, tex="grug_mobs_rock.png", at="target")],
        simple=simple("The exact ring only, 32 motes, no thrown chunks.", [
@@ -397,8 +410,8 @@ EFFECTS = [
     fx("breath_windup", "boss", "Dragon breath wind-up", "Both dragons, breath (1.25 s)",
        "boss_dragons.lua:733-747", "growl and animation only",
        "Glowing motes (frost or fire) gather at the dragon's mouth and vanish into it.",
-       [sp(20, 1.0, "#8ee8ff", ("sphere", [2.5, 3.5, 0], 1.6, True), attract=([2.5, 3.5, 0], 1.5, True),
-           exp=(0.7, 0.9), size=(2.5, 3.5), glow=14)],
+       [sp(20, 1.0, "#8ee8ff", ("sphere", [0, 5.0, 0], 1.6, True), attract=([0, 5.0, 0], 1.5, True),
+           exp=(0.7, 0.9), size=(2.5, 3.5), glow=14)],  # PM: at the launch point
        art="draconis ice and fire motes (MIT).", pace=1 / 6, pace_text="about every 6 s"),
     fx("breath_bolt", "boss", "Dragon breath bolts", "Both dragons, the three breath bolts",
        "boss_dragons.lua:403-446", "a tinted rock sprite with up to 18 single trail particles each",
@@ -429,10 +442,11 @@ EFFECTS = [
        "a 40-particle single ring (wind-up) and a burst of 96",
        "The 8 m warning ring stays as today (40 single particles, an exact circle); on release a pale ring "
        "of 48 blows outward to 8 m, instead of today's 96-mote burst.",
-       [single(40, "#d8eef4", ("disc", [0, 0.3, 0], 8.0, True), exp=(1.25, 1.25), size=(3.5, 3.5), glow=6,
-               fade=False, at="target"),
-        single(48, "#d8eef4", ("disc", [0, 0.5, 0], 1.0, True), radial=(18, 18), exp=(0.39, 0.39),
-               size=(3.5, 3.5), glow=6, at="target", delay=1.25)],
+       [single(40, "#d8eef4", ("disc", [0, 0.2, 0], 8.0, True), vel=[[0, 0.3, 0], [0, 0.3, 0]],
+               exp=(1.25, 1.25), size=(4.0, 4.0), glow=6, fade=False, at="target",
+               tex=GUST_KEPT),  # PM: today's ring, kept
+        single(48, "#d8eef4", ("disc", [0, 0.5, 0], 1.0, True), radial=(GUST_RING, GUST_RING),
+               exp=(0.39, 0.39), size=(3.5, 3.5), glow=6, at="target", delay=1.25)],
        simple=simple("The wind-up ring and a release spawner of 40 (a disc, less server time).", [
            single(40, "#d8eef4", ("disc", [0, 0.3, 0], 8.0, True), exp=(1.25, 1.25), size=(3.5, 3.5), glow=6,
                   fade=False, at="target"),
@@ -442,8 +456,8 @@ EFFECTS = [
     fx("dive", "boss", "Dragon dive slam", "Both dragons, dive", "boss_dragons.lua:755-824",
        "80 gold motes at the wind-up and 120 at the slam",
        "Keep the wind-up; the slam as an exact ground ring out to 7 m (48) and a dust cloud (32) instead of 120.",
-       [single(48, "#e8c06a", ("disc", [0, 0.2, 0], 1.0, True), radial=(18, 18), exp=(0.34, 0.34),
-               size=(4.0, 4.0), glow=10, at="target"),
+       [single(48, "#e8c06a", ("disc", [0, 0.2, 0], 1.0, True), radial=(DIVE_RING, DIVE_RING),
+               exp=(0.34, 0.34), size=(4.0, 4.0), glow=10, at="target"),  # PM: lands on 7 m
         sp(32, 0.2, "#a89a80", ("disc", [0, 0.2, 0], 3.0, False), vel=[[-1, 0.5, -1], [1, 2, 1]], exp=(0.8, 1.2),
            size=(5.0, 7.0), glow=0, at="target")],
        simple=simple("The ring only.", [single(48, "#e8c06a", ("disc", [0, 0.2, 0], 1.0, True), radial=(18, 18),
