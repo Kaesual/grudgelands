@@ -27,7 +27,7 @@ No gameplay change. A player sees nothing new.
 WM, WE and WG start together; they share no files. WE reads two values WM
 defines (the appearance version and the texture length cap, §3); it builds
 against the names fixed in §3 and merges main after WM for its final check.
-Merge order: WM, WG, WE, D. Estimate: WM about 2 hours, WE 2–3 hours,
+Merge order: WG, then WM and WE together (§7), then D. Estimate: WM about 2 hours, WE 2–3 hours,
 WG 3–4 hours, each plus its review.
 
 ## 2. Rulings
@@ -182,10 +182,11 @@ bone, skinning, and the stand animation; walk too if cheap. First route:
 proven by the test, not assumed. If it gets the skeleton or the animation
 wrong, the fallbacks are a script on the B3D reader in
 `tools/r33_c3/gen_cloak_model.py` or Blender 5.2 with a B3D import add-on;
-if the fallback becomes very laborious, the lane asks the user (§3). One
-option the user named for that case: a static glb first (mesh, skeleton,
-cloak, rest pose, no animation), with the animation left to the website's
-own JavaScript — the user decides; the lane does not pick it alone. The
+if the animation becomes very laborious, the lane does not stop: one
+fallback is pre-approved (the user and the website, 2026-10-06): a static
+glb (mesh, skeleton including the Cloak bone, both buffers, rest pose, no
+animation), with the idle motion left to the website's JavaScript until an
+animated glb becomes cheap; the report states which variant shipped. The
 conversion command lives in `tools/web_data/model/` so it can be rerun. A
 stock glTF loader must be able to load the result.
 
@@ -243,8 +244,11 @@ GUI checklist (the user; an existing test world is enough):
   lane briefs, the queue.
 - Process budget: WM and WE need a few LuaJIT runs and one boot each; WG
   is Python and LuaJIT only. Well inside 8.
-- Shared files: none between WM, WE and WG. WE reads WM's constants and
-  merges main after WM.
+- Shared files: none between WM, WE and WG. WE reads WM's constants: it
+  resumes on top of the reviewed WM branch, and WM and WE land on main
+  together, so no commit carries `grug_xp:level` without
+  `tools/web_data/web_data.json` (the website's support rule: a commit
+  supports level and preview exactly when that file exists).
 - After merge: report the level-key commit and the round's state to the
   website (the coordinator drafts the message; the user sends it). The
   website builds against §3 meanwhile and fetches the result after the

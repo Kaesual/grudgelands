@@ -127,7 +127,7 @@ our changes. Derivatives keep their source's licence.
   **yyt16384** (`grug_mapgen`); the bucket by **ElementW** (`grug_farming`).
   The player model `character.b3d` (player_api, CC BY-SA 3.0: celeron55,
   MirceaKitsune, Jordach et al.) and our cloak model built on it
-  (`grug_visuals`).
+  (`grug_visuals`; its glTF conversion in `tools/web_data/model`).
 - **VoxeLibre** (<https://git.minetest.land/VoxeLibre/VoxeLibre>) — textures
   based on the Pixel Perfection pack by **XSSheep**, with changes and
   additions by **MysticTempest** and **kingoscargames** and other VoxeLibre
