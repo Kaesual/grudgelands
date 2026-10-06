@@ -640,10 +640,9 @@ Wave 1 built no game feature; its pages and probe went to the user first.
   variant for every complex one, the ten existing looks it keeps, art
   proposals with their sprites and the rejected sprites; per card the
   server cost of one use and of twenty players in one zone from the model
-  of §2.12 (a spawner
-  about 671 B per receiver whatever its amount, a single particle 10–40 B
-  compressed; headless Lua calls: a spawner 1.88 µs, 2.26 µs with
-  `attract`, `add_particle` 0.60 µs).
+  of §2.12 (a spawner about 671 B per receiver whatever its amount, a
+  single particle 10–40 B compressed; headless Lua calls: a spawner 1.88
+  µs, 2.26 µs with `attract`, `add_particle` 0.60 µs).
 - **V4 GUI probe** (`tools/r40_probe`, tools only, never shipped; its
   README holds the install steps and the report form): test courses, the
   Charge variants (teleport, ghost and physical carrier, the planned path,
@@ -706,7 +705,8 @@ Wave 1 built no game feature; its pages and probe went to the user first.
   and the two-row split followed); one pass every 0.1 s over players with
   a running timer only, at most 100 per pass, writes only on a visible
   change; the wear bar no longer shows cooldowns or charges. Fixture 233
-  checks. **Overlay against the wear bar** (Lua per pass, headless bench):
+  checks. **Overlay against the wear bar** (Lua per pass, headless bench;
+  the wear ticker ran every 0.5 s, the overlay pass runs every 0.1 s):
   one player with 8 cooldowns 17 → 2.6 µs; 100 players with one cooldown
   each 178 µs and 250 inventory writes/s → 161 µs (worst 417) and 1,196
   HUD writes/s; 100 players with four each 942 µs (about 1.9 ms/s) and 790
@@ -754,7 +754,7 @@ Wave 1 built no game feature; its pages and probe went to the user first.
   no write during the charge pose and 0.2 s after it; the website head note
   in [tools/web_data/model/README.md](../../tools/web_data/model/README.md).
   Fixture 71 checks. Numbers: the pass for 100 stand-ins 0.26 µs per step
-  standing, 1.15 µs per step all looking around (400 writes/s); **3.7
+  with a steady look, 1.15 µs per step all looking around (400 writes/s); **3.7
   writes/s per player looking around continuously, none standing still**;
   about 60 B per write and observer, so twenty players in one zone all
   looking around send about 89 KB/s, about 4.4 KB/s into each client
