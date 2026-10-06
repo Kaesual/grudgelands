@@ -260,7 +260,8 @@ function grug_achievements.select_cloak(player, id)
 end
 
 grug_visuals.register_cloak_source(function(player)
-	return R.cloak_texture(book, player:get_meta())
+	local meta = player:get_meta()
+	return R.cloak_texture(book, meta), R.selected(book, meta)
 end)
 
 -- The Character page's cloak picker (Stats tab, under the model). Items are
