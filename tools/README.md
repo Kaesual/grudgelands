@@ -217,6 +217,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`effects.py`, the emitters in engine terms; `cost_model.py`, the server
   cost from the engine's serialization; `data.json`, their output;
   `particle_cost_probe/`, the headless timing of the particle API calls).
+  `r40_cd` the cooldown overlay: `gen_cooldown_textures.py` (the 72 cover
+  frames and the image digits in `grug_abilities/textures`, `--check`),
+  `portable_test.lua` (number, frame, the slot geometry against the
+  engine's pixel arithmetic, slot tracking, writes only on change, the
+  pass), `bench/` (a headless probe mod: the wear bar's Lua cost before and
+  the overlay's after, `PROBE=tools/r40_cd/bench tools/luanti_headless.sh
+  150`).
   `r40_px` the particle helper's fixture (`portable_test.lua`: the scale
   arithmetic, exact rings, the budget of every catalogue effect, the
   fallback rule on the real kits, settlement and cast dispatcher), the

@@ -43,8 +43,9 @@ Core principles:
   The Skills catalogue restores an unlocked ability only when no carried copy
   exists. External storage, equipment slots and trading refuse these items.
   Reconnect and talent changes normalize existing copies without re-granting
-  discarded ones. Left click attacks or casts; the wear bar shows the skill's
-  charge or cooldown. Appearance follows §2c.
+  discarded ones. Left click attacks or casts; a running charge or cooldown
+  shows as the overlay on the skill's hotbar slot (§2b "The cooldown
+  overlay"). Appearance follows §2c.
 - **Skills pick up drops within hand reach.** A fresh physical LMB press
   attempts pickup of the first visible dropped item within 4 m exactly once,
   unless a hostile stands behind it (loot never hides a hostile; the press is
@@ -312,8 +313,8 @@ intervening objects (dropped items excepted) matter.
 Block progress belongs to the current node and is lost on retargeting. Apples,
 plants and torches require positive digging time; the initial torch timing is
 0.3 s. Actual removal preserves normal node callbacks, protection, `can_dig`,
-drops and empty-hand tool restrictions. A skill's charge wear is never mining
-wear. Crack feedback may begin during click arbitration, but removal may not.
+drops and empty-hand tool restrictions. Digging never wears a skill item.
+Crack feedback may begin during click arbitration, but removal may not.
 
 ### Scheduling and effect boundaries
 
@@ -488,47 +489,49 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   is not an eligible ally target. Input routing may consume a drop click for
   pickup before a spell is invoked; that does not alter spell target resolution.
 
-### The charge bar
+### The cooldown overlay
 
-- A **charging** skill shows a bar under its hotbar icon that grows from
-  left to right and runs **red → yellow → green** as a continuous ramp, no
-  fixed intermediate states. A **fully charged** skill shows **no bar** —
-  being ready is the default, and the absence of a bar is the signal.
-- This is the item **wear bar**, driven by the charge instead of by a
-  cooldown: `wear = (1 − charge) × 65534` (the game's wear cap is 65534,
-  not the engine's 65535 — a fully worn item reads as broken). The engine
-  defines durability as
-  `1 − wear / 65535` and derives both bar length and color from it, and it
-  draws nothing at `wear = 0`. The color ramp is `set_wear_bar_params` with
-  `blend = "linear"` and stops at 0.0 red / 0.5 yellow / 1.0 green.
-- **The bar's resolution is set by the TICKER, not by `WEAR_STEPS`, and the
-  packet cost is 2/s per player at worst** (measured against the engine
-  source 2026-08-09, correcting a first draft of this bullet that claimed
-  a per-skill cost):
-  - Wear writes are driven by the **one shared 0.5 s globalstep** that
-    already serves every ability of every player. There is no per-skill
-    loop and there must never be one.
-  - The engine **coalesces**: `ServerEnvironment::step` sends a player's
-    inventory at most once per environment step, and only if it was
-    modified (`src/serverenvironment.cpp`). Ten skills charging at once
-    therefore cost exactly what one costs — **one packet per tick, so ≤ 2
-    per second per player**, and none at all while nothing is charging.
-  - The packet is **incremental at list granularity** (`Inventory::serialize`
-    writes `KeepList` for untouched lists), so a wear write on `main`
-    leaves the eight equipment lists, the bag lists and `craft`
-    unserialized. Per-*slot* incremental is an unimplemented TODO in the
-    engine (`src/inventory.cpp`), so the `main` list itself goes out whole.
-  - Consequence for the look: a bar can only move `charge_time / 0.5 s`
-    times. **Rule: the ticker stays at 0.5 s** — speeding it up is the one
-    change that actually costs packets, and it is not worth a smoother
-    bar. **Recommendation, not a gate: charge times of at least 2 s, and
-    3–4 s reads better** (4 visible steps already say "charging, nearly
-    there"; 6–8 look continuous). A skill may still have no charge at all
-    and be limited by its resource alone — Mighty Blow is exactly that.
-    Set `WEAR_STEPS` to 32 so the quantizer is never the binding
-    constraint; the ticker is the only knob.
-  - The Strike's old `no_cooldown_display` exception disappears with the
-    model: it has no charge, so it has no bar.
+Round 40 (the user's rulings and picks, round plan §2.1, §2.9, §2.13); it
+replaces the item wear bar, which no longer shows cooldowns or charges.
+
+- A skill with a running **cooldown** (cast skills) or **charge** (swing
+  skills: Hamstring, Opening) that sits in a **hotbar** slot is covered with
+  **50 % black over the whole icon square**; the cover clears **clockwise
+  from twelve o'clock** like a clock hand. It is drawn from 72 pre-rendered
+  frames, one per 5°; a frame shows the elapsed share, so the frame count
+  never depends on the duration (2 s and 300 s use the same frames).
+- The **remaining time** sits in the middle of the icon as **image digits**
+  that scale with the icon (white, black outline), without decimals or unit:
+  above 60 s the minutes rounded up (`5m` from 5:00 down to 4:01, `2m` at
+  1:01), from 60 s down the seconds rounded up (`60`, `59` … `1`).
+- **No ready signal:** cover and number vanish when the skill is ready; a
+  fully charged swing skill shows nothing, which is the default state.
+- **Hotbar only:** a skill in a bag or in the main inventory past the hotbar
+  shows nothing. The overlay follows a skill moved between slots or into
+  and out of the hotbar, the hotbar's item count and the engine's two-row
+  split in a narrow window.
+- **Cost:** per shown slot two HUD image elements (the cover and the whole
+  number as one image). One pass every 0.1 s visits only players with a
+  running cooldown or charge, at most 100 per pass (up to 100 such players
+  keep the 0.1 s cadence; beyond that they take turns, round robin), and
+  writes only a visible change: a new frame, a new number, an element added
+  or removed (a 300 s cooldown: 134 changes; a pass with nothing new sends
+  nothing). The hotbar is read again after an
+  inventory action, a new timer and every 0.5 s. The overlay never writes
+  the inventory (the wear bar re-sent the whole `main` list on every
+  visible step).
+- **Layout:** the elements sit on the engine's own slot rectangles,
+  computed from the window size and the `real_hud_scaling` and
+  `real_gui_scaling` the client reports (about 0.2 s after a resize, polled
+  every 0.5 s). The server cannot tell the display density from
+  `gui_scaling`: it assumes `gui_scaling` 1 (which matters only where 48 ×
+  density is not a whole number) and `hud_hotbar_max_width` at its default
+  1.0. A client that reports no window information gets fixed HUD units for
+  one row at density 1.
+- Code: `grug_abilities/cooldown_hud.lua` (the elements and the pass),
+  `cooldown_math.lua` (number, frame and slot arithmetic, the digit size
+  `DIGIT_SHARE`); textures from `tools/r40_cd/gen_cooldown_textures.py`
+  (`--check`).
 
 ### Strike
 
@@ -590,7 +593,7 @@ Revised 2026-09-23, Round 18:
 - First-person wield and third-person held presentation still use the equipped
   weapon (or the ability's declared equipment source); utilities follow the same
   rule. Swapping equipment refreshes presentation without changing the action icon.
-- Preserve bow draw stages, cooldown/charge wear, material-tier weapon appearance
+- Preserve bow draw stages, the cooldown overlay, material-tier weapon appearance
   and honest empty-slot presentation. Icons grant no entitlement or combat power.
 - Existing accepted weapon and armor media are unchanged. The round delivers a
   reviewed active-skill contact sheet and provenance for imported/generated icons.

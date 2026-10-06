@@ -26,12 +26,12 @@ local swing_input_latch = {} -- player name -> one direct hostile object click
 local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
 -- player name -> {ability id -> {expiry = us time, duration = seconds}}. The
--- duration is stored per cast, not looked up from the def, because the wear
--- ticker needs the value THIS cast used to draw a fraction of it.
+-- duration is stored per cast, not looked up from the def, because the
+-- cooldown overlay needs the value THIS cast used to draw a fraction of it.
 local cooldowns = {}
 -- Player name -> {ability id -> next accepted cast time in microseconds}.
 -- This is a server-authoritative input cadence, not a visible cooldown: it
--- has no wear bar and talents cannot shorten it.
+-- has no cooldown overlay and talents cannot shorten it.
 local cast_intervals = {}
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local ready_reticle_huds = {} -- player name -> {id = hud id, visible = bool}
@@ -693,8 +693,8 @@ end
 
 --
 -- Ability registration & item. One tool per ability; the item's `range`
--- doubles as the targeting range (pointed_thing works up to it), the wear
--- bar displays the running cooldown.
+-- doubles as the targeting range (pointed_thing works up to it). A running
+-- cooldown or charge shows as the overlay on the hotbar (cooldown_hud.lua).
 --
 
 -- The cue of each ability (Round 34 S1b, plan §4.3), one per theme. A cast
@@ -904,19 +904,7 @@ function grug_abilities.update_stack_description(stack, def, player)
 	return true
 end
 
--- Cooldown display via item wear. Inventory writes re-send the whole
--- player inventory to the client, so this path is deliberately stingy:
--- slot indices are cached (no full-list scan per tick) and the wear bar is
--- quantized to WEAR_STEPS — a write happens only when the visible step
--- changes, not every tick.
--- 32 since WP38 T6 (classes.md §2b): the bar's resolution is set by the
--- TICKER (one shared 0.5 s globalstep), not by WEAR_STEPS — set WEAR_STEPS
--- to 32 so the quantizer is never the binding constraint.
-local WEAR_STEPS = 32
-
-local wear_steps = {} -- player name -> {ability id -> last written step}
-local charge_steps = {} -- player name -> {ability id -> last written charge step}
-
+-- The lists ability representations may live in: main and the bag contents.
 local function representation_lists()
 	local lists = {"main"}
 	if core.global_exists("grug_inventory") then
@@ -927,20 +915,20 @@ local function representation_lists()
 	return lists
 end
 
-local function set_item_wear(player, ability_id, wear)
-	local inv = player:get_inventory()
-	local itemname = "grug_abilities:" .. ability_id
-	for _, listname in ipairs(representation_lists()) do
-		for i = 1, inv:get_size(listname) do
-			local stack = inv:get_stack(listname, i)
-			if stack:get_name() == itemname then
-				stack:set_wear(wear)
-				inv:set_stack(listname, i, stack)
-				return
-			end
-		end
-	end
-end
+-- The cooldown overlay on the hotbar (classes.md "The cooldown overlay"):
+-- arm_cooldown and reset_charge hand it their records, it draws them on the
+-- skill's hotbar slot and drops them when they run out. It never writes the
+-- inventory.
+local cooldown_hud = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/cooldown_hud.lua")({
+	math = dofile(core.get_modpath(core.get_current_modname()) ..
+		"/cooldown_math.lua"),
+	ability_of = function(itemname)
+		local def = item_defs[itemname]
+		return def and def.id
+	end,
+})
+grug_abilities.cooldown_hud = cooldown_hud
 
 -- Destination policy for ability and mount representations is centralized in
 -- grug_skills. Source-side take callbacks cannot distinguish Q/drop from an
@@ -996,25 +984,24 @@ function grug_abilities.effective_cooldown(player, def)
 end
 
 -- Start (or restart) an ability's cooldown. `duration` <= 0 is "no cooldown"
--- and stores nothing at all, so a free ability never enters the ticker.
--- Every remaining user is a cast skill and displays its wear bar.
+-- and stores nothing at all, so a free ability never enters the overlay.
+-- Every remaining user is a cast skill and shows the overlay.
 function grug_abilities.arm_cooldown(player, def, duration)
 	if not duration or duration <= 0 then
 		return
 	end
 	local name = player:get_player_name()
-	cooldowns[name] = cooldowns[name] or {}
-	cooldowns[name][def.id] = {
+	local rec = {
 		expiry = core.get_us_time() + duration * 1e6,
 		duration = duration,
 	}
-	wear_steps[name] = wear_steps[name] or {}
-	wear_steps[name][def.id] = WEAR_STEPS
-	set_item_wear(player, def.id, 65534)
+	cooldowns[name] = cooldowns[name] or {}
+	cooldowns[name][def.id] = rec
+	cooldown_hud.track(player, def.id, rec)
 end
 
 -- End a running cooldown now (Last Word resets Word of Ruin's, Round 35).
--- The ticker clears the record and the wear bar on its next pass.
+-- The overlay holds the same record and drops it on its next pass.
 function grug_abilities.clear_cooldown(player, id)
 	local cds = cooldowns[player:get_player_name()]
 	local rec = cds and cds[id]
@@ -1033,7 +1020,9 @@ end
 -- fired proc (kits.lua). Runtime-only, never persisted.
 --
 
-local charges = {} -- player name -> {ability id -> ready_at us time}
+-- player name -> {ability id -> {expiry = ready_at us time, duration = s}},
+-- the shape of a cooldown record, so the overlay draws both alike.
+local charges = {}
 
 function grug_abilities.effective_charge(player, def)
 	local duration = def.charge or 0
@@ -1051,38 +1040,23 @@ function grug_abilities.charge_ready(player, def)
 		return true
 	end
 	local per_player = charges[player:get_player_name()]
-	return core.get_us_time() >= ((per_player and per_player[def.id]) or 0)
+	local rec = per_player and per_player[def.id]
+	return not rec or core.get_us_time() >= rec.expiry
 end
 
--- The one reset: a fired proc starts the timer over. Also restarts the
--- charge bar immediately — an empty bar under the icon from the swing on,
--- instead of up to 0.5 s later when the ticker next looks. One inventory
--- write per proc, and procs are rare: worth it.
+-- The one reset: a fired proc starts the timer over, and the overlay covers
+-- the skill from the swing on.
 function grug_abilities.reset_charge(player, def)
 	if not def.charge then
 		return
 	end
 	local name = player:get_player_name()
+	local duration = grug_abilities.effective_charge(player, def)
+	local rec = {expiry = core.get_us_time() + duration * 1e6,
+		duration = duration}
 	charges[name] = charges[name] or {}
-	charges[name][def.id] = core.get_us_time()
-		+ grug_abilities.effective_charge(player, def) * 1e6
-	charge_steps[name] = charge_steps[name] or {}
-	charge_steps[name][def.id] = 0
-	set_item_wear(player, def.id, 65534)
-end
-
--- 0..1, for the charge bar (T6 drives the wear bar with it).
-function grug_abilities.charge_fraction(player, def)
-	if not def.charge then
-		return 1
-	end
-	local per_player = charges[player:get_player_name()]
-	local ready_at = (per_player and per_player[def.id]) or 0
-	local remaining = (ready_at - core.get_us_time()) / 1e6
-	if remaining <= 0 then
-		return 1
-	end
-	return 1 - remaining / grug_abilities.effective_charge(player, def)
+	charges[name][def.id] = rec
+	cooldown_hud.track(player, def.id, rec)
 end
 
 -- Authoritative swing clock (classes.md §2b). Native object punches from a
@@ -1535,9 +1509,8 @@ end
 
 -- The skin token: what a stack has to say about itself so a sync can decide, in
 -- ONE string compare, that it is already correct. Load-bearing, not polish --
--- every inventory write re-sends the whole list to the client, which is why the
--- cooldown-wear path above is so stingy (D2/2). Without it, dragging any item
--- would rewrite four stacks.
+-- every inventory write re-sends the whole list to the client (D2/2). Without
+-- it, dragging any item would rewrite four stacks.
 --
 -- Shape: "<version>|<wield source>"; an empty slot is "<version>|", so a
 -- freshly granted stack of a weaponless character is written once (it shows
@@ -1706,8 +1679,8 @@ local EMPTY_HAND_SCALE = "(1, 1, 2.5)"
 -- Skin one ability stack IN PLACE; returns true only when something actually
 -- changed, i.e. only when the caller has to spend an inventory write.
 --
--- Touches nothing but the three meta keys: the wear bar is the cooldown display
--- and stays whatever it was, and so does the Loose draw-time `range`.
+-- Touches nothing but the three meta keys: the wear and the Loose draw-time
+-- `range` stay whatever they were.
 local function apply_skin(stack, def, src)
 	local meta = stack:get_meta()
 	local token = skin_token(src)
@@ -1751,58 +1724,6 @@ local function apply_swing_caps(stack, def, player)
 	meta:set_string(SWING_CAPS_TOKEN_KEY, token)
 	return true
 end
-
--- Wear bar params for CHARGING skills (classes.md §2b), applied like the
--- skin: compare first, write once, or not at all. There is no getter for
--- wear bar params, so the token is the compare — every inventory write
--- re-sends the list, and a newly granted item must not spend a second
--- write on the ramp once the sync pass established it.
---
--- The argument is the wear bar table ITSELF — `color_stops` and `blend` at
--- the top level. `read_wear_bar_params` reads both off the table it is
--- handed (`src/script/common/c_content.cpp:1847-1889`), and a missing
--- `color_stops` is a hard `LuaError("color_stops must be a table")`. The
--- `wear_color = {...}` wrapper belongs to an ITEM DEFINITION
--- (`doc/lua_api.md:10512-10522`), where the field name is what selects this
--- same reader — passing the definition's shape to the meta method threw
--- from inside the class-pick formspec handler and, being a LuaError out of
--- a callback, took the server with it (server.cpp:128-132, :163-167).
--- Hamstring is the only ability with a `charge`, so the crash was "pick
--- Warrior".
-local function apply_charge_bar(stack, def)
-	if not def.charge then
-		return false
-	end
-	local meta = stack:get_meta()
-	if meta:get_string("grug_charge_bar") == "1" then
-		return false
-	end
-	meta:set_wear_bar_params({
-		blend = "linear",
-		color_stops = {[0.0] = "#ff0000", [0.5] = "#ffff00", [1.0] = "#00ff00"},
-	})
-	meta:set_string("grug_charge_bar", "1")
-	return true
-end
-
--- Load-time probe for the call above (WP38 review). The wear bar table is
--- validated C++-side and a bad shape is a LuaError, not a return value —
--- and the only caller is sync_kit, which runs inside the class-pick
--- formspec handler, so the failure mode is a SERVER SHUTDOWN on "pick
--- Warrior" (server.cpp:128-132, :163-167). There is no getter to compare
--- against and no syntax check can see the shape, so it is exercised once
--- at startup on a scratch stack that goes nowhere: a wrong table costs one
--- loud line at boot instead of the first player who picks a class with a
--- charging skill in its kit.
-core.register_on_mods_loaded(function()
-	local ok, err = pcall(apply_charge_bar, ItemStack("grug_abilities:strike"),
-		{charge = 1})
-	if not ok then
-		core.log("error", "[grug_abilities] the engine rejects the charge-bar " ..
-			"wear params: " .. tostring(err) .. " -- granting any skill that " ..
-			"has a charge would kill the server from sync_kit")
-	end
-end)
 
 -- Resolve each hand at most once per pass, and only when a stack actually asks
 -- for it. The entry is the {inv, wield} source pair, so one hand is read once
@@ -2000,18 +1921,6 @@ function grug_abilities.unlocked_ids(player)
 	return result
 end
 
-local function representation_wear(player, def)
-	local name = player:get_player_name()
-	if def.kind == "swing" and def.charge then
-		local frac = grug_abilities.charge_fraction(player, def)
-		return math.floor((1 - math.max(0, math.min(1, frac))) * 65534)
-	end
-	local rec = cooldowns[name] and cooldowns[name][def.id]
-	if not rec then return 0 end
-	local remaining = math.max(0, (rec.expiry - core.get_us_time()) / 1e6)
-	return math.floor(math.min(1, remaining / rec.duration) * 65534)
-end
-
 function grug_abilities.stack_for(player, ability_id)
 	local def = grug_abilities.registered[ability_id]
 	if not def or not grug_abilities.is_unlocked(player, ability_id) then return nil end
@@ -2019,9 +1928,7 @@ function grug_abilities.stack_for(player, ability_id)
 
 	apply_skin(stack, def, skin_source_cache(player)(def))
 	if def.slot ~= "offhand" then apply_swing_caps(stack, def, player) end
-	apply_charge_bar(stack, def)
 	grug_abilities.update_stack_description(stack, def, player)
-	stack:set_wear(representation_wear(player, def))
 	return stack
 end
 
@@ -2332,12 +2239,13 @@ core.register_globalstep(function(dtime)
 end)
 
 --
--- Regen / decay / cooldown ticker (0.5 s): mana follows the level-linear
--- absolute curve; rage decays 5/s out of combat (combat_stats §5,
--- classes.md §1). Cooldown/charge wear and the skill-name watcher share this
--- one throttled pass; the attack/input pass above uses the 0.05 s threshold
--- required for prompt release and click-latch input; an
--- actual pass still waits for the next engine step (currently often 0.09 s).
+-- Regen / decay ticker (0.5 s): mana follows the level-linear absolute
+-- curve; rage decays 5/s out of combat (combat_stats §5, classes.md §1). The
+-- skill-name watcher and the HUD bars share this one throttled pass (the
+-- cooldown overlay has its own, cooldown_hud.lua); the attack/input pass
+-- above uses the 0.05 s threshold required for prompt release and
+-- click-latch input; an actual pass still waits for the next engine step
+-- (currently often 0.09 s).
 --
 
 local acc = 0
@@ -2373,63 +2281,6 @@ core.register_globalstep(function(dtime)
 				rage[name] = new
 				if math.floor(new) ~= math.floor(cur) then
 					hud_update(player)
-				end
-			end
-		end
-		-- cooldown wear display (write only when the visible step changes)
-		local cds = cooldowns[name]
-		if cds then
-			local now = core.get_us_time()
-			local steps = wear_steps[name] or {}
-			wear_steps[name] = steps
-			for id, rec in pairs(cds) do
-				local remaining = (rec.expiry - now) / 1e6
-				-- Every remaining cooldown user is a cast skill and displays
-				-- its wear bar. A wear write costs a full inventory re-send,
-				-- which is why the step quantization above exists.
-				if remaining <= 0 then
-					cds[id] = nil
-					steps[id] = nil
-					set_item_wear(player, id, 0)
-				else
-					-- The duration of THIS cast (stored in the record), not
-					-- def.cooldown.
-					local frac = remaining / rec.duration
-					local step = math.max(1,
-						math.min(WEAR_STEPS, math.ceil(frac * WEAR_STEPS)))
-					if step ~= steps[id] then
-						steps[id] = step
-						set_item_wear(player, id,
-							math.floor(step / WEAR_STEPS * 65534))
-					end
-				end
-			end
-		end
-		-- charge bars (classes.md §2b): wear = (1 - charge) * 65534,
-		-- quantized to WEAR_STEPS, written only when the visible step
-		-- changes; a full charge writes 0 ONCE (no bar = ready) and drops
-		-- the record. This iterates the REGISTRY, not the inventory — a
-		-- handful of defs (today exactly one) — and costs a few table
-		-- reads per player per tick.
-		local charge_recs = charge_steps[name]
-		if charge_recs then
-			for id, def in pairs(grug_abilities.registered) do
-				if def.kind == "swing" and def.charge then
-					local frac = grug_abilities.charge_fraction(player, def)
-					if frac >= 1 then
-						if charge_recs[id] then
-							charge_recs[id] = nil
-							set_item_wear(player, id, 0)
-						end
-					else
-						local step = math.max(0,
-							math.min(WEAR_STEPS, math.floor(frac * WEAR_STEPS)))
-						if step ~= charge_recs[id] then
-							charge_recs[id] = step
-							set_item_wear(player, id, math.floor(
-								(WEAR_STEPS - step) / WEAR_STEPS * 65534))
-						end
-					end
 				end
 			end
 		end
@@ -2509,8 +2360,6 @@ core.register_on_leaveplayer(function(player)
 	cast_intervals[name] = nil
 	charges[name] = nil
 	targets[name] = nil
-	wear_steps[name] = nil
-	charge_steps[name] = nil
 	bar_huds[name] = nil
 	predicted_hp[name] = nil
 	skillname_huds[name] = nil
