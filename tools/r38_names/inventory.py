@@ -182,6 +182,15 @@ class Model:
         self.sources.append({"id": sid, "what": what, "where": where})
         return sid
 
+    def file_name(self, key, fallback):
+        """A slot's name in data/names.json (Round 38 lane B2: the code that
+        names kings, royal guards, dragons, whelps, the rift boss and the
+        bodyguards reads it there), else `fallback`."""
+        rel = MOBS + "/data/names.json"
+        if not (self.repo.root / rel).exists():
+            return fallback
+        return self.repo.json(rel)["names"].get(key, fallback)
+
     # zones --------------------------------------------------------------------
     def load_zones(self):
         r = self.repo
@@ -656,26 +665,29 @@ class Model:
         # Kings, royal guards, the undead king's summons.
         btext = r.text(MOBS + "/bosses.lua")
         races = balanced(btext, btext.index("{", btext.index("local RACES")))
-        self.source("kings", "the six kings (RACES[race].name), level 65 elite, and their royal guards "
-                    "(name .. ' Royal Guard', level 60 elite)", r.cite(MOBS + "/bosses.lua", r"local RACES = \{"))
+        self.source("kings", "the six kings and their royal guards (names.json king_<race>, "
+                    "royal_guard_<race>), level 65 and 60 elite", r.cite(MOBS + "/bosses.lua", r"local RACES = \{") +
+                    ", " + r.cite(MOBS + "/bosses.lua", r'names\.required\("king_"'))
         capital = {"dwarf": "elandor_dur_brannoc", "human": "elandor_highcourt", "elf": "elandor_lethariel",
                    "undead": "kragmar_nhal_veyr", "orc": "kragmar_gor_drazhak", "troll": "kragmar_kezamba"}
-        for m in re.finditer(r'(\w+)\s*=\s*\{name\s*=\s*"([^"]+)",\s*faction\s*=\s*"(\w+)",\s*\n\s*kit\s*=\s*"(\w+)"', races):
-            race, kname, faction, kit = m.groups()
+        for m in re.finditer(r'(\w+)\s*=\s*\{faction\s*=\s*"(\w+)",\s*\n\s*kit\s*=\s*"(\w+)"', races):
+            race, faction, kit = m.groups()
             zid = capital[race]
+            kname = self.file_name("%s/king_%s/L65-65" % (zid, race), "king_" + race)
             if self.zones[zid]["race_region"] != race or not self.zones[zid]["civic"]:
                 raise SystemExit("inventory: capital of %s is not %s" % (race, zid))
             where = "%s:%d" % (MOBS + "/bosses.lua", r.line_of(MOBS + "/bosses.lua", btext.index("local RACES") + m.start()))
             common = {"zone": zid, "authored_tier": "elite", "leader": False, "disposition": "aggressive",
                       "size": 1.0, "drops": None, "clocks": ["any"], "family": "humanoid"}
             self.add_slot(dict(common, key="%s/king_%s/L65-65" % (zid, race), source="boss", name=kname,
-                               name_source="bosses.lua RACES.name", name_where=where,
+                               name_source="names.json (bosses.lua RACES)", name_where=where,
                                entity="grug_mobs:king_" + race, role="king_" + race, base="king",
                                tier="boss", role_levels=[65, 65], levels=[65, 65],
                                notes=["king encounter (boss ledger); fixed level 65, elite tier"]))
             self.add_slot(dict(common, key="%s/royal_guard_%s/L60-60" % (zid, race), source="boss_guard",
-                               name=kname + " Royal Guard", name_source="bosses.lua row.name .. ' Royal Guard'",
-                               name_where=r.cite(MOBS + "/bosses.lua", r'row\.name \.\. " Royal Guard"'),
+                               name=self.file_name("%s/royal_guard_%s/L60-60" % (zid, race), "royal_guard_" + race),
+                               name_source="names.json (bosses.lua royal_guard_<race>)",
+                               name_where=r.cite(MOBS + "/bosses.lua", r'names\.required\("royal_guard_"'),
                                entity="grug_mobs:royal_guard_" + race, role="royal_guard_" + race, base="guard",
                                tier="elite", role_levels=[60, 60], levels=[60, 60],
                                notes=["four per king; fixed level 60, elite tier"]))
@@ -695,28 +707,30 @@ class Model:
         # Dragons and whelps.
         dtext = r.text(MOBS + "/boss_dragons.lua")
         whelp_level = int(re.search(r"whelp_level\s*=\s*(\d+)", dtext).group(1))
-        self.source("dragons", "the two dragons (level 70 boss tier) and their whelps (name .. ' Whelp', level %d)" % whelp_level,
-                    r.cite(MOBS + "/boss_dragons.lua", r'description = opts\.description \.\. " Whelp"'))
+        self.source("dragons", "the two dragons (level 70 boss tier) and their whelps (level %d), named by "
+                    "names.json" % whelp_level,
+                    r.cite(MOBS + "/boss_dragons.lua", r'whelp_level = \d+'))
         dzones = {"ice": "front_wyrmglass_crown", "storm": "front_stormscale_summit"}
         for m in re.finditer(r'register_mob\("grug_mobs:(\w+)",\s*whelp_def\((\w+)\)\)', dtext):
             whelp, opts = m.groups()
             om = re.search(r"local %s = \{" % opts, dtext) or re.search(r"%s\s*=\s*\{" % opts, dtext)
             obody = balanced(dtext, om.end() - 1)
-            dname = re.search(r'description\s*=\s*"([^"]+)"', obody).group(1)
             dentity = re.search(r'register_mob\("grug_mobs:(\w+)",\s*dragon_def\("\w+",\s*%s\b' % opts, dtext)
             dent = dentity.group(1) if dentity else None
             zid = dzones[opts]
+            dname = self.file_name("%s/%s/L70-70" % (zid, dent), dent)
             dwhere = "%s:%d" % (MOBS + "/boss_dragons.lua", r.line_of(MOBS + "/boss_dragons.lua", om.end() + obody.index("description")))
             common = {"zone": zid, "leader": False, "disposition": "aggressive", "size": 1.0, "drops": None,
                       "clocks": ["any"]}
             if dent:
                 self.add_slot(dict(common, key="%s/%s/L70-70" % (zid, dent), source="boss", name=dname,
-                                   name_source="boss_dragons.lua description", name_where=dwhere,
+                                   name_source="names.json (boss_dragons.lua)", name_where=dwhere,
                                    entity="grug_mobs:" + dent, role=dent, base=dent, family="dragon",
                                    tier="boss", authored_tier="boss", role_levels=[70, 70], levels=[70, 70],
                                    notes=["dragon encounter; fixed level 70, boss tier"]))
             self.add_slot(dict(common, key="%s/%s/L%d-%d" % (zid, whelp, whelp_level, whelp_level), source="summon",
-                               name=dname + " Whelp", name_source="boss_dragons.lua opts.description .. ' Whelp'",
+                               name=self.file_name("%s/%s/L%d-%d" % (zid, whelp, whelp_level, whelp_level), whelp),
+                               name_source="names.json (boss_dragons.lua whelp_def)",
                                name_where=dwhere, entity="grug_mobs:" + whelp, role=whelp, base=whelp,
                                family="dragon", tier="normal", authored_tier="normal",
                                role_levels=[whelp_level, whelp_level], levels=[whelp_level, whelp_level],
@@ -726,19 +740,19 @@ class Model:
         core_rel = MOBS + "/rift_core.lua"
         site = re.search(r'M\.SITE = "(\w+)"', r.text(core_rel)).group(1)
         szone = re.search(r'key="%s"[^\n]*zone_id="(\w+)"' % site, cat).group(1)
-        bm = r.search(core_rel, r'M\.BOSS_NAME = "([^"]+)"')
         rfix = int(re.search(r"_grug_fixed_level = (\d+)", balanced(r.text(MOBS + "/rift.lua"),
                    r.text(MOBS + "/rift.lua").index("(", r.text(MOBS + "/rift.lua").index('register_mob("grug_mobs:rift_boss"')))).group(1))
         self.add_slot({"key": "%s/rift_boss/L%d-%d" % (szone, rfix, rfix), "zone": szone, "source": "boss",
-                       "name": bm.group(1), "name_source": "rift_core.lua M.BOSS_NAME",
-                       "name_where": "%s:%d" % (core_rel, r.line_of(core_rel, bm.start())),
+                       "name": self.file_name("%s/rift_boss/L%d-%d" % (szone, rfix, rfix), "rift_boss"),
+                       "name_source": "names.json (rift.lua)",
+                       "name_where": r.cite(MOBS + "/rift.lua", r'names\.required\("rift_boss"\)'),
                        "entity": "grug_mobs:rift_boss", "role": "rift_boss", "family": "rift_boss",
                        "base": "grug_mobs:dungeon_master", "tier": "boss", "authored_tier": "elite",
                        "leader": False, "disposition": "aggressive", "size": 1.0, "drops": None,
                        "role_levels": [rfix, rfix], "levels": [rfix, rfix], "clocks": ["any"],
                        "notes": ["the rift at clash site %s; fixed level %d elite, boss ledger" % (site, rfix)]})
-        self.source("rift_boss", "the rift boss name and site", r.cite(core_rel, r"M\.BOSS_NAME") + ", " +
-                    r.cite(core_rel, r"M\.SITE = "))
+        self.source("rift_boss", "the rift boss name and site", r.cite(MOBS + "/rift.lua",
+                    r'names\.required\("rift_boss"\)') + ", " + r.cite(core_rel, r"M\.SITE = "))
 
         # Guards: settlements and outposts (one name per faction everywhere).
         gtext = r.text(MOBS + "/guard.lua")
@@ -789,10 +803,10 @@ class Model:
                                base="king", tier="boss", authored_tier="elite", disposition="aggressive",
                                role_levels=[lv["GENERAL_LEVEL"]] * 2, levels=[lv["GENERAL_LEVEL"]] * 2,
                                notes=["fortress General, a king's chassis; boss gear on an enemy player's kill"]))
-            bname = "%s Bodyguard" % fac
-            self.add_slot(dict(common, key="%s/%s.bodyguard/L60-60" % (zid, key), source="pvp_garrison",
-                               name=bname, name_source="bosses.lua (Accord|Throng) .. ' Bodyguard'",
-                               name_where=r.cite(MOBS + "/bosses.lua", r'" Bodyguard"'),
+            bkey = "%s/%s.bodyguard/L60-60" % (zid, key)
+            self.add_slot(dict(common, key=bkey, source="pvp_garrison",
+                               name=self.file_name(bkey, "%s Bodyguard" % fac), name_source="names.json (bosses.lua)",
+                               name_where=r.cite(MOBS + "/bosses.lua", r'\.bodyguard"\)'),
                                entity="grug_mobs:bodyguard_" + faction, role="bodyguard_" + faction, family="guard",
                                base="guard", tier="elite", authored_tier="elite",
                                role_levels=[lv["BODYGUARD_LEVEL"]] * 2, levels=[lv["BODYGUARD_LEVEL"]] * 2,

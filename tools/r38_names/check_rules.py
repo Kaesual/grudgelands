@@ -5,7 +5,13 @@ rules 1-4) over a name proposal.
     python3 tools/r38_names/check_rules.py <proposal.json ...>
     python3 tools/r38_names/check_rules.py --partial <zone files ...>
     python3 tools/r38_names/check_rules.py --world-pending <all zone files>
-    python3 tools/r38_names/check_rules.py --today      # today's names as the proposal
+    python3 tools/r38_names/check_rules.py --shipped    # the game's names: the permanent gate
+
+`--shipped` (also `--today`) checks the names the game ships, every slot as
+the inventory reads it (data/names.json, pvp_names.json for the PvP
+captains, war commanders and Generals). It is the naming check of the round
+workflow since Round 38 (it replaces tools/r28_names/build_review.py
+--check).
 
 A proposal is one JSON file per zone (plus `world.json` for the slots
 without a zone), each
@@ -24,14 +30,16 @@ Checked (one line per problem, exit 1 on any):
       and bosses at most 3 (words split on spaces; a hyphenated word is one)
   R2  no signal word (tools/r28_names' list: Small, Large, Braindead ...)
   R3  "Piglet" only on the start pigs the `*_hunt_01` quests target
-  R4  per name (case-insensitive, across every zone using it): its slots'
-      level bands join without a gap, and all its slots lie in one drop
+  R4  per name (case-insensitive, across every zone using it): its zone
+      slots' level bands join without a gap, and all of them lie in one drop
       tier. A zone slot whose own band spans two tiers counts as the tier
-      holding most of its levels, the higher on a tie (coordinator's default
-      ruling: a capital's L20-23 slot is T3, so it may share a name with
-      L24+ slots, never with L19 or lower); a world/ slot keeps every tier
-      its levels touch (pending the user). Exempt from the gap test (not
-      from the tier test): the names in GAP_EXEMPT, see there
+      holding most of its levels, the higher on a tie (the user's ruling,
+      plan §6 item 11: a capital's L20-23 slot is T3, so it may share a name
+      with L24+ slots, never with L19 or lower). The world/ slots (no zone:
+      underground casts, water mobs, the faction guards, unplaced sub-types;
+      their level comes from the place) are exempt (the user, plan §6 items
+      9 and 10). Exempt from the gap test (not from the tier test): the
+      names in GAP_EXEMPT, see there
   R0  every slot named exactly once, no unknown slot key, no empty name or
       reason; with --partial only the zones the given files touch must be
       complete; with --world-pending every zone slot must be named and the
@@ -144,7 +152,9 @@ def check(model, entries, partial=False, world_pending=False):
             problems.append("R3 %s: %r - Piglet is reserved for the start pigs of the *_hunt_01 quests" % (key, name))
         if key in pigs and not PIGLET.search(name):
             notes.append("note R3 %s: a start pig of a *_hunt_01 quest without \"Piglet\" (%r)" % (key, name))
-        by_name[name.lower()].append(slot)
+        # Rule 4 binds the zone slots only (world/ slots: plan §6 items 9, 10).
+        if slot["zone"] is not None:
+            by_name[name.lower()].append(slot)
     for lname, slots in sorted(by_name.items()):
         bands = sorted({tuple(s["levels"]) for s in slots})
         shown = names[slots[0]["key"]]
@@ -172,10 +182,10 @@ def check(model, entries, partial=False, world_pending=False):
 
 
 def effective_tier(slot):
-    """The drop tier rule 4 counts a slot as (the coordinator's default
-    ruling, Round 38; the user may overrule it): the tier that holds most of
-    the slot's levels, the higher one on a tie. A capital's L20-23 slot
-    (one level T2, three T3) counts as T3."""
+    """The drop tier rule 4 counts a zone slot as (the user's ruling, plan
+    §6 item 11): the tier that holds most of the slot's levels, the higher
+    one on a tie. A capital's L20-23 slot (one level T2, three T3) counts as
+    T3."""
     levels = defaultdict(int)
     for level in range(slot["levels"][0], slot["levels"][1] + 1):
         levels[inventory.drop_tier(level)] += 1
@@ -183,11 +193,7 @@ def effective_tier(slot):
 
 
 def slot_tiers(slot):
-    """The tiers rule 4 sees for a slot: its effective tier; a world/ slot
-    (no zone: underground casts, guards, unplaced sub-types) keeps every
-    tier its levels touch, pending the user's ruling."""
-    if slot["zone"] is None:
-        return inventory.tiers_of(*slot["levels"])
+    """The tiers rule 4 sees for a zone slot: its effective tier."""
     return [effective_tier(slot)]
 
 
@@ -210,12 +216,13 @@ def main(argv=None):
                     help="only the zones the given files touch must be complete")
     ap.add_argument("--world-pending", action="store_true",
                     help="every zone slot must be named; the world/ slots may be missing")
-    ap.add_argument("--today", action="store_true", help="check today's names as a proposal")
+    ap.add_argument("--today", "--shipped", dest="today", action="store_true",
+                    help="check the shipped names (names.json, pvp_names.json): the permanent gate")
     ap.add_argument("--repo", default=str(inventory.REPO))
     ap.add_argument("--quiet-notes", action="store_true", help="print problems only")
     args = ap.parse_args(argv)
     if not args.files and not args.today:
-        ap.error("give proposal files or --today")
+        ap.error("give proposal files or --shipped")
     model = inventory.build(args.repo, surfaces=False)
     if args.today:
         entries, load_problems = today_entries(model), []

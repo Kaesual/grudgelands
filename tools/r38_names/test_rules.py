@@ -94,7 +94,15 @@ def main():
     entries[mf[0]] = ("Grave Hog", False, "fixture", "fixture")
     p = run(model, entries)[0]
     expect(len(p) == 1 and p[0].startswith("R4 ") and "T1,T2" in p[0], "R4 two tiers across zones: %s" % p)
-    # R4 effective tier (coordinator's default ruling): a capital's L20-23
+    # R4 does not bind the world/ slots (the user, plan §6 items 9 and 10):
+    # a faction guard (L20-60) and an underground cast keep one name each.
+    world = {s["key"]: (s["name"], True, "fixture", "fixture") for s in model.slots}
+    guard = [s["key"] for s in model.slots if s["key"].startswith("world/guard_")]
+    expect(guard and all(len(model.slot_by_key[k]["drop_tiers"]) > 1 for k in guard),
+           "the faction guards span several tiers: %s" % guard)
+    expect(not [x for x in run(model, world)[0] if x.startswith("R4 ") and "world/" in x],
+           "R4 exempts the world/ slots")
+    # R4 effective tier (the user's ruling, plan §6 item 11): a capital's L20-23
     # slot counts as T3, so it joins L24-27 but not a L18-20 slot.
     hc, gm = "elandor_highcourt", "elandor_goldmead_vale"
     cap = clean_names(model, {hc, gm})
