@@ -977,6 +977,13 @@ territory.
   it; when it was dismissed only the hint changes; a failure never forces the
   dialog open. There is no kick button. After the arrival the normal
   inventory returns.
+- **A welcome window greets each character once**, right after its arrival
+  in the start town: the player's line (name, race, class, faction), five
+  short points (explore, level up, quests, skills on the hotbar, a party with
+  friends), a pointer to Help, and a small open-source note with link buttons
+  to Discord, GitHub issues, the source, CREDITS.md and the support page.
+  "Got it" or Esc closes it for good; the arrival happens once, so nothing is
+  stored for it.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives

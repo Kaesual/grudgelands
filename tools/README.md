@@ -167,3 +167,6 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   - `b2`: the portable test of the accepted names in the game (code-built
     names equal `names.json`, single-named entities register under it,
     the whelps at level 60).
+  - `wc`: the portable test of the welcome window (its text, link buttons
+    and Got it; the arrival callbacks run once, after the arriving mark is
+    cleared).

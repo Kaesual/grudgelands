@@ -50,6 +50,11 @@ achievements](#cloaks-and-achievements).
   route to the same handlers; a HUD hint at
   `hud_layout.anchors.creation_hint` shows while no dialog is open; release
   re-runs sfinv for the player. Fixture and engine probe: `tools/r35_c`.
+  `grug_classes.register_on_arrival(func)` runs once per character, after
+  the arrival teleport and the release; `grug_inventory/welcome.lua` uses it
+  for the welcome window (`grug_inventory:welcome`), whose links are
+  Help → About's `grug_inventory.LINKS` plus the credits. Fixture:
+  `tools/r38_wc`.
   LotT has NO per-faction spawns and no player-PvP gating — we build those
   ourselves (`core.register_on_punchplayer` /
   `register_on_player_hpchange`).

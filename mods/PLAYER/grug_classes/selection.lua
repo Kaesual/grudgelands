@@ -55,6 +55,19 @@ function grug_classes.register_look_panel(panel)
 	look_panel = panel
 end
 
+--
+-- ARRIVAL CALLBACKS: func(player) runs once per character, right after the
+-- arrival teleport released it from creation. Only "Create character" sets
+-- the arriving mark and only that teleport clears it, so a reconnect, a
+-- respawn or a waiting screen for an existing character never runs them.
+--
+local arrival_callbacks = {}
+
+function grug_classes.register_on_arrival(func)
+	assert(type(func) == "function", "grug_classes.register_on_arrival: not a function")
+	arrival_callbacks[#arrival_callbacks + 1] = func
+end
+
 -- The screen hint while no creation dialog is open.
 local HINT = {
 	paused = "Character creation paused \226\128\147 press I to continue",
@@ -617,6 +630,9 @@ finish_if_ready = function(player)
 	local def = grug_classes.get_class_def(player)
 	core.chat_send_player(name, core.colorize("#ffd100",
 		"You are now a " .. def.name .. ". Your journey begins!"))
+	for _, func in ipairs(arrival_callbacks) do
+		func(player)
+	end
 	return true
 end
 
