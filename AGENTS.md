@@ -316,6 +316,13 @@ The topic rules below name the one path to use; the
   per NPC; look and enchant art comes from the generators
   (`tools/wp13/gen_character_visuals.py`, `tools/r31_b/gen_enchant_masks.py
   --check`). PvP POIs are rules in `grug_mapgen/wp40/r31_pvp_catalog.lua`.
+- **Realm websites read player meta** (the contract in the
+  [module guide](docs/technical/module-guide.md#player-meta-read-by-external-tools)):
+  those keys and the appearance format are not renamed without notice; a
+  format change raises `APPEARANCE_VERSION`. A change to items, factions,
+  classes, races or textures regenerates `tools/web_data/web_data.json`
+  (`export.lua --check`); a change to the player model or its animations
+  reruns `tools/web_data/model/build_glb.py --check` and `check_glb.py`.
 
 ### Combat, input and notices
 
