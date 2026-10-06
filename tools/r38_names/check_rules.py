@@ -4,6 +4,7 @@ rules 1-4) over a name proposal.
 
     python3 tools/r38_names/check_rules.py <proposal.json ...>
     python3 tools/r38_names/check_rules.py --partial <zone files ...>
+    python3 tools/r38_names/check_rules.py --world-pending <all zone files>
     python3 tools/r38_names/check_rules.py --today      # today's names as the proposal
 
 A proposal is one JSON file per zone (plus `world.json` for the slots
@@ -29,10 +30,12 @@ Checked (one line per problem, exit 1 on any):
       holding most of its levels, the higher on a tie (coordinator's default
       ruling: a capital's L20-23 slot is T3, so it may share a name with
       L24+ slots, never with L19 or lower); a world/ slot keeps every tier
-      its levels touch (pending the user)
+      its levels touch (pending the user). Exempt from the gap test (not
+      from the tier test): the names in GAP_EXEMPT, see there
   R0  every slot named exactly once, no unknown slot key, no empty name or
       reason; with --partial only the zones the given files touch must be
-      complete
+      complete; with --world-pending every zone slot must be named and the
+      world/ slots may be missing (they are named after the zones)
 Notes (no exit status): a Piglet slot without "Piglet", and every slot whose
 own level band spans several drop tiers (with the tier rule 4 counts it as).
 """
@@ -47,6 +50,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import inventory  # noqa: E402
 
 PIGLET = re.compile(r"\bpiglets?\b", re.IGNORECASE)
+
+# Names exempt from rule 4's gap test, with the one role every slot bearing
+# the name must have for the exemption to hold (the tier test still
+# applies). Coordinator's ruling, Round 38 lane C: the Rift Spawn is one
+# story-fixed creature (docs/planning/round36/story-bible.md 1.5) whose ABM
+# rows (spawn_policy.lua RECIPE_ZONE_ROWS) spawn it at the region level, the
+# middle of each belt: L52, 56, 59 and 60, all in drop tier 6. Its slots are
+# points with gaps between them; one name over them is one creature, not a
+# stretch with a hole in it.
+GAP_EXEMPT = {"rift spawn": "rift_spawn"}
 
 
 def piglet_slots(model):
@@ -85,8 +98,10 @@ def load_proposals(paths):
     return entries, problems
 
 
-def check(model, entries, partial=False):
-    """(problems, notes) for a proposal (key -> (name, keep, reason, file))."""
+def check(model, entries, partial=False, world_pending=False):
+    """(problems, notes) for a proposal (key -> (name, keep, reason, file)).
+    partial: only the zones the entries touch must be complete;
+    world_pending: the world/ slots may be missing."""
     problems, notes = [], []
     signal = model.signal
     pigs = piglet_slots(model)
@@ -109,6 +124,8 @@ def check(model, entries, partial=False):
     covered = {model.slot_by_key[k]["zone"] or "world" for k in names}
     for slot in model.slots:
         if slot["key"] in entries:
+            continue
+        if world_pending and slot["zone"] is None:
             continue
         if not partial or (slot["zone"] or "world") in covered:
             problems.append("R0 %s: not named (today %r)" % (slot["key"], slot["name"]))
@@ -139,9 +156,11 @@ def check(model, entries, partial=False):
                     "" if s["zone"] is None else " (counts as T%d)" % effective_tier(s)))
         if len(bands) < 2:
             continue
+        exempt = GAP_EXEMPT.get(lname)
+        gap_test = not (exempt and all(s["role"] == exempt for s in slots))
         reach = bands[0][1]
         for lo, hi in bands[1:]:
-            if lo > reach + 1:
+            if gap_test and lo > reach + 1:
                 problems.append("R4 %r: level gap L%d-L%d between its bands (%s)" % (
                     shown, reach + 1, lo - 1, band_list(bands, slots)))
             reach = max(reach, hi)
@@ -189,6 +208,8 @@ def main(argv=None):
     ap.add_argument("files", nargs="*", help="proposal JSON files")
     ap.add_argument("--partial", action="store_true",
                     help="only the zones the given files touch must be complete")
+    ap.add_argument("--world-pending", action="store_true",
+                    help="every zone slot must be named; the world/ slots may be missing")
     ap.add_argument("--today", action="store_true", help="check today's names as a proposal")
     ap.add_argument("--repo", default=str(inventory.REPO))
     ap.add_argument("--quiet-notes", action="store_true", help="print problems only")
@@ -200,7 +221,7 @@ def main(argv=None):
         entries, load_problems = today_entries(model), []
     else:
         entries, load_problems = load_proposals(args.files)
-    problems, notes = check(model, entries, partial=args.partial)
+    problems, notes = check(model, entries, partial=args.partial, world_pending=args.world_pending)
     problems = load_problems + problems
     for line in problems:
         print(line)
