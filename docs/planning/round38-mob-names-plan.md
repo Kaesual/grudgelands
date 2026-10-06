@@ -156,3 +156,18 @@ Lua runs share the workstation cap of 8 through the round's queue
    the §2.1 guarantee. An item objective names the item; the mobs it
    mentions are guidance. The quest drops tied to a mob (the captains'
    orders) do fall under it.
+8. The preview page (2026-10-06): the proposed names are accepted as shown
+   (https://claude.ai/artifact/BaT3x8SHz3PiRduScz39aG).
+9. World slots (2026-10-06): the 29 mobs that belong to no zone (underground
+   casts, water mobs, the faction guards, unplaced sub-types) are renamed
+   this round by a small lane Z7, one name per entity; rule 2.2.4 does not
+   apply to them (their level comes from the place).
+10. The faction guards "Accord Guard" and "Throng Guard" (L20–60) are exempt
+    from rule 2.2.4.
+11. A capital's L20–23 slot counts as drop tier 3 (it may share a name with
+    L24+ slots, never with L19 or lower).
+12. The dragon whelps are a balance bug: they become level 60 (today a fixed
+    level 20 on the level-60 islands).
+13. The kings stay mixed ("King of Highcourt", "Dur Brannoc King").
+14. Quest texts: no reading page; an independent review agent checks that
+    the new names are set correctly everywhere.
