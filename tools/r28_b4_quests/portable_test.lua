@@ -244,6 +244,29 @@ grug_mobs = {
 		return seams
 	end)(),
 }
+-- Round 38: the mob names by slot (grug_mobs names.lua over data/names.json),
+-- here every fixture slot named after its role, and the base boar anywhere.
+local function role_title(role)
+	return (role:gsub("_", " "):gsub("(%a)([%w']*)", function(a, b) return a:upper() .. b end))
+end
+do
+	local map = {["world/boar/L1-60"] = "Boar"}
+	local regions = grug_mobs.spawn_regions
+	for _, zone in ipairs({"elandor_dawnmere_fields", "front_shattered_line"}) do
+		for _, id in ipairs(regions.zone_area_ids(zone)) do
+			for role, range in pairs(regions.get_area(zone, id).levels_by_role) do
+				map[("%s/%s/L%d-%d"):format(zone, role, range[1], range[2])] = role_title(role)
+			end
+		end
+	end
+	for role in pairs(DISPOSITION) do
+		local leader = regions.leader(role)
+		if leader then
+			map[("%s/%s/L%d-%d"):format(leader.zone, role, leader.level, leader.level)] = role_title(role)
+		end
+	end
+	grug_mobs.names = dofile("tools/r38_b1/names_stub.lua").of(".", map)
+end
 for role in pairs(DISPOSITION) do
 	core.registered_entities["grug_mobs:" .. role] = {description = role:gsub("_", " "):gsub("(%a)([%w']*)",
 		function(a, b) return a:upper() .. b end)}
@@ -372,8 +395,13 @@ local function dialogue(player, npc, id)
 	end
 	return ""
 end
-local function mob(role, area, leader)
-	return {name = "grug_mobs:" .. role, _grug_area = area, _grug_leader = leader, object = {}}
+-- A mob shows its slot's name (names.lua), or `name`.
+local function mob(role, area, leader, name)
+	local zone = area and area:match("^([^/]+)/") or "elandor_dawnmere_fields"
+	local leader_row = leader and grug_mobs.spawn_regions.leader(role)
+	return {name = "grug_mobs:" .. role, _grug_area = area, _grug_leader = leader, object = {},
+		description = name or grug_mobs.names.lookup(role, leader_row and leader_row.zone or zone,
+			leader_row and leader_row.level) or grug_mobs.names.lookup(role, nil, nil)}
 end
 local AT = {x = 0, y = 0, z = 0}
 
@@ -407,13 +435,17 @@ eq(Q.hud_line({objectives = row.objectives}, 400), "5/5 Bring Any Tree", "group 
 check(Q.turn_in(ann, "fx_tools_02"), "turn in logs")
 eq(ann:count("default:tree") + ann:count("default:pine_tree"), 2, "exactly five logs taken")
 
--- Kill objective limited to an area: credit by the mob's area tag.
+-- Kill objective with an area (Round 38): the area selects the name; every
+-- mob of that name counts, wherever it spawned, and no other name does.
 check(Q.accept(ann, "fx_hunt_01"), "accept Crop Thieves")
+eq(Q.hud_line(journal_row(ann, "fx_hunt_01"), 400), "0/3 Defeat Small Boar", "the label is the selected name")
 Q.credit_kill(ann, mob("small_boar", "elandor_dawnmere_fields/fallback"), AT)
-eq(journal_row(ann, "fx_hunt_01").objectives[1].count, 0, "a small boar of another area does not count")
+eq(journal_row(ann, "fx_hunt_01").objectives[1].count, 1, "a Small Boar of another area counts")
 Q.credit_kill(ann, mob("large_rat", "elandor_dawnmere_fields/home_fields_day"), AT)
-eq(journal_row(ann, "fx_hunt_01").objectives[1].count, 0, "another role in the area does not count")
-for _ = 1, 3 do Q.credit_kill(ann, mob("small_boar", "elandor_dawnmere_fields/home_fields_day"), AT) end
+eq(journal_row(ann, "fx_hunt_01").objectives[1].count, 1, "another name in the area does not count")
+Q.credit_kill(ann, mob("small_boar", "elandor_dawnmere_fields/home_fields_day", nil, "Grey Hog"), AT)
+eq(journal_row(ann, "fx_hunt_01").objectives[1].count, 1, "the same role under another name does not count")
+for _ = 1, 2 do Q.credit_kill(ann, mob("small_boar", "elandor_dawnmere_fields/home_fields_day"), AT) end
 eq(journal_row(ann, "fx_hunt_01").objectives[1].count, 3, "small boars of the area count")
 eq(Q.hud_line(journal_row(ann, "fx_hunt_01"), 400), "Return to Elian Reed", "ready line")
 check(Q.turn_in(ann, "fx_hunt_01"), "turn in Crop Thieves")
@@ -458,8 +490,8 @@ eq(ann:count("grug_mobs:ledger_page") .. "/" .. bob:count("grug_mobs:ledger_page
 	cid:count("grug_mobs:ledger_page"), "1/1/0", "each eligible participant gets their own page")
 eq(#fed_items, 2, "a feed line per page")
 rolls = {}
-drop_hooks[1](mob("confused_bandit", "elandor_dawnmere_fields/fallback"), {"ann"}, AT)
-eq(#rolls, 0, "a bandit of another area drops no page")
+drop_hooks[1](mob("confused_bandit", "elandor_dawnmere_fields/border_bandits", nil, "Lost Bandit"), {"ann"}, AT)
+eq(#rolls, 0, "a bandit of another name drops no page")
 drop_hooks[1](mob("small_boar", "elandor_dawnmere_fields/border_bandits"), {"ann"}, AT)
 eq(#rolls, 0, "another role drops no page")
 math.random = function(n) rolls[#rolls + 1] = n; return 2 end
@@ -549,8 +581,8 @@ eq(Q.status(tim, "fx_travel"), "ready", "travel quest with empty persisted count
 -- The drop hook ends at once for mobs no quest drop names.
 math.random = function() error("no roll expected") end
 drop_hooks[1](mob("small_boar", "elandor_dawnmere_fields/home_fields_day"), {"ann", "bob"}, AT)
-check(not Q.quest_drop_mobs["grug_mobs:small_boar"] and Q.quest_drop_mobs["grug_mobs:confused_bandit"],
-	"quest-drop mob set")
+check(not Q.quest_drop_names["Small Boar"] and Q.quest_drop_names["Confused Bandit"],
+	"quest-drop name set")
 math.random = random
 
 -- The new giver's quest goes through its dialogue.
@@ -796,5 +828,5 @@ has(raised, "zones/elandor_dawnmere_fields.quests.json: quest fx_hunt_01: object
 
 print(("example messages: %s"):format(raised:match("\n  ([^\n]+)") or ""))
 print(("%d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(failures .. " failure(s)", 0) end
 print("R28 B4 QUESTS PORTABLE PASS checks=" .. checks)

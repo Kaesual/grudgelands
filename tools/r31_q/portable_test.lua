@@ -6,9 +6,11 @@
 --   C  credit: the REAL grug_quests (registry, state, labels, validate,
 --      loader) over tools/r31_q/fixture: an Accord quest to kill Throng
 --      Guards and the Throng Captain of one Battlegrounds camp counts a kill
---      only of that role carrying that camp's area tag (`_grug_area`, lane
---      G's "<zone>/<settlement key>"): not another camp's, not an untagged
---      town guard, not the other faction's garrison, never past the count;
+--      by the name the mob shows (Round 38): the camp's guards' post name
+--      (data/names.json) and its captain's name on this world (the camp's
+--      race), wherever such a mob stands; not another camp's, not a town
+--      guard, not the other faction's garrison, never past the count; the
+--      labels read those names;
 --   V  the load checks on that fixture: clean as written; a quest naming its
 --      own faction's camp (E-garrison-faction), a garrison role the camp has
 --      not (E-role-not-in-area), a guard without an area (E-not-a-mob) and a
@@ -118,8 +120,16 @@ grug_core = {register_tag_visibility = function() end,
 	settlement_socket_anchor = function(key) return places[key] end,
 	settlement_sockets_at = fortress_sockets,
 	settlement_socket_settlements = function()
-		return {{key = "pvp_fortress_accord", race_id = SEAT.accord},
+		local out = {{key = "pvp_fortress_accord", race_id = SEAT.accord},
 			{key = "pvp_fortress_throng", race_id = SEAT.throng}}
+		-- Round 38: every camp registered as its faction's first race (a
+		-- camp's race names its captain on a world).
+		for _, row in ipairs(CATALOG.rows) do
+			if row.kind ~= "pvp_fortress" then
+				out[#out + 1] = {key = row.key, race_id = CATALOG.FACTION_RACES[row.faction][1]}
+			end
+		end
+		return out
 	end,
 	opposing_faction = function(f) return f == "accord" and "throng" or "accord" end,
 	feed_item = function() end,
@@ -175,6 +185,8 @@ grug_mobs = {
 	register_participant_drop_hook = function() end,
 	disposition = function() return nil end, -- guards and captains have none
 	pvp_garrison = garrison,
+	-- Round 38: the shipped mob names by slot (a garrison post's guards).
+	names = dofile(path("tools/r38_b1/names_stub.lua")).shipped(repo),
 	spawn_regions = {
 		get_area = function() return nil end,
 		area_roles = function() return nil end,
@@ -223,9 +235,29 @@ function player:get_meta()
 end
 function player:get_inventory() return {get_list = function() return {} end} end
 check(Q.accept(player, "q31_picket"), "accept the camp quest")
+eq(Q.objective_subject(Q.registered_quests.q31_picket.objectives[1]),
+	grug_mobs.names.lookup("pvp_camp_broken_causeway_throng_low.guard", nil, nil),
+	"the guards' label is their post's name")
+eq(Q.objective_subject(Q.registered_quests.q31_picket.objectives[2]),
+	garrison.captain_name("pvp_camp_broken_causeway_throng_low", CATALOG.FACTION_RACES.throng[1]),
+	"the captain's label is the name he shows on this world")
 local function counters() return Q.journal(player).quests[1].objectives end
-local function kill(name, area, faction)
-	Q.credit_kill(player, {name = "grug_mobs:" .. name, _grug_area = area, object = {_faction = faction}})
+-- What the mob shows (Round 38: a kill counts by it): a garrison guard its
+-- post's name (names.lua), a town guard its entity's, a captain his camp
+-- race's pvp_names.json name.
+local function shown(name, area)
+	local key = area and area:match("/(.+)$")
+	if name:find("^captain_") then
+		for _, record in ipairs(grug_core.settlement_socket_settlements()) do
+			if record.key == key then return garrison.captain_name(key, record.race_id) end
+		end
+	end
+	return key and grug_mobs.names.lookup(key .. ".guard", nil, nil) or
+		core.registered_entities["grug_mobs:" .. name].description
+end
+local function kill(name, area, faction, as)
+	Q.credit_kill(player, {name = "grug_mobs:" .. name, _grug_area = area, object = {_faction = faction},
+		description = shown(name, as or area)})
 	local rows = counters()
 	return rows[1].count .. "/" .. rows[2].count
 end
@@ -240,7 +272,7 @@ eq(kill("guard_throng", CAMP, "throng"), "1/0", "a guard of the camp counts")
 eq(kill("captain_throng", "front_broken_causeway/pvp_camp_broken_causeway_throng_high", "throng"), "1/0",
 	"another camp's captain counts nothing")
 eq(kill("captain_throng", CAMP, "throng"), "1/1", "the camp's captain counts")
-eq(kill("guard_throng", CAMP, "throng"), "2/1", "a second guard counts")
+eq(kill("guard_throng", nil, "throng", CAMP), "2/1", "a guard of the camp's name counts wherever it stands")
 eq(kill("guard_throng", CAMP, "throng"), "2/1", "no count past the objective")
 eq(Q.status(player, "q31_picket"), "ready", "the quest is ready to turn in")
 

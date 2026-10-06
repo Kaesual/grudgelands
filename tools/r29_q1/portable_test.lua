@@ -129,9 +129,7 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 local CORE = dofile("mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
 local catalogue = {}
 for _, row in ipairs(read_json(MOBS .. "/data/subtypes.json")) do catalogue[row.role] = row end
--- The leader's display name in its zone (catalogue display_by_zone).
 catalogue.confused_bandit_chief.display = "Confused Bandit Chief"
-catalogue.confused_bandit_chief.display_by_zone = {elandor_dawnmere_fields = "Chief Crumb"}
 local recipe = CORE.parse_recipe("elandor_dawnmere_fields",
 	read_json(MOBS .. "/data/zones/elandor_dawnmere_fields.spawns.json").recipe, {
 		band = {1, 10},
@@ -183,13 +181,23 @@ local regions = {
 		return CORE.describe(map, target, mode, ref, "Dawnmere Fields")
 	end,
 }
+-- Round 38: the mob names by slot (grug_mobs names.lua): every slot of the
+-- recipe by its catalogue display, the leader by its own name in its zone.
+local names_stub = dofile("tools/r38_b1/names_stub.lua")
+local slot_names = names_stub.slot_map(regions, {"elandor_dawnmere_fields"},
+	function(role) return catalogue[role].display or role end, {"confused_bandit_chief"})
+for key in pairs(slot_names) do
+	if key:find("/confused_bandit_chief/", 1, true) then slot_names[key] = "Chief Crumb" end
+end
 grug_mobs = {
 	register_on_eligible_kill = function() end,
 	register_participant_drop_hook = function() end,
 	disposition = function(name) return name == "grug_mobs:wild_turkey" and "critter" or "aggressive" end,
 	subtype = function(name) return catalogue[name:match("^grug_mobs:(.+)$") or name] end,
 	spawn_regions = regions,
+	names = names_stub.of(".", slot_names),
 }
+grug_core.settlement_socket_settlements = function() return {} end
 grug_zones = {get = function(zone)
 	if zone == "elandor_dawnmere_fields" then
 		return {level_min = 1, level_max = 10, display_name = "Dawnmere Fields"}
@@ -436,5 +444,5 @@ check(quests_seen >= 240, "the shipped quests were read (" .. quests_seen .. ")"
 eq(table.concat(shipped, ", "), "", "no shipped quest text carries a fixed compass word")
 
 print(("%d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(failures .. " failure(s)", 0) end
 print(("R29 Q1 PORTABLE PASS checks=%d"):format(checks))

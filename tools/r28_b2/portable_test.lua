@@ -210,6 +210,19 @@ local function new_world(modpath)
 	assert(loadstring(scale_src))()
 	local dir = ROOT .. "/mods/ENTITIES/grug_mobs/"
 	dofile(dir .. "disposition.lua")
+	-- Round 38: the names file of the data, where it has one.
+	local names_file = real_open(modpath .. "/data/names.json")
+	if names_file then
+		names_file:close()
+		-- names.lua reads names_core.lua beside the data's modpath: the mod's.
+		local real_dofile = dofile
+		_G.dofile = function(path)
+			if path == modpath .. "/names_core.lua" then path = dir .. "names_core.lua" end
+			return real_dofile(path)
+		end
+		real_dofile(dir .. "names.lua")
+		_G.dofile = real_dofile
+	end
 	dofile(dir .. "levels.lua")
 	dofile(dir .. "aggro.lua")
 	dofile(dir .. "verbs.lua")
@@ -436,7 +449,7 @@ check(not ok_dup, "a duplicate disposition name is an error")
 check(not pcall(grug_mobs.register_disposition, "grug_mobs:x_new", "angry"),
 	"an unknown disposition is an error")
 
--- Display and tint by zone.
+-- Name (data/names.json, Round 38) and tint by zone.
 local kapok = spawn(w, "grug_mobs:small_boar", -10)
 check(kapok.description == "Small Jungle Boar", "Kapok display name")
 check(kapok._grug_variant_zone == KAPOK, "spawn zone persisted")
@@ -454,7 +467,7 @@ local lr2 = spawn(w, "grug_mobs:large_rat", -10, staticdata(lr))
 local lr3 = spawn(w, "grug_mobs:large_rat", -10, staticdata(lr2))
 check(lr3.base_texture[1] == "grug_mobs_giant_rat.png^[multiply:#9fbf7f",
 	"modifier tint applied once over three activations")
-check(lr3.description == "Large Rat", "no display_by_zone: plain name")
+check(lr3.description == "Large Rat", "a role the names file does not name: its display")
 -- Elite tint over the zone tint (the authored elite matriarch in Kapok).
 w.field_level = 2
 local mk = spawn(w, "grug_mobs:boar_matriarch", -10)

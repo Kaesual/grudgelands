@@ -163,7 +163,12 @@ grug_xp = {get_level = function() return 60 end, quest_reward = function(_, weig
 -- names every kind or camp, quest place and clash site (Round 36) by its id
 -- and every direction "nearby" (this test reads item names).
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end,
-	spawn_regions = {leader = function() return nil end, get_area = function(_, id) return {name = id} end,
+	-- Round 38: kill objectives select names (labels.lua Q.target_names);
+	-- this stand-in map selects none, so labels read the entity.
+	names = dofile(ROOT .. "/tools/r38_b1/names_stub.lua").of(ROOT, {}),
+	spawn_regions = {leader = function() return nil end,
+		get_area = function(_, id) return {name = id, levels_by_role = {}} end,
+		zone_area_ids = function() return {} end,
 		zone_place = function(zone, id) return {zone = zone, id = id, name = id} end,
 		clash_site = function(key)
 			return key:match("^r20_anchor_%d+$") and {key = key, zone = "front", name = key} or nil
@@ -412,4 +417,4 @@ for _, kind in ipairs({"dialogue objective", "dialogue reward", "quest log objec
 end
 for _, label in ipairs(failed_labels) do print("FAIL " .. label) end
 print(("%d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(failures .. " failure(s)", 0) end

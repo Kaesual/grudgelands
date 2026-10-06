@@ -970,12 +970,13 @@ do
 end
 
 -- The captain's quest-drop path: grug_quests rolls a quest drop for a mob
--- whose name and area tag match the drop row (state.lua mob_counts); the
--- captain carries his camp's area, like the guards a fortress quest names.
+-- whose shown name is one of the drop row's names (state.lua mob_counts,
+-- Round 38); the captain shows his camp race's name, which the drop row
+-- selects by his role and camp area.
 do
 	local state = read(repo .. "/mods/PLAYER/grug_quests/state.lua")
-	check(state:find("if target.area and mob._grug_area ~= target.area then return false end", 1, true) ~= nil,
-		"W quest drops match the mob's area tag")
+	check(state:find("return target.name_set[mob.description] == true", 1, true) ~= nil,
+		"W quest drops match the mob's shown name")
 	check(state:find("grug_mobs.register_participant_drop_hook(Q.roll_quest_drops)", 1, true) ~= nil,
 		"W ...through the participant drop hook every eligible kill runs")
 end
