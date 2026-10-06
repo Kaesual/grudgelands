@@ -1,0 +1,17 @@
+HUMAN start anchor (0,37,-2550), protected floor y=-63
+EMERGED (-48,-63,-2598)..(127,77,-2503) in 14.1 s
+TOWN pad above the floor (-48,-63,-2598)..(47,36,-2503): resources 0, stone 841224 (0.0000 per stone) []
+TOWN pad above the floor gatherables 0 []
+START graded ring (80,-37,-2598)..(127,77,-2503): resources 15673, stone 272004 (0.0576 per stone) [stone_with_coal=4621 stone_with_copper=2987 stone_with_tin=3044 stone_with_iron=2221 stone_with_quartz=2246 stone_with_citrine=554]
+START graded ring gatherables 16 [corn_source=6 potato_source=6 carrot_source=4]
+EMERGED (480,-37,-2598)..(527,77,-2503) in 3.2 s
+REFERENCE box (480,-37,-2598)..(527,77,-2503): resources 6268, stone 111034 (0.0565 per stone) [stone_with_coal=1851 stone_with_copper=1210 stone_with_tin=1153 stone_with_iron=940 stone_with_quartz=901 stone_with_citrine=213]
+REFERENCE box gatherables 0 []
+VILLAGE goldmead_village (village_1) anchor (-120,36,-2020)
+EMERGED (-90,-37,-2095)..(-45,76,-1945) in 4.7 s
+VILLAGE envelope ring (-90,-37,-2095)..(-45,76,-1945): resources 22536, stone 393237 (0.0573 per stone) [stone_with_coal=6495 stone_with_copper=4272 stone_with_tin=4391 stone_with_iron=3264 stone_with_quartz=3296 stone_with_citrine=818]
+VILLAGE envelope ring gatherables 2 [wild_onion_source=2]
+EMERGED (160,-37,-2095)..(205,76,-1945) in 6.2 s
+VILLAGE reference box (160,-37,-2095)..(205,76,-1945): resources 24063, stone 422215 (0.0570 per stone) [stone_with_coal=7076 stone_with_copper=4628 stone_with_tin=4491 stone_with_iron=3432 stone_with_quartz=3562 stone_with_citrine=874]
+VILLAGE reference box gatherables 17 [corn_source=2 potato_source=5 sunleaf_source=1 pumpkin_source=2 wild_grain_source=6 wild_onion_source=1]
+RESULT PASS checks=5 failures=0

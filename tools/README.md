@@ -256,3 +256,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `bench_pass.lua`, the pass for 100 stand-in players, and `engine.sh` with
   the disposable probe `grug_probe_r40_an2`, the engine cost of the look
   read and the override write.
+  `r40_ore` (fix lane ORE, resources and gatherables wherever digging is
+  allowed): `run.sh OUT_DIR [TIMEOUT]` boots the disposable probe
+  `grug_probe_r40_ore` (resources and gatherables inside the human start
+  town, in its graded ring and in the nearest human village's envelope,
+  against reference boxes); `evidence/` keeps its run on seed
+  5626331914247410985. Its portable checks live in `r24_protection_depth`
+  (the P8 floor against the hard protection), `r24_fill` (the host rule)
+  and `r23_renewal` (gatherables in an envelope).

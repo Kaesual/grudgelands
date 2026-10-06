@@ -438,8 +438,8 @@ return function(deps)
 
 	-- Whether a resource source's writer refuses the column by its claim
 	-- exclusions (world_content.lua and r7_p9g.lua through
-	-- r6_settlement.lua `exclusion_reason(x, z)`, the full territory rule):
-	-- any static exclusion, else any overlay kind (road corridor, inland
+	-- r6_settlement.lua `exclusion_reason(x, z, "gathering")`): any static
+	-- exclusion as trees see it, else any overlay kind (road corridor, inland
 	-- water, water bank). A shoreline row ignores the water bank; a P9G row
 	-- ignores a dry island coast envelope on land outside a hard foundation.
 	local function resource_excluded(source, territory_id, overlay, water,
