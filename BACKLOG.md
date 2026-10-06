@@ -1269,10 +1269,9 @@ none blocks the GUI test.
   Stormscale Wyvern" (`grug_achievements/catalog.lua`) keep the short
   forms from before Round 38; the mobs show "Wyrmglass Ice Dragon" and
   "Stormscale Jungle Wyvern".
-- **Entity descriptions in Lua are fallbacks:** a family's registered
-  description (for example the spider family's) shows only where
-  `names.json` names no slot for the mob; reading them as the shown name
-  misleads.
+- **Entity descriptions in Lua are fallbacks** (text review): a family's
+  registered description shows only where `names.json` names no slot for
+  the mob; reading one as the shown name misleads.
 - **The level-60 whelps** make a dragon's enrage phase clearly harder than
   before (HP 384 → 2696 each); watch it in playtests.
 - **The Rift Spawn's gap exemption** in `check_rules.py` (rule 4) holds
