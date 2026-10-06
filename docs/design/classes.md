@@ -87,9 +87,9 @@ Core principles:
   skills" come only from talent keystones**, at most one per tree
   ([skill_trees.md](skill_trees.md) §2) — talents otherwise improve or
   replace existing buttons rather than adding many new ones.
-- **Balance constraints** (decided 2026-08-06): group content is sized
+- **Balance constraints** (decided 2026-08-06): party content is sized
   for **2–3 players**, and every encounter must be **beatable without a
-  healer** (food/potions as the substitute) — the Priest makes groups
+  healer** (food/potions as the substitute) — the Priest makes parties
   comfortable, never mandatory.
 - **Numeric ability tooltips are player-specific.** Damage, healing and absorb
   numbers show the effective current-level value before Crit and target-level

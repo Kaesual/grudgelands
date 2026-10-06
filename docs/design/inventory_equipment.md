@@ -33,7 +33,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   (the selection lives in the sfinv context; Start is the default): **Start**
   (first steps, levels and zones, capitals, protected ground), **Quests &
   Professions**, **Basics** (ores by depth and pick tier, smelting, recipe
-  discovery, skills, bags, food, repair, riding, home travel, death, groups),
+  discovery, skills, bags, food, repair, riding, home travel, death, parties),
   **Formulas** (the general pool/attribute/armor/mana formulas and the
   B/C/G/T/S legend), **About** (Discord, GitHub issues and repository,
   support link) and **Sound** (music and ambience on/off and volume per
@@ -382,7 +382,7 @@ the Round 19 top-centre text list:
   and the Stats view has the **cloak picker** under the model
   ([character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
-  list and in the Group page's "Current party" table (`parties.md`).
+  list and in the Party page's "Current party" table (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
   keep using the one central registry rather than per-consumer status
   stores. Art provenance: `tools/r26_icons/` and the `LICENSE-media.md` files
@@ -461,12 +461,13 @@ them back from here." This does not alter entitlement or the one-copy rule.
 
 ## Round 14 navigation pages
 
-The inventory gains separate Quests, Group and Map tabs, following `quests.md`,
-`parties.md` and `world_map.md`. Quests and Group each own a saved HUD toggle,
-default on; empty quest logs and ungrouped players have no corresponding HUD.
+The inventory gains separate Quests, Party and Map tabs, following `quests.md`,
+`parties.md` and `world_map.md`. Quests and Party each own a saved HUD toggle,
+default on; empty quest logs and players without a party have no
+corresponding HUD.
 Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
 our own minimap, default on (`world_map.md`). Since Round 31 a PvP tab
-(right after Group, `grug_pvp/page.lua`) holds the "Flag me for PvP"
+(right after Party, `grug_pvp/page.lua`) holds the "Flag me for PvP"
 button, the current state (safe, or flagged with the reason and the seconds
 left; PvP combat) and the PvP statistics; it is re-sent once a second only
 while its text changes.

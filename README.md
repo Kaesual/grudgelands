@@ -33,7 +33,7 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   contested borderlands to the war front at level 60, with repeatable
   bounties, a journal, quest tracker, world atlas and minimap to help you
   find your way. From level 41 each faction's main story follows a
-  burning debt across the front to a shared finale for a small group.
+  burning debt across the front to a shared finale for a small party.
 - **Bosses.** Two dragons on their own islands at level 60, a king on the
   throne of each capital, a General in each faction's fortress and
   Isquarre the Tithe-Eater at a rift on the front. Each boss drops two
@@ -109,7 +109,7 @@ stats, and the sound controls. The short version:
 
 The latest finished round is Round 37, "Audit fixes": what an October 2026
 review of the code and the documentation found, from creatures that keep
-to the player holding their attention in a group fight to mounts that no
+to the player holding their attention in a party fight to mounts that no
 longer throw you off when a buff runs out, plus calmer start zones and
 less server work per player. Round 36 before it brought each faction's
 main story from level 41 to 60, with its finale against Isquarre at the
@@ -262,7 +262,7 @@ investigations and delivery records.
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags and crafting stations; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
-| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps, minimap and markers. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [atlas](docs/design/world_map.md): maps, minimap and markers. |
 | Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 

@@ -13,32 +13,32 @@ Decided 2026-09-21; Round 14 user Go.
   players are still members and count toward both minimum and maximum size.
 - Offline membership is indefinite, including across server restarts. Offline
   leaders keep leadership indefinitely; disconnects never elect a new leader.
-- Only the leader invites and kicks while a party exists. Ungrouped players
-  can invite to form one. Everyone may leave voluntarily.
-- A Group tab manages invitations, accept/decline, leave and leader actions.
+- Only the leader invites and kicks while a party exists. Players without a
+  party can invite to form one. Everyone may leave voluntarily.
+- A Party tab manages invitations, accept/decline, leave and leader actions.
 - Each player can disable incoming invitations. Rate limit is one invitation
   per second **per sender**. No ten-per-minute limiter or additional rate tiers.
-- A saved per-player HUD switch defaults on. Ungrouped means hidden. Display
-  names and HP bars; offline rows display offline status, not fake live HP.
-  No mana/rage bars in this round.
+- A saved per-player HUD switch defaults on. Without a party it is hidden.
+  Display names and HP bars; offline rows display offline status, not fake
+  live HP. No mana/rage bars in this round.
 - No XP multiplier, passive nearby-party credit, loot mode, automatic quest
   sharing or party-owned mob tag is introduced. Existing participation governs
   XP and quest credit independently of party identity.
 
 ### Invitation model
 
-An invitation refers to its **inviter**, not to a provisional group id. On
+An invitation refers to its **inviter**, not to a provisional party id. On
 acceptance, validate both current factions, recipient eligibility/preferences,
 current membership, inviter authority and available capacity again:
 
-1. If the inviter is ungrouped, create a new two-person party.
+1. If the inviter is in no party, create a new two-person party.
 2. If the inviter currently leads a party, join that party if space remains.
 3. If the inviter is now an ordinary party member, refuse the stale invitation.
 
 Therefore: A invites B and C; B accepts (A+B exists); B leaves (dissolve);
 C accepts the still-valid invitation (new A+C party). No special orphan-party
 state or generation history is necessary. The UI identifies the inviter and
-shows current group context before acceptance; invites do not reserve slots.
+shows current party context before acceptance; invites do not reserve slots.
 
 Accepted defaults:
 
@@ -70,7 +70,7 @@ does not introduce any shared XP, quest or teleport authority.
 
 ## Online invitation roster
 
-The Group tab offers a scrollable, name-sorted list of online players in the
+The Party tab offers a scrollable, name-sorted list of online players in the
 viewer's faction, excluding the viewer. Each row retains the exact player name
 as its action identity. Invitation opt-out and existing party membership are
 shown as status; the unchanged invitation API decides whether an invite is
@@ -80,7 +80,7 @@ the list; no background roster polling is required. Names need not be typed.
 
 ## Party health colors
 
-Round 19: a saved personal Group-tab dropdown chooses **By class** (default)
+Round 19: a saved personal Party-tab dropdown chooses **By class** (default)
 or **All green**. Missing preferences use By class; an explicitly saved green
 choice remains green. Class colors are Warrior brown, Mage
 blue, Priest white and Scout olive-green, with dark backing for readability.
@@ -90,12 +90,12 @@ Only the viewer's HUD changes. Offline rows remain labelled offline with no
 fabricated live HP. The existing HUD visibility preference is independent.
 Settings changes and health/class transitions update changed HUD fields only.
 Since Round 26 each row also shows the member's class icon (Warrior, Mage,
-Priest, Scout), in the party HUD and in the Group page's "Current party"
-table, so the class is clear without knowing the colours. On the Group page
+Priest, Scout), in the party HUD and in the Party page's "Current party"
+table, so the class is clear without knowing the colours. On the Party page
 an offline member or a member without a class shows a blank instead.
 
 ## Level presentation
 
 Member and invitation labels include `[Lv X]`. Online levels are live; an
-offline member retains the last known level in the persisted group record.
+offline member retains the last known level in the persisted party record.
 This does not introduce a separate global offline-player database.

@@ -965,7 +965,7 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   against a receding and a standing target, before and after
   (`docs/research/mob-pressure.md`).
 
-Group trinity: a good group = **tank + healer + 1–2 damage dealers**;
+Party trinity: a good party = **tank + healer + 1–2 damage dealers**;
 class kits must support this (Warrior: threat/taunt tools, Priest:
 in-combat heals). Pulling several same-level mobs solo is dangerous by
 design (`group_attack` stays on).

@@ -177,10 +177,10 @@ givers the bible names, and the front climaxes folded in as required
 steps (their texts carry the thread; their other quests stay as they
 were). Chapters open at 41, 46 and 53, each with a quest that requires
 the previous chapter's last turn-in (a Warmaster turn-in); the finale
-"Group: The Collector Comes Due" opens at 60 on the rift boss, and the
+"Party: The Collector Comes Due" opens at 60 on the rift boss, and the
 last turn-in at the Warmaster carries the bible's last line. Every step a
 chapter names carries the faction's tag; every required step is solo but
-the finale; optional branches (the war commander's "Group:" hunt, the
+the finale; optional branches (the war commander's "Party:" hunt, the
 islands' interactions) never block the line. The ledger counts a front
 host's main line in the front bands (`ledger.py --track`).
 
@@ -195,7 +195,7 @@ host's main line in the front bands (`ledger.py --track`).
   Huskell, Nalo Pathdrum's Chirr with the rootmark at Skyroot Crossing,
   the tally-stone at Tombroad Ambush; then the finale, turned in at Vaska,
   and `throng_main_final` at the Warmaster. Optional: War Commander
-  Greyvow (57, Group:), the survey cairn and the wreck's pay chest on the
+  Greyvow (57, Party:), the survey cairn and the wreck's pay chest on the
   islands (60, from the Nhal Veyr and Gor Drazhak envoys).
 - **The Accord** ("Every Name Accounted For", tag `accord_main`, the
   Warmaster's line `main`): chapter 1 (41) the impounded pay at Ashen
@@ -210,7 +210,7 @@ host's main line in the front bands (`ledger.py --track`).
   Boughwarden's Chirr, the rootmark at Skyroot Crossing and the
   tally-stone at Tombroad Ambush; then the finale at the Warmaster and
   `accord_main_final`, a report given and taken there. Optional: War
-  Commander Stonegrudge (57, Group:), Salt-Counter (58, Group:, Borin),
+  Commander Stonegrudge (57, Party:), Salt-Counter (58, Party:, Borin),
   the survey cairn and the wreck's pay chest on the islands (60, from the
   Dur Brannoc and Highcourt envoys, once chapter 3 has begun).
 
@@ -358,7 +358,7 @@ counted name, names the text never says).
   with a 1-in-N chance. It is rolled **per eligible
   participant** who has the quest (the participants of kill credit), goes
   straight into that player's inventory or bags (dropped at the feet when
-  full) and posts a loot line to the message feed, so a group never competes
+  full) and posts a loot line to the message feed, so a party never competes
   for it. Each quest drop pairs with an item objective of its quest.
 
 ## Repeatable quests (Ruling 42)
