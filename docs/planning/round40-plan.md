@@ -611,7 +611,7 @@ PM MERGE; CH MERGE AFTER FIXES (one Medium, where a cancelled dash lets the
 warrior go, and Lows; fixed in `e748d1d7`); AN2 MERGE (its Medium, the
 integration with CH's `Body` lead, done after CH's merge in `ef204ded`).
 Every code lane ended with a smoke boot (PASS) and a full fixture run (the
-last lanes 116 of 116 before their final main merge); main's tree has
+last lanes 116–117 of 116–117 before their final main merge); main's tree has
 **119 portable fixtures** (112 at the start; new: `r40_probe`, `r40_px`,
 `r40_an1`, `r40_cd`, `r40_pm`, `r40_ch`, `r40_an2`). No world generation
 changed: no seed fleet, and an existing world is enough for the GUI test
@@ -807,9 +807,10 @@ warrior (§2.11); Battlebeat gets no proc flash (below).
   Ground's guard holds 1.0 s, not the whole 8 s buff.
 - **CH's hold:** the probe's uphill stop short was the client's drawn lag
   (it draws the carrier about 2.7 m behind at 24 m/s and keeps that
-  position on detach), not the planner; the fix holds about 0.34 s, then
-  detaches and puts the warrior on the stop. A warrior rooted at the cast
-  does not move (a miss).
+  position on detach), not the planner; the fix detaches and puts the warrior on the
+  stop, and the 0.34 s hold before that only sizes the forward snap (the
+  replay). A warrior rooted at the cast does not move (it hits only if
+  already within reach).
 - **CD** visits at most 100 players per pass (25 in its first version), so
   the 0.1 s cadence holds up to 100 players; the bow keeps its draw-stage
   wear (the draw's progress, not a cooldown).
@@ -848,8 +849,9 @@ looks wrong.
    to another slot, past slot 8 and back follows (a bag shows nothing);
    Hamstring's and Opening's charges show the same way and a full charge
    shows nothing; Last Word's reset of Word of Ruin clears its cover. **No
-   wear bar** on a skill item: check it with a **new character** (a skill
-   item an older character already carries may keep its old bar).
+   wear bar** for a cooldown or charge on a skill item (the bow's draw bar
+   while drawing stays): check it with a **new character** (a skill item an
+   older character already carries may keep its old bar).
 2. **Poses**, each standing and walking, in your own third person and on a
    second client: `cast1` (Fireball, Smite, Word of Ruin, Cinderfall) and
    `cast2` (Ice Nova, Glacial Ward, Heal, Mend, Shield) for about 0.6 s;
@@ -868,8 +870,9 @@ looks wrong.
    looking up.
 4. **Charge**, in first and third person: long and short on flat ground;
    uphill onto the last stair (arrives on top); over a step, off a ledge,
-   into a wall; trenches of 4 nodes (jumped) and 5 (stop at the rim, a
-   miss), a wide dip (followed down and up), a hole crossed diagonally,
+   into a wall; a trench 4 nodes wide (jumped), a trench 5 wide and at
+   least 2 deep (stop at the rim, a miss), a dip 5 wide and 1 deep (followed
+   down and up); the hit, stun and rage land on arrival; a hole crossed diagonally,
    water (crossed; a target in water: the dash ends on the shore); no line
    of sight (refused, nothing spent); a mob hitting you mid-dash; the model
    running ahead of the camera in third person and the FOV kick in first

@@ -58,8 +58,8 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
     against the `.b3d` within about 1e-6; a probe mod for the GUI check.
   - Round end on main: every gate passed, synced. **GUI-accepted by the
     user on 2026-10-06** (the look unchanged, the glTF probe); pushed by
-    the user on 2026-10-06 together with Rounds 36–38 (origin/main
-    `d018d866`, the Round 40 start), whose GUI tests are still open. The
+    the user on 2026-10-06 together with Rounds 37 and 38, after Round 36 on
+    2026-10-05 (origin/main `d018d866`, the Round 40 start), whose GUI tests are still open. The
     coordinator's report to the website names the level-key commit.
 
 - **Round 38 "Mob names" complete and pushed**
@@ -679,8 +679,8 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
 - **Latest game:** main carries Round 40 (`bd52bbf4` and lane D), on top
-  of Rounds 36–39 (pushed by the user on 2026-10-06, origin/main
-  `d018d866`), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 40
+  of Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39
+  on 2026-10-06; origin/main `d018d866`), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 40
   is not pushed. Round 29
   was tested by the user on a fresh world (2026-10-02), the user's Round 33
   findings became Round 34's fix lanes, the Round 34 findings Round 35 and

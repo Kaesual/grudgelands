@@ -17,9 +17,10 @@ creatures. No new world is needed.
 
 - A skill on cooldown is shaded on the hotbar; the shade clears clockwise
   like a clock hand, and the time left sits in the middle of the icon (in
-  minutes above one minute, then in seconds). The bar under a skill's icon
-  is gone; a skill an older character already carries may still show a
-  leftover bar.
+  minutes above one minute, then in seconds). Skills no longer show their
+  cooldown or charge as a bar under the icon (the bow's draw bar while
+  drawing stays); a skill an older character already carries may still
+  show a leftover bar.
 - Characters strike poses: a hand thrust forward or both arms raised for a
   spell, a diagonal cut for Mighty Blow, the drawn bow, a raised shield
   arm for Hold Ground, shoulder first in a Charge and a short flinch when
