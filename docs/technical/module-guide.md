@@ -280,8 +280,10 @@ tools](#player-meta-read-by-external-tools).
   `spell_damage_value` and Smite return unrounded amounts that
   `deal_ability_damage` floors once after the level scalar (fixture
   `tools/r36_k`). Abilities = hotbar tools in `grug_abilities` (item `range` =
-  targeting range, wear bar = cooldown display for cast skills, charge
-  bar for swing skills since WP38); kits/numbers:
+  targeting range; cooldowns and charges show as the hotbar overlay of
+  `cooldown_hud.lua` since Round 40: `arm_cooldown` and `reset_charge` hand
+  it their `{expiry, duration}` records, `cooldown_math.lua` is its pure
+  arithmetic, fixture `tools/r40_cd`); kits/numbers:
   `docs/design/classes.md`. WP19 added the 8 s target-memory store (separate
   enemy/ally slots via `grug_abilities.get_target(player, ally)`). **WP39's
   decided rule supersedes its hostile fallback:** enemy memory is Target-Frame/
