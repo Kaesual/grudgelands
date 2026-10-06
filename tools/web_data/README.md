@@ -62,8 +62,8 @@ rounded to ten significant digits.
 |---|---|
 | `appearance_limits.texture_max_bytes` | Maximum length in bytes of every texture string in a stored appearance (body, cloak, hand images). |
 | `appearance_limits.json_max_bytes` | Maximum length in bytes of the whole stored `grug_visuals:appearance` value. |
-| `texture_grammar` | The grammar a stored texture string stays inside (modifiers, their argument syntax, grouping and nesting, escaping), exported verbatim from `grug_visuals`; its fields are described in the contract section. |
-| `texture_files` | Every PNG a stored texture string may name, sorted by `name`. `engine: false` entries are game files at `path` (repository path); `engine: true` entries are textures the engine itself provides (no `path`; the website supplies an equivalent). |
+| `texture_grammar` | The closed grammar every stored texture string parses under, `grug_visuals.APPEARANCE_TEXTURE` verbatim (the contract section explains it): `max_depth` (parenthesis nesting), `escaped` (false: nothing is escaped), `file` (`charset` and `suffix` of a file name), `dirs` (the repository directories the files come from), `engine_files` (modifier → the engine texture it draws without naming it), `args` (argument kind → its syntax), `modifiers` (modifier name → its argument kinds in order). |
+| `texture_files` | Every PNG a stored texture string may name or a modifier may draw, sorted by `name`. `engine: false` entries are the files of `texture_grammar.dirs`, at `path` (repository path); `engine: true` entries are textures the engine itself provides (`texture_grammar.engine_files`, no `path`; the website supplies an equivalent). |
 
 A website parses a stored string with an allow-listed, bounded parser
 against `texture_grammar` and `texture_files` and rejects anything else.

@@ -9,7 +9,8 @@
 --   V  versions and limits: schema 1, the appearance version and both byte
 --      caps positive integers;
 --   T  the texture files: sorted, unique, PNG names; a repository file exists
---      at its path, an engine texture carries no path;
+--      at its path and follows the grammar's file rule, an engine texture
+--      carries no path;
 --   L  the level table: level 1 at 0 XP, strictly rising, max_level entries;
 --   F  factions, races and classes: unique ids, a name each, faction colours
 --      as #rrggbb, every race of a listed faction with its stature as a
@@ -80,6 +81,9 @@ check(type(data.texture_grammar) == "table" and next(data.texture_grammar) ~= ni
 
 -- T. Texture files.
 local texture_names = {}
+local file_rule = data.texture_grammar.file or {}
+local file_pattern = "^[" .. tostring(file_rule.charset) .. "]+" ..
+	tostring(file_rule.suffix):gsub("%p", "%%%0") .. "$"
 check(#data.texture_files > 0, "T texture files listed")
 for index, entry in ipairs(data.texture_files) do
 	local label = "T " .. tostring(entry.name)
@@ -93,6 +97,7 @@ for index, entry in ipairs(data.texture_files) do
 		check(entry.engine == false and type(entry.path) == "string" and
 			entry.path:sub(-#entry.name - 1) == "/" .. entry.name and exists(entry.path),
 			label .. " exists at its path")
+		check(entry.name:match(file_pattern) ~= nil, label .. " follows the grammar's file rule")
 	end
 	texture_names[entry.name] = true
 end

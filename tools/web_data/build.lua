@@ -119,7 +119,7 @@ function M.encode(data)
 	return encode_value(data, "") .. "\n"
 end
 
--- A plain deep copy of foreign data (the closed sets lane WM defines): Lua
+-- A plain deep copy of foreign data (the texture grammar): Lua
 -- sequences become arrays, everything else objects with string keys.
 local function plain(value)
 	if type(value) ~= "table" then return value end
@@ -271,7 +271,9 @@ end
 -- The export
 ------------------------------------------------------------------------------
 
--- The values lane WM owns in grug_visuals (plan §3): read, never defaulted.
+-- The appearance contract in grug_visuals (appearance.lua, plan §3): the
+-- version, the two byte caps and the closed texture grammar, read and never
+-- defaulted.
 local function appearance_contract(gv)
 	local function need(key, kind)
 		local value = gv[key]
@@ -279,19 +281,20 @@ local function appearance_contract(gv)
 			" is not a " .. kind .. " (the appearance contract, plan §3)")
 		return value
 	end
+	local grammar = need("APPEARANCE_TEXTURE", "table")
+	assert(type(grammar.dirs) == "table" and type(grammar.engine_files) == "table",
+		"web_data: the texture grammar names no directories or engine files")
 	return {
 		version = need("APPEARANCE_VERSION", "number"),
 		texture_max = need("APPEARANCE_TEXTURE_MAX", "number"),
 		json_max = need("APPEARANCE_JSON_MAX", "number"),
-		grammar = need("APPEARANCE_TEXTURE_GRAMMAR", "table"),
-		dirs = need("APPEARANCE_TEXTURE_DIRS", "table"),
-		engine = need("APPEARANCE_ENGINE_TEXTURES", "table"),
+		grammar = grammar,
 	}
 end
 
--- Every PNG a stored texture string may name: the files of WM's directories
--- (repository paths) and the engine-provided names WM lists.
-local function texture_files(root, contract)
+-- Every PNG a stored texture string may name or a modifier may draw: the
+-- files of the grammar's directories (repository paths) and its engine files.
+local function texture_files(root, grammar)
 	local files, seen = {}, {}
 	local function add(entry)
 		assert(not seen[entry.name], "web_data: texture " .. entry.name ..
@@ -299,14 +302,14 @@ local function texture_files(root, contract)
 		seen[entry.name] = true
 		files[#files + 1] = entry
 	end
-	for _, dir in ipairs(contract.dirs) do
+	for _, dir in ipairs(grammar.dirs) do
 		local names = list_png(root .. "/" .. dir)
 		assert(#names > 0, "web_data: no PNG in " .. dir)
 		for _, name in ipairs(names) do
 			add({name = name, engine = false, path = dir .. "/" .. name})
 		end
 	end
-	for _, name in ipairs(contract.engine) do
+	for _, name in pairs(grammar.engine_files) do
 		add({name = name, engine = true})
 	end
 	table.sort(files, function(a, b) return a.name < b.name end)
@@ -456,7 +459,7 @@ function M.build(root)
 		appearance_limits = {texture_max_bytes = contract.texture_max,
 			json_max_bytes = contract.json_max},
 		texture_grammar = plain(contract.grammar),
-		texture_files = texture_files(root, contract),
+		texture_files = texture_files(root, contract.grammar),
 		levels = {max_level = grug_xp.MAX_LEVEL, start_xp = start_xp},
 		factions = factions,
 		races = races,
