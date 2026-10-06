@@ -274,7 +274,10 @@ eq(kill("guard_throng", CAMP, "throng"), "2/0", "a guard of the camp counts")
 eq(kill("captain_throng", "front_broken_causeway/pvp_camp_broken_causeway_throng_high", "throng"), "2/0",
 	"another camp's captain counts nothing")
 eq(kill("captain_throng", CAMP, "throng"), "2/1", "the camp's captain counts")
-eq(kill("guard_throng", nil, "throng", CAMP), "2/1", "no count past the objective")
+-- A guard showing the camp's name without the camp's tag (Round 38: a kill
+-- counts by the shown name, wherever the mob stands), while one is missing.
+eq(kill("guard_throng", nil, "throng", CAMP), "3/1", "a guard of the camp's name counts wherever it stands")
+eq(kill("guard_throng", CAMP, "throng"), "3/1", "no count past the objective")
 eq(Q.status(player, "q31_picket"), "ready", "the quest is ready to turn in")
 
 ------------------------------------------------------------------------------
