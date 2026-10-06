@@ -282,7 +282,11 @@ merge of WM and WE; it is also the first commit with
 the first commit that supports level and preview. (WM's branch commit
 `c8b3d4ef` wrote the key first but is not on main's first-parent line.)
 
-Round end: …
+Round end: main checks all PASS on 2026-10-06 — `run_fixtures.sh` 112/112,
+`check_fresh_server.py`, `validate.py --game` (0 errors), `export.lua --check`,
+`build_glb.py --check`, `check_glb.py`, `r37_dc` (game.conf 0.39.0), one
+headless boot of main (seed 927633297731163573; code as in `03a76229`, the
+docs merge changes no code); synced to the Luanti folder.
 
 ### Shipped, by lane
 
