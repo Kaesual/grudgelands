@@ -125,8 +125,12 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 		end
 		-- Same target resolution mobs_redo uses for the punch itself: a
 		-- rider is dragged down together with whatever carries them.
+		local victim = target
 		target = target:get_attach() or target
 		target:add_velocity(vector.new(0, -8, 0))
+		-- Bubbles around the dragged player (Round 40 PM).
+		local pos = victim:get_pos()
+		if pos then grug_core.particles.play("kraken_drag", {target = pos}) end
 		return true
 	end,
 

@@ -21,6 +21,7 @@ grug_mobs.register_simple_arrow("grug_mobs:arrow_entity", {
 	velocity = 16,
 	size = {x = 0.4, y = 0.4},
 	lifetime = 4,
+	impact = "#a08860", -- splinters (Round 40 PM)
 })
 
 --

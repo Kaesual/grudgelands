@@ -27,6 +27,7 @@ grug_mobs.register_simple_arrow("grug_mobs:rock_entity", {
 	velocity = 12,
 	size = {x = 0.5, y = 0.5},
 	lifetime = 4,
+	impact = "#8a8a8a", -- grey dust (Round 40 PM)
 })
 
 -- Race-region side gate. Unlike every T5 family, the golem pair cannot be

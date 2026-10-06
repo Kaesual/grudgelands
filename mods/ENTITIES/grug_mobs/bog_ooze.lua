@@ -82,7 +82,7 @@ local bog_ooze = {
 }
 
 -- Verb BEFORE register_mob (verbs.lua contract).
-grug_mobs.damage_aura(bog_ooze, {radius = 2, damage = 2})
+grug_mobs.damage_aura(bog_ooze, {radius = 2, damage = 2, effect = "ooze_aura"})
 grug_mobs.register_mob("grug_mobs:bog_ooze", bog_ooze)
 
 -- §4 row "Bog Ooze | mud | 20 | 2000 | 3 | any | outer".

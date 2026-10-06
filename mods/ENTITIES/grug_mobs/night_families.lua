@@ -174,6 +174,8 @@ local wisp = {
 			grug_core.invalidate_combat_identity(self.object)
 			self.object:set_pos(dest)
 			self.temp.grug_wisp_blink = 0
+			-- Pale puffs where it leaves and where it arrives (Round 40 PM).
+			grug_core.particles.play("wisp_blink", {caster = pos, target = dest})
 		end
 	end,
 }
@@ -214,10 +216,20 @@ local function treant_def(description, tint)
 			local pos = self.object and self.object:get_pos()
 			if not pos then return end
 			local objects = core.get_objects_inside_radius(pos, 3)
+			local slowed = false
 			for i = 1, #objects do
 				if core.is_player(objects[i]) then
 					grug_mobs.slow_player(objects[i], 1.2, 0.7)
+					slowed = true
 				end
+			end
+			-- Leaves drift down while it slows someone, on every second aura
+			-- tick: they live two seconds (Round 40 PM).
+			self.temp.grug_root_leaves = slowed and not self.temp.grug_root_leaves
+			if self.temp.grug_root_leaves then
+				local box = self._grug_cbox -- its live box (mobs/api.lua mob_cbox)
+				grug_core.particles.play("treant_aura", {target = vector.offset(pos, 0,
+					box and box[2] or 0, 0)})
 			end
 		end,
 	})

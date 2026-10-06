@@ -216,6 +216,7 @@ local SIZE = 1.15
 grug_mobs.register_simple_arrow("grug_mobs:rift_bolt", {
 	label = "a void bolt", texture = TEXTURES.bolt, velocity = 9,
 	size = {x = 1, y = 1}, glow = 6, tail = true, lifetime = 6,
+	impact = "#8a4fd0", -- violet motes (Round 40 PM)
 })
 
 local live -- the boss's ObjectRef while it stands

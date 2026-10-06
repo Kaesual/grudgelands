@@ -36,7 +36,10 @@ local TUNING = {
 	-- The user's ruling of 2026-10-06 (plan §6 item 12): the whelps are
 	-- level-60 adds on the level-60 islands (until Round 38 a fixed 20).
 	whelp_level = 60,
-	trail_particles = 18,
+	-- A breath bolt's trail (Round 40 PM): trail_particles motes (under
+	-- grug_particle_scale) spread over trail_span seconds of flight.
+	trail_particles = 12,
+	trail_span = 1.44,
 }
 grug_mobs.DRAGON_TUNING = TUNING
 
@@ -249,20 +252,8 @@ local function find_effect_pos(impact)
 end
 
 local function effect_burst(pos, kind)
-	local ice = kind == "rime"
-	core.add_particlespawner({
-		amount = 36,
-		time = 0.25,
-		pos = {min = {x = pos.x - 1, y = pos.y, z = pos.z - 1},
-			max = {x = pos.x + 1, y = pos.y + 0.5, z = pos.z + 1}},
-		vel = {min = {x = -1, y = 0.2, z = -1},
-			max = {x = 1, y = 1.5, z = 1}},
-		exptime = {min = 0.4, max = 1.2},
-		size = {min = 1.5, max = 3.5},
-		texture = ice and "default_snow.png^[colorize:#8ee8ff:120" or
-			"default_item_smoke.png^[colorize:#ff5a20:210",
-		glow = ice and 8 or 10,
-	})
+	grug_core.particles.play(kind == "rime" and "dragon_patch_rime" or
+		"dragon_patch_scorch", {caster = pos})
 end
 
 local function place_ground_effect(kind, impact, actor_name)
@@ -400,25 +391,20 @@ local function projectile_node(self, pos)
 	place_ground_effect(self._grug_effect, pos, self._grug_actor_name)
 end
 
+-- Frost or fire, the breath's colour (its wind-up and trail).
+local BREATH_COLORS = {rime = "#8ee8ff", scorch = "#ff7338"}
+
 local function projectile_trail(self, dtime)
+	local count = grug_core.particles.count(TUNING.trail_particles)
 	self._grug_trail_count = self._grug_trail_count or 0
 	self._grug_trail_left = (self._grug_trail_left or 0) - dtime
-	if self._grug_trail_count >= TUNING.trail_particles or
-			self._grug_trail_left > 0 then return end
+	if self._grug_trail_count >= count or self._grug_trail_left > 0 then return end
 	local pos = self.object and self.object:get_pos()
 	if not pos then return end
 	self._grug_trail_count = self._grug_trail_count + 1
-	self._grug_trail_left = 0.08
-	core.add_particle({
-		pos = pos,
-		velocity = {x = 0, y = 0, z = 0},
-		expirationtime = 0.35,
-		size = 4,
-		texture = self._grug_effect == "rime" and
-			"grug_mobs_rock.png^[colorize:#b8f4ff:220" or
-			"grug_mobs_rock.png^[colorize:#ff7338:220",
-		glow = 10,
-	})
+	self._grug_trail_left = TUNING.trail_span / count
+	grug_core.particles.play("breath_trail", {caster = pos,
+		color = BREATH_COLORS[self._grug_effect]})
 end
 
 local function register_breath_arrow(name, texture, effect, label)
@@ -555,23 +541,6 @@ local function cooldown(self, seconds)
 	return seconds * (self._grug_enraged and TUNING.enrage_cooldown_factor or 1)
 end
 
-local function burst(pos, amount, texture, glow, radius, height, time)
-	radius = radius or 3
-	height = height or 4
-	core.add_particlespawner({
-		amount = amount,
-		time = time or 0.5,
-		pos = {min = {x = pos.x - radius, y = pos.y, z = pos.z - radius},
-			max = {x = pos.x + radius, y = pos.y + height, z = pos.z + radius}},
-		vel = {min = {x = -3, y = 0.5, z = -3},
-			max = {x = 3, y = 5, z = 3}},
-		exptime = {min = 0.4, max = 1.6},
-		size = {min = 2, max = 6},
-		texture = texture,
-		glow = glow or 0,
-	})
-end
-
 local function shoot_breath(self, action, opts)
 	local from = self.object and self.object:get_pos()
 	local to = action.target and action.target:get_pos()
@@ -609,38 +578,34 @@ local function shoot_breath(self, action, opts)
 	end
 	grug_sounds.play(opts.effect == "rime" and "dragon_breath_frost" or
 		"dragon_breath_fire", self.object)
-	burst(from, 54, opts.effect == "rime" and
-		"default_snow.png^[colorize:#8ee8ff:120" or
-		"default_item_smoke.png^[colorize:#ff7338:210", 10, 2, 3, 0.35)
+	grug_core.particles.play("breath_burst_" .. opts.effect, {caster = from})
 end
 
+-- The breath's launch point: where the bolts and the muzzle burst start.
+local function breath_origin(self, opts)
+	local pos = self.object and self.object:get_pos()
+	return pos and {x = pos.x, y = pos.y + opts.eye_height, z = pos.z}
+end
+
+-- The lightning strikes within 2 nodes of the snapshot.
+local LIGHTNING_RADIUS = 2
+
 local function lightning_ring(pos)
-	for index = 0, 31 do
-		local angle = index * math.pi * 2 / 32
-		core.add_particle({
-			pos = {x = pos.x + math.cos(angle) * 2, y = pos.y + 0.1,
-				z = pos.z + math.sin(angle) * 2},
-			velocity = {x = 0, y = 0, z = 0},
-			expirationtime = TUNING.lightning_windup,
-			size = 3,
-			texture = "grug_mobs_rock.png^[colorize:#fff27a:230",
-			glow = 12,
-		})
-	end
+	grug_core.particles.play("lightning_ring", {target = pos, reach = LIGHTNING_RADIUS,
+		time = TUNING.lightning_windup})
 end
 
 local function lightning_impact(self, snapshot)
-	for _, player in ipairs(hostile_players(snapshot, 2)) do
+	for _, player in ipairs(hostile_players(snapshot, LIGHTNING_RADIUS)) do
 		local pos = player:get_pos()
 		local _, horizontal = distance(snapshot, pos)
-		if horizontal <= 2 then
+		if horizontal <= LIGHTNING_RADIUS then
 			player:punch(self.object, 1, {full_punch_interval = 1,
 				damage_groups = {fleshy = self.damage * 2}}, nil)
 		end
 	end
 	grug_sounds.play("dragon_lightning", snapshot)
-	burst(snapshot, 96, "grug_mobs_rock.png^[colorize:#fff27a:230", 14,
-		2, 8, 0.25)
+	grug_core.particles.play("lightning_strike", {target = snapshot})
 end
 
 -- A player's live braking factor: the client brakes at the default air
@@ -700,10 +665,13 @@ local function spawn_whelps(self, opts)
 	end
 	for index = count + 1, 2 do
 		local side = index == 1 and -1 or 1
-		local object = core.add_entity({x = pos.x + side * 5, y = pos.y + 1,
-			z = pos.z + 2}, opts.whelp)
+		local at = {x = pos.x + side * 5, y = pos.y + 1, z = pos.z + 2}
+		local object = core.add_entity(at, opts.whelp)
 		local ent = object and object:get_luaentity()
-		if ent then ent._grug_boss_summon = self._grug_boss_id end
+		if ent then
+			ent._grug_boss_summon = self._grug_boss_id
+			grug_core.particles.play("whelp_arrival", {target = at})
+		end
 	end
 end
 
@@ -725,8 +693,7 @@ local function enrage(self, state, opts)
 		end
 	end
 	grug_sounds.play("dragon_enrage", self.object)
-	burst(pos, 180, "default_item_smoke.png^[colorize:#ff341f:210", 12,
-		7, 10, 0.8)
+	grug_core.particles.play("enrage", {target = pos})
 	spawn_whelps(self, opts)
 end
 
@@ -756,12 +723,8 @@ local function begin_dive(self, state, target, target_pos)
 	begin_action(self, state, "dive_warn", target, target_pos,
 		TUNING.dive_windup)
 	set_flight(self, true)
-	local pos = self.object:get_pos()
-	burst(pos, 80, "default_item_smoke.png^[colorize:#ffd24a:190", 10,
-		5, 4, TUNING.dive_windup)
+	grug_core.particles.play("dive_windup", {caster = self.object:get_pos()})
 end
-
-local GUST_TEXTURE = "default_item_smoke.png^[colorize:#d8eef4:150"
 
 -- The gust's wind-up (Round 36): the dragon stops and beats its spread wings
 -- (the flight clip) with the growl, a ring of wind marks its reach on the
@@ -771,18 +734,8 @@ local function begin_gust(self, state, target, target_pos, opts)
 	begin_action(self, state, "gust", target, target_pos, TUNING.gust_windup)
 	if self.set_animation then self:set_animation("fly", true) end
 	local pos = self.object:get_pos()
-	for index = 0, 39 do
-		local angle = index * math.pi * 2 / 40
-		core.add_particle({
-			pos = {x = pos.x + math.cos(angle) * TUNING.gust_radius, y = pos.y + 0.2,
-				z = pos.z + math.sin(angle) * TUNING.gust_radius},
-			velocity = {x = 0, y = 0.3, z = 0},
-			expirationtime = TUNING.gust_windup,
-			size = 4,
-			texture = GUST_TEXTURE,
-			glow = 6,
-		})
-	end
+	grug_core.particles.play("gust_windup", {target = pos, reach = TUNING.gust_radius,
+		time = TUNING.gust_windup})
 	if grug_core.feed then
 		for _, player in ipairs(hostile_players(pos, TUNING.gust_radius + 8)) do
 			grug_core.feed(player, "combat", opts.description ..
@@ -799,22 +752,24 @@ local function release_gust(self, state)
 	for _, player in ipairs(hostile_players(pos, TUNING.gust_radius)) do
 		push_player(self, player, pos, TUNING.gust_push, TUNING.gust_lift)
 	end
-	burst(pos, 96, GUST_TEXTURE, 3, TUNING.gust_radius, 3, 0.4)
+	grug_core.particles.play("gust_release", {target = pos, reach = TUNING.gust_radius})
 	state.primary = math.max(state.primary or 0, TUNING.gust_recover)
 end
+
+-- The dive's slam hits within this radius.
+local DIVE_RADIUS = 7
 
 local function finish_dive(self, state)
 	local pos = self.object and self.object:get_pos()
 	if pos then
-		for _, player in ipairs(hostile_players(pos, 7)) do
+		for _, player in ipairs(hostile_players(pos, DIVE_RADIUS)) do
 			slam_hit = true
 			player:punch(self.object, 1, {full_punch_interval = 1,
 				damage_groups = {fleshy = self.damage * 3}}, nil)
 			slam_hit = false
 			slam_knockback(self, player, pos)
 		end
-		burst(pos, 120, "default_item_smoke.png^[colorize:#ffd24a:190", 8,
-			7, 5, 0.3)
+		grug_core.particles.play("dive_slam", {target = pos, reach = DIVE_RADIUS})
 	end
 	state.action = nil
 	state.mode = "landing"
@@ -894,6 +849,11 @@ local function start_primary(self, state, target, target_pos, opts, airborne)
 		state.lightning_next = opts.lightning and true or false
 		begin_action(self, state, "breath", target, target_pos,
 			TUNING.breath_windup)
+		local origin = breath_origin(self, opts)
+		if origin then
+			grug_core.particles.play("breath_windup", {caster = origin,
+				color = BREATH_COLORS[opts.effect]})
+		end
 	end
 end
 
@@ -1083,8 +1043,7 @@ local function dragon_tick(self, dtime, moveresult, opts)
 		if horizontal > TUNING.takeoff_distance or not visible then
 			state.mode = "air"
 			set_flight(self, true)
-			burst(pos, 48, "default_item_smoke.png^[colorize:#d8eef4:130", 3,
-				4, 3, 0.4)
+			grug_core.particles.play("dragon_takeoff", {caster = pos})
 			steer(self, above_target(), TUNING.fly, TUNING.run)
 			return false
 		end
