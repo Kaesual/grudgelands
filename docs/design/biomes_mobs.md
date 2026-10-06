@@ -609,7 +609,7 @@ grug_jungle_edge:
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| **Jungle Lynx** (the Raptor slot) | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; Small Cat Claw 1/3 (`raptor_claw` item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
+| **Jungle Lynx** (the Raptor slot) | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; Cat Claw 1/3 (`raptor_claw` item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.6 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
 | Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |

@@ -72,7 +72,7 @@
         "highcourt_front_01"
       ],
       "title": "Bounty: Fashion at a Safe Distance",
-      "text": "The court tailors have discovered Silver Ape Hair, and their enthusiasm survives every description of the journey. Take a boat to Stormscale Summit and collect four tufts from Mandrills in the {name:front_stormscale_summit/thunderwood} by day. Bring them to me for payment; I handle the purse so you needn't hear about hems. This bounty is available again one hour after each turn-in.",
+      "text": "The court tailors have discovered Silver Mane, and their enthusiasm survives every description of the journey. Take a boat to Stormscale Summit and collect four tufts from Mandrills in the {name:front_stormscale_summit/thunderwood} by day. Bring them to me for payment; I handle the purse so you needn't hear about hems. This bounty is available again one hour after each turn-in.",
       "objectives": [
         {
           "type": "item",

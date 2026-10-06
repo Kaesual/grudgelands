@@ -390,14 +390,14 @@ Hornet: venom and fangs, Cat: cat claws, Tortoise: shells and bone).
 | Stat | T1 prefix / suffix | T2 prefix / suffix | T3 prefix / suffix | T4 prefix / suffix | T5 prefix / suffix | T6 prefix / suffix |
 |---|---|---|---|---|---|---|
 | Str | Boar Tusk / Crab Leg | Ridged Boar Tusk / Fang | Hard-Set Molar / Gnarled Boar Tusk | Gritted Teeth / Warpack Fang | Clenched Jaw / Siegepack Fang | Last-Laugh Dentures / Unquiet Bone |
-| Dex | Rat Tail / Fine Sinew | Sinewy Rat Tail / Tough Sinew | Balanced Weapon Strap / Braided Sinew | Reinforced Weapon Strap / Ape Hair | Siege Weapon Strap / Siege Weapon Strap | Unbroken Weapon Strap / Silver Ape Hair |
+| Dex | Rat Tail / Fine Sinew | Sinewy Rat Tail / Tough Sinew | Balanced Weapon Strap / Braided Sinew | Reinforced Weapon Strap / Ape Hair | Siege Weapon Strap / Siege Weapon Strap | Unbroken Weapon Strap / Silver Mane |
 | Int | Crab Eye / Crab Eye | Clear Crab Eye / Knotted Talisman | Coded Talisman / Bound Wisp Mote | Campaign Talisman / Storm Feather | Siege Talisman / Ash Feather | Last-Pay Talisman / Last-Hex Shard |
 | HP | Tattered Flesh / Fine Sinew | Foul Flesh / Tough Sinew | Pickled Flesh / Braided Sinew | Leathery Flesh / Ironbound Sinew | Scorched Flesh / Scorched Flesh | Salt-Cured Flesh / Salt-Cured Flesh |
 | Mana | Crab Eye / Bandit Talisman | Clear Crab Eye / Knotted Talisman | Bound Wisp Mote / Clouded Reed Pearl | Campaign Talisman / Storm Feather | Siege Talisman / Siege Talisman | Last-Pay Talisman / Salt-Barbed Feather |
-| Crit | Bandit Talisman / Boar Tusk | Ridged Boar Tusk / Fang | Serrated Fang / Shearing Cat Claw | Gritted Teeth / Razor Cat Claw | Clenched Jaw / Siegepack Fang | Last-Laugh Dentures / Glass Cat Claw |
+| Crit | Bandit Talisman / Boar Tusk | Ridged Boar Tusk / Fang | Serrated Fang / Shearing Cat Claw | Gritted Teeth / Razor Cat Claw | Clenched Jaw / Siegepack Fang | Last-Laugh Dentures / Gleaming Cat Claw |
 | Speed | Rat Tail / Rat Tail | Sinewy Rat Tail / Sinewy Rat Tail | Balanced Weapon Strap / Barbed Feather | Reinforced Weapon Strap / Warpack Fang | Siege Weapon Strap / Scorch Venom | Unbroken Weapon Strap / Glass Venom |
-| Dodge | Rat Fur Patch / Rat Tail | Dense Rat Fur / Sinewy Rat Tail | Coarse Spider Silk / Shearing Cat Claw | Layered Spider Web / Razor Cat Claw | Siege Weapon Strap / Ash Feather | Glass Spider Silk / Glass Cat Claw |
-| Armor | Rat Fur Patch / Crab Leg | Dense Rat Fur / Ridged Crab Shell | Layered Crab Shell / Layered Crab Shell | Marching Bone / Storm Crab Shell | Siege Bone / Clenched Jaw | Unbroken Weapon Strap / Unquiet Bone |
+| Dodge | Rat Fur Patch / Rat Tail | Dense Rat Fur / Sinewy Rat Tail | Coarse Spider Silk / Shearing Cat Claw | Layered Spider Web / Razor Cat Claw | Siege Weapon Strap / Ash Feather | Glass Silk / Gleaming Cat Claw |
+| Armor | Rat Fur Patch / Crab Leg | Dense Rat Fur / Ridged Crab Shell | Layered Crab Shell / Layered Crab Shell | Drilled Bone / Pitted Crab Shell | Siege Bone / Clenched Jaw | Unbroken Weapon Strap / Unquiet Bone |
 <!-- end generated -->
 
 ### 2.3 Every signature
@@ -416,7 +416,7 @@ before Round 33.
 | 1 | Fine Sinew | 1/3/0 | regular | enchant Dex suffix; enchant HP suffix; upgrade woodcarver | 4.2 | — |
 | 1 | Fox Tail | 3/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
 | 1 | Mild Venom | 0/2/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
-| 1 | Small Cat Claw | 0/1/0 | one faction | sell-only: one faction (Throng start zone only) | 0.0 | — |
+| 1 | Cat Claw | 0/1/0 | one faction | sell-only: one faction (Throng start zone only) | 0.0 | — |
 | 1 | Rat Fur Patch | 3/3/0 | common | enchant Dodge prefix; enchant Armor prefix; upgrade armorsmith; upgrade leatherworker | 6.5 | enchant |
 | 1 | Rat Tail | 3/3/0 | common | enchant Dex prefix; enchant Speed prefix; enchant Speed suffix; enchant Dodge suffix; upgrade weaponsmith; upgrade tailor | 7.0 | enchant |
 | 1 | Tattered Flesh | 3/3/0 | common | enchant HP prefix; upgrade leatherworker; upgrade tailor; Elixir of Vigor I | 7.5 | enchant |
@@ -439,7 +439,7 @@ before Round 33.
 | 2 | Wisp Mote | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 3 | Balanced Weapon Strap | 6/3/0 | common | enchant Dex prefix; enchant Speed prefix | 1.8 | enchant |
 | 3 | Barbed Feather | 1/1/0 | regular | enchant Speed suffix | 0.5 | — |
-| 3 | Bone Chitin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 3 | Ivory Chitin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 3 | Bound Wisp Mote | 3/2/0 | common | enchant Int suffix; enchant Mana prefix; upgrade woodcarver; Cave Draught | 5.0 | — |
 | 3 | Braided Sinew | 7/7/0 | common | enchant Dex suffix; enchant HP suffix; upgrade armorsmith; upgrade woodcarver; upgrade leatherworker | 9.2 | — |
 | 3 | Chipped Core | 0/0/0 | none | sell-only: no placed source (stone golems are not in a spawn recipe) | 0.0 | — |
@@ -451,7 +451,7 @@ before Round 33.
 | 3 | Etched Bone | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 3 | Gnarled Boar Tusk | 2/2/0 | common | enchant Str suffix; upgrade weaponsmith | 3.0 | — |
 | 3 | Layered Crab Shell | 4/4/0 | common | enchant Armor prefix; enchant Armor suffix; upgrade armorsmith; Stoneskin Elixir III | 5.0 | — |
-| 3 | Gravewood Resin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 3 | Lichen Resin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 3 | Pickled Flesh | 3/3/0 | common | enchant HP prefix | 1.5 | enchant |
 | 3 | Ridged Crocodile Tooth | 0/2/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 3 | Serrated Fang | 3/3/0 | common | enchant Crit prefix; upgrade weaponsmith; Elixir of Precision III | 3.5 | — |
@@ -465,15 +465,15 @@ before Round 33.
 | 4 | Gritted Teeth | 3/3/0 | common | enchant Str prefix; enchant Crit prefix | 2.5 | enchant |
 | 4 | Hex Bottle Shard | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 4 | Ironbound Sinew | 3/1/0 | common | enchant HP suffix; upgrade armorsmith; Elixir of Vigor IV | 5.0 | — |
-| 4 | Layered Bone Chitin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 4 | Layered Chitin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 4 | Layered Spider Web | 2/2/0 | regular | enchant Dodge prefix; upgrade tailor | 3.2 | — |
 | 4 | Leathery Flesh | 3/3/0 | common | enchant HP prefix; upgrade leatherworker; Healing Potion IV | 5.0 | enchant |
-| 4 | Marching Bone | 2/2/0 | common | enchant Armor prefix; upgrade weaponsmith | 2.2 | — |
+| 4 | Drilled Bone | 2/2/0 | common | enchant Armor prefix; upgrade weaponsmith | 2.2 | — |
 | 4 | Razor Cat Claw | 2/2/0 | common | enchant Crit suffix; enchant Dodge suffix; Elixir of Precision IV | 2.8 | — |
 | 4 | Reinforced Weapon Strap | 3/3/0 | common | enchant Dex prefix; enchant Speed prefix | 1.8 | enchant |
-| 4 | Flickering Wisp Mote | 2/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
+| 4 | Guttering Wisp Mote | 2/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
 | 4 | Scarred Bear Claw | 2/1/0 | scarce | upgrade weaponsmith | 1.5 | — |
-| 4 | Storm Crab Shell | 2/2/0 | regular | enchant Armor suffix; upgrade armorsmith | 3.2 | — |
+| 4 | Pitted Crab Shell | 2/2/0 | regular | enchant Armor suffix; upgrade armorsmith | 3.2 | — |
 | 4 | Storm Feather | 2/1/0 | common | enchant Int suffix; enchant Mana suffix; upgrade woodcarver | 4.0 | — |
 | 4 | Veined Core | 1/0/0 | one faction | sell-only: no regular source (one unique elite) | 0.0 | — |
 | 4 | Warpack Fang | 3/2/0 | common | enchant Str suffix; enchant Speed suffix | 2.0 | — |
@@ -482,25 +482,25 @@ before Round 33.
 | 5 | Scorch Venom | 0/0/2 | regular | enchant Speed suffix; upgrade weaponsmith; upgrade tailor | 4.5 | — |
 | 5 | Scorched Flesh | 0/0/2 | common | enchant HP prefix; enchant HP suffix; upgrade leatherworker; Elixir of Vigor V | 6.5 | enchant |
 | 5 | Siege Bone | 0/0/2 | regular | enchant Armor prefix; upgrade armorsmith; Stoneskin Elixir V | 4.2 | — |
-| 5 | Siege Cat Claw | 0/0/1 | scarce | upgrade weaponsmith | 1.5 | — |
+| 5 | Notched Cat Claw | 0/0/1 | scarce | upgrade weaponsmith | 1.5 | — |
 | 5 | Siege Core | 0/0/2 | scarce | sell-only: no regular source (two unique elites) | 0.0 | — |
 | 5 | Siege Talisman | 0/0/2 | regular | enchant Int prefix; enchant Mana prefix; enchant Mana suffix; upgrade tailor; upgrade goldsmith | 7.5 | enchant |
 | 5 | Siege Weapon Strap | 0/0/2 | regular | enchant Dex prefix; enchant Dex suffix; enchant Speed prefix; enchant Dodge prefix; upgrade armorsmith; upgrade leatherworker | 8.8 | enchant |
 | 5 | Siegepack Fang | 0/0/2 | regular | enchant Str suffix; enchant Crit suffix; upgrade woodcarver; Elixir of Precision V | 5.0 | — |
 | 6 | Abyssal Crab Shell | 0/0/2 | scarce | sell-only: scarce (an optional elite on two shores); a hunter's trophy | 0.0 | — |
-| 6 | Glass Cat Claw | 0/0/3 | regular | enchant Crit suffix; enchant Dodge suffix | 1.8 | — |
-| 6 | Glass Spider Silk | 0/0/3 | regular | enchant Dodge prefix; upgrade tailor | 3.2 | — |
+| 6 | Gleaming Cat Claw | 0/0/3 | regular | enchant Crit suffix; enchant Dodge suffix | 1.8 | — |
+| 6 | Glass Silk | 0/0/3 | regular | enchant Dodge prefix; upgrade tailor | 3.2 | — |
 | 6 | Glass Venom | 0/0/2 | regular | enchant Speed suffix; upgrade tailor | 3.0 | — |
 | 6 | Last-Hex Shard | 0/0/2 | regular | enchant Int suffix; upgrade goldsmith; Elixir of Focus VI | 4.0 | — |
 | 6 | Last-Laugh Dentures | 0/0/4 | regular | enchant Str prefix; enchant Crit prefix | 2.5 | enchant |
 | 6 | Last-Pay Talisman | 0/0/4 | regular | enchant Int prefix; enchant Mana prefix; upgrade goldsmith | 4.0 | enchant |
 | 6 | Rime Sinew | 0/0/2 | scarce | upgrade woodcarver | 1.5 | — |
 | 6 | Salt-Barbed Feather | 0/0/4 | regular | enchant Mana suffix; upgrade woodcarver | 2.5 | — |
-| 6 | Salt Bear Claw | 0/0/1 | scarce | upgrade weaponsmith | 1.5 | — |
+| 6 | Blighted Bear Claw | 0/0/1 | scarce | upgrade weaponsmith | 1.5 | — |
 | 6 | Salt Chitin | 0/0/1 | scarce | sell-only: scarce (one zone, rare weevil); a hunter's trophy | 0.0 | — |
 | 6 | Salt-Cured Flesh | 0/0/4 | common | enchant HP prefix; enchant HP suffix; upgrade leatherworker; Elixir of Vigor VI | 6.5 | enchant |
 | 6 | Saltpack Fang | 0/0/1 | scarce | sell-only: scarce (one zone, few hounds); a hunter's trophy | 0.0 | — |
-| 6 | Silver Ape Hair | 0/0/2 | regular | enchant Dex suffix; upgrade leatherworker | 3.8 | — |
+| 6 | Silver Mane | 0/0/2 | regular | enchant Dex suffix; upgrade leatherworker | 3.8 | — |
 | 6 | Unbroken Weapon Strap | 0/0/4 | regular | enchant Dex prefix; enchant Speed prefix; enchant Armor prefix; upgrade armorsmith | 5.0 | enchant |
 | 6 | Unquiet Bone | 0/0/4 | common | enchant Str suffix; enchant Armor suffix; upgrade weaponsmith; upgrade armorsmith; Stoneskin Elixir VI | 7.2 | — |
 
@@ -545,11 +545,11 @@ Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
 
 | Profession (families) | T1 | T2 | T3 | T4 | T5 | T6 |
 |---|---|---|---|---|---|---|
-| Weaponsmith (sword, dagger, battle axe) | Boar Tusk + Rat Tail | Ridged Boar Tusk + Fang | Serrated Fang + Gnarled Boar Tusk | Scarred Bear Claw + Marching Bone | Siege Cat Claw + Scorch Venom | Salt Bear Claw + Unquiet Bone |
-| Armorsmith (metal armour, shield) | Crab Leg + Rat Fur Patch | Ridged Crab Shell + Dense Rat Fur | Layered Crab Shell + Braided Sinew | Storm Crab Shell + Ironbound Sinew | Siege Bone + Siege Weapon Strap | Unquiet Bone + Unbroken Weapon Strap |
+| Weaponsmith (sword, dagger, battle axe) | Boar Tusk + Rat Tail | Ridged Boar Tusk + Fang | Serrated Fang + Gnarled Boar Tusk | Scarred Bear Claw + Drilled Bone | Notched Cat Claw + Scorch Venom | Blighted Bear Claw + Unquiet Bone |
+| Armorsmith (metal armour, shield) | Crab Leg + Rat Fur Patch | Ridged Crab Shell + Dense Rat Fur | Layered Crab Shell + Braided Sinew | Pitted Crab Shell + Ironbound Sinew | Siege Bone + Siege Weapon Strap | Unquiet Bone + Unbroken Weapon Strap |
 | Woodcarver (staff, wand) | Fine Sinew + Boar Tusk | Tough Sinew + Ridged Boar Tusk | Braided Sinew + Bound Wisp Mote | Bitter Resin + Storm Feather | Ash Feather + Siegepack Fang | Salt-Barbed Feather + Rime Sinew |
-| Leatherworker (leather armour, bow) | Rat Fur Patch + Tattered Flesh | Dense Rat Fur + Foul Flesh | Coarse Spider Silk + Braided Sinew | Ape Hair + Leathery Flesh | Siege Weapon Strap + Scorched Flesh | Silver Ape Hair + Salt-Cured Flesh |
-| Tailor (cloth armour, spellbook) | Rat Tail + Tattered Flesh | Knotted Talisman + Sinewy Rat Tail | Coarse Spider Silk + Clouded Reed Pearl | Layered Spider Web + Campaign Talisman | Siege Talisman + Scorch Venom | Glass Spider Silk + Glass Venom |
+| Leatherworker (leather armour, bow) | Rat Fur Patch + Tattered Flesh | Dense Rat Fur + Foul Flesh | Coarse Spider Silk + Braided Sinew | Ape Hair + Leathery Flesh | Siege Weapon Strap + Scorched Flesh | Silver Mane + Salt-Cured Flesh |
+| Tailor (cloth armour, spellbook) | Rat Tail + Tattered Flesh | Knotted Talisman + Sinewy Rat Tail | Coarse Spider Silk + Clouded Reed Pearl | Layered Spider Web + Campaign Talisman | Siege Talisman + Scorch Venom | Glass Silk + Glass Venom |
 | Goldsmith (trinket) | Crab Eye + Bandit Talisman | Clear Crab Eye + Knotted Talisman | Clasped Purse + Clouded Reed Pearl | Campaign Purse + Campaign Talisman | Clenched Jaw + Siege Talisman | Last-Hex Shard + Last-Pay Talisman |
 
 #### Own material (upgrades and enchants)

@@ -36,7 +36,7 @@
       "level": 53,
       "requires": [],
       "title": "Teach the Drum to Scratch",
-      "text": "Our shrine drum needs a voice that will make even the canopy spirits sit up. Kill four Glass Panthers at night in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}, and bring me two Glass Cat Claws. I'll do the playing. You have the difficult part: asking the cats for an instrument.",
+      "text": "Our shrine drum needs a voice that will make even the canopy spirits sit up. Kill four Glass Panthers at night in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}, and bring me two Gleaming Cat Claws. I'll do the playing. You have the difficult part: asking the cats for an instrument.",
       "objectives": [
         {
           "type": "kill",

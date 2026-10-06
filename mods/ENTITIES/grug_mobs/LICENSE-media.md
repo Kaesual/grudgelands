@@ -629,7 +629,7 @@ re-export check). AI generation itself is not deterministic.
 | `textures/grug_mobs_bitter_resin.png` | Own work; GPT-6 Astra-generated icon (Bitter Resin); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_bitter_venom.png` | Own work; GPT-6 Astra-generated icon (Bitter Venom); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_blunt_croc_tooth.png` | Own work; GPT-6 Astra-generated icon (Blunt Crocodile Tooth); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_bone_chitin.png` | Own work; GPT-6 Astra-generated icon (Bone Chitin); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_bone_chitin.png` | Own work; GPT-6 Astra-generated icon (Ivory Chitin); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_bound_wisp_mote.png` | Own work; GPT-6 Astra-generated icon (Bound Wisp Mote); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_braided_sinew.png` | Own work; GPT-6 Astra-generated icon (Braided Sinew); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_brush_fox_tail.png` | Own work; GPT-6 Astra-generated icon (Brush Fox Tail); export treatment above | CC0-1.0 |
@@ -650,8 +650,8 @@ re-export check). AI generation itself is not deterministic.
 | `textures/grug_mobs_fine_sinew.png` | Own work; GPT-6 Astra-generated icon (Fine Sinew); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_foul_flesh.png` | Own work; GPT-6 Astra-generated icon (Foul Flesh); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_fox_tail.png` | Own work; GPT-6 Astra-generated icon (Fox Tail); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_glass_cat_claw.png` | Own work; GPT-6 Astra-generated icon (Glass Cat Claw); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_glass_spider_silk.png` | Own work; GPT-6 Astra-generated icon (Glass Spider Silk); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_glass_cat_claw.png` | Own work; GPT-6 Astra-generated icon (Gleaming Cat Claw); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_glass_spider_silk.png` | Own work; GPT-6 Astra-generated icon (Glass Silk); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_glass_venom.png` | Own work; GPT-6 Astra-generated icon (Glass Venom); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_gnarled_boar_tusk.png` | Own work; GPT-6 Astra-generated icon (Gnarled Boar Tusk); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_gritted_teeth.png` | Own work; GPT-6 Astra-generated icon (Gritted Teeth); export treatment above | CC0-1.0 |
@@ -662,26 +662,26 @@ re-export check). AI generation itself is not deterministic.
 | `textures/grug_mobs_last_hex_shard.png` | Own work; GPT-6 Astra-generated icon (Last-Hex Shard); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_last_laugh_dentures.png` | Own work; GPT-6 Astra-generated icon (Last-Laugh Dentures); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_last_pay_talisman.png` | Own work; GPT-6 Astra-generated icon (Last-Pay Talisman); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_layered_bone_chitin.png` | Own work; GPT-6 Astra-generated icon (Layered Bone Chitin); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_layered_bone_chitin.png` | Own work; GPT-6 Astra-generated icon (Layered Chitin); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_layered_crab_shell.png` | Own work; GPT-6 Astra-generated icon (Layered Crab Shell); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_layered_spider_web.png` | Own work; GPT-6 Astra-generated icon (Layered Spider Web); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_leathery_flesh.png` | Own work; GPT-6 Astra-generated icon (Leathery Flesh); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_marching_bone.png` | Own work; GPT-6 Astra-generated icon (Marching Bone); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_marching_bone.png` | Own work; GPT-6 Astra-generated icon (Drilled Bone); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_mild_venom.png` | Own work; GPT-6 Astra-generated icon (Mild Venom); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_mourning_resin.png` | Own work; GPT-6 Astra-generated icon (Gravewood Resin); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_mourning_resin.png` | Own work; GPT-6 Astra-generated icon (Lichen Resin); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_pickled_flesh.png` | Own work; GPT-6 Astra-generated icon (Pickled Flesh); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_rat_fur_patch.png` | Own work; GPT-6 Astra-generated icon (Rat Fur Patch); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_rat_tail.png` | Own work; GPT-6 Astra-generated icon (Rat Tail); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_razor_cat_claw.png` | Own work; GPT-6 Astra-generated icon (Razor Cat Claw); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_reed_pearl.png` | Own work; GPT-6 Astra-generated icon (Reed Pearl); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_reinforced_weapon_strap.png` | Own work; GPT-6 Astra-generated icon (Reinforced Weapon Strap); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_restless_wisp_mote.png` | Own work; GPT-6 Astra-generated icon (Flickering Wisp Mote); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_restless_wisp_mote.png` | Own work; GPT-6 Astra-generated icon (Guttering Wisp Mote); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_ridged_boar_tusk.png` | Own work; GPT-6 Astra-generated icon (Ridged Boar Tusk); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_ridged_crab_shell.png` | Own work; GPT-6 Astra-generated icon (Ridged Crab Shell); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_ridged_croc_tooth.png` | Own work; GPT-6 Astra-generated icon (Ridged Crocodile Tooth); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_rime_sinew.png` | Own work; GPT-6 Astra-generated icon (Rime Sinew); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_salt_barbed_feather.png` | Own work; GPT-6 Astra-generated icon (Salt-Barbed Feather); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_salt_bear_claw.png` | Own work; GPT-6 Astra-generated icon (Salt Bear Claw); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_salt_bear_claw.png` | Own work; GPT-6 Astra-generated icon (Blighted Bear Claw); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_salt_chitin.png` | Own work; GPT-6 Astra-generated icon (Salt Chitin); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_salt_cured_flesh.png` | Own work; GPT-6 Astra-generated icon (Salt-Cured Flesh); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_saltpack_fang.png` | Own work; GPT-6 Astra-generated icon (Saltpack Fang); export treatment above | CC0-1.0 |
@@ -691,15 +691,15 @@ re-export check). AI generation itself is not deterministic.
 | `textures/grug_mobs_serrated_fang.png` | Own work; GPT-6 Astra-generated icon (Serrated Fang); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_shearing_cat_claw.png` | Own work; GPT-6 Astra-generated icon (Shearing Cat Claw); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_siege_bone.png` | Own work; GPT-6 Astra-generated icon (Siege Bone); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_siege_cat_claw.png` | Own work; GPT-6 Astra-generated icon (Siege Cat Claw); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_siege_cat_claw.png` | Own work; GPT-6 Astra-generated icon (Notched Cat Claw); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_siege_core.png` | Own work; GPT-6 Astra-generated icon (Siege Core); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_siege_talisman.png` | Own work; GPT-6 Astra-generated icon (Siege Talisman); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_siege_weapon_strap.png` | Own work; GPT-6 Astra-generated icon (Siege Weapon Strap); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_siegepack_fang.png` | Own work; GPT-6 Astra-generated icon (Siegepack Fang); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_silver_ape_hair.png` | Own work; GPT-6 Astra-generated icon (Silver Ape Hair); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_silver_ape_hair.png` | Own work; GPT-6 Astra-generated icon (Silver Mane); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_silver_tip_fox_tail.png` | Own work; GPT-6 Astra-generated icon (Silver-Tip Fox Tail); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_sinewy_rat_tail.png` | Own work; GPT-6 Astra-generated icon (Sinewy Rat Tail); export treatment above | CC0-1.0 |
-| `textures/grug_mobs_storm_crab_shell.png` | Own work; GPT-6 Astra-generated icon (Storm Crab Shell); export treatment above | CC0-1.0 |
+| `textures/grug_mobs_storm_crab_shell.png` | Own work; GPT-6 Astra-generated icon (Pitted Crab Shell); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_storm_feather.png` | Own work; GPT-6 Astra-generated icon (Storm Feather); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_stubborn_molar.png` | Own work; GPT-6 Astra-generated icon (Hard-Set Molar); export treatment above | CC0-1.0 |
 | `textures/grug_mobs_tattered_flesh.png` | Own work; GPT-6 Astra-generated icon (Tattered Flesh); export treatment above | CC0-1.0 |
