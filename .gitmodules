@@ -37,3 +37,6 @@
 [submodule "reference_projects/farming"]
 	path = reference_projects/farming
 	url = https://codeberg.org/tenplus1/farming.git
+[submodule "reference_projects/character_anim"]
+	path = reference_projects/character_anim
+	url = https://github.com/appgurueu/character_anim
