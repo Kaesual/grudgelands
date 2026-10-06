@@ -22,7 +22,7 @@ example E5) are cited below.
 
 - **Latest delivery:
   [Round 40 "Combat feel"](docs/planning/round40-plan.md#completion-2026-10-06)
-  complete locally, not pushed** (2026-10-06, `bd52bbf4` and lane D; no
+  complete and pushed** (2026-10-06, `bd52bbf4` and lane D; no
   new world needed; GUI test open): the cooldown overlay on the hotbar
   instead of the wear bar, poses and the head look, Charge as a dash,
   particle effects for player skills, bosses and mob specials with
@@ -1353,7 +1353,7 @@ from the reviews (backlog notes, no severity); none blocks the GUI test.
 
 ### Round 40 — combat feel
 
-**Delivered locally 2026-10-06, not pushed**
+**Delivered and pushed 2026-10-06**
 ([completion](docs/planning/round40-plan.md#completion-2026-10-06),
 plan [round40-plan.md](docs/planning/round40-plan.md)); every code lane
 independently reviewed by Opus, the wave 1 pages' numbers too; 119

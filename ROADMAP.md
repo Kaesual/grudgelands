@@ -349,7 +349,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   look, Charge as a dash on a planned path with the user's hole rule, and
   single-colour particle effects for every player skill but Strike, the
   bosses and the mob specials through one helper with the server-wide
-  `grug_particle_scale`. Complete locally on 2026-10-06, not pushed; no
+  `grug_particle_scale`. Complete and pushed on 2026-10-06; no
   new world needed. Next: the GUI test on desktop and the web build.
 
 ### Remaining work

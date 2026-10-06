@@ -6,8 +6,8 @@ research pass and the user's answers of the same day; revised after an
 independent Opus review (verdict "ready after fixes", every finding checked
 at the cited lines); a focused re-review (fresh Opus context, "ready after
 fixes", no High) is folded in; approved and started on the user's "go"
-(2026-10-06). Status: **complete locally on 2026-10-06, not pushed; GUI
-test open** ([completion and GUI checklist](#completion-2026-10-06)).
+(2026-10-06). Status: **complete on 2026-10-06 and pushed (origin/main
+`94605188`, on the user's request); GUI test open** ([completion and GUI checklist](#completion-2026-10-06)).
 
 The round makes combat read better: a cooldown overlay on the skill icons,
 better character animations, Charge as a real dash, and particle effects

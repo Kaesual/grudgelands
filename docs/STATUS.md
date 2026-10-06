@@ -2,8 +2,10 @@
 
 Updated 2026-10-06. This is the delivery pointer, not another game specification.
 
-- **Round 40 "Combat feel" complete locally, not pushed**
+- **Round 40 "Combat feel" complete and pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round40-plan.md#completion-2026-10-06)).
+  Pushed on 2026-10-06 by the coordinator on the user's request (origin/main
+  `94605188`), before the user's GUI test; a fix round follows it.
   Started from origin/main `d018d866`; wave 1 built the acceptance pages
   and a GUI probe, wave 2 the user's picks. Every lane is merged on main
   (last AN2, `bd52bbf4`, then this documentation lane D), each code lane
@@ -681,7 +683,7 @@ Updated 2026-10-06. This is the delivery pointer, not another game specification
 - **Latest game:** main carries Round 40 (`bd52bbf4` and lane D), on top
   of Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39
   on 2026-10-06; origin/main `d018d866`), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 40
-  is not pushed. Round 29
+  is pushed too (origin/main `94605188`). Round 29
   was tested by the user on a fresh world (2026-10-02), the user's Round 33
   findings became Round 34's fix lanes, the Round 34 findings Round 35 and
   the first Round 35 findings Round 36's lane F; Rounds 25–35 count as

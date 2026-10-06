@@ -12,9 +12,9 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 40 "Combat feel" is complete locally, not pushed
-([plan](docs/planning/round40-plan.md)); every round up to Round 39 is
-pushed (origin/main `d018d866`, 2026-10-06). Rounds 25–35 count as
+**Current state:** Round 40 "Combat feel" is complete and pushed with
+every earlier round ([plan](docs/planning/round40-plan.md); origin/main
+`94605188`, 2026-10-06; pushed by the coordinator on the user's request). Rounds 25–35 count as
 GUI-accepted (the user, 2026-10-05), Round 39 too (2026-10-06); the GUI
 tests of Rounds 36–38 and 40 are open. Details: [STATUS](docs/STATUS.md).
 
