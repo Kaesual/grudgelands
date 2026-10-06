@@ -65,7 +65,7 @@ function grug_quests.hud_text(journal, window)
 end
 
 -- Every objective as "<subject> <count>/<required>", joined by ", "
--- ("Small Boar 3/10, Light Leather 0/2").
+-- ("Barrow Piglet 3/8, Light Leather 0/2").
 function grug_quests.compact_text(quest)
 	local parts = {}
 	for _, objective in ipairs(quest.objectives) do

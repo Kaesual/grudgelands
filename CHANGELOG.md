@@ -9,6 +9,39 @@ some of its changes are part of world generation.
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.38.0 — Round 38, "Mob names" (2026-10-06)
+
+New names for the creatures of every zone, and kill quests that count
+every creature of the name they ask for. **New world:** guards and named
+creatures that an older world has already placed may show a wrong name,
+so their quests might not count them.
+
+- Creatures carry short names that suit their zone, such as the Barrow
+  Piglet of Stillgrave Hollow or the Coconut Crab of Kapok Cradle, instead
+  of names with "Small", "Large" or "Braindead": size and the colour of
+  the name show how dangerous a creature is. Each starting area's first
+  pigs are its Piglets.
+- A kill quest counts every creature that bears the name it asks for,
+  wherever that creature came from, and nothing else: the name in the
+  quest is the name over the creature's head. Before, some creatures of
+  the right name did not count because they had spawned in the next field
+  over.
+- Quests against a war camp name the camp's guards and its captain by
+  name, and both count.
+- Quest texts use the new names; a few jokes that rested on an old name
+  are new.
+- The two whelps a dragon calls when it rages are level 60 like their
+  island, no longer level 20, and much tougher.
+- Underground you meet Pit Rats, Crevice Spiders, Buried Miners, Goblin
+  Pelters, Fire Hurlers, Lava Seeps and Bedrock Sentinels;
+  the deep ocean's Kraken Guard is now simply the Kraken.
+- Twelve loot items have shorter names: Cat Claw, Notched Cat Claw,
+  Gleaming Cat Claw, Blighted Bear Claw, Pitted Crab Shell, Silver Mane,
+  Glass Silk, Guttering Wisp Mote, Lichen Resin, Drilled Bone, Ivory
+  Chitin and Layered Chitin.
+- "Group" is now "Party" wherever you read it: the Party tab, the invite
+  notice, the help, the Priest's description and the "Party: …" quests.
+
 ## 0.37.0 — Round 37, "Audit fixes" (2026-10-06)
 
 Fixes for what an October 2026 review of the code and the documentation

@@ -12,7 +12,7 @@ local function tracked(journal, id)
 end
 
 -- One line per objective (ruling 41): "Bring Wood Axe: 0/1", with the
--- targets' level range (Lane Q0): "Defeat Small Boar: 0/8 (level 1–4)".
+-- targets' level range (Lane Q0): "Defeat Barrow Piglet: 0/8 (level 1–2)".
 local function objective_label(objective)
 	return ("%s: %d/%d%s"):format(grug_quests.objective_action(objective),
 		objective.count, objective.required, grug_quests.objective_levels_text(objective))

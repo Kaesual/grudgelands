@@ -2,9 +2,11 @@
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-06 from the user's naming
 request during Round 37 and the kill-credit bug found in the user's
-playtest; revised the same day with the user's answers. Status: **approved and
-started on the user's "go" (2026-10-06)**; phases 0 and 1 (lanes I, V, M)
-run together, since V and M do not need the finished inventory to begin.
+playtest; revised the same day with the user's answers. Status: **complete
+locally on 2026-10-06, not pushed** ([completion and GUI
+checklist](#completion-2026-10-06)); approved and started on the user's "go"
+(2026-10-06); phases 0 and 1 (lanes I, V, M) ran together, since V and M do
+not need the finished inventory to begin.
 
 A design round, run in parallel lanes: the names are proposed zone by zone
 by several Opus agents on a shared vocabulary, checked for consistency and
@@ -182,3 +184,226 @@ Lua runs share the workstation cap of 8 through the round's queue
     mobs drop them).
 17. "Group" becomes "Party" everywhere the player sees it (2026-10-06),
     in this round.
+
+## Completion (2026-10-06)
+
+Every lane is merged on main, last lane PR (`ec2e874c`); lane D (this
+section and the status documents) follows. Nothing of Round 38 is pushed
+yet (origin/main is `0ba677fe`, the round's start). Reviews, each by an
+independent Opus: I MERGE AFTER FIXES; M/B1 MERGE with one Low (fixed);
+B2 MERGE AFTER FIXES (one Medium, one Low); B3 through the text review NR
+MERGE with one Low (fixed by the coordinator); IB MERGE (one Low, to this
+lane); PR MERGE AFTER FIXES (a README wording, fixed by the coordinator).
+Lane C (a checker option and one exemption, with fixture cases) merged
+without a review of its own; the naming lanes' proposals had the taste
+review T and the user's page instead. After each merge the coordinator ran
+the checks and the portable fixtures; the code lanes B1, B2, B3 and PR
+each ended with a smoke boot (PASS). On main's tree (`ec2e874c`):
+`tools/run_fixtures.sh` **108 of 108** (lane PR's run),
+`validate.py --game` 0 errors and the same 7 warnings as before the round,
+`check_rules.py --shipped` **0 problems** (22 notes: the capitals' L20–23
+slots counted as tier 3) over 950 slots, `guarantee.py --check` PASS (no
+E- finding over 362 objectives), `gen_names.py --check` current (898
+names). No spawn recipe and no world generation changed, so there was no
+seed fleet; the GUI test still wants **a fresh world**: a PvP garrison's
+guards and a named rare carry their name key from their placement
+(`start_npcs.lua` `install_garrison`, `rares.lua`), so actors an older
+world has already placed show a fallback name (fresh-server mode, no
+migration).
+
+Round end: …
+
+### Shipped, by lane
+
+Numbers come from the lanes' tools, run the same way before and after;
+"before" is the round's opening tree (`50f41d62`, lane I's final
+`inventory.py`), "after" main `ec2e874c`.
+
+- **I inventory** (merge `8b0fcbe3`; `tools/r38_names/`): `inventory.py`
+  lists every name slot — sub-type × zone × level band of each recipe,
+  leaders, rares, kings and royal guards, dragons and whelps, the rift
+  boss, PvP garrisons, guards, underground and water mobs, unplaced
+  sub-types — with its name and source line, words, levels, drop tiers,
+  race region, neighbours (`neighbours.lua` on the six quest seeds) and
+  the quests and texts that name it: **950 slots** (921 in the 38 zones,
+  29 world slots), **356 distinct names** before. `check_rules.py` checks
+  the §2.2 rules (`test_rules.py` breaks one at a time). Today's names
+  broke them **374 times**: 75 normal names (184 slots) over two words and
+  17 named ones over three (rule 1, 201 lines), signal words on 116 slots
+  (51 names; rule 2), rule 4 by 38 names. Of the 362 objectives under the
+  guarantee (360 kills, 2 quest drops; the 65 item objectives are
+  guidance, §6.7), **268 left same-named mobs uncounted** (230 in their
+  own zone; 161 area-targeted zone and role pairs) and **21 counted a mob
+  of another name than their label** (every PvP captain and commander: the
+  quest said "Throng Captain", the mob showed its `pvp_names.json` name).
+- **V vocabulary and moods** (design, private round folder): a mood brief
+  for each of the 38 zones and a vocabulary for each of the 34 families
+  (size, age, temper, look), a modifier sheet and a style guide; the fire
+  and coin words reserved for the ten Undertithe-corrupted sub-types.
+- **M mechanism, then B1** (merge `f7c2e794`; [quests.md "The quest-name
+  guarantee"](../design/quests.md#the-quest-name-guarantee-round-38)):
+  of the options in §2.1, **a kill counts by the name the mob shows**.
+  `grug_mobs/data/names.json` holds one name per slot key
+  (`<scope>/<source>/L<lo>-<hi>`, written by `tools/r38_b1/gen_names.py`);
+  `names.lua` (over the pure `names_core.lua`) names every mob once per
+  activation and on every relevel; `Q.target_names` resolves each
+  objective's roles and area at load into the names of the slots they
+  select, and `mob_counts` compares the mob's name with them, so every mob
+  of the name counts wherever it spawned and no other does; an objective
+  that selects no name stops the load (`E-no-name`); camp quests write the
+  captain as `{captain:<camp key>}`. `tools/r38_names/guarantee.py --check`
+  proves the property over lane I's model and the names file. The kill
+  path costs **0.73 → 0.30 µs** per kill that credits nothing (20 active
+  quests, LuaJIT, the `tools/r38_b1` fixture; a comparison). The review's
+  Low (the validator's selector fallback against the game's) and the
+  `r37_f` fixture on the names file were fixed before the merge.
+- **C coherence** (merge `5e028dc0`): `check_rules.py --world-pending`
+  checks the six naming lanes together; the Rift Spawn (one story
+  creature at L52, 56, 59 and 60, all tier 6) is exempt from rule 4's gap
+  test. Patterns set across lanes: garrison guards "<Faction> <rank>"
+  (Accord Picket, Throng Veteran …), royal guards "Royal <noun>", a toll
+  bandit voice per capital, one Bone Levy, Marching Zombie and Gallows
+  Crow, the Last Watch names only on L56–60, split names for the six
+  repeatable bounties' targets.
+- **Z1–Z6 naming and T taste** (design): names for the 921 zone slots,
+  one lane per race region with its zones, every name claimed in a shared
+  register (a reuse with its reason), every merge or split of level bands
+  with a one-line reason. The taste review read each zone as a player
+  would: 5 changes (all made: Ounce → Tarn Cat, Ashenward Marcher →
+  Marching Zombie, the Skyglass garrison names, Barrow Keener → Fen
+  Wailer, Levy Skeleton → Bone Levy) and 13 suggestions, which the lanes
+  took or answered in their revision.
+- **The user's page** (lane page): the zone view, the family view and
+  every named mob, elite and boss, in German
+  ([preview page](https://claude.ai/artifact/BaT3x8SHz3PiRduScz39aG)):
+  485 proposed names for the 921 zone slots, 330 before.
+- **Z7 world slots** (design, §6.9): one name per entity for the 29 world
+  slots: Giant Rat → **Pit Rat**, Giant Spider → **Crevice Spider**, Goblin
+  Miner Slinger → **Goblin Pelter**, the underground Zombie → **Buried
+  Miner**, Dungeon Master → **Fire Hurler**, Lava Flan → **Lava Seep**,
+  Land Guard → **Bedrock Sentinel**, Crown Stone Golem → **Scree Golem**;
+  21 kept (later the Kraken, lane IB).
+- **B2 the accepted names** (merge `6397120c`; [biomes_mobs.md
+  "Names"](../design/biomes_mobs.md#round-28-sub-types-and-loot-by-band)):
+  `names.json` from the picks of Z1–Z7 (`gen_names.py --proposals`):
+  **536 of 950 slots renamed** (535 by lane B2, the Kraken by lane IB), **356 → 513 distinct names** (330 → 485
+  on the zone slots), §2.2 breaks **374 → 0**. Kings, royal guards, the
+  General's bodyguards, the dragons and their broadcast, the whelps and
+  the rift boss read their names from the file, no second copy in code;
+  `check_rules.py --shipped` is the naming gate (`tools/r28_names`'s
+  `build_review.py` retired); the dragon whelps are **level 60** (§6.12;
+  were 20, HP **384 → 2696**, still no drops); Captain Morveth the Still is
+  Captain Morveth Stillwake. The review's Medium (the map read "Dur Brannoc
+  King, King of Dur Brannoc") and Low (`r31_q`'s counting order) were
+  fixed before the merge.
+- **B3 quest texts** (merge `8fcf175c`): **242 quest text fields in 42
+  files** name the shown names (`guarantee.py` `W-text-name` **216 → 0**);
+  the PvP camp quests name the post's guards and the captain by
+  placeholder; jokes that rested on an old name are rewritten in the same
+  voice (`stillgrave_hunt_05`). The text review NR (§6.14, no reading
+  page) found one Low, the trophy quests' "Throng/Accord Guards", fixed
+  by the coordinator (`77212b08`).
+- **IT item study** (design): 120 items, 72 of them with a creature word;
+  12 renames proposed, 8 three-word family items to keep.
+- **IB items and the Kraken** (merge `9bcdad9e`; §6.15, §6.16): the
+  **Kraken** (was Kraken Guard); **twelve item display names**, ids
+  unchanged — Cat Claw, Notched Cat Claw, Gleaming Cat Claw, Blighted Bear
+  Claw, Pitted Crab Shell, Silver Mane, Glass Silk, Guttering Wisp Mote,
+  Lichen Resin, Drilled Bone, Ivory Chitin, Layered Chitin — in
+  `items.json` and its catalogue copy, five quest texts, the icon
+  provenance rows and the regenerated `item_tiers.md`.
+- **PR Group becomes Party** (merge `ec2e874c`; §6.17): the Party tab, the
+  invite notice ("Open Party to respond"), the help line, the Priest's
+  description, **20 "Party: …" quest titles** and 21 quest-text phrases;
+  page ids, data keys and engine groups unchanged; the design docs and the
+  README say party.
+- **D** (this lane): this section, STATUS, AGENTS.md's names rule and
+  pointer, ROADMAP, BACKLOG, README, CHANGELOG 0.38.0 and `game.conf`
+  version 0.38.0, the tools README, stale example names in
+  `grug_quests` comments.
+
+### The user's choices during the round
+
+Besides §6 items 1–6 (before the start), all on 2026-10-06:
+
+1. **Item objectives** are guidance, not under the guarantee; quest drops
+   tied to a mob are (§6.7).
+2. **The page:** the proposed names are accepted as shown (§6.8,
+   [preview page](https://claude.ai/artifact/BaT3x8SHz3PiRduScz39aG)).
+3. **World slots** renamed by lane Z7, one name per entity, exempt from
+   rule 4 (§6.9); the faction guards exempt too (§6.10); a capital's
+   L20–23 slot counts as tier 3 (§6.11).
+4. **The dragon whelps** become level 60 (§6.12); **the kings** stay mixed
+   ("King of Highcourt", "Dur Brannoc King"; §6.13).
+5. **Quest texts:** no reading page, an independent review agent instead
+   (§6.14).
+6. **Z7's names** accepted as proposed (Oerkki and Mesa Golem kept).
+7. **The zombie achievement stays:** "Kill %d zombies" counts the Buried
+   Miner too (it counts the entity family).
+8. **The Kraken** (§6.15), **twelve item renames** with the shorter
+   alternatives, the three-word family items kept (§6.16), and **Group
+   becomes Party** in this round (§6.17).
+
+### Deviations from the plan
+
+- Phases 0 and 1 ran together (I, V, M), and lane M went on as **B1 during
+  phase 2**, before the picks: today's names first, with interim names for
+  the PvP garrison guards until B2.
+- **Lanes added during the round:** Z7 (the world slots, §6.9), the item
+  study IT and its build IB, the Kraken, and PR (Group becomes Party).
+- **No reading page for the texts** (§6.14): the review NR read them.
+- §5's "rewritten naming checks (`tools/r28_names`)" became the new
+  `tools/r38_names` (`check_rules.py`, `guarantee.py`); `r28_names`'s
+  `build_review.py` is retired. §5's `quest_targets.py` run is not in the
+  round log; no spawn recipe changed (0 `*.spawns.json` files), so the
+  region statistics it reports are unchanged.
+- Lane C merged without a review of its own (above).
+
+### Open notes
+
+In the [BACKLOG](../../BACKLOG.md#round-38-carry-overs); none blocks the GUI
+test.
+
+- The dragons' broadcast puts "The " before the names file's name in code;
+  the achievements keep the short forms "Wyrmglass Dragon" and
+  "Stormscale Wyvern"; the families' Lua descriptions are only fallbacks.
+- The level-60 whelps make the enrage phase clearly harder (watch in
+  playtests); the Rift Spawn's gap exemption holds while its name stays on
+  one role; `guarantee.py`'s `I-now-counts` (205 objectives) and
+  `W-level-fit` (135) are information, not errors; the 8 three-word family
+  items keep their names.
+- The welcome window after character creation is the user's separate lane
+  (branch `r38-wc`), not merged in this round.
+
+### GUI playtest checklist
+
+Desktop client and the web build, on **a fresh world** made on main after
+this lane. Helpers: `/xp give`, `/teleport`, `/giveme`, `/time`
+(privileges `server`, `give`, `settime`). Say what reads or looks wrong.
+
+1. **Stillgrave Hollow, the playtest quests:** `stillgrave_hunt_01` — every
+   Barrow Piglet counts, anywhere in the zone, from any field;
+   `stillgrave_hunt_02` — every Grave Rat counts the same way; a creature
+   of another name never does.
+2. **The start zones' nametags:** each zone's level 1–2 pigs are its
+   Piglet (Barley, Pine, Glade, Yam, Barrow, Scrub Piglet); no name has a
+   signal word (Small, Large, Braindead, Confused …).
+3. **A zone walk per continent** (Elandor and Kragmar, a few zones and
+   belts each): do the names feel like the zone, and does the bigger,
+   meaner one read as such without a signal word?
+4. **A PvP garrison quest** (for example `ashenward_bastion_picket_broken`,
+   "Blind the …" at level 42): the text names the camp's guards (Throng
+   Pickets) and the captain by name; the guards and the captain
+   count.
+5. **The Map tab's king markers:** "Dur Brannoc King" once, "King of
+   Highcourt" as it is.
+6. **A dragon fight to the enrage:** the two whelps are level 60.
+7. **Party:** the Party tab, a "Party: …" quest title in the log and the
+   invite line "Open Party to respond".
+8. **Loot with the new item names:** Cat Claw, Silver Mane, Glass Silk,
+   Layered Chitin ….
+9. **Underground:** Pit Rat, Crevice Spider, Buried Miner, Goblin Pelter,
+   Fire Hurler, Lava Seep.
+10. **The Kraken's nametag** in deep ocean reads "Kraken".
+11. **A few rewritten quest texts:** `stillgrave_hunt_05` ("Borrow Has Had
+    Long Enough") and a camp quest read naturally with the new names.

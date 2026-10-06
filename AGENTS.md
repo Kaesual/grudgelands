@@ -12,10 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 37 is complete locally, not pushed; every round up to
-Round 36 is pushed (origin/main `0f169898`, 2026-10-05); Rounds 25–35 count as
-GUI-accepted (the user, 2026-10-05); the GUI tests of Rounds 36 and 37 are
-open; next is Round 38 "Mob names". Details: [STATUS](docs/STATUS.md).
+**Current state:** Round 38 "Mob names" is complete locally, not pushed;
+every round up to Round 37 is pushed (origin/main `0ba677fe`, 2026-10-06);
+Rounds 25–35 count as GUI-accepted (the user, 2026-10-05); the GUI tests of
+Rounds 36–38 are open. Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 
@@ -249,9 +249,18 @@ The topic rules below name the one path to use; the
   `tools/r28_world/run.sh` (border rule `tools/r28_world/border_rule.py`); show
   the images when the user decides a distribution. Design files:
   `python3 tools/r28_design/validate.py`.
-- **Names:** signal words (Small, Large, Braindead …) only on start-zone roles,
-  unique names for every other sub-type; kill quests name the exact sub-type and
-  place (`tools/r28_names/build_review.py --check`). **Quest texts** name items,
+- **Names are data per slot** (zone, source, level band) in
+  `grug_mobs/data/names.json`, built by `tools/r38_b1/gen_names.py
+  --proposals` (`--check`); code-built names (kings, dragons, whelps …) read
+  it, no second copy in code (PvP captains: `pvp_names.json`). **A kill counts by the name
+  the mob shows**, so a quest's name is its exact target
+  (`tools/r38_names/guarantee.py --check`); item objectives name items, the
+  mobs they mention are guidance. The rules — normal mobs at most two words,
+  named, elite and boss at most three, no signal words, Piglet only for the
+  start pigs, one level stretch within one drop tier — are owned by
+  [biomes_mobs.md "Names"](docs/design/biomes_mobs.md#round-28-sub-types-and-loot-by-band);
+  the gate is `tools/r38_names/check_rules.py --shipped` (the Round 28
+  `build_review.py` is retired). **Quest texts** name items,
   never tooltip texts; seed-dependent directions and places are placeholders
   ([spawn_regions.md](docs/design/spawn_regions.md#directions)), never a fixed
   compass word. Quest files that require each other change together.

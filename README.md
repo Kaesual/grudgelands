@@ -107,16 +107,17 @@ stats, and the sound controls. The short version:
 *Last updated: 2026-10-06. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 37, "Audit fixes": what an October 2026
-review of the code and the documentation found, from creatures that keep
-to the player holding their attention when several players fight them to mounts that no
-longer throw you off when a buff runs out, plus calmer start zones and
-less server work per player. Round 36 before it brought each faction's
-main story from level 41 to 60, with its finale against Isquarre at the
-rift, and decoration for every village, camp and point of interest.
-Worlds made before Round 36 and its last fixes miss part of it (the
-decoration, the dragon arenas, benches, ground cover and roads are made
-with the world), so start a new world.
+The latest finished round is Round 38, "Mob names": the creatures of
+every zone carry short names that suit it, and a kill quest counts every
+creature that bears the name it asks for, wherever it came from. Group is
+now called Party. Round 37 before it fixed what an October 2026 review of
+the code and the documentation found, from creatures that keep to the
+player holding their attention when several players fight them to mounts
+that no longer throw you off when a buff runs out, and Round 36 brought
+each faction's main story from level 41 to 60, with its finale against
+Isquarre at the rift. Start a new world: worlds made before Round 36 miss
+the decoration, the dragon arenas, benches, ground cover and roads, and
+guards and named creatures placed before Round 38 may show a wrong name.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the

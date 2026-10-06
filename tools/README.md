@@ -71,9 +71,11 @@ Fixtures and probes by round (moved from AGENTS.md on 2026-10-05). A
 `portable_test.lua` runs under `run_fixtures.sh`; an `engine.sh` is a
 headless probe with a throwaway probe mod (`grug_probe_*`, never shipped).
 Older folders (`r10_*` … `r28_*`, `wp13`, `wp26`, `wp40`) follow the same
-pattern; the shared Round 28 tools are `r28_design`, `r28_regions`,
-`r28_world` and `r28_names` (their uses are in AGENTS.md "Zone content") and
-`r28_zone_atlas` (the portable world the seed fleet builds).
+pattern; the shared Round 28 tools are `r28_design`, `r28_regions` and
+`r28_world` (their uses are in AGENTS.md "Zone content") and
+`r28_zone_atlas` (the portable world the seed fleet builds); `r28_names`
+is retired since Round 38 (the naming gate is `r38_names/check_rules.py
+--shipped`).
 
 - **Round 29** (`r29_<lane>`): `b` boats, `w` waystones, `e1` prices and
   `band_payout.sh`, `e4` income (`income.py`), `mres` gems, `mgeo` bands and
@@ -153,14 +155,15 @@ pattern; the shared Round 28 tools are `r28_design`, `r28_regions`,
   Call, royal guards, the fan's shots and the patches, `engine.sh` a
   two-boot restart test; `f` the start-zone alert rule, the Reef Lurker's
   shore kind and the minimap's normal base.
-- **Round 38** (`r38_<lane>`): `names` lane I's slot inventory
-  (`inventory.py`), the name-rule checker (`check_rules.py`, its test
-  `test_rules.py`) and the quest-name guarantee (`guarantee.py --check`,
-  `--self-test`); `b1` `gen_names.py` (writes and `--check`s
-  `grug_mobs/data/names.json`, `--proposals` lays picks over today's
-  names), `names_stub.lua` (`grug_mobs.names` for fixtures) and the
-  portable test of names by slot, the Stillgrave kill credit, garrisons and
-  the kill path's cost; `b2` the portable test of the accepted names in the
-  game (the code-built names equal `names.json`, every single-named entity
-  registers under it, the whelps at level 60). `check_rules.py --shipped`
-  is the naming gate since lane B2.
+- **Round 38** (`r38_<lane>`):
+  - `names`: lane I's slot inventory (`inventory.py`), the name-rule
+    checker (`check_rules.py --shipped`, the naming gate; its test
+    `test_rules.py`), the quest-name guarantee (`guarantee.py --check`,
+    `--self-test`) and the zones' neighbours (`neighbours.lua`).
+  - `b1`: `gen_names.py` writes and `--check`s `grug_mobs/data/names.json`
+    (`--proposals` lays the picks over today's names), `names_stub.lua`
+    for fixtures, and the portable test of names by slot, the Stillgrave
+    kill credit, garrisons and the kill path's cost.
+  - `b2`: the portable test of the accepted names in the game (code-built
+    names equal `names.json`, single-named entities register under it,
+    the whelps at level 60).
