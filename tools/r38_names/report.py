@@ -91,9 +91,7 @@ star for rares, `Boss `; the prefix is not part of the name.
   `leader`, `disposition`, `size` (the authored size factor; a leader's is
   grug_mobs.LEADER.size), `drops` (drop family), `role_levels`, `levels`,
   `drop_tiers`, `clocks` (day, night, any, cave), `units`, `tags` (area
-  tags its mobs carry), `quest_targets`, `quest_mentions`, `notes`, and
-  for PvP captains and commanders `quest_label` (the generic name the quest
-  log shows for them, "Throng Captain").
+  tags its mobs carry), `quest_targets`, `quest_mentions`, `notes`.
 - `zones.tsv`: one row per zone (band, race region, continent, role,
   biomes, neighbours on all six seeds and on some, slot count).
 - `slots.tsv`: one row per slot (the columns a naming agent scans;
@@ -145,12 +143,15 @@ quests.
 
 For `relation: counts`:
 
-- `same_name_not_counted`: spawn sources `<slot key>@<kind or camp id>`
-  (no `@` for untagged sources) whose mobs bear the label's name but do not
-  count (another kind or camp than the area, another zone, another role);
-  `same_name_not_counted_in_zone`: those in the target zone (the
-  kill-credit bug of plan §1);
-- `counted_other_name`: counting sources whose mobs show another name.
+- `selected`: the slots the objective's roles and area select; its
+  `labels` are their names, and since Round 38 lane B1 a mob counts by its
+  shown name, so `targets` holds every slot bearing one of them;
+- `same_name_not_counted` and `same_name_not_counted_in_zone` (spawn
+  sources `<slot key>@<kind or camp id>` whose mobs bear the label's name
+  but do not count; the kill-credit bug of plan §1) and
+  `counted_other_name` (counting sources whose mobs show another name) are
+  empty by construction since lane B1; `tools/r38_names/guarantee.py`
+  proves it.
 
 `quest_mentions` lists every quest-file string that names today's name
 verbatim (simple plurals and possessives included; quest id and JSON path).
@@ -317,8 +318,8 @@ def summary(model):
                  whelps[0]["levels"][0])
     crit = sorted({s["name"] for s in slots if s["source"] == "critter"})
     lines.append("- Critters and the underground and water mobs are base entities: one name for every zone "
-                 "today (%s); a per-zone critter name needs a mechanism the sub-types have "
-                 "(display_by_zone)." % ", ".join(crit))
+                 "today (%s); data/names.json may name any source per zone and level band (lane B1)."
+                 % ", ".join(crit))
     gsig = sorted({s["name"] for s in slots if s["signal_words"] and s["source"] in ("underground",)})
     lines.append("- Underground names with a signal word: %s." % ", ".join(gsig))
     nb = sum(1 for z in model.zones.values() if z["neighbours_some_seeds"])

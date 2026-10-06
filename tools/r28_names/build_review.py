@@ -66,6 +66,13 @@ def pretty_id(item_id):
 class Data:
     def __init__(self):
         self.subtypes = load(MOB_DATA / "subtypes.json")
+        # Round 38: a sub-type's zone names live in data/names.json by slot
+        # (<zone>/<role>/L<lo>-<hi>); the zone variant is the zone's name
+        # where it differs from the catalogue display.
+        self.zone_names = {}
+        for key, name in load(MOB_DATA / "names.json")["names"].items():
+            zone, source, _ = key.split("/")
+            self.zone_names.setdefault(source, {}).setdefault(zone, set()).add(name)
         self.items = {i["id"]: i for i in load(MOB_DATA / "items.json")}
         self.drops = {d["family"]: d for d in load(MOB_DATA / "drops.json")}
         self.enchants = {e["tier"]: e for e in load(PROF_DATA / "enchants.json")}
@@ -153,7 +160,8 @@ def validate(d):
         if st["display"] not in (p["current"], p["proposed"]):
             errors.append("%s: data display %r is neither current nor proposed" % (role, st["display"]))
         for z, v in (p.get("by_zone") or {}).items():
-            have = (st.get("display_by_zone") or {}).get(z)
+            names = d.zone_names.get(role, {}).get(z) or set()
+            have = next(iter(names)) if len(names) == 1 else None
             if have not in (v["current"], v["proposed"]):
                 errors.append("%s/%s: data variant %r is neither current nor proposed" % (role, z, have))
         start = d.is_start_role(st)

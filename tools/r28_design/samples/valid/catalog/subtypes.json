@@ -4,9 +4,6 @@
     "family": "boar",
     "base": "grug_mobs:boar",
     "display": "Small Boar",
-    "display_by_zone": {
-      "kragmar_kapok_cradle": "Small Jungle Boar"
-    },
     "tint_by_zone": {
       "kragmar_kapok_cradle": "jungle"
     },

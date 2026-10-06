@@ -4,7 +4,8 @@
 -- are the placement authority for surface mobs; this script prints a view of
 -- them per zone and per family, with each zone's level band from its mapgen
 -- zone record (grug_mapgen/wp40/source/simple_map.lua) and each role's base
--- mob from the catalogue (data/subtypes.json). The Rift Spawn's surface row
+-- mob from the catalogue (data/subtypes.json), a leader by its slot name in
+-- data/names.json (Round 38). The Rift Spawn's surface row
 -- zones come from spawn_policy.lua's RECIPE_ZONE_ROWS.
 --
 --   luajit tools/r37_dd/zone_mobs.lua [REPO]           rewrite the file
@@ -66,6 +67,9 @@ local function build(repo)
 		return title(base:sub(#MOB_PREFIX + 1))
 	end
 	local rift = rift_row_zones(read(mobs_dir .. "/spawn_policy.lua"))
+	-- Round 38: a leader's name is its slot's in data/names.json.
+	local names_core = dofile(mobs_dir .. "/names_core.lua")
+	local names = names_core.api((names_core.build(json.parse(read(mobs_dir .. "/data/names.json")).names)))
 
 	local zones, by_family = {}, {}
 	local function note(family, column, zone_name)
@@ -99,7 +103,7 @@ local function build(repo)
 			end
 		end
 		for _, leader in ipairs(recipe.leaders or {}) do
-			row.leaders[#row.leaders + 1] = roles[leader.role].display
+			row.leaders[#row.leaders + 1] = names.lookup(leader.role, zone.id, nil) or roles[leader.role].display
 			note(family_of(leader.role), "leader", zone.display_name)
 		end
 		for _, critter in ipairs(recipe.critters or {}) do

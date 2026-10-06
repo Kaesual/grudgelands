@@ -43,7 +43,7 @@ MAX_LINES_PER_GIVER = 2
 MAX_SIGNATURE_PER_BAND = 2
 SIZE_RANGE = (0.75, 1.3)
 
-SUBTYPE_KEYS = {"role", "family", "base", "display", "display_by_zone", "tint_by_zone", "size",
+SUBTYPE_KEYS = {"role", "family", "base", "display", "tint_by_zone", "size",
                 "disposition", "tier", "leader", "levels", "drops", "notes"}
 SUBTYPE_REQUIRED = ("role", "family", "base", "display", "size", "disposition", "levels", "drops")
 ITEM_KEYS = {"id", "name", "tier", "family", "kind", "description", "uses", "icon", "notes"}
@@ -72,7 +72,7 @@ FAMILIES = ("sword", "dagger", "greataxe", "metal_armor", "shield", "leather_arm
 
 # Quest text placeholders and the compass-word rule (Round 29 Q1; the game's
 # rules in mods/PLAYER/grug_quests/labels.lua): placeholder -> argument count.
-PLACEHOLDER_KINDS = {"dir_from_giver": 1, "dir_of": 2, "zone_area": 1, "name": 1}
+PLACEHOLDER_KINDS = {"dir_from_giver": 1, "dir_of": 2, "zone_area": 1, "name": 1, "captain": 1}
 PLACEHOLDER_DIRECTIONS = ("dir_from_giver", "dir_of", "zone_area")
 PLACEHOLDER_ID = re.compile(r"^[a-z][a-z0-9_]*$")
 PLACEHOLDER_TARGET = re.compile(r"^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)?$")
@@ -366,10 +366,9 @@ class Validator:
             for zone, tint in (row.get("tint_by_zone") or {}).items():
                 if d.tints is not None and tint not in d.tints:
                     self.E("E-unknown-tint", file, path, "tint %r (zone %s) not in catalog/tints.json" % (tint, zone))
-            for key in ("display_by_zone", "tint_by_zone"):
-                for zone in row.get(key) or {}:
-                    if self.atlas and zone not in self.atlas.zones:
-                        self.E("E-unknown-zone", file, path, "%s names unknown zone %r" % (key, zone))
+            for zone in row.get("tint_by_zone") or {}:
+                if self.atlas and zone not in self.atlas.zones:
+                    self.E("E-unknown-zone", file, path, "tint_by_zone names unknown zone %r" % zone)
         # An existing mob's drop family is its own role (grug_mobs/subtypes.lua).
         used_families = ({row.get("drops") for row in self.subtypes.values()}
                          | {name.split(":", 1)[1] for name in self.ex_entities})
@@ -1001,6 +1000,10 @@ class Validator:
                     self.E("E-placeholder-target", file, kpath, "%s: %s is no kind, camp, leader, quest place, "
                            "clash site or PvP POI of %s"
                            % (raw, args[-1], args[-1].split("/")[0] if "/" in args[-1] else zone))
+                elif kind == "captain" and not (target.get("garrison") and any(
+                        r.startswith("captain_") for r in target.get("roles") or ())):
+                    self.E("E-placeholder-target", file, kpath, "%s: %s is no PvP camp with a captain"
+                           % (raw, args[-1]))
                 elif kind == "dir_from_giver" and target.get("type") == "open":
                     self.W("W-placeholder-spread", file, kpath, "%s: %s is an open kind spread over many "
                            "patches; use {zone_area:...} or {dir_of:<place>:...}" % (raw, args[-1]))
@@ -1161,46 +1164,6 @@ class Validator:
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
         self.check_recipe_targets(zone, obj, roles, file, path, all_areas)
-        for role in roles:
-            if isinstance(role, str) and not (area is not None and area.get("garrison")):
-                self.check_shown_name(zone, role, area_ref, file, path, all_areas)
-
-    def shown_name(self, zone, role, area_ref):
-        """(name, zone) a kill objective's label gives a sub-type (the game's
-        grug_quests labels.lua, Q.target_zones): its display in a named
-        leader's zone, else in the area's zone, else in the quest's zone."""
-        rec = self.subtypes.get(role) or {}
-        found = self.d.find_leader(role, zone)
-        if found is not None:
-            label_zone = found[0]
-        elif isinstance(area_ref, str) and area_ref:
-            label_zone = C.split_area_ref(area_ref, zone)[0]
-        else:
-            label_zone = zone
-        return (rec.get("display_by_zone") or {}).get(label_zone, rec.get("display")), label_zone
-
-    def check_shown_name(self, zone, role, area_ref, file, path, all_areas):
-        """Round 32: a kill target is shown as the player sees the mob where
-        the objective's targets are met (its zone display name, set at spawn
-        by grug_mobs' apply_zone_variant): a leader in its zone, an area's
-        roles in the area's zone, otherwise the quest zone's kinds and camps,
-        else every zone whose recipe spawns the role."""
-        rec = self.subtypes.get(role)
-        if rec is None:
-            return
-        shown, label_zone = self.shown_name(zone, role, area_ref)
-        if self.d.find_leader(role, zone) is not None or (isinstance(area_ref, str) and area_ref):
-            met = [label_zone]
-        else:
-            def hosts(z):
-                return any(role in self.area_roles(a) for a in (all_areas.get(z) or {}).values())
-            met = [zone] if hosts(zone) else sorted(z for z in all_areas if hosts(z))
-        by_zone = rec.get("display_by_zone") or {}
-        for z in met:
-            seen = by_zone.get(z, rec.get("display"))
-            if seen != shown:
-                self.E("E-label-name", file, path, "%s is shown as %r but met as %r in %s; name an area "
-                       "of that zone" % (role, shown, seen, z))
 
     def role_drops(self, role, levels):
         """Items a role drops while met at `levels` (lo, hi): its family's
@@ -2185,26 +2148,6 @@ def _scenarios():
         d["items"].append(dup)
 
 
-    def label_elsewhere(target):
-        """Round 32: a sub-type with a Goldmead display name, spawned only in
-        Goldmead; Dawnmere's hunt names it without an area, so its label
-        would read the Dawnmere name. (The shipped quests show the passing
-        case: a zone display name met in the objective's own zone or area.)"""
-        cat = target / "catalog" / "subtypes.json"
-        data = _load(cat)
-        data.append({"role": "odd_role", "family": "boar", "base": "grug_mobs:boar", "display": "Odd",
-                     "display_by_zone": {"elandor_goldmead_vale": "Odd Vale Beast"}, "size": 1.0,
-                     "disposition": "neutral", "levels": [11, 20], "drops": "boar"})
-        _save(cat, data)
-        recipe = goldmead_recipe([])
-        recipe["recipe"]["belts"][0]["kinds"]["open"]["day"] = [{"role": "odd_role", "weight": 1}]
-        _save(target / "zones" / "elandor_goldmead_vale.spawns.json", recipe)
-        data = _load(target / Q_FILE)
-        for q in data["quests"]:
-            if q["id"] == "sample_hunt_01":
-                q["objectives"] = [{"type": "kill", "roles": ["odd_role"], "count": 3}]
-        _save(target / Q_FILE, data)
-
     def front_cycle(target):
         front_ok(target)
         path = target / "zones" / "elandor_dawnmere_fields.front.quests.json"
@@ -2263,7 +2206,6 @@ def _scenarios():
          "E-zone-leader"),
         ("leader role in two zones' recipes", leader_in_two_zones, "E-duplicate"),
         ("kill of another zone's leader without an area", kill_leader_elsewhere, "!W-recipe-target"),
-        ("label of a mob met only in another zone", label_elsewhere, "E-label-name"),
         ("a palette-only spawns file (shipped form)", palette_only, None),
         ("camp on the zone's bandit POI", goldmead_camps([poi_camp()]), None),
         ("camp on a POI named by its name", goldmead_camps([poi_camp(
