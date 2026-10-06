@@ -174,6 +174,7 @@ S.play = function(event, target)
 	return true
 end
 played = {}
+grug_core = {particles = dofile(ROOT .. "/tools/r40_pm/helper_stub.lua")(ROOT)} -- Round 40 PM
 assert(loadfile(MOBS .. "rift_spawn.lua"))()
 if check(def ~= nil, "W the Rift Spawn registers") then
 	eq(def.sounds and def.sounds.fuse, "rift_fuse", "W the fuse sound is the rift_fuse event")

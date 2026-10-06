@@ -410,11 +410,13 @@ local function remove_royal_summons(self)
 	for _, object in ipairs(royal_summons(self, pos)) do object:remove() end
 end
 
+-- Returns the raiders it summoned.
 local function bone_call(self, faction)
 	local pos = self.object:get_pos()
 	local count = #royal_summons(self, pos)
+	local summoned = {}
 	for _, dx in ipairs({-2, 2}) do
-		if count >= BONE_CALL_CAP then return end
+		if count >= BONE_CALL_CAP then return summoned end
 		local object = core.add_entity({x = pos.x + dx, y = pos.y,
 			z = pos.z + 2}, "grug_mobs:skeleton_raider")
 		local ent = object and object:get_luaentity()
@@ -424,8 +426,10 @@ local function bone_call(self, faction)
 			-- reads an instance faction too).
 			ent._grug_faction = faction
 			count = count + 1
+			summoned[#summoned + 1] = object
 		end
 	end
+	return summoned
 end
 
 -- The encounter reset of a King or General (evade, leash): the retinue comes
@@ -435,11 +439,53 @@ royal_reset = function(self)
 	remove_royal_summons(self)
 end
 
+-- The signature's effects (Round 40 PM, the accepted particle catalogue):
+-- Shatter marks its blast radius for the whole wind-up and bursts out to it,
+-- Cleave lights its cone and sweeps an arc on the hit, the other kits rise in
+-- their colour around the king and on each creature the resolve touched.
+local SIGNATURE_WINDUP = 2
+local SHATTER_RADIUS = 6
+local KIT_COLORS = {rally = "#e8c06a", regrowth = "#7ac943", bone_call = "#9aa88a",
+	volley = "#e6eef0"}
+local RESOLVE_BURSTS = 4
+
+local function king_facing(self)
+	return core.yaw_to_dir(self.object:get_yaw() or 0)
+end
+
+-- One wind-up second's effect; `first` is the cast's start, the second
+-- second's spawners start halfway (spawners last at most 1 s).
+local function royal_windup(self, kit, first)
+	local pos = self.object and self.object:get_pos()
+	if not pos then return end
+	if kit == "shatter" then
+		if first then
+			grug_core.particles.play("king_windup_ring", {target = pos,
+				reach = SHATTER_RADIUS, time = SIGNATURE_WINDUP})
+		end
+	elseif kit == "cleave" then
+		grug_core.particles.play("king_cleave_windup", {caster = pos, dir = king_facing(self)})
+	else
+		grug_core.particles.play("king_aura", {caster = pos, color = KIT_COLORS[kit]})
+	end
+end
+
+local function resolve_burst(kit, object, count)
+	local pos = count <= RESOLVE_BURSTS and object and object:get_pos()
+	if pos then
+		grug_core.particles.play("king_resolve", {target = pos, color = KIT_COLORS[kit]})
+	end
+end
+
 local function royal_signature(self, race, target, start_health)
 	local kit = RACES[race].kit
 	local faction = RACES[race].faction
 	if kit == "shatter" then
-		hit_players(self, 6, 3, false, 8, faction)
+		hit_players(self, SHATTER_RADIUS, 3, false, 8, faction)
+		local pos = self.object:get_pos()
+		if pos then
+			grug_core.particles.play("king_shatter", {target = pos, reach = SHATTER_RADIUS})
+		end
 	elseif kit == "rally" then
 		local pos = self.object:get_pos()
 		local offsets = {{x = -3, z = 2}, {x = 3, z = 2},
@@ -457,6 +503,7 @@ local function royal_signature(self, race, target, start_health)
 					grug_mobs.place_on_ground(ent.object, {x = pos.x + offset.x,
 						y = pos.y, z = pos.z + offset.z})
 				end
+				resolve_burst(kit, ent.object, guard_index)
 			end
 		end
 	elseif kit == "volley" then
@@ -464,13 +511,20 @@ local function royal_signature(self, race, target, start_health)
 		shoot(self, target, "grug_mobs:arrow_entity", 0)
 		shoot(self, target, "grug_mobs:arrow_entity", 0.16)
 	elseif kit == "bone_call" then
-		bone_call(self, faction)
+		for index, object in ipairs(bone_call(self, faction)) do
+			resolve_burst(kit, object, index)
+		end
 	elseif kit == "cleave" then
 		hit_players(self, 6, 3, true, 0, faction)
+		local pos = self.object:get_pos()
+		if pos then
+			grug_core.particles.play("king_cleave", {caster = pos, dir = king_facing(self)})
+		end
 	elseif kit == "regrowth" and self.health >= start_health then
 		self.health = math.min(self.hp_max or self.health,
 			self.health + math.floor((self.hp_max or self.health) * 0.2))
 		self.old_health = self.health
+		resolve_burst(kit, self.object, 1)
 	end
 end
 
@@ -496,6 +550,10 @@ local function king_tick(self, dtime, race, boss_id)
 	if cast then
 		self:set_velocity(0)
 		cast.left = cast.left - dtime
+		if not cast.second and cast.left <= SIGNATURE_WINDUP / 2 then
+			cast.second = true
+			royal_windup(self, RACES[race].kit, false)
+		end
 		if cast.left <= 0 then
 			royal_signature(self, race, cast.target, cast.health)
 			self.temp.grug_royal_cast = nil
@@ -506,11 +564,12 @@ local function king_tick(self, dtime, race, boss_id)
 	self.temp.grug_royal_cooldown = math.max(0,
 		(self.temp.grug_royal_cooldown or 4) - dtime)
 	if self.attack and self.attack:get_pos() and self.temp.grug_royal_cooldown <= 0 then
-		self.temp.grug_royal_cast = {target = self.attack, left = 2,
+		self.temp.grug_royal_cast = {target = self.attack, left = SIGNATURE_WINDUP,
 			health = self.health}
 		grug_sounds.play("king_signature", self.object)
 		self:set_animation(RACES[race].kit == "volley" and "shoot" or "punch", true)
 		self:set_velocity(0)
+		royal_windup(self, RACES[race].kit, true)
 	end
 end
 

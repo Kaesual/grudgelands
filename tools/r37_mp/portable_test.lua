@@ -725,7 +725,7 @@ local dragons_src = read("mods/ENTITIES/grug_mobs/boss_dragons.lua")
 local protected = function() return false end
 local placed = {}
 local dragon_part = load_in(table.concat({
-	"local TUNING = {trail_particles = 18}\nlocal function burst() end\n",
+	"local TUNING = {trail_particles = 12, trail_span = 1.44}\nlocal BREATH_COLORS = {}\n",
 	cut(dragons_src, "local RIME = \"grug_mobs:dragon_rime\"",
 		"local effect_node = {rime = RIME, scorch = SCORCH}\n", "effects"),
 	cut(dragons_src, "local hostile_player = function(player)", "\nend\n", "hostile"),
@@ -738,7 +738,8 @@ local dragon_part = load_in(table.concat({
 	cut(dragons_src, "local function shoot_breath(self, action, opts)", "\nend\n", "shoot_breath"),
 	"register_breath_arrow(\"grug_mobs:ice_breath\", \"t.png\", \"rime\", \"frost breath\")\n",
 	"return {shoot = shoot_breath, place = place_ground_effect}\n",
-}, ""), {grug_core = {ground_effect_protected = function(pos, actor) return protected(pos, actor) end}},
+}, ""), {grug_core = {ground_effect_protected = function(pos, actor) return protected(pos, actor) end,
+	particles = dofile(repo .. "/tools/r40_pm/helper_stub.lua")(repo)}}, -- Round 40 PM
 	"dragon part")
 local real_set_node = core.set_node
 core.set_node = function(p, n) placed[#placed + 1] = vector.round(p) real_set_node(p, n) end

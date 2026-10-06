@@ -338,6 +338,7 @@ do
 
 	grug_mobs.tier_telegraphs = function(tier) return tier == "elite" end
 	grug_mobs.root = function(self) self.walk_velocity, self.run_velocity = 0, 0 end
+	grug_core.particles = dofile(repo .. "/tools/r40_pm/helper_stub.lua")(repo) -- Round 40 PM
 	dofile(repo .. "/mods/ENTITIES/grug_mobs/telegraph.lua")
 
 	players = {}
