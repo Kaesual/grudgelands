@@ -88,14 +88,16 @@ local function lead_start(run, player)
 	run.lead_units = run.opts.lead * 10 / (vs.y > 0 and vs.y or 1)
 	-- An override the client does not know yet snaps (no interpolation,
 	-- content_cao.cpp:1774-1781), and overrides go out once per server step
-	-- (unit_sao.cpp:138-144): the epsilon first, the lead one step later.
+	-- (unit_sao.cpp:138-144): the epsilon first, the lead two steps later
+	-- (the order of the player's and the carrier's step is not fixed, so one
+	-- step could overwrite the epsilon before it was sent).
 	player:set_bone_override("Body", {position = {vec = {x = 0, y = 0, z = EPS_LEAD},
 		interpolation = 0}})
 	run.lead_stage = 1
 end
 
 local function lead_step(run, player)
-	if run.lead_stage == 1 and run.steps >= 1 then
+	if run.lead_stage == 1 and run.steps >= 2 then
 		player:set_bone_override("Body", {position = {vec = {x = 0, y = 0, z = run.lead_units},
 			interpolation = run.opts.leadin}})
 		run.lead_stage = 2
