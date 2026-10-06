@@ -1,6 +1,11 @@
 grug_xp = {}
 
 local META_XP = "grug_xp:xp"
+-- The level, stored for tools outside the game (the realm website reads player
+-- meta, never game code; contract: docs/technical/module-guide.md "Player meta
+-- read by external tools"). Derived from XP on every XP change and every join;
+-- XP stays the authority and get_level never reads it.
+local META_LEVEL = "grug_xp:level"
 
 grug_xp.MAX_LEVEL = 60
 
@@ -115,6 +120,7 @@ function grug_xp.set_xp(player, xp)
 	local old_level = grug_xp.get_level(player)
 	player:get_meta():set_int(META_XP, xp)
 	local new_level = grug_xp.level_from_xp(xp)
+	player:get_meta():set_int(META_LEVEL, new_level)
 	if new_level ~= old_level then
 		run_level_callbacks(player, old_level, new_level)
 		if new_level > old_level then
@@ -246,6 +252,7 @@ hud_update = function(player)
 end
 
 core.register_on_joinplayer(function(player)
+	player:get_meta():set_int(META_LEVEL, grug_xp.get_level(player))
 	local layout = grug_core.hud_layout
 	local width, label = hud_progress(player)
 	hud_ids[player:get_player_name()] = {
