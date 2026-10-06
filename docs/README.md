@@ -13,6 +13,7 @@ reading every development round.
 | What decisions remain open? | Root `TODO-*.md` files; [BACKLOG open questions](../BACKLOG.md#audit-2026-10-open-questions) |
 | How should work be performed? | [AGENTS](../AGENTS.md), then the [round workflow](process/round-workflow.md) (gates, review checklist, [templates](process/round-workflow.md#7-templates)) |
 | Which mod owns a concern? | [Mod ownership map](technical/mod-map.md) |
+| What does a realm website read, and in which format? | [Module guide, "Player meta read by external tools"](technical/module-guide.md#player-meta-read-by-external-tools), [web data export](../tools/web_data/README.md) |
 | Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](technical/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
 | Why was something decided or how was it tested? | [Research and historical evidence](research/README.md) |
 | What changed during documentation cleanup? | [Consolidation record](maintenance/documentation-round.md) |
