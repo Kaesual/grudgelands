@@ -114,7 +114,10 @@ Frames and units, as the engine applies them (derivation:
   units of the `.b3d`).
 - `rot` is Euler degrees about the bone's axes, applied as
   Rz(z) · Ry(y) · Rx(x).
-- `size` is the item entity's visual size. The item is drawn as an extruded
+- `size` is the item entity's visual size. Only `x` and `y` are exported;
+  the engine sets the missing `z` to `x`
+  (`src/script/common/c_content.cpp`, `visual_size`), which scales the
+  item's extrusion thickness the same way. The item is drawn as an extruded
   square of its image (image right along the entity's +x, image up along +y,
   centred on the entity's origin) whose edge is 20 × `size` × `wield_scale`
   model units (the engine's extrusion factor 40, halved by the entity's
@@ -124,8 +127,9 @@ Frames and units, as the engine applies them (derivation:
   rotation matrix R built from `rot` becomes S·R·S with S = diag(1, 1, −1);
   units (10 = 1 node) and bone names are the same.
 - The model's own `visual_size` (the race's) scales the attachment as well:
-  item transform = S(race) · T(pos) · R(rot) · S(size). The per-race values
-  already contain the compensation that makes the item equally large in every
+  item transform = S(race) · B(bone, frame) · T(pos) · R(rot) · S(size),
+  with B the `Arm_Right` bone's animated transform at the current frame. The
+  per-race values already contain the compensation that makes the item equally large in every
   hand (`size` = 0.32 / stature).
 
 The offhand is stored in the appearance but not drawn by the game yet; there

@@ -213,6 +213,7 @@ local function load_game(root)
 		end,
 		get_current_modname = function() return current end,
 		colorize = function(_, text) return text end,
+		register_item = function(name, def) items[name] = def end,
 		register_tool = function(name, def) items[name] = def end,
 		register_craftitem = function(name, def) items[name] = def end,
 		register_node = function(name, def) items[name] = def end,
@@ -377,6 +378,13 @@ function M.build(root)
 		end
 	end
 
+	-- The class list the party UI draws icons for is the second source: a
+	-- class registered in a sub-file this loader skips would otherwise be
+	-- missing without a word.
+	local class_list = table.concat(grug_classes.class_ids, ",")
+	assert(class_list == table.concat(grug_core.status_icons.CLASSES, ","),
+		"web_data: registered classes " .. class_list .. " differ from " ..
+		"grug_core.status_icons.CLASSES")
 	local classes = array()
 	for _, id in ipairs(grug_classes.class_ids) do
 		local def = grug_classes.registered_classes[id]
@@ -429,7 +437,7 @@ function M.build(root)
 		assert(LIST_SLOT[slot.list], "web_data: unknown equipment list " .. slot.list)
 		list_group[slot.list] = slot.group
 	end
-	local hand_items, equippable = {}, {}
+	local hand_items, equippable, list_items = {}, {}, {}
 	local names = {}
 	for name in pairs(items) do names[#names + 1] = name end
 	table.sort(names)
@@ -440,6 +448,7 @@ function M.build(root)
 		for list, group in pairs(list_group) do
 			if (groups[group] or 0) > 0 then
 				equip = true
+				list_items[list] = (list_items[list] or 0) + 1
 				hand = hand or HAND_SLOT[LIST_SLOT[list]] == true
 			end
 		end
@@ -451,6 +460,12 @@ function M.build(root)
 			hand_items[name] = {wield_image = wield_image(def),
 				wield_scale = vec3(def.wield_scale or {x = 1, y = 1, z = 1})}
 		end
+	end
+
+	-- Every equipment list takes at least one exported item: a registration
+	-- the stub missed fails here instead of shrinking the export.
+	for list in pairs(list_group) do
+		assert(list_items[list], "web_data: no exported item fits " .. list)
 	end
 
 	return {
