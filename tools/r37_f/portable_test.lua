@@ -282,13 +282,23 @@ local lurker = SUB.salt_reef_lurker
 check(lurker and lurker.base == "grug_mobs:reef_lurker" and lurker.tier == "elite"
 	and lurker.family == "crab" and lurker.levels[1] >= 51,
 	"R salt_reef_lurker: an elite crab of the 51-60 band")
-local names = {}
+-- Who bears the name: the catalogue displays and, since Round 38, every
+-- slot of data/names.json (one source per slot key).
+local bearers = {}
 for _, row in ipairs(catalogue) do
-	names[row.display] = (names[row.display] or 0) + 1
-	for _, text in pairs(row.display_by_zone or {}) do names[text] = (names[text] or 0) + 1 end
+	bearers[row.display] = bearers[row.display] or {}
+	bearers[row.display][row.role] = true
 end
-check(names[lurker.display] == 1 and lurker.display ~= "Reef Lurker",
-	"R its name '" .. lurker.display .. "' is unique and not the base's")
+for key, text in pairs(json_decode(read(MOBS .. "/data/names.json")).names) do
+	bearers[text] = bearers[text] or {}
+	bearers[text][key:match("^[^/]+/([^/]+)/")] = true
+end
+local others = {}
+for source in pairs(bearers[lurker.display] or {}) do
+	if source ~= "salt_reef_lurker" then others[#others + 1] = source end
+end
+check(bearers[lurker.display] and #others == 0 and lurker.display ~= "Reef Lurker",
+	"R its name '" .. lurker.display .. "' is unique and not the base's (" .. table.concat(others, ",") .. ")")
 local placed = {}
 for id in pairs(roles_in.salt_reef_lurker or {}) do placed[#placed + 1] = id end
 table.sort(placed)
