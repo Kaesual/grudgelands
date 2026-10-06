@@ -900,6 +900,12 @@ class Model:
                     "(leader zone, else the area's zone, else the quest's zone)",
                     r.cite("mods/PLAYER/grug_quests/labels.lua", r"local function mob_label") + ", " +
                     r.cite("mods/PLAYER/grug_quests/labels.lua", r"function Q\.target_zones"))
+        self.source("quest_items", "an item objective counts held items only (no mob, no area): its roles "
+                    "are guidance (plan §6.7); the items are family drops by drop tier",
+                    r.cite("mods/PLAYER/grug_quests/loader.lua", r'elseif objective\.type == "item" then') + ", " +
+                    r.cite(MOBS + "/subtypes.lua", r"function grug_mobs\.band_drop_rows"))
+        self.source("quest_drops", "a quest drop rolls on a kill of its roles in its area (under the guarantee)",
+                    r.cite("mods/PLAYER/grug_quests/state.lua", r"function Q\.roll_quest_drops"))
         self.source("quest_placeholders", "{name:T} placeholders fill a leader's or area's name at runtime",
                     r.cite("mods/PLAYER/grug_quests/labels.lua", r"P\.KINDS = "))
         by_role = defaultdict(list)
@@ -938,6 +944,30 @@ class Model:
                     # critter or cave mob carries no tag (None).
                     def sources(s):
                         return [(s, t) for t in (s["tags"] or [None])]
+                    if kind == "item":
+                        # An item objective counts held items (loader.lua: no
+                        # mobs, no area); its roles and area are guidance (the
+                        # user, plan §6.7), outside the §2.1 guarantee.
+                        named = [s for role in roles for s in by_role.get(role, [])]
+                        guide = [s for s in named if area in s["tags"]] or named
+                        obj = {"quest": q["id"], "file": rel, "quest_zone": qzone,
+                               "path": "%s[%d]" % (field, oi), "kind": kind, "relation": "guidance",
+                               "item": o.get("item"), "roles": roles, "area": area, "count": o.get("count"),
+                               "labels": labels, "targets": [], "guidance": sorted({s["key"] for s in guide}),
+                               "drop_slots": sorted(set(self.drop_slots(o.get("item"))) | {
+                                   s["key"] for d in q.get("quest_drops") or [] if d.get("item") == o.get("item")
+                                   for role in d.get("roles") or [] for s in by_role.get(role, [])
+                                   if not d.get("area") or d["area"] in s["tags"]}),
+                               "same_name_not_counted": [], "same_name_not_counted_in_zone": [],
+                               "counted_other_name": [], "title": q.get("title", "")}
+                        self.objectives.append(obj)
+                        for key in obj["guidance"]:
+                            self.slot_by_key[key]["quest_targets"].append({
+                                "quest": q["id"], "file": rel, "path": obj["path"], "kind": kind,
+                                "relation": "guidance", "area": area, "item": obj["item"],
+                                "drops_item": key in obj["drop_slots"], "same_name_not_counted": [],
+                                "same_name_not_counted_in_zone": [], "counted_other_name": []})
+                        continue
                     counted = [(s, t) for role in roles for s in by_role.get(role, []) for s, t in sources(s)
                                if area is None or t == area]
                     counted_ids = {(s["key"], t) for s, t in counted}
@@ -954,7 +984,7 @@ class Model:
                                             and s["zone"] in target_zones})
                     other = sorted({ref(s, t) for s, t in counted if s["name"].lower() not in label_names})
                     obj = {"quest": q["id"], "file": rel, "quest_zone": qzone, "path": "%s[%d]" % (field, oi),
-                           "kind": kind, "item": o.get("item"), "roles": roles, "area": area,
+                           "kind": kind, "relation": "counts", "item": o.get("item"), "roles": roles, "area": area,
                            "count": o.get("count"), "labels": labels, "targets": targets,
                            "same_name_not_counted": same_not, "same_name_not_counted_in_zone": same_not_zone,
                            "counted_other_name": other, "title": q.get("title", "")}
@@ -962,10 +992,30 @@ class Model:
                     for key in obj["targets"]:
                         self.slot_by_key[key]["quest_targets"].append({
                             "quest": q["id"], "file": rel, "path": obj["path"], "kind": kind,
-                            "area": area, "same_name_not_counted": same_not,
+                            "relation": "counts", "area": area, "same_name_not_counted": same_not,
                             "same_name_not_counted_in_zone": same_not_zone,
                             "counted_other_name": other})
         self.objectives.sort(key=lambda o: (o["file"], o["quest"], o["path"]))
+
+    def drop_slots(self, item):
+        """The slots whose family drop table holds `item` at one of the slot's
+        drop tiers (subtypes.lua band_drop_rows: the table of the sub-type's
+        `drops`, else of the entity role; a leader adds leader_bonus)."""
+        if not item:
+            return []
+        if not hasattr(self, "drop_tables"):
+            self.drop_tables = {d["family"]: d for d in self.repo.json(MOBS + "/data/drops.json")}
+        out = []
+        for s in self.slots:
+            table = self.drop_tables.get(s["drops"] or s["role"])
+            if not table:
+                continue
+            rows = [row for t in s["drop_tiers"] for row in table["bands"].get(str(t), [])]
+            if s["leader"]:
+                rows += table.get("leader_bonus") or []
+            if any(row["item"] == item for row in rows):
+                out.append(s["key"])
+        return sorted(out)
 
     # text surfaces ---------------------------------------------------------------
     def build_surfaces(self):
@@ -1145,7 +1195,7 @@ def build(repo=REPO, surfaces=True):
 
 TSV_COLUMNS = ["key", "zone", "race_region", "continent", "source", "today_name", "words", "signal_words",
                "tier", "disposition", "family", "base", "size", "levels", "drop_tiers", "clocks", "units",
-               "camps", "quest_targets", "quest_mentions", "same_name_not_counted", "entity", "name_where",
+               "camps", "quest_targets", "quest_guidance", "quest_mentions", "same_name_not_counted", "entity", "name_where",
                "neighbours", "notes"]
 
 
@@ -1163,7 +1213,8 @@ def tsv_row(s):
         "size": "%g" % s["size"], "levels": "%d-%d" % tuple(s["levels"]),
         "drop_tiers": ",".join("T%d" % t for t in s["drop_tiers"]), "clocks": ",".join(s["clocks"]),
         "units": " ".join(kinds), "camps": " ".join(camps),
-        "quest_targets": ",".join(sorted({q["quest"] for q in s["quest_targets"]})),
+        "quest_targets": ",".join(sorted({q["quest"] for q in s["quest_targets"] if q["relation"] == "counts"})),
+        "quest_guidance": ",".join(sorted({q["quest"] for q in s["quest_targets"] if q["relation"] == "guidance"})),
         "quest_mentions": ",".join(sorted({q["quest"] or q["path"] for q in s["quest_mentions"]})),
         "same_name_not_counted": "%d/%d" % (len(nz), len(nn)) if nn else "", "entity": s["entity"], "name_where": s["name_where"],
         "neighbours": ",".join(s["neighbours"]),

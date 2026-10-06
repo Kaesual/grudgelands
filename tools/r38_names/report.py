@@ -114,18 +114,36 @@ star for rares, `Boss `; the prefix is not part of the name.
 (gear pool, `ceil(L / 10)` of `min(L, 60)`) give the same tier for every
 mob level: 1-10 T1, 11-20 T2, 21-30 T3, 31-40 T4, 41-50 T5, 51-60 T6 (and
 above 60 T6 for drops). Level 30 is T3 and level 20 is T2, so the
-capitals' first belt (L20-23) spans T2 and T3 on its own. (Bag sizes use
+capitals' first belt (L20-23) spans T2 and T3 on its own. Rule 4
+(`check_rules.py`) counts such a zone slot as the tier that holds most of
+its levels, the higher one on a tie: the coordinator's default ruling,
+which the user may overrule; a capital's L20-23 slot is T3, so it may share
+a name with L24+ slots, never with L19 or lower. A `world/` slot keeps
+every tier its levels touch (pending the user). (Bag sizes use
 other cuts, 15/30/45: `grug_items.BAG_DROPS`.)
 
 ## Quest links
 
 `objectives` (and each slot's `quest_targets`) hold every kill objective,
 item objective with `roles` and quest drop: quest id, file, JSON path,
-kind, roles, area, the label the game shows per role (the role's display
-name in its target zone: a leader's zone, else the area's zone, else the
-quest's zone; for an item objective the quest log shows the item, and the
-label is its source mob's name), `targets` (the slots whose mobs count),
-and:
+kind, `relation`, roles, area, the label the game shows per role (the
+role's display name in its target zone: a leader's zone, else the area's
+zone, else the quest's zone), `targets` (the slots whose mobs count), and
+the fields below.
+
+`relation: counts` (kill objectives and quest drops) is under the §2.1
+guarantee. `relation: guidance` (item objectives): the game counts held
+items only (`grug_quests/loader.lua`, no mob and no area), so the mobs and
+place an item objective names are guidance (the user, plan §6.7); its
+`targets` and the three lists below are empty, `guidance` lists the named
+roles' slots (in the named area where it has them), `drop_slots` the slots
+whose family drop table holds the item at one of the slot's drop tiers
+(`data/drops.json`, `subtypes.lua` band_drop_rows; a leader adds its
+leader_bonus) or whose quest drop gives it. In `slots.tsv`,
+`quest_targets` lists the counting quests and `quest_guidance` the item
+quests.
+
+For `relation: counts`:
 
 - `same_name_not_counted`: spawn sources `<slot key>@<kind or camp id>`
   (no `@` for untagged sources) whose mobs bear the label's name but do not
@@ -170,8 +188,10 @@ Every slot is named exactly once over all files; `keep: true` keeps
 today's name. `check_rules.py` prints one line per problem (`R0` coverage,
 `R1` words, `R2` signal words, `R3` Piglet, `R4` level stretch) and exits 1
 on any; `--partial` checks only the zones the given files touch (rule 4
-then sees only those names). Notes (no exit status) flag a `*_hunt_01`
-start pig without "Piglet" and slots whose own band spans tiers.
+then sees only those names). Rule 4 uses the effective tiers of "Drop
+tier" above. Notes (no exit status) flag a `*_hunt_01` start pig without
+"Piglet" and every slot whose own band spans tiers (with the tier rule 4
+counts it as).
 
 ## Name sources (file:line)
 
@@ -210,8 +230,9 @@ def summary(model):
     lines.append("Families (recipe and leader slots, %d): " % len(fam) +
                  ", ".join("%s %d" % kv for kv in fam.most_common(14)) + " ... (all in `lists.md`)")
     # quests
-    obj = model.objectives
-    targeted = sum(1 for s in slots if s["quest_targets"])
+    obj = [o for o in model.objectives if o["relation"] == "counts"]
+    items = [o for o in model.objectives if o["relation"] == "guidance"]
+    targeted = sum(1 for s in slots if any(q["relation"] == "counts" for q in s["quest_targets"]))
     pairs = set()
     for o in obj:
         if not o["area"]:
@@ -222,22 +243,24 @@ def summary(model):
                    for x in o["same_name_not_counted_in_zone"]):
                 pairs.add((o["area"].split("/")[0], role))
     rpairs = {p for p in pairs if p[1] in model.subtypes}
-    lines.append("")
     other = [o for o in obj if o["counted_other_name"]]
-    lines.append("**Quests:** %d objectives aim at mobs (%s); %d slots are targeted. %d objectives leave "
-                 "same-named mobs uncounted, %d of them in the target zone itself: %d area-targeted "
-                 "(zone, role) pairs, %d of recipe roles (the Round 37 analysis' %d rows with area quests "
-                 "in `multi_region_roles.tsv`, the same pairs; its 159 counts only roles in two or more "
-                 "kinds) and %d of garrison guards. %d objectives count mobs of another name than their "
-                 "label (%s)." % (
+    other_roles = {model.slot_by_key[x.split("@")[0]]["role"] for o in other for x in o["counted_other_name"]}
+    lines.append("")
+    lines.append("**Quests:** %d objectives fall under the guarantee (%s) and target %d slots; %d item "
+                 "objectives name a mob as guidance only (plan §6.7: the game counts held items; "
+                 "`relation: guidance`, with the slots whose drop table holds the item in `drop_slots`; "
+                 "%d of them have one). %d guarantee objectives leave same-named mobs uncounted, %d of them "
+                 "in the target zone itself: %d area-targeted (zone, role) pairs, %d of recipe roles and %d "
+                 "of garrison guards (the Round 37 analysis' 168 pairs counted item objectives too). "
+                 "%d objectives count mobs of another name than their label (%s)." % (
                      len(obj), ", ".join("%s %d" % kv for kv in sorted(Counter(o["kind"] for o in obj).items())),
-                     targeted, sum(1 for o in obj if o["same_name_not_counted"]),
+                     targeted, len(items), sum(1 for o in items if o["drop_slots"]),
+                     sum(1 for o in obj if o["same_name_not_counted"]),
                      sum(1 for o in obj if o["same_name_not_counted_in_zone"]), len(pairs), len(rpairs),
-                     len(rpairs), len(pairs) - len(rpairs), len(other),
+                     len(pairs) - len(rpairs), len(other),
                      "all PvP captains and commanders: the quest label is the entity's \"Throng Captain\", "
                      "the mob shows its pvp_names.json name" if other and all(
-                         r.startswith(("captain_", "commander_")) for o in other for r in o["roles"]
-                         if any(model.slot_by_key[x.split("@")[0]]["role"] == r for x in o["counted_other_name"]))
+                         r.startswith(("captain_", "commander_")) for r in other_roles)
                      else "see `objectives` in slots.json"))
     # rules today
     problems, notes = check_rules.check(model, check_rules.today_entries(model))
@@ -277,11 +300,13 @@ def summary(model):
     lines.append("**Findings worth a look**")
     lines.append("")
     msrc = Counter(s["source"] for s in multi)
-    lines.append("- %d slots span several drop tiers on their own (%s), so no name can satisfy rule 4's "
-                 "\"one tier\" for them: the underground casts (one name per entity, level = max(surface "
-                 "level above, depth level): e.g. Zombie L3-60), the two faction guards (L20-60, the same "
-                 "entity as the PvP garrison guards), the capital slots of the L20-23 belt (level 20 is T2; "
-                 "merging them with L24+ always breaks rule 4) and unplaced elite sub-types." % (
+    lines.append("- %d slots span several drop tiers on their own (%s). Rule 4 counts a zone slot as the "
+                 "tier holding most of its levels (coordinator's default ruling, the user may overrule it): "
+                 "the capitals' L20-23 slots are T3 and may share a name with L24+. The world/ slots keep "
+                 "every tier, pending the user: the underground casts (one name per entity, level = "
+                 "max(surface level above, depth level): e.g. Zombie L3-60), the two faction guards "
+                 "(L20-60, the same entity as the PvP garrison guards) and unplaced elite sub-types; no "
+                 "name can satisfy \"one tier\" for them." % (
                      len(multi), ", ".join("%s %d" % kv for kv in sorted(msrc.items()))))
     unplaced = [s["name"] for s in slots if s["source"] == "unplaced"]
     lines.append("- %d registered sub-types are never placed (no recipe, camp or leader): %s." % (
