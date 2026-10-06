@@ -16,8 +16,8 @@
 -- `clear`; when the box would still touch something on the way, the apex
 -- rises in 0.25 m steps and then the takeoff moves back. Where no sample
 -- fits (a wall higher than `max_rise`, a drop deeper than `max_drop`) or no
--- hop clears, the path is cut short there; a cut path shorter than
--- `min_move` is refused.
+-- hop clears, the path runs up to the edge and is cut short there; a cut
+-- path shorter than `min_move` is refused.
 
 local planner = {}
 
@@ -284,9 +284,9 @@ function planner.plan(boxes, from, dest, opts)
 				hop, a, b = longer, na, nb
 			end
 			if not hop then
-				cut_at, cut_why = xs[a], "no hop clears the edge at " ..
-					("%.2f m"):format(xs[i + 1])
-				e = a
+				-- Run up to the edge and stop there (the box fits at i).
+				cut_at, cut_why = xs[i + 1], "no hop clears the edge"
+				e = i
 				break
 			end
 			if a > run_start then

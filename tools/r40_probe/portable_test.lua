@@ -140,6 +140,23 @@ do
 	check(r == nil and why and why:find("refused"), "a wall 1 m out refuses the path")
 end
 
+-- A step under a low ceiling: standable on both sides, but no arc fits, so
+-- the path runs up to the edge and stops there.
+do
+	local FULLB = {{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}}
+	local function boxes(x, y, z)
+		if y <= -1 then return FULLB end
+		if y == 0 and x >= 5 then return FULLB end -- the step: top at 0.5
+		if y == 3 and x >= 2 then return FULLB end -- the ceiling: from 2.5 up
+		return nil
+	end
+	local p = planner.plan(boxes, {x = 0, y = -0.5, z = 0}, {x = 9, y = 0.5, z = 0})
+	check(p and p.cut and p.cut_why == "no hop clears the edge",
+		"low ceiling: cut short, no hop clears (" .. tostring(p and p.cut_why) .. ")")
+	check(p and p.dist >= 3.9 and p.dist < 4.5 and kinds(p) == "run",
+		"low ceiling: one run up to the edge (" .. tostring(p and p.dist) .. ")")
+end
+
 -- Hops land exactly: the arc reaches the landing height at its end.
 do
 	local c = course("step")
@@ -231,5 +248,8 @@ do
 	check(w == 96 and h == 96, "pie 96 x 96")
 end
 
-print(("r40_probe portable_test: %d checks, %d failures"):format(checks, failures))
-os.exit(failures == 0 and 0 or 1)
+if failures == 0 then
+	print(("R40 PROBE PORTABLE PASS checks=%d"):format(checks))
+else
+	error(("R40 PROBE PORTABLE FAIL %d/%d"):format(failures, checks), 0)
+end
