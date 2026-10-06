@@ -156,7 +156,7 @@ need no text edit: quest labels, the tracker and the feed
 (`grug_quests/labels.lua` reads the display names), `{{name:...}}`
 placeholders, the rare broadcast (`rares.lua` spec.name), kill notices
 from the entity description. The only locale files are the vendored
-mobs mod's; no grug mod ships a translation.
+mobs mod's; no grug mod ships a translation, and no lore book item exists.
 
 ## Proposal format (for `check_rules.py`)
 
