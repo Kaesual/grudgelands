@@ -2,8 +2,9 @@
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-06 from the user's naming
 request during Round 37 and the kill-credit bug found in the user's
-playtest; revised the same day with the user's answers. Status: **draft,
-awaiting the user's approval and go**.
+playtest; revised the same day with the user's answers. Status: **approved and
+started on the user's "go" (2026-10-06)**; phases 0 and 1 (lanes I, V, M)
+run together, since V and M do not need the finished inventory to begin.
 
 A design round, run in parallel lanes: the names are proposed zone by zone
 by several Opus agents on a shared vocabulary, checked for consistency and
