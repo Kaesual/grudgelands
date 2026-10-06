@@ -1,7 +1,8 @@
 -- Round 40 lane V4: portable fixture for the probe's pure parts -- the path
 -- planner on every test course (destinations from the game's own
 -- grug_abilities/blink.lua), the cooldown number and frame, and the engine's
--- hotbar slot arithmetic. Not part of tools/run_fixtures.sh (a probe).
+-- hotbar slot arithmetic. tools/run_fixtures.sh picks it up
+-- (run_fixtures.sh:23 runs every tools/*/portable_test.lua).
 --
 --   luajit tools/r40_probe/portable_test.lua <repo>
 

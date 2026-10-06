@@ -236,8 +236,9 @@ local function courses(origin, done)
 		vi = vi + 1
 		if vi > #variants then
 			if ci > 0 then
-				log(("course %s cleared, %d nodes restored"):format(shapes.ORDER[ci],
-					P.course.clear(name)))
+				local restored, kept = P.course.clear(name)
+				log(("course %s cleared, %d nodes restored, %d kept"):format(shapes.ORDER[ci],
+					restored, kept))
 			end
 			ci, vi = ci + 1, 1
 			local key = shapes.ORDER[ci]

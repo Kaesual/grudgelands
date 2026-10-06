@@ -53,7 +53,8 @@ walk into open countryside and try again.
   `/psetup long mob grug_mobs:wolf`; any registered entity name works).
 - `/psetup back` puts you back at the start (after a dash).
 - `/psetup clear` removes the course and restores every replaced node (the
-  list survives a restart).
+  list survives a restart; a node that cannot be restored stays on the list
+  and the command says so: walk back to the course and clear again).
 - `/psetup` alone lists the courses.
 
 `/pdummy [<m>] [mob <entity>]` puts a target `<m>` metres ahead (default 8)

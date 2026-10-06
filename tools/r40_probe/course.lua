@@ -144,17 +144,34 @@ local function refusal(pos)
 	return nil
 end
 
+-- Restore the replaced nodes. The blocks may have unloaded since the course
+-- was built, and set_node fails (returns false) on an unloaded block
+-- (map.cpp:223-243): load the area first and keep every record that still
+-- failed for the next clear. Returns restored, kept.
 function course.clear(name)
 	remove_entities(state[name])
 	state[name] = nil
 	local saved = storage:get_string("course:" .. name)
-	if saved == "" then return 0 end
+	if saved == "" then return 0, 0 end
 	local rec = core.deserialize(saved) or {}
-	for _, r in ipairs(rec.nodes or {}) do
-		core.set_node({x = r[1], y = r[2], z = r[3]}, {name = r[4], param2 = r[5]})
+	local list = rec.nodes or {}
+	if #list > 0 then
+		local p1 = {x = list[1][1], y = list[1][2], z = list[1][3]}
+		local p2 = {x = p1.x, y = p1.y, z = p1.z}
+		for _, r in ipairs(list) do
+			p1.x, p1.y, p1.z = math.min(p1.x, r[1]), math.min(p1.y, r[2]), math.min(p1.z, r[3])
+			p2.x, p2.y, p2.z = math.max(p2.x, r[1]), math.max(p2.y, r[2]), math.max(p2.z, r[3])
+		end
+		core.load_area(p1, p2)
 	end
-	storage:set_string("course:" .. name, "")
-	return #(rec.nodes or {})
+	local kept = {}
+	for _, r in ipairs(list) do
+		if not core.set_node({x = r[1], y = r[2], z = r[3]}, {name = r[4], param2 = r[5]}) then
+			kept[#kept + 1] = r
+		end
+	end
+	storage:set_string("course:" .. name, #kept > 0 and core.serialize({nodes = kept}) or "")
+	return #list - #kept, #kept
 end
 
 local function place_player(player, st)
@@ -168,8 +185,14 @@ end
 function course.build(player, key, mob)
 	local shape = shapes.LIST[key]
 	if not shape then return false, "unknown course " .. tostring(key) end
+	if mob and not core.registered_entities[mob] then
+		return false, "no entity named " .. mob
+	end
 	local name = player:get_player_name()
-	course.clear(name)
+	local _, kept = course.clear(name)
+	if kept > 0 then
+		return false, ("%d nodes of the last course could not be restored (unloaded); walk back to it and /psetup clear"):format(kept)
+	end
 	local dx, dz = axis(player)
 	local lx, lz = -dz, dx
 	local p = player:get_pos()
@@ -207,15 +230,20 @@ function course.build(player, key, mob)
 		return false, "course refused here: " .. table.concat(list, "; ") ..
 			". Walk to open countryside and try again."
 	end
-	local nodes = {}
+	-- The record is stored before any node changes (a crash in between
+	-- leaves a record, never unrecorded nodes).
+	local nodes, todo = {}, {}
 	for _, c in ipairs(cells) do
 		local n = core.get_node(c[1])
 		if n.name ~= c[2] then
 			nodes[#nodes + 1] = {c[1].x, c[1].y, c[1].z, n.name, n.param2}
-			core.set_node(c[1], {name = c[2]})
+			todo[#todo + 1] = c
 		end
 	end
 	storage:set_string("course:" .. name, core.serialize({nodes = nodes}))
+	for _, c in ipairs(todo) do
+		core.set_node(c[1], {name = c[2]})
+	end
 	local st = {
 		start = {x = sx, y = y0 + shape.floor(0) + 0.5, z = sz},
 		yaw = core.dir_to_yaw({x = dx, y = 0, z = dz}),

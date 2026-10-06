@@ -416,7 +416,14 @@ end
 -- Returns true or false and a reason.
 function charge.start(rider, target, variant, opts, key, on_done)
 	key = key or rider:get_player_name()
-	if runs[key] then return false, "a dash is already running" end
+	local old = runs[key]
+	-- A carrier removed without its on_step (/clearobjects) leaves its run
+	-- behind: forget it.
+	if old and old.carrier and not old.carrier:get_pos() then
+		runs[key] = nil
+		old = nil
+	end
+	if old then return false, "a dash is already running" end
 	if rider:get_attach() then return false, "already attached (mounted?)" end
 	local is_player = rider:is_player()
 	local run = new_run(variant, key, opts)

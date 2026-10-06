@@ -50,7 +50,12 @@ core.register_chatcommand("psetup", {
 		if not player then return false, err end
 		local w = words(param)
 		if w[1] == "clear" then
-			return true, ("course removed, %d nodes restored"):format(P.course.clear(name))
+			local restored, kept = P.course.clear(name)
+			if kept > 0 then
+				return false, ("%d nodes restored, %d still unloaded and kept: walk back to the course and /psetup clear again")
+					:format(restored, kept)
+			end
+			return true, ("course removed, %d nodes restored"):format(restored)
 		elseif w[1] == "back" then
 			return P.course.back(player)
 		elseif not w[1] then
