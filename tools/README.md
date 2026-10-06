@@ -244,4 +244,5 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   placement on the stop, lead, FOV, pose and dust -- and the kits.lua cast's
   refusals) and `bench/`, a disposable probe timing the cast's map work and
   the carrier per step on natural terrain (`PROBE=tools/r40_ch/bench`, run
-  on the base and the branch).
+  on the base and the branch); `lag_replay.py` replays the client's drawn
+  carrier to size the arrival hold (the forward snap at each hold length).
