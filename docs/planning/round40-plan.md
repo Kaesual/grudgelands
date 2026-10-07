@@ -935,3 +935,9 @@ looks wrong.
   envelope 0.0573 against 0.0570. Independent review (Opus): merge after
   fixes (no ore in a walking surface; a stale farming.md sentence), both
   fixed. Implemented by the coordinator.
+
+- **CR** (production mapgen crash, 2026-10-07): planned first as a hotfix
+  0.40.2 here, then moved into [Round 41](round41-plan.md) as lane CR, so
+  that the crash fix and the upgrade contract (lane UP) ship together in
+  0.41.0 with one map reset of the production realm (the user,
+  2026-10-07).
