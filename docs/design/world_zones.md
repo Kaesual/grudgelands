@@ -878,7 +878,12 @@ rewrite records the WP40 model it replaced.
   final surface, in authored water above it or above the final surface cap is
   replaceable where required to materialize the height and water; supporting
   solids below the surface otherwise remain unchanged. Foreign, unknown and
-  unavailable content remains a transaction veto. Native dungeons stay
+  unavailable content remains a transaction veto; the water guard's barrier
+  (group `grug_air`) is air to the writer, not foreign (Round 41). On a live
+  server a vetoed chunk keeps the engine's terrain (a visible seam) and is
+  reported once through the severe-error helper (`[GRUG-SEVERE]` log line,
+  red chat message); the seed fleet and the fixtures still fail on it
+  (Round 41 ruling 8). Native dungeons stay
   disjoint below the authored range, and no second competing terrain writer
   runs.
 - **Shallow subsurface strata (2026-09-18):** below top soil and filler, the
