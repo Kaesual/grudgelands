@@ -29,8 +29,10 @@ end
 
 -- The chat text players see (no details: those are for the log).
 function severe.chat_text(source, summary)
-	return "Severe server error (" .. tostring(source) .. "): " .. tostring(summary) ..
-		" The server keeps running; please tell an administrator."
+	-- One sentence break whether or not the summary ends with its own stop.
+	local text = tostring(summary):gsub("%.?%s*$", "")
+	return "Severe server error (" .. tostring(source) .. "): " .. text ..
+		". The server keeps running; please tell an administrator."
 end
 
 local shown = {}
