@@ -95,7 +95,8 @@ check(newest ~= nil and newest:find(version, 1, true) ~= nil,
 	"C the newest CHANGELOG entry names " .. version)
 
 -- D. settingtypes.txt ----------------------------------------------------------------
--- The setting lines as of Round 37's base (9dc5f717): only descriptions change.
+-- The setting lines as of Round 37's base (9dc5f717), plus the hosting
+-- platform's map reset counter (Round 41 lane UP): only descriptions change.
 local SETTINGS = {
 	"grug_atmosphere_enabled (Enable Grudgelands atmosphere presets) bool true",
 	"grug_atmosphere_zones (Drive the atmosphere from the player's zone) bool true",
@@ -118,6 +119,7 @@ local SETTINGS = {
 	"grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10",
 	"grug_particle_scale (Particle amount scale) float 1.0 0 2",
 	"grug_tree_regrowth (Regrow trees from saplings) bool true",
+	"grug_reset_world (Map reset counter, set by the hosting platform) int 0 0",
 }
 local INTERNALS = {"grug_", "globalstep", "observer", "set_lighting", "set_atmosphere",
 	"packet", "sprite", "hysteresis", "DoT", "Player/"}
