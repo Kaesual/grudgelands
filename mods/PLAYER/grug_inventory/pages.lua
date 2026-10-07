@@ -77,6 +77,8 @@ local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
 -- #343434 of gui_formbg.png, approximately (accepted). Generated, no texture
 -- file.
 local QUIVER_COVER = "[fill:8x8:#1f1f1f"
+-- Slot units the cover reaches past its size, about one pixel (see its use).
+local QUIVER_COVER_OVER = 0.02
 -- The engine's count "100" in the default font (font_size 16 times display
 -- density and gui_scaling, fontengine.cpp getFontSize; window information
 -- reports that product as real_gui_scaling), in pixels per unit of that
@@ -190,17 +192,29 @@ local function quiver_content(player)
 	elseif total > first:get_stack_max() then
 		-- Above one stack the slot shows the true total (Round 41 ruling 6):
 		-- drawn after the list[], so clicks still reach the cell (inventory
-		-- clicks are found by position, guiFormSpecMenu.cpp getItemAtPos); a
+		-- clicks are found by position, guiFormSpecMenu.cpp getItemAtPos, and
+		-- image / item_image are click-through elements, visible only while
+		-- drawn, so the list keeps its hover highlight and item tooltip; only
+		-- the cover paints over the highlight in its corner); a
 		-- cover hides the engine's count corner, then an item_image of the
 		-- same item and slot rect draws the total with the list's own font
 		-- and corner (guiItemImage.cpp draw -> drawItemStack). The count in an
 		-- item_image string is undocumented engine behaviour
 		-- (docs/technical/upstream-workarounds.md §4).
-		-- The cell where the list[] above draws it, after its %.1f rounding.
+		-- Legacy layout: a position counts in spacing units, a size in slot
+		-- units (guiFormSpecMenu.cpp getElementBasePos, parseImage), so the
+		-- cover's offset into the cell is (1 - size) slots, times imgsize /
+		-- spacing (TOOLTIP_W, TOOLTIP_H). The cell is where the list[] above
+		-- draws it, after its %.1f rounding. The engine truncates position and
+		-- size to pixels, so the position is rounded down and the cover is
+		-- QUIVER_COVER_OVER larger: at most about a pixel past the slot, onto
+		-- its border (listcolors' #141318), never short of the count.
 		local cx, cy = tonumber(("%.1f"):format(x)), tonumber(("%.1f"):format(y))
 		local cover_w, cover_h = quiver_cover_size(player)
-		fs[#fs + 1] = ("image[%.2f,%.2f;%.2f,%.2f;%s]"):format(
-			cx + 1 - cover_w, cy + 1 - cover_h, cover_w, cover_h, QUIVER_COVER)
+		fs[#fs + 1] = ("image[%.3f,%.3f;%.2f,%.2f;%s]"):format(
+			math.floor((cx + (1 - cover_w) * TOOLTIP_W) * 1000) / 1000,
+			math.floor((cy + (1 - cover_h) * TOOLTIP_H) * 1000) / 1000,
+			cover_w + QUIVER_COVER_OVER, cover_h + QUIVER_COVER_OVER, QUIVER_COVER)
 		fs[#fs + 1] = ("item_image[%.1f,%.1f;1,1;%s %d]"):format(x, y,
 			first:get_name(), total)
 	end
