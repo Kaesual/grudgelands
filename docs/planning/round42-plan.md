@@ -7,8 +7,8 @@ behind trees in combat), three read-only research passes (the existing
 pathing code, the settlement walking data, the engine pathfinder) and the
 user's answers of the same day; revised after an independent Opus review
 (verdict "ready after fixes", every finding checked at the cited lines).
-Status: **draft, waiting for the user's "go"; starts after Round 41 has
-merged** ([Round 41](round41-plan.md)).
+Status: **running** (the user's go 2026-10-07 after Round 41; NV0 merged,
+calibration ruled 2026-10-08, rulings 18–20).
 
 The user calls this a high-risk topic: navigation has to feel good
 without a hard hit on server performance. The round replaces today's
@@ -142,6 +142,32 @@ conditions); the user asked for numbers with a basis, not guesses.
     pick the next villager spot, the unwatched snap) stay as later stages
     fed by the new detector. CL, after the playtest, only removes what is
     then dead.
+18. **Calibration (the user, 2026-10-08, after NV0's report;
+    `tools/r42_nv0/evidence/before/`).** Every NV0 proposal is taken; they
+    stay guide values:
+    - stuck threshold 30 % of the expected self-movement, measured against
+      the speed the mob really has (after the water slowdown);
+    - target "close" 16 nodes; candidate rings 10, then 16; height band ±3;
+      head room ceil(mob height) cells;
+    - the walkable-line test every 0.5 s in combat, every 1 s on fixed walks;
+    - "off route" 2 nodes;
+    - the give-up veto 8 nodes or 15 s;
+    - the evade local search radius 6, ±2;
+    - search padding 6 and **never below 2** (an engine crash below,
+      `docs/technical/upstream-workarounds.md` §5); no leg longer than 32
+      nodes in one piece;
+    - lockout per mob 1 s in combat, 5 s otherwise (the existing no-path
+      waits on top); a global cap of 20 searches per second, provisional —
+      NV1 reports the real demand.
+19. **Wide mobs** (NV0 finding F3): the engine's search cannot produce a
+    route for a mob wider than one node. Where the width check rejects
+    every path, the mob gives up like any other (a rejected path counts as
+    a failed search; ruling 9); no extra mechanism.
+20. **Tall mobs** (NV0 finding F4): mobs taller than 2 nodes (elites and
+    royal guards 2.38, the bog ooze 2.03) get a physics collision height
+    just under 2, so they pass 2-high doorways; their look and their
+    selection box stay (the head clips through a lintel while passing).
+    NV1 builds it.
 
 Coordinator defaults (the user may overrule them):
 
