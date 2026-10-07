@@ -1,0 +1,68 @@
+# Final region run (Round 41 lane CR, named before the run): the production
+# crash window of the report on its seed -- chunks cx 21..25, cz -33..-28,
+# the layer above (cy 0, y -32..47) first, then the crash layer (cy -1,
+# y -112..-33), 60 chunks -- as the production world generated them (the
+# layer above before the one below). Expected: every chunk generates, no
+# severe report. Each chunk's wall time is in the log.
+continue_after_severe
+emerge 1688 0 -2632
+emerge 1768 0 -2632
+emerge 1848 0 -2632
+emerge 1928 0 -2632
+emerge 2008 0 -2632
+emerge 1688 0 -2552
+emerge 1768 0 -2552
+emerge 1848 0 -2552
+emerge 1928 0 -2552
+emerge 2008 0 -2552
+emerge 1688 0 -2472
+emerge 1768 0 -2472
+emerge 1848 0 -2472
+emerge 1928 0 -2472
+emerge 2008 0 -2472
+emerge 1688 0 -2392
+emerge 1768 0 -2392
+emerge 1848 0 -2392
+emerge 1928 0 -2392
+emerge 2008 0 -2392
+emerge 1688 0 -2312
+emerge 1768 0 -2312
+emerge 1848 0 -2312
+emerge 1928 0 -2312
+emerge 2008 0 -2312
+emerge 1688 0 -2232
+emerge 1768 0 -2232
+emerge 1848 0 -2232
+emerge 1928 0 -2232
+emerge 2008 0 -2232
+emerge 1688 -80 -2632
+emerge 1768 -80 -2632
+emerge 1848 -80 -2632
+emerge 1928 -80 -2632
+emerge 2008 -80 -2632
+emerge 1688 -80 -2552
+emerge 1768 -80 -2552
+emerge 1848 -80 -2552
+emerge 1928 -80 -2552
+emerge 2008 -80 -2552
+emerge 1688 -80 -2472
+emerge 1768 -80 -2472
+emerge 1848 -80 -2472
+emerge 1928 -80 -2472
+emerge 2008 -80 -2472
+emerge 1688 -80 -2392
+emerge 1768 -80 -2392
+emerge 1848 -80 -2392
+emerge 1928 -80 -2392
+emerge 2008 -80 -2392
+emerge 1688 -80 -2312
+emerge 1768 -80 -2312
+emerge 1848 -80 -2312
+emerge 1928 -80 -2312
+emerge 2008 -80 -2312
+emerge 1688 -80 -2232
+emerge 1768 -80 -2232
+emerge 1848 -80 -2232
+emerge 1928 -80 -2232
+emerge 2008 -80 -2232
+shutdown
