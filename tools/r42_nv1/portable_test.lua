@@ -393,7 +393,13 @@ do
 		p = walk(p, steer, 4.6)
 	end
 	check(reached and p.x > 5, "F1 the path leads round the wall: x " .. p.x)
-	check(nst(m).fails == 0 and not nst(m).want, "F1 the path's end is progress")
+	check(not nst(m).want, "F1 left on a walkable line: no new search")
+	for _ = 1, 8 do
+		step(m, p, t, tp, 4.6)
+		p = walk(p, tp, 4.6)
+	end
+	check(nst(m).fails == 0 and not nst(m).line_left,
+		"F1 the free straight walk is progress")
 	-- F2 the target moves 5 nodes from the planned end: the path is left.
 	wall_scene()
 	m = mob()
@@ -417,6 +423,15 @@ do
 	end
 	check(left and left <= 5 and m.ev.leave_line == 1 and nst(m).fails == 0,
 		"F3 a walkable line leaves the path, step " .. tostring(left))
+	-- F3b stuck right after such a leave (before any free window): the line
+	-- test was wrong, a failure (never a found-and-left loop).
+	wall_scene()
+	m = mob()
+	for _ = 1, 8 do step(m, p, t, tp, 4.6) end
+	nst(m).line_left = true
+	nst(m).path = nil
+	for _ = 1, 7 do step(m, p, t, tp, 4.6) end
+	check(nst(m).fails == 1, "F3b stuck after leaving on the line counts")
 	-- F4 stuck on its path: a failure.
 	wall_scene()
 	m = mob()

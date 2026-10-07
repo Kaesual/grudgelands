@@ -248,7 +248,9 @@ function nav.line_walkable(body, a, b)
 	local cx, cz = floor(a.x + 0.5), floor(a.z + 0.5)
 	if len < 0.01 then return true end
 	local ux, uz = dx / len, dz / len
-	local sx, sz = -uz * body.hw, ux * body.hw
+	-- The square body's half extent across the walking direction.
+	local side = body.hw * (abs(ux) + abs(uz))
+	local sx, sz = -uz * side, ux * side
 	local seen1, seen2
 	for i = 1, ceil(len / 0.5) do
 		local t = i * 0.5
@@ -446,6 +448,7 @@ end
 -- End a stuck episode: the count, the wish to search, the candidates.
 local function progress(self, nst)
 	nst.fails, nst.want, nst.ring, nst.angle, nst.point = 0, nil, nil, nil, nil
+	nst.line_left = nil
 	obstacle.cancel_path_request(self.temp)
 end
 
@@ -672,19 +675,33 @@ function nav.combat_step(self, pos, dtime, target, target_pos, dist, striking,
 		emit(self, "leave_" .. reason)
 		if reason == "stuck" then
 			return nil, fail(self, nst, not never_give_up)
-		elseif reason ~= "drift" then
+		elseif reason == "end" then
 			progress(self, nst)
+		elseif reason == "line" then
+			-- Walk straight; progress once the straight walk proves free
+			-- (below); stuck before that, the line test was wrong: a failure.
+			nst.line_left, nst.want = true, nil
+			obstacle.cancel_path_request(self.temp)
 		end
 		return nil
 	end
 	if seen == "stuck" then
 		if not nst.want then emit(self, "stuck") end
 		nst.want = true
-	elseif seen == "free" and (nst.want or nst.fails > 0) and dist <= nav.MAX_LEG then
+		if nst.line_left then
+			nst.line_left = nil
+			local outcome = fail(self, nst, not never_give_up)
+			if outcome then return nil, outcome end
+		end
+	elseif seen == "free" then
+		nst.line_left = nil
 		-- Moving freely with a clear way to the target: the episode is over.
-		body = nav.body(self, nst)
-		if nav.line_walkable(body, feet_of(body, pos), target_cell(target, target_pos)) then
-			progress(self, nst)
+		if (nst.want or nst.fails > 0) and dist <= nav.MAX_LEG then
+			body = nav.body(self, nst)
+			if nav.line_walkable(body, feet_of(body, pos),
+					target_cell(target, target_pos)) then
+				progress(self, nst)
+			end
 		end
 	end
 	if not nst.want then return nil end
