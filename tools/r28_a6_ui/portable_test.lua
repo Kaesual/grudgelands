@@ -880,5 +880,5 @@ for label, count in pairs(raw_brackets) do
 	print(("note: %s carries %d raw '[' inside elements (texture modifiers)"):format(label, count))
 end
 print(("%d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(("R28 A6 UI PORTABLE FAIL %d/%d"):format(failures, checks), 0) end
 print("R28 A6 UI PORTABLE PASS checks=" .. checks)
