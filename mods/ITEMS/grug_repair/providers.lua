@@ -100,11 +100,15 @@ local function form(session)
 	return table.concat(fs)
 end
 
-function grug_repair.open(player, provider)
+-- `on_close(player)` (optional) runs on the form's Close button, not on Esc:
+-- a station's form passes its return (Round 41 ruling 3); the other
+-- providers pass none, and Close just closes.
+function grug_repair.open(player, provider, on_close)
 	local quote, reason = grug_repair.quote(player, provider)
 	if not quote then return false, reason end
 	serial = serial + 1
-	local session = {quote = quote, page = 1, formname = PREFIX .. serial}
+	local session = {quote = quote, page = 1, formname = PREFIX .. serial,
+		on_close = on_close}
 	sessions[player:get_player_name()] = session
 	core.show_formspec(player:get_player_name(), session.formname, form(session))
 	return true
@@ -114,8 +118,8 @@ function grug_repair.open_trainer(player, entity)
 	return grug_repair.open(player, trainer_provider(entity))
 end
 
-function grug_repair.open_station(player, pos)
-	return grug_repair.open(player, station_provider(pos))
+function grug_repair.open_station(player, pos, on_close)
+	return grug_repair.open(player, station_provider(pos), on_close)
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -125,6 +129,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not session or session.formname ~= formname then return true end
 	if fields.quit or not grug_repair.provider_permitted(player, session.quote.provider) then
 		sessions[name] = nil
+		-- Close is a button_exit: it sends "close" with "quit", Esc "quit" alone.
+		if fields.close and session.on_close then session.on_close(player) end
 		return true
 	end
 	local selected, count
@@ -138,7 +144,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local _, reason = grug_repair.apply(player, quote)
 		core.chat_send_player(name, reason)
 		sessions[name] = nil
-		grug_repair.open(player, session.quote.provider)
+		grug_repair.open(player, session.quote.provider, session.on_close)
 	elseif fields.next or fields.previous then
 		session.page = session.page + (fields.next and 1 or -1)
 		core.show_formspec(name, formname, form(session))
