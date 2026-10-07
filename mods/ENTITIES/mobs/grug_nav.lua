@@ -104,16 +104,26 @@ local function now()
 end
 
 -- The server step counter (a skipped step breaks a detector window) and the
--- count cap: searches started in the current second of server steps.
+-- count cap: the server-step times of the last CAP searches; one more may
+-- start when the oldest of them is a second old (any one second holds at
+-- most CAP searches).
 local step_id = 0
-local cap_used, cap_clock = 0, 0
+local clock = 0
+local cap_times, cap_next = {}, 1
 
 function nav.begin_server_step(dtime)
 	step_id = step_id + 1
-	cap_clock = cap_clock + (dtime or 0)
-	if cap_clock >= 1 then
-		cap_clock, cap_used = 0, 0
-	end
+	clock = clock + (dtime or 0)
+end
+
+local function cap_free()
+	local oldest = cap_times[cap_next]
+	return not oldest or clock - oldest >= 1
+end
+
+local function cap_take()
+	cap_times[cap_next] = clock
+	cap_next = cap_next % nav.CAP + 1
 end
 
 --
@@ -573,7 +583,7 @@ local function attempt(self, nst, pos, goal_pos, key, mode, close, target)
 		obstacle.cancel_path_request(self.temp)
 		return "wait"
 	end
-	if cap_used >= nav.CAP then
+	if not cap_free() then
 		if not nst.capped then
 			nst.capped = true
 			nav.counters.cap_waits = nav.counters.cap_waits + 1
@@ -583,7 +593,7 @@ local function attempt(self, nst, pos, goal_pos, key, mode, close, target)
 		return "wait"
 	end
 	if not obstacle.claim_path_budget(self.temp) then return "wait" end
-	cap_used = cap_used + 1
+	cap_take()
 	nst.capped, nst.point = nil, nil
 	nst.lock = t + nav.LOCKOUT[mode]
 	local path = nav.search(from, goal, nav.PADDING, body.jump, body.drop)

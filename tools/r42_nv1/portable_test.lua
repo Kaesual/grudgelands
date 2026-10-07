@@ -514,10 +514,11 @@ do
 	for i = 1, 30 do fill(-1, 1, i * 3 - 1, 1, 3, i * 3 + 1, "fence") set(0, 1, i * 3, "air") set(0, 2, i * 3, "air") end
 	find_calls = {}
 	nav.counters.cap_waits = 0
-	-- Start at a fresh second of server steps.
+	-- Start after a quiet second of server steps.
 	us = us + 10000000
 	nav.begin_server_step(1)
-	for s = 1, 15 do
+	local in_window = {}
+	for s = 1, 25 do
 		us = us + 100000
 		nav.begin_server_step(0.1)
 		O.begin_server_step()
@@ -526,8 +527,16 @@ do
 			nav.combat_step(e.m, e.p, 0.1, t, pos(6, Y, i * 3), 6, false)
 			nav.command(e.m, e.p, 4.6)
 		end
+		in_window[s] = #find_calls
 		if s == 10 then mobs.at10 = #find_calls end
 	end
+	-- Any ten consecutive steps (one second) hold at most 20 searches.
+	local worst = 0
+	for s = 10, 25 do
+		local n = in_window[s] - (in_window[s - 10] or 0)
+		if n > worst then worst = n end
+	end
+	check(worst <= 20, "L2 at most 20 in any one second: " .. worst)
 	check(mobs.at10 <= 20 and nav.counters.cap_waits > 0,
 		"L2 the cap holds the first second near 20: " .. tostring(mobs.at10))
 	check(#find_calls > mobs.at10, "L2 the waiting mobs search in the next second")

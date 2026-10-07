@@ -129,6 +129,12 @@ do
 		local dt = now() - t0
 		current = previous
 		step_acc.mob_us = step_acc.mob_us + dt
+		if dt > (step_acc.top_us or 0) then
+			step_acc.top_us, step_acc.top_name = dt, self.name
+			step_acc.top_state = tostring(self.state) ..
+				((self.temp and self.temp.grug_evading) and "/evading" or "") ..
+				(tracked[self] and "/tracked" or "")
+		end
 		return r
 	end
 end
@@ -796,9 +802,10 @@ end
 core.register_globalstep(function()
 	if step_rows then
 		step_rows[#step_rows + 1] = {step_acc.mob_us, step_acc.fp_n, step_acc.fp_us,
-			now()}
+			now(), step_acc.top_us, step_acc.top_name, step_acc.top_state}
 	end
 	step_acc.mob_us, step_acc.fp_n, step_acc.fp_us = 0, 0, 0
+	step_acc.top_us, step_acc.top_name, step_acc.top_state = 0, nil, nil
 	for i = 1, #active do sample(active[i]) end
 end)
 
@@ -845,15 +852,31 @@ local function batch_summary(mover, rows, seconds)
 		fpus = fpus + rows[i][3]
 		if rows[i][3] > fpmax then fpmax = rows[i][3] end
 	end
+	-- The three costliest steps: seconds into the batch and microseconds.
+	local worst = {}
+	for i = 1, #rows do worst[i] = i end
+	table.sort(worst, function(a, b) return rows[a][1] > rows[b][1] end)
+	local slow = {}
+	for k = 1, math.min(3, #worst) do
+		local i = worst[k]
+		slow[k] = {r2((rows[i][4] - rows[1][4]) / 1e6), rows[i][1], rows[i][5],
+			rows[i][6], rows[i][7]}
+	end
 	table.sort(mob)
 	local summary = {mover = mover, steps = #rows, seconds = r2(seconds),
+		slowest = slow,
 		mob_us_p50 = pct(mob, 0.5), mob_us_p90 = pct(mob, 0.9),
 		mob_us_p99 = pct(mob, 0.99), mob_us_max = mob[#mob],
 		fp_calls = fpn, fp_us = fpus, fp_max_step_us = fpmax}
 	results.batches[#results.batches + 1] = summary
-	log(("BATCH %s steps=%d mob_us p50=%s p99=%s max=%s fp_calls=%d fp_us=%d"):format(
+	local sl = {}
+	for k = 1, #slow do
+		sl[k] = ("%ss:%s(top %s %s %s)"):format(slow[k][1], slow[k][2],
+			tostring(slow[k][3]), tostring(slow[k][4]), tostring(slow[k][5]))
+	end
+	log(("BATCH %s steps=%d mob_us p50=%s p99=%s max=%s fp_calls=%d fp_us=%d slowest[%s]"):format(
 		mover, #rows, tostring(summary.mob_us_p50), tostring(summary.mob_us_p99),
-		tostring(summary.mob_us_max), fpn, fpus))
+		tostring(summary.mob_us_max), fpn, fpus, table.concat(sl, " ")))
 end
 
 local function run_batch(mover, done)
@@ -1255,8 +1278,21 @@ local function phase_chasers40(done)
 			end
 			table.sort(mob)
 			table.sort(fpstep)
+			-- The three costliest steps (seconds in, mob+fp us, the top mob).
+			local order = {}
+			for i = 1, #rows do order[i] = i end
+			table.sort(order, function(a, b)
+				return rows[a][1] + rows[a][3] > rows[b][1] + rows[b][3]
+			end)
+			local slow = {}
+			for k = 1, math.min(3, #order) do
+				local i = order[k]
+				slow[k] = ("%ss:%d(top %s %s %s)"):format(
+					r2((rows[i][4] - rows[1][4]) / 1e6), rows[i][1] + rows[i][3],
+					tostring(rows[i][5]), tostring(rows[i][6]), tostring(rows[i][7]))
+			end
 			calib.chasers40 = {
-				fp_peak_per_s = peak,
+				fp_peak_per_s = peak, slowest = table.concat(slow, " "),
 				chasers = n, seconds = r2(seconds), steps = #rows,
 				cpu_s = r2(os.clock() - cpu0),
 				fp_calls = fpn, fp_found = found, fp_per_s = r2(fpn / seconds),
@@ -1270,6 +1306,7 @@ local function phase_chasers40(done)
 			local sm = {}
 			for k, v in pairs(sm_total) do sm[#sm + 1] = k .. "=" .. v end
 			table.sort(sm)
+			log(("CHASERS40 slowest steps %s"):format(calib.chasers40.slowest))
 			log(("CHASERS40 %.1f s: find_path %d calls (%.1f/s, peak %d in 1 s, found %d), %.2f ms/s, mean %.0f us, max %d us; step mob+fp us p50=%s p99=%s max=%s; give_ups=%d refused=%d; sm[%s]"):format(
 				seconds, fpn, fpn / seconds, peak, found, fpus / 1000 / seconds,
 				fpn > 0 and fpus / fpn or 0, fpmax, tostring(calib.chasers40.mob_step_us_p50),
