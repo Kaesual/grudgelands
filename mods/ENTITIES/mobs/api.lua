@@ -135,10 +135,9 @@ local main_timer_interval = tonumber(settings:get("mob_main_timer_interval") or 
 -- GRUG PATCH (Round 37 MB, MOB-16): upstream's `get_bool(...) or true` read
 -- an explicit `false` as true, so the switch could never turn A* off.
 local pathfinding_enable = settings:get_bool("mob_pathfinding_enable", true)
-local pathfinding_stuck_timeout = tonumber(
-		settings:get("mob_pathfinding_stuck_timeout")) or 3.0
-local pathfinding_stuck_path_timeout = tonumber(
-		settings:get("mob_pathfinding_stuck_path_timeout")) or 5.0
+-- GRUG PATCH (Round 42 NV1): the stuck timeouts and the chase searchdistance
+-- are no longer read; grug_nav.lua's detector, lockout and padding replace
+-- them (combat_stats.md §4 "Navigation").
 local pathfinding_algorithm = settings:get("mob_pathfinding_algorithm") or "A*_noprefetch"
 
 if pathfinding_algorithm == "AStar_noprefetch" then pathfinding_algorithm = "A*_noprefetch"
@@ -147,17 +146,14 @@ end
 
 local pathfinding_max_jump = tonumber(settings:get("mob_pathfinding_max_jump") or 4)
 local pathfinding_max_drop = tonumber(settings:get("mob_pathfinding_max_drop") or 6)
-local pathfinding_searchdistance = tonumber(
-		settings:get("mob_pathfinding_searchdistance") or 16)
 
--- GRUG PATCH: close blocked targets get one A* attempt after a short LOS
--- grace period; a failed search earns one alternating lateral step before
--- the next visibility test (combat_stats.md section 4, 2026-09-17 ruling R3).
--- The helper is production code, not a test model. Its globalstep resets the
--- two-call server-wide A* allowance once per engine step. Engine loads have a
--- mod path; isolated real-api harnesses may not, so their loader falls back to
--- this file's own directory instead of requiring every harness to know the
--- helper dependency.
+-- GRUG PATCH (Round 42 NV1): combat navigation is grug_nav.lua (the stuck
+-- detector, the local search and the follower; combat_stats.md section 4)
+-- on grug_obstacle.lua's per-step A* budget and negative path cache. Both
+-- are production code, not test models; the globalstep starts their server
+-- step. Engine loads have a mod path; isolated real-api harnesses may not,
+-- so their loader falls back to this file's own directory instead of
+-- requiring every harness to know the helper dependency.
 local mobs_modpath = core.get_modpath("mobs")
 if not mobs_modpath then
 	local source = debug and debug.getinfo
@@ -166,8 +162,12 @@ if not mobs_modpath then
 end
 assert(mobs_modpath, "cannot locate mobs/grug_obstacle.lua")
 local grug_obstacle = dofile(mobs_modpath .. "/grug_obstacle.lua")
-core.register_globalstep(function()
+local grug_nav = dofile(mobs_modpath .. "/grug_nav.lua")
+grug_nav.init({obstacle = grug_obstacle, algorithm = pathfinding_algorithm,
+	max_jump = pathfinding_max_jump, max_drop = pathfinding_max_drop})
+core.register_globalstep(function(dtime)
 	grug_obstacle.begin_server_step()
+	grug_nav.begin_server_step(dtime)
 end)
 
 -- show peaceful mode message
@@ -336,26 +336,12 @@ function mob_class:do_attack(player, force)
 	if (self.state == "attack" or self.state == "die" or self.state == "runaway")
 	and not force then return end
 
-	-- GRUG PATCH: a CHANGED target invalidates the whole path state (WP6
-	-- review B1). `path.way`/`path.following` describe a route to the OLD
-	-- target and `path.stuck` is the walk-speed penalty earned while chasing
-	-- it — carrying either into the new chase (threat switch, taunt, retaliate
-	-- via do_punch) makes the mob crawl after a target it never failed to
-	-- reach. Same target = same chase, so nothing is reset then (apply_path
-	-- re-calls us with self.attack on every path application).
-	if self.path and self.attack ~= player then
-		self.path.stuck = false
-		self.path.following = false
-		self.path.stuck_timer = 0
-		-- GRUG PATCH: obstacle timers belong to the exact chase target. A threat
-		-- switch must not inherit the old target's blocked-LOS delay or sidestep.
-		if self.temp then
-			grug_obstacle.cancel_path_request(self.temp)
-			self.temp.grug_obstacle_blocked = nil
-			self.temp.grug_obstacle_sidestep = nil
-			self.temp.grug_obstacle_backoff = nil
-			grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
-		end
+	-- GRUG PATCH (Round 42 NV1): the navigation state (path, stuck episode,
+	-- failure count) belongs to the exact chase target; a threat switch
+	-- starts clean.
+	if self.temp and self.attack ~= player then
+		grug_nav.forget(self.temp)
+		grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
 	end
 
 	-- GRUG PATCH: seed the ordinary incoming-damage grace clock at first aggro.
@@ -393,6 +379,8 @@ end
 local mob_cbox = grug_obstacle.mob_cbox
 -- The shared helper is published for grug_mobs (patrol nudge, separation).
 mobs.grug_obstacle = grug_obstacle
+-- GRUG PATCH (Round 42 NV1): and the navigation module (NV2/NV3's walkers).
+mobs.grug_nav = grug_nav
 
 -- collision function
 
@@ -454,6 +442,9 @@ function mobs:scale_mob(self, w, h, perma)
 		self.base_selbox = selbox
 	end
 
+	-- GRUG PATCH (Round 42 NV1): a mob taller than 2 nodes moves with a
+	-- physics box just under 2 (grug_obstacle.physics_box).
+	colbox = grug_obstacle.physics_box(colbox, self)
 	self.object:set_properties(
 			{visual_size = vis_size, collisionbox = colbox, selectionbox = selbox})
 	self._grug_cbox = colbox -- GRUG PATCH (Round 30 P2): see mob_cbox
@@ -481,6 +472,23 @@ local function check_for(look_for, look_inside)
 	end
 end
 
+-- GRUG PATCH (Round 42 NV1): the liquid slowdown, shared by set_velocity
+-- and the stuck detector's expected speed ("the speed the mob really has",
+-- round42-plan.md ruling 18).
+local function grug_liquid_speed(self, v)
+
+	-- is mob standing in liquid?
+	local visc = min(core.registered_nodes[self.standing_in].liquid_viscosity or 0, 7)
+
+	-- only slow moving mobs when inside a viscous fluid they cannot swim in
+	-- e.g. fish in water, spiders in cobweb
+	if v > 0 and visc > 0 and not check_for(self.standing_in, self.fly_in) then
+		v = v / (visc + 1)
+	end
+
+	return v
+end
+
 -- move mob in facing direction
 
 function mob_class:set_velocity(v)
@@ -504,14 +512,7 @@ function mob_class:set_velocity(v)
 
 	local yaw = (self.object:get_yaw() or 0) + self.rotate
 
-	-- is mob standing in liquid?
-	local visc = min(core.registered_nodes[self.standing_in].liquid_viscosity or 0, 7)
-
-	-- only slow moving mobs when inside a viscous fluid they cannot swim in
-	-- e.g. fish in water, spiders in cobweb
-	if v > 0 and visc > 0 and not check_for(self.standing_in, self.fly_in) then
-		v = v / (visc + 1)
-	end
+	v = grug_liquid_speed(self, v)
 
 	local vel = self.object:get_velocity() or {y = 0}
 
@@ -1165,8 +1166,7 @@ local function has_safe_support(self, top, bottom)
 		-- wade now (grug_may_wade, asked only here, so dry ground costs nothing)
 		-- and only when it hurts nobody: lava and every other damaging liquid
 		-- stay a boundary even for a mob immune to it. A liquid that hurts this
-		-- mob already returned false above. The cliff probe and the
-		-- close-obstacle sidestep share this rule.
+		-- mob already returned false above. The cliff probe asks this rule.
 		if (def.liquidtype and def.liquidtype ~= "none")
 		or (def.groups and (def.groups.liquid or 0) > 0) then
 			return not (def.groups and def.groups.lava)
@@ -1202,6 +1202,10 @@ function mob_class:is_at_cliff()
 
 	return not has_safe_support(self, top, bottom)
 end
+
+-- GRUG PATCH (Round 42 NV1): the navigation's cell tests treat a node that
+-- hurts this mob as blocked.
+grug_nav.set_dangerous(is_node_dangerous)
 
 -- check for nodes or groups inside mob collision area
 
@@ -1512,12 +1516,14 @@ function mob_class:breed()
 				self.base_texture = self.mommy_tex ; self.mommy_tex = nil
 			end
 
+			-- GRUG PATCH (Round 42 NV1): the physics box (scale_mob).
+			local colbox = grug_obstacle.physics_box(self.base_colbox, self)
 			self.object:set_properties({
 				textures = self.base_texture,
 				mesh = self.base_mesh, visual_size = self.base_size,
-				collisionbox = self.base_colbox, selectionbox = self.base_selbox
+				collisionbox = colbox, selectionbox = self.base_selbox
 			})
-			self._grug_cbox = self.base_colbox -- GRUG PATCH (Round 30 P2)
+			self._grug_cbox = colbox -- GRUG PATCH (Round 30 P2)
 
 			-- run custom function when grown
 			if self.on_grown then self.on_grown(self)
@@ -1735,358 +1741,12 @@ function mob_class:day_docile()
 	return self.docile_by_day and self.time_of_day > 0.2 and self.time_of_day < 0.8
 end
 
--- are we able to dig & drop a node?
-
-local function can_dig_drop(pos)
-
-	if core.is_protected(pos, "") then return end
-
-	local node = node_ok(pos, "air").name
-	local ndef = core.registered_nodes[node]
-
-	if not ndef or node == "ignore" or ndef.drawtype == "airlike" or ndef.groups.level
-	or ndef.groups.unbreakable or ndef.groups.liquid then return end
-
-	local drops = core.get_node_drops(node)
-
-	core.remove_node(pos)
-
-	for n = 1, #drops do
-		core.add_item(pos, drops[n])
-	end
-
-	return true
-end
-
--- process found path (nil if not found) way leading to target_pos
--- if add_jump is true, add jump if below target_pos
--- if set_velocity is true and path found, start moving at self.walk_velocity
-
-function mob_class:apply_path(way, target_pos, add_jump, set_velocity)
-
-	local s = self.object:get_pos() ; if not s or not target_pos then return end
-
-	self.path.way = way
-
-	if self.attack then self:do_attack(self.attack) end
-
-	if not self.path.way then -- no path found
-
-		self.path.following = false
-
-		-- GRUG PATCH: give `self.path.stuck` a meaning (WP6-T10). The field is
-		-- READ in do_states (walk instead of run) and cleared when
-		-- the mob reaches its target, but NOTHING in mobs_redo ever sets it —
-		-- dead code here and in the mcl_mobs fork of the same rnd code.
-		-- Meaning chosen: "wedged with NO usable path", i.e. the mob is about
-		-- to blunder straight at its target through whatever is in the way;
-		-- walking that stretch kills the ram-the-wall jitter and the mob keeps
-		-- pushing instead of bouncing. Deliberately NOT set while a path IS
-		-- being followed: walk_velocity is 1 for most grug_mobs defs, so a
-		-- chaser would crawl every detour at 1 m/s and terrain would become
-		-- the free escape hatch that AGENTS.md "Mobs" explicitly forbids.
-		--
-		-- WP6 REVIEW (B1): setting the flag was only half a mechanic — every
-		-- clear site T10 added is unreachable for a mob that is MOVING (the
-		-- smart_mobs ones sit behind a stuck_timer that is zeroed at >= 0.5
-		-- m/s; the two do_states abandon exits need path.following, which the
-		-- branch we are in has just set false; the in-reach clear needs a melee
-		-- reach a 1 m/s mob never closes). Three unconditional clears were
-		-- added since — stop_attack(), do_attack() on a target change, and
-		-- do_states the moment its already-computed line_of_sight comes back
-		-- true — so the penalty now lasts exactly as long as the wedge does.
-		self.path.stuck = true
-
-		 -- lets make a way by digging/building
-		if self.pathfinding == 2 and mobs_griefing then
-
-			local prop = self.object:get_properties()
-			local height_diff = target_pos.y - s.y
-
-			-- is player more than 1 block higher than mob?
-			if height_diff > 1.1 then
-
-				if not core.is_protected(s, "") then -- build upwards
-
-					local ndef1 = core.registered_nodes[self.standing_in]
-
-					if ndef1 and (ndef1.buildable_to or ndef1.groups.liquid) then
-
-						s.y = s.y + (prop.collisionbox[2] + 0.25)
-
-						core.set_node(s, {name = mobs.fallback_node})
-					end
-				end
-
-				-- can we dig block above head so we can jump
-				can_dig_drop({x = s.x, y = s.y + ceil(prop.collisionbox[5]) + 1, z = s.z})
-
-				self.object:set_pos({x = s.x, y = s.y + 2, z = s.z})
-
-			elseif height_diff < -1.1 then -- is player move than 1 block lower
-
-				 -- try to dig down
-				can_dig_drop({x = s.x, y = s.y + (prop.collisionbox[2] - 0.25), z = s.z})
-
-			else -- dig 2 blocks to make door toward player direction
-
-				local yaw1 = self.object:get_yaw() + pi / 2
-				local p1 = {
-					x = s.x + cos(yaw1),
-					y = s.y + (prop.collisionbox[2] + 0.25),
-					z = s.z + sin(yaw1)
-				}
-
-				-- dig bottom node first incase of door
-				can_dig_drop(p1) ; p1.y = p1.y + 1 ; can_dig_drop(p1)
-			end
-		end
-
-		-- will try again in 2 second
-		self.path.stuck_timer = pathfinding_stuck_timeout - 2
-
-	elseif add_jump and s.y < target_pos.y and not self.fly then
-
-		self:do_jump() --add jump to pathfinding
-		self.path.following = true
-		self.path.stuck = false -- GRUG PATCH: path found, run it (see above)
-
-	else -- yay i found path
-
-		self:mob_sound(self.attack and self.sounds.war_cry or self.sounds.random)
-
-		if set_velocity then
-			self:set_velocity(self.walk_velocity)
-		end
-
-		self.path.following = true -- now follow path
-		self.path.stuck = false -- GRUG PATCH: path found, run it (see above)
-	end
-end
-
--- path height checker
-
-local function path_height_blocked(self)
-
-	local node
-
-	for _,pos in pairs(self.path.way) do
-
-		node = get_node({x = pos.x, y = pos.y + 1, z = pos.z}).name
-
-		-- GRUG PATCH: treat unknown AND unloaded as BLOCKED (WP6-T10, comment
-		-- corrected in the WP6 review, M12). Two different cases, and the
-		-- original comment here conflated them:
-		--   * "ignore" (unloaded/unemerged block — routine while a path reaches
-		--     toward the edge of the active area) IS a registered node and it
-		--     is walkable = false (builtin/game/register.lua), so upstream
-		--     silently read unloaded volume as CLEAR headroom and sent 2-node
-		--     mobs through clearance nobody had verified. No crash, a wrong
-		--     answer — which is the worse of the two.
-		--   * a node whose mod is gone has no definition at all; THAT is the
-		--     only case where the bare `.walkable` index errors out of the
-		--     mob's step.
-		-- Both now count as blocked: a 2-node-high mob must not be routed
-		-- through clearance we cannot verify.
-		local ndef = core.registered_nodes[node]
-
-		if not ndef or node == "ignore" or ndef.walkable then return true end
-	end
-end
-
--- GRUG PATCH (Round 30 P2): is the node at `pos` walkable for the engine's
--- pathfinder? An unknown node counts as walkable, as it does there.
-local function grug_walkable_at(pos)
-	local def = core.registered_nodes[get_node(pos).name]
-	return not def or def.walkable == true
-end
-
--- path finding and smart mob routine by rnd, line_of_sight and other edits by Elkien3
-
-function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
-		grug_target_visible)
-
-	local s1 = self.path.lastpos
-	local target_pos = p
-
-	-- are we stuck?
-	if (abs(s1.x - s.x) + abs(s1.z - s.z)) / dtime < 0.5 then
-		self.path.stuck_timer = self.path.stuck_timer + dtime
-	else
-		self.path.stuck_timer = 0
-	end
-
-	self.path.lastpos = {x = s.x, y = s.y, z = s.z}
-
-	-- GRUG PATCH: actually USE mob_pathfinding_stuck_path_timeout (WP6-T10).
-	-- Upstream reads the setting at load time (line ~89) and then never
-	-- references it — mobs kept re-planning on the short timeout, and the
-	-- setting was a lie. Intent verified against the sibling fork of the same
-	-- rnd code (VoxeLibre mcl_mobs/combat.lua:90-106), which branches exactly
-	-- like this: a mob that is ALREADY following a path gets the longer
-	-- stuck_path_timeout of no-progress patience, a mob without one re-plans
-	-- after the short stuck_timeout. Reaching this point IS "give up on the
-	-- path": below, either line_of_sight clears path.following or find_path
-	-- replaces path.way outright. Two effects we want — a wedged path-follower
-	-- stops rubber-banding against its own bad path, and a moving one does not
-	-- pay for an A* search every stuck_timeout seconds.
-	local timeout = self.path.following and pathfinding_stuck_path_timeout
-			or pathfinding_stuck_timeout
-
-	-- GRUG PATCH: the ordinary stuck detector keeps its upstream timeout;
-	-- attack-state obstacle recovery may force this already-bounded A* pass
-	-- after its separate one-second blocked-LOS timer expires.
-	if not grug_force_path and self.path.stuck_timer <= timeout then return end
-
-	-- The attack state supplies its one canonical target-LOS
-	-- result. Other callers retain the upstream fallback ray.
-	local has_lineofsight = grug_target_visible
-	if has_lineofsight == nil then
-		has_lineofsight = core.line_of_sight(
-				{x = s.x, y = s.y + 0.5, z = s.z},
-				{x = target_pos.x, y = target_pos.y + 1.5, z = target_pos.z}, .2)
-	end
-
-	if has_lineofsight then
-		if self.temp then grug_obstacle.cancel_path_request(self.temp) end
-		-- GRUG PATCH: the target is visible again, so the detour is over —
-		-- clear the wedged flag with it (WP6-T10, see apply_path). Without
-		-- this a mob that was walled in once would keep walking instead of
-		-- running for the rest of the chase.
-		self.path.stuck = false
-		self.path.following = false ; return "visible"
-	end
-
-	self.temp = self.temp or {}
-
-	-- GRUG PATCH (Round 30 P2, perf review 2026-10 #4): the negative path
-	-- cache and the give-up rule (grug_obstacle.no_path_gate). A mob whose
-	-- last searches found no path waits before it repeats the same search,
-	-- and after three failures against a target that did not move it gives
-	-- the target up (grug_mobs: drop it and go home through the leash reset).
-	local grug_now = core.get_us_time() / 1000000
-	-- Flying actors (the dragons and their whelps) never give a target up:
-	-- their own flight logic handles a blocked ray, and the dragons' reset
-	-- would restart the boss attempt with a full heal. They only wait.
-	local grug_gate = grug_obstacle.no_path_gate(self.temp, grug_now,
-			self.attack, s, target_pos, self.keep_flying == true)
-	if grug_gate == "wait" then
-		-- No queued request may take a grant this mob will not claim.
-		grug_obstacle.cancel_path_request(self.temp)
-		return "backoff"
-	end
-	if grug_gate == "give_up" then
-		if grug_mobs and grug_mobs.give_up_target then
-			grug_mobs.give_up_target(self)
-		else
-			self:stop_attack()
-		end
-		return "give_up"
-	end
-
-	if not grug_obstacle.claim_path_budget(self.temp) then return "budget" end
-	grug_obstacle.path_attempted(self.temp)
-	self.path.stuck_timer = 0
-	local grug_mob_pos = {x = s.x, y = s.y, z = s.z} -- before the ground fix
-
-	-- round position to avoid getting stuck in walls
-	local sx, sz = floor(s.x + 0.5), floor(s.z + 0.5)
-
-	local ssight, sground = core.line_of_sight(s, {x = sx, y = s.y - 4, z = sz}, 1)
-
-	-- determine node above ground (adjust height for player models)
-	if not ssight then s.y = sground.y + 1 end
-
-	local dropheight = self.fear_height ~= 0 and self.fear_height or pathfinding_max_drop
-	local jumpheight = 0
-	local prop = self.object:get_properties()
-
-	if self.jump_height >= pathfinding_max_jump then
-
-		jumpheight = min(ceil(self.jump_height / pathfinding_max_jump), pathfinding_max_jump)
-
-	elseif prop.stepheight > 0.5 then jumpheight = 1 end
-
-	local p1 = {
-		x = floor(target_pos.x + 0.5),
-		y = floor(target_pos.y + 0.5),
-		z = floor(target_pos.z + 0.5)}
-
-	-- GRUG PATCH (Round 30 P2, perf review #4): the close-obstacle pass (a
-	-- target within reach behind a trunk or wall) searches a small box; the
-	-- search's time counts against the per-step A* budget.
-	local grug_searchdistance = grug_force_path
-			and min(grug_obstacle.close_searchdistance, pathfinding_searchdistance)
-			or pathfinding_searchdistance
-	-- GRUG PATCH (Round 30 P2): a target standing in a walkable node (slab,
-	-- stair, snow dust) is aimed at from the node above; a search whose ends
-	-- the engine would refuse is not run and not counted
-	-- (grug_obstacle.fit_path_ends).
-	local grug_ends_valid = grug_obstacle.fit_path_ends(
-			{x = floor(s.x + 0.5), y = floor(s.y + 0.5), z = floor(s.z + 0.5)},
-			p1, grug_walkable_at)
-	if grug_ends_valid then
-		local grug_t0 = core.get_us_time()
-		self.path.way = core.find_path(s, p1, grug_searchdistance,
-				jumpheight, dropheight, pathfinding_algorithm)
-		grug_obstacle.note_path_cost(core.get_us_time() - grug_t0)
-	else
-		self.path.way = nil
-	end
-
-	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
-	local height = cbox[5] - cbox[2]
-
-	-- since we have a path, double check clearance height for 2x node high mobs
-	if self.path.way and #self.path.way > 0 then
-
-		if height > 1 then
-			if path_height_blocked(self) then -- make sure 2 high mobs can get access
-				self.path.way = nil
-			end
-		end
-	end
-
-	-- GRUG PATCH: if the close-obstacle A* pass has no usable route, move
-	-- laterally for half a second and alternate sides on consecutive failures.
-	-- The attack branch owns the velocity and checks the actual lateral vector.
-	if grug_force_path then
-		grug_obstacle.note_path_result(self.temp,
-				self.path.way and #self.path.way > 0)
-	end
-	-- GRUG PATCH (Round 30 P2): remember the result for the negative cache.
-	if grug_ends_valid then
-		grug_obstacle.note_search_result(self.temp, grug_now, self.attack,
-				grug_mob_pos, target_pos, self.path.way and #self.path.way > 0)
-	end
-
-	--[[ do we still have a path after check
-	if self.path.way and #self.path.way > 0 then
-
-		-- show path length and particle trail
-		print("-- path length:" .. tonumber(#self.path.way))
-
-		for _,pos in pairs(self.path.way) do
-
-			core.add_particle({pos = pos, texture = "mobs_heart_particle.png",
-					expirationtime = 2, size = 4, collisiondetection = false,
-					vertical = false})
-
-			if height > 1 then
-				pos.y = pos.y + 1
-				core.add_particle({pos = pos, texture = "mobs_heart_particle.png",
-					expirationtime = 2, size = 4, collisiondetection = false,
-					vertical = false})
-			end
-		end
-	end]]
-
-	self.state = ""
-
-	 -- factored out for reuse / possible override
-	self:apply_path(self.path.way, target_pos, true, true)
-	return "attempted"
-end
+-- GRUG PATCH (Round 42 NV1): mobs_redo's path finding and smart mob routine
+-- (smart_mobs with its stuck timer, apply_path with its dig-and-build
+-- branch, the 2-high head-room check, can_dig_drop) is replaced by
+-- grug_nav.lua: the stuck detector, the local bounded search with its head
+-- room and width checks and the follower (combat_stats.md section 4,
+-- round42-plan.md ruling 17).
 
 -- temporary entity for go_to() function
 
@@ -2434,28 +2094,11 @@ function mob_class:stop_attack()
 	self.attack = nil
 	self.following = nil
 	self.v_start = false ; self.timer = 0 ; self.blinktimer = 0
-	-- GRUG PATCH: reset the FULL path state, not only the way (WP6 review B1).
-	-- Upstream cleared `path.way` and left `path.stuck`/`path.following`
-	-- standing, so the walk-speed penalty and a dead path-follow flag survived
-	-- every de-aggro, leash reset and target switch. `path.stuck` in
-	-- particular has no reachable clear site for a MOVING mob (smart_mobs
-	-- zeroes stuck_timer at >= 0.5 m/s, so its timeout gate never opens), which
-	-- turned one wedged moment into a permanent 1 m/s crawl for the rest of the
-	-- entity's life. Guarded: stop_attack can run before mob_activate's path
-	-- init in exotic paths (wrapper mods calling it from on_activate).
-	if self.path then
-		self.path.way = nil
-		self.path.stuck = false
-		self.path.following = false
-		self.path.stuck_timer = 0
-	end
-	-- GRUG PATCH: no blocked-LOS countdown or half-finished sidestep survives
-	-- de-aggro. The side bit may stay so a later failure tries the other side.
+	-- GRUG PATCH (Round 42 NV1): no path, stuck episode or queued search
+	-- survives de-aggro (grug_nav.lua). Guarded: stop_attack can run before
+	-- mob_activate in exotic paths (wrapper mods calling it from on_activate).
 	if self.temp then
-		grug_obstacle.cancel_path_request(self.temp)
-		self.temp.grug_obstacle_blocked = nil
-		self.temp.grug_obstacle_sidestep = nil
-		self.temp.grug_obstacle_backoff = nil
+		grug_nav.forget(self.temp)
 		grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
 	end
 	self:set_velocity(0)
@@ -2672,36 +2315,9 @@ function mob_class:do_states(dtime)
 			end
 		else
 			self.target_time_lost = 0
-			-- GRUG PATCH: the target is visible again, so whatever wedged the
-			-- mob is behind it — drop the walk-speed penalty here (WP6 review
-			-- B1, see apply_path/stop_attack). This REUSES the line_of_sight
-			-- result the branch above already computed; do not add a second ray
-			-- per step. smart_mobs has the same clear, but it sits behind the
-			-- stuck_timer timeout, and that timer is zeroed on every step in
-			-- which the mob moves faster than 0.5 m/s — i.e. exactly the mob we
-			-- need to un-stick can never reach it.
-			if self.path then self.path.stuck = false end
 		end
 
-		-- GRUG PATCH: a target can be physically close but separated by a trunk
-		-- or wall. After about one second of blocked LOS, ground melee mobs run
-		-- the same bounded A* search used by the chase branch even though
-		-- `dist <= reach`. A live path suppresses replanning; a nil path arms the
-		-- alternating sidestep in smart_mobs. Fliers and dogshoot families keep
-		-- their existing movement models.
 		self.temp = self.temp or {}
-		local obstacle_state = self.temp
-		grug_obstacle.tick_backoff(obstacle_state, dtime)
-		local grug_blocked_close = not in_sight and dist <= attack_reach
-		local can_close_path = self.pathfinding and pathfinding_enable
-			and not self.fly and self.attack_type == "dogfight"
-		if grug_obstacle.close_path_due(obstacle_state, dtime,
-				grug_blocked_close, can_close_path, self.path.following) then
-			-- GRUG PATCH (Round 30 P2): a given-up target ends the attack
-			-- state like the give-up distance above does.
-			if self:smart_mobs(s, target_pos, dist, dtime, true, in_sight)
-					== "give_up" then return end
-		end
 
 		local ds_var = 0
 
@@ -2874,79 +2490,66 @@ function mob_class:do_states(dtime)
 				end
 			end
 
-			-- rnd: new movement direction
-			if self.path.following and self.path.way
-			and self.attack_type ~= "dogshoot" then
-
-				-- no paths longer than 60
-				-- GRUG PATCH: clear the wedged flag together with the path on
-				-- both abandon exits (WP6-T10, see apply_path) — otherwise the
-				-- walk-speed penalty outlives the detour that caused it.
-				-- A detour is not complete merely because the target is
-				-- close; keep following it while the direct LOS remains blocked.
-				if #self.path.way > 60
-				or not grug_obstacle.keep_path(dist, self.reach, in_sight) then
-					self.path.stuck = false
-					self.path.following = false ; return
+			-- GRUG PATCH (Round 42 NV1): navigation (grug_nav.lua,
+			-- combat_stats.md section 4). A ground melee mob that wants to move
+			-- but does not is stuck; it searches a short local detour and
+			-- steers at its waypoints until it strikes, reaches the path's end,
+			-- sees a walkable straight line, the target moved away from the
+			-- planned end or it is stuck again. Failed searches in a row give
+			-- the target up, also a visible one. Fliers and dogshoot families
+			-- never search (a ranged family answers terrain by shooting over
+			-- it); the dragons and whelps never give up, they only wait.
+			local can_nav = self.pathfinding and pathfinding_enable
+				and not self.fly and self.attack_type == "dogfight"
+			if can_nav then
+				local steer, outcome = grug_nav.combat_step(self, s, dtime,
+						self.attack, target_pos, dist,
+						dist <= attack_reach and in_sight, self.keep_flying == true)
+				if outcome == "give_up" then
+					-- A given-up target ends the attack state like the give-up
+					-- distance above does (aggro.lua give_up_target).
+					if grug_mobs and grug_mobs.give_up_target then
+						grug_mobs.give_up_target(self)
+					else
+						self:stop_attack()
+					end
+					return
 				end
-
-				local p1 = self.path.way[1]
-
-				if not p1 then
-					self.path.stuck = false
-					self.path.following = false
-					if not in_sight then
-						grug_obstacle.note_exhausted_blocked_path(obstacle_state)
-					else
-						return
-					end
-				else
-					if abs(p1.x - s.x) + abs(p1.z - s.z) < 0.6 then
-						table_remove(self.path.way, 1) -- remove waypoint once reached
-					end
-
-					local next_waypoint = self.path.way[1]
-					if next_waypoint then
-						-- Never expose the stored waypoint table to movement helpers: the
-						-- old final LOS adjusted its y field in place.
-						movement_pos = grug_obstacle.copy_pos(next_waypoint)
-					elseif not in_sight then
-						-- Reaching the final waypoint without target LOS
-						-- exhausts this route. Sidestep now; the already-saturated blocked
-						-- timer may request another budgeted A* after per-mob backoff.
-						self.path.stuck = false
-						self.path.following = false
-						grug_obstacle.note_exhausted_blocked_path(obstacle_state)
-					else
-						self.path.stuck = false
-						self.path.following = false
-						return
-					end
+				if steer then
+					-- Never expose the stored waypoint to movement helpers.
+					movement_pos = grug_obstacle.copy_pos(steer)
 				end
 			end
+			-- The speed this step commands when the mob wants to move (the
+			-- stuck detector's yardstick); 0 for every intentional stop.
+			local grug_nav_v = 0
 
 			self:yaw_to_pos(movement_pos)
 
 			-- move towards enemy if beyond mob reach
 			if dist > (self.reach + (self.reach_ext or 0)) then
 
-				-- path finding by rnd (only when enabled in setting and mob)
-				-- GRUG PATCH: never run A* for a dogshoot mob (WP6-T10). The
-				-- path CONSUMPTION block ~40 lines up already excludes
-				-- attack_type == "dogshoot", so every core.find_path call for
-				-- one of them was computed and thrown away — pure cost, plus a
-				-- stray war_cry and a walk_velocity write from apply_path.
-				-- Losing nothing: a ranged family answers terrain by shooting
-				-- over it, which is exactly why biomes_mobs §3.1 gives the
-				-- archer/raider/golem `dogshoot` in the first place. Our defs
-				-- keep `pathfinding = 1` (§3 says all aggressive mobs do), it
-				-- simply costs nothing now.
-				if self.pathfinding and pathfinding_enable
-				and self.attack_type ~= "dogshoot" then
-					-- GRUG PATCH (Round 30 P2): see the close-obstacle call.
-					if self:smart_mobs(s, target_pos, dist, dtime, false, in_sight)
-							== "give_up" then return end
+				-- GRUG PATCH: soft de-aggro (combat_stats.md §3, WP6) —
+				-- beyond 25m from its target a chasing mob drops to walk
+				-- speed, so fleeing is hard but not impossible (our mobs
+				-- are faster than players). Per-mob opt-out with
+				-- _grug_soft_deaggro = false (kraken: own leash, swims).
+				-- REACHABLE since the WP6 review (B2): with the give-up
+				-- distance at 45 for our mobs, `dist` can now actually
+				-- exceed 25 — under the old view_range give-up (<= 16) this
+				-- whole branch was dead. A mob more than 25 m behind its
+				-- target walks, keeps following, and is dropped by the leash
+				-- (40 m from where the chase began, or 15 s without contact)
+				-- — not by the mob's eyesight. GRUG PATCH (Round 42 NV1): no
+				-- walk-speed crawl for a wedged mob any more, and the speed is
+				-- decided before the cliff guard, so a mob held at a cliff or
+				-- right under its target still wants to move (the detector).
+				local grug_chase_v = self.run_velocity
+				if dist > 25 and self._grug_soft_deaggro ~= false
+				and not damage_pursuit then
+					grug_chase_v = self.walk_velocity
 				end
+				grug_nav_v = grug_chase_v
 
 				-- distance padding to stop mob spinning
 				local pad = abs(movement_pos.x - s.x)
@@ -2960,26 +2563,7 @@ function mob_class:do_states(dtime)
 				else
 					self.reach_ext = 0 -- reset
 
-					-- GRUG PATCH: soft de-aggro (combat_stats.md §3, WP6) —
-					-- beyond 25m from its target a chasing mob drops to walk
-					-- speed, so fleeing is hard but not impossible (our mobs
-					-- are faster than players). Per-mob opt-out with
-					-- _grug_soft_deaggro = false (kraken: own leash, swims).
-					-- REACHABLE since the WP6 review (B2): with the give-up
-					-- distance at 45 for our mobs, `dist` can now actually
-					-- exceed 25 — under the old view_range give-up (<= 16) this
-					-- whole branch was dead. It composes with the path.stuck
-					-- clears of B1 exactly as the spec reads: a mob that is not
-					-- wedged and is more than 25 m behind its target walks,
-					-- keeps following, and is dropped by the leash (40 m from
-					-- where the chase began, or 15 s without contact) — not by
-					-- the mob's eyesight.
-					if self.path.stuck or (dist > 25
-					and self._grug_soft_deaggro ~= false and not damage_pursuit) then
-						self:set_velocity(self.walk_velocity)
-					else
-						self:set_velocity(self.run_velocity)
-					end
+					self:set_velocity(grug_chase_v) -- GRUG PATCH: soft de-aggro
 
 					local anim = "walk"
 
@@ -2991,14 +2575,10 @@ function mob_class:do_states(dtime)
 				end
 			else -- rnd: if inside reach range
 
-				-- GRUG PATCH: only visible contact proves the detour is over. With
-				-- blocked LOS the mob keeps its in-reach path instead of dancing at
-				-- the obstacle.
-				if in_sight then
-					self.path.stuck = false
-					self.path.stuck_timer = 0
-					self.path.following = false
-				end
+				-- GRUG PATCH (Round 42 NV1): a visible target in reach is struck
+				-- (an intentional stop); a blocked one is run at, along the
+				-- detour when there is one, and a mob held there is stuck.
+				if not in_sight then grug_nav_v = self.run_velocity end
 
 				-- GRUG PATCH: do not freeze for the whole in-reach branch.
 				-- Standing still inside reach of a RECEDING target is what
@@ -3042,48 +2622,13 @@ function mob_class:do_states(dtime)
 				end
 			end
 
-			-- GRUG PATCH: a failed close-range A* search gets a bounded lateral
-			-- escape attempt. The perpendicular is computed from the real target,
-			-- not a temporary waypoint, and alternates on every failed search. Each
-			-- candidate side is probed at the actual lateral collision edge just
-			-- before velocity is applied; unsafe first choice falls back to the
-			-- opposite side, while two unsafe sides make the mob stand.
-			local sidestep = obstacle_state.grug_obstacle_sidestep
-			if grug_blocked_close and sidestep and sidestep > 0 then
-				local function sidestep_safe(velocity)
-					local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
-					local length = square(velocity.x * velocity.x
-							+ velocity.z * velocity.z)
-					if length == 0 then return false end
-					local edge = cbox[4] + 0.5
-					local x = s.x + velocity.x / length * edge
-					local z = s.z + velocity.z / length * edge
-					local y = s.y + cbox[2]
-					local depth = self.fear_height ~= 0 and self.fear_height
-							or pathfinding_max_drop
-					return has_safe_support(self,
-							{x = x, y = y, z = z},
-							{x = x, y = y - depth, z = z})
-				end
-
-				local velocity, chosen_side = grug_obstacle.choose_sidestep(
-						s, target_pos, obstacle_state.grug_obstacle_side,
-						self.run_velocity, sidestep_safe)
-				if not velocity then
-					self:set_velocity(0)
-					self:set_animation("stand")
-				else
-					obstacle_state.grug_obstacle_side = chosen_side
-					local current = self.object:get_velocity()
-					self.object:set_velocity({
-						x = velocity.x,
-						y = current and current.y or 0,
-						z = velocity.z,
-					})
-					self:set_animation(self.animation and self.animation.run_start
-						and "run" or "walk")
-				end
-				grug_obstacle.advance_sidestep(obstacle_state, dtime)
+			-- GRUG PATCH (Round 42 NV1): what this step commanded, for the
+			-- stuck detector: the speed the mob really has (slowed by a liquid,
+			-- 0 while ordered to stand or winding up).
+			if can_nav then
+				if self.order == "stand" or grug_winding_up(self) then grug_nav_v = 0 end
+				grug_nav.command(self, s, grug_nav_v > 0
+						and grug_liquid_speed(self, grug_nav_v) or 0)
 			end
 
 			-- GRUG PATCH: the punch lands here, outside both branches, and the
@@ -3096,7 +2641,7 @@ function mob_class:do_states(dtime)
 			-- The custom_attack hook still consumes the cadence when it declines,
 			-- but it is never called until canonical target LOS succeeds.
 			-- A terrain-blocked LOS no longer consumes it: the ready swing stays
-			-- banked until the detour or sidestep exposes the target.
+			-- banked until the detour exposes the target.
 			-- GRUG PATCH (Round 37 MB, MOB-07): no ordinary swing while an
 			-- elite or rare winds up; the cone hit is its attack.
 			local ready = self.punch_timer >= self.punch_interval
@@ -4023,7 +3568,9 @@ function mob_class:mob_activate(staticdata, def, dtime)
 	-- get texture, model and size
 	local textures = self.base_texture
 	local mesh, vis_size = self.base_mesh, self.base_size
-	local colbox, selbox = self.base_colbox, self.base_selbox
+	-- GRUG PATCH (Round 42 NV1): the physics box (scale_mob).
+	local colbox = grug_obstacle.physics_box(self.base_colbox, self)
+	local selbox = self.base_selbox
 
 	self.object:set_properties({visual_size = vis_size,
 			collisionbox = colbox, selectionbox = selbox})
@@ -4048,13 +3595,8 @@ function mob_class:mob_activate(staticdata, def, dtime)
 
 	if self.health == 0 then self.health = random(self.hp_min, prop.hp_max) end
 
-	self.path = { -- pathfinding init
-		way = {}, -- path to follow, table of positions
-		lastpos = {x = 0, y = 0, z = 0},
-		stuck = false,
-		stuck_timer = 0, -- if stuck for too long search for path
-		following = false -- currently following path?
-	}
+	-- GRUG PATCH (Round 42 NV1): no `self.path`; the navigation state lives
+	-- in self.temp.grug_nav (grug_nav.lua).
 
 	local armor -- Armor groups (immortal = 1 for custom damage handling)
 
