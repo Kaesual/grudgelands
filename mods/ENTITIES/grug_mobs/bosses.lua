@@ -657,6 +657,26 @@ local function royal_guard_drop_attack(self)
 	end
 end
 
+-- One step of an active follow between the 1 Hz nudges (Round 41 ruling 1).
+-- do_states never runs while the follow owns the guard, so the walk clip is
+-- re-asserted here on every step: walk_toward's own write can be held back by
+-- the swing lock (mobs/api.lua set_animation) while a punch clip ends. A hit
+-- taken since the last nudge (do_punch → do_attack) is dropped, and that drop
+-- (stop_attack) stands the guard still in its stand clip; it walks on toward
+-- the leader at once instead of standing until the next nudge.
+local function royal_follow_step(self)
+	if self.attack or self.state ~= "walk" then
+		royal_guard_drop_attack(self)
+		local leader = self._grug_home
+		local pos = self.object:get_pos()
+		if leader and pos then
+			grug_mobs.walk_toward(self, leader.x, leader.z, pos)
+			return
+		end
+	end
+	grug_mobs.walk_animation(self)
+end
+
 local function royal_guard_tick(base_tick, self, dtime, boss_id)
 	self._grug_boss_id = boss_id or ("king:" .. self._grug_royal_race)
 	local result = royal_guard_base_tick(base_tick, self, dtime)
@@ -669,7 +689,7 @@ local function royal_guard_tick(base_tick, self, dtime, boss_id)
 		-- active, on_step must not run do_states or general_attack after this
 		-- callback and overwrite the kingward movement with an enemy chase.
 		if self.temp.grug_royal_follow_active then
-			royal_guard_drop_attack(self)
+			royal_follow_step(self)
 			return false
 		end
 		return
