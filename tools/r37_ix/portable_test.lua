@@ -20,6 +20,15 @@
 --      grug_jobs/workspaces.lua. The 1 s pass re-shows the furnace form only
 --      while it is the open form: the recipe book, a form another mod shows
 --      and a closed form all stop it, and the session ends.
+--      Round 41 lane UI (ruling 3), with the REAL grug_jobs/ui.lua and
+--      grug_repair/providers.lua: the book's Close returns to the furnace
+--      form (which refreshes again), also after an ingredient jump, Back,
+--      a search and the discovery refresh; Esc closes everything; Close
+--      after walking away, after the furnace was dug or replaced, or when
+--      dead falls back to the inventory's crafting page; an inventory
+--      opening never inherits a station origin; the repair form's Close
+--      returns to the furnace (also after a repair), its Esc closes, and the
+--      repair form of another provider keeps its plain Close.
 --   G  grass and moss (X-02): grug_core/protection.lua and the two ABMs of
 --      default/functions.lua. In a town, a capital, a POI core or on a road
 --      dirt stays dirt and cobble stays cobble; on open ground both grow.
@@ -558,6 +567,217 @@ do
 	eq(shows(FORM, "bob"), 2, "F another viewer's furnace form still refreshes")
 	local record = default.node_formspec.shown_form
 	eq(record and record("ann"), "grug_jobs:book", "F the record holds the open book")
+end
+
+------------------------------------------------------------------------------
+-- F (Round 41 lane UI): Close of the book and of the repair form returns to
+-- the station it was opened from (ruling 3), with the real ui.lua and the
+-- real repair providers.
+------------------------------------------------------------------------------
+do
+	local c = new_engine()
+	default = {get_hotbar_bg = function() return "" end,
+		get_inventory_drops = function() end}
+	real_dofile(path("mods/BASE/default/node_formspec.lua"))
+	grug_core = {interaction_protected = function() return false end}
+	grug_items = {enchant_legend_formspec = function() return "" end}
+	grug_sounds = {play = function() end}
+	grug_money = {format = function(copper) return copper .. " copper" end}
+	grug_housing = {claim_at = function() return {} end, is_active = function() return true end}
+	-- A tiny catalogue: the furnace cooks a bar from dust, the grid makes the
+	-- dust from ore (Basics), so the bar's dust cell jumps to Basics.
+	for _, item in ipairs({"test:bar", "test:dust", "test:ore"}) do
+		c.registered_items[item] = {name = item, description = item:sub(6), groups = {}}
+	end
+	local crafts = {
+		["test:bar"] = {{method = "cooking", width = 1, items = {"test:dust"}, output = "test:bar"}},
+		["test:dust"] = {{method = "normal", width = 1, items = {"test:ore"}, output = "test:dust"}},
+	}
+	function c.get_all_craft_recipes(name) return crafts[name] end
+	local function item_name(value)
+		if type(value) == "table" and value.get_name then return value:get_name() end
+		return type(value) == "string" and (value:match("^(%S+)") or "") or ""
+	end
+	grug_jobs = {
+		PROFESSIONS = {}, SECONDARY_PROFESSIONS = {}, PRIMARY_SLOTS = 0,
+		station_info = function() return {display_name = "Furnace", node = "default:furnace"} end,
+		-- A player-placed furnace inside a claim: shared, and it repairs.
+		is_public_station = function() return false end,
+		station_operations = function() return {} end,
+		recipes_for = function() return {} end,
+		has = function() return false end,
+		primary_at = function() return nil end,
+		recipe_progress_unlocked = function() return true end,
+		_item_name = item_name,
+		_flatten_inputs = function(inputs)
+			local out = {}
+			for _, value in ipairs(inputs or {}) do out[#out + 1] = item_name(value) end
+			return out
+		end,
+		_group_matches = function(token, name) return token == name end,
+	}
+	local pages = {}
+	sfinv = {override_page = function(name, def) pages[name] = def end,
+		set_page = function(_, page) E.sfinv_page = page end}
+	E.modname = "grug_jobs"
+	real_dofile(path("mods/PLAYER/grug_jobs/ui.lua"))
+	function c.create_detached_inventory() return E.new_inventory() end
+	function c.formspec_escape(s) return s end
+	local stub_automatic = {sizes = {furnace = {src = 1, fuel = 1, dst = 4}},
+		advance = function() end, fractions = function() return 0, 0 end,
+		fuel_time = function() return 0 end, personal_light_deadline = function() return 0 end}
+	dofile = function(file)
+		if file:match("/automatic%.lua$") then return stub_automatic end
+		return real_dofile(file)
+	end
+	grug_jobs.workspaces = real_dofile(path("mods/PLAYER/grug_jobs/workspaces.lua"))
+	dofile = real_dofile
+	-- grug_repair's service seam as service.lua defines it; the real providers.
+	local provider_types = {}
+	grug_repair = {}
+	function grug_repair.register_provider(kind, permitted) provider_types[kind] = permitted end
+	function grug_repair.provider_permitted(player, provider)
+		if not player or player:get_hp() <= 0 or type(provider) ~= "table" then return false end
+		local validate = provider_types[provider.kind]
+		return validate and validate(player, provider) == true or false
+	end
+	function grug_repair.quote(player, provider)
+		if not grug_repair.provider_permitted(player, provider) then return nil, "gone" end
+		return {owner = player:get_player_name(), provider = provider, items = {}, total = 0}
+	end
+	function grug_repair.apply() return true, "Repaired." end
+	real_dofile(path("mods/ITEMS/grug_repair/providers.lua"))
+	grug_repair.register_provider("test", function() return true end)
+
+	c.register_node("default:furnace", {_grug_station = "furnace", groups = {}})
+	local pos = P(0, 0, 0)
+	local function place(id)
+		c.set_node(pos, {name = "default:furnace"})
+		c.get_meta(pos):set_string("grug_jobs:station_id", id)
+	end
+	place("s1")
+	local ann = new_player("ann", {pos = P(1, 0, 0)})
+	ann.hp = 20
+	function ann:get_hp() return self.hp end
+	function ann:get_inventory_formspec() return "inventory" end
+	E.players = {ann = ann}
+	local FORM, BOOK = "grug_jobs:workspace", "grug_jobs:book"
+	local record = default.node_formspec.shown_form
+	local function last() return E.shown[#E.shown] end
+	local function book_from_furnace()
+		check(grug_jobs.workspaces.open(pos, ann) == true, "F41 the furnace opens (open reports true)")
+		run_receive(ann, FORM, {grug_jobs_book = "Book"})
+		eq(last().form, BOOK, "F41 the book button shows the book")
+	end
+	local function lands_in_inventory(label)
+		eq(last().form, "", label .. ": the inventory is shown")
+		eq(E.sfinv_page, "sfinv:crafting", label .. ": on the crafting page")
+		E.sfinv_page = nil
+	end
+
+	-- Close returns to the furnace, whose form keeps refreshing.
+	book_from_furnace()
+	local furnace_shows = shows(FORM)
+	run_receive(ann, BOOK, {grug_jobs_close = "Close"})
+	eq(shows(FORM), furnace_shows + 1, "F41 Close returns to the furnace form")
+	eq(record("ann"), FORM, "F41 the furnace form is the open form again")
+	step(1.1)
+	eq(shows(FORM), furnace_shows + 2, "F41 the returned furnace form refreshes each second")
+	-- The origin survives a search, an ingredient jump, Back and the
+	-- discovery refresh.
+	run_receive(ann, FORM, {grug_jobs_book = "Book"})
+	run_receive(ann, BOOK, {grug_jobs_search = "bar", grug_jobs_do_search = "Search"})
+	run_receive(ann, BOOK, {grug_jobs_cell_1 = ""})
+	run_receive(ann, BOOK, {grug_jobs_back = "Back"})
+	run_receive(ann, BOOK, {grug_jobs_cell_1 = ""})
+	grug_jobs.refresh_open_book(ann)
+	eq(last().form, BOOK, "F41 the jumps and the refresh keep the book open")
+	furnace_shows = shows(FORM)
+	run_receive(ann, BOOK, {grug_jobs_close = "Close"})
+	eq(shows(FORM), furnace_shows + 1, "F41 Close after a jump, Back and a refresh returns to the furnace")
+	-- The jump really switched books: Basics lists the dust, the furnace does not.
+	run_receive(ann, FORM, {grug_jobs_book = "Book"})
+	local before_jump = #E.shown
+	run_receive(ann, BOOK, {grug_jobs_cell_1 = ""})
+	eq(#E.shown, before_jump + 1, "F41 the dust cell jumps (one redraw)")
+	-- Esc closes everything: no furnace, no inventory.
+	furnace_shows = shows(FORM)
+	local total = #E.shown
+	run_receive(ann, BOOK, {quit = "true"})
+	eq(#E.shown, total, "F41 Esc on the book shows nothing")
+	step(1.1)
+	eq(shows(FORM), furnace_shows, "F41 Esc on the book does not reopen the furnace")
+	-- Fallbacks to the inventory.
+	book_from_furnace()
+	ann.pos = P(20, 0, 0)
+	run_receive(ann, BOOK, {grug_jobs_close = "Close"})
+	lands_in_inventory("F41 Close after walking away")
+	ann.pos = P(1, 0, 0)
+	book_from_furnace()
+	c.remove_node(pos)
+	furnace_shows = shows(FORM)
+	run_receive(ann, BOOK, {grug_jobs_close = "Close"})
+	eq(shows(FORM), furnace_shows, "F41 a dug furnace is not reopened")
+	lands_in_inventory("F41 Close after the furnace was dug")
+	place("s1")
+	book_from_furnace()
+	place("s2") -- dug and a new furnace placed at the same spot
+	run_receive(ann, BOOK, {grug_jobs_close = "Close"})
+	lands_in_inventory("F41 Close after the furnace was replaced")
+	place("s1")
+	book_from_furnace()
+	ann.hp = 0
+	run_receive(ann, BOOK, {grug_jobs_close = "Close"})
+	lands_in_inventory("F41 Close when dead")
+	ann.hp = 20
+	-- An inventory opening never inherits the station's origin, even on the
+	-- same book view (the station book jumped to Basics, then a form of
+	-- another mod replaced it without a quit).
+	book_from_furnace()
+	run_receive(ann, BOOK, {grug_jobs_cell_1 = ""})
+	c.show_formspec("ann", "other:dialog", "x")
+	pages["sfinv:crafting"].on_player_receive_fields(nil, ann, {}, {grug_jobs_book_general = ""})
+	eq(last().form, BOOK, "F41 the inventory opens Basics")
+	run_receive(ann, BOOK, {grug_jobs_close = "Close"})
+	lands_in_inventory("F41 Close of an inventory opening")
+
+	-- The repair form: Close returns to the furnace, also after a repair.
+	local function repair_from_furnace()
+		check(grug_jobs.workspaces.open(pos, ann), "F41 the furnace opens for repair")
+		run_receive(ann, FORM, {grug_jobs_repair = "Repair equipment"})
+		local form = last().form
+		check(form:match("^grug_repair:service:") ~= nil, "F41 the repair button shows the repair form")
+		return form
+	end
+	local form = repair_from_furnace()
+	furnace_shows = shows(FORM)
+	run_receive(ann, form, {close = "Close", quit = "true"})
+	eq(shows(FORM), furnace_shows + 1, "F41 repair Close returns to the furnace form")
+	eq(record("ann"), FORM, "F41 the furnace form is open after the repair form")
+	form = repair_from_furnace()
+	run_receive(ann, form, {all = "Repair all"})
+	form = last().form
+	check(form:match("^grug_repair:service:") ~= nil, "F41 a repair redraws the repair form")
+	furnace_shows = shows(FORM)
+	run_receive(ann, form, {close = "Close", quit = "true"})
+	eq(shows(FORM), furnace_shows + 1, "F41 repair Close after a repair returns to the furnace")
+	-- Esc on the repair form closes everything.
+	form = repair_from_furnace()
+	total = #E.shown
+	run_receive(ann, form, {quit = "true"})
+	eq(#E.shown, total, "F41 Esc on the repair form shows nothing")
+	-- Close after walking away falls back to the inventory.
+	form = repair_from_furnace()
+	ann.pos = P(20, 0, 0)
+	run_receive(ann, form, {close = "Close", quit = "true"})
+	lands_in_inventory("F41 repair Close after walking away")
+	ann.pos = P(1, 0, 0)
+	-- Another provider's repair form keeps its plain Close.
+	check(grug_repair.open(ann, {kind = "test"}), "F41 another provider opens the repair form")
+	form = last().form
+	total = #E.shown
+	run_receive(ann, form, {close = "Close", quit = "true"})
+	eq(#E.shown, total, "F41 another provider's repair Close only closes")
 end
 
 ------------------------------------------------------------------------------
