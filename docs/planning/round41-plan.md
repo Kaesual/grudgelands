@@ -681,9 +681,11 @@ Round end on main: `run_fixtures.sh` 123/123, the smoke boots PASS,
 - **CR production crash** (`157b391b`;
   [world.md](../design/world.md), [luanti-lua.md](../technical/luanti-lua.md)):
   the R5 fill-void band of the report's chunk (22,−1,−32) reaches y −33,
-  the chunk's top layer, which the chunk above writes first; there the
-  water guard had turned flooded air into `grug_core:water_barrier`, which
-  the writer classed foreign and refused (`fail_replace_policy`). Fix (a):
+  the chunk's top layer, which the chunk above writes first; content the
+  writer classes foreign there is refused (`fail_replace_policy`). The
+  likely trigger (not proven without the production map; it did not form
+  on its own in a fresh world): `grug_core:water_barrier`, which the water
+  guard sets for flooded air on protected ground, classed foreign. Fix (a):
   the barrier carries `grug_air` and gets air's class row. The whole R7
   transaction of a chunk runs under `pcall` (`wp40/degrade.lua`): on a
   failure the chunk keeps the engine's terrain (R6 restores content,

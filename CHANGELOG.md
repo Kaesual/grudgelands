@@ -28,9 +28,9 @@ characters keep everything but their position and home claim.
   waypoints. A home claim goes with the old map: the Housing Steward hands
   out a new Claim Stone.
 - The server stopped every time a player came near one stretch of
-  ungenerated ground: water flowing in a cave nearby had left a hidden
-  blocker the world generator refused. That ground now generates
-  normally. If generating a piece of land ever fails again, the server
+  ungenerated ground: most likely water flowing in a cave nearby had left
+  a hidden blocker the world generator refused, and the generator now
+  accepts it. If generating a piece of land ever fails again, the server
   keeps running: that piece gets plain terrain without the game's
   finishing touches, and every player sees a red chat message so the
   server owner can report it.
