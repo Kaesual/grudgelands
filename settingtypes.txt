@@ -76,7 +76,8 @@ grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool fals
 #    6.7 nodes per pixel). high: 3600x3200 (2 nodes per pixel); its first
 #    render at a world's start takes about a minute longer and clients
 #    download about 8 MB instead of about 1 MB. The image is cached in the
-#    world folder; changing the setting renders it again at the next start.
+#    world folder; changing the setting renders it again at the next start
+#    and removes the tiles of the other quality.
 grug_map_quality (World map quality) enum normal normal,high
 
 [Combat]

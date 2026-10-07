@@ -1636,6 +1636,8 @@ one-cell settlement checks are unchanged.
   throne anchor, ordinary chase/leash rules and 15-second no-contact rule own
   the encounter state. The guards have no independent home target: while the
   king lives they always path toward and follow its current position.
+- The king holds his throne (Round 41): no idle walking, the throne
+  socket's authored facing, and a walk back to it after a fight.
 - When the king evades it returns to its throne and heals fully. If the king's
   return path reaches the ordinary failed-path threshold, the king teleports to
   its anchor and all four guards are moved with it in the same reset. A guard

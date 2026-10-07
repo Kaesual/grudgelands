@@ -167,14 +167,21 @@ PNG of about 0.56 MB in about the same time; high as one PNG would be about
 textures. An unknown value warns and falls back to `normal`. The quality
 and the size of the minimap's copy enter the cache key, so switching it
 re-renders the base (and the copy) at the next start; both are cached in
-the world directory.
+the world directory. A render clears the old key before it writes the
+first tile and writes the new key last, so a start after a crash in the
+middle of a render renders again instead of taking mixed tiles as current
+(Round 41).
 
 **Tiles.** The base is sent as 512 px tiles (`grug_map_base_<col>_<row>.png`,
 edge tiles smaller), the minimap's copy at high as
 `grug_map_mini_<col>_<row>.png`, written to the world directory and
-announced as startup media; nothing else of the base is sent. The Map tab
-combines all its tiles into one texture; the minimap combines only the at
-most four tiles of its base each cell texture overlaps.
+announced as startup media; nothing else of the base is sent. After every
+render or cache hit, tiles of these two names that the current quality does
+not use (after high → normal the 50 extra base tiles and the 6 minimap
+tiles, about 7 MB) are deleted from the world directory and their count is
+logged; a failed delete is a warning (Round 41). No other file is touched.
+The Map tab combines all its tiles into one texture; the minimap combines
+only the at most four tiles of its base each cell texture overlaps.
 
 **Relief** (both qualities, tuned on images of the user's world):
 - Hillshade: Lambert shading with light from the north-west (map top-left)

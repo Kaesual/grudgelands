@@ -21,6 +21,12 @@
 --    copy as `minimap`, and a second install reads both from the cache; at
 --    normal the minimap base is the base itself. minimap.lua installs from
 --    `installed.minimap`.
+-- Q  Round 41 lane MAP, the same virtual world folder: high -> normal removes
+--    the extra base tiles and the minimap copy (count logged) and nothing
+--    else of the folder; normal -> high removes nothing; a refused delete
+--    is a warning and the base is still served; a crash after the first
+--    tile write, then the old quality again, renders instead of passing
+--    mixed tiles as current.
 -- Prints "R37 F PORTABLE PASS checks=<n>" or exits 1 listing failures.
 
 local ROOT = arg and arg[1] or "."
@@ -447,6 +453,109 @@ check(minimap_src:find("local mini = installed.minimap", 1, true) ~= nil
 local V = dofile(ROOT .. "/mods/PLAYER/grug_map/minimap_view.lua")
 local v = V.new({quality = "normal", width = 1080, height = 960, tiles = {}}, VIEW)
 check(v.grid == 2 and v.reduce == 1 and v.pixels == 72, "M normal geometry: grid 2, 72 px cells")
+
+------------------------------------------------------------------------------
+-- Q (Round 41 lane MAP): stale tiles and a crash-safe key, on the same
+-- virtual world folder with 128 px tiles (normal 1 base tile, high 3 x 3 base
+-- tiles plus 1 minimap tile).
+------------------------------------------------------------------------------
+local real_remove = os.remove
+local logs, refuse = {}, {}
+core.log = function(level, text) logs[#logs + 1] = level .. " " .. text end
+core.get_dir_list = function(path, dirs)
+	assert(path == WORLD and dirs == false, "Q lists only the world folder's files")
+	local names = {}
+	for full in pairs(files) do
+		local name = full:sub(#WORLD + 2)
+		if full:sub(1, #WORLD + 1) == WORLD .. "/" and not name:find("/", 1, true) then
+			names[#names + 1] = name
+		end
+	end
+	table.sort(names)
+	return names
+end
+os.remove = function(path)
+	if path:sub(1, #WORLD) ~= WORLD then return real_remove(path) end
+	if refuse[path] then return nil, path .. ": Permission denied" end
+	if files[path] == nil then return nil, path .. ": No such file or directory" end
+	files[path] = nil
+	return true
+end
+local function world_names(pattern)
+	local out = {}
+	for _, name in ipairs(core.get_dir_list(WORLD, false)) do
+		if name:find(pattern) then out[#out + 1] = name end
+	end
+	return out
+end
+local function logged(pattern)
+	for _, line in ipairs(logs) do if line:find(pattern) then return line end end
+end
+for path in pairs(files) do files[path] = nil end
+base.TILE = 128
+local OTHER = {"grug_map_zone_grid.txt", "grug_map_base_notes.png", "grug_map_base_1_1.png.bak",
+	"map_meta.txt", "grug_map_mini_x_0.png"}
+for _, name in ipairs(OTHER) do files[WORLD .. "/" .. name] = "keep" end
+
+settings.grug_map_quality = "high"
+logs, media, encodes = {}, {}, 0
+base.install(VIEW)
+check(#world_names("^grug_map_base_%d+_%d+%.png$") == 9 and #world_names("^grug_map_mini_%d+_%d+%.png$") == 1
+	and logged("removed 0 stale world map tiles"), "Q high render: 9 base and 1 minimap tile, nothing stale")
+settings.grug_map_quality = "normal"
+logs, media, encodes = {}, {}, 0
+local q_normal = base.install(VIEW)
+local kept = true
+for _, name in ipairs(OTHER) do kept = kept and files[WORLD .. "/" .. name] == "keep" end
+check(encodes == 1 and q_normal.quality == "normal"
+	and table.concat(world_names("^grug_map_base_%d+_%d+%.png$"), ",") == "grug_map_base_0_0.png"
+	and #world_names("^grug_map_mini_%d+_%d+%.png$") == 0
+	and logged("removed 9 stale world map tiles"),
+	"Q high -> normal: the 8 extra base tiles and the minimap tile are removed, the count logged")
+check(kept, "Q no other file of the world folder is touched")
+settings.grug_map_quality = "high"
+logs, media, encodes = {}, {}, 0
+base.install(VIEW)
+check(encodes == 10 and #world_names("^grug_map_base_%d+_%d+%.png$") == 9
+	and logged("removed 0 stale world map tiles"), "Q normal -> high removes nothing")
+
+-- A failed delete is a warning, never an error.
+local stale = WORLD .. "/grug_map_base_2_2.png"
+settings.grug_map_quality = "normal"
+base.install(VIEW)
+files[stale] = "stale"
+refuse[stale] = true
+logs, media, encodes = {}, {}, 0
+local refused = base.install(VIEW)
+check(encodes == 0 and refused.tiles and files[stale] == "stale"
+	and logged("^warning .*grug_map_base_2_2%.png") and not logged("^error"),
+	"Q a refused delete warns and the cache hit still serves the base")
+refuse[stale] = nil
+
+-- A crash after the first tile write (normal -> high), then the old quality
+-- again: the key was invalidated first, so the start renders.
+local writes, real_write = 0, core.safe_file_write
+core.safe_file_write = function(path, data)
+	if path:find("%.png$") then
+		writes = writes + 1
+		if writes == 2 then error("simulated crash") end
+	end
+	return real_write(path, data)
+end
+settings.grug_map_quality = "high"
+base.install(VIEW)
+core.safe_file_write = real_write
+check(writes == 2 and files[WORLD .. "/grug_map_base_0_0.png"] == "PNG128x128",
+	"Q crash: the first high tile replaced the normal one")
+settings.grug_map_quality = "normal"
+logs, media, encodes = {}, {}, 0
+base.install(VIEW)
+check(encodes == 1 and files[WORLD .. "/grug_map_base_0_0.png"] == "PNG108x96",
+	"Q crash, then the old quality: renders again, no mixed tiles pass as current")
+logs, media, encodes = {}, {}, 0
+base.install(VIEW)
+check(encodes == 0, "Q the next start reads the cache again")
+os.remove = real_remove
 io.open = real_open
 
 if #failures > 0 then

@@ -436,6 +436,11 @@ for _, poi in ipairs(POIS) do
 				if socket.role == "guard_post" or socket.role == "captain" then
 					check(entity._grug_post_x == socket.pos.x and entity._grug_post_z == socket.pos.z,
 						where .. " holds its post")
+				elseif socket.role == "general" then
+					-- Round 41 ruling 2: the General holds his seat like a post.
+					check(entity._grug_home and entity._grug_post_x == socket.pos.x and
+						entity._grug_post_z == socket.pos.z, where .. " a royal home, holds his seat")
+					eq(entity._grug_boss_id, "general:" .. poi.faction, where .. " the General's encounter")
 				else
 					check(entity._grug_home and entity._grug_post_x == nil, where .. " a royal home, no post")
 					eq(entity._grug_boss_id, "general:" .. poi.faction, where .. " the General's encounter")
