@@ -1,0 +1,1286 @@
+{
+ "batches": null,
+ "calib": {
+  "settle": {
+   "capital": {
+    "key": "dur_brannoc",
+    "legs": [
+     {
+      "d": 0,
+      "len24": 1,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 0,
+      "us4": 6,
+      "who": "patrol"
+     },
+     {
+      "d": 33.42,
+      "len24": 48,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 300,
+      "us4": 327,
+      "who": "patrol"
+     },
+     {
+      "d": 53.04,
+      "len24": 76,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 966,
+      "us4": 1048,
+      "who": "patrol"
+     },
+     {
+      "d": 37.01,
+      "len24": 55,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 365,
+      "us4": 388,
+      "who": "patrol"
+     },
+     {
+      "d": 72.01,
+      "len24": 86,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 969,
+      "us4": 989,
+      "who": "patrol"
+     },
+     {
+      "d": 54.41,
+      "len24": 77,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 589,
+      "us4": 623,
+      "who": "patrol"
+     },
+     {
+      "d": 83.49,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 12789,
+      "us4": 4588,
+      "who": "patrol"
+     },
+     {
+      "d": 65.76,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 77,
+      "us4": 78,
+      "who": "patrol"
+     },
+     {
+      "d": 109.25,
+      "len24": 145,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 3580,
+      "us4": 3663,
+      "who": "patrol"
+     },
+     {
+      "d": 24.17,
+      "len24": 33,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 213,
+      "us4": 236,
+      "who": "patrol"
+     },
+     {
+      "d": 41.59,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 226,
+      "us4": 170,
+      "who": "patrol"
+     },
+     {
+      "d": 75.07,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 258,
+      "us4": 136,
+      "who": "patrol"
+     },
+     {
+      "d": 45.88,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 211,
+      "us4": 41,
+      "who": "patrol"
+     },
+     {
+      "d": 54.64,
+      "len24": 77,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 912,
+      "us4": 948,
+      "who": "patrol"
+     },
+     {
+      "d": 77.83,
+      "len24": 111,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 1347,
+      "us4": 1398,
+      "who": "patrol"
+     },
+     {
+      "d": 123.11,
+      "len24": 175,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 5291,
+      "us4": 4886,
+      "who": "patrol"
+     },
+     {
+      "d": 71.2,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 9673,
+      "us4": 2956,
+      "who": "patrol"
+     },
+     {
+      "d": 30,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 78,
+      "us4": 35,
+      "who": "patrol"
+     },
+     {
+      "d": 59.48,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 7451,
+      "us4": 1128,
+      "who": "patrol"
+     },
+     {
+      "d": 0,
+      "len24": 1,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 2,
+      "us4": 4,
+      "who": "patrol"
+     },
+     {
+      "d": 0,
+      "len24": 1,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 2,
+      "us4": 2,
+      "who": "patrol"
+     },
+     {
+      "d": 31.14,
+      "len24": 45,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 222,
+      "us4": 178,
+      "who": "patrol"
+     },
+     {
+      "d": 79.03,
+      "len24": 82,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 202,
+      "us4": 199,
+      "who": "patrol"
+     },
+     {
+      "d": 71.85,
+      "len24": 83,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 424,
+      "us4": 439,
+      "who": "patrol"
+     },
+     {
+      "d": 75.96,
+      "len24": 95,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 480,
+      "us4": 498,
+      "who": "patrol"
+     },
+     {
+      "d": 30.53,
+      "len24": 43,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 258,
+      "us4": 386,
+      "who": "patrol"
+     },
+     {
+      "d": 13,
+      "len24": 14,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 24,
+      "us4": 27,
+      "who": "patrol"
+     },
+     {
+      "d": 0,
+      "len24": 1,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 0,
+      "us4": 2,
+      "who": "patrol"
+     },
+     {
+      "d": 10.2,
+      "len24": 13,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 18,
+      "us4": 31,
+      "who": "walker"
+     },
+     {
+      "d": 6.4,
+      "len24": 10,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 14,
+      "us4": 22,
+      "who": "walker"
+     },
+     {
+      "d": 8.25,
+      "len24": 11,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 12,
+      "us4": 20,
+      "who": "walker"
+     },
+     {
+      "d": 5,
+      "len24": 8,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 10,
+      "us4": 17,
+      "who": "walker"
+     },
+     {
+      "d": 9,
+      "len24": 10,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 8,
+      "us4": 13,
+      "who": "walker"
+     },
+     {
+      "d": 25.96,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 581,
+      "us4": 238,
+      "who": "walker"
+     },
+     {
+      "d": 24.04,
+      "len24": 35,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 81,
+      "us4": 99,
+      "who": "walker"
+     },
+     {
+      "d": 10.05,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 1851,
+      "us4": 81,
+      "who": "walker"
+     },
+     {
+      "d": 8,
+      "len24": 9,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 7,
+      "us4": 14,
+      "who": "walker"
+     },
+     {
+      "d": 13,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 156,
+      "us4": 104,
+      "who": "walker"
+     },
+     {
+      "d": 5,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 2322,
+      "us4": 29,
+      "who": "walker"
+     },
+     {
+      "d": 18,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 235,
+      "us4": 130,
+      "who": "walker"
+     },
+     {
+      "d": 10,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 4,
+      "us4": 9,
+      "who": "walker"
+     },
+     {
+      "d": 18.44,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 4,
+      "us4": 7,
+      "who": "walker"
+     },
+     {
+      "d": 28.28,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 3730,
+      "us4": 296,
+      "who": "walker"
+     },
+     {
+      "d": 26.17,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 532,
+      "us4": 64,
+      "who": "walker"
+     },
+     {
+      "d": 2.83,
+      "len24": 5,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 3,
+      "us4": 7,
+      "who": "walker"
+     },
+     {
+      "d": 6,
+      "len24": 9,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 11,
+      "us4": 17,
+      "who": "walker"
+     },
+     {
+      "d": 13,
+      "len24": 16,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 19,
+      "us4": 28,
+      "who": "walker"
+     },
+     {
+      "d": 16.28,
+      "len24": 24,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 52,
+      "us4": 71,
+      "who": "walker"
+     },
+     {
+      "d": 13,
+      "len24": 14,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 10,
+      "us4": 16,
+      "who": "walker"
+     },
+     {
+      "d": 25.61,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 3617,
+      "us4": 286,
+      "who": "walker"
+     },
+     {
+      "d": 10.2,
+      "len24": 13,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 19,
+      "us4": 46,
+      "who": "walker"
+     },
+     {
+      "d": 13,
+      "len24": 16,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 19,
+      "us4": 29,
+      "who": "walker"
+     },
+     {
+      "d": 10.2,
+      "len24": 13,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 23,
+      "us4": 41,
+      "who": "walker"
+     },
+     {
+      "d": 11.18,
+      "len24": 14,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 17,
+      "us4": 23,
+      "who": "walker"
+     },
+     {
+      "d": 26.08,
+      "len24": 37,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 199,
+      "us4": 215,
+      "who": "walker"
+     },
+     {
+      "d": 24.19,
+      "len24": 34,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 143,
+      "us4": 157,
+      "who": "walker"
+     },
+     {
+      "d": 29.83,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 4186,
+      "us4": 706,
+      "who": "walker"
+     },
+     {
+      "d": 8,
+      "len24": 9,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 6,
+      "us4": 12,
+      "who": "walker"
+     },
+     {
+      "d": 36.36,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 128,
+      "us4": 120,
+      "who": "walker"
+     },
+     {
+      "d": 184.84,
+      "len24": 233,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 8504,
+      "us4": 7881,
+      "who": "patrol"
+     },
+     {
+      "d": 229.92,
+      "len24": 296,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 12365,
+      "us4": 12413,
+      "who": "patrol"
+     },
+     {
+      "d": 228.48,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 62221,
+      "us4": 5369,
+      "who": "patrol"
+     },
+     {
+      "d": 168.22,
+      "len24": 247,
+      "line": false,
+      "ok24": true,
+      "ok4": false,
+      "us24": 12155,
+      "us4": 34,
+      "who": "patrol"
+     },
+     {
+      "d": 86.58,
+      "len24": 97,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 880,
+      "us4": 885,
+      "who": "patrol"
+     },
+     {
+      "d": 262.21,
+      "len24": 341,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 20871,
+      "us4": 18531,
+      "who": "patrol"
+     },
+     {
+      "d": 176.66,
+      "len24": 239,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 8012,
+      "us4": 7990,
+      "who": "patrol"
+     },
+     {
+      "d": 45.88,
+      "len24": 58,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 320,
+      "us4": 300,
+      "who": "patrol"
+     },
+     {
+      "d": 116.67,
+      "len24": 166,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 4439,
+      "us4": 4565,
+      "who": "patrol"
+     },
+     {
+      "d": 18,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 211,
+      "us4": 135,
+      "who": "walker"
+     },
+     {
+      "d": 9,
+      "len24": 10,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 10,
+      "us4": 18,
+      "who": "walker"
+     },
+     {
+      "d": 9,
+      "len24": 10,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 11,
+      "us4": 46,
+      "who": "walker"
+     },
+     {
+      "d": 8,
+      "len24": 9,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 7,
+      "us4": 13,
+      "who": "walker"
+     },
+     {
+      "d": 3,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 118,
+      "us4": 34,
+      "who": "walker"
+     },
+     {
+      "d": 11,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 2667,
+      "us4": 25,
+      "who": "walker"
+     },
+     {
+      "d": 11.18,
+      "len24": 16,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 22,
+      "us4": 34,
+      "who": "walker"
+     },
+     {
+      "d": 8,
+      "len24": 9,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 11,
+      "us4": 22,
+      "who": "walker"
+     },
+     {
+      "d": 31.4,
+      "len24": 37,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 144,
+      "us4": 161,
+      "who": "patrol"
+     },
+     {
+      "d": 80.66,
+      "len24": 115,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 875,
+      "us4": 938,
+      "who": "patrol"
+     },
+     {
+      "d": 27.29,
+      "len24": 38,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 97,
+      "us4": 119,
+      "who": "patrol"
+     },
+     {
+      "d": 167.26,
+      "len24": 237,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 11109,
+      "us4": 11471,
+      "who": "patrol"
+     },
+     {
+      "d": 80.06,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 8856,
+      "us4": 1749,
+      "who": "patrol"
+     },
+     {
+      "d": 187.09,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 192,
+      "us4": 163,
+      "who": "patrol"
+     },
+     {
+      "d": 67.36,
+      "len24": 90,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 1476,
+      "us4": 1509,
+      "who": "patrol"
+     },
+     {
+      "d": 93.74,
+      "len24": 131,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 3943,
+      "us4": 3917,
+      "who": "patrol"
+     },
+     {
+      "d": 39.2,
+      "len24": 56,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 468,
+      "us4": 492,
+      "who": "patrol"
+     },
+     {
+      "d": 12,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 82,
+      "us4": 87,
+      "who": "walker"
+     },
+     {
+      "d": 14,
+      "len24": 17,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 36,
+      "us4": 54,
+      "who": "walker"
+     },
+     {
+      "d": 22.8,
+      "len24": 33,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 155,
+      "us4": 176,
+      "who": "walker"
+     },
+     {
+      "d": 16.12,
+      "len24": 19,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 37,
+      "us4": 55,
+      "who": "walker"
+     },
+     {
+      "d": 2.83,
+      "len24": 9,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 24,
+      "us4": 26,
+      "who": "walker"
+     },
+     {
+      "d": 10,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 4,
+      "us4": 8,
+      "who": "walker"
+     },
+     {
+      "d": 15.13,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 4,
+      "us4": 7,
+      "who": "walker"
+     },
+     {
+      "d": 20.59,
+      "len24": 29,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 93,
+      "us4": 113,
+      "who": "walker"
+     },
+     {
+      "d": 6,
+      "len24": 7,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 12,
+      "us4": 20,
+      "who": "walker"
+     },
+     {
+      "d": 13,
+      "len24": 0,
+      "line": false,
+      "ok24": false,
+      "ok4": false,
+      "us24": 2720,
+      "us4": 178,
+      "who": "walker"
+     },
+     {
+      "d": 6,
+      "len24": 7,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 15,
+      "us4": 28,
+      "who": "walker"
+     },
+     {
+      "d": 11,
+      "len24": 16,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 31,
+      "us4": 43,
+      "who": "walker"
+     },
+     {
+      "d": 7,
+      "len24": 8,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 6,
+      "us4": 11,
+      "who": "walker"
+     },
+     {
+      "d": 8.6,
+      "len24": 13,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 20,
+      "us4": 29,
+      "who": "walker"
+     }
+    ],
+    "patrols": 9,
+    "walkers": 18
+   },
+   "start": {
+    "key": "hearthpine",
+    "legs": [
+     {
+      "d": 28,
+      "len24": 29,
+      "line": true,
+      "ok24": true,
+      "ok4": true,
+      "us24": 27,
+      "us4": 65,
+      "who": "patrol"
+     },
+     {
+      "d": 23.77,
+      "len24": 32,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 135,
+      "us4": 163,
+      "who": "patrol"
+     },
+     {
+      "d": 12.04,
+      "len24": 18,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 34,
+      "us4": 51,
+      "who": "patrol"
+     },
+     {
+      "d": 12.04,
+      "len24": 18,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 46,
+      "us4": 62,
+      "who": "patrol"
+     },
+     {
+      "d": 50.8,
+      "len24": 60,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 257,
+      "us4": 421,
+      "who": "patrol"
+     },
+     {
+      "d": 12.08,
+      "len24": 17,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 35,
+      "us4": 53,
+      "who": "walker"
+     },
+     {
+      "d": 19.65,
+      "len24": 25,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 66,
+      "us4": 82,
+      "who": "walker"
+     },
+     {
+      "d": 15,
+      "len24": 18,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 23,
+      "us4": 34,
+      "who": "walker"
+     },
+     {
+      "d": 22.09,
+      "len24": 25,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 69,
+      "us4": 92,
+      "who": "walker"
+     },
+     {
+      "d": 19.1,
+      "len24": 28,
+      "line": false,
+      "ok24": true,
+      "ok4": true,
+      "us24": 74,
+      "us4": 87,
+      "who": "walker"
+     }
+    ],
+    "patrols": 1,
+    "walkers": 1
+   }
+  }
+ },
+ "meta": {
+  "close_searchdistance": 8,
+  "give_up_after": 3,
+  "origin": {
+   "floor_y": 300,
+   "x": 2560,
+   "z": 2560
+  },
+  "path_budget_us": 3000,
+  "phases": [
+   "settle"
+  ],
+  "scenes": [
+   {
+    "blocked": [
+     0,
+     0
+    ],
+    "goal_h": 1,
+    "name": "open",
+    "note": "control: flat open ground",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "trunk",
+    "note": "one tree trunk in the middle of the straight line",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     11,
+     0
+    ],
+    "goal_h": 1,
+    "name": "trunk_near",
+    "note": "the target 2 nodes behind a trunk (within melee reach of its front)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "row",
+    "note": "a row of 7 trunks across the line, 1-node gaps, row ends at v +-6",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "doorway",
+    "note": "a 3-high wall across the lane with a 1-wide, 2-high doorway at v +4",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "lcorner",
+    "note": "an L: wall u 7 (v -5..2) and wall v 2 (u 3..7), the way round at v -6",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     9,
+     0
+    ],
+    "goal_h": 1,
+    "name": "fence",
+    "note": "a 2-high wooden fence ring round the target (visible, not walkable)",
+    "reachable": false
+   },
+   {
+    "blocked": [
+     9,
+     0
+    ],
+    "goal_h": 1,
+    "name": "fence_low",
+    "note": "a 1-high wooden fence ring (collision 1.0 high: below a 1.1 step)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     5,
+     0
+    ],
+    "goal_h": 1,
+    "name": "pillar",
+    "note": "a 3x3 stone pillar, 4 high",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0,
+     -1
+    ],
+    "goal_h": 1,
+    "name": "ditch",
+    "note": "a 2-wide, 2-deep ditch across the lane; a 1-deep crossing at v 4..5",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 2,
+    "name": "step",
+    "note": "the ground rises by one node from u 7 on (a plain step up)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "lowgap",
+    "note": "a 4-high wall across the lane, a 1-high hole on the line (v 0), a 2-high gap at v +5",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     3,
+     0
+    ],
+    "goal_h": 1,
+    "name": "pond",
+    "note": "a 2-deep pond (u 4..10, v -6..6) on the line, one-node banks",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "door_closed",
+    "note": "a 3-high wall across the lane, a closed wooden door on the line",
+    "reachable": false
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "door_open",
+    "note": "the same wall with the wooden door open",
+    "reachable": true
+   }
+  ],
+  "seed": "42",
+  "settings": {
+   "dedicated_server_step": "0.09",
+   "mob_pathfinding_searchdistance": "24",
+   "mob_pathfinding_stuck_path_timeout": "3.0",
+   "mob_pathfinding_stuck_timeout": "2.0"
+  }
+ },
+ "movers": null,
+ "trials": null
+}

@@ -188,6 +188,36 @@ Engine reference for the line citations: `reference_projects/luanti` at
 - **What to do then:** drop the `item_image` (and the cover) and keep the
   total in the label beside the cell, which every client draws.
 
+## 5. `core.find_path` with searchdistance 0 or 1 can abort the server
+
+- **Upstream problem:** `Pathfinder::getPath` (`src/pathfinder.cpp`) sizes
+  its search box as the box of start and goal widened by `searchdistance`
+  and keeps the grid in an `ArrayGridNodeContainer` when the box's length
+  `diff.getLength()` is 5 or less (an `s16`, so the square root is
+  truncated), otherwise in a `MapGridNodeContainer`. The array holds
+  `diff.X * diff.Y * diff.Z` nodes, but the A* loop
+  (`updateCostHeuristic`) fetches every neighbour's grid node
+  (`getIndexElement(ineighbor)`) before it looks at the neighbour's cost, so
+  a node on the box's edge reads one step outside the array. The Flatpak
+  build aborts on the assertion (`stl_vector.h: Assertion '__n <
+  this->size()' failed`, Round 42 NV0's calibration run, a search with
+  searchdistance 1 over 3 nodes); other builds read out of bounds. With
+  searchdistance 2 or more every box is at least 4 × 4 × 4 (length 6 or
+  more) and takes the map container.
+- **Issue:** none filed yet (found 2026-10-08).
+- **Affected versions:** the code is unchanged up to `df0487906`
+  (5.17.0-dev).
+- **Our workaround:** no game code calls `core.find_path` below
+  searchdistance 8 today (`mobs/api.lua` close-cover 8, chase 24;
+  `grug_mobs/patrol.lua` 24; `grug_mobs/rift.lua` 40). The navigation probe
+  never searches below 2 (`tools/r42_nv0/grug_probe_r42_nv0/init.lua`
+  `MIN_PAD`). Round 42's local searches (small paddings) must keep
+  searchdistance at 2 or more.
+- **How to tell upstream fixed it:** the neighbour access in
+  `updateCostHeuristic` checks the index (or the cost) first, or the array
+  container is sized `(diff + 1)` per axis.
+- **What to remove then:** the floor of 2 on the search padding.
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields

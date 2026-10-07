@@ -6,6 +6,8 @@
 #
 # Usage (worktree root): tools/r31_pvp/run.sh OUT_DIR LABEL
 #   SEED defaults to 12345 (the Round 30 probe seed).
+#   ENGINE_RUN=<script> replaces the Round 31 queue with a later round's
+#   measuring queue (same arguments: <label> [luanti_headless args...]).
 set -uo pipefail
 export LC_ALL=C
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -14,7 +16,7 @@ mkdir -p "$out"
 probe="$(mktemp -d)"
 cp -a "$here/grug_probe_r31_pvp" "$probe/"
 KEEP=1 SEED="${SEED:-12345}" PROBE="$probe/grug_probe_r31_pvp" \
-	~/projects/grudgelands-orchestration/r31/engine_run.sh "p1_$label" 300 \
+	"${ENGINE_RUN:-$HOME/projects/grudgelands-orchestration/r31/engine_run.sh}" "p1_$label" 300 \
 	>"$out/launcher.txt" 2>&1
 rc=$?
 root=$(grep -o '/tmp/grudgelands-headless\.[A-Za-z0-9]*' "$out/launcher.txt" | head -1)

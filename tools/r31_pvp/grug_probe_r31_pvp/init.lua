@@ -60,6 +60,19 @@ grug_core.create_tag_carrier = function(parent, owner)
 	if fake_refs[parent] then return nil end
 	return orig_ctc(parent, owner)
 end
+-- Nor can a sound follow one (Round 34's hit sounds reach core.sound_play
+-- with the fake as `object`; Round 42 NV0): it plays at the fake's position.
+local orig_sp = core.sound_play
+core.sound_play = function(spec, params, ephemeral)
+	if type(params) == "table" and fake_refs[params.object] then
+		local copy = {}
+		for k, v in pairs(params) do copy[k] = v end
+		copy.object = nil
+		copy.pos = params.object:get_pos()
+		params = copy
+	end
+	return orig_sp(spec, params, ephemeral)
+end
 
 local function new_meta()
 	local store = {}
