@@ -93,38 +93,14 @@ local function refine(vmanip, minp, maxp)
 	if type(result) ~= "string" then fail("writer result differs") end
 end
 
--- A failed refinement never stops the server (Round 41 ruling 8): the chunk
--- keeps the engine's terrain (the writer changes the VoxelManip only after
--- every check and puts the engine's bytes back if a later engine call fails,
--- r6_settlement.lua), and the failure goes to the severe-error helper: one
--- [GRUG-SEVERE] log line with the chunk and the failing voxel, and a red chat
--- message once per chunk. Only this engine path degrades; the seed fleet and
--- the fixtures call the writer directly, so a failure still fails them.
-local function position_text(pos)
-	if type(pos) ~= "table" then return tostring(pos) end
-	return ("(%s,%s,%s)"):format(tostring(pos.x), tostring(pos.y), tostring(pos.z))
-end
-local function report_failure(minp, maxp, err)
-	local message = tostring(err)
-	local first = message:match("^[^\n]*")
-	local chunk = position_text(minp)
-	local details = ("minp=%s maxp=%s error=%s"):format(chunk,
-		position_text(maxp), first)
-	local cid = tonumber(first:match(" cid=(%d+)"))
-	local node = cid and core.get_name_from_content_id(cid)
-	if node then details = details .. " node=" .. node end
-	severe.report("mapgen", "the map chunk at " .. chunk ..
-		" was generated without its refinement (plain terrain there)", details,
-		"mapgen:" .. chunk)
-	if message ~= first then
-		core.log("error", "grug_mapgen: refinement failure trace: " .. message)
-	end
-end
+-- A failed refinement never stops the server: the chunk keeps the engine's
+-- terrain and the failure is reported once (degrade.lua, Round 41 ruling 8).
+local refine_or_degrade = dofile(wp40 .. "/degrade.lua")(severe,
+	core.get_name_from_content_id)
 
 core.register_on_generated(function(vmanip, minp, maxp, blockseed)
 	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
 	-- the external R8 cave checker can prove the component the real writer saw.
 	if native_baseline then return end
-	local ok, err = pcall(refine, vmanip, minp, maxp)
-	if not ok then report_failure(minp, maxp, err) end
+	refine_or_degrade(refine, vmanip, minp, maxp)
 end)
