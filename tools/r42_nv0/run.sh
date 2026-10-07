@@ -7,7 +7,9 @@
 # ("RESULT DONE").
 #
 # Usage (any directory): tools/r42_nv0/run.sh OUT_DIR LABEL [PHASES] [TIMEOUT]
-#   PHASES   comma separated: scenes, calib, chasers40 (default "scenes")
+#   PHASES   comma separated: scenes, calib, chasers40, settle (default
+#            "scenes"); scenes take about 4 min, calib about 1.5, settle
+#            about 2: run one phase per boot, or raise TIMEOUT
 #   TIMEOUT  seconds for the boot (default 360)
 #   SEED=<unsigned decimal> the world seed (default 12345, Round 30's probe seed)
 #   NV0_MOVERS=boar,wolf / NV0_SCENES=trunk,row  restrict a debug run

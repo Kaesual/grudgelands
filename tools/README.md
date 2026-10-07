@@ -301,7 +301,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   LABEL [PHASES] [TIMEOUT]` boots the disposable probe `grug_probe_r42_nv0`
   (through the round's measuring queue when it exists; `SEED` default 12345;
   `NV0_MOVERS`/`NV0_SCENES` restrict a debug run) and copies
-  `nv0_results.json` and the `[nv0]` log lines to `OUT_DIR`. Phase `scenes`
+  `nv0_results.json` and the `[nv0]` log lines to `OUT_DIR`; one phase per
+  boot fits the default timeout of 360 s (or raise `TIMEOUT`). Phase `scenes`
   (about 4 minutes) builds fifteen scenes (`grug_probe_r42_nv0/scenes.lua`:
   open ground, a trunk, a trunk right before the target, a row of trees, a
   wall with a doorway, an L-corner, a 2-high and a 1-high fence ring, a
