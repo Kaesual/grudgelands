@@ -36,9 +36,15 @@ bigger than planned, report it (the coordinator splits it with the user).
   update the `docs/design/` and `docs/technical/` files and VENDOR.md
   entries that your change makes wrong (English), in-lane; keep those edits
   to what your change falsifies.
-- **Fresh-server mode:** no migrations, no legacy aliases, no compat code,
-  no placeholders for removed things. A persistence change may drop old
-  fields.
+- **Release mode** (AGENTS.md, the
+  [upgrade contract](../../technical/upgrade-contract.md)): no data
+  migrations, no compat code, no placeholders for removed things; ids of
+  quests, items, achievements and waypoints stay stable (a renamed item may
+  use `register_alias`). Your report classifies your change as
+  *compatible*, *map reset* (map-bound state or world generation changed)
+  or *new server* (saved state the new code cannot read), with the reason;
+  a new-server change is reported before it is built. New map-bound state
+  gets its map-reset clear in the same change.
 - **Code style:** match the surrounding code (comment density, naming,
   idioms). English. Lua 5.1 compatible. The user strongly prefers small,
   cheap mechanisms over clever ones; no new frameworks.

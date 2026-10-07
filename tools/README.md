@@ -55,7 +55,12 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
 - `tools/check_lua.sh <files>`: plain Lua 5.1 parser, `SETGLOBAL` list and the
   sweeps of [docs/technical/luanti-lua.md](../docs/technical/luanti-lua.md)
   (needs ripgrep).
-- `python3 tools/check_fresh_server.py`: the fresh-server source audit.
+- `python3 tools/check_fresh_server.py`: the source audit of the removed
+  development-era compatibility mechanisms (release mode allows `register_alias`
+  for a renamed item).
+- `python3 tools/check_upgrade.py`: the upgrade declaration
+  (`web_data/upgrade.json`) against the last pushed commit, after its own
+  self-test (`--self-test` alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
 - `tools/luanti_headless.sh`: an isolated headless engine boot (never the
   personal Luanti folder; options in the script header).
 - `tools/r35_t/upstream_check.sh`: whether the installed engine still
@@ -278,4 +283,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`portable_test.lua`: the real `input.lua` and `scout.lua` on a fake
   engine; a new press during a live draw fires it and draws again, the
   0.2 s grace, node calls, the starting press's own call); the engine side
-  is a case in `pt_fixes/lane_a`'s probe, the quiver total in `r28_a6_ui`.
+  is a case in `pt_fixes/lane_a`'s probe, the quiver total in `r28_a6_ui`; `r41_up` the platform's upgrade contract
+  ([upgrade contract](../docs/technical/upgrade-contract.md)):
+  `portable_test.lua` (the world and character records and the trigger, the
+  idempotent clears of the preparation, grug_mobs and housing state, the
+  relocation on the real character creation with its hold, failure and
+  retry, new characters, unknown quest, waypoint and achievement ids, the
+  committed declaration) and `engine.sh OUT_DIR [TIMEOUT]`, two boots of one
+  world with the disposable probe `grug_probe_r41_up`: a fresh world with a
+  Claim Stone, then what the platform does (map database deleted,
+  `grug_reset_world` raised through a disposable patch of the staged game)
+  and the reset boot with an old and a new character. The declaration's
+  rules are `check_upgrade.py`'s own self-test (above).

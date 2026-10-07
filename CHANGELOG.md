@@ -9,6 +9,8 @@ some of its changes are part of world generation.
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.41.0 — Round 41 (2026-10-07)
+
 ## 0.40.1 — Round 40 fix, "Ore where you dig" (2026-10-07)
 
 Ore, coal and gems now lie everywhere you may dig. **New world** needed:

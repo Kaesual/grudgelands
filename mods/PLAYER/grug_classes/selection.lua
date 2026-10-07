@@ -152,7 +152,11 @@ local function reassert_player_lock(player)
 end
 
 local function lock_player(player)
-	if character_complete(player) and grug_core.world_preparation_status().ready then
+	-- The platform's map reset (grug_core/map_reset.lua): a created character
+	-- that has not been moved to its race start since is held as well.
+	local relocate = grug_core.map_reset.needs_relocation(player)
+	if character_complete(player) and not relocate and
+			grug_core.world_preparation_status().ready then
 		return nil
 	end
 	local name = player:get_player_name()
@@ -168,6 +172,7 @@ local function lock_player(player)
 		-- moment, which for a fresh character is the 1/1/1 baseline.
 		session = {previous_immortal = armor.immortal,
 			preparation_only = character_complete(player),
+			relocate = relocate,
 			preparation_ready = grug_core.world_preparation_status().ready,
 			draft = {},
 			dismissed = false}
@@ -536,6 +541,52 @@ local function start_arrival_load(player)
 	return true
 end
 
+-- The map reset's relocation of an existing character (preparation_only with
+-- `relocate`): held like any reconnect during preparation until the
+-- preparation is ready (finish_if_ready's first gate), then until its race
+-- start has loaded; then moved there without the arrival flow, its map-bound
+-- player state cleared and the world's record written
+-- (grug_core.map_reset.relocated). A failure is logged and disconnects the
+-- player with the record unwritten, so the next join tries again.
+local function relocate_player(player, session)
+	if session.relocating then
+		present(player)
+		return false
+	end
+	local name = player:get_player_name()
+	local function fail(reason)
+		core.log("error", "[grug_classes] map reset: moving " .. name ..
+			" to the race start failed (" .. reason .. "); the next join retries")
+		core.disconnect_player(name, "The world was renewed, but your starting " ..
+			"area could not be loaded. Please join again.")
+	end
+	session.relocating = true
+	local started = grug_factions.prepare_spawn(player, function(_, spawn, failure)
+		-- One step later, as in start_arrival_load: nothing acts inside an
+		-- emerge completion callback.
+		core.after(0, function()
+			local p = core.get_player_by_name(name)
+			if not p or creation_sessions[name] ~= session then
+				return
+			end
+			if not spawn then
+				fail(failure or "spawn_unavailable")
+				return
+			end
+			grug_core.invalidate_combat_identity(p)
+			p:set_pos(spawn)
+			grug_core.map_reset.relocated(p)
+			release_player(p, session)
+		end)
+	end)
+	if not started then
+		fail("spawn_unavailable")
+		return false
+	end
+	present(player)
+	return false
+end
+
 -- Binds the created start identity. The arrival load above may only start
 -- once the selected world preparation is complete: before that it
 -- would compete with the startup preload for the same mapgen threads.
@@ -572,6 +623,9 @@ finish_if_ready = function(player)
 		return false
 	end
 	if session.preparation_only then
+		if session.relocate then
+			return relocate_player(player, session)
+		end
 		return release_player(player, session)
 	end
 	local key = arrival_key(player)
@@ -620,6 +674,9 @@ finish_if_ready = function(player)
 	grug_core.invalidate_combat_identity(player)
 	player:set_pos(session.spawn_pos)
 	player:get_meta():set_string(META_ARRIVING, "")
+	-- The arrival is a move to the race start too: no map-reset relocation
+	-- follows it.
+	grug_core.map_reset.record(player)
 	if player:get_hp() <= 0 then
 		player:set_hp(grug_classes.get_max_hp(player),
 			{type = "set_hp", from = "mod"})

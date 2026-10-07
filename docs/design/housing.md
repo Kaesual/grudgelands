@@ -101,6 +101,11 @@ or guild land.
 - **Soulbound** (ruling 8): it cannot go into chests, bags, trades or mail,
   and it stays in the inventory on death. Dropping it destroys it; a new one
   comes from the Housing Steward.
+- **Map reset** (Round 41 ruling 9, the
+  [upgrade contract](../technical/upgrade-contract.md) §3): every claim goes
+  with the old map. A placed stone does not come back into the inventory; its
+  owner gets a new one from the Housing Steward, as after losing it, and the
+  travel home falls back to the innkeeper (§8). A carried stone stays.
 - It is placed like any block from a hotbar slot.
 - **One lock only** (Round 26 ruling 10): for **12 hours (43 200 s)** after
   activation the stone cannot be picked up. There is no placing lock and no

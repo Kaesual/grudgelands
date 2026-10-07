@@ -104,3 +104,13 @@ grug_particle_scale (Particle amount scale) float 1.0 0 2
 #    The saplings then grow like any other sapling. Grass, ferns
 #    and wild resource plants renew regardless of this switch.
 grug_tree_regrowth (Regrow trees from saplings) bool true
+
+[Hosting platform]
+
+#    Owned by the hosting platform; never change it by hand. The platform
+#    raises it, after emptying the map while the server is stopped, when an
+#    upgrade needs a map reset. The next start generates the world again from
+#    the same seed and prepares the starting areas again; each existing
+#    character is moved to the starting town of its race at its next join
+#    and keeps everything else. A claimed home goes with the old map.
+grug_reset_world (Map reset counter, set by the hosting platform) int 0 0

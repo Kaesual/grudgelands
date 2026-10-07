@@ -151,7 +151,9 @@ rawset(_G, "grug_core", {
  get_player_race=function() return player.race end,
  in_combat=function(p) return p.combat end,
  invalidate_combat_identity=function() generation = generation + 1 end,
- start_position=function() return vnew(0, 101, 0) end})
+ start_position=function() return vnew(0, 101, 0) end,
+ -- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
+ map_reset={register_on_relocate=function() end}})
 dofile(repo .. "/mods/CORE/grug_core/settlement_sockets.lua")
 -- Every home location at x = 1000 * index; the innkeeper at the anchor, the
 -- waystone 40 east of it, the anchor's ground at y = 100.

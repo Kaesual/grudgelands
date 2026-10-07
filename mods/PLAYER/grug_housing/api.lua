@@ -21,6 +21,8 @@ local model = dofile(modpath .. "/registry.lua")({
 	now = os.time,
 })
 model.load()
+-- The platform's map reset: the claims go with the map (registry.lua).
+grug_core.map_reset.clear("the housing claims", model.map_reset)
 grug_housing.model = model
 
 -- Claim size and placement bounds (rulings 1-2).

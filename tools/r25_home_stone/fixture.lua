@@ -104,6 +104,8 @@ rawset(_G, "core", {
 local generation, dismounts = 0, 0
 local holds = {} -- the movement aggregator's exclusive holds, by name
 rawset(_G, "grug_core", {factions={accord={}, throng={}},
+ -- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
+ map_reset={clear=function() end, register_on_relocate=function() end},
  hold_movement=function(_, name) holds[name] = true end,
  release_movement=function(_, name) holds[name] = nil end,
  get_player_race=function() return player.race end,

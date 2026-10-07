@@ -55,25 +55,39 @@ tests of Rounds 36–38 and 40 are open. Details: [STATUS](docs/STATUS.md).
   checks both).
 - **Only the user pushes.** Agents never push.
 
-## Fresh-server development mode
+## Release mode
 
-- **Standing user instruction, decided 2026-09-13:** the first release is still
-  under development. Assume the server and world are **always fresh**; there are
-  no old servers, worlds or player records to migrate.
-- Do not add backward-compatibility branches, saved-world/data migrations,
-  legacy-name aliases, old-format readers, compatibility placeholders or cleanup
-  LBMs/timers for earlier development versions, and remove code whose sole
-  purpose is supporting or cleaning up those versions. One deliberate exception
-  (Round 26 ruling 14): the twelve tool aliases from the former `default:` tool
-  names to `grug_materials:` (`grug_materials.TOOL_ALIASES`) keep repository
-  references working; they are not an old-world migration.
-- Current-version persistence (saving/reloading the same world, reconnects,
-  inventories, normal entity activation) remains required. Current engine APIs,
-  Lua 5.1 support and integrations with shipped dependencies are not old-world
-  migration mechanisms.
-- This supersedes older migration/legacy requirements in project documents. Do
-  not infer a release transition from a commit, merge, deployment or WP
-  completion: **only the user's explicit announcement changes this mode**.
+- **The user's announcement (2026-10-07, Round 41 ruling 9):** fresh-server
+  development mode ended with **0.41.0**. Worlds survive upgrades through the
+  hosting platform's upgrade contract
+  ([upgrade contract](docs/technical/upgrade-contract.md)): every upgrade is
+  **compatible**, needs a **map reset** or needs a **new server**, declared
+  in `tools/web_data/upgrade.json` and checked by
+  `python3 tools/check_upgrade.py`. Exactly one real world existed then (the
+  user's production server on 0.40.0); nothing checks, audits or supports
+  older versions.
+- **No data migrations.** A change the new code cannot read from saved state
+  is declared, never converted: a map reset when the state is map-bound (or
+  world generation changed), otherwise a new server (an XP-curve change,
+  removed or restructured quests, removed items, rebuilt talents, a validated
+  world-creation scalar). "New server" wins when both apply. The only
+  migration mechanism is the map reset (`grug_reset_world`,
+  `grug_core.map_reset`); new map-bound state gets its clear in the same
+  change.
+- **Stable ids:** quests, items, achievements and waypoints keep their ids;
+  a renamed item may keep its old name with `register_alias`. Unknown ids in
+  saved state are ignored or dropped, never a crash.
+- **Every lane classifies its change** (compatible, map reset, new server)
+  in its report and the reviewer checks it; a new-server change is reported
+  before it is built ([round workflow](docs/process/round-workflow.md#3-gates)).
+- A compatible version should boot every world of the version before,
+  full-preparation worlds included: best effort, without saved test worlds.
+  Keep it minimal: no mechanism for a case that does not occur.
+- Still no backward-compatibility branches, old-format readers,
+  compatibility placeholders or cleanup LBMs for the development versions
+  before 0.40.0; the twelve tool aliases `grug_materials.TOOL_ALIASES` (Round
+  26 ruling 14) stay. Current-version persistence (saving and reloading the
+  same world, reconnects, inventories, entity activation) remains required.
 
 ## Anthropic repository sharing authorization
 

@@ -24,6 +24,16 @@ local function load(player)
 		local state = core.deserialize(raw) or
 			{active = {}, completed = {}, tracked = {}, hud = true}
 		state.cooldowns = state.cooldowns or {}
+		-- A quest id the game no longer registers is dropped from the active
+		-- and tracked quests (the upgrade contract: unknown ids in saved state
+		-- never crash); `completed` and `cooldowns` are only looked up by id.
+		for id in pairs(state.active or {}) do
+			if not Q.registered_quests[id] then state.active[id] = nil end
+		end
+		local tracked = state.tracked or {}
+		for i = #tracked, 1, -1 do
+			if not Q.registered_quests[tracked[i]] then table.remove(tracked, i) end
+		end
 		entry = {raw = raw, state = state}
 		cache[name] = entry
 	end

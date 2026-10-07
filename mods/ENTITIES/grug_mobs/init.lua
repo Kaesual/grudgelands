@@ -52,6 +52,8 @@ end
 -- dragons (liveness.lua) and the start settlements' one marker per occupied
 -- NPC socket (start_npcs.lua).
 grug_mobs.storage = core.get_mod_storage()
+-- The platform's map reset clears this storage's map-bound records first.
+dofile(core.get_modpath("grug_mobs") .. "/map_reset.lua")
 
 -- Builds one texture entry per MATERIAL SLOT of a mesh (wp6_model_notes §0.3).
 -- Several imported meshes are assembled from many separate cubes, so the b3d

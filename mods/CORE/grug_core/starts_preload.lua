@@ -2,6 +2,15 @@
 local plan_api = dofile(core.get_modpath("grug_core") .. "/preparation_plan.lua")
 local storage = core.get_mod_storage()
 local STORAGE_KEY = "world_preparation"
+-- The map reset (map_reset.lua): the progress belongs to the old map, the mode
+-- to the world. Only the mode stays, so the selected plan starts again.
+grug_core.map_reset.clear("the world preparation progress", function()
+	local old = storage:get_string(STORAGE_KEY)
+	local prior = old ~= "" and core.deserialize(old) or nil
+	if type(prior) == "table" and (prior.mode == "full" or prior.mode == "starts") then
+		storage:set_string(STORAGE_KEY, core.serialize({mode = prior.mode}))
+	end
+end)
 local selected = core.settings:get_bool("grug_prepare_full_world", false) and "full" or "starts"
 local saved = storage:get_string(STORAGE_KEY)
 local state = saved ~= "" and core.deserialize(saved) or nil
