@@ -127,7 +127,7 @@ local mob_class = {}
 local obstacle_stub = {cancel_path_request = function() end, forget_no_path = function() end}
 load_in(cut("function mob_class:do_attack(player, force)", "\nend\n", "do_attack"),
 	{mob_class = mob_class, random = function() return 100 end,
-		grug_obstacle = obstacle_stub}, "do_attack")
+		grug_obstacle = obstacle_stub, grug_nav = {forget = function() end}}, "do_attack")
 local tail = cut("\tlocal hitter_name = hitter:get_player_name() or \"\"",
 	"\n\treturn true\nend\n", "retaliation")
 check(tail:find("grug_mob_hit and self.attack and self.state == \"attack\"", 1, true) ~= nil,

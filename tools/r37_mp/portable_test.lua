@@ -292,7 +292,8 @@ local api_env = {
 	table_copy = function(t) local c = {} for k, v in pairs(t) do c[k] = v end return c end,
 	use_cmi = false, use_vh1 = false, square = math.sqrt, aoc_range = 64,
 	is_player = core.is_player,
-	grug_obstacle = {cancel_path_request = function() end},
+	grug_obstacle = {cancel_path_request = function() end,
+		physics_box = function(box) return box end},
 	grug_mobs = {},
 }
 local active_count = load_in(api_source, api_env, "api")

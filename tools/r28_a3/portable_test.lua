@@ -101,6 +101,8 @@ local api = assert(io.open(ROOT .. "/mods/ENTITIES/mobs/api.lua")):read("*a")
 local scale_src = api:match("\nfunction mobs:scale_mob%(.-\nend\n")
 assert(scale_src, "mobs:scale_mob not found in api.lua")
 _G.mobs = {}
+-- scale_mob cuts a tall mob's physics box (Round 42 NV1, ruling 20).
+_G.grug_obstacle = dofile(ROOT .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
 assert(loadstring(scale_src))()
 
 dofile(ROOT .. "/mods/CORE/grug_core/tag_carrier.lua")
@@ -211,11 +213,13 @@ do
 	grug_mobs.ensure_init(king) -- first tick: tier visuals at once
 	local CHARACTER_HEIGHT = 1.7 -- character.b3d, nodes at visual_size 1
 	near(king.object.props.visual_size.x, 1.6, "king final visual_size")
-	near(king.object.props.collisionbox[5], CHARACTER_HEIGHT * 1.6,
-		"king collisionbox top = model height")
+	-- Round 42 NV1 (ruling 20): the physics box of a mob taller than two
+	-- nodes stops just under two; the selection box keeps the model height.
+	near(king.object.props.collisionbox[5], 1.95,
+		"king physics box top just under 2 nodes")
 	near(king.object.props.selectionbox[5], CHARACTER_HEIGHT * 1.6,
 		"king selectionbox top = model height")
-	check(king.object.props.collisionbox[5] > 1.7 * 1.4,
+	check(king.object.props.selectionbox[5] > 1.7 * 1.4,
 		"king stands taller than an elite guard")
 	near(king.object.props.collisionbox[4] / king.object.props.visual_size.x,
 		0.3, "king box width keeps the player box proportion")

@@ -207,6 +207,8 @@ local function new_world(modpath)
 	_G.grug_mobs = {}
 	w.rows = {}
 	_G.mobs = {spawn = function(_, row) w.rows[row.name] = row end}
+	-- scale_mob cuts a tall mob's physics box (Round 42 NV1, ruling 20).
+	_G.grug_obstacle = dofile(ROOT .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
 	assert(loadstring(scale_src))()
 	local dir = ROOT .. "/mods/ENTITIES/grug_mobs/"
 	dofile(dir .. "disposition.lua")
