@@ -772,4 +772,4 @@ check(detached["grug_housing_fuel_owner"] == nil, "leave removes the detached in
 
 print(("r25 interfaces fixture: %s (%d checks, %d failures)"):format(
 	failures == 0 and "PASS" or "FAIL", checks, failures))
-os.exit(failures == 0 and 0 or 1)
+if failures > 0 then error("r25 interfaces fixture failed", 0) end

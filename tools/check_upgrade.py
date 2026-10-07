@@ -20,7 +20,7 @@ entry v with a < v <= b; crossing a `new_server` entry needs a new server
 (also when map_reset entries are crossed too), else crossing a `map_reset`
 entry needs a map reset, else the move is compatible.
 
-Usage (repository root):
+Usage (repository root; a check runs the self-test of these rules first):
   python3 tools/check_upgrade.py [--base REF]
   python3 tools/check_upgrade.py --self-test
 """
@@ -213,8 +213,10 @@ def main(argv):
     if argv == ["--self-test"]:
         self_test()
     elif not argv:
+        self_test()
         check("origin/main")
     elif len(argv) == 2 and argv[0] == "--base":
+        self_test()
         check(argv[1])
     else:
         raise SystemExit(__doc__)

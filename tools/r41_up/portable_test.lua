@@ -19,8 +19,8 @@
 --      stasis decides nothing;
 --   E. unknown ids in saved state: quests (state.lua), waypoints
 --      (waypoints_core.lua), achievements and cloaks (achievements core.lua);
---   F. the declaration: tools/web_data/upgrade.json as committed and the
---      rules of tools/check_upgrade.py (its self-test).
+--   F. the declaration as committed; its rules are tools/check_upgrade.py's
+--      own self-test (run by every check, and by --self-test).
 --
 -- Usage (repo root): luajit tools/r41_up/portable_test.lua [repo]
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
@@ -706,15 +706,13 @@ do
 		"F the first declaration as the contract gives it")
 	local conf = read(repo .. "/game.conf"):match("\nversion = ([%d.]+)")
 	eq(conf, "0.41.0", "F game.conf names the declared version")
-	local pipe = io.popen("python3 '" .. repo .. "/tools/check_upgrade.py' --self-test 2>&1")
-	local out = pipe and pipe:read("*a") or ""
-	if pipe then pipe:close() end
-	check(out:find("check_upgrade self-test: PASS", 1, true) ~= nil,
-		"F the declaration rules (check_upgrade.py --self-test): " .. out)
+	-- The rules themselves (lists, history, outcomes) are the check tool's own
+	-- self-test, which every run of tools/check_upgrade.py runs first.
+	check(read(repo .. "/tools/check_upgrade.py"):find("def self_test", 1, true) ~= nil,
+		"F the check tool carries its self-test")
 end
 
 if failures > 0 then
-	print(("R41 UP PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R41 UP PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R41 UP PORTABLE PASS checks=%d"):format(checks))
