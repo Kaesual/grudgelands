@@ -2,7 +2,46 @@
 
 Updated 2026-10-07. This is the delivery pointer, not another game specification.
 
-- **Round 40 follow-up lane ORE merged, not pushed** (2026-10-07, main
+- **Round 41 "Playtest fixes, the production crash and the upgrade
+  contract" complete, not pushed** (2026-10-07, version 0.41.0,
+  [plan, completion and GUI checklist](planning/round41-plan.md#completion-2026-10-07)).
+  Started from main `7d8b79d9` (0.40.1, pushed on 2026-10-07);
+  every lane is merged on main (last UP, `a3790e65`, then this
+  documentation lane D), each code lane independently reviewed by Opus
+  (MERGE, SC MERGE AFTER FIXES; every fix made before the merge) and ended
+  with a smoke boot, except the coordinator's one-line lane WW (no review;
+  covered by main's fixtures and smoke boot after its merge); main has 123 portable fixtures. Round end on main:
+  fixtures 123/123, smoke boots PASS, `check_upgrade.py` PASS. Seed fleet
+  `full` 304/304.
+  **First release under the upgrade contract** (release mode, AGENTS.md):
+  the declaration is
+  `{"schema": 1, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": []}`;
+  every lane compatible except CR (map reset). **Not pushed** (only the
+  user pushes); after the push the hosting platform migrates the
+  production server (0.40.0) to 0.41.0 **with a map reset**.
+  - **Fixes from the Round 40 playtest:** mobs on scripted walks move
+    their legs at once, royal guards too; kings and Generals hold their
+    seat (MOB); the recipe book's Close and the station's Repair form
+    return to the station, slots that accept several items show them as
+    small icons (UI); the waterweed bed is no glass sand (WW); a new
+    right-click while the bow is drawn fires and draws again, the quiver
+    shows its true total (SC); world-map tiles of the other quality are
+    removed and a render crash leaves no mixed tiles (MAP).
+  - **The production crash (CR):** most likely a water-guard barrier in a
+    layer saved before its chunk was generated stopped the server in a loop
+    (reproduced with placed barriers; not proven without the production
+    map); the writer now reads it as air, and any mapgen failure keeps the engine's
+    terrain for that chunk and is reported as `[GRUG-SEVERE]` in the log
+    and a red chat line instead of stopping the server.
+  - **The upgrade contract (UP):** `tools/web_data/upgrade.json` and
+    `tools/check_upgrade.py`, the map reset through `grug_reset_world`,
+    unknown quest ids in saved state dropped; the platform summary is in
+    the completion.
+  - Next: the sync and the user's GUI test (desktop and web build), the
+    push, then the production migration; Round 42 (mob navigation,
+    [plan](planning/round42-plan.md)) waits for the user's "go".
+
+- **Round 40 follow-up lane ORE merged and pushed** (2026-10-07, main
   `3251158c`, version 0.40.1,
   [plan, follow-up lanes](planning/round40-plan.md#follow-up-lanes)):
   ores, coal and gems wherever digging is allowed (only the start towns'
@@ -12,7 +51,8 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   2026-10-07). World generation changed: **new world** for GUI item 7.
   Fixtures 119/119, seed fleet quick 100/100, smoke boot of main, engine
   probe `tools/r40_ore` PASS; independent review (Opus) merge after
-  fixes, fixed. Not yet pushed (only the user pushes).
+  fixes, fixed. Pushed on 2026-10-07 (origin/main
+  `7d8b79d9`); the production server stays on 0.40.0 until Round 41.
 
 - **Round 40 "Combat feel" complete and pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round40-plan.md#completion-2026-10-06)).
@@ -692,16 +732,19 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 40 (`bd52bbf4` and lane D), on top
-  of Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39
-  on 2026-10-06; origin/main `d018d866`), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 40
-  is pushed too (origin/main `94605188`). Round 29
+- **Latest game:** main carries Round 41 (0.41.0, `a3790e65` and lane D;
+  not pushed) on top of Round 40 (pushed 2026-10-06) and its follow-up
+  0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
+  Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
+  2026-10-06), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 29
   was tested by the user on a fresh world (2026-10-02), the user's Round 33
   findings became Round 34's fix lanes, the Round 34 findings Round 35 and
   the first Round 35 findings Round 36's lane F; Rounds 25–35 count as
   GUI-accepted (below). The 2026-09-30 playtest with friends fed Round 28,
-  the 2026-10-02 spawn playtest Round 29. Fresh-world development
-  remains in force.
+  the 2026-10-02 spawn playtest Round 29, the Round 40 playtest and the
+  production crash Round 41. Fresh-world development ended with 0.41.0:
+  release mode (AGENTS.md) and the
+  [upgrade contract](technical/upgrade-contract.md).
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
 - **Preparation performance follow-up:** the bounded two-request pipeline
@@ -717,7 +760,11 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   ruling of 2026-10-05, [Round 37 plan](planning/round37-plan.md) §2.3.5);
   Round 24 was accepted earlier, and its build contains Rounds 20–23 and
   the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06.
-  **Rounds 36, 37, 38 and 40 are open** (Round 40's
+  **Rounds 36, 37, 38, 40 and 41 are open** (Round 41's
+  [checklist](planning/round41-plan.md#gui-playtest-checklist) covers the
+  walk animation, kings and Generals at their seat, the recipe book's
+  Close and multi-item slots, the bow, the quiver total, map quality, the
+  map reset and a forced mapgen failure; Round 40's
   [checklist](planning/round40-plan.md#gui-playtest-checklist) covers the
   cooldown overlay, the poses and head look, the Charge dash and every
   particle effect at two scales, desktop and web build). The
@@ -764,9 +811,13 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** every round up to Round 39 is pushed
-  (origin/main `d018d866`, 2026-10-06); Round 40 is local.
-- **Release:** unreleased fresh-server development. The Nether is expansion
+- **Remote observation:** every round up to Round 40 and its follow-up
+  0.40.1 is pushed (origin/main `7d8b79d9`, 2026-10-07); Round 41 is
+  local. The production server runs 0.40.0.
+- **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
+  production server, upgrades through the
+  [upgrade contract](technical/upgrade-contract.md); no public release
+  yet. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.
 

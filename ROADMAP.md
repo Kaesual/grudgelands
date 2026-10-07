@@ -351,6 +351,21 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   bosses and the mob specials through one helper with the server-wide
   `grug_particle_scale`. Complete and pushed on 2026-10-06; no
   new world needed. Next: the GUI test on desktop and the web build.
+  Its follow-up 0.40.1 puts ore wherever digging is allowed (pushed
+  2026-10-07).
+- [x] **Round 41 "Playtest fixes, the production crash and the upgrade
+  contract"** ([completion](docs/planning/round41-plan.md#completion-2026-10-07)),
+  version 0.41.0: **release mode reached** — worlds survive upgrades
+  through the hosting platform's
+  [upgrade contract](docs/technical/upgrade-contract.md) (compatible, map
+  reset or new server, declared per version); the crash loop of the
+  production server fixed, and a mapgen failure no longer stops a server;
+  the Round 40 playtest fixes (walk animation, kings and Generals at their
+  seat, the recipe book's Close and multi-item slots, the bow's missed
+  release, the quiver total, stale map tiles). Complete on 2026-10-07, not
+  pushed; the production server moves to it with a map reset. Next: the
+  GUI test, the push and the migration; then
+  [Round 42](docs/planning/round42-plan.md), mob navigation.
 
 ### Remaining work
 
@@ -370,10 +385,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 36](BACKLOG.md#round-36-carry-overs),
   [Round 37](BACKLOG.md#round-37-carry-overs),
   [Round 38](BACKLOG.md#round-38-carry-overs),
-  [Round 39](BACKLOG.md#round-39-carry-overs) and
-  [Round 40](BACKLOG.md#round-40-carry-overs) carry-overs (Round 40: the
+  [Round 39](BACKLOG.md#round-39-carry-overs),
+  [Round 40](BACKLOG.md#round-40-carry-overs) and
+  [Round 41](BACKLOG.md#round-41-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
-  hold to pick); Round 36 settled
+  hold to pick; Round 41: the bow's second cause); Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
   [open questions](BACKLOG.md#audit-2026-10-open-questions),
@@ -401,8 +417,10 @@ Checks with judgement, not gates: a native start/generation/restart of the
 candidate as deep as its changes warrant, an optional PUC Lua 5.1 crash smoke
 test, and a resource spot check on a few seeds. Exact wording and ownership:
 [BACKLOG release gates](BACKLOG.md#first-public-release-gates).
-Historical evidence does not certify later code. Only the user's announcement
-ends fresh-server development mode.
+Historical evidence does not certify later code. Fresh-server development
+mode ended with 0.41.0 (the user's announcement, 2026-10-07): from then on
+worlds survive upgrades through the
+[upgrade contract](docs/technical/upgrade-contract.md).
 
 ## Phase 2 — Expansion
 
