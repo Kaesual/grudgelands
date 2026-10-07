@@ -1,0 +1,25 @@
+# Run 2 (reproduction with the saved neighbours): the production world had
+# the layer above and several chunks of the candidates' own layer generated
+# and played in for an hour before the crash. Generate the layer above the
+# two candidates and the player's chunk, then the generated neighbours of the
+# report in the candidates' layer, let the liquids run, census the two
+# candidates' top layers (y -33) and the cave water above them, then
+# generate the candidates.
+emerge 1760 0 -2560
+emerge 1840 0 -2560
+emerge 1920 0 -2560
+emerge 1760 0 -2480
+emerge 1840 0 -2480
+emerge 1920 0 -2480
+emerge 1840 -80 -2560
+emerge 1760 -80 -2480
+emerge 1840 -80 -2480
+emerge 1920 -80 -2480
+wait 120
+census 1728 -33 -2592 1807 -33 -2513
+census 1888 -33 -2592 1967 -33 -2513
+census 1728 -32 -2592 1807 1 -2513
+census 1888 -32 -2592 1967 1 -2513
+emerge 1760 -80 -2560
+emerge 1920 -80 -2560
+shutdown

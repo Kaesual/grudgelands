@@ -1,0 +1,32 @@
+# After the fix: the report's chunks and the forced failure (engine check).
+# 1. Run 5's case: barriers at four rock positions of the top layer of
+#    (22,-1,-32) and water over its openings (the guard makes the barriers):
+#    the chunk now generates without a severe report and the census shows
+#    no barrier left in that layer.
+# 2. The report's second chunk (24,-1,-32) after the chunk above it.
+# 3. The forced failure: a foreign node (default:cobble, as a player's or an
+#    older world's block would be) at four rock positions of the top layer of
+#    (23,-1,-33): one [GRUG-SEVERE] line, one red chat message, the server
+#    goes on; then one more chunk generates normally.
+continue_after_severe
+emerge 1760 0 -2560
+place 1730 -33 -2590 grug_core:water_barrier
+place 1770 -33 -2550 grug_core:water_barrier
+place 1800 -33 -2520 grug_core:water_barrier
+place 1780 -33 -2580 grug_core:water_barrier
+water_over_air 1728 -33 -2592 1807 -2513
+wait 5
+census 1728 -33 -2592 1807 -33 -2513
+emerge 1760 -80 -2560
+census 1728 -37 -2592 1807 -33 -2513
+emerge 1920 0 -2560
+emerge 1920 -80 -2560
+emerge 1840 0 -2640
+place 1810 -33 -2670 default:cobble
+place 1840 -33 -2640 default:cobble
+place 1870 -33 -2610 default:cobble
+place 1885 -33 -2595 default:cobble
+emerge 1840 -80 -2640
+census 1808 -33 -2672 1887 -33 -2593
+emerge 1680 -80 -2480
+shutdown

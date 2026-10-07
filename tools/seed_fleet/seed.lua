@@ -15,6 +15,10 @@
 -- village, outpost, camp or POI), each the chunk holding the column's ground
 -- or water surface.
 --
+-- A seed may also name chunks of its own in tools/seed_fleet/chunks.txt (a
+-- chunk that once failed in a real world, Round 41); they are planned and
+-- written after the sample.
+--
 -- Prints one line, "OK <seed> <seconds> <roster sha256> chunks=<n>
 -- chunk_seconds=<s>" or "FAIL <seed> <seconds> <error>" and then raises (a
 -- non-zero exit). A failure in the per-chunk path names the chunk.
@@ -104,6 +108,22 @@ local function sample()
 	return columns
 end
 
+-- The named chunks of this seed: {label, minp}.
+local function named_chunks()
+	local result = {}
+	local file = io.open(repo .. "/tools/seed_fleet/chunks.txt", "r")
+	if not file then return result end
+	for line in file:lines() do
+		local s, x, y, z, label = line:match("^(%d+)%s+(%-?%d+)%s+(%-?%d+)%s+(%-?%d+)%s*(.*)$")
+		if s == seed then
+			result[#result + 1] = {label ~= "" and label or "named",
+				{x = tonumber(x), y = tonumber(y), z = tonumber(z)}}
+		end
+	end
+	file:close()
+	return result
+end
+
 local ok, err = pcall(build)
 local roster = ok and R.built.anchor_roster.sha256
 local chunks, chunk_seconds = 0, 0
@@ -119,6 +139,16 @@ if ok then
 		ok, err = pcall(R.chunk, minp)
 		if not ok then
 			err = ("chunk %d,%d,%d (%s): %s"):format(minp.x, minp.y, minp.z, label, tostring(err))
+			break
+		end
+		chunks = chunks + 1
+	end
+	for _, named in ipairs(ok and named_chunks() or {}) do
+		local minp = named[2]
+		ok, err = pcall(R.chunk, minp)
+		if not ok then
+			err = ("chunk %d,%d,%d (%s): %s"):format(minp.x, minp.y, minp.z, named[1],
+				tostring(err))
 			break
 		end
 		chunks = chunks + 1

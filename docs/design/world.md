@@ -183,7 +183,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     permission exists, so every such path is suppressed or the affected nodes
     are restored. Guarded air that water flowed into is restored as an
     invisible, air-like water barrier whose own flood callback refuses the
-    next flow, so the flow is not retried every liquid tick (Round 37).
+    next flow, so the flow is not retried every liquid tick (Round 37). The
+    world writer reads the barrier as air (group `grug_air`): the guard also
+    leaves it in the top or bottom layer of a chunk not generated yet, which
+    the neighbouring chunk wrote, and that chunk's generation fills or keeps
+    it like air (Round 41; as foreign content it stopped the production
+    server).
     Grass spreading onto dirt and moss on cobble stop in towns, capitals,
     landmarks, villages, camps, POI cores and on roads (Round 37). There is
     no rollback system: protected volumes need none,

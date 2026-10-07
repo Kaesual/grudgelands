@@ -436,8 +436,11 @@ The topic rules below name the one path to use; the
   on it, never on a copy. The seed fleet (`tools/seed_fleet/runtime.lua`)
   builds the real runtime and plans and writes five chunks per seed through
   `plan_slice` and the writer against a fake VoxelManip, about 25 s per seed
-  (`quick` about 6 minutes at 6–8 parallel, `full` about 17 minutes); a
-  `fail()` on the per-chunk path still stops the server and must pass `quick`.
+  (`quick` about 6 minutes at 6–8 parallel, `full` about 17 minutes). A
+  `fail()` on the per-chunk path fails the fleet and the fixtures, so it must
+  pass `quick`; on a live server it no longer stops the server: the chunk
+  keeps the engine's terrain and is reported through `grug_core.severe`
+  (`wp40/degrade.lua`, Round 41).
 - **Decorations are owner-only:** tall trees are lost in height bands
   (emergent jungle trees: no ground at y ≡ 15..50 mod 80) and on 2–4-node
   lines along chunk borders
@@ -482,4 +485,10 @@ The topic rules below name the one path to use; the
   (`tools/wp40/profile/run.sh`) needs a launcher that forwards its path.
 - Read the relevant [module guide](docs/technical/module-guide.md) section
   before touching a module; never infer current behaviour from an old report.
-- Server log via `core.log("action"|"warning"|"error", msg)`.
+- Server log via `core.log("action"|"warning"|"error", msg)`. An error the
+  server survives but an administrator must see goes through the one
+  severe-error helper `grug_core.severe.report(source, summary, details, key)`
+  (`grug_core/severe.lua`): an error line with the literal prefix
+  `[GRUG-SEVERE]` and a red chat message to every player once per key; the
+  mapgen environment loads the same file by `dofile` and its chat part
+  reaches the main thread through gen_notify.

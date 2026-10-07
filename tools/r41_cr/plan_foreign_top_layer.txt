@@ -1,0 +1,17 @@
+# Run 5 (the failing path with a pre-existing foreign node): the layer above
+# candidate (22,-1,-32) is generated, then a foreign node sits in the
+# candidate's top layer (y -33) at rock positions, as runtime or older-world
+# content in a saved neighbour's layer would; the candidate is generated.
+# Expected: the production error (fail_replace_policy, from the fill-void
+# band y -37..-33), now as one [GRUG-SEVERE] line with the location and one
+# red chat message, the server running on; the census afterwards shows the
+# chunk kept the engine's terrain.
+emerge 1760 0 -2560
+census 1779 -33 -2582 1784 -33 -2577
+place 1730 -33 -2590 grug_core:water_barrier
+place 1770 -33 -2550 grug_core:water_barrier
+place 1800 -33 -2520 grug_core:water_barrier
+place 1780 -33 -2580 grug_core:water_barrier
+emerge 1760 -80 -2560
+census 1728 -37 -2592 1807 -33 -2513
+shutdown

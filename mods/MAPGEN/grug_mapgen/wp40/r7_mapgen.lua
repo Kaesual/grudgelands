@@ -54,10 +54,13 @@ end
 local modpath = core.get_modpath("grug_mapgen")
 local default_path = core.get_modpath("default")
 local gathering_path = core.get_modpath("grug_gathering")
+local core_path = core.get_modpath("grug_core")
 if type(modpath) ~= "string" or type(default_path) ~= "string" or
-		type(gathering_path) ~= "string" then
+		type(gathering_path) ~= "string" or type(core_path) ~= "string" then
 	fail("required mod path differs")
 end
+-- The severe-error helper the main environment loads as grug_core.severe.
+local severe = dofile(core_path .. "/severe.lua")
 local wp40 = modpath .. "/wp40"
 local native = dofile(wp40 .. "/r7_native.lua")
 native.validate_emerge()
@@ -78,16 +81,26 @@ if not water_level then fail("water level differs") end
 local air_chunks = dofile(wp40 .. "/air_chunks.lua")(built.writer_bounds, water_level)
 local function get_heightmap() return core.get_mapgen_object("heightmap") end
 
-core.register_on_generated(function(vmanip, minp, maxp, blockseed)
+-- The chunk's refinement: plan and write the one R7 transaction.
+local function refine(vmanip, minp, maxp)
 	minp = plain_engine_position(minp, "generated minp")
 	maxp = plain_engine_position(maxp, "generated maxp")
-	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
-	-- the external R8 cave checker can prove the component the real writer saw.
-	if native_baseline then return end
 	-- Native air above everything the writer can place: the transaction would
 	-- change nothing (air_chunks.lua), so it is not run.
 	if air_chunks.untouched(minp, maxp, get_heightmap) then return end
 	local plan, generation = built.session.plan_slice(minp, maxp)
 	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
 	if type(result) ~= "string" then fail("writer result differs") end
+end
+
+-- A failed refinement never stops the server: the chunk keeps the engine's
+-- terrain and the failure is reported once (degrade.lua, Round 41 ruling 8).
+local refine_or_degrade = dofile(wp40 .. "/degrade.lua")(severe,
+	core.get_name_from_content_id)
+
+core.register_on_generated(function(vmanip, minp, maxp, blockseed)
+	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
+	-- the external R8 cave checker can prove the component the real writer saw.
+	if native_baseline then return end
+	refine_or_degrade(refine, vmanip, minp, maxp)
 end)

@@ -17,10 +17,17 @@
 --      all four tiers with the right state, buttons only for "buy";
 --   6. the Character page (grug_inventory/pages.lua): "Damage reduction" with
 --      its tooltip, the Professions tab body from grug_jobs/character_tab.lua;
+--      the Scout's quiver cell at 0, 100, 101, 181 and 500 arrows (Round 41:
+--      above 100 the total as an overlay, its cover at gui_scaling 1 and 2);
 --   7. recipe books (grug_jobs/ui.lua): a profession book lists T1-T6 with
 --      locked recipes greyed and "N locked" per tier, the station view and
 --      Basics keep their old rules;
---   8. every formspec built above passes a bracket/escape sanity check.
+--   8. every formspec built above passes a bracket/escape sanity check;
+--   9. slots that accept several items (Round 41 lane UI, ruling 4): the
+--      2 / 3 / 4 (2x2) / 3 + "+N" icon layouts inside the cell, a single
+--      member keeps its one icon, icons in the tooltip's order, one click
+--      target per icon with a recipe and none for "+N", the complete list on
+--      every icon, and navigation and Back from a sub-icon.
 --
 -- Usage (repo root): luajit tools/r28_a6_ui/portable_test.lua
 
@@ -151,6 +158,10 @@ function ItemStack(item)
 	function stack:get_count() return count end
 	function stack:is_empty() return count == 0 or name == "" end
 	function stack:to_string() return name == "" and "" or (name .. " " .. count) end
+	function stack:get_stack_max()
+		local def = core.registered_items[name]
+		return def and def.stack_max or 99
+	end
 	function stack:get_short_description()
 		local def = core.registered_items[name]
 		return def and def.description or name
@@ -732,6 +743,129 @@ context.grug_character_tab = "stats"
 grug_jobs.record_craft(smith, "weaponsmith", 2)
 eq(resent, 1, "no refresh while another tab is open")
 
+-- The Scout's quiver cell (Round 41 ruling 6): above 100 arrows it shows the
+-- true total, a cover over the engine's count corner (sized for the window:
+-- a three-digit count at 30 x 20 px per real_gui_scaling against the legacy
+-- slot size) and an item_image of the cell's item with the total, both after
+-- the list[]; at 100 or fewer the engine's own count stays alone.
+core.registered_items["grug_gear:arrow"] = {description = "Arrow", stack_max = 100}
+grug_inventory.QUIVER_LIST = "grug_quiver_content"
+grug_inventory.quiver_capacity = function() return 500 end
+local quiver_total = 0
+grug_inventory.quiver_count = function() return quiver_total end
+grug_inventory.has_quiver = function(p) return p:get_player_name() ~= "smith" end
+-- The engine's legacy formspec layout (guiFormSpecMenu.cpp), written out
+-- here independently of pages.lua: calculateImgsize (padding 0.05 on each
+-- side; getImgsize with the padded screen, its integer min_dim / 15; capped
+-- by fitx / fity for the form's size; truncated to v2s32), spacing 5/4 and
+-- 15/13 of imgsize, padding 3/8 (:3339-3341), a position trunc(padding +
+-- pos * spacing) (getElementBasePos :257-264), an image or item_image size
+-- trunc(size * imgsize) (parseImage :808-811, parseItemImage), a list slot
+-- imgsize from that base (parseList). The window information a client sends
+-- is clientdynamicinfo.cpp's: max_formspec_size = size / getImgsize(size).
+local function get_imgsize(w, h, gui_scaling, density)
+	local min_dim = math.floor(math.min(w, h))
+	return math.max(math.floor(min_dim / 15) * gui_scaling, 0.5555 * density * 96 * gui_scaling)
+end
+local function engine_window(w, h, gui_scaling)
+	local prefer = get_imgsize(w, h, gui_scaling, 1)
+	return {size = {x = w, y = h}, max_formspec_size = {x = w / prefer, y = h / prefer},
+		real_gui_scaling = gui_scaling, real_hud_scaling = gui_scaling}
+end
+local function legacy_layout(w, h, gui_scaling)
+	local pw, ph = w * 0.9, h * 0.9
+	local img = math.floor(math.min(get_imgsize(pw, ph, gui_scaling, 1),
+		pw / (5 / 4 * (0.5 + 10.4)), ph / (15 / 13 * (0.85 + 11.1))))
+	return {img = img, sx = img * 5 / 4, sy = img * 15 / 13, pad = math.floor(img * 3 / 8),
+		font = 16 * gui_scaling}
+end
+local function rect_of(layout, x, y, w, h)
+	local x0 = math.floor(layout.pad + x * layout.sx)
+	local y0 = math.floor(layout.pad + y * layout.sy)
+	return {x0 = x0, y0 = y0, x1 = x0 + math.floor(w * layout.img), y1 = y0 + math.floor(h * layout.img)}
+end
+local NORMAL_WINDOW = engine_window(1920, 1080, 1)
+local LARGE_WINDOW = engine_window(1920, 1080, 2)
+-- A small browser window of the web build at gui_scaling 1.5: the form-fit
+-- cap holds, so the count is largest against the slot.
+local SMALL_WINDOW = engine_window(1280, 720, 1.5)
+local function quiver_page(name, window, total)
+	local archer = make_player(name, window)
+	function archer:get_properties() return smith:get_properties() end
+	function archer:get_inventory()
+		return {get_stack = function(_, list, index)
+			if list == grug_inventory.QUIVER_LIST and index == 1 and total > 0 then
+				return ItemStack("grug_gear:arrow " .. math.min(total, 100))
+			end
+			return ItemStack("")
+		end}
+	end
+	quiver_total = total
+	contexts[name] = {page = "grug_inventory:character", grug_character_tab = "stats"}
+	local fs = character:get(archer, contexts[name])
+	formspec_ok(fs, "quiver " .. name)
+	return fs
+end
+local QUIVER_CELL = "list[current_player;grug_quiver_content;7.3,1.9;1,1;]"
+local COVER = "[fill:8x8:#1f1f1f]"
+-- Where the engine draws the cover and the count overlay for a page, in
+-- pixels, against the slot and the engine's own count "100" in its corner
+-- (drawItemStack: right- and bottom-aligned at the slot's corner; the
+-- default font's digits about 0.556 em wide, its line about 1.2 em high).
+local function overlay_ok(fs, layout, label)
+	local cx, cy, cw, ch = fs:match("image%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);%[fill:8x8:#1f1f1f%]")
+	local ix, iy, iw, ih = fs:match("item_image%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_gear:arrow %d+%]")
+	if not check(cx and ix, label .. ": cover and count overlay present") then return end
+	local slot = rect_of(layout, 7.3, 1.9, 1, 1)
+	local cover = rect_of(layout, tonumber(cx), tonumber(cy), tonumber(cw), tonumber(ch))
+	local image = rect_of(layout, tonumber(ix), tonumber(iy), tonumber(iw), tonumber(ih))
+	local count_w = math.ceil(3 * 0.556 * layout.font)
+	local count_h = math.ceil(1.2 * layout.font)
+	local detail = (" (slot %d,%d-%d,%d, cover %d,%d-%d,%d, count %dx%d)"):format(slot.x0, slot.y0,
+		slot.x1, slot.y1, cover.x0, cover.y0, cover.x1, cover.y1, count_w, count_h)
+	check(image.x0 == slot.x0 and image.y0 == slot.y0 and image.x1 == slot.x1 and image.y1 == slot.y1,
+		label .. ": the item_image lies exactly on the slot" .. detail)
+	check(cover.x0 >= slot.x0 and cover.y0 >= slot.y0, label .. ": the cover starts inside the slot" .. detail)
+	check(cover.x0 <= slot.x1 - count_w and cover.y0 <= slot.y1 - count_h,
+		label .. ": the cover hides the engine's count" .. detail)
+	check(cover.x1 >= slot.x1 and cover.y1 >= slot.y1 and cover.x1 <= slot.x1 + 1 and
+		cover.y1 <= slot.y1 + 1, label .. ": the cover reaches the slot's corner, at most onto its 1 px border" .. detail)
+end
+local fs100 = quiver_page("archer100", NORMAL_WINDOW, 100)
+has(fs100, QUIVER_CELL, "quiver 100: the cell")
+has(fs100, "label[7.3,2.85;100/500]", "quiver 100: the total beside it")
+lacks(fs100, "item_image[", "quiver 100: no overlay")
+lacks(fs100, COVER, "quiver 100: no cover")
+local fs101 = quiver_page("archer101", NORMAL_WINDOW, 101)
+local count101 = "item_image[7.3,1.9;1,1;grug_gear:arrow 101]"
+has(fs101, count101, "quiver 101: the total on the cell")
+overlay_ok(fs101, legacy_layout(1920, 1080, 1), "quiver 101, 1920x1080 gui_scaling 1")
+local at_list, at_cover, at_count = fs101:find(QUIVER_CELL, 1, true),
+	fs101:find(COVER, 1, true), fs101:find(count101, 1, true)
+check(at_list and at_cover and at_count and at_list < at_cover and at_cover < at_count,
+	"quiver 101: list, then cover, then count (drawn on top, clicks reach the list)")
+local fs500 = quiver_page("archer500", LARGE_WINDOW, 500)
+has(fs500, "item_image[7.3,1.9;1,1;grug_gear:arrow 500]", "quiver 500: the total on the cell")
+has(fs500, "label[7.3,2.85;500/500]", "quiver 500: the total beside it")
+overlay_ok(fs500, legacy_layout(1920, 1080, 2), "quiver 500, 1920x1080 gui_scaling 2")
+overlay_ok(quiver_page("archer_small", SMALL_WINDOW, 250), legacy_layout(1280, 720, 1.5),
+	"quiver 250, 1280x720 gui_scaling 1.5")
+local fs_unknown = quiver_page("archer_join", nil, 181)
+has(fs_unknown, "item_image[7.3,1.9;1,1;grug_gear:arrow 181]", "quiver 181: the total on the cell")
+-- Without window information the cover must still hide the count in the
+-- small window above, the largest count against the slot.
+local cx, cy = fs_unknown:match("image%[([%d.]+),([%d.]+);[%d.]+,[%d.]+;%[fill")
+local small = legacy_layout(1280, 720, 1.5)
+local cover_at = rect_of(small, tonumber(cx) or 0, tonumber(cy) or 0, 0, 0)
+local slot_small = rect_of(small, 7.3, 1.9, 1, 1)
+check(cover_at.x0 <= slot_small.x1 - math.ceil(3 * 0.556 * small.font) and
+	cover_at.y0 <= slot_small.y1 - math.ceil(1.2 * small.font),
+	"quiver 181 without window information: the cover hides the count even in a small window")
+local fs0 = quiver_page("archer0", NORMAL_WINDOW, 0)
+lacks(fs0, "item_image[", "empty quiver: no overlay")
+has(fs0, "grug_inventory_quiver.png", "empty quiver: the ghost")
+grug_inventory.has_quiver = function() return false end
+
 ------------------------------------------------------------------------------
 -- 7. Recipe books.
 ------------------------------------------------------------------------------
@@ -807,10 +941,167 @@ has(basics_fs, "grug_test:plank", "Basics lists its recipe")
 local counts = grug_jobs.book_locked_counts(smith, grug_jobs.book_records(smith, "weaponsmith"))
 eq(table.concat(counts, ","), "0,0,1,0,0,0", "book_locked_counts")
 
+------------------------------------------------------------------------------
+-- 9. Slots that accept several items (Round 41 lane UI, ruling 4).
+------------------------------------------------------------------------------
+-- Groups of 1, 2, 3, 4 (five members, two sharing a label) and 5 items; corn
+-- and apple have a Basics recipe of their own, so their icons are clickable.
+local group_items = {
+	testone = {{"grug_test:salt", "Salt"}},
+	testtwo = {{"grug_test:potato", "Potato"}, {"grug_test:corn", "Corn"}},
+	testthree = {{"grug_test:onion", "Onion"}, {"grug_test:garlic", "Garlic"},
+		{"grug_test:leek", "Leek"}},
+	testfour = {{"grug_test:berry_b", "Blueberry"}, {"grug_test:berry_a", "Blueberry"},
+		{"grug_test:cherry", "Cherry"}, {"grug_test:raspberry", "Raspberry"},
+		{"grug_test:strawberry", "Strawberry"}},
+	testfive = {{"grug_test:pear", "Pear"}, {"grug_test:apple", "Apple"},
+		{"grug_test:plum", "Plum"}, {"grug_test:fig", "Fig"}, {"grug_test:quince", "Quince"}},
+}
+for group, members in pairs(group_items) do
+	for _, member in ipairs(members) do
+		core.registered_items[member[1]] = {description = member[2] .. "\nFood",
+			groups = {[group] = 1}}
+	end
+end
+item("grug_test:stew", "Test Stew")
+core.get_item_group = function(name, group)
+	local def = core.registered_items[name]
+	return def and def.groups and def.groups[group] or 0
+end
+basics_crafts["grug_test:stew"] = {method = "normal", width = 3, items = {"group:testtwo",
+	"group:testthree", "group:testfour", "group:testfive", "group:testone"},
+	output = "grug_test:stew"}
+basics_crafts["grug_test:corn"] = {method = "normal", width = 1, items = {"grug_test:plank"},
+	output = "grug_test:corn"}
+basics_crafts["grug_test:apple"] = {method = "normal", width = 1, items = {"grug_test:bar"},
+	output = "grug_test:apple"}
+grug_jobs._reset_book_cache()
+local book_shown
+core.show_formspec = function(_, formname, formspec)
+	if formname == "grug_jobs:book" then book_shown = formspec end
+end
+local stew_fs = grug_jobs.book_formspec(smith, "general", nil, 1, "", "grug_test:stew", 1)
+formspec_ok(stew_fs, "multi-item slots")
+-- Elements per kind, with their position and size.
+local function slot_elements(fs, kind)
+	local out = {}
+	for x, y, w, h, rest in fs:gmatch(kind .. "%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);(.-)%]") do
+		out[#out + 1] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
+			rest = rest}
+	end
+	return out
+end
+local function inside(e, cx, cy)
+	return e.x >= cx - 1e-6 and e.y >= cy - 1e-6 and e.x + e.w <= cx + 0.82 + 1e-6 and
+		e.y + e.h <= cy + 0.82 + 1e-6
+end
+local function cell_parts(fs, cx, cy)
+	local parts = {icons = {}, buttons = {}, tooltips = {}, whole = {}}
+	for _, e in ipairs(slot_elements(fs, "item_image")) do
+		if inside(e, cx, cy) then
+			if e.w < 0.82 then parts.icons[#parts.icons + 1] = e else parts.whole[#parts.whole + 1] = e end
+		end
+	end
+	for _, e in ipairs(slot_elements(fs, "image_button")) do
+		if inside(e, cx, cy) then parts.buttons[#parts.buttons + 1] = e end
+	end
+	for _, e in ipairs(slot_elements(fs, "tooltip")) do
+		if inside(e, cx, cy) then parts.tooltips[#parts.tooltips + 1] = e end
+	end
+	return parts
+end
+local function near2(a, b) return math.abs(a - b) < 0.002 end
+-- Icon offsets inside the cell, row by row.
+local function offsets(parts, cx, cy)
+	local out = {}
+	for _, e in ipairs(parts.icons) do
+		out[#out + 1] = ("%.3f,%.3f"):format(e.x - cx, e.y - cy)
+	end
+	return table.concat(out, " ")
+end
+local function icon_items(parts)
+	local out = {}
+	for _, e in ipairs(parts.icons) do out[#out + 1] = e.rest end
+	return table.concat(out, " ")
+end
+local CELLS = {{1.25, 5.65}, {2.15, 5.65}, {3.05, 5.65}, {1.25, 6.55}, {2.15, 6.55}}
+local two, three, four, five, one = cell_parts(stew_fs, unpack(CELLS[1])),
+	cell_parts(stew_fs, unpack(CELLS[2])), cell_parts(stew_fs, unpack(CELLS[3])),
+	cell_parts(stew_fs, unpack(CELLS[4])), cell_parts(stew_fs, unpack(CELLS[5]))
+eq(offsets(two, 1.25, 5.65), "0.020,0.225 0.430,0.225", "2 items: two icons side by side")
+eq(offsets(three, 2.15, 5.65), "0.020,0.020 0.430,0.020 0.225,0.430",
+	"3 items: two above, one below")
+eq(offsets(four, 3.05, 5.65), "0.020,0.020 0.430,0.020 0.020,0.430 0.430,0.430", "4 items: 2x2")
+eq(offsets(five, 1.25, 6.55), "0.020,0.020 0.430,0.020 0.020,0.430", "5 items: three icons")
+for _, parts in ipairs({two, three, four, five}) do
+	for _, e in ipairs(parts.icons) do
+		check(near2(e.w, 0.37) and near2(e.h, 0.37), "icons are 0.37 inside 0.41 quarters")
+	end
+	eq(#parts.whole, 0, "a multi-item slot draws no full-size icon")
+end
+has(stew_fs, "style_type[label;font_size=*0.8]label[1.710,7.165;+2]style_type[label;font_size=*1]",
+	"5 items: \"+2\" in the fourth place, in a smaller font reset afterwards")
+eq(#one.icons, 0, "1 item: no small icons")
+eq(#one.whole, 1, "1 item: today's single icon")
+eq(one.whole[1] and one.whole[1].rest, "grug_test:salt", "1 item: its only member")
+-- Icon order follows the tooltip's (label) order; a shared label is one entry.
+eq(icon_items(two), "grug_test:corn grug_test:potato", "icons in tooltip order (Corn, Potato)")
+eq(icon_items(three), "grug_test:garlic grug_test:leek grug_test:onion", "3 icons in order")
+eq(icon_items(four), "grug_test:berry_a grug_test:cherry grug_test:raspberry grug_test:strawberry",
+	"two Blueberries are one icon (the first name), 4 icons")
+eq(icon_items(five), "grug_test:apple grug_test:fig grug_test:pear", "the first three of five")
+-- Clickability: one target per icon under the cell rule, never the marker.
+eq(#two.buttons, 1, "2 items: only Corn (with a recipe) is clickable")
+has(stew_fs, "image_button[1.250,5.855;0.41,0.41;blank.png;grug_jobs_cell_1_1;;false;false]",
+	"Corn's click target covers its quarter")
+lacks(stew_fs, "grug_jobs_cell_1_2", "Potato (no recipe) has no click target")
+eq(#three.buttons + #four.buttons, 0, "items without a recipe are inert")
+eq(#five.buttons, 1, "5 items: only Apple is clickable")
+has(stew_fs, "grug_jobs_cell_4_1;", "Apple is icon 1 of cell 4")
+lacks(stew_fs, "grug_jobs_cell_4_4", "the \"+2\" marker is never clickable")
+-- Every icon shows the same complete list; a clickable one adds the click line.
+local function tooltip_texts(parts)
+	local out = {}
+	for _, e in ipairs(parts.tooltips) do out[#out + 1] = e.rest end
+	return out
+end
+local five_full = fs_escape("Apple or Fig or Pear or Plum or Quince")
+local tips = tooltip_texts(five)
+eq(#tips, 2, "5 items: the clickable icon's tooltip and the whole cell's")
+eq(tips[1], five_full .. "\nClick to view recipe", "the clickable icon lists all five")
+eq(tips[2], five_full, "the whole cell (inert icons, the marker) lists all five")
+check(not stew_fs:find("%+%d+ more"), "no \"+N more\" cut in any tooltip")
+tips = tooltip_texts(four)
+eq(#tips, 1, "4 items: one tooltip over the whole cell")
+eq(tips[1], fs_escape("Blueberry or Cherry or Raspberry or Strawberry"), "4 items: the full list")
+eq(tooltip_texts(two)[2], fs_escape("Corn or Potato"), "2 items: \"Corn or Potato\"")
+eq(tooltip_texts(one)[1], "Salt", "1 item: today's tooltip")
+-- Navigation and Back from a sub-icon, through the book's own handler.
+local function send_book(fields)
+	book_shown = nil
+	for _, fn in ipairs(callbacks.fields) do
+		if fn(smith, "grug_jobs:book", fields) then break end
+	end
+	return book_shown
+end
+grug_jobs.open_book(smith, "general")
+send_book({grug_jobs_search = "stew", grug_jobs_do_search = ""})
+local host = send_book({grug_jobs_item_1 = "", grug_jobs_search = "stew"})
+has(host, "item_image[5.25,6.35;1.1,1.1;grug_test:stew]", "the stew is selected")
+eq(send_book({grug_jobs_cell_1_2 = ""}), nil, "a forged click on Potato does nothing")
+local jumped = send_book({grug_jobs_cell_1_1 = ""})
+has(jumped, "item_image[5.25,6.35;1.1,1.1;grug_test:corn]", "clicking Corn opens its recipe")
+has(jumped, "grug_jobs_back;Back]", "Back appears after a sub-icon jump")
+local back = send_book({grug_jobs_back = ""})
+has(back, "item_image[5.25,6.35;1.1,1.1;grug_test:stew]", "Back returns to the stew")
+has(back, "grug_jobs_search;;stew]", "Back restores the search")
+jumped = send_book({grug_jobs_cell_4_1 = ""})
+has(jumped, "item_image[5.25,6.35;1.1,1.1;grug_test:apple]", "clicking Apple (5-item slot) opens its recipe")
+
 print(("%d formspecs checked for bracket/escape sanity"):format(formspecs_checked))
 for label, count in pairs(raw_brackets) do
 	print(("note: %s carries %d raw '[' inside elements (texture modifiers)"):format(label, count))
 end
 print(("%d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(("R28 A6 UI PORTABLE FAIL %d/%d"):format(failures, checks), 0) end
 print("R28 A6 UI PORTABLE PASS checks=" .. checks)

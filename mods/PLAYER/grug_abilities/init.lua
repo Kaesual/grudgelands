@@ -625,7 +625,9 @@ end
 -- The client DID point at a node: builtin's placement rule, spelled out, plus
 -- the hand-reach bound builtin does not have.
 local function ability_on_place(itemstack, placer, pointed_thing)
-	if placer and grug_abilities.input then grug_abilities.input.right_action(placer) end
+	if placer and grug_abilities.input then
+		grug_abilities.input.right_native(placer, pointed_thing)
+	end
 	if not placer or not pointed_thing or pointed_thing.type ~= "node" or
 			sneaking(placer) then
 		return itemstack
@@ -640,7 +642,9 @@ end
 -- Air/secondary fallback: the first visible actor or node owns interaction.
 -- Never reach through a foreground blocker or duplicate native object dispatch.
 local function ability_on_secondary_use(itemstack, user, pointed_thing)
-	if user and grug_abilities.input then grug_abilities.input.right_action(user) end
+	if user and grug_abilities.input then
+		grug_abilities.input.right_native(user, pointed_thing)
+	end
 	-- An OBJECT click arrives here too (see the header): the engine is about to
 	-- run that object's own right-click, so this callback must do nothing at all.
 	if pointed_thing and pointed_thing.type ~= "nothing" then
@@ -690,6 +694,26 @@ local function ability_on_secondary_use(itemstack, user, pointed_thing)
 	end
 	return pass_to_node(nearest.under, user, itemstack, nearest) or itemstack
 end
+
+-- The engine writes the stack these callbacks return back into the wield
+-- slot (serverpackethandler.cpp INTERACT_PLACE / INTERACT_ACTIVATE ->
+-- PlayerSAO::setWieldedItem), and their `itemstack` is a copy taken before
+-- they ran. Returned as it came, it would undo what contextual input wrote to
+-- the wielded stack during the call: the zero pointing range and the draw
+-- stage of a bow draw this press started, renewed or ended (Round 41). The
+-- stack as it is now goes back instead; another stack a node's on_rightclick
+-- returned is kept.
+local function wielded_now(callback)
+	return function(itemstack, player, pointed_thing)
+		local result = callback(itemstack, player, pointed_thing)
+		if result == itemstack and player and player.get_wielded_item then
+			return player:get_wielded_item()
+		end
+		return result
+	end
+end
+local ability_on_place_now = wielded_now(ability_on_place)
+local ability_on_secondary_use_now = wielded_now(ability_on_secondary_use)
 
 --
 -- Ability registration & item. One tool per ability; the item's `range`
@@ -837,8 +861,8 @@ function grug_abilities.register_ability(def)
 		-- Right-click never cast and still does not; both callbacks only hand
 		-- the click on to an interactive node (see the block above this
 		-- function).
-		on_place = ability_on_place,
-		on_secondary_use = ability_on_secondary_use,
+		on_place = ability_on_place_now,
+		on_secondary_use = ability_on_secondary_use_now,
 	}
 	-- Every representation retains the native hand-dig path. The server input
 	-- owner dispatches skills from native press events and sampled controls.

@@ -255,20 +255,32 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 				local liquidtype = canonical_def.liquidtype or "none"
 				local liquid_kind = liquidtype == "source" and 1 or
 					(liquidtype == "flowing" and 2 or 0)
+				-- A node of the group grug_air is air to the writer: the water
+				-- guard's barrier (grug_core/water_guard.lua) is flooded air on
+				-- protected ground, and the guard leaves it in the top or bottom
+				-- layer of a chunk not generated yet. As foreign content it was
+				-- a transaction veto there (Round 41 lane CR, the production
+				-- crash); as air the fill-void band fills it, a clear keeps it,
+				-- and the liquid scan sees no liquid.
+				local air_like = ((canonical_def.groups or {}).grug_air or 0) == 1
 				local source_name = canonical_def.liquid_alternative_source
 				local family = source_name == "default:water_source" and 1 or
 					(source_name == "default:river_water_source" and 2 or
 						(liquid_kind ~= 0 and 3 or 0))
-				class_by_cid[cid] = {
-					liquid_kind ~= 0 and 4 or content_class(canonical_name, canonical_def),
-					family, liquid_kind,
-					canonical_def.floodable == true,
-					canonical_def.paramtype == "light",
-					canonical_def.paramtype == "light",
-					canonical_def.sunlight_propagates == true,
-					integer(canonical_def.light_source or 0, "light source", 0, 15),
-					canonical_def.paramtype2 or "none",
-				}
+				if air_like and liquid_kind == 0 then
+					class_by_cid[cid] = {1, 0, 0, true, true, true, true, 0, "none"}
+				else
+					class_by_cid[cid] = {
+						liquid_kind ~= 0 and 4 or content_class(canonical_name, canonical_def),
+						family, liquid_kind,
+						canonical_def.floodable == true,
+						canonical_def.paramtype == "light",
+						canonical_def.paramtype == "light",
+						canonical_def.sunlight_propagates == true,
+						integer(canonical_def.light_source or 0, "light source", 0, 15),
+						canonical_def.paramtype2 or "none",
+					}
+				end
 			end
 		end
 	end

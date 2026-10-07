@@ -1,0 +1,29 @@
+# Run 3 (reproduction of the runtime mechanism): candidate (22,-1,-32), minp
+# (1728,-112,-2592), lies wholly on hard_protected ground, where the water
+# guard turns air that water flows into into grug_core:water_barrier. As in
+# production, the whole layer above it and the generated neighbours of its own
+# layer exist first; the liquids run; the census shows whether a barrier
+# formed in its top layer (y -33) on its own. Then water is let into one cave
+# opening of that layer (as cave water reaching it through a player's tunnel
+# would), the census shows the barrier, and the candidate is generated.
+emerge 1680 0 -2640
+emerge 1760 0 -2640
+emerge 1840 0 -2640
+emerge 1680 0 -2560
+emerge 1760 0 -2560
+emerge 1840 0 -2560
+emerge 1680 0 -2480
+emerge 1760 0 -2480
+emerge 1840 0 -2480
+emerge 1680 -80 -2560
+emerge 1840 -80 -2560
+emerge 1760 -80 -2480
+emerge 1840 -80 -2480
+wait 90
+census 1728 -33 -2592 1807 -33 -2513
+census 1781 -33 -2580 1783 -32 -2578
+place 1782 -32 -2579 default:water_source
+wait 5
+census 1728 -33 -2592 1807 -33 -2513
+emerge 1760 -80 -2560
+shutdown
