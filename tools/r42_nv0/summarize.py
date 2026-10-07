@@ -14,6 +14,7 @@ table per scene and mover. --compact writes the result file without the
 per-step tracks (small enough to keep as evidence).
 """
 import json
+import os
 import math
 import sys
 
@@ -104,7 +105,10 @@ def trials_section(data):
             t = trials.get((mover, scene))
             if not t:
                 continue
-            rows.append([scene, t["reached"], t.get("t_goal"), t.get("min_d"),
+            reached = t["reached"]
+            if reached and t.get("how") == "snap":
+                reached = "snap"
+            rows.append([scene, reached, t.get("t_goal"), t.get("min_d"),
                          t.get("searches"), t.get("found"),
                          round((t.get("search_us") or 0) / 1000, 2),
                          t.get("search_max_us"), triggers(t)])
@@ -391,7 +395,7 @@ def main(argv):
         print(__doc__)
         return 2
     data = load(args[0])
-    parts = [f"# NV0 probe summary ({args[0]})",
+    parts = [f"# NV0 probe summary ({os.path.basename(args[0])})",
              f"Seed {data['meta'].get('seed')}, settings "
              f"{json.dumps(data['meta'].get('settings'), sort_keys=True)}, "
              f"A* budget {data['meta'].get('path_budget_us')} us/step."]

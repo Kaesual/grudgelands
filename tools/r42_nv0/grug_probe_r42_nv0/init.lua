@@ -537,7 +537,14 @@ local function pct(sorted, p)
 	return sorted[max(1, min(#sorted, math.ceil(#sorted * p)))]
 end
 
+-- Never below searchdistance 2: a box whose integer length is 5 or less
+-- (only possible with searchdistance 0 or 1) takes the engine's array node
+-- container, and the search reads one step outside it: the server aborts
+-- (docs/technical/upstream-workarounds.md §5).
+local MIN_PAD = 2
+
 local function timed_path(a, b, pad, jump, drop, reps)
+	assert(pad >= MIN_PAD, "searchdistance below " .. MIN_PAD)
 	local costs, path = {}, nil
 	for i = 1, reps or 3 do
 		local t0 = now()
@@ -706,8 +713,8 @@ local function start_trial(rec, mover)
 		rec.t0 = now()
 	elseif mover.kind == "villager" then
 		ent._grug_idle_spots = {
-			{x = s.x, z = s.z, yaw = 0},
-			{x = g.x, z = g.z, yaw = 0},
+			{x = s.x, y = s.y, z = s.z, yaw = 0},
+			{x = g.x, y = g.y, z = g.z, yaw = 0},
 		}
 		ent._grug_walker = true
 		ent._grug_idle_spot = 2
@@ -746,7 +753,10 @@ local function sample(rec)
 	local radius = ARRIVE[rec.kind]
 	if radius and not rec.arrive_t and d <= radius then
 		rec.arrive_t = r2(t)
-		event(rec, "arrive")
+		-- A teleport (snap) before the arrival means it did not walk there.
+		rec.arrive_how = (rec.counts.teleport or rec.counts.snap) and "snap"
+			or "walk"
+		event(rec, "arrive", rec.arrive_how)
 	end
 	for _, r in ipairs({1.5, 3, 5}) do
 		local key = "t_within_" .. r
@@ -780,6 +790,7 @@ local function finish_trial(rec, mover)
 	local row = {
 		scene = rec.scene, mover = rec.mover, kind = rec.kind, lane = rec.lane,
 		entity = rec.entity, T = mover.T, reached = reached,
+		how = rec.kind == "combat" and (reached and "hit" or nil) or rec.arrive_how,
 		t_goal = rec.kind == "combat" and rec.hit_t or rec.arrive_t,
 		t_within_1_5 = rec["t_within_1.5"], t_within_3 = rec.t_within_3,
 		t_within_5 = rec.t_within_5, min_d = rec.min_d and r2(rec.min_d),
@@ -795,8 +806,9 @@ local function finish_trial(rec, mover)
 	local cn = {}
 	for k, v in pairs(rec.counts) do cn[#cn + 1] = k .. "=" .. v end
 	table.sort(cn)
-	log(("TRIAL %-11s %-11s reached=%-5s t=%-6s min_d=%-5s fp=%d found=%d us=%d max=%d sm[%s] %s"):format(
-		rec.mover, rec.scene, tostring(reached), tostring(row.t_goal),
+	log(("TRIAL %-11s %-11s reached=%-5s %-4s t=%-6s min_d=%-5s fp=%d found=%d us=%d max=%d sm[%s] %s"):format(
+		rec.mover, rec.scene, tostring(reached), tostring(row.how or ""),
+		tostring(row.t_goal),
 		tostring(row.min_d), rec.fp.n, rec.fp.found, rec.fp.us, rec.fp.max,
 		table.concat(sm, " "), table.concat(cn, " ")))
 end
@@ -835,7 +847,6 @@ local function run_batch(mover, done)
 			rec.entity, rec.race = name, race
 			if obj then
 				rec.obj, rec.ent = obj, ent
-				if mover.kind == "combat" then ent._grug_level = 10 end
 				tracked[ent] = rec
 			else
 				rec.lost = true
@@ -908,7 +919,7 @@ end
 ---------------------------------------------------------------------------
 local calib = {}
 results.calib = calib
-local PADS = {1, 2, 3, 4, 6, 8, 12, 16, 24}
+local PADS = {2, 3, 4, 6, 8, 12, 16, 24}
 
 -- C1: every scene, from its start and from its blocked cell to the goal,
 -- against the padding; head-room/width violations of the found path; the
@@ -1169,7 +1180,6 @@ local function phase_chasers40(done)
 		local name = i % 3 == 0 and "grug_mobs:bandit" or "grug_mobs:zombie"
 		local obj, ent = spawn_at(name, feet(p))
 		if obj then
-			ent._grug_level = 20
 			local rec = {mover = name, kind = "chaser", scene = "chasers40", lane = 0,
 				track = {}, events = {}, fp = {n = 0, found = 0, us = 0, max = 0},
 				sm = sm_total, counts = {}, cycles = 0, t0 = now(), goal = feet(c)}

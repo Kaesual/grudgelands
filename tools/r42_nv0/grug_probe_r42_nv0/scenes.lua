@@ -38,13 +38,14 @@ local function wall(u, v1, v2, top)
 	return {"fill", "solid", u, v1, 1, u, v2, top}
 end
 
--- A fence ring round the goal, `top` nodes high.
+-- A fence ring round the goal, `top` nodes high, 4 nodes from it: beyond a
+-- melee reach of 3, so a mob outside cannot strike across it.
 local function fence_ring(top)
 	return {
-		{"fill", "fence", G - 2, -2, 1, G + 2, -2, top},
-		{"fill", "fence", G - 2, 2, 1, G + 2, 2, top},
-		{"fill", "fence", G - 2, -1, 1, G - 2, 1, top},
-		{"fill", "fence", G + 2, -1, 1, G + 2, 1, top},
+		{"fill", "fence", G - 4, -4, 1, G + 4, -4, top},
+		{"fill", "fence", G - 4, 4, 1, G + 4, 4, top},
+		{"fill", "fence", G - 4, -3, 1, G - 4, 3, top},
+		{"fill", "fence", G + 4, -3, 1, G + 4, 3, top},
 	}
 end
 
@@ -102,14 +103,14 @@ local list = {
 		name = "fence",
 		note = "a 2-high wooden fence ring round the target (visible, not walkable)",
 		ops = fence_ring(2),
-		blocked = {G - 3, 0},
+		blocked = {G - 5, 0},
 		reachable = false,
 	},
 	{
 		name = "fence_low",
 		note = "a 1-high wooden fence ring (collision 1.0 high: below a 1.1 step)",
 		ops = fence_ring(1),
-		blocked = {G - 3, 0},
+		blocked = {G - 5, 0},
 	},
 	{
 		name = "pillar",

@@ -295,3 +295,28 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_reset_world` raised through a disposable patch of the staged game)
   and the reset boot with an old and a new character. The declaration's
   rules are `check_upgrade.py`'s own self-test (above).
+- **Round 42** (`r42_<lane>`): `r42_nv0` the navigation test scene, which
+  NV1–DR rerun for their before/after numbers
+  ([round plan](../docs/planning/round42-plan.md) §4.1). `run.sh OUT_DIR
+  LABEL [PHASES] [TIMEOUT]` boots the disposable probe `grug_probe_r42_nv0`
+  (through the round's measuring queue when it exists; `SEED` default 12345;
+  `NV0_MOVERS`/`NV0_SCENES` restrict a debug run) and copies
+  `nv0_results.json` and the `[nv0]` log lines to `OUT_DIR`. Phase `scenes`
+  (about 4 minutes) builds fifteen scenes (`grug_probe_r42_nv0/scenes.lua`:
+  open ground, a trunk, a trunk right before the target, a row of trees, a
+  wall with a doorway, an L-corner, a 2-high and a 1-high fence ring, a
+  pillar, a ditch, a step, a wall with a 1-high hole and a 2-high gap, a
+  pond, a closed and an open wooden door) as lanes on a forceloaded floor
+  above deep ocean and drives real mobs on the real code through all of them
+  at once, one mover per batch: boar, wolf, bear (wide), bandit (tall) forced
+  onto a punchable dummy, a post guard walking back to its post, a royal
+  guard following a leader stand-in, a villager walker. Per trial: reached
+  and when, every `core.find_path` call (count, found, cost, the largest),
+  today's stuck triggers and a per-step track. Phase `calib` measures
+  `find_path` against padding and distance (the scenes, a flat field with
+  and without a path, natural-terrain samples), the candidate fan and a
+  walkable-line prototype; `chasers40` is Round 30's stress (40 chasers round
+  an enclosed target). `summarize.py RESULTS.json [AFTER.json]` prints the
+  tables (self-movement ratios, before/after; `--compact` drops the tracks);
+  `portable_test.lua` pins the scene layouts with an engine-like grid
+  search; `evidence/` keeps the lane's before-runs.
