@@ -247,7 +247,9 @@ local function settlement_factory()
 	-- Base eligibility of one voxel as a P8 resource host (ruling 10, widened
 	-- by the user ruling of 2026-10-07: ground anyone may dig carries the
 	-- ordinary distribution).  Native host rock is a host unless a hydrology
-	-- seal (priority 3) or water (priority 6) holds it; an anchor's grading
+	-- seal (priority 3) or water (priority 6) holds it, or it is the walking
+	-- surface of a path or foundation (opcodes 22 and 16, which P7 leaves as
+	-- stone on a bay platform or a wet grade); below it an anchor's grading
 	-- or platform (4) and a hard foundation (2) are ordinary rock, the
 	-- hard-protected volume above its floor is kept out by the column
 	-- predicate instead.  Stone R5 wrote into native void (terrain fill 27,
@@ -262,7 +264,8 @@ local function settlement_factory()
 			return false
 		end
 		if original_cid == host_cid then
-			return priority ~= 3 and priority ~= 6
+			return priority ~= 3 and priority ~= 6 and r5_opcode ~= 22 and
+				r5_opcode ~= 16
 		end
 		return host_cid == fill_host_cid and (r5_opcode == R24_FILL_OPCODE or
 			r5_opcode == 21 or r5_opcode == 15)

@@ -140,8 +140,8 @@ writers do. At the planned surface renewal follows the generator's own
 host rule: nothing on an anchor platform, on a land grade other than a
 start's or capital's dry anchor grade, on a sealed river or lake column or in
 a surface cave mouth; the dry anchor grades (the natural skin around starts
-and capitals) regrow grass and trees at their biome's density, but no
-resource plants.
+and capitals) regrow grass, trees and resource plants at their biome's
+density (resource plants since the user ruling of 2026-10-07).
 
 **How much.** Around the spot, the renewal counts present plants of the chosen
 species or class and the eligible open supports in a box whose radius makes

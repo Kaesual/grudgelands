@@ -1349,7 +1349,8 @@ code, not by this document.
   stratum host at y; water, bed material, hydrology seals, routes,
   dungeons, foreign nodes and protected content are not hosts. Native rock
   under an anchor's grading or platform, and the stone a grading or
-  foundation fill writes into native void, is ordinary rock.
+  foundation fill writes into native void, is ordinary rock; the walking
+  surface of a path or foundation is no host.
 - **Hard-protected ground** (the exact footprint of a start town or a
   capital's protected city) hosts no natural resource inside its protected
   volume: from its placement height − 100 upward (Round 24 ruling 30).

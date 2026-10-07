@@ -63,6 +63,9 @@ end
 -- predicate's business)
 check(host(STONE, STONE, 0, 0, 4, 21, STONE, STONE), "native stone under a grading")
 check(host(STONE, STONE, 0, 0, 2, 15, STONE, STONE), "native stone under a foundation")
+check(not host(STONE, STONE, 0, 0, 4, 22, STONE, STONE), "a path's walking surface is no host")
+check(not host(STONE, STONE, 0, 0, 2, 16, STONE, STONE),
+	"a foundation's walking surface is no host")
 check(not host(STONE, DIRT, 2, 0, 5, 27, STONE, STONE), "filler over native stone")
 check(host(STONE, COAL, 24, 3, 5, 27, STONE, STONE), "claimed native host keeps its base")
 check(not host(STONE, STONE, 0, 1, 5, 27, STONE, STONE), "occupied cell")
@@ -80,7 +83,7 @@ check(not host(AIR, cid_of("grug_materials:slate"), 2, 0, 5, 27, STONE, STONE),
 	"layer rock is no host")
 check(not host(AIR, AIR, 0, 0, 5, 27, STONE, STONE), "air is no host")
 check(not host(AIR, STONE, 0, 1, 5, 27, STONE, STONE), "reserved fill is no host")
-say("resource-host base rule: 21/21 cases")
+say("resource-host base rule: 23/23 cases")
 
 -------------------------------------------------------------------------------
 -- Synthetic owner: columns with a native top and a planned surface.  R5 has
