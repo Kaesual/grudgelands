@@ -154,7 +154,22 @@ core.find_path = function(pos1, pos2, searchdistance, max_jump, max_drop, algo)
 	return path
 end
 
-do
+-- Round 42 NV1: the navigation module's events (stuck, found, no_path,
+-- rejected, refused, cap_wait, leave_<reason>, give_up) as "nav_<event>".
+local NAV = mobs.grug_nav
+if NAV then
+	NAV.on_event = function(self, kind)
+		local rec = tracked[self]
+		if rec and rec.t0 then
+			local key = "nav_" .. kind
+			rec.sm[key] = (rec.sm[key] or 0) + 1
+			event(rec, "nav", kind)
+		end
+	end
+end
+
+-- The pre-NV1 code's stuck triggers (absent after NV1: nothing to wrap).
+if mc.smart_mobs then
 	local orig = mc.smart_mobs
 	mc.smart_mobs = function(self, s, p, dist, dtime, force, visible)
 		local r = orig(self, s, p, dist, dtime, force, visible)
@@ -168,7 +183,7 @@ do
 	end
 end
 
-do
+if OB.note_path_result then
 	local orig = OB.note_path_result
 	OB.note_path_result = function(temp, has_path)
 		local rec = current and tracked[current]
@@ -187,6 +202,8 @@ do
 		end
 		return orig_exhausted(temp)
 	end
+end
+do
 	local orig_claim = OB.claim_path_budget
 	OB.claim_path_budget = function(temp)
 		local ok, generation = orig_claim(temp)
@@ -743,7 +760,10 @@ local function sample(rec)
 	local bx, bz = lane_base(rec.lane)
 	local flags = 0
 	if ent.state == "attack" then flags = flags + 1 end
-	if ent.path and ent.path.following then flags = flags + 2 end
+	if (ent.path and ent.path.following)
+			or (NAV and NAV.following(ent.temp)) then
+		flags = flags + 2
+	end
 	if rec.coll then flags = flags + 4 end
 	if ent.temp and ent.temp.grug_evading then flags = flags + 8 end
 	rec.coll = false
@@ -775,7 +795,8 @@ end
 
 core.register_globalstep(function()
 	if step_rows then
-		step_rows[#step_rows + 1] = {step_acc.mob_us, step_acc.fp_n, step_acc.fp_us}
+		step_rows[#step_rows + 1] = {step_acc.mob_us, step_acc.fp_n, step_acc.fp_us,
+			now()}
 	end
 	step_acc.mob_us, step_acc.fp_n, step_acc.fp_us = 0, 0, 0
 	for i = 1, #active do sample(active[i]) end
@@ -1222,9 +1243,20 @@ local function phase_chasers40(done)
 				mob[i] = rows[i][1] + rows[i][3]
 				fpstep[i] = rows[i][3]
 			end
+			-- The most searches in any one second (the cap's view).
+			local peak, lo, inwin = 0, 1, 0
+			for hi = 1, #rows do
+				inwin = inwin + rows[hi][2]
+				while rows[hi][4] - rows[lo][4] >= 1e6 do
+					inwin = inwin - rows[lo][2]
+					lo = lo + 1
+				end
+				if inwin > peak then peak = inwin end
+			end
 			table.sort(mob)
 			table.sort(fpstep)
 			calib.chasers40 = {
+				fp_peak_per_s = peak,
 				chasers = n, seconds = r2(seconds), steps = #rows,
 				cpu_s = r2(os.clock() - cpu0),
 				fp_calls = fpn, fp_found = found, fp_per_s = r2(fpn / seconds),
@@ -1238,8 +1270,8 @@ local function phase_chasers40(done)
 			local sm = {}
 			for k, v in pairs(sm_total) do sm[#sm + 1] = k .. "=" .. v end
 			table.sort(sm)
-			log(("CHASERS40 %.1f s: find_path %d calls (%.1f/s, found %d), %.2f ms/s, mean %.0f us, max %d us; step mob+fp us p50=%s p99=%s max=%s; give_ups=%d refused=%d; sm[%s]"):format(
-				seconds, fpn, fpn / seconds, found, fpus / 1000 / seconds,
+			log(("CHASERS40 %.1f s: find_path %d calls (%.1f/s, peak %d in 1 s, found %d), %.2f ms/s, mean %.0f us, max %d us; step mob+fp us p50=%s p99=%s max=%s; give_ups=%d refused=%d; sm[%s]"):format(
+				seconds, fpn, fpn / seconds, peak, found, fpus / 1000 / seconds,
 				fpn > 0 and fpus / fpn or 0, fpmax, tostring(calib.chasers40.mob_step_us_p50),
 				tostring(calib.chasers40.mob_step_us_p99), tostring(mob[#mob]),
 				gave, refused, table.concat(sm, " ")))
