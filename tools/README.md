@@ -264,3 +264,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   5626331914247410985. Its portable checks live in `r24_protection_depth`
   (the P8 floor against the hard protection), `r24_fill` (the host rule)
   and `r23_renewal` (gatherables in an envelope).
+- **Round 41** (`r41_<lane>`): `r41_sc` the bow's missed release
+  (`portable_test.lua`: the real `input.lua` and `scout.lua` on a fake
+  engine; a new press during a live draw fires it and draws again, the
+  0.2 s grace, node calls, the starting press's own call); the engine side
+  is a case in `pt_fixes/lane_a`'s probe, the quiver total in `r28_a6_ui`.
