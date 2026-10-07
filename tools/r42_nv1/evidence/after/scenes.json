@@ -1,0 +1,9012 @@
+{
+ "batches": [
+  {
+   "fp_calls": 41,
+   "fp_max_step_us": 271,
+   "fp_us": 3031,
+   "mob_us_max": 1017,
+   "mob_us_p50": 345,
+   "mob_us_p90": 536,
+   "mob_us_p99": 719,
+   "mover": "boar",
+   "seconds": 20.05,
+   "slowest": [
+    [
+     2.27,
+     1017,
+     230,
+     "grug_mobs:boar",
+     "attack/tracked"
+    ],
+    [
+     16.69,
+     725,
+     175,
+     "grug_mobs:boar",
+     "attack/tracked"
+    ],
+    [
+     3.26,
+     719,
+     152,
+     "grug_mobs:boar",
+     "attack/tracked"
+    ]
+   ],
+   "steps": 221
+  },
+  {
+   "fp_calls": 29,
+   "fp_max_step_us": 234,
+   "fp_us": 2621,
+   "mob_us_max": 1255,
+   "mob_us_p50": 299,
+   "mob_us_p90": 491,
+   "mob_us_p99": 777,
+   "mover": "wolf",
+   "seconds": 20.02,
+   "slowest": [
+    [
+     7.8,
+     1255,
+     110,
+     "grug_mobs:wolf",
+     "attack/tracked"
+    ],
+    [
+     2.27,
+     836,
+     165,
+     "grug_mobs:wolf",
+     "attack/tracked"
+    ],
+    [
+     6.98,
+     777,
+     78,
+     "grug_mobs:wolf",
+     "attack/tracked"
+    ]
+   ],
+   "steps": 221
+  },
+  {
+   "fp_calls": 75,
+   "fp_max_step_us": 282,
+   "fp_us": 4176,
+   "mob_us_max": 1175,
+   "mob_us_p50": 341,
+   "mob_us_p90": 552,
+   "mob_us_p99": 815,
+   "mover": "bear",
+   "seconds": 20.03,
+   "slowest": [
+    [
+     16.86,
+     1175,
+     749,
+     "grug_mobs:bear",
+     "attack/tracked"
+    ],
+    [
+     7.61,
+     833,
+     209,
+     "grug_mobs:bear",
+     "attack/tracked"
+    ],
+    [
+     8.15,
+     815,
+     111,
+     "grug_mobs:bear",
+     "attack/tracked"
+    ]
+   ],
+   "steps": 221
+  },
+  {
+   "fp_calls": 41,
+   "fp_max_step_us": 244,
+   "fp_us": 2824,
+   "mob_us_max": 3639,
+   "mob_us_p50": 310,
+   "mob_us_p90": 1841,
+   "mob_us_p99": 2998,
+   "mover": "bandit",
+   "seconds": 20.01,
+   "slowest": [
+    [
+     3.35,
+     3639,
+     331,
+     "grug_mobs:bandit",
+     "attack/tracked"
+    ],
+    [
+     4.44,
+     3308,
+     309,
+     "grug_mobs:bandit",
+     "attack/tracked"
+    ],
+    [
+     4.07,
+     2998,
+     329,
+     "grug_mobs:bandit",
+     "attack/tracked"
+    ]
+   ],
+   "steps": 221
+  },
+  {
+   "fp_calls": 89,
+   "fp_max_step_us": 1132,
+   "fp_us": 7143,
+   "mob_us_max": 1484,
+   "mob_us_p50": 35,
+   "mob_us_p90": 132,
+   "mob_us_p99": 921,
+   "mover": "post_guard",
+   "seconds": 45,
+   "slowest": [
+    [
+     34.7,
+     1484,
+     621,
+     "grug_mobs:guard_accord",
+     "stand/tracked"
+    ],
+    [
+     36.87,
+     1092,
+     522,
+     "grug_mobs:guard_accord",
+     "stand/tracked"
+    ],
+    [
+     33.61,
+     1046,
+     525,
+     "grug_mobs:guard_accord",
+     "stand/tracked"
+    ]
+   ],
+   "steps": 498
+  },
+  {
+   "fp_calls": 8,
+   "fp_max_step_us": 682,
+   "fp_us": 729,
+   "mob_us_max": 1223,
+   "mob_us_p50": 42,
+   "mob_us_p90": 138,
+   "mob_us_p99": 434,
+   "mover": "royal_guard",
+   "seconds": 30.09,
+   "slowest": [
+    [
+     27.1,
+     1223,
+     292,
+     "grug_mobs:royal_guard_elf",
+     "walk/tracked"
+    ],
+    [
+     15.18,
+     657,
+     88,
+     "grug_mobs:royal_guard_human",
+     "walk/tracked"
+    ],
+    [
+     26.02,
+     507,
+     111,
+     "grug_mobs:royal_guard_human",
+     "walk/tracked"
+    ]
+   ],
+   "steps": 333
+  },
+  {
+   "fp_calls": 0,
+   "fp_max_step_us": 0,
+   "fp_us": 0,
+   "mob_us_max": 379,
+   "mob_us_p50": 11,
+   "mob_us_p90": 89,
+   "mob_us_p99": 277,
+   "mover": "villager",
+   "seconds": 30.07,
+   "slowest": [
+    [
+     14.09,
+     379,
+     109,
+     "grug_mobs:villager_human",
+     "walk/tracked"
+    ],
+    [
+     13,
+     338,
+     80,
+     "grug_mobs:villager_human",
+     "stand/tracked"
+    ],
+    [
+     15.17,
+     310,
+     85,
+     "grug_mobs:villager_human",
+     "walk/tracked"
+    ]
+   ],
+   "steps": 333
+  }
+ ],
+ "calib": null,
+ "meta": {
+  "give_up_after": 3,
+  "origin": {
+   "floor_y": 300,
+   "x": 2560,
+   "z": 2560
+  },
+  "path_budget_us": 3000,
+  "phases": [
+   "scenes"
+  ],
+  "scenes": [
+   {
+    "blocked": [
+     0,
+     0
+    ],
+    "goal_h": 1,
+    "name": "open",
+    "note": "control: flat open ground",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "trunk",
+    "note": "one tree trunk in the middle of the straight line",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     11,
+     0
+    ],
+    "goal_h": 1,
+    "name": "trunk_near",
+    "note": "the target 2 nodes behind a trunk (within melee reach of its front)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "row",
+    "note": "a row of 7 trunks across the line, 1-node gaps, row ends at v +-6",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "doorway",
+    "note": "a 3-high wall across the lane with a 1-wide, 2-high doorway at v +4",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "lcorner",
+    "note": "an L: wall u 7 (v -5..2) and wall v 2 (u 3..7), the way round at v -6",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     9,
+     0
+    ],
+    "goal_h": 1,
+    "name": "fence",
+    "note": "a 2-high wooden fence ring round the target (visible, not walkable)",
+    "reachable": false
+   },
+   {
+    "blocked": [
+     9,
+     0
+    ],
+    "goal_h": 1,
+    "name": "fence_low",
+    "note": "a 1-high wooden fence ring (collision 1.0 high: below a 1.1 step)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     5,
+     0
+    ],
+    "goal_h": 1,
+    "name": "pillar",
+    "note": "a 3x3 stone pillar, 4 high",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0,
+     -1
+    ],
+    "goal_h": 1,
+    "name": "ditch",
+    "note": "a 2-wide, 2-deep ditch across the lane; a 1-deep crossing at v 4..5",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 2,
+    "name": "step",
+    "note": "the ground rises by one node from u 7 on (a plain step up)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "lowgap",
+    "note": "a 4-high wall across the lane, a 1-high hole on the line (v 0), a 2-high gap at v +5",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     3,
+     0
+    ],
+    "goal_h": 1,
+    "name": "pond",
+    "note": "a 2-deep pond (u 4..10, v -6..6) on the line, one-node banks",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "door_closed",
+    "note": "a 3-high wall across the lane, a closed wooden door on the line",
+    "reachable": false
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "door_open",
+    "note": "the same wall with the wooden door open",
+    "reachable": true
+   }
+  ],
+  "seed": "12345",
+  "settings": {
+   "dedicated_server_step": "0.09",
+   "mob_pathfinding_searchdistance": "24",
+   "mob_pathfinding_stuck_path_timeout": "3.0",
+   "mob_pathfinding_stuck_timeout": "2.0"
+  }
+ },
+ "movers": {
+  "bandit": {
+   "T": 20,
+   "entity": "grug_mobs:bandit",
+   "fear_height": 6,
+   "floats": true,
+   "height": 1.7,
+   "jump_height": 4,
+   "kind": "combat",
+   "note": "tall mob (1.7)",
+   "pathfinding": 1,
+   "reach": 3,
+   "run_velocity": 4.6,
+   "stepheight": 1.100000023841858,
+   "tier": "normal",
+   "walk_velocity": 1,
+   "width": 0.6
+  },
+  "bear": {
+   "T": 20,
+   "entity": "grug_mobs:bear",
+   "fear_height": 6,
+   "floats": true,
+   "height": 1.4,
+   "jump_height": 4,
+   "kind": "combat",
+   "note": "wide mob (1.4)",
+   "pathfinding": 1,
+   "reach": 3,
+   "run_velocity": 4.6,
+   "stepheight": 1.100000023841858,
+   "tier": "normal",
+   "walk_velocity": 1,
+   "width": 1.4
+  },
+  "boar": {
+   "T": 20,
+   "entity": "grug_mobs:boar",
+   "fear_height": 6,
+   "floats": true,
+   "height": 0.87,
+   "jump_height": 4,
+   "kind": "combat",
+   "note": "the pig (0.9 wide)",
+   "pathfinding": 1,
+   "reach": 3,
+   "run_velocity": 4.6,
+   "stepheight": 1.100000023841858,
+   "tier": "normal",
+   "walk_velocity": 1,
+   "width": 0.9
+  },
+  "post_guard": {
+   "T": 45,
+   "entity": "grug_mobs:guard_accord",
+   "fear_height": 4,
+   "floats": true,
+   "height": 1.7,
+   "jump_height": 4,
+   "kind": "post",
+   "note": "a fixed walk back to its post (start_post_tick)",
+   "pathfinding": 1,
+   "reach": 3,
+   "run_velocity": 4.6,
+   "stepheight": 1.100000023841858,
+   "tier": "normal",
+   "walk_velocity": 1.2,
+   "width": 0.6
+  },
+  "royal_guard": {
+   "T": 30,
+   "entity": "grug_mobs:royal_guard_human",
+   "fear_height": 4,
+   "floats": true,
+   "height": 1.95,
+   "jump_height": 4,
+   "kind": "follow",
+   "note": "follows an idle leader on the goal (royal_guard_tick)",
+   "pathfinding": 1,
+   "reach": 3,
+   "run_velocity": 4.6,
+   "stepheight": 1.100000023841858,
+   "tier": "elite",
+   "walk_velocity": 1.2,
+   "width": 0.84
+  },
+  "villager": {
+   "T": 30,
+   "entity": "grug_mobs:villager_human",
+   "fear_height": 4,
+   "floats": true,
+   "height": 1.7,
+   "jump_height": 0,
+   "kind": "villager",
+   "note": "a walker whose next idle spot is the goal (amble_tick)",
+   "reach": 0,
+   "run_velocity": 1.1,
+   "stepheight": 1.100000023841858,
+   "walk_velocity": 1.1,
+   "width": 0.6
+  },
+  "wolf": {
+   "T": 20,
+   "entity": "grug_mobs:wolf",
+   "fear_height": 6,
+   "floats": true,
+   "height": 0.85,
+   "jump_height": 4,
+   "kind": "combat",
+   "note": "narrow chaser",
+   "pathfinding": 1,
+   "reach": 3,
+   "run_velocity": 4.6,
+   "stepheight": 1.100000023841858,
+   "tier": "normal",
+   "walk_velocity": 1.5,
+   "width": 0.6
+  }
+ },
+ "trials": [
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 1,
+   "min_d": 1.49,
+   "mover": "boar",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      30
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     3.26,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.81,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 2,
+   "min_d": 1.79,
+   "mover": "boar",
+   "reached": true,
+   "scene": "trunk",
+   "search_max_us": 30,
+   "search_us": 30,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.81,
+   "t_within_3": 3.9,
+   "t_within_5": 3.45
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     3.26,
+     "nav",
+     "stuck"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      3,
+      6,
+      20
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "found"
+    ],
+    [
+     3.81,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 3,
+   "min_d": 1.69,
+   "mover": "boar",
+   "reached": true,
+   "scene": "trunk_near",
+   "search_max_us": 20,
+   "search_us": 20,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      21
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     3.26,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.81,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 4,
+   "min_d": 1.77,
+   "mover": "boar",
+   "reached": true,
+   "scene": "row",
+   "search_max_us": 21,
+   "search_us": 21,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.81,
+   "t_within_3": 3.9,
+   "t_within_5": 3.45
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      48
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     3.81,
+     "nav",
+     "leave_line"
+    ],
+    [
+     4.63,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 5,
+   "min_d": 1.68,
+   "mover": "boar",
+   "reached": true,
+   "scene": "doorway",
+   "search_max_us": 48,
+   "search_us": 48,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 4.63,
+   "t_within_3": 4.72,
+   "t_within_5": 4.35
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 14
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      21,
+      58
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     4.36,
+     "nav",
+     "leave_line"
+    ],
+    [
+     5.53,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 6,
+   "min_d": 1.79,
+   "mover": "boar",
+   "reached": true,
+   "scene": "lcorner",
+   "search_max_us": 58,
+   "search_us": 58,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 5.53,
+   "t_within_3": 5.62,
+   "t_within_5": 5.17
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 3,
+    "leash_reset": 3
+   },
+   "cycles": 3,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.72,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.72,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      117
+     ]
+    ],
+    [
+     2.72,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.81,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      111
+     ]
+    ],
+    [
+     3.81,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.9,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      111
+     ]
+    ],
+    [
+     5.9,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.9,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.9,
+     "give_up"
+    ],
+    [
+     6.98,
+     "re_engage",
+     1
+    ],
+    [
+     7.53,
+     "nav",
+     "stuck"
+    ],
+    [
+     7.53,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      120
+     ]
+    ],
+    [
+     7.53,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.62,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      109
+     ]
+    ],
+    [
+     8.62,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.7,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      114
+     ]
+    ],
+    [
+     10.7,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.7,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.7,
+     "give_up"
+    ],
+    [
+     11.79,
+     "re_engage",
+     2
+    ],
+    [
+     12.34,
+     "nav",
+     "stuck"
+    ],
+    [
+     12.34,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      127
+     ]
+    ],
+    [
+     12.34,
+     "nav",
+     "no_path"
+    ],
+    [
+     13.43,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      108
+     ]
+    ],
+    [
+     13.43,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.51,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      110
+     ]
+    ],
+    [
+     15.51,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.51,
+     "nav",
+     "give_up"
+    ],
+    [
+     15.51,
+     "give_up"
+    ],
+    [
+     16.6,
+     "re_engage",
+     3
+    ],
+    [
+     17.15,
+     "nav",
+     "stuck"
+    ],
+    [
+     17.15,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      136
+     ]
+    ],
+    [
+     17.15,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.24,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      122
+     ]
+    ],
+    [
+     18.24,
+     "nav",
+     "no_path"
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 7,
+   "min_d": 4.57,
+   "mover": "boar",
+   "reached": false,
+   "scene": "fence",
+   "search_max_us": 136,
+   "search_us": 1285,
+   "searches": 11,
+   "smart_mobs": {
+    "nav_give_up": 3,
+    "nav_no_path": 11,
+    "nav_stuck": 4
+   },
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 8,
+   "min_d": 1.49,
+   "mover": "boar",
+   "reached": true,
+   "scene": "fence_low",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     1.63,
+     "nav",
+     "stuck"
+    ],
+    [
+     1.63,
+     "fp",
+     [
+      6,
+      9,
+      14,
+      45
+     ]
+    ],
+    [
+     1.63,
+     "nav",
+     "found"
+    ],
+    [
+     3.26,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.81,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 9,
+   "min_d": 1.42,
+   "mover": "boar",
+   "reached": true,
+   "scene": "pillar",
+   "search_max_us": 45,
+   "search_us": 45,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.81,
+   "t_within_1_5": 4.17,
+   "t_within_3": 3.9,
+   "t_within_5": 3.45
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 10,
+   "min_d": 1.49,
+   "mover": "boar",
+   "reached": true,
+   "scene": "ditch",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 11,
+   "min_d": 1.45,
+   "mover": "boar",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 12,
+   "min_d": 1.49,
+   "mover": "boar",
+   "reached": true,
+   "scene": "lowgap",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.99,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 13,
+   "min_d": 1.49,
+   "mover": "boar",
+   "reached": true,
+   "scene": "pond",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.99,
+   "t_within_1_5": 3.36,
+   "t_within_3": 3.08,
+   "t_within_5": 2.54
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      61
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      64
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      66
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.44,
+     "re_engage",
+     1
+    ],
+    [
+     6.98,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.98,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      72
+     ]
+    ],
+    [
+     6.98,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.07,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      75
+     ]
+    ],
+    [
+     8.07,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.16,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      73
+     ]
+    ],
+    [
+     10.16,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.16,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.16,
+     "give_up"
+    ],
+    [
+     11.25,
+     "re_engage",
+     2
+    ],
+    [
+     11.79,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.79,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      73
+     ]
+    ],
+    [
+     11.79,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.88,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      66
+     ]
+    ],
+    [
+     12.88,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.97,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      69
+     ]
+    ],
+    [
+     14.97,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.97,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.97,
+     "give_up"
+    ],
+    [
+     16.06,
+     "re_engage",
+     3
+    ],
+    [
+     16.6,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.6,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      74
+     ]
+    ],
+    [
+     16.6,
+     "nav",
+     "no_path"
+    ],
+    [
+     17.69,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      84
+     ]
+    ],
+    [
+     17.69,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.78,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      65
+     ]
+    ],
+    [
+     18.78,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.78,
+     "nav",
+     "give_up"
+    ],
+    [
+     18.78,
+     "give_up"
+    ],
+    [
+     19.87,
+     "re_engage",
+     4
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 14,
+   "min_d": 7.95,
+   "mover": "boar",
+   "reached": false,
+   "scene": "door_closed",
+   "search_max_us": 84,
+   "search_us": 842,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_no_path": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:boar",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      53
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      52
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      55
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.44,
+     "re_engage",
+     1
+    ],
+    [
+     6.98,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.98,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      59
+     ]
+    ],
+    [
+     6.98,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.07,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      56
+     ]
+    ],
+    [
+     8.07,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.16,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      58
+     ]
+    ],
+    [
+     10.16,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.16,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.16,
+     "give_up"
+    ],
+    [
+     11.25,
+     "re_engage",
+     2
+    ],
+    [
+     11.79,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.79,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      58
+     ]
+    ],
+    [
+     11.79,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.88,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      49
+     ]
+    ],
+    [
+     12.88,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.97,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      66
+     ]
+    ],
+    [
+     14.97,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.97,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.97,
+     "give_up"
+    ],
+    [
+     16.06,
+     "re_engage",
+     3
+    ],
+    [
+     16.6,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.6,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      58
+     ]
+    ],
+    [
+     16.6,
+     "nav",
+     "no_path"
+    ],
+    [
+     17.69,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      67
+     ]
+    ],
+    [
+     17.69,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.78,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      51
+     ]
+    ],
+    [
+     18.78,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.78,
+     "nav",
+     "give_up"
+    ],
+    [
+     18.78,
+     "give_up"
+    ],
+    [
+     19.87,
+     "re_engage",
+     4
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 15,
+   "min_d": 7.95,
+   "mover": "boar",
+   "reached": false,
+   "scene": "door_open",
+   "search_max_us": 67,
+   "search_us": 682,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_no_path": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 1,
+   "min_d": 1.48,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      29
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     2.72,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.54,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 2,
+   "min_d": 1.77,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "trunk",
+   "search_max_us": 29,
+   "search_us": 29,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.54,
+   "t_within_3": 3.63,
+   "t_within_5": 3.17
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     3.26,
+     "nav",
+     "stuck"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      3,
+      6,
+      19
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "found"
+    ],
+    [
+     3.63,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 3,
+   "min_d": 1.58,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "trunk_near",
+   "search_max_us": 19,
+   "search_us": 19,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.63,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      24
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     2.72,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.54,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 4,
+   "min_d": 1.78,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "row",
+   "search_max_us": 24,
+   "search_us": 24,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.54,
+   "t_within_3": 3.63,
+   "t_within_5": 3.17
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      57
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     3.81,
+     "nav",
+     "leave_line"
+    ],
+    [
+     4.45,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 5,
+   "min_d": 1.42,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "doorway",
+   "search_max_us": 57,
+   "search_us": 57,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 4.45,
+   "t_within_1_5": 4.81,
+   "t_within_3": 4.54,
+   "t_within_5": 4.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 14
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      21,
+      65
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     3.81,
+     "nav",
+     "leave_line"
+    ],
+    [
+     5.17,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 6,
+   "min_d": 1.63,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "lcorner",
+   "search_max_us": 65,
+   "search_us": 65,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 5.17,
+   "t_within_3": 5.26,
+   "t_within_5": 4.81
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 3,
+    "leash_reset": 3
+   },
+   "cycles": 3,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.72,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.72,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      148
+     ]
+    ],
+    [
+     2.72,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.81,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      124
+     ]
+    ],
+    [
+     3.81,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.9,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      123
+     ]
+    ],
+    [
+     5.9,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.9,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.9,
+     "give_up"
+    ],
+    [
+     6.98,
+     "re_engage",
+     1
+    ],
+    [
+     7.53,
+     "nav",
+     "stuck"
+    ],
+    [
+     7.53,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      124
+     ]
+    ],
+    [
+     7.53,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.61,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      151
+     ]
+    ],
+    [
+     8.61,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.7,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      126
+     ]
+    ],
+    [
+     10.7,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.7,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.7,
+     "give_up"
+    ],
+    [
+     11.78,
+     "re_engage",
+     2
+    ],
+    [
+     12.33,
+     "nav",
+     "stuck"
+    ],
+    [
+     12.33,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      137
+     ]
+    ],
+    [
+     12.33,
+     "nav",
+     "no_path"
+    ],
+    [
+     13.42,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      129
+     ]
+    ],
+    [
+     13.42,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.5,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      127
+     ]
+    ],
+    [
+     15.5,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.5,
+     "nav",
+     "give_up"
+    ],
+    [
+     15.5,
+     "give_up"
+    ],
+    [
+     16.58,
+     "re_engage",
+     3
+    ],
+    [
+     17.13,
+     "nav",
+     "stuck"
+    ],
+    [
+     17.13,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      158
+     ]
+    ],
+    [
+     17.13,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.21,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      119
+     ]
+    ],
+    [
+     18.21,
+     "nav",
+     "no_path"
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 7,
+   "min_d": 4.43,
+   "mover": "wolf",
+   "reached": false,
+   "scene": "fence",
+   "search_max_us": 158,
+   "search_us": 1466,
+   "searches": 11,
+   "smart_mobs": {
+    "nav_give_up": 3,
+    "nav_no_path": 11,
+    "nav_stuck": 4
+   },
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 8,
+   "min_d": 1.48,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "fence_low",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     1.63,
+     "nav",
+     "stuck"
+    ],
+    [
+     1.63,
+     "fp",
+     [
+      6,
+      9,
+      14,
+      53
+     ]
+    ],
+    [
+     1.63,
+     "nav",
+     "found"
+    ],
+    [
+     3.26,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.54,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 9,
+   "min_d": 1.43,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "pillar",
+   "search_max_us": 53,
+   "search_us": 53,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.54,
+   "t_within_1_5": 3.9,
+   "t_within_3": 3.63,
+   "t_within_5": 3.17
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 10,
+   "min_d": 1.48,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "ditch",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 11,
+   "min_d": 1.44,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 12,
+   "min_d": 1.48,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "lowgap",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     3.08,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 13,
+   "min_d": 1.69,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "pond",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 3.08,
+   "t_within_3": 3.17,
+   "t_within_5": 2.63
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      59
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      66
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      85
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.44,
+     "re_engage",
+     1
+    ],
+    [
+     6.99,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.99,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      84
+     ]
+    ],
+    [
+     6.99,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.07,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      74
+     ]
+    ],
+    [
+     8.07,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.15,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      75
+     ]
+    ],
+    [
+     10.15,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.15,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.15,
+     "give_up"
+    ],
+    [
+     11.24,
+     "re_engage",
+     2
+    ],
+    [
+     11.78,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.78,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      81
+     ]
+    ],
+    [
+     11.78,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.87,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      78
+     ]
+    ],
+    [
+     12.87,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.95,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      91
+     ]
+    ],
+    [
+     14.95,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.95,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.95,
+     "give_up"
+    ],
+    [
+     16.04,
+     "re_engage",
+     3
+    ],
+    [
+     16.58,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.58,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      70
+     ]
+    ],
+    [
+     16.58,
+     "nav",
+     "no_path"
+    ],
+    [
+     17.67,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      75
+     ]
+    ],
+    [
+     17.67,
+     "nav",
+     "no_path"
+    ],
+    [
+     19.75,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      70
+     ]
+    ],
+    [
+     19.75,
+     "nav",
+     "no_path"
+    ],
+    [
+     19.75,
+     "nav",
+     "give_up"
+    ],
+    [
+     19.75,
+     "give_up"
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 14,
+   "min_d": 7.8,
+   "mover": "wolf",
+   "reached": false,
+   "scene": "door_closed",
+   "search_max_us": 91,
+   "search_us": 908,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_no_path": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:wolf",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 15,
+   "min_d": 1.48,
+   "mover": "wolf",
+   "reached": true,
+   "scene": "door_open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.09
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 1,
+   "min_d": 1.5,
+   "mover": "bear",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.17,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.17,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      29
+     ]
+    ],
+    [
+     2.17,
+     "nav",
+     "found"
+    ],
+    [
+     3.26,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.71,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 2,
+   "min_d": 1.69,
+   "mover": "bear",
+   "reached": true,
+   "scene": "trunk",
+   "search_max_us": 29,
+   "search_us": 29,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.71,
+   "t_within_3": 3.8,
+   "t_within_5": 3.44
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     3.26,
+     "nav",
+     "stuck"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      3,
+      6,
+      19
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "found"
+    ],
+    [
+     3.8,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 3,
+   "min_d": 1.79,
+   "mover": "bear",
+   "reached": true,
+   "scene": "trunk_near",
+   "search_max_us": 19,
+   "search_us": 19,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.8,
+   "t_within_3": 3.9,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.17,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.17,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      21
+     ]
+    ],
+    [
+     2.17,
+     "nav",
+     "rejected"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      22
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      36
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.43,
+     "re_engage",
+     1
+    ],
+    [
+     6.98,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.98,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      19
+     ]
+    ],
+    [
+     6.98,
+     "nav",
+     "rejected"
+    ],
+    [
+     8.06,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      18
+     ]
+    ],
+    [
+     8.06,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.15,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      19
+     ]
+    ],
+    [
+     10.15,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.15,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.15,
+     "give_up"
+    ],
+    [
+     11.24,
+     "re_engage",
+     2
+    ],
+    [
+     11.78,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.78,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      28
+     ]
+    ],
+    [
+     11.78,
+     "nav",
+     "rejected"
+    ],
+    [
+     12.87,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      29
+     ]
+    ],
+    [
+     12.87,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.95,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      41
+     ]
+    ],
+    [
+     14.95,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.95,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.95,
+     "give_up"
+    ],
+    [
+     16.04,
+     "re_engage",
+     3
+    ],
+    [
+     16.59,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.59,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      20
+     ]
+    ],
+    [
+     16.59,
+     "nav",
+     "rejected"
+    ],
+    [
+     17.67,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      18
+     ]
+    ],
+    [
+     17.67,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.76,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      18
+     ]
+    ],
+    [
+     19.76,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.76,
+     "nav",
+     "give_up"
+    ],
+    [
+     19.76,
+     "give_up"
+    ]
+   ],
+   "found": 12,
+   "kind": "combat",
+   "lane": 4,
+   "min_d": 8.2,
+   "mover": "bear",
+   "reached": false,
+   "scene": "row",
+   "search_max_us": 41,
+   "search_us": 289,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_rejected": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.17,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.17,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      50
+     ]
+    ],
+    [
+     2.17,
+     "nav",
+     "rejected"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      50
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      53
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.43,
+     "re_engage",
+     1
+    ],
+    [
+     6.98,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.98,
+     "fp",
+     [
+      6,
+      9,
+      16,
+      45
+     ]
+    ],
+    [
+     6.98,
+     "nav",
+     "rejected"
+    ],
+    [
+     8.06,
+     "fp",
+     [
+      6,
+      8,
+      15,
+      38
+     ]
+    ],
+    [
+     8.06,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.15,
+     "fp",
+     [
+      6,
+      8,
+      15,
+      51
+     ]
+    ],
+    [
+     10.15,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.15,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.15,
+     "give_up"
+    ],
+    [
+     11.24,
+     "re_engage",
+     2
+    ],
+    [
+     11.78,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.78,
+     "fp",
+     [
+      6,
+      9,
+      16,
+      45
+     ]
+    ],
+    [
+     11.78,
+     "nav",
+     "rejected"
+    ],
+    [
+     12.87,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      52
+     ]
+    ],
+    [
+     12.87,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.95,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      56
+     ]
+    ],
+    [
+     14.95,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.95,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.95,
+     "give_up"
+    ],
+    [
+     16.04,
+     "re_engage",
+     3
+    ],
+    [
+     16.59,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.59,
+     "fp",
+     [
+      6,
+      9,
+      16,
+      47
+     ]
+    ],
+    [
+     16.59,
+     "nav",
+     "rejected"
+    ],
+    [
+     17.67,
+     "fp",
+     [
+      6,
+      8,
+      15,
+      38
+     ]
+    ],
+    [
+     17.67,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.76,
+     "fp",
+     [
+      6,
+      8,
+      15,
+      43
+     ]
+    ],
+    [
+     19.76,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.76,
+     "nav",
+     "give_up"
+    ],
+    [
+     19.76,
+     "give_up"
+    ]
+   ],
+   "found": 12,
+   "kind": "combat",
+   "lane": 5,
+   "min_d": 8.2,
+   "mover": "bear",
+   "reached": false,
+   "scene": "doorway",
+   "search_max_us": 56,
+   "search_us": 568,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_rejected": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 14
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.17,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.17,
+     "fp",
+     [
+      6,
+      8,
+      21,
+      59
+     ]
+    ],
+    [
+     2.17,
+     "nav",
+     "found"
+    ],
+    [
+     4.89,
+     "nav",
+     "leave_line"
+    ],
+    [
+     5.71,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 6,
+   "min_d": 1.56,
+   "mover": "bear",
+   "reached": true,
+   "scene": "lcorner",
+   "search_max_us": 59,
+   "search_us": 59,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 5.71,
+   "t_within_3": 5.8,
+   "t_within_5": 5.34
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 3,
+    "leash_reset": 3
+   },
+   "cycles": 3,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.72,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.72,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      150
+     ]
+    ],
+    [
+     2.72,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.81,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      119
+     ]
+    ],
+    [
+     3.81,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.89,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      121
+     ]
+    ],
+    [
+     5.89,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.89,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.89,
+     "give_up"
+    ],
+    [
+     6.98,
+     "re_engage",
+     1
+    ],
+    [
+     7.52,
+     "nav",
+     "stuck"
+    ],
+    [
+     7.52,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      130
+     ]
+    ],
+    [
+     7.52,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.61,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      107
+     ]
+    ],
+    [
+     8.61,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.69,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      131
+     ]
+    ],
+    [
+     10.69,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.69,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.69,
+     "give_up"
+    ],
+    [
+     11.78,
+     "re_engage",
+     2
+    ],
+    [
+     12.32,
+     "nav",
+     "stuck"
+    ],
+    [
+     12.32,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      140
+     ]
+    ],
+    [
+     12.32,
+     "nav",
+     "no_path"
+    ],
+    [
+     13.41,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      182
+     ]
+    ],
+    [
+     13.41,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.5,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      108
+     ]
+    ],
+    [
+     15.5,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.5,
+     "nav",
+     "give_up"
+    ],
+    [
+     15.5,
+     "give_up"
+    ],
+    [
+     16.59,
+     "re_engage",
+     3
+    ],
+    [
+     17.13,
+     "nav",
+     "stuck"
+    ],
+    [
+     17.13,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      129
+     ]
+    ],
+    [
+     17.13,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.22,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      106
+     ]
+    ],
+    [
+     18.22,
+     "nav",
+     "no_path"
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 7,
+   "min_d": 4.82,
+   "mover": "bear",
+   "reached": false,
+   "scene": "fence",
+   "search_max_us": 182,
+   "search_us": 1423,
+   "searches": 11,
+   "smart_mobs": {
+    "nav_give_up": 3,
+    "nav_no_path": 11,
+    "nav_stuck": 4
+   },
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 8,
+   "min_d": 1.5,
+   "mover": "bear",
+   "reached": true,
+   "scene": "fence_low",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     1.63,
+     "nav",
+     "stuck"
+    ],
+    [
+     1.63,
+     "fp",
+     [
+      6,
+      9,
+      14,
+      39
+     ]
+    ],
+    [
+     1.63,
+     "nav",
+     "found"
+    ],
+    [
+     3.26,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.71,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 9,
+   "min_d": 1.56,
+   "mover": "bear",
+   "reached": true,
+   "scene": "pillar",
+   "search_max_us": 39,
+   "search_us": 39,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.71,
+   "t_within_3": 3.8,
+   "t_within_5": 3.35
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 10,
+   "min_d": 1.5,
+   "mover": "bear",
+   "reached": true,
+   "scene": "ditch",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 11,
+   "min_d": 1.5,
+   "mover": "bear",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.17,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.17,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      8
+     ]
+    ],
+    [
+     2.17,
+     "nav",
+     "rejected"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      10
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      11
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.43,
+     "re_engage",
+     1
+    ],
+    [
+     6.98,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.98,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      17
+     ]
+    ],
+    [
+     6.98,
+     "nav",
+     "rejected"
+    ],
+    [
+     8.06,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      19
+     ]
+    ],
+    [
+     8.06,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.15,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      19
+     ]
+    ],
+    [
+     10.15,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.15,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.15,
+     "give_up"
+    ],
+    [
+     11.24,
+     "re_engage",
+     2
+    ],
+    [
+     11.78,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.78,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      11
+     ]
+    ],
+    [
+     11.78,
+     "nav",
+     "rejected"
+    ],
+    [
+     12.87,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      10
+     ]
+    ],
+    [
+     12.87,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.95,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      10
+     ]
+    ],
+    [
+     14.95,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.95,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.95,
+     "give_up"
+    ],
+    [
+     16.04,
+     "re_engage",
+     3
+    ],
+    [
+     16.59,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.59,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      20
+     ]
+    ],
+    [
+     16.59,
+     "nav",
+     "rejected"
+    ],
+    [
+     17.67,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      24
+     ]
+    ],
+    [
+     17.67,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.76,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      18
+     ]
+    ],
+    [
+     19.76,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.76,
+     "nav",
+     "give_up"
+    ],
+    [
+     19.76,
+     "give_up"
+    ]
+   ],
+   "found": 12,
+   "kind": "combat",
+   "lane": 12,
+   "min_d": 8.2,
+   "mover": "bear",
+   "reached": false,
+   "scene": "lowgap",
+   "search_max_us": 24,
+   "search_us": 177,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_rejected": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.99,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 13,
+   "min_d": 1.5,
+   "mover": "bear",
+   "reached": true,
+   "scene": "pond",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.99,
+   "t_within_3": 3.08,
+   "t_within_5": 2.54
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.17,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.17,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      58
+     ]
+    ],
+    [
+     2.17,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      74
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      79
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.43,
+     "re_engage",
+     1
+    ],
+    [
+     6.98,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.98,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      73
+     ]
+    ],
+    [
+     6.98,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.06,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      72
+     ]
+    ],
+    [
+     8.06,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.15,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      64
+     ]
+    ],
+    [
+     10.15,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.15,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.15,
+     "give_up"
+    ],
+    [
+     11.24,
+     "re_engage",
+     2
+    ],
+    [
+     11.78,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.78,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      84
+     ]
+    ],
+    [
+     11.78,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.87,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      63
+     ]
+    ],
+    [
+     12.87,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.95,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      63
+     ]
+    ],
+    [
+     14.95,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.95,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.95,
+     "give_up"
+    ],
+    [
+     16.04,
+     "re_engage",
+     3
+    ],
+    [
+     16.59,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.59,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      95
+     ]
+    ],
+    [
+     16.59,
+     "nav",
+     "no_path"
+    ],
+    [
+     17.67,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      75
+     ]
+    ],
+    [
+     17.67,
+     "nav",
+     "no_path"
+    ],
+    [
+     19.76,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      68
+     ]
+    ],
+    [
+     19.76,
+     "nav",
+     "no_path"
+    ],
+    [
+     19.76,
+     "nav",
+     "give_up"
+    ],
+    [
+     19.76,
+     "give_up"
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 14,
+   "min_d": 8.2,
+   "mover": "bear",
+   "reached": false,
+   "scene": "door_closed",
+   "search_max_us": 95,
+   "search_us": 868,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_no_path": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:bear",
+   "events": [
+    [
+     2.17,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.17,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      57
+     ]
+    ],
+    [
+     2.17,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      53
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      48
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.43,
+     "re_engage",
+     1
+    ],
+    [
+     6.98,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.98,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      56
+     ]
+    ],
+    [
+     6.98,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.06,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      51
+     ]
+    ],
+    [
+     8.06,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.15,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      46
+     ]
+    ],
+    [
+     10.15,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.15,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.15,
+     "give_up"
+    ],
+    [
+     11.24,
+     "re_engage",
+     2
+    ],
+    [
+     11.78,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.78,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      60
+     ]
+    ],
+    [
+     11.78,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.87,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      63
+     ]
+    ],
+    [
+     12.87,
+     "nav",
+     "no_path"
+    ],
+    [
+     13.96,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      70
+     ]
+    ],
+    [
+     13.96,
+     "nav",
+     "no_path"
+    ],
+    [
+     13.96,
+     "nav",
+     "give_up"
+    ],
+    [
+     13.96,
+     "give_up"
+    ],
+    [
+     15.04,
+     "re_engage",
+     3
+    ],
+    [
+     15.59,
+     "nav",
+     "stuck"
+    ],
+    [
+     15.59,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      70
+     ]
+    ],
+    [
+     15.59,
+     "nav",
+     "no_path"
+    ],
+    [
+     16.68,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      64
+     ]
+    ],
+    [
+     16.68,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.76,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      67
+     ]
+    ],
+    [
+     18.76,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.76,
+     "nav",
+     "give_up"
+    ],
+    [
+     18.76,
+     "give_up"
+    ],
+    [
+     19.85,
+     "re_engage",
+     4
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 15,
+   "min_d": 8.2,
+   "mover": "bear",
+   "reached": false,
+   "scene": "door_open",
+   "search_max_us": 70,
+   "search_us": 705,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_no_path": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 1,
+   "min_d": 1.49,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      36
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     2.72,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.53,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 2,
+   "min_d": 1.78,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "trunk",
+   "search_max_us": 36,
+   "search_us": 36,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.53,
+   "t_within_3": 3.62,
+   "t_within_5": 3.17
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     3.26,
+     "nav",
+     "stuck"
+    ],
+    [
+     3.26,
+     "fp",
+     [
+      6,
+      3,
+      6,
+      33
+     ]
+    ],
+    [
+     3.26,
+     "nav",
+     "found"
+    ],
+    [
+     3.62,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 3,
+   "min_d": 1.59,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "trunk_near",
+   "search_max_us": 33,
+   "search_us": 33,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.62,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      23
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     2.72,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.53,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 4,
+   "min_d": 1.79,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "row",
+   "search_max_us": 23,
+   "search_us": 23,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.53,
+   "t_within_3": 3.62,
+   "t_within_5": 3.17
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 15
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      55
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     3.81,
+     "nav",
+     "leave_line"
+    ],
+    [
+     4.44,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 5,
+   "min_d": 1.45,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "doorway",
+   "search_max_us": 55,
+   "search_us": 55,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 4.44,
+   "t_within_1_5": 4.8,
+   "t_within_3": 4.53,
+   "t_within_5": 4.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 14
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      21,
+      61
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "found"
+    ],
+    [
+     3.81,
+     "nav",
+     "leave_line"
+    ],
+    [
+     5.16,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 6,
+   "min_d": 1.65,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "lcorner",
+   "search_max_us": 61,
+   "search_us": 61,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 5.16,
+   "t_within_3": 5.25,
+   "t_within_5": 4.8
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 3,
+    "leash_reset": 3
+   },
+   "cycles": 3,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.72,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.72,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      115
+     ]
+    ],
+    [
+     2.72,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.81,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      126
+     ]
+    ],
+    [
+     3.81,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.89,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      131
+     ]
+    ],
+    [
+     5.89,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.89,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.89,
+     "give_up"
+    ],
+    [
+     6.97,
+     "re_engage",
+     1
+    ],
+    [
+     7.52,
+     "nav",
+     "stuck"
+    ],
+    [
+     7.52,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      136
+     ]
+    ],
+    [
+     7.52,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.6,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      122
+     ]
+    ],
+    [
+     8.6,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.69,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      134
+     ]
+    ],
+    [
+     10.69,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.69,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.69,
+     "give_up"
+    ],
+    [
+     11.77,
+     "re_engage",
+     2
+    ],
+    [
+     12.32,
+     "nav",
+     "stuck"
+    ],
+    [
+     12.32,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      141
+     ]
+    ],
+    [
+     12.32,
+     "nav",
+     "no_path"
+    ],
+    [
+     13.4,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      125
+     ]
+    ],
+    [
+     13.4,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.49,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      129
+     ]
+    ],
+    [
+     15.49,
+     "nav",
+     "no_path"
+    ],
+    [
+     15.49,
+     "nav",
+     "give_up"
+    ],
+    [
+     15.49,
+     "give_up"
+    ],
+    [
+     16.57,
+     "re_engage",
+     3
+    ],
+    [
+     17.12,
+     "nav",
+     "stuck"
+    ],
+    [
+     17.12,
+     "fp",
+     [
+      6,
+      6,
+      0,
+      150
+     ]
+    ],
+    [
+     17.12,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.2,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      133
+     ]
+    ],
+    [
+     18.2,
+     "nav",
+     "no_path"
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 7,
+   "min_d": 4.43,
+   "mover": "bandit",
+   "reached": false,
+   "scene": "fence",
+   "search_max_us": 150,
+   "search_us": 1442,
+   "searches": 11,
+   "smart_mobs": {
+    "nav_give_up": 3,
+    "nav_no_path": 11,
+    "nav_stuck": 4
+   },
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 8,
+   "min_d": 1.49,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "fence_low",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     1.63,
+     "nav",
+     "stuck"
+    ],
+    [
+     1.63,
+     "fp",
+     [
+      6,
+      9,
+      14,
+      46
+     ]
+    ],
+    [
+     1.63,
+     "nav",
+     "found"
+    ],
+    [
+     3.27,
+     "nav",
+     "leave_line"
+    ],
+    [
+     3.63,
+     "hit"
+    ]
+   ],
+   "found": 1,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 9,
+   "min_d": 1.8,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "pillar",
+   "search_max_us": 46,
+   "search_us": 46,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_leave_line": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 3.63,
+   "t_within_3": 3.71,
+   "t_within_5": 3.26
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 10,
+   "min_d": 1.49,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "ditch",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 11,
+   "min_d": 1.45,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      11
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "rejected"
+    ],
+    [
+     3.27,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      36
+     ]
+    ],
+    [
+     3.27,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      35
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "rejected"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.43,
+     "re_engage",
+     1
+    ],
+    [
+     6.97,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.97,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      32
+     ]
+    ],
+    [
+     6.97,
+     "nav",
+     "rejected"
+    ],
+    [
+     8.06,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      29
+     ]
+    ],
+    [
+     8.06,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.14,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      26
+     ]
+    ],
+    [
+     10.14,
+     "nav",
+     "rejected"
+    ],
+    [
+     10.14,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.14,
+     "give_up"
+    ],
+    [
+     11.23,
+     "re_engage",
+     2
+    ],
+    [
+     11.77,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.77,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      20
+     ]
+    ],
+    [
+     11.77,
+     "nav",
+     "rejected"
+    ],
+    [
+     12.86,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      16
+     ]
+    ],
+    [
+     12.86,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.94,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      18
+     ]
+    ],
+    [
+     14.94,
+     "nav",
+     "rejected"
+    ],
+    [
+     14.94,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.94,
+     "give_up"
+    ],
+    [
+     16.03,
+     "re_engage",
+     3
+    ],
+    [
+     16.57,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.57,
+     "fp",
+     [
+      6,
+      9,
+      10,
+      28
+     ]
+    ],
+    [
+     16.57,
+     "nav",
+     "rejected"
+    ],
+    [
+     17.66,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      26
+     ]
+    ],
+    [
+     17.66,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.74,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      27
+     ]
+    ],
+    [
+     19.74,
+     "nav",
+     "rejected"
+    ],
+    [
+     19.74,
+     "nav",
+     "give_up"
+    ],
+    [
+     19.74,
+     "give_up"
+    ]
+   ],
+   "found": 12,
+   "kind": "combat",
+   "lane": 12,
+   "min_d": 7.8,
+   "mover": "bandit",
+   "reached": false,
+   "scene": "lowgap",
+   "search_max_us": 36,
+   "search_us": 304,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_rejected": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 16
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     3.08,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 13,
+   "min_d": 1.7,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "pond",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 3.08,
+   "t_within_3": 3.17,
+   "t_within_5": 2.63
+  },
+  {
+   "T": 20,
+   "counts": {
+    "give_up": 4,
+    "leash_reset": 4
+   },
+   "cycles": 4,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.18,
+     "nav",
+     "stuck"
+    ],
+    [
+     2.18,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      58
+     ]
+    ],
+    [
+     2.18,
+     "nav",
+     "no_path"
+    ],
+    [
+     3.27,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      65
+     ]
+    ],
+    [
+     3.27,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      60
+     ]
+    ],
+    [
+     5.35,
+     "nav",
+     "no_path"
+    ],
+    [
+     5.35,
+     "nav",
+     "give_up"
+    ],
+    [
+     5.35,
+     "give_up"
+    ],
+    [
+     6.43,
+     "re_engage",
+     1
+    ],
+    [
+     6.97,
+     "nav",
+     "stuck"
+    ],
+    [
+     6.97,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      72
+     ]
+    ],
+    [
+     6.97,
+     "nav",
+     "no_path"
+    ],
+    [
+     8.06,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      65
+     ]
+    ],
+    [
+     8.06,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.14,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      70
+     ]
+    ],
+    [
+     10.14,
+     "nav",
+     "no_path"
+    ],
+    [
+     10.14,
+     "nav",
+     "give_up"
+    ],
+    [
+     10.14,
+     "give_up"
+    ],
+    [
+     11.23,
+     "re_engage",
+     2
+    ],
+    [
+     11.77,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.77,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      75
+     ]
+    ],
+    [
+     11.77,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.86,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      67
+     ]
+    ],
+    [
+     12.86,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.94,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      66
+     ]
+    ],
+    [
+     14.94,
+     "nav",
+     "no_path"
+    ],
+    [
+     14.94,
+     "nav",
+     "give_up"
+    ],
+    [
+     14.94,
+     "give_up"
+    ],
+    [
+     16.03,
+     "re_engage",
+     3
+    ],
+    [
+     16.57,
+     "nav",
+     "stuck"
+    ],
+    [
+     16.57,
+     "fp",
+     [
+      6,
+      9,
+      0,
+      72
+     ]
+    ],
+    [
+     16.57,
+     "nav",
+     "no_path"
+    ],
+    [
+     17.66,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      65
+     ]
+    ],
+    [
+     17.66,
+     "nav",
+     "no_path"
+    ],
+    [
+     19.74,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      89
+     ]
+    ],
+    [
+     19.74,
+     "nav",
+     "no_path"
+    ],
+    [
+     19.74,
+     "nav",
+     "give_up"
+    ],
+    [
+     19.74,
+     "give_up"
+    ]
+   ],
+   "found": 0,
+   "kind": "combat",
+   "lane": 14,
+   "min_d": 7.8,
+   "mover": "bandit",
+   "reached": false,
+   "scene": "door_closed",
+   "search_max_us": 89,
+   "search_us": 824,
+   "searches": 12,
+   "smart_mobs": {
+    "nav_give_up": 4,
+    "nav_no_path": 12,
+    "nav_stuck": 4
+   }
+  },
+  {
+   "T": 20,
+   "counts": {
+    "hits": 17
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:bandit",
+   "events": [
+    [
+     2.45,
+     "hit"
+    ]
+   ],
+   "found": 0,
+   "how": "hit",
+   "kind": "combat",
+   "lane": 15,
+   "min_d": 1.49,
+   "mover": "bandit",
+   "reached": true,
+   "scene": "door_open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 2.45,
+   "t_within_1_5": 2.81,
+   "t_within_3": 2.54,
+   "t_within_5": 2.08
+  },
+  {
+   "T": 45,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     14.37,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "post",
+   "lane": 1,
+   "min_d": 0.98,
+   "mover": "post_guard",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 2,
+   "t_goal": 14.37,
+   "t_within_1_5": 14.82,
+   "t_within_3": 13.56,
+   "t_within_5": 11.84
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 2
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     30.27,
+     "fp",
+     [
+      24,
+      8,
+      11,
+      40
+     ]
+    ],
+    [
+     30.27,
+     "nudge_path"
+    ],
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      9,
+      10,
+      27
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     36.6,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 2,
+   "how": "walk",
+   "kind": "post",
+   "lane": 2,
+   "min_d": 0.94,
+   "mover": "post_guard",
+   "reached": true,
+   "scene": "trunk",
+   "search_max_us": 40,
+   "search_us": 67,
+   "searches": 2,
+   "smart_mobs": null,
+   "stall_max": 21,
+   "t_goal": 36.6,
+   "t_within_1_5": 42.92,
+   "t_within_3": 35.78,
+   "t_within_5": 34.16
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 4
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      3,
+      6,
+      24
+     ]
+    ],
+    [
+     34.61,
+     "nudge_path"
+    ],
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      4,
+      5,
+      17
+     ]
+    ],
+    [
+     35.69,
+     "nudge_path"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      4,
+      5,
+      17
+     ]
+    ],
+    [
+     36.78,
+     "nudge_path"
+    ],
+    [
+     37.86,
+     "fp",
+     [
+      24,
+      4,
+      5,
+      21
+     ]
+    ],
+    [
+     37.86,
+     "nudge_path"
+    ],
+    [
+     43.47,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 4,
+   "how": "walk",
+   "kind": "post",
+   "lane": 3,
+   "min_d": 1.03,
+   "mover": "post_guard",
+   "reached": true,
+   "scene": "trunk_near",
+   "search_max_us": 24,
+   "search_us": 79,
+   "searches": 4,
+   "smart_mobs": null,
+   "stall_max": 23,
+   "t_goal": 43.47,
+   "t_within_1_5": 43.92,
+   "t_within_3": 12.47,
+   "t_within_5": 10.75
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 4
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     29.19,
+     "fp",
+     [
+      24,
+      8,
+      11,
+      32
+     ]
+    ],
+    [
+     29.19,
+     "nudge_path"
+    ],
+    [
+     30.27,
+     "fp",
+     [
+      24,
+      8,
+      11,
+      28
+     ]
+    ],
+    [
+     30.27,
+     "nudge_path"
+    ],
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      9,
+      10,
+      15
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     32.44,
+     "fp",
+     [
+      24,
+      9,
+      10,
+      36
+     ]
+    ],
+    [
+     32.44,
+     "nudge_path"
+    ],
+    [
+     38.59,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 4,
+   "how": "walk",
+   "kind": "post",
+   "lane": 4,
+   "min_d": 0.73,
+   "mover": "post_guard",
+   "reached": true,
+   "scene": "row",
+   "search_max_us": 36,
+   "search_us": 111,
+   "searches": 4,
+   "smart_mobs": null,
+   "stall_max": 23,
+   "t_goal": 38.59,
+   "t_within_1_5": 38.95,
+   "t_within_3": 37.68,
+   "t_within_5": 36.06
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 8
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      8,
+      17,
+      52
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     32.44,
+     "fp",
+     [
+      24,
+      8,
+      17,
+      58
+     ]
+    ],
+    [
+     32.44,
+     "nudge_path"
+    ],
+    [
+     33.52,
+     "fp",
+     [
+      24,
+      9,
+      16,
+      56
+     ]
+    ],
+    [
+     33.52,
+     "nudge_path"
+    ],
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      9,
+      16,
+      62
+     ]
+    ],
+    [
+     34.61,
+     "nudge_path"
+    ],
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      11,
+      14,
+      40
+     ]
+    ],
+    [
+     35.69,
+     "nudge_path"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      12,
+      13,
+      38
+     ]
+    ],
+    [
+     36.78,
+     "nudge_path"
+    ],
+    [
+     37.86,
+     "fp",
+     [
+      24,
+      12,
+      13,
+      36
+     ]
+    ],
+    [
+     37.86,
+     "nudge_path"
+    ],
+    [
+     38.95,
+     "fp",
+     [
+      24,
+      11,
+      12,
+      42
+     ]
+    ],
+    [
+     38.95,
+     "nudge_path"
+    ],
+    [
+     44.1,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 8,
+   "how": "walk",
+   "kind": "post",
+   "lane": 5,
+   "min_d": 1.53,
+   "mover": "post_guard",
+   "reached": true,
+   "scene": "doorway",
+   "search_max_us": 62,
+   "search_us": 384,
+   "searches": 8,
+   "smart_mobs": null,
+   "stall_max": 27,
+   "t_goal": 44.1,
+   "t_within_3": 43.29,
+   "t_within_5": 41.57
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 9
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     30.27,
+     "fp",
+     [
+      24,
+      8,
+      21,
+      100
+     ]
+    ],
+    [
+     30.27,
+     "nudge_path"
+    ],
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      9,
+      20,
+      57
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     32.44,
+     "fp",
+     [
+      24,
+      11,
+      18,
+      57
+     ]
+    ],
+    [
+     32.44,
+     "nudge_path"
+    ],
+    [
+     33.52,
+     "fp",
+     [
+      24,
+      12,
+      17,
+      49
+     ]
+    ],
+    [
+     33.52,
+     "nudge_path"
+    ],
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      12,
+      17,
+      65
+     ]
+    ],
+    [
+     34.61,
+     "nudge_path"
+    ],
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      13,
+      16,
+      44
+     ]
+    ],
+    [
+     35.69,
+     "nudge_path"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      14,
+      15,
+      49
+     ]
+    ],
+    [
+     36.78,
+     "nudge_path"
+    ],
+    [
+     37.86,
+     "fp",
+     [
+      24,
+      12,
+      13,
+      36
+     ]
+    ],
+    [
+     37.86,
+     "nudge_path"
+    ],
+    [
+     38.95,
+     "fp",
+     [
+      24,
+      11,
+      12,
+      35
+     ]
+    ],
+    [
+     38.95,
+     "nudge_path"
+    ]
+   ],
+   "found": 9,
+   "kind": "post",
+   "lane": 6,
+   "min_d": 3.69,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "lcorner",
+   "search_max_us": 100,
+   "search_us": 492,
+   "searches": 9,
+   "smart_mobs": null,
+   "stall_max": 28,
+   "t_within_5": 43.83
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_nopath": 11
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     33.52,
+     "fp",
+     [
+      24,
+      5,
+      0,
+      505
+     ]
+    ],
+    [
+     33.52,
+     "nudge_nopath"
+    ],
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      5,
+      0,
+      595
+     ]
+    ],
+    [
+     34.61,
+     "nudge_nopath"
+    ],
+    [
+     35.69,
+     "nudge_nopath"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      5,
+      0,
+      505
+     ]
+    ],
+    [
+     36.78,
+     "nudge_nopath"
+    ],
+    [
+     37.86,
+     "nudge_nopath"
+    ],
+    [
+     38.95,
+     "nudge_nopath"
+    ],
+    [
+     40.03,
+     "nudge_nopath"
+    ],
+    [
+     41.12,
+     "fp",
+     [
+      24,
+      5,
+      0,
+      520
+     ]
+    ],
+    [
+     41.12,
+     "nudge_nopath"
+    ],
+    [
+     42.2,
+     "nudge_nopath"
+    ],
+    [
+     43.29,
+     "nudge_nopath"
+    ],
+    [
+     44.37,
+     "nudge_nopath"
+    ]
+   ],
+   "found": 0,
+   "kind": "post",
+   "lane": 7,
+   "min_d": 4.89,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "fence",
+   "search_max_us": 595,
+   "search_us": 2125,
+   "searches": 4,
+   "smart_mobs": null,
+   "stall_max": 30,
+   "t_within_5": 11.84
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 9
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      8
+     ]
+    ],
+    [
+     35.69,
+     "nudge_path"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      9
+     ]
+    ],
+    [
+     36.78,
+     "nudge_path"
+    ],
+    [
+     37.86,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      9
+     ]
+    ],
+    [
+     37.86,
+     "nudge_path"
+    ],
+    [
+     38.95,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      8
+     ]
+    ],
+    [
+     38.95,
+     "nudge_path"
+    ],
+    [
+     40.03,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      19
+     ]
+    ],
+    [
+     40.03,
+     "nudge_path"
+    ],
+    [
+     41.12,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      10
+     ]
+    ],
+    [
+     41.12,
+     "nudge_path"
+    ],
+    [
+     42.2,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      19
+     ]
+    ],
+    [
+     42.2,
+     "nudge_path"
+    ],
+    [
+     43.29,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      17
+     ]
+    ],
+    [
+     43.29,
+     "nudge_path"
+    ],
+    [
+     44.37,
+     "fp",
+     [
+      24,
+      5,
+      6,
+      17
+     ]
+    ],
+    [
+     44.37,
+     "nudge_path"
+    ]
+   ],
+   "found": 9,
+   "kind": "post",
+   "lane": 8,
+   "min_d": 4.89,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "fence_low",
+   "search_max_us": 19,
+   "search_us": 116,
+   "searches": 9,
+   "smart_mobs": null,
+   "stall_max": 28,
+   "t_within_5": 14.01
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 7
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     28.1,
+     "fp",
+     [
+      24,
+      9,
+      14,
+      48
+     ]
+    ],
+    [
+     28.1,
+     "nudge_path"
+    ],
+    [
+     29.19,
+     "fp",
+     [
+      24,
+      9,
+      14,
+      39
+     ]
+    ],
+    [
+     29.19,
+     "nudge_path"
+    ],
+    [
+     30.27,
+     "fp",
+     [
+      24,
+      9,
+      14,
+      39
+     ]
+    ],
+    [
+     30.27,
+     "nudge_path"
+    ],
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      9,
+      14,
+      30
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     32.44,
+     "fp",
+     [
+      24,
+      10,
+      13,
+      26
+     ]
+    ],
+    [
+     32.44,
+     "nudge_path"
+    ],
+    [
+     33.52,
+     "fp",
+     [
+      24,
+      10,
+      13,
+      28
+     ]
+    ],
+    [
+     33.52,
+     "nudge_path"
+    ],
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      11,
+      12,
+      24
+     ]
+    ],
+    [
+     34.61,
+     "nudge_path"
+    ]
+   ],
+   "found": 7,
+   "kind": "post",
+   "lane": 9,
+   "min_d": 2.16,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "pillar",
+   "search_max_us": 48,
+   "search_us": 234,
+   "searches": 7,
+   "smart_mobs": null,
+   "stall_max": 26,
+   "t_within_3": 43.2,
+   "t_within_5": 41.48
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 13
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      79
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     32.44,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      110
+     ]
+    ],
+    [
+     32.44,
+     "nudge_path"
+    ],
+    [
+     33.52,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      77
+     ]
+    ],
+    [
+     33.52,
+     "nudge_path"
+    ],
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      77
+     ]
+    ],
+    [
+     34.61,
+     "nudge_path"
+    ],
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      78
+     ]
+    ],
+    [
+     35.69,
+     "nudge_path"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      78
+     ]
+    ],
+    [
+     36.78,
+     "nudge_path"
+    ],
+    [
+     37.86,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      84
+     ]
+    ],
+    [
+     37.86,
+     "nudge_path"
+    ],
+    [
+     38.95,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      82
+     ]
+    ],
+    [
+     38.95,
+     "nudge_path"
+    ],
+    [
+     40.03,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      93
+     ]
+    ],
+    [
+     40.03,
+     "nudge_path"
+    ],
+    [
+     41.12,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      78
+     ]
+    ],
+    [
+     41.12,
+     "nudge_path"
+    ],
+    [
+     42.2,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      86
+     ]
+    ],
+    [
+     42.2,
+     "nudge_path"
+    ],
+    [
+     43.29,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      90
+     ]
+    ],
+    [
+     43.29,
+     "nudge_path"
+    ],
+    [
+     44.37,
+     "fp",
+     [
+      24,
+      9,
+      18,
+      83
+     ]
+    ],
+    [
+     44.37,
+     "nudge_path"
+    ]
+   ],
+   "found": 13,
+   "kind": "post",
+   "lane": 10,
+   "min_d": 9.12,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "ditch",
+   "search_max_us": 110,
+   "search_us": 1095,
+   "searches": 13,
+   "smart_mobs": null,
+   "stall_max": 32
+  },
+  {
+   "T": 45,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     13.29,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "post",
+   "lane": 11,
+   "min_d": 0.94,
+   "mover": "post_guard",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 3,
+   "t_goal": 13.29,
+   "t_within_1_5": 13.65,
+   "t_within_3": 12.38,
+   "t_within_5": 9.67
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 14
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     30.27,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      15
+     ]
+    ],
+    [
+     30.27,
+     "nudge_path"
+    ],
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     32.44,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      11
+     ]
+    ],
+    [
+     32.44,
+     "nudge_path"
+    ],
+    [
+     33.52,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      10
+     ]
+    ],
+    [
+     33.52,
+     "nudge_path"
+    ],
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      8
+     ]
+    ],
+    [
+     34.61,
+     "nudge_path"
+    ],
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     35.69,
+     "nudge_path"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     36.78,
+     "nudge_path"
+    ],
+    [
+     37.86,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      8
+     ]
+    ],
+    [
+     37.86,
+     "nudge_path"
+    ],
+    [
+     38.95,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     38.95,
+     "nudge_path"
+    ],
+    [
+     40.03,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      11
+     ]
+    ],
+    [
+     40.03,
+     "nudge_path"
+    ],
+    [
+     41.12,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     41.12,
+     "nudge_path"
+    ],
+    [
+     42.2,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     42.2,
+     "nudge_path"
+    ],
+    [
+     43.29,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     43.29,
+     "nudge_path"
+    ],
+    [
+     44.37,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      9
+     ]
+    ],
+    [
+     44.37,
+     "nudge_path"
+    ]
+   ],
+   "found": 14,
+   "kind": "post",
+   "lane": 12,
+   "min_d": 7.8,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "lowgap",
+   "search_max_us": 15,
+   "search_us": 135,
+   "searches": 14,
+   "smart_mobs": null,
+   "stall_max": 33
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_path": 11
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     25.93,
+     "fp",
+     [
+      24,
+      11,
+      26,
+      220
+     ]
+    ],
+    [
+     25.93,
+     "nudge_path"
+    ],
+    [
+     27.02,
+     "fp",
+     [
+      24,
+      11,
+      26,
+      194
+     ]
+    ],
+    [
+     27.02,
+     "nudge_path"
+    ],
+    [
+     28.1,
+     "fp",
+     [
+      24,
+      12,
+      25,
+      171
+     ]
+    ],
+    [
+     28.1,
+     "nudge_path"
+    ],
+    [
+     29.19,
+     "fp",
+     [
+      24,
+      12,
+      25,
+      167
+     ]
+    ],
+    [
+     29.19,
+     "nudge_path"
+    ],
+    [
+     30.27,
+     "fp",
+     [
+      24,
+      14,
+      23,
+      195
+     ]
+    ],
+    [
+     30.27,
+     "nudge_path"
+    ],
+    [
+     31.36,
+     "fp",
+     [
+      24,
+      15,
+      22,
+      126
+     ]
+    ],
+    [
+     31.36,
+     "nudge_path"
+    ],
+    [
+     32.44,
+     "fp",
+     [
+      24,
+      16,
+      21,
+      127
+     ]
+    ],
+    [
+     32.44,
+     "nudge_path"
+    ],
+    [
+     33.52,
+     "fp",
+     [
+      24,
+      18,
+      19,
+      50
+     ]
+    ],
+    [
+     33.52,
+     "nudge_path"
+    ],
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      17,
+      18,
+      36
+     ]
+    ],
+    [
+     34.61,
+     "nudge_path"
+    ],
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      17,
+      18,
+      34
+     ]
+    ],
+    [
+     35.69,
+     "nudge_path"
+    ],
+    [
+     36.78,
+     "fp",
+     [
+      24,
+      16,
+      17,
+      37
+     ]
+    ],
+    [
+     36.78,
+     "nudge_path"
+    ]
+   ],
+   "found": 11,
+   "kind": "post",
+   "lane": 13,
+   "min_d": 9.74,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "pond",
+   "search_max_us": 220,
+   "search_us": 1357,
+   "searches": 11,
+   "smart_mobs": null,
+   "stall_max": 30
+  },
+  {
+   "T": 45,
+   "counts": {
+    "nudge_nopath": 10
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     34.61,
+     "fp",
+     [
+      24,
+      8,
+      0,
+      241
+     ]
+    ],
+    [
+     34.61,
+     "nudge_nopath"
+    ],
+    [
+     35.69,
+     "fp",
+     [
+      24,
+      8,
+      0,
+      233
+     ]
+    ],
+    [
+     35.69,
+     "nudge_nopath"
+    ],
+    [
+     36.78,
+     "nudge_nopath"
+    ],
+    [
+     37.86,
+     "fp",
+     [
+      24,
+      8,
+      0,
+      236
+     ]
+    ],
+    [
+     37.86,
+     "nudge_nopath"
+    ],
+    [
+     38.95,
+     "nudge_nopath"
+    ],
+    [
+     40.03,
+     "nudge_nopath"
+    ],
+    [
+     41.12,
+     "nudge_nopath"
+    ],
+    [
+     42.2,
+     "fp",
+     [
+      24,
+      8,
+      0,
+      238
+     ]
+    ],
+    [
+     42.2,
+     "nudge_nopath"
+    ],
+    [
+     43.29,
+     "nudge_nopath"
+    ],
+    [
+     44.37,
+     "nudge_nopath"
+    ]
+   ],
+   "found": 0,
+   "kind": "post",
+   "lane": 14,
+   "min_d": 7.8,
+   "mover": "post_guard",
+   "reached": false,
+   "scene": "door_closed",
+   "search_max_us": 241,
+   "search_us": 948,
+   "searches": 4,
+   "smart_mobs": null,
+   "stall_max": 29
+  },
+  {
+   "T": 45,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:guard_accord",
+   "events": [
+    [
+     20.88,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "post",
+   "lane": 15,
+   "min_d": 0.98,
+   "mover": "post_guard",
+   "reached": true,
+   "scene": "door_open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 7,
+   "t_goal": 20.88,
+   "t_within_1_5": 21.33,
+   "t_within_3": 17.9,
+   "t_within_5": 16.18
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_human",
+   "events": [
+    [
+     8.67,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "follow",
+   "lane": 1,
+   "min_d": 0.01,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 8.67,
+   "t_within_1_5": 13.73,
+   "t_within_3": 12.47,
+   "t_within_5": 8.67
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_path": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_elf",
+   "events": [
+    [
+     27.01,
+     "fp",
+     [
+      24,
+      8,
+      11,
+      33
+     ]
+    ],
+    [
+     27.01,
+     "nudge_path"
+    ],
+    [
+     28.1,
+     "teleport"
+    ],
+    [
+     28.19,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 1,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 2,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "trunk",
+   "search_max_us": 33,
+   "search_us": 33,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 21.68,
+   "t_goal": 28.19,
+   "t_within_1_5": 28.19,
+   "t_within_3": 28.19,
+   "t_within_5": 28.19
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_dwarf",
+   "events": [
+    [
+     8.67,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "follow",
+   "lane": 3,
+   "min_d": 0.83,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "trunk_near",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 8.67,
+   "t_within_1_5": 26.2,
+   "t_within_3": 14.64,
+   "t_within_5": 8.67
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_path": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_orc",
+   "events": [
+    [
+     27.01,
+     "fp",
+     [
+      24,
+      8,
+      11,
+      23
+     ]
+    ],
+    [
+     27.01,
+     "nudge_path"
+    ],
+    [
+     28.1,
+     "teleport"
+    ],
+    [
+     28.19,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 1,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 4,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "row",
+   "search_max_us": 23,
+   "search_us": 23,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 21.68,
+   "t_goal": 28.19,
+   "t_within_1_5": 28.19,
+   "t_within_3": 28.19,
+   "t_within_5": 28.19
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_path": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_troll",
+   "events": [
+    [
+     27.01,
+     "fp",
+     [
+      24,
+      8,
+      17,
+      54
+     ]
+    ],
+    [
+     27.01,
+     "nudge_path"
+    ],
+    [
+     28.1,
+     "teleport"
+    ],
+    [
+     28.19,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 1,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 5,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "doorway",
+   "search_max_us": 54,
+   "search_us": 54,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 21.68,
+   "t_goal": 28.19,
+   "t_within_1_5": 28.19,
+   "t_within_3": 28.19,
+   "t_within_5": 28.19
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_path": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_undead",
+   "events": [
+    [
+     27.02,
+     "fp",
+     [
+      24,
+      8,
+      21,
+      72
+     ]
+    ],
+    [
+     27.02,
+     "nudge_path"
+    ],
+    [
+     28.1,
+     "teleport"
+    ],
+    [
+     28.19,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 1,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 6,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "lcorner",
+   "search_max_us": 72,
+   "search_us": 72,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 21.68,
+   "t_goal": 28.19,
+   "t_within_1_5": 28.19,
+   "t_within_3": 28.19,
+   "t_within_5": 28.19
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_human",
+   "events": [
+    [
+     8.67,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "follow",
+   "lane": 7,
+   "min_d": 4.89,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "fence",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 8.67,
+   "t_within_5": 8.67
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_elf",
+   "events": [
+    [
+     8.67,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "follow",
+   "lane": 8,
+   "min_d": 4.89,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "fence_low",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 8.67,
+   "t_within_5": 8.67
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_path": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_dwarf",
+   "events": [
+    [
+     25.93,
+     "fp",
+     [
+      24,
+      9,
+      14,
+      47
+     ]
+    ],
+    [
+     25.93,
+     "nudge_path"
+    ],
+    [
+     27.02,
+     "teleport"
+    ],
+    [
+     27.11,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 1,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 9,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "pillar",
+   "search_max_us": 47,
+   "search_us": 47,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 21.68,
+   "t_goal": 27.11,
+   "t_within_1_5": 27.11,
+   "t_within_3": 27.11,
+   "t_within_5": 27.11
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_orc",
+   "events": null,
+   "found": 0,
+   "kind": "follow",
+   "lane": 10,
+   "min_d": 6.92,
+   "mover": "royal_guard",
+   "reached": false,
+   "scene": "ditch",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 18.43
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_troll",
+   "events": [
+    [
+     8.58,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "follow",
+   "lane": 11,
+   "min_d": 0.04,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 8.58,
+   "t_within_1_5": 13.64,
+   "t_within_3": 12.38,
+   "t_within_5": 8.58
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_path": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_undead",
+   "events": [
+    [
+     27.02,
+     "fp",
+     [
+      24,
+      8,
+      9,
+      10
+     ]
+    ],
+    [
+     27.02,
+     "nudge_path"
+    ],
+    [
+     28.1,
+     "teleport"
+    ],
+    [
+     28.19,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 1,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 12,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "lowgap",
+   "search_max_us": 10,
+   "search_us": 10,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 21.68,
+   "t_goal": 28.19,
+   "t_within_1_5": 28.19,
+   "t_within_3": 28.19,
+   "t_within_5": 28.19
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_human",
+   "events": [
+    [
+     13.01,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "follow",
+   "lane": 13,
+   "min_d": 0.02,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "pond",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 13.01,
+   "t_within_1_5": 18.61,
+   "t_within_3": 17.35,
+   "t_within_5": 13.01
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_nopath": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_elf",
+   "events": [
+    [
+     27.02,
+     "fp",
+     [
+      24,
+      8,
+      0,
+      254
+     ]
+    ],
+    [
+     27.02,
+     "nudge_nopath"
+    ],
+    [
+     27.02,
+     "teleport"
+    ],
+    [
+     27.11,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 0,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 14,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "door_closed",
+   "search_max_us": 254,
+   "search_us": 254,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 20.6,
+   "t_goal": 27.11,
+   "t_within_1_5": 27.11,
+   "t_within_3": 27.11,
+   "t_within_5": 27.11
+  },
+  {
+   "T": 30,
+   "counts": {
+    "nudge_nopath": 1,
+    "teleport": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:royal_guard_dwarf",
+   "events": [
+    [
+     27.02,
+     "fp",
+     [
+      24,
+      8,
+      0,
+      236
+     ]
+    ],
+    [
+     27.02,
+     "nudge_nopath"
+    ],
+    [
+     27.02,
+     "teleport"
+    ],
+    [
+     27.11,
+     "arrive",
+     "snap"
+    ]
+   ],
+   "found": 0,
+   "how": "snap",
+   "kind": "follow",
+   "lane": 15,
+   "min_d": 0,
+   "mover": "royal_guard",
+   "reached": true,
+   "scene": "door_open",
+   "search_max_us": 236,
+   "search_us": 236,
+   "searches": 1,
+   "smart_mobs": null,
+   "stall_max": 20.6,
+   "t_goal": 27.11,
+   "t_within_1_5": 27.11,
+   "t_within_3": 27.11,
+   "t_within_5": 27.11
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     15.62,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 1,
+   "min_d": 0.89,
+   "mover": "villager",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 1.08,
+   "t_goal": 15.62,
+   "t_within_1_5": 15.71,
+   "t_within_3": 14.36,
+   "t_within_5": 11.47
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     23.84,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 2,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "trunk",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": null,
+   "found": 0,
+   "kind": "villager",
+   "lane": 3,
+   "min_d": 2.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "trunk_near",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 13,
+   "t_within_3": 15.44,
+   "t_within_5": 13.63
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     27.09,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 4,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "row",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     26,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 5,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "doorway",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     26,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 6,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "lcorner",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     28.17,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 7,
+   "min_d": 4.47,
+   "mover": "villager",
+   "reached": false,
+   "scene": "fence",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17,
+   "t_within_5": 12.55
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": null,
+   "found": 0,
+   "kind": "villager",
+   "lane": 8,
+   "min_d": 4.47,
+   "mover": "villager",
+   "reached": false,
+   "scene": "fence_low",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 13,
+   "t_within_5": 15.8
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     24.92,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 9,
+   "min_d": 8.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "pillar",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     20.58,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 10,
+   "min_d": 9.23,
+   "mover": "villager",
+   "reached": false,
+   "scene": "ditch",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     14.54,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 11,
+   "min_d": 0.89,
+   "mover": "villager",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 1.08,
+   "t_goal": 14.54,
+   "t_within_1_5": 14.63,
+   "t_within_3": 13.27,
+   "t_within_5": 11.47
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     23.84,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 12,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "lowgap",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     20.58,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 13,
+   "min_d": 11.02,
+   "mover": "villager",
+   "reached": false,
+   "scene": "pond",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     23.84,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 14,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "door_closed",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 15.17
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     21.04,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 15,
+   "min_d": 0.89,
+   "mover": "villager",
+   "reached": true,
+   "scene": "door_open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "stall_max": 2.17,
+   "t_goal": 21.04,
+   "t_within_1_5": 21.13,
+   "t_within_3": 18.69,
+   "t_within_5": 15.8
+  }
+ ]
+}
