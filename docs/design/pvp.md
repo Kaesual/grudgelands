@@ -171,7 +171,10 @@ combat may follow its target in).
   race of the faction (a mixed garrison); the **General** (level-65 elite,
   the seat race's king chassis and kit without the crown, a fixed look in
   the royal tabard, his weapon in the seat king's enchant colours) with
-  **2 bodyguards** (level-60 elites, royal-guard rules). Guards respawn after
+  **2 bodyguards** (level-60 elites, royal-guard rules). Like a king, the
+  General holds his seat in the keep (Round 41): he never wanders, faces
+  the seat's authored direction and walks back to it after a fight or a
+  leash reset; his bodyguards follow him. Guards respawn after
   3–6 min; the General's group returns like a king's (15 min of wall-clock
   time after the General's death).
 - **Services:** three protected quest givers (Warmaster, Drillmaster,

@@ -29,10 +29,10 @@ local TICK = 1 -- s between nudges (performance rule: throttled)
 --
 -- mobs_redo's own walk state re-randomizes the yaw with a 30 % chance per
 -- do_states call (api.lua:2176-2864) and may stop the mob (`stand_chance`), so a
--- single nudge is a suggestion, not a command — but do_custom runs BEFORE
--- do_states in the same step and this repeats once a second, so the mob
--- makes net progress instead of a straight line. That is exactly what an
--- amble should look like.
+-- single nudge is a suggestion, not a command — but do_states runs only once a
+-- second on its own timer and this repeats once a second, so the mob makes net
+-- progress instead of a straight line. That is exactly what an amble should
+-- look like.
 --
 -- `pos` is passed in because both callers already fetched it; y is only used
 -- to keep the yaw horizontal.
@@ -45,11 +45,51 @@ local TICK = 1 -- s between nudges (performance rule: throttled)
 -- Clearing `delay` also drops a smoothed random turn still in flight, which
 -- would otherwise turn the mob away again right after this.
 --
+-- The walk clip is set here too (Round 41 ruling 1), see walk_animation below.
+--
 function grug_mobs.walk_toward(self, x, z, pos)
 	self:yaw_to_pos(vector.new(x, pos.y, z), 0, 0)
 	self.delay = 0
 	self.state = "walk"
 	self:set_velocity(self.walk_velocity)
+	grug_mobs.walk_animation(self)
+end
+
+--
+-- THE LEGS MOVE WITH THE NUDGE (Round 41 ruling 1). walk_toward used to leave
+-- the clip to mobs_redo's walk state, but outside a fight do_states runs only
+-- once a second on mobs_redo's own timer (api.lua on_step, "one second timed
+-- calls"), out of step with the callers' nudges: a mob started from standing
+-- glided up to a second in its stand pose, and a caller that returns false
+-- from do_custom (the royal follow, bosses.lua) never reached do_states at all.
+--
+-- The clip is the one do_states' walk state would pick: a mob with a fly clip
+-- that is inside its element (flight_check) flies unless it stands on walkable
+-- ground out of water; every other mob walks. A definition without the clip
+-- keeps what it plays (set_animation ignores a clip it does not have).
+--
+-- A hot path (every nudge; the royal follow every step): nothing is written
+-- when the clip already plays. The swing lock (mobs/api.lua set_animation,
+-- Round 37 MB) may hold one write back while a punch clip ends; the next call
+-- writes it.
+--
+function grug_mobs.walk_animation(self)
+	local anims = self.animation
+	if not anims then
+		return
+	end
+	local clip = "walk"
+	if anims.fly_start and anims.fly_end and self:flight_check() then
+		local on = core.registered_nodes[self.standing_on]
+		local within = core.registered_nodes[self.standing_in]
+		if not (on and on.walkable) or
+				(within and within.groups and within.groups.water) then
+			clip = "fly"
+		end
+	end
+	if self.animation_current ~= clip then
+		self:set_animation(clip)
+	end
 end
 
 --
