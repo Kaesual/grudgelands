@@ -508,8 +508,8 @@ Normal tier at level L:
   bespoke tuning). The ranged families (Bandit Archer, Poacher, Skeleton
   Archer, Skeleton Raider, Frost Stray) roam at **1** and keep **4.0** for the
   whole fight: they opt out of the bound-actor soft de-aggro, the one combat
-  reader of `walk_velocity` besides the wedged-path crawl that `dogshoot`
-  never enters. Flying mobs also climb and dive toward a target at
+  reader of `walk_velocity` (the wedged-path crawl is gone since Round 42).
+  Flying mobs also climb and dive toward a target at
   `walk_velocity`, so the Glowwing (walk 2) changes height at 2 m/s in
   combat (accepted).
 - **Reach**: player swing abilities (Strike, Mighty Blow and Hamstring) use
@@ -880,24 +880,56 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   mob. mobs_redo set a 0.25 s pause on every landed hit, which skipped the
   attack state and therefore the punch timer; several players hitting one mob
   stretched its attack interval a lot. Mob-vs-mob hits keep that pause.
-- **Close cover triggers navigation** (decided 2026-09-17). If a ground melee
-  mob has spent about **1 s** inside reach without line of sight, it starts the
-  existing bounded A* search despite already being close. It does not abandon
-  that path merely because `dist < reach` while LOS remains blocked. If A*
-  returns nil, it sidesteps perpendicular to the target for about **0.5 s**,
-  alternating sides on consecutive failures, then tests LOS again. Immediately
-  before moving, the actual selected side is checked for a cliff or dangerous
-  ground; the other side is tried once, and if both are unsafe the mob stands.
-  Support probes skip harmless non-walkable vegetation to inspect the actual
-  ground below it. Vegetation must not halt a chase or sidestep on solid ground,
-  or make a real drop, dangerous ground or unknown/unloaded terrain traversable.
-  The `reach × 0.6` contact stop applies only while the target is visible; a
-  blocked melee mob keeps following its path regardless of contact distance.
-  Reaching the last waypoint with LOS still blocked drops that exhausted path,
-  starts the same sidestep fallback and makes A* due again after the 0.25 s
-  per-mob backoff.
+- **Navigation** (Round 42, [round 42 plan](../planning/round42-plan.md)
+  rulings 1–9 and 17–20; `mobs/grug_nav.lua`, the dogfight branch of
+  `do_states` in `mobs/api.lua`). A ground melee mob in a fight walks
+  straight at its target. It is **stuck** when it wants to move but moved
+  itself less than **30 %** of the distance its current speed should have
+  carried it over **0.5 s**; the current speed is the one it really has
+  (slows, the evade speed and the liquid slowdown included). It wants to move
+  while it chases, while it runs at a target in reach that it cannot see,
+  and while a cliff edge holds it or it stands right under a target above
+  it. It is never stuck while it strikes a visible target in reach, winds
+  up, is ordered to stand, rooted, stunned or knocked back. Progress toward
+  the target is not the measure: a target running away faster than the mob
+  leaves no stuck mob.
+  A stuck mob asks the engine's pathfinder for a short local detour, never a
+  long fixed path: straight to a target within **16 nodes**, otherwise to an
+  intermediate point in the target's direction, on a ring of **10 nodes** and
+  at the next attempt **16** (at 0°, ±20°, ±40°, the first point within
+  **±3 nodes** of height where the mob stands with its head room). The search
+  box is the two ends padded by **6 nodes** (never below 2,
+  [upstream workarounds](../technical/upstream-workarounds.md) §5; the
+  engine's box reaches one node less on its positive side); no leg longer
+  than **32 nodes** goes to the engine. A mob searches at most once a second
+  in a fight; after a failed search the same two nodes wait **1, 2, 4 s**
+  (the negative path cache); the server starts at most **20 searches in any
+  one second**, and every search runs inside the A* budget below. A found
+  path is checked for **head room** (as many free cells as the mob is tall,
+  rounded up, at every waypoint) and **width** (a mob up to two nodes wide
+  needs a free 2×2 block at every waypoint and is steered through its
+  middle; a wider one every cell round the waypoint); unknown and unloaded
+  nodes count as blocked. A path that fails the checks is a failed search, so
+  a wide mob that finds no wide route gives up like any other.
+  The mob follows the path, smoothed: at each waypoint it steers at the
+  furthest of the next eight it can walk to straight. It leaves the path when
+  it strikes, at the path's end, when the target moved **4 nodes** from where
+  the path was planned (a fleeing player is not chased along an old path),
+  when the straight line to the target is walkable again (tested every
+  **0.5 s**) or when it is stuck on the path; then it walks straight again.
+  The walkable line samples the way every half node: feet to head free at
+  both sides of the body, ground below, steps up to the mob's step height
+  and drops down to its fear height; a diagonal step needs both corner cells
+  free with ground under them; harmless water is ground for a mob that
+  floats. Fliers and the dogshoot families never search (a ranged family
+  answers terrain by shooting over it). This replaces mobs_redo's stuck
+  timer, the 1 s blocked-line-of-sight trigger and the sidestep of the
+  close-cover ruling of 2026-09-17 and the walk-speed crawl of a wedged
+  mob (ruling 17). The `reach × 0.6` contact stop applies only while the
+  target is visible; a blocked melee mob keeps running at it, along its
+  detour when it has one. The contact run retains its `at_cliff` guard.
   A ground melee attack computes one collision-box eye-height target-LOS ray
-  per mob per server step and reuses it for path retention, A*, the custom
+  per mob per server step and reuses it for the strike test, the custom
   attack hook and the punch gate. A blocked target invokes neither the custom
   hook nor the punch. Shoot and explode attacks retain their fixed `+0.5` LOS
   endpoints. Dogshoot melee and flying/swimming dogfight require both that
@@ -911,37 +943,39 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   (a found path costs 14–211 µs). Each request has one generation-token
   entry. Cancellation invalidates only that generation, releases its strong
   entity-state reference immediately and puts any later request from the same
-  mob at the tail. Death and unload cancel pending entries. The **0.25 s**
-  per-mob backoff applies after an exhausted path, not to budget waiting.
-  The close-cover search looks within **8 nodes** of the mob and the target
-  (searchdistance 8 instead of the chase's 24, about a tenth of the search
-  box).
+  mob at the tail. Death and unload cancel pending entries.
+- **Tall mobs** (Round 42 ruling 20): a mob taller than two nodes (the
+  elites and royal guards at 2.38, the kings at 2.72, the bog ooze, the war
+  construct, a rare at twice its size) moves with a physics box **1.95**
+  high, so it walks through a 2-high doorway. Its look and its selection box
+  stay; the head clips through a lintel while it passes. Fliers keep their
+  box (`mobs/grug_obstacle.lua` `physics_box`).
 - **Unreachable targets are given up** (Round 30, the user's ruling on perf
-  review 2026-10 #4). A mob searches for a path only while it has no line of
-  sight to its target; a player it can see but not reach (across a fence
-  or water) is not searched for and never given up. After an A* search finds no
-  path, the mob does not repeat the search for the same two nodes for
-  **1 s**, then **2 s**, then **4 s** (a mob or target that changes node
-  lifts the wait). After **3 failed searches in a row** against a target
-  whose node has not changed — a player hidden in a closed house, in a
-  walled-in hole, in a boat behind cover — the mob gives the target up at its
-  next search instead: it drops the target and goes home through the
-  ordinary reset (Evade above: threat, target and tags cleared, healed, a run
-  home when it stands beyond its radius). A target that moves to another node
-  restarts the count; about 7 s of trying covers a player stepping round a
-  corner. Afterwards target acquisition ignores that player while they stay
-  on the same node; once they move, or hit the mob, or a group alert calls
-  it, the mob fights as usual. A target standing in a walkable node (a bottom
-  slab, a lower stair step, snow dust) is searched for from the node above
-  it, since the engine refuses a walkable destination; a search whose ends
-  are still walkable is not run and never counts. Guards and rares follow the
-  rule; the kings, like the bespoke no-leash actors (Kraken, royal guards),
-  only drop the target (no heal, no royal encounter reset); the dragons and
-  their whelps never give up and only wait: their arena edge ends the fight
-  instead (`world.md` §4b, Round 31). The patrol path nudge shares the budget and
-  the waits (1, 2, 4, 8 s, then 8 s) but never gives anything up
-  (`mobs/grug_obstacle.lua`, `mobs/api.lua` `smart_mobs`,
-  `grug_mobs/aggro.lua` `give_up_target`). The contact run retains its existing `at_cliff` guard.
+  review 2026-10 #4; since Round 42 also a visible target, ruling 9).
+  Failed searches in a row within one stuck episode count, whether they aimed
+  at the target or at an intermediate point and however the target moved; a
+  path rejected by the checks, a search whose ends the engine would refuse
+  and a path the mob got stuck on count too. Progress resets the count:
+  striking the target, reaching a path's end, or moving freely with a
+  walkable straight line to the target. After **3 failed searches in a row**
+  the mob gives the target up, **also when it can see it** (a player behind
+  a fence, across deep water, on a pillar, in a closed house or a boat): it
+  drops the target and goes home through the ordinary reset (Evade above:
+  threat, target and tags cleared, healed, a run home when it stands beyond
+  its radius). Afterwards target acquisition ignores that player until they
+  moved **8 nodes** from where they stood or **15 s** passed, so a mob behind
+  a fence cannot loop give-up and heal every few seconds; being hit or a
+  group alert starts a new chase as usual. A target standing in a walkable
+  node (a bottom slab, a lower stair step, snow dust) is searched for from
+  the node above it, and a mob pressed into a fence searches from the open
+  cell next to it. Guards and rares follow the rule; the kings, like the
+  bespoke no-leash actors (Kraken, royal guards), only drop the target (no
+  heal, no royal encounter reset); the dragons and their whelps never give
+  up and only wait: their arena edge ends the fight instead (`world.md` §4b,
+  Round 31). The patrol path nudge shares the budget and the negative
+  cache's waits (1, 2, 4, 8 s, then 8 s) but never gives anything up
+  (`mobs/grug_nav.lua`, `mobs/grug_obstacle.lua`, `grug_mobs/aggro.lua`
+  `give_up_target`).
   *Rationale, because the defect was invisible on paper*: the following
   pre-patch coordinates refer to commit `77261837` (2026-09-15). Vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`

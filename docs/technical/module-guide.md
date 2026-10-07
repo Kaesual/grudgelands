@@ -648,9 +648,12 @@ tools](#player-meta-read-by-external-tools).
     set; `grug_obstacle.mob_cbox` / `object_cbox`), never `get_properties()`
     in a step; privilege checks go through the cached `mobs.has_priv`. A*
     runs inside a per-step time budget (about 3 ms) with a negative path
-    cache and the give-up rule of `combat_stats.md` ("Unreachable targets are
-    given up"): `grug_obstacle.no_path_gate` / `note_search_result`,
-    `grug_mobs.give_up_target` (`aggro.lua`). A new chase or patrol search
+    cache (`grug_obstacle.no_path_gate` / `note_search_result`). Combat
+    navigates through `mobs/grug_nav.lua` (`mobs.grug_nav`, Round 42: the
+    stuck detector, the local search, the follower and the give-up rule of
+    `combat_stats.md` "Navigation" and "Unreachable targets are given up",
+    `grug_mobs.give_up_target` in `aggro.lua`); `nav.fixed_step` is the
+    fixed-walk interface. A new chase or patrol search
     asks that budget (`claim_path_budget` / `spare_path_budget`), reports its
     cost (`note_path_cost`) and result, as `patrol.lua` `path_nudge` does;
     never an unbudgeted `core.find_path`. Fixture `tools/r30_p2` (also the
@@ -692,9 +695,10 @@ tools](#player-meta-read-by-external-tools).
     freezing the mob, and the punch sits outside both branches with the
     in-reach and line-of-sight tests where it lands. The 44th to 59th
     (round-5 combat AI, 2026-09-17) raise ordinary reach to 3 m, navigate
-    blocked close cover, remove implicit ordinary-hit knockback and disable
-    object-to-object collision; `mobs/grug_obstacle.lua` holds the bounded
-    production state decisions used by that attack path.
+    blocked close cover (replaced by `mobs/grug_nav.lua` in Round 42),
+    remove implicit ordinary-hit knockback and disable object-to-object
+    collision; `mobs/grug_obstacle.lua` holds the A* budget, the negative
+    path cache and the collision-box cache.
     The 40th (WP13 playtest round 2, 2026-09-15) is the
     per-TARGET non-combatant veto in `general_attack`'s candidate filter:
     hostiles and guards MAY fight each other, but nothing in the world may

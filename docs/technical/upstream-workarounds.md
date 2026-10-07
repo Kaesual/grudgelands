@@ -207,16 +207,18 @@ Engine reference for the line citations: `reference_projects/luanti` at
 - **Issue:** none filed yet (found 2026-10-08).
 - **Affected versions:** the code is unchanged up to `df0487906`
   (5.17.0-dev).
-- **Our workaround:** no game code calls `core.find_path` below
-  searchdistance 8 today (`mobs/api.lua` close-cover 8, chase 24;
-  `grug_mobs/patrol.lua` 24; `grug_mobs/rift.lua` 40). The navigation probe
-  never searches below 2 (`tools/r42_nv0/grug_probe_r42_nv0/init.lua`
-  `MIN_PAD`). Round 42's local searches (small paddings) must keep
-  searchdistance at 2 or more.
+- **Our workaround:** the navigation module's one search,
+  `nav.search` in `mods/ENTITIES/mobs/grug_nav.lua`, raises any padding below
+  `nav.MIN_PADDING` (2) to 2 (combat searches at 6, Round 42 NV1; fixture
+  `tools/r42_nv1` L3). The other callers search far above it
+  (`grug_mobs/patrol.lua` 24, `grug_mobs/rift.lua` 40; Round 42 NV2 moves
+  them onto the module). The navigation probe never searches below 2
+  (`tools/r42_nv0/grug_probe_r42_nv0/init.lua` `MIN_PAD`).
 - **How to tell upstream fixed it:** the neighbour access in
   `updateCostHeuristic` checks the index (or the cost) first, or the array
   container is sized `(diff + 1)` per axis.
-- **What to remove then:** the floor of 2 on the search padding.
+- **What to remove then:** the floor of 2 on the search padding
+  (`nav.MIN_PADDING` in `grug_nav.lua`).
 
 ## Checked and not listed
 
