@@ -451,6 +451,8 @@ do -- R1 release seen, then a fresh press: two ordinary draws.
 		"R1 the fresh press's draw has no grace and its full time (" .. mult(2) .. ")")
 end
 
-print(("%d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
-print("R41 SC PORTABLE PASS checks=" .. checks)
+if failures == 0 then
+	print("R41 SC PORTABLE PASS checks=" .. checks)
+else
+	error(("R41 SC PORTABLE FAIL %d/%d"):format(failures, checks), 0)
+end
