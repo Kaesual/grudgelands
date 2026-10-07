@@ -1,0 +1,39 @@
+ACTION[Main]: [r41_up_probe] boot 2: setting pending=true applied=1
+ACTION[Server]: [r41_up_probe] stage 1: boot 2: the clears during the load (t=5.8s)
+ACTION[Server]: [r41_up_probe] ok   boot 1's notes are in the world folder
+ACTION[Server]: [r41_up_probe] ok   the reset applies setting 1
+ACTION[Server]: [r41_up_probe] ok   the preparation plan starts again (mode kept)
+ACTION[Server]: [r41_up_probe] ok   the start NPC markers are gone (67 before)
+ACTION[Server]: [r41_up_probe] ok   the liveness generations stay (0)
+ACTION[Server]: [r41_up_probe] ok   no housing claim survives
+ACTION[Server]: [r41_up_probe] ok   oldhero needs a new stone: needs_stone
+ACTION[Server]: [r41_up_probe] ok   join callback ran
+ACTION[Server]: [r41_up_probe] ok   join callback ran
+ACTION[Server]: [r41_up_probe] ok   join callback ran
+ACTION[Server]: [r41_up_probe] joined oldhero (new=false, 3 callbacks)
+ACTION[Server]: [r41_up_probe] ok   newplayer callback ran
+ACTION[Server]: [r41_up_probe] ok   newplayer callback ran
+ACTION[Server]: [r41_up_probe] ok   join callback ran
+ACTION[Server]: [r41_up_probe] ok   join callback ran
+ACTION[Server]: [r41_up_probe] ok   join callback ran
+ACTION[Server]: [r41_up_probe] joined newbie (new=true, 3 callbacks)
+ACTION[Server]: [r41_up_probe] ok   a new character records 1 at once
+ACTION[Server]: [r41_up_probe] ok   oldhero has no record yet
+ACTION[Server]: [r41_up_probe] ok   oldhero is held
+ACTION[Server]: [r41_up_probe] ok   ...and safe
+ACTION[Server]: [r41_up_probe] stage 2: boot 2: the start areas are prepared again (t=42.5s)
+ACTION[Server]: [r41_up_probe] ok   the starts are prepared again (84/84)
+ACTION[Server]: [r41_up_probe] stage 3: boot 2: oldhero at the human start (t=42.7s)
+ACTION[Server]: [r41_up_probe] ok   oldhero moved to the human start (0,37,-2550)
+ACTION[Server]: [r41_up_probe] ok   one move
+ACTION[Server]: [r41_up_probe] ok   oldhero released
+ACTION[Server]: [r41_up_probe] ok   ...no longer immortal
+ACTION[Server]: [r41_up_probe] ok   the home claim is cleared
+ACTION[Server]: [r41_up_probe] ok   the XP stays
+ACTION[Server]: [r41_up_probe] ok   the class stays
+ACTION[Server]: [r41_up_probe] ok   no arrival flow
+ACTION[Server]: [r41_up_probe] ok   the new character is in creation, never moved
+ACTION[Server]: [r41_up_probe] stage 4: boot 2: the old claim node is gone (t=43.1s)
+ACTION[Server]: [r41_up_probe] ok   the regenerated map has no Claim Stone there: air
+ACTION[Server]: [r41_up_probe] ok   no claim protects it
+ACTION[Server]: [r41_up_probe] RESULT PASS checks=31 failures=0 t=43.3s

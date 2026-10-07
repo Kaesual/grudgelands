@@ -1,0 +1,10 @@
+ACTION[Main]: [r41_up_probe] boot 1: setting pending=false applied=0
+ACTION[Server]: [r41_up_probe] stage 1: boot 1: the world is prepared (t=5.6s)
+ACTION[Server]: [r41_up_probe] ok   boot 1 runs without a reset
+ACTION[Server]: [r41_up_probe] stage 2: boot 1: the start NPCs are placed (t=40.2s)
+ACTION[Server]: [r41_up_probe] stage 3: boot 1: a Claim Stone near the human start (t=40.3s)
+ACTION[Server]: [r41_up_probe] stage 4: boot 1: place it and remember (t=40.8s)
+ACTION[Server]: [r41_up_probe] ok   the claim node stands
+ACTION[Server]: [r41_up_probe] ok   oldhero's stone is placed
+ACTION[Server]: [r41_up_probe] remembered: claim 1 at (0,67,-2510), 67 start NPC markers, 0 generations
+ACTION[Server]: [r41_up_probe] RESULT PASS checks=3 failures=0 t=41.0s

@@ -269,3 +269,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   5626331914247410985. Its portable checks live in `r24_protection_depth`
   (the P8 floor against the hard protection), `r24_fill` (the host rule)
   and `r23_renewal` (gatherables in an envelope).
+- **Round 41** (`r41_<lane>`): `r41_up` the platform's upgrade contract
+  ([upgrade contract](../docs/technical/upgrade-contract.md)):
+  `portable_test.lua` (the world and character records and the trigger, the
+  idempotent clears of the preparation, grug_mobs and housing state, the
+  relocation on the real character creation with its hold, failure and
+  retry, new characters, unknown quest, waypoint and achievement ids, the
+  committed declaration) and `engine.sh OUT_DIR [TIMEOUT]`, two boots of one
+  world with the disposable probe `grug_probe_r41_up`: a fresh world with a
+  Claim Stone, then what the platform does (map database deleted,
+  `grug_reset_world` raised through a disposable patch of the staged game)
+  and the reset boot with an old and a new character. The declaration's
+  rules are `check_upgrade.py`'s own self-test (above).

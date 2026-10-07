@@ -1,0 +1,6 @@
+ACTION[Main]: [grug_core] map reset 1: cleared the world preparation progress
+ACTION[Main]: [grug_core] map reset 1: cleared the grug_mobs actor records
+ACTION[Main]: [grug_core] map reset 1: cleared the housing claims
+ACTION[Main]: [grug_core] map reset 1 applied to the world (was 0)
+ACTION[Main]: [grug_core] world preparation mode=starts cursor=0/84
+ACTION[Server]: [grug_core] map reset 1: oldhero moved to the race start

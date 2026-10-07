@@ -1,0 +1,9 @@
+--- a/minetest.conf
++++ b/minetest.conf
+@@ -208,3 +208,6 @@
+ # normal (1080x960, default) or high (3600x3200, about a minute more at the
+ # first start of a world and a larger client download). See settingtypes.txt.
+ grug_map_quality = normal
++
++# The platform raises this for a map reset.
++grug_reset_world = 1

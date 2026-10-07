@@ -1,0 +1,21 @@
+total 1504
+drwxr-xr-x. 3 jan jan    400 Oct  7 20:11 .
+drwx------. 5 jan jan    160 Oct  7 20:09 ..
+-rw-r--r--. 1 jan jan    148 Oct  7 20:11 env_meta.txt
+-rw-r--r--. 1 jan jan      9 Oct  7 20:11 force_loaded.txt
+-rw-r--r--. 1 jan jan     64 Oct  7 20:10 grug_map_base.key
+-rw-r--r--. 1 jan jan 224151 Oct  7 20:10 grug_map_base_0_0.png
+-rw-r--r--. 1 jan jan 187453 Oct  7 20:10 grug_map_base_0_1.png
+-rw-r--r--. 1 jan jan 272382 Oct  7 20:10 grug_map_base_1_0.png
+-rw-r--r--. 1 jan jan 218296 Oct  7 20:10 grug_map_base_1_1.png
+-rw-r--r--. 1 jan jan   2659 Oct  7 20:10 grug_map_base_2_0.png
+-rw-r--r--. 1 jan jan    714 Oct  7 20:10 grug_map_base_2_1.png
+-rw-r--r--. 1 jan jan    520 Oct  7 20:10 grug_map_minimap_mask.png
+-rw-r--r--. 1 jan jan  46048 Oct  7 20:10 grug_map_zone_grid.txt
+-rw-r--r--. 1 jan jan 113189 Oct  7 20:10 grug_region_maps.txt
+-rw-r--r--. 1 jan jan 428764 Oct  7 20:10 grug_world_layouts.txt
+-rw-r--r--. 1 jan jan      0 Oct  7 20:11 ipban.txt
+-rw-r--r--. 1 jan jan   3621 Oct  7 20:10 map_meta.txt
+drwxr-xr-x. 2 jan jan    100 Oct  7 20:11 mod_storage
+-rw-r--r--. 1 jan jan     85 Oct  7 20:11 r41_up_probe.txt
+-rw-r--r--. 1 jan jan     87 Oct  7 20:09 world.mt

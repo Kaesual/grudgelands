@@ -1,0 +1,6 @@
+staged probe: grug_probe_r41_up
+headless boot: PASS (port 38956, 290 s)
+log: /tmp/grudgelands-headless.RalD0j/server.log
+seed = 42
+95:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38956.
+kept: /tmp/grudgelands-headless.RalD0j
