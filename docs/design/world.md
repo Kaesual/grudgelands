@@ -471,7 +471,9 @@ the world"). The king/royal-guard binding, reset, death and group-respawn
 rules are implemented by the six level-65 king entities and their four
 level-60 royal guards per capital. They consume the authored `king` and royal
 guard sockets; the king alone owns reset, death and group-respawn authority as
-specified in `world_zones.md` §12.
+specified in `world_zones.md` §12. A king holds his seat (Round 41): he never
+wanders, stands on his throne socket facing its authored direction and walks
+back to it after a fight or a leash reset; his guards follow him there.
 
 ## 4. Outposts & patrols
 
