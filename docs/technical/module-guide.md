@@ -1004,8 +1004,9 @@ tools](#player-meta-read-by-external-tools).
     (2026-09-29 WP audit D8; WP22 and WP29 are closed). Canonical storage blocks, Iron Sign/Ladder
     and the 20 canonical metal stair/slab nodes are storage/building
     derivatives, not natural ground and never harvest-gated.
-  - Emberglass and Abyssal Steel are the canonical names. Fresh-server mode
-    forbids earlier-version material aliases and migration readers. WP26 owns
+  - Emberglass and Abyssal Steel are the canonical names; no aliases or
+    migration readers of development-era material names exist (release mode
+    allows `register_alias` only for an item renamed from now on). WP26 owns
     furnace/alloy/storage recipes in `mods/ITEMS/grug_smelting`; its
     `grug_smelting.RECIPES` surface is consumed by the trader anti-loop audit
     because engine craft inspection cannot see dual-furnace recipes. Recipe
@@ -1736,7 +1737,7 @@ tools](#player-meta-read-by-external-tools).
   | `grug_factions:faction` | string | `accord`, `throng` (`grug_core.factions`); missing: no faction yet | `grug_factions.set_faction`: "Create character" (`grug_classes/selection.lua`) and the admin `/faction` |
   | `grug_classes:race` | string | `human`, `dwarf`, `elf` (The Accord), `orc`, `troll`, `undead` (The Throng); missing: none yet. The game counts a race of the other faction as unset (`grug_classes.get_race`), possible only after an admin `/faction` | `grug_classes.set_race`: "Create character" and the admin `/race` |
   | `grug_classes:class` | string | `warrior`, `mage`, `priest`, `scout`; missing: none yet. Never changes once set (no class change, admins included) | `grug_classes.set_class`: "Create character" only |
-  | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a fresh world (no conversion) |
+  | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a new server ([upgrade contract](upgrade-contract.md), no conversion) |
   | `grug_visuals:appearance` | compact JSON string | the format below; missing: no apply yet (the first join writes it) | `grug_visuals.apply` (`apply.lua`, built in the pure `appearance.lua`) |
 
 - **The appearance** (`APPEARANCE_VERSION` 1): what the game draws, with

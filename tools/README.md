@@ -53,7 +53,12 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
 - `tools/check_lua.sh <files>`: plain Lua 5.1 parser, `SETGLOBAL` list and the
   sweeps of [docs/technical/luanti-lua.md](../docs/technical/luanti-lua.md)
   (needs ripgrep).
-- `python3 tools/check_fresh_server.py`: the fresh-server source audit.
+- `python3 tools/check_fresh_server.py`: the source audit of the removed
+  development-era compatibility mechanisms (release mode allows `register_alias`
+  for a renamed item).
+- `python3 tools/check_upgrade.py`: the upgrade declaration
+  (`web_data/upgrade.json`) against the last pushed commit, after its own
+  self-test (`--self-test` alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
 - `tools/luanti_headless.sh`: an isolated headless engine boot (never the
   personal Luanti folder; options in the script header).
 - `tools/r35_t/upstream_check.sh`: whether the installed engine still

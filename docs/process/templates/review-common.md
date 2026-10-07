@@ -25,8 +25,9 @@ Goal: find what would break the game or a user rule, not style nits.
   list: a finding marked refuted must really be refuted, a confirmed one
   must really be fixed.
 - Rules: the plan's rulings (§2, number by number where the lane implements
-  them) and the brief; fresh-server mode (no migrations, aliases,
-  placeholders); docs updated where the change makes them wrong; no edits to
+  them) and the brief; release mode (no data migrations or placeholders,
+  stable ids; the lane's upgrade classification — compatible, map reset or
+  new server — is right and new map-bound state has its clear); docs updated where the change makes them wrong; no edits to
   files the brief forbids; vendored patches marked `-- GRUG PATCH` with a
   VENDOR.md entry; no scope creep beyond the brief's items and the size-S
   Lows the report lists.

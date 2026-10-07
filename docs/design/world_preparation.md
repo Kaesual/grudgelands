@@ -13,6 +13,10 @@ the air-chunk fast path decided 2026-09-28 (Round 23, WP48).
   starts-only preparation at the **first startup of a fresh world**.
 - Persist the selected mode immediately, before queueing preparation. It is
   immutable for that world. Later configuration edits cannot switch the mode.
+- A **map reset** of the hosting platform's
+  [upgrade contract](../technical/upgrade-contract.md) (§3) keeps the mode and
+  discards the plan and its progress: the world's selected preparation starts
+  again from its first unit at that start, and players wait as on a new world.
 - Full-world mode replaces starts-only mode; do not queue both schedulers.
 - One waiting UI handles both modes, shows actual progress and an estimated
   remaining time when enough timing evidence exists. Players cannot enter the

@@ -15,7 +15,7 @@ per session). Cross-provider CLI mechanics:
 
 - **The user** decides the plan, every ruling, the model routing of the
   session, picks on review pages (sounds, art, texts, POIs), runs the GUI
-  test and pushes. Nothing else ends fresh-server mode or authorizes a push.
+  test and pushes. Nothing else authorizes a push.
 - **The coordinator** plans the round with the user, writes the briefs,
   creates the worktrees, starts implementers and reviewers, verifies their
   reports against the code, merges in the plan's order and runs the
@@ -78,6 +78,8 @@ per session). Cross-provider CLI mechanics:
 |---|---|---|---|---|
 | `bash tools/check_lua.sh <changed .lua>` (Lua under `tools/` too) | yes | yes | — | — |
 | `python3 tools/check_fresh_server.py` | — | yes | — | yes |
+| Upgrade classification (below): the report states it, the reviewer checks it | — | yes | — | the declaration follows from it |
+| `python3 tools/check_upgrade.py` (the upgrade declaration against `origin/main`) | — | when `game.conf`'s version or `tools/web_data/upgrade.json` changed | — | yes |
 | A fixture for new logic, `tools/r<NN>_<lane>/portable_test.lua` (repository path as `arg[1]`, non-zero exit on failure) | — | yes | — | — |
 | `tools/run_fixtures.sh` (every portable fixture, LuaJIT) | — | yes | — | yes |
 | `python3 tools/r28_design/validate.py --game` | — | when quest, mob or catalogue data changed | — | yes |
@@ -90,6 +92,19 @@ per session). Cross-provider CLI mechanics:
 | Independent review | — | every non-trivial lane | every non-trivial lane, against the code | — |
 | `tools/sync_to_luanti.sh` (coordinator, from main) | — | — | — | yes |
 | The user's GUI check | — | — | — | yes |
+
+**Upgrade classification** (release mode since 0.41.0, Round 41 ruling 10;
+[upgrade contract](../technical/upgrade-contract.md)). Every code or data
+lane's report says whether its change is *compatible* (a world of the version
+before boots and plays on), needs a *map reset* (map-bound state or world
+generation changed) or needs a *new server* (saved state the new code cannot
+read: an XP-curve change, removed or restructured quests, removed items,
+rebuilt talents), with the reason; a new-server change is reported before it
+is built. The reviewer checks the statement. The round's declaration follows
+from the classifications: `tools/web_data/upgrade.json` carries the version
+`game.conf` names, and the round's version goes into `map_reset` or
+`new_server` when a lane needs it (both: new server). The coordinator runs
+`tools/check_upgrade.py` at the round end.
 
 **No PUC runtime runs** at any stage: plain-5.1 syntax is the
 `check_lua.sh` gate, and at most one optional PUC crash smoke test runs at
@@ -167,7 +182,12 @@ Point reviewers at this section verbatim.
 5. **Protection and exploits:** `is_protected` paths, the terrain-damage
    guard (`grug_core.world_alterable`), ability and resource bypasses, PvP
    flag rules, relog resets.
-6. **Report:** severity-ranked (Critical/High/Medium/Low), file:line, a
+6. **Upgrade classification:** the lane's statement (compatible, map
+   reset, new server) matches the change ([§3](#3-gates)); saved state
+   keeps its ids and format or the statement says why not; new map-bound
+   state has its map-reset clear
+   ([upgrade contract](../technical/upgrade-contract.md) §3.4).
+7. **Report:** severity-ranked (Critical/High/Medium/Low), file:line, a
    one-sentence defect and a concrete failure scenario, verified against the
    code; no speculative findings.
 

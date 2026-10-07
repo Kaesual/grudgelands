@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Guard the explicitly removed old-world compatibility mechanisms."""
+"""Guard the removed development-era compatibility mechanisms.
+
+Release mode (since 0.41.0, AGENTS.md "Release mode"): worlds survive upgrades
+through the hosting platform's contract, never through data migrations. The
+mechanisms the fresh-server development mode removed stay removed. Ids of
+quests, items, achievements and waypoints stay stable; a renamed item may keep
+its old name with `register_alias`, so aliases are no longer refused here.
+"""
 from pathlib import Path
 import re
 
@@ -27,15 +34,6 @@ for path in (ROOT / "mods").rglob("*.lua"):
             "function creative.is_enabled_for",
         )):
             errors.append(f"{relative}:{number}: retired compatibility mechanism")
-        if re.search(r"\b(?:core|minetest)\.register_alias(?:_force)?\s*\(", code):
-            # Native mapgen aliases are used on every fresh world by C++; the
-            # tool namespace keeps its old `default:` names as aliases by user
-            # ruling (Round 26 ruling 14), not for saved worlds.
-            if relative.as_posix() not in (
-                "mods/BASE/default/mapgen.lua",
-                "mods/ITEMS/grug_materials/tools.lua",
-            ):
-                errors.append(f"{relative}:{number}: unexpected item-name alias")
 
 # These are normal current-version activation, not migration; do not remove
 # them by indiscriminately deleting every load-time callback.
@@ -44,4 +42,4 @@ assert "register_sapling_growth" in (ROOT / "mods/BASE/default/trees.lua").read_
 assert "core.serialize(clean_staticdata(self))" in (ROOT / "mods/ENTITIES/mobs/api.lua").read_text()
 if errors:
     raise SystemExit("\n".join(errors))
-print("Fresh-server source audit: PASS")
+print("Release-mode source audit: PASS")
