@@ -21,7 +21,9 @@
 --   calib     find_path against padding and distance (the scenes, a flat
 --             field with and without a path), the candidate fan, the
 --             walkable-line test's cost, natural-terrain samples;
---   chasers40 Round 30's stress: 40 chasers round an enclosed target.
+--   chasers40 Round 30's stress: 40 chasers round an enclosed target;
+--   settle    the walker and patrol legs of a start town and a capital,
+--             one search per leg (plan §3.3; seed 42 is the plan's).
 -- Results go to <world>/nv0_results.json; every log line carries "[nv0]".
 
 local MOD = core.get_current_modname()
@@ -1249,6 +1251,144 @@ local function phase_chasers40(done)
 	end)
 end
 
+---------------------------------------------------------------------------
+-- Settlements (plan §3.3): the legs of the walkers and patrols the real NPC
+-- placement puts into the first start identity's start town and capital,
+-- one engine search per leg at padding 4 and 24.
+---------------------------------------------------------------------------
+local function settlement_bounds(anchor)
+	for _, record in ipairs(grug_core.settlement_socket_settlements()) do
+		local a = record.anchor
+		if a.x == anchor.x and a.y == anchor.y and a.z == anchor.z then
+			local minp = vector.copy(a)
+			local maxp = vector.copy(a)
+			for _, socket in ipairs(grug_core.settlement_sockets_at(record.key)) do
+				local p = socket.pos
+				minp = {x = min(minp.x, p.x), y = min(minp.y, p.y), z = min(minp.z, p.z)}
+				maxp = {x = max(maxp.x, p.x), y = max(maxp.y, p.y), z = max(maxp.z, p.z)}
+			end
+			return record.key, vector.offset(minp, -8, -8, -8),
+				vector.offset(maxp, 8, 16, 8)
+		end
+	end
+end
+
+local function leg_key(a, b)
+	local ka = floor(a.x + 0.5) .. "," .. floor(a.z + 0.5)
+	local kb = floor(b.x + 0.5) .. "," .. floor(b.z + 0.5)
+	if ka > kb then ka, kb = kb, ka end
+	return ka .. "|" .. kb
+end
+
+local function path_end(p)
+	local q = {x = floor(p.x + 0.5), y = floor(p.y + 0.5), z = floor(p.z + 0.5)}
+	if walkable(q.x, q.y, q.z) then q.y = q.y + 1 end
+	return q
+end
+
+local function measure_settlement(kind, key, minp, maxp)
+	local legs, seen = {}, {}
+	local walkers, patrols = 0, 0
+	local function add(a, b, who)
+		local k = leg_key(a, b)
+		if seen[k] then return end
+		seen[k] = true
+		legs[#legs + 1] = {who = who, a = path_end(a), b = path_end(b)}
+	end
+	for _, obj in ipairs(core.get_objects_in_area(minp, maxp)) do
+		local ent = obj:get_luaentity()
+		if ent and ent._grug_walker == true and type(ent._grug_idle_spots) == "table"
+				and #ent._grug_idle_spots >= 2 then
+			walkers = walkers + 1
+			local spots = ent._grug_idle_spots
+			for i = 1, #spots do add(spots[i], spots[i % #spots + 1], "walker") end
+		elseif ent and type(ent._grug_patrol_route) == "table" then
+			patrols = patrols + 1
+			local pts = ent._grug_patrol_route.points or {}
+			local y0 = floor(obj:get_pos().y + 0.5)
+			local placed = {}
+			for i = 1, #pts do
+				local px, pz = floor(pts[i].x + 0.5), floor(pts[i].z + 0.5)
+				local y = find_standable(px, pz, y0, 16, 2) or y0
+				placed[i] = {x = px, y = y, z = pz}
+			end
+			for i = 1, #placed do add(placed[i], placed[i % #placed + 1], "patrol") end
+		end
+	end
+	local rows = {}
+	for _, leg in ipairs(legs) do
+		local a, b = leg.a, leg.b
+		local d = horizontal(a, b)
+		local p4, c4 = timed_path(a, b, 4, 1, 2, 1)
+		local p24, c24 = timed_path(a, b, 24, 1, 2, 1)
+		rows[#rows + 1] = {who = leg.who, d = r2(d),
+			line = line_walkable(a, b, 2, 0.3, 1, 2),
+			ok4 = p4 ~= nil, us4 = c4, ok24 = p24 ~= nil, us24 = c24,
+			len24 = p24 and #p24 or 0}
+	end
+	calib.settle = calib.settle or {}
+	calib.settle[kind] = {key = key, walkers = walkers, patrols = patrols,
+		legs = rows}
+	log(("SETTLE %s %s: %d walkers, %d patrols, %d distinct legs"):format(
+		kind, key, walkers, patrols, #rows))
+end
+
+local function phase_settle(done)
+	local identity = grug_core.start_identities()[1]
+	local targets = {
+		{"start", grug_core.start_anchor(identity.faction_id, identity.race_id)},
+		{"capital", grug_core.capital_anchor(identity.faction_id, identity.race_id)},
+	}
+	local i = 0
+	local function next_target()
+		i = i + 1
+		local target = targets[i]
+		if not target then
+			write_results()
+			return done()
+		end
+		local key, minp, maxp = settlement_bounds(target[2])
+		if not key then
+			log("SETTLE no settlement record for the " .. target[1])
+			return next_target()
+		end
+		local blocks = 0
+		for bx = floor(minp.x / 16), floor(maxp.x / 16) do
+			for bz = floor(minp.z / 16), floor(maxp.z / 16) do
+				for by = floor(minp.y / 16), floor(maxp.y / 16) do
+					if core.forceload_block(vector.new(bx * 16, by * 16, bz * 16), true, -1) then
+						blocks = blocks + 1
+					end
+				end
+			end
+		end
+		log(("SETTLE %s %s box %s - %s, %d blocks forceloaded"):format(target[1],
+			key, core.pos_to_string(minp), core.pos_to_string(maxp), blocks))
+		local t0 = now()
+		core.emerge_area(minp, maxp, function(_, _, remaining)
+			if remaining ~= 0 then return end
+			log(("SETTLE %s emerged in %.1f s"):format(target[1], (now() - t0) / 1e6))
+			-- Wait for the real placement (its heartbeat is 5 s) until the NPC
+			-- count holds for three polls, at most 60 s.
+			local last, stable, waited = -1, 0, 0
+			local function poll()
+				local n = #core.get_objects_in_area(minp, maxp)
+				if n == last and n > 0 then stable = stable + 1 else stable = 0 end
+				last = n
+				waited = waited + 3
+				if stable >= 3 or waited >= 60 then
+					local ok, err = pcall(measure_settlement, target[1], key, minp, maxp)
+					if not ok then core.log("error", P .. "settle: " .. tostring(err)) end
+					return next_target()
+				end
+				core.after(3, poll)
+			end
+			core.after(3, poll)
+		end)
+	end
+	next_target()
+end
+
 local function phase_calib(done)
 	local ok, err = pcall(calib_scenes)
 	if not ok then core.log("error", P .. "calib_scenes: " .. tostring(err)) end
@@ -1269,7 +1409,7 @@ end
 -- Run
 ---------------------------------------------------------------------------
 local PHASE_FN = {scenes = phase_scenes, calib = phase_calib,
-	chasers40 = phase_chasers40}
+	chasers40 = phase_chasers40, settle = phase_settle}
 
 local function run_phases()
 	local i = 0

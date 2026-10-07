@@ -1,0 +1,113 @@
+ACTION[Server]: [r31pvp] center (0,37,-2550) grug_pvp=true
+ACTION[Server]: [r31pvp] phase -> emerge
+ACTION[Server]: [r31pvp] emerge done=true after 2.3 s
+ACTION[Server]: [r31pvp] ZONE grid coastal_shelf rule=contested faction=- -> accord:contested throng:contested                n=127
+ACTION[Server]: [r31pvp] ZONE grid coastal_shelf rule=peaceful faction=accord -> accord:false throng:enemy                    n=142
+ACTION[Server]: [r31pvp] ZONE grid coastal_shelf rule=peaceful faction=throng -> accord:enemy throng:false                    n=127
+ACTION[Server]: [r31pvp] ZONE grid deep_ocean rule=nil faction=- -> accord:false throng:false                                 n=3660
+ACTION[Server]: [r31pvp] ZONE grid immutable_dragon_channel rule=nil faction=- -> accord:false throng:false                   n=114
+ACTION[Server]: [r31pvp] ZONE grid land rule=contested faction=- -> accord:contested throng:contested                         n=2723
+ACTION[Server]: [r31pvp] ZONE grid land rule=peaceful faction=accord -> accord:false throng:enemy                             n=1705
+ACTION[Server]: [r31pvp] ZONE grid land rule=peaceful faction=throng -> accord:enemy throng:false                             n=1827
+ACTION[Server]: [r31pvp] ZONE grid planned_water rule=contested faction=- -> accord:contested throng:contested                n=94
+ACTION[Server]: [r31pvp] ZONE grid planned_water rule=peaceful faction=accord -> accord:false throng:enemy                    n=458
+ACTION[Server]: [r31pvp] ZONE grid planned_water rule=peaceful faction=throng -> accord:enemy throng:false                    n=436
+ACTION[Server]: [r31pvp] ZONE grid record mismatches (rule/faction vs the zone record): 0
+ACTION[Server]: [r31pvp] ZONE settlement copperfell territory=accord_home feature=village rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement copperfell territory=hard_protected feature=camp rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement copperfell territory=hard_protected feature=poi rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement dawnmere territory=hard_protected feature=- rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement dur territory=hard_protected feature=- rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement goldmead territory=accord_home feature=village rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement goldmead territory=hard_protected feature=camp rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement goldmead territory=hard_protected feature=poi rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement gor territory=hard_protected feature=- rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement hearthpine territory=hard_protected feature=- rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement highcourt territory=hard_protected feature=- rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement kapok territory=hard_protected feature=- rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement kezamba territory=hard_protected feature=- rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement lethariel territory=hard_protected feature=- rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement mournfen territory=hard_protected feature=camp rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement mournfen territory=hard_protected feature=poi rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement mournfen territory=throng_home feature=village rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement nhal territory=hard_protected feature=- rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement pvp territory=contested_land feature=fortress rule=contested faction=- -> accord:contested throng:contested n=2
+ACTION[Server]: [r31pvp] ZONE settlement pvp territory=contested_land feature=war_camp rule=contested faction=- -> accord:contested throng:contested n=16
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=accord_home feature=camp rule=peaceful faction=accord -> accord:false throng:enemy n=2
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=accord_home feature=poi rule=peaceful faction=accord -> accord:false throng:enemy n=4
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=accord_home feature=village rule=peaceful faction=accord -> accord:false throng:enemy n=3
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=contested_land feature=poi rule=contested faction=- -> accord:contested throng:contested n=28
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=hard_protected feature=camp rule=contested faction=- -> accord:contested throng:contested n=6
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=hard_protected feature=poi rule=contested faction=- -> accord:contested throng:contested n=10
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=hard_protected feature=poi rule=peaceful faction=accord -> accord:false throng:enemy n=4
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=hard_protected feature=poi rule=peaceful faction=throng -> accord:enemy throng:false n=4
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=throng_home feature=camp rule=peaceful faction=throng -> accord:enemy throng:false n=2
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=throng_home feature=poi rule=peaceful faction=throng -> accord:enemy throng:false n=4
+ACTION[Server]: [r31pvp] ZONE settlement r20 territory=throng_home feature=village rule=peaceful faction=throng -> accord:enemy throng:false n=3
+ACTION[Server]: [r31pvp] ZONE settlement raincall territory=hard_protected feature=camp rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement raincall territory=hard_protected feature=poi rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement raincall territory=throng_home feature=village rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement redtusk territory=hard_protected feature=camp rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement redtusk territory=hard_protected feature=poi rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement redtusk territory=throng_home feature=village rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement silverleaf territory=hard_protected feature=- rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement starbough territory=accord_home feature=village rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement starbough territory=hard_protected feature=camp rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement starbough territory=hard_protected feature=poi rule=peaceful faction=accord -> accord:false throng:enemy n=1
+ACTION[Server]: [r31pvp] ZONE settlement stillgrave territory=hard_protected feature=- rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE settlement sunscar territory=hard_protected feature=- rule=peaceful faction=throng -> accord:enemy throng:false n=1
+ACTION[Server]: [r31pvp] ZONE deep capital dwarf y=-1200 rule=contested faction=- -> accord:contested throng:contested        n=1
+ACTION[Server]: [r31pvp] ZONE deep capital dwarf y=-500 rule=peaceful faction=accord -> accord:false throng:enemy             n=1
+ACTION[Server]: [r31pvp] ZONE deep capital dwarf y=-501 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital dwarf y=-700 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital dwarf y=-701 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital elf y=-1200 rule=contested faction=- -> accord:contested throng:contested          n=1
+ACTION[Server]: [r31pvp] ZONE deep capital elf y=-500 rule=peaceful faction=accord -> accord:false throng:enemy               n=1
+ACTION[Server]: [r31pvp] ZONE deep capital elf y=-501 rule=contested faction=- -> accord:contested throng:contested           n=1
+ACTION[Server]: [r31pvp] ZONE deep capital elf y=-700 rule=contested faction=- -> accord:contested throng:contested           n=1
+ACTION[Server]: [r31pvp] ZONE deep capital elf y=-701 rule=contested faction=- -> accord:contested throng:contested           n=1
+ACTION[Server]: [r31pvp] ZONE deep capital human y=-1200 rule=contested faction=- -> accord:contested throng:contested        n=1
+ACTION[Server]: [r31pvp] ZONE deep capital human y=-500 rule=peaceful faction=accord -> accord:false throng:enemy             n=1
+ACTION[Server]: [r31pvp] ZONE deep capital human y=-501 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital human y=-700 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital human y=-701 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital orc y=-1200 rule=contested faction=- -> accord:contested throng:contested          n=1
+ACTION[Server]: [r31pvp] ZONE deep capital orc y=-500 rule=peaceful faction=throng -> accord:enemy throng:false               n=1
+ACTION[Server]: [r31pvp] ZONE deep capital orc y=-501 rule=contested faction=- -> accord:contested throng:contested           n=1
+ACTION[Server]: [r31pvp] ZONE deep capital orc y=-700 rule=contested faction=- -> accord:contested throng:contested           n=1
+ACTION[Server]: [r31pvp] ZONE deep capital orc y=-701 rule=contested faction=- -> accord:contested throng:contested           n=1
+ACTION[Server]: [r31pvp] ZONE deep capital troll y=-1200 rule=contested faction=- -> accord:contested throng:contested        n=1
+ACTION[Server]: [r31pvp] ZONE deep capital troll y=-500 rule=peaceful faction=throng -> accord:enemy throng:false             n=1
+ACTION[Server]: [r31pvp] ZONE deep capital troll y=-501 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital troll y=-700 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital troll y=-701 rule=contested faction=- -> accord:contested throng:contested         n=1
+ACTION[Server]: [r31pvp] ZONE deep capital undead y=-1200 rule=contested faction=- -> accord:contested throng:contested       n=1
+ACTION[Server]: [r31pvp] ZONE deep capital undead y=-500 rule=peaceful faction=throng -> accord:enemy throng:false            n=1
+ACTION[Server]: [r31pvp] ZONE deep capital undead y=-501 rule=contested faction=- -> accord:contested throng:contested        n=1
+ACTION[Server]: [r31pvp] ZONE deep capital undead y=-700 rule=contested faction=- -> accord:contested throng:contested        n=1
+ACTION[Server]: [r31pvp] ZONE deep capital undead y=-701 rule=contested faction=- -> accord:contested throng:contested        n=1
+ACTION[Server]: [r31pvp] ZONE failures=0 (65.2 ms)
+ACTION[Server]: [r31pvp] phase -> settle
+ACTION[Server]: [r31pvp] MICRO candidate grug_mobs:wolf at (6,37,-2542) alive=true valid=true
+ACTION[Server]: [r31pvp] MICRO candidate grug_mobs:boar at (12,39,-2542) alive=true valid=true
+ACTION[Server]: [r31pvp] MICRO candidate grug_mobs:stag at (18,37,-2542) alive=true valid=true
+ACTION[Server]: [r31pvp] MICRO candidate grug_mobs:bear at (24,37,-2542) alive=true valid=true
+ACTION[Server]: [r31pvp] MICRO candidate grug_mobs:guard_throng at (30,44,-2542) alive=true valid=true
+ACTION[Server]: [r31pvp] MICRO mob grug_mobs:wolf at (6,37,-2544)
+ACTION[Server]: [r31pvp] MICRO valid_target(player, mob, hostile)                   median    0.126 us  best    0.120 us  (n=20000 x 15)
+ACTION[Server]: [r31pvp] MICRO combat_ray onto the mob (10 m)                       median   13.139 us  best   12.371 us  (n=2000 x 15)
+ACTION[Server]: [r31pvp] MICRO ray hits on the mob: 30000 of 30000
+ACTION[Server]: [r31pvp] MICRO hp-change chain: mob punch 3 on a player             median   18.420 us  best   17.404 us  (n=2000 x 15)
+ACTION[Server]: [r31pvp] MICRO mark_in_combat + in_combat                           median    0.211 us  best    0.207 us  (n=20000 x 15)
+ACTION[Server]: [r31pvp] MICRO in_combat                                            median    0.052 us  best    0.051 us  (n=20000 x 15)
+ACTION[Server]: [r31pvp] MICRO valid_target(player, enemy player, hostile)          median    0.726 us  best    0.718 us  (n=20000 x 15)
+ACTION[Server]: [r31pvp] MICRO hp-change chain: enemy player punch 3                median   22.820 us  best   19.358 us  (n=2000 x 15)
+ACTION[Server]: [r31pvp] TICK   0 fake players:      0.2 us per tick,   0.00 us per player, sample   0.00 us (samples 0)
+ACTION[Server]: [r31pvp] TICK  50 fake players:     53.0 us per tick,   1.06 us per player, sample   0.53 us (samples 1000)
+ACTION[Server]: [r31pvp] TICK  50 fake players: grug_map location text_at   0.46 us per player (comparison)
+ACTION[Server]: [r31pvp] TICK 100 fake players:     73.3 us per tick,   0.73 us per player, sample   0.39 us (samples 2000)
+ACTION[Server]: [r31pvp] TICK 100 fake players: grug_map location text_at   0.25 us per player (comparison)
+ACTION[Server]: [r31pvp] TICK flagged after the samples: 68 of 100
+ACTION[Server]: [r31pvp] phase -> done
+ACTION[Server]: [r31pvp] RESULT DONE
+ACTION[Server]: [r31pvp] phase -> off

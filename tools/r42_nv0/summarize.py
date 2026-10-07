@@ -349,6 +349,29 @@ def calib_section(data):
         out.append("## Walkable-line prototype cost\n\n" + table(
             ["d", "us per test", "clear"],
             [[r["d"], r["us"], r["clear"]] for r in line]))
+    settle = calib.get("settle")
+    if settle:
+        rows = []
+        for kind, block in sorted(settle.items()):
+            for who in ("walker", "patrol"):
+                legs = [r for r in block.get("legs") or [] if r["who"] == who]
+                if not legs:
+                    continue
+                ds = [r["d"] for r in legs]
+                rows.append([kind, who, len(legs), pct(ds, 0.5), max(ds),
+                             sum(1 for r in legs if r["d"] > 32),
+                             sum(1 for r in legs if not r.get("line")),
+                             sum(1 for r in legs if r.get("ok4")),
+                             sum(1 for r in legs if r.get("ok24")),
+                             round(sum(r.get("us4") or 0 for r in legs) / 1000, 2),
+                             max(r.get("us4") or 0 for r in legs),
+                             round(sum(r.get("us24") or 0 for r in legs) / 1000, 2),
+                             max(r.get("us24") or 0 for r in legs)])
+        out.append("## Settlement legs (one search per distinct leg)\n\n"
+                   + table(["settlement", "mover", "legs", "d p50", "d max",
+                            "legs > 32", "line blocked", "found pad4",
+                            "found pad24", "pad4 ms total", "pad4 max us",
+                            "pad24 ms total", "pad24 max us"], rows))
     c40 = calib.get("chasers40")
     if c40:
         rows = [[k, v] for k, v in c40.items() if not isinstance(v, dict)]
