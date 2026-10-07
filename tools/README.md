@@ -316,7 +316,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `find_path` against padding and distance (the scenes, a flat field with
   and without a path, natural-terrain samples), the candidate fan and a
   walkable-line prototype; `chasers40` is Round 30's stress (40 chasers round
-  an enclosed target). `summarize.py RESULTS.json [AFTER.json]` prints the
-  tables (self-movement ratios, before/after; `--compact` drops the tracks);
-  `portable_test.lua` pins the scene layouts with an engine-like grid
-  search; `evidence/` keeps the lane's before-runs.
+  an enclosed target); `settle` measures the walker and patrol legs the real
+  NPC placement gives the first start town and its capital (one search per
+  leg; `SEED=42` is the plan's seed). `summarize.py RESULTS.json
+  [AFTER.json]` prints the tables (self-movement ratios, before/after;
+  `--compact` drops the tracks); `portable_test.lua` pins the scene layouts
+  with an engine-like grid search; `evidence/before/` keeps the lane's
+  before-runs (scenes and calib on seed 12345, settle on 42, the PvE micro
+  run). The PvE micro run itself is `r31_pvp/run.sh` with
+  `ENGINE_RUN=<the round's engine_run.sh>`.
