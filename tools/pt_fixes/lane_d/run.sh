@@ -4,12 +4,14 @@
 # Boots two isolated headless servers, one after the other, through
 # tools/luanti_headless.sh with the disposable probe mod staged (never shipped):
 #   1. baseline: this checkout with mods/PLAYER/grug_jobs/ui.lua reverted to
-#      BASE_REV (default 752cca97, the commit before the lane) via GAME_PATCH;
+#      BASE_REV via GAME_PATCH (default 0172a15b, the Round 41 base; the
+#      navigation lane compared against 752cca97, before its own change);
 #   2. current: this checkout as is.
 # Both emit a digest per rendered recipe route of the book formspec with the
-# lane's new elements removed; the DUMP lines must be identical (grid, boxes,
-# tooltips and every other element unchanged). The current run also has to
-# print "RESULT PASS" for the behaviour checks.
+# navigation lane's elements and every multi-item slot (Round 41) removed;
+# the DUMP lines must be identical (grid, boxes, single-item cells, tooltips
+# and every other element unchanged). The current run also has to print
+# "RESULT PASS" for the behaviour checks.
 #
 # Usage: tools/pt_fixes/lane_d/run.sh OUT_DIR [TIMEOUT_SECONDS]
 set -euo pipefail
@@ -18,7 +20,7 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 repo="$(cd "$here/../../.." && pwd -P)"
 out="${1:?usage: run.sh OUT_DIR [TIMEOUT_SECONDS]}"
 timeout_s="${2:-300}"
-base_rev="${BASE_REV:-752cca97}"
+base_rev="${BASE_REV:-0172a15b}"
 mkdir -p "$out"
 out="$(cd "$out" && pwd -P)"
 
