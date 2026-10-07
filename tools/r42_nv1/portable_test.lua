@@ -268,6 +268,16 @@ do
 	nav.begin_server_step(DT) -- a step without do_states
 	for _ = 1, 4 do step(m3, c, t, pos(30, Y, 12), 4.6) end
 	check(not m3.ev, "D7 a skipped step restarts the window")
+	-- D9 a once-a-second walker tick (NV2/NV3's fixed walks) is watched too:
+	-- ten server steps between its calls, each call with dtime 1.
+	local w = mob()
+	local wp = pos(0, Y, 15)
+	for _ = 1, 3 do
+		for _ = 1, 10 do server_step() end
+		nav.fixed_step(w, wp, 1.0, pos(20, 0.5, 15), "walk")
+		nav.command(w, wp, 1.2)
+	end
+	check(w.ev and w.ev.stuck == 1, "D9 a held 1 Hz walker is stuck after its 1 s window")
 	-- D8 the liquid speed is api.lua's set_velocity rule (cut out).
 	local api = read("mods/ENTITIES/mobs/api.lua")
 	local function cut(from, to)

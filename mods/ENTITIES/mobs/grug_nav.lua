@@ -103,16 +103,14 @@ local function now()
 	return core.get_us_time() / 1000000
 end
 
--- The server step counter (a skipped step breaks a detector window) and the
--- count cap: the server-step times of the last CAP searches; one more may
--- start when the oldest of them is a second old (any one second holds at
--- most CAP searches).
-local step_id = 0
+-- The server-step clock (a detector window breaks when the mob skipped a
+-- call) and the count cap: the clock times of the last CAP searches; one
+-- more may start when the oldest of them is a second old (any one second
+-- holds at most CAP searches).
 local clock = 0
 local cap_times, cap_next = {}, 1
 
 function nav.begin_server_step(dtime)
-	step_id = step_id + 1
 	clock = clock + (dtime or 0)
 end
 
@@ -453,9 +451,12 @@ local function progress(self, nst)
 end
 
 --
--- The stuck detector (ruling 2). The caller reports each step the speed the
--- mob commands (`speed`, already slowed by water; 0 for an intentional
--- stop) at `pos`; the next step's observe() measures the window.
+-- The stuck detector (ruling 2). After each step (or tick) the caller
+-- reports the speed the mob commands (`speed`, already slowed by a liquid; 0
+-- for an intentional stop) at `pos`; the next call's observe() measures the
+-- window with that call's `dtime`. A per-step caller and a once-a-second
+-- tick both work; a call that comes later than its own `dtime` says (a
+-- skipped step: knockback pause, stun) breaks the window.
 --
 function nav.command(self, pos, speed)
 	local nst = state(self)
@@ -463,7 +464,7 @@ function nav.command(self, pos, speed)
 		nst.wt, nst.cmd_v = nil, nil
 		return
 	end
-	nst.cmd_v, nst.cmd_step = speed, step_id
+	nst.cmd_v, nst.cmd_clock = speed, clock
 	if not nst.wt then
 		nst.wt, nst.we, nst.wx, nst.wz = 0, 0, pos.x, pos.z
 	end
@@ -472,7 +473,7 @@ end
 -- "stuck", "free" (a window ended with enough movement) or nil.
 local function observe(nst, pos, dtime, window)
 	if not nst.wt then return nil end
-	if nst.cmd_step ~= step_id - 1 or not nst.cmd_v then
+	if not nst.cmd_v or clock - nst.cmd_clock > dtime * 1.5 + 0.01 then
 		nst.wt = nil
 		return nil
 	end
