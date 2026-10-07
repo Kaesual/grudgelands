@@ -158,6 +158,36 @@ Engine reference for the line citations: `reference_projects/luanti` at
   runs or while Charge holds it (`grug_visuals.hold_head`) as the `Body`
   lead blends back.
 
+## 4. The quiver count relies on an undocumented item_image count
+
+- **Upstream behaviour we rely on:** `item_image[<X>,<Y>;<W>,<H>;<item
+  name>]` is documented with an item **name** only (`doc/lua_api.md`), but
+  the client deserializes the whole string as an item stack
+  (`src/gui/guiItemImage.cpp` `GUIItemImage::draw`: `item.deSerialize`) and
+  draws it with `drawItemStack` and the formspec's font, so
+  `grug_gear:arrow 181` shows the arrow with the count 181 in the corner,
+  exactly as an inventory cell draws its count (`src/gui/drawItemStack.cpp`,
+  the `count_text` block; the count is a `u16`). Nothing promises this; a
+  future client could ignore the count or reject the string.
+- **Issue:** none filed; it is not a bug, only undocumented. A documented
+  replacement would be a formspec way to show a count on a list cell other
+  than the stack's own (or `item_image` documenting the item string).
+- **Affected versions:** the code is unchanged up to `df0487906`
+  (5.17.0-dev); `guiItemImage.cpp` last changed in `b9ed4793e` (2025-03).
+- **Our use:** the Scout's quiver cell (`grug_inventory/pages.lua`
+  `quiver_content`, Round 41 lane SC, ruling 6): above 100 arrows a cover
+  (`[fill`, sized for the player's window by `quiver_cover_size`) hides the
+  engine's count corner and an `item_image` of the cell's item with the
+  total draws the true count, both after the `list[]` (inventory clicks are
+  found by position, `guiFormSpecMenu.cpp` `getItemAtPos`, so the cell stays
+  clickable). The Character page fixture (`tools/r28_a6_ui`) checks the
+  strings, not the drawing.
+- **How to tell it broke:** with more than 100 arrows the quiver cell shows
+  the arrow without a count, or a broken item, on a newer client (a GUI
+  check; the fixture cannot see it).
+- **What to do then:** drop the `item_image` (and the cover) and keep the
+  total in the label beside the cell, which every client draws.
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields

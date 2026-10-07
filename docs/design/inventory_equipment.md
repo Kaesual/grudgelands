@@ -255,7 +255,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   slot. It holds up to **500 arrows**; arrows stack to **100** in any
   inventory. Internally the list `grug_quiver_content` carries five stacks of
   100, but only its first cell is drawn and it always holds min(total, 100):
-  **clicking the slot takes up to 100 arrows as one stack**. Arrows enter by
+  **clicking the slot takes up to 100 arrows as one stack**. Above 100 arrows
+  the cell shows the true total (e.g. 181) over the engine's count (Round 41
+  ruling 6); its count corner matches the slot background only approximately
+  and shows no hover highlight (accepted). Arrows enter by
   **drag** (onto the slot), **shift-click** (from the inventory) and **pickup**
   while the quiver has room; anything else is refused. Shots draw from the
   quiver first, then `main`; a talent refund returns to the quiver first. A

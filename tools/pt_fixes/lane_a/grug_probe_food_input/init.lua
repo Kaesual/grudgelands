@@ -929,6 +929,90 @@ for _, path in ipairs({"release", "cancel", "stun", "slot", "death", "leave"}) d
 	end)
 end
 
+-- The bow's missed release (Round 41 ruling 5): a second empty-air call
+-- during a live draw is a new press whose release fell between two control
+-- snapshots (the controls stay "place" throughout). It fires the drawn arrow
+-- at once and the held button draws again; a renewed draw that ends within
+-- 0.2 s fires nothing and costs no arrow; node calls (the engine's place
+-- repeats on the node the press began on) never count; a tap from rest
+-- fires one weak arrow as before.
+-- A shot needs a valid hostile in the crosshair (homing arrows): a sturdy
+-- bandit in front takes the arrows.
+local function bow_player(label, origin)
+	local ref, fake = make_player(label, "scout", origin)
+	fake.weapon = bow_name
+	local mob, ent = spawn_mob(vector.offset(origin, 0, 0, 6))
+	ent.health, ent.old_health = 10000, 10000
+	aim(ref, fake, mob)
+	fake.mob = mob
+	fake.inv:set_stack("main", 1, grug_abilities.stack_for(ref, "loose"))
+	fake.inv:set_stack("main", 3, ItemStack("grug_gear:arrow 20"))
+	return ref, fake
+end
+local NOTHING = {type = "nothing"}
+local function bow_done(label, ref, fake, arrows)
+	check(count(fake, 3) == arrows, label .. ": " .. (20 - arrows) .. " arrow(s) fired (" ..
+		count(fake, 3) .. " left)")
+	check(not grug_abilities.scout_draw_active(ref) and loose_range(fake) == "",
+		label .. ": draw ended, range override removed")
+	if fake.mob:get_pos() then fake.mob:remove() end
+	active[fake.name] = nil
+end
+scenario("bow_missed_release_held", function(origin)
+	local ref, fake = bow_player("bow_missed_release_held", origin)
+	return {
+		{0, function() press(fake, NOTHING) end},
+		{0.6, function()
+			check(grug_abilities.scout_draw_active(ref) and count(fake, 3) == 20,
+				"bow_missed_release_held: drawing, nothing fired yet")
+			native(fake, NOTHING) -- release + press between two snapshots
+			check(count(fake, 3) == 19, "bow_missed_release_held: the drawn arrow fires at once (" ..
+				count(fake, 3) .. " left)")
+			check(grug_abilities.scout_draw_active(ref) and loose_range(fake) == "0",
+				"bow_missed_release_held: the held button draws again, range still zero")
+		end},
+		{1.3, function()
+			check(grug_abilities.scout_draw_active(ref) and count(fake, 3) == 19,
+				"bow_missed_release_held: still drawing past the grace")
+			release(fake)
+		end},
+		{1.6, function() bow_done("bow_missed_release_held", ref, fake, 18) end},
+	}
+end)
+scenario("bow_missed_release_tap", function(origin)
+	local ref, fake = bow_player("bow_missed_release_tap", origin)
+	return {
+		{0, function() press(fake, NOTHING) end},
+		{0.6, function()
+			native(fake, NOTHING)
+			check(count(fake, 3) == 19, "bow_missed_release_tap: the drawn arrow fires at once")
+		end},
+		{0.7, function() release(fake) end},
+		{1.1, function() bow_done("bow_missed_release_tap", ref, fake, 19) end},
+	}
+end)
+scenario("bow_node_repeats", function(origin)
+	local ref, fake = bow_player("bow_node_repeats", origin)
+	return {
+		{0, function() press(fake, floor_pointed(origin)) end},
+		{1.0, function()
+			check((fake.repeats or 0) >= 2 and grug_abilities.scout_draw_active(ref) and
+				count(fake, 3) == 20, "bow_node_repeats: " .. tostring(fake.repeats) ..
+				" node repeats fired nothing")
+			release(fake)
+		end},
+		{1.3, function() bow_done("bow_node_repeats", ref, fake, 19) end},
+	}
+end)
+scenario("bow_tap_from_rest", function(origin)
+	local ref, fake = bow_player("bow_tap_from_rest", origin)
+	return {
+		{0, function() press(fake, NOTHING) end},
+		{0.05, function() release(fake) end},
+		{0.4, function() bow_done("bow_tap_from_rest", ref, fake, 19) end},
+	}
+end)
+
 -- Eating, then drawing: the ring passes from food to bow with no leftover
 -- owner, and the bow's frames are untinted.
 scenario("food_then_bow", function(origin)

@@ -72,6 +72,45 @@ local QUIVER_POS = {7.3, 1.85}
 -- The Bag of Coins deposit slot (Round 34), below the quiver's total.
 local DEPOSIT_POS = {7.3, 3.75}
 local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
+-- The cover over the quiver cell's count corner (Round 41 ruling 6): the
+-- slot's colour as drawn, default's listcolors slot #00000069 over the
+-- #343434 of gui_formbg.png, approximately (accepted). Generated, no texture
+-- file.
+local QUIVER_COVER = "[fill:8x8:#1f1f1f"
+-- Slot units the cover reaches past its size, about one pixel (see its use).
+local QUIVER_COVER_OVER = 0.02
+-- The engine's count "100" in the default font (font_size 16 times display
+-- density and gui_scaling, fontengine.cpp getFontSize; window information
+-- reports that product as real_gui_scaling), in pixels per unit of that
+-- scale, with room to spare: the font's digits are about 0.56 em wide, its
+-- line about 1.12 em high.
+local COUNT_W_PX, COUNT_H_PX = 30, 20
+
+-- The cover's size in slot units for this player's window, so the count is
+-- hidden at any GUI scale and window size. The slot is the engine's legacy
+-- imgsize (guiFormSpecMenu.cpp calculateImgsize): the preferred size, which
+-- window information gives unpadded as size / max_formspec_size (the 5 %
+-- padding on each side lowers it by at most 10 %), capped so the inventory
+-- form fits the padded window. Slot and count both grow with gui_scaling, so
+-- the ratio changes mainly where that cap holds (a small window, a large
+-- scale). Without window information (a page built right at join) the cover
+-- takes most of the cell.
+local function quiver_cover_size(player)
+	local info = core.get_player_window_information(player:get_player_name())
+	if not (info and info.size and info.max_formspec_size and
+			info.real_gui_scaling) then
+		return 0.9, 0.65
+	end
+	local width, height = info.size.x * 0.9, info.size.y * 0.9
+	local slot = math.min(0.9 * info.size.x / info.max_formspec_size.x,
+		width / (5 / 4 * (0.5 + grug_inventory.UI.width)),
+		height / (15 / 13 * (0.85 + grug_inventory.UI.height)))
+	-- Rounded up to the formspec's two decimals, never below the count.
+	local function units(px)
+		return math.min(1, math.ceil(px * info.real_gui_scaling / slot * 100) / 100)
+	end
+	return units(COUNT_W_PX), units(COUNT_H_PX)
+end
 
 -- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
 -- §1). Reused grug_gear art for the five slots with a natural match, dimmed by
@@ -128,7 +167,8 @@ local DAMAGE_REDUCTION_TOOLTIP = "Armor reduction against an enemy of your " ..
 	"level. Higher against lower-level enemies, lower against higher-level ones."
 
 -- The Scout's quiver slot (Round 28 ruling 26): the first cell of the quiver
--- list, the arrow total beside it, and the shift-click ring main <-> quiver.
+-- list (above 100 arrows showing the true total, Round 41), the arrow total
+-- beside it, and the shift-click ring main <-> quiver.
 local function quiver_content(player)
 	local inv = player:get_inventory()
 	local total = grug_inventory.quiver_count(player)
@@ -146,8 +186,37 @@ local function quiver_content(player)
 		"listring[current_player;main]",
 		("listring[current_player;%s]"):format(grug_inventory.QUIVER_LIST),
 	}
-	if inv:get_stack(grug_inventory.QUIVER_LIST, 1):is_empty() then
+	local first = inv:get_stack(grug_inventory.QUIVER_LIST, 1)
+	if first:is_empty() then
 		fs[#fs + 1] = ("image[%.1f,%.1f;1,1;%s]"):format(x, y, QUIVER_GHOST)
+	elseif total > first:get_stack_max() then
+		-- Above one stack the slot shows the true total (Round 41 ruling 6):
+		-- drawn after the list[], so clicks still reach the cell (inventory
+		-- clicks are found by position, guiFormSpecMenu.cpp getItemAtPos, and
+		-- image / item_image are click-through elements, visible only while
+		-- drawn, so the list keeps its hover highlight and item tooltip; only
+		-- the cover paints over the highlight in its corner); a
+		-- cover hides the engine's count corner, then an item_image of the
+		-- same item and slot rect draws the total with the list's own font
+		-- and corner (guiItemImage.cpp draw -> drawItemStack). The count in an
+		-- item_image string is undocumented engine behaviour
+		-- (docs/technical/upstream-workarounds.md §4).
+		-- Legacy layout: a position counts in spacing units, a size in slot
+		-- units (guiFormSpecMenu.cpp getElementBasePos, parseImage), so the
+		-- cover's offset into the cell is (1 - size) slots, times imgsize /
+		-- spacing (TOOLTIP_W, TOOLTIP_H). The cell is where the list[] above
+		-- draws it, after its %.1f rounding. The engine truncates position and
+		-- size to pixels, so the position is rounded down and the cover is
+		-- QUIVER_COVER_OVER larger: at most about a pixel past the slot, onto
+		-- its border (listcolors' #141318), never short of the count.
+		local cx, cy = tonumber(("%.1f"):format(x)), tonumber(("%.1f"):format(y))
+		local cover_w, cover_h = quiver_cover_size(player)
+		fs[#fs + 1] = ("image[%.3f,%.3f;%.2f,%.2f;%s]"):format(
+			math.floor((cx + (1 - cover_w) * TOOLTIP_W) * 1000) / 1000,
+			math.floor((cy + (1 - cover_h) * TOOLTIP_H) * 1000) / 1000,
+			cover_w + QUIVER_COVER_OVER, cover_h + QUIVER_COVER_OVER, QUIVER_COVER)
+		fs[#fs + 1] = ("item_image[%.1f,%.1f;1,1;%s %d]"):format(x, y,
+			first:get_name(), total)
 	end
 	return table.concat(fs)
 end

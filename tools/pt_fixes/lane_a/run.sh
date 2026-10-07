@@ -3,7 +3,9 @@
 # NPC, nothing, combat), engine place repeats, eating feedback and cleanup,
 # the eating progress ring (shown at hold confirmation, removed on every end
 # path, never on a combat refusal, handed over to the bow draw), the bow draw
-# range/stance/ring end paths and the movement stance factor.
+# range/stance/ring end paths, the bow's missed release (Round 41: a new
+# press during a live draw fires it and draws again, the 0.2 s grace, node
+# repeats, a tap from rest) and the movement stance factor.
 #
 # Boots one isolated headless server through tools/luanti_headless.sh with the
 # disposable probe mod staged (never shipped), copies the server log to

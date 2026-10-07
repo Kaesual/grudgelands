@@ -400,10 +400,24 @@ pending actions (a tap, a bow draw, eating); an LMB held across it goes on
 with the new item (hold modes above). Our own NPC/node interactions
 cancel before opening. Native inventory, pause, chat and focus loss are observed
 as ordinary release: they may launch a drawn bow or resolve a pending short
-skill click. Very fast air clicks (under roughly 90 ms at the default server
-step) can fall between control reports; node/object events supply additional
-press evidence. Both limitations are explicitly accepted for the playtest;
-no client changes are required or promised.
+skill click (accepted; no client changes are required or promised).
+
+A release and a new press that both fall between two control reports (under
+roughly 90 ms at the default server step) are invisible in the control
+state; the native item call a new press sends is the evidence instead (the
+client sends an empty-air or object call on the press edge only). Food uses
+it too: such a call during a food press settles that press and starts a new
+one. **The bow** (Round 41 ruling 5): the first native
+call after a draw starts belongs to the starting press; a later empty-air or
+object call during a live draw is a new press. It fires the drawn arrow at
+once with the draw time it has, and while the button stays held a new arrow
+is drawn within the same hold. A draw started this way that ends within
+**0.2 s** is cancelled silently (no arrow, no ammunition), so one quick tap
+never fires two arrows; its end counts at the last server step that still
+saw the button down (or at a further such press), not when the server
+notices the release. Node calls (a press that began on a node, the engine's
+place repeats) never count. A tap from rest is unchanged: it fires one weak
+arrow.
 
 ### The weapon-ready reticle
 
