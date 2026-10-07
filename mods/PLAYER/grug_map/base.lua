@@ -619,6 +619,33 @@ function M.add_media(name, data)
 		"dynamic_add_media refused " .. path)
 end
 
+-- Deletes the world-map tiles in the world folder that the current quality
+-- does not use (Round 41 ruling 7): after high -> normal the extra base
+-- tiles and the minimap copy would otherwise stay. Only names of the two
+-- tile patterns this file writes are touched; `lists` are the tile lists in
+-- use. Logs the count; a failed delete is a warning.
+local function remove_stale_tiles(lists)
+	local used = {}
+	for _, list in ipairs(lists) do
+		for _, tile in ipairs(list) do used[tile.name] = true end
+	end
+	local patterns = {"^" .. M.BASE_PREFIX .. "_%d+_%d+%.png$",
+		"^" .. M.MINI_PREFIX .. "_%d+_%d+%.png$"}
+	local removed = 0
+	for _, name in ipairs(core.get_dir_list(WORLD, false) or {}) do
+		if not used[name] and (name:find(patterns[1]) or name:find(patterns[2])) then
+			local ok, err = os.remove(WORLD .. "/" .. name)
+			if ok then
+				removed = removed + 1
+			else
+				core.log("warning", "[grug_map] cannot remove stale world map tile " ..
+					name .. ": " .. tostring(err))
+			end
+		end
+	end
+	core.log("action", "[grug_map] removed " .. removed .. " stale world map tiles")
+end
+
 local function prepare(view)
 	assert(grug_core.zone_authority_installed(), "world authority is not installed")
 	local zones = grug_zones
@@ -643,9 +670,18 @@ local function prepare(view)
 		for _, tile in ipairs(mini_tiles or {}) do M.add_media(tile.name) end
 	else
 		local rendered, rendered_mini = render(zones, view, spec)
+		-- Tile names are shared across qualities: the old key goes before
+		-- the first tile is overwritten and the new one is written last, so
+		-- a crash in between renders again at the next start (ruling 7).
+		assert(core.safe_file_write(CACHE_KEY, ""), "cannot write " .. CACHE_KEY)
 		for _, tile in ipairs(rendered) do M.add_media(tile.name, tile.png) end
 		for _, tile in ipairs(rendered_mini or {}) do M.add_media(tile.name, tile.png) end
 		assert(core.safe_file_write(CACHE_KEY, key), "cannot write " .. CACHE_KEY)
+	end
+	-- Never stops the load: the base is announced already.
+	local ok, err = pcall(remove_stale_tiles, {tiles, mini_tiles or {}})
+	if not ok then
+		core.log("warning", "[grug_map] stale world map tiles not removed: " .. tostring(err))
 	end
 	local result = {quality = spec.quality, width = spec.width, height = spec.height,
 		tiles = tiles,
