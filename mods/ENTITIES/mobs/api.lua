@@ -2525,7 +2525,11 @@ function mob_class:do_states(dtime)
 		self:set_animation("stand")
 
 		-- are we able to walk
-		if self.order ~= "stand" and self.walk_chance ~= 0
+		-- GRUG PATCH (Round 41 MOB): a mob that holds an authored seat (the
+		-- kings and Generals, `_grug_no_wander` on their prototype) never
+		-- starts a random walk; its own tick walks it back to the seat.
+		-- `walk_chance = 0` is no substitute: do_jump reads it as "a jumping mob".
+		if self.order ~= "stand" and self.walk_chance ~= 0 and not self._grug_no_wander
 		and not self.facing_fence and not self.at_cliff
 		and random(100) <= self.walk_chance then
 

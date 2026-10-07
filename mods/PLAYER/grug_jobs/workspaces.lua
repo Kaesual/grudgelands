@@ -327,14 +327,19 @@ local function callbacks(ctx)
 	}
 end
 
-function workspaces.open(pos, player)
+-- Opens the station form at `pos`; true when it is shown. `id` (optional)
+-- is the station id a return from the recipe book or the repair form expects
+-- (Round 41 ruling 3): a station dug and replaced at the same place is
+-- another station, and the caller falls back to the inventory.
+function workspaces.open(pos, player, id)
 	local station = node_station(pos)
-	if not station or not player or not player:is_player() then return end
+	if not station or not player or not player:is_player() then return false end
+	if id and core.get_meta(pos):get_string("grug_jobs:station_id") ~= id then return false end
 	local name = player:get_player_name()
 	local ctx = {name = name, pos = vector.new(pos), station = station,
 		id = stamp(pos), personal = grug_jobs.is_public_station(station, pos),
 		automatic = automatic.sizes[station] ~= nil}
-	if not accessible(ctx, player) then return end
+	if not accessible(ctx, player) then return false end
 	detach(viewers[name])
 	sequence = sequence + 1
 	ctx.detached = "grug_workspace_" .. name .. "_" .. sequence
@@ -351,6 +356,7 @@ function workspaces.open(pos, player)
 	advance(ctx)
 	refresh(ctx, false)
 	core.show_formspec(name, FORM, formspec(ctx))
+	return true
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -359,18 +365,23 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not ctx then return true end
 	if fields.quit then detach(ctx) return true end
 	if not accessible(ctx, player) then return true end
+	-- The book and the repair form replace the station form and the session
+	-- ends; their Close returns here (Round 41 ruling 3, ui.lua
+	-- close_to_origin), Esc closes everything.
 	if fields.grug_jobs_book then
-		-- The book replaces the station form; the session ends as for repair.
 		detach(ctx)
-		grug_jobs.open_book(player, "station", ctx.station)
+		grug_jobs.open_book(player, "station", ctx.station, nil,
+			{pos = vector.new(ctx.pos), id = ctx.id})
 		return true
 	end
 	if fields.grug_jobs_repair then
 		local repair = rawget(_G, "grug_repair")
 		if repair then
-			local pos = ctx.pos
+			local origin = {pos = vector.new(ctx.pos), id = ctx.id}
 			detach(ctx)
-			repair.open_station(player, pos)
+			repair.open_station(player, origin.pos, function(closer)
+				grug_jobs.close_to_origin(closer, origin)
+			end)
 		end
 		return true
 	end

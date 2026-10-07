@@ -24,6 +24,8 @@ local output_index_cache = {}
 -- Every record book_output_index left out as an inverse route (see there).
 -- [product][single ingredient] = most slots of a one-ingredient route.
 local shaping_cache
+-- group token -> its entries (group_entries).
+local group_entries_cache = {}
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -536,27 +538,57 @@ function grug_jobs.book_station_icon(station)
 	return GENERIC_STATION_TEXTURE, false
 end
 
-local function display_item(token)
-	if token == "" or not token:match("^group:") then return token end
-	local names = {}
-	for name in pairs(core.registered_items or {}) do names[#names + 1] = name end
-	table.sort(names)
-	for index = 1, #names do
-		local matches
-		if grug_jobs._discovery_token_matches then
-			matches = grug_jobs._discovery_token_matches(token, names[index])
-		else
-			local groups = token:match("^group:(.+)$")
-			matches = true
-			for group in groups:gmatch("[^,]+") do
-				if not core.get_item_group or core.get_item_group(names[index], group) <= 0 then
-					matches = false break
-				end
+-- The items a group token accepts, one entry {item, label} per distinct label
+-- (the label's alphabetically first item), in label order: the cell
+-- tooltip's list and, for a slot that accepts several items, its icons
+-- (Round 41 ruling 4). Built once per token like the other book caches.
+local function group_entries(token)
+	local cached = group_entries_cache[token]
+	if cached then return cached end
+	local by_label, labels = {}, {}
+	for name in pairs(core.registered_items or {}) do
+		if grug_jobs._group_matches(token, name) then
+			local label = item_label(name):match("^[^\n]+") or name
+			if not by_label[label] then
+				labels[#labels + 1] = label
+				by_label[label] = name
+			elseif name < by_label[label] then
+				by_label[label] = name
 			end
 		end
-		if matches then return names[index] end
 	end
-	return "unknown"
+	table.sort(labels)
+	cached = {}
+	for index = 1, #labels do
+		cached[index] = {item = by_label[labels[index]], label = labels[index]}
+	end
+	group_entries_cache[token] = cached
+	return cached
+end
+
+-- The item a single-icon cell shows: the item itself, or a group's only
+-- (alphabetically first) member.
+local function display_item(token)
+	if token == "" or not token:match("^group:") then return token end
+	local entries = group_entries(token)
+	return entries[1] and entries[1].item or "unknown"
+end
+
+-- Icon places inside the 0.82 cell (offsets of 0.41 quarters) for a slot
+-- that accepts 2, 3 or 4 items; more than four show the first three and a
+-- "+N" marker in the fourth place. Returns the places and N (0 when every
+-- item has an icon), or nil below two items (one icon, as before).
+local SLOT_QUARTER, SLOT_ICON = 0.41, 0.37
+local SLOT_PLACES = {
+	[2] = {{0, 0.205}, {0.41, 0.205}},
+	[3] = {{0, 0}, {0.41, 0}, {0.205, 0.41}},
+	[4] = {{0, 0}, {0.41, 0}, {0, 0.41}, {0.41, 0.41}},
+}
+local function slot_layout(count)
+	if count < 2 then return nil end
+	if count <= 4 then return SLOT_PLACES[count], 0 end
+	local four = SLOT_PLACES[4]
+	return {four[1], four[2], four[3]}, count - 3
 end
 
 function grug_jobs._book_recipe_cells(recipe)
@@ -615,9 +647,56 @@ local function locked_text(player, recipe)
 	return "Locked: " .. tostring(reason or "not available yet.")
 end
 
--- `clickable(item)` decides whether an ingredient cell links to a recipe;
--- `locked` is the lock line of a greyed recipe (nil when craftable);
--- returns {[cell index] = item} for the linked cells.
+-- An invisible click target over an unchanged icon: no bevel pane and a
+-- transparent image in every state, so rest and hover look as before.
+-- `rect` is the element's "x,y;w,h".
+local function append_overlay(fs, field, rect)
+	fs[#fs + 1] = ("style[%s;border=false;bgimg=%s;bgimg_hovered=%s;" ..
+		"bgimg_pressed=%s]"):format(field, CELL_OVERLAY, CELL_OVERLAY,
+		CELL_OVERLAY)
+	fs[#fs + 1] = ("image_button[%s;%s;%s;;false;false]"):format(rect,
+		CELL_OVERLAY, field)
+end
+
+-- A slot that accepts several items (Round 41 ruling 4): small icons in the
+-- tooltip's order, each its own click target under the cell rule
+-- (`clickable`), the "+N" marker never; every icon shows the slot's complete
+-- list, a clickable one with the click line. Linked icons go into `links`
+-- as "<cell>_<icon>".
+local function append_slot_icons(fs, links, index, x, y, entries, label, clickable)
+	local places, more = slot_layout(#entries)
+	local inset = (SLOT_QUARTER - SLOT_ICON) / 2
+	for icon = 1, #places do
+		local qx, qy = x + places[icon][1], y + places[icon][2]
+		local item = entries[icon].item
+		fs[#fs + 1] = ("item_image[%.3f,%.3f;%.2f,%.2f;%s]"):format(qx + inset,
+			qy + inset, SLOT_ICON, SLOT_ICON, esc(item))
+		if clickable and clickable(item) then
+			local key = index .. "_" .. icon
+			links[key] = item
+			local rect = ("%.3f,%.3f;%.2f,%.2f"):format(qx, qy, SLOT_QUARTER,
+				SLOT_QUARTER)
+			append_overlay(fs, CELL_FIELD .. key, rect)
+			fs[#fs + 1] = ("tooltip[%s;%s]"):format(rect,
+				esc(label .. "\n" .. CELL_TOOLTIP))
+		end
+	end
+	if more > 0 then
+		-- A smaller font keeps "+12" inside its quarter; reset for later labels.
+		fs[#fs + 1] = "style_type[label;font_size=*0.8]"
+		fs[#fs + 1] = ("label[%.3f,%.3f;+%d]"):format(x + SLOT_QUARTER + 0.05,
+			y + SLOT_QUARTER * 1.5, more)
+		fs[#fs + 1] = "style_type[label;font_size=*1]"
+	end
+	-- The whole cell (the marker, the gaps, inert icons) shows the list; the
+	-- engine takes the first matching tooltip rect, so linked icons keep theirs.
+	fs[#fs + 1] = ("tooltip[%.2f,%.2f;0.82,0.82;%s]"):format(x, y, esc(label))
+end
+
+-- `clickable(item)` decides whether an ingredient cell (or one icon of a
+-- multi-item slot) links to a recipe; `locked` is the lock line of a greyed
+-- recipe (nil when craftable); returns {[cell index or "<cell>_<icon>"] =
+-- item} for the linked cells and icons.
 local function append_recipe(fs, recipe, alternative, alternative_count, clickable,
 		locked)
 	local links = {}
@@ -640,47 +719,33 @@ local function append_recipe(fs, recipe, alternative, alternative_count, clickab
 		local cell = cells[index]
 		local x = 1.25 + (cell.column - 1) * 0.9
 		local y = 5.65 + (cell.row - 1) * 0.9
-		local item = display_item(cell.token)
-		fs[#fs + 1] = ("item_image[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
-			esc(item))
-		local linked = clickable and clickable(item)
-		if linked then
-			-- Invisible click target over the unchanged cell: no bevel pane and a
-			-- transparent image in every state, so rest and hover look as before.
-			local field = CELL_FIELD .. index
-			links[index] = item
-			fs[#fs + 1] = ("style[%s;border=false;bgimg=%s;bgimg_hovered=%s;" ..
-				"bgimg_pressed=%s]"):format(field, CELL_OVERLAY, CELL_OVERLAY,
-				CELL_OVERLAY)
-			fs[#fs + 1] = ("image_button[%.2f,%.2f;0.82,0.82;%s;%s;;false;false]"):format(
-				x, y, CELL_OVERLAY, field)
+		-- A group lists every item it accepts (Round 41: no "+N more" cut).
+		local entries = cell.token:match("^group:") and group_entries(cell.token) or nil
+		local label = item_label(cell.token)
+		if entries then
+			local names = {}
+			for n = 1, #entries do names[n] = entries[n].label end
+			label = #names > 0 and table.concat(names, " or ") or cell.token
 		end
-			local label = item_label(cell.token)
-			if cell.token:match("^group:") then
-				local names, seen = {}, {}
-				for name in pairs(core.registered_items or {}) do
-					if grug_jobs._group_matches(cell.token, name) then
-						local candidate = item_label(name):match("^[^\n]+")
-						if not seen[candidate] then
-							seen[candidate] = true
-							names[#names + 1] = candidate
-						end
-					end
-				end
-				table.sort(names)
-				if #names > 0 then
-					local shown = {}
-					for n = 1, math.min(4, #names) do shown[#shown + 1] = names[n] end
-					label = table.concat(shown, " or ")
-					if #names > #shown then label = label .. "\n+" .. (#names - #shown) .. " more" end
-				else label = cell.token end
+		if rawget(_G, "grug_inventory") and grug_inventory.wrap_text then
+			label = grug_inventory.wrap_text(label, 58)
+		end
+		if entries and #entries > 1 then
+			append_slot_icons(fs, links, index, x, y, entries, label, clickable)
+		else
+			local item = display_item(cell.token)
+			fs[#fs + 1] = ("item_image[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
+				esc(item))
+			local linked = clickable and clickable(item)
+			if linked then
+				links[index] = item
+				append_overlay(fs, CELL_FIELD .. index,
+					("%.2f,%.2f;0.82,0.82"):format(x, y))
+				label = label .. "\n" .. CELL_TOOLTIP
 			end
-			if rawget(_G, "grug_inventory") and grug_inventory.wrap_text then
-				label = grug_inventory.wrap_text(label, 58)
-			end
-			if linked then label = label .. "\n" .. CELL_TOOLTIP end
 			fs[#fs + 1] = ("tooltip[%.2f,%.2f;0.82,0.82;%s]"):format(x, y,
 				esc(label))
+		end
 	end
 	fs[#fs + 1] = "image[4.15,6.55;0.9,0.7;gui_furnace_arrow_bg.png^[transformR270]"
 	fs[#fs + 1] = ("item_image[5.25,6.35;1.1,1.1;%s]"):format(
@@ -816,7 +881,11 @@ function grug_jobs.book_formspec(player, book, station, page, search, output, al
 	return make_formspec(player, book, station, state)
 end
 
-function grug_jobs.open_book(player, book, station, page)
+-- `origin` is where Close leads (Round 41 ruling 3): {pos, id} of the
+-- station whose book button opened the book, nil from the inventory. Every
+-- call sets it, so an inventory opening never inherits a station's; the
+-- book's own redraws (navigation, Back, discovery refresh) pass it on.
+function grug_jobs.open_book(player, book, station, page, origin)
 	local name = player:get_player_name()
 	local state = sessions[name]
 	if not state or state.book ~= book or state.station ~= station then
@@ -826,6 +895,7 @@ function grug_jobs.open_book(player, book, station, page)
 	elseif page then
 		state.page = page
 	end
+	state.origin = origin
 	-- Discovery first (Round 37): the book shows what the player holds now,
 	-- not what the last slotted scan saw (discovery.lua).
 	if grug_jobs._scan_discovery then grug_jobs._scan_discovery(player, true) end
@@ -883,7 +953,21 @@ end
 
 function grug_jobs.refresh_open_book(player)
 	local state = sessions[player:get_player_name()]
-	if state then grug_jobs.open_book(player, state.book, state.station) end
+	if state then grug_jobs.open_book(player, state.book, state.station, nil, state.origin) end
+end
+
+-- Close of the book or of a station's repair form (Round 41 ruling 3): back
+-- to the station form at `origin` ({pos, id}) when it can be reopened there
+-- (workspaces.open checks the node, its id, distance, life and access),
+-- else, and without an origin, the inventory's crafting page as before.
+function grug_jobs.close_to_origin(player, origin)
+	local workspaces = grug_jobs.workspaces
+	if origin and workspaces and workspaces.open(origin.pos, player, origin.id) then
+		return true
+	end
+	sfinv.set_page(player, "sfinv:crafting")
+	core.show_formspec(player:get_player_name(), "", player:get_inventory_formspec())
+	return false
 end
 
 local function slot_button(fs, x, y, field, profession, empty_label)
@@ -964,8 +1048,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.grug_jobs_close then
 		sessions[name] = nil
 		if core.close_formspec then core.close_formspec(name, BOOK_FORM) end
-		sfinv.set_page(player, "sfinv:crafting")
-		core.show_formspec(name, "", player:get_inventory_formspec())
+		grug_jobs.close_to_origin(player, state.origin)
 		return true
 	end
 	local redraw = false
@@ -996,14 +1079,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		state.alternative = state.alternative + 1
 		redraw = true
 	end
-	for index, item in pairs(state.cell_items or {}) do
-		if fields[CELL_FIELD .. index] then
+	-- A cell index, or "<cell>_<icon>" for an icon of a multi-item slot.
+	for key, item in pairs(state.cell_items or {}) do
+		if fields[CELL_FIELD .. key] then
 			if show_ingredient(player, state, item) then redraw = true end
 			break
 		end
 	end
 	if fields.grug_jobs_back and go_back(state) then redraw = true end
-	if redraw then grug_jobs.open_book(player, state.book, state.station) end
+	if redraw then grug_jobs.open_book(player, state.book, state.station, nil, state.origin) end
 	if fields.quit then sessions[name] = nil end
 	return true
 end)
@@ -1025,4 +1109,5 @@ grug_jobs._reset_book_cache = function()
 	record_cache = setmetatable({}, {__mode = "k"})
 	output_index_cache = {}
 	shaping_cache = nil
+	group_entries_cache = {}
 end

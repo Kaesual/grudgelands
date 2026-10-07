@@ -1308,6 +1308,14 @@ local function install(entity, row, slot)
 		entity._grug_idle_tag = slot.tag or slot.activity
 	elseif slot.role == "king" or slot.role == "general" or slot.role == "bodyguard" then
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
+		-- A king and a General hold their seat like a post guard its post
+		-- (Round 41 ruling 2; bosses.lua king_tick runs start_post_tick). A
+		-- bodyguard gets none: it follows its General (bosses.lua).
+		if slot.role ~= "bodyguard" then
+			entity._grug_post_x = slot.pos.x
+			entity._grug_post_z = slot.pos.z
+			entity._grug_post_yaw = slot.yaw
+		end
 	elseif slot.role == "mount_display" or slot.role == "gear_display" then
 		entity._grug_display_race = row.race_id
 		entity._grug_display_tag = slot.tag

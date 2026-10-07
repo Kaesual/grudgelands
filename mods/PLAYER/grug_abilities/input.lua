@@ -273,7 +273,7 @@ return function(api)
 		return def ~= nil and type(def.on_rightclick) == "function"
 	end
 	local function right_begin(player, s, def, hit, distance)
-		s.pending, s.dig = nil, nil
+		s.pending, s.dig, s.bow_native = nil, nil, nil
 		if not def and is_food(player:get_wielded_item():get_name()) then
 			-- Food owns the whole press, interactive target or not (user ruling
 			-- 2026-09-28): a release before HOLD_US is a click, performed on
@@ -662,6 +662,29 @@ return function(api)
 		if s.native_seen then return true end
 		s.native_seen = true
 		return false
+	end
+	-- A skill item's native on_place/on_secondary_use (init.lua): the step a
+	-- right_action runs, plus the bow's missed release (Round 41 ruling 5),
+	-- the food rule above applied to a live draw. A drawn bow points at
+	-- nothing (hold_range), and the client sends an empty-air or object call
+	-- on the press edge only, so the first native call after a draw starts
+	-- belongs to the starting press (it may also be the call that starts it),
+	-- and a later object or empty-air call during the live draw is a new press
+	-- whose release fell between two control snapshots: the drawn arrow flies
+	-- now and the same hold draws again (scout.lua renew_bow_draw). Node calls
+	-- (a press that began on a node, the engine's place repeats) never count.
+	-- Returns the press's RMB owner, as right_action does.
+	function M.right_native(player, pointed)
+		M.step(player)
+		local s = state(player)
+		if s.right == "bow" and Q.scout_draw_active(player) then
+			if s.bow_native and (not pointed or pointed.type ~= "node") then
+				local ok, err = Q.renew_bow_draw(player)
+				if not ok then report(player, s, err) end
+			end
+			s.bow_native = true
+		end
+		return s.right
 	end
 	-- Entity right-clicks reach the entity directly on press (engine
 	-- INTERACT_PLACE). A food-owned press defers them to the click on release,

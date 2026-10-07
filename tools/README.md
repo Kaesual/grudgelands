@@ -274,4 +274,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   bytes; the severe-error helper), `engine.sh PLAN [TIMEOUT]` with the
   disposable probe `grug_probe_r41_cr` (generate chunks in order, census a
   layer, place nodes, record severe reports) and its plans (`plan_*.txt`,
-  runs 1–5 of the lane's diagnosis and the final region run).
+  runs 1–5 of the lane's diagnosis and the final region run); `r41_sc` the bow's missed release
+  (`portable_test.lua`: the real `input.lua` and `scout.lua` on a fake
+  engine; a new press during a live draw fires it and draws again, the
+  0.2 s grace, node calls, the starting press's own call); the engine side
+  is a case in `pt_fixes/lane_a`'s probe, the quiver total in `r28_a6_ui`.

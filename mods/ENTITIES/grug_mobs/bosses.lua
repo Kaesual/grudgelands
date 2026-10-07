@@ -549,6 +549,14 @@ local function king_tick(self, dtime, race, boss_id)
 	else
 		self.temp.grug_royal_reset = nil
 	end
+	-- The seat (Round 41 ruling 2): start_npcs.lua gives a king and a General
+	-- the post fields of his throne socket, so the post guard's idle tick holds
+	-- him there -- idle only, it waits out a fight, a cast and the evade run --
+	-- walks him back after a fight or a leash reset and turns him to the
+	-- socket's authored facing.
+	if self._grug_post_x and not self.temp.grug_royal_cast then
+		grug_mobs.start_post_tick(self, dtime)
+	end
 	local cast = self.temp.grug_royal_cast
 	if cast then
 		self:set_velocity(0)
@@ -594,6 +602,10 @@ local function king_def(race, row)
 		walk_velocity = 1.2, run_velocity = 4.6,
 		jump = true, jump_height = 4, stepheight = 1.1, fear_height = 4,
 		view_range = 18, owner = "",
+		-- A king or General holds his seat (Round 41 ruling 2): no random
+		-- turns, and no random walks either (`_grug_no_wander`, published on
+		-- the prototype below); king_tick walks him back after a fight.
+		randomly_turn = false,
 		visual = "mesh", mesh = "character.b3d",
 		-- The definition fallback of a build without grug_visuals; with it, a
 		-- king wears his people's royal tabard and crown over his one fixed
@@ -657,6 +669,26 @@ local function royal_guard_drop_attack(self)
 	end
 end
 
+-- One step of an active follow between the 1 Hz nudges (Round 41 ruling 1).
+-- do_states never runs while the follow owns the guard, so the walk clip is
+-- re-asserted here on every step: walk_toward's own write can be held back by
+-- the swing lock (mobs/api.lua set_animation) while a punch clip ends. A hit
+-- taken since the last nudge (do_punch → do_attack) is dropped, and that drop
+-- (stop_attack) stands the guard still in its stand clip; it walks on toward
+-- the leader at once instead of standing until the next nudge.
+local function royal_follow_step(self)
+	if self.attack or self.state ~= "walk" then
+		royal_guard_drop_attack(self)
+		local leader = self._grug_home
+		local pos = self.object:get_pos()
+		if leader and pos then
+			grug_mobs.walk_toward(self, leader.x, leader.z, pos)
+			return
+		end
+	end
+	grug_mobs.walk_animation(self)
+end
+
 local function royal_guard_tick(base_tick, self, dtime, boss_id)
 	self._grug_boss_id = boss_id or ("king:" .. self._grug_royal_race)
 	local result = royal_guard_base_tick(base_tick, self, dtime)
@@ -669,7 +701,7 @@ local function royal_guard_tick(base_tick, self, dtime, boss_id)
 		-- active, on_step must not run do_states or general_attack after this
 		-- callback and overwrite the kingward movement with an enemy chase.
 		if self.temp.grug_royal_follow_active then
-			royal_guard_drop_attack(self)
+			royal_follow_step(self)
 			return false
 		end
 		return
@@ -724,6 +756,9 @@ for race, row in pairs(RACES) do
 	local race_id, race_row = race, row
 	grug_mobs.register_mob("grug_mobs:king_" .. race_id,
 		king_def(race_id, race_row))
+	-- mobs_redo copies a field whitelist; its do_states reads this from the
+	-- prototype (GRUG PATCH, Round 41 MOB): no random walk from the seat.
+	core.registered_entities["grug_mobs:king_" .. race_id]._grug_no_wander = true
 	local guard = grug_mobs.guard_definition(row.faction,
 		grug_mobs.names.required("royal_guard_" .. race_id), "character.png")
 	local base_tick = guard.do_custom
@@ -788,6 +823,7 @@ for faction, race in pairs(GENERALS) do
 	end
 	grug_mobs.register_mob(name, general)
 	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)
+	core.registered_entities[name]._grug_no_wander = true -- as a king's
 
 	local bodyguard = garrison.bodyguard_entity(faction_id)
 	local guard = grug_mobs.guard_definition(faction_id,
