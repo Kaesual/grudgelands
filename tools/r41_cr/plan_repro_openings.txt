@@ -1,0 +1,23 @@
+# Run 4 (reproduction of the runtime mechanism, every opening): as run 3,
+# but cave water reaches every air opening of the candidate's top layer
+# (y -33), so the water guard leaves a barrier in each; the candidate's own
+# caves re-carve some of them (the barrier is ground content), the rest meet
+# the writer's fill-void band (y -37..-33).
+emerge 1680 0 -2640
+emerge 1760 0 -2640
+emerge 1840 0 -2640
+emerge 1680 0 -2560
+emerge 1760 0 -2560
+emerge 1840 0 -2560
+emerge 1680 0 -2480
+emerge 1760 0 -2480
+emerge 1840 0 -2480
+emerge 1680 -80 -2560
+emerge 1840 -80 -2560
+emerge 1760 -80 -2480
+emerge 1840 -80 -2480
+water_over_air 1728 -33 -2592 1807 -2513
+wait 10
+census 1728 -33 -2592 1807 -33 -2513
+emerge 1760 -80 -2560
+shutdown

@@ -44,6 +44,11 @@ end
 -- sea), which never changes: a guard that can vanish (a Claim Stone's
 -- arrival cube) keeps the plain air revert, so no barrier outlives it in
 -- ordinary ground, where code that expects "air" would trip over it.
+-- The world writer (grug_mapgen, wp40/r7_content.lua) reads the group
+-- grug_air as air: a barrier the guard left in the top or bottom layer of a
+-- chunk not generated yet is filled or kept like the flooded air it stands
+-- for, never refused as foreign content (Round 41 lane CR, the production
+-- mapgen crash).
 local BARRIER = "grug_core:water_barrier"
 grug_core.WATER_BARRIER = BARRIER
 core.register_node(BARRIER, {
@@ -57,7 +62,7 @@ core.register_node(BARRIER, {
 	buildable_to = true,
 	floodable = true,
 	drop = "",
-	groups = {not_in_creative_inventory = 1},
+	groups = {not_in_creative_inventory = 1, grug_air = 1},
 })
 
 -- The node a guarded transform at `pos` is set back to: what was there,

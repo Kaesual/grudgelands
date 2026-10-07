@@ -1250,6 +1250,10 @@ local function settlement_factory()
 		local call_min, call_max = {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}
 		local transaction_state = {
 			light_zero = light_zero, light_full = light_full,
+			-- The VoxelManip the transaction has written to (false before the
+			-- first setter) and whether it relit it: a later failure puts the
+			-- engine's bytes back (settlement.apply, Round 41 lane CR).
+			written_vm = false, written_light = false,
 			call_min = call_min, call_max = call_max,
 			successor_tail = successor_tail,
 			runtime_mode = runtime_mode == true,
@@ -2598,7 +2602,9 @@ local function settlement_factory()
 					feature_ref, interface_ref, role_bit, occupant)
 				if x < min_x or x > max_x or y < min_y or y > max_y or
 						z < min_z or z > max_z then
-					fail("fail_settlement", "successor write escaped central owner")
+					fail("fail_settlement", ("successor write escaped central owner " ..
+						"at (%s,%s,%s) opcode=%s"):format(tostring(x), tostring(y),
+						tostring(z), tostring(opcode)))
 				end
 				local index = index_at(x, y, z)
 				local cid, exact_param2 = resolve(content_ref, param2, role_bit)
@@ -2760,7 +2766,10 @@ local function settlement_factory()
 										class_id ~= CLASS_LIQUID then
 									if class_id == CLASS_FOREIGN or class_id == CLASS_UNKNOWN or
 											class_id == CLASS_IGNORE then
-										fail("fail_settlement", "P7 filler predecessor differs")
+										fail("fail_settlement", ("P7 filler predecessor differs " ..
+											"at (%d,%d,%d) cid=%d param2=%d class=%d opcode=%d"):format(
+											x, y, z, final_data[index], final_param2[index], class_id,
+											predecessor))
 									end
 									write_intent(x, y, z, filler_ref, 0, 2, 0, 0, 1, false)
 								end
@@ -3438,14 +3447,16 @@ local function settlement_factory()
 				function successor_context.write_p9g(x, y, z, cid, param2,
 						local_ref, feature_ref)
 					if not inside_owner(x, y, z) then
-						fail("fail_settlement", "P9G write escaped central owner")
+						fail("fail_settlement", ("P9G write escaped central owner " ..
+							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
 					end
 					integer(cid, "P9G CID", 0, MAX_SAFE, "fail_content_manifest")
 					integer(param2, "P9G param2", 0, 255, "fail_content_manifest")
 					integer(local_ref, "P9G local ref", 1, 36, "fail_content_manifest")
 					integer(feature_ref, "P9G feature ref", 1, 36, "fail_content_manifest")
 					if cid == contract.ignore_cid then
-						fail("fail_content_manifest", "P9G target is ignore")
+						fail("fail_content_manifest", ("P9G target is ignore " ..
+							"at (%d,%d,%d)"):format(x, y, z))
 					end
 					local index = index_at(x, y, z)
 					final_data[index], final_param2[index] = cid, param2
@@ -3464,14 +3475,16 @@ local function settlement_factory()
 				function successor_context.write_anchor(x, y, z, cid, param2,
 						local_ref, feature_ref)
 					if not inside_owner(x, y, z) then
-						fail("fail_settlement", "anchor write escaped central owner")
+						fail("fail_settlement", ("anchor write escaped central owner " ..
+							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
 					end
 					integer(cid, "anchor CID", 0, MAX_SAFE, "fail_content_manifest")
 					integer(param2, "anchor param2", 0, 255, "fail_content_manifest")
 					integer(local_ref, "anchor local ref", 1, 2, "fail_content_manifest")
 					integer(feature_ref, "anchor feature ref", 7, 60, "fail_content_manifest")
 					if cid == contract.ignore_cid then
-						fail("fail_content_manifest", "anchor target is ignore")
+						fail("fail_content_manifest", ("anchor target is ignore " ..
+							"at (%d,%d,%d)"):format(x, y, z))
 					end
 					local index = index_at(x, y, z)
 					final_data[index], final_param2[index] = cid, param2
@@ -3496,12 +3509,14 @@ local function settlement_factory()
 				end
 				function successor_context.write_road(x, y, z, cid, param2)
 					if not inside_owner(x, y, z) then
-						fail("fail_settlement", "road write escaped central owner")
+						fail("fail_settlement", ("road write escaped central owner " ..
+							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
 					end
 					integer(cid, "road CID", 0, MAX_SAFE, "fail_content_manifest")
 					integer(param2, "road param2", 0, 255, "fail_content_manifest")
 					if cid == contract.ignore_cid then
-						fail("fail_content_manifest", "road target is ignore")
+						fail("fail_content_manifest", ("road target is ignore " ..
+							"at (%d,%d,%d)"):format(x, y, z))
 					end
 					local index = index_at(x, y, z)
 					final_data[index], final_param2[index] = cid, param2
@@ -3513,7 +3528,8 @@ local function settlement_factory()
 				function successor_context.write_hearthpine(x, y, z, cid, param2,
 						local_ref, feature_ref)
 					if not inside_owner(x, y, z) then
-						fail("fail_settlement", "Hearthpine write escaped central owner")
+						fail("fail_settlement", ("Hearthpine write escaped central owner " ..
+							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
 					end
 					integer(cid, "Hearthpine CID", 0, MAX_SAFE, "fail_content_manifest")
 					integer(param2, "Hearthpine param2", 0, 255,
@@ -3525,7 +3541,8 @@ local function settlement_factory()
 					end
 					local index = index_at(x, y, z)
 					if original_data[index] == contract.ignore_cid then
-						fail("fail_content_ignore", "Hearthpine owner is ignore")
+						fail("fail_content_ignore", ("Hearthpine owner is ignore " ..
+							"at (%d,%d,%d) cid=%d"):format(x, y, z, original_data[index]))
 					end
 					final_data[index], final_param2[index] = cid, param2
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
@@ -3790,6 +3807,7 @@ local function settlement_factory()
 				light_loaded = true
 			end
 
+			transaction_state.written_vm = vm
 			if content_changed then
 				local ok = pcall(vm.set_data, vm, final_data)
 				if not ok then fail("fail_vm_contract", "set_data failed") end
@@ -3807,6 +3825,7 @@ local function settlement_factory()
 				a.min_x, a.min_y, a.min_z, a.max_x, a.max_y, a.max_z =
 					min_x, min_y, min_z, max_x, max_y, max_z
 				halo.vm = vm
+				transaction_state.written_light = true
 				last_sun_runs = halo.relight(a)
 			end
 			if liquid_changed then
@@ -3836,6 +3855,19 @@ local function settlement_factory()
 				return apply_impl(vm, minp, maxp, plan, generation, call_mode)
 			end, with_traceback)
 			allocator:leave_hotpath("r6_settlement_apply")
+			local written = transaction_state.written_vm
+			if not ok and written then
+				-- A failure after the first VoxelManip setter (an engine call that
+				-- failed) restores the engine's own content, param2 and light, so
+				-- the chunk keeps engine terrain (Round 41 ruling 8; the emerge
+				-- wrapper in r7_mapgen.lua reports it and goes on).
+				pcall(written.set_data, written, original_data)
+				pcall(written.set_param2_data, written, original_param2)
+				if transaction_state.written_light then
+					pcall(written.set_light_data, written, original_light)
+				end
+			end
+			transaction_state.written_vm, transaction_state.written_light = false, false
 			if not ok then error(result, 0) end
 			return result
 		end

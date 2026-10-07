@@ -73,6 +73,27 @@ local function anchor_grade_feature(feature_id)
 	return value
 end
 
+-- Names for the location details of a voxel failure (Round 41 lane CR). Read
+-- only on a failure branch, never per voxel.
+local CLASS_NAMES = {"air", "foreign", "ignore", "liquid", "native_ore",
+	"natural_host", "natural_surface", "natural_vegetation", "unknown",
+	"wp43_resource", "wp43_stratum"}
+local POLICY_NAMES = {"cut_natural", "deep_exact_host", "fill_void",
+	"open_engineered", "seal_void", "surface_exact", "write_water"}
+
+-- The location part of a voxel failure message: position, content id (the
+-- emerge wrapper adds its node name, `r7_mapgen.lua`), class, policy, opcode,
+-- role and feature id.
+local function voxel_details(x, y, z, cid, param2, class_id, policy, opcode,
+		role, feature_id)
+	return ("at (%s,%s,%s) cid=%s param2=%s class=%s policy=%s opcode=%s " ..
+		"role=%s feature=%s"):format(tostring(x), tostring(y), tostring(z),
+		tostring(cid), tostring(param2),
+		tostring(CLASS_NAMES[class_id] or class_id),
+		tostring(POLICY_NAMES[policy] or policy), tostring(opcode), tostring(role),
+		tostring(feature_id or "-"))
+end
+
 local function preserved_native_cave(opcode, policy, class_id, heightmap_value,
 		y, feature_id)
 	return policy == 3 and
@@ -642,7 +663,8 @@ local function adapter_factory(allocator_factory)
 					(param2_mode == K.PARAM2_EXACT and
 						(type(param2_value) ~= "number" or param2_value % 1 ~= 0 or
 							param2_value < 0 or param2_value > 255)) then
-				fail("fail_target", "resolved target tuple is invalid")
+				fail("fail_target", "resolved target tuple is invalid" ..
+					(" role=%s y=%s"):format(tostring(role_id), tostring(y)))
 			end
 			local classify_param2 = param2_mode == K.PARAM2_EXACT and
 				param2_value or 0
@@ -651,12 +673,14 @@ local function adapter_factory(allocator_factory)
 				classify(target_cid, classify_param2, "fail_target")
 			if target_cid == ignore_cid or class_id == K.CLASS_IGNORE or
 					class_id == K.CLASS_FOREIGN or class_id == K.CLASS_UNKNOWN then
-				fail("fail_target", "planned target class is forbidden")
+				fail("fail_target", "planned target class is forbidden" ..
+					(" role=%s y=%s"):format(tostring(role_id), tostring(y)))
 			end
 			if role_id == K.ROLE_AIR then
 				if target_kind ~= K.TARGET_AIR or class_id ~= K.CLASS_AIR or
 						liquid_kind ~= K.LIQUID_NONE then
-					fail("fail_target", "AIR role target differs")
+					fail("fail_target", "AIR role target differs" ..
+						(" role=%s y=%s"):format(tostring(role_id), tostring(y)))
 				end
 			elseif role_id == K.ROLE_ORDINARY_WATER_SOURCE or
 					role_id == K.ROLE_RIVER_WATER_SOURCE then
@@ -664,14 +688,16 @@ local function adapter_factory(allocator_factory)
 						class_id ~= K.CLASS_LIQUID or
 						liquid_kind ~= K.LIQUID_SOURCE or
 						not compatible_liquid(family_id, liquid_kind) then
-					fail("fail_target", "water role target differs")
+					fail("fail_target", "water role target differs" ..
+						(" role=%s y=%s"):format(tostring(role_id), tostring(y)))
 				end
 			else
 				if target_kind ~= K.TARGET_SOLID or liquid_kind ~= K.LIQUID_NONE or
 						(class_id ~= K.CLASS_NATURAL_HOST and
 							class_id ~= K.CLASS_NATURAL_SURFACE and
 							class_id ~= K.CLASS_WP43_STRATUM) then
-					fail("fail_target", "solid role target differs")
+					fail("fail_target", "solid role target differs" ..
+						(" role=%s y=%s"):format(tostring(role_id), tostring(y)))
 				end
 			end
 			scratch[base + 1] = target_cid + 1
@@ -861,10 +887,23 @@ local function adapter_factory(allocator_factory)
 			return result_a, result_b
 		end
 
+		-- A failure of one planned voxel names it (Round 41 lane CR): the
+		-- details are formatted on the failure branch only.
+		local function voxel_fail(code, message, plan, run_base, x, y, z, cid,
+				param2, class_id)
+			local feature_ref = plan.run_values[run_base + K.R_FEATURE]
+			fail(code, message .. " " .. voxel_details(x, y, z, cid, param2,
+				class_id, plan.run_values[run_base + K.R_POLICY],
+				plan.run_values[run_base + K.R_OPCODE],
+				plan.run_values[run_base + K.R_ROLE],
+				feature_ref ~= 0 and plan.stable_refs[feature_ref] or nil))
+		end
+
 		local function resolve_voxel(plan, run_base, y, min_y, heightmap_value,
-				old_cid, old_param2)
+				old_cid, old_param2, x, z)
 			if old_cid == ignore_cid then
-				fail("fail_content_ignore", "planned owner content is ignore")
+				voxel_fail("fail_content_ignore", "planned owner content is ignore",
+					plan, run_base, x, y, z, old_cid, old_param2, K.CLASS_IGNORE)
 			end
 			local role = plan.run_values[run_base + K.R_ROLE]
 			local policy = plan.run_values[run_base + K.R_POLICY]
@@ -875,21 +914,25 @@ local function adapter_factory(allocator_factory)
 			local target_kind = scratch[target + 2]
 			if (policy == K.POLICY_CUT_NATURAL or
 					policy == K.POLICY_OPEN_ENGINEERED) and target_kind ~= K.TARGET_AIR then
-				fail("fail_target", "air policy target differs")
+				voxel_fail("fail_target", "air policy target differs", plan, run_base,
+					x, y, z, old_cid, old_param2, nil)
 			elseif (policy == K.POLICY_FILL_VOID or policy == K.POLICY_SEAL_VOID or
 					policy == K.POLICY_SURFACE_EXACT or
 					policy == K.POLICY_DEEP_EXACT_HOST) and
 					target_kind ~= K.TARGET_SOLID then
-				fail("fail_target", "solid policy target differs")
+				voxel_fail("fail_target", "solid policy target differs", plan,
+					run_base, x, y, z, old_cid, old_param2, nil)
 			elseif policy == K.POLICY_WRITE_WATER and
 					target_kind ~= K.TARGET_WATER_SOURCE then
-				fail("fail_target", "water policy target differs")
+				voxel_fail("fail_target", "water policy target differs", plan,
+					run_base, x, y, z, old_cid, old_param2, nil)
 			end
 			local class_id, family_id, liquid_kind, liquid_level, floodable,
 				paramtype_light, light_propagates, sunlight_propagates, light_source =
 				classify(old_cid, old_param2, "fail_old_class")
 			if class_id == K.CLASS_IGNORE then
-				fail("fail_content_ignore", "classified owner content is ignore")
+				voxel_fail("fail_content_ignore", "classified owner content is ignore",
+					plan, run_base, x, y, z, old_cid, old_param2, class_id)
 			end
 			local feature_ref = plan.run_values[run_base + K.R_FEATURE]
 			local feature_id = feature_ref ~= 0 and plan.stable_refs[feature_ref] or nil
@@ -905,7 +948,8 @@ local function adapter_factory(allocator_factory)
 					liquid_kind)
 			end
 			if outcome == K.OUTCOME_REJECT then
-				fail("fail_replace_policy", "replace-policy matrix rejected")
+				voxel_fail("fail_replace_policy", "replace-policy matrix rejected",
+					plan, run_base, x, y, z, old_cid, old_param2, class_id)
 			end
 			local final_cid = outcome == K.OUTCOME_WRITE and target_cid or old_cid
 			local param2_mode = scratch[target + 3]
@@ -1100,7 +1144,8 @@ local function adapter_factory(allocator_factory)
 				if run_base == nil then
 					if old_cid == ignore_cid then
 						fail("fail_content_ignore",
-							"required owner neighbour is ignore")
+							"required owner neighbour is ignore " ..
+							voxel_details(nx, ny, nz, old_cid, old_p2, K.CLASS_IGNORE))
 					end
 					local _, family, kind = classify(old_cid, old_p2,
 						"fail_old_class")
@@ -1111,7 +1156,7 @@ local function adapter_factory(allocator_factory)
 					old_paramtype_unused, old_light_unused, old_sunlight_unused,
 					old_source_unused, final_class_unused, final_family,
 					final_kind = resolve_voxel(plan, run_base, ny,
-						minp.y, heightmap[column], old_cid, old_p2)
+						minp.y, heightmap[column], old_cid, old_p2, nx, nz)
 				return final_cid, final_p2, final_family, final_kind
 			end
 
@@ -1134,7 +1179,7 @@ local function adapter_factory(allocator_factory)
 								final_level, final_floodable, final_paramtype_light,
 								final_light_propagates, final_sunlight_propagates,
 								final_light_source = resolve_voxel(plan, run_base, y,
-									minp.y, heightmap[column], old_cid, old_p2)
+									minp.y, heightmap[column], old_cid, old_p2, x, z)
 							local content_changed = final_cid ~= old_cid
 							local param2_changed = final_p2 ~= old_p2
 							if content_changed or param2_changed then
@@ -1210,7 +1255,7 @@ local function adapter_factory(allocator_factory)
 							local index = buffer_index(x, y, z)
 							local final_cid, final_p2 = resolve_voxel(plan, run_base, y,
 								minp.y, heightmap[column], data_buffer[index],
-								param2_buffer[index])
+								param2_buffer[index], x, z)
 							data_buffer[index] = final_cid
 							param2_buffer[index] = final_p2
 						end

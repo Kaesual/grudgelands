@@ -37,9 +37,11 @@ capital edge, a settlement collar) through the real per-chunk path against a
 fake VoxelManip, about 25 s per seed. It runs eight seeds at a time under idle
 scheduling and without a wall-clock limit, prints each failed seed with its
 error (a chunk failure names the chunk and keeps the traceback) and a summary,
-and exits 1 on any failure (the
+and exits 1 on any failure. A seed may name further chunks of its own in
+`seed_fleet/chunks.txt` (Round 41: the production crash chunks), written
+after its sample. The
 [round workflow](../docs/process/round-workflow.md#3-gates) says when each
-size is required).
+size is required.
 
 ```sh
 tools/seed_fleet/run.sh quick         # the first 100 seeds (about 6 minutes at 6-8 parallel)
@@ -264,7 +266,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   5626331914247410985. Its portable checks live in `r24_protection_depth`
   (the P8 floor against the hard protection), `r24_fill` (the host rule)
   and `r23_renewal` (gatherables in an envelope).
-- **Round 41** (`r41_<lane>`): `r41_sc` the bow's missed release
+- **Round 41** (`r41_<lane>`): `r41_cr` the production mapgen crash
+  (`portable_test.lua`: on the production seed's crash chunk, a water
+  barrier in the top layer is filled like air, a foreign node and an unknown
+  id fail the writer and degrade on the engine path with one `[GRUG-SEVERE]`
+  line and one chat message per chunk, a late failure restores the engine's
+  bytes; the severe-error helper), `engine.sh PLAN [TIMEOUT]` with the
+  disposable probe `grug_probe_r41_cr` (generate chunks in order, census a
+  layer, place nodes, record severe reports) and its plans (`plan_*.txt`,
+  runs 1–5 of the lane's diagnosis and the final region run); `r41_sc` the bow's missed release
   (`portable_test.lua`: the real `input.lua` and `scout.lua` on a fake
   engine; a new press during a live draw fires it and draws again, the
   0.2 s grace, node calls, the starting press's own call); the engine side

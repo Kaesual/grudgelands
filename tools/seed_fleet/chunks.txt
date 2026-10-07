@@ -1,0 +1,7 @@
+# Named chunks of the seed fleet (tools/seed_fleet/seed.lua): one per line,
+# "SEED MINP_X MINP_Y MINP_Z label". Each is planned and written after that
+# seed's sample, when the seed is in the run. Round 41 lane CR: the two
+# nearest candidates of the production crash of 2026-10-07 (fail_replace_policy
+# in the fill-void band y -37..-33; kaesual.com report).
+3684797457838814663 1728 -112 -2592 production crash candidate (22,-1,-32)
+3684797457838814663 1888 -112 -2592 production crash candidate (24,-1,-32)

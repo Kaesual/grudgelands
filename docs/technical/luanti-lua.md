@@ -301,8 +301,10 @@ bytes, while the PUC fallback uses `strcoll` and Luanti sets the locale from
 the environment, so a pair such as `x_b` / `xa` may collate differently. A
 `pairs` loop that only fills a set or sums values is fine. This bites
 hardest in mapgen: emerge rebuilds a lazy capital composition and compares
-its hash with main's, so an order-dependent builder stops the server (audit
-2026-10, MGS-11).
+its hash with main's, so an order-dependent builder fails every chunk that
+touches it (audit 2026-10, MGS-11; since Round 41 such a chunk keeps the
+engine's terrain and is reported as `[GRUG-SEVERE]` instead of stopping the
+server).
 
 ## Do-not-write checklist
 
