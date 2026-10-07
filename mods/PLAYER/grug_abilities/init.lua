@@ -625,7 +625,9 @@ end
 -- The client DID point at a node: builtin's placement rule, spelled out, plus
 -- the hand-reach bound builtin does not have.
 local function ability_on_place(itemstack, placer, pointed_thing)
-	if placer and grug_abilities.input then grug_abilities.input.right_action(placer) end
+	if placer and grug_abilities.input then
+		grug_abilities.input.right_native(placer, pointed_thing)
+	end
 	if not placer or not pointed_thing or pointed_thing.type ~= "node" or
 			sneaking(placer) then
 		return itemstack
@@ -640,7 +642,9 @@ end
 -- Air/secondary fallback: the first visible actor or node owns interaction.
 -- Never reach through a foreground blocker or duplicate native object dispatch.
 local function ability_on_secondary_use(itemstack, user, pointed_thing)
-	if user and grug_abilities.input then grug_abilities.input.right_action(user) end
+	if user and grug_abilities.input then
+		grug_abilities.input.right_native(user, pointed_thing)
+	end
 	-- An OBJECT click arrives here too (see the header): the engine is about to
 	-- run that object's own right-click, so this callback must do nothing at all.
 	if pointed_thing and pointed_thing.type ~= "nothing" then

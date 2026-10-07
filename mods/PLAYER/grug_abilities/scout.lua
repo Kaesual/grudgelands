@@ -20,6 +20,13 @@ local MIN_DRAW_TIME = 0.5
 -- Self-imposed stance while drawing or holding a drawn bow (user ruling
 -- 2026-09-28): the movement aggregator's final speed factor.
 local DRAW_STANCE, DRAW_STANCE_FACTOR = "scout_draw", 0.5
+-- A draw renewed by a new press during a live draw (renew_draw, Round 41
+-- ruling 5) that ends within this time is cancelled silently: no arrow, no
+-- ammunition. Its end counts at the last draw step that still saw the button
+-- down (or at the next press), not when the server notices the release: the
+-- client reports its controls once per server step and the draw loop polls
+-- once per step, so a quick tap would otherwise look up to two steps longer.
+local RENEW_GRACE_US = 200000
 local draws = {}
 local draw_wear_steps = {}
 local pending_control = {}
@@ -424,7 +431,8 @@ local function start_draw(player)
 	return true
 end
 
-local function release_draw(player, rec)
+-- `ended`: when the draw ended in real time (see RENEW_GRACE_US).
+local function release_draw(player, rec, ended)
 	if grug_core.is_stunned(player) then clear_draw(player); return end
 	local bow = equipped_bow(player)
 	if not bow or bow_identity(bow) ~= rec.bow then
@@ -434,6 +442,13 @@ local function release_draw(player, rec)
 	draws[player:get_player_name()] = nil
 	if grug_core.refuse_mounted_attack and
 			grug_core.refuse_mounted_attack(player) == true then
+		cancel_receipt(player, rec.action_id)
+		finish_draw_wear(player)
+		return
+	end
+	-- A renewed draw ended within the grace: the tap that fired the drawn
+	-- arrow never fires a second one.
+	if rec.renewed and ended - rec.started < RENEW_GRACE_US then
 		cancel_receipt(player, rec.action_id)
 		finish_draw_wear(player)
 		return
@@ -460,6 +475,20 @@ local function release_draw(player, rec)
 	end
 end
 
+-- A new press during a live draw (input.lua bow_native, Round 41 ruling 5):
+-- its release fell between two control reports, so the drawn arrow flies now
+-- with the draw time it has, and the same hold draws again at once (Loose has
+-- no cooldown). The new draw is a renewed one (RENEW_GRACE_US).
+local function renew_draw(player)
+	local name = player:get_player_name()
+	local rec = draws[name]
+	if not rec then return false end
+	release_draw(player, rec, core.get_us_time())
+	local ok, err = start_draw(player)
+	if ok and draws[name] then draws[name].renewed = true end
+	return ok, err
+end
+
 local draw_accumulator = 0
 core.register_globalstep(function(dtime)
 	draw_accumulator = draw_accumulator + dtime
@@ -477,9 +506,10 @@ core.register_globalstep(function(dtime)
 			if not def or wield:get_name() ~= "grug_abilities:loose" or not bow then
 				clear_draw(player)
 			elseif not player:get_player_control().place then
-				release_draw(player, rec)
+				release_draw(player, rec, rec.held or rec.started)
 			else
-				local fraction = math.min(1, (core.get_us_time() - rec.started) /
+				rec.held = core.get_us_time() -- the last step that saw RMB down
+				local fraction = math.min(1, (rec.held - rec.started) /
 					(effective_draw_time(player, bow) * 1e6))
 				set_draw_wear(player, fraction)
 				grug_abilities.crosshair.set_ring(player, fraction, "bow")
@@ -639,6 +669,8 @@ grug_abilities.scout_draw_active = function(player)
 	return draws[player:get_player_name()] ~= nil
 end
 
--- The contextual RMB owner starts/cancels the existing draw transaction.
+-- The contextual RMB owner starts/cancels the existing draw transaction and
+-- renews it on a new press during the draw.
 grug_abilities.start_bow_draw = start_draw
 grug_abilities.cancel_bow_draw = clear_draw
+grug_abilities.renew_bow_draw = renew_draw
