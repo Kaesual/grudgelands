@@ -4,8 +4,9 @@
 # 5575844014311305038, 6410640627505506314, 9512886083845910081 (stopped at
 # load before Round 34 F3: a river over anchor 29), 4282870288782723 (a river
 # between anchors 72 and 101), 2996858566870034 (a tributary junction across
-# anchor 31), 12345 (the usual test seed); then random seeds alternately below
-# and above 2^53 (fixed, so runs compare).
+# anchor 31), 12345 (the usual test seed), 3684797457838814663 (the production
+# realm's seed, with its named crash chunks in chunks.txt, Round 41); then
+# random seeds alternately below and above 2^53 (fixed, so runs compare).
 17713522922938657774
 5575844014311305038
 6410640627505506314
@@ -13,6 +14,7 @@
 4282870288782723
 2996858566870034
 12345
+3684797457838814663
 6866842473207
 75731352233772710
 52857145422941

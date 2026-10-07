@@ -26,8 +26,9 @@
 -- a world):
 --   * nodes: the real registrations of default, grug_trees, grug_materials,
 --     grug_nodes, doors and grug_decor (the Round 24 mining harness,
---     tools/r24_mining/fixture.lua), grug_gathering's sources and
---     grug_mapgen's world nodes, so the frozen content semantics hold; any
+--     tools/r24_mining/fixture.lua), grug_gathering's sources,
+--     grug_mapgen's world nodes and grug_core's water barrier (Round 41), so
+--     the frozen content semantics hold; any
 --     other name the mapgen asks for (the settlement palette's furniture) is
 --     registered on demand as a plain solid node. Content ids are this
 --     harness's own;
@@ -64,6 +65,20 @@ return function(repo, seed, mode)
 		return def
 	end})
 	for name, def in pairs(H.nodes) do rawset(nodes, name, def) end
+	-- grug_core's water barrier, read from its real registration (the guard's
+	-- callbacks are not needed here).
+	do
+		local saved_core, saved_grug_core = rawget(_G, "core"), rawget(_G, "grug_core")
+		_G.core = {register_node = function(name, def)
+				def.name = name
+				rawset(nodes, name, def)
+			end,
+			register_on_mods_loaded = function() end,
+			register_on_liquid_transformed = function() end}
+		_G.grug_core = {}
+		dofile(repo .. "/mods/CORE/grug_core/water_guard.lua")
+		_G.core, _G.grug_core = saved_core, saved_grug_core
+	end
 	-- A content id is a function of the name alone (the mapgen asks for ids
 	-- in `pairs` order, which varies between runs), well below 2^31.
 	local cid_of, name_of = {air = CONTENT_AIR, ignore = CONTENT_IGNORE},
