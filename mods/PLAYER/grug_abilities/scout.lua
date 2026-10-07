@@ -475,7 +475,7 @@ local function release_draw(player, rec, ended)
 	end
 end
 
--- A new press during a live draw (input.lua bow_native, Round 41 ruling 5):
+-- A new press during a live draw (input.lua right_native, Round 41 ruling 5):
 -- its release fell between two control reports, so the drawn arrow flies now
 -- with the draw time it has, and the same hold draws again at once (Loose has
 -- no cooldown). The new draw is a renewed one (RENEW_GRACE_US).
