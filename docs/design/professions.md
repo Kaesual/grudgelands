@@ -184,11 +184,22 @@ presentation rule, not a crafting-permission unlock.
 - Every furnace, dual furnace and brewing stand carries the same book button,
   filtered to recipes for that station. Grid recipes remain beside the normal
   3×3 grid.
+- **Close returns to where the book was opened (Round 41):** a book opened
+  from a station's book button closes back to that station's form (the
+  selected enchant operation is not kept); a book opened from the crafting
+  page closes to the crafting page. The station's "Repair equipment" form
+  ([durability_repair.md](durability_repair.md)) closes back to the station
+  the same way; the repair form of a trainer just closes. When the station
+  cannot be opened again (dug or replaced, out of reach, no access, the
+  player dead), Close lands on the crafting page instead. Esc closes
+  everything. Ingredient navigation, Back, a search and the discovery
+  refresh keep the book's origin; a book opened from the crafting page never
+  returns to a station.
 - **Ingredient navigation (decided 2026-09-28):** an ingredient cell of the
   selected recipe is clickable when the ingredient has a recipe the player's
   books already list (Basics, the primary professions, Cooking, Alchemy); its tooltip
-  gains "Click to view recipe". A group ingredient uses the item the cell
-  shows. The click keeps the current book when that view lists the
+  gains "Click to view recipe". In a slot that accepts several items each
+  small icon is its own link (below). The click keeps the current book when that view lists the
   ingredient; otherwise it opens the first of those books that does, and a
   station-filtered view falls back to that book's full view. It clears the
   search, selects the ingredient's first route and turns to its page. A Back
@@ -200,6 +211,16 @@ presentation rule, not a crafting-permission unlock.
   block back to bar or lump). So mined materials such as cobble, sand, coal
   lump or snow stay inert, while bars (smelting) and planks (trees) stay
   clickable. Inverse routes remain listed and browsable in the book.
+- **Slots that accept several items (Round 41):** a group ingredient that
+  accepts two or more items (one per distinct item name) shows them as small
+  icons inside the one cell, in the tooltip's alphabetical order: two side
+  by side, three as two above one, four as 2×2, more than four as three
+  icons and a "+N" marker in the fourth place. Nothing animates or cycles.
+  Each icon links on its own under the navigation rule above; "+N" never
+  does. Every icon and the marker show the same tooltip, the complete list
+  of allowed items joined by "or" (no "+N more" cut); a linked icon adds
+  "Click to view recipe". A group with a single item keeps one full-size
+  icon.
 - **The craft gate:** a profession recipe is craftable only when the player
   has learned the profession, its effective profession tier is at least the
   recipe tier, and the character's mastery band is at least the recipe's
