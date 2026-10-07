@@ -17,6 +17,8 @@
 --      all four tiers with the right state, buttons only for "buy";
 --   6. the Character page (grug_inventory/pages.lua): "Damage reduction" with
 --      its tooltip, the Professions tab body from grug_jobs/character_tab.lua;
+--      the Scout's quiver cell at 0, 100, 101, 181 and 500 arrows (Round 41:
+--      above 100 the total as an overlay, its cover at gui_scaling 1 and 2);
 --   7. recipe books (grug_jobs/ui.lua): a profession book lists T1-T6 with
 --      locked recipes greyed and "N locked" per tier, the station view and
 --      Basics keep their old rules;
@@ -151,6 +153,10 @@ function ItemStack(item)
 	function stack:get_count() return count end
 	function stack:is_empty() return count == 0 or name == "" end
 	function stack:to_string() return name == "" and "" or (name .. " " .. count) end
+	function stack:get_stack_max()
+		local def = core.registered_items[name]
+		return def and def.stack_max or 99
+	end
 	function stack:get_short_description()
 		local def = core.registered_items[name]
 		return def and def.description or name
@@ -731,6 +737,68 @@ eq(resent, 1, "a counted craft refreshes the open Professions tab")
 context.grug_character_tab = "stats"
 grug_jobs.record_craft(smith, "weaponsmith", 2)
 eq(resent, 1, "no refresh while another tab is open")
+
+-- The Scout's quiver cell (Round 41 ruling 6): above 100 arrows it shows the
+-- true total, a cover over the engine's count corner (sized for the window:
+-- a three-digit count at 30 x 20 px per real_gui_scaling against the legacy
+-- slot size) and an item_image of the cell's item with the total, both after
+-- the list[]; at 100 or fewer the engine's own count stays alone.
+core.registered_items["grug_gear:arrow"] = {description = "Arrow", stack_max = 100}
+grug_inventory.QUIVER_LIST = "grug_quiver_content"
+grug_inventory.quiver_capacity = function() return 500 end
+local quiver_total = 0
+grug_inventory.quiver_count = function() return quiver_total end
+grug_inventory.has_quiver = function(p) return p:get_player_name() ~= "smith" end
+-- 1920x1080 at gui_scaling 1 and 2 (max_formspec_size = size over the
+-- preferred slot, clientdynamicinfo.cpp: 72 px and 144 px).
+local NORMAL_WINDOW = {size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 72, y = 1080 / 72},
+	real_gui_scaling = 1, real_hud_scaling = 1}
+local LARGE_WINDOW = {size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 144, y = 1080 / 144},
+	real_gui_scaling = 2, real_hud_scaling = 2}
+local function quiver_page(name, window, total)
+	local archer = make_player(name, window)
+	function archer:get_properties() return smith:get_properties() end
+	function archer:get_inventory()
+		return {get_stack = function(_, list, index)
+			if list == grug_inventory.QUIVER_LIST and index == 1 and total > 0 then
+				return ItemStack("grug_gear:arrow " .. math.min(total, 100))
+			end
+			return ItemStack("")
+		end}
+	end
+	quiver_total = total
+	contexts[name] = {page = "grug_inventory:character", grug_character_tab = "stats"}
+	local fs = character:get(archer, contexts[name])
+	formspec_ok(fs, "quiver " .. name)
+	return fs
+end
+local QUIVER_CELL = "list[current_player;grug_quiver_content;7.3,1.9;1,1;]"
+local COVER = "[fill:8x8:#1f1f1f]"
+local fs100 = quiver_page("archer100", NORMAL_WINDOW, 100)
+has(fs100, QUIVER_CELL, "quiver 100: the cell")
+has(fs100, "label[7.3,2.85;100/500]", "quiver 100: the total beside it")
+lacks(fs100, "item_image[", "quiver 100: no overlay")
+lacks(fs100, COVER, "quiver 100: no cover")
+local fs101 = quiver_page("archer101", NORMAL_WINDOW, 101)
+local cover101 = "image[7.83,2.59;0.47,0.31;" .. COVER
+local count101 = "item_image[7.3,1.9;1,1;grug_gear:arrow 101]"
+has(fs101, cover101, "quiver 101, normal scale: cover over the count corner")
+has(fs101, count101, "quiver 101: the total on the cell")
+local at_list, at_cover, at_count = fs101:find(QUIVER_CELL, 1, true),
+	fs101:find(cover101, 1, true), fs101:find(count101, 1, true)
+check(at_list and at_cover and at_count and at_list < at_cover and at_cover < at_count,
+	"quiver 101: list, then cover, then count (drawn on top, clicks reach the list)")
+local fs500 = quiver_page("archer500", LARGE_WINDOW, 500)
+has(fs500, "image[7.44,2.33;0.86,0.57;" .. COVER, "quiver 500, gui_scaling 2: a larger cover")
+has(fs500, "item_image[7.3,1.9;1,1;grug_gear:arrow 500]", "quiver 500: the total on the cell")
+has(fs500, "label[7.3,2.85;500/500]", "quiver 500: the total beside it")
+local fs_unknown = quiver_page("archer_join", nil, 181)
+has(fs_unknown, "image[7.40,2.25;0.90,0.65;" .. COVER, "quiver 181 without window information: most of the cell")
+has(fs_unknown, "item_image[7.3,1.9;1,1;grug_gear:arrow 181]", "quiver 181: the total on the cell")
+local fs0 = quiver_page("archer0", NORMAL_WINDOW, 0)
+lacks(fs0, "item_image[", "empty quiver: no overlay")
+has(fs0, "grug_inventory_quiver.png", "empty quiver: the ghost")
+grug_inventory.has_quiver = function() return false end
 
 ------------------------------------------------------------------------------
 -- 7. Recipe books.

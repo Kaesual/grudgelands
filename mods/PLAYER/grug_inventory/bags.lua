@@ -79,8 +79,8 @@ end
 -- The arrows live in QUIVER_LIST, QUIVER_STACKS ordinary stacks of up to the
 -- arrow's stack_max (100) each, but the Character page draws only its first
 -- cell. normalize_quiver keeps that cell holding min(total, 100), so clicking
--- it takes up to 100 arrows as one stack, and a label beside it shows the
--- total. Arrows come in by drag, shift-click and pickup. A drag onto the full
+-- it takes up to 100 arrows as one stack; a label beside it shows the total,
+-- and above 100 an overlay on the cell shows it too (pages.lua, Round 41). Arrows come in by drag, shift-click and pickup. A drag onto the full
 -- visible cell cannot be an engine move (the engine would swap the stacks),
 -- so every move INTO the quiver is applied by absorb_into_quiver from the
 -- allow callback, which then refuses the engine's own move. There is no item
