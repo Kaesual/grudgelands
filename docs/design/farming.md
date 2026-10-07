@@ -121,10 +121,13 @@ is the Claim Stone's: inside an active claim there is no natural renewal (wild
 plants, trees); an expired claim renews like any other ground (Round 25 rulings 14
 and 19, `housing.md` §6.4). Other
 player protection is never consulted. Each class keeps its
-own writer's claim exclusions: resource plants the full territory rule
-(settlements, POIs with their collars, start and capital blend envelopes,
-roads, inland water and water banks; shoreline species ignore the bank,
-gathering sources the dry island coast envelopes), trees and shrubs the decoration rule (the planner's vegetation
+own writer's claim exclusions: resource plants the "gathering" rule (the
+static shapes as trees see them — start towns, capitals, a POI's core and
+margin, planned water and coasts, but no anchor blend envelope — plus roads,
+inland water and water banks; shoreline species ignore the bank, gathering
+sources the dry island coast envelopes; user ruling 2026-10-07: the
+envelopes round villages, camps and POIs grow their gatherables like open
+land), trees and shrubs the decoration rule (the planner's vegetation
 exclusions and road corridors; banks allowed), ground cover the same rule with
 the seeded share of a start's or capital's treeless band open (Round 36 W3;
 the band itself is a town and never renews). Cave plants follow the
@@ -137,8 +140,8 @@ writers do. At the planned surface renewal follows the generator's own
 host rule: nothing on an anchor platform, on a land grade other than a
 start's or capital's dry anchor grade, on a sealed river or lake column or in
 a surface cave mouth; the dry anchor grades (the natural skin around starts
-and capitals) regrow grass and trees at their biome's density, but no
-resource plants.
+and capitals) regrow grass, trees and resource plants at their biome's
+density (resource plants since the user ruling of 2026-10-07).
 
 **How much.** Around the spot, the renewal counts present plants of the chosen
 species or class and the eligible open supports in a box whose radius makes

@@ -244,8 +244,16 @@ local function settlement_factory()
 			intent_opcode == 0 and r5_opcode == R24_FILL_OPCODE
 	end
 
-	-- Base eligibility of one voxel as a P8 resource host (ruling 10).  Native
-	-- host rock keeps the pre-Round-24 rule; fill stone is a host of the
+	-- Base eligibility of one voxel as a P8 resource host (ruling 10, widened
+	-- by the user ruling of 2026-10-07: ground anyone may dig carries the
+	-- ordinary distribution).  Native host rock is a host unless a hydrology
+	-- seal (priority 3) or water (priority 6) holds it, or it is the walking
+	-- surface of a path or foundation (opcodes 22 and 16, which P7 leaves as
+	-- stone on a bay platform or a wet grade); below it an anchor's grading
+	-- or platform (4) and a hard foundation (2) are ordinary rock, the
+	-- hard-protected volume above its floor is kept out by the column
+	-- predicate instead.  Stone R5 wrote into native void (terrain fill 27,
+	-- an anchor's grading fill 21, a foundation fill 15) is a host of the
 	-- default:stone tier only.  A voxel P8 already claimed (opcode 24) keeps
 	-- its base eligibility, so the per-cell count does not depend on order.
 	local function r24_resource_host_base(original_cid, final_cid,
@@ -256,16 +264,17 @@ local function settlement_factory()
 			return false
 		end
 		if original_cid == host_cid then
-			return priority ~= 2 and priority ~= 3 and priority ~= 4 and
-				priority ~= 6
+			return priority ~= 3 and priority ~= 6 and r5_opcode ~= 22 and
+				r5_opcode ~= 16
 		end
-		return host_cid == fill_host_cid and r5_opcode == R24_FILL_OPCODE
+		return host_cid == fill_host_cid and (r5_opcode == R24_FILL_OPCODE or
+			r5_opcode == 21 or r5_opcode == 15)
 	end
 
 	-- Round 24 ruling 30: whether a column admits a P8 resource at `y`.
-	-- `column_state` bit 1: the resource is allowed on the column (water class
-	-- and region); bit 2: the column is fixed/protected ground, which stays
-	-- ore-free only inside its protected volume, from `floor_y` upward.
+	-- `column_state` bit 1: the resource is allowed on the column (water
+	-- class); bit 2: the column lies in a hard-protected footprint, which
+	-- stays ore-free only inside its protected volume, from `floor_y` upward.
 	local function r30_resource_column_open(column_state, floor_y, y)
 		if column_state % 2 == 0 then return false end
 		return column_state < 2 or y < floor_y
@@ -1060,7 +1069,7 @@ local function settlement_factory()
 				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(planner_source.overlay_exclusion_at) ~= "function" or
-				type(planner_source.protection_floor_y) ~= "function" or
+				type(planner_source.ore_floor_at) ~= "function" or
 				type(planner_source.protected_floor_at) ~= "function" or
 				type(planner_source.protected_only_floor_at) ~= "function" or
 				type(source) ~= "table" or
@@ -1189,8 +1198,14 @@ local function settlement_factory()
 		-- R5). Content that seeks a shore (P9G and world-content shore rows)
 		-- ignores the bank id. Vegetation sees only the road corridor (nothing
 		-- grows on a road or its side slopes); cave skins see none of them.
+		-- "gathering" (user ruling 2026-10-07) is the natural content's rule
+		-- (P9G sources, world-content plants and their renewal): the static
+		-- shapes as trees see them -- no anchor blend envelope, a POI only
+		-- with its core and margin -- and every overlay kind as the territory
+		-- rule adds them.
 		local function exclusion_reason(x, z, purpose)
-			local reason, id = static_exclusion_reason(x, z, purpose)
+			local reason, id = static_exclusion_reason(x, z,
+				purpose == "gathering" and "vegetation" or purpose)
 			if reason then return reason, id end
 			if purpose == "vegetation" or purpose == "cover" then
 				if planner_source.overlay_exclusion_at(x, z) == "road_corridor" then
@@ -1198,7 +1213,7 @@ local function settlement_factory()
 				end
 				return nil
 			end
-			if purpose ~= nil then return nil end
+			if purpose ~= nil and purpose ~= "gathering" then return nil end
 			local kind = planner_source.overlay_exclusion_at(x, z)
 			if kind == nil then return nil end
 			id = overlay_exclusion_id[kind]
@@ -2892,17 +2907,16 @@ local function settlement_factory()
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
-					-- Only fixed/protected ground matters here, so the overlay
-					-- (water) kinds are not asked.
-					local reason, id = helpers.static_exclusion_reason(x, z)
-					-- The capital ingress corridors are retired (Round 22, D9).
-					local excluded = reason == "fixed_or_protected"
-					-- Bit 2 is the protected exclusion, from the column's protected
-					-- floor upward (Round 24 ruling 30). Bit 1 is filled for each
-					-- resource below from immutable water/race column values.
-					resource_column_state[column] = excluded and 2 or 0
-					resource_protected_floor[column] = excluded and
-						planner_source.protection_floor_y(id, x, z) or 0
+					-- Only a hard-protected volume (a start town or a capital's
+					-- city, exact footprint) keeps resources out, from its floor
+					-- upward: wherever digging is allowed the ordinary
+					-- distribution holds (user ruling 2026-10-07).
+					local floor = planner_source.ore_floor_at(x, z)
+					-- Bit 2 is that protected exclusion (Round 24 ruling 30). Bit 1
+					-- is filled for each resource below from the immutable water
+					-- class of the column.
+					resource_column_state[column] = floor and 2 or 0
+					resource_protected_floor[column] = floor or 0
 				end
 			end
 			-- With no predecessor runs, the live predicate is already cheap;
@@ -2964,7 +2978,11 @@ local function settlement_factory()
 							local column = column_index(x, z)
 							local base = (column - 1) * COLUMN_STRIDE
 							local water_class = plan.column_values[base + 1]
-							local allowed = water_class == 1 or water_class == 2
+							-- Land, planned water and the coastal shelf: every column
+							-- a player may dig (deep ocean and the dragon channel
+							-- are immutable).
+							local allowed = water_class == 1 or water_class == 2 or
+								water_class == 3
 							if allowed then allowed_columns = allowed_columns + 1 end
 							resource_column_state[column] =
 								resource_column_state[column] >= 2 and
@@ -3401,8 +3419,11 @@ local function settlement_factory()
 				-- places at; below the column's protected-only floor the claim
 				-- exclusion does not apply. `dry_island_open`: P9G's view of the
 				-- dragon islands' coast envelopes (nonblocking on dry land).
-				function successor_context.exclusion_at(x, z, y, dry_island_open)
-					local reason, id = helpers.exclusion_reason(x, z)
+				-- `purpose`: nil (the territory rule) or "gathering" (see
+				-- `exclusion_reason`).
+				function successor_context.exclusion_at(x, z, y, dry_island_open,
+						purpose)
+					local reason, id = helpers.exclusion_reason(x, z, purpose)
 					if y ~= nil and reason == "fixed_or_protected" and
 							y < (dry_island_open and
 								(planner_source.protected_only_floor_at(x, z, true) or

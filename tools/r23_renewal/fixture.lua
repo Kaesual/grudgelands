@@ -91,7 +91,8 @@ local planner = {
 	column_values_at = column_values_at,
 	-- A settlement core at x < -60 (every purpose); its anchor-blend envelope
 	-- at x -60 .. -45, z 30 .. 45 answers only the territory rule (nil
-	-- purpose), as the writer's resource rule sees it; a dry island coast
+	-- purpose), which no plant writer asks since the user ruling of
+	-- 2026-10-07 (resources keep the trees' rule); a dry island coast
 	-- envelope at x 65 .. 75, z -20 .. -10 answers territory, vegetation and
 	-- cover (Round 36 W3: the cover purpose differs only in a start's or
 	-- capital's band, which this stand-in has none of).
@@ -316,10 +317,12 @@ local function classes_at(x, z)
 end
 local blend = classes_at(-50, 38)
 out("anchor blend envelope: " .. blend)
-check(blend == "cover:grug_meadows,tree:grug_meadows,shrub:grug_meadows",
-	"anchor-blend envelope: no resource plant, cover and trees still grow")
+-- user ruling 2026-10-07: the envelope is ordinary ground for every plant
+check(blend == classes_at(-40, 38) and blend:find("cover:grug_meadows", 1, true) and
+	not blend:find("^cover:"),
+	"anchor-blend envelope: resource plants, cover and trees grow as outside")
 result = run(-50, 38, "resource")
-check(result == "no_habitat", "anchor-blend envelope: resource renewal refused (" ..
+check(result == "placed", "anchor-blend envelope: resource renews (" ..
 	tostring(result) .. ")")
 result = run(-50, 36, "cover")
 check(result == "placed", "anchor-blend envelope: cover renews (" .. tostring(result) .. ")")

@@ -901,7 +901,9 @@ rewrite records the WP40 model it replaced.
   treated like native stone near the surface: the resource pass counts it as
   a `default:stone` host with the same budget per 16³ cell and the same veins
   (ores stay in `default:stone` only), and the shallow strata above replace
-  it. Fill 41 or more nodes below the column's surface (mountain interiors)
+  it. The stone an anchor's grading or a hard foundation writes into native
+  void (R5 opcodes 21 and 15) is a resource host the same way (user ruling
+  2026-10-07); strata and layers keep to the terrain fill. Fill 41 or more nodes below the column's surface (mountain interiors)
   carries sparse horizontal layers: absolute y plus a smooth per-column
   offset (bilinear on a 48-node lattice, ±5 nodes) selects a 13-node slab;
   a slab of the column's zone holds one layer of 2–4 nodes with probability
@@ -1335,22 +1337,30 @@ code, not by this document.
   The quarter-density floor retains older inputs at depth; T1 Iron keeps its
   former density as a bootstrap exception. Gold peaks at T4 and remains
   useful at T5/T6, matching Goldsmith demand.
-- Natural-resource placement and its accessible-host denominator admit only
-  horizontal classes `land` and zone-owned `planned_water`. Rivers, lakes,
-  marsh channels, cenotes and the landward bay masks therefore retain their
-  underground geology. `coastal_shelf`, `deep_ocean` and
-  `immutable_dragon_channel` admit no natural resource. Eligibility still
-  requires the exact WP43 stratum host at y; water, bed material, routes,
-  dungeons, foreign nodes and protected content are not hosts.
-- **Fixed and protected ground** (every anchor's claim envelope — a capital's
-  protected city, a start town, the square of a POI, village, camp or
-  outpost — and every hard core) hosts no
-  natural resource inside its protected volume: from its placement height −
-  100 upward (Round 24 ruling 30). The placement height is the anchor's
-  fitted surface; where several such
-  shapes hold a column, the lowest floor wins. Below that floor the column
-  takes ores, gems, rock layers and nests like any other ground (the former
-  rule kept these columns ore-free down to y = −700).
+- **Ground anyone may dig carries the ordinary distribution** (user ruling
+  2026-10-07): ores, coal and gems are absent only where digging is
+  forbidden for everyone, never in ground some player may dig.
+- Natural-resource placement and its accessible-host denominator admit the
+  horizontal classes `land`, zone-owned `planned_water` and
+  `coastal_shelf`. Rivers, lakes, marsh channels, cenotes, the landward bay
+  masks and the coastal shelf therefore retain their underground geology;
+  `deep_ocean` and `immutable_dragon_channel` (immutable at every depth)
+  admit no natural resource. Eligibility still requires the exact WP43
+  stratum host at y; water, bed material, hydrology seals, routes,
+  dungeons, foreign nodes and protected content are not hosts. Native rock
+  under an anchor's grading or platform, and the stone a grading or
+  foundation fill writes into native void, is ordinary rock; the walking
+  surface of a path or foundation is no host.
+- **Hard-protected ground** (the exact footprint of a start town or a
+  capital's protected city) hosts no natural resource inside its protected
+  volume: from its placement height − 100 upward (Round 24 ruling 30).
+  Below that floor the column takes ores, gems, rock layers and nests like
+  any other ground. Every other anchor's claim envelope — the square of a
+  POI, village, camp or outpost, open to digging outside its building
+  core — is ordinary resource ground (user ruling 2026-10-07; the former
+  rule kept it resource-free from its anchor's placement height − 100
+  upward). The building cores, roads and the 36 functional outpost and
+  bandit columns stay protected for digging without a resource exception.
 - **Below the floor everything is ordinary ground** (ruling 30 addendum,
   2026-09-29). Where a column's claim exclusion comes only from protected
   shapes (anchor envelopes, hard cores, hard footprints), the writers apply

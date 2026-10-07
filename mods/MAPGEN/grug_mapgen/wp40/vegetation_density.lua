@@ -438,8 +438,8 @@ return function(deps)
 
 	-- Whether a resource source's writer refuses the column by its claim
 	-- exclusions (world_content.lua and r7_p9g.lua through
-	-- r6_settlement.lua `exclusion_reason(x, z)`, the full territory rule):
-	-- any static exclusion, else any overlay kind (road corridor, inland
+	-- r6_settlement.lua `exclusion_reason(x, z, "gathering")`): any static
+	-- exclusion as trees see it, else any overlay kind (road corridor, inland
 	-- water, water bank). A shoreline row ignores the water bank; a P9G row
 	-- ignores a dry island coast envelope on land outside a hard foundation.
 	local function resource_excluded(source, territory_id, overlay, water,
@@ -463,9 +463,11 @@ return function(deps)
 	--    or marker names counted as present), species (weighted placements),
 	--    shore (true for a shoreline row), divisor (tree and shrub: marker
 	--    columns per plant)}.
-	-- Each class keeps its own writer's claim exclusions: resources the full
-	-- territory rule, trees and shrubs the "vegetation" rule, ground cover the
-	-- "cover" rule (road corridors too, water banks not; Round 36 W3: a share
+	-- Each class keeps its own writer's claim exclusions: resources the
+	-- writers' "gathering" rule (the static shapes as trees see them plus
+	-- every overlay kind; user ruling 2026-10-07), trees and shrubs the
+	-- "vegetation" rule, ground cover the "cover" rule (road corridors too,
+	-- water banks not; Round 36 W3: a share
 	-- of a start's or capital's bare band). Cave rows follow the writer's
 	-- "cave" rule. Round 24 ruling 30 addendum (optional deps, all or none):
 	-- `cave_limit` is the writer's own column rule (r6_settlement.lua
@@ -506,7 +508,7 @@ return function(deps)
 		local below_floor, below_floor_p9g = false, false
 		if not cave then
 			overlay = deps.overlay_exclusion_at(x, z)
-			territory_id = select(2, deps.static_exclusion_values_at(x, z))
+			territory_id = select(2, deps.static_exclusion_values_at(x, z, "vegetation"))
 			if territory_id ~= nil and protected_only_floor_at then
 				local floor = protected_only_floor_at(x, z)
 				below_floor = floor ~= nil and y < floor

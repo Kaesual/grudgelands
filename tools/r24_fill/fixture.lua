@@ -54,10 +54,18 @@ local T2 = 50 -- a deeper tier host
 -- native host, unchanged by the old rule
 check(host(STONE, STONE, 0, 0, nil, nil, STONE, STONE), "native stone, no run")
 check(host(STONE, STONE, 0, 0, 5, 27, STONE, STONE), "native stone in terrain fill run")
-for _, priority in ipairs({2, 3, 4, 6}) do
-	check(not host(STONE, STONE, 0, 0, priority, 21, STONE, STONE),
+for _, priority in ipairs({3, 6}) do
+	check(not host(STONE, STONE, 0, 0, priority, 17, STONE, STONE),
 		"predecessor priority " .. priority .. " excludes native stone")
 end
+-- user ruling 2026-10-07: an anchor's grading or platform and a hard
+-- foundation are ordinary rock (the protected volume is the column
+-- predicate's business)
+check(host(STONE, STONE, 0, 0, 4, 21, STONE, STONE), "native stone under a grading")
+check(host(STONE, STONE, 0, 0, 2, 15, STONE, STONE), "native stone under a foundation")
+check(not host(STONE, STONE, 0, 0, 4, 22, STONE, STONE), "a path's walking surface is no host")
+check(not host(STONE, STONE, 0, 0, 2, 16, STONE, STONE),
+	"a foundation's walking surface is no host")
 check(not host(STONE, DIRT, 2, 0, 5, 27, STONE, STONE), "filler over native stone")
 check(host(STONE, COAL, 24, 3, 5, 27, STONE, STONE), "claimed native host keeps its base")
 check(not host(STONE, STONE, 0, 1, 5, 27, STONE, STONE), "occupied cell")
@@ -67,12 +75,15 @@ check(host(AIR, STONE, 0, 0, 5, 27, STONE, STONE), "fill stone is a default:ston
 check(host(AIR, COAL, 24, 3, 5, 27, STONE, STONE), "claimed fill keeps its base")
 check(not host(AIR, STONE, 0, 0, 5, 27, T2, STONE), "fill never hosts a deeper tier")
 check(not host(AIR, STONE, 2, 0, 5, 27, STONE, STONE), "skin stone (opcode 2) is no host")
-check(not host(AIR, STONE, 0, 0, 4, 21, STONE, STONE), "anchor-grade fill is no host")
+check(host(AIR, STONE, 0, 0, 4, 21, STONE, STONE), "anchor-grade fill is a host")
+check(host(AIR, STONE, 0, 0, 2, 15, STONE, STONE), "foundation fill is a host")
+check(not host(AIR, STONE, 0, 0, 4, 21, T2, STONE), "grading fill never hosts a deeper tier")
+check(not host(AIR, STONE, 0, 0, 3, 17, STONE, STONE), "seal stone is no host")
 check(not host(AIR, cid_of("grug_materials:slate"), 2, 0, 5, 27, STONE, STONE),
 	"layer rock is no host")
 check(not host(AIR, AIR, 0, 0, 5, 27, STONE, STONE), "air is no host")
 check(not host(AIR, STONE, 0, 1, 5, 27, STONE, STONE), "reserved fill is no host")
-say("resource-host base rule: 17/17 cases")
+say("resource-host base rule: 23/23 cases")
 
 -------------------------------------------------------------------------------
 -- Synthetic owner: columns with a native top and a planned surface.  R5 has
