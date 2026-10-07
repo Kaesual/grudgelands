@@ -1441,7 +1441,7 @@ blocks the GUI test.
 **Delivered 2026-10-07, not pushed**
 ([completion](docs/planning/round41-plan.md#completion-2026-10-07),
 plan [round41-plan.md](docs/planning/round41-plan.md)); every code lane
-independently reviewed by Opus; 123 portable fixtures on main. Version
+independently reviewed by Opus except the coordinator's one-line lane WW; 123 portable fixtures on main. Version
 0.41.0, the first release in release mode: the production server moves to
 it with a map reset (declaration `map_reset: ["0.40.1"]`).
 

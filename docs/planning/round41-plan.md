@@ -539,7 +539,7 @@ GUI checklist (desktop and web):
 ## 7. Orchestration notes
 
 - Start state: main `7d8b79d9` (Round 40 and the ORE follow-up lane,
-  0.40.1; ORE merged, not pushed). Only the user pushes.
+  0.40.1, pushed on 2026-10-07). Only the user pushes.
 - Process budget: at most 8 Lua processes at once across all lanes and
   reviews (AGENTS.md); engine runs only through `tools/luanti_headless.sh`
   with its isolation; CR's run budget (ruling 8).
@@ -591,7 +591,7 @@ GUI checklist (desktop and web):
 
 Every lane is merged on main; lane D (this section and the status
 documents) follows. Nothing of Round 41 is pushed: origin/main is
-`7d8b79d9` (0.40.1, pushed by the user on 2026-10-07), the production
+`7d8b79d9` (0.40.1, pushed on 2026-10-07), the production
 server runs 0.40.0. Main's first-parent line from the plan (`0172a15b`):
 MOB (`927f7c89`), MAP (`02ce860f`), SC (`782fe25f`), UI (`125aa6b0`), WW
 (`b31a9f78`), CR (`157b391b`), UP (`a3790e65`).
@@ -603,7 +603,8 @@ the quiver cover placed in the wrong formspec unit, fixed by the lane in
 below, one became lane WW); CR MERGE (one Low, a missing sentence break in
 the chat message, fixed by the coordinator in `46728591`); UP MERGE (no
 findings). WW is the coordinator's one-line fix after the user's ruling
-(no lane report). Every code lane ended with a smoke boot (PASS) and a
+(no lane report, no review; main's fixtures and smoke boot after its
+merge cover it). Every other code lane ended with a smoke boot (PASS) and a
 full fixture run (119–122 before its merge); main's tree has **123
 portable fixtures** (119 at the start; new `r41_mob`, `r41_sc`, `r41_cr`,
 `r41_up`; MAP and UI extended `r37_f`, `r37_ix` and `r28_a6_ui`).
@@ -637,9 +638,10 @@ Round end on main: `run_fixtures.sh` 123/123, the smoke boots PASS,
   is cleared before the first tile write and written last; after a render
   or a cache hit, world-map tiles the current quality does not use are
   deleted (`removed N stale world map tiles` in the log; a failed delete
-  is a warning; only the two tile name patterns). `r37_f` section Q (41
-  checks): high → normal removes the 50 extra base and 6 minimap tiles
-  (about 7 MB), normal → high removes nothing, a crash after the first
+  is a warning; only the two tile name patterns). `r37_f` section Q (8
+  checks; the fixture has 41, 33 before): on its virtual world folder
+  high → normal removes the extra base and minimap tiles (8 and 1 there;
+  in a real world 50 and 6, about 7 MB), normal → high removes nothing, a crash after the first
   tile then the old quality re-renders. Engine (seed 42): a normal render
   9.67 s (Round 27: about 10 s); a second boot with five planted stale
   tiles removed exactly those five.
@@ -812,8 +814,10 @@ holds the full tables):
   like the book; existing fixtures extended instead of a `tools/r41_ui`;
   the probe's catalogue assumptions refreshed (five stale failures on the
   base).
-- **CR:** the cause is runtime state, not generation alone: a guard
-  barrier in a layer saved before its chunk existed. Of the report's
+- **CR:** the cause is most likely runtime state, not generation alone: a
+  guard barrier in a layer saved before its chunk existed (reproduced with
+  placed barriers; not proven without the production map, which could
+  also hold blocks of an older game version). Of the report's
   candidates (unverified there), (22,−1,−32), entirely on hard-protected
   ground, is the likely one; (24,−1,−32) generates normally. With the production seed in `quick`, seed
   2688922133946307 drops out of `quick` (it stays in `full`).
@@ -875,7 +879,9 @@ for what others see. Say what looks wrong.
    waypoints; its home claim is gone and the Housing Steward hands out a
    new Claim Stone; a new character starts normally. After the push the
    platform does the same with the production server.
-9. **Mapgen failure:** CR's probe mod (`tools/r41_cr`) forces one; the
+9. **Mapgen failure:** CR's probe mod (`tools/r41_cr/engine.sh` with
+   `plan_after_fix.txt`, which sets `continue_after_severe`; without it the
+   probe stops the server at the first report on purpose) forces one; the
    server keeps running, the log shows one `[GRUG-SEVERE]` line with the
    location, every player sees the red chat line once and the chunk shows
    plain engine terrain. On the production server after its reset, the

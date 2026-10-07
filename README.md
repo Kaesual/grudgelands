@@ -132,8 +132,8 @@ October 2026 review of the code and the documentation found, from
 creatures that keep to the player holding their attention when several
 players fight them to mounts that no longer throw you off when a buff
 runs out, and Round 36 brought each faction's main story from level 41 to
-60, with its finale against Isquarre at the rift. Worlds made before
-0.41.0 need a map reset, or start a new world.
+60, with its finale against Isquarre at the rift. A 0.40 world moves
+to 0.41.0 with a map reset; older worlds start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the

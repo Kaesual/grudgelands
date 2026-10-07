@@ -5,11 +5,12 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
 - **Round 41 "Playtest fixes, the production crash and the upgrade
   contract" complete, not pushed** (2026-10-07, version 0.41.0,
   [plan, completion and GUI checklist](planning/round41-plan.md#completion-2026-10-07)).
-  Started from main `7d8b79d9` (0.40.1, pushed by the user on 2026-10-07);
+  Started from main `7d8b79d9` (0.40.1, pushed on 2026-10-07);
   every lane is merged on main (last UP, `a3790e65`, then this
   documentation lane D), each code lane independently reviewed by Opus
   (MERGE, SC MERGE AFTER FIXES; every fix made before the merge) and ended
-  with a smoke boot; main has 123 portable fixtures. Round end on main:
+  with a smoke boot, except the coordinator's one-line lane WW (no review;
+  covered by main's fixtures and smoke boot after its merge); main has 123 portable fixtures. Round end on main:
   fixtures 123/123, smoke boots PASS, `check_upgrade.py` PASS. Seed fleet
   `full` 304/304.
   **First release under the upgrade contract** (release mode, AGENTS.md):
@@ -26,9 +27,10 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
     right-click while the bow is drawn fires and draws again, the quiver
     shows its true total (SC); world-map tiles of the other quality are
     removed and a render crash leaves no mixed tiles (MAP).
-  - **The production crash (CR):** a water-guard barrier in a layer saved
-    before its chunk was generated stopped the server in a loop; the
-    writer now reads it as air, and any mapgen failure keeps the engine's
+  - **The production crash (CR):** most likely a water-guard barrier in a
+    layer saved before its chunk was generated stopped the server in a loop
+    (reproduced with placed barriers; not proven without the production
+    map); the writer now reads it as air, and any mapgen failure keeps the engine's
     terrain for that chunk and is reported as `[GRUG-SEVERE]` in the log
     and a red chat line instead of stopping the server.
   - **The upgrade contract (UP):** `tools/web_data/upgrade.json` and
@@ -49,7 +51,7 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   2026-10-07). World generation changed: **new world** for GUI item 7.
   Fixtures 119/119, seed fleet quick 100/100, smoke boot of main, engine
   probe `tools/r40_ore` PASS; independent review (Opus) merge after
-  fixes, fixed. Pushed by the user on 2026-10-07 (origin/main
+  fixes, fixed. Pushed on 2026-10-07 (origin/main
   `7d8b79d9`); the production server stays on 0.40.0 until Round 41.
 
 - **Round 40 "Combat feel" complete and pushed**
@@ -732,7 +734,7 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
 - **Latest game:** main carries Round 41 (0.41.0, `a3790e65` and lane D;
   not pushed) on top of Round 40 (pushed 2026-10-06) and its follow-up
-  0.40.1 (pushed by the user on 2026-10-07, origin/main `7d8b79d9`),
+  0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
   Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
   2026-10-06), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 29
   was tested by the user on a fresh world (2026-10-02), the user's Round 33
