@@ -840,9 +840,10 @@ GUI test.
 
 ### GUI playtest checklist
 
-Desktop and the web build, both Luanti 5.17.0, on the synced game. No
-world generation changed: an existing world works; the last check of item
-1 wants a new character. Use a second client for what others see. Say what
+Desktop and the web build, both Luanti 5.17.0, on the synced game. Items
+1–6 change no world generation: an existing world works; the last check of
+item 1 wants a new character. Item 7 (the follow-up lane ORE) needs a new
+world. Use a second client for what others see. Say what
 looks wrong.
 
 1. **Cooldown overlay** (accepted provisionally; this test decides): cast
@@ -899,3 +900,38 @@ looks wrong.
    gust, dive, enrage and whelps, the return warning near the lair), the
    Kraken's drag, spider webs, poison, pounces, ambushes, the ooze and
    treant auras, Oerkki and Wisp blinks, projectile impacts.
+7. **Ore where you dig** (follow-up lane ORE, needs a **new world**): dig
+   into the ground just outside the start town's border and round a
+   village, camp or point of interest: coal, copper, tin, iron, quartz and
+   citrine as often as in open land, from a few nodes under the surface
+   down; inside the start town nothing can be dug, as before; the shallow
+   sea floor along a coast holds ore too; wild gatherables (potatoes,
+   corn, carrots, onions …) grow round villages and camps like trees.
+
+### Follow-up lanes
+
+- **ORE** (2026-10-07, merged `3251158c`, version 0.40.1; the user's report
+  from the realm server: no coal or ore right outside the human start
+  town). User rulings of 2026-10-07: ground anyone may dig carries the
+  ordinary distribution of ores, coal and gems; the ore exclusion covers
+  only ground where digging is forbidden for everyone; the coastal shelf
+  takes resources; gatherable plants keep the trees' claim rule. Two
+  causes: the P8 resource pass kept every anchor's claim envelope (the
+  squares round villages, camps and POIs; for starts and capitals their
+  own outline) resource-free from the anchor's placement height − 100
+  upward, and its host rule took no rock in an anchor's grading or
+  foundation, so every graded collar was ore-free from y = −37 to its
+  surface (the start town's ring). Now only the hard-protected footprint
+  of a start town or capital keeps resources out
+  (`planner_source.ore_floor_at`), graded rock and grading fill host ore
+  (not a walking surface), and P9G, world-content plants and their
+  renewal use the new exclusion purpose "gathering" (the trees' static
+  shapes plus roads, inland water and banks). Checks: fixtures 119/119
+  (`r24_protection_depth` compares the floor with the hard protection
+  column by column, `r24_fill`, `r23_renewal`), seed fleet quick 100/100,
+  smoke boot of main, and the engine probe `tools/r40_ore` on seed
+  5626331914247410985: the town pad above its floor 0 resources, the
+  graded ring 0.0576 per stone against 0.0565 in open land, a village
+  envelope 0.0573 against 0.0570. Independent review (Opus): merge after
+  fixes (no ore in a walking surface; a stale farming.md sentence), both
+  fixed. Implemented by the coordinator.

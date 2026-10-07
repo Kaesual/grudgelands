@@ -14,7 +14,9 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 
 **Current state:** Round 40 "Combat feel" is complete and pushed with
 every earlier round ([plan](docs/planning/round40-plan.md); origin/main
-`94605188`, 2026-10-06; pushed by the coordinator on the user's request). Rounds 25–35 count as
+`94605188`, 2026-10-06; pushed by the coordinator on the user's request);
+its follow-up lane ORE (ore wherever digging is allowed, 0.40.1) is merged
+on main, not pushed. Rounds 25–35 count as
 GUI-accepted (the user, 2026-10-05), Round 39 too (2026-10-06); the GUI
 tests of Rounds 36–38 and 40 are open. Details: [STATUS](docs/STATUS.md).
 

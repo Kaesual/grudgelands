@@ -9,6 +9,22 @@ some of its changes are part of world generation.
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.40.1 — Round 40 fix, "Ore where you dig" (2026-10-07)
+
+Ore, coal and gems now lie everywhere you may dig. **New world** needed:
+the change is part of world generation.
+
+- The ground right around towns, villages, camps and points of interest
+  used to hold no ore, coal or gems down to about 40 below sea level, and
+  the squares round villages, camps and points of interest even to 100
+  below their buildings. Now only the protected towns themselves (start
+  towns and capitals, which nobody may dig) keep ore out; everywhere else
+  it is as common as in the open land.
+- The shallow sea floor along the coasts holds ore too.
+- Wild gatherable plants (potatoes, corn, carrots, onions, berries and the
+  like) grow round villages, camps and points of interest like trees
+  already did, and regrow there.
+
 ## 0.40.0 — Round 40, "Combat feel" (2026-10-06)
 
 Combat reads better: cooldowns on the hotbar, poses for the characters,

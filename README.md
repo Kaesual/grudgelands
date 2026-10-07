@@ -104,10 +104,13 @@ stats, and the sound controls. The short version:
 
 ## Current state
 
-*Last updated: 2026-10-06. The current version is the newest entry of the
+*Last updated: 2026-10-07. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 40, "Combat feel": cooldowns show on
+Since its fix 0.40.1, ore, coal and gems lie wherever you may dig, right
+up to the edge of the protected towns, and wild gatherables grow round
+villages and camps (new world). The latest finished round is Round 40,
+"Combat feel": cooldowns show on
 the hotbar as a shade that clears like a clock hand, characters strike
 poses for their spells, blows and blocks and look up and down, Charge is a
 real dash that hops over steps and holes, and skills, bosses and creatures

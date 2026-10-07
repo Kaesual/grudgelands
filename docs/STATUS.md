@@ -1,6 +1,18 @@
 # Project status
 
-Updated 2026-10-06. This is the delivery pointer, not another game specification.
+Updated 2026-10-07. This is the delivery pointer, not another game specification.
+
+- **Round 40 follow-up lane ORE merged, not pushed** (2026-10-07, main
+  `3251158c`, version 0.40.1,
+  [plan, follow-up lanes](planning/round40-plan.md#follow-up-lanes)):
+  ores, coal and gems wherever digging is allowed (only the start towns'
+  and capitals' protected footprints keep them out; graded rock round
+  every anchor and the coastal shelf host them), and gatherable plants
+  grow round villages, camps and POIs like trees (user rulings
+  2026-10-07). World generation changed: **new world** for GUI item 7.
+  Fixtures 119/119, seed fleet quick 100/100, smoke boot of main, engine
+  probe `tools/r40_ore` PASS; independent review (Opus) merge after
+  fixes, fixed. Not yet pushed (only the user pushes).
 
 - **Round 40 "Combat feel" complete and pushed**
   (2026-10-06, [plan, completion and GUI checklist](planning/round40-plan.md#completion-2026-10-06)).
