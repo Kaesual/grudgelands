@@ -554,7 +554,7 @@ local function king_tick(self, dtime, race, boss_id)
 	-- him there -- idle only, it waits out a fight, a cast and the evade run --
 	-- walks him back after a fight or a leash reset and turns him to the
 	-- socket's authored facing.
-	if self._grug_post_x then
+	if self._grug_post_x and not self.temp.grug_royal_cast then
 		grug_mobs.start_post_tick(self, dtime)
 	end
 	local cast = self.temp.grug_royal_cast
