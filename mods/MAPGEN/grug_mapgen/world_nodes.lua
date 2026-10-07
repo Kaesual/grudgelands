@@ -34,7 +34,9 @@ return function(engine, directory, nodes, gathering)
   wield_image="default_kelp.png^[colorize:#4F8A52:45",
   paramtype="light",
   paramtype2="leveled",
-  groups={crumbly=3,sand=1,not_in_creative_inventory=1},
+  -- No `sand` group: the bed is no sand item (it drops default:sand), and
+  -- group:sand recipes (glass) would offer it as an alternative (Round 41).
+  groups={crumbly=3,not_in_creative_inventory=1},
   sounds=default.node_sound_sand_defaults(),
   selection_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,-0.3,0.5}},
   drop="default:sand",
