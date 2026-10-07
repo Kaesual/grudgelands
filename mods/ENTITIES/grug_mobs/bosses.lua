@@ -549,6 +549,14 @@ local function king_tick(self, dtime, race, boss_id)
 	else
 		self.temp.grug_royal_reset = nil
 	end
+	-- The seat (Round 41 ruling 2): start_npcs.lua gives a king and a General
+	-- the post fields of his throne socket, so the post guard's idle tick holds
+	-- him there -- idle only, it waits out a fight, a cast and the evade run --
+	-- walks him back after a fight or a leash reset and turns him to the
+	-- socket's authored facing.
+	if self._grug_post_x then
+		grug_mobs.start_post_tick(self, dtime)
+	end
 	local cast = self.temp.grug_royal_cast
 	if cast then
 		self:set_velocity(0)
@@ -594,6 +602,10 @@ local function king_def(race, row)
 		walk_velocity = 1.2, run_velocity = 4.6,
 		jump = true, jump_height = 4, stepheight = 1.1, fear_height = 4,
 		view_range = 18, owner = "",
+		-- A king or General holds his seat (Round 41 ruling 2): no random
+		-- turns, and no random walks either (`_grug_no_wander`, published on
+		-- the prototype below); king_tick walks him back after a fight.
+		randomly_turn = false,
 		visual = "mesh", mesh = "character.b3d",
 		-- The definition fallback of a build without grug_visuals; with it, a
 		-- king wears his people's royal tabard and crown over his one fixed
@@ -744,6 +756,9 @@ for race, row in pairs(RACES) do
 	local race_id, race_row = race, row
 	grug_mobs.register_mob("grug_mobs:king_" .. race_id,
 		king_def(race_id, race_row))
+	-- mobs_redo copies a field whitelist; its do_states reads this from the
+	-- prototype (GRUG PATCH, Round 41 MOB): no random walk from the seat.
+	core.registered_entities["grug_mobs:king_" .. race_id]._grug_no_wander = true
 	local guard = grug_mobs.guard_definition(row.faction,
 		grug_mobs.names.required("royal_guard_" .. race_id), "character.png")
 	local base_tick = guard.do_custom
@@ -808,6 +823,7 @@ for faction, race in pairs(GENERALS) do
 	end
 	grug_mobs.register_mob(name, general)
 	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)
+	core.registered_entities[name]._grug_no_wander = true -- as a king's
 
 	local bodyguard = garrison.bodyguard_entity(faction_id)
 	local guard = grug_mobs.guard_definition(faction_id,
