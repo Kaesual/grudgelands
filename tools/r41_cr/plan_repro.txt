@@ -1,0 +1,13 @@
+# Run 1 (reproduction): the report's two nearest candidate chunks, each after
+# the chunk above it, as the production world had that layer generated first.
+# The census reads the candidate's top layer (y -33), which the chunk above
+# already wrote when it was generated.
+emerge 1760 0 -2560
+wait 5
+census 1728 -33 -2592 1807 -33 -2513
+emerge 1760 -80 -2560
+emerge 1920 0 -2560
+wait 5
+census 1888 -33 -2592 1967 -33 -2513
+emerge 1920 -80 -2560
+shutdown
