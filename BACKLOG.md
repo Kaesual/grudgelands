@@ -21,9 +21,22 @@ WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 40 "Combat feel"](docs/planning/round40-plan.md#completion-2026-10-06)
-  complete and pushed** (2026-10-06, `bd52bbf4` and lane D; no
-  new world needed; GUI test open): the cooldown overlay on the hotbar
+  [Round 41 "Playtest fixes, the production crash and the upgrade contract"](docs/planning/round41-plan.md#completion-2026-10-07)
+  complete, not pushed** (2026-10-07, `a3790e65` and lane D, version
+  0.41.0; the production server moves to it with a map reset; GUI test
+  open): release mode and the hosting platform's
+  [upgrade contract](docs/technical/upgrade-contract.md) with its map
+  reset; the production crash loop fixed and mapgen failures reported as
+  `[GRUG-SEVERE]` instead of stopping the server; the Round 40 playtest
+  fixes (walk animation, kings and Generals at their seat, the recipe
+  book's Close and multi-item slots, the bow's missed release, the quiver
+  total, stale map tiles, the waterweed bed)
+  ([Round 41](#round-41--playtest-fixes-the-production-crash-and-the-upgrade-contract),
+  [carry-overs](#round-41-carry-overs)).
+- [Round 40 "Combat feel"](docs/planning/round40-plan.md#completion-2026-10-06)
+  (2026-10-06, `bd52bbf4` and lane D, pushed; its follow-up 0.40.1, ore
+  wherever digging is allowed, pushed 2026-10-07; no new world needed;
+  GUI test open): the cooldown overlay on the hotbar
   instead of the wear bar, poses and the head look, Charge as a dash,
   particle effects for player skills, bosses and mob specials with
   `grug_particle_scale` ([Round 40](#round-40--combat-feel),
@@ -74,7 +87,7 @@ example E5) are cited below.
   [carry-overs](#round-36-carry-overs)).
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user,
   2026-10-05, [Round 37 plan](docs/planning/round37-plan.md) §2.3.5),
-  Round 39 too (2026-10-06); Rounds 36, 37, 38 and 40 are open
+  Round 39 too (2026-10-06); Rounds 36, 37, 38, 40 and 41 are open
   ([project status](docs/STATUS.md)).
 - [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
   (2026-10-05, pushed 2026-10-05; its first GUI findings fed Round 36): the user's
@@ -1326,8 +1339,8 @@ from the reviews (backlog notes, no severity); none blocks the GUI test.
 - **The offhand is stored but not drawn** in game: the user wants it on
   the character later; the appearance format already carries it.
 - **An unregistered item in a hand slot** would store an empty `image`
-  (`grug_visuals.hand_image` finds no definition); fresh-server mode rules
-  such an item out.
+  (`grug_visuals.hand_image` finds no definition); release mode rules such
+  an item out (a removed item needs a new server).
 - **Admin `/faction`** updates the stored appearance only at the
   character's next apply.
 - **The grammar's `max_depth = 4`** is exactly the measured depth of
@@ -1422,6 +1435,70 @@ blocks the GUI test.
 - **The probe** (`tools/r40_probe`, tools only) switches its carrier's
   segments up to one server step late (corrected by an interpolated
   `move_to`); the shipped dash is `grug_abilities/charge.lua`.
+
+### Round 41 — playtest fixes, the production crash and the upgrade contract
+
+**Delivered 2026-10-07, not pushed**
+([completion](docs/planning/round41-plan.md#completion-2026-10-07),
+plan [round41-plan.md](docs/planning/round41-plan.md)); every code lane
+independently reviewed by Opus; 123 portable fixtures on main. Version
+0.41.0, the first release in release mode: the production server moves to
+it with a map reset (declaration `map_reset: ["0.40.1"]`).
+
+- **Release mode and the upgrade contract** (UP): AGENTS.md "Release
+  mode", [upgrade-contract.md](docs/technical/upgrade-contract.md),
+  `tools/web_data/upgrade.json` with `tools/check_upgrade.py`, the map
+  reset through `grug_reset_world`, unknown quest ids dropped.
+- **The production crash** (CR): the writer reads the water barrier as
+  air; a mapgen failure keeps the engine's terrain and is reported through
+  `grug_core.severe` ([luanti-lua.md](docs/technical/luanti-lua.md)).
+- **Playtest fixes:** the walk animation and kings and Generals at their
+  seat (MOB, [world.md](docs/design/world.md), [pvp.md](docs/design/pvp.md)),
+  stale world-map tiles (MAP, [world_map.md](docs/design/world_map.md#map-quality-and-relief)),
+  the bow's missed release and the quiver total (SC,
+  [classes.md](docs/design/classes.md#cancellation-and-native-client-limits)),
+  the recipe book's Close and multi-item slots (UI,
+  [professions.md](docs/design/professions.md#12-recipe-books-are-ui-revised-2026-09-18)),
+  the waterweed bed out of `group:sand` (WW).
+
+### Round 41 carry-overs
+
+**Noted 2026-10-07** ([completion](docs/planning/round41-plan.md#completion-2026-10-07)),
+the reviews' backlog notes (theoretical, no severity); none blocks the GUI
+test or the migration.
+
+- **The rift boss** (`walk_chance = 0`) may hop while chasing (mobs_redo's
+  `do_jump` reads it as a jumping mob); unverified in the engine, a
+  Round 42 candidate.
+- **Post and seat stall time** carries across a fight, so time stalled
+  before it counts toward the 90 s snap after it (the snap still needs no
+  player within 48 nodes).
+- **`wielded_now`** (`grug_abilities/init.lua`) drops an in-place edit by a
+  node `on_rightclick` that returns the passed stack; no such node exists
+  today.
+- **The quiver cover** assumes the default font size (16); a larger user
+  font could show part of the engine's "100".
+- **The bow's second cause** (round41-plan §8, a lost release snapshot on a
+  lossy link) stays open; the plan's three questions tell it apart.
+- **A recipe book session survives a form that replaced it** (the death
+  screen, another mod's form; pre-existing); a later discovery refresh can
+  reopen the book.
+- **A repair form stays open without a session** after walking out of
+  range and pressing Repair; its Close then only closes.
+- **Two items with the same label share one icon** in a multi-item slot
+  (the alphabetically first); if only the other has a recipe, the icon is
+  not clickable.
+- **Group members hidden from the creative inventory** still show as
+  icons in multi-item slots.
+- **`check_upgrade.py`** accepts a new entry below the pushed version
+  together with a bump; a later rule: a new entry must exceed the pushed
+  version.
+- **`tools/web_data/README.md`** does not mention `upgrade.json` (the docs
+  index and upgrade-contract.md do).
+- **The late-failure light restore** in the mapgen degrade path has no
+  test (the portable test checks content and param2).
+- **A systematic mapgen failure** would send one red chat line per chunk
+  to every player; a cap would need the user's call.
 
 ### Audit 2026-10 open questions
 
@@ -1760,8 +1837,9 @@ rigid rule that forces hour-long tests):
 Evidence boundary: [R8](docs/research/wp40-simple-map-r8-contract.md) and
 [WP40 completion](docs/research/wp40-completion.md) are historical owner texts,
 superseded for these checks by Round 22 D1/D5 and the decisions above. This is
-a development-WP completion, not a public release. Only the user's explicit
-announcement ends fresh-server mode. Plain Lua 5.1 compatibility of the code
+a development-WP completion, not a public release. Fresh-server mode ended
+with 0.41.0 (the user's announcement, 2026-10-07; release mode in AGENTS.md).
+Plain Lua 5.1 compatibility of the code
 stays a hard rule throughout development; only PUC runtime testing is
 optional.
 

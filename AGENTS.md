@@ -12,13 +12,15 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 40 "Combat feel" is complete and pushed with
-every earlier round ([plan](docs/planning/round40-plan.md); origin/main
-`94605188`, 2026-10-06; pushed by the coordinator on the user's request);
-its follow-up lane ORE (ore wherever digging is allowed, 0.40.1) is merged
-on main, not pushed. Rounds 25–35 count as
-GUI-accepted (the user, 2026-10-05), Round 39 too (2026-10-06); the GUI
-tests of Rounds 36–38 and 40 are open. Details: [STATUS](docs/STATUS.md).
+**Current state:** Round 41 (playtest fixes, the production crash, the
+upgrade contract; 0.41.0, the first release in release mode) is complete
+on main, not pushed ([plan](docs/planning/round41-plan.md)); after the
+push the platform migrates the production server with a map reset.
+Everything up to 0.40.1 is pushed (origin/main `7d8b79d9`, 2026-10-07).
+Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
+(2026-10-06); the GUI tests of Rounds 36–38, 40 and 41 are open. Round 42
+(mob navigation) waits for the user's "go". Details:
+[STATUS](docs/STATUS.md).
 
 ## Language rules
 

@@ -4,12 +4,61 @@ What changed in the game, newest first, one entry per development round.
 The game shows its version on Help → About; versions count
 `0.<round>.<patch>` and start with Round 37 (earlier rounds had none). An
 entry that says **new world** needs a world created on that round or later:
-some of its changes are part of world generation.
+some of its changes are part of world generation. From 0.41.0 on, worlds
+are kept across versions: an entry that says **map reset** regenerates an
+existing world's map from its seed while the characters stay
+([upgrade contract](docs/technical/upgrade-contract.md)).
 
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
 ## 0.41.0 — Round 41 (2026-10-07)
+
+Fixes from the Round 40 playtest, the end of a crash that kept stopping
+the hosted server, and worlds that are kept across updates from now on.
+**Map reset** needed: an existing world's map is generated anew;
+characters keep everything but their position and home claim.
+
+- Worlds are kept across updates from this version on. Each new version
+  says whether an existing world simply plays on, needs a map reset or
+  needs a new server. In a map reset the map is generated again from the
+  same seed; each existing character waits a moment when joining, then
+  arrives at its race's start town and keeps its level, equipment,
+  inventory, money, quests, achievements, professions, mounts and
+  waypoints. A home claim goes with the old map: the Housing Steward hands
+  out a new Claim Stone.
+- The server stopped every time a player came near one stretch of
+  ungenerated ground: water flowing in a cave nearby had left a hidden
+  blocker the world generator refused. That ground now generates
+  normally. If generating a piece of land ever fails again, the server
+  keeps running: that piece gets plain terrain without the game's
+  finishing touches, and every player sees a red chat message so the
+  server owner can report it.
+- Creatures that set off walking (guards back to their post, villagers,
+  camp creatures) move their legs at once instead of gliding; royal
+  guards and bodyguards following their leader do too, also right after
+  being hit.
+- The kings and both Generals stay at their seat, facing the hall door or
+  the keep entrance, and walk back to it after a fight.
+- The recipe book's Close returns to the station you opened it from (a
+  furnace, a bench) instead of the inventory, and so does Close on the
+  station's Repair equipment form. If you walked away or the station is
+  gone, Close opens the inventory's crafting page; Esc still closes
+  everything.
+- A recipe slot that takes one of several ingredients (any wood, any
+  stone, Corn or Potato) shows them as small icons: up to four, or three
+  and "+N" for more. Click an icon whose recipe you know to open it; every
+  icon's tooltip lists all ingredients the slot takes. The waterweed bed
+  no longer shows up as sand in the glass recipe.
+- Bow: pressing right-click again while an arrow is drawn fires that
+  arrow at once, and holding on draws the next one; a very quick tap fires
+  only the drawn arrow. This fixes a bow that stayed drawn after a quick
+  release and re-press.
+- The quiver slot shows the true number of arrows above 100 (for example
+  181); taking from it still takes at most 100.
+- After a change of the map quality setting, the world-map pictures of
+  the old quality are deleted from the world folder, and a server stopped
+  while drawing the map draws it again at its next start.
 
 ## 0.40.1 — Round 40 fix, "Ore where you dig" (2026-10-07)
 

@@ -6,7 +6,8 @@ checked at the cited lines) and the user's answers of the same day;
 revised after an independent Opus review (verdict "ready after fixes",
 every finding checked at the cited lines); extended the same day by the
 production mapgen crash (lane CR) and the hosting platform's upgrade
-contract (lane UP). Status: **draft, waiting for the user's "go"**.
+contract (lane UP). Status: **complete** (2026-10-07,
+[completion](#completion-2026-10-07)); not pushed.
 
 The round ships as **0.41.0**, the first release under the upgrade contract;
 after it the user's production server is migrated to it with a map reset
@@ -569,7 +570,8 @@ GUI checklist (desktop and web):
 - After the round: the user pushes 0.41.0; the platform migrates the
   production server with a map reset (ruling 9). Nothing in this round
   touches that server.
-- Decided during the round: nothing; every ruling is in §2.
+- Decided during the round: the CR checkpoint, the waterweed lane WW and
+  the multi-item tooltip ([completion](#decisions-during-the-round)).
 
 ## 8. Open questions and notes for the user
 
@@ -582,4 +584,297 @@ GUI checklist (desktop and web):
 - **Waterweed in `group:sand`:** the read-only probe counted
   `grug_mapgen:freshwater_waterweed` among the glass recipe's sand. Where
   the group comes from was not traced. A candidate for a later fix lane or
-  a BACKLOG note.
+  a BACKLOG note. **Fixed in this round** (lane WW, the user's call): the
+  bed's own definition carried `sand = 1`.
+
+## Completion (2026-10-07)
+
+Every lane is merged on main; lane D (this section and the status
+documents) follows. Nothing of Round 41 is pushed: origin/main is
+`7d8b79d9` (0.40.1, pushed by the user on 2026-10-07), the production
+server runs 0.40.0. Main's first-parent line from the plan (`0172a15b`):
+MOB (`927f7c89`), MAP (`02ce860f`), SC (`782fe25f`), UI (`125aa6b0`), WW
+(`b31a9f78`), CR (`157b391b`), UP (`a3790e65`).
+
+Reviews, each by an independent Opus: MOB MERGE (one Low, fixed by the
+coordinator in `8e8ac582`); MAP MERGE; SC MERGE AFTER FIXES (one Medium,
+the quiver cover placed in the wrong formspec unit, fixed by the lane in
+`80f90fa0`); UI MERGE (no findings; two notes for the user, one ruled
+below, one became lane WW); CR MERGE (one Low, a missing sentence break in
+the chat message, fixed by the coordinator in `46728591`); UP MERGE (no
+findings). WW is the coordinator's one-line fix after the user's ruling
+(no lane report). Every code lane ended with a smoke boot (PASS) and a
+full fixture run (119–122 before its merge); main's tree has **123
+portable fixtures** (119 at the start; new `r41_mob`, `r41_sc`, `r41_cr`,
+`r41_up`; MAP and UI extended `r37_f`, `r37_ix` and `r28_a6_ui`).
+
+Round end on main: `run_fixtures.sh` 123/123, the smoke boots PASS,
+`check_upgrade.py` PASS. Seed fleet `full`
+(after CR's world-generation change): 304 of 304 seeds build, 0 failed
+(18 min 16 s).
+
+### Shipped, by lane
+
+- **MOB walk animation and stationary leaders** (`927f7c89`;
+  [world.md](../design/world.md), [pvp.md](../design/pvp.md)):
+  `grug_mobs.walk_animation` sets the clip `do_states` would pick (fly for
+  a flier off the ground or in water, else walk) whenever `walk_toward`
+  starts a walk, no write when it already plays; the royal follow keeps it
+  on every active step and, after a hit, walks on toward the leader at
+  once (`stop_attack` also zeroed the velocity). Kings and Generals get a
+  seat (`_grug_post_x/_z/_yaw` from the throne or General socket's
+  authored facing) and the post guard's idle tick: back to the seat beyond
+  2 nodes after a fight or a leash reset, then face the hall door or keep
+  entrance; no random walk (`_grug_no_wander`, a GRUG PATCH in mobs_redo's
+  `do_states`, VENDOR.md "Round 41 MOB") and no random turn. Leash, evade,
+  give-up, boss reset and respawn unchanged. Fixture `r41_mob` 87 checks
+  (each change removed fails its section, mutation-checked by the review).
+  Numbers (LuaJIT `-joff`, stubbed engine): a nudge on a walking mob about
+  98 → 117 ns and 0 engine writes both; from standing 0 → 1 write (the
+  fix).
+- **MAP stale tiles and a crash-safe key** (`02ce860f`;
+  [world_map.md](../design/world_map.md#map-quality-and-relief)): the key
+  is cleared before the first tile write and written last; after a render
+  or a cache hit, world-map tiles the current quality does not use are
+  deleted (`removed N stale world map tiles` in the log; a failed delete
+  is a warning; only the two tile name patterns). `r37_f` section Q (41
+  checks): high → normal removes the 50 extra base and 6 minimap tiles
+  (about 7 MB), normal → high removes nothing, a crash after the first
+  tile then the old quality re-renders. Engine (seed 42): a normal render
+  9.67 s (Round 27: about 10 s); a second boot with five planted stale
+  tiles removed exactly those five.
+- **SC bow and quiver** (`782fe25f`;
+  [classes.md](../design/classes.md#cancellation-and-native-client-limits),
+  [inventory_equipment.md](../design/inventory_equipment.md)): a second
+  native call during a live draw (an object or empty-air press, never a
+  node repeat) fires the drawn arrow with its draw time and starts a new
+  draw; released within 0.2 s (`RENEW_GRACE_US`, measured to the last step
+  that saw the button down) it is cancelled silently with no arrow used;
+  a tap from rest unchanged. Its probe found that the engine wrote a skill
+  item's pre-call stack back into the wield slot and undid a draw started
+  in a native call; `wielded_now` returns the stack as it is after the
+  call. The quiver slot shows the true total above 100 as an
+  `item_image` over the list with a small `[fill` cover over the engine's
+  count, sized from the window information in legacy formspec units
+  (upstream-workarounds §4); taking still takes one stack of 100. Fixtures
+  `r41_sc` 35 checks, `r28_a6_ui` 197 (the cover checked in pixels at
+  three windows), probe `pt_fixes/lane_a` 410/410. No hot path changed.
+- **UI recipe book** (`125aa6b0`;
+  [professions.md §1.2](../design/professions.md#12-recipe-books-are-ui-revised-2026-09-18)):
+  Close of a book opened from a station and Close of its Repair form
+  return to that station (`grug_jobs.close_to_origin`;
+  `workspaces.open(pos, player, id)` reports success and now also checks
+  the expected station id); dug, replaced, more than 8 nodes away,
+  protected or dead falls back to the crafting page; Esc closes everything.
+  The origin survives ingredient navigation, Back and the discovery
+  refresh. Multi-item slots draw 2, 3, 4 or three icons and "+N" inside the
+  0.82 cell, each real-item icon clickable when its recipe is known, every
+  icon with the complete ingredient list; group members cached per token.
+  Fixtures `r37_ix` F41 (49 new checks, the real `ui.lua` and repair
+  providers) and `r28_a6_ui` section 9 (51); the probe `pt_fixes/lane_d`
+  51/0 with 1,708 book routes identical to the base outside multi-item
+  slots; 6,792 cells, 1,550 small icons (909 clickable).
+- **WW waterweed** (`b31a9f78`): the waterweed bed
+  (`grug_mapgen:freshwater_waterweed`) no longer carries `group:sand`, so
+  the glass recipe's sand slot no longer offers it (plan §8, made visible
+  by UI's icons).
+- **CR production crash** (`157b391b`;
+  [world.md](../design/world.md), [luanti-lua.md](../technical/luanti-lua.md)):
+  the R5 fill-void band of the report's chunk (22,−1,−32) reaches y −33,
+  the chunk's top layer, which the chunk above writes first; there the
+  water guard had turned flooded air into `grug_core:water_barrier`, which
+  the writer classed foreign and refused (`fail_replace_policy`). Fix (a):
+  the barrier carries `grug_air` and gets air's class row. The whole R7
+  transaction of a chunk runs under `pcall` (`wp40/degrade.lua`): on a
+  failure the chunk keeps the engine's terrain (R6 restores content,
+  param2 and light after a late failure) and `grug_core.severe.report`
+  writes one `[GRUG-SEVERE]` error line (chunk, voxel, content id, node,
+  class, policy, opcode, role, feature) and a red chat line to every
+  player once per chunk, from the mapgen environment through gen_notify;
+  the details are built only on the failure branch. The seed fleet and the
+  fixtures still fail on a writer error. Runs: 5 of 6 diagnosis runs (run
+  5 reproduced the production signature with barriers in rock); after the
+  fix the report's chunks and a forced failure (~65 s; the server went on)
+  and the final region (cx 21..25, cz −33..−28, two layers: 59 chunks
+  generated, 0 errors, mean 1.31 s per chunk at cy 0 and 0.59 s at cy −1,
+  max 4.35 s). The production seed and its chunks are in the seed fleet;
+  `quick` 100/100. Per chunk (fleet `quick`, same 99 seeds, CPU) 0.519 →
+  0.540 s, the median per seed +3.4 % and the whole seed +3.2 % with the
+  build part unchanged: machine drift, no measurable cost. Fixture
+  `r41_cr` 21 checks (fails with the production error when the fix is
+  reverted).
+- **UP upgrade contract** (`a3790e65`;
+  [upgrade-contract.md](../technical/upgrade-contract.md),
+  [AGENTS.md "Release mode"](../../AGENTS.md#release-mode)): release mode
+  in AGENTS.md, the design docs and both ruling-10 gates in the round
+  workflow; `tools/web_data/upgrade.json` and `tools/check_upgrade.py`
+  (against `origin/main`, its rules' self-test first), `game.conf` 0.41.0;
+  the map reset (`grug_core.map_reset`, the per-mod clears, the relocation
+  through creation's hold, new characters recorded without a move);
+  unknown quest ids in saved state are dropped (a removed active quest
+  crashed the journal), waypoints, achievements and items were already
+  safe; `check_fresh_server.py` allows `register_alias`. Fixture `r41_up`
+  107 checks plus `--self-test`; engine test `tools/r41_up/engine.sh`
+  (evidence in `tools/r41_up/evidence/`): 67 start-NPC markers and a Claim
+  Stone, then the map database deleted and the setting raised; the clears
+  and the record in the log, the starts prepared again (84/84), the old
+  character held and moved once to the human start without the arrival,
+  its claim gone, XP and class kept; the new character recorded and never
+  moved; the claim node air; seed 42 kept.
+- **D** (this lane): this section, STATUS, the AGENTS.md pointer, ROADMAP,
+  BACKLOG, README and the CHANGELOG 0.41.0 entry.
+
+### Upgrade classification and the declaration
+
+| Lane | Outcome | Reason |
+|---|---|---|
+| MOB | compatible | no saved format changes; a 0.40 king or General stops wandering at once and gets its seat when re-placed |
+| MAP | compatible | no saved state; the first start re-renders once and removes leftovers |
+| SC | compatible | input logic and formspec drawing only |
+| UI | compatible | origins and sessions live in memory |
+| WW | compatible | a node group, no saved state |
+| CR | map reset | world generation changes for chunks that hold a water barrier |
+| UP | compatible | with `grug_reset_world` at 0 nothing is cleared or moved |
+
+The round's declaration, as the plan's default:
+`{"schema": 1, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": []}`.
+The production server (0.40.0) crosses 0.40.1 and gets the map reset,
+which covers CR's change for it too; no lane needs a new server. A 0.40.1
+world would count as compatible although CR changed generation; none
+exists (upgrade-contract §2).
+
+### UP's final summary for the platform
+
+The contract's requirement 6
+([upgrade-contract.md §3](../technical/upgrade-contract.md#3-the-map-reset)
+holds the full tables):
+
+- **Setting:** `grug_reset_world` (int, default 0, min 0, platform-owned,
+  section *Hosting platform*). The world record is mod storage
+  `grug_core` `reset_world`, the character record player meta
+  `grug_core:reset_world`; missing records count as 0; a setting above
+  the record triggers, one below it does nothing.
+- **Map-bound mod storage, cleared:** `grug_core` `world_preparation` (the
+  plan and its progress; the mode is kept); `grug_mobs` everything but
+  `live_gen:<key>` (start-NPC markers and respawn times, rares, dragons,
+  leader timers, the rift crack and its boss timer, liveness positions and
+  absences); `grug_housing` every `claim:<id>`, a placed stone's owner
+  becomes `needs_stone`.
+- **Kept:** the counters `next_id`, `live_gen:` and `item_serial`;
+  `grug_home` `claim_lost:` (pending notices), parties and the world
+  record.
+- **Map-bound player meta:** the position (moved to the race start),
+  `grug_home:claim` (cleared); `grug_pvp:loc` is sampled again. Level,
+  XP, money, inventory, talents, quests, achievements, professions, mounts
+  and waypoints are kept.
+- **Declaration:**
+  `{"schema": 1, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": []}`.
+- **Where Grudgelands decided:** map-bound is everything that describes the
+  old map's contents or actors, their respawn timers included, so the
+  world fills as a fresh one; monotonic counters and the preparation mode
+  are kept. A placed stone's owner gets a new stone from the Housing
+  Steward; a carried stone stays. The hold reuses creation's preparation
+  session (frozen, immortal, the waiting screen). An unfinished arrival
+  counts as the move. A failed relocation logs, disconnects ("…Please join
+  again.") and writes no record; the next join retries.
+
+### Decisions during the round
+
+1. **CR checkpoint** (the coordinator, confirmed by the user on
+   2026-10-07, after the reproduction): fix (a) only, the water barrier
+   counts as air for the writer. Option (b), keeping foreign or unknown
+   pre-existing content instead of the writer's veto, is declined: such
+   content degrades the chunk and is reported (ruling 8).
+2. **Waterweed** (the user): fixed in this round as lane WW, not left for a
+   later lane (§8).
+3. **Multi-item tooltip** (the user): stays as built: every icon shows the
+   same complete list; "Click to view recipe" appears only on clickable
+   icons (the UI review's note).
+4. **Review fixes:** MOB's (the seat tick waits out a signature cast) and
+   CR's (the chat sentence break) applied by the coordinator; SC's (the
+   quiver cover in legacy formspec units) by the lane.
+
+### Deviations from the plan
+
+- **Merge order:** WW merged between UI and CR (plan §1: MOB, MAP, SC, UI,
+  CR, UP); CR and UP merged main before their reviews.
+- **MOB:** `walk_chance = 0` was not used (mobs_redo's `do_jump` reads it
+  as a jumping mob and would hop leaders through fights); the GRUG PATCH
+  `_grug_no_wander` in the vendored `do_states` instead. The follow's
+  walk-on after a hit goes beyond §3.1 (`stop_attack` zeroes the velocity).
+- **SC:** the engine's write-back of the pre-call stack (above) was not in
+  §3.4; the fix touches every skill item's native callbacks (a no-op write
+  for the others).
+- **UI:** `workspaces.open` also checks the expected id (§3.2 assumed its
+  checks were enough); the Repair Close falls back to the crafting page
+  like the book; existing fixtures extended instead of a `tools/r41_ui`;
+  the probe's catalogue assumptions refreshed (five stale failures on the
+  base).
+- **CR:** the cause is runtime state, not generation alone: a guard
+  barrier in a layer saved before its chunk existed. Of the report's
+  candidates (unverified there), (22,−1,−32), entirely on hard-protected
+  ground, is the likely one; (24,−1,−32) generates normally. With the production seed in `quick`, seed
+  2688922133946307 drops out of `quick` (it stays in `full`).
+- **UP:** §3.8's mod-storage list was partly refuted: `grug_classes`,
+  `grug_abilities/kits.lua` and `grug_factions` keep none, `grug_mapgen`
+  none (its world-folder caches are keyed by the world key and stay
+  valid).
+
+### Open notes
+
+The reviews' backlog notes are in the
+[BACKLOG](../../BACKLOG.md#round-41-carry-overs); none blocks the GUI
+test or the migration. The bow's second, unproven cause (§8) stays open.
+
+### GUI playtest checklist
+
+Desktop and the web build, on the synced game. Every item works in a world
+made on 0.41.0; items 1–2 and 9 want new placements or generation (a new
+world, or the production server after its map reset). Use a second client
+for what others see. Say what looks wrong.
+
+1. **Walk animation:** a royal guard or bodyguard following its leader
+   walks with moving legs, also right after being hit; a mob that starts
+   walking home or to its post (a guard post, a villager's amble, a camp
+   roam) shows the walk at once; a gull or crow flying home shows its
+   flight loop.
+2. **Kings and Generals** stand at their seat while idle, face the hall
+   door or the keep entrance, and walk back after a fight and after a
+   leash reset; their guards keep following.
+3. **Recipe book Close:** from a furnace, the dual furnace and a bench,
+   Close returns to that station with the fire and progress still
+   updating, also after an ingredient jump and Back; Esc closes
+   everything; walking away with the book open, then Close, lands on the
+   crafting page. At a station inside an active claim: Repair equipment →
+   Close returns to the station; Esc closes.
+4. **Multi-item slots:** in the cooking book "Corn or Potato" shows both
+   icons, berry preserve 2×2, fruit glazed roast three icons and "+2"; in
+   Basics the stick (wood, three and "+4") and the stone pickaxe (three
+   and "+9"). An icon whose recipe you know opens it; "+N" does nothing;
+   every icon shows the full list. "+N" fits its corner and block icons
+   read well at a normal and a large GUI scale. The glass recipe's sand
+   slot no longer shows the waterweed bed.
+5. **Bow:** shoot repeatedly at a mob by release and an immediate
+   re-press: no stuck drawn arrow; a quick tap fires the drawn arrow and
+   no second weak one; holding on draws the next arrow. If a draw still
+   sticks, answer §8's three questions.
+6. **Quiver** with more than 100 arrows shows the total in its slot;
+   taking from it takes 100. At a normal and a large GUI scale the cover
+   hides the engine's "100" and ends at the slot's corner; hovering the
+   slot keeps its highlight outside the cover's corner and shows the item
+   tooltip.
+7. **Map quality:** switch normal → high → normal between starts; the Map
+   tab shows the right resolution; the world folder holds only the current
+   tiles (the log names how many were removed).
+8. **Map reset** on a copy of a test world: stop the server, delete the
+   map database (keep `map_meta.txt`), raise `grug_reset_world`, start; an
+   existing character waits on the preparation screen, then arrives at its
+   race start without the welcome, keeps level, inventory, quests and
+   waypoints; its home claim is gone and the Housing Steward hands out a
+   new Claim Stone; a new character starts normally. After the push the
+   platform does the same with the production server.
+9. **Mapgen failure:** CR's probe mod (`tools/r41_cr`) forces one; the
+   server keeps running, the log shows one `[GRUG-SEVERE]` line with the
+   location, every player sees the red chat line once and the chunk shows
+   plain engine terrain. On the production server after its reset, the
+   area round (1853, −2, −2457) generates without a crash.

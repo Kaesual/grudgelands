@@ -107,10 +107,18 @@ stats, and the sound controls. The short version:
 *Last updated: 2026-10-07. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-Since its fix 0.40.1, ore, coal and gems lie wherever you may dig, right
-up to the edge of the protected towns, and wild gatherables grow round
-villages and camps (new world). The latest finished round is Round 40,
-"Combat feel": cooldowns show on
+The latest finished round is Round 41 (0.41.0): fixes from the Round 40
+playtest (creatures that walk move their legs, kings and Generals keep
+to their seat, the recipe book's Close returns to the station, slots that
+take several ingredients show them all, a quick re-press of the bow fires
+the drawn arrow, the quiver shows its full count) and a fix for a crash
+that kept stopping the hosted server. From 0.41.0 on, worlds are kept
+across updates: each update says whether a world plays on, needs its map
+regenerated (characters keep everything but their position and home
+claim) or needs a new server; 0.41.0 itself needs a map reset of older
+worlds. Since 0.40.1,
+ore, coal and gems lie wherever you may dig, right up to the edge of the
+protected towns. In Round 40, "Combat feel", cooldowns show on
 the hotbar as a shade that clears like a clock hand, characters strike
 poses for their spells, blows and blocks and look up and down, Charge is a
 real dash that hops over steps and holes, and skills, bosses and creatures
@@ -124,10 +132,8 @@ October 2026 review of the code and the documentation found, from
 creatures that keep to the player holding their attention when several
 players fight them to mounts that no longer throw you off when a buff
 runs out, and Round 36 brought each faction's main story from level 41 to
-60, with its finale against Isquarre at the rift. Start a new world:
-worlds made before Round 36 miss the decoration, the dragon arenas,
-benches, ground cover and roads, and guards and named creatures placed
-before Round 38 may show a wrong name.
+60, with its finale against Isquarre at the rift. Worlds made before
+0.41.0 need a map reset, or start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the
