@@ -150,6 +150,9 @@ grug_core = {
 		if holds[p:get_player_name()] == name then holds[p:get_player_name()] = nil end
 	end,
 	invalidate_combat_identity = noop,
+	-- Round 41: the platform's map reset (grug_core/map_reset.lua), idle
+	-- here; tools/r41_up covers the relocation.
+	map_reset = {needs_relocation = function() return false end, record = noop},
 	create_tag_carrier = function() return {} end,
 	set_tag_carrier_text = noop,
 	remove_tag_carrier = noop,

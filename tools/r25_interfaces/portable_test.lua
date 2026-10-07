@@ -176,6 +176,8 @@ end}
 --
 
 grug_core = {}
+-- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
+grug_core.map_reset = {clear = function() end}
 dofile("mods/CORE/grug_core/settlement_sockets.lua")
 local CAPITALS = {
 	{key = "highcourt", race = "human", plot = "market_counting_house"},

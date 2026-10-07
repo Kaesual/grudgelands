@@ -194,6 +194,27 @@ return function(api)
 		end
 	end
 
+	-- The platform's map reset (grug_core/map_reset.lua, the upgrade
+	-- contract; Round 41 ruling 9): the claims are map-bound and go, also a
+	-- record that does not decode. A player whose stone stood needs a new one
+	-- from the Housing Steward, as after losing it; a carried stone and every
+	-- other record stay, and so does the id counter (monotonic). Runs on the
+	-- loaded registry; idempotent.
+	function M.map_reset()
+		local keys = storage.keys()
+		for index = 1, #keys do
+			if keys[index]:match("^claim:") then storage.set_string(keys[index], "") end
+		end
+		claims, grid, claim_count = {}, {}, 0
+		storage.set_string("next_id", tostring(next_id))
+		for name, rec in pairs(players) do
+			if rec.state == "placed" then
+				rec.state, rec.claim_id = "needs_stone", nil
+				save_player(name)
+			end
+		end
+	end
+
 	-- Queries -----------------------------------------------------------------
 
 	local function round(value) return floor(value + 0.5) end

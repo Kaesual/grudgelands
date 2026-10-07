@@ -259,7 +259,9 @@ local function boot(mode)
   check(not in_callback,"no callback dispatch")
   dispatches=dispatches+1;requests[#requests+1]={lo=clone(a),hi=clone(b),fn=fn}
  end
- local game={start_identities=function() return ids end,FLIGHT_CEILING=600}
+ -- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
+ local game={start_identities=function() return ids end,FLIGHT_CEILING=600,
+  map_reset={clear=function() end}}
  -- The scheduler plans the small region; everything else is production code.
  local function region_dofile(path)
   local module=dofile(path)

@@ -80,6 +80,8 @@ end
 -- a road corridor (Lane E): hard protected for everyone, owner included.
 -- ---------------------------------------------------------------------------
 grug_core = {}
+-- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
+grug_core.map_reset = {clear = function() end}
 local function road_spot(pos) return pos.x == 50 and pos.z == 50 end
 grug_zones = {
 	hard_protection_kind_at = function(pos)

@@ -114,3 +114,6 @@ if housing then
  end)
 end
 core.register_on_joinplayer(deliver)
+-- The platform's map reset (grug_core/map_reset.lua): the claim target is
+-- map-bound player state; a relocated character's home is its innkeeper.
+grug_core.map_reset.register_on_relocate(grug_home.clear_home_claim)
