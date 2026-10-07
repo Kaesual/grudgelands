@@ -54,10 +54,13 @@ end
 local modpath = core.get_modpath("grug_mapgen")
 local default_path = core.get_modpath("default")
 local gathering_path = core.get_modpath("grug_gathering")
+local core_path = core.get_modpath("grug_core")
 if type(modpath) ~= "string" or type(default_path) ~= "string" or
-		type(gathering_path) ~= "string" then
+		type(gathering_path) ~= "string" or type(core_path) ~= "string" then
 	fail("required mod path differs")
 end
+-- The severe-error helper the main environment loads as grug_core.severe.
+local severe = dofile(core_path .. "/severe.lua")
 local wp40 = modpath .. "/wp40"
 local native = dofile(wp40 .. "/r7_native.lua")
 native.validate_emerge()
@@ -78,16 +81,50 @@ if not water_level then fail("water level differs") end
 local air_chunks = dofile(wp40 .. "/air_chunks.lua")(built.writer_bounds, water_level)
 local function get_heightmap() return core.get_mapgen_object("heightmap") end
 
-core.register_on_generated(function(vmanip, minp, maxp, blockseed)
+-- The chunk's refinement: plan and write the one R7 transaction.
+local function refine(vmanip, minp, maxp)
 	minp = plain_engine_position(minp, "generated minp")
 	maxp = plain_engine_position(maxp, "generated maxp")
-	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
-	-- the external R8 cave checker can prove the component the real writer saw.
-	if native_baseline then return end
 	-- Native air above everything the writer can place: the transaction would
 	-- change nothing (air_chunks.lua), so it is not run.
 	if air_chunks.untouched(minp, maxp, get_heightmap) then return end
 	local plan, generation = built.session.plan_slice(minp, maxp)
 	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
 	if type(result) ~= "string" then fail("writer result differs") end
+end
+
+-- A failed refinement never stops the server (Round 41 ruling 8): the chunk
+-- keeps the engine's terrain (the writer changes the VoxelManip only after
+-- every check and puts the engine's bytes back if a later engine call fails,
+-- r6_settlement.lua), and the failure goes to the severe-error helper: one
+-- [GRUG-SEVERE] log line with the chunk and the failing voxel, and a red chat
+-- message once per chunk. Only this engine path degrades; the seed fleet and
+-- the fixtures call the writer directly, so a failure still fails them.
+local function position_text(pos)
+	if type(pos) ~= "table" then return tostring(pos) end
+	return ("(%s,%s,%s)"):format(tostring(pos.x), tostring(pos.y), tostring(pos.z))
+end
+local function report_failure(minp, maxp, err)
+	local message = tostring(err)
+	local first = message:match("^[^\n]*")
+	local chunk = position_text(minp)
+	local details = ("minp=%s maxp=%s error=%s"):format(chunk,
+		position_text(maxp), first)
+	local cid = tonumber(first:match(" cid=(%d+)"))
+	local node = cid and core.get_name_from_content_id(cid)
+	if node then details = details .. " node=" .. node end
+	severe.report("mapgen", "the map chunk at " .. chunk ..
+		" was generated without its refinement (plain terrain there)", details,
+		"mapgen:" .. chunk)
+	if message ~= first then
+		core.log("error", "grug_mapgen: refinement failure trace: " .. message)
+	end
+end
+
+core.register_on_generated(function(vmanip, minp, maxp, blockseed)
+	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
+	-- the external R8 cave checker can prove the component the real writer saw.
+	if native_baseline then return end
+	local ok, err = pcall(refine, vmanip, minp, maxp)
+	if not ok then report_failure(minp, maxp, err) end
 end)

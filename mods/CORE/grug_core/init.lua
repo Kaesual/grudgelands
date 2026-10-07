@@ -36,6 +36,11 @@ function grug_core.get_player_race(name)
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
+-- The severe-error helper (Round 41): a [GRUG-SEVERE] log line and a red chat
+-- message for an error the server survives. The mapgen environment loads the
+-- same file; install_main relays its reports to chat.
+grug_core.severe = dofile(modpath .. "/severe.lua")
+grug_core.severe.install_main()
 -- The bottom-centre HUD column. Pure data plus arithmetic, depends on
 -- nothing, and every HUD writer in the game reads it.
 dofile(modpath .. "/hud_layout.lua")
