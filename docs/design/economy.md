@@ -53,7 +53,7 @@ axis (D2).
   never consumes inventory Gold.
 - Vendors sell the T1 Common bases only (Round 33): every weapon family and
   armour piece of the first material tier, Common and unenchanted, at every
-  level. From T2 the bases come from Basics crafting or drops; there is no
+  level. From T2 the bases come from profession crafting (Round 45) or drops; there is no
   rotation and no vendor Uncommon (`items_crafting.md` §3.8).
 
 ## 2. Ordinary price axis and buy-back

@@ -118,57 +118,72 @@ tools](#player-meta-read-by-external-tools).
 - **Professions**: `grug_jobs` owns the exact six primaries — Weaponsmith,
   Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith — plus the
   secondaries Cooking and Alchemy (`alchemist`; Round 33), two primary slots,
-  one fixed book slot per secondary, player-meta progression and the UI-only
-  recipe books.
-  Content mods first call `register_ingredient_tier(item, tier)`, then
-  `register_recipe{profession, tier, station, inputs, output, hint}`; every
-  gear recipe must contain a declared ingredient of its own tier. A recipe's
-  `progress` flag (Round 33) says whether it awards profession progress: end
-  products do; `material = true`, `progress = false` (stations,
-  intermediates) and automatic finishes do not. For an
-  intermediate-material conversion, the output tier is the recipe tier; it
-  does not invent a same-tier input solely to satisfy the gear rule. **Basics** is the
-  exclusive profession-free category; every recipe route appears in exactly
-  one book. Weaponsmith and Armorsmith have separate authorization/progression
+  player-meta progression and the recipe registry.
+- **The recipe registry** (Round 45, `grug_jobs/registry.lua`): every craft is
+  a record `{id, output, count, ingredients = {{item = name | group = name,
+  n}, ...}, area, profession, tier, time, station, progress}`; `area` is
+  `basic`, `cooking`, a primary or `alchemist` (`grug_jobs.AREAS`),
+  `profession` the area's (nil in Basic), `time` seconds per item
+  (`grug_jobs.DURATIONS`), `station` nil or the profession's station kind
+  (`grug_jobs.PROFESSION_STATIONS`), `progress` whether it awards profession
+  progress (never in Basic). Queries: `recipe(id)`, `recipes_in_area(area)`
+  (tier, then the output's description, then id; sorted once every mod has
+  loaded), `recipes_for_output(output)`; `grug_jobs.recipes` is every record
+  in registration order. The returned lists are the registry's own: never
+  write into them. An id defaults to the output plus the sorted ingredient
+  list (`"default:wood|default:tree*1"`), stable however a catalog orders its
+  rows; a job stores it. Content mods first call
+  `register_ingredient_tier(item, tier)`, then
+  `register_recipe{area, output, count?, ingredients, tier, time, station?,
+  progress?, material?}`; `ingredient_list(tokens)` counts a flat list or grid
+  of item names and `"group:x"` tokens into ingredients (the profession
+  catalogs keep their input tables). A profession recipe needs a declared
+  ingredient of its own tier and none above it; `material = true` (an
+  intermediate whose output is an ingredient of the recipe's tier) gives no
+  XP. After load every output and item ingredient must be registered and every
+  group must have a member; a Basic record's tier (for the order only) is its
+  output's material tier, else its highest ingredient's, else T1. **Basic** is
+  `grug_jobs/basic_recipes.lua`: rows converted once from the base commit's
+  engine grid routes by `tools/r45_rg/gen_basic_recipes.lua` (`--check`;
+  input `tools/r45_rg/corpus_base.lua` from `dump_corpus.sh`), plus the
+  stairs and walls families made per material by
+  `register_basic_catalog`'s loop; edit it as data. Gear recipes are
+  registered by their family's owner (`grug_professions/base_recipes.lua`
+  through `grug_professions.family_owner`, trinkets in
+  `grug_artisans/goldsmith.lua`). Nothing matches a craft grid and nothing
+  reads engine crafts: the vendored and other mods' engine grid registrations
+  that remain are unreachable (the player's `craft` list has size 0,
+  `craft_list.lua`). Furnace, dual-furnace and alloy recipes are no records:
+  engine cooking recipes and `grug_smelting.RECIPES`; the good dishes' furnace
+  finish is an engine cooking recipe `grug_cooking` registers.
+  `can_craft_recipe(player, recipe)` is the profession gate (Basic always; a
+  profession recipe or station operation needs the profession at the recipe's
+  tier); the station-nearby check and the jobs are lane JB's (Round 45). The
+  Crafting tab is a stub ("Crafting is being rebuilt", `ui.lua`) until lane UI.
+  Fixture `tools/r45_rg`: record shape, queries, refusals, the conversion
+  against the base catalog, gear in its profession, durations, stations, the
+  craft list and the removed APIs.
+- Player APIs are `learn`, `unlearn`, `has`, `profession_level`,
+  `crafts_in_tier`, `character_tier`, `record_craft`, `award_progress` and
+  `can_craft_recipe`; every craft path and station operation (enchants,
+  profession upgrades) awards progress through `award_progress(player,
+  recipe)`, which checks the recipe's flag; `register_on_award_progress(fn(player,
+  recipe))` (Round 33) runs after each counted award (grug_achievements counts
+  dishes and potions there; fixture `tools/r33_c2`: roster and progress
+  flags). `profession_level` returns 0 when unlearned and effective T1–T6 when
+  learned. Weaponsmith and Armorsmith have separate authorization/progression
   but share station id `forge` and node `grug_jobs:forge`; there is no
-  `blacksmith` alias. Supported station names are `grid`, `furnace`,
-  `dual_furnace`, `brewing_stand` and the registered profession stations.
-  `register_station(name, {register_recipe=..., can_use=...})` lets a later
-  station install its engine adapter and optional per-player gate; registrations
-  made before that adapter are replayed. Player APIs are `learn`, `unlearn`,
-  `has`, `profession_level`, `crafts_in_tier`, `character_tier`,
-  `record_craft`, `award_progress` and `can_craft_recipe`; every craft path and
-  station operation (enchants, profession upgrades) awards progress through
-  `award_progress(player, recipe)`, which checks the recipe's flag;
-  `register_on_award_progress(fn(player, recipe))` (Round 33) runs after each
-  counted award (grug_achievements counts dishes and potions there, i.e. at
-  their preparation; fixture `tools/r33_c2`: roster, book slots, progress
-  flags of the shipped recipe corpus). `profession_level` returns 0 when
-  unlearned and effective T1–T6 when learned. Grid output is vetoed before the
-  engine craft. Authored workspaces have persistent per-player/per-station data;
-  player-placed stations share inputs with individually qualified output views.
-  Automatic furnace/dual/brewing processing is universal and grants no progress;
-  the protected preparation step grants current-tier progress instead.
-  One output may have one route per station when every route agrees on
-  profession and tier; `recipe_for_output(output, station)` resolves the
-  station-specific route. This is how a Cooking grid dish and its raw-assembly
-  furnace path meet at the same edible item. A grid craft finds its recipe
-  through an index built at registration (Round 30, `registry.lua`
-  `recipe_for_craft`: station and shape, then trimmed size and cell mask or
-  ingredient count); a new matcher rule must keep the index and the former
-  linear scan equal (`tools/r30_p4` replays the shipped recipe corpus).
-  Grid and selected enchant commits revalidate qualification and inputs before
-  consuming anything and record progress once after settlement. Alchemists make
-  mixtures in their inventory grid; Brewing Stands finish them universally.
-  Basics declares each exact engine route as starter or with one main material;
-  the complete runtime catalog is audited against `basics_routes.lua` at startup.
-  Discovery changes visibility only. Bread, Cooked Meat and Cooked Fish are
-  universal Basics roasting; protected Cooking dishes keep their book provenance.
-  Stations and workspaces are `docs/design/inventory_equipment.md` §4 and
-  `professions.md` §1.5, named tiered enchantments (including trinkets)
-  `items_crafting.md` §6b, equipment separation `items_crafting.md` §3.0.3–§3.0.4
-  and wear `durability_repair.md`.
-  Station icons appear below the recipe arrow, outside ingredient slots.
+  `blacksmith` alias.
+- **Stations** (`workspaces.lua`): furnaces and dual furnaces keep their dialog;
+  authored ones have persistent per-player/per-station workspaces, player-placed
+  ones share node inventories. The forge, the benches and the brewing stand
+  show the notice form `grug_jobs:station_notice` ("Crafting moved to the
+  Crafting tab", the repair button inside a claim); their node lists stay so
+  digging releases old contents. Automatic furnace/dual processing is
+  universal and grants no progress. Stations and workspaces are
+  `docs/design/inventory_equipment.md` §4 and `professions.md` §1.5, named
+  tiered enchantments (including trinkets) `items_crafting.md` §6b, equipment
+  separation `items_crafting.md` §3.0.3–§3.0.4 and wear `durability_repair.md`.
   `grug_jobs.open_trainer(player, profession, pos)` serves the six primaries,
   Cooking and Alchemy. The Character page's Professions mode (Round 28 ruling 23) is
   built by `grug_jobs/character_tab.lua` into the mode area `grug_inventory`
@@ -483,15 +498,18 @@ tools](#player-meta-read-by-external-tools).
   equipment slot (Round 33) and all consumables; `grug_quality` wraps it so
   a stack's own `grug_req_level` (drops, upgrades, the crown) wins. Potions
   retain their instant channel and shared persistent cooldown.
-  `grug_cooking` owns the mapgen-free plant items, the 18 grid dishes, the six
-  raw assembled dishes and their furnace routes. `grug_fishing.table_for(pos)`
+  `grug_cooking` owns the mapgen-free plant items, the 12 dish recipes, the six
+  raw assembled dishes (Cooking recipes since Round 45) and their engine
+  furnace routes. `grug_fishing.table_for(pos)`
   selects one of six catch tables through `grug_core.mob_level_at(pos)`; water
   salinity never gates fishing.
   **Alchemy** is split between low-level `grug_brewing` (the inactive/active
   stand nodes, timer and recipe adapter) and `grug_alchemy` (items, profession
   recipes and effects). The stand has two reagent slots plus vial, fuel and
   output. Automatic completion is universal and grants no profession progress;
-  the qualified inventory-grid mixture preparation owns progression. Capital
+  the qualified mixture preparation (an Alchemy recipe at the stand since
+  Round 45; `grug_alchemy` hands the finish table to
+  `grug_brewing.register_recipe` itself) owns progression. Capital
   personal workspaces derive from terrain-resolved,
   rotated `public_station` sockets in the themed outer premises.
   `grug_jobs.register_public_position(station, pos)` owns the shared registry;
@@ -1043,8 +1061,11 @@ tools](#player-meta-read-by-external-tools).
     allows `register_alias` only for an item renamed from now on). WP26 owns
     furnace/alloy/storage recipes in `mods/ITEMS/grug_smelting`; its
     `grug_smelting.RECIPES` surface is consumed by the trader anti-loop audit
-    because engine craft inspection cannot see dual-furnace recipes. Recipe
-    ownership and remaining economy work are tracked in BACKLOG.
+    because engine craft inspection cannot see dual-furnace recipes. The
+    storage pack/unpack pairs and the dual furnace's own recipe are Basic
+    recipes of the registry since Round 45; the smelting startup audit checks
+    them there. Recipe ownership and remaining economy work are tracked in
+    BACKLOG.
 
 ## Traders and money
 
@@ -1065,7 +1086,9 @@ tools](#player-meta-read-by-external-tools).
   - **One price module owns every payout** (`grug_traders/prices.lua`,
     pure rules in `price_rules.lua`; Round 29): loot and gathered goods by
     class × tier factor, processed goods by their cheapest recipe, sold
-    goods by 5% ceiling buy-back capped by their recipe. It reads each
+    goods by 5% ceiling buy-back capped by their recipe (the recipe
+    registry's records, the dual furnace's and the engine's cooking recipes;
+    Round 45). It reads each
     item's tier from its own registration and resolves once when every mod
     has loaded; items carry **no** price field. `grug_traders.sell_price`
     returns the payout, and **0 means "not sellable"**. A new loot or

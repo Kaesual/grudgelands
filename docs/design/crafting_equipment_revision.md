@@ -5,8 +5,8 @@ owners (Round 37). This file only keeps the old section names as links.
 
 ## Workspaces and production
 
-Personal and shared stations, access, previews and digging:
-[inventory_equipment.md](inventory_equipment.md#4-crafting-model-revised-2026-09-21) §4.
+Personal and shared stations, access and digging:
+[inventory_equipment.md](inventory_equipment.md#4-crafting-model-round-45) §4.
 Station recipes, who prepares what and who earns progress:
 [professions.md](professions.md#15-stations-production-and-progress) §1.5.
 

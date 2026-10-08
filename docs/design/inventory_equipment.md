@@ -88,8 +88,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   player, the same as `/music` and `/ambience`; Round 34). Body text is a
   scrolling `hypertext[]`; links are read-only `textarea[]` rows the player
   can select and copy, each with a `button_url[]` that asks before opening a
-  browser. Starter recipes are visible immediately; acquiring their main
-  material reveals later recipes without restricting crafting permission.
+  browser.
 - Creative includes a searchable, paged Food category derived from registered
   edible-food groups, including raw ingredients and cooked results.
 - **Every equipment slot says what it is, without hovering** (decided
@@ -118,7 +117,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     ("Ranged" / "Melee"). The Scout's quiver slot shows a dimmed quiver.
     Since Round 44 every slot's name is also printed beside it in the gear
     box; the tooltips stay.
-- Further pages: existing **Crafting** (3×3 grid).
+- Further pages: **Crafting** (the recipe lists of `professions.md` §1.2; the
+  3×3 grid is gone since Round 45).
 - Armor visuals on the player model: composed with the character's look
   ([character_visuals.md](character_visuals.md) §1, §3).
 
@@ -290,8 +290,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 3. Bags (classic MMO model, LotT implementation pattern)
 
 - **Base inventory stays 32 slots** (must not feel cramped); **4 bag
-  slots** extend it. Cloth and leather each have four named variants, one per
-  mastery tier: **8 / 16 / 24 / 32** slots (`bagslots` group; bag slots + contents are
+  slots** extend it. Cloth and leather each have four named variants, at
+  profession tiers T1 / T2 / T4 / T5: **8 / 16 / 24 / 32** slots (`bagslots` group; bag slots + contents are
   player-inventory lists, see above). Four huge bags therefore add 128
   slots. The parallel cloth/leather catalog is an explicit one-item-per-concept
   exception; neither material grants stats, affixes or extra capacity.
@@ -352,17 +352,17 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   items do.
 - No item drop or XP loss on death (Round 18).
 
-## 4. Crafting model (revised 2026-09-21)
+## 4. Crafting model (Round 45)
 
-- **Basics** is the exclusive category for profession-free recipes. Every recipe
-  route belongs to exactly one category: Basics or its owning profession.
-  Starter recipes are visible immediately; further Basics recipes appear after
-  first acquiring their main material (user decision 2026-09-20). Neither that
-  visibility rule nor character level restricts universal recipe crafting.
-- Everyone uses the familiar 3×3 layouts to make plain weapons, tools and
-  metal, cloth or leather armor. Plain feedstock preparation for cloth, leather
-  and processed wood is also profession-free. Professional components such as
-  settings are never base-item inputs.
+- **Recipe lists, no grid** ([professions.md](professions.md) §1.2,
+  [UI rework spec](../planning/ui-crafting-rework-plan.md) §2.16–2.36): every
+  craft is an ingredient-list recipe of one area. **Basic** is the area for
+  profession-free recipes (tools, blocks, planks, torches, dyes, bolts,
+  leather grades, graded wood, arrows, …); gear (weapons, armour, offhands,
+  trinkets) and bags are recipes of their profession. Every area shows all its
+  recipes; character level restricts no recipe. The player's engine `craft`
+  list has size 0 (a join shrinks it while it is empty).
+- Professional components such as settings are never Basic inputs.
 - Named enchant application and replacement use the owning profession station.
   Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
   Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are
@@ -370,41 +370,39 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   metadata and wear. An enchanted weapon, offhand or armour piece shows its
   prefix and suffix colours (character_visuals.md §5a) on its own inventory
   image, which also draws it in hand and when dropped and is rebuilt whenever
-  its affixes change; a plain stack carries no image of its own. Each
-  enchanting station shows the colour legend. Other profession recipes retain their explicit grid,
-  furnace, dual-furnace or brewing-stand route.
-- Authored capital/POI stations are personal workspaces keyed by player and
-  physical station: durable inputs, outputs, fuel and processing state per
-  player. Player-placed stations share node inventories; inside an
-  active Claim Stone claim, access follows the claim's permission list
-  (`housing.md` §6), with no station-specific owner or ACL; outside protected
-  areas they have no individual owner. The station UI shows its mode with a
-  short explanation. Authored loot chests are outside this model. Shared 3×3
-  inputs are common while each viewer's output preview is qualified
-  independently; an ineligible viewer sees no craftable result. A successful
-  take revalidates recipe, station,
-  distance, access, inputs, profession tier and capacity before consuming or
-  awarding progress. Partial transfers retain produced remainder without a
-  second debit or progress award, and closing a UI loses no contents.
+  its affixes change; a plain stack carries no image of its own.
+- **Stations:** a profession recipe needs its station within 4 nodes when its
+  job starts (`professions.md` §1.5). Only **furnaces and dual furnaces** keep
+  a dialog with lists. The forge, the four benches and the brewing stand have
+  none: right-clicking one shows that crafting moved to the Crafting tab and,
+  inside an active Claim Stone claim, the repair button
+  ([durability_repair.md](durability_repair.md)).
+- Authored capital/POI furnaces and dual furnaces are personal workspaces
+  keyed by player and physical station: durable inputs, outputs, fuel and
+  processing state per player. Player-placed ones share node inventories;
+  inside an active Claim Stone claim, access follows the claim's permission
+  list (`housing.md` §6), with no station-specific owner or ACL; outside
+  protected areas they have no individual owner. The station UI shows its mode
+  with a short explanation. Authored loot chests are outside this model.
+  Closing a UI loses no contents.
 - Player-placed furnaces, dual furnaces, brewing stands and profession
   stations can be dug at any time by anyone the normal protection allows
   (Round 28 ruling 18): in the open world there is no extra rule, inside a
   claim the claim's rights apply and in foreign home territory the territory
   rule applies. Digging drops every node list **and** every player's saved
   workspace record together with the station itself (to the digger's
-  inventory, overflow on the ground), exactly what an explosion releases. A
-  station is never undiggable because it still holds items, including other
-  players' invisible leftovers. Authored public stations stay undiggable and
-  blast-immune.
+  inventory, overflow on the ground), exactly what an explosion releases —
+  also the old contents of a bench or brewing stand from before Round 45.
+  A station is never undiggable because it still holds items, including
+  other players' invisible leftovers. Authored public stations stay
+  undiggable and blast-immune.
 - Personal processing state, fuel, inputs and outputs persist in the physical
   node. Elapsed server game time may catch up lazily after unload/restart but
-  does not promise work during shutdown. Automatic furnace, dual-furnace and
-  brewing completion is universal and gives no profession progress; only the
-  protected qualified preparation/craft grants current-tier progress.
-- Learned profession and T1–T6 profession level gate professional operations.
-  Universal Basics routes have neither gate and award no profession progress.
-- Recipe books display human item descriptions. A group slot lists concrete
-  alternatives with “or”; arrows switch only between complete recipe routes.
+  does not promise work during shutdown. Automatic furnace and dual-furnace
+  completion is universal and gives no profession progress.
+- Learned profession and T1–T6 profession level gate professional recipes and
+  operations. Basic recipes have neither gate and award no profession
+  progress.
 - Claim permission never grants a recipe, profession tier or material the
   character has not unlocked.
 
@@ -590,9 +588,7 @@ Armor hover descriptions explicitly state Cloth, Leather or Metal, including
 named enchanted variants. The combat state is shown while the living player
 is in combat; since Round 26 it is a 32 px gold-framed crossed-swords icon
 beside the life bar (`grug_core/combat_hud.lua`), no longer a "Combat" text,
-and not part of the status row (§5). Station recipe
-book buttons occupy a separate right-hand position clear of input/fuel/output
-slots, mode explanations and crafting-operation controls.
+and not part of the status row (§5).
 
 ## Round 18 interaction clarity
 
@@ -600,5 +596,5 @@ Weapon-slot tooltips and contextual raw-weapon hints explain that equipped
 weapons provide combat stats while hotbar skills execute attacks. No automatic
 equipping or hotbar-weapon combat fallback. The top inventory row is explicitly
 highlighted as Hotbar. Selected page controls use a visible border/tint rather
-than a `>` prefix. Crafting starts with recipe-book guidance; the skill
-catalog explains placing and removing skills (§6).
+than a `>` prefix. The skill catalog explains placing and removing skills
+(§6).
