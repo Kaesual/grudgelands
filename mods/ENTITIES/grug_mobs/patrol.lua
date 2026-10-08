@@ -454,9 +454,9 @@ local QUIET_AFTER = 4 -- give-up cycles before the log goes quiet
 -- stand -- is retried only SNAP_RETRY seconds later: a deadline on the server
 -- clock (`grug_snap_wait`, runtime only), so a caller that asks rarely (a
 -- patrol, after three fresh failures) waits as long as one that asks every
--- tick. `elapsed` is no longer read (the villagers still pass it).
+-- tick.
 --
-function grug_mobs.snap_try(self, pos, x, z, elapsed, after)
+function grug_mobs.snap_try(self, pos, x, z, after)
 	self.temp = self.temp or {}
 	local t = self.temp
 	local now = core.get_us_time() / 1000000
@@ -619,7 +619,7 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, snap,
 		return
 	end
 	if snap and (t.grug_route_skips or 0) > 0 and grug_mobs.snap_try(self, pos,
-			pt.x, pt.z, TICK, "on two waypoints in a row") then
+			pt.x, pt.z, "on two waypoints in a row") then
 		return
 	end
 	wp_holder[wp_key] = idx % #points + 1

@@ -816,8 +816,7 @@ local function work_tick(self, dtime)
 	if dx * dx + dz * dz > slack * slack then
 		temp.grug_home_walk = (temp.grug_home_walk or 0) + elapsed
 		if temp.grug_home_walk >= WORK_STALL_SNAP and
-				grug_mobs.snap_try(self, pos, home_x, home_z, elapsed,
-					WORK_STALL_SNAP) then
+				grug_mobs.snap_try(self, pos, home_x, home_z, WORK_STALL_SNAP) then
 			return false
 		end
 		grug_mobs.walk_toward(self, home_x, home_z, pos)

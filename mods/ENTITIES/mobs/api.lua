@@ -39,7 +39,9 @@ local settings, atann = core.settings, math.atan
 local function atan(x)
 	if not x or x ~= x then return 0 else return atann(x) end
 end
-local table_copy, table_remove = table.copy, table.remove
+-- GRUG PATCH (Round 42 CL): no `table_remove`; its one reader went with
+-- smart_mobs (Round 42 NV1).
+local table_copy = table.copy
 
 -- creative check
 
@@ -137,7 +139,7 @@ local main_timer_interval = tonumber(settings:get("mob_main_timer_interval") or 
 local pathfinding_enable = settings:get_bool("mob_pathfinding_enable", true)
 -- GRUG PATCH (Round 42 NV1): the stuck timeouts and the chase searchdistance
 -- are no longer read; grug_nav.lua's detector, lockout and padding replace
--- them (combat_stats.md §4 "Navigation").
+-- them (combat_stats.md §4 "Navigation"; Round 42 CL dropped the settings).
 local pathfinding_algorithm = settings:get("mob_pathfinding_algorithm") or "A*_noprefetch"
 
 if pathfinding_algorithm == "AStar_noprefetch" then pathfinding_algorithm = "A*_noprefetch"
@@ -377,7 +379,8 @@ end
 -- box from `_grug_cbox` instead of a get_properties() table per call (see
 -- grug_obstacle.lua). Written below wherever a collisionbox is set.
 local mob_cbox = grug_obstacle.mob_cbox
--- The shared helper is published for grug_mobs (patrol nudge, separation).
+-- The shared helper is published for grug_mobs (the fixed walks, separation,
+-- flight).
 mobs.grug_obstacle = grug_obstacle
 -- GRUG PATCH (Round 42 NV1): and the navigation module (NV2/NV3's walkers).
 mobs.grug_nav = grug_nav

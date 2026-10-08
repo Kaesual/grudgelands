@@ -781,12 +781,12 @@ do
 	fresh()
 	players[1] = {player = true, pos = {x = 0, y = 1, z = 0}, is_player = function() return true end}
 	m = mob(0, 0)
-	check(not grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, 1, "test"), "F4 watched: refused")
+	check(not grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, "test"), "F4 watched: refused")
 	players = {}
 	us = us + 5 * 1000000
-	check(not grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, 1, "test"), "F4 ...5 s later still waiting")
+	check(not grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, "test"), "F4 ...5 s later still waiting")
 	us = us + 6 * 1000000
-	check(grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, 1, "test"), "F4 ...11 s later: snapped")
+	check(grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, "test"), "F4 ...11 s later: snapped")
 end
 
 -- ---------------------------------------------------------------------------
