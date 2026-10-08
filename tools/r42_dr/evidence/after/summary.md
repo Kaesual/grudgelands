@@ -32,3 +32,9 @@ Capital: `OBS=120 STEADY=60 tools/r42_nv3/run.sh OUT dr capital` (seed 42). Scen
 | post guard | door_open | walk → walk | 15.5 → 19.8 | 0 → 0 | 0 → 0 | – → yes (found open) |
 | royal guard | door_closed | snap → snap | 27.6 → 27.5 | 4 → 4 | 68 → 121 | – → no |
 | royal guard | door_open | snap → snap | 27.6 → 27.5 | 4 → 4 | 51 → 65 | – → yes |
+
+## Fix round (review L1-L3), same probe and seed (`capital_fix.json`)
+
+- Census: walkers 130 (ok 120, none 10), patrols 50 (ok 49, none 1); whole cache 558 searches (was 611), 51.8 ms (was 54.0), largest 612 us; smoothing 12.0 ms.
+- Live 120 s: 166 searches (83/min, was 92.5), largest 534 us; NPC doors opened 17, closed 18. Steady 60 s: 7 searches, opened 11, closed 11; the two doors open at the end are held by walkers still in their doorway.
+- Door finding (`npc_doors.near`, 41 x 9 x 41 `find_nodes_in_area` plus the door test per door found): 106 calls over the whole run, 10.1 ms in total, largest single call 316 us.

@@ -1,0 +1,16 @@
+ACTION[Server]: [nv3] target capital
+ACTION[Server]: [nv3] LIVE capital dur_brannoc box (-1975,59,-1672) - (-1651,97,-1331), 1848 blocks forceloaded
+ACTION[Emerge-0]: [nv3] LIVE capital emerged in 12.0 s
+ACTION[Server]: [nv3] LIVE capital 454 objects after 12 s
+ACTION[Server]: [nv3] LIVE capital dur_brannoc: 98 ambling residents (20 walkers, 0 one-spot), 9 patrols; 120 s: find_path 166 (83.0/min, found 107, max 534 us at d 22.6, 13.3 ms), nav searches 166, cap waits 0; arrivals 44, spots given up 4, patrol advances 485, snaps 0, patrol give-ups 0
+ACTION[Server]: [nv3] LIVE cache {"corners":521,"door_legs":20,"legs":60,"max_us":539,"none":1,"ok":59,"pending":0,"search_us":18463,"searches":183,"smooth_us":4225,"street_legs":5,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":5126}
+ACTION[Server]: [nv3] LIVE doors: NPCs opened 17, closed 18; open before 1, after 0 of 62
+ACTION[Server]: [nv3] LIVE door finding so far: 48 calls, 4.6 ms, largest 259 us
+ACTION[Server]: [nv3] CENSUS capital dur_brannoc: 180 distinct legs in 33.4 s (369 steps): walkers 130 (ok 120, none 10), patrols 50 (ok 49, none 1, street 28); 372 more searches, 33.4 ms; cache {"corners":1647,"door_legs":39,"legs":199,"max_us":612,"none":11,"ok":188,"pending":0,"search_us":51813,"searches":555,"smooth_us":11935,"street_legs":28,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":5126}
+ACTION[Server]: [nv3] LIVE capital_steady dur_brannoc: 98 ambling residents (20 walkers, 0 one-spot), 9 patrols; 60 s: find_path 7 (7.0/min, found 6, max 293 us at d 12.0, 0.4 ms), nav searches 7, cap waits 0; arrivals 41, spots given up 3, patrol advances 242, snaps 0, patrol give-ups 0
+ACTION[Server]: [nv3] LIVE cache {"corners":1657,"door_legs":39,"legs":200,"max_us":612,"none":11,"ok":189,"pending":0,"search_us":52233,"searches":558,"smooth_us":12009,"street_legs":28,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":5126}
+ACTION[Server]: [nv3] LIVE doors: NPCs opened 11, closed 11; open before 2, after 2 of 62
+ACTION[Server]: [nv3] LIVE open door (-1831,74,-1590): grug_mobs:villager_dwarf d 0.8 holds -1831,74,-1590; grug_core:tag_carrier d 0.8; grug_mobs:villager_dwarf d 1.1 dwelling; grug_core:tag_carrier d 1.1
+ACTION[Server]: [nv3] LIVE open door (-1945,75,-1445): grug_mobs:villager_dwarf d 0.5 holds -1945,75,-1445; grug_core:tag_carrier d 0.5; grug_mobs:guard_accord d 3.4; grug_visuals:wield d 3.4; grug_core:tag_carrier d 3.4; grug_mobs:villager_dwarf d 1.1 dwelling; grug_core:tag_carrier d 1.1
+ACTION[Server]: [nv3] LIVE door finding so far: 106 calls, 10.1 ms, largest 316 us
+ACTION[Server]: [nv3] RESULT DONE
