@@ -538,6 +538,10 @@ end
 --
 local function advance(set, entry)
 	local job = entry.job
+	-- A build that found its area unloaded looks again a second later, not
+	-- every step of every walker waiting on it.
+	local now = core.get_us_time()
+	if now < (job.wait_until or 0) then return end
 	local steps = job.steps
 	while job.i <= #steps and steps[job.i].street do
 		local corners = steps[job.i].street
@@ -562,7 +566,10 @@ local function advance(set, entry)
 	local goal = step.to
 	if step.split then
 		goal = split_point(body, step.split, step.skip or 0)
-		if goal == "wait" then return end
+		if goal == "wait" then
+			job.wait_until = now + 1000000
+			return
+		end
 		if not goal then
 			-- No candidate left: the plan is spent.
 			job.fails = routes.MAX_FAILS
@@ -571,12 +578,18 @@ local function advance(set, entry)
 	end
 	local from, why = end_cell(job.from)
 	local to, why2 = end_cell(goal)
-	if why == "unloaded" or why2 == "unloaded" then return end
+	if why == "unloaded" or why2 == "unloaded" then
+		job.wait_until = now + 1000000
+		return
+	end
 	local steer
 	if from and to then
 		-- The engine reads unloaded nodes as walls: a search whose box is
 		-- not loaded waits, so no route is ever "none" for want of a load.
-		if not box_loaded(from, to) then return end
+		if not box_loaded(from, to) then
+			job.wait_until = now + 1000000
+			return
+		end
 		-- The queue is keyed by the build, not by a walker: any walker on
 		-- the leg may claim the grant, and a walker's own local searches
 		-- keep theirs.

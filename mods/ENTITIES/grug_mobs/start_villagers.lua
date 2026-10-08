@@ -597,10 +597,12 @@ end
 local function walk_leg(self, dtime, pos, spots, index)
 	local to = spots[index]
 	local from = spots[self._grug_idle_from or 0]
-	if not from or from == to then
-		-- A stand-in for this walk only, never saved: a walker that is not at
-		-- it walks its goal as a fixed walk when that leg has no route
-		-- (routes.lua FROM_SLACK).
+	local standin = not from or from == to
+	if standin then
+		-- A stand-in for this walk only, never saved. Its "no route" is no
+		-- verdict on the walker (the stand-in may be enclosed while the
+		-- walker stands outside it): the walker then walks its goal as a
+		-- fixed walk, with the give-up of three failures.
 		local best
 		for k = 1, #spots do
 			local s = spots[k]
@@ -613,7 +615,7 @@ local function walk_leg(self, dtime, pos, spots, index)
 	end
 	local fails, none = grug_mobs.route_walk(self, dtime, pos, self._grug_start,
 		from, to, "amble")
-	if fails then return fails, none end
+	if fails and not (none and standin) then return fails, none end
 	return grug_mobs.walk_fixed(self, dtime, pos, to.x, to.y, to.z, index, "amble")
 end
 

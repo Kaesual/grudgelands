@@ -23,7 +23,8 @@
 --      leg; a start-town patrol's second round asks nothing;
 --   U  unloaded is "later": a leg across the unloaded edge waits and is
 --      built once loaded; a pending walk is a fixed walk (round a wall); a
---      walker away from an enclosed no-route start walks to its goal;
+--      walker away from an enclosed no-route start walks to its goal, and so
+--      does one beside an enclosed stand-in start;
 --   N  the next-spot stage: a village spot in a pen is given up after three
 --      failed searches;
 --   R  rings: a walker whose composition has one spot borrows the nearest
@@ -685,6 +686,16 @@ do
 	t = run(m, 60, arrived)
 	check(t ~= nil and hdist(m, 0, 0) < 1.6, "U3 the walker away from its enclosed start arrives")
 	check(m._grug_idle_from == 1, "U3 ...the stand-in start was never saved")
+	-- U4 the walker stands right by its enclosed stand-in start (within 5
+	-- nodes of it): the stand-in's "no route" is no verdict, it still walks.
+	fresh()
+	town = new_settlement("start")
+	pen(20, 0, 3)
+	spots = {spot(0, 0), spot(20, 0), spot(40, 0)}
+	m = walker(20, 4.6, town, spots, 1)
+	t = run(m, 120, arrived)
+	check(t ~= nil, "U4 a walker beside its enclosed stand-in start arrives (" ..
+		tostring(t) .. " s, spot " .. tostring(m._grug_idle_spot) .. ")")
 end
 
 -- ---------------------------------------------------------------------------
