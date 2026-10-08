@@ -187,6 +187,11 @@ conditions); the user asked for numbers with a basis, not guesses.
     capital costs about 27 ms of searching, 8–16 ms of smoothing and 4.6 ms
     of street reading, spread over minutes). A walker's ring is topped up to
     at least 3 spots (ruling 16).
+24. **DR's door users** (the user, 2026-10-08): NPCs walk round fence gates
+    and never open them (mobs_redo stops a walker facing a gate); villagers,
+    settlement patrols and post guards use doors; royal guards do not (no
+    royal route needs one; a closed door leaves them their snap). NPCs never
+    open a locked door.
 
 Coordinator defaults (the user may overrule them):
 
