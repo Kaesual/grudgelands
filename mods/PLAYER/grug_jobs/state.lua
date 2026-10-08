@@ -4,14 +4,6 @@ local META_LEARNED = "grug_jobs:learned:"
 local META_LEVEL = "grug_jobs:level:"
 local META_CRAFTS = "grug_jobs:crafts:"
 
-local function mastery_band(player)
-	local level = grug_xp.get_level(player)
-	if level >= 46 then return 4 end
-	if level >= 31 then return 3 end
-	if level >= 16 then return 2 end
-	return 1
-end
-
 grug_jobs.CRAFTS_TO_ADVANCE = {10, 15, 20, 25, 30}
 
 local function set_string(meta, key, value)
@@ -181,12 +173,20 @@ local function craft_sound(recipe)
 	return CRAFT_SOUNDS[recipe.operation or ""] or CRAFT_SOUNDS[recipe.profession or ""] or "craft"
 end
 
--- A product taken out of a furnace or brewing stand (workspaces.lua, which
--- finish without award_progress): only the cooking and alchemy cues, so
--- smelting stays silent. Nil for anything else.
-function grug_jobs.automatic_take_sound(recipe)
-	local sound = recipe and craft_sound(recipe)
-	return (sound == "craft_cooking" or sound == "craft_alchemy") and sound or nil
+-- A product taken out of a furnace (workspaces.lua, which finishes without
+-- award_progress): the cooking cue for a dish a raw assembly cooks into
+-- (grug_cooking.RAW_ASSEMBLIES), so smelting and the plain refinements stay
+-- silent. Nil for anything else.
+local finished_dishes
+function grug_jobs.furnace_take_sound(stack)
+	if not finished_dishes then
+		finished_dishes = {}
+		local cooking = rawget(_G, "grug_cooking")
+		for _, row in ipairs(cooking and cooking.RAW_ASSEMBLIES or {}) do
+			finished_dishes[row.output] = true
+		end
+	end
+	return finished_dishes[ItemStack(stack):get_name()] and "craft_cooking" or nil
 end
 
 -- fn(player, recipe) after every finished craft award_progress counts
@@ -206,9 +206,12 @@ function grug_jobs.award_progress(player, recipe)
 	return advanced, level
 end
 
--- Shared progression authority for recipe books and the actual craft gate.
--- Station-specific access is checked separately at the point of crafting.
-function grug_jobs.recipe_progress_unlocked(player, recipe)
+-- Whether the player's professions allow a recipe or station operation: a
+-- Basic recipe always, a profession one when the profession is learned at
+-- the recipe's tier or higher (spec §2.34: profession tier = item tier). The
+-- station nearby is the job start's check (lane JB).
+function grug_jobs.can_craft_recipe(player, recipe)
+	if type(recipe) == "table" and recipe.area == "basic" then return true end
 	if type(recipe) ~= "table" or not grug_jobs.has(player, recipe.profession) then
 		return false, "Learn " ..
 			(recipe and grug_jobs.PROFESSIONS[recipe.profession] and
@@ -219,22 +222,6 @@ function grug_jobs.recipe_progress_unlocked(player, recipe)
 	if level < recipe.tier then
 		return false, grug_jobs.PROFESSIONS[recipe.profession].name ..
 			" tier " .. recipe.tier .. " required."
-	end
-	if recipe.mastery_required and mastery_band(player) < recipe.mastery_required then
-		local names = {"Apprentice", "Journeyman", "Expert", "Master"}
-		return false, names[recipe.mastery_required] .. " mastery required."
-	end
-	return true
-end
-
-function grug_jobs.can_craft_recipe(player, recipe)
-	if recipe and recipe.automatic_finish then return true end
-	local unlocked, reason = grug_jobs.recipe_progress_unlocked(player, recipe)
-	if not unlocked then return false, reason end
-	local handler = grug_jobs.station_handler(recipe.station)
-	if handler and handler.can_use then
-		local allowed, reason = handler.can_use(player, recipe)
-		if not allowed then return false, reason or "The station refused this recipe." end
 	end
 	return true
 end

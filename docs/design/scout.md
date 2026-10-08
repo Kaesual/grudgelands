@@ -135,8 +135,8 @@ The active contract is:
   the Melee blade's affixes do not (Round 28). One bow per material tier,
   material-named under §3.0.3. Arrows craft 100 (one stack) per batch from 1
   Bronze Bar + 2 Sticks diagonally, without feathers (Round 21, approved
-  2026-09-24; one stack since Round 28). Plain bows and arrows are Basics;
-  the Leatherworker owns named bow enchantments. There is no quiver item.
+  2026-09-24; one stack since Round 28). Arrows are Basic recipes; the
+  Leatherworker makes bows (Round 45) and owns named bow enchantments. There is no quiver item.
 - `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
   maximum by holding RMB and releases a targeted homing arrow on RMB release;
   Loose LMB uses melee Strike or hand digging. Draw affects damage (the curve
@@ -362,7 +362,7 @@ conflicts if version 1 had stealth (§8).
 | **WP11 (skill trees)** | the Scout's 16 talents run on the shared talent machinery | `skill_trees.md` §4 |
 | **The speed aggregator** | ruling 11's `grug_core` aggregator drives Sprint, Snare Shot and Shake Loose | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
 | **Weapon ladder §3.0.3** | six tier bows, the below-ladder starter bow, dedicated centre-grip pose and ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
-| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 Bronze Bar + 2 diagonal Sticks → 100, one stack (Round 21 calibration, Round 28 stack size); the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
+| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basic craft is 1 Bronze Bar + 2 Sticks → 100, one stack (Round 21 calibration, Round 28 stack size); the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
 | **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
 | **Professions** | none created. Leatherworker owns the leather grades and the bow enchants and upgrades (Round 33) | `professions.md` §2–§3 |
 | **Traders** | the bowyer shelf exposes the T1 bow and player arrows; the tanner shelf the T1 leather pieces (vendors sell T1 bases only since Round 33) | `grug_traders/stock.lua` |

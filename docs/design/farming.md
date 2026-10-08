@@ -1,6 +1,6 @@
 # Farming and wild plant renewal
 
-Decided 2026-09-20. This file owns farming and its Basics recipes (hoes,
+Decided 2026-09-20. This file owns farming and its Basic recipes (hoes,
 bucket, seeds), renewable wild plants and the water-only bucket; the food and
 material catalog remains in [items_crafting.md](items_crafting.md) §3.7. These
 rules supersede the former blanket non-renewal wording for plants, but never
@@ -14,7 +14,7 @@ Cultivated crops and their seeds remain distinct from natural source nodes.
 Seeds use recognizable seed silhouettes from licensed references, rather than
 recolored harvest icons. Reusing an appropriate seed silhouette is allowed.
 **Seeds:** any player crafts one harvest item of a family into two of its
-seeds (a shapeless Basics recipe, every family).
+seeds (a Basic recipe, every family).
 
 Every family has four logical stages at 200 seconds per advance. Growth runs
 only above wet crop soil; drying pauses exact partial progress and rewetting
@@ -173,8 +173,8 @@ visits per player and step, independent of world size.
 ## Water bucket
 
 One empty Iron Bucket and one filled Water Bucket, both stack size one. The
-Basics recipe is three `grug_materials:iron_bar` in the pinned VoxeLibre V
-layout. There is no profession, character-level or Housing prerequisite.
+Basic recipe is three `grug_materials:iron_bar` (the pinned VoxeLibre V
+layout until Round 45). There is no profession, character-level or Housing prerequisite.
 
 Fill only from actual ordinary or river water sources. Preserve that family in
 filled-stack metadata and place the same source family again. Invalid/missing

@@ -14,7 +14,8 @@ if rows == nil then error("grug_professions: data/enchants.json is missing", 0) 
 P.ENCHANT_DATA = data.validate_enchants(rows, grug_items.POOLS)
 
 -- The families each profession makes, enchants and upgrades (item_tiers.md
--- §3.3): two professions dress every class.
+-- §3.3): two professions dress every class. The gear recipes follow it
+-- (base_recipes.lua, Round 45).
 P.FAMILY_OWNERS = {
 	weaponsmith = {"dagger", "greataxe", "sword"},
 	armorsmith = {"metal_armor", "shield"},
@@ -144,13 +145,14 @@ P.register_upgrades("armorsmith", "forge", bars, metal_armor)
 P.register_upgrades("leatherworker", "tanning_rack", leathers, leather_armor)
 P.register_upgrades("tailor", "tailor_bench", bolts, cloth_armor)
 
--- Which profession's recipes make each item. Station operations work in place
--- on the equipment and make nothing new.
+-- Which profession's recipes make each item (Basic recipes belong to no
+-- profession). Station operations work in place on the equipment and make
+-- nothing new.
 function P.profession_products()
 	local products = {}
 	for index = 1, #grug_jobs.recipes do
 		local recipe = grug_jobs.recipes[index]
-		products[recipe.output_name] = recipe.profession
+		if recipe.profession then products[recipe.output] = recipe.profession end
 	end
 	return products
 end
@@ -177,8 +179,14 @@ core.register_on_mods_loaded(function()
 	local checked = {}
 	for index = 1, #grug_jobs.recipes do
 		local recipe = grug_jobs.recipes[index]
-		checked[#checked + 1] = {profession = recipe.profession, inputs = recipe.flat_inputs,
-			label = recipe.output_name}
+		if recipe.profession then
+			local inputs = {}
+			for _, entry in ipairs(recipe.ingredients) do
+				inputs[#inputs + 1] = grug_jobs.ingredient_token(entry)
+			end
+			checked[#checked + 1] = {profession = recipe.profession, inputs = inputs,
+				label = recipe.output}
+		end
 	end
 	for _, operation in ipairs(grug_jobs.station_operations()) do
 		checked[#checked + 1] = {profession = operation.profession,

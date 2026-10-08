@@ -10,6 +10,13 @@ the item catalog (§3.3–§3.6b, §6b), and there is **exactly one item per
 concept** — the vendor bracket catalog and the base craft ladder are the
 same, material-named items (§3.0.3). Resolutions in §10.
 
+**Recipe lists, Round 45 (2026-10-08).** The 3×3 crafting grid and the
+recipe books are gone: every craft is an ingredient-list recipe of one
+crafting area, and gear is made only by the profession that owns its family
+([professions.md](professions.md) §1.2,
+[ui-crafting-rework-plan.md](../planning/ui-crafting-rework-plan.md) §2.23,
+§4.1).
+
 **World-zone revision 2026-08-10.** Surface progression is keyed by the
 stable named zones and level bands in `world_zones.md`, not by WP18's radial
 ring names.
@@ -30,12 +37,12 @@ profession catalogs, food, the vendor catalog, loot sources, the quality and
 enchant model and the bow foundation. Every item number that a script prints
 (enchant values and inputs, upgrades, the crown, potions and elixirs, sale
 values, repair math, culture prices) is in [item_tiers.md](item_tiers.md);
-the profession rules (slots, progression, recipe books, mastery, stations) are
+the profession rules (slots, progression, recipe areas, mastery, stations) are
 in [professions.md](professions.md); money, prices and sinks in
 [economy.md](economy.md); wear and repair in
 [durability_repair.md](durability_repair.md); farming in
 [farming.md](farming.md). Crafting mechanics frame: `inventory_equipment.md`
-§4 (3×3 grid, multi-stage, shared and personal stations).
+§4 (multi-stage, stations, shared and personal workspaces).
 
 **Notation (binding, 2026-08-07).** `T1`–`T6` **always** means a *gear /
 material* tier (§3.0) or the profession tier of the same number. The four
@@ -107,8 +114,9 @@ profession rules:
 
 - §2.1 the two ladders (profession tier and mastery band) →
   [professions.md §1.1](professions.md#11-profession-tier-and-mastery-band);
-- §2.2 recipe books, Basics visibility, ingredient navigation and the craft
-  gate → [professions.md §1.2](professions.md#12-recipe-books-are-ui-revised-2026-09-18);
+- §2.2 the recipe areas (the recipe books, Basics visibility and ingredient
+  navigation until Round 45) and the craft gate →
+  [professions.md §1.2](professions.md#12-recipe-areas-round-45);
 - §2.3 profession level and tier ingredients →
   [professions.md §1](professions.md#1-structure) and
   [§1.3](professions.md#13-tier-ingredients-revised-2026-09-18);
@@ -117,9 +125,10 @@ profession rules:
 ## 3. Materials, curves and the profession catalogs
 
 Multi-stage everywhere (decided): ore → bar → component → item; hide →
-cured leather; cloth → bolt. Each authored recipe declares its station:
-ordinary grid, furnace, dual furnace or brewing stand. A station hint in the
-book explains where non-grid recipes are made.
+cured leather; cloth → bolt. Each recipe is an ingredient list of one
+crafting area; a profession recipe needs its station nearby
+([professions.md](professions.md) §1.2, §1.5). Smelting, alloys and the
+good dishes' finish stay furnace and dual-furnace recipes.
 
 Reading order: **§3.0** the material ladder and the one-item-per-concept
 rule, **§3.1/§3.2** the armor and weapon curves every item is generated
@@ -245,10 +254,11 @@ political territory or PvP state; it selects the region's signature wood:
 
 Crafted material blocks are storage/building nodes, never natural resources.
 **The pack/unpack recipes shipped 2026-09-16** (WP26): all twelve processed
-rows, 9 ↔ 1, both directions, derived from `grug_materials.PROCESSED_MATERIALS`
-so the Gold Block and the two resource-form blocks are covered by construction.
-The six cut-gem blocks pack and unpack the same way since Round 33 (a plain
-Basics recipe in `grug_artisans/goldsmith.lua`, building accents); rough gems
+rows, 9 ↔ 1, both directions, one per `grug_materials.PROCESSED_MATERIALS`
+row, so the Gold Block and the two resource-form blocks are covered (Basic
+recipes since Round 45, `grug_jobs/basic_recipes.lua`; the smelting audit
+checks them). The six cut-gem blocks pack and unpack the same way since Round
+33 (Basic recipes, building accents); rough gems
 have no block. Storage blocks have no harvest tier, any real pick recovers them wherever territory
 permission allows, and they always drop themselves. Mapgen never places a
 craftable nine-unit storage block. Citrine, Garnet, Jade, Diamond, Sapphire and
@@ -372,8 +382,9 @@ from `grug_gear`. Consequences, all binding:
   a startup audit (`grug_materials/audit.lua`) enforces the namespace. Iron gets tools
   because Iron is a full tier here — it owns a tier rock, a pick tier and a
   real bar item — so skipping it would leave §3.0.4's T2 row without a pick.
-  All six pick, axe and shovel tiers use the familiar Minecraft grid shapes and
-  are universal Basics recipes. Their existing capability profiles remain the
+  All six pick, axe and shovel tiers are Basic recipes with the ingredients of
+  the familiar grid shapes (three bars or blocks and two sticks for a pick or
+  an axe, one and two for a shovel). Their existing capability profiles remain the
   authority for dig times: dig speed stays as in the game, and no separate
   six-pick speed calibration follows (user decision 2026-09-29, WP audit D8).
   Lifetime follows the current equipment revision.
@@ -382,27 +393,28 @@ from `grug_gear`. Consequences, all binding:
   Bronze Sword, Mage/Priest with a Bronze Staff, Scout with a Bronze Bow in
   Ranged, a Bronze Sword in Melee and 200 arrows in its quiver slot (Round 28).
   Ordinary T1 weapons are usable at level 1.
-- **All armor base recipes use the canonical shapes:** head 5, chest 8,
-  legs 7 and feet 4 units, in the same grid positions for metal, cloth and
-  leather. All three lines and all six material tiers are registered and
-  universal.
-- A profession never gets a *parallel* item. What a profession adds on
-  top of the base item is the **enchantment and the special
-  variant** (§6b), plus its handful of exclusive recipes.
+- **All armor base recipes use the canonical counts:** head 5, chest 8,
+  legs 7 and feet 4 units of the line's material, for metal, cloth and
+  leather. All three lines and all six material tiers are registered; since
+  Round 45 each line is its profession's recipe (Armorsmith, Tailor,
+  Leatherworker) at the tier of its material.
+- A profession never gets a *parallel* item. It makes the one item of its
+  families (Round 45) and adds the **enchantment and the special variant**
+  (§6b), plus its handful of exclusive recipes.
 
 ##### Plain caster weapons and bows
 
-User-approved playtest revision, 2026-09-21. All six tiers of plain wands,
-staves and bows are profession-free Basics recipes. H means an ordinary
+User-approved playtest revision, 2026-09-21; since Round 45 the Woodcarver
+makes the wands and staves and the Leatherworker the bows, with these
+ingredients (the former grid shapes counted). H means an ordinary
 `group:stick`, M one bar of the weapon's metal tier, O the occult component
-below and T `grug_professions:thread`. Dashes are empty grid slots.
+below and T `grug_professions:thread`.
 
-| Weapon | Top row | Middle row | Bottom row |
-|---|---|---|---|
-| Wand | `-O-` | `-M-` | `-H-` |
-| Staff | `OMO` | `-H-` | `-H-` |
-| Bow | `-HT` | `M-T` | `-HT` |
-| Mirrored bow | `TH-` | `T-M` | `TH-` |
+| Weapon | Ingredients |
+|---|---|
+| Wand | 1 O, 1 M, 1 H |
+| Staff | 2 O, 1 M, 2 H |
+| Bow | 2 H, 3 T, 1 M |
 
 | Tier / metal | Occult component |
 |---|---|
@@ -416,10 +428,8 @@ below and T `grug_professions:thread`. Dashes are empty grid slots.
 Each wand consumes one occult component; each staff consumes two. Bows need
 none. Graded wood and the former metal-rod wand alternative are absent from
 these base recipes; graded wood is the Woodcarver's enchant material (§3.6a).
-Components may be collected before their weapon tier, with metal providing
-the tier gate. Bronze recipes are visible from the start; later recipes are
-discovered by finding their matching metal bar. Discovery only affects book
-visibility, never crafting qualification or character-level restrictions.
+Components may be collected before their weapon tier, with metal and the
+profession tier providing the tier gate.
 
 #### 3.0.4 Tier rock, harvest tier and loose ground
 
@@ -590,7 +600,7 @@ level or harvest tier.
 
 Pick profiles retain their authored monotonic ladder. Hoe identities, uses,
 soil conversion, water buckets, seeds and wild renewal are authoritative in
-[farming.md](farming.md), their Basics recipes (hoes, bucket, seeds)
+[farming.md](farming.md), their Basic recipes (hoes, bucket, seeds)
 included.
 
 #### 3.0.5 Boats have no recipe
@@ -692,10 +702,9 @@ also generates the vendor bracket weapons of §3.8.
 
 The active caster roster is the two-handed staff or the one-handed wand plus a
 Tailor spellbook. Scepters and orbs are absent on fresh servers: no item,
-recipe, loot or vendor identity remains. Staves and wands use universal plain
-Basics recipes; Woodcarver owns their enchantments. Bows are likewise
-universal plain Basics, with the Leatherworker owning their improvement
-operations (Round 33).
+recipe, loot or vendor identity remains. The Woodcarver makes staves and wands
+and owns their enchantments; the Leatherworker makes bows and owns their
+improvement operations (Round 33; the recipes since Round 45).
 
 Every equipment item requires min(item level, 60) as its minimum character
 level (Round 33, round33-plan.md §2.2; `_grug_req_level`, per stack
@@ -705,19 +714,15 @@ tier's band, 1 / 11 / 21 / 31 / 41 / 51 (Round 45). Every equipment slot enforce
 carry their own material-tier level requirement instead (§3.0.4 "Tool level
 requirement").
 
-**How to read §3.3–§3.6b** (rewritten 2026-08-07). These sections used to
-describe a model where each profession **owned** its item catalog. Under
-§3.0.3 that is no longer true: the base item of every material tier is
-craftable by everyone. What each section now lists is three things —
+**How to read §3.3–§3.6b** (rewritten 2026-08-07, Round 45). Every section
+lists three things —
 
-1. the **material chain** the profession enchants and upgrades with — its
-   grades are universal Basics grid recipes that award no progress
-   ([professions.md](professions.md) §3),
-2. the **item families** the profession may **enchant and upgrade**
-   (§6b, §7) — its exclusive claim on the *quality* of an item, not on its
-   existence,
-3. its **exclusive recipes**: things nobody else can make at all (bags,
-   spellbooks, trinkets, settings and cut gems).
+1. the **material chain** the profession works with — its grades are Basic
+   recipes that award no progress ([professions.md](professions.md) §3),
+2. the **item families** the profession **makes, enchants and upgrades**
+   (§6b, §7; the base items are its recipes since Round 45, at the profession
+   tier of the item's tier),
+3. its other **exclusive recipes** (bags, trinkets, settings and cut gems).
 
 Coverage across the six primaries and the two secondaries is complete and
 overlap-free (professions.md §2).
@@ -732,28 +737,31 @@ six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
 — the T4 metal is Silversteel from a real new ore, which is exactly the
 "new ore post-MVP" option P1 held open.
 
-**Weaponsmith enchants** physical weapons. Gathering tools have no combat enchants.
-**Armorsmith enchants** metal armor and shields. Plain base recipes
-remain universal: swords cost two bars plus a handle; picks cost three bars;
-armor uses the canonical 5/8/7/4 head/chest/legs/feet layouts. Both smiths
-enchant with the metal bar of the enchant tier as their own material (§6b);
-the former Weaponsmith metal fittings are removed (Round 28 ruling 28).
+**The Weaponsmith makes and enchants** physical weapons at the Forge: swords
+(two bars and a handle), daggers (one bar and a handle) and battle axes (five
+bars and two handles), a handle being a stick or a metal rod. Gathering tools
+have no combat enchants; picks (three bars, two sticks) stay Basic.
+**The Armorsmith makes and enchants** metal armor (the canonical 5/8/7/4
+head/chest/legs/feet bars) and shields (six planks and a bar) at the Forge.
+Both smiths enchant with the metal bar of the enchant tier as their own
+material (§6b); the former Weaponsmith metal fittings are removed (Round 28
+ruling 28).
 
-**Exclusive recipes**: named family-legal enchantments.
-Plain shields use their universal Basics grid; Armorsmith owns their enchants.
+**Exclusive recipes**: their families' base items and named family-legal
+enchantments.
 
 Ore access follows §3.0.4: territory/protection, then the pick tier against
 the ore's harvest tier, at any depth. Natural distribution comes
 from §3.0.1 and the column's `race_region`, not from a tier-matched stratum or
 a lead-metal-band rule.
 
-Every pick is a universal base recipe. Higher-tier tools improve their mining
-access and lifetime; no professional refinement step exists.
+Every pick is a Basic recipe. Higher-tier tools improve their mining access
+and lifetime; no professional refinement step exists.
 
 ### 3.4 Leatherworker (tanning rack) — leather armour, bows and leather bags
 
-**Material chain**: hide + thread → leather, 1:1 per grade, as universal
-Basics grid recipes (no profession, no progress). Authored grades are
+**Material chain**: hide + thread → leather, 1:1 per grade, as Basic
+recipes (no profession, no progress). Authored grades are
 **T1 light leather, T2 cured leather, T3 heavy leather and T4 scaled hide**;
 decided 2026-08-13: **T5 sleek leather** (from the panther's sleek pelt —
 `biomes_mobs.md` §3.1/§6, both continents via jungle fringe/deep jungle) and
@@ -761,25 +769,25 @@ decided 2026-08-13: **T5 sleek leather** (from the panther's sleek pelt —
 the Tailor's T4 silkweave precedent (serpents and panthers carry the
 level-51–60 zones on both continents; no new mob is required).
 
-**Enchants**: leather armor, all four slots. Base recipes use
-the §3.1 shapes at jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP
-wearers are the **Warrior** (light avoidance set, §3.8 — decided
-2026-08-13) and the **Scout**.
+**Makes and enchants**: leather armor, all four slots, at the Tanning Rack:
+jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP wearers are the
+**Warrior** (light avoidance set, §3.8 — decided 2026-08-13) and the
+**Scout**.
 
 **Exclusive recipes**: named leather-armor enchantments across T1–T6 (§6b)
 and four leather bags at the Tanning Rack — the 8-slot Leather Pouch at
-profession T1, then 16 / 24 / 32 slots at T2 / T4 / T5, each also needing
-its mastery band Apprentice / Journeyman / Expert / Master
-([professions.md](professions.md) §1.1). (The quiver item and its recipe
-were removed in Round 28; the quiver is a Scout-only slot,
-`inventory_equipment.md` §3.) Plain bows are Basics; the Leatherworker enchants
-and upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md) §3.3).
+profession T1, then 16 / 24 / 32 slots at T2 / T4 / T5, each eight leathers
+of its tier and a Thread (no mastery band since Round 45). (The quiver item
+and its recipe were removed in Round 28; the quiver is a Scout-only slot,
+`inventory_equipment.md` §3.) The Leatherworker makes bows and enchants and
+upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md)
+§3.3).
 
 
 ### 3.5 Tailor (tailor bench) — cloth armour, spellbooks and cloth bags
 
-**Material chain**: 2 cloth + thread → bolt, as universal Basics grid
-recipes (no profession, no progress). Authored grades are **T1 linen
+**Material chain**: 2 cloth + thread → bolt, as Basic recipes (no
+profession, no progress). Authored grades are **T1 linen
 scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
 bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
@@ -792,49 +800,46 @@ stormweave bolt** — stormkelp (coast 45–60, both continents,
 unchanged, and the T6 bolt gives the level-45–60 coast zones an economic
 pull.
 
-**Enchants**: cloth armor, all four slots. Base recipes:
+**Makes and enchants**: cloth armor, all four slots, at the Tailor Bench:
 robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
 
 **Exclusive recipes**:
 
 - **Bags** (`inventory_equipment.md` §3) — **four sizes, 8 / 16 / 24 / 32
-  slots**, at profession T1 / T2 / T4 / T5, each also needing its mastery
-  band Apprentice / Journeyman / Expert / Master
-  ([professions.md](professions.md) §1.1). The 8-slot bag stays
+  slots**, at profession T1 / T2 / T4 / T5 (no mastery band since Round 45).
+  The 8-slot bag (six patch bolts, two light leathers) stays
   vendor-sellable, because it is the floor tier (vendor floor rule); the
   16-slot bag is 8 woven bolts + 2 cured leather, the 24-slot 10 heavy
   bolts + 4 spider silk + 2 heavy leather, and the 32-slot ("huge bag")
   is the Master addition of 2026-08-07.
 - **Named cloth enchantments** across all six tiers (§6b); no separate kit line.
 - **Spellbooks** (Round 33, from the Goldsmith): two bolts of the tier and a
-  Parchment at the Tailor Bench; every tier also needs the Journeyman
-  mastery band (character level 16+, [professions.md](professions.md) §1.1),
-  so the T1 spellbook is out of reach in the T1 band. The Tailor also enchants
-  and upgrades them with its bolt ([item_tiers.md](item_tiers.md) §3.3).
+  Parchment at the Tailor Bench, at the profession tier of the book's tier
+  (no mastery band since Round 45). The Tailor also enchants and upgrades
+  them with its bolt ([item_tiers.md](item_tiers.md) §3.3).
 - The woven and heavy bolt bundles are bag inputs (intermediates, no
   profession progress).
 
 ### 3.6 Alchemy (brewing stand) — potions and elixirs
 
 **Implemented 2026-09-18; a secondary profession since Round 33** (no primary
-slot, its own book slot beside Cooking, `professions.md` §1). Herbalism is
+slot, its own crafting area beside Cooking, `professions.md` §1). Herbalism is
 part of Alchemy rather than a separate profession. The wild sources of
 Gravemoss, Dragonweed, Crimson Lotus and Ember Moss are fail-closed scenery
 for everyone who has not learned Alchemy; learning the profession authorizes
 all four. The cultivated Ember Moss crop and its seed recipe carry no Alchemy
 gate ([farming.md](farming.md)). Cave Cap remains food-grade and universal.
 Recipe access is the effective Alchemy tier ([professions.md](professions.md)
-§1.2), not a herb or keystone book gate. Every tier-N recipe contains a
+§1.2), not a herb or keystone gate. Every tier-N recipe contains a
 declared tier-N reagent.
 
-Alchemists assemble a potion mixture from its reagents and vial in their own
-inventory 3x3 grid; that qualified preparation awards current-tier progress.
-The **Brewing Stand** accepts one mixture, fuel and finished outputs. Its
-automatic completion and extraction are universal and grant no further progress.
-Capital stations are personal workspaces; all player-placed copies are shared
-stations subject to area access. The stand is a T3 Alchemy grid recipe (a
-station: it awards no profession progress):
-three Steel Bars, one Furnace and one Glass Bottle. Glass Bottles cost 3 copper.
+Alchemists prepare a potion from its reagents and vial as an Alchemy recipe
+at a **Brewing Stand** nearby (Round 45, 2 s; spec §2.27), and that qualified
+preparation awards current-tier progress. Round 45 also ends the mixture
+step: the recipes produce the finished potions and elixirs, and the stand's
+automatic brewing goes (lane ST). The stand is a T3 Alchemy recipe (a
+station: it awards no profession progress): three Steel Bars, one Furnace
+and one Glass Bottle. Glass Bottles cost 3 copper.
 
 Potions restore or act immediately and share the persistent potion clock.
 Every successfully consumed potion or elixir plays one shared drinking sound;
@@ -857,31 +862,30 @@ imbuing oil and no Sovereign's Flask (removed in Round 33).
 
 Woodcarver owns named enchant and upgrade operations for the caster weapon
 families: staff and wand (bows belong to the Leatherworker since Round 33,
-[item_tiers.md](item_tiers.md) §3.3). Their plain recipes remain universal
-Basics.
-Plain weapons use ordinary sticks and matching-tier metal bars. Wands and
-staves additionally use the tier's ordinary mob component; bows use Thread.
-The exact shapes and six-component ladder are in §3.0.3
-([plain caster weapons and bows](#plain-caster-weapons-and-bows)).
+[item_tiers.md](item_tiers.md) §3.3), and makes them at the Carving Bench
+(Round 45). Wands and staves use ordinary sticks, matching-tier metal bars and
+the tier's ordinary mob component; the ingredients and six-component ladder
+are in §3.0.3 ([plain caster weapons and bows](#plain-caster-weapons-and-bows)).
 
 **Material chain**: wood, including the per-race woods of biomes_mobs §5 —
 silverwood and gravewood among them. Signature woods are not a mandatory
 universal tier ladder. The six processed grades are decided
 (2026-08-13): **Seasoned → Polished → Hardened → Inlaid → Lacquered →
 Heartwood** (T1→T6), retained for enchanting rather than plain weapon recipes,
-each a universal Basics grid recipe from any `group:wood` — both continents
+each a Basic recipe from any `group:wood` — both continents
 reach every grade by construction, and the per-race woods stay a cosmetic
 skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
 for example Steel Staff (§3.8).
 
-**Enchants and upgrades**: staves and wands.
+**Makes, enchants and upgrades**: staves and wands.
 
-**Exclusive operations:** named staff and wand enchants and upgrades across T1–T6.
+**Exclusive recipes and operations:** staves and wands, their named enchants
+and upgrades across T1–T6.
 
 **Self-contained (Round 28 ruling 28).** The Woodcarver enchants with its
 own graded wood of the enchant tier plus the tier's loot and mining inputs
 (§6b); it no longer buys Weaponsmith metal fittings, which are removed.
-Universal plain caster weapons never require a professional component.
+Caster weapons never require another profession's component.
 
 ### 3.6b Goldsmith (jeweller's bench) — gold, gems, both trinket slots
 
@@ -932,7 +936,7 @@ Copper-inlaid Steel and the two filigree Settings are Goldsmith components,
 not universal bars or tool materials. Every core trinket takes the gem of its
 recipe tier (T5 and T6 add the gems one and two tiers below); the
 six identities differ only by their Setting count. The complete tier list is
-visible in the matching book group: all six T4 recipes become craftable with
+listed in the Goldsmith's area: all six T4 recipes become craftable with
 profession T4, so mining depth rather than recipe rarity remains the
 material gate. No recipe scroll, reputation grind or enemy unlock is involved.
 Each core trinket recipe consumes only its tier-appropriate Setting and the
@@ -997,9 +1001,9 @@ main profession slot (professions.md §1).
   T3 and Wild Cocoa T6. The five band fish are T2–T6 respectively. Cooked
   Meat, Cooked Fish, Bread and the Meat Block are T1 Hearty dishes.
 
-  **Cooking book.** Every row is a profession recipe at the crafting grid and
-  contains at least one ingredient registered at its own recipe tier. The
-  Hearty dishes have no direct grid route (Round 28 ruling 27): they come only
+  **Cooking area.** Every row is a Cooking recipe (1 s, no station; Round 45)
+  and contains at least one ingredient registered at its own recipe tier. The
+  Hearty dishes have no direct recipe (Round 28 ruling 27): they come only
   from their raw assembly in the furnace (below). Within a tier a stronger
   dish costs more to make, never less (Round 34): the Caster dish (HP and mana
   regeneration) needs more input value, counted in vendor payouts, than the
@@ -1022,9 +1026,9 @@ main profession slot (professions.md §1).
   | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
 
   **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
-  Cooked Fish and Wild Grain → Bread are universal Basics routes with no
+  Cooked Fish and Wild Grain → Bread are universal furnace recipes with no
   profession progression. Every tier also
-  has one Cooking grid recipe for an inedible raw assembly ("Raw X"); its
+  has one Cooking recipe for an inedible raw assembly ("Raw X"); its
   universal furnace finishing route is the only source of that tier's
   Hearty dish:
 
@@ -1049,7 +1053,7 @@ main profession slot (professions.md §1).
   not chat (`inventory_equipment.md`, "Message feed").
   Current catch tables and catch-only rod wear stay unchanged. Death, logout,
   unequipping or leaving the permitted range removes the line. No fishing
-  profession or lure system is introduced. The rod is an early T1 Basics
+  profession or lure system is introduced. The rod is an early T1 Basic
   craft: three sticks and two thread (user decision, Round 29).
 
 - **Vendor stock**: the level-independent core (small bag, weak healing
@@ -1065,8 +1069,8 @@ main profession slot (professions.md §1).
 - **Vendors sell the T1 catalog only** ([round33-plan.md](../planning/round33-plan.md)
   §2.6): all six weapon families and the three armour lines at their T1 slot
   prices, Common, at every level, with no rotation and no vendor Uncommon.
-  From T2 the bases come from Basics crafting (mined and gathered materials)
-  or drops. The superseded moving floor, bracket tabs and hourly rotation are
+  From T2 the bases come from profession crafting (mined and gathered
+  materials; Round 45) or drops. The superseded moving floor, bracket tabs and hourly rotation are
   [archived](../archive/design/items-history.md#38-vendor-brackets-before-round-33-superseded).
 - **Six catalogs, one per material tier**, 1-based (bracket 1 is levels
   1–10, never 0–9): they are the base craft ladder (§3.0.3), the drop pool of
@@ -1081,8 +1085,8 @@ main profession slot (professions.md §1).
 | 1H weapon dmg (§3.2 curve) | 4 | 8 | 11 | 15 | 18 | 22 |
 
 - **No gem base cost.** Ordinary crafted combat weapons, armor
-  pieces and offhands at every tier use only their universal material
-  recipe (bars, cloth, leather, wood). The former T4–T6 Cut-gem surcharge on
+  pieces and offhands at every tier use only their material recipe (bars,
+  cloth, leather, wood). The former T4–T6 Cut-gem surcharge on
   base equipment is retired (Round 10 ruling 7: "There is no additional high-tier
   regional-gem surcharge on base equipment"). Gem demand comes from trinkets
   (§3.6b/§6.2) and enchant inputs (§6b). Dropped/vendor gear
@@ -1502,7 +1506,8 @@ cap/demand audit evaluates all three source channels together.
 
 ### 6.4 Crafted quality
 
-Base recipes produce Common gear and are universally craftable. One enchant
+Base recipes produce Common gear at their tier's base item level; they are
+their family's profession recipes (Round 45). One enchant
 makes ordinary equipment Uncommon; one prefix plus one suffix makes it Rare.
 There is no refinement prerequisite, bonus or separate Imbue/Temper path.
 Enchant values follow the item level up to the enchant's tier
@@ -1514,14 +1519,13 @@ own rules.
 ### 6b.1 Profession ownership
 
 Apply enchantments at the owning profession station to the concrete stack.
-Everyone can craft base gear; qualified professionals can apply or replace its
-legal enchants. Tools are not weapons and receive no ordinary combat enchants.
+Qualified professionals craft base gear and apply or replace its legal
+enchants. Tools are not weapons and receive no ordinary combat enchants.
 
 Each legal family/stat/channel combination has one named recipe at every
 enchant tier: 552 ordinary family/stat/channel/tier operations plus 36
 Goldsmith trinket operations (three choices per channel across six tiers).
-UI selection distinguishes operations without manufacturing ambiguous grid
-recipes. An application acts on the concrete equipment stack, preserves its
+UI selection distinguishes operations; none is an ingredient-matched recipe. An application acts on the concrete equipment stack, preserves its
 other metadata and wear and leaves the other channel intact. Each stat has a
 fixed colour that the enchanted item shows as a small accent (prefix) and
 fitting (suffix) on its icon, in hand and on the body; every enchanting
@@ -1643,9 +1647,8 @@ physical Gold is a separate Goldsmith/build material (economy.md §1).
 - §8.4 services, claims and mounts → [housing.md](housing.md) (the Claim
   Stone and its fuel) and economy.md §4.1–§4.2 (mount and boat prices).
 
-Core supplies remain simple fixed-price goods. No profession book
-([professions.md](professions.md) §1.2), Dowsing Rod or Gem Detector is sold
-or crafted.
+Core supplies remain simple fixed-price goods. No profession book, Dowsing
+Rod or Gem Detector is sold or crafted.
 
 ## 9. Bow and arrow item foundation
 
@@ -1675,15 +1678,15 @@ consumer are active:
 - **Arrows** stack to **100** in any inventory (Round 28 ruling 26, which
   replaced the 200 of the 2026-09-20 playtest ruling); new Scouts receive 200
   in their quiver slot, which holds up to 500 (`inventory_equipment.md` §3). Ammo also has a targeted projectile entity;
-  one Basics craft fills one stack of 100 from 1 bronze bar + 2 sticks
-  diagonally (`--M / -S- / S--`; Round 28 ruling 26), without feathers or a
+  one Basic craft fills one stack of 100 from 1 bronze bar + 2 sticks
+  (Round 28 ruling 26; arrows stay Basic in Round 45), without feathers or a
   profession; there is no other metal recipe and no bonus-damage ammunition
   tier (Round 21). Arrows cost 3c each
   (2c after the same-race discount) at every race vendor and the Bowyer;
   traders do not buy them back, because the basic craft makes a full stack
   from one bar (economy.md §2).
-- **Plain production is Basics; the Leatherworker owns enchantments and
-  upgrades** (Round 33, [item_tiers.md](item_tiers.md) §3.3). The
+- **The Leatherworker makes bows and owns their enchantments and upgrades**
+  (Round 33, [item_tiers.md](item_tiers.md) §3.3; the recipe since Round 45). The
   Scout consumes the family in V1. Shots draw from the Scout's quiver slot
   first, then `main` and the bags.
 

@@ -2,17 +2,6 @@ local A = grug_artisans
 local C = "grug_artisans:"
 local M = "grug_materials:"
 
-local function grid(inputs)
-	local result = {}
-	for index = 1, #inputs do
-		local row = math.floor((index - 1) / 3) + 1
-		local column = (index - 1) % 3 + 1
-		result[row] = result[row] or {}
-		result[row][column] = inputs[index]
-	end
-	return result
-end
-
 -- The six depth-tiered gems (economy plan §6): each cuts at the tier it is
 -- mined at, and its raw and cut forms are ingredients of that tier. Raw
 -- Quartz is a T1 enchant input, a mineral without a cut form (Round 33).
@@ -23,25 +12,16 @@ for _, resource in ipairs(grug_materials.RESOURCES) do
 		local tier = resource.harvest_tier
 		A.register_ingredient(resource.raw_item, tier)
 		A.register_ingredient(resource.cut_item, tier)
-		A.register_recipe("goldsmith", {tier = tier,
-			station = "jewellers_bench", inputs = {{resource.raw_item}},
-			output = resource.cut_item, material = true,
-			hint = "Cut at a Jeweller's Bench"})
+		A.register_recipe("goldsmith", {tier = tier, output = resource.cut_item,
+			ingredients = {{item = resource.raw_item, n = 1}}, material = true,
+			time = grug_jobs.DURATIONS.material})
 		if resource.gem then gem_by_tier[tier] = resource.cut_item end
 	end
 end
 
--- Cut-gem storage blocks (Round 33): a plain 9 <-> 1 Basics recipe anyone may
--- use, so the blocks serve as building accents. The unpack is no second
--- route to a cut gem (grug_jobs registry.lua storage_unpack).
-for _, resource in ipairs(grug_materials.RESOURCES) do
-	if resource.gem and resource.cut_item and resource.block_node then
-		local cut = resource.cut_item
-		core.register_craft({output = resource.block_node,
-			recipe = {{cut, cut, cut}, {cut, cut, cut}, {cut, cut, cut}}})
-		core.register_craft({output = cut .. " 9", recipe = {{resource.block_node}}})
-	end
-end
+-- Cut-gem storage blocks (Round 33): a plain 9 <-> 1 Basic recipe anyone may
+-- use, so the blocks serve as building accents (grug_jobs/basic_recipes.lua).
+-- The unpack only returns what was packed: no second route to a cut gem.
 
 local settings = {
 	{key = "tin", name = "Tin Setting", inputs = {M .. "tin_bar", M .. "tin_bar"}},
@@ -74,9 +54,9 @@ for tier = 1, #settings do
 			({"b7a289", "8c8c86", "6f7781", "ddb64d", "9e633e", "59436f"})[tier] ..
 			":100", {grug_profession_material = 1, grug_jewellery_setting = tier})
 	A.register_ingredient(row.item, tier)
-	A.register_recipe("goldsmith", {tier = tier, station = "jewellers_bench",
-		inputs = {row.inputs}, output = row.item, material = true,
-		hint = "Form at a Jeweller's Bench"})
+	A.register_recipe("goldsmith", {tier = tier, output = row.item,
+		ingredients = grug_jobs.ingredient_list(row.inputs), material = true,
+		time = grug_jobs.DURATIONS.material})
 end
 
 local trinkets = {
@@ -88,9 +68,10 @@ local trinkets = {
 	{key = "reclaimers_mark", settings = 6},
 }
 
--- Round 9 ruling 39: the identity-specific Setting counts are a temporary
--- collision key for the input-authoritative station registry. Replace them
--- with station output selection or one authored per-identity ingredient.
+-- Round 9 ruling 39 made the Setting count (1 to 6) tell the identities
+-- apart in the old input-matched registry. Since Round 45 a craft names its
+-- recipe, so that reason is gone; the counts stay as today's ingredients
+-- (spec §2.34).
 
 -- The cut gem of the recipe tier (Citrine at T1 ... Diamond at T6, as in the
 -- mines), plus the T4 gem at T5 and the T5 and T4 gems at T6.
@@ -109,9 +90,9 @@ for tier = 1, 6 do
 		local gems = trinket_gems(tier)
 		for gem_index = 1, #gems do inputs[#inputs + 1] = gems[gem_index] end
 		A.register_recipe("goldsmith", {tier = tier,
-			station = "jewellers_bench", inputs = grid(inputs),
 			output = grug_gear.trinket_item(row.key, tier),
-			hint = "Assemble at a Jeweller's Bench"})
+			ingredients = grug_jobs.ingredient_list(inputs),
+			time = grug_jobs.DURATIONS.gear})
 	end
 end
 

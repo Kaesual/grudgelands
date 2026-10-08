@@ -1,31 +1,15 @@
 local P = grug_professions
 local C = "grug_professions:"
-local THREAD = C .. "thread"
 
-local function grid(inputs)
-	local result = {}
-	for index = 1, #inputs do
-		local row = math.floor((index - 1) / 3) + 1
-		local column = (index - 1) % 3 + 1
-		result[row] = result[row] or {}
-		result[row][column] = inputs[index]
-	end
-	return result
-end
-
+-- The six cloth bolts. Each bolt's recipe (two cloths or silks and a
+-- Thread) is Basic (grug_jobs/basic_recipes.lua).
 local tiers = {
-	{key = "patch", name = "Patch", source = "grug_mobs:linen_scrap",
-		inputs = {"grug_mobs:linen_scrap", "grug_mobs:linen_scrap", THREAD}},
-	{key = "woven", name = "Woven", source = "grug_mobs:linen_cloth",
-		inputs = {"grug_mobs:linen_cloth", "grug_mobs:linen_cloth", THREAD}},
-	{key = "heavy", name = "Heavy", source = "grug_mobs:heavy_cloth",
-		inputs = {"grug_mobs:heavy_cloth", "grug_mobs:heavy_cloth", THREAD}},
-	{key = "silkweave", name = "Silkweave", source = "grug_mobs:spider_silk",
-		inputs = {C .. "bolt_heavy", "grug_mobs:spider_silk", THREAD}},
-	{key = "silk", name = "Silk", recipe_tier = 5, material = true,
-		inputs = {"grug_mobs:spider_silk", "grug_mobs:spider_silk", THREAD}},
-	{key = "stormweave", name = "Stormweave", recipe_tier = 6, material = true,
-		inputs = {"grug_mobs:spider_silk", "grug_gathering:stormkelp", THREAD}},
+	{key = "patch", name = "Patch", source = "grug_mobs:linen_scrap"},
+	{key = "woven", name = "Woven", source = "grug_mobs:linen_cloth"},
+	{key = "heavy", name = "Heavy", source = "grug_mobs:heavy_cloth"},
+	{key = "silkweave", name = "Silkweave", source = "grug_mobs:spider_silk"},
+	{key = "silk", name = "Silk"},
+	{key = "stormweave", name = "Stormweave"},
 }
 
 for tier = 1, #tiers do
@@ -40,60 +24,46 @@ for tier = 1, #tiers do
 		P.register_ingredient("grug_gathering:stormkelp", 5)
 	end
 	P.register_ingredient(bolt, tier)
-	core.register_craft({output = bolt, recipe = grid(row.inputs)})
-
 end
 
 local woven_bundle = P.register_item(C .. "woven_bolt_bundle",
 	"Bundle of Four Woven Bolts",
 	"default_paper.png^[colorize:#cab795:105", {grug_tailor_bundle = 4})
 P.register_ingredient(woven_bundle, 2)
-P.register_recipe("tailor", {tier = 2, station = "tailor_bench",
-	inputs = {{C .. "bolt_woven", C .. "bolt_woven", C .. "bolt_woven"},
-		{C .. "bolt_woven", "", ""}}, output = woven_bundle, material = true,
-	hint = "Bundle at a Tailor Bench"})
+P.register_recipe("tailor", {tier = 2, output = woven_bundle,
+	ingredients = {{item = C .. "bolt_woven", n = 4}}, material = true,
+	time = grug_jobs.DURATIONS.material})
 
 local heavy_bundle = P.register_item(C .. "heavy_bolt_bundle",
 	"Bundle of Five Heavy Bolts",
 	"default_paper.png^[colorize:#8c735e:105", {grug_tailor_bundle = 5})
 P.register_ingredient(heavy_bundle, 3)
-P.register_recipe("tailor", {tier = 3, station = "tailor_bench",
-	inputs = {{C .. "bolt_heavy", C .. "bolt_heavy", C .. "bolt_heavy"},
-		{C .. "bolt_heavy", C .. "bolt_heavy", ""}}, output = heavy_bundle,
-	material = true, hint = "Bundle at a Tailor Bench"})
+P.register_recipe("tailor", {tier = 3, output = heavy_bundle,
+	ingredients = {{item = C .. "bolt_heavy", n = 5}}, material = true,
+	time = grug_jobs.DURATIONS.material})
 
-P.register_recipe("tailor", {tier = 1, station = "tailor_bench",
-	inputs = {{C .. "bolt_patch", C .. "bolt_patch", C .. "bolt_patch"},
-		{C .. "bolt_patch", "grug_mobs:light_leather", C .. "bolt_patch"},
-		{C .. "bolt_patch", "grug_mobs:light_leather", ""}},
-	output = "grug_inventory:bag_small", mastery_required = 1,
-	hint = "Sew at a Tailor Bench"})
-P.register_recipe("tailor", {tier = 2, station = "tailor_bench",
-	inputs = {{woven_bundle, woven_bundle, C .. "cured_leather"},
-		{"", C .. "cured_leather", ""}},
-	output = "grug_inventory:bag_medium", mastery_required = 2,
-	hint = "Sew at a Tailor Bench"})
-P.register_recipe("tailor", {tier = 4, station = "tailor_bench",
-	inputs = {{heavy_bundle, heavy_bundle, "grug_mobs:spider_silk"},
-		{"grug_mobs:spider_silk", "grug_mobs:heavy_leather",
-			"grug_mobs:spider_silk"},
-		{"grug_mobs:heavy_leather", "grug_mobs:spider_silk", ""}},
-	output = "grug_inventory:bag_large", mastery_required = 3,
-	hint = "Sew at a Tailor Bench"})
-P.register_recipe("tailor", {tier = 5, station = "tailor_bench",
-	inputs = {{C .. "bolt_silk", C .. "bolt_silk", C .. "bolt_silk"},
-		{C .. "bolt_silk", "grug_mobs:spider_silk", C .. "bolt_silk"},
-		{C .. "bolt_silk", C .. "bolt_silk", C .. "bolt_silk"}},
-	output = "grug_inventory:bag_great", mastery_required = 4,
-	hint = "Sew at a Tailor Bench"})
+-- Cloth bags give profession XP and need only the profession tier (Round 45
+-- rulings 7 and 8).
+local function bag(tier, output, ingredients)
+	P.register_recipe("tailor", {tier = tier, output = output,
+		ingredients = ingredients, time = grug_jobs.DURATIONS.bag})
+end
+bag(1, "grug_inventory:bag_small", {{item = C .. "bolt_patch", n = 6},
+	{item = "grug_mobs:light_leather", n = 2}})
+bag(2, "grug_inventory:bag_medium", {{item = woven_bundle, n = 2},
+	{item = C .. "cured_leather", n = 2}})
+bag(4, "grug_inventory:bag_large", {{item = heavy_bundle, n = 2},
+	{item = "grug_mobs:spider_silk", n = 4}, {item = "grug_mobs:heavy_leather", n = 2}})
+bag(5, "grug_inventory:bag_great", {{item = C .. "bolt_silk", n = 8},
+	{item = "grug_mobs:spider_silk", n = 1}})
 
 -- The spellbook (Round 33, item_tiers.md §3.3; from the Goldsmith): two bolts
--- of the tier and a Parchment, Journeyman mastery.
+-- of the tier and a Parchment, gear like every offhand.
 local METALS = {"bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"}
 for tier = 1, #tiers do
 	local bolt = C .. "bolt_" .. tiers[tier].key
-	P.register_recipe("tailor", {tier = tier, station = "tailor_bench",
-		inputs = {{bolt, bolt, C .. "parchment"}},
-		output = "grug_gear:spellbook_" .. METALS[tier], mastery_required = 2,
-		hint = "Bind at a Tailor Bench"})
+	P.register_recipe("tailor", {tier = tier,
+		output = "grug_gear:spellbook_" .. METALS[tier],
+		ingredients = {{item = bolt, n = 2}, {item = C .. "parchment", n = 1}},
+		time = grug_jobs.DURATIONS.gear})
 end

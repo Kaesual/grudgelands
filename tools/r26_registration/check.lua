@@ -16,9 +16,9 @@
 --    tool name outside the vendored registration and the alias loop, no
 --    removed mobs utility outside mobs_redo's own api.lua string compares,
 --    and only canonical `grug_materials:` tool names.
--- 4. Reads the Basics recipe catalog (grug_jobs/basics_routes.lua): no
---    silver-sandstone or mobs-utility route, and the six Wood/Stone tool
---    routes match the recipes tools.lua registers, key for key.
+-- 4. Reads the Basic recipe catalog (grug_jobs/basic_recipes.lua, Round 45):
+--    no silver-sandstone or mobs-utility recipe, and the six Wood/Stone tool
+--    recipes hold the ingredients tools.lua's grid recipes use.
 -- 5. Loads the real spawn roster (tools/r24_density_xp/roster.lua) and checks
 --    the WP37 remainder (ruling 15): the two surface critters at chance 2933
 --    (2200 / 0.75: 0.75 x density, chance is 1-in-N), aoc unchanged, the two
@@ -222,11 +222,13 @@ check(canonical_hits > 0, "canonical tool names are referenced")
 -- ---------------------------------------------------------------------------
 -- 4. The Basics catalog.
 -- ---------------------------------------------------------------------------
-local routes = dofile(repo .. "/mods/PLAYER/grug_jobs/basics_routes.lua")
+local basic = dofile(repo .. "/mods/PLAYER/grug_jobs/basic_recipes.lua")
+local routes = basic.recipes
 local catalog = {}
+local function token(entry) return entry.item or ("group:" .. entry.group) end
 for _, route in ipairs(routes) do
 	local names = {route.output}
-	for _, input in ipairs(route.inputs) do names[#names + 1] = input end
+	for _, entry in ipairs(route.ingredients) do names[#names + 1] = token(entry) end
 	for _, name in ipairs(names) do
 		check(not name:find("silver_sand", 1, true), "catalog silver route " .. route.output)
 		check(not removed_mobs[name], "catalog mobs utility " .. name)
@@ -235,32 +237,45 @@ for _, route in ipairs(routes) do
 	catalog[route.output] = catalog[route.output] or {}
 	table.insert(catalog[route.output], route)
 end
--- The Wood/Stone rows must be exactly what tools.lua registers: the catalog's
--- width and flattened slots are the engine's view of those shaped recipes.
+for _, family in ipairs({basic.stairs, basic.walls}) do
+	for _, row in ipairs(family) do
+		for _, name in ipairs(row) do
+			check(not name:find("silver_sand", 1, true), "catalog silver family " .. name)
+		end
+	end
+end
+-- The Wood/Stone rows hold what tools.lua's grid recipes use, counted.
+local function counted(list)
+	local counts, keys = {}, {}
+	for _, name in ipairs(list) do
+		if name ~= "" then counts[name] = (counts[name] or 0) + 1 end
+	end
+	for name, n in pairs(counts) do keys[#keys + 1] = name .. "*" .. n end
+	table.sort(keys)
+	return table.concat(keys, "+")
+end
 for _, grade in ipairs({"wood", "stone"}) do
 	for _, family in ipairs(FAMILIES) do
 		local output = "grug_materials:" .. family .. "_" .. grade
 		local craft = by_output[output][1]
-		local width, slots = 0, {}
+		local slots = {}
 		for _, row in ipairs(craft.recipe) do
-			if #row > width then width = #row end
+			for _, name in ipairs(row) do slots[#slots + 1] = name end
 		end
-		for r, row in ipairs(craft.recipe) do
-			for c = 1, width do slots[(r - 1) * width + c] = row[c] or "" end
-		end
-		while slots[#slots] == "" do slots[#slots] = nil end
 		local rows = catalog[output]
 		check(rows and #rows == 1, output .. " has one catalog row")
-		local route = rows[1]
-		check(route.width == width and table.concat(route.inputs, "|") ==
-			table.concat(slots, "|") and route.starter == true,
-			output .. " catalog row matches the registered recipe")
+		local wanted = {}
+		for _, entry in ipairs(rows and rows[1] and rows[1].ingredients or {}) do
+			for _ = 1, entry.n do wanted[#wanted + 1] = token(entry) end
+		end
+		check(counted(wanted) == counted(slots),
+			output .. " catalog row holds the registered recipe's ingredients")
 	end
 end
 for _, family in ipairs(FAMILIES) do
 	for _, grade in ipairs(GRADES) do
 		check(catalog["grug_materials:" .. family .. "_" .. grade],
-			family .. "_" .. grade .. " is in the Basics catalog")
+			family .. "_" .. grade .. " is in the Basic catalog")
 	end
 end
 

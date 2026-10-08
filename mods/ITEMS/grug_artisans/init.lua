@@ -2,7 +2,6 @@
 -- this entry point owns their shared registration and audit seams.
 
 grug_artisans = {
-	CATALOGS = {woodcarver = {}, goldsmith = {}},
 	INGREDIENT_TIERS = {},
 }
 
@@ -26,52 +25,17 @@ function grug_artisans.register_ingredient(item, tier)
 	return item
 end
 
+-- One recipe of `profession`'s area at its station (grug_jobs
+-- PROFESSION_STATIONS); `definition` takes the record's other fields.
 function grug_artisans.register_recipe(profession, definition)
-	definition.profession = profession
-	local recipe = grug_jobs.register_recipe(definition)
-	grug_artisans.CATALOGS[profession][#grug_artisans.CATALOGS[profession] + 1] = {
-		tier = recipe.tier,
-		station = recipe.station,
-		inputs = recipe.inputs,
-		output = recipe.output_name,
-		material = recipe.material,
-		in_place = recipe.in_place,
-		hint = recipe.hint,
-	}
-	return recipe
+	definition.area = profession
+	definition.station = grug_jobs.PROFESSION_STATIONS[profession]
+	return grug_jobs.register_recipe(definition)
 end
 
 dofile(modpath .. "/woodcarver.lua")
 dofile(modpath .. "/goldsmith.lua")
 
 dofile(modpath .. "/enchants.lua")
-
-local function input_exists(input)
-	local group = input:match("^group:(.+)$")
-	if not group then return core.registered_items[input] ~= nil end
-	for name in pairs(core.registered_items) do
-		if core.get_item_group(name, group) > 0 then return true end
-	end
-	return false
-end
-
-core.register_on_mods_loaded(function()
-	for profession, catalog in pairs(grug_artisans.CATALOGS) do
-		for index = 1, #catalog do
-			local row = catalog[index]
-			if not core.registered_items[row.output] then
-				error("grug_artisans: unregistered " .. profession ..
-					" output " .. row.output, 0)
-			end
-			local inputs = grug_jobs._flatten_inputs(row.inputs)
-			for input_index = 1, #inputs do
-				if not input_exists(inputs[input_index]) then
-					error("grug_artisans: unregistered " .. profession ..
-						" input " .. inputs[input_index], 0)
-				end
-			end
-		end
-	end
-end)
 
 core.log("action", "[grug_artisans] registered Woodcarver and Goldsmith catalogs")

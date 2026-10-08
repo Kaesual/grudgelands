@@ -157,32 +157,22 @@ end
 
 local STEEL = "grug_materials:steel_bar"
 
+-- Each profession builds its own station (tier 3, no XP, no station nearby:
+-- the station is what it builds).
 local station_recipes = {
-	{profession = "weaponsmith", output = "grug_jobs:forge", inputs = {
-		{STEEL, STEEL, STEEL},
-		{"", "default:furnace", ""},
-		{"default:stonebrick", "default:stonebrick", "default:stonebrick"},
-	}},
-	{profession = "leatherworker", output = "grug_jobs:tanning_rack", inputs = {
-		{"group:wood", STEEL, "group:wood"},
-		{"group:wood", "default:paper", "group:wood"},
-		{"group:wood", "", "group:wood"},
-	}},
-	{profession = "tailor", output = "grug_jobs:tailor_bench", inputs = {
-		{"default:paper", STEEL, "default:paper"},
-		{"group:wood", "default:chest", "group:wood"},
-		{"", "default:paper", ""},
-	}},
-	{profession = "woodcarver", output = "grug_jobs:carving_bench", inputs = {
-		{"group:wood", "group:wood", "group:wood"},
-		{"group:wood", STEEL, "group:wood"},
-		{"", "default:stick", ""},
-	}},
-	{profession = "goldsmith", output = "grug_jobs:jewellers_bench", inputs = {
-		{"default:glass", STEEL, "default:glass"},
-		{"", "default:torch", ""},
-		{"default:stonebrick", "default:stonebrick", "default:stonebrick"},
-	}},
+	{profession = "weaponsmith", output = "grug_jobs:forge", ingredients = {
+		{item = STEEL, n = 3}, {item = "default:furnace", n = 1},
+		{item = "default:stonebrick", n = 3}}},
+	{profession = "leatherworker", output = "grug_jobs:tanning_rack", ingredients = {
+		{group = "wood", n = 6}, {item = STEEL, n = 1}, {item = "default:paper", n = 1}}},
+	{profession = "tailor", output = "grug_jobs:tailor_bench", ingredients = {
+		{item = "default:paper", n = 3}, {item = STEEL, n = 1}, {group = "wood", n = 2},
+		{item = "default:chest", n = 1}}},
+	{profession = "woodcarver", output = "grug_jobs:carving_bench", ingredients = {
+		{group = "wood", n = 5}, {item = STEEL, n = 1}, {item = "default:stick", n = 1}}},
+	{profession = "goldsmith", output = "grug_jobs:jewellers_bench", ingredients = {
+		{item = "default:glass", n = 2}, {item = STEEL, n = 1}, {item = "default:torch", n = 1},
+		{item = "default:stonebrick", n = 3}}},
 }
 
 function factory.install_jobs(jobs)
@@ -210,27 +200,12 @@ function factory.install_jobs(jobs)
 			end
 		end,
 	})
-	for station, info in pairs(STATION_INFO) do
-		local station_id, station_info = station, info
-		jobs.register_station(station_id, {
-			register_recipe = function(recipe)
-				if recipe.station ~= station_id then
-					error("grug_jobs: station recipe adapter differs", 0)
-				end
-			end,
-			can_use = function(player, recipe)
-				return recipe and jobs.has(player, recipe.profession)
-			end,
-		})
-	end
 	jobs.register_ingredient_tier(STEEL, 3)
 	for index = 1, #station_recipes do
 		local recipe = station_recipes[index]
-		jobs.register_recipe({
-			profession = recipe.profession, tier = 3, station = "grid",
-			inputs = recipe.inputs, output = recipe.output, progress = false,
-			hint = "Craft in the inventory grid",
-		})
+		jobs.register_recipe({area = recipe.profession, tier = 3,
+			output = recipe.output, ingredients = recipe.ingredients,
+			time = jobs.DURATIONS.station, progress = false})
 	end
 	core.register_on_mods_loaded(function()
 		local settlements = grug_core.settlement_socket_settlements()

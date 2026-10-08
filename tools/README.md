@@ -193,8 +193,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
 - **Round 30** (`r30_<lane>`): `p1` quest state, tracker, Map tab, minimap and
   Character page; `p2` pathing, give-up, collision boxes, merged spawn ABMs;
   `p3` region-map cache incl. input coverage and corruption cases, `run.sh`;
-  `p4` crafting index with the shipped recipe corpus, crosshair, carriers,
-  flight sweep, farming; `l` island landings, `engine.sh`; `c` start-NPC
+  `p4` crosshair, carriers, flight sweep, farming (its crafting index and
+  recipe corpus were retired in Round 45 with the grid); `l` island landings, `engine.sh`; `c` start-NPC
   duplication.
 - **Round 31** (`r31_<lane>`): `pvp` flag core and engine probe, `p2` PvP UI,
   `p1b` support refusal and mount boxes, `n` faction filter, `c` clean-up,
@@ -609,3 +609,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   consumables off the ladder, and a stack pinned at the old ladder's
   `grug_ilvl` / `grug_req_level` (lane MS's 0.45.0 step) keeping its level,
   requirement, tooltip, armor and enchant values.
+  `r45_rg` the recipe registry: `dump_corpus.sh`
+  boots the game once with the disposable probe `grug_probe_r45_rg` and dumps
+  the engine's grid routes, the registry, the gear families and the vendor
+  payouts (`corpus_base.lua` is the base commit's dump, the generator's input);
+  `gen_basic_recipes.lua` converts it into `grug_jobs/basic_recipes.lua`
+  (`--check`, `--report`); `portable_test.lua` loads the real registry, the
+  Basic catalog and the profession catalogs under a stub engine: the record
+  shape, queries and refusals, the conversion of every grid route, gear in
+  its profession, durations, stations, the craft list at a join and the
+  removed APIs. The recipe-book probe `pt_fixes/lane_d` is retired with the
+  books.

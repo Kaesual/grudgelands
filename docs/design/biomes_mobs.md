@@ -330,7 +330,7 @@ grass/mud; Stormkelp's natural source may use any accepted P7 dry support in
 its four named high/endpoint zones and does not require `grug_beach` or sand.
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
-own recipe book with T1–T6 groups, `items_crafting.md`; the tiers tie to
+own T1–T6 recipes, `items_crafting.md`; the tiers tie to
 the region an ingredient comes from):
 
 - Low and middle tiers come out of the settled zones and the swamp:
@@ -1516,7 +1516,7 @@ otherwise a tinted placeholder; the `icon` brief stays on the item as
 `_grug_icon_brief`.
 Signature items are mob materials (`grug_material`); their catalogue `tier`
 (1–6) is both their vendor price in copper and their ingredient tier
-(registered by `grug_professions`, so recipe books show it and no enchant
+(registered by `grug_professions`, so no profession recipe or enchant
 takes one above its own tier). Quest items have no price and no tier. The
 trader drop audit covers the band tables too. `generic` items are
 existing ones. Any other kind is a load error.

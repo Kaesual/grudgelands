@@ -23,8 +23,9 @@
 --      item, refusals (crowned, would lower, would change nothing, no
 --      equipment), the preview text;
 --   F. families: bow enchants and upgrades at the Leatherworker (leather),
---      spellbooks at the Tailor (bolts; the recipe 2 bolts + Parchment,
---      Journeyman), the Woodcarver keeps staves and wands; every enchant
+--      spellbooks at the Tailor (bolts; the recipe 2 bolts + Parchment, no
+--      mastery band since Round 45), the Woodcarver keeps staves and wands;
+--      every enchant
 --      takes its channel's loot, every upgrade 2 own materials + the two
 --      signatures of upgrades.json; the data files equal tools/r33_ds;
 --   G. the Goldsmith: no Ornament Components, no spellbook, Cut Citrine is
@@ -617,6 +618,7 @@ do
 		end,
 	}
 	local env = setmetatable({grug_professions = stub,
+		grug_jobs = {DURATIONS = {gear = 3, bag = 3, material = 1}},
 		core = {register_craft = function() end}}, {__index = _G})
 	local chunk = assert(loadfile(ROOT .. "/mods/ITEMS/grug_professions/tailor.lua"))
 	setfenv(chunk, env)
@@ -629,11 +631,15 @@ do
 		end
 		if check(found ~= nil, "F the Tailor binds the T" .. tier .. " spellbook") then
 			local bolt = "grug_professions:bolt_" .. BOLTS[tier]
-			eq(table.concat(found.inputs[1], ","), bolt .. "," .. bolt .. ",grug_professions:parchment",
+			local parts = {}
+			for index, entry in ipairs(found.ingredients) do
+				parts[index] = entry.item .. "*" .. entry.n
+			end
+			eq(table.concat(parts, ","), bolt .. "*2,grug_professions:parchment*1",
 				"F T" .. tier .. " spellbook takes two bolts and a Parchment")
-			check(found.profession == "tailor" and found.station == "tailor_bench" and
-				found.tier == tier and found.mastery_required == 2,
-				"F T" .. tier .. " spellbook: Tailor Bench, Journeyman")
+			check(found.profession == "tailor" and found.tier == tier and found.time == 3 and
+				found.mastery_required == nil,
+				"F T" .. tier .. " spellbook: a Tailor recipe of its tier, 3 s, no mastery band")
 		end
 	end
 end
@@ -658,7 +664,12 @@ do
 	local env = setmetatable({grug_artisans = A,
 		grug_materials = {RESOURCES = M.RESOURCES, register_on_harvest = function() end},
 		grug_gear = {trinket_item = function(key, tier) return "trinket:" .. key .. ":" .. tier end},
-		grug_jobs = {has = function() return true end},
+		grug_jobs = {has = function() return true end, DURATIONS = {gear = 3, material = 1},
+			ingredient_list = function(tokens)
+				local list = {}
+				for _, token in ipairs(tokens) do list[#list + 1] = {item = token, n = 1} end
+				return list
+			end},
 		grug_items = {mastery_band = function() return 1 end},
 		core = {add_item = function() end, register_craft = function() end},
 	}, {__index = _G})
@@ -675,10 +686,8 @@ do
 		if recipe.output:find("cut_quartz") then quartz_cut = quartz_cut + 1 end
 		if recipe.output == "trinket:manawell:1" then
 			local gems = {}
-			for _, row in ipairs(recipe.inputs) do
-				for _, item in ipairs(row) do
-					if item:find("^grug_materials:cut_") then gems[#gems + 1] = item end
-				end
+			for _, entry in ipairs(recipe.ingredients) do
+				if entry.item:find("^grug_materials:cut_") then gems[#gems + 1] = entry.item end
 			end
 			t1_gems = table.concat(gems, ",")
 		end
@@ -733,11 +742,9 @@ check(close(white, 5, 0.4) and close(blue, 2, 0.25) and close(gold, 1, 0.2),
 -- Progress: the real grug_jobs state counts an upgrade like an enchant.
 ------------------------------------------------------------------------------
 do
+	-- Round 45: the station dialogs no longer apply operations (lane EU makes
+	-- them jobs); the counting itself stays.
 	local upgrade = grug_jobs.station_operation("upgrade:tailor:t1")
-	local stations = read_file("mods/PLAYER/grug_jobs/workspaces.lua")
-	check(stations:find("grug_jobs.award_progress(player, recipe)", 1, true) ~= nil,
-		"progress: the station awards every applied operation")
-	check(stations:find("ctx.warning", 1, true) ~= nil, "the station shows the warning")
 	local saved = grug_jobs
 	_G.grug_jobs = {}
 	grug_inventory = {refresh = function() end, refresh_character_tab = function() end}

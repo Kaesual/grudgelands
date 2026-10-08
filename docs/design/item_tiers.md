@@ -578,26 +578,27 @@ enchants, which a new base would have to buy again.
 
 Two professions dress every class in armour, weapon and offhand:
 
-| Profession | Enchants and upgrades | Makes | Class pairs |
+| Profession | Enchants and upgrades | Makes (Round 45: its families too) | Class pairs |
 |---|---|---|---|
-| Weaponsmith | swords, daggers, battle axes (also the Scout's melee blade) | — | Warrior, Scout |
-| Armorsmith | metal armour, shields | — | Warrior |
-| Woodcarver | staves, wands | — | Mage, Priest |
-| Leatherworker | leather armour, **bows** (from the Woodcarver) | leather bags | Scout |
-| Tailor | cloth armour, **spellbooks** (from the Goldsmith) | spellbooks, cloth bags | Mage, Priest |
+| Weaponsmith | swords, daggers, battle axes (also the Scout's melee blade) | its families | Warrior, Scout |
+| Armorsmith | metal armour, shields | its families | Warrior |
+| Woodcarver | staves, wands | its families | Mage, Priest |
+| Leatherworker | leather armour, **bows** (from the Woodcarver) | its families, leather bags | Scout |
+| Tailor | cloth armour, **spellbooks** (from the Goldsmith) | its families, cloth bags | Mage, Priest |
 | Goldsmith | trinkets for everyone | trinkets; cut gems and settings | all |
 
-The plain weapons, armour, shields, bows, staves and wands are universal
-Basics recipes everyone crafts (items_crafting.md §3.0.3); a profession
-makes only the items in its "Makes" column.
+Since Round 45 the plain weapons, armour, shields, bows, staves and wands are
+recipes of the profession in this table (items_crafting.md §3.0.3,
+professions.md §1.2), at the profession tier of the item's tier; they were
+universal Basics recipes before.
 
 Warrior: Armorsmith + Weaponsmith. Scout: Leatherworker + Weaponsmith.
 Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
 
 - **The Tailor's spellbook** (replaces the Goldsmith's Setting + Parchment):
-  `2 × the bolt of tier T + 1 Parchment` at the Tailor Bench, Journeyman
-  mastery as today (character level 16+ at every tier,
-  [professions.md](professions.md) §1.1); it counts as a progression craft. Item, tier and stats of
+  `2 × the bolt of tier T + 1 Parchment` at the Tailor Bench, at profession
+  tier T (no mastery band since Round 45, [professions.md](professions.md)
+  §1.1); it counts as a progression craft. Item, tier and stats of
   the six spellbooks are unchanged.
 - Bow enchants and upgrades take the Leatherworker's leather grade of the
   tier; spellbook enchants and upgrades the Tailor's bolt. Family inputs and
@@ -615,11 +616,8 @@ Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
 | Goldsmith | trinket | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets |
 <!-- end generated -->
 
-The bags and spellbooks in this table also need their mastery band
-([professions.md](professions.md) §1.1): the spellbooks from character level
-16 at every tier, so the T1 spellbook is out of reach in the T1 band
-(levels 1–10) and counts later only for a Tailor still at profession tier 1;
-the 32-slot bags (T5) from level 46.
+The bags and spellbooks in this table need only their profession tier (Round
+45 ruling 7: no mastery band).
 
 ### 3.4 Two Goldsmith leftovers (v2, approved: user choices 11A, 12A)
 

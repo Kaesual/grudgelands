@@ -1,12 +1,22 @@
 -- Detached inventories are views; node metadata owns every durable workspace.
+-- Since Round 45 (lane RG) only furnaces and dual furnaces keep a dialog with
+-- lists. The forge, the four benches and the brewing stand show a notice
+-- until lane ST makes them proximity stations; their old node-meta contents
+-- stay where they are and still come out when a player-placed station is dug
+-- (round45-plan.md ruling 3).
 local workspaces = {}
 local automatic = dofile(core.get_modpath("grug_jobs") .. "/automatic.lua")
 local viewers = {}
+local notices = {}
 local sequence = 0
 local FORM = "grug_jobs:workspace"
+local NOTICE_FORM = "grug_jobs:station_notice"
 local PREFIX = "grug_jobs:workspace:"
 local PERSONAL_BURN_UNTIL = "grug_jobs:personal_burn_until"
 local refresh
+
+-- The stations whose dialog still holds lists.
+local DIALOG_STATIONS = {furnace = true, dual_furnace = true}
 
 local function node_station(pos)
 	local node = core.get_node_or_nil(pos)
@@ -65,10 +75,9 @@ local function save(ctx)
 	if station ~= ctx.station or core.get_meta(ctx.pos):get_string("grug_jobs:station_id") ~= ctx.id then
 		return
 	end
-	local record = {lists = {}, process = ctx.process, produced = ctx.produced}
-	for list, stacks in pairs(ctx.inv:get_lists()) do
-		if (ctx.personal and (ctx.automatic or list ~= "output")) or
-				(list == "output" and ctx.produced) then
+	local record = {lists = {}, process = ctx.process}
+	if ctx.personal then
+		for list, stacks in pairs(ctx.inv:get_lists()) do
 			local values = {}
 			for index = 1, #stacks do values[index] = stacks[index]:to_string() end
 			record.lists[list] = values
@@ -84,7 +93,7 @@ end
 
 local function inventory_signature(ctx)
 	local result = {}
-	for _, list in ipairs({"src", "input", "mixture", "fuel", "dst", "output"}) do
+	for _, list in ipairs({"src", "input", "fuel", "dst", "output"}) do
 		for _, stack in ipairs(ctx.inv:get_list(list) or {}) do
 			result[#result + 1] = stack:to_string()
 		end
@@ -95,7 +104,7 @@ end
 -- Returns whether settlement changed an inventory slot. An allow callback
 -- refuses that stale transfer; the next request sees the settled inventory.
 local function advance(ctx)
-	if not ctx.personal or not ctx.automatic then return false end
+	if not ctx.personal then return false end
 	local now = core.get_gametime()
 	local elapsed = math.max(0, now - (ctx.process.last or now))
 	ctx.process.last = now
@@ -111,37 +120,14 @@ local function advance(ctx)
 	return changed_inventory
 end
 
-local function qualified(player, recipe)
-	return recipe and grug_jobs.can_craft_recipe(player, recipe)
-end
-
-local function selected(ctx)
-	if not ctx.operation or not grug_jobs.station_operations then return nil end
-	for _, recipe in ipairs(grug_jobs.station_operations(ctx.station)) do
-		if recipe.id == ctx.operation then return recipe end
+-- The repair button a station inside an active Claim Stone claim adds
+-- (grug_repair), or "".
+local function repair_button(name, pos, x, y)
+	local repair = rawget(_G, "grug_repair")
+	if repair and repair.can_open_station(core.get_player_by_name(name), pos) then
+		return ("button[%g,%g;2.4,0.8;grug_jobs_repair;Repair equipment]"):format(x, y)
 	end
-end
-
-local function preview(ctx, player)
-	local list = inputs(ctx):get_list("craft") or {}
-	local recipe = selected(ctx)
-	if recipe then
-		local plan = grug_items.operation_plan(recipe, list, player)
-		return plan and plan.output or ItemStack(""), plan and recipe or nil,
-			plan and plan.warning
-	end
-	recipe = grug_jobs.recipe_for_craft(ctx.station, ItemStack(""), list)
-	if not qualified(player, recipe) then return ItemStack("") end
-	local output = ItemStack(recipe.output)
-	local quality = rawget(_G, "grug_items")
-	if quality and quality.crafted_output then quality.crafted_output(output, player, recipe) end
-	return output, recipe
-end
-
-local function set_output(ctx, stack)
-	if ctx.inv:get_stack("output", 1):to_string() ~= stack:to_string() then
-		ctx.inv:set_stack("output", 1, stack)
-	end
+	return ""
 end
 
 local function formspec(ctx)
@@ -151,99 +137,46 @@ local function formspec(ctx)
 	local mode = ctx.personal and "Personal workspace" or "Shared station"
 	local explanation = ctx.personal and "Your work is saved here, separately for each station." or
 		"Inputs and finished work are shared with players who can access this area."
-	local result = "formspec_version[4]size[12,11]label[0.5,0.4;" .. core.formspec_escape(title) ..
-		"]label[0.5,0.85;" .. mode .. "]label[0.5,1.25;" .. core.formspec_escape(explanation) .. "]"
-	if ctx.automatic then
-		local source = ctx.station == "furnace" and "src" or
-			(ctx.station == "dual_furnace" and "input" or "mixture")
-		local output = ctx.station == "furnace" and "dst" or "output"
-		local width = ctx.station == "dual_furnace" and 2 or 1
-		local furnace_kind = ctx.station == "furnace" or ctx.station == "dual_furnace"
-		local fuel_percent, progress_percent = 0, 0
-		if furnace_kind then
-			local process = ctx.process
-			if not ctx.personal then
-				process = core.deserialize(core.get_meta(ctx.pos):get_string(
-					"grug_jobs:process")) or {}
-			end
-			local fuel_fraction, progress_fraction = automatic.fractions(ctx.station,
-				inputs(ctx), process)
-			fuel_percent = math.floor(fuel_fraction * 100 + 0.5)
-			progress_percent = math.floor(progress_fraction * 100 + 0.5)
-		end
-		result = result .. "label[1,1.9;" .. (source == "mixture" and "Prepared mixture" or "Input") ..
-			"]list[" .. location .. ";" .. source .. ";1,2.3;" .. width .. ",1;]" ..
-			"label[3.5,1.9;Fuel]list[" .. location .. ";fuel;3.5,2.3;1,1;]" ..
-			"label[6,1.9;Finished output]list[" .. location .. ";" .. output .. ";6,2.3;2," ..
-			(ctx.station == "furnace" and 2 or 1) .. ";]listring[" .. location .. ";" .. output ..
-			"]listring[current_player;main]listring[" .. location .. ";" .. source ..
-			"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]" ..
-			(furnace_kind and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png]" or "") ..
-			(furnace_kind and fuel_percent > 0 and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
-				fuel_percent .. ":default_furnace_fire_fg.png]" or "") ..
-			(furnace_kind and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]" or "") ..
-			(furnace_kind and progress_percent > 0 and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
-				progress_percent .. ":gui_furnace_arrow_fg.png^[transformR270]" or "")
-	else
-		result = result .. "list[" .. location .. ";craft;1,2;3,3;]" ..
-			"label[6,1.8;" .. (ctx.produced and "Crafted remainder" or "Qualified result") ..
-			"]list[detached:" .. ctx.detached .. ";output;6,2.3;1,1;]" ..
-			"listring[detached:" .. ctx.detached .. ";output]listring[current_player;main]" ..
-			"listring[" .. location .. ";craft]listring[current_player;main]"
-		local choices = {"Craft from inputs"}
-		ctx.choices = {false}
-		local chosen = 1
-		for _, recipe in ipairs(grug_jobs.station_operations and grug_jobs.station_operations(ctx.station) or {}) do
-			if grug_jobs.can_craft_recipe(core.get_player_by_name(ctx.name), recipe) then
-				choices[#choices + 1] = core.formspec_escape(recipe.label or recipe.id)
-				ctx.choices[#ctx.choices + 1] = recipe.id
-				if ctx.operation == recipe.id then chosen = #choices end
-			end
-		end
-		if #choices > 1 then
-			result = result .. "dropdown[5,3.7;6.5,0.8;operation;" .. table.concat(choices, ",") ..
-				";" .. chosen .. ";true]"
-			-- What each stat's colour is on the enchanted item (grug_quality).
-			result = result .. grug_items.enchant_legend_formspec(5, 4.65)
-		end
-		if ctx.operation then result = result .. "button[7.3,2.3;2,0.8;apply;Apply]" end
-		-- A weaker enchant over a stronger one ("Replaces T7 Strength with T6
-		-- Strength", grug_quality enchant_plan).
-		if ctx.operation and ctx.warning then
-			result = result .. "label[5,3.45;" ..
-				core.formspec_escape(core.colorize("#FF9A40", ctx.warning)) .. "]"
-		end
+	local source = ctx.station == "furnace" and "src" or "input"
+	local output = ctx.station == "furnace" and "dst" or "output"
+	local width = ctx.station == "dual_furnace" and 2 or 1
+	local process = ctx.process
+	if not ctx.personal then
+		process = core.deserialize(core.get_meta(ctx.pos):get_string(
+			"grug_jobs:process")) or {}
 	end
-	-- A station inside an active Claim Stone claim also repairs (grug_repair).
-	local repair = rawget(_G, "grug_repair")
-	if repair and repair.can_open_station(core.get_player_by_name(ctx.name), ctx.pos) then
-		result = result .. "button[9.3,4.95;2.4,0.8;grug_jobs_repair;Repair equipment]"
-	end
-	return result .. "list[current_player;main;1,6;8,1;]list[current_player;main;1,7.25;8,3;8]" ..
-		default.get_hotbar_bg(1, 6) .. grug_jobs.station_book_button(ctx.station, 10.3, 2.3)
+	local fuel_fraction, progress_fraction = automatic.fractions(ctx.station,
+		inputs(ctx), process)
+	local fuel_percent = math.floor(fuel_fraction * 100 + 0.5)
+	local progress_percent = math.floor(progress_fraction * 100 + 0.5)
+	return "formspec_version[4]size[12,11]label[0.5,0.4;" .. core.formspec_escape(title) ..
+		"]label[0.5,0.85;" .. mode .. "]label[0.5,1.25;" .. core.formspec_escape(explanation) .. "]" ..
+		"label[1,1.9;Input]list[" .. location .. ";" .. source .. ";1,2.3;" .. width .. ",1;]" ..
+		"label[3.5,1.9;Fuel]list[" .. location .. ";fuel;3.5,2.3;1,1;]" ..
+		"label[6,1.9;Finished output]list[" .. location .. ";" .. output .. ";6,2.3;2," ..
+		(ctx.station == "furnace" and 2 or 1) .. ";]listring[" .. location .. ";" .. output ..
+		"]listring[current_player;main]listring[" .. location .. ";" .. source ..
+		"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]" ..
+		"image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png]" ..
+		(fuel_percent > 0 and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
+			fuel_percent .. ":default_furnace_fire_fg.png]" or "") ..
+		"image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]" ..
+		(progress_percent > 0 and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
+			progress_percent .. ":gui_furnace_arrow_fg.png^[transformR270]" or "") ..
+		repair_button(ctx.name, ctx.pos, 9.3, 4.95) ..
+		"list[current_player;main;1,6;8,1;]list[current_player;main;1,7.25;8,3;8]" ..
+		default.get_hotbar_bg(1, 6)
 end
 
 -- Whether the station's own form is the one open (default/node_formspec.lua
--- records the last form shown): a re-show never pops it back over the recipe
--- book or any other form (Round 37, PLY-03).
+-- records the last form shown): a re-show never pops it back over another
+-- form (Round 37, PLY-03).
 local function form_open(ctx)
 	return default.node_formspec.shown_form(ctx.name) == FORM
 end
 
 refresh = function(ctx, show)
-	local player = core.get_player_by_name(ctx.name)
-	if not accessible(ctx, player) then
-		if not ctx.automatic and not ctx.produced then set_output(ctx, ItemStack("")) end
-		return
-	end
-	if not ctx.automatic and not ctx.produced then
-		local output, recipe, warning = preview(ctx, player)
-		ctx.recipe = recipe
-		-- The warning is formspec text: a change redraws the open form.
-		if warning ~= ctx.warning then show = true end
-		ctx.warning = warning
-		set_output(ctx, output)
-	end
+	if not accessible(ctx, core.get_player_by_name(ctx.name)) then return end
 	if show and form_open(ctx) then core.show_formspec(ctx.name, FORM, formspec(ctx)) end
 end
 
@@ -254,7 +187,7 @@ local function refresh_position(pos)
 end
 
 local function changed(ctx)
-	if ctx.personal and (ctx.station == "furnace" or ctx.station == "dual_furnace") then
+	if ctx.personal then
 		automatic.advance(ctx.station, ctx.inv, ctx.process, 0)
 		extend_personal_light(ctx)
 	end
@@ -287,131 +220,115 @@ local function callbacks(ctx)
 			return count
 		end,
 		allow_take = function(inv, list, index, stack, player)
-			ctx.receipt = nil
 			if not accessible(ctx, player) then return 0 end
 			if advance(ctx) then return 0 end
-			if ctx.automatic or list ~= "output" or ctx.produced then return stack:get_count() end
-			if ctx.operation then return 0 end
-			local output, recipe = preview(ctx, player)
-			local current = inv:get_stack(list, index)
-			if not recipe or current:to_string() ~= output:to_string() then refresh(ctx, false) return 0 end
-			local consume = {}
-			for slot, ingredient in ipairs(inputs(ctx):get_list("craft") or {}) do
-				if not ingredient:is_empty() then consume[slot] = 1 end
-			end
-			ctx.receipt = {recipe = recipe, consume = consume}
 			return stack:get_count()
 		end,
 		on_put = function() changed(ctx) end,
 		on_move = function() changed(ctx) end,
 		on_take = function(inv, list, index, stack, player)
-			if not ctx.automatic and list == "output" and not ctx.produced then
-				local receipt = assert(ctx.receipt, "station result without authorized receipt")
-				local recipe = receipt.recipe
-				ctx.receipt = nil
-				local source = inputs(ctx)
-				for slot, count in pairs(receipt.consume) do
-					local ingredient = source:get_stack("craft", slot)
-					ingredient:take_item(count)
-					source:set_stack("craft", slot, ingredient)
-				end
-				grug_jobs.award_progress(player, recipe)
-				ctx.produced = not inv:is_empty("output")
-			elseif ctx.produced then ctx.produced = not inv:is_empty("output") end
-			if ctx.automatic and (list == "dst" or list == "output") then
-				grug_sounds.play(grug_jobs.automatic_take_sound(
-					grug_jobs.recipe_for_output(stack, ctx.station)), player)
+			if list == "dst" or list == "output" then
+				grug_sounds.play(grug_jobs.furnace_take_sound(stack), player)
 			end
 			changed(ctx)
 		end,
 	}
 end
 
+-- The notice of a station without a dialog: its name, where crafting went
+-- and the repair button. `ctx` is {name, pos, id, station}.
+local function notice_formspec(ctx)
+	local title = grug_jobs.station_info(ctx.station).display_name
+	return "formspec_version[4]size[8,3.6]label[0.5,0.5;" .. core.formspec_escape(title) ..
+		"]label[0.5,1.2;Crafting moved to the Crafting tab.]" ..
+		repair_button(ctx.name, ctx.pos, 0.5, 2.2) ..
+		"button_exit[5.1,2.2;2.4,0.8;close;Close]"
+end
+
 -- Opens the station form at `pos`; true when it is shown. `id` (optional)
--- is the station id a return from the recipe book or the repair form expects
--- (Round 41 ruling 3): a station dug and replaced at the same place is
--- another station, and the caller falls back to the inventory.
+-- is the station id a return from the repair form expects (Round 41 ruling
+-- 3): a station dug and replaced at the same place is another station, and
+-- the caller falls back to the inventory.
 function workspaces.open(pos, player, id)
 	local station = node_station(pos)
 	if not station or not player or not player:is_player() then return false end
 	if id and core.get_meta(pos):get_string("grug_jobs:station_id") ~= id then return false end
 	local name = player:get_player_name()
 	local ctx = {name = name, pos = vector.new(pos), station = station,
-		id = stamp(pos), personal = grug_jobs.is_public_station(station, pos),
-		automatic = automatic.sizes[station] ~= nil}
+		id = stamp(pos), personal = grug_jobs.is_public_station(station, pos)}
 	if not accessible(ctx, player) then return false end
 	detach(viewers[name])
+	if not DIALOG_STATIONS[station] then
+		notices[name] = ctx
+		core.show_formspec(name, NOTICE_FORM, notice_formspec(ctx))
+		return true
+	end
 	sequence = sequence + 1
 	ctx.detached = "grug_workspace_" .. name .. "_" .. sequence
 	ctx.inv = core.create_detached_inventory(ctx.detached, callbacks(ctx), name)
 	local data = core.deserialize(core.get_meta(pos):get_string(PREFIX .. name)) or {}
 	ctx.process = data.process or {}
-	ctx.produced = data.produced == true
-	local sizes = ctx.personal and (automatic.sizes[station] or {craft = 9, output = 1}) or {output = 1}
+	local sizes = ctx.personal and automatic.sizes[station] or {}
 	for list, size in pairs(sizes) do
 		ctx.inv:set_size(list, size)
 		if data.lists and data.lists[list] then ctx.inv:set_list(list, data.lists[list]) end
 	end
 	viewers[name] = ctx
 	advance(ctx)
-	refresh(ctx, false)
 	core.show_formspec(name, FORM, formspec(ctx))
 	return true
 end
 
+-- Close of a station's repair form (Round 41 ruling 3): back to the station
+-- form at `origin` ({pos, id}) when it can be reopened there, else the
+-- inventory.
+local function close_to_origin(player, origin)
+	if origin and workspaces.open(origin.pos, player, origin.id) then return true end
+	core.show_formspec(player:get_player_name(), "", player:get_inventory_formspec())
+	return false
+end
+
+-- The repair form replaces the station form and the session ends; its Close
+-- returns here, Esc closes everything.
+local function open_repair(player, ctx)
+	local repair = rawget(_G, "grug_repair")
+	if not repair then return end
+	local origin = {pos = vector.new(ctx.pos), id = ctx.id}
+	repair.open_station(player, origin.pos, function(closer)
+		close_to_origin(closer, origin)
+	end)
+end
+
 core.register_on_player_receive_fields(function(player, formname, fields)
+	if formname == NOTICE_FORM then
+		local name = player:get_player_name()
+		local ctx = notices[name]
+		if fields.quit then notices[name] = nil end
+		if ctx and fields.grug_jobs_repair and accessible(ctx, player) then
+			notices[name] = nil
+			open_repair(player, ctx)
+		end
+		return true
+	end
 	if formname ~= FORM then return false end
 	local ctx = viewers[player:get_player_name()]
 	if not ctx then return true end
 	if fields.quit then detach(ctx) return true end
 	if not accessible(ctx, player) then return true end
-	-- The book and the repair form replace the station form and the session
-	-- ends; their Close returns here (Round 41 ruling 3, ui.lua
-	-- close_to_origin), Esc closes everything.
-	if fields.grug_jobs_book then
-		detach(ctx)
-		grug_jobs.open_book(player, "station", ctx.station, nil,
-			{pos = vector.new(ctx.pos), id = ctx.id})
-		return true
-	end
 	if fields.grug_jobs_repair then
-		local repair = rawget(_G, "grug_repair")
-		if repair then
-			local origin = {pos = vector.new(ctx.pos), id = ctx.id}
-			detach(ctx)
-			repair.open_station(player, origin.pos, function(closer)
-				grug_jobs.close_to_origin(closer, origin)
-			end)
-		end
+		detach(ctx)
+		open_repair(player, ctx)
 		return true
-	end
-	if fields.operation and not ctx.produced then
-		local index = tonumber(fields.operation)
-		if index and ctx.choices and ctx.choices[index] ~= nil then ctx.operation = ctx.choices[index] or nil end
-	end
-	if fields.apply and not ctx.produced then
-		local recipe = selected(ctx)
-		local plan, reason
-		if recipe then plan, reason = grug_items.operation_plan(recipe, inputs(ctx):get_list("craft"), player) end
-		if plan and grug_inventory.fits(player, {plan.output}) then
-			local source = inputs(ctx)
-			for slot, count in pairs(plan.consume) do
-				local stack = source:get_stack("craft", slot)
-				stack:take_item(count)
-				source:set_stack("craft", slot, stack)
-			end
-			local rest = grug_inventory.give(player, plan.output)
-			assert(rest:is_empty(), "station operation destination changed during commit")
-			-- Progress hook for every station operation (enchants and upgrades).
-			grug_jobs.award_progress(player, recipe)
-			changed(ctx)
-		else core.chat_send_player(ctx.name, reason or "Make room in your inventory.") end
 	end
 	refresh(ctx, true)
 	return true
 end)
 
-core.register_on_leaveplayer(function(player) detach(viewers[player:get_player_name()]) end)
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	detach(viewers[name])
+	notices[name] = nil
+end)
 local accumulator = 0
 core.register_globalstep(function(dtime)
 	accumulator = accumulator + dtime
@@ -424,16 +341,23 @@ core.register_globalstep(function(dtime)
 			detach(ctx)
 		elseif accessible(ctx, core.get_player_by_name(ctx.name)) then
 			advance(ctx)
-			refresh(ctx, ctx.station == "furnace" or ctx.station == "dual_furnace")
+			refresh(ctx, true)
 		end
 	end
 end)
+
+-- The node lists of a station: its automatic lists, else the old crafting
+-- grid of the benches and the forge (Round 45: no longer shown, still
+-- released on a dig).
+local function station_lists(station)
+	return automatic.sizes[station] or {craft = 9}
+end
 
 -- Everything a station holds: its node lists and every player's saved
 -- workspace record. Digging and blasts both release all of it, so other
 -- players' invisible leftovers never block a dig (Round 28 ruling 18).
 local function station_contents(pos, station, drops)
-	for list in pairs(automatic.sizes[station] or {craft = 9}) do
+	for list in pairs(station_lists(station)) do
 		default.get_inventory_drops(pos, list, drops)
 	end
 	for key, value in pairs(core.get_meta(pos):to_table().fields or {}) do
@@ -452,7 +376,7 @@ end
 local function initialize(pos, station)
 	stamp(pos)
 	local inv = core.get_meta(pos):get_inventory()
-	for list, size in pairs(automatic.sizes[station] or {craft = 9}) do
+	for list, size in pairs(station_lists(station)) do
 		if inv:get_size(list) ~= size then inv:set_size(list, size) end
 	end
 end
@@ -490,9 +414,11 @@ local function install_node(name, station)
 		end
 		refresh_position(pos)
 	end
+	-- Only a dialog station shows its node lists; the others take nothing.
 	local function allow_put(pos, list, index, stack, player)
-		if not allowed(pos, player) or list == "output" or list == "dst" then return 0 end
-		if not (automatic.sizes[station] or {craft = 9})[list] then return 0 end
+		if not DIALOG_STATIONS[station] or not allowed(pos, player) or
+				list == "output" or list == "dst" then return 0 end
+		if not station_lists(station)[list] then return 0 end
 		if list == "fuel" and automatic.fuel_time(station, stack) <= 0 then return 0 end
 		return stack:get_count()
 	end
@@ -520,7 +446,8 @@ local function install_node(name, station)
 		end,
 		allow_metadata_inventory_put = allow_put,
 		allow_metadata_inventory_take = function(pos, list, index, stack, player)
-			if not allowed(pos, player) or not (automatic.sizes[station] or {craft = 9})[list] then return 0 end
+			if not DIALOG_STATIONS[station] or not allowed(pos, player) or
+					not station_lists(station)[list] then return 0 end
 			return stack:get_count()
 		end,
 		allow_metadata_inventory_move = function(pos, from, fi, to, ti, count, player)

@@ -66,7 +66,8 @@ local function run()
 	local profession_routes, mob_drops, node_drops, fishing = {}, {}, {}, {}
 	for _, recipe in ipairs(grug_jobs.recipes or {}) do
 		local output = type(recipe.output) == "string" and recipe.output:match("^(%S+)")
-		if output then
+		-- Round 45: Basic records belong to no profession.
+		if output and recipe.area ~= "basic" then
 			push(profession_routes, output, {profession = recipe.profession,
 				tier = recipe.tier, station = recipe.station})
 		end

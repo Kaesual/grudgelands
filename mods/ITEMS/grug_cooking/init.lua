@@ -88,8 +88,7 @@ end
 
 local function dish(id, description, tier, role, inputs)
 	return {id = id, item = "grug_cooking:" .. id, description = description,
-		tier = tier, role = role, inputs = inputs, station = inputs and "grid",
-		hint = inputs and "Crafting grid",
+		tier = tier, role = role, inputs = inputs,
 		image = "grug_cooking_dish_" .. id .. ".png"}
 end
 
@@ -103,8 +102,8 @@ local BERRY = "group:grug_cooking_berry"
 local FRUIT = "group:grug_cooking_fruit"
 local EARLY_SPICE = "group:grug_cooking_early_spice"
 
--- A dish without grid inputs comes only from its raw assembly (below) in the
--- furnace (Round 28 ruling 27: no direct grid route duplicates that line).
+-- A dish without inputs comes only from its raw assembly (below) in the
+-- furnace (Round 28 ruling 27: no direct recipe duplicates that line).
 -- Within a tier a stronger dish costs more to make (Round 34 ruling 3): the
 -- Caster dish, which adds mana regeneration to the same HP terms, needs more
 -- input value (vendor payouts) than the Hearty and Hunter dishes of its tier.
@@ -140,22 +139,6 @@ local DISHES = {
 	dish("cocoa_rubbed_game", "Cocoa-Rubbed Game", 6, "hunter",
 		{MEAT, G .. "wild_cocoa", EARLY_SPICE}),
 }
-
-local function grid(inputs)
-	local result = {}
-	for index = 1, #inputs do
-		local row = math.floor((index - 1) / 3) + 1
-		local column = (index - 1) % 3 + 1
-		result[row] = result[row] or {}
-		result[row][column] = inputs[index]
-	end
-	for row = 1, #result do
-		for column = 1, 3 do
-			if result[row][column] == nil then result[row][column] = "" end
-		end
-	end
-	return result
-end
 
 for index = 1, #DISHES do
 	local row = DISHES[index]
@@ -194,12 +177,13 @@ for item, tier in pairs(INGREDIENT_TIERS) do
 	grug_jobs.register_ingredient_tier(item, tier)
 end
 
+-- Simple dishes are Cooking recipes of 1 s (spec §2.30), no station.
 for index = 1, #DISHES do
 	local row = DISHES[index]
 	if row.inputs then
-		grug_jobs.register_recipe({profession = "cooking", tier = row.tier,
-			station = row.station, inputs = grid(row.inputs), output = row.item,
-			hint = row.hint})
+		grug_jobs.register_recipe({area = "cooking", tier = row.tier,
+			output = row.item, ingredients = grug_jobs.ingredient_list(row.inputs),
+			time = grug_jobs.DURATIONS.food})
 	end
 end
 
@@ -218,11 +202,11 @@ local RAW_ASSEMBLIES = {
 		inputs = {MEAT, MEAT, G .. "wild_cocoa", C .. "salt_crust"}},
 }
 
+-- A good dish: its raw assembly is a Cooking recipe of 1 s (the XP comes
+-- here), the furnace finishes it as an engine cooking recipe.
 for index = 1, #RAW_ASSEMBLIES do
 	local row = RAW_ASSEMBLIES[index]
 	row.item = C .. row.id
-	row.station = "grid"
-	row.hint = "Crafting grid — inedible until furnace-cooked"
 	core.register_craftitem(row.item, {
 		description = "Raw " .. core.registered_items[row.output].description:match("^[^\n]+") ..
 			"\nInedible. Cook this assembled dish in a furnace.",
@@ -231,12 +215,11 @@ for index = 1, #RAW_ASSEMBLIES do
 		_grug_tier = row.tier,
 	})
 	grug_jobs.register_ingredient_tier(row.item, row.tier)
-	grug_jobs.register_recipe({profession = "cooking", tier = row.tier,
-		station = "grid", inputs = grid(row.inputs), output = row.item,
-		hint = row.hint})
-	grug_jobs.register_recipe({profession = "cooking", tier = row.tier,
-		station = "furnace", inputs = {row.item}, output = row.output,
-		hint = "Furnace — cook assembled dish", time = 5})
+	grug_jobs.register_recipe({area = "cooking", tier = row.tier,
+		output = row.item, ingredients = grug_jobs.ingredient_list(row.inputs),
+		time = grug_jobs.DURATIONS.food})
+	core.register_craft({type = "cooking", output = row.output,
+		recipe = row.item, cooktime = 5})
 end
 
 grug_cooking.RAW_ASSEMBLIES = RAW_ASSEMBLIES
@@ -262,4 +245,4 @@ grug_cooking.REFINEMENTS = {
 }
 
 -- Simple meat, fish and bread conversions are universal Basics recipes.
--- Raw profession dishes award progress only during their grid preparation.
+-- Raw profession dishes award progress only at their preparation.

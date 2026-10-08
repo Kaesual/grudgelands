@@ -5,8 +5,8 @@
 --
 -- Loads the REAL grug_quests registry, state, labels, npc and hud files, the
 -- REAL grug_core hud_layout and item_names, the REAL grug_map atlas, base,
--- minimap_view, minimap and providers, the REAL grug_jobs discovery file and
--- the REAL (pure) grug_housing registry on a fake engine. Checks:
+-- minimap_view, minimap and providers and the REAL (pure) grug_housing
+-- registry on a fake engine. Checks:
 --   M  minimap (CORE-04): a still player with a still party places nothing
 --      and sends nothing; a move places the map again exactly when the map
 --      corner moves by a whole screen pixel (the real geometry decides);
@@ -26,11 +26,7 @@
 --   T  tracker (PLY-05): without an active item objective a poll reads no
 --      inventory list and the tracker line still follows kills; with one it
 --      reads them and the line follows held items as before;
---   D  discovery (PLY-05, X-13): a join and an inventory action are scanned
---      in the player's next slot (once for many actions), otherwise every
---      10 s; never every player in one step; a quiet scan never redraws the
---      open book, a loud one does on a new item; the book opens after a
---      scan (grug_jobs.open_book);
+--   D  retired in Round 45 (the recipe discovery is gone);
 --   C  Claim Stone (PLY-04): a placement that fails several rules shows the
 --      first in the order depth, faction, one claim, overlap, settlement,
 --      zone scan, cube (every combination); a held click on one spot runs
@@ -649,84 +645,8 @@ do
 	eq(collected, 0, "M ...and then the key holds again")
 end
 
--- ---------------------------------------------------------------------------
--- D: discovery
--- ---------------------------------------------------------------------------
-do
-	local opened, scans = 0, 0
-	grug_jobs = {_item_name = function(item)
-		if type(item) == "table" and item.get_name then return item:get_name() end
-		return type(item) == "string" and (item:match("^(%S+)") or "") or ""
-	end, refresh_open_book = function() opened = opened + 1 end}
-	for k in pairs(registered) do registered[k] = nil end
-	dofile(repo .. "/mods/PLAYER/grug_jobs/discovery.lua")
-	local discovery_step = registered.register_globalstep[1]
-	local real_scan = grug_jobs._scan_discovery
-	players = {}
-	local crowd = {}
-	for i = 1, 12 do
-		crowd[i] = new_player(("d%02d"):format(i), {x = i, y = 10, z = 0})
-		join(crowd[i])
-	end
-	local scanned = {}
-	-- count the scans per player through their inventory reads
-	local function reads_of(p) return p.reads or 0 end
-	for _, p in ipairs(crowd) do
-		local inv = p.get_inventory
-		function p:get_inventory()
-			local i = inv(self)
-			local lists = i.get_lists
-			i.get_lists = function(...) self.reads = (self.reads or 0) + 1; return lists(...) end
-			return i
-		end
-	end
-	local most = 0
-	for _ = 1, 5 do
-		local before = 0
-		for _, p in ipairs(crowd) do before = before + reads_of(p) end
-		discovery_step(0.1)
-		local after = 0
-		for _, p in ipairs(crowd) do after = after + reads_of(p) end
-		most = math.max(most, after - before)
-	end
-	local all_once = true
-	for _, p in ipairs(crowd) do all_once = all_once and reads_of(p) == 1 end
-	check(all_once, "D a join is scanned in the player's first slot (within 0.5 s)")
-	check(most <= 3, "D never every player in one step (" .. most .. " at most)")
-	-- quiet: nothing for 9.5 s, then the 10 s sweep
-	local p = crowd[1]
-	local base = reads_of(p)
-	for _ = 1, 95 do discovery_step(0.1) end
-	eq(reads_of(p) - base, 0, "D no event: no scan for 9.5 s")
-	for _ = 1, 5 do discovery_step(0.1) end
-	eq(reads_of(p) - base, 1, "D the sweep scans after 10 s")
-	-- inventory actions: one scan in the next slot
-	base = reads_of(p)
-	for _ = 1, 4 do each("register_on_player_inventory_action", p, "move", nil, {}) end
-	for _ = 1, 5 do discovery_step(0.1) end
-	eq(reads_of(p) - base, 1, "D several inventory actions: one scan within 0.5 s")
-	-- a new item: a loud scan redraws the open book, a quiet one does not
-	p:give("default:copper_ingot 1")
-	opened = 0
-	check(real_scan(p, true) == true, "D a quiet scan records the new item")
-	eq(opened, 0, "D ...without redrawing the book")
-	check(grug_jobs.discovery_seen(p, "default:copper_ingot"), "D ...and it counts as seen")
-	p:give("grug_food:raw_meat 1")
-	check(real_scan(p) == true and opened == 1, "D a loud scan with a new item redraws the open book")
-	check(real_scan(p) == false and opened == 1, "D ...and nothing new redraws nothing")
-	-- the book scans before it draws (grug_jobs.open_book)
-	local ui = io.open(repo .. "/mods/PLAYER/grug_jobs/ui.lua"):read("*a")
-	local body = ui:match("function grug_jobs%.open_book%(.-\nend")
-	local scan_at = body and body:find("_scan_discovery(player, true)", 1, true)
-	local draw_at = body and body:find("make_formspec(", 1, true)
-	check(scan_at and draw_at and scan_at < draw_at, "D open_book scans (quietly) before it draws the book")
-	-- leave: no more slot visits
-	each("register_on_leaveplayer", p)
-	players[p.name] = nil
-	base = reads_of(p)
-	for _ = 1, 110 do discovery_step(0.1) end
-	eq(reads_of(p) - base, 0, "D a player who left is not scanned")
-end
+-- D (discovery) was retired in Round 45: every area shows all its recipes,
+-- so no inventory scan remains (round45-plan.md §4.2).
 
 -- ---------------------------------------------------------------------------
 -- C: Claim Stone placement (the pure registry)
