@@ -1,6 +1,8 @@
--- The sfinv Talents page owns every player-facing talent mutation. The chat
--- command is deliberately read-only; rank purchases and full resets always
--- act on the PlayerRef that submitted this page's fixed button fields.
+-- The sfinv Talents & Skills page owns every player-facing talent mutation.
+-- The chat command is deliberately read-only; rank purchases and full resets
+-- always act on the PlayerRef that submitted this page's fixed button fields.
+-- The page draws the class's talent trees through the tree framework below
+-- and, under them, the skill catalog row grug_skills installs.
 
 local PAGE_NAME = "grug_classes:talents"
 local META_RESPEC_USED = "grug_classes:respec_used"
@@ -54,18 +56,6 @@ end
 
 local function trees_for_player(player)
 	return grug_classes.trees_of_class(grug_classes.get_class(player))
-end
-
-local function active_tree(player, context)
-	local trees = trees_for_player(player)
-	for _, tree in ipairs(trees) do
-		if tree.id == context.grug_talent_tree then
-			return tree, trees
-		end
-	end
-	local tree = trees[1]
-	context.grug_talent_tree = tree and tree.id or nil
-	return tree, trees
 end
 
 local function level_number(value)
@@ -123,11 +113,10 @@ function grug_classes.talent_description_for(player, def)
 	return def.description .. " At your level: " .. table.concat(ranks, "; ") .. "."
 end
 
-local function selected_description(player, context, tree)
+local function selected_description(player, context)
 	local def = context.grug_talent_selected
 		and grug_classes.registered_talents[context.grug_talent_selected]
-	if not def or not tree or def.tree ~= tree.id
-			or def.class ~= grug_classes.get_class(player) then
+	if not def or def.class ~= grug_classes.get_class(player) then
 		return context.grug_talent_notice
 			or "Click an available talent to buy one rank."
 	end
@@ -144,115 +133,220 @@ local function selected_description(player, context, tree)
 		grug_classes.talent_description_for(player, def), status)
 end
 
-local function buyable_talent_style(fieldname, selected)
-	if selected then
-		return grug_inventory.selected_button_style(fieldname, true)
+--
+-- The tree framework (Round 44, spec ui-crafting-rework-plan.md ruling 7 and
+-- §3.4). A tree is a list of sections {id} and a list of nodes {id, section,
+-- row, col, requires = {node ids}}. layout_tree puts the sections side by
+-- side in `area`, each node at its row and column inside its section, and
+-- routes one connector per requirement, orthogonally: down from the parent's
+-- bottom, across in the gap above the child's row, down into the child's top
+-- (one straight segment when both share a column). A node may have any number
+-- of parents and children; the page draws every connector box before the
+-- nodes, so the lines run under them. Positions are real coordinates.
+--
+grug_classes.TALENT_TREE_AREA = {x = 0.25, y = 1.5, w = 13.0, section_gap = 0.3,
+	pad = 0.15, col_gap = 0.25, node_h = 0.8, row_gap = 0.3, line = 0.08}
+
+function grug_classes.layout_tree(sections, nodes, area)
+	area = area or grug_classes.TALENT_TREE_AREA
+	local cols, rows = {}, 0
+	for _, node in ipairs(nodes) do
+		cols[node.section] = math.max(cols[node.section] or 1, node.col)
+		rows = math.max(rows, node.row)
 	end
-	return ("style[%s;bgcolor=#526f3f;bgcolor_hovered=#688d50;" ..
-		"bgcolor_pressed=#3e552f;border=true]"):format(esc(fieldname))
+	local pitch = area.node_h + area.row_gap
+	local height = rows * pitch - area.row_gap
+	local section_w = (area.w - (#sections - 1) * area.section_gap) / #sections
+	local layout = {sections = {}, nodes = {}, connectors = {}, bottom = area.y + height}
+	for index, section in ipairs(sections) do
+		local count = cols[section.id] or 1
+		layout.sections[section.id] = {
+			x = area.x + (index - 1) * (section_w + area.section_gap), y = area.y,
+			w = section_w, h = height,
+			node_w = (section_w - 2 * area.pad - (count - 1) * area.col_gap) / count,
+		}
+	end
+	for _, node in ipairs(nodes) do
+		local section = layout.sections[node.section]
+		layout.nodes[node.id] = {
+			x = section.x + area.pad + (node.col - 1) * (section.node_w + area.col_gap),
+			y = area.y + (node.row - 1) * pitch, w = section.node_w, h = area.node_h,
+		}
+	end
+	local t = area.line
+	for _, node in ipairs(nodes) do
+		local child = layout.nodes[node.id]
+		for _, parent_id in ipairs(node.requires or {}) do
+			local parent = layout.nodes[parent_id]
+			local px, py = parent.x + parent.w / 2, parent.y + parent.h
+			local cx, cy = child.x + child.w / 2, child.y
+			local segments
+			if math.abs(px - cx) < 1e-9 then
+				segments = {{x = px - t / 2, y = py, w = t, h = cy - py}}
+			else
+				local mid = cy - area.row_gap / 2
+				segments = {
+					{x = px - t / 2, y = py, w = t, h = mid - py + t / 2},
+					{x = math.min(px, cx) - t / 2, y = mid - t / 2,
+						w = math.abs(cx - px) + t, h = t},
+					{x = cx - t / 2, y = mid - t / 2, w = t, h = cy - mid + t / 2},
+				}
+			end
+			layout.connectors[#layout.connectors + 1] = {from = parent_id,
+				to = node.id, segments = segments}
+		end
+	end
+	return layout
+end
+
+-- Today's talent data as framework data: one section per tree of the class,
+-- each chain a column, each tier a row, the talent above in the same chain
+-- (the hard chain) the one requirement.
+function grug_classes.talent_tree_data(trees)
+	local sections, nodes = {}, {}
+	for _, tree in ipairs(trees) do
+		sections[#sections + 1] = {id = tree.id, tree = tree}
+		for _, def in ipairs(tree.talents) do
+			local col = 1
+			for index, chain in ipairs(tree.chains) do
+				if chain == def.chain then col = index end
+			end
+			nodes[#nodes + 1] = {id = def.id, section = tree.id, row = def.tier,
+				col = col, requires = def.above and {def.above.id} or {}}
+		end
+	end
+	return sections, nodes
+end
+
+-- Node looks: buyable (green, as before), maxed, ranked but not buyable,
+-- locked; the selected node gets the shared gold selection.
+local NODE_STYLES = {
+	buyable = "bgcolor=#526f3f;bgcolor_hovered=#688d50;bgcolor_pressed=#3e552f;border=true",
+	maxed = "bgcolor=#5c4a2a;bgcolor_hovered=#6f5a33;bgcolor_pressed=#4a3b22;border=true",
+	ranked = "bgcolor=#4a4a4a;bgcolor_hovered=#575757;bgcolor_pressed=#3a3a3a;border=true",
+	locked = "bgcolor=#2e2e2e;bgcolor_hovered=#3a3a3a;bgcolor_pressed=#262626;" ..
+		"border=false;textcolor=#9a9a9a",
+}
+local CONNECTOR_MET, CONNECTOR_OPEN = "#c9a65a", "#5a5a5a"
+
+-- Button field index per talent id (registration order, fixed after load).
+local field_index
+local function talent_field(id)
+	if not field_index then
+		field_index = {}
+		for index, talent_id in ipairs(grug_classes.talent_ids) do
+			field_index[talent_id] = index
+		end
+	end
+	return "grug_talent_pick_" .. field_index[id]
+end
+
+-- One node: its state (the key of NODE_STYLES, or "selected"), the button and
+-- its tooltip. The page sends one style[] per state for all its nodes.
+local function node_formspec(player, context, def, rect)
+	local field = talent_field(def.id)
+	local rank = grug_classes.talent_rank(player, def.id)
+	local available, reason = grug_classes.can_spend_talent(player, def.id)
+	local state = context.grug_talent_selected == def.id and "selected"
+		or available and "buyable" or rank >= def.ranks and "maxed"
+		or rank > 0 and "ranked" or "locked"
+	local tooltip = def.name .. " — " ..
+		grug_classes.talent_description_for(player, def)
+	if not available and rank < def.ranks then
+		tooltip = tooltip .. " Locked: " .. reason
+	end
+	return state, field, table.concat({
+		("image_button[%.2f,%.2f;%.2f,%.2f;blank.png;%s;%s]"):format(rect.x,
+			rect.y, rect.w, rect.h, field, esc(("%s%s\n%d/%d"):format(def.name,
+			talent_mark(def), rank, def.ranks))),
+		("tooltip[%s;%s]"):format(field, esc(grug_inventory.wrap_text(tooltip, 58))),
+	})
 end
 
 local function talent_content(player, context)
 	local class_id = grug_classes.get_class(player)
 	local class_def = class_id and grug_classes.registered_classes[class_id]
-	local tree, trees = active_tree(player, context)
+	local trees = trees_for_player(player)
 	local fs = {
 		"real_coordinates[true]",
-		("label[0.20,0.35;%s]"):format(esc(class_def and class_def.name or "No class")),
-		("label[9.50,0.35;%s]"):format(esc(("Points %d/%d")
-			:format(grug_classes.talent_points_total(player),
-				grug_classes.talent_points_available(player)))),
+		("label[0.25,0.45;%s]"):format(esc((class_def and class_def.name or "No class") ..
+			" talents")),
+		("label[3.60,0.45;%s]"):format(esc(("Talent points available: %d of %d")
+			:format(grug_classes.talent_points_available(player),
+				grug_classes.talent_points_total(player)))),
 	}
-
-	for index, candidate in ipairs(trees) do
-		local label = candidate.name .. " " ..
-			grug_classes.tree_points(player, candidate.id)
-		local field = "grug_talent_tree_" .. index
-		fs[#fs + 1] = grug_inventory.selected_button_style(field,
-			tree and candidate.id == tree.id)
-		fs[#fs + 1] = ("button[%.2f,0.80;2.10,0.60;grug_talent_tree_%d;%s]")
-			:format(0.2 + (index - 1) * 2.25, index, esc(label))
-	end
 
 	local spent = grug_classes.talent_points_spent(player)
 	if spent <= 0 then
-		fs[#fs + 1] = "label[9.50,1.10;" .. esc("No ranks spent") .. "]"
+		fs[#fs + 1] = "label[9.90,0.45;" .. esc("No ranks spent") .. "]"
 	elseif context.grug_talent_respec_pending then
-		fs[#fs + 1] = "button[9.50,0.80;1.45,0.60;grug_talent_respec_confirm;Confirm]"
-		fs[#fs + 1] = "button[11.10,0.80;1.50,0.60;grug_talent_respec_cancel;Cancel]"
+		fs[#fs + 1] = "button[9.90,0.15;1.60,0.60;grug_talent_respec_confirm;Confirm]"
+		fs[#fs + 1] = "button[11.60,0.15;1.65,0.60;grug_talent_respec_cancel;Cancel]"
 	else
 		local price = grug_classes.respec_price(player)
 		local price_text = price == 0 and "Free" or grug_money.format(price)
-		fs[#fs + 1] = "button[9.50,0.80;3.10,0.60;grug_talent_respec;" ..
+		fs[#fs + 1] = "button[9.90,0.15;3.35,0.60;grug_talent_respec;" ..
 			esc("Respec: " .. price_text) .. "]"
 	end
 
-	if not tree then
-		fs[#fs + 1] = "label[0.20,1.70;" ..
+	if #trees == 0 then
+		fs[#fs + 1] = "label[0.25,1.70;" ..
 			esc("Choose a class before spending talent points.") .. "]"
 		return table.concat(fs)
 	end
 
-	for chain_index, chain in ipairs(tree.chains) do
-		local x = 0.2 + (chain_index - 1) * 6.3
-		fs[#fs + 1] = ("label[%.2f,1.65;%s]"):format(x + 0.1,
-			esc(chain:sub(1, 1):upper() .. chain:sub(2)))
-		for tier = 1, 4 do
-			local def
-			for _, candidate in ipairs(tree.talents) do
-				if candidate.chain == chain and candidate.tier == tier then
-					def = candidate
-					break
-				end
-			end
-			if def then
-				local y = 2.00 + (tier - 1) * 0.80
-				local rank = grug_classes.talent_rank(player, def.id)
-				local label = ("T%d %s%s %d/%d"):format(tier, def.name,
-					talent_mark(def), rank, def.ranks)
-				local selected = context.grug_talent_selected == def.id
-				local available, reason = grug_classes.can_spend_talent(player, def.id)
-				if available then
-					local field_index
-					for index, id in ipairs(grug_classes.talent_ids) do
-						if id == def.id then
-							field_index = index
-							break
-						end
-					end
-					fs[#fs + 1] = buyable_talent_style(
-						"grug_talent_pick_" .. field_index, selected)
-					fs[#fs + 1] = ("button[%.2f,%.2f;6.05,0.65;grug_talent_pick_%d;%s]")
-						:format(x, y, field_index, esc(label))
-				else
-					local locked_label = label ..
-						(rank >= def.ranks and " [max]" or " [locked]")
-					local markup = "<global margin=0 halign=center valign=middle>" ..
-						locked_label
-					fs[#fs + 1] = ("box[%.2f,%.2f;6.05,0.65;#606060]" ..
-						"box[%.2f,%.2f;5.99,0.59;#303030]" ..
-						"hypertext[%.2f,%.2f;5.99,0.59;;%s]"):format(
-						x, y, x + 0.03, y + 0.03,
-						x + 0.03, y + 0.03, esc(markup))
-				end
-				local tooltip = def.name .. " — " ..
-					grug_classes.talent_description_for(player, def)
-				if not available and rank < def.ranks then
-					tooltip = tooltip .. " Locked: " .. reason
-				end
-				fs[#fs + 1] = ("tooltip[%.2f,%.2f;6.05,0.65;%s]")
-					:format(x, y, esc(grug_inventory.wrap_text(tooltip, 58)))
-			end
+	local sections, nodes = grug_classes.talent_tree_data(trees)
+	local layout = grug_classes.layout_tree(sections, nodes)
+	for _, section in ipairs(sections) do
+		local rect = layout.sections[section.id]
+		fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#00000030]"):format(rect.x,
+			rect.y - 0.55, rect.w, rect.h + 0.7)
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(rect.x + 0.15, rect.y - 0.27,
+			esc(("%s — %d points"):format(section.tree.name,
+				grug_classes.tree_points(player, section.id))))
+	end
+	for _, connector in ipairs(layout.connectors) do
+		local parent = grug_classes.registered_talents[connector.from]
+		local color = grug_classes.talent_rank(player, parent.id) >= parent.ranks
+			and CONNECTOR_MET or CONNECTOR_OPEN
+		for _, s in ipairs(connector.segments) do
+			fs[#fs + 1] = ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(s.x, s.y, s.w, s.h, color)
 		end
 	end
+	local by_state, parts = {}, {}
+	for _, node in ipairs(nodes) do
+		local state, field, part = node_formspec(player, context,
+			grug_classes.registered_talents[node.id], layout.nodes[node.id])
+		by_state[state] = by_state[state] or {}
+		table.insert(by_state[state], field)
+		parts[#parts + 1] = part
+	end
+	for _, state in ipairs({"buyable", "maxed", "ranked", "locked", "selected"}) do
+		local fields = by_state[state]
+		if fields then
+			fs[#fs + 1] = state == "selected"
+				and grug_inventory.selected_button_style(fields[1], true)
+				or ("style[%s;%s]"):format(table.concat(fields, ","), NODE_STYLES[state])
+		end
+	end
+	fs[#fs + 1] = table.concat(parts)
 
 	local description = context.grug_talent_notice
-		or selected_description(player, context, tree)
-	fs[#fs + 1] = "textarea[0.20,5.35;12.35,1.75;;;" .. esc(description) .. "]"
+		or selected_description(player, context)
+	fs[#fs + 1] = ("textarea[0.25,%.2f;13.00,1.15;;;%s]"):format(layout.bottom + 0.35,
+		esc(description))
 	return table.concat(fs)
 end
 
 grug_classes.talent_formspec_content = talent_content
+
+-- The skill catalog row under the tree (spec §3.4, Round 44 plan ruling 4):
+-- grug_skills, which depends on this mod, installs a function(player, y)
+-- that returns its formspec part in real coordinates from y down (about 1.4
+-- high, above the short inventory at 9.5); without it the page ends with
+-- the tree and its text.
+grug_classes.skill_catalog_row = nil
+local CATALOG_Y = 7.3
 
 local function refresh_open_page(player)
 	if sfinv.get_page(player) == PAGE_NAME then
@@ -299,22 +393,10 @@ local function receive_fields(player, context, fields)
 		return true
 	end
 
-	local trees = trees_for_player(player)
-	for index, tree in ipairs(trees) do
-		if fields["grug_talent_tree_" .. index] then
-			context.grug_talent_tree = tree.id
-			context.grug_talent_selected = nil
-			context.grug_talent_notice = nil
-			refresh_open_page(player)
-			return true
-		end
-	end
 	for index, id in ipairs(grug_classes.talent_ids) do
 		if fields["grug_talent_pick_" .. index] then
 			local def = grug_classes.registered_talents[id]
-			local tree = active_tree(player, context)
-			if not def or not tree or def.tree ~= tree.id or
-					def.class ~= grug_classes.get_class(player) then
+			if not def or def.class ~= grug_classes.get_class(player) then
 				return true
 			end
 			context.grug_talent_notice = nil
@@ -330,11 +412,16 @@ local function receive_fields(player, context, fields)
 	return false
 end
 
+-- One tab for the talent tree and the skill catalog (spec ruling 1), with the
+-- short inventory below, so tools and food can leave the hotbar for skills.
 sfinv.register_page(PAGE_NAME, {
-	title = "Talents",
+	title = "Talents & Skills",
 	get = function(self, player, context)
+		local catalog = grug_classes.skill_catalog_row
 		return sfinv.make_formspec(player, context,
-			talent_content(player, context), true)
+			talent_content(player, context) ..
+				(catalog and catalog(player, CATALOG_Y) or ""),
+			"short")
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
 		return receive_fields(player, context, fields)

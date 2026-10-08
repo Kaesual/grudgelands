@@ -53,15 +53,14 @@ end
 --
 -- Tab order (spec ruling 1): one table, not the mods' load order. Pages
 -- missing from it (creative's tabs for creative players) follow in their
--- registration order. Until the wave-2 lanes merge their pages, Talents and
--- Skills hold the place of "Talents & Skills", Party and PvP the place of
--- "Party & PvP", and Quests (moving into the map window) sits before Map.
+-- registration order. Until the wave-2 lanes merge their pages, Party and
+-- PvP hold the place of "Party & PvP", and Quests (moving into the map
+-- window) sits before Map. grug_classes:talents is "Talents & Skills".
 --
 grug_inventory.TAB_ORDER = {
 	"grug_inventory:inventory",
 	"grug_inventory:character",
 	"grug_classes:talents",
-	"grug_skills:skills",
 	"sfinv:crafting",
 	"grug_parties:group",
 	"grug_pvp:pvp",

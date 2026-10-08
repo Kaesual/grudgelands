@@ -1,77 +1,85 @@
-local PAGE = "grug_skills:skills"
+-- The skill catalog (Round 44, spec ui-crafting-rework-plan.md ruling 8 and
+-- §3.4): one row under the talent tree of the Talents & Skills page, which
+-- grug_classes/talents_ui.lua draws; this file installs the row as
+-- grug_classes.skill_catalog_row. Each unlocked ability has its own slot of
+-- a per-player detached list that is an infinite source and an infinite
+-- destination: a drag onto a free hotbar slot copies the skill there
+-- (bound_items.lua decides where a skill may land and keeps it to one copy),
+-- and a drag of the carried copy back onto its own icon removes that copy
+-- (the engine undoes the swap such a drop asks for and keeps the catalog's
+-- stack). A talent that unlocks an ability puts it on a free hotbar slot,
+-- else it waits here. Mounts and boats are not listed (they move to the
+-- quickbar).
 local detached = {}
-local slots = {}
+local slots = {} -- player name -> ability id per catalog slot
+local known = {} -- player name -> set of ability ids at the last rebuild
 
 local function inv_name(name) return "grug_skills_" .. name end
-local function present(player, itemname)
-	local inv = player:get_inventory()
-	for _, listname in ipairs({"main", "craft"}) do
-		if inv:contains_item(listname, itemname) then return true end
-	end
-	for i = 1, grug_inventory.BAG_COUNT do
-		if inv:contains_item(grug_inventory.content_list(i), itemname) then return true end
-	end
-	return false
-end
 
 local function entries(player)
 	local result = {}
 	for index, id in ipairs(grug_abilities.unlocked_ids(player)) do
-		assert(index <= 8, "Skills ability row exceeds the decided class-kit limit")
-		result[index] = {kind = "ability", id = id,
-			stack = grug_abilities.stack_for(player, id)}
-	end
-	for _, id in ipairs(grug_mounts.owned_tier_ids(player)) do
-		result[8 + id] = {kind = "mount", id = id,
-			stack = grug_mounts.stack_for(player, id)}
+		assert(index <= grug_inventory.HOTBAR_SIZE,
+			"Skills ability row exceeds the decided class-kit limit")
+		result[index] = id
 	end
 	return result
 end
 
-local function current_stack(player, entry)
-	if entry.kind == "ability" then return grug_abilities.stack_for(player, entry.id) end
-	return grug_mounts.stack_for(player, entry.id)
-end
-
-local function rebuild(player, announce)
+-- Fills the catalog with fresh stacks of the unlocked abilities.
+local function fill(player)
 	local name = player:get_player_name()
 	local inv = detached[name]
-	if not inv then return end
-	local previous = {}
-	for _, entry in pairs(slots[name] or {}) do
-		if entry.kind == "ability" then previous[entry.id] = true end
-	end
+	if not inv then return nil end
 	local rows = entries(player)
-	if announce == true then
-		for _, entry in pairs(rows) do
-			local def = entry.kind == "ability" and grug_abilities.registered[entry.id]
-			if def and def.talent_gated and not previous[entry.id] then
-				core.chat_send_player(name, def.name .. " unlocked. Open Inventory > Skills to use it.")
+	slots[name] = rows
+	inv:set_size("catalog", #rows)
+	for i, id in ipairs(rows) do
+		inv:set_stack("catalog", i, grug_abilities.stack_for(player, id))
+	end
+	return rows
+end
+
+-- After an entitlement change. With announce == true (a talent change) each
+-- talent ability unlocked since the last rebuild goes onto a free hotbar
+-- slot, or waits in the catalog when the hotbar is full; the feed says which.
+local function rebuild(player, announce)
+	local name = player:get_player_name()
+	local rows = fill(player)
+	if not rows then return end
+	local before, now = known[name] or {}, {}
+	for _, id in ipairs(rows) do
+		now[id] = true
+		local def = grug_abilities.registered[id]
+		if announce == true and def and def.talent_gated and not before[id] then
+			if grug_abilities.grant_to_hotbar(player, id) then
+				grug_core.feed(player, "notice", def.name .. " unlocked: it is on your hotbar.")
+			else
+				grug_core.feed(player, "notice", def.name ..
+					" unlocked. Your hotbar is full: drag it from Talents & Skills.")
 			end
 		end
 	end
-	slots[name] = rows
-	inv:set_size("catalog", 16)
-	for i = 1, 16 do inv:set_stack("catalog", i, ItemStack("")) end
-	for i, entry in pairs(rows) do inv:set_stack("catalog", i, entry.stack) end
+	known[name] = now
 end
 
 grug_skills.rebuild = rebuild
 local function create(player)
 	local name = player:get_player_name()
+	local function slot_stack(actor, index)
+		local id = slots[name] and slots[name][index]
+		return id and grug_abilities.stack_for(actor, id)
+	end
 	local callbacks = {
 		allow_move = function() return 0 end,
 		allow_take = function(_, listname, index, stack, actor)
 			if not actor or actor:get_player_name() ~= name or listname ~= "catalog" then return 0 end
-			local entry = slots[name] and slots[name][index]
-			local fresh = entry and current_stack(actor, entry)
-			if not fresh or fresh:get_name() ~= stack:get_name() or present(actor, stack:get_name()) then return 0 end
-			if not actor:get_inventory():room_for_item("main", fresh) then return 0 end
+			local fresh = slot_stack(actor, index)
+			if not fresh or fresh:get_name() ~= stack:get_name() then return 0 end
 			return -1
 		end,
 		on_take = function(_, _, index, stack, actor)
-			local entry = slots[name] and slots[name][index]
-			local fresh = entry and current_stack(actor, entry)
+			local fresh = slot_stack(actor, index)
 			if not fresh then return end
 			local inv = actor:get_inventory()
 			for i = 1, inv:get_size("main") do
@@ -80,10 +88,12 @@ local function create(player)
 				end
 			end
 		end,
+		-- Only the skill of that very slot: a different stack would come back
+		-- out of the swap into the player's inventory (the engine's
+		-- infinite-source rule), not be removed.
 		allow_put = function(_, listname, index, stack, actor)
 			if not actor or actor:get_player_name() ~= name or listname ~= "catalog" then return 0 end
-			local entry = slots[name] and slots[name][index]
-			local fresh = entry and current_stack(actor, entry)
+			local fresh = slot_stack(actor, index)
 			if fresh and fresh:get_name() == stack:get_name() and
 					grug_skills.is_entitled(actor, stack) then return -1 end
 			return 0
@@ -93,47 +103,28 @@ local function create(player)
 	rebuild(player)
 end
 
-local function passive_text(player)
-	local lines = {}
-	for id, def in pairs(grug_classes.registered_talents or {}) do
-		local rank = grug_classes.talent_rank(player, id)
-		if rank > 0 and not def.ability then
-			lines[#lines + 1] = def.name .. " (" .. rank .. "): " ..
-				(grug_classes.talent_description_for and
-				grug_classes.talent_description_for(player, def) or def.description)
-		end
-	end
-	table.sort(lines)
-	return table.concat(lines, "\n")
-end
-
-local function content(player)
-	grug_skills.guard_destinations()
-	rebuild(player)
+-- The row: a hint, then the catalog under the hotbar's columns, labelled
+-- like the hotbar. `y` is the hint's top, in the page's real coordinates.
+local function catalog_row(player, y)
+	grug_skills.guard_detached()
+	fill(player)
 	local location = "detached:" .. core.formspec_escape(inv_name(player:get_player_name()))
-	local hint = core.formspec_escape(
-		"Drop skills to remove them. Drag them back from here.")
-	return "label[0.25,0.2;" .. hint .. "]" ..
-		"label[0.25,0.65;Abilities]" ..
-		"list[" .. location .. ";catalog;0.25,1.05;8,1;0]" ..
-		"label[0.25,2.25;Purchased mounts and boats]" ..
-		"list[" .. location .. ";catalog;0.25,2.65;6,1;8]" ..
-		"label[0.25,3.75;Passive and replacement talents]" ..
-		"textarea[0.25,4.15;9.9,2.3;;;" ..
-		core.formspec_escape(passive_text(player)) .. "]"
-
+	return ("label[0.25,%.2f;%s]"):format(y + 0.15, core.formspec_escape(
+			"Drag skills onto the hotbar. Drag one back here to remove it.")) ..
+		("label[0.30,%.2f;Skills]"):format(y + 0.85) ..
+		("list[%s;catalog;%.3f,%.2f;8,1;0]"):format(location,
+			grug_inventory.VIEW_GEOMETRY.x, y + 0.35)
 end
 
-grug_skills.page_content = content
-sfinv.register_page(PAGE, {title = "Skills", get = function(_, player, context)
-	return sfinv.make_formspec(player, context, content(player), true)
-end})
+grug_skills.catalog_row = catalog_row
+grug_classes.skill_catalog_row = catalog_row
 
 core.register_on_joinplayer(function(player) core.after(0, function(name)
 	local current = core.get_player_by_name(name); if current then create(current) end
 end, player:get_player_name()) end)
 core.register_on_leaveplayer(function(player)
-	local name = player:get_player_name(); core.remove_detached_inventory(inv_name(name)); detached[name] = nil; slots[name] = nil
+	local name = player:get_player_name(); core.remove_detached_inventory(inv_name(name))
+	detached[name], slots[name], known[name] = nil, nil, nil
 end)
 grug_classes.register_on_class_chosen(rebuild)
 if grug_classes.register_on_talents_changed then
@@ -141,4 +132,3 @@ if grug_classes.register_on_talents_changed then
 end
 grug_classes.register_on_race_chosen(rebuild)
 grug_factions.register_on_faction_chosen(rebuild)
-grug_mounts.register_on_owned_tiers_changed(rebuild)
