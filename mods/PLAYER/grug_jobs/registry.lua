@@ -1,3 +1,14 @@
+-- The recipe registry (Round 45, round45-plan.md §3, ui-crafting-rework-plan.md
+-- §4.1): every craft is an ingredient list in one crafting area. A record is
+--   {id, output, count, ingredients = {{item = name | group = name, n}, ...},
+--    area, profession, tier, time, station, progress}
+-- `area` is "basic", "cooking", a primary profession or "alchemist";
+-- `profession` is the area's profession (nil for Basic); `time` is the
+-- duration of one craft in seconds (spec §2.30); `station` is nil or the
+-- station kind that must stand nearby; `progress` says whether the craft
+-- gives profession XP (never in Basic). Nothing here matches a craft grid:
+-- a job names its recipe by id. Furnace, dual-furnace and alloy recipes are
+-- no records; they stay engine cooking and grug_smelting recipes.
 local function fail(message)
 	error("grug_jobs recipe registry: " .. message, 0)
 end
@@ -18,10 +29,20 @@ grug_jobs.PRIMARY_PROFESSIONS = {
 	"goldsmith",
 }
 -- Secondaries take no primary slot; every character may learn both (Round
--- 33: Alchemy joined Cooking). The crafting page has one fixed book slot each.
+-- 33: Alchemy joined Cooking).
 grug_jobs.SECONDARY_PROFESSIONS = {"cooking", "alchemist"}
+
+-- The crafting areas (spec §2.16): Basic, Cooking, the six primaries (a
+-- character shows the two it learned) and Alchemy.
+grug_jobs.AREAS = {"basic", "cooking", "weaponsmith", "armorsmith", "tailor",
+	"leatherworker", "woodcarver", "goldsmith", "alchemist"}
+local AREA_SET = {}
+for _, area in ipairs(grug_jobs.AREAS) do AREA_SET[area] = true end
+
+-- Station nodes. Furnaces and dual furnaces keep their dialog (workspaces.lua)
+-- and no recipe names them; the others are the kinds a recipe may need
+-- nearby (spec §2.27, §4.7).
 grug_jobs.STATIONS = {
-	grid = {display_name = "Crafting Grid"},
 	furnace = {display_name = "Furnace", node = "default:furnace"},
 	dual_furnace = {display_name = "Dual Furnace",
 		node = "grug_smelting:dual_furnace"},
@@ -40,6 +61,21 @@ grug_jobs.STATIONS = {
 		node = "grug_jobs:jewellers_bench"},
 }
 
+-- The station each profession's recipes need nearby (Cooking needs none).
+grug_jobs.PROFESSION_STATIONS = {
+	weaponsmith = "forge", armorsmith = "forge", leatherworker = "tanning_rack",
+	tailor = "tailor_bench", woodcarver = "carving_bench",
+	goldsmith = "jewellers_bench", alchemist = "brewing_stand",
+}
+
+-- Seconds per crafted item (spec §2.30; a job lasts quantity x time).
+-- `material` covers the profession intermediates (bolt bundles, cut gems,
+-- settings) and `station` the station nodes, which the spec leaves open:
+-- both as Basic. Enchants (5 s) and upgrades (1 s per level) are station
+-- operations, not records.
+grug_jobs.DURATIONS = {basic = 1, food = 1, potion = 2, gear = 3, bag = 3,
+	material = 1, station = 1}
+
 function grug_jobs.station_info(station)
 	local definition = grug_jobs.STATIONS[station]
 	if type(definition) ~= "table" then return nil end
@@ -48,21 +84,12 @@ function grug_jobs.station_info(station)
 		node = definition.node}
 end
 
+-- Every record in registration order (prices and the load audits walk it).
 grug_jobs.recipes = {}
 
 local ingredient_tiers = {}
-local recipes_by_output = {}
-local recipes_by_profession = {}
-local station_handlers = {}
-local ambiguous_crafts_logged = {}
-local in_place_universal_routes = {}
-local registration_phase
-local registry_metrics = {
-	matrix_checks = 0,
-	engine_output_scans = 0,
-	group_item_checks = 0,
-	token_overlap_computations = 0,
-}
+local by_id, by_output, by_area = {}, {}, {}
+local finalized = false
 
 local function item_name(value)
 	if type(value) == "string" then
@@ -76,6 +103,8 @@ local function item_name(value)
 	return ""
 end
 
+-- The names in a list or a nested grid of item strings, empty slots left
+-- out (station operations still list their materials this way).
 local function flatten_inputs(value, result)
 	result = result or {}
 	if type(value) == "string" or
@@ -84,8 +113,6 @@ local function flatten_inputs(value, result)
 		local name = item_name(value)
 		if name ~= "" then result[#result + 1] = name end
 	elseif type(value) == "table" then
-		-- Engine recipe arrays may contain nil holes for empty shaped slots, so
-		-- `#value` is not an authority for their last numeric index.
 		local maximum = 0
 		for key in pairs(value) do
 			if type(key) == "number" and key % 1 == 0 and key > maximum then
@@ -99,490 +126,6 @@ local function flatten_inputs(value, result)
 	return result
 end
 
-local function normalized_inputs(value)
-	local names = flatten_inputs(value)
-	table.sort(names)
-	return table.concat(names, "\0")
-end
-
-local function group_matches(token, actual)
-	if token == actual then return true end
-	local groups = token:match("^group:(.+)$")
-	if not groups then return token == actual end
-	if type(core.get_item_group) ~= "function" then return token == actual end
-	for group in groups:gmatch("[^,]+") do
-		if core.get_item_group(actual, group) <= 0 then return false end
-	end
-	return true
-end
-
--- Build token compatibility once, then find a maximum bipartite matching with
--- one augmenting path per left slot. This is O(VE), unlike enumerating slot
--- permutations, and mirrors the graph/matching split in Luanti craftdef.cpp.
-local function can_match_all(left, right, compatible)
-	if #left ~= #right then return false end
-	local graph = {}
-	for left_index = 1, #left do
-		local neighbors = {}
-		for right_index = 1, #right do
-			registry_metrics.matrix_checks = registry_metrics.matrix_checks + 1
-			if compatible(left[left_index], right[right_index]) then
-				neighbors[#neighbors + 1] = right_index
-			end
-		end
-		graph[left_index] = neighbors
-	end
-
-	local matched_left = {}
-	local function augment(left_index, seen)
-		local neighbors = graph[left_index]
-		for index = 1, #neighbors do
-			local right_index = neighbors[index]
-			if not seen[right_index] then
-				seen[right_index] = true
-				if not matched_left[right_index] or
-						augment(matched_left[right_index], seen) then
-					matched_left[right_index] = left_index
-					return true
-				end
-			end
-		end
-		return false
-	end
-
-	for left_index = 1, #left do
-		if not augment(left_index, {}) then return false end
-	end
-	return true
-end
-
--- Match the ingredients the engine actually selected, independent of their
--- craft-grid offset. Maximum matching handles broad and narrow group tokens
--- without making a greedy choice or enumerating permutations.
-local function inputs_match(declared, actual)
-	local wanted = flatten_inputs(declared)
-	local got = flatten_inputs(actual)
-	return can_match_all(wanted, got, group_matches)
-end
-
-local function maximum_numeric_key(value)
-	local maximum = 0
-	for key in pairs(value or {}) do
-		if type(key) == "number" and key % 1 == 0 and key > maximum then
-			maximum = key
-		end
-	end
-	return maximum
-end
-
-local function matrix_from_nested(value)
-	local matrix = {}
-	local height = maximum_numeric_key(value)
-	local width = 0
-	for row = 1, height do
-		local row_value = type(value[row]) == "table" and value[row] or {}
-		width = math.max(width, maximum_numeric_key(row_value))
-		matrix[row] = row_value
-	end
-	return matrix, width, height
-end
-
-local function matrix_from_grid(value, width)
-	local matrix = {}
-	local maximum = maximum_numeric_key(value)
-	local height = math.max(1, math.ceil(maximum / width))
-	for row = 1, height do
-		matrix[row] = {}
-		for column = 1, width do
-			matrix[row][column] = value[(row - 1) * width + column]
-		end
-	end
-	return matrix, width, height
-end
-
-local function trim_matrix(matrix, width, height)
-	local min_row, max_row, min_column, max_column
-	for row = 1, height do
-		for column = 1, width do
-			if item_name(matrix[row] and matrix[row][column]) ~= "" then
-				min_row = min_row and math.min(min_row, row) or row
-				max_row = max_row and math.max(max_row, row) or row
-				min_column = min_column and math.min(min_column, column) or column
-				max_column = max_column and math.max(max_column, column) or column
-			end
-		end
-	end
-	if not min_row then return {}, 0, 0 end
-	local result = {}
-	for row = min_row, max_row do
-		local target = {}
-		for column = min_column, max_column do
-			target[#target + 1] = item_name(matrix[row] and matrix[row][column])
-		end
-		result[#result + 1] = target
-	end
-	return result, max_column - min_column + 1, max_row - min_row + 1
-end
-
--- Shaped recipes use the same placement rule as the engine grid: surrounding
--- empty rows and columns only move the pattern, while every slot inside the
--- trimmed rectangle is authoritative. Shapeless recipes retain the registry's
--- maximum-matching group semantics. recipe_for_craft applies this rule through
--- the craft index below; the function stays as the per-recipe reference for
--- tools/r30_p4/portable_test.lua.
-local function shaped_inputs_match(declared, actual)
-	local declared_matrix, declared_width, declared_height =
-		matrix_from_nested(declared)
-	local actual_matrix, actual_width, actual_height
-	if type(actual[1]) == "table" and
-		(type(actual[1].get_name) ~= "function") then
-		actual_matrix, actual_width, actual_height = matrix_from_nested(actual)
-	else
-		actual_matrix, actual_width, actual_height = matrix_from_grid(actual, 3)
-	end
-	local wanted, wanted_width, wanted_height = trim_matrix(declared_matrix,
-		declared_width, declared_height)
-	local got, got_width, got_height = trim_matrix(actual_matrix,
-		actual_width, actual_height)
-	if wanted_width ~= got_width or wanted_height ~= got_height then return false end
-	for row = 1, wanted_height do
-		for column = 1, wanted_width do
-			local token = wanted[row][column]
-			local name = got[row][column]
-			if token == "" then
-				if name ~= "" then return false end
-			elseif name == "" or not group_matches(token, name) then
-				return false
-			end
-		end
-	end
-	return true
-end
-
--- Craft lookup index (Round 30, perf review #7). The engine asks for a grid
--- recipe twice per crafted item, so a shift-click of a stack used to scan and
--- re-trim every recipe hundreds of times. Each recipe is filed once, at
--- registration, under its station and the property the matchers above
--- require of any grid it accepts: a shaped recipe under its trimmed size and
--- the mask of its occupied cells (empty cells must coincide), then under the
--- item in its first occupied cell or, when that cell is a group, in the
--- bucket's group list; every other recipe under its ingredient count. A
--- lookup trims the grid once and runs the full matcher only on those
--- candidates, so it finds exactly the recipes the scan over all of them found.
-local craft_index = {}
-
--- The trimmed cells (row-major item names, "" for empty) and the shape key.
-local function grid_shape(matrix, width, height)
-	local trimmed, trimmed_width, trimmed_height = trim_matrix(matrix, width, height)
-	local cells, mask = {}, {}
-	for row = 1, trimmed_height do
-		for column = 1, trimmed_width do
-			local name = trimmed[row][column]
-			cells[#cells + 1] = name
-			mask[#mask + 1] = name == "" and "0" or "1"
-		end
-	end
-	return cells, trimmed_width .. "x" .. trimmed_height .. ":" .. table.concat(mask)
-end
-
-local function first_occupied(cells)
-	for index = 1, #cells do
-		if cells[index] ~= "" then return cells[index] end
-	end
-end
-
-local function index_recipe(recipe)
-	local station = craft_index[recipe.station]
-	if not station then
-		station = {shaped = {}, counted = {}}
-		craft_index[recipe.station] = station
-	end
-	if recipe.shaped then
-		local cells, shape = grid_shape(matrix_from_nested(recipe.inputs))
-		local bucket = station.shaped[shape]
-		if not bucket then
-			bucket = {items = {}, groups = {}}
-			station.shaped[shape] = bucket
-		end
-		local first = first_occupied(cells)
-		local list = bucket.groups
-		if first and not first:match("^group:") then
-			list = bucket.items[first]
-			if not list then
-				list = {}
-				bucket.items[first] = list
-			end
-		end
-		list[#list + 1] = {recipe = recipe, cells = cells}
-	else
-		local count = #recipe.flat_inputs
-		local list = station.counted[count]
-		if not list then
-			list = {}
-			station.counted[count] = list
-		end
-		list[#list + 1] = recipe
-	end
-end
-
--- Same cells as `wanted` under the same mask: every occupied cell must match.
-local function cells_match(wanted, got)
-	for index = 1, #wanted do
-		local token = wanted[index]
-		if token ~= "" and not group_matches(token, got[index]) then return false end
-	end
-	return true
-end
-
-local function new_comparison_phase()
-	return {group_members = {}, token_members = {}, token_overlap = {}}
-end
-
-local function registration_comparison_phase()
-	if not registration_phase then registration_phase = new_comparison_phase() end
-	return registration_phase
-end
-
-local function group_member_set(group, phase)
-	local cached = phase.group_members[group]
-	if cached then return cached end
-	local items = {}
-	local count = 0
-	for name in pairs(core.registered_items or {}) do
-		registry_metrics.group_item_checks = registry_metrics.group_item_checks + 1
-		if type(core.get_item_group) == "function" and
-				core.get_item_group(name, group) > 0 then
-			items[name] = true
-			count = count + 1
-		end
-	end
-	cached = {items = items, count = count}
-	phase.group_members[group] = cached
-	return cached
-end
-
-local function group_token_members(token, phase)
-	local cached = phase.token_members[token]
-	if cached then return cached end
-	local groups = token:match("^group:(.+)$")
-	if not groups then return nil end
-	local sets = {}
-	local smallest
-	for group in groups:gmatch("[^,]+") do
-		local members = group_member_set(group, phase)
-		sets[#sets + 1] = members
-		if not smallest or members.count < smallest.count then smallest = members end
-	end
-	local items = {}
-	local count = 0
-	for name in pairs(smallest and smallest.items or {}) do
-		local present = true
-		for index = 1, #sets do
-			if not sets[index].items[name] then present = false break end
-		end
-		if present then items[name] = true count = count + 1 end
-	end
-	cached = {items = items, count = count}
-	phase.token_members[token] = cached
-	return cached
-end
-
-local function tokens_overlap(first, second, phase)
-	local first_group = first:match("^group:(.+)$")
-	local second_group = second:match("^group:(.+)$")
-	if not first_group and not second_group then return first == second end
-	local pair_key = first <= second and first .. "\0" .. second or
-		second .. "\0" .. first
-	local cached = phase.token_overlap[pair_key]
-	if cached ~= nil then return cached end
-	registry_metrics.token_overlap_computations =
-		registry_metrics.token_overlap_computations + 1
-	local overlap = false
-	if not first_group then
-		overlap = group_token_members(second, phase).items[first] == true
-	elseif not second_group then
-		overlap = group_token_members(first, phase).items[second] == true
-	else
-		local first_members = group_token_members(first, phase)
-		local second_members = group_token_members(second, phase)
-		local smaller, larger = first_members, second_members
-		if second_members.count < first_members.count then
-			smaller, larger = second_members, first_members
-		end
-		for name in pairs(smaller.items) do
-			if larger.items[name] then overlap = true break end
-		end
-	end
-	phase.token_overlap[pair_key] = overlap
-	return overlap
-end
-
--- Two recipe languages overlap when at least one concrete, unordered input
--- multiset can satisfy both. Group/group overlap is decidable once an item
--- belonging to both groups is registered; otherwise the final runtime guard
--- below remains authoritative.
-local function input_languages_overlap(first, second, phase)
-	local left = flatten_inputs(first)
-	local right = flatten_inputs(second)
-	phase = phase or registration_comparison_phase()
-	return can_match_all(left, right, function(left_token, right_token)
-		return tokens_overlap(left_token, right_token, phase)
-	end)
-end
-
-local function engine_method(station)
-	if station == "grid" then return "normal" end
-	if station == "furnace" then return "cooking" end
-	return nil
-end
-
-local function engine_corpus(phase)
-	if phase.engine_corpus then return phase.engine_corpus end
-	local corpus = {by_output = {}, by_method_count = {}}
-	phase.engine_corpus = corpus
-	if type(core.get_all_craft_recipes) ~= "function" then return corpus end
-	local outputs = {}
-	for name in pairs(core.registered_items or {}) do outputs[#outputs + 1] = name end
-	table.sort(outputs)
-	for output_index = 1, #outputs do
-		local output = outputs[output_index]
-		registry_metrics.engine_output_scans = registry_metrics.engine_output_scans + 1
-		local recipes = core.get_all_craft_recipes(output) or {}
-		for recipe_index = 1, #recipes do
-			local recipe = recipes[recipe_index]
-			local record = {
-				method = recipe.method,
-				items = recipe.items or {},
-				output = item_name(recipe.output or output),
-			}
-			local output_recipes = corpus.by_output[record.output]
-			if not output_recipes then
-				output_recipes = {}
-				corpus.by_output[record.output] = output_recipes
-			end
-			output_recipes[#output_recipes + 1] = record
-			local by_count = corpus.by_method_count[record.method]
-			if not by_count then
-				by_count = {}
-				corpus.by_method_count[record.method] = by_count
-			end
-			local count = #flatten_inputs(record.items)
-			local bucket = by_count[count]
-			if not bucket then bucket = {} by_count[count] = bucket end
-			bucket[#bucket + 1] = record
-		end
-	end
-	return corpus
-end
-
-local function engine_bucket(corpus, method, inputs)
-	local by_count = corpus.by_method_count[method] or {}
-	return by_count[#flatten_inputs(inputs)] or {}
-end
-
-local function dual_recipe_list()
-	local smelting = rawget(_G, "grug_smelting")
-	if not smelting or type(smelting.RECIPES) ~= "table" then return {} end
-	return smelting.RECIPES
-end
-
-local function refuse_input_collision(station, inputs, output, phase, dual)
-	local method = engine_method(station)
-	if method then
-		local corpus = engine_corpus(phase)
-		local bucket = engine_bucket(corpus, method, inputs)
-		for index = 1, #bucket do
-			local existing = bucket[index]
-			if existing.method == method and
-					input_languages_overlap(inputs, existing.items, phase) then
-				fail("profession " .. station .. " inputs for " .. output ..
-					" collide with universal engine output " .. existing.output)
-			end
-		end
-	elseif station == "dual_furnace" then
-		for index = 1, #dual do
-			local existing = dual[index]
-			if input_languages_overlap(inputs, existing.inputs or {}, phase) then
-				fail("profession dual-furnace inputs for " .. output ..
-					" collide with existing output " .. item_name(existing.output))
-			end
-		end
-	end
-end
-
-local function dual_recipe_count(output)
-	local count = 0
-	local recipes = dual_recipe_list()
-	for index = 1, #recipes do
-		if item_name(recipes[index].output) == output then
-			count = count + 1
-		end
-	end
-	return count
-end
-
-local function output_route_count(output, station)
-	local routes = recipes_by_output[output] or {}
-	local count = 0
-	for index = 1, #routes do
-		if station == nil or routes[index].station == station then
-			count = count + 1
-		end
-	end
-	return count
-end
-
-local function refuse_existing_output(output, phase, in_place)
-	local recipes = engine_corpus(phase).by_output[output] or {}
-	local owned_engine = output_route_count(output, "grid") +
-		output_route_count(output, "furnace")
-	local universal_routes = math.max(0, #recipes - owned_engine)
-	if not in_place and (universal_routes > 0 or
-			(in_place_universal_routes[output] or 0) > 0) then
-		fail("profession output " .. output ..
-			" already has a universal engine recipe")
-	end
-	if dual_recipe_count(output) > output_route_count(output, "dual_furnace") then
-		fail("profession output " .. output ..
-			" already has a dual-furnace recipe")
-	end
-	return universal_routes
-end
-
-local function contains_exact_input(inputs, output)
-	for index = 1, #inputs do
-		if inputs[index] == output then return true end
-	end
-	return false
-end
-
-local function contains_upgrade_kit(inputs)
-	for index = 1, #inputs do
-		local name = item_name(inputs[index])
-		if name ~= "" and (core.get_item_group(name, "grug_upgrade_kit") or 0) > 0 then
-			return true
-		end
-	end
-	return false
-end
-
--- A storage unpack (Round 33: the cut-gem blocks) turns one block into nine
--- of a profession output, and that block's own recipe packs nine of them: it
--- only returns what was packed, so it is no second route to the output.
-local function storage_unpack(corpus, candidate_inputs, output)
-	if #candidate_inputs ~= 1 then return false end
-	local packs = corpus.by_output[candidate_inputs[1]] or {}
-	for index = 1, #packs do
-		local packed = flatten_inputs(packs[index].items or {})
-		local only_output = #packed == 9
-		for input_index = 1, #packed do
-			if packed[input_index] ~= output then only_output = false end
-		end
-		if only_output then return true end
-	end
-	return false
-end
-
 function grug_jobs.register_ingredient_tier(item, tier)
 	local name = item_name(item)
 	if name == "" then fail("an ingredient needs an itemstring") end
@@ -593,7 +136,6 @@ function grug_jobs.register_ingredient_tier(item, tier)
 	if old and old ~= tier then
 		fail("ingredient " .. name .. " already has tier " .. old)
 	end
-	if not old then registration_phase = nil end
 	ingredient_tiers[name] = tier
 	return tier
 end
@@ -602,420 +144,279 @@ function grug_jobs.ingredient_tier(item)
 	return ingredient_tiers[item_name(item)]
 end
 
-local function install_recipe(recipe)
-	local handler = station_handlers[recipe.station]
-	if handler and handler.register_recipe then
-		handler.register_recipe(recipe)
-	end
+-- "group:<name>" for a group entry, else the item name: the token the
+-- ingredient-tier table and the price module key on.
+local function token_of(entry)
+	return entry.group and ("group:" .. entry.group) or entry.item
+end
+grug_jobs.ingredient_token = token_of
+
+-- Whether an item (a name) is accepted by one ingredient entry.
+function grug_jobs.ingredient_accepts(entry, name)
+	if entry.item then return entry.item == name end
+	return core.get_item_group(name, entry.group) > 0
 end
 
--- A future station (notably R8-ALCH's brewing stand) installs its recipe
--- adapter and optional per-player permission hook here. Recipes registered
--- before the station exists are retained and replayed exactly once. A custom
--- station owns its take path: before output leaves it MUST call
--- `grug_jobs.can_craft_recipe(player, recipe)`, and after a successful take it
--- MUST call `grug_jobs.award_progress(player, recipe)`.
--- Merely supplying `can_use` does not gate or settle a station inventory.
--- grug_jobs finalizes craft authority on the first server step. Later calls to
--- the engine's craft-callback registration APIs remain supported: grug_jobs
--- inserts them synchronously before its terminal permission gate and logs the
--- first such late registration.
-function grug_jobs.register_station(station, definition)
-	if not grug_jobs.STATIONS[station] then
-		fail("unknown station " .. tostring(station))
-	end
-	if type(definition) ~= "table" then fail(station .. " station differs") end
-	if definition.register_recipe ~= nil and
-			type(definition.register_recipe) ~= "function" then
-		fail(station .. " register_recipe differs")
-	end
-	if definition.can_use ~= nil and type(definition.can_use) ~= "function" then
-		fail(station .. " can_use differs")
-	end
-	if station_handlers[station] then fail(station .. " station is already owned") end
-	station_handlers[station] = definition
-	for index = 1, #grug_jobs.recipes do
-		local recipe = grug_jobs.recipes[index]
-		if recipe.station == station then install_recipe(recipe) end
-	end
+local function positive_integer(value)
+	return type(value) == "number" and value % 1 == 0 and value >= 1
 end
 
-function grug_jobs.station_handler(station)
-	return station_handlers[station]
+-- The id a record gets when its definition names none: the output and the
+-- sorted ingredient list, so it stays the same however the registering code
+-- orders its rows (a job stores it).
+local function default_id(output, ingredients)
+	local parts = {}
+	for index, entry in ipairs(ingredients) do
+		parts[index] = token_of(entry) .. "*" .. entry.n
+	end
+	table.sort(parts)
+	return output .. "|" .. table.concat(parts, "+")
 end
 
-function grug_jobs.register_recipe(definition)
-	if type(definition) ~= "table" then fail("recipe definition differs") end
-	local profession = definition.profession
-	local profession_def = grug_jobs.PROFESSIONS[profession]
-	if not profession_def then
-		fail("unknown profession " .. tostring(profession))
-	end
-	local tier = definition.tier
-	if type(tier) ~= "number" or tier % 1 ~= 0 or tier < 1 or tier > 6 then
-		fail(profession .. " recipe needs tier 1..6")
-	end
-	local station = definition.station
-	if not grug_jobs.STATIONS[station] then
-		fail("unknown station " .. tostring(station))
-	end
-	if type(definition.inputs) ~= "table" and
-			type(definition.inputs) ~= "string" then
-		fail(profession .. " T" .. tier .. " recipe needs inputs")
-	end
-	if definition.shapeless ~= nil and type(definition.shapeless) ~= "boolean" then
-		fail(profession .. " T" .. tier .. " shapeless flag differs")
-	end
-	if definition.in_place ~= nil and type(definition.in_place) ~= "boolean" then
-		fail(profession .. " T" .. tier .. " in_place flag differs")
-	end
-	if definition.material ~= nil and type(definition.material) ~= "boolean" then
-		fail(profession .. " T" .. tier .. " material flag differs")
-	end
-	if definition.progress ~= nil and type(definition.progress) ~= "boolean" then
-		fail(profession .. " T" .. tier .. " progress flag differs")
-	end
-	if definition.existing_engine_recipe ~= nil and
-			type(definition.existing_engine_recipe) ~= "boolean" then
-		fail(profession .. " T" .. tier .. " existing_engine_recipe differs")
-	end
-	if definition.mastery_required ~= nil and
-			(type(definition.mastery_required) ~= "number" or
-			definition.mastery_required % 1 ~= 0 or
-			definition.mastery_required < 1 or definition.mastery_required > 4) then
-		fail(profession .. " recipe mastery_required differs")
-	end
-	local inputs = flatten_inputs(definition.inputs)
-	if #inputs == 0 then fail(profession .. " T" .. tier .. " recipe has no input") end
-	local has_own_tier = false
-	for index = 1, #inputs do
-		local input_tier = ingredient_tiers[inputs[index]]
-		if input_tier == tier then has_own_tier = true end
-		if input_tier and input_tier > tier then
-			fail(profession .. " T" .. tier .. " recipe uses higher-tier ingredient " ..
-				inputs[index])
+local function copy_ingredients(list, label)
+	if type(list) ~= "table" or #list == 0 then fail(label .. " needs ingredients") end
+	local result, seen = {}, {}
+	for index, entry in ipairs(list) do
+		if type(entry) ~= "table" or not positive_integer(entry.n) then
+			fail(label .. " ingredient " .. index .. " needs a count n")
 		end
-	end
-	local output = item_name(definition.output)
-	if output == "" then fail(profession .. " recipe needs an output") end
-	if definition.material then
-		if ingredient_tiers[output] ~= tier then
-			fail(output .. " material output tier differs from recipe tier")
+		local item, group = entry.item, entry.group
+		if (item == nil) == (group == nil) then
+			fail(label .. " ingredient " .. index .. " needs exactly one of item and group")
 		end
-	elseif not has_own_tier then
-		fail(profession .. " T" .. tier ..
-			" recipe needs at least one declared T" .. tier .. " ingredient")
-	end
-	if definition.in_place and not contains_exact_input(inputs, output) then
-		fail(output .. " in-place recipe must consume its output")
-	end
-	local output_routes = recipes_by_output[output]
-	if output_routes then
-		for index = 1, #output_routes do
-			local route = output_routes[index]
-			if route.station == station then
-				if not ((definition.in_place or route.in_place) and
-					definition.operation ~= route.operation) then
-					fail("duplicate profession output " .. output .. " at " .. station)
-				end
-			end
-			if route.profession ~= profession or route.tier ~= tier then
-				fail("profession output " .. output ..
-					" routes disagree on profession or tier")
-			end
+		if item ~= nil and (type(item) ~= "string" or not item:match("^[%w_]+:[%w_]+$")) then
+			fail(label .. " ingredient " .. index .. " item differs")
 		end
-	end
-	local phase = definition.existing_engine_recipe and new_comparison_phase() or
-		registration_comparison_phase()
-	local universal_routes = 0
-	if definition.existing_engine_recipe then
-		local wanted_method = engine_method(station)
-		if not wanted_method then
-			fail(output .. " existing engine recipe needs grid or furnace")
+		if group ~= nil and (type(group) ~= "string" or not group:match("^[%w_]+$")) then
+			fail(label .. " ingredient " .. index .. " group differs")
 		end
-		local engine = engine_corpus(phase).by_output[output] or {}
-		local provenance = 0
-		for index = 1, #engine do
-			if engine[index].method == wanted_method and
-					input_languages_overlap(definition.inputs,
-						engine[index].items or {}, phase) then
-				provenance = provenance + 1
-			end
-		end
-		if provenance ~= 1 or #engine ~= 1 then
-			fail(output .. " existing engine recipe provenance differs")
-		end
-	else
-		universal_routes = refuse_existing_output(output, phase,
-			definition.in_place == true)
-		refuse_input_collision(station, definition.inputs, output, phase,
-			dual_recipe_list())
+		local copy = item and {item = item, n = entry.n} or {group = group, n = entry.n}
+		local token = token_of(copy)
+		if seen[token] then fail(label .. " lists " .. token .. " twice") end
+		seen[token] = true
+		result[index] = copy
 	end
-	local input_key = normalized_inputs(definition.inputs)
-	for index = 1, #grug_jobs.recipes do
-		local previous = grug_jobs.recipes[index]
-		if previous.station == station and
-				input_languages_overlap(previous.inputs, definition.inputs, phase) then
-			fail("overlapping profession " .. station .. " inputs for " .. output ..
-				" and " .. previous.output_name)
-		end
-	end
-	if type(definition.hint) ~= "string" or definition.hint == "" then
-		fail(output .. " needs a station hint")
-	end
-
-	local automatic_finish = station == "furnace" or station == "dual_furnace" or
-		station == "brewing_stand"
-	local recipe = {
-		profession = profession,
-		tier = tier,
-		station = station,
-		inputs = definition.inputs,
-		flat_inputs = inputs,
-		output = definition.output,
-		output_name = output,
-		hint = definition.hint,
-		time = definition.time,
-		in_place = definition.in_place == true,
-		material = definition.material == true,
-		operation = definition.operation,
-		family = definition.family,
-		operation_material = definition.operation_material,
-		operation_reagent = definition.operation_reagent,
-		mastery_required = definition.mastery_required,
-		existing_engine_recipe = definition.existing_engine_recipe == true,
-		automatic_finish = automatic_finish,
-		-- Only real recipes award profession progress (Round 33): the
-		-- profession's own end products. A station or an intermediate
-		-- (`material`, or `progress = false`) and every automatic finish count
-		-- nothing; a potion or dish counts once, at its preparation.
-		progress = definition.progress ~= false and definition.material ~= true and
-			not automatic_finish,
-		universal_output_routes = universal_routes,
-		shapeless = definition.shapeless == true,
-		shaped = definition.shapeless ~= true and
-			type(definition.inputs) == "table" and
-			type(definition.inputs[1]) == "table" and
-			type(definition.inputs[1].get_name) ~= "function",
-		id = station .. "\0" .. input_key .. "\0" .. output,
-		input_key = input_key,
-	}
-	if recipe.in_place then
-		in_place_universal_routes[output] = math.max(
-			in_place_universal_routes[output] or 0, universal_routes)
-	end
-	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
-	index_recipe(recipe)
-	if not output_routes then
-		output_routes = {}
-		recipes_by_output[output] = output_routes
-	end
-	output_routes[#output_routes + 1] = recipe
-	local list = recipes_by_profession[profession]
-	if not list then
-		list = {}
-		recipes_by_profession[profession] = list
-	end
-	list[#list + 1] = recipe
-	if not recipe.existing_engine_recipe then install_recipe(recipe) end
-	return recipe
-end
-
-function grug_jobs.recipe_for_output(output, station)
-	local routes = recipes_by_output[item_name(output)] or {}
-	if station == nil then return routes[1] end
-	local found
-	for index = 1, #routes do
-		if routes[index].station == station then
-			if found then return nil end
-			found = routes[index]
-		end
-	end
-	return found
-end
-
-local function ambiguous_craft(station, inputs)
-	local key = station .. "\0" .. normalized_inputs(inputs)
-	if not ambiguous_crafts_logged[key] then
-		ambiguous_crafts_logged[key] = true
-		if type(core.log) == "function" then
-			core.log("error", "[grug_jobs] ambiguous profession " .. station ..
-				" recipe inputs; craft refused")
-		end
-	end
-	return nil, "ambiguous profession recipe inputs; contact an administrator"
-end
-
--- Resolve one profession recipe by station and concrete ingredients. Inputs,
--- not a mutable callback output, are authoritative. Registration rejects every
--- overlap it can decide; if a later group definition creates an ambiguity, the
--- runtime safety net reports it and fails closed.
-function grug_jobs.recipe_for_craft(station, output, inputs)
-	if inputs == nil then
-		return grug_jobs.recipe_for_output(output, station)
-	end
-	local index = craft_index[station]
-	if not index then return nil end
-	local found
-	-- Shaped recipes: the grid is trimmed once, as shaped_inputs_match did per
-	-- candidate.
-	local matrix, width, height
-	if type(inputs[1]) == "table" and type(inputs[1].get_name) ~= "function" then
-		matrix, width, height = matrix_from_nested(inputs)
-	else
-		matrix, width, height = matrix_from_grid(inputs, 3)
-	end
-	local cells, shape = grid_shape(matrix, width, height)
-	local bucket = index.shaped[shape]
-	if bucket then
-		local lists = {bucket.items[first_occupied(cells)], bucket.groups}
-		for list_index = 1, 2 do
-			local list = lists[list_index] or {}
-			for entry_index = 1, #list do
-				local entry = list[entry_index]
-				if cells_match(entry.cells, cells) then
-					if found then return ambiguous_craft(station, inputs) end
-					found = entry.recipe
-				end
-			end
-		end
-	end
-	-- Every other recipe: maximum matching over the same ingredient count.
-	local got = flatten_inputs(inputs)
-	local counted = index.counted[#got] or {}
-	for entry_index = 1, #counted do
-		local candidate = counted[entry_index]
-		if can_match_all(candidate.flat_inputs, got, group_matches) then
-			if found then return ambiguous_craft(station, inputs) end
-			found = candidate
-		end
-	end
-	return found
-end
-
--- At registration time a profession output and input language must be unused.
--- Recheck after all mods have initialized so later engine/dual registrations
--- cannot silently override a profession recipe or become gated as one.
-function grug_jobs.validate_recipe_collisions()
-	local phase = new_comparison_phase()
-	local corpus = engine_corpus(phase)
-	local all_dual = dual_recipe_list()
-	for index = 1, #grug_jobs.recipes do
-		local recipe = grug_jobs.recipes[index]
-		local engine = corpus.by_output[recipe.output_name] or {}
-		local expected_engine = output_route_count(recipe.output_name, "grid") +
-			output_route_count(recipe.output_name, "furnace") +
-			(in_place_universal_routes[recipe.output_name] or 0)
-		local late_self_upgrade, unpack = 0, 0
-		if #engine > expected_engine then
-			for engine_index = 1, #engine do
-				local candidate = engine[engine_index]
-				local candidate_inputs = flatten_inputs(candidate.items or {})
-				if contains_exact_input(candidate_inputs, recipe.output_name) and
-						contains_upgrade_kit(candidate_inputs) then
-					late_self_upgrade = late_self_upgrade + 1
-				elseif storage_unpack(corpus, candidate_inputs, recipe.output_name) then
-					unpack = unpack + 1
-				end
-			end
-		end
-		if #engine ~= expected_engine + late_self_upgrade + unpack then
-			fail("profession output " .. recipe.output_name ..
-				" collides with a universal engine recipe (engine=" .. #engine ..
-				", expected=" .. expected_engine .. ", upgrade=" ..
-				late_self_upgrade .. ", unpack=" .. unpack .. ")")
-		end
-		if recipe.station == "grid" or recipe.station == "furnace" then
-			local wanted_method = recipe.station == "grid" and "normal" or "cooking"
-			local provenance = 0
-			for engine_index = 1, #engine do
-				if engine[engine_index].method == wanted_method and
-						input_languages_overlap(recipe.inputs,
-							engine[engine_index].items or {}, phase) then
-					provenance = provenance + 1
-				end
-			end
-			if provenance ~= 1 then
-				fail("profession output " .. recipe.output_name ..
-					" engine recipe provenance differs")
-			end
-		end
-		local wanted_method = engine_method(recipe.station)
-		if wanted_method then
-			local own = 0
-			local bucket = engine_bucket(corpus, wanted_method, recipe.inputs)
-			for engine_index = 1, #bucket do
-				local existing = bucket[engine_index]
-				if existing.method == wanted_method and
-						input_languages_overlap(recipe.inputs, existing.items, phase) then
-					if existing.output ~= recipe.output_name then
-						fail("profession " .. recipe.station .. " inputs for " ..
-							recipe.output_name .. " collide with universal engine output " ..
-							existing.output)
-					end
-					own = own + 1
-				end
-			end
-			if own ~= 1 then
-				fail("profession " .. recipe.station .. " inputs for " ..
-					recipe.output_name .. " have " .. own .. " engine owners")
-			end
-		elseif recipe.station == "dual_furnace" then
-			local own = 0
-			for dual_index = 1, #all_dual do
-				local existing = all_dual[dual_index]
-				if input_languages_overlap(recipe.inputs, existing.inputs or {}, phase) then
-					if item_name(existing.output) ~= recipe.output_name then
-						fail("profession dual-furnace inputs for " .. recipe.output_name ..
-							" collide with existing output " .. item_name(existing.output))
-					end
-					own = own + 1
-				end
-			end
-			if own ~= 1 then
-				fail("profession dual-furnace inputs for " .. recipe.output_name ..
-					" have " .. own .. " station owners")
-			end
-		end
-		local expected_dual = output_route_count(recipe.output_name, "dual_furnace")
-		if dual_recipe_count(recipe.output_name) ~= expected_dual then
-			fail("profession output " .. recipe.output_name ..
-				" collides with a dual-furnace recipe")
-		end
-	end
-	return true
-end
-
-function grug_jobs.recipes_for(profession, station)
-	local source = recipes_by_profession[profession] or {}
-	local result = {}
-	for index = 1, #source do
-		local recipe = source[index]
-		if station == nil or recipe.station == station then
-			result[#result + 1] = recipe
-		end
-	end
-	table.sort(result, function(a, b)
-		if a.tier ~= b.tier then return a.tier < b.tier end
-		return a.output_name < b.output_name
-	end)
 	return result
 end
 
+-- The ingredient list of a flat list (or a nested grid) of item names and
+-- "group:<name>" tokens, empty slots left out: each token counted once per
+-- slot, in the order it first appears. The profession catalogs keep their
+-- input tables and convert them here.
+function grug_jobs.ingredient_list(tokens)
+	local result, index_of = {}, {}
+	for _, token in ipairs(flatten_inputs(tokens)) do
+		local entry = result[index_of[token]]
+		if entry then
+			entry.n = entry.n + 1
+		else
+			local group = token:match("^group:(.+)$")
+			result[#result + 1] = group and {group = group, n = 1} or {item = token, n = 1}
+			index_of[token] = #result
+		end
+	end
+	return result
+end
+
+-- Registers one record. `definition` takes the record's fields; `id`,
+-- `count` (1), `profession` (the area's) and `progress` (true outside Basic)
+-- may be left out, `time` too in Basic. `material = true` (validation only)
+-- marks a profession intermediate: its output is an ingredient of the
+-- recipe's tier and it gives no XP. A profession recipe never needs an
+-- ingredient above its tier and, unless it is a material, needs one of its
+-- own tier (professions.md §1.3).
+function grug_jobs.register_recipe(definition)
+	if type(definition) ~= "table" then fail("recipe definition differs") end
+	if finalized then fail("recipes register at load time") end
+	local output = definition.output
+	if type(output) ~= "string" or not output:match("^[%w_]+:[%w_]+$") then
+		fail("a recipe needs an output item name, got " .. tostring(output))
+	end
+	local area = definition.area
+	if not AREA_SET[area] then fail(output .. " has unknown area " .. tostring(area)) end
+	local basic = area == "basic"
+	local profession = not basic and area or nil
+	if definition.profession ~= nil and definition.profession ~= profession then
+		fail(output .. " profession differs from its area")
+	end
+	local count = definition.count == nil and 1 or definition.count
+	if not positive_integer(count) then fail(output .. " count differs") end
+	local ingredients = copy_ingredients(definition.ingredients, output)
+	local tier = definition.tier
+	if tier ~= nil and (type(tier) ~= "number" or tier % 1 ~= 0 or tier < 1 or tier > 6) then
+		fail(output .. " needs tier 1..6")
+	end
+	if not basic and tier == nil then fail(output .. " needs a tier") end
+	local time = definition.time
+	if time == nil and basic then time = grug_jobs.DURATIONS.basic end
+	if type(time) ~= "number" or time <= 0 then fail(output .. " needs a time") end
+	local station = definition.station
+	if station ~= nil then
+		if basic then fail(output .. ": Basic recipes need no station") end
+		if station ~= grug_jobs.PROFESSION_STATIONS[profession] then
+			fail(output .. " station " .. tostring(station) .. " is not " ..
+				grug_jobs.PROFESSIONS[profession].name .. "'s")
+		end
+	end
+	local progress = definition.progress
+	if progress == nil then progress = not basic and definition.material ~= true end
+	if type(progress) ~= "boolean" then fail(output .. " progress flag differs") end
+	if basic and progress then fail(output .. ": Basic recipes give no XP") end
+	if definition.material ~= nil and type(definition.material) ~= "boolean" then
+		fail(output .. " material flag differs")
+	end
+	if not basic then
+		local has_own_tier = false
+		for _, entry in ipairs(ingredients) do
+			local input_tier = ingredient_tiers[token_of(entry)]
+			if input_tier == tier then has_own_tier = true end
+			if input_tier and input_tier > tier then
+				fail(profession .. " T" .. tier .. " recipe " .. output ..
+					" uses higher-tier ingredient " .. token_of(entry))
+			end
+		end
+		if definition.material then
+			if progress then fail(output .. ": a material gives no XP") end
+			if ingredient_tiers[output] ~= tier then
+				fail(output .. " material output tier differs from recipe tier")
+			end
+		elseif not has_own_tier then
+			fail(profession .. " T" .. tier .. " recipe " .. output ..
+				" needs at least one declared T" .. tier .. " ingredient")
+		end
+	end
+	local id = definition.id or default_id(output, ingredients)
+	if type(id) ~= "string" or id == "" then fail(output .. " id differs") end
+	if by_id[id] then fail("duplicate recipe id " .. id) end
+	local recipe = {id = id, output = output, count = count,
+		ingredients = ingredients, area = area, profession = profession,
+		tier = tier, time = time, station = station, progress = progress}
+	by_id[id] = recipe
+	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
+	by_output[output] = by_output[output] or {}
+	table.insert(by_output[output], recipe)
+	by_area[area] = by_area[area] or {}
+	table.insert(by_area[area], recipe)
+	return recipe
+end
+
+-- The record with this id, or nil.
+function grug_jobs.recipe(id)
+	return by_id[id]
+end
+
+-- Every record that makes `output` (an item name or stack), in registration
+-- order. The list is the registry's own: never write into it.
+function grug_jobs.recipes_for_output(output)
+	return by_output[item_name(output)] or {}
+end
+
+-- Every record of one area, ordered by tier, then the output's description,
+-- then id (spec §2.17's stable order). The list is the registry's own: never
+-- write into it.
+function grug_jobs.recipes_in_area(area)
+	return by_area[area] or {}
+end
+
+-- Registers the Basic catalog (basic_recipes.lua, which init.lua loads) and
+-- its loop-made families as the vendored stairs and walls loops registered
+-- them.
+function grug_jobs.register_basic_catalog(data)
+	for _, row in ipairs(data.recipes) do
+		grug_jobs.register_recipe({area = "basic", output = row.output,
+			count = row.count, ingredients = row.ingredients})
+	end
+	local function add(output, count, item, n)
+		grug_jobs.register_recipe({area = "basic", output = output, count = count,
+			ingredients = {{item = item, n = n}}})
+	end
+	for _, row in ipairs(data.stairs) do
+		local sub, block = row[1], row[2]
+		local stair, slab = "stairs:stair_" .. sub, "stairs:slab_" .. sub
+		add(stair, 8, block, 6)
+		add("stairs:stair_inner_" .. sub, 7, block, 6)
+		add("stairs:stair_outer_" .. sub, 6, block, 4)
+		add(slab, 6, block, 3)
+		add(block, 3, stair, 4)
+		add(block, 1, slab, 2)
+	end
+	for _, row in ipairs(data.walls) do add(row[1], 6, row[2], 6) end
+end
+
+-- An item's material tier, or nil when nothing declares one: its own tier,
+-- a gear bracket, a registered ingredient tier (bars, graded wood), else its
+-- level band.
+local function declared_tier(name)
+	local definition = core.registered_items[name] or {}
+	local sources = {definition._grug_tier, definition._grug_bracket,
+		ingredient_tiers[name]}
+	for index = 1, 3 do
+		local tier = tonumber(sources[index])
+		if tier and tier >= 1 and tier <= 6 then return math.floor(tier) end
+	end
+	local level = tonumber(definition._grug_ilvl)
+	if level and level > 0 then
+		return math.min(6, math.floor((level - 1) / 10) + 1)
+	end
+	return nil
+end
+
+local function first_line(name)
+	local definition = core.registered_items[name]
+	local text = definition and definition.description or ""
+	text = text:match("^[^\n]*") or ""
+	return text ~= "" and text or name
+end
+
+-- After every mod: each output and item ingredient is registered and each
+-- group has a member; a Basic record's tier (for the list order only) is its
+-- output's, else its highest ingredient's, else 1; the area lists are sorted.
+core.register_on_mods_loaded(function()
+	finalized = true
+	local groups = {}
+	for _, recipe in ipairs(grug_jobs.recipes) do
+		if not core.registered_items[recipe.output] then
+			fail("unregistered output " .. recipe.output .. " (" .. recipe.id .. ")")
+		end
+		local inferred
+		for _, entry in ipairs(recipe.ingredients) do
+			if entry.item then
+				if not core.registered_items[entry.item] then
+					fail("unregistered ingredient " .. entry.item .. " (" .. recipe.id .. ")")
+				end
+			else
+				groups[entry.group] = groups[entry.group] or recipe.id
+			end
+			local tier = entry.item and declared_tier(entry.item) or
+				ingredient_tiers[token_of(entry)]
+			if tier and tier > (inferred or 0) then inferred = tier end
+		end
+		if recipe.tier == nil then
+			recipe.tier = declared_tier(recipe.output) or inferred or 1
+		end
+	end
+	for name in pairs(core.registered_items) do
+		for group in pairs(groups) do
+			if core.get_item_group(name, group) > 0 then groups[group] = nil end
+		end
+	end
+	for group, id in pairs(groups) do
+		fail("group " .. group .. " has no member (" .. id .. ")")
+	end
+	local labels = {}
+	for _, list in pairs(by_area) do
+		for _, recipe in ipairs(list) do
+			labels[recipe.output] = labels[recipe.output] or first_line(recipe.output)
+		end
+		table.sort(list, function(a, b)
+			if a.tier ~= b.tier then return a.tier < b.tier end
+			if labels[a.output] ~= labels[b.output] then
+				return labels[a.output] < labels[b.output]
+			end
+			return a.id < b.id
+		end)
+	end
+end)
+
 grug_jobs._item_name = item_name
 grug_jobs._flatten_inputs = flatten_inputs
-grug_jobs._normalized_inputs = normalized_inputs
-grug_jobs._inputs_match = inputs_match
-grug_jobs._shaped_inputs_match = shaped_inputs_match
-grug_jobs._group_matches = group_matches
-grug_jobs._input_languages_overlap = function(first, second)
-	return input_languages_overlap(first, second, registration_comparison_phase())
-end
-grug_jobs._recipe_registry_metrics = function()
-	return {
-		matrix_checks = registry_metrics.matrix_checks,
-		engine_output_scans = registry_metrics.engine_output_scans,
-		group_item_checks = registry_metrics.group_item_checks,
-		token_overlap_computations = registry_metrics.token_overlap_computations,
-	}
-end

@@ -13,6 +13,8 @@ local tiers = {
 
 A.register_ingredient("group:wood", 1)
 
+-- The six wood grades. Each grade's recipe (the grade below, or two planks,
+-- and a plank) is Basic (grug_jobs/basic_recipes.lua).
 for tier = 1, #tiers do
 	local row = tiers[tier]
 	local wood = A.register_item(C .. row.key .. "_wood", row.name .. " Wood",
@@ -20,12 +22,4 @@ for tier = 1, #tiers do
 			({"9b744d", "bb966d", "7f6547", "78644f", "5f493e", "392d35"})[tier] ..
 			":90", {grug_profession_material = 1, grug_wood_grade = tier})
 	A.register_ingredient(wood, tier)
-	local material_inputs
-	if tier == 1 then
-		material_inputs = {{"group:wood", "group:wood"}}
-	else
-		material_inputs = {{C .. tiers[tier - 1].key .. "_wood", "group:wood"}}
-	end
-	core.register_craft({output = wood, recipe = material_inputs})
-
 end

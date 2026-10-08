@@ -174,7 +174,12 @@ local env = setmetatable({
 	grug_materials = {RESOURCES = M.RESOURCES,
 		register_on_harvest = function(fn) harvest_callbacks[#harvest_callbacks + 1] = fn end},
 	grug_gear = {trinket_item = function(key, tier) return "trinket:" .. key .. ":" .. tier end},
-	grug_jobs = {has = function() return true end},
+	grug_jobs = {has = function() return true end, DURATIONS = {gear = 3, material = 1},
+		ingredient_list = function(tokens)
+			local list = {}
+			for _, token in ipairs(tokens) do list[#list + 1] = {item = token, n = 1} end
+			return list
+		end},
 	grug_items = {mastery_band = function() return 1 end},
 	core = {add_item = function() end,
 		register_craft = function(def) crafts[#crafts + 1] = def end},
@@ -189,11 +194,9 @@ for _, recipe in ipairs(recipes) do
 		cuts[output] = recipe.tier
 	elseif output:match("^trinket:manawell:") then
 		local gems = {}
-		for _, row in ipairs(recipe.inputs) do
-			for _, item in ipairs(row) do
-				local key = item:match("^grug_materials:cut_(.+)$")
-				if key then gems[#gems + 1] = key end
-			end
+		for _, entry in ipairs(recipe.ingredients) do
+			local key = entry.item:match("^grug_materials:cut_(.+)$")
+			if key then gems[#gems + 1] = key end
 		end
 		trinket_gems[recipe.tier] = table.concat(gems, ",")
 	end
@@ -205,21 +208,19 @@ for _, resource in ipairs(M.RESOURCES) do
 			resource.key .. " raw ingredient tier")
 	end
 end
--- Round 33: every cut-gem storage block packs from nine cut gems and back.
+-- Round 33: every cut-gem storage block packs from nine cut gems and back
+-- (Basic recipes since Round 45, grug_jobs/basic_recipes.lua).
+eq(#crafts, 0, "the Goldsmith registers no grid craft")
 local packs, unpacks = {}, {}
-for _, craft in ipairs(crafts) do
-	local flat = {}
-	for _, row in ipairs(craft.recipe) do
-		for _, item in ipairs(row) do flat[#flat + 1] = item end
-	end
-	if #flat == 9 then packs[craft.output] = flat[1]
-	elseif #flat == 1 then unpacks[flat[1]] = craft.output end
+for _, row in ipairs(dofile(repo .. "/mods/PLAYER/grug_jobs/basic_recipes.lua").recipes) do
+	local only = #row.ingredients == 1 and row.ingredients[1]
+	if only and only.n == 9 and row.count == 1 then packs[row.output] = only.item end
+	if only and only.n == 1 and row.count == 9 then unpacks[only.item] = row.output end
 end
-eq(#crafts, 12, "six gem blocks, two crafts each")
 for _, resource in ipairs(M.RESOURCES) do
 	if resource.gem then
 		eq(packs[resource.block_node], resource.cut_item, resource.key .. " block packs nine cut gems")
-		eq(unpacks[resource.block_node], resource.cut_item .. " 9", resource.key .. " block unpacks")
+		eq(unpacks[resource.block_node], resource.cut_item, resource.key .. " block unpacks nine")
 	end
 end
 -- Round 33 (item_tiers.md §3.4): Cut Citrine is the T1 trinket gem.

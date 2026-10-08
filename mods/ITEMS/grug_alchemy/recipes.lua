@@ -223,35 +223,25 @@ for index = 1, #catalog do
 		groups = {grug_potion_mixture = 1}, _grug_tier = row.tier,
 	})
 	grug_jobs.register_ingredient_tier(row.mixture, row.tier)
-	grug_jobs.register_recipe({
-		profession = "alchemist", tier = row.tier, station = "grid",
-		inputs = {row.inputs}, output = row.mixture,
-		hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-	})
-	grug_jobs.register_recipe({
-		profession = "alchemist", tier = row.tier, station = "brewing_stand",
-		inputs = {row.mixture}, output = "grug_alchemy:" .. row.id,
-		hint = "Anyone may finish the prepared mixture; no profession progress", time = 5,
-	})
+	-- Round 45 (lane RG): the preparation is an Alchemy recipe at the brewing
+	-- stand, 2 s; it still makes the mixture, which the stand's automatic
+	-- finish below turns into the potion until lane ST makes the finished
+	-- potion the recipe's output.
+	grug_jobs.register_recipe({area = "alchemist", tier = row.tier,
+		station = "brewing_stand", output = row.mixture,
+		ingredients = grug_jobs.ingredient_list(row.inputs),
+		time = grug_jobs.DURATIONS.potion})
+	grug_brewing.register_recipe({station = "brewing_stand", flat_inputs = {row.mixture},
+		output = "grug_alchemy:" .. row.id, output_name = "grug_alchemy:" .. row.id,
+		time = 5})
 end
 
--- Housing copy: still profession gated and settled by the existing grid
--- adapter. Steel is the declared T3 ingredient.
-grug_jobs.register_recipe({
-	profession = "alchemist", tier = 3, station = "grid",
-	inputs = {
-		{"grug_materials:steel_bar", "vessels:glass_bottle",
-			"grug_materials:steel_bar"},
-		{"", "default:furnace", ""},
-		{"", "grug_materials:steel_bar", ""},
-	},
-	output = grug_brewing.NODE, progress = false,
-	hint = "Craft in the inventory grid",
-})
-
-grug_jobs.register_station("brewing_stand", {
-	register_recipe = grug_brewing.register_recipe,
-})
+-- Housing copy: the stand itself, an Alchemy recipe without XP and without a
+-- stand nearby. Steel is the declared T3 ingredient.
+grug_jobs.register_recipe({area = "alchemist", tier = 3, output = grug_brewing.NODE,
+	ingredients = {{item = "grug_materials:steel_bar", n = 3},
+		{item = "vessels:glass_bottle", n = 1}, {item = "default:furnace", n = 1}},
+	time = grug_jobs.DURATIONS.station, progress = false})
 
 grug_gathering.register_herb_authorizer(function(player)
 	if not player or not player.is_player or not player:is_player() then

@@ -107,21 +107,10 @@ grug_materials.REMOVED_MOBS_UTILITIES = {
 	"mobs:protector2", "mobs:mob_repellent", "mobs:saddle",
 }
 
--- Preserve current utility recipes with explicit canonical material inputs.
-core.clear_craft({output = "default:chest_locked"})
-core.register_craft({
-	output = "default:chest_locked",
-	recipe = {
-		{"group:wood", "group:wood", "group:wood"},
-		{"group:wood", "grug_materials:iron_bar", "group:wood"},
-		{"group:wood", "group:wood", "group:wood"},
-	},
-})
-core.register_craft({
-	type = "shapeless",
-	output = "default:chest_locked",
-	recipe = {"default:chest", "grug_materials:iron_bar"},
-})
+-- The locked chest takes the canonical Iron Bar: its two recipes are Basic
+-- (grug_jobs/basic_recipes.lua) since Round 45, like every crafting-grid
+-- route. The clears above still matter for the engine's cooking and fuel
+-- recipes of removed items.
 
 -- Unregistration is the fresh-server content boundary. No alias is installed:
 -- removed names are unknown rather than alternate spellings of current items.

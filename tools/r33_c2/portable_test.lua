@@ -3,21 +3,17 @@
 --   A. the roster: six primaries, Cooking and Alchemy secondary; a character
 --      learns two primaries plus both secondaries, a third primary is
 --      refused, a secondary cannot be unlearned; the Professions tab lists
---      all four inside the page; the crafting page has one fixed book slot
---      per secondary below the primaries, then Basics;
+--      all four inside the page (Round 45: the book slots went with the
+--      recipe books);
 --   B. progression counting (registry.lua + state.lua): an end product
---      counts, a material, a station (`progress = false`) and an automatic
---      finish do not, a station operation does; the usual tier advance;
---   C. the shipped recipe set (tools/r30_p4/recipe_corpus.lua, dumped from
---      the engine): stations, settings, cut gems, bolt bundles, ornament
---      components and every furnace or brewing finish count nothing; potion
---      mixtures, dishes, bags, trinkets and spellbooks count; every
---      profession can still reach its band cap (a counting recipe or an
---      enchant operation at each of T1..T5);
---   D. the storage unpack (cut-gem blocks) passes the registry's collision
---      check, any other universal route to a profession output still fails;
+--      counts, a material and a station (`progress = false`) do not, a
+--      station operation does; the usual tier advance;
+--   C. retired in Round 45: the shipped recipe set's progress flags and the
+--      band caps are tools/r45_rg's (the real catalogs, not an engine dump);
+--   D. retired in Round 45: the registry has no collision check (a craft
+--      names its recipe);
 --   E. removed things are absent: no removed id, API or data file in any
---      shipped Lua or JSON file, nothing removed in the recipe corpus, the
+--      shipped Lua or JSON file (the recipe catalogs included), the
 --      material registry, the gathering catalog or the WP43 projection.
 --
 -- Usage (repo root): luajit tools/r33_c2/portable_test.lua [REPO]
@@ -93,7 +89,6 @@ end
 -- ---------------------------------------------------------------------------
 local jobs = load_jobs()
 dofile(repo .. "/mods/PLAYER/grug_jobs/character_tab.lua")
-dofile(repo .. "/mods/PLAYER/grug_jobs/ui.lua")
 
 eq(#jobs.PRIMARY_PROFESSIONS, 6, "six primaries")
 local primaries = table.concat(jobs.PRIMARY_PROFESSIONS, ",")
@@ -116,13 +111,6 @@ for key, definition in pairs(jobs.PROFESSIONS) do
 	end
 	check(listed, key .. " is listed")
 end
-
-local fresh = make_player("fresh")
-local fresh_page = jobs.crafting_page_content(fresh)
-check(fresh_page:find("grug_jobs_book_alchemist", 1, true) ~= nil,
-	"an Alchemy book slot exists before learning")
-check(fresh_page:find("Alchemy — learn at a trainer", 1, true) ~= nil,
-	"the empty Alchemy slot says where to learn it")
 
 local crafter = make_player("crafter")
 check(jobs.learn(crafter, "weaponsmith"), "first primary")
@@ -152,16 +140,6 @@ for y in tab:gmatch("label%[0%.40,([%d%.]+);") do lowest = math.max(lowest, tonu
 check(lowest > 0 and lowest <= area.y + area.h - 0.25,
 	"the tab's rows end inside the mode area (" .. lowest .. ")")
 
-local page = jobs.crafting_page_content(crafter)
-local slots = {}
-for y, field in page:gmatch("image_button%[0%.10,([%d%.]+);0%.82,0%.82;[^;]*;([%w_]+);%]") do
-	slots[#slots + 1] = field .. "@" .. y
-end
-eq(table.concat(slots, " "), "grug_jobs_book_primary_1@0.55 grug_jobs_book_primary_2@1.48 " ..
-	"grug_jobs_book_cooking@2.41 grug_jobs_book_alchemist@3.34 grug_jobs_book_general@4.27",
-	"book slots: two primaries, Cooking, Alchemy, Basics")
-check(page:find("tooltip[grug_jobs_book_alchemist;Alchemy recipe book]", 1, true) ~= nil,
-	"the learned Alchemy slot opens its book")
 
 -- ---------------------------------------------------------------------------
 -- B. Progression counting.
@@ -172,22 +150,18 @@ for _, name in ipairs({"t:ore", "t:bar", "t:fine", "t:gear", "t:mix", "t:node"})
 end
 jobs.register_ingredient_tier("t:ore", 1)
 jobs.register_ingredient_tier("t:bar", 1)
-local product = jobs.register_recipe({profession = "weaponsmith", tier = 1,
-	station = "grid", inputs = {{"t:ore", "t:ore"}}, output = "t:gear", hint = "x"})
-local material = jobs.register_recipe({profession = "weaponsmith", tier = 1,
-	station = "grid", inputs = {{"t:ore"}}, output = "t:bar", material = true, hint = "x"})
-local station = jobs.register_recipe({profession = "weaponsmith", tier = 1,
-	station = "grid", inputs = {{"t:ore", "t:ore", "t:ore"}}, output = "t:node",
-	progress = false, hint = "x"})
-local finish = jobs.register_recipe({profession = "weaponsmith", tier = 1,
-	station = "furnace", inputs = {"t:bar"}, output = "t:fine", hint = "x"})
+local product = jobs.register_recipe({area = "weaponsmith", tier = 1, time = 3,
+	ingredients = {{item = "t:ore", n = 2}}, output = "t:gear"})
+local material = jobs.register_recipe({area = "weaponsmith", tier = 1, time = 1,
+	ingredients = {{item = "t:ore", n = 1}}, output = "t:bar", material = true})
+local station = jobs.register_recipe({area = "weaponsmith", tier = 1, time = 1,
+	ingredients = {{item = "t:ore", n = 3}}, output = "t:node", progress = false})
 eq(product.progress, true, "an end product counts")
 eq(material.progress, false, "a material does not count")
 eq(station.progress, false, "a station does not count")
-eq(finish.progress, false, "an automatic finish does not count")
-check(not pcall(jobs.register_recipe, {profession = "weaponsmith", tier = 1,
-	station = "grid", inputs = {{"t:ore", "t:bar"}}, output = "t:mix",
-	progress = "yes", hint = "x"}), "a non-boolean progress flag is refused")
+check(not pcall(jobs.register_recipe, {area = "weaponsmith", tier = 1, time = 1,
+	ingredients = {{item = "t:ore", n = 1}, {item = "t:bar", n = 1}}, output = "t:mix",
+	progress = "yes"}), "a non-boolean progress flag is refused")
 
 local smith = make_player("smith")
 jobs.learn(smith, "weaponsmith")
@@ -196,8 +170,7 @@ jobs.award_progress(smith, product)
 eq(crafts(), 1, "the end product awarded one craft")
 jobs.award_progress(smith, material)
 jobs.award_progress(smith, station)
-jobs.award_progress(smith, finish)
-eq(crafts(), 1, "material, station and finish awarded nothing")
+eq(crafts(), 1, "material and station awarded nothing")
 local operation = {profession = "weaponsmith", tier = 1, progress = true}
 jobs.award_progress(smith, operation)
 eq(crafts(), 2, "a station operation awards one craft")
@@ -209,88 +182,8 @@ eq(jobs.profession_level(smith, "weaponsmith"), 2, "ten counted crafts open tier
 character_level = 5
 check(read("mods/PLAYER/grug_jobs/station_operations.lua"):find("recipe.progress = true", 1, true),
 	"every station operation is flagged as progress")
-for _, path in ipairs({"mods/PLAYER/grug_jobs/stations.lua",
-		"mods/PLAYER/grug_jobs/workspaces.lua"}) do
-	local text = read(path)
-	check(text:find("award_progress(player, recipe)", 1, true) ~= nil,
-		path .. " awards progress through award_progress")
-	check(text:find("record_craft", 1, true) == nil, path .. " never records directly")
-end
-
--- ---------------------------------------------------------------------------
--- C. The shipped recipe set and the band caps.
--- ---------------------------------------------------------------------------
-local corpus = dofile(repo .. "/tools/r30_p4/recipe_corpus.lua")
-local STATION_OUTPUTS = {["grug_jobs:forge"] = true, ["grug_jobs:tanning_rack"] = true,
-	["grug_jobs:tailor_bench"] = true, ["grug_jobs:carving_bench"] = true,
-	["grug_jobs:jewellers_bench"] = true, ["grug_brewing:brewing_stand"] = true}
-local function intermediate(name)
-	return name:find("^grug_artisans:setting_") or name:find("^grug_materials:cut_") or
-		name:find("_bolt_bundle$")
-end
-local function end_product(name)
-	return name:find("^grug_alchemy:mixture_") or name:find("^grug_cooking:") or
-		name:find("^grug_inventory:bag_") or name:find("^grug_gear:spellbook_") or
-		name:find("^grug_gear:[%w_]+_t%d$")
-end
-local counting = {}
-for _, recipe in ipairs(corpus.recipes) do
-	local name, label = recipe.output_name, recipe.profession .. " " .. recipe.output_name
-	check(type(recipe.progress) == "boolean", label .. " carries its progress flag")
-	if STATION_OUTPUTS[name] then
-		eq(recipe.progress, false, label .. ": a station does not count")
-	elseif recipe.station == "furnace" or recipe.station == "brewing_stand" then
-		eq(recipe.progress, false, label .. ": an automatic finish does not count")
-	elseif intermediate(name) then
-		eq(recipe.progress, false, label .. ": an intermediate does not count")
-	elseif end_product(name) then
-		eq(recipe.progress, true, label .. ": an end product counts")
-	else
-		check(false, label .. " is neither a station, an intermediate nor an end product")
-	end
-	if recipe.progress then
-		counting[recipe.profession] = counting[recipe.profession] or {}
-		counting[recipe.profession][recipe.tier] = true
-	end
-end
--- Enchant operations (grug_professions/enchants.lua, grug_artisans/enchants.lua)
--- exist at every tier of enchants.json for the six primaries.
-local enchant_tiers = {}
-for tier in read("mods/ITEMS/grug_professions/data/enchants.json"):gmatch('"tier":%s*(%d)') do
-	enchant_tiers[tonumber(tier)] = true
-end
-for _, profession in ipairs({"weaponsmith", "armorsmith", "leatherworker", "tailor",
-		"woodcarver", "goldsmith"}) do
-	counting[profession] = counting[profession] or {}
-	for tier in pairs(enchant_tiers) do counting[profession][tier] = true end
-end
-for profession in pairs(jobs.PROFESSIONS) do
-	for tier = 1, 5 do
-		check(counting[profession] and counting[profession][tier],
-			profession .. " has a counting craft at T" .. tier .. " (band cap reachable)")
-	end
-end
-
--- ---------------------------------------------------------------------------
--- D. The cut-gem storage unpack and the collision check.
--- ---------------------------------------------------------------------------
-jobs = load_jobs()
-for _, name in ipairs({"g:raw", "g:cut", "g:block", "g:other"}) do
-	items[name] = {groups = {}}
-end
-jobs.register_ingredient_tier("g:raw", 1)
-jobs.register_ingredient_tier("g:cut", 1)
-jobs.register_recipe({profession = "goldsmith", tier = 1, station = "jewellers_bench",
-	inputs = {{"g:raw"}}, output = "g:cut", material = true, hint = "x"})
-local nine = {}
-for index = 1, 9 do nine[index] = "g:cut" end
-engine_recipes["g:block"] = {{method = "normal", items = nine, output = "g:block"}}
-engine_recipes["g:cut"] = {{method = "normal", items = {"g:block"}, output = "g:cut 9"}}
-check(pcall(jobs.validate_recipe_collisions), "a storage unpack is no second route")
-engine_recipes["g:cut"][2] = {method = "normal", items = {"g:other"}, output = "g:cut"}
-check(not pcall(jobs.validate_recipe_collisions),
-	"any other universal route to a profession output still fails")
-engine_recipes = {}
+check(read("mods/PLAYER/grug_jobs/workspaces.lua"):find("record_craft", 1, true) == nil,
+	"the station dialogs never record directly")
 
 -- ---------------------------------------------------------------------------
 -- E. Removed things are absent.
@@ -322,21 +215,6 @@ check(io.open(repo .. "/mods/ITEMS/grug_professions/reagents.lua") == nil,
 	"the reagent loader is gone")
 check(io.open(repo .. "/mods/CORE/grug_core/textures/grug_status_warding_draught.png") == nil,
 	"the Warding Draught icon is gone")
-
-for _, recipe in ipairs(corpus.recipes) do
-	local names = {recipe.output_name}
-	local function collect(value)
-		if type(value) == "string" then names[#names + 1] = value
-		elseif type(value) == "table" then for _, child in pairs(value) do collect(child) end end
-	end
-	collect(recipe.inputs)
-	for _, name in ipairs(names) do
-		check(not name:find("weapon_grip", 1, true), recipe.output_name .. " uses no grip")
-		for _, key in ipairs(CULTURAL) do
-			check(name ~= "grug_materials:" .. key, recipe.output_name .. " uses no " .. key)
-		end
-	end
-end
 
 local env = setmetatable({grug_materials = {},
 	core = {get_modpath = function() return nil end}}, {__index = _G})

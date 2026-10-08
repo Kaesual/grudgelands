@@ -140,8 +140,11 @@ local function check_registry()
 			fail("removed mobs utility remains registered: " .. item_name)
 		end
 	end
+	-- The recipe registry (Round 45) holds every craft; grug_jobs depends on
+	-- this mod, so it is read once every mod has loaded.
+	local jobs = rawget(_G, "grug_jobs")
 	for _, item_name in ipairs(grug_materials.REMOVED_SILVER_SANDSTONE_OUTPUTS) do
-		if core.get_all_craft_recipes(item_name) then
+		if jobs and #jobs.recipes_for_output(item_name) > 0 then
 			fail("silver-sandstone recipe remains: " .. item_name)
 		end
 	end

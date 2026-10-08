@@ -153,7 +153,8 @@ local function class_of(itemname, gathered)
 end
 
 --
--- Recipes: engine craft/cooking, the dual furnace and profession stations.
+-- Recipes: the recipe registry (grug_jobs, every craft since Round 45), the
+-- dual furnace and the engine's cooking recipes (furnaces).
 --
 
 local function split_item(str)
@@ -186,14 +187,15 @@ local function load_station_recipes()
 		for _, input in ipairs(recipe.inputs or {}) do push_input(inputs, input) end
 		add_station_recipe(name, count, "dualfurn", inputs)
 	end
+	-- One input per unit: {group = "wood", n = 3} adds "group:wood" three times.
 	local jobs = rawget(_G, "grug_jobs")
 	for _, recipe in ipairs(jobs and jobs.recipes or {}) do
-		-- In-place operations (enchants) return the item they consume.
-		if not recipe.in_place and not recipe.operation then
-			local output = ItemStack(recipe.output)
-			add_station_recipe(output:get_name(), output:get_count(),
-				recipe.station, recipe.flat_inputs or {})
+		local inputs = {}
+		for _, entry in ipairs(recipe.ingredients) do
+			local token = jobs.ingredient_token(entry)
+			for _ = 1, entry.n do inputs[#inputs + 1] = token end
 		end
+		add_station_recipe(recipe.output, recipe.count, recipe.area, inputs)
 	end
 end
 
@@ -206,21 +208,20 @@ local function recipes_for(itemname)
 	for _, recipe in ipairs(station_recipes[itemname] or {}) do
 		list[#list + 1] = recipe
 	end
-	-- Only input-consuming methods: fuel and toolrepair make no item. The
-	-- engine does not report craft replacements (a returned bucket), so a
-	-- recipe with one over-counts its inputs: that can only hide a loop,
-	-- never invent one.
+	-- The engine keeps only the furnace's cooking recipes; fuel and toolrepair
+	-- make no item. The engine does not report cooking replacements (a
+	-- returned bucket), so a recipe with one over-counts its inputs: that can
+	-- only hide a loop, never invent one.
 	for _, recipe in ipairs(core.get_all_craft_recipes(itemname) or {}) do
-		local method = recipe.method or "normal"
 		local name, count = split_item(recipe.output or itemname)
-		if (method == "normal" or method == "cooking") and name == itemname then
-			-- pairs: empty grid slots are nil holes in `items`.
+		if recipe.method == "cooking" and name == itemname then
+			-- pairs: empty slots are nil holes in `items`.
 			local inputs = {}
 			for _, entry in pairs(recipe.items or {}) do
 				if type(entry) == "string" and entry ~= "" then push_input(inputs, entry) end
 			end
 			if #inputs > 0 then
-				list[#list + 1] = {method = method, count = count, inputs = inputs}
+				list[#list + 1] = {method = "cooking", count = count, inputs = inputs}
 			end
 		end
 	end

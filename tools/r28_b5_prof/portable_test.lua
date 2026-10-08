@@ -10,9 +10,10 @@
 --      family_input, tiers, unknown keys, non-item values);
 --   4. the cross-profession check: a foreign product in an operation is
 --      reported, an own product is not;
---   5. cooking (grug_cooking/init.lua + grug_jobs/basics_routes.lua): the six
---      raw-assembly dishes have no grid route, only "Raw X" in the furnace;
---      the other twelve keep their grid route;
+--   5. cooking (grug_cooking/init.lua + grug_jobs/basic_recipes.lua; Round 45
+--      recipe lists): the six raw-assembly dishes have no Cooking recipe, only
+--      "Raw X" cooked in the furnace; the other twelve keep their recipe; no
+--      Basic recipe makes a dish;
 --   6. no metal fittings remain in the profession sources.
 --
 -- Usage (repo root): luajit tools/r28_b5_prof/portable_test.lua
@@ -303,53 +304,59 @@ check(offences[1] and offences[1]:find("woodcarver enchant:bow needs grug_artisa
 local registered = setmetatable({}, {__index = function(_, name)
 	return {description = name, groups = {}}
 end})
-local routes = {}
+local routes, cooked = {}, {}
 _G.core = {
 	registered_items = registered,
 	register_craftitem = function(name, def) rawset(registered, name, def) end,
 	override_item = function() end,
-	register_craft = function() end,
+	register_craft = function(def)
+		if def.type == "cooking" then cooked[#cooked + 1] = def end
+	end,
 }
 _G.grug_food = {register_item = function() return true end}
 _G.grug_jobs = {
+	DURATIONS = {food = 1},
 	register_ingredient_tier = function() end,
 	register_recipe = function(def) routes[#routes + 1] = def end,
+	ingredient_list = function(tokens) return tokens end,
 }
 dofile("mods/ITEMS/grug_cooking/init.lua")
 local FURNACE_ONLY = {hearty_stew = true, pumpkin_stew = true, foragers_pot = true,
 	marsh_roast = true, kelp_wrapped_roast = true, grand_feast = true}
 local function routes_for(item)
-	local grid, furnace = 0, 0
+	local recipes, furnace = 0, 0
 	for _, def in ipairs(routes) do
 		if def.output == item then
-			if def.station == "grid" then grid = grid + 1 end
-			if def.station == "furnace" then furnace = furnace + 1 end
+			recipes = recipes + 1
+			eq(def.area, "cooking", item .. " is a Cooking recipe")
+			eq(def.time, 1, item .. " takes 1 s")
+			eq(def.station, nil, item .. " needs no station")
 		end
 	end
-	return grid, furnace
+	for _, def in ipairs(cooked) do
+		if def.output == item then furnace = furnace + 1 end
+	end
+	return recipes, furnace
 end
-local grid_dishes = 0
+local listed_dishes = 0
 for _, dish in ipairs(grug_cooking.DISHES) do
-	local grid, furnace = routes_for(dish.item)
+	local recipes, furnace = routes_for(dish.item)
 	if FURNACE_ONLY[dish.id] then
-		eq(grid, 0, dish.id .. " has no grid route")
+		eq(recipes, 0, dish.id .. " has no Cooking recipe")
 		eq(furnace, 1, dish.id .. " comes from its raw assembly in the furnace")
 	else
-		grid_dishes = grid_dishes + 1
-		eq(grid, 1, dish.id .. " keeps its grid route")
+		listed_dishes = listed_dishes + 1
+		eq(recipes, 1, dish.id .. " keeps its recipe")
 	end
 end
-eq(grid_dishes, 12, "twelve dishes keep a grid route")
+eq(listed_dishes, 12, "twelve dishes keep a recipe")
 for _, raw in ipairs(grug_cooking.RAW_ASSEMBLIES) do
 	check(FURNACE_ONLY[raw.output:match(":(.+)$")], raw.id .. " finishes a furnace-only dish")
-	eq((routes_for(raw.item)), 1, raw.id .. " is assembled on the grid")
+	eq((routes_for(raw.item)), 1, raw.id .. " is a Cooking recipe")
 end
-local catalogue = dofile("mods/PLAYER/grug_jobs/basics_routes.lua")
-for _, route in ipairs(catalogue) do
-	local id = route.output:match("^grug_cooking:(.+)$")
-	if id and FURNACE_ONLY[id] then
-		eq(route.station, "furnace", "Basics catalogue " .. id .. " route is the furnace")
-	end
+local catalogue = dofile("mods/PLAYER/grug_jobs/basic_recipes.lua")
+for _, row in ipairs(catalogue.recipes) do
+	check(not row.output:match("^grug_cooking:"), "no Basic recipe makes " .. row.output)
 end
 
 -- ---------------------------------------------------------------------------

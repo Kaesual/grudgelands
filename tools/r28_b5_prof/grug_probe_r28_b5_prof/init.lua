@@ -101,10 +101,11 @@ local function run()
 		check(not (def.groups or {}).grug_weaponsmith_fitting, name .. " is no fitting")
 	end
 	for _, recipe in ipairs(grug_jobs.recipes) do
-		check(not recipe.output_name:find("fitting", 1, true), "recipe makes " .. recipe.output_name)
+		check(not recipe.output:find("fitting", 1, true), "recipe makes " .. recipe.output)
 	end
 
-	-- 3. Cooking: six furnace-only dishes, twelve grid dishes.
+	-- 3. Cooking: six furnace-only dishes, twelve Cooking recipes (Round 45:
+	-- recipe lists, no grid route).
 	local furnace_only = {hearty_stew = true, pumpkin_stew = true, foragers_pot = true,
 		marsh_roast = true, kelp_wrapped_roast = true, grand_feast = true}
 	local grid_dishes = 0
@@ -115,18 +116,14 @@ local function run()
 			if route.method == "normal" then normal = normal + 1 end
 			if route.method == "cooking" then cooking = cooking + 1 end
 		end
-		local profession_grid = 0
-		for _, recipe in ipairs(grug_jobs.recipes) do
-			if recipe.output_name == dish.item and recipe.station == "grid" then
-				profession_grid = profession_grid + 1
-			end
-		end
+		local listed = #grug_jobs.recipes_for_output(dish.item)
+		check(normal == 0, dish.id .. " has no grid route")
 		if furnace_only[dish.id] then
-			check(normal == 0 and profession_grid == 0, dish.id .. " has no grid route")
+			check(listed == 0, dish.id .. " has no Cooking recipe")
 			check(cooking == 1, dish.id .. " cooks from its raw assembly (" .. cooking .. ")")
 		else
 			grid_dishes = grid_dishes + 1
-			check(normal + profession_grid >= 1, dish.id .. " keeps its grid route")
+			check(listed == 1, dish.id .. " keeps its Cooking recipe")
 		end
 	end
 	check(grid_dishes == 12, "twelve grid dishes (got " .. grid_dishes .. ")")

@@ -1,32 +1,25 @@
--- Universal Basics recipes. Shapes mirror the familiar three-column tool and
--- armor layouts; profession catalogs only improve the resulting plain items.
+-- Gear recipes (Round 45, spec §2.23 and §2.34): every weapon, armour piece
+-- and offhand is a recipe of the profession that owns its family
+-- (grug_professions.FAMILY_OWNERS), with the ingredients the universal
+-- crafting grid used (counted from its shapes), the profession tier equal to
+-- the item's tier, the profession's station nearby and 3 s per item. Tools,
+-- metal rods, arrows, sticks and the hoe stay Basic recipes
+-- (grug_jobs/basic_recipes.lua).
 
 local G = "grug_gear:"
 local M = "grug_materials:"
 local C = "grug_professions:"
 
 local tiers = {
-	{metal = "bronze", bar = M .. "bronze_bar", pick = M .. "pick_bronze",
-		axe = M .. "axe_bronze", shovel = M .. "shovel_bronze",
-		cloth = "patch", leather = "light", wood = "seasoned"},
-	{metal = "iron", bar = M .. "iron_bar", pick = M .. "pick_iron",
-		axe = M .. "axe_iron", shovel = M .. "shovel_iron",
-		cloth = "woven", leather = "cured", wood = "polished"},
-	{metal = "steel", bar = M .. "steel_bar", pick = M .. "pick_steel",
-		axe = M .. "axe_steel", shovel = M .. "shovel_steel",
-		cloth = "heavy", leather = "heavy", wood = "hardened"},
-	{metal = "silversteel", bar = M .. "silversteel_bar",
-		pick = M .. "pick_silversteel", axe = M .. "axe_silversteel",
-		shovel = M .. "shovel_silversteel", cloth = "silkweave",
-		leather = "scaled", wood = "inlaid"},
-	{metal = "embersteel", bar = M .. "embersteel_bar",
-		pick = M .. "pick_embersteel", axe = M .. "axe_embersteel",
-		shovel = M .. "shovel_embersteel", cloth = "silk", leather = "sleek",
-		wood = "lacquered"},
-	{metal = "abyssal_steel", bar = M .. "abyssal_steel_bar",
-		pick = M .. "pick_abyssal_steel", axe = M .. "axe_abyssal_steel",
-		shovel = M .. "shovel_abyssal_steel", cloth = "stormweave",
-		leather = "nightscale", wood = "heartwood"},
+	{metal = "bronze", bar = M .. "bronze_bar", cloth = "patch", leather = "light"},
+	{metal = "iron", bar = M .. "iron_bar", cloth = "woven", leather = "cured"},
+	{metal = "steel", bar = M .. "steel_bar", cloth = "heavy", leather = "heavy"},
+	{metal = "silversteel", bar = M .. "silversteel_bar", cloth = "silkweave",
+		leather = "scaled"},
+	{metal = "embersteel", bar = M .. "embersteel_bar", cloth = "silk",
+		leather = "sleek"},
+	{metal = "abyssal_steel", bar = M .. "abyssal_steel_bar", cloth = "stormweave",
+		leather = "nightscale"},
 }
 
 local occult_components = {
@@ -38,121 +31,64 @@ local occult_components = {
 	"grug_mobs:venom_sac",
 }
 
-local armor_shapes = {
-	head = {{1, 1, 1}, {1, 0, 1}},
-	chest = {{1, 0, 1}, {1, 1, 1}, {1, 1, 1}},
-	legs = {{1, 1, 1}, {1, 0, 1}, {1, 0, 1}},
-	feet = {{1, 0, 1}, {1, 0, 1}},
-}
+-- The material count of each armour slot (the grid shapes: a helmet of 5, a
+-- chestpiece of 8, leggings of 7, boots of 4).
+local ARMOR_COUNTS = {head = 5, chest = 8, legs = 7, feet = 4}
 
-local function filled(shape, item)
-	local recipe = {}
-	for row = 1, #shape do
-		recipe[row] = {}
-		for column = 1, #shape[row] do
-			recipe[row][column] = shape[row][column] == 1 and item or ""
-		end
+-- One gear recipe: the owning profession from the output's family, the tier
+-- from its bracket.
+local function gear(output, tier, ingredients)
+	local family = grug_items.family_for(ItemStack(output))
+	local profession = family and grug_professions.family_owner(family)
+	if not profession then
+		error("grug_professions: no profession makes " .. output, 0)
 	end
-	return recipe
+	grug_professions.register_recipe(profession, {output = output, tier = tier,
+		ingredients = ingredients, time = grug_jobs.DURATIONS.gear})
 end
 
-local function register(output, recipe)
-	-- Replace a vendored recipe where one exists; clearing a missing one only
-	-- logs an engine warning.
-	if core.get_all_craft_recipes(output) then
-		core.clear_craft({output = output})
-	end
-	core.register_craft({output = output, recipe = recipe})
-end
-
--- VoxeLibre's familiar handle path uses two vertical planks for four sticks.
--- Replace Minetest Game's one-plank shortcut so the grid shape stays canonical.
-core.clear_craft({output = "default:stick"})
-core.register_craft({output = "default:stick 4", recipe = {
-	{"group:wood"}, {"group:wood"},
-}})
+local function item(name, n) return {item = name, n = n} end
+local function group(name, n) return {group = name, n = n} end
 
 for tier = 1, #tiers do
 	local row = tiers[tier]
+	local bar = row.bar
 	local rod = C .. "metal_rod_" .. row.metal
 	grug_professions.register_item(rod, grug_gear.MATERIALS[tier].metal.name ..
 		" Rod", "default_steel_ingot.png^[transformR90^[resize:8x16^[colorize:" ..
 		grug_gear.BRACKET_TINT[tier] .. ":90", {grug_metal_rod = tier})
-	core.register_craft({output = rod .. " 4", recipe = {{row.bar}, {row.bar}}})
 
-	local sword = G .. "sword_" .. row.metal
-	register(sword, {{row.bar}, {row.bar}, {"group:stick"}})
-	core.register_craft({output = sword, recipe = {{row.bar}, {row.bar}, {rod}}})
-	register(row.pick, {{row.bar, row.bar, row.bar}, {"", "group:stick", ""},
-		{"", "group:stick", ""}})
-	register(row.shovel, {{row.bar}, {"group:stick"}, {"group:stick"}})
-	register(row.axe, {{row.bar, row.bar}, {row.bar, "group:stick"},
-		{"", "group:stick"}})
-	core.register_craft({output = row.axe, recipe = {
-		{row.bar, row.bar}, {"group:stick", row.bar},
-		{"group:stick", ""}}})
-
-	local dagger = G .. "dagger_" .. row.metal
-	register(dagger, {{"", row.bar, ""}, {"", "group:stick", ""}})
-	core.register_craft({output = dagger,
-		recipe = {{"", row.bar, ""}, {"", rod, ""}}})
-	local greataxe = G .. "greataxe_" .. row.metal
-	register(greataxe, {
-		{row.bar, row.bar, row.bar}, {row.bar, "group:stick", row.bar},
-		{"", "group:stick", ""}})
-	core.register_craft({output = greataxe, recipe = {
-		{row.bar, row.bar, row.bar}, {row.bar, rod, row.bar}, {"", rod, ""}}})
-	local wand = G .. "wand_" .. row.metal
+	-- A handle is two sticks, or one metal rod per stick.
+	local sword, dagger, greataxe = G .. "sword_" .. row.metal,
+		G .. "dagger_" .. row.metal, G .. "greataxe_" .. row.metal
+	gear(sword, tier, {item(bar, 2), group("stick", 1)})
+	gear(sword, tier, {item(bar, 2), item(rod, 1)})
+	gear(dagger, tier, {item(bar, 1), group("stick", 1)})
+	gear(dagger, tier, {item(bar, 1), item(rod, 1)})
+	gear(greataxe, tier, {item(bar, 5), group("stick", 2)})
+	gear(greataxe, tier, {item(bar, 5), item(rod, 2)})
 	local occult = occult_components[tier]
-	register(wand, {{"", occult, ""}, {"", row.bar, ""},
-		{"", "group:stick", ""}})
-	register(G .. "staff_" .. row.metal, {{occult, row.bar, occult},
-		{"", "group:stick", ""}, {"", "group:stick", ""}})
-	local bow = G .. "bow_" .. row.metal
-	register(bow, {{"", "group:stick", C .. "thread"},
-		{row.bar, "", C .. "thread"}, {"", "group:stick", C .. "thread"}})
-	core.register_craft({output = bow, recipe = {
-		{C .. "thread", "group:stick", ""}, {C .. "thread", "", row.bar},
-		{C .. "thread", "group:stick", ""}}})
-	register(G .. "shield_" .. row.metal, {
-		{"group:wood", row.bar, "group:wood"},
-		{"group:wood", "group:wood", "group:wood"},
-		{"", "group:wood", ""},
-	})
+	gear(G .. "wand_" .. row.metal, tier,
+		{item(occult, 1), item(bar, 1), group("stick", 1)})
+	gear(G .. "staff_" .. row.metal, tier,
+		{item(occult, 2), item(bar, 1), group("stick", 2)})
+	gear(G .. "bow_" .. row.metal, tier,
+		{group("stick", 2), item(C .. "thread", 3), item(bar, 1)})
+	gear(G .. "shield_" .. row.metal, tier, {group("wood", 6), item(bar, 1)})
 
 	local materials = {
-		metal = row.bar,
-		cloth = C .. "bolt_" .. row.cloth,
-		leather = tier == 1 and "grug_mobs:light_leather" or
+		metal = {bar, row.metal},
+		cloth = {C .. "bolt_" .. row.cloth, row.cloth},
+		leather = {tier == 1 and "grug_mobs:light_leather" or
 			(tier == 3 and "grug_mobs:heavy_leather" or
 			(tier == 4 and "grug_mobs:scaled_hide" or
-			C .. row.leather .. "_leather")),
+			C .. row.leather .. "_leather")), row.leather},
 	}
-	for line, material in pairs(materials) do
-		for slot, shape in pairs(armor_shapes) do
-			register(G .. slot .. "_" .. line .. "_" ..
-				(line == "metal" and row.metal or row[line]), filled(shape, material))
+	for _, line in ipairs({"metal", "cloth", "leather"}) do
+		local material, key = materials[line][1], materials[line][2]
+		for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
+			gear(G .. slot .. "_" .. line .. "_" .. key, tier,
+				{item(material, ARMOR_COUNTS[slot])})
 		end
 	end
-end
-
-if core.get_all_craft_recipes(G .. "arrow") then
-	core.clear_craft({output = G .. "arrow"})
-end
--- One craft fills one arrow stack (stack_max 100, Round 28 ruling 26).
-core.register_craft({output = G .. "arrow 100", recipe = {
-	{"", "", M .. "bronze_bar"},
-	{"", "group:stick", ""},
-	{"group:stick", "", ""},
-}})
-
-if core.registered_items["grug_farming:hoe"] then
-	register("grug_farming:hoe", {
-		{"group:wood", "group:wood", ""},
-		{"", "default:stick", ""}, {"", "default:stick", ""},
-	})
-	core.register_craft({output = "grug_farming:hoe", recipe = {
-		{"", "group:wood", "group:wood"},
-		{"", "default:stick", ""}, {"", "default:stick", ""},
-	}})
 end

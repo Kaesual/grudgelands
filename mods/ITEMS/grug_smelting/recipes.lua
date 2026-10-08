@@ -1,5 +1,8 @@
 -- Every WP26 recipe registration, and the startup self-audit that proves the
 -- surface is exactly the one the task card names (§3.2-§3.5, gates 1 and 5).
+-- Since Round 45 the storage pack/unpack pairs and the dual furnace's own
+-- recipe are Basic recipes of the recipe registry
+-- (grug_jobs/basic_recipes.lua); the audit checks them there.
 --
 -- INPUT-FORM RULE (task card §3.1, binding): an alloy input is the material's
 -- BAR where a bar exists; mined Coal, Emberglass and Abyssal Crystal enter as
@@ -86,44 +89,23 @@ end
 --
 -- §3.4 -- storage pack/unpack, both directions, all twelve processed rows
 --
--- Including the two `kind = "resource"` rows (Emberglass, Abyssal Crystal),
--- whose storage input is the mined item itself, and the Gold Block sentence of
--- §3.0.1. Rough gems cannot pack and the cut-gem blocks pack in
--- grug_artisans (goldsmith.lua), so no gem appears here;
+-- Nine of the storage input make one block, one block gives nine back:
+-- Basic recipes, audited below. Including the two `kind = "resource"` rows
+-- (Emberglass, Abyssal Crystal), whose storage input is the mined item itself,
+-- and the Gold Block sentence of §3.0.1. Rough gems cannot pack and the
+-- cut-gem blocks pack in their own Basic recipes, so no gem appears here;
 -- `grug_materials:emberglass_shard` is a WP43 migration target and
 -- deliberately gets no recipe.
 --
-for _, material in ipairs(PROCESSED) do
-	core.register_craft({
-		output = material.block_node,
-		recipe = {
-			{material.item, material.item, material.item},
-			{material.item, material.item, material.item},
-			{material.item, material.item, material.item},
-		},
-	})
-	core.register_craft({
-		output = material.item .. " 9",
-		recipe = {{material.block_node}},
-	})
-end
-
+-- §3.5 -- the dual furnace's own recipe
 --
--- §3.5 -- the dual furnace's own craft recipe
---
--- One normal furnace plus the first alloy's two metals, in LotT's
--- T-arrangement (decided 2026-08-13, `items_crafting.md` §3.0.2). LotT's own
+-- One normal furnace plus the first alloy's two metals (two copper, one tin;
+-- decided 2026-08-13, `items_crafting.md` §3.0.2), a Basic recipe. LotT's own
 -- steel-tier original (`lottblocks/crafting.lua:271-277`) would deadlock this
 -- ladder: Steel is T3 here and needs the dual furnace to exist first.
 --
-core.register_craft({
-	output = grug_smelting.NODE,
-	recipe = {
-		{"", "grug_materials:copper_bar", ""},
-		{"grug_materials:copper_bar", "default:furnace",
-			"grug_materials:tin_bar"},
-	},
-})
+local STATION_INGREDIENTS = {["grug_materials:copper_bar"] = 2,
+	["default:furnace"] = 1, ["grug_materials:tin_bar"] = 1}
 
 --
 -- Startup self-audit (gates 1 and 5)
@@ -203,42 +185,41 @@ core.register_on_mods_loaded(function()
 		end
 	end
 
-	-- §3.4: twelve pack/unpack pairs, and the engine really has both shapes.
+	-- §3.4 and §3.5 against the recipe registry: a Basic recipe making
+	-- `count` of `output` from exactly `wanted` ({[item] = n}).
+	local jobs = rawget(_G, "grug_jobs")
+	if not jobs then fail("the recipe registry (grug_jobs) is missing") end
+	local function basic_recipe(output, count, wanted)
+		for _, recipe in ipairs(jobs.recipes_for_output(output)) do
+			local same = recipe.area == "basic" and recipe.count == count
+			local listed = 0
+			for _, entry in ipairs(recipe.ingredients) do
+				listed = listed + 1
+				if entry.item == nil or wanted[entry.item] ~= entry.n then same = false end
+			end
+			for _ in pairs(wanted) do listed = listed - 1 end
+			if same and listed == 0 then return true end
+		end
+		return false
+	end
+
+	-- §3.4: twelve pack/unpack pairs.
 	for _, material in ipairs(PROCESSED) do
 		check_item(material.item, "storage item")
 		check_item(material.block_node, "storage block")
-		local packed = core.get_craft_result({method = "normal", width = 3,
-			items = {
-				ItemStack(material.item), ItemStack(material.item),
-				ItemStack(material.item), ItemStack(material.item),
-				ItemStack(material.item), ItemStack(material.item),
-				ItemStack(material.item), ItemStack(material.item),
-				ItemStack(material.item),
-			}})
-		if packed.item:get_name() ~= material.block_node or
-				packed.item:get_count() ~= 1 then
+		if not basic_recipe(material.block_node, 1, {[material.item] = 9}) then
 			fail("nine " .. material.item .. " do not pack into " ..
 				material.block_node)
 		end
-		local unpacked = core.get_craft_result({method = "normal", width = 1,
-			items = {ItemStack(material.block_node)}})
-		if unpacked.item:get_name() ~= material.item or
-				unpacked.item:get_count() ~= 9 then
+		if not basic_recipe(material.item, 9, {[material.block_node] = 1}) then
 			fail(material.block_node .. " does not unpack into nine " ..
 				material.item)
 		end
 	end
 
 	-- §3.5: the station itself is craftable from a normal furnace.
-	local station = core.get_craft_result({method = "normal", width = 3,
-		items = {
-			ItemStack(""), ItemStack("grug_materials:copper_bar"), ItemStack(""),
-			ItemStack("grug_materials:copper_bar"), ItemStack("default:furnace"),
-			ItemStack("grug_materials:tin_bar"),
-		}})
-	if station.item:get_name() ~= grug_smelting.NODE or
-			station.item:get_count() ~= 1 then
-		fail("the T-arrangement does not craft " .. grug_smelting.NODE)
+	if not basic_recipe(grug_smelting.NODE, 1, STATION_INGREDIENTS) then
+		fail("two copper, a tin bar and a furnace do not make " .. grug_smelting.NODE)
 	end
 
 	core.log("action", "[grug_smelting] recipe audit passed: " .. #SMELTS ..

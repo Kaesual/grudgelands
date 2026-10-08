@@ -296,8 +296,9 @@ do
 		register_craftitem = function() end, override_item = function() end,
 		register_craft = function() end}
 	grug_food = {register_item = function() return true end}
-	grug_jobs = {register_ingredient_tier = function() end,
-		register_recipe = function(def) routes[#routes + 1] = def end}
+	grug_jobs = {register_ingredient_tier = function() end, DURATIONS = {food = 1},
+		register_recipe = function(def) routes[#routes + 1] = def end,
+		ingredient_list = function(tokens) return tokens end}
 	dofile(ROOT .. "/mods/ITEMS/grug_cooking/init.lua")
 	local rules = dofile(ROOT .. "/mods/ENTITIES/grug_traders/price_rules.lua")
 	-- The tier the price module resolves for each input (its own tier; a

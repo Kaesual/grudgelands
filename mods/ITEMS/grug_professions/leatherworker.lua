@@ -2,22 +2,15 @@ local P = grug_professions
 local C = "grug_professions:"
 local THREAD = C .. "thread"
 
+-- The six leather grades. Each grade's recipe (the grade below or a pelt,
+-- and Thread) is Basic (grug_jobs/basic_recipes.lua).
 local tiers = {
-	{key = "light", name = "Light", output = "grug_mobs:light_leather",
-		inputs = {"mobs:leather", THREAD}, recipe_tier = 1},
-	{key = "cured", name = "Cured", output = C .. "cured_leather",
-		inputs = {"grug_mobs:light_leather", THREAD}, recipe_tier = 2,
-		material = true},
-	{key = "heavy", name = "Heavy", output = "grug_mobs:heavy_leather",
-		inputs = {C .. "cured_leather", THREAD}, recipe_tier = 3, material = true},
-	{key = "scaled", name = "Scaled", output = "grug_mobs:scaled_hide",
-		inputs = {"grug_mobs:heavy_leather", THREAD}, recipe_tier = 4,
-		material = true},
-	{key = "sleek", name = "Sleek", output = C .. "sleek_leather",
-		inputs = {"grug_mobs:sleek_pelt", THREAD}, recipe_tier = 5},
-	{key = "nightscale", name = "Nightscale", output = C .. "nightscale_leather",
-		inputs = {"grug_mobs:scaled_hide", "grug_mobs:sleek_pelt"},
-		recipe_tier = 6, material = true},
+	{key = "light", name = "Light", output = "grug_mobs:light_leather"},
+	{key = "cured", name = "Cured", output = C .. "cured_leather"},
+	{key = "heavy", name = "Heavy", output = "grug_mobs:heavy_leather"},
+	{key = "scaled", name = "Scaled", output = "grug_mobs:scaled_hide"},
+	{key = "sleek", name = "Sleek", output = C .. "sleek_leather"},
+	{key = "nightscale", name = "Nightscale", output = C .. "nightscale_leather"},
 }
 
 for tier = 1, #tiers do
@@ -34,7 +27,6 @@ for tier = 1, #tiers do
 	elseif tier == 5 then
 		P.register_ingredient("grug_mobs:sleek_pelt", tier)
 	end
-	core.register_craft({output = row.output, recipe = {row.inputs}})
 end
 
 local bag_outputs = {
@@ -42,13 +34,12 @@ local bag_outputs = {
 	"grug_inventory:bag_leather_pack", "grug_inventory:bag_leather_rucksack",
 }
 local bag_tiers = {1, 2, 4, 5}
+-- Eight leathers of the tier and a Thread. Bags give profession XP and need
+-- only the profession tier (Round 45 rulings 7 and 8).
 for index = 1, #bag_outputs do
 	local tier = bag_tiers[index]
-	local leather = tiers[tier].output
-	P.register_recipe("leatherworker", {tier = tier, station = "tanning_rack",
-		inputs = {{leather, leather, leather}, {leather, THREAD, leather},
-			{leather, leather, leather}}, output = bag_outputs[index],
-		mastery_required = index,
-		hint = "Sew at a Tanning Rack"})
+	P.register_recipe("leatherworker", {tier = tier, output = bag_outputs[index],
+		ingredients = {{item = tiers[tier].output, n = 8}, {item = THREAD, n = 1}},
+		time = grug_jobs.DURATIONS.bag})
 end
 
