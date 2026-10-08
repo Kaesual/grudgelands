@@ -175,6 +175,7 @@ local DOOR_WALKS = {amble = true, post = true}
 local VIA_FAILS = 2 -- failed searches toward the cell in front of the door
 local VIA_DOORS = 2 -- doors tried per walk
 local CROSS_REACH = 0.4 -- nodes: the door's centre and the cell behind passed
+-- (the cell in front is reached closer, npc_doors.FRONT_REACH: lined up)
 local CROSS_TIME = 8 -- s: a crossing that takes longer is dropped
 
 -- The navigation call, the steer and what it commanded. Returns
@@ -232,14 +233,14 @@ local function cross(self, pos, w, dtime)
 	w.ct = w.ct + dtime
 	local t = self.temp
 	doors.approach(self, pos, w.door)
-	local c = w.centred and w.behind or w.door
+	local c = doors.aim(w.door, w.centred and w.behind or w.door)
 	local dx, dz = c.x - pos.x, c.z - pos.z
 	if dx * dx + dz * dz < CROSS_REACH * CROSS_REACH then
 		if w.centred then
 			drop_via(t, w)
 			return true
 		end
-		w.centred, c = true, w.behind
+		w.centred, c = true, doors.aim(w.door, w.behind)
 	end
 	if w.ct > CROSS_TIME then
 		drop_via(t, w)
@@ -256,7 +257,7 @@ local function via_step(self, dtime, pos, w)
 	doors.heading(self, w.door)
 	if w.phase == "to" then
 		local dx, dz = w.x - pos.x, w.z - pos.z
-		if dx * dx + dz * dz >= CROSS_REACH * CROSS_REACH then
+		if dx * dx + dz * dz >= doors.FRONT_REACH * doors.FRONT_REACH then
 			drive(self, w, pos)
 			local nst = t.grug_nav
 			local fails = nst and nst.target == w.key and nst.fails or 0
@@ -370,14 +371,22 @@ function grug_mobs.walk_follow(self, dtime, owner)
 	if w.phase and not self.attack
 			and (self.state == "stand" or self.state == "walk") then
 		-- A door detour: in front of the door it crosses (checked every
-		-- step, a once-a-second decision walks into the door).
+		-- step, a once-a-second decision walks into the door; steered
+		-- every step for its last two nodes, lined up with the doorway).
 		local pos = self.object:get_pos()
 		if pos and w.phase == "to" then
 			local dx, dz = w.x - pos.x, w.z - pos.z
-			if dx * dx + dz * dz < CROSS_REACH * CROSS_REACH then
+			local d2 = dx * dx + dz * dz
+			if d2 < doors.FRONT_REACH * doors.FRONT_REACH then
 				w.phase, w.ct = "cross", 0
 				local nst = t.grug_nav
 				if nst and nst.target == w.key then nav.forget(t) end
+			elseif d2 < 4 then
+				local nst = t.grug_nav
+				if not (nst and nst.target == w.key and nst.path) then
+					local a = doors.aim(w.door, w)
+					grug_mobs.walk_toward(self, a.x, a.z, pos)
+				end
 			end
 		end
 		if pos and w.phase == "cross" then

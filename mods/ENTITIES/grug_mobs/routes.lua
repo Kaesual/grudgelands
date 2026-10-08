@@ -758,23 +758,55 @@ local function nearest_corner(points, a, pos)
 	return bk
 end
 
-local function passed(c, pos)
+-- Is corner k of `points` passed? The cell in front of a door is reached
+-- closer (FRONT_REACH): a walker lined up with the doorway walks through it.
+local function passed(c, pos, nxt)
 	local dx, dz = c.x - pos.x, c.z - pos.z
-	return dx * dx + dz * dz < routes.CORNER_REACH * routes.CORNER_REACH
+	local r = nxt and nxt.door and doors.FRONT_REACH or routes.CORNER_REACH
+	return dx * dx + dz * dz < r * r
 end
 
--- The door ahead of a walker on corner k (heading for it or for the cell in
--- front of it), opened once it is near; true while it crosses (k is the
--- door's corner or the cell behind it): it is then steered every step.
+-- The door ahead of a walker on corner k (heading for the cell in front of
+-- it, for its centre or for the cell behind it): heading through it, opening
+-- it once near. Returns the point to steer at every step while it does (the
+-- middle of the doorway, npc_doors.aim), nil otherwise.
 local function door_ahead(self, points, k, pos)
 	local c, nxt = points[k], points[k + 1]
-	local d = c and c.door or (nxt and nxt.door)
-	doors.heading(self, d)
-	if c and c.door then
-		doors.approach(self, pos, c.door)
-		return true
+	if not c then
+		if nxt and nxt.door then doors.heading(self, nxt.door) end
+		return nil
 	end
-	return k > 1 and points[k - 1].door ~= nil
+	local prev = k > 1 and points[k - 1] or nil
+	local d = c.door or (nxt and nxt.door) or (prev and prev.door)
+	doors.heading(self, (c.door or (nxt and nxt.door)) and d or nil)
+	if not d then return nil end
+	if c.door then
+		doors.approach(self, pos, d)
+	elseif not (prev and prev.door) then
+		-- On the way to the cell in front: steered only for its last nodes.
+		local dx, dz = c.x - pos.x, c.z - pos.z
+		if dx * dx + dz * dz > 4 then return nil end
+	end
+	return doors.aim(d, c)
+end
+
+-- Is the walker in a doorway on its way through (a cached route's door
+-- corner, or the cell behind it while still within CLEAR of the door; a
+-- fixed walk's door detour crossing)? An amble does not stop there
+-- (start_villagers.lua): arriving in the doorway would hold the door open.
+function grug_mobs.door_crossing(self, pos)
+	local t = self.temp
+	if not t then return false end
+	if t.grug_walk and t.grug_walk.phase == "cross" then return true end
+	local leg = t.grug_leg
+	local points = leg and leg.k and leg.entry.state == "ok" and leg.entry.points
+	local c = points and points[leg.k]
+	if not c then return false end
+	if c.door then return true end
+	local prev = leg.k > 1 and points[leg.k - 1]
+	if not (prev and prev.door) then return false end
+	local dx, dz = prev.x - pos.x, prev.z - pos.z
+	return dx * dx + dz * dz < doors.CLEAR * doors.CLEAR
 end
 
 local ON_ROUTE = {route = true}
@@ -830,7 +862,8 @@ function grug_mobs.route_walk(self, dtime, pos, key, from, to, owner, patrol)
 		if not nav.line_walkable(body, feet, points[k]) then k = k - 1 end
 		leg.k = k
 	end
-	while leg.k < #points and passed(leg.k == 0 and from or points[leg.k], pos) do
+	while leg.k < #points
+			and passed(leg.k == 0 and from or points[leg.k], pos, points[leg.k + 1]) do
 		leg.k = leg.k + 1
 	end
 	local c = leg.k == 0 and from or points[leg.k]
@@ -858,22 +891,22 @@ function grug_mobs.route_follow(self, dtime, owner)
 		elseif entry.state == "ok" and leg.k then
 			local pos = self.object:get_pos()
 			local points = entry.points
-			if pos and leg.k < #points
-					and passed(leg.k == 0 and leg.from or points[leg.k], pos) then
+			if pos and leg.k < #points and passed(leg.k == 0 and leg.from
+					or points[leg.k], pos, points[leg.k + 1]) then
 				leg.k = leg.k + 1
-				while leg.k < #points and passed(points[leg.k], pos) do
+				while leg.k < #points and passed(points[leg.k], pos, points[leg.k + 1]) do
 					leg.k = leg.k + 1
 				end
 				grug_mobs.walk_clear(self, owner)
-				door_ahead(self, points, leg.k, pos)
-				local c = entry.points[leg.k]
+				local c = door_ahead(self, points, leg.k, pos) or entry.points[leg.k]
 				grug_mobs.walk_toward(self, c.x, c.z, pos)
 				return
 			end
-			if pos and door_ahead(self, points, leg.k, pos) then
-				-- Through a doorway: no random turn into the frame.
-				local c = points[leg.k]
-				grug_mobs.walk_toward(self, c.x, c.z, pos)
+			local aim = pos and door_ahead(self, points, leg.k, pos)
+			if aim then
+				-- Into, through and out of a doorway: steered at its middle
+				-- every step, no random turn into the frame.
+				grug_mobs.walk_toward(self, aim.x, aim.z, pos)
 			end
 		end
 	end

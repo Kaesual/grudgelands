@@ -43,6 +43,11 @@ local D = {
 	FORGET = 8, -- nodes: a walker this far from the door it opened lets it be
 	IN_DOOR = 0.9, -- nodes from the centre: somebody stands in the doorway
 	RETRY = 0.5, -- s before a close kept back by somebody in the doorway retries
+	FRONT_REACH = 0.15, -- nodes: the cell in front of a door is reached
+	-- An open leaf lies along one side of its cell (a 1/8 node panel): the
+	-- way through is 7/8 wide and its middle 1/16 off the cell's centre.
+	-- A body 0.6 wide has 0.14 to spare on either side of that middle.
+	SHIFT = 1 / 16,
 }
 grug_mobs.npc_doors = D
 
@@ -215,6 +220,22 @@ local function door_ref(d)
 		return nil
 	end
 	return ref
+end
+
+-- Where a walker aims at point `p` of the way through door `d` (its
+-- centre, the cells in front and behind): the middle of the doorway, 1/16
+-- off the cell's centre away from the open leaf. A leaf's panel lies on its
+-- node's -z face turned by its facedir (doors/init.lua collision_box), so
+-- an open leaf of facedir f lies toward -dir(f).
+local FACE = {[0] = {0, 1}, [1] = {1, 0}, [2] = {0, -1}, [3] = {-1, 0}}
+function D.aim(d, p)
+	local doors = api()
+	local node = core.get_node_or_nil({x = d.x, y = d.y, z = d.z})
+	if not doors or not node or not doors.registered_doors[node.name] then return p end
+	local ref = doors.get({x = d.x, y = d.y, z = d.z})
+	if not ref or not ref:state() then return p end
+	local f = FACE[node.param2 % 4]
+	return {x = p.x + f[1] * D.SHIFT, y = p.y, z = p.z + f[2] * D.SHIFT}
 end
 
 -- The walker heads through door `d` (runtime only; the right-behind test of

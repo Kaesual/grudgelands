@@ -46,9 +46,12 @@ local floor, sqrt, abs = math.floor, math.sqrt, math.abs
 -- engine.
 -- ---------------------------------------------------------------------------
 local us = 1000000
-local world, metas = {}, {}
+local world, metas, param2s = {}, {}, {}
 local function key(x, y, z) return x .. "," .. y .. "," .. z end
-local function set(x, y, z, name) world[key(x, y, z)] = name end
+local function set(x, y, z, name, p2)
+	world[key(x, y, z)] = name
+	param2s[key(x, y, z)] = p2
+end
 local function fill(x1, y1, z1, x2, y2, z2, name)
 	for x = math.min(x1, x2), math.max(x1, x2) do
 		for y = math.min(y1, y2), math.max(y1, y2) do
@@ -99,8 +102,10 @@ core = {
 	log = function(_, text) logs[#logs + 1] = text end,
 	pos_to_string = function(p) return ("(%g,%g,%g)"):format(p.x, p.y, p.z) end,
 	get_meta = meta_of,
-	get_node = function(p) return {name = name_at(p.x, p.y, p.z), param2 = 0} end,
-	swap_node = function(p, node) set(p.x, p.y, p.z, node.name) end,
+	get_node = function(p)
+		return {name = name_at(p.x, p.y, p.z), param2 = param2s[key(p.x, p.y, p.z)] or 0}
+	end,
+	swap_node = function(p, node) set(p.x, p.y, p.z, node.name, node.param2) end,
 	sound_play = function(spec, params)
 		sounds[#sounds + 1] = {name = spec, pos = params.pos}
 	end,
@@ -138,7 +143,7 @@ minetest = core
 local LIMIT = 300 -- beyond |x| the map is not loaded
 function core.get_node_or_nil(pos)
 	if abs(pos.x) > LIMIT then return nil end
-	return {name = name_at(pos.x, pos.y, pos.z)}
+	return core.get_node(pos)
 end
 local function walkable(x, y, z)
 	local def = nodes[name_at(x, y, z)]
@@ -395,8 +400,8 @@ local function hdist(m, x, z)
 	return sqrt((p.x - x) * (p.x - x) + (p.z - z) * (p.z - z))
 end
 local function fresh()
-	world, metas, find_calls, logs, placed, players, objects, sounds =
-		{}, {}, {}, {}, {}, {}, {}, {}
+	world, metas, param2s, find_calls, logs, placed, players, objects, sounds =
+		{}, {}, {}, {}, {}, {}, {}, {}, {}
 	interact_asked = 0
 	us = us + 100 * 1000000
 end
@@ -427,9 +432,11 @@ local function room(x1, z1, x2, z2, door_z, door_side)
 	fill(x1, 1, z1, x1, 3, z2, "stone")
 	fill(x2, 1, z1, x2, 3, z2, "stone")
 	if door_z then
+		-- The leaf faces inward (the way the placer looked: facedir 1 is +x).
 		local dx = door_side == "east" and x2 or x1
-		set(dx, 1, door_z, "doors:door_wood_a")
-		set(dx, 2, door_z, "doors:hidden")
+		local face = door_side == "east" and 3 or 1
+		set(dx, 1, door_z, "doors:door_wood_a", face)
+		set(dx, 2, door_z, "doors:hidden", face)
 		return {x = dx, y = 1, z = door_z}
 	end
 end
@@ -505,6 +512,31 @@ do
 		"R5 from one room into another through both doors")
 	check(not door_open(d1) and not door_open(d2), "R5 ...both shut behind it")
 	check(st.searches <= 30, "R5 ...in a bounded build (" .. st.searches .. " searches)")
+	-- R7 a spot right behind the door: the walker does not stop in the
+	-- doorway (it would hold the door open), it arrives clear of it and the
+	-- door is shut while it dwells.
+	fresh()
+	local town7 = new_settlement("start")
+	local d7 = room(10, -4, 18, 4, 0)
+	local m7 = walker(0, 0, town7, {spot(0, 0), spot(11, 0)}, 2)
+	m7._grug_idle_from = 1
+	local in_doorway
+	t = run(m7, 60, function(s)
+		if arrived(s) and abs(s.object.pos.x - d7.x) < D.CLEAR then in_doorway = true end
+		return arrived(s)
+	end)
+	run(m7, 2)
+	check(t ~= nil and not in_doorway and arrived(m7),
+		"R7 a walker never arrives in the doorway")
+	check(not door_open(d7), "R7 ...and the door is shut while it dwells behind it")
+	-- R8 the open leaf lies along one side: the walker aims at the middle
+	-- of the way through, 1/16 off the cell's centre away from the leaf (the
+	-- vendored toggle turns facedir 1 into the open leaf's facedir 2, whose
+	-- panel lies on +z).
+	doors.get(d7):open()
+	local aim = D.aim(d7, d7)
+	check(abs(aim.z - (d7.z - 1 / 16)) < 1e-9 and aim.x == d7.x,
+		"R8 the aim is the middle of the doorway")
 	-- R6 the room without its door is no route (the plain plan and the door
 	-- plans are spent; nothing searches again).
 	fresh()
