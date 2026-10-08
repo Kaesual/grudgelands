@@ -653,11 +653,17 @@ tools](#player-meta-read-by-external-tools).
     stuck detector, the local search, the follower and the give-up rule of
     `combat_stats.md` "Navigation" and "Unreachable targets are given up",
     `grug_mobs.give_up_target` in `aggro.lua`); `nav.fixed_step` is the
-    fixed-walk interface. A new chase or patrol search
-    asks that budget (`claim_path_budget` / `spare_path_budget`), reports its
-    cost (`note_path_cost`) and result, as `patrol.lua` `path_nudge` does;
-    never an unbudgeted `core.find_path`. Fixture `tools/r30_p2` (also the
-    merged spawn ABMs and the eye height).
+    fixed-walk interface. A walk to a fixed goal (a patrol, a post or seat,
+    the evade, the rift boss's way home) goes through `patrol.lua`
+    `grug_mobs.walk_fixed` from its owner's 1 Hz tick and
+    `grug_mobs.walk_follow` on every other step (the per-step steer while
+    a path is followed), `walk_clear` when it ends; the royal follow
+    (`bosses.lua`) calls `fixed_step`/`combat_step` itself every step
+    (Round 42 NV2, `world.md` §4a "Fixed walks"). Every search is
+    `nav.search` behind the per-mob lockout, the negative cache, the count
+    cap and the budget (`claim_path_budget`, `note_path_cost`); never an
+    unbudgeted `core.find_path`. Fixtures `tools/r30_p2` (also the merged
+    spawn ABMs and the eye height), `tools/r42_nv1` and `tools/r42_nv2`.
   - **Countdowns tick in `do_custom`, never `core.after`**: a mob can
     die, be unloaded or leash-reset inside the window, and mobs_redo
     persists plain fields — a lost timer would save the mob permanently
