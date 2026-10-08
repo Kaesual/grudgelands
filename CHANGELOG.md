@@ -12,6 +12,14 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.43.1 — Round 43 hotfix, "Villager routes" (2026-10-09)
+
+Existing worlds play on: no map reset, no new world.
+
+- Villagers no longer crash the server on certain routes: a walk that
+  starts and ends on the same standing place (two plots of Nhal Veyr have
+  two such places on one spot) is now simply walked.
+
 ## 0.43.0 — Round 43, "World migrations" (2026-10-08)
 
 Groundwork so that later versions can change how characters are saved

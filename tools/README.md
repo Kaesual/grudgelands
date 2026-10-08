@@ -485,3 +485,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   from `Containerfile` (Debian trixie's python3, psycopg, zstandard and
   PostgreSQL; network for apt). About 5 minutes; one queue slot (boots and
   containers run one at a time).
+- **Hotfix 0.43.1** (`hf_0431`): `portable_test.lua` drives the real
+  `routes.lua`, navigation and amble tick in tools/r42_nv3's world model on
+  legs whose two ends share one search cell (two spots on one position, one
+  node apart in height on a block, a stand-in start), and an "ok" route
+  without points through `route_walk` and `route_follow`: no crash, the
+  walker arrives. `same_cell.lua` lists the start and capital blueprints'
+  idle-spot pairs and patrol neighbours in one cell (offline, no engine).

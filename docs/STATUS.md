@@ -20,7 +20,8 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
   a 0.42.0 world plays on, its missing record counts as 0.41.0 and is
   stamped 0.43.0. **Push:** origin/main is `332c5e79` (0.42.0, pushed by
   the user on 2026-10-08); 0.43.0 is not pushed. The GUI check (plan §6)
-  is open.
+  is open. 0.43.1 (hotfix on 0.43.0: an empty villager route crashed the
+  server, `tools/hf_0431`; compatible) is not pushed.
   - **Game side (GS):** the world version record (`grug_core`
     `world_version`), the start guard at the top of `grug_core` (a newer
     world, or one with a step between, refuses to start with a message
