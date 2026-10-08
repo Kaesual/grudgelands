@@ -61,7 +61,7 @@ FULL_DRAW = 2.25        # Loose at full draw, scout.lua:63-71
 ARMOR_LINES = {"metal": (5.6, 0.86667), "leather": (3.2667, 0.64444),
                "cloth": (2.3333, 0.22222)}
 ARMOR_SHARES = (0.22, 0.35, 0.27, 0.16)
-BASE_ILVL = (3, 10, 20, 30, 40, 50)   # vendor/crafted bases per material tier
+BASE_ILVL = (1, 11, 21, 31, 41, 51)   # vendor/crafted bases per material tier (the ladder, Round 45)
 
 
 def weapon_damage(ilvl, family):

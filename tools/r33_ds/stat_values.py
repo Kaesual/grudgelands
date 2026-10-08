@@ -88,8 +88,9 @@ def value_tables():
         cells += [fmt(stat, enchant_value(stat, 65, 7)), fmt(stat, enchant_value(stat, 70, 7))]
         today = " / ".join(("%g" % v) for v in TODAY[stat])
         out.append("| %s | %s | %s | %s |" % (LABEL[stat], formula, " | ".join(cells), today))
-    out += ["", "### Values on plain bases (vendor or crafted item level 3/10/20/30/40/50)", "",
-            "| Stat | T1 (3) | T2 (10) | T3 (20) | T4 (30) | T5 (40) | T6 (50) |",
+    out += ["", "### Values on plain bases (vendor or crafted item level %s)" % "/".join(
+                str(il) for il in C.BASE_ILVL), "",
+            "| Stat | %s |" % " | ".join("T%d (%d)" % (t, il) for t, il in enumerate(C.BASE_ILVL, 1)),
             "|---|---:|---:|---:|---:|---:|---:|"]
     for stat in ORDER:
         cells = [fmt(stat, enchant_value(stat, C.BASE_ILVL[t - 1], t)) for t in range(1, 7)]
