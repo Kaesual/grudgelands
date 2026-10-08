@@ -22,8 +22,9 @@
 -- objective marks nothing; a talk objective counts from the start (a
 -- travel quest's destination), so its NPC stays marked while the quest is
 -- active. Item objectives (gathering, ore, quest drops) and roles outside
--- the region maps (underground, water, rare and critter spawns) mark
--- nothing; the quest text suffices.
+-- the region maps without a place of their own (underground, water, rare
+-- and critter spawns) mark nothing; the quest text suffices. Two objectives
+-- at one spot share one crosshair.
 --
 -- The region index is built once at start from the cached region maps:
 -- role -> regions and "zone/area" -> regions, each region {zone, x, z,
@@ -84,8 +85,13 @@ end
 -- `lookup.role(role)` a role's own place (or nil).
 function M.targets(index, def, progress, pos, lookup)
 	local crosshairs, rings, seen = {}, {}, {}
+	local spots = {}
 	local function crosshair(spot)
-		if spot then crosshairs[#crosshairs + 1] = {x = spot.x, z = spot.z} end
+		local key = spot and (spot.x .. "," .. spot.z)
+		if key and not spots[key] then
+			spots[key] = true
+			crosshairs[#crosshairs + 1] = {x = spot.x, z = spot.z}
+		end
 	end
 	local function ring_list(list, zone)
 		for _, entry in ipairs(list or {}) do

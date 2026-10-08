@@ -625,6 +625,13 @@ do
 	found = targets.targets(index, registered_quests.q_wolf, rows(registered_quests.q_wolf, {}),
 		{x = 0, z = 0}, lk)
 	check(#found.crosshairs == 0, "T a role with regions gets no role crosshair")
+	-- Two objectives at one spot (a talk NPC who is also the use place):
+	-- one crosshair.
+	local same = {zone = "dawnmere", objectives = {{type = "talk", npc = "smith", count = 1},
+		{type = "kill", mobs = {"grug_mobs:crumb"}, count = 1},
+		{type = "kill", mobs = {"grug_mobs:crumb"}, count = 1}}}
+	found = targets.targets(index, same, nil, {x = 0, z = 0}, lookup)
+	eq(#found.crosshairs, 2, "T one crosshair per spot (the leader twice: once)")
 
 	-- In the form: rings under the crosshair, tinted and semi-transparent,
 	-- sized by the region (at least RING_MIN).
@@ -786,6 +793,56 @@ do
 	for _, fn in ipairs(markers_changed) do fn(accord) end
 	advance(2)
 	eq(sends_to("ann") - before, 0, "R a stale event does not pop the window over another form")
+	shown.ann = nil
+	fields(accord, {quit = "true"})
+	-- (A) "Back to inventory", then Esc on the inventory (its quit clears
+	-- node_formspec's record): the window stays closed.
+	local function nothing_after(label)
+		local n = sends_to("ann")
+		for _, fn in ipairs(markers_changed) do fn(accord) end
+		local bea2 = make_player("bea2", {x = 600, z = 600}, "accord")
+		players.bea2 = bea2
+		parties.ann, parties.bea2 = {"ann", "bea2"}, {"ann", "bea2"}
+		for _ = 1, 30 do bea2.pos = {x = bea2.pos.x + 9, z = bea2.pos.z}; advance(0.5) end
+		parties.ann, parties.bea2, players.bea2 = nil, nil, nil
+		eq(sends_to("ann") - n, 0, label)
+	end
+	W.open(accord)
+	advance(2)
+	fields(accord, {grug_map_back = "Back to inventory"})
+	eq(shows[#shows].formname, "", "R Back to inventory shows the inventory")
+	shown.ann = nil -- the inventory's quit
+	nothing_after("R (A) back, then Esc: the map never pops up again")
+	-- (B) Death with the map open: the death screen replaces it; its quit
+	-- on respawn clears the record; the map stays closed.
+	W.open(accord)
+	advance(2)
+	core.show_formspec("ann", "__builtin:death", "size[1,1]")
+	shown.ann = nil -- the death screen's quit on respawn
+	nothing_after("R (B) death and respawn: the map never pops up again")
+	-- Another form shown and quit while the map was open: closed.
+	W.open(accord)
+	advance(2)
+	core.show_formspec("ann", "grug_parties:invite", "size[1,1]")
+	shown.ann = nil
+	nothing_after("R another form's quit: the map stays closed")
+	-- A close of every form: closed.
+	W.open(accord)
+	advance(2)
+	core.close_formspec("ann", "")
+	core.show_formspec("ann", "", "")
+	shown.ann = nil
+	nothing_after("R closing every form: the map stays closed")
+	-- The crossing close still works after all that.
+	W.open(accord)
+	advance(2)
+	for _, fn in ipairs(markers_changed) do fn(accord) end
+	shown.ann = nil
+	fields(accord, {quit = "true"})
+	advance(2)
+	before = sends_to("ann")
+	fields(accord, {grug_map_zoom_out = "-"})
+	eq(sends_to("ann") - before, 1, "R the crossing close still answers the next click")
 	shown.ann = nil
 	fields(accord, {quit = "true"})
 	-- The scroll pause: a scrollbar move holds every send for 0.5 s; a

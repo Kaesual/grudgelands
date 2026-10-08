@@ -361,16 +361,35 @@ end
 local sessions = {}
 W.sessions = sessions
 
--- The window is open from a send or any other event of it until its quit,
--- and only while no other form was shown since (default/node_formspec.lua
--- shown_form: another form, the death screen or the inventory replace it
--- silently, and a refresh must never pop it back over them). A send that
--- crosses a close shows the window again while its quit arrives after it;
--- the next event of the window then proves it is shown and marks it open.
+-- The window is open from a send or any other event of it until its quit
+-- or until any other form is shown: another form, the death screen, the
+-- inventory ("Back to inventory") or a close of every form replace it
+-- silently, and a refresh must never pop it back over them (or over the
+-- game once that form is closed). Every form the server shows passes the
+-- wrapper below, which closes the session. A send that crosses a close
+-- shows the window again while its quit arrives after it; the next event
+-- of the window then proves it is shown and marks it open again.
+-- default/node_formspec.lua's shown_form is the backstop: a form other
+-- than the window there always means closed.
 function W.is_open(name)
 	local session = sessions[name]
+	if not session or not session.open then return false end
 	local shown = default.node_formspec.shown_form(name)
-	return session ~= nil and session.open == true and (shown == nil or shown == W.FORMNAME)
+	if shown ~= nil and shown ~= W.FORMNAME then
+		session.open = false
+		return false
+	end
+	return true
+end
+
+-- Any other form shown (or every form closed) ends the window's session.
+local show_formspec = core.show_formspec
+function core.show_formspec(playername, formname, formspec)
+	local session = sessions[playername]
+	if session and formname ~= W.FORMNAME and (formspec ~= "" or formname == "") then
+		session.open = false
+	end
+	return show_formspec(playername, formname, formspec)
 end
 
 -- The party's arrow cells ("" outside a party): the party check sends only
@@ -486,6 +505,8 @@ end
 
 -- "Back to inventory": the inventory window at its homepage.
 function W.back(player)
+	local session = sessions[player:get_player_name()]
+	if session then session.open = false end
 	if sfinv.inventory_suspended(player) then
 		core.close_formspec(player:get_player_name(), W.FORMNAME)
 		return

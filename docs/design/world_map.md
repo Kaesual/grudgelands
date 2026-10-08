@@ -193,7 +193,7 @@ Selecting a quest marks where its open objectives are done
 - finished kill and use objectives, item objectives (gathering, ore, quest
   drops) and roles outside the region maps without a place of their own
   (underground, water, rare and critter spawns) mark nothing; the text
-  suffices.
+  suffices. Two objectives at one spot share one crosshair.
 
 The index (role → regions, area → regions, leader → spot) is built once at
 start from the region maps ([spawn_regions.md](spawn_regions.md)): seed 42,
@@ -217,12 +217,14 @@ drag breaks the drag); what falls due meanwhile is owed until then. A pass
 every 0.1 s serves the owed sends and party checks, longest waiting first,
 at most 8 party checks and 2 sends per pass, so many windows opened
 together drift apart. The window counts as open from a send or any other
-event of it until its quit, and only while no other form was shown since
-(`default.node_formspec.shown_form`): another form, the death screen or the
-inventory replaces it and it is never sent again until the next opening. A
-send that crosses a close shows the window again while its quit arrives
-after it; the window's next event proves it is shown and marks it open
-again, so clicks are answered.
+event of it until its quit or until any other form is shown: every form
+the server shows passes a wrapper in `window.lua`, so another form, the
+death screen, the inventory ("Back to inventory") or a close of every form
+end it, and it is never sent again until the next opening, also after that
+form is closed (`default.node_formspec.shown_form` naming another form
+also means closed). A send that crosses a close shows the window again
+while its quit arrives after it; the window's next event proves it is
+shown and marks it open again, so clicks are answered.
 
 Comparisons (not targets; seed 42, an Accord or Throng viewer with seven
 active quests at its start town, engine probe `tools/r44_mq/grug_probe_r44_mq`):
