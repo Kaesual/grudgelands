@@ -328,9 +328,9 @@ Game:
   tab, output area → inventory on Crafting), each targeting `main`. Where a
   spill into the bags is needed, the server routes the move itself in the
   inventory callback (the quiver pattern, `bags.lua:96`).
-- Sort categories (proposal, settled in the prototype): weapons, offhands,
-  armour, trinkets, bags, tools, potions and food, profession materials, mob
-  loot, blocks and the rest. Tier from `_grug_bracket` / item level;
+- Sort categories (the user, 2026-10-08): weapons (offhands included),
+  trinkets, armour, consumables (arrows, food, potions), then the rest.
+  Tier from `_grug_bracket` / item level;
   quality from `grug_quality`. Stacks merge only when name and metadata are
   identical.
 - The shared give helper (`main[9..]`, bags in slot order, hotbar last,
@@ -408,7 +408,10 @@ Game:
 - **Baked base:** the renderer draws boss, dungeon/POI and settlement icons
   and the region names (pixel font, a small glyph table in Lua) into the
   world-map variant; the minimap variant gets icons at their own size and no
-  names. Icon sizes are tuned on the zoom-2× view. The cache key covers art,
+  names. Sizes "roughly as today" (the user): a baked icon at zoom 1× is
+  about the size of the overlay icons and grows with the zoom; the minimap
+  keeps its own icon sizes, its baked icons again about the size of its
+  other icons. The cache key covers art,
   font and layout versions.
 - **Overlay** per §2.12, as plain `image[]` elements; only quest NPCs carry
   tooltips. Trainers per own faction; 2/3 size at zoom 1×/2×. The region-name
@@ -437,8 +440,11 @@ Game:
 
 ### 3.8 Party & PvP, Help
 
-- Party and PvP become one page with two sections, no inventory. The PvP 1 s
-  check stays.
+- Party and PvP become one page with two sections, no inventory (split as in
+  wireframe v1). The party section keeps every feature of today's page: the
+  online players of the own faction, pending invites, and the member list
+  while in a party; the small PvP section sits below. The PvP 1 s check
+  stays.
 - Help texts that name Bags, Quests, Skills or "Inventory > Crafting" are
   rewritten.
 
@@ -596,8 +602,8 @@ The server learns the typed number only with an event (§1). Rules:
   it as a free refund). The
   per-player workspaces of capital **furnaces and dual furnaces** stay as
   they are (`workspaces.lua:257`, `:347`), since furnaces keep their dialog.
-  Alchemy mixtures in player inventories need a decision in Round B (remove,
-  or refund their ingredients).
+  Alchemy mixtures in player inventories are **deleted**, not refunded (the
+  user, 2026-10-08).
 - **Skills and mounts (Round A):** bound skills outside the hotbar and every
   mount item are removed at login; purchased mounts stay recorded.
 - **Potion belt / quickbar (Round A):** new lists only; compatible.
@@ -611,8 +617,6 @@ the short inventory is the hotbar + 2 rows; the skill catalog is a single row
 under the talent tree; every tab keeps today's window size; the map window
 uses 80–90 % of the screen; inventory slot sizes do not change.
 
-Settled in the lanes and the GUI test, not before: the sort category order
-(proposal in §3.2), the map symbol sizes (baked icons on world map and
-minimap, trainer icons at about 2/3 at zoom 1×/2×), the exact Party & PvP
-split. Open for the Round B plan: alchemy mixtures in player inventories
-(remove, or refund their ingredients, §6).
+Decided afterwards (the user, 2026-10-08): the sort order (§3.2), the map
+symbol sizes "roughly as today" (§3.6), the Party & PvP page (§3.8),
+mixtures deleted (§6). Fine-tuning of icon sizes happens at the GUI test.
