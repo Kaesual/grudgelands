@@ -1,6 +1,7 @@
 -- Round 44 lane FR portable test: the inventory window. Loads the REAL
--- vendored sfinv (mods/BASE/sfinv/api.lua) and grug_inventory's ui.lua and
--- pages.lua under a minimal `core` stub and checks:
+-- vendored sfinv (mods/BASE/sfinv/api.lua) and grug_inventory's bags.lua
+-- (with lane IH's storage.lua), ui.lua and pages.lua under a minimal `core`
+-- stub and checks:
 --   1. the tab order: one table (grug_inventory.TAB_ORDER) whatever the
 --      registration order, pages missing from it after it, the Inventory
 --      page as the homepage, no ordering hook left in the page mods;
@@ -15,8 +16,9 @@
 --   4. the scrollbar echo: CHG and VAL values kept per view, echoed and
 --      clamped on the next build; a pure scrollbar event reaches no page
 --      handler and sends nothing, a button event still does;
---   5. Sort: calls grug_inventory.sort (IH's; a stub here), ignores clicks
---      for 2.5 s after one it ran, never resends;
+--   5. Sort: calls lane IH's real grug_inventory.sort (counted through a
+--      wrapper; it sorts main[9..]), ignores clicks for 2.5 s after one it
+--      ran, never resends; the potion belt drawn from IH's constants;
 --   6. refresh: a bag change re-renders a page with a view, a stat change
 --      only the Character page; the deposit slot on the Inventory page, not
 --      on the Character page;
@@ -83,7 +85,10 @@ end
 -- Stubs
 --
 
-local function ItemStack(value)
+-- Stacks without metadata: enough for the views and for the real sort.
+local stack_methods = {}
+local stack_meta = {__index = stack_methods}
+function ItemStack(value)
 	local name, count = "", 0
 	if type(value) == "table" then
 		name, count = value.name, value.count
@@ -91,12 +96,31 @@ local function ItemStack(value)
 		local n, c = value:match("^(%S+)%s*(%d*)$")
 		name, count = n, tonumber(c) or 1
 	end
-	return setmetatable({name = name, count = count}, {__index = {
-		is_empty = function(self) return self.name == "" or self.count <= 0 end,
-		get_name = function(self) return self.name end,
-		get_count = function(self) return self.count end,
-		get_description = function(self) return self.name end,
-	}})
+	return setmetatable({name = name, count = count}, stack_meta)
+end
+function stack_methods:is_empty() return self.name == "" or self.count <= 0 end
+function stack_methods:get_name() return self.name end
+function stack_methods:get_count() return self.count end
+function stack_methods:set_count(count) self.count = count end
+function stack_methods:get_description() return self.name end
+function stack_methods:get_stack_max() return 99 end
+function stack_methods:get_definition() return core.registered_items[self.name] end
+function stack_methods:get_meta() return {get_int = function() return 0 end} end
+function stack_methods:to_string()
+	if self:is_empty() then return "" end
+	return self.count == 1 and self.name or self.name .. " " .. self.count
+end
+function stack_methods:add_item(other)
+	other = ItemStack(other)
+	if self:is_empty() then
+		self.name, self.count = other.name, other.count
+		return ItemStack("")
+	end
+	if other.name ~= self.name then return other end
+	local moved = math.min(other.count, 99 - self.count)
+	self.count = self.count + moved
+	other.count = other.count - moved
+	return other:is_empty() and ItemStack("") or other
 end
 
 local mods_loaded, receive_handlers = {}, {}
@@ -116,9 +140,21 @@ core = {
 	log = function() end,
 	get_player_window_information = function() return nil end,
 	get_us_time = function() return now_us end,
-	registered_items = {},
+	registered_items = {
+		["default:dirt"] = {description = "Dirt", groups = {}},
+		["test:sword"] = {description = "Sword", groups = {grug_equip_weapon = 1}},
+	},
 	is_creative_enabled = function() return false end,
+	register_craftitem = function() end,
+	register_allow_player_inventory_action = function() end,
+	register_on_player_inventory_action = function() end,
+	register_on_item_pickup = function() end,
+	strip_colors = function(text) return text end,
 }
+function core.get_item_group(name, group)
+	local def = core.registered_items[name]
+	return def and def.groups and def.groups[group] or 0
+end
 minetest = core
 dump = function(value) return tostring(value) end
 
@@ -150,9 +186,8 @@ grug_classes = {
 }
 player_api = {registered_models = {["character.b3d"] = {textures = {"character.png"}}}}
 
--- grug_inventory as equipment.lua and bags.lua leave it, plus lane IH's sort
--- (plan §3 signature: grug_inventory.sort(player) -> changed), stubbed.
-local sorts = 0
+-- grug_inventory as equipment.lua leaves it; bags.lua and storage.lua are
+-- the real files (loaded below).
 grug_inventory = {
 	equipment_slots = {
 		{list = "grug_head", label = "Head"}, {list = "grug_chest", label = "Chest"},
@@ -162,12 +197,6 @@ grug_inventory = {
 	},
 	slot_label = function(_, list) return list end,
 	slot_ghost = function() return nil end,
-	has_quiver = function() return false end,
-	BAG_COUNT = 4,
-	bag_list = function(i) return "grug_bag" .. i end,
-	content_list = function(i) return "grug_bag" .. i .. "_content" end,
-	QUIVER_LIST = "grug_quiver_content",
-	sort = function() sorts = sorts + 1 return true end,
 }
 
 -- Players: lists by name; set_inventory_formspec counts sends.
@@ -176,6 +205,15 @@ local function make_player(name, lists)
 	local inv = {}
 	function inv:get_size(list) return lists[list] and #lists[list] or 0 end
 	function inv:get_stack(list, index) return ItemStack(lists[list] and lists[list][index] or "") end
+	function inv:get_list(list)
+		if not lists[list] then return nil end
+		local out = {}
+		for index, value in ipairs(lists[list]) do out[index] = ItemStack(value) end
+		return out
+	end
+	function inv:set_stack(list, index, stack)
+		lists[list][index] = ItemStack(stack):to_string()
+	end
 	function inv:is_empty(list)
 		for _, v in ipairs(lists[list] or {}) do if v ~= "" then return false end end
 		return true
@@ -216,6 +254,13 @@ end
 --
 
 dofile(repo .. "/mods/BASE/sfinv/api.lua")
+dofile(repo .. "/mods/PLAYER/grug_inventory/bags.lua")
+-- The real sort, counted.
+local sorts, real_sort = 0, grug_inventory.sort
+grug_inventory.sort = function(player)
+	sorts = sorts + 1
+	return real_sort(player)
+end
 local function stub_page(name, title, show_inv, extra)
 	local def = {title = title, get = function(_, player, context)
 		return sfinv.make_formspec(player, context, "label[0,0;" .. title .. "]", show_inv)
@@ -403,8 +448,9 @@ eq(four_context.grug_inv_view, "full", "the Inventory page shows the full view")
 for i = 1, 4 do
 	has(inventory, "list[current_player;grug_bag" .. i .. ";", "bag slot " .. i)
 end
-has(inventory, "list[current_player;grug_potion_belt;", "the potion belt")
-has(inventory, ";4,1;]", "four belt slots")
+has(inventory, ("list[current_player;%s;"):format(grug_inventory.POTION_BELT),
+	"the potion belt, IH's list")
+has(inventory, ";" .. grug_inventory.POTION_BELT_SIZE .. ",1;]", "the belt's slots")
 has(inventory, "list[detached:grug_money_deposit_four;deposit;", "the coin deposit")
 has(inventory, "button[", "a button")
 has(inventory, ";grug_inv_sort;Sort]", "the Sort button")
@@ -430,6 +476,9 @@ four_context.page = "grug_inventory:inventory"
 --
 
 local scroller = make_player("scroller", lists_with_bags({32, 32, 32, 32}))
+scroller.lists.main[1] = "default:dirt 3"
+scroller.lists.main[12] = "default:dirt 5"
+scroller.lists.grug_bag2_content[3] = "test:sword"
 local ctx = sfinv.get_or_create_context(scroller)
 sfinv.set_player_inventory_formspec(scroller, ctx)
 local sends = scroller.sent
@@ -449,6 +498,9 @@ local sorted = sorts
 eq(receive(scroller, "", {grug_inv_scroll_full = "VAL:40", grug_inv_sort = "Sort"}), true,
 	"Sort is handled")
 eq(sorts, sorted + 1, "Sort sorts")
+eq(scroller.lists.main[9], "test:sword", "the real sort put the sword first")
+eq(scroller.lists.main[10], "default:dirt 5", "then the dirt")
+eq(scroller.lists.main[1], "default:dirt 3", "the hotbar untouched")
 eq(ctx.grug_inv_scroll.full, 40, "a button event keeps the scroll value too")
 eq(scroller.sent, sends, "Sort sends no formspec")
 now_us = now_us + 1000000

@@ -554,7 +554,6 @@ end)
 --
 
 local INVENTORY_PAGE = "grug_inventory:inventory"
-local POTION_BELT = "grug_potion_belt"
 local TOP_LABEL_Y, TOP_SLOT_Y = 0.3, 0.55
 local BAGS_X, BELT_X, COINS_X = 0.4, 5.55, 10.7
 local SORT_X, SORT_W = 11.95, 1.15
@@ -579,10 +578,11 @@ local function inventory_content(player)
 	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,1;%s]"):format(BAGS_X, TOP_SLOT_Y,
 		grug_inventory.BAG_COUNT * PITCH - 0.25,
 		esc("Bag slots — a bag here adds its slots to the inventory below"))
-	fs[#fs + 1] = ("list[current_player;%s;%.2f,%.2f;4,1;]"):format(POTION_BELT,
-		BELT_X, TOP_SLOT_Y)
+	local belt = grug_inventory.POTION_BELT_SIZE
+	fs[#fs + 1] = ("list[current_player;%s;%.2f,%.2f;%d,1;]"):format(
+		grug_inventory.POTION_BELT, BELT_X, TOP_SLOT_Y, belt)
 	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,1;%s]"):format(BELT_X, TOP_SLOT_Y,
-		4 * PITCH - 0.25, esc("Potion belt — potions and elixirs only"))
+		belt * PITCH - 0.25, esc("Potion belt — potions and elixirs only"))
 	-- The Bag of Coins deposit (Round 34, moved here from the Character page
 	-- in Round 44): a bag put here is credited at once, so the slot is always
 	-- empty and always shows its ghost.
