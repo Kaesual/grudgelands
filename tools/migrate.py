@@ -7,7 +7,10 @@ tools/migration/ (cli.py).
 """
 import sys
 
-from migration.cli import main
+# The tool writes nothing outside the world: no bytecode caches either.
+sys.dont_write_bytecode = True
+
+from migration.cli import main  # noqa: E402
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

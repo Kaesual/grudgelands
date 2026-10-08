@@ -77,14 +77,16 @@ class ModStorage:
         self.modname = modname
 
     def get(self, key, default=None):
-        row = self._world._store.execute(
-            "SELECT value FROM %s WHERE modname = ? AND key = ?" % _storage_table(self._world._store),
-            (self.modname, codec.to_bytes(key))).fetchone()
+        store = self._world._store
+        row = store.execute("SELECT value FROM %s WHERE modname = ? AND key = ?"
+                            % _storage_table(store),
+                            (self.modname, codec.to_bytes(key))).fetchone()
         return default if row is None else codec.to_str(bytes(row[0]))
 
     def items(self):
-        rows = self._world._store.execute(
-            "SELECT key, value FROM %s WHERE modname = ?" % _storage_table(self._world._store), (self.modname,))
+        store = self._world._store
+        rows = store.execute("SELECT key, value FROM %s WHERE modname = ?"
+                             % _storage_table(store), (self.modname,))
         return {codec.to_str(bytes(k)): codec.to_str(bytes(v)) for k, v in rows}
 
     def keys(self):

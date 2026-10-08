@@ -62,7 +62,10 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   (`web_data/upgrade.json`) against the last pushed commit, after its own
   self-test (`--self-test` alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
 - `tools/luanti_headless.sh`: an isolated headless engine boot (never the
-  personal Luanti folder; options in the script header).
+  personal Luanti folder; options in the script header). Its world.mt names
+  no `mod_storage_backend`, so its worlds keep mod storage in files.
+- `python3 tools/migrate.py --world <dir> [--check]`: the world-migration
+  tool (`tools/migration/`; `--help` has the exit codes and the output).
 - `tools/r35_t/upstream_check.sh`: whether the installed engine still
   misreads rotated selection boxes (prints `FIXED` or `BUG PRESENT`); run it
   at every engine version change with the rest of
@@ -376,3 +379,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   walker at any phase, free wanderers keep it, `facing_fence` only for
   blocking nodes, the jump logic at real fences unchanged;
   `evidence/after/` keeps NV0's villager and post-guard scenes.
+- **Round 43** (`r43_<lane>`): `r43_mt` the migration tool's tests,
+  `test_migrate.py` (Python unittest: the codecs against an engine-written
+  world, opening and refusals, locks, check mode, events, test-only steps
+  through `cli.main(test_steps=...)`), run where the platform runs the tool
+  by `container_test.sh [COMMIT]` (debian:trixie, Debian's python3,
+  python3-psycopg and python3-zstandard, a `git archive` export).
+  `world/` is that engine-written world, built by `make_world.sh OUT_DIR`
+  with the disposable probe `grug_probe_r43_mt` (two launcher runs on a
+  world folder of its own: the game with SQLite mod storage, then
+  `--migrate-players sqlite3`).
