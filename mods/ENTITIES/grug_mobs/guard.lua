@@ -114,8 +114,8 @@ local function guard_tick(self, dtime)
 	end
 	-- Ambient outpost patrol (world.md §4). Only the camp's designated
 	-- patroller carries the route; every other guard holds its post.
-	-- `rescue` is on: a guard walking an authored loop through a settlement is
-	-- exactly the mob the stuck rescue was written for (patrol.lua).
+	-- `snap` is on: a guard that cannot reach two waypoints of an authored
+	-- loop in a row is put on the second, out of sight (patrol.lua).
 	local route = self._grug_patrol_route
 	if route then
 		-- A route carrier walks its loop straight (Round 28 ruling 11):

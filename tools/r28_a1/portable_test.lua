@@ -140,6 +140,13 @@ dofile(mobs_dir .. "/roam_avoid.lua")
 grug_mobs.walk_toward = function(self, x, z, pos)
 	walks[#walks + 1] = {x = x, z = z, from = {x = pos.x, z = pos.z}}
 end
+-- The evade's walk home (patrol.lua walk_fixed, Round 42 NV2): the same record.
+grug_mobs.walk_fixed = function(self, dtime, pos, x, y, z)
+	walks[#walks + 1] = {x = x, z = z, from = {x = pos.x, z = pos.z}}
+	return 0
+end
+grug_mobs.walk_follow = function() end
+grug_mobs.walk_clear = function() end
 grug_mobs.idle_health_tick = function() end
 
 -- 3a. the away direction

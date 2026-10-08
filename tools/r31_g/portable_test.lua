@@ -334,6 +334,10 @@ _G.grug_mobs = {
 	pvp_garrison = G,
 	place_on_ground = noop,
 	face_yaw = noop,
+	-- patrol.lua's fixed walk (Round 42 NV2; not loaded here).
+	walk_fixed = function() return 0 end,
+	walk_follow = noop,
+	walk_clear = noop,
 	clear_boss_activity = noop,
 	register_dragon_bosses = noop,
 	-- levels.lua's leader factors (the real values; levels.lua is not loaded).

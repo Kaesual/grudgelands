@@ -189,11 +189,11 @@ local RESPAWN_MIN, RESPAWN_MAX = 180, 360
 -- two nodes of slack so a nudged guard is not permanently walking home.
 local POST_TICK = 1
 local POST_SLACK = 2
--- The post walk's own two stages of patrol.lua's stuck rescue. Deliberately the
--- same numbers as the route's first and third stage: a guard is a guard, and the
--- one difference is that a post has no next waypoint to skip to.
-local POST_STALL_PATH = 20
-local POST_STALL_SNAP = 90
+-- The walk home is a fixed walk on the shared navigation (patrol.lua
+-- `walk_fixed`, Round 42). A post has no next waypoint to skip to: after this
+-- many failed searches in a row the guard is snapped onto it, out of sight
+-- only -- a patrol's two skips' worth (patrol.lua SKIP_AFTER).
+local POST_SNAP_AFTER = 6
 --
 -- THE 80/20 SPLIT (contract section 8.3, user ruling of playtest round 3).
 --
@@ -1656,43 +1656,40 @@ function grug_mobs.start_post_tick(self, dtime)
 	self.temp = self.temp or {}
 	local temp = self.temp
 	temp.grug_post_acc = (temp.grug_post_acc or 0) + dtime
-	if temp.grug_post_acc < POST_TICK then return end
-	temp.grug_post_acc = 0
-	-- Idle only: fighting, fleeing and flopping own the movement, and an
-	-- evading guard is already running home on aggro.lua's stricter target.
-	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
+	if temp.grug_post_acc < POST_TICK then
+		grug_mobs.walk_follow(self, dtime, "post")
 		return
 	end
-	if temp.grug_evading then
-		grug_mobs.stall_clear(self)
+	temp.grug_post_acc = 0
+	-- Idle only: fighting, fleeing and flopping own the movement, and an
+	-- evading guard is already running home on aggro.lua's stricter target
+	-- (a walk of its own, "evade").
+	if self.attack or (self.state ~= "stand" and self.state ~= "walk")
+			or temp.grug_evading then
 		return
 	end
 	local pos = self.object and self.object:get_pos()
 	if not pos then return end
-	local dx = self._grug_post_x - pos.x
-	local dz = self._grug_post_z - pos.z
+	local post_x, post_z = self._grug_post_x, self._grug_post_z
+	local dx = post_x - pos.x
+	local dz = post_z - pos.z
 	if dx * dx + dz * dz > POST_SLACK * POST_SLACK then
-		-- THE WALK HOME GETS THE SAME THREE-STAGE RESCUE THE PATROL HAS
-		-- (patrol.lua, playtest round 1): a post is a standing position, so a
-		-- guard that cannot get back to it is a guard that is missing from the
-		-- gate. Stage 2 has nothing to skip to here -- a post is one point --
-		-- so this is stage 1 (the pathfinder) and stage 3 (the out-of-sight
-		-- snap, which lands exactly on the authored post).
-		local stalled, total = grug_mobs.stall_clock(self, self._grug_post_x,
-			self._grug_post_z, pos, POST_TICK)
-		if total >= POST_STALL_SNAP and
-				grug_mobs.snap_try(self, pos, self._grug_post_x,
-					self._grug_post_z, POST_TICK, POST_STALL_SNAP) then
-			return
+		-- THE WALK HOME IS A FIXED WALK (patrol.lua, Round 42): a post is a
+		-- standing position, so a guard that cannot get back to it is a guard
+		-- that is missing from the gate. It finds its way round what stands in
+		-- it; one that still cannot is snapped onto the authored post, out of
+		-- sight only. The post's height is its socket's (`_grug_home`, the same
+		-- position for a post guard, a king and a General).
+		local home = self._grug_home
+		local y = home and home.x == post_x and home.z == post_z and home.y or nil
+		if grug_mobs.walk_fixed(self, dtime, pos, post_x, y, post_z, "post",
+				"post") >= POST_SNAP_AFTER then
+			grug_mobs.snap_try(self, pos, post_x, post_z, POST_TICK,
+				"after " .. POST_SNAP_AFTER .. " failed searches in a row")
 		end
-		if stalled >= POST_STALL_PATH and grug_mobs.path_nudge(self,
-				self._grug_post_x, self._grug_post_z, pos) then
-			return
-		end
-		grug_mobs.walk_toward(self, self._grug_post_x, self._grug_post_z, pos)
 		return
 	end
-	grug_mobs.stall_clear(self)
+	grug_mobs.walk_clear(self, "post")
 	self.state = "stand"
 	self:set_velocity(0)
 	grug_mobs.face_yaw(self, self._grug_post_yaw or 0)

@@ -240,68 +240,28 @@ local function pulse_particles(pos, radius, amount, time)
 	grug_mobs.rift_stats.particles = grug_mobs.rift_stats.particles + amount
 end
 
--- The way home. aggro.lua's evade run (and the idle walk below) steer
--- straight, and a mob never steps into a damage node, so the crack stops a
--- run that crosses it. A run that makes no progress for STALL seconds asks
--- once for an A* way round (within mobs_redo's per-step path budget, as
--- patrol.lua's path_nudge does; no drop deeper than a node, so never into the
--- crack) and then follows its steps each server step; the evade's 40 s snap
+-- The way home. Evading, the boss runs home on aggro.lua's evade (a fixed
+-- walk with its local search); idle away from its spot (a reset inside the
+-- leash leaves it where the fight ended) it walks back on the same shared
+-- navigation (patrol.lua `walk_fixed`, Round 42): straight, and round what
+-- blocks it on a short local path. The crack is no way for it: the
+-- navigation treats a damaging node as blocked, and the evade's 40 s snap
 -- home stays the backstop.
-local STALL = 2
-local PATH_REACH = 40
-
 local function go_home(self, t, pos, dtime)
+	if t.grug_evading then return end
+	t.grug_rift_walk = (t.grug_rift_walk or 0) + dtime
+	if t.grug_rift_walk < 1 then
+		grug_mobs.walk_follow(self, dtime, "rift")
+		return
+	end
+	t.grug_rift_walk = 0
 	local home = self._grug_home
 	local dx, dz = pos.x - home.x, pos.z - home.z
 	if dx * dx + dz * dz <= HOME_REACH * HOME_REACH then
-		t.grug_rift_route, t.grug_rift_walk = nil, nil
-		grug_mobs.stall_clear(self)
+		grug_mobs.walk_clear(self, "rift")
 		return
 	end
-	local route = t.grug_rift_route
-	if route then
-		local step = route[route.i]
-		while step and (step.x - pos.x) * (step.x - pos.x) +
-				(step.z - pos.z) * (step.z - pos.z) <= 1 do
-			route.i = route.i + 1
-			step = route[route.i]
-		end
-		if step then
-			grug_mobs.walk_toward(self, step.x, step.z, pos)
-			-- Knocked off the route (no progress toward its step): drop it,
-			-- so the walk below stalls again and asks for a new way.
-			t.grug_rift_walk = (t.grug_rift_walk or 0) + dtime
-			if t.grug_rift_walk >= 1 then
-				local elapsed = t.grug_rift_walk
-				t.grug_rift_walk = 0
-				if grug_mobs.stall_clock(self, step.x, step.z, pos, elapsed) >= STALL then
-					t.grug_rift_route = nil
-					grug_mobs.stall_clear(self)
-				end
-			end
-			return
-		end
-		t.grug_rift_route = nil
-	end
-	t.grug_rift_walk = (t.grug_rift_walk or 0) + dtime
-	if t.grug_rift_walk < 1 then return end
-	local elapsed = t.grug_rift_walk
-	t.grug_rift_walk = 0
-	-- The evade steers itself once a second; the idle walk is ours.
-	if not t.grug_evading then grug_mobs.walk_toward(self, home.x, home.z, pos) end
-	if grug_mobs.stall_clock(self, home.x, home.z, pos, elapsed) < STALL then return end
-	local obstacle = mobs.grug_obstacle
-	if not obstacle.spare_path_budget() then return end
-	local feet = (self.collisionbox and self.collisionbox[2]) or 0
-	local from = vector.round({x = pos.x, y = pos.y + feet, z = pos.z})
-	local started = core.get_us_time()
-	local path = core.find_path(from, vector.round(home), PATH_REACH, 1, 1, "A*_noprefetch")
-	obstacle.note_path_cost(core.get_us_time() - started)
-	grug_mobs.stall_clear(self)
-	if path then
-		path.i = 1
-		t.grug_rift_route = path
-	end
+	grug_mobs.walk_fixed(self, dtime, pos, home.x, home.y, home.z, "home", "rift")
 end
 
 local function boss_tick(self, dtime)
@@ -347,7 +307,8 @@ local function boss_tick(self, dtime)
 		end
 		return
 	end
-	t.grug_rift_route, t.grug_rift_walk = nil, nil
+	t.grug_rift_walk = nil
+	grug_mobs.walk_clear(self, "rift")
 	t.grug_rift_pulse = (t.grug_rift_pulse or PULSE_FIRST) - dtime
 	if t.grug_rift_pulse > 0 or t.grug_tg_left then return end
 	t.grug_rift_cast = {left = PULSE_WINDUP}

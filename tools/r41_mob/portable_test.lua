@@ -249,7 +249,15 @@ grug_core.start_ready = function() return false end
 grug_core.opposing_faction = function(id) return id == "accord" and "throng" or "accord" end
 _G.grug_zones = {get = function(id) return zone_of[id] end}
 
-_G.mobs = {mob_class = mob_class, grug_obstacle = {}}
+-- The shared navigation (Round 42), reduced to "walk straight": its own
+-- tests are tools/r42_nv1 and tools/r42_nv2.
+local nav_stub = {
+	fixed_step = function() return nil end,
+	combat_step = function() return nil end,
+	command = noop,
+	forget = function(temp) if temp then temp.grug_nav = nil end end,
+}
+_G.mobs = {mob_class = mob_class, grug_obstacle = {}, grug_nav = nav_stub}
 function mobs:remove(entity) entity.object:remove() end
 local function place_on_ground(object, pos) object.pos = copy(pos) end
 _G.grug_mobs = {
