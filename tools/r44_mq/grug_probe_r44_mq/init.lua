@@ -135,6 +135,51 @@ local function after(faction)
 	end
 end
 
+-- Every objective of every quest alone, all open, seen from (0, 0): how
+-- many the targets mark, by type, and some kill roles that stay unmarked.
+local function coverage()
+	local targets = dofile(core.get_modpath("grug_map") .. "/targets.lua")
+	local index = grug_map.quest_targets.index()
+	local lookup = {
+		npc = function(id)
+			local npc = grug_map.quest_npc(id)
+			return npc and npc.position or nil
+		end,
+		place = function(ref) return grug_quests.use_place_xz(ref) end,
+	}
+	local rows = {kill = {0, 0, 0}, talk = {0, 0, 0}, use = {0, 0, 0}, item = {0, 0, 0}}
+	local unmarked, seen = {}, {}
+	local ids = {}
+	for id in pairs(grug_quests.registered_quests) do ids[#ids + 1] = id end
+	table.sort(ids)
+	for _, id in ipairs(ids) do
+		local def = grug_quests.registered_quests[id]
+		for _, objective in ipairs(def.objectives) do
+			local one = {zone = def.zone, objectives = {objective}}
+			local found = targets.targets(index, one, nil, {x = 0, z = 0}, lookup)
+			local row = rows[objective.type]
+			row[1] = row[1] + 1
+			if #found.crosshairs > 0 then row[2] = row[2] + 1 end
+			if #found.rings > 0 then row[3] = row[3] + 1 end
+			if objective.type == "kill" and #found.crosshairs == 0 and #found.rings == 0 then
+				local key = table.concat(objective.mobs or {}, "+") .. (objective.area and
+					(" @" .. objective.area) or (" in " .. tostring(def.zone)))
+				if not seen[key] then
+					seen[key] = true
+					unmarked[#unmarked + 1] = key
+				end
+			end
+		end
+	end
+	for _, kind in ipairs({"kill", "talk", "use", "item"}) do
+		local row = rows[kind]
+		log(("coverage %s objectives: %d, with a crosshair %d, with rings %d"):format(kind,
+			row[1], row[2], row[3]))
+	end
+	log(("unmarked kill objectives (%d distinct): %s"):format(#unmarked,
+		table.concat(unmarked, "; ")))
+end
+
 local clock, done = 0, false
 core.register_globalstep(function(dtime)
 	if done then return end
@@ -145,6 +190,7 @@ core.register_globalstep(function(dtime)
 		for _, faction in ipairs(grug_core.faction_ids) do
 			if grug_map.window then after(faction) else before(faction) end
 		end
+		if grug_map.window then coverage() end
 		if grug_map.quest_targets then
 			local stats = grug_map.quest_targets.stats()
 			log(("target index: %d roles, %d region entries, %d areas, %d leaders, " ..

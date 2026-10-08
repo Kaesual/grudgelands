@@ -17,10 +17,10 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   the selected inventory page the button is re-sent when the text changes
   (once a minute, Round 33: a per-second re-send closed the cloak dropdown),
   and once when it becomes Ready (Round 30 ruling; it was on the Map tab
-  before). The Map
-  tab's innkeeper markers (the own faction's six only, Round 31) label the
-  locations and identify the current home; a claim home has its own marker
-  (below).
+  before). The
+  minimap's innkeeper markers (the own faction's six only, Round 31) show the
+  locations and the current home; the map window shows only the home
+  (Round 44); a claim home has its own marker (below).
 - Return is immediate, without a cast time, and allowed only alive and outside
   combat. It dismounts the player before arrival. There is no inventory item or
   skill. Initial range/interaction checks apply to binding, not return travel.
@@ -67,6 +67,7 @@ Full rules: [housing.md](housing.md) §8.
 - When the stone is picked up or destroyed, the target falls back to the
   player's bound innkeeper (the starting-town innkeeper when none is bound),
   with a message; an offline player gets the message at the next login.
-- The Map tab marks a claim home with an "H" marker labelled "Your Claim
-  Stone" (`grug_map/providers.lua`).
+- The map marks a claim home with the home icon at the stone
+  (`grug_map/providers.lua`; the map window and the minimap, without a label
+  since Round 44).
 - Death always respawns at the bound innkeeper, never at the Claim Stone.

@@ -733,7 +733,8 @@ In every capital the **Crownbinder** ([economy.md](economy.md) §4,
 service plot and the **Decor Merchant** (the culture vendor) the gate resident
 of the woodcarver service plot, taken over like the Housing Steward's; no
 blueprint or mapgen output changes. Both serve only their capital's faction
-and have a map marker on that faction's Map tab and minimap (Round 34).
+and have a marker on that faction's minimap (Round 34; on the Map tab until
+Round 44, whose map window shows only trainers and quest NPCs).
 
 | Capital | Crownbinder (goldsmith plot) | Decor Merchant (woodcarver plot) |
 |---|---|---|

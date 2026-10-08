@@ -1192,8 +1192,8 @@ tools](#player-meta-read-by-external-tools).
   giver (memoized until the raw state changes, `Q.markers_changed` resets it
   or the earliest running repeatable cooldown ends, Round 37): the
   minimap, the only consumer that registers
-  `Q.register_on_markers_changed`; the Map tab, which compares the
-  `marker_states` version in its signature; the NPC tags, read on the 1 Hz
+  `Q.register_on_markers_changed` (since Round 44 the map window too: it
+  sends itself again while open, throttled); the NPC tags, read on the 1 Hz
   carrier pass. `Q.markers_changed` fires on a
   quest change, a held objective-item change (the tracker's `Q.journal_key`
   poll, `hud.lua`, five 0.1 s slots; counts capped at what one quest takes,
@@ -1374,7 +1374,7 @@ tools](#player-meta-read-by-external-tools).
   its baked icon kind, the same for every viewer (ruling 5 ended Round 31's
   per-faction hiding), and `providers.lua` keeps the kings' and dragons'
   places only for the zone markers' placement. The
-  Map tab's signature includes the faction, and the minimap re-asks its
+  map window builds its overlay per send, and the minimap re-asks its
   static markers on `register_on_faction_chosen`. Fixtures `tools/r31_n`,
   `tools/r31_m`, `tools/r44_mb`.
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
@@ -1609,8 +1609,9 @@ tools](#player-meta-read-by-external-tools).
 
 ## World atlas rules
 
-- **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
-  with no fog of war and independent future-interactive markers. It needs no
+- **World atlas**: `docs/design/world_map.md` governs the cartographic map
+  window (Z and the Map tab since Round 44), with no fog of war and
+  independent markers. It needs no
   generated-terrain bitmap and never unlocks waypoint travel.
 
 ## Sound

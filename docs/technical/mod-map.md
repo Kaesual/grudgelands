@@ -43,7 +43,8 @@ mobs_redo fork publishes `mobs`.
 | `grug_mounts` | Riding tiers and boats, mount entities, the Riding Trainer and the Shipwright, mount prices | `dismount`, `owns_tier`, `open_trainer`, `register_on_owned_tiers_changed`, `PRICES` | [mounts.md](../design/mounts.md), [boats.md](../design/boats.md) |
 | `grug_home` | Innkeeper homes, the Claim Stone as travel home, return and respawn, waystones; one travel path (`travel.lua`) | `travel`, `respawn`, `open_innkeeper`, `known_waypoints` | [home_travel.md](../design/home_travel.md), [world.md](../design/world.md) §6 |
 | `grug_housing` | Claim Stones: claims, fuel, permissions, interaction guard, Housing Stewards | `MIN_Y` (the rest is internal) | [housing.md](../design/housing.md) |
-| `grug_map` | The Map tab (atlas), our minimap, markers and their providers, the zone banner and location | `location` (`capital_of`, …), `register_marker_provider` | [world_map.md](../design/world_map.md) |
+| `grug_map` | The map window (atlas, Z and the Map tab, Round 44) with the quest log (`quest_box.lua`) and quest targets (`targets.lua`), our minimap, markers and their providers, the zone banner and location | `location` (`capital_of`, …), `register_marker_provider`, `window.open`, `quest_npc`, `quest_targets` | [world_map.md](../design/world_map.md), [quests.md](../design/quests.md) |
+| `grug_keys` | Rising edges of the zoom and aux1 keys (one control read per player per step) and the players' `zoom_fov` (Round 44) | `register_on_press` | [world_map.md](../design/world_map.md#map-window) |
 | `grug_achievements` | Per-character achievements, their counters and the cloaks they unlock | none (counts through other mods' hooks) | [character_visuals.md](../design/character_visuals.md) §5b |
 
 ## ENTITIES
