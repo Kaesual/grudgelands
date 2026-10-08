@@ -12,6 +12,36 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.42.0 — Round 42, "Mob navigation" (2026-10-08)
+
+Creatures, guards and townsfolk find their way instead of getting stuck.
+Existing worlds play on: no map reset, no new world.
+
+- Creatures in a fight come round a tree, a row of trees, a pillar or a
+  wall corner and find the doorway in a wall; large ones such as bears
+  too. A fleeing player is no longer chased along an old detour.
+- A creature that cannot reach you, for example behind a fence, gives up
+  after a few seconds even when it can see you, heals and goes back. It
+  leaves you alone until you have moved about eight blocks or 15 seconds
+  have passed, so it no longer comes back and heals again every few
+  seconds.
+- Tall creatures (elites, royal guards and the like) fit through doorways
+  two blocks high.
+- Guards walk back to their posts and along their patrols round trees and
+  walls, and kings and Generals back to their seat. Royal guards and
+  bodyguards follow their leader round obstacles and run after him in a
+  fight to keep up. A creature pulled to the edge of its area walks home
+  round what stands in its way.
+- Villagers and patrols in start towns, villages and capitals walk their
+  rounds without walking into trunks or walls; capital patrols follow the
+  streets, and no villager stands frozen on one spot any more.
+- Villagers, town patrols and guards on their rounds open a door, walk
+  through and close it behind them. They never open a locked door and
+  walk round fence gates.
+- Creatures on their way somewhere no longer stop at random, and a wall
+  torch or a sign no longer stops them; wild creatures still pause now
+  and then while they wander.
+
 ## 0.41.0 — Round 41 (2026-10-07)
 
 Fixes from the Round 40 playtest, the end of a crash that kept stopping

@@ -21,10 +21,19 @@ WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 41 "Playtest fixes, the production crash and the upgrade contract"](docs/planning/round41-plan.md#completion-2026-10-07)
-  complete, not pushed** (2026-10-07, `a3790e65` and lane D, version
-  0.41.0; the production server moves to it with a map reset; GUI test
-  open): release mode and the hosting platform's
+  [Round 42 "Mob navigation"](docs/planning/round42-plan.md#completion-2026-10-08)
+  complete, playtest accepted, 0.42.0 not pushed** (2026-10-08, `f8265d60`
+  and lane D, version 0.42.0, compatible; origin/main `71f777e2` holds
+  every lane up to ST under 0.41.0): one navigation module on the
+  engine's pathfinder for combat, fixed walks and settlement walkers, a
+  route cache in start towns and capitals, capital patrols along the
+  streets, NPCs that use doors, no random stops on routes
+  ([Round 42](#round-42--mob-navigation),
+  [carry-overs](#round-42-carry-overs)).
+- [Round 41 "Playtest fixes, the production crash and the upgrade contract"](docs/planning/round41-plan.md#completion-2026-10-07)
+  (2026-10-07, `a3790e65` and lane D, version 0.41.0, pushed 2026-10-08 as
+  `71612d19`; the production server moves to it with a map reset; GUI
+  test open): release mode and the hosting platform's
   [upgrade contract](docs/technical/upgrade-contract.md) with its map
   reset; the production crash loop fixed and mapgen failures reported as
   `[GRUG-SEVERE]` instead of stopping the server; the Round 40 playtest
@@ -219,7 +228,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP3 | Character creation and original classes | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP4 | Original ability framework | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | **Delivered in Round 33** ([completion](docs/planning/round33-plan.md#completion-2026-10-04)): drops by quality (normal 5/2/1 %, named and elite 10/10/5 %), boss double drops at item level 65/70 with T7 enchants, shields, spellbooks and trinkets in the pool, bag world drops, the level requirement on all gear; enchant values by item level with a tier cap ([item_tiers.md](docs/design/item_tiers.md)). The cultural and PvP finishes were removed by the user (round33-plan §2.8); the crown (a Fallen Crown lifts an item to its tier's top + 5, enchants +1 tier) takes the place of the Grudgeforged masterwork (D3). Named rares drop no trophies (D4). Round 28's loot by band and Round 29's payout calibration came before. | WP1 ✅, WP3 ✅, WP43 ✅ |
-| WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Round 31 adds NPC look rolls, the PvP garrisons (Generals, bodyguards, camp captains) and the round dragon arenas. Current rules: topic design. | — |
+| WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Round 31 adds NPC look rolls, the PvP garrisons (Generals, bodyguards, camp captains) and the round dragon arenas. Round 42 replaces the stuck handling with navigation on the engine's pathfinder (combat, fixed walks, settlement walkers, doors). Current rules: topic design. | — |
 | WP7 | Ledger currency and traders | Delivered; Round 29 (WP44) replaced its price curve and 25% buy-back. | — |
 | WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Round 30: the legacy fields removed (unknown fields stop the load), the decoded-state cache and markers that follow held items and levels. Round 31: givers serve only their faction, PvP garrison kill objectives, PvP POIs as placeholder targets. Broader story remains WP9. | — |
 | WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | **V1. Delivered in Round 36** ([completion](docs/planning/round36-plan.md#completion-2026-10-05), rules [quests.md](docs/design/quests.md) "The main line", [story.md](docs/design/story.md)): each faction's main line 41–60 from its fortress Warmaster (chapters at 41, 46, 53, the party finale at 60 on the rift boss) on the approved [story bible](docs/planning/round36/story-bible.md), the front climaxes folded in, the "use at a place" objective filling each contested zone's quest-interaction slot, ten corrupted sub-types, three achievements with cloaks; the rift at Tombroad Ambush. Before: Round 29's 491 quests on the Round 28 framework (a track per race, the contested 31–40 zones, the front with bounties), Round 31's 24 fortress quests; 540 quests now. GUI test open (Round 36). | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
@@ -693,7 +702,8 @@ files and the engine version stay as noted.
 - **Map tab:** an empty strip remains where the Return home button was.
 - **Mob give-up (P2 notes, for the GUI test):** a player who keeps
   re-aggroing a mob from a closed house or other hidden spot gets it fully healed at
-  each give-up (about every 7 s); P2's one-seed count run showed +55 % spawn
+  each give-up (about every 7 s; since Round 42 the veto lasts until the
+  player moved 8 nodes or 15 s passed); P2's one-seed count run showed +55 % spawn
   attempts in a shallow cave, judged run noise (the merged dispatcher keeps
   every row's rate by construction).
 
@@ -1214,10 +1224,6 @@ none blocks the GUI test. Numbers are comparisons, never targets.
 - **Start-zone camps fight alone** too (lane F's reading of the ruling:
   bandits, poachers and their chiefs; every member still attacks on
   sight); to confirm with the user.
-- **`tools/r31_pvp`'s engine probe crashes since Round 34** (the hp-change
-  chain plays a sound on a fake player) and its `run.sh` still points at
-  the Round 31 queue; CB measured with a scratch copy. AGENTS.md's PvP
-  combat-path rule names this probe.
 - **`minimap_view.lua` keeps its high-quality rows** (8-pixel grid, halved
   texture), unused since Round 37 F; the `tools/r27_minimap` geometry
   fixture still tests them.
@@ -1438,7 +1444,7 @@ blocks the GUI test.
 
 ### Round 41 — playtest fixes, the production crash and the upgrade contract
 
-**Delivered 2026-10-07, not pushed**
+**Delivered 2026-10-07, pushed 2026-10-08**
 ([completion](docs/planning/round41-plan.md#completion-2026-10-07),
 plan [round41-plan.md](docs/planning/round41-plan.md)); every code lane
 independently reviewed by Opus except the coordinator's one-line lane WW; 123 portable fixtures on main. Version
@@ -1468,11 +1474,8 @@ the reviews' backlog notes (theoretical, no severity); none blocks the GUI
 test or the migration.
 
 - **The rift boss** (`walk_chance = 0`) may hop while chasing (mobs_redo's
-  `do_jump` reads it as a jumping mob); unverified in the engine, a
-  Round 42 candidate.
-- **Post and seat stall time** carries across a fight, so time stalled
-  before it counts toward the 90 s snap after it (the snap still needs no
-  player within 48 nodes).
+  `do_jump` reads it as a jumping mob); unverified in the engine, not
+  taken up by Round 42.
 - **`wielded_now`** (`grug_abilities/init.lua`) drops an in-place edit by a
   node `on_rightclick` that returns the passed stack; no such node exists
   today.
@@ -1499,6 +1502,69 @@ test or the migration.
   test (the portable test checks content and param2).
 - **A systematic mapgen failure** would send one red chat line per chunk
   to every player; a cap would need the user's call.
+
+### Round 42 — mob navigation
+
+**Delivered 2026-10-08, playtest accepted the same day, 0.42.0 not pushed**
+([completion](docs/planning/round42-plan.md#completion-2026-10-08),
+plan [round42-plan.md](docs/planning/round42-plan.md)); every lane
+independently reviewed by Opus; 129 portable fixtures on main. Version
+0.42.0, compatible. No world generation changed.
+
+- **Test scene** (NV0): `tools/r42_nv0`, 15 scenes × 7 movers, the
+  before-numbers and the calibration (rulings 18–20).
+- **Navigation core and combat** (NV1): `mobs/grug_nav.lua`, the stuck
+  detector, local search, path checks, smoothing and follower; the give-up
+  in sight with the longer veto
+  ([combat_stats.md §4](docs/design/combat_stats.md#4-threat-aggro-system)).
+- **Fixed walks** (NV2): patrols, posts, seats, the royal follow, the
+  evade, the rift boss and named rares ([world.md](docs/design/world.md)
+  §4a).
+- **Settlement walkers and the route cache** (NV3), **doors** (DR) and
+  **no random stops on routes** (ST):
+  [settlements.md](docs/design/settlements.md#settlement-walkers).
+- **Cleanup** (CL): the unread stuck settings and the dead helpers.
+
+### Round 42 carry-overs
+
+**Noted 2026-10-08** ([completion](docs/planning/round42-plan.md#completion-2026-10-08)),
+the reviews' and reports' backlog notes (theoretical, no severity); none
+blocked the playtest.
+
+- **Tall mobs** (NV1): rares ×2 and kings also get the collision height
+  under 2 and clip through lintels (the playtest accepted the look).
+- **Close targets** (NV1) are searched directly only, so a bandit still
+  gives up at a 2-high gap 5 nodes aside.
+- **An evader sliding along a wall** (NV2) counts as stuck only when it
+  stops.
+- **Royal guards running to a fighting leader** (NV2) can overshoot by up
+  to about 4 nodes (cosmetic).
+- **A named rare that evades** (NV2) runs two walk owners (theoretical).
+- **A blocked walker is steered every step** (NV2); option: steer the
+  idle-leader follow only while it has a path.
+- **A fixed-walk goal over 32 nodes away** (NV2) searches every 5 s while
+  its ring fails.
+- **Cache builds skip the per-mob lockout** (NV3), bounded by the cap and
+  the budget.
+- **Gate-tower patrol loops never climb** (NV3; older than the round).
+- **A player's unlocked door** (DR) within 20 nodes of a village walker's
+  ends, outside protection, can be opened by a failed fixed walk.
+- **A door hand-over is lost** (DR) when a fight pulls the opener over 8
+  nodes away; the door stays open.
+- **Random stops come back now and then** (ST) with server steps over
+  0.5 s.
+- **A roamer pinned outside its leash** (ST) never pauses.
+- **The random turn** (ST) still applies to post guards walking back,
+  named rares, royal guards, the rift boss and the wild evade, roam-cap
+  and shore walks (a mild veer of about 0.3 m).
+- **Walkable decor named "wall"** (ST; castle wall slabs and stairs) still
+  counts as a fence.
+- **No negative-cache and lockout merge** (CL): they decide differently
+  when a mob searches again.
+- **Unused before Round 42, left untouched** (CL):
+  `grug_mobs.start_npc_activity`, the unread `mobs_disable_damage_kb`
+  setting, upstream's unused `deg`, `vmultiply`, `vsubtract`,
+  `set_pitch`, `set_roll`, and `no_path_wait_cap` (read, never reached).
 
 ### Audit 2026-10 open questions
 
