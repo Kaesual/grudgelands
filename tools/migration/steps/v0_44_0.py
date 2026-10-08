@@ -15,9 +15,11 @@ Nothing else changes: the purchased mounts stay recorded in player meta
 (grug_mounts:land_tier, flight_tier, water_tier), every other stack keeps
 its slot, count, wear and meta, and a removed skill waits in the Talents &
 Skills catalog. A character's inventory is written only when something was
-removed. No online work, no map part: 0.43.0 never lets a mount item or a
-skill into a node or detached inventory (grug_skills/bound_items.lua guards
-both) and deletes one that is dropped (their on_drop).
+removed. No online work. The step covers player inventories only: a
+crafting station's grid, which 0.43.0 opens as a detached inventory after
+the join and saves in node meta, may still hold such an item and would need
+the deferred map part (rare; nothing is lost). A dropped one is deleted
+(their on_drop).
 
 The names are the 0.43.0 game's, frozen here (a pushed step never changes):
 a skill is any item of the mod grug_abilities (0.43.0 registers items there

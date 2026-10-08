@@ -370,7 +370,7 @@ skip its due steps.
 
 | Step | What it does | Online work | Test |
 |---|---|---|---|
-| 0.44.0 (Round 44, the UI rework) | For every character, offline ones included: every mount item leaves every list, every skill every list but the hotbar (`main` slots 1–8); nothing else changes, the purchased mounts stay in player meta (`grug_mounts:*_tier`) and the quickbar reads them; a character's inventory is written only when something goes. No map part: no mount item or skill can enter a node or detached inventory (`grug_skills/bound_items.lua`), a dropped one is deleted | none | `tools/r44_ms/run.sh`: unit tests, then a 0.43.0 world built by the 0.43.0 game, the shipped tool in the runner's container, a boot and joins of 0.44.0 |
+| 0.44.0 (Round 44, the UI rework) | For every character, offline ones included: every mount item leaves every list, every skill every list but the hotbar (`main` slots 1–8); nothing else changes, the purchased mounts stay in player meta (`grug_mounts:*_tier`) and the quickbar reads them; a character's inventory is written only when something goes. Player inventories only: a crafting station's grid (a detached inventory saved in node meta) may still hold such an item and would need the deferred map part (rare; nothing is lost); a dropped one is deleted | none | `tools/r44_ms/run.sh`: unit tests, then a 0.43.0 world built by the 0.43.0 game, the shipped tool in the runner's container, a boot and joins of 0.44.0 |
 
 The 0.44.0 step identifies the items by the 0.43.0 game's names, frozen in
 the step: a skill is any item of `grug_abilities` (`grug_abilities:<id>`,
