@@ -714,7 +714,14 @@ local function advance(set, entry)
 	end
 	local t1 = core.get_us_time()
 	steer[#steer] = {x = goal.x, y = to.y, z = goal.z}
+	local before = #entry.points
 	smooth(body, steer, entry.points)
+	if #entry.points == before then
+		-- A one-point path (already there: two fixed points in one cell)
+		-- still ends at its goal, so every route has at least one point
+		-- (hotfix 0.43.1: an empty route crashed the walker joining it).
+		entry.points[before + 1] = {x = goal.x, y = to.y, z = goal.z}
+	end
 	set.stats.smooth_us = set.stats.smooth_us + (core.get_us_time() - t1)
 	job.from = {x = goal.x, y = to.y, z = goal.z}
 	job.i = job.i + 1
@@ -862,6 +869,13 @@ function grug_mobs.route_walk(self, dtime, pos, key, from, to, owner, patrol)
 			leg.key .. "#to", owner)
 	end
 	local points = entry.points
+	if #points == 0 then
+		-- No corner to follow (never built since 0.43.1; a guard): the goal
+		-- as a fixed walk, like a leg still being built.
+		leg.k = nil
+		return grug_mobs.walk_fixed(self, dtime, pos, to.x, to.y, to.z,
+			leg.key .. "#to", owner)
+	end
 	if not leg.k then
 		-- Joining the route: the corner ending the nearest segment when the
 		-- way there is a straight walk, else that segment's start (a patrol

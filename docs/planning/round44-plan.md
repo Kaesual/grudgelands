@@ -379,9 +379,11 @@ MS's branch) merge back to back. Main's first-parent line from 0.43.0
 (`9dc2fad5`, origin/main): wave 1 through the integration branch `r44-w1`
 (`93f1536f`), CH (`fe5cc31b`), TS (`999c490a`), PP (`f45a9bec`), MQ
 (`c48eb681`), the coordinator's fixture-rule commits (`98d461c4`,
-`5a8a065d`) and QB (`36019071`). **Push:** origin/main is `9dc2fad5`
-(0.43.0, pushed on 2026-10-09 by the coordinator on the user's request);
-**0.44.0 is not pushed**. It is the first release with a declared
+`5a8a065d`) and QB (`36019071`); after MS and D, hotfix 0.43.1 (an empty
+villager route crashed the server; `hf-0431`, reviewed MERGE) was pushed on
+top of 0.43.0 and merged into this release. **Push:** origin/main is
+`f49eac8d` (0.43.1, pushed on 2026-10-09 by the coordinator on the user's
+request); **0.44.0 is not pushed**. It is the first release with a declared
 migration step; the platform adopts such a version only once its runner is
 in production (contract revision 2, ruling 3), so 0.44.0 may wait on the
 platform side. Nothing of Round 45 is part of this release.

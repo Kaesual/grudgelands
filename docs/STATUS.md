@@ -24,8 +24,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   **the first release with a declared migration step** — a 0.43.0 world
   is migrated offline with `python3 tools/migrate.py --world <dir>`
   (unmigrated, the start guard refuses it), no map reset. **Push:**
-  origin/main is `9dc2fad5` (0.43.0, pushed on 2026-10-09 by the
-  coordinator on the user's request); 0.44.0 is not pushed. The platform
+  origin/main is `f49eac8d` (hotfix 0.43.1 on top of 0.43.0, both pushed
+  on 2026-10-09 by the coordinator on the user's request); 0.44.0, which
+  carries the hotfix, is not pushed. The platform
   adopts a version with a real step only once its runner is in production
   (contract revision 2), so 0.44.0 may wait on the platform side. The GUI
   check (plan §6, the completion's checklist) is open.
@@ -57,7 +58,7 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
     the user's push decision for 0.44.0; Round 45 (crafting,
     [plan](planning/round45-plan.md)) merges only after this lane.
 
-- **Round 43 "World migrations" complete and pushed**
+- **Round 43 "World migrations" complete and pushed; hotfix 0.43.1 pushed**
   (2026-10-08, version 0.43.0,
   [plan, completion, GUI checklist and the platform summary](planning/round43-plan.md#completion-2026-10-08)).
   Started from main `332c5e79` (0.42.0); every lane is merged on main
@@ -74,8 +75,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   `{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}`:
   a 0.42.0 world plays on, its missing record counts as 0.41.0 and is
   stamped 0.43.0. **Push:** 0.43.0 pushed on 2026-10-09 by the coordinator
-  on the user's request (origin/main `9dc2fad5`). The GUI check (plan §6)
-  is open.
+  on the user's request (`9dc2fad5`). 0.43.1 (hotfix on 0.43.0: an empty
+  villager route crashed the server, `tools/hf_0431`; compatible) pushed
+  the same day (`f49eac8d`). The GUI check (plan §6) is open.
   - **Game side (GS):** the world version record (`grug_core`
     `world_version`), the start guard at the top of `grug_core` (a newer
     world, or one with a step between, refuses to start with a message

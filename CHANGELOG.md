@@ -84,6 +84,14 @@ world.
   the command. No map reset: the map image is drawn anew once at the first
   start.
 
+## 0.43.1 — Round 43 hotfix, "Villager routes" (2026-10-09)
+
+Existing worlds play on: no map reset, no new world.
+
+- Villagers no longer crash the server on certain routes: a walk that
+  starts and ends on the same standing place (two plots of Nhal Veyr have
+  two such places on one spot) is now simply walked.
+
 ## 0.43.0 — Round 43, "World migrations" (2026-10-08)
 
 Groundwork so that later versions can change how characters are saved
