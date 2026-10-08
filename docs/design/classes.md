@@ -37,11 +37,11 @@ Core principles:
   to a Claim Stone ([housing.md](housing.md) §8), is immediate and uses no
   cast.
 - **Abilities use indestructible, bound inventory representations.** The base
-  kit, including Strike, is inserted once at character creation. Representations
-  may be carried in main inventory or owned bags; dropping or returning one to
-  Skills deletes only that copy, without a world drop or lost entitlement.
-  The Skills catalogue restores an unlocked ability only when no carried copy
-  exists. External storage, equipment slots and trading refuse these items.
+  kit, including Strike, is inserted once at character creation. Since Round
+  44 representations live on the hotbar only (`inventory_equipment.md` §6);
+  dropping one or returning it to its catalog icon deletes only that copy,
+  without a world drop or lost entitlement. The Talents & Skills catalogue
+  restores an unlocked ability only when no carried copy exists. External storage, equipment slots and trading refuse these items.
   Reconnect and talent changes normalize existing copies without re-granting
   discarded ones. Left click attacks or casts; a running charge or cooldown
   shows as the overlay on the skill's hotbar slot (§2b "The cooldown
@@ -579,23 +579,29 @@ it, including one that has not picked a class yet.
 ## 2d. Ability entitlement and the Skills catalogue
 
 A character permanently sees every currently unlocked active ability in the
-Inventory > Skills catalogue. Initial class creation grants the universal and
-base-class starter kit once. Later talent unlocks are acquired manually from
-Skills; talent changes, joins and equipment changes never recreate a deleted
+Talents & Skills catalogue. Initial class creation grants the universal and
+base-class starter kit once. A later talent unlock puts its ability on a
+free hotbar slot, or leaves it in the catalogue when the hotbar is full;
+talent changes, joins and equipment changes never recreate a deleted
 representation. Losing a talent removes its representation.
 
-At initial character creation, the base abilities occupy the first inventory
-slots in kit order: Strike on key 1, then the remaining class abilities, then
-starter supplies. Existing carried items are preserved. This startup arrangement
-does not reorder the player's inventory on joins or talent changes.
+At initial character creation, the base abilities occupy the first hotbar
+slots in kit order: Strike on key 1, then the remaining class abilities; the
+starter supplies go to the inventory rows first. Existing carried items are
+preserved. This startup arrangement does not reorder the player's inventory
+on joins or talent changes. A later class change puts each missing base
+ability on its kit slot when that is free, else on the first free hotbar
+slot, else leaves it in the catalogue.
 
-Ability items may live in `main` or the character's four owned bag-content
-lists. `craft`, equipment, the quiver, bag slots, nodes, detached inventories and
+Ability items live on the hotbar only (`main[1..8]`, Round 44,
+`inventory_equipment.md` §6). `main[9..]`, the bags, the potion belt,
+`craft`, equipment, the quiver, bag slots, nodes, detached inventories and
 other characters refuse them. Dropping one deletes the representation without
-changing entitlement or combat state; dragging it back to its matching Skills
-entry does the same. Recovery is available only when no copy exists in `main`,
-`craft` or any owned bag, and snapshots current skin, description, range and
-cooldown/charge display. Server ledgers remain authoritative.
+changing entitlement or combat state; dragging it back onto its catalogue
+icon does the same. Recovery is available only when no copy exists in
+`main`, `craft` or any owned bag, lands on a hotbar slot, and snapshots
+current skin, description, range and cooldown/charge display. Server ledgers
+remain authoritative.
 
 ## 2c. What an ability item looks like
 

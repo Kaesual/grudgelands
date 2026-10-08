@@ -24,8 +24,9 @@ leash; bound actors: leash and give-up distance).
   the earlier job-trainer rule is superseded). There is no Riding Trainer in a
   race start, so the first tier requires a trip to a capital. A learned step is
   **player state, permanent and per character**,
-  and purchase makes the owner-bound representation for that step available
-  for manual recovery from Skills; it inserts no stack automatically.
+  and purchase records it; it inserts no stack automatically. (Until Round
+  44 the Skills page offered the representation for manual recovery; the
+  quickbar (E) takes that role.)
 - Every capital has one outer-district stable using the same shared building
   design, with the local architectural palette: earth floor, one-node fence,
   clear entrance and a flat roof on exactly six posts, without perimeter walls.
@@ -96,8 +97,9 @@ character state:
 - Inventory representation is **one recoverable item per bought tier**. Buying
   a higher tier retains every preceding tier, and each item summons its original
   tier at its original speed. Persistent highest-tier metadata remains the
-  ownership authority; missing representations are recovered manually from the
-  Skills page and are never recreated on join or purchase.
+  ownership authority; missing representations are never recreated on join
+  or purchase (the Skills page that recovered them went in Round 44; the
+  quickbar takes its place).
 - T1 is a faction-coloured horse. T2 is a Human horse, Dwarf ibex, Elf stag,
   Orc boar, Undead grave wolf and Troll tiger. Accord flight uses an eagle at
   T3 and the larger, nobler-coloured Steller's sea eagle at T4; Throng flight
@@ -141,7 +143,7 @@ arbitrary fixed-price wall.
 
 Boats are the third movement mode, **water**, next to land and flight
 (`boats.md`, 2026-10-02): two boat tiers with the same owner-bound item,
-Skills recovery, ephemeral entity, eject and teardown rules as this section,
+ephemeral entity, eject and teardown rules as this section,
 sold by the Shipwright instead of the Riding Trainer and summoned only in
 water. Flight and its geography (§3.2, §4) do not apply to them.
 
@@ -152,8 +154,8 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   a permanent character upgrade.
 - **Every purchased tier has an owner-bound inventory/hotbar representation.**
   The item is the summon/dismount action. Dropping it deletes only that
-  representation; permanent player state remains authoritative and the item can
-  be recovered from Skills. Representations may be kept in `main` or the
+  representation; permanent player state remains authoritative. Representations
+  may be kept in `main` or the
   character's own bag contents, never traded or stored externally. Purchase and
   join never insert a missing item automatically.
 - Using the item on foot creates one ephemeral mount entity at the player's

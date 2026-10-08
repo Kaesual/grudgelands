@@ -22,8 +22,9 @@ values in `biomes_mobs.md` §3.1.
   `grug_bound_skill`, owner metadata, deleted when dropped, never traded or
   stored outside the character's own main inventory and bags. Ownership is
   the per-character metadata `grug_mounts:water_tier` (highest owned boat);
-  the item is only its representation and is recovered manually from the
-  Skills page, like a riding tier. Buying the Improved Boat keeps the Boat.
+  the item is only its representation, like a riding tier (the Skills page
+  that recovered it went in Round 44; the quickbar takes its place). Buying
+  the Improved Boat keeps the Boat.
 - **An empty boat never exists in the world.** Using the item creates an
   ephemeral boat entity with the player seated in it; using it again removes
   it. There is no placing, pickup, decay timer, theft, ownership window or
