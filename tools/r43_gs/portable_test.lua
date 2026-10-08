@@ -106,7 +106,14 @@ local function boot(opts)
 		register_on_mods_loaded = function(fn) run.mods_loaded[#run.mods_loaded + 1] = fn end,
 		after = function(_, fn) run.after[#run.after + 1] = fn end,
 		registered_on_joinplayers = run.joins,
-		register_on_joinplayer = function(fn) run.joins[#run.joins + 1] = fn end,
+		register_on_joinplayer = function(fn)
+			-- The engine profiler (profiler.load) stores a wrapper instead.
+			if opts.wrap_register then
+				local inner = fn
+				fn = function(...) return inner(...) end
+			end
+			run.joins[#run.joins + 1] = fn
+		end,
 		register_on_newplayer = function() end,
 		disconnect_player = function(name, reason)
 			run.disconnected[#run.disconnected + 1] = name .. ": " .. reason
@@ -240,11 +247,17 @@ do
 	assert(finish_load(r))
 	eq(r.storage:get_string("world_version"), "0.44.1", "B ...and records the game")
 
-	-- A new world is stamped, even when steps lie before the game's version.
+	-- A new world is stamped at once, even when steps lie before the game's
+	-- version, so a first start that fails later keeps the stamp.
 	r = boot({game = "0.45.0", registry = {versions = {"0.44.0"}, handlers = {}}})
 	check(r.ok and r.M.new_world == true, "B a new world loads past every step")
-	assert(finish_load(r))
-	eq(r.storage:get_string("world_version"), "0.45.0", "B ...and is stamped")
+	eq(r.storage:get_string("world_version"), "0.45.0", "B ...and is stamped at the guard")
+	r.storage:set_string("world_preparation", "x")
+	r.mods_loaded[#r.mods_loaded + 1] = function() error("a later mod fails") end
+	check(not finish_load(r), "B its first load fails later")
+	local again = boot({game = "0.45.0", registry = {versions = {"0.44.0"}, handlers = {}},
+		storage = r.storage.data})
+	check(again.ok and again.M.from == "0.45.0", "B ...and the next start still loads it")
 
 	-- An equal record is left alone.
 	r = boot({record = "0.43.0", storage = {world_preparation = "x"}})
@@ -419,6 +432,11 @@ do
 	eq(table.concat(seen, " "), "base:yes relocate:true:yes",
 		"E every join callback, the relocation's included, reads the repaired character")
 	eq(r.storage:get_string("reset_world"), "1", "E the map reset applied in the same start")
+	-- With the engine profiler's wrapped registrations the start still works.
+	local wrapped = boot({record = "0.45.0", game = "0.45.0", registry = registry,
+		storage = {world_preparation = "x"}, joins_before = {before_core}, wrap_register = true})
+	check(wrapped.ok, "E a wrapped join registration loads: " .. tostring(wrapped.err))
+	eq(wrapped.joins[2], before_core, "E ...and its entry moves first")
 end
 
 --

@@ -10,7 +10,7 @@
 -- The guard, at load: a world newer than this game, or one with a migration
 -- step between its record and this game's version, refuses to start.
 -- Otherwise the game writes its own version into the record once the load
--- has succeeded (the first server step).
+-- has succeeded (the first server step); a new world records it at once.
 -- Online work: the steps' world markers run once every mod has loaded, the
 -- character markers at a join (grug_core/migrations.lua).
 --
@@ -232,19 +232,25 @@ end
 M.game = game
 -- The world's version this start began from.
 M.from = from
+-- A new world takes the game's version at once: a first start that fails
+-- later in its load leaves storage keys behind, and without the record the
+-- next start would take the world for an existing 0.41.0 one.
+if M.new_world then
+	storage:set_string(RECORD_KEY, game)
+	core.log("action", ("[grug_core] world version %s recorded for a new world"):format(game))
+end
 core.log("action", ("[grug_core] world version %s%s, game %s: no migration step due"):format(
 	from, record ~= "" and "" or (M.new_world and " (a new world)" or " (no record)"), game))
 
 core.register_on_mods_loaded(function()
 	M.run_world(storage, M.steps)
-	-- The record once the load has succeeded: every mod and every
-	-- register_on_mods_loaded callback ran without an error.
+	-- An existing world's record once the load has succeeded: every mod and
+	-- every register_on_mods_loaded callback ran without an error.
 	core.after(0, function()
 		if storage:get_string(RECORD_KEY) ~= game then
 			storage:set_string(RECORD_KEY, game)
 			core.log("action", ("[grug_core] world version %s recorded (was %s)"):format(game,
-				record ~= "" and record or (M.new_world and "none, a new world" or
-					"none, an existing world: " .. BASELINE)))
+				record ~= "" and record or "none, an existing world: " .. BASELINE))
 		end
 	end)
 end)
@@ -255,8 +261,11 @@ end)
 local function on_join(player)
 	M.run_character(player, M.steps)
 end
-core.register_on_joinplayer(on_join)
+-- Moved as registered: with the engine profiler on (profiler.load) the stored
+-- entry is a wrapper, not on_join, and run_callbacks needs the registered
+-- entry's callback_origins record.
 local joins = core.registered_on_joinplayers
-assert(joins[#joins] == on_join)
-table.remove(joins, #joins)
-table.insert(joins, 1, on_join)
+local count = #joins
+core.register_on_joinplayer(on_join)
+assert(#joins == count + 1)
+table.insert(joins, 1, table.remove(joins))
