@@ -38,9 +38,10 @@ axis (D2).
   item, so players can give money to each other. **Withdraw** on the
   Character page opens a dialog with gold, silver and copper fields; a whole
   amount from 1c up to the balance is taken and one Bag of Coins holding it
-  is put into the first empty main slot in one transaction
-  (`grug_money.take_with_inventory`), refused when the main inventory is
-  full. The **deposit slot** beside it takes only a filled bag, destroys it
+  is put into the first empty slot in the give order (`main[9..]`, the
+  bags, the hotbar last; [inventory_equipment.md](inventory_equipment.md)
+  §3) in one transaction (`grug_money.take_with_inventory`), refused when
+  the whole inventory is full. The **deposit slot** beside it takes only a filled bag, destroys it
   and credits its amount, refused if the balance would exceed the clamp
   above. One bag per stack, the amount in its item meta and tooltip. Traders
   neither sell nor buy it (no price class: payout 0). It drops, is picked up

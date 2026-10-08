@@ -489,6 +489,19 @@ do
 	eq(name_at(s, "main", 10), BAG.large, "swap: the old bag on the dragged bag's slot")
 	same_census(before, census(s), "swap to a smaller bag")
 
+	-- The same swap dragged the other way (the equipped bag onto the small
+	-- one lying in main): the same rule.
+	local r = new_player("c2r", "warrior")
+	equip_bag(r, 1, BAG.medium)
+	fill_list(r, I.content_list(1), 1, 16, "t:dirt 99")
+	put(r, "main", 30, BAG.small)
+	before = census(r)
+	eq(move(r, I.bag_list(1), 1, "main", 30), 1, "swap by dragging the equipped bag: allowed")
+	eq(name_at(r, I.bag_list(1), 1), BAG.small, "swap by drag: the small bag equipped")
+	eq(r.inv:get_size(I.content_list(1)), 8, "swap by drag: the list shrinks")
+	eq(count_at(r, "main", 16), 99, "swap by drag: eight stacks moved to main[9..16]")
+	same_census(before, census(r), "swap by dragging the equipped bag")
+
 	-- To a smaller bag without room: refused, nothing moves.
 	local f = new_player("c3", "warrior")
 	equip_bag(f, 1, BAG.medium)

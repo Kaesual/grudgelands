@@ -64,7 +64,7 @@ function grug_inventory.slot_order(inv)
 end
 
 -- The cells of `slots` with a working copy of each stack (one get_list per
--- list, not one get_stack per slot).
+-- list, not one get_stack per slot; get_list already returns copies).
 local function cells_of(inv, slots)
 	local lists, cells = {}, {}
 	for _, slot in ipairs(slots) do
@@ -74,7 +74,7 @@ local function cells_of(inv, slots)
 			lists[slot.list] = list
 		end
 		cells[#cells + 1] = {list = slot.list, index = slot.index,
-			stack = ItemStack(list[slot.index])}
+			stack = list[slot.index] or ItemStack("")}
 	end
 	return cells
 end
