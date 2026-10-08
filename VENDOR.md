@@ -524,6 +524,15 @@ are ours: `grug_mobs/patrol.lua` `walk_fixed` (patrols, named rares, posts,
 seats, the evade, the rift boss) and the royal follow (`bosses.lua`, also
 `combat_step` for a fighting leader). Fixture `tools/r42_nv2/portable_test.lua`.
 
+## Round 42 NV3 — settlement routes (2026-10-08)
+
+`mobs/grug_nav.lua` (no new marker): `nav.claim_search(temp)` hands a caller
+outside the follower one search slot — the global count cap, then the
+per-step budget queue keyed by `temp`, as the follower's own attempt takes
+them. Its one caller is ours: the settlement route cache
+(`grug_mobs/routes.lua`), which builds each leg one `nav.search` at a time.
+Fixture `tools/r42_nv3/portable_test.lua`.
+
 ## Server-side node formspecs (2026-09-28)
 
 A formspec stored in node metadata (key `formspec`) is opened by the client
