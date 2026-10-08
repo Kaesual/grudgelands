@@ -23,12 +23,15 @@ Decided 2026-09-21; Round 14 user Go.
   water layout, so a changed layout re-renders the base. The relief samples
   terrain height on one fixed grid per map quality on every server (D29: no
   time budget, hardware never changes the image); the render is paid once per
-  world at first start, then the cached image is reused (Round 27 sizes and
-  times below). It carries no text: the region names are a label layer under
-  the markers. No pre-rendered atlas image ships.
+  world at first start, then the cached image is reused (sizes and times
+  below). Since Round 44 the settlement, point-of-interest and boss icons
+  and the region names are baked into it ([Baked layer](#baked-layer)). No
+  pre-rendered atlas image ships.
 - Separate the shared map base from marker records and world-to-screen mapping.
-  Markers must remain extensible for hover tooltips and/or click actions; do not
-  bake labels and all marker semantics irreversibly into one raster.
+  Markers must remain extensible for hover tooltips and/or click actions. Only
+  the places that are the same for every player (settlements, points of
+  interest, kings, dragons) and the region names are baked (Round 44, the
+  user's ruling); everything per player stays a marker.
 - Map visibility never unlocks waypoint travel. Actual visit-unlock is the
   waystones' authority ([world.md](world.md) §6); a map marker grants no travel.
 - Since Round 27 the same base image also feeds our own HUD minimap, which
@@ -49,12 +52,15 @@ session; closed maps receive no polling or formspec refreshes.
 
 Round 16 (approved 2026-09-22): authored quest givers have individual icon
 markers with the same per-player ready/available/active/locked precedence as
-world symbols. Include individual profession/Riding trainers, the six kings and
-two dragons at their authored locations. The Housing Steward has its own
+world symbols. Include individual profession/Riding trainers at their
+authored locations (since Round 44 one icon per profession,
+`grug_map_trainer_<profession>.png` by GPT-6 Astra, replacing the book;
+Riding keeps the mount icon); the six kings and two dragons are baked since
+Round 44. The Housing Steward has its own
 marker (kind `steward`, a cottage-and-key icon, Round 26 playtest), drawn above
-trainers, kings and innkeepers but below quest, party and player markers. The
+trainers and innkeepers but below quest, party and player markers. The
 capital services of Round 33 share that layer (kind `service`, Round 34): the
-Crownbinder (a crown over an anvil) and the Decor Merchant (a lantern). NPC/boss markers do not query live
+Crownbinder (a crown over an anvil) and the Decor Merchant (a lantern). NPC markers do not query live
 entities, load terrain, reveal health or indicate respawn state. All NPC/player
 hover tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
@@ -64,29 +70,10 @@ Round 31 (PvP ruling 13): **the NPC's faction decides who sees its
 marker.** Each NPC marker carries its NPC's faction (the race's; a quest
 giver's own race where it names one). A player sees only the own faction's
 quest givers, trainers, Housing Stewards, Crownbinders, Decor Merchants and
-innkeepers, plus every king
-(the enemy's too) and both dragons; a character without a faction yet sees
-only the kings and dragons. Both factions can have markers in one zone
-(a spy in a contested zone), each seen only by its own side. The base,
-the region names, roads and zone markers stay complete for everyone.
-
-**Settlement icons by faction** (Round 31, the user's ruling after the
-lane-M preview): the terrain map is the same for both factions, only the
-icons differ. A faction's starts, capitals, villages, outposts and PvP
-fortress show only to that faction; the Battlegrounds war camps (quest
-targets) and every neutral place (bandit and Mirefolk camps, mines, clash
-sites, dragon arenas) show to everyone; the kings and dragons stay visible
-as NPC markers. A settlement's class comes from its anchor slot, carried in
-the settlement registry; the rule and its one list of hidden classes live
-in `grug_map/settlement_icons.lua` (`HIDDEN`), and the Map tab keeps one
-list per viewer faction, built once. **Hostile camps** (Round 32: the bandit
-camps of the start zones and the frontier, and the Mirefolk camps; by their
-anchor slot, `HOSTILE` in the same file) draw a red "X", never the quest
-giver's gold "!" (an available quest); other settlements keep their "+".
-The minimap shows no settlement icons. The service and quest-giver lists are split per viewer faction
-once at server start, so a marker build only picks the own list, in the
-Map tab and the minimap alike; the quest givers' states still come from
-one `grug_quests.marker_states` call.
+innkeepers; a character without a faction yet sees no NPC markers. Both
+factions can have markers in one zone (a spy in a contested zone), each seen
+only by its own side. The base with its baked layer (the kings and dragons
+included), roads and zone markers stay complete for everyone.
 
 Round 29 (WP17): every **discovered** waystone of the player's own network
 (three starts, three capitals and, since Round 31, the faction's PvP
@@ -141,27 +128,72 @@ nothing. Markers of one look share one `style[]`. While scroll changes
 continue, defer a live rebuild until a short 0.5-second quiet interval;
 pending marker changes must still appear afterward.
 
+## Baked layer
+
+Round 44 (the UI rework spec, rulings 11 and 13; plan ruling 5). The base
+renderer draws, into the image itself:
+
+- **Icons** of every settlement by its anchor slot (`grug_map/settlement_icons.lua`):
+  start towns, capitals, villages, outposts, PvP fortresses, Battlegrounds
+  war camps, bandit and Mirefolk camps (red warning details), mines and gem
+  camps (`mine`, `apex_mine`), clash sites (`clash_*`), rare dens
+  (`rare_*`), the dragon arenas; plus the six kings at their sockets and the
+  two dragons. A dragon arena and its dragon are one icon. Generals,
+  captains and the rift boss stay unmarked. **Every settlement is baked for
+  everyone**, the other faction's starts, capitals, villages, outposts and
+  fortress included (Round 44 ruling 5; it ends Round 31's per-faction
+  hiding). Draw order bottom to top: war camps, outposts, villages, mines,
+  clash sites, rare dens, bandit and Mirefolk camps, fortresses, starts,
+  capitals, kings, dragons; icons are not moved apart (a king stands about
+  32 nodes from his capital's anchor, so his crown covers most of the
+  capital's icon).
+- **Region names** in an English uppercase pixel font (cap height 7) with a
+  dark halo of one glyph pixel, light text, at the nine places of the Round
+  22 macro layout; the island names stand north of their islands over the
+  sea, one word per line. Names draw above the icons.
+
+Two variants: the **Map tab's image** gets the 16 px icons scaled ×2 at
+`normal` (32 px, about 0.37 formspec units at zoom 1, beside the overlay's
+0.34) and ×6 at `high` (96 px, 0.33), and the names at the same scale; the
+**minimap's image** gets the hand-drawn 6 px icons unscaled (about 18 screen
+pixels at 1080p) and no names. Both grow with the zoom like the terrain.
+The art (lane AR, `grug_map/art/`) reaches Lua as data:
+`tools/r44_mb/gen_baked_art.py` writes `grug_map/baked_art.lua` (`--check`
+tells a stale copy), because the engine decodes no PNG for Lua. The cache
+key covers the drawing code (`bake.lua`), the art and font versions and
+every icon's kind and place, so new art, a new layout or a moved settlement
+re-renders the map at the next start. Each render logs the drawn icons and
+names and how many pairs overlap (seed 42: 124 icons, 58 overlapping pairs
+at normal, 44 at high; 10 and 8 names over an icon). The Map tab draws no
+settlement, camp, king or dragon markers and no region-name text; the
+minimap shows its baked icons under its markers.
+
 ## Map quality and relief
 
 Round 27 (WP50, approved 2026-09-29). The Map tab's base image has the
 quality of the server setting `grug_map_quality` in `minetest.conf` (main
 menu: *World map › World map quality*), the same for every player on that
-server. The minimap always shows normal quality (user ruling 2026-10-06):
-at `normal` it shows the same base, at `high` a normal-size copy
-(1080×960) that the render scales down from its own high image in the same
+server. The minimap always shows normal quality (user ruling 2026-10-06)
+in its own variant (Round 44, [Baked layer](#baked-layer)): a normal-size
+copy (1080×960) of the terrain taken before anything is baked, the same
+pixels at `normal` and at `high` scaled down from the high image in the same
 pass, with no second terrain sampling (each high pixel goes to the normal
 pixel its centre lies in, which takes their mean):
 
 | Quality | Size | Nodes per pixel | Relief grid | Tiles | Download | First render |
 |---|---|---|---|---|---|---|
-| `normal` (default) | 1080×960 | about 6.7 | 8 nodes | 6 | about 0.92 MB | about 10 s |
-| `high` | 3600×3200 | 2 | 4 nodes | 56 | about 6.93 MB | about 56 s |
+| `normal` (default) | 1080×960 | about 6.7 | 8 nodes | 6 + 6 | about 0.81 + 0.90 MB | about 10 s |
+| `high` | 3600×3200 | 2 | 4 nodes | 56 + 6 | about 6.10 + 1.09 MB | about 47 s |
 
 Sizes and times are comparisons from one engine run each on the development
-workstation (2026-09-30), not targets. The minimap's copy at high adds 6
-tiles of about 1.09 MB to the download and about 0.09 s to the render
-(seed 42, 2026-10-06: the high render took 52.8 s before and 51.2 s after,
-within run-to-run noise). Before Round 27 the normal base was one
+workstation (seed 42, 2026-10-08), not targets; the second figure is the
+minimap's copy. Before Round 44 (same seed and day) the normal base was
+0.91 MB and the minimap showed it (no copy), the high base 6.74 MB plus a
+1.09 MB copy; the renders took 9.6 s and 46.1 s before, 9.8 s and 47.3 s
+after (run-to-run noise; baking and the copy cost about 0.1 s at normal and
+0.5 s at high). The baked icons cover terrain detail, so the Map tab's tiles
+got smaller; at normal the minimap's own copy adds about 0.90 MB to the
+download. Before Round 27 the normal base was one
 PNG of about 0.56 MB in about the same time; high as one PNG would be about
 8.06 MB. No edge exceeds 4096 px, because some GPUs cannot hold larger
 textures. An unknown value warns and falls back to `normal`. The quality
@@ -173,13 +205,15 @@ middle of a render renders again instead of taking mixed tiles as current
 (Round 41).
 
 **Tiles.** The base is sent as 512 px tiles (`grug_map_base_<col>_<row>.png`,
-edge tiles smaller), the minimap's copy at high as
+edge tiles smaller), the minimap's copy as
 `grug_map_mini_<col>_<row>.png`, written to the world directory and
 announced as startup media; nothing else of the base is sent. After every
 render or cache hit, tiles of these two names that the current quality does
-not use (after high → normal the 50 extra base tiles and the 6 minimap
-tiles, about 7 MB) are deleted from the world directory and their count is
-logged; a failed delete is a warning (Round 41). No other file is touched.
+not use (after high → normal the 50 extra base tiles, about 5.3 MB) are
+deleted from the world directory and their count is logged; a failed delete
+is a warning (Round 41). No other file is touched. A world of an earlier
+version re-renders once under the new key and overwrites its tiles of the
+same names.
 The Map tab combines all its tiles into one texture; the minimap combines
 only the at most four tiles of its base each cell texture overlaps.
 
@@ -196,12 +230,9 @@ only the at most four tiles of its base each cell texture overlaps.
   quality draws wide rivers wider; wide rivers keep the Round 22 minimum of
   three pixels.
 
-**Region labels.** The nine region names are hypertext boxes. A box whose
-text is taller than the box shows a small dark scrollbar next to the name;
-since Round 27 the boxes are large enough for the bold name at a
-1280×720 window (one line on the mainland, two on the islands). Known limit:
-they are sized for the default font; a larger client font or a smaller
-window can bring the scrollbar back.
+**Region labels.** The nine region names are baked into the Map tab's
+image since Round 44 ([Baked layer](#baked-layer)); until then they were
+hypertext boxes over the image.
 
 ## Minimap
 
@@ -256,20 +287,24 @@ drawn from the base image above. The gliding version (approved in playtest,
   185.0 MB before, 79.9 MB now), the same as on a normal server. The
   geometry code (`minimap_view.lua`) still takes either base size; the game
   passes it the normal one.
-- **Markers** are separate HUD elements, never pixels of the map texture:
-  quest givers with their per-player state (ready, available, active,
-  locked), the Housing Steward, the Crownbinder and the Decor Merchant,
-  profession and Riding trainers, innkeepers,
-  the player's home (the bound innkeeper or Claim Stone) and discovered
-  waystones (Round 29). Settlements,
-  camps, kings and dragons stay on the Map tab only. Markers glide with the
+- **Baked icons:** the minimap's own base carries the 6 px icons of every
+  settlement, point of interest, king and dragon, without names (Round 44,
+  [Baked layer](#baked-layer)); they glide with the map as part of it.
+- **Markers** are separate HUD elements, never pixels of the map texture
+  (Round 44, the UI rework spec ruling 13): quest givers with their
+  per-player state (ready, available, active, locked: the "!" and "?"),
+  profession trainers with their profession's icon and Riding trainers with
+  the mount icon, the player's home (the bound innkeeper or Claim Stone) and
+  discovered waystones (Round 29). The Housing Steward, the capital services
+  and the other innkeepers stay on the Map tab only. Markers glide with the
   map and are hidden unless the whole icon lies inside the hole. The minimap
   has 24 marker slots; when more markers fall inside the circle, quest givers
-  keep a slot first, then the Steward and the capital services, home,
-  innkeeper, trainers and
-  waystones, and the
-  kept ones are drawn in their usual order. Markers are not clustered or
-  moved apart.
+  keep a slot first, then the home, trainers and waystones, and the kept
+  ones are drawn in their usual order. Markers are not clustered or moved
+  apart. The densest window, measured in every capital and start town of
+  seed 42 with every quest giver of the faction counted (2026-10-08), holds
+  11 markers in a capital (15 with the kinds shown before Round 44) and 3 in a start
+  town, plus at most the home and a waystone, so the 24 slots stay.
 - **Party members** (online, same party) have nine slots of their own: a cyan
   heading arrow that glides with the map inside the hole, or a cyan arrow on
   the bezel pointing toward them (16 directions) when they are outside it.
@@ -381,12 +416,12 @@ were in, and quest texts and level routes now name zones.
   `grug_map_zone_grid.txt`, keyed by `grug_mapgen.wp40.world_key`, the zone
   queries' seam and the sampling code; the placement itself runs every
   start).
-  If another marker (service, king, dragon, quest giver, settlement,
-  innkeeper) or a region name is too close, the marker takes the deepest
+  If another marker (service, quest giver, innkeeper) or a baked icon
+  (king, dragon, settlement) or a region name is too close, the marker takes the deepest
   cell of its zone that keeps 0.45 formspec units (zoom 1) from every other
   marker's centre on both axes and clear of the region names' text; where no
   cell is clear it takes the one clearest of other markers first and of the
-  names' text second (the island names cover almost their whole island). The
+  names' text second. The
   map has no layer filters; zone markers zoom and scroll like every marker.
-- **King markers** name their settlement: "King of Highcourt" (a king with a
-  name of his own would read "<name>, King of Highcourt").
+- **Kings** carry no name on the map since Round 44: they are baked icons
+  without a tooltip (until then "King of Highcourt" markers).

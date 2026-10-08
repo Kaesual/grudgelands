@@ -12,6 +12,8 @@
 --     (the worst case), for the marker kinds before Round 44 (quest givers,
 --     trainers, the Steward, the capital services, innkeepers) and after
 --     (quest givers, trainers); home and waystones add at most two.
+--   * each capital's king socket against the capital's anchor (both baked
+--     icons: how far apart they are drawn).
 -- The base render itself logs its own line ("[grug_map] rendered ...").
 local P = "[r44mb_probe] "
 local function log(text) core.log("action", P .. text) end
@@ -157,6 +159,18 @@ local function minimap_density()
 	end
 end
 
+local function kings()
+	for _, settlement in ipairs(grug_core.settlement_socket_settlements()) do
+		for _, socket in ipairs(grug_core.settlement_sockets_at(settlement.key)) do
+			if socket.role == "king" then
+				local dx, dz = socket.pos.x - settlement.anchor.x, socket.pos.z - settlement.anchor.z
+				log(("king of %s (%s): %d, %d nodes from the anchor"):format(settlement.key,
+					tostring(settlement.slot), dx, dz))
+			end
+		end
+	end
+end
+
 local clock, done = 0, false
 core.register_globalstep(function(dtime)
 	if done then return end
@@ -168,6 +182,7 @@ core.register_globalstep(function(dtime)
 			page_bytes(faction, {x = 0, y = 20, z = 0})
 		end
 		minimap_density()
+		kings()
 	end)
 	if not ok then log("failed: " .. tostring(err)) end
 	log("done")

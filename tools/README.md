@@ -376,3 +376,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   walker at any phase, free wanderers keep it, `facing_fence` only for
   blocking nodes, the jump logic at real fences unchanged;
   `evidence/after/` keeps NV0's villager and post-guard scenes.
+- **Round 44** (`r44_<lane>`): `r44_mb`: `gen_baked_art.py [--art DIR]
+  [--check]` turns the baked map icons and the pixel font
+  (`mods/PLAYER/grug_map/art/`) into `mods/PLAYER/grug_map/baked_art.lua`
+  (standard library PNG decoding; `--check` exits 1 on a stale copy);
+  `portable_test.lua` checks the kind mapping, the items, the glyph layout,
+  the drawing, the cache key text and the minimap's marker kinds; the
+  disposable probe `grug_probe_r44_mb` (staged with `PROBE=` through
+  `luanti_headless.sh`; `high_quality.patch` as `GAME_PATCH=` for a second
+  boot at high quality) logs the Map tab's formspec bytes per faction, the
+  minimap's densest capital window and each king's place in its capital.
