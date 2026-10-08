@@ -211,14 +211,14 @@ local TOPS = {
 }
 local BASES = {
 	str = {1, 3, 5, 8, 11, 15}, dex = {1, 2, 4, 6, 8, 10}, int = {1, 3, 5, 8, 11, 15},
-	crit_percent = {1.8, 2.1, 2.6, 3.0, 3.5, 3.9},
-	attack_speed_percent = {1.7, 2.0, 2.4, 2.8, 3.2, 3.6},
-	max_hp_percent = {1.7, 2.0, 2.4, 2.8, 3.2, 3.6},
-	max_mana_percent = {2.3, 2.5, 2.8, 3.1, 3.4, 3.7},
-	dodge_percent = {1.6, 1.8, 2.1, 2.5, 2.8, 3.1},
-	armor_rating = {0.5, 0.8, 1.6, 2.4, 3.2, 4.0},
+	crit_percent = {1.7, 2.2, 2.6, 3.1, 3.5, 3.9},
+	attack_speed_percent = {1.6, 2.0, 2.4, 2.8, 3.2, 3.6},
+	max_hp_percent = {1.6, 2.0, 2.4, 2.8, 3.2, 3.6},
+	max_mana_percent = {2.2, 2.5, 2.8, 3.1, 3.4, 3.7},
+	dodge_percent = {1.5, 1.9, 2.2, 2.5, 2.8, 3.1},
+	armor_rating = {0.5, 0.9, 1.7, 2.5, 3.3, 4.1},
 }
-local BASE_ILVL = {3, 10, 20, 30, 40, 50}
+local BASE_ILVL = {1, 11, 21, 31, 41, 51}
 for stat, row in pairs(TOPS) do
 	for tier = 1, 6 do
 		check(near(Q.enchant_value(stat, 10 * tier, tier), row[tier]),
@@ -365,12 +365,12 @@ local function affix_on(stack, channel)
 end
 
 local ember_sword = crafted("grug_gear:sword_embersteel")
-eq(ember_sword:get_meta():get_int("grug_ilvl"), 40, "C a crafted T5 sword is item level 40")
+eq(ember_sword:get_meta():get_int("grug_ilvl"), 41, "C a crafted T5 sword is item level 41")
 local result = plan("enchant:sword:prefix:str:t5", ember_sword)
 check(result ~= nil, "C a T5 Strength enchant applies")
 local str = affix_on(result.output, "prefix")
 eq(str and str.tier, 5, "C the enchant carries the recipe's tier")
-eq(str and str.value, 11, "C its value is the rule at item level 40")
+eq(str and str.value, 11, "C its value is the rule at item level 41")
 eq(result.warning, nil, "C a first enchant warns of nothing")
 eq(result.output:get_meta():get_int("grug_quality"), 2, "C one enchant is Uncommon")
 check(description(result.output):find("+11 Strength (T5)", 1, true),
@@ -379,7 +379,7 @@ eq(result.consume[1], 1, "C the item is consumed from the grid")
 local enchanted = result.output
 result = plan("enchant:sword:suffix:crit_percent:t4", enchanted)
 check(result and affix_on(result.output, "suffix").tier == 4 and
-	near(affix_on(result.output, "suffix").value, 3.5), "C a T4 Crit suffix at item level 40")
+	near(affix_on(result.output, "suffix").value, 3.5), "C a T4 Crit suffix at item level 41")
 enchanted = result.output
 local _, reason = plan("enchant:sword:prefix:str:t5", enchanted)
 eq(reason, "This enchantment would not change the item.", "C the same enchant is refused")
@@ -458,10 +458,10 @@ end
 -- E. The crown.
 ------------------------------------------------------------------------------
 do
-	-- A T5 sword at 40 with T5 Strength and T4 Crit: 55, T6 and T5.
+	-- A T5 sword at 41 with T5 Strength and T4 Crit: 55, T6 and T5.
 	local item = enchanted
 	local text = Q.crown_preview(item)
-	eq(text, "Item level 40 becomes 55. T5 Strength becomes T6. T4 Crit becomes T5.",
+	eq(text, "Item level 41 becomes 55. T5 Strength becomes T6. T4 Crit becomes T5.",
 		"E the preview text")
 	local crowned, shown = Q.crown_item(item, player)
 	check(crowned ~= nil and shown == text, "E the crown applies")

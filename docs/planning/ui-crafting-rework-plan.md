@@ -5,8 +5,13 @@ session with the user after the friends playtest of 2026-10-07, reviewed by
 an independent Opus pass (findings verified and applied; edge cases decided by
 the user). The layout wireframe v1
 (<https://claude.ai/artifact/8XM4hJggJyJSpuigRyg9jJ>) was accepted by the
-user as drawn. Next step: the round plans (`round<NN>-plan.md`) for the two
-rounds, after the user's migration-framework specification.
+user as drawn. **Round A delivered in Round 44** (2026-10-09, version
+0.44.0; [completion](round44-plan.md#completion-2026-10-09)); Round B is
+[Round 45](round45-plan.md). Round 44 superseded two points of this
+plan: the migrations are offline steps of the Round 43 tool (§6), and the
+precondition below (framework and AGENTS.md change before the plans are
+approved) became Round 44's parallel run with Round 43 under its merge
+rule ([round 44 plan §7](round44-plan.md#7-orchestration-notes)).
 
 Two rounds, cut by the user (2026-10-08):
 
@@ -629,7 +634,9 @@ The server learns the typed number only with an event (§1). Rules:
   Alchemy mixtures in player inventories are **deleted**, not refunded (the
   user, 2026-10-08).
 - **Skills and mounts (Round A):** bound skills outside the hotbar and every
-  mount item are removed at login; purchased mounts stay recorded.
+  mount item are removed by the offline step 0.44.0 (Round 44 lane MS;
+  [upgrade contract §5.8](../technical/upgrade-contract.md#58-the-declared-steps)),
+  not at login; purchased mounts stay recorded.
 - **Potion belt / quickbar (Round A):** new lists only; compatible.
 - **Map cache (Round A):** a new cache key re-renders on first start;
   compatible.

@@ -9,7 +9,7 @@ already adopts this project's feedback on the first draft: the lock wording,
 conservative new-world recognition, online work per world and per
 character, the map-block API deferred, the baseline rule, and the foundation
 as its own release.
-Status: **complete** (2026-10-08, version 0.43.0, not pushed;
+Status: **complete** (2026-10-08, version 0.43.0, pushed 2026-10-09;
 [completion](#completion-2026-10-08) with the platform summary).
 Ran **in parallel with Round 44's wave 1** (§7).
 

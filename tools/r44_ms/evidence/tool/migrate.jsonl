@@ -1,0 +1,4 @@
+{"event": "start", "mode": "migrate", "world": "<run>/w"}
+{"event": "step_start", "step": "0.44.0", "from": "0.43.0"}
+{"event": "step_done", "step": "0.44.0", "counts": {"characters": 1, "player_meta": 0, "inventories": 1, "positions": 0, "privileges": 0, "mod_storage": 0, "markers": 0}}
+{"event": "done", "mode": "migrate", "world_version": "0.43.0", "record": "0.43.0", "new_world": false, "target": "0.44.0", "due": ["0.44.0"], "backends": {"player": "sqlite3", "auth": "sqlite3", "mod_storage": "sqlite3"}, "applied": ["0.44.0"]}

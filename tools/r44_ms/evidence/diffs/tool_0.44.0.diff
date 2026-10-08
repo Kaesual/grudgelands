@@ -1,0 +1,18 @@
+--- before
++++ after
+@@ -7 +6,0 @@
+-'item' | 'rider' | '0:10' | 'grug_mounts:journeyman_mount 1 0 "\\u0001inventory_image\\u0002grug_mounts_icon...(208)
+@@ -10 +8,0 @@
+-'item' | 'rider' | '0:2' | 'grug_mounts:apprentice_mount 1 0 "\\u0001inventory_image\\u0002grug_mounts_icon...(212)
+@@ -14,2 +11,0 @@
+-'item' | 'rider' | '0:8' | 'grug_abilities:mighty_blow 1 0 "\\u0001description\\u0002Mighty Blow (Warrior)\...(656)
+-'item' | 'rider' | '0:9' | 'grug_abilities:strike 1 0 "\\u0001description\\u0002Strike (every class)\\nfree...(698)
+@@ -17,2 +12,0 @@
+-'item' | 'rider' | '17:0' | 'grug_abilities:taunt 1 0 "\\u0001description\\u0002Taunt (Warrior)\\nfree, 8 s ...(562)
+-'item' | 'rider' | '17:1' | 'grug_mounts:boat 1 0 "\\u0001inventory_image\\u0002grug_mounts_icon_boat.png\\u...(173)
+@@ -20,2 +13,0 @@
+-'item' | 'rider' | '17:7' | 'grug_abilities:charge 1 0 "\\u0001description\\u0002Charge (Warrior)\\nfree, 10...(641)
+-'item' | 'rider' | '1:0' | 'grug_mounts:apprentice_mount 1 0 "\\u0001inventory_image\\u0002grug_mounts_icon...(212)
+@@ -41 +33 @@
+-'storage' | 'grug_core' | 'world_version' | '0.43.0'
++'storage' | 'grug_core' | 'world_version' | '0.44.0'

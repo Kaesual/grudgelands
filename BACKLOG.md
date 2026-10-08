@@ -21,10 +21,25 @@ WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 42 "Mob navigation"](docs/planning/round42-plan.md#completion-2026-10-08)
-  complete, playtest accepted, 0.42.0 not pushed** (2026-10-08, `f8265d60`
-  and lane D, version 0.42.0, compatible; origin/main `71f777e2` holds
-  every lane up to ST under 0.41.0): one navigation module on the
+  [Round 44 "Inventory, map and quickbar"](docs/planning/round44-plan.md#completion-2026-10-09)
+  complete, 0.44.0 not pushed** (2026-10-09, `36019071`, lanes MS and D,
+  version 0.44.0, **migrate**: the first declared step; GUI test open):
+  Round A of the UI rework — the window with fixed tabs, the give helper,
+  bags in bags, Sort and the potion belt, the Character tab, Talents &
+  Skills with hotbar-only skills, Party & PvP, the baked pixel-art map,
+  the map window with the quest log and targets on Z, the quickbar on E;
+  step 0.44.0 removes mount items and skills outside the hotbar offline
+  ([Round 44](#round-44--inventory-map-and-quickbar),
+  [carry-overs](#round-44-carry-overs)).
+- [Round 43 "World migrations"](docs/planning/round43-plan.md#completion-2026-10-08)
+  (2026-10-08, `d10018a7` and lane D, version 0.43.0, compatible, pushed
+  2026-10-09 as `9dc2fad5`; GUI test open): the migration tool, the world
+  version record, the start guard and the online-work runner, with an
+  empty `migrate` list ([Round 43](#round-43--world-migrations),
+  [carry-overs](#round-43-carry-overs)).
+- [Round 42 "Mob navigation"](docs/planning/round42-plan.md#completion-2026-10-08)
+  (2026-10-08, `f8265d60` and lane D, version 0.42.0, compatible,
+  playtest accepted, pushed 2026-10-08 as `332c5e79`): one navigation module on the
   engine's pathfinder for combat, fixed walks and settlement walkers, a
   route cache in start towns and capitals, capital patrols along the
   streets, NPCs that use doors, no random stops on routes
@@ -458,8 +473,6 @@ none blocks the playtest. All are low priority.
 **Noted 2026-09-30** ([completion](docs/planning/round27-minimap-plan.md#completion-2026-09-30));
 none blocks the playtest.
 
-- Map tab region labels are sized for a 1280×720 window at the default font;
-  a larger client font can bring the small hypertext scrollbar back.
 - In start towns several minimap markers (quest givers, trainers, innkeeper)
   stack on top of each other; like the Map tab they are not clustered. The
   playtest decides whether this needs handling.
@@ -517,11 +530,9 @@ playtest of the front quests and bounties.
   without a recipe, which no shipped zone is.
 - The game (Lua) and `tools/r28_design` (Python) disagree at edges on item
   sources.
-- Wording: "level" in the quest log, "levels" on the Map tab (M1).
 
 **Zone names (Lane M1 notes):**
 
-- The zone marker icon on the Map tab is a placeholder for art.
 - On very small windows the entry banner and the flight warning may lack
   clearance.
 
@@ -699,7 +710,6 @@ files and the engine version stay as noted.
   band-3 outliers (Crocodile Tooth, Shiny Scale; T4 items in bands 2–3) stay
   because no T3 replacement exists
   ([economy plan](docs/planning/economy-vendor-plan.md#band-smoothing-round-30-2026-10-02)).
-- **Map tab:** an empty strip remains where the Return home button was.
 - **Mob give-up (P2 notes, for the GUI test):** a player who keeps
   re-aggroing a mob from a closed house or other hidden spot gets it fully healed at
   each give-up (about every 7 s; since Round 42 the veto lasts until the
@@ -751,8 +761,6 @@ none blocks the fresh-world GUI test. Numbers are comparisons, never targets.
   more Lua heap at the first step than a later start (110 against 65 MiB);
   it is grug_mapgen's first-start load, not caches (a possible later item;
   the #22 warm-load proposal above stays the user's call).
-- **Tab order:** the engine order ends …, Quests, Group, PvP, Map (Map has
-  no ordering hook); check in the GUI test.
 - **Mounts:** the tier-3/4 flyers share one selection box per tier, sized
   for the highest seat (taller than a smaller race's flyer); the riderless
   capital displays keep each model's own box (`display_box`) — check their
@@ -761,7 +769,7 @@ none blocks the fresh-world GUI test. Numbers are comparisons, never targets.
   on thin ice; the refreeze radius of broken ice; a breath splash just
   outside the rim damages without a fight flag. Watch in the GUI test.
 - **UI headroom:** the flight warning has 4 px of headroom under the banner
-  subtitle at 720p and GUI scale 1; 10 survival tabs at 1280 × 720.
+  subtitle at 720p and GUI scale 1.
 - **Small notes:** a profession vendor outside a settlement would serve
   everyone (none exists); Mend ticks continue after the helper's flag ends
   (allowed by ruling 6); the enchant masks keep their source texture's
@@ -818,15 +826,8 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   the territory status repeats two zone queries `grug_pvp`'s own location
   tick already makes (could share them). Standing exactly at y −501 can
   flicker the banner, which is the rule itself.
-- **Map tab poll** (F4 review): the interval stays 2 s while fewer than
-  about 40 viewers' maps change at once and stretches beyond (about N/20 s
-  for N changing viewers); the true 2.0 s cadence sends about 20 % more
-  per open tab than the old rounded 2.5 s. One run read `page.lua`
-  2.4 → 4.2 ms/s at 50 stand-ins, and R3's gain was not visible at 100 in
-  one run (run-to-run spread up to about 40 %).
-- **F4 fixture gaps:** the Map tab's scroll quiet interval and the party
-  HUD's `slot_of` clean-up on leave are not covered by
-  `tools/r32_f4/portable_test.lua`.
+- **F4 fixture gap:** the party HUD's `slot_of` clean-up on leave is not
+  covered by `tools/r32_f4/portable_test.lua`.
 - **Performance review "later" list**
   ([R6–R13](docs/research/perf-review-2026-10-r32.md#later)): R6 ability
   input and crosshair every step (20–34 ms/s at 100) and R7 the minimap
@@ -1568,7 +1569,7 @@ blocked the playtest.
 
 ### Round 43 — world migrations
 
-**Delivered 2026-10-08, 0.43.0 not pushed**
+**Delivered 2026-10-08, pushed 2026-10-09**
 ([completion](docs/planning/round43-plan.md#completion-2026-10-08),
 plan [round43-plan.md](docs/planning/round43-plan.md)); every lane
 independently reviewed by Opus; 130 portable fixtures on main. Version
@@ -1583,9 +1584,10 @@ generation changed.
 - **The migration tool** (MT): `tools/migrate.py` and `tools/migration/`
   ([tools/README.md](tools/README.md#the-migration-tool)).
 - **Integration tests** (IT): `tools/r43_it/run.sh`, SQLite and PostgreSQL.
-- **Open for the first real step** (with the UI rework, in a later
-  version; ruling 2): map blocks (format v29, both SQLite `blocks` layouts, the round-trip
-  test) only when a step needs them (ruling 4).
+- **Open for a later step:** map blocks (format v29, both SQLite `blocks`
+  layouts, the round-trip test) only when a step needs them (ruling 4);
+  the first real step, 0.44.0, did without them (its station-grid gap is a
+  [Round 44 carry-over](#round-44-carry-overs)).
 
 ### Round 43 carry-overs
 
@@ -1603,11 +1605,81 @@ the reviews' and reports' backlog notes (theoretical, no severity).
   rather than "new world".
 - **Strings that are not valid UTF-8** (MT) cannot be written to
   PostgreSQL: the step fails, exit 1.
-- **The integration suite assumes an empty `migrate` list** (IT); the round
-  that declares the first real step adapts it.
 - **PostgreSQL migrate mode takes no lock at `begin()`** (IT), so a lock
   timeout during a step's first write is exit 1 `step`, not exit 2 `lock`
   (the operator stops the server first).
+
+### Round 44 — inventory, map and quickbar
+
+**Delivered 2026-10-09, 0.44.0 not pushed**
+([completion](docs/planning/round44-plan.md#completion-2026-10-09),
+plan [round44-plan.md](docs/planning/round44-plan.md)); every lane
+independently reviewed by Opus; 138 portable fixtures on main. Version
+0.44.0, **migrate**: the first declared step. Round A of the
+[UI and crafting rework](docs/planning/ui-crafting-rework-plan.md). No
+world generation changed.
+
+- **Inventory logic** (IH) and **the window frame** (FR): the give helper,
+  the fit check, bags in bags, the sort, the potion belt; the fixed tab
+  order, the inventory views and the Inventory tab
+  ([inventory_equipment.md](docs/design/inventory_equipment.md)).
+- **Character** (CH), **Talents & Skills** (TS), **Party & PvP and Help**
+  (PP): the mode and gear boxes with shift-click routing; the tree
+  framework, the skill row and hotbar-only skills
+  ([skill_trees.md](docs/design/skill_trees.md)); one Party & PvP page and
+  the rewritten texts.
+- **Map** (AR, MB, MQ): the user's art picks, the baked layer, the map
+  window on Z with the quest log, quest targets and event-driven refresh,
+  `grug_keys` ([world_map.md](docs/design/world_map.md)).
+- **Quickbar** (QB) and **the step** (MS): `grug_quickbar` on E, mount
+  items inert; step 0.44.0 and its test
+  ([upgrade contract §5.8](docs/technical/upgrade-contract.md#58-the-declared-steps)).
+
+### Round 44 carry-overs
+
+**Noted 2026-10-09** ([completion](docs/planning/round44-plan.md#completion-2026-10-09)),
+the reviews' and reports' backlog notes (theoretical, no severity). The map
+icon overlaps (and MB's GUI tuning) wait for the GUI test; MB has nothing
+else open.
+
+- **Window frame** (FR): reopening the inventory shows the scrollbar
+  position of the last send, not where the player left it; a page with no
+  view and an empty tab row would turn `size` into a legacy size (none
+  exists); a pure scrollbar event stops at sfinv, so `""` handlers
+  registered after it never see one (none acts on it).
+- **Bags** (IH): a cross-inventory bag swap (a chest's bag onto an equipped
+  bag) is checked as a full removal, stricter than needed; two soulbound
+  stacks past `main` would push one into a bag in a sort (one Claim Stone
+  per player).
+- **Character** (CH): a future allow rule on gear or arrow moves must also
+  cover `route_shift`, which skips the allow callbacks registered after
+  `equipment.lua`; a quiver change, a Scout's shot included, resends the
+  cached Character page in every mode.
+- **Talents & Skills** (TS): no message when a class change finds a full
+  hotbar (the base skills wait silently in the row).
+- **Texts** (PP): the removed-tab scan in `tools/r44_pp` misses
+  concatenations across lines, words split by hypertext tags and `[[...]]`
+  strings (no hits by hand today).
+- **Map window** (MQ): `zoom_fov` 72 replaces the 15° zoom creative mode
+  gives; while Charge's field of view is active, Z shows "Zoom currently
+  disabled"; the old probe `tools/r27_quest_item_names` still reads the
+  Quests page (outside `run_fixtures.sh`); the stale comment in
+  `grug_mapgen/wp40/r7_loader.lua:46-47` (zone markers as a `world_key`
+  reader) waits for the next real mapgen change, since a comment edit there
+  invalidates the world-layout cache.
+- **Quickbar** (QB): an open quickbar is never refreshed; `grug_mounts`
+  still depends on `grug_inventory`, which it no longer uses;
+  `grug_mounts.register_on_owned_tiers_changed` has no listener.
+- **The step** (MS): a crafting station's detached grid (saved in node
+  meta) can hold a skill or mount item from 0.43 that step 0.44.0 cannot
+  reach (the map part is deferred; nothing is lost). 0.44 still lets a
+  skill or mount item into a station grid: detached inventories are
+  protected only at load, at a join and when the skills page draws —
+  protect each at its creation, as `grug_housing/soulbound.lua` does (the
+  Round 45 plan removes the craft grids). The e2e row dump cuts rows over
+  90 characters (byte identity checked separately); on PostgreSQL the step
+  runs only on a world without skills or mounts (it uses only the shared
+  data API).
 
 ### Audit 2026-10 open questions
 

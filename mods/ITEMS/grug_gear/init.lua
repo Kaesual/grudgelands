@@ -10,13 +10,14 @@
 -- ---------------------------------------------------------------------------
 -- ITEM-LEVEL INTERFACE
 -- ---------------------------------------------------------------------------
---   _grug_ilvl     The item level of the bracket.
+--   _grug_ilvl     The base item level of the bracket (the ladder
+--                  1/11/21/31/41/51, round45-plan.md §4.1).
 --   _grug_req_level The minimum character level to equip it, for every
---                  item here (round33-plan.md §2.2): the item level, but 1
---                  in the first bracket (the starter kit and the level-1
---                  vendor floor). grug_inventory enforces it in every
---                  equipment slot (inventory_equipment.md §2,
---                  items_crafting.md §6.1); a dropped stack carries its own.
+--                  item here: the item level, capped at 60 (so 1 in the
+--                  first bracket, the starter kit and the level-1 vendor
+--                  floor). grug_inventory enforces it in every equipment
+--                  slot (inventory_equipment.md §2, items_crafting.md §6.1);
+--                  a dropped or crafted stack carries its own.
 --   _grug_quality  1 = Common for every item registered here. WP5 owns
 --                  quality > 1, the enchant roll ranges behind it (§6.2/§6.3)
 --                  and the colored display names that come with it. Nothing
@@ -37,28 +38,30 @@ dofile(core.get_modpath(core.get_current_modname()) .. "/permissions.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/enchant_colors.lua")
 
 --
--- Brackets. Prices are the Common slot table of economy.md §2 VERBATIM (in
--- copper): the ×2.5 axis with clean displayed prices, which is why it is not
--- recomputed from the bracket-1 anchor.
+-- Brackets. `ilvl` is the item level ladder (round45-plan.md §4.1): a
+-- tier's base item level is the first level of its band, 1/11/21/31/41/51,
+-- and `cap` = 10 x tier is the top of the tier, where upgrades end. Prices
+-- are the Common slot table of economy.md §2 VERBATIM (in copper): the ×2.5
+-- axis with clean displayed prices, which is why it is not recomputed from
+-- the bracket-1 anchor.
 --
 
 grug_gear.BRACKETS = {
-	{min_level =  1, max_level = 10, ilvl =  3, price = {weapon =   25, chest =   20, other =   15}},
-	{min_level = 11, max_level = 20, ilvl = 10, price = {weapon =   65, chest =   50, other =   35}},
-	{min_level = 21, max_level = 30, ilvl = 20, price = {weapon =  160, chest =  130, other =   80}},
-	{min_level = 31, max_level = 40, ilvl = 30, price = {weapon =  400, chest =  320, other =  200}},
-	{min_level = 41, max_level = 50, ilvl = 40, price = {weapon = 1000, chest =  800, other =  500}},
-	{min_level = 51, max_level = 60, ilvl = 50, price = {weapon = 2500, chest = 2000, other = 1250}},
+	{min_level =  1, max_level = 10, ilvl =  1, cap = 10, price = {weapon =   25, chest =   20, other =   15}},
+	{min_level = 11, max_level = 20, ilvl = 11, cap = 20, price = {weapon =   65, chest =   50, other =   35}},
+	{min_level = 21, max_level = 30, ilvl = 21, cap = 30, price = {weapon =  160, chest =  130, other =   80}},
+	{min_level = 31, max_level = 40, ilvl = 31, cap = 40, price = {weapon =  400, chest =  320, other =  200}},
+	{min_level = 41, max_level = 50, ilvl = 41, cap = 50, price = {weapon = 1000, chest =  800, other =  500}},
+	{min_level = 51, max_level = 60, ilvl = 51, cap = 60, price = {weapon = 2500, chest = 2000, other = 1250}},
 }
 
 local NUM_BRACKETS = #grug_gear.BRACKETS
 
--- The equip requirement of a bracket's items (round33-plan.md §2.2): the item
--- level, capped at 60, except the first bracket, which a level-1 character
--- wears.
-function grug_gear.bracket_required_level(bracket, ilvl)
-	if bracket == 1 then return 1 end
-	return math.min(ilvl, 60)
+-- The equip requirement of an item level: the item level itself from level
+-- 1, capped at 60 (round45-plan.md §4.1; boss drops at 65/70 require 60).
+-- grug_quality writes the same rule into a stack's `grug_req_level`.
+function grug_gear.required_level(ilvl)
+	return math.max(1, math.min(math.floor(tonumber(ilvl) or 1), 60))
 end
 
 -- The tooltip line of an equip requirement, or nil for none (level 1).
@@ -84,9 +87,9 @@ end
 -- round 2, 2026-09-15), and so are the two `default` swords the ladder now
 -- covers -- `grug_materials/content_curation.lua` unregisters those.
 --
--- Nothing about the GENERATOR changed with the rename: the brackets, the ilvl
--- anchors, the prices, the damage curve and the armor curve are the same
--- numbers WP7 shipped.
+-- Nothing about the GENERATOR changed with the rename: the brackets, the
+-- prices, the damage curve and the armor curve are the numbers WP7 shipped;
+-- the ilvl anchors moved to the 1/11/21/... ladder in Round 45.
 --
 -- Three naming ladders, one per line:
 --   * metal   -- the six universal metals of §3.0.1, which are also the six
@@ -212,7 +215,7 @@ end
 -- Weapons (§3.2). Base 1H damage curve; the family factor multiplies the
 -- ROUNDED 1H value, exactly as the §3.2 table is built.
 --
--- Verified against the §3.8 row: ilvl 3/10/20/30/40/50 -> 5/8/11/15/18/22.
+-- The 1H curve at the base ladder: ilvl 1/11/21/31/41/51 -> 4/8/11/15/18/22.
 --
 -- How damage reaches a mob (WP38): a swing ability builds one authoritative
 -- full hit from this fleshy value + Str/10 at this interval, then armor
@@ -269,7 +272,7 @@ end
 -- Two doc cells do not round to their table value: cloth at ilvl 42 rounds
 -- to 12 (doc 11) and leather at ilvl 27 rounds to 21 (doc 20). Both are
 -- interior points of a fit anchored on T1/T4 -- reported as findings; the
--- vendor brackets stop at ilvl 50 and none of them touches those cells.
+-- base brackets stop at ilvl 51 and none of them touches those cells.
 --
 -- Round 10 registers all three material lines across six tiers. Universal
 -- base recipes include leather; class armor-rank eligibility still governs
@@ -516,7 +519,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			},
 			_grug_weapon_family = w.key,
 			_grug_ilvl = br.ilvl,
-			_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
+			_grug_req_level = grug_gear.required_level(br.ilvl),
 			_grug_bracket = bracket,
 			_grug_quality = 1,
 			_grug_hands = w.hands,
@@ -548,7 +551,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		inventory_image = SHIELD_IMAGE[bracket], _grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1},
 		stack_max = 1, _grug_armor = shield_rating, _grug_ilvl = br.ilvl,
-		_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
+		_grug_req_level = grug_gear.required_level(br.ilvl),
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
 		_grug_quality_family = "shield",
 	})
@@ -564,7 +567,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		_grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1},
 		stack_max = 1, _grug_max_mana_percent = mana, _grug_ilvl = br.ilvl,
-		_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
+		_grug_req_level = grug_gear.required_level(br.ilvl),
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
 		_grug_quality_family = "spellbook",
 	})
@@ -605,7 +608,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 					stack_max = 1,
 					_grug_armor = armor,
 					_grug_ilvl = br.ilvl,
-					_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
+					_grug_req_level = grug_gear.required_level(br.ilvl),
 					_grug_bracket = bracket,
 					_grug_quality = 1,
 				})

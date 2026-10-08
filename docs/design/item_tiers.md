@@ -145,19 +145,19 @@ and +69 % at 70 (table "A full set at level 60"), the order of the design's
 | Dodge % | 1.5 + 0.032 × L, one decimal | 1.8 | 2.1 | 2.5 | 2.8 | 3.1 | 3.4 | 3.6 | 3.7 | 0.5 / 0.8 / 1.2 / 1.6 / 2 / 2.5 |
 | Armor rating | 0.08 × L, one decimal | 0.8 | 1.6 | 2.4 | 3.2 | 4.0 | 4.8 | 5.2 | 5.6 | 1 / 2 / 3 / 4 / 5 / 6 |
 
-### Values on plain bases (vendor or crafted item level 3/10/20/30/40/50)
+### Values on plain bases (vendor or crafted item level 1/11/21/31/41/51)
 
-| Stat | T1 (3) | T2 (10) | T3 (20) | T4 (30) | T5 (40) | T6 (50) |
+| Stat | T1 (1) | T2 (11) | T3 (21) | T4 (31) | T5 (41) | T6 (51) |
 |---|---:|---:|---:|---:|---:|---:|
 | Strength | 1 | 3 | 5 | 8 | 11 | 15 |
 | Dexterity | 1 | 2 | 4 | 6 | 8 | 10 |
 | Intelligence | 1 | 3 | 5 | 8 | 11 | 15 |
-| Crit % | 1.8 | 2.1 | 2.6 | 3.0 | 3.5 | 3.9 |
-| Attack speed % | 1.7 | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 |
-| Max HP % | 1.7 | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 |
-| Max Mana % | 2.3 | 2.5 | 2.8 | 3.1 | 3.4 | 3.7 |
-| Dodge % | 1.6 | 1.8 | 2.1 | 2.5 | 2.8 | 3.1 |
-| Armor rating | 0.5 | 0.8 | 1.6 | 2.4 | 3.2 | 4.0 |
+| Crit % | 1.7 | 2.2 | 2.6 | 3.1 | 3.5 | 3.9 |
+| Attack speed % | 1.6 | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 |
+| Max HP % | 1.6 | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 |
+| Max Mana % | 2.2 | 2.5 | 2.8 | 3.1 | 3.4 | 3.7 |
+| Dodge % | 1.5 | 1.9 | 2.2 | 2.5 | 2.8 | 3.1 |
+| Armor rating | 0.5 | 0.9 | 1.7 | 2.5 | 3.3 | 4.1 |
 
 ### A full set at level 60
 
@@ -566,12 +566,13 @@ Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
 
 ### 3.2 What an upgrade is worth
 
-A plain base sits at the bottom of its tier (item level 3/10/20/30/40/50) and
-an upgrade lifts it to the top (10/20/…/60). Example, an Embersteel sword (T5)
-with two T5 enchants: item level 40 → 50, damage 18 → 22, a Strength enchant
-11 → 15, a Crit enchant 3.5 → 3.9 %. An upgraded T(n) weapon or armour piece
-equals a plain T(n+1) one in base stats; the upgrade keeps its enchants, which
-a new base would have to buy again.
+A plain base sits at the bottom of its tier (item level 1/11/21/31/41/51, the
+ladder of Round 45) and an upgrade lifts it to the top (10/20/…/60). Example,
+an Embersteel sword (T5) with two T5 enchants: item level 41 → 50, damage
+18 → 22, a Strength enchant 11 → 15, a Crit enchant 3.5 → 3.9 %. An upgraded
+T(n) weapon equals a plain T(n+1) one in base damage, an armour piece is at
+most one armor point behind it (one item level lower); the upgrade keeps its
+enchants, which a new base would have to buy again.
 
 ### 3.3 Profession families (v2, user ruling 2026-10-04)
 

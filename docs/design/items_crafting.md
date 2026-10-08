@@ -150,16 +150,16 @@ universal pick.
 
 | Tier | Levels | ilvl | Metal | Processing | Tier rock (mapgen band) | Next-pick material available no deeper than |
 |---|---:|---:|---|---|---|---:|
-| T1 | 1–10 | 3 | **Bronze** | Copper + Tin, dual furnace | `default:stone`, y ≥ −100 | Iron: y ≥ −100 |
-| T2 | 11–20 | 10 | **Iron** | Iron ore, normal furnace | `grug_materials:t2_stone`, −101…−300 | mined Coal/Steel inputs: y ≥ −300 |
-| T3 | 21–30 | 20 | **Steel** | Iron Bar + mined Coal, dual furnace | `grug_materials:t3_stone`, −301…−500 | Silver: y ≥ −500 |
-| T4 | 31–40 | 30 | **Silversteel** | Steel + Silver, dual furnace | `grug_materials:t4_stone`, −501…−700 | Emberglass: y ≥ −700 |
-| T5 | 41–50 | 40 | **Embersteel** | Silversteel + Emberglass, dual furnace | `grug_materials:t5_stone`, −701…−1000 | Abyssal Crystal: y ≥ −1000 |
-| T6 | 51–60 | 50 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | `grug_materials:t6_stone`, below −1000 | no T7 prerequisite |
+| T1 | 1–10 | 1 | **Bronze** | Copper + Tin, dual furnace | `default:stone`, y ≥ −100 | Iron: y ≥ −100 |
+| T2 | 11–20 | 11 | **Iron** | Iron ore, normal furnace | `grug_materials:t2_stone`, −101…−300 | mined Coal/Steel inputs: y ≥ −300 |
+| T3 | 21–30 | 21 | **Steel** | Iron Bar + mined Coal, dual furnace | `grug_materials:t3_stone`, −301…−500 | Silver: y ≥ −500 |
+| T4 | 31–40 | 31 | **Silversteel** | Steel + Silver, dual furnace | `grug_materials:t4_stone`, −501…−700 | Emberglass: y ≥ −700 |
+| T5 | 41–50 | 41 | **Embersteel** | Silversteel + Emberglass, dual furnace | `grug_materials:t5_stone`, −701…−1000 | Abyssal Crystal: y ≥ −1000 |
+| T6 | 51–60 | 51 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | `grug_materials:t6_stone`, below −1000 | no T7 prerequisite |
 
 - Wood and Stone starter picks are not extra material tiers. They are T1
   picks (T1 rock and T1 resources); Bronze is the best T1 pick. Wood and Stone
-  gear stays below the generated ilvl anchors and carries no level requirement.
+  gear has no item level and carries no level requirement.
 - Gold is a universal luxury, jewelry and building material, never a tool
   metal. There is no Gold weapon, armor or pick. Physical Gold and ledger money
   are separate systems (`economy.md` §1).
@@ -632,14 +632,14 @@ Headed by their ilvl from here on.
 | Cloth (Tailor) | 5 | 8 | 11 | 15 | 5/4/3/3 |
 | Shield | — | — | — | — | matching-tier base metal-set total |
 
-The six live catalog anchors at ilvl 3/10/20/30/40/50 produce cloth set
-ratings 4/5/6/8/11/14, leather 5/10/17/23/29/36 and metal
-8/14/23/32/40/49. A plain shield contributes the matching tier's complete
-base metal-set rating: 8/14/23/32/40/49. Drop gear uses the same curve at
+The six live catalog anchors at ilvl 1/11/21/31/41/51 (the item level
+ladder, Round 45) produce cloth set ratings 4/5/7/8/12/14, leather
+4/11/18/23/30/37 and metal 6/14/23/32/41/49. A plain shield contributes the
+matching tier's complete base metal-set rating: 6/14/23/32/41/49. Drop gear uses the same curve at
 its ilvl; quality adds affixes without changing the base curve.
 
 **Off-tier ilvls: linear interpolation** (recorded 2026-08-07 with WP7).
-The vendor brackets sit at ilvl 3/10/20/30/40/50 (§3.8) — ilvls the tier
+The base brackets sit at ilvl 1/11/21/31/41/51 (§3.8) — ilvls the tier
 table above does not cover — so the implementation fits a straight line
 through the T1/T4 anchors (ilvl 12 and 57) per armor line and reads the
 set total off it. Result against the four table cells:
@@ -652,21 +652,21 @@ set total off it. Result against the four table cells:
 
 So **the cloth and leather rows are not perfectly linear** — each misses
 one interior cell by 1 point; metal reproduces the table exactly. No
-shipped vendor bracket touches ilvl 27 or 42, but **WP5's drop tables
+shipped base bracket touches ilvl 27 or 42, but **WP5's drop tables
 will**, and the 1-point step is accepted there rather than bending the
 line: the table cell is the authority at the four tier ilvls, the line
 is the authority between them.
 
 **Minimum 1 armor point per piece.** The per-piece split can round to 0
-at the very bottom of the cloth line — bracket 1 (ilvl 3) has a set
-total of 3, and the 16 % foot share rounds to 0. A 0-armor boot is a
+at the very bottom of the cloth line — bracket 1 (ilvl 1) has a set
+total of 2.6, and the 16 % foot share rounds to 0. A 0-armor boot is a
 bug, not a design statement, so every piece is clamped to ≥ 1. That
 clamp bites at exactly one item in the whole shipped catalog.
 
 **The six-tier ladder reads off the same line** (2026-08-07). Under
 §3.0.3 the material sets and the vendor brackets are one catalog, so a
 tier's armor values are the line evaluated at that tier's ilvl anchor —
-3 / 10 / 20 / 30 / 40 / 50 — per piece, exactly as the shipped generator
+1 / 11 / 21 / 31 / 41 / 51 — per piece, exactly as the shipped generator
 already does it. Nothing is re-derived and no coefficient changes; the
 tier columns above stay the authority at their four ilvls.
 
@@ -708,7 +708,8 @@ improvement operations (Round 33; the recipes since Round 45).
 
 Every equipment item requires min(item level, 60) as its minimum character
 level (Round 33, round33-plan.md §2.2; `_grug_req_level`, per stack
-`grug_req_level`); T1 bases require level 1. Every equipment slot enforces it
+`grug_req_level`); base items therefore require the first level of their
+tier's band, 1 / 11 / 21 / 31 / 41 / 51 (Round 45). Every equipment slot enforces it
 (`inventory_equipment.md`). This gate does not apply to tools, which
 carry their own material-tier level requirement instead (§3.0.4 "Tool level
 requirement").
@@ -1080,8 +1081,8 @@ main profession slot (professions.md §1).
 | Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
 |---|---|---|---|---|---|---|
 | Material tier | T1 | T2 | T3 | T4 | T5 | T6 |
-| ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
-| 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
+| ilvl | 1 | 11 | 21 | 31 | 41 | 51 |
+| 1H weapon dmg (§3.2 curve) | 4 | 8 | 11 | 15 | 18 | 22 |
 
 - **No gem base cost.** Ordinary crafted combat weapons, armor
   pieces and offhands at every tier use only their material recipe (bars,
@@ -1319,11 +1320,11 @@ regeneration path reads them all.
 **Level requirement** (Round 33, [round33-plan.md](../planning/round33-plan.md)
 §2.2). **Every** equipment item — weapons, armour, shields, spellbooks,
 trinkets; dropped, crafted or bought — requires the character level
-**min(item level, 60)**. Ordinary base items therefore require levels
-**1 / 10 / 20 / 30 / 40 / 50** across the six material tiers: T1 uses an
-explicit level-1 requirement (`_grug_req_level`) while retaining item level 3
-for base stats, so the starter kit and the first vendor bracket fit a new
-character. A found item requires its own item level up to the character cap,
+**min(item level, 60)**. Ordinary base items sit on the item level ladder
+(Round 45, round45-plan.md §4.1): base item level **1 / 11 / 21 / 31 / 41 /
+51**, the first level of each tier's band, and they require exactly that
+level, so the starter kit and the first vendor bracket fit a new character
+without an exception (`_grug_req_level`). A found item requires its own item level up to the character cap,
 stored per stack (`grug_req_level`); boss drops at item level 65/70 require
 level 60. Every equipment slot refuses an item above the character's level
 and says so in the message feed, naming the slot; the tooltip ends with

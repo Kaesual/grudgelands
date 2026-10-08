@@ -384,10 +384,21 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   step by step, the game finishes a step's online work at load and at each
   character's join, and a start guard refuses a newer world or one that
   needs the tool; shipped alone with an empty `migrate` list. Complete on
-  2026-10-08; 0.43.0 not pushed. Next: the push and the GUI check; then
-  [Round 44](docs/planning/round44-plan.md) (UI rework, the first real
-  migration step) and [Round 45](docs/planning/round45-plan.md)
-  (crafting rework).
+  2026-10-08, pushed on 2026-10-09. Next: the GUI check.
+- [x] **Round 44 "Inventory, map and quickbar"**
+  ([completion](docs/planning/round44-plan.md#completion-2026-10-09)),
+  version 0.44.0, **migrate** (the first declared step): Round A of the
+  [UI and crafting rework](docs/planning/ui-crafting-rework-plan.md) — one
+  window with fixed tabs, one inventory with bags in bags, Sort and the
+  potion belt, the Character tab's mode box, both talent trees on one
+  Talents & Skills tab with hotbar-only skills, Party & PvP on one page,
+  the pixel-art map with every settlement baked, the map window with the
+  quest log and quest targets on Z, the quickbar on E for mounts, boats,
+  potions and Return home; the offline step removes the retired mount
+  items and skills outside the hotbar. Complete on 2026-10-09; 0.44.0 not
+  pushed and may wait for the platform's step runner. Next: the GUI test;
+  then [Round 45](docs/planning/round45-plan.md) (crafting rework, Round
+  B).
 
 ### Remaining work
 
@@ -410,11 +421,14 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 39](BACKLOG.md#round-39-carry-overs),
   [Round 40](BACKLOG.md#round-40-carry-overs),
   [Round 41](BACKLOG.md#round-41-carry-overs),
-  [Round 42](BACKLOG.md#round-42-carry-overs) and
-  [Round 43](BACKLOG.md#round-43-carry-overs) carry-overs (Round 40: the
+  [Round 42](BACKLOG.md#round-42-carry-overs),
+  [Round 43](BACKLOG.md#round-43-carry-overs) and
+  [Round 44](BACKLOG.md#round-44-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
-  navigation notes only; Round 43: theoretical migration notes only);
+  navigation notes only; Round 43: theoretical migration notes only;
+  Round 44: theoretical UI and step notes, the map icon overlaps for the
+  GUI test);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

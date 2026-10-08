@@ -444,7 +444,7 @@ end
 --
 do
 	local r = boot({record = "0.42.0", storage = {world_preparation = "x"},
-		test_steps = {step("0.42.5")}})
+		registry = {versions = {}, handlers = {}}, test_steps = {step("0.42.5")}})
 	check(r.ok and not r.hook_read, "F without its setting the hook file is never read")
 	eq(#r.M.steps, 0, "F ...and adds no step")
 
@@ -478,11 +478,20 @@ do
 	r = boot({registry = {versions = {}, handlers = {["0.44.0"] = {}}}})
 	has(r.err, "no listed step", "F handlers for an unlisted version stop the load")
 
-	-- The shipped registry: empty, and the shipped configuration never sets
-	-- the hook (settingtypes.txt and minetest.conf do not name it).
+	-- The shipped registry: the declaration's migrate list (0.44.0 on, Round
+	-- 44 lane MS; tools/check_upgrade.py proves the same), and the shipped
+	-- configuration never sets the hook (settingtypes.txt and minetest.conf
+	-- do not name it).
 	grug_core = {}
 	real_dofile(CORE .. "/migrations.lua")
-	eq(#grug_core.migrations.versions, 0, "F the shipped registry declares no step")
+	local f = assert(io.open(repo .. "/tools/web_data/upgrade.json", "rb"))
+	local declared = {}
+	for version in assert(f:read("*a"):match('"migrate": %[([^%]]*)%]')):gmatch('"([^"]+)"') do
+		declared[#declared + 1] = version
+	end
+	f:close()
+	eq(table.concat(grug_core.migrations.versions, " "), table.concat(declared, " "),
+		"F the shipped registry is the declaration's migrate list")
 	for _, name in ipairs({"/minetest.conf", "/settingtypes.txt", "/game.conf"}) do
 		local f = assert(io.open(repo .. name, "rb"))
 		local text = f:read("*a")
