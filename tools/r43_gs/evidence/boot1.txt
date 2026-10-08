@@ -1,0 +1,5 @@
+headless boot: PASS (port 31016, 150 s)
+log: /tmp/grudgelands-headless.G125Ll/server.log
+seed = 42
+96:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31016.
+kept: /tmp/grudgelands-headless.G125Ll

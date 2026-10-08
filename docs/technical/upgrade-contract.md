@@ -45,10 +45,11 @@ declaration follows from them.
 
 ## 2. The declaration
 
-`tools/web_data/upgrade.json`, exactly this shape:
+`tools/web_data/upgrade.json`, exactly this shape (schema 2 since Round 43,
+which added the `migrate` list of the platform's migration contract):
 
 ```json
-{"schema": 1, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": []}
+{"schema": 2, "version": "0.42.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}
 ```
 
 - `version` equals `game.conf`'s `version`. Versions are
@@ -61,7 +62,12 @@ declaration follows from them.
 - `tools/check_upgrade.py` checks these rules against the last pushed commit
   (`origin/main`; `--base REF` for another) and runs its own self-test of the
   rules first (also alone: `--self-test`). A missing earlier declaration is
-  accepted once. It runs at every round end.
+  accepted once; a pushed schema-1 declaration counts as one without
+  `migrate` entries. It also proves the game's step registry
+  (`grug_core.migrations` `versions`, which the start guard reads) equal to
+  `migrate`, and that each `migrate` entry's step file
+  `tools/migration/steps/vX_Y_Z.py` exists and, once pushed, is unchanged.
+  It runs at every round end.
 - The first declaration (0.41.0) covers the one migration that is due: the
   user's production server moves from 0.40.0 to 0.41.0 with a map reset
   (it crosses 0.40.1, which changed world generation; Round 41's own mapgen
