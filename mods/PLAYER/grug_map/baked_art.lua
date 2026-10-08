@@ -2,8 +2,8 @@
 -- The baked map layer's icons and pixel font (bake.lua), decoded from
 -- the PNGs in mods/PLAYER/grug_map/art; `--check` tells a stale copy.
 return {
-	art_version = "02af5d8d4338bf14",
-	font_version = "731c15ec7b081e49",
+	art_version = "80521b11695ec4e7",
+	font_version = "59f583e8b368e949",
 	icons = {
 		start = {w = 16, h = 16,
 			palette = {["."] = "00000000", ["#"] = "241e1cff", ["a"] = "604331ff", ["b"] = "b85f3fff", ["c"] = "ffe5abff", ["d"] = "d7bd8aff", ["e"] = "e6b64dff"},

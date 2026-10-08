@@ -6,9 +6,15 @@ through the hosting platform's contract, never through data migrations. The
 mechanisms the fresh-server development mode removed stay removed. Ids of
 quests, items, achievements and waypoints stay stable; a renamed item may keep
 its old name with `register_alias`, so aliases are no longer refused here.
+
+Also (Round 44): the baked map art's Lua copy is current
+(tools/r44_mb/gen_baked_art.py --check and its decoder self-test), since art
+changed without regenerating grug_map/baked_art.lua would keep the old art
+under the old map cache key.
 """
 from pathlib import Path
 import re
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 removed = (
@@ -40,6 +46,13 @@ for path in (ROOT / "mods").rglob("*.lua"):
 assert '"close opened chests on load"' in (ROOT / "mods/BASE/default/chests.lua").read_text()
 assert "register_sapling_growth" in (ROOT / "mods/BASE/default/trees.lua").read_text()
 assert "core.serialize(clean_staticdata(self))" in (ROOT / "mods/ENTITIES/mobs/api.lua").read_text()
+sys.path.insert(0, str(ROOT / "tools/r44_mb"))
+import gen_baked_art  # noqa: E402
+
+errors += ["baked art decoder self-test: " + failure for failure in gen_baked_art.self_test()]
+baked = ROOT / gen_baked_art.OUTPUT
+if not baked.exists() or baked.read_text(encoding="utf-8") != gen_baked_art.build(gen_baked_art.DEFAULT_ART):
+    errors.append(f"{gen_baked_art.OUTPUT} is stale: run python3 tools/r44_mb/gen_baked_art.py")
 if errors:
     raise SystemExit("\n".join(errors))
-print("Release-mode source audit: PASS")
+print("Release-mode source audit and baked map art: PASS")

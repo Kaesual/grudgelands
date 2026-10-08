@@ -31,7 +31,7 @@ local givers, services, bosses = {}, {}, {}
 -- places stay known here for the zone markers' placement.
 local givers_for, services_for = {}, {}
 local function visible(row, faction)
-	return row.everyone or row.faction == nil or row.faction == faction
+	return row.faction == nil or row.faction == faction
 end
 -- Trainer icons per profession (Round 44, spec ruling 15) replace the book;
 -- Riding keeps the mount icon.
