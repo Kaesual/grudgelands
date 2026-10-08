@@ -334,7 +334,7 @@ local function load_quests(quest_root, mobs_root, register, prepare)
 	register(quest_root, mobs_root)
 	mod_paths.grug_quests = quest_root
 	local base = "mods/PLAYER/grug_quests/"
-	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader", "ui", "hud"}) do
+	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader", "hud"}) do
 		-- use.lua reads the quest-object kinds the quest files may name
 		-- (Round 36): always the shipped data/use_objects.json.
 		mod_paths.grug_quests = file == "use" and "mods/PLAYER/grug_quests" or quest_root
@@ -409,6 +409,13 @@ local function dialogue(npc, id)
 	end
 	return ""
 end
+-- The quest log is the map window's quest box since Round 44
+-- (grug_map/quest_box.lua); this stands in for the old Quests tab's page.
+local quest_box = dofile("mods/PLAYER/grug_map/quest_box.lua")
+pages["grug_quests:quests"] = {get = function(_, p, context)
+	return quest_box.content({quest_selected = context.grug_quest_selected}, grug_quests.journal(p),
+		{x = 13.4, y = 1.05, w = 7, h = 10.7})
+end}
 local function log(id) return pages["grug_quests:quests"].get(nil, player, {grug_quest_selected = id}) end
 local function hud(id)
 	for _, row in ipairs(Q.journal(player).quests) do

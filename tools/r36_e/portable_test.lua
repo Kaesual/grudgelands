@@ -228,7 +228,7 @@ grug_mobs = {
 -- grug_quests, the real files in init.lua's order.
 ------------------------------------------------------------------------------
 grug_quests = {}
-for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader", "ui",
+for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader",
 		"hud"}) do
 	dofile(repo .. "/mods/PLAYER/grug_quests/" .. file .. ".lua")
 end

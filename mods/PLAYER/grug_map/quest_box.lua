@@ -58,12 +58,19 @@ local function detail_text(quest)
 		table.concat(objectives, "\n") .. "\n\nRewards: " .. table.concat(rewards, ", ")
 end
 
--- "Level 9 · Dawnmere Fields": the quest's level and its zone's name.
+-- "Level 9 · Dawnmere Fields": the quest's level and its zone's name, the
+-- name read once per zone (rendering reads no world seam twice, Round 28
+-- Q0).
+local zone_names = {}
 local function level_line(quest)
 	local def = grug_quests.registered_quests[quest.id]
 	if not def then return "" end
-	local zone = def.zone and grug_zones.get(def.zone)
-	local name = zone and zone.display_name
+	local name = def.zone and zone_names[def.zone]
+	if def.zone and name == nil then
+		local zone = grug_zones.get(def.zone)
+		name = zone and zone.display_name or false
+		zone_names[def.zone] = name
+	end
 	return "Level " .. def.level .. (name and (" · " .. name) or "")
 end
 
