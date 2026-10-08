@@ -11,15 +11,16 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - Built on sfinv pages in one frame (Round 44, `grug_inventory/ui.lua`):
   `formspec_version[6]` with a real-coordinate `size[13.500,13.673]`, the
   same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size;
-  the Map tab keeps its own legacy header. Page content follows a
+  the Map tab opens the map window, a form of its own sized to the screen
+  (Round 44, [world_map.md](world_map.md#map-window)). Page content follows a
   `real_coordinates[false]`, so pages still in legacy coordinates keep their
   place and end before legacy y=7.0; pages in real coordinates start their
   content with `real_coordinates[true]`.
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
-  Character · Talents & Skills · Crafting · Party & PvP · Help · Map. Until
-  the map window lands, Quests (moving into it) stands before
-  Map. Creative's tabs, for creative players, follow the table.
+  Character · Talents & Skills · Crafting · Party & PvP · Help · Map. The
+  quest log is in the map window. Creative's tabs, for creative players,
+  follow the table.
 - **Inventory views** (`grug_inventory.inventory_view(player, mode,
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
@@ -572,7 +573,9 @@ The inventory gains separate Quests, Party and Map tabs, following `quests.md`,
 default on; empty quest logs and players without a party have no
 corresponding HUD.
 Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
-our own minimap, default on (`world_map.md`). Since Round 31 a PvP tab
+our own minimap, default on (`world_map.md`). Since Round 44 the quest log
+and that switch live in the map window (Z or the Map tab); the Quests tab
+is gone. Since Round 31 a PvP tab
 (since Round 44 the PvP section of the Party & PvP tab, `grug_pvp/page.lua`) holds the "Flag me for PvP"
 button, the current state (safe, or flagged with the reason and the seconds
 left; PvP combat) and the PvP statistics; it is re-sent once a second only

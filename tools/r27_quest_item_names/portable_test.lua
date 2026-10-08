@@ -195,9 +195,17 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 grug_quests = {}
 local Q = grug_quests
 for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader",
-		"ui", "hud"}) do
+		"hud"}) do
 	dofile(ROOT .. "/mods/PLAYER/grug_quests/" .. file .. ".lua")
 end
+-- The quest log is the map window's quest box since Round 44
+-- (grug_map/quest_box.lua); this stands in for the old Quests tab's page.
+local quest_box = dofile(ROOT .. "/mods/PLAYER/grug_map/quest_box.lua")
+pages["grug_quests:quests"] = {get = function(_, p, context)
+	return quest_box.content({quest_selected = context.grug_quest_selected}, grug_quests.journal(p),
+		{x = 13.4, y = 1.05, w = 7, h = 10.7})
+end}
+
 
 -- No shipped quest rewards items yet; one fixture quest exercises the reward
 -- path of the real dialogue and quest log with a food and a tool.
@@ -359,12 +367,14 @@ for _, id in ipairs(ids) do
 		end
 	end
 
-	-- Quest log (ui.lua) and HUD tracker (hud.lua), quest active.
+	-- Quest log (grug_map/quest_box.lua since Round 44) and HUD tracker
+	-- (hud.lua), quest active.
 	set_state({active = {[id] = {}}, completed = completed, tracked = {id}, hud = true})
 	local form = pages["grug_quests:quests"].get(nil, player, {grug_quest_selected = id})
 	-- One text field (Round 32): description, an empty line, one line per
 	-- objective, an empty line, the reward line.
-	local detail = element(form, "textarea[5.10,1.05;5.00,4.75;;;")
+	local detail_at = form:find("textarea%[[%d.,;]+;;;")
+	local detail = detail_at and element(form, ";;;", detail_at)
 	if check(detail ~= nil, "quest log text field present: " .. id) then
 		local detail_lines = lines_of(detail)
 		local count = #detail_lines

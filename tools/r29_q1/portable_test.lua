@@ -210,11 +210,19 @@ local BASE = "mods/PLAYER/grug_quests/"
 local function load_quests(quest_root)
 	grug_quests = {}
 	mod_paths.grug_quests, mod_paths.grug_mobs = quest_root, MOBS
-	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "validate", "loader", "ui", "hud"}) do
+	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "validate", "loader", "hud"}) do
 		dofile(BASE .. file .. ".lua")
 	end
 	return grug_quests
 end
+-- The quest log is the map window's quest box since Round 44
+-- (grug_map/quest_box.lua); this stands in for the old Quests tab's page.
+local quest_box = dofile("mods/PLAYER/grug_map/quest_box.lua")
+pages["grug_quests:quests"] = {get = function(_, p, context)
+	return quest_box.content({quest_selected = context.grug_quest_selected}, grug_quests.journal(p),
+		{x = 13.4, y = 1.05, w = 7, h = 10.7})
+end}
+
 
 ------------------------------------------------------------------------------
 -- 1. The parts.

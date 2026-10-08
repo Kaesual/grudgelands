@@ -20,18 +20,24 @@ a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
 
 - Exactly 20 active quests maximum; accepting beyond that is refused with a
   clear explanation. Completion or abandonment frees a slot.
-- A dedicated Quest inventory tab supports viewing and abandoning quests.
-  Right of the quest list: the title, then one scrolling text field with the
-  description, the objective lines and the reward line, separated by an
-  empty line each, and below it one row with "Track on HUD" on the left and
-  Abandon on the right; while Confirm abandon and Cancel are shown they take
-  the row alone (Round 32).
-- Quest lists (the quest giver's dialog and the Quest tab) show each quest's
+- The quest log supports viewing and abandoning quests. Since Round 44 it
+  is part of the map window (Z or the Map tab,
+  [world_map.md](world_map.md#map-window); until then a Quests tab): right
+  of the map, the list box with the active count, the Quest HUD switch, the
+  list and one row with "Track on HUD" on the left and Abandon on the right
+  (while Confirm abandon and Cancel are shown they take the row alone,
+  Round 32); below it the selected quest's title, its level and zone, one
+  scrolling text field with the description, the objective lines and the
+  reward line, separated by an empty line each, and where to hand it in.
+  Selecting a quest marks its targets on the map (leader, talk NPC and use
+  place crosshairs, rings around the nearest spawn regions;
+  [world_map.md](world_map.md#quest-targets)).
+- Quest lists (the quest giver's dialog and the quest log) show each quest's
   status as the entry's colour, explained by a legend or the list's tooltip:
   available gold, ready to complete green, in progress blue, locked grey; a
   repeatable quest ends in "(R)". The giver's dialog is wide enough for the
   longest title at a full-HD window; quest texts are read-only (Round 35).
-- A quest HUD toggle lives in this tab, defaults on and is saved per player.
+- A quest HUD toggle lives in the quest log, defaults on and is saved per player.
   No active quests means no quest HUD, without changing the saved preference.
 - Objective families are **item turn-in**, **kill**, **travel**
   (conversation) and, since Round 36, **use at a place** (a quest object

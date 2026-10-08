@@ -17,10 +17,7 @@
 --      inventories equal keys always give equal journals and markers;
 --   T  a turn-in whose money or XP reward raises still saves the state and
 --      runs the change callbacks and markers_changed, then re-raises;
---   G  the Map tab's zone grid (grug_map/location.lua): a world of more than
---      255 zones places its markers, logs a warning and stores no file (the
---      encode assert is inside the pcall); an ordinary world stores the file
---      and the next start reads it back.
+--   G  (the Map tab's zone grid; gone with the zone markers in Round 44).
 -- Prints "R31 C PORTABLE PASS checks=<n>" or the failures.
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
@@ -425,55 +422,6 @@ do
 		check(changes >= 1, "T the change callbacks run after a failed " .. reward .. " reward")
 		check(marker_calls >= 1, "T the markers are told after a failed " .. reward .. " reward")
 	end
-end
-
--- ---------------------------------------------------------------------------
--- G: the zone grid with more than 255 zones
--- ---------------------------------------------------------------------------
-local zone_count = 300
-grug_zones = {
-	id_at = function(x, z)
-		local cell = math.floor((x + 3600) / 96) + math.floor((z + 3600) / 96) * 75
-		return "zone_" .. (cell % zone_count + 1)
-	end,
-	get = function(id) return {id = id, numeric_id = tonumber(id:match("%d+")), display_name = id,
-		level_min = 1, level_max = 10} end,
-	water_class_at = function() return "land" end,
-	hard_footprint_in = function() return nil end,
-}
-grug_home = {locations = function() return {} end}
-grug_mapgen = {wp40 = {world_key = {seed = "1", source = "s", settings = "x", interpreter = "j"}}}
--- One server start: a fresh atlas and location.lua, then the mods-loaded
--- hook that places the zone markers.
-local function start_map()
-	grug_map = {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")}
-	grug_map.atlas.set_base_texture("base.png")
-	grug_map.page_layout = {map_w = 12.37, region_labels = {}}
-	grug_map.static_marker_positions = function() return {} end
-	registered.register_on_mods_loaded = {}
-	logs, writes = {}, {}
-	dofile(repo .. "/mods/PLAYER/grug_map/location.lua")
-	local ok, err = pcall(each, "register_on_mods_loaded")
-	local placed = #grug_map.atlas.collect_markers(nil, {zone = true})
-	local warned, read = false, false
-	for _, row in ipairs(logs) do
-		warned = warned or (row[1] == "warning" and row[2]:find("zone grid is not stored: .*too many zones") ~= nil)
-		read = read or row[2]:find("from the file", 1, true) ~= nil
-	end
-	return ok, err, placed, warned, read
-end
-do
-	local ok, err, placed, warned = start_map()
-	check(ok, "G more than 255 zones do not stop the load: " .. tostring(err))
-	check(placed > 255, "G ...their markers are placed (" .. placed .. ")")
-	check(warned, "G ...a warning names the unstored grid")
-	eq(#writes, 0, "G ...and no file is written")
-	zone_count = 3
-	local ok2, err2, placed2, warned2, read2 = start_map()
-	check(ok2 and placed2 == 3 and not warned2 and #writes == 1 and not read2,
-		"G an ordinary world samples and stores the grid: " .. tostring(err2))
-	local ok3, _, placed3, _, read3 = start_map()
-	check(ok3 and placed3 == 3 and read3 and #writes == 0, "G the next start reads it back")
 end
 
 if #failures > 0 then

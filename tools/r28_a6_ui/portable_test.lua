@@ -9,10 +9,11 @@
 --      level-up is a banner and nothing goes to chat;
 --   3. quest progress lines (grug_quests/hud.lua): first sight silent, a rise
 --      posts "<subject> n/m" under the quest's key, a fall is silent;
---   4. the quest log column (grug_quests/ui.lua): one text field right of the
---      list with a visible gap, the title aligned with the text; description,
---      objectives and rewards in that field, "Track on HUD" and Abandon on
---      one row below it, the abandon confirmation alone on it (Round 32 F3);
+--   4. the quest log (the map window's quest box since Round 44,
+--      grug_map/quest_box.lua): one text field below the list, the title
+--      aligned with the text; description, objectives and rewards in that
+--      field, "Track on HUD" and Abandon on one row, the abandon
+--      confirmation alone on it (Round 32 F3); the ready line below;
 --   5. the Riding Trainer (grug_mounts/state.lua tier_state + trainer.lua):
 --      all four tiers with the right state, buttons only for "buy";
 --   6. the Character page (grug_inventory/pages.lua): "Damage reduction" with
@@ -455,7 +456,7 @@ eq(fed[2] and fed[2].text, "Light Leather 1/1", "an item gain posts through the 
 grug_core.feed = nil
 
 ------------------------------------------------------------------------------
--- 4. Quest log column (legacy coordinates).
+-- 4. The quest log.
 ------------------------------------------------------------------------------
 local pages, contexts = {}, {}
 sfinv = {pages = pages, pages_unordered = {}, contexts = contexts,
@@ -481,54 +482,45 @@ grug_quests.journal = function()
 		reward_xp = 40}},
 		tracked = {"q1"}, hud_enabled = true}
 end
-dofile("mods/PLAYER/grug_quests/ui.lua")
-local quest_fs = pages["grug_quests:quests"]:get(carol, {})
-formspec_ok(quest_fs, "quest log")
-local PAD, SPACING_PER_IMG = 0.3, 1.25 -- legacy padding (spacing units), spacing / imgsize
-local list_x, list_w = quest_fs:match("textlist%[([%d.]+),[%d.]+;([%d.]+),")
-local list_right = tonumber(list_x) + tonumber(list_w)
-local text_lefts = {}
-for x in quest_fs:gmatch("textarea%[([%d.]+),") do text_lefts[#text_lefts + 1] = tonumber(x) - PAD end
-local title_x = tonumber(quest_fs:match("label%[([%d.]+),0%.65;Boar Trouble%]"))
-eq(#text_lefts, 1, "one text field for description, objectives and rewards (Round 32)")
-for i, left in ipairs(text_lefts) do
-	check(left - list_right >= 0.15, ("textarea %d right of the list with a gap (%.2f units)")
-		:format(i, left - list_right))
+-- Since Round 44 the quest log is the map window's quest box
+-- (grug_map/quest_box.lua) in real coordinates: labels and checkboxes are
+-- placed by their vertical centre, buttons, the list and text fields by
+-- their top-left corner (guiFormSpecMenu.cpp, real_coordinates). The window
+-- around it is tools/r44_mq's.
+grug_quests.registered_quests = {q1 = {level = 3, zone = "dawnmere"}}
+local saved_zones = rawget(_G, "grug_zones")
+grug_zones = {get = function() return {display_name = "Dawnmere Fields"} end}
+local quest_box = dofile("mods/PLAYER/grug_map/quest_box.lua")
+local RECT = {x = 13.4, y = 1.05, w = 7.0, h = 10.7}
+local function box_fs(session)
+	session = session or {}
+	session.quest_selected = "q1" -- nothing is preselected since Round 44
+	return quest_box.content(session, grug_quests.journal(carol), RECT)
 end
-check(title_x and math.abs(title_x - text_lefts[1]) < 1e-6, "title label starts where the text starts")
-print(("quest log: list ends at %.2f, text starts at %.2f (gap %.2f spacing = %.3f imgsize); before: overlap %.3f imgsize")
-	:format(list_right, text_lefts[1], text_lefts[1] - list_right,
-		(text_lefts[1] - list_right) * SPACING_PER_IMG, (list_right - (3.85 - PAD)) * SPACING_PER_IMG))
-has(quest_fs, "Small Boar: 3/10", "objective text unchanged")
-
--- Round 32 F3: description, objective lines and the reward line share one
--- text field, separated by an empty line; "Track on HUD" and Abandon share
--- one row below it. Engine geometry of legacy coordinates, in image units
--- (guiFormSpecMenu.cpp: spacing 5/4 x 15/13, padding 3/8, button half-height
--- 15/13 * 0.35; parseTextArea, parseButton, parseCheckbox, parseLabel).
-local SX, SY, PADI, BH = 5 / 4, 15 / 13, 3 / 8, 15 / 13 * 0.35
+local quest_fs = box_fs()
+formspec_ok(quest_fs, "quest log")
 local function nums(text) local out = {}
 	for v in text:gmatch("[%d.]+") do out[#out + 1] = tonumber(v) end
 	return out
 end
-local function textarea_box(fs)
-	local g = nums(fs:match("textarea%[([%d.,;]+);;;") or "")
-	local top = g[2] * SY + BH
-	return {left = g[1] * SX, right = g[1] * SX + g[3] * SX - (SX - 1),
-		top = top, bottom = top + g[4] - (SY - 1)}
+local function rect_of(fs, pattern)
+	local g = nums(fs:match(pattern) or "")
+	return g[1] and {left = g[1], top = g[2], right = g[1] + g[3], bottom = g[2] + g[4]} or nil
 end
-local function button_box(fs, field)
-	local g = nums(fs:match("button%[([%d.,;]+);" .. field .. ";") or "")
-	if #g < 4 then return nil end
-	local left, centre = PADI + g[1] * SX, PADI + g[2] * SY + g[4] / 2
-	return {left = left, right = left + g[3] * SX - (SX - 1), centre = centre,
-		top = centre - BH, bottom = centre + BH}
-end
-local function checkbox_at(fs, field)
-	local g = nums(fs:match("checkbox%[([%d.,]+);" .. field .. ";") or "")
-	return {left = PADI + g[1] * SX, centre = PADI + g[2] * SY + 0.5}
-end
-local function near(a, b) return a and b and math.abs(a - b) < 0.01 end
+local function near(a, b) return a and b and math.abs(a - b) < 0.011 end
+local list = rect_of(quest_fs, "textlist%[([%d.,;]+);grug_quest_list;")
+local text = rect_of(quest_fs, "textarea%[([%d.,;]+);;;")
+local textareas = 0
+for _ in quest_fs:gmatch("textarea%[") do textareas = textareas + 1 end
+eq(textareas, 1, "one text field for description, objectives and rewards (Round 32)")
+check(list and text and text.top - list.bottom >= 0.5, "the text field below the list box")
+check(list and near(list.left, text.left) and near(list.right, text.right),
+	"list and text share the column's edges")
+check(text.right <= RECT.x + RECT.w and text.bottom <= RECT.y + RECT.h, "the text inside the column")
+local title_x = tonumber(quest_fs:match("label%[([%d.]+),[%d.]+;Boar Trouble%]"))
+check(near(title_x, text.left), "title label starts where the text starts")
+has(quest_fs, "Level 3 · Dawnmere Fields", "the level and zone line")
+has(quest_fs, "Small Boar: 3/10", "objective text unchanged")
 local detail = quest_fs:match("textarea%[[%d.,;]+;;;(.-)%]")
 local d_desc = detail and detail:find("Boars eat our crops.\n\n", 1, true)
 local d_obj = detail and detail:find("Small Boar: 3/10", 1, true)
@@ -544,52 +536,44 @@ grug_quests.journal = function()
 	journal.quests[1].description = long_description
 	return journal
 end
-has(pages["grug_quests:quests"]:get(carol, {}), long_description .. "\n\n",
-	"the description reaches the text field unwrapped")
+has(box_fs(), long_description .. "\n\n", "the description reaches the text field unwrapped")
 grug_quests.journal = plain_journal
-local text = textarea_box(quest_fs)
-local row_centre = checkbox_at(quest_fs, "grug_quest_track").centre
-local function check_row(fs, label)
-	local right
-	for _, field in ipairs({"grug_quest_abandon", "grug_quest_confirm", "grug_quest_cancel"}) do
-		local box = button_box(fs, field)
-		if box then
-			check(near(box.centre, row_centre), label .. ": " .. field .. " on the checkbox row")
-			check(box.top - text.bottom >= 0.2, ("%s: %s below the text field (gap %.2f images)")
-				:format(label, field, box.top - text.bottom))
-			right = math.max(right or 0, box.right)
-		end
-	end
-	check(near(right, text.right), label .. ": the buttons end at the text's right edge")
-end
-check(near(checkbox_at(quest_fs, "grug_quest_track").left, text.left),
-	"row: Track on HUD starts at the text's left edge")
-check_row(quest_fs, "row")
-local confirm_fs = pages["grug_quests:quests"]:get(carol, {grug_quest_abandon = "q1"})
+-- "Track on HUD" and Abandon share one row at the list box's bottom; the
+-- buttons end at the list's right edge.
+local function button_rect(fs, field) return rect_of(fs, "button%[([%d.,;]+);" .. field .. ";") end
+local track_y = tonumber(quest_fs:match("checkbox%[[%d.]+,([%d.]+);grug_quest_track;"))
+local track_x = tonumber(quest_fs:match("checkbox%[([%d.]+),[%d.]+;grug_quest_track;"))
+local abandon = button_rect(quest_fs, "grug_quest_abandon")
+check(abandon and near((abandon.top + abandon.bottom) / 2, track_y), "row: Abandon on the checkbox row")
+check(abandon and near(abandon.right, list.right), "row: Abandon ends at the list's right edge")
+check(near(track_x, list.left), "row: Track on HUD starts at the list's left edge")
+check(abandon and abandon.top - list.bottom >= 0.1, "row: below the list")
+check(abandon and abandon.bottom < text.top, "row: above the text box")
+local confirm_fs = box_fs({quest_abandon = "q1"})
 formspec_ok(confirm_fs, "quest log, confirm abandon")
-check_row(confirm_fs, "confirm row")
-local confirm = button_box(confirm_fs, "grug_quest_confirm")
-local cancel = button_box(confirm_fs, "grug_quest_cancel")
+local confirm = button_rect(confirm_fs, "grug_quest_confirm")
+local cancel = button_rect(confirm_fs, "grug_quest_cancel")
 check(confirm and cancel and cancel.left - confirm.right > 0.1, "Confirm abandon left of Cancel")
+check(cancel and near(cancel.right, list.right) and near(confirm.top, abandon.top),
+	"confirm row: in the Abandon row, ending at the list's right edge")
 -- "Track on HUD" (about 125 px x gui_scaling with its box) would reach into
--- Confirm abandon at 720p from gui_scaling 1.25, so the confirmation takes
--- the row alone.
+-- Confirm abandon at a large GUI scale, so the confirmation takes the row
+-- alone.
 check(not confirm_fs:find("grug_quest_track", 1, true),
 	"no Track on HUD checkbox while the abandon confirmation is shown")
-print(("quest log: text field %.2f..%.2f images high (before: three fields, %.2f in all), row centre %.2f")
-	:format(text.top, text.bottom, 1.35 + 1.55 + 0.75 - 3 * (SY - 1), row_centre))
--- The ready line stays below the row.
+-- The ready line sits below the text field, inside the box.
 grug_quests.journal = function()
 	local journal = plain_journal()
 	journal.quests[1].ready = true
 	return journal
 end
-local ready_fs = pages["grug_quests:quests"]:get(carol, {})
+local ready_fs = box_fs()
 local ready_y = tonumber(ready_fs:match("label%[[%d.]+,([%d.]+);Ready to return to Elder Maren%.%]"))
-local ready_centre = ready_y and PADI + (ready_y + 7 / 30) * SY
-check(ready_centre and ready_centre - BH >= button_box(ready_fs, "grug_quest_abandon").bottom,
-	"the ready line sits below the row")
+local ready_text = rect_of(ready_fs, "textarea%[([%d.,;]+);;;")
+check(ready_y and ready_text and ready_y - 0.2 >= ready_text.bottom and ready_y <= RECT.y + RECT.h,
+	"the ready line sits below the text field")
 grug_quests.journal = plain_journal
+grug_zones = saved_zones
 
 ------------------------------------------------------------------------------
 -- 5. Riding Trainer.

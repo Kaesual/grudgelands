@@ -546,3 +546,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   names in Help and the welcome window, and a scan of every Lua string
   literal and JSON line under `mods/` for a removed tab name; it prints the
   page's bytes.
+  `r44_mq`: `portable_test.lua` loads the real `grug_keys` and
+  `grug_map`'s `atlas.lua`, `providers.lua`, `page.lua` and `window.lua`
+  (with `targets.lua` and `quest_box.lua`) under a stub `core`: the key
+  edges, the window size and layout, the overlay per faction and quest
+  state, the quest target index and the crosshair-before-rings rule with
+  the five-ring cap (garrison camps and the rift boss as crosshairs), the
+  refresh rule (throttle, trailing send, party checks, the pass budget, the
+  0.5 s scroll pause, a send that crossed a close), the quest boxes (no
+  preselection), zoom and the Map tab; it prints
+  the sends per minute alone and in a party. The disposable probe
+  `grug_probe_r44_mq` (staged with `PROBE=`) logs the map formspec's bytes
+  per faction at zoom 1x and 8x (the Map and Quests tabs before Round 44 MQ,
+  the map window after), the target index's size and build time and how
+  many quest objectives the targets mark.

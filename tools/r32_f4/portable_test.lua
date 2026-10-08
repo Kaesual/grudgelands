@@ -6,16 +6,11 @@
 --
 --   luajit tools/r32_f4/portable_test.lua [repo]
 --
--- Loads the REAL grug_map atlas.lua, providers.lua and page.lua, and the
--- real grug_core/hud_layout.lua and grug_parties/hud.lua, on a fake engine
--- (the stub style of tools/r26_map/portable_test.lua). Checks:
---   M  Map tab poll, 0.1 s passes: twelve walking viewers who opened the tab
---      together are rebuilt at most two per pass, each every 2 s on its own
---      phase; sixty walking viewers (more than the budget) are served
---      longest-waiting first, none starves, at most 8 signature reads and 2
---      builds per pass; a viewer who leaves or changes tab mid-queue is
---      dropped and gets nothing more; still viewers get no sends; a
---      scrollbar move defers the rebuild by 0.5 s;
+-- Loads the REAL grug_map atlas.lua and providers.lua, and the real
+-- grug_core/hud_layout.lua and grug_parties/hud.lua, on a fake engine (the
+-- stub style of tools/r26_map/portable_test.lua). Checks:
+--   M  (the Map tab poll's spreading; since Round 44 the map window's pass
+--      budget, checked by tools/r44_mq section B);
 --   P  party HUD: every player is polled exactly once per 0.5 s in one of
 --      five slots; players without a party never build a view; the row
 --      layout is recomputed only when a player's window (or the row count)
@@ -82,9 +77,7 @@ rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"
 		enabled = function() minimap_reads = minimap_reads + 1; return true end}})
 grug_map.atlas.set_base_texture("grug_map_base.png")
 dofile(repo .. "/mods/PLAYER/grug_map/providers.lua")
-dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
 for _, fn in ipairs(loaded) do fn() end
-local page_step = steps[#steps]
 
 local sends = {} -- {t, name}
 local function new_player(name, x)
@@ -104,144 +97,6 @@ end
 local function leave(p)
 	for _, fn in ipairs(leaves) do fn(p) end
 	players[p.name] = nil
-end
-
--- ---------------------------------------------------------------------------
--- M: the Map tab poll
--- ---------------------------------------------------------------------------
-local PAGE = "grug_map:atlas"
-local function open(p)
-	local context = {page = PAGE}
-	sfinv.contexts[p.name] = context
-	page.on_enter(page, p, context)
-	page.get(page, p, context)
-	return context
-end
--- One 0.1 s pass; walkers move 5 nodes east (2 s of it are about ten arrow
--- cells at 1x). Returns the pass's sends and signature reads.
-local function pass(walkers)
-	for _, p in ipairs(walkers) do p.pos.x = p.pos.x + 5 end
-	local before_sends, before_reads = #sends, minimap_reads
-	us = us + 100000
-	page_step(0.1)
-	local built = #sends - before_sends
-	-- a build reads the switch twice (form and its signature), a check once
-	return built, minimap_reads - before_reads - 2 * built
-end
-local function gaps_of(name, from)
-	local times = {}
-	for _, row in ipairs(sends) do
-		if row.name == name and row.t >= from then times[#times + 1] = row.t end
-	end
-	local least, most = math.huge, 0
-	for i = 2, #times do
-		least = math.min(least, times[i] - times[i - 1])
-		most = math.max(most, times[i] - times[i - 1])
-	end
-	return times, least, most
-end
-
--- M1: twelve viewers open the tab in the same step and keep walking.
-do
-	local list = {}
-	for i = 1, 12 do list[i] = new_player(("m%02d"):format(i), -2000 + i * 20) end
-	for _, p in ipairs(list) do open(p) end
-	local start, most_built, most_reads = us / 1e6, 0, 0
-	local passes_with_builds = {}
-	for k = 1, 300 do
-		local built, reads = pass(list)
-		most_built, most_reads = math.max(most_built, built), math.max(most_reads, reads)
-		if built > 0 and k > 20 and k <= 40 then passes_with_builds[#passes_with_builds + 1] = k end
-	end
-	check(most_built <= 2, "M1 at most two builds per pass (" .. most_built .. ")")
-	check(most_reads <= 8, "M1 at most eight signature reads per pass (" .. most_reads .. ")")
-	check(#passes_with_builds >= 6, "M1 the twelve rebuilds spread over at least six passes of 2 s (" ..
-		#passes_with_builds .. ")")
-	local fair = true
-	for _, p in ipairs(list) do
-		local times, least, most = gaps_of(p.name, start)
-		fair = fair and #times >= 13 and times[1] - start <= 2.65 and
-			least >= 2 - 1e-6 and most <= 2.1 + 1e-6
-		if not fair then
-			check(false, ("M1 %s: %d sends, first %.2f s, gaps %.2f..%.2f s"):format(p.name,
-				#times, (times[1] or 0) - start, least, most))
-			break
-		end
-	end
-	check(fair, "M1 every viewer is rebuilt every 2 s (never sooner), the first within 2.6 s")
-	for _, p in ipairs(list) do leave(p) end
-	local before = #sends
-	for _ = 1, 30 do pass(list) end
-	check(#sends == before, "M1 viewers who left get nothing more")
-end
-
--- M2: sixty walking viewers, more than two builds per pass can serve every
--- 2 s; one leaves and one changes tab while waiting in the queue.
-do
-	sends = {}
-	local list = {}
-	for i = 1, 60 do list[i] = new_player(("n%02d"):format(i), -3000 + i * 10) end
-	for _, p in ipairs(list) do open(p) end
-	local start, most_built, most_reads = us / 1e6, 0, 0
-	for _ = 1, 200 do
-		local built, reads = pass(list)
-		most_built, most_reads = math.max(most_built, built), math.max(most_reads, reads)
-	end
-	local leaver, switcher = list[17], list[40]
-	local cut = us / 1e6
-	leave(leaver)
-	sfinv.contexts[switcher.name].page = "grug_inventory:character"
-	for _ = 1, 300 do
-		local built, reads = pass(list)
-		most_built, most_reads = math.max(most_built, built), math.max(most_reads, reads)
-	end
-	check(most_built <= 2 and most_reads <= 8, ("M2 the pass budget holds under load (%d builds, %d reads)")
-		:format(most_built, most_reads))
-	local worst, served = 0, true
-	for _, p in ipairs(list) do
-		if p ~= leaver and p ~= switcher then
-			local times, _, most = gaps_of(p.name, start)
-			served = served and #times >= 12 and times[1] - start <= 5
-			worst = math.max(worst, most)
-		end
-	end
-	check(served and worst <= 3.5, ("M2 nobody starves: every viewer is served, at most %.2f s apart")
-		:format(worst))
-	local after = 0
-	for _, row in ipairs(sends) do
-		if (row.name == leaver.name or row.name == switcher.name) and row.t > cut then after = after + 1 end
-	end
-	check(after == 0, "M2 a viewer who leaves or changes tab mid-queue is dropped (" .. after .. " sends)")
-	for _, p in ipairs(list) do if players[p.name] then leave(p) end end
-end
-
--- M3: still viewers are read, never rebuilt; a scrollbar move defers.
-do
-	sends = {}
-	local list = {}
-	for i = 1, 30 do list[i] = new_player(("s%02d"):format(i), -1450 + i * 90) end
-	for _, p in ipairs(list) do open(p) end
-	local most_reads, reads_total = 0, 0
-	for _ = 1, 100 do
-		local _, reads = pass({})
-		most_reads = math.max(most_reads, reads)
-		reads_total = reads_total + reads
-	end
-	check(#sends == 0, "M3 still viewers get no sends")
-	check(most_reads <= 8 and reads_total >= 30 * 4, ("M3 every still viewer is read every 2 s " ..
-		"(%d reads in 10 s, at most %d per pass)"):format(reads_total, most_reads))
-	local p = list[1]
-	for _ = 1, 25 do pass({}) end
-	local context = sfinv.contexts[p.name]
-	page.on_player_receive_fields(page, p, context, {grug_map_scroll_x = "CHG:40"})
-	local moved = us / 1e6
-	p.pos.x = p.pos.x + 400
-	for _ = 1, 30 do pass({}) end
-	local times = gaps_of(p.name, moved)
-	check(times[1] and times[1] - moved >= 0.5 - 1e-6 and times[1] - moved <= 2.1 + 1e-6,
-		("M3 a scrollbar move defers the rebuild by 0.5 s (sent after %.2f s)"):format(
-			(times[1] or moved) - moved))
-	for _, q in ipairs(list) do leave(q) end
 end
 
 -- ---------------------------------------------------------------------------

@@ -22,14 +22,13 @@ atlas.register_marker_provider("party", function(player)
 	return result
 end)
 
-local givers, services, bosses = {}, {}, {}
+local givers, services = {}, {}
 -- Ruling 13 (Round 31): a player sees only the NPC markers of the own
 -- faction. Each marker carries its NPC's `faction`; the lists per viewer
 -- faction are built once below, so a marker build only picks one (the key
 -- "" is a player without a faction: none). The kings and the dragons are
--- baked into the base image for everyone since Round 44 (bake.lua); their
--- places stay known here for the zone markers' placement.
-local givers_for, services_for = {}, {}
+-- baked into the base image for everyone since Round 44 (bake.lua).
+local givers_for, services_for, giver_by_id = {}, {}, {}
 local function visible(row, faction)
 	return row.faction == nil or row.faction == faction
 end
@@ -84,17 +83,12 @@ core.register_on_mods_loaded(function()
 			elseif socket.role == "culture_vendor" then
 				label, texture = "Decor Merchant", "grug_map_decor_merchant.png"
 				kind = "service"
-			elseif socket.role == "king" and socket.spawn ~= false then
-				bosses[#bosses + 1] = {position = socket.pos}
 			end
 			if label and socket.spawn ~= false then
 				services[#services + 1] = {id = id, label = label, position = socket.pos,
 					kind = kind, texture = texture, faction = faction}
 			end
 		end
-	end
-	for _, dragon in ipairs(grug_mobs.dragon_map_markers()) do
-		bosses[#bosses + 1] = {position = dragon.pos}
 	end
 	for id, npc in pairs(grug_quests.registered_npcs) do
 		local position = assert(sockets[npc.settlement .. "/" .. npc.socket],
@@ -103,19 +97,15 @@ core.register_on_mods_loaded(function()
 			faction = npc.faction}
 	end
 	table.sort(givers, function(a, b) return a.id < b.id end)
+	for _, giver in ipairs(givers) do giver_by_id[giver.id] = giver end
 	givers_for, services_for = split(givers), split(services)
 end)
 
--- The positions of the services, kings, dragons and quest givers above, for
--- the zone markers' placement (location.lua). Known once mods are loaded.
-function grug_map.static_marker_positions()
-	local result = {}
-	for _, list in ipairs({services, bosses, givers}) do
-		for _, row in ipairs(list) do
-			result[#result + 1] = {x = row.position.x, z = row.position.z}
-		end
-	end
-	return result
+-- A quest NPC's marker row {id, title, position, faction} (every quest NPC,
+-- givers and talk destinations), or nil: the map window's question marks
+-- and quest targets (Round 44). Read-only.
+function grug_map.quest_npc(id)
+	return giver_by_id[id]
 end
 
 atlas.register_marker_provider("service", function(player)

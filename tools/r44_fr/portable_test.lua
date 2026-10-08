@@ -283,7 +283,6 @@ stub_page("sfinv:crafting", "Crafting", true)
 dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
 stub_page("grug_inventory:help", "Help", true)
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
-stub_page("grug_quests:quests", "Quests", true)
 stub_page("grug_parties:group", "Party & PvP", false)
 stub_page("creative:all", "All", true, {is_in_nav = function() return false end})
 for _, fn in ipairs(mods_loaded) do fn() end
@@ -297,7 +296,7 @@ local order = {}
 for _, def in ipairs(sfinv.pages_unordered) do order[#order + 1] = def.name end
 eq(table.concat(order, ","), "grug_inventory:inventory,grug_inventory:character," ..
 	"grug_classes:talents,sfinv:crafting,grug_parties:group," ..
-	"grug_inventory:help,grug_quests:quests,grug_map:atlas,creative:all",
+	"grug_inventory:help,grug_map:atlas,creative:all",
 	"tab order follows TAB_ORDER, other pages after it")
 eq(sfinv.get_homepage_name(), "grug_inventory:inventory", "Inventory is the homepage")
 check(sfinv.pages["grug_inventory:bags"] == nil, "the Bags page is gone")
@@ -307,11 +306,11 @@ local context = sfinv.get_or_create_context(plain)
 eq(context.page, "grug_inventory:inventory", "a new context opens Inventory")
 local form = sfinv.get_formspec(plain, context)
 has(form, "tabheader[0,0;sfinv_nav_tabs;Inventory,Character,Talents & Skills,Crafting," ..
-	"Party & PvP,Help,Quests,Map;1;true;false]", "the tab captions in order, Inventory selected")
+	"Party & PvP,Help,Map;1;true;false]", "the tab captions in order, Inventory selected")
 
 -- No page mod keeps an ordering hook.
 for _, file in ipairs({"mods/PLAYER/grug_classes/talents_ui.lua",
-		"mods/PLAYER/grug_skills/page.lua", "mods/PLAYER/grug_quests/ui.lua",
+		"mods/PLAYER/grug_skills/page.lua", "mods/PLAYER/grug_map/quest_box.lua",
 		"mods/PLAYER/grug_parties/ui.lua", "mods/PLAYER/grug_pvp/page.lua",
 		"mods/PLAYER/grug_inventory/pages.lua"}) do
 	local handle = assert(io.open(repo .. "/" .. file))

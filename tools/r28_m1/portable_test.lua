@@ -11,15 +11,11 @@
 --   D  debounce: the brief's city example (leave and re-enter within the
 --      display: nothing new), A->B->A, A->B->C, no start while a display
 --      runs, an unchanged sample shows nothing;
---   T  texts: zone tooltips ("Dawnmere Fields (levels 1–10)", one level)
---      (the King labels went with the King markers in Round 44: the kings
---      are baked into the map image);
---   P  placement: chamfer depths, the pole of inaccessibility, determinism,
---      the minimum distance to obstacles and between zone markers, the
---      fallback when no cell is clear, islands, region-name obstacles;
+--   T, P  (zone tooltips and the zone markers' placement; gone in Round
+--      44 with the zone markers, which the map window does not draw);
 --   R  runtime: banner element on join, the join banner, 1.5 s display then
 --      hidden, the debounce through the real globalstep, text_of for the
---      minimap line, zone markers through the atlas provider, HUD traffic
+--      minimap line, no zone-marker provider (Round 44), HUD traffic
 --      only on changes, nothing during character creation; L layout: the
 --      flight-boundary warning between the zone and level-up banners. The
 --      per-sample cost is measured by the engine probe
@@ -119,125 +115,6 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- T: texts
--- ---------------------------------------------------------------------------
-do
-	check(L.zone_tooltip({display_name = "Dawnmere Fields", level_min = 1, level_max = 10}) ==
-		"Dawnmere Fields (levels 1–10)", "T zone tooltip with a band")
-	check(L.zone_tooltip({display_name = "Stormscale Summit", level_min = 60, level_max = 60}) ==
-		"Stormscale Summit (level 60)", "T single-level zone")
-	check(L.zone_tooltip({id = "x", display_name = "X"}) == "X", "T no band: name only")
-end
-
--- ---------------------------------------------------------------------------
--- P: placement
--- ---------------------------------------------------------------------------
--- A grid from rows of characters: '.' water, letters zone ids.
-local function grid_of(rows, step, min_x, max_z)
-	local nx, nz = #rows[1], #rows
-	local cells = {}
-	for gz = 0, nz - 1 do
-		local row = rows[gz + 1]
-		for gx = 0, nx - 1 do
-			local ch = row:sub(gx + 1, gx + 1)
-			cells[gz * nx + gx + 1] = ch ~= "." and ch or false
-		end
-	end
-	return {nx = nx, nz = nz, step = step or 10, min_x = min_x or 0, max_z = max_z or 0,
-		cells = cells}
-end
-local function cell_of(grid, point)
-	local gx = math.floor((point.x - grid.min_x) / grid.step)
-	local gz = math.floor((grid.max_z - point.z) / grid.step)
-	return gx, gz
-end
-local function cheb(a, b) return math.max(math.abs(a.x - b.x), math.abs(a.z - b.z)) end
-do
-	local square = grid_of({
-		".........",
-		".AAAAAAA.",
-		".AAAAAAA.",
-		".AAAAAAA.",
-		".AAAAAAA.",
-		".AAAAAAA.",
-		".AAAAAAA.",
-		".AAAAAAA.",
-		"........."})
-	local depth = L.depths(square)
-	check(depth[4 * 9 + 4 + 1] == 12 and depth[1 * 9 + 1 + 1] == 3 and depth[1] == 0,
-		"P chamfer depths: border 3, centre 12, water 0")
-	local points = L.place_labels(square, {"A"}, {}, 20)
-	local gx, gz = cell_of(square, points.A)
-	check(gx == 4 and gz == 4 and points.A.x == 45 and points.A.z == -45,
-		"P pole of a square is its centre cell")
-
-	-- Two zones side by side, an island zone, and a lake in B.
-	local rows = {
-		"....................",
-		".AAAAAAAABBBBBBBBB..",
-		".AAAAAAAABBBBBBBBB..",
-		".AAAAAAAABBBB..BBB..",
-		".AAAAAAAABBBB..BBB..",
-		".AAAAAAAABBBBBBBBB..",
-		".AAAAAAAABBBBBBBBB..",
-		"....................",
-		"...........CCC......",
-		"...........CCC......",
-		"...........CCC......",
-		"....................",
-	}
-	local world = grid_of(rows, 10, 0, 0)
-	local order = {"A", "B", "C"}
-	local first = L.place_labels(world, order, {}, 25)
-	local again = L.place_labels(world, order, {}, 25)
-	check(first.A and first.B and first.C, "P every zone gets a marker, the island too")
-	check(first.A.x == again.A.x and first.B.z == again.B.z and first.C.x == again.C.x,
-		"P deterministic")
-	check(zone_at and world.cells[select(2, cell_of(world, first.B)) * world.nx +
-		cell_of(world, first.B) + 1] == "B", "P B's marker on B's land")
-	local cx, cz = cell_of(world, first.C)
-	check(cx == 12 and cz == 9, "P island marker at the island's deepest cell")
-	-- An obstacle on A's pole: the marker moves to the deepest clear cell.
-	local obstacle = {x = first.A.x, z = first.A.z, rx = 25, rz = 25}
-	local nudged = L.place_labels(world, order, {obstacle}, 25)
-	check(cheb(nudged.A, obstacle) >= 25, "P nudged clear of an obstacle")
-	check(world.cells[select(2, cell_of(world, nudged.A)) * world.nx +
-		cell_of(world, nudged.A) + 1] == "A", "P the nudged marker stays in its zone")
-	-- Zone markers keep the gap from each other.
-	local spaced = L.place_labels(world, order, {}, 60)
-	check(cheb(spaced.A, spaced.B) >= 60, "P zone markers keep the gap between each other")
-	-- Obstacle order does not matter.
-	local o1 = {x = 30, z = -30, rx = 25, rz = 25}
-	local o2 = {x = 120, z = -40, rx = 25, rz = 25}
-	local p1 = L.place_labels(world, order, {o1, o2}, 25)
-	local p2 = L.place_labels(world, order, {o2, o1}, 25)
-	check(p1.A.x == p2.A.x and p1.A.z == p2.A.z and p1.B.x == p2.B.x and p1.B.z == p2.B.z,
-		"P obstacle order does not change the placement")
-	-- No clear cell: the clearest one wins, still on the zone's land.
-	local wall = {x = 50, z = -40, rx = 1000, rz = 1000}
-	local fallback = L.place_labels(world, {"A"}, {wall}, 25)
-	check(fallback.A and world.cells[select(2, cell_of(world, fallback.A)) * world.nx +
-		cell_of(world, fallback.A) + 1] == "A", "P no clear cell: still placed on the zone")
-	local near_wall = {x = 45, z = -35, rx = 40, rz = 40}
-	local clearest = L.place_labels(world, {"A"}, {near_wall}, 25)
-	check(cheb(clearest.A, near_wall) >= 40, "P a clear cell found beside a big obstacle")
-	-- A name covering the whole zone and a marker on part of it: the marker
-	-- stays clear of the icon and accepts the text.
-	local name = {x = 45, z = -35, rx = 1000, rz = 1000, soft = true}
-	local icon = {x = 45, z = -35, rx = 30, rz = 30}
-	local icon_first = L.place_labels(world, {"A"}, {name, icon}, 25)
-	check(cheb(icon_first.A, icon) >= 30, "P fallback keeps clear of icons before names")
-	-- A region name's obstacle: wrapped text, half a marker round it.
-	local text = L.text_obstacle("Human Lands", 0, 0, 4.6, 0.45, 100)
-	check(text.soft and math.abs(text.rx - (11 * 0.2 / 2 + 0.225) * 100) < 1e-9 and
-		math.abs(text.rz - (0.45 / 2 + 0.225) * 100) < 1e-9, "P one-line region name box")
-	local island = L.text_obstacle("Wyrmglass Crown", 0, 0, 2.4, 0.45, 100)
-	check(math.abs(island.rz - (2 * 0.45 / 2 + 0.225) * 100) < 1e-9 and
-		math.abs(island.rx - (9 * 0.2 / 2 + 0.225) * 100) < 1e-9,
-		"P island name wraps onto two lines")
-end
-
--- ---------------------------------------------------------------------------
 -- R: runtime (location.lua on a fake engine)
 -- ---------------------------------------------------------------------------
 local now_us = 0
@@ -322,46 +199,13 @@ rawset(_G, "grug_home", {locations = function()
 end})
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")})
 grug_map.atlas.set_base_texture("base.png")
-grug_map.page_layout = {map_w = 12.37, region_labels = {{"Human Lands", 0, -2350, 4.6, 1.3}}}
-grug_map.static_marker_positions = function()
-	return {{x = 0, z = -1500}, {x = 40, z = -1480}, {x = 0, z = -2550}}
-end
 dofile(repo .. "/mods/PLAYER/grug_map/location.lua")
 local M = grug_map.location
 check(type(M) == "table" and M.text_at({x = 0, y = 0, z = -2550}) == "Dawnmere",
 	"R location.lua publishes text_at")
 for _, fn in ipairs(loaded) do fn() end
-
--- Zone markers through the atlas.
-do
-	local markers = grug_map.atlas.collect_markers(nil, {zone = true})
-	check(#markers == 3, "R one marker per zone (" .. #markers .. ")")
-	local by_id, ok = {}, true
-	for _, m in ipairs(markers) do
-		by_id[m.id] = m
-		ok = ok and m.kind == "zone" and m.texture == "grug_map_zone.png"
-	end
-	check(ok, "R zone markers have their kind and icon")
-	local dawn = by_id["zone:elandor_dawnmere_fields"]
-	check(dawn and dawn.detail == "Dawnmere Fields (levels 1–10)" and
-		dawn.label == "Dawnmere Fields", "R tooltip text through the provider")
-	check(dawn and zone_at(dawn.position.x, dawn.position.z) == "elandor_dawnmere_fields",
-		"R the marker lies in its zone")
-	local gap = 0.45 * 7200 / 12.37
-	local fixed = {{x = 0, z = -1500}, {x = 40, z = -1480}, {x = 0, z = -2550},
-		{x = -120, z = -2020}, {x = -60, z = -1520}}
-	local clear = true
-	for _, m in ipairs(markers) do
-		for _, f in ipairs(fixed) do clear = clear and cheb(m.position, f) >= gap end
-		for _, o in ipairs(markers) do
-			if o ~= m then clear = clear and cheb(m.position, o.position) >= gap end
-		end
-	end
-	check(clear, "R zone markers keep the minimum distance from every marker")
-	local logged = false
-	for _, text in ipairs(logs) do logged = logged or text:find("placed 3 zone markers", 1, true) end
-	check(logged, "R placement is logged")
-end
+check(#grug_map.atlas.collect_markers(nil, {zone = true}) == 0 and #loaded == 0,
+	"R no zone markers and no placement at start (Round 44)")
 
 local function step(seconds)
 	local target = now_us + seconds * 1e6

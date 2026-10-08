@@ -6,10 +6,7 @@
 --   WALK   from every start town's and capital city's anchor east and north
 --          in 4-node steps, logging each change of the shown name (town
 --          edge, zone border);
---   ZONES  every zone marker: position, its own zone at that point, and its
---          clearance from every other Map tab marker in formspec units at
---          zoom 1 (>= 0.45 is clear);
---   KINGS  the King markers' labels;
+--   (ZONES and KINGS, the zone and King markers, went in Round 44);
 --   COST   microseconds per lookup over a world grid and inside town boxes
 --          (a comparison, not a target).
 -- Then it shuts the server down.
@@ -59,42 +56,9 @@ local function run()
 		"north walks with a change: %d"):format(towns_seen, zones_seen))
 	ok = ok and towns_seen == 12
 
-	-- ZONES: placement and clearance.
+	-- ZONES and KINGS went with the zone and King markers in Round 44 (the
+	-- map window draws neither; the kings are baked into the map image).
 	local view = atlas.view()
-	local nodes = (view.max_x - view.min_x) / grug_map.page_layout.map_w
-	local fixed = {}
-	for _, pos in ipairs(grug_map.static_marker_positions()) do fixed[#fixed + 1] = pos end
-	for _, row in ipairs(grug_core.settlement_socket_settlements()) do fixed[#fixed + 1] = row.anchor end
-	for _, row in ipairs(grug_home.locations()) do fixed[#fixed + 1] = row.pos end
-	local zones = atlas.collect_markers(nil, {zone = true})
-	local clear, in_zone = 0, 0
-	for _, m in ipairs(zones) do
-		local nearest = math.huge
-		for _, f in ipairs(fixed) do
-			nearest = math.min(nearest, math.max(math.abs(f.x - m.position.x),
-				math.abs(f.z - m.position.z)))
-		end
-		for _, o in ipairs(zones) do
-			if o ~= m then
-				nearest = math.min(nearest, math.max(math.abs(o.position.x - m.position.x),
-					math.abs(o.position.z - m.position.z)))
-			end
-		end
-		local units = nearest / nodes
-		if units >= 0.45 - 1e-9 then clear = clear + 1 end
-		local own = grug_zones.id_at(m.position.x, m.position.z) == m.id:sub(6)
-		if own then in_zone = in_zone + 1 end
-		log(("ZONE %s at %d,%d: %s; in own zone %s; nearest marker %.2f units"):format(
-			m.id:sub(6), m.position.x, m.position.z, m.detail, tostring(own), units))
-	end
-	log(("ZONES %d markers, %d in their own zone, %d clear (>= 0.45 units)"):format(
-		#zones, in_zone, clear))
-	ok = ok and #zones == 38 and in_zone == 38
-
-	-- KINGS
-	for _, m in ipairs(atlas.collect_markers(nil, {service = true})) do
-		if m.kind == "boss" then log("MARKER boss: " .. m.label) end
-	end
 
 	-- COST: a world grid (mostly outside towns) and the town boxes.
 	local function cost(label, points)

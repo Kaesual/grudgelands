@@ -4,8 +4,8 @@
 --
 -- Loads the REAL grug_core hud_layout.lua, grug_map atlas.lua, base.lua
 -- (tiling, mask, quality setting; not the render, which needs a world: see
--- render_base.lua), minimap_view.lua, minimap.lua and page.lua on a fake
--- engine. Checks:
+-- render_base.lua), minimap_view.lua and minimap.lua on a fake engine.
+-- Checks:
 --   L  layout: the minimap box is the native minimap's box (25 % of the
 --      window height, 10 HUD px from the top and right edges), so the quest
 --      list clearance holds; it follows window size and HUD scaling;
@@ -23,9 +23,9 @@
 --      the map and markers move together; a new texture only on a new cell;
 --      markers of the ruling-8 kinds (trainers by profession icon since
 --      Round 44) inside the hole only, quest states as icons; party members inside as heading arrows, outside as rim arrows
---      on the bezel; window resize relayouts; the Map tab switch hides and
---      shows the minimap and persists in meta; every texture exists;
---   P  page: no region-name hypertext (the names are baked since Round 44).
+--      on the bezel; window resize relayouts; the switch (in the map window
+--      since Round 44, tools/r44_mq) hides and shows the minimap and
+--      persists in meta; every texture exists.
 -- Prints "R27 MINIMAP PORTABLE PASS checks=<n>" or the failures, plus the
 -- measured per-update cost as a comparison.
 local repo = arg[1] or "."
@@ -478,7 +478,6 @@ dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 local minimap = grug_map.minimap
 minimap.install(installed)
 dofile(repo .. "/mods/PLAYER/grug_map/providers.lua")
-dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
 for _, fn in ipairs(loaded) do fn() end
 check(media[#media] == "grug_map_minimap_mask.png", "R mask announced as media")
 
@@ -717,19 +716,14 @@ do
 	frame = small
 end
 
--- The Map tab switch.
-local context = {}
-page.on_enter(page, me, context)
-local fs = page.get(page, me, context)
-check(fs:find("checkbox%[[%d.]+,0%.26;grug_map_minimap;Show minimap;true%]"),
-	"R Map tab switch shown, on by default")
-page.on_player_receive_fields(page, me, context, {grug_map_minimap = "false"})
+-- The switch (the map window's checkbox since Round 44; its form is
+-- tools/r44_mq's): off removes every element and persists, on restores.
+check(minimap.enabled(me), "R the minimap is on by default")
+minimap.set_enabled(me, false)
 check(not minimap.enabled(me) and #elements(me) == 0, "R switch off removes every element")
 step(0.25)
 check(#elements(me) == 0, "R stays off")
-fs = page.get(page, me, context)
-check(fs:find("Show minimap;false%]"), "R switch shows off")
-page.on_player_receive_fields(page, me, context, {grug_map_minimap = "true"})
+minimap.set_enabled(me, true)
 check(minimap.enabled(me) and #by_text(me, "^%[combine:") == 1, "R switch on restores it")
 
 -- Every texture the minimap draws exists.
@@ -760,14 +754,6 @@ do
 	if file then file:close() end
 	check(text:find("render_icons.py", 1, true) and text:find("grug_map_minimap_bezel.png", 1, true),
 		"R LICENSE-media rows")
-end
-
--- ---------------------------------------------------------------------------
--- P: page
--- ---------------------------------------------------------------------------
-do
-	local fs1 = page.get(page, me, context)
-	check(not fs1:find("hypertext[", 1, true), "P no region-name hypertext (baked)")
 end
 
 -- ---------------------------------------------------------------------------
@@ -838,7 +824,8 @@ print(("R27 cost: %.1f us per player update (%d updates, %.2f packets per update
 	views.high.walk_bytes / 1048576))
 
 -- A world folder that cannot be written: no mask, no minimap, the load goes
--- on and the Map tab says so. (A second copy of minimap.lua, last.)
+-- on (the map window then says so, tools/r44_mq). (A second copy of
+-- minimap.lua, last.)
 do
 	core.safe_file_write = function() return false end
 	local first = grug_map.minimap
@@ -847,9 +834,6 @@ do
 	local installed_ok = ok and pcall(second.install, installed)
 	check(ok and installed_ok and not second.available(),
 		"S unwritable mask: the load goes on, no minimap")
-	local fs = page.get(page, me, context)
-	check(fs:find("No minimap available", 1, true) and not fs:find("grug_map_minimap;", 1, true),
-		"S Map tab says no minimap instead of the switch")
 	check(first.available(), "S the working copy stays available")
 	grug_map.minimap = first
 end
