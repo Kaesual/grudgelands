@@ -744,10 +744,10 @@ grug_classes.register_on_class_chosen(function(player)
 			core.get_item_group(stack:get_name(), "grug_armor_class") > rank
 		if not stack:is_empty() and disallowed then
 			local label = piece_name(stack)
-			-- add_item first, then write the LEFTOVER back into the slot: the
-			-- piece is either in `main` or still in the slot, never nowhere
-			-- and never on the ground (a full bag must not cost gear).
-			local leftover = inv:add_item("main", stack)
+			-- give first, then write the LEFTOVER back into the slot: the
+			-- piece is either in the inventory or still in the slot, never
+			-- nowhere and never on the ground (a full bag must not cost gear).
+			local leftover = grug_inventory.give(player, stack)
 			inv:set_stack(list, 1, leftover)
 			if leftover:is_empty() then
 				removed[#removed + 1] = label
@@ -832,8 +832,8 @@ grug_inventory.STARTER_ARROWS = {
 local CLASS_STARTER_WEAPON = grug_inventory.STARTER_WEAPON
 
 -- Put `stack` into the hand `list` when the class rules and the other hand
--- allow it, or into `main` when the slot cannot take it. Returns "slot",
--- "main" or nil (nothing anywhere -- a full bag).
+-- allow it, or into the inventory (grug_inventory.give) when the slot cannot
+-- take it. Returns "slot", "main" or nil (nothing anywhere -- a full bag).
 local function place_starter_item(player, inv, stack, list)
 	local other_list = list == WEAPON_LIST and OFFHAND_LIST or WEAPON_LIST
 	local other = inv:get_stack(other_list, 1)
@@ -844,8 +844,8 @@ local function place_starter_item(player, inv, stack, list)
 		inv:set_stack(list, 1, stack)
 		return "slot"
 	end
-	if inv:room_for_item("main", stack) then
-		inv:add_item("main", stack)
+	if grug_inventory.fits(player, {stack}) then
+		grug_inventory.give(player, stack)
 		return "main"
 	end
 	return nil
@@ -905,9 +905,8 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 	end
 	local arrows = grug_inventory.STARTER_ARROWS[class_id]
 	if arrows then
-		local leftover = grug_inventory.add_to_quiver(player,
+		local leftover = grug_inventory.give(player,
 			ItemStack("grug_gear:arrow " .. arrows))
-		leftover = inv:add_item("main", leftover)
 		if not leftover:is_empty() then
 			core.add_item(player:get_pos(), leftover)
 		end
@@ -1000,20 +999,20 @@ end)
 local WEAPON_HINT_KEY = "grug_weapon_hint"
 local WEAPON_HINT_DELAY = 5 -- seconds, so it lands after the join/creation chatter
 
--- Condition 3. `main` only: bags are storage, the hint is about the item the
--- player is carrying around.
+-- Condition 3. `main` and the bags: the Inventory tab shows them as one
+-- inventory and the give helper and the sort fill both (Round 44).
 local function owns_slot_eligible_weapon(player)
 	local inv = player:get_inventory()
 	if not inv then
 		return false
 	end
 	local weapon_group = slot_group[WEAPON_LIST]
-	local list = inv:get_list("main") or {}
-	for i = 1, #list do
-		local stack = list[i]
-		if not stack:is_empty() and
-				core.get_item_group(stack:get_name(), weapon_group) > 0 then
-			return true
+	for _, listname in ipairs(grug_inventory.carried_lists(inv)) do
+		for _, stack in ipairs(inv:get_list(listname) or {}) do
+			if not stack:is_empty() and
+					core.get_item_group(stack:get_name(), weapon_group) > 0 then
+				return true
+			end
 		end
 	end
 	return false

@@ -231,11 +231,12 @@ local function say(session, message, color)
 	session.message_color = color
 end
 
--- Return the part of a put that add_fuel did not accept: into the main
--- inventory, and onto the ground beside the player when it is full.
+-- Return the part of a put that add_fuel did not accept: into the inventory
+-- (grug_inventory.give), and onto the ground beside the player when it is
+-- full.
 local function give_back(player, stack)
 	if stack:is_empty() then return end
-	local leftover = player:get_inventory():add_item("main", stack)
+	local leftover = grug_inventory.give(player, stack)
 	if not leftover:is_empty() then
 		core.add_item(player:get_pos(), leftover)
 	end
