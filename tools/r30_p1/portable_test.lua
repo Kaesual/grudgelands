@@ -971,7 +971,7 @@ do
 	for _ = 1, 3 do second(); home_left = home_left - 1 end
 	eq(kay.sends, 3, "K the Effects tab is not re-sent for the countdown")
 	ctx.grug_character_tab = nil
-	ctx.page = "grug_inventory:bags"
+	ctx.page = "grug_inventory:inventory"
 	for _ = 1, 3 do second(); home_left = home_left - 1 end
 	eq(kay.sends, 3, "K another page is not re-sent")
 	ctx.page = "grug_inventory:character"

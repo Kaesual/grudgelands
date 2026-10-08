@@ -376,3 +376,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   walker at any phase, free wanderers keep it, `facing_fence` only for
   blocking nodes, the jump logic at real fences unchanged;
   `evidence/after/` keeps NV0's villager and post-guard scenes.
+- **Round 44** (`r44_<lane>`): `r44_fr` the inventory window
+  (`portable_test.lua`, the real vendored sfinv and `grug_inventory`'s
+  `ui.lua` and `pages.lua` under a stub `core`): the fixed tab order, the
+  frame (formspec_version 6, the old window size), the full and short
+  inventory views with 0–4 bags of mixed sizes, the scrollbar echo and no
+  resend on a pure scrollbar event, the Sort cooldown, the refresh rules;
+  it prints the Inventory and Character pages' bytes with four 32-slot bags.

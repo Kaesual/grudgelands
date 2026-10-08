@@ -18,8 +18,7 @@
 --      counters; every element above the shared inventory (y 7.0) and
 --      inside the page width; the button flags and re-sends; the 1 s poll
 --      re-sends only while the open tab's text changes; another page gets
---      nothing; nav order: right after Party for every order of the other
---      tabs' hooks (ours runs after Party's, it loads after grug_parties);
+--      nothing; no ordering hook (Round 44: grug_inventory's tab table);
 --   B  the banner's second line (since Round 32 the territory line,
 --      tested in tools/r32_f1): layout only, the line under the banner,
 --      the flight warning under it and above the level-up banner;
@@ -335,72 +334,10 @@ do
 	check(ok and #sends == 3, "P a join-time change without a context does nothing")
 	pvp_state.bob, pvp_stats.bob, players.bob = nil, nil, nil
 
-	-- Nav order: grug_inventory's order, then the other tabs' hooks (each moves
-	-- its page right after its predecessor) in every order, ours last (it
-	-- loads after grug_parties); the start lists both load positions of Skills
-	-- seen in practice. PvP must follow Party directly.
-	local reorder = loaded[1]
-	local function move_after(name, after)
-		return function()
-			local page, ordered, inserted = sfinv.pages[name], {}, false
-			for _, d in ipairs(sfinv.pages_unordered) do
-				if d ~= page then ordered[#ordered + 1] = d end
-				if d.name == after then ordered[#ordered + 1] = page; inserted = true end
-			end
-			if not inserted then ordered[#ordered + 1] = page end
-			sfinv.pages_unordered = ordered
-		end
-	end
-	local others = {move_after("grug_classes:talents", "grug_inventory:bags"),
-		move_after("grug_skills:skills", "grug_classes:talents"),
-		move_after("grug_quests:quests", "grug_skills:skills"),
-		move_after("grug_parties:group", "grug_quests:quests")}
-	local starts = {
-		{"grug_inventory:character", "grug_inventory:bags", "grug_inventory:help",
-			"sfinv:crafting", "grug_classes:talents", "grug_skills:skills",
-			"grug_quests:quests", "grug_parties:group", "grug_pvp:pvp", "grug_map:atlas"},
-		{"grug_inventory:character", "grug_inventory:bags", "grug_inventory:help",
-			"sfinv:crafting", "grug_classes:talents", "grug_quests:quests",
-			"grug_parties:group", "grug_map:atlas", "grug_pvp:pvp", "grug_skills:skills"},
-	}
-	local function permutations(list)
-		if #list <= 1 then return {list} end
-		local out = {}
-		for i = 1, #list do
-			local rest = {}
-			for j = 1, #list do if j ~= i then rest[#rest + 1] = list[j] end end
-			for _, tail in ipairs(permutations(rest)) do
-				local p = {list[i]}
-				for _, item in ipairs(tail) do p[#p + 1] = item end
-				out[#out + 1] = p
-			end
-		end
-		return out
-	end
-	local all_ok, runs = true, 0
-	for _, start in ipairs(starts) do
-		for _, hooks in ipairs(permutations(others)) do
-			for _, name in ipairs(start) do
-				sfinv.pages[name] = sfinv.pages[name] or {name = name}
-			end
-			sfinv.pages_unordered = {}
-			for _, name in ipairs(start) do
-				sfinv.pages_unordered[#sfinv.pages_unordered + 1] = sfinv.pages[name]
-			end
-			for _, fn in ipairs(hooks) do fn() end
-			reorder()
-			runs = runs + 1
-			local names = {}
-			for index, d in ipairs(sfinv.pages_unordered) do names[index] = d.name end
-			local at = table.indexof(names, "grug_parties:group")
-			if names[at + 1] ~= "grug_pvp:pvp" or #names ~= #start then
-				all_ok = false
-				print("nav order: " .. table.concat(names, " "))
-			end
-		end
-	end
-	eq(runs, 48, "P nav: every hook order on both load orders")
-	check(all_ok, "P PvP follows Party for every hook order")
+	-- Nav order (Round 44): grug_inventory's one tab table places the page;
+	-- grug_pvp keeps no ordering hook of its own (tools/r44_fr checks the
+	-- table).
+	eq(#loaded, 0, "P no ordering hook")
 end
 
 -- ---------------------------------------------------------------------------

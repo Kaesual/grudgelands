@@ -327,8 +327,9 @@ sfinv.register_page(PAGE, {
 	on_player_receive_fields = function(self, player, context, fields)
 		if fields.quit then
 			-- The engine cannot report a later inventory reopen. Returning to
-			-- Character makes the next Map tab click an explicit open event.
-			sfinv.set_page(player, "grug_inventory:character")
+			-- the homepage (Inventory, the "i" page) makes the next Map tab
+			-- click an explicit open event.
+			sfinv.set_page(player, sfinv.get_homepage_name(player))
 			return true
 		end
 		-- Buttons submit VAL for both axes; a scrollbar movement submits CHG.
@@ -427,6 +428,6 @@ core.register_on_leaveplayer(function(player)
 end)
 core.register_on_dieplayer(function(player)
 	if active[player:get_player_name()] then
-		sfinv.set_page(player, "grug_inventory:character")
+		sfinv.set_page(player, sfinv.get_homepage_name(player))
 	end
 end)

@@ -202,6 +202,10 @@ local function make_player(name, window)
 		self.huds[id][stat] = deep_copy(value)
 	end
 	function p:get_pos() return nil end
+	-- The inventory views (Round 44) read the lists' sizes: main only.
+	function p:get_inventory()
+		return {get_size = function(_, list) return list == "main" and 32 or 0 end}
+	end
 	function p:get_meta()
 		local meta = self.meta
 		return {
@@ -465,7 +469,7 @@ sfinv = {pages = pages, pages_unordered = {}, contexts = contexts,
 	get_formspec = function() return "" end,
 	get_nav_fs = function() return "tabheader[0,0;sfinv_nav_tabs;Character,Quests;1;true;false]" end,
 }
-grug_inventory = {}
+grug_inventory = {BAG_COUNT = 0}
 dofile("mods/PLAYER/grug_inventory/ui.lua")
 grug_money = {format = function(c) return c .. " copper" end, get = function() return 0 end,
 	register_on_change = function() end,
@@ -716,7 +720,8 @@ grug_core.register_on_status_modifiers_changed = function() end
 grug_core.status_effects = function() return {} end
 grug_core.status_icons = {remaining_text = function() return "" end}
 function smith:get_properties() return {visual = "mesh", mesh = "character.b3d", textures = {"character.png"}} end
-function smith:get_inventory() return {get_stack = function() return ItemStack("") end} end
+function smith:get_inventory() return {get_stack = function() return ItemStack("") end,
+	get_size = function(_, list) return list == "main" and 32 or 0 end} end
 local resent = 0
 sfinv.set_player_inventory_formspec = function() resent = resent + 1 end
 dofile("mods/PLAYER/grug_inventory/pages.lua")
@@ -757,7 +762,9 @@ grug_inventory.has_quiver = function(p) return p:get_player_name() ~= "smith" en
 -- The engine's legacy formspec layout (guiFormSpecMenu.cpp), written out
 -- here independently of pages.lua: calculateImgsize (padding 0.05 on each
 -- side; getImgsize with the padded screen, its integer min_dim / 15; capped
--- by fitx / fity for the form's size; truncated to v2s32), spacing 5/4 and
+-- by fitx / fity for the form's size, which since Round 44 is a
+-- real-coordinate size[13.500,13.673], so fit = padded size / that size;
+-- truncated to v2s32), spacing 5/4 and
 -- 15/13 of imgsize, padding 3/8 (:3339-3341), a position trunc(padding +
 -- pos * spacing) (getElementBasePos :257-264), an image or item_image size
 -- trunc(size * imgsize) (parseImage :808-811, parseItemImage), a list slot
@@ -775,7 +782,7 @@ end
 local function legacy_layout(w, h, gui_scaling)
 	local pw, ph = w * 0.9, h * 0.9
 	local img = math.floor(math.min(get_imgsize(pw, ph, gui_scaling, 1),
-		pw / (5 / 4 * (0.5 + 10.4)), ph / (15 / 13 * (0.85 + 11.1))))
+		pw / 13.5, ph / 13.673))
 	return {img = img, sx = img * 5 / 4, sy = img * 15 / 13, pad = math.floor(img * 3 / 8),
 		font = 16 * gui_scaling}
 end
@@ -798,7 +805,7 @@ local function quiver_page(name, window, total)
 				return ItemStack("grug_gear:arrow " .. math.min(total, 100))
 			end
 			return ItemStack("")
-		end}
+		end, get_size = function(_, list) return list == "main" and 32 or 0 end}
 	end
 	quiver_total = total
 	contexts[name] = {page = "grug_inventory:character", grug_character_tab = "stats"}

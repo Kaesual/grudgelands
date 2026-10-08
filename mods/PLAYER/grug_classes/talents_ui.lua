@@ -341,28 +341,6 @@ sfinv.register_page(PAGE_NAME, {
 	end,
 })
 
--- grug_inventory establishes Character/Bags/Crafting order after this mod
--- loads. Move Talents into its specified third slot once every mod is ready,
--- without patching the vendored sfinv implementation or grug_inventory.
-core.register_on_mods_loaded(function()
-	local page = sfinv.pages[PAGE_NAME]
-	local ordered = {}
-	local inserted = false
-	for _, def in ipairs(sfinv.pages_unordered) do
-		if def ~= page then
-			ordered[#ordered + 1] = def
-		end
-		if def.name == "grug_inventory:bags" then
-			ordered[#ordered + 1] = page
-			inserted = true
-		end
-	end
-	if not inserted then
-		ordered[#ordered + 1] = page
-	end
-	sfinv.pages_unordered = ordered
-end)
-
 grug_classes.register_on_talents_changed(refresh_open_page)
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	if old_level ~= nil then

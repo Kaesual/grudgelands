@@ -1,6 +1,7 @@
--- sfinv pages: Character (new homepage) and Bags, plus the shared nav order
--- (the Help page is registered by help.lua). sfinv uses legacy formspec
--- coordinates; shared content ends before y=7.0.
+-- sfinv pages: Inventory (the homepage) and Character (the Help page is
+-- registered by help.lua; the frame, the tab order and the inventory views
+-- live in ui.lua). Character's content is in legacy coordinates and ends
+-- before y=7.0; the Inventory tab is drawn in real coordinates.
 
 local function esc(text)
 	return core.formspec_escape(text)
@@ -69,8 +70,6 @@ local SLOT_POS = {
 	grug_trinket2 = {9.3, 5.45},
 }
 local QUIVER_POS = {7.3, 1.85}
--- The Bag of Coins deposit slot (Round 34), below the quiver's total.
-local DEPOSIT_POS = {7.3, 3.75}
 local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
 -- The cover over the quiver cell's count corner (Round 41 ruling 6): the
 -- slot's colour as drawn, default's listcolors slot #00000069 over the
@@ -87,14 +86,14 @@ local QUIVER_COVER_OVER = 0.02
 local COUNT_W_PX, COUNT_H_PX = 30, 20
 
 -- The cover's size in slot units for this player's window, so the count is
--- hidden at any GUI scale and window size. The slot is the engine's legacy
--- imgsize (guiFormSpecMenu.cpp calculateImgsize): the preferred size, which
--- window information gives unpadded as size / max_formspec_size (the 5 %
--- padding on each side lowers it by at most 10 %), capped so the inventory
--- form fits the padded window. Slot and count both grow with gui_scaling, so
--- the ratio changes mainly where that cap holds (a small window, a large
--- scale). Without window information (a page built right at join) the cover
--- takes most of the cell.
+-- hidden at any GUI scale and window size. The slot is the engine's imgsize
+-- (guiFormSpecMenu.cpp calculateImgsize): the preferred size, which window
+-- information gives unpadded as size / max_formspec_size (the 5 % padding on
+-- each side lowers it by at most 10 %), capped so the inventory form (a
+-- real-coordinate size, Round 44) fits the padded window. Slot and count both
+-- grow with gui_scaling, so the ratio changes mainly where that cap holds (a
+-- small window, a large scale). Without window information (a page built
+-- right at join) the cover takes most of the cell.
 local function quiver_cover_size(player)
 	local info = core.get_player_window_information(player:get_player_name())
 	if not (info and info.size and info.max_formspec_size and
@@ -103,8 +102,7 @@ local function quiver_cover_size(player)
 	end
 	local width, height = info.size.x * 0.9, info.size.y * 0.9
 	local slot = math.min(0.9 * info.size.x / info.max_formspec_size.x,
-		width / (5 / 4 * (0.5 + grug_inventory.UI.width)),
-		height / (15 / 13 * (0.85 + grug_inventory.UI.height)))
+		width / grug_inventory.UI.frame_w, height / grug_inventory.UI.frame_h)
 	-- Rounded up to the formspec's two decimals, never below the count.
 	local function units(px)
 		return math.min(1, math.ceil(px * info.real_gui_scaling / slot * 100) / 100)
@@ -272,18 +270,10 @@ local function character_content(player, context)
 		("label[2.75,3.95;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
 		"label[8.3,1.25;Armor]label[9.3,1.25;Gear]",
 	}
-	-- The Bag of Coins (Round 34): Withdraw opens grug_money's dialog; the
-	-- slot beside it takes a bag and credits it at once, so it always shows
-	-- its ghost. Button, label and slot share the money line's centre.
-	local deposit, deposit_list = grug_money.deposit_location(player)
+	-- The Bag of Coins (Round 34): Withdraw beside the balance opens
+	-- grug_money's dialog and shares the money line's centre. The deposit
+	-- slot is on the Inventory tab (Round 44).
 	fs[#fs + 1] = "button[5.6,3.83;1.55,0.7;grug_money_withdraw;Withdraw]"
-	fs[#fs + 1] = ("list[%s;%s;%.1f,%.2f;1,1;]"):format(deposit, deposit_list,
-		DEPOSIT_POS[1], DEPOSIT_POS[2])
-	fs[#fs + 1] = ("image[%.1f,%.2f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
-		:format(DEPOSIT_POS[1], DEPOSIT_POS[2])
-	fs[#fs + 1] = ("tooltip[%.1f,%.2f;%.4f,%.4f;%s]"):format(DEPOSIT_POS[1],
-		DEPOSIT_POS[2], TOOLTIP_W, TOOLTIP_H,
-		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
 	-- Claim Stone status (Round 25 ruling 14). Neither mod depends on the
 	-- other, so grug_housing is read at build time; it returns "" until the
 	-- player has received a stone and keeps the cached page current itself.
@@ -556,100 +546,106 @@ end)
 -- The Help page lives in help.lua (dofile'd by init.lua before this file).
 
 --
--- Bags page
+-- Inventory page (Round 44, spec §3.2, wireframe v1): the four bag slots,
+-- the potion belt, the Bag of Coins deposit and Sort along the top, the full
+-- inventory view (main[9..] and every equipped bag as one scrolling grid, the
+-- hotbar below) under them. Real coordinates; no listring, so shift-click
+-- does nothing here (one inventory has no "other side").
 --
 
-local function bags_content(player, context)
-	local inv = player:get_inventory()
-	local selected = context.grug_bag or 1
-	local fs = {}
-	for i = 1, grug_inventory.BAG_COUNT do
-		local x = (i - 1) * 2 + 0.3
-		local field = "grug_open_" .. i
-		table.insert(fs, ("list[current_player;%s;%.1f,0.35;1,1;]"):format(
-			grug_inventory.bag_list(i), x))
-		table.insert(fs, grug_inventory.selected_button_style(field, i == selected))
-		table.insert(fs, ("button[%.1f,1.35;1.5,0.7;grug_open_%d;%s]"):format(
-			x - 0.25, i, esc("Bag " .. i)))
-	end
+local INVENTORY_PAGE = "grug_inventory:inventory"
+local POTION_BELT = "grug_potion_belt"
+local TOP_LABEL_Y, TOP_SLOT_Y = 0.3, 0.55
+local BAGS_X, BELT_X, COINS_X = 0.4, 5.55, 10.7
+local SORT_X, SORT_W = 11.95, 1.15
+local PITCH = 1.25
+-- Sort ignores clicks for this long after one it ran (spec ruling 5): no
+-- countdown, no resend; the lists the sort changed reach the client on their
+-- own.
+local SORT_COOLDOWN_US = 2500000
 
-	local bag = inv:get_stack(grug_inventory.bag_list(selected), 1)
-	local slots = grug_inventory.bag_slots_of(bag)
-	if slots > 0 then
-		table.insert(fs, ("label[0,2.05;%s]"):format(
-			esc(("Bag %d — %s"):format(selected, bag:get_description()))))
-		table.insert(fs, ("list[current_player;%s;0,2.35;8,3;]"):format(
-			grug_inventory.content_list(selected)))
-		table.insert(fs, ("listring[current_player;%s]listring[current_player;main]")
-			:format(grug_inventory.content_list(selected)))
-	else
-		table.insert(fs, ("label[0,2.35;%s]"):format(
-			esc(("Bag %d is empty — put a bag into the slot above."):format(selected))))
+local function inventory_content(player)
+	local deposit, deposit_list = grug_money.deposit_location(player)
+	local fs = {
+		"real_coordinates[true]",
+		("label[%.2f,%.2f;Bags]"):format(BAGS_X, TOP_LABEL_Y),
+		("label[%.2f,%.2f;Potion belt]"):format(BELT_X, TOP_LABEL_Y),
+		("label[%.2f,%.2f;Coins]"):format(COINS_X, TOP_LABEL_Y),
+	}
+	for i = 1, grug_inventory.BAG_COUNT do
+		fs[#fs + 1] = ("list[current_player;%s;%.2f,%.2f;1,1;]"):format(
+			grug_inventory.bag_list(i), BAGS_X + (i - 1) * PITCH, TOP_SLOT_Y)
 	end
+	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,1;%s]"):format(BAGS_X, TOP_SLOT_Y,
+		grug_inventory.BAG_COUNT * PITCH - 0.25,
+		esc("Bag slots — a bag here adds its slots to the inventory below"))
+	fs[#fs + 1] = ("list[current_player;%s;%.2f,%.2f;4,1;]"):format(POTION_BELT,
+		BELT_X, TOP_SLOT_Y)
+	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,1;%s]"):format(BELT_X, TOP_SLOT_Y,
+		4 * PITCH - 0.25, esc("Potion belt — potions and elixirs only"))
+	-- The Bag of Coins deposit (Round 34, moved here from the Character page
+	-- in Round 44): a bag put here is credited at once, so the slot is always
+	-- empty and always shows its ghost.
+	fs[#fs + 1] = ("list[%s;%s;%.2f,%.2f;1,1;]"):format(deposit, deposit_list,
+		COINS_X, TOP_SLOT_Y)
+	fs[#fs + 1] = ("image[%.2f,%.2f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
+		:format(COINS_X, TOP_SLOT_Y)
+	fs[#fs + 1] = ("tooltip[%.2f,%.2f;1,1;%s]"):format(COINS_X, TOP_SLOT_Y,
+		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
+	fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,1;grug_inv_sort;Sort]"):format(SORT_X,
+		TOP_SLOT_Y, SORT_W)
+	fs[#fs + 1] = ("tooltip[grug_inv_sort;%s]"):format(esc("Sort the inventory " ..
+		"and the bags. The hotbar stays as it is."))
 	return table.concat(fs)
 end
 
-sfinv.register_page("grug_inventory:bags", {
-	title = "Bags",
+sfinv.register_page(INVENTORY_PAGE, {
+	title = "Inventory",
 	get = function(self, player, context)
-		context.grug_bag = context.grug_bag or 1
-		return sfinv.make_formspec(player, context,
-			bags_content(player, context), true)
+		return sfinv.make_formspec(player, context, inventory_content(player),
+			"full")
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
-		for i = 1, grug_inventory.BAG_COUNT do
-			if fields["grug_open_" .. i] then
-				context.grug_bag = i
-				sfinv.set_page(player, "grug_inventory:bags")
-				return true
+		if fields.grug_inv_sort then
+			local now = core.get_us_time()
+			if now >= (context.grug_inv_sort_ready or 0) then
+				context.grug_inv_sort_ready = now + SORT_COOLDOWN_US
+				grug_inventory.sort(player)
 			end
+			return true
 		end
 	end,
 })
 
 --
--- Homepage & nav order: Character first, Bags second, Crafting after.
+-- Homepage: the Inventory tab (spec ruling 1; the tab order is ui.lua's).
 --
 
--- Deliberate override (not a wrapper): the Character page is the homepage
+-- Deliberate override (not a wrapper): the Inventory page is the homepage
 -- for everyone, including creative players. grug_inventory optionally
 -- depends on creative so the load order — and thus this override — is
 -- deterministic (creative wraps this function; we load after it).
 function sfinv.get_homepage_name(player)
-	return "grug_inventory:character"
+	return INVENTORY_PAGE
 end
-
-local nav_order = {"grug_inventory:character", "grug_inventory:bags",
-	"grug_inventory:help", "sfinv:crafting"}
-local ordered, seen = {}, {}
-for _, name in ipairs(nav_order) do
-	if sfinv.pages[name] then
-		table.insert(ordered, sfinv.pages[name])
-		seen[name] = true
-	end
-end
-for _, def in ipairs(sfinv.pages_unordered) do
-	if not seen[def.name] then
-		table.insert(ordered, def)
-	end
-end
-sfinv.pages_unordered = ordered
 
 --
--- Refresh hooks: an open Character/Bags page re-renders on stat or bag
--- changes (the list contents themselves update live anyway).
+-- Refresh hooks. refresh() re-renders an open page that shows an inventory
+-- view (its grid follows the bag lists' sizes) or the Character page; a bag
+-- change calls it (bags.lua). The stat hooks below re-render only the
+-- Character page. The list contents themselves update live anyway.
 --
 
 function grug_inventory.refresh(player, force)
 	local context = sfinv.get_or_create_context(player)
-	if force or context.page == "grug_inventory:character" or
-			context.page == "grug_inventory:bags" then
+	if force or context.page == CHARACTER_PAGE or context.grug_inv_view then
 		sfinv.set_page(player, context.page)
 	end
 end
 
--- Re-send a cached Character page (any tab) and nothing else: the money hook
--- below uses it; the quiver total uses refresh_character_tab(player, "stats").
+-- Re-send a cached Character page (any tab) and nothing else: the stat and
+-- money hooks below use it; the quiver total uses
+-- refresh_character_tab(player, "stats").
 function grug_inventory.refresh_character(player)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == CHARACTER_PAGE then
@@ -659,27 +655,28 @@ end
 
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	if old_level ~= nil then
-		grug_inventory.refresh(player)
+		grug_inventory.refresh_character(player)
 	end
 end)
 
 -- Ghost icons mirror slot occupancy, so an equipment change re-renders an
--- open Character page (inventory_equipment.md §1). Rare event; refresh()
--- itself no-ops on any other page. Pure wear changes nothing the page shows
--- (the slots' wear bars and tooltips update with the list itself).
+-- open Character page (inventory_equipment.md §1). Rare event; nothing is
+-- re-sent for any other page. Pure wear changes nothing the page shows (the
+-- slots' wear bars and tooltips update with the list itself).
 grug_core.register_on_equipment_change(function(player, listname, reason)
 	if reason == "durability_metadata" then return end
-	grug_inventory.refresh(player)
+	grug_inventory.refresh_character(player)
 end)
 
 grug_core.register_on_status_modifiers_changed(function(player)
-	grug_inventory.refresh(player)
+	grug_inventory.refresh_character(player)
 end)
 
 -- Join needs no second callback here. grug_inventory depends on both sfinv
 -- and player_api, so their join callbacks run first. equipment.lua's later
 -- join callback sizes the slots and calls equipment_changed, which reaches
--- the single refresh consumer above after the model and sfinv context exist.
+-- the equipment-change refresh consumer above after the model and sfinv
+-- context exist.
 
 -- Keep the cached Character form current even while inventory is closed, so
 -- opening it shows the latest balance. Other selected pages need no rebuild.

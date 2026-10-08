@@ -290,7 +290,7 @@ do
 	local function reset() calls = {} end
 	grug_classes = {apply_stats = count("apply_stats")}
 	grug_visuals = {apply = count("visuals")}
-	grug_inventory.refresh = count("character_page")
+	grug_inventory.refresh_character = count("character_page")
 	IRRELEVANT_LIST = {grug_trinket1 = true, grug_trinket2 = true}
 	TRINKET_LISTS = {"grug_trinket1", "grug_trinket2"}
 	rebuild = count("trinkets")

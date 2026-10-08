@@ -40,7 +40,8 @@ axis (D2).
   amount from 1c up to the balance is taken and one Bag of Coins holding it
   is put into the first empty main slot in one transaction
   (`grug_money.take_with_inventory`), refused when the main inventory is
-  full. The **deposit slot** beside it takes only a filled bag, destroys it
+  full. The **deposit slot** on the Inventory tab (Round 44) takes only a
+  filled bag, destroys it
   and credits its amount, refused if the balance would exceed the clamp
   above. One bag per stack, the amount in its item meta and tooltip. Traders
   neither sell nor buy it (no price class: payout 0). It drops, is picked up

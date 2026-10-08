@@ -1,24 +1,51 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (last revised 2026-10-01; established 2026-08-06).
+Decided spec (last revised 2026-10-08; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
 hand count), WP38 (native swing capability/pointability bridge), WP39
 (current-ray swing authority, shipped 2026-08-10).
 
-## 1. Character screen (the "i" key)
+## 1. The inventory window (the "i" key)
 
-- Built on sfinv pages; **Character is the homepage**. Shared pages use a
-  10.4 × 11.1 legacy-coordinate form with the hotbar at `(1.2, 7.2)` and
-  the remaining inventory at `(1.2, 8.35)`. Legacy content ends before y=7.0; pages using a content-only real-coordinate
-  switch keep their controls above the same physical inventory boundary.
-  Character, Bags, Talents, Skills, Crafting, Help and Creative share this
-  boundary. The base inventory remains 32 slots.
+- Built on sfinv pages in one frame (Round 44, `grug_inventory/ui.lua`):
+  `formspec_version[6]` with a real-coordinate `size[13.500,13.673]`, the
+  same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size;
+  the Map tab keeps its own legacy header. Page content follows a
+  `real_coordinates[false]`, so pages still in legacy coordinates keep their
+  place and end before legacy y=7.0; pages in real coordinates start their
+  content with `real_coordinates[true]`.
+- **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
+  the mods' load order): **Inventory** (the homepage, what "i" opens) ·
+  Character · Talents & Skills · Crafting · Party & PvP · Help · Map. Until
+  their pages are merged, Talents and Skills stand at "Talents & Skills",
+  Party and PvP at "Party & PvP", and Quests (moving into the map window)
+  before Map. Creative's tabs, for creative players, follow the table.
+- **Inventory views** (`grug_inventory.inventory_view(player, mode,
+  context)`): `main[9..]`, then each equipped bag's content list in slot
+  order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
+  so there are no gaps), and the hotbar (`main[1..8]`) below it, outside the
+  scroll area, at the same place in every tab. **Full** shows eight rows
+  (the Inventory tab); **short** shows two (every other tab with an
+  inventory). A page asks the frame for its view and never draws `main`
+  itself; Help, Party and PvP still show the short view until their page is
+  rebuilt. The scroll position is kept per view and sent back with every
+  rebuild (the client forgets it on a resend), so equipping a bag or sorting
+  keeps the place; a pure scrollbar event re-sends nothing. No listring in
+  the views: shift-click has no job inside one inventory.
+- **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2): along the top the four
+  bag slots, the four-slot **potion belt** (`grug_potion_belt`, potions and
+  elixirs only), the Bag of Coins **deposit slot** and **Sort**; below them
+  the full view, at most 24 + 4 × 32 = 152 slots in 19 rows. Sort orders
+  `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
+  for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
+  time, a 32-slot bag cut to 24) is gone.
 - Character separates the model, concise live HP/resource/armor values and
   equipment into three columns. The current money balance is shown here, with
   balance changes updating the cached Character view; money has no gameplay HUD.
-  Beside the balance a **Withdraw** button and a **deposit slot** handle the
-  Bag of Coins (Round 34, [economy.md](economy.md) §1).
+  Beside the balance a **Withdraw** button handles the Bag of Coins (Round
+  34, [economy.md](economy.md) §1); its deposit slot is on the Inventory tab
+  (Round 44).
   Round 19 removes the pool/armor derivation section. Character shows concise
   effective Crit and Dodge alongside armor rating, **Damage reduction** (the
   armor's reduction against an enemy of the character's own level; its tooltip
@@ -68,7 +95,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (Round 28): Warrior sword / shield ("Weapon" / "Shield"), Mage and
     Priest staff / spellbook ("Weapon" / "Caster offhand"), Scout bow / sword
     ("Ranged" / "Melee"). The Scout's quiver slot shows a dimmed quiver.
-- Further pages: **Bags**, existing **Crafting** (3×3 grid).
+- Further pages: existing **Crafting** (3×3 grid).
 - Armor visuals on the player model: composed with the character's look
   ([character_visuals.md](character_visuals.md) §1, §3).
 

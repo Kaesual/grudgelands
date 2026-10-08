@@ -757,7 +757,7 @@ step(10)
 eq(#sfinv_sets, sets + 1, "changed status rebuilds the cached page")
 step(10)
 eq(#sfinv_sets, sets + 1, "only once per change")
-sfinv.contexts.owner = {page = "grug_inventory:bags"}
+sfinv.contexts.owner = {page = "grug_inventory:inventory"}
 claim.paid_until = now + 3 * DAY
 step(10)
 eq(#sfinv_sets, sets + 1, "other pages are not rebuilt")

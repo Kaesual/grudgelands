@@ -1,7 +1,7 @@
 -- The Bag of Coins (Round 34 ruling 4; BACKLOG "Money withdraw and
 -- deposit"): money taken out of the balance into an item, so players can
 -- give money to each other. Withdraw on the Character page through a small
--- dialog; a deposit slot on the same page destroys a bag and credits it.
+-- dialog; a deposit slot on the Inventory page destroys a bag and credits it.
 -- The amount lives in the item's meta, one bag per stack. Traders neither
 -- sell it nor buy it (it has no price class, so grug_traders pays 0 and the
 -- sell path refuses it). No log line for transfers (user ruling); a dropped
@@ -101,7 +101,7 @@ end
 
 local function deposit_name(name) return "grug_money_deposit_" .. name end
 
--- The list[] location of the player's deposit slot, for the Character page.
+-- The list[] location of the player's deposit slot, for the Inventory page.
 function grug_money.deposit_location(player)
 	return "detached:" .. deposit_name(player:get_player_name()), DEPOSIT_LIST
 end
