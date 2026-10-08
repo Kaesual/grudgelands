@@ -77,8 +77,8 @@ sizes, Party & PvP page). Round-specific (the user, 2026-10-08):
 - **Sort** (IH): `grug_inventory.sort(player)` → changed; the button and its
   2–3 s server-side cooldown are FR's.
 - **Key edges** (MQ writes it, QB uses it): one globalstep helper in a new
-  small mod (`grug_keys`, not `grug_core`, which Round 43 edits in parallel)
-  that reports the rising edge of `zoom` and `aux1` per player.
+  small mod, `grug_keys` (input belongs neither to the map nor to the
+  quickbar), that reports the rising edge of `zoom` and `aux1` per player.
 - **Markers and icons:** AR delivers textures under the names MB and MQ
   use; until AR's picks merge, MB and MQ use clearly marked placeholders.
 
@@ -91,10 +91,15 @@ server) and updates the design docs whose rules it changes
 
 ### 4.1 Wave 1 — IH, inventory logic
 
-- The give helper (§3) and all its call sites: the 30 direct
-  `add_item("main", …)` calls in 15 files, `core.handle_node_drops` for
-  digging (overridden), equipment returns, the quest reward helper; item
-  pickup. Inventory-full messages only when the whole inventory is full.
+- The give helper (§3) and all its call sites: the 24 direct
+  `add_item("main", …)` calls in 16 files (22 in 14 game files, plus
+  `BASE/creative/init.lua` and `BASE/default/craftitems.lua`; measured with
+  `grep -rnE "add_item\(\s*['\"]main['\"]" mods`), `core.handle_node_drops`
+  for digging (overridden), equipment returns, the quest reward helper (a
+  variable list name, `grug_quests/state.lua:600`), item pickup
+  (`grug_gear/init.lua:790-796`, `register_on_item_pickup`). The brief lists
+  the exact sites. Inventory-full messages only when the whole inventory is
+  full.
 - Bag rules (spec §2.3): bags inside bags allowed, never into their own list;
   swap to an equal or larger bag keeps the contents; taking a bag out (drag
   or drop out of the window) and swapping to a smaller one redistribute the
@@ -137,6 +142,9 @@ Pixel art, matching the game's existing icons:
   zone names use; the lane measures the character set from the data);
 - the red crosshair and a white ring (tinted in code).
 
+The crafting progress bar (spec §3.7) is not part of this lane: Round 45
+generates it in code.
+
 A review page with variants; the user picks. MB and MQ swap their
 placeholders for the picks.
 
@@ -145,12 +153,16 @@ placeholders for the picks.
 - The renderer draws the baked icons and the pixel-font region names into
   the world-map variant and the icons alone into the minimap variant; both
   cached, the cache key covering art, font and layout versions (spec §3.6).
+- MB owns the map page's region names (`grug_map/page.lua:49-58`, the
+  `REGION_LABELS` drawing at :200-220) and its settlement marker provider
+  (`page.lua:97-125`), the boss provider (`providers.lua:88-99`) and
+  `settlement_icons.lua`; MQ starts from MB's result.
 - **All settlements are baked, the other faction's included** (ruling 5):
   the per-viewer hiding of `grug_map/settlement_icons.lua` (Round 31) ends
   for the map image; NPC overlays (trainers, quest givers) stay own-faction
   only.
 - The region-name `hypertext` elements and the dynamic markers of baked kinds
-  leave the map page's providers; the minimap's dynamic markers are trainers
+  leave the map page; the minimap's dynamic markers are trainers
   (new icons), quest givers ! and ?, home, waypoints and party (spec §3.7).
 - Render time and texture sizes reported before and after (both quality
   settings).
@@ -188,6 +200,7 @@ Measured formspec bytes before and after.
   nothing on the other faction's side beyond the baked layer.
 - The quest boxes move here from the Quests tab, which goes (spec §2.14):
   list, Quest HUD, Track on HUD, Abandon with confirm, quest text.
+- No exclamation marks on the world map; the minimap keeps ! and ?.
 - Quest targets: the role → regions index built once at start; leader
   crosshairs first, then up to five circles for the nearest spawn regions;
   talk NPCs and use places marked.
@@ -221,18 +234,27 @@ lines; Help names E and Z and the aux1 notes (spec §3.5).
 
 ### 4.10 Wave 3 — MS, the migration step
 
-The first real step under `tools/migrate/steps/` (Round 43's layout): for
+The first real step under `tools/migration/steps/` (Round 43's layout): for
 every character, remove mount items from every list and bound skills from
-every list but `main[1..8]`. Offline only, no online work. Its test (the
-Round 43 harness): a 0.43 world with such items, the step, a headless boot,
-the checks. The declaration gains `"migrate": ["0.44.0"]` (lane D) and the
-game's `grug_core.migrations` list the same entry.
+every list but `main[1..8]`. Offline only, no online work. TS does not
+extend the login cleanup (`normalize_kit`) to `main[9..]`: existing stray
+skills are the step's job.
+
+MS owns the version change, so its branch can run the real flow: it bumps
+`game.conf` and the declaration's `version` to 0.44.0, adds `0.44.0` to the
+declaration's `migrate` list and to `grug_core.migrations` together
+(`check_upgrade.py` stays green on every commit). Its test builds the world
+from the **0.43.0 commit** (a worktree; 0.44 code no longer hands out mount
+items), then runs the step, boots headless and checks.
 
 ### 4.11 Wave 4 — D, documentation
 
 The plan's completion with the GUI checklist; STATUS, the AGENTS pointer,
-ROADMAP, BACKLOG, README, CHANGELOG (0.44.0), `game.conf`, the declaration
-(version 0.44.0, `migrate` 0.44.0); the spec's status line for Round A.
+ROADMAP, BACKLOG, README, CHANGELOG (0.44.0; the version itself is MS's);
+the spec's status line for Round A and its §6, which this round supersedes
+in two points: the migrations are offline steps, not "removed at login",
+and the spec's precondition "framework and AGENTS change before the plans
+are approved" is replaced by the parallel run with the merge rule (§7).
 
 ## 5. Rules
 
@@ -256,11 +278,15 @@ Per lane the gates of the [round workflow](../process/round-workflow.md#3-gates)
 
 GUI checklist (desktop and web):
 
-- `i` opens Inventory; the tab order; every tab at today's size.
+- `i` opens Inventory; the tab order; every tab at today's size; the
+  Crafting tab still works inside the new frame.
+- A 0.43 world started without the tool is refused with the guard's message
+  naming the step and the command line.
 - Inventory: four bags of mixed sizes shown as one grid, scrolling keeps its
   place after equipping and sorting; Sort (order, merging, hotbar untouched,
   the cooldown); swap a bag for a larger and a smaller one; take a full bag
-  out with and without room; a bag inside a bag; the potion belt.
+  out with and without room; a bag inside a bag; the potion belt (refuses
+  anything but potions and elixirs).
 - Pickups, loot, quest rewards and dug blocks fill `main[9..]` and the bags
   before the hotbar; a Scout shoots arrows from a bag.
 - Character: the four modes, the cloak, equipping by drag and shift-click,
@@ -269,11 +295,17 @@ GUI checklist (desktop and web):
   hotbar, returned to the catalog.
 - Quickbar: E opens it, a mount summons, a potion drinks, Return home works,
   the window closes; no mount items anywhere.
-- Map: Z and the Map tab; baked icons and names at all zoom levels;
+- Map: Z and the Map tab; the minimap switch in the map window; the other
+  faction's settlements baked; the quest boxes (Quest HUD, Track on HUD,
+  Abandon with confirm); no refresh while alone and standing still; baked
+  icons and names at all zoom levels;
   trainers of the own faction; question marks with names; a kill quest shows
   circles, a leader quest the crosshair; the minimap shows ! and ? and the
   trainers.
-- Party & PvP: invites, the member list, the PvP button.
+- Party & PvP: online players of the own faction, invites, the member
+  list, the PvP button.
+- Texts: Help and the welcome window name the new tabs, E and Z; the riding
+  trainer and the shipwright give the "Press E" tip.
 - An old world (0.43) migrated with the tool, then boots: mount items and
   stray skills are gone, owned mounts are in the quickbar.
 
@@ -290,24 +322,32 @@ GUI checklist (desktop and web):
 - Process budget: at most 8 Lua processes at once; engine runs only through
   `tools/luanti_headless.sh`.
 - Files per lane (the briefs list exact files):
-  - IH: `grug_inventory/bags.lua`, a new helper module, the 15 call-site
-    files, `grug_quests/state.lua` (reward helper), ammo readers.
-  - FR: `BASE/sfinv/` (patch markers), `grug_inventory/ui.lua`,
-    `pages.lua` (frame, Inventory tab), the ordering hooks in
-    `talents_ui.lua`, `grug_skills/page.lua`, `grug_quests/ui.lua`,
-    `grug_parties/ui.lua`, `grug_pvp/page.lua`, `grug_map/page.lua` (hook
-    lines only).
-  - CH: `grug_inventory/pages.lua` (Character), `equipment.lua` (labels only).
+  - IH: `grug_inventory/bags.lua`, a new helper module loaded from
+    `bags.lua` (FR owns `grug_inventory/init.lua`), the 16 call-site files,
+    `grug_quests/state.lua` (reward helper), ammo readers.
+  - FR: `BASE/sfinv/` (patch markers), `grug_inventory/ui.lua`, `init.lua`,
+    `pages.lua` (frame, Inventory tab), the ordering hooks
+    (`talents_ui.lua:348-363`, `grug_skills/page.lua:147-153`,
+    `grug_quests/ui.lua:172-178`, `grug_parties/ui.lua:207-213`,
+    `grug_pvp/page.lua:95-104`, `grug_inventory/pages.lua:626-636`; the map
+    page has none).
+  - CH: `grug_inventory/pages.lua` (Character), `equipment.lua` (labels and
+    the shift-click routing as needed).
   - TS: `grug_classes/talents_ui.lua`, `grug_skills/`, `grug_abilities`
     (grant path, `normalize_kit`).
-  - MB: `grug_map/base.lua`, `minimap.lua`, `minimap_view.lua`,
-    `providers.lua` (kinds).
-  - MQ: `grug_map/page.lua`, `atlas.lua`, a new window module,
-    `grug_quests/ui.lua` (moved), the new `grug_keys` mod.
+  - MB: `grug_map/base.lua`, `minimap.lua`, `minimap_view.lua`, `page.lua`
+    (region names, settlement provider), `providers.lua` (bosses),
+    `settlement_icons.lua`, `world_map.md`, the fixtures that assert the
+    hiding (`tools/r31_m/portable_test.lua:228-235`,
+    `tools/r32_f1/portable_test.lua:350-361`).
+  - MQ: `grug_map/page.lua`, `atlas.lua`, `providers.lua` (quest givers →
+    active quests only, ? with the NPC name; `:129-140`), a new window
+    module, `grug_quests/ui.lua` (moved), the new `grug_keys` mod.
   - PP: `grug_parties/ui.lua`, `grug_pvp/page.lua`, `grug_inventory/help.lua`,
     `welcome.lua`.
   - QB: `grug_mounts/`, a quickbar module, `grug_alchemy`/trader potion use.
-  - MS: `tools/migrate/steps/`, its test, `grug_core.migrations`.
+  - MS: `tools/migration/steps/`, its test, `grug_core.migrations`,
+    `game.conf`, `tools/web_data/upgrade.json`.
 - Merge order: IH, FR, AR, MB, then CH, TS, PP, MQ, then QB, MS, then D.
   Lanes that start after a shared file changed merge main before their
   review. FR touches the ordering hooks of other mods' pages; the wave-2

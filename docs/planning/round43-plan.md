@@ -65,16 +65,17 @@ These fix the interface between GS and MT so both can work in parallel.
 
 - **Tool path:** `python3 tools/migrate.py --world <dir>` and
   `python3 tools/migrate.py --world <dir> --check`, run from the repository
-  root. Steps live in `tools/migrate/steps/`, one file per declared version
-  (`v0_44_0.py` style); helpers and the data API in `tools/migrate/`.
+  root. The package next to it is `tools/migration/` (not `tools/migrate/`,
+  which would shadow the script on import): helpers, the data API and
+  `steps/`, one file per declared version (`v0_44_0.py` style).
 - **World record:** mod storage of `grug_core`, key `world_version`, a
   `major.minor.patch` string (contract R6).
 - **Online-work markers** (contract R6; the map reset's two-level pattern,
   `grug_core/map_reset.lua:4-21`):
   - world part: `grug_core` mod storage, key `migrate_world:<version>`;
   - character part: player meta `grug_core:migrate:<version>`;
-  - a step that leaves online work writes its markers in its own
-    transactions; the game finishes the world part at the next load and each
+  - a step that leaves online work writes its markers in the step's
+    per-backend transactions; the game finishes the world part at the next load and each
     character's part at that character's next join, in step order, and
     then deletes the marker.
 - **The game's step registry:** `grug_core.migrations` in a runtime-tree
@@ -82,9 +83,16 @@ These fix the interface between GS and MT so both can work in parallel.
   guard compares against (contract R7) and the online handlers per version
   (`world` and `character` functions). `tools/check_upgrade.py` proves the
   list equal to the declaration's `migrate` list.
-- **Declaration:** `tools/web_data/upgrade.json` at schema 2,
+- **Declaration:** `tools/web_data/upgrade.json` at schema 2. GS converts
+  it with `version` still equal to `game.conf`'s (the check requires it);
+  lane D bumps both to 0.43.0, ending at
   `{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"],
   "new_server": [], "migrate": []}`.
+- **Test-only steps:** GS provides one hook, read before the guard, through
+  which a test registers undeclared step versions (their guard entries and
+  online handlers); it is inert in a shipped game (for example enabled only
+  by a setting no shipped config sets). MT provides the matching tool hook.
+  Test step versions are at most the branch's `game.conf` version.
 - **Test environment:** the tool's tests run in a `debian:trixie` container
   (Podman) with Debian's `python3` 3.13, `python3-psycopg` and
   `python3-zstandard`, exactly the platform's runner; the PostgreSQL test
@@ -117,6 +125,8 @@ between, and the game stamps 0.43.0.
 - **New-world recognition** (R6), conservative: a world is new only when it
   has no characters and no saved game state; in doubt, existing. The lane
   chooses the method and lists exactly what "saved game state" it looks at.
+  "Characters" are rows of the player backend, never auth entries (a platform
+  may create auth entries before the first boot).
 - **Online work** (R6, §3): the runner that finishes pending world markers
   at load and character markers at join, in step order, and deletes each
   marker after its handler succeeded. A failing handler stops the load (world
@@ -124,6 +134,8 @@ between, and the game stamps 0.43.0.
   it never deletes the marker. When a join also carries a map-reset
   relocation, the lane fixes and reports the order (migration work first is
   the default: it repairs saved data the relocation may read).
+- The world part of online work runs after every map-reset clear (R1:
+  a step never relies on map-bound storage).
 - `tools/check_fresh_server.py` and its docstring follow the new rule
   ("migrations only through the tool").
 - The guard runs before the map-reset clears; a move that combines a map
@@ -135,8 +147,9 @@ between, and the game stamps 0.43.0.
   entries only with a version bump, the crossing rule), that each declared
   step file exists and is unchanged against `origin/main`, and that the
   game's `grug_core.migrations` list equals the declaration. Its self-test
-  covers the new rules; `outcome()` learns the fourth outcome (new server
-  wins; map reset and migrate combine).
+  covers the new rules (the "schema 1 only" case flips); `compare()` accepts
+  a pushed schema-1 declaration without a `migrate` key; `outcome()` learns
+  the fourth outcome (new server wins; map reset and migrate combine).
 - Fixtures (`tools/r43_gs/portable_test.lua`) for the guard decision, the
   record rules, new-world recognition and the marker order.
 
@@ -160,9 +173,15 @@ between, and the game stamps 0.43.0.
 - **The data API** (R5, now): list all characters (offline ones too); read
   and write player meta, inventories (lists, sizes, items with meta) and
   position; read auth and write privileges; read, write and delete mod-storage
-  keys per mod. One transaction per backend per step; the world version
-  write sits in the step's mod-storage transaction. A step can never create,
-  rename or delete a character or an auth entry, nor change a table layout.
+  keys per mod; the escape hatch: a step may use the raw SQLite or
+  PostgreSQL connection of a backend. One transaction per backend per step;
+  the world version write sits in the step's mod-storage transaction. A step
+  can never create, rename or delete a character or an auth entry, nor
+  change a table layout.
+- The tool reads the record like the game: missing on an existing world =
+  0.41.0. It never creates a database file (SQLite opened read-write without
+  create, `mode=rw`); a world whose databases do not exist is refused with
+  exit 2.
 - **Codecs:** `core.serialize` / `core.deserialize` for the subset the game
   writes, verified against `builtin/common/serialize.lua`;
   `core.write_json` / `core.parse_json` as the game uses them; item strings
@@ -173,7 +192,10 @@ between, and the game stamps 0.43.0.
   `requirements.txt` with exact versions for self-hosters.
 - Unit tests for the codecs (round trips against strings the engine wrote),
   world opening and refusals, check mode and exit codes, on SQLite; the
-  PostgreSQL paths get their real run in IT.
+  PostgreSQL paths get their real run in IT. The container run works from a
+  `git archive` export of the branch (no `reference_projects/`, no
+  gitignored `tools/bin`), which proves the tool needs nothing outside what
+  the platform's runner gets.
 
 ### 4.3 Wave 2 — IT, integration tests
 
@@ -208,13 +230,19 @@ between, and the game stamps 0.43.0.
 - `docs/technical/upgrade-contract.md`: the fourth outcome, the declaration
   at schema 2, the tool, the record, the markers, the guard; the change table
   gains "migrate" rows (removed items, restructured character state).
-- The round workflow §3: the classification names four outcomes; the gates
-  add "each declared step has its test" and the tool's container test run
-  when `tools/migrate/` changed.
+- The round workflow: §3 and §5 item 6 name four outcomes; the gates add
+  "each declared step has its test" and, whenever `tools/migrate.py` or
+  `tools/migration/` changes, the container run of **every** declared step's
+  test (old steps run on the shared helpers); the templates
+  `common-brief.md` and `review-common.md` follow.
+- AGENTS.md also records that `origin/main` history is never rewritten
+  (contract R8: the platform fetches released commits); the module guide
+  names the new `grug_core` parts, a guard mod if any, and the tool.
 - A short **self-hosting** section (README's hosting paragraph or its own
   page): stop the server, back it up, run the tool, then start.
-- `game.conf` 0.43.0, the declaration's `version`, the CHANGELOG entry,
-  `tools/r37_dc` for the new version.
+- `game.conf` 0.43.0, the declaration's `version`, the CHANGELOG entry;
+  `tools/r37_dc` is run (it reads `game.conf`); the status owners (STATUS,
+  the AGENTS pointer, ROADMAP, BACKLOG, README) as every lane D.
 - The plan's completion with the **final summary for the platform** (R9):
   command line, exit codes and output events, tested Python and dependency
   versions, the data API and codecs, the record, the markers, the guard's
@@ -255,7 +283,9 @@ GUI checklist (desktop and web), short because nothing visible changes:
 - **Parallel with Round 44** (the user, 2026-10-08): Round 44's wave 1
   (IH, FR, AR, MB) starts together with this round in its own worktrees.
   The two rounds share no files except the status owners lane D edits
-  (STATUS, CHANGELOG, AGENTS, `game.conf`, the declaration). This round
+  (STATUS, CHANGELOG, AGENTS, `game.conf`, the declaration); Round 44's MS
+  later edits `grug_core.migrations` and `tools/migration/steps/`, strictly
+  after this round has merged. This round
   merges first; Round 44 merges nothing to main before 0.43.0 is complete
   and pushed, so the user's push of 0.43.0 carries no Round 44 work. The
   process budget is shared (8 Lua processes, two measuring engine runs;
@@ -266,13 +296,14 @@ GUI checklist (desktop and web), short because nothing visible changes:
   - GS: `mods/CORE/grug_core/` (the guard, the record, the migrations
     registry, the marker runner; possibly a tiny first-loading guard mod),
     `tools/web_data/upgrade.json`, `tools/check_upgrade.py`, `tools/r43_gs/`.
-  - MT: `tools/migrate.py`, `tools/migrate/`, `tools/r43_mt/` (tests and the
-    container script), `requirements.txt` under `tools/migrate/`.
+  - MT: `tools/migrate.py`, `tools/migration/`, `tools/r43_mt/` (tests and
+    the container script), `requirements.txt` under `tools/migration/`.
   - IT: `tools/r43_it/` (engine script, probe mod, test-only steps).
   - D: the docs above, `game.conf`, `CHANGELOG.md`, `tools/r37_dc`.
 - Merge order GS, MT, then IT, then D.
 - Decided during the round: the new-world method (GS), the guard placement
-  (GS), the test hook for undeclared steps (MT).
+  (GS), the test hooks for undeclared steps (GS in the game, MT in the
+  tool).
 
 ## 8. Open questions for the user
 

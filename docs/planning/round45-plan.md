@@ -184,14 +184,17 @@ tab's formspec bytes per page and the sends per job.
   the step (the tool sees only the new code); (4) set the character marker
   for the online rebuild of item descriptions (`regenerate_description`) at
   the next join. The game's handler for that marker lands in the same lane.
-  Its test: a 0.44 world with such items, the step, a headless boot, a join,
-  the checks. The declaration gains `0.45.0` in `migrate` (lane D).
+  Its test builds the world from the **0.44.0 commit** (a worktree), then
+  the step, a headless boot, a join, the checks. MS owns the version
+  change: `game.conf` and the declaration's `version` to 0.45.0, `0.45.0`
+  into the declaration's `migrate` list and into `grug_core.migrations`,
+  together (`check_upgrade.py` green on every commit).
 
 ### 4.8 Wave 6 — D, documentation
 
 The plan's completion with the GUI checklist; STATUS, the AGENTS pointer,
-ROADMAP, BACKLOG, README, CHANGELOG (0.45.0), `game.conf`, the declaration
-(version 0.45.0, `migrate` 0.45.0); the spec's status line for Round B.
+ROADMAP, BACKLOG, README, CHANGELOG (0.45.0; the version itself is MS's);
+the spec's status line for Round B.
 
 ## 5. Rules
 
@@ -251,7 +254,8 @@ GUI checklist (desktop and web):
     NPC roles.
   - EU: `grug_quality/init.lua` (operations), `grug_jobs/station_operations.lua`,
     `grug_professions/data/upgrades.json`, the UI's enchant and upgrade boxes.
-  - MS: `tools/migrate/steps/`, its test, the marker handler in the game.
+  - MS: `tools/migration/steps/`, its test, the marker handler in the game,
+    `grug_core.migrations`, `game.conf`, `tools/web_data/upgrade.json`.
 - Merge order: IL, RG, then JB, then UI and ST, then EU, then PT fixes, MS,
   D. IL and RG run in parallel and share no files except
   `grug_gear` (IL owns the bracket table, RG only its recipe files).
