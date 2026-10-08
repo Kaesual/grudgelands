@@ -217,7 +217,7 @@ local function reel(player, cast, itemstack)
 	local entry = grug_fishing.catch_at(grug_fishing.CATCH_TABLES[band],
 		rng:next(0, grug_fishing.CATCH_TOTAL - 1))
 	local stack = ItemStack(entry.name .. " " .. entry.count)
-	local left = player:get_inventory():add_item("main", stack)
+	local left = grug_inventory.give(player, stack)
 	if not left:is_empty() then core.add_item(player:get_pos(), left) end
 	-- Return the worn callback stack; a separate set_wielded_item followed by
 	-- returning the old on_place stack would silently undo the wear.

@@ -1,7 +1,4 @@
 local atlas = grug_map.atlas
--- The King marker's text (Round 28 M1); pure, see location_view.lua.
-local king_label = dofile(core.get_modpath(core.get_current_modname()) ..
-	"/location_view.lua").king_label
 
 local function player_marker(player, kind)
 	local name = player:get_player_name()
@@ -25,15 +22,21 @@ atlas.register_marker_provider("party", function(player)
 	return result
 end)
 
-local givers, services = {}, {}
+local givers, services, bosses = {}, {}, {}
 -- Ruling 13 (Round 31): a player sees only the NPC markers of the own
--- faction, plus the enemy kings and both dragons. Each marker carries its
--- NPC's `faction` (nil for the dragons); `everyone` marks the kings. The
--- lists per viewer faction are built once below, so a marker build only
--- picks one (the key "" is a player without a faction: kings and dragons).
+-- faction. Each marker carries its NPC's `faction`; the lists per viewer
+-- faction are built once below, so a marker build only picks one (the key
+-- "" is a player without a faction: none). The kings and the dragons are
+-- baked into the base image for everyone since Round 44 (bake.lua); their
+-- places stay known here for the zone markers' placement.
 local givers_for, services_for = {}, {}
 local function visible(row, faction)
-	return row.everyone or row.faction == nil or row.faction == faction
+	return row.faction == nil or row.faction == faction
+end
+-- Trainer icons per profession (Round 44, spec ruling 15) replace the book;
+-- Riding keeps the mount icon.
+function grug_map.trainer_icon(profession)
+	return "grug_map_trainer_" .. profession .. ".png"
 end
 grug_map.marker_visible = visible
 local function split(rows)
@@ -64,7 +67,8 @@ core.register_on_mods_loaded(function()
 			local label, texture, kind
 			if socket.role == "trainer" then
 				local profession = assert(grug_jobs.PROFESSIONS[socket.profession])
-				label, texture = profession.name .. " Trainer", "grug_jobs_book.png"
+				label = profession.name .. " Trainer"
+				texture = grug_map.trainer_icon(socket.profession)
 				kind = "trainer"
 			elseif socket.role == "riding_trainer" then
 				label, texture = "Riding Trainer", "grug_mounts_icon_" .. settlement.race_id .. ".png"
@@ -80,23 +84,17 @@ core.register_on_mods_loaded(function()
 			elseif socket.role == "culture_vendor" then
 				label, texture = "Decor Merchant", "grug_map_decor_merchant.png"
 				kind = "service"
-			elseif socket.role == "king" then
-				-- Round 28 M1: the King marker carries the city's display name.
-				local def = assert(core.registered_entities["grug_mobs:king_" .. settlement.race_id])
-				label = king_label(def.description, settlement.display_name or settlement.key)
-				texture = "grug_mobs_item_fallen_crown.png"
-				kind = "boss"
+			elseif socket.role == "king" and socket.spawn ~= false then
+				bosses[#bosses + 1] = {position = socket.pos}
 			end
 			if label and socket.spawn ~= false then
 				services[#services + 1] = {id = id, label = label, position = socket.pos,
-					kind = kind, texture = texture, faction = faction,
-					everyone = socket.role == "king" or nil}
+					kind = kind, texture = texture, faction = faction}
 			end
 		end
 	end
 	for _, dragon in ipairs(grug_mobs.dragon_map_markers()) do
-		services[#services + 1] = {id = dragon.id, label = dragon.name,
-			position = dragon.pos, kind = "boss", texture = "grug_mobs_item_fallen_crown.png"}
+		bosses[#bosses + 1] = {position = dragon.pos}
 	end
 	for id, npc in pairs(grug_quests.registered_npcs) do
 		local position = assert(sockets[npc.settlement .. "/" .. npc.socket],
@@ -112,7 +110,7 @@ end)
 -- the zone markers' placement (location.lua). Known once mods are loaded.
 function grug_map.static_marker_positions()
 	local result = {}
-	for _, list in ipairs({services, givers}) do
+	for _, list in ipairs({services, bosses, givers}) do
 		for _, row in ipairs(list) do
 			result[#result + 1] = {x = row.position.x, z = row.position.z}
 		end

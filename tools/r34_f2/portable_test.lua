@@ -21,6 +21,16 @@
 -- Usage (repo root): luajit tools/r34_f2/portable_test.lua [REPO]
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
+-- Round 44: item sources give through grug_inventory.give (main[9..], the
+-- bags, the hotbar last; tools/r44_ih); this fixture keeps a main-only
+-- stand-in.
+grug_inventory = {give = function(player, stack)
+	return player:get_inventory():add_item("main", stack)
+end, slot_order = function(inv)
+	local slots = {}
+	for index = 1, inv:get_size("main") do slots[index] = {list = "main", index = index} end
+	return slots
+end}
 local ROOT = arg[1] or "."
 local failures, checks = 0, 0
 local function check(ok, label)

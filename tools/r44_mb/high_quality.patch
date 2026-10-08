@@ -1,0 +1,8 @@
+--- a/minetest.conf	2026-10-08 21:25:25.441279642 +0200
++++ b/minetest.conf	2026-10-08 21:25:25.441848172 +0200
+@@ -173,4 +173,4 @@
+ # World map image quality for the Map tab (the minimap always shows normal):
+ # normal (1080x960, default) or high (3600x3200, about a minute more at the
+ # first start of a world and a larger client download). See settingtypes.txt.
+-grug_map_quality = normal
++grug_map_quality = high

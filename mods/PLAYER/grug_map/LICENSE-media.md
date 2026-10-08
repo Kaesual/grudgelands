@@ -53,3 +53,26 @@ dedicates any rights it holds in this original to CC0-1.0.
 `textures/grug_map_decor_merchant.png` (a hanging lantern): original 16×16
 RGBA pixel art drawn from character grids by `tools/r34_f2/render_icons.py`
 for Grudgelands, CC0-1.0. No third-party source images.
+
+# UI rework proposals (Round 44, lane AR)
+
+Original, AI-assisted pixel art painted for Grudgelands by **GPT-6 Astra**
+on 2026-10-08. Hand-placed pixel shapes and original letter grids written
+with **Python/Pillow**; no image-generation service, downloaded art,
+external fonts or third-party source pixels. The project dedicates any
+rights it holds in these originals to **CC0 1.0 Universal (CC0-1.0)**.
+Reproducible generator and provenance: `tools/r44_ar/paint_art.py`.
+
+Each family includes all **A, B and C** proposals, stored with the same
+basenames under `tools/r44_ar/variants/{A,B,C}/`. The final paths hold the
+user's picks (variant A, the font from C). This licence covers every
+proposal. The complete filename inventory, dimensions and font format
+are in `tools/r44_ar/README.md`.
+
+| Files (final paths relative to this mod; all A/B/C copies included) | Author | Source / tool disclosure | License |
+|------|--------|--------------------------|---------|
+| `textures/grug_map_trainer_{weaponsmith,armorsmith,tailor,leatherworker,woodcarver,goldsmith,alchemist,cooking}.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; 16×16 profession emblems on shared plates; `tools/r44_ar/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `art/baked_{start,capital,village,outpost,fortress,war_camp,bandit,mirefolk,mine,clash,rare_den,king,dragon}.png` and matching `baked_<kind>_mini.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; 16×16 world symbols and independently painted 6×6 miniatures; `tools/r44_ar/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `art/font.png` and `art/font.txt` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; three original proportional seven-pixel uppercase fonts, 41 glyphs each, with red start metadata; `tools/r44_ar/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_map_crosshair.png` and `textures/grug_map_ring.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; red 16×16 target reticles and white 32×32 region rings; `tools/r44_ar/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `tools/r44_ar/variants/{A,B,C}/sheet.png` (repository-relative) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; comparison layouts, terrain patches and original caption glyphs, Python/Pillow; labelled existing-icon samples retain the CC0 provenance documented above | CC0-1.0 |

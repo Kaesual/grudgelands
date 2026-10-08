@@ -21,11 +21,11 @@
 --   R  runtime: native minimap off on join; elements created; only changes
 --      are sent (a still player sends nothing); the arrow stays centred and
 --      the map and markers move together; a new texture only on a new cell;
---      markers of the ruling-8 kinds inside the hole only, quest states as
---      icons; party members inside as heading arrows, outside as rim arrows
+--      markers of the ruling-8 kinds (trainers by profession icon since
+--      Round 44) inside the hole only, quest states as icons; party members inside as heading arrows, outside as rim arrows
 --      on the bezel; window resize relayouts; the Map tab switch hides and
 --      shows the minimap and persists in meta; every texture exists;
---   P  page: region label boxes tall enough for no scrollbar (ruling 12).
+--   P  page: no region-name hypertext (the names are baked since Round 44).
 -- Prints "R27 MINIMAP PORTABLE PASS checks=<n>" or the failures, plus the
 -- measured per-update cost as a comparison.
 local repo = arg[1] or "."
@@ -469,7 +469,10 @@ core.register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end
 local installed = {quality = "normal", width = 1080, height = 960,
 	tiles = base.tiles(1080, 960)}
 installed.texture = base.combined_texture(1080, 960, installed.tiles)
-installed.minimap = installed -- normal quality: the minimap shows the base itself
+-- Round 44: the minimap has its own variant (baked small icons, no names)
+-- at every quality.
+installed.minimap = {quality = "normal", width = 1080, height = 960,
+	tiles = base.tiles(1080, 960, base.MINI_PREFIX)}
 atlas.set_base_texture(installed.texture)
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 local minimap = grug_map.minimap
@@ -551,14 +554,16 @@ check(#bezels == 1 and near(screen(bezels[1], me) + frame.diameter, 1920 - 10, 1
 check(#by_text(me, "^grug_map_minimap_mask%.png%^%[multiply:") == 1, "R sea background disc")
 local function has(texture) return #by_text(me, "^" .. texture:gsub("%.", "%%.") .. "$") end
 check(has("grug_map_quest_available.png") == 1, "R near quest giver shown, far one not")
+-- Trainers by their profession icon since Round 44; kings and dragons are
+-- pixels of the base.
 check(has("grug_map_housing_steward.png") == 1, "R Housing Steward shown")
-check(has("grug_jobs_book.png") == 1 and has("grug_mounts_icon_human.png") == 1,
-	"R trainers shown (profession and riding)")
+check(has("grug_map_trainer_tailor.png") == 1 and has("grug_mounts_icon_human.png") == 1,
+	"R trainers shown (profession icon and riding)")
 check(has("grug_map_innkeeper.png") == 1, "R innkeeper shown (the far inn is not)")
-check(has("grug_mobs_item_fallen_crown.png") == 0, "R kings stay on the Map tab")
+check(has("grug_mobs_item_fallen_crown.png") == 0, "R no king marker")
 do
 	local riding = by_text(me, "^grug_mounts_icon_human%.png$")[1]
-	local book = by_text(me, "^grug_jobs_book%.png$")[1]
+	local book = by_text(me, "^grug_map_trainer_tailor%.png$")[1]
 	check(riding and book and near(riding.scale.x * 64, 16) and near(book.scale.x * 16, 16),
 		"R icons drawn 16 px whatever their texture size")
 end
@@ -572,7 +577,7 @@ check(me.sent == before, "R a still player sends nothing (" .. (me.sent - before
 -- a new cell changes the texture.
 local map_text = map.text
 local compass_x = compass.position.x
-local book = by_text(me, "^grug_jobs_book%.png$")[1]
+local book = by_text(me, "^grug_map_trainer_tailor%.png$")[1]
 local bx0, by0 = screen(book, me)
 local mx0, my0 = screen(map, me)
 me.pos.x = me.pos.x + 5
@@ -740,7 +745,8 @@ do
 	end
 	local names = {"grug_map_minimap_bezel.png", "grug_map_quest_available.png",
 		"grug_map_quest_locked.png", "grug_map_quest_ready.png", "grug_map_quest_active.png",
-		"grug_map_innkeeper.png", "grug_map_home.png", "grug_map_heading_gold_00.png"}
+		"grug_map_innkeeper.png", "grug_map_trainer_tailor.png", "grug_map_home.png",
+		"grug_map_heading_gold_00.png"}
 	for f = 0, 15 do
 		names[#names + 1] = ("grug_map_rim_cyan_%02d.png"):format(f)
 		names[#names + 1] = ("grug_map_heading_cyan_%02d.png"):format(f)
@@ -761,11 +767,7 @@ end
 -- ---------------------------------------------------------------------------
 do
 	local fs1 = page.get(page, me, context)
-	local low = 99
-	for h in fs1:gmatch("hypertext%[[%d.%-]+,[%d.%-]+;[%d.]+,([%d.]+);grug_map_region_%d+;") do
-		low = math.min(low, tonumber(h))
-	end
-	check(low >= 1.3, "P region label boxes >= 1.3 tall (" .. low .. ")")
+	check(not fs1:find("hypertext[", 1, true), "P no region-name hypertext (baked)")
 end
 
 -- ---------------------------------------------------------------------------

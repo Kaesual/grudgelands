@@ -104,7 +104,7 @@ Scout-only slot** (ruling 26), not an item: up to **500 arrows**, arrows stack
 to **100** everywhere, clicking the slot takes up to 100 as one stack, arrows
 enter by drag, shift-click and pickup while it has room
 (`inventory_equipment.md` §3). Ammunition is consumed atomically from the
-quiver first and then `main`. The Scout starts with its Bronze Bow in Ranged,
+quiver first and then `main` and the bags. The Scout starts with its Bronze Bow in Ranged,
 its Bronze Sword in Melee and 200 arrows in the quiver.
 
 Historical baseline measured before Round 11:

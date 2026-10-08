@@ -13,6 +13,16 @@
 -- Usage (repo root): luajit tools/r25_interfaces/portable_test.lua
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
+-- Round 44: item sources give through grug_inventory.give (main[9..], the
+-- bags, the hotbar last; tools/r44_ih); this fixture keeps a main-only
+-- stand-in.
+grug_inventory = {give = function(player, stack)
+	return player:get_inventory():add_item("main", stack)
+end, slot_order = function(inv)
+	local slots = {}
+	for index = 1, inv:get_size("main") do slots[index] = {list = "main", index = index} end
+	return slots
+end}
 local failures, checks = 0, 0
 local function check(ok, label)
 	checks = checks + 1
@@ -757,7 +767,7 @@ step(10)
 eq(#sfinv_sets, sets + 1, "changed status rebuilds the cached page")
 step(10)
 eq(#sfinv_sets, sets + 1, "only once per change")
-sfinv.contexts.owner = {page = "grug_inventory:bags"}
+sfinv.contexts.owner = {page = "grug_inventory:inventory"}
 claim.paid_until = now + 3 * DAY
 step(10)
 eq(#sfinv_sets, sets + 1, "other pages are not rebuilt")

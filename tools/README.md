@@ -57,7 +57,10 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   (needs ripgrep).
 - `python3 tools/check_fresh_server.py`: the source audit of the removed
   development-era compatibility mechanisms (release mode allows `register_alias`
-  for a renamed item; migration markers only in grug_core's runner).
+  for a renamed item; migration markers only in grug_core's runner); since
+  Round 44 also that `grug_map/baked_art.lua` is
+  current with `grug_map/art/` (`tools/r44_mb/gen_baked_art.py --check`)
+  and the generator's PNG decoder self-test (`--self-test`).
 - `python3 tools/check_upgrade.py`: the upgrade declaration
   (`web_data/upgrade.json`, schema 2) against the last pushed commit, the
   game's step registry (`grug_core/migrations.lua`) against its `migrate`
@@ -485,3 +488,30 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   from `Containerfile` (Debian trixie's python3, psycopg, zstandard and
   PostgreSQL; network for apt). About 5 minutes; one queue slot (boots and
   containers run one at a time).
+- **Round 44** (`r44_<lane>`): `r44_fr` the inventory window
+  (`portable_test.lua`, the real vendored sfinv and `grug_inventory`'s
+  `ui.lua` and `pages.lua` under a stub `core`): the fixed tab order, the
+  frame (formspec_version 6, the old window size), the full and short
+  inventory views with 0–4 bags of mixed sizes, the scrollbar echo and no
+  resend on a pure scrollbar event, the Sort cooldown, the refresh rules;
+  it prints the Inventory and Character pages' bytes with four 32-slot bags.
+  `r44_ih`: `portable_test.lua` loads the real
+  `grug_inventory/bags.lua` (and `storage.lua`) with an engine move and drop
+  model and metadata-aware stacks: the give helper's order (quiver,
+  `main[9..]`, bags, hotbar, leftover; soulbound in `main` only; pickup and
+  dug drops), the fit check, bag swaps and removals with and without room
+  (no item lost or duplicated), bags in bags, the sort (categories, tier,
+  name, quality, merging, the hotbar untouched), the potion belt's allow
+  rule and ammo from a bag.
+  `r44_mb`: `gen_baked_art.py [--art DIR]
+  [--check]` turns the baked map icons and the pixel font
+  (`mods/PLAYER/grug_map/art/`) into `mods/PLAYER/grug_map/baked_art.lua`
+  (standard library PNG decoding; `--check` exits 1 on a stale copy,
+  `--self-test` decodes small PNGs of every transparency form; both run in
+  `tools/check_fresh_server.py`, so changed art must be regenerated);
+  `portable_test.lua` checks the kind mapping, the items, the glyph layout,
+  the drawing, the cache key text and the minimap's marker kinds; the
+  disposable probe `grug_probe_r44_mb` (staged with `PROBE=` through
+  `luanti_headless.sh`; `high_quality.patch` as `GAME_PATCH=` for a second
+  boot at high quality) logs the Map tab's formspec bytes per faction, the
+  minimap's densest capital window and each king's place in its capital.

@@ -3,9 +3,12 @@
 -- of the pre-rendered world map, top right in the native minimap's box
 -- (grug_core.hud_layout.minimap_box), with the player's arrow, party
 -- members (rim arrows when outside), quest givers with their state, the
--- Housing Steward, trainers, innkeepers, the player's home and discovered
--- waystones (Round 29). Under it a line names the player's location (Round
--- 28 M1, location.lua).
+-- Housing Steward and the capital services, trainers (their profession's
+-- icon since Round 44), innkeepers, the player's home and discovered
+-- waystones (Round 29). Settlements, points of interest, kings and dragons
+-- are baked into the minimap's own base image since Round 44 (base.lua,
+-- bake.lua). Under it a line names the player's location (Round 28 M1,
+-- location.lua).
 --
 -- Glide (test variant for the playtest): the arrow stays in the centre and
 -- the map moves under it pixel by pixel. The map is ONE
@@ -57,8 +60,8 @@ local RIM_FILL, RIM_EXTENT = 0.85, 21 / 32
 local BEZEL = "grug_map_minimap_bezel.png"
 local BEZEL_PX = 256
 local SEA = "#1c3a52"
--- Kinds shown (ruling 8); settlements, camps, kings and dragons stay on the
--- Map tab only.
+-- Kinds shown (ruling 8; kept in Round 44 by the user); settlements, camps,
+-- kings and dragons are pixels of the base since Round 44.
 local SHOWN = {quest = true, steward = true, service = true, trainer = true,
 	innkeeper = true, home = true, waypoint = true}
 local QUEST_TEXTURE = {available = "grug_map_quest_available.png",
@@ -66,7 +69,9 @@ local QUEST_TEXTURE = {available = "grug_map_quest_available.png",
 	active = "grug_map_quest_active.png"}
 local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png",
 	waypoint = "grug_map_waypoint.png"}
--- Which markers keep a slot when more than MARKER_SLOTS are in the circle.
+-- Which markers keep a slot when more than MARKER_SLOTS are in the circle
+-- (the densest capital window holds 15 of these besides home and waystones,
+-- Round 44).
 local PRIORITY = {quest = 1, steward = 2, service = 2, home = 3, innkeeper = 4,
 	trainer = 5, waypoint = 6}
 local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}

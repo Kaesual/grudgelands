@@ -148,9 +148,9 @@ local function pending_key()
 	return "grug_mobs:pending_boss_loot"
 end
 
+-- grug_inventory.give: main[9..], the bags, the hotbar last (Round 44).
 local function give_or_queue(player, stack)
-	local inv = player:get_inventory()
-	local leftover = inv:add_item("main", stack)
+	local leftover = grug_inventory.give(player, stack)
 	-- Loot that entered the inventory shows in the message feed.
 	local taken = ItemStack(stack):get_count() - leftover:get_count()
 	if taken > 0 then grug_core.feed_item(player, stack, taken) end
@@ -161,9 +161,9 @@ local function give_or_queue(player, stack)
 	meta:set_string(pending_key(), core.serialize(pending))
 	-- Online here (the kill loop takes players by name); one keyed feed
 	-- line however many stacks are queued, never chat. The queue is handed
-	-- over only at the next join, into `main` (bags do not count).
+	-- over only at the next join, through the same give helper.
 	grug_core.feed(player, "notice",
-		"Boss loot is waiting: free main inventory space, then rejoin.", "boss_loot")
+		"Boss loot is waiting: free inventory space, then rejoin.", "boss_loot")
 end
 
 local boss_reward_hooks = {}
@@ -191,7 +191,7 @@ core.register_on_joinplayer(function(player)
 	local keep = {}
 	for index = 1, #pending do
 		local stack = ItemStack(pending[index])
-		local leftover = player:get_inventory():add_item("main", stack)
+		local leftover = grug_inventory.give(player, stack)
 		-- Queued loot that arrives now shows in the message feed.
 		local taken = stack:get_count() - leftover:get_count()
 		if taken > 0 then grug_core.feed_item(player, stack, taken) end

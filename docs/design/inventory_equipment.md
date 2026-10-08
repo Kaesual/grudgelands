@@ -1,24 +1,51 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (last revised 2026-10-01; established 2026-08-06).
+Decided spec (last revised 2026-10-08; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
 hand count), WP38 (native swing capability/pointability bridge), WP39
 (current-ray swing authority, shipped 2026-08-10).
 
-## 1. Character screen (the "i" key)
+## 1. The inventory window (the "i" key)
 
-- Built on sfinv pages; **Character is the homepage**. Shared pages use a
-  10.4 × 11.1 legacy-coordinate form with the hotbar at `(1.2, 7.2)` and
-  the remaining inventory at `(1.2, 8.35)`. Legacy content ends before y=7.0; pages using a content-only real-coordinate
-  switch keep their controls above the same physical inventory boundary.
-  Character, Bags, Talents, Skills, Crafting, Help and Creative share this
-  boundary. The base inventory remains 32 slots.
+- Built on sfinv pages in one frame (Round 44, `grug_inventory/ui.lua`):
+  `formspec_version[6]` with a real-coordinate `size[13.500,13.673]`, the
+  same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size;
+  the Map tab keeps its own legacy header. Page content follows a
+  `real_coordinates[false]`, so pages still in legacy coordinates keep their
+  place and end before legacy y=7.0; pages in real coordinates start their
+  content with `real_coordinates[true]`.
+- **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
+  the mods' load order): **Inventory** (the homepage, what "i" opens) ·
+  Character · Talents & Skills · Crafting · Party & PvP · Help · Map. Until
+  their pages are merged, Talents and Skills stand at "Talents & Skills",
+  Party and PvP at "Party & PvP", and Quests (moving into the map window)
+  before Map. Creative's tabs, for creative players, follow the table.
+- **Inventory views** (`grug_inventory.inventory_view(player, mode,
+  context)`): `main[9..]`, then each equipped bag's content list in slot
+  order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
+  so there are no gaps), and the hotbar (`main[1..8]`) below it, outside the
+  scroll area, at the same place in every tab. **Full** shows eight rows
+  (the Inventory tab); **short** shows two (every other tab with an
+  inventory). A page asks the frame for its view and never draws `main`
+  itself; Help, Party and PvP still show the short view until their page is
+  rebuilt. The scroll position is kept per view and sent back with every
+  rebuild (the client forgets it on a resend), so equipping a bag or sorting
+  keeps the place; a pure scrollbar event re-sends nothing. No listring in
+  the views: shift-click has no job inside one inventory.
+- **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2): along the top the four
+  bag slots, the four-slot **potion belt** (`grug_potion_belt`, potions and
+  elixirs only), the Bag of Coins **deposit slot** and **Sort**; below them
+  the full view, at most 24 + 4 × 32 = 152 slots in 19 rows. Sort orders
+  `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
+  for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
+  time, a 32-slot bag cut to 24) is gone.
 - Character separates the model, concise live HP/resource/armor values and
   equipment into three columns. The current money balance is shown here, with
   balance changes updating the cached Character view; money has no gameplay HUD.
-  Beside the balance a **Withdraw** button and a **deposit slot** handle the
-  Bag of Coins (Round 34, [economy.md](economy.md) §1).
+  Beside the balance a **Withdraw** button handles the Bag of Coins (Round
+  34, [economy.md](economy.md) §1); its deposit slot is on the Inventory tab
+  (Round 44).
   Round 19 removes the pool/armor derivation section. Character shows concise
   effective Crit and Dodge alongside armor rating, **Damage reduction** (the
   armor's reduction against an enemy of the character's own level; its tooltip
@@ -68,7 +95,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (Round 28): Warrior sword / shield ("Weapon" / "Shield"), Mage and
     Priest staff / spellbook ("Weapon" / "Caster offhand"), Scout bow / sword
     ("Ranged" / "Melee"). The Scout's quiver slot shows a dimmed quiver.
-- Further pages: **Bags**, existing **Crafting** (3×3 grid).
+- Further pages: existing **Crafting** (3×3 grid).
 - Armor visuals on the player model: composed with the character's look
   ([character_visuals.md](character_visuals.md) §1, §3).
 
@@ -249,6 +276,36 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   The **small 8-slot cloth bag is the
   exception and stays vendor-sellable**: it is the floor tier of its
   item category (professions.md §4), so it is bought, not crafted-only.
+- **The give order** (Round 44, spec `ui-crafting-rework-plan.md` §2.4):
+  every item source — pickup, dug blocks, loot, boss loot, purchases, quest
+  rewards and drops, fishing, harvests, refunds, equipment returns, station
+  results, coin withdrawals — goes through `grug_inventory.give`: arrows to
+  a Scout's quiver first, then partial stacks of the same item anywhere,
+  then the empty slots of `main[9..]`, the bags in slot order and the
+  hotbar last, so a hotbar slot freed for a skill stays free. A soulbound
+  item (the Claim Stone) sits in `main` only. `grug_inventory.fits` answers
+  the same question without changing anything; a source that refuses
+  instead of dropping (purchases, the Claim Stone, station results) says
+  the inventory is full only when the whole inventory is.
+- **Bag rules** (Round 44, spec §2.3): a bag may sit inside another bag but
+  never in its own content list (an unequipped bag is always empty: the
+  contents belong to the slot). Swapping to an equal or larger bag keeps the
+  contents. Taking a bag out (drag, drop or into another inventory) or
+  swapping to a smaller one first fills the cells the smaller bag keeps,
+  then moves the rest to `main[9..]`, the other bags and the hotbar, in the
+  same server callback and before the list shrinks; when the rest does not
+  fit (counted without the bag's own list and without the slot the bag
+  lands in) the move is refused with one feed line. A bag moves between two
+  bag slots only when both are empty.
+- **Sort** (Round 44, spec §2.5): `main[9..]` and the bags as one sequence,
+  the hotbar never: weapons (offhands included), trinkets, armour,
+  consumables (arrows, food, potions), then the rest; inside a category the
+  higher tier first (gear bracket, food tier, else the item level's tier),
+  then the name, then the higher quality. Stacks merge only when name, wear
+  and metadata are identical; free slots end up contiguous at the end; a
+  soulbound item stays in `main`.
+- **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
+  elixirs only (group `grug_potion`), created for every player.
 - **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn left of the
   armor column on the Character page with the arrow total beside it. There is
   no quiver item and no Leatherworker quiver recipe; non-Scouts have no quiver
@@ -261,7 +318,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   and shows no hover highlight (accepted). Arrows enter by
   **drag** (onto the slot), **shift-click** (from the inventory) and **pickup**
   while the quiver has room; anything else is refused. Shots draw from the
-  quiver first, then `main`; a talent refund returns to the quiver first. A
+  quiver first, then `main` and the bags; a talent refund returns to the
+  quiver first. A
   drag of part of a stack onto the slot while it shows a full 100 moves the
   whole stack in (the engine treats that drop as a whole-stack swap).
   No item drop on death, so the quiver keeps its arrows like the equipped
@@ -425,7 +483,7 @@ them.
   line at class choice, the raw-weapon hint, mount notices (dismount
   reason, flight-boundary warning, summon refusal, a mount not bound to
   this character), talent points earned or
-  returned, and "Boss loot is waiting: free main inventory space, then
+  returned, and "Boss loot is waiting: free inventory space, then
   rejoin." (queued boss loot is handed over at the next join). Each
   notice group keeps one keyed line that a repeat refreshes (`potion`,
   `food`, `equip:<reason>`, `class_change:*`, `starter:<slot>`,

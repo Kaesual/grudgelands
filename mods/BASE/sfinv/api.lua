@@ -131,6 +131,16 @@ function sfinv.inventory_suspended(player)
 	return false
 end
 
+-- GRUG PATCH: grug_inventory's inventory views scroll in a scroll_container,
+-- whose position the client does not keep across a resend; every event of
+-- the form carries it. This hook sees each event of the inventory formspec
+-- before tabs and pages do and keeps that position; it returns true for a
+-- pure scrollbar event, which then ends here and causes no resend. Overriders
+-- chain the previous function.
+function sfinv.handle_scroll(player, context, fields)
+	return false
+end
+
 function sfinv.set_player_inventory_formspec(player, context)
 	if sfinv.inventory_suspended(player) then -- GRUG PATCH: see above
 		return
@@ -185,6 +195,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not context then
 		sfinv.set_player_inventory_formspec(player)
 		return false
+	end
+
+	-- GRUG PATCH: see sfinv.handle_scroll above.
+	if sfinv.handle_scroll(player, context, fields) then
+		return true
 	end
 
 	-- Was a tab selected?

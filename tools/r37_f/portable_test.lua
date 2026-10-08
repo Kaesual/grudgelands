@@ -15,15 +15,16 @@
 --    the dragon islands); an elite crab with its own unique name and crab
 --    loot in its level band.
 -- M  The minimap base per quality: the REAL base.lua names a normal-size
---    minimap copy only at high, none for a crop; downscale averages exactly
+--    minimap copy at both qualities (Round 44: the minimap's own variant
+--    with its small baked icons), none for a crop; downscale averages exactly
 --    the source pixels whose centres fall in each target pixel; install at
 --    high (shrunk sizes, stub world) announces both tile sets, returns the
 --    copy as `minimap`, and a second install reads both from the cache; at
---    normal the minimap base is the base itself. minimap.lua installs from
+--    normal too both sets are announced. minimap.lua installs from
 --    `installed.minimap`.
 -- Q  Round 41 lane MAP, the same virtual world folder: high -> normal removes
---    the extra base tiles and the minimap copy (count logged) and nothing
---    else of the folder; normal -> high removes nothing; a refused delete
+--    the extra base tiles (count logged; the minimap copy stays, Round 44)
+--    and nothing else of the folder; normal -> high removes nothing; a refused delete
 --    is a warning and the base is still served; a crash after the first
 --    tile write, then the old quality again, renders instead of passing
 --    mixed tiles as current.
@@ -367,7 +368,11 @@ rawset(_G, "core", {
 rawset(_G, "grug_core", {
 	zone_authority_installed = function() return true end,
 	start_identities = function() return {} end,
+	-- Round 44: the baked layer's inputs (none in this stub world).
+	settlement_socket_settlements = function() return {} end,
+	settlement_sockets_at = function() return {} end,
 })
+rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 rawset(_G, "grug_zones", {
 	water_class_at = function(x) return x < -3000 and "deep_ocean" or "land" end,
 	id_at = function(x) return x < 0 and "west" or "east" end,
@@ -377,7 +382,8 @@ rawset(_G, "grug_zones", {
 })
 local base = dofile(ROOT .. "/mods/PLAYER/grug_map/base.lua")
 local hi, no = base.spec("high"), base.spec("normal")
-check(no.minimap == nil, "M normal: the minimap shows the base itself")
+check(no.minimap and no.minimap.quality == "normal" and no.minimap.width == 1080
+	and no.minimap.height == 960, "M normal: the minimap's own 1080x960 copy (Round 44)")
 check(hi.minimap and hi.minimap.quality == "normal" and hi.minimap.width == 1080
 	and hi.minimap.height == 960, "M high: a 1080x960 normal minimap copy")
 check(base.spec("high", {width = 200, height = 100}).minimap == nil, "M a crop has no copy")
@@ -444,8 +450,9 @@ check(encodes == 2, "M a missing minimap tile re-renders")
 settings.grug_map_quality = "normal"
 media, encodes = {}, 0
 local normal = base.install(VIEW)
-check(normal.minimap == normal and names_of(media, "grug_map_mini_") == 0 and encodes == 1,
-	"M normal install: one base serves both, no copy")
+check(normal.minimap ~= normal and normal.minimap.width == 108 and
+	names_of(media, "grug_map_mini_") == 1 and names_of(media, "grug_map_base_") == 1 and encodes == 2,
+	"M normal install: the base and the minimap's own copy (Round 44)")
 local minimap_src = read(ROOT .. "/mods/PLAYER/grug_map/minimap.lua")
 check(minimap_src:find("local mini = installed.minimap", 1, true) ~= nil
 	and minimap_src:find("V.new(mini, atlas.view())", 1, true) ~= nil,
@@ -507,11 +514,11 @@ logs, media, encodes = {}, {}, 0
 local q_normal = base.install(VIEW)
 local kept = true
 for _, name in ipairs(OTHER) do kept = kept and files[WORLD .. "/" .. name] == "keep" end
-check(encodes == 1 and q_normal.quality == "normal"
+check(encodes == 2 and q_normal.quality == "normal"
 	and table.concat(world_names("^grug_map_base_%d+_%d+%.png$"), ",") == "grug_map_base_0_0.png"
-	and #world_names("^grug_map_mini_%d+_%d+%.png$") == 0
-	and logged("removed 9 stale world map tiles"),
-	"Q high -> normal: the 8 extra base tiles and the minimap tile are removed, the count logged")
+	and #world_names("^grug_map_mini_%d+_%d+%.png$") == 1
+	and logged("removed 8 stale world map tiles"),
+	"Q high -> normal: the 8 extra base tiles are removed, the count logged, the minimap tile stays")
 check(kept, "Q no other file of the world folder is touched")
 settings.grug_map_quality = "high"
 logs, media, encodes = {}, {}, 0
@@ -550,7 +557,7 @@ check(writes == 2 and files[WORLD .. "/grug_map_base_0_0.png"] == "PNG128x128",
 settings.grug_map_quality = "normal"
 logs, media, encodes = {}, {}, 0
 base.install(VIEW)
-check(encodes == 1 and files[WORLD .. "/grug_map_base_0_0.png"] == "PNG108x96",
+check(encodes == 2 and files[WORLD .. "/grug_map_base_0_0.png"] == "PNG108x96",
 	"Q crash, then the old quality: renders again, no mixed tiles pass as current")
 logs, media, encodes = {}, {}, 0
 base.install(VIEW)

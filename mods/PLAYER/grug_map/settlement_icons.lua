@@ -1,18 +1,12 @@
--- Settlement icons per viewer faction (Round 31, the user's ruling after the
--- lane-M preview), pure: no engine calls, so tools/r31_m/portable_test.lua
--- runs it as it ships. The terrain map is the same for everyone; a faction's
--- own places are no icon for the other faction. A settlement's class comes
--- from its anchor slot (grug_core.settlement_socket_settlements). HIDDEN lists
--- the classes the enemy does not see, so hiding another class is one entry
--- there. Seen by everyone: the Battlegrounds war camps (quest targets) and
--- every neutral place (bandit and Mirefolk camps, mines, clash sites, the
--- dragon arenas). The kings and dragons are NPC markers (providers.lua).
--- HOSTILE lists the classes of hostile camps (Round 32 §2.2): their own
--- symbol and colour on the Map tab (page.lua), never the quest giver's "!".
+-- The baked icon kind of each settlement (Round 44, world_map.md "Baked
+-- layer"), pure: no engine calls, so the portable fixtures run it as it
+-- ships. A settlement's class comes from its anchor slot
+-- (grug_core.settlement_socket_settlements). Every settlement is baked into
+-- the one map image everyone sees, the other faction's starts, capitals,
+-- villages, outposts and fortress included (Round 44 ruling 5; it ends
+-- Round 31's per-viewer hiding). The hostile camps (bandits, Mirefolk) have
+-- icons of their own that read as dangerous (Round 32 §2.2).
 local M = {}
-
-M.HIDDEN = {start = true, capital = true, village = true, outpost = true, fortress = true}
-M.HOSTILE = {bandit = true, mirefolk = true}
 
 function M.class(slot)
 	if type(slot) ~= "string" then return "other" end
@@ -26,15 +20,18 @@ function M.class(slot)
 	return "other"
 end
 
--- Whether a settlement of `slot` is a hostile camp (bandits, Mirefolk).
-function M.hostile(slot)
-	return M.HOSTILE[M.class(slot)] == true
-end
-
--- Whether a settlement of `slot` owned by `owner` (a faction id, nil for
--- none) shows its icon to `viewer` (a faction id, "" or nil for none).
-function M.visible(slot, owner, viewer)
-	return not (M.HIDDEN[M.class(slot)] and owner ~= viewer)
+-- The baked icon kind of a settlement of `slot`: its class, or for "other"
+-- the point of interest (mines and gem camps, clash sites, rare dens, the
+-- dragon arenas); nil for a slot of no known kind (drawn without an icon).
+function M.kind(slot)
+	local class = M.class(slot)
+	if class ~= "other" then return class end
+	if type(slot) ~= "string" then return nil end
+	if slot == "mine" or slot == "apex_mine" then return "mine" end
+	if slot == "dragon" then return "dragon" end
+	if slot:match("^clash_") then return "clash" end
+	if slot:match("^rare_") then return "rare_den" end
+	return nil
 end
 
 return M

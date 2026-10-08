@@ -167,13 +167,3 @@ end, on_player_receive_fields = function(_, player, context, fields)
 end})
 
 grug_quests.register_on_change(refresh)
-
-core.register_on_mods_loaded(function()
-	local page, ordered, inserted = sfinv.pages[PAGE], {}, false
-	for _, def in ipairs(sfinv.pages_unordered) do
-		if def ~= page then ordered[#ordered + 1] = def end
-		if def.name == "grug_skills:skills" then ordered[#ordered + 1] = page; inserted = true end
-	end
-	if not inserted then ordered[#ordered + 1] = page end
-	sfinv.pages_unordered = ordered
-end)

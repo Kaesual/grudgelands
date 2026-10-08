@@ -115,25 +115,26 @@ local function current_offer(player, session, vendor, discount)
 	return offer
 end
 
--- Every stack in the player's main list the vendor would buy.
+-- Every stack in the player's main list and bags the vendor would buy.
 local function current_rows(player)
 	local rows = {}
 	local inv = player:get_inventory()
 	if not inv then
 		return rows
 	end
-	local size = inv:get_size("main")
-	for i = 1, size do
-		local stack = inv:get_stack("main", i)
-		if not stack:is_empty() then
-			local unit = grug_traders.stack_sell_price(stack)
-			if unit > 0 then
-				rows[#rows + 1] = {
-					index = i,
-					item = stack:get_name(),
-					count = stack:get_count(),
-					unit = unit,
-				}
+	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+		for i, stack in ipairs(inv:get_list(list) or {}) do
+			if not stack:is_empty() then
+				local unit = grug_traders.stack_sell_price(stack)
+				if unit > 0 then
+					rows[#rows + 1] = {
+						list = list,
+						index = i,
+						item = stack:get_name(),
+						count = stack:get_count(),
+						unit = unit,
+					}
+				end
 			end
 		end
 	end
@@ -402,12 +403,9 @@ local function do_buy(player, session, vendor, index)
 		return
 	end
 	local stack = ItemStack(entry.item)
-	-- The trader writes directly with add_item, so no engine inventory-action
-	-- callback sees this acquisition. Use the same one-stack initializer as
-	-- crafting and dropped-item pickup before the stack reaches `main`.
-	grug_gear.initialize_weapon_tooltip(stack, player)
-	local inv = player:get_inventory()
-	if not inv or not inv:room_for_item("main", stack) then
+	-- The give helper (main[9..], the bags, the hotbar last) also runs the
+	-- weapon-tooltip initializer crafting and pickup use.
+	if not grug_inventory.fits(player, {stack}) then
 		-- Exact refund of exactly what was taken. Items are NEVER dropped on
 		-- the ground as a fallback: a full bag next to a busy vendor would
 		-- turn a purchase into a giveaway.
@@ -415,7 +413,7 @@ local function do_buy(player, session, vendor, index)
 		show(player, "Your inventory is full.")
 		return
 	end
-	inv:add_item("main", stack)
+	grug_inventory.give(player, stack)
 	grug_sounds.play("vendor_buy", player)
 	show(player, "Bought " .. short_desc(entry.item) .. " for " ..
 		grug_money.format(entry.price) .. ".")
@@ -428,10 +426,10 @@ local function do_sell(player, session, index, sell_all)
 		return
 	end
 	local inv = player:get_inventory()
-	local stack = inv and inv:get_stack("main", shown.index)
-	-- Re-resolve the slot: the row index is a UI position, `shown.index` the
-	-- main-list slot it pointed at when the form was drawn. The player may
-	-- have moved the stack in another window in between.
+	local stack = inv and inv:get_stack(shown.list, shown.index)
+	-- Re-resolve the slot: the row index is a UI position, `shown.list` and
+	-- `shown.index` the slot it pointed at when the form was drawn. The
+	-- player may have moved the stack in another window in between.
 	if not stack or stack:is_empty() or stack:get_name() ~= shown.item then
 		show(player, "That item is no longer in that slot.")
 		return
@@ -466,7 +464,7 @@ local function do_sell(player, session, index, sell_all)
 		show(player)
 		return
 	end
-	inv:set_stack("main", shown.index, stack)
+	inv:set_stack(shown.list, shown.index, stack)
 	-- sold == count today (count <= available); recomputed from what was
 	-- actually taken so the credit can never exceed what the check cleared.
 	local total = sold * unit

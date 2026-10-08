@@ -36,6 +36,16 @@
 --      the sweep reads the faction once and copies no zone record.
 -- Usage (repo root): luajit tools/r30_p4/portable_test.lua [REPO]
 local repo = arg[1] or "."
+-- Round 44: item sources give through grug_inventory.give (main[9..], the
+-- bags, the hotbar last; tools/r44_ih); this fixture keeps a main-only
+-- stand-in.
+grug_inventory = {give = function(player, stack)
+	return player:get_inventory():add_item("main", stack)
+end, slot_order = function(inv)
+	local slots = {}
+	for index = 1, inv:get_size("main") do slots[index] = {list = "main", index = index} end
+	return slots
+end}
 
 local checks, failures = 0, 0
 local function check(ok, label)

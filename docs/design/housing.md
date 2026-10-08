@@ -87,8 +87,8 @@ or guild land.
   placing crumbles, whether the owner is online or not. The owner then needs
   a new stone and gets it from the Housing Steward at once.
 - **Activation** (ruling 9): the draft form's Activate button pays exactly
-  **5 lumps** at once from the main inventory (charcoal first, then coal
-  lumps) and starts fuel and protection. Further fuel goes through the fuel
+  **5 lumps** at once from the main inventory and the bags (charcoal
+  first, then coal lumps) and starts fuel and protection. Further fuel goes through the fuel
   slot (§4); the draft's slot refuses fuel.
 - A draft cannot be the travel-home target (§8).
 

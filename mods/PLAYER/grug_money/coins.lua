@@ -1,7 +1,7 @@
 -- The Bag of Coins (Round 34 ruling 4; BACKLOG "Money withdraw and
 -- deposit"): money taken out of the balance into an item, so players can
 -- give money to each other. Withdraw on the Character page through a small
--- dialog; a deposit slot on the same page destroys a bag and credits it.
+-- dialog; a deposit slot on the Inventory page destroys a bag and credits it.
 -- The amount lives in the item's meta, one bag per stack. Traders neither
 -- sell it nor buy it (it has no price class, so grug_traders pays 0 and the
 -- sell path refuses it). No log line for transfers (user ruling); a dropped
@@ -57,7 +57,9 @@ function grug_money.parse_amount(gold, silver, copper)
 end
 
 -- Takes `copper` from the balance and puts one bag with it into the first
--- empty main slot, in one transaction (grug_money.take_with_inventory).
+-- empty slot in the give helper's order (main[9..], the bags, the hotbar
+-- last; grug_inventory.slot_order, read at run time since grug_inventory
+-- depends on this mod), in one transaction (grug_money.take_with_inventory).
 -- Returns true, or false and a reason.
 function grug_money.withdraw(player, copper)
 	if type(copper) ~= "number" or copper ~= copper or copper % 1 ~= 0 or copper < 1 then
@@ -67,11 +69,11 @@ function grug_money.withdraw(player, copper)
 		return false, "You do not have that much money."
 	end
 	local inventory = player:get_inventory()
-	for index = 1, inventory:get_size("main") do
-		local current = inventory:get_stack("main", index)
+	for _, slot in ipairs(grug_inventory.slot_order(inventory)) do
+		local current = inventory:get_stack(slot.list, slot.index)
 		if current:is_empty() then
-			local ok = grug_money.take_with_inventory(player, copper, {{list = "main",
-				index = index, expected = current, replacement = grug_money.make_bag(copper)}})
+			local ok = grug_money.take_with_inventory(player, copper, {{list = slot.list,
+				index = slot.index, expected = current, replacement = grug_money.make_bag(copper)}})
 			if ok then return true end
 			return false, "The inventory changed. Try again."
 		end
@@ -101,7 +103,7 @@ end
 
 local function deposit_name(name) return "grug_money_deposit_" .. name end
 
--- The list[] location of the player's deposit slot, for the Character page.
+-- The list[] location of the player's deposit slot, for the Inventory page.
 function grug_money.deposit_location(player)
 	return "detached:" .. deposit_name(player:get_player_name()), DEPOSIT_LIST
 end
