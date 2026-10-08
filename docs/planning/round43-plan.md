@@ -9,8 +9,9 @@ already adopts this project's feedback on the first draft: the lock wording,
 conservative new-world recognition, online work per world and per
 character, the map-block API deferred, the baseline rule, and the foundation
 as its own release.
-Status: **draft**, waits for the user's go after Round 42 is complete.
-Runs **in parallel with Round 44's wave 1** (§7).
+Status: **complete** (2026-10-08, version 0.43.0, not pushed;
+[completion](#completion-2026-10-08) with the platform summary).
+Ran **in parallel with Round 44's wave 1** (§7).
 
 Why now: the UI rework and the crafting rework
 ([ui-crafting-rework-plan.md](ui-crafting-rework-plan.md)) change saved
@@ -311,3 +312,361 @@ GUI checklist (desktop and web), short because nothing visible changes:
 
 None blocking. The model routing (§ intro) is the default; say if this
 round should run differently.
+
+## Completion (2026-10-08)
+
+Every lane is merged on main; lane D (this section, the rule documents and
+the status owners) follows. Main's first-parent line from the start
+(`332c5e79`, 0.42.0, origin/main): GS (`422d4879`), MT (`e2b749bb`), IT
+(`328010b5`) and the coordinator's HUD fix (`d10018a7`). Push: origin/main
+is `332c5e79` (0.42.0, pushed by the user on 2026-10-08); **0.43.0 is not
+pushed**. Nothing of Round 44 is on main or part of this release.
+
+Reviews, each by an independent Opus, every fix made by the lane itself
+before its merge:
+
+- **GS** MERGE AFTER FIXES; one Medium (the join-order move asserted the
+  raw callback and failed with the engine profiler on) and one Low (a fresh
+  world whose first load failed later read as an existing 0.41.0 world),
+  fixed by the lane (`be7420e3`): the registered entry is moved as it
+  stands, and a new world is stamped at the guard.
+- **MT** MERGE AFTER FIXES; two Lows (the `failed` event was lost when the
+  error text held undecodable bytes; the tool's new-world rule was not the
+  game's), fixed by the lane (`3fec857a`): events keep undecodable bytes
+  escaped, and the tool's rule includes the game's; the interface went into
+  `tools/README.md` (`f34802fb`).
+- **IT** MERGE AFTER FIXES; one Medium (the "newer world" record was pinned
+  to 0.43.0 and would have failed after this lane's bump) and a Low (no
+  `tools/README.md` line), fixed by the lane (`e51f4012`): the newer record
+  is derived from `game.conf`, the hook's steps are given out of order with a
+  check that the guard sorts them, and the README line.
+
+Round end on main `d10018a7` (the coordinator): `run_fixtures.sh` 130/130
+(new: `r43_gs`), `check_fresh_server.py` PASS, `check_upgrade.py` PASS
+(0.42.0 against origin/main), smoke boot PASS; lane IT's suite 59/59
+(`tools/r43_it/run.sh`, on `e51f4012`). After this lane's bump:
+`check_upgrade.py` PASS for 0.43.0 against origin/main, `tools/r37_dc`
+PASS. No seed fleet: no world generation changed.
+
+### Shipped, by lane
+
+- **GS, the game side** (`422d4879`;
+  [upgrade contract §5](../technical/upgrade-contract.md#5-migrations)):
+  `grug_core/migrations.lua` (the registry: `versions`, empty, and the
+  online handlers) and `grug_core/world_version.lua` (271 lines, loaded
+  first in `grug_core`): the record, the start guard with the contract's
+  two messages, new-world recognition, the test hook, the world-marker
+  runner after every map-reset clear and the character-marker runner as the
+  first join callback; the declaration at schema 2; `check_upgrade.py`'s
+  `migrate` rules (the same list rules, the registry equal to the
+  declaration, each step file present and unchanged once pushed, a pushed
+  schema-1 base accepted, the fourth outcome); `check_fresh_server.py`
+  refuses marker keys outside the runner. Fixture `r43_gs` 99 checks;
+  `tools/r43_gs/refusal_boot.sh` with a smoke boot (seed 42, the record
+  written) and a refused boot whose world files kept their hashes. `mods/`
+  +312 −3 lines this round (with the HUD fix).
+- **MT, the migration tool** (`e2b749bb`;
+  [tools/README.md](../../tools/README.md#the-migration-tool)):
+  `tools/migrate.py` and `tools/migration/` (`cli.py`, `world.py`,
+  `data.py`, `codec.py`, `steps/`, `requirements.txt`; 1,696 lines of
+  Python), an engine-written test world (`tools/r43_mt/world`, 76 KB, built
+  by `make_world.sh`) and the unit tests: 38 OK, 2 skipped in the
+  `debian:trixie` container (`container_test.sh`), including the check that
+  the engine's `core.deserialize` reads the tool's output.
+- **IT, integration tests** (`328010b5`; `tools/r43_it/`): two
+  engine-written worlds, characters created by real joins through a
+  minimal protocol client (`client.py`, SRP), every tool run in the
+  container, five real boots and four refusal boots per run: test steps
+  0.41.1–0.41.5 (offline meta, an item with meta, a privilege, mod-storage
+  writes; a world marker at load; two character markers in step order on
+  one character, a second character untouched), the guard (a crossing world
+  refused with the command line and nothing written; a compatible move
+  bumps the record; a new world stamped; an existing world without
+  characters not taken for new; a newer and a malformed record refused by
+  game and tool), a map reset combined with a step in the platform's order,
+  and PostgreSQL. **59 checks, all PASS.** No bug found in GS's or MT's
+  code.
+- **Found on main and fixed:** `tools/r41_up/portable_test.lua` part F
+  pinned the 0.41.0 declaration and failed on main after the 0.42.0 bump
+  (Round 42's 129/129 ran before the bump); GS made it check the 0.40.1
+  reset at `game.conf`'s version.
+- **Coordinator fix** (`d10018a7`): the HUD text elements in
+  `grug_core/feed.lua` and `grug_map/location.lua` pass `size = {x = n,
+  y = 0}`, ending the engine's "Invalid vector coordinate y" deprecation
+  warning on every join (found by IT; the engine plans to make it an
+  error). Not visible to players.
+- **D, this lane:** version 0.43.0 and the declaration, AGENTS.md "Release
+  mode", the upgrade contract (§1 four outcomes, §2, the new §5), the round
+  workflow's gates and review item 6 with both templates, the module guide
+  and mod map, the README's hosting steps, the status owners.
+
+### Upgrade classification and the declaration
+
+| Lane | Outcome | Reason |
+|---|---|---|
+| GS | compatible | a 0.42 world has no record (0.41.0) and no `migrate` entry lies between: it passes the guard and is stamped 0.43.0; nothing else saved changes |
+| MT | compatible | only `tools/` |
+| IT | compatible | only `tools/r43_it/` |
+| HUD fix | compatible | HUD sizes only |
+| D | compatible | docs, `game.conf`'s version and the declaration |
+
+The round's declaration:
+`{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}`
+(no new entry): a 0.42.0 world plays on.
+
+### Decisions during the round
+
+The user (2026-10-08), on the lanes' questions:
+
+- **Keep the separate `failed` event** for exit 1 (MT's choice; the
+  alternative was a `refusal` with code 1), and **exit 1 as soon as the
+  first step has begun** (conservative: its transactions are open). Both
+  go beyond the contract's event list and wording and need the platform's
+  acknowledgement (summary below).
+- **A missing `players.sqlite` or `auth.sqlite` counts as empty** (a
+  never-joined world, which the game would otherwise refuse while the tool
+  refused it too); **a missing `mod_storage.sqlite` stays exit 2**.
+- **Lane IT builds its worlds with SQLite mod storage in its own world
+  folder**: the headless launcher keeps files-backed mod storage, which the
+  tool refuses.
+- **The online-work fixtures of every declared step stay in
+  `tools/run_fixtures.sh` for good** (now in the round workflow §3).
+
+### Deviations from the plan
+
+- **§4.2 "a world whose databases do not exist is refused":** only a
+  missing `mod_storage.sqlite` is; missing player and auth databases count
+  as empty (the user's decision above).
+- **§4.1 guard mod:** none; the guard sits at the top of `grug_core`. A
+  separate mod could not read `grug_core`'s storage (mod storage is bound to
+  the loading mod), and the 21 mods that can load first write no saved
+  state at load.
+- **§4.1 record "once the load succeeded":** holds for existing worlds; a
+  recognised new world is stamped at the guard (GS review fix), as R6
+  allows.
+- **§4.3 PostgreSQL:** the local Flatpak engine has no PostgreSQL backend,
+  so IT seeded PostgreSQL from an engine-written SQLite world with the
+  engine's own DDL (the route the plan named).
+- **Not in §1's table:** the coordinator's HUD fix and GS's repair of
+  `tools/r41_up` part F.
+- **Estimates** (§1, unmeasured) were not tracked.
+
+### Open notes
+
+The reviews' and reports' backlog notes are in the
+[BACKLOG](../../BACKLOG.md#round-43-carry-overs) (theoretical, no
+severity). The first real step (with the UI rework, a later version) adds
+map blocks only if it needs them (ruling 4) and adapts IT's suite, which
+assumes an empty `migrate` list.
+
+### GUI checklist
+
+Plan §6; desktop and the web build. Nothing visible changes.
+
+1. A world from 0.42.0 boots under 0.43.0 and plays on; Help → About shows
+   0.43.0.
+2. A fresh world boots and plays.
+3. Optional, on a copy of a local world with the server stopped:
+   `python3 tools/migrate.py --world <copy> --check` reports 0.43.0 and no
+   due steps.
+
+### Final summary for the platform (contract R9)
+
+From the code at main `d10018a7` plus this lane's version bump; the tool's
+full interface is owned by
+[tools/README.md "The migration tool"](../../tools/README.md#the-migration-tool).
+
+**1. Command line.** From the repository root of a full export of the
+target commit (every tracked file except `reference_projects/`):
+
+```
+python3 tools/migrate.py --world <dir>           # migrate
+python3 tools/migrate.py --world <dir> --check   # report, change nothing
+```
+
+The tool migrates to the checkout's `game.conf` version and runs every due
+step (declared `migrate` entries above the world's version, at most the
+target) in ascending order. It cannot detect a running server (`--help`
+says so). `--check` reports the world version and the due steps and proves
+write access with a real write on every present backend, rolled back:
+SQLite under `BEGIN IMMEDIATE` (busy timeout 5 s), PostgreSQL `BEGIN` with
+`SET LOCAL lock_timeout = '5s'`; the write is the record in `grug_core`'s
+mod storage, a probe row in `player` and in `auth` (an explicit id, so
+PostgreSQL's sequence stays untouched).
+
+**2. Exit codes.**
+
+- `0`: migrated, nothing to do, or checked.
+- `2`: refused or failed before anything was written: the world is newer
+  than the tool, a backend or table layout is unsupported, `world.mt` is
+  invalid, a database connection failed, a lock could not be acquired,
+  a database file is missing (`mod_storage.sqlite`), the record is
+  malformed, or the checkout is broken.
+- `1`: failed after the first step began; the world is undefined, restore
+  the backup. **Addition for the platform to acknowledge:** exit 1 applies
+  as soon as the first step's transactions are open, even if that step had
+  not written yet (conservative); only a lock that the first step could not
+  take is still exit 2 `lock`.
+
+**3. Output events** (stdout, one JSON object per line, non-ASCII escaped,
+the last line is the result; stderr carries the same as text):
+
+| Event | Fields | When |
+|---|---|---|
+| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first |
+| `step_start` | `step`, `from` | a step begins |
+| `step_done` | `step`, `counts` (`characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers`) | a step committed |
+| `done` | `mode`, `world_version` (before the run, `null` for a new world), `record`, `new_world`, `target`, `due`, `backends` (`sqlite3`, `postgresql` or `absent` per kind), `applied` or `write_checked` | exit 0 |
+| `refusal` | `reason`, `message` | exit 2 |
+| `failed` | `step` (or `null`), `reason`, `message` | exit 1 |
+
+Refusal reasons: `usage`, `checkout`, `world_mt`, `backend`,
+`database_missing`, `connection`, `layout`, `lock`, `write_access`,
+`record`, `world_newer`, `internal`. Failure reasons: `lock`, `step`,
+`rule`, `commit`. **Addition for the platform to acknowledge:** the
+`failed` event (exit 1) is not in the contract's event list (start,
+refusal, step start, step done, done).
+
+**4. Tested versions.** The tool's unit tests and every tool run of the
+integration suite ran in a `debian:trixie` container (Debian 13) with
+Debian's packages: Python 3.13.5, psycopg 3.2.6 (`python3-psycopg`), libpq
+17.11, SQLite 3.46.1; `python3-zstandard` 0.23.0 installed but unused (no
+map part yet). PostgreSQL server 17.11 (Debian 17.11-0+deb13u1) for the
+PostgreSQL run. `tools/migration/requirements.txt` pins `psycopg==3.2.6`
+for self-hosters.
+
+**5. Opening a world.** `world.mt` only: `player_backend`,
+`auth_backend`, `mod_storage_backend` (`sqlite3` or `postgresql`; a missing
+key means `files` and is refused like leveldb) and
+`pgsql_player_connection`, `pgsql_auth_connection`,
+`pgsql_mod_storage_connection`, passed to libpq (psycopg rebuilds the
+conninfo with equivalent parameters: `service=`, URIs, multi-host,
+`passfile` and environment defaults kept). No password is needed in
+`world.mt` or on the command line (`PGPASSFILE`). The engine's 5.17 table
+layouts are checked (`world.py` `LAYOUTS`); SQLite files are opened with
+`mode=rw`, never created. A missing `players.sqlite` / `auth.sqlite` counts
+as empty; a missing `mod_storage.sqlite` is exit 2 `database_missing`.
+
+**6. The data API and codecs** (`tools/migration/data.py`, `codec.py`). A
+step is `tools/migration/steps/v<major>_<minor>_<patch>.py` with
+`migrate(world)`; one transaction per backend per step, committed player,
+auth, then mod storage with the record; any exception rolls all back.
+
+- characters: `characters()` (rows of the player backend, offline ones
+  included), `get_meta`/`set_meta`, `get_inventory`/`set_inventory` (lists
+  with size, width and `ItemStack`s with count, wear and meta),
+  `get_position`/`set_position` (in nodes);
+- auth: `auth_names()`, `get_auth(name)`, `set_privileges(name, privs)`;
+- mod storage: `mods()`, `storage(mod).get/set/delete/items/keys`;
+- markers: `mark_world(value)`, `mark_character(name, value)`;
+- escape hatch: `raw(kind)` (the sqlite3 or psycopg connection inside the
+  step's transaction), `engine(kind)`;
+- limits, checked after the step and before any commit, raw writes
+  included: no character or auth entry created, renamed or deleted, no
+  schema change, no write of the record (exit 1 `rule`, every backend
+  rolled back);
+- codecs: `serialize`/`deserialize` (`builtin/common/serialize.lua`,
+  references and cycles read, LuaJIT's `%q` mirrored), `parse_json`/
+  `write_json`, `ItemStack.parse`/`to_string` (`inventory.cpp`,
+  `itemstackmetadata.cpp`); every engine string without references round-
+  trips byte for byte. Map blocks are deferred (ruling 4).
+
+**7. The record.** `grug_core` mod storage `world_version`,
+`major.minor.patch`. Missing on an existing world = 0.41.0; a 0.40.0 world
+counts the same. The tool writes it after each step in that step's
+mod-storage transaction and writes nothing when nothing is due. The game
+writes its version when no step lies between: a new world at the guard, an
+existing world at the first server step after a successful load.
+
+**8. The markers.** World part: `grug_core` mod storage
+`migrate_world:<version>`, run once every mod has loaded (after every
+map-reset clear). Character part: player meta `grug_core:migrate:<version>`,
+run in the first join callback of all, before the map reset's relocation.
+Values default to `"1"` and reach the handler. Several pending markers run
+in step order; each is deleted only after its handler succeeded. A failing
+world handler stops the load; a failing character handler reports
+`[GRUG-SEVERE]`, disconnects the player and keeps the marker.
+
+**9. The guard: placement and messages.** At the top of `grug_core`'s
+`init.lua`, before anything of the game reads or writes saved state (the
+map-reset clears included); no separate guard mod (a mod's storage is bound
+to that mod). The mods that can load before `grug_core` (21, everything not
+depending on it) write no saved state at load. After a mod-load error the
+engine skips the environment's saves but still commits the mod-storage
+transaction (`server.cpp`, `~Server`); the guard writes nothing before it
+refuses, and a refused boot left every world file's hash unchanged (GS
+evidence). Its step list is `grug_core.migrations.versions` in the runtime
+tree, proven equal to the declaration by `check_upgrade.py`. Messages:
+
+- `[grug_core] This world is at version <record>, newer than this game's
+  version <game>; the server does not start: downgrade to <record> to
+  continue.`
+- `[grug_core] This world is at version <record> and needs the migration
+  step <v> before this game's version <game> can start it; the server does
+  not start: back up the world and run the tool from the game's repository
+  root: python3 tools/migrate.py --world <world path>` ("steps v1, v2" for
+  several).
+- A malformed record: `[grug_core] the world's version record "<x>" is no
+  major.minor.patch version; the server does not start: restore the world
+  from its backup`.
+
+**10. New-world recognition.** The game: no key in `grug_core`'s mod
+storage, no `env_meta.txt`, no `players.sqlite` and no `players/` in the
+world directory; auth entries are never looked at. The tool: the game's
+rule plus no mod-storage entry of any mod and no row of the player backend,
+so a world new to the tool is new to the game; then nothing is due and
+nothing is written (`done` with `new_world: true`), and the game stamps
+the world at its first start.
+
+**11. Test hooks** (never reachable from a shipped game or the command
+line). The game: the setting `grug_test_migrations = true` (set by no
+shipped configuration, not in `settingtypes.txt`) loads
+`<world>/grug_test_migrations.lua` before the guard; it returns
+`{ {version =, world =, character =}, ... }`. The tool:
+`migration.cli.main(argv, test_steps={version: module})`.
+
+**12. Version and declaration.** 0.43.0:
+`{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}`.
+A move from 0.42.0 is compatible; from 0.40.x it crosses the 0.40.1 map
+reset.
+
+**13. "Grudgelands decides" choices.**
+
+- Tool path `tools/migrate.py`, package `tools/migration/`, step files
+  `steps/v<major>_<minor>_<patch>.py` with `migrate(world)`.
+- Event names and fields as above; refusal and failure reason codes.
+- The data API's shape (6.), positions in nodes, the commit order player,
+  auth, mod storage.
+- The record keys and the marker keys (plan §3); marker values reach the
+  handlers.
+- The record write: a new world at the guard, an existing world at the
+  first server step after a successful load; none by the tool when nothing
+  is due.
+- The new-world methods (10.).
+- The guard in `grug_core`, no guard mod; a malformed record refuses to
+  start (game) and is exit 2 `record` (tool).
+- On a character handler's failure: a severe report, a disconnect, the
+  marker kept; handlers must be safe to rerun. Character work runs before
+  the map reset's relocation.
+- Markers of unregistered versions are ignored (the tool writes only
+  declared steps, `check_upgrade.py` proves the lists equal).
+- The test hooks (11.).
+- Check-mode locks: SQLite busy timeout and PostgreSQL `lock_timeout`
+  5 s.
+
+**14. Notes for the platform.**
+
+- The engine splits log lines at 256 characters (`src/log.h`
+  `BUFFER_LENGTH`), so the refusal arrives as two `ERROR[Main]:` lines
+  (where the cut falls depends on the world path), after `ModError: Failed
+  to load and run script from …/grug_core/init.lua:` and before the stack
+  traceback.
+- The tool's lock refusal carries psycopg's multi-line database message;
+  its newlines are escaped inside the one JSON event, so one event per line
+  holds.
+- The local Flatpak engine has no PostgreSQL backend, so lane IT seeded
+  PostgreSQL from an engine-written SQLite world with the engine's own DDL
+  (`database-postgresql.cpp`); the platform's layout (player and auth on
+  PostgreSQL, mod storage in SQLite) ran too, with rows equal to the SQLite
+  result the engine loaded.
+
