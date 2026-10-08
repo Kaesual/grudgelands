@@ -19,8 +19,9 @@
 --      spy); a quest whose turn-in NPC is of another faction is refused at
 --      load;
 --   M  map markers: each player gets the own faction's quest givers,
---      services and innkeepers, every king and both dragons; a factionless
---      viewer only kings and dragons; markers carry the NPC's faction;
+--      services and innkeepers; no king or dragon markers (baked into the
+--      base image for everyone since Round 44); a factionless viewer no NPC
+--      markers; markers carry the NPC's faction;
 --      in one zone both factions keep their own markers (the spy case); the
 --      quest markers are asked once per build (one marker_states call) and
 --      an enemy giver never shows even with a state in marker_states;
@@ -408,9 +409,10 @@ for _, case in ipairs({{ann, "accord", "throng"}, {org, "throng", "accord"}}) do
 	local enemy_giver = own == "accord" and "quest:warlord" or "quest:elder"
 	check(m[own_giver] and m[own_giver].faction == own, "M " .. own .. ": own quest giver with its faction")
 	check(m[enemy_giver] == nil, "M " .. own .. ": no enemy quest giver")
-	check(m["service:dawnmere/king5"] and m["service:gor_drazhak/king5"],
-		"M " .. own .. ": both kings")
-	check(m["service:dragon:ice"] and m["service:dragon:storm"], "M " .. own .. ": both dragons")
+	check(not m["service:dawnmere/king5"] and not m["service:gor_drazhak/king5"] and
+		not kinds.boss, "M " .. own .. ": no king markers (baked, Round 44)")
+	check(not m["service:dragon:ice"] and not m["service:dragon:storm"],
+		"M " .. own .. ": no dragon markers (baked, Round 44)")
 	local trainer = own == "accord" and "service:dawnmere/trainer2" or "service:gor_drazhak/trainer2"
 	local foreign = own == "accord" and "service:gor_drazhak/trainer2" or "service:dawnmere/trainer2"
 	check(m[trainer] and m[trainer].faction == own and m[foreign] == nil,
@@ -438,12 +440,12 @@ end
 do
 	local m, kinds = markers(new)
 	check(kinds.quest == nil and kinds.trainer == nil and kinds.innkeeper == nil and
-		m["service:dawnmere/king5"] and m["service:gor_drazhak/king5"] and m["service:dragon:ice"],
-		"M a factionless viewer sees only kings and dragons")
+		kinds.boss == nil and m["service:dawnmere/king5"] == nil,
+		"M a factionless viewer sees no NPC markers")
 end
 do
 	local static = grug_map.static_marker_positions()
-	eq(#static, 13, "M zone-marker placement still sees every service and giver (8 + 5)")
+	eq(#static, 13, "M zone-marker placement still sees every service, king, dragon and giver (8 + 5)")
 end
 Q.marker_states = real_states
 
