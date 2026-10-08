@@ -14,6 +14,7 @@ PASS  steps       tool: the four test steps ran in order
 PASS  steps       tool: offline writes and markers are in the databases
 PASS  setup       boot C: the server ran and both characters joined and left
 PASS  guard       a compatible move (0.41.4, no step between) starts and bumps the record
+PASS  steps       game: the hook's unordered test steps are in step order
 PASS  steps       game: the offline mod-storage write and delete are seen at load
 PASS  steps       game: the world marker ran once at load with its value
 PASS  steps       game, hero's join: the two markers ran in step order, then were deleted
@@ -57,4 +58,4 @@ PASS  postgresql  platform layout --check
 PASS  postgresql  platform layout migrate: rows equal the SQLite world after the same steps
 PASS  postgresql  the PostgreSQL run finished
 
-58 checks, 0 failed
+59 checks, 0 failed

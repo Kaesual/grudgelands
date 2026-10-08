@@ -30,7 +30,8 @@ World 2 (no character ever joins):
   tool     --check: existing (0.41.0), step 0.41.1 due
   boot E   refused (an existing world, not a new one)
   tool     step 0.41.1; boot F starts and bumps the record
-  boot G   a record newer than the game: refused; the tool refuses too
+  boot G   a record newer than the game (its next minor version): refused;
+           the tool refuses too
   boot H   a malformed record: refused; the tool refuses too
 PostgreSQL: pg_test.py in the container, on world 1's rows before and after
 its tool run.
@@ -475,6 +476,8 @@ def world1(run):
           load.get("from") == "0.41.4" and load.get("new_world") is False
           and storage(w1, "grug_core").get("world_version") == GAME
           and ("world version %s recorded (was 0.41.4)" % GAME) in c.log)
+    check("steps", "game: the hook's unordered test steps are in step order",
+          load.get("steps") == DUE4, json.dumps(load.get("steps")))
     check("steps", "game: the offline mod-storage write and delete are seen at load",
           load.get("offline") == "0.41.1" and load.get("delete_me") == ""
           and load.get("keep") == "probe")
@@ -530,6 +533,7 @@ def world1(run):
               in line]
     check("map reset", "boot J started from 0.41.5 with the reset pending",
           j.rc == 0 and load.get("from") == "0.41.5" and load.get("reset_pending") is True
+          and load.get("steps") == ALL5
           and load.get("reset_applied") == 1, "rc %d load %s" % (j.rc, json.dumps(load)))
     check("map reset", "the step's offline write and its world work (after every clear) are done",
           load.get("offline_reset") == "0.41.5"
@@ -582,13 +586,15 @@ def world2(run):
           f.rc == 0 and load.get("from") == "0.41.1" and load.get("offline") == "0.41.1"
           and storage(w2, "grug_core").get("world_version") == GAME, "rc %d" % f.rc)
 
-    set_record(w2, "0.43.0")
+    major, minor = (int(part) for part in GAME.split(".")[:2])
+    newer = "%d.%d.0" % (major, minor + 1)
+    set_record(w2, newer)
     before = dump(w2)
     g = boot(run, w2, "w2_G_newer", known=one)
     check("guard", "a newer world is refused (both versions, downgrade to the record)",
-          refused_with(g, "This world is at version 0.43.0, newer than this game's version "
-                          "%s; the server does not start: downgrade to 0.43.0 to continue."
-                       % GAME) and dump(w2) == before, "rc %d" % g.rc)
+          refused_with(g, "This world is at version %s, newer than this game's version "
+                          "%s; the server does not start: downgrade to %s to continue."
+                       % (newer, GAME, newer)) and dump(w2) == before, "rc %d" % g.rc)
     rc, ev = tool(run, "w2_newer", w2, "-", check_mode=True)
     check("guard", "the tool refuses the newer world too (exit 2, world_newer)",
           rc == 2 and last(ev).get("reason") == "world_newer" and dump(w2) == before,

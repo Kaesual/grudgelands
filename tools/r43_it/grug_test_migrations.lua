@@ -42,12 +42,14 @@ local function world(version)
 	end
 end
 
+-- Deliberately not in ascending order: grug_core sorts the steps
+-- (world_version.lua M.collect), and the runs prove it.
 local all = {
-	{version = "0.41.1"},
-	{version = "0.41.2", world = world("0.41.2")},
-	{version = "0.41.3", character = character("0.41.3")},
-	{version = "0.41.4", character = character("0.41.4")},
 	{version = "0.41.5", world = world("0.41.5")},
+	{version = "0.41.4", character = character("0.41.4")},
+	{version = "0.41.2", world = world("0.41.2")},
+	{version = "0.41.1"},
+	{version = "0.41.3", character = character("0.41.3")},
 }
 
 local f = io.open(core.get_worldpath() .. "/r43_it_plan.json", "r")
