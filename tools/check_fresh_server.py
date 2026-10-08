@@ -2,10 +2,14 @@
 """Guard the removed development-era compatibility mechanisms.
 
 Release mode (since 0.41.0, AGENTS.md "Release mode"): worlds survive upgrades
-through the hosting platform's contract, never through data migrations. The
-mechanisms the fresh-server development mode removed stay removed. Ids of
-quests, items, achievements and waypoints stay stable; a renamed item may keep
-its old name with `register_alias`, so aliases are no longer refused here.
+through the hosting platform's contract. Saved data is converted only through
+the migration tool (`tools/migrate.py`), one declared step per `migrate`
+version with its test, and the game's online part of a step runs only through
+grug_core's runner (`grug_core.migrations`); never through load-time
+conversions scattered over the mods. The mechanisms the fresh-server
+development mode removed stay removed. Ids of quests, items, achievements and
+waypoints stay stable; a renamed item may keep its old name with
+`register_alias`, so aliases are no longer refused here.
 """
 from pathlib import Path
 import re
@@ -34,6 +38,9 @@ for path in (ROOT / "mods").rglob("*.lua"):
             "function creative.is_enabled_for",
         )):
             errors.append(f"{relative}:{number}: retired compatibility mechanism")
+        if ("migrate_world:" in code or "grug_core:migrate:" in code) and \
+                relative.as_posix() != "mods/CORE/grug_core/world_version.lua":
+            errors.append(f"{relative}:{number}: a migration marker outside grug_core's runner")
 
 # These are normal current-version activation, not migration; do not remove
 # them by indiscriminately deleting every load-time callback.
