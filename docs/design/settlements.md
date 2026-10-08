@@ -572,7 +572,8 @@ Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
 
 - **A walker's leg** runs from the spot it last stood at to the spot it is
   heading for, on the shared fixed walk ([world.md](world.md) §4a "Fixed
-  walks"): straight first; stuck (less than 30 % of its speed over 1 s), a
+  walks"): straight first, with no random stops (ruling 25); stuck (less
+  than 30 % of its speed over 1 s), a
   short local search round the obstacle, followed to its end. After three
   failed searches in a row toward one point it gives the spot up and takes
   the next one; there is no timer of its own any more.
@@ -650,8 +651,9 @@ Decided in Round 42 ([plan](../planning/round42-plan.md) ruling 15):
   placed) is no door for an NPC; an unlocked door is a door wherever it
   stands. Trapdoors are no way through a wall.
 - **Gates are routed round:** NPCs never open a fence gate. Every walker
-  stops when it faces a node named gate, open or not (the vendored mob
-  code's fence rule), and a settlement's gates stand in fence and hedge lines
+  stops when it faces a fence gate, open or not (the vendored mob code's
+  fence rule: a blocking node named fence, gate or wall; a gate blocks open
+  or shut), and a settlement's gates stand in fence and hedge lines
   round fields, paddocks and orchards that walks pass by; a spot that only a
   gate reaches is no route.
 

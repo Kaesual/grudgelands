@@ -256,6 +256,7 @@ local nav_stub = {
 	combat_step = function() return nil end,
 	command = noop,
 	forget = function(temp) if temp then temp.grug_nav = nil end end,
+	steer = noop, -- walk_toward's mark (Round 42 ST; tools/r42_st)
 }
 _G.mobs = {mob_class = mob_class, grug_obstacle = {}, grug_nav = nav_stub}
 function mobs:remove(entity) entity.object:remove() end

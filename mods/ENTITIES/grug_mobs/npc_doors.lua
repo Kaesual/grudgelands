@@ -16,8 +16,9 @@
 --   * NEVER A LOCKED DOOR: a door with an owner (a locked door a player
 --     placed) is no door for an NPC. Trapdoors and fence gates are not doors
 --     here either: a trapdoor is no way through a wall, and mobs_redo stops
---     every walker that faces a node named "gate" (`facing_fence`), open or
---     not, so NPCs route round a gate as round a fence (settlements.md).
+--     every walker that faces a fence gate (`facing_fence`: a blocking node
+--     named "gate"; open or closed, a gate's node is walkable), so NPCs route
+--     round a gate as round a fence (settlements.md).
 --   * OPENING: `doors.get(pos):open()` with no player, which skips the
 --     interaction check (doors.door_toggle), so a door in a protected
 --     settlement opens; the vendored toggle plays the door's own open and

@@ -381,9 +381,9 @@ local function evade_tick(self, dtime)
 		return
 	end
 	-- One decision of the walk home, once a second. mobs_redo's walk state
-	-- re-issues the velocity and may randomly turn or stop the mob
-	-- (patrol.lua's header spells this out), so a straight run is a jog with
-	-- pauses; a detour is steered every step (leash_tick, walk_follow).
+	-- re-issues the velocity and may randomly turn the mob (its random stop
+	-- is held off by the nudge, ruling 25; patrol.lua's header spells this
+	-- out); a detour is steered every step (leash_tick, walk_follow).
 	grug_mobs.walk_fixed(self, dtime, pos, home.x, home.y, home.z, "evade",
 		"evade", EVADE_SEARCH)
 end

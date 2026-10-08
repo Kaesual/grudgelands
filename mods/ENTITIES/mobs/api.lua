@@ -2206,7 +2206,12 @@ function mob_class:do_states(dtime)
 		end
 
 		-- stand depending on situation
-		if self.facing_fence or self.at_cliff or random(100) <= self.stand_chance then
+		-- GRUG PATCH (Round 42 ST, ruling 25): no random stop while one of our
+		-- movers drives the mob (grug_nav.steered: a nudge within 1.5 s, the
+		-- routes, fixed walks, the amble); free wandering keeps it, and the
+		-- stops at a blocking fence and at a cliff apply to every walker.
+		if self.facing_fence or self.at_cliff
+		or (random(100) <= self.stand_chance and not grug_nav.steered(self)) then
 
 			-- don't stand if mob flies and keep_flying set
 			if (self.fly and not self.keep_flying) or not self.fly then
@@ -3696,8 +3701,15 @@ function mob_class:get_nodes()
 			{x = pos.x + dir_x, y = pos.y + y_level + 1.25, z = pos.z + dir_z}).name
 
 	-- are we facing a fence or wall
-	self.facing_fence = self.looking_at:find("fence")
-			or self.looking_at:find("gate") or self.looking_at:find("wall")
+	-- GRUG PATCH (Round 42 ST, ruling 25): only a node that really blocks the
+	-- walk (walkable) counts; the name match alone stopped walkers in front
+	-- of a wall torch or a wall sign. Real fences, walls and fence gates (open
+	-- or closed: both are walkable) still do.
+	local front = self.looking_at
+	local front_def = core.registered_nodes[front]
+	self.facing_fence = (front:find("fence") or front:find("gate")
+			or front:find("wall")) ~= nil
+			and front_def ~= nil and front_def.walkable ~= false
 --[[
 print("on: " .. self.standing_on
 	.. ", front: " .. self.looking_at

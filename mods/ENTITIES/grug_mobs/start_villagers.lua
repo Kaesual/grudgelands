@@ -38,8 +38,9 @@
 -- Movement is owned by `start_npcs.lua` (the ambling tick below reads the
 -- fields it installs). `walk_chance = 0` and `randomly_turn = false` are what
 -- stop mobs_redo's own wander from fighting it; `stand_chance` is left at its
--- default because do_states may still stop a walk, and a nudge once a second
--- is what an amble is (see patrol.lua's header).
+-- default: since Round 42 ST (ruling 25) do_states no longer stops a walk the
+-- amble's nudges drive (patrol.lua walk_toward), and a villager that stands
+-- for any other reason is walked on by the next once-a-second decision.
 --
 
 --

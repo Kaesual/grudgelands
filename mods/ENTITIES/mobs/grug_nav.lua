@@ -68,6 +68,9 @@ local nav = {
 	OFF_ROUTE = 2, -- nodes off a fixed walk's path (ruling 5)
 	REACH_WP = 0.6, -- Manhattan distance that reaches a waypoint
 	LOOKAHEAD = {8, 4, 2}, -- waypoints ahead tried by the smoothing
+	-- s a steer holds off mobs_redo's random stop (Round 42 ST, ruling 25):
+	-- longer than the movers' once-a-second decisions, shorter than two.
+	STEER_HOLD = 1.5,
 }
 
 local floor, ceil, sqrt, abs = math.floor, math.ceil, math.sqrt, math.abs
@@ -509,6 +512,30 @@ local function observe(nst, pos, dtime, window)
 	nst.wt = nil
 	nst.seen = stuck and "stuck" or "free"
 	return nst.seen
+end
+
+--
+-- "Our navigation drives this mob now" (Round 42 ST, ruling 25). Every
+-- mover of ours turns a mob onto its way with one primitive, the nudge
+-- (grug_mobs.walk_toward: route legs, fixed walks, the villagers' amble,
+-- posts and seats, the evade, the rift boss; also the roam cap's, the
+-- wander leash's and the shore's walk home and the road push), once a second
+-- or every step while it walks; the nudge marks the mob on the server-step
+-- clock. For STEER_HOLD after the last mark mobs_redo's walk state skips its
+-- random stop (`stand_chance`, api.lua do_states): a routed walker no longer
+-- stands for up to a second every few seconds. A mob only mobs_redo walks
+-- (free wandering) carries no fresh mark and keeps the stop; the stops in
+-- front of a blocking fence and at a cliff stay for everybody. Runtime only
+-- (`self.temp`, reset on every activation).
+--
+function nav.steer(self)
+	self.temp = self.temp or {}
+	self.temp.grug_steer_at = clock
+end
+
+function nav.steered(self)
+	local at = self.temp and self.temp.grug_steer_at
+	return at ~= nil and clock - at <= nav.STEER_HOLD
 end
 
 --
