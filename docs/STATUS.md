@@ -1,8 +1,63 @@
 # Project status
 
-Updated 2026-10-08. This is the delivery pointer, not another game specification.
+Updated 2026-10-09. This is the delivery pointer, not another game specification.
 
-- **Round 43 "World migrations" complete, 0.43.0 not pushed**
+- **Round 44 "Inventory, map and quickbar" complete, 0.44.0 not pushed**
+  (2026-10-09, version 0.44.0,
+  [plan, completion and GUI checklist](planning/round44-plan.md#completion-2026-10-09)).
+  Round A of the [UI and crafting rework](planning/ui-crafting-rework-plan.md),
+  on the accepted wireframe. Wave 1 started from `332c5e79` in parallel
+  with Round 43; on main from 0.43.0 (`9dc2fad5`), after its push: the
+  integration branch `r44-w1` (IH, FR, AR, MB; `93f1536f`), then CH
+  (`fe5cc31b`), TS (`999c490a`), PP (`f45a9bec`), MQ (`c48eb681`), QB
+  (`36019071`), then MS and this documentation lane D back to back; each
+  lane independently reviewed by Opus (MERGE; MQ MERGE AFTER FIXES twice,
+  the re-review with a Medium; every fix made by the lane before its
+  merge); main has 138 portable fixtures. MS's step test 27/27 and lane
+  IT's suite 59/59 on `1770300d`; `tools/r37_dc`, `check_upgrade.py` and
+  `check_fresh_server.py` PASS on lane D's branch. **Round-end gates:
+  _(coordinator: full fixtures, `check_upgrade.py`,
+  `check_fresh_server.py`, smoke boot — to be filled in)_.** No world
+  generation changed (no seed fleet). Every lane compatible except MS
+  (**migrate**); the declaration is
+  `{"schema": 2, "version": "0.44.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0"]}`:
+  **the first release with a declared migration step** — a 0.43.0 world
+  is migrated offline with `python3 tools/migrate.py --world <dir>`
+  (unmigrated, the start guard refuses it), no map reset. **Push:**
+  origin/main is `9dc2fad5` (0.43.0, pushed on 2026-10-09 by the
+  coordinator on the user's request); 0.44.0 is not pushed. The platform
+  adopts a version with a real step only once its runner is in production
+  (contract revision 2), so 0.44.0 may wait on the platform side. The GUI
+  check (plan §6, the completion's checklist) is open.
+  - **The window (FR, PP):** formspec_version 6 at the old size, one tab
+    table (Inventory, Character, Talents & Skills, Crafting, Party & PvP,
+    Help, Map), full and short inventory views; the Bags, Skills, Quests
+    and PvP tabs gone; Party & PvP on one page; Help and every text naming
+    an old tab or key rewritten.
+  - **Inventory (IH, FR):** one give helper for every item source
+    (`main[9..]`, the bags, the hotbar last), bags in bags with checked
+    swaps and removals, the sort, the potion belt, ammo from every list;
+    the Inventory tab with one scrolling grid (Inventory tab 1,405 →
+    2,007 B with four 32-slot bags).
+  - **Character (CH) and Talents & Skills (TS):** the five-mode box with
+    3D as the default, the gear box with the quiver and Return home,
+    shift-click routing; both trees side by side on a tree framework, the
+    skill row, skills only on the hotbar, grants to a free hotbar slot.
+  - **Map (AR, MB, MQ):** the user's art picks (A, font C) baked into the
+    world-map and minimap images, every settlement for everyone; the map
+    window on Z and the Map tab (85 % of the screen, `grug_keys`) with the
+    quest log, quest targets (crosshairs, rings) and event-driven refresh
+    (map form 34,065 → 5,013 B; 0 sends a minute alone, 12 in a moving
+    party).
+  - **Quickbar (QB) and the step (MS):** `grug_quickbar` on E (mounts and
+    boats per owned tier, the belt, Return home), mount items inert; step
+    0.44.0 removes mount items and skills outside the hotbar offline.
+  - Next: the coordinator's round-end gates, the review, the merge of MS
+    and D, the sync and the user's GUI test (desktop and web build), then
+    the user's push decision for 0.44.0; Round 45 (crafting,
+    [plan](planning/round45-plan.md)) merges only after this lane.
+
+- **Round 43 "World migrations" complete and pushed**
   (2026-10-08, version 0.43.0,
   [plan, completion, GUI checklist and the platform summary](planning/round43-plan.md#completion-2026-10-08)).
   Started from main `332c5e79` (0.42.0); every lane is merged on main
@@ -18,8 +73,8 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
   declaration is
   `{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}`:
   a 0.42.0 world plays on, its missing record counts as 0.41.0 and is
-  stamped 0.43.0. **Push:** origin/main is `332c5e79` (0.42.0, pushed by
-  the user on 2026-10-08); 0.43.0 is not pushed. The GUI check (plan §6)
+  stamped 0.43.0. **Push:** 0.43.0 pushed on 2026-10-09 by the coordinator
+  on the user's request (origin/main `9dc2fad5`). The GUI check (plan §6)
   is open.
   - **Game side (GS):** the world version record (`grug_core`
     `world_version`), the start guard at the top of `grug_core` (a newer
@@ -39,9 +94,8 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
     engine's deprecation warning on every join (coordinator, found by IT);
     `tools/r41_up` part F, which pinned the 0.41.0 declaration and failed on
     main after the 0.42.0 bump, fixed by GS.
-  - Next: the user's push of 0.43.0 and the GUI check; Round 44 (UI
-    rework, [plan](planning/round44-plan.md)) merges to main only after the
-    push, then Round 45 (crafting, [plan](planning/round45-plan.md)).
+  - Next: the GUI check; Round 44 (UI rework,
+    [plan](planning/round44-plan.md)) merged to main after the push.
 
 - **Round 42 "Mob navigation" complete, playtest accepted and pushed**
   (2026-10-08, version 0.42.0,

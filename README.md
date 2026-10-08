@@ -86,16 +86,18 @@ stats, and the sound controls. The short version:
   look. On a new world a window first shows how far the game has prepared
   the starting areas; character creation opens when they are ready.
 - **Fight with skills, not the hotbar weapon.** Your starter weapon is
-  already equipped in the hand slots of the Character page. Open the
-  Skills tab, drag a combat skill onto your hotbar, select it and
-  left-click a creature. Holding the left button digs, and fights a
+  already equipped in the hand slots of the Character tab. Open the
+  Talents & Skills tab, drag a combat skill onto your hotbar, select it
+  and left-click a creature. Holding the left button digs, and fights a
   creature that walks into your aim.
 - **Quests:** a yellow `!` above someone means a new quest, a yellow `?`
-  one ready to hand in. Right-click to talk.
+  one ready to hand in. Right-click to talk. `Z` opens the map with your
+  quest log and shows where a quest's targets are.
 - **Around level 10** your start town sends you on to your people's
   capital: trainers for every profession, riding, repairs and new quests.
 - **Getting home:** set your home at an innkeeper; Return home on the
-  Character page takes you back every 30 minutes. Dying costs no items,
+  Character tab or in the quickbar (`E`, also your mounts, boats and
+  potions) takes you back every 30 minutes. Dying costs no items,
   money or XP; you respawn at your home.
 - **Flying mounts** climb with Jump and descend with Sneak.
 - **Sound:** Help → Sound, or `/music 50`, `/music off`, `/ambience off`
@@ -104,14 +106,21 @@ stats, and the sound controls. The short version:
 
 ## Current state
 
-*Last updated: 2026-10-08. The current version is the newest entry of the
+*Last updated: 2026-10-09. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 43 (0.43.0), "World migrations": it
-changes nothing in play, but later versions can now convert saved
-characters with a tool hosts run on a stopped world instead of asking for
-a new server, and a server refuses to start a world from a newer version
-or one that still needs that tool; a 0.42 world plays on. Since Round 42
+The latest finished round is Round 44 (0.44.0), "Inventory, map and
+quickbar": one window with fixed tabs, one scrolling inventory with bags
+inside bags, Sort and a potion belt, a Character tab with a 3D view and
+named gear slots, both talent trees on one Talents & Skills tab with
+skills kept on the hotbar, Party & PvP on one page, a pixel-art map with
+every settlement drawn in and a map window with the quest log and quest
+targets on `Z`, and a quickbar on `E` for mounts, boats, potions and
+Return home. It is the first version with a migration: a host runs the
+tool once on the stopped 0.43 world, which removes the retired mount
+items and stray skills (owned mounts stay). Round 43 (0.43.0), "World
+migrations", brought that tool and a start guard that refuses a world
+from a newer version or one that still needs the tool. Since Round 42
 (0.42.0), "Mob navigation", creatures in a fight find their way round
 trees and walls and through doorways and give up behind a fence, guards
 and bodyguards keep up with their leader, villagers and patrols walk
@@ -142,8 +151,8 @@ creatures that keep to the player holding their attention when several
 players fight them to mounts that no longer throw you off when a buff
 runs out, and Round 36 brought each faction's main story from level 41 to
 60, with its finale against Isquarre at the rift. A 0.40 world moves
-to 0.41.0 with a map reset and then plays on in 0.43.0; older worlds
-start a new world.
+to 0.41.0 with a map reset, plays on in 0.43.0 and moves to 0.44.0 with
+the migration tool; older worlds start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the
