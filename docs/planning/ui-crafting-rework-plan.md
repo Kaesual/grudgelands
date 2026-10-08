@@ -194,6 +194,8 @@ Game:
    the four-slot **potion belt** below; a click uses the mount, boat or potion
    and closes the window. The belt is one list, filled in the Inventory tab and
    shown in both places; it accepts potions and elixirs only.
+   The quickbar also carries the **Return home** button (it stays on the
+   Character tab too; the user, 2026-10-08).
    **The quickbar is the only place for mounts:** no mount items on the
    hotbar, none on the Skills page; the riding trainer says so in a short tip.
 10. **Map window on Z (zoom)** and from the Map tab; sized to about 80–90 % of

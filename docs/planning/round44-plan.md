@@ -212,6 +212,9 @@ lines; Help names E and Z and the aux1 notes (spec §3.5).
   owned mounts and boats on top (summon/dismount with the existing gates),
   the potion belt below as item buttons (drink, shared cooldown); a click
   acts and closes.
+- The **Return home** button also sits in the quickbar (the user,
+  2026-10-08), with the same cooldown and combat gates as on the Character
+  tab, which keeps its own.
 - Mount items are no longer handed out or registered for use; ownership stays
   in player meta (`grug_mounts/state.lua`). The riding trainer and the
   shipwright tell the player "Press E for your mounts".
@@ -264,8 +267,8 @@ GUI checklist (desktop and web):
   the arrow slot.
 - Talents & Skills: the tree, the catalog row, a skill refused outside the
   hotbar, returned to the catalog.
-- Quickbar: E opens it, a mount summons, a potion drinks, the window closes;
-  no mount items anywhere.
+- Quickbar: E opens it, a mount summons, a potion drinks, Return home works,
+  the window closes; no mount items anywhere.
 - Map: Z and the Map tab; baked icons and names at all zoom levels;
   trainers of the own faction; question marks with names; a kill quest shows
   circles, a leader quest the crosshair; the minimap shows ! and ? and the
@@ -314,5 +317,5 @@ GUI checklist (desktop and web):
 
 ## 8. Open questions for the user
 
-- Routing: Astra for lane AR with a pick page, as in earlier art lanes?
-- None else blocking.
+None. Answered 2026-10-08: Astra paints lane AR with a pick page, as in
+earlier art lanes; Return home also in the quickbar (§4.9).
