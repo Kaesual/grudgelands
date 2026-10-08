@@ -57,10 +57,14 @@ bigger than planned, report it (the coordinator splits it with the user).
   functions you changed. Only the lane the plan names changes world
   generation (`mods/MAPGEN`).
 - **Checks:** `bash tools/check_lua.sh <changed .lua files>`,
-  `python3 tools/check_fresh_server.py`, `tools/run_fixtures.sh` (all
-  portable fixtures, LuaJIT), and a fixture for new logic
+  `python3 tools/check_fresh_server.py`, and a fixture for new logic
   (`tools/r<NN>_<lane>/portable_test.lua`; make sure `run_fixtures.sh` picks
-  it up). Lanes that touch quest or mob data also run
+  it up). **Fixture runs, sized to the change:** while you work and in fix
+  rounds run only your own fixture plus the fixtures that load the files you
+  changed (`grep -l <file> tools/*/portable_test.lua tools/*/fixture.lua`);
+  the full `tools/run_fixtures.sh` (all portable fixtures, LuaJIT) runs
+  **once**, right before your final report, and again only if a later fix
+  touches files outside that selection. Lanes that touch quest or mob data also run
   `python3 tools/r28_design/validate.py --game`. One smoke boot of your
   final branch. No PUC runtime runs.
 - **Lua-process budget (at most 8 workstation-wide, shared by all lanes):**

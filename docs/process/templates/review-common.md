@@ -34,9 +34,11 @@ Goal: find what would break the game or a user rule, not style nits.
 - Tests: run the lane's portable fixture, `bash tools/check_lua.sh` on
   changed Lua, `python3 tools/check_fresh_server.py`, and
   `python3 tools/r28_design/validate.py --game` where quest or mob data
-  changed; `tools/run_fixtures.sh` through the Lua queue:
+  changed; the fixtures that load the changed files through the Lua queue:
   `~/projects/grudgelands-orchestration/r<NN>/lua_run.sh review-<lane> 4
-  tools/run_fixtures.sh` (waiting is normal). A headless boot only if you
+  tools/run_fixtures.sh <fixtures...>` (waiting is normal); the full
+  `tools/run_fixtures.sh` only if you doubt the lane's full-run receipt or
+  main was merged into the lane after it. A headless boot only if you
   doubt the lane's boot claim (through
   `~/projects/grudgelands-orchestration/r<NN>/lua_run.sh <label> 1 env
   LC_ALL=C tools/luanti_headless.sh` from the worktree, own run root,
