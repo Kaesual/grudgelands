@@ -181,6 +181,12 @@ conditions); the user asked for numbers with a basis, not guesses.
     exception of ruling 11); royal guards run while their leader fights. The
     evade's "not closer to home for 1 s" (ruling 10) is the one self-movement
     detector of ruling 17; the 40 s snap catches the rest.
+23. **NV3's cache and rings** (the user, 2026-10-08): the route cache
+    (`grug_mobs/routes.lua`) stays as built (about 560 code lines); it lives
+    in memory only and is not persisted in the world folder (a whole
+    capital costs about 27 ms of searching, 8–16 ms of smoothing and 4.6 ms
+    of street reading, spread over minutes). A walker's ring is topped up to
+    at least 3 spots (ruling 16).
 
 Coordinator defaults (the user may overrule them):
 
