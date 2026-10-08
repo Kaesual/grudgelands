@@ -590,24 +590,26 @@ end
 -- short local way round. Returns the failed searches in a row, and true when
 -- the leg has no route at all.
 --
--- The spot it came from is a plain index (`_grug_idle_from`); a walker that
--- does not know it (its first walk, a refreshed ring) starts from the spot
--- nearest to where it stands.
+-- The spot it came from is a plain index (`_grug_idle_from`, set on
+-- arrival); a walker that does not know it (its first walk, a refreshed ring)
+-- takes the spot nearest to where it stands as the leg's start.
 --
 local function walk_leg(self, dtime, pos, spots, index)
 	local to = spots[index]
 	local from = spots[self._grug_idle_from or 0]
 	if not from or from == to then
+		-- A stand-in for this walk only, never saved: a walker that is not at
+		-- it walks its goal as a fixed walk when that leg has no route
+		-- (routes.lua FROM_SLACK).
 		local best
 		for k = 1, #spots do
 			local s = spots[k]
 			local dx, dz = s.x - pos.x, s.z - pos.z
 			local d2 = dx * dx + dz * dz
 			if k ~= index and (not best or d2 < best) then
-				best, self._grug_idle_from = d2, k
+				best, from = d2, s
 			end
 		end
-		from = spots[self._grug_idle_from]
 	end
 	local fails, none = grug_mobs.route_walk(self, dtime, pos, self._grug_start,
 		from, to, "amble")

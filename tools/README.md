@@ -354,6 +354,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (default 90): every `core.find_path` call, the navigation's counters,
   walker arrivals and spots given up, patrol advances, snaps, one-spot
   walkers, the route cache's statistics; targets `start`, `village`,
-  `capital` and `streets` (the capital's streets read from the road layout
+  `capital`, `capital_partial` (after the placement only a 96-node box round
+  one district patrol guard stays loaded: legs with unloaded ends) and
+  `streets` (the capital's streets read from the road layout
   as the runtime does). `summarize.py RESULTS.json [MORE.json ...]` prints
   the table; `evidence/before/` and `evidence/after/` keep the lane's runs.

@@ -11,6 +11,7 @@
 | after | village_steady copperfell_village | 30 s | 0 (0.0/min; per 30 s 0) | 0 us (d 0.0) | 0 | 1/1/0 | 1 / 0 | 0 | 0 | 0 | - |
 | after | capital dur_brannoc | 120 s | 73 (36.5/min; per 30 s 40/4/17/8/4) | 236 us (d 18.0) | 73 | 98/20/0 | 52 / 57 | 485 | 0 | 0 | legs 55 (ok 41, none 14, street 6), searches 83 (7.1 ms, max 258 us), smoothing 2.6 ms, corners 345, streets read 4.6 ms |
 | after | capital_steady dur_brannoc | 60 s | 7 (7.0/min; per 30 s 2/5) | 121 us (d 16.3) | 7 | 98/20/0 | 34 / 44 | 242 | 0 | 0 | legs 197 (ok 151, none 46, street 28), searches 291 (27.5 ms, max 523 us), smoothing 7.8 ms, corners 1185, streets read 4.6 ms |
+| after | capital_partial dur_brannoc | 90 s | 3 (2.0/min; per 30 s 1/0/2) | 54 us (d 10.8) | 3 | 13/2/0 | 4 / 5 | 93 | 0 | 0 | legs 23 (ok 14, none 6, street 4), searches 37 (3.8 ms, max 259 us), smoothing 1.6 ms, corners 139, streets read 4.9 ms |
 
 ## Census (every leg of the settlement's walkers and patrols)
 

@@ -8,7 +8,8 @@
 # ("RESULT DONE").
 #
 # Usage (any directory): tools/r42_nv3/run.sh OUT_DIR LABEL [TARGETS] [TIMEOUT]
-#   TARGETS  comma separated: start, village, capital, streets (default
+#   TARGETS  comma separated: start, village, capital, capital_partial,
+#            streets (default
 #            "streets,start,village"); a capital takes about 2.5 min with
 #            OBS 90, a start or a village about 1.5
 #   TIMEOUT  seconds for the boot (default 330)

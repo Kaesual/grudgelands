@@ -21,6 +21,9 @@
 --      walks back to the route's next corner; a village walker (no cache)
 --      follows its spot as a fixed target round a trunk; a fight drops the
 --      leg; a start-town patrol's second round asks nothing;
+--   U  unloaded is "later": a leg across the unloaded edge waits and is
+--      built once loaded; a pending walk is a fixed walk (round a wall); a
+--      walker away from an enclosed no-route start walks to its goal;
 --   N  the next-spot stage: a village spot in a pen is given up after three
 --      failed searches;
 --   R  rings: a walker whose composition has one spot borrows the nearest
@@ -634,6 +637,54 @@ do
 	end)
 	check(t ~= nil and #find_calls == calls and #placed == 0,
 		"W4 ...the next rounds ask nothing")
+end
+
+-- ---------------------------------------------------------------------------
+-- U. Unloaded is "later", never "no route" (review High); a walker away from
+-- a no-route leg's start walks to its goal (review Medium).
+-- ---------------------------------------------------------------------------
+do
+	-- U1 a leg across the unloaded edge (x > 300): pending, not none; the
+	-- walker walks on as a fixed walk; once loaded, the leg is built.
+	fresh()
+	local town = new_settlement("start")
+	local spots = {spot(250, 0), spot(350, 0)}
+	local m = walker(250, 0, town, spots, 2)
+	m._grug_idle_from = 1
+	run(m, 3)
+	local st = grug_mobs.route_cache_stats(town)
+	check(st.none == 0 and st.pending == 1, "U1 an unloaded leg waits (none " ..
+		st.none .. ", pending " .. st.pending .. ")")
+	check(hdist(m, 250, 0) > 1, "U1 ...while the walker walks on")
+	LIMIT = 1000
+	m.object.pos = {x = 250, y = 0.51, z = 0}
+	local t = run(m, 120, arrived)
+	st = grug_mobs.route_cache_stats(town)
+	check(t ~= nil and st.ok == 1 and st.none == 0, "U1 ...loaded, it is built and walked")
+	LIMIT = 300
+	-- U2 a wall on the way while the far end is unloaded: the pending walk
+	-- is a fixed walk, stuck at the wall it searches its way round.
+	fresh()
+	town = new_settlement("start")
+	fill(268, 1, -3, 268, 2, 3, "stone")
+	m = walker(260, 0, town, {spot(260, 0), spot(301, 0)}, 2)
+	m._grug_idle_from = 1
+	t = run(m, 40, function(s) return s.object.pos.x > 271 end)
+	st = grug_mobs.route_cache_stats(town)
+	check(t ~= nil and st.none == 0, "U2 round the wall while the leg waits (" ..
+		tostring(t) .. " s)")
+	check(m.ev and m.ev.stuck and m.ev.found, "U2 ...stuck, a local search found the way")
+	-- U3 the start of a no-route leg is enclosed and the walker is away from
+	-- it: it walks to its goal (ring: A open, B and C in pens).
+	fresh()
+	town = new_settlement("start")
+	pen(20, 0, 3)
+	pen(0, 20, 3)
+	spots = {spot(0, 0), spot(20, 0), spot(0, 20)}
+	m = walker(14, 6, town, spots, 1)
+	t = run(m, 60, arrived)
+	check(t ~= nil and hdist(m, 0, 0) < 1.6, "U3 the walker away from its enclosed start arrives")
+	check(m._grug_idle_from == 1, "U3 ...the stand-in start was never saved")
 end
 
 -- ---------------------------------------------------------------------------

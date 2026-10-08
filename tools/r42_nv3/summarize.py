@@ -44,7 +44,7 @@ def main(paths):
                     cache.get("streets_us", 0) / 1000)
             rows.append("| %s | %s %s | %d s | %d (%.1f/min; per 30 s %s) | %d us (d %.1f) | %d | %d/%d/%d | %d / %d | %d | %d | %d | %s |" % (
                 label(path), s["kind"], s["key"], s["obs"], fp["n"], fp["per_min"],
-                "/".join(str(b) for b in buckets) or "0", fp["max_us"], fp["max_d"],
+                "/".join(str(b or 0) for b in buckets) or "0", fp["max_us"], fp["max_d"],
                 nav["searches"], len(walkers), walking, s["one_spot_walkers"],
                 arrivals, given_up, adv, s["snaps"], nav.get("cap_waits", 0), cache_text))
         for c in data.get("census") or []:

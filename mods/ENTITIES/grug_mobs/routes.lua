@@ -16,8 +16,8 @@
 --     longer leg is split at intermediate standable points on the straight
 --     line (or beside it, when the point on it is no place to stand). A leg
 --     whose searches fail MAX_FAILS times is spent (a street plan falls back
---     to the straight one once); while it builds, the walker walks straight
---     at its goal.
+--     to the straight one once); while it builds, the walker walks to its
+--     goal as a fixed walk.
 --   * CAPITAL PATROLS RUN OVER THE STREETS (ruling 14): a patrol leg longer
 --     than nav.MAX_LEG whose two ends each lie within STREET_REACH of a street
 --     is "to the street" (a cached search), along the streets (the planner's
@@ -29,7 +29,11 @@
 --   * A LEG WITH NO ROUTE IS REMEMBERED as such: the walker's later stage
 --     takes over at once (a villager's next spot, a patrol's next waypoint)
 --     and nothing searches that leg again until the server restarts. Doors
---     are walls to the engine (DR builds the routes through them).
+--     are walls to the engine (DR builds the routes through them). A walker
+--     away from the leg's start walks to its goal as a plain fixed walk
+--     instead (with its own give-up). Unloaded is never "no route": a build
+--     waits until its candidates, ends and search box are loaded, and the
+--     walker meanwhile walks to its goal as a fixed walk.
 --   * FOLLOWING: the walker steers at its next corner with the fixed walk
 --     (patrol.lua walk_fixed: the one stuck detector, a local search when it
 --     is stuck, followed to its end); a corner within CORNER_REACH is passed.
@@ -56,6 +60,7 @@ local routes = {
 	STREET_JOIN = 1.5, -- nodes: two streets this close are joined
 	DETOUR = 3, -- a street route longer than this times the straight line is none
 	CORNER_REACH = 0.4, -- nodes: a corner is passed (checked every step)
+	FROM_SLACK = 5, -- nodes from a leg's start within which "no route" holds
 	SMOOTH_MARGIN = 0.25, -- nodes of side room a corner line keeps in addition
 	LOOK = 16, -- path points one smoothing test looks ahead
 	CAPITAL_REACH = 320, -- nodes from a capital's anchor its streets start
@@ -448,8 +453,20 @@ local function plan(set, a, b, patrol)
 	return steps
 end
 
+-- Is the column (x, z) loaded from `y - band` to `y + band`? A mapblock is
+-- 16 nodes high: its two ends and its middle answer for it.
+local function column_loaded(x, y, z, band)
+	for _, dy in ipairs({-band, 0, band}) do
+		local node = core.get_node_or_nil({x = x, y = y + dy, z = z})
+		if not node or node.name == "ignore" then return false end
+	end
+	return true
+end
+
 -- The candidates of a split point: on the line at its fraction, then beside
--- it (OFFSETS across the line), the first standable one for `body`.
+-- it (OFFSETS across the line), the first standable one for `body`; "wait"
+-- when a candidate before it is not loaded (unloaded is never "nowhere to
+-- stand").
 local function split_point(body, sp, skip)
 	local a, b, t = sp.a, sp.b, sp.t
 	local x, z = a.x + (b.x - a.x) * t, a.z + (b.z - a.z) * t
@@ -459,6 +476,7 @@ local function split_point(body, sp, skip)
 	local seen = 0
 	for _, off in ipairs(routes.OFFSETS) do
 		local cx, cz = floor(x + ux * off + 0.5), floor(z + uz * off + 0.5)
+		if not column_loaded(cx, y0, cz, 3) then return "wait" end
 		local y = nav.stand_y(body, cx, cz, y0, 3)
 		if y then
 			seen = seen + 1
@@ -487,13 +505,38 @@ local function finish(set, entry, state)
 	end
 end
 
+-- The search box of (from, to) at padding nav.PADDING: loaded at every
+-- mapblock it touches, at the heights of both ends (sampled every 16 nodes).
+local function box_loaded(from, to)
+	local pad = nav.PADDING
+	local x1, x2 = math.min(from.x, to.x) - pad, math.max(from.x, to.x) + pad - 1
+	local z1, z2 = math.min(from.z, to.z) - pad, math.max(from.z, to.z) + pad - 1
+	local P = {}
+	for _, y in ipairs({from.y, to.y}) do
+		local x = x1
+		while true do
+			local z = z1
+			while true do
+				P.x, P.y, P.z = x, y, z
+				local node = core.get_node_or_nil(P)
+				if not node or node.name == "ignore" then return false end
+				if z >= z2 then break end
+				z = math.min(z + 16, z2)
+			end
+			if x >= x2 then break end
+			x = math.min(x + 16, x2)
+		end
+	end
+	return true
+end
+
 --
 -- One step of a pending leg's build: street steps at once, then at most one
 -- engine search, when the cap and the step's budget allow (the queue is
--- keyed by the asking walker's `temp`). Nothing happens while an end is not
--- loaded.
+-- keyed by the build). Nothing happens while a candidate, an end or the
+-- search box is not loaded: unloaded is "later", never "no route".
 --
-local function advance(set, entry, temp)
+local function advance(set, entry)
 	local job = entry.job
 	local steps = job.steps
 	while job.i <= #steps and steps[job.i].street do
@@ -519,6 +562,7 @@ local function advance(set, entry, temp)
 	local goal = step.to
 	if step.split then
 		goal = split_point(body, step.split, step.skip or 0)
+		if goal == "wait" then return end
 		if not goal then
 			-- No candidate left: the plan is spent.
 			job.fails = routes.MAX_FAILS
@@ -530,7 +574,13 @@ local function advance(set, entry, temp)
 	if why == "unloaded" or why2 == "unloaded" then return end
 	local steer
 	if from and to then
-		if not nav.claim_search(temp) then return end
+		-- The engine reads unloaded nodes as walls: a search whose box is
+		-- not loaded waits, so no route is ever "none" for want of a load.
+		if not box_loaded(from, to) then return end
+		-- The queue is keyed by the build, not by a walker: any walker on
+		-- the leg may claim the grant, and a walker's own local searches
+		-- keep theirs.
+		if not nav.claim_search(job) then return end
 		local t0 = core.get_us_time()
 		local path = nav.search(from, to, nav.PADDING, body.jump, body.drop)
 		local t1 = core.get_us_time()
@@ -612,9 +662,13 @@ end
 -- One decision of a leg walk, from its owner's once-a-second tick: walk leg
 -- (from, to) of settlement `key` as walk `owner` (`patrol`: a patrol, which
 -- takes the streets in a capital). Returns the fixed walk's failed searches
--- in a row toward the current corner, and true as a second value when the
--- leg has no route (the owner's later stage, now). nil: this settlement has
--- no route cache (or the walker flies): the owner walks the leg itself.
+-- in a row toward the current corner (or toward `to` while the leg is still
+-- built), and true as a second value when the leg has no route and the
+-- walker stands at its start (the owner's later stage, now). nil: the owner
+-- walks to `to` itself as a fixed walk -- this settlement has no route
+-- cache, the walker flies, or the leg has no route but the walker is away
+-- from its start (FROM_SLACK): the leg's verdict is about `from`, not about
+-- where the walker stands.
 --
 function grug_mobs.route_walk(self, dtime, pos, key, from, to, owner, patrol)
 	local set = settlements[key]
@@ -628,16 +682,20 @@ function grug_mobs.route_walk(self, dtime, pos, key, from, to, owner, patrol)
 		t.grug_leg = leg
 	end
 	local entry = leg.entry
-	if entry.state == "pending" then advance(set, entry, t) end
+	if entry.state == "pending" then advance(set, entry) end
 	if entry.state == "none" then
+		local dx, dz = from.x - pos.x, from.z - pos.z
+		if dx * dx + dz * dz > routes.FROM_SLACK * routes.FROM_SLACK then
+			return nil
+		end
 		grug_mobs.walk_clear(self, owner)
 		return 0, true
 	end
 	if entry.state == "pending" then
-		-- Stage 1 while the route is built: straight at the goal.
-		grug_mobs.walk_clear(self, owner)
-		grug_mobs.walk_toward(self, to.x, to.z, pos)
-		return 0
+		-- While the route is built (or waits for its area to load): the
+		-- fixed walk at the goal, stuck detector and local search included.
+		return grug_mobs.walk_fixed(self, dtime, pos, to.x, to.y, to.z,
+			leg.key .. "#to", owner)
 	end
 	local points = entry.points
 	if not leg.k then
@@ -672,7 +730,7 @@ function grug_mobs.route_follow(self, dtime, owner)
 			and (self.state == "stand" or self.state == "walk") then
 		local entry = leg.entry
 		if entry.state == "pending" then
-			advance(entry.set, entry, t)
+			advance(entry.set, entry)
 		elseif entry.state == "ok" and leg.k and leg.k < #entry.points then
 			local pos = self.object:get_pos()
 			local points = entry.points

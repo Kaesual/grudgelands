@@ -544,7 +544,8 @@ want lived-in settlements without paying for it in server load"):
   spot (a work resident; a resident whose ring is its own spot) asks the
   pathfinder nothing at all, writes its animation once per change, and does
   nothing whatsoever while no player is within 24 nodes; one moved off its
-  spot walks back straight and is put back out of sight after 30 seconds.
+  spot walks back straight (a work resident is put back out of sight after
+  30 seconds).
   Walkers, and the rare hop of a static resident, may use the pathfinder
   (Round 42 ruling 12), on routes cached where they repeat.
 
@@ -583,9 +584,12 @@ Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
   each search bounded (padding 6, no piece longer than 24 nodes: a longer leg
   is split at standable points on the straight line, or up to 6 nodes beside
   it), smoothed and kept as corner points; four failed searches spend a leg.
-  While a leg is built the walker walks straight at its goal. A leg with no
-  route is remembered as such and the walker's next stage takes over at once
-  (the next spot; a patrol's next waypoint), so nothing searches it again.
+  While a leg is built — also while its area is not loaded, which never
+  counts as "no route" — the walker walks to its goal as a fixed walk. A leg
+  with no route is remembered as such and the walker's next stage takes over
+  at once (the next spot; a patrol's next waypoint), so nothing searches it
+  again; a walker more than 5 nodes from the leg's start walks to its goal as
+  a fixed walk instead, with the three-failure give-up.
   Villages, camps and fortresses have no cache: their walkers follow their
   spot as a fixed target.
 - **Capital patrols run over the streets** (ruling 14): a patrol leg longer

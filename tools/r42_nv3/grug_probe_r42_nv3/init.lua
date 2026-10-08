@@ -11,8 +11,10 @@
 --     (grug_mobs.route_cache_stats, Round 42 NV3).
 -- Targets (setting grug_nv3_targets, comma separated): start (the first start
 -- identity's start town), village (the Round 14 village nearest to it),
--- capital (the first identity's capital), streets (pure data: the capital's
--- streets against its patrol points and walker spots, no terrain).
+-- capital (the first identity's capital), capital_partial (the capital with
+-- only a 96-node box round one district patrol guard kept loaded after the
+-- placement), streets (pure data: the capital's streets against its patrol
+-- points and walker spots, no terrain).
 -- Results go to <world>/nv3_results.json; every log line carries "[nv3]".
 
 local P = "[nv3] "
@@ -86,6 +88,16 @@ core.find_path = function(a, b, ...)
 		end
 	end
 	return path
+end
+
+-- Patrol give-ups (patrol.lua's report line), while a record is filled.
+local give_ups = 0
+local real_log = core.log
+core.log = function(level, text)
+	if fp and type(text) == "string" and text:find("could not reach its waypoint", 1, true) then
+		give_ups = give_ups + 1
+	end
+	return real_log(level, text)
 end
 
 local snaps = 0
@@ -194,8 +206,9 @@ local function observe(name, record, minp, maxp, done, obs)
 	for i, ent in ipairs(patrols) do
 		prec[i] = {ent = ent, wp = ent._grug_patrol_route.wp, advances = 0}
 	end
-	snaps = 0
+	snaps, give_ups = 0, 0
 	local c0 = nav_counters()
+	local cache0 = grug_mobs.route_cache_stats and grug_mobs.route_cache_stats(record.key)
 	collectgarbage("collect")
 	local mem0 = collectgarbage("count")
 	fp = {t0 = now(), n = 0, us = 0, found = 0, max_us = 0, max_d = 0, buckets = {},
@@ -234,7 +247,7 @@ local function observe(name, record, minp, maxp, done, obs)
 			nav = {searches = c1.searches - c0.searches, found = c1.found - c0.found,
 				cap_waits = c1.cap_waits - c0.cap_waits},
 			walkers = {}, patrols = {}, one_spot_walkers = one_spot,
-			snaps = snaps}
+			snaps = snaps, patrol_give_ups = give_ups, cache_before = cache0}
 		local arr, gu, walking = 0, 0, 0
 		for _, w in ipairs(wrec) do
 			out.walkers[#out.walkers + 1] = {walker = w.walker, ring = w.ring,
@@ -257,7 +270,7 @@ local function observe(name, record, minp, maxp, done, obs)
 		log(("LIVE %s %s: %d ambling residents (%d walkers, %d one-spot), %d patrols; " ..
 			"%d s: find_path %d (%.1f/min, found %d, max %d us at d %.1f, %.1f ms), " ..
 			"nav searches %d, cap waits %d; arrivals %d, spots given up %d, " ..
-			"patrol advances %d, snaps %d"):format(name, record.key, #wrec, walking,
+			"patrol advances %d, snaps %d, patrol give-ups " .. give_ups):format(name, record.key, #wrec, walking,
 			one_spot, #prec, obs, f.n, f.n * 60 / obs, f.found, f.max_us, f.max_d,
 			f.us / 1000, out.nav.searches, out.nav.cap_waits, arr, gu, adv, snaps))
 		if out.cache then
@@ -359,7 +372,70 @@ local function census(name, record, minp, maxp, done)
 	core.after(0, tick)
 end
 
+-- The capital with only a box of PARTIAL nodes round one district patrol
+-- guard kept loaded (a player's surroundings), the rest freed after the
+-- placement: legs whose far ends are unloaded (Round 42 NV3 review).
+local PARTIAL = 48
+local function partial(name, record, minp, maxp, done)
+	local _, patrols = movers(minp, maxp, record.key)
+	local guard
+	for _, ent in ipairs(patrols) do
+		if #ent._grug_patrol_route.points >= 5 then guard = ent break end
+	end
+	local gp = guard and guard.object:get_pos()
+	if not gp then
+		log("PARTIAL no district patrol guard")
+		return done()
+	end
+	local kmin = {x = gp.x - PARTIAL, y = minp.y, z = gp.z - PARTIAL}
+	local kmax = {x = gp.x + PARTIAL, y = maxp.y, z = gp.z + PARTIAL}
+	local freed = blocks_of(minp, maxp, function(p)
+		local inside = p.x + 15 >= kmin.x and p.x <= kmax.x and p.z + 15 >= kmin.z
+			and p.z <= kmax.z
+		if not inside then core.forceload_free_block(p, true) end
+		return not inside
+	end)
+	log(("PARTIAL kept %s - %s round the guard at %s, freed %d blocks"):format(
+		core.pos_to_string(vector.round(kmin)), core.pos_to_string(vector.round(kmax)),
+		core.pos_to_string(vector.round(gp)), freed))
+	-- Let the freed area deactivate and unload.
+	core.after(40, function()
+		observe(name, record, kmin, kmax, function()
+			local wp = guard._grug_patrol_route and guard._grug_patrol_route.wp
+			log(("PARTIAL guard active %s, waypoint %s"):format(
+				tostring(guard.object and guard.object:get_pos() ~= nil), tostring(wp)))
+			done()
+		end)
+	end)
+end
+
 local function phase_live(name, done)
+	if name == "capital_partial" then
+		local record = target_record("capital")
+		local minp, maxp = bounds(record)
+		blocks_of(minp, maxp, function(p) return core.forceload_block(p, true, -1) end)
+		core.emerge_area(minp, maxp, function(_, _, remaining)
+			if remaining ~= 0 then return end
+			local last, stable, waited = -1, 0, 0
+			local function poll()
+				local n = #core.get_objects_in_area(minp, maxp)
+				if n == last and n > 0 then stable = stable + 1 else stable = 0 end
+				last, waited = n, waited + 3
+				if stable >= 3 or waited >= 60 then
+					return partial(name, record, minp, maxp, function()
+						blocks_of(minp, maxp, function(p)
+							core.forceload_free_block(p, true)
+							return true
+						end)
+						core.after(5, done)
+					end)
+				end
+				core.after(3, poll)
+			end
+			core.after(3, poll)
+		end)
+		return
+	end
 	local record = target_record(name)
 	if not record then
 		log("no settlement for " .. name)
