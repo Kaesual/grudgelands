@@ -11,7 +11,7 @@ grug_mounts.FLIGHT_CEILING = grug_core.FLIGHT_CEILING
 grug_mounts.PRICES = {105, 700, 12900, 73800, 105, 700}
 
 -- The quickbar tip (Round 44, ui-crafting-rework-plan.md §3.5): the Riding
--- Trainer's and the Shipwright's dialogue show it, a purchase answers with it
+-- Trainer's and the Shipwright's dialogue show it below the purchase answer,
 -- and the retired items carry it.
 grug_mounts.QUICKBAR_TIP = "Press E to open your mounts."
 

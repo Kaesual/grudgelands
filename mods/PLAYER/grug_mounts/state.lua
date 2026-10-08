@@ -72,6 +72,6 @@ function grug_mounts.purchase(player, tier_id)
 	if not grug_money.take(player, price) then return false, "You do not have enough money." end
 	player:get_meta():set_int(meta_key(tier.mode), tier_id)
 	for _, func in ipairs(owned_changed) do func(player) end
-	return true, tier.name .. (tier.mode == "water" and " bought. " or " learned. ") ..
-		grug_mounts.QUICKBAR_TIP
+	-- The dialogue's tip line (grug_mounts.QUICKBAR_TIP) says where to use it.
+	return true, tier.name .. (tier.mode == "water" and " bought." or " learned.")
 end

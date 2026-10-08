@@ -617,9 +617,14 @@ level, money = 60, 1000000
 local cy_writes = cy.writes
 local ok, message = grug_mounts.purchase(cy, 1)
 check(ok, "Apprentice Riding bought")
-eq(message, "Apprentice Riding learned. Press E to open your mounts.", "the purchase line (PP's)")
+eq(message, "Apprentice Riding learned.", "the purchase line (the tip is the dialogue's)")
 ok, message = grug_mounts.purchase(cy, 5)
-eq(message, "Boat bought. Press E to open your mounts.", "the boat's purchase line")
+eq(message, "Boat bought.", "the boat's purchase line")
+local answered = grug_mounts.trainer_formspec({{id = 5, name = "Boat", level = 15, state = "owned"}},
+	{ok = true, text = message}, grug_mounts.SERVICES.shipwright)
+local said = 0
+for _ in answered:gmatch("Press E to open your mounts") do said = said + 1 end
+eq(said, 1, "after a purchase the dialogue says the tip once")
 for _, fn in ipairs(callbacks.join) do fn(cy) end
 for _, record in ipairs(afters) do
 	if record.delay == 0 then record.fn(unpack(record.args)) end
