@@ -47,7 +47,7 @@ local function trainer_formspec(player, profession, confirming)
 	elseif session and session.notice then
 		text = session.notice
 	elseif known then
-		text = "Open Inventory > Crafting and choose this profession's recipe book."
+		text = "Open the Crafting tab and choose this profession's recipe book."
 	end
 	if text then
 		fs[#fs + 1] = ("textarea[0.35,1.25;6.1,1.35;;;%s]"):format(esc(text))
@@ -106,7 +106,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		if ok and not before then
 			session.notice = "Learned " ..
 				grug_jobs.PROFESSIONS[session.profession].name ..
-				". Open Inventory > Crafting and choose its recipe book."
+				". Open the Crafting tab and choose its recipe book."
 		else
 			session.notice = reason
 		end

@@ -4,12 +4,13 @@
 -- Sound sub-page adds the music and ambience controls of grug_ambience
 -- (Round 34) above its text, built per player.
 --
--- Legacy coordinates (see ui.lua): the button row sits at y = 0 and the
--- text area ends above the shared inventory boundary at y = 7.0. The body is
--- a hypertext[] element, which scrolls on its own when a sub-page is longer
--- than the area. Links are read-only textarea[] elements (selectable, Ctrl+C
--- copies) with a button_url[] beside them; a formspec cannot open a browser
--- by itself, and button_url only asks the player first.
+-- No inventory view (spec §3.1): the page has the whole window. Legacy
+-- coordinates (see ui.lua): the button row sits at y = 0 and the text area
+-- ends near the window's bottom edge. The body is a hypertext[] element,
+-- which scrolls on its own when a sub-page is longer than the area. Links
+-- are read-only textarea[] elements (selectable, Ctrl+C copies) with a
+-- button_url[] beside them; a formspec cannot open a browser by itself, and
+-- button_url only asks the player first.
 
 local PAGE = "grug_inventory:help"
 local DEFAULT_SECTION = "start"
@@ -49,12 +50,18 @@ end
 local SECTIONS = {
 	{id = "start", label = "Start", x = 0.0, w = 1.5, text = body({
 		heading("Your first steps"),
-		"• Your starter weapon is already equipped on the Character page. Open the Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
+		"• Your starter weapon is already equipped on the Character page. Open the Talents & Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
 		"• Talk to the people of your start town. A yellow ! above someone means they have a quest for you.",
 		"• Craft a Wooden Pickaxe early: stone and ore need a pickaxe. Dirt, sand and other loose ground dig by hand (or with a skill selected), a shovel is fastest. The Basics book in the Crafting tab shows tools, weapons and armor you can make.",
 		"",
+		heading("Keys"),
+		"• I opens your inventory. E opens the quickbar: your mounts and boats, the potion belt and Return home; a click uses one and closes it. Z opens the map with your quest log.",
+		"• E and Z are your client's Aux1 and Zoom keys. If you changed those keys in the client's settings, your own keys open the quickbar and the map.",
+		"• With the client setting \"Aux1 key for climbing/descending\" on, holding E also makes you sink in water and climb down ladders.",
+		"• With the client setting \"Toggle Aux1 key\" on, the quickbar opens on every second press of E.",
+		"",
 		heading("Levels and zones"),
-		"• Creatures, quests, mining ore and gems, and fishing give XP, up to level 60. Creatures 10 or more levels below you give none; ore, gems and fish always give some. Every second level gives a talent point for the Talents tab.",
+		"• Creatures, quests, mining ore and gems, and fishing give XP, up to level 60. Creatures 10 or more levels below you give none; ore, gems and fish always give some. Every second level gives a talent point for the Talents & Skills tab.",
 		"• Your faction lives on its own continent. Your start town lies in a level 1-10 zone on its outer side, and levels rise toward the front where the two continents meet: 11-20 home zones, the capital zones (20-30) and heartlands (21-30), 31-40 frontiers, 31-59 on the front itself and level 60 on the two dragon islands.",
 		"• Zones of level 31 and above are contested by both factions.",
 		"• Underground creatures get stronger with depth: 3 levels per 50 nodes below y 0 (level 60 near y -1000), and never weaker than the zone above them.",
@@ -69,10 +76,10 @@ local SECTIONS = {
 	})},
 	{id = "quests", label = "Quests & Professions", x = 1.5, w = 3.1, text = body({
 		heading("Quests"),
-		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = needs a higher level. The Map tab shows the same symbols.",
+		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = needs a higher level. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
 		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, take it to the person with the yellow ? (often the giver) and press Complete.",
 		"• Objectives are: bring items (counted from your inventory and bags, taken when you hand in), defeat creatures, or speak with a named person. Everyone nearby who helped with damage or healing gets kill credit; the killing blow is not needed.",
-		"• The Quests tab holds up to 20 active quests and can track up to ten on screen. When the log is full, finish or abandon a quest before you accept a new one.",
+		"• Your quest log is in the map window (Z or the Map tab): up to 20 active quests, up to ten tracked on screen. Select a quest to read it and to see its targets on the map where they are known. When the log is full, finish or abandon a quest before you accept a new one.",
 		"• Quest givers wait in start towns, capitals, villages and camps. At level 10 your start town sends you on to your capital.",
 		"",
 		heading("Professions"),
@@ -116,20 +123,21 @@ local SECTIONS = {
 		"• Skills use the items in your hand slots on the Character page, never one in the hotbar. Select a skill and left-click a target; if the skill is not ready, you strike with your weapon.",
 		"• Hand slots by class: Warriors carry a weapon and a shield (only Warriors use shields), Mages and Priests a weapon and a spellbook in the Caster offhand. Scouts carry a bow in the Ranged slot for the bow skills and a sword or dagger in the Melee slot for Strike and every melee skill. Both hand items always count toward your stats.",
 		"• Scouts have a quiver slot for up to 500 arrows: drag or shift-click arrows onto it, and picked-up arrows go there first. Click it to take up to 100 arrows. Shots use the quiver first, then your inventory. Arrows stack to 100.",
-		"• The Skills tab keeps every unlocked skill and bought mount: drag an icon into your inventory. Drop icons you do not need; you can drag them back at any time.",
+		"• The Talents & Skills tab keeps every unlocked skill: drag one onto your hotbar. Skills stay on the hotbar; drag one back to the list to remove it and take it again at any time.",
 		"",
 		heading("Bags, food and repair"),
-		"• The Bags tab holds up to four bags of 8 to 32 slots. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
+		"• The Inventory tab holds up to four bags of 8 to 32 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
+		"• The potion belt on the Inventory tab holds four potions or elixirs; drink them from the quickbar (E).",
 		"• Eat food out of combat for a five-minute buff: instant healing, regeneration and sometimes extra stats. Only one food buff is active at a time.",
 		"• Gear wears out with use and stops working when broken. Every profession trainer of your faction repairs it for money.",
 		"",
 		heading("Riding, home and death"),
-		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mount then waits in the Skills tab: use its icon to mount or dismount.",
-		"• The Shipwright beside the Riding Trainer sells a Boat at level 15 and an Improved Boat at level 30. Use the boat icon while standing or swimming in water, and again to go ashore. Any hit throws you into the water.",
+		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mounts then wait in the quickbar: press E and click one to mount or dismount.",
+		"• The Shipwright beside the Riding Trainer sells a Boat at level 15 and an Improved Boat at level 30. Use the boat from the quickbar (E) while standing or swimming in water, and again to go ashore. Any hit throws you into the water.",
 		"• In every capital the Crownbinder lifts one item with a Fallen Crown and a fee: its item level rises to its tier's top + 5 and its enchants one tier, once per item. The Decor Merchant there sells decorative blocks and lights.",
-		"• Set your home at an innkeeper in a start town or capital of your faction. The Character page has Return home (every 30 minutes, not in combat).",
+		"• Set your home at an innkeeper in a start town or capital of your faction. The Character page and the quickbar (E) have Return home (every 30 minutes, not in combat).",
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
-		"• The Party tab makes a party of up to 10 players of your faction.",
+		"• The Party & PvP tab makes a party of up to 10 players of your faction and holds the Flag me for PvP button.",
 	})},
 	{id = "formulas", label = "Formulas", x = 6.1, w = 1.7, text = body({
 		heading("Character formulas"),
@@ -183,19 +191,19 @@ local LINKS = {
 -- The welcome window (welcome.lua) links the same addresses.
 grug_inventory.LINKS = LINKS
 
--- Geometry (legacy coordinates, 10.4 wide; content must end before y = 7.0).
+-- Geometry (legacy coordinates, 10.4 wide; the window is 11.85 S high, ui.lua).
 -- In legacy units (S = one slot spacing, imgsize = 13/15 S, padding 0.325 S)
 -- a textarea/hypertext at (y, h) spans (y + 0.35) S to
--- (y + 0.35 + 0.8667 h - 0.1333) S from the form's top edge, and an element
--- at y = 7.0 starts at 7.325 S. The body below therefore ends at 6.96 S; the
--- lowest About button ends at 7.21 S (guiFormSpecMenu.cpp parseHyperText,
+-- (y + 0.35 + 0.8667 h - 0.1333) S from the form's top edge. The full body
+-- below therefore ends at 11.47 S, the Sound body at 11.46 S; the lowest
+-- About button ends at 7.21 S (guiFormSpecMenu.cpp parseHyperText,
 -- parseTextArea, parseButton; spacing/padding/m_btn_height at :3339-3342).
 local BUTTON_Y, BUTTON_H = 0.0, 0.7
 local BODY_X, BODY_Y, BODY_W = 0.2, 0.85, 10.2
-local BODY_H = 6.8          -- full-height sub-pages
+local BODY_H = 12.0         -- full-height sub-pages
 local ABOUT_BODY_H = 2.4    -- About: text above the link rows (ends 3.15 S)
 local SOUND_BODY_Y = 2.75   -- Sound: text below the two control rows
-local SOUND_BODY_H = 4.6
+local SOUND_BODY_H = 9.8
 local LINK_Y, LINK_STEP = 2.95, 0.95
 local LINK_FIELD_W, LINK_BUTTON_X, LINK_BUTTON_W, LINK_H = 7.7, 8.1, 2.1, 0.65
 
@@ -249,7 +257,7 @@ end
 sfinv.register_page(PAGE, {
 	title = "Help",
 	get = function(self, player, context)
-		return sfinv.make_formspec(player, context, help_content(player, context), true)
+		return sfinv.make_formspec(player, context, help_content(player, context), false)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
 		for _, section in ipairs(SECTIONS) do

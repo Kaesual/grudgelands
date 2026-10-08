@@ -46,7 +46,7 @@ local function rebuild(player, announce)
 		for _, entry in pairs(rows) do
 			local def = entry.kind == "ability" and grug_abilities.registered[entry.id]
 			if def and def.talent_gated and not previous[entry.id] then
-				core.chat_send_player(name, def.name .. " unlocked. Open Inventory > Skills to use it.")
+				core.chat_send_player(name, def.name .. " unlocked. Open the Talents & Skills tab to use it.")
 			end
 		end
 	end

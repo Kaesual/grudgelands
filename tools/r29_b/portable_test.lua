@@ -520,7 +520,7 @@ ok = grug_mounts.purchase(bo, 5)
 check(not ok, "not enough money")
 money = 5000
 ok, message = grug_mounts.purchase(bo, 5)
-check(ok and message == "Boat bought. Open Inventory > Skills to use it.", "Boat bought: " .. tostring(message))
+check(ok and message == "Boat bought. Press E to open your mounts.", "Boat bought: " .. tostring(message))
 eq(money, 5000 - grug_mounts.PRICES[5], "Boat price taken")
 eq(boat_states(), "owned,buy", "Improved Boat for sale after the Boat")
 level = 29

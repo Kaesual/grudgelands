@@ -770,7 +770,7 @@ registration (`grug_xp.register_on_level_change`). `old_level` is nil on
 join, so the function returns there before any arithmetic. When
 `talent_points_at(new_level) > talent_points_at(old_level)` and at least one
 point is unspent, it posts one message-feed line directing the player to
-Inventory > Talents, alongside the "Reached level N!" level-up banner (a
+the Talents & Skills tab, alongside the "Reached level N!" level-up banner (a
 large centre message since Round 28 ruling 20, no longer a chat line). No new
 globalstep, no new HUD element, no new packet. The banner itself names the
 points the jump earned in a second line, "You gained +1 Talent Point" (or "+N

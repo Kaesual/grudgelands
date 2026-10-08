@@ -118,7 +118,7 @@ function grug_mounts.purchase(player, tier_id)
 	player:get_meta():set_int(meta_key(tier.mode), tier_id)
 	for _, func in ipairs(owned_changed) do func(player) end
 	return true, tier.name .. (tier.mode == "water" and " bought" or " learned") ..
-		". Open Inventory > Skills to use it."
+		". Press E to open your mounts."
 end
 
 core.register_on_joinplayer(function(player)
