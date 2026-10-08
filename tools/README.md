@@ -64,7 +64,10 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   list and the declared step files, after its own self-test (`--self-test`
   alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
 - `tools/luanti_headless.sh`: an isolated headless engine boot (never the
-  personal Luanti folder; options in the script header).
+  personal Luanti folder; options in the script header). Its world.mt names
+  no `mod_storage_backend`, so its worlds keep mod storage in files.
+- `python3 tools/migrate.py --world <dir> [--check]`: the world-migration
+  tool ([below](#the-migration-tool)).
 - `tools/r35_t/upstream_check.sh`: whether the installed engine still
   misreads rotated selection boxes (prints `FIXED` or `BUG PRESENT`); run it
   at every engine version change with the rest of
@@ -73,6 +76,74 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   builds it (isometric view, top-down plan, two other race palettes;
   `page.py` makes the review page); `tools/r36_w/render.py` and `page.py`
   the before/after pages of a decor change.
+
+## The migration tool
+
+`tools/migrate.py` (code in `tools/migration/`) migrates a **stopped** world
+to the version of the checkout it runs from (`game.conf`): every step of the
+declaration's `migrate` list (`tools/web_data/upgrade.json`) above the
+world's version, in ascending order, each in one write transaction per
+database backend; the world version (`grug_core` mod storage
+`world_version`) is written with each step. Run it from the repository root
+of a full checkout; Python 3.13 or newer, and for a PostgreSQL world
+psycopg 3 (`tools/migration/requirements.txt`; Debian: `python3-psycopg`).
+The tool cannot detect a running server (Luanti holds no lasting SQLite lock,
+PostgreSQL has none): stop the server and back the world up first (its
+directory and, for PostgreSQL, its databases).
+
+```
+python3 tools/migrate.py --world <dir>           # migrate
+python3 tools/migrate.py --world <dir> --check   # report, change nothing
+```
+
+`--check` reports the world version and the due steps and proves write
+access: on every backend a real write under the write lock (SQLite `BEGIN
+IMMEDIATE`, PostgreSQL at most 5 s for a row lock), rolled back.
+
+The world is found from `world.mt` only: `player_backend`, `auth_backend`
+and `mod_storage_backend`, each `sqlite3` or `postgresql`, and the matching
+`pgsql_player_connection`, `pgsql_auth_connection`,
+`pgsql_mod_storage_connection` strings, handed to libpq as they stand (a
+password may come from `PGPASSFILE`). A missing key means the engine's
+`files` backend and is refused like any other. A missing `players.sqlite`
+or `auth.sqlite` (nobody ever joined) counts as empty; a missing
+`mod_storage.sqlite` is refused. A world without a record is at 0.41.0
+unless it is new (no character, no mod storage, no `env_meta.txt`, no
+`players.sqlite`, no `players/`): then nothing is due and the game records
+its version at the first start.
+
+**Exit codes:** `0` migrated, nothing to do, or checked; `2` refused or
+failed before anything was written (the world is unchanged); `1` failed
+after the first step began: the world is undefined, restore the backup.
+
+**Output:** stdout carries one JSON object per line, the last one is the
+result; stderr carries the same as text. Strings are JSON with non-ASCII
+escaped.
+
+| Event | Fields | When |
+|---|---|---|
+| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first |
+| `step_start` | `step` (its version), `from` (the world's version before it) | a step begins |
+| `step_done` | `step`, `counts`: `characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers` (writes of that step) | a step committed |
+| `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`), and `applied` (migrate) or `write_checked` (check) | exit 0 |
+| `refusal` | `reason`, `message` | exit 2 |
+| `failed` | `step` (or `null`), `reason`, `message` | exit 1 |
+
+Refusal reasons: `usage`, `checkout` (game.conf, the declaration or a step
+file), `world_mt`, `backend`, `database_missing`, `connection`, `layout`
+(not the engine's table layout), `lock`, `write_access`, `record` (no
+`major.minor.patch`), `world_newer`, `internal`. Failure reasons: `lock`
+(a later step's lock), `step` (the step raised), `rule` (the step broke a
+limit of the data API), `commit`.
+
+**Steps** live in `tools/migration/steps/v<major>_<minor>_<patch>.py` and
+export `migrate(world)` (the data API: `tools/migration/data.py`; codecs:
+`codec.py`). Online work is left with `world.mark_world()` (grug_core mod
+storage `migrate_world:<version>`, the game's next load) and
+`world.mark_character(name)` (player meta `grug_core:migrate:<version>`,
+that character's next join). Tests run undeclared steps through
+`migration.cli.main(argv, test_steps={version: module})`, which the command
+line cannot reach.
 
 ## Web data
 
@@ -297,16 +368,6 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_reset_world` raised through a disposable patch of the staged game)
   and the reset boot with an old and a new character. The declaration's
   rules are `check_upgrade.py`'s own self-test (above).
-- **Round 43** (`r43_<lane>`): `r43_gs` the game side of world migrations
-  ([round plan](../docs/planning/round43-plan.md) §4.1):
-  `portable_test.lua` (the real `grug_core/world_version.lua` and
-  `migrations.lua` on stubs: the start guard's decision and refusals, the
-  record at load, new-world recognition, the online-work runner's order and
-  failures, the character work before the map reset's relocation, the test
-  hook `grug_test_migrations`) and `refusal_boot.sh OUT_DIR [TIMEOUT]`, two
-  boots of one world: a fresh world records its version, then the record is
-  raised above the game's and the second boot must refuse; the world
-  directory is listed before and after it (`evidence/`).
 - **Round 42** (`r42_<lane>`): `r42_nv0` the navigation test scene, which
   NV1–DR rerun for their before/after numbers
   ([round plan](../docs/planning/round42-plan.md) §4.1). `run.sh OUT_DIR
@@ -388,3 +449,23 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   walker at any phase, free wanderers keep it, `facing_fence` only for
   blocking nodes, the jump logic at real fences unchanged;
   `evidence/after/` keeps NV0's villager and post-guard scenes.
+- **Round 43** (`r43_<lane>`): `r43_gs` the game side of world migrations
+  ([round plan](../docs/planning/round43-plan.md) §4.1):
+  `portable_test.lua` (the real `grug_core/world_version.lua` and
+  `migrations.lua` on stubs: the start guard's decision and refusals, the
+  record at load, new-world recognition, the online-work runner's order and
+  failures, the character work before the map reset's relocation, the test
+  hook `grug_test_migrations`) and `refusal_boot.sh OUT_DIR [TIMEOUT]`, two
+  boots of one world: a fresh world records its version, then the record is
+  raised above the game's and the second boot must refuse; the world
+  directory is listed before and after it (`evidence/`).
+  `r43_mt` the migration tool's tests,
+  `test_migrate.py` (Python unittest: the codecs against an engine-written
+  world, opening and refusals, locks, check mode, events, test-only steps
+  through `cli.main(test_steps=...)`), run where the platform runs the tool
+  by `container_test.sh [COMMIT]` (debian:trixie, Debian's python3,
+  python3-psycopg and python3-zstandard, a `git archive` export).
+  `world/` is that engine-written world, built by `make_world.sh OUT_DIR`
+  with the disposable probe `grug_probe_r43_mt` (two launcher runs on a
+  world folder of its own: the game with SQLite mod storage, then
+  `--migrate-players sqlite3`); IT builds its worlds the same way.

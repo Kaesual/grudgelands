@@ -1,0 +1,6 @@
+# The migration tool (tools/migrate.py) for self-hosters, Python 3.13 or newer.
+# SQLite worlds need nothing beyond the standard library. PostgreSQL worlds
+# need psycopg 3 and the system's libpq (or install psycopg[binary]==3.2.6).
+# The versions are Debian trixie's (python3-psycopg 3.2.6-1), which the
+# platform's runner uses; the tests ran on them (tools/r43_mt/container_test.sh).
+psycopg==3.2.6
