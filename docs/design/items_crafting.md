@@ -150,7 +150,7 @@ universal pick.
 
 - Wood and Stone starter picks are not extra material tiers. They are T1
   picks (T1 rock and T1 resources); Bronze is the best T1 pick. Wood and Stone
-  gear stays below the generated ilvl anchors and carries no level requirement.
+  gear has no item level and carries no level requirement.
 - Gold is a universal luxury, jewelry and building material, never a tool
   metal. There is no Gold weapon, armor or pick. Physical Gold and ledger money
   are separate systems (`economy.md` §1).
