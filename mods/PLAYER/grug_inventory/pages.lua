@@ -695,9 +695,9 @@ function grug_inventory.refresh(player, force)
 	end
 end
 
--- Re-send a cached Character page (any tab) and nothing else: the stat and
--- money hooks below use it; the quiver total uses
--- refresh_character_tab(player, "stats").
+-- Re-send a cached Character page (any mode) and nothing else: the stat and
+-- money hooks below use it, and so does the quiver total (bags.lua), which
+-- the gear box shows in every mode.
 function grug_inventory.refresh_character(player)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == CHARACTER_PAGE then

@@ -10,7 +10,7 @@
 -- Usage: local H = dofile("tools/r44_ch/harness.lua")(repo)
 
 return function(repo)
-local H = {feed = {}, sounds = {}, equipment_changes = 0, logs = {}}
+local H = {feed = {}, sounds = {}, equipment_changes = 0, logs = {}, dropped = {}}
 
 --
 -- Engine surface
@@ -47,7 +47,7 @@ core = {
 	get_player_window_information = function(name) return window_info[name] end,
 	is_creative_enabled = function() return false end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
-	add_item = function() end,
+	add_item = function(_, stack) H.dropped[#H.dropped + 1] = ItemStack(stack):to_string() end,
 	after = function() end,
 }
 setmetatable(core, {__index = function(_, key)
@@ -482,6 +482,11 @@ function H.shift(player, fs, list, index)
 		end
 	end
 	return target.list
+end
+
+-- A rejoin of an existing player: every join callback again.
+function H.join(player)
+	for _, f in ipairs(callbacks.join) do f(player) end
 end
 
 function H.put(player, list, index, item)

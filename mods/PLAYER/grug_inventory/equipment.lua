@@ -232,8 +232,19 @@ core.register_on_joinplayer(function(player)
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		inv:set_size(slot.list, 1)
 	end
-	-- The Character page's shift-click target (below); always empty.
+	-- The Character page's shift-click target (below); always empty. A
+	-- safety net for a write that is not ours (another mod, a server-side
+	-- set_stack): whatever sits there goes back through the give helper,
+	-- the leftover to the player's feet.
 	inv:set_size(grug_inventory.SHIFT_LIST, 1)
+	local stray = inv:get_stack(grug_inventory.SHIFT_LIST, 1)
+	if not stray:is_empty() then
+		inv:set_stack(grug_inventory.SHIFT_LIST, 1, ItemStack(""))
+		local leftover = grug_inventory.give(player, stray)
+		if not leftover:is_empty() then
+			core.add_item(player:get_pos(), leftover)
+		end
+	end
 	-- Fresh session, fresh caches: the lists are loaded at this point.
 	grug_inventory.equipment_changed(player)
 end)

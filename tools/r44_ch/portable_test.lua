@@ -17,7 +17,7 @@
 --      rules with their feed lines), equipment -> inventory in the give order
 --      (main[9..], bags, hotbar last; refused when full), arrows into and out
 --      of a Scout's quiver, anything else unmoved; the routing list stays
---      empty; a drag still equips;
+--      empty (a stray item is given back at join); a drag still equips;
 --   4. the page's bytes per mode (printed; comparisons, not targets).
 --
 -- Usage (repo root): luajit tools/r44_ch/portable_test.lua [repo]
@@ -469,6 +469,19 @@ routing_empty(dr, "drag")
 H.put(dr, "main", 10, "grug_gear:head_leather")
 eq(H.move(dr, "main", 10, "grug_head", 1, 1, false), 1, "a drag onto Head swaps by the engine")
 eq(H.get(dr, "main", 10), "grug_gear:head_metal", "... the old helmet takes the cell")
+
+-- The join's safety net: whatever another writer left in the routing list
+-- goes back through the give helper; the leftover lands at the feet.
+local sn = H.player("sn", "warrior")
+H.put(sn, "grug_shift", 1, "grug_gear:head_metal")
+H.join(sn)
+routing_empty(sn, "join")
+eq(H.get(sn, "main", 9), "grug_gear:head_metal", "join: a stray item is given back (main[9])")
+for i = 1, 32 do H.put(sn, "main", i, "t:apple 99") end
+H.put(sn, "grug_shift", 1, "grug_gear:head_leather")
+H.join(sn)
+routing_empty(sn, "join, full")
+eq(H.dropped[#H.dropped], "grug_gear:head_leather", "join, full: the leftover drops at the feet")
 
 --
 -- 4. Bytes (a comparison: tools/r44_ch/bytes.lua measures any tree)

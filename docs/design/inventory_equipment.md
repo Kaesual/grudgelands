@@ -52,7 +52,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   home** button with its state ([home_travel.md](home_travel.md)).
   **Shift-click** moves between the inventory and the equipment: every list
   the page draws rings to `grug_shift`, a one-slot list no page draws and
-  that never holds anything, whose allow callback applies the move itself
+  that never holds anything (whatever another writer leaves there goes back
+  through the give helper at join), whose allow callback applies the move itself
   (`equipment.lua`; a listring alone reaches only one next list and fills
   `main` from the hotbar). From `main` (hotbar included) or a bag a piece
   of gear goes into its slot — an empty slot of its kind first, else it
