@@ -20,8 +20,8 @@ tool once on the stopped world (last point below). No map reset, no new
 world.
 
 - **One window with fixed tabs:** Inventory, Character, Talents & Skills,
-  Crafting, Party & PvP, Help and Map. `I` opens it on Inventory; the tab
-  you last used stays selected. The Bags, Skills, Quests and PvP tabs are
+  Crafting, Party & PvP, Help and Map. Inventory is the first page; the
+  tab you last used stays selected when you reopen it. The Bags, Skills, Quests and PvP tabs are
   gone; what they held moved as below.
 - **One inventory:** the Inventory tab shows four bag slots, the potion
   belt, the coin deposit and a Sort button above one scrolling grid of
@@ -58,7 +58,7 @@ world.
   a place, rings on the nearest areas where its creatures live, also in
   the other faction's land. The map shows you and your party, your home,
   waystones, your faction's trainers with their profession icons and
-  services, and a `?` at the givers of the quests you have; the minimap
+  services, and a `?` where you hand in the quests you have; the minimap
   keeps `!` and `?`. The minimap switch moved here. The map no longer
   refreshes every two seconds, only when something changes. `Z` no longer
   zooms the view.

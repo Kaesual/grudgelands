@@ -400,8 +400,9 @@ before its merge:
 - **MB** MERGE; one Low (the art decoder ignored PNG colour keys), fixed
   (`461de63a`) with a decoder self-test, and `check_fresh_server.py` now
   runs the generator's staleness check.
-- **CH** MERGE; two Lows (a stale comment; nothing ever empties the hidden
-  shift-click list), fixed (`e7f2adac`): the list is emptied at join.
+- **CH** MERGE; two Lows (a stale comment, fixed; more traffic per quiver
+  change, accepted); the review's backlog safety net applied: the hidden
+  shift-click list is emptied at join (`e7f2adac`).
 - **TS** MERGE; three Lows (the chain names gone, a locked node's text
   replaced by its reason, one feed line for two causes), fixed
   (`afb5d55d`).
@@ -426,9 +427,10 @@ step test 27/27 and lane IT's suite 59/59 on `1770300d`. This lane:
 `tools/r37_dc` PASS, `check_upgrade.py` PASS (0.44.0 against origin/main),
 `check_fresh_server.py` PASS. No seed fleet: no world generation changed.
 
-**Round-end gates on the final branch: _(coordinator: full
-`run_fixtures.sh`, `check_upgrade.py`, `check_fresh_server.py`, smoke
-boot — to be filled in)_.**
+**Round-end gates on the final branch** (`r44-d`, coordinator,
+2026-10-09): full `run_fixtures.sh` 138/138, `check_upgrade.py` PASS
+(0.44.0 against origin/main `9dc2fad5`), `check_fresh_server.py` PASS,
+smoke boot PASS.
 
 `mods/` +4,172 −2,106 lines this round (99 files), two new mods
 (`grug_keys`, `grug_quickbar`).
@@ -675,7 +677,9 @@ on a copy of a 0.43 world migrated with the tool, and on a fresh world.
 5. **Web build:** the tab row fits ("Inventory" and "Party & PvP" are
    longer than the old captions; arrows may appear).
 6. Other tabs: hotbar + 2 rows at the same place as on Inventory, nothing
-   overlapping; the mouse wheel scrolls one row.
+   overlapping; the mouse wheel scrolls one row. The Crafting tab still
+   works inside the new frame: the grid crafts, and shift-click moves
+   between the craft grid and the inventory.
 
 **Inventory:**
 
@@ -706,7 +710,7 @@ on a copy of a 0.43 world migrated with the tool, and on a fresh world.
     arrows:** the cell shows the total, but no item tooltip and no hover
     highlight (formspec_version 6); a click still takes up to 100. Empty
     slots' ghost images look right, their labels' tooltips show.
-15. Shift-click: a helmet into Head, a second one swaps; an equipped piece
+15. Equipping by drag still works. Shift-click: a helmet into Head, a second one swaps; an equipped piece
     goes to rows 2–4, bags, then the hotbar; with everything full a feed
     line; arrows into and out of the quiver; an apple does not move.
 16. Return home in every mode, counting down in minutes.
@@ -723,7 +727,8 @@ on a copy of a 0.43 world migrated with the tool, and on a fresh world.
 
 **Party & PvP and texts:**
 
-19. One tab without an inventory: invite, accept, decline, kick, make
+19. One tab without an inventory: the online players of your faction,
+    invite, accept, decline, kick, make
     leader, leave, the checkboxes and the colours dropdown; the PvP section
     with the flag button on the right; on the web build the PvP rule lines
     stay inside; an open dropdown during a PvP countdown closes once a
@@ -768,7 +773,8 @@ on a copy of a 0.43 world migrated with the tool, and on a fresh world.
 29. The riding trainer and the shipwright show "Press E to open your
     mounts." once, also after a purchase; no mount item after a purchase or
     a relog. With a rebound aux1 key that key opens it; with "Toggle Aux1
-    key" every second press.
+    key" every second press; with "Aux1 key for climbing/descending",
+    holding E also sinks in water and climbs down ladders.
 30. The web build: the quickbar fits.
 
 ### For the platform

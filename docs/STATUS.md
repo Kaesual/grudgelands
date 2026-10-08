@@ -15,9 +15,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   the re-review with a Medium; every fix made by the lane before its
   merge); main has 138 portable fixtures. MS's step test 27/27 and lane
   IT's suite 59/59 on `1770300d`; `tools/r37_dc`, `check_upgrade.py` and
-  `check_fresh_server.py` PASS on lane D's branch. **Round-end gates:
-  _(coordinator: full fixtures, `check_upgrade.py`,
-  `check_fresh_server.py`, smoke boot — to be filled in)_.** No world
+  `check_fresh_server.py` PASS on lane D's branch. **Round-end gates
+  (coordinator):** fixtures 138/138, `check_upgrade.py` and
+  `check_fresh_server.py` PASS, smoke boot PASS. No world
   generation changed (no seed fleet). Every lane compatible except MS
   (**migrate**); the declaration is
   `{"schema": 2, "version": "0.44.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0"]}`:
