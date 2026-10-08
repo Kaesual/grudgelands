@@ -369,4 +369,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   tools/r42_nv3's world model: door legs, open/pass/close, the NPC right
   behind, unloaded in the doorway, open doors, owned doors and trapdoors,
   gates, fixed-walk door detours; `evidence/after/` keeps the lane's capital
-  run (NV3's probe) and NV0's door scenes.
+  run (NV3's probe) and NV0's door scenes. `r42_st`: `portable_test.lua`
+  cuts the vendored walk state, `get_nodes` and `do_jump` out of
+  `mobs/api.lua` and drives them with the real `grug_nav.lua` steer mark and
+  `patrol.lua` (`walk_toward`, `route_tick`): no random stop for a driven
+  walker at any phase, free wanderers keep it, `facing_fence` only for
+  blocking nodes, the jump logic at real fences unchanged;
+  `evidence/after/` keeps NV0's villager and post-guard scenes.

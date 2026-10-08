@@ -100,7 +100,8 @@ _G.grug_xp = {mob_xp = function(level) return 25 + 5 * level end, LEVEL_OFFSET =
 local api = assert(io.open(ROOT .. "/mods/ENTITIES/mobs/api.lua")):read("*a")
 local scale_src = api:match("\nfunction mobs:scale_mob%(.-\nend\n")
 assert(scale_src, "mobs:scale_mob not found in api.lua")
-_G.mobs = {}
+-- walk_toward marks the mob as driven (Round 42 ST): the real navigation.
+_G.mobs = {grug_nav = dofile(ROOT .. "/mods/ENTITIES/mobs/grug_nav.lua")}
 -- scale_mob cuts a tall mob's physics box (Round 42 NV1, ruling 20).
 _G.grug_obstacle = dofile(ROOT .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
 assert(loadstring(scale_src))()
