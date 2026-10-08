@@ -651,6 +651,48 @@ do
 	check(not nav.line_walkable(dry, pos(0, 0.5, 0), pos(8, 1, 0)), "W5 a non-floater does not")
 	fill(3, -1, -3, 5, 0, 3, "lava")
 	check(not nav.line_walkable(b, pos(0, 0.5, 0), pos(8, 1, 0)), "W5 lava never")
+	-- W7 the line ends at the target's level (review Medium): a target on
+	-- a balcony over open ground, or right overhead, is not "straight".
+	clear_world()
+	fill(4, 3, -2, 8, 3, 2, "stone") -- the balcony's floor, y 3
+	check(nav.line_walkable(b, pos(0, 0.5, 0), pos(6, 1, 0)),
+		"W7 a target under the balcony: walkable")
+	check(not nav.line_walkable(b, pos(0, 0.5, 0), pos(6, 4, 0), 1),
+		"W7 a target on the balcony: not walkable")
+	check(not nav.line_walkable(b, pos(6, 0.5, 0), pos(6, 4, 0), 1),
+		"W7 a target right overhead: not walkable")
+	check(nav.line_walkable(b, pos(0, 0.5, 0), pos(6, 2, 0), 1),
+		"W7 a jumping target one node up still is")
+	check(nav.line_walkable(b, pos(5, 4, 0), pos(10, 1, 0)),
+		"W7 off the balcony's end down to a target beyond: a drop of 3")
+	check(not nav.line_walkable(b, pos(4, 4, 0), pos(7, 1, 0)),
+		"W7 from the balcony to a target under it: not walkable")
+	-- W8 switchback stairs: a waypoint of the upper flight right above the
+	-- mob is not reached, and smoothing never jumps to it.
+	do
+		clear_world()
+		-- lower flight rises +x at z 0 to y 3; landing at x 4; upper flight
+		-- comes back at z 1 from x 4 to x 0 at y 3..6 (solid under it).
+		fill(1, 1, 0, 1, 1, 0, "stone")
+		fill(2, 1, 0, 2, 2, 0, "stone")
+		fill(3, 1, 0, 4, 3, 0, "stone")
+		fill(0, 1, 1, 4, 3, 1, "stone")
+		fill(3, 4, 1, 3, 4, 1, "stone")
+		fill(2, 4, 1, 2, 5, 1, "stone")
+		fill(1, 4, 1, 1, 6, 1, "stone")
+		local sm = mob()
+		local path = {pos(0, 1, 0), pos(2, 5, 0), pos(5, 1, 0)}
+		sm.temp.grug_nav = {fails = 0, target = target_obj(), path = path, i = 2,
+			lt = 0, aim_x = 5, aim_z = 0}
+		local tgt = sm.temp.grug_nav.target
+		-- The mob on the ground right under the next waypoint (4 up).
+		local s1 = step(sm, pos(2, Y, 0), tgt, pos(5, Y, 0.2), 0)
+		check(s1 == path[2], "W8 a waypoint right above is not reached")
+		path = {pos(0, 1, 0), pos(1, 2, 0), pos(2, 3, 0), pos(3, 4, 0),
+			pos(4, 4, 0), pos(4, 4, 1), pos(3, 5, 1), pos(2, 6, 1), pos(1, 7, 1)}
+		check(not nav.line_walkable(nav.body(sm), pos(1, 1.5, 0), path[9]),
+			"W8 no straight walk onto the upper flight")
+	end
 	-- W6 a diagonal corner: both corner cells must be free.
 	clear_world()
 	set(1, 1, 0, "stone")

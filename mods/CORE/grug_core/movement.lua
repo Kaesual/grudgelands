@@ -408,11 +408,14 @@ function grug_core.emit_stun_particles(object, duration)
 	local props = object:get_properties() or {}
 	local box = props.collisionbox or {-0.3, 0, -0.3, 0.3, 1.7, 0.3}
 	local width = math.min(1.5, math.max(0.3, box[4] - box[1]))
+	-- Over the head: the selection box, since a mob taller than two nodes
+	-- moves with a lower physics box (Round 42, combat_stats.md §4).
+	local top = (props.selectionbox or box)[5]
 	local lifetime = math.min(2, math.max(0.3, duration))
 	core.add_particlespawner({
 		amount = 8, time = 0.1,
-		pos = {min = vector.offset(pos, -width / 2, box[5] + 0.1, -width / 2),
-			max = vector.offset(pos, width / 2, box[5] + 0.4, width / 2)},
+		pos = {min = vector.offset(pos, -width / 2, top + 0.1, -width / 2),
+			max = vector.offset(pos, width / 2, top + 0.4, width / 2)},
 		vel = {min = vector.new(-0.1, 0, -0.1), max = vector.new(0.1, 0.1, 0.1)},
 		exptime = {min = lifetime, max = lifetime}, size = {min = 2, max = 3},
 		texture = "[fill:5x5:#00000000^[fill:1x5:2,0:#ffe066^[fill:5x1:0,2:#ffe066",

@@ -73,14 +73,13 @@ local nav = {
 local floor, ceil, sqrt, abs = math.floor, math.ceil, math.sqrt, math.abs
 local cos, sin, pi = math.cos, math.sin, math.pi
 
--- Set by api.lua (nav.init): the A* budget and negative cache, the
--- per-mob danger test and the engine search settings.
+-- Set by api.lua: the A* budget and negative cache and the engine search
+-- settings (nav.init), the per-mob danger test (nav.set_dangerous).
 local obstacle, dangerous
 local algorithm, max_jump, max_drop = "A*_noprefetch", 4, 6
 
 function nav.init(opts)
 	obstacle = opts.obstacle
-	dangerous = opts.dangerous
 	algorithm = opts.algorithm or algorithm
 	max_jump = opts.max_jump or max_jump
 	max_drop = opts.max_drop or max_drop
@@ -239,12 +238,15 @@ local function settle(body, x, y, z)
 	return nil
 end
 
-function nav.line_walkable(body, a, b)
+function nav.line_walkable(body, a, b, rise)
 	local dx, dz = b.x - a.x, b.z - a.z
 	local len = sqrt(dx * dx + dz * dz)
 	local y = feet_y(a.y)
 	local cx, cz = floor(a.x + 0.5), floor(a.z + 0.5)
-	if len < 0.01 then return true end
+	local by = feet_y(b.y)
+	if len < 0.01 then
+		return by - y >= -body.step and by - y <= body.step + (rise or 0)
+	end
 	local ux, uz = dx / len, dz / len
 	-- The square body's half extent across the walking direction.
 	local side = body.hw * (abs(ux) + abs(uz))
@@ -277,7 +279,9 @@ function nav.line_walkable(body, a, b)
 			end
 		end
 	end
-	return true
+	-- The walk must end at b's level, not under a balcony or on a bridge
+	-- over it: within one step, `rise` more above (a jumping target).
+	return by - y >= -body.step and by - y <= body.step + (rise or 0)
 end
 
 --
@@ -485,7 +489,6 @@ local function observe(nst, pos, dtime, window)
 	nst.wt = nil
 	return stuck and "stuck" or "free"
 end
-nav.observe = observe
 
 --
 -- Following (rulings 4, 5, 7).
@@ -521,7 +524,11 @@ local function follow(nst, body, pos)
 	local path = nst.path
 	local p = path[nst.i]
 	local moved = false
-	while p and abs(p.x - pos.x) + abs(p.z - pos.z) < nav.REACH_WP do
+	-- Reached: close in plan and on its level (switchback stairs pass a
+	-- waypoint of the other flight right above or below).
+	local fy = feet_y(pos.y + body.feet)
+	while p and abs(p.x - pos.x) + abs(p.z - pos.z) < nav.REACH_WP
+	and abs(p.y - fy) <= 1 do
 		nst.i = nst.i + 1
 		p = path[nst.i]
 		moved = true
@@ -661,7 +668,7 @@ function nav.combat_step(self, pos, dtime, target, target_pos, dist, striking,
 					nst.lt = 0
 					body = nav.body(self, nst)
 					if dist <= nav.MAX_LEG and nav.line_walkable(body,
-							feet_of(body, pos), target_cell(target, target_pos)) then
+							feet_of(body, pos), target_cell(target, target_pos), 1) then
 						reason = "line"
 					end
 				end
@@ -700,7 +707,7 @@ function nav.combat_step(self, pos, dtime, target, target_pos, dist, striking,
 		if (nst.want or nst.fails > 0) and dist <= nav.MAX_LEG then
 			body = nav.body(self, nst)
 			if nav.line_walkable(body, feet_of(body, pos),
-					target_cell(target, target_pos)) then
+					target_cell(target, target_pos), 1) then
 				progress(self, nst)
 			end
 		end
@@ -781,12 +788,6 @@ function nav.fixed_step(self, pos, dtime, goal, key)
 		return nil, "failed"
 	end
 	return nil
-end
-
--- Is the mob following a path right now?
-function nav.following(temp)
-	local nst = temp and temp.grug_nav
-	return nst ~= nil and nst.path ~= nil
 end
 
 return nav

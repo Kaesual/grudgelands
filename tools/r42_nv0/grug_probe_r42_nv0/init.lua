@@ -767,7 +767,7 @@ local function sample(rec)
 	local flags = 0
 	if ent.state == "attack" then flags = flags + 1 end
 	if (ent.path and ent.path.following)
-			or (NAV and NAV.following(ent.temp)) then
+			or (ent.temp and ent.temp.grug_nav and ent.temp.grug_nav.path) then
 		flags = flags + 2
 	end
 	if rec.coll then flags = flags + 4 end
