@@ -417,11 +417,14 @@ end
 -- Removing requirements and adding rewards to the same copies accounts for
 -- space freed by this very hand-in.
 local function settlement(player, def, active)
-	local inv, rows = player:get_inventory(), {}
-	for _, slot in ipairs(grug_inventory.slot_order(inv)) do
-		local stack = inv:get_stack(slot.list, slot.index)
-		rows[#rows + 1] = {list = slot.list, index = slot.index, expected = ItemStack(stack), replacement = ItemStack(stack)}
+	local inv, rows, hotbar = player:get_inventory(), {}, {}
+	for _, list in ipairs(owned_lists(player)) do
+		for index, stack in ipairs(inv:get_list(list) or {}) do
+			local row = {list = list, index = index, expected = ItemStack(stack), replacement = ItemStack(stack)}
+			if list == "main" and index <= 8 then hotbar[#hotbar + 1] = row else rows[#rows + 1] = row end
+		end
 	end
+	for _, row in ipairs(hotbar) do rows[#rows + 1] = row end
 	local _, ready, allocation = progress(player, def, active)
 	if not ready then return nil, "You no longer have all required items." end
 	for _, taken in pairs(allocation) do

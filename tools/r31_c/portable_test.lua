@@ -297,7 +297,9 @@ grug_core = {feed_item = function() end, feed = function() return true end,
 	FEED_COLOR = {notice = 0xf0e6c8}}
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
-grug_inventory = {BAG_COUNT = 0}
+grug_inventory = {BAG_COUNT = 0,
+	-- Round 44: quest drops go through grug_inventory.give (main-only here).
+	give = function(player, stack) return player:get_inventory():add_item("main", stack) end}
 grug_factions = {same_faction = function() return false end}
 grug_xp = {get_level = function() return 10 end, add_xp = function() end,
 	quest_reward = function() return 10 end,
