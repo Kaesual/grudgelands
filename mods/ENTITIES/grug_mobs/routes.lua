@@ -792,12 +792,18 @@ end
 
 -- Is the walker in a doorway on its way through (a cached route's door
 -- corner, or the cell behind it while still within CLEAR of the door; a
--- fixed walk's door detour crossing)? An amble does not stop there
+-- fixed walk's door detour crossing; within CLEAR of a door it holds)? An amble does not stop there
 -- (start_villagers.lua): arriving in the doorway would hold the door open.
 function grug_mobs.door_crossing(self, pos)
 	local t = self.temp
 	if not t then return false end
 	if t.grug_walk and t.grug_walk.phase == "cross" then return true end
+	local o = t.grug_door_open
+	if o then
+		-- Still in the doorway of the door it holds open.
+		local dx, dz = o.x - pos.x, o.z - pos.z
+		if dx * dx + dz * dz < doors.CLEAR * doors.CLEAR then return true end
+	end
 	local leg = t.grug_leg
 	local points = leg and leg.k and leg.entry.state == "ok" and leg.entry.points
 	local c = points and points[leg.k]
