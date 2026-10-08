@@ -12,6 +12,26 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.43.0 — Round 43, "World migrations" (2026-10-08)
+
+Groundwork so that later versions can change how characters are saved
+without asking for a new world. Nothing changes in play. Existing worlds
+play on: no map reset, no new world.
+
+- An update can now need a fourth thing besides "plays on", "map reset"
+  and "new server": a **migration**. Then the server's host stops the
+  server, backs the world up and runs a tool that ships with the game; it
+  brings the world, offline characters included, to the new version, and
+  the game finishes the rest when the world starts and when each character
+  next joins. No version needs it yet.
+- Hosts get that tool, `tools/migrate.py`, for worlds on SQLite or
+  PostgreSQL; `--check` shows a world's version and what is due without
+  changing anything ([hosting a server](README.md#play-with-luanti)).
+- A server refuses to start a world saved by a newer version of the game,
+  or one that needs the tool first, with a message that says which
+  version to use or which command to run. Each world now remembers the
+  version that last started it.
+
 ## 0.42.0 — Round 42, "Mob navigation" (2026-10-08)
 
 Creatures, guards and townsfolk find their way instead of getting stuck.
