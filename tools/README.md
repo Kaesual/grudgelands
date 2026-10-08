@@ -57,10 +57,12 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   (needs ripgrep).
 - `python3 tools/check_fresh_server.py`: the source audit of the removed
   development-era compatibility mechanisms (release mode allows `register_alias`
-  for a renamed item).
+  for a renamed item; migration markers only in grug_core's runner).
 - `python3 tools/check_upgrade.py`: the upgrade declaration
-  (`web_data/upgrade.json`) against the last pushed commit, after its own
-  self-test (`--self-test` alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
+  (`web_data/upgrade.json`, schema 2) against the last pushed commit, the
+  game's step registry (`grug_core/migrations.lua`) against its `migrate`
+  list and the declared step files, after its own self-test (`--self-test`
+  alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
 - `tools/luanti_headless.sh`: an isolated headless engine boot (never the
   personal Luanti folder; options in the script header). Its world.mt names
   no `mod_storage_backend`, so its worlds keep mod storage in files.
@@ -298,6 +300,16 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_reset_world` raised through a disposable patch of the staged game)
   and the reset boot with an old and a new character. The declaration's
   rules are `check_upgrade.py`'s own self-test (above).
+- **Round 43** (`r43_<lane>`): `r43_gs` the game side of world migrations
+  ([round plan](../docs/planning/round43-plan.md) §4.1):
+  `portable_test.lua` (the real `grug_core/world_version.lua` and
+  `migrations.lua` on stubs: the start guard's decision and refusals, the
+  record at load, new-world recognition, the online-work runner's order and
+  failures, the character work before the map reset's relocation, the test
+  hook `grug_test_migrations`) and `refusal_boot.sh OUT_DIR [TIMEOUT]`, two
+  boots of one world: a fresh world records its version, then the record is
+  raised above the game's and the second boot must refuse; the world
+  directory is listed before and after it (`evidence/`).
 - **Round 42** (`r42_<lane>`): `r42_nv0` the navigation test scene, which
   NV1–DR rerun for their before/after numbers
   ([round plan](../docs/planning/round42-plan.md) §4.1). `run.sh OUT_DIR

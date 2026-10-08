@@ -1,0 +1,4 @@
+boot1.log:10:ACTION[Main]: [grug_core] world version 0.42.0 (a new world), game 0.42.0: no migration step due
+boot1.log:98:ACTION[Server]: [grug_core] world version 0.42.0 recorded (was none, a new world)
+boot2.log:11:ERROR[Main]: ModError: Failed to load and run script from /tmp/grudgelands-headless.G125Ll/user/games/grudgelands/mods/CORE/grug_core/init.lua:
+boot2.log:12:ERROR[Main]: [grug_core] This world is at version 9.0.0, newer than this game's version 0.42.0; the server does not start: downgrade to 9.0.0 to continue.
