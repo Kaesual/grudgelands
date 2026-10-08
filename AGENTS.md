@@ -84,8 +84,8 @@ only after it, then Round 45 (crafting). Details: [STATUS](docs/STATUS.md).
 - **The baseline rule:** a step relies only on what the previous step or
   map reset left plus what the versions in between write without a load;
   never on data a compatible version writes lazily at a load, never on an
-  earlier step's online work having finished. A world without a version
-  record is 0.41.0. The map reset (`grug_reset_world`,
+  earlier step's online work having finished. An existing world without a
+  version record is 0.41.0 (a new world takes the game's version). The map reset (`grug_reset_world`,
   `grug_core.map_reset`) stays the map's mechanism; new map-bound state gets
   its clear in the same change.
 - **`origin/main` history is never rewritten** (contract R8): the platform

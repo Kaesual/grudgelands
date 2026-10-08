@@ -122,7 +122,7 @@ escaped.
 
 | Event | Fields | When |
 |---|---|---|
-| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first |
+| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first (a usage refusal comes alone) |
 | `step_start` | `step` (its version), `from` (the world's version before it) | a step begins |
 | `step_done` | `step`, `counts`: `characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers` (writes of that step) | a step committed |
 | `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`), and `applied` (migrate) or `write_checked` (check) | exit 0 |

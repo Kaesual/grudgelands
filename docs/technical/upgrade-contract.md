@@ -37,7 +37,7 @@ What a change needs:
 |---|---|
 | Nothing saved changes meaning | compatible |
 | World generation, or map-bound state (§3.2) the new code cannot read | map reset |
-| A removed item: a step replaces or removes it in inventories, offline characters included | migrate |
+| A removed item: a step replaces or removes it in inventories, offline characters included (items in node inventories on the map need the deferred map part, Round 43 ruling 4) | migrate |
 | Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |

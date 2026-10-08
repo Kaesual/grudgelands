@@ -277,8 +277,9 @@ GUI checklist (desktop and web), short because nothing visible changes:
   0.43.0.
 - A fresh world boots and plays.
 - Optional, on a copy of a local world with the server stopped:
-  `python3 tools/migrate.py --world <copy> --check` reports 0.43.0 and no
-  due steps.
+  `python3 tools/migrate.py --world <copy> --check` reports the world's
+  version (0.41.0 before its first start under 0.43.0, else 0.43.0), the
+  target 0.43.0 and no due steps.
 
 ## 7. Orchestration notes
 
@@ -467,8 +468,9 @@ Plan §6; desktop and the web build. Nothing visible changes.
    0.43.0.
 2. A fresh world boots and plays.
 3. Optional, on a copy of a local world with the server stopped:
-   `python3 tools/migrate.py --world <copy> --check` reports 0.43.0 and no
-   due steps.
+   `python3 tools/migrate.py --world <copy> --check` reports the world's
+   version (0.41.0 before its first start under 0.43.0, else 0.43.0), the
+   target 0.43.0 and no due steps.
 
 ### Final summary for the platform (contract R9)
 
@@ -513,7 +515,7 @@ the last line is the result; stderr carries the same as text):
 
 | Event | Fields | When |
 |---|---|---|
-| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first |
+| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first (a usage refusal comes alone) |
 | `step_start` | `step`, `from` | a step begins |
 | `step_done` | `step`, `counts` (`characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers`) | a step committed |
 | `done` | `mode`, `world_version` (before the run, `null` for a new world), `record`, `new_world`, `target`, `due`, `backends` (`sqlite3`, `postgresql` or `absent` per kind), `applied` or `write_checked` | exit 0 |
