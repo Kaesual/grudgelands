@@ -224,10 +224,13 @@ tools](#player-meta-read-by-external-tools).
   runtime-only untimed `mount` status. Mounted players cannot attack. Land
   controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
   Since Round 29 boats are the third mode, **water** (`grug_mounts.TIERS`
-  5 and 6, `BOAT_TIERS`): the same owner-bound item, ownership meta and
-  dismount path, a surface controller, a once-per-second water-contact
-  check, landing within 2 nodes; using another tier's item replaces the
-  active mount or boat. The Riding Trainer dialogue is one service format
+  5 and 6, `BOAT_TIERS`): the same ownership meta and dismount path, a
+  surface controller, a once-per-second water-contact check, landing within
+  2 nodes; another tier's summon replaces the active mount or boat
+  (`grug_mounts.toggle`). Since Round 44 the quickbar (`grug_quickbar`, E)
+  is the only summon path: one button per `owned_tier_ids` entry calls
+  `toggle`; no mount item is handed out (`items.lua` keeps the six retired
+  items registered and inert until the 0.44.0 migration step). The Riding Trainer dialogue is one service format
   (`grug_mounts.SERVICES`); `shipwright.lua` serves the `shipwright` socket
   role of the capital stable. Prices: `grug_mounts.PRICES` (E4,
   `tools/r29_e4/income.py --check`). Fixture `tools/r29_b` (boats, and since
