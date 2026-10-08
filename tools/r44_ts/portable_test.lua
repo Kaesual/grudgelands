@@ -163,6 +163,11 @@ eq(buttons, 16, "sixteen node buttons")
 has(form, "blank.png;grug_talent_pick_", "nodes are image buttons")
 has(form, "Twin Shot *\n3/3]", "a node shows its name, mark and rank")
 has(form, "label[0.40,1.23;Quarry — 15 points]", "a section title with its points")
+for _, chain in ipairs({"Draw", "Ranging", "Blade", "Shadow"}) do
+	check(form:find("label%[[%d.]+,1%.63;" .. chain .. "%]") ~= nil, "the column label " .. chain)
+end
+near(data_layout.sections.quarry.columns[2] + 0.05,
+	tonumber(form:match("label%[([%d.]+),1%.63;Ranging%]")), "Ranging over its column")
 local styles = 0
 for _ in form:gmatch("style%[grug_talent_pick_") do styles = styles + 1 end
 eq(styles, 3, "one style per node state (maxed, ranked, locked)")
@@ -181,6 +186,18 @@ sfinv.pages["grug_classes:talents"]:on_player_receive_fields(learner, lctx, {[fi
 eq(grug_classes.talent_rank(learner, "fine_edge"), 1, "the click bought a rank")
 eq(lctx.grug_talent_selected, "fine_edge", "and selected the node")
 has(learner.formspec, "style[" .. field .. ";bgcolor=#8a682f", "the selected node is gold")
+-- A refused click selects the node and shows its text and the reason.
+local locked_field
+for index, id in ipairs(grug_classes.talent_ids) do
+	if id == "untouchable" then locked_field = "grug_talent_pick_" .. index end
+end
+sfinv.pages["grug_classes:talents"]:on_player_receive_fields(learner, lctx, {[locked_field] = "x"})
+eq(grug_classes.talent_rank(learner, "untouchable"), 0, "a locked node buys nothing")
+eq(lctx.grug_talent_notice, nil, "no notice replaces the description")
+local line = learner.formspec:match("textarea%[[^;]*;[^;]*;;;(.-)%]")
+has(line, "Untouchable", "the line names the talent")
+has(line, "Below 30% health", "with its text")
+has(line, "needs", "and the reason")
 
 --
 -- 3. One tab and the catalog row.
@@ -465,6 +482,17 @@ local lucky = unlock("lucky", 4)
 eq(lucky:get_inventory():get_stack("main", 4):get_name(), "grug_abilities:pinning_shot",
 	"an unlock lands on the free hotbar slot")
 has(lucky.feed and lucky.feed[#lucky.feed], "on your hotbar", "the feed says so")
+local function unlock_carrying(name)
+	local p = H.make_player(name, "scout", 30, "quiver=5,fletching=4,strong_draw=3")
+	H.join(p)
+	p:get_inventory():set_stack("main", 20, "grug_abilities:pinning_shot")
+	check(grug_classes.spend_talent(p, "pinning_shot"), name .. ": Pinning Shot ranked")
+	return p
+end
+local carrier = unlock_carrying("carrier")
+has(carrier.feed and carrier.feed[#carrier.feed], "You already carry it",
+	"a carried copy gets its own feed line")
+eq(carrier:get_inventory():get_stack("main", 1):get_name(), "", "and no second copy")
 local full = unlock("full", nil)
 eq(count_skills(full, "main"), 0, "a full hotbar: the unlock is not placed")
 check(main_tail_empty(full), "and not in main[9..]")

@@ -2036,12 +2036,16 @@ local function carries(inv, ability_id)
 end
 
 -- The talent-unlock grant (grug_skills): the ability onto a free hotbar
--- slot unless the player already carries it. Returns the slot or nil.
+-- slot unless the player already carries it. Returns the slot, or nil and
+-- why not: "locked", "carried" or "full".
 function grug_abilities.grant_to_hotbar(player, ability_id)
 	local inv = player:get_inventory()
 	local stack = grug_abilities.stack_for(player, ability_id)
-	if not stack or carries(inv, ability_id) then return nil end
-	return place_on_hotbar(inv, stack)
+	if not stack then return nil, "locked" end
+	if carries(inv, ability_id) then return nil, "carried" end
+	local slot = place_on_hotbar(inv, stack)
+	if not slot then return nil, "full" end
+	return slot
 end
 
 local function grant_initial_kit(player)

@@ -135,16 +135,18 @@ end
 
 --
 -- The tree framework (Round 44, spec ui-crafting-rework-plan.md ruling 7 and
--- §3.4). A tree is a list of sections {id} and a list of nodes {id, section,
--- row, col, requires = {node ids}}. layout_tree puts the sections side by
+-- §3.4). A tree is a list of sections {id, columns = {labels}} (the column
+-- labels are optional) and a list of nodes {id, section, row, col, requires =
+-- {node ids}}. layout_tree puts the sections side by
 -- side in `area`, each node at its row and column inside its section, and
 -- routes one connector per requirement, orthogonally: down from the parent's
 -- bottom, across in the gap above the child's row, down into the child's top
 -- (one straight segment when both share a column). A node may have any number
 -- of parents and children; the page draws every connector box before the
--- nodes, so the lines run under them. Positions are real coordinates.
+-- nodes, so the lines run under them. Positions are real coordinates; each
+-- section's layout lists its columns' left edges for their labels.
 --
-grug_classes.TALENT_TREE_AREA = {x = 0.25, y = 1.5, w = 13.0, section_gap = 0.3,
+grug_classes.TALENT_TREE_AREA = {x = 0.25, y = 1.85, w = 13.0, section_gap = 0.3,
 	pad = 0.15, col_gap = 0.25, node_h = 0.8, row_gap = 0.3, line = 0.08}
 
 function grug_classes.layout_tree(sections, nodes, area)
@@ -159,17 +161,21 @@ function grug_classes.layout_tree(sections, nodes, area)
 	local section_w = (area.w - (#sections - 1) * area.section_gap) / #sections
 	local layout = {sections = {}, nodes = {}, connectors = {}, bottom = area.y + height}
 	for index, section in ipairs(sections) do
-		local count = cols[section.id] or 1
-		layout.sections[section.id] = {
+		local count = math.max(cols[section.id] or 1, #(section.columns or {}))
+		local rect = {
 			x = area.x + (index - 1) * (section_w + area.section_gap), y = area.y,
-			w = section_w, h = height,
+			w = section_w, h = height, columns = {},
 			node_w = (section_w - 2 * area.pad - (count - 1) * area.col_gap) / count,
 		}
+		for col = 1, count do
+			rect.columns[col] = rect.x + area.pad + (col - 1) * (rect.node_w + area.col_gap)
+		end
+		layout.sections[section.id] = rect
 	end
 	for _, node in ipairs(nodes) do
 		local section = layout.sections[node.section]
 		layout.nodes[node.id] = {
-			x = section.x + area.pad + (node.col - 1) * (section.node_w + area.col_gap),
+			x = section.columns[node.col],
 			y = area.y + (node.row - 1) * pitch, w = section.node_w, h = area.node_h,
 		}
 	end
@@ -200,12 +206,16 @@ function grug_classes.layout_tree(sections, nodes, area)
 end
 
 -- Today's talent data as framework data: one section per tree of the class,
--- each chain a column, each tier a row, the talent above in the same chain
--- (the hard chain) the one requirement.
+-- each chain a column (labelled with the chain's name), each tier a row, the
+-- talent above in the same chain (the hard chain) the one requirement.
 function grug_classes.talent_tree_data(trees)
 	local sections, nodes = {}, {}
 	for _, tree in ipairs(trees) do
-		sections[#sections + 1] = {id = tree.id, tree = tree}
+		local columns = {}
+		for index, chain in ipairs(tree.chains) do
+			columns[index] = chain:sub(1, 1):upper() .. chain:sub(2)
+		end
+		sections[#sections + 1] = {id = tree.id, tree = tree, columns = columns}
 		for _, def in ipairs(tree.talents) do
 			local col = 1
 			for index, chain in ipairs(tree.chains) do
@@ -300,10 +310,14 @@ local function talent_content(player, context)
 	for _, section in ipairs(sections) do
 		local rect = layout.sections[section.id]
 		fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#00000030]"):format(rect.x,
-			rect.y - 0.55, rect.w, rect.h + 0.7)
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(rect.x + 0.15, rect.y - 0.27,
+			rect.y - 0.9, rect.w, rect.h + 1.05)
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(rect.x + 0.15, rect.y - 0.62,
 			esc(("%s — %d points"):format(section.tree.name,
 				grug_classes.tree_points(player, section.id))))
+		for col, text in ipairs(section.columns) do
+			fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(rect.columns[col] + 0.05,
+				rect.y - 0.22, esc(text))
+		end
 	end
 	for _, connector in ipairs(layout.connectors) do
 		local parent = grug_classes.registered_talents[connector.from]
@@ -346,7 +360,7 @@ grug_classes.talent_formspec_content = talent_content
 -- high, above the short inventory at 9.5); without it the page ends with
 -- the tree and its text.
 grug_classes.skill_catalog_row = nil
-local CATALOG_Y = 7.3
+local CATALOG_Y = 7.6
 
 local function refresh_open_page(player)
 	if sfinv.get_page(player) == PAGE_NAME then
@@ -401,9 +415,9 @@ local function receive_fields(player, context, fields)
 			end
 			context.grug_talent_notice = nil
 			context.grug_talent_selected = id
-			local ok, reason = grug_classes.spend_talent(player, id)
-			if not ok then
-				context.grug_talent_notice = reason
+			-- A refused click selects the node: the line under the trees then
+			-- shows its text and the reason (selected_description).
+			if not grug_classes.spend_talent(player, id) then
 				refresh_open_page(player)
 			end
 			return true

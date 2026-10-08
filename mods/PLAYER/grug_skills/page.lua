@@ -43,6 +43,12 @@ end
 -- After an entitlement change. With announce == true (a talent change) each
 -- talent ability unlocked since the last rebuild goes onto a free hotbar
 -- slot, or waits in the catalog when the hotbar is full; the feed says which.
+local UNLOCK_LINES = {
+	placed = " unlocked: it is on your hotbar.",
+	full = " unlocked. Your hotbar is full: drag it from Talents & Skills.",
+	carried = " unlocked. You already carry it.",
+	locked = " unlocked. Drag it from Talents & Skills onto your hotbar.",
+}
 local function rebuild(player, announce)
 	local name = player:get_player_name()
 	local rows = fill(player)
@@ -52,12 +58,9 @@ local function rebuild(player, announce)
 		now[id] = true
 		local def = grug_abilities.registered[id]
 		if announce == true and def and def.talent_gated and not before[id] then
-			if grug_abilities.grant_to_hotbar(player, id) then
-				grug_core.feed(player, "notice", def.name .. " unlocked: it is on your hotbar.")
-			else
-				grug_core.feed(player, "notice", def.name ..
-					" unlocked. Your hotbar is full: drag it from Talents & Skills.")
-			end
+			local slot, why = grug_abilities.grant_to_hotbar(player, id)
+			grug_core.feed(player, "notice", def.name ..
+				(UNLOCK_LINES[slot and "placed" or why] or UNLOCK_LINES.locked))
 		end
 	end
 	known[name] = now

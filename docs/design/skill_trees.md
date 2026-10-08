@@ -720,15 +720,16 @@ them (`inventory_equipment.md` §6) and the shared frame the short inventory
 (the hotbar and two scrolling rows) below. The page uses real coordinates.
 
 - **Tree framework** (`grug_classes.layout_tree`): a tree is a list of
-  sections and a list of nodes `{id, section, row, col, requires = {…}}`.
-  Sections sit side by side, nodes are image buttons at their row and
-  column, and every requirement is a connector of `box[]` segments drawn
-  before (under) the nodes, orthogonal: down from the parent, across in the
-  gap above the child's row, down into the child. A node may have several
-  parents and children. Today's data (`grug_classes.talent_tree_data`) gives
-  two sections, the class's two trees side by side, each chain a column, each
-  tier a row and the talent above in the chain the one requirement; a
-  connector is gold once its parent has every rank.
+  sections (with optional column labels) and a list of nodes `{id, section,
+  row, col, requires = {…}}`. Sections sit side by side, nodes are image
+  buttons at their row and column, and every requirement is a connector of
+  `box[]` segments drawn before (under) the nodes, orthogonal: down from the
+  parent, across in the gap above the child's row, down into the child. A
+  node may have several parents and children. Today's data
+  (`grug_classes.talent_tree_data`) gives two sections, the class's two trees
+  side by side, each chain a column labelled with its name, each tier a row
+  and the talent above in the chain the one requirement; a connector is gold
+  once its parent has every rank.
 
 ```
 +--------------------------------------------------------------------+
@@ -736,6 +737,7 @@ them (`inventory_equipment.md` §6) and the shared frame the short inventory
 +--------------------------------------------------------------------+
 | Scout talents   Talent points available: 3 of 15  [ Respec: Free ] |
 | +- Quarry — 12 points -----------+ +- Veil — 0 points ------------+ |
+| | Draw           | Ranging       | | Blade         | Shadow       | |
 | | Strong Draw    | Quiver        | | Fine Edge     | Light Step   | |
 | |     5/5        |   3/5         | |    0/5        |    0/5       | |
 | |       |               |        | |      |               |       | |
