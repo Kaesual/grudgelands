@@ -1,0 +1,9 @@
+launcher: staged patch: patch_hook.diff
+seconds: 44, exit 0
+joins: []
+--- log lines
+ACTION[Main]: [grug_core] world version 0.42.0 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.42.0 (a new world), game 0.42.0: no migration step due
+ACTION[Main]: [r43_it_probe] phase w2_D_new: new_world=true from=0.42.0
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:34572.
+ACTION[Server]: [r43_it_probe] observations written: no joins planned

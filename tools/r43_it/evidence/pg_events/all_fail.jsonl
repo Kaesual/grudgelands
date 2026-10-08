@@ -1,0 +1,3 @@
+{"event": "start", "mode": "migrate", "world": "/tmp/worlds/all_pg"}
+{"event": "step_start", "step": "0.41.5", "from": "0.41.4"}
+{"event": "failed", "step": "0.41.5", "reason": "step", "message": "step 0.41.5 failed: RuntimeError: the IT failure step raises after writing"}

@@ -1,0 +1,9 @@
+# Round 43 lane IT: the platform runner's environment (Debian trixie's
+# python3 3.13, python3-psycopg, python3-zstandard; plan section 3) plus
+# Debian's PostgreSQL server for the throwaway database of pg_test.py.
+# Built once by tools/r43_it/run.sh as localhost/grudgelands-r43-it:trixie.
+FROM docker.io/library/debian:trixie
+RUN apt-get update -qq \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+		python3 python3-psycopg python3-zstandard postgresql >/dev/null \
+	&& rm -rf /var/lib/apt/lists/*

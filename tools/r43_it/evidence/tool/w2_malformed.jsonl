@@ -1,0 +1,2 @@
+{"event": "start", "mode": "check", "world": "<run>/w2"}
+{"event": "refusal", "reason": "record", "message": "grug_core's world_version '0.42' is no major.minor.patch version"}
