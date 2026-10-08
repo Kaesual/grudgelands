@@ -12,16 +12,15 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 42 (mob navigation; 0.42.0, compatible) is
-complete on main and its playtest accepted (the user, 2026-10-08;
-[plan](docs/planning/round42-plan.md)). origin/main is `71f777e2` (pushed
-2026-10-08): Round 41 (0.41.0, map reset) and every Round 42 lane up to
-ST under 0.41.0; 0.42.0 (CL and lane D) is not pushed. Rounds 25–35
-count as GUI-accepted (the user, 2026-10-05), Round 39 too (2026-10-06);
-the GUI tests of Rounds 36–38, 40 and 41 are open. Next: Round 43 (world
-migrations) in parallel with Round 44's wave 1 (UI rework), then Round 45
-(crafting); each waits for the user's "go". Details:
-[STATUS](docs/STATUS.md).
+**Current state:** Round 43 (world migrations; 0.43.0, compatible) is
+complete on main ([plan](docs/planning/round43-plan.md)): the migration
+tool, the world version record and the start guard, with an empty
+`migrate` list. origin/main is `332c5e79` (0.42.0, pushed by the user on
+2026-10-08); 0.43.0 is not pushed. Rounds 25–35 count as GUI-accepted (the
+user, 2026-10-05), Round 39 too (2026-10-06), Round 42's playtest was
+accepted (2026-10-08); the GUI tests of Rounds 36–38, 40, 41 and 43 are
+open. Next: the user's push of 0.43.0; Round 44 (UI rework) merges to main
+only after it, then Round 45 (crafting). Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 
@@ -64,25 +63,41 @@ migrations) in parallel with Round 44's wave 1 (UI rework), then Round 45
   development mode ended with **0.41.0**. Worlds survive upgrades through the
   hosting platform's upgrade contract
   ([upgrade contract](docs/technical/upgrade-contract.md)): every upgrade is
-  **compatible**, needs a **map reset** or needs a **new server**, declared
-  in `tools/web_data/upgrade.json` and checked by
-  `python3 tools/check_upgrade.py`. Exactly one real world existed then (the
-  user's production server on 0.40.0); nothing checks, audits or supports
-  older versions.
-- **No data migrations.** A change the new code cannot read from saved state
-  is declared, never converted: a map reset when the state is map-bound (or
-  world generation changed), otherwise a new server (an XP-curve change,
-  removed or restructured quests, removed items, rebuilt talents, a validated
-  world-creation scalar). "New server" wins when both apply. The only
-  migration mechanism is the map reset (`grug_reset_world`,
-  `grug_core.map_reset`); new map-bound state gets its clear in the same
-  change.
+  **compatible**, needs a **map reset**, a **migration** (since Round 43) or
+  a **new server**, declared in `tools/web_data/upgrade.json` (schema 2) and
+  checked by `python3 tools/check_upgrade.py`. New server wins; map reset
+  and migrate combine. Exactly one real world existed then (the user's
+  production server on 0.40.0); nothing checks, audits or supports older
+  versions.
+- **Migrations only through the tool, with a test.** A change the new code
+  cannot read from saved state is declared: a map reset when the state is
+  map-bound (or world generation changed), otherwise a migration (a removed
+  item, restructured character state) or, when the round decides not to
+  migrate, a new server; a validated world-creation scalar always needs a
+  new server. A migration is one step file
+  `tools/migration/steps/vX_Y_Z.py` per `migrate` entry, run offline by
+  `tools/migrate.py` on the stopped world, with its online part only through
+  grug_core's runner (`grug_core.migrations`); never a conversion at load
+  elsewhere. Each declared step has its end-to-end test
+  ([round workflow](docs/process/round-workflow.md#3-gates)); a pushed step
+  never changes (a fix is a later step).
+- **The baseline rule:** a step relies only on what the previous step or
+  map reset left plus what the versions in between write without a load;
+  never on data a compatible version writes lazily at a load, never on an
+  earlier step's online work having finished. A world without a version
+  record is 0.41.0. The map reset (`grug_reset_world`,
+  `grug_core.map_reset`) stays the map's mechanism; new map-bound state gets
+  its clear in the same change.
+- **`origin/main` history is never rewritten** (contract R8): the platform
+  fetches released commits to create test realms, restore backups and build
+  its migration runner.
 - **Stable ids:** quests, items, achievements and waypoints keep their ids;
   a renamed item may keep its old name with `register_alias`. Unknown ids in
   saved state are ignored or dropped, never a crash.
-- **Every lane classifies its change** (compatible, map reset, new server)
-  in its report and the reviewer checks it; a new-server change is reported
-  before it is built ([round workflow](docs/process/round-workflow.md#3-gates)).
+- **Every lane classifies its change** (compatible, map reset, migrate, new
+  server) in its report and the reviewer checks it; a new-server change is
+  reported before it is built
+  ([round workflow](docs/process/round-workflow.md#3-gates)).
 - A compatible version should boot every world of the version before,
   full-preparation worlds included: best effort, without saved test worlds.
   Keep it minimal: no mechanism for a case that does not occur.

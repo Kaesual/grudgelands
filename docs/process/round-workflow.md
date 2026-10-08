@@ -80,6 +80,8 @@ per session). Cross-provider CLI mechanics:
 | `python3 tools/check_fresh_server.py` | — | yes | — | yes |
 | Upgrade classification (below): the report states it, the reviewer checks it | — | yes | — | the declaration follows from it |
 | `python3 tools/check_upgrade.py` (the upgrade declaration against `origin/main`) | — | when `game.conf`'s version or `tools/web_data/upgrade.json` changed | — | yes |
+| Each declared migration step has its test (below) | — | a lane that adds a step | — | yes |
+| The test of **every** declared step in the `debian:trixie` container | — | when `tools/migrate.py` or `tools/migration/` changed | — | — |
 | A fixture for new logic, `tools/r<NN>_<lane>/portable_test.lua` (repository path as `arg[1]`, non-zero exit on failure) | — | yes | — | — |
 | `tools/run_fixtures.sh` (every portable fixture, LuaJIT) | — | yes | — | yes |
 | `python3 tools/r28_design/validate.py --game` | — | when quest, mob or catalogue data changed | — | yes |
@@ -104,17 +106,31 @@ coordinator runs it on main only if main moved since the lane's run, or at
 the round end; never a second full run right after a merge.
 
 **Upgrade classification** (release mode since 0.41.0, Round 41 ruling 10;
+four outcomes since Round 43;
 [upgrade contract](../technical/upgrade-contract.md)). Every code or data
 lane's report says whether its change is *compatible* (a world of the version
 before boots and plays on), needs a *map reset* (map-bound state or world
-generation changed) or needs a *new server* (saved state the new code cannot
-read: an XP-curve change, removed or restructured quests, removed items,
-rebuilt talents), with the reason; a new-server change is reported before it
-is built. The reviewer checks the statement. The round's declaration follows
-from the classifications: `tools/web_data/upgrade.json` carries the version
-`game.conf` names, and the round's version goes into `map_reset` or
-`new_server` when a lane needs it (both: new server). The coordinator runs
-`tools/check_upgrade.py` at the round end.
+generation changed), *migrate* (saved state the new code cannot read,
+converted by a declared step of `tools/migrate.py`: a removed item,
+restructured character state) or a *new server* (such state the round
+decides not to migrate, or a validated world-creation scalar), with the
+reason; a new-server change is reported before it is built. The reviewer
+checks the statement. The round's declaration follows from the
+classifications: `tools/web_data/upgrade.json` carries the version
+`game.conf` names, and the round's version goes into `map_reset`,
+`migrate` or `new_server` when a lane needs it (new server wins; map reset
+and migrate combine). The coordinator runs `tools/check_upgrade.py` at the
+round end.
+
+**Migration steps** (contract R8; the user, 2026-10-08). Each declared step
+has its test: a minimal world at the previous version, the step, a headless
+boot of the new version, then the checks, its online work at load and at a
+join included (pattern: `tools/r43_it/run.sh`). Whenever `tools/migrate.py`
+or `tools/migration/` changes, the test of **every** declared step runs in
+the `debian:trixie` container (old steps run on the shared helpers), with
+the tool's unit tests (`tools/r43_mt/container_test.sh`). The online-work
+fixtures of every declared step stay in `tools/run_fixtures.sh` for good
+(old handlers run against new game code).
 
 **No PUC runtime runs** at any stage: plain-5.1 syntax is the
 `check_lua.sh` gate, and at most one optional PUC crash smoke test runs at
@@ -193,10 +209,13 @@ Point reviewers at this section verbatim.
    guard (`grug_core.world_alterable`), ability and resource bypasses, PvP
    flag rules, relog resets.
 6. **Upgrade classification:** the lane's statement (compatible, map
-   reset, new server) matches the change ([§3](#3-gates)); saved state
-   keeps its ids and format or the statement says why not; new map-bound
-   state has its map-reset clear
-   ([upgrade contract](../technical/upgrade-contract.md) §3.4).
+   reset, migrate, new server) matches the change ([§3](#3-gates)); saved
+   state keeps its ids and format or the statement says why not; new
+   map-bound state has its map-reset clear
+   ([upgrade contract](../technical/upgrade-contract.md) §3.4); a migration
+   step keeps the baseline rule and the data API's limits, has its test and
+   leaves online work only through grug_core's runner (upgrade contract
+   §5).
 7. **Report:** severity-ranked (Critical/High/Medium/Low), file:line, a
    one-sentence defect and a concrete failure scenario, verified against the
    code; no speculative findings.
