@@ -1,31 +1,11 @@
-local function use_mount(itemstack, user)
-	if not user or not user.is_player or not user:is_player() then return itemstack end
-	local definition = core.registered_items[itemstack:get_name()]
-	local tier_id = definition and definition._grug_mount_tier
-	local bound_owner = itemstack:get_meta():get_string("grug_mounts:owner")
-	if bound_owner ~= user:get_player_name() or not tier_id or
-			not grug_mounts.owns_tier(user, tier_id) then
-		grug_core.feed(user, "notice", "That mount is not bound to this character.", "mount")
-		return itemstack
-	end
-	grug_mounts.toggle(user, tier_id)
-	return itemstack
-end
-
--- Luanti handles an object right-click by invoking the wielded item's
--- on_secondary_use first and the object's on_rightclick second
--- (serverpackethandler.cpp). Let interactive entities own that click so a
--- trainer/NPC cannot both open its UI and activate the held mount.
-local function use_mount_secondary(itemstack, user, pointed_thing)
-	if pointed_thing and pointed_thing.type == "object" and pointed_thing.ref then
-		local entity = pointed_thing.ref:get_luaentity()
-		if entity and type(entity.on_rightclick) == "function" then
-			return itemstack
-		end
-	end
-	return use_mount(itemstack, user)
-end
-
+-- The retired mount items (Round 44, ui-crafting-rework-plan.md ruling 9):
+-- mounts and boats live in the quickbar (E, grug_quickbar), which works from
+-- the purchase record (state.lua). Nothing hands these items out any more and
+-- they do nothing when used; they stay registered so stacks an older version
+-- handed out remain valid items until the 0.44.0 migration step removes them
+-- offline. They keep the bound-skill group, so grug_skills keeps them out of
+-- chests and other foreign inventories, and a drop still deletes them rather
+-- than leaving them in the world.
 local function delete_drop()
 	return ItemStack("")
 end
@@ -33,16 +13,11 @@ end
 for tier_id = 1, #grug_mounts.TIERS do
 	local tier = grug_mounts.TIERS[tier_id]
 	core.register_craftitem(tier.item, {
-		description = tier.name,
-		inventory_image = ({"grug_mounts_icon_t1_accord.png",
-			"grug_mounts_icon_human.png", "grug_mounts_icon_expert_accord.png",
-			"grug_mounts_icon_master_accord.png", "grug_mounts_icon_boat.png",
-			"grug_mounts_icon_improved_boat.png"})[tier_id],
+		description = tier.name .. "\n" .. grug_mounts.QUICKBAR_TIP,
+		inventory_image = tier.icon,
 		stack_max = 1,
 		groups = {grug_mount = tier_id, grug_bound_skill = 1, not_in_creative_inventory = 1},
 		_grug_mount_tier = tier_id,
-		on_use = use_mount,
-		on_secondary_use = use_mount_secondary,
 		on_drop = delete_drop,
 	})
 end

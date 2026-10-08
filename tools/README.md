@@ -560,3 +560,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   per faction at zoom 1x and 8x (the Map and Quests tabs before Round 44 MQ,
   the map window after), the target index's size and build time and how
   many quest objectives the targets mark.
+  `r44_qb`: `portable_test.lua` loads the real `grug_keys`,
+  `grug_quickbar`, `grug_mounts` (catalog, state, entity, items, trainer,
+  shipwright), `grug_traders/potion.lua`, `grug_alchemy/effects.lua` and
+  `grug_home/travel.lua` under a stub `core`: the quickbar's content per
+  owned tiers and belt contents, opening on aux1's rising edge only, a belt
+  click drinking once through the potion's `on_use` and the shared
+  cooldown, summon and dismount with their gates, Return home with its
+  gates, no mount item on purchase or join and the "Press E" tip in both
+  stable dialogues; it prints the window's bytes.

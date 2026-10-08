@@ -18,21 +18,18 @@ values in `biomes_mobs.md` §3.1.
   movement modes — land, flight and **water** — and two water tiers: the
   **Boat** (tier 5) and the **Improved Boat** (tier 6). One active mount *or*
   boat per player.
-- Each bought boat is an **owner-bound skill item**: `stack_max = 1`, group
-  `grug_bound_skill`, owner metadata, deleted when dropped, never traded or
-  stored outside the character's own main inventory and bags. Ownership is
-  the per-character metadata `grug_mounts:water_tier` (highest owned boat);
-  the item is only its representation, like a riding tier (the Skills page
-  that recovered it went in Round 44; the quickbar takes its place). Buying
-  the Improved Boat keeps the Boat.
-- **An empty boat never exists in the world.** Using the item creates an
-  ephemeral boat entity with the player seated in it; using it again removes
-  it. There is no placing, pickup, decay timer, theft, ownership window or
+- Each bought boat is **one button in the quickbar** (E; Round 44), like a
+  riding tier (`mounts.md` §3); no item is handed out. Ownership is the
+  per-character metadata `grug_mounts:water_tier` (highest owned boat).
+  Buying the Improved Boat keeps the Boat.
+- **An empty boat never exists in the world.** The button creates an
+  ephemeral boat entity with the player seated in it; clicking it again
+  removes it. There is no placing, pickup, decay timer, theft, ownership window or
   boat persistence. A boat has no inventory, no passenger seat and no mob or
   NPC seat.
-- Using another tier's item while mounted or boating **replaces** the active
+- Another tier's button while mounted or boating **replaces** the active
   mount or boat when that tier may be summoned at that spot; otherwise the
-  current one stays and the refusal is shown. Using the active tier's item
+  current one stays and the refusal is shown. The active tier's button
   dismounts or disembarks.
 - A boating player cannot use abilities, casts or combat swings (the mount
   block, `mounts.md` §3).

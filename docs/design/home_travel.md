@@ -18,7 +18,9 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   the selected inventory page the button is re-sent when the text changes
   (once a minute, Round 33: a per-second re-send closed the cloak dropdown),
   and once when it becomes Ready (Round 30 ruling; it was on the Map tab
-  before). The
+  before). The quickbar (E, Round 44, `inventory_equipment.md`) carries the
+  same line and button with the same gates; it is sent once per opening and
+  closes on the click. The
   minimap's innkeeper markers (the own faction's six only, Round 31) show the
   locations and the current home; the map window shows only the home
   (Round 44); a claim home has its own marker (below).
