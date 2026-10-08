@@ -201,10 +201,12 @@ end
 local eligible_kill
 grug_mobs = {register_on_eligible_kill = function(fn) eligible_kill = fn end}
 
--- The PvP tab and status icons (lane P2, page.lua and hud.lua) load with
--- init.lua; tools/r31_p2 tests them, here they only need somewhere to register.
+-- The PvP section and status icons (lane P2, page.lua and hud.lua) load with
+-- init.lua; tools/r31_p2 tests them, here they only need somewhere to register
+-- (since Round 44 the section goes into grug_parties's Party & PvP page).
 sfinv = {pages = {}, pages_unordered = {}, contexts = {},
 	register_page = function(name, def) sfinv.pages[name] = def end}
+grug_parties = {PAGE = "grug_parties:group"}
 function grug_core.register_status_source() return true end
 
 dofile(repo .. "/mods/PLAYER/grug_pvp/init.lua")

@@ -592,6 +592,8 @@ do
 	}
 	_G.sfinv = {pages = {}, pages_unordered = {}, contexts = {},
 		register_page = function(name, def) sfinv.pages[name] = def end}
+	-- page.lua installs the PvP section into grug_parties's page (Round 44).
+	_G.grug_parties = {PAGE = "grug_parties:group"}
 	core.get_modpath = function() return repo .. "/mods/PLAYER/grug_pvp" end
 	core.get_current_modname = function() return "grug_pvp" end
 	core.get_connected_players = function() return {} end

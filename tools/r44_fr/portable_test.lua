@@ -271,7 +271,6 @@ local function stub_page(name, title, show_inv, extra)
 	sfinv.register_page(name, def)
 end
 local page_calls = 0
-stub_page("grug_pvp:pvp", "PvP", true)
 stub_page("grug_classes:talents", "Talents", true, {
 	on_player_receive_fields = function(_, player, context, fields)
 		page_calls = page_calls + 1
@@ -285,7 +284,7 @@ stub_page("grug_inventory:help", "Help", true)
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 stub_page("grug_quests:quests", "Quests", true)
 stub_page("grug_skills:skills", "Skills", true)
-stub_page("grug_parties:group", "Party", true)
+stub_page("grug_parties:group", "Party & PvP", false)
 stub_page("creative:all", "All", true, {is_in_nav = function() return false end})
 for _, fn in ipairs(mods_loaded) do fn() end
 local receive = receive_handlers[1]
@@ -298,7 +297,7 @@ local order = {}
 for _, def in ipairs(sfinv.pages_unordered) do order[#order + 1] = def.name end
 eq(table.concat(order, ","), "grug_inventory:inventory,grug_inventory:character," ..
 	"grug_classes:talents,grug_skills:skills,sfinv:crafting,grug_parties:group," ..
-	"grug_pvp:pvp,grug_inventory:help,grug_quests:quests,grug_map:atlas,creative:all",
+	"grug_inventory:help,grug_quests:quests,grug_map:atlas,creative:all",
 	"tab order follows TAB_ORDER, other pages after it")
 eq(sfinv.get_homepage_name(), "grug_inventory:inventory", "Inventory is the homepage")
 check(sfinv.pages["grug_inventory:bags"] == nil, "the Bags page is gone")
@@ -308,7 +307,7 @@ local context = sfinv.get_or_create_context(plain)
 eq(context.page, "grug_inventory:inventory", "a new context opens Inventory")
 local form = sfinv.get_formspec(plain, context)
 has(form, "tabheader[0,0;sfinv_nav_tabs;Inventory,Character,Talents,Skills,Crafting," ..
-	"Party,PvP,Help,Quests,Map;1;true;false]", "the tab captions in order, Inventory selected")
+	"Party & PvP,Help,Quests,Map;1;true;false]", "the tab captions in order, Inventory selected")
 
 -- No page mod keeps an ordering hook.
 for _, file in ipairs({"mods/PLAYER/grug_classes/talents_ui.lua",

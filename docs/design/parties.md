@@ -15,7 +15,9 @@ Decided 2026-09-21; Round 14 user Go.
   leaders keep leadership indefinitely; disconnects never elect a new leader.
 - Only the leader invites and kicks while a party exists. Players without a
   party can invite to form one. Everyone may leave voluntarily.
-- A Party tab manages invitations, accept/decline, leave and leader actions.
+- A Party tab manages invitations, accept/decline, leave and leader actions
+  (since Round 44 the top section of the Party & PvP tab, with the PvP
+  section below it and no inventory; [pvp.md](pvp.md) §5).
 - Each player can disable incoming invitations. Rate limit is one invitation
   per second **per sender**. No ten-per-minute limiter or additional rate tiers.
 - A saved per-player HUD switch defaults on. Without a party it is hidden.
@@ -70,7 +72,7 @@ does not introduce any shared XP, quest or teleport authority.
 
 ## Online invitation roster
 
-The Party tab offers a scrollable, name-sorted list of online players in the
+The Party & PvP tab offers a scrollable, name-sorted list of online players in the
 viewer's faction, excluding the viewer. Each row retains the exact player name
 as its action identity. Invitation opt-out and existing party membership are
 shown as status; the unchanged invitation API decides whether an invite is
@@ -80,7 +82,7 @@ the list; no background roster polling is required. Names need not be typed.
 
 ## Party health colors
 
-Round 19: a saved personal Party-tab dropdown chooses **By class** (default)
+Round 19: a saved personal dropdown on the Party (& PvP) tab chooses **By class** (default)
 or **All green**. Missing preferences use By class; an explicitly saved green
 choice remains green. Class colors are Warrior brown, Mage
 blue, Priest white and Scout olive-green, with dark backing for readability.
@@ -90,8 +92,8 @@ Only the viewer's HUD changes. Offline rows remain labelled offline with no
 fabricated live HP. The existing HUD visibility preference is independent.
 Settings changes and health/class transitions update changed HUD fields only.
 Since Round 26 each row also shows the member's class icon (Warrior, Mage,
-Priest, Scout), in the party HUD and in the Party page's "Current party"
-table, so the class is clear without knowing the colours. On the Party page
+Priest, Scout), in the party HUD and in the Party & PvP tab's "Current party"
+table, so the class is clear without knowing the colours. On that tab
 an offline member or a member without a class shows a blank instead.
 
 ## Level presentation
