@@ -19,8 +19,9 @@
 --      stasis decides nothing;
 --   E. unknown ids in saved state: quests (state.lua), waypoints
 --      (waypoints_core.lua), achievements and cloaks (achievements core.lua);
---   F. the declaration as committed; its rules are tools/check_upgrade.py's
---      own self-test (run by every check, and by --self-test).
+--   F. the declaration as committed (the 0.40.1 reset, game.conf's version);
+--      its rules are tools/check_upgrade.py's own self-test (run by every
+--      check, and by --self-test).
 --
 -- Usage (repo root): luajit tools/r41_up/portable_test.lua [repo]
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
@@ -701,11 +702,14 @@ end
 -- F. The declaration.
 --
 do
-	eq(read(repo .. "/tools/web_data/upgrade.json"),
-		'{"schema": 1, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": []}\n',
-		"F the first declaration as the contract gives it")
+	-- Round 43 moved the declaration to schema 2 and the version moves every
+	-- round: the reset this lane declared stays, at game.conf's version.
+	local decl = read(repo .. "/tools/web_data/upgrade.json")
 	local conf = read(repo .. "/game.conf"):match("\nversion = ([%d.]+)")
-	eq(conf, "0.41.0", "F game.conf names the declared version")
+	check(decl:find('"map_reset": ["0.40.1"', 1, true) ~= nil,
+		"F the 0.40.1 map reset stays declared")
+	check(conf ~= nil and decl:find('"version": "' .. conf .. '"', 1, true) ~= nil,
+		"F the declaration names game.conf's version")
 	-- The rules themselves (lists, history, outcomes) are the check tool's own
 	-- self-test, which every run of tools/check_upgrade.py runs first.
 	check(read(repo .. "/tools/check_upgrade.py"):find("def self_test", 1, true) ~= nil,

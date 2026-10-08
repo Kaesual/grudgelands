@@ -1,5 +1,13 @@
 grug_core = {}
 
+local modpath = core.get_modpath(core.get_current_modname())
+-- World migrations (Round 43): the step registry, then the world version's
+-- start guard, before anything in this game reads or writes saved state (the
+-- map-reset clears included). The mods that can load before grug_core write
+-- no saved state at load (docs/technical/upgrade-contract.md).
+dofile(modpath .. "/migrations.lua")
+dofile(modpath .. "/world_version.lua")
+
 -- Player-facing faction identity remains core-owned. World coordinates,
 -- ownership, levels and anchors are installed later by the validated WP40
 -- session; this module deliberately contains no fallback world geometry.
@@ -35,7 +43,6 @@ function grug_core.get_player_race(name)
 	return nil
 end
 
-local modpath = core.get_modpath(core.get_current_modname())
 -- The severe-error helper (Round 41): a [GRUG-SEVERE] log line and a red chat
 -- message for an error the server survives. The mapgen environment loads the
 -- same file; install_main relays its reports to chat.
