@@ -1790,7 +1790,7 @@ function grug_mobs.start_post_tick(self, dtime)
 		local y = home and home.x == post_x and home.z == post_z and home.y or nil
 		if grug_mobs.walk_fixed(self, dtime, pos, post_x, y, post_z, "post",
 				"post") >= POST_SNAP_AFTER then
-			grug_mobs.snap_try(self, pos, post_x, post_z, POST_TICK,
+			grug_mobs.snap_try(self, pos, post_x, post_z,
 				"after " .. POST_SNAP_AFTER .. " failed searches in a row")
 		end
 		return

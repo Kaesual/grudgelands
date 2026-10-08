@@ -124,7 +124,7 @@ grug_mobs.start_damage_pursuit = function() end
 
 -- mobs_redo's do_attack and the on_punch retaliation tail, cut out of api.lua.
 local mob_class = {}
-local obstacle_stub = {cancel_path_request = function() end, forget_no_path = function() end}
+local obstacle_stub = {forget_no_path = function() end}
 load_in(cut("function mob_class:do_attack(player, force)", "\nend\n", "do_attack"),
 	{mob_class = mob_class, random = function() return 100 end,
 		grug_obstacle = obstacle_stub, grug_nav = {forget = function() end}}, "do_attack")

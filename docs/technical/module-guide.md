@@ -579,12 +579,14 @@ tools](#player-meta-read-by-external-tools).
   Quest/trader NPCs: `type="npc"`, `passive`, `on_rightclick` → formspec;
   placement via `mobs:add_mob(pos, def)`.
   **Pathfinding is a quality criterion** (user requirement: dangerous mobs
-  must not fail at terrain, otherwise they are not dangerous): mobs_redo
-  has `pathfinding = 1|2` (uses `core.find_path`, 2 = can break/build
-  nodes) plus `stepheight`/`jump_height`/`fear_height` — always enable and
-  test these when tuning mobs. VoxeLibre `mcl_mobs` has its own, more
-  advanced `pathfinding.lua` (+ the villagers' `gopath`) — if mobs_redo
-  pathfinding is not good enough, adapt from there (GPL ok, see below).
+  must not fail at terrain, otherwise they are not dangerous): mobs_redo's
+  `pathfinding = 1` lets a mob search (`core.find_path` through
+  `mobs/grug_nav.lua` since Round 42; upstream's level 2, break/build
+  nodes, is gone) plus `stepheight`/`jump_height`/`fear_height` — always
+  enable and test these when tuning mobs. VoxeLibre `mcl_mobs` has its own, more
+  advanced `pathfinding.lua` (+ the villagers' `gopath`; GPL ok, see below),
+  but Round 42 builds no pathfinder of our own ([round 42
+  plan](../planning/round42-plan.md) ruling 1).
   Fallback design: additionally make heartland mobs fast (`run_velocity`)
   and give them ranged attacks (`attack_type = "dogshoot"`) so terrain
   exploits are not trivial.

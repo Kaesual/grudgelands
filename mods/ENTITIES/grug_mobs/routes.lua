@@ -92,10 +92,6 @@ function grug_mobs.route_settlement(key, kind, anchor)
 		street_legs = 0, streets_us = 0, door_legs = 0}}
 end
 
-function grug_mobs.route_cached(key)
-	return settlements[key] ~= nil
-end
-
 --
 -- Cells.
 --

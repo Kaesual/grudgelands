@@ -170,10 +170,9 @@ functions needed for the mob to work properly which contains the following:
    'blood_texture'       has the texture name to use for droplets e.g.
                          "mobs_blood.png", or table {"blood1.png", "blood2.png"}
    'pathfinding'         set to 1 for mobs to use pathfinder feature to locate
-                         player, set to 2 so they can build/break also (only
-                         works with dogfight attack and when 'mobs_griefing'
-                         in minetest.conf is not false). Adding {unbreakable=1}
-                         to node groups stops them being broken by mobs.
+                         player (only works with dogfight attack). Grudgelands:
+                         level 2 (build/break) is gone since Round 42; every
+                         value searches through grug_nav.lua (VENDOR.md).
    'immune_to'           is a table that holds specific damage when being hit by
                          certain items e.g.
       {"default:sword_wood",  0} -- causes no damage.
@@ -881,7 +880,7 @@ External Settings for "minetest.conf"
                             spawn egg.
    'mobs_drop_items'        when false mobs no longer drop items when they die.
    'mobs_griefing'          when false mobs cannot break blocks when using either
-                            pathfinding level 2, replace functions or mobs:boom
+                            replace functions or mobs:boom
    'mobs_can_hear'          True by default, allows mobs to hear sound around them.
                             function.
    'mob_nospawn_range'      Minimum range a mob can spawn near player (def: 12)
@@ -893,12 +892,9 @@ External Settings for "minetest.conf"
    'mob_height_fix'         Disabled by default, increases smaller mob heights so they
                             cannot glitch through certain nodes.
    'mob_pathfinding_enable'     Enable pathfinding.
-   'mob_pathfinding_stuck_timeout'      How long before stuck mobs start searching. (default 3.0)
-   'mob_pathfinding_stuck_path_timeout'     How long will mob follow path before giving up. (default 5.0)
    'mob_pathfinding_algorithm'  Which pathfinding algorithm to use Dijkstra, A*_noprefetch
                                 (AStar_noprefetch) [default] or A* (AStar)
                             (A* names differ cause Minetest doesn´t allow "*" in settings)
-   'mob_pathfinding_searchdistance'     max search distance from search positions (default 16)
    'mob_pathfinding_max_jump'   max jump height for pathfinding (default 4)
    'mob_pathfinding_max_drop'   max drop height for pathfinding (default 6)
    'mobs_can_hear'          Enabled by default, overrides minetest.sound_play and enables
