@@ -192,6 +192,17 @@ conditions); the user asked for numbers with a basis, not guesses.
     settlement patrols and post guards use doors; royal guards do not (no
     royal route needs one; a closed door leaves them their snap). NPCs never
     open a locked door.
+25. **No random stops on routes** (the user, 2026-10-08, after his first
+    look at the merged lanes; lane ST): mobs_redo's random stop of a walking
+    mob (`stand_chance`, `mobs/api.lua` walk state) no longer applies while
+    our navigation drives the mob (routes, fixed walks, the amble); free
+    wandering keeps it. mobs_redo's "facing a fence" stop
+    (`facing_fence`, a name match on "fence", "gate", "wall") applies only to
+    a node in front that really blocks (walkable), so a wall torch, a
+    banner or a sign no longer stops a walker. The cliff guard and every
+    real hold stay.
+26. **The route cache stays built on first use** (the user, 2026-10-08):
+    no build before the server accepts players or during world preparation.
 
 Coordinator defaults (the user may overrule them):
 
