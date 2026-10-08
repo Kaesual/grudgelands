@@ -289,9 +289,11 @@ def scenario(run):
                   "the hotbar skills and every other kept stack in place (name, count, wear)",
           settled and not offenders(settled) and not lost,
           json.dumps({"offenders": offenders(settled), "lost": lost}))
-    owned = (hero.get("mounts") or {}).get("owned")
-    check("boot", "rider's mounts for the quickbar: owned tiers 1, 2 and 5 from the purchase "
-                  "record", owned == [1, 2, 5], json.dumps(hero.get("mounts")))
+    owned = hero.get("mounts") or {}
+    check("boot", "rider's mounts in the quickbar: owned tiers 1, 2 and 5 from the purchase "
+                  "record, one quickbar button each",
+          owned.get("owned") == [1, 2, 5] and owned.get("quickbar") == [1, 2, 5],
+          json.dumps(owned))
     walker = joins.get("walker") or {}
     wl = probe_lists(walker.get("settled"))
     check("boot", "walker after the game's join: its hotbar skill and its apple in place",

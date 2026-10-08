@@ -13,8 +13,8 @@
 --                 moved to the second place): the inventory as loaded; when
 --                 the plan's phase starts with "setup" (0.43.0) the character
 --                 is then built (see below); 2.5 s after the join the
---                 inventory as the game left it, the purchase record and the
---                 owned mounts;
+--                 inventory as the game left it, the purchase record, the
+--                 owned mounts and the quickbar's mount buttons (0.44.0 on);
 --   then          once every character the plan names has left again, it
 --                 writes the file and shuts the server down.
 -- The plan: <world>/r43_it_plan.json {"phase": "...", "joins": [names]}.
@@ -80,7 +80,21 @@ local function mounts(player)
 	for _, key in ipairs(MOUNT_META) do record[key] = meta:get_string(key) end
 	local owned = core.global_exists("grug_mounts") and grug_mounts.owned_tier_ids and
 		grug_mounts.owned_tier_ids(player) or {}
-	return {record = record, owned = owned}
+	-- The quickbar (0.44.0 on, grug_quickbar): its mount buttons.
+	local quickbar
+	if core.global_exists("grug_quickbar") then
+		local ok, fs = pcall(grug_quickbar.formspec, player)
+		if ok then
+			local tiers = {}
+			for tier in fs:gmatch("grug_quickbar_mount_(%d+)") do tiers[tonumber(tier)] = true end
+			quickbar = {}
+			for tier in pairs(tiers) do quickbar[#quickbar + 1] = tier end
+			table.sort(quickbar)
+		else
+			quickbar = {error = tostring(fs)}
+		end
+	end
+	return {record = record, owned = owned, quickbar = quickbar}
 end
 
 -- The 0.43.0 character build (a "setup" phase).
