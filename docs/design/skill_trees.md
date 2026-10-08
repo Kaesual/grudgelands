@@ -160,7 +160,7 @@ Death costs no XP (Round 18); dying never removes talent points.
 
 ### 1.4 Respec, and no class change (rulings 4, 20, 22)
 
-- **Where: in the talent UI itself** (the Talents page, §3.5). There is no
+- **Where: in the talent UI itself** (the Talents & Skills page, §3.5). There is no
   class trainer and no NPC (ruling 4).
 - **What: a full reset.** Ruling 20 — a respec sets every rank to 0 and
   returns all 30 points. No partial or single-tree respec: one button, one
@@ -539,7 +539,8 @@ edge.
   and Priest as data, the point budget, both gate kinds, spend and respec,
   persistence, the timed-window table and the accessors.
 - `grug_classes/scout_talents.lua`: the Scout's 16 talents.
-- `grug_classes/talents_ui.lua`: the Talents page (§3.5) and the paid respec
+- `grug_classes/talents_ui.lua`: the Talents & Skills page with the tree
+  framework (§3.5) and the paid respec
   (`grug_classes.buy_respec`); for these `grug_classes` depends on `sfinv` and
   `grug_money`.
 
@@ -648,7 +649,7 @@ lives.
 
 ### 3.4 Granting a new skill, and replacing an existing one
 
-A newly ranked active-skill talent adds its ability to the Skills catalogue and announces that location; it does not insert an item. Full respec removes representations that are no longer unlocked. Re-ranking exposes the ability for manual recovery. Passive and replacement talents remain read-only information and never create dummy items.
+A newly ranked active-skill talent adds its ability to the skill catalogue and puts it on the first free hotbar slot; with a full hotbar it waits in the catalogue (Round 44: skills live on the hotbar only, `inventory_equipment.md` §6). The message feed says which. Full respec removes representations that are no longer unlocked. Re-ranking grants the ability the same way. Passive and replacement talents remain read-only information and never create dummy items.
 
 **Two mechanisms, and ruling 13 makes the second one carry most of the
 design.**
@@ -660,11 +661,12 @@ positive talent rank; catalogue listing, recovery, normalization and actual
 cast/swing execution all use that authority. Possessing a forged or stale
 representation never grants an ability.
 
-A talent-granted ability appears in Inventory > Skills and is recovered
-manually. Registration order determines catalogue order but never moves an
-existing hotbar item. Under ruling 13 at most two such abilities exist per
-build. Base-kit insertion occurs once at character creation; later unlocks
-announce catalogue availability and do not require a free inventory slot.
+A talent-granted ability appears in the Talents & Skills catalogue and on a
+free hotbar slot when there is one; otherwise the player drags it there.
+Registration order determines catalogue order but never moves an existing
+hotbar item. Under ruling 13 at most two such abilities exist per build.
+Base-kit insertion occurs once at character creation; later unlocks never
+need a free slot outside the hotbar and never use one.
 
 **A replacement** (the eight replacing keystones and the two replacing
 capstones) is **not** a registration and touches none of the above. The
@@ -678,8 +680,8 @@ items and zero grant logic.
 
 Talent spending and respec invoke `grug_abilities.normalize_kit(player)`.
 This removes stale or duplicate representations and refreshes surviving item
-metadata without filling discarded slots. The Skills catalogue refreshes its
-entitlement list and announces new entries. Replacements need no additional
+metadata without filling discarded slots. The skill catalogue refreshes its
+entitlement list, places new entries on a free hotbar slot and announces them. Replacements need no additional
 item: the next cast reads the current talent rank.
 
 **Hotbar budget** (`classes.md` §2b reserves keys 1-8). Under rulings 13 and
@@ -711,48 +713,56 @@ it at level 1 and then re-tuning it with three separate talents.
 
 ### 3.5 UI
 
-Round 19 follow-up: talent names/ranks share the same text alignment in every
-state. Purchasable talents have a clearly visible button background and border;
-locked/maxed entries remain visibly distinct and retain their status and tooltip.
-This is presentation only: first-click purchases and authorization are unchanged.
+Since Round 44 (`ui-crafting-rework-plan.md` ruling 7 and §3.4) one tab,
+**Talents & Skills**, registered from `grug_classes/talents_ui.lua`, shows
+the class's talent trees; `grug_skills` adds the skill catalogue row under
+them (`inventory_equipment.md` §6) and the shared frame the short inventory
+(the hotbar and two scrolling rows) below. The page uses real coordinates.
 
-A third `sfinv` page beside Character and Bags, registered from
-`grug_classes/talents_ui.lua` so the page lives with the data it shows and
-`grug_inventory` keeps its two pages. sfinv uses legacy coordinates and the
-content area spans about y 0.3-5.0.
-
-Each tree has **eight talents in two chains and four tiers**, which is a
-two-column chain layout per tree and four rows — sixteen buttons for the
-class, plus the per-tree point counters, the gate labels and the description
-line. That fits the sfinv area only if the two trees are **tabbed rather than
-side by side**:
+- **Tree framework** (`grug_classes.layout_tree`): a tree is a list of
+  sections (with optional column labels) and a list of nodes `{id, section,
+  row, col, requires = {…}}`. Sections sit side by side, nodes are image
+  buttons at their row and column, and every requirement is a connector of
+  `box[]` segments drawn before (under) the nodes, orthogonal: down from the
+  parent, across in the gap above the child's row, down into the child. A
+  node may have several parents and children. Today's data
+  (`grug_classes.talent_tree_data`) gives two sections, the class's two trees
+  side by side, each chain a column labelled with its name, each tier a row
+  and the talent above in the chain the one requirement; a connector is gold
+  once its parent has every rank.
 
 ```
-+---------------------------------------------------------------+
-| Character | Bags | Talents |                        (sfinv tabs)
-+---------------------------------------------------------------+
-| Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
-|                                            [ Respec  --    12s]|
-|      WALL                       ANVIL                          |
-| T1 | Ironbound      5/5 |   | Spite          5/5 |             |
-| T2 | Weathered     4/4 |   | Affront        3/4 |     (>=5)   |
-| T3 | Hold Ground *  3/3 |   | Bellow *       0/3 |     (>=12)  |
-| T4 | Unbroken **    1/1 |   | Grudge         0/3 |     (>=20)  |
-|                                                               |
-| Unbroken -- rank 1/1: total armor rating x1.65; below 20% HP, |
-| +33% of K as rating after the multiplier for 8 s / 180 s.     |
-+---------------------------------------------------------------+
++--------------------------------------------------------------------+
+| Inventory | Character | Talents & Skills | Crafting | ...  (tabs)  |
++--------------------------------------------------------------------+
+| Scout talents   Talent points available: 3 of 15  [ Respec: Free ] |
+| +- Quarry — 12 points -----------+ +- Veil — 0 points ------------+ |
+| | Draw           | Ranging       | | Blade         | Shadow       | |
+| | Strong Draw    | Quiver        | | Fine Edge     | Light Step   | |
+| |     5/5        |   3/5         | |    0/5        |    0/5       | |
+| |       |               |        | |      |               |       | |
+| | Cold Eye  4/4  | Fletching 0/4 | | ...                          | |
+| | ... four rows, one per tier    | |                              | |
+| +--------------------------------+ +------------------------------+ |
+| (the selected talent's text, or a notice)                          |
+| Drag skills onto the hotbar. Drag one back here to remove it.      |
+| Skills  [Strike][Sprint][Loose][Snare Shot]                        |
+| (two inventory rows, scrolling; then the hotbar)                   |
++--------------------------------------------------------------------+
 ```
 
-- `*` marks a keystone, `**` the capstone; a locked talent is a plain label
-  (no click target) with its reason spelled out ("needs 12 points in Bulwark"
-  or "needs Weathered 4/4").
-- Clicking an available talent immediately spends one point for one rank.
-  Hover explains the effect before purchase; selected/last-purchased detail
-  may remain visible. There is no preselection click or purchase confirmation.
+- A node shows the talent's name, `*` for a keystone or `**` for the
+  capstone, and its rank. Its look tells the state: buyable (green), every
+  rank bought, some ranks but not buyable now, locked (dimmed); the selected
+  node is gold. Hover explains the effect and, when locked, the reason
+  ("needs 12 points in Bulwark" or "needs Weathered 4/4").
+- Clicking an available talent immediately spends one point for one rank;
+  clicking another node selects it and shows its text and the reason in the
+  line below the trees. There is no preselection click or purchase
+  confirmation.
 - The **Respec button lives here** (ruling 4) with its price in the label and
   an inline confirmation prompt, since there is no NPC to host the transaction.
-- Fixed numeric button fields map only to registered trees and talents of the
+- Fixed numeric button fields map only to registered talents of the
   submitting PlayerRef's own class. Names and descriptions are escaped with
   `core.formspec_escape`; no player name or free-text field enters a purchase.
 - Combat statistics are on Character, not Talents. The freed space belongs to
@@ -770,7 +780,7 @@ registration (`grug_xp.register_on_level_change`). `old_level` is nil on
 join, so the function returns there before any arithmetic. When
 `talent_points_at(new_level) > talent_points_at(old_level)` and at least one
 point is unspent, it posts one message-feed line directing the player to
-Inventory > Talents, alongside the "Reached level N!" level-up banner (a
+Inventory > Talents & Skills, alongside the "Reached level N!" level-up banner (a
 large centre message since Round 28 ruling 20, no longer a chat line). No new
 globalstep, no new HUD element, no new packet. The banner itself names the
 points the jump earned in a second line, "You gained +1 Talent Point" (or "+N

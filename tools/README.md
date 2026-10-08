@@ -515,6 +515,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   quiver, the refusals); it prints the page's bytes per mode.
   `luajit tools/r44_ch/bytes.lua [repo]` prints the bytes per mode for a
   Scout with four 32-slot bags against any tree (before and after).
+  `r44_ts`: `harness.lua` loads the real vendored sfinv, `grug_inventory`'s
+  `ui.lua`, the talent files with `talents_ui.lua` and `grug_skills` under a
+  stub `core` (it also loads the tree before lane TS);
+  `portable_test.lua` checks the tree framework on a small tree with a
+  branch (node rectangles, connectors), today's trees as two sections, the
+  one Talents & Skills tab and its catalog row, the hotbar-only rule for
+  every target list with an engine move model (catalog to hotbar, drag back
+  removes) and the grants with a free and a full hotbar (the grant code cut
+  out of `grug_abilities/init.lua`); `page_bytes.lua [repo]` prints the
+  talent and skill pages' formspec bytes (before: a `git archive` export of
+  the older tree as `repo`).
   `r44_mb`: `gen_baked_art.py [--art DIR]
   [--check]` turns the baked map icons and the pixel font
   (`mods/PLAYER/grug_map/art/`) into `mods/PLAYER/grug_map/baked_art.lua`

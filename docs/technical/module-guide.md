@@ -194,16 +194,21 @@ tools](#player-meta-read-by-external-tools).
 ## Skills catalogue
 
 - **Skills catalogue**: `grug_skills` lists unlocked active class/talent
-  abilities and every purchased mount tier. Entitlement is authoritative;
-  inventory stacks are disposable bound representations. Drop/catalog return
-  deletes only the stack, with no world entity. Manual recovery requires no
-  copy in main, craft or owned bag contents; external inventories, equipment
-  and trading refuse bound stacks. Base-kit insertion happens once at character
-  creation; later talent unlocks and mount purchases announce Skills availability
-  without insertion. `grug_abilities.is_unlocked` is shared by catalogue,
+  abilities as one row of the Talents & Skills tab (`grug_classes.skill_catalog_row`,
+  drawn by `talents_ui.lua`); mounts are no longer listed (Round 44).
+  Entitlement is authoritative; inventory stacks are disposable bound
+  representations. Drop or a drag back onto the catalog icon deletes only the
+  stack, with no world entity. Skills live on the hotbar only:
+  `bound_items.lua` lets a move or a put land an ability only on `main[1..8]`
+  and a catalog put only while no copy is carried in main, craft or owned bag
+  contents; external inventories, equipment and trading refuse bound stacks.
+  Grants (`grant_initial_kit`, `grug_abilities.grant_to_hotbar` for talent
+  unlocks) use a free hotbar slot or leave the skill in the catalog, never
+  `main[9..]` or a bag. `grug_abilities.is_unlocked` is shared by catalogue,
   recovery, normalization and actual cast/swing execution. `normalize_kit`
-  removes stale copies without re-granting missing ones. Purchased mount tiers
-  remain individually available at their original speeds.
+  removes stale copies without re-granting missing ones; it still keeps
+  copies in `main[9..]` and bags (removing those is the 0.44.0 migration
+  step).
   Do not compare InvRef userdata for inventory ownership: engine callbacks can
   create a fresh wrapper for the same underlying inventory. Authenticate
   `inventory:get_location()` (type and player name), then the allowed list and

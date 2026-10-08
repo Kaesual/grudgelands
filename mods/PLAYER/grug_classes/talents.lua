@@ -1258,7 +1258,7 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 		if left > 0 then
 			-- In the message feed beside the level-up's XP line, never chat.
 			grug_core.feed(player, "quest", "Talent point earned - " .. left ..
-				" to spend. Open Inventory > Talents.", "talents")
+				" to spend. Open Inventory > Talents & Skills.", "talents")
 		end
 	end
 end
@@ -1340,7 +1340,7 @@ core.register_chatcommand("talents", {
 			end
 		end
 		lines[#lines + 1] =
-			"* keystone, ! capstone. Open Inventory > Talents to make changes."
+			"* keystone, ! capstone. Open Inventory > Talents & Skills to make changes."
 		return true, table.concat(lines, "\n")
 	end,
 })

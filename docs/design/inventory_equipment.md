@@ -18,9 +18,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
   Character · Talents & Skills · Crafting · Party & PvP · Help · Map. Until
-  their pages are merged, Talents and Skills stand at "Talents & Skills",
-  Party and PvP at "Party & PvP", and Quests (moving into the map window)
-  before Map. Creative's tabs, for creative players, follow the table.
+  their pages are merged, Party and PvP stand at "Party & PvP", and Quests
+  (moving into the map window) before Map. Creative's tabs, for creative players, follow the table.
 - **Inventory views** (`grug_inventory.inventory_view(player, mode,
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
@@ -532,23 +531,39 @@ them.
   posts every positive grant itself; a caller that names the XP in its own
   line passes `quiet`.
 
-## 6. Skills page and bound representations
+## 6. The skill catalog and bound representations
 
-The sfinv **Skills** page follows Talents and lists all currently unlocked active
-abilities plus every purchased riding tier. Its detached catalogue is an
-infinite source and matching deletion destination. A drag to the visible main
-inventory succeeds only when the exact item is absent from `main`, `craft` and
-all four owned bag-content lists and main has room.
+Since Round 44 (`docs/planning/ui-crafting-rework-plan.md` rulings 8 and §3.4)
+the skill catalog is one row under the talent trees on the **Talents &
+Skills** tab (`skill_trees.md` §3.5), on the hotbar's columns, with the short
+inventory below so tools and food can leave the hotbar. It lists every
+currently unlocked active ability, nothing else: mounts and boats left it
+(they move to the quickbar). Its detached list is an infinite source and an
+infinite destination: a drag onto a free hotbar slot copies the skill there
+as a fresh stack, and dragging the carried copy back onto its own icon
+removes that copy (the engine undoes the swap such a drop asks for). The
+hint reads "Drag skills onto the hotbar. Drag one back here to remove it."
 
-Ability and mount representations carry `grug_bound_skill`. Player inventory
-moves allow only `main` and owned bag contents; all node metadata inventories,
-other detached inventories, crafting and equipment refuse them. Source takes
-remain allowed so Q/drop reaches the item's deletion-only callback. Entitlement,
-cooldowns, charge, resources and active mounts are independent of the disposable
-item stack.
+**Skills live on the hotbar only** (`main[1..8]`). Ability representations
+carry `grug_ability` and `grug_bound_skill`; a move inside the inventory may
+take a skill only onto a hotbar slot (a swap that would push one off the
+hotbar is refused), and a put from the catalog lands only on a hotbar slot
+and only while the player carries no other copy in `main`, `craft` or an
+owned bag. Bags, `main[9..]`, the potion belt, crafting, equipment and the
+quiver refuse skills. A grant goes onto a free hotbar slot or, with a full
+hotbar, waits in the catalog, never into `main[9..]` or a bag: the base kit
+at character creation (in kit order) and after a class change (its kit slot,
+else the first free one), and a talent unlock (`skill_trees.md` §3.4). A
+stray skill from before Round 44 outside the hotbar may still be moved onto
+the hotbar or back onto its icon; removing the others is the 0.44.0
+migration step, not the login.
 
-The Skills catalog has a short visible hint: "Drop skills to remove them. Drag
-them back from here." This does not alter entitlement or the one-copy rule.
+Mount representations (`grug_bound_skill` without `grug_ability`) keep
+`main` and the owned bag contents until the quickbar retires them. All node
+metadata inventories and other detached inventories refuse bound stacks.
+Source takes remain allowed so Q/drop reaches the item's deletion-only
+callback. Entitlement, cooldowns, charge, resources and active mounts are
+independent of the disposable item stack.
 
 ## Round 14 navigation pages
 
@@ -582,5 +597,5 @@ Weapon-slot tooltips and contextual raw-weapon hints explain that equipped
 weapons provide combat stats while hotbar skills execute attacks. No automatic
 equipping or hotbar-weapon combat fallback. The top inventory row is explicitly
 highlighted as Hotbar. Selected page controls use a visible border/tint rather
-than a `>` prefix. Crafting starts with recipe-book guidance; Skills explains
-safe icon deletion/recovery and one carried copy across main/craft/owned bags.
+than a `>` prefix. Crafting starts with recipe-book guidance; the skill
+catalog explains placing and removing skills (§6).
