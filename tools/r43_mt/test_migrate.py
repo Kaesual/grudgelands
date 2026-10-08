@@ -570,6 +570,20 @@ class StepTest(WorldCase):
         self.assertEqual(self.storage("grug_probe_r43_mt", "first"), "yes")
         self.assertEqual(self.meta("oldhero", "number"), "42")
 
+    def test_failed_event_with_undecodable_bytes(self):
+        # A stored value that is no UTF-8 in the error text: the event is
+        # still written (JSON escapes the surrogate) and the exit code is 1.
+        def broken(world):
+            raise ValueError(world.storage("grug_probe_r43_mt").get("raw:binary"))
+        out = io.BytesIO()
+        stdout = io.TextIOWrapper(out, encoding="utf-8")
+        code = cli.main(["--world", str(self.world)], test_steps={TARGET: Step(broken)},
+                        stdout=stdout, stderr=io.StringIO())
+        stdout.flush()
+        events = [json.loads(line) for line in out.getvalue().decode("utf-8").splitlines()]
+        self.assertEqual((code, events[-1]["event"], events[-1]["reason"]), (1, "failed", "step"))
+        self.assertIn("\udcff", events[-1]["message"])
+
     def test_first_step_failure_is_exit_1(self):
         code, events, _ = self.run_tool(steps={TARGET: Step(lambda w: 1 / 0)})
         self.assertResult(events, "failed", code, 1)
@@ -614,14 +628,33 @@ class StepTest(WorldCase):
         self.assertEqual((code, ran, events[-1]["record"]), (0, [2], "0.41.5"))
 
     def test_new_world(self):
-        self.sql("players.sqlite", "DELETE FROM player")
+        # Nothing of an earlier start: an empty mod storage, no player
+        # database (a platform may create auth entries before the start).
         self.sql("mod_storage.sqlite", "DELETE FROM entries")
+        (self.world / "players.sqlite").unlink()
         before = self.hashes()
         code, events, err = self.run_tool(steps={TARGET: Step(lambda w: 1 / 0)})
         self.assertResult(events, "done", code, 0)
         self.assertEqual((events[-1]["new_world"], events[-1]["world_version"],
                           events[-1]["due"]), (True, None, []))
         self.assertEqual(self.hashes(), before)
+
+    def test_new_world_is_the_games(self):
+        # Each trace the game's rule (grug_core/world_version.lua) counts
+        # makes the world existing for the tool too.
+        self.sql("mod_storage.sqlite", "DELETE FROM entries")
+        self.sql("players.sqlite", "DELETE FROM player")
+        traces = [lambda: None,  # an empty players.sqlite
+                  lambda: (self.world / "players.sqlite").unlink()
+                  or (self.world / "players").mkdir(),
+                  lambda: (self.world / "players").rmdir()
+                  or (self.world / "env_meta.txt").write_text("game_time = 1\n")]
+        for trace in traces:
+            trace()
+            with self.subTest(sorted(p.name for p in self.world.iterdir())):
+                code, events, _ = self.run_tool("--check")
+                self.assertEqual((code, events[-1]["new_world"], events[-1]["world_version"]),
+                                 (0, False, "0.41.0"))
 
     def test_existing_world_without_characters(self):
         # Saved state but no character: existing, at the baseline.
@@ -677,7 +710,9 @@ class PostgresDialectTest(unittest.TestCase):
         backends = {kind: worldmod.Backend(kind, "postgresql", _PgStandIn(conn), "stand-in")
                     for kind in worldmod.KINDS}
         self.assertIsNone(data.read_record(backends))
-        self.assertFalse(data.is_new_world(backends))
+        empty_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, empty_dir)
+        self.assertFalse(data.is_new_world(backends, empty_dir))
         world = data.World(backends, "0.42.0")
         self.assertEqual(world.characters(), ["pg"])
         self.assertEqual(world.get_meta("pg"), {"a": "b"})

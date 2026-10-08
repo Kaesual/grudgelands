@@ -23,6 +23,7 @@ ObjectRef::l_get_pos divides by it); the API speaks nodes like `get_pos`.
 """
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from . import codec
 from .codec import ItemStack
@@ -333,11 +334,18 @@ def write_record(backends, version):
     storage_write(backends["mod_storage"], RECORD_MOD, RECORD_KEY, version)
 
 
-def is_new_world(backends):
-    """The tool's new-world rule: no character (no row of the player
-    backend) and no mod-storage entry of any mod. Stricter than any game
-    rule that looks at characters and mod storage, so a world new to the
-    tool is new to the game too."""
+def is_new_world(backends, world_dir):
+    """The tool's new-world rule: the game's rule (grug_core/
+    world_version.lua `is_new_world`: no grug_core mod-storage key, no
+    env_meta.txt, no players.sqlite and no players directory in the world
+    directory), tightened to no mod-storage entry of any mod and no row of
+    the player backend. Everything the game looks at the tool looks at too,
+    so a world new to the tool is new to the game; the reverse case only
+    runs the steps on a world without data."""
+    world_dir = Path(world_dir)
+    if any((world_dir / name).exists() for name in ("env_meta.txt", "players.sqlite",
+                                                     "players")):
+        return False
     player, store = backends["player"], backends["mod_storage"]
     if player.present and player.execute("SELECT 1 FROM player LIMIT 1").fetchone():
         return False

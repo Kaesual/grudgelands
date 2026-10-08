@@ -89,7 +89,7 @@ class Output:
         self.out, self.err = out, err
 
     def event(self, name, text=None, **fields):
-        self.out.write(json.dumps(dict(event=name, **fields), ensure_ascii=False) + "\n")
+        self.out.write(json.dumps(dict(event=name, **fields)) + "\n")
         self.out.flush()
         if text:
             self.say(text)
@@ -149,7 +149,7 @@ def _load_step(version, path):
     return module
 
 
-def world_version(backends):
+def world_version(backends, world_dir):
     """The record read like the game: missing on an existing world is the
     baseline 0.41.0; a new world (data.is_new_world) has no version yet."""
     record = data.read_record(backends)
@@ -158,7 +158,7 @@ def world_version(backends):
             raise Refusal("record", "grug_core's world_version %r is no "
                           "major.minor.patch version" % record)
         return record, record, False
-    if data.is_new_world(backends):
+    if data.is_new_world(backends, world_dir):
         return None, None, True
     return BASELINE, None, False
 
@@ -256,7 +256,7 @@ def main(argv, test_steps=None, stdout=None, stderr=None):
         target, steps = read_checkout(test_steps)
         backends = worldmod.open_world(world_dir)
         try:
-            current, record, new_world = world_version(backends)
+            current, record, new_world = world_version(backends, world_dir)
         except worldmod.db_errors() as err:
             raise Refusal("connection", "cannot read the world: %s" % err) from None
         if current is not None and parse_version(current) > parse_version(target):
