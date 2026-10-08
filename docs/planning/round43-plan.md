@@ -10,6 +10,7 @@ conservative new-world recognition, online work per world and per
 character, the map-block API deferred, the baseline rule, and the foundation
 as its own release.
 Status: **draft**, waits for the user's go after Round 42 is complete.
+Runs **in parallel with Round 44's wave 1** (§7).
 
 Why now: the UI rework and the crafting rework
 ([ui-crafting-rework-plan.md](ui-crafting-rework-plan.md)) change saved
@@ -120,7 +121,14 @@ between, and the game stamps 0.43.0.
   at load and character markers at join, in step order, and deletes each
   marker after its handler succeeded. A failing handler stops the load (world
   part) or holds the character with a clear error, like the map reset does;
-  it never deletes the marker.
+  it never deletes the marker. When a join also carries a map-reset
+  relocation, the lane fixes and reports the order (migration work first is
+  the default: it repairs saved data the relocation may read).
+- `tools/check_fresh_server.py` and its docstring follow the new rule
+  ("migrations only through the tool").
+- The guard runs before the map-reset clears; a move that combines a map
+  reset with a step (the platform empties the map, runs the tool, raises
+  `grug_reset_world`) passes the guard and then resets.
 - **Declaration and check** (R2): schema 2 in `upgrade.json`;
   `tools/check_upgrade.py` checks the new list with the same rules as the
   other two (ascending, never edited or removed, at most `version`, new
@@ -180,6 +188,10 @@ between, and the game stamps 0.43.0.
   refused (with the expected message); a compatible move bumps the record;
   a new world is stamped; an existing world without characters but with
   saved state is not taken for new.
+- **Map reset combined with a step** (R1): one run in the platform's order
+  (empty the map, run the tool with a test step, raise `grug_reset_world`,
+  boot) ends with the step applied, the map reset done and the record at the
+  new version.
 - **PostgreSQL:** one run against a throwaway PostgreSQL covers every
   PostgreSQL code path of the tool. Whether the local Luanti build can run a
   world on PostgreSQL is unverified; if it cannot, the test seeds the
@@ -240,6 +252,14 @@ GUI checklist (desktop and web), short because nothing visible changes:
 ## 7. Orchestration notes
 
 - Start state: main after Round 42's lane D (the user's go).
+- **Parallel with Round 44** (the user, 2026-10-08): Round 44's wave 1
+  (IH, FR, AR, MB) starts together with this round in its own worktrees.
+  The two rounds share no files except the status owners lane D edits
+  (STATUS, CHANGELOG, AGENTS, `game.conf`, the declaration). This round
+  merges first; Round 44 merges nothing to main before 0.43.0 is complete
+  and pushed, so the user's push of 0.43.0 carries no Round 44 work. The
+  process budget is shared (8 Lua processes, two measuring engine runs;
+  containers count).
 - Process budget: at most 8 Lua processes at once (AGENTS.md); engine runs
   only through `tools/luanti_headless.sh`; containers count as processes.
 - Files per lane:

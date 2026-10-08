@@ -5,7 +5,9 @@ Coordinator: Claude (Opus 5.5), drafted 2026-10-08. This round builds
 ("the spec" below; its §2 rulings and §3 are this round's design). Layout:
 wireframe v1 (<https://claude.ai/artifact/8XM4hJggJyJSpuigRyg9jJ>), accepted
 by the user. Crafting stays as it is until Round 45 (Round B of the spec).
-Status: **draft**, waits for the user's go after Round 43 is complete.
+Status: **draft**. Wave 1 starts **in parallel with Round 43** after Round
+42 is complete; nothing of this round merges to main before 0.43.0 is
+complete and pushed (§7).
 
 Routing default (agent model policy; the user decides per session): Claude
 coordinates, Opus implements and reviews; GPT-6 Astra paints the art
@@ -15,16 +17,16 @@ coordinates, Opus implements and reviews; GPT-6 Astra paints the art
 
 | Lane | What | Wave | Kind | Waits for |
 |---|---|---|---|---|
-| IH | Inventory logic: the give helper and its call sites, bag rules (bags in bags, swaps, redistribution), the sort, the potion belt list, ammo from all lists | 1 | code | Round 43 complete |
-| FR | Window frame: fixed tab order, the new frame, the full and short inventory views, the Inventory tab | 1 | code | Round 43 complete |
-| AR | Art: profession trainer icons, baked boss/dungeon/settlement icons (world map and minimap sizes), the pixel font, crosshair and ring; review page with the user's picks | 1 | art | — |
-| MB | Map base: baked icons and pixel-font region names in the world-map variant, the minimap variant, the cache key; minimap markers | 1 | code | — (placeholder art until AR) |
+| IH | Inventory logic: the give helper and its call sites, bag rules (bags in bags, swaps, redistribution), the sort, the potion belt list, ammo from all lists | 1 | code | Round 42 complete |
+| FR | Window frame: fixed tab order, the new frame, the full and short inventory views, the Inventory tab | 1 | code | Round 42 complete |
+| AR | Art: profession trainer icons, baked boss/dungeon/settlement icons (world map and minimap sizes), the pixel font, crosshair and ring; review page with the user's picks | 1 | art | Round 42 complete |
+| MB | Map base: baked icons and pixel-font region names in the world-map variant, the minimap variant, the cache key; minimap markers | 1 | code | Round 42 complete (placeholder art until AR) |
 | CH | Character tab: the four-mode box, the gear box with the arrow slot, the short inventory | 2 | code | FR, IH |
 | TS | Talents & Skills tab: the tree framework, the skill catalog row, hotbar-only skills, the grant path; mounts leave the page | 2 | code | FR |
 | MQ | Map and quest window: Z key and Map tab, screen-sized window, overlay rules, quest boxes, quest targets (crosshair, circles), refresh rules | 2 | code | MB, AR picks |
 | PP | Party & PvP page and the Help texts | 2 | code | FR |
 | QB | Quickbar on E: mounts, boats and the potion belt; mount items retired; riding trainer tip | 3 | code | IH, TS, MQ (key helper) |
-| MS | Migration step 0.44.0: mount items and skills outside the hotbar removed offline | 3 | code + test | QB, TS |
+| MS | Migration step 0.44.0: mount items and skills outside the hotbar removed offline | 3 | code + test | Round 43 merged, QB, TS |
 | D | Documentation, version 0.44.0, the declaration's first `migrate` entry | 4 | docs | last merge |
 
 Estimates (unmeasured, for planning only): IH 8–10 h, FR 8–12 h, AR 4–6 h
@@ -50,6 +52,11 @@ sizes, Party & PvP page). Round-specific (the user, 2026-10-08):
 4. **Defaults of the wireframe stand:** short inventory = hotbar + 2 rows;
    the skill catalog as one row under the tree; tabs at today's window size;
    the map window at 80–90 % of the screen.
+5. **Enemy settlements on the map:** baked settlement icons are the same for
+   everyone, the other faction's start towns, capitals, villages, outposts
+   and fortresses included. This supersedes the Round 31 ruling that hid
+   them; MB rewrites the rule where it lives (`world_map.md`,
+   `settlement_icons.lua`).
 
 ## 3. Shared conventions (coordinator defaults; lanes may refine them in their report)
 
@@ -69,8 +76,9 @@ sizes, Party & PvP page). Round-specific (the user, 2026-10-08):
   `main` stays 32 (hotbar 8 + 24); bag contents `grug_bag<i>_content`.
 - **Sort** (IH): `grug_inventory.sort(player)` → changed; the button and its
   2–3 s server-side cooldown are FR's.
-- **Key edges** (MQ writes it, QB uses it): one globalstep helper in
-  `grug_core` that reports the rising edge of `zoom` and `aux1` per player.
+- **Key edges** (MQ writes it, QB uses it): one globalstep helper in a new
+  small mod (`grug_keys`, not `grug_core`, which Round 43 edits in parallel)
+  that reports the rising edge of `zoom` and `aux1` per player.
 - **Markers and icons:** AR delivers textures under the names MB and MQ
   use; until AR's picks merge, MB and MQ use clearly marked placeholders.
 
@@ -137,6 +145,10 @@ placeholders for the picks.
 - The renderer draws the baked icons and the pixel-font region names into
   the world-map variant and the icons alone into the minimap variant; both
   cached, the cache key covering art, font and layout versions (spec §3.6).
+- **All settlements are baked, the other faction's included** (ruling 5):
+  the per-viewer hiding of `grug_map/settlement_icons.lua` (Round 31) ends
+  for the map image; NPC overlays (trainers, quest givers) stay own-faction
+  only.
 - The region-name `hypertext` elements and the dynamic markers of baked kinds
   leave the map page's providers; the minimap's dynamic markers are trainers
   (new icons), quest givers ! and ?, home, waypoints and party (spec §3.7).
@@ -148,8 +160,10 @@ placeholders for the picks.
 The four-mode box (3D with the cloak dropdown, Stats, Effects,
 Achievements; the professions overview as a fifth mode until Round 45), the
 gear box (eight slots and the Scout's arrow slot, class hand labels), the
-short inventory; shift-click inventory ↔ equipment. Measured formspec bytes
-before and after.
+short inventory; shift-click inventory ↔ equipment. The Return-home line
+and its button stay on the Character tab (Round 30 ruling,
+`pages.lua:224-238`); the coin deposit moves to the Inventory tab (FR).
+Measured formspec bytes before and after.
 
 ### 4.6 Wave 2 — TS, Talents & Skills
 
@@ -166,7 +180,8 @@ before and after.
 ### 4.7 Wave 2 — MQ, map and quest window
 
 - Opened by Z (the key helper, §3) and by the Map tab; sized to 80–90 % of
-  `max_formspec_size` with a fixed fallback.
+  `max_formspec_size` with a fixed fallback. The minimap on/off switch
+  (today on the Map tab, player meta) moves into the map window.
 - The overlay (spec §2.12): own player and party arrows, home, discovered
   waypoints, own-faction trainers (about 2/3 size at zoom 1×/2×), question
   marks for active quests only (silver, gold) with the NPC name as tooltip;
@@ -186,9 +201,10 @@ before and after.
 
 One page, no inventory: the party section keeps today's features (online
 players of the own faction, pending invites, the member list while in a
-party), the small PvP section below. Help texts that name Bags, Quests,
-Skills, the old tab order or keys are rewritten; Help names E and Z and the
-aux1 notes (spec §3.5).
+party), the small PvP section below. Every player-facing text that names
+an old tab or key is rewritten: Help, the welcome window
+(`grug_inventory/welcome.lua`, "Skills tab", "Party tab"), trainer and NPC
+lines; Help names E and Z and the aux1 notes (spec §3.5).
 
 ### 4.9 Wave 3 — QB, the quickbar
 
@@ -260,7 +276,14 @@ GUI checklist (desktop and web):
 
 ## 7. Orchestration notes
 
-- Start state: main after Round 43's lane D.
+- Start state: main after Round 42's lane D; wave 1 runs in parallel with
+  Round 43 in its own worktrees (the user, 2026-10-08).
+- **Merge rule:** nothing of this round merges to main before Round 43's
+  lane D has merged and the user has pushed 0.43.0. Lanes that finish
+  earlier wait reviewed; each merges main (with Round 43) into its branch
+  and reruns its gates before the merge. MS starts only after Round 43 has
+  merged (it needs the tool and the step registry). Lane D of this round
+  runs after Round 43's lane D (shared status files).
 - Process budget: at most 8 Lua processes at once; engine runs only through
   `tools/luanti_headless.sh`.
 - Files per lane (the briefs list exact files):
@@ -277,8 +300,9 @@ GUI checklist (desktop and web):
   - MB: `grug_map/base.lua`, `minimap.lua`, `minimap_view.lua`,
     `providers.lua` (kinds).
   - MQ: `grug_map/page.lua`, `atlas.lua`, a new window module,
-    `grug_quests/ui.lua` (moved), `grug_core` key helper.
-  - PP: `grug_parties/ui.lua`, `grug_pvp/page.lua`, `grug_inventory/help.lua`.
+    `grug_quests/ui.lua` (moved), the new `grug_keys` mod.
+  - PP: `grug_parties/ui.lua`, `grug_pvp/page.lua`, `grug_inventory/help.lua`,
+    `welcome.lua`.
   - QB: `grug_mounts/`, a quickbar module, `grug_alchemy`/trader potion use.
   - MS: `tools/migrate/steps/`, its test, `grug_core.migrations`.
 - Merge order: IH, FR, AR, MB, then CH, TS, PP, MQ, then QB, MS, then D.
