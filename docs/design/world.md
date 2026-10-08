@@ -577,15 +577,19 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   15 minutes (Round 37, `world_zones.md` §12). A PvP fortress's General
   and his two bodyguards (Round 31) are the same encounter on the same rules.
 - **Fixed walks** (Round 42, [round 42 plan](../planning/round42-plan.md)
-  rulings 5, 10, 11 and 17): a patrol to its next waypoint (also a named
+  rulings 5, 10, 11, 17 and 25): a patrol to its next waypoint (also a named
   rare's), a post guard, a king or a General back to his post or seat, a
   royal guard or bodyguard to an idle leader, the evade run and the rift
   boss's way home walk straight at a goal that stays put, a nudge once a
-  second. A walker that wants to move but moved less than **30 %** of its
-  speed over **1 s** is stuck — also one mobs_redo holds in front of a node
-  named fence, gate or wall or at a drop of 1.5 (town walls and gates are
-  where guards stand), never one it stops at random. A stuck walker asks the
-  engine's pathfinder for a short local path (the same bounded search,
+  second. mobs_redo's random stop of a walking mob does not apply while our
+  nudges walk it (for 1.5 s after each nudge: these fixed walks, the
+  settlement routes and the villagers' amble, also the roam cap's and the
+  wander leash's walk home); free wandering keeps it. A walker that wants to
+  move but moved less than **30 %** of its speed over **1 s** is stuck —
+  also one mobs_redo holds in front of a blocking (walkable) node named
+  fence, gate or wall (a wall torch or a wall sign no longer holds it) or at
+  a drop of 1.5 (town walls and gates are where guards stand). A stuck
+  walker asks the engine's pathfinder for a short local path (the same bounded search,
   checks and smoothing as a fight's, `combat_stats.md` §4 "Navigation"; at
   most one search every **5 s**) to its goal, or to a point 10 then 16
   nodes toward a goal further than 32 nodes, and follows it to its end,
