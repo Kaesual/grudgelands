@@ -570,7 +570,7 @@ do
 	local rows = grug_traders.crown_rows(p)
 	eq(#rows, 1, "F only gear is offered")
 	check(rows[1] and rows[1].result and rows[1].text and
-		rows[1].text:find("Item level 40 becomes 55", 1, true) ~= nil,
+		rows[1].text:find("Item level 41 becomes 55", 1, true) ~= nil,
 		"F ...with the operation's preview (" .. tostring(rows[1] and rows[1].text) .. ")")
 	-- No Fallen Crown: nothing changes.
 	local ok, message = grug_traders.crown_apply(p, rows[1])

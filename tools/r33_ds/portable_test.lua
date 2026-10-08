@@ -6,7 +6,7 @@
 -- design file's tier-top table, so a rounding difference between the two
 -- languages or a typo in a coefficient shows up before wave 2:
 --   A. the tier-top values T1..T6 (L = 10 T) and T7 at 65 and 70;
---   B. the plain-base values (item level 3/10/20/30/40/50);
+--   B. the plain-base values (item level 1/11/21/31/41/51);
 --   C. the tier cap: an enchant never reads above 10 x its tier, the crown's
 --      +1 tier lets a T6 enchant on item level 65 reach the T7 value;
 --   D. every curve is non-decreasing over item levels 1..70 and keeps its
@@ -62,15 +62,16 @@ local TOPS = {
 	dodge_percent = {1.8, 2.1, 2.5, 2.8, 3.1, 3.4, 3.6, 3.7},
 	armor_rating = {0.8, 1.6, 2.4, 3.2, 4.0, 4.8, 5.2, 5.6},
 }
--- "Values on plain bases": item level 3/10/20/30/40/50 with the base's tier.
+-- "Values on plain bases": item level 1/11/21/31/41/51 (the ladder, Round
+-- 45) with the base's tier.
 local BASES = {
 	str = {1, 3, 5, 8, 11, 15},
 	dex = {1, 2, 4, 6, 8, 10},
-	crit_percent = {1.8, 2.1, 2.6, 3.0, 3.5, 3.9},
-	max_mana_percent = {2.3, 2.5, 2.8, 3.1, 3.4, 3.7},
-	armor_rating = {0.5, 0.8, 1.6, 2.4, 3.2, 4.0},
+	crit_percent = {1.7, 2.2, 2.6, 3.1, 3.5, 3.9},
+	max_mana_percent = {2.2, 2.5, 2.8, 3.1, 3.4, 3.7},
+	armor_rating = {0.5, 0.9, 1.7, 2.5, 3.3, 4.1},
 }
-local BASE_ILVL = {3, 10, 20, 30, 40, 50}
+local BASE_ILVL = {1, 11, 21, 31, 41, 51}
 
 local function near(a, b)
 	return math.abs(a - b) < 1e-9

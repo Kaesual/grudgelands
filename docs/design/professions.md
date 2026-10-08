@@ -99,8 +99,8 @@ thing.
 
 - **Profession tier T1–T6** is the crafter's progression in one profession
   (§1). It uses the same six tiers as gear and materials (`items_crafting.md`
-  §3.0: one per ten character levels, item-level anchors 3 / 10 / 20 / 30 /
-  40 / 50). Every profession recipe and station operation needs a profession
+  §3.0: one per ten character levels, base item levels 1 / 11 / 21 / 31 /
+  41 / 51). Every profession recipe and station operation needs a profession
   tier at least its own, and it counts only at the crafter's current tier.
 - **Mastery band** comes from the character's level, not from any
   profession: **Apprentice** from level 1, **Journeyman** 16, **Expert** 31,

@@ -370,7 +370,8 @@ def scout_tables():
             label, " / ".join(str(v) for v in vals),
             " / ".join("%+.1f" % (100 * s) for s in sets), 100 * g60, 100 * g70, rider,
             "pass" if not problems else "%d spread failures" % len(problems)))
-    out += ["", "Plain bases (vendor and crafted item levels 3 / 10 / 20 / 30 / 40 / 50), "
+    out += ["", "Plain bases (vendor and crafted item levels %s), " % " / ".join(
+                str(il) for il in C.BASE_ILVL) +
             "today → proposed: " + " / ".join(
                 "%d → %d" % (with_dex(DEX_TODAY, lambda il=il: ev("dex", il)),
                              with_dex(DEX_PROPOSED, lambda il=il: ev("dex", il)))

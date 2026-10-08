@@ -7,6 +7,11 @@
 -- Tier N rock is "ordinary stone compressed by depth" (Round 24 ruling 1):
 -- a pick of tier >= N digs it at any y. The y bands only say where mapgen
 -- places each rock; no pick is limited by depth.
+-- `ilvl` is the old base item level (3/10/.../50), unread since the item
+-- level ladder (round45-plan.md §4.1): a tier's item levels live in
+-- grug_gear.BRACKETS. The field stays because this table is part of the WP43
+-- projection whose digest grug_mapgen pins (wp40/r7_manifest.lua); changing
+-- it means re-pinning that mapgen manifest.
 grug_materials.TIERS = {
 	{id = 1, key = "bronze", name = "Bronze", min_level = 1, max_level = 10,
 		ilvl = 3, y_max = 31000, y_min = -100,

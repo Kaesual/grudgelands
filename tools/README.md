@@ -599,3 +599,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   are checked against them), this game refuses the world, the shipped tool
   (`--check`, migrate, `--check`) runs in the container, and this game boots
   and both characters join again; a PASS/FAIL table.
+- **Round 45** (`r45_<lane>`): `r45_il` the item level ladder
+  (`portable_test.lua`, the real `grug_gear` with its trinkets,
+  `grug_quality` and grug_core's level gate under a stub `core`): the
+  brackets (base item level 1/11/21/31/41/51, cap 10 × tier), every gear
+  definition and trinket at its bracket's level and requirement with the
+  baked tooltip lines, the requirement rule (the item level from level 1,
+  capped at 60, no first-bracket exception) for drops and crafted bases,
+  consumables off the ladder, and a stack pinned at the old ladder's
+  `grug_ilvl` / `grug_req_level` (lane MS's 0.45.0 step) keeping its level,
+  requirement, tooltip, armor and enchant values.

@@ -235,16 +235,12 @@ local function effective_ilvl(stack, supplied)
 	return value and clamp(math.floor(value), 1, 75) or nil
 end
 
--- Every equipment family carries the requirement min(ilvl, 60), or its
--- definition's up to the definition's own item level, so a first-bracket
--- item stays level 1 up to its item level 3 (round33-plan.md §2.2).
+-- Every equipment family carries the requirement min(ilvl, 60), the item
+-- level from level 1 (grug_gear.required_level, round45-plan.md §4.1).
 -- Callers pass equipment stacks only (family_for is not "tool").
 local function write_item_level_meta(stack, meta, ilvl)
 	meta:set_int("grug_ilvl", ilvl)
-	local definition = stack:get_definition() or {}
-	local authored = ilvl <= (tonumber(definition._grug_ilvl) or 0) and
-		tonumber(definition._grug_req_level) or nil
-	meta:set_int("grug_req_level", authored or math.min(ilvl, 60))
+	meta:set_int("grug_req_level", grug_gear.required_level(ilvl))
 end
 
 -- A stack's equip requirement: its own, else its definition's; nil for none.

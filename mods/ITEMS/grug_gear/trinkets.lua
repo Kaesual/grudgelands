@@ -1,7 +1,8 @@
 -- The six core trinket identities, materialized once per tier by the Round 9
 -- ruling. Mechanics consume the authored fields below; quality owns affix meta.
+-- Their item level and requirement are the gear ladder's (grug_gear.BRACKETS,
+-- round45-plan.md §4.1), baked into the description like every base item's.
 
-local ILVLS = {3, 10, 20, 30, 40, 50}
 local TIER_NAMES = {"Tin", "Iron", "Steel", "Gold", "Embersteel",
 	"Abyssal Steel"}
 
@@ -57,15 +58,16 @@ for identity_index = 1, #identities do
 		local value = identity.values[tier]
 		local rage = identity.rage and identity.rage[tier] or nil
 		local special = identity.line(value, rage)
+		local ilvl = grug_gear.BRACKETS[tier].ilvl
 		core.register_craftitem(grug_gear.trinket_item(identity.key, tier), {
 			description = TIER_NAMES[tier] .. " " .. identity.name ..
-				"\nItem level " .. ILVLS[tier] .. "\n" ..
+				"\nItem level " .. ilvl .. "\n" ..
 				core.colorize("#9aa0a6", special),
 			inventory_image = identity.image,
 			groups = {grug_gear = 1, grug_equip_trinket = 1},
 			stack_max = 1,
-			_grug_ilvl = ILVLS[tier],
-			_grug_req_level = grug_gear.bracket_required_level(tier, ILVLS[tier]),
+			_grug_ilvl = ilvl,
+			_grug_req_level = grug_gear.required_level(ilvl),
 			_grug_bracket = tier,
 			_grug_quality = 1,
 			_grug_quality_family = "trinket",

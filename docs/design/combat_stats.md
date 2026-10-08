@@ -160,8 +160,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     still costs at least 1 HP.
 - **Every equipment slot enforces the item's level requirement**
   min(item level, 60) (Round 33, round33-plan.md §2.2): weapons, the
-  Scout's Melee offhand, armour, shields, spellbooks and trinkets alike; T1
-  bases require level 1, boss drops at item level 65/70 level 60. The
+  Scout's Melee offhand, armour, shields, spellbooks and trinkets alike;
+  base items require their base item level 1 / 11 / 21 / 31 / 41 / 51
+  (the ladder, Round 45), boss drops at item level 65/70 level 60. The
   definition carries `_grug_req_level`, a dropped, upgraded or crowned stack
   its own `grug_req_level` (`grug_inventory/equipment.lua`, the allow
   callback; `grug_quality`);

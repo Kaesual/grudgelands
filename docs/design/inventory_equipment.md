@@ -187,8 +187,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger. The
     hand-slot table above says which slot takes which family. Level and
     occupied-hand checks also apply; the level check covers every slot (below).
-    Ordinary T1 items require level 1 despite base-stat item level 3;
-    elevated found-item levels retain their own requirement. Common `Usable by`
+    Base items require their item level (1 / 11 / 21 / 31 / 41 / 51, the
+    ladder of Round 45; T1 needs level 1); found items retain their own
+    requirement. Common `Usable by`
     tooltip text lists permitted classes; it never changes with the viewer.
     Broken items remain visibly equipped but provide no usable combat weapon.
   - **No migration**: weapons stay valid `main` items and nothing of a
