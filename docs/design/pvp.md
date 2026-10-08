@@ -38,7 +38,7 @@ eligibility and flag".
   unflagged, neither can harm the other.
 - A player is **flagged** while any of these holds:
   - **location:** standing on contested ground or in enemy territory (§1);
-  - **the button** "Flag me for PvP" (PvP tab): 60 s from the press; a
+  - **the button** "Flag me for PvP" (Party & PvP tab): 60 s from the press; a
     second press restarts the 60 s;
   - **PvP contact** (§3): 60 s after the last contact.
 - **Only own peaceful territory clears the location flag**, and the player
@@ -109,7 +109,9 @@ eligibility and flag".
 
 ## 5. Interface
 
-- **PvP tab** (Character UI, right after Party): the "Flag me for PvP"
+- **The PvP section of the Party & PvP tab** (Round 44: one tab with the
+  party, below its section, no inventory; `grug_pvp/page.lua` installs it
+  into `grug_parties`'s page): the "Flag me for PvP"
   button; the state — "Safe", "Flagged: Contested Territory", "Flagged:
   Enemy Territory" or "Flagged for N s" (button or contact) — with one
   explanatory line; "In PvP combat: no mount, food or travel." while it
@@ -211,7 +213,7 @@ combat may follow its target in).
   only these two, also hold a **named war commander**: a level-60 elite with
   the leaders' factors (1.15 × size, 1.5 × HP on top of the elite's), the
   guard chassis, respawning after 270–330 s like a captain and counted as a
-  captain on the PvP tab. He has no authored socket: he stands five nodes
+  captain on the Party & PvP tab. He has no authored socket: he stands five nodes
   beside the captain, across from the camp's west yard post. He is the main
   line's optional party fight in that camp; the captain stays its solo
   target. His name lives in `pvp_names.json` (`commanders`): War Commander

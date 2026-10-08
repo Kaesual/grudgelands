@@ -1027,9 +1027,10 @@ territory.
   dialog open. There is no kick button. After the arrival the normal
   inventory returns.
 - **A welcome window greets each character once**, right after its arrival
-  in the start town: the player's line (name, race, class, faction), five
-  short points (explore, level up, quests, skills on the hotbar, a party with
-  friends), a pointer to Help, and a small open-source note with link buttons
+  in the start town: the player's line (name, race, class, faction), six
+  short points (explore, level up, quests, skills on the hotbar, E for the
+  mounts and potions and Z for the map, a party with friends), a pointer to
+  Help, and a small open-source note with link buttons
   to Discord, GitHub issues, the source, CREDITS.md and the support page.
   "Got it" or Esc closes it for good; the arrival happens once, so nothing is
   stored for it.

@@ -538,3 +538,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `luanti_headless.sh`; `high_quality.patch` as `GAME_PATCH=` for a second
   boot at high quality) logs the Map tab's formspec bytes per faction, the
   minimap's densest capital window and each king's place in its capital.
+  `r44_pp`: `portable_test.lua` loads the real sfinv, `grug_inventory`'s
+  `ui.lua`, `help.lua` and `welcome.lua`, `grug_parties/ui.lua` and
+  `grug_pvp/page.lua`: the one Party & PvP tab in and out of a party (both
+  sections, no inventory view, inside the window), every party and PvP field
+  still handled, the PvP 1 s check, Help without a view, the new tab and key
+  names in Help and the welcome window, and a scan of every Lua string
+  literal and JSON line under `mods/` for a removed tab name; it prints the
+  page's bytes.

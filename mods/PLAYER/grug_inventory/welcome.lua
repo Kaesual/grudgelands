@@ -3,14 +3,14 @@
 -- no state of its own: the arrival happens exactly once, so a window closed
 -- with Esc or lost to a disconnect is never shown again.
 --
--- Real coordinates, 14 x 9.3: wide rather than tall, because a form unit is
+-- Real coordinates, 14 x 9.75: wide rather than tall, because a form unit is
 -- about 1/15 of the window height (at least 53 px at 96 dpi) while the font
 -- keeps its pixel size, so short boxes overflow on common screens. The text
 -- is three hypertext[] elements (title, body, footer); each line is its own
 -- paragraph with the engine's paragraph gap, so there are no blank lines.
--- At 53 px per unit the body needs about 4.3 of its 4.6 units and the footer
--- 0.9 of its 1.35 (1024x600 also gives 53 px per unit); an overflowing box
--- scrolls.
+-- At 53 px per unit the body needs about 4.7 of its 5.05 units and the
+-- footer 0.9 of its 1.35 (1024x600 also gives 53 px per unit); an
+-- overflowing box scrolls.
 -- The links are the Help -> About addresses plus the credits, as
 -- button_url[] (the client asks before opening a browser), in one row with
 -- "Got it".
@@ -42,9 +42,10 @@ local BODY = table.concat({
 		"The closer you travel to the front, the more dangerous it gets."),
 	point("Level up.", "Creatures, quests, mining and fishing all give experience, up to level 60."),
 	point("Do quests.", "A yellow <b>!</b> above someone means they have a task for you."),
-	point("Use your skills.", "Drag skills from the Skills tab onto your hotbar, " ..
+	point("Use your skills.", "Drag skills from the Talents & Skills tab onto your hotbar, " ..
 		"select one and left-click."),
-	point("Team up.", "Invite friends of your faction on the Party tab and adventure together."),
+	point("Press E and Z.", "E opens your mounts and potions, Z the map with your quests."),
+	point("Team up.", "Invite friends of your faction on the Party & PvP tab and adventure together."),
 	colored(MUTED_COLOR, "Everything else is explained on the Help tab of your inventory (I)."),
 }, "\n")
 
@@ -73,20 +74,20 @@ local LINK_GAP = 0.125
 -- Everything but the player's line is fixed, so it is built once.
 local function build_tail()
 	local fs = {
-		("hypertext[%.2f,1.8;%.2f,4.6;;%s]"):format(LEFT, TEXT_W, esc(BODY)),
-		("box[%.2f,6.5;%.2f,0.03;%s]"):format(LEFT, TEXT_W, RULE_COLOR),
-		("hypertext[%.2f,6.6;%.2f,1.35;;%s]"):format(LEFT, TEXT_W, esc(FOOTER)),
+		("hypertext[%.2f,1.8;%.2f,5.05;;%s]"):format(LEFT, TEXT_W, esc(BODY)),
+		("box[%.2f,6.95;%.2f,0.03;%s]"):format(LEFT, TEXT_W, RULE_COLOR),
+		("hypertext[%.2f,7.05;%.2f,1.35;;%s]"):format(LEFT, TEXT_W, esc(FOOTER)),
 	}
 	local x = LEFT
 	for _, link in ipairs(LINK_ROW) do
 		local url = link.url or URLS[link.id]
 		assert(url, "[grug_inventory] welcome: no address for link " .. link.id)
-		fs[#fs + 1] = ("button_url[%.2f,8.2;%.2f,0.6;grug_welcome_%s;%s;%s]"):format(
+		fs[#fs + 1] = ("button_url[%.2f,8.65;%.2f,0.6;grug_welcome_%s;%s;%s]"):format(
 			x, link.w, link.id, esc(link.label), esc(url))
 		x = x + link.w + LINK_GAP
 	end
 	fs[#fs + 1] = "style[grug_welcome_ok;bgcolor=#2f6a2a;font=bold]"
-	fs[#fs + 1] = ("button_exit[%.2f,8.1;2.5,0.8;grug_welcome_ok;Got it]"):format(
+	fs[#fs + 1] = ("button_exit[%.2f,8.55;2.5,0.8;grug_welcome_ok;Got it]"):format(
 		LEFT + TEXT_W - 2.5)
 	return table.concat(fs)
 end
@@ -114,7 +115,7 @@ end
 function grug_inventory.welcome_formspec(player)
 	local head = "<big><b>" .. colored(HEADING_COLOR, "Welcome to Grudgelands") ..
 		"</b></big>\n" .. colored(MUTED_COLOR, who(player))
-	return "formspec_version[4]size[14,9.3]" ..
+	return "formspec_version[4]size[14,9.75]" ..
 		("hypertext[%.2f,0.35;%.2f,1.4;;%s]"):format(LEFT, TEXT_W, esc(head)) .. TAIL
 end
 

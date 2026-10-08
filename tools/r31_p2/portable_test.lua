@@ -14,11 +14,12 @@
 --      untimed contested icon with its territory label, the tagged icon with
 --      the countdown caption for button and contact, no icon for a timer at
 --      0; labels and details fit the Effects tab's clip widths;
---   P  the PvP tab: button, headline, detail, combat line and all seven
---      counters; every element above the shared inventory (y 7.0) and
---      inside the page width; the button flags and re-sends; the 1 s poll
---      re-sends only while the open tab's text changes; another page gets
---      nothing; no ordering hook (Round 44: grug_inventory's tab table);
+--   P  the PvP section of the Party & PvP tab (Round 44; the page itself:
+--      tools/r44_pp): button, headline, detail, combat line and all seven
+--      counters; every element inside the window below the section's top;
+--      the button flags and re-sends; the 1 s poll re-sends only while the
+--      open tab's text changes; another page gets nothing; no page or
+--      ordering hook of its own (grug_inventory's tab table);
 --   B  the banner's second line (since Round 32 the territory line,
 --      tested in tools/r32_f1): layout only, the line under the banner,
 --      the flight warning under it and above the level-up banner;
@@ -205,11 +206,12 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- P: page.lua, the PvP tab
+-- P: page.lua, the PvP section of the Party & PvP tab
 -- ---------------------------------------------------------------------------
 do
 	local steps, loaded, pages, sends = {}, {}, {}, {}
 	local players = {}
+	local PAGE, TOP = "grug_parties:group", 8.35
 	change_callbacks = {}
 	rawset(_G, "core", {
 		get_current_modname = function() return "grug_pvp" end,
@@ -227,38 +229,36 @@ do
 			return list
 		end,
 	})
+	-- grug_parties owns the page and draws the section from TOP down.
+	rawset(_G, "grug_parties", {PAGE = PAGE})
 	rawset(_G, "sfinv", {
 		pages = {}, pages_unordered = {}, contexts = {},
-		register_page = function(name, def)
-			def.name = name
-			sfinv.pages[name] = def
-			sfinv.pages_unordered[#sfinv.pages_unordered + 1] = def
+		register_page = function(name)
 			pages[#pages + 1] = name
-		end,
-		make_formspec = function(_, _, content, show_inv)
-			return (show_inv and "INV|" or "") .. content
 		end,
 		set_player_inventory_formspec = function(player, context)
 			sends[#sends + 1] = player:get_player_name()
-			context.last_form = sfinv.pages[context.page]:get(player, context)
+			context.last_form = grug_parties.pvp_section.get(player, context, TOP)
 		end,
 	})
 	rawset(_G, "grug_pvp", fake_pvp())
 	dofile(repo .. "/mods/PLAYER/grug_pvp/page.lua")
-	local def = sfinv.pages["grug_pvp:pvp"]
-	check(def and def.title == "PvP", "P the PvP page is registered")
-	eq(#change_callbacks, 1, "P the page follows grug_pvp changes")
+	local section = grug_parties.pvp_section
+	check(section and type(section.get) == "function" and
+		type(section.on_fields) == "function", "P the PvP section is installed")
+	eq(#pages, 0, "P no PvP page of its own")
+	eq(#change_callbacks, 1, "P the section follows grug_pvp changes")
 
 	local bob = fake_player("bob")
 	players.bob = bob
-	local context = {page = "grug_pvp:pvp"}
+	local context = {page = PAGE}
 	sfinv.contexts.bob = context
 	pvp_state.bob = {flagged = true, reason = "contact", seconds_left = 12, pvp_combat = true}
 	pvp_stats.bob = {kills = 4, killing_blows = 2, deaths = 1, guards = 9, captains = 1,
 		generals = 0, kings = 1}
-	local form = def:get(bob, context)
-	check(form:sub(1, 4) == "INV|", "P the page carries the shared inventory")
-	check(form:find("button[0.2,2.05;3.6,0.8;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
+	local form = section.get(bob, context, TOP)
+	check(not form:find("list[", 1, true), "P the section carries no inventory")
+	check(form:find("button[9.60,8.35;3.60,0.70;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
 		"P the Flag me for PvP button")
 	check(form:find("Flagged for 12 s", 1, true) ~= nil, "P the headline with seconds")
 	check(form:find("PvP contact", 1, true) ~= nil, "P the reason line")
@@ -269,34 +269,37 @@ do
 	check(form:find("label%[[%d.]+,[%d.]+;9%]") ~= nil, "P a counter value")
 	check(not form:find("rank", 1, true) and not form:find("title", 1, true),
 		"P statistics only: no rank or titles")
-	-- Geometry: every element above y 7.0 and inside the 10.4 width, at about
-	-- six characters per legacy unit for a label (a generous estimate).
+	-- Geometry (real coordinates): every element from TOP down and inside the
+	-- 13.5 x 13.67 window, a label at about 0.15 units a character (the web
+	-- build; generous) and 0.2 below its middle.
 	local inside = true
 	for kind, args in form:gmatch("(%a+)%[([^%]]*)%]") do
 		local x, y, rest = args:match("^([%d.]+),([%d.]+);(.*)$")
 		x, y = tonumber(x), tonumber(y)
 		if kind == "label" and x then
 			local text = rest:gsub("\27%(c@#%x+%)", "")
-			if y > 6.5 or x + #text / 6 > 10.2 then
+			if y < TOP or y + 0.2 > 13.4 or x + #text * 0.15 > 13.3 then
 				inside = false
 				print("outside: " .. args)
 			end
 		elseif kind == "button" and x then
 			local w, h = rest:match("^([%d.]+),([%d.]+);")
-			if y + tonumber(h) > 7.0 or x + tonumber(w) > 10.4 then inside = false end
+			if y < TOP or y + tonumber(h) > 13.4 or x + tonumber(w) > 13.4 then inside = false end
 		end
 	end
-	check(inside, "P every element fits above the inventory and inside the page")
+	check(inside, "P every element inside the window, under the section's top")
 	-- Stats labels do not run into their values.
 	local longest = 0
 	for _, row in ipairs(V.STATS) do longest = math.max(longest, #row[2]) end
-	check(longest / 6 < 3.6, "P counter labels end before their values")
+	check(longest * 0.15 < 4.2, "P counter labels end before their values")
 
 	-- The button.
 	sends = {}
 	pvp_state.bob = {flagged = false}
 	context.grug_pvp_key = V.page_key(pvp_state.bob, pvp_stats.bob)
-	local handled = def:on_player_receive_fields(bob, context, {grug_pvp_flag = "Flag me for PvP"})
+	check(section.on_fields(bob, context, {grug_party_refresh = "Refresh"}) == false,
+		"P other fields are not the section's")
+	local handled = section.on_fields(bob, context, {grug_pvp_flag = "Flag me for PvP"})
 	check(handled == true and pvp_calls.flag_now == 1, "P the button flags the player")
 	eq(#sends, 1, "P the button re-sends the page once")
 	check(context.last_form and context.last_form:find("Flagged for 60 s", 1, true) ~= nil,
@@ -326,7 +329,7 @@ do
 	eq(pvp_calls.state, calls, "P another page asks grug_pvp nothing")
 	change_callbacks[1](bob, {})
 	eq(#sends, 2, "P a change on another page re-sends nothing")
-	context.page = "grug_pvp:pvp"
+	context.page = PAGE
 	change_callbacks[1](bob, {})
 	eq(#sends, 3, "P a change on the open tab re-sends at once")
 	-- grug_pvp fires once at join, possibly before sfinv made a context.

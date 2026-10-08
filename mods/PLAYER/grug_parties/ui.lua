@@ -1,4 +1,14 @@
+-- The Party & PvP tab (spec §3.8, Round 44 lane PP): the party section on
+-- top (invitation and HUD settings, the online players of the own faction,
+-- pending invitations, the current party), the PvP section below it
+-- (grug_pvp/page.lua installs it as grug_parties.pvp_section). No inventory
+-- view: the page has the whole window. Real coordinates.
+
 local PAGE = "grug_parties:group"
+grug_parties.PAGE = PAGE
+-- Where the PvP section starts, under the party's lowest row (7.83) and the
+-- separator line.
+local SEPARATOR_Y, PVP_Y = 8.10, 8.35
 
 local function esc(value) return core.formspec_escape(tostring(value or "")) end
 local function health_color_mode(player)
@@ -138,14 +148,21 @@ local function content(player, context)
 	if context.grug_party_notice then
 		fs[#fs + 1] = "textarea[6.85,4.25;6.35,1.45;;;" .. esc(context.grug_party_notice) .. "]"
 	end
+	local pvp = grug_parties.pvp_section
+	if pvp then
+		fs[#fs + 1] = ("box[0.20,%.2f;13.10,0.03;#ffffff40]"):format(SEPARATOR_Y)
+		fs[#fs + 1] = pvp.get(player, context, PVP_Y)
+	end
 	return table.concat(fs)
 end
 
-sfinv.register_page(PAGE, {title = "Party", on_enter = function(_, player, context)
+sfinv.register_page(PAGE, {title = "Party & PvP", on_enter = function(_, player, context)
 	rebuild_roster(player, context)
 end, get = function(_, player, context)
-	return sfinv.make_formspec(player, context, content(player, context), true)
+	return sfinv.make_formspec(player, context, content(player, context), false)
 end, on_player_receive_fields = function(_, player, context, fields)
+	local pvp = grug_parties.pvp_section
+	if pvp and pvp.on_fields(player, context, fields) then return true end
 	if fields.grug_party_online_list then
 		local event = core.explode_textlist_event(fields.grug_party_online_list)
 		local rows = context.grug_party_online_rows or {}
