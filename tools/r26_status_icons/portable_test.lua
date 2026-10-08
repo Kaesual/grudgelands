@@ -506,7 +506,13 @@ sfinv = {
 grug_inventory = {equipment_slots = {},
 	selected_button_style = function(field, selected)
 		return "style[" .. field .. ";" .. tostring(selected) .. "]"
-	end}
+	end,
+	-- The gear box beside every mode (Round 44): no slots, no bags, no quiver.
+	BAG_COUNT = 0, SHIFT_LIST = "grug_shift", has_quiver = function() return false end,
+	wrap_text = function(text) return text end}
+grug_classes = grug_classes or {}
+grug_classes.get_class = grug_classes.get_class or function() return "warrior" end
+function alice:get_inventory() return {get_size = function() return 0 end} end
 grug_xp = {register_on_level_change = function() end, get_level = function() return 5 end}
 grug_money = {register_on_change = function() end}
 function grug_core.register_on_equipment_change() end
@@ -522,8 +528,8 @@ local page = character:get(alice, context)
 check(page:find("No active effects", 1, true) ~= nil, "effects empty state")
 check(page:find("style[grug_character_effects;true]", 1, true) ~= nil,
 	"effects button styled selected")
-check(page:find("button[0.00,0.00;1.50,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
-	"stats tab button")
+check(page:find("button[1.25,0.35;1.20,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
+	"stats mode button")
 
 -- Several effects: icon with frame, name, time, detail.
 local bread_def = {description = "Bread\nRestores HP", inventory_image = "grug_cooking_bread.png"}
@@ -540,7 +546,7 @@ page = character:get(alice, context)
 local function has(text, label) check(page:find(text, 1, true) ~= nil, label) end
 has(";0.80,0.80;" .. fs_escape(bread .. "^grug_status_frame_buff.png") .. "]",
 	"food row shows the item image on its frame")
-has("image[0.20,0.95;0.80,0.80;" ..
+has("image[0.40,1.30;0.80,0.80;" ..
 	fs_escape("grug_status_elixir_focus.png^grug_status_frame_buff.png") .. "]",
 	"first row: row order (elixir before food)")
 has(fs_escape("Bread  (c@#f0c75e)5 min left"), "food name and time")
@@ -553,8 +559,8 @@ has(fs_escape("grug_status_slowed.png^grug_status_frame_debuff.png"), "slow debu
 has("40% slower", "slow detail from the aggregator")
 check(page:find("Maximum HP", 1, true) == nil, "effects tab hides the stats")
 
--- Refresh policy: re-sent only while the effects tab is selected and its
--- printed text changed.
+-- Refresh policy: re-sent only while the effects mode is selected and its
+-- printed text changed (Return home has no home here).
 resent = 0
 for _, fn in ipairs(steps) do fn(1) end
 eq(resent, 0, "unchanged effects: nothing re-sent")

@@ -37,7 +37,7 @@
 --   grug_achievements.unlocked_cloaks(player) -> {id, ...}
 --   grug_achievements.cloak_dropdown(player, x, y, w) -> formspec
 --   grug_achievements.choose_cloak_by_name(player, name) -> changed?
---   grug_achievements.character_achievements_formspec(player, context)
+--   grug_achievements.character_achievements_formspec(player, context, area)
 --   grug_achievements.handle_tab_fields(player, context, fields) -> handled?
 --
 
@@ -78,7 +78,7 @@ local function announce(player, rows)
 		grug_core.feed(player, "notice", text, "achievement:" ..
 			row.achievement.id .. ":" .. row.tier)
 	end
-	-- The dropdown on the Stats tab and the list on this tab both changed.
+	-- The cloak picker (3D mode) and the Achievements list both changed.
 	grug_inventory.refresh_character(player)
 end
 
@@ -264,7 +264,7 @@ grug_visuals.register_cloak_source(function(player)
 	return R.cloak_texture(book, meta), R.selected(book, meta)
 end)
 
--- The Character page's cloak picker (Stats tab, under the model). Items are
+-- The Character page's cloak picker (3D mode, beside the model). Items are
 -- the owned cloaks by name; the client sends the chosen name back.
 function grug_achievements.cloak_dropdown(player, x, y, w)
 	local meta = player:get_meta()
@@ -294,13 +294,13 @@ function grug_achievements.choose_cloak_by_name(player, name)
 end
 
 --
--- The Achievements tab of the Character page: two columns of six rows, the
--- cloak's outer face beside each, paged when there are more.
+-- The Achievements mode of the Character page: one column of rows in the
+-- page's mode area (Round 44, real coordinates), the cloak's outer face
+-- beside each, paged when there are more.
 --
 
-local COLUMNS_X = {0.2, 5.3}
-local ROW_Y, ROW_STEP, ROWS = 0.95, 0.95, 6
-local PER_PAGE = ROWS * #COLUMNS_X
+local ROW_STEP, PER_PAGE = 0.95, 7
+local PAGER_H = 0.7
 local TEXT_CHARS = 38
 
 local function clip(text, limit)
@@ -356,7 +356,9 @@ local function page_count(list)
 	return math.max(1, math.ceil(#list / PER_PAGE))
 end
 
-function grug_achievements.character_achievements_formspec(player, context)
+-- `area` is the mode area {x, y, w, h}: the rows from its top, the pager at
+-- its foot.
+function grug_achievements.character_achievements_formspec(player, context, area)
 	local list = R.visible_list(book, faction_of(player))
 	local pages = page_count(list)
 	local page = math.max(1, math.min(context.grug_achievements_page or 1, pages))
@@ -368,27 +370,28 @@ function grug_achievements.character_achievements_formspec(player, context)
 		if not ach then
 			break
 		end
-		local column = math.floor((slot - 1) / ROWS) + 1
-		local x = COLUMNS_X[column]
-		local y = ROW_Y + ((slot - 1) % ROWS) * ROW_STEP
+		local x = area.x
+		local y = area.y + (slot - 1) * ROW_STEP
 		local title, status, text, image, tip = grug_achievements.row(player, ach)
-		-- Legacy tooltip[] rects are in spacing units (pages.lua TOOLTIP_W):
-		-- 4.0 x 0.8 covers the row's picture and both lines.
-		fs[#fs + 1] = ("tooltip[%.2f,%.2f;4.0,0.8;%s]"):format(x, y,
+		-- The rect covers the row's picture and both lines.
+		fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,0.85;%s]"):format(x, y, area.w,
 			core.formspec_escape(tip))
 		if image then
 			fs[#fs + 1] = ("image[%.2f,%.2f;0.42,0.84;%s]"):format(x, y,
 				core.formspec_escape(image))
 		end
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y - 0.05,
+		-- Real-coordinate labels are centred on their y.
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.2,
 			core.formspec_escape(title .. "  " .. status))
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.37,
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.62,
 			core.formspec_escape(clip(text, TEXT_CHARS)))
 	end
 	if pages > 1 then
-		fs[#fs + 1] = ("button[8.4,0;0.8,0.7;grug_ach_prev;<]" ..
-			"button[9.2,0;0.8,0.7;grug_ach_next;>]label[7.6,0.1;%d/%d]")
-			:format(page, pages)
+		local right, y = area.x + area.w, area.y + area.h - PAGER_H
+		fs[#fs + 1] = ("label[%.2f,%.2f;%d/%d]button[%.2f,%.2f;0.8,%.2f;grug_ach_prev;<]" ..
+			"button[%.2f,%.2f;0.8,%.2f;grug_ach_next;>]"):format(right - 2.5,
+			y + PAGER_H / 2, page, pages, right - 1.7, y, PAGER_H, right - 0.8, y,
+			PAGER_H)
 	end
 	return table.concat(fs)
 end

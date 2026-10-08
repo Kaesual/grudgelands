@@ -908,6 +908,10 @@ end
 do
 	grug_inventory.equipment_slots = {}
 	grug_inventory.has_quiver = function() return false end
+	-- Round 44: the gear box (Return home at its foot) in every mode.
+	grug_inventory.BAG_COUNT = grug_inventory.BAG_COUNT or 0
+	grug_inventory.SHIFT_LIST = "grug_shift"
+	grug_inventory.wrap_text = grug_inventory.wrap_text or function(text) return text end
 	grug_inventory.selected_button_style = function(field, selected)
 		return "style[" .. field .. ";" .. tostring(selected) .. "]"
 	end
@@ -937,9 +941,10 @@ do
 	sfinv.contexts.kay = ctx
 	home_left, home_pending, has_home = 0, false, true
 	sfinv.set_player_inventory_formspec(kay, ctx)
-	local button = "button[2.75,6.25;5.55,0.7;grug_character_home;"
-	check(kay.form:find(button .. "Return home: Inn (Ready)]", 1, true),
-		"K the Stats tab shows Return home: Inn (Ready)")
+	local button = "button[8.50,8.00;4.65,0.8;grug_character_home;"
+	check(kay.form:find(button .. "Return home (Ready)]", 1, true) and
+		kay.form:find("label[8.50,7.60;Home: Inn]", 1, true),
+		"K the gear box shows Home: Inn and Return home (Ready)")
 	local function second() character_step(1.0) end
 	kay.sends = 0
 	for _ = 1, 5 do second() end
@@ -947,7 +952,7 @@ do
 	home_left = 90
 	second()
 	eq(kay.sends, 1, "K a cooldown starts: re-sent")
-	check(kay.form:find(button .. "Return home: Inn (2 min)]", 1, true), "K ...in whole minutes")
+	check(kay.form:find(button .. "Return home (2 min)]", 1, true), "K ...in whole minutes")
 	second()
 	eq(kay.sends, 1, "K the same text is not re-sent")
 	home_left = 89
@@ -956,7 +961,7 @@ do
 	home_left = 60
 	second()
 	eq(kay.sends, 2, "K a new minute is re-sent")
-	check(kay.form:find("Return home: Inn (1 min)", 1, true), "K ...with the new value")
+	check(kay.form:find("Return home (1 min)", 1, true), "K ...with the new value")
 	character_step(0.5)
 	home_left = 1
 	character_step(0.4)
@@ -964,18 +969,21 @@ do
 	home_left = 0
 	second()
 	eq(kay.sends, 3, "K once when it becomes Ready")
-	check(kay.form:find("Return home: Inn (Ready)", 1, true), "K ...showing Ready")
+	check(kay.form:find("Return home (Ready)", 1, true), "K ...showing Ready")
 	for _ = 1, 3 do second() end
 	eq(kay.sends, 3, "K and then nothing")
-	-- another tab or page: nothing re-sent for the countdown
-	ctx.grug_character_tab, ctx.grug_effects_key = "effects", ""
+	-- every mode shows the button (Round 44): the Effects mode is re-sent
+	-- once for the new minute; another page is not re-sent
+	ctx.grug_character_tab = "effects"
+	sfinv.set_player_inventory_formspec(kay, ctx)
+	kay.sends = 0
 	home_left = 50
 	for _ = 1, 3 do second(); home_left = home_left - 1 end
-	eq(kay.sends, 3, "K the Effects tab is not re-sent for the countdown")
+	eq(kay.sends, 1, "K the Effects mode is re-sent once for the countdown")
 	ctx.grug_character_tab = nil
 	ctx.page = "grug_inventory:inventory"
 	for _ = 1, 3 do second(); home_left = home_left - 1 end
-	eq(kay.sends, 3, "K another page is not re-sent")
+	eq(kay.sends, 1, "K another page is not re-sent")
 	ctx.page = "grug_inventory:character"
 	home_left = 0
 	second()
@@ -984,7 +992,7 @@ do
 	character:on_player_receive_fields(kay, ctx, {grug_character_home = "Return home"})
 	eq(home_returns, 1, "K the button asks grug_home.return_home")
 	eq(inventory_sets, sets + 1, "K ...and rebuilds the page at once")
-	check(kay.form:find("Return home: Inn (Preparing arrival)", 1, true), "K Preparing arrival shows")
+	check(kay.form:find("Return home (Preparing arrival)", 1, true), "K Preparing arrival shows")
 	home_pending = false
 	-- no home, no button
 	has_home = false
