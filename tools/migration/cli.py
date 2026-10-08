@@ -61,6 +61,7 @@ Run it from the repository root of the checkout:
 Exit codes: 0 migrated or nothing to do (or checked); 2 refused or failed
 before anything was written; 1 failed after writing began: restore the
 backup. stdout: one JSON object per line; stderr: the same as text.
+Every event and its fields: tools/README.md, "The migration tool".
 """
 
 
