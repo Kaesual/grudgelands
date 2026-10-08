@@ -50,13 +50,17 @@ sources, upgrade cost, visibility and gear recipes were decided on
 4. **A playtest (PT)** before the migration step and the docs: the crafting
    feel (durations, list, output area) is judged in the game, and its
    findings may still change values before MS freezes the step.
-5. **No crafting on main between RG and UI** (coordinator default, pending
-   the user, §8): the lanes merge in one go during the round; the user plays
-   only at PT.
-6. **Craft-grid leftovers** (coordinator default, pending the user, §8):
-   stacks that do not fit offline are handed over at the next join through
-   the give helper; anything still left goes to the crafting output area;
-   only if that is full too, it drops at the character's feet.
+5. **No crafting on main between RG and UI:** accepted; the user plays only
+   at PT.
+6. **Craft-grid leftovers:** stacks that do not fit offline are handed over
+   at the next join through the give helper; anything still left goes to the
+   crafting output area; only if that is full too, it drops at the
+   character's feet.
+7. **Mastery bands go:** spellbooks and bags no longer need a mastery band
+   (`grug_professions/state.lua:223-226`, `tailor.lua:69-97`,
+   `leatherworker.lua:51`); profession tier = item tier for everything (RG).
+8. **Bags give profession XP;** intermediates (bundles, bolts and other
+   `material` recipes) do not (JB).
 
 ## 3. Shared conventions (coordinator defaults; lanes may refine them in their report)
 
@@ -325,14 +329,6 @@ GUI checklist (desktop and web):
 
 ## 8. Open questions for the user
 
-Pending the user (from the plan review, 2026-10-08):
-
-- Rulings 5 and 6 above (coordinator defaults).
-- Mastery requirements: spellbooks (`tailor.lua:97`, mastery 2 at every
-  tier) and bags (`tailor.lua:69-87`, `leatherworker.lua:51`) need a mastery
-  band today; keep them under "profession tier = item tier"?
-- Profession XP for bags and intermediates (bundles, bolts): ruling 31 lists
-  gear, trinkets, potions, dishes and enchants. Do bags count?
-
-Measured during the round and reported: how many grid routes convert
+None. The plan review's questions were answered on 2026-10-08 (rulings
+5–8). Measured during the round and reported: how many grid routes convert
 automatically and which need hand edits (RG).

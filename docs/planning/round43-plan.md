@@ -233,7 +233,9 @@ between, and the game stamps 0.43.0.
 - The round workflow: §3 and §5 item 6 name four outcomes; the gates add
   "each declared step has its test" and, whenever `tools/migrate.py` or
   `tools/migration/` changes, the container run of **every** declared step's
-  test (old steps run on the shared helpers); the templates
+  test (old steps run on the shared helpers), and the online-work fixtures
+  of every declared step stay in `tools/run_fixtures.sh` for good (old
+  handlers run against new game code; the user, 2026-10-08); the templates
   `common-brief.md` and `review-common.md` follow.
 - AGENTS.md also records that `origin/main` history is never rewritten
   (contract R8: the platform fetches released commits); the module guide

@@ -319,6 +319,10 @@ Game:
     profession; the profession tier needed equals the item's tier; the
     station within 4 nodes; the result starts at its tier's base item level
     (1/11/21/…).
+35. **Mastery bands go** (the user, 2026-10-08): spellbooks and bags need
+    only the profession tier equal to the item tier, like all gear.
+36. **Bags give profession XP;** intermediates (bundles, bolts, other
+    materials) do not.
 
 ## 3. Round A — window structure
 

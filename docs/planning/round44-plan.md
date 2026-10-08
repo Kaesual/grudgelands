@@ -197,6 +197,10 @@ Measured formspec bytes before and after.
 - Opened by Z (the key helper, §3) and by the Map tab; sized to 80–90 % of
   `max_formspec_size` with a fixed fallback. The minimap on/off switch
   (today on the Map tab, player meta) moves into the map window.
+- The game sets the players' `zoom_fov` to 72° (the user, 2026-10-08), so Z
+  no longer shows the client's "Zoom currently disabled" message
+  (`client/game.cpp:1924-1929`); at the default field of view nothing zooms
+  visibly.
 - The overlay (spec §2.12): own player and party arrows, home, discovered
   waypoints, own-faction trainers (about 2/3 size at zoom 1×/2×), question
   marks for active quests only (silver, gold) with the NPC name as tooltip;
@@ -220,7 +224,9 @@ players of the own faction, pending invites, the member list while in a
 party), the small PvP section below. Every player-facing text that names
 an old tab or key is rewritten: Help, the welcome window
 (`grug_inventory/welcome.lua`, "Skills tab", "Party tab"), trainer and NPC
-lines; Help names E and Z and the aux1 notes (spec §3.5).
+lines; Help names E and Z and the aux1 notes (spec §3.5), including that
+players who set aux1 to toggle open the quickbar on every second press (the
+user: a Help note, no special logic).
 
 ### 4.9 Wave 3 — QB, the quickbar
 
