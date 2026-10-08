@@ -1,0 +1,18 @@
+--- before
++++ after
+@@ -2,0 +3 @@
++'auth' | 'hero' | '#1#ghkkRXxsAHvBW0rNbQ89IQ#n7UrfsH6QWa+vFBAXS+vyS2cW4bjjLTqmsGT4a1qJFu4pNuBZ58sV...(370) | 'fly'
+@@ -4,0 +6 @@
++'item' | 'hero' | '0:0' | 'default:apple 7 0 "\\u0001description\\u0002Migrated apple\\n\\"0.41.1\\"\\u000...(111)
+@@ -6,0 +9,2 @@
++'meta' | 'hero' | 'grug_core:migrate:0.41.3' | 'c-0.41.3'
++'meta' | 'hero' | 'grug_core:migrate:0.41.4' | 'c-0.41.4'
+@@ -8,0 +13 @@
++'meta' | 'hero' | 'it:offline' | '0.41.1'
+@@ -10,0 +16 @@
++'storage' | 'grug_core' | 'migrate_world:0.41.2' | 'w-0.41.2'
+@@ -12 +18 @@
+-'storage' | 'grug_probe_r43_it' | 'delete_me' | 'probe'
++'storage' | 'grug_core' | 'world_version' | '0.41.4'
+@@ -13,0 +20 @@
++'storage' | 'grug_probe_r43_it' | 'offline' | '0.41.1'

@@ -1,0 +1,6 @@
+launcher: staged probe: grug_probe_r43_it
+seconds: 1, exit 1
+joins: []
+--- log lines
+ACTION[Main]: Successfully migrated the metadata of 0 mods
+ACTION[Main]: world.mt updated

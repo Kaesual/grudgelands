@@ -1,0 +1,60 @@
+PASS  setup       w1: the engine created an empty mod_storage.sqlite
+PASS  new world   tool (shipped command line) --check: an unstarted world is new
+PASS  new world   tool with test steps on the new world: nothing due, nothing written
+PASS  setup       boot A: the server ran and both characters joined and left
+PASS  new world   game: the same world is new at its first start
+PASS  guard       a new world is stamped with the game's version
+PASS  steps       grug_core's migration runner is the first join callback
+PASS  guard       a world crossing steps is refused (message names the steps and the tool)
+PASS  guard       the refused start wrote nothing
+PASS  steps       tool --check: 0.41.0 (no record), four steps due, write access on all three
+PASS  steps       tool --check wrote nothing
+PASS  steps       tool (shipped command line, empty migrate list): nothing due
+PASS  steps       tool: the four test steps ran in order
+PASS  steps       tool: offline writes and markers are in the databases
+PASS  setup       boot C: the server ran and both characters joined and left
+PASS  guard       a compatible move (0.41.4, no step between) starts and bumps the record
+PASS  steps       game: the offline mod-storage write and delete are seen at load
+PASS  steps       game: the world marker ran once at load with its value
+PASS  steps       game, hero's join: the two markers ran in step order, then were deleted
+PASS  steps       game, hero's join: the offline meta, inventory and privilege are loaded
+PASS  steps       game, bystander's join: unaffected (no marker, no handler call)
+PASS  steps       after boot C: no marker left in the databases, the handlers' writes saved
+PASS  map reset   on the emptied map the tool runs only the due step 0.41.5
+PASS  map reset   boot J started from 0.41.5 with the reset pending
+PASS  map reset   the step's offline write and its world work (after every clear) are done
+PASS  map reset   the map reset is done and the record is at the new version
+PASS  setup       boot D: a new world ran without any join
+PASS  new world   tool: a booted world without characters is existing (0.41.0, step due)
+PASS  guard       an existing world without characters is not taken for new: refused
+PASS  new world   game: the same world is existing too (no deadlock: refused, not new)
+PASS  new world   tool: runs the step the game asked for
+PASS  new world   game: starts after the tool and bumps the record
+PASS  guard       a newer world is refused (both versions, downgrade to the record)
+PASS  guard       the tool refuses the newer world too (exit 2, world_newer)
+PASS  guard       a malformed record is refused by the game
+PASS  guard       a malformed record is refused by the tool too (exit 2, record)
+PASS  postgresql  the local Luanti build has no PostgreSQL backend (seeding route)
+PASS  postgresql  postgres started
+PASS  postgresql  runner versions
+PASS  postgresql  pg empty tables: --check sees a new world
+PASS  postgresql  pg empty tables: migrating writes nothing
+PASS  postgresql  pg seeding: rows equal the SQLite world
+PASS  postgresql  pg --check: version, due steps, write access on all three
+PASS  postgresql  pg --check: its writes rolled back
+PASS  postgresql  pg --check: a lock held on mod_storage is refused
+PASS  postgresql  pg --check: a lock held on player is refused
+PASS  postgresql  pg after the lock refusals: unchanged
+PASS  postgresql  pg: without the PGPASSFILE password the connection is refused
+PASS  postgresql  pg migrate: the four test steps
+PASS  postgresql  pg migrate: step counts
+PASS  postgresql  pg migrate: rows equal the SQLite world after the same steps
+PASS  postgresql  pg migrate: record and markers
+PASS  postgresql  pg migrate again: nothing due
+PASS  postgresql  pg: a step that raises after writing exits 1 and rolls every backend back
+PASS  postgresql  pg: a step that renames an auth entry exits 1 and rolls every backend back
+PASS  postgresql  platform layout --check
+PASS  postgresql  platform layout migrate: rows equal the SQLite world after the same steps
+PASS  postgresql  the PostgreSQL run finished
+
+58 checks, 0 failed

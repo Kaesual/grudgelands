@@ -316,7 +316,8 @@ def keep_evidence(run, phase, result, launcher_out):
     (folder / ("%s.txt" % phase)).write_text(re.sub(r"/tmp/grudgelands-headless\.\w+",
                                                     "<run>", text))
     if result.obs is not None:
-        (folder / ("%s.obs.json" % phase)).write_text(json.dumps(result.obs, indent=1) + "\n")
+        (folder / ("%s.obs.json" % phase)).write_text(re.sub(
+            r"/tmp/grudgelands-headless\.\w+", "<run>", json.dumps(result.obs, indent=1)) + "\n")
 
 
 def refused_with(result, *pieces):

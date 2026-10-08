@@ -1,0 +1,108 @@
+{
+ "finish": "every planned character left",
+ "first_join_callback": "@<run>/user/games/grudgelands/mods/CORE/grug_core/world_version.lua",
+ "joins": [
+  {
+   "fly": true,
+   "log": [
+    {
+     "kind": "world",
+     "marker": "w-0.41.2",
+     "reset_applied": 0,
+     "reset_pending": false,
+     "step": "0.41.2"
+    },
+    {
+     "kind": "character",
+     "marker": "c-0.41.3",
+     "name": "hero",
+     "pending": [
+      "0.41.3",
+      "0.41.4"
+     ],
+     "step": "0.41.3"
+    },
+    {
+     "kind": "character",
+     "marker": "c-0.41.4",
+     "name": "hero",
+     "pending": [
+      "0.41.4"
+     ],
+     "step": "0.41.4"
+    }
+   ],
+   "main1": "default:apple 7 0 \"\\u0001grug_it\\u0002offline\\u0003description\\u0002Migrated apple\\n\\\"0.41.1\\\"\\u0003\"",
+   "markers": null,
+   "name": "hero",
+   "offline": "0.41.1",
+   "order": "0.41.3;0.41.4;"
+  },
+  {
+   "fly": false,
+   "log": [
+    {
+     "kind": "world",
+     "marker": "w-0.41.2",
+     "reset_applied": 0,
+     "reset_pending": false,
+     "step": "0.41.2"
+    },
+    {
+     "kind": "character",
+     "marker": "c-0.41.3",
+     "name": "hero",
+     "pending": [
+      "0.41.3",
+      "0.41.4"
+     ],
+     "step": "0.41.3"
+    },
+    {
+     "kind": "character",
+     "marker": "c-0.41.4",
+     "name": "hero",
+     "pending": [
+      "0.41.4"
+     ],
+     "step": "0.41.4"
+    }
+   ],
+   "main1": "",
+   "markers": null,
+   "name": "bystander",
+   "offline": "",
+   "order": ""
+  }
+ ],
+ "leaves": 2,
+ "load": {
+  "delete_me": "",
+  "from": "0.41.4",
+  "game": "0.42.0",
+  "keep": "probe",
+  "new_world": false,
+  "offline": "0.41.1",
+  "offline_reset": "",
+  "reset_applied": 0,
+  "reset_pending": false,
+  "steps": [
+   "0.41.1",
+   "0.41.2",
+   "0.41.3",
+   "0.41.4"
+  ]
+ },
+ "mods_loaded": {
+  "log": [
+   {
+    "kind": "world",
+    "marker": "w-0.41.2",
+    "reset_applied": 0,
+    "reset_pending": false,
+    "step": "0.41.2"
+   }
+  ]
+ },
+ "phase": "w1_C_online"
+}

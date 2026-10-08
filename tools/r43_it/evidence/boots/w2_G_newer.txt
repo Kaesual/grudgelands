@@ -1,0 +1,11 @@
+launcher: staged patch: patch_hook.diff
+seconds: 2, exit 1
+joins: []
+--- log lines
+ERROR[Main]: ModError: Failed to load and run script from <run>/user/games/grudgelands/mods/CORE/grug_core/init.lua:
+ERROR[Main]: [grug_core] This world is at version 0.43.0, newer than this game's version 0.42.0; the server does not start: downgrade to 0.43.0 to continue.
+ERROR[Main]: stack traceback:
+ERROR[Main]: 	[C]: in function 'error'
+ERROR[Main]: 	.../games/grudgelands/mods/CORE/grug_core/world_version.lua:230: in main chunk
+ERROR[Main]: 	[C]: in function 'dofile'
+ERROR[Main]: 	...710n/user/games/grudgelands/mods/CORE/grug_core/init.lua:9: in main chunk
