@@ -1,14 +1,14 @@
 ACTION[Server]: [nv3] target capital
 ACTION[Server]: [nv3] LIVE capital dur_brannoc box (-1975,59,-1672) - (-1651,97,-1331), 1848 blocks forceloaded
-ACTION[Emerge-0]: [nv3] LIVE capital emerged in 12.9 s
+ACTION[Emerge-0]: [nv3] LIVE capital emerged in 12.3 s
 ACTION[Server]: [nv3] LIVE capital 454 objects after 12 s
-ACTION[Server]: [nv3] LIVE capital dur_brannoc: 98 ambling residents (20 walkers, 0 one-spot), 9 patrols; 120 s: find_path 57 (28.5/min, found 46, max 230 us at d 18.0, 3.7 ms), nav searches 57, cap waits 0; arrivals 53, spots given up 36, patrol advances 485, snaps 0
-ACTION[Server]: [nv3] LIVE cache {"corners":338,"legs":55,"max_us":270,"none":14,"ok":41,"pending":0,"search_us":7460,"searches":84,"smooth_us":5738,"street_legs":6,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":4733}
-ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-HRhheh/world/nv3_results.json (7204 bytes)
-ACTION[Server]: [nv3] CENSUS capital dur_brannoc: 180 distinct legs in 13.3 s (146 steps): walkers 130 (ok 93, none 37), patrols 50 (ok 46, none 4, street 28); 211 more searches, 20.7 ms; cache {"corners":1180,"legs":196,"max_us":498,"none":46,"ok":150,"pending":0,"search_us":28173,"searches":295,"smooth_us":16347,"street_legs":28,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":4733}
-ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-HRhheh/world/nv3_results.json (18557 bytes)
-ACTION[Server]: [nv3] LIVE capital_steady dur_brannoc: 98 ambling residents (20 walkers, 0 one-spot), 9 patrols; 60 s: find_path 11 (11.0/min, found 4, max 134 us at d 16.3, 0.6 ms), nav searches 11, cap waits 0; arrivals 36, spots given up 19, patrol advances 242, snaps 0
-ACTION[Server]: [nv3] LIVE cache {"corners":1190,"legs":198,"max_us":498,"none":46,"ok":152,"pending":0,"search_us":28372,"searches":297,"smooth_us":16459,"street_legs":28,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":4733}
-ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-HRhheh/world/nv3_results.json (25712 bytes)
-ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-HRhheh/world/nv3_results.json (25712 bytes)
+ACTION[Server]: [nv3] LIVE capital dur_brannoc: 98 ambling residents (20 walkers, 0 one-spot), 9 patrols; 120 s: find_path 73 (36.5/min, found 57, max 236 us at d 18.0, 4.2 ms), nav searches 73, cap waits 0; arrivals 52, spots given up 57, patrol advances 485, snaps 0
+ACTION[Server]: [nv3] LIVE cache {"corners":345,"legs":55,"max_us":258,"none":14,"ok":41,"pending":0,"search_us":7119,"searches":83,"smooth_us":2562,"street_legs":6,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":4625}
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-pkoNCR/world/nv3_results.json (7218 bytes)
+ACTION[Server]: [nv3] CENSUS capital dur_brannoc: 180 distinct legs in 12.7 s (140 steps): walkers 130 (ok 93, none 37), patrols 50 (ok 46, none 4, street 28); 207 more searches, 20.3 ms; cache {"corners":1180,"legs":196,"max_us":523,"none":46,"ok":150,"pending":0,"search_us":27388,"searches":290,"smooth_us":7827,"street_legs":28,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":4625}
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-pkoNCR/world/nv3_results.json (20444 bytes)
+ACTION[Server]: [nv3] LIVE capital_steady dur_brannoc: 98 ambling residents (20 walkers, 0 one-spot), 9 patrols; 60 s: find_path 7 (7.0/min, found 3, max 121 us at d 16.3, 0.4 ms), nav searches 7, cap waits 0; arrivals 34, spots given up 44, patrol advances 242, snaps 0
+ACTION[Server]: [nv3] LIVE cache {"corners":1185,"legs":197,"max_us":523,"none":46,"ok":151,"pending":0,"search_us":27512,"searches":291,"smooth_us":7850,"street_legs":28,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":4625}
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-pkoNCR/world/nv3_results.json (27598 bytes)
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-pkoNCR/world/nv3_results.json (27598 bytes)
 ACTION[Server]: [nv3] RESULT DONE

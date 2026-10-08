@@ -330,7 +330,9 @@ local function census(name, record, minp, maxp, done)
 				if leg.patrol and entry and entry.street then kind.street = kind.street + 1 end
 				out.legs[#out.legs + 1] = {who = leg.patrol and "patrol" or "walker",
 					d = leg.d, state = state, street = entry and entry.street or nil,
-					corners = entry and entry.points and #entry.points or 0}
+					corners = entry and entry.points and #entry.points or 0,
+					a = state ~= "ok" and core.pos_to_string(leg.a) or nil,
+					b = state ~= "ok" and core.pos_to_string(leg.b) or nil}
 				i = i + 1
 			end
 		end
