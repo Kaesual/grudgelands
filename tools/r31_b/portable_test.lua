@@ -22,7 +22,8 @@
 --      a plain set composes exactly as before (same key, same texture);
 --   F. NPC weapons: weapon_colors gives an item string with the image, plain
 --      without; every king's fixed colours come from its weapon's pool;
---   G. the station legend: nine swatches in the table's colours;
+--   G. the station legend: nine swatches in the table's colours (Round 45:
+--      no station dialog draws it until the Crafting tab's enchanting box);
 --   H. reports the worst-case modifier lengths.
 --
 --   luajit tools/r31_b/portable_test.lua [REPO]
@@ -480,9 +481,8 @@ do
 		check(seen_color[color], "legend swatch is a table colour: " .. color)
 	end
 	check(boxes == 9, "legend has nine swatches (got " .. boxes .. ")")
-	check(read_file(ROOT .. "/mods/PLAYER/grug_jobs/workspaces.lua"):find(
-		"grug_items.enchant_legend_formspec(5, 4.65)", 1, true) ~= nil,
-		"the station form shows the legend")
+	-- Round 45: the bench dialog that drew it is gone; the enchanting box of
+	-- the Crafting tab (lane EU) takes it over.
 end
 
 ------------------------------------------------------------------------------
