@@ -39,24 +39,41 @@ function grug_jobs.profession_overview(player)
 end
 
 local NOTE_COLOR = "#f0c75e"
-local ROW_Y, ROW_STEP = 1.0, 1.3
+-- Real-coordinate labels are centred on their y; one printed line each.
+local LINE_STEP, ROW_GAP = 0.42, 0.26
+-- Characters per line in a mode area `area.w` units wide.
+local CHARS_PER_UNIT = 6.6
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
 end
 
--- The tab body in sfinv's legacy coordinates (content ends before y = 7.0;
--- four rows -- two primaries, Cooking and Alchemy -- end at about 5.7). Pure.
-function grug_jobs.professions_formspec(rows)
-	if #rows == 0 then
-		return "label[0.2,1.0;" .. esc("No professions learned yet. Profession " ..
-			"trainers in the towns and capitals teach them.") .. "]"
-	end
+-- The Professions mode of the Character page, drawn into `area` = {x, y, w,
+-- h} in real coordinates (Round 44): per profession its name and tier, its
+-- progress and, while the level caps it, the note, wrapped to the area's
+-- width; the footer at the area's foot when the rows leave room. Pure.
+function grug_jobs.professions_formspec(rows, area)
+	local width = math.floor(area.w * CHARS_PER_UNIT)
 	local fs = {}
-	for index, row in ipairs(rows) do
-		local y = ROW_Y + (index - 1) * ROW_STEP
-		fs[#fs + 1] = ("label[0.2,%.2f;%s]"):format(y,
-			esc(("%s — Tier %d"):format(row.name, row.tier)))
+	local function line(y, text)
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(area.x, y, esc(text))
+	end
+	-- One label per wrapped line; returns the y below the last one.
+	local function lines(y, text, color)
+		for piece in (grug_inventory.wrap_text(text, width) .. "\n"):gmatch("(.-)\n") do
+			line(y, color and core.colorize(color, piece) or piece)
+			y = y + LINE_STEP
+		end
+		return y
+	end
+	if #rows == 0 then
+		lines(area.y + 0.35, "No professions learned yet. Profession " ..
+			"trainers in the towns and capitals teach them.")
+		return table.concat(fs)
+	end
+	local y = area.y + 0.35
+	for _, row in ipairs(rows) do
+		line(y, ("%s — Tier %d"):format(row.name, row.tier))
 		local progress
 		if row.needed then
 			progress = ("Crafts: %d/%d toward tier %d"):format(row.crafts,
@@ -64,21 +81,25 @@ function grug_jobs.professions_formspec(rows)
 		else
 			progress = "Highest tier reached."
 		end
-		fs[#fs + 1] = ("label[0.2,%.2f;%s]"):format(y + 0.4, esc(progress))
+		y = lines(y + LINE_STEP, progress)
 		if row.capped then
 			-- The full count advances on the next current-tier craft once the
 			-- level allows it (state.lua record_craft).
-			fs[#fs + 1] = ("label[0.2,%.2f;%s]"):format(y + 0.8,
-				esc(core.colorize(NOTE_COLOR, ("Capped by your level: reach level " ..
-				"%d, then craft once more for tier %d."):format(row.next_level,
-				row.tier + 1))))
+			y = lines(y, ("Capped by your level: reach level %d, then craft " ..
+				"once more for tier %d."):format(row.next_level, row.tier + 1),
+				NOTE_COLOR)
 		end
+		y = y + ROW_GAP
 	end
-	fs[#fs + 1] = ("label[0.2,6.4;%s]"):format(esc("Only crafts of the current " ..
-		"tier count toward the next one."))
+	-- The footer when the rows leave room for it (four capped rows do not).
+	local footer = grug_inventory.wrap_text("Only crafts of the current tier " ..
+		"count toward the next one.", width)
+	local _, breaks = footer:gsub("\n", "")
+	local footer_y = area.y + area.h - 0.25 - breaks * LINE_STEP
+	if y <= footer_y then lines(footer_y, footer) end
 	return table.concat(fs)
 end
 
-function grug_jobs.character_professions_formspec(player)
-	return grug_jobs.professions_formspec(grug_jobs.profession_overview(player))
+function grug_jobs.character_professions_formspec(player, area)
+	return grug_jobs.professions_formspec(grug_jobs.profession_overview(player), area)
 end

@@ -168,13 +168,13 @@ local function normalize_quiver(inventory)
 	end
 end
 
--- The Character page's Stats tab prints the total beside the slot, so a
--- changed quiver re-renders a cached Stats tab (pages.lua). Nothing else is
--- re-sent.
+-- The Character page's gear box prints the total beside the slot in every
+-- mode, so a changed quiver re-renders a cached Character page (pages.lua).
+-- Nothing else is re-sent.
 local function quiver_changed(player, inventory)
 	normalize_quiver(inventory)
-	if grug_inventory.refresh_character_tab then
-		grug_inventory.refresh_character_tab(player, "stats")
+	if grug_inventory.refresh_character then
+		grug_inventory.refresh_character(player)
 	end
 end
 
@@ -207,8 +207,10 @@ function grug_inventory.add_to_quiver(player, stack)
 end
 
 -- A move into the quiver: up to `count` arrows of the source stack go in,
--- applied here rather than by the engine (see above).
-local function absorb_into_quiver(player, inventory, from_list, from_index, count)
+-- applied here rather than by the engine (see above). Public for the
+-- Character page's shift-click routing (equipment.lua).
+function grug_inventory.absorb_into_quiver(player, inventory, from_list,
+		from_index, count)
 	local source = inventory:get_stack(from_list, from_index)
 	if not is_arrow(source) then
 		return
@@ -222,6 +224,27 @@ local function absorb_into_quiver(player, inventory, from_list, from_index, coun
 	end
 	source:set_count(source:get_count() - accepted)
 	inventory:set_stack(from_list, from_index, source)
+end
+
+-- Shift-click out of the quiver (equipment.lua's routing): up to `count`
+-- arrows of the visible cell go into the inventory in the give order, never
+-- back into the quiver; what does not fit stays. Returns the number moved.
+function grug_inventory.unload_quiver(player, count)
+	local inv = player:get_inventory()
+	local first = inv:get_stack(QUIVER_LIST, 1)
+	if not is_arrow(first) then
+		return 0
+	end
+	local moving = ItemStack(first)
+	moving:set_count(math.min(count or first:get_count(), first:get_count()))
+	local moved = moving:get_count() -
+		grug_inventory.give(player, moving, true):get_count()
+	if moved > 0 then
+		first:set_count(first:get_count() - moved)
+		inv:set_stack(QUIVER_LIST, 1, first)
+		quiver_changed(player, inv)
+	end
+	return moved
 end
 
 -- Arrows shoot from the quiver first, then from `main` and every bag, so
@@ -393,8 +416,8 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 				stack:get_stack_max() - cell:get_count()))
 		end
 		if from_list ~= QUIVER_LIST then
-			absorb_into_quiver(player, inventory, from_list, info.from_index,
-				info.count or stack:get_count())
+			grug_inventory.absorb_into_quiver(player, inventory, from_list,
+				info.from_index, info.count or stack:get_count())
 		end
 		return 0
 	end

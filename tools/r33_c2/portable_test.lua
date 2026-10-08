@@ -66,7 +66,8 @@ _G.core = {
 }
 local character_level = 5
 _G.grug_xp = {get_level = function() return character_level end}
-_G.grug_inventory = {refresh = function() end, refresh_character_tab = function() end}
+_G.grug_inventory = {refresh = function() end, refresh_character_tab = function() end,
+	wrap_text = function(text) return text end}
 _G.sfinv = {override_page = function() end}
 
 local function load_jobs()
@@ -143,10 +144,13 @@ local overview = jobs.profession_overview(crafter)
 eq(#overview, 4, "four rows on the Professions tab")
 eq(overview[3] and overview[3].name, "Cooking", "Cooking after the primaries")
 eq(overview[4] and overview[4].name, "Alchemy", "Alchemy last")
-local tab = jobs.professions_formspec(overview)
+-- The Character page's mode area (Round 44, real coordinates).
+local area = {x = 0.4, y = 1.25, w = 7.5, h = 7.8}
+local tab = jobs.professions_formspec(overview, area)
 local lowest = 0
-for y in tab:gmatch("label%[0%.2,([%d%.]+);") do lowest = math.max(lowest, tonumber(y)) end
-check(lowest > 0 and lowest <= 6.4, "the tab's rows end inside the page (" .. lowest .. ")")
+for y in tab:gmatch("label%[0%.40,([%d%.]+);") do lowest = math.max(lowest, tonumber(y)) end
+check(lowest > 0 and lowest <= area.y + area.h - 0.25,
+	"the tab's rows end inside the mode area (" .. lowest .. ")")
 
 local page = jobs.crafting_page_content(crafter)
 local slots = {}

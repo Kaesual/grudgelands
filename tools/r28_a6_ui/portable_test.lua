@@ -660,8 +660,10 @@ local refreshed = 0
 grug_inventory.refresh = function() refreshed = refreshed + 1 end
 dofile("mods/PLAYER/grug_jobs/state.lua")
 dofile("mods/PLAYER/grug_jobs/character_tab.lua")
+-- The Character page's mode area the body is drawn into (Round 44).
+local AREA = {x = 0.4, y = 1.25, w = 7.5, h = 7.8}
 local smith = make_player("smith", nil)
-eq(grug_jobs.professions_formspec(grug_jobs.profession_overview(smith)):find("No professions learned", 1, true) ~= nil,
+eq(grug_jobs.professions_formspec(grug_jobs.profession_overview(smith), AREA):find("No professions learned", 1, true) ~= nil,
 	true, "empty professions state")
 smith.meta["grug_jobs:primary:1"] = "weaponsmith"
 smith.meta["grug_jobs:level:weaponsmith"] = 2
@@ -677,7 +679,7 @@ eq(overview[1].crafts, 7, "crafts in tier")
 eq(overview[1].needed, 15, "needed for the next tier")
 eq(overview[1].capped, false, "7/15 at level 15: crafting, not the level, is missing")
 eq(overview[2].capped, false, "cooking T1 is not capped at level 15")
-local prof_fs = grug_jobs.professions_formspec(overview)
+local prof_fs = grug_jobs.professions_formspec(overview, AREA)
 formspec_ok(prof_fs, "professions tab")
 has(prof_fs, fs_escape("Weaponsmith — Tier 2"), "profession name and tier")
 has(prof_fs, fs_escape("Crafts: 7/15 toward tier 3"), "tier progress")
@@ -685,20 +687,22 @@ lacks(prof_fs, "Capped by your level", "no cap note while crafts are missing")
 smith.meta["grug_jobs:crafts:weaponsmith"] = 15
 overview = grug_jobs.profession_overview(smith)
 eq(overview[1].capped, true, "15/15 at level 15: the level blocks tier 3")
-has(grug_jobs.professions_formspec(overview),
-	fs_escape("Capped by your level: reach level 21, then craft once more for tier 3."),
+-- The note wraps to the mode area's width (Round 44).
+local capped_fs = grug_jobs.professions_formspec(overview, AREA)
+has(capped_fs, fs_escape(colorize("#f0c75e", "Capped by your level: reach level 21, then craft")),
 	"cap note when the level blocks")
+has(capped_fs, fs_escape(colorize("#f0c75e", "once more for tier 3.")), "cap note, wrapped")
 smith.meta["grug_jobs:crafts:weaponsmith"] = 7
 has(prof_fs, fs_escape("Crafts: 10/10 toward tier 2"), "cooking progress")
 char_level = 5
 overview = grug_jobs.profession_overview(smith)
 eq(overview[2].capped, true, "level 5 caps cooking T1")
-has(grug_jobs.professions_formspec(overview),
-	fs_escape("Capped by your level: reach level 11, then craft once more for tier 2."),
+has(grug_jobs.professions_formspec(overview, AREA),
+	fs_escape(colorize("#f0c75e", "Capped by your level: reach level 11, then craft")),
 	"saturated cap note")
 char_level = 60
 smith.meta["grug_jobs:level:weaponsmith"] = 6
-has(grug_jobs.professions_formspec(grug_jobs.profession_overview(smith)),
+has(grug_jobs.professions_formspec(grug_jobs.profession_overview(smith), AREA),
 	"Highest tier reached.", "T6 needs nothing more")
 char_level = 15
 smith.meta["grug_jobs:level:weaponsmith"] = 2
@@ -726,14 +730,14 @@ local resent = 0
 sfinv.set_player_inventory_formspec = function() resent = resent + 1 end
 dofile("mods/PLAYER/grug_inventory/pages.lua")
 local character = pages["grug_inventory:character"]
-local context = {page = "grug_inventory:character"}
+local context = {page = "grug_inventory:character", grug_character_tab = "stats"}
 contexts.smith = context
 local stats_fs = character:get(smith, context)
 formspec_ok(stats_fs, "character stats")
-has(stats_fs, "label[2.75,2.60;Damage reduction: 12.3%]", "Damage reduction label")
+has(stats_fs, "label[0.40,3.10;Damage reduction: 12.3%]", "Damage reduction label")
 lacks(stats_fs, "Own-level", "old label gone")
 has(stats_fs, fs_escape("Armor reduction against an enemy of your level."), "tooltip text")
-has(stats_fs, "tooltip[2.75,2.608;3.6,0.45;", "tooltip covers the label line")
+has(stats_fs, "tooltip[0.40,2.85;5.0,0.50;", "tooltip covers the label line")
 has(stats_fs, "grug_character_professions;Professions]", "Professions tab button")
 character:on_player_receive_fields(smith, context, {grug_character_professions = "Professions"})
 eq(context.grug_character_tab, "professions", "Professions tab selected")
@@ -750,7 +754,7 @@ eq(resent, 1, "no refresh while another tab is open")
 
 -- The Scout's quiver cell (Round 41 ruling 6): above 100 arrows it shows the
 -- true total, a cover over the engine's count corner (sized for the window:
--- a three-digit count at 30 x 20 px per real_gui_scaling against the legacy
+-- a three-digit count at 30 x 20 px per real_gui_scaling against the
 -- slot size) and an item_image of the cell's item with the total, both after
 -- the list[]; at 100 or fewer the engine's own count stays alone.
 core.registered_items["grug_gear:arrow"] = {description = "Arrow", stack_max = 100}
@@ -759,15 +763,14 @@ grug_inventory.quiver_capacity = function() return 500 end
 local quiver_total = 0
 grug_inventory.quiver_count = function() return quiver_total end
 grug_inventory.has_quiver = function(p) return p:get_player_name() ~= "smith" end
--- The engine's legacy formspec layout (guiFormSpecMenu.cpp), written out
--- here independently of pages.lua: calculateImgsize (padding 0.05 on each
--- side; getImgsize with the padded screen, its integer min_dim / 15; capped
--- by fitx / fity for the form's size, which since Round 44 is a
--- real-coordinate size[13.500,13.673], so fit = padded size / that size;
--- truncated to v2s32), spacing 5/4 and
--- 15/13 of imgsize, padding 3/8 (:3339-3341), a position trunc(padding +
--- pos * spacing) (getElementBasePos :257-264), an image or item_image size
--- trunc(size * imgsize) (parseImage :808-811, parseItemImage), a list slot
+-- The engine's real-coordinate formspec layout (guiFormSpecMenu.cpp; the
+-- Character page is real coordinates since Round 44), written out here
+-- independently of pages.lua: calculateImgsize (padding 0.05 on each side;
+-- getImgsize with the padded screen, its integer min_dim / 15; capped by
+-- fitx / fity for the form's size[13.500,13.673], so fit = padded size /
+-- that size; truncated to v2s32), a position trunc(pos * imgsize)
+-- (getRealCoordinateBasePos :267-271), an image or item_image size
+-- trunc(size * imgsize) (getRealCoordinateGeometry :273-276), a list slot
 -- imgsize from that base (parseList). The window information a client sends
 -- is clientdynamicinfo.cpp's: max_formspec_size = size / getImgsize(size).
 local function get_imgsize(w, h, gui_scaling, density)
@@ -779,16 +782,15 @@ local function engine_window(w, h, gui_scaling)
 	return {size = {x = w, y = h}, max_formspec_size = {x = w / prefer, y = h / prefer},
 		real_gui_scaling = gui_scaling, real_hud_scaling = gui_scaling}
 end
-local function legacy_layout(w, h, gui_scaling)
+local function real_layout(w, h, gui_scaling)
 	local pw, ph = w * 0.9, h * 0.9
 	local img = math.floor(math.min(get_imgsize(pw, ph, gui_scaling, 1),
 		pw / 13.5, ph / 13.673))
-	return {img = img, sx = img * 5 / 4, sy = img * 15 / 13, pad = math.floor(img * 3 / 8),
-		font = 16 * gui_scaling}
+	return {img = img, font = 16 * gui_scaling}
 end
 local function rect_of(layout, x, y, w, h)
-	local x0 = math.floor(layout.pad + x * layout.sx)
-	local y0 = math.floor(layout.pad + y * layout.sy)
+	local x0 = math.floor(x * layout.img)
+	local y0 = math.floor(y * layout.img)
 	return {x0 = x0, y0 = y0, x1 = x0 + math.floor(w * layout.img), y1 = y0 + math.floor(h * layout.img)}
 end
 local NORMAL_WINDOW = engine_window(1920, 1080, 1)
@@ -813,7 +815,7 @@ local function quiver_page(name, window, total)
 	formspec_ok(fs, "quiver " .. name)
 	return fs
 end
-local QUIVER_CELL = "list[current_player;grug_quiver_content;7.3,1.9;1,1;]"
+local QUIVER_CELL = "list[current_player;grug_quiver_content;8.50,6.10;1,1;]"
 local COVER = "[fill:8x8:#1f1f1f]"
 -- Where the engine draws the cover and the count overlay for a page, in
 -- pixels, against the slot and the engine's own count "100" in its corner
@@ -823,7 +825,7 @@ local function overlay_ok(fs, layout, label)
 	local cx, cy, cw, ch = fs:match("image%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);%[fill:8x8:#1f1f1f%]")
 	local ix, iy, iw, ih = fs:match("item_image%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_gear:arrow %d+%]")
 	if not check(cx and ix, label .. ": cover and count overlay present") then return end
-	local slot = rect_of(layout, 7.3, 1.9, 1, 1)
+	local slot = rect_of(layout, 8.5, 6.1, 1, 1)
 	local cover = rect_of(layout, tonumber(cx), tonumber(cy), tonumber(cw), tonumber(ch))
 	local image = rect_of(layout, tonumber(ix), tonumber(iy), tonumber(iw), tonumber(ih))
 	local count_w = math.ceil(3 * 0.556 * layout.font)
@@ -840,31 +842,31 @@ local function overlay_ok(fs, layout, label)
 end
 local fs100 = quiver_page("archer100", NORMAL_WINDOW, 100)
 has(fs100, QUIVER_CELL, "quiver 100: the cell")
-has(fs100, "label[7.3,2.85;100/500]", "quiver 100: the total beside it")
+has(fs100, "label[9.60,6.35;Quiver\n100/500]", "quiver 100: the total beside it")
 lacks(fs100, "item_image[", "quiver 100: no overlay")
 lacks(fs100, COVER, "quiver 100: no cover")
 local fs101 = quiver_page("archer101", NORMAL_WINDOW, 101)
-local count101 = "item_image[7.3,1.9;1,1;grug_gear:arrow 101]"
+local count101 = "item_image[8.50,6.10;1,1;grug_gear:arrow 101]"
 has(fs101, count101, "quiver 101: the total on the cell")
-overlay_ok(fs101, legacy_layout(1920, 1080, 1), "quiver 101, 1920x1080 gui_scaling 1")
+overlay_ok(fs101, real_layout(1920, 1080, 1), "quiver 101, 1920x1080 gui_scaling 1")
 local at_list, at_cover, at_count = fs101:find(QUIVER_CELL, 1, true),
 	fs101:find(COVER, 1, true), fs101:find(count101, 1, true)
 check(at_list and at_cover and at_count and at_list < at_cover and at_cover < at_count,
 	"quiver 101: list, then cover, then count (drawn on top, clicks reach the list)")
 local fs500 = quiver_page("archer500", LARGE_WINDOW, 500)
-has(fs500, "item_image[7.3,1.9;1,1;grug_gear:arrow 500]", "quiver 500: the total on the cell")
-has(fs500, "label[7.3,2.85;500/500]", "quiver 500: the total beside it")
-overlay_ok(fs500, legacy_layout(1920, 1080, 2), "quiver 500, 1920x1080 gui_scaling 2")
-overlay_ok(quiver_page("archer_small", SMALL_WINDOW, 250), legacy_layout(1280, 720, 1.5),
+has(fs500, "item_image[8.50,6.10;1,1;grug_gear:arrow 500]", "quiver 500: the total on the cell")
+has(fs500, "label[9.60,6.35;Quiver\n500/500]", "quiver 500: the total beside it")
+overlay_ok(fs500, real_layout(1920, 1080, 2), "quiver 500, 1920x1080 gui_scaling 2")
+overlay_ok(quiver_page("archer_small", SMALL_WINDOW, 250), real_layout(1280, 720, 1.5),
 	"quiver 250, 1280x720 gui_scaling 1.5")
 local fs_unknown = quiver_page("archer_join", nil, 181)
-has(fs_unknown, "item_image[7.3,1.9;1,1;grug_gear:arrow 181]", "quiver 181: the total on the cell")
+has(fs_unknown, "item_image[8.50,6.10;1,1;grug_gear:arrow 181]", "quiver 181: the total on the cell")
 -- Without window information the cover must still hide the count in the
 -- small window above, the largest count against the slot.
 local cx, cy = fs_unknown:match("image%[([%d.]+),([%d.]+);[%d.]+,[%d.]+;%[fill")
-local small = legacy_layout(1280, 720, 1.5)
+local small = real_layout(1280, 720, 1.5)
 local cover_at = rect_of(small, tonumber(cx) or 0, tonumber(cy) or 0, 0, 0)
-local slot_small = rect_of(small, 7.3, 1.9, 1, 1)
+local slot_small = rect_of(small, 8.5, 6.1, 1, 1)
 check(cover_at.x0 <= slot_small.x1 - math.ceil(3 * 0.556 * small.font) and
 	cover_at.y0 <= slot_small.y1 - math.ceil(1.2 * small.font),
 	"quiver 181 without window information: the cover hides the count even in a small window")

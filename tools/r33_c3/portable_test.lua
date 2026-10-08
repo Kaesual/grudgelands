@@ -341,7 +341,9 @@ eq(A.selected_cloak(bert), "none", "S a cloak the catalogue dropped reads as No 
 check(A.select_cloak(bert, "plain_grey"), "S a default cloak can be selected")
 eq(cloak_source(bert), "grug_achievements_cloak_plain_grey.png", "S grey cloak texture")
 
--- F: the dropdown and the page's resubmissions.
+-- F: the dropdown and the page's resubmissions. The Achievements mode is
+-- drawn into the Character page's mode area (Round 44).
+local AREA = {x = 0.4, y = 1.25, w = 7.5, h = 7.8}
 local fs = A.cloak_dropdown(anna_again, 0, 6.3, 2.6)
 check(fs:find("dropdown%[0.00,6.30;2.60;grug_cloak;No cloak,Plain grey cloak,Hunter's Green," ..
 	"Trail Green,Fallen Crown,Heavy Crown,Stormscale,", 1) ~= nil, "F dropdown items: " .. fs)
@@ -353,7 +355,7 @@ check(A.choose_cloak_by_name(anna_again, "Trail Green"), "F a new name selects")
 eq(A.selected_cloak(anna_again), "hunter_2", "F Trail Green selected")
 check(not A.choose_cloak_by_name(anna_again, "Honored Red"), "F an unowned name is ignored")
 local context = {}
-local tab = A.character_achievements_formspec(anna_again, context)
+local tab = A.character_achievements_formspec(anna_again, context, AREA)
 check(tab:find("Hunter III  150/500", 1, true) ~= nil, "F the tab shows Hunter III's progress")
 check(tab:find("Honored  0/50", 1, true) ~= nil, "F the tab shows Honored's progress")
 check(tab:find("Kill 50 guards of the enemy faction.", 1, true) ~= nil, "F condition text")
@@ -362,9 +364,12 @@ check(tab:find("grug_ach_next", 1, true) ~= nil, "F a second page")
 check(tab:find("tooltip", 1, true) ~= nil and tab:find("Cloak: Deepwood Green", 1, true) ~= nil,
 	"F the tooltip names the next cloak")
 check(A.handle_tab_fields(anna_again, context, {grug_ach_next = true}), "F next page")
-local tab2 = A.character_achievements_formspec(anna_again, context)
+-- Seven rows a page since Round 44: pages 2 and 3 hold the rest.
+local tab2 = A.character_achievements_formspec(anna_again, context, AREA)
+check(A.handle_tab_fields(anna_again, context, {grug_ach_next = true}), "F third page")
+tab2 = tab2 .. A.character_achievements_formspec(anna_again, context, AREA)
 check(tab2:find("Grounded", 1, true) ~= nil and tab2:find("Hunter", 1, true) == nil,
-	"F page 2 holds the rest: " .. tab2:sub(1, 120))
+	"F pages 2 and 3 hold the rest: " .. tab2:sub(1, 120))
 check(tab2:find("Last Word  0/1", 1, true) ~= nil, "F a one-kill achievement")
 check(tab2:find("Kill Huskell or Paymaster Chirr.", 1, true) ~= nil, "F text_one")
 
@@ -481,7 +486,7 @@ do
 	local function all_pages(player)
 		local context, text = {}, ""
 		for _ = 1, 4 do
-			text = text .. A.character_achievements_formspec(player, context)
+			text = text .. A.character_achievements_formspec(player, context, AREA)
 			A.handle_tab_fields(player, context, {grug_ach_next = true})
 		end
 		return text

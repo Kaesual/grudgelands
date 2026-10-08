@@ -108,12 +108,15 @@ end
 -- leftover, which the caller drops, refuses, queues or keeps as before.
 -- Every stack gets the weapon-tooltip setup an engine pickup or craft gives
 -- it (grug_gear.initialize_weapon_tooltip, cheap for anything but gear).
-function grug_inventory.give(player, stack)
+-- `skip_quiver` leaves the quiver out (arrows shift-clicked out of it).
+function grug_inventory.give(player, stack, skip_quiver)
 	stack = ItemStack(stack)
 	local inv = player and player:get_inventory()
 	if stack:is_empty() or not inv then return stack end
 	grug_gear.initialize_weapon_tooltip(stack, player)
-	stack = grug_inventory.add_to_quiver(player, stack)
+	if not skip_quiver then
+		stack = grug_inventory.add_to_quiver(player, stack)
+	end
 	if stack:is_empty() then return stack end
 	local cells = cells_of(inv, ordered_slots(inv))
 	stack = fill(cells, stack)

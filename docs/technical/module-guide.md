@@ -170,9 +170,10 @@ tools](#player-meta-read-by-external-tools).
   and wear `durability_repair.md`.
   Station icons appear below the recipe arrow, outside ingredient slots.
   `grug_jobs.open_trainer(player, profession, pos)` serves the six primaries,
-  Cooking and Alchemy. The Character page's Professions tab (Round 28 ruling 23) is
-  built by `grug_jobs/character_tab.lua`; `grug_inventory` owns the tab row
-  and asks for the body, because `grug_jobs` depends on `grug_inventory`. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
+  Cooking and Alchemy. The Character page's Professions mode (Round 28 ruling 23) is
+  built by `grug_jobs/character_tab.lua` into the mode area `grug_inventory`
+  passes (Round 44); `grug_inventory` owns the mode row and asks for the
+  body, because `grug_jobs` depends on `grug_inventory`. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
   with an authenticated Riding socket, never the generic profession hook.
 
 ## Crop registration
@@ -1778,7 +1779,7 @@ tools](#player-meta-read-by-external-tools).
   `plain_grey`), `creatures.lua`
   (pure: wild animals, zombies, families, named leaders by role, rares by
   registry id; a load audit logs any unclassified mob) and `init.lua` (the
-  hooks, the Achievements tab body and the cloak dropdown that
+  hooks, the Achievements mode body and the cloak dropdown that
   `grug_inventory/pages.lua` reads at build time). Counters come from
   grug_mobs' eligible-kill hook (cached per entity name),
   `grug_mobs.register_on_boss_kill(fn(player, boss_id))` (every player the

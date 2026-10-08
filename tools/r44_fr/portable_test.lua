@@ -199,6 +199,7 @@ grug_inventory = {
 	},
 	slot_label = function(_, list) return list end,
 	slot_ghost = function() return nil end,
+	SHIFT_LIST = "grug_shift", -- equipment.lua's shift-click routing list
 }
 
 -- Players: lists by name; set_inventory_formspec counts sends.
@@ -476,6 +477,7 @@ eq(count, 24 + 4 * 32, "the Inventory page shows 152 slots in its grid")
 print(("bytes: Inventory page with four 32-slot bags %d"):format(#inventory))
 
 four_context.page = "grug_inventory:character"
+four_context.grug_character_tab = "stats" -- the balance's mode (Round 44 lane CH)
 local character = sfinv.get_formspec(four, four_context)
 formspec_ok(character, "Character page")
 lacks(character, "deposit;", "no deposit on the Character page")

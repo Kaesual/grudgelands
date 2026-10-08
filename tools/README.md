@@ -503,6 +503,18 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (no item lost or duplicated), bags in bags, the sort (categories, tier,
   name, quality, merging, the hotbar untouched), the potion belt's allow
   rule and ammo from a bag.
+  `r44_ch`: the Character tab. `harness.lua` loads the real vendored sfinv,
+  `grug_inventory`'s `equipment.lua`, `bags.lua` (with `storage.lua`),
+  `ui.lua` and `pages.lua`, the real `grug_gear` permissions,
+  `grug_achievements` and `grug_jobs/character_tab.lua` under a stub `core`,
+  with an engine move model whose shift-click follows the page's own
+  listring. `portable_test.lua`: each mode renders inside its box, the gear
+  box's slots and hand labels per class, the arrow slot only for Scouts,
+  Return home and Withdraw, and the shift-click routing (gear into its slot
+  or swapped, back out in the give order, arrows into and out of the
+  quiver, the refusals); it prints the page's bytes per mode.
+  `luajit tools/r44_ch/bytes.lua [repo]` prints the bytes per mode for a
+  Scout with four 32-slot bags against any tree (before and after).
   `r44_mb`: `gen_baked_art.py [--art DIR]
   [--check]` turns the baked map icons and the pixel font
   (`mods/PLAYER/grug_map/art/`) into `mods/PLAYER/grug_map/baked_art.lua`

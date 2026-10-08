@@ -482,7 +482,8 @@ do
   make_formspec=function(_, _, fs) return fs end, set_page=function() end,
   set_player_inventory_formspec=function() sets = sets + 1 end})
  rawset(_G, "grug_inventory", {equipment_slots={}, has_quiver=function() return false end,
-  selected_button_style=function() return "" end, wrap_text=function(text) return text end})
+  selected_button_style=function() return "" end, wrap_text=function(text) return text end,
+  BAG_COUNT=0, SHIFT_LIST="grug_shift"})
  rawset(_G, "grug_classes", {get_class_def=function() return {resource="rage"} end,
   get_pool_breakdown=function() return {final=20} end, get_crit_chance=function() return 0 end,
   get_dodge_chance=function() return 0 end, get_class=function() return "warrior" end})
@@ -496,23 +497,26 @@ do
  grug_core.register_on_equipment_change = function() end
  grug_core.register_on_status_modifiers_changed = function() end
  player.get_properties = function() return {visual="mesh", mesh="m.b3d", textures={"t.png"}} end
+ player.get_inventory = function() return {get_size=function() return 0 end} end
  core.get_current_modname = function() return "grug_inventory" end
  dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
  core.get_current_modname = function() return "grug_home" end
  local character = pages["grug_inventory:character"]
  local context = {page="grug_inventory:character"}
  check(character.get(character, player, context):find(
-  "grug_character_home;Return home: Claim Stone (2 min)]", 1, true), "M Character page button")
+  "grug_character_home;Return home (2 min)]", 1, true) and
+  character.get(character, player, context):find("Home: Claim Stone]", 1, true),
+  "M Character page line and button")
  data["grug_home:ready_at"] = tostring(clock)
- check(character.get(character, player, context):find("Return home: Claim Stone (Ready)]", 1, true),
+ check(character.get(character, player, context):find("Return home (Ready)]", 1, true),
   "M Character page button ready")
  check(not home.is_pending(player), "M no return under way before the click")
  check(character.on_player_receive_fields(character, player, context, {grug_character_home="x"}) and
   sets == 1, "M the button rebuilds the page")
  check(home.is_pending(player), "M the button starts the return home")
- check(character.get(character, player, context):find("Return home: Claim Stone (Preparing arrival)]",
+ check(character.get(character, player, context):find("Return home (Preparing arrival)]",
   1, true), "M Character page button while arriving")
- player.get_properties = nil
+ player.get_properties, player.get_inventory = nil, nil
 end
 
 -- ---------------------------------------------------------------------------
