@@ -475,4 +475,4 @@ eq(H.get(dr, "main", 10), "grug_gear:head_metal", "... the old helmet takes the 
 --
 
 print(("r44_ch: %d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(("r44_ch: %d failures"):format(failures)) end
