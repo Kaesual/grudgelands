@@ -374,11 +374,19 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   the evade run home follow it; villagers and patrols in start towns and
   capitals walk cached routes and the capital streets, open and close
   doors and no longer stop at random on their way. Complete on
-  2026-10-08, the user's playtest accepted the same day; 0.42.0 not
-  pushed. Next: the push; then
-  [Round 43](docs/planning/round43-plan.md) (world migrations) in
-  parallel with [Round 44](docs/planning/round44-plan.md)'s first wave
-  (UI rework), then [Round 45](docs/planning/round45-plan.md)
+  2026-10-08, the user's playtest accepted it the same day; pushed on
+  2026-10-08.
+- [x] **Round 43 "World migrations"**
+  ([completion](docs/planning/round43-plan.md#completion-2026-10-08)),
+  version 0.43.0, compatible (a 0.42.0 world plays on): the fourth upgrade
+  outcome **migrate** of the platform's migration contract — an offline
+  tool (`tools/migrate.py`, SQLite and PostgreSQL) converts a stopped world
+  step by step, the game finishes a step's online work at load and at each
+  character's join, and a start guard refuses a newer world or one that
+  needs the tool; shipped alone with an empty `migrate` list. Complete on
+  2026-10-08; 0.43.0 not pushed. Next: the push and the GUI check; then
+  [Round 44](docs/planning/round44-plan.md) (UI rework, the first real
+  migration step) and [Round 45](docs/planning/round45-plan.md)
   (crafting rework).
 
 ### Remaining work
@@ -401,11 +409,13 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 38](BACKLOG.md#round-38-carry-overs),
   [Round 39](BACKLOG.md#round-39-carry-overs),
   [Round 40](BACKLOG.md#round-40-carry-overs),
-  [Round 41](BACKLOG.md#round-41-carry-overs) and
-  [Round 42](BACKLOG.md#round-42-carry-overs) carry-overs (Round 40: the
+  [Round 41](BACKLOG.md#round-41-carry-overs),
+  [Round 42](BACKLOG.md#round-42-carry-overs) and
+  [Round 43](BACKLOG.md#round-43-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
-  navigation notes only); Round 36 settled
+  navigation notes only; Round 43: theoretical migration notes only);
+  Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
   [open questions](BACKLOG.md#audit-2026-10-open-questions),
@@ -436,7 +446,8 @@ test, and a resource spot check on a few seeds. Exact wording and ownership:
 Historical evidence does not certify later code. Fresh-server development
 mode ended with 0.41.0 (the user's announcement, 2026-10-07): from then on
 worlds survive upgrades through the
-[upgrade contract](docs/technical/upgrade-contract.md).
+[upgrade contract](docs/technical/upgrade-contract.md), since 0.43.0 also
+through migration steps.
 
 ## Phase 2 — Expansion
 

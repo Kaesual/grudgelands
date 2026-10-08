@@ -5,11 +5,12 @@ also AGENTS.md "Documentation layers"):
 
 The project is in **release mode** since 0.41.0 (the user, 2026-10-07):
 worlds survive upgrades through the hosting platform's
-[upgrade contract](../technical/upgrade-contract.md) — compatible, map reset
-or new server — never through data migrations. Ids of quests, items,
-achievements and waypoints stay stable; a design change that breaks saved
-state is declared as a map reset or a new server. Older migration wording
-does not authorize compatibility code; see
+[upgrade contract](../technical/upgrade-contract.md) — compatible, map
+reset, migrate (since Round 43) or new server; saved data is converted only
+by a declared step of the migration tool, with its test. Ids of quests,
+items, achievements and waypoints stay stable; a design change that breaks
+saved state is declared as a map reset, a migration or a new server. Older
+migration wording does not authorize compatibility code; see
 [AGENTS.md](../../AGENTS.md#release-mode).
 
 - Only settled decisions: rules, numbers, formulas, lists. No open

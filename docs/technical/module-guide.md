@@ -25,7 +25,8 @@ water](#mobs-in-water), [Enchantments](#enchantments), [Materials and
 tier-rock gating](#materials-and-tier-rock-gating), [Traders and
 money](#traders-and-money), [Quests](#quests), [Parties](#parties),
 [Housing](#housing), [Travel](#travel), [Atlas](#atlas),
-[Preparation](#preparation), [Fishing](#fishing), [Mapgen and
+[Preparation](#preparation), [World version and
+migrations](#world-version-and-migrations), [Fishing](#fishing), [Mapgen and
 biomes](#mapgen-and-biomes), [World atlas rules](#world-atlas-rules),
 [Sound](#sound), [UI and formspecs](#ui-and-formspecs), [Player model and
 skins](#player-model-and-skins), [Looks and enchant
@@ -1386,6 +1387,39 @@ tools](#player-meta-read-by-external-tools).
   the shared waiting/stasis gate. Native tests
   use isolated tiny bounds; never run production full generation as a test.
 
+## World version and migrations
+
+- **Round 43** ([upgrade contract](upgrade-contract.md) §5, which owns the
+  rules; the tool's interface:
+  [tools/README.md](../../tools/README.md#the-migration-tool)).
+- `grug_core/migrations.lua` (`grug_core.migrations`): `versions`, the
+  declaration's `migrate` list the start guard reads (the runtime tree has
+  no `tools/`; `tools/check_upgrade.py` parses this literal and proves it
+  equal), and `handlers[version] = {world = fn(marker), character =
+  fn(player, marker)}` for a step's online work. A new step adds its version
+  here and, when it leaves online work, its handlers and their fixture.
+- `grug_core/world_version.lua` (`grug_core.world_version`), loaded first in
+  `grug_core/init.lua`: the record `world_version`, new-world recognition
+  (`is_new_world`), the guard (`decide`: newer world or a step between
+  refuses the start), the test hook (`grug_test_migrations`), the world
+  markers (`run_world`, in `register_on_mods_loaded` after every map-reset
+  clear) and the character markers (`run_character`, moved to the first join
+  callback as registered, so the engine profiler's wrapper survives). Pure
+  parts are tested on stubs by `tools/r43_gs/portable_test.lua`.
+  `check_fresh_server.py` refuses marker keys anywhere else.
+- **The tool** `tools/migrate.py` (entry) and the package `tools/migration/`:
+  `cli.py` (command line, events, exit codes, the step loop with one
+  transaction per backend, the check mode), `world.py` (`world.mt`, the
+  SQLite and PostgreSQL backends, the engine's table layouts, locks),
+  `data.py` (the step's `World`: characters, meta, inventories, positions,
+  auth and privileges, mod storage, markers, `raw(kind)`, the limit checks),
+  `codec.py` (`serialize`/`deserialize`, JSON, `ItemStack`), `steps/`
+  (`v<major>_<minor>_<patch>.py`, none yet). Python 3.13, standard library;
+  `psycopg` 3 imported only for PostgreSQL. Unit tests:
+  `tools/r43_mt/test_migrate.py` (the container run
+  `tools/r43_mt/container_test.sh`); end to end with the engine:
+  `tools/r43_it/run.sh`.
+
 ## Fishing
 
 - **Fishing (Round 14):** transient bobber, manual reel in a 1.5-second bite
@@ -1764,7 +1798,7 @@ tools](#player-meta-read-by-external-tools).
   | `grug_factions:faction` | string | `accord`, `throng` (`grug_core.factions`); missing: no faction yet | `grug_factions.set_faction`: "Create character" (`grug_classes/selection.lua`) and the admin `/faction` |
   | `grug_classes:race` | string | `human`, `dwarf`, `elf` (The Accord), `orc`, `troll`, `undead` (The Throng); missing: none yet. The game counts a race of the other faction as unset (`grug_classes.get_race`), possible only after an admin `/faction` | `grug_classes.set_race`: "Create character" and the admin `/race` |
   | `grug_classes:class` | string | `warrior`, `mage`, `priest`, `scout`; missing: none yet. Never changes once set (no class change, admins included) | `grug_classes.set_class`: "Create character" only |
-  | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a new server ([upgrade contract](upgrade-contract.md), no conversion) |
+  | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a new server or a migration step ([upgrade contract](upgrade-contract.md) §1) |
   | `grug_visuals:appearance` | compact JSON string | the format below; missing: no apply yet (the first join writes it) | `grug_visuals.apply` (`apply.lua`, built in the pure `appearance.lua`) |
 
 - **The appearance** (`APPEARANCE_VERSION` 1): what the game draws, with

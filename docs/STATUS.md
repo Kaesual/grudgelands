@@ -2,8 +2,49 @@
 
 Updated 2026-10-08. This is the delivery pointer, not another game specification.
 
-- **Round 42 "Mob navigation" complete, playtest accepted, 0.42.0 not
-  pushed** (2026-10-08, version 0.42.0,
+- **Round 43 "World migrations" complete, 0.43.0 not pushed**
+  (2026-10-08, version 0.43.0,
+  [plan, completion, GUI checklist and the platform summary](planning/round43-plan.md#completion-2026-10-08)).
+  Started from main `332c5e79` (0.42.0); every lane is merged on main
+  (GS `422d4879`, MT `e2b749bb`, IT `328010b5`, the coordinator's HUD fix
+  `d10018a7`, then this documentation lane D); GS, MT and IT each
+  independently reviewed by Opus (MERGE AFTER FIXES each; every fix made by
+  the lane before the merge); main has 130 portable fixtures. Round end on
+  main `d10018a7`: fixtures 130/130, `check_fresh_server.py` PASS,
+  `check_upgrade.py` PASS, smoke boot PASS; lane IT's integration suite
+  59/59 (`tools/r43_it/run.sh`, SQLite and PostgreSQL); the tool's unit
+  tests 38 OK, 2 skipped in the `debian:trixie` container. No world
+  generation changed (no seed fleet). Every lane compatible; the
+  declaration is
+  `{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}`:
+  a 0.42.0 world plays on, its missing record counts as 0.41.0 and is
+  stamped 0.43.0. **Push:** origin/main is `332c5e79` (0.42.0, pushed by
+  the user on 2026-10-08); 0.43.0 is not pushed. The GUI check (plan §6)
+  is open.
+  - **Game side (GS):** the world version record (`grug_core`
+    `world_version`), the start guard at the top of `grug_core` (a newer
+    world, or one with a step between, refuses to start with a message
+    naming the versions or the tool's command), conservative new-world
+    recognition, the online-work runner (world markers at load, character
+    markers at the first join callback), the schema-2 declaration and
+    `check_upgrade.py`'s `migrate` rules.
+  - **The tool (MT):** `python3 tools/migrate.py --world <dir> [--check]`,
+    SQLite and PostgreSQL from `world.mt`, exit codes 0/2/1, one JSON
+    event per line, the data API (characters, meta, inventories,
+    positions, auth, mod storage, markers, raw connections) and the codecs.
+  - **Integration (IT):** test-only steps end to end through real joins
+    and headless boots, the guard cases, a map reset combined with a step,
+    and PostgreSQL seeded from an engine-written world.
+  - **Also:** the HUD text elements give their size a y, ending the
+    engine's deprecation warning on every join (coordinator, found by IT);
+    `tools/r41_up` part F, which pinned the 0.41.0 declaration and failed on
+    main after the 0.42.0 bump, fixed by GS.
+  - Next: the user's push of 0.43.0 and the GUI check; Round 44 (UI
+    rework, [plan](planning/round44-plan.md)) merges to main only after the
+    push, then Round 45 (crafting, [plan](planning/round45-plan.md)).
+
+- **Round 42 "Mob navigation" complete, playtest accepted and pushed**
+  (2026-10-08, version 0.42.0,
   [plan, completion and GUI checklist](planning/round42-plan.md#completion-2026-10-08)).
   Started from main `71612d19` (0.41.0); every lane is merged on main
   (NV0, NV1, NV2, NV3, DR, the user's extra lane ST, last CL `f8265d60`,
@@ -16,9 +57,9 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
   **The user's playtest PT** (NV1–ST) **accepted on 2026-10-08**; CL
   changes no behaviour. Every lane compatible; the declaration is
   `{"schema": 1, "version": "0.42.0", "map_reset": ["0.40.1"], "new_server": []}`:
-  a 0.41.0 world plays on. **Push:** origin/main is `71f777e2` (pushed by
-  the user on 2026-10-08); it contains every Round 42 lane up to ST under
-  the version 0.41.0; 0.42.0 (CL and this lane) is not pushed.
+  a 0.41.0 world plays on. **Push:** the user pushed every Round 42 lane
+  up to ST under the version 0.41.0 (`71f777e2`), then 0.42.0 (origin/main
+  `332c5e79`), both on 2026-10-08.
   - **Combat (NV1):** one navigation module on the engine's pathfinder,
     used locally and rarely: a stuck detector, short detours round trees,
     walls and corners, a give-up also in sight with a veto of 8 nodes or
@@ -38,11 +79,6 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
     minute before, 7 with a full cache; its legs without a route 41 → 11
     of 180 through doors (DR); 40 blocked chasers' largest search 357 →
     193 µs; `mods/` net +1,962 lines.
-  - Next: the user's push of 0.42.0; Round 43 (world migrations,
-    [plan](planning/round43-plan.md)) in parallel with Round 44's wave 1
-    (UI rework, [plan](planning/round44-plan.md)), then Round 45
-    (crafting, [plan](planning/round45-plan.md)); each waits for the
-    user's go.
 
 - **Round 41 "Playtest fixes, the production crash and the upgrade
   contract" complete and pushed** (2026-10-07, version 0.41.0,
@@ -775,8 +811,9 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 42 (0.42.0, `f8265d60` and lane D;
-  not pushed) on top of Round 41 (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
+- **Latest game:** main carries Round 43 (0.43.0, `d10018a7` and lane D;
+  not pushed) on top of Round 42 (0.42.0, pushed on 2026-10-08), Round 41
+  (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
   Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
   2026-10-06), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 29
@@ -802,8 +839,12 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user's
   ruling of 2026-10-05, [Round 37 plan](planning/round37-plan.md) §2.3.5);
   Round 24 was accepted earlier, and its build contains Rounds 20–23 and
-  the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06.
-  **Rounds 36, 37, 38, 40 and 41 are open** (Round 41's
+  the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06,
+  Round 42 by the user's playtest on 2026-10-08.
+  **Rounds 36, 37, 38, 40, 41 and 43 are open** (Round 43's
+  [checklist](planning/round43-plan.md#gui-checklist) is short: a 0.42.0
+  world plays on under 0.43.0, a fresh world, the tool's `--check` on a
+  copy; Round 41's
   [checklist](planning/round41-plan.md#gui-playtest-checklist) covers the
   walk animation, kings and Generals at their seat, the recipe book's
   Close and multi-item slots, the bow, the quiver total, map quality, the
@@ -854,12 +895,13 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main is `71f777e2` (pushed 2026-10-08):
-  every round up to Round 41 and the Round 42 lanes up to ST, still under
-  the version 0.41.0; 0.42.0 (lane CL and lane D) is local.
+- **Remote observation:** origin/main is `332c5e79` (0.42.0, pushed by
+  the user on 2026-10-08): every round up to Round 42; 0.43.0 (Round 43)
+  is local.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
-  [upgrade contract](technical/upgrade-contract.md); no public release
+  [upgrade contract](technical/upgrade-contract.md) (compatible, map
+  reset, migrate since 0.43.0, new server); no public release
   yet. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

@@ -107,12 +107,16 @@ stats, and the sound controls. The short version:
 *Last updated: 2026-10-08. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 42 (0.42.0), "Mob navigation":
-creatures in a fight find their way round trees and walls and through
-doorways and give up behind a fence, guards and bodyguards keep up with their leader,
-villagers and patrols walk their rounds without walking into trunks or
-stopping at random, and townsfolk open, pass and close doors; a 0.41
-world plays on. Round 41 (0.41.0) brought fixes from the Round 40
+The latest finished round is Round 43 (0.43.0), "World migrations": it
+changes nothing in play, but later versions can now convert saved
+characters with a tool hosts run on a stopped world instead of asking for
+a new server, and a server refuses to start a world from a newer version
+or one that still needs that tool; a 0.42 world plays on. Since Round 42
+(0.42.0), "Mob navigation", creatures in a fight find their way round
+trees and walls and through doorways and give up behind a fence, guards
+and bodyguards keep up with their leader, villagers and patrols walk
+their rounds without walking into trunks or stopping at random, and
+townsfolk open, pass and close doors. Round 41 (0.41.0) brought fixes from the Round 40
 playtest (creatures that walk move their legs, kings and Generals keep
 to their seat, the recipe book's Close returns to the station, slots that
 take several ingredients show them all, a quick re-press of the bow fires
@@ -120,8 +124,8 @@ the drawn arrow, the quiver shows its full count) and a fix for a crash
 that kept stopping the hosted server. From 0.41.0 on, worlds are kept
 across updates: each update says whether a world plays on, needs its map
 regenerated (characters keep everything but their position and home
-claim) or needs a new server; 0.41.0 itself needs a map reset of older
-worlds. Since 0.40.1,
+claim), a migration by the host (since 0.43.0) or a new server; 0.41.0
+itself needs a map reset of older worlds. Since 0.40.1,
 ore, coal and gems lie wherever you may dig, right up to the edge of the
 protected towns. In Round 40, "Combat feel", cooldowns show on
 the hotbar as a shade that clears like a clock hand, characters strike
@@ -138,7 +142,7 @@ creatures that keep to the player holding their attention when several
 players fight them to mounts that no longer throw you off when a buff
 runs out, and Round 36 brought each faction's main story from level 41 to
 60, with its finale against Isquarre at the rift. A 0.40 world moves
-to 0.41.0 with a map reset and then plays on in 0.42.0; older worlds
+to 0.41.0 with a map reset and then plays on in 0.43.0; older worlds
 start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
@@ -200,6 +204,27 @@ hours), the damage multiplier for creatures and NPCs (1.5 by default), the
 particle amount of the combat effects (1.0 by default, the same for every
 player) and tree regrowth. Damage is always on and creative mode is off. Details:
 [world preparation](docs/design/world_preparation.md).
+
+**Updating a hosted world.** Each [changelog](CHANGELOG.md) entry says
+whether an existing world plays on, needs a map reset, a migration or a
+new server. A migration runs offline with the tool that comes with the
+game, from the root of the new version's repository checkout (Python 3.13
+or newer; a PostgreSQL world also needs psycopg 3, Debian's
+`python3-psycopg`):
+
+1. Stop the server. The tool cannot tell whether a server is running.
+2. Back up the world: its directory and, for PostgreSQL, its databases.
+3. `python3 tools/migrate.py --world <world directory> --check` shows the
+   world's version and the due steps and changes nothing.
+4. `python3 tools/migrate.py --world <world directory>` runs the due steps.
+5. Start the server with the new version.
+
+Exit code `0`: migrated, or nothing to do. `2`: refused before anything was
+written, so the world is unchanged; the last line on standard output says
+why. `1`: it failed while writing: restore the backup. A server refuses to
+start a world that still needs the tool, and names the command. Details:
+[the migration tool](tools/README.md#the-migration-tool) and the
+[upgrade contract](docs/technical/upgrade-contract.md#5-migrations).
 
 <details>
 <summary>Local development setup</summary>
