@@ -597,7 +597,13 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   keeps its 40 s snap. A leader that fights, chases or runs home is a
   moving target: his guards track him as a chaser tracks its target
   (leaving a path when he moved 4 nodes from its end) and run, so they keep
-  up. Fliers walk straight and never search.
+  up. Fliers walk straight and never search. Villager walkers walk their
+  legs between spots the same way (Round 42 NV3, giving a spot up after 3).
+  In start towns and capitals the legs of the walkers and of the watch's
+  patrol come from a route cache, built once on first use and reused; a
+  capital's long patrol legs run over its streets, and a cached leg with no
+  route goes to the later stage at once ([settlements.md](settlements.md)
+  "Settlement walkers").
 - **Respawn slots**: every anchor has a configured **maximum population**
   and refills toward it one NPC at a time. Each refill takes a
   **configurable interval** (either an exact duration or a min–max

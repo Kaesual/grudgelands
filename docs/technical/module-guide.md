@@ -659,11 +659,21 @@ tools](#player-meta-read-by-external-tools).
     `grug_mobs.walk_follow` on every other step (the per-step steer while
     a path is followed), `walk_clear` when it ends; the royal follow
     (`bosses.lua`) calls `fixed_step`/`combat_step` itself every step
-    (Round 42 NV2, `world.md` §4a "Fixed walks"). Every search is
+    (Round 42 NV2, `world.md` §4a "Fixed walks"). A walk in a start town or
+    a capital between two fixed points (a villager's spots, the watch's
+    waypoints) goes through `routes.lua` (Round 42 NV3,
+    `settlements.md` "Settlement walkers"): `grug_mobs.route_walk` from the
+    owner's tick and `route_follow` on the other steps, `route_clear` when it
+    ends; the settlement route cache builds each leg once with
+    `nav.claim_search` (the cap and the budget for a caller outside the
+    follower) and `nav.search`, and reads a capital's streets from
+    `grug_mapgen.wp40.road_layout_text` with `wp40/road_layout.lua`'s own
+    decoder. Every search is
     `nav.search` behind the per-mob lockout, the negative cache, the count
     cap and the budget (`claim_path_budget`, `note_path_cost`); never an
     unbudgeted `core.find_path`. Fixtures `tools/r30_p2` (also the merged
-    spawn ABMs and the eye height), `tools/r42_nv1` and `tools/r42_nv2`.
+    spawn ABMs and the eye height), `tools/r42_nv1`, `tools/r42_nv2` and
+    `tools/r42_nv3`.
   - **Countdowns tick in `do_custom`, never `core.after`**: a mob can
     die, be unloaded or leash-reset inside the window, and mobs_redo
     persists plain fields — a lost timer would save the mob permanently
