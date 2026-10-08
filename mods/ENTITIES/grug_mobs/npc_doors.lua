@@ -13,7 +13,7 @@
 --     nothing is saved: a door is keyed by its node position. A door counts
 --     when it stands in a wall (its two neighbours along the wall are not
 --     open, the cells in front of and behind it are) and nobody owns it.
---   * NEVER WHAT A PLAYER OWNS: a door with an owner (a locked door a player
+--   * NEVER A LOCKED DOOR: a door with an owner (a locked door a player
 --     placed) is no door for an NPC. Trapdoors and fence gates are not doors
 --     here either: a trapdoor is no way through a wall, and mobs_redo stops
 --     every walker that faces a node named "gate" (`facing_fence`), open or
@@ -26,10 +26,14 @@
 --     guard besides the rift's crack (AGENTS.md).
 --   * CLOSING: a walker closes the door it opened once it is through (CLEAR
 --     from the centre), unless another NPC heading through the same door is
---     right behind (BEHIND): that one closes it after it. Somebody standing
---     in the doorway keeps it open for now. A door a player opened, or one
---     an NPC found open, stays open; so does one whose opener was unloaded
---     or died on the way (the claim is runtime state, never saved).
+--     right behind (BEHIND): that one closes it after it. A player or a mob
+--     standing in the doorway (within CLEAR of the centre, the same measure)
+--     keeps it open for now; attached objects (a nametag carrier) and items
+--     are nobody. A walker holds every door it opened or was handed until
+--     each is settled (`grug_door_open`, door key -> door), so a second door
+--     never drops the first. A door a player opened, or one an NPC found
+--     open, stays open; so does one whose opener was unloaded or died on the
+--     way (the claims are runtime state, never saved).
 --
 local floor, sqrt, abs = math.floor, math.sqrt, math.abs
 
@@ -41,7 +45,6 @@ local D = {
 	CLEAR = 0.9, -- nodes from the door's centre: the walker (0.6 wide) is through
 	BEHIND = 4, -- nodes: another NPC heading through this close keeps it open
 	FORGET = 8, -- nodes: a walker this far from the door it opened lets it be
-	IN_DOOR = 0.9, -- nodes from the centre: somebody stands in the doorway
 	RETRY = 0.5, -- s before a close kept back by somebody in the doorway retries
 	FRONT_REACH = 0.15, -- nodes: the cell in front of a door is reached
 	-- An open leaf lies along one side of its cell (a 1/8 node panel): the
@@ -252,59 +255,82 @@ function D.approach(self, pos, d)
 	local ref = door_ref(d)
 	if not ref or ref:state() then return end
 	if ref:open() then
-		self.temp.grug_door_open = {x = d.x, y = d.y, z = d.z, key = d.key}
+		local t = self.temp
+		t.grug_door_open = t.grug_door_open or {}
+		t.grug_door_open[d.key] = {x = d.x, y = d.y, z = d.z, key = d.key}
 	end
 end
 
---
--- Every step of a walker that opened a door: once it is through, close it,
--- or hand the close to an NPC right behind, or wait for the doorway to
--- clear. Far away (an arrival beside it, a fight that pulled it off), it
--- lets the door be.
---
-function D.settle(self, pos)
-	local t = self.temp
-	local o = t.grug_door_open
-	if t.grug_door_next == o.key then return end
+-- Is `obj` somebody in the doorway of door `o`: a player or a mob (not one
+-- attached to something: a nametag carrier, a rider) within CLEAR of the
+-- door's centre, the measure a walker is through by.
+local function in_doorway(obj, o)
+	if obj:get_attach() then return false end
+	if not obj:is_player() then
+		local ent = obj:get_luaentity()
+		if not (ent and ent._cmi_is_mob) then return false end
+	end
+	local p = obj:get_pos()
+	if not p or abs(p.y - (o.y + 0.5)) >= 2 then return false end
+	local dx, dz = p.x - o.x, p.z - o.z
+	return dx * dx + dz * dz < D.CLEAR * D.CLEAR
+end
+
+-- One held door `o`: true when it is settled (closed, handed over, shut by
+-- somebody else, or let be from far away); "wait" when somebody stands in
+-- the doorway; false while the walker is not through yet.
+local function settle_one(self, t, pos, o)
+	if t.grug_door_next == o.key then return false end
 	local dx, dz = o.x - pos.x, o.z - pos.z
 	local d2 = dx * dx + dz * dz
-	if d2 > D.FORGET * D.FORGET then
-		t.grug_door_open = nil
-		return
-	end
-	if d2 < D.CLEAR * D.CLEAR then return end
-	local now = core.get_us_time()
-	if now < (t.grug_door_retry or 0) then return end
+	if d2 > D.FORGET * D.FORGET then return true end
+	if d2 < D.CLEAR * D.CLEAR then return false end
 	local ref = door_ref(o)
-	if not ref or not ref:state() then
-		-- Shut by somebody else, or no door any more.
-		t.grug_door_open = nil
-		return
-	end
+	-- Shut by somebody else, or no door any more.
+	if not ref or not ref:state() then return true end
 	local centre = {x = o.x, y = o.y + 0.5, z = o.z}
 	local in_door = false
 	for _, obj in ipairs(core.get_objects_inside_radius(centre, D.BEHIND)) do
 		local ent = not obj:is_player() and obj:get_luaentity()
 		if ent ~= self then
 			if ent and ent.temp and ent.temp.grug_door_next == o.key then
-				-- Right behind: the close is its own once it is through.
-				if not ent.temp.grug_door_open then ent.temp.grug_door_open = o end
-				t.grug_door_open = nil
-				return
+				-- Right behind: the close is its own once it is through
+				-- (added to what it holds, never in place of it).
+				local held = ent.temp.grug_door_open or {}
+				ent.temp.grug_door_open = held
+				held[o.key] = o
+				return true
 			end
-			local p = obj:get_pos()
-			if p and abs(p.y - centre.y) < 2 and abs(p.x - o.x) < D.IN_DOOR
-					and abs(p.z - o.z) < D.IN_DOOR then
-				in_door = true
-			end
+			if in_doorway(obj, o) then in_door = true end
 		end
 	end
-	if in_door then
-		t.grug_door_retry = now + D.RETRY * 1000000
-		return
-	end
+	if in_door then return "wait" end
 	ref:close()
-	t.grug_door_open = nil
+	return true
+end
+
+--
+-- Every step of a walker that holds doors it opened (or was handed): once
+-- it is through one, close it, or hand the close to an NPC right behind, or
+-- wait for the doorway to clear. Far away (an arrival beside it, a fight
+-- that pulled it off), it lets the door be.
+--
+function D.settle(self, pos)
+	local t = self.temp
+	local now = core.get_us_time()
+	if now < (t.grug_door_retry or 0) then return end
+	local left, wait = false, false
+	for key, o in pairs(t.grug_door_open) do
+		local done = settle_one(self, t, pos, o)
+		if done == true then
+			t.grug_door_open[key] = nil
+		else
+			left, wait = true, wait or done == "wait"
+		end
+	end
+	if not left then t.grug_door_open = nil end
+	-- Kept back by somebody in a doorway: look again a little later.
+	t.grug_door_retry = wait and now + D.RETRY * 1000000 or nil
 end
 
 return D

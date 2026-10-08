@@ -235,7 +235,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     recorded, never by players and never anywhere else; and **settlement NPCs
     opening and closing doors** on their walks (Round 42 ruling 15;
     [settlements.md](settlements.md) "Doors"): a door's open or shut state
-    only, never a player's door.
+    only, never a locked door.
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -501 and below the universal contested deep rule overrides

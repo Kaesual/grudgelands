@@ -118,6 +118,21 @@ if rawget(_G, "doors") and doors.door_toggle then
 	end
 end
 
+-- The door finding (Round 42 DR): calls of npc_doors.near (two per door
+-- plan, one per fixed-walk end) and their cost, over the whole run.
+local door_find = {n = 0, us = 0, max_us = 0}
+if grug_mobs.npc_doors then
+	local real_near = grug_mobs.npc_doors.near
+	grug_mobs.npc_doors.near = function(...)
+		local t0 = now()
+		local a, b = real_near(...)
+		local us = now() - t0
+		door_find.n, door_find.us = door_find.n + 1, door_find.us + us
+		if us > door_find.max_us then door_find.max_us = us end
+		return a, b
+	end
+end
+
 -- The doors standing open in a box (Round 42 DR), and who stands near each
 -- (the NPCs within 4 nodes: distance, dwelling, the door it holds, the door
 -- it heads through).
@@ -138,7 +153,12 @@ local function open_doors(minp, maxp)
 						local t = ent.temp or {}
 						who[#who + 1] = ("%s d %.1f%s%s%s"):format(ent.name,
 							vector.distance(p, q), ent._grug_idle_dwell and " dwelling" or "",
-							t.grug_door_open and (" holds " .. t.grug_door_open.key) or "",
+							t.grug_door_open and (" holds " .. table.concat((function()
+								local keys = {}
+								for k in pairs(t.grug_door_open) do keys[#keys + 1] = k end
+								table.sort(keys)
+								return keys
+							end)(), " ")) or "",
 							t.grug_door_next and (" heads " .. t.grug_door_next) or "")
 					end
 				end
@@ -334,6 +354,9 @@ local function observe(name, record, minp, maxp, done, obs)
 				door_opens, door_closes, out.doors_before.open, out.doors_after.open,
 				out.doors_after.doors))
 			for _, line in ipairs(out.doors_after.near) do log("LIVE open door " .. line) end
+			out.door_find = {n = door_find.n, us = door_find.us, max_us = door_find.max_us}
+			log(("LIVE door finding so far: %d calls, %.1f ms, largest %d us"):format(
+				door_find.n, door_find.us / 1000, door_find.max_us))
 		end
 		write_results()
 		done()

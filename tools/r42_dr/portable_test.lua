@@ -16,7 +16,10 @@
 --      one through closes it (one open, one close);
 --   U  an NPC unloaded in the doorway leaves the door open;
 --   O  a door found open (a player's) is passed and left open;
---   P  never a player's door: an owned door is no door (no route, never
+--   D  who is in the doorway (players and mobs, never an attached nametag
+--      carrier or an item); a walker holding two doors shuts both; a
+--      hand-over adds to what the receiver holds;
+--   P  never a locked door: an owned door is no door (no route, never
 --      opened); trapdoors are no doors;
 --   G  gates: NPCs route round a fence gate and never open one; a pen whose
 --      only way in is a gate is no route;
@@ -314,12 +317,14 @@ local function new_object(pos)
 	function o:get_velocity() return vector.new(self.vel) end
 	function o:is_player() return false end
 	function o:get_luaentity() return self.ent end
+	function o:get_attach() return self.parent end
 	return o
 end
 
 -- A villager's body (0.6 wide, 1.7 tall, never jumps) by default.
 local function mob(x, z, fields)
 	local m = setmetatable({name = "test:villager", state = "stand", temp = {},
+		_cmi_is_mob = true,
 		walk_velocity = 1.1, jump_height = 0, fear_height = 4,
 		initial_properties = {stepheight = 1.1},
 		_grug_cbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3}}, {__index = mob_class})
@@ -479,6 +484,13 @@ do
 		and entry.points[k - 1].x == d.x - 1 and entry.points[k + 1].x == d.x + 1,
 		"R1 the route: in front of the door, through it, behind it")
 	check(#find_calls >= 2, "R1 ...searched to the door and from it: " .. #find_calls)
+	local seen_pair, twice = {}, false
+	for _, c in ipairs(find_calls) do
+		local k = key(c.from.x, c.from.y, c.from.z) .. ">" .. key(c.to.x, c.to.y, c.to.z)
+		if seen_pair[k] then twice = true end
+		seen_pair[k] = true
+	end
+	check(not twice, "R1 ...no piece searched twice (the check's path is walked)")
 	check(opened_at and opened_at < d.x - 0.3,
 		"R2 it opens the door in front of it (at x " .. tostring(opened_at) .. ")")
 	check(not door_open(d), "R2 ...and it is shut again behind it")
@@ -603,6 +615,85 @@ do
 end
 
 -- ---------------------------------------------------------------------------
+-- D. Who is in the doorway; every held door is settled (review L1, L2).
+-- ---------------------------------------------------------------------------
+do
+	local function place(m, x, z) m.object.pos = {x = x, y = 0.51, z = z} end
+	local function settle(m) D.settle(m, m.object:get_pos()) end
+	-- D1 the opener stopped beside the door inside the wall's corner (axis
+	-- 0.75, lateral 0.6: past it by the 0.9 measure) with its nametag
+	-- carrier attached at its position: nobody is in the doorway, so the
+	-- door is shut.
+	fresh()
+	local d = room(10, -4, 18, 4, 0)
+	local m = mob(d.x - 1, d.z)
+	D.approach(m, m.object:get_pos(), D.at(d))
+	check(door_open(d) and m.temp.grug_door_open[D.key(d)] ~= nil, "D1 the walker opens and holds the door")
+	place(m, d.x + 0.75, d.z + 0.6)
+	local tag = new_object(m.object.pos)
+	tag.parent = m.object
+	objects[#objects + 1] = tag
+	local item = new_object({x = d.x, y = 1, z = d.z})
+	objects[#objects + 1] = item
+	settle(m)
+	check(not door_open(d) and m.temp.grug_door_open == nil,
+		"D1 its own nametag carrier and an item in the doorway hold nothing")
+	-- D2 a mob standing in the doorway keeps it open until it leaves.
+	fresh()
+	d = room(10, -4, 18, 4, 0)
+	m = mob(d.x - 1, d.z)
+	D.approach(m, m.object:get_pos(), D.at(d))
+	place(m, d.x + 2, d.z)
+	local other = mob(d.x + 0.2, d.z + 0.1)
+	settle(m)
+	check(door_open(d) and m.temp.grug_door_open ~= nil, "D2 a mob in the doorway keeps it open")
+	place(other, d.x + 3, d.z + 2)
+	us = us + 1000000
+	settle(m)
+	check(not door_open(d) and m.temp.grug_door_open == nil, "D2 ...and it is shut once the doorway is clear")
+	-- D3 a second door never drops the first: both are shut.
+	fresh()
+	local d1 = room(10, -4, 18, 4, 0)
+	local d2 = {x = 10, y = 1, z = 2}
+	set(10, 1, 2, "doors:door_wood_a", 1)
+	set(10, 2, 2, "doors:hidden", 1)
+	set(10, 1, 1, "stone")
+	m = mob(9, 0)
+	local other2 = mob(d1.x, d1.z) -- keeps the first door back
+	D.approach(m, m.object:get_pos(), D.at(d1))
+	place(m, 12, 0)
+	settle(m)
+	check(door_open(d1), "D3 the first door is kept open (somebody in it)")
+	place(m, 9, 2)
+	D.approach(m, m.object:get_pos(), D.at(d2))
+	place(m, 12, 3)
+	place(other2, 3, -2)
+	us = us + 1000000
+	settle(m)
+	check(not door_open(d1) and not door_open(d2) and m.temp.grug_door_open == nil,
+		"D3 a walker holding two doors shuts both")
+	-- D4 a hand-over to an NPC that holds a door of its own adds to it.
+	fresh()
+	d1 = room(10, -4, 18, 4, 0)
+	set(10, 1, 2, "doors:door_wood_a", 1)
+	set(10, 2, 2, "doors:hidden", 1)
+	set(10, 1, 1, "stone")
+	local a, b = mob(9, 0), mob(9, 2)
+	D.approach(a, a.object:get_pos(), D.at(d1))
+	D.approach(b, b.object:get_pos(), D.at(d2))
+	place(b, 7, 0.5)
+	b.temp.grug_door_next = D.key(d1) -- b heads through a's door next
+	place(a, 12, 0)
+	settle(a)
+	check(a.temp.grug_door_open == nil and b.temp.grug_door_open[D.key(d1)] ~= nil
+		and b.temp.grug_door_open[D.key(d2)] ~= nil, "D4 the hand-over adds to what b holds")
+	b.temp.grug_door_next = nil
+	place(b, 12, 1)
+	settle(b)
+	check(not door_open(d1) and not door_open(d2), "D4 ...and b shuts both")
+end
+
+-- ---------------------------------------------------------------------------
 -- O. A door found open is passed and left open.
 -- ---------------------------------------------------------------------------
 do
@@ -619,7 +710,7 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- P. Never a player's door; trapdoors are no doors.
+-- P. Never a locked door; trapdoors are no doors.
 -- ---------------------------------------------------------------------------
 do
 	fresh()
@@ -639,7 +730,7 @@ do
 		_grug_idle_spot = 2})
 	v.do_custom = amble_tick
 	run(v, 30)
-	check(not door_open(d), "P2 a fixed walk never opens a player's door")
+	check(not door_open(d), "P2 a fixed walk never opens a locked door")
 	-- Unloaded is never "no door" for the cache; a fixed walk's detour takes
 	-- what is loaded.
 	fresh()

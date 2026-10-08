@@ -564,14 +564,14 @@ local function door_plans(a, b)
 end
 
 -- A door plan's steps: first a check per door that its end reaches its own
--- side of it (a short search in the room; a wrong door costs that one, not
--- a walk across the town), then to the door, through it ({door, behind}),
--- on.
+-- side of it (a short search in the room, in walking order; a wrong door
+-- costs that one, not a walk across the town; the walk reuses its path),
+-- then to the door, through it ({door, behind}), on.
 local function door_steps(a, b, plan)
 	local steps, from = {}, a
 	local da, db = plan[1], plan[2]
 	if da then steps[#steps + 1] = {check = a, to = (doors.sides(da, a))} end
-	if db then steps[#steps + 1] = {check = b, to = (doors.sides(db, b))} end
+	if db then steps[#steps + 1] = {check = (doors.sides(db, b)), to = b} end
 	if da then
 		local here, there = doors.sides(da, a)
 		split_steps(steps, from, here)
@@ -643,6 +643,7 @@ local function advance(set, entry)
 		local plan = job.door_plans[job.di]
 		if not plan then return finish(set, entry, "none") end
 		job.steps, job.i, job.fails = door_steps(entry.a, entry.b, plan), 1, 0
+		job.checked = nil
 		job.from, entry.points, entry.street, entry.doors = entry.a, {}, nil, nil
 		return
 	end
@@ -667,9 +668,15 @@ local function advance(set, entry)
 		return
 	end
 	local steer
+	local pair = from and to and (from.x .. "," .. from.y .. "," .. from.z .. ">" ..
+		to.x .. "," .. to.y .. "," .. to.z)
 	if from and to and from.x == to.x and from.y == to.y and from.z == to.z then
 		-- Already there (a leg that starts in front of its door).
 		steer = {from}
+	elseif pair and job.checked and job.checked[pair] then
+		-- The door plan's check searched this very piece.
+		steer = job.checked[pair]
+		job.checked[pair] = nil
 	elseif from and to then
 		-- The engine reads unloaded nodes as walls: a search whose box is
 		-- not loaded waits, so no route is ever "none" for want of a load.
@@ -702,7 +709,10 @@ local function advance(set, entry)
 		return
 	end
 	if step.check then
-		-- The end reaches its side of the door: on to the plan's walk.
+		-- The end reaches its side of the door: on to the plan's walk,
+		-- which takes this path when it walks the same piece.
+		job.checked = job.checked or {}
+		job.checked[pair] = steer
 		job.i = job.i + 1
 		return
 	end
@@ -798,9 +808,8 @@ function grug_mobs.door_crossing(self, pos)
 	local t = self.temp
 	if not t then return false end
 	if t.grug_walk and t.grug_walk.phase == "cross" then return true end
-	local o = t.grug_door_open
-	if o then
-		-- Still in the doorway of the door it holds open.
+	for _, o in pairs(t.grug_door_open or {}) do
+		-- Still in the doorway of a door it holds open.
 		local dx, dz = o.x - pos.x, o.z - pos.z
 		if dx * dx + dz * dz < doors.CLEAR * doors.CLEAR then return true end
 	end

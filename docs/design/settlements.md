@@ -638,13 +638,17 @@ Decided in Round 42 ([plan](../planning/round42-plan.md) ruling 15):
   settlement opens; the door plays its own open and close sounds. This is
   the second recorded exception to the terrain-damage guard besides the
   rift's crack ([world.md](world.md) §2 R1b).
-- **Closing:** the NPC that opened a door closes it once it is a node past
-  its centre, unless another NPC heading through the same door is within 4
-  nodes: that one closes it after it. Somebody standing in the doorway keeps
-  it open until the doorway is clear. A door found open (a player's doing)
-  stays open, and so does one whose opener was unloaded or died on the way.
-- **Never a player's door:** a door with an owner (a locked door a player
-  placed) is no door for an NPC. Trapdoors are no way through a wall.
+- **Closing:** the NPC that opened a door closes it once it is 0.9 nodes
+  past its centre, unless another NPC heading through the same door is
+  within 4 nodes: that one closes it after it. A player or a mob standing in
+  the doorway (within the same 0.9 nodes) keeps it open until the doorway is
+  clear. An NPC holds every door it opened or was handed until each is
+  closed, so a second door never makes it forget the first. A door found
+  open (a player's doing) stays open, and so does one whose opener was
+  unloaded or died on the way.
+- **Never a locked door:** a door with an owner (a locked door a player
+  placed) is no door for an NPC; an unlocked door is a door wherever it
+  stands. Trapdoors are no way through a wall.
 - **Gates are routed round:** NPCs never open a fence gate. Every walker
   stops when it faces a node named gate, open or not (the vendored mob
   code's fence rule), and a settlement's gates stand in fence and hedge lines
