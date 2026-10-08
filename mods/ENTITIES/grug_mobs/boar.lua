@@ -29,7 +29,7 @@ local boar = {
 	-- api.lua:1009-1034) and — whenever it is non-zero — the max_drop handed to
 	-- core.find_path (mobs/grug_nav.lua nav.body since Round 42). At 4 a
 	-- chaser stops dead at any ledge a player can simply hop down, which is
-	-- the cheapest terrain exploit there is and exactly what AGENTS.md "Mobs"
+	-- the cheapest terrain exploit there is and exactly what module-guide.md
 	-- forbids ("dangerous mobs must not fail at terrain, otherwise they are
 	-- not dangerous").
 	-- 6 is the free value: mobs_redo charges fall damage only above SIX nodes
