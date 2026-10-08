@@ -368,7 +368,7 @@ core.register_on_joinplayer(function(player)
 		next_sample = now_seconds() + (joined * JOIN_PHASE) % L.SAMPLE,
 		offset_y = anchor.offset.y, shown_text = "", shown_line = "", shown_color = COLOR,
 		banner = player:hud_add(layout.text_element("zone_banner", {number = COLOR,
-			text = "", size = {x = layout.ZONE_BANNER_SIZE}, style = 1, z_index = 2})),
+			text = "", size = {x = layout.ZONE_BANNER_SIZE, y = 0}, style = 1, z_index = 2})),
 		line = player:hud_add(layout.text_element("zone_subtitle",
 			{number = COLOR, text = "", style = 1, z_index = 2}))}
 end)

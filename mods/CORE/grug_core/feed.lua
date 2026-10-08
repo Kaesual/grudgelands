@@ -226,7 +226,7 @@ core.register_on_joinplayer(function(player)
 			y = offset.y}
 	end
 	rec.banner_id = player:hud_add(layout.text_element("banner", {
-		number = grug_core.FEED_COLOR.notice, text = "", size = {x = 2},
+		number = grug_core.FEED_COLOR.notice, text = "", size = {x = 2, y = 0},
 		style = 1, z_index = 2}))
 	feeds[name] = rec
 end)
