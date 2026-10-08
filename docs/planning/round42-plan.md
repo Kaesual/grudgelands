@@ -174,6 +174,13 @@ conditions); the user asked for numbers with a basis, not guesses.
     fixed-walk interface NV2 and NV3 use). A fighting mob leaves its path
     when the target is more than **4 nodes** from the path's planned end
     (`TARGET_DRIFT`, ruling 4 b).
+22. **NV2's later stages** (the user, 2026-10-08): a patrol skips a waypoint
+    after 3 failed searches in a row; a post guard (and a king or General on
+    its seat) is snapped onto its post after 6, out of sight only; a royal
+    guard snaps after 20 s stuck without a path, also in view (the existing
+    exception of ruling 11); royal guards run while their leader fights. The
+    evade's "not closer to home for 1 s" (ruling 10) is the one self-movement
+    detector of ruling 17; the 40 s snap catches the rest.
 
 Coordinator defaults (the user may overrule them):
 
