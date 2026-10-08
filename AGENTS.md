@@ -487,6 +487,11 @@ The topic rules below name the one path to use; the
   LuaJIT; a new one takes the repository path as `arg[1]` and exits non-zero on
   failure. Fixture and probe folders per round:
   [tools/README.md](tools/README.md).
+- **Run only the fixtures you need** (the user, 2026-10-08/09): while
+  developing, your own fixture plus the fixtures that actually test the
+  behaviour you are changing — never every fixture that merely loads a file
+  you changed; the full `tools/run_fixtures.sh` once, right before your
+  final report. Details: [round workflow §3](docs/process/round-workflow.md#3-gates).
 - **Seed fleet:** `tools/seed_fleet/run.sh quick|full`; when each is required:
   [round workflow](docs/process/round-workflow.md#3-gates).
 - **The user's GUI install** is a Flatpak (`org.luanti.luanti`, no access to
