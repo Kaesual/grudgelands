@@ -376,6 +376,8 @@ _G.grug_mobs = {
 	end,
 	walk_follow = noop,
 	walk_clear = function(self, owner) self._walk_cleared = owner or true end,
+	-- routes.lua (Round 42 NV3; not loaded here).
+	route_settlement = noop,
 }
 dofile(mobs_dir .. "/guard.lua")
 dofile(mobs_dir .. "/bosses.lua")

@@ -233,20 +233,19 @@ local SWEEP_ARRIVED = 0.6
 -- squared distance per second, and a walk only in the rare case.
 --
 -- The last resort is patrol.lua's third stage, the out-of-sight snap (the
--- user's round-1 ruling: a teleport never happens where anyone can watch it).
--- It is keyed on the STALL clock -- thirty seconds without measurable progress
--- toward home -- and not on the total, because the thing that stops a resident
--- getting home is a tree or a fence it is pressed against, and a mob that
--- oscillates around an obstacle makes progress often enough to keep resetting a
--- total. Thirty seconds is also well inside the time a player takes to walk up.
+-- user's round-1 ruling: a teleport never happens where anyone can watch it),
+-- after thirty seconds of walking home without getting there (Round 42: a
+-- plain count of the walk's seconds; the walkers' stall clock is gone, and a
+-- resident that never leaves its spot has no detector of its own). Thirty
+-- seconds is also well inside the time a player takes to walk up.
 --
 local WORK_SLACK = 1.2
 local WORK_STALL_SNAP = 30
--- Seconds of no measurable progress toward a spot after which the villager
--- gives that spot up and takes another (patrol.lua's stall clock). Short,
--- because the usual obstacle is another villager and the usual fix is to go
--- somewhere else.
-local SPOT_GIVE_UP = 15
+-- THE WALKERS' LATER STAGE (Round 42, ruling 17): a walker gives a spot up
+-- and takes the next one after this many failed searches in a row toward it
+-- (the fixed walk's count, patrol.lua walk_fixed; a patrol's skip takes as
+-- many), or at once when its leg has no route (routes.lua).
+local SPOT_GIVE_UP_AFTER = 3
 -- One answer per player per two seconds: on_rightclick fires per click and a
 -- held mouse button is a chat flood otherwise.
 local ANSWER_COOLDOWN = 2
@@ -581,11 +580,54 @@ local function next_spot(self, spots, index)
 	return fallback
 end
 
+--
+-- THE WALK BETWEEN TWO SPOTS (Round 42 NV3; round42-plan.md rulings 5, 12,
+-- 13, 17). A walker's leg runs from the spot it last stood at to the spot it
+-- is heading for. In a start town or a capital the leg's route comes from the
+-- route cache (routes.lua: built once, reused by everybody); anywhere else
+-- (a village) the walker follows its spot as a fixed target (patrol.lua
+-- walk_fixed). Either way it walks straight first and, stuck, searches a
+-- short local way round. Returns the failed searches in a row, and true when
+-- the leg has no route at all.
+--
+-- The spot it came from is a plain index (`_grug_idle_from`, set on
+-- arrival); a walker that does not know it (its first walk, a refreshed ring)
+-- takes the spot nearest to where it stands as the leg's start.
+--
+local function walk_leg(self, dtime, pos, spots, index)
+	local to = spots[index]
+	local from = spots[self._grug_idle_from or 0]
+	local standin = not from or from == to
+	if standin then
+		-- A stand-in for this walk only, never saved. Its "no route" is no
+		-- verdict on the walker (the stand-in may be enclosed while the
+		-- walker stands outside it): the walker then walks its goal as a
+		-- fixed walk, with the give-up of three failures.
+		local best
+		for k = 1, #spots do
+			local s = spots[k]
+			local dx, dz = s.x - pos.x, s.z - pos.z
+			local d2 = dx * dx + dz * dz
+			if k ~= index and (not best or d2 < best) then
+				best, from = d2, s
+			end
+		end
+	end
+	local fails, none = grug_mobs.route_walk(self, dtime, pos, self._grug_start,
+		from, to, "amble")
+	if fails and not (none and standin) then return fails, none end
+	return grug_mobs.walk_fixed(self, dtime, pos, to.x, to.y, to.z, index, "amble")
+end
+
 local function amble_tick(self, dtime)
 	self.temp = self.temp or {}
 	local temp = self.temp
 	temp.grug_amble_acc = (temp.grug_amble_acc or 0) + dtime
-	if temp.grug_amble_acc < AMBLE_TICK then return end
+	if temp.grug_amble_acc < AMBLE_TICK then
+		-- Between decisions: a passed corner, a local path, a route being built.
+		grug_mobs.route_follow(self, dtime, "amble")
+		return
+	end
 	local elapsed = temp.grug_amble_acc
 	temp.grug_amble_acc = 0
 	-- A twin on a socket somebody else already holds removes itself, once per
@@ -603,7 +645,7 @@ local function amble_tick(self, dtime)
 	if type(spots) ~= "table" or #spots == 0 then return end
 	-- Idle only, the same test patrol.lua and aggro.lua's roam cap use.
 	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
-		grug_mobs.stall_clear(self)
+		grug_mobs.route_clear(self, "amble")
 		return
 	end
 	local pos = self.object and self.object:get_pos()
@@ -615,23 +657,24 @@ local function amble_tick(self, dtime)
 	if dx * dx + dz * dz > SPOT_ARRIVED * SPOT_ARRIVED then
 		-- Still on the way: clear the dwell so arriving starts a fresh one.
 		self._grug_idle_dwell = nil
-		-- A BLOCKED VILLAGER PICKS ANOTHER SPOT instead of pushing forever. It
-		-- has no pathfinder (mobs_redo only path-finds in the attack state) and
-		-- since the round-1 fix no jump either, so "walk into it until it moves"
-		-- is not a plan -- and the thing in the way is usually another villager
-		-- on the same errand.
-		local stalled = grug_mobs.stall_clock(self, spot.x, spot.z, pos, elapsed)
-		if stalled >= SPOT_GIVE_UP then
-			grug_mobs.stall_clear(self)
+		if #spots < 2 then
+			-- A resident whose only spot is its own never leaves it, so it
+			-- asks the pathfinder nothing (ruling 12): back to it straight.
+			grug_mobs.walk_toward(self, spot.x, spot.z, pos)
+			return
+		end
+		local fails, none = walk_leg(self, dtime, pos, spots, index)
+		if none or fails >= SPOT_GIVE_UP_AFTER then
+			-- The later stage: this spot is given up for the next one.
+			grug_mobs.route_clear(self, "amble")
 			self._grug_idle_spot = next_spot(self, spots, index)
 			self.state = "stand"
 			self:set_velocity(0)
-			return
 		end
-		grug_mobs.walk_toward(self, spot.x, spot.z, pos)
 		return
 	end
-	grug_mobs.stall_clear(self)
+	grug_mobs.route_clear(self, "amble")
+	self._grug_idle_from = index
 	--
 	-- HOW LONG THIS RESIDENT STANDS STILL is the whole of the 80/20 rule on the
 	-- idle side (contract section 8.3). A WALKER keeps the round-1 twenty to
@@ -767,9 +810,8 @@ local function work_tick(self, dtime)
 	local dx = (home_x or pos.x) - pos.x
 	local dz = (home_z or pos.z) - pos.z
 	if dx * dx + dz * dz > slack * slack then
-		local stalled = grug_mobs.stall_clock(self, home_x, home_z, pos,
-			elapsed)
-		if stalled >= WORK_STALL_SNAP and
+		temp.grug_home_walk = (temp.grug_home_walk or 0) + elapsed
+		if temp.grug_home_walk >= WORK_STALL_SNAP and
 				grug_mobs.snap_try(self, pos, home_x, home_z, elapsed,
 					WORK_STALL_SNAP) then
 			return false
@@ -778,7 +820,7 @@ local function work_tick(self, dtime)
 		self:set_animation("walk")
 		return false
 	end
-	grug_mobs.stall_clear(self)
+	temp.grug_home_walk = nil
 	if not watched(self, pos) then
 		-- Nobody within 24 nodes: no activity, no swing, no facing. The one
 		-- thing that still happens is STOPPING, and the stand animation goes
@@ -911,14 +953,16 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		-- api.lua consults it -- and is kept false only so the def does not
 		-- claim the opposite of what it does. Flat settlement ground plus
 		-- `stepheight = 1.1` is what a villager needs; something in the way is
-		-- handled by picking another spot (amble_tick), not by climbing it.
+		-- walked round (the shared navigation, Round 42) or its spot given up
+		-- (amble_tick), never climbed.
 		--
 		jump = false,
 		jump_height = 0,
 		stepheight = 1.1,
 		fear_height = 4,
-		-- No `pathfinding`: mobs_redo only path-finds in the attack state
-		-- (api.lua smart_mobs), which a villager can never enter.
+		-- No `pathfinding` field: a walker's way round an obstacle is the
+		-- shared navigation's (amble_tick, routes.lua; Round 42), never
+		-- mobs_redo's own.
 		view_range = 4,
 		reach = 0,
 		floats = true,

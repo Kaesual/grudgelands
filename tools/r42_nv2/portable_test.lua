@@ -40,7 +40,7 @@
 --      socket's y; a refused snap is retried 10 s later however rarely the
 --      caller asks;
 --   A  the old pieces are gone: no path_nudge, no core.find_path outside the
---      navigation, the stall clock only for the villagers (NV3).
+--      navigation, no stall clock (NV3 removed the villagers' last one).
 -- Usage (repo root): luajit tools/r42_nv2/portable_test.lua [REPO]
 -- Prints "R42 NV2 PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
@@ -452,7 +452,7 @@ do
 	check(t ~= nil and t > 8, "P3 the waypoint in the pen is skipped (" .. tostring(t) .. " s)")
 	check(m.ev.no_path >= 3 or (m.ev.no_path or 0) + (m.ev.refused or 0) >= 3,
 		"P3 ...after three failed searches")
-	check(logged("could not reach its waypoint (3 failed searches in a row)"),
+	check(logged("could not reach its waypoint (3 failed searches in a row"),
 		"P3 ...reported")
 	check(#placed == 0, "P3 ...not snapped (the first in a row)")
 	-- P4 the second unreachable waypoint in a row is snapped to, out of sight.
@@ -802,8 +802,9 @@ do
 			"A " .. file .. ": no stall clock")
 		check(not src:find("smart_mobs", 1, true), "A " .. file .. ": no smart_mobs comment")
 	end
-	check(read(dir .. "start_villagers.lua"):find("stall_clock(", 1, true) ~= nil,
-		"A the villagers keep their stall clock until NV3")
+	-- Round 42 NV3 replaced the villagers' stall clock (tools/r42_nv3).
+	check(read(dir .. "start_villagers.lua"):find("stall_clock(", 1, true) == nil,
+		"A the villagers' stall clock is gone (NV3)")
 end
 
 print("R42 NV2 PORTABLE PASS checks=" .. checks)

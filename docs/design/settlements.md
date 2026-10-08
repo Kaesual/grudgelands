@@ -481,10 +481,13 @@ Decided 2026-09-15 after the first NPC playtest, and part of that behaviour:
   their authored names.
 - **A villager at a doorstep faces the street**, and villagers walk — they do
   not jump. A walker dwells 20 to 60 seconds at a spot, then walks to another
-  spot of the same composition; a spot it cannot reach is given up for another.
+  spot of the same composition; a spot it cannot reach is given up for another
+  (Round 42: after three failed searches in a row, or at once when its leg has
+  no route; see "Settlement walkers" below).
 - **A guard that cannot reach its waypoint keeps patrolling anyway**: stuck,
   it finds a short local path round the obstacle and follows it (Round 42,
-  the fixed walks of `world.md` §4a); after three failed searches in a row it
+  the fixed walks of `world.md` §4a); after three failed searches in a row
+  (or at once on a cached leg with no route, "Settlement walkers" below) it
   takes the next waypoint, and only when the next one cannot be reached
   either and no player is within 48 nodes is it moved there outright. A
   post guard walks back to its post the same way and is moved onto it, out
@@ -532,11 +535,20 @@ want lived-in settlements without paying for it in server load"):
   two to four destinations in a start rather than a march across the
   settlement. Where a settlement's spots are further apart than that, the
   walker takes the nearest ones anyway: a walker with one destination is a
-  walker that never moves.
+  walker that never moves. A walker always has more than one destination
+  (Round 42 ruling 16): one whose own composition offers no other spot (a
+  capital plot that publishes only its gate doorstep) takes the nearest
+  spots of the settlement's other compositions, up to three in its ring.
 - **The load is the point.** Path-finding and animated meshes are what a
-  settlement costs, not the head count. A static resident asks the pathfinder
-  nothing at all, writes its animation once per change, and does nothing
-  whatsoever while no player is within 24 nodes.
+  settlement costs, not the head count. A resident that never leaves its
+  spot (a work resident; a resident whose ring is its own spot) asks the
+  pathfinder nothing at all, writes its animation once per change, and does
+  nothing whatsoever while no player is within 24 nodes; one moved off its
+  spot walks back straight (a work resident is put back out of sight after
+  30 seconds).
+  Walkers, and the rare hop of a static resident, may use the pathfinder
+  (Round 42 ruling 12), on routes cached where they repeat.
+
 - **Profession vendors.** A district reads as lived in when the butcher's house
   has a butcher in it, so a `vendor` socket may name one of twelve professions —
   butcher, smith, fishmonger, baker, tailor, mason, brewer, bowyer, herbalist,
@@ -552,6 +564,51 @@ want lived-in settlements without paying for it in server load"):
   adopted 2026-09-18). Villagers, elders and vendors use the same independent
   25 m show / 30 m hide carrier gate as combat families. A nearby player no
   longer exposes settlement names to a different, distant player.
+
+### Settlement walkers
+
+Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
+16–18):
+
+- **A walker's leg** runs from the spot it last stood at to the spot it is
+  heading for, on the shared fixed walk ([world.md](world.md) §4a "Fixed
+  walks"): straight first; stuck (less than 30 % of its speed over 1 s), a
+  short local search round the obstacle, followed to its end. After three
+  failed searches in a row toward one point it gives the spot up and takes
+  the next one; there is no timer of its own any more.
+- **Route cache in start towns and capitals** (the terrain there is
+  protected and never changes): a leg between two fixed points — two spots,
+  or two waypoints of the watch's loop — is computed once, on first use, and
+  reused by every walker on it until the server restarts. It is built one
+  engine search at a time inside the A* budget and the global search cap,
+  each search bounded (padding 6, no piece longer than 24 nodes: a longer leg
+  is split at standable points on the straight line, or up to 6 nodes beside
+  it), smoothed and kept as corner points; four failed searches spend a leg.
+  While a leg is built — also while its area is not loaded, which never
+  counts as "no route" — the walker walks to its goal as a fixed walk. A leg
+  with no route is remembered as such and the walker's next stage takes over
+  at once (the next spot; a patrol's next waypoint), so nothing searches it
+  again; a walker more than 5 nodes from the leg's start walks to its goal as
+  a fixed walk instead, with the three-failure give-up.
+  Villages, camps and fortresses have no cache: their walkers follow their
+  spot as a fixed target.
+- **Capital patrols run over the streets** (ruling 14): a patrol leg longer
+  than 32 nodes whose two waypoints each lie within 24 nodes (and 6 of
+  height) of a street walks "to the street" (a cached search), along the
+  streets (the capital planner's avenues and lanes, the shortest way through
+  their junctions, as corner points within a node of the centreline) and
+  "from the street" (a cached search). A street way more than three times
+  the straight line, or an end its search cannot join to the street, falls
+  back to the split straight leg. The carriageway is kept free; street
+  furniture stands on the verge.
+- **Following a cached route:** the walker steers at its next corner and
+  turns there; one that starts a leg away from it (a patrol counts a waypoint
+  reached 4 nodes short of it; after a fight or a reload) joins the route at
+  the end of the nearest segment, or at that segment's start when the way
+  there is not a straight walk; one pushed more than 2 nodes off it is stuck
+  within a second and searches its way back to its next corner.
+- **Doors are walls to the engine** until NPCs open doors: legs to indoor
+  spots behind a door end as "no route" without a search storm.
 
 ## Round 15 regional POI composition
 

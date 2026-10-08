@@ -1,0 +1,8 @@
+ACTION[Server]: [nv3] target capital_partial
+ACTION[Server]: [nv3] PARTIAL kept (-1917,59,-1518) - (-1821,97,-1422) round the guard at (-1869,70,-1470), freed 1652 blocks
+ACTION[Server]: [nv3] LIVE capital_partial dur_brannoc: 13 ambling residents (2 walkers, 0 one-spot), 3 patrols; 90 s: find_path 3 (2.0/min, found 3, max 54 us at d 10.8, 0.2 ms), nav searches 3, cap waits 0; arrivals 4, spots given up 5, patrol advances 93, snaps 0, patrol give-ups 3
+ACTION[Server]: [nv3] LIVE cache {"corners":139,"legs":23,"max_us":259,"none":6,"ok":14,"pending":3,"search_us":3813,"searches":37,"smooth_us":1550,"street_legs":4,"street_points":2240,"street_roads":19,"street_stops":141,"streets_us":4926}
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-jA04hw/world/nv3_results.json (1769 bytes)
+ACTION[Server]: [nv3] PARTIAL guard active true, waypoint 3
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-jA04hw/world/nv3_results.json (1769 bytes)
+ACTION[Server]: [nv3] RESULT DONE

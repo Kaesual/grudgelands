@@ -431,6 +431,20 @@ function nav.search(from, goal, padding, jump, drop)
 	return path
 end
 
+-- One search slot for a caller outside the follower (Round 42 NV3: the
+-- settlement route cache builds its legs one search at a time): the global
+-- cap, then the per-step budget queue keyed by `temp`, as attempt() takes
+-- them. True when the caller may run nav.search now.
+function nav.claim_search(temp)
+	if not cap_free() then
+		obstacle.cancel_path_request(temp)
+		return false
+	end
+	if not obstacle.claim_path_budget(temp) then return false end
+	cap_take()
+	return true
+end
+
 --
 -- Per-mob state: `self.temp.grug_nav` (runtime only, never saved).
 --

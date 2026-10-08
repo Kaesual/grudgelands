@@ -1,0 +1,1024 @@
+{
+ "batches": [
+  {
+   "fp_calls": 18,
+   "fp_max_step_us": 151,
+   "fp_us": 1132,
+   "mob_us_max": 629,
+   "mob_us_p50": 56,
+   "mob_us_p90": 167,
+   "mob_us_p99": 441,
+   "mover": "villager",
+   "seconds": 30.06,
+   "slowest": [
+    [
+     8.69,
+     629,
+     425,
+     "grug_mobs:villager_human",
+     "stand/tracked"
+    ],
+    [
+     3.26,
+     465,
+     78,
+     "grug_mobs:villager_human",
+     "walk/tracked"
+    ],
+    [
+     2.17,
+     460,
+     76,
+     "grug_mobs:villager_human",
+     "stand/tracked"
+    ]
+   ],
+   "steps": 332
+  }
+ ],
+ "calib": null,
+ "meta": {
+  "give_up_after": 3,
+  "origin": {
+   "floor_y": 300,
+   "x": 2560,
+   "z": 2560
+  },
+  "path_budget_us": 3000,
+  "phases": [
+   "scenes"
+  ],
+  "scenes": [
+   {
+    "blocked": [
+     0,
+     0
+    ],
+    "goal_h": 1,
+    "name": "open",
+    "note": "control: flat open ground",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "trunk",
+    "note": "one tree trunk in the middle of the straight line",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     11,
+     0
+    ],
+    "goal_h": 1,
+    "name": "trunk_near",
+    "note": "the target 2 nodes behind a trunk (within melee reach of its front)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "row",
+    "note": "a row of 7 trunks across the line, 1-node gaps, row ends at v +-6",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "doorway",
+    "note": "a 3-high wall across the lane with a 1-wide, 2-high doorway at v +4",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "lcorner",
+    "note": "an L: wall u 7 (v -5..2) and wall v 2 (u 3..7), the way round at v -6",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     9,
+     0
+    ],
+    "goal_h": 1,
+    "name": "fence",
+    "note": "a 2-high wooden fence ring round the target (visible, not walkable)",
+    "reachable": false
+   },
+   {
+    "blocked": [
+     9,
+     0
+    ],
+    "goal_h": 1,
+    "name": "fence_low",
+    "note": "a 1-high wooden fence ring (collision 1.0 high: below a 1.1 step)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     5,
+     0
+    ],
+    "goal_h": 1,
+    "name": "pillar",
+    "note": "a 3x3 stone pillar, 4 high",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0,
+     -1
+    ],
+    "goal_h": 1,
+    "name": "ditch",
+    "note": "a 2-wide, 2-deep ditch across the lane; a 1-deep crossing at v 4..5",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 2,
+    "name": "step",
+    "note": "the ground rises by one node from u 7 on (a plain step up)",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "lowgap",
+    "note": "a 4-high wall across the lane, a 1-high hole on the line (v 0), a 2-high gap at v +5",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     3,
+     0
+    ],
+    "goal_h": 1,
+    "name": "pond",
+    "note": "a 2-deep pond (u 4..10, v -6..6) on the line, one-node banks",
+    "reachable": true
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "door_closed",
+    "note": "a 3-high wall across the lane, a closed wooden door on the line",
+    "reachable": false
+   },
+   {
+    "blocked": [
+     6,
+     0
+    ],
+    "goal_h": 1,
+    "name": "door_open",
+    "note": "the same wall with the wooden door open",
+    "reachable": true
+   }
+  ],
+  "seed": "12345",
+  "settings": {
+   "dedicated_server_step": "0.09",
+   "mob_pathfinding_searchdistance": "24",
+   "mob_pathfinding_stuck_path_timeout": "3.0",
+   "mob_pathfinding_stuck_timeout": "2.0"
+  }
+ },
+ "movers": {
+  "villager": {
+   "T": 30,
+   "entity": "grug_mobs:villager_human",
+   "fear_height": 4,
+   "floats": true,
+   "height": 1.7,
+   "jump_height": 0,
+   "kind": "villager",
+   "note": "a walker whose next idle spot is the goal (amble_tick)",
+   "reach": 0,
+   "run_velocity": 1.1,
+   "stepheight": 1.100000023841858,
+   "walk_velocity": 1.1,
+   "width": 0.6
+  }
+ },
+ "trials": [
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     22.19,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 1,
+   "min_d": 0.85,
+   "mover": "villager",
+   "reached": true,
+   "scene": "open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 22.19,
+   "t_within_1_5": 22.28,
+   "t_within_3": 18.75,
+   "t_within_5": 11.5
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     10.77,
+     "nav",
+     "stuck"
+    ],
+    [
+     10.77,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      36
+     ]
+    ],
+    [
+     10.77,
+     "nav",
+     "found"
+    ],
+    [
+     18.11,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 2,
+   "min_d": 1.2,
+   "mover": "villager",
+   "reached": true,
+   "scene": "trunk",
+   "search_max_us": 36,
+   "search_us": 36,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 18.11,
+   "t_within_1_5": 18.2,
+   "t_within_3": 16.85,
+   "t_within_5": 14.85
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     18.38,
+     "nav",
+     "stuck"
+    ],
+    [
+     18.38,
+     "fp",
+     [
+      6,
+      3,
+      6,
+      21
+     ]
+    ],
+    [
+     18.38,
+     "nav",
+     "found"
+    ],
+    [
+     21.1,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 3,
+   "min_d": 0.93,
+   "mover": "villager",
+   "reached": true,
+   "scene": "trunk_near",
+   "search_max_us": 21,
+   "search_us": 21,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 21.1,
+   "t_within_1_5": 21.19,
+   "t_within_3": 16.57,
+   "t_within_5": 13.67
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     10.77,
+     "nav",
+     "stuck"
+    ],
+    [
+     10.77,
+     "fp",
+     [
+      6,
+      8,
+      11,
+      23
+     ]
+    ],
+    [
+     10.77,
+     "nav",
+     "found"
+    ],
+    [
+     17.93,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 4,
+   "min_d": 1,
+   "mover": "villager",
+   "reached": true,
+   "scene": "row",
+   "search_max_us": 23,
+   "search_us": 23,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 17.93,
+   "t_within_1_5": 18.02,
+   "t_within_3": 16.66,
+   "t_within_5": 14.76
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     10.77,
+     "nav",
+     "stuck"
+    ],
+    [
+     10.77,
+     "fp",
+     [
+      6,
+      8,
+      17,
+      51
+     ]
+    ],
+    [
+     10.77,
+     "nav",
+     "found"
+    ],
+    [
+     21.82,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 5,
+   "min_d": 0.62,
+   "mover": "villager",
+   "reached": true,
+   "scene": "doorway",
+   "search_max_us": 51,
+   "search_us": 51,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 21.82,
+   "t_within_1_5": 22,
+   "t_within_3": 20.47,
+   "t_within_5": 18.56
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     9.69,
+     "nav",
+     "stuck"
+    ],
+    [
+     9.69,
+     "fp",
+     [
+      6,
+      8,
+      21,
+      80
+     ]
+    ],
+    [
+     9.69,
+     "nav",
+     "found"
+    ],
+    [
+     24.09,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 6,
+   "min_d": 0.51,
+   "mover": "villager",
+   "reached": true,
+   "scene": "lcorner",
+   "search_max_us": 80,
+   "search_us": 80,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 24.09,
+   "t_within_1_5": 24.18,
+   "t_within_3": 22.64,
+   "t_within_5": 20.83
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     11.86,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.86,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      107
+     ]
+    ],
+    [
+     11.86,
+     "nav",
+     "no_path"
+    ],
+    [
+     16.94,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      139
+     ]
+    ],
+    [
+     16.94,
+     "nav",
+     "no_path"
+    ],
+    [
+     22.01,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      126
+     ]
+    ],
+    [
+     22.01,
+     "nav",
+     "no_path"
+    ],
+    [
+     22.82,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 7,
+   "min_d": 4.43,
+   "mover": "villager",
+   "reached": false,
+   "scene": "fence",
+   "search_max_us": 139,
+   "search_us": 372,
+   "searches": 3,
+   "smart_mobs": {
+    "nav_no_path": 3,
+    "nav_stuck": 1
+   },
+   "t_within_5": 10.41
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     14.04,
+     "nav",
+     "stuck"
+    ],
+    [
+     14.04,
+     "fp",
+     [
+      6,
+      4,
+      5,
+      12
+     ]
+    ],
+    [
+     14.04,
+     "nav",
+     "found"
+    ],
+    [
+     16.85,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 8,
+   "min_d": 0.95,
+   "mover": "villager",
+   "reached": true,
+   "scene": "fence_low",
+   "search_max_us": 12,
+   "search_us": 12,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 16.85,
+   "t_within_1_5": 16.94,
+   "t_within_3": 15.58,
+   "t_within_5": 12.59
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     11.86,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.86,
+     "fp",
+     [
+      6,
+      9,
+      14,
+      33
+     ]
+    ],
+    [
+     11.86,
+     "nav",
+     "found"
+    ],
+    [
+     21.55,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 9,
+   "min_d": 1.37,
+   "mover": "villager",
+   "reached": true,
+   "scene": "pillar",
+   "search_max_us": 33,
+   "search_us": 33,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 21.55,
+   "t_within_1_5": 21.64,
+   "t_within_3": 20.29,
+   "t_within_5": 18.29
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     8.6,
+     "nav",
+     "stuck"
+    ],
+    [
+     8.6,
+     "fp",
+     [
+      6,
+      9,
+      18,
+      97
+     ]
+    ],
+    [
+     8.6,
+     "nav",
+     "found"
+    ],
+    [
+     20.01,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 1,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 10,
+   "min_d": 0.84,
+   "mover": "villager",
+   "reached": true,
+   "scene": "ditch",
+   "search_max_us": 97,
+   "search_us": 97,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_found": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 20.01,
+   "t_within_1_5": 20.1,
+   "t_within_3": 18.11,
+   "t_within_5": 16.03
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     17.84,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 11,
+   "min_d": 0.85,
+   "mover": "villager",
+   "reached": true,
+   "scene": "step",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 17.84,
+   "t_within_1_5": 17.93,
+   "t_within_3": 16.57,
+   "t_within_5": 12.59
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     11.86,
+     "nav",
+     "stuck"
+    ],
+    [
+     11.86,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      10
+     ]
+    ],
+    [
+     11.86,
+     "nav",
+     "rejected"
+    ],
+    [
+     16.94,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      12
+     ]
+    ],
+    [
+     16.94,
+     "nav",
+     "rejected"
+    ],
+    [
+     22.01,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      10
+     ]
+    ],
+    [
+     22.01,
+     "nav",
+     "rejected"
+    ],
+    [
+     22.82,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 3,
+   "kind": "villager",
+   "lane": 12,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "lowgap",
+   "search_max_us": 12,
+   "search_us": 32,
+   "searches": 3,
+   "smart_mobs": {
+    "nav_rejected": 3,
+    "nav_stuck": 1
+   }
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     5.34,
+     "nav",
+     "stuck"
+    ],
+    [
+     5.34,
+     "fp",
+     [
+      6,
+      11,
+      0,
+      145
+     ]
+    ],
+    [
+     5.34,
+     "nav",
+     "no_path"
+    ],
+    [
+     20.1,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 13,
+   "min_d": 0.95,
+   "mover": "villager",
+   "reached": true,
+   "scene": "pond",
+   "search_max_us": 145,
+   "search_us": 145,
+   "searches": 1,
+   "smart_mobs": {
+    "nav_no_path": 1,
+    "nav_stuck": 1
+   },
+   "t_goal": 20.1,
+   "t_within_1_5": 20.19,
+   "t_within_3": 18.84,
+   "t_within_5": 15.49
+  },
+  {
+   "T": 30,
+   "counts": {
+    "villager_next_spot": 1
+   },
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     7.51,
+     "nav",
+     "stuck"
+    ],
+    [
+     7.51,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      73
+     ]
+    ],
+    [
+     7.51,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.59,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      78
+     ]
+    ],
+    [
+     12.59,
+     "nav",
+     "no_path"
+    ],
+    [
+     17.66,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      79
+     ]
+    ],
+    [
+     17.66,
+     "nav",
+     "no_path"
+    ],
+    [
+     18.47,
+     "next_spot",
+     1
+    ]
+   ],
+   "found": 0,
+   "kind": "villager",
+   "lane": 14,
+   "min_d": 7.8,
+   "mover": "villager",
+   "reached": false,
+   "scene": "door_closed",
+   "search_max_us": 79,
+   "search_us": 230,
+   "searches": 3,
+   "smart_mobs": {
+    "nav_no_path": 3,
+    "nav_stuck": 1
+   }
+  },
+  {
+   "T": 30,
+   "counts": null,
+   "cycles": 0,
+   "entity": "grug_mobs:villager_human",
+   "events": [
+    [
+     18.93,
+     "arrive",
+     "walk"
+    ]
+   ],
+   "found": 0,
+   "how": "walk",
+   "kind": "villager",
+   "lane": 15,
+   "min_d": 0.85,
+   "mover": "villager",
+   "reached": true,
+   "scene": "door_open",
+   "search_max_us": 0,
+   "search_us": 0,
+   "searches": 0,
+   "smart_mobs": null,
+   "t_goal": 18.93,
+   "t_within_1_5": 19.02,
+   "t_within_3": 16.57,
+   "t_within_5": 14.76
+  }
+ ]
+}

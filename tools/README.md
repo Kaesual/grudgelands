@@ -341,4 +341,21 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the evade, the royal follow, the rift boss, the later stages;
   `evidence/after/` keeps NV2's scenes run of the post guard and the royal
   guard (seed 12345; the before/after table against
-  `r42_nv1/evidence/after`).
+  `r42_nv1/evidence/after`). `r42_nv3`: `portable_test.lua` drives real
+  villager and patrol walks (the real `patrol.lua`, `routes.lua` and
+  navigation, the amble and work ticks and the rings cut out of
+  `start_villagers.lua` and `start_npcs.lua`, a capital's streets written by
+  the real `road_layout.lua`) through tools/r42_nv2's world model: the route
+  cache, the street legs, following and the return to a route, the next-spot
+  stage, the one-spot walkers, residents that ask nothing. `run.sh OUT_DIR
+  LABEL [TARGETS] [TIMEOUT]` (probe mod `grug_probe_r42_nv3`, seed 42, one
+  boot through the round's measuring queue) watches the real placement and
+  movement of one settlement at a time with no player for `OBS` seconds
+  (default 90): every `core.find_path` call, the navigation's counters,
+  walker arrivals and spots given up, patrol advances, snaps, one-spot
+  walkers, the route cache's statistics; targets `start`, `village`,
+  `capital`, `capital_partial` (after the placement only a 96-node box round
+  one district patrol guard stays loaded: legs with unloaded ends) and
+  `streets` (the capital's streets read from the road layout
+  as the runtime does). `summarize.py RESULTS.json [MORE.json ...]` prints
+  the table; `evidence/before/` and `evidence/after/` keep the lane's runs.
