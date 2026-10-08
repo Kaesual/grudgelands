@@ -1315,8 +1315,16 @@ tools](#player-meta-read-by-external-tools).
   since Round 30 (`grug_inventory/pages.lua`, its 1 s pass re-sends that page
   only while the button text changes).
   Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
-  it as 512 px tiles (at high also a normal-size copy for the minimap,
-  scaled down in the same pass, Round 37); `minimap.lua` (HUD state, marker slots, change-only
+  it as 512 px tiles, plus a normal-size copy for the minimap (scaled down
+  in the same pass at high, Round 37; at both qualities since Round 44).
+  Since Round 44 the pure `bake.lua` draws the settlement, point-of-interest,
+  king and dragon icons and the region names (pixel font, dark halo) into
+  the Map tab's image and the small icons alone into the minimap's copy;
+  the art is Lua data (`baked_art.lua`, generated from
+  `grug_map/art/*.png` by `tools/r44_mb/gen_baked_art.py`, `--check`), since
+  the engine decodes no PNG for Lua. The cache key covers `bake.lua` (the
+  layout), the art and font versions and every icon's kind and place
+  (fixture `tools/r44_mb`); `minimap.lua` (HUD state, marker slots, change-only
   `hud_change` per whole screen pixel; every server step only a cheap test,
   and the map, markers or party arrows placed again only when what they
   show changed, Round 37) and the pure
@@ -1334,7 +1342,9 @@ tools](#player-meta-read-by-external-tools).
   static markers are re-asked on `grug_quests.register_on_markers_changed`
   and, when their key (quest version, home, waystones, faction) changed, at
   a 5 s check. The minimap asks only the quest, service, home and (since Round 29)
-  waypoint marker providers (`atlas.collect_markers(player, only)`); the
+  waypoint marker providers (`atlas.collect_markers(player, only)`);
+  since Round 44 trainers show one icon per profession
+  (`grug_map.trainer_icon`); the
   `waypoint` provider shows the player's discovered waystones on both maps.
   Fixture:
   `tools/r27_minimap/portable_test.lua`; traffic comparison:
@@ -1358,15 +1368,15 @@ tools](#player-meta-read-by-external-tools).
   `location_view.lua` `capital_at`, up to eight footprint queries per sample
   only while leaving), which decides where music plays.
   Round 31: NPC markers carry their NPC's faction and the service and
-  quest-giver lists are split per viewer faction once at load (the kings and
-  dragons stay for everyone); `settlement_icons.lua` (pure, `HIDDEN`) decides
-  which settlement icons a viewer faction sees from the anchor slot in the
-  settlement registry, and the Map tab builds one list per faction; since
-  Round 32 it also names the hostile camps (`HOSTILE`: slots `bandit_N`
-  and `mirefolk`), which draw a red "X" instead of the "!". The
+  quest-giver lists are split per viewer faction once at load. Since Round
+  44 settlements, camps, points of interest, kings and dragons are no
+  markers: `settlement_icons.lua` (pure) maps a settlement's anchor slot to
+  its baked icon kind, the same for every viewer (ruling 5 ended Round 31's
+  per-faction hiding), and `providers.lua` keeps the kings' and dragons'
+  places only for the zone markers' placement. The
   Map tab's signature includes the faction, and the minimap re-asks its
   static markers on `register_on_faction_chosen`. Fixtures `tools/r31_n`,
-  `tools/r31_m`.
+  `tools/r31_m`, `tools/r44_mb`.
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
 
 ## Preparation

@@ -29,10 +29,9 @@
 --      outside starts and capitals are 106 (the count the claim scan names);
 --   5. the waystone rules: each faction's network is seven stones, the
 --      fortress travels like a capital (known only when discovered);
---   6. the map's settlement icons (`grug_map/settlement_icons.lua`): the
---      enemy's starts, capitals, villages, outposts and fortress are hidden,
---      the war camps and every neutral place are seen by both factions and
---      by a player without one only the neutral places and the camps; the
+--   6. the map's settlement icons (`grug_map/settlement_icons.lua`): every
+--      slot has its baked icon kind, the same for every viewer (Round 44
+--      ruling 5 ended the Round 31 hiding of the enemy's places); the
 --      mobs' rules (`spawn_policy.lua`, `roam_avoid.lua`) treat "fortress"
 --      and "war_camp" like a village, and a bandit "camp" not.
 -- Prints "R31 M PORTABLE PASS checks=<n>" or raises.
@@ -223,16 +222,13 @@ check(#entries == 7 and entries[7].state == "here", "the fortress in its own tra
 
 -- 6. the map icons and the mobs' rules
 local icons = dofile(repo .. "/mods/PLAYER/grug_map/settlement_icons.lua")
-local owned = {"start", "capital", "village_1", "outpost_1", "outpost_2", "pvp_fortress"}
-for _, slot in ipairs(owned) do
-	check(icons.visible(slot, "accord", "accord") and not icons.visible(slot, "accord", "throng") and
-		not icons.visible(slot, "throng", "") and not icons.visible(slot, "throng", nil),
-		slot .. ": own faction only")
-end
-for _, slot in ipairs({"pvp_accord_low", "pvp_throng_high", "bandit_1", "mine", "mirefolk",
-		"clash_2", "dragon", "apex_mine"}) do
-	check(icons.visible(slot, "accord", "throng") and icons.visible(slot, "throng", "accord") and
-		icons.visible(slot, nil, ""), slot .. ": seen by everyone")
+check(icons.visible == nil and icons.HIDDEN == nil, "no per-viewer icon rule (Round 44)")
+for slot, kind in pairs({start = "start", capital = "capital", village_1 = "village",
+		outpost_1 = "outpost", outpost_2 = "outpost", pvp_fortress = "fortress",
+		pvp_accord_low = "war_camp", pvp_throng_high = "war_camp", bandit_1 = "bandit",
+		mine = "mine", apex_mine = "mine", mirefolk = "mirefolk", clash_2 = "clash",
+		dragon = "dragon", rare_ashmaw = "rare_den"}) do
+	check(icons.kind(slot) == kind, slot .. ": baked as " .. kind)
 end
 -- the source's slots fall in the expected classes
 local classes = {}

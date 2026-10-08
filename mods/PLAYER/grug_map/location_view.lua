@@ -176,20 +176,6 @@ function L.zone_tooltip(record)
 	return ("%s (levels %d–%d)"):format(name, low, high)
 end
 
--- The King marker names the settlement. A king's name that already names
--- his city is shown as it is ("King of Highcourt", "Dur Brannoc King": the
--- names file's mixed forms, Round 38); a "King of ..." for another place
--- or no name reads "King of <city>"; a name of the king himself keeps that
--- name: "<name>, King of <city>".
-function L.king_label(description, city)
-	if type(description) ~= "string" or description == "" then
-		return "King of " .. city
-	end
-	if description:find(city, 1, true) then return description end
-	if description:find("^King of ") then return "King of " .. city end
-	return description .. ", King of " .. city
-end
-
 -- ---------------------------------------------------------------------------
 -- Zone marker placement
 -- ---------------------------------------------------------------------------

@@ -57,7 +57,9 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   (needs ripgrep).
 - `python3 tools/check_fresh_server.py`: the source audit of the removed
   development-era compatibility mechanisms (release mode allows `register_alias`
-  for a renamed item).
+  for a renamed item); since Round 44 also that `grug_map/baked_art.lua` is
+  current with `grug_map/art/` (`tools/r44_mb/gen_baked_art.py --check`)
+  and the generator's PNG decoder self-test (`--self-test`).
 - `python3 tools/check_upgrade.py`: the upgrade declaration
   (`web_data/upgrade.json`) against the last pushed commit, after its own
   self-test (`--self-test` alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
@@ -391,3 +393,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (no item lost or duplicated), bags in bags, the sort (categories, tier,
   name, quality, merging, the hotbar untouched), the potion belt's allow
   rule and ammo from a bag.
+  `r44_mb`: `gen_baked_art.py [--art DIR]
+  [--check]` turns the baked map icons and the pixel font
+  (`mods/PLAYER/grug_map/art/`) into `mods/PLAYER/grug_map/baked_art.lua`
+  (standard library PNG decoding; `--check` exits 1 on a stale copy,
+  `--self-test` decodes small PNGs of every transparency form; both run in
+  `tools/check_fresh_server.py`, so changed art must be regenerated);
+  `portable_test.lua` checks the kind mapping, the items, the glyph layout,
+  the drawing, the cache key text and the minimap's marker kinds; the
+  disposable probe `grug_probe_r44_mb` (staged with `PROBE=` through
+  `luanti_headless.sh`; `high_quality.patch` as `GAME_PATCH=` for a second
+  boot at high quality) logs the Map tab's formspec bytes per faction, the
+  minimap's densest capital window and each king's place in its capital.

@@ -344,21 +344,21 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- H: hostile camps (settlement_icons.lua)
+-- H: hostile camps (settlement_icons.lua): their own baked icon kinds
+-- since Round 44 (bake.lua draws every settlement for everyone).
 -- ---------------------------------------------------------------------------
 do
 	local icons = dofile(repo .. "/mods/PLAYER/grug_map/settlement_icons.lua")
-	check(icons.hostile("bandit_1") and icons.hostile("bandit_2"), "H bandit camps are hostile")
-	check(icons.hostile("mirefolk"), "H Mirefolk camps are hostile")
+	check(icons.kind("bandit_1") == "bandit" and icons.kind("bandit_2") == "bandit",
+		"H bandit camps have the bandit icon")
+	check(icons.kind("mirefolk") == "mirefolk", "H Mirefolk camps have the Mirefolk icon")
 	for _, slot in ipairs({"start", "capital", "village_1", "outpost_2", "pvp_fortress",
 			"pvp_battlegrounds_low", "mine", "apex_mine", "clash_1", "dragon",
 			"rare_ashmaw", "landmark"}) do
-		check(not icons.hostile(slot), "H " .. slot .. " is not a hostile camp")
+		local kind = icons.kind(slot)
+		check(kind ~= "bandit" and kind ~= "mirefolk", "H " .. slot .. " is not a hostile camp")
 	end
-	check(not icons.hostile(nil), "H no slot: not hostile")
-	-- Visibility is unchanged: hostile camps are neutral places, seen by all.
-	check(icons.visible("bandit_1", "accord", "throng") and
-		icons.visible("mirefolk", nil, ""), "H hostile camps show to everyone")
+	check(icons.kind(nil) == nil, "H no slot: no icon")
 end
 
 if #failures == 0 then

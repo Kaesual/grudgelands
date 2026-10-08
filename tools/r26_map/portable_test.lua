@@ -13,8 +13,9 @@
 --      label, base image size, scroll range and thumb follow the level;
 --      markers scale with the level; zooming keeps the view centre; scroll
 --      values clamp to the 8x range;
---   H  (Round 32) hostile camps, bandits and Mirefolk by their slot, draw a
---      red "X", never the quest giver's "!"; a village keeps its "+";
+--   H  (Round 32) hostile camps, bandits and Mirefolk by their slot, drew a
+--      red "X"; since Round 44 every settlement and camp is baked into the
+--      base image, so the page draws no settlement or camp marker at all;
 --   C  (Round 34) the Crownbinder and the Decor Merchant have service
 --      markers with their own icons, on the map and the minimap.
 -- Prints "R26 MAP PORTABLE PASS checks=<n>" or the failures.
@@ -201,21 +202,20 @@ check(x1 ~= nil, "S steward image button on the page")
 check(fs1:find("label[0.15,0.22;World — 1x]", 1, true), "Z label at 1x")
 local base_w = tonumber(fs1:match("image%[0,0;([%d.]+),[%d.]+;grug_map_base%.png%]"))
 
--- H: hostile camps (Round 32): kind, symbol and colour.
+-- H: hostile camps and settlements (Round 32, Round 44): baked into the
+-- base image, no markers on the page.
 do
 	local kinds = {}
-	for _, marker in ipairs(atlas.collect_markers(player)) do kinds[marker.label] = marker.kind end
-	check(kinds["Goldmead Bandit Camp"] == "hostile" and kinds["Slatehook Hideout"] == "hostile" and
-		kinds["Siltbasket Camp"] == "hostile" and kinds["Goldmead Village"] == "settlement",
-		"H bandit and Mirefolk camps are hostile, a village is not")
+	for _, marker in ipairs(atlas.collect_markers(player)) do kinds[marker.kind] = true end
+	check(not kinds.hostile and not kinds.settlement and not kinds.boss,
+		"H no settlement, camp or boss markers (baked since Round 44)")
 	local symbols = {}
 	for symbol in fs1:gmatch("button%[[%d.%-]+,[%d.%-]+;0%.32,0%.32;[^;%]]+;([^%]]*)%]") do
 		symbols[symbol] = (symbols[symbol] or 0) + 1
 	end
-	check(symbols.X == 3 and symbols["!"] == nil and symbols["+"] == 2,
-		("H three red X, no \"!\", \"+\" for Highcourt and the village (X %s, ! %s, + %s)"):format(
+	check(symbols.X == nil and symbols["!"] == nil and symbols["+"] == nil,
+		("H no X, ! or + symbols on the page (X %s, ! %s, + %s)"):format(
 			tostring(symbols.X), tostring(symbols["!"]), tostring(symbols["+"])))
-	check(fs1:find("textcolor=#ff5a4a", 1, true) ~= nil, "H the hostile symbol is red")
 end
 check(base_w and base_w > 5, "Z base image at 1x")
 

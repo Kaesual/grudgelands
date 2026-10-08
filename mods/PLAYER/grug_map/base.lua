@@ -3,28 +3,38 @@
 -- Coast, zone borders and (from Round 22 Phase 4) roads differ per world
 -- seed, so the base cannot ship as a pre-rendered texture. The server renders
 -- it once from the public world authority (grug_zones), caches it in the world
--- directory and announces it as startup media. Markers and labels stay a
--- separate formspec layer (page.lua); nothing here knows about them.
+-- directory and announces it as startup media. Since Round 44 the settlement,
+-- point-of-interest and boss icons and the region names are baked into it
+-- (bake.lua): the Map tab's image carries icons and names, the minimap's its
+-- own small icons and no names. Every other marker stays a separate layer
+-- (page.lua, minimap.lua).
 --
 -- Only pure public queries are used (water_class_at, id_at, get,
--- terrain_height_at) plus the river centrelines grug_mapgen publishes: no
--- chunk is generated, loaded or read.
+-- terrain_height_at) plus the river centrelines grug_mapgen publishes and the
+-- settlement, king and dragon registries: no chunk is generated, loaded or
+-- read.
 --
 -- The image is sent as TILES of at most TILE x TILE pixels (Round 27): the
 -- minimap builds its round window with `[combine` from the at most four
 -- tiles it overlaps, so the client never copies the whole base per window
 -- (`[combine` copies each source image once, imagesource.cpp). The Map tab
 -- shows every tile combined into one texture. The minimap always shows a
--- normal-size base (user ruling 2026-10-06): at high quality the render
--- also sends a normal-size copy of its own image, scaled down in the same
--- pass, as `grug_map_mini_*` tiles. Nothing else is sent, so the download
+-- normal-size base (user ruling 2026-10-06), its own variant since Round 44:
+-- the render copies its terrain (at high quality scaled down in the same
+-- pass) before anything is baked, bakes the small icons into the copy and
+-- sends it as `grug_map_mini_*` tiles. Nothing else is sent, so the download
 -- is the tiles alone.
 
 local M = {}
 
 -- This file's own source enters the cache key, so any palette or drawing
--- change re-renders cached bases without a manual version bump.
-local SOURCE_PATH = core.get_modpath(core.get_current_modname()) .. "/base.lua"
+-- change re-renders cached bases without a manual version bump; so do the
+-- baked layer's (bake.lua, the layout) and its art and font versions.
+local MODPATH = core.get_modpath(core.get_current_modname())
+local SOURCE_PATH = MODPATH .. "/base.lua"
+local BAKE_PATH = MODPATH .. "/bake.lua"
+local bake = dofile(BAKE_PATH)
+local icons = dofile(MODPATH .. "/settlement_icons.lua")
 local WORLD = core.get_worldpath()
 local CACHE_KEY = WORLD .. "/grug_map_base.key"
 M.TILE = 512
@@ -43,7 +53,7 @@ M.MASK = "grug_map_minimap_mask.png"
 -- below keeps smooth. The steps are part of this file's source and therefore
 -- of the cache key, so changing one re-renders cached bases.
 M.QUALITY = {
-	normal = {width = 1080, height = 960, relief_step = 8},
+	normal = {width = 1080, height = 960, relief_step = 8, minimap = "normal"},
 	high = {width = 3600, height = 3200, relief_step = 4, minimap = "normal"},
 }
 M.DEFAULT_QUALITY = "normal"
@@ -266,10 +276,10 @@ local function sea(class)
 end
 
 -- The render size and relief step of `quality` ("normal" or "high"; any
--- other value is normal), and `minimap` {quality, width, height} when the
--- minimap's base is a scaled-down copy (nil: the minimap shows this base).
--- `override` replaces fields: offline tools render crops of a view at their
--- own size, or try other RELIEF values.
+-- other value is normal), and `minimap` {quality, width, height}: the size
+-- of the minimap's own copy (nil for a crop). `override` replaces fields:
+-- offline tools render crops of a view at their own size, or try other
+-- RELIEF values.
 function M.spec(quality, override)
 	if not M.QUALITY[quality] then quality = M.DEFAULT_QUALITY end
 	local base = M.QUALITY[quality]
@@ -343,7 +353,9 @@ local function encode_tiles(pixels, width, tiles)
 	return total
 end
 
-local function render(zones, view, spec)
+-- `layer` ({items, labels, art}, baked_layer below) is baked into both
+-- images; nil (offline crops) bakes nothing.
+local function render(zones, view, spec, layer)
 	local WIDTH, HEIGHT, R = spec.width, spec.height, spec.relief
 	local started = core.get_us_time()
 	local scale_x = (view.max_x - view.min_x) / WIDTH
@@ -463,27 +475,48 @@ local function render(zones, view, spec)
 		end
 	end
 
+	-- The minimap's normal-size copy, from these pixels before anything is
+	-- baked (no second sampling): the same pixels at normal, scaled down at
+	-- high.
+	local coloured = core.get_us_time()
+	local mini, mini_pixels = spec.minimap, nil
+	if mini and mini.width == WIDTH and mini.height == HEIGHT then
+		mini_pixels = {}
+		for index = 1, WIDTH * HEIGHT do mini_pixels[index] = pixels[index] end
+	elseif mini then
+		mini_pixels = M.downscale(pixels, WIDTH, HEIGHT, mini.width, mini.height)
+	end
+	local copied = core.get_us_time()
+	local baked = {icons = 0, names = 0, icon_overlaps = 0, name_overlaps = 0}
+	if layer then
+		baked = bake.draw(pixels, WIDTH, HEIGHT, view, layer, layer.art,
+			bake.SCALE[spec.quality] or bake.SCALE.normal, true, "")
+	end
 	local tiles = M.tiles(WIDTH, HEIGHT)
 	local total = encode_tiles(pixels, WIDTH, tiles)
 	local encoded = core.get_us_time()
-	-- The minimap's normal-size copy, from these pixels (no second sampling).
-	local mini, mini_total = spec.minimap, 0
-	local mini_tiles
+	local mini_total, mini_tiles = 0, nil
 	if mini then
+		if layer then
+			bake.draw(mini_pixels, mini.width, mini.height, view, layer, layer.art,
+				bake.SCALE.mini, false, "_mini")
+		end
 		mini_tiles = M.tiles(mini.width, mini.height, M.MINI_PREFIX)
-		mini_total = encode_tiles(M.downscale(pixels, WIDTH, HEIGHT,
-			mini.width, mini.height), mini.width, mini_tiles)
+		mini_total = encode_tiles(mini_pixels, mini.width, mini_tiles)
 	end
 	local finished = core.get_us_time()
 	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
-		"(zones/water %.2f s, relief step %d %.2f s, colour+encode %.2f s, " ..
-		"%d tiles, %d bytes; minimap copy %s %.2f s, %d bytes)"):
+		"(zones/water %.2f s, relief step %d %.2f s, colour %.2f s, bake+encode %.2f s, " ..
+		"%d tiles, %d bytes; minimap copy %s %.2f s, %d bytes; baked %d icons " ..
+		"(%d overlapping pairs) and %d names (%d over an icon))"):
 		format(WIDTH, HEIGHT, spec.quality, (finished - started) / 1e6,
 		(classified - started) / 1e6,
 		relief.step,
-		(shaded - classified) / 1e6, (encoded - shaded) / 1e6, #tiles, total,
+		(shaded - classified) / 1e6, (coloured - shaded) / 1e6,
+		(encoded - copied) / 1e6, #tiles, total,
 		mini and (mini.width .. "x" .. mini.height) or "none",
-		(finished - encoded) / 1e6, mini_total))
+		(copied - coloured + finished - encoded) / 1e6, mini_total,
+		baked.icons, baked.icon_overlaps, baked.names, baked.name_overlaps))
 	return tiles, mini_tiles
 end
 
@@ -595,6 +628,37 @@ local function read_file(path)
 	return data
 end
 
+-- The baked layer of this world (Round 44): every registered settlement by
+-- its slot's kind (settlement_icons.lua), the kings at their sockets and the
+-- dragons at their arenas, the region names, the art, and the versions its
+-- part of the cache key names.
+local function baked_layer()
+	local art = dofile(MODPATH .. "/baked_art.lua")
+	local settlements, kings, unknown_slots = {}, {}, {}
+	for _, row in ipairs(grug_core.settlement_socket_settlements()) do
+		local kind = icons.kind(row.slot)
+		if not kind then unknown_slots[#unknown_slots + 1] = tostring(row.slot) end
+		settlements[#settlements + 1] = {kind = kind, x = row.anchor.x, z = row.anchor.z}
+		for _, socket in ipairs(grug_core.settlement_sockets_at(row.key)) do
+			if socket.role == "king" and socket.spawn ~= false then
+				kings[#kings + 1] = {x = socket.pos.x, z = socket.pos.z}
+			end
+		end
+	end
+	local dragons = {}
+	for _, dragon in ipairs(grug_mobs.dragon_map_markers()) do
+		dragons[#dragons + 1] = {x = dragon.pos.x, z = dragon.pos.z}
+	end
+	if #unknown_slots > 0 then
+		core.log("warning", "[grug_map] settlements without a map icon kind: " ..
+			table.concat(unknown_slots, ", "))
+	end
+	local items = bake.items(settlements, kings, dragons)
+	return {items = items, labels = bake.REGION_LABELS, art = art,
+		versions = {layout = core.sha256(assert(read_file(BAKE_PATH), "cannot read " .. BAKE_PATH)),
+			art = art.art_version, font = art.font_version}}
+end
+
 -- The server's map quality (`grug_map_quality` in minetest.conf); an
 -- unknown value warns and falls back to normal.
 function M.quality()
@@ -621,7 +685,8 @@ end
 
 -- Deletes the world-map tiles in the world folder that the current quality
 -- does not use (Round 41 ruling 7): after high -> normal the extra base
--- tiles and the minimap copy would otherwise stay. Only names of the two
+-- tiles would otherwise stay (since Round 44 both qualities send the
+-- minimap's own copy under the same six names). Only names of the two
 -- tile patterns this file writes are touched; `lists` are the tile lists in
 -- use. Logs the count; a failed delete is a warning.
 local function remove_stale_tiles(lists)
@@ -653,11 +718,13 @@ local function prepare(view)
 	local tiles = M.tiles(spec.width, spec.height)
 	local mini = spec.minimap
 	local mini_tiles = mini and M.tiles(mini.width, mini.height, M.MINI_PREFIX)
+	local layer = baked_layer()
 	-- The quality and the minimap copy's size enter the key (ruling 3), so
-	-- switching either re-renders both.
+	-- switching either re-renders both; so does the baked layer (Round 44:
+	-- its layout, art and font versions and every icon's kind and place).
 	local key = core.sha256(spec.quality .. "\n" .. M.TILE .. "\n" ..
 		(mini and (mini.width .. "x" .. mini.height) or "-") .. "\n" ..
-		cache_key(zones, view))
+		cache_key(zones, view) .. "\n" .. core.sha256(bake.key_text(layer.versions, layer.items)))
 	local current = read_file(CACHE_KEY) == key
 	for _, list in ipairs({tiles, mini_tiles or {}}) do
 		for _, tile in ipairs(list) do
@@ -669,7 +736,7 @@ local function prepare(view)
 		for _, tile in ipairs(tiles) do M.add_media(tile.name) end
 		for _, tile in ipairs(mini_tiles or {}) do M.add_media(tile.name) end
 	else
-		local rendered, rendered_mini = render(zones, view, spec)
+		local rendered, rendered_mini = render(zones, view, spec, layer)
 		-- Tile names are shared across qualities: the old key goes before
 		-- the first tile is overwritten and the new one is written last, so
 		-- a crash in between renders again at the next start (ruling 7).
@@ -693,8 +760,8 @@ end
 
 -- Load-time entry point. Returns the base: {quality, width, height, tiles,
 -- texture, minimap} with `texture` what the Map tab shows and `minimap` the
--- base the minimap shows ({quality, width, height, tiles}: the normal-size
--- copy at high quality, the base itself at normal), or
+-- base the minimap shows ({quality, width, height, tiles}: its own
+-- normal-size variant with the small icons and no names), or
 -- {texture = fallback} without tiles if the base is unavailable. Startup
 -- media must be announced while mods load (dynamic_add_media without a
 -- callback), so init.lua calls this; grug_mapgen has installed the world

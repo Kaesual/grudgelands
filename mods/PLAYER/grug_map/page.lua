@@ -13,52 +13,11 @@ local MAP_W = math.min(PAGE_W - 0.8 - GUTTER, (PAGE_H - MAP_Y - 1.5) * 9 / 8)
 local MAP_H = MAP_W * 8 / 9
 local MAP_X = (PAGE_W - MAP_W - GUTTER) / 2
 local SCROLL_X, SCROLL_Y = "grug_map_scroll_x", "grug_map_scroll_y"
-local LABELS = {
-	hearthpine = "Hearthpine", dawnmere = "Dawnmere", silverleaf = "Silverleaf",
-	stillgrave = "Stillgrave", sunscar = "Sunscar", kapok = "Kapok Cradle",
-	dur_brannoc = "Dur Brannoc", highcourt = "Highcourt",
-	lethariel = "Lethariel", nhal_veyr = "Nhal Veyr",
-	gor_drazhak = "Gor Drazhak", kezamba = "Kezamba",
-	copperfell_village = "Copperfell Village",
-	copperfell_outpost = "Copperfell Outpost",
-	copperfell_bandit_camp = "Copperfell Bandit Camp",
-	goldmead_village = "Goldmead Village", goldmead_outpost = "Goldmead Outpost",
-	goldmead_bandit_camp = "Goldmead Bandit Camp",
-	starbough_village = "Starbough Village", starbough_outpost = "Starbough Outpost",
-	starbough_bandit_camp = "Starbough Bandit Camp",
-	mournfen_village = "Mournfen Village", mournfen_outpost = "Mournfen Outpost",
-	mournfen_bandit_camp = "Mournfen Bandit Camp",
-	redtusk_village = "Redtusk Village", redtusk_outpost = "Redtusk Outpost",
-	redtusk_bandit_camp = "Redtusk Bandit Camp",
-	raincall_village = "Raincall Village", raincall_outpost = "Raincall Outpost",
-	raincall_bandit_camp = "Raincall Bandit Camp",
-}
-
--- Region names were baked into the old shipped atlas image. The per-world base
--- carries no text, so they are a formspec layer under the markers, positioned
--- like every marker through world_to_screen (fixed macro layout, world_zones.md
--- §7.1). At whole-world scale 38 zone names would be unreadable.
--- Each row: text, world x, world z, box width, box height (formspec units).
--- The island boxes are narrow so the name wraps onto the island itself.
--- A hypertext box shows a scrollbar (the small dark box right of a name,
--- Round 27 ruling 12) as soon as its text is taller than the box, so the
--- boxes are wide and tall enough for the bold name at the smallest usual
--- window (1280 x 720, where a formspec unit is about 46 px): one line on
--- the mainland, two on the islands, with room for one more wrapped line.
--- The text stays centred.
-local REGION_LABELS = {
-	{"Dwarven Lands", -1800, -2350, 4.6, 1.3}, {"Human Lands", 0, -2350, 4.6, 1.3},
-	{"Elven Lands", 1800, -2350, 4.6, 1.3}, {"Undead Lands", -1800, 2350, 4.6, 1.3},
-	{"Orc Lands", 0, 2350, 4.6, 1.3}, {"Troll Lands", 1800, 2350, 4.6, 1.3},
-	{"The Contested Front", 0, 0, 4.6, 1.3},
-	{"Wyrmglass Crown", -3150, 0, 2.4, 2.0}, {"Stormscale Summit", 3150, 0, 2.4, 2.0},
-}
--- The map's width and the region names, for the zone markers' placement
--- (location.lua keeps them clear of every marker and name).
-grug_map.page_layout = {map_w = MAP_W, region_labels = REGION_LABELS}
--- Dark text over a light halo of four offset copies reads on land and sea.
-local LABEL_TEXT, LABEL_HALO, HALO = "#2a1c10", "#f3e8c8", 0.025
-local HALO_OFFSETS = {{-HALO, -HALO}, {HALO, -HALO}, {-HALO, HALO}, {HALO, HALO}}
+-- The region names are baked into the base image since Round 44
+-- (bake.lua). The map's width and the names' rows, for the zone markers'
+-- placement (location.lua keeps them clear of every marker and name).
+grug_map.page_layout = {map_w = MAP_W,
+	region_labels = dofile(core.get_modpath("grug_map") .. "/bake.lua").REGION_LABELS}
 -- Round 30 ruling (perf review #3): while the tab is open, its arrows and
 -- markers are brought up to date at most every REBUILD seconds, and only
 -- when the signature below changed. Clicks still answer at once.
@@ -85,42 +44,9 @@ local function humanize(key)
 	return text
 end
 
--- Settlement icons per viewer faction (Round 31): settlement_icons.lua
--- holds the rule and the one list of hidden classes.
-local icons = dofile(core.get_modpath("grug_map") .. "/settlement_icons.lua")
--- Hostile camps (Round 32 §2.2): a red "X", never the quest giver's gold
--- "!" (an available quest).
-local HOSTILE_SYMBOL, HOSTILE_COLOR = "X", "#ff5a4a"
-
--- The marker lists per viewer faction ("" for a player without one), built
--- once on first use: the registry is complete before any player opens the map.
-local settlements_for
-local function build_settlement_markers()
-	local faction_of_race = {}
-	for _, identity in ipairs(grug_core.start_identities()) do
-		faction_of_race[identity.race_id] = identity.faction_id
-	end
-	local rows = grug_core.settlement_socket_settlements()
-	settlements_for = {}
-	for _, viewer in ipairs({"", unpack(grug_core.faction_ids)}) do
-		local list = {}
-		for index = 1, #rows do
-			local row = rows[index]
-			local owner = faction_of_race[row.race_id]
-			if icons.visible(row.slot, owner, viewer) then
-				local label = row.display_name or LABELS[row.key] or humanize(row.key)
-				list[#list + 1] = {id = row.key, label = label, position = row.anchor,
-					kind = icons.hostile(row.slot) and "hostile" or "settlement",
-					detail = label}
-			end
-		end
-		settlements_for[viewer] = list
-	end
-end
-atlas.register_marker_provider("settlement", function(player)
-	if not settlements_for then build_settlement_markers() end
-	return settlements_for[player and grug_factions.get_faction(player) or ""] or {}
-end)
+-- Settlements, camps, points of interest, kings and dragons are baked into
+-- the base image for everyone since Round 44 (bake.lua, ruling 5); they are
+-- no markers here.
 
 function grug_map.register_marker_provider(name, callback)
 	return atlas.register_marker_provider(name, callback)
@@ -148,9 +74,8 @@ end
 -- place and heading frame, the quest markers' version
 -- (grug_quests.marker_states), the home (which innkeeper or Claim Stone is
 -- marked as home), the discovered waystones and the faction (which NPC
--- markers the player sees, Round 31). Every other marker and label
--- is fixed for the server's run; scroll values are transport state (see
--- page_content).
+-- markers the player sees, Round 31). Every other marker is fixed for the
+-- server's run; scroll values are transport state (see page_content).
 local function signature(player, context)
 	local zoom, view, name = context.grug_map_zoom or 1, atlas.view(), player:get_player_name()
 	local parts = {zoom, context.grug_map_selected or "", current_zone(player),
@@ -171,8 +96,7 @@ local function signature(player, context)
 	local home = grug_home.get(player)
 	parts[#parts + 1] = home and home.id or ""
 	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
-	-- The faction picks the NPC markers (Round 31, ruling 13) and the
-	-- settlement icons.
+	-- The faction picks the NPC markers (Round 31, ruling 13).
 	parts[#parts + 1] = grug_factions.get_faction(player) or ""
 	return table.concat(parts, "|")
 end
@@ -201,23 +125,6 @@ local function page_content(player, context)
 			format(MAP_W * zoom, MAP_H, SCROLL_Y, MAP_H / 1000),
 		("image[0,0;%s,%s;%s]"):format(MAP_W * zoom, MAP_H * zoom,
 			esc(view.texture))}
-	for index, row in ipairs(REGION_LABELS) do
-		local sx, sy = atlas.world_to_screen(view, {x = row[2], z = row[3]},
-			0, 0, MAP_W * zoom, MAP_H * zoom)
-		local w, h = row[4], row[5]
-		-- Clamp the box into the image; the text stays centred in the box.
-		local lx = math.max(0, math.min(MAP_W * zoom - w, sx - w / 2))
-		local function text(dx, dy, color, suffix)
-			fs[#fs + 1] = ("hypertext[%.3f,%.3f;%s,%s;grug_map_region_%d%s;%s]"):
-				format(lx + dx, sy - h / 2 + dy, w, h, index, suffix,
-				esc("<global halign=center valign=middle color=" .. color ..
-					"><b>" .. row[1] .. "</b>"))
-		end
-		for halo, offset in ipairs(HALO_OFFSETS) do
-			text(offset[1], offset[2], LABEL_HALO, "_" .. halo)
-		end
-		text(0, 0, LABEL_TEXT, "")
-	end
 	context.grug_map_marker_fields = {}
 	local markers = atlas.collect_markers(player)
 	context.grug_map_detail = nil
@@ -261,10 +168,9 @@ local function page_content(player, context)
 				local quest = marker.kind == "quest"
 				local symbol = marker.kind == "home" and "H" or
 					marker.kind == "innkeeper" and "I" or quest and ((marker.status == "ready" or marker.status == "active")
-					and "?" or "!") or (marker.kind == "hostile" and HOSTILE_SYMBOL or "+")
+					and "?" or "!") or "+"
 				local color = quest and ((marker.status == "ready" or marker.status == "available")
-					and "#ffd700" or "#c0c0c0") or
-					(marker.kind == "hostile" and HOSTILE_COLOR or "#ffe9a8")
+					and "#ffd700" or "#c0c0c0") or "#ffe9a8"
 				style("bgcolor=#2b2118cc;textcolor=" .. color, field)
 				elements[#elements + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
 					format(sx - 0.16, sy - 0.16, field, symbol)
