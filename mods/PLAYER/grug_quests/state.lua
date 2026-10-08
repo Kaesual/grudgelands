@@ -412,15 +412,19 @@ function Q.journal_key(player)
 	table.sort(names)
 	return raw, table.concat(names, ","), counts
 end
--- Preflight copies every owned slot. Removing requirements and adding rewards
--- to the same copies accounts for space freed by this very hand-in.
+-- Preflight copies every owned slot, in the give helper's order (main[9..],
+-- the bags, the hotbar last), so rewards land where any other item would.
+-- Removing requirements and adding rewards to the same copies accounts for
+-- space freed by this very hand-in.
 local function settlement(player, def, active)
-	local inv, rows = player:get_inventory(), {}
+	local inv, rows, hotbar = player:get_inventory(), {}, {}
 	for _, list in ipairs(owned_lists(player)) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
-			rows[#rows + 1] = {list = list, index = index, expected = ItemStack(stack), replacement = ItemStack(stack)}
+			local row = {list = list, index = index, expected = ItemStack(stack), replacement = ItemStack(stack)}
+			if list == "main" and index <= 8 then hotbar[#hotbar + 1] = row else rows[#rows + 1] = row end
 		end
 	end
+	for _, row in ipairs(hotbar) do rows[#rows + 1] = row end
 	local _, ready, allocation = progress(player, def, active)
 	if not ready then return nil, "You no longer have all required items." end
 	for _, taken in pairs(allocation) do
@@ -592,13 +596,10 @@ function Q.credit_use(player, key)
 	if copy then save(player, copy); changed(player) end
 	return copy ~= nil
 end
--- Into the player's inventory and bags; what does not fit drops at the feet.
+-- Through the give helper (main[9..], the bags, the hotbar last); what does
+-- not fit drops at the feet.
 local function give(player, item)
-	local inv, rest = player:get_inventory(), ItemStack(item)
-	for _, list in ipairs(owned_lists(player)) do
-		if rest:is_empty() then break end
-		rest = inv:add_item(list, rest)
-	end
+	local rest = grug_inventory.give(player, item)
 	if not rest:is_empty() then core.add_item(player:get_pos(), rest) end
 	grug_core.feed_item(player, ItemStack(item), 1)
 end

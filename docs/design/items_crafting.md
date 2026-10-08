@@ -1684,7 +1684,7 @@ consumer are active:
 - **Plain production is Basics; the Leatherworker owns enchantments and
   upgrades** (Round 33, [item_tiers.md](item_tiers.md) §3.3). The
   Scout consumes the family in V1. Shots draw from the Scout's quiver slot
-  first, then `main`.
+  first, then `main` and the bags.
 
 ## 10. Historical decision log (non-authoritative)
 

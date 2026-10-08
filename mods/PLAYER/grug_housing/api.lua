@@ -66,8 +66,8 @@ function grug_housing.refund_item()
 	return grug_housing.REFUND_FALLBACK
 end
 
--- Activation takes its lumps from the main inventory in this order: charcoal
--- first, so the scarcer coal is spent last.
+-- Activation takes its lumps from the inventory and bags in this order:
+-- charcoal first, so the scarcer coal is spent last.
 grug_housing.FUEL_ORDER = {"grug_smelting:charcoal", "default:coal_lump"}
 
 function grug_housing.is_fuel(itemname)
@@ -162,14 +162,14 @@ function grug_housing.issue_stone(player)
 	local holds = grug_housing.holds_stone(player)
 	local ok, message = model.can_issue(name, level, holds)
 	if not ok then return false, message end
-	local inv = player:get_inventory()
+	-- The stone is soulbound: the give helper puts it into `main` only.
 	local stone = ItemStack(grug_housing.STONE_ITEM)
-	if not inv:room_for_item("main", stone) then
+	if not grug_inventory.fits(player, {stone}) then
 		return false, "Make room in your inventory for the Claim Stone."
 	end
 	ok, message = model.issue(name, level, holds)
 	if not ok then return false, message end
-	inv:add_item("main", stone)
+	grug_inventory.give(player, stone)
 	return true, message
 end
 
@@ -203,18 +203,19 @@ function grug_housing.remove_stone_node(claim)
 	return false
 end
 
-local function fuel_in_main(inv)
-	local have = 0
-	for _, item in ipairs(grug_housing.FUEL_ORDER) do
-		for _, stack in ipairs(inv:get_list("main") or {}) do
-			if stack:get_name() == item then have = have + stack:get_count() end
+local function fuel_carried(inv)
+	local have, fuel = 0, {}
+	for _, item in ipairs(grug_housing.FUEL_ORDER) do fuel[item] = true end
+	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+		for _, stack in ipairs(inv:get_list(list) or {}) do
+			if fuel[stack:get_name()] then have = have + stack:get_count() end
 		end
 	end
 	return have
 end
 
 -- R26 ruling 9: the owner activates the draft; ACTIVATION_LUMPS coal lumps or
--- charcoal (mixed) are taken from the main inventory at once. Returns ok,
+-- charcoal (mixed) are taken from the inventory and bags at once. Returns ok,
 -- message.
 function grug_housing.activate(player)
 	if not player or not player:is_player() then return false, "No player." end
@@ -226,23 +227,25 @@ function grug_housing.activate(player)
 	end
 	local need = model.ACTIVATION_LUMPS
 	local inv = player:get_inventory()
-	local have = fuel_in_main(inv)
+	local have = fuel_carried(inv)
 	if have < need then
 		return false, ("Activation needs %d coal lumps or charcoal in your " ..
 			"inventory; you have %d."):format(need, have)
 	end
 	local left = need
 	for _, item in ipairs(grug_housing.FUEL_ORDER) do
-		if left <= 0 then break end
-		local taken = inv:remove_item("main", ItemStack(item .. " " .. left))
-		left = left - taken:get_count()
+		for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+			if left <= 0 then break end
+			local taken = inv:remove_item(list, ItemStack(item .. " " .. left))
+			left = left - taken:get_count()
+		end
 	end
 	local burnt = model.activate(claim, need - left)
 	if burnt <= 0 then
 		-- Cannot happen after the count above; hand back what was taken.
 		local back = need - left
 		if back > 0 then
-			local rest = inv:add_item("main",
+			local rest = grug_inventory.give(player,
 				ItemStack(grug_housing.refund_item() .. " " .. back))
 			if not rest:is_empty() then core.add_item(player:get_pos(), rest) end
 		end
@@ -281,18 +284,17 @@ function grug_housing.pick_up(player)
 		return false, "Your Claim Stone stays in place for another " ..
 			model.wait_text(wait) .. "."
 	end
-	local inv = player:get_inventory()
 	local stone = ItemStack(grug_housing.STONE_ITEM)
-	if not inv:room_for_item("main", stone) then
+	if not grug_inventory.fits(player, {stone}) then
 		return false, "Make room in your inventory for the Claim Stone."
 	end
 	local lumps = model.refund_lumps(claim)
 	grug_housing.remove_stone_node(claim)
 	model.remove(claim, "picked_up")
-	inv:add_item("main", stone)
+	grug_inventory.give(player, stone)
 	local refund = grug_housing.refund_item()
 	if lumps > 0 then
-		local left = inv:add_item("main", ItemStack(refund .. " " .. lumps))
+		local left = grug_inventory.give(player, ItemStack(refund .. " " .. lumps))
 		if not left:is_empty() then core.add_item(player:get_pos(), left) end
 	end
 	grug_housing.notify_claim_changed(claim, "picked_up")

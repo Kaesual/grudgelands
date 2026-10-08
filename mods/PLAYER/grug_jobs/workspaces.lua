@@ -393,14 +393,14 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local recipe = selected(ctx)
 		local plan, reason
 		if recipe then plan, reason = grug_items.operation_plan(recipe, inputs(ctx):get_list("craft"), player) end
-		if plan and player:get_inventory():room_for_item("main", plan.output) then
+		if plan and grug_inventory.fits(player, {plan.output}) then
 			local source = inputs(ctx)
 			for slot, count in pairs(plan.consume) do
 				local stack = source:get_stack("craft", slot)
 				stack:take_item(count)
 				source:set_stack("craft", slot, stack)
 			end
-			local rest = player:get_inventory():add_item("main", plan.output)
+			local rest = grug_inventory.give(player, plan.output)
 			assert(rest:is_empty(), "station operation destination changed during commit")
 			-- Progress hook for every station operation (enchants and upgrades).
 			grug_jobs.award_progress(player, recipe)

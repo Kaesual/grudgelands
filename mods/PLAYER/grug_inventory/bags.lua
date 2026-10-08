@@ -2,9 +2,15 @@
 -- bag item whose `bagslots` group value sizes the matching content list.
 -- Base inventory stays 32; bags only ever add slots.
 --
--- Safety rules (a shrinking list would silently destroy items):
---  * a bag can only be removed/replaced while its contents are empty
---  * bags never go inside bags
+-- Bag rules (spec ui-crafting-rework-plan.md §2.3; a shrinking list would
+-- silently destroy items, set_size truncates):
+--  * a bag may sit inside another bag, never in its own content list (an
+--    unequipped bag is always empty: the contents belong to the slot)
+--  * swapping to an equal or larger bag keeps the contents
+--  * taking a bag out, or swapping to a smaller one, moves the contents that
+--    no longer fit to main[9..], the other bags and the hotbar, or is
+--    refused when they do not fit there (storage.lua plan_bag_resize)
+--  * a move between two bag slots needs both bags empty
 
 grug_inventory.BAG_COUNT = 4
 
@@ -74,7 +80,7 @@ end
 --
 -- Why: arrows are the Scout's ammunition, and a slot of its own keeps them
 -- out of the bags without an item to craft first. Shots draw from the quiver
--- first, then from `main`.
+-- first, then from `main` and the bags.
 --
 -- The arrows live in QUIVER_LIST, QUIVER_STACKS ordinary stacks of up to the
 -- arrow's stack_max (100) each, but the Character page draws only its first
@@ -218,11 +224,14 @@ local function absorb_into_quiver(player, inventory, from_list, from_index, coun
 	inventory:set_stack(from_list, from_index, source)
 end
 
+-- Arrows shoot from the quiver first, then from `main` and every bag, so
+-- sorted or overflowed arrows in a bag still count (Round 44).
 local function usable_ammo_lists(player)
+	local lists = grug_inventory.carried_lists(player:get_inventory())
 	if grug_inventory.has_quiver(player) then
-		return {QUIVER_LIST, "main"}
+		table.insert(lists, 1, QUIVER_LIST)
 	end
-	return {"main"}
+	return lists
 end
 
 function grug_inventory.ammo_count(player)
@@ -241,8 +250,9 @@ function grug_inventory.is_bow(stack)
 		core.get_item_group(stack:get_name(), "grug_bow") > 0
 end
 
--- One server-side transaction: quiver first, then main. No list is written
--- until the combined preflight has proved that the complete shot can settle.
+-- One server-side transaction: quiver first, then main and the bags. No list
+-- is written until the combined preflight has proved that the complete shot
+-- can settle.
 function grug_inventory.consume_ammo(player, count)
 	count = math.floor(tonumber(count) or 1)
 	if count < 1 or grug_inventory.ammo_count(player) < count then return false end
@@ -266,38 +276,21 @@ function grug_inventory.consume_ammo(player, count)
 	return left == 0
 end
 
--- Return one successful shot action's complete ammunition count. Prefer the
--- quiver, then main; if both filled between launch and refund, place the
--- remainder at the player's feet instead of silently losing it.
+-- Return one successful shot action's complete ammunition count through the
+-- give helper (quiver first); if everything filled between launch and
+-- refund, place the remainder at the player's feet instead of losing it.
+-- Picked-up arrows take the same way (storage.lua's pickup handler).
 function grug_inventory.refund_ammo(player, count)
 	count = math.floor(tonumber(count) or 0)
 	if count < 1 then return false end
 	local inv = player and player:get_inventory()
 	if not inv then return false end
-	local leftover = grug_inventory.add_to_quiver(player,
-		ItemStack(ARROW .. " " .. count))
-	if not leftover:is_empty() then
-		leftover = inv:add_item("main", leftover)
-	end
+	local leftover = grug_inventory.give(player, ItemStack(ARROW .. " " .. count))
 	if not leftover:is_empty() then
 		core.add_item(player:get_pos(), leftover)
 	end
 	return true
 end
-
--- Picked-up arrows fill a Scout's quiver first, the rest goes to `main`.
--- Returning nil leaves an untouched pickup to builtin's own add to `main`.
-core.register_on_item_pickup(function(itemstack, picker)
-	if not picker or not picker.is_player or not picker:is_player() or
-			not is_arrow(itemstack) then
-		return nil
-	end
-	local leftover = grug_inventory.add_to_quiver(picker, itemstack)
-	if leftover:get_count() == itemstack:get_count() then
-		return nil
-	end
-	return picker:get_inventory():add_item("main", leftover)
-end)
 
 -- Would moving `stack` onto `dest` be a swap? The engine swaps when nothing of
 -- the stack fits. A move out of the quiver never swaps: arrows would enter
@@ -307,6 +300,20 @@ local function would_swap(dest, stack)
 		return false
 	end
 	return ItemStack(dest):add_item(stack):get_count() == stack:get_count()
+end
+
+-- May bag slot `i`'s contents shrink to `new_size` (0: the bag leaves)?
+-- Counted without the bag's own list and without `landing`, the slot the
+-- leaving bag lands in. A refusal is one keyed feed line.
+local function bag_contents_fit(player, inventory, i, new_size, landing)
+	if inventory:get_size(grug_inventory.content_list(i)) <= new_size or
+			grug_inventory.plan_bag_resize(inventory, i, new_size, landing) then
+		return true
+	end
+	grug_core.feed(player, "notice",
+		"No room for the bag's contents: make space in your inventory first.",
+		"bag_contents")
+	return false
 end
 
 --
@@ -338,10 +345,36 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		stack = info.stack
 	end
 
-	-- Taking a bag out (or swapping it away) requires empty contents.
 	local from_bag = from_list and bag_slot_index(from_list)
-	if from_bag and not inventory:is_empty(grug_inventory.content_list(from_bag)) then
-		return 0
+	local to_bag = to_list and bag_slot_index(to_list)
+	if from_bag and to_bag then
+		-- Between two bag slots: only empty bags (the contents belong to
+		-- the slot, so they would not follow the bag).
+		if not inventory:is_empty(grug_inventory.content_list(from_bag)) or
+				not inventory:is_empty(grug_inventory.content_list(to_bag)) then
+			return 0
+		end
+	elseif from_bag then
+		-- A bag leaves its slot (drag, drop, into another inventory), or a
+		-- swap replaces it with the bag lying on the target slot. Never
+		-- into its own content list.
+		if to_list and content_index(to_list) == from_bag then
+			return 0
+		end
+		local new_size, landing = 0, nil
+		if action == "move" then
+			local incoming = inventory:get_stack(to_list, info.to_index)
+			if would_swap(incoming, stack) then
+				new_size = grug_inventory.bag_slots_of(incoming)
+				if new_size == 0 then
+					return 0 -- only a bag may take the slot
+				end
+			end
+			landing = {list = to_list, index = info.to_index}
+		end
+		if not bag_contents_fit(player, inventory, from_bag, new_size, landing) then
+			return 0
+		end
 	end
 
 	if to_list == QUIVER_LIST then
@@ -370,23 +403,21 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		return 0
 	end
 
-	if to_list then
-		local to_bag = bag_slot_index(to_list)
-		if to_bag then
-			if grug_inventory.bag_slots_of(stack) == 0 then
-				return 0 -- only bags fit into bag slots
-			end
-			-- Replacing an equipped bag also requires empty contents.
-			local current = inventory:get_stack(to_list, 1)
-			if not current:is_empty() and
-					not inventory:is_empty(grug_inventory.content_list(to_bag)) then
-				return 0
-			end
-			return 1
+	if to_bag then
+		local new_size = grug_inventory.bag_slots_of(stack)
+		if new_size == 0 then
+			return 0 -- only bags fit into bag slots
 		end
-		if content_index(to_list) and grug_inventory.bag_slots_of(stack) > 0 then
-			return 0 -- no bags inside bags
+		if from_list and content_index(from_list) == to_bag then
+			return 0 -- the old bag would land in its own content list
 		end
+		-- Replacing an equipped bag: a smaller one moves the overflow.
+		local current = inventory:get_stack(to_list, 1)
+		if not from_bag and not current:is_empty() and
+				not bag_contents_fit(player, inventory, to_bag, new_size) then
+			return 0
+		end
+		return 1
 	end
 
 	-- Not our concern: nil keeps the callback chain running (OR_SC).
@@ -416,10 +447,12 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 		quiver_changed(player, inventory)
 	end
 
+	-- The overflow of a removed or smaller bag moves before the list
+	-- shrinks, in this one callback (storage.lua apply_bag_resize).
 	local refresh = false
 	for i in pairs(touched_bags) do
 		local bag = inventory:get_stack(grug_inventory.bag_list(i), 1)
-		inventory:set_size(grug_inventory.content_list(i),
+		grug_inventory.apply_bag_resize(player, inventory, i,
 			grug_inventory.bag_slots_of(bag))
 		refresh = true
 	end
@@ -427,3 +460,5 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 		grug_inventory.refresh(player)
 	end
 end)
+
+dofile(core.get_modpath(core.get_current_modname()) .. "/storage.lua")

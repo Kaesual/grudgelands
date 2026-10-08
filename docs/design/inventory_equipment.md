@@ -276,6 +276,36 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   The **small 8-slot cloth bag is the
   exception and stays vendor-sellable**: it is the floor tier of its
   item category (professions.md §4), so it is bought, not crafted-only.
+- **The give order** (Round 44, spec `ui-crafting-rework-plan.md` §2.4):
+  every item source — pickup, dug blocks, loot, boss loot, purchases, quest
+  rewards and drops, fishing, harvests, refunds, equipment returns, station
+  results, coin withdrawals — goes through `grug_inventory.give`: arrows to
+  a Scout's quiver first, then partial stacks of the same item anywhere,
+  then the empty slots of `main[9..]`, the bags in slot order and the
+  hotbar last, so a hotbar slot freed for a skill stays free. A soulbound
+  item (the Claim Stone) sits in `main` only. `grug_inventory.fits` answers
+  the same question without changing anything; a source that refuses
+  instead of dropping (purchases, the Claim Stone, station results) says
+  the inventory is full only when the whole inventory is.
+- **Bag rules** (Round 44, spec §2.3): a bag may sit inside another bag but
+  never in its own content list (an unequipped bag is always empty: the
+  contents belong to the slot). Swapping to an equal or larger bag keeps the
+  contents. Taking a bag out (drag, drop or into another inventory) or
+  swapping to a smaller one first fills the cells the smaller bag keeps,
+  then moves the rest to `main[9..]`, the other bags and the hotbar, in the
+  same server callback and before the list shrinks; when the rest does not
+  fit (counted without the bag's own list and without the slot the bag
+  lands in) the move is refused with one feed line. A bag moves between two
+  bag slots only when both are empty.
+- **Sort** (Round 44, spec §2.5): `main[9..]` and the bags as one sequence,
+  the hotbar never: weapons (offhands included), trinkets, armour,
+  consumables (arrows, food, potions), then the rest; inside a category the
+  higher tier first (gear bracket, food tier, else the item level's tier),
+  then the name, then the higher quality. Stacks merge only when name, wear
+  and metadata are identical; free slots end up contiguous at the end; a
+  soulbound item stays in `main`.
+- **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
+  elixirs only (group `grug_potion`), created for every player.
 - **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn left of the
   armor column on the Character page with the arrow total beside it. There is
   no quiver item and no Leatherworker quiver recipe; non-Scouts have no quiver
@@ -288,7 +318,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   and shows no hover highlight (accepted). Arrows enter by
   **drag** (onto the slot), **shift-click** (from the inventory) and **pickup**
   while the quiver has room; anything else is refused. Shots draw from the
-  quiver first, then `main`; a talent refund returns to the quiver first. A
+  quiver first, then `main` and the bags; a talent refund returns to the
+  quiver first. A
   drag of part of a stack onto the slot while it shows a full 100 moves the
   whole stack in (the engine treats that drop as a whole-stack swap).
   No item drop on death, so the quiver keeps its arrows like the equipped
@@ -452,7 +483,7 @@ them.
   line at class choice, the raw-weapon hint, mount notices (dismount
   reason, flight-boundary warning, summon refusal, a mount not bound to
   this character), talent points earned or
-  returned, and "Boss loot is waiting: free main inventory space, then
+  returned, and "Boss loot is waiting: free inventory space, then
   rejoin." (queued boss loot is handed over at the next join). Each
   notice group keeps one keyed line that a repeat refreshes (`potion`,
   `food`, `equip:<reason>`, `class_change:*`, `starter:<slot>`,

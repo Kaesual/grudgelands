@@ -129,9 +129,8 @@ function grug_artisans.settle_goldsmith_bonus(event, roll)
 	local chance = grug_items.mastery_band(player) >= 2 and 20 or 10
 	roll = math.floor(tonumber(roll) or 101)
 	if roll < 1 or roll > chance then return false end
-	local inventory = player:get_inventory()
-	if not inventory then return false end
-	local leftover = inventory:add_item("main", event.raw_item)
+	if not player:get_inventory() then return false end
+	local leftover = grug_inventory.give(player, event.raw_item)
 	if leftover and not leftover:is_empty() then
 		core.add_item(event.pos or player:get_pos(), leftover)
 	end

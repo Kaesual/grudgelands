@@ -336,7 +336,7 @@ end
 
 local function give_harvest(player, pos, item)
 	if core.is_creative_enabled(player:get_player_name()) then return end
-	local leftover = player:get_inventory():add_item("main", item)
+	local leftover = grug_inventory.give(player, item)
 	if not leftover:is_empty() then core.add_item(pos, leftover) end
 end
 

@@ -777,23 +777,13 @@ local function refresh_weapon_descriptions(player)
 end
 
 -- One acquisition initializer, used by each engine-owned acquisition boundary.
--- Crafting can replace its output directly. Item pickup must perform builtin's
--- add itself only for a changed weapon because returning a callback result
--- suppresses builtin's default add. Trader purchases call the same initializer
--- immediately before their direct add_item write.
+-- Crafting can replace its output directly. Every other acquisition (item
+-- pickup, dug drops, trader purchases, loot) goes through
+-- grug_inventory.give, which calls the same initializer (Round 44).
 core.register_on_craft(function(itemstack, player)
 	if grug_gear.initialize_weapon_tooltip(itemstack, player) then
 		return itemstack
 	end
-end)
-
-core.register_on_item_pickup(function(itemstack, picker)
-	if not picker or not picker.is_player or not picker:is_player() or
-			not grug_gear.initialize_weapon_tooltip(itemstack, picker) then
-		return
-	end
-	local inventory = picker:get_inventory()
-	return inventory and inventory:add_item("main", itemstack) or itemstack
 end)
 
 core.register_on_mods_loaded(function()

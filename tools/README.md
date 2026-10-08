@@ -383,3 +383,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   inventory views with 0–4 bags of mixed sizes, the scrollbar echo and no
   resend on a pure scrollbar event, the Sort cooldown, the refresh rules;
   it prints the Inventory and Character pages' bytes with four 32-slot bags.
+  `r44_ih`: `portable_test.lua` loads the real
+  `grug_inventory/bags.lua` (and `storage.lua`) with an engine move and drop
+  model and metadata-aware stacks: the give helper's order (quiver,
+  `main[9..]`, bags, hotbar, leftover; soulbound in `main` only; pickup and
+  dug drops), the fit check, bag swaps and removals with and without room
+  (no item lost or duplicated), bags in bags, the sort (categories, tier,
+  name, quality, merging, the hotbar untouched), the potion belt's allow
+  rule and ammo from a bag.

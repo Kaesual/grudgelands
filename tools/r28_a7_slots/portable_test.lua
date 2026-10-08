@@ -54,6 +54,12 @@ core = {
 	register_globalstep = function(f) table.insert(callbacks.globalstep, f) end,
 	after = function() end,
 	formspec_escape = function(text) return text end,
+	-- Round 44: bags.lua loads storage.lua (the give helper, lane IH).
+	get_modpath = function() return ROOT .. "/mods/PLAYER/grug_inventory" end,
+	get_current_modname = function() return "grug_inventory" end,
+	strip_colors = function(text) return text end,
+	is_creative_enabled = function() return false end,
+	handle_node_drops = function() end,
 }
 setmetatable(core, {__index = function(_, key)
 	if type(key) == "string" and key:match("^register_") then return function() end end
@@ -224,7 +230,8 @@ grug_classes = {
 	talent_rank = function() return 0 end,
 }
 grug_gear = {STARTER_SWORD = "grug_gear:sword_bronze",
-	STARTER_STAFF = "grug_gear:staff_bronze", STARTER_BOW = "grug_gear:bow_bronze"}
+	STARTER_STAFF = "grug_gear:staff_bronze", STARTER_BOW = "grug_gear:bow_bronze",
+	initialize_weapon_tooltip = function() return false end}
 dofile(ROOT .. "/mods/ITEMS/grug_gear/permissions.lua")
 function grug_gear.usable_by() return "Usable by: someone" end
 
@@ -609,7 +616,8 @@ do
 	I.refund_ammo(empty, 1)
 	eq(I.quiver_count(empty), 1, "refund goes to the quiver first")
 
-	-- Pickup: quiver first while it has room.
+	-- Pickup: quiver first while it has room, the rest through the give
+	-- helper (main[9..] first, Round 44).
 	local picker = new_player("q3", nil, 1)
 	join(picker)
 	choose_class(picker, "scout")
@@ -622,14 +630,14 @@ do
 	end
 	eq(I.quiver_count(picker), 500, "pickup fills the quiver")
 	check(result and result:is_empty(), "pickup leftover went to main")
-	eq(picker.inv:get_stack("main", 1):get_count(), 30, "30 arrows in main")
+	eq(picker.inv:get_stack("main", 9):get_count(), 30, "30 arrows in main[9]")
 	local apple_result
 	for _, f in ipairs(callbacks.pickup) do apple_result = f(ItemStack("t:apple"), picker) end
-	eq(apple_result, nil, "other pickups untouched")
+	check(apple_result and apple_result:is_empty(), "other pickups take the give helper too")
 end
 
 do
-	-- Non-Scouts have no quiver: nothing enters it, pickup goes to main.
+	-- Non-Scouts have no quiver: nothing enters it, pickup goes to main[9..].
 	local w = new_player("n1", nil, 1)
 	join(w)
 	choose_class(w, "warrior")
@@ -643,7 +651,8 @@ do
 		"add_to_quiver refuses a non-Scout")
 	local result
 	for _, f in ipairs(callbacks.pickup) do result = f(ItemStack("grug_gear:arrow 5"), w) end
-	eq(result, nil, "warrior pickup is builtin's")
+	check(result and result:is_empty(), "warrior pickup through the give helper")
+	eq(w.inv:get_stack("main", 2):get_count(), 25, "warrior arrows merge into the partial stack")
 	local m = new_player("n2", nil, 1)
 	join(m)
 	choose_class(m, "mage")

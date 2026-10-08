@@ -166,7 +166,9 @@ grug_factions = {get_faction = function() return "accord" end, same_faction = fu
 -- Round 31: which NPCs serve whom (the real rule on the fake faction table).
 dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
-grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
+grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
+	-- Round 44: quest drops go through grug_inventory.give (main-only here).
+	give = function(player, stack) return player:get_inventory():add_item("main", stack) end}
 local zone_at = {}
 grug_zones = {id_at = function(x, z) return zone_at[x .. "," .. z] or "elandor_dawnmere_fields" end,
 	-- Level bands (Lane Q0's base-mob ranges) of the fixture's recipe zones.

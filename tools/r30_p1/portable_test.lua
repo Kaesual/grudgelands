@@ -280,7 +280,9 @@ grug_core = {
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
-	UI = {width = 10.4, height = 11.1}}
+	UI = {width = 10.4, height = 11.1},
+	-- Round 44: quest drops go through grug_inventory.give (main-only here).
+	give = function(player, stack) return player:get_inventory():add_item("main", stack) end}
 local faction_chosen = {}
 grug_factions = {get_faction = function() return faction end, same_faction = function() return false end,
 	register_on_faction_chosen = function(fn) faction_chosen[#faction_chosen + 1] = fn end,

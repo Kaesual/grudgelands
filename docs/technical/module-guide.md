@@ -1124,7 +1124,8 @@ tools](#player-meta-read-by-external-tools).
     `lottmobs/trader.lua`) move items through detached
     `wanted/input/offered/output` lists — that loses whatever sits in
     the input list when a player disconnects mid-trade. Every transfer
-    goes directly against the player's own `main` list, the vendor's
+    goes directly against the player's own inventory (purchases through
+    `grug_inventory.give`, sales from `main` and the bags), the vendor's
     "stock" is a computed list of names and prices, and **every formspec
     action re-validates from scratch** (session, distance to the stored
     POSITION not an ObjectRef, access rule, and prices/counts recomputed

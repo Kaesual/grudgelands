@@ -183,10 +183,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 		if new_stack then
 			new_stack:get_meta():from_table({ fields = data })
-			if inv:room_for_item("main", new_stack) then
-				inv:add_item("main", new_stack)
-			else
-				minetest.add_item(player:get_pos(), new_stack)
+			-- GRUG PATCH: the game's give helper (main[9..], the bags, the
+			-- hotbar last) instead of `main`; the leftover drops as before.
+			local leftover = grug_inventory.give(player, new_stack)
+			if not leftover:is_empty() then
+				minetest.add_item(player:get_pos(), leftover)
 			end
 		else
 			stack:get_meta():from_table({ fields = data })

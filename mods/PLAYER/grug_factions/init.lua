@@ -199,9 +199,10 @@ function grug_factions.set_faction(player, id)
 	local meta = player:get_meta()
 	if meta:get_int(META_KIT) == 0 then
 		meta:set_int(META_KIT, 1)
-		local inv = player:get_inventory()
+		-- grug_inventory loads after this mod (it depends on it); the call
+		-- runs at character creation, long after every mod has loaded.
 		for _, item in ipairs(starter_kits[id] or {}) do
-			inv:add_item("main", item)
+			grug_inventory.give(player, item)
 		end
 	end
 	for _, func in ipairs(faction_chosen_callbacks) do
