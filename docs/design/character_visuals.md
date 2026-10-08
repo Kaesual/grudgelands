@@ -328,11 +328,11 @@ are kept per character, and so is the choice.
   (in creation) sees and earns only the shared ones. Every Name Accounted
   For is The Accord's, Our Oaths Are Ours The Throng's; The Last Claim
   Denied is shared.
-- The Character page has an **Achievements** tab: each achievement with its
+- The Character page has an **Achievements** mode: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
-  tooltip with the flavour line, two columns of six per page. Under the
-  model on the Stats view, a **dropdown** lists the owned cloaks. Earning a
-  tier posts a line to the message feed.
+  tooltip with the flavour line, one column of seven per page (Round 44).
+  Beside the model in the 3D mode, a **dropdown** lists the owned cloaks.
+  Earning a tier posts a line to the message feed.
 - **On the model:** a cloak hangs from the shoulders to just above the knee.
   It is a thin box behind the body on its own bone, keyed per animation
   frame, the technique of VoxeLibre's capes. It sways a little standing,

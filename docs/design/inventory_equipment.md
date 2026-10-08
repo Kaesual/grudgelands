@@ -40,9 +40,29 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
   for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
   time, a 32-slot bag cut to 24) is gone.
-- Character separates the model, concise live HP/resource/armor values and
-  equipment into three columns. The current money balance is shown here, with
-  balance changes updating the cached Character view; money has no gameplay HUD.
+- **The Character tab** (Round 44, [UI rework spec](../planning/ui-crafting-rework-plan.md)
+  ruling 6 and §3.3; real coordinates): top left the **mode box**, top right
+  the **gear box**, below them the short inventory view. The mode buttons
+  switch the box only, the choice is runtime context (never stored): **3D**
+  (the default: the model and the cloak picker), **Stats**, **Effects**,
+  **Achievements**, and **Professions** until Round 45 moves it to Crafting.
+  The gear box shows the eight equipment slots with each slot's name beside
+  it (the hands' names per class, §1 below), the Scout's quiver under them
+  and, at its foot in every mode, the travel home's name and the **Return
+  home** button with its state ([home_travel.md](home_travel.md)).
+  **Shift-click** moves between the inventory and the equipment: every list
+  the page draws rings to `grug_shift`, a one-slot list no page draws and
+  that never holds anything, whose allow callback applies the move itself
+  (`equipment.lua`; a listring alone reaches only one next list and fills
+  `main` from the hotbar). From `main` (hotbar included) or a bag a piece
+  of gear goes into its slot — an empty slot of its kind first, else it
+  swaps with the equipped piece, which takes the source cell — under the
+  drag's equip rules and refusal lines; arrows go into a Scout's quiver.
+  From an equipment slot or the quiver the item goes into the inventory in
+  the give order (`main[9..]`, the bags, the hotbar last), or stays with a
+  feed line when it does not fit. Anything else does not move.
+  The Stats mode shows the current money balance, with balance changes
+  updating the cached Character view; money has no gameplay HUD.
   Beside the balance a **Withdraw** button handles the Bag of Coins (Round
   34, [economy.md](economy.md) §1); its deposit slot is on the Inventory tab
   (Round 44).
@@ -91,10 +111,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     one- or two-character `label[]`s ("H", "C", "L", "F", "W", "O", "T1",
     "T2") — legibility beats prettiness here, and the existing hover
     tooltips carry the full name either way.
-  - The two hand slots take their ghost and tooltip label from the class
+  - The two hand slots take their ghost and label from the class
     (Round 28): Warrior sword / shield ("Weapon" / "Shield"), Mage and
     Priest staff / spellbook ("Weapon" / "Caster offhand"), Scout bow / sword
     ("Ranged" / "Melee"). The Scout's quiver slot shows a dimmed quiver.
+    Since Round 44 every slot's name is also printed beside it in the gear
+    box; the tooltips stay.
 - Further pages: existing **Crafting** (3×3 grid).
 - Armor visuals on the player model: composed with the character's look
   ([character_visuals.md](character_visuals.md) §1, §3).
@@ -306,8 +328,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   soulbound item stays in `main`.
 - **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
   elixirs only (group `grug_potion`), created for every player.
-- **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn left of the
-  armor column on the Character page with the arrow total beside it. There is
+- **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn under the
+  equipment slots in the Character page's gear box with the arrow total
+  beside it. There is
   no quiver item and no Leatherworker quiver recipe; non-Scouts have no quiver
   slot. It holds up to **500 arrows**; arrows stack to **100** in any
   inventory. Internally the list `grug_quiver_content` carries five stacks of
@@ -317,7 +340,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   ruling 6); its count corner matches the slot background only approximately
   and shows no hover highlight (accepted). Arrows enter by
   **drag** (onto the slot), **shift-click** (from the inventory) and **pickup**
-  while the quiver has room; anything else is refused. Shots draw from the
+  while the quiver has room; anything else is refused. A shift-click on the
+  slot moves its up to 100 arrows into the inventory in the give order,
+  never back into the quiver. Shots draw from the
   quiver first, then `main` and the bags; a talent refund returns to the
   quiver first. A
   drag of part of a stack onto the slot while it shows a full 100 moves the
@@ -427,21 +452,25 @@ the Round 19 top-centre text list:
 - One throttled pass every 0.5 s owns timed ticks, expiry and display refresh, and
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
-- **Character page tabs:** "Stats" (the view as before; since Round 30 it
-  also carries the **Return home** button with its cooldown in whole
-  minutes, re-sent when the text changes, [home_travel.md](home_travel.md)),
+- **Character page modes** (Round 44: a mode box beside the gear box, see
+  §1): "Stats" (pools, armor, damage reduction, crit, dodge, the balance
+  with Withdraw, the Claim Stone status; the **Return home** button with its
+  cooldown in whole minutes sits in the gear box in every mode, re-sent when
+  the text changes, [home_travel.md](home_travel.md)),
   "Effects": icon,
-  name, remaining time and a detail line per status, refreshed about once a
-  minute or on change while that tab is open, and "Professions" (Round 28
+  name, remaining time and a detail line per status in one column (seven
+  rows and "... and N more" when there are more than eight), refreshed about
+  once a minute or on change while that mode is open, and "Professions" (Round 28
   ruling 23): per known profession (primary slots, then Cooking and Alchemy) its tier,
   "Crafts: n/m toward tier N+1" (`professions.md` §1 counts; "Highest tier
   reached." at T6) and, while the character's ten-level band caps the tier,
   the note "Capped by your level: reach level 10N+1, then craft once more
   for tier N+1" when the count is full and only the character level blocks
-  the next tier. A counted craft refreshes the tab while it is open.
-  Since Round 33 a tab "Achievements" sits between Effects and Professions,
-  and the Stats view has the **cloak picker** under the model
-  ([character_visuals.md](character_visuals.md) §5b).
+  the next tier; the footer note when the rows leave room. A counted craft
+  refreshes the mode while it is open.
+  Since Round 33 "Achievements" sits between Effects and Professions, and
+  the **cloak picker** sits beside the model (the 3D mode since Round 44;
+  [character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list and in the Party page's "Current party" table (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects

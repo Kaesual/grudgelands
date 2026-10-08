@@ -11,8 +11,9 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   enemy home. The UI offers **Set home here** or **This is your home**.
 - Persist the location ID per character, not player-selected coordinates.
   Binding is authenticated by the nearby innkeeper interaction.
-- The Character page (Stats tab) offers **Return home** with the destination
-  and the remaining cooldown in whole minutes, rounded up ("Preparing
+- The Character page (the gear box, in every mode since Round 44) offers
+  **Return home**: the line "Home: <destination>" and the button with the
+  remaining cooldown in whole minutes, rounded up ("Preparing
   arrival" during a return, "Ready" when it may be used); while that page is
   the selected inventory page the button is re-sent when the text changes
   (once a minute, Round 33: a per-second re-send closed the cloak dropdown),
