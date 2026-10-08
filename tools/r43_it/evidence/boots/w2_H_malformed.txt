@@ -1,0 +1,11 @@
+launcher: staged patch: patch_hook.diff
+seconds: 2, exit 1
+joins: []
+--- log lines
+ERROR[Main]: ModError: Failed to load and run script from <run>/user/games/grudgelands/mods/CORE/grug_core/init.lua:
+ERROR[Main]: [grug_core] the world's version record "0.42" is no major.minor.patch version; the server does not start: restore the world from its backup
+ERROR[Main]: stack traceback:
+ERROR[Main]: 	[C]: in function 'error'
+ERROR[Main]: 	.../games/grudgelands/mods/CORE/grug_core/world_version.lua:230: in main chunk
+ERROR[Main]: 	[C]: in function 'dofile'
+ERROR[Main]: 	...arqi/user/games/grudgelands/mods/CORE/grug_core/init.lua:9: in main chunk

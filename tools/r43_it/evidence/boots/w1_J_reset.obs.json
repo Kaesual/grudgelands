@@ -1,0 +1,36 @@
+{
+ "finish": "no joins planned",
+ "first_join_callback": "@<run>/user/games/grudgelands/mods/CORE/grug_core/world_version.lua",
+ "joins": null,
+ "leaves": 0,
+ "load": {
+  "delete_me": "",
+  "from": "0.41.5",
+  "game": "0.42.0",
+  "keep": "probe",
+  "new_world": false,
+  "offline": "0.41.1",
+  "offline_reset": "0.41.5",
+  "reset_applied": 1,
+  "reset_pending": true,
+  "steps": [
+   "0.41.1",
+   "0.41.2",
+   "0.41.3",
+   "0.41.4",
+   "0.41.5"
+  ]
+ },
+ "mods_loaded": {
+  "log": [
+   {
+    "kind": "world",
+    "marker": "w-0.41.5",
+    "reset_applied": 1,
+    "reset_pending": true,
+    "step": "0.41.5"
+   }
+  ]
+ },
+ "phase": "w1_J_reset"
+}

@@ -1,0 +1,12 @@
+launcher: staged patch: patch_hook.diff
+seconds: 2, exit 1
+joins: []
+--- log lines
+ERROR[Main]: ModError: Failed to load and run script from <run>/user/games/grudgelands/mods/CORE/grug_core/init.lua:
+ERROR[Main]: [grug_core] This world is at version 0.41.0 and needs the migration steps 0.41.1, 0.41.2, 0.41.3, 0.41.4 before this game's version 0.42.0 can start it; the server does not start: back up the world and run the tool from the game's repository root: python3 
+ERROR[Main]: tools/migrate.py --world <run>/w1
+ERROR[Main]: stack traceback:
+ERROR[Main]: 	[C]: in function 'error'
+ERROR[Main]: 	.../games/grudgelands/mods/CORE/grug_core/world_version.lua:230: in main chunk
+ERROR[Main]: 	[C]: in function 'dofile'
+ERROR[Main]: 	...arqi/user/games/grudgelands/mods/CORE/grug_core/init.lua:9: in main chunk

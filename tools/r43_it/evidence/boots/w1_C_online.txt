@@ -1,0 +1,20 @@
+launcher: staged patch: patch_hook.diff
+seconds: 21, exit 0
+joins: ['hero logged in (protocol 52), stayed 4.0 s', 'bystander logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.41.4, game 0.42.0: no migration step due
+ACTION[Main]: [r43_it_probe] phase w1_C_online: new_world=false from=0.41.4
+ACTION[Main]: [grug_core] migration 0.41.2: the world's online work is done
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:34572.
+ACTION[Server]: [grug_core] world version 0.42.0 recorded (was 0.41.4)
+ACTION[Server]: hero [127.0.0.1] joins game. List of players: hero
+ACTION[Server]: [grug_core] migration 0.41.3: hero's online work is done
+ACTION[Server]: [grug_core] migration 0.41.4: hero's online work is done
+ACTION[Server]: [r43_it_probe] joined hero
+ACTION[Server]: [r43_it_probe] left hero
+ACTION[Server]: hero leaves game. List of players: 
+ACTION[Server]: bystander [127.0.0.1] joins game. List of players: bystander
+ACTION[Server]: [r43_it_probe] joined bystander
+ACTION[Server]: [r43_it_probe] left bystander
+ACTION[Server]: bystander leaves game. List of players: 
+ACTION[Server]: [r43_it_probe] observations written: every planned character left

@@ -125,7 +125,7 @@ escaped.
 
 | Event | Fields | When |
 |---|---|---|
-| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first |
+| `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first (a usage refusal comes alone) |
 | `step_start` | `step` (its version), `from` (the world's version before it) | a step begins |
 | `step_done` | `step`, `counts`: `characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers` (writes of that step) | a step committed |
 | `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`), and `applied` (migrate) or `write_checked` (check) | exit 0 |
@@ -472,6 +472,22 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   with the disposable probe `grug_probe_r43_mt` (two launcher runs on a
   world folder of its own: the game with SQLite mod storage, then
   `--migrate-players sqlite3`); IT builds its worlds the same way.
+  `r43_it` the migration path end to end
+  ([round plan](../docs/planning/round43-plan.md) §4.3): `run.sh
+  [EVIDENCE_DIR]` (default `evidence/`) runs `it.py`, which prints a PASS/FAIL
+  table: real engine boots of two test worlds through `luanti_headless.sh`
+  with the probe `grug_probe_r43_it`, real joins by `client.py` (a minimal
+  protocol client), the tool with the undeclared test steps of `steps.py`
+  (`tool_run.py`, the tool's Python hook) and the game's test hook naming the
+  same steps (`grug_test_migrations.lua`): offline writes, world and
+  character online work in step order, the start guard's refusals and record,
+  new-world agreement of tool and game, a map reset combined with a step, and
+  PostgreSQL (`pg_test.py`: a throwaway server inside the container, tables
+  seeded from the engine-written SQLite world). Needs podman and the Flatpak
+  Luanti; the first run builds the image `localhost/grudgelands-r43-it:trixie`
+  from `Containerfile` (Debian trixie's python3, psycopg, zstandard and
+  PostgreSQL; network for apt). About 5 minutes; one queue slot (boots and
+  containers run one at a time).
 - **Round 44** (`r44_<lane>`): `r44_fr` the inventory window
   (`portable_test.lua`, the real vendored sfinv and `grug_inventory`'s
   `ui.lua` and `pages.lua` under a stub `core`): the fixed tab order, the

@@ -1346,7 +1346,7 @@ from the reviews (backlog notes, no severity); none blocks the GUI test.
   the character later; the appearance format already carries it.
 - **An unregistered item in a hand slot** would store an empty `image`
   (`grug_visuals.hand_image` finds no definition); release mode rules such
-  an item out (a removed item needs a new server).
+  an item out (a removed item needs a migration step or a new server).
 - **Admin `/faction`** updates the stored appearance only at the
   character's next apply.
 - **The grammar's `max_depth = 4`** is exactly the measured depth of
@@ -1505,7 +1505,7 @@ test or the migration.
 
 ### Round 42 — mob navigation
 
-**Delivered 2026-10-08, playtest accepted the same day, 0.42.0 not pushed**
+**Delivered 2026-10-08, playtest accepted the same day, pushed 2026-10-08**
 ([completion](docs/planning/round42-plan.md#completion-2026-10-08),
 plan [round42-plan.md](docs/planning/round42-plan.md)); every lane
 independently reviewed by Opus; 129 portable fixtures on main. Version
@@ -1565,6 +1565,49 @@ blocked the playtest.
   `grug_mobs.start_npc_activity`, the unread `mobs_disable_damage_kb`
   setting, upstream's unused `deg`, `vmultiply`, `vsubtract`,
   `set_pitch`, `set_roll`, and `no_path_wait_cap` (read, never reached).
+
+### Round 43 — world migrations
+
+**Delivered 2026-10-08, 0.43.0 not pushed**
+([completion](docs/planning/round43-plan.md#completion-2026-10-08),
+plan [round43-plan.md](docs/planning/round43-plan.md)); every lane
+independently reviewed by Opus; 130 portable fixtures on main. Version
+0.43.0, compatible, with an empty `migrate` list: the foundation of the
+platform's migration contract, shipped alone (ruling 2). No world
+generation changed.
+
+- **Game side** (GS): the world version record, the start guard,
+  new-world recognition, the online-work runner and the schema-2
+  declaration with `check_upgrade.py`
+  ([upgrade contract §5](docs/technical/upgrade-contract.md#5-migrations)).
+- **The migration tool** (MT): `tools/migrate.py` and `tools/migration/`
+  ([tools/README.md](tools/README.md#the-migration-tool)).
+- **Integration tests** (IT): `tools/r43_it/run.sh`, SQLite and PostgreSQL.
+- **Open for the first real step** (with the UI rework, in a later
+  version; ruling 2): map blocks (format v29, both SQLite `blocks` layouts, the round-trip
+  test) only when a step needs them (ruling 4).
+
+### Round 43 carry-overs
+
+**Noted 2026-10-08** ([completion](docs/planning/round43-plan.md#completion-2026-10-08)),
+the reviews' and reports' backlog notes (theoretical, no severity).
+
+- **A held character** (GS; a failed character handler) still meets the
+  other join callbacks of that join; handlers must be safe to rerun.
+- **One contrived registry layout** (GS) passes `check_upgrade`'s parser: a
+  block-commented literal `versions` table plus a non-literal real one.
+- **The PostgreSQL schema guard** (MT) compares columns only.
+- **A step could commit through `raw(...)` itself** (MT), outside the
+  tool's rollback.
+- **A missing `mod_storage.sqlite` with no characters** (MT) is exit 2
+  rather than "new world".
+- **Strings that are not valid UTF-8** (MT) cannot be written to
+  PostgreSQL: the step fails, exit 1.
+- **The integration suite assumes an empty `migrate` list** (IT); the round
+  that declares the first real step adapts it.
+- **PostgreSQL migrate mode takes no lock at `begin()`** (IT), so a lock
+  timeout during a step's first write is exit 1 `step`, not exit 2 `lock`
+  (the operator stops the server first).
 
 ### Audit 2026-10 open questions
 

@@ -1,0 +1,2 @@
+{"event": "start", "mode": "check", "world": "/tmp/worlds/empty"}
+{"event": "done", "mode": "check", "world_version": null, "record": null, "new_world": true, "target": "0.42.0", "due": [], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "postgresql"}, "write_checked": ["player", "auth", "mod_storage"]}

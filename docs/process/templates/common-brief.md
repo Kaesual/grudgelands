@@ -37,14 +37,20 @@ bigger than planned, report it (the coordinator splits it with the user).
   entries that your change makes wrong (English), in-lane; keep those edits
   to what your change falsifies.
 - **Release mode** (AGENTS.md, the
-  [upgrade contract](../../technical/upgrade-contract.md)): no data
-  migrations, no compat code, no placeholders for removed things; ids of
+  [upgrade contract](../../technical/upgrade-contract.md)): data migrations
+  only through the tool (`tools/migrate.py`, one declared step per
+  `migrate` version, with its test; online work only through grug_core's
+  runner), no compat code, no placeholders for removed things; ids of
   quests, items, achievements and waypoints stay stable (a renamed item may
   use `register_alias`). Your report classifies your change as
-  *compatible*, *map reset* (map-bound state or world generation changed)
-  or *new server* (saved state the new code cannot read), with the reason;
-  a new-server change is reported before it is built. New map-bound state
-  gets its map-reset clear in the same change.
+  *compatible*, *map reset* (map-bound state or world generation changed),
+  *migrate* (saved state the new code cannot read, converted by a step) or
+  *new server* (such state not migrated, or a validated world-creation
+  scalar), with the reason; a new-server change is reported before it is
+  built. New map-bound state gets its map-reset clear in the same change.
+  A step keeps the baseline rule (it relies only on what the previous step
+  or map reset left, never on lazy writes at a load or on earlier online
+  work having finished) and never changes once pushed.
 - **Code style:** match the surrounding code (comment density, naming,
   idioms). English. Lua 5.1 compatible. The user strongly prefers small,
   cheap mechanisms over clever ones; no new frameworks.
@@ -65,7 +71,11 @@ bigger than planned, report it (the coordinator splits it with the user).
   the full `tools/run_fixtures.sh` (all portable fixtures, LuaJIT) runs
   **once**, right before your final report, and again only if a later fix
   touches files outside that selection. Lanes that touch quest or mob data also run
-  `python3 tools/r28_design/validate.py --game`. One smoke boot of your
+  `python3 tools/r28_design/validate.py --game`. A lane that adds a
+  migration step adds its end-to-end test (pattern `tools/r43_it/run.sh`);
+  a lane that changes `tools/migrate.py` or `tools/migration/` runs the test
+  of every declared step and the tool's unit tests in the `debian:trixie`
+  container (a container counts as one Lua process). One smoke boot of your
   final branch. No PUC runtime runs.
 - **Lua-process budget (at most 8 workstation-wide, shared by all lanes):**
   every Lua run longer than about 30 s and every engine boot goes through
