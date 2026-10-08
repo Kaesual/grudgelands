@@ -290,21 +290,23 @@ drawn from the base image above. The gliding version (approved in playtest,
 - **Baked icons:** the minimap's own base carries the 6 px icons of every
   settlement, point of interest, king and dragon, without names (Round 44,
   [Baked layer](#baked-layer)); they glide with the map as part of it.
-- **Markers** are separate HUD elements, never pixels of the map texture
-  (Round 44, the UI rework spec ruling 13): quest givers with their
-  per-player state (ready, available, active, locked: the "!" and "?"),
-  profession trainers with their profession's icon and Riding trainers with
-  the mount icon, the player's home (the bound innkeeper or Claim Stone) and
-  discovered waystones (Round 29). The Housing Steward, the capital services
-  and the other innkeepers stay on the Map tab only. Markers glide with the
+- **Markers** are separate HUD elements, never pixels of the map texture:
+  quest givers with their per-player state (ready, available, active,
+  locked: the "!" and "?"), the Housing Steward, the Crownbinder and the
+  Decor Merchant, profession trainers with their profession's icon (Round
+  44) and Riding trainers with the mount icon, innkeepers, the player's home
+  (the bound innkeeper or Claim Stone) and discovered waystones (Round 29),
+  each NPC of the own faction only (Round 31). The user kept this set in
+  Round 44. Markers glide with the
   map and are hidden unless the whole icon lies inside the hole. The minimap
   has 24 marker slots; when more markers fall inside the circle, quest givers
-  keep a slot first, then the home, trainers and waystones, and the kept
-  ones are drawn in their usual order. Markers are not clustered or moved
-  apart. The densest window, measured in every capital and start town of
-  seed 42 with every quest giver of the faction counted (2026-10-08), holds
-  11 markers in a capital (15 with the kinds shown before Round 44) and 3 in a start
-  town, plus at most the home and a waystone, so the 24 slots stay.
+  keep a slot first, then the Steward and the capital services, home,
+  innkeeper, trainers and waystones, and the kept ones are drawn in their
+  usual order. Markers are not clustered or moved apart. The densest
+  window, measured in every capital and start town of seed 42 with every
+  quest giver of the faction counted (2026-10-08), holds 15 markers in a
+  capital and 4 in a start town, plus at most the home and a waystone, so
+  the 24 slots stay.
 - **Party members** (online, same party) have nine slots of their own: a cyan
   heading arrow that glides with the map inside the hole, or a cyan arrow on
   the bezel pointing toward them (16 directions) when they are outside it.

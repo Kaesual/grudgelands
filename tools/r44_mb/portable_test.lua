@@ -26,10 +26,10 @@
 --      no names;
 --   C  the cache key text changes with the layout, art and font versions
 --      and with an icon's kind or place, and only then;
---   M  the minimap's marker kinds are quest givers, trainers, home and
---      waystones (no Steward, services, innkeepers, kings, dragons or
---      settlements); trainers use their profession icon, a 16 x 16 PNG for
---      every profession.
+--   M  the minimap's marker kinds are quest givers, the Steward, the
+--      capital services, trainers, innkeepers, home and waystones (the
+--      user, Round 44), never kings, dragons or settlements; trainers use
+--      their profession icon, a 16 x 16 PNG for every profession.
 -- Prints "R44 MB PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -308,10 +308,11 @@ do
 	local kinds = {}
 	for kind in shown:gmatch("(%w+) = true") do kinds[#kinds + 1] = kind end
 	table.sort(kinds)
-	eq(table.concat(kinds, ","), "home,quest,trainer,waypoint", "M minimap kinds")
+	eq(table.concat(kinds, ","), "home,innkeeper,quest,service,steward,trainer,waypoint",
+		"M minimap kinds")
 	local priority = minimap:match("local PRIORITY = (%b{})") or ""
-	check(priority:find("quest = 1", 1, true) and not priority:find("steward", 1, true) and
-		not priority:find("innkeeper", 1, true), "M quest givers keep a slot first")
+	check(priority:find("quest = 1", 1, true) and priority:find("steward = 2", 1, true) and
+		priority:find("innkeeper = 4", 1, true), "M quest givers keep a slot first, then the Steward")
 	check(minimap:find("MARKER_SLOTS, PARTY_SLOTS = 24, 9", 1, true), "M 24 marker slots stay")
 	local providers = read(MAP .. "providers.lua")
 	check(providers:find('return "grug_map_trainer_" .. profession .. ".png"', 1, true) and

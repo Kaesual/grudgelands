@@ -17,8 +17,7 @@
 --      red "X"; since Round 44 every settlement and camp is baked into the
 --      base image, so the page draws no settlement or camp marker at all;
 --   C  (Round 34) the Crownbinder and the Decor Merchant have service
---      markers with their own icons on the map (since Round 44 not on the
---      minimap, spec ruling 13).
+--      markers with their own icons, on the map and the minimap.
 -- Prints "R26 MAP PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -182,9 +181,8 @@ do
 	if file then file:close() end
 	local shown = minimap:match("local SHOWN = (%b{})") or ""
 	local priority = minimap:match("local PRIORITY = (%b{})") or ""
-	check(shown ~= "" and not shown:find("service", 1, true) and
-		not shown:find("steward", 1, true) and not priority:find("service", 1, true),
-		"C the minimap shows no services (Round 44)")
+	check(shown:find("service = true", 1, true) and priority:find("service = 2", 1, true),
+		"C the minimap shows the services with the Steward's priority")
 end
 
 local function button_at(fs, texture)

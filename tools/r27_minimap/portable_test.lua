@@ -21,8 +21,8 @@
 --   R  runtime: native minimap off on join; elements created; only changes
 --      are sent (a still player sends nothing); the arrow stays centred and
 --      the map and markers move together; a new texture only on a new cell;
---      markers of the Round 44 kinds (quest givers, trainers by profession,
---      home, waystones) inside the hole only, quest states as icons; party members inside as heading arrows, outside as rim arrows
+--      markers of the ruling-8 kinds (trainers by profession icon since
+--      Round 44) inside the hole only, quest states as icons; party members inside as heading arrows, outside as rim arrows
 --      on the bezel; window resize relayouts; the Map tab switch hides and
 --      shows the minimap and persists in meta; every texture exists;
 --   P  page: no region-name hypertext (the names are baked since Round 44).
@@ -554,12 +554,12 @@ check(#bezels == 1 and near(screen(bezels[1], me) + frame.diameter, 1920 - 10, 1
 check(#by_text(me, "^grug_map_minimap_mask%.png%^%[multiply:") == 1, "R sea background disc")
 local function has(texture) return #by_text(me, "^" .. texture:gsub("%.", "%%.") .. "$") end
 check(has("grug_map_quest_available.png") == 1, "R near quest giver shown, far one not")
--- Round 44 (spec ruling 13): no Steward, services or innkeepers; trainers
--- by their profession icon; kings and dragons are pixels of the base.
-check(has("grug_map_housing_steward.png") == 0, "R no Housing Steward")
+-- Trainers by their profession icon since Round 44; kings and dragons are
+-- pixels of the base.
+check(has("grug_map_housing_steward.png") == 1, "R Housing Steward shown")
 check(has("grug_map_trainer_tailor.png") == 1 and has("grug_mounts_icon_human.png") == 1,
 	"R trainers shown (profession icon and riding)")
-check(has("grug_map_innkeeper.png") == 0, "R no innkeeper (only the home)")
+check(has("grug_map_innkeeper.png") == 1, "R innkeeper shown (the far inn is not)")
 check(has("grug_mobs_item_fallen_crown.png") == 0, "R no king marker")
 do
 	local riding = by_text(me, "^grug_mounts_icon_human%.png$")[1]
@@ -745,7 +745,8 @@ do
 	end
 	local names = {"grug_map_minimap_bezel.png", "grug_map_quest_available.png",
 		"grug_map_quest_locked.png", "grug_map_quest_ready.png", "grug_map_quest_active.png",
-		"grug_map_trainer_tailor.png", "grug_map_home.png", "grug_map_heading_gold_00.png"}
+		"grug_map_innkeeper.png", "grug_map_trainer_tailor.png", "grug_map_home.png",
+		"grug_map_heading_gold_00.png"}
 	for f = 0, 15 do
 		names[#names + 1] = ("grug_map_rim_cyan_%02d.png"):format(f)
 		names[#names + 1] = ("grug_map_heading_cyan_%02d.png"):format(f)
@@ -773,8 +774,8 @@ end
 -- S: slots, staggering, a missing mask
 -- ---------------------------------------------------------------------------
 do
-	-- More markers than slots: the quest giver keeps its slot, drawn in the
-	-- usual order (trainers below quests).
+	-- More markers than slots: the quest giver and the Steward keep theirs,
+	-- drawn in the usual order (trainers below the Steward below quests).
 	local saved = {x = me.pos.x, z = me.pos.z}
 	me.pos.x, me.pos.z = -2000, -2000
 	step(0.25)
@@ -790,8 +791,8 @@ do
 	table.sort(order, function(a, b) return a.z < b.z end)
 	check(shown == 24, "S all 24 marker slots used (" .. shown .. ")")
 	check(order[#order] and order[#order].t == "grug_map_quest_available.png" and
-		order[#order - 1] and order[#order - 1].t == "grug_map_trainer_tailor.png",
-		"S the quest giver keeps a slot and draws on top of the trainers")
+		order[#order - 1] and order[#order - 1].t == "grug_map_housing_steward.png",
+		"S the quest giver and the Steward keep a slot and draw on top")
 	me.pos.x, me.pos.z = saved.x, saved.z
 	step(0.25)
 

@@ -1341,9 +1341,9 @@ tools](#player-meta-read-by-external-tools).
   static markers are re-asked on `grug_quests.register_on_markers_changed`
   and, when their key (quest version, home, waystones, faction) changed, at
   a 5 s check. The minimap asks only the quest, service, home and (since Round 29)
-  waypoint marker providers (`atlas.collect_markers(player, only)`) and
-  since Round 44 shows only quest givers, trainers (`grug_map.trainer_icon`,
-  one icon per profession), the home and waystones; the
+  waypoint marker providers (`atlas.collect_markers(player, only)`);
+  since Round 44 trainers show one icon per profession
+  (`grug_map.trainer_icon`); the
   `waypoint` provider shows the player's discovered waystones on both maps.
   Fixture:
   `tools/r27_minimap/portable_test.lua`; traffic comparison:
