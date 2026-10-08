@@ -373,21 +373,25 @@ local function target_cell(target, target_pos)
 		z = floor(target_pos.z + 0.5)}
 end
 
--- The highest standable feet cell of column (x, z) within BAND of `y0`.
-function nav.stand_y(body, x, z, y0)
-	for y = y0 + nav.BAND, y0 - nav.BAND, -1 do
+-- The highest standable feet cell of column (x, z) within `band` (default
+-- BAND) of `y0`.
+function nav.stand_y(body, x, z, y0, band)
+	band = band or nav.BAND
+	for y = y0 + band, y0 - band, -1 do
 		if stands(body, x, y, z) then return y end
 	end
 	return nil
 end
 
 -- The next candidate of this stuck episode: the rings in turn, on each ring
--- the angles in order, the first standable one (ruling 4).
-local function next_candidate(nst, body, from, toward)
+-- the angles in order, the first standable one (ruling 4). `opts` may give
+-- other rings and another height band (a fixed walk's own, ruling 10).
+local function next_candidate(nst, body, from, toward, opts)
 	local dx, dz = toward.x - from.x, toward.z - from.z
 	local len = sqrt(dx * dx + dz * dz)
 	if len < 1 then return nil end
-	local rings, angles = nav.RINGS, nav.ANGLES
+	local rings, angles = opts and opts.rings or nav.RINGS, nav.ANGLES
+	local band = opts and opts.band
 	nst.ring = (nst.ring or 0) % #rings + 1
 	nst.angle = nst.angle or {}
 	for pass = 0, #rings - 1 do
@@ -401,7 +405,7 @@ local function next_candidate(nst, body, from, toward)
 			local c, s = cos(a), sin(a)
 			local x = floor(from.x + (dx * c - dz * s) / len * radius + 0.5)
 			local z = floor(from.z + (dx * s + dz * c) / len * radius + 0.5)
-			local y = nav.stand_y(body, x, z, from.y)
+			local y = nav.stand_y(body, x, z, from.y, band)
 			if y then return {x = x, y = y, z = z} end
 		end
 	end
@@ -474,7 +478,9 @@ function nav.command(self, pos, speed)
 	end
 end
 
--- "stuck", "free" (a window ended with enough movement) or nil.
+-- "stuck", "free" (a window ended with enough movement) or nil. The last
+-- ended window's verdict stays in `nst.seen` (Round 42 NV2: the royal snap's
+-- clock runs only while the guard is really stuck).
 local function observe(nst, pos, dtime, window)
 	if not nst.wt then return nil end
 	if not nst.cmd_v or clock - nst.cmd_clock > dtime * 1.5 + 0.01 then
@@ -487,7 +493,8 @@ local function observe(nst, pos, dtime, window)
 	local dx, dz = pos.x - nst.wx, pos.z - nst.wz
 	local stuck = sqrt(dx * dx + dz * dz) < nav.STUCK_RATIO * nst.we
 	nst.wt = nil
-	return stuck and "stuck" or "free"
+	nst.seen = stuck and "stuck" or "free"
+	return nst.seen
 end
 
 --
@@ -563,7 +570,7 @@ end
 -- One search attempt of a stuck mob. "found", "failed" (counts) or "wait"
 -- (lockout, negative cache, cap or budget; nothing counts).
 --
-local function attempt(self, nst, pos, goal_pos, key, mode, close, target)
+local function attempt(self, nst, pos, goal_pos, key, mode, close, target, opts)
 	local t = now()
 	if t < (nst.lock or 0) then return "wait" end
 	local body = nav.body(self, nst)
@@ -577,7 +584,7 @@ local function attempt(self, nst, pos, goal_pos, key, mode, close, target)
 					z = floor(goal_pos.z + 0.5)}
 		else
 			-- A candidate is picked once per search, not per waiting step.
-			goal = nst.point or next_candidate(nst, body, from, goal_pos)
+			goal = nst.point or next_candidate(nst, body, from, goal_pos, opts)
 			nst.point = goal
 			key = "nav_point"
 		end
@@ -731,9 +738,12 @@ end
 -- steer at (nil: straight at the goal) and "failed" when a search failed or
 -- the mob got stuck on its path (the caller's later stages decide; the
 -- episode's count is `self.temp.grug_nav.fails`). A goal beyond MAX_LEG is
--- approached through ring candidates in its direction.
+-- approached through ring candidates in its direction. `opts` (optional):
+-- `close`, the distance within which the goal itself is searched for
+-- (default MAX_LEG), and the candidates' `rings` and height `band` (Round 42
+-- NV2: the evade's local point, ruling 10).
 --
-function nav.fixed_step(self, pos, dtime, goal, key)
+function nav.fixed_step(self, pos, dtime, goal, key, opts)
 	local nst = state(self)
 	if nst.target ~= key then
 		nav.forget(self.temp)
@@ -771,16 +781,22 @@ function nav.fixed_step(self, pos, dtime, goal, key)
 		nst.lt = (nst.lt or 0) + nav.WINDOW.fixed
 		if nst.lt >= nav.LINE_EVERY.fixed then
 			nst.lt = 0
-			local body = nav.body(self, nst)
+			-- A goal beyond MAX_LEG has no line to test: walking freely
+			-- toward it is progress (Round 42 NV2; a real hold reads stuck).
 			local dx, dz = goal.x - pos.x, goal.z - pos.z
-			if dx * dx + dz * dz <= nav.MAX_LEG * nav.MAX_LEG
-			and nav.line_walkable(body, feet_of(body, pos), goal) then
+			if dx * dx + dz * dz > nav.MAX_LEG * nav.MAX_LEG then
 				progress(self, nst)
+			else
+				local body = nav.body(self, nst)
+				if nav.line_walkable(body, feet_of(body, pos), goal) then
+					progress(self, nst)
+				end
 			end
 		end
 	end
 	if not nst.want then return nil end
-	local result = attempt(self, nst, pos, goal, key, "fixed", nav.MAX_LEG)
+	local result = attempt(self, nst, pos, goal, key, "fixed",
+		opts and opts.close or nav.MAX_LEG, nil, opts)
 	if result == "found" then
 		return nst.path[nst.i]
 	elseif result == "failed" then

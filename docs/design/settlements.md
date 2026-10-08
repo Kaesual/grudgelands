@@ -482,9 +482,13 @@ Decided 2026-09-15 after the first NPC playtest, and part of that behaviour:
 - **A villager at a doorstep faces the street**, and villagers walk — they do
   not jump. A walker dwells 20 to 60 seconds at a spot, then walks to another
   spot of the same composition; a spot it cannot reach is given up for another.
-- **A guard that cannot reach its waypoint keeps patrolling anyway**: it paths
-  around the obstacle, then takes the next waypoint, and only if it is still
-  stuck and no player is within 48 nodes is it moved there outright.
+- **A guard that cannot reach its waypoint keeps patrolling anyway**: stuck,
+  it finds a short local path round the obstacle and follows it (Round 42,
+  the fixed walks of `world.md` §4a); after three failed searches in a row it
+  takes the next waypoint, and only when the next one cannot be reached
+  either and no player is within 48 nodes is it moved there outright. A
+  post guard walks back to its post the same way and is moved onto it, out
+  of sight only, after six failed searches in a row.
 - **A patrolling guard turns and walks together** (Round 28 ruling 11): each
   route step faces the new heading at once and walks along it, and a guard
   with a patrol loop makes no random turns of its own. Post guards keep their

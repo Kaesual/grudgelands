@@ -226,13 +226,13 @@ function grug_mobs.leash_reset(self)
 	--     that on its own.
 	-- It used to TELEPORT the mob home right here. It now runs home instead:
 	-- the snap solved the bookkeeping but the player watched the mob it had
-	-- been fighting vanish mid-screen. The straight-line steer of evade_tick is
-	-- NOT a second pathfinding state machine (mobs_redo has none usable here:
-	-- go_to() fakes an attack target, which our threat/leash/telegraph code all
-	-- mis-read — see patrol.lua), it is the same 1 Hz nudge patrols and the
-	-- roam cap already use; the teleport survives as the 40 s safety net for a
-	-- walk that terrain has blocked, so the bookkeeping guarantees above still
-	-- hold in the worst case, just a little later.
+	-- been fighting vanish mid-screen. evade_tick's walk is NOT a second
+	-- pathfinding state machine (mobs_redo has none usable here: go_to() fakes
+	-- an attack target, which our threat/leash/telegraph code all mis-read —
+	-- see patrol.lua), it is the fixed walk patrols and posts use (the 1 Hz
+	-- nudge and the shared navigation, Round 42); the teleport survives as the
+	-- 40 s safety net for a walk that terrain has blocked, so the bookkeeping
+	-- guarantees above still hold in the worst case, just a little later.
 	--
 	-- Threshold is the DEF radius: 25 for a camp mob, 30 for a guard, the 40 m
 	-- default otherwise — i.e. "further from your post than your post reaches";
@@ -299,7 +299,13 @@ end
 --   * becomes a normal mob again the instant it arrives: within EVADE_ARRIVED
 --     of `_grug_home`, a free (damage-pursuit) mob already back inside its
 --     wander radius (Round 36 §2.14.2, the same radius leash_reset sent it
---     home from).
+--     home from);
+--   * finds its way round what blocks the run (Round 42 ruling 10): the run
+--     is a fixed walk home (patrol.lua `walk_fixed`, the shared navigation),
+--     and an evader that moved less than 30 % of its speed over 1 s searches
+--     a local way to a point EVADE_SEARCH.rings[1] nodes toward home (within
+--     EVADE_SEARCH.band of its height; the point chosen before the search,
+--     home's direction first, then 20 and 40 degrees aside) and follows it.
 --
 local EVADE_ARRIVED = 4 -- m horizontal from `_grug_home` counts as home
 
@@ -309,11 +315,14 @@ local function evade_radius(self)
 		or EVADE_ARRIVED
 end
 local EVADE_TIMEOUT = 40 -- s before the old teleport snap takes over
+-- The evade's local search (Round 42 ruling 18): home itself within 6 nodes,
+-- otherwise a point 6 nodes toward it, within 2 of the evader's height.
+local EVADE_SEARCH = {close = 6, rings = {6}, band = 2}
 -- Read by init.lua's tick_speed_effects (public because that is where the
 -- speed fields are owned); combat_stats §4's "1.5x its run speed".
 grug_mobs.EVADE_SPEED_FACTOR = 1.5
 
-local function evade_tick(self)
+local function evade_tick(self, dtime)
 	local ev = self.temp.grug_evading
 	if not ev then
 		return
@@ -353,26 +362,30 @@ local function evade_tick(self)
 		-- Instantly a normal mob again: attackable, targeting, and its speeds
 		-- restored by the next tick_speed_effects (init.lua).
 		self.temp.grug_evading = nil
+		grug_mobs.walk_clear(self, "evade")
 		return
 	end
 	if grug_core.mono_time() - (ev.started or 0) > EVADE_TIMEOUT then
-		-- SELF-HEALING SAFETY NET. The run is straight-line steering, not
-		-- pathfinding, so a cliff or a wall can park an evader forever (water
-		-- no longer does: an evader swims, Round 34, mobs/api.lua) —
-		-- and forever means untouchable forever, plus every stray-garrison
-		-- consequence listed in leash_reset above. After 40 s the old teleport
-		-- takes over: the same ground correction every hand placement uses
-		-- (init.lua), because `_grug_home` is a FEET position (the camp node,
-		-- the spawn point) and an entity's position is its collisionbox origin.
+		-- SELF-HEALING SAFETY NET. The local search finds a way round a
+		-- trunk, a wall's end or a ditch, but not out of a fenced pen or across
+		-- a gorge (water no longer parks an evader: it swims, Round 34,
+		-- mobs/api.lua) -- and stuck means untouchable forever, plus every
+		-- stray-garrison consequence listed in leash_reset above. After 40 s
+		-- the old teleport takes over, also while watched (Round 42 ruling 10):
+		-- the same ground correction every hand placement uses (init.lua),
+		-- because `_grug_home` is a FEET position (the camp node, the spawn
+		-- point) and an entity's position is its collisionbox origin.
 		grug_mobs.place_on_ground(self.object, home)
 		self.temp.grug_evading = nil
+		grug_mobs.walk_clear(self, "evade")
 		return
 	end
-	-- One nudge home. mobs_redo's walk state re-issues the velocity and may
-	-- randomly turn or stop the mob (patrol.lua's header spells this out), so
-	-- the run is a jog with pauses rather than a straight sprint — net progress
-	-- once a second, with the timeout above as the backstop.
-	grug_mobs.walk_toward(self, home.x, home.z, pos)
+	-- One decision of the walk home, once a second. mobs_redo's walk state
+	-- re-issues the velocity and may randomly turn or stop the mob
+	-- (patrol.lua's header spells this out), so a straight run is a jog with
+	-- pauses; a detour is steered every step (leash_tick, walk_follow).
+	grug_mobs.walk_fixed(self, dtime, pos, home.x, home.y, home.z, "evade",
+		"evade", EVADE_SEARCH)
 end
 
 local function leash_check(self)
@@ -691,6 +704,8 @@ function grug_mobs.leash_tick(self, dtime)
 	local t = self.temp
 	t.grug_leash_acc = (t.grug_leash_acc or 0) + dtime
 	if t.grug_leash_acc < LEASH_INTERVAL then
+		-- An evader's detour is steered every step (patrol.lua walk_follow).
+		if t.grug_evading then grug_mobs.walk_follow(self, dtime, "evade") end
 		return
 	end
 	t.grug_leash_acc = 0
@@ -721,7 +736,7 @@ function grug_mobs.leash_tick(self, dtime)
 	-- bespoke actors one field test. It must, however, stay BEFORE
 	-- leash_check: that is what keeps the arrival/timeout handling ahead of any
 	-- fresh chase bookkeeping in the same slot.
-	evade_tick(self)
+	evade_tick(self, dtime)
 	-- Any-source idle recovery shares this one-second cadence. It runs for
 	-- no-leash actors too (notably royal guards), while its own calm-state and
 	-- shared encounter gates prevent a transient target gap from healing them.

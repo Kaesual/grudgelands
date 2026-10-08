@@ -306,8 +306,9 @@ shared helper `mobs/grug_obstacle.lua` (our own file, one marker) grows:
   still walkable is not run and not counted. The close-obstacle pass searches with
   searchdistance 8. Each `core.find_path` is timed into a per-step budget of
   about 3 ms (`path_budget_us`) that replaces the count of 2;
-  `grug_obstacle.spare_path_budget` serves the once-a-second patrol nudge
-  (`grug_mobs/patrol.lua`). `do_attack` (target change) and `stop_attack`
+  `grug_obstacle.spare_path_budget` served the once-a-second patrol nudge
+  (`grug_mobs/patrol.lua`; no caller since Round 42 NV2, left for the
+  round's cleanup lane). `do_attack` (target change) and `stop_attack`
   forget the cache (`forget_no_path`). `mobs.grug_obstacle` publishes the
   helper.
 - **Collision box field (#6):** `mob_activate`, `mobs:scale_mob` and the
@@ -513,6 +514,15 @@ keep theirs). `mobs.grug_nav` publishes the module.
 
 Fixture `tools/r42_nv1/portable_test.lua`. `mobs/api.lua` now has
 **125 markers**, `grug_obstacle.lua` 2, `grug_nav.lua` 1.
+
+## Round 42 NV2 — fixed walks (2026-10-08)
+
+`mobs/grug_nav.lua` (no new marker): `nav.fixed_step` takes optional search
+options (`close`, the candidate `rings` and height `band`; `nav.stand_y` a
+band) for the evade's local point (round42-plan.md ruling 10). Its callers
+are ours: `grug_mobs/patrol.lua` `walk_fixed` (patrols, named rares, posts,
+seats, the evade, the rift boss) and the royal follow (`bosses.lua`, also
+`combat_step` for a fighting leader). Fixture `tools/r42_nv2/portable_test.lua`.
 
 ## Server-side node formspecs (2026-09-28)
 

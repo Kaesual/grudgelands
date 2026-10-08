@@ -553,8 +553,9 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 - **Place-bound NPCs** are bound to their anchor (guard banner, camp
   fire, mine, platform): after losing aggro they **evade home** —
   untouchable, running at 1.5× run speed, normal again on arrival;
-  a blocked walk falls back to a teleport snap after ~40 s
-  (combat_stats.md §4 carries the full evade rule) — and while idle
+  a blocked run finds its way round on a short local search and falls
+  back to a teleport snap after ~40 s (combat_stats.md §4 carries the
+  full evade rule) — and while idle
   they **roam only a small radius around it** — **20 nodes**,
   horizontal, enforced as a gentle steer home once a second while the
   NPC is idle. The patroller role is the one designed exception.
@@ -572,6 +573,31 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   outside a reset or the king's death returns on its own after the same
   15 minutes (Round 37, `world_zones.md` §12). A PvP fortress's General
   and his two bodyguards (Round 31) are the same encounter on the same rules.
+- **Fixed walks** (Round 42, [round 42 plan](../planning/round42-plan.md)
+  rulings 5, 10, 11 and 17): a patrol to its next waypoint (also a named
+  rare's), a post guard, a king or a General back to his post or seat, a
+  royal guard or bodyguard to an idle leader, the evade run and the rift
+  boss's way home walk straight at a goal that stays put, a nudge once a
+  second. A walker that wants to move but moved less than **30 %** of its
+  speed over **1 s** is stuck — also one mobs_redo holds in front of a node
+  named fence, gate or wall or at a drop of 1.5 (town walls and gates are
+  where guards stand), never one it stops at random. A stuck walker asks the
+  engine's pathfinder for a short local path (the same bounded search,
+  checks and smoothing as a fight's, `combat_stats.md` §4 "Navigation"; at
+  most one search every **5 s**) to its goal, or to a point 10 then 16
+  nodes toward a goal further than 32 nodes, and follows it to its end,
+  steered every step; more than **2 nodes** off the path it searches again.
+  The evade searches a point **6 nodes** toward home (within 2 of its
+  height) instead. Failed searches in a row feed the later stages: a patrol
+  takes its next waypoint after **3**, and the second waypoint in a row it
+  cannot reach is snapped to while no player is within 48 nodes (skipped
+  while watched; a named rare only skips); a post guard, king or General is
+  snapped onto his post after **6**, out of sight only; a royal guard stuck
+  **20 s** without a path is put on its leader, also in view; the evade
+  keeps its 40 s snap. A leader that fights, chases or runs home is a
+  moving target: his guards track him as a chaser tracks its target
+  (leaving a path when he moved 4 nodes from its end) and run, so they keep
+  up. Fliers walk straight and never search.
 - **Respawn slots**: every anchor has a configured **maximum population**
   and refills toward it one NPC at a time. Each refill takes a
   **configurable interval** (either an exact duration or a min–max
@@ -782,9 +808,9 @@ contact there is intended.
   own: dragged more than **24 nodes** from where its fight began, or 15 s
   without contact, it resets (full health, threat and its ledger cleared, a
   void pulse it was winding up cancelled) and runs home untouchable (the
-  evade of `combat_stats.md` §4), taking an A* way round the crack when a
-  straight run stalls (and a new one when knocked off it); idle it walks
-  back to its spot the same way. It returns **5 minutes** of wall-clock time after its death.
+  evade of `combat_stats.md` §4); idle it walks back to its spot as a fixed
+  walk (§4a): a stuck run or walk finds a short local way round, and the
+  crack is no way for it (a damaging node is blocked to the navigation). It returns **5 minutes** of wall-clock time after its death.
   Loot through the boss ledger (`items_crafting.md` §5.3b); every credited
   kill reaches `grug_mobs.register_on_boss_kill` as `rift:<site key>`.
 

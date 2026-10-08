@@ -333,4 +333,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   follower, lockout and cap, head room and width, give-up and veto, the
   physics box); `evidence/after/` keeps NV1's after-runs of the scenes, the
   40 chasers (seed 12345) and the PvE micro run (`scenes_summary.md` ends
-  with the before/after table against `r42_nv0/evidence/before`).
+  with the before/after table against `r42_nv0/evidence/before`). `r42_nv2`:
+  `portable_test.lua` drives real fixed walks (the real `patrol.lua` and
+  `aggro.lua`, the post tick, royal follow and rift way home cut out of
+  their files, the real navigation) through a node grid with a colliding
+  body and mobs_redo's cliff and fence holds: patrols, posts, held walkers,
+  the evade, the royal follow, the rift boss, the later stages;
+  `evidence/after/` keeps NV2's scenes run of the post guard and the royal
+  guard (seed 12345; the before/after table against
+  `r42_nv1/evidence/after`).

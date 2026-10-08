@@ -643,7 +643,25 @@ local function king_def(race, row)
 end
 
 local ROYAL_FOLLOW_DISTANCE = 5
-local ROYAL_PATH_FAILURE = 20
+-- THE FOLLOW ON THE SHARED NAVIGATION (Round 42 NV2, round42-plan.md rulings
+-- 4, 5 and 11). A leader that waits -- idle, at or on the way to his seat --
+-- is a fixed goal: the guard walks at him and, stuck, follows a found path to
+-- its end (mobs/grug_nav.lua `fixed_step`, as patrols and posts do). A leader
+-- that fights, chases or runs home is a moving target: the guard tracks him
+-- like a chaser its target (`combat_step` without giving up: a path is left
+-- when he moved 4 nodes from its planned end, when the straight line to him
+-- is walkable again, at its end) and runs, so it keeps up. The snap stays
+-- the last stage: ROYAL_SNAP_AFTER seconds stuck without a path put the
+-- guard on the leader, also while watched.
+local ROYAL_SNAP_AFTER = 20
+local nav = mobs.grug_nav
+local LEADER_FEET = {x = 0, y = 0, z = 0}
+
+-- A leader that is no fixed goal.
+local function leader_moving(lent)
+	return lent.attack ~= nil or lent.state == "attack"
+		or (lent.temp ~= nil and lent.temp.grug_evading ~= nil)
+end
 
 local function royal_guard_base_tick(base_tick, self, dtime)
 	-- Royal socket fields identify and claim the authored guard slot, but the
@@ -669,24 +687,58 @@ local function royal_guard_drop_attack(self)
 	end
 end
 
--- One step of an active follow between the 1 Hz nudges (Round 41 ruling 1).
--- do_states never runs while the follow owns the guard, so the walk clip is
--- re-asserted here on every step: walk_toward's own write can be held back by
--- the swing lock (mobs/api.lua set_animation) while a punch clip ends. A hit
--- taken since the last nudge (do_punch → do_attack) is dropped, and that drop
--- (stop_attack) stands the guard still in its stand clip; it walks on toward
--- the leader at once instead of standing until the next nudge.
-local function royal_follow_step(self)
-	if self.attack or self.state ~= "walk" then
-		royal_guard_drop_attack(self)
-		local leader = self._grug_home
-		local pos = self.object:get_pos()
-		if leader and pos then
-			grug_mobs.walk_toward(self, leader.x, leader.z, pos)
-			return
-		end
+-- The follow's navigation is the guard's own, with the leader as its target.
+local function forget_follow(self, leader)
+	local t = self.temp
+	t.grug_royal_follow_active, t.grug_royal_leader = nil, nil
+	t.grug_royal_stuck = nil
+	local nst = t.grug_nav
+	if nst and (nst.target == "royal_leader" or (leader and nst.target == leader)) then
+		nav.forget(t)
 	end
-	grug_mobs.walk_animation(self)
+end
+
+-- One step of an active follow, every server step (Round 41 ruling 1: do_states
+-- never runs while the follow owns the guard). A hit taken since the last step
+-- (do_punch → do_attack) is dropped and the guard walks on at once;
+-- walk_toward re-asserts the walk clip on every step, so a write the swing
+-- lock (mobs/api.lua set_animation) held back while a punch clip ended lands
+-- on the next.
+local function royal_follow_step(self, dtime, leader, lent, lpos, pos)
+	royal_guard_drop_attack(self)
+	local t = self.temp
+	local steer, speed
+	if leader_moving(lent) then
+		local dx, dz = lpos.x - pos.x, lpos.z - pos.z
+		steer = nav.combat_step(self, pos, dtime, leader, lpos,
+			math.sqrt(dx * dx + dz * dz), false, true)
+		speed = self.run_velocity
+	else
+		local box = lent._grug_cbox
+		LEADER_FEET.x, LEADER_FEET.z = lpos.x, lpos.z
+		LEADER_FEET.y = lpos.y + (box and box[2] or 0)
+		steer = nav.fixed_step(self, pos, dtime, LEADER_FEET, "royal_leader")
+	end
+	local p = steer or lpos
+	grug_mobs.walk_toward(self, p.x, p.z, pos, speed)
+	local v = self.object:get_velocity()
+	nav.command(self, pos, v and math.sqrt(v.x * v.x + v.z * v.z) or 0)
+	-- Stuck time: from the first stuck window to progress, paused while a
+	-- path is followed; a window in which the guard moved freely (running
+	-- after a leader far away) starts it again.
+	local nst = t.grug_nav
+	if not nst or (not nst.want and nst.fails == 0) or nst.seen == "free" then
+		t.grug_royal_stuck = nil
+	elseif not nst.path then
+		t.grug_royal_stuck = (t.grug_royal_stuck or 0) + dtime
+	end
+	if (t.grug_royal_stuck or 0) >= ROYAL_SNAP_AFTER then
+		-- Unlike ambient patrol snaps, this is encounter correction, not
+		-- travel: the guard must rejoin the authoritative king even while
+		-- watched, and never moves the king in response to its own failure.
+		grug_mobs.place_on_ground(self.object, lpos)
+		forget_follow(self, leader)
+	end
 end
 
 local function royal_guard_tick(base_tick, self, dtime, boss_id)
@@ -695,19 +747,25 @@ local function royal_guard_tick(base_tick, self, dtime, boss_id)
 	if result == false then return false end
 	if not self.object then return end
 	self.temp = self.temp or {}
-	self.temp.grug_royal_follow = (self.temp.grug_royal_follow or 0) + dtime
-	if self.temp.grug_royal_follow < 1 then
+	local t = self.temp
+	t.grug_royal_follow = (t.grug_royal_follow or 0) + dtime
+	if t.grug_royal_follow < 1 then
 		-- Returning false is the mobs_redo ownership boundary: while follow is
 		-- active, on_step must not run do_states or general_attack after this
 		-- callback and overwrite the kingward movement with an enemy chase.
-		if self.temp.grug_royal_follow_active then
-			royal_follow_step(self)
+		if t.grug_royal_follow_active then
+			local leader = t.grug_royal_leader
+			local lent = leader and leader:get_luaentity()
+			local lpos = lent and leader:get_pos()
+			local pos = self.object:get_pos()
+			if lpos and pos then
+				royal_follow_step(self, dtime, leader, lent, lpos, pos)
+			end
 			return false
 		end
 		return
 	end
-	local elapsed = self.temp.grug_royal_follow
-	self.temp.grug_royal_follow = 0
+	t.grug_royal_follow = 0
 	local pos = self.object:get_pos()
 	for _, ent in ipairs(royal_objects(self._grug_boss_id, 80, pos)) do
 		-- The encounter's leader: a king or a General.
@@ -717,39 +775,16 @@ local function royal_guard_tick(base_tick, self, dtime, boss_id)
 			local dx, dz = king_pos.x - pos.x, king_pos.z - pos.z
 			if dx * dx + dz * dz <=
 					ROYAL_FOLLOW_DISTANCE * ROYAL_FOLLOW_DISTANCE then
-				self.temp.grug_royal_follow_active = nil
-				self.temp.grug_royal_path_attempted = nil
-				grug_mobs.stall_clear(self)
+				forget_follow(self, ent.object)
 				return
 			end
-			self.temp.grug_royal_follow_active = true
-			royal_guard_drop_attack(self)
-			local stalled = grug_mobs.stall_clock(self, king_pos.x, king_pos.z,
-				pos, elapsed)
-			if stalled >= ROYAL_PATH_FAILURE then
-				if not self.temp.grug_royal_path_attempted then
-					self.temp.grug_royal_path_attempted = true
-					if grug_mobs.path_nudge(self, king_pos.x, king_pos.z, pos) then
-						return false
-					end
-				end
-				-- Unlike ambient patrol snaps, this is encounter correction, not
-				-- travel: the guard must rejoin the authoritative king even while
-				-- watched, and never moves the king in response to its own failure.
-				grug_mobs.place_on_ground(self.object, king_pos)
-				grug_mobs.stall_clear(self)
-				self.temp.grug_royal_follow_active = nil
-				self.temp.grug_royal_path_attempted = nil
-				return false
-			end
-			self.temp.grug_royal_path_attempted = nil
-			grug_mobs.walk_toward(self, king_pos.x, king_pos.z, pos)
+			t.grug_royal_follow_active = true
+			t.grug_royal_leader = ent.object
+			royal_follow_step(self, dtime, ent.object, ent, king_pos, pos)
 			return false
 		end
 	end
-	self.temp.grug_royal_follow_active = nil
-	self.temp.grug_royal_path_attempted = nil
-	grug_mobs.stall_clear(self)
+	forget_follow(self, t.grug_royal_leader)
 end
 
 for race, row in pairs(RACES) do

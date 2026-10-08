@@ -439,6 +439,10 @@ do
 	}
 	grug_mobs = {
 		walk_toward = function() nudges = nudges + 1 end,
+		-- The evade's walk home (patrol.lua walk_fixed, Round 42 NV2).
+		walk_fixed = function() nudges = nudges + 1; return 0 end,
+		walk_follow = function() end,
+		walk_clear = function() end,
 		idle_health_tick = function() end,
 		place_on_ground = function() end,
 		roam_avoid_tick = function() end,

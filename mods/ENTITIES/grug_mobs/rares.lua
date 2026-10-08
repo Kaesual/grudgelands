@@ -309,8 +309,10 @@ end)
 -- _grug_rare_id, so no normal mob ever enters this function).
 --
 -- The walk itself is grug_mobs.route_tick (patrol.lua) — the identical
--- movement the outpost patrols of WP6/T8 use; the rationale for not using
--- mobs_redo's go_to() lives there. The current waypoint index stays in the
+-- movement the outpost patrols of WP6/T8 use, on the shared navigation since
+-- Round 42 (a blocked rare finds its way round, and skips a waypoint it
+-- cannot reach; it is never snapped); the rationale for not using mobs_redo's
+-- go_to() lives there. The current waypoint index stays in the
 -- plain field `_grug_rare_wp`, so the route position survives unload/reload
 -- with the mob exactly as before.
 --

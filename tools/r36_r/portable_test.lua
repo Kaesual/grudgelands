@@ -25,8 +25,9 @@
 --   V  the void's damage: a share of the victim's own pool a second through
 --      grug_core's REAL node_pool_damage (about 9 s at any level), lava
 --      untouched; the void pulse: an evading or targetless boss never lands
---      a pulse it was winding up; a boss knocked off its way home drops the
---      route and asks again;
+--      a pulse it was winding up; an idle boss away from its spot walks back
+--      on the shared fixed walk (patrol.lua `walk_fixed`, Round 42), an
+--      evading one leaves the way home to the evade;
 --   R  leash and reset through the REAL aggro.lua: the boss is no free
 --      (damage-pursuit) mob, is dragged at most its own 24 nodes, then heals,
 --      forgets, clears its ledger and runs home untouchable, and is a normal
@@ -367,6 +368,14 @@ _G.grug_mobs = {
 	stamp_arrow_damage = noop,
 	root = noop,
 	walk_toward = function(self, x, z) self._walked_to = {x = x, z = z} end,
+	-- patrol.lua's fixed walk (Round 42 NV2; its own test is tools/r42_nv2).
+	walk_fixed = function(self, dtime, pos, x, y, z, key, owner)
+		self._walked_to = {x = x, z = z}
+		self._walk = {x = x, y = y, z = z, key = key, owner = owner}
+		return 0
+	end,
+	walk_follow = noop,
+	walk_clear = function(self, owner) self._walk_cleared = owner or true end,
 }
 dofile(mobs_dir .. "/guard.lua")
 dofile(mobs_dir .. "/bosses.lua")
@@ -689,13 +698,6 @@ do
 	check(combat:find("grug_core.node_pool_damage(reason", 1, true) ~= nil,
 		"V the central hp modifier applies it")
 
-	-- The real stall clock (patrol.lua), which the way home uses.
-	local patrol = read(mobs_dir .. "/patrol.lua")
-	local progress = patrol:match("\nlocal PROGRESS = ([%d%.]+)")
-	local clock_src = patrol:match("\n(function grug_mobs%.stall_clock%(.-\nend)\n")
-	local clear_src = patrol:match("\n(function grug_mobs%.stall_clear%(.-\nend)\n")
-	check(progress and clock_src and clear_src, "V the stall clock found")
-	assert(loadstring("local PROGRESS = " .. progress .. "\n" .. clock_src .. "\n" .. clear_src))()
 	-- The pulse.
 	local hits = 0
 	local real_hit = grug_mobs.boss_hit_players
@@ -731,17 +733,24 @@ do
 	eq(hits, 1, "V nor a boss that lost its target")
 	grug_mobs.boss_hit_players = real_hit
 
-	-- The route: a boss that does not move.
+	-- The way home: the shared fixed walk (Round 42 NV2).
 	boss.temp = {}
-	boss._walked_to = nil
+	boss._walk = nil
 	local home = boss._grug_home
 	boss.object.pos = {x = home.x + 12, y = home.y, z = home.z}
-	boss.temp.grug_rift_route = {i = 1, {x = home.x + 9, y = home.y, z = home.z},
-		{x = home.x + 5, y = home.y, z = home.z}}
 	tick(boss, 1)
-	check(boss._walked_to and boss._walked_to.x == home.x + 9, "V an idle boss follows its route")
-	for _ = 1, 4 do tick(boss, 1) end
-	eq(boss.temp.grug_rift_route, nil, "V knocked off it (no progress for 2 s): the route is dropped")
+	local w = boss._walk
+	check(w and w.owner == "rift" and w.key == "home" and w.x == home.x
+		and w.y == home.y and w.z == home.z, "V an idle boss walks home on the fixed walk")
+	boss._walk = nil
+	boss.temp.grug_evading = {started = 0}
+	tick(boss, 1)
+	eq(boss._walk, nil, "V an evading boss leaves its way home to the evade")
+	boss.temp.grug_evading = nil
+	boss._walk_cleared = nil
+	boss.object.pos = {x = home.x + 2, y = home.y, z = home.z}
+	tick(boss, 1)
+	eq(boss._walk_cleared, "rift", "V back at its spot the walk ends")
 end
 
 ------------------------------------------------------------------------------

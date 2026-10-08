@@ -838,8 +838,12 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   untouchable state, they may idle there anyway (Round 36 §2.14.2). Reset
   **outside** it they run back visibly at 1.5× run speed, untouchable and
   without reacquiring targets, and are a normal mob again as soon as they are
-  back inside the wander radius. A blocked return teleports home after about
-  40 seconds. Bound actors (camp members, guards, rares, bosses, royals) keep
+  back inside the wander radius. The run is a fixed walk (`world.md` §4a,
+  Round 42 ruling 10): an evader that moves less than 30 % of its speed
+  over 1 s searches a short local path to a point **6 nodes** toward home
+  (within 2 nodes of its height; home's direction first, then 20° and 40°
+  aside) and follows it; a return that is still blocked teleports home
+  after **40 seconds**, also in view. Bound actors (camp members, guards, rares, bosses, royals) keep
   their prior return threshold, their leash radius (25 for a camp member, 30
   for a guard, 40 by default), and end the run within about four nodes of
   home; patrollers and dragons never evade.
@@ -972,10 +976,12 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   bespoke no-leash actors (Kraken, royal guards), only drop the target (no
   heal, no royal encounter reset); the dragons and their whelps never give
   up and only wait: their arena edge ends the fight instead (`world.md` §4b,
-  Round 31). The patrol path nudge shares the budget and the negative
-  cache's waits (1, 2, 4, 8 s, then 8 s) but never gives anything up
-  (`mobs/grug_nav.lua`, `mobs/grug_obstacle.lua`, `grug_mobs/aggro.lua`
-  `give_up_target`).
+  Round 31). The fixed walks (patrols, posts, the royal follow, the evade;
+  `world.md` §4a) share the search, the budget and the negative cache's
+  waits (1, 2, 4, 8 s, then 8 s) but never give anything up: their own later
+  stages decide (`mobs/grug_nav.lua`, `mobs/grug_obstacle.lua`,
+  `grug_mobs/aggro.lua` `give_up_target`, `grug_mobs/patrol.lua`
+  `walk_fixed`).
   *Rationale, because the defect was invisible on paper*: the following
   pre-patch coordinates refer to commit `77261837` (2026-09-15). Vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
