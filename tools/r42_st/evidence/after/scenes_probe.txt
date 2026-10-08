@@ -1,0 +1,49 @@
+ACTION[Server]: [nv0] arena (2560,295,2560) - (2707,308,2939)
+ACTION[Server]: [nv0] forceloaded blocks: 480
+ACTION[Emerge-0]: [nv0] arena emerged in 4.7 s
+ACTION[Server]: [nv0] door lane 15 open -> true (doors:door_wood_c)
+ACTION[Server]: [nv0] arena built
+ACTION[Server]: [nv0] phase scenes
+ACTION[Server]: [nv0] batch post_guard
+ACTION[Server]: [nv0] door lane 15 open -> true (doors:door_wood_c)
+ACTION[Server]: [nv0] MOVER post_guard grug_mobs:guard_accord width=0.60 height=1.70 walk=1.2 run=4.6 step=1.1000000238419
+ACTION[Server]: [nv0] TRIAL post_guard  open        reached=true  walk t=11.14  min_d=0.96  fp=0 found=0 us=0 max=0 sm[] 
+ACTION[Server]: [nv0] TRIAL post_guard  trunk       reached=true  walk t=13.76  min_d=0.86  fp=1 found=1 us=33 max=33 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  trunk_near  reached=true  walk t=13.94  min_d=1.26  fp=1 found=1 us=21 max=21 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  row         reached=true  walk t=13.67  min_d=0.72  fp=1 found=1 us=25 max=25 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  doorway     reached=true  walk t=17.2   min_d=1.55  fp=1 found=1 us=48 max=48 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  lcorner     reached=true  walk t=20.01  min_d=0.89  fp=1 found=1 us=58 max=58 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  fence       reached=false      t=nil    min_d=4.43  fp=6 found=0 us=772 max=170 sm[nav_no_path=6 nav_stuck=2] 
+ACTION[Server]: [nv0] TRIAL post_guard  fence_low   reached=true  walk t=12.31  min_d=1.07  fp=1 found=1 us=10 max=10 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  pillar      reached=true  walk t=14.58  min_d=0.78  fp=1 found=1 us=42 max=42 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  ditch       reached=true  walk t=16.12  min_d=1.34  fp=1 found=1 us=74 max=74 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  step        reached=true  walk t=11.05  min_d=0.91  fp=0 found=0 us=0 max=0 sm[] 
+ACTION[Server]: [nv0] TRIAL post_guard  lowgap      reached=true  snap t=39.1   min_d=0     fp=6 found=6 us=139 max=58 sm[nav_rejected=6 nav_stuck=1] snap=1 teleport=1
+ACTION[Server]: [nv0] TRIAL post_guard  pond        reached=true  walk t=15.3   min_d=0.74  fp=1 found=0 us=154 max=154 sm[nav_no_path=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL post_guard  door_closed reached=true  walk t=12.77  min_d=0.75  fp=1 found=0 us=60 max=60 sm[nav_no_path=1 nav_stuck=1]  door_open_end=false
+ACTION[Server]: [nv0] TRIAL post_guard  door_open   reached=true  walk t=11.14  min_d=0.96  fp=0 found=0 us=0 max=0 sm[]  door_open_end=true
+ACTION[Server]: [nv0] BATCH post_guard steps=498 mob_us p50=69 p99=757 max=1278 fp_calls=22 fp_us=1436 slowest[7.6s:1278(top 282 grug_mobs:guard_accord walk/tracked) 9.78s:925(top 308 grug_mobs:guard_accord stand/tracked) 4.34s:837(top 410 grug_mobs:guard_accord stand/tracked)]
+ACTION[Server]: [nv0] wrote /tmp/grudgelands-headless.nv0-C5da7j/world/nv0_results.json (373722 bytes)
+ACTION[Server]: [nv0] batch villager
+ACTION[Server]: [nv0] door lane 15 open -> true (doors:door_wood_c)
+ACTION[Server]: [nv0] MOVER villager grug_mobs:villager_human width=0.60 height=1.70 walk=1.1 run=1.1 step=1.1000000238419
+ACTION[Server]: [nv0] TRIAL villager    open        reached=true  walk t=12.37  min_d=0.89  fp=0 found=0 us=0 max=0 sm[] 
+ACTION[Server]: [nv0] TRIAL villager    trunk       reached=true  walk t=14.54  min_d=0.82  fp=1 found=1 us=30 max=30 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    trunk_near  reached=true  walk t=15.63  min_d=0.83  fp=1 found=1 us=24 max=24 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    row         reached=true  walk t=14.54  min_d=0.82  fp=1 found=1 us=20 max=20 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    doorway     reached=true  walk t=18.51  min_d=0.53  fp=1 found=1 us=48 max=48 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    lcorner     reached=true  walk t=21.4   min_d=1.23  fp=1 found=1 us=68 max=68 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    fence       reached=false      t=nil    min_d=4.43  fp=3 found=0 us=387 max=131 sm[nav_no_path=3 nav_stuck=1] villager_next_spot=1
+ACTION[Server]: [nv0] TRIAL villager    fence_low   reached=true  walk t=13.55  min_d=0.99  fp=1 found=1 us=7 max=7 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    pillar      reached=true  walk t=16.8   min_d=0.99  fp=1 found=1 us=34 max=34 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    ditch       reached=true  walk t=17.34  min_d=1.6   fp=1 found=1 us=104 max=104 sm[nav_found=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    step        reached=true  walk t=12.37  min_d=0.89  fp=0 found=0 us=0 max=0 sm[] 
+ACTION[Server]: [nv0] TRIAL villager    lowgap      reached=false      t=nil    min_d=7.8   fp=3 found=3 us=44 max=18 sm[nav_rejected=3 nav_stuck=1] villager_next_spot=1
+ACTION[Server]: [nv0] TRIAL villager    pond        reached=true  walk t=16.8   min_d=0.99  fp=1 found=0 us=146 max=146 sm[nav_no_path=1 nav_stuck=1] 
+ACTION[Server]: [nv0] TRIAL villager    door_closed reached=true  walk t=13.55  min_d=0.94  fp=1 found=0 us=61 max=61 sm[nav_no_path=1 nav_stuck=1]  door_open_end=false
+ACTION[Server]: [nv0] TRIAL villager    door_open   reached=true  walk t=12.37  min_d=0.89  fp=0 found=0 us=0 max=0 sm[]  door_open_end=true
+ACTION[Server]: [nv0] BATCH villager steps=333 mob_us p50=29 p99=517 max=1119 fp_calls=16 fp_us=973 slowest[7.59s:1119(top 226 grug_mobs:villager_human walk/tracked) 10.84s:601(top 329 grug_mobs:villager_human stand/tracked) 5.42s:556(top 323 grug_mobs:villager_human stand/tracked)]
+ACTION[Server]: [nv0] wrote /tmp/grudgelands-headless.nv0-C5da7j/world/nv0_results.json (643996 bytes)
+ACTION[Server]: [nv0] phase scenes done in 78.4 s
+ACTION[Server]: [nv0] wrote /tmp/grudgelands-headless.nv0-C5da7j/world/nv0_results.json (643996 bytes)
+ACTION[Server]: [nv0] RESULT DONE
