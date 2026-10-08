@@ -107,6 +107,7 @@ assert(loadstring(scale_src))()
 
 dofile(ROOT .. "/mods/CORE/grug_core/tag_carrier.lua")
 dofile(ROOT .. "/mods/ENTITIES/grug_mobs/levels.lua")
+dofile(ROOT .. "/mods/ENTITIES/grug_mobs/npc_doors.lua")
 dofile(ROOT .. "/mods/ENTITIES/grug_mobs/patrol.lua")
 -- init.lua's ensure_tag_carrier, reduced to what the checks read.
 function grug_mobs.ensure_tag_carrier(self)

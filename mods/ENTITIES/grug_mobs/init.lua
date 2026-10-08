@@ -1042,6 +1042,8 @@ dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")
 -- Round 37 MP: liveness of the named rares and the dragons (MOC-01, MOC-03).
 dofile(modpath .. "/liveness.lua")
+-- Round 42 DR: settlement NPCs open, pass and close doors (before the walks).
+dofile(modpath .. "/npc_doors.lua")
 dofile(modpath .. "/patrol.lua")
 -- Round 42 NV3: the settlement route cache on the fixed walks.
 dofile(modpath .. "/routes.lua")

@@ -26,10 +26,18 @@
 --     "from the street" (a cached search). A street route that is no route
 --     (an end the search cannot join to its street, a detour of more than
 --     DETOUR times the straight line) falls back to the split straight leg.
+--   * THROUGH DOORS (Round 42 DR, ruling 15): a door is a wall to the
+--     engine, so a leg whose plain plan is spent tries DOOR PLANS
+--     (npc_doors.lua finds the doors near its ends at runtime): through one
+--     of the doors nearest to `to` (the end behind it), through one of
+--     those nearest to `from`, through both nearest. A door plan is "to the
+--     door" (searches to the cell in front of it), "through the door" (two
+--     corners: the door's centre, marked with the door, and the cell behind
+--     it; no search) and "from the door" (searches on). Each starts over
+--     from `from`; the first that gets through is the route.
 --   * A LEG WITH NO ROUTE IS REMEMBERED as such: the walker's later stage
 --     takes over at once (a villager's next spot, a patrol's next waypoint)
---     and nothing searches that leg again until the server restarts. Doors
---     are walls to the engine (DR builds the routes through them). A walker
+--     and nothing searches that leg again until the server restarts. A walker
 --     away from the leg's start walks to its goal as a plain fixed walk
 --     instead (with its own give-up). Unloaded is never "no route": a build
 --     waits until its candidates, ends and search box are loaded, and the
@@ -41,13 +49,16 @@
 --     skipped spot) takes the corner that ends the route segment nearest to
 --     it: walking there is the return to the route (ruling 5); one more than
 --     two nodes off and blocked is stuck within a second and searches its way
---     back to that corner.
+--     back to that corner. At a door corner it opens the door (within
+--     npc_doors.OPEN_REACH) and is steered every step until it stands behind
+--     it; the door is closed after it (npc_doors.settle, from walk_follow).
 --
 -- Kept in memory only (round42-plan.md §7: persisting is decided by the
 -- measurement; tools/r42_nv3). Settlements other than start towns and
 -- capitals have no cache: their walkers follow fixed targets (walk_fixed).
 --
 local nav = mobs.grug_nav
+local doors = grug_mobs.npc_doors
 local floor, ceil, sqrt, abs = math.floor, math.ceil, math.sqrt, math.abs
 
 local routes = {
@@ -78,7 +89,7 @@ function grug_mobs.route_settlement(key, kind, anchor)
 	settlements[key] = {kind = kind, anchor = {x = anchor.x, y = anchor.y,
 		z = anchor.z}, legs = {}, stats = {legs = 0, ok = 0, none = 0,
 		searches = 0, search_us = 0, max_us = 0, smooth_us = 0, corners = 0,
-		street_legs = 0, streets_us = 0}}
+		street_legs = 0, streets_us = 0, door_legs = 0}}
 end
 
 function grug_mobs.route_cached(key)
@@ -499,6 +510,7 @@ local function finish(set, entry, state)
 		st.ok = st.ok + 1
 		st.corners = st.corners + #entry.points
 		if entry.street then st.street_legs = st.street_legs + 1 end
+		if entry.doors then st.door_legs = st.door_legs + 1 end
 	else
 		st.none = st.none + 1
 		entry.points = nil
@@ -531,7 +543,48 @@ local function box_loaded(from, to)
 end
 
 --
--- One step of a pending leg's build: street steps at once, then at most one
+-- THE DOOR PLANS of a leg whose plain plans are spent: through each of the
+-- doors nearest to `b`, then each of those nearest to `a`, then through the
+-- nearest of both. The side of a door its end is on is the side that end
+-- lies on (a room behind a door lies behind its wall). "wait" while the
+-- area round an end is not loaded.
+--
+local function door_plans(a, b)
+	local da = doors.near(a)
+	if da == "wait" then return "wait" end
+	local db = doors.near(b)
+	if db == "wait" then return "wait" end
+	local plans = {}
+	for _, d in ipairs(db) do plans[#plans + 1] = {nil, d} end
+	for _, d in ipairs(da) do plans[#plans + 1] = {d, nil} end
+	if da[1] and db[1] and da[1].key ~= db[1].key then
+		plans[#plans + 1] = {da[1], db[1]}
+	end
+	return plans
+end
+
+-- A door plan's steps: to the door, through it ({door, behind}), on.
+local function door_steps(a, b, plan)
+	local steps, from = {}, a
+	local da, db = plan[1], plan[2]
+	if da then
+		local here, there = doors.sides(da, a)
+		split_steps(steps, from, here)
+		steps[#steps + 1] = {door = da, behind = there}
+		from = there
+	end
+	if db then
+		local here, there = doors.sides(db, b)
+		split_steps(steps, from, there)
+		steps[#steps + 1] = {door = db, behind = here}
+		from = here
+	end
+	split_steps(steps, from, b)
+	return steps
+end
+
+--
+-- One step of a pending leg's build: street and door steps at once, then at most one
 -- engine search, when the cap and the step's budget allow (the queue is
 -- keyed by the build). Nothing happens while a candidate, an end or the
 -- search box is not loaded: unloaded is "later", never "no route".
@@ -543,10 +596,22 @@ local function advance(set, entry)
 	local now = core.get_us_time()
 	if now < (job.wait_until or 0) then return end
 	local steps = job.steps
-	while job.i <= #steps and steps[job.i].street do
-		local corners = steps[job.i].street
-		for k = 2, #corners do entry.points[#entry.points + 1] = corners[k] end
-		job.from = corners[#corners]
+	while job.i <= #steps and (steps[job.i].street or steps[job.i].door) do
+		local s = steps[job.i]
+		local points = entry.points
+		if s.street then
+			for k = 2, #s.street do points[#points + 1] = s.street[k] end
+			job.from = s.street[#s.street]
+		else
+			-- Through the door: its centre (the door rides on the corner)
+			-- and the cell behind it; the cell in front ended the search.
+			local d = s.door
+			points[#points + 1] = {x = d.x, y = d.y, z = d.z,
+				door = {x = d.x, y = d.y, z = d.z, key = d.key}}
+			points[#points + 1] = {x = s.behind.x, y = s.behind.y, z = s.behind.z}
+			job.from = s.behind
+			entry.doors = (entry.doors or 0) + 1
+		end
 		job.i = job.i + 1
 	end
 	local step = steps[job.i]
@@ -560,7 +625,21 @@ local function advance(set, entry)
 			entry.points, entry.street = {}, nil
 			return
 		end
-		return finish(set, entry, "none")
+		-- Then the door plans, each from the start again.
+		if not job.door_plans then
+			local plans = door_plans(entry.a, entry.b)
+			if plans == "wait" then
+				job.wait_until = now + 1000000
+				return
+			end
+			job.door_plans, job.di = plans, 0
+		end
+		job.di = job.di + 1
+		local plan = job.door_plans[job.di]
+		if not plan then return finish(set, entry, "none") end
+		job.steps, job.i, job.fails = door_steps(entry.a, entry.b, plan), 1, 0
+		job.from, entry.points, entry.street, entry.doors = entry.a, {}, nil, nil
+		return
 	end
 	local body = job.body
 	local goal = step.to
@@ -583,7 +662,10 @@ local function advance(set, entry)
 		return
 	end
 	local steer
-	if from and to then
+	if from and to and from.x == to.x and from.y == to.y and from.z == to.z then
+		-- Already there (a leg that starts in front of its door).
+		steer = {from}
+	elseif from and to then
 		-- The engine reads unloaded nodes as walls: a search whose box is
 		-- not loaded waits, so no route is ever "none" for want of a load.
 		if not box_loaded(from, to) then
@@ -671,6 +753,22 @@ local function passed(c, pos)
 	return dx * dx + dz * dz < routes.CORNER_REACH * routes.CORNER_REACH
 end
 
+-- The door ahead of a walker on corner k (heading for it or for the cell in
+-- front of it), opened once it is near; true while it crosses (k is the
+-- door's corner or the cell behind it): it is then steered every step.
+local function door_ahead(self, points, k, pos)
+	local c, nxt = points[k], points[k + 1]
+	local d = c and c.door or (nxt and nxt.door)
+	doors.heading(self, d)
+	if c and c.door then
+		doors.approach(self, pos, c.door)
+		return true
+	end
+	return k > 1 and points[k - 1].door ~= nil
+end
+
+local ON_ROUTE = {route = true}
+
 --
 -- One decision of a leg walk, from its owner's once-a-second tick: walk leg
 -- (from, to) of settlement `key` as walk `owner` (`patrol`: a patrol, which
@@ -727,7 +825,10 @@ function grug_mobs.route_walk(self, dtime, pos, key, from, to, owner, patrol)
 	end
 	local c = leg.k == 0 and from or points[leg.k]
 	if leg.wk ~= leg.k then leg.wk, leg.wkey = leg.k, leg.key .. "#" .. leg.k end
-	return grug_mobs.walk_fixed(self, dtime, pos, c.x, c.y, c.z, leg.wkey, owner)
+	door_ahead(self, points, leg.k, pos)
+	-- A corner is the route's own: no door detour of the fixed walk.
+	return grug_mobs.walk_fixed(self, dtime, pos, c.x, c.y, c.z, leg.wkey, owner,
+		ON_ROUTE)
 end
 
 --
@@ -744,18 +845,25 @@ function grug_mobs.route_follow(self, dtime, owner)
 		local entry = leg.entry
 		if entry.state == "pending" then
 			advance(entry.set, entry)
-		elseif entry.state == "ok" and leg.k and leg.k < #entry.points then
+		elseif entry.state == "ok" and leg.k then
 			local pos = self.object:get_pos()
 			local points = entry.points
-			if pos and passed(leg.k == 0 and leg.from or points[leg.k], pos) then
+			if pos and leg.k < #points
+					and passed(leg.k == 0 and leg.from or points[leg.k], pos) then
 				leg.k = leg.k + 1
 				while leg.k < #points and passed(points[leg.k], pos) do
 					leg.k = leg.k + 1
 				end
 				grug_mobs.walk_clear(self, owner)
+				door_ahead(self, points, leg.k, pos)
 				local c = entry.points[leg.k]
 				grug_mobs.walk_toward(self, c.x, c.z, pos)
 				return
+			end
+			if pos and door_ahead(self, points, leg.k, pos) then
+				-- Through a doorway: no random turn into the frame.
+				local c = points[leg.k]
+				grug_mobs.walk_toward(self, c.x, c.z, pos)
 			end
 		end
 	end
@@ -767,7 +875,9 @@ end
 function grug_mobs.route_clear(self, owner)
 	local t = self.temp
 	local leg = t and t.grug_leg
-	if leg and (not owner or leg.owner == owner) then t.grug_leg = nil end
+	if leg and (not owner or leg.owner == owner) then
+		t.grug_leg, t.grug_door_next = nil, nil
+	end
 	grug_mobs.walk_clear(self, owner)
 end
 

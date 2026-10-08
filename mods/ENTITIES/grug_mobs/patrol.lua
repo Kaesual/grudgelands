@@ -157,7 +157,25 @@ end
 -- navigation) and the goal's feet position. Fliers never search (their walk
 -- stays the plain nudge), like in a fight.
 --
+-- THROUGH A DOOR (Round 42 DR, ruling 15). A door is a wall to the engine,
+-- so a settlement NPC's fixed walk whose search failed looks for a door
+-- (npc_doors.between: one near the walker or its goal whose wall stands
+-- between the two) and walks there as a DOOR DETOUR in place of its walk:
+-- to the cell in front of the door (a fixed walk, VIA_FAILS failed searches
+-- drop it), then over the door's centre to the cell behind it, steered
+-- every step and opening the door on the way (CROSS_TIME bounds it), then
+-- on to its goal. Each door is tried once per walk, at most VIA_DOORS of
+-- them. Only the walkers and the post guards (DOOR_WALKS) do this: never a
+-- fight, a camp, a wild mob, nor a walker on a cached route (routes.lua
+-- builds its doors into the route).
+--
 local nav = mobs.grug_nav
+local doors = grug_mobs.npc_doors
+local DOOR_WALKS = {amble = true, post = true}
+local VIA_FAILS = 2 -- failed searches toward the cell in front of the door
+local VIA_DOORS = 2 -- doors tried per walk
+local CROSS_REACH = 0.4 -- nodes: the door's centre and the cell behind passed
+local CROSS_TIME = 8 -- s: a crossing that takes longer is dropped
 
 -- The navigation call, the steer and what it commanded. Returns
 -- fixed_step's outcome.
@@ -199,17 +217,100 @@ local function standing_y(x, z, around_y)
 	return nil
 end
 
+-- The door detour is over (through, or given up): the walk it replaced
+-- starts again on the next decision; the doors it tried stay tried.
+local function drop_via(t, w)
+	t.grug_walk, t.grug_door_next = nil, nil
+	local nst = t.grug_nav
+	if nst and nst.target == w.key then nav.forget(t) end
+end
+
+-- A crossing step of door detour `w`: steer at the door's centre, then at
+-- the cell behind it, opening the door on the way. True when it is over
+-- (through, or given up after CROSS_TIME).
+local function cross(self, pos, w, dtime)
+	w.ct = w.ct + dtime
+	local t = self.temp
+	doors.approach(self, pos, w.door)
+	local c = w.centred and w.behind or w.door
+	local dx, dz = c.x - pos.x, c.z - pos.z
+	if dx * dx + dz * dz < CROSS_REACH * CROSS_REACH then
+		if w.centred then
+			drop_via(t, w)
+			return true
+		end
+		w.centred, c = true, w.behind
+	end
+	if w.ct > CROSS_TIME then
+		drop_via(t, w)
+		return true
+	end
+	grug_mobs.walk_toward(self, c.x, c.z, pos)
+	return false
+end
+
+-- One decision of a door detour (walk_fixed with the walk's own key).
+local function via_step(self, dtime, pos, w)
+	local t = self.temp
+	w.dt = w.dt + dtime
+	doors.heading(self, w.door)
+	if w.phase == "to" then
+		local dx, dz = w.x - pos.x, w.z - pos.z
+		if dx * dx + dz * dz >= CROSS_REACH * CROSS_REACH then
+			drive(self, w, pos)
+			local nst = t.grug_nav
+			local fails = nst and nst.target == w.key and nst.fails or 0
+			if fails >= VIA_FAILS then
+				-- Not even to the door: back to the walk, which counts on.
+				drop_via(t, w)
+			end
+			return fails
+		end
+		w.phase, w.ct = "cross", 0
+		local nst = t.grug_nav
+		if nst and nst.target == w.key then nav.forget(t) end
+	end
+	cross(self, pos, w, dtime)
+	return 0
+end
+
+-- A door detour for walk `w` (key `key`, owner `owner`) whose search
+-- failed, or nil.
+local function door_via(self, pos, w, key, owner)
+	local t = self.temp
+	local tried = t.grug_door_tried
+	if not tried or tried.walk ~= key then
+		tried = {walk = key, n = 0}
+		t.grug_door_tried = tried
+	end
+	if tried.n >= VIA_DOORS then return nil end
+	local feet = {x = pos.x, y = pos.y + mobs.grug_obstacle.mob_cbox(self)[2],
+		z = pos.z}
+	local d = doors.between(feet, w, tried)
+	if not d or d == "wait" then return nil end
+	tried[d.key], tried.n = true, tried.n + 1
+	local front, behind = doors.sides(d, feet)
+	doors.heading(self, d)
+	return {owner = owner, key = key .. "#door", main = key, dt = 0,
+		phase = "to", x = front.x, y = front.y, z = front.z, behind = behind,
+		door = {x = d.x, y = d.y, z = d.z, key = d.key}}
+end
+
 --
 -- One decision of a fixed walk, from its owner's once-a-second tick: walk
 -- toward (x, y, z), `y` the goal's feet height or nil when the goal is given
 -- in plan only (a route point, a post), as walk `key` of `owner`. `opts`:
--- fixed_step's search options (the evade's local point). Returns the failed
--- searches in a row of this walk.
+-- fixed_step's search options (the evade's local point); `opts.route`: a
+-- corner of a cached route (no door detour). Returns the failed searches in
+-- a row of this walk (of its door detour while it has one).
 --
 function grug_mobs.walk_fixed(self, dtime, pos, x, y, z, key, owner, opts)
 	self.temp = self.temp or {}
 	local t = self.temp
 	local w = t.grug_walk
+	if w and w.main == key and w.owner == owner and not self.fly then
+		return via_step(self, dtime, pos, w)
+	end
 	if not w or w.owner ~= owner or w.key ~= key then
 		w = {owner = owner, key = key, dt = 0}
 		t.grug_walk = w
@@ -240,7 +341,15 @@ function grug_mobs.walk_fixed(self, dtime, pos, x, y, z, key, owner, opts)
 	end
 	drive(self, w, pos)
 	nst = t.grug_nav
-	return nst and nst.target == key and nst.fails or 0
+	local fails = nst and nst.target == key and nst.fails or 0
+	if fails > (w.door_fails or 0) and DOOR_WALKS[owner]
+			and not (opts and opts.route) then
+		-- A new failure: is there a door between the walker and its goal?
+		w.door_fails = fails
+		local via = door_via(self, pos, w, key, owner)
+		if via then t.grug_walk = via end
+	end
+	return fails
 end
 
 --
@@ -250,9 +359,32 @@ end
 --
 function grug_mobs.walk_follow(self, dtime, owner)
 	local t = self.temp
+	if t and t.grug_door_open then
+		-- A door it opened: closed behind it once it is through.
+		local pos = self.object:get_pos()
+		if pos then doors.settle(self, pos) end
+	end
 	local w = t and t.grug_walk
 	if not w or w.owner ~= owner then return end
 	w.dt = w.dt + dtime
+	if w.phase and not self.attack
+			and (self.state == "stand" or self.state == "walk") then
+		-- A door detour: in front of the door it crosses (checked every
+		-- step, a once-a-second decision walks into the door).
+		local pos = self.object:get_pos()
+		if pos and w.phase == "to" then
+			local dx, dz = w.x - pos.x, w.z - pos.z
+			if dx * dx + dz * dz < CROSS_REACH * CROSS_REACH then
+				w.phase, w.ct = "cross", 0
+				local nst = t.grug_nav
+				if nst and nst.target == w.key then nav.forget(t) end
+			end
+		end
+		if pos and w.phase == "cross" then
+			cross(self, pos, w, dtime)
+			return
+		end
+	end
 	local nst = t.grug_nav
 	if not nst or nst.target ~= w.key or not (nst.path or nst.want)
 			or self.attack or (self.state ~= "stand" and self.state ~= "walk") then
@@ -269,7 +401,11 @@ function grug_mobs.walk_clear(self, owner)
 	local t = self.temp
 	local w = t and t.grug_walk
 	if not w or (owner and w.owner ~= owner) then return end
-	t.grug_walk = nil
+	t.grug_walk, t.grug_door_next = nil, nil
+	local tried = t.grug_door_tried
+	if tried and (tried.walk == w.key or tried.walk == w.main) then
+		t.grug_door_tried = nil
+	end
 	local nst = t.grug_nav
 	if nst and nst.target == w.key then nav.forget(t) end
 end

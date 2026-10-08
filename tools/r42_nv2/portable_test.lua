@@ -204,6 +204,7 @@ grug_mobs = {
 	idle_health_tick = noop,
 	roam_avoid_tick = noop,
 }
+dofile(repo .. "/mods/ENTITIES/grug_mobs/npc_doors.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/patrol.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/aggro.lua")
 
