@@ -1,11 +1,11 @@
 launcher: staged patch: patch_hook.diff
-seconds: 53, exit 0
+seconds: 52, exit 0
 joins: ['hero registered (protocol 52), stayed 4.0 s', 'bystander registered (protocol 52), stayed 4.0 s']
 --- log lines
-ACTION[Main]: [grug_core] world version 0.42.0 recorded for a new world
-ACTION[Main]: [grug_core] world version 0.42.0 (a new world), game 0.42.0: no migration step due
-ACTION[Main]: [r43_it_probe] phase w1_A_new: new_world=true from=0.42.0
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:34572.
+ACTION[Main]: [grug_core] world version 0.44.0 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.44.0 (a new world), game 0.44.0: no migration step due
+ACTION[Main]: [r43_it_probe] phase w1_A_new: new_world=true from=0.44.0
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32824.
 ACTION[Server]: hero [127.0.0.1] joins game. List of players: hero
 ACTION[Server]: [r43_it_probe] joined hero
 ACTION[Server]: [r43_it_probe] left hero

@@ -22,6 +22,8 @@ World 1 (SQLite player, auth and mod storage):
            character markers for hero)
   boot C   the world marker at load, hero's two markers in step order at
            its join, bystander untouched, the record bumped to the game's
+           (one patch version above the game's when the last declared step
+           is the game's own version: BUMP)
   reset    the record set to 0.41.4, map.sqlite deleted, the tool runs step
            0.41.5, grug_reset_world raised
   boot J   the map reset and the step's world part after the clears
@@ -35,6 +37,10 @@ World 2 (no character ever joins):
   boot H   a malformed record: refused; the tool refuses too
 PostgreSQL: pg_test.py in the container, on world 1's rows before and after
 its tool run.
+
+The declared steps (the declaration's `migrate` list, 0.44.0 on) lie above
+the test steps, so every tool run on a world before them runs them too, and
+the guard names them with the test steps (DECLARED; Round 44 lane MS).
 
 Prints a PASS/FAIL table, writes it with trimmed evidence to the evidence
 directory and exits 0 only when every check passed.
@@ -73,6 +79,30 @@ BOOT_TIMEOUT = 290
 DUE4 = ["0.41.1", "0.41.2", "0.41.3", "0.41.4"]
 ALL5 = DUE4 + ["0.41.5"]
 GAME = re.search(r"^version\s*=\s*(\S+)", (REPO / "game.conf").read_text(), re.M).group(1)
+DECLARED = json.loads((REPO / "tools" / "web_data" / "upgrade.json").read_text())["migrate"]
+
+
+def parsed(version):
+    return tuple(int(part) for part in version.split("."))
+
+
+def with_declared(test_steps, after="0.41.0"):
+    """The steps due on a world at `after`: the test steps and the declared
+    ones above it, in step order."""
+    return sorted(test_steps + [v for v in DECLARED if parsed(v) > parsed(after)], key=parsed)
+
+
+def steps_text(steps):
+    return ("step " if len(steps) == 1 else "steps ") + ", ".join(steps)
+
+
+# The last step a full tool run leaves as the record, and the game version a
+# compatible move from it goes to: the game's own, or, when the last declared
+# step is the game's version (no compatible move from an earlier version
+# exists), a disposable patch of the staged game.conf one patch above it.
+LAST = with_declared(DUE4)[-1]
+BUMP = GAME if parsed(LAST) < parsed(GAME) else "%d.%d.%d" % (
+    parsed(GAME)[0], parsed(GAME)[1], parsed(GAME)[2] + 1)
 
 results = []
 
@@ -229,7 +259,8 @@ def same_item(text, stack):
 
 def game_patch(run, extra):
     """A disposable patch of the staged game's minetest.conf (never the
-    repository's): the test hook, and the map reset when asked."""
+    repository's): the test hook, and the map reset when asked; "bump" also
+    gives the staged game.conf the version BUMP."""
     if extra in run.patches:
         return run.patches[extra]
     old = (REPO / "minetest.conf").read_text().splitlines(keepends=True)
@@ -238,8 +269,12 @@ def game_patch(run, extra):
     if extra == "reset":
         new += ["# The platform raises this for a map reset.\n", "grug_reset_world = 1\n"]
     path = run.work / ("patch_%s.diff" % extra)
-    path.write_text("".join(difflib.unified_diff(old, new, "a/minetest.conf",
-                                                 "b/minetest.conf")))
+    text = "".join(difflib.unified_diff(old, new, "a/minetest.conf", "b/minetest.conf"))
+    if extra == "bump" and BUMP != GAME:
+        conf = (REPO / "game.conf").read_text().splitlines(keepends=True)
+        bumped = [re.sub(r"^version\s*=.*", "version = " + BUMP, line) for line in conf]
+        text += "".join(difflib.unified_diff(conf, bumped, "a/game.conf", "b/game.conf"))
+    path.write_text(text)
     run.patches[extra] = path
     return path
 
@@ -253,9 +288,10 @@ class Boot:
 
 
 def boot(run, world, phase, known=None, joins=(), seed_storage=False, reset=False,
-         extra_args=(), timeout=BOOT_TIMEOUT):
+         extra_args=(), timeout=BOOT_TIMEOUT, bump=False):
     """One engine run of `world`. `known`: the test steps the game knows
-    (None: the hook stays off). Returns a Boot with rc, log, obs, joins."""
+    (None: the hook stays off); `bump`: the game at version BUMP. Returns a
+    Boot with rc, log, obs, joins."""
     plan = {"phase": phase, "joins": list(joins), "steps": known or [],
             "seed_storage": seed_storage}
     (world / "r43_it_plan.json").write_text(json.dumps(plan))
@@ -267,7 +303,8 @@ def boot(run, world, phase, known=None, joins=(), seed_storage=False, reset=Fals
     env.pop("KEEP", None)
     if known is not None:
         shutil.copy(HERE / "grug_test_migrations.lua", world / "grug_test_migrations.lua")
-        env["GAME_PATCH"] = str(game_patch(run, "reset" if reset else "hook"))
+        env["GAME_PATCH"] = str(game_patch(run, "reset" if reset else
+                                           "bump" if bump else "hook"))
     before = server_logs(run.root)
     out = run.work / ("launcher_%s.txt" % phase)
     started = time.monotonic()
@@ -420,9 +457,9 @@ def world1(run):
     before = dump(w1)
     b = boot(run, w1, "w1_B_refused", known=DUE4)
     check("guard", "a world crossing steps is refused (message names the steps and the tool)",
-          refused_with(b, "This world is at version 0.41.0 and needs the migration steps "
-                          "0.41.1, 0.41.2, 0.41.3, 0.41.4 before this game's version %s can "
-                          "start it" % GAME,
+          refused_with(b, "This world is at version 0.41.0 and needs the migration %s "
+                          "before this game's version %s can start it"
+                       % (steps_text(with_declared(DUE4)), GAME),
                        "back up the world and run the tool from the game's repository root: "
                        "python3 tools/migrate.py --world %s" % w1),
           "rc %d" % b.rc)
@@ -430,29 +467,32 @@ def world1(run):
 
     rc, ev = tool(run, "w1_check", w1, ",".join(DUE4), check_mode=True)
     done = last(ev)
-    check("steps", "tool --check: 0.41.0 (no record), four steps due, write access on all three",
+    check("steps", "tool --check: 0.41.0 (no record), four test steps and the declared ones "
+                   "due, write access on all three",
           rc == 0 and done.get("world_version") == "0.41.0" and done.get("record") is None
-          and done.get("new_world") is False and done.get("due") == DUE4
+          and done.get("new_world") is False and done.get("due") == with_declared(DUE4)
           and done.get("write_checked") == ["player", "auth", "mod_storage"],
           "exit %d %s" % (rc, json.dumps(done)))
     check("steps", "tool --check wrote nothing", dump(w1) == before)
     rc, ev = tool(run, "w1_check_shipped", w1, "-", check_mode=True, shipped=True)
-    check("steps", "tool (shipped command line, empty migrate list): nothing due",
-          rc == 0 and last(ev).get("due") == [] and last(ev).get("world_version") == "0.41.0")
+    check("steps", "tool (shipped command line): only the declared steps due",
+          rc == 0 and last(ev).get("due") == with_declared([])
+          and last(ev).get("world_version") == "0.41.0")
 
     rc, ev = tool(run, "w1_migrate", w1, ",".join(DUE4))
     kinds = [e.get("event") for e in ev]
-    check("steps", "tool: the four test steps ran in order",
-          rc == 0 and last(ev).get("applied") == DUE4 and kinds == ["start"] +
-          ["step_start", "step_done"] * 4 + ["done"]
-          and [e["step"] for e in ev if e.get("event") == "step_start"] == DUE4,
+    due = with_declared(DUE4)
+    check("steps", "tool: the four test steps and the declared ones ran in order",
+          rc == 0 and last(ev).get("applied") == due and kinds == ["start"] +
+          ["step_start", "step_done"] * len(due) + ["done"]
+          and [e["step"] for e in ev if e.get("event") == "step_start"] == due,
           "exit %d %s" % (rc, kinds))
     after = dump(w1)
     world_diff(run, "w1_tool_0.41.1-0.41.4", before, after)
     meta = player_meta(w1, "hero")
     store = storage(w1, "grug_probe_r43_it")
     check("steps", "tool: offline writes and markers are in the databases",
-          storage(w1, "grug_core").get("world_version") == "0.41.4"
+          storage(w1, "grug_core").get("world_version") == LAST
           and storage(w1, "grug_core").get("migrate_world:0.41.2") == "w-0.41.2"
           and meta.get("it:offline") == "0.41.1"
           and meta.get("grug_core:migrate:0.41.3") == "c-0.41.3"
@@ -466,18 +506,19 @@ def world1(run):
     snapshot(w1, run.work / "post_tool")
 
     # Boot C: the online work.
-    c = boot(run, w1, "w1_C_online", known=DUE4, joins=("hero", "bystander"))
+    c = boot(run, w1, "w1_C_online", known=DUE4, joins=("hero", "bystander"), bump=True)
     obs = c.obs or {}
     load = obs.get("load") or {}
     check("setup", "boot C: the server ran and both characters joined and left",
           c.rc == 0 and len(obs.get("joins") or []) == 2 and obs.get("leaves") == 2,
           "rc %d joins %s" % (c.rc, c.joins))
-    check("guard", "a compatible move (0.41.4, no step between) starts and bumps the record",
-          load.get("from") == "0.41.4" and load.get("new_world") is False
-          and storage(w1, "grug_core").get("world_version") == GAME
-          and ("world version %s recorded (was 0.41.4)" % GAME) in c.log)
-    check("steps", "game: the hook's unordered test steps are in step order",
-          load.get("steps") == DUE4, json.dumps(load.get("steps")))
+    check("guard", "a compatible move (%s to %s, no step between) starts and bumps the record"
+          % (LAST, BUMP),
+          load.get("from") == LAST and load.get("new_world") is False
+          and storage(w1, "grug_core").get("world_version") == BUMP
+          and ("world version %s recorded (was %s)" % (BUMP, LAST)) in c.log)
+    check("steps", "game: the hook's unordered test steps are in step order (with the declared)",
+          load.get("steps") == with_declared(DUE4), json.dumps(load.get("steps")))
     check("steps", "game: the offline mod-storage write and delete are seen at load",
           load.get("offline") == "0.41.1" and load.get("delete_me") == ""
           and load.get("keep") == "probe")
@@ -518,9 +559,10 @@ def world1(run):
             path.unlink()
     before = dump(w1)
     rc, ev = tool(run, "w1_reset_migrate", w1, ",".join(ALL5))
-    check("map reset", "on the emptied map the tool runs only the due step 0.41.5",
-          rc == 0 and last(ev).get("applied") == ["0.41.5"]
-          and storage(w1, "grug_core").get("world_version") == "0.41.5",
+    check("map reset", "on the emptied map the tool runs only the due steps (0.41.5 and the "
+                       "declared)",
+          rc == 0 and last(ev).get("applied") == with_declared(["0.41.5"], "0.41.4")
+          and storage(w1, "grug_core").get("world_version") == LAST,
           "exit %d %s" % (rc, json.dumps(last(ev))))
     world_diff(run, "w1_tool_0.41.5", before, dump(w1))
     j = boot(run, w1, "w1_J_reset", known=ALL5, reset=True)
@@ -531,9 +573,9 @@ def world1(run):
     cleared = [i for i, line in enumerate(lines) if re.search(r"map reset 1: cleared", line)]
     worked = [i for i, line in enumerate(lines) if "migration 0.41.5: the world's online work"
               in line]
-    check("map reset", "boot J started from 0.41.5 with the reset pending",
-          j.rc == 0 and load.get("from") == "0.41.5" and load.get("reset_pending") is True
-          and load.get("steps") == ALL5
+    check("map reset", "boot J started from %s with the reset pending" % LAST,
+          j.rc == 0 and load.get("from") == LAST and load.get("reset_pending") is True
+          and load.get("steps") == with_declared(ALL5)
           and load.get("reset_applied") == 1, "rc %d load %s" % (j.rc, json.dumps(load)))
     check("map reset", "the step's offline write and its world work (after every clear) are done",
           load.get("offline_reset") == "0.41.5"
@@ -567,24 +609,27 @@ def world2(run):
     done = last(ev)
     check("new world", "tool: a booted world without characters is existing (0.41.0, step due)",
           rc == 0 and done.get("new_world") is False and done.get("world_version") == "0.41.0"
-          and done.get("due") == one, "exit %d %s" % (rc, json.dumps(done)))
+          and done.get("due") == with_declared(one), "exit %d %s" % (rc, json.dumps(done)))
     e = boot(run, w2, "w2_E_refused", known=one)
     check("guard", "an existing world without characters is not taken for new: refused",
-          refused_with(e, "This world is at version 0.41.0 and needs the migration step 0.41.1 "
-                          "before", "python3 tools/migrate.py --world %s" % w2),
+          refused_with(e, "This world is at version 0.41.0 and needs the migration %s "
+                          "before" % steps_text(with_declared(one)),
+                       "python3 tools/migrate.py --world %s" % w2),
           "rc %d" % e.rc)
     check("new world", "game: the same world is existing too (no deadlock: refused, not new)",
-          refused_with(e, "needs the migration step 0.41.1") and dump(w2) == before)
+          refused_with(e, "needs the migration %s" % steps_text(with_declared(one)))
+          and dump(w2) == before)
     rc, ev = tool(run, "w2_migrate", w2, "0.41.1")
     check("new world", "tool: runs the step the game asked for",
-          rc == 0 and last(ev).get("applied") == one
-          and storage(w2, "grug_core").get("world_version") == "0.41.1",
+          rc == 0 and last(ev).get("applied") == with_declared(one)
+          and storage(w2, "grug_core").get("world_version") == with_declared(one)[-1],
           "exit %d %s" % (rc, json.dumps(last(ev))))
-    f = boot(run, w2, "w2_F_after_tool", known=one)
+    f = boot(run, w2, "w2_F_after_tool", known=one, bump=True)
     load = (f.obs or {}).get("load") or {}
     check("new world", "game: starts after the tool and bumps the record",
-          f.rc == 0 and load.get("from") == "0.41.1" and load.get("offline") == "0.41.1"
-          and storage(w2, "grug_core").get("world_version") == GAME, "rc %d" % f.rc)
+          f.rc == 0 and load.get("from") == with_declared(one)[-1]
+          and load.get("offline") == "0.41.1"
+          and storage(w2, "grug_core").get("world_version") == BUMP, "rc %d" % f.rc)
 
     major, minor = (int(part) for part in GAME.split(".")[:2])
     newer = "%d.%d.0" % (major, minor + 1)
