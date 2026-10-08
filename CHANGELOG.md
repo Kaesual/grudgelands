@@ -18,8 +18,9 @@ Creatures, guards and townsfolk find their way instead of getting stuck.
 Existing worlds play on: no map reset, no new world.
 
 - Creatures in a fight come round a tree, a row of trees, a pillar or a
-  wall corner and find the doorway in a wall; large ones such as bears
-  too. A fleeing player is no longer chased along an old detour.
+  wall corner and find the doorway in a wall. Large ones such as bears get
+  round a single tree, a pillar or a corner and give up where only a
+  narrow way leads on. A fleeing player is no longer chased along an old detour.
 - A creature that cannot reach you, for example behind a fence, gives up
   after a few seconds even when it can see you, heals and goes back. It
   leaves you alone until you have moved about eight blocks or 15 seconds

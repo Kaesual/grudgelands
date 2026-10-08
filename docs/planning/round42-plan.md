@@ -519,8 +519,9 @@ on 2026-10-08); it contains every Round 42 lane up to ST under the version
 
 Reviews, each by an independent Opus:
 
-- **NV0** MERGE; three Lows (two in the calibration text, one in the tool
-  docs) handled by the coordinator (`7e43bbc9`).
+- **NV0** MERGE; three Lows: the tool-docs Low fixed by the coordinator
+  (`7e43bbc9`), the two calibration-text Lows taken into ruling 18 and
+  NV1's brief.
 - **NV1** MERGE AFTER FIXES; one Medium (the walkable-line test ignored
   the goal's height, so a target on a balcony read as straight-walkable)
   and two Lows, fixed by the lane (`369a395e`).
@@ -601,8 +602,8 @@ are comparisons, never targets.
   rift boss's way home (its own route code 61 → 22 lines) and the named
   rares' routes on the shared follower; `stall_clock` → `path_nudge`
   replaced on these callers; the later stages of ruling 22. Post guard:
-  trunks and row 37–44 → 14–20 s; doorway, L-corner, ditch, fence_low and
-  pond now reached. Royal guard: trunk, row, doorway, L-corner and pillar
+  trunks and row 37–44 → 14–20 s; doorway 44.1 → 21.6 s; L-corner, ditch,
+  fence_low and pond now reached. Royal guard: trunk, row, doorway, L-corner and pillar
   walked in 12–18 s instead of a snap after 27–28 s. Batch searches 89 →
   25 (post guard) and 8 → 19 (royal guard), largest search 595 → 161 µs
   and 254 → 68 µs. Fixture `r42_nv2` 107 checks.
@@ -705,7 +706,7 @@ use (26). The coordinator's defaults (§2) stand. The fixture-run rule of
 ### Deviations from the plan
 
 - **NV1 grew `mods/` instead of shrinking it:** §3.4 estimated 300–450
-  new lines and a net reduction; NV1 brought `grug_nav.lua` (791 lines at
+  new lines and a net reduction; NV1 brought `grug_nav.lua` (793 lines at
   its merge, with the fixed-walk interface the later lanes use) and
   `mods/` grew by 266 lines in its merge; the user kept the size (ruling
   21). The route cache (ruling 23) and the doors added most of the round's

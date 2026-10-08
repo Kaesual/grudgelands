@@ -775,8 +775,8 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 41 (0.41.0, `a3790e65` and lane D;
-  not pushed) on top of Round 40 (pushed 2026-10-06) and its follow-up
+- **Latest game:** main carries Round 42 (0.42.0, `f8265d60` and lane D;
+  not pushed) on top of Round 41 (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
   Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
   2026-10-06), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 29
@@ -854,9 +854,9 @@ Updated 2026-10-08. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** every round up to Round 40 and its follow-up
-  0.40.1 is pushed (origin/main `7d8b79d9`, 2026-10-07); Round 41 is
-  local. The production server runs 0.40.0.
+- **Remote observation:** origin/main is `71f777e2` (pushed 2026-10-08):
+  every round up to Round 41 and the Round 42 lanes up to ST, still under
+  the version 0.41.0; 0.42.0 (lane CL and lane D) is local.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md); no public release
