@@ -530,6 +530,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   out of `grug_abilities/init.lua`); `page_bytes.lua [repo]` prints the
   talent and skill pages' formspec bytes (before: a `git archive` export of
   the older tree as `repo`).
+  `r44_ar`: `paint_art.py` (Python 3 with Pillow) paints the map and
+  trainer art (trainer icons, baked map icons with their 6 × 6 minimap
+  drawings, the pixel font, the crosshair and the ring) in three variants
+  A, B and C with a contact sheet each under `variants/`; `--install`
+  also copies the user's picks (`PICKS`: A for every file, the font from
+  C) to `mods/PLAYER/grug_map/art/` and `textures/`, and `--check` (with
+  `--install`, also the installed files) verifies them without writing.
+  After an install, rerun `r44_mb/gen_baked_art.py`.
   `r44_mb`: `gen_baked_art.py [--art DIR]
   [--check]` turns the baked map icons and the pixel font
   (`mods/PLAYER/grug_map/art/`) into `mods/PLAYER/grug_map/baked_art.lua`

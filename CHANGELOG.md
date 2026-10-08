@@ -12,6 +12,78 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.44.0 — Round 44, "Inventory, map and quickbar" (2026-10-09)
+
+A new inventory window, a map window with the quest log on Z and a
+quickbar on E. **Migration** needed: the server's host runs the migration
+tool once on the stopped world (last point below). No map reset, no new
+world.
+
+- **One window with fixed tabs:** Inventory, Character, Talents & Skills,
+  Crafting, Party & PvP, Help and Map. Inventory is the first page; the
+  tab you last used stays selected when you reopen it. The Bags, Skills, Quests and PvP tabs are
+  gone; what they held moved as below.
+- **One inventory:** the Inventory tab shows four bag slots, the potion
+  belt, the coin deposit and a Sort button above one scrolling grid of
+  everything you carry, every bag included, with the hotbar below. A bag
+  can go inside another bag. Swapping a bag for a larger one keeps its
+  contents; taking a full bag out or swapping it for a smaller one moves
+  the contents into free slots, or is refused when there is no room. Sort
+  puts weapons, trinkets, armour, then arrows, food and potions, then the
+  rest in order and merges stacks; it never touches the hotbar.
+- **New items fill your bags before the hotbar:** pickups, loot, quest
+  rewards, dug blocks and purchases go into the rows above the hotbar and
+  the bags first, so a slot you keep free for a skill stays free; a stack
+  already on the hotbar still grows. A Scout shoots arrows from any bag.
+- **The potion belt** holds four potions or elixirs to drink from the
+  quickbar.
+- **The Character tab** has a box with five views: your character in 3D
+  with the cloak picker (the default), Stats with your money and Withdraw,
+  Effects, Achievements and Professions. Beside it every equipment slot is
+  named for your class, a Scout's quiver sits with them, and Return home is
+  there in every view. Shift-click puts gear into its slot (or swaps it)
+  and back into your bags, and arrows into the quiver and out.
+- **Talents & Skills:** both talent trees side by side with their chain
+  names and lines between the talents; click a talent to learn a rank or to
+  see why it is locked. Your skills sit in one row below. Skills now live
+  only on the hotbar: drag one onto it, drag it back onto its icon to put
+  it away. A skill a new talent unlocks goes onto a free hotbar slot, or
+  waits in the row when the hotbar is full.
+- **Party & PvP** is one tab: the party above, the PvP flag button and your
+  PvP record below. Help and the welcome window name the new tabs and
+  keys, with notes for players who changed the Aux1 key.
+- **The map window** opens with `Z` or the Map tab and fills most of the
+  screen, with your quest log beside the map: Quest HUD, Track on HUD and
+  Abandon. Pick a quest to see its targets: a red crosshair on a leader or
+  a place, rings on the nearest areas where its creatures live, also in
+  the other faction's land. The map shows you and your party, your home,
+  waystones, your faction's trainers with their profession icons and
+  services, and a `?` where you hand in the quests you have; the minimap
+  keeps `!` and `?`. The minimap switch moved here. The map no longer
+  refreshes every two seconds, only when something changes. `Z` no longer
+  zooms the view.
+- **A pixel-art map:** settlements, fortresses, camps, mines, dens, kings
+  and dragons are drawn into the map as small pixel icons, the other
+  faction's places included, and region names in a pixel font; the
+  minimap shows small versions of the icons. The zone markers are gone.
+  The map's download at normal quality grows by about 0.9 MB.
+- **The quickbar on `E`:** your mounts and boats (a button for every tier
+  you own; click the one you ride to get off), the potion belt (click to
+  drink, with the shared cooldown) and Return home. A click acts and
+  closes it. Mounts are no longer items: the riding trainer and the
+  Shipwright tell you "Press E to open your mounts."
+- **This release has a migration step** (for the server's host): stop the
+  server, back the world up, run
+  `python3 tools/migrate.py --world <world directory>` from the new
+  version's checkout, then start it
+  ([updating a hosted world](README.md#play-with-luanti)). The step removes
+  the old mount items and every skill outside the hotbar from all
+  characters, offline ones included; owned mounts stay and are in the
+  quickbar, and a removed skill can be dragged from Talents & Skills again.
+  A 0.43 world started without the tool is refused with a message naming
+  the command. No map reset: the map image is drawn anew once at the first
+  start.
+
 ## 0.43.0 — Round 43, "World migrations" (2026-10-08)
 
 Groundwork so that later versions can change how characters are saved

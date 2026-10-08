@@ -12,15 +12,18 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 43 (world migrations; 0.43.0, compatible) is
-complete on main ([plan](docs/planning/round43-plan.md)): the migration
-tool, the world version record and the start guard, with an empty
-`migrate` list. origin/main is `332c5e79` (0.42.0, pushed by the user on
-2026-10-08); 0.43.0 is not pushed. Rounds 25–35 count as GUI-accepted (the
-user, 2026-10-05), Round 39 too (2026-10-06), Round 42's playtest was
-accepted (2026-10-08); the GUI tests of Rounds 36–38, 40, 41 and 43 are
-open. Next: the user's push of 0.43.0; Round 44 (UI rework) merges to main
-only after it, then Round 45 (crafting). Details: [STATUS](docs/STATUS.md).
+**Current state:** Round 44 (inventory, map and quickbar; 0.44.0,
+**migrate**) is complete ([plan](docs/planning/round44-plan.md)): the new
+window and tabs, one inventory with bags and Sort, the map window on Z,
+the quickbar on E, and the first declared migration step (mount items and
+skills outside the hotbar removed offline). origin/main is `9dc2fad5`
+(0.43.0, pushed on 2026-10-09 by the coordinator on the user's request);
+0.44.0 is not pushed and may wait on the platform's step runner. Rounds
+25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
+(2026-10-06), Round 42's playtest was accepted (2026-10-08); the GUI tests
+of Rounds 36–38, 40, 41, 43 and 44 are open. Next: Round 44's GUI test and
+push decision; Round 45 (crafting) merges after Round 44. Details:
+[STATUS](docs/STATUS.md).
 
 ## Language rules
 
@@ -326,9 +329,9 @@ The topic rules below name the one path to use; the
 - **Particles** are welcome, but the total at once stays in the **hundreds,
   never thousands** (the web build); every spawner has a bounded amount and
   lifetime. Effect briefs name the budget; reviews check it.
-- **World-folder caches** (world layouts, region maps, the Map tab's zone grid)
-  share the key `grug_mapgen.wp40.world_key` plus a digest of their builders'
-  files; a new input joins the key; any failure rebuilds, never stops the load.
+- **World-folder caches** (world layouts, region maps) share the key
+  `grug_mapgen.wp40.world_key` plus a digest of their builders' files; a new
+  input joins the key; any failure rebuilds, never stops the load.
 - **Mob per-step code:** A* only inside the per-step budget, no
   `get_properties()` (`self._grug_cbox`), spawn rows only through the three
   merged spawn ABMs. **Quest state** is cached decoded: never write into a table
