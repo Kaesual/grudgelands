@@ -14,9 +14,10 @@
 --     per-step A* budget and the global cap (nav.claim_search), each bounded:
 --     padding 6 (never below 2) and no piece longer than SPLIT nodes -- a
 --     longer leg is split at intermediate standable points on the straight
---     line (or beside it, when the point on it is no place to stand). At most
---     MAX_SEARCHES searches per leg; while it builds, the walker walks
---     straight at its goal.
+--     line (or beside it, when the point on it is no place to stand). A leg
+--     whose searches fail MAX_FAILS times is spent (a street plan falls back
+--     to the straight one once); while it builds, the walker walks straight
+--     at its goal.
 --   * CAPITAL PATROLS RUN OVER THE STREETS (ruling 14): a patrol leg longer
 --     than nav.MAX_LEG whose two ends each lie within STREET_REACH of a street
 --     is "to the street" (a cached search), along the streets (the planner's
@@ -47,7 +48,7 @@ local floor, ceil, sqrt, abs = math.floor, math.ceil, math.sqrt, math.abs
 
 local routes = {
 	SPLIT = 24, -- nodes: a longer straight piece is split
-	MAX_SEARCHES = 6, -- engine searches one leg may spend
+	MAX_FAILS = 4, -- failed engine searches that spend a leg's plan
 	STREET_REACH = 24, -- nodes from a patrol point to its street
 	STREET_RISE = 6, -- nodes of height between them
 	STREET_DEV = 1, -- nodes a street corner line may leave the centreline
@@ -503,10 +504,10 @@ local function advance(set, entry, temp)
 	end
 	local step = steps[job.i]
 	if not step then return finish(set, entry, "ok") end
-	if job.searches >= routes.MAX_SEARCHES then
+	if job.fails >= routes.MAX_FAILS then
 		-- A street plan that ran out falls back to the straight leg once.
 		if steps.street and not job.fallback then
-			job.fallback, job.searches = true, 0
+			job.fallback, job.fails = true, 0
 			job.steps, job.i, job.from = {}, 1, entry.a
 			split_steps(job.steps, entry.a, entry.b)
 			entry.points, entry.street = {}, nil
@@ -520,7 +521,7 @@ local function advance(set, entry, temp)
 		goal = split_point(body, step.split, step.skip or 0)
 		if not goal then
 			-- No candidate left: the plan is spent.
-			job.searches = routes.MAX_SEARCHES
+			job.fails = routes.MAX_FAILS
 			return
 		end
 	end
@@ -539,14 +540,14 @@ local function advance(set, entry, temp)
 		st.search_us = st.search_us + (t1 - t0)
 		if t1 - t0 > st.max_us then st.max_us = t1 - t0 end
 	end
-	job.searches = job.searches + 1
 	if not steer then
 		-- A split point gets its next candidate; a fixed end has none, so
 		-- the plan is spent (a street plan falls back once, above).
+		job.fails = job.fails + 1
 		if step.split then
 			step.skip = (step.skip or 0) + 1
 		else
-			job.searches = routes.MAX_SEARCHES
+			job.fails = routes.MAX_FAILS
 		end
 		return
 	end
@@ -567,7 +568,7 @@ local function entry_of(set, body, a, b, patrol)
 	local steps = plan(set, a, b, patrol)
 	entry = {state = "pending", key = key, set = set, a = a, b = b, points = {},
 		street = steps.street,
-		job = {steps = steps, i = 1, searches = 0, body = body,
+		job = {steps = steps, i = 1, fails = 0, body = body,
 			from = {x = a.x, y = a.y, z = a.z}}}
 	-- The body's cell rules only; the walker itself is not kept. Its sides
 	-- get SMOOTH_MARGIN more room: the line test samples every half node, and

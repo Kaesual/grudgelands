@@ -582,7 +582,7 @@ Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
   engine search at a time inside the A* budget and the global search cap,
   each search bounded (padding 6, no piece longer than 24 nodes: a longer leg
   is split at standable points on the straight line, or up to 6 nodes beside
-  it), smoothed and kept as corner points; at most six searches per leg.
+  it), smoothed and kept as corner points; four failed searches spend a leg.
   While a leg is built the walker walks straight at its goal. A leg with no
   route is remembered as such and the walker's next stage takes over at once
   (the next spot; a patrol's next waypoint), so nothing searches it again.

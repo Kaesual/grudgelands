@@ -11,7 +11,8 @@
 --   C  the cache: a leg is searched on first use and reused by the next
 --      walker (no second search); a leg with no route is remembered (no
 --      search storm) and the walker takes its next spot at once; a long leg
---      is split (no search longer than 32 nodes, padding 6); a split point
+--      is split (no search longer than 32 nodes, padding 6), into as many
+--      pieces as it takes (failures spend a plan, not pieces); a split point
 --      on an obstacle moves beside the line; legs are per body class;
 --   S  capital patrols over the streets: a long leg is "to the street"
 --      (a search), the street corners, "from the street" (a search); a leg
@@ -426,7 +427,7 @@ do
 	st = grug_mobs.route_cache_stats(town3)
 	check(st.none == 1 and m._grug_idle_spot == 3, "C3 no route: the next spot at once")
 	local calls = #find_calls
-	check(calls >= 1 and calls <= routes.MAX_SEARCHES, "C3 ...after a bounded build: " .. calls)
+	check(calls >= 1 and calls <= routes.MAX_FAILS, "C3 ...after a bounded build: " .. calls)
 	t = run(m, 30, arrived)
 	check(t ~= nil, "C3 ...which is reached")
 	calls = #find_calls
@@ -447,6 +448,17 @@ do
 	check(#find_calls >= 3 and longest_call() <= routes.SPLIT + 0.01 and all_padded(),
 		"C4 ...in pieces of at most " .. routes.SPLIT .. " nodes, padding 6 (" ..
 		#find_calls .. " searches, longest " .. longest_call() .. ")")
+	-- C4b a leg of many pieces: failures, not pieces, spend a plan.
+	fresh()
+	local town4b = new_settlement("start")
+	fill(80, 1, -4, 80, 2, 4, "stone")
+	spots = {spot(0, 0), spot(170, 0)}
+	m = walker(0, 0, town4b, spots, 2)
+	m._grug_idle_from = 1
+	t = run(m, 240, arrived)
+	st = grug_mobs.route_cache_stats(town4b)
+	check(t ~= nil and st.ok == 1 and st.searches >= 8,
+		"C4b a 170-node leg in " .. st.searches .. " pieces is walked")
 	-- C5 a split point on a pillar: the candidate beside the line.
 	fresh()
 	local town5 = new_settlement("start")
