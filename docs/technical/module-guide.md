@@ -1430,11 +1430,14 @@ tools](#player-meta-read-by-external-tools).
   `data.py` (the step's `World`: characters, meta, inventories, positions,
   auth and privileges, mod storage, markers, `raw(kind)`, the limit checks),
   `codec.py` (`serialize`/`deserialize`, JSON, `ItemStack`), `steps/`
-  (`v<major>_<minor>_<patch>.py`, none yet). Python 3.13, standard library;
-  `psycopg` 3 imported only for PostgreSQL. Unit tests:
-  `tools/r43_mt/test_migrate.py` (the container run
-  `tools/r43_mt/container_test.sh`); end to end with the engine:
-  `tools/r43_it/run.sh`.
+  (`v<major>_<minor>_<patch>.py`; `v0_44_0.py`, the first, removes mount
+  items and skills outside the hotbar, [upgrade contract](upgrade-contract.md)
+  §5.8). Python 3.13, standard library; `psycopg` 3 imported only for
+  PostgreSQL. Unit tests: `tools/r43_mt/test_migrate.py` (the container run
+  `tools/r43_mt/container_test.sh`; against a copy of the declaration with
+  an empty `migrate` list); end to end with the engine:
+  `tools/r43_it/run.sh` (the mechanism) and each step's own test
+  (`tools/r44_ms/run.sh` for 0.44.0).
 
 ## Fishing
 

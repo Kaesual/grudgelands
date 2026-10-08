@@ -37,7 +37,7 @@ What a change needs:
 |---|---|
 | Nothing saved changes meaning | compatible |
 | World generation, or map-bound state (§3.2) the new code cannot read | map reset |
-| A removed item: a step replaces or removes it in inventories, offline characters included (items in node inventories on the map need the deferred map part, Round 43 ruling 4) | migrate |
+| A removed item: a step replaces or removes it in inventories, offline characters included (items in node inventories on the map need the deferred map part, Round 43 ruling 4); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
 | Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
@@ -62,7 +62,7 @@ declaration follows from them.
 which added the `migrate` list of the platform's migration contract):
 
 ```json
-{"schema": 2, "version": "0.43.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": []}
+{"schema": 2, "version": "0.44.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0"]}
 ```
 
 - `version` equals `game.conf`'s `version`. Versions are
@@ -89,7 +89,9 @@ which added the `migrate` list of the platform's migration contract):
   (it crosses 0.40.1, which changed world generation; Round 41's own mapgen
   fix is covered by the same reset). No history before 0.40.0 is audited.
 - 0.43.0 ships the migration foundation alone, with an empty `migrate` list
-  (Round 43 ruling 2); the first real step comes in a later version.
+  (Round 43 ruling 2); 0.44.0 declares the first real step (§5.8). The
+  platform adopts a version with a real step only once its runner is in
+  production (Round 44 ruling 3).
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the
@@ -189,7 +191,8 @@ state never crash; they are ignored or dropped:
 ## 5. Migrations
 
 Round 43 built the mechanism ([round 43 plan](../planning/round43-plan.md),
-completion with the platform summary); 0.43.0 declares no step yet. The
+completion with the platform summary); 0.43.0 declared no step, 0.44.0 the
+first (§5.8). The
 tool's interface in full (every event and its fields, every refusal and
 failure reason) is owned by
 [tools/README.md "The migration tool"](../../tools/README.md#the-migration-tool);
@@ -343,9 +346,10 @@ skip its due steps.
 - **Each declared step has its test** (contract R8): a minimal world at the
   previous version, the step, a headless boot of the new version on the
   result, then the checks, its online work at load and at a join included.
-  Round 43's integration suite `tools/r43_it/run.sh` is the pattern (it
-  assumes an empty `migrate` list; the round of the first real step adapts
-  it).
+  Round 43's integration suite `tools/r43_it/run.sh` is the pattern; its
+  test steps lie below the declared ones, so its tool runs and guard
+  messages include the declaration's `migrate` list (since 0.44.0). The
+  step 0.44.0's test is `tools/r44_ms/run.sh` (§5.8).
 - Whenever `tools/migrate.py` or `tools/migration/` changes, the test of
   **every** declared step runs in the `debian:trixie` container (older steps
   run on the shared helpers); the tool's unit tests are
@@ -361,3 +365,15 @@ skip its due steps.
     the guard and the runner;
   - the tool: `migration.cli.main(argv, test_steps={version: module})`.
 
+
+### 5.8 The declared steps
+
+| Step | What it does | Online work | Test |
+|---|---|---|---|
+| 0.44.0 (Round 44, the UI rework) | For every character, offline ones included: every mount item leaves every list, every skill every list but the hotbar (`main` slots 1–8); nothing else changes, the purchased mounts stay in player meta (`grug_mounts:*_tier`) and the quickbar reads them; a character's inventory is written only when something goes. No map part: no mount item or skill can enter a node or detached inventory (`grug_skills/bound_items.lua`), a dropped one is deleted | none | `tools/r44_ms/run.sh`: unit tests, then a 0.43.0 world built by the 0.43.0 game, the shipped tool in the runner's container, a boot and joins of 0.44.0 |
+
+The 0.44.0 step identifies the items by the 0.43.0 game's names, frozen in
+the step: a skill is any item of `grug_abilities` (`grug_abilities:<id>`,
+registered only by `register_ability`), a mount item one of the six tier
+items of `grug_mounts/catalog.lua`; its end-to-end test proves both against
+the registrations of a running 0.43.0 game.
