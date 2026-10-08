@@ -32,6 +32,13 @@
 --      20 s without a path the guard is snapped to him, also while watched;
 --   B  the rift boss: idle, it walks back to its spot round an obstacle;
 --      evading, it leaves the way home to the evade;
+--   F  review fixes: a walker heading freely for a goal beyond 32 nodes ends
+--      its stuck episode (no failures pile up, no skip); a royal guard
+--      running after a fighting leader far away is never "stuck"; the
+--      ground of a route point without y is the floor nearest the walker
+--      (under a lintel, not on it) and start-town route points carry their
+--      socket's y; a refused snap is retried 10 s later however rarely the
+--      caller asks;
 --   A  the old pieces are gone: no path_nudge, no core.find_path outside the
 --      navigation, the stall clock only for the villagers (NV3).
 -- Usage (repo root): luajit tools/r42_nv2/portable_test.lua [REPO]
@@ -727,6 +734,58 @@ do
 	end
 	run(m, 3)
 	check(m.temp.grug_walk == nil and hdist(m, 0, 0) < 0.01, "B2 evading: the way home is the evade's")
+end
+
+-- ---------------------------------------------------------------------------
+-- F. Review fixes.
+-- ---------------------------------------------------------------------------
+do
+	-- F1 a far waypoint (60 nodes): an episode with two failures and a locked
+	-- search ends after a free window; the waypoint is kept.
+	fresh()
+	local m = patroller(0, 0, {{x = 60, z = 0}, {x = 0, z = 0}}, true)
+	run(m, 1.5)
+	local nst = m.temp.grug_nav
+	check(nst and nst.target == 1, "F1 walking to the far waypoint")
+	nst.want, nst.fails, nst.lock = true, 2, us / 1000000 + 1000
+	run(m, 3)
+	nst = m.temp.grug_nav
+	check(nst and not nst.want and nst.fails == 0, "F1 walking freely toward it ends the episode")
+	check(m.route.wp == 1 and #find_calls == 0, "F1 ...no search, no skip")
+	-- F2 a royal guard running after a fighting leader 40 nodes off, with an
+	-- episode open: its stuck clock never runs, no snap.
+	fresh()
+	local l = leader_at(40, 0, {attack = {}, state = "attack"})
+	m = royal(0, 0)
+	local away = function() l.object.pos.x = l.object.pos.x + 0.4 end
+	run(m, 1.5, nil, away)
+	nst = m.temp.grug_nav
+	check(nst and nst.target == l.object, "F2 tracking the far leader")
+	nst.want, nst.fails, nst.lock = true, 1, us / 1000000 + 1000
+	local top = 0
+	run(m, 25, function(s)
+		top = math.max(top, s.temp.grug_royal_stuck or 0)
+	end, away)
+	check(#placed == 0 and top < 1.5, "F2 running freely is never stuck (" .. top .. " s)")
+	-- F3 a route point without y under a lintel: the floor below it.
+	fresh()
+	set(12, 3, 0, "stone")
+	m = patroller(0, 0, {{x = 12, z = 0}, {x = 0, z = 0}}, true)
+	run(m, 1.1)
+	check(m.temp.grug_walk and m.temp.grug_walk.y == 1, "F3 the floor under the lintel, not its top")
+	local npcs = read(NPCS)
+	check(npcs:find("y = socket.pos.y, z = socket.pos.z}", 1, true)
+		and npcs:find("y = loop[index].y,", 1, true), "F3 start-town route points carry their y")
+	-- F4 a refused snap is retried after 10 s on the clock, however rarely.
+	fresh()
+	players[1] = {player = true, pos = {x = 0, y = 1, z = 0}, is_player = function() return true end}
+	m = mob(0, 0)
+	check(not grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, 1, "test"), "F4 watched: refused")
+	players = {}
+	us = us + 5 * 1000000
+	check(not grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, 1, "test"), "F4 ...5 s later still waiting")
+	us = us + 6 * 1000000
+	check(grug_mobs.snap_try(m, m.object:get_pos(), 5, 0, 1, "test"), "F4 ...11 s later: snapped")
 end
 
 -- ---------------------------------------------------------------------------

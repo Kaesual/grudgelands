@@ -478,7 +478,9 @@ function nav.command(self, pos, speed)
 	end
 end
 
--- "stuck", "free" (a window ended with enough movement) or nil.
+-- "stuck", "free" (a window ended with enough movement) or nil. The last
+-- ended window's verdict stays in `nst.seen` (Round 42 NV2: the royal snap's
+-- clock runs only while the guard is really stuck).
 local function observe(nst, pos, dtime, window)
 	if not nst.wt then return nil end
 	if not nst.cmd_v or clock - nst.cmd_clock > dtime * 1.5 + 0.01 then
@@ -491,7 +493,8 @@ local function observe(nst, pos, dtime, window)
 	local dx, dz = pos.x - nst.wx, pos.z - nst.wz
 	local stuck = sqrt(dx * dx + dz * dz) < nav.STUCK_RATIO * nst.we
 	nst.wt = nil
-	return stuck and "stuck" or "free"
+	nst.seen = stuck and "stuck" or "free"
+	return nst.seen
 end
 
 --
@@ -778,11 +781,16 @@ function nav.fixed_step(self, pos, dtime, goal, key, opts)
 		nst.lt = (nst.lt or 0) + nav.WINDOW.fixed
 		if nst.lt >= nav.LINE_EVERY.fixed then
 			nst.lt = 0
-			local body = nav.body(self, nst)
+			-- A goal beyond MAX_LEG has no line to test: walking freely
+			-- toward it is progress (Round 42 NV2; a real hold reads stuck).
 			local dx, dz = goal.x - pos.x, goal.z - pos.z
-			if dx * dx + dz * dz <= nav.MAX_LEG * nav.MAX_LEG
-			and nav.line_walkable(body, feet_of(body, pos), goal) then
+			if dx * dx + dz * dz > nav.MAX_LEG * nav.MAX_LEG then
 				progress(self, nst)
+			else
+				local body = nav.body(self, nst)
+				if nav.line_walkable(body, feet_of(body, pos), goal) then
+					progress(self, nst)
+				end
 			end
 		end
 	end

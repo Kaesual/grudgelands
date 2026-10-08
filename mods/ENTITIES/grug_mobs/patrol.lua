@@ -173,23 +173,28 @@ local function drive(self, w, pos)
 	return outcome
 end
 
--- The standing y for (x, z) near `around_y`: the topmost cell whose own node and
--- head room are not walkable and which has walkable ground under it. nil when
+-- The standing y for (x, z) near `around_y`: the cell nearest to it (from 4
+-- above to 8 below, the lower first at the same distance) whose own node and
+-- head room are not walkable and which has walkable ground under it -- the
+-- floor under a lintel or an arch, not the lintel's top (Round 42). nil when
 -- the column offers none, which is a refusal to teleport rather than a guess.
+local function stands_at(x, y, z)
+	local here = core.get_node_or_nil({x = x, y = y, z = z})
+	local above = core.get_node_or_nil({x = x, y = y + 1, z = z})
+	local below = core.get_node_or_nil({x = x, y = y - 1, z = z})
+	local here_def = here and core.registered_nodes[here.name]
+	local above_def = above and core.registered_nodes[above.name]
+	local below_def = below and core.registered_nodes[below.name]
+	return here_def and above_def and below_def and
+		here_def.walkable ~= true and above_def.walkable ~= true and
+		below_def.walkable == true
+end
+
 local function standing_y(x, z, around_y)
 	local base = math.floor(around_y + 0.5)
-	for y = base + 4, base - 8, -1 do
-		local here = core.get_node_or_nil({x = x, y = y, z = z})
-		local above = core.get_node_or_nil({x = x, y = y + 1, z = z})
-		local below = core.get_node_or_nil({x = x, y = y - 1, z = z})
-		local here_def = here and core.registered_nodes[here.name]
-		local above_def = above and core.registered_nodes[above.name]
-		local below_def = below and core.registered_nodes[below.name]
-		if here_def and above_def and below_def and
-				here_def.walkable ~= true and above_def.walkable ~= true and
-				below_def.walkable == true then
-			return y
-		end
+	for d = 0, 8 do
+		if stands_at(x, base - d, z) then return base - d end
+		if d > 0 and d <= 4 and stands_at(x, base + d, z) then return base + d end
 	end
 	return nil
 end
@@ -336,21 +341,23 @@ end
 --
 -- The snap with a back-off. The first attempt runs the moment the mob is due;
 -- a refusal -- a player inside SNAP_PLAYER_RANGE, or a column with nowhere to
--- stand -- is retried only every SNAP_RETRY seconds.
+-- stand -- is retried only SNAP_RETRY seconds later: a deadline on the server
+-- clock (`grug_snap_wait`, runtime only), so a caller that asks rarely (a
+-- patrol, after three fresh failures) waits as long as one that asks every
+-- tick. `elapsed` is no longer read (the villagers still pass it).
 --
 function grug_mobs.snap_try(self, pos, x, z, elapsed, after)
 	self.temp = self.temp or {}
 	local t = self.temp
-	local wait = (t.grug_snap_wait or 0) - (elapsed or 0)
-	if wait > 0 then
-		t.grug_snap_wait = wait
+	local now = core.get_us_time() / 1000000
+	if now < (t.grug_snap_wait or 0) then
 		return false
 	end
 	if grug_mobs.snap_to(self, pos, x, z, after) then
 		t.grug_snap_wait = nil
 		return true
 	end
-	t.grug_snap_wait = SNAP_RETRY
+	t.grug_snap_wait = now + SNAP_RETRY
 	return false
 end
 

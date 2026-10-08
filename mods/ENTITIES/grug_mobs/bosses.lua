@@ -724,9 +724,10 @@ local function royal_follow_step(self, dtime, leader, lent, lpos, pos)
 	local v = self.object:get_velocity()
 	nav.command(self, pos, v and math.sqrt(v.x * v.x + v.z * v.z) or 0)
 	-- Stuck time: from the first stuck window to progress, paused while a
-	-- path is followed.
+	-- path is followed; a window in which the guard moved freely (running
+	-- after a leader far away) starts it again.
 	local nst = t.grug_nav
-	if not nst or (not nst.want and nst.fails == 0) then
+	if not nst or (not nst.want and nst.fails == 0) or nst.seen == "free" then
 		t.grug_royal_stuck = nil
 	elseif not nst.path then
 		t.grug_royal_stuck = (t.grug_royal_stuck or 0) + dtime

@@ -2,73 +2,73 @@
  "batches": [
   {
    "fp_calls": 25,
-   "fp_max_step_us": 243,
-   "fp_us": 1660,
-   "mob_us_max": 1238,
-   "mob_us_p50": 79,
-   "mob_us_p90": 213,
-   "mob_us_p99": 637,
+   "fp_max_step_us": 204,
+   "fp_us": 1540,
+   "mob_us_max": 944,
+   "mob_us_p50": 66,
+   "mob_us_p90": 207,
+   "mob_us_p99": 567,
    "mover": "post_guard",
-   "seconds": 45.08,
+   "seconds": 45.06,
    "slowest": [
     [
-     18.3,
-     1238,
-     1127,
+     8.69,
+     944,
+     205,
      "grug_mobs:guard_accord",
      "walk/tracked"
     ],
     [
-     29.81,
-     1231,
-     82,
-     "grug_mobs:guard_accord",
-     "stand"
-    ],
-    [
-     7.6,
-     907,
-     324,
+     6.52,
+     763,
+     171,
      "grug_mobs:guard_accord",
      "walk/tracked"
+    ],
+    [
+     2.18,
+     589,
+     138,
+     "grug_mobs:guard_accord",
+     "stand/tracked"
     ]
    ],
    "steps": 498
   },
   {
    "fp_calls": 19,
-   "fp_max_step_us": 275,
-   "fp_us": 813,
-   "mob_us_max": 3058,
-   "mob_us_p50": 81,
-   "mob_us_p90": 236,
-   "mob_us_p99": 787,
+   "fp_max_step_us": 296,
+   "fp_us": 824,
+   "mob_us_max": 771,
+   "mob_us_p50": 54,
+   "mob_us_p90": 151,
+   "mob_us_p99": 455,
    "mover": "royal_guard",
-   "seconds": 30.04,
+   "seconds": 30.08,
    "slowest": [
     [
-     28.77,
-     3058,
-     2913,
-     "grug_mobs:royal_guard_human",
-     "stand/tracked"
-    ],
-    [
-     13.02,
-     843,
-     157,
-     "grug_mobs:royal_guard_human",
-     "stand/tracked"
-    ],
-    [
-     7.6,
-     812,
-     142,
+     7.59,
+     771,
+     143,
      "grug_mobs:royal_guard_undead",
+     "walk/tracked"
+    ],
+    [
+     14.1,
+     666,
+     216,
+     "grug_mobs:royal_guard_troll",
+     "walk/tracked"
+    ],
+    [
+     22.77,
+     498,
+     127,
+     "grug_mobs:royal_guard_elf",
      "walk/tracked"
     ]
    ],
-   "steps": 332
+   "steps": 333
   }
  ],
  "calib": null,
@@ -337,7 +337,7 @@
      "found"
     ],
     [
-     18.48,
+     18.47,
      "arrive",
      "walk"
     ]
@@ -346,7 +346,7 @@
    "how": "walk",
    "kind": "post",
    "lane": 2,
-   "min_d": 0.71,
+   "min_d": 1.17,
    "mover": "post_guard",
    "reached": true,
    "scene": "trunk",
@@ -357,8 +357,8 @@
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 18.48,
-   "t_within_1_5": 18.84,
+   "t_goal": 18.47,
+   "t_within_1_5": 24.9,
    "t_within_3": 17.57,
    "t_within_5": 15.76
   },
@@ -380,7 +380,7 @@
       6,
       3,
       6,
-      23
+      21
      ]
     ],
     [
@@ -389,7 +389,7 @@
      "found"
     ],
     [
-     19.48,
+     19.47,
      "arrive",
      "walk"
     ]
@@ -398,19 +398,19 @@
    "how": "walk",
    "kind": "post",
    "lane": 3,
-   "min_d": 1.33,
+   "min_d": 1.29,
    "mover": "post_guard",
    "reached": true,
    "scene": "trunk_near",
-   "search_max_us": 23,
-   "search_us": 23,
+   "search_max_us": 21,
+   "search_us": 21,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 19.48,
-   "t_within_1_5": 25.91,
+   "t_goal": 19.47,
+   "t_within_1_5": 26.08,
    "t_within_3": 14.67,
    "t_within_5": 11.86
   },
@@ -421,27 +421,27 @@
    "entity": "grug_mobs:guard_accord",
    "events": [
     [
-     7.51,
+     7.52,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.52,
      "fp",
      [
       6,
       8,
       11,
-      68
+      31
      ]
     ],
     [
-     7.51,
+     7.52,
      "nav",
      "found"
     ],
     [
-     13.95,
+     13.94,
      "arrive",
      "walk"
     ]
@@ -450,19 +450,19 @@
    "how": "walk",
    "kind": "post",
    "lane": 4,
-   "min_d": 0.84,
+   "min_d": 0.76,
    "mover": "post_guard",
    "reached": true,
    "scene": "row",
-   "search_max_us": 68,
-   "search_us": 68,
+   "search_max_us": 31,
+   "search_us": 31,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 13.95,
-   "t_within_1_5": 18.12,
+   "t_goal": 13.94,
+   "t_within_1_5": 18.11,
    "t_within_3": 12.95,
    "t_within_5": 11.32
   },
@@ -493,7 +493,7 @@
      "found"
     ],
     [
-     21.66,
+     21.64,
      "arrive",
      "walk"
     ]
@@ -502,7 +502,7 @@
    "how": "walk",
    "kind": "post",
    "lane": 5,
-   "min_d": 1.68,
+   "min_d": 1.62,
    "mover": "post_guard",
    "reached": true,
    "scene": "doorway",
@@ -513,9 +513,9 @@
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 21.66,
-   "t_within_3": 20.75,
-   "t_within_5": 19.03
+   "t_goal": 21.64,
+   "t_within_3": 20.74,
+   "t_within_5": 19.02
   },
   {
    "T": 45,
@@ -535,7 +535,7 @@
       6,
       8,
       21,
-      71
+      85
      ]
     ],
     [
@@ -544,7 +544,7 @@
      "found"
     ],
     [
-     21.47,
+     21.46,
      "arrive",
      "walk"
     ]
@@ -557,17 +557,17 @@
    "mover": "post_guard",
    "reached": true,
    "scene": "lcorner",
-   "search_max_us": 71,
-   "search_us": 71,
+   "search_max_us": 85,
+   "search_us": 85,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 21.47,
-   "t_within_1_5": 25.46,
-   "t_within_3": 20.57,
-   "t_within_5": 18.84
+   "t_goal": 21.46,
+   "t_within_1_5": 23.09,
+   "t_within_3": 20.56,
+   "t_within_5": 18.93
   },
   {
    "T": 45,
@@ -587,7 +587,7 @@
       6,
       5,
       0,
-      119
+      116
      ]
     ],
     [
@@ -601,7 +601,52 @@
      "stuck"
     ],
     [
-     20.21,
+     20.19,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      118
+     ]
+    ],
+    [
+     20.19,
+     "nav",
+     "no_path"
+    ],
+    [
+     25.26,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      114
+     ]
+    ],
+    [
+     25.26,
+     "nav",
+     "no_path"
+    ],
+    [
+     30.33,
+     "fp",
+     [
+      6,
+      5,
+      0,
+      144
+     ]
+    ],
+    [
+     30.33,
+     "nav",
+     "no_path"
+    ],
+    [
+     38.37,
      "fp",
      [
       6,
@@ -611,52 +656,7 @@
      ]
     ],
     [
-     20.21,
-     "nav",
-     "no_path"
-    ],
-    [
-     25.28,
-     "fp",
-     [
-      6,
-      5,
-      0,
-      161
-     ]
-    ],
-    [
-     25.28,
-     "nav",
-     "no_path"
-    ],
-    [
-     30.35,
-     "fp",
-     [
-      6,
-      5,
-      0,
-      121
-     ]
-    ],
-    [
-     30.35,
-     "nav",
-     "no_path"
-    ],
-    [
-     38.39,
-     "fp",
-     [
-      6,
-      5,
-      0,
-      142
-     ]
-    ],
-    [
-     38.39,
+     38.37,
      "nav",
      "no_path"
     ]
@@ -668,8 +668,8 @@
    "mover": "post_guard",
    "reached": false,
    "scene": "fence",
-   "search_max_us": 161,
-   "search_us": 679,
+   "search_max_us": 144,
+   "search_us": 628,
    "searches": 5,
    "smart_mobs": {
     "nav_no_path": 5,
@@ -695,7 +695,7 @@
       6,
       5,
       6,
-      17
+      16
      ]
     ],
     [
@@ -704,7 +704,7 @@
      "found"
     ],
     [
-     12.4,
+     12.41,
      "arrive",
      "walk"
     ]
@@ -717,14 +717,14 @@
    "mover": "post_guard",
    "reached": true,
    "scene": "fence_low",
-   "search_max_us": 17,
-   "search_us": 17,
+   "search_max_us": 16,
+   "search_us": 16,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 12.4,
+   "t_goal": 12.41,
    "t_within_1_5": 12.86,
    "t_within_3": 11.5,
    "t_within_5": 8.6
@@ -747,7 +747,7 @@
       6,
       9,
       14,
-      45
+      48
      ]
     ],
     [
@@ -756,7 +756,7 @@
      "found"
     ],
     [
-     14.85,
+     14.94,
      "arrive",
      "walk"
     ]
@@ -765,21 +765,21 @@
    "how": "walk",
    "kind": "post",
    "lane": 9,
-   "min_d": 1.02,
+   "min_d": 1.09,
    "mover": "post_guard",
    "reached": true,
    "scene": "pillar",
-   "search_max_us": 45,
-   "search_us": 45,
+   "search_max_us": 48,
+   "search_us": 48,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 14.85,
-   "t_within_1_5": 17.12,
-   "t_within_3": 13.95,
-   "t_within_5": 12.13
+   "t_goal": 14.94,
+   "t_within_1_5": 17.21,
+   "t_within_3": 14.04,
+   "t_within_5": 12.22
   },
   {
    "T": 45,
@@ -799,7 +799,7 @@
       6,
       9,
       18,
-      77
+      91
      ]
     ],
     [
@@ -808,7 +808,7 @@
      "found"
     ],
     [
-     18.48,
+     18.47,
      "arrive",
      "walk"
     ]
@@ -817,19 +817,18 @@
    "how": "walk",
    "kind": "post",
    "lane": 10,
-   "min_d": 0.72,
+   "min_d": 1.52,
    "mover": "post_guard",
    "reached": true,
    "scene": "ditch",
-   "search_max_us": 77,
-   "search_us": 77,
+   "search_max_us": 91,
+   "search_us": 91,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 18.48,
-   "t_within_1_5": 18.84,
+   "t_goal": 18.47,
    "t_within_3": 17.66,
    "t_within_5": 15.76
   },
@@ -840,7 +839,7 @@
    "entity": "grug_mobs:guard_accord",
    "events": [
     [
-     13.22,
+     13.31,
      "arrive",
      "walk"
     ]
@@ -857,9 +856,9 @@
    "search_us": 0,
    "searches": 0,
    "smart_mobs": null,
-   "t_goal": 13.22,
+   "t_goal": 13.31,
    "t_within_1_5": 13.67,
-   "t_within_3": 12.4,
+   "t_within_3": 12.41,
    "t_within_5": 10.77
   },
   {
@@ -907,22 +906,52 @@
      "rejected"
     ],
     [
-     22.02,
+     22.01,
      "fp",
      [
       6,
       8,
       9,
-      22
+      17
      ]
     ],
     [
-     22.02,
+     22.01,
      "nav",
      "rejected"
     ],
     [
-     27.09,
+     27.08,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      17
+     ]
+    ],
+    [
+     27.08,
+     "nav",
+     "rejected"
+    ],
+    [
+     35.12,
+     "fp",
+     [
+      6,
+      8,
+      9,
+      18
+     ]
+    ],
+    [
+     35.12,
+     "nav",
+     "rejected"
+    ],
+    [
+     43.16,
      "fp",
      [
       6,
@@ -932,50 +961,20 @@
      ]
     ],
     [
-     27.09,
+     43.16,
      "nav",
      "rejected"
     ],
     [
-     35.14,
-     "fp",
-     [
-      6,
-      8,
-      9,
-      17
-     ]
-    ],
-    [
-     35.14,
-     "nav",
-     "rejected"
-    ],
-    [
-     43.18,
-     "fp",
-     [
-      6,
-      8,
-      9,
-      17
-     ]
-    ],
-    [
-     43.18,
-     "nav",
-     "rejected"
-    ],
-    [
-     43.27,
+     43.34,
      "teleport"
     ],
     [
-     43.27,
+     43.34,
      "snap"
     ],
     [
-     43.36,
+     43.43,
      "arrive",
      "snap"
     ]
@@ -988,17 +987,17 @@
    "mover": "post_guard",
    "reached": true,
    "scene": "lowgap",
-   "search_max_us": 22,
-   "search_us": 97,
+   "search_max_us": 18,
+   "search_us": 93,
    "searches": 6,
    "smart_mobs": {
     "nav_rejected": 6,
     "nav_stuck": 1
    },
-   "t_goal": 43.36,
-   "t_within_1_5": 43.36,
-   "t_within_3": 43.36,
-   "t_within_5": 43.36
+   "t_goal": 43.43,
+   "t_within_1_5": 43.43,
+   "t_within_3": 43.43,
+   "t_within_5": 43.43
   },
   {
    "T": 45,
@@ -1018,7 +1017,7 @@
       6,
       11,
       0,
-      143
+      137
      ]
     ],
     [
@@ -1027,7 +1026,7 @@
      "no_path"
     ],
     [
-     23.38,
+     21.83,
      "arrive",
      "walk"
     ]
@@ -1036,20 +1035,20 @@
    "how": "walk",
    "kind": "post",
    "lane": 13,
-   "min_d": 1.39,
+   "min_d": 0.75,
    "mover": "post_guard",
    "reached": true,
    "scene": "pond",
-   "search_max_us": 143,
-   "search_us": 143,
+   "search_max_us": 137,
+   "search_us": 137,
    "searches": 1,
    "smart_mobs": {
     "nav_no_path": 1,
     "nav_stuck": 1
    },
-   "t_goal": 23.38,
-   "t_within_1_5": 23.74,
-   "t_within_3": 20.39,
+   "t_goal": 21.83,
+   "t_within_1_5": 22.28,
+   "t_within_3": 19.92,
    "t_within_5": 15.76
   },
   {
@@ -1070,7 +1069,7 @@
       6,
       8,
       0,
-      70
+      64
      ]
     ],
     [
@@ -1079,62 +1078,62 @@
      "no_path"
     ],
     [
-     20.21,
+     20.2,
      "fp",
      [
       6,
       8,
       0,
-      84
+      64
      ]
     ],
     [
-     20.21,
+     20.2,
      "nav",
      "no_path"
     ],
     [
-     25.28,
+     25.26,
      "fp",
      [
       6,
       8,
       0,
-      82
+      61
      ]
     ],
     [
-     25.28,
+     25.26,
      "nav",
      "no_path"
     ],
     [
-     30.35,
+     30.33,
      "fp",
      [
       6,
       8,
       0,
-      59
+      60
      ]
     ],
     [
-     30.35,
+     30.33,
      "nav",
      "no_path"
     ],
     [
-     38.39,
+     38.37,
      "fp",
      [
       6,
       8,
       0,
-      62
+      58
      ]
     ],
     [
-     38.39,
+     38.37,
      "nav",
      "no_path"
     ]
@@ -1146,8 +1145,8 @@
    "mover": "post_guard",
    "reached": false,
    "scene": "door_closed",
-   "search_max_us": 84,
-   "search_us": 357,
+   "search_max_us": 64,
+   "search_us": 307,
    "searches": 5,
    "smart_mobs": {
     "nav_no_path": 5,
@@ -1190,7 +1189,7 @@
    "entity": "grug_mobs:royal_guard_human",
    "events": [
     [
-     8.59,
+     8.58,
      "arrive",
      "walk"
     ]
@@ -1199,7 +1198,7 @@
    "how": "walk",
    "kind": "follow",
    "lane": 1,
-   "min_d": 0.1,
+   "min_d": 0.06,
    "mover": "royal_guard",
    "reached": true,
    "scene": "open",
@@ -1207,10 +1206,10 @@
    "search_us": 0,
    "searches": 0,
    "smart_mobs": null,
-   "t_goal": 8.59,
-   "t_within_1_5": 11.58,
-   "t_within_3": 10.31,
-   "t_within_5": 8.59
+   "t_goal": 8.58,
+   "t_within_1_5": 11.83,
+   "t_within_3": 10.3,
+   "t_within_5": 8.58
   },
   {
    "T": 30,
@@ -1219,27 +1218,27 @@
    "entity": "grug_mobs:royal_guard_elf",
    "events": [
     [
-     7.51,
+     7.5,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.5,
      "fp",
      [
       6,
       8,
       11,
-      33
+      31
      ]
     ],
     [
-     7.51,
+     7.5,
      "nav",
      "found"
     ],
     [
-     11.94,
+     11.93,
      "arrive",
      "walk"
     ]
@@ -1248,21 +1247,20 @@
    "how": "walk",
    "kind": "follow",
    "lane": 2,
-   "min_d": 0.77,
+   "min_d": 1.66,
    "mover": "royal_guard",
    "reached": true,
    "scene": "trunk",
-   "search_max_us": 33,
-   "search_us": 33,
+   "search_max_us": 31,
+   "search_us": 31,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 11.94,
-   "t_within_1_5": 17.27,
-   "t_within_3": 15.83,
-   "t_within_5": 11.94
+   "t_goal": 11.93,
+   "t_within_3": 13.64,
+   "t_within_5": 11.93
   },
   {
    "T": 30,
@@ -1271,7 +1269,7 @@
    "entity": "grug_mobs:royal_guard_dwarf",
    "events": [
     [
-     8.59,
+     8.58,
      "arrive",
      "walk"
     ]
@@ -1280,7 +1278,7 @@
    "how": "walk",
    "kind": "follow",
    "lane": 3,
-   "min_d": 0.02,
+   "min_d": 1.05,
    "mover": "royal_guard",
    "reached": true,
    "scene": "trunk_near",
@@ -1288,10 +1286,10 @@
    "search_us": 0,
    "searches": 0,
    "smart_mobs": null,
-   "t_goal": 8.59,
-   "t_within_1_5": 22.78,
-   "t_within_3": 10.31,
-   "t_within_5": 8.59
+   "t_goal": 8.58,
+   "t_within_1_5": 29.45,
+   "t_within_3": 10.3,
+   "t_within_5": 8.58
   },
   {
    "T": 30,
@@ -1300,27 +1298,27 @@
    "entity": "grug_mobs:royal_guard_orc",
    "events": [
     [
-     7.51,
+     7.5,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.5,
      "fp",
      [
       6,
       8,
       11,
-      21
+      23
      ]
     ],
     [
-     7.51,
+     7.5,
      "nav",
      "found"
     ],
     [
-     11.94,
+     11.93,
      "arrive",
      "walk"
     ]
@@ -1329,21 +1327,21 @@
    "how": "walk",
    "kind": "follow",
    "lane": 4,
-   "min_d": 0.03,
+   "min_d": 0.74,
    "mover": "royal_guard",
    "reached": true,
    "scene": "row",
-   "search_max_us": 21,
-   "search_us": 21,
+   "search_max_us": 23,
+   "search_us": 23,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 11.94,
-   "t_within_1_5": 14.83,
-   "t_within_3": 13.66,
-   "t_within_5": 11.94
+   "t_goal": 11.93,
+   "t_within_1_5": 16.08,
+   "t_within_3": 13.64,
+   "t_within_5": 11.93
   },
   {
    "T": 30,
@@ -1352,47 +1350,47 @@
    "entity": "grug_mobs:royal_guard_troll",
    "events": [
     [
-     7.51,
+     7.5,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.5,
      "fp",
      [
       6,
       8,
       17,
-      48
+      61
      ]
     ],
     [
-     7.51,
+     7.5,
      "nav",
      "found"
     ],
     [
-     11.85,
+     11.84,
      "nav",
      "leave_stuck"
     ],
     [
-     12.57,
+     12.56,
      "fp",
      [
       6,
       11,
       12,
-      34
+      33
      ]
     ],
     [
-     12.57,
+     12.56,
      "nav",
      "found"
     ],
     [
-     15.56,
+     15.54,
      "arrive",
      "walk"
     ]
@@ -1401,22 +1399,22 @@
    "how": "walk",
    "kind": "follow",
    "lane": 5,
-   "min_d": 0.33,
+   "min_d": 0.4,
    "mover": "royal_guard",
    "reached": true,
    "scene": "doorway",
-   "search_max_us": 48,
-   "search_us": 82,
+   "search_max_us": 61,
+   "search_us": 94,
    "searches": 2,
    "smart_mobs": {
     "nav_found": 2,
     "nav_leave_stuck": 1,
     "nav_stuck": 1
    },
-   "t_goal": 15.56,
-   "t_within_1_5": 21.79,
-   "t_within_3": 19.44,
-   "t_within_5": 15.56
+   "t_goal": 15.54,
+   "t_within_1_5": 19.7,
+   "t_within_3": 18.34,
+   "t_within_5": 15.54
   },
   {
    "T": 30,
@@ -1425,27 +1423,27 @@
    "entity": "grug_mobs:royal_guard_undead",
    "events": [
     [
-     7.51,
+     7.5,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.5,
      "fp",
      [
       6,
       8,
       21,
-      56
+      64
      ]
     ],
     [
-     7.51,
+     7.5,
      "nav",
      "found"
     ],
     [
-     18.45,
+     18.43,
      "arrive",
      "walk"
     ]
@@ -1454,21 +1452,21 @@
    "how": "walk",
    "kind": "follow",
    "lane": 6,
-   "min_d": 0.92,
+   "min_d": 0.5,
    "mover": "royal_guard",
    "reached": true,
    "scene": "lcorner",
-   "search_max_us": 56,
-   "search_us": 56,
+   "search_max_us": 64,
+   "search_us": 64,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 18.45,
-   "t_within_1_5": 22.78,
-   "t_within_3": 20.25,
-   "t_within_5": 18.45
+   "t_goal": 18.43,
+   "t_within_1_5": 23.94,
+   "t_within_3": 21.32,
+   "t_within_5": 18.43
   },
   {
    "T": 30,
@@ -1477,7 +1475,7 @@
    "entity": "grug_mobs:royal_guard_human",
    "events": [
     [
-     8.59,
+     8.58,
      "arrive",
      "walk"
     ]
@@ -1486,7 +1484,7 @@
    "how": "walk",
    "kind": "follow",
    "lane": 7,
-   "min_d": 4.88,
+   "min_d": 4.89,
    "mover": "royal_guard",
    "reached": true,
    "scene": "fence",
@@ -1494,8 +1492,8 @@
    "search_us": 0,
    "searches": 0,
    "smart_mobs": null,
-   "t_goal": 8.59,
-   "t_within_5": 8.59
+   "t_goal": 8.58,
+   "t_within_5": 8.58
   },
   {
    "T": 30,
@@ -1504,7 +1502,7 @@
    "entity": "grug_mobs:royal_guard_elf",
    "events": [
     [
-     8.59,
+     8.58,
      "arrive",
      "walk"
     ]
@@ -1513,7 +1511,7 @@
    "how": "walk",
    "kind": "follow",
    "lane": 8,
-   "min_d": 4.88,
+   "min_d": 4.89,
    "mover": "royal_guard",
    "reached": true,
    "scene": "fence_low",
@@ -1521,8 +1519,8 @@
    "search_us": 0,
    "searches": 0,
    "smart_mobs": null,
-   "t_goal": 8.59,
-   "t_within_5": 8.59
+   "t_goal": 8.58,
+   "t_within_5": 8.58
   },
   {
    "T": 30,
@@ -1531,27 +1529,27 @@
    "entity": "grug_mobs:royal_guard_dwarf",
    "events": [
     [
-     6.42,
+     6.41,
      "nav",
      "stuck"
     ],
     [
-     6.42,
+     6.41,
      "fp",
      [
       6,
       9,
       14,
-      43
+      45
      ]
     ],
     [
-     6.42,
+     6.41,
      "nav",
      "found"
     ],
     [
-     12.75,
+     12.74,
      "arrive",
      "walk"
     ]
@@ -1560,21 +1558,20 @@
    "how": "walk",
    "kind": "follow",
    "lane": 9,
-   "min_d": 1.32,
+   "min_d": 1.84,
    "mover": "royal_guard",
    "reached": true,
    "scene": "pillar",
-   "search_max_us": 43,
-   "search_us": 43,
+   "search_max_us": 45,
+   "search_us": 45,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 12.75,
-   "t_within_1_5": 18.45,
-   "t_within_3": 16.91,
-   "t_within_5": 12.75
+   "t_goal": 12.74,
+   "t_within_3": 19.06,
+   "t_within_5": 12.74
   },
   {
    "T": 30,
@@ -1583,27 +1580,27 @@
    "entity": "grug_mobs:royal_guard_orc",
    "events": [
     [
-     8.59,
+     8.58,
      "nav",
      "stuck"
     ],
     [
-     8.59,
+     8.58,
      "fp",
      [
       6,
       7,
       16,
-      55
+      51
      ]
     ],
     [
-     8.59,
+     8.58,
      "nav",
      "found"
     ],
     [
-     14.29,
+     14.28,
      "arrive",
      "walk"
     ]
@@ -1612,21 +1609,21 @@
    "how": "walk",
    "kind": "follow",
    "lane": 10,
-   "min_d": 1.45,
+   "min_d": 1.06,
    "mover": "royal_guard",
    "reached": true,
    "scene": "ditch",
-   "search_max_us": 55,
-   "search_us": 55,
+   "search_max_us": 51,
+   "search_us": 51,
    "searches": 1,
    "smart_mobs": {
     "nav_found": 1,
     "nav_stuck": 1
    },
-   "t_goal": 14.29,
-   "t_within_1_5": 20.25,
-   "t_within_3": 18.18,
-   "t_within_5": 14.29
+   "t_goal": 14.28,
+   "t_within_1_5": 17.26,
+   "t_within_3": 15.9,
+   "t_within_5": 14.28
   },
   {
    "T": 30,
@@ -1635,7 +1632,7 @@
    "entity": "grug_mobs:royal_guard_troll",
    "events": [
     [
-     8.59,
+     8.58,
      "arrive",
      "walk"
     ]
@@ -1644,7 +1641,7 @@
    "how": "walk",
    "kind": "follow",
    "lane": 11,
-   "min_d": 0.18,
+   "min_d": 2.91,
    "mover": "royal_guard",
    "reached": true,
    "scene": "step",
@@ -1652,10 +1649,9 @@
    "search_us": 0,
    "searches": 0,
    "smart_mobs": null,
-   "t_goal": 8.59,
-   "t_within_1_5": 15.92,
-   "t_within_3": 11.4,
-   "t_within_5": 8.59
+   "t_goal": 8.58,
+   "t_within_3": 23.49,
+   "t_within_5": 8.58
   },
   {
    "T": 30,
@@ -1666,76 +1662,76 @@
    "entity": "grug_mobs:royal_guard_undead",
    "events": [
     [
-     7.51,
+     7.5,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.5,
      "fp",
      [
       6,
       8,
       9,
-      9
+      10
      ]
     ],
     [
-     7.51,
+     7.5,
      "nav",
      "rejected"
     ],
     [
-     12.57,
+     12.56,
      "fp",
      [
       6,
       8,
       9,
-      8
+      14
      ]
     ],
     [
-     12.57,
+     12.56,
      "nav",
      "rejected"
     ],
     [
-     17.63,
+     17.62,
      "fp",
      [
       6,
       8,
       9,
-      28
+      16
      ]
     ],
     [
-     17.63,
+     17.62,
      "nav",
      "rejected"
     ],
     [
-     22.69,
+     22.68,
      "fp",
      [
       6,
       8,
       9,
-      18
+      17
      ]
     ],
     [
-     22.69,
+     22.68,
      "nav",
      "rejected"
     ],
     [
-     27.49,
+     27.46,
      "teleport"
     ],
     [
-     27.58,
+     27.55,
      "arrive",
      "snap"
     ]
@@ -1748,17 +1744,17 @@
    "mover": "royal_guard",
    "reached": true,
    "scene": "lowgap",
-   "search_max_us": 28,
-   "search_us": 63,
+   "search_max_us": 17,
+   "search_us": 57,
    "searches": 4,
    "smart_mobs": {
     "nav_rejected": 4,
     "nav_stuck": 1
    },
-   "t_goal": 27.58,
-   "t_within_1_5": 27.58,
-   "t_within_3": 27.58,
-   "t_within_5": 27.58
+   "t_goal": 27.55,
+   "t_within_1_5": 27.55,
+   "t_within_3": 27.55,
+   "t_within_5": 27.55
   },
   {
    "T": 30,
@@ -1767,7 +1763,7 @@
    "entity": "grug_mobs:royal_guard_human",
    "events": [
     [
-     10.94,
+     11.02,
      "arrive",
      "walk"
     ]
@@ -1776,7 +1772,7 @@
    "how": "walk",
    "kind": "follow",
    "lane": 13,
-   "min_d": 0.57,
+   "min_d": 0.01,
    "mover": "royal_guard",
    "reached": true,
    "scene": "pond",
@@ -1784,10 +1780,10 @@
    "search_us": 0,
    "searches": 0,
    "smart_mobs": null,
-   "t_goal": 10.94,
-   "t_within_1_5": 18.63,
-   "t_within_3": 14.11,
-   "t_within_5": 10.94
+   "t_goal": 11.02,
+   "t_within_1_5": 14.28,
+   "t_within_3": 13.01,
+   "t_within_5": 11.02
   },
   {
    "T": 30,
@@ -1798,12 +1794,12 @@
    "entity": "grug_mobs:royal_guard_elf",
    "events": [
     [
-     7.51,
+     7.5,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.5,
      "fp",
      [
       6,
@@ -1813,27 +1809,12 @@
      ]
     ],
     [
-     7.51,
+     7.5,
      "nav",
      "no_path"
     ],
     [
-     12.57,
-     "fp",
-     [
-      6,
-      8,
-      0,
-      68
-     ]
-    ],
-    [
-     12.57,
-     "nav",
-     "no_path"
-    ],
-    [
-     17.63,
+     12.56,
      "fp",
      [
       6,
@@ -1843,12 +1824,12 @@
      ]
     ],
     [
-     17.63,
+     12.56,
      "nav",
      "no_path"
     ],
     [
-     22.69,
+     17.62,
      "fp",
      [
       6,
@@ -1858,16 +1839,31 @@
      ]
     ],
     [
-     22.69,
+     17.62,
      "nav",
      "no_path"
     ],
     [
-     27.49,
+     22.68,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      66
+     ]
+    ],
+    [
+     22.68,
+     "nav",
+     "no_path"
+    ],
+    [
+     27.46,
      "teleport"
     ],
     [
-     27.58,
+     27.55,
      "arrive",
      "snap"
     ]
@@ -1881,16 +1877,16 @@
    "reached": true,
    "scene": "door_closed",
    "search_max_us": 68,
-   "search_us": 262,
+   "search_us": 260,
    "searches": 4,
    "smart_mobs": {
     "nav_no_path": 4,
     "nav_stuck": 1
    },
-   "t_goal": 27.58,
-   "t_within_1_5": 27.58,
-   "t_within_3": 27.58,
-   "t_within_5": 27.58
+   "t_goal": 27.55,
+   "t_within_1_5": 27.55,
+   "t_within_3": 27.55,
+   "t_within_5": 27.55
   },
   {
    "T": 30,
@@ -1901,12 +1897,27 @@
    "entity": "grug_mobs:royal_guard_dwarf",
    "events": [
     [
-     7.51,
+     7.5,
      "nav",
      "stuck"
     ],
     [
-     7.51,
+     7.5,
+     "fp",
+     [
+      6,
+      8,
+      0,
+      48
+     ]
+    ],
+    [
+     7.5,
+     "nav",
+     "no_path"
+    ],
+    [
+     12.56,
      "fp",
      [
       6,
@@ -1916,61 +1927,46 @@
      ]
     ],
     [
-     7.51,
+     12.56,
      "nav",
      "no_path"
     ],
     [
-     12.57,
+     17.62,
      "fp",
      [
       6,
       8,
       0,
-      50
+      51
      ]
     ],
     [
-     12.57,
+     17.62,
      "nav",
      "no_path"
     ],
     [
-     17.63,
+     22.68,
      "fp",
      [
       6,
       8,
       0,
-      50
+      51
      ]
     ],
     [
-     17.63,
+     22.68,
      "nav",
      "no_path"
     ],
     [
-     22.69,
-     "fp",
-     [
-      6,
-      8,
-      0,
-      49
-     ]
-    ],
-    [
-     22.69,
-     "nav",
-     "no_path"
-    ],
-    [
-     27.49,
+     27.46,
      "teleport"
     ],
     [
-     27.58,
+     27.55,
      "arrive",
      "snap"
     ]
@@ -1983,17 +1979,17 @@
    "mover": "royal_guard",
    "reached": true,
    "scene": "door_open",
-   "search_max_us": 50,
-   "search_us": 198,
+   "search_max_us": 51,
+   "search_us": 199,
    "searches": 4,
    "smart_mobs": {
     "nav_no_path": 4,
     "nav_stuck": 1
    },
-   "t_goal": 27.58,
-   "t_within_1_5": 27.58,
-   "t_within_3": 27.58,
-   "t_within_5": 27.58
+   "t_goal": 27.55,
+   "t_within_1_5": 27.55,
+   "t_within_3": 27.55,
+   "t_within_5": 27.55
   }
  ]
 }

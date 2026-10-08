@@ -761,8 +761,11 @@ local function build_rows()
 				local points = {}
 				for order = 1, loop.size do
 					local socket = loop.by_order[order]
+					-- The socket's height too: the fixed walk's goal
+					-- (patrol.lua walk_fixed), exact under a lintel or an arch.
 					if socket then
-						points[#points + 1] = {x = socket.pos.x, z = socket.pos.z}
+						points[#points + 1] = {x = socket.pos.x,
+							y = socket.pos.y, z = socket.pos.z}
 					end
 				end
 				row.patrols[group] = points
@@ -1263,7 +1266,8 @@ local function install(entity, row, slot)
 		local loop = row.patrols[slot.group] or {}
 		local points = {}
 		for index = 1, #loop do
-			points[index] = {x = loop[index].x, z = loop[index].z}
+			points[index] = {x = loop[index].x, y = loop[index].y,
+				z = loop[index].z}
 		end
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
 		entity._grug_patrol_route = {points = points, wp = 1}
