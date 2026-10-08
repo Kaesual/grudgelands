@@ -232,6 +232,8 @@ core.register_on_joinplayer(function(player)
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		inv:set_size(slot.list, 1)
 	end
+	-- The Character page's shift-click target (below); always empty.
+	inv:set_size(grug_inventory.SHIFT_LIST, 1)
 	-- Fresh session, fresh caches: the lists are loaded at this point.
 	grug_inventory.equipment_changed(player)
 end)
@@ -448,6 +450,181 @@ core.register_on_leaveplayer(function(player)
 	slot_cache[name] = nil
 end)
 
+-- May `stack` go into the equipment list `to_list` by this action? Every
+-- equip rule, each refusal explained in the feed (throttled): the slot's
+-- group or the class's hand rule, the level, the armor class, the
+-- two-handed rule and the unique trinkets. Used by the allow callback below
+-- and by the shift-click routing after it.
+local function equip_allowed(player, inventory, to_list, stack, action, info)
+	if to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
+		-- The hands follow the class rules (ruling 25), not one group.
+		local class_id = grug_classes.get_class(player)
+		if not grug_inventory.hand_accepts(class_id, to_list, stack) then
+			warn_hand_item(player, to_list, stack)
+			return false
+		end
+	elseif core.get_item_group(stack:get_name(), slot_group[to_list]) == 0 then
+		return false
+	end
+	-- The level requirement holds in every slot (round33-plan.md §2.2).
+	local allowed, required, current = grug_core.can_use_item_level(player, stack)
+	if not allowed then
+		warn_item_level(player, stack, grug_inventory.slot_label(
+			grug_classes.get_class(player), to_list) or slot_name[to_list],
+			required, current)
+		return false
+	end
+	if is_armor_list[to_list] then
+		local rank = core.get_item_group(stack:get_name(), "grug_armor_class")
+		if rank > 0 and rank > grug_classes.get_armor_rank(player) then
+			warn_armor_class(player, rank)
+			return false
+		end
+	elseif to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
+		-- The two-handed rule, both directions (B4). Armor lists and hand
+		-- lists are disjoint, hence the elseif: no equip pays for both
+		-- checks. The class slot rules were checked above.
+		if not allow_hands(player, inventory, to_list, stack, action, info) then
+			return false
+		end
+	elseif OTHER_TRINKET_LIST[to_list] and
+			not allow_unique_trinket(inventory, to_list, stack, action, info) then
+		return false
+	end
+	return true
+end
+
+--
+-- Shift-click on the Character page (Round 44, spec §3.2): inventory <->
+-- equipment. A listring moves a stack only into the ONE next list of the
+-- ring, and the engine fills that list from its first slot -- for `main`
+-- that is the hotbar, and eight one-slot equipment lists cannot all be "the
+-- next list". So every list the page draws rings to SHIFT_LIST, a one-slot
+-- list that no page draws and that never holds anything: the allow callback
+-- applies the move the shift-click means itself and refuses the engine's own
+-- (the quiver's pattern, bags.lua absorb_into_quiver).
+--   * From `main` (hotbar included) or a bag: a piece of gear goes into its
+--     slot -- an empty slot of its kind first, else it swaps with the
+--     equipped piece, which takes the source cell as a drag onto the slot
+--     would leave it; arrows go into a Scout's quiver.
+--   * From an equipment slot or the quiver: into the inventory in the give
+--     order (main[9..], the bags, the hotbar last), or refused with a feed
+--     line when it does not fit.
+-- The equip rules are a drag's (equip_allowed), with the same feed lines.
+-- Nothing else moves: a shift-clicked apple stays where it is.
+--
+grug_inventory.SHIFT_LIST = "grug_shift"
+local SHIFT_LIST = grug_inventory.SHIFT_LIST
+
+local function carried_list(list)
+	return list == "main" or list:match("^grug_bag%d_content$") ~= nil
+end
+
+local function warn_no_room(player, stack)
+	local reason = "room:" .. stack:get_name()
+	if claim_warn(player, reason) then
+		grug_core.feed(player, "notice", "No room in your inventory for " ..
+			piece_name(stack) .. ".", "equip:" .. reason)
+	end
+end
+
+-- The equipment lists that may hold `stack` for this class, in slot order:
+-- by the slot's group, the two hands by the class rules.
+local function lists_for(class_id, stack)
+	local lists = {}
+	for _, slot in ipairs(grug_inventory.equipment_slots) do
+		local takes
+		if slot.list == WEAPON_LIST or slot.list == OFFHAND_LIST then
+			takes = grug_inventory.hand_accepts(class_id, slot.list, stack)
+		else
+			takes = core.get_item_group(stack:get_name(), slot.group) > 0
+		end
+		if takes then lists[#lists + 1] = slot.list end
+	end
+	return lists
+end
+
+local function equip_by_shift(player, inventory, from_list, from_index)
+	local source = inventory:get_stack(from_list, from_index)
+	local piece = ItemStack(source)
+	piece:set_count(1)
+	local lists = lists_for(grug_classes.get_class(player), piece)
+	if #lists == 0 then
+		-- Hand gear this class cannot hold says so, as on a drag; anything
+		-- that is no equipment at all stays silent.
+		warn_hand_item(player, core.get_item_group(piece:get_name(),
+			"grug_equip_weapon") > 0 and WEAPON_LIST or OFFHAND_LIST, piece)
+		return
+	end
+	-- Empty slots first, then a swap, each in slot order; the first slot the
+	-- rules allow.
+	local target
+	for pass = 1, 2 do
+		for _, list in ipairs(lists) do
+			if not target and inventory:get_stack(list, 1):is_empty() == (pass == 1) and
+					equip_allowed(player, inventory, list, piece, "move", {
+						from_list = from_list, from_index = from_index, to_list = list,
+						to_index = 1, count = 1}) then
+				target = list
+			end
+		end
+	end
+	if not target then return end
+	local old = inventory:get_stack(target, 1)
+	source:take_item(1)
+	local give_old = false
+	if not old:is_empty() then
+		if source:is_empty() then
+			source = old -- the swap: the old piece takes the source cell
+		elseif grug_inventory.fits(player, {old}) then
+			give_old = true -- a stack of several: the old piece goes elsewhere
+		else
+			warn_no_room(player, old)
+			return
+		end
+	end
+	inventory:set_stack(from_list, from_index, source)
+	inventory:set_stack(target, 1, piece)
+	if give_old then grug_inventory.give(player, old) end
+	grug_inventory.equipment_changed(player, target)
+	grug_sounds.play("equip", player)
+end
+
+local function unequip_by_shift(player, inventory, list)
+	local stack = inventory:get_stack(list, 1)
+	if not grug_inventory.fits(player, {stack}) then
+		warn_no_room(player, stack)
+		return
+	end
+	inventory:set_stack(list, 1, ItemStack(""))
+	-- fits() said it all goes; a leftover would only follow a callback that
+	-- changed the inventory in between, and then it stays in its slot.
+	inventory:set_stack(list, 1, grug_inventory.give(player, stack))
+	grug_inventory.equipment_changed(player, list)
+	grug_sounds.play("equip", player)
+end
+
+local function route_shift(player, inventory, info)
+	local from_list = info.from_list
+	local stack = inventory:get_stack(from_list, info.from_index)
+	if stack:is_empty() then return end
+	if slot_group[from_list] then
+		unequip_by_shift(player, inventory, from_list)
+	elseif from_list == grug_inventory.QUIVER_LIST then
+		if grug_inventory.unload_quiver(player, info.count) == 0 then
+			warn_no_room(player, stack)
+		end
+	elseif carried_list(from_list) then
+		if core.get_item_group(stack:get_name(), "grug_arrow") > 0 and
+				grug_inventory.has_quiver(player) then
+			grug_inventory.absorb_into_quiver(player, inventory, from_list,
+				info.from_index, info.count or stack:get_count())
+		else
+			equip_by_shift(player, inventory, from_list, info.from_index)
+		end
+	end
+end
+
 core.register_allow_player_inventory_action(function(player, action, inventory, info)
 	local to_list, stack
 	if action == "move" then
@@ -457,44 +634,17 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		to_list = info.listname
 		stack = info.stack
 	end
-	local group = to_list and slot_group[to_list]
-	if group then
-		if to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
-			-- The hands follow the class rules (ruling 25), not one group.
-			local class_id = grug_classes.get_class(player)
-			if not grug_inventory.hand_accepts(class_id, to_list, stack) then
-				warn_hand_item(player, to_list, stack)
-				return 0
-			end
-		elseif core.get_item_group(stack:get_name(), group) == 0 then
-			return 0
+	if to_list == SHIFT_LIST then
+		-- Nothing ever lands here: a move from this player's own lists is a
+		-- shift-click on the Character page, applied by route_shift.
+		if action == "move" then
+			route_shift(player, inventory, info)
 		end
-		-- The level requirement holds in every slot (round33-plan.md §2.2).
-		local allowed, required, current = grug_core.can_use_item_level(player, stack)
-		if not allowed then
-			warn_item_level(player, stack, grug_inventory.slot_label(
-				grug_classes.get_class(player), to_list) or slot_name[to_list],
-				required, current)
-			return 0
-		end
-		if is_armor_list[to_list] then
-			local rank = core.get_item_group(stack:get_name(), "grug_armor_class")
-			if rank > 0 and rank > grug_classes.get_armor_rank(player) then
-				warn_armor_class(player, rank)
-				return 0
-			end
-		elseif to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
-			-- The two-handed rule, both directions (B4). Armor lists and hand
-			-- lists are disjoint, hence the elseif: no equip pays for both
-			-- checks. The class slot rules were checked above.
-			if not allow_hands(player, inventory, to_list, stack, action, info) then
-				return 0
-			end
-		elseif OTHER_TRINKET_LIST[to_list] and
-				not allow_unique_trinket(inventory, to_list, stack, action, info) then
-			return 0
-		end
-		return 1 -- slots hold exactly one item
+		return 0
+	end
+	if to_list and slot_group[to_list] then
+		return equip_allowed(player, inventory, to_list, stack, action, info) and
+			1 or 0 -- slots hold exactly one item
 	end
 	-- Not our list: return nil so later allow callbacks still run (the
 	-- engine combines them with OR + short-circuit — a number here would
