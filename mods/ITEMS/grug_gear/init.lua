@@ -776,15 +776,10 @@ local function refresh_weapon_descriptions(player)
 	end
 end
 
--- One acquisition initializer, used by each engine-owned acquisition boundary.
--- Crafting can replace its output directly. Every other acquisition (item
--- pickup, dug drops, trader purchases, loot) goes through
--- grug_inventory.give, which calls the same initializer (Round 44).
-core.register_on_craft(function(itemstack, player)
-	if grug_gear.initialize_weapon_tooltip(itemstack, player) then
-		return itemstack
-	end
-end)
+-- One acquisition initializer: every acquisition (item pickup, dug drops,
+-- trader purchases, loot) goes through grug_inventory.give, which calls it
+-- (Round 44); a crafted item gets it from grug_items.crafted_output (Round
+-- 45: no engine craft remains).
 
 core.register_on_mods_loaded(function()
 	local inventory_api = rawget(_G, "grug_inventory")
