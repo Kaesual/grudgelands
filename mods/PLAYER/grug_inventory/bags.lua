@@ -250,8 +250,9 @@ function grug_inventory.is_bow(stack)
 		core.get_item_group(stack:get_name(), "grug_bow") > 0
 end
 
--- One server-side transaction: quiver first, then main and the bags. No list is written
--- until the combined preflight has proved that the complete shot can settle.
+-- One server-side transaction: quiver first, then main and the bags. No list
+-- is written until the combined preflight has proved that the complete shot
+-- can settle.
 function grug_inventory.consume_ammo(player, count)
 	count = math.floor(tonumber(count) or 1)
 	if count < 1 or grug_inventory.ammo_count(player) < count then return false end
