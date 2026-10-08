@@ -39,12 +39,13 @@ What a change needs:
 | World generation, or map-bound state (§3.2) the new code cannot read | map reset |
 | A removed item: a step replaces or removes it in inventories, offline characters included | migrate |
 | Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
-| Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it (for example an XP-curve change) | new server |
+| Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
 
-**Data migrations only through the tool, with a test:** a change the new
-code cannot read is converted by a declared step (§5) whose test runs the
-step end to end, or declared a new server; never converted at load by code
+**Data migrations only through the tool, with a test:** a change to state
+that is not map-bound and that the new code cannot read is converted by a
+declared step (§5) whose test runs the step end to end, or declared a new
+server; never converted at load by code
 scattered over the mods (`tools/check_fresh_server.py` guards the retired
 mechanisms and keeps the markers in grug_core's runner). Ids of quests,
 items, achievements and waypoints stay stable; a renamed item may keep its
