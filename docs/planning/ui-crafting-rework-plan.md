@@ -302,6 +302,23 @@ Game:
     stay.
 29. **Existing items keep what they are** where possible (§6): an existing
     ilvl-20 steel sword may exist; new crafts follow the new ladder.
+30. **Durations** (the user, 2026-10-08): Basic 1 s per craft; simple food
+    1 s; good dishes 1 s for the raw dish, then the furnace as today;
+    potions and elixirs 2 s; gear (weapons, armour, offhands, trinkets) 3 s;
+    enchants 5 s; upgrades 1 s per level. A job lasts quantity × duration.
+31. **Profession XP sources:** crafted gear, trinkets, potions, dishes and
+    enchants give XP (one per item, capped by §2.22); **upgrades give none**,
+    so cheap upgrades are no XP farm.
+32. **Upgrade cost per level:** one family material of the item's tier
+    (bar, cloth bolt, leather, graded wood, set gem); weapons one stick on
+    top.
+33. **Recipe visibility:** every area shows all its recipes; search,
+    pages and "Craftable only" replace the discovery (the seen-items list,
+    its inventory scan and the starter flags go).
+34. **Gear recipes** keep today's Basics ingredients, moved to their
+    profession; the profession tier needed equals the item's tier; the
+    station within 4 nodes; the result starts at its tier's base item level
+    (1/11/21/…).
 
 ## 3. Round A — window structure
 
