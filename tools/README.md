@@ -359,3 +359,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `streets` (the capital's streets read from the road layout
   as the runtime does). `summarize.py RESULTS.json [MORE.json ...]` prints
   the table; `evidence/before/` and `evidence/after/` keep the lane's runs.
+  Since Round 42 DR the probe also counts the doors NPCs open and close and
+  the doors standing open before and after each window, and the NV0 probe
+  re-places a scene's door before each trial and records whether it is open
+  at the trial's end (`door_open_end`). `r42_dr`: `portable_test.lua`
+  drives real walkers, post guards and patrols (the real `npc_doors.lua`,
+  `patrol.lua`, `routes.lua`, navigation and amble tick, and the vendored
+  `doors.get`/`door_toggle` cut out of `doors/init.lua`) through doors in
+  tools/r42_nv3's world model: door legs, open/pass/close, the NPC right
+  behind, unloaded in the doorway, open doors, owned doors and trapdoors,
+  gates, fixed-walk door detours; `evidence/after/` keeps the lane's capital
+  run (NV3's probe) and NV0's door scenes.

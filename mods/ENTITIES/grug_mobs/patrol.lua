@@ -287,7 +287,7 @@ local function door_via(self, pos, w, key, owner)
 	local feet = {x = pos.x, y = pos.y + mobs.grug_obstacle.mob_cbox(self)[2],
 		z = pos.z}
 	local d = doors.between(feet, w, tried)
-	if not d or d == "wait" then return nil end
+	if not d then return nil end
 	tried[d.key], tried.n = true, tried.n + 1
 	local front, behind = doors.sides(d, feet)
 	doors.heading(self, d)

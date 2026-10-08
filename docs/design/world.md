@@ -606,7 +606,10 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   patrol come from a route cache, built once on first use and reused; a
   capital's long patrol legs run over its streets, and a cached leg with no
   route goes to the later stage at once ([settlements.md](settlements.md)
-  "Settlement walkers").
+  "Settlement walkers"). Doors are walls to every search: the route cache
+  builds its legs through doors, and a walker's or post guard's fixed walk
+  whose search failed walks through a door between it and its goal, opening
+  it and closing it behind it (Round 42 DR, settlements.md "Doors").
 - **Respawn slots**: every anchor has a configured **maximum population**
   and refills toward it one NPC at a time. Each refill takes a
   **configurable interval** (either an exact duration or a min–max

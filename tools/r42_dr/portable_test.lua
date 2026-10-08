@@ -135,7 +135,9 @@ core = {
 	end,
 }
 minetest = core
+local LIMIT = 300 -- beyond |x| the map is not loaded
 function core.get_node_or_nil(pos)
+	if abs(pos.x) > LIMIT then return nil end
 	return {name = name_at(pos.x, pos.y, pos.z)}
 end
 local function walkable(x, y, z)
@@ -606,6 +608,14 @@ do
 	v.do_custom = amble_tick
 	run(v, 30)
 	check(not door_open(d), "P2 a fixed walk never opens a player's door")
+	-- Unloaded is never "no door" for the cache; a fixed walk's detour takes
+	-- what is loaded.
+	fresh()
+	local edge = room(286, -4, 294, 4, 0)
+	check(D.near({x = 284, y = 1, z = 0}) == "wait",
+		"P4 the cache waits while a door search's box is not loaded")
+	local part = D.near({x = 284, y = 1, z = 0}, nil, true)
+	check(#part == 1 and part[1].key == D.key(edge), "P4 ...a fixed walk takes the loaded part")
 	-- A trapdoor is no door.
 	set(30, 1, 0, "doors:trapdoor")
 	check(D.at({x = 30, y = 1, z = 0}) == nil, "P3 a trapdoor is no door")

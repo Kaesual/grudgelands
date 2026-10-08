@@ -607,8 +607,49 @@ Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
   the end of the nearest segment, or at that segment's start when the way
   there is not a straight walk; one pushed more than 2 nodes off it is stuck
   within a second and searches its way back to its next corner.
-- **Doors are walls to the engine** until NPCs open doors: legs to indoor
-  spots behind a door end as "no route" without a search storm.
+- **Doors** (Round 42 DR, ruling 15; see "Doors" below): a leg whose plain
+  plan is spent tries door plans before it is "no route": through one of
+  the three doors nearest to its goal, through one of the three nearest to
+  its start, through the nearest of both; each starts from the leg's start
+  again, and the first that gets through is cached like any route. A leg
+  with no route that no door opens (an enclosure without a door, a raised
+  hall the engine cannot climb to) stays "no route".
+
+### Doors
+
+Decided in Round 42 ([plan](../planning/round42-plan.md) ruling 15):
+
+- **Settlement NPCs open, pass and close doors.** To the engine's pathfinder
+  a door is a wall, open or shut, so a walk through one is three pieces: to
+  the cell in front of it (a search), over its centre to the cell behind it
+  (a straight walk, steered every step), and on (a search). The doors are
+  found in the world when a walk needs one (the upright doors within 20 nodes
+  of a walk's end, nearest first); nothing is written for them and nothing is
+  saved. A door counts when it stands in a wall with a place to stand in
+  front of and behind it.
+- **Who:** the walkers and the watch on cached routes (start towns,
+  capitals), and the walkers and post guards elsewhere on a fixed walk: one
+  whose search failed looks for a door whose wall stands between it and its
+  goal and walks through it (at most two doors per walk). Royal guards never
+  need one (they follow their king inside his hall); fights, camps and wild
+  mobs never open a door.
+- **Opening:** within 1.6 nodes of the door's centre the NPC opens it the way
+  a player's click does but with no player, so a door in a protected
+  settlement opens; the door plays its own open and close sounds. This is
+  the second recorded exception to the terrain-damage guard besides the
+  rift's crack ([world.md](world.md) §2 R1b).
+- **Closing:** the NPC that opened a door closes it once it is a node past
+  its centre, unless another NPC heading through the same door is within 4
+  nodes: that one closes it after it. Somebody standing in the doorway keeps
+  it open until the doorway is clear. A door found open (a player's doing)
+  stays open, and so does one whose opener was unloaded or died on the way.
+- **Never a player's door:** a door with an owner (a locked door a player
+  placed) is no door for an NPC. Trapdoors are no way through a wall.
+- **Gates are routed round:** NPCs never open a fence gate. Every walker
+  stops when it faces a node named gate, open or not (the vendored mob
+  code's fence rule), and a settlement's gates stand in fence and hedge lines
+  round fields, paddocks and orchards that walks pass by; a spot that only a
+  gate reaches is no route.
 
 ## Round 15 regional POI composition
 

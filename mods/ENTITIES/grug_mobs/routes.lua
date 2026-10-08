@@ -563,10 +563,15 @@ local function door_plans(a, b)
 	return plans
 end
 
--- A door plan's steps: to the door, through it ({door, behind}), on.
+-- A door plan's steps: first a check per door that its end reaches its own
+-- side of it (a short search in the room; a wrong door costs that one, not
+-- a walk across the town), then to the door, through it ({door, behind}),
+-- on.
 local function door_steps(a, b, plan)
 	local steps, from = {}, a
 	local da, db = plan[1], plan[2]
+	if da then steps[#steps + 1] = {check = a, to = (doors.sides(da, a))} end
+	if db then steps[#steps + 1] = {check = b, to = (doors.sides(db, b))} end
 	if da then
 		local here, there = doors.sides(da, a)
 		split_steps(steps, from, here)
@@ -655,7 +660,7 @@ local function advance(set, entry)
 			return
 		end
 	end
-	local from, why = end_cell(job.from)
+	local from, why = end_cell(step.check or job.from)
 	local to, why2 = end_cell(goal)
 	if why == "unloaded" or why2 == "unloaded" then
 		job.wait_until = now + 1000000
@@ -694,6 +699,11 @@ local function advance(set, entry)
 		else
 			job.fails = routes.MAX_FAILS
 		end
+		return
+	end
+	if step.check then
+		-- The end reaches its side of the door: on to the plan's walk.
+		job.i = job.i + 1
 		return
 	end
 	local t1 = core.get_us_time()

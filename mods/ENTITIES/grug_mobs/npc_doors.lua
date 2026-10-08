@@ -153,14 +153,16 @@ end
 --
 -- The doors near `p` (a walk's end): within REACH and RISE, not on p's own
 -- plane, not in `tried` (keys), nearest first, at most PER_END. "wait" when
--- the area is not loaded (unloaded is never "no door").
+-- the area is not loaded (unloaded is never "no door": the route cache
+-- remembers its verdict); `partial`: the loaded part answers (a fixed
+-- walk's detour, which is tried again on its next failure).
 --
-function D.near(p, tried, limit)
+function D.near(p, tried, partial)
 	if not api() then return {} end
 	local cx, cy, cz = floor(p.x + 0.5), floor(p.y + 0.5), floor(p.z + 0.5)
 	local minp = {x = cx - D.REACH, y = cy - D.RISE, z = cz - D.REACH}
 	local maxp = {x = cx + D.REACH, y = cy + D.RISE, z = cz + D.REACH}
-	if not box_loaded(minp, maxp) then return "wait" end
+	if not partial and not box_loaded(minp, maxp) then return "wait" end
 	local out = {}
 	for _, q in ipairs(core.find_nodes_in_area(minp, maxp, "group:door")) do
 		local d = D.at(q)
@@ -174,22 +176,19 @@ function D.near(p, tried, limit)
 		if a.dist ~= b.dist then return a.dist < b.dist end
 		return a.key < b.key
 	end)
-	limit = limit or D.PER_END
-	for k = #out, limit + 1, -1 do out[k] = nil end
+	for k = #out, D.PER_END + 1, -1 do out[k] = nil end
 	return out
 end
 
 --
 -- The door a fixed walk from `from` to `to` (feet positions) may cross: one
--- near either end whose wall has the two on opposite sides, the shortest way
--- over it first; nil when there is none, "wait" when unloaded.
+-- near either end (in the loaded part) whose wall has the two on opposite
+-- sides, the shortest way over it first; nil when there is none.
 --
 function D.between(from, to, tried)
 	local list = {}
 	for _, p in ipairs({to, from}) do
-		local near = D.near(p, tried)
-		if near == "wait" then return "wait" end
-		for _, d in ipairs(near) do list[#list + 1] = d end
+		for _, d in ipairs(D.near(p, tried, true)) do list[#list + 1] = d end
 	end
 	local best, cost
 	for _, d in ipairs(list) do
