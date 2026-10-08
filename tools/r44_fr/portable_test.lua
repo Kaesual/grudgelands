@@ -520,4 +520,4 @@ grug_inventory.refresh(refresher)
 eq(refresher.sent, before, "a bag change leaves the Map tab alone")
 
 print(("r44_fr: %d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error(("r44_fr: %d failures"):format(failures)) end

@@ -118,6 +118,7 @@ local ROW_STEPS = PITCH / SCROLL_FACTOR
 grug_inventory.VIEW_ROWS = {full = 8, short = 2}
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 	short = "grug_inv_scroll_short"}
+-- Where the views sit, for pages that lay out content around them.
 grug_inventory.VIEW_GEOMETRY = {x = VIEW_X, width = VIEW_W,
 	hotbar_y = HOTBAR_Y, area_bottom = AREA_BOTTOM}
 
@@ -215,8 +216,8 @@ end
 --
 -- The frame. A page passes show_inv = "full" or "short" for that view, true
 -- for the short view (pages not yet reworked) and false or nil for none. A
--- page with its own header (`size`: the Map tab, creative's tabs) gets the
--- tabs and its content only. context.grug_inv_view records the view the page
+-- page with its own header (`size`: the Map tab) gets the tabs and its
+-- content only. context.grug_inv_view records the view the page
 -- shows, so a bag change re-renders it (pages.lua grug_inventory.refresh).
 --
 function sfinv.make_formspec(player, context, content, show_inv, size)
