@@ -20,6 +20,7 @@
 -- walk-velocity nudge once a second is all an amble needs.
 --
 
+local nav = mobs.grug_nav
 local WAYPOINT_REACHED = 4 -- m
 local TICK = 1 -- s between nudges (performance rule: throttled)
 
@@ -30,11 +31,16 @@ local TICK = 1 -- s between nudges (performance rule: throttled)
 -- anchor"), which is the same "walk that way" with a different target.
 --
 -- mobs_redo's own walk state re-randomizes the yaw with a 30 % chance per
--- do_states call (api.lua:2176-2864) and may stop the mob (`stand_chance`), so a
--- single nudge is a suggestion, not a command — but do_states runs only once a
--- second on its own timer and this repeats once a second, so the mob makes net
--- progress instead of a straight line. That is exactly what an amble should
--- look like.
+-- do_states call (mobs/api.lua, the walk state), so a single nudge is a
+-- suggestion, not a command — but do_states runs only once a second on its
+-- own timer and this repeats once a second, so the mob makes net progress
+-- instead of a straight line. That is exactly what an amble should look like.
+--
+-- THE NUDGE MARKS THE MOB AS DRIVEN (Round 42 ST, ruling 25; mobs/grug_nav.lua
+-- `nav.steer`): for 1.5 s after it the walk state's random stop
+-- (`stand_chance`) does not apply, so a mob one of our movers walks no longer
+-- stands for up to a second every few seconds. Its stops in front of a fence,
+-- wall or closed gate that blocks and at a cliff stay.
 --
 -- `pos` is passed in because both callers already fetched it; y is only used
 -- to keep the yaw horizontal.
@@ -55,6 +61,7 @@ local TICK = 1 -- s between nudges (performance rule: throttled)
 -- (bosses.lua). A speed above the walk speed plays the run clip.
 --
 function grug_mobs.walk_toward(self, x, z, pos, speed)
+	nav.steer(self)
 	self:yaw_to_pos(vector.new(x, pos.y, z), 0, 0)
 	self.delay = 0
 	self.state = "walk"
@@ -141,16 +148,18 @@ end
 --      (`walk_fixed` returns them): a patrol takes its next waypoint, a
 --      patrol or a post snaps out of sight (`snap_try`).
 --
--- HELD WALKERS. mobs_redo stops a walker that faces a node named fence, gate
--- or wall (`facing_fence`, do_states) and the ambient cliff guard stops it at
--- a drop of 1.5 (`is_at_cliff`); a town wall or gate is where guards stand.
--- The walk still wants to move there, so the detector hears the speed the
--- nudge commanded, not the speed mobs_redo left it: such a walker is stuck
--- like one pressed into a trunk, and a path down a drop the cliff guard
--- refuses is followed (the engine plans drops up to the mob's fear height).
--- mobs_redo's random stop (`stand_chance`) is no hold: a once-a-second window
--- that ends with the walker stood still for no reason of its own is not
--- measured.
+-- HELD WALKERS. mobs_redo stops a walker that faces a blocking (walkable)
+-- node named fence, gate or wall (`facing_fence`, do_states; Round 42 ST: a
+-- wall torch or a wall sign no longer does) and the ambient cliff guard
+-- stops it at a drop of 1.5 (`is_at_cliff`); a town wall or gate is where
+-- guards stand. The walk still wants to move there, so the detector hears the
+-- speed the nudge commanded, not the speed mobs_redo left it: such a walker
+-- is stuck like one pressed into a trunk, and a path down a drop the cliff
+-- guard refuses is followed (the engine plans drops up to the mob's fear
+-- height). mobs_redo's random stop (`stand_chance`) no longer reaches a
+-- walker the nudges drive (walk_toward above, ruling 25); a stand that is no
+-- hold all the same (the owner's own stop before a walk, a fight's end)
+-- is not measured.
 --
 -- One walk per mob in `self.temp.grug_walk` (runtime only): its owner (the
 -- tick that drives it), its key (one goal; a new key is a new walk for the
@@ -169,7 +178,6 @@ end
 -- fight, a camp, a wild mob, nor a walker on a cached route (routes.lua
 -- builds its doors into the route).
 --
-local nav = mobs.grug_nav
 local doors = grug_mobs.npc_doors
 local DOOR_WALKS = {amble = true, post = true}
 local VIA_FAILS = 2 -- failed searches toward the cell in front of the door
@@ -337,7 +345,7 @@ function grug_mobs.walk_fixed(self, dtime, pos, x, y, z, key, owner, opts)
 	local stepped = nst and nst.target == key and (nst.path or nst.want)
 	if not stepped and self.state == "stand"
 			and not self.facing_fence and not self.at_cliff then
-		-- mobs_redo stood the walker since the last nudge: no measure.
+		-- Stood since the last nudge, and not by a hold: no measure.
 		nav.command(self, pos, 0)
 	end
 	drive(self, w, pos)
