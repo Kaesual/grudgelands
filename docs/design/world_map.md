@@ -75,7 +75,8 @@ quest givers, trainers, Housing Stewards, Crownbinders, Decor Merchants and
 innkeepers; a character without a faction yet sees no NPC markers. Both
 factions can have markers in one zone (a spy in a contested zone), each seen
 only by its own side. The base with its baked layer (the kings and dragons
-included), roads and zone markers stay complete for everyone.
+included) and roads stay complete for everyone; since Round 44 the
+selected quest's own targets show wherever they are.
 
 Round 29 (WP17): every **discovered** waystone of the player's own network
 (three starts, three capitals and, since Round 31, the faction's PvP
@@ -127,31 +128,43 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   character creation or while dead. Esc or the X button closes the window;
   "Back to inventory" opens the inventory window at Inventory.
 - **Size:** 85 % of the client's `max_formspec_size`
-  (`core.get_player_window_information`, read at every send), 20×12 units
-  for clients that do not report it, at least 16×10 (the client shrinks a
-  larger form itself). At 1920×1080 and GUI scale 1 that is 22.66×12.75
-  units: the map 12.49×11.10, the quest column 9.0 wide. The inventory tabs
-  keep their own size.
+  (`core.get_player_window_information`, read at every send) with
+  `padding[0,0]` (`max_formspec_size` assumes no padding; the default 0.05
+  would shrink the form to about 76 % of the screen), 20×12 units for
+  clients that do not report it, at least 16×10 (the client shrinks a
+  larger form itself). At 1920×1080 and GUI scale 1 (72 px per unit) that
+  is 22.66×12.75 units: the map 12.49×11.10, the quest column 9.0 wide. At
+  1280×720 the client's fixed image size (0.5555 inch, 53.3 px) wins over
+  1/15 of the height, so `max_formspec_size` is 24×13.5 and the window
+  20.4×11.47 (the map 10.85×9.64). At GUI scale 1.5 on 1080p the window
+  sits at the 16×10 floor, which still fits (17.8×10 maximum). The
+  inventory tabs keep their own size.
 - **Layout:** a header row (the zoom, the location as "Current:", the
   minimap switch "Show minimap", stored per player in player meta, or "No
   minimap available", "Back to inventory", the close button); the 9:8 map
   with its scrollbars on the left; the quest column on the right, at least
   6.5 units and 30 % of the window wide plus what the map's aspect leaves.
-- **Overlay** (ruling 12), plain `image[]` elements, bottom to top: quest
+- **Overlay** (ruling 12; the Steward, services and innkeepers added back
+  by the user, 2026-10-08), plain `image[]` elements, bottom to top: quest
   target rings, the own faction's trainers (the profession icons, riding
   the mount icon; 0.23 units at 1x and 2x, two thirds of the 0.34 icons,
-  0.34 at 4x and 8x), the home and discovered waystones, a question mark at
-  the hand-in NPC of every active quest of the own faction (silver in
-  progress, gold when one of its quests is ready; the NPC's name as
-  tooltip, the only tooltips of the map), quest target crosshairs, the
-  party's cyan arrows, the player's gold arrow. No exclamation marks, no
-  Steward, services, other innkeepers or zone markers; nothing of the other
-  faction beyond the baked layer. No search, list, legend or filters.
+  0.34 at 4x and 8x), innkeepers, the home and discovered waystones, the
+  Housing Steward, the Crownbinder and the Decor Merchant (their icons,
+  0.34, without tooltips; each NPC of the own faction only, like the
+  minimap), a question mark at the hand-in NPC of every active quest of the
+  own faction (silver in progress, gold when one of its quests is ready;
+  the NPC's name as tooltip, the only tooltips of the map), quest target
+  crosshairs, the party's cyan arrows, the player's gold arrow. No
+  exclamation marks and no zone markers; nothing of the other faction
+  beyond the baked layer except the selected quest's own targets. No
+  search, list, legend or filters.
 - **Quest boxes** (ruling 14, the quest log of [quests.md](quests.md)):
   the list box (the active count, the Quest HUD switch, the list, Track on
   HUD and Abandon with its confirmation) and below it the selected quest's
-  title, level and zone, its text and where to hand it in. The selection
-  stays between openings; without one the first quest is selected.
+  title, level and zone, its text and where to hand it in. Nothing is
+  preselected (the user, 2026-10-08): every opening starts without a
+  selection, the text box asks to select a quest, and the map shows quest
+  targets only after the player clicked one.
 
 ### Quest targets
 
@@ -162,24 +175,31 @@ Selecting a quest marks where its open objectives are done
   leader's spot; a talk objective: the crosshair at the NPC (it counts from
   the start, so it stays marked while the quest is active); a use
   objective: the crosshair at its place;
+- a kill objective at a PvP garrison camp (its area is the camp, no
+  recipe region): the crosshair at the camp's anchor; the rift boss (no
+  region, a place of his own): the crosshair at his clash site. A quest
+  target shows wherever it is, in the other faction's land too (the user,
+  2026-10-08);
 - every other kill objective: rings around spawn regions, those of its
   area (a kind or camp of the zone's recipe) or, without an area, those of
   the quest's zone whose kind or camp spawns its role (the slots its names
   come from). Crosshairs come first; then at most five rings, the regions
-  nearest the player. A ring is the white ring texture tinted orange and
-  semi-transparent, as wide as a disc of the region's area, at least 0.4
-  units;
+  nearest the player. A ring is the white ring texture (32 px, a 1 px line)
+  tinted orange and semi-transparent, as wide as a disc of the region's
+  area, at least 0.7 units: below 32 screen pixels nearest-neighbour
+  scaling drops parts of the line, and 0.7 units are about 50 px at 1080p
+  and 37 px at 720p, about twice an icon (most regions are 0.2–0.45 units
+  wide at zoom 1);
 - finished kill and use objectives, item objectives (gathering, ore, quest
-  drops) and roles outside the region maps (underground, water, rare and
-  critter spawns) mark nothing; the text suffices.
+  drops) and roles outside the region maps without a place of their own
+  (underground, water, rare and critter spawns) mark nothing; the text
+  suffices.
 
 The index (role → regions, area → regions, leader → spot) is built once at
 start from the region maps ([spawn_regions.md](spawn_regions.md)): seed 42,
 151 roles, 1287 regions, 363 areas and 49 leaders in about 2 ms. On that
-seed the targets mark all 94 talk and 18 use objectives and of the 360
-kill objectives 57 with a crosshair and 266 with rings; unmarked are the
-kill objectives at PvP garrison camps (an area that is no recipe region)
-and the rift boss.
+seed the targets mark all 94 talk, 18 use and 360 kill objectives (94 kill
+objectives with a crosshair, 266 with rings).
 
 ### Refresh
 
@@ -191,18 +211,25 @@ second is owed and goes out when it ends (one trailing send). In a party
 the arrows are compared every 5 s and the window is sent only when a
 member's arrow (the viewer's included) moved to another grid cell. Alone,
 nothing is sent without an event: the player's own arrow shows where they
-stood at the last send. A scrollbar move alone sends nothing. A pass every
-0.1 s serves the owed sends and party checks, longest waiting first, at
-most 8 party checks and 2 sends per pass, so many windows opened together
-drift apart. The window counts as open while it is the form the server
-last showed (`default.node_formspec.shown_form`): another form, the death
-screen or the inventory replaces it and it is never sent again until the
-next opening.
+stood at the last send. A scrollbar move sends nothing and holds every
+send for 0.5 s after it (the old Map tab's rule: a form rebuilt during a
+drag breaks the drag); what falls due meanwhile is owed until then. A pass
+every 0.1 s serves the owed sends and party checks, longest waiting first,
+at most 8 party checks and 2 sends per pass, so many windows opened
+together drift apart. The window counts as open from a send or any other
+event of it until its quit, and only while no other form was shown since
+(`default.node_formspec.shown_form`): another form, the death screen or the
+inventory replaces it and it is never sent again until the next opening. A
+send that crosses a close shows the window again while its quit arrives
+after it; the window's next event proves it is shown and marks it open
+again, so clicks are answered.
 
 Comparisons (not targets; seed 42, an Accord or Throng viewer with seven
 active quests at its start town, engine probe `tools/r44_mq/grug_probe_r44_mq`):
-the window is about 4.9 KB at zoom 1x and 5.0 KB at 8x (41 images, 7
-tooltips, 4 buttons, a kill quest's three targets); before Round 44 the Map
+the window is about 5.0 KB at zoom 1x and 5.1 KB at 8x with no quest
+selected (53 images, 7 tooltips, 3 buttons), 5.8/5.9 KB with a kill
+quest selected (its three targets, Track on HUD and Abandon); before
+Round 44 the Map
 tab was 34.1/34.3 KB (MB's base: 78 image buttons, 38 buttons, 114 tooltips)
 plus the Quests tab's 2.0 KB, and about 67.5 KB before MB. Sends per minute
 (the fixture's clock): alone 0 standing or walking, in a party with a
@@ -488,25 +515,10 @@ were in, and quest texts and level routes now name zones.
   underground mob level follows depth, so a range would only confuse).
   Each sample adds the status's two zone queries (`pvp_rule_at`,
   `faction_at`) to the location's one.
-- **Zone markers on the Map tab:** one marker per zone (islands and front
-  zones included), a plain pennant icon, with the zone name and level band
-  in its tooltip, e.g. "Dawnmere Fields (levels 1–10)" ("(level 60)" for a
-  one-level zone). **Since Round 44 the map window does not draw them**
-  (ruling 12 lists the overlay and gives tooltips to quest NPCs only); the
-  placement below still runs at start and the provider stays. Zone markers draw
-  under every other marker. Each sits at the land cell of its zone farthest
-  from the zone's border and coast on a 32-node grid (the pole of
-  inaccessibility), computed once at server start from the world authority
-  (a later start of the same world reads the 32-node zone grid from
-  `grug_map_zone_grid.txt`, keyed by `grug_mapgen.wp40.world_key`, the zone
-  queries' seam and the sampling code; the placement itself runs every
-  start).
-  If another marker (service, quest giver, innkeeper) or a baked icon
-  (king, dragon, settlement) or a region name is too close, the marker takes the deepest
-  cell of its zone that keeps 0.45 formspec units (zoom 1) from every other
-  marker's centre on both axes and clear of the region names' text; where no
-  cell is clear it takes the one clearest of other markers first and of the
-  names' text second. The
-  map has no layer filters; zone markers zoom and scroll like every marker.
+- **Zone markers on the Map tab (Round 28 to 43, gone in Round 44):** one
+  marker per zone, a pennant icon with the zone name and level band in its
+  tooltip. The map window draws none (ruling 12; the user, 2026-10-08), so
+  their placement at start, their provider and the zone-grid cache
+  `grug_map_zone_grid.txt` are gone; a world's old file stays unread.
 - **Kings** carry no name on the map since Round 44: they are baked icons
   without a tooltip (until then "King of Highcourt" markers).

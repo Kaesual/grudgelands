@@ -1351,9 +1351,9 @@ tools](#player-meta-read-by-external-tools).
   `tools/r27_minimap/bench_glide.lua`.
   Zone and town names (Round 28 M1): `location.lua` samples each player's
   location every second, writes the line under the minimap and the entry
-  banner and places one zone marker per zone at startup (since Round 30 a
-  later start reads the sampled zone grid from `<world>/grug_map_zone_grid.txt`,
-  keyed like the region maps); the pure
+  banner (until Round 44 it also placed one zone marker per zone at
+  startup, with a zone-grid cache in the world folder; the map window draws
+  none, so both are gone); the pure
   `location_view.lua` holds the rules (fixture `tools/r28_m1`). Since
   Round 32 each sample also takes the territory status
   (`grug_pvp.territory_at`, the PvP flag's own rule, never the flag): it
@@ -1372,8 +1372,7 @@ tools](#player-meta-read-by-external-tools).
   44 settlements, camps, points of interest, kings and dragons are no
   markers: `settlement_icons.lua` (pure) maps a settlement's anchor slot to
   its baked icon kind, the same for every viewer (ruling 5 ended Round 31's
-  per-faction hiding), and `providers.lua` keeps the kings' and dragons'
-  places only for the zone markers' placement. The
+  per-faction hiding). The
   map window builds its overlay per send, and the minimap re-asks its
   static markers on `register_on_faction_chosen`. Fixtures `tools/r31_n`,
   `tools/r31_m`, `tools/r44_mb`.

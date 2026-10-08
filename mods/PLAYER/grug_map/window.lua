@@ -7,22 +7,24 @@
 -- with the zoom, the location, the minimap switch, "Back to inventory" and
 -- the close button.
 --
--- The overlay (ruling 12) is plain image[] elements: the player's and the
--- party's arrows, the home, discovered waystones, the own faction's
--- trainers (two thirds size at zoom 1x and 2x) and a question mark at the
--- NPC of each active quest (silver in progress, gold ready to hand in) with
--- the NPC's name as its only tooltip. Settlements, camps, bosses and region
--- names are pixels of the base image (bake.lua); nothing else is drawn, so
--- nothing of the other faction shows beyond that baked layer.
+-- The overlay (ruling 12, with the user's additions of 2026-10-08) is plain
+-- image[] elements: the player's and the party's arrows, the home,
+-- discovered waystones, the own faction's trainers (two thirds size at zoom
+-- 1x and 2x), Housing Stewards, capital services and innkeepers, and a
+-- question mark at the NPC of each active quest (silver in progress, gold
+-- ready to hand in) with the NPC's name as its only tooltip. Settlements,
+-- camps, bosses and region names are pixels of the base image (bake.lua);
+-- of the other faction nothing is drawn beyond that baked layer except the
+-- selected quest's own targets.
 --
 -- Refresh (spec §3.6): event-driven. A click, zoom, quest selection or a
 -- quest change sends the window again, at most once per SEND_GAP_US per
 -- player; an event inside that gap is owed and goes out when the gap ends
 -- (the trailing send). In a party the arrows are checked every PARTY_US and
 -- the window is sent only when a member's arrow moved. Alone, nothing is
--- sent without an event. A scrollbar move alone never sends (the client
--- moves the image and the overlay together; the server keeps the position
--- and echoes it on the next send).
+-- sent without an event. A scrollbar move never sends (the client moves the
+-- image and the overlay together; the server keeps the position and echoes
+-- it on the next send) and holds every send for QUIET_US.
 local modpath = core.get_modpath(core.get_current_modname())
 local atlas = grug_map.atlas
 local targets = dofile(modpath .. "/targets.lua")
@@ -40,6 +42,9 @@ W.FALLBACK = {x = 20, y = 12}
 W.MIN = {x = 16, y = 10}
 W.SEND_GAP_US = 1000000
 W.PARTY_US = 5000000
+-- A scrollbar move holds every send for QUIET_US (the old Map tab's rule):
+-- a form rebuilt while the player drags the scrollbar would break the drag.
+W.QUIET_US = 500000
 local PASS = 0.1
 
 -- Layout in real coordinates: the header row, the 9:8 map with its
@@ -50,7 +55,12 @@ local COLUMN_MIN, COLUMN_SHARE = 6.5, 0.3
 -- Overlay sizes in formspec units, constant at every zoom (only positions
 -- scale): icons as before Round 44, trainers two thirds at 1x and 2x
 -- (ruling 12), arrows, the crosshair; rings at least RING_MIN across.
-local ICON, TRAINER_SMALL, ARROW, CROSSHAIR, RING_MIN = 0.34, 0.23, 0.42, 0.5, 0.4
+-- RING_MIN (the user, 2026-10-08: a ring clearly visible at zoom 1): the
+-- ring texture is 32 px with a 1 px line, so below 32 screen pixels
+-- nearest-neighbour scaling drops parts of the line. 0.7 units are about
+-- 50 px at 1080p and 37 px at 720p (GUI scale 1, 72 and 53 px per unit),
+-- about twice an icon.
+local ICON, TRAINER_SMALL, ARROW, CROSSHAIR, RING_MIN = 0.34, 0.23, 0.42, 0.5, 0.7
 -- Arrows sit on a grid of ARROW_STEP units (about a screen pixel); the
 -- party check compares these cells, so a move inside one sends nothing.
 local ARROW_STEP = 0.02
@@ -139,11 +149,13 @@ local function arrow_cell(view, position, layout, zoom)
 end
 
 -- The markers of the overlay (ruling 12) from the providers: player and
--- party arrows, the home (not the other innkeepers), waystones and trainers
--- (not the Steward or the services), each NPC of the own faction only
--- (providers.lua).
+-- party arrows, the home, waystones, trainers and (the user, 2026-10-08)
+-- the Housing Steward, the capital services and the innkeepers, each NPC of
+-- the own faction only (providers.lua), like the minimap; no zone markers.
 local PROVIDERS = {player = true, party = true, home = true, waypoint = true, service = true}
-local KINDS = {player = true, party = true, home = true, waypoint = true, trainer = true}
+local KINDS = {player = true, party = true, home = true, waypoint = true, trainer = true,
+	steward = true, service = true, innkeeper = true}
+local KIND_TEXTURE = {home = "grug_map_home.png", innkeeper = "grug_map_innkeeper.png"}
 function W.overlay_markers(player)
 	local result = {}
 	for _, marker in ipairs(atlas.collect_markers(player, PROVIDERS)) do
@@ -176,22 +188,40 @@ function W.quest_marks(player, journal)
 	return result
 end
 
-local function target_lookup()
-	return {
-		npc = function(id)
-			local npc = grug_map.quest_npc(id)
-			return npc and npc.position or nil
-		end,
-		place = function(ref) return grug_quests.use_place_xz(ref) end,
-	}
+-- Settlement key -> anchor (a garrison camp's place), built on first need.
+local anchors
+local function anchor_of(key)
+	if not anchors then
+		anchors = {}
+		for _, row in ipairs(grug_core.settlement_socket_settlements()) do anchors[row.key] = row.anchor end
+	end
+	return anchors[key]
 end
+-- Roles outside the region maps that have a place of their own: the rift
+-- boss at his clash site (grug_mobs rift.lua).
+local ROLE_PLACES = {
+	rift_boss = function()
+		local rules = grug_mobs.rift_rules
+		return rules and grug_mobs.spawn_regions.place(rules.SITE) or nil
+	end,
+}
+local lookup = {
+	npc = function(id)
+		local npc = grug_map.quest_npc(id)
+		return npc and npc.position or nil
+	end,
+	place = function(ref) return grug_quests.use_place_xz(ref) end,
+	area = function(ref) return anchor_of(ref:match("/(.+)$") or ref) end,
+	role = function(role) return ROLE_PLACES[role] and ROLE_PLACES[role]() or nil end,
+}
+W.target_lookup = lookup
 
 -- The selected quest's targets for the player (targets.lua), or nil.
 function W.quest_targets(player, quest)
 	if not quest then return nil end
 	local def = grug_quests.registered_quests[quest.id]
 	if not def then return nil end
-	return targets.targets(index, def, quest.objectives, player:get_pos(), target_lookup())
+	return targets.targets(index, def, quest.objectives, player:get_pos(), lookup)
 end
 
 local function image(list, sx, sy, size, texture)
@@ -242,7 +272,7 @@ local function overlay(fs, player, session, layout, journal, quest)
 		else
 			local sx, sy = at(marker.position)
 			if sx then
-				local texture = marker.kind == "home" and "grug_map_home.png" or marker.texture
+				local texture = KIND_TEXTURE[marker.kind] or marker.texture
 				local size = marker.kind == "trainer" and zoom <= 2 and TRAINER_SMALL or ICON
 				if texture then image(icons, sx, sy, size, texture) end
 			end
@@ -283,7 +313,9 @@ function W.formspec(player, session, info)
 			tostring(grug_map.minimap.enabled(player))) or
 		("label[%.2f,%.2f;No minimap available]"):format(right - 7.1, cy)
 	local fs = {
-		("formspec_version[6]size[%.2f,%.2f]"):format(w, h),
+		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
+		-- would shrink the form to about 76 % of the screen.
+		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h),
 		("label[%.2f,%.2f;Map]"):format(PAD, cy),
 		("button[1.0,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD),
 		("label[1.75,%.2f;%dx]"):format(cy, zoom),
@@ -321,18 +353,24 @@ end
 --
 
 -- player name -> session: the window state (zoom, scroll, quest selection),
--- kept between opens until the player leaves; sent (the last send's
--- core.get_us_time), pending (a send is owed), party_sig (the arrows at the
--- last send), party_checked, sends (a counter for probes).
+-- kept between opens until the player leaves; open (see is_open), sent
+-- (the last send's core.get_us_time), pending (a send is owed),
+-- quiet_until (no send before this, after a scrollbar move), party_sig
+-- (the arrows at the last send), party_checked, sends (a counter for
+-- probes).
 local sessions = {}
 W.sessions = sessions
 
--- The window is open while it is the form the server last showed the
--- player and no quit or other form came since (default/node_formspec.lua
--- shown_form): another form, the death screen or the inventory replace it
--- silently, and a refresh must never pop it back over them.
+-- The window is open from a send or any other event of it until its quit,
+-- and only while no other form was shown since (default/node_formspec.lua
+-- shown_form: another form, the death screen or the inventory replace it
+-- silently, and a refresh must never pop it back over them). A send that
+-- crosses a close shows the window again while its quit arrives after it;
+-- the next event of the window then proves it is shown and marks it open.
 function W.is_open(name)
-	return default.node_formspec.shown_form(name) == W.FORMNAME
+	local session = sessions[name]
+	local shown = default.node_formspec.shown_form(name)
+	return session ~= nil and session.open == true and (shown == nil or shown == W.FORMNAME)
 end
 
 -- The party's arrow cells ("" outside a party): the party check sends only
@@ -355,7 +393,10 @@ end
 -- Whether a send may go out now; otherwise it is owed (pending) and the
 -- pass sends it once SEND_GAP_US has passed since the last one.
 function W.may_send(session, now)
-	if not session.sent or now - session.sent >= W.SEND_GAP_US then return true end
+	if now >= (session.quiet_until or 0) and
+			(not session.sent or now - session.sent >= W.SEND_GAP_US) then
+		return true
+	end
 	session.pending = true
 	return false
 end
@@ -363,7 +404,7 @@ end
 local function send(player, session, now)
 	local name = player:get_player_name()
 	local form = W.formspec(player, session, core.get_player_window_information(name))
-	session.sent, session.pending = now, false
+	session.sent, session.pending, session.open = now, false, true
 	session.party_sig = W.party_signature(player, session)
 	session.sends = (session.sends or 0) + 1
 	session.bytes = #form
@@ -392,8 +433,9 @@ end
 -- owed and is first in the next pass.
 W.CHECKS_PER_PASS, W.BUILDS_PER_PASS = 8, 2
 local function due_at(session)
-	if session.pending then return session.sent + W.SEND_GAP_US end
-	return (session.party_checked or session.sent) + W.PARTY_US
+	local at = session.pending and session.sent + W.SEND_GAP_US or
+		(session.party_checked or session.sent) + W.PARTY_US
+	return math.max(at, session.quiet_until or 0)
 end
 function W.pass(now)
 	local due = {}
@@ -428,15 +470,16 @@ function W.pass(now)
 end
 
 -- Opens the window (Z, the Map tab): always sent at once, at zoom 1 over
--- the whole map; the quest selection stays from the last open.
+-- the whole map, with no quest selected (targets show only after a click).
 function W.open(player)
 	if sfinv.inventory_suspended(player) or (player:get_hp() or 1) <= 0 then return false end
 	local name = player:get_player_name()
 	local session = sessions[name] or W.new_state()
 	sessions[name] = session
 	session.zoom, session.scroll_x, session.scroll_y = 1, 0, 0
-	session.quest_abandon, session.quest_notice = nil, nil
+	session.quest_selected, session.quest_abandon, session.quest_notice = nil, nil, nil
 	session.pending, session.dirty, session.busy, session.party_checked = false, nil, nil, nil
+	session.quiet_until = nil
 	send(player, session, core.get_us_time())
 	return true
 end
@@ -455,10 +498,16 @@ end
 function W.handle_fields(player, fields)
 	local name = player:get_player_name()
 	local session = sessions[name]
-	if not session or fields.quit then return end
+	if not session then return end
+	if fields.quit then
+		session.open = false
+		return
+	end
+	session.open = true
 	-- Every event carries both scrollbars (VAL, or CHG for the moved one):
 	-- kept first, so a send below echoes the current view. A scrollbar
-	-- event alone changes nothing else and sends nothing.
+	-- event alone changes nothing else and sends nothing; it holds every
+	-- send for QUIET_US.
 	for _, axis in ipairs({"x", "y"}) do
 		local raw = fields["grug_map_scroll_" .. axis]
 		local kind, value
@@ -466,6 +515,7 @@ function W.handle_fields(player, fields)
 		if kind == "CHG" or kind == "VAL" then
 			session["scroll_" .. axis] = atlas.clamp_scroll(tonumber(value), session.zoom or 1)
 		end
+		if kind == "CHG" then session.quiet_until = core.get_us_time() + W.QUIET_US end
 	end
 	if fields.grug_map_back then
 		W.back(player)

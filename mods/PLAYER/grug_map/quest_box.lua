@@ -27,15 +27,16 @@ local function objective_label(objective)
 		objective.count, objective.required, grug_quests.objective_levels_text(objective))
 end
 
--- The selected quest of the journal and its row, or the first quest when
--- none (or a gone one) is selected.
+-- The selected quest of the journal and its row, or nil: nothing is
+-- preselected (the user, 2026-10-08), so the map shows quest targets only
+-- after the player clicked a quest; a quest that left the log drops its
+-- selection.
 function M.selected(journal, session)
 	for index, quest in ipairs(journal.quests) do
 		if quest.id == session.quest_selected then return quest, index end
 	end
-	local quest = journal.quests[1]
-	session.quest_selected = quest and quest.id or nil
-	return quest, quest and 1 or nil
+	session.quest_selected = nil
+	return nil, nil
 end
 
 -- Description, objective lines and the reward line, separated by an empty
@@ -105,7 +106,7 @@ function M.content(session, journal, rect)
 			y + PAD + ROW_H / 2, journal.hud_enabled and "true" or "false"),
 		("textlist[%.2f,%.2f;%.2f,%.2f;grug_quest_list;%s;%d;false]"):format(x + PAD,
 			y + PAD + ROW_H + 0.1, w - 2 * PAD, row_y - (y + PAD + ROW_H + 0.1) - 0.15,
-			table.concat(rows, ","), selected_index or 1),
+			table.concat(rows, ","), selected_index or 0),
 		("tooltip[grug_quest_list;%s]"):format(grug_quests.status_tooltip({"active", "ready"})),
 	}
 	local text_y = y + list_h + GAP
@@ -113,7 +114,9 @@ function M.content(session, journal, rect)
 	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, text_y, w, text_h, PANEL)
 	if not quest then
 		fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(x + PAD, text_y + PAD,
-			w - 2 * PAD, text_h - 2 * PAD, "Your quest log is empty. Talk to a quest giver to begin.")
+			w - 2 * PAD, text_h - 2 * PAD, #journal.quests == 0 and
+			"Your quest log is empty. Talk to a quest giver to begin." or
+			"Select a quest to read it and to see its targets on the map.")
 		return table.concat(fs)
 	end
 	-- While the abandon confirmation is shown, its two buttons take the row

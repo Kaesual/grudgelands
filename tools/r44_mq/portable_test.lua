@@ -25,7 +25,9 @@
 --      second is owed and goes out when the second is over (one trailing
 --      send), a scrollbar event alone sends nothing, alone nothing is sent
 --      without an event, in a party at most every 5 s and only when a
---      member moved, a replaced window gets nothing; the sends per minute
+--      member moved, a replaced window gets nothing, a send that crossed a
+--      close works again after the window's next event, a scrollbar move
+--      holds every send for 0.5 s; the sends per minute
 --      alone and in a party are printed (comparisons, not targets);
 --   B  the pass budget: many windows in parties opened together get at most
 --      two pass sends and eight party checks per pass, longest waiting
@@ -212,6 +214,12 @@ local registered_quests = {
 			{type = "item", item = "default:apple", count = 3}}},
 	q_enemy = {id = "q_enemy", level = 5, zone = "kezamba", npc = "warlord", turnin_npc = "warlord",
 		objectives = {{type = "item", item = "default:apple", count = 1}}},
+	-- A PvP garrison camp in the other faction's land, and the rift boss.
+	q_camp = {id = "q_camp", level = 30, zone = "front_x", npc = "elder", turnin_npc = "elder",
+		objectives = {{type = "kill", mobs = {"grug_mobs:captain_throng"},
+			area = "front_x/pvp_camp_x_throng_low", count = 1}}},
+	q_rift = {id = "q_rift", level = 40, zone = "dawnmere", npc = "elder", turnin_npc = "elder",
+		objectives = {{type = "kill", mobs = {"grug_mobs:rift_boss"}, count = 1}}},
 }
 rawset(_G, "grug_quests", {
 	registered_quests = registered_quests,
@@ -255,6 +263,7 @@ rawset(_G, "grug_quests", {
 -- quest NPCs' sockets.
 local settlements = {
 	{key = "highcourt", race_id = "human", anchor = {x = 100, z = 100}},
+	{key = "pvp_camp_x_throng_low", race_id = "orc", anchor = {x = -900, z = 700}},
 	{key = "gor_drazhak", race_id = "orc", anchor = {x = -2000, z = 1500}},
 }
 local sockets = {
@@ -300,6 +309,7 @@ rawset(_G, "grug_home", {
 	get = function(p) return homes[p.name] end,
 	locations = function()
 		return {{id = "inn_hc", label = "Highcourt", pos = {x = 110, z = 80}, faction = "accord"},
+			{id = "inn_dm", label = "Dawnmere", pos = {x = 20, z = -300}, faction = "accord"},
 			{id = "inn_gd", label = "Gor Drazhak", pos = {x = -1990, z = 1490}, faction = "throng"}}
 	end,
 	known_waypoints = function(p)
@@ -333,7 +343,9 @@ local maps = {
 }
 rawset(_G, "grug_mobs", {
 	dragon_map_markers = function() return {} end,
+	rift_rules = {SITE = "r20_anchor_077"},
 	spawn_regions = {
+		place = function(key) return key == "r20_anchor_077" and {x = -1500, z = 900, name = "Tombroad"} or nil end,
 		core = {CELL = 32},
 		zone_ids = function() return {"dawnmere", "kezamba", "nowhere"} end,
 		zone_has_recipe = function(zone) return maps[zone] ~= nil end,
@@ -400,7 +412,11 @@ do
 	check(w == 16 and h == 10, "S the floor 16x10")
 	w, h = W.window_size({max_formspec_size = {x = 20, y = 15}}) -- 4:3
 	check(near(w, 17, 0.011) and near(h, 12.75, 0.011), "S 4:3 screen")
-	for _, size in ipairs({{22.66, 12.75}, {20, 12}, {16, 10}, {17, 12.75}, {30, 16}}) do
+	-- 1280x720 at GUI scale 1: the fixed image size (0.5555 in, 53.3 px)
+	-- wins over 720/15, so max_formspec_size is 24 x 13.5.
+	w, h = W.window_size({max_formspec_size = {x = 1280 / (0.5555 * 96), y = 720 / (0.5555 * 96)}})
+	check(near(w, 20.4, 0.011) and near(h, 11.47, 0.011), ("S 720p (%.2fx%.2f)"):format(w, h))
+	for _, size in ipairs({{22.66, 12.75}, {20, 12}, {16, 10}, {17, 12.75}, {30, 16}, {20.4, 11.47}}) do
 		local L = W.layout(size[1], size[2])
 		local label = ("S layout %.2fx%.2f"):format(size[1], size[2])
 		check(near(L.map_w / L.map_h, 9 / 8, 1e-9), label .. ": map 9:8")
@@ -471,8 +487,15 @@ do
 	check(find_image(list, "grug_map_trainer_alchemist.png") == nil, "O no trainer of the other faction")
 	check(find_image(list, "grug_map_home.png") ~= nil, "O the home")
 	check(find_image(list, "grug_map_waypoint.png") ~= nil, "O a discovered waystone")
+	-- The user's answer of 2026-10-08: the Steward, the services and the
+	-- innkeepers come back (own faction, like the minimap), no tooltips.
 	for _, texture in ipairs({"grug_map_housing_steward.png", "grug_map_crownbinder.png",
-			"grug_map_innkeeper.png", "grug_map_zone.png", "grug_map_quest_available.png",
+			"grug_map_innkeeper.png"}) do
+		local image = find_image(list, texture)
+		check(image and near(image.w, 0.34), "O drawn: " .. texture)
+	end
+	eq(count(map, "grug_map_innkeeper%.png"), 1, "O the other own innkeeper (the home has its icon)")
+	for _, texture in ipairs({"grug_map_zone.png", "grug_map_quest_available.png",
 			"grug_map_quest_locked.png"}) do
 		check(find_image(list, texture) == nil, "O not drawn: " .. texture)
 	end
@@ -511,6 +534,12 @@ do
 	check(find_image(list, "grug_map_trainer_alchemist.png") ~= nil, "O throng sees its trainer")
 	check(find_image(list, "grug_map_trainer_tailor.png") == nil, "O throng sees no accord trainer")
 	check(find_image(list, "grug_map_waypoint.png") == nil, "O no waystone undiscovered")
+	for _, texture in ipairs({"grug_map_housing_steward.png", "grug_map_crownbinder.png",
+			"grug_map_home.png"}) do
+		check(find_image(list, texture) == nil, "O throng sees no accord " .. texture)
+	end
+	eq(count(map_part(W.formspec(throng, tstate, nil)), "grug_map_innkeeper%.png"), 1,
+		"O throng sees its own innkeeper only")
 	has(map_part(W.formspec(throng, tstate, nil)), ";Warlord Gash]", "O throng's quest NPC")
 	-- A party member: a cyan arrow.
 	local bea = make_player("bea", {x = 600, z = 600}, "accord")
@@ -583,6 +612,19 @@ do
 		{x = 0, z = 0}, lookup)
 	check(#found.crosshairs == 0 and #found.rings == 0, "T an item quest marks nothing")
 	check(near(targets.ring_radius(9, 32), math.sqrt(9 * 1024 / math.pi)), "T ring radius from size")
+	-- A garrison camp (no recipe region) and the rift boss (no region, a
+	-- place of his own): a crosshair, in the other faction's land too.
+	local lk = W.target_lookup
+	found = targets.targets(index, registered_quests.q_camp, rows(registered_quests.q_camp, {}),
+		{x = 0, z = 0}, lk)
+	check(#found.crosshairs == 1 and found.crosshairs[1].x == -900 and found.crosshairs[1].z == 700
+		and #found.rings == 0, "T a garrison camp's kill: a crosshair at the camp")
+	found = targets.targets(index, registered_quests.q_rift, rows(registered_quests.q_rift, {}),
+		{x = 0, z = 0}, lk)
+	check(#found.crosshairs == 1 and found.crosshairs[1].x == -1500, "T the rift boss at his site")
+	found = targets.targets(index, registered_quests.q_wolf, rows(registered_quests.q_wolf, {}),
+		{x = 0, z = 0}, lk)
+	check(#found.crosshairs == 0, "T a role with regions gets no role crosshair")
 
 	-- In the form: rings under the crosshair, tinted and semi-transparent,
 	-- sized by the region (at least RING_MIN).
@@ -598,7 +640,8 @@ do
 	for w in map:gmatch("image%[[%d.%-]+,[%d.%-]+;([%d.]+),[%d.]+;grug_map_ring") do
 		ring_sizes[#ring_sizes + 1] = tonumber(w)
 	end
-	check(#ring_sizes == 2 and ring_sizes[1] >= 0.4 - 1e-9, "T ring at least the minimum size")
+	check(#ring_sizes == 2 and ring_sizes[1] >= 0.7 - 1e-9 and ring_sizes[2] >= 0.7 - 1e-9,
+		"T rings at least the minimum size (0.7)")
 	state.zoom = 8
 	map = map_part(W.formspec(accord, state, nil))
 	local big = tonumber(map:match("image%[[%d.%-]+,[%d.%-]+;([%d.]+),[%d.]+;grug_map_ring"))
@@ -632,7 +675,8 @@ do
 	check(W.open(accord), "R the window opens")
 	eq(sends_to("ann"), 1, "R the open sends at once")
 	eq(shown.ann, W.FORMNAME, "R it is the shown form")
-	has(shows[1].form, "size[20.00,12.00]", "R fallback size without window information")
+	has(shows[1].form, "size[20.00,12.00]padding[0,0]",
+		"R fallback size without window information, no padding (max_formspec_size has none)")
 	-- A zoom click inside the first second: owed, sent when the second ends.
 	advance(0.3)
 	fields(accord, {grug_map_zoom_in = "+", grug_map_scroll_x = "VAL:0", grug_map_scroll_y = "VAL:0"})
@@ -717,6 +761,66 @@ do
 	before = sends_to("ann")
 	for _, fn in ipairs(markers_changed) do fn(accord) end
 	eq(sends_to("ann") - before, 0, "R closed: nothing sent")
+	-- A send that crosses a close: the client shows the window again, then
+	-- the old instance's quit arrives. The next event of the window marks
+	-- it open; clicks and pass sends work again.
+	W.open(accord)
+	advance(2)
+	for _, fn in ipairs(markers_changed) do fn(accord) end -- a send on its way
+	shown.ann = nil -- node_formspec clears it on the crossing quit
+	fields(accord, {quit = "true"})
+	check(not W.is_open("ann"), "R after the crossing quit the server thinks it closed")
+	advance(2)
+	before = sends_to("ann")
+	fields(accord, {grug_map_zoom_in = "+", grug_map_scroll_x = "VAL:0", grug_map_scroll_y = "VAL:0"})
+	check(W.is_open("ann"), "R an event of the window marks it open again")
+	eq(sends_to("ann") - before, 1, "R the click is answered")
+	for _, fn in ipairs(markers_changed) do fn(accord) end
+	advance(1.1)
+	eq(sends_to("ann") - before, 2, "R owed sends go out again")
+	-- Another form shown since: an event of the stale window does not
+	-- reopen it over that form.
+	core.show_formspec("ann", "grug_quests:npc", "size[1,1]")
+	fields(accord, {grug_map_zoom_in = "+"})
+	before = sends_to("ann")
+	for _, fn in ipairs(markers_changed) do fn(accord) end
+	advance(2)
+	eq(sends_to("ann") - before, 0, "R a stale event does not pop the window over another form")
+	shown.ann = nil
+	fields(accord, {quit = "true"})
+	-- The scroll pause: a scrollbar move holds every send for 0.5 s; a
+	-- quest change owed meanwhile goes out once the pause is over.
+	W.open(accord)
+	advance(2)
+	before = sends_to("ann")
+	fields(accord, {grug_map_scroll_x = "CHG:0", grug_map_scroll_y = "VAL:0"})
+	for _, fn in ipairs(markers_changed) do fn(accord) end
+	advance(0.4)
+	eq(sends_to("ann") - before, 0, "R no send within 0.5 s of a scrollbar move")
+	fields(accord, {grug_map_scroll_x = "CHG:0", grug_map_scroll_y = "VAL:0"}) -- still dragging
+	advance(0.4)
+	eq(sends_to("ann") - before, 0, "R the pause restarts with every move")
+	advance(0.2)
+	eq(sends_to("ann") - before, 1, "R the owed send goes out after the pause")
+	-- In a party: the 5 s check waits for the pause too.
+	local cara = make_player("cara", {x = 600, z = 600}, "accord")
+	players.cara = cara
+	parties.ann, parties.cara = {"ann", "cara"}, {"ann", "cara"}
+	advance(4.8)
+	cara.pos = {x = 900, z = 900}
+	before = sends_to("ann")
+	local held = clock_us
+	for _ = 1, 10 do -- dragging for 2 s across the party check
+		fields(accord, {grug_map_scroll_x = "CHG:0", grug_map_scroll_y = "VAL:0"})
+		advance(0.2)
+	end
+	eq(sends_to("ann") - before, 0, "R the party check waits while the scrollbar moves")
+	advance(0.6)
+	eq(sends_to("ann") - before, 1, "R ...and sends once it is still")
+	check(clock_us - held >= 2e6, "R (the drag lasted past the 5 s check)")
+	parties.ann, parties.cara, players.cara = nil, nil, nil
+	shown.ann = nil
+	fields(accord, {quit = "true"})
 	-- Opens are refused while the inventory belongs to character creation
 	-- and while dead.
 	suspended.ann = true
@@ -822,8 +926,20 @@ end
 do
 	advance(2)
 	local state = W.sessions.ann
+	-- Nothing is preselected (the user, 2026-10-08): no targets, no text,
+	-- no Track or Abandon until a click; every opening starts so.
+	W.open(accord)
+	local form = shows[#shows].form
+	check(state.quest_selected == nil, "Q no quest preselected")
+	has(form, ";grug_quest_list;#active* Title q_kill,#ready", "Q the list")
+	check(form:match(";grug_quest_list;[^%]]*;0;false%]") ~= nil, "Q the list shows no selection")
+	has(form, "Select a quest to read it and to see its targets on the map.", "Q the hint")
+	lacks(form, "grug_quest_abandon", "Q no Abandon without a selection")
+	lacks(form, "grug_quest_track", "Q no Track on HUD without a selection")
+	eq(count(map_part(form), "grug_map_ring") + count(map_part(form), "crosshair"), 0,
+		"Q no targets without a selection")
 	state.quest_selected = "q_kill"
-	local form = W.formspec(accord, state, nil)
+	form = W.formspec(accord, state, nil)
 	has(form, "Active quests: 5/20", "Q the active count")
 	has(form, "checkbox[", "Q checkboxes")
 	has(form, ";grug_quest_hud;Quest HUD;true]", "Q the Quest HUD switch")

@@ -492,7 +492,11 @@ local saved_zones = rawget(_G, "grug_zones")
 grug_zones = {get = function() return {display_name = "Dawnmere Fields"} end}
 local quest_box = dofile("mods/PLAYER/grug_map/quest_box.lua")
 local RECT = {x = 13.4, y = 1.05, w = 7.0, h = 10.7}
-local function box_fs(session) return quest_box.content(session or {}, grug_quests.journal(carol), RECT) end
+local function box_fs(session)
+	session = session or {}
+	session.quest_selected = "q1" -- nothing is preselected since Round 44
+	return quest_box.content(session, grug_quests.journal(carol), RECT)
+end
 local quest_fs = box_fs()
 formspec_ok(quest_fs, "quest log")
 local function nums(text) local out = {}

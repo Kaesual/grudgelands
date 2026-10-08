@@ -5,16 +5,6 @@
 -- Inventory as after closing the old Map tab.
 local PAGE = "grug_map:atlas"
 
--- The map's width at zoom 1 in the old Map tab's window, the reference size
--- the zone markers' spacing was tuned for (location.lua); the region names'
--- rows (bake.lua). The map window sizes its map per player (window.lua).
-local UI = grug_inventory.UI
-local PAGE_W = (UI.width - 1) * 5 / 4 + 1.75
-local PAGE_H = (UI.height - 1) * 15 / 13 + 1.75 + 7 / 26
-local MAP_W = math.min(PAGE_W - 0.8 - 0.33, (PAGE_H - 0.85 - 1.5) * 9 / 8)
-grug_map.page_layout = {map_w = MAP_W,
-	region_labels = dofile(core.get_modpath("grug_map") .. "/bake.lua").REGION_LABELS}
-
 -- Settlements, camps, points of interest, kings and dragons are baked into
 -- the base image for everyone since Round 44 (bake.lua, ruling 5); they are
 -- no markers.

@@ -8,6 +8,12 @@
 --     regions of the quest's zone whose kind or camp spawns its role (the
 --     names that count come from those slots, grug_quests labels.lua
 --     target_names);
+--   * a kill objective whose area is no recipe region (a PvP garrison camp,
+--     "zone/<settlement key>"): a crosshair at the camp; a role that spawns
+--     in no region of the quest's zone but has a place of its own (the rift
+--     boss at its site): a crosshair there. These may lie in the other
+--     faction's land: a quest target shows wherever it is (the user,
+--     2026-10-08);
 --   * a talk objective: a crosshair at the NPC; a use objective: a crosshair
 --     at its place.
 -- Crosshairs come first (a quest "kill seven bandits and their leader"
@@ -74,7 +80,8 @@ end
 -- {{x, z}, ...}, rings = {{x, z, size}, ...}}. `progress` is the journal's
 -- objective rows (count, required) in the order of def.objectives;
 -- `lookup.npc(id)` and `lookup.place(ref)` give a talk NPC's and a use
--- place's {x, z} or nil.
+-- place's {x, z} or nil; `lookup.area(ref)` a garrison camp's and
+-- `lookup.role(role)` a role's own place (or nil).
 function M.targets(index, def, progress, pos, lookup)
 	local crosshairs, rings, seen = {}, {}, {}
 	local function crosshair(spot)
@@ -102,9 +109,15 @@ function M.targets(index, def, progress, pos, lookup)
 				if leader then
 					crosshair(leader)
 				elseif objective.area then
-					ring_list(index.areas[objective.area])
+					if index.areas[objective.area] then
+						ring_list(index.areas[objective.area])
+					else
+						crosshair(lookup.area and lookup.area(objective.area))
+					end
 				else
+					local before = #rings
 					ring_list(index.roles[role], def.zone)
+					if #rings == before then crosshair(lookup.role and lookup.role(role)) end
 				end
 			end
 		end

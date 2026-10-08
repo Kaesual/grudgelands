@@ -207,7 +207,7 @@ kept about 22 MiB of per-cell tables that nothing at runtime reads.
   (`grug_mapgen.wp40.planner_source.drop_caches`: the planner column cache,
   the front-border cache, the horizontal field-sample memo and the height
   memos), which a first start's whole-world sweeps (world layouts, map base,
-  region builds, zone grid) leave full and a later start never fills; the
+  region builds, until Round 44 the zone grid) leave full and a later start never fills; the
   answers are the same, runtime queries refill what they use (Round 31 C;
   seed 12345: 149 → 110 MiB on a first start, 71 → 65 MiB on a later one).
 

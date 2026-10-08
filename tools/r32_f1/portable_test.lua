@@ -180,8 +180,6 @@ do
 	}
 	rawset(_G, "grug_home", {locations = function() return {} end})
 	rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")})
-	grug_map.page_layout = {map_w = 12.37, region_labels = {}}
-	grug_map.static_marker_positions = function() return {} end
 	rawset(_G, "grug_pvp", pvp)
 	dofile(repo .. "/mods/PLAYER/grug_map/location.lua")
 	for _, fn in ipairs(loaded) do fn() end

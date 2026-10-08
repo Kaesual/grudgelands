@@ -308,8 +308,6 @@ do
 	rawset(_G, "grug_home", {locations = function() return {} end})
 	rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")})
 	grug_map.atlas.set_base_texture("base.png")
-	grug_map.page_layout = {map_w = 12.37, region_labels = {}}
-	grug_map.static_marker_positions = function() return {} end
 	dofile(repo .. "/mods/PLAYER/grug_map/location.lua")
 	local M = grug_map.location
 	local p = {name = "ana", pos = {x = 0, y = 10, z = 0}, n = 0}

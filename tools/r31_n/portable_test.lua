@@ -443,10 +443,6 @@ do
 		kinds.boss == nil and m["service:dawnmere/king5"] == nil,
 		"M a factionless viewer sees no NPC markers")
 end
-do
-	local static = grug_map.static_marker_positions()
-	eq(#static, 13, "M zone-marker placement still sees every service, king, dragon and giver (8 + 5)")
-end
 Q.marker_states = real_states
 
 -- ---------------------------------------------------------------------------

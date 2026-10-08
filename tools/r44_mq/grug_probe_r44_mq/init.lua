@@ -140,13 +140,7 @@ end
 local function coverage()
 	local targets = dofile(core.get_modpath("grug_map") .. "/targets.lua")
 	local index = grug_map.quest_targets.index()
-	local lookup = {
-		npc = function(id)
-			local npc = grug_map.quest_npc(id)
-			return npc and npc.position or nil
-		end,
-		place = function(ref) return grug_quests.use_place_xz(ref) end,
-	}
+	local lookup = grug_map.window.target_lookup
 	local rows = {kill = {0, 0, 0}, talk = {0, 0, 0}, use = {0, 0, 0}, item = {0, 0, 0}}
 	local unmarked, seen = {}, {}
 	local ids = {}
