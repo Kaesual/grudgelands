@@ -1,2 +1,2 @@
 {"event": "start", "mode": "migrate", "world": "/tmp/worlds/empty"}
-{"event": "done", "mode": "migrate", "world_version": null, "record": null, "new_world": true, "target": "0.42.0", "due": [], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "postgresql"}, "applied": []}
+{"event": "done", "mode": "migrate", "world_version": null, "record": null, "new_world": true, "target": "0.44.0", "due": [], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "postgresql"}, "applied": []}

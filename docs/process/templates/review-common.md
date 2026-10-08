@@ -38,7 +38,8 @@ Goal: find what would break the game or a user rule, not style nits.
   changed Lua, `python3 tools/check_fresh_server.py`, and
   `python3 tools/r28_design/validate.py --game` where quest or mob data
   changed, `python3 tools/check_upgrade.py` where the declaration or
-  `game.conf`'s version changed; the fixtures that load the changed files through the Lua queue:
+  `game.conf`'s version changed; the fixtures that test the changed behaviour (not every fixture that merely loads a changed file)
+  through the Lua queue:
   `~/projects/grudgelands-orchestration/r<NN>/lua_run.sh review-<lane> 4
   tools/run_fixtures.sh <fixtures...>` (waiting is normal); the full
   `tools/run_fixtures.sh` only if you doubt the lane's full-run receipt or

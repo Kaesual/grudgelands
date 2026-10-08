@@ -1,0 +1,18 @@
+launcher: staged probe: grug_probe_r44_ms
+seconds: 51, exit 0
+joins: ['rider registered (protocol 52), stayed 4.0 s', 'walker registered (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.43.0 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.43.0 (a new world), game 0.43.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33737.
+ACTION[Server]: rider [127.0.0.1] joins game. List of players: rider
+ACTION[Server]: [r44_ms_probe] joined rider
+ACTION[Server]: [r44_ms_probe] built rider
+ACTION[Server]: [r44_ms_probe] left rider
+ACTION[Server]: rider leaves game. List of players: 
+ACTION[Server]: walker [127.0.0.1] joins game. List of players: walker
+ACTION[Server]: [r44_ms_probe] joined walker
+ACTION[Server]: [r44_ms_probe] built walker
+ACTION[Server]: [r44_ms_probe] left walker
+ACTION[Server]: walker leaves game. List of players: 
+ACTION[Server]: [r44_ms_probe] observations written: every planned character left

@@ -24,9 +24,9 @@ leash; bound actors: leash and give-up distance).
   the earlier job-trainer rule is superseded). There is no Riding Trainer in a
   race start, so the first tier requires a trip to a capital. A learned step is
   **player state, permanent and per character**,
-  and purchase records it; it inserts no stack automatically. (Until Round
-  44 the Skills page offered the representation for manual recovery; the
-  quickbar (E) takes that role.)
+  and purchase records it; it hands out no item. Owned mounts and boats are
+  used from the quickbar (E, §3); the Riding Trainer and the Shipwright say
+  so in their dialogue ("Press E to open your mounts.").
 - Every capital has one outer-district stable using the same shared building
   design, with the local architectural palette: earth floor, one-node fence,
   clear entrance and a flat roof on exactly six posts, without perimeter walls.
@@ -94,12 +94,10 @@ character state:
   is listed greyed ("Requires level N", Round 28 ruling 19 above).
   Price is calibrated by reliable net earning time rather than preserving the
   obsolete 1s/8s/30s/60s table.
-- Inventory representation is **one recoverable item per bought tier**. Buying
-  a higher tier retains every preceding tier, and each item summons its original
-  tier at its original speed. Persistent highest-tier metadata remains the
-  ownership authority; missing representations are never recreated on join
-  or purchase (the Skills page that recovered them went in Round 44; the
-  quickbar takes its place).
+- **One quickbar button per bought tier** (Round 44; no inventory item).
+  Buying a higher tier retains every preceding tier, and each button summons
+  its original tier at its original speed. Persistent highest-tier metadata
+  is the ownership authority.
 - T1 is a faction-coloured horse. T2 is a Human horse, Dwarf ibex, Elf stag,
   Orc boar, Undead grave wolf and Troll tiger. Accord flight uses an eagle at
   T3 and the larger, nobler-coloured Steller's sea eagle at T4; Throng flight
@@ -142,7 +140,7 @@ arbitrary fixed-price wall.
 ## 3. What a mount is, mechanically
 
 Boats are the third movement mode, **water**, next to land and flight
-(`boats.md`, 2026-10-02): two boat tiers with the same owner-bound item,
+(`boats.md`, 2026-10-02): two boat tiers with the same quickbar button,
 ephemeral entity, eject and teardown rules as this section,
 sold by the Shipwright instead of the Riding Trainer and summoned only in
 water. Flight and its geography (§3.2, §4) do not apply to them.
@@ -152,13 +150,14 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   taming items (`mobs:saddle`, `mobs:lasso`, `mobs:net`) and its other
   utility items were removed in Round 26 (WP28). A mount is a purchase, exactly like a tome or
   a permanent character upgrade.
-- **Every purchased tier has an owner-bound inventory/hotbar representation.**
-  The item is the summon/dismount action. Dropping it deletes only that
-  representation; permanent player state remains authoritative. Representations
-  may be kept in `main` or the
-  character's own bag contents, never traded or stored externally. Purchase and
-  join never insert a missing item automatically.
-- Using the item on foot creates one ephemeral mount entity at the player's
+- **The quickbar is the only place for mounts** (Round 44,
+  `inventory_equipment.md` "Quickbar"): E opens it, and each purchased tier
+  has one button there, the summon/dismount action; a click acts and closes
+  the window. Nothing hands out a mount item. The six items of earlier
+  versions (`grug_mounts:apprentice_mount` … `grug_mounts:improved_boat`)
+  stay registered as inert items (no use; still kept to `main` and the own
+  bags, a drop deletes them) until the 0.44.0 migration step removes them.
+- A click on foot creates one ephemeral mount entity at the player's
   exact position and rotation. The entity takes over that position as the
   movement and collision authority, and the player's visible character is
   attached on top. While mounted, movement controls drive only the mount entity;
@@ -167,9 +166,6 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   and sideways movement use full tier speed; reverse alone retains 35%.
   Horizontal diagonals are normalized to prevent a speed bonus. Flight ascent
   and descent retain their existing controls and speed.
-- Right-clicking an interactive NPC/entity while holding the mount item invokes
-  that interaction without also summoning or dismissing the mount. Air
-  right-click and the existing primary-use toggle remain available.
 - **A mount is therefore an entity the player is attached to.** The player calls
   `player:set_attach(mount_entity, ...)`
   (`reference_projects/luanti/doc/lua_api.md:8948`); while attached the
@@ -197,12 +193,12 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   page's Effects tab. This is
   runtime-only UI state, supplies no movement modifier and is cleared by the
   shared dismount path.
-- Only one active mount entity (mount or boat) may exist per player. Using the
-  active mount item again dismounts. Using another owned tier's item replaces
-  the active mount when that tier may be summoned there; otherwise the active
-  mount stays and the refusal is shown. Every dismount removes the ephemeral entity; no horse or
-  flying creature remains parked in the world, and the unchanged item was in
-  the inventory throughout.
+- Only one active mount entity (mount or boat) may exist per player. The
+  active tier's button dismounts (the quickbar frames it). Another owned
+  tier's button replaces the active mount when that tier may be summoned
+  there; otherwise the active mount stays and the refusal is shown. Every
+  dismount removes the ephemeral entity; no horse or flying creature remains
+  parked in the world.
 - **Mount speed is the entity's velocity, never
   `physics_override.speed`.** That follows from the attachment above and
   it matters: since the movement aggregator landed (ruling 11, 2026-09-16,

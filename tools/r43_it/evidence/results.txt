@@ -7,22 +7,22 @@ PASS  guard       a new world is stamped with the game's version
 PASS  steps       grug_core's migration runner is the first join callback
 PASS  guard       a world crossing steps is refused (message names the steps and the tool)
 PASS  guard       the refused start wrote nothing
-PASS  steps       tool --check: 0.41.0 (no record), four steps due, write access on all three
+PASS  steps       tool --check: 0.41.0 (no record), four test steps and the declared ones due, write access on all three
 PASS  steps       tool --check wrote nothing
-PASS  steps       tool (shipped command line, empty migrate list): nothing due
-PASS  steps       tool: the four test steps ran in order
+PASS  steps       tool (shipped command line): only the declared steps due
+PASS  steps       tool: the four test steps and the declared ones ran in order
 PASS  steps       tool: offline writes and markers are in the databases
 PASS  setup       boot C: the server ran and both characters joined and left
-PASS  guard       a compatible move (0.41.4, no step between) starts and bumps the record
-PASS  steps       game: the hook's unordered test steps are in step order
+PASS  guard       a compatible move (0.44.0 to 0.44.1, no step between) starts and bumps the record
+PASS  steps       game: the hook's unordered test steps are in step order (with the declared)
 PASS  steps       game: the offline mod-storage write and delete are seen at load
 PASS  steps       game: the world marker ran once at load with its value
 PASS  steps       game, hero's join: the two markers ran in step order, then were deleted
 PASS  steps       game, hero's join: the offline meta, inventory and privilege are loaded
 PASS  steps       game, bystander's join: unaffected (no marker, no handler call)
 PASS  steps       after boot C: no marker left in the databases, the handlers' writes saved
-PASS  map reset   on the emptied map the tool runs only the due step 0.41.5
-PASS  map reset   boot J started from 0.41.5 with the reset pending
+PASS  map reset   on the emptied map the tool runs only the due steps (0.41.5 and the declared)
+PASS  map reset   boot J started from 0.44.0 with the reset pending
 PASS  map reset   the step's offline write and its world work (after every clear) are done
 PASS  map reset   the map reset is done and the record is at the new version
 PASS  setup       boot D: a new world ran without any join
@@ -47,7 +47,7 @@ PASS  postgresql  pg --check: a lock held on mod_storage is refused
 PASS  postgresql  pg --check: a lock held on player is refused
 PASS  postgresql  pg after the lock refusals: unchanged
 PASS  postgresql  pg: without the PGPASSFILE password the connection is refused
-PASS  postgresql  pg migrate: the four test steps
+PASS  postgresql  pg migrate: the four test steps and the declared ones
 PASS  postgresql  pg migrate: step counts
 PASS  postgresql  pg migrate: rows equal the SQLite world after the same steps
 PASS  postgresql  pg migrate: record and markers

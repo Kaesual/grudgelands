@@ -1,4 +1,6 @@
--- One highest-owned tier per movement mode; boats are the water mode.
+-- The purchase record is the one source of what a character owns (Round 44:
+-- no mount item is handed out; the quickbar lists owned_tier_ids). One
+-- highest-owned tier per movement mode; boats are the water mode.
 local META_KEY = {
 	land = "grug_mounts:land_tier",
 	flight = "grug_mounts:flight_tier",
@@ -28,55 +30,8 @@ function grug_mounts.owned_tier_ids(player)
 	return ids
 end
 
-function grug_mounts.stack_for(player, tier_id)
-	local tier = assert(grug_mounts.TIERS[tier_id])
-	local stack = ItemStack(tier.item)
-	local model = grug_mounts.model_for(player, tier_id)
-	if model then
-		local meta = stack:get_meta()
-		meta:set_string("grug_mounts:owner", player:get_player_name())
-		meta:set_string("description", model.description .. "\n" .. tier.name ..
-			(" — %g nodes/s"):format(tier.speed))
-		meta:set_string("inventory_image", model.icon)
-	end
-	return stack
-end
-
 function grug_mounts.register_on_owned_tiers_changed(func)
 	owned_changed[#owned_changed + 1] = func
-end
-
-local function allowed_storage(listname)
-	if listname == "main" then return true end
-	for i = 1, grug_inventory.BAG_COUNT do
-		if listname == grug_inventory.content_list(i) then return true end
-	end
-	return false
-end
-
-function grug_mounts.reconcile_items(player)
-	local inv, have = player:get_inventory(), {}
-	local equipment, changed = {}, false
-	for _, slot in ipairs(grug_inventory.equipment_slots) do equipment[slot.list] = true end
-	for listname, list in pairs(inv:get_lists()) do
-		for index, stack in ipairs(list) do
-			local def = core.registered_items[stack:get_name()]
-			local tier_id = def and def._grug_mount_tier
-			if tier_id then
-				local owner = stack:get_meta():get_string("grug_mounts:owner")
-				if not allowed_storage(listname) or owner ~= player:get_player_name() or
-						not grug_mounts.owns_tier(player, tier_id) or have[tier_id] then
-					inv:set_stack(listname, index, ItemStack(""))
-					if equipment[listname] then changed = true end
-				else
-					have[tier_id] = true
-					inv:set_stack(listname, index, grug_mounts.stack_for(player, tier_id))
-				end
-			end
-		end
-	end
-	if changed then grug_inventory.equipment_changed(player) end
-	return true
 end
 
 local function prerequisite_met(player, tier_id)
@@ -117,15 +72,6 @@ function grug_mounts.purchase(player, tier_id)
 	if not grug_money.take(player, price) then return false, "You do not have enough money." end
 	player:get_meta():set_int(meta_key(tier.mode), tier_id)
 	for _, func in ipairs(owned_changed) do func(player) end
-	return true, tier.name .. (tier.mode == "water" and " bought" or " learned") ..
-		". Press E to open your mounts."
+	-- The dialogue's tip line (grug_mounts.QUICKBAR_TIP) says where to use it.
+	return true, tier.name .. (tier.mode == "water" and " bought." or " learned.")
 end
-
-core.register_on_joinplayer(function(player)
-	core.after(0, function(name)
-		local current = core.get_player_by_name(name)
-		if current then grug_mounts.reconcile_items(current) end
-	end, player:get_player_name())
-end)
-grug_classes.register_on_race_chosen(grug_mounts.reconcile_items)
-grug_factions.register_on_faction_chosen(grug_mounts.reconcile_items)

@@ -465,7 +465,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `r43_mt` the migration tool's tests,
   `test_migrate.py` (Python unittest: the codecs against an engine-written
   world, opening and refusals, locks, check mode, events, test-only steps
-  through `cli.main(test_steps=...)`), run where the platform runs the tool
+  through `cli.main(test_steps=...)`, against a copy of the declaration with
+  an empty `migrate` list), run where the platform runs the tool
   by `container_test.sh [COMMIT]` (debian:trixie, Debian's python3,
   python3-psycopg and python3-zstandard, a `git archive` export).
   `world/` is that engine-written world, built by `make_world.sh OUT_DIR`
@@ -479,7 +480,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   with the probe `grug_probe_r43_it`, real joins by `client.py` (a minimal
   protocol client), the tool with the undeclared test steps of `steps.py`
   (`tool_run.py`, the tool's Python hook) and the game's test hook naming the
-  same steps (`grug_test_migrations.lua`): offline writes, world and
+  same steps (`grug_test_migrations.lua`; the declared steps run with them
+  and the guard names them, and when the last declared step is the game's
+  own version the compatible-move boots stage a game.conf one patch version
+  above it): offline writes, world and
   character online work in step order, the start guard's refusals and record,
   new-world agreement of tool and game, a map reset combined with a step, and
   PostgreSQL (`pg_test.py`: a throwaway server inside the container, tables
@@ -488,6 +492,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   from `Containerfile` (Debian trixie's python3, psycopg, zstandard and
   PostgreSQL; network for apt). About 5 minutes; one queue slot (boots and
   containers run one at a time).
+- **Hotfix 0.43.1** (`hf_0431`): `portable_test.lua` drives the real
+  `routes.lua`, navigation and amble tick in tools/r42_nv3's world model on
+  legs whose two ends share one search cell (two spots on one position, one
+  node apart in height on a block, a stand-in start), and an "ok" route
+  without points through `route_walk` and `route_follow`: no crash, the
+  walker arrives. `same_cell.lua` lists the start and capital blueprints'
+  idle-spot pairs and patrol neighbours in one cell (offline, no engine).
 - **Round 44** (`r44_<lane>`): `r44_fr` the inventory window
   (`portable_test.lua`, the real vendored sfinv and `grug_inventory`'s
   `ui.lua` and `pages.lua` under a stub `core`): the fixed tab order, the
@@ -526,6 +537,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   out of `grug_abilities/init.lua`); `page_bytes.lua [repo]` prints the
   talent and skill pages' formspec bytes (before: a `git archive` export of
   the older tree as `repo`).
+  `r44_ar`: `paint_art.py` (Python 3 with Pillow) paints the map and
+  trainer art (trainer icons, baked map icons with their 6 × 6 minimap
+  drawings, the pixel font, the crosshair and the ring) in three variants
+  A, B and C with a contact sheet each under `variants/`; `--install`
+  also copies the user's picks (`PICKS`: A for every file, the font from
+  C) to `mods/PLAYER/grug_map/art/` and `textures/`, and `--check` (with
+  `--install`, also the installed files) verifies them without writing.
+  After an install, rerun `r44_mb/gen_baked_art.py`.
   `r44_mb`: `gen_baked_art.py [--art DIR]
   [--check]` turns the baked map icons and the pixel font
   (`mods/PLAYER/grug_map/art/`) into `mods/PLAYER/grug_map/baked_art.lua`
@@ -560,6 +579,26 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   per faction at zoom 1x and 8x (the Map and Quests tabs before Round 44 MQ,
   the map window after), the target index's size and build time and how
   many quest objectives the targets mark.
+  `r44_qb`: `portable_test.lua` loads the real `grug_keys`,
+  `grug_quickbar`, `grug_mounts` (catalog, state, entity, items, trainer,
+  shipwright), `grug_traders/potion.lua`, `grug_alchemy/effects.lua` and
+  `grug_home/travel.lua` under a stub `core`: the quickbar's content per
+  owned tiers and belt contents, opening on aux1's rising edge only, a belt
+  click drinking once through the potion's `on_use` and the shared
+  cooldown, summon and dismount with their gates, Return home with its
+  gates, no mount item on purchase or join and the "Press E" tip in both
+  stable dialogues; it prints the window's bytes.
+  `r44_ms` the test of the migration step 0.44.0 (mount items and skills
+  outside the hotbar; [upgrade contract](../docs/technical/upgrade-contract.md)
+  §5.8): `run.sh [EVIDENCE_DIR]` (default `evidence/`; one queue slot, about
+  3 minutes) runs `test_step.py` (Python unittest on the Round 43 MT world,
+  the tool pinned to the 0.44.0 checkout) in IT's runner image, then
+  `e2e.py`, which reuses `r43_it/it.py` and `client.py`: the 0.43.0 game
+  (a `git archive` of `9dc2fad5`) builds two characters with the probe
+  `grug_probe_r44_ms` and lists its registrations (the step's frozen names
+  are checked against them), this game refuses the world, the shipped tool
+  (`--check`, migrate, `--check`) runs in the container, and this game boots
+  and both characters join again; a PASS/FAIL table.
 - **Round 45** (`r45_<lane>`): `r45_il` the item level ladder
   (`portable_test.lua`, the real `grug_gear` with its trinkets,
   `grug_quality` and grug_core's level gate under a stub `core`): the
