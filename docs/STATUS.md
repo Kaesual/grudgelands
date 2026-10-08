@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-08. This is the delivery pointer, not another game specification.
+Updated 2026-10-09. This is the delivery pointer, not another game specification.
 
 - **Round 43 "World migrations" complete, 0.43.0 pushed; hotfix 0.43.1 not pushed**
   (2026-10-08, version 0.43.0,
