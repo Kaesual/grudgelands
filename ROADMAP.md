@@ -362,10 +362,24 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   production server fixed, and a mapgen failure no longer stops a server;
   the Round 40 playtest fixes (walk animation, kings and Generals at their
   seat, the recipe book's Close and multi-item slots, the bow's missed
-  release, the quiver total, stale map tiles). Complete on 2026-10-07, not
-  pushed; the production server moves to it with a map reset. Next: the
-  GUI test, the push and the migration; then
-  [Round 42](docs/planning/round42-plan.md), mob navigation.
+  release, the quiver total, stale map tiles). Complete on 2026-10-07,
+  pushed on 2026-10-08; the production server moves to it with a map
+  reset. Next: the GUI test.
+- [x] **Round 42 "Mob navigation"**
+  ([completion](docs/planning/round42-plan.md#completion-2026-10-08)),
+  version 0.42.0, compatible (a 0.41.0 world plays on): mobs and NPCs that
+  got stuck now use the engine's pathfinder, locally and rarely, on one
+  shared navigation module: creatures in a fight come round trees, walls
+  and fences or give up; guards on patrols and posts, royal guards and
+  the evade run home follow it; villagers and patrols in start towns and
+  capitals walk cached routes and the capital streets, open and close
+  doors and no longer stop at random on their way. Complete on
+  2026-10-08, the user's playtest accepted the same day; 0.42.0 not
+  pushed. Next: the push; then
+  [Round 43](docs/planning/round43-plan.md) (world migrations) in
+  parallel with [Round 44](docs/planning/round44-plan.md)'s first wave
+  (UI rework), then [Round 45](docs/planning/round45-plan.md)
+  (crafting rework).
 
 ### Remaining work
 
@@ -386,10 +400,12 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 37](BACKLOG.md#round-37-carry-overs),
   [Round 38](BACKLOG.md#round-38-carry-overs),
   [Round 39](BACKLOG.md#round-39-carry-overs),
-  [Round 40](BACKLOG.md#round-40-carry-overs) and
-  [Round 41](BACKLOG.md#round-41-carry-overs) carry-overs (Round 40: the
+  [Round 40](BACKLOG.md#round-40-carry-overs),
+  [Round 41](BACKLOG.md#round-41-carry-overs) and
+  [Round 42](BACKLOG.md#round-42-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
-  hold to pick; Round 41: the bow's second cause); Round 36 settled
+  hold to pick; Round 41: the bow's second cause; Round 42: theoretical
+  navigation notes only); Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
   [open questions](BACKLOG.md#audit-2026-10-open-questions),

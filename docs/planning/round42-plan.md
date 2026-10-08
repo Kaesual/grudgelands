@@ -7,8 +7,9 @@ behind trees in combat), three read-only research passes (the existing
 pathing code, the settlement walking data, the engine pathfinder) and the
 user's answers of the same day; revised after an independent Opus review
 (verdict "ready after fixes", every finding checked at the cited lines).
-Status: **running** (the user's go 2026-10-07 after Round 41; NV0 merged,
-calibration ruled 2026-10-08, rulings 18–20).
+Status: **complete** (2026-10-08,
+[completion](#completion-2026-10-08)); the user's playtest accepted on
+2026-10-08; 0.42.0 not pushed.
 
 The user calls this a high-risk topic: navigation has to feel good
 without a hard hit on server performance. The round replaces today's
@@ -502,3 +503,267 @@ GUI checklist (desktop and web):
 None before the start; both door questions were answered on 2026-10-07
 (ruling 15). NV0's calibration report comes to the user before NV1
 starts.
+
+## Completion (2026-10-08)
+
+Every lane is merged on main; lane D (this section and the status
+documents) follows. Main's first-parent line from the start (`71612d19`,
+0.41.0): NV0 (`e07414d7`), NV1 (`15a5f032`), NV2 (`53c3d201`), NV3
+(`e13a1f12`), DR (`c4d8772d`), ST (`43a0d5ea`), CL (`f8265d60`), with the
+user's rulings 18–26 (§2) in between; the commits between ST's and CL's
+merges are the plans of Rounds 43–45, not part of this round. The user's
+playtest **PT** (NV1–ST) was **accepted on 2026-10-08**, after ST; CL
+changes no behaviour. Push: origin/main is `71f777e2` (pushed by the user
+on 2026-10-08); it contains every Round 42 lane up to ST under the version
+0.41.0; 0.42.0 (CL and this lane) is not pushed.
+
+Reviews, each by an independent Opus:
+
+- **NV0** MERGE; three Lows: the tool-docs Low fixed by the coordinator
+  (`7e43bbc9`), the two calibration-text Lows taken into ruling 18 and
+  NV1's brief.
+- **NV1** MERGE AFTER FIXES; one Medium (the walkable-line test ignored
+  the goal's height, so a target on a balcony read as straight-walkable)
+  and two Lows, fixed by the lane (`369a395e`).
+- **NV2** MERGE; three Lows (a waypoint's ground was the topmost standable
+  cell, a refused patrol snap retried in calls instead of seconds, a goal
+  beyond 32 nodes kept counting failures while the walker walked freely),
+  fixed by the lane (`c3e93dac`).
+- **NV3** MERGE AFTER FIXES; one High (an unloaded leg was stored as "no
+  route" or walked straight without the detector), one Medium (a walker
+  whose stand-in start was enclosed froze) and a doc Low, fixed by the lane
+  (`c75c2539`); the focused re-review MERGE with one narrower Low, fixed by
+  the lane (`37788e56`).
+- **DR** MERGE; three Lows (the opener's own name tag held its door open, a
+  second door claim overwrote the first, door plans searched a piece
+  twice), fixed by the lane (`23a824ae`).
+- **ST** MERGE; one Low (a stale evade comment) fixed by the coordinator
+  (`6316f35f`).
+- **CL** MERGE; its two text notes fixed by the coordinator (`d805422e`).
+
+Every code lane ended with a smoke boot (PASS) and a full fixture run (124
+to 129 across the lanes); main's tree has **129 portable fixtures** (123
+at the start; new `r42_nv0`, `r42_nv1`, `r42_nv2`, `r42_nv3`, `r42_dr`,
+`r42_st`). Round end on main (the coordinator, after CL's merge):
+`run_fixtures.sh` 129/129 (CL's full run on the same base; main did not
+move since), `check_fresh_server.py` PASS, the smoke boot of main
+`f8265d60` PASS (90 s); `check_upgrade.py` PASS for 0.42.0 against
+origin/main (this lane). No seed fleet: no world generation changed.
+
+### Shipped, by lane
+
+Numbers come from the lanes' probe runs (NV0's scenes on seed 12345, the
+settlements on seed 42), checked by the reviews against the evidence; they
+are comparisons, never targets.
+
+- **NV0 test scene and calibration** (`e07414d7`; `tools/r42_nv0/`,
+  [upstream-workarounds §5](../technical/upstream-workarounds.md#5-corefind_path-with-searchdistance-0-or-1-can-abort-the-server)):
+  an engine probe with 15 scenes (a trunk, a trunk near the goal, a tree
+  row, a wall with a doorway, an L-corner, a 2-high and a 1-high fence
+  ring, a pillar, a ditch, a step, a wall with a 1-high hole and a 2-high
+  gap, a pond, a closed and an open door) and 7 movers (boar, wolf, bear,
+  bandit, post guard, royal guard, villager), a summarizer for before/after
+  tables, the 40-chasers stress run and the PvE micro probe
+  `tools/r31_pvp` (repaired; it crashed since Round 34). Before: the narrow
+  chasers reached the trunk, row, doorway, L-corner and pillar in
+  3.8–7.5 s, the bear none of them; the post guard reached 7 of 15 scenes
+  (trunks and pillar after 37–41 s), the villager 3, and the royal guard
+  snapped in 8. Its findings (the engine aborts the server below padding
+  2, now upstream-workarounds §5; no wide routes from the engine; head-room
+  rejections; 0.9-wide mobs miss open doors; a narrow mob in a fence cell
+  never searched; held walkers) became rulings 18–20.
+- **NV1 navigation core and combat** (`15a5f032`;
+  [combat_stats.md §4](../design/combat_stats.md#4-threat-aggro-system)):
+  the module `mobs/grug_nav.lua` with the stuck detector (30 % of the
+  self-movement the mob's real speed should give; window 0.5 s in combat,
+  1 s otherwise), the candidate fan (rings 10 and 16, height ±3), the
+  bounded local search (padding 6, never below 2, legs ≤ 32, lockout 1 s
+  or 5 s per mob, at most 20 searches a second, inside the existing budget
+  and negative cache), the head-room and width checks, smoothing, the
+  walkable-line test, the follower with its abort rules (target drift 4,
+  ruling 21) and the fixed-walk interface for NV2–DR. Combat runs on it in
+  place of mobs_redo's stuck timer, the blocked-LOS trigger, the sidestep
+  and the crawl (ruling 17); a mob gives up after three failed searches in
+  a row also when it sees its target, and the veto lasts until the player
+  moved 8 nodes or 15 s passed (ruling 9); mobs taller than 2 nodes get a
+  1.95 physics box (ruling 20). Before → after: the narrow chasers
+  3.8–7.5 → 3.5–5.5 s; the bear now reaches the trunk, trunk_near, pillar
+  and L-corner (one search each) and gives up at a fence or a door 3.2 s
+  after getting stuck instead of about 11.7 s; 40 blocked chasers 96 → 88
+  searches, mean 261 → 131 µs, largest 357 → 193 µs, mob step p50/p99
+  542/4393 → 184/4315 µs, peak 20 searches a second (38 cap waits, only
+  in this stress); the PvE micro run flat (combat ray 13.1 → 12.7 µs, mob
+  punch 18.4 → 17.8 µs, 100-player tick 73.3 → 75.0 µs). Fixture `r42_nv1`
+  116 checks; seven older fixtures that pinned the replaced pieces
+  adapted.
+- **NV2 fixed walks** (`53c3d201`; [world.md](../design/world.md) §4a
+  "Fixed walks"): patrols, posts and the kings' and Generals' seats, the
+  royal follow, the evade run home (a point 6 nodes ±2 toward home), the
+  rift boss's way home (its own route code 61 → 22 lines) and the named
+  rares' routes on the shared follower; `stall_clock` → `path_nudge`
+  replaced on these callers; the later stages of ruling 22. Post guard:
+  trunks and row 37–44 → 14–20 s; doorway 44.1 → 21.6 s; L-corner, ditch,
+  fence_low and pond now reached. Royal guard: trunk, row, doorway, L-corner and pillar
+  walked in 12–18 s instead of a snap after 27–28 s. Batch searches 89 →
+  25 (post guard) and 8 → 19 (royal guard), largest search 595 → 161 µs
+  and 254 → 68 µs. Fixture `r42_nv2` 107 checks.
+- **NV3 settlement walkers and the route cache** (`e13a1f12`;
+  [settlements.md](../design/settlements.md#settlement-walkers)
+  "Settlement walkers"): `grug_mobs/routes.lua` caches the routes between
+  fixed points in start towns and capitals (built on first use inside the
+  budget, pieces ≤ 24 at standable split points, smoothed corner points,
+  memory only, rulings 23 and 26); capital patrol legs over 32 nodes run
+  along the streets, read at runtime from the road layout (28 of 50 legs
+  in Dur Brannoc, ruling 14); every villager walker moves on the follower
+  (cached route or plain fixed walk) and gives a spot up after 3 failures;
+  every walker ring has at least 3 spots (one-spot walkers 2 → 0); unloaded
+  ground waits and never counts as "no route". Dur Brannoc: **searches per
+  minute 16** (on NV2's code; the research's 40–60 was older) **→ 36.5**
+  in the first window while the cache builds **→ 7** with a full cache;
+  snaps 2 → 0; the whole capital's cache 291 searches (27.5 ms, largest
+  523 µs), 7.8 ms smoothing, 4.6 ms reading the streets, Lua heap
+  +0.29 MiB. Hearthpine 6.4 a minute while building, then 0; Copperfell
+  village 0. NV0's villager scenes 3 → 12 of 15. Fixture `r42_nv3` 97
+  checks.
+- **DR doors** (`c4d8772d`;
+  [settlements.md](../design/settlements.md#doors) "Doors", AGENTS.md's
+  terrain-damage guard): `grug_mobs/npc_doors.lua`; a leg without a route
+  tries plans through the nearest doors (to the door, through it, from it);
+  villagers, settlement patrols and post guards open an unowned door in a
+  wall, pass and close it unless another NPC is close behind or somebody
+  stands in the doorway; never a locked door, never a fence gate (walked
+  round), royal guards never (ruling 24); the doors' own sounds; the second
+  recorded exception to the terrain-damage guard (ruling 15). Dur Brannoc:
+  **no-route legs** walkers 37 → 10 of 130, patrols 4 → 1 of 50 (the 11
+  left are enclosures without a door or raised halls; NV0 counted 30 of 99
+  unordered pairs before the round); spots given up 44 → 2 a minute and 39
+  door legs (the lane's run before its fix round); after the fix round 83
+  searches a minute in the first window (largest 534 µs) and 7 with a full
+  cache; the one-time cache 291 → 558 searches, 27.5 → 51.8 ms, largest
+  523 → 612 µs; door finding 10.1 ms over the whole run (largest call
+  316 µs). NV0's closed door: the villager and the post guard walk through
+  (13.6 and 17.1 s) instead of failing. Fixture `r42_dr` 97 checks.
+- **ST no random stops on routes** (`43a0d5ea`; ruling 25;
+  [world.md](../design/world.md) §4a,
+  [settlements.md](../design/settlements.md#settlement-walkers)): every
+  nudge of `grug_mobs.walk_toward` stamps the mob as steered; mobs_redo's
+  random stop in the walk state applies only when the last nudge is more
+  than 1.5 s old, so routes, fixed walks, the amble, posts, seats, the
+  evade and the rift boss no longer pause at random, while free wandering
+  keeps it. The "facing a fence" stop counts only a node that blocks, so a
+  wall torch or a sign no longer stops a walker. Villager open 22.2 →
+  12.4 s, trunk 18.1 → 14.5 s; post guard trunk 18.5 → 13.8 s, pond 21.8 →
+  15.3 s; no scene worse; largest search 170 µs. Fixture `r42_st` 52
+  checks.
+- **CL cleanup** (`f8265d60`): the three stuck and search-distance
+  settings nothing read since NV1 (`minetest.conf`, `settingtypes.txt`,
+  `api.txt`), `grug_obstacle.spare_path_budget`, the negative cache's own
+  give-up (its one caller never used it), `grug_mobs.route_cached`,
+  `snap_try`'s unread argument and `api.lua`'s unused `table_remove`;
+  stale comments, VENDOR.md, the module guide, and the fixtures that pinned
+  removed pieces. No behaviour change.
+- **D** (this lane): this section, STATUS, the AGENTS.md pointer, ROADMAP,
+  BACKLOG, README, the CHANGELOG 0.42.0 entry, the version 0.42.0 and the
+  round workflow's fixture-run rule (§3, the user, 2026-10-08).
+
+**The round from first to last** (NV0's scenes): the post guard reaches
+14 of 15 scenes (7 before; the low-gap wall only by its out-of-sight
+snap, the fence is unreachable), the villager 13 (3 before; not the fence
+and the low-gap wall), and the royal guard snaps in 3 scenes (8 before:
+the low-gap wall and both doors, which no royal route needs). **Line balance
+of `mods/`:** +3,159 / −1,197 lines (net +1,962) over 18 files: NV1
++984/−718, NV2 +443/−358, NV3 +1,033/−90, DR +680/−26, ST +76/−27, CL
++33/−68 (NV0 changed tools only). The three new modules: `grug_nav.lua`
+850 lines, `routes.lua` 958, `npc_doors.lua` 337 (618, 722 and 219
+without blank and comment lines).
+
+### Upgrade classification and the declaration
+
+| Lane | Outcome | Reason |
+|---|---|---|
+| NV0 | compatible | tools and one technical doc only |
+| NV1 | compatible | navigation state and the veto live in `self.temp`; the tall-mob box is derived at activation from the saved, unchanged `base_colbox`; an old saved `path` field is ignored |
+| NV2 | compatible | new state only in `self.temp`; saved route points, a rare's waypoint and the post fields unchanged |
+| NV3 | compatible | the cache lives in memory; one new optional field (`_grug_idle_from`); rings and patrol points are derived again at each claim |
+| DR | compatible | runtime state only; a door's open state is world state that already exists |
+| ST | compatible | the steer stamp lives in `self.temp`; `facing_fence` is recomputed every 0.25 s |
+| CL | compatible | nothing saved changed; the removed settings were not read |
+
+The round's declaration:
+`{"schema": 1, "version": "0.42.0", "map_reset": ["0.40.1"], "new_server": []}`
+(no new entry): a 0.41.0 world boots and plays on.
+
+### Decisions during the round
+
+The user's rulings 18–26 (§2): the calibration after NV0 (18–20), NV1's
+size and the target drift (21), NV2's later stages (22), NV3's cache and
+rings (23), DR's door users (24), no random stops on routes and the fence
+stop only for blocking nodes (25, lane ST), and the cache built on first
+use (26). The coordinator's defaults (§2) stand. The fixture-run rule of
+2026-10-08 (the user) is now in the
+[round workflow](../process/round-workflow.md#3-gates) §3.
+
+### Deviations from the plan
+
+- **NV1 grew `mods/` instead of shrinking it:** §3.4 estimated 300–450
+  new lines and a net reduction; NV1 brought `grug_nav.lua` (793 lines at
+  its merge, with the fixed-walk interface the later lanes use) and
+  `mods/` grew by 266 lines in its merge; the user kept the size (ruling
+  21). The route cache (ruling 23) and the doors added most of the round's
+  rest.
+- **Lane ST** is not in §1's table: it came from the user's first look at
+  the merged lanes (ruling 25) and merged after DR; PT covered NV1–ST.
+- **Research numbers that changed** (the lanes' re-checks): the capital
+  searched 16 times a minute before NV3, not 40–60; Dur Brannoc had 30 of
+  99 legs without a route (NV0), not 19–26; the replaced combat pieces did
+  have fixtures (`r34_f1`, `r30_p2`, `r28_a3`), which NV1 adapted.
+- **NV3** did not persist the cache (measured cheap enough, ruling 23) and
+  tops a ring up to 3 spots, not 2.
+- **DR** routes NPCs round fence gates instead of opening them (§4.5 left
+  it open; ruling 24).
+- **CL:** the dig branch of `apply_path` had already gone with NV1; the
+  negative cache and the per-mob lockout stay separate (they decide
+  differently when a mob searches again), so §4.6's "merge where it
+  simplifies" did not apply. CL started from main after the Round 43–45
+  plans.
+
+### Open notes
+
+The reviews' backlog notes are in the
+[BACKLOG](../../BACKLOG.md#round-42-carry-overs) (theoretical, no
+severity); none blocked PT.
+
+### GUI playtest checklist
+
+Plan §6, refined by the lanes' GUI excerpts. Desktop and the web build;
+an existing world is enough (no world generation changed). **Checked by
+the user's playtest PT on 2026-10-08** (accepted).
+
+1. **Combat:** a pig or wolf behind a single tree and behind a row of
+   trees comes round; a mob behind a wall with a doorway finds it; an
+   elite passes a 2-high door; a mob behind a 2-high fence gives up within
+   about 4 s and does not come back for 15 s or until you moved 8 nodes; a
+   bear at a tree row gives up; a fleeing player is not chased along an
+   old path; ranged attackers at 25 m and more.
+2. **The Accord and Throng fortresses:** bodyguards follow an idle General
+   round trees and walls; one pushed out of the keep walks back through
+   the doorway; fight the General and his guards run after him and keep
+   up.
+3. **Start town:** walkers and the patrol make their rounds round the
+   trunks and reach their waypoints; post guards walk back to their posts,
+   also down a ledge and through a gap in a fence line.
+4. **A village:** its walker moves between its spots.
+5. **A capital:** walkers go to spots indoors, open the door, pass and
+   close it, and nobody stops in a doorway; the garrison and forge yards'
+   patrol and posts pass the double doors; NPCs walk round fence gates; a
+   district patrol leaves a plot gate and follows the streets to the next
+   plot; no walker stands frozen on one spot.
+6. **No random stops:** walkers and patrols walk their legs without
+   pausing every few seconds; a walker passes a wall torch or sign without
+   stopping; walkers still stop at real fences, walls and gates and go
+   round them; wild mobs and a post guard idling at its post still pause
+   now and then.
+7. **Evade:** drag a mob to its leash limit behind a wall or a tree row
+   across rough ground; it runs round on a short detour and walks home;
+   only a pen snaps it after 40 s.
+8. **Server feel** with several fights at once: no hitches.

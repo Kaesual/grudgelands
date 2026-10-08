@@ -12,14 +12,15 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 41 (playtest fixes, the production crash, the
-upgrade contract; 0.41.0, the first release in release mode) is complete
-on main, not pushed ([plan](docs/planning/round41-plan.md)); after the
-push the platform migrates the production server with a map reset.
-Everything up to 0.40.1 is pushed (origin/main `7d8b79d9`, 2026-10-07).
-Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
-(2026-10-06); the GUI tests of Rounds 36–38, 40 and 41 are open. Round 42
-(mob navigation) waits for the user's "go". Details:
+**Current state:** Round 42 (mob navigation; 0.42.0, compatible) is
+complete on main and its playtest accepted (the user, 2026-10-08;
+[plan](docs/planning/round42-plan.md)). origin/main is `71f777e2` (pushed
+2026-10-08): Round 41 (0.41.0, map reset) and every Round 42 lane up to
+ST under 0.41.0; 0.42.0 (CL and lane D) is not pushed. Rounds 25–35
+count as GUI-accepted (the user, 2026-10-05), Round 39 too (2026-10-06);
+the GUI tests of Rounds 36–38, 40 and 41 are open. Next: Round 43 (world
+migrations) in parallel with Round 44's wave 1 (UI rework), then Round 45
+(crafting); each waits for the user's "go". Details:
 [STATUS](docs/STATUS.md).
 
 ## Language rules

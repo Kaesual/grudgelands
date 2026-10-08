@@ -1,9 +1,51 @@
 # Project status
 
-Updated 2026-10-07. This is the delivery pointer, not another game specification.
+Updated 2026-10-08. This is the delivery pointer, not another game specification.
+
+- **Round 42 "Mob navigation" complete, playtest accepted, 0.42.0 not
+  pushed** (2026-10-08, version 0.42.0,
+  [plan, completion and GUI checklist](planning/round42-plan.md#completion-2026-10-08)).
+  Started from main `71612d19` (0.41.0); every lane is merged on main
+  (NV0, NV1, NV2, NV3, DR, the user's extra lane ST, last CL `f8265d60`,
+  then this documentation lane D), each independently reviewed by Opus
+  (MERGE; NV1 and NV3 MERGE AFTER FIXES, NV3 with a High and a re-review;
+  every fix made before the merge) and ended with a smoke boot; main has
+  129 portable fixtures. Round end on main: fixtures 129/129,
+  `check_fresh_server.py` PASS, smoke boot of main PASS,
+  `check_upgrade.py` PASS. No world generation changed (no seed fleet).
+  **The user's playtest PT** (NV1–ST) **accepted on 2026-10-08**; CL
+  changes no behaviour. Every lane compatible; the declaration is
+  `{"schema": 1, "version": "0.42.0", "map_reset": ["0.40.1"], "new_server": []}`:
+  a 0.41.0 world plays on. **Push:** origin/main is `71f777e2` (pushed by
+  the user on 2026-10-08); it contains every Round 42 lane up to ST under
+  the version 0.41.0; 0.42.0 (CL and this lane) is not pushed.
+  - **Combat (NV1):** one navigation module on the engine's pathfinder,
+    used locally and rarely: a stuck detector, short detours round trees,
+    walls and corners, a give-up also in sight with a veto of 8 nodes or
+    15 s; the old stuck timer, sidestep and crawl are gone; mobs taller
+    than 2 nodes pass 2-high doorways.
+  - **Fixed walks (NV2):** patrols, posts, seats, the royal follow, the
+    evade run home, the rift boss and named rares on the same follower;
+    royal guards run after a fighting leader.
+  - **Settlements (NV3, DR):** a route cache in start towns and capitals,
+    capital patrols along the streets, villager walkers on the follower
+    with at least three spots; NPCs open, pass and close doors on their
+    routes (the second exception to the terrain-damage guard).
+  - **No random stops (ST):** mobs_redo's random stop no longer applies
+    while our navigation drives a mob; the fence stop only for nodes that
+    block.
+  - Numbers (the completion has them all): Dur Brannoc 16 searches a
+    minute before, 7 with a full cache; its legs without a route 41 → 11
+    of 180 through doors (DR); 40 blocked chasers' largest search 357 →
+    193 µs; `mods/` net +1,962 lines.
+  - Next: the user's push of 0.42.0; Round 43 (world migrations,
+    [plan](planning/round43-plan.md)) in parallel with Round 44's wave 1
+    (UI rework, [plan](planning/round44-plan.md)), then Round 45
+    (crafting, [plan](planning/round45-plan.md)); each waits for the
+    user's go.
 
 - **Round 41 "Playtest fixes, the production crash and the upgrade
-  contract" complete, not pushed** (2026-10-07, version 0.41.0,
+  contract" complete and pushed** (2026-10-07, version 0.41.0,
   [plan, completion and GUI checklist](planning/round41-plan.md#completion-2026-10-07)).
   Started from main `7d8b79d9` (0.40.1, pushed on 2026-10-07);
   every lane is merged on main (last UP, `a3790e65`, then this
@@ -16,9 +58,10 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   **First release under the upgrade contract** (release mode, AGENTS.md):
   the declaration is
   `{"schema": 1, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": []}`;
-  every lane compatible except CR (map reset). **Not pushed** (only the
-  user pushes); after the push the hosting platform migrates the
-  production server (0.40.0) to 0.41.0 **with a map reset**.
+  every lane compatible except CR (map reset). **Pushed** by the user on
+  2026-10-08 (origin/main `71612d19`, the Round 42 start); the declaration
+  asks the hosting platform to move the production server (0.40.0) to
+  0.41.0 **with a map reset**.
   - **Fixes from the Round 40 playtest:** mobs on scripted walks move
     their legs at once, royal guards too; kings and Generals hold their
     seat (MOB); the recipe book's Close and the station's Repair form
@@ -732,8 +775,8 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 41 (0.41.0, `a3790e65` and lane D;
-  not pushed) on top of Round 40 (pushed 2026-10-06) and its follow-up
+- **Latest game:** main carries Round 42 (0.42.0, `f8265d60` and lane D;
+  not pushed) on top of Round 41 (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
   Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
   2026-10-06), Rounds 20–35 and the 2026-09-28 playtest fixes. Round 29
@@ -811,9 +854,9 @@ Updated 2026-10-07. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** every round up to Round 40 and its follow-up
-  0.40.1 is pushed (origin/main `7d8b79d9`, 2026-10-07); Round 41 is
-  local. The production server runs 0.40.0.
+- **Remote observation:** origin/main is `71f777e2` (pushed 2026-10-08):
+  every round up to Round 41 and the Round 42 lanes up to ST, still under
+  the version 0.41.0; 0.42.0 (lane CL and lane D) is local.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md); no public release

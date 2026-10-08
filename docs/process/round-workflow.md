@@ -93,6 +93,16 @@ per session). Cross-provider CLI mechanics:
 | `tools/sync_to_luanti.sh` (coordinator, from main) | — | — | — | yes |
 | The user's GUI check | — | — | — | yes |
 
+**Fixture runs, sized to the change** (the user, 2026-10-08). While a lane
+works and in its fix rounds it runs only its own fixture plus the fixtures
+that load the files it changed (`grep -l <file> tools/*/portable_test.lua
+tools/*/fixture.lua`; the lane brief may name a standing selection, such as
+the fixtures that load the mob movement code). The full
+`tools/run_fixtures.sh` runs once per lane, right before its final report,
+and again only if a later fix touches files outside that selection. The
+coordinator runs it on main only if main moved since the lane's run, or at
+the round end; never a second full run right after a merge.
+
 **Upgrade classification** (release mode since 0.41.0, Round 41 ruling 10;
 [upgrade contract](../technical/upgrade-contract.md)). Every code or data
 lane's report says whether its change is *compatible* (a world of the version

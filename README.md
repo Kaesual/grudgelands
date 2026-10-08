@@ -104,10 +104,15 @@ stats, and the sound controls. The short version:
 
 ## Current state
 
-*Last updated: 2026-10-07. The current version is the newest entry of the
+*Last updated: 2026-10-08. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 41 (0.41.0): fixes from the Round 40
+The latest finished round is Round 42 (0.42.0), "Mob navigation":
+creatures in a fight find their way round trees and walls and through
+doorways and give up behind a fence, guards and bodyguards keep up with their leader,
+villagers and patrols walk their rounds without walking into trunks or
+stopping at random, and townsfolk open, pass and close doors; a 0.41
+world plays on. Round 41 (0.41.0) brought fixes from the Round 40
 playtest (creatures that walk move their legs, kings and Generals keep
 to their seat, the recipe book's Close returns to the station, slots that
 take several ingredients show them all, a quick re-press of the bow fires
@@ -133,7 +138,8 @@ creatures that keep to the player holding their attention when several
 players fight them to mounts that no longer throw you off when a buff
 runs out, and Round 36 brought each faction's main story from level 41 to
 60, with its finale against Isquarre at the rift. A 0.40 world moves
-to 0.41.0 with a map reset; older worlds start a new world.
+to 0.41.0 with a map reset and then plays on in 0.42.0; older worlds
+start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the
