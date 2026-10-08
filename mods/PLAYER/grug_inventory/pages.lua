@@ -189,11 +189,14 @@ local function quiver_content(player)
 		fs[#fs + 1] = ("image[%.1f,%.1f;1,1;%s]"):format(x, y, QUIVER_GHOST)
 	elseif total > first:get_stack_max() then
 		-- Above one stack the slot shows the true total (Round 41 ruling 6):
-		-- drawn after the list[], so clicks still reach the cell (inventory
-		-- clicks are found by position, guiFormSpecMenu.cpp getItemAtPos, and
-		-- image / item_image are click-through elements, visible only while
-		-- drawn, so the list keeps its hover highlight and item tooltip; only
-		-- the cover paints over the highlight in its corner); a
+		-- drawn after the list[]. Clicks still reach the cell (inventory
+		-- clicks are found by position, guiFormSpecMenu.cpp getItemAtPos).
+		-- The hover does not: since the frame's formspec_version 6 (Round 44)
+		-- elements stack in definition order, mouse moves go to the topmost
+		-- element under the pointer (:4410-4422), here the full-cell
+		-- item_image, so the cell loses its hover highlight and item tooltip
+		-- while the overlay is shown (the same holds for the ghost images
+		-- over empty equipment, quiver and deposit slots: no highlight). A
 		-- cover hides the engine's count corner, then an item_image of the
 		-- same item and slot rect draws the total with the list's own font
 		-- and corner (guiItemImage.cpp draw -> drawItemStack). The count in an

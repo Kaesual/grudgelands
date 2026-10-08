@@ -115,6 +115,8 @@ local SCROLLBAR_X, SCROLLBAR_W = VIEW_X + VIEW_W + 0.15, 0.3
 -- step (smallstep) scrolls a row.
 local SCROLL_FACTOR = 0.125
 local ROW_STEPS = PITCH / SCROLL_FACTOR
+local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
+	"largestep=100;thumbsize=1;arrows=default]"
 grug_inventory.VIEW_ROWS = {full = 8, short = 2}
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 	short = "grug_inv_scroll_short"}
@@ -168,6 +170,10 @@ function grug_inventory.inventory_view(player, mode, context)
 			visible * ROW_STEPS, visible * ROW_STEPS)
 		fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.2f,%.3f;vertical;%s;%d]"):format(
 			SCROLLBAR_X, area_y, SCROLLBAR_W, area_h, field, value)
+		-- scrollbaroptions[] applies to every later scrollbar[], page content
+		-- included: back to the engine's defaults (guiFormSpecMenu.h
+		-- parserData::scrollbar_options).
+		fs[#fs + 1] = SCROLLBAR_DEFAULTS
 	end
 	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;vertical;%.3f]"):format(
 		VIEW_X, area_y, VIEW_W, area_h, field, SCROLL_FACTOR)

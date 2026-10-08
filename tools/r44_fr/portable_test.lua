@@ -13,6 +13,8 @@
 --      without gaps, the hotbar outside the scroll area at one place in both
 --      views, slot counts, the scrollbar only when the grid is taller than the
 --      view, no listring on the Inventory page;
+--      the view's scrollbaroptions reset to the engine defaults after its
+--      scrollbar, so page scrollbars do not inherit them;
 --   4. the scrollbar echo: CHG and VAL values kept per view, echoed and
 --      clamped on the next build; a pure scrollbar event reaches no page
 --      handler and sends nothing, a button event still does;
@@ -415,6 +417,17 @@ for _, case in ipairs(cases) do
 		if row > visible then
 			eq(tonumber(max), (row - visible) * 10, label .. ": scroll range")
 			has(view, "scrollbar[", label .. ": a scrollbar")
+			-- The options are reset to the engine's defaults right after the
+			-- view's scrollbar, so a page's own scrollbar[] later in the form
+			-- does not inherit them.
+			local after = view:match("scrollbar%[[^%]]*%](.*)$")
+			eq(after and after:match("^scrollbaroptions%[[^%]]*%]"),
+				"scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;" ..
+				"thumbsize=1;arrows=default]", label .. ": options reset after the scrollbar")
+			local last = nil
+			for options in view:gmatch("scrollbaroptions%[([^%]]*)%]") do last = options end
+			eq(last, "min=0;max=1000;smallstep=10;largestep=100;thumbsize=1;arrows=default",
+				label .. ": the last options in the view are the defaults")
 		else
 			eq(max, nil, label .. ": no scroll range when it fits")
 			lacks(view, "scrollbar[", label .. ": no scrollbar when it fits")
