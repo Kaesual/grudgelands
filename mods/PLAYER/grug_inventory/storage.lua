@@ -20,10 +20,6 @@ local function soulbound(stack)
 	return core.get_item_group(stack:get_name(), "grug_soulbound") > 0
 end
 
-local function may_hold(listname, stack)
-	return listname == "main" or not soulbound(stack)
-end
-
 -- The lists a player keeps items in: `main` and each equipped bag's content
 -- list, in bag slot order. Readers that count or take items walk these.
 -- The quiver, the potion belt and the equipment slots are not among them.
@@ -83,10 +79,12 @@ end
 -- whole order, hotbar included: merging takes no free slot), then empty
 -- cells in order. Returns the leftover; touched cells are marked.
 local function fill(cells, stack)
+	local main_only = soulbound(stack)
 	for pass = 1, 2 do
 		for _, cell in ipairs(cells) do
 			if stack:is_empty() then return stack end
-			if cell.stack:is_empty() == (pass == 2) and may_hold(cell.list, stack) then
+			if cell.stack:is_empty() == (pass == 2) and
+					(not main_only or cell.list == "main") then
 				local before = cell.stack:get_count()
 				stack = cell.stack:add_item(stack)
 				if cell.stack:get_count() ~= before then cell.changed = true end
