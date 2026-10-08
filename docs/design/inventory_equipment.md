@@ -328,7 +328,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   and metadata are identical; free slots end up contiguous at the end; a
   soulbound item stays in `main`.
 - **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
-  elixirs only (group `grug_potion`), created for every player.
+  elixirs only (group `grug_potion`), created for every player; filled here
+  and drunk from the quickbar (below).
 - **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn under the
   equipment slots in the Character page's gear box with the arrow total
   beside it. There is
@@ -539,7 +540,7 @@ the skill catalog is one row under the talent trees on the **Talents &
 Skills** tab (`skill_trees.md` §3.5), on the hotbar's columns, with the short
 inventory below so tools and food can leave the hotbar. It lists every
 currently unlocked active ability, nothing else: mounts and boats left it
-(they move to the quickbar). Its detached list is an infinite source and an
+(they are in the quickbar). Its detached list is an infinite source and an
 infinite destination: a drag onto a free hotbar slot copies the skill there
 as a fresh stack, and dragging the carried copy back onto its own icon
 removes that copy (the engine undoes the swap such a drop asks for). The
@@ -559,12 +560,41 @@ stray skill from before Round 44 outside the hotbar may still be moved onto
 the hotbar or back onto its icon; removing the others is the 0.44.0
 migration step, not the login.
 
-Mount representations (`grug_bound_skill` without `grug_ability`) keep
-`main` and the owned bag contents until the quickbar retires them. All node
+The retired mount items (`grug_bound_skill` without `grug_ability`; nothing
+hands them out since Round 44, the quickbar below replaces them) keep `main`
+and the owned bag contents until the 0.44.0 migration step removes them. All node
 metadata inventories and other detached inventories refuse bound stacks.
 Source takes remain allowed so Q/drop reaches the item's deletion-only
 callback. Entitlement, cooldowns, charge, resources and active mounts are
 independent of the disposable item stack.
+
+## The quickbar (E, Round 44)
+
+Spec `docs/planning/ui-crafting-rework-plan.md` ruling 9 and §3.5
+(`grug_quickbar`). The rising edge of aux1 (E by default; `grug_keys`) opens
+a small window on the left of the screen, four inventory-sized slots wide
+(5.5 × about 6.5 units):
+
+- **Mounts and boats:** one image button per purchased tier (every owned
+  riding tier and boat, four to a row, the model's icon, a tooltip with the
+  model, tier and speed); the tier being ridden is framed green and its
+  button dismounts. Without any: "No mounts or boats yet." The buttons call
+  the mount's own summon path with its gates (`mounts.md` §3).
+- **Potion belt:** the four belt slots; a filled one is an item button (the
+  count in the item string; a list slot would pick the stack up), an empty
+  one draws only the slot. A click uses the potion through its own `on_use`,
+  so the shared 60 s potion cooldown, the full-health and level refusals
+  hold; the stack shrinks in the belt.
+- **Return home:** with a home, "Home: <name>" and the button "Return home
+  (<state>)" with the Character tab's state text; the same travel request
+  and its gates (combat, the cooldown, a running return).
+- A click acts once and closes the window. It is sent once per opening and
+  never refreshed; it does not open while dead or during character
+  creation. The client releases every key while a menu or the chat is open,
+  so E cannot open it over another window. Help names the limits: a rebound
+  aux1 key, "Aux1 key for climbing/descending" sinks in water and climbs
+  down ladders while E is held, and "Toggle Aux1 key" opens the quickbar on
+  every second press.
 
 ## Round 14 navigation pages
 

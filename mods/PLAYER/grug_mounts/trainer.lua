@@ -82,6 +82,7 @@ function grug_mounts.trainer_formspec(rows, notice, service)
 		fs[#fs + 1] = ("label[0.4,5.0;%s]"):format(esc(core.colorize(
 			NOTICE[notice.ok == true], notice.text)))
 	end
+	fs[#fs + 1] = "label[0.4,5.45;" .. esc(grug_mounts.QUICKBAR_TIP) .. "]"
 	fs[#fs + 1] = "button_exit[8.1,5.1;1.5,0.6;close;Close]"
 	return table.concat(fs)
 end

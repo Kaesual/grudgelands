@@ -247,6 +247,8 @@ local function home_state(player)
 		(remaining > 0 and ("%d min"):format(math.ceil(remaining / 60)) or "Ready")
 	return home.label, state
 end
+-- The quickbar (grug_quickbar) shows the same name and state.
+grug_inventory.home_state = home_state
 
 -- The text the poll compares: the home line and the button together.
 local function home_text(player)

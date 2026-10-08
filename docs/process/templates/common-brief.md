@@ -65,12 +65,15 @@ bigger than planned, report it (the coordinator splits it with the user).
 - **Checks:** `bash tools/check_lua.sh <changed .lua files>`,
   `python3 tools/check_fresh_server.py`, and a fixture for new logic
   (`tools/r<NN>_<lane>/portable_test.lua`; make sure `run_fixtures.sh` picks
-  it up). **Fixture runs, sized to the change:** while you work and in fix
-  rounds run only your own fixture plus the fixtures that load the files you
-  changed (`grep -l <file> tools/*/portable_test.lua tools/*/fixture.lua`);
-  the full `tools/run_fixtures.sh` (all portable fixtures, LuaJIT) runs
-  **once**, right before your final report, and again only if a later fix
-  touches files outside that selection. Lanes that touch quest or mob data also run
+  it up). **Fixture runs, only the necessary ones:**
+  while you develop run only your own fixture plus the fixtures that
+  actually test the behaviour you are changing — a fixture that merely
+  loads a file you changed but checks something else does not count; in
+  fix rounds your own fixture plus the fixtures that failed or that test
+  the fixed behaviour. The full `tools/run_fixtures.sh` (all portable
+  fixtures, LuaJIT) runs **once**, right before your final report, and
+  catches the rest. Your report names the fixtures you ran during
+  development and why. Lanes that touch quest or mob data also run
   `python3 tools/r28_design/validate.py --game`. A lane that adds a
   migration step adds its end-to-end test (pattern `tools/r43_it/run.sh`);
   a lane that changes `tools/migrate.py` or `tools/migration/` runs the test
