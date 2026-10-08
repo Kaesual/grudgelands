@@ -23,7 +23,8 @@
 --      engine probe tools/r35_f/engine.sh checks every registered node);
 --   F  flint: a curated removal, gravel drops only gravel, no price row and
 --      no other mention under mods/ outside the vendored default mod;
---   Q  the quest dialog and log (grug_quests/npc.lua, ui.lua): one colour per
+--   Q  the quest dialog and log (grug_quests/npc.lua, grug_map/quest_box.lua
+--      since Round 44): one colour per
 --      status as the entry's colour, "(R)" for repeatable, no "(available)"
 --      or "[Repeatable]" text, the dialog 16 units wide with a 7-unit list,
 --      a legend and a tooltip, the description a read-only textarea (no
@@ -439,12 +440,18 @@ do
 	check(seen >= 10, "Q the textarea scan sees the game's text fields (got " .. seen .. ")")
 	eq(#named, 0, "Q no named textarea in our mods (" .. table.concat(named, ", ") .. ")")
 
-	local ui = read(ROOT .. "/mods/PLAYER/grug_quests/ui.lua")
+	-- The quest log is the map window's quest box since Round 44.
+	local ui = read(ROOT .. "/mods/PLAYER/grug_map/quest_box.lua")
 	check(ui:find("grug_quests.list_entry(", 1, true) ~= nil, "Q the quest log uses the same entries")
 	check(ui:find("tooltip[grug_quest_list;", 1, true) ~= nil, "Q the quest log list has the tooltip")
 	check(not ui:find("[Repeatable]", 1, true) and not ui:find("[Ready]", 1, true),
 		"Q the quest log has no [Repeatable] or [Ready] text")
-	local log_w = tonumber(ui:match("\nlocal LIST_W = ([%d.]+)"))
+	-- The list spans the window's quest column (at least COLUMN_MIN wide)
+	-- less the box padding on both sides.
+	local column = tonumber(read(ROOT .. "/mods/PLAYER/grug_map/window.lua"):match(
+		"\nlocal COLUMN_MIN, COLUMN_SHARE = ([%d.]+),"))
+	local pad = tonumber(ui:match("\nlocal PAD, GAP, ROW_H, BUTTON_H = ([%d.]+),"))
+	local log_w = column and pad and column - 2 * pad
 	check(log_w and log_w > 3.45, "Q the quest log list is wider than before (got " .. tostring(log_w) .. ")")
 end
 

@@ -5,7 +5,7 @@
 --
 -- Loads the REAL grug_quests registry, state, labels, npc and hud files, the
 -- REAL grug_core hud_layout and item_names, and the REAL grug_map atlas,
--- base, minimap_view, minimap, providers and page on a fake engine.
+-- base, minimap_view, minimap and providers on a fake engine.
 -- Checks:
 --   C  the decoded-state cache: every read path shares one decoded table per
 --      raw meta string (no deserialization while it is unchanged); accept,
@@ -32,12 +32,8 @@
 --      unlocks at once; a quiet HUD poll or a non-objective item keeps the
 --      memo (no deserialization, no inventory scan beyond the poll's own);
 --      both tell the minimap to ask its static markers again;
---   P  Map tab: an unchanged signature sends nothing and builds no form
---      (no marker collection); a walking viewer gets at most one send per
---      2 s; arrows move on a 0.02-unit grid and a move inside one grid cell
---      changes neither signature nor form; a quest change shows on the next
---      2 s poll; zoom and selection clicks answer at once; one style[] per
---      look names every marker of that look;
+--   P  (the Map tab's 2 s poll; gone in Round 44: the map window's refresh
+--      rule is checked by tools/r44_mq, section R);
 --   W  minimap: the window information and the location line are read every
 --      0.5 s, not every step; held objective items and a level-up re-ask
 --      its static markers on the next step.
@@ -701,7 +697,7 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- P: the Map tab
+-- The map stubs (the minimap below)
 -- ---------------------------------------------------------------------------
 local party = {}
 grug_parties = {view = function(player)
@@ -754,153 +750,18 @@ dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 grug_map.minimap.install(installed)
 local minimap_step = registered.register_globalstep[steps_before + 1]
 dofile(repo .. "/mods/PLAYER/grug_map/providers.lua")
-dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
-local page_step = registered.register_globalstep[#registered.register_globalstep]
 each("register_on_mods_loaded")
-local collected = 0
-do
-	local real = atlas.collect_markers
-	atlas.collect_markers = function(...)
-		collected = collected + 1
-		return real(...)
-	end
-end
-local function page_steps(seconds)
-	for _ = 1, math.floor(seconds / 0.5 + 0.5) do us = us + 500000; page_step(0.5) end
-end
 
+-- The two players the minimap checks (W) walk with. The Map tab's 2 s poll
+-- (Round 30 ruling, perf review #3) is gone since Round 44: the map window
+-- refreshes on events only (tools/r44_mq, section R).
 local walker = new_player("walker", {x = 100, y = 10, z = -220})
 join(walker)
 local mate = new_player("mate", {x = 120, y = 10, z = -240})
 join(mate)
 party = {"mate"}
-local context = {page = "grug_map:atlas"}
-sfinv.contexts.walker = context
-page.on_enter(page, walker, context)
-sfinv.set_player_inventory_formspec(walker, context)
-local first = walker.form
-check(first and first:find("grug_map_marker_", 1, true), "P the form carries markers")
-
--- one style[] per look
-do
-	local looks, named, fields = 0, {}, {}
-	for names in first:gmatch("style%[([^;%]]+);") do
-		looks = looks + 1
-		for field in names:gmatch("[^,]+") do named[field] = (named[field] or 0) + 1 end
-	end
-	for field in first:gmatch("button%[[^;]+;[^;]+;(grug_map_marker_%x+)") do fields[field] = true end
-	for field in first:gmatch("image_button%[[^;]+;[^;]+;[^;]+;(grug_map_marker_%x+);") do fields[field] = true end
-	local once = true
-	for field, n in pairs(named) do once = once and n == 1 and fields[field] end
-	check(looks >= 2 and looks <= 5, "P one style[] per look (" .. looks .. ")")
-	check(once, "P every styled field is one marker, styled once")
-	local quest_buttons, styled_quests = 0, 0
-	for _, giver in ipairs({"elder", "hunter", "envoy"}) do
-		local field = atlas.field_id("quest:" .. giver)
-		if first:find(field, 1, true) then
-			quest_buttons = quest_buttons + 1
-			if named[field] then styled_quests = styled_quests + 1 end
-		end
-	end
-	check(quest_buttons == 3 and styled_quests == 3, "P quest markers are styled through the shared style[]")
-	check(first:find("style%[[^%]]*" .. atlas.field_id("player:walker")) and
-		first:find("style%[[^%]]*" .. atlas.field_id("party:mate")), "P both arrows share the border style")
-end
-
--- standing still: no sends, no form, no marker collection
-do
-	walker.sends, collected = 0, 0
-	page_steps(10)
-	eq(walker.sends, 0, "P a still viewer gets no sends")
-	eq(collected, 0, "P the poll builds no form while nothing changed")
-end
-
--- moves inside one arrow grid cell change nothing
-do
-	walker.sends = 0
-	local form = walker.form
-	walker.pos.x = walker.pos.x + 0.5
-	page_steps(4)
-	eq(walker.sends, 0, "P a move inside one grid cell sends nothing")
-	sfinv.set_player_inventory_formspec(walker, context)
-	eq(walker.form, form, "P ...and the form is the same")
-	walker.pos.x = walker.pos.x - 0.5
-end
-
--- walking at zoom 4: at most one send per 2 s
-do
-	page.on_player_receive_fields(page, walker, context, {grug_map_zoom_in = "+"})
-	page.on_player_receive_fields(page, walker, context, {grug_map_zoom_in = "+"})
-	eq(context.grug_map_zoom, 4, "P zoomed to 4x")
-	walker.sends = 0
-	local sends_at, last = {}, walker.sends
-	for i = 1, 40 do
-		walker.pos.x = walker.pos.x + 2 -- 4 nodes per second
-		us = us + 500000
-		page_step(0.5)
-		if walker.sends ~= last then sends_at[#sends_at + 1] = i * 0.5; last = walker.sends end
-	end
-	local spaced = true
-	for i = 2, #sends_at do spaced = spaced and sends_at[i] - sends_at[i - 1] >= 2 - 1e-9 end
-	check(#sends_at >= 8 and #sends_at <= 10 and spaced,
-		("P a walking viewer: %d sends in 20 s, at least 2 s apart"):format(#sends_at))
-end
-
--- a click answers at once, and the poll then waits again
-do
-	local sets = inventory_sets
-	page.on_player_receive_fields(page, walker, context, {grug_map_zoom_out = "-"})
-	eq(inventory_sets, sets + 1, "P a zoom click rebuilds at once")
-	local field = atlas.field_id("quest:hunter")
-	page.on_player_receive_fields(page, walker, context, {[field] = "!"})
-	eq(inventory_sets, sets + 2, "P a marker click rebuilds at once")
-	eq(context.grug_map_selected, "quest:hunter", "P the marker is selected")
-	check(walker.form:find("Selected: Hunter Brosk", 1, true), "P the selection shows")
-	walker.sends = 0
-	page_steps(1.5)
-	eq(walker.sends, 0, "P no poll send within 2 s of a click")
-end
-
--- a quest change shows on the next 2 s poll
-do
-	page_steps(4)
-	walker.sends = 0
-	local field = atlas.field_id("quest:elder")
-	local before = walker.form:match("(button%[[^%]]-;" .. field .. ";[^%]]*%])")
-	check(Q.accept(walker, "intro"), "P accept the intro")
-	page_steps(2)
-	eq(walker.sends, 1, "P the quest change is sent on the next poll")
-	local after = walker.form:match("(button%[[^%]]-;" .. field .. ";[^%]]*%])")
-	check(before and after and before:find(";!%]$") and after:find(";%?%]$"),
-		"P the elder's marker turns from ! to ? (" .. tostring(before) .. " -> " .. tostring(after) .. ")")
-end
-
--- Return home lives on the Character page (Round 30 ruling): a running
--- countdown sends nothing here; a party member turning does.
-do
-	page_steps(4)
-	check(not walker.form:find("Return home", 1, true) and not walker.form:find("grug_map_home", 1, true),
-		"P the Map tab has no Return home button")
-	walker.sends = 0
-	home_left = 90
-	page_steps(4)
-	eq(walker.sends, 0, "P a home countdown sends nothing on the Map tab")
-	home_left = 0
-	page_steps(4)
-	walker.sends = 0
-	mate.yaw = math.pi
-	page_steps(2)
-	eq(walker.sends, 1, "P a party member turning is sent")
-	-- Round 31 (ruling 13): a faction change picks other NPC markers, so
-	-- the next poll sends the form.
-	page_steps(4)
-	walker.sends = 0
-	faction = "throng"
-	page_steps(2)
-	eq(walker.sends, 1, "P a faction change is sent on the next poll")
-	faction = "accord"
-	page_steps(2)
-end
+-- An item objective for W's held-item signal (it was taken in the old P).
+check(Q.accept(walker, "intro"), "W the walker accepts the intro")
 
 -- ---------------------------------------------------------------------------
 -- K: Return home on the Character page (Round 30 ruling)

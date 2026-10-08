@@ -8,7 +8,8 @@ dofile(path .. "/npcs.lua")
 dofile(path .. "/use.lua")
 dofile(path .. "/validate.lua")
 dofile(path .. "/loader.lua")
-dofile(path .. "/ui.lua")
+-- The quest log is part of the map window since Round 44 (grug_map
+-- quest_box.lua).
 dofile(path .. "/hud.lua")
 core.register_on_mods_loaded(function()
 	grug_quests.resolve_npc_factions()

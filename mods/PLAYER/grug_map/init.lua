@@ -14,3 +14,5 @@ dofile(modpath .. "/providers.lua")
 dofile(modpath .. "/page.lua")
 -- After page.lua (its layout places the zone markers) and providers.lua.
 dofile(modpath .. "/location.lua")
+-- The map window (Z and the Map tab), with the quest boxes and targets.
+dofile(modpath .. "/window.lua")

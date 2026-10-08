@@ -12,7 +12,8 @@
 -- coordinates keep their place; a page in real coordinates starts its content
 -- with real_coordinates[true]. Legacy content ends before y = 7.0
 -- (content_bottom), which is real y 8.45; the inventory views sit below it.
--- The Map tab keeps its own legacy header (width and height below).
+-- The map has its own window since Round 44 (grug_map window.lua); the
+-- legacy width and height below remain the old Map tab's reference size.
 grug_inventory.UI = {width = 10.4, height = 11.1, inventory_y = 7.2,
 	content_bottom = 7.0}
 local UI = grug_inventory.UI
@@ -55,7 +56,7 @@ end
 -- missing from it (creative's tabs for creative players) follow in their
 -- registration order. Until the wave-2 lanes merge their pages, Talents and
 -- Skills hold the place of "Talents & Skills", Party and PvP the place of
--- "Party & PvP", and Quests (moving into the map window) sits before Map.
+-- "Party & PvP". The quest log lives in the map window (Round 44 MQ).
 --
 grug_inventory.TAB_ORDER = {
 	"grug_inventory:inventory",
@@ -66,7 +67,6 @@ grug_inventory.TAB_ORDER = {
 	"grug_parties:group",
 	"grug_pvp:pvp",
 	"grug_inventory:help",
-	"grug_quests:quests",
 	"grug_map:atlas",
 }
 
@@ -222,9 +222,10 @@ end
 --
 -- The frame. A page passes show_inv = "full" or "short" for that view, true
 -- for the short view (pages not yet reworked) and false or nil for none. A
--- page with its own header (`size`: the Map tab) gets the tabs and its
--- content only. context.grug_inv_view records the view the page
--- shows, so a bag change re-renders it (pages.lua grug_inventory.refresh).
+-- page with its own header (`size`; none since the map got its own window)
+-- gets the tabs and its content only. context.grug_inv_view records the
+-- view the page shows, so a bag change re-renders it (pages.lua
+-- grug_inventory.refresh).
 --
 function sfinv.make_formspec(player, context, content, show_inv, size)
 	local nav = sfinv.get_nav_fs(player, context, context.nav_titles,

@@ -29,7 +29,7 @@ local givers, services, bosses = {}, {}, {}
 -- "" is a player without a faction: none). The kings and the dragons are
 -- baked into the base image for everyone since Round 44 (bake.lua); their
 -- places stay known here for the zone markers' placement.
-local givers_for, services_for = {}, {}
+local givers_for, services_for, giver_by_id = {}, {}, {}
 local function visible(row, faction)
 	return row.faction == nil or row.faction == faction
 end
@@ -103,8 +103,16 @@ core.register_on_mods_loaded(function()
 			faction = npc.faction}
 	end
 	table.sort(givers, function(a, b) return a.id < b.id end)
+	for _, giver in ipairs(givers) do giver_by_id[giver.id] = giver end
 	givers_for, services_for = split(givers), split(services)
 end)
+
+-- A quest NPC's marker row {id, title, position, faction} (every quest NPC,
+-- givers and talk destinations), or nil: the map window's question marks
+-- and quest targets (Round 44). Read-only.
+function grug_map.quest_npc(id)
+	return giver_by_id[id]
+end
 
 -- The positions of the services, kings, dragons and quest givers above, for
 -- the zone markers' placement (location.lua). Known once mods are loaded.
