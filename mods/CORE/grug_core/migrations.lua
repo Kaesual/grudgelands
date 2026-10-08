@@ -21,7 +21,9 @@ grug_core.migrations = {
 	-- The declaration's `migrate` list, ascending: the guard refuses a world
 	-- whose record lies before one of them. tools/check_upgrade.py proves this
 	-- list equal to tools/web_data/upgrade.json's `migrate` list.
-	versions = {},
+	versions = {
+		"0.44.0", -- mount items and skills outside the hotbar removed; offline only
+	},
 	-- Online work, only for a step that leaves some:
 	--   handlers["x.y.z"] = {
 	--     world = function(marker) end,             -- marker: the stored value
