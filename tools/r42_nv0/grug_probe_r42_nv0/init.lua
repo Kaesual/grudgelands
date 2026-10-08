@@ -217,13 +217,6 @@ do
 		if rec and rec.t0 and not ok then count(rec, "budget_refused") end
 		return ok, generation
 	end
-	local orig_spare = OB.spare_path_budget
-	OB.spare_path_budget = function()
-		local ok = orig_spare()
-		local rec = current and tracked[current]
-		if rec and rec.t0 and not ok then count(rec, "budget_refused") end
-		return ok
-	end
 end
 
 do
@@ -1521,14 +1514,10 @@ end
 
 core.after(1, function()
 	math.randomseed(12345)
-	for _, key in ipairs({"mob_pathfinding_searchdistance",
-			"mob_pathfinding_stuck_timeout", "mob_pathfinding_stuck_path_timeout",
-			"mob_pathfinding_algorithm", "dedicated_server_step"}) do
+	for _, key in ipairs({"mob_pathfinding_algorithm", "dedicated_server_step"}) do
 		results.meta.settings[key] = core.settings:get(key)
 	end
 	results.meta.path_budget_us = OB.path_budget_us
-	results.meta.close_searchdistance = OB.close_searchdistance
-	results.meta.give_up_after = OB.give_up_after
 	results.meta.seed = core.get_mapgen_setting("seed")
 	results.meta.scenes = {}
 	for _, scene in ipairs(scenes.list) do

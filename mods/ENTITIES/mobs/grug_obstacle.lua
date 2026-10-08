@@ -5,16 +5,13 @@
 local obstacle = {
 	-- Round 30 P2 (perf review 2026-10 #4): A* time per server step, in
 	-- microseconds, instead of a fixed number of searches. A no-path search
-	-- costs 2-3 ms at searchdistance 24, a found path 14-211 us.
+	-- cost 2-3 ms at Round 30's padding of 24, a found path 14-211 us.
 	path_budget_us = 3000,
 	-- Negative path cache: after a no-path result the mob waits before it
 	-- searches the same pair of nodes again (seconds, per consecutive
 	-- failure, the last one repeated, capped).
 	no_path_waits = {1, 2, 4, 8},
 	no_path_wait_cap = 10,
-	-- The negative cache's own give-up count (no_path_gate without
-	-- `no_give_up`). Since Round 42 combat counts its failures in grug_nav.
-	give_up_after = 3,
 }
 
 -- Microseconds spent on A* in the current server step, and the running
@@ -193,32 +190,21 @@ function obstacle.claim_path_budget(temp)
 	return false, entry.generation
 end
 
--- A caller that searches at most once a second (the patrol nudge) cannot
--- claim a queued grant in the step it is given, so it neither queues nor
--- waits: it searches only while the step has budget left and nobody queues.
-function obstacle.spare_path_budget()
-	discard_invalid_queue_head()
-	return path_queue_head > #path_queue
-		and path_spent_us + path_granted_us < obstacle.path_budget_us
-end
-
 --
--- Negative path cache and give-up (Round 30 P2, perf review 2026-10 #4).
+-- Negative path cache (Round 30 P2, perf review 2026-10 #4).
 --
 -- A no-path search explores the whole search box, so repeating it for an
 -- unreachable target (a closed house, a pillar, a boat) cost 2-3 ms every
 -- couple of seconds, forever. `temp.grug_no_path` remembers the last failed
--- search: the target object, the mob's and the target's node and how many
--- searches in a row failed while the target's node stayed the same.
+-- search: the target (an object or a key), the mob's and the target's node
+-- and how many searches in a row failed while the target's node stayed the
+-- same.
 --   * The next search for the same two nodes waits 1, 2, 4, 8 s after the
 --     1st, 2nd, 3rd, 4th failure (capped); a changed node of either side lifts
 --     the wait, since that is a different search.
 --   * A target that changes node starts the count again.
---   * Once `give_up_after` searches failed, the next search that would run
---     gives the target up instead (the caller drops it and goes home). A
---     caller that counts its own failures (grug_nav, Round 42) or has no
---     target to give up (the patrol nudge) passes `no_give_up`; its waits
---     keep growing to the cap instead.
+-- Giving a target up is the caller's: grug_nav counts its own failures
+-- (Round 42; the gate's own give-up went in Round 42 CL).
 -- Nodes are rounded positions; `now` is in seconds.
 --
 
@@ -227,9 +213,8 @@ local function node_of(pos)
 		math.floor(pos.z + 0.5)
 end
 
--- "search", "wait" (back-off running) or "give_up".
-function obstacle.no_path_gate(temp, now, target, mob_pos, target_pos,
-		no_give_up)
+-- "search" or "wait" (back-off running).
+function obstacle.no_path_gate(temp, now, target, mob_pos, target_pos)
 	local state = temp.grug_no_path
 	if not state then return "search" end
 	local tx, ty, tz = node_of(target_pos)
@@ -237,15 +222,6 @@ function obstacle.no_path_gate(temp, now, target, mob_pos, target_pos,
 	or state.tz ~= tz then
 		temp.grug_no_path = nil
 		return "search"
-	end
-	if not no_give_up and state.fails >= obstacle.give_up_after then
-		local mx, my, mz = node_of(mob_pos)
-		if now < state.until_time and state.mx == mx and state.my == my
-		and state.mz == mz then
-			return "wait"
-		end
-		temp.grug_no_path = nil
-		return "give_up"
 	end
 	local mx, my, mz = node_of(mob_pos)
 	if now < state.until_time and state.mx == mx and state.my == my

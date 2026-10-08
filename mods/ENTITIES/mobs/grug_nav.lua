@@ -638,7 +638,7 @@ local function attempt(self, nst, pos, goal_pos, key, mode, close, target, opts)
 		emit(self, "refused")
 		return "failed"
 	end
-	if obstacle.no_path_gate(self.temp, t, key, from, goal, true) == "wait" then
+	if obstacle.no_path_gate(self.temp, t, key, from, goal) == "wait" then
 		obstacle.cancel_path_request(self.temp)
 		return "wait"
 	end

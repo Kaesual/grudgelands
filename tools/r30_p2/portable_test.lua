@@ -5,14 +5,13 @@
 --
 -- A. mobs/grug_obstacle.lua, the real file: the negative path cache (waits of
 --    1, 2, 4 s for the same two nodes; a moved mob lifts the wait, a moved
---    target restarts the count; the third failure's wait ends in "give_up";
---    a found path forgets everything; the patrol nudge's variant without
---    give-up grows to 8 s and stays there), the per-step A* time budget
+--    target restarts the count; a found path forgets everything; the waits
+--    grow to 8 s and stay there, never a give-up: since Round 42 grug_nav
+--    counts the failures, tools/r42_nv1), the per-step A* time budget
 --    (direct claims while the step has time, the queue granted at the next
---    step, the spare-budget test of the once-a-second nudge) and the
---    collision boxes (the mob field, the per-step player cache), and the
---    path ends (a target on a slab, stair or snow aimed at from above; an end
---    still walkable is no search).
+--    step) and the collision boxes (the mob field, the per-step player
+--    cache), and the path ends (a target on a slab, stair or snow aimed at
+--    from above; an end still walkable is no search).
 -- B. general_attack, cut out of the vendored api.lua: the mob's eye stays at
 --    its own position + 1 for every candidate and its position is not moved.
 -- C. the privilege cache, cut out of api.lua: one lookup per player and
@@ -67,9 +66,10 @@ do
 	O.note_search_result(temp, 3.0, target, moved, goal, false)
 	check(temp.grug_no_path.fails == 3, "A1 the count goes on for a moved mob")
 	check(O.no_path_gate(temp, 6.9, target, moved, goal) == "wait", "A1 wait 4 s")
-	check(O.no_path_gate(temp, 7.0, target, moved, goal) == "give_up",
-		"A1 the third failure's wait ends in give_up")
-	check(temp.grug_no_path == nil, "A1 give_up forgets the state")
+	check(O.no_path_gate(temp, 7.0, target, moved, goal) == "search",
+		"A1 the third failure's wait ends in a search, never a give-up")
+	O.forget_no_path(temp)
+	check(temp.grug_no_path == nil, "A1 forget_no_path forgets the state")
 	-- A target that moves restarts the count.
 	O.note_search_result(temp, 10, target, mob, goal, false)
 	O.note_search_result(temp, 11, target, mob, goal, false)
@@ -84,23 +84,23 @@ do
 	O.note_search_result(temp, 13, target, mob, goal2, false)
 	O.note_search_result(temp, 14, target, mob, goal2, true)
 	check(temp.grug_no_path == nil, "A2 a found path forgets")
-	-- The nudge variant: no give-up, the waits grow to 8 s and stay there.
+	-- A key as the target (a fixed walk's goal): the waits grow to 8 s and
+	-- stay there.
 	local now = 0
 	local waits = {}
 	for i = 1, 6 do
-		O.note_search_result(temp, now, "nudge", mob, goal, false)
+		O.note_search_result(temp, now, "post", mob, goal, false)
 		local t = now
-		while O.no_path_gate(temp, t, "nudge", mob, goal, true) == "wait" do
+		while O.no_path_gate(temp, t, "post", mob, goal) == "wait" do
 			t = t + 0.25
 		end
-		check(O.no_path_gate(temp, t, "nudge", mob, goal, true) == "search",
-			"A3 nudge searches again " .. i)
+		check(O.no_path_gate(temp, t, "post", mob, goal) == "search",
+			"A3 searches again " .. i)
 		waits[i] = t - now
 		now = t
 	end
-	check(table.concat(waits, ",") == "1,2,4,8,8,8", "A3 nudge waits " ..
+	check(table.concat(waits, ",") == "1,2,4,8,8,8", "A3 waits " ..
 		table.concat(waits, ","))
-	check(O.give_up_after == 3, "A4 give up after 3")
 end
 
 -- Path ends: a target on a slab, a stair or snow dust stands in a walkable
@@ -133,11 +133,9 @@ do
 	check(O.claim_path_budget(b) == true, "A5 time left: second claim")
 	O.note_path_cost(2500)
 	check(O.claim_path_budget(c) == false, "A5 budget spent: queued")
-	check(O.spare_path_budget() == false, "A5 no spare budget while queued")
 	O.begin_server_step()
 	check(O.claim_path_budget(c) == true, "A5 the queued request is granted next step")
 	O.note_path_cost(100)
-	check(O.spare_path_budget() == true, "A5 spare budget after a cheap search")
 	O.begin_server_step()
 	-- Grants follow the cost estimate: expensive searches grant fewer.
 	for _ = 1, 8 do O.note_path_cost(2800) end
