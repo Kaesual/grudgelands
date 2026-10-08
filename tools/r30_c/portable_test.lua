@@ -192,6 +192,8 @@ entity_defs["grug_mobs:elder_human"] = {after_activate = function(self) grug_mob
 entity_defs["grug_mobs:guard_accord"] = {on_tick = function(self) claim_once(self, true) end}
 entity_defs["grug_mobs:villager_human"] = {on_tick = function(self) claim_once(self, false) end}
 
+-- routes.lua (Round 42 NV3) is not loaded here: the rows register nowhere.
+grug_mobs.route_settlement = function() end
 dofile(ROOT .. "/mods/ENTITIES/grug_mobs/start_npcs.lua")
 for _, fn in ipairs(loaded) do fn() end
 local function heartbeat()

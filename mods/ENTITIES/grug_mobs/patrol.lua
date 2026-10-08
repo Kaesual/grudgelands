@@ -296,49 +296,6 @@ local SNAP_RETRY = 10 -- s between out-of-sight attempts once one was refused
 local QUIET_AFTER = 4 -- give-up cycles before the log goes quiet
 
 --
--- THE VILLAGERS' STALL CLOCK (start_villagers.lua; Round 42 NV3 moves the
--- villagers onto the navigation too). How long this mob has made no
--- measurable progress toward (x, z), as two clocks: the one a caller may
--- lower, and the one only progress clears. A CHANGED TARGET replaces the
--- yardstick and keeps both clocks.
---
-local PROGRESS = 1 -- squared-distance improvement that counts as progress
-
-function grug_mobs.stall_clock(self, x, z, pos, elapsed)
-	self.temp = self.temp or {}
-	local t = self.temp
-	local dx, dz = x - pos.x, z - pos.z
-	local d2 = dx * dx + dz * dz
-	if t.grug_stall_x ~= x or t.grug_stall_z ~= z then
-		t.grug_stall_x, t.grug_stall_z = x, z
-		t.grug_stall_d2 = d2
-		return t.grug_stall or 0, t.grug_stall_total or 0
-	end
-	local base = t.grug_stall_d2
-	if not base or d2 <= base - PROGRESS then
-		t.grug_stall_d2 = d2
-		t.grug_stall, t.grug_stall_total = 0, 0
-		return 0, 0
-	end
-	t.grug_stall = (t.grug_stall or 0) + (elapsed or 0)
-	t.grug_stall_total = (t.grug_stall_total or 0) + (elapsed or 0)
-	return t.grug_stall, t.grug_stall_total
-end
-
--- Forget both clocks AND the terminal state: the mob arrived, or something else
--- took the movement over. A fight is not a stall, and a mob that has just made
--- progress is allowed to report its next problem out loud again.
-function grug_mobs.stall_clear(self)
-	local t = self.temp
-	if not t then
-		return
-	end
-	t.grug_stall, t.grug_stall_total, t.grug_stall_d2 = nil, nil, nil
-	t.grug_stall_x, t.grug_stall_z = nil, nil
-	t.grug_stall_cycles, t.grug_snap_wait = nil, nil
-end
-
---
 -- The snap with a back-off. The first attempt runs the moment the mob is due;
 -- a refusal -- a player inside SNAP_PLAYER_RANGE, or a column with nowhere to
 -- stand -- is retried only SNAP_RETRY seconds later: a deadline on the server
@@ -370,7 +327,7 @@ local function report_give_up(self)
 	if t.grug_stall_cycles < QUIET_AFTER then
 		core.log("action", "[grug_mobs] " .. self.name ..
 			" could not reach its waypoint (" .. SKIP_AFTER ..
-			" failed searches in a row) and walks on to the next one")
+			" failed searches in a row, or no route) and walks on to the next one")
 	elseif t.grug_stall_cycles == QUIET_AFTER then
 		core.log("action", "[grug_mobs] " .. self.name ..
 			" cannot reach any waypoint of its loop; it keeps trying without" ..
@@ -400,9 +357,9 @@ end
 -- to stand.
 --
 -- `after` says for the log line what the mob was stuck for: the seconds of a
--- caller that still times its stall (a work resident walking back to its
--- socket after 30 s, start_villagers.lua), or the reason of one fed by the
--- navigation (failed searches).
+-- caller that times its walk (a work resident walking back to its socket for
+-- 30 s, start_villagers.lua), or the reason of one fed by the navigation
+-- (failed searches).
 function grug_mobs.snap_to(self, pos, x, z, after)
 	if not grug_mobs.unwatched(pos, SNAP_PLAYER_RANGE) then
 		return false
@@ -413,7 +370,9 @@ function grug_mobs.snap_to(self, pos, x, z, after)
 	end
 	local to = {x = x, y = y, z = z}
 	grug_mobs.place_on_ground(self.object, to)
-	grug_mobs.stall_clear(self)
+	-- Arrived by other means: the walk, its leg and the give-up count end.
+	local t = self.temp
+	if t then t.grug_stall_cycles, t.grug_snap_wait, t.grug_leg = nil, nil, nil end
 	grug_mobs.walk_clear(self)
 	core.log("action", "[grug_mobs] " .. self.name .. " was stuck " ..
 		(type(after) == "number" and ("for " .. after .. " s") or (after or "")) ..
@@ -422,11 +381,13 @@ function grug_mobs.snap_to(self, pos, x, z, after)
 	return true
 end
 
--- A patrol's walk is over: the next leg starts clean.
+-- A patrol's walk is over: the next leg starts clean (on a cached route at
+-- the corner nearest to it, routes.lua).
 local function route_clear(self)
 	grug_mobs.walk_clear(self, "route")
 	local t = self.temp
 	t.grug_route_skips, t.grug_stall_cycles, t.grug_snap_wait = nil, nil, nil
+	if t.grug_leg and t.grug_leg.owner == "route" then t.grug_leg = nil end
 end
 
 --
@@ -443,8 +404,14 @@ end
 --              capital watch passes true (guard.lua); the named rares walk
 --              wilderness waypoints and only skip (a rare that has to be
 --              teleported is somebody else's work package).
+-- settlement — the settlement key of a start or capital watch (guard.lua):
+--              its legs, from the waypoint last reached to the next, come
+--              from the route cache (routes.lua; a capital's over its
+--              streets), and a leg with no route is skipped at once. Without
+--              it (outposts, rares) each waypoint is a plain fixed walk.
 --
-function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, snap)
+function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, snap,
+		settlement)
 	if not points or #points < 2 then
 		return
 	end
@@ -452,7 +419,11 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, snap)
 	local t = self.temp
 	t.grug_route_acc = (t.grug_route_acc or 0) + dtime
 	if t.grug_route_acc < TICK then
-		grug_mobs.walk_follow(self, dtime, "route")
+		if settlement then
+			grug_mobs.route_follow(self, dtime, "route")
+		else
+			grug_mobs.walk_follow(self, dtime, "route")
+		end
 		return
 	end
 	t.grug_route_acc = 0
@@ -472,13 +443,26 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, snap)
 	local pt = points[idx]
 	local dx, dz = pt.x - pos.x, pt.z - pos.z
 	if dx * dx + dz * dz <= WAYPOINT_REACHED * WAYPOINT_REACHED then
+		t.grug_route_from = idx
 		idx = idx % #points + 1
 		wp_holder[wp_key] = idx
 		pt = points[idx]
 		route_clear(self)
 	end
-	if grug_mobs.walk_fixed(self, dtime, pos, pt.x, pt.y, pt.z, idx,
-			"route") < SKIP_AFTER then
+	local fails, none
+	if settlement then
+		-- The leg from the waypoint last reached (runtime; after a reload
+		-- the one before this one).
+		local from = points[t.grug_route_from or 0]
+		if not from or from == pt then from = points[(idx - 2) % #points + 1] end
+		fails, none = grug_mobs.route_walk(self, dtime, pos, settlement, from, pt,
+			"route", true)
+	end
+	if not fails then
+		fails = grug_mobs.walk_fixed(self, dtime, pos, pt.x, pt.y, pt.z, idx,
+			"route")
+	end
+	if not none and fails < SKIP_AFTER then
 		return
 	end
 	if snap and (t.grug_route_skips or 0) > 0 and grug_mobs.snap_try(self, pos,

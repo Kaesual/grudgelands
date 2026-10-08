@@ -338,6 +338,8 @@ _G.grug_mobs = {
 	walk_fixed = function() return 0 end,
 	walk_follow = noop,
 	walk_clear = noop,
+	-- routes.lua (Round 42 NV3; not loaded here).
+	route_settlement = noop,
 	clear_boss_activity = noop,
 	register_dragon_bosses = noop,
 	-- levels.lua's leader factors (the real values; levels.lua is not loaded).

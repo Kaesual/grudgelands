@@ -433,6 +433,9 @@ end
 --
 local placing = false
 
+-- Set below, next to the rings it re-derives (`idle_ring`).
+local refresh_walk
+
 function grug_mobs.start_npc_claim(entity)
 	if type(entity) ~= "table" then
 		return true
@@ -463,6 +466,7 @@ function grug_mobs.start_npc_claim(entity)
 				remove_socket_holder(other)
 			end
 			slots[socket_id] = entity
+			refresh_walk(entity)
 			return true
 		end
 		core.log("warning", "[grug_mobs] start npcs " .. key .. ": a second " ..
@@ -474,6 +478,7 @@ function grug_mobs.start_npc_claim(entity)
 		return false
 	end
 	slots[socket_id] = entity
+	refresh_walk(entity)
 	return true
 end
 
@@ -862,6 +867,8 @@ local function build_rows()
 			end
 			rows[#rows + 1] = row
 			by_key[row.key] = row
+			-- Start towns and capitals cache their walkers' legs (routes.lua).
+			grug_mobs.route_settlement(row.key, row.kind, row.anchor)
 		end
 	end
 end
@@ -1043,7 +1050,11 @@ end
 -- re-basing the index is exactly how everybody would end up pointed at the
 -- wrong spot.
 --
-local function bounded_spots(group, home_index, walker)
+-- `others` (optional): the idle spots of the settlement's other compositions,
+-- for a walker whose own composition cannot fill its ring (Round 42 ruling
+-- 16, below).
+--
+local function bounded_spots(group, home_index, walker, others)
 	local home = group[home_index]
 	if not home then
 		local out = {}
@@ -1119,7 +1130,100 @@ local function bounded_spots(group, home_index, walker)
 			if position == home_index then index = #out end
 		end
 	end
+	--
+	-- A WALKER ALWAYS HAS MORE THAN ONE DESTINATION (Round 42 ruling 16). A
+	-- capital plot may publish a single idle spot -- its gate doorstep -- and
+	-- the composition rule above then handed its walker a ring of one: two to
+	-- six walkers per capital stood still for good. Such a walker takes the
+	-- nearest spots of the settlement's other compositions until its ring
+	-- reaches WALK_MIN_RING (or the settlement runs out); nearest first, the
+	-- order `others` is given in breaking a tie, appended after its own.
+	--
+	if walker == true and #out < WALK_MIN_RING and others and #others > 0 then
+		local near = {}
+		for position = 1, #others do
+			local spot = others[position]
+			local dx, dz = spot.x - home.x, spot.z - home.z
+			near[#near + 1] = {spot = spot, d2 = dx * dx + dz * dz,
+				position = position}
+		end
+		table.sort(near, function(a, b)
+			if a.d2 ~= b.d2 then return a.d2 < b.d2 end
+			return a.position < b.position
+		end)
+		for k = 1, #near do
+			if #out >= WALK_MIN_RING then break end
+			local spot = near[k].spot
+			out[#out + 1] = {x = spot.x, y = spot.y, z = spot.z,
+				yaw = spot.yaw, tag = spot.tag, spare = spot.spare}
+		end
+	end
 	return out, index
+end
+
+-- The idle spots of every composition of `row` but `composition`, in a fixed
+-- order (compositions by name, spots in authored order): the spots a walker
+-- with too short a ring may borrow (`bounded_spots`).
+local function other_spots(row, composition)
+	local names = {}
+	for name in pairs(row.idle_groups) do
+		if name ~= composition then names[#names + 1] = name end
+	end
+	table.sort(names)
+	local out = {}
+	for _, name in ipairs(names) do
+		for _, spot in ipairs(row.idle_groups[name]) do out[#out + 1] = spot end
+	end
+	return out
+end
+
+-- A resident's ring, from its row: the spots and the index of its own.
+local function idle_ring(row, slot)
+	local walker = row.walkers[slot.id] == true
+	local spots, index = bounded_spots(row.idle_groups[slot.composition] or {},
+		slot.idle_index, walker, walker and other_spots(row, slot.composition) or nil)
+	return spots, index, walker
+end
+
+--
+-- A WALK IS RE-DERIVED FROM ITS ROW AT EVERY CLAIM (Round 42). The ring and
+-- the patrol loop an NPC carries are copies `install` wrote into its saved
+-- fields, so an NPC placed by an older version keeps the older copy: a
+-- walker's ring of one (ruling 16), patrol points without their heights (the
+-- route cache's legs need them). Each activation's claim hands it the ring
+-- and the loop its row gives now; the spot it is heading for and its place in
+-- the loop stay.
+--
+refresh_walk = function(entity)
+	local row = by_key[entity._grug_start]
+	local slot = row and row.by_socket[entity._grug_socket]
+	if not slot then return end
+	if slot.role == "idle" and type(entity._grug_idle_spots) == "table" then
+		local spots, index = idle_ring(row, slot)
+		local heading = entity._grug_idle_spots[entity._grug_idle_spot or 0]
+		if heading then
+			for k = 1, #spots do
+				local spot = spots[k]
+				if spot.x == heading.x and spot.y == heading.y and
+						spot.z == heading.z then
+					index = k
+					break
+				end
+			end
+		end
+		entity._grug_idle_spots, entity._grug_idle_spot = spots, index
+		entity._grug_idle_from = nil
+	elseif slot.role == "guard_patrol" and
+			type(entity._grug_patrol_route) == "table" then
+		local loop = row.patrols[slot.group] or {}
+		local route = entity._grug_patrol_route
+		local points = {}
+		for k = 1, #loop do
+			points[k] = {x = loop[k].x, y = loop[k].y, z = loop[k].z}
+		end
+		route.points = points
+		if type(route.wp) ~= "number" or route.wp > #points then route.wp = 1 end
+	end
 end
 
 local function install_profession_trainer_name(entity, profession)
@@ -1276,9 +1380,7 @@ local function install(entity, row, slot)
 		-- and a core villager to the core -- and, since round 3, only the ones
 		-- within WALK_RADIUS of its own socket, with a static resident's ring
 		-- narrowed to the spares (see `bounded_spots`).
-		local walker = row.walkers[slot.id] == true
-		local spots, index = bounded_spots(
-			row.idle_groups[slot.composition] or {}, slot.idle_index, walker)
+		local spots, index, walker = idle_ring(row, slot)
 		entity._grug_idle_spots = spots
 		entity._grug_idle_spot = index
 		entity._grug_idle_tag = slot.tag
