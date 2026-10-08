@@ -36,6 +36,13 @@ from migration.codec import ItemStack  # noqa: E402
 from migration.data import InventoryList  # noqa: E402
 
 WORLD = HERE / "world"
+# The tool's mechanism is tested with test steps up to game.conf's version,
+# against a copy of the declaration with an empty `migrate` list: the
+# declared steps have their own end-to-end tests (0.44.0: tools/r44_ms/).
+_DECLARATION = tempfile.TemporaryDirectory()
+cli.DECLARATION = Path(_DECLARATION.name, "upgrade.json")
+cli.DECLARATION.write_text(json.dumps(dict(json.loads(
+    (REPO / "tools" / "web_data" / "upgrade.json").read_text()), migrate=[])))
 TARGET = cli.read_checkout(None)[0]
 LONG = "a string long enough to be referenced"
 SERIAL = {

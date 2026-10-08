@@ -465,7 +465,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `r43_mt` the migration tool's tests,
   `test_migrate.py` (Python unittest: the codecs against an engine-written
   world, opening and refusals, locks, check mode, events, test-only steps
-  through `cli.main(test_steps=...)`), run where the platform runs the tool
+  through `cli.main(test_steps=...)`, against a copy of the declaration with
+  an empty `migrate` list), run where the platform runs the tool
   by `container_test.sh [COMMIT]` (debian:trixie, Debian's python3,
   python3-psycopg and python3-zstandard, a `git archive` export).
   `world/` is that engine-written world, built by `make_world.sh OUT_DIR`
@@ -479,7 +480,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   with the probe `grug_probe_r43_it`, real joins by `client.py` (a minimal
   protocol client), the tool with the undeclared test steps of `steps.py`
   (`tool_run.py`, the tool's Python hook) and the game's test hook naming the
-  same steps (`grug_test_migrations.lua`): offline writes, world and
+  same steps (`grug_test_migrations.lua`; the declared steps run with them
+  and the guard names them, and when the last declared step is the game's
+  own version the compatible-move boots stage a game.conf one patch version
+  above it): offline writes, world and
   character online work in step order, the start guard's refusals and record,
   new-world agreement of tool and game, a map reset combined with a step, and
   PostgreSQL (`pg_test.py`: a throwaway server inside the container, tables
@@ -569,3 +573,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   cooldown, summon and dismount with their gates, Return home with its
   gates, no mount item on purchase or join and the "Press E" tip in both
   stable dialogues; it prints the window's bytes.
+  `r44_ms` the test of the migration step 0.44.0 (mount items and skills
+  outside the hotbar; [upgrade contract](../docs/technical/upgrade-contract.md)
+  §5.8): `run.sh [EVIDENCE_DIR]` (default `evidence/`; one queue slot, about
+  3 minutes) runs `test_step.py` (Python unittest on the Round 43 MT world,
+  the tool pinned to the 0.44.0 checkout) in IT's runner image, then
+  `e2e.py`, which reuses `r43_it/it.py` and `client.py`: the 0.43.0 game
+  (a `git archive` of `9dc2fad5`) builds two characters with the probe
+  `grug_probe_r44_ms` and lists its registrations (the step's frozen names
+  are checked against them), this game refuses the world, the shipped tool
+  (`--check`, migrate, `--check`) runs in the container, and this game boots
+  and both characters join again; a PASS/FAIL table.

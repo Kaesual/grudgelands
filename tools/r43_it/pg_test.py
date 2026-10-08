@@ -44,7 +44,9 @@ REPO = HERE.parents[1]
 WORK = Path(sys.argv[1])
 ROLE, PASSWORD = "grug_it", "it-secret"
 STEPS = "0.41.1,0.41.2,0.41.3,0.41.4"
-DUE = STEPS.split(",")
+# The declared steps lie above the test steps and run with them (it.py).
+DECLARED = json.loads((REPO / "tools" / "web_data" / "upgrade.json").read_text())["migrate"]
+DUE = sorted(STEPS.split(",") + DECLARED, key=lambda v: tuple(int(p) for p in v.split(".")))
 results = []
 
 DDL = [
@@ -339,8 +341,9 @@ def main():
     rc, ev, _ = tool("all_migrate", world, STEPS)
     done = last(ev)
     kinds = [e.get("event") for e in ev]
-    check("pg migrate: the four test steps", rc == 0 and done.get("applied") == DUE and kinds ==
-          ["start"] + ["step_start", "step_done"] * 4 + ["done"],
+    check("pg migrate: the four test steps and the declared ones", rc == 0
+          and done.get("applied") == DUE and kinds ==
+          ["start"] + ["step_start", "step_done"] * len(DUE) + ["done"],
           "exit %d, events %s" % (rc, kinds))
     counts = {e["step"]: e["counts"] for e in ev if e.get("event") == "step_done"}
     check("pg migrate: step counts", counts.get("0.41.1", {}).get("inventories") == 1
@@ -356,7 +359,7 @@ def main():
                               "AND key = %s", (b"migrate_world:0.41.2",)).fetchone()
         char = conn.execute("SELECT attr, value FROM player_metadata WHERE player = 'hero' "
                             "AND attr LIKE 'grug_core:migrate:%%' ORDER BY attr").fetchall()
-    check("pg migrate: record and markers", record and bytes(record[0]) == b"0.41.4"
+    check("pg migrate: record and markers", record and bytes(record[0]) == DUE[-1].encode()
           and marker and bytes(marker[0]) == b"w-0.41.2"
           and char == [("grug_core:migrate:0.41.3", "c-0.41.3"),
                        ("grug_core:migrate:0.41.4", "c-0.41.4")],
@@ -366,13 +369,19 @@ def main():
     check("pg migrate again: nothing due", rc == 0 and last(ev).get("applied") == [],
           "exit %d, %s" % (rc, json.dumps(last(ev))))
 
+    # Test setup (the server stopped): the record back at 0.41.4, so the
+    # failing test step 0.41.5 is due again before the declared ones.
+    with connect("grug_it_all") as conn:
+        conn.execute("UPDATE mod_storage SET value = %s WHERE modname = 'grug_core' "
+                     "AND key = %s", (b"0.41.4", b"world_version"))
+    before_fail = dump_pg("grug_it_all")
     for case, reason in (("fail", "step"), ("rename", "rule")):
         rc, ev, _ = tool("all_" + case, world, "0.41.5=" + case)
         done = last(ev)
         check("pg: a step that %s exits 1 and rolls every backend back" % (
             "raises after writing" if case == "fail" else "renames an auth entry"),
             rc == 1 and done.get("event") == "failed" and done.get("reason") == reason
-            and dump_pg("grug_it_all") == result,
+            and dump_pg("grug_it_all") == before_fail,
             "exit %d, %s" % (rc, json.dumps(done)))
 
     # The platform's layout: player and auth on PostgreSQL, mod storage SQLite.
