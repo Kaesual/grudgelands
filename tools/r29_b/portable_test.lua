@@ -10,7 +10,8 @@
 --      the rider in the water; disembark onto land within 2 nodes, else water;
 --   E. one mount or boat: replacement of a horse, refusal keeps the horse;
 --   F. purchase gating: Shipwright rows, own faction, levels, Learn Boat
---      first, purchase at the shipped price, Skills recovery ids;
+--      first, purchase at the shipped price, the owned ids the quickbar
+--      lists; the retired boat item;
 --   G. Kraken speed switch: 10 in deep ocean, 5 elsewhere, leash, view range,
 --      and the switch writing the speed base while a slow runs;
 --   H. riding tiers 1-4 bought in order through the Riding Trainer dialogue
@@ -285,20 +286,10 @@ local boat_item = registered_items["grug_mounts:boat"]
 check(boat_item and boat_item.stack_max == 1 and boat_item.groups.grug_bound_skill == 1 and
 	boat_item._grug_mount_tier == 5, "boat item: bound skill, one per stack")
 eq(boat_item.on_drop().name, "", "dropping deletes the boat item")
--- Somebody else's boat item: refused with a keyed feed line, never chat
--- (Round 32 F3).
-do
-	local foreign = {get_name = function() return "grug_mounts:boat" end,
-		get_meta = function() return {get_string = function() return "somebody_else" end} end}
-	local fed, chatted = #feed_lines, #chat
-	local user = {is_player = function() return true end,
-		get_player_name = function() return "stranger" end}
-	eq(boat_item.on_use(foreign, user), foreign, "a foreign boat item is kept")
-	check(#feed_lines == fed + 1 and
-		feed_lines[#feed_lines].text == "That mount is not bound to this character." and
-		feed_lines[#feed_lines].key == "mount", "not-bound refusal is a mount feed line")
-	eq(#chat, chatted, "not-bound refusal: nothing in chat")
-end
+-- Round 44: the item is retired (the quickbar summons from the purchase
+-- record), so it has no use of its own; it stays registered for old stacks.
+check(boat_item.on_use == nil and boat_item.on_secondary_use == nil and
+	boat_item.on_place == nil, "the retired boat item does nothing when used")
 check(registered_items["grug_mounts:improved_boat"].inventory_image ==
 	"grug_mounts_icon_improved_boat.png", "improved boat icon name")
 
@@ -530,7 +521,7 @@ ok = grug_mounts.purchase(bo, 6)
 check(ok, "Improved Boat bought")
 eq(boat_states(), "owned,owned", "both boats owned")
 check(grug_mounts.owns_tier(bo, 5), "buying the improved boat keeps the base boat")
-eq(table.concat(grug_mounts.owned_tier_ids(bo), ","), "5,6", "Skills recovery lists both boats")
+eq(table.concat(grug_mounts.owned_tier_ids(bo), ","), "5,6", "the quickbar lists both boats")
 eq(grug_mounts.highest_owned(bo, "land"), 0, "boats are no riding tier")
 ok, message = grug_mounts.purchase(bo, 6)
 check(not ok and message == "You already own this boat.", "no second purchase")
@@ -655,7 +646,7 @@ for tier_id = 1, 4 do
 end
 eq(grug_mounts.highest_owned(ed, "land"), 2, "riding: the two land tiers")
 eq(grug_mounts.highest_owned(ed, "flight"), 4, "riding: the two flight tiers")
-eq(table.concat(grug_mounts.owned_tier_ids(ed), ","), "1,2,3,4", "Skills recovery lists the four riding tiers")
+eq(table.concat(grug_mounts.owned_tier_ids(ed), ","), "1,2,3,4", "the quickbar lists the four riding tiers")
 eq(grug_mounts.highest_owned(ed, "water"), 0, "riding tiers are no boat")
 
 if failures > 0 then

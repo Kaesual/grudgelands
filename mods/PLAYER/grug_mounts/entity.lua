@@ -674,9 +674,10 @@ function grug_mounts.mount(player, tier_id)
 	return grug_mounts.spawn_entity(player, tier_id, pos)
 end
 
--- The active tier's item dismounts. Another tier's item replaces the active
--- mount or boat when that tier may be summoned here; otherwise the current
--- one stays and the refusal is shown.
+-- The quickbar's button of a tier (grug_quickbar): the active tier's button
+-- dismounts. Another tier's button replaces the active mount or boat when
+-- that tier may be summoned here; otherwise the current one stays and the
+-- refusal is shown.
 function grug_mounts.toggle(player, tier_id)
 	local name = player:get_player_name()
 	local record = active[name]

@@ -10,27 +10,36 @@ grug_mounts.FLIGHT_CEILING = grug_core.FLIGHT_CEILING
 -- Derived and checked by tools/r29_e4/income.py (economy plan, E4).
 grug_mounts.PRICES = {105, 700, 12900, 73800, 105, 700}
 
+-- The quickbar tip (Round 44, ui-crafting-rework-plan.md §3.5): the Riding
+-- Trainer's and the Shipwright's dialogue show it, a purchase answers with it
+-- and the retired items carry it.
+grug_mounts.QUICKBAR_TIP = "Press E to open your mounts."
+
+-- `item` is the tier's retired inventory item (items.lua; Round 44: mounts
+-- live in the quickbar, no item is handed out); `icon` is the tier's
+-- picture when no model applies (the item's image, the quickbar fallback).
+
 grug_mounts.TIERS = {
 	[1] = {id = 1, key = "apprentice", name = "Apprentice Riding",
 		level = 15, mode = "land", speed = 6.4,
-		item = "grug_mounts:apprentice_mount"},
+		item = "grug_mounts:apprentice_mount", icon = "grug_mounts_icon_t1_accord.png"},
 	[2] = {id = 2, key = "journeyman", name = "Journeyman Riding",
 		level = 30, mode = "land", speed = 8,
-		item = "grug_mounts:journeyman_mount"},
+		item = "grug_mounts:journeyman_mount", icon = "grug_mounts_icon_human.png"},
 	[3] = {id = 3, key = "expert", name = "Expert Riding",
 		level = 45, mode = "flight", speed = 8,
-		item = "grug_mounts:expert_mount"},
+		item = "grug_mounts:expert_mount", icon = "grug_mounts_icon_expert_accord.png"},
 	[4] = {id = 4, key = "master", name = "Master Riding",
 		level = 60, mode = "flight", speed = 12,
-		item = "grug_mounts:master_mount"},
-	-- Boats are water mounts (docs/design/boats.md): the same owner-bound item,
-	-- Skills recovery and ephemeral entity, sold by the Shipwright.
+		item = "grug_mounts:master_mount", icon = "grug_mounts_icon_master_accord.png"},
+	-- Boats are water mounts (docs/design/boats.md): the same purchase record,
+	-- quickbar button and ephemeral entity, sold by the Shipwright.
 	[5] = {id = 5, key = "boat", name = "Boat",
 		level = 15, mode = "water", speed = 4,
-		item = "grug_mounts:boat"},
+		item = "grug_mounts:boat", icon = "grug_mounts_icon_boat.png"},
 	[6] = {id = 6, key = "improved_boat", name = "Improved Boat",
 		level = 30, mode = "water", speed = 8,
-		item = "grug_mounts:improved_boat"},
+		item = "grug_mounts:improved_boat", icon = "grug_mounts_icon_improved_boat.png"},
 }
 grug_mounts.RIDING_TIERS = {1, 2, 3, 4}
 grug_mounts.BOAT_TIERS = {5, 6}

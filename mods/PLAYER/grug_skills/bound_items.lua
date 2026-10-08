@@ -4,8 +4,10 @@ local function bound(stack)
 end
 
 -- Skills (ability representations) live on the hotbar only (Round 44, spec
--- ui-crafting-rework-plan.md ruling 8): main[1..8]. Mount items keep the
--- older rule, `main` and the owned bag contents, until lane QB retires them.
+-- ui-crafting-rework-plan.md ruling 8): main[1..8]. The retired mount items
+-- (grug_mounts/items.lua; nothing hands them out since Round 44) keep the
+-- older rule, `main` and the owned bag contents, until the 0.44.0 migration
+-- step removes them offline.
 local function ability(stack)
 	return core.get_item_group(stack:get_name(), "grug_ability") > 0
 end
