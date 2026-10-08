@@ -302,8 +302,8 @@ end
 --     home from);
 --   * finds its way round what blocks the run (Round 42 ruling 10): the run
 --     is a fixed walk home (patrol.lua `walk_fixed`, the shared navigation),
---     and an evader that does not move for 1 s searches a local way to a
---     point EVADE_SEARCH.rings[1] nodes toward home (within
+--     and an evader that moved less than 30 % of its speed over 1 s searches
+--     a local way to a point EVADE_SEARCH.rings[1] nodes toward home (within
 --     EVADE_SEARCH.band of its height; the point chosen before the search,
 --     home's direction first, then 20 and 40 degrees aside) and follows it.
 --
