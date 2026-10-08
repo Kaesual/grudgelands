@@ -313,7 +313,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   onto a punchable dummy, a post guard walking back to its post, a royal
   guard following a leader stand-in, a villager walker. Per trial: reached
   and when, every `core.find_path` call (count, found, cost, the largest),
-  today's stuck triggers and a per-step track. Phase `calib` measures
+  the stuck triggers (since NV1 the navigation module's events, `nav_*`)
+  and a per-step track; each batch logs its three slowest steps with the
+  costliest mob in them. Phase `calib` measures
   `find_path` against padding and distance (the scenes, a flat field with
   and without a path, natural-terrain samples), the candidate fan and a
   walkable-line prototype; `chasers40` is Round 30's stress (40 chasers round
@@ -325,4 +327,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   with an engine-like grid search; `evidence/before/` keeps the lane's
   before-runs (scenes and calib on seed 12345, settle on 42, the PvE micro
   run). The PvE micro run itself is `r31_pvp/run.sh` with
-  `ENGINE_RUN=<the round's engine_run.sh>`.
+  `ENGINE_RUN=<the round's engine_run.sh>`. `r42_nv1`: `portable_test.lua`
+  loads the real `mobs/grug_nav.lua` and `grug_obstacle.lua` on a fake node
+  grid with an engine-like search (the stuck detector, candidates, the
+  follower, lockout and cap, head room and width, give-up and veto, the
+  physics box); `evidence/after/` keeps NV1's after-runs of the scenes, the
+  40 chasers (seed 12345) and the PvE micro run (`scenes_summary.md` ends
+  with the before/after table against `r42_nv0/evidence/before`).

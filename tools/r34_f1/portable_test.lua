@@ -8,8 +8,9 @@
 --      on through it; lava (also for an immune mob), a damaging liquid and
 --      water that hurts the mob always stay a boundary; fliers, swimmers and
 --      the self-flying dragons are unchanged; solid ground and vegetation
---      over ground are support in every state; the close-obstacle sidestep
---      uses the same support function.
+--      over ground are support in every state; the navigation's cell test
+--      (mobs/grug_nav.lua, Round 42, which replaced the close-obstacle
+--      sidestep) keeps lava and damaging liquids a boundary too.
 --   B. every mob definition that sets `floats` sets it to true (every
 --      non-flier floats; the mob_class default is true as well).
 --   C. grug_mobs/aggro.lua shore_check: an idle floating non-flier in water
@@ -189,10 +190,13 @@ end
 set_front({[1] = "ignore"})
 check(cliff({state = "attack"}), "A6 unloaded terrain stays a boundary")
 
--- A7 the close-obstacle sidestep asks the same rule.
-local sidestep = api:match("local function sidestep_safe%(velocity%).-\n%s*end\n")
-check(sidestep ~= nil and sidestep:find("return has_safe_support(self,", 1, true) ~= nil,
-	"A7 the sidestep check uses the same support rule")
+-- A7 the navigation's cell test (Round 42 NV1 replaced the close-obstacle
+-- sidestep): harmless liquid only for a wading mob, never lava or a
+-- damaging liquid (behaviour: tools/r42_nv1 W5).
+local nav_src = read("mods/ENTITIES/mobs/grug_nav.lua")
+check(api:find("local function sidestep_safe", 1, true) == nil
+	and nav_src:find("local ok = body.wades and not (groups and groups.lava)\n\t\t\tand (def.damage_per_second or 0) <= 0", 1, true) ~= nil,
+	"A7 the navigation keeps the same liquid boundary")
 
 -- ---------------------------------------------------------------------------
 -- B. every floats field is true

@@ -479,36 +479,36 @@ end
 
 --
 -- Giving up an unreachable target (Round 30 P2, the user's ruling on perf
--- review 2026-10 #4, round30-plan.md §2). mobs_redo's smart_mobs calls this
--- when three A* searches in a row found no path to a target whose node did not
--- change (mobs/grug_obstacle.lua no_path_gate): a player in a closed house, on
--- a pillar or in a boat. The mob drops the target and goes home through the
--- ordinary leash reset above (heal, forget threat and tags, run home when it
--- stands beyond its radius); guards and rares included, since their own rules
--- end such a chase only after the 15 s contact timeout or never. The bespoke
--- no-leash actors (Kraken, royal guards) and the kings (coordinator ruling,
--- Round 30 review) keep their encounter rules and only drop the target: no
--- heal, no royal encounter reset. The dragons and whelps never get here
--- (flying actors only wait, api.lua smart_mobs).
+-- review 2026-10 #4; Round 42 NV1, round42-plan.md ruling 9). The combat
+-- navigation (mobs/grug_nav.lua) calls this after three failed path searches
+-- in a row in one stuck episode, also against a target the mob can see (a
+-- player behind a fence, in a closed house, on a pillar, in a boat). The mob
+-- drops the target and goes home through the ordinary leash reset above
+-- (heal, forget threat and tags, run home when it stands beyond its radius);
+-- guards and rares included, since their own rules end such a chase only
+-- after the 15 s contact timeout or never. The bespoke no-leash actors
+-- (Kraken, royal guards) and the kings (coordinator ruling, Round 30 review)
+-- keep their encounter rules and only drop the target: no heal, no royal
+-- encounter reset. The dragons and whelps never get here (they only wait,
+-- api.lua do_states).
 --
--- A player given up on is ignored by target acquisition until they stand on
--- another node (grug_mobs.gave_up_on, the _grug_ignore_player veto in
--- init.lua), so the mob does not walk straight back to the same unreachable
--- spot. Being hit or a group alert still starts a new chase as usual.
+-- A player given up on is ignored by target acquisition until they moved
+-- GAVE_UP_NODES away from where they stood or GAVE_UP_SECONDS passed
+-- (grug_mobs.gave_up_on, the _grug_ignore_player veto in init.lua), so a mob
+-- behind a fence cannot loop give-up and heal every few seconds. Being hit or
+-- a group alert still starts a new chase as usual.
 --
-local function node_of(pos)
-	return math.floor(pos.x + 0.5), math.floor(pos.y + 0.5),
-		math.floor(pos.z + 0.5)
-end
+local GAVE_UP_NODES = 8
+local GAVE_UP_SECONDS = 15
 
 function grug_mobs.give_up_target(self)
 	local target = self.attack
 	local pos = target and target:get_pos()
 	self.temp = self.temp or {}
 	if pos and core.is_player(target) then
-		local x, y, z = node_of(pos)
 		self.temp.grug_gave_up = {name = target:get_player_name(),
-			x = x, y = y, z = z}
+			x = pos.x, y = pos.y, z = pos.z,
+			until_time = grug_core.mono_time() + GAVE_UP_SECONDS}
 	end
 	if self._grug_no_leash or self._grug_royal_king then
 		self:stop_attack()
@@ -523,9 +523,9 @@ function grug_mobs.gave_up_on(self, player)
 		return false
 	end
 	local pos = player:get_pos()
-	if pos then
-		local x, y, z = node_of(pos)
-		if x == gave.x and y == gave.y and z == gave.z then
+	if pos and grug_core.mono_time() < gave.until_time then
+		local dx, dy, dz = pos.x - gave.x, pos.y - gave.y, pos.z - gave.z
+		if dx * dx + dy * dy + dz * dz < GAVE_UP_NODES * GAVE_UP_NODES then
 			return true
 		end
 	end

@@ -1,10 +1,8 @@
--- GRUG PATCH: bounded close-obstacle decisions shared by the real attack path
--- and its pure-Lua regression test (combat_stats.md section 4).
+-- GRUG PATCH: the bounded A* budget, the negative path cache and the
+-- collision-box cache shared by the real attack path (mobs/grug_nav.lua,
+-- combat_stats.md section 4) and its pure-Lua regression tests.
 
 local obstacle = {
-	path_delay = 1.0,
-	sidestep_time = 0.5,
-	path_backoff = 0.25,
 	-- Round 30 P2 (perf review 2026-10 #4): A* time per server step, in
 	-- microseconds, instead of a fixed number of searches. A no-path search
 	-- costs 2-3 ms at searchdistance 24, a found path 14-211 us.
@@ -14,12 +12,9 @@ local obstacle = {
 	-- failure, the last one repeated, capped).
 	no_path_waits = {1, 2, 4, 8},
 	no_path_wait_cap = 10,
-	-- Give up a target after this many failed searches in a row while the
-	-- target's node stays the same (the user's ruling, round30-plan.md §2).
+	-- The negative cache's own give-up count (no_path_gate without
+	-- `no_give_up`). Since Round 42 combat counts its failures in grug_nav.
 	give_up_after = 3,
-	-- searchdistance of the close-obstacle A* pass (a target within reach
-	-- behind a trunk or wall); the chase pass keeps the server setting.
-	close_searchdistance = 8,
 }
 
 -- Microseconds spent on A* in the current server step, and the running
@@ -69,6 +64,20 @@ function obstacle.object_cbox(object)
 		return box
 	end
 	return object:get_properties().collisionbox
+end
+
+-- GRUG PATCH (Round 42 NV1, ruling 20): the physics box of a mob taller than
+-- two nodes is cut to just under two, so it walks through a 2-high doorway;
+-- its look and its selection box stay (the head clips through a lintel).
+-- Fliers keep their box. `box` itself is never changed: the full box stays
+-- the saved base (base_colbox) a later rescale starts from.
+obstacle.PHYSICS_HEIGHT = 1.95
+
+function obstacle.physics_box(box, self)
+	if not box or box[5] - box[2] <= 2 or (self and (self.fly or self.keep_flying)) then
+		return box
+	end
+	return {box[1], box[2], box[3], box[4], box[2] + obstacle.PHYSICS_HEIGHT, box[6]}
 end
 
 function obstacle.path_request_current(temp, generation)
@@ -157,33 +166,7 @@ function obstacle.note_path_cost(us)
 	if path_cost_estimate_us < 50 then path_cost_estimate_us = 50 end
 end
 
-function obstacle.tick_backoff(temp, dtime)
-	local remaining = (temp.grug_obstacle_backoff or 0) - dtime
-	if remaining > 0 then
-		temp.grug_obstacle_backoff = remaining
-	else
-		temp.grug_obstacle_backoff = nil
-	end
-end
-
-function obstacle.close_path_due(temp, dtime, blocked, can_path, following)
-	if not blocked or not can_path then
-		obstacle.cancel_path_request(temp)
-		temp.grug_obstacle_blocked = nil
-		if not blocked then temp.grug_obstacle_sidestep = nil end
-		return false
-	end
-
-	temp.grug_obstacle_blocked = (temp.grug_obstacle_blocked or 0) + dtime
-	if following then obstacle.cancel_path_request(temp) end
-	return not temp.grug_obstacle_sidestep
-		and not following
-		and not temp.grug_obstacle_backoff
-		and temp.grug_obstacle_blocked >= obstacle.path_delay
-end
-
 function obstacle.claim_path_budget(temp)
-	if temp.grug_obstacle_backoff then return false end
 	local entry = path_entries[temp]
 	if entry then
 		if entry.status ~= "granted"
@@ -219,10 +202,6 @@ function obstacle.spare_path_budget()
 		and path_spent_us + path_granted_us < obstacle.path_budget_us
 end
 
-function obstacle.path_attempted(temp)
-	temp.grug_obstacle_blocked = nil
-end
-
 --
 -- Negative path cache and give-up (Round 30 P2, perf review 2026-10 #4).
 --
@@ -237,8 +216,9 @@ end
 --   * A target that changes node starts the count again.
 --   * Once `give_up_after` searches failed, the next search that would run
 --     gives the target up instead (the caller drops it and goes home). A
---     caller without a target to give up (the patrol nudge) passes
---     `no_give_up`; its waits keep growing to the cap instead.
+--     caller that counts its own failures (grug_nav, Round 42) or has no
+--     target to give up (the patrol nudge) passes `no_give_up`; its waits
+--     keep growing to the cap instead.
 -- Nodes are rounded positions; `now` is in seconds.
 --
 
@@ -301,11 +281,11 @@ end
 -- core.find_path refuses a walkable source or destination node
 -- (src/pathfinder.cpp, "Destination is walkable"). A player standing on a
 -- bottom slab, a lower stair step or snow dust stands inside a walkable
--- node: the search aims at the node above it, as smart_mobs already lifts
--- its own end. `source` and `dest` are rounded node positions; `dest` may be
--- lifted in place. False when an end is still walkable: such a search cannot
--- succeed, and its nil path says nothing about reachability, so it is not
--- run and never counts toward giving up.
+-- node: the search aims at the node above it (grug_nav moves the mob's own
+-- start out of a walkable node). `source` and `dest` are rounded node
+-- positions; `dest` may be lifted in place. False when an end is still
+-- walkable: such a search cannot succeed and is not run; grug_nav counts it
+-- as a failed search (Round 42, NV0 finding F7: never a silent loop).
 function obstacle.fit_path_ends(source, dest, walkable)
 	if walkable(dest) then
 		dest.y = dest.y + 1
@@ -315,27 +295,6 @@ end
 
 function obstacle.forget_no_path(temp)
 	temp.grug_no_path = nil
-end
-
-function obstacle.note_path_result(temp, has_path)
-	if has_path then
-		temp.grug_obstacle_sidestep = nil
-		return
-	end
-
-	local previous = temp.grug_obstacle_side or -1
-	temp.grug_obstacle_side = -previous
-	temp.grug_obstacle_sidestep = obstacle.sidestep_time
-end
-
-function obstacle.note_exhausted_blocked_path(temp)
-	obstacle.note_path_result(temp, false)
-	temp.grug_obstacle_blocked = obstacle.path_delay
-	temp.grug_obstacle_backoff = obstacle.path_backoff
-end
-
-function obstacle.keep_path(distance, reach, target_visible)
-	return not (distance < reach and target_visible)
 end
 
 function obstacle.should_close_contact(distance, reach, target_visible)
@@ -364,37 +323,6 @@ function obstacle.strike_target_visible(self, mob_pos, target_pos,
 		common_visible, ground_melee)
 	if not common_visible or ground_melee then return common_visible == true end
 	return obstacle.target_visible(self, mob_pos, target_pos, true)
-end
-
-local function side_velocity(mob_pos, target_pos, side, speed)
-	local dx = target_pos.x - mob_pos.x
-	local dz = target_pos.z - mob_pos.z
-	local length = math.sqrt(dx * dx + dz * dz)
-	if length == 0 then return end
-	return {
-		x = -dz / length * speed * side,
-		z = dx / length * speed * side,
-	}
-end
-
-function obstacle.choose_sidestep(mob_pos, target_pos, preferred_side, speed, is_safe)
-	local first = preferred_side or 1
-	local velocity = side_velocity(mob_pos, target_pos, first, speed)
-	if velocity and is_safe(velocity) then return velocity, first end
-
-	local second = -first
-	velocity = side_velocity(mob_pos, target_pos, second, speed)
-	if velocity and is_safe(velocity) then return velocity, second end
-	return nil, first
-end
-
-function obstacle.advance_sidestep(temp, dtime)
-	local remaining = (temp.grug_obstacle_sidestep or 0) - dtime
-	if remaining > 0 then
-		temp.grug_obstacle_sidestep = remaining
-	else
-		temp.grug_obstacle_sidestep = nil
-	end
 end
 
 function obstacle.try_melee_attack(args)

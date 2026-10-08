@@ -934,8 +934,8 @@ function grug_mobs.register_mob(name, def)
 				if s.temp and s.temp.grug_evading then
 					return true
 				end
-				-- A player this mob gave up as unreachable, still on the
-				-- same node (aggro.lua give_up_target).
+				-- A player this mob gave up as unreachable, until they moved
+				-- 8 nodes or 15 s passed (aggro.lua give_up_target).
 				-- A bespoke actor's own veto: a dragon ignores players
 				-- outside its arena (boss_dragons.lua).
 				return grug_mobs.gave_up_on(s, player)

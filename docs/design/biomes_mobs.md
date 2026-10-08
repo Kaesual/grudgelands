@@ -366,9 +366,10 @@ final naming in items_crafting.md. All aggressive mobs:
 no distance give-up, no soft de-aggro), while camp members, guards, rares and
 other bound actors keep the 25 m soft de-aggro, the 45 m give-up and their
 leash. Every one of them gives up a target it cannot reach after three
-failed path searches (Round 30, `combat_stats.md` "Unreachable targets are
-given up"; the dragons only wait and their arena edge ends the fight, the
-kings only drop the target). Idle, a
+failed path searches in a row, also a target it can see (Round 30 and
+Round 42, `combat_stats.md` "Unreachable targets are given up"; the dragons
+only wait and their arena edge ends the fight, the kings only drop the
+target). Idle, a
 free-roaming mob wanders within 32 nodes of its spawn point
 and roams at a calm walk (Round 24); an idle aggressive one also probes
 every 4–5 seconds eight points on a ring at its view range and walks away

@@ -76,7 +76,8 @@ local function cut(from, to, label)
 end
 local mob_class = {}
 local api_env = setmetatable({mob_class = mob_class, random = function(a) return a or 0 end,
-	grug_obstacle = {cancel_path_request = noop, forget_no_path = noop}},
+	grug_obstacle = {cancel_path_request = noop, forget_no_path = noop},
+	grug_nav = {forget = noop}},
 	{__index = _G})
 local function load_api(source, label)
 	local chunk = assert(loadstring(source, "=" .. label))

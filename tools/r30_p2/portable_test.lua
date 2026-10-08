@@ -29,7 +29,8 @@
 --    stated chance and cap.
 -- F. aggro.lua give_up_target: an ordinary mob runs the leash reset, a king
 --    or no-leash actor only drops the target, a given-up player is ignored
---    until they move; the dragons only ever wait (api.lua).
+--    until they moved 8 nodes or 15 s passed (Round 42 NV1; the detail is
+--    tools/r42_nv1 G7); the dragons only ever wait (api.lua).
 -- Prints "R30 P2 PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
 local checks = 0
@@ -99,8 +100,7 @@ do
 	end
 	check(table.concat(waits, ",") == "1,2,4,8,8,8", "A3 nudge waits " ..
 		table.concat(waits, ","))
-	check(O.give_up_after == 3 and O.close_searchdistance == 8,
-		"A4 give up after 3, close search box 8")
+	check(O.give_up_after == 3, "A4 give up after 3")
 end
 
 -- Path ends: a target on a slab, a stair or snow dust stands in a walkable
@@ -486,10 +486,11 @@ end
 -- ---------------------------------------------------------------------------
 do
 	local src = read("mods/ENTITIES/grug_mobs/aggro.lua")
-	local block = src:match("\n(local function node_of%(pos%).-\nfunction grug_mobs.gave_up_on%(self, player%).-\nend\n)")
+	local block = src:match("\n(local GAVE_UP_NODES = %d+.-\nfunction grug_mobs.gave_up_on%(self, player%).-\nend\n)")
 	check(block ~= nil, "F give_up_target block found")
 	local resets = 0
 	local env = {grug_mobs = {leash_reset = function() resets = resets + 1 end},
+		grug_core = {mono_time = function() return 0 end},
 		core = {is_player = function(o) return o.player == true end}}
 	local chunk = assert(loadstring(block))
 	setfenv(chunk, setmetatable(env, {__index = _G}))
@@ -515,13 +516,13 @@ do
 	local player = {get_player_name = function() return "anna" end,
 		get_pos = function() return {x = 1.4, y = 7.2, z = -3.9} end}
 	check(G.gave_up_on(plain, player), "F the same node stays ignored")
-	player.get_pos = function() return {x = 2.6, y = 7, z = -3.6} end
+	player.get_pos = function() return {x = 9.6, y = 7, z = -3.6} end
 	check(not G.gave_up_on(plain, player) and plain.temp.grug_gave_up == nil,
-		"F a moved player is a target again")
+		"F a player moved 8 nodes is a target again")
 	-- The dragons never reach give_up_target: api.lua passes keep_flying as
-	-- the gate's no-give-up flag.
+	-- the navigation's never-give-up flag.
 	local api = read("mods/ENTITIES/mobs/api.lua")
-	check(api:find("self.attack, s, target_pos, self.keep_flying == true)", 1, true) ~= nil,
+	check(api:find("dist <= attack_reach and in_sight, self.keep_flying == true)", 1, true) ~= nil,
 		"F flying actors (dragons, whelps) only wait")
 end
 
