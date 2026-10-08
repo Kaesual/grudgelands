@@ -21,9 +21,10 @@
 --   F. trinkets roll 0/1/2 enchants, the single one on either channel, each
 --      from its channel's pool;
 --   G. the enchant tier of an item level (T1..T6 by ten levels, T7 above 60);
---   H. the requirement: every equipment definition carries min(ilvl, 60) (1 in
---      the first bracket); dropped armour, offhands and trinkets carry their
---      own, capped at 60, refuse a lower character and show "Requires level";
+--   H. the requirement: every equipment definition carries min(ilvl, 60) (the
+--      ladder of Round 45, no first-bracket exception); dropped armour,
+--      offhands and trinkets carry their own, capped at 60, refuse a lower
+--      character and show "Requires level";
 --   I. sale value: blue x3, gold x6 of the Common payout, per stack;
 --   J. the Kraken (user ruling, Round 33): the REAL kraken.lua definition is
 --      a level-70 elite; it drops no item and no bag, and the REAL level
@@ -500,11 +501,13 @@ do
 			if group:find("^grug_equip_") and value > 0 then equip = true end
 		end
 		if equip then
-			local want = def._grug_bracket == 1 and 1 or math.min(def._grug_ilvl, 60)
+			-- The ladder (Round 45 lane IL): the requirement is the item
+			-- level from level 1, capped at 60; no first-bracket exception.
+			local want = math.min(def._grug_ilvl, 60)
 			if def._grug_req_level ~= want then ok = false; bad[#bad + 1] = name end
 		end
 	end
-	check(ok, "H every equipment definition requires min(ilvl, 60), 1 in bracket 1: " ..
+	check(ok, "H every equipment definition requires min(ilvl, 60): " ..
 		table.concat(bad, ", "))
 	for _, row in ipairs({{"grug_gear:chest_metal_silversteel", 37, 37},
 			{"grug_gear:shield_embersteel", 44, 44}, {"grug_gear:spellbook_iron", 17, 17},
@@ -521,8 +524,9 @@ do
 		check(meta:get_string("description"):find("\nRequires level " .. row[3], 1, true) ~= nil,
 			"H ...and its tooltip says Requires level " .. row[3])
 	end
-	-- A first-bracket drop stays level 1 up to the item's own level 3.
-	for _, row in ipairs({{1, 1}, {2, 1}, {3, 1}, {4, 4}, {7, 7}}) do
+	-- A first-bracket drop requires its own item level (the bracket-1
+	-- exception went with the ladder, Round 45 lane IL).
+	for _, row in ipairs({{1, 1}, {2, 2}, {3, 3}, {4, 4}, {7, 7}}) do
 		local stack = ItemStack("grug_gear:chest_metal_bronze")
 		grug_items.roll_enchants(stack, row[1], 0, 7)
 		check(stack:get_meta():get_int("grug_req_level") == row[2],
@@ -530,19 +534,19 @@ do
 	end
 	-- A plain vendor stack: the definition's requirement and tooltip line.
 	local helm = ItemStack("grug_gear:head_metal_steel")
-	check(grug_core.can_use_item_level({level = 19}, helm) == false and
-		grug_core.can_use_item_level({level = 20}, helm) == true,
-		"H a plain Steel Helm needs level 20")
+	check(grug_core.can_use_item_level({level = 20}, helm) == false and
+		grug_core.can_use_item_level({level = 21}, helm) == true,
+		"H a plain Steel Helm needs level 21")
 	-- The definitions' tooltips, once every mod has loaded.
 	for _, fn in ipairs(mods_loaded) do fn() end
 	local function line_count(name, line)
 		local _, count = registered[name].description:gsub(line, "")
 		return count
 	end
-	check(line_count("grug_gear:head_metal_steel", "\nRequires level 20") == 1 and
-		line_count("grug_gear:sword_abyssal_steel", "\nRequires level 50") == 1 and
-		line_count("grug_gear:reclaimers_mark_t2", "\nRequires level 10") == 1 and
-		line_count("grug_gear:spellbook_silversteel", "\nRequires level 30") == 1,
+	check(line_count("grug_gear:head_metal_steel", "\nRequires level 21") == 1 and
+		line_count("grug_gear:sword_abyssal_steel", "\nRequires level 51") == 1 and
+		line_count("grug_gear:reclaimers_mark_t2", "\nRequires level 11") == 1 and
+		line_count("grug_gear:spellbook_silversteel", "\nRequires level 31") == 1,
 		"H the definitions' tooltips end with one Requires level line")
 	check(line_count("grug_gear:sword_bronze", "Requires level") == 0 and
 		line_count("grug_gear:feet_leather_light", "Requires level") == 0,
@@ -554,7 +558,7 @@ do
 		"H a first-bracket piece is worn at level 1 and shows no requirement line")
 	local crafted = ItemStack("grug_gear:legs_leather_scaled")
 	grug_items.crafted_output(crafted)
-	check(crafted:get_meta():get_int("grug_req_level") == 30, "H a crafted piece requires its level")
+	check(crafted:get_meta():get_int("grug_req_level") == 31, "H a crafted piece requires its level")
 end
 
 ------------------------------------------------------------------------------
