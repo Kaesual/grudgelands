@@ -13,6 +13,9 @@
 #            OBS 90, a start or a village about 1.5
 #   TIMEOUT  seconds for the boot (default 330)
 #   OBS=<s>  observation per settlement (default 90)
+#   STEADY=<s> after it, the census (every leg of the settlement through the
+#            route cache, when the code has one) and a second observation of
+#            this many seconds on the full cache (default 0: neither)
 #   SEED=<unsigned decimal> the world seed (default 42)
 #   LAUNCHER="<command> [args]" replaces the default launcher, which is the
 #     Round 42 measuring queue (engine_run.sh) when it exists, else
@@ -47,6 +50,7 @@ cp "$repo/minetest.conf" "$patchdir/b/minetest.conf"
 	echo "max_forceloaded_blocks = 6000"
 	echo "grug_nv3_targets = $targets"
 	echo "grug_nv3_obs = ${OBS:-90}"
+	echo "grug_nv3_steady = ${STEADY:-0}"
 } >>"$patchdir/b/minetest.conf"
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 set +e

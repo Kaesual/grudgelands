@@ -19,6 +19,7 @@ def label(path):
 def main(paths):
     rows = []
     streets = []
+    census = []
     for path in paths:
         with open(path, encoding="utf-8") as handle:
             data = json.load(handle)
@@ -46,6 +47,22 @@ def main(paths):
                 "/".join(str(b) for b in buckets) or "0", fp["max_us"], fp["max_d"],
                 nav["searches"], len(walkers), walking, s["one_spot_walkers"],
                 arrivals, given_up, adv, s["snaps"], nav.get("cap_waits", 0), cache_text))
+        for c in data.get("census") or []:
+            legs = c.get("legs") or []
+            census.append("- %s: %d distinct legs (directed) through the cache in %.1f s: "
+                          "walkers %d (ok %d, no route %d), patrols %d (ok %d, no route %d, "
+                          "over the streets %d); this pass %d searches, %.1f ms; the whole cache "
+                          "%d legs, %d searches, %.1f ms searching (largest %d us), %.1f ms "
+                          "smoothing, %.1f ms reading the streets, %d corners, Lua heap +%.0f KiB "
+                          "over the pass" % (
+                              label(path) + " " + path.rsplit("/", 1)[-1], len(legs), c["seconds"], c["walker"]["legs"],
+                              c["walker"]["ok"], c["walker"]["none"], c["patrol"]["legs"],
+                              c["patrol"]["ok"], c["patrol"]["none"], c["patrol"].get("street", 0),
+                              c["searches"], c["search_ms"], c["cache"]["legs"],
+                              c["cache"]["searches"], c["cache"]["search_us"] / 1000,
+                              c["cache"]["max_us"], c["cache"]["smooth_us"] / 1000,
+                              c["cache"].get("streets_us", 0) / 1000, c["cache"]["corners"],
+                              c["lua_kib_delta"]))
         if data.get("streets"):
             st = data["streets"]
             streets.append("- %s %s: road layout %d bytes, module load %d us, deserialize %d us, "
@@ -61,6 +78,10 @@ def main(paths):
     print("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for row in rows:
         print(row)
+    if census:
+        print("\n## Census (every leg of the settlement's walkers and patrols)\n")
+        for line in census:
+            print(line)
     if streets:
         print("\n## Street data\n")
         for line in streets:

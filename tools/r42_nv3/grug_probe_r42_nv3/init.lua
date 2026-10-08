@@ -25,6 +25,9 @@ for word in (core.settings:get("grug_nv3_targets") or "start"):gmatch("[%w_]+") 
 	TARGETS[#TARGETS + 1] = word
 end
 local OBS = tonumber(core.settings:get("grug_nv3_obs") or "") or 90
+-- After the first window: the census of every leg, then a second window of
+-- this many seconds on the full cache (0: neither).
+local STEADY = tonumber(core.settings:get("grug_nv3_steady") or "") or 0
 local BUCKET = 30
 
 local results = {meta = {targets = TARGETS, obs = OBS,
@@ -77,6 +80,10 @@ core.find_path = function(a, b, ...)
 			fp.max_d = r2(sqrt(dx * dx + dz * dz))
 		end
 		fp.buckets[bucket] = (fp.buckets[bucket] or 0) + 1
+		local box = fp.box
+		if box and (a.x < box[1].x or a.x > box[2].x or a.z < box[1].z or a.z > box[2].z) then
+			fp.outside = fp.outside + 1
+		end
 	end
 	return path
 end
@@ -171,7 +178,8 @@ local function nav_counters()
 		cap_waits = c.cap_waits or 0}
 end
 
-local function observe(name, record, minp, maxp, done)
+local function observe(name, record, minp, maxp, done, obs)
+	obs = obs or OBS
 	local walkers, patrols = movers(minp, maxp, record.key)
 	local wrec, prec = {}, {}
 	local one_spot, rings = 0, {}
@@ -190,7 +198,8 @@ local function observe(name, record, minp, maxp, done)
 	local c0 = nav_counters()
 	collectgarbage("collect")
 	local mem0 = collectgarbage("count")
-	fp = {t0 = now(), n = 0, us = 0, found = 0, max_us = 0, max_d = 0, buckets = {}}
+	fp = {t0 = now(), n = 0, us = 0, found = 0, max_us = 0, max_d = 0, buckets = {},
+		outside = 0, box = {minp, maxp}}
 	local elapsed = 0
 	local function poll()
 		elapsed = elapsed + 0.5
@@ -214,14 +223,14 @@ local function observe(name, record, minp, maxp, done)
 				p.wp = route.wp
 			end
 		end
-		if elapsed < OBS then return core.after(0.5, poll) end
+		if elapsed < obs then return core.after(0.5, poll) end
 		local f = fp
 		fp = nil
 		local c1 = nav_counters()
-		local out = {key = record.key, kind = name, obs = OBS,
-			find_path = {n = f.n, per_min = r2(f.n * 60 / OBS), found = f.found,
+		local out = {key = record.key, kind = name, obs = obs,
+			find_path = {n = f.n, per_min = r2(f.n * 60 / obs), found = f.found,
 				total_ms = r2(f.us / 1000), max_us = f.max_us, max_d = f.max_d,
-				buckets = f.buckets},
+				buckets = f.buckets, outside = f.outside},
 			nav = {searches = c1.searches - c0.searches, found = c1.found - c0.found,
 				cap_waits = c1.cap_waits - c0.cap_waits},
 			walkers = {}, patrols = {}, one_spot_walkers = one_spot,
@@ -249,7 +258,7 @@ local function observe(name, record, minp, maxp, done)
 			"%d s: find_path %d (%.1f/min, found %d, max %d us at d %.1f, %.1f ms), " ..
 			"nav searches %d, cap waits %d; arrivals %d, spots given up %d, " ..
 			"patrol advances %d, snaps %d"):format(name, record.key, #wrec, walking,
-			one_spot, #prec, OBS, f.n, f.n * 60 / OBS, f.found, f.max_us, f.max_d,
+			one_spot, #prec, obs, f.n, f.n * 60 / obs, f.found, f.max_us, f.max_d,
 			f.us / 1000, out.nav.searches, out.nav.cap_waits, arr, gu, adv, snaps))
 		if out.cache then
 			log("LIVE cache " .. core.write_json(out.cache))
@@ -258,6 +267,94 @@ local function observe(name, record, minp, maxp, done)
 		done()
 	end
 	core.after(0.5, poll)
+end
+
+-- Every leg of the settlement's walkers (their rings, forward) and patrols
+-- (their loops) through the route cache, the way the walkers ask for them,
+-- until none is pending: the whole cache's first-use cost and its no-route
+-- legs. Only with a route cache (Round 42 NV3).
+local function census(name, record, minp, maxp, done)
+	if not grug_mobs.route_walk or not grug_mobs.route_cache_stats(record.key) then
+		return done()
+	end
+	local walkers, patrols = movers(minp, maxp, record.key)
+	local legs, seen = {}, {}
+	local function add(ent, a, b, patrol)
+		if not a or not b or a.y == nil or b.y == nil then return end
+		local k = ("%s %d,%d,%d>%d,%d,%d"):format(patrol and "p" or "w", a.x, a.y, a.z,
+			b.x, b.y, b.z)
+		if seen[k] then return end
+		seen[k] = true
+		local dx, dz = b.x - a.x, b.z - a.z
+		legs[#legs + 1] = {ent = ent, a = a, b = b, patrol = patrol,
+			d = r2(sqrt(dx * dx + dz * dz))}
+	end
+	for _, ent in ipairs(walkers) do
+		local spots = ent._grug_idle_spots
+		if #spots >= 2 then
+			for i = 1, #spots do add(ent, spots[i], spots[i % #spots + 1], false) end
+		end
+	end
+	for _, ent in ipairs(patrols) do
+		local pts = ent._grug_patrol_route.points
+		for i = 1, #pts do add(ent, pts[i], pts[i % #pts + 1], true) end
+	end
+	local s0 = grug_mobs.route_cache_stats(record.key)
+	collectgarbage("collect")
+	local mem0 = collectgarbage("count")
+	local t0 = now()
+	local i, steps = 1, 0
+	local out = {legs = {}, walker = {legs = 0, ok = 0, none = 0},
+		patrol = {legs = 0, ok = 0, none = 0, street = 0}}
+	local function tick()
+		steps = steps + 1
+		for _ = 1, 8 do
+			local leg = legs[i]
+			if not leg then break end
+			local ent = leg.ent
+			local pos = ent.object and ent.object:get_pos()
+			if not pos then
+				i = i + 1
+			else
+				ent.temp = ent.temp or {}
+				ent.temp.grug_leg = nil
+				grug_mobs.route_walk(ent, 0, pos, record.key, leg.a, leg.b, "nv3_census",
+					leg.patrol)
+				local entry = ent.temp.grug_leg and ent.temp.grug_leg.entry
+				local state = entry and entry.state or "?"
+				if state == "pending" then break end
+				grug_mobs.route_clear(ent, "nv3_census")
+				local kind = leg.patrol and out.patrol or out.walker
+				kind.legs = kind.legs + 1
+				if state == "ok" then kind.ok = kind.ok + 1 else kind.none = kind.none + 1 end
+				if leg.patrol and entry and entry.street then kind.street = kind.street + 1 end
+				out.legs[#out.legs + 1] = {who = leg.patrol and "patrol" or "walker",
+					d = leg.d, state = state, street = entry and entry.street or nil,
+					corners = entry and entry.points and #entry.points or 0}
+				i = i + 1
+			end
+		end
+		if legs[i] and steps < 3000 then return core.after(0, tick) end
+		local s1 = grug_mobs.route_cache_stats(record.key)
+		collectgarbage("collect")
+		out.lua_kib_delta = r2(collectgarbage("count") - mem0)
+		out.seconds = r2((now() - t0) / 1e6)
+		out.steps = steps
+		out.searches = s1.searches - s0.searches
+		out.search_ms = r2((s1.search_us - s0.search_us) / 1000)
+		out.cache = s1
+		results.census = results.census or {}
+		results.census[#results.census + 1] = out
+		log(("CENSUS %s %s: %d distinct legs in %.1f s (%d steps): walkers %d (ok %d, " ..
+			"none %d), patrols %d (ok %d, none %d, street %d); %d more searches, %.1f ms; " ..
+			"cache %s"):format(name, record.key, #out.legs, out.seconds, steps,
+			out.walker.legs, out.walker.ok, out.walker.none, out.patrol.legs, out.patrol.ok,
+			out.patrol.none, out.patrol.street, out.searches, out.search_ms,
+			core.write_json(s1)))
+		write_results()
+		done()
+	end
+	core.after(0, tick)
 end
 
 local function phase_live(name, done)
@@ -283,13 +380,20 @@ local function phase_live(name, done)
 			last, waited = n, waited + 3
 			if stable >= 3 or waited >= 60 then
 				log(("LIVE %s %d objects after %d s"):format(name, n, waited))
-				return observe(name, record, minp, maxp, function()
+				local function free()
 					blocks_of(minp, maxp, function(p)
 						core.forceload_free_block(p, true)
 						return true
 					end)
 					-- Let the area deactivate before the next target.
 					core.after(5, done)
+				end
+				return observe(name, record, minp, maxp, function()
+					if STEADY <= 0 then return free() end
+					-- The whole cache, then the steady state on a full cache.
+					census(name, record, minp, maxp, function()
+						observe(name .. "_steady", record, minp, maxp, free, STEADY)
+					end)
 				end)
 			end
 			core.after(3, poll)

@@ -1,0 +1,22 @@
+ACTION[Server]: [nv3] target start
+ACTION[Server]: [nv3] LIVE start hearthpine box (-1836,27,-2571) - (-1783,52,-2483), 72 blocks forceloaded
+ACTION[Emerge-0]: [nv3] LIVE start emerged in 4.6 s
+ACTION[Server]: [nv3] LIVE start 29 objects after 36 s
+ACTION[Server]: [nv3] LIVE start hearthpine: 3 ambling residents (1 walkers, 0 one-spot), 1 patrols; 75 s: find_path 8 (6.4/min, found 8, max 160 us at d 23.8, 0.6 ms), nav searches 8, cap waits 0; arrivals 2, spots given up 0, patrol advances 4, snaps 0
+ACTION[Server]: [nv3] LIVE cache {"corners":41,"legs":7,"max_us":204,"none":0,"ok":7,"pending":0,"search_us":738,"searches":10,"smooth_us":1306,"street_legs":0,"streets_us":0}
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-8BMAG5/world/nv3_results.json (764 bytes)
+ACTION[Server]: [nv3] CENSUS start hearthpine: 14 distinct legs in 0.2 s (3 steps): walkers 9 (ok 9, none 0), patrols 5 (ok 5, none 0, street 0); 9 more searches, 0.8 ms; cache {"corners":78,"legs":15,"max_us":204,"none":0,"ok":15,"pending":0,"search_us":1487,"searches":19,"smooth_us":2296,"street_legs":0,"streets_us":0}
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-8BMAG5/world/nv3_results.json (1939 bytes)
+ACTION[Server]: [nv3] LIVE start_steady hearthpine: 3 ambling residents (1 walkers, 0 one-spot), 1 patrols; 30 s: find_path 0 (0.0/min, found 0, max 0 us at d 0.0, 0.0 ms), nav searches 0, cap waits 0; arrivals 0, spots given up 0, patrol advances 0, snaps 0
+ACTION[Server]: [nv3] LIVE cache {"corners":78,"legs":15,"max_us":204,"none":0,"ok":15,"pending":0,"search_us":1487,"searches":19,"smooth_us":2296,"street_legs":0,"streets_us":0}
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-8BMAG5/world/nv3_results.json (2603 bytes)
+ACTION[Server]: [nv3] target village
+ACTION[Server]: [nv3] LIVE village copperfell_village box (-1878,86,-2047) - (-1858,111,-2028), 8 blocks forceloaded
+ACTION[Emerge-0]: [nv3] LIVE village emerged in 3.0 s
+ACTION[Server]: [nv3] LIVE village 6 objects after 12 s
+ACTION[Server]: [nv3] LIVE village copperfell_village: 1 ambling residents (1 walkers, 0 one-spot), 0 patrols; 75 s: find_path 0 (0.0/min, found 0, max 0 us at d 0.0, 0.0 ms), nav searches 0, cap waits 0; arrivals 2, spots given up 0, patrol advances 0, snaps 0
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-8BMAG5/world/nv3_results.json (2950 bytes)
+ACTION[Server]: [nv3] LIVE village_steady copperfell_village: 1 ambling residents (1 walkers, 0 one-spot), 0 patrols; 30 s: find_path 0 (0.0/min, found 0, max 0 us at d 0.0, 0.0 ms), nav searches 0, cap waits 0; arrivals 1, spots given up 0, patrol advances 0, snaps 0
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-8BMAG5/world/nv3_results.json (3303 bytes)
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-8BMAG5/world/nv3_results.json (3303 bytes)
+ACTION[Server]: [nv3] RESULT DONE
