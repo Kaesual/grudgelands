@@ -168,6 +168,12 @@ conditions); the user asked for numbers with a basis, not guesses.
     just under 2, so they pass 2-high doorways; their look and their
     selection box stay (the head clips through a lintel while passing).
     NV1 builds it.
+21. **NV1's size and the target drift** (the user, 2026-10-08): the
+    navigation module stays as built (`mobs/grug_nav.lua`, about 790 lines,
+    `mods/` net +262 instead of the estimated reduction; it carries the
+    fixed-walk interface NV2 and NV3 use). A fighting mob leaves its path
+    when the target is more than **4 nodes** from the path's planned end
+    (`TARGET_DRIFT`, ruling 4 b).
 
 Coordinator defaults (the user may overrule them):
 
