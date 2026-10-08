@@ -7,9 +7,9 @@ independent pixel grids. Existing icons appear only as labelled sheet references
 
 Run from anywhere: python3 tools/r44_ar/paint_art.py
   Default: paint all A/B/C proposals and their sheets (never overwrite picks).
-  --install-a: also copy the provisional A assets to the final art/texture paths.
+  --install: also copy the user's picks (PICKS) to the final art/texture paths.
   --check: compare proposals and sheets with the generator without writing.
-  --check --install-a: also verify the provisional final files against A.
+  --check --install: also verify the final files against the picks.
 """
 
 import argparse
@@ -33,6 +33,19 @@ CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 '-.,"
 NEAREST = Image.Resampling.NEAREST
 WHITE = (255, 255, 255, 255)
 CLEAR = (0, 0, 0, 0)
+# The user's picks (pick page, 2026-10-08): variant A everywhere, font C.
+# A baked kind's full and miniature image, and font.png with font.txt, go
+# together under one key.
+PICKS = {"font": "C"}
+DEFAULT_PICK = "A"
+
+
+def pick_key(name):
+    if name.startswith("baked_"):
+        return name.removesuffix(".png").removesuffix("_mini")
+    return name.removesuffix(".png")
+
+
 TITLES = {"A": "BRONZE AND EMBER", "B": "SLATE AND SILVER", "C": "INK AND PARCHMENT"}
 
 # Each family has its own material palette, not faction colours.
@@ -987,7 +1000,7 @@ def pixels(im):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
-    parser.add_argument("--install-a", action="store_true")
+    parser.add_argument("--install", action="store_true")
     args = parser.parse_args()
     failures = []
     count = 0
@@ -1021,12 +1034,13 @@ def main():
             output(HERE / "variants" / variant / name, im)
         output(HERE / "variants" / variant / "font.txt", CHARSET + "\n")
         output(HERE / "variants" / variant / "sheet.png", contact_sheet(variant, assets))
-        if variant == "A" and args.install_a:
-            for name, im in assets.items():
-                folder = "textures" if name.startswith("grug_map_") else "art"
-                output(MAP / folder / name, im)
-            output(MAP / "art/font.txt", CHARSET + "\n")
         print(f"{variant}: 37 RGBA assets, font {assets['font.png'].width}x8, 1440x1860 sheet")
+    if args.install:
+        for name in sets["A"]:
+            im = sets[PICKS.get(pick_key(name), DEFAULT_PICK)][name]
+            folder = "textures" if name.startswith("grug_map_") else "art"
+            output(MAP / folder / name, im)
+        output(MAP / "art/font.txt", CHARSET + "\n")
     for name in sets["A"]:
         # Every requested file gets three actual choices, even the white ring.
         assert len({(sets[v][name].size, sets[v][name].tobytes()) for v in "ABC"}) == 3, name

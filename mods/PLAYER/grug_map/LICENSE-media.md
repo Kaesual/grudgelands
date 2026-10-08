@@ -64,9 +64,9 @@ rights it holds in these originals to **CC0 1.0 Universal (CC0-1.0)**.
 Reproducible generator and provenance: `tools/r44_ar/paint_art.py`.
 
 Each family includes all **A, B and C** proposals, stored with the same
-basenames under `tools/r44_ar/variants/{A,B,C}/`. Variant A at the final
-paths is provisional, pending the user's picks. This licence covers any of
-those picks. The complete filename inventory, dimensions and font format
+basenames under `tools/r44_ar/variants/{A,B,C}/`. The final paths hold the
+user's picks (variant A, the font from C). This licence covers every
+proposal. The complete filename inventory, dimensions and font format
 are in `tools/r44_ar/README.md`.
 
 | Files (final paths relative to this mod; all A/B/C copies included) | Author | Source / tool disclosure | License |

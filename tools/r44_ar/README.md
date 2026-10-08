@@ -9,8 +9,9 @@ tool disclosure live in
 **Upgrade classification: compatible.** This lane adds art, its provenance
 generator and documentation. It changes no game code, gameplay data, saved
 state, world generation or upgrade declaration. No Lua or engine run is
-needed for this art package. Independent lane review, the coordinator's pick
-page, the user's picks and the desktop/web GUI checks remain pending.
+needed for this art package. The user picked on 2026-10-08 (pick page):
+**variant A for every file, the font from C**. Independent lane review and
+the desktop/web GUI checks remain pending.
 
 ## Choices and handover
 
@@ -25,11 +26,10 @@ settlement art. Hostile camps have red warning details. Cooking is included
 as explicitly requested by the lane brief. The progress bar remains Round
 45's work. There are no deviations from the lane brief.
 
-Each variant directory is flat, with the final basenames. **A is provisionally
-copied to the final paths** so MB/MQ can wire them. This is not an art pick.
-The coordinator may choose families independently using the user's picks;
-copy a font's `font.png` and `font.txt` together, and a baked kind's full and
-miniature images together. The final licence already covers A, B and C.
+Each variant directory is flat, with the final basenames. The final paths
+hold the user's picks (`PICKS` in `paint_art.py`: A, font C). A font's
+`font.png` and `font.txt` go together, and a baked kind's full and miniature
+images together. The final licence already covers A, B and C.
 
 ## Complete file inventory
 
@@ -73,16 +73,16 @@ The following files live in `mods/PLAYER/grug_map/art/`, and also in each
 
 | Additional file | Size / format |
 |-----------------|---------------|
-| `art/font.png`, `variants/A/font.png` | 232 × 8 RGBA |
+| `variants/A/font.png` | 232 × 8 RGBA |
 | `variants/B/font.png` | 194 × 8 RGBA |
-| `variants/C/font.png` | 238 × 8 RGBA |
+| `art/font.png`, `variants/C/font.png` | 238 × 8 RGBA |
 | `art/font.txt`, each `variants/{A,B,C}/font.txt` | 42 ASCII bytes: 41 characters + LF |
 | Each `variants/{A,B,C}/sheet.png` | 1440 × 1860 RGBA, opaque review sheet |
 | `tools/r44_ar/paint_art.py` | Reproducible generator and format checks |
 | `tools/r44_ar/README.md` | This inventory and handover |
 | `mods/PLAYER/grug_map/LICENSE-media.md` | Grouped licence rows, including variants |
 
-Total: **151 PNGs** (111 proposals, 37 provisional final images, 3 sheets)
+Total: **151 PNGs** (111 proposals, 37 final images from the picks, 3 sheets)
 and **4 font.txt files**, plus generator, handover and licence update.
 
 ## Font sheet contract
@@ -135,17 +135,16 @@ rendered in the original small-cap caption font, plus:
   in the mod's media licence. Sheet captions use our own glyph grids.
 
 ```sh
-python3 tools/r44_ar/paint_art.py --check --install-a
+python3 tools/r44_ar/paint_art.py --check --install
 ```
 
 This checks all **155** art/text files against fresh in-memory drawings,
 including sizes, modes, alpha, font markers/separators, seven-pixel capitals,
-all three distinct proposals per basename, and identical provisional A copies.
+all three distinct proposals per basename, and the final files equal to the picks.
 The actual saved PNGs are reopened and their complete pixel bytes compared.
 All three contact sheets were visually inspected for label placement,
 silhouettes, terrain contrast, reduced trainer scale and font examples.
 
 To repaint just proposals and sheets, run the script without arguments.
-`--install-a` explicitly also replaces final images with A; do not use it
-after the coordinator has installed different user picks. After picks,
-`--check` alone still checks the untouched proposal sets and sheets.
+`--install` also writes the final images from `PICKS`; change `PICKS`
+first if the user picks again.
