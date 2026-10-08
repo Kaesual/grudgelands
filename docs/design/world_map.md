@@ -175,7 +175,11 @@ Selecting a quest marks where its open objectives are done
 
 The index (role → regions, area → regions, leader → spot) is built once at
 start from the region maps ([spawn_regions.md](spawn_regions.md)): seed 42,
-151 roles, 1287 regions, 363 areas and 49 leaders in about 2 ms.
+151 roles, 1287 regions, 363 areas and 49 leaders in about 2 ms. On that
+seed the targets mark all 94 talk and 18 use objectives and of the 360
+kill objectives 57 with a crosshair and 266 with rings; unmarked are the
+kill objectives at PvP garrison camps (an area that is no recipe region)
+and the rift boss.
 
 ### Refresh
 
