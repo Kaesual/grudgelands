@@ -713,6 +713,14 @@ local function start_trial(rec, mover)
 	local s = cell_pos(rec.lane, scene.start[1], scene.start[2], 1)
 	local g = cell_pos(rec.lane, scene.goal[1], scene.goal[2], scene.goal_h)
 	rec.goal_h = scene.goal_h
+	-- A scene's door as authored again (Round 42 DR: NPCs open and close
+	-- doors; the trial before may have left it either way).
+	for _, op in ipairs(scene.ops) do
+		if op[1] == "door" then
+			place_door(rec.lane, op[2], op[3], op[4])
+			rec.door = cell_pos(rec.lane, op[2], op[3], 1)
+		end
+	end
 	grug_mobs.place_on_ground(obj, feet(s))
 	obj:set_velocity({x = 0, y = 0, z = 0})
 	ent:set_yaw(-math.pi / 2, 0) -- facing +x (mobs_redo yaw 0 faces +z)
@@ -829,6 +837,10 @@ local function finish_trial(rec, mover)
 		stall_max = rec.stall_max and r2(rec.stall_max), cycles = rec.cycles,
 		lost = rec.lost, events = rec.events, track = rec.track,
 	}
+	if rec.door and doors and doors.get(rec.door) then
+		-- Round 42 DR: is the scene's door open at the trial's end?
+		row.door_open_end = doors.get(rec.door):state()
+	end
 	results.trials[#results.trials + 1] = row
 	local sm = {}
 	for k, v in pairs(rec.sm) do sm[#sm + 1] = k .. "=" .. v end
@@ -840,7 +852,8 @@ local function finish_trial(rec, mover)
 		rec.mover, rec.scene, tostring(reached), tostring(row.how or ""),
 		tostring(row.t_goal),
 		tostring(row.min_d), rec.fp.n, rec.fp.found, rec.fp.us, rec.fp.max,
-		table.concat(sm, " "), table.concat(cn, " ")))
+		table.concat(sm, " "), table.concat(cn, " ")) ..
+		(row.door_open_end ~= nil and (" door_open_end=" .. tostring(row.door_open_end)) or ""))
 end
 
 local function batch_summary(mover, rows, seconds)

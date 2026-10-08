@@ -668,12 +668,17 @@ tools](#player-meta-read-by-external-tools).
     `nav.claim_search` (the cap and the budget for a caller outside the
     follower) and `nav.search`, and reads a capital's streets from
     `grug_mapgen.wp40.road_layout_text` with `wp40/road_layout.lua`'s own
-    decoder. Every search is
+    decoder. Doors (Round 42 DR, `settlements.md` "Doors") go through
+    `npc_doors.lua`: the route cache's door plans and the fixed walk's door
+    detour (walkers and post guards only) find doors with `npc_doors.near`
+    / `between`, open them with `approach` (the vendored `doors.get(pos):open()`
+    with no player, its own sounds) and close them with `settle` from
+    `walk_follow`; a door is a wall to every search. Every search is
     `nav.search` behind the per-mob lockout, the negative cache, the count
     cap and the budget (`claim_path_budget`, `note_path_cost`); never an
     unbudgeted `core.find_path`. Fixtures `tools/r30_p2` (also the merged
     spawn ABMs and the eye height), `tools/r42_nv1`, `tools/r42_nv2` and
-    `tools/r42_nv3`.
+    `tools/r42_nv3`, `tools/r42_dr`.
   - **Countdowns tick in `do_custom`, never `core.after`**: a mob can
     die, be unloaded or leash-reset inside the window, and mobs_redo
     persists plain fields — a lost timer would save the mob permanently

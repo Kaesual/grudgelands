@@ -100,6 +100,75 @@ core.log = function(level, text)
 	return real_log(level, text)
 end
 
+-- NPC door use (Round 42 DR): toggles with no player, while a record is
+-- filled.
+local door_opens, door_closes = 0, 0
+if rawget(_G, "doors") and doors.door_toggle then
+	local real_toggle = doors.door_toggle
+	doors.door_toggle = function(pos, node, clicker)
+		local ok = real_toggle(pos, node, clicker)
+		if ok and clicker == nil and fp then
+			if doors.get(pos):state() then
+				door_opens = door_opens + 1
+			else
+				door_closes = door_closes + 1
+			end
+		end
+		return ok
+	end
+end
+
+-- The door finding (Round 42 DR): calls of npc_doors.near (two per door
+-- plan, one per fixed-walk end) and their cost, over the whole run.
+local door_find = {n = 0, us = 0, max_us = 0}
+if grug_mobs.npc_doors then
+	local real_near = grug_mobs.npc_doors.near
+	grug_mobs.npc_doors.near = function(...)
+		local t0 = now()
+		local a, b = real_near(...)
+		local us = now() - t0
+		door_find.n, door_find.us = door_find.n + 1, door_find.us + us
+		if us > door_find.max_us then door_find.max_us = us end
+		return a, b
+	end
+end
+
+-- The doors standing open in a box (Round 42 DR), and who stands near each
+-- (the NPCs within 4 nodes: distance, dwelling, the door it holds, the door
+-- it heads through).
+local function open_doors(minp, maxp)
+	if not rawget(_G, "doors") then return nil end
+	local n, open, near = 0, 0, {}
+	for _, p in ipairs(core.find_nodes_in_area(minp, maxp, "group:door")) do
+		local d = doors.get(p)
+		if d and doors.registered_doors[core.get_node(p).name] then
+			n = n + 1
+			if d:state() then
+				open = open + 1
+				local who = {}
+				for _, obj in ipairs(core.get_objects_inside_radius(p, 4)) do
+					local ent = obj:get_luaentity()
+					local q = obj:get_pos()
+					if ent and q then
+						local t = ent.temp or {}
+						who[#who + 1] = ("%s d %.1f%s%s%s"):format(ent.name,
+							vector.distance(p, q), ent._grug_idle_dwell and " dwelling" or "",
+							t.grug_door_open and (" holds " .. table.concat((function()
+								local keys = {}
+								for k in pairs(t.grug_door_open) do keys[#keys + 1] = k end
+								table.sort(keys)
+								return keys
+							end)(), " ")) or "",
+							t.grug_door_next and (" heads " .. t.grug_door_next) or "")
+					end
+				end
+				near[#near + 1] = core.pos_to_string(p) .. ": " .. table.concat(who, "; ")
+			end
+		end
+	end
+	return {doors = n, open = open, near = near}
+end
+
 local snaps = 0
 local real_snap_to = grug_mobs.snap_to
 grug_mobs.snap_to = function(...)
@@ -207,6 +276,8 @@ local function observe(name, record, minp, maxp, done, obs)
 		prec[i] = {ent = ent, wp = ent._grug_patrol_route.wp, advances = 0}
 	end
 	snaps, give_ups = 0, 0
+	door_opens, door_closes = 0, 0
+	local doors0 = open_doors(minp, maxp)
 	local c0 = nav_counters()
 	local cache0 = grug_mobs.route_cache_stats and grug_mobs.route_cache_stats(record.key)
 	collectgarbage("collect")
@@ -247,7 +318,9 @@ local function observe(name, record, minp, maxp, done, obs)
 			nav = {searches = c1.searches - c0.searches, found = c1.found - c0.found,
 				cap_waits = c1.cap_waits - c0.cap_waits},
 			walkers = {}, patrols = {}, one_spot_walkers = one_spot,
-			snaps = snaps, patrol_give_ups = give_ups, cache_before = cache0}
+			snaps = snaps, patrol_give_ups = give_ups, cache_before = cache0,
+			npc_door_opens = door_opens, npc_door_closes = door_closes,
+			doors_before = doors0, doors_after = open_doors(minp, maxp)}
 		local arr, gu, walking = 0, 0, 0
 		for _, w in ipairs(wrec) do
 			out.walkers[#out.walkers + 1] = {walker = w.walker, ring = w.ring,
@@ -275,6 +348,15 @@ local function observe(name, record, minp, maxp, done, obs)
 			f.us / 1000, out.nav.searches, out.nav.cap_waits, arr, gu, adv, snaps))
 		if out.cache then
 			log("LIVE cache " .. core.write_json(out.cache))
+		end
+		if out.doors_after then
+			log(("LIVE doors: NPCs opened %d, closed %d; open before %d, after %d of %d"):format(
+				door_opens, door_closes, out.doors_before.open, out.doors_after.open,
+				out.doors_after.doors))
+			for _, line in ipairs(out.doors_after.near) do log("LIVE open door " .. line) end
+			out.door_find = {n = door_find.n, us = door_find.us, max_us = door_find.max_us}
+			log(("LIVE door finding so far: %d calls, %.1f ms, largest %d us"):format(
+				door_find.n, door_find.us / 1000, door_find.max_us))
 		end
 		write_results()
 		done()

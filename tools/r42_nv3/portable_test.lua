@@ -193,6 +193,7 @@ grug_mobs = {
 }
 -- The road layout the runtime holds (set per street test).
 grug_mapgen = {wp40 = {}}
+dofile(repo .. "/mods/ENTITIES/grug_mobs/npc_doors.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/patrol.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/routes.lua")
 local routes = grug_mobs.routes

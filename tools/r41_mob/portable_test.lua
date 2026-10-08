@@ -273,6 +273,7 @@ _G.grug_mobs = {
 	refresh_visual = noop,
 	register_mob = function(name, def) core.registered_entities[name] = def end,
 }
+dofile(repo .. "/mods/ENTITIES/grug_mobs/npc_doors.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/patrol.lua")
 -- The route cache (Round 42 NV3) caches nothing here: its own test is
 -- tools/r42_nv3, and the stub navigation only walks straight.

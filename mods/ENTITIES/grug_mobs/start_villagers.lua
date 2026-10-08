@@ -654,7 +654,10 @@ local function amble_tick(self, dtime)
 	if index < 1 or index > #spots then index = 1 end
 	local spot = spots[index]
 	local dx, dz = spot.x - pos.x, spot.z - pos.z
-	if dx * dx + dz * dz > SPOT_ARRIVED * SPOT_ARRIVED then
+	-- Never arrived in a doorway on the way through (Round 42 DR): a walker
+	-- dwelling there would hold the door open.
+	if dx * dx + dz * dz > SPOT_ARRIVED * SPOT_ARRIVED
+			or grug_mobs.door_crossing(self, pos) then
 		-- Still on the way: clear the dwell so arriving starts a fresh one.
 		self._grug_idle_dwell = nil
 		if #spots < 2 then

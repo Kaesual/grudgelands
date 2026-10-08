@@ -241,8 +241,9 @@ tour; it never carries design or WP detail that does not already live in
   node data → `core.get_meta(pos)`.
 - **Terrain-damage guard (user, 2026-09-19):** towns, starts, capitals and POIs
   are never damaged. Anything that writes or removes nodes from mobs, combat,
-  fire, explosions or lava asks `grug_core.world_alterable(pos)`; the one
-  recorded exception is the rift's crack.
+  fire, explosions or lava asks `grug_core.world_alterable(pos)`; the two
+  recorded exceptions are the rift's crack and settlement NPCs opening and
+  closing doors (`grug_mobs/npc_doors.lua`, Round 42 ruling 15).
 - **Performance basics:** throttle every `register_globalstep` with a dtime
   accumulator; node timers for stations; LBMs only for current-version
   activation; ABMs only for ambient events (`chance`/`interval`, `catch_up =
@@ -410,8 +411,9 @@ The topic rules below name the one path to use; the
   Other mods hear turn-ins through `grug_quests.register_on_turn_in`, never a
   second completion path; `grug_quests.quest_held` is the cheap "has or did"
   query.
-- **The rift is runtime content** (`grug_mobs/rift_core.lua`), its crack the one
-  recorded exception to POI protection ([world.md](docs/design/world.md) §4b).
+- **The rift is runtime content** (`grug_mobs/rift_core.lua`), its crack one of
+  the two recorded exceptions to POI protection, besides NPC door use
+  ([world.md](docs/design/world.md) §4b).
 - **Decor is a kit** (`grug_mapgen/wp13/decor_kit.lua`): authored rows placed
   whole or failing the build; it never changes a composition's bounds, sockets
   or protection box, never blocks a window or a way; `tools/r36_w` holds every

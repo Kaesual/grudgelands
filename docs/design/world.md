@@ -230,9 +230,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     the hard-protected content of R1 (user decision 2026-09-29,
     [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
     E7). Nothing in the game damages terrain today; the guard is deferred work
-    (WP46). The one deliberate exception is **the rift's crack** (§4b, Round
-    36): written once per world inside its clash site's own POI box and
-    recorded, never by players and never anywhere else.
+    (WP46). The two deliberate exceptions are **the rift's crack** (§4b,
+    Round 36): written once per world inside its clash site's own POI box and
+    recorded, never by players and never anywhere else; and **settlement NPCs
+    opening and closing doors** on their walks (Round 42 ruling 15;
+    [settlements.md](settlements.md) "Doors"): a door's open or shut state
+    only, never a locked door.
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -501 and below the universal contested deep rule overrides
@@ -603,7 +606,10 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   patrol come from a route cache, built once on first use and reused; a
   capital's long patrol legs run over its streets, and a cached leg with no
   route goes to the later stage at once ([settlements.md](settlements.md)
-  "Settlement walkers").
+  "Settlement walkers"). Doors are walls to every search: the route cache
+  builds its legs through doors, and a walker's or post guard's fixed walk
+  whose search failed walks through a door between it and its goal, opening
+  it and closing it behind it (Round 42 DR, settlements.md "Doors").
 - **Respawn slots**: every anchor has a configured **maximum population**
   and refills toward it one NPC at a time. Each refill takes a
   **configurable interval** (either an exact duration or a min–max

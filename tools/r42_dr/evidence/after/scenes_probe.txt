@@ -1,0 +1,7 @@
+ACTION[Server]: [nv0] TRIAL post_guard  door_closed reached=true  walk t=17.08  min_d=0.76  fp=1 found=0 us=86 max=86 sm[nav_no_path=1 nav_stuck=1]  door_open_end=false
+ACTION[Server]: [nv0] TRIAL post_guard  door_open   reached=true  walk t=19.8   min_d=0.98  fp=0 found=0 us=0 max=0 sm[]  door_open_end=true
+ACTION[Server]: [nv0] TRIAL royal_guard door_closed reached=true  snap t=27.51  min_d=0     fp=4 found=0 us=351 max=121 sm[nav_no_path=4 nav_stuck=1] teleport=1 door_open_end=false
+ACTION[Server]: [nv0] TRIAL royal_guard door_open   reached=true  snap t=27.51  min_d=0     fp=4 found=0 us=228 max=65 sm[nav_no_path=4 nav_stuck=1] teleport=1 door_open_end=true
+ACTION[Server]: [nv0] TRIAL villager    door_closed reached=true  walk t=13.62  min_d=1.05  fp=1 found=0 us=68 max=68 sm[nav_no_path=1 nav_stuck=1]  door_open_end=false
+ACTION[Server]: [nv0] TRIAL villager    door_open   reached=true  walk t=14.52  min_d=0.9   fp=0 found=0 us=0 max=0 sm[]  door_open_end=true
+ACTION[Server]: [nv0] RESULT DONE
