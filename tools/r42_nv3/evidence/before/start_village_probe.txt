@@ -1,0 +1,26 @@
+ACTION[Server]: [nv3] target streets
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_terrace_watch: terrace_market/terrace_market_walk(st 98 d 8.9 dy 0, leg 185) terrace_brewhouse/terrace_brewhouse_watch(st 99 d 10.0 dy -1, leg 230) terrace_alehouse/terrace_alehouse_watch(st 102 d 6.3 dy -1, leg 228) terrace_bakehouse/terrace_bakehouse_watch(st 103 d 9.0 dy 0, leg 168) terrace_well_court/terrace_well_court_watch(st 103 d 9.0 dy 0, leg 87) terrace_long_house/terrace_long_house_watch(st 103 d 10.1 dy -2, leg 262) terrace_cottage_west/terrace_cottage_west_watch(st 102 d 9.3 dy -1, leg 177) terrace_cottage_east/terrace_cottage_east_watch(st 99 d 9.2 dy -1, leg 46) terrace_watch/terrace_watch_watch(st 99 d 8.5 dy 0, leg 117)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_gate_south_tower: gate_south_deck(st 97 d 4.0 dy -11, leg 0) gate_south_rampart(st 97 d 4.0 dy -6, leg 0)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_gate_west_tower: gate_west_deck(st 96 d 4.0 dy -11, leg 0) gate_west_rampart(st 96 d 4.0 dy -6, leg 0)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_gate_north_tower: gate_north_deck(st 95 d 4.0 dy -11, leg 0) gate_north_rampart(st 95 d 4.0 dy -6, leg 0)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_gate_east_tower: gate_east_deck(st 94 d 4.0 dy -11, leg 0) gate_east_rampart(st 94 d 4.0 dy -6, leg 0)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_garrison_watch: garrison_barracks/garrison_barracks_yard(st 104 d 14.3 dy 1, leg 42) garrison_muster_hall/garrison_muster_hall_watch(st 97 d 8.2 dy 0, leg 75) garrison_armoury/garrison_armoury_watch(st 96 d 11.1 dy 0, leg 46) garrison_drill_yard/garrison_drill_yard_watch(st 100 d 10.1 dy -2, leg 55) garrison_stable/garrison_stable_watch(st 100 d 9.0 dy -1, leg 78) garrison_quartermaster/garrison_quartermaster_watch(st 100 d 9.7 dy -1, leg 123) garrison_wain_shed/garrison_wain_shed_watch(st 104 d 6.9 dy 0, leg 71) garrison_serjeant/garrison_serjeant_watch(st 100 d 9.6 dy 2, leg 30) garrison_watch_tower/garrison_watch_tower_watch(st 108 d 9.7 dy 0, leg 59)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_watch: colonnade_west_walk(st 97 d 36.7 dy 0, leg 31) watch_south_west(st 97 d 33.5 dy 0, leg 79) watch_north_west(st 95 d 28.6 dy 0, leg 72) watch_north_east(st 98 d 15.2 dy 0, leg 76) watch_south_east(st 97 d 24.2 dy 0, leg 31) colonnade_east_walk(st 97 d 36.5 dy 0, leg 13)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_deep_watch: deep_hall_of_record/deep_hall_of_record_watch(st 101 d 7.5 dy -1, leg 33) deep_scriptorium/deep_scriptorium_watch(st 105 d 9.4 dy 2, leg 53) deep_memory_hall/deep_memory_hall_watch(st 105 d 8.8 dy 1, leg 37) deep_carvers/deep_carvers_watch(st 101 d 6.8 dy -1, leg 72) deep_lantern_court/deep_lantern_court_watch(st 105 d 9.9 dy -3, leg 54) deep_archive/deep_archive_watch(st 105 d 6.7 dy -1, leg 83) deep_keeper/deep_keeper_watch(st 97 d 10.0 dy 1, leg 66) deep_lamp_store/deep_lamp_store_watch(st 104 d 6.0 dy -1, leg 109) deep_watch/deep_watch_watch(st 101 d 8.9 dy 1, leg 24)
+ACTION[Server]: [nv3] STREETS loop dur_brannoc_forge_watch: forge_charcoal/forge_charcoal_watch(st 99 d 9.4 dy 0, leg 31) forge_pack_stable/forge_pack_stable_watch(st 96 d 9.6 dy 0, leg 81) forge_smithy/forge_smithy_watch(st 95 d 8.2 dy 0, leg 27) forge_guild_house/forge_guild_house_watch(st 99 d 6.2 dy 0, leg 167) forge_quench_court/forge_quench_court_watch(st 103 d 10.1 dy -1, leg 80) forge_watch/forge_watch_yard(st 103 d 23.4 dy -2, leg 187) forge_copse/forge_copse_watch(st 103 d 9.2 dy -1, leg 67) forge_ore_yard/forge_ore_yard_watch(st 99 d 7.9 dy 0, leg 94) forge_store/forge_store_watch(st 99 d 6.8 dy 0, leg 39)
+ACTION[Server]: [nv3] STREETS dur_brannoc: text 231909 bytes, load 1484 us, deserialize 2070 us, 19 streets (2240 points) within 320, kinds {"avenue":24,"lane":79,"primary":26,"secondary":30,"trail":42}, +3297 KiB with the layout
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-mS53D7/world/nv3_results.json (6064 bytes)
+ACTION[Server]: [nv3] target start
+ACTION[Server]: [nv3] LIVE start hearthpine box (-1836,27,-2571) - (-1783,52,-2483), 72 blocks forceloaded
+ACTION[Emerge-0]: [nv3] LIVE start emerged in 4.0 s
+ACTION[Server]: [nv3] LIVE start 29 objects after 36 s
+ACTION[Server]: [nv3] LIVE start hearthpine: 3 ambling residents (1 walkers, 0 one-spot), 1 patrols; 75 s: find_path 0 (0.0/min, found 0, max 0 us at d 0.0, 0.0 ms), nav searches 0, cap waits 0; arrivals 1, spots given up 0, patrol advances 4, snaps 0
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-mS53D7/world/nv3_results.json (6542 bytes)
+ACTION[Server]: [nv3] target village
+ACTION[Server]: [nv3] LIVE village copperfell_village box (-1878,86,-2047) - (-1858,111,-2028), 8 blocks forceloaded
+ACTION[Emerge-0]: [nv3] LIVE village emerged in 3.0 s
+ACTION[Server]: [nv3] LIVE village 6 objects after 12 s
+ACTION[Server]: [nv3] LIVE village copperfell_village: 1 ambling residents (1 walkers, 0 one-spot), 0 patrols; 75 s: find_path 0 (0.0/min, found 0, max 0 us at d 0.0, 0.0 ms), nav searches 0, cap waits 0; arrivals 2, spots given up 0, patrol advances 0, snaps 0
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-mS53D7/world/nv3_results.json (6890 bytes)
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-mS53D7/world/nv3_results.json (6890 bytes)
+ACTION[Server]: [nv3] RESULT DONE

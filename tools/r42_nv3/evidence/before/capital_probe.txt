@@ -1,0 +1,8 @@
+ACTION[Server]: [nv3] target capital
+ACTION[Server]: [nv3] LIVE capital dur_brannoc box (-1975,59,-1672) - (-1651,97,-1331), 1848 blocks forceloaded
+ACTION[Emerge-0]: [nv3] LIVE capital emerged in 12.7 s
+ACTION[Server]: [nv3] LIVE capital 454 objects after 12 s
+ACTION[Server]: [nv3] LIVE capital dur_brannoc: 98 ambling residents (20 walkers, 2 one-spot), 9 patrols; 120 s: find_path 32 (16.0/min, found 18, max 268 us at d 30.5, 3.4 ms), nav searches 32, cap waits 0; arrivals 50, spots given up 17, patrol advances 492, snaps 2
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-4hGd7u/world/nv3_results.json (7008 bytes)
+ACTION[Server]: [nv3] wrote /tmp/grudgelands-headless.nv3-4hGd7u/world/nv3_results.json (7008 bytes)
+ACTION[Server]: [nv3] RESULT DONE
