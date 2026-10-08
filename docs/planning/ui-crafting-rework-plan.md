@@ -608,10 +608,11 @@ The server learns the typed number only with an event (§1). Rules:
   in node storage follow the new definitions (accepted).
 - **Crafting (Round B):** the player's own `craft` list (at most 9 stacks,
   possibly gear) is emptied into the inventory through the give helper
-  **before** the item-level pin pass, then removed. The engine creates
-  `craft` for every new player (`src/player.cpp:34`), so the game also sets
-  its size to 0 on join; for existing players the removal sticks
-  (`inventory.cpp:966-977`).
+  **before** the item-level pin pass and stored with size 0. The engine
+  re-creates `craft` with 9 slots at every load and the database loaders
+  only resize stored lists (`database-sqlite3.cpp:587-591`,
+  `inventory.cpp:1033-1038`), so the game sets its size to 0 at every join
+  and the step stores size 0 (corrected in the Round 45 plan review).
   Workspace contents in node meta (station grids, brewing stands, the
   per-player capital workspaces) are **discarded** (the user, 2026-10-08):
   once `on_rightclick` and the lists are gone no code reads them, so they stay

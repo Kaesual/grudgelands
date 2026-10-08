@@ -74,6 +74,9 @@ sizes, Party & PvP page). Round-specific (the user, 2026-10-08):
   it (spec §3.2).
 - **Lists:** `grug_potion_belt` (4, potions and elixirs only; IH);
   `main` stays 32 (hotbar 8 + 24); bag contents `grug_bag<i>_content`.
+- **Fit check** (IH): `grug_inventory.fits(player, stacks)` answers whether
+  the stacks would fit (helper order, partial stacks counted) without
+  changing anything; bag removal and Round 45's cancel refund use it.
 - **Sort** (IH): `grug_inventory.sort(player)` → changed; the button and its
   2–3 s server-side cooldown are FR's.
 - **Key edges** (MQ writes it, QB uses it): one globalstep helper in a new
