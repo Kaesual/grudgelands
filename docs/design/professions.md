@@ -195,8 +195,10 @@ items, per-recipe unlocks, keystone redemptions or discovery.
   the current profession tier, awarded at its end; a saturated profession
   advances at the end of its next counting job once the character band
   allows it. Unlearning a profession while its job runs lets the job finish
-  without XP. The list, search and ×N of the Crafting tab: spec §2.17–2.18
-  and §4.2–4.5.
+  without XP. The list, search and ×N of the Crafting tab, its crafting
+  box, output area and progress bar: [inventory_equipment.md](inventory_equipment.md)
+  §1 "The Crafting tab" (spec §2.17–2.18 and §4.2–4.5); the professions
+  overview sits in its box.
 - Unlearning wipes that profession's level and current-tier count. Learning
   it again starts at T1.
 
