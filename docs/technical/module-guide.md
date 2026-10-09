@@ -325,8 +325,9 @@ tools](#player-meta-read-by-external-tools).
 ## Mount runtime
 
 - **Mount runtime**: ownership is player meta; the summoned controller and its
-  visible child are ephemeral. The child is hidden only from its local rider in
-  first person. `grug_mounts.dismount` is the shared cleanup path for manual,
+  visible child are ephemeral. The child of a riding or flying mount is
+  attached with `forced_visible`, so its rider sees it in first person; a
+  boat's hull is hidden from its own rider in first person. `grug_mounts.dismount` is the shared cleanup path for manual,
   damage, death, leave, shutdown and external-detach exits and clears the
   runtime-only untimed `mount` status. Mounted players cannot attack. Land
   controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
@@ -1798,9 +1799,12 @@ tools](#player-meta-read-by-external-tools).
   - **`grug_sounds`** (`mods/CORE/grug_sounds/init.lua`) is the one play
     path for effects: `grug_sounds.play(event, target)` with a player, an
     object or a position; `EVENTS` maps an event to its spec (name, gain,
-    pitch, distance, `personal`, `interval`) and an event without a spec is
-    a silent no-op (the approval gate: no spec until the user picked a
-    file). The rate limit is checked before anything is allocated (per
+    pitch, distance, `personal`, `interval`, `stoppable`) and an event
+    without a spec is a silent no-op (the approval gate: no spec until the
+    user picked a file). A `stoppable` event (the gallop and wing beats)
+    keeps the handle of its last play per target, and
+    `grug_sounds.stop(event, target)` fades it out in 0.1 s and lifts the
+    interval, so the next play sounds at once. The rate limit is checked before anything is allocated (per
     event and target: a player name, an ObjectRef with weak keys, or
     `"pos"`). `HOOKS` lists every event a call site may name; a new call
     site adds its event there and its mod depends on `grug_sounds`.

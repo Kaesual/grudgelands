@@ -172,9 +172,13 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   player's `get_pos`/`get_rotation` return the parent entity's values
   and their own setters are ignored (`lua_api.md:8864-8870`).
 - The physical mount controller is invisible. Its visible mesh is attached as
-  a child of the rider with `force_visible = false`: the engine hides that child
-  from its owner's first-person camera, while third-person views and other
-  clients retain the complete rider-and-mount silhouette. Dismount and every
+  a child of the rider. For riding and flying mounts the attachment sets
+  `forced_visible` (Round 45 playtest): the rider sees the mount's head and
+  front half ahead of and below the camera in first person, so it feels like
+  riding or flying; without the flag the engine hides a child of the local
+  player in first person. A boat's hull keeps the engine default and stays
+  hidden from its own rider in first person. Third-person views and other
+  clients show the complete rider-and-mount silhouette. Dismount and every
   lifecycle exit remove both ephemeral objects.
 - Land mounts automatically step over slabs and nominal one-node rises while
   moving forward, without jump input. Their controller uses a **1.01-node**
