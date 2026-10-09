@@ -39,12 +39,14 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   Isquarre the Tithe-Eater at a rift on the front. Each boss drops two
   blue or gold items for you once a day; within that day you can still
   help others kill it (Isquarre then drops what an elite drops).
-- **Crafting and equipment.** Make basic gear, choose two of six primary
-  professions, and improve your equipment with enchantments and upgrades.
-  Weaponsmith, Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith
-  each have their own recipes; Cooking and Alchemy are available alongside
-  them. Creatures drop white, blue and gold gear, and a Fallen Crown lifts
-  an item beyond its tier.
+- **Crafting and equipment.** Pick a recipe from a list on the Crafting
+  tab and let the job run, even while you are away. Choose two of six
+  primary professions, which make all the gear, and improve your
+  equipment with enchantments and upgrades. Weaponsmith, Armorsmith,
+  Tailor, Leatherworker, Woodcarver and Goldsmith each have their own
+  recipes and station; everyone knows Cooking, and Alchemy is available
+  alongside them. Creatures drop white, blue and gold gear, and a Fallen
+  Crown lifts an item beyond its tier.
 - **Life between adventures.** Grow crops, go fishing, prepare food and
   visit vendors. Learn to ride at level 15 and to fly at level 45 at your
   capital's stable, where a Shipwright sells boats from level 15, the way
@@ -61,7 +63,7 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   atlas markers help you stay together while exploring and fighting.
 - **A world you can hear.** Creatures, spells, crafting and the people you
   talk to have their own sounds; every region has a quiet ambience by day
-  and night, forges ring and rivers run, and each capital has its own calm
+  and night, hearths crackle and rivers run, and each capital has its own calm
   music.
 - **Fight the other faction when you choose to.** Contested lands and enemy
   territory flag you for PvP, a button flags you anywhere, and only two
@@ -109,16 +111,26 @@ stats, and the sound controls. The short version:
 *Last updated: 2026-10-09. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
 
-The latest finished round is Round 44 (0.44.0), "Inventory, map and
-quickbar": one window with fixed tabs, one scrolling inventory with bags
+The latest finished round is Round 45 (0.45.0), "Crafting rework":
+recipe lists in areas on the Crafting tab instead of the crafting grid and
+the recipe books, crafting as timed jobs that finish while you are away,
+all gear made by the professions at stations nearby, a new item level
+ladder, enchants and upgrades as jobs, Cooking known from the start,
+finished potions at the brewing stand and Grudge-Free Repairs in every
+start town and capital; from its playtest a tidier inventory with your
+money above the hotbar, mounts you see in first person, rides that end
+in water or lava, and your Claim Stone as a waypoint. A host runs the
+migration tool once on the stopped world: it removes old alchemy
+mixtures, empties the old crafting grid into the inventory and keeps
+existing gear at its item level. Round 44 (0.44.0), "Inventory, map and
+quickbar", brought one window with fixed tabs, one scrolling inventory with bags
 inside bags, Sort and a potion belt, a Character tab with a 3D view and
 named gear slots, both talent trees on one Talents & Skills tab with
 skills kept on the hotbar, Party & PvP on one page, a pixel-art map with
 every settlement drawn in and a map window with the quest log and quest
 targets on `Z`, and a quickbar on `E` for mounts, boats, potions and
-Return home. It is the first version with a migration: a host runs the
-tool once on the stopped 0.43 world, which removes the retired mount
-items and stray skills (owned mounts stay). Round 43 (0.43.0), "World
+Return home; its migration removed the retired mount items and stray
+skills (owned mounts stay). Round 43 (0.43.0), "World
 migrations", brought that tool and a start guard that refuses a world
 from a newer version or one that still needs the tool. Since Round 42
 (0.42.0), "Mob navigation", creatures in a fight find their way round
@@ -151,8 +163,9 @@ creatures that keep to the player holding their attention when several
 players fight them to mounts that no longer throw you off when a buff
 runs out, and Round 36 brought each faction's main story from level 41 to
 60, with its finale against Isquarre at the rift. A 0.40 world moves
-to 0.41.0 with a map reset, plays on in 0.43.0 and moves to 0.44.0 with
-the migration tool; older worlds start a new world.
+to 0.41.0 with a map reset, plays on in 0.43.0 and moves to 0.44.0 and
+0.45.0 with the migration tool (one run does both); older worlds start a
+new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the

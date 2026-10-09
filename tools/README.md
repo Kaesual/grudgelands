@@ -698,3 +698,22 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_core/migrations.lua` under a stub engine): the leftover order, a
   failing drop without copies, the capabilities refresh (station-enchanted,
   upgraded and crowned weapons untouched), the tooltips, a rerun; it stays in `run_fixtures.sh` for good.
+  The playtest fixes (`portable_test.lua` each, real game files under a
+  stub engine): `r45_pt5` the shift-click inbox (creative, chest, partial
+  fit, `main` full, the give order, everything full, the output area and
+  target slot, guarded items, `room_for` against `give`, the rings of every
+  patched page and the bag rings, the creative page without its trash
+  ring); `r45_pt6` mounts (the first-person attach, ride sounds from the
+  mount's step, the water and lava dismount and summon refusals, fall
+  damage by height, solid ground for ground mounts); `r45_pt7` mobs (the
+  fliers' fly clip, the shore crab's stepheight and every stepheight being
+  0 or above 1, the dawn cube; `grug_probe_r45_pt7` is its engine probe);
+  `r45_pt8` station sounds (no idle loop, the queue rule also under a
+  coarse `core.after`, which stations sound); `r45_pt9` the Claim Stone as
+  a waypoint (the list entry, travel both ways, the map marker).
+  `r45_art` the user's art picks in the game (the five station node boxes
+  and tiles against the picked designs, a jewellery icon per trinket and
+  tier, no removed texture named). `r45_a1` (jewellery icons) and `r45_a2`
+  (station designs) are the GPT-6 Astra generators with their proposal
+  sheets and `final_sheet.png`; `--check` byte-compares the shipped files
+  (Python with Pillow, an installed tool for generating art).

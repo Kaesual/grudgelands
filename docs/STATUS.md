@@ -2,7 +2,72 @@
 
 Updated 2026-10-09. This is the delivery pointer, not another game specification.
 
-- **Round 44 "Inventory, map and quickbar" complete, 0.44.0 not pushed**
+- **Round 45 "Crafting rework" complete; 0.45.0 pushed on the user's
+  word after the round-end gates** (2026-10-09, version 0.45.0,
+  [plan, completion and GUI checklist](planning/round45-plan.md#completion-2026-10-09)).
+  Round B of the [UI and crafting rework](planning/ui-crafting-rework-plan.md).
+  On main from Round 44 with hotfix 0.43.1 (`c913dbbe`): IL (`73a5806f`),
+  RG (`a86098ad`), JB (`0b7b1331`), ST (`0dd375b8`), UI (`ca9cd103`), EU
+  (`2f918739`); then the user's playtest, which became nine fix lanes
+  (PT1–PT9, PT4 research only) and the art lane ART on the user's
+  findings and picks, merged up to `bff2d5b9`; then MS (`4a892fd6`) and
+  this documentation lane D. Each code lane independently reviewed by
+  Opus (MERGE; UI and PT5 MERGE AFTER FIXES with a Medium each, PT6's
+  first follow-up too, PT2's delta with a Low, ST with a Medium for the
+  user; every fix made by
+  the lane before its merge; PT1 and ART without a separate review); main
+  has 152 portable fixtures. MS's full run 151/152 (`r37_dc` waited for
+  this lane), its step test 64/64 (SQLite and PostgreSQL), the chain
+  0.41.0/0.43.0 → 0.45.0 in `r44_ms` 32/32; `tools/r37_dc`,
+  `check_upgrade.py` and `check_fresh_server.py` PASS on lane D's branch.
+  **Round-end gates (coordinator, on `r45-d` at `5d175be6`):** full
+  fixtures 152/152, `check_upgrade.py` and `check_fresh_server.py` PASS,
+  smoke boot PASS; lane D's review MERGE AFTER FIXES, fixed. No world generation changed (no seed fleet). IL, RG, ST
+  and MS are this release's **migrate** step, everything else
+  compatible; the declaration is
+  `{"schema": 2, "version": "0.45.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`:
+  the second release with a declared step — a 0.44.0 world is migrated
+  offline with `python3 tools/migrate.py --world <dir>`, and the
+  production world (0.41.0) gets 0.44.0 and 0.45.0 in the same run; no
+  map reset. **Push:** origin/main is `2f918739` (Round 45 up to EU,
+  still labelled 0.44.0, pushed by the user on 2026-10-09; no realm runs
+  it, the production server is on 0.41.0); 0.45.0 is pushed on the
+  user's word (2026-10-09) after the round-end gates, as the merge commit
+  of lane D. The GUI
+  check (the completion's checklist) is open.
+  - **Crafting (RG, JB, UI):** one recipe registry (662 records, every grid
+    route converted, gear moved to its profession), the grid, books and
+    discovery removed; timed jobs with consumption, catch-up at login,
+    cancel and the 4-slot output area; the Crafting tab with areas, the
+    paged list, the crafting box and the progress bar (Basic page 1
+    4,215 B, 1 send at a job's start, end and cancel).
+  - **Item levels, enchants and upgrades (IL, EU):** the ladder
+    1/11/21/31/41/51 with the requirement = item level; enchants and
+    +N upgrades as jobs in a target slot, upgrades without XP.
+  - **Stations, cooking, alchemy (ST, PT8, ART):** proximity stations
+    without dialogs, Cooking from the start, finished potions at the
+    brewing stand, mixtures inert, Grudge-Free Repairs on the former
+    Cooking sockets, claim repair only at furnaces; station sounds at a
+    job's start, the idle forge loop removed; the user's new station looks
+    and jewellery icons.
+  - **Playtest fixes (PT1–PT3, PT5–PT7, PT9):** the boxed Inventory tab
+    with the money row and 7 rows, one Character Stats mode, the crafting
+    box in three areas with descriptions, recipes above the profession
+    tier hidden, the shift-click inbox; mounts in first person, ride
+    sounds, rider fall damage, liquids end a ride; fliers' wing clip,
+    crabs on steps, night mobs at dawn within 64 nodes; the Claim Stone
+    as a waypoint both ways.
+  - **The step (MS):** 0.45.0 deletes mixtures, empties the craft grid and
+    `craftresult` into the inventory, pins the 0.44 item level of
+    unmodified gear; at the next join leftovers, the T1 weapon damage and
+    the tooltips.
+  - Next: the sync and the user's GUI test (desktop and web build);
+    Round 46 (the waiting point for
+    players in creation stasis, the Grudge-Free Repairs icon, POI
+    placement for the random-seed load failures;
+    [BACKLOG](../BACKLOG.md#round-45-carry-overs)).
+
+- **Round 44 "Inventory, map and quickbar" complete and pushed**
   (2026-10-09, version 0.44.0,
   [plan, completion and GUI checklist](planning/round44-plan.md#completion-2026-10-09)).
   Round A of the [UI and crafting rework](planning/ui-crafting-rework-plan.md),
@@ -24,11 +89,12 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   **the first release with a declared migration step** — a 0.43.0 world
   is migrated offline with `python3 tools/migrate.py --world <dir>`
   (unmigrated, the start guard refuses it), no map reset. **Push:**
-  origin/main is `f49eac8d` (hotfix 0.43.1 on top of 0.43.0, both pushed
-  on 2026-10-09 by the coordinator on the user's request); 0.44.0, which
-  carries the hotfix, is not pushed. The platform
+  0.44.0 (with hotfix 0.43.1, `c913dbbe`) reached origin/main inside
+  `2f918739`, pushed by the user on 2026-10-09 together with Round 45 up
+  to EU (still labelled 0.44.0); no realm runs it, the production server
+  is on 0.41.0. The platform
   adopts a version with a real step only once its runner is in production
-  (contract revision 2), so 0.44.0 may wait on the platform side. The GUI
+  (contract revision 2). The GUI
   check (plan §6, the completion's checklist) is open.
   - **The window (FR, PP):** formspec_version 6 at the old size, one tab
     table (Inventory, Character, Talents & Skills, Crafting, Party & PvP,
@@ -53,10 +119,8 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   - **Quickbar (QB) and the step (MS):** `grug_quickbar` on E (mounts and
     boats per owned tier, the belt, Return home), mount items inert; step
     0.44.0 removes mount items and skills outside the hotbar offline.
-  - Next: the coordinator's round-end gates, the review, the merge of MS
-    and D, the sync and the user's GUI test (desktop and web build), then
-    the user's push decision for 0.44.0; Round 45 (crafting,
-    [plan](planning/round45-plan.md)) merges only after this lane.
+  - Next: the user's GUI test (desktop and web build); Round 45
+    ([plan](planning/round45-plan.md)) followed on top of it.
 
 - **Round 43 "World migrations" complete and pushed; hotfix 0.43.1 pushed**
   (2026-10-08, version 0.43.0,
@@ -452,9 +516,10 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
     1.49 MB.
   - **Ambience and music (S2):** `grug_ambience`: a quiet bed per region,
     night, cave, deep underground and sea (towns at half gain), distant
-    thunder on the dragon islands, loops at forges, hearths and flowing
-    water; four music pools (Land, Front and sea, Underground, Town; since
-    Round 35 music plays only in the capitals) whose 16 tracks are pushed
+    thunder on the dragon islands, loops at forges (removed in Round 45),
+    hearths and flowing water; four music pools (Land, Front and sea,
+    Underground, Town; since Round 35 music plays only in the capitals)
+    whose 16 tracks are pushed
     to a player only while music is on; a main-menu theme; Help → Sound,
     `/music`, `/ambience`. First-join media 14.10 →
     20.82 MB; the music (30 MB) is never part of it.
@@ -867,8 +932,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 43 (0.43.0, `d10018a7` and lane D;
-  not pushed) on top of Round 42 (0.42.0, pushed on 2026-10-08), Round 41
+- **Latest game:** main carries Round 45 (0.45.0; see the top entry for
+  its push) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+  2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
   (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
   Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
@@ -897,7 +963,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   Round 24 was accepted earlier, and its build contains Rounds 20–23 and
   the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06,
   Round 42 by the user's playtest on 2026-10-08.
-  **Rounds 36, 37, 38, 40, 41 and 43 are open** (Round 43's
+  **Rounds 36–38, 40, 41 and 43–45 are open** (Round 45's
+  [checklist](planning/round45-plan.md#gui-checklist), Round 44's
+  [checklist](planning/round44-plan.md#gui-checklist); Round 43's
   [checklist](planning/round43-plan.md#gui-checklist) is short: a 0.42.0
   world plays on under 0.43.0, a fresh world, the tool's `--check` on a
   copy; Round 41's
@@ -951,9 +1019,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main is `332c5e79` (0.42.0, pushed by
-  the user on 2026-10-08): every round up to Round 42; 0.43.0 (Round 43)
-  is local.
+- **Remote observation:** origin/main was `2f918739` at Round 45's
+  documentation (Round 44 and Round 45 up to EU, labelled 0.44.0, pushed
+  by the user on 2026-10-09); the top entry has the current push line.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md) (compatible, map

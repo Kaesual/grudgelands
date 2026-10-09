@@ -12,6 +12,103 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.45.0 — Round 45, "Crafting rework" (2026-10-09)
+
+Crafting without the grid and the recipe books, gear only from the
+professions, and the fixes from the playtest. **Migration** needed: the
+server's host runs the migration tool once on the stopped world (last
+point below). No map reset, no new world.
+
+- **Recipe lists instead of the grid and the books:** the Crafting tab
+  has an area for Basic, Cooking, your two primary professions and
+  Alchemy, each with its tier progress. A list of ten recipes a page with
+  a search and "Craftable only"; ×N shows how many you can make. Pick a
+  recipe to see the item with its description (crafted gear exactly as it
+  will come out), what it needs against what you carry, the most you can
+  make and an amount field with Max. Basic lists every recipe; a
+  profession area lists its recipes up to your tier. The 3×3 grid, the
+  recipe books and the discovery are gone.
+- **Crafting takes time:** Craft now starts a job: 1 s per Basic item,
+  dish or material, 2 s per potion, 3 s per piece of gear or bag. A bar
+  shows its progress (reopening the window shows it from its last update
+  until your next click). One job at a time; it goes on while the window
+  is closed or you are offline, and a line tells you "… is ready". The
+  results wait in a four-slot output area on the tab; Take all moves them
+  into your inventory. Stop gives everything back when there is room.
+  Ingredients come from your bags first and the hotbar last.
+- **Professions make all gear:** weapons, armour, shields, spellbooks,
+  bags and jewellery come from their profession at the tier of the item;
+  Basic makes tools, blocks, arrows and the like. Spellbooks and bags no
+  longer need a character level beyond the profession tier.
+- **Profession stations work nearby:** a profession recipe needs its
+  station within 4 blocks (the forge for weapon- and armorsmiths, the
+  four benches, the brewing stand); stations open no window any more.
+  Furnaces and dual furnaces still do. Five stations got a new look: the
+  tanning rack, the tailor bench, the carving bench, the jeweller's bench
+  and the brewing stand. The forge and the brewing stand play their sound
+  when someone starts a job there; the forge no longer hammers with nobody
+  at work.
+- **A new item level ladder:** new gear starts at item level 1, 11, 21,
+  31, 41 or 51 by tier, and its level requirement is its item level
+  (tier-1 gear has none). New tier-1 gear is a little weaker than before
+  (a bronze sword deals 4 instead of 5). Every piece of jewellery has its
+  own icon per tier.
+- **Enchants and upgrades are jobs:** in a primary profession's area,
+  "Enchant an item" and "Upgrade an item" take the item into a target
+  slot. Enchanting lists the enchants that fit it up to your tier with
+  their values, shows the result before you start and takes 5 s.
+  Upgrading adds item levels one at a time (1 s and one material of the
+  item's own kind each, plus a stick for weapons) up to ten times the
+  item's tier, with a warning when the result needs a higher level than
+  yours; upgrades give no profession XP. Cancel gives the item back, and
+  an item left in the slot returns to your inventory at login. Three
+  signatures (Campaign Purse, Scarred and Blighted Bear Claw) have no use
+  left.
+- **Cooking from the start:** every character knows Cooking; there are no
+  Cooking trainers. Simple dishes are made directly, good dishes as a raw
+  dish finished in a furnace.
+- **Finished potions:** Alchemy makes potions and elixirs directly at the
+  brewing stand; mixtures and the stand's automatic brewing are gone (an
+  old mixture says "No longer used").
+- **Grudge-Free Repairs:** in every start town and capital, where the
+  Cooking trainer stood, an NPC repairs your gear and does nothing else.
+  Inside your claim only furnaces and dual furnaces repair now.
+- **Inventory:** seven rows in the same window size, each area in its own
+  box; your money, Withdraw, the coin slot and Sort in one row above the
+  hotbar; the hotbar stays in place on every tab. The Character tab has
+  three views: Stats (your character beside the stats), Effects and
+  Achievements; the professions overview moved to the Crafting tab.
+  Shift-click from a chest, a furnace, the creative inventory or the
+  crafting slots fills your inventory, then your bags, then the hotbar,
+  also when the rows above the hotbar are full; the creative inventory no
+  longer deletes a shift-clicked stack.
+- **Mounts:** you see your mount (and your boat) in first person. The
+  riding sound stops in the air, when you stand still and when you get
+  off. A rider of a ground mount takes fall damage as on foot and is
+  thrown off. Water and lava end a ride, and no mount comes in water,
+  from a boat or in lava; a ground mount only comes when you stand on
+  solid ground.
+- **Creatures:** birds and other fliers beat their wings while in the
+  air, crabs climb one-block steps, and at dawn night creatures stay while
+  a player is within 64 blocks.
+- **Your Claim Stone is a waypoint:** once activated, "Your Claim Stone"
+  is the last entry of every waystone's list, free like any waystone, and
+  the stone's new Waypoints tab takes you to your waystones; the map shows
+  the stone.
+- **This release has a migration step** (for the server's host): stop the
+  server, back the world up, run
+  `python3 tools/migrate.py --world <world directory>` from the new
+  version's checkout, then start it
+  ([updating a hosted world](README.md#play-with-luanti)). The step
+  removes alchemy mixtures, empties the old crafting grid into the
+  inventory (what does not fit comes at the next login: into the
+  inventory, else the output area, else at the character's feet), and
+  keeps every unchanged piece of gear at its old item level and
+  requirement; old tier-1 weapons keep their damage, and tooltips are
+  refreshed when the character next joins.
+  From 0.41.0 or 0.43.0 the same run also applies the 0.44.0 step. No map
+  reset.
+
 ## 0.44.0 — Round 44, "Inventory, map and quickbar" (2026-10-09)
 
 A new inventory window, a map window with the quest log on Z and a

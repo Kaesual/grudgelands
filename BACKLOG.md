@@ -21,9 +21,24 @@ WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 44 "Inventory, map and quickbar"](docs/planning/round44-plan.md#completion-2026-10-09)
-  complete, 0.44.0 not pushed** (2026-10-09, `36019071`, lanes MS and D,
-  version 0.44.0, **migrate**: the first declared step; GUI test open):
+  [Round 45 "Crafting rework"](docs/planning/round45-plan.md#completion-2026-10-09)
+  complete** (2026-10-09, `4a892fd6` and lane D; pushed on the user's
+  word after the round-end gates;
+  version 0.45.0, **migrate**: the second declared step; GUI test open):
+  Round B of the UI rework — the recipe registry and the Crafting tab
+  instead of the grid and the books, crafting jobs with the output area,
+  gear only from professions, the item level ladder, enchants and
+  upgrades as jobs, proximity stations, Cooking from the start, finished
+  potions, Grudge-Free Repairs; the playtest's fix lanes (inventory
+  window, shift-click inbox, mounts, mobs, station sounds, the Claim Stone
+  as a waypoint) and the user's art picks; step 0.45.0 removes mixtures,
+  empties the craft grid and pins old gear's item level offline
+  ([Round 45](#round-45--crafting-rework),
+  [carry-overs](#round-45-carry-overs)).
+- [Round 44 "Inventory, map and quickbar"](docs/planning/round44-plan.md#completion-2026-10-09)
+  (2026-10-09, `36019071` and lanes MS and D, version 0.44.0,
+  **migrate**: the first declared step; pushed by the user on 2026-10-09
+  inside `2f918739`; GUI test open):
   Round A of the UI rework — the window with fixed tabs, the give helper,
   bags in bags, Sort and the potion belt, the Character tab, Talents &
   Skills with hotbar-only skills, Party & PvP, the baked pixel-art map,
@@ -111,8 +126,8 @@ example E5) are cited below.
   [carry-overs](#round-36-carry-overs)).
 - **GUI acceptance:** Rounds 25–35 count as GUI-accepted (the user,
   2026-10-05, [Round 37 plan](docs/planning/round37-plan.md) §2.3.5),
-  Round 39 too (2026-10-06); Rounds 36, 37, 38, 40 and 41 are open
-  ([project status](docs/STATUS.md)).
+  Round 39 too (2026-10-06), Round 42's playtest (2026-10-08); Rounds
+  36–38, 40, 41 and 43–45 are open ([project status](docs/STATUS.md)).
 - [Round 35 "Fixes and character creation"](docs/planning/round35-plan.md#completion-2026-10-05)
   (2026-10-05, pushed 2026-10-05; its first GUI findings fed Round 36): the user's
   Round 34 GUI findings — the server's aiming rays test rotated selection
@@ -223,7 +238,9 @@ example E5) are cited below.
 - Open work without its own WP: friendly-guard healing stays deferred as a
   coherent support-combat feature (rule owner `combat_stats.md`); the T6 lava
   lakes of `world.md` §4c stay planned (E3) with no scheduled owner. Repair at
-  crafting stations inside a claim (D7) shipped in Round 29.
+  crafting stations inside a claim (D7) shipped in Round 29; since Round 45
+  only player-placed furnaces and dual furnaces offer it (the user leans to
+  repair only in towns, [Round 45 carry-overs](#round-45-carry-overs)).
 - **October 2026 audit:** the design questions that block no fix are in
   [Audit 2026-10 open questions](#audit-2026-10-open-questions), the fix
   packages after Round 37 in
@@ -1464,8 +1481,8 @@ it with a map reset (declaration `map_reset: ["0.40.1"]`).
   stale world-map tiles (MAP, [world_map.md](docs/design/world_map.md#map-quality-and-relief)),
   the bow's missed release and the quiver total (SC,
   [classes.md](docs/design/classes.md#cancellation-and-native-client-limits)),
-  the recipe book's Close and multi-item slots (UI,
-  [professions.md](docs/design/professions.md#12-recipe-books-are-ui-revised-2026-09-18)),
+  the recipe book's Close and multi-item slots (UI; the books went in
+  Round 45),
   the waterweed bed out of `group:sand` (WW).
 
 ### Round 41 carry-overs
@@ -1484,16 +1501,8 @@ test or the migration.
   font could show part of the engine's "100".
 - **The bow's second cause** (round41-plan §8, a lost release snapshot on a
   lossy link) stays open; the plan's three questions tell it apart.
-- **A recipe book session survives a form that replaced it** (the death
-  screen, another mod's form; pre-existing); a later discovery refresh can
-  reopen the book.
 - **A repair form stays open without a session** after walking out of
   range and pressing Repair; its Close then only closes.
-- **Two items with the same label share one icon** in a multi-item slot
-  (the alphabetically first); if only the other has a recipe, the icon is
-  not clickable.
-- **Group members hidden from the creative inventory** still show as
-  icons in multi-item slots.
 - **`check_upgrade.py`** accepts a new entry below the pushed version
   together with a bump; a later rule: a new entry must exceed the pushed
   version.
@@ -1611,7 +1620,7 @@ the reviews' and reports' backlog notes (theoretical, no severity).
 
 ### Round 44 — inventory, map and quickbar
 
-**Delivered 2026-10-09, 0.44.0 not pushed**
+**Delivered 2026-10-09, pushed 2026-10-09 inside `2f918739`**
 ([completion](docs/planning/round44-plan.md#completion-2026-10-09),
 plan [round44-plan.md](docs/planning/round44-plan.md)); every lane
 independently reviewed by Opus; 138 portable fixtures on main. Version
@@ -1670,16 +1679,126 @@ else open.
 - **Quickbar** (QB): an open quickbar is never refreshed; `grug_mounts`
   still depends on `grug_inventory`, which it no longer uses;
   `grug_mounts.register_on_owned_tiers_changed` has no listener.
-- **The step** (MS): a crafting station's detached grid (saved in node
-  meta) can hold a skill or mount item from 0.43 that step 0.44.0 cannot
-  reach (the map part is deferred; nothing is lost). 0.44 still lets a
-  skill or mount item into a station grid: detached inventories are
-  protected only at load, at a join and when the skills page draws —
-  protect each at its creation, as `grug_housing/soulbound.lua` does (the
-  Round 45 plan removes the craft grids). The e2e row dump cuts rows over
+- **The step** (MS): the station grids are gone since Round 45 (RG, ST),
+  so nothing new can enter one; what remains is an old player-placed
+  station's dead node meta, which may still hold a skill or mount item
+  from before 0.44 and hands it out when the station is dug (the dig refund;
+  nothing is lost). The e2e row dump cuts rows over
   90 characters (byte identity checked separately); on PostgreSQL the step
   runs only on a world without skills or mounts (it uses only the shared
   data API).
+
+### Round 45 — crafting rework
+
+**Delivered 2026-10-09, pushed on the user's word after the round-end gates**
+([completion](docs/planning/round45-plan.md#completion-2026-10-09),
+plan [round45-plan.md](docs/planning/round45-plan.md)); every code lane
+independently reviewed by Opus (PT1 and ART without a separate review);
+152 portable fixtures on main. Version 0.45.0, **migrate**: the second
+declared step. Round B of the
+[UI and crafting rework](docs/planning/ui-crafting-rework-plan.md). No
+world generation changed.
+
+- **The item level ladder** (IL) and **enchants and upgrades** (EU):
+  1/11/21/31/41/51, the requirement = the item level; the target slot,
+  the filtered enchant list, +N upgrades to 10 × tier
+  ([item_tiers.md](docs/design/item_tiers.md)).
+- **Recipes, jobs and the Crafting tab** (RG, JB, UI, PT3): the registry,
+  gear in its profession, the grid, books and discovery removed; timed
+  jobs and the output area; the tab with areas, list, box and bar
+  ([professions.md §1.2](docs/design/professions.md#12-recipe-areas-round-45),
+  [inventory_equipment.md §4](docs/design/inventory_equipment.md#4-crafting-model-round-45)).
+- **Stations, cooking, alchemy** (ST, PT8, ART): proximity stations,
+  Cooking at join, finished potions, Grudge-Free Repairs, station sounds
+  at a job's start, the new station looks and jewellery icons
+  ([durability_repair.md](docs/design/durability_repair.md),
+  [sound.md](docs/design/sound.md)).
+- **Playtest fixes** (PT1, PT2, PT5, PT6, PT7, PT9): the boxed Inventory
+  tab with the money row, one Character Stats mode, the shift-click inbox;
+  mounts in first person, ride sounds, rider fall damage, liquids end a
+  ride ([mounts.md](docs/design/mounts.md)); fliers, crabs, dawn; the
+  Claim Stone as a waypoint ([home_travel.md](docs/design/home_travel.md)).
+- **The step** (MS): 0.45.0 and its test
+  ([upgrade contract §5.8](docs/technical/upgrade-contract.md#58-the-declared-steps)).
+
+### Round 45 carry-overs
+
+**Noted 2026-10-09** ([completion](docs/planning/round45-plan.md#completion-2026-10-09)),
+the user's items for later rounds and the reviews' and reports' backlog
+notes (theoretical, no severity).
+
+- **The waiting point for players in creation stasis** (the user,
+  Round 46): every player whose wait ends in a teleport waits at
+  (0, 31000, 0), where no map is generated around them; the spec is
+  ready (`grudgelands-orchestration/r46/waiting-point-spec.md`, outside
+  the repository).
+- **Random seeds can fail at load** ("river covers the core of POI", e.g.
+  seed 8507030740356938342, already in 0.44.0); the user's long-term fix
+  is POI placement adapted to the roads and rivers (Round 46;
+  [seed-dependent POI placement](#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
+- **A map and minimap icon for Grudge-Free Repairs** (the user, Round 46):
+  a repair icon without a tooltip; new art and the user's pick.
+- **Repair only in towns** (the user leans to it): remove claim repair,
+  the furnaces' included; a crafting-table repair station is dropped
+  (repairs stay scarce so players meet).
+- **`grug_materials/registry.lua` `TIERS[].ilvl`** still says 3/10/…/50
+  (unread, part of the pinned WP43 projection): fold it into the next
+  mapgen change with the `r7_loader.lua:46-47` comment
+  ([Round 44 carry-overs](#round-44-carry-overs)).
+- **Night mobs and idle players** (PT7): a player who stands still or is
+  away keeps every night mob within 64 nodes (up to about 110 at the
+  cube's corners) all day; watch it.
+- **Crafting tab** (UI): the ×N count and the station hint go stale until
+  the next click; the search echo cut at 40 bytes can split a UTF-8
+  character; a Craft now click reads the inventory three times; Help's
+  "Profession recipes need their station within 4 blocks" also reads as
+  covering Cooking (the line above says otherwise); the enchant and
+  upgrade boxes stack their notes without a cap (only an unlikely
+  eight-line combination reaches the button), and a recipe box whose
+  description is dropped for room is not checked against the quantity
+  row (no recipe gets there).
+- **Jobs** (JB, EU): XP counts crafts, not items (the same while every
+  XP recipe makes one); a worn tool without metadata counts as a plain
+  ingredient (no recipe takes a tool); corrupted job meta is dropped with
+  its consumed items (nothing writes such meta); an operation that
+  vanishes mid-job returns the item and its materials, possibly more
+  stacks than the start checked (they spill into the inventory, then at
+  the feet); missing materials do not grey the button.
+- **Recipes** (RG, ST): the 332 dead engine grid routes could be reached
+  by a modified client only while a pre-0.45 `craft` list keeps 9 slots
+  with items; Round 9's setting counts are kept though their collision
+  reason is gone; `r45_st` §Q sees only the records it loads (alchemy and
+  cooking), so it would miss a quest target moved to a primary.
+- **Grudge-Free Repairs** (ST): a saved Cooking trainer keeps its old
+  nametag until its first claim tick (seconds); a refused click (more than
+  8 nodes away, or the NPC pushed off its socket) shows nothing.
+- **Shift-click inbox** (PT5): only a modified client can move a bag slot
+  into the inbox, where a leftover drops at the feet; `room_for` assumes
+  the quiver takes all its room (one arrow item today); "No room in your
+  inventory." also shows when the source would refuse anyway; `bag_rings`
+  reads only the page content, not a view's listrings.
+- **Mounts** (PT6): the ride clip restarts on a speed flicker (pressing
+  almost head-on into a wall under lag); a clip's last 0.05 s is never
+  cut; the fall factor comes from the node under the centre, the engine's
+  from the collided node (an edge case for the three nodes in that
+  group); a mount falls through cobwebs and climbables at full speed; a
+  bottom slab on water refuses a summon.
+- **Mobs** (PT7): a forced stand restarts a hovering flier's wing loop
+  once; a flier within 0.25 nodes of the ground plays stand; a perched
+  bird plays fly for one step after it reloads.
+- **Claim Stone** (PT9): the arrival does not check the floor (a stone
+  that vanished before the 5 s scan; Return home has the same gap); a
+  forged tab-1 field on the Waypoints tab is still handled (the owner on
+  their own stone, harmless).
+- **`tools/r33_ds/allocation.py --check` fails** (pre-existing since
+  `c913dbbe`, noted by EU and its review): the T5 enchants `int` and
+  `dodge_percent` take the scarce input `ash_feather`.
+- **Art** (ART): the lit brewing stand only glows; the jeweller's bench
+  and the brewing stand keep metal dig sounds and `cracky`.
+- **The step** (MS): the drop at the feet runs before a map reset's
+  relocation (only a release crossing a map reset and 0.45.0 together,
+  which the declaration does not allow today); a nil from `core.add_item`
+  would hold the character at every join (safe; a SEVERE line).
 
 ### Audit 2026-10 open questions
 
@@ -1704,7 +1823,9 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
 - **DI-14** — spellbooks need Journeyman mastery (level 16+) at every tier
   (the T5 32-slot bags Master, level 46+), so the T1 spellbook is out of
   reach in the T1 band (levels 1–10) and counts only from level 16 for a
-  Tailor still at profession tier 1: keep the gate? ([item docs](docs/audit-2026-10/docs/05-design-items.md))
+  Tailor still at profession tier 1: keep the gate? **Decided 2026-10-08,
+  done in Round 45:** the mastery bands go (round45-plan ruling 7).
+  ([item docs](docs/audit-2026-10/docs/05-design-items.md))
 - **DI-17** — station recipes belong to one profession each, so only the
   Weaponsmith crafts a Forge: may the Armorsmith craft one too?
   ([item docs](docs/audit-2026-10/docs/05-design-items.md))
@@ -1712,7 +1833,8 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
   Alchemy-gated, only the wild source is: intended? ([item docs](docs/audit-2026-10/docs/05-design-items.md))
 - **D3 / mastery bands** — the mastery bands (character level 16 / 31 /
   46, bags and spellbooks only) beside the six profession tiers: keep them
-  or make them profession tiers? (from the archived
+  or make them profession tiers? **Decided 2026-10-08, done in Round 45:**
+  removed; the profession tier equals the item tier for everything. (from the archived
   [findings](docs/archive/maintenance/findings.md); [item docs](docs/audit-2026-10/docs/05-design-items.md))
 - **DI-10** — is a "found gear versus crafted demand" audit still wanted
   after WP5, or does the sentence go? ([item docs](docs/audit-2026-10/docs/05-design-items.md))
@@ -1737,7 +1859,9 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
 - **CORE-03** — switching off the atmosphere (a graphics fallback) also
   mutes the ambience beds: keep the beds then? ([core code](docs/audit-2026-10/code/06-core-hud-ambience.md))
 - **ITM-16 / fuels** — furnaces burn only coal, charcoal and logs, the
-  brewing stand the engine fuels (planks yes, charcoal no): intended?
+  brewing stand the engine fuels (planks yes, charcoal no): intended? The
+  brewing stand takes no fuel since Round 45 (no automatic brewing); the
+  furnace half stays open.
   ([item code](docs/audit-2026-10/code/09-items.md))
 - **Fishing rod** — all other gear breaks and is repaired, the rod breaks
   and disappears: intended? ([item code](docs/audit-2026-10/code/09-items.md))
@@ -1901,6 +2025,12 @@ trinkets drop from mobs (Round 33); royal guards and other encounter adds
 drop no gear by design (Round 34 ruling 7).
 
 ### Seed-dependent POI placement (user, 2026-10-03; optional, set aside)
+
+**Taken up again by the user (2026-10-09) for Round 46:** random seeds can
+still fail at load ("river covers the core of POI", e.g. seed
+8507030740356938342); the long-term fix is POI placement adapted to the
+roads and rivers instead of fixed anchors. The record below is the earlier
+state.
 
 Set aside by the user (2026-10-03): optional, not planned for now; POIs and
 the fortresses stay at their fixed positions. Confirmed by the user

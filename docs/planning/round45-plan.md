@@ -4,8 +4,8 @@ Coordinator: Claude (Opus 5.5), drafted 2026-10-08. This round builds
 **Round B** of the [UI and crafting rework plan](ui-crafting-rework-plan.md)
 ("the spec" below; its §2 rulings 16–34, §4 and §6 are this round's design).
 Layout: wireframe v1 (<https://claude.ai/artifact/8XM4hJggJyJSpuigRyg9jJ>),
-the Crafting artboard. Status: **draft**, waits for the user's go after
-Round 44 is complete.
+the Crafting artboard. Status: **complete** (2026-10-09, version 0.45.0,
+**migrate**; [completion](#completion-2026-10-09)).
 
 The 3×3 grid and the recipe books go. Recipes become ingredient lists in
 five areas (Basic, Cooking, two primaries, Alchemy); every craft is a timed
@@ -332,3 +332,559 @@ GUI checklist (desktop and web):
 None. The plan review's questions were answered on 2026-10-08 (rulings
 5–8). Measured during the round and reported: how many grid routes convert
 automatically and which need hand edits (RG).
+
+## Completion (2026-10-09)
+
+Every lane is merged on main; this lane D (this section and the status
+owners) follows MS on main `4a892fd6`. Main's first-parent line from
+Round 44 with hotfix 0.43.1 (`c913dbbe`): IL (`73a5806f`), RG
+(`a86098ad`), JB (`0b7b1331`), ST (`0dd375b8`), UI (`ca9cd103`), EU
+(`2f918739`), then the playtest phase: PT1 (`d57ec82f`), PT9 (`8d32c84c`,
+follow-up `a39b22ee`), PT7 (`0bee63b9`), PT6 (`1b51a9bb`, follow-ups
+`c887d1b7` and `bff2d5b9`), PT3 (`b9ff54b8`, its review Low `570ed6b1`),
+PT8 (`02f27c39`, follow-up `716dc58e`), PT2 (`6751b892`, follow-up
+`74f78ece`), PT5 (`66381441`), ART (`5ed74763`), and MS (`4a892fd6`).
+**Push:** the user pushed `2f918739` (Round 45 up to EU, still labelled
+0.44.0) on 2026-10-09; no realm runs it, the production server is on
+0.41.0. **0.45.0 is pushed on the user's word (2026-10-09) after the
+round-end gates, as the merge commit of lane D.** It is the second release
+with a declared
+step: production moves 0.41.0 → 0.45.0 in one tool run that applies 0.44.0
+and 0.45.0 (MS tested this chain).
+
+Reviews, each by an independent Opus, every fix made by the lane itself
+before its merge:
+
+- **IL** MERGE; the follow-ups (the wood and stone gear sentence in
+  `items_crafting.md`, the stale `TIERS[].ilvl` kept with a comment)
+  fixed (`ef6ae6f2`).
+- **RG** MERGE; one Low (the items probe read Basic records as profession
+  routes), fixed (`c0a653e2`); the retired-fixture list added to the
+  report.
+- **JB** MERGE; three Lows (a nested rebuild during completion, a job of an
+  unknown kind dropping its target, `begin_job` over a running job),
+  fixed (`143154ff`).
+- **ST** MERGE with one Medium for the user (start towns lost their only
+  repair point); the user's answer, the repair-only NPC on the former
+  Cooking sockets, reviewed MERGE (`e093683a`).
+- **UI** MERGE AFTER FIXES; one Medium (a crafted client could stall the
+  server through the field trim), fixed (`6d56495e`); one Low (the bar
+  restarts at its last sent frame on reopen) accepted by the user; the
+  delta MERGE.
+- **EU** MERGE; two Lows (the target slot's allow callback ended the chain,
+  an item left in Target), fixed (`78534db3`).
+- **PT2** MERGE; the delta (7 rows) MERGE AFTER FIXES with one Low/Medium
+  (a draft Claim Stone status ran into the Cloak label), fixed
+  (`7c0671a1`).
+- **PT3** MERGE; one Low (a stale sentence in `inventory_equipment.md`
+  §4), fixed on main (`570ed6b1`).
+- **PT5** MERGE AFTER FIXES; one Medium (shift-click from `main` on the
+  Crafting tab moved items into bag 1), fixed (`c866bcfe`).
+- **PT6** MERGE; the first follow-up MERGE AFTER FIXES with one Medium (a
+  fall into a shallow pool could kill, depending on step timing), fixed
+  (`db13ee78`); its two Lows (lava one node deep, a mid-air summon
+  cancelling fall damage) became the user's decisions, built in
+  `8007f6e2` and checked by the coordinator.
+- **PT7** MERGE, no finding. **PT8** MERGE; one Low (a start between a
+  sound's end and its queued replay played twice), fixed (`68452353`).
+  **PT9** MERGE; one Low (a blocked arrival reported as unreachable),
+  fixed (`61385b3d`); the follow-up MERGE.
+- **MS** MERGE; two Lows (step 0.45.0's own writes untested on
+  PostgreSQL, no station-enchanted, upgraded or crowned weapon in the
+  tests), closed by tests (`c8219677`); the delta (`craftresult`, the
+  chain) MERGE.
+- PT1 (layout only) and ART (the user's picks on review pages) merged
+  without a separate review; PT4 was research only.
+
+Main has 152 portable fixtures (13 new: `r45_il`, `r45_rg`, `r45_jb`,
+`r45_st`, `r45_ui`, `r45_eu`, `r45_pt5` … `r45_pt9`, `r45_art`,
+`r45_ms`). The lanes' own gates are in their reports (each lane's full
+fixture run, `check_fresh_server.py`, a smoke boot); MS's full run
+151/152 (`r37_dc` red until this lane's CHANGELOG entry), its step test
+64/64 (13 on PostgreSQL), `r44_ms` 32/32 with the chain checks, lane IT's
+suite 59/59. This lane: `tools/r37_dc` PASS, `check_upgrade.py` PASS
+(0.45.0 against origin/main `2f918739`), `check_fresh_server.py` PASS.
+No seed fleet: no world generation changed.
+
+**Round-end gates on the final branch** (`r45-d` at `5d175be6`,
+coordinator, 2026-10-09): full `run_fixtures.sh` 152/152 PASS,
+`check_upgrade.py` PASS (0.45.0 against origin/main `2f918739`),
+`check_fresh_server.py` PASS, headless smoke boot PASS. Lane D's review:
+MERGE AFTER FIXES (Lows and nits only), fixed.
+
+`mods/` +5,049 −4,962 lines this round (162 files); no new mod; removed
+from `grug_jobs`: `stations.lua`, `discovery.lua`, `basics_routes.lua`,
+`basics_presentation.lua`.
+
+### Shipped, by lane
+
+Numbers are comparisons on the lanes' harnesses, never targets.
+
+- **IL, the item level ladder** (`73a5806f`;
+  [item_tiers.md](../design/item_tiers.md)): `grug_gear.BRACKETS` base
+  item levels 1/11/21/31/41/51 with a cap of 10 × tier; the requirement is
+  the item level from level 1, capped at 60, without the first-bracket
+  exception (`grug_gear.required_level`); trinkets on the same ladder.
+  New items, old → new: T1 item level 3 → 1 (one-hand damage 5 → 4,
+  metal set 8 → 6), T2 10 → 11, … T6 50 → 51; damage from T2 up
+  unchanged. `item_tiers.md` regenerated; income check unchanged (crown
+  fee 1g 48s). Fixture 92 checks.
+- **RG, the recipe registry** (`a86098ad`;
+  [professions.md §1.2](../design/professions.md#12-recipe-areas-round-45)):
+  one record model (`grug_jobs/registry.lua`) with queries by area, id and
+  output; 620 grid routes converted (231 Basic rows and 171 loop-made rows
+  generated, 15 mirrored duplicates merged, 138 gear routes → 132
+  profession records, 64 profession grid recipes in place; hand edits: 15
+  dye tokens, the written-book copy dropped); registry 174 → 662 records;
+  the grid, books, discovery, mastery bands and the engine craft path
+  removed, `craft` sized 0 at every join; every consumer on the registry
+  (vendor prices: 392 payouts identical, the smelting and materials
+  audits); durations per spec §2.30 plus intermediates 1 s, station nodes
+  1 s, bags 3 s; engine grid routes 621 → 332 (unreachable data); 15
+  crafting fixtures adapted or retired. Crafting page 1,148 → 188 B (the
+  stub until UI).
+- **JB, jobs** (`0b7b1331`;
+  [inventory_equipment.md §4](../design/inventory_equipment.md#4-crafting-model-round-45)):
+  `grug_jobs/jobs.lua`: one job per player in one meta key; start checks
+  (station within 4 nodes, output room, ingredients), consumption from the
+  bags, `main[9..]`, then the hotbar, plain stacks only; completion by
+  `core.after` for online players, caught up at login and on opening the
+  tab; gear through `crafted_output`; XP per job capped by the tier, a
+  saturated tier advancing at the end; achievements count the job's items;
+  the feed line; cancel with a dry-run fit check; the 4-slot output area
+  `grug_craft_out` with Take all. Per job two meta writes, the output list
+  sent once, no globalstep. Fixture 169 checks.
+- **ST, stations, cooking, alchemy** (`0dd375b8`;
+  [professions.md](../design/professions.md),
+  [durability_repair.md](../design/durability_repair.md)): the forge, the
+  four benches and the brewing stand are proximity stations without a
+  dialog (the dig and blast refund of old contents kept, a lit stand goes
+  out at its node timer); furnaces keep their dialog; claim repair only at
+  player-placed furnaces and dual furnaces; Cooking learned at T1 at every
+  join; the 12 Cooking trainer sockets hold **Grudge-Free Repairs**
+  (repair only, no map icon); 40 alchemy recipes make finished potions at
+  the stand (2 s), the automatic brewing and the `grug_brewing` adapter
+  gone, the 40 mixtures inert ("No longer used"); the 163 item objectives
+  unaffected. Fixture 459 checks.
+- **UI, the Crafting tab** (`ca9cd103`;
+  [inventory_equipment.md §4](../design/inventory_equipment.md#4-crafting-model-round-45)):
+  area tabs with tier progress, the list (10 a page, search at most once a
+  second, Craftable only, ×N from one inventory pass), the crafting box
+  (have/need, Max, the quantity rules, the XP hint, the station hint with a
+  greyed but clickable button), the output area with the progress bar
+  (66 × 672, 96 frames, `frame_start` on every build) and Stop; the
+  professions overview moved here from the Character tab; Help and
+  trainer texts rewritten. Bytes (content / page): old page 1,148 / 2,128
+  and the old Basics book 9,208; Basic page 1 3,235 / 4,215, a recipe
+  chosen 3,875 / 4,855, Weaponsmith 3,968 / 4,948, during a job 3,842 /
+  4,822. Sends per job: start 1, end 1 (only on Crafting), cancel 1; none
+  on a scrollbar event or a throttled search. Basic lists 402 recipes (41
+  pages). Fixture 232 checks.
+- **EU, enchants and upgrades** (`2f918739`;
+  [item_tiers.md](../design/item_tiers.md),
+  [inventory_equipment.md §4](../design/inventory_equipment.md#4-crafting-model-round-45)):
+  "Enchant an item" and "Upgrade an item" in learned primary areas, a
+  target slot `grug_craft_target`, the preview (`image[]` plus the
+  computed tooltip), the list of valid enchants up to the profession tier,
+  5 s, cancel returning the exact item; "+N levels" with Max to 10 × the
+  item's tier (and the materials), one own material per level and a Stick
+  for weapons, 1 s per level, no XP, the warning and the yellow "Upgrade
+  anyway", "Already at the cap"; the target handed back at join and on
+  unlearn; the grid operation functions removed. Bytes (box / page):
+  recipe 569 / 3,230, enchant 32 rows 2,445 / 5,075, 72 rows 3,466 /
+  6,061, upgrade 1,189 / 3,819; one send more per slot placement and list
+  click. Fixture 937 checks.
+- **PT1, the Inventory tab layout** (`d57ec82f`): a box per area with its
+  label inside, aligned slots, a draggable scrollbar handle (the thumb is
+  the visible share of the rows). Inventory 2,004 → 2,221 B.
+- **PT2, inventory and Character** (`6751b892`, `74f78ece`;
+  [inventory_equipment.md §1](../design/inventory_equipment.md#1-the-inventory-window-the-i-key)):
+  the money row (Money and the balance, Withdraw, the deposit slot, Sort)
+  between the grid and the hotbar, the Coins box gone; Character's 3D and
+  Stats merged into one Stats mode (three modes), the cloak hint a
+  tooltip; the boxed short view on every tab with the hotbar at one place;
+  7 inventory rows in today's window size (13.5 × 13.673); the Skills box
+  on Talents. Inventory 2,221 → 2,241 B and Crafting 4,076 → 4,142 (the
+  7-row follow-up); Character Stats 5,076 → 5,126 and Talents 6,264 →
+  6,381 (measured on PT2's first, 8-row version).
+- **PT3, the crafting box** (`b9ff54b8`): three areas (top; the
+  description, ingredients, Max and notes; the quantity row and Craft
+  now), the description exact for crafted gear and the cooked dish plus
+  "Must be cooked in a furnace to become edible." for raw dishes; bordered
+  Enchant/Upgrade buttons; profession areas list recipes only up to the
+  profession tier. Sword box 569 → 829 B; Weaponsmith page 4,948 → 4,575.
+  The review's probe built all 662 recipes: 206 gear descriptions equal
+  the job's result, no overflow.
+- **PT5, the shift-click inbox** (`66381441`;
+  [inventory_equipment.md §3](../design/inventory_equipment.md#3-bags-classic-mmo-model-lott-implementation-pattern)):
+  a hidden one-slot list `grug_inbox` as the ring target of chests,
+  furnaces, the bookshelf, vessels, creative and our pages (vendored ones
+  with GRUG PATCH): it takes what fits in the give order (`main[9..]`, the
+  bags, the hotbar), also with `main` full; "No room in your inventory."
+  otherwise; bag rings on Crafting and creative; the creative page no
+  longer deletes a shift-clicked stack. Crafting +35 B, enchant box +70,
+  furnace +105, +84 per equipped bag. Fixture 147 checks.
+- **PT6, mounts** (`1b51a9bb`, `c887d1b7`, `bff2d5b9`;
+  [mounts.md](../design/mounts.md), [boats.md](../design/boats.md)): the
+  mount and the boat hull visible in first person (`forced_visible`); ride
+  sounds from the mount's step (paused after 0.5 s in the air, cut on
+  standing still and every dismount; `grug_sounds.stop`); fall damage for
+  riders of ground mounts by the engine's formula on the drop height (6
+  nodes 1 native HP, 10 nodes 6; the hit dismounts); any liquid ends a
+  ride ("Mounts cannot enter water." / "… lava."); no mount summoned in
+  water, from a boat or in lava; ground mounts only on solid ground.
+  Fixture 118 checks.
+- **PT7, mobs** (`0bee63b9`;
+  [biomes_mobs.md](../design/biomes_mobs.md)): air fliers keep their fly
+  clip while flying (a wrapper on the prototype, no vendored change);
+  shore crabs stepheight 1 → 1.1 (the engine's step-up is strict); night
+  mobs stay at dawn while a player is within 64 nodes on every axis
+  (before a 32-node sphere). Fixture 95 checks.
+- **PT8, station sounds** (`02f27c39`, `716dc58e`;
+  [sound.md §3.2](../design/sound.md#32-events-that-sound)): a job start
+  plays the station's cue at the nearest station (the forge's 1.5 s
+  hammer, the brewing stand's 1.8 s alchemy cue), at most one queued
+  behind a playing one; the job's end cue moved to the start; the idle 10 s
+  forge loop and its file (78 kB) removed. Fixture 61 checks.
+- **PT9, the Claim Stone as a waypoint** (`8d32c84c`, `a39b22ee`;
+  [home_travel.md](../design/home_travel.md),
+  [housing.md](../design/housing.md)): every waystone list ends with
+  "Your Claim Stone" (Travel from activation, "No claim stone" otherwise),
+  free and without cooldown, landing on the stone's arrival cube; a
+  Waypoints tab on the owner's activated stone; the map and minimap marker
+  shows the stone's own texture (the home marker wins). Fixture 44 checks.
+- **ART, the user's art picks** (`5ed74763`;
+  [tools/r45_a1](../../tools/r45_a1/README.md),
+  [tools/r45_a2](../../tools/r45_a2/README.md)): 36 jewellery icons, one
+  per identity and tier (manawell A, last_light A, battlebeat B,
+  apothecary_loop B, mercy_seal A, reclaimers_mark C); new node boxes and
+  tiles for the tanning rack (B), tailor bench (B), carving bench (B),
+  jeweller's bench (A) and brewing stand (B); the forge unchanged; the
+  loom and the old brewing textures removed. CC0, by GPT-6 Astra,
+  generators committed. Fixture 280 checks.
+- **MS, the migration step** (`4a892fd6`;
+  [upgrade contract §5.8](../technical/upgrade-contract.md#58-the-declared-steps)):
+  `tools/migration/steps/v0_45_0.py`, for every character: mixtures
+  deleted from every list; the `craft` grid and `craftresult` moved into
+  empty slots of `main[9..]`, the bags, then the hotbar (`craft` stored
+  with size 0 when empty); every 0.44 gear stack without an item level
+  pinned at its 0.44 item level and requirement (frozen table of 156
+  items); `craftpreview` emptied, `grug_jobs:seen_items` deleted; the
+  marker on every character. Its join handler hands leftovers out (give
+  helper, output area, feet), refreshes first-tier weapon damage
+  (`grug_items.refresh_capabilities`) and rebuilds descriptions.
+  `game.conf`, `upgrade.json` and `grug_core.migrations` at 0.45.0.
+  `tools/r45_ms/run.sh`: 7 unit tests, end to end 64/64 (a 0.44.0 world
+  from a `git archive` of `c913dbbe`, SQLite and PostgreSQL); the chain
+  0.43.0 → 0.45.0 and 0.41.0 → 0.45.0 in `tools/r44_ms`. Real-run counts:
+  3 characters, 2 player meta, 3 inventories, 3 markers.
+- **D, this lane:** this completion, the spec's status line and its
+  amendments, the CHANGELOG entry, STATUS, the AGENTS pointer, ROADMAP,
+  BACKLOG, README and the `tools/README.md` lines for the playtest and art
+  folders.
+
+### Upgrade classification and the declaration
+
+| Lane | Outcome | Reason |
+|---|---|---|
+| IL | **migrate** | unmodified saved gear reads a new item level, requirement and stats; MS pins the old values |
+| RG | **migrate** | the `craft` list is never shown or read again; MS empties it |
+| JB | compatible | a new meta key and a new list made at join |
+| ST | **migrate** | the mixtures are deleted (ruling 2); Cooking at join only adds keys, the trainer mapping is runtime |
+| UI | compatible | context state, one texture, texts |
+| EU | compatible | a new list made at join and two job kinds; enchanted, upgraded and crowned items keep their meta |
+| PT1–PT3, PT5–PT9 | compatible | layout, runtime and live-derived state only; PT5's inbox is a new empty list |
+| ART | compatible | looks only; node and item names unchanged |
+| MS | **migrate** | the step 0.45.0 for IL, RG and ST |
+| D | compatible | docs |
+
+The round's declaration:
+`{"schema": 2, "version": "0.45.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`.
+A 0.44.0 world needs the tool once (stop, back up,
+`python3 tools/migrate.py --world <dir>`, start); a 0.41.0 or 0.43.0 world
+gets 0.44.0 and 0.45.0 in the same run. Unmigrated, the start guard
+refuses it and names the due steps and the command. No map reset.
+
+### Decisions during the round
+
+The user (2026-10-08 and 2026-10-09), on the lanes' questions:
+
+- **Wave 1:** the weaker new T1 items accepted (the ruled curve); RG's
+  durations kept (intermediates 1 s, station nodes 1 s, bags 3 s); the
+  332 unreachable engine grid recipes stay as data; the T1 damage refresh
+  is MS's; `grug_materials/registry.lua` `TIERS[].ilvl` stays (pinned
+  mapgen projection).
+- **JB:** a job of an unlearned profession still counts toward the craft
+  achievements; a job finished offline plays its end sound and feed line
+  at login.
+- **ST:** claim repair only at player-placed furnaces and dual furnaces
+  for now; old lit brewing stands go out at their node timer; the 12
+  former Cooking trainer sockets hold a repair-only NPC titled
+  **"Grudge-Free Repairs"** (the user's name, the same everywhere); no
+  crafting-table repair station (repairs stay scarce so players meet).
+- **UI:** Craftable only also needs the profession tier; the greyed button
+  stays clickable; a throttled search is ignored; the grey XP hint at T6
+  and a full tier; the lane's labels; the bar restarts at its last sent
+  frame when the window is reopened.
+- **EU:** the entry buttons below the list; the Target item handed back at
+  join and on unlearn; the enchant list hides tiers above the profession
+  tier; Max is limited by the materials too; "set gem" is the Goldsmith's
+  Setting; three signatures (Campaign Purse, Scarred and Blighted Bear
+  Claw) lose every use; "Upgrading…"; upgrades give no XP and do not count
+  toward the craft achievements.
+- **Playtest:** the Inventory tab's boxed layout and money row (balance,
+  Withdraw, deposit slot, Sort); one Character "Stats" mode (3D and Stats
+  merged); the boxed short view everywhere; **7 inventory rows in
+  today's window size**; the crafting box in three areas with item
+  descriptions, bordered Enchant/Upgrade buttons, **recipes above the
+  profession tier hidden (corrects spec §2.33)**; the shift-click inbox
+  (into `main` and the bags, as its own list); mounts visible in first
+  person (boats too), ride sounds stopping in the air, when standing and
+  at a dismount, fall damage for riders of ground mounts as on foot (any
+  hit dismounts), any liquid (water and lava) ends a ride, ground mounts
+  summoned only on solid ground; flying mobs keep their fly clip in the
+  air, crabs climb one-node steps, night mobs stay at dawn while a player
+  is within 64 nodes (cube); station sounds only when a player starts a
+  job (queued at most once, at the job's start; the 10 s forge loop
+  removed); the activated Claim Stone a normal waypoint for its owner both
+  ways ("Your Claim Stone" last in the waystone list, a "Waypoints" tab on
+  the stone, its own texture as marker, "No claim stone" otherwise); art
+  picks: stations tanning B, tailor B, carving B, jeweller A, brewing B;
+  jewellery manawell A, last_light A, battlebeat B, apothecary_loop B,
+  mercy_seal A, reclaimers_mark C (GPT-6 Astra).
+- **PT9's consequence accepted:** told that a Claim Stone which is the
+  travel home is then reachable from any waystone for free and without
+  the Return home cooldown, the user kept the stone a normal waypoint
+  both ways.
+- **MS:** `craftresult` is part of the craft move; the push of
+  `2f918739` needs nothing (no realm ran it).
+- **Next round (46):** the waiting point for players in creation stasis
+  (spec ready); the map and minimap icon for Grudge-Free Repairs (new art,
+  the user's pick); POI placement adapted to roads and rivers for the
+  random-seed load failures (BACKLOG).
+
+### Deviations from the plan
+
+- **The playtest phase (ruling 4) grew into nine fix lanes and two art
+  lanes** on the user's findings, decided live in chat: PT1–PT3 and
+  PT5–PT9 (PT4 was research only, which led to PT5), and A1/A2 (GPT-6
+  Astra, merged as ART after the user's picks). Several had follow-ups
+  after the user's answers (PT2, PT6 twice, PT8, PT9). They touched more
+  than crafting: the inventory window, mounts, mobs, sounds and the Claim
+  Stone.
+- **Spec §2.33 corrected:** profession areas list recipes only up to the
+  profession tier (PT3, the user); Basic still lists all.
+- **Spec §2.26 "Max always fills to the cap":** Max stops at what the
+  materials pay for too (EU, the user).
+- **§4.5 "ordinary NPCs":** after ST's review Medium (start towns lost
+  their only repair point), the former Cooking trainers answer as the
+  repair-only Grudge-Free Repairs.
+- **Spec §6 "no new game code" for the pin:** unmodified T1 weapons read
+  their damage from the definition, so MS added
+  `grug_items.refresh_capabilities` and runs it in the join handler; the
+  pin covers every list, and offline the craft move fills only empty slots
+  (the tool cannot read `stack_max`), leftovers at the join (ruling 6).
+  `craftresult` joined the move (the user).
+- **§4.7 "a worktree":** MS built the 0.44.0 world from a `git archive`
+  of `c913dbbe`, as in Round 44.
+- **§6 checklist "the bar continues":** a reopened window shows the bar
+  from its last send (accepted; no per-tick sends).
+- **The wireframe** had no entry point for enchants and upgrades; EU put
+  buttons below the list (accepted).
+- **A mid-round push:** the user pushed `2f918739` (IL–EU, labelled
+  0.44.0) before PT and MS; no realm runs it.
+- **§4.2 "about 31 tool folders":** 37 name `grug_jobs`, 15 test
+  crafting.
+- **§7 file lists:** lanes touched shared files outside their lists, each
+  named in its report: ST's repair provider and `start_npcs.lua`, EU's
+  unlearn hand-back in `state.lua`, PT2's `grug_skills/page.lua`, PT3's
+  Help sentence, PT6's `grug_sounds`, PT8's `grug_sounds` and
+  `grug_ambience`, PT2's and PT5's edits in `grug_jobs` page files.
+- **Estimates** (§1, unmeasured) were not tracked.
+
+### Open notes
+
+The reviews' and reports' backlog notes are in the
+[BACKLOG](../../BACKLOG.md#round-45-carry-overs) (theoretical, no
+severity, and the user's Round 46 items). Recommendations kept as built
+unless the user says otherwise at the GUI test: a raw dish's text keeps
+the cooked dish's "Hold RMB … to eat" line before the furnace note (PT3);
+the lit brewing stand looks like the unlit one and only glows, the
+jeweller's bench and the brewing stand keep metal dig sounds (ART); the
+four benches have no job sound (PT8; a new sound needs a listening page);
+the Wisp and swimmers keep their clips (PT7). `grug_materials/registry.lua`
+`TIERS[].ilvl` (3/10/…/50, unread) and the stale comment in
+`grug_mapgen/wp40/r7_loader.lua:46-47` wait for the next real mapgen
+change, since an edit there changes the pinned projection or the
+world-layout cache.
+
+### GUI checklist
+
+Plan §6, desktop (GUI scale 1 and 2, and a 720p screen) and the web build
+(about 1280 × 720); on a copy of the production world (0.41) or a 0.44
+world migrated with the tool, and on a fresh world.
+
+**Migration (first):**
+
+1. Start the old world under 0.45.0 without the tool: refused; the message
+   names the due steps and the command line.
+2. Server stopped, on a copy: `python3 tools/migrate.py --world <copy>
+   --check` (from 0.41.0: 0.44.0 and 0.45.0 due; from 0.44.0: 0.45.0),
+   then without `--check`, then start.
+3. Join: equipped gear stays equipped and the armour value is unchanged;
+   tooltips show the old level ("Item level 3" on a Bronze Sword, which
+   still deals 5; "Requires level 10" on Iron pieces); craft-grid items are
+   in `main`, the bags or the hotbar, else in the Crafting output area,
+   else at your feet; no "Prepared … Mixture" left; crafted, enchanted,
+   upgraded and crowned items unchanged; Cooking known at T1 (a higher tier
+   kept).
+
+**Inventory window:**
+
+4. Inventory: a box per area with its label inside, 7 rows, the window as
+   large as before; with four bags the scrollbar handle drags.
+5. The money row: Money and the balance, Withdraw (opens its dialog and
+   returns), the deposit slot, Sort ending with the last hotbar slot; the
+   balance updates; a balance of 100000g or more beside Withdraw.
+6. Switch tabs: the hotbar stays at one place; the short view is boxed on
+   Character, Crafting and Talents & Skills.
+7. Character: three modes. Stats shows the model left, the stats and the
+   Claim Stone status right, the Cloak dropdown at the bottom with its
+   hint as a tooltip; a draft Claim Stone's four-line status stays clear of
+   the Cloak label; no balance or Withdraw here.
+8. Talents & Skills: the Skills box above the short view; the hint beside
+   "Skills" readable in a small web window; dragging skills to and from the
+   hotbar works.
+9. Shift-click: from a chest with `main` full and a bag equipped → the
+   bag; a partial fit leaves the rest in the chest; everything full → "No
+   room in your inventory." and nothing moves. Creative → `main[9..]` with
+   the hotbar free, the creative stack stays; on the creative page a
+   shift-click from the hotbar, `main` or a bag deletes nothing. Furnace
+   lists, the Crafting output area and the target slot → the inventory;
+   from `main` still into the chest, the furnace input or the target slot.
+   On Crafting with a bag: from `main` nothing moves (recipe box); with
+   Enchant/Upgrade open, gear from a bag goes into the target slot.
+
+**Crafting tab:**
+
+10. Areas Basic (default), Cooking, two primaries and Alchemy with tier
+    progress; profession areas list only recipes up to your tier, Basic
+    everything; 10 a page with "Page x of y"; search, Craftable only and
+    ×N right; a clipped long name shows its tooltip.
+11. The box in three areas: a T1 sword shows its stats and no quantity
+    row; the raw stew pot shows the stew's text and the furnace note; a
+    long text scrolls; the quantity row sits right above Craft now. A
+    Basic craft of 1 and of 20 with Max; above the maximum the field drops
+    and the note shows. The XP hint green, and grey at T6 or a full tier.
+12. Away from the forge: "Requires: Forge nearby" and a greyed button that
+    still answers a click; at the forge Craft now works. A weapon from the
+    Weaponsmith at its tier's base item level; no gear in Basic. The
+    professions overview sits in the box; Character has no Professions
+    mode.
+13. A job: start, close and reopen the window (the bar shows its last sent
+    frame, right again after a click or at the end); log out and in (the
+    job finished or continues; a finished one plays its sound and feed
+    line at login); the HUD line "… is ready"; Stop with and without room;
+    the output area full, partly full, Take all into the bags when `main`
+    is full.
+
+**Enchants and upgrades:**
+
+14. Weaponsmith: "Enchant an item" looks like a button (gold while open);
+    a steel sword in Target lists the enchants T3–T1 (up to your tier) with
+    their values; the preview tooltip equals the result after 5 s
+    "Enchanting…"; Cancel returns the sword; away from the forge the
+    button is greyed; shift-click reaches the slot.
+15. Upgrade: Max → +9 and "Result: item level 30 (cap)" (fewer with too few
+    materials); "Upgrading…" while it runs; above your level the warning,
+    then a yellow "Upgrade anyway" and the second click starts; at 30 or on
+    a crowned item "Already at the cap"; a T2 smith on a T3 item:
+    "Weaponsmith tier 3 required."
+16. An item left in Target is back in the inventory after a relog and
+    after unlearning the profession.
+
+**Stations, cooking, alchemy, repair:**
+
+17. The forge, the four benches and the brewing stand open no window; a
+    furnace still does, without a book button, and inside your claim shows
+    Repair; dig an old player-placed bench or brewing stand: its contents
+    drop; an old lit brewing stand goes out.
+18. Cooking without a trainer; a good dish finished in the furnace; a
+    potion at the brewing stand takes 2 s, away from it "Requires: Brewing
+    Stand nearby"; an old mixture shows "No longer used".
+19. Grudge-Free Repairs in every start town and capital: only the repair
+    form, no trainer dialog, no map or minimap icon, the other faction
+    refused; Help names it.
+    A profession trainer's hint names the Crafting tab and the station.
+20. The new stations (tanning rack, tailor bench, carving bench,
+    jeweller's bench, brewing stand) from front and back; the selection
+    outline follows the shape; dig one of your own: it comes back as the
+    station item; the forge unchanged. Trinkets T1–T6 show
+    distinct jewellery in the inventory, the equipment slots and the web
+    inventory; the Goldsmith's product display.
+21. Sounds: an idle capital forge is silent; a Weaponsmith job start plays
+    one hammer cue at the forge and none at the end; two players starting
+    within 1.5 s hear two cues back to back, a third adds nothing; an
+    alchemy job sounds at the stand when it starts; an upgrade hammers at
+    the start and chimes at the end; a burning furnace keeps its fire
+    loop.
+
+**Item levels:**
+
+22. A new character's starter weapon reads "Item level 1" without
+    "Requires level"; an Iron piece needs level 11; a T3 trinket reads
+    "Item level 21, Requires level 21".
+
+**Mounts and mobs:**
+
+23. First person on a horse, a race mount, an eagle and a bat: the head or
+    body shows looking ahead or down (in the way?); the boat hull shows;
+    third person unchanged.
+24. The gallop stops when W is released, goes quiet in a jump and resumes
+    on landing, keeps going downhill, ends at a dismount; a hovering flyer
+    and a dismount stop the wing beats.
+25. A ledge of about 6 nodes on a horse: a small hit and thrown off; 5
+    nodes or a jump: nothing; a high fall into deep water: no damage.
+26. Riding into a river or the sea (a thin flowing film too) dismounts
+    with "Mounts cannot enter water."; flying low over water goes on,
+    diving in dismounts; lava one node deep dismounts with the lava note
+    and lava damage; a mount refused in water, from a boat and in lava; a
+    ground mount refused mid-air, a flyer allowed; on the ground it works.
+27. A parrot or crow hovering, fleeing or fighting beats its wings; a crab
+    climbs a one-node step, also when chasing; at dawn night mobs within
+    64 nodes on every axis stay, farther away they leave (and an idle
+    player keeps them all day: watch).
+
+**Claim Stone:**
+
+28. A waystone's list ends with "Your Claim Stone — No claim stone"
+    without a stone and with a draft; after activating: Travel and a map
+    and minimap marker in the stone's look; travel lands on the stone, the
+    Return home cooldown unchanged; an unfuelled stone still works; as the
+    travel home only the home marker shows; a block on the stone: "Your
+    Claim Stone's arrival is blocked."; another player sees "No claim
+    stone".
+29. The activated stone's form has two tabs; Waypoints lists your
+    discovered waystones; Travel arrives beside the waystone and closes
+    the form; about 9 nodes away: "Stand at your Claim Stone to travel."
+    in red; a draft has no tabs.
+
+**Web build:**
+
+30. At about 1280 × 720: the Crafting tab, the enchant box with its
+    warning line, the money row, the Talents hint; nothing clipped.
+
+### For the platform
+
+0.45.0 declares its step `0.45.0` under the Round 43 tool and interface
+unchanged ([tools/README.md](../../tools/README.md#the-migration-tool)).
+The production world (0.41.0, no record) needs one run of
+`python3 tools/migrate.py --world <dir>` from a full export of the 0.45.0
+commit; it applies 0.44.0, then 0.45.0 (events `start`, `step_start`
+`{0.44.0, from 0.41.0}` and `{0.45.0, from 0.44.0}`, each `step_done`
+with its counts, `done`). Step 0.45.0 writes the inventories and player
+meta of every character that needs it and a marker on every character; its
+online work runs at each character's next join (craft leftovers, the T1
+damage refresh, descriptions). No map part. Tested end to end on SQLite,
+on PostgreSQL (all three backends and the platform's layout, every row
+equal to the SQLite result) and as the chain from a record-less copy.
