@@ -3,6 +3,8 @@ default.chest = {}
 -- support for MT game translation.
 local S = default.get_translator
 
+-- GRUG PATCH: shift-click goes to the inbox (grug_inventory/inbox.lua):
+-- main[9..] and the bags.
 function default.chest.get_chest_formspec(pos)
 	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
 	local formspec =
@@ -11,6 +13,7 @@ function default.chest.get_chest_formspec(pos)
 		"list[current_player;main;0,4.85;8,1;]" ..
 		"list[current_player;main;0,6.08;8,3;8]" ..
 		"listring[nodemeta:" .. spos .. ";main]" ..
+		"listring[current_player;grug_inbox]" ..
 		"listring[current_player;main]" ..
 		default.get_hotbar_bg(0,4.85)
 	return formspec

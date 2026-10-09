@@ -103,10 +103,12 @@ local function slot(fs, x, label)
 end
 
 -- Shift-click moves an item of `main` into the slot and back: the ring
--- keeps UI's output → main first (the first occurrence of a list decides
--- where a shift-click goes).
-local RING = ("listring[current_player;%s]listring[current_player;main]" ..
-	"listring[current_player;%s]listring[current_player;main]"):format(
+-- keeps UI's output → inbox first (the first occurrence of a list decides
+-- where a shift-click goes); the slot and the output go to the shift-click
+-- inbox (grug_inventory/inbox.lua: into main[9..] and the bags).
+local RING = ("listring[current_player;%s]listring[current_player;grug_inbox]" ..
+	"listring[current_player;main]listring[current_player;%s]" ..
+	"listring[current_player;grug_inbox]listring[current_player;main]"):format(
 	grug_jobs.OUTPUT_LIST, TARGET)
 
 local function station_warning(op)

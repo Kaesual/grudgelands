@@ -129,6 +129,15 @@ local function repair_button(name, pos, x, y)
 	return ""
 end
 
+-- Shift-click: each station list rings to the shift-click inbox
+-- (grug_inventory/inbox.lua: into main[9..] and the bags), `main` to the
+-- first station list. The list name is spelled out: fixtures stub
+-- grug_inventory.
+local function ring(location, list)
+	return "listring[" .. location .. ";" .. list ..
+		"]listring[current_player;grug_inbox]listring[current_player;main]"
+end
+
 local function formspec(ctx)
 	local location = ctx.personal and "detached:" .. ctx.detached or
 		"nodemeta:" .. ctx.pos.x .. "," .. ctx.pos.y .. "," .. ctx.pos.z
@@ -153,9 +162,8 @@ local function formspec(ctx)
 		"label[1,1.9;Input]list[" .. location .. ";" .. source .. ";1,2.3;" .. width .. ",1;]" ..
 		"label[3.5,1.9;Fuel]list[" .. location .. ";fuel;3.5,2.3;1,1;]" ..
 		"label[6,1.9;Finished output]list[" .. location .. ";" .. output .. ";6,2.3;2," ..
-		(ctx.station == "furnace" and 2 or 1) .. ";]listring[" .. location .. ";" .. output ..
-		"]listring[current_player;main]listring[" .. location .. ";" .. source ..
-		"]listring[current_player;main]listring[" .. location .. ";fuel]listring[current_player;main]" ..
+		(ctx.station == "furnace" and 2 or 1) .. ";]" .. ring(location, output) ..
+		ring(location, source) .. ring(location, "fuel") ..
 		"image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png]" ..
 		(fuel_percent > 0 and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
 			fuel_percent .. ":default_furnace_fire_fg.png]" or "") ..

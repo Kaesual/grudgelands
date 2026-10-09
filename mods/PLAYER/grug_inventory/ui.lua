@@ -290,6 +290,41 @@ function sfinv.handle_scroll(player, context, fields)
 end
 
 --
+-- Shift-click from a bag (Round 45 playtest PT5): on a page whose rings send
+-- `main` to another list, each bag the view shows goes there too. The engine
+-- takes the ring entry after the FIRST one naming the source list
+-- (getNextInventoryRing), so pairs appended at the end change no other
+-- list's target. The appended part opens with the page's first ring entry
+-- again, so the page's last entry still wraps to the same list (the recipe
+-- box's `main` -> the output area). A bag the page rings itself (the
+-- Character tab) is left alone.
+--
+local function bag_rings(player, content)
+	local rings, ringed = {}, {}
+	for entry in content:gmatch("listring%[([^%]]*;[^%]]*)%]") do
+		rings[#rings + 1] = entry
+		ringed[entry] = true
+	end
+	local target
+	for index, entry in ipairs(rings) do
+		if entry == "current_player;main" then
+			target = rings[index % #rings + 1]
+			break
+		end
+	end
+	if not target or target == "current_player;main" then return "" end
+	local inv = player:get_inventory()
+	local fs = {("listring[%s]"):format(rings[1])}
+	for i = 1, grug_inventory.BAG_COUNT do
+		local list = grug_inventory.content_list(i)
+		if inv:get_size(list) > 0 and not ringed["current_player;" .. list] then
+			fs[#fs + 1] = ("listring[current_player;%s]listring[%s]"):format(list, target)
+		end
+	end
+	return #fs > 1 and table.concat(fs) or ""
+end
+
+--
 -- The frame. A page passes show_inv = "full" or "short" for that view, true
 -- for the short view (pages not yet reworked) and false or nil for none. A
 -- page with its own header (`size`; none since the map got its own window)
@@ -312,6 +347,7 @@ function sfinv.make_formspec(player, context, content, show_inv, size)
 		mode and grug_inventory.inventory_view(player, mode, context) or "",
 		"real_coordinates[false]",
 		content,
+		mode and bag_rings(player, content) or "",
 	})
 end
 

@@ -164,7 +164,6 @@ function creative.register_tab(name, title, items)
 					image[4.08,4.2;0.8,0.8;creative_trash_icon.png]
 					listcolors[#00000069;#5A5A5A;#141318;#30434C;#FFF]
 					list[detached:trash;main;4.02,4.1;1,1;]
-					listring[]
 					image_button[5,4.05;0.8,0.8;creative_prev_icon.png;creative_prev;]
 					image_button[7.25,4.05;0.8,0.8;creative_next_icon.png;creative_next;]
 					image_button[2.63,4.05;0.8,0.8;creative_search_icon.png;creative_search;]
@@ -174,11 +173,17 @@ function creative.register_tab(name, title, items)
 				"tooltip[creative_clear;" .. esc(S("Reset")) .. "]" ..
 				"tooltip[creative_prev;" .. esc(S("Previous page")) .. "]" ..
 				"tooltip[creative_next;" .. esc(S("Next page")) .. "]" ..
+				-- GRUG PATCH: no `listring[]` after the trash: it ringed the
+				-- last two lists drawn, the frame's hotbar and the trash, so
+				-- shift-click from `main` deleted the stack.
 				"listring[current_player;main]" ..
 				"field_enter_after_edit[creative_filter;true]" ..
 				"field_close_on_enter[creative_filter;false]" ..
 				"field[0.3,4.2;2.8,1.2;creative_filter;;" .. esc(inv.filter) .. "]" ..
 				"listring[detached:creative_" .. player_name .. ";main]" ..
+				-- GRUG PATCH: shift-click from the creative list goes to the
+				-- inbox (grug_inventory/inbox.lua): main[9..] and the bags.
+				"listring[current_player;grug_inbox]" ..
 				"list[detached:creative_" .. player_name .. ";main;0,0;8,4;" .. tostring(inv.start_i) .. "]" ..
 				creative.formspec_add, true)
 		end,
