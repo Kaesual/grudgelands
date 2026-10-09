@@ -27,7 +27,11 @@ local function crab_def(description, tier, spawn_check, drop_scale)
 		_grug_tier = tier, _grug_spawn_check = spawn_check,
 		attack_type = "dogfight", group_attack = false, reach = 3,
 		pathfinding = 1, walk_velocity = 1.5, run_velocity = 3.4,
-		jump = false, jump_height = 0, stepheight = 1, fear_height = 2,
+		-- The engine steps an object up only when its bottom plus stepheight
+		-- lies strictly above the obstacle's top (collision.cpp), so a
+		-- stepheight of exactly 1 never climbed a one-node step; 1.1 as on
+		-- every other ground mob (Round 45 playtest).
+		jump = false, jump_height = 0, stepheight = 1.1, fear_height = 2,
 		view_range = 8, floats = true,
 		visual = "mesh", mesh = "grug_mobs_shore_crab.b3d",
 		textures = {{"grug_mobs_shore_crab.png"}},
