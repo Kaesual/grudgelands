@@ -85,7 +85,10 @@ fortress; [world.md](world.md) §6) is a marker of kind
 `grug_map_waypoint.png` (a grey standing stone with a blue rune, by GPT-6
 Astra). Undiscovered and enemy waystones are not shown. The provider is
 `waypoint` in `grug_map/providers.lua`, fed by `grug_home.known_waypoints`; a
-marker never unlocks or starts travel.
+marker never unlocks or starts travel. Since Round 45 (PT9) the owner's
+activated Claim Stone is a `waypoint` marker "Your Claim Stone" with the same
+icon (`grug_home.claim_waypoint`), unless it is the travel home, which the
+home marker already shows.
 
 ## Innkeeper home travel
 
@@ -433,7 +436,8 @@ drawn from the base image above. The gliding version (approved in playtest,
   the quest tracker sees them every 0.5 s, a level change), and at a check
   every 5 s (each player in their own phase) only when their key changed:
   the quest markers' version (a repeatable's cooldown ending shows then),
-  the home, the discovered waystones or the faction. Party member names are
+  the home, the discovered waystones, the Claim Stone waypoint or the
+  faction. Party member names are
   read again only on a party change and that 5 s check. The window size and
   the location line are read every 0.5 s (Round 30, perf review #12); a
   window change then resends every element's position. Only changed HUD

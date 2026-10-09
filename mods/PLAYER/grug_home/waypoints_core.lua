@@ -58,14 +58,26 @@ function M.newly_found(rows, faction, set, race, pos)
  return result
 end
 
+-- Round 45 PT9: the owner's activated Claim Stone is a waypoint of its own,
+-- the last entry of every list. Its button is always CLAIM_ID; without a
+-- stone (none, a draft, picked up or destroyed) the entry reads "No claim
+-- stone".
+M.CLAIM_ID = "claim"
+M.CLAIM_LABEL = "Your Claim Stone"
+
 -- The travel list shown at waystone `here_id`: every own-faction waystone in
--- order, each "here", "travel" (known) or "unknown".
-function M.entries(rows, faction, set, race, here_id)
+-- order, each "here", "travel" (known) or "unknown", then the Claim Stone:
+-- "travel" with `claim` (its row), else "no_claim".
+function M.entries(rows, faction, set, race, here_id, claim)
  local result = {}
  for _, row in ipairs(M.network(rows, faction)) do
   local state = row.id == here_id and "here" or
    (M.known(set, row, race) and "travel" or "unknown")
   result[#result + 1] = {row = row, state = state}
+ end
+ if faction ~= nil then
+  result[#result + 1] = claim and {row = claim, state = "travel"} or
+   {row = {id = M.CLAIM_ID, label = M.CLAIM_LABEL}, state = "no_claim"}
  end
  return result
 end
@@ -73,6 +85,7 @@ end
 -- Why a trip from `origin` to `target` may not start, or nil when it may.
 -- `t`: alive, faction, race, set, origin, target, at_origin, in_combat,
 -- pending. Travel is free and has no cooldown, so nothing else refuses it.
+-- A Claim Stone target (a row with `claim`) needs no visit.
 function M.refusal(t)
  if not t.alive then return "You cannot travel now." end
  if not t.origin or t.faction == nil or t.origin.faction ~= t.faction then
@@ -83,7 +96,7 @@ function M.refusal(t)
   return "That waystone is not on your path."
  end
  if t.target.id == t.origin.id then return "You are already here." end
- if not M.known(t.set or {}, t.target, t.race) then
+ if not t.target.claim and not M.known(t.set or {}, t.target, t.race) then
   return "You have not visited that waystone yet."
  end
  if t.in_combat then return "Cannot travel in combat." end

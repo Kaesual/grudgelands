@@ -273,6 +273,9 @@ local function static_key(player)
 	local home = grug_home.get(player)
 	local parts = {version, home and home.id or "", grug_factions.get_faction(player) or ""}
 	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
+	-- The Claim Stone waypoint (Round 45 PT9) appears with its activation.
+	local claim = grug_home.claim_waypoint(player)
+	parts[#parts + 1] = claim and claim.id or ""
 	return table.concat(parts, "|")
 end
 

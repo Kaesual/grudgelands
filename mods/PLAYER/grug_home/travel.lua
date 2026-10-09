@@ -243,6 +243,11 @@ end
 function grug_home.safe_arrival(position)
  return safe_arrival({arrival=position})
 end
+-- The arrival rule of a Claim Stone row (claim_arrival above), for the
+-- waystones' trip to the owner's stone (Round 45 PT9).
+function grug_home.claim_arrival(row)
+ return claim_arrival(row)
+end
 function grug_home.return_home(player) return request(player, false) end
 function grug_home.respawn(player)
  grug_home.cancel(player)
