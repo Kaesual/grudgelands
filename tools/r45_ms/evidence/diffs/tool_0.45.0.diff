@@ -1,0 +1,65 @@
+--- before
++++ after
+@@ -8,11 +8,8 @@
+-'item' | 'scribe' | '0:8' | 'grug_gear:mercy_seal_t6 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Abyssal...(317)
+-'item' | 'scribe' | '12:0' | 'grug_gear:head_metal_steel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Stee...(349)
+-'item' | 'scribe' | '18:0' | 'grug_alchemy:mixture_potion_mana_t2'
+-'item' | 'scribe' | '1:0' | 'grug_alchemy:mixture_potion_cave'
+-'item' | 'scribe' | '1:1' | 'grug_gear:bow_iron 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron Bow\\u0...(438)
+-'item' | 'scribe' | '1:2' | 'default:apple 3'
+-'item' | 'scribe' | '8:0' | 'grug_gear:sword_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze S...(457)
+-'item' | 'sleeper' | '0:8' | 'grug_gear:legs_cloth_stormweave 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF...(376)
+-'item' | 'sleeper' | '0:9' | 'grug_alchemy:mixture_potion_antivenom 2'
+-'item' | 'sleeper' | '1:4' | 'default:apple'
+-'item' | 'sleeper' | '8:0' | 'grug_gear:wand_steel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Steel Wand...(456)
++'item' | 'scribe' | '0:10' | 'default:apple 3'
++'item' | 'scribe' | '0:8' | 'grug_gear:mercy_seal_t6 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Abyssal...(372)
++'item' | 'scribe' | '0:9' | 'grug_gear:bow_iron 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron Bow\\u0...(493)
++'item' | 'scribe' | '12:0' | 'grug_gear:head_metal_steel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Stee...(404)
++'item' | 'scribe' | '8:0' | 'grug_gear:sword_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze S...(510)
++'item' | 'sleeper' | '0:8' | 'grug_gear:legs_cloth_stormweave 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF...(431)
++'item' | 'sleeper' | '0:9' | 'default:apple'
++'item' | 'sleeper' | '8:0' | 'grug_gear:wand_steel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Steel Wand...(511)
+@@ -22,3 +19,3 @@
+-'item' | 'smith' | '0:11' | 'grug_gear:bow_bronze 1 65535 "\\u0001_grug_broken_drawn_wield_image\\u0002(grug...(1080)
+-'item' | 'smith' | '0:12' | 'grug_alchemy:mixture_potion_healing_t1 3'
+-'item' | 'smith' | '0:13' | 'grug_gear:spellbook_embersteel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)...(338)
++'item' | 'smith' | '0:11' | 'grug_gear:bow_bronze 1 65535 "\\u0001_grug_broken_drawn_wield_image\\u0002(grug...(1133)
++'item' | 'smith' | '0:12' | 'grug_gear:greataxe_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronz...(515)
++'item' | 'smith' | '0:13' | 'grug_gear:spellbook_embersteel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)...(393)
+@@ -49 +46 @@
+-'item' | 'smith' | '0:8' | 'grug_gear:dagger_silversteel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Si...(496)
++'item' | 'smith' | '0:8' | 'grug_gear:dagger_silversteel 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Si...(551)
+@@ -51 +48 @@
+-'item' | 'smith' | '10:0' | 'grug_gear:manawell_t2 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron Mana...(310)
++'item' | 'smith' | '10:0' | 'grug_gear:manawell_t2 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron Mana...(365)
+@@ -54,2 +51,2 @@
+-'item' | 'smith' | '19:0' | 'grug_gear:chest_cloth_silk 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Silk...(351)
+-'item' | 'smith' | '19:1' | 'grug_alchemy:mixture_elixir_focus_t3'
++'item' | 'smith' | '19:0' | 'grug_gear:chest_cloth_silk 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Silk...(406)
++'item' | 'smith' | '19:1' | 'default:cobble 4'
+@@ -62,3 +58,0 @@
+-'item' | 'smith' | '1:0' | 'grug_alchemy:mixture_elixir_vigor_t2'
+-'item' | 'smith' | '1:1' | 'grug_gear:greataxe_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronz...(462)
+-'item' | 'smith' | '1:2' | 'default:cobble 4'
+@@ -71 +65 @@
+-'item' | 'smith' | '5:0' | 'grug_gear:chest_metal_iron 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron...(359)
++'item' | 'smith' | '5:0' | 'grug_gear:chest_metal_iron 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron...(414)
+@@ -73,3 +67,4 @@
+-'item' | 'smith' | '7:0' | 'grug_gear:feet_metal_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bro...(339)
+-'item' | 'smith' | '8:0' | 'grug_gear:sword_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze S...(459)
+-'item' | 'smith' | '9:0' | 'grug_gear:shield_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze ...(294)
++'item' | 'smith' | '7:0' | 'grug_gear:feet_metal_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bro...(392)
++'item' | 'smith' | '8:0' | 'grug_gear:sword_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze S...(512)
++'item' | 'smith' | '9:0' | 'grug_gear:shield_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze ...(347)
++'meta' | 'scribe' | 'grug_core:migrate:0.45.0' | '1'
+@@ -78 +73 @@
+-'meta' | 'sleeper' | 'grug_jobs:seen_items' | 'return {"default:apple"}'
++'meta' | 'sleeper' | 'grug_core:migrate:0.45.0' | '1'
+@@ -83,0 +79 @@
++'meta' | 'smith' | 'grug_core:migrate:0.45.0' | '1'
+@@ -86 +81,0 @@
+-'meta' | 'smith' | 'grug_jobs:seen_items' | 'return {"default:dirt"}'
+@@ -95 +90 @@
+-'storage' | 'grug_core' | 'world_version' | '0.44.0'
++'storage' | 'grug_core' | 'world_version' | '0.45.0'

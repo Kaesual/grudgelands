@@ -1,0 +1,2166 @@
+{
+ "drops": [
+  {
+   "item": "default:clay_lump 3",
+   "pos": {
+    "x": 38,
+    "y": 8,
+    "z": -33
+   }
+  }
+ ],
+ "finish": "every planned character left",
+ "joins": [
+  {
+   "drops": [
+    {
+     "item": "default:clay_lump 3",
+     "pos": {
+      "x": 38,
+      "y": 8,
+      "z": -33
+     }
+    }
+   ],
+   "loaded": {
+    "craft": {
+     "size": 9,
+     "stacks": [
+      "",
+      "",
+      "",
+      "default:torch 3",
+      "default:stick 6",
+      "default:paper 2",
+      "default:book",
+      "default:coal_lump 5",
+      "default:clay_lump 3"
+     ]
+    },
+    "craftpreview": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "craftresult": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_bag1": {
+     "size": 1,
+     "stacks": [
+      "grug_inventory:bag_small"
+     ]
+    },
+    "grug_bag1_content": {
+     "size": 8,
+     "stacks": [
+      "grug_gear:chest_cloth_silk 1 0 \"\\u0001grug_req_level\\u000240\\u0003grug_ilvl\\u000240\\u0003grug_base_name\\u0002Silk Robe\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Silk Robe\\u001b(c@#fff)\\nItem level 40\\n\\u001b(c@#9aa0a6)Cloth\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)4 armor rating\\u001b(c@#fff)\\nRequires level 40\\nUsable by: All classes\\nDurability: 3000 / 3000\\u0003\"",
+      "default:cobble 4",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99"
+     ]
+    },
+    "grug_bag2": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_bag3": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_bag4": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_chest": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:chest_metal_iron 1 0 \"\\u0001grug_req_level\\u000210\\u0003grug_ilvl\\u000210\\u0003grug_base_name\\u0002Iron Chestplate\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Chestplate\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)Metal\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)5 armor rating\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Warrior\\nDurability: 1500 / 1500\\u0003\""
+     ]
+    },
+    "grug_feet": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:feet_metal_bronze 1 0 \"\\u0001grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Sabatons\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Sabatons\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)Metal\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)1 armor rating\\u001b(c@#fff)\\nUsable by: Warrior\\nDurability: 1000 / 1000\\u0003\""
+     ]
+    },
+    "grug_head": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_legs": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:legs_leather_cured 1 0 \"\\u0001grug_base_name\\u0002Cured Pants\\u0003grug_quality\\u00021\\u0003grug_ilvl\\u000210\\u0003grug_req_level\\u000210\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.3999999761581421,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":1,\\\"punch_attack_uses\\\":0}\\u0003description\\u0002\\u001b(c@#FFFFFF)Cured Pants\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)Leather\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)3 armor rating\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Warrior, Scout\\nDurability: 1500 / 1500\\u0003\""
+     ]
+    },
+    "grug_offhand": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:shield_bronze 1 0 \"\\u0001grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Shield\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Shield\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)8 armor rating\\u001b(c@#fff)\\nUsable by: All classes\\nDurability: 1000 / 1000\\u0003\""
+     ]
+    },
+    "grug_potion_belt": {
+     "size": 4,
+     "stacks": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "grug_quiver_content": {
+     "size": 5,
+     "stacks": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "grug_shift": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_trinket1": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:manawell_t2 1 0 \"\\u0001grug_req_level\\u000210\\u0003grug_ilvl\\u000210\\u0003grug_base_name\\u0002Iron Manawell Pendant\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Manawell Pendant\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)+0.10 Mana per second\\u001b(c@#fff)\\nUsable by: All classes\\nRequires level 10\\u0003\""
+     ]
+    },
+    "grug_trinket2": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:battlebeat_t1 1 0 \"\\u0001grug_ilvl\\u00023\\u0003grug_req_level\\u00021\\u0003_grug_max_mana_percent\\u00022.3\\u0003grug_roll_seed\\u00025\\u0003grug_ench\\u0002return {{value=2.2999999999999998,tier=1,stat=\\\"max_mana_percent\\\",channel=\\\"suffix\\\"}}\\u0003grug_quality\\u00022\\u0003grug_base_name\\u0002Tin Battlebeat Band\\u0003description\\u0002\\u001b(c@#4A90FF)Tin Battlebeat Band of the Raven\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)+0.25 Rage per accepted hit\\u001b(c@#fff)\\n+2.3% maximum Mana (T1; 3 at your level)\\nUsable by: All classes\\u0003\""
+     ]
+    },
+    "grug_weapon": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:sword_bronze 1 0 \"\\u0001grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Sword\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Sword\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)5 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\nUsable by: Warrior, Scout\\nDurability: 1000 / 1000\\nEffective at level 10: 12 damage per swing\\u0003\""
+     ]
+    },
+    "main": {
+     "size": 32,
+     "stacks": [
+      "default:torch 10",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "grug_gear:dagger_silversteel 1 0 \"\\u0001grug_req_level\\u000230\\u0003grug_ilvl\\u000230\\u0003grug_base_name\\u0002Silversteel Dagger\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Silversteel Dagger\\u001b(c@#fff)\\nItem level 30\\n\\u001b(c@#9aa0a6)11 damage, 0.7 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\nRequires level 30\\nUsable by: All classes\\nDurability: 2500 / 2500\\nEffective at level 10: 21 damage per swing\\u0003\"",
+      "grug_gear:staff_iron 1 0 \"\\u0001grug_base_name\\u0002Iron Staff\\u0003grug_quality\\u00021\\u0003grug_ilvl\\u000210\\u0003grug_req_level\\u000210\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":10},\\\"full_punch_interval\\\":1.3999999761581421,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Staff\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)10 damage, 1.4 s swing, two-handed\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon; attack with a hotbar combat skill\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Mage, Priest\\nDurability: 1500 / 1500\\nEffective at level 10: 19 damage per swing\\u0003\"",
+      "grug_gear:sword_bronze 1 0 \"\\u0001grug_ilvl\\u00027\\u0003grug_req_level\\u00027\\u0003grug_roll_seed\\u000211\\u0003grug_ench\\u0002return {{value=1.8999999999999999,tier=1,stat=\\\"attack_speed_percent\\\",channel=\\\"prefix\\\"}}\\u0003grug_quality\\u00022\\u0003inventory_image\\u0002grug_gear_item_sword_bronze.png^(grug_gear_item_sword_bronze_ench.png^[verticalframe:2:0^[multiply:#e0803c^[opacity:128)\\u0003_grug_attack_speed_percent\\u00021.9\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":6},\\\"full_punch_interval\\\":0.98135429620742798,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_base_name\\u0002Bronze Sword\\u0003description\\u0002\\u001b(c@#4A90FF)Swift Bronze Sword\\u001b(c@#fff)\\nItem level 7\\n\\u001b(c@#9aa0a6)6 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\n+1.9% attack speed (T1)\\nRequires level 7\\nUsable by: Warrior, Scout\\nDurability: 1000 / 1000\\nEffective at level 10: 14 damage per swing\\u0003\"",
+      "grug_gear:bow_bronze 1 65535 \"\\u0001grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Bow\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Bow\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)5 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Ranged; shoot with a hotbar bow skill\\u001b(c@#fff)\\nUsable by: Scout\\nDurability: 0 / 1000 \u2014 Broken\\u0003grug_req_level\\u00021\\u0003_grug_repair_caps\\u0002return {damage_groups={fleshy=5},punch_attack_uses=0,full_punch_interval=1,max_drop_level=0,groupcaps={}}\\u0003_grug_broken_drawn_inventory_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.3999999761581421,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":1,\\\"punch_attack_uses\\\":0}\\u0003inventory_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003wield_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003_grug_broken_drawn_wield_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003\"",
+      "grug_gear:greataxe_bronze 1 0 \"\\u0001grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Battle Axe\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Battle Axe\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)8 damage, 1.4 s swing, two-handed\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon; attack with a hotbar combat skill\\u001b(c@#fff)\\nUsable by: Warrior\\nDurability: 1000 / 1000\\nEffective at level 10: 17 damage per swing\\u0003\"",
+      "grug_gear:spellbook_embersteel 1 0 \"\\u0001grug_req_level\\u000240\\u0003grug_ilvl\\u000240\\u0003grug_base_name\\u0002Embersteel Spellbook\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Embersteel Spellbook\\u001b(c@#fff)\\nItem level 40\\n\\u001b(c@#9aa0a6)+3% maximum Mana\\u001b(c@#fff)\\nRequires level 40\\nUsable by: All classes\\nDurability: 3000 / 3000\\u0003\"",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99",
+      "default:dirt 99"
+     ]
+    }
+   },
+   "loaded_meta_marker": "1",
+   "name": "smith",
+   "settled": {
+    "armor": 9,
+    "equipment": {
+     "grug_chest": {
+      "fresh_wearable": false,
+      "item": "grug_gear:chest_metal_iron",
+      "wearable": true
+     },
+     "grug_feet": {
+      "fresh_wearable": true,
+      "item": "grug_gear:feet_metal_bronze",
+      "wearable": true
+     },
+     "grug_legs": {
+      "fresh_wearable": false,
+      "item": "grug_gear:legs_leather_cured",
+      "wearable": true
+     },
+     "grug_offhand": {
+      "fresh_wearable": true,
+      "item": "grug_gear:shield_bronze",
+      "wearable": true
+     },
+     "grug_trinket1": {
+      "fresh_wearable": false,
+      "item": "grug_gear:manawell_t2",
+      "wearable": true
+     },
+     "grug_trinket2": {
+      "fresh_wearable": true,
+      "item": "grug_gear:battlebeat_t1",
+      "wearable": true
+     },
+     "grug_weapon": {
+      "fresh_wearable": true,
+      "item": "grug_gear:sword_bronze",
+      "wearable": true
+     }
+    },
+    "inventory": {
+     "craftpreview": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "craftresult": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_bag1": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       "grug_inventory:bag_small"
+      ]
+     },
+     "grug_bag1_content": {
+      "gear": {
+       "1": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Silk Robe\u001b(c@#fff)\nItem level 40\n\u001b(c@#9aa0a6)Cloth\u001b(c@#fff)\n\u001b(c@#9aa0a6)4 armor rating\u001b(c@#fff)\nRequires level 40\nUsable by: All classes\nDurability: 3000 / 3000",
+        "ilvl": 40,
+        "req": 40,
+        "wear": 0
+       }
+      },
+      "size": 8,
+      "stacks": [
+       "grug_gear:chest_cloth_silk 1 0 \"\\u0001grug_req_level\\u000240\\u0003grug_ilvl\\u000240\\u0003grug_base_name\\u0002Silk Robe\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Silk Robe\\u001b(c@#fff)\\nItem level 40\\n\\u001b(c@#9aa0a6)Cloth\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)4 armor rating\\u001b(c@#fff)\\nRequires level 40\\nUsable by: All classes\\nDurability: 3000 / 3000\\u0003\"",
+       "default:cobble 4",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99"
+      ]
+     },
+     "grug_bag2": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_bag3": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_bag4": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_chest": {
+      "gear": {
+       "1": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Iron Chestplate\u001b(c@#fff)\nItem level 10\n\u001b(c@#9aa0a6)Metal\u001b(c@#fff)\n\u001b(c@#9aa0a6)5 armor rating\u001b(c@#fff)\nRequires level 10\nUsable by: Warrior\nDurability: 1500 / 1500",
+        "ilvl": 10,
+        "req": 10,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:chest_metal_iron 1 0 \"\\u0001grug_req_level\\u000210\\u0003grug_ilvl\\u000210\\u0003grug_base_name\\u0002Iron Chestplate\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Chestplate\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)Metal\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)5 armor rating\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Warrior\\nDurability: 1500 / 1500\\u0003\""
+      ]
+     },
+     "grug_craft_out": {
+      "gear": null,
+      "size": 4,
+      "stacks": [
+       "default:stick 6",
+       "default:paper 2",
+       "default:book",
+       "default:coal_lump 5"
+      ]
+     },
+     "grug_craft_target": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_feet": {
+      "gear": {
+       "1": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Bronze Sabatons\u001b(c@#fff)\nItem level 3\n\u001b(c@#9aa0a6)Metal\u001b(c@#fff)\n\u001b(c@#9aa0a6)1 armor rating\u001b(c@#fff)\nUsable by: Warrior\nDurability: 1000 / 1000",
+        "ilvl": 3,
+        "req": 1,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:feet_metal_bronze 1 0 \"\\u0001grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Sabatons\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Sabatons\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)Metal\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)1 armor rating\\u001b(c@#fff)\\nUsable by: Warrior\\nDurability: 1000 / 1000\\u0003\""
+      ]
+     },
+     "grug_head": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_inbox": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_legs": {
+      "gear": {
+       "1": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Cured Pants\u001b(c@#fff)\nItem level 10\n\u001b(c@#9aa0a6)Leather\u001b(c@#fff)\n\u001b(c@#9aa0a6)3 armor rating\u001b(c@#fff)\nRequires level 10\nUsable by: Warrior, Scout\nDurability: 1500 / 1500",
+        "ilvl": 10,
+        "req": 10,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:legs_leather_cured 1 0 \"\\u0001grug_base_name\\u0002Cured Pants\\u0003grug_quality\\u00021\\u0003grug_ilvl\\u000210\\u0003grug_req_level\\u000210\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.3999999761581421,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":1,\\\"punch_attack_uses\\\":0}\\u0003description\\u0002\\u001b(c@#FFFFFF)Cured Pants\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)Leather\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)3 armor rating\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Warrior, Scout\\nDurability: 1500 / 1500\\u0003\""
+      ]
+     },
+     "grug_offhand": {
+      "gear": {
+       "1": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Bronze Shield\u001b(c@#fff)\nItem level 3\n\u001b(c@#9aa0a6)8 armor rating\u001b(c@#fff)\nUsable by: All classes\nDurability: 1000 / 1000",
+        "ilvl": 3,
+        "req": 1,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:shield_bronze 1 0 \"\\u0001grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Shield\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Shield\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)8 armor rating\\u001b(c@#fff)\\nUsable by: All classes\\nDurability: 1000 / 1000\\u0003\""
+      ]
+     },
+     "grug_potion_belt": {
+      "gear": null,
+      "size": 4,
+      "stacks": [
+       "",
+       "",
+       "",
+       ""
+      ]
+     },
+     "grug_quiver_content": {
+      "gear": null,
+      "size": 5,
+      "stacks": [
+       "",
+       "",
+       "",
+       "",
+       ""
+      ]
+     },
+     "grug_shift": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_trinket1": {
+      "gear": {
+       "1": {
+        "damage": 1,
+        "description": "\u001b(c@#FFFFFF)Iron Manawell Pendant\u001b(c@#fff)\nItem level 10\n\u001b(c@#9aa0a6)+0.10 Mana per second\u001b(c@#fff)\nUsable by: All classes\nRequires level 10",
+        "ilvl": 10,
+        "req": 10,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:manawell_t2 1 0 \"\\u0001grug_req_level\\u000210\\u0003grug_ilvl\\u000210\\u0003grug_base_name\\u0002Iron Manawell Pendant\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Manawell Pendant\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)+0.10 Mana per second\\u001b(c@#fff)\\nUsable by: All classes\\nRequires level 10\\u0003\""
+      ]
+     },
+     "grug_trinket2": {
+      "gear": {
+       "1": {
+        "damage": 1,
+        "description": "\u001b(c@#4A90FF)Tin Battlebeat Band of the Raven\u001b(c@#fff)\nItem level 3\n\u001b(c@#9aa0a6)+0.25 Rage per accepted hit\u001b(c@#fff)\n+2.3% maximum Mana (T1; 3 at your level)\nUsable by: All classes",
+        "ilvl": 3,
+        "req": 1,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:battlebeat_t1 1 0 \"\\u0001grug_ilvl\\u00023\\u0003grug_req_level\\u00021\\u0003_grug_max_mana_percent\\u00022.3\\u0003grug_roll_seed\\u00025\\u0003grug_ench\\u0002return {{value=2.2999999999999998,tier=1,stat=\\\"max_mana_percent\\\",channel=\\\"suffix\\\"}}\\u0003grug_quality\\u00022\\u0003grug_base_name\\u0002Tin Battlebeat Band\\u0003description\\u0002\\u001b(c@#4A90FF)Tin Battlebeat Band of the Raven\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)+0.25 Rage per accepted hit\\u001b(c@#fff)\\n+2.3% maximum Mana (T1; 3 at your level)\\nUsable by: All classes\\u0003\""
+      ]
+     },
+     "grug_weapon": {
+      "gear": {
+       "1": {
+        "damage": 5,
+        "description": "\u001b(c@#FFFFFF)Bronze Sword\u001b(c@#fff)\nItem level 3\n\u001b(c@#9aa0a6)5 damage, 1.0 s swing\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\u001b(c@#fff)\nUsable by: Warrior, Scout\nDurability: 1000 / 1000\nEffective at level 10: 12 damage per swing",
+        "ilvl": 3,
+        "req": 1,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:sword_bronze 1 0 \"\\u0001tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":5},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Sword\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Sword\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)5 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\nUsable by: Warrior, Scout\\nDurability: 1000 / 1000\\nEffective at level 10: 12 damage per swing\\u0003\""
+      ]
+     },
+     "main": {
+      "gear": {
+       "10": {
+        "damage": 10,
+        "description": "\u001b(c@#FFFFFF)Iron Staff\u001b(c@#fff)\nItem level 10\n\u001b(c@#9aa0a6)10 damage, 1.4 s swing, two-handed\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Weapon; attack with a hotbar combat skill\u001b(c@#fff)\nRequires level 10\nUsable by: Mage, Priest\nDurability: 1500 / 1500\nEffective at level 10: 19 damage per swing",
+        "ilvl": 10,
+        "req": 10,
+        "wear": 0
+       },
+       "11": {
+        "damage": 6,
+        "description": "\u001b(c@#4A90FF)Swift Bronze Sword\u001b(c@#fff)\nItem level 7\n\u001b(c@#9aa0a6)6 damage, 1.0 s swing\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\u001b(c@#fff)\n+1.9% attack speed (T1)\nRequires level 7\nUsable by: Warrior, Scout\nDurability: 1000 / 1000\nEffective at level 10: 14 damage per swing",
+        "ilvl": 7,
+        "req": 7,
+        "wear": 0
+       },
+       "12": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Bronze Bow\u001b(c@#fff)\nItem level 3\n\u001b(c@#9aa0a6)5 damage, 1.0 s swing\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Ranged; shoot with a hotbar bow skill\u001b(c@#fff)\nUsable by: Scout\nDurability: 0 / 1000 \u2014 Broken",
+        "ilvl": 3,
+        "repair_damage": 5,
+        "req": 1,
+        "wear": 65535
+       },
+       "13": {
+        "damage": 8,
+        "description": "\u001b(c@#FFFFFF)Bronze Battle Axe\u001b(c@#fff)\nItem level 3\n\u001b(c@#9aa0a6)8 damage, 1.4 s swing, two-handed\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Weapon; attack with a hotbar combat skill\u001b(c@#fff)\nUsable by: Warrior\nDurability: 1000 / 1000\nEffective at level 10: 17 damage per swing",
+        "ilvl": 3,
+        "req": 1,
+        "wear": 0
+       },
+       "14": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Embersteel Spellbook\u001b(c@#fff)\nItem level 40\n\u001b(c@#9aa0a6)+3% maximum Mana\u001b(c@#fff)\nRequires level 40\nUsable by: All classes\nDurability: 3000 / 3000",
+        "ilvl": 40,
+        "req": 40,
+        "wear": 0
+       },
+       "9": {
+        "damage": 11,
+        "description": "\u001b(c@#FFFFFF)Silversteel Dagger\u001b(c@#fff)\nItem level 30\n\u001b(c@#9aa0a6)11 damage, 0.7 s swing\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\u001b(c@#fff)\nRequires level 30\nUsable by: All classes\nDurability: 2500 / 2500\nEffective at level 10: 21 damage per swing",
+        "ilvl": 30,
+        "req": 30,
+        "wear": 0
+       }
+      },
+      "size": 32,
+      "stacks": [
+       "default:torch 13",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "grug_gear:dagger_silversteel 1 0 \"\\u0001grug_req_level\\u000230\\u0003grug_ilvl\\u000230\\u0003grug_base_name\\u0002Silversteel Dagger\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Silversteel Dagger\\u001b(c@#fff)\\nItem level 30\\n\\u001b(c@#9aa0a6)11 damage, 0.7 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\nRequires level 30\\nUsable by: All classes\\nDurability: 2500 / 2500\\nEffective at level 10: 21 damage per swing\\u0003\"",
+       "grug_gear:staff_iron 1 0 \"\\u0001grug_base_name\\u0002Iron Staff\\u0003grug_quality\\u00021\\u0003grug_ilvl\\u000210\\u0003grug_req_level\\u000210\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":10},\\\"full_punch_interval\\\":1.3999999761581421,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Staff\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)10 damage, 1.4 s swing, two-handed\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon; attack with a hotbar combat skill\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Mage, Priest\\nDurability: 1500 / 1500\\nEffective at level 10: 19 damage per swing\\u0003\"",
+       "grug_gear:sword_bronze 1 0 \"\\u0001grug_ilvl\\u00027\\u0003grug_req_level\\u00027\\u0003grug_roll_seed\\u000211\\u0003grug_ench\\u0002return {{value=1.8999999999999999,tier=1,stat=\\\"attack_speed_percent\\\",channel=\\\"prefix\\\"}}\\u0003grug_quality\\u00022\\u0003_grug_attack_speed_percent\\u00021.9\\u0003inventory_image\\u0002grug_gear_item_sword_bronze.png^(grug_gear_item_sword_bronze_ench.png^[verticalframe:2:0^[multiply:#e0803c^[opacity:128)\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":6},\\\"full_punch_interval\\\":0.98135429620742798,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_base_name\\u0002Bronze Sword\\u0003description\\u0002\\u001b(c@#4A90FF)Swift Bronze Sword\\u001b(c@#fff)\\nItem level 7\\n\\u001b(c@#9aa0a6)6 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\n+1.9% attack speed (T1)\\nRequires level 7\\nUsable by: Warrior, Scout\\nDurability: 1000 / 1000\\nEffective at level 10: 14 damage per swing\\u0003\"",
+       "grug_gear:bow_bronze 1 65535 \"\\u0001grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Bow\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Bow\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)5 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Ranged; shoot with a hotbar bow skill\\u001b(c@#fff)\\nUsable by: Scout\\nDurability: 0 / 1000 \u2014 Broken\\u0003grug_req_level\\u00021\\u0003_grug_repair_caps\\u0002return {damage_groups={fleshy=5},punch_attack_uses=0,full_punch_interval=1,max_drop_level=0,groupcaps={}}\\u0003_grug_broken_drawn_inventory_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.3999999761581421,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":1,\\\"punch_attack_uses\\\":0}\\u0003inventory_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003wield_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003_grug_broken_drawn_wield_image\\u0002(grug_gear_bow_lebethron.png)^[hsl:0:-80:-35^[cracko:1:4\\u0003\"",
+       "grug_gear:greataxe_bronze 1 0 \"\\u0001tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":8},\\\"full_punch_interval\\\":1.3999999761581421,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Battle Axe\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Battle Axe\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)8 damage, 1.4 s swing, two-handed\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon; attack with a hotbar combat skill\\u001b(c@#fff)\\nUsable by: Warrior\\nDurability: 1000 / 1000\\nEffective at level 10: 17 damage per swing\\u0003\"",
+       "grug_gear:spellbook_embersteel 1 0 \"\\u0001grug_req_level\\u000240\\u0003grug_ilvl\\u000240\\u0003grug_base_name\\u0002Embersteel Spellbook\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Embersteel Spellbook\\u001b(c@#fff)\\nItem level 40\\n\\u001b(c@#9aa0a6)+3% maximum Mana\\u001b(c@#fff)\\nRequires level 40\\nUsable by: All classes\\nDurability: 3000 / 3000\\u0003\"",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99",
+       "default:dirt 99"
+      ]
+     }
+    },
+    "level": 10,
+    "marker": "",
+    "meta_seen": ""
+   }
+  },
+  {
+   "drops": null,
+   "loaded": {
+    "craft": {
+     "size": 0,
+     "stacks": null
+    },
+    "craftpreview": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "craftresult": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_bag1": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_bag2": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_bag3": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_bag4": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_chest": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_feet": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_head": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_legs": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_offhand": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_potion_belt": {
+     "size": 4,
+     "stacks": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "grug_quiver_content": {
+     "size": 5,
+     "stacks": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "grug_shift": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:head_metal_steel 1 0 \"\\u0001grug_req_level\\u000220\\u0003grug_ilvl\\u000220\\u0003grug_base_name\\u0002Steel Helm\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Steel Helm\\u001b(c@#fff)\\nItem level 20\\n\\u001b(c@#9aa0a6)Metal\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)5 armor rating\\u001b(c@#fff)\\nRequires level 20\\nUsable by: Warrior\\nDurability: 2000 / 2000\\u0003\""
+     ]
+    },
+    "grug_trinket1": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_trinket2": {
+     "size": 1,
+     "stacks": [
+      ""
+     ]
+    },
+    "grug_weapon": {
+     "size": 1,
+     "stacks": [
+      "grug_gear:sword_bronze 1 0 \"\\u0001grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Sword\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Sword\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)5 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\nUsable by: Warrior, Scout\\nDurability: 1000 / 1000\\nEffective at level 1: 3 damage per swing\\u0003\""
+     ]
+    },
+    "main": {
+     "size": 32,
+     "stacks": [
+      "default:apple 2",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "grug_gear:mercy_seal_t6 1 0 \"\\u0001grug_req_level\\u000250\\u0003grug_ilvl\\u000250\\u0003grug_base_name\\u0002Abyssal Steel Mercy Seal\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Abyssal Steel Mercy Seal\\u001b(c@#fff)\\nItem level 50\\n\\u001b(c@#9aa0a6)+6% outgoing healing\\u001b(c@#fff)\\nUsable by: All classes\\nRequires level 50\\u0003\"",
+      "grug_gear:bow_iron 1 0 \"\\u0001grug_req_level\\u000210\\u0003grug_ilvl\\u000210\\u0003grug_base_name\\u0002Iron Bow\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Bow\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)8 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Ranged; shoot with a hotbar bow skill\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Scout\\nDurability: 1500 / 1500\\nEffective at level 1: 5 damage per swing\\u0003\"",
+      "default:apple 3",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   },
+   "loaded_meta_marker": "1",
+   "name": "scribe",
+   "settled": {
+    "armor": 0,
+    "equipment": {
+     "grug_weapon": {
+      "fresh_wearable": true,
+      "item": "grug_gear:sword_bronze",
+      "wearable": true
+     }
+    },
+    "inventory": {
+     "craft": {
+      "gear": null,
+      "size": 0,
+      "stacks": null
+     },
+     "craftpreview": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "craftresult": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_bag1": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_bag2": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_bag3": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_bag4": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_chest": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_craft_out": {
+      "gear": null,
+      "size": 4,
+      "stacks": [
+       "",
+       "",
+       "",
+       ""
+      ]
+     },
+     "grug_craft_target": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_feet": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_head": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_inbox": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_legs": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_offhand": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_potion_belt": {
+      "gear": null,
+      "size": 4,
+      "stacks": [
+       "",
+       "",
+       "",
+       ""
+      ]
+     },
+     "grug_quiver_content": {
+      "gear": null,
+      "size": 5,
+      "stacks": [
+       "",
+       "",
+       "",
+       "",
+       ""
+      ]
+     },
+     "grug_shift": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_trinket1": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_trinket2": {
+      "gear": null,
+      "size": 1,
+      "stacks": [
+       ""
+      ]
+     },
+     "grug_weapon": {
+      "gear": {
+       "1": {
+        "damage": 5,
+        "description": "\u001b(c@#FFFFFF)Bronze Sword\u001b(c@#fff)\nItem level 3\n\u001b(c@#9aa0a6)5 damage, 1.0 s swing\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\u001b(c@#fff)\nUsable by: Warrior, Scout\nDurability: 1000 / 1000\nEffective at level 1: 3 damage per swing",
+        "ilvl": 3,
+        "req": 1,
+        "wear": 0
+       }
+      },
+      "size": 1,
+      "stacks": [
+       "grug_gear:sword_bronze 1 0 \"\\u0001tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":5},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_req_level\\u00021\\u0003grug_ilvl\\u00023\\u0003grug_base_name\\u0002Bronze Sword\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Bronze Sword\\u001b(c@#fff)\\nItem level 3\\n\\u001b(c@#9aa0a6)5 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\nUsable by: Warrior, Scout\\nDurability: 1000 / 1000\\nEffective at level 1: 3 damage per swing\\u0003\""
+      ]
+     },
+     "main": {
+      "gear": {
+       "1": {
+        "damage": 1,
+        "description": "",
+        "ilvl": 1,
+        "wear": 0
+       },
+       "10": {
+        "damage": 8,
+        "description": "\u001b(c@#FFFFFF)Iron Bow\u001b(c@#fff)\nItem level 10\n\u001b(c@#9aa0a6)8 damage, 1.0 s swing\u001b(c@#fff)\n\u001b(c@#9aa0a6)Equip in Character > Ranged; shoot with a hotbar bow skill\u001b(c@#fff)\nRequires level 10\nUsable by: Scout\nDurability: 1500 / 1500\nEffective at level 1: 5 damage per swing",
+        "ilvl": 10,
+        "req": 10,
+        "wear": 0
+       },
+       "11": {
+        "damage": 1,
+        "description": "",
+        "ilvl": 1,
+        "wear": 0
+       },
+       "12": {
+        "damage": 0,
+        "description": "\u001b(c@#FFFFFF)Steel Helm\u001b(c@#fff)\nItem level 20\n\u001b(c@#9aa0a6)Metal\u001b(c@#fff)\n\u001b(c@#9aa0a6)5 armor rating\u001b(c@#fff)\nRequires level 20\nUsable by: Warrior\nDurability: 2000 / 2000",
+        "ilvl": 20,
+        "req": 20,
+        "wear": 0
+       },
+       "9": {
+        "damage": 1,
+        "description": "\u001b(c@#FFFFFF)Abyssal Steel Mercy Seal\u001b(c@#fff)\nItem level 50\n\u001b(c@#9aa0a6)+6% outgoing healing\u001b(c@#fff)\nUsable by: All classes\nRequires level 50",
+        "ilvl": 50,
+        "req": 50,
+        "wear": 0
+       }
+      },
+      "size": 32,
+      "stacks": [
+       "default:apple 2",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "grug_gear:mercy_seal_t6 1 0 \"\\u0001grug_req_level\\u000250\\u0003grug_ilvl\\u000250\\u0003grug_base_name\\u0002Abyssal Steel Mercy Seal\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Abyssal Steel Mercy Seal\\u001b(c@#fff)\\nItem level 50\\n\\u001b(c@#9aa0a6)+6% outgoing healing\\u001b(c@#fff)\\nUsable by: All classes\\nRequires level 50\\u0003\"",
+       "grug_gear:bow_iron 1 0 \"\\u0001grug_req_level\\u000210\\u0003grug_ilvl\\u000210\\u0003grug_base_name\\u0002Iron Bow\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Iron Bow\\u001b(c@#fff)\\nItem level 10\\n\\u001b(c@#9aa0a6)8 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Ranged; shoot with a hotbar bow skill\\u001b(c@#fff)\\nRequires level 10\\nUsable by: Scout\\nDurability: 1500 / 1500\\nEffective at level 1: 5 damage per swing\\u0003\"",
+       "default:apple 3",
+       "grug_gear:head_metal_steel 1 0 \"\\u0001grug_req_level\\u000220\\u0003grug_ilvl\\u000220\\u0003grug_base_name\\u0002Steel Helm\\u0003grug_quality\\u00021\\u0003description\\u0002\\u001b(c@#FFFFFF)Steel Helm\\u001b(c@#fff)\\nItem level 20\\n\\u001b(c@#9aa0a6)Metal\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)5 armor rating\\u001b(c@#fff)\\nRequires level 20\\nUsable by: Warrior\\nDurability: 2000 / 2000\\u0003\"",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       ""
+      ]
+     }
+    },
+    "level": 1,
+    "marker": "",
+    "meta_seen": ""
+   }
+  }
+ ],
+ "leaves": 2,
+ "load": {
+  "from": "0.45.0",
+  "game": "0.45.0",
+  "new_world": false,
+  "steps": [
+   "0.44.0",
+   "0.45.0"
+  ]
+ },
+ "phase": "after_0.45.0",
+ "registrations": {
+  "aliases": null,
+  "bag_count": 4,
+  "bags": {
+   "grug_inventory:bag_great": 32,
+   "grug_inventory:bag_large": 24,
+   "grug_inventory:bag_leather_pack": 24,
+   "grug_inventory:bag_leather_pouch": 8,
+   "grug_inventory:bag_leather_rucksack": 32,
+   "grug_inventory:bag_leather_satchel": 16,
+   "grug_inventory:bag_medium": 16,
+   "grug_inventory:bag_small": 8
+  },
+  "hotbar_size": 8,
+  "leveled": {
+   "default:apple": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "default:blueberries": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_alchemy:elixir_deepwater": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_alchemy:elixir_focus_t1": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_alchemy:elixir_focus_t2": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_alchemy:elixir_focus_t3": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_alchemy:elixir_focus_t4": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_alchemy:elixir_focus_t5": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_alchemy:elixir_focus_t6": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_alchemy:elixir_precision_t1": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_alchemy:elixir_precision_t2": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_alchemy:elixir_precision_t3": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_alchemy:elixir_precision_t4": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_alchemy:elixir_precision_t5": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_alchemy:elixir_precision_t6": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_alchemy:elixir_stoneskin_t1": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_alchemy:elixir_stoneskin_t2": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_alchemy:elixir_stoneskin_t3": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_alchemy:elixir_stoneskin_t4": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_alchemy:elixir_stoneskin_t5": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_alchemy:elixir_stoneskin_t6": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_alchemy:elixir_vigor_t1": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_alchemy:elixir_vigor_t2": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_alchemy:elixir_vigor_t3": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_alchemy:elixir_vigor_t4": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_alchemy:elixir_vigor_t5": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_alchemy:elixir_vigor_t6": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_alchemy:potion_antivenom": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_alchemy:potion_cave": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_alchemy:potion_healing_t1": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_alchemy:potion_healing_t2": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_alchemy:potion_healing_t3": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_alchemy:potion_healing_t4": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_alchemy:potion_healing_t5": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_alchemy:potion_healing_t6": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_alchemy:potion_mana_t1": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_alchemy:potion_mana_t2": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_alchemy:potion_mana_t3": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_alchemy:potion_mana_t4": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_alchemy:potion_mana_t5": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_alchemy:potion_mana_t6": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_alchemy:potion_swiftness": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:bamboo_shoot": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_cooking:berry_preserve": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:blightberry": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:bread": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_cooking:carrot": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_cooking:cassava": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_cooking:cave_cap": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_cooking:cocoa_rubbed_game": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_cooking:corn_crusted_fish": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_cooking:foragers_pot": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_cooking:frost_melon": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_cooking:fruit_glazed_roast": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:grand_feast": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_cooking:hearty_stew": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_cooking:hunters_feast": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_cooking:jungle_berry": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:jungle_cocoa": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_cooking:kelp_wrapped_roast": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_cooking:marsh_roast": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_cooking:marshbloom_chowder": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_cooking:mushroom_skewer": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_cooking:onion_seared_steak": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_cooking:pumpkin": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:pumpkin_stew": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:salt_crusted_fish": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_cooking:stormkelp_broth": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_cooking:sunberry": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_cooking:sweetroot_mash": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_cooking:wild_grain": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_fishing:cooked_fish": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_fishing:ember_eel": {
+    "equip": false,
+    "ilvl": 41
+   },
+   "grug_fishing:frostfin": {
+    "equip": false,
+    "ilvl": 31
+   },
+   "grug_fishing:mire_carp": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_fishing:silver_trout": {
+    "equip": false,
+    "ilvl": 11
+   },
+   "grug_fishing:storm_tuna": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_gathering:corn": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_gathering:melon": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_gathering:mushroom": {
+    "equip": false,
+    "ilvl": 21
+   },
+   "grug_gathering:potato": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "grug_gathering:wild_cocoa": {
+    "equip": false,
+    "ilvl": 51
+   },
+   "grug_gear:apothecary_loop_t1": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:apothecary_loop_t2": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:apothecary_loop_t3": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:apothecary_loop_t4": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:apothecary_loop_t5": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:apothecary_loop_t6": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:battlebeat_t1": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:battlebeat_t2": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:battlebeat_t3": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:battlebeat_t4": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:battlebeat_t5": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:battlebeat_t6": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:bow_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:bow_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:bow_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:bow_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:bow_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:bow_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:chest_cloth_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:chest_cloth_patch": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:chest_cloth_silk": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:chest_cloth_silkweave": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:chest_cloth_stormweave": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:chest_cloth_woven": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:chest_leather_cured": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:chest_leather_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:chest_leather_light": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:chest_leather_nightscale": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:chest_leather_scaled": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:chest_leather_sleek": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:chest_metal_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:chest_metal_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:chest_metal_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:chest_metal_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:chest_metal_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:chest_metal_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:dagger_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:dagger_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:dagger_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:dagger_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:dagger_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:dagger_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:feet_cloth_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:feet_cloth_patch": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:feet_cloth_silk": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:feet_cloth_silkweave": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:feet_cloth_stormweave": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:feet_cloth_woven": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:feet_leather_cured": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:feet_leather_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:feet_leather_light": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:feet_leather_nightscale": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:feet_leather_scaled": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:feet_leather_sleek": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:feet_metal_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:feet_metal_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:feet_metal_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:feet_metal_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:feet_metal_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:feet_metal_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:greataxe_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:greataxe_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:greataxe_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:greataxe_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:greataxe_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:greataxe_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:head_cloth_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:head_cloth_patch": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:head_cloth_silk": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:head_cloth_silkweave": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:head_cloth_stormweave": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:head_cloth_woven": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:head_leather_cured": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:head_leather_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:head_leather_light": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:head_leather_nightscale": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:head_leather_scaled": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:head_leather_sleek": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:head_metal_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:head_metal_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:head_metal_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:head_metal_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:head_metal_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:head_metal_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:last_light_t1": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:last_light_t2": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:last_light_t3": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:last_light_t4": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:last_light_t5": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:last_light_t6": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:legs_cloth_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:legs_cloth_patch": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:legs_cloth_silk": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:legs_cloth_silkweave": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:legs_cloth_stormweave": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:legs_cloth_woven": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:legs_leather_cured": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:legs_leather_heavy": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:legs_leather_light": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:legs_leather_nightscale": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:legs_leather_scaled": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:legs_leather_sleek": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:legs_metal_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:legs_metal_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:legs_metal_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:legs_metal_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:legs_metal_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:legs_metal_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:manawell_t1": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:manawell_t2": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:manawell_t3": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:manawell_t4": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:manawell_t5": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:manawell_t6": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:mercy_seal_t1": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:mercy_seal_t2": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:mercy_seal_t3": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:mercy_seal_t4": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:mercy_seal_t5": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:mercy_seal_t6": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:reclaimers_mark_t1": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:reclaimers_mark_t2": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:reclaimers_mark_t3": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:reclaimers_mark_t4": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:reclaimers_mark_t5": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:reclaimers_mark_t6": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:shield_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:shield_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:shield_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:shield_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:shield_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:shield_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:spellbook_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:spellbook_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:spellbook_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:spellbook_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:spellbook_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:spellbook_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:staff_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:staff_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:staff_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:staff_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:staff_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:staff_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:sword_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:sword_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:sword_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:sword_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:sword_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:sword_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_gear:wand_abyssal_steel": {
+    "equip": true,
+    "ilvl": 51,
+    "req": 51
+   },
+   "grug_gear:wand_bronze": {
+    "equip": true,
+    "ilvl": 1,
+    "req": 1
+   },
+   "grug_gear:wand_embersteel": {
+    "equip": true,
+    "ilvl": 41,
+    "req": 41
+   },
+   "grug_gear:wand_iron": {
+    "equip": true,
+    "ilvl": 11,
+    "req": 11
+   },
+   "grug_gear:wand_silversteel": {
+    "equip": true,
+    "ilvl": 31,
+    "req": 31
+   },
+   "grug_gear:wand_steel": {
+    "equip": true,
+    "ilvl": 21,
+    "req": 21
+   },
+   "grug_mobs:raw_fish": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "mobs:meat": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "mobs:meat_raw": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "mobs:meatblock": {
+    "equip": false,
+    "ilvl": 1
+   },
+   "mobs:meatblock_raw": {
+    "equip": false,
+    "ilvl": 1
+   }
+  },
+  "mixtures": [
+   "grug_alchemy:mixture_elixir_deepwater",
+   "grug_alchemy:mixture_elixir_focus_t1",
+   "grug_alchemy:mixture_elixir_focus_t2",
+   "grug_alchemy:mixture_elixir_focus_t3",
+   "grug_alchemy:mixture_elixir_focus_t4",
+   "grug_alchemy:mixture_elixir_focus_t5",
+   "grug_alchemy:mixture_elixir_focus_t6",
+   "grug_alchemy:mixture_elixir_precision_t1",
+   "grug_alchemy:mixture_elixir_precision_t2",
+   "grug_alchemy:mixture_elixir_precision_t3",
+   "grug_alchemy:mixture_elixir_precision_t4",
+   "grug_alchemy:mixture_elixir_precision_t5",
+   "grug_alchemy:mixture_elixir_precision_t6",
+   "grug_alchemy:mixture_elixir_stoneskin_t1",
+   "grug_alchemy:mixture_elixir_stoneskin_t2",
+   "grug_alchemy:mixture_elixir_stoneskin_t3",
+   "grug_alchemy:mixture_elixir_stoneskin_t4",
+   "grug_alchemy:mixture_elixir_stoneskin_t5",
+   "grug_alchemy:mixture_elixir_stoneskin_t6",
+   "grug_alchemy:mixture_elixir_vigor_t1",
+   "grug_alchemy:mixture_elixir_vigor_t2",
+   "grug_alchemy:mixture_elixir_vigor_t3",
+   "grug_alchemy:mixture_elixir_vigor_t4",
+   "grug_alchemy:mixture_elixir_vigor_t5",
+   "grug_alchemy:mixture_elixir_vigor_t6",
+   "grug_alchemy:mixture_potion_antivenom",
+   "grug_alchemy:mixture_potion_cave",
+   "grug_alchemy:mixture_potion_healing_t1",
+   "grug_alchemy:mixture_potion_healing_t2",
+   "grug_alchemy:mixture_potion_healing_t3",
+   "grug_alchemy:mixture_potion_healing_t4",
+   "grug_alchemy:mixture_potion_healing_t5",
+   "grug_alchemy:mixture_potion_healing_t6",
+   "grug_alchemy:mixture_potion_mana_t1",
+   "grug_alchemy:mixture_potion_mana_t2",
+   "grug_alchemy:mixture_potion_mana_t3",
+   "grug_alchemy:mixture_potion_mana_t4",
+   "grug_alchemy:mixture_potion_mana_t5",
+   "grug_alchemy:mixture_potion_mana_t6",
+   "grug_alchemy:mixture_potion_swiftness"
+  ],
+  "shift_list": "grug_shift",
+  "unleveled_equipment": null
+ }
+}

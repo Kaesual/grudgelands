@@ -1,0 +1,51 @@
+PASS  setup  the 0.44.0 commit c913dbbe exported (its game and launcher)
+PASS  setup  boot S (0.44.0): a new world, smith, scribe and sleeper joined, were built and left
+PASS  names  0.44.0: the equipment with an item level is exactly the step's 156 gear items with their (item level, requirement)
+PASS  names  0.44.0: no equipment without an item level of its definition
+PASS  names  0.44.0: the bags and their sizes are the step's
+PASS  names  0.44.0: the hotbar has 8 slots and there are 4 bag slots, as the step's move order assumes
+PASS  names  0.44.0: the items under grug_alchemy:mixture_ (and the mixture group) are ST's 40 mixtures
+PASS  names  0.44.0: no alias names a gear item, a mixture or a bag
+PASS  setup  saved: every placed stack as built (69 stacks)
+PASS  setup  saved: smith is a level-10 warrior wearing an Iron Chestplate a fresh copy of which 0.44.0 also allows (10 / 10)
+PASS  setup  saved: the grids hold 9 (smith), 3 (scribe) and 1 (sleeper) stacks; seen-items meta on smith and sleeper
+PASS  guard  boot R (0.45.0): the 0.44.0 world without the tool is refused, naming the step and the command line
+PASS  guard  the refused start wrote nothing
+PASS  tool   --check: world 0.44.0, due 0.45.0, write access on all three backends, nothing written
+PASS  tool   migrate: the events start, step_start/step_done per due step, done; exit 0
+PASS  tool   step 0.45.0 wrote three inventories, two seen-items deletions and three markers, nothing else
+PASS  tool   the record is 0.45.0
+PASS  step   scribe: every slot of every list as the step must leave it (mixtures gone, craft moved, unmodified gear pinned, everything else unchanged)
+PASS  step   sleeper: every slot of every list as the step must leave it (mixtures gone, craft moved, unmodified gear pinned, everything else unchanged)
+PASS  step   smith: every slot of every list as the step must leave it (mixtures gone, craft moved, unmodified gear pinned, everything else unchanged)
+PASS  step   smith: two craft stacks moved into the slots the mixtures freed, six left in the grid (size 9)
+PASS  step   scribe and sleeper: the grid stored with size 0; craftpreview empty for all
+PASS  step   no mixture left in any list of any character
+PASS  step   player meta: the marker on all three, seen-items gone, nothing else changed
+PASS  step   nothing else changed: only the characters' item and meta rows and the record (positions, auth, other mod storage untouched)
+PASS  tool   --check after: world 0.45.0, nothing due
+PASS  boot   boot A (0.45.0): starts from 0.45.0 with nothing due; smith and scribe joined and left; the record is 0.45.0
+PASS  names  0.45.0: every gear item of the step now has another definition value (the pin keeps each)
+PASS  names  0.45.0: the bag sizes are unchanged (the join sizes bag lists by them)
+PASS  names  0.45.0: the items under grug_alchemy:mixture_ (and the mixture group) are ST's 40 mixtures
+PASS  names  0.45.0: no alias names a gear item, a mixture or a bag
+PASS  boot   smith's join: the engine loaded the migrated inventory (the grid with its stored size) and the marker
+PASS  boot   scribe's join: the engine loaded the migrated inventory (the grid with its stored size) and the marker
+PASS  boot   after the join: no mixture, the craft grid gone (size 0), the marker cleared, for smith and scribe
+PASS  boot   smith: the leftover torches merged through the give helper (main[1] 13)
+PASS  boot   smith: the next four leftovers fill the output area in grid order
+PASS  boot   smith: the last leftover dropped at the feet, nothing else dropped
+PASS  boot   smith: every unmodified piece keeps its 0.44.0 item level and requirement in its slot (10 pieces: equipped, main, bag, the moved battle axe)
+PASS  boot   smith: their tooltips are rebuilt ("Item level <old>", the old requirement line)
+PASS  boot   smith: everything stays equipped and wearable at level 10; a fresh Iron Chestplate would need level 11 now
+PASS  boot   smith: the equipped armour is what 0.44.0 counted (9)
+PASS  boot   smith: the first-tier sword and battle axe deal their 0.44.0 damage (5 and 8, not the new definition's 4 and 6)
+PASS  boot   smith: the broken bow stays broken and keeps its 0.44.0 damage (5) for the repair
+PASS  boot   smith: crafted and rolled gear keeps its own item level, requirement, enchants and capabilities
+PASS  boot   scribe: the helm left in the shift-click slot came back into the inventory at the join, pinned at 20 / 20
+PASS  boot   scribe: the moved bow, the trinket and the equipped sword at their old levels with rebuilt tooltips; the moved apples in main[11]
+PASS  boot   scribe: the plain first-tier sword deals 5 and is wearable at level 1
+PASS  boot   saved after boot A: the markers of smith and scribe are gone; sleeper (offline) keeps its marker and its migrated inventory
+PASS  boot   saved after boot A: no mixture for any character
+
+49 checks, 0 failed

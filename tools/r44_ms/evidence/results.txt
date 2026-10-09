@@ -7,23 +7,25 @@ PASS  names  0.43.0: group grug_bound_skill is skills plus mount items, no alias
 PASS  names  0.43.0: the hotbar has the step's 8 slots
 PASS  setup  saved: rider carries every placed stack (8 to remove, in craft, grug_bag1_content, main)
 PASS  setup  saved: rider owns riding tiers 1-2 and the boat (purchase record)
-PASS  guard  boot R (0.44.0): the 0.43.0 world without the tool is refused, naming the step and the command line
+PASS  guard  boot R (0.45.0): the 0.43.0 world without the tool is refused, naming the step and the command line
 PASS  guard  the refused start wrote nothing
-PASS  tool   --check: world 0.43.0, due 0.44.0, write access on all three backends, nothing written
+PASS  tool   --check: world 0.43.0, due 0.44.0, 0.45.0, write access on all three backends, nothing written
+PASS  tool   step 0.44.0 alone (the tool pinned to the 0.44.0 checkout, on a copy): exit 0, the copy at 0.44.0
 PASS  tool   migrate: the events start, step_start/step_done per due step, done; exit 0
 PASS  tool   step 0.44.0 wrote one character's inventory and nothing else
-PASS  tool   the record is 0.44.0
-PASS  step   rider: exactly the 8 placed stacks to remove are gone, every other slot of every list unchanged
-PASS  step   rider: no mount item in any list, no skill outside main[1..8]
-PASS  step   rider and walker: player meta unchanged (the purchase record kept)
-PASS  step   nothing else changed: only rider's item rows and the record (walker's rows, positions, auth, other mod storage untouched)
-PASS  tool   --check after: world 0.44.0, nothing due
-PASS  boot   boot A (0.44.0): starts from 0.44.0 with nothing due; rider and walker joined and left
+PASS  tool   the record is 0.45.0
+PASS  step   rider (0.44.0 alone): exactly the 8 placed stacks to remove are gone, every other slot of every list unchanged
+PASS  step   rider (0.44.0 alone, and after every due step): no mount item in any list, no skill outside main[1..8]
+PASS  step   rider and walker (0.44.0 alone): player meta unchanged (the purchase record kept)
+PASS  step   rider and walker after every due step: the purchase record kept
+PASS  step   0.44.0 alone changed nothing else: only rider's item rows and the record (walker's rows, positions, auth, other mod storage untouched)
+PASS  tool   --check after: world 0.45.0, nothing due
+PASS  boot   boot A (0.45.0): starts from 0.45.0 with nothing due; rider and walker joined and left
 PASS  boot   rider's join: the engine loaded the migrated inventory
-PASS  boot   rider after the game's join: no mount item, no skill outside the hotbar; the hotbar skills and every other kept stack in place (name, count, wear)
+PASS  boot   rider after the game's join: no mount item, no skill outside the hotbar; the hotbar skills in place and every other kept stack held (name, count, wear)
 PASS  boot   rider's mounts in the quickbar: owned tiers 1, 2 and 5 from the purchase record, one quickbar button each
 PASS  boot   walker after the game's join: its hotbar skill and its apple in place
-PASS  names  0.44.0: every item in group grug_ability is still under grug_abilities: (the hotbar skills the step keeps are the game's skills)
+PASS  names  0.45.0: every item in group grug_ability is still under grug_abilities: (the hotbar skills the step keeps are the game's skills)
 PASS  boot   saved after boot A: no mount item and no skill outside the hotbar for either character
 
-27 checks, 0 failed
+29 checks, 0 failed

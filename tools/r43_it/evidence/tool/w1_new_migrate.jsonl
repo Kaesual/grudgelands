@@ -1,2 +1,2 @@
 {"event": "start", "mode": "migrate", "world": "<run>/w1"}
-{"event": "done", "mode": "migrate", "world_version": null, "record": null, "new_world": true, "target": "0.44.0", "due": [], "backends": {"player": "absent", "auth": "absent", "mod_storage": "sqlite3"}, "applied": []}
+{"event": "done", "mode": "migrate", "world_version": null, "record": null, "new_world": true, "target": "0.45.0", "due": [], "backends": {"player": "absent", "auth": "absent", "mod_storage": "sqlite3"}, "applied": []}

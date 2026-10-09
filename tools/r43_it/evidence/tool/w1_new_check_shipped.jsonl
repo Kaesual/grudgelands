@@ -1,2 +1,2 @@
 {"event": "start", "mode": "check", "world": "<run>/w1"}
-{"event": "done", "mode": "check", "world_version": null, "record": null, "new_world": true, "target": "0.44.0", "due": [], "backends": {"player": "absent", "auth": "absent", "mod_storage": "sqlite3"}, "write_checked": ["mod_storage"]}
+{"event": "done", "mode": "check", "world_version": null, "record": null, "new_world": true, "target": "0.45.0", "due": [], "backends": {"player": "absent", "auth": "absent", "mod_storage": "sqlite3"}, "write_checked": ["mod_storage"]}
