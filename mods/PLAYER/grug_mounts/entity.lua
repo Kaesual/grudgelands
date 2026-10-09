@@ -20,6 +20,10 @@ local AIRBORNE_PAUSE = 0.5
 -- a 14 nodes/s tolerance, is the damage. The mount falls at 9.81, so the
 -- rule reads the height, not the mount's own speed.
 local PLAYER_GRAVITY = 19.62
+-- Water is for boats (Round 45 PT6): a riding or flying mount ends where it
+-- enters water, and none is summoned there.
+local WATER_DISMOUNT = "Mounts cannot enter water."
+local WATER_REFUSAL = "Only boats can be summoned in water."
 local FALL_TOLERANCE = 14
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
 local WARNING_DIRECTIONS = {}
@@ -411,19 +415,25 @@ local function fall_damage(self, player, pos, height)
 	return true
 end
 
+local function in_liquid(pos)
+	local inside = node_definition(position_node(pos))
+	return inside and (inside.liquidtype or "none") ~= "none"
+end
+
 -- The fall: the peak height while the mount is off the ground (a liquid
 -- breaks the fall, as it slows a swimmer: the peak follows the mount down
--- through it), the drop below it on landing. A new mount starts without a
--- peak. Returns the drop on the step the mount lands.
+-- through it), the drop below it on landing. A landing in a liquid is no
+-- drop at all, however fast the fall was (a pool floor reached between two
+-- steps; water already ends the ride in on_step). A new mount starts without
+-- a peak. Returns the drop on the step the mount lands.
 local function track_fall(self, moveresult, pos)
 	if not moveresult or moveresult.touching_ground then
 		local peak = self._grug_fall_peak
 		self._grug_fall_peak = nil
-		return peak and peak - pos.y
+		if not peak or in_liquid(pos) then return nil end
+		return peak - pos.y
 	end
-	local inside = node_definition(position_node(pos))
-	if not self._grug_fall_peak or pos.y > self._grug_fall_peak or
-			(inside and (inside.liquidtype or "none") ~= "none") then
+	if not self._grug_fall_peak or pos.y > self._grug_fall_peak or in_liquid(pos) then
 		self._grug_fall_peak = pos.y
 	end
 	return nil
@@ -591,6 +601,15 @@ local entity_definition = {
 		if not record or record.object ~= self.object then self.object:remove() return end
 		local pos = self.object:get_pos()
 		local tier = grug_mounts.TIERS[self._grug_tier]
+		-- Water is for boats: a riding or flying mount whose body (its
+		-- origin, at its feet) enters a water node ends at once, and the rider
+		-- stays there, in the water, as a swimmer. This runs before the land
+		-- step, so a fall into water deals no mount fall damage; lava is no
+		-- water and ends the ride through its damage (the HP observer).
+		if tier.mode ~= "water" and is_water(pos) then
+			grug_mounts.dismount(player, WATER_DISMOUNT, true)
+			return
+		end
 		if tier.mode == "flight" then
 			local legal = grug_mounts.flight_state(player, pos)
 			if not legal then
@@ -746,6 +765,9 @@ local function summon_position(player, tier_id)
 		if record and record.mode == "water" then pos.y = pos.y - 0.5 end
 		return grug_mounts.boat_surface(pos)
 	end
+	-- Feet in water, or on its surface (a boat's seat, a swimmer at the top):
+	-- only boats.
+	if grug_mounts.boat_touches_water(pos) then return nil, WATER_REFUSAL end
 	if tier.mode == "flight" then
 		local legal = grug_mounts.flight_state(player, pos)
 		if not legal then return nil, "Flying mounts are forbidden here." end

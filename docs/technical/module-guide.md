@@ -347,7 +347,9 @@ tools](#player-meta-read-by-external-tools).
   `grug_mounts.dismount` is the shared cleanup path for manual, damage, death, leave, shutdown and external-detach exits and clears the
   runtime-only untimed `mount` status. Mounted players cannot attack. A land
   controller deals its rider the engine's player fall damage itself (peak
-  height while airborne, `set_hp` with type `fall`; mounts.md §3.1). Land
+  height while airborne, `set_hp` with type `fall`; mounts.md §3.1). A
+  riding or flying mount entering water ends in its step (hard dismount,
+  "Mounts cannot enter water.") and is not summoned in water. Land
   controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
   Since Round 29 boats are the third mode, **water** (`grug_mounts.TIERS`
   5 and 6, `BOAT_TIERS`): the same ownership meta and dismount path, a

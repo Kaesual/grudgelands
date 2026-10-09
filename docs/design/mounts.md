@@ -226,6 +226,16 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   remains in player metadata; every reconnect starts on foot.
 - **Entering a no-mount zone dismounts you** (§4) — via the same detach and
   entity-removal transaction.
+- **Water is for boats** (Round 45 playtest). A riding or flying mount whose
+  body enters water — its origin, at its feet, in a `group:water` node
+  (normal or river water, source or flowing, one node deep included) — ends
+  at once in its own step: a hard dismount that leaves the rider where the
+  mount was, in the water, with the feed note "Mounts cannot enter water."
+  and the ride sound stopped. A flyer just above a water surface flies on.
+  A riding or flying mount is also refused where the player's feet or the
+  node below them are water (standing or swimming in it, sitting in a boat):
+  "Only boats can be summoned in water." Lava is no water: its damage ends
+  the ride (§3.1).
 - **A stun dismounts you**: `grug_core.set_stun` dismounts a mounted player
   (`grug_core/movement.lua`).
 - **Taking damage dismounts you** (§3.1) — the same detach path again.
@@ -256,8 +266,9 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   the player's own collisions, which an attached player does not have, so
   the land controller applies the engine's player rule itself: it keeps the
   peak height while off the ground (a liquid breaks the fall: the peak
-  follows the mount down through it; a new mount starts without one), and on
-  landing a drop of `d` nodes deals `floor(f × sqrt(2 × 19.62 × d) − 14 +
+  follows the mount down through it, and a landing in a liquid is no drop,
+  however fast; water ends the ride before any landing anyway; a new mount
+  starts without a peak), and on landing a drop of `d` nodes deals `floor(f × sqrt(2 × 19.62 × d) − 14 +
   0.5)` native damage with reason type `fall`, where `f` is the floor
   node's and the rider's `fall_damage_add_percent` factor (19.62 is the
   player's gravity; the mount itself falls at 9.81, so the height counts,

@@ -19,9 +19,17 @@
 --      floor(f * sqrt(2 * 19.62 * d) - 14 + 0.5) with type "fall": 4 and 5
 --      nodes are harmless, 6 and 10 nodes hurt; the peak of a jump counts;
 --      a damage-adding floor multiplies the speed before the tolerance, a
---      negating one and an immortal rider take none; water on the way breaks
---      the fall; a remount starts without a peak; the fall hit dismounts
---      (both objects gone); a flyer takes none.
+--      negating one and an immortal rider take none; a fall into water ends
+--      the ride with no fall damage, also landing on a pool floor with no
+--      step sampled inside the water, and a landing in lava deals none
+--      either; a remount starts without a peak; the fall hit dismounts
+--      (both objects gone); a flyer takes none;
+--   A  water is for boats: a horse walking into water (source, river water
+--      flowing, one node deep) and a flyer descending into it are dismounted
+--      at once where they are (one feed note, the gallop stopped); beside
+--      water and a flyer just above its surface ride on; a boat stays; a
+--      riding or flying mount is refused standing in water, swimming at its
+--      surface and from a boat (which stays).
 --
 --   luajit tools/r45_pt6/portable_test.lua [REPO]
 -- Prints "R45 PT6 PORTABLE PASS checks=<n>" or the failures.
@@ -62,6 +70,7 @@ local function world_node(pos)
 		math.floor(pos.z + 0.5))] or "air"
 end
 
+local feeds = {}
 local clock_us = 1000000
 local plays, fades = {}, {}
 local next_handle = 0
@@ -76,6 +85,8 @@ core = {
 		floor_hard = {walkable = true, liquidtype = "none", groups = {fall_damage_add_percent = 100}},
 		floor_soft = {walkable = true, liquidtype = "none", groups = {fall_damage_add_percent = -100}},
 		water = {walkable = false, liquidtype = "source", groups = {water = 3}},
+		river_flowing = {walkable = false, liquidtype = "flowing", groups = {water = 3}},
+		lava = {walkable = false, liquidtype = "source", groups = {lava = 3}},
 	},
 	get_us_time = function() return clock_us end,
 	sound_play = function(spec, params, ephemeral)
@@ -90,7 +101,10 @@ core = {
 	sound_fade = function(handle, step, gain)
 		fades[#fades + 1] = {handle = handle, step = step, gain = gain}
 	end,
-	get_item_group = function() return 0 end,
+	get_item_group = function(name, group)
+		local def = core.registered_nodes[name]
+		return def and def.groups and def.groups[group] or 0
+	end,
 	get_node_or_nil = function(pos) return {name = world_node(pos)} end,
 	serialize = function(value) serial[#serial + 1] = copy(value); return "S" .. #serial end,
 	deserialize = function(text)
@@ -179,7 +193,10 @@ grug_core = {
 	set_status = function() end,
 	clear_status = function() end,
 	hud_layout = {anchors = {flight_warning = {}}, flight_warning_offset = function() return {} end},
-	feed = function() return true end,
+	feed = function(player, kind, text, key)
+		feeds[#feeds + 1] = {name = player:get_player_name(), kind = kind, text = text, key = key}
+		return true
+	end,
 }
 grug_zones = {
 	water_class_at = function() return "land" end,
@@ -436,12 +453,25 @@ horse = sit(1)
 eq(fall(horse, 3), 8, "F the rider's own fall_damage_add_percent counts like the engine's")
 ada.armor = {}
 
--- Water on the way breaks the fall: water at y = 1..5 over the floor.
+-- A fall into water: the ride ends in the water, with no fall damage.
 for y = 1, 5 do world[node_key(0, y, 0)] = "water" end
 horse = sit(1)
-eq(fall(horse, 20, {GROUND + 20, 12, 5, 3, 1}), 0, "F a fall through water does not hurt")
-check(grug_mounts.active.ada ~= nil, "F (still mounted)")
+eq(fall(horse, 20, {GROUND + 20, 12, 5, 3, 1}), 0, "F a fall into water deals no fall damage")
+eq(grug_mounts.active.ada, nil, "F (the water ended the ride)")
 for y = 1, 5 do world[node_key(0, y, 0)] = nil end
+-- Delta review: a 30-node fall into a pool two deep, no step sampled
+-- inside the water before the mount lands on the pool floor.
+for y = 0, 1 do world[node_key(0, y, 0)] = "water" end
+horse = sit(1)
+eq(fall(horse, 30, {GROUND + 30}), 0, "F a landing on a pool floor (no sample in the water) deals none")
+eq(grug_mounts.active.ada, nil, "F (dismounted by the water, not by a hit)")
+for y = 0, 1 do world[node_key(0, y, 0)] = nil end
+-- A landing in lava: no mount fall damage (lava's own damage ends the ride).
+world[node_key(0, 0, 0)] = "lava"
+horse = sit(1)
+eq(fall(horse, 30, {GROUND + 30}), 0, "F a landing in lava deals no fall damage")
+grug_mounts.dismount(ada, "manual", false)
+world[node_key(0, 0, 0)] = nil
 
 -- A dismount mid-air and a remount: the new mount has no peak.
 horse = sit(1)
@@ -454,6 +484,74 @@ eq(fall(horse, 0, {}), 0, "F a remount starts without a peak")
 grug_mounts.dismount(ada, "manual", false)
 local flyer2 = sit(3)
 eq(fall(flyer2, 20), 0, "F a flyer takes none")
+grug_mounts.dismount(ada, "manual", false)
+
+------------------------------------------------------------------------------
+-- A: water is for boats.
+------------------------------------------------------------------------------
+local function last_feed() return feeds[#feeds] and feeds[#feeds].text end
+local function walk_into(name, tier)
+	world[node_key(1, 0, 0)] = name
+	local entity = sit(tier)
+	local record = grug_mounts.active.ada
+	ada.hp, feeds, fades = 100, {}, {}
+	ada.control = {up = true}
+	steps(entity, 0.5) -- running: the gallop plays
+	entity.object.pos = {x = 1, y = GROUND, z = 0}
+	CONTROLLER.on_step(entity, DT, {touching_ground = true, collides = true,
+		standing_on_object = false, collisions = {}})
+	ada.control = {}
+	world[node_key(1, 0, 0)] = nil
+	return record
+end
+floor_of("floor")
+local record_w = walk_into("water", 1)
+eq(grug_mounts.active.ada, nil, "A a horse walking into water (one node deep) is dismounted")
+check(not record_w.object:is_valid() and not record_w.visual:is_valid(), "A both objects gone")
+eq(last_feed(), "Mounts cannot enter water.", "A one feed note says why")
+eq(#feeds, 1, "A (once)")
+eq(ada.pos.x, 1, "A the rider stays where the mount entered the water")
+eq(#fades, 1, "A the gallop stops")
+eq(ada.hp, 100, "A no damage")
+walk_into("river_flowing", 2)
+eq(grug_mounts.active.ada, nil, "A flowing river water dismounts a race mount too")
+walk_into("air", 1)
+check(grug_mounts.active.ada ~= nil, "A beside water the horse rides on")
+grug_mounts.dismount(ada, "manual", false)
+
+-- A flyer: just above the surface it flies on, into the water it ends.
+local bird = sit(3)
+for x = -2, 2 do for z = -2, 2 do world[node_key(x, 0, z)] = "water" end end
+feeds = {}
+at(bird, 0.6, false)
+check(grug_mounts.active.ada ~= nil, "A a flyer just above the water flies on")
+at(bird, 0.2, false)
+eq(grug_mounts.active.ada, nil, "A a flyer descending into water is dismounted")
+eq(last_feed(), "Mounts cannot enter water.", "A the flyer's note")
+
+-- A boat on the same water stays.
+ada.pos = {x = 0, y = -0.2, z = 0}
+check(grug_mounts.mount(ada, 5), "A a boat is summoned in the water")
+local boat = grug_mounts.active.ada.object:get_luaentity()
+at(boat, 0.5, false)
+check(grug_mounts.active.ada ~= nil and grug_mounts.active.ada.mode == "water", "A the boat stays")
+-- From the boat: a horse or a flyer is refused, the boat stays.
+ada.pos = boat.object:get_pos()
+local ok, message = grug_mounts.toggle(ada, 1)
+check(not ok and message == "Only boats can be summoned in water.", "A no horse from a boat: " .. tostring(message))
+eq(grug_mounts.active.ada and grug_mounts.active.ada.mode, "water", "A the boat stays after the refusal")
+grug_mounts.dismount(ada, "manual", true)
+-- Standing in water and swimming at its surface: refused.
+ada.pos = {x = 0, y = -0.49, z = 0}
+ok, message = grug_mounts.mount(ada, 1)
+check(not ok and message == "Only boats can be summoned in water.", "A no horse standing in water")
+ada.pos = {x = 0, y = 0.5, z = 0}
+ok, message = grug_mounts.mount(ada, 3)
+check(not ok and message == "Only boats can be summoned in water.", "A no flyer swimming at the surface")
+eq(grug_mounts.active.ada, nil, "A (nothing summoned)")
+for x = -2, 2 do for z = -2, 2 do world[node_key(x, 0, z)] = nil end end
+ada.pos = {x = 0, y = GROUND, z = 0}
+check(grug_mounts.mount(ada, 1), "A on dry ground the horse comes")
 grug_mounts.dismount(ada, "manual", false)
 
 if failures > 0 then
