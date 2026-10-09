@@ -709,7 +709,8 @@ local counts = J.ingredient_counts(p)
 local reads = list_reads
 fs = open(p)
 local per_build = list_reads - reads
-check(per_build <= 5 + 2, "N one inventory pass per build (" .. per_build .. " list reads)")
+-- No bag: the pass reads `main` once.
+eq(per_build, 1, "N one inventory pass per build")
 has(fs, fs_escape("×") .. "7]", "N Block 01 ×7 (the tagged oak never counts)")
 eq(J.crafts_from_counts(counts, J.recipes_in_area("basic")[2]), 7,
 	"N jobs.lua's rule gives the same 7")
@@ -774,8 +775,10 @@ eq(J.job_state(cook), nil, "Q above the maximum: no job")
 has(cook.formspec, "grug_craft_qty;;12]", "Q the field lowered to the maximum")
 says(cook.formspec, "Not enough ingredients — quantity reduced to 12", "Q the note")
 eq(count_of(cook, "t:meat"), 30, "Q nothing consumed")
--- Max fills the field; a second click starts.
+-- Max fills the field from the build's own pass; a second click starts.
+reads = list_reads
 click(cook, {[FIELDS.qty] = "3", [FIELDS.max] = "Max"})
+eq(list_reads - reads, 1, "Q a Max click: one inventory pass")
 has(cook.formspec, "grug_craft_qty;;12]", "Q Max fills the maximum")
 lacks(cook.formspec, "quantity reduced", "Q the note goes with the next click")
 
@@ -972,7 +975,13 @@ open(reader)
 click(reader, {[FIELDS.row .. "1"] = ""})
 eq(st_of(reader).selected, long.id, "the long-named recipe chosen")
 fs = reader.formspec
-has(fs, "..]", "the long name clipped")
+has(fs, "label[0.9,2.63;A Very Long Decorated..]", "the long name clipped in the list")
+has(fs, "tooltip[grug_craft_row1;A Very Long Decorated Ceremonial Bookshelf of Oak]",
+	"... in full as the row's tooltip")
+lacks(fs, "tooltip[grug_craft_row2;", "no tooltip for a name that fits")
+has(fs, "label[6.65,1.25;A Very Long Decorated]label[6.65,1.6;Ceremonial Bookshelf..]",
+	"the box wraps the name to two lines, the rest clipped")
+has(fs, "label[6.65,2;Basic · Tier 1]", "the area line below it")
 has(fs, "Any Wood]", "a group entry: Any Wood")
 has(fs, "tooltip[5.6,2.6;4.4,0.4;Oak Plank or Pine Plank]", "the group's members in a tooltip")
 geometry_ok(fs, "long names")

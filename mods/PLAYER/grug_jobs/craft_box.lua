@@ -165,18 +165,31 @@ local function build(player, view)
 		return table.concat(fs)
 	end
 	local stacks = stackable(recipe)
+	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe,
+		view.counts)
+	-- Max (a click) is filled here, from this build's one inventory pass.
+	if st.fill_max then st.qty, st.fill_max = tostring(math.max(1, most)), nil end
 	local quantity = stacks and quantity_of(st.qty) or 1
 	local sub = area_name(recipe) .. " · Tier " .. recipe.tier
 	if recipe.count > 1 then sub = sub .. " · makes " .. recipe.count end
-	fs[#fs + 1] = ("item_image[%s,%s;0.9,0.9;%s]label[%s,%s;%s]label[%s,%s;%s]"):format(
-		n(X), n(BOX.y + 0.2), esc(recipe.output),
-		n(X + 1.05), n(BOX.y + 0.45), esc(clip(label_of(recipe.output),
-			math.floor((W - 1.05) * CHARS))),
-		n(X + 1.05), n(BOX.y + 0.85), esc(sub))
+	-- The name in up to two lines beside the icon, then the area line.
+	local width = math.floor((W - 1.05) * CHARS)
+	local name = {}
+	for piece in (grug_inventory.wrap_text(label_of(recipe.output), width) ..
+			"\n"):gmatch("(.-)\n") do
+		name[#name + 1] = piece
+	end
+	if #name > 2 then name = {name[1], clip(table.concat(name, " ", 2), width)} end
+	local y = BOX.y + (#name > 1 and 0.3 or 0.45)
+	fs[#fs + 1] = ("item_image[%s,%s;0.9,0.9;%s]"):format(n(X), n(BOX.y + 0.2),
+		esc(recipe.output))
+	for _, piece in ipairs(name) do
+		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 1.05), n(y), esc(piece))
+		y = y + 0.35
+	end
+	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 1.05), n(y + 0.05), esc(sub))
 	fs[#fs + 1] = ("label[%s,%s;Ingredients (have/need)]"):format(n(X), n(BOX.y + 1.4))
-	local y = ingredient_rows(fs, recipe, view.counts, quantity or 1, BOX.y + 1.65)
-	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe,
-		view.counts)
+	y = ingredient_rows(fs, recipe, view.counts, quantity, BOX.y + 1.65)
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y + 0.2), esc("Max: " .. most ..
 		(by_space < by_ingredients and " (output area)" or "")))
 	y = y + 0.5
@@ -217,7 +230,7 @@ local function fields(player, st, fields)
 	if not recipe then return false end
 	local stacks = stackable(recipe)
 	if fields[F.max] then
-		st.qty = tostring(math.max(1, (grug_jobs.max_craftable(player, recipe))))
+		st.fill_max = true
 		return true
 	end
 	if fields.key_enter_field == F.qty then

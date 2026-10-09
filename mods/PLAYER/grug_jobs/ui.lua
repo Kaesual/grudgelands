@@ -73,8 +73,10 @@ local PAGER_Y = ROW_Y + PER_PAGE * ROW_H + 0.2
 local BOX = {x = 5.4, y = 0.95, w = 4.8, h = 8.25}
 local OUT = {x = 10.4, y = 0.95, w = 2.9, h = 8.25}
 grug_jobs.CRAFT_BOX = BOX
--- Characters per real unit for clipping and wrapping (the overview's rate).
+-- Characters per real unit for clipping and wrapping (the overview's rate),
+-- and a row's room for its name between the icon and ×N.
 local CHARS_PER_UNIT = 6.6
+local ROW_CHARS = math.floor(3.55 * CHARS_PER_UNIT)
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -218,15 +220,20 @@ local function list_content(fs, player, st, tab, counts)
 				n(ROW_H), SELECTED_ROW)
 		end
 		local count = "×" .. crafts
+		local name = label_of(recipe.output)
+		local shown = clip(name, ROW_CHARS)
 		fs[#fs + 1] = ("item_image[%s,%s;%s,%s;%s]label[%s,%s;%s]label[%s,%s;%s]"):format(
 			n(LIST_X + 0.1), n(y + (ROW_H - ICON) / 2), n(ICON), n(ICON), esc(recipe.output),
-			n(LIST_X + 0.7), n(y + ROW_H / 2),
-			esc(clip(label_of(recipe.output), math.floor(3.55 * CHARS_PER_UNIT))),
+			n(LIST_X + 0.7), n(y + ROW_H / 2), esc(shown),
 			n(LIST_X + LIST_W - 0.75), n(y + ROW_H / 2),
 			esc(crafts > 0 and count or core.colorize(DIM, count)))
-		-- The click target over the row (the old book's overlay pattern).
+		-- The click target over the row (the old book's overlay pattern); a
+		-- clipped name in full as its tooltip.
 		fs[#fs + 1] = ("image_button[%s,%s;%s,%s;blank.png;%s%d;;false;false]"):format(
 			n(LIST_X), n(y), n(LIST_W), n(ROW_H), F.row, index)
+		if shown ~= name then
+			fs[#fs + 1] = ("tooltip[%s%d;%s]"):format(F.row, index, esc(name))
+		end
 	end
 	if #rows == 0 then
 		wrapped_labels(fs, LIST_X + 0.15, ROW_Y + 0.35, LIST_W - 0.3,
