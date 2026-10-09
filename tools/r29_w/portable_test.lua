@@ -64,9 +64,8 @@ check(#found == 1 and found[1].id == "highcourt", "A newly found")
 check(#R.newly_found(ROWS, "accord", {highcourt=true}, "human", {x=301, y=10, z=1}) == 0, "A known not found again")
 check(#R.newly_found(ROWS, "accord", {}, "human", {x=401, y=10, z=0}) == 0, "A enemy stone never found")
 local entries = R.entries(ROWS, "accord", {}, "human", "highcourt")
--- Round 45 PT9: the list ends with the Claim Stone entry ("no_claim" here).
-check(#entries == 4 and entries[1].state == "unknown" and entries[2].state == "travel" and
- entries[3].state == "here" and entries[4].state == "no_claim", "A entries")
+check(#entries == 3 and entries[1].state == "unknown" and entries[2].state == "travel" and
+ entries[3].state == "here", "A entries")
 local base = {alive=true, faction="accord", race="human", set={}, origin=hc, target=ROWS[2],
  at_origin=true, in_combat=false, pending=false}
 local function refusal(changes)

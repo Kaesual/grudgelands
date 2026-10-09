@@ -58,28 +58,27 @@ function M.newly_found(rows, faction, set, race, pos)
  return result
 end
 
--- Round 45 PT9: the owner's activated Claim Stone is a waypoint of its own,
--- the last entry of every list. Its button is always CLAIM_ID; without a
--- stone (none, a draft, picked up or destroyed) the entry reads "No claim
--- stone".
-M.CLAIM_ID = "claim"
-M.CLAIM_LABEL = "Your Claim Stone"
-
 -- The travel list shown at waystone `here_id`: every own-faction waystone in
--- order, each "here", "travel" (known) or "unknown", then the Claim Stone:
--- "travel" with `claim` (its row), else "no_claim".
-function M.entries(rows, faction, set, race, here_id, claim)
+-- order, each "here", "travel" (known) or "unknown".
+function M.entries(rows, faction, set, race, here_id)
  local result = {}
  for _, row in ipairs(M.network(rows, faction)) do
   local state = row.id == here_id and "here" or
    (M.known(set, row, race) and "travel" or "unknown")
   result[#result + 1] = {row = row, state = state}
  end
- if faction ~= nil then
-  result[#result + 1] = claim and {row = claim, state = "travel"} or
-   {row = {id = M.CLAIM_ID, label = M.CLAIM_LABEL}, state = "no_claim"}
- end
  return result
+end
+
+-- Round 45 PT9: the owner's activated Claim Stone is a waypoint of its own,
+-- the entry after the list above: "travel" with `claim` (its row), else
+-- "no_claim" (no stone, a draft, picked up or destroyed). Its button is
+-- always CLAIM_ID.
+M.CLAIM_ID = "claim"
+M.CLAIM_LABEL = "Your Claim Stone"
+function M.claim_entry(claim)
+ if claim then return {row = claim, state = "travel"} end
+ return {row = {id = M.CLAIM_ID, label = M.CLAIM_LABEL}, state = "no_claim"}
 end
 
 -- Why a trip from `origin` to `target` may not start, or nil when it may.

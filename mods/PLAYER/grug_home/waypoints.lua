@@ -100,7 +100,8 @@ end
 local dialogs, serial = {}, 0
 local function form(player, origin)
  local entries = rules.entries(rows, grug_factions.get_faction(player),
-  known_set(player), race_of(player), origin.id, grug_home.claim_waypoint(player))
+  known_set(player), race_of(player), origin.id)
+ entries[#entries + 1] = rules.claim_entry(grug_home.claim_waypoint(player))
  local fs = {"formspec_version[3]size[7,", tostring(1.9 + 0.7 * #entries), "]",
   "label[0.4,0.5;", core.formspec_escape(origin.label .. " Waystone"), "]"}
  for index, entry in ipairs(entries) do

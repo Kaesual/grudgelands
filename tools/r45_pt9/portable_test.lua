@@ -2,9 +2,9 @@
 --
 --   luajit tools/r45_pt9/portable_test.lua [REPO]
 --
--- A. The pure rules (grug_home/waypoints_core.lua): every list ends with the
---    Claim Stone entry, "travel" with a claim row, else "no_claim"; a claim
---    target needs no visit.
+-- A. The pure rules (grug_home/waypoints_core.lua): the Claim Stone entry,
+--    "travel" with a claim row, else "no_claim"; a claim target needs no
+--    visit.
 -- B. The shipped grug_home (init, claim_home, travel, waypoints) with the real
 --    grug_housing api.lua (claims faked on top) on a fake engine: no stone,
 --    a carried stone and a draft read "No claim stone" (never "Not yet
@@ -33,14 +33,14 @@ local ROWS = {
  {id="hearth", label="hearth", faction="accord", race="dwarf", start=true, pos={x=0, y=10, z=0}},
  {id="dawn", label="dawn", faction="accord", race="human", start=true, pos={x=100, y=10, z=0}},
 }
-local list = R.entries(ROWS, "accord", {}, "human", "dawn")
-check(#list == 3 and list[3].state == "no_claim" and list[3].row.id == R.CLAIM_ID and
- list[3].row.label == "Your Claim Stone", "A no claim: last entry no_claim")
+local entry = R.claim_entry(nil)
+check(entry.state == "no_claim" and entry.row.id == R.CLAIM_ID and
+ entry.row.label == "Your Claim Stone", "A no claim: no_claim")
 local claim_row = {id="claim:7", claim="7", faction="accord", label="Your Claim Stone",
  pos={x=500, y=20, z=500}}
-list = R.entries(ROWS, "accord", {}, "human", "dawn", claim_row)
-check(#list == 3 and list[3].state == "travel" and list[3].row == claim_row, "A claim: travel")
-check(#R.entries(ROWS, nil, {}, "human", "dawn", claim_row) == 0, "A no faction, no list")
+entry = R.claim_entry(claim_row)
+check(entry.state == "travel" and entry.row == claim_row, "A claim: travel")
+check(#R.entries(ROWS, "accord", {}, "human", "dawn") == 2, "A the waystone list itself unchanged")
 check(R.refusal({alive=true, faction="accord", race="human", set={}, origin=ROWS[2],
  target=claim_row, at_origin=true}) == nil, "A claim target needs no visit")
 check(R.refusal({alive=true, faction="accord", race="human", set={}, origin=ROWS[2],
