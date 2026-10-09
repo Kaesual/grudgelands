@@ -340,9 +340,10 @@ local MODEL = {x = 0.4, y = 1.35, w = 3.3, h = BOX_BOTTOM - 0.25 - 1.35}
 local STAT_X, STAT_Y, STAT_STEP = 3.95, 1.6, 0.5
 local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.15 - STAT_X
 local STAT_CHARS = math.floor(STAT_W / 0.15)
--- The cloak block from its top: the label, the dropdown (one unit high),
--- two lines of hint ending at the model's bottom.
-local CLOAK_Y = MODEL.y + MODEL.h - 2.1
+-- The cloak block: the label and under it the dropdown (one unit high),
+-- ending at the model's bottom; the hint is the dropdown's tooltip, so the
+-- block stays clear of a four-line Claim Stone status (a draft stone's).
+local CLOAK_Y = MODEL.y + MODEL.h - 1
 local function stats_content(player)
 	local mesh, textures = preview_model(player)
 	local class = grug_classes.get_class_def(player)
@@ -396,8 +397,7 @@ local function stats_content(player)
 	if achievements then
 		fs[#fs + 1] = ("label[%.2f,%.2f;Cloak]"):format(STAT_X, CLOAK_Y - 0.35)
 		fs[#fs + 1] = achievements.cloak_dropdown(player, STAT_X, CLOAK_Y, STAT_W)
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X, CLOAK_Y + 1.35,
-			esc("Cloaks unlock through\nachievements."))
+		fs[#fs + 1] = "tooltip[grug_cloak;" .. esc("Cloaks unlock through achievements.") .. "]"
 	end
 	return table.concat(fs)
 end

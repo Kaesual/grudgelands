@@ -67,7 +67,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   The mode buttons switch the box only, the choice is runtime context (never
   stored): **Stats** (the default: the model on the left; right of it the
   stats and the Claim Stone status, and at the foot the cloak picker,
-  bottom-aligned with the model; 3D and Stats are one mode since the Round
+  bottom-aligned with the model, "Cloaks unlock through achievements." as
+  its tooltip; 3D and Stats are one mode since the Round
   45 playtest), **Effects** and **Achievements**; the professions overview
   moved to the Crafting tab in Round 45.
   The gear box shows the eight equipment slots with each slot's name beside
