@@ -9,6 +9,10 @@
 -- a player travels to any discovered stone of the network: instant, free,
 -- no cooldown, alive and out of combat, through grug_home.travel (the home
 -- return's own emerge, validation and teleport). Enemy stones are inert.
+-- Since Round 45 (PT9) every list ends with the owner's activated Claim
+-- Stone, "Your Claim Stone" (grug_home.claim_waypoint, claim_home.lua),
+-- reached the same way and landing in its arrival cube; without one the
+-- entry reads "No claim stone".
 local path = core.get_modpath(core.get_current_modname())
 local rules = dofile(path .. "/waypoints_core.lua")
 local KEY = "grug_home:waypoints"
@@ -97,6 +101,7 @@ local dialogs, serial = {}, 0
 local function form(player, origin)
  local entries = rules.entries(rows, grug_factions.get_faction(player),
   known_set(player), race_of(player), origin.id)
+ entries[#entries + 1] = rules.claim_entry(grug_home.claim_waypoint(player))
  local fs = {"formspec_version[3]size[7,", tostring(1.9 + 0.7 * #entries), "]",
   "label[0.4,0.5;", core.formspec_escape(origin.label .. " Waystone"), "]"}
  for index, entry in ipairs(entries) do
@@ -105,7 +110,11 @@ local function form(player, origin)
   if entry.state == "here" then
    fs[#fs + 1] = ("label[4.2,%.2f;You are here]"):format(y)
   elseif entry.state == "travel" then
-   fs[#fs + 1] = ("button[4.2,%.2f;2.4,0.6;go_%s;Travel]"):format(y - 0.3, entry.row.id)
+   fs[#fs + 1] = ("button[4.2,%.2f;2.4,0.6;go_%s;Travel]"):format(y - 0.3,
+    entry.row.claim and rules.CLAIM_ID or entry.row.id)
+  elseif entry.state == "no_claim" then
+   fs[#fs + 1] = ("label[4.2,%.2f;%s]"):format(y,
+    core.colorize("#8a8a8a", "No claim stone"))
   else
    fs[#fs + 1] = ("label[4.2,%.2f;%s]"):format(y,
     core.colorize("#8a8a8a", "Not yet visited"))
@@ -144,7 +153,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
  local target
  for field in pairs(fields) do
   local id = field:match("^go_(.+)$")
-  if id then target = by_id[id] end
+  if id == rules.CLAIM_ID then
+   target = grug_home.claim_waypoint(player)
+   if not target then
+    core.chat_send_player(name, "You have no activated Claim Stone.")
+    return true
+   end
+  elseif id then
+   target = by_id[id]
+  end
  end
  if not target then return true end
  local origin = by_id[dialog.origin]
@@ -160,18 +177,34 @@ core.register_on_player_receive_fields(function(player, formname, fields)
  dialogs[name] = nil
  core.close_formspec(name, formname)
  -- On the server step after the emerge the trip still needs the same
- -- living, out-of-combat player of the same faction at the origin stone.
- grug_home.travel(player, {pos=target.pos, unavailable=
-  "The " .. target.label .. " waystone cannot be reached right now. Please try again.",
+ -- living, out-of-combat player of the same faction at the origin stone,
+ -- and a Claim Stone target still the owner's activated stone.
+ local unavailable = target.claim and
+  "Your Claim Stone cannot be reached right now. Please try again." or
+  "The " .. target.label .. " waystone cannot be reached right now. Please try again."
+ grug_home.travel(player, {pos=target.pos, unavailable=unavailable,
   check=function(p)
    if p:get_hp() <= 0 or grug_factions.get_faction(p) ~= faction then return false end
    if grug_core.in_combat(p) or not rules.near(origin, p:get_pos()) then
     core.chat_send_player(name, "Travel canceled.")
     return false
    end
+   if target.claim then
+    local current = grug_home.claim_waypoint(p)
+    if not current or current.id ~= target.id then
+     core.chat_send_player(name, "Your Claim Stone is gone. Travel canceled.")
+     return false
+    end
+   end
    return true
   end,
-  arrival=function() return arrival_at(target) end})
+  arrival=function()
+   if not target.claim then return arrival_at(target) end
+   -- Emerged, but the arrival cube is not free (as Return home says it).
+   local arrival = grug_home.claim_arrival(target)
+   if not arrival then return nil, "Your Claim Stone's arrival is blocked." end
+   return arrival
+  end})
  return true
 end)
 

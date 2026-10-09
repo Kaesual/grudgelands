@@ -923,6 +923,14 @@ WP17).
   The character's own start counts as discovered from creation.
 - **Right-click** opens the list of the seven own-faction waypoints: "You are
   here", **Travel** (discovered) or a greyed "Not yet visited".
+- **The own Claim Stone** (Round 45 PT9): every list ends with "Your Claim
+  Stone", a waypoint for its owner only, once the stone is activated (a draft
+  is none); it stays one when its fuel runs out and goes with the stone
+  (picked up, destroyed, removed by an admin). Without one the entry reads a
+  greyed "No claim stone". Travel there works like waystone travel (free, no
+  cooldown, from a waystone) and lands in the stone's arrival cube
+  ([housing.md](housing.md) §2); a blocked cube leaves the player in place
+  with a message. It is independent of the stone being the travel home.
 - **Travel** works **only while standing at a waystone** (within the same
   reach), waystone to waystone: instant, free, no cooldown, alive and out of
   combat. It runs through the innkeeper return's own path (`grug_home.travel`
@@ -936,6 +944,8 @@ WP17).
   or on the dragon islands.
 - The world map and the minimap show discovered waypoints as the marker kind
   `waypoint` ([world_map.md](world_map.md)); undiscovered ones are not shown.
+  The Claim Stone waypoint is marked too, unless it is the travel home (the
+  home marker then marks it).
   The initial cartographic atlas has no fog of war. Showing terrain or a
   waypoint on the map never unlocks waypoint travel; only visiting the
   waystone does. There is no `/unstuck`.

@@ -712,7 +712,8 @@ grug_home = {get = function() return has_home and {id = "inn", label = "Inn"} or
 	locations = function() return {{id = "inn", label = "Inn", pos = {x = 80, y = 10, z = -210}}} end,
 	remaining = function() return home_left end, is_pending = function() return home_pending end,
 	return_home = function() home_returns = home_returns + 1; home_pending = true; return true end,
-	known_waypoints = function() return {} end}
+	known_waypoints = function() return {} end,
+	claim_waypoint = function() return nil end}
 grug_jobs = {PROFESSIONS = {}}
 local inventory_sets = 0
 local page
