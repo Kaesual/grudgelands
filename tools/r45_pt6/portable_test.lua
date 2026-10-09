@@ -1,10 +1,10 @@
 -- Round 45 playtest fix PT6 portable test (LuaJIT): the mount in first
--- person and the ride sounds. Loads the REAL grug_sounds/init.lua and the
+-- person, the ride sounds and the rider's fall damage. Loads the REAL grug_sounds/init.lua and the
 -- REAL grug_mounts catalog.lua and entity.lua under a minimal `core` stub;
 -- the engine's moveresult (touching_ground) is handed to the controller's
 -- on_step like the engine does. Checks:
---   V  first person: the visible mount of a riding (land) and a flying mount
---      is attached to its rider with forced_visible, a boat's hull without;
+--   V  first person: the visible mount of every tier (riding, flying, the
+--      boats' hulls) is attached to its rider with forced_visible;
 --   G  the gallop: plays (stoppable, not ephemeral) while the mount runs on
 --      the ground, paced by its interval; stops at once when the mount
 --      stands; a short loss of ground contact (under 0.5 s) keeps it, a
@@ -14,7 +14,14 @@
 --      hovers and on a dismount;
 --   S  grug_sounds.stop: only a stoppable event's kept play, once; it lifts
 --      the interval; a non-stoppable event (the boat's splash) stays
---      ephemeral and is never stopped; a leaving player's handles go.
+--      ephemeral and is never stopped; a leaving player's handles go;
+--   F  fall damage of a ground mount's rider, the engine's player rule
+--      floor(f * sqrt(2 * 19.62 * d) - 14 + 0.5) with type "fall": 4 and 5
+--      nodes are harmless, 6 and 10 nodes hurt; the peak of a jump counts;
+--      a damage-adding floor multiplies the speed before the tolerance, a
+--      negating one and an immortal rider take none; water on the way breaks
+--      the fall; a remount starts without a peak; the fall hit dismounts
+--      (both objects gone); a flyer takes none.
 --
 --   luajit tools/r45_pt6/portable_test.lua [REPO]
 -- Prints "R45 PT6 PORTABLE PASS checks=<n>" or the failures.
@@ -48,6 +55,13 @@ vector = {
 	add = function(a, b) return {x = a.x + b.x, y = a.y + b.y, z = a.z + b.z} end,
 }
 
+local world = {}
+local function node_key(x, y, z) return x .. "," .. y .. "," .. z end
+local function world_node(pos)
+	return world[node_key(math.floor(pos.x + 0.5), math.floor(pos.y + 0.5),
+		math.floor(pos.z + 0.5))] or "air"
+end
+
 local clock_us = 1000000
 local plays, fades = {}, {}
 local next_handle = 0
@@ -56,7 +70,13 @@ local callbacks = {hp = {}, die = {}, leave = {}, join = {}, shutdown = {}}
 local registered_entities = {}
 
 core = {
-	registered_nodes = {air = {walkable = false, liquidtype = "none"}},
+	registered_nodes = {
+		air = {walkable = false, liquidtype = "none"},
+		floor = {walkable = true, liquidtype = "none"},
+		floor_hard = {walkable = true, liquidtype = "none", groups = {fall_damage_add_percent = 100}},
+		floor_soft = {walkable = true, liquidtype = "none", groups = {fall_damage_add_percent = -100}},
+		water = {walkable = false, liquidtype = "source", groups = {water = 3}},
+	},
 	get_us_time = function() return clock_us end,
 	sound_play = function(spec, params, ephemeral)
 		local handle
@@ -71,7 +91,7 @@ core = {
 		fades[#fades + 1] = {handle = handle, step = step, gain = gain}
 	end,
 	get_item_group = function() return 0 end,
-	get_node_or_nil = function() return {name = "air"} end,
+	get_node_or_nil = function(pos) return {name = world_node(pos)} end,
 	serialize = function(value) serial[#serial + 1] = copy(value); return "S" .. #serial end,
 	deserialize = function(text)
 		local index = type(text) == "string" and tonumber(text:match("^S(%d+)$"))
@@ -121,7 +141,7 @@ end
 core.add_entity = function(pos, name, staticdata) return new_object(pos, name, staticdata) end
 
 local function make_player(name, faction, race)
-	local player = {name = name, pos = {x = 0, y = 10, z = 0}, hp = 20,
+	local player = {name = name, pos = {x = 0, y = 10, z = 0}, hp = 20, reasons = {}, armor = {},
 		control = {}, look = 0, faction = faction, race = race}
 	function player:is_player() return true end
 	function player:get_player_name() return self.name end
@@ -131,6 +151,13 @@ local function make_player(name, faction, race)
 	end
 	function player:set_pos(p) self.pos = copy(p) end
 	function player:get_hp() return self.hp end
+	-- set_hp -> the HP observers, like the engine.
+	function player:set_hp(hp, reason)
+		self.reasons[#self.reasons + 1] = reason
+		for _, fn in ipairs(callbacks.hp) do fn(self, hp - self.hp, reason) end
+		self.hp = hp
+	end
+	function player:get_armor_groups() return self.armor end
 	function player:set_attach(parent) self.parent = parent end
 	function player:set_detach() self.parent = nil end
 	function player:get_attach() return self.parent end
@@ -208,7 +235,7 @@ local function last_fade() return fades[#fades] end
 local ada = make_player("ada", "accord", "human")
 for _, case in ipairs({{1, true, "Apprentice horse"}, {2, true, "Journeyman race mount"},
 		{3, true, "Expert flyer"}, {4, true, "Master flyer"},
-		{5, false, "Boat"}, {6, false, "Improved Boat"}}) do
+		{5, true, "Boat"}, {6, true, "Improved Boat"}}) do
 	local _, record = ride(ada, case[1])
 	eq(record.visual:get_attach(), ada, "V the visible mount rides on its rider: " .. case[3])
 	eq(record.visual.forced_visible, case[2], "V forced_visible in first person: " .. case[3])
@@ -337,6 +364,97 @@ local bob = make_player("bob", "accord", "human")
 eq(S.play("mount_gallop", bob), true, "S a player target plays")
 for _, fn in ipairs(callbacks.leave) do fn(bob) end
 eq(S.stop("mount_gallop", bob), false, "S a leaving player's handle is forgotten")
+
+------------------------------------------------------------------------------
+-- F: fall damage.
+------------------------------------------------------------------------------
+-- Floor nodes at y = -1 (top at -0.5): a mount standing there has its
+-- origin at -0.49 (collision box bottom -0.01).
+local GROUND = -0.49
+local function floor_of(name)
+	for x = -2, 2 do for z = -2, 2 do world[node_key(x, -1, z)] = name end end
+end
+-- The engine moved the mount to y; on_step with its ground contact.
+local function at(entity, y, grounded)
+	entity.object.pos = {x = 0, y = y, z = 0}
+	entity.object.velocity = {x = 0, y = 0, z = 0}
+	clock_us = clock_us + DT * 1000000
+	CONTROLLER.on_step(entity, DT, {touching_ground = grounded, collides = grounded,
+		standing_on_object = false, collisions = {}})
+end
+-- A drop from `height` above the floor: in the air on the way down, then
+-- the landing. Returns the damage dealt (native HP).
+local function fall(entity, height, path)
+	ada.hp = 100
+	local n = #ada.reasons
+	for _, y in ipairs(path or {GROUND + height, GROUND + height / 2}) do at(entity, y, false) end
+	at(entity, GROUND, true)
+	return 100 - ada.hp, ada.reasons[n + 1]
+end
+local function sit(tier)
+	ada.control = {}
+	ada.pos = {x = 0, y = GROUND, z = 0}
+	local entity = ride(ada, tier)
+	at(entity, GROUND, true)
+	return entity
+end
+
+floor_of("floor")
+horse = sit(1)
+eq(fall(horse, 4), 0, "F 4 nodes do not hurt")
+eq(fall(horse, 5), 0, "F 5 nodes do not hurt (14.0 nodes/s is the tolerance)")
+check(grug_mounts.active.ada ~= nil, "F a harmless drop keeps the rider up")
+local record = grug_mounts.active.ada
+local damage, reason = fall(horse, 6)
+eq(damage, math.floor(math.sqrt(2 * 19.62 * 6) - 14 + 0.5), "F 6 nodes: the engine's damage")
+eq(damage, 1, "F 6 nodes deal 1 native HP")
+eq(reason and reason.type, "fall", "F the reason is a fall (the pool modifier scales it)")
+eq(grug_mounts.active.ada, nil, "F the fall hit dismounts")
+check(not record.object:is_valid() and not record.visual:is_valid(), "F the mount and its model are gone")
+eq(ada:get_attach(), nil, "F the rider is detached")
+
+horse = sit(1)
+eq(fall(horse, 10), 6, "F 10 nodes deal 6 native HP")
+-- A jump from a ledge 4 nodes up: the apex (2.15 above it) is the peak.
+horse = sit(1)
+eq(fall(horse, 0, {GROUND + 4.5, GROUND + 6.15, GROUND + 5, GROUND + 2}), 2,
+	"F the peak of a jump counts (6.15 nodes: 2 HP)")
+
+floor_of("floor_hard")
+horse = sit(1)
+eq(fall(horse, 3), math.floor(2 * math.sqrt(2 * 19.62 * 3) - 14 + 0.5),
+	"F a +100% floor doubles the speed before the tolerance")
+eq(grug_mounts.active.ada, nil, "F (dismounted)")
+floor_of("floor_soft")
+horse = sit(1)
+eq(fall(horse, 20), 0, "F a -100% floor takes all fall damage")
+floor_of("floor")
+ada.armor = {immortal = 1}
+eq(fall(horse, 20), 0, "F an immortal rider takes none")
+ada.armor = {fall_damage_add_percent = 100}
+horse = sit(1)
+eq(fall(horse, 3), 8, "F the rider's own fall_damage_add_percent counts like the engine's")
+ada.armor = {}
+
+-- Water on the way breaks the fall: water at y = 1..5 over the floor.
+for y = 1, 5 do world[node_key(0, y, 0)] = "water" end
+horse = sit(1)
+eq(fall(horse, 20, {GROUND + 20, 12, 5, 3, 1}), 0, "F a fall through water does not hurt")
+check(grug_mounts.active.ada ~= nil, "F (still mounted)")
+for y = 1, 5 do world[node_key(0, y, 0)] = nil end
+
+-- A dismount mid-air and a remount: the new mount has no peak.
+horse = sit(1)
+at(horse, GROUND + 20, false)
+grug_mounts.dismount(ada, "manual", false)
+horse = sit(1)
+eq(fall(horse, 0, {}), 0, "F a remount starts without a peak")
+
+-- A flyer never takes fall damage from the controller.
+grug_mounts.dismount(ada, "manual", false)
+local flyer2 = sit(3)
+eq(fall(flyer2, 20), 0, "F a flyer takes none")
+grug_mounts.dismount(ada, "manual", false)
 
 if failures > 0 then
 	print(("R45 PT6 PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
