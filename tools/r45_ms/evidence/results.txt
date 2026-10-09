@@ -24,6 +24,20 @@ PASS  step   craftresult: scribe's sword moved to main[12] and pinned 10 / 10, t
 PASS  step   no mixture left in any list of any character
 PASS  step   player meta: the marker on all three, seen-items gone, nothing else changed
 PASS  step   nothing else changed: only the characters' item and meta rows and the record (positions, auth, other mod storage untouched)
+PASS  pg     postgres started
+PASS  pg     pg seeding: rows equal the 0.44.0 SQLite world (a grid stack, plain T2 gear, mixtures, seen-items)
+PASS  pg     pg migrate (all on PostgreSQL): step 0.45.0 from 0.44.0 with the SQLite run's counts
+PASS  pg     pg migrate: every row equals the SQLite world after the same run
+PASS  pg     pg: the grids of scribe and sleeper stored with size 0, smith's kept at 9 with its leftovers; scribe's craftresult kept at 1, empty
+PASS  pg     pg: plain T2 gear pinned at 10 / 10 (smith's equipped Iron Chestplate, scribe's Iron Bow from the grid and Iron Sword from craftresult)
+PASS  pg     pg: no mixture left in any list
+PASS  pg     pg: grug_jobs:seen_items deleted, the marker on all three
+PASS  pg     platform layout (player and auth on PostgreSQL, mod storage SQLite): every row equals the SQLite world after the same run
+PASS  pg     platform: the grids of scribe and sleeper stored with size 0, smith's kept at 9 with its leftovers; scribe's craftresult kept at 1, empty
+PASS  pg     platform: plain T2 gear pinned at 10 / 10 (smith's equipped Iron Chestplate, scribe's Iron Bow from the grid and Iron Sword from craftresult)
+PASS  pg     platform: no mixture left in any list
+PASS  pg     platform: grug_jobs:seen_items deleted, the marker on all three
+PASS  pg     the PostgreSQL run finished
 PASS  tool   --check after: world 0.45.0, nothing due
 PASS  boot   boot A (0.45.0): starts from 0.45.0 with nothing due; smith and scribe joined and left; the record is 0.45.0
 PASS  names  0.45.0: every gear item of the step now has another definition value (the pin keeps each)
@@ -42,11 +56,11 @@ PASS  boot   smith: everything stays equipped and wearable at level 10; a fresh 
 PASS  boot   smith: the equipped armour is what 0.44.0 counted (9)
 PASS  boot   smith: the first-tier sword and battle axe deal their 0.44.0 damage (5 and 8, not the new definition's 4 and 6)
 PASS  boot   smith: the broken bow stays broken and keeps its 0.44.0 damage (5) for the repair
-PASS  boot   smith: crafted and rolled gear keeps its own item level, requirement, enchants and capabilities
+PASS  boot   smith: crafted, rolled and crowned gear keeps its own item level, requirement, enchants and capabilities
 PASS  boot   scribe: the helm left in the shift-click slot came back into the inventory at the join, pinned at 20 / 20
 PASS  boot   scribe: the moved bow and craftresult sword, the trinket and the equipped sword at their old levels with rebuilt tooltips; the moved apples in main[11]
 PASS  boot   scribe: the plain first-tier sword deals 5 and is wearable at level 1
 PASS  boot   saved after boot A: the markers of smith and scribe are gone; sleeper (offline) keeps its marker and its migrated inventory
 PASS  boot   saved after boot A: no mixture for any character
 
-50 checks, 0 failed
+64 checks, 0 failed

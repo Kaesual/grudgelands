@@ -17,9 +17,11 @@
 --      what is left (no copy), and the rerun finishes it;
 --   D. tool capabilities: an unmodified first-tier weapon pinned at the old
 --      level deals its old damage again (broken ones through the repair's
---      kept capabilities); weapons whose damage already matches (new, crafted,
---      enchanted, higher tiers, a broken one with its old capabilities) keep
---      their stacks;
+--      kept capabilities); weapons whose damage already matches (new,
+--      crafted, a station-enchanted first-tier sword without an item level
+--      of its own (pinned offline), upgraded, crowned, higher tiers, a broken
+--      one with its old capabilities) keep their item level, requirement,
+--      enchants and capabilities;
 --   E. the tooltips of gear in every list show the pinned level and
 --      requirement; a plain item is not touched;
 --   F. a second run changes nothing.
@@ -387,6 +389,39 @@ do
 		damage_groups = {fleshy = 0}, groupcaps = {}, punch_attack_uses = 0})
 	inv:set_stack("main", 8, broken_bare)
 	inv:set_stack("main", 9, pinned("grug_gear:shield_bronze", 3, 1))
+	-- Enchanted at a station at 0.44.0: the enchant and the capabilities
+	-- (store_affixes -> apply_capabilities at the definition's item level 3:
+	-- 5 damage, the swing shortened by the speed enchant), no item level of
+	-- its own, so the offline step pinned 3 / 1.
+	local speed = grug_items.enchant_value("attack_speed_percent", 3, 1)
+	local enchanted = pinned("grug_gear:sword_bronze", 3, 1)
+	enchanted:get_meta():set_string("grug_ench", core.serialize({{channel = "prefix",
+		stat = "attack_speed_percent", tier = 1, value = speed}}))
+	enchanted:get_meta():set_int("grug_quality", 2)
+	enchanted:get_meta():set_tool_capabilities({full_punch_interval = 1.0 / (1 + speed / 100),
+		damage_groups = {fleshy = 5}, groupcaps = {}, max_drop_level = 0})
+	inv:set_stack("main", 10, enchanted)
+	-- Upgraded at 0.44.0 (upgrade_plan: write_item_level_meta to 10 x tier,
+	-- then store_affixes): item level and requirement 10, 8 damage.
+	local upgraded = pinned("grug_gear:sword_bronze", 10, 10)
+	upgraded:get_meta():set_int("grug_quality", 1)            -- store_affixes: enchants + 1
+	upgraded:get_meta():set_tool_capabilities({full_punch_interval = 1.0,
+		damage_groups = {fleshy = grug_gear.weapon_damage_at_level(10, "sword")},
+		groupcaps = {}, max_drop_level = 0})
+	inv:set_stack("main", 11, upgraded)
+	-- Crowned (crown_plan: 10 x tier + 5, the same at 0.44.0).
+	local crowned = assert(grug_items.crown_item(new_stack("grug_gear:sword_bronze")))
+	inv:set_stack("main", 12, crowned)
+	local function fields(stack)
+		local meta = stack:get_meta()
+		local caps = stack.caps or {}
+		return table.concat({meta:get_string("grug_ilvl"), meta:get_string("grug_req_level"),
+			meta:get_string("grug_ench"), meta:get_string("grug_crowned"),
+			meta:get_string("grug_quality"), tostring(caps.full_punch_interval),
+			tostring(caps.damage_groups and caps.damage_groups.fleshy), tostring(stack.wear)}, "|")
+	end
+	local kept_before = {}
+	for index = 10, 12 do kept_before[index] = fields(inv:get_stack("main", index)) end
 	local before = {}
 	for index = 4, 7 do before[index] = inv:get_stack("main", index):to_string() end
 	run(player, "1")
@@ -420,6 +455,19 @@ do
 		"D a broken bow without kept capabilities stays broken and keeps its old damage "
 		.. "for the repair")
 	check(inv:get_stack("main", 9).caps == nil, "D a shield gets no capabilities")
+	local kept = {}
+	for index = 10, 12 do
+		local now = fields(inv:get_stack("main", index))
+		if now ~= kept_before[index] then kept[#kept + 1] = index .. ": " .. kept_before[index] ..
+			" -> " .. now end
+	end
+	check(kept_before[10]:match("^3|1|S%d+||2|0%.98") and kept_before[11]:match("^10|10|") and
+		kept_before[12]:match("^15|15|.*|1|") and damage(inv:get_stack("main", 10)) == 5 and
+		damage(inv:get_stack("main", 11)) == 8 and damage(inv:get_stack("main", 12)) ==
+		grug_gear.weapon_damage_at_level(15, "sword") and #kept == 0,
+		"D a station-enchanted (5 damage, faster swing), an upgraded (10 / 10, 8) and a crowned "
+		.. "(15 / 15) Bronze Sword keep item level, requirement, enchant, quality and "
+		.. "capabilities: " .. table.concat(kept, "; ") .. " " .. table.concat(kept_before, " / ", 10, 12))
 end
 
 ------------------------------------------------------------------------------

@@ -19,6 +19,9 @@ the joins).
            (Debian trixie, python3 3.13; tools/r43_it/Containerfile):
            --check, the migration, --check again; every slot of every list
            of every character compared with what the step must leave
+  pg       the same run on PostgreSQL (pg_check.py in the container, all
+           three backends and the platform's layout), seeded from the
+           0.44.0 world: every row equal to the SQLite result
   boot A   this checkout's game on the migrated world: smith and scribe
            join (sleeper stays offline); the probe records the inventory as
            loaded (before grug_core's runner) and as the join left it, every
@@ -267,6 +270,29 @@ def tooltip_ok(facts, ilvl, req):
         req <= 1 and "Requires level" not in text or ("Requires level %d" % req) in text)
 
 
+def postgresql(run):
+    """The same run on PostgreSQL (tools/r45_ms/pg_check.py in the runner's
+    container): seeded from the 0.44.0 world before the tool, every row
+    compared with the SQLite world after it."""
+    proc = subprocess.run(
+        ["podman", "run", "--rm", "--network=none", "--security-opt", "label=disable",
+         "-v", "%s:%s:ro" % (REPO, REPO), "-v", "%s:%s" % (run.work, run.work),
+         "-w", str(REPO), it.IMAGE, "python3", "tools/r45_ms/pg_check.py", str(run.work)],
+        capture_output=True, text=True)
+    (run.evidence / "postgresql.txt").write_text(proc.stdout + proc.stderr[-3000:])
+    events = run.work / "pg_events"
+    if events.is_dir():
+        it.shutil.copytree(events, run.evidence / "pg_events", dirs_exist_ok=True)
+    try:
+        results = json.loads((run.work / "pg_results.json").read_text())
+    except (OSError, ValueError):
+        results = []
+    for item in results:
+        check("pg", item["name"], item["ok"], item["detail"])
+    check("pg", "the PostgreSQL run finished", proc.returncode == 0 and results,
+          "exit %d" % proc.returncode)
+
+
 def scenario(run):
     w = run.root / "w"
     it.write_world_mt(w, mod_storage=True)
@@ -336,7 +362,9 @@ def scenario(run):
           rc == 0 and done.get("world_version") == OLD_VERSION and done.get("due") == DUE
           and done.get("write_checked") == ["player", "auth", "mod_storage"]
           and it.dump(w) == dump_before, "exit %d %s" % (rc, json.dumps(done)))
+    it.snapshot(w, run.work / "pre_tool")
     rc, ev = it.tool(run, "migrate", w, "-", shipped=True)
+    it.snapshot(w, run.work / "post_tool")
     kinds = [e.get("event") for e in ev]
     first = next((e for e in ev if e.get("event") == "step_done"), {})
     check("tool", "migrate: the events start, step_start/step_done per due step, done; exit 0",
@@ -392,6 +420,7 @@ def scenario(run):
           changed and all(re.match(r"'(item|meta)' \| '(smith|scribe|sleeper)' \|", line)
                           or line.startswith("'storage' | 'grug_core' | 'world_version' |")
                           for line in changed), json.dumps(changed[:6]))
+    postgresql(run)
     rc, ev = it.tool(run, "check_after", w, "-", check_mode=True, shipped=True)
     done = it.last(ev)
     check("tool", "--check after: world %s, nothing due" % DUE[-1],
@@ -493,8 +522,8 @@ def scenario(run):
         if not same_levels(stack_at(sm, e["list"], e["slot"]), then,
                            LEVEL_KEYS + ("grug_quality",)):
             untouched.append("%s[%d]" % (e["list"], e["slot"]))
-    check("boot", "smith: crafted and rolled gear keeps its own item level, requirement, "
-                  "enchants and capabilities", not untouched, json.dumps(untouched))
+    check("boot", "smith: crafted, rolled and crowned gear keeps its own item level, "
+                  "requirement, enchants and capabilities", not untouched, json.dumps(untouched))
     # Scribe.
     helm = find(sc, "grug_gear:head_metal_steel")
     helm_facts = gear_at(sc, *helm[0]) if len(helm) == 1 else {}

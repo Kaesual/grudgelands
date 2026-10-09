@@ -24,7 +24,7 @@
 -- The setup (0.44.0), one character per join; every placed stack is listed
 -- in the observation's `layout` with its role, and e2e.py holds what the
 -- step and the join must make of it:
---   smith    a level-10 warrior: unmodified, crafted and rolled gear of
+--   smith    a level-10 warrior: unmodified, crafted, rolled and crowned gear of
 --            several tiers equipped, in main and in a bag, a broken
 --            unmodified first-tier bow, mixtures in main, a bag and the
 --            craft grid, and a craft grid of which two stacks fit into the
@@ -230,7 +230,9 @@ local function build_smith(player)
 	place(player, e, "main", 12, broken(player, "grug_gear:bow_bronze"), "pin")
 	place(player, e, "main", 13, MIX .. "potion_healing_t1 3", "mixture")
 	place(player, e, "main", 14, acquired(player, "grug_gear:spellbook_embersteel"), "pin")
-	fill(player, e, "main", 15, 32)
+	place(player, e, "main", 15, assert(grug_items.crown_item(ItemStack(
+		must("grug_gear:sword_bronze")), player)), "modified", "crowned: 15 / 15")
+	fill(player, e, "main", 16, 32)
 	place(player, e, grug_inventory.bag_list(1), 1, "grug_inventory:bag_small", "plain")
 	local bag = grug_inventory.content_list(1)
 	inv:set_size(bag, 8)

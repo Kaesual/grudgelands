@@ -686,11 +686,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   table, bag sizes and mixture prefix are checked against them), this game
   refuses the world, the shipped tool (`--check`, migrate, `--check`) runs in
   the container and every slot of every list is compared with what the step
-  must leave, and this game boots and two characters join (craft and
+  must leave; `pg_check.py` repeats that run on PostgreSQL in the container
+  (r43_it's `pg_test.py` helpers; all three backends and the platform's
+  layout, seeded from the 0.44.0 world, every row equal to the SQLite
+  result: the size-0 grid, the pin, mixtures, the seen-items key); and this
+  game boots and two characters join (craft and
   `craftresult` leftovers through the give helper, the output area and the feet; old item levels,
   requirements, tooltips, armour and first-tier damage; the offline
   character keeps its marker); a PASS/FAIL table. `portable_test.lua` is the
   join part's fixture (the real `grug_gear`, `grug_quality` and
   `grug_core/migrations.lua` under a stub engine): the leftover order, a
-  failing drop without copies, the capabilities refresh, the tooltips, a
-  rerun; it stays in `run_fixtures.sh` for good.
+  failing drop without copies, the capabilities refresh (station-enchanted,
+  upgraded and crowned weapons untouched), the tooltips, a rerun; it stays in `run_fixtures.sh` for good.
