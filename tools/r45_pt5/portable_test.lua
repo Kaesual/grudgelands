@@ -390,7 +390,6 @@ check_rings("mods/BASE/creative/inventory.lua", 1)
 check_rings("mods/PLAYER/grug_jobs/workspaces.lua", 1)
 check_rings("mods/PLAYER/grug_jobs/operation_box.lua", 2)
 check_rings("mods/PLAYER/grug_jobs/ui.lua", 1)
-check_rings("mods/PLAYER/grug_housing/stone_form.lua", 1)
 
 -- The engine's lookup (getNextInventoryRing: the entry after the FIRST one
 -- naming the source list) on the rings as the pages send them.
@@ -460,6 +459,22 @@ do
 		"listring[current_player;grug_inbox]listring[current_player;main]", "short")
 	eq(next_ring(fs, "current_player", "grug_bag1_content"), "current_player;" .. OUTPUT,
 		"recipe box: bag -> the output area, like main")
+	-- `main` is the content's last ring entry: it still wraps to the output
+	-- area (review Medium), never into a bag.
+	eq(next_ring(fs, "current_player", "main"), "current_player;" .. OUTPUT,
+		"recipe box with bags: main -> the output area, as before")
+	inv:set_stack("main", 2, ItemStack("t:apple 5"))
+	eq(H.shift(p, fs, "main", 2), OUTPUT, "recipe box with bags: shift-click from main targets the output")
+	eq(count(inv, "grug_bag1_content", "t:apple"), 0, "recipe box with bags: nothing lands in bag 1")
+	inv:set_stack("main", 2, ItemStack(""))
+	for i = 1, 4 do inv:set_stack(OUTPUT, i, ItemStack("")) end
+	-- The enchant/upgrade box without an area draws no RING: the same rings.
+	local inbox_last = "listring[current_player;grug_craft_out]listring[current_player;grug_inbox]"
+	fs = sfinv.make_formspec(p, context, inbox_last .. "listring[current_player;main]", "short")
+	eq(next_ring(fs, "current_player", "main"), "current_player;" .. OUTPUT,
+		"box without its ring: main unchanged")
+	eq(next_ring(fs, "current_player", "grug_inbox"), "current_player;main",
+		"box without its ring: the inbox entry unchanged")
 	-- No ring for main, no view, or the Character page's own bag rings.
 	fs = sfinv.make_formspec(p, context, "label[0,0;x]", "full")
 	check(not fs:find("listring", 1, true), "a page without rings gets no bag rings")

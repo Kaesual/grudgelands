@@ -185,10 +185,7 @@ local function main_formspec(player, claim, session)
 	fs[#fs + 1] = "button_exit[7.25,6.75;3.1,0.8;close;Close]"
 	fs[#fs + 1] = "list[current_player;main;0.4,7.85;8,1;]"
 	fs[#fs + 1] = "list[current_player;main;0.4,9.1;8,3;8]"
-	-- Shift-click goes to the inbox (grug_inventory/inbox.lua): main[9..]
-	-- and the bags.
-	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;grug_inbox]" ..
-		"listring[current_player;main]"):format(inv, LIST)
+	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, LIST)
 	return table.concat(fs)
 end
 

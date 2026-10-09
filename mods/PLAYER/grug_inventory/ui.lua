@@ -283,8 +283,10 @@ end
 -- `main` to another list, each bag the view shows goes there too. The engine
 -- takes the ring entry after the FIRST one naming the source list
 -- (getNextInventoryRing), so pairs appended at the end change no other
--- list's target; a bag the page rings itself (the Character tab) is left
--- alone.
+-- list's target. The appended part opens with the page's first ring entry
+-- again, so the page's last entry still wraps to the same list (the recipe
+-- box's `main` -> the output area). A bag the page rings itself (the
+-- Character tab) is left alone.
 --
 local function bag_rings(player, content)
 	local rings, ringed = {}, {}
@@ -301,14 +303,14 @@ local function bag_rings(player, content)
 	end
 	if not target or target == "current_player;main" then return "" end
 	local inv = player:get_inventory()
-	local fs = {}
+	local fs = {("listring[%s]"):format(rings[1])}
 	for i = 1, grug_inventory.BAG_COUNT do
 		local list = grug_inventory.content_list(i)
 		if inv:get_size(list) > 0 and not ringed["current_player;" .. list] then
 			fs[#fs + 1] = ("listring[current_player;%s]listring[%s]"):format(list, target)
 		end
 	end
-	return table.concat(fs)
+	return #fs > 1 and table.concat(fs) or ""
 end
 
 --

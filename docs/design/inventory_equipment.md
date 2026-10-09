@@ -404,8 +404,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   the inventory is full only when the whole inventory is.
 - **Shift-click from another inventory** (Round 45 playtest) follows the
   give order too: chests, furnaces, the bookshelf and vessels shelf, the
-  creative inventory, the Claim Stone's fuel slot, the crafting output area
-  and the target slot ring each list to `grug_inbox`, a one-slot player
+  creative inventory, the crafting output area and the target slot ring
+  each list to `grug_inbox`, a one-slot player
   list no page draws (`grug_inventory/inbox.lua`). It takes exactly what
   `grug_inventory.room_for` says the give helper can place (`main[9..]`,
   the bags, the hotbar last; arrows into a Scout's quiver first) and hands

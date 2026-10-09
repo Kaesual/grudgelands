@@ -361,8 +361,8 @@ has(fs, "item_image[0.4,1.4;1,1;default:coal_lump]", "burning lumps drawn on the
 has(fs, ";41]", "slot shows ceil(remaining / 26160) lumps")
 has(fs, ";bob — Everything,zed — Interact;", "access list sorted, owner not listed")
 lacks(fs, "owner —", "owner not in the access list")
-has(fs, "listring[detached:grug_housing_fuel_owner;fuel]listring[current_player;grug_inbox]" ..
-	"listring[current_player;main]", "shift-click ring (Round 45 PT5: through the inbox)")
+has(fs, "listring[detached:grug_housing_fuel_owner;fuel]listring[current_player;main]",
+	"shift-click ring")
 lacks(fs, "set_home", "no Set-as-home button without grug_home.set_home_claim")
 has(fs, "button[0.4,6.75;3.1,0.8;pick_up;Pick up stone]", "pick-up button")
 lacks(fs, "Pick-up possible", "no lock line 24 h after activation")
