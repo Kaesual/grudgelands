@@ -64,16 +64,20 @@ local BOX_COLOR = "#00000040"
 local DIM = "#9a9a9a"
 local RUN_COLOR = "#5fd068"
 
--- Layout (real coordinates; the frame is 13.5 wide and the short view's
--- grid starts at y 9.5, see grug_inventory/ui.lua).
+-- Layout (real coordinates; the frame is 13.5 wide). The boxes end a gap
+-- above the short view's Inventory box, as on the other tabs
+-- (grug_inventory.VIEW_GEOMETRY.top, 9.14 since the Round 45 playtest).
+local BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
 local TAB_Y, TAB_H = 0.25, 0.65
 local LIST_X, LIST_W = 0.2, 5.0
 local SEARCH_Y, CHECK_Y = 1.1, 2.0
-local ROW_Y, ROW_H, ICON = 2.35, 0.56, 0.45
+-- Rows 0.54 high (0.56 until the boxes moved up), so the box buttons below
+-- the pager keep their height.
+local ROW_Y, ROW_H, ICON = 2.35, 0.54, 0.45
 local PAGER_Y = ROW_Y + PER_PAGE * ROW_H + 0.1
 local PAGER_H = 0.55
-local BOX = {x = 5.4, y = 0.95, w = 4.8, h = 8.25}
-local OUT = {x = 10.4, y = 0.95, w = 2.9, h = 8.25}
+local BOX = {x = 5.4, y = 0.95, w = 4.8, h = BOTTOM - 0.95}
+local OUT = {x = 10.4, y = 0.95, w = 2.9, h = BOTTOM - 0.95}
 grug_jobs.CRAFT_BOX = BOX
 -- Characters per real unit for clipping and wrapping (the overview's rate),
 -- and a row's room for its name between the icon and ×N.

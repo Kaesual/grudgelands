@@ -117,14 +117,12 @@ local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.6, BOX_BOTTOM - 1.2
 -- real-coordinate size, Round 44) fits the padded window. Slot and count both
 -- grow with gui_scaling, so the ratio changes mainly where that cap holds (a
 -- small window, a large scale). Without window information (a page built
--- right at join) the cover takes the cell's full width and most of its
--- height: in a small web window at gui_scaling 1.5 the count "100" fills all
--- but two pixels of the slot's width.
+-- right at join) the cover takes most of the cell.
 local function quiver_cover_size(player)
 	local info = core.get_player_window_information(player:get_player_name())
 	if not (info and info.size and info.max_formspec_size and
 			info.real_gui_scaling) then
-		return 1, 0.7
+		return 0.9, 0.65
 	end
 	local width, height = info.size.x * 0.9, info.size.y * 0.9
 	local slot = math.min(0.9 * info.size.x / info.max_formspec_size.x,

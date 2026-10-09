@@ -484,7 +484,7 @@ do
  rawset(_G, "grug_inventory", {equipment_slots={}, has_quiver=function() return false end,
   selected_button_style=function() return "" end, wrap_text=function(text) return text end,
   BAG_COUNT=0, SHIFT_LIST="grug_shift", BOX_COLOR="#00000040",
-  VIEW_GEOMETRY={top=10.3}})
+  VIEW_GEOMETRY={top=9.1365}})
  rawset(_G, "grug_classes", {get_class_def=function() return {resource="rage"} end,
   get_pool_breakdown=function() return {final=20} end, get_crit_chance=function() return 0 end,
   get_dodge_chance=function() return 0 end, get_class=function() return "warrior" end})

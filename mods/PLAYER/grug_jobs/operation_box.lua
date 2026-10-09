@@ -42,7 +42,7 @@ grug_jobs.OPERATION_FIELDS = F
 
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
-local BUTTON_Y = BOX.y + BOX.h - 0.8
+local BUTTON_Y = BOX.y + BOX.h - 0.75
 local TITLE_Y, SLOT_Y = BOX.y + 0.3, BOX.y + 0.65
 local NOTE_STEP = 0.38
 local LEVEL_CHARS = 8

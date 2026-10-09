@@ -35,7 +35,7 @@ local label_of = grug_jobs.recipe_label
 
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
-local BUTTON_Y = BOX.y + BOX.h - 0.8
+local BUTTON_Y = BOX.y + BOX.h - 0.75
 -- The quantity row sits right above the button.
 local QUANTITY_Y = BUTTON_Y - 0.75
 -- The middle area's first label (its centre) below the top area.

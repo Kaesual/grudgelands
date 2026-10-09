@@ -3,17 +3,14 @@
 -- two inventory views. Plus the shared selection style, plain-text wrapping
 -- and the creative Food category.
 --
--- The frame is formspec_version 6 with real coordinates, as wide as the old
--- legacy size[10.4,11.1] frame: a legacy size of W x H is
+-- The frame is formspec_version 6 with real coordinates, the same window as
+-- the old legacy size[10.4,11.1] frame: a legacy size of W x H is
 -- 3/8 + 5/4 (W - 1) + 1 + 3/8 slot units wide and 3/8 + 15/13 (H - 1) + 1 +
 -- 3/8 plus two thirds of a button half-height (15/13 * 0.35) high
--- (guiFormSpecMenu.cpp regenerateGui), 13.5 x 13.673 real units. Its height
--- is the larger of that and what the Inventory tab's boxed layout needs
--- (LAYOUT below; with eight rows and the money row 14.75 since the
--- Round 45 playtest). Below 15 units of height the slot size stays the
--- engine's preferred one (calculateImgsize: the smaller screen side / 15,
--- unless the form must shrink to fit), so the taller window shrinks slots
--- only where the form already had to fit a small window. Page content follows a real_coordinates[false], so
+-- (guiFormSpecMenu.cpp regenerateGui), 13.5 x 13.673 real units. Every tab
+-- keeps that size (spec ui-crafting-rework-plan.md §7); the Inventory tab's
+-- boxed layout (LAYOUT below) fits it with seven rows and the money row
+-- (the user, 2026-10-09). Page content follows a real_coordinates[false], so
 -- pages still written in legacy coordinates keep their place; a page in real
 -- coordinates starts its content with real_coordinates[true]. Legacy content
 -- ends before y = 7.0 (content_bottom), which is real y 8.45; the inventory
@@ -121,7 +118,7 @@ local SCROLL_FACTOR = 0.125
 local ROW_STEPS = PITCH / SCROLL_FACTOR
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
-grug_inventory.VIEW_ROWS = {full = 8, short = 2}
+grug_inventory.VIEW_ROWS = {full = 7, short = 2}
 -- The background of the window's boxed areas (the Character tab's boxes, the
 -- views' Inventory boxes, the Inventory tab's areas).
 grug_inventory.BOX_COLOR = "#00000040"
@@ -135,8 +132,8 @@ grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 -- wide. The Inventory tab, top to bottom: Bags and Potion belt side by side,
 -- Inventory (the grid and its scrollbar), the money row (no box: the
 -- balance, Withdraw, the Bag of Coins deposit, Sort; pages.lua), Hotbar. The
--- group is centred in the window, top and bottom margins equal; the window
--- grows to fit it (UI.frame_h). Every other tab shows the short Inventory
+-- group is centred in the window, top and bottom margins equal; it must fit
+-- the window, which keeps its size. Every other tab shows the short Inventory
 -- box right above the same Hotbar box, its page content above that
 -- (VIEW_GEOMETRY.top). Every number is a box edge or a slot corner.
 do
@@ -150,7 +147,8 @@ do
 	local money_h = SLOT
 	local content_h = slot_box_h + gap + inventory_h + gap + money_h + gap +
 		slot_box_h
-	UI.frame_h = math.max(UI.frame_h, content_h + 2 * gap)
+	assert(content_h + 2 * gap <= UI.frame_h,
+		"grug_inventory: the Inventory tab's layout must fit the window")
 	local top_y = (UI.frame_h - content_h) / 2
 	local box_x = (UI.frame_w - box_w) / 2
 	local inventory_y = top_y + slot_box_h + gap

@@ -9,14 +9,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 1. The inventory window (the "i" key)
 
 - Built on sfinv pages in one frame (Round 44, `grug_inventory/ui.lua`):
-  `formspec_version[6]` with a real-coordinate `size[13.500,14.750]`: as
-  wide as the old legacy 10.4 × 11.1 form (13.5 × 13.673) and, since the
-  Round 45 playtest, as high as the Inventory tab's boxed layout with eight
-  rows and the money row needs (the larger of the two, computed in
-  `ui.lua`). Below 15 units of height the engine keeps its preferred slot
-  size, so slots shrink only where the form already had to fit a small
-  window (a 1280 × 720 web window at GUI scale 1.5: about 47 → 43 px).
-  Every tab keeps that size;
+  `formspec_version[6]` with a real-coordinate `size[13.500,13.673]`, the
+  same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size
+  (the Inventory tab's boxed layout fits it with seven rows and the money
+  row; the user, 2026-10-09);
   the Map tab opens the map window, a form of its own sized to the screen
   (Round 44, [world_map.md](world_map.md#map-window)). Page content follows a
   `real_coordinates[false]`, so pages still in legacy coordinates keep their
@@ -34,7 +30,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
   `grug_inventory.LAYOUT`): an **Inventory** box with the grid and its
   scrollbar and the gold **Hotbar** box, each labelled inside, top left
-  above the slots. **Full** shows eight rows (the Inventory tab, layout
+  above the slots. **Full** shows seven rows (the Inventory tab, layout
   below); **short** shows two (every other tab with an inventory), its
   Inventory box right above the Hotbar box. The Hotbar box is at the same
   place in every tab, so it does not jump on a tab switch; page content
