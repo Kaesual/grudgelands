@@ -2,8 +2,8 @@
 
 Updated 2026-10-09. This is the delivery pointer, not another game specification.
 
-- **Round 45 "Crafting rework" complete, 0.45.0 not pushed** (2026-10-09,
-  version 0.45.0,
+- **Round 45 "Crafting rework" complete; 0.45.0 pushed on the user's
+  word after the round-end gates** (2026-10-09, version 0.45.0,
   [plan, completion and GUI checklist](planning/round45-plan.md#completion-2026-10-09)).
   Round B of the [UI and crafting rework](planning/ui-crafting-rework-plan.md).
   On main from Round 44 with hotfix 0.43.1 (`c913dbbe`): IL (`73a5806f`),
@@ -13,14 +13,16 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   findings and picks, merged up to `bff2d5b9`; then MS (`4a892fd6`) and
   this documentation lane D. Each code lane independently reviewed by
   Opus (MERGE; UI and PT5 MERGE AFTER FIXES with a Medium each, PT6's
-  first follow-up too, ST with a Medium for the user; every fix made by
+  first follow-up too, PT2's delta with a Low, ST with a Medium for the
+  user; every fix made by
   the lane before its merge; PT1 and ART without a separate review); main
   has 152 portable fixtures. MS's full run 151/152 (`r37_dc` waited for
   this lane), its step test 64/64 (SQLite and PostgreSQL), the chain
   0.41.0/0.43.0 → 0.45.0 in `r44_ms` 32/32; `tools/r37_dc`,
   `check_upgrade.py` and `check_fresh_server.py` PASS on lane D's branch.
-  **Round-end gates (coordinator):** *placeholder, filled in by the
-  coordinator.* No world generation changed (no seed fleet). IL, RG, ST
+  **Round-end gates (coordinator, on `r45-d` at `5d175be6`):** full
+  fixtures 152/152, `check_upgrade.py` and `check_fresh_server.py` PASS,
+  smoke boot PASS; lane D's review MERGE AFTER FIXES, fixed. No world generation changed (no seed fleet). IL, RG, ST
   and MS are this release's **migrate** step, everything else
   compatible; the declaration is
   `{"schema": 2, "version": "0.45.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`:
@@ -29,7 +31,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   production world (0.41.0) gets 0.44.0 and 0.45.0 in the same run; no
   map reset. **Push:** origin/main is `2f918739` (Round 45 up to EU,
   still labelled 0.44.0, pushed by the user on 2026-10-09; no realm runs
-  it, the production server is on 0.41.0); 0.45.0 is not pushed. The GUI
+  it, the production server is on 0.41.0); 0.45.0 is pushed on the
+  user's word (2026-10-09) after the round-end gates, as the merge commit
+  of lane D. The GUI
   check (the completion's checklist) is open.
   - **Crafting (RG, JB, UI):** one recipe registry (662 records, every grid
     route converted, gear moved to its profession), the grid, books and
@@ -57,9 +61,8 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
     `craftresult` into the inventory, pins the 0.44 item level of
     unmodified gear; at the next join leftovers, the T1 weapon damage and
     the tooltips.
-  - Next: the coordinator's round-end gates, the review, the merge of D,
-    the sync and the user's GUI test (desktop and web build), then the
-    user's push decision for 0.45.0; Round 46 (the waiting point for
+  - Next: the sync and the user's GUI test (desktop and web build);
+    Round 46 (the waiting point for
     players in creation stasis, the Grudge-Free Repairs icon, POI
     placement for the random-seed load failures;
     [BACKLOG](../BACKLOG.md#round-45-carry-overs)).
@@ -929,8 +932,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 43 (0.43.0, `d10018a7` and lane D;
-  not pushed) on top of Round 42 (0.42.0, pushed on 2026-10-08), Round 41
+- **Latest game:** main carries Round 45 (0.45.0; see the top entry for
+  its push) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+  2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
   (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
   Rounds 36–39 (Round 36 pushed by the user on 2026-10-05, Rounds 37–39 on
@@ -959,7 +963,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   Round 24 was accepted earlier, and its build contains Rounds 20–23 and
   the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06,
   Round 42 by the user's playtest on 2026-10-08.
-  **Rounds 36, 37, 38, 40, 41 and 43 are open** (Round 43's
+  **Rounds 36–38, 40, 41 and 43–45 are open** (Round 45's
+  [checklist](planning/round45-plan.md#gui-checklist), Round 44's
+  [checklist](planning/round44-plan.md#gui-checklist); Round 43's
   [checklist](planning/round43-plan.md#gui-checklist) is short: a 0.42.0
   world plays on under 0.43.0, a fresh world, the tool's `--check` on a
   copy; Round 41's
@@ -1013,9 +1019,9 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main is `332c5e79` (0.42.0, pushed by
-  the user on 2026-10-08): every round up to Round 42; 0.43.0 (Round 43)
-  is local.
+- **Remote observation:** origin/main was `2f918739` at Round 45's
+  documentation (Round 44 and Round 45 up to EU, labelled 0.44.0, pushed
+  by the user on 2026-10-09); the top entry has the current push line.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md) (compatible, map

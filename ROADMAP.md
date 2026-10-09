@@ -411,7 +411,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   trainers' places; the user's playtest fixes (the inventory window,
   mounts, mobs, station sounds, the Claim Stone as a waypoint) and art
   picks; the offline step removes mixtures, empties the craft grid and
-  keeps old gear at its item level. Complete on 2026-10-09; not pushed.
+  keeps old gear at its item level. Complete on 2026-10-09; pushed on the
+  user's word after the round-end gates.
   Next: the GUI test; then Round 46 (the waiting point for players in
   creation stasis).
 

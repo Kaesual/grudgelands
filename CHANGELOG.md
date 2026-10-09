@@ -34,7 +34,7 @@ point below). No map reset, no new world.
   until your next click). One job at a time; it goes on while the window
   is closed or you are offline, and a line tells you "… is ready". The
   results wait in a four-slot output area on the tab; Take all moves them
-  into your bags. Stop gives everything back when there is room.
+  into your inventory. Stop gives everything back when there is room.
   Ingredients come from your bags first and the hotbar last.
 - **Professions make all gear:** weapons, armour, shields, spellbooks,
   bags and jewellery come from their profession at the tier of the item;
@@ -45,8 +45,9 @@ point below). No map reset, no new world.
   four benches, the brewing stand); stations open no window any more.
   Furnaces and dual furnaces still do. Five stations got a new look: the
   tanning rack, the tailor bench, the carving bench, the jeweller's bench
-  and the brewing stand. A station plays its sound when someone starts a
-  job there; the forge no longer hammers with nobody at work.
+  and the brewing stand. The forge and the brewing stand play their sound
+  when someone starts a job there; the forge no longer hammers with nobody
+  at work.
 - **A new item level ladder:** new gear starts at item level 1, 11, 21,
   31, 41 or 51 by tier, and its level requirement is its item level
   (tier-1 gear has none). New tier-1 gear is a little weaker than before
@@ -100,10 +101,11 @@ point below). No map reset, no new world.
   version's checkout, then start it
   ([updating a hosted world](README.md#play-with-luanti)). The step
   removes alchemy mixtures, empties the old crafting grid into the
-  inventory (what does not fit comes at the next login, into the output
-  area or at the character's feet), and keeps every unchanged piece of
-  gear at its old item level and requirement; tooltips and the damage of
-  old tier-1 weapons are brought up to date when the character next joins.
+  inventory (what does not fit comes at the next login: into the
+  inventory, else the output area, else at the character's feet), and
+  keeps every unchanged piece of gear at its old item level and
+  requirement; old tier-1 weapons keep their damage, and tooltips are
+  refreshed when the character next joins.
   From 0.41.0 or 0.43.0 the same run also applies the 0.44.0 step. No map
   reset.
 

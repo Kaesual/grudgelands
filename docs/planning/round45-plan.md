@@ -346,7 +346,9 @@ PT8 (`02f27c39`, follow-up `716dc58e`), PT2 (`6751b892`, follow-up
 `74f78ece`), PT5 (`66381441`), ART (`5ed74763`), and MS (`4a892fd6`).
 **Push:** the user pushed `2f918739` (Round 45 up to EU, still labelled
 0.44.0) on 2026-10-09; no realm runs it, the production server is on
-0.41.0. **0.45.0 is not pushed.** It is the second release with a declared
+0.41.0. **0.45.0 is pushed on the user's word (2026-10-09) after the
+round-end gates, as the merge commit of lane D.** It is the second release
+with a declared
 step: production moves 0.41.0 → 0.45.0 in one tool run that applies 0.44.0
 and 0.45.0 (MS tested this chain).
 
@@ -404,9 +406,11 @@ suite 59/59. This lane: `tools/r37_dc` PASS, `check_upgrade.py` PASS
 (0.45.0 against origin/main `2f918739`), `check_fresh_server.py` PASS.
 No seed fleet: no world generation changed.
 
-**Round-end gates on the final branch** (`r45-d`, coordinator):
-*PLACEHOLDER — the coordinator fills in the full `run_fixtures.sh` (…/152),
-`check_upgrade.py`, `check_fresh_server.py` and the smoke boot.*
+**Round-end gates on the final branch** (`r45-d` at `5d175be6`,
+coordinator, 2026-10-09): full `run_fixtures.sh` 152/152 PASS,
+`check_upgrade.py` PASS (0.45.0 against origin/main `2f918739`),
+`check_fresh_server.py` PASS, headless smoke boot PASS. Lane D's review:
+MERGE AFTER FIXES (Lows and nits only), fixed.
 
 `mods/` +5,049 −4,962 lines this round (162 files); no new mod; removed
 from `grug_jobs`: `stations.lua`, `discovery.lua`, `basics_routes.lua`,
@@ -500,8 +504,9 @@ Numbers are comparisons on the lanes' harnesses, never targets.
   Stats merged into one Stats mode (three modes), the cloak hint a
   tooltip; the boxed short view on every tab with the hotbar at one place;
   7 inventory rows in today's window size (13.5 × 13.673); the Skills box
-  on Talents. Inventory 2,221 → 2,241 B, Character Stats 5,076 → 5,126,
-  Talents 6,264 → 6,381, Crafting 4,076 → 4,142.
+  on Talents. Inventory 2,221 → 2,241 B and Crafting 4,076 → 4,142 (the
+  7-row follow-up); Character Stats 5,076 → 5,126 and Talents 6,264 →
+  6,381 (measured on PT2's first, 8-row version).
 - **PT3, the crafting box** (`b9ff54b8`): three areas (top; the
   description, ingredients, Max and notes; the quantity row and Craft
   now), the description exact for crafted gear and the cooked dish plus
@@ -647,6 +652,10 @@ The user (2026-10-08 and 2026-10-09), on the lanes' questions:
   picks: stations tanning B, tailor B, carving B, jeweller A, brewing B;
   jewellery manawell A, last_light A, battlebeat B, apothecary_loop B,
   mercy_seal A, reclaimers_mark C (GPT-6 Astra).
+- **PT9's consequence accepted:** told that a Claim Stone which is the
+  travel home is then reachable from any waystone for free and without
+  the Return home cooldown, the user kept the stone a normal waypoint
+  both ways.
 - **MS:** `craftresult` is part of the craft move; the push of
   `2f918739` needs nothing (no realm ran it).
 - **Next round (46):** the waiting point for players in creation stasis
@@ -806,9 +815,11 @@ world migrated with the tool, and on a fresh world.
 19. Grudge-Free Repairs in every start town and capital: only the repair
     form, no trainer dialog, no map or minimap icon, the other faction
     refused; Help names it.
+    A profession trainer's hint names the Crafting tab and the station.
 20. The new stations (tanning rack, tailor bench, carving bench,
     jeweller's bench, brewing stand) from front and back; the selection
-    outline follows the shape; the forge unchanged. Trinkets T1–T6 show
+    outline follows the shape; dig one of your own: it comes back as the
+    station item; the forge unchanged. Trinkets T1–T6 show
     distinct jewellery in the inventory, the equipment slots and the web
     inventory; the Goldsmith's product display.
 21. Sounds: an idle capital forge is silent; a Weaponsmith job start plays

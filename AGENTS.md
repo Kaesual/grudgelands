@@ -21,10 +21,11 @@ finished potions, Grudge-Free Repairs, the playtest fixes, and step
 0.45.0 (mixtures removed, the craft grid emptied, old gear keeps its item
 level). origin/main is `2f918739` (Round 44 and Round 45 up to EU, still
 labelled 0.44.0, pushed by the user on 2026-10-09; production runs
-0.41.0); 0.45.0 is not pushed. Rounds 25–35 count as GUI-accepted (the
+0.41.0); 0.45.0 is pushed on the user's word after the round-end gates.
+Rounds 25–35 count as GUI-accepted (the
 user, 2026-10-05), Round 39 too (2026-10-06), Round 42's playtest was
 accepted (2026-10-08); the GUI tests of Rounds 36–38, 40, 41, 43, 44 and
-45 are open. Next: Round 45's GUI test and push decision; Round 46 (the
+45 are open. Next: Round 45's GUI test; Round 46 (the
 waiting point for players in creation stasis). Details:
 [STATUS](docs/STATUS.md).
 

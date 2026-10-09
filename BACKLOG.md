@@ -22,7 +22,8 @@ example E5) are cited below.
 
 - **Latest delivery:
   [Round 45 "Crafting rework"](docs/planning/round45-plan.md#completion-2026-10-09)
-  complete, 0.45.0 not pushed** (2026-10-09, `4a892fd6` and lane D,
+  complete** (2026-10-09, `4a892fd6` and lane D; pushed on the user's
+  word after the round-end gates;
   version 0.45.0, **migrate**: the second declared step; GUI test open):
   Round B of the UI rework — the recipe registry and the Crafting tab
   instead of the grid and the books, crafting jobs with the output area,
@@ -1619,7 +1620,7 @@ the reviews' and reports' backlog notes (theoretical, no severity).
 
 ### Round 44 — inventory, map and quickbar
 
-**Delivered 2026-10-09, 0.44.0 not pushed**
+**Delivered 2026-10-09, pushed 2026-10-09 inside `2f918739`**
 ([completion](docs/planning/round44-plan.md#completion-2026-10-09),
 plan [round44-plan.md](docs/planning/round44-plan.md)); every lane
 independently reviewed by Opus; 138 portable fixtures on main. Version
@@ -1689,7 +1690,7 @@ else open.
 
 ### Round 45 — crafting rework
 
-**Delivered 2026-10-09, not pushed**
+**Delivered 2026-10-09, pushed on the user's word after the round-end gates**
 ([completion](docs/planning/round45-plan.md#completion-2026-10-09),
 plan [round45-plan.md](docs/planning/round45-plan.md)); every code lane
 independently reviewed by Opus (PT1 and ART without a separate review);
@@ -1789,6 +1790,9 @@ notes (theoretical, no severity).
   that vanished before the 5 s scan; Return home has the same gap); a
   forged tab-1 field on the Waypoints tab is still handled (the owner on
   their own stone, harmless).
+- **`tools/r33_ds/allocation.py --check` fails** (pre-existing since
+  `c913dbbe`, noted by EU and its review): the T5 enchants `int` and
+  `dodge_percent` take the scarce input `ash_feather`.
 - **Art** (ART): the lit brewing stand only glows; the jeweller's bench
   and the brewing stand keep metal dig sounds and `cracky`.
 - **The step** (MS): the drop at the feet runs before a map reset's

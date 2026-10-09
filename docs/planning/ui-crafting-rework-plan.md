@@ -9,7 +9,7 @@ user as drawn. **Round A delivered in Round 44** (2026-10-09, version
 0.44.0; [completion](round44-plan.md#completion-2026-10-09)); **Round B
 delivered in Round 45** (2026-10-09, version 0.45.0;
 [completion](round45-plan.md#completion-2026-10-09)), which amended §2.26
-(Max), §2.27 (the former Cooking trainers), §2.33 (visibility) and §6 (the
+(Max), §2.28 (the former Cooking trainers), §2.33 (visibility) and §6 (the
 pin), each marked there. Round 44 superseded two points of this
 plan: the migrations are offline steps of the Round 43 tool (§6), and the
 precondition below (framework and AGENTS.md change before the plans are
@@ -594,7 +594,8 @@ The server learns the typed number only with an event (§1). Rules:
 - Alchemy: recipes produce finished potions and elixirs at the brewing stand;
   mixtures and the automatic brewing go.
 - Cooking trainers (6 capital, 6 start town) become ordinary NPCs; check talk
-  quests that point at them.
+  quests that point at them. (Amended in Round 45: they became the
+  repair-only Grudge-Free Repairs, §2.28.)
 - Check the 163 item objectives (94 name `grug_materials` items, 6
   `grug_smelting`) for targets that become profession-only or disappear
   (mixtures).
