@@ -234,13 +234,21 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   and the ride sound stopped. A flyer just above a water surface flies on.
   A riding or flying mount is also refused where the player's feet or the
   node below them are water (standing or swimming in it, sitting in a boat):
-  "Only boats can be summoned in water." Lava is no water: its damage ends
-  the ride (§3.1).
+  "Only boats can be summoned in water." Lava, the game's other liquid,
+  ends the ride the same way ("Mounts cannot enter lava."; the rider is left
+  in it under the engine's own lava damage), one node deep included, and no
+  mount is summoned in it ("Mounts cannot be summoned in lava.").
 - **A stun dismounts you**: `grug_core.set_stun` dismounts a mounted player
   (`grug_core/movement.lua`).
 - **Taking damage dismounts you** (§3.1) — the same detach path again.
 - Mounting is refused while `grug_core.in_combat(player)` reports the active
   five-second combat window.
+- **A ground mount is summoned only on solid ground** (Round 45 playtest): a
+  walkable node under the middle or a corner of the player's box; in the
+  air (jumping, falling) it is refused with "Stand on solid ground to summon
+  this mount.", because a mount summoned in a fall starts at rest and would
+  cut the fall's damage short. Flyers may be summoned in a fall; boats keep
+  their own water rule.
 - A mounted player cannot use abilities, casts or combat swings. They must
   dismount before attacking; the refusal is a grey message-feed line
   ("Dismount before attacking."), not a chat line.
@@ -267,9 +275,10 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   the land controller applies the engine's player rule itself: it keeps the
   peak height while off the ground (a liquid breaks the fall: the peak
   follows the mount down through it, and a landing in a liquid is no drop,
-  however fast; water ends the ride before any landing anyway; a new mount
-  starts without a peak), and on landing a drop of `d` nodes deals `floor(f × sqrt(2 × 19.62 × d) − 14 +
-  0.5)` native damage with reason type `fall`, where `f` is the floor
+  however fast; a liquid, water or lava, ends the ride before any landing
+  anyway, and the rider then meets the engine's own rules there; a new
+  mount starts without a peak), and on landing a drop of `d` nodes deals
+  `floor(f × sqrt(2 × 19.62 × d) − 14 + 0.5)` native damage with reason type `fall`, where `f` is the floor
   node's and the rider's `fall_damage_add_percent` factor (19.62 is the
   player's gravity; the mount itself falls at 9.81, so the height counts,
   not its speed). Nothing below about 5 nodes hurts. The shared fall

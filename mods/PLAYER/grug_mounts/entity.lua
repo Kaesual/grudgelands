@@ -21,9 +21,13 @@ local AIRBORNE_PAUSE = 0.5
 -- rule reads the height, not the mount's own speed.
 local PLAYER_GRAVITY = 19.62
 -- Water is for boats (Round 45 PT6): a riding or flying mount ends where it
--- enters water, and none is summoned there.
+-- enters a liquid (water or lava), and none is summoned there; a ground
+-- mount is summoned only by a player standing on solid ground.
 local WATER_DISMOUNT = "Mounts cannot enter water."
+local LAVA_DISMOUNT = "Mounts cannot enter lava."
 local WATER_REFUSAL = "Only boats can be summoned in water."
+local LAVA_REFUSAL = "Mounts cannot be summoned in lava."
+local GROUND_REFUSAL = "Stand on solid ground to summon this mount."
 local FALL_TOLERANCE = 14
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
 local WARNING_DIRECTIONS = {}
@@ -602,12 +606,12 @@ local entity_definition = {
 		local pos = self.object:get_pos()
 		local tier = grug_mounts.TIERS[self._grug_tier]
 		-- Water is for boats: a riding or flying mount whose body (its
-		-- origin, at its feet) enters a water node ends at once, and the rider
-		-- stays there, in the water, as a swimmer. This runs before the land
-		-- step, so a fall into water deals no mount fall damage; lava is no
-		-- water and ends the ride through its damage (the HP observer).
-		if tier.mode ~= "water" and is_water(pos) then
-			grug_mounts.dismount(player, WATER_DISMOUNT, true)
+		-- origin, at its feet) enters a liquid node ends at once, and the
+		-- rider stays there, in it: a swimmer in water, in lava under the
+		-- engine's own lava damage. This runs before the land step, so a fall
+		-- into a liquid deals no mount fall damage.
+		if tier.mode ~= "water" and in_liquid(pos) then
+			grug_mounts.dismount(player, is_water(pos) and WATER_DISMOUNT or LAVA_DISMOUNT, true)
 			return
 		end
 		if tier.mode == "flight" then
@@ -750,6 +754,17 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	return true
 end
 
+-- A player standing at `pos` (the feet) has a walkable node under the middle
+-- or a corner of the player's box (0.3 around the middle, like its width).
+local function on_ground(pos)
+	for _, offset in ipairs({{0, 0}, {-0.29, -0.29}, {-0.29, 0.29}, {0.29, -0.29}, {0.29, 0.29}}) do
+		local floor = node_definition(position_node({x = pos.x + offset[1],
+			y = pos.y - 0.1, z = pos.z + offset[2]}))
+		if floor and floor.walkable then return true end
+	end
+	return false
+end
+
 -- Where tier_id may be summoned for this player right now, or nil and why.
 local function summon_position(player, tier_id)
 	if grug_core.in_combat(player) then return nil, "You cannot mount while in combat." end
@@ -768,6 +783,11 @@ local function summon_position(player, tier_id)
 	-- Feet in water, or on its surface (a boat's seat, a swimmer at the top):
 	-- only boats.
 	if grug_mounts.boat_touches_water(pos) then return nil, WATER_REFUSAL end
+	if in_liquid(pos) then return nil, LAVA_REFUSAL end
+	-- A ground mount needs the player on solid ground: summoned in the air it
+	-- would start at rest and cut a fall short. A flyer may be summoned in a
+	-- fall.
+	if tier.mode == "land" and not on_ground(pos) then return nil, GROUND_REFUSAL end
 	if tier.mode == "flight" then
 		local legal = grug_mounts.flight_state(player, pos)
 		if not legal then return nil, "Flying mounts are forbidden here." end
