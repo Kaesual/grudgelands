@@ -70,10 +70,12 @@ local function list_facts()
 	local over_list, over_box = 0, 0
 	for _, name in ipairs(longest) do
 		if #name > 23 then over_list = over_list + 1 end
-		if #name > 22 then over_box = over_box + 1 end
+		local lines = grug_inventory.wrap_text(name, 22)
+		if select(2, lines:gsub("\n", "")) > 1 then over_box = over_box + 1 end
 	end
-	log(("names: longest %q (%d chars); %d clipped in the list (23), %d in the box (22)")
-		:format(longest[1] or "", #(longest[1] or ""), over_list, over_box))
+	log(("names: longest %q (%d chars); %d clipped in the list (23, full name as" ..
+		" tooltip), %d beyond the box's two lines of 22"):format(longest[1] or "",
+		#(longest[1] or ""), over_list, over_box))
 	local many = 0
 	for _, recipe in ipairs(J.recipes) do
 		if #recipe.ingredients > 5 then many = many + 1 end
