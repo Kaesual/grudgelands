@@ -620,3 +620,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   its profession, durations, stations, the craft list at a join and the
   removed APIs. The recipe-book probe `pt_fixes/lane_d` is retired with the
   books.
+  `r45_jb` crafting jobs (`portable_test.lua`, the real `grug_inventory`
+  give helper and fit check, the registry, `state.lua` and `jobs.lua` under
+  a stub engine with a wall clock and `core.after`): the start checks, the
+  consumption order and the metadata rule, completion by the online timer,
+  at login and on opening the tab (a server restart in the middle of a job
+  included), gear through `crafted_output`, several output stacks above
+  `stack_max`, XP per job and after an unlearn, cancel with and without room,
+  Stop after the end, the take-only output area and Take all.
+  `grug_probe_r45_jb` is the smoke boot's disposable probe (registry facts
+  the fixture relies on).

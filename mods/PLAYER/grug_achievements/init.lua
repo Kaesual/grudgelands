@@ -19,7 +19,7 @@
 --   * grug_pvp's counters (grug_pvp.register_on_stat): pvp:<stat>, read from
 --     grug_pvp.stats, never copied;
 --   * grug_jobs' counted crafts (grug_jobs.register_on_award_progress):
---     craft:<profession> by the recipe's output count (cooking: dishes,
+--     craft:<profession> by the items a craft or job made (cooking: dishes,
 --     alchemist: potions and elixirs, both counted at their preparation);
 --   * deaths: death:<reason type>, e.g. death:fall;
 --   * grug_quests' turn-ins (grug_quests.register_on_turn_in, Round 36):
@@ -202,10 +202,12 @@ if core.global_exists("grug_mobs") then
 end
 
 if core.global_exists("grug_jobs") and grug_jobs.register_on_award_progress then
-	grug_jobs.register_on_award_progress(function(player, recipe)
+	-- `items`: what the craft or crafting job made (Round 45: a job counts its
+	-- whole quantity at once).
+	grug_jobs.register_on_award_progress(function(player, recipe, items)
 		local counter = "craft:" .. tostring(recipe.profession)
 		if book.by_counter[counter] then
-			grug_achievements.add(player, counter, ItemStack(recipe.output):get_count())
+			grug_achievements.add(player, counter, items or recipe.count or 1)
 		end
 	end)
 end

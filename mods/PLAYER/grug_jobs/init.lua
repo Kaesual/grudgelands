@@ -1,5 +1,5 @@
 -- Profession framework: the recipe registry, persistent player progression,
--- station nodes and settlement trainers.
+-- crafting jobs, station nodes and settlement trainers.
 
 grug_jobs = {}
 
@@ -7,6 +7,7 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/registry.lua")
 grug_jobs.register_basic_catalog(dofile(modpath .. "/basic_recipes.lua"))
 dofile(modpath .. "/state.lua")
+dofile(modpath .. "/jobs.lua")
 dofile(modpath .. "/character_tab.lua")
 dofile(modpath .. "/ui.lua")
 dofile(modpath .. "/craft_list.lua")

@@ -158,8 +158,39 @@ tools](#player-meta-read-by-external-tools).
   finish is an engine cooking recipe `grug_cooking` registers.
   `can_craft_recipe(player, recipe)` is the profession gate (Basic always; a
   profession recipe or station operation needs the profession at the recipe's
-  tier); the station-nearby check and the jobs are lane JB's (Round 45). The
-  Crafting tab is a stub ("Crafting is being rebuilt", `ui.lua`) until lane UI.
+  tier). The Crafting tab is a stub ("Crafting is being rebuilt", `ui.lua`)
+  until lane UI; building it catches the job up.
+- **Crafting jobs** (`jobs.lua`, Round 45 lane JB): one job per player in
+  player meta `grug_jobs:job` (one `core.serialize`d table: `kind`
+  "recipe", `recipe` id, `quantity`, `consumed` itemstrings for the refund,
+  `target` itemstring for lane EU's enchant and upgrade kinds, `start` and
+  `finish` in os.time() seconds with a sub-second part from `grug_jobs.now()`,
+  `no_xp` after an unlearn). `start_job(player, recipe_id, quantity)` →
+  ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
+  `profession`, `station`, `space`, `ingredients`); `cancel_job(player)` →
+  ok, `"completed"`/`"cancelled"` or the refusal; `job_state(player)` (a copy,
+  no side effects); `update_job(player, source)` completes a due job (login,
+  the tab's build) and otherwise arms the timer; the timer is one
+  `core.after` per online player with a job, no globalstep.
+  `ingredient_counts(player)` (one pass over `main` and the bags, stacks
+  without metadata: `is_ingredient_stack`), `ingredient_have(counts, entry)`,
+  `crafts_from_counts(counts, recipe)`, `output_capacity(player, recipe)`,
+  `max_craftable(player, recipe[, counts])` → n, by ingredients, by space;
+  `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
+  within 4 nodes); `take_all(player)` → moved, left. The output area
+  `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at
+  every join; a join handler that runs earlier, such as lane MS's 0.45.0
+  step, calls it before it uses the list).
+  `register_on_job_end(fn(player, job, outcome, source))` (outcome
+  `completed`/`cancelled`; source `timer`, `join`, `open`, `start`, `stop`)
+  is where UI resends an open Crafting page; `register_job_kind(kind,
+  {finish})`, `begin_job` (nil and the reason while a job runs: the caller
+  gives back what it took) and `take_ingredients` are the parts EU's kinds
+  use. A job is cleared before its kind's `finish` runs, so a hook inside it
+  cannot complete it twice; a job without its recipe, or of an unknown kind,
+  returns its ingredients and target. A finished recipe job makes its
+  stacks (gear through `grug_items.crafted_output`), calls `award_progress`
+  once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
   Fixture `tools/r45_rg`: record shape, queries, refusals, the conversion
   against the base catalog, gear in its profession, durations, stations, the
   craft list and the removed APIs.
@@ -167,10 +198,12 @@ tools](#player-meta-read-by-external-tools).
   `crafts_in_tier`, `character_tier`, `record_craft`, `award_progress` and
   `can_craft_recipe`; every craft path and station operation (enchants,
   profession upgrades) awards progress through `award_progress(player,
-  recipe)`, which checks the recipe's flag; `register_on_award_progress(fn(player,
-  recipe))` (Round 33) runs after each counted award (grug_achievements counts
-  dishes and potions there; fixture `tools/r33_c2`: roster and progress
-  flags). `profession_level` returns 0 when unlearned and effective T1–T6 when
+  recipe[, crafts[, no_xp]])`, which checks the recipe's flag and counts a
+  job's crafts at once (`record_craft(player, profession, tier[, crafts])`:
+  min(crafts, XP left in the tier)); `register_on_award_progress(fn(player,
+  recipe, items))` (Round 33) runs after each counted award with the items
+  made (grug_achievements counts dishes and potions there; fixture
+  `tools/r33_c2`: roster and progress flags). `profession_level` returns 0 when unlearned and effective T1–T6 when
   learned. Weaponsmith and Armorsmith have separate authorization/progression
   but share station id `forge` and node `grug_jobs:forge`; there is no
   `blacksmith` alias.
