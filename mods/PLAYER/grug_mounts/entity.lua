@@ -13,6 +13,18 @@ local LANDING_RADIUS = 2
 -- has been off the ground this long (a jump, a fall deeper than about one
 -- node). A step down a slope (0.45 s for one node) keeps the gallop going.
 local AIRBORNE_PAUSE = 0.5
+-- Fall damage of a ground mount's rider (Round 45 PT6): the engine's own
+-- player rule (clientenvironment.cpp, which an attached player never runs):
+-- the impact speed a player reaches falling the same height (player gravity
+-- 2 x movement_gravity 9.81), times the fall_damage_add_percent factor, minus
+-- a 14 nodes/s tolerance, is the damage. The mount falls at 9.81, so the
+-- rule reads the height, not the mount's own speed.
+local PLAYER_GRAVITY = 19.62
+-- Water is for boats (Round 45 PT6): a riding or flying mount ends where it
+-- enters water, and none is summoned there.
+local WATER_DISMOUNT = "Mounts cannot enter water."
+local WATER_REFUSAL = "Only boats can be summoned in water."
+local FALL_TOLERANCE = 14
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
 local WARNING_DIRECTIONS = {}
 local DRAGON_ISLANDS = {
@@ -376,6 +388,57 @@ local function horizontal_input(control, yaw)
 		math.cos(yaw) * forward + math.sin(yaw) * side, scale
 end
 
+-- The fall-damage factor of a landing: the floor node's and the rider's
+-- `fall_damage_add_percent` (like the engine), nil for an immortal rider.
+local function fall_factor(self, player, pos)
+	local armor = player:get_armor_groups() or {}
+	if (armor.immortal or 0) ~= 0 then return nil end
+	local floor = node_definition(position_node({x = pos.x,
+		y = pos.y + self._grug_model.collisionbox[2] - 0.1, z = pos.z}))
+	local node_percent = floor and floor.groups and floor.groups.fall_damage_add_percent or 0
+	return (1 + node_percent / 100) * (1 + (armor.fall_damage_add_percent or 0) / 100)
+end
+
+-- The rider's fall damage for a drop of `height` nodes, as the engine deals
+-- it to a player: the native amount with reason type "fall", which the
+-- shared fall modifier (grug_core/combat.lua) scales to the HP pool and
+-- the race perk, and which the HP observer below turns into a dismount.
+-- Returns true when damage was dealt.
+local function fall_damage(self, player, pos, height)
+	local factor = fall_factor(self, player, pos)
+	if not factor or factor <= 0 then return false end
+	local damage = math.floor(factor * math.sqrt(2 * PLAYER_GRAVITY * height) -
+		FALL_TOLERANCE + 0.5)
+	local hp = player:get_hp()
+	if damage <= 0 or hp <= 0 then return false end
+	player:set_hp(hp - damage, {type = "fall"})
+	return true
+end
+
+local function in_liquid(pos)
+	local inside = node_definition(position_node(pos))
+	return inside and (inside.liquidtype or "none") ~= "none"
+end
+
+-- The fall: the peak height while the mount is off the ground (a liquid
+-- breaks the fall, as it slows a swimmer: the peak follows the mount down
+-- through it), the drop below it on landing. A landing in a liquid is no
+-- drop at all, however fast the fall was (a pool floor reached between two
+-- steps; water already ends the ride in on_step). A new mount starts without
+-- a peak. Returns the drop on the step the mount lands.
+local function track_fall(self, moveresult, pos)
+	if not moveresult or moveresult.touching_ground then
+		local peak = self._grug_fall_peak
+		self._grug_fall_peak = nil
+		if not peak or in_liquid(pos) then return nil end
+		return peak - pos.y
+	end
+	if not self._grug_fall_peak or pos.y > self._grug_fall_peak or in_liquid(pos) then
+		self._grug_fall_peak = pos.y
+	end
+	return nil
+end
+
 local function land_step(self, control, yaw, dtime, moveresult)
 	local tier = grug_mounts.TIERS[self._grug_tier]
 	local velocity = self.object:get_velocity() or {x = 0, y = 0, z = 0}
@@ -400,6 +463,14 @@ local function land_step(self, control, yaw, dtime, moveresult)
 		z = input_z * horizontal})
 	self.object:set_acceleration({x = 0, y = -9.81, z = 0})
 	set_animation(self, input_scale == 0 and "stand" or "move")
+	-- A landing from more than about five nodes hurts the rider, and the hurt
+	-- dismounts (the HP observer removes this mount).
+	local pos = self.object:get_pos()
+	local drop = pos and track_fall(self, moveresult, pos)
+	if drop and drop > 0 and fall_damage(self, self.driver, pos, drop) and
+			not self.object:is_valid() then
+		return
+	end
 	-- Ground contact is the engine's collision result of this step (nil only
 	-- off-engine: counted as ground).
 	if moveresult and not moveresult.touching_ground then
@@ -530,6 +601,15 @@ local entity_definition = {
 		if not record or record.object ~= self.object then self.object:remove() return end
 		local pos = self.object:get_pos()
 		local tier = grug_mounts.TIERS[self._grug_tier]
+		-- Water is for boats: a riding or flying mount whose body (its
+		-- origin, at its feet) enters a water node ends at once, and the rider
+		-- stays there, in the water, as a swimmer. This runs before the land
+		-- step, so a fall into water deals no mount fall damage; lava is no
+		-- water and ends the ride through its damage (the HP observer).
+		if tier.mode ~= "water" and is_water(pos) then
+			grug_mounts.dismount(player, WATER_DISMOUNT, true)
+			return
+		end
 		if tier.mode == "flight" then
 			local legal = grug_mounts.flight_state(player, pos)
 			if not legal then
@@ -613,14 +693,11 @@ local visual_definition = {
 		self.object:set_properties({mesh = model.mesh, textures = model.textures,
 			visual_size = {x = model.visual_size.x / rider_size.x,
 				y = model.visual_size.y / rider_size.y}})
-		-- forced_visible: the rider sees the mount's front half in first person
-		-- too (the engine hides a child of the local player there unless the
-		-- attachment forces it; Round 45 PT6, riding and flying mounts). A
-		-- boat's hull stays hidden in first person, as before.
-		local tier = grug_mounts.TIERS[data.tier]
+		-- forced_visible: the rider sees the mount's front half, or the boat's
+		-- hull, in first person too (the engine hides a child of the local
+		-- player there unless the attachment forces it; Round 45 PT6).
 		self.object:set_attach(player, "", {x = 0, y = -seat / rider_size.y,
-			z = (model.attach_z or 0) / rider_size.x}, {x = 0, y = 0, z = 0},
-			tier.mode ~= "water")
+			z = (model.attach_z or 0) / rider_size.x}, {x = 0, y = 0, z = 0}, true)
 	end,
 	get_staticdata = function() return "" end,
 }
@@ -688,6 +765,9 @@ local function summon_position(player, tier_id)
 		if record and record.mode == "water" then pos.y = pos.y - 0.5 end
 		return grug_mounts.boat_surface(pos)
 	end
+	-- Feet in water, or on its surface (a boat's seat, a swimmer at the top):
+	-- only boats.
+	if grug_mounts.boat_touches_water(pos) then return nil, WATER_REFUSAL end
 	if tier.mode == "flight" then
 		local legal = grug_mounts.flight_state(player, pos)
 		if not legal then return nil, "Flying mounts are forbidden here." end

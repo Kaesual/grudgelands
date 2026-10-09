@@ -8,7 +8,8 @@
 --   C. water contact (ruling 8): removal within the one-second check;
 --   D. the eject seams: HP-change observer and entity on_punch, both leaving
 --      the rider in the water; disembark onto land within 2 nodes, else water;
---   E. one mount or boat: replacement of a horse, refusal keeps the horse;
+--   E. one mount or boat: no horse in water (Round 45 PT6), a refused mount
+--      keeps the boat, a refused boat keeps the horse;
 --   F. purchase gating: Shipwright rows, own faction, levels, Learn Boat
 --      first, purchase at the shipped price, the owned ids the quickbar
 --      lists; the retired boat item;
@@ -457,19 +458,21 @@ check(not grug_mounts.is_mounted(ada) and not controller_of(ada), "logout disemb
 ------------------------------------------------------------------------------
 -- E. One mount or boat.
 ------------------------------------------------------------------------------
--- A land mount carries the rider into one node of water over ground.
+-- Water is for boats (Round 45 PT6, tools/r45_pt6): no land mount in one
+-- node of water over ground, and none replaces a boat there (it stays).
 clear_world()
 set_node(0, -1, 0, "default:dirt"); set_node(0, 0, 0, "default:water_source")
 ada.pos = {x = 0, y = -0.5, z = 0}
-check((grug_mounts.mount(ada, 1)), "horse summoned")
-local horse = controller_of(ada)
+local horse_ok, horse_message = grug_mounts.mount(ada, 1)
+check(not horse_ok and tostring(horse_message):find("Only boats", 1, true),
+	"no horse summoned in one node of water: " .. tostring(horse_message))
 grug_mounts.toggle(ada, 5)
 local record = grug_mounts.active.ada
-eq(record and record.mode, "water", "the boat item replaces the horse")
-check(not horse.object:is_valid(), "the horse is gone")
+eq(record and record.mode, "water", "a boat in one node of water")
 grug_mounts.toggle(ada, 1)
-eq(grug_mounts.active.ada and grug_mounts.active.ada.mode, "land", "a mount item replaces the boat")
+eq(grug_mounts.active.ada and grug_mounts.active.ada.mode, "water", "a refused mount keeps the boat")
 grug_mounts.dismount(ada, nil, true)
+local horse
 -- Boat to boat on open water, both ways.
 pond()
 ada.pos = {x = 0, y = -1, z = 0}

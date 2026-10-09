@@ -64,7 +64,9 @@ are not nudged into travelling by owning a boat.
 
 ## 3. Summoning and leaving the water
 
-- **A boat can be summoned only in water** (ruling 5): the player's feet are
+- **Only a boat can be summoned in water, and only in water** (ruling 5;
+  riding and flying mounts are refused in water and end where they enter
+  it, `mounts.md` §3): the player's feet are
   in a `group:water` node — normal or river water, source or flowing. Every
   water body works: rivers, lakes, bays, shelf, deep ocean, channels. There
   are no docks; the only piers are the four island landings' (§7.1), and a
