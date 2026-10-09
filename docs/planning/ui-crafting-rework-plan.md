@@ -6,8 +6,11 @@ an independent Opus pass (findings verified and applied; edge cases decided by
 the user). The layout wireframe v1
 (<https://claude.ai/artifact/8XM4hJggJyJSpuigRyg9jJ>) was accepted by the
 user as drawn. **Round A delivered in Round 44** (2026-10-09, version
-0.44.0; [completion](round44-plan.md#completion-2026-10-09)); Round B is
-[Round 45](round45-plan.md). Round 44 superseded two points of this
+0.44.0; [completion](round44-plan.md#completion-2026-10-09)); **Round B
+delivered in Round 45** (2026-10-09, version 0.45.0;
+[completion](round45-plan.md#completion-2026-10-09)), which amended §2.26
+(Max), §2.27 (the former Cooking trainers), §2.33 (visibility) and §6 (the
+pin), each marked there. Round 44 superseded two points of this
 plan: the migrations are offline steps of the Round 43 tool (§6), and the
 precondition below (framework and AGENTS.md change before the plans are
 approved) became Round 44's parallel run with Round 43 under its merge
@@ -288,7 +291,8 @@ Game:
     player's level: a permanent warning ("The target item level exceeds your
     level, you won't be able to use this item before you have reached level
     N.") and a yellow "Upgrade anyway" button; Max always fills to the cap
-    and may produce the warning. The player's level never limits an upgrade
+    and may produce the warning (**amended in Round 45**, the user: Max also
+    stops at what the materials pay for). The player's level never limits an upgrade
     (a level-22 crafter at profession T3 may raise a steel sword to 30). A
     higher profession tier never lifts an item past its own tier's cap: a T1
     smith cannot make or upgrade T2 items, and a T2 smith raises a T1 item
@@ -304,7 +308,9 @@ Game:
     contents are discarded, §6).
 28. **Cooking without trainers:** every player knows cooking from the start
     (keeps its tiers); the cooking trainers become ordinary NPCs; quest cooks
-    stay.
+    stay. **Amended in Round 45** (the user): the 12 former Cooking trainer
+    sockets hold a repair-only NPC, "Grudge-Free Repairs", so start towns
+    keep a repair point.
 29. **Existing items keep what they are** where possible (§6): an existing
     ilvl-20 steel sword may exist; new crafts follow the new ladder.
 30. **Durations** (the user, 2026-10-08): Basic 1 s per craft; simple food
@@ -317,9 +323,12 @@ Game:
 32. **Upgrade cost per level:** one family material of the item's tier
     (bar, cloth bolt, leather, graded wood, set gem); weapons one stick on
     top.
-33. **Recipe visibility:** every area shows all its recipes; search,
-    pages and "Craftable only" replace the discovery (the seen-items list,
-    its inventory scan and the starter flags go).
+33. **Recipe visibility:** Basic shows all its recipes; a profession area
+    (the primaries, Cooking, Alchemy) shows its recipes up to the player's
+    profession tier (**corrected in Round 45**, the user at the playtest;
+    before: every area shows all). Search, pages and "Craftable only"
+    replace the discovery (the seen-items list, its inventory scan and the
+    starter flags go).
 34. **Gear recipes** keep today's Basics ingredients, moved to their
     profession; the profession tier needed equals the item's tier; the
     station within 4 nodes; the result starts at its tier's base item level
@@ -614,7 +623,15 @@ The server learns the typed number only with an event (§1). Rules:
   Pinning the old requirement keeps every equipped item wearable (it was met
   when equipped and levels never drop), so no separate lowering step is
   needed. The tooltip is rebuilt with the existing description code. Items
-  in node storage follow the new definitions (accepted).
+  in node storage follow the new definitions (accepted). **As built in
+  Round 45** (step 0.45.0,
+  [upgrade contract §5.8](../technical/upgrade-contract.md#58-the-declared-steps)):
+  the pin covers every list of a character; unmodified T1 weapons read
+  their damage from the definition, so the step's join handler refreshes
+  their capabilities (new `grug_items.refresh_capabilities`) before it
+  rebuilds the descriptions; offline the `craft` grid and `craftresult`
+  fill only empty slots and their leftovers are handed out at the next
+  join.
 - **Crafting (Round B):** the player's own `craft` list (at most 9 stacks,
   possibly gear) is emptied into the inventory through the give helper
   **before** the item-level pin pass and stored with size 0. The engine
