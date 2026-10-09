@@ -147,14 +147,11 @@ local function record_craft(player, profession, tier, crafts)
 	return false, current, gained
 end
 
--- Every counted craft also refreshes the Character page's Professions tab
--- when that tab is the open view (Round 28 ruling 23); otherwise nothing.
+-- A counted craft plays the tier sound when the profession advanced. The
+-- overview on the Crafting tab follows with the job's end resend (ui.lua).
 function grug_jobs.record_craft(player, profession, tier, crafts)
 	local advanced, level, gained = record_craft(player, profession, tier, crafts)
 	if advanced then grug_sounds.play("profession_tier", player) end
-	if grug_inventory.refresh_character_tab then
-		grug_inventory.refresh_character_tab(player, "professions")
-	end
 	return advanced, level, gained
 end
 

@@ -2,7 +2,8 @@
 -- spec ruling 6 and §3.3). Through tools/r44_ch/harness.lua (the real
 -- sfinv, grug_inventory equipment/bags/storage/ui/pages, grug_gear
 -- permissions, grug_achievements and grug_jobs' body) it checks:
---   1. the four modes and the professions overview: each renders, the
+--   1. the four modes (the professions overview moved to the Crafting tab in
+--      Round 45 and is checked there, tools/r45_ui): each renders, the
 --      selected button is styled, 3D is the default, a mode button switches
 --      the box only (runtime context), every mode keeps the gear box and the
 --      frame's short view, the page draws no `main` of its own, and the
@@ -104,7 +105,7 @@ local MODE_RIGHT, GEAR_LEFT, BOXES_BOTTOM = 8.1, 8.3, 9.2
 -- 1. The modes
 --
 
-local MODES = {"3d", "stats", "effects", "achievements", "professions"}
+local MODES = {"3d", "stats", "effects", "achievements"}
 local warrior = H.player("wara", "warrior", {16})
 local default_fs = H.page(warrior, nil)
 eq(H.context.grug_character_tab, nil, "no mode stored before a click")
@@ -113,7 +114,7 @@ has(default_fs, "style[grug_character_3d;bgcolor=#8a682f", "the 3D button is sty
 has(default_fs, "dropdown[3.95,2.00;3.80;grug_cloak;", "the cloak picker sits in the 3D mode")
 lacks(default_fs, "Maximum HP", "no stats in the 3D mode")
 local labels = {["3d"] = "3D", stats = "Stats", effects = "Effects",
-	achievements = "Achievements", professions = "Professions"}
+	achievements = "Achievements"}
 H.status_effects = {
 	{id = "food", name = "Hearty Stew", texture = "stew.png", detail = "+2% HP/5s",
 		remaining_us = 600000000},
@@ -205,31 +206,8 @@ has(ach, "label[5.40,8.70;1/3]", "achievements: page 1 of 3")
 check(H.click(warrior, {grug_ach_next = ">"}), "achievements: next page handled")
 has(H.page(warrior, "achievements"), "label[5.40,8.70;2/3]", "achievements: page 2")
 
--- Professions: wrapped into the mode box.
-local prof = H.page(warrior, "professions")
-has(prof, "label[0.40,1.60;Weaponsmith — Tier 2]", "professions: the first row")
-has(prof, "Capped by your level: reach level 21\\, then craft]", "professions: the note, line 1")
-has(prof, "once more for tier 3.]", "professions: the note, line 2")
-has(prof, "Highest tier reached.", "professions: a T6 row")
-has(prof, "Only crafts of the current tier count toward the", "professions: the footer")
--- Four capped rows leave no room for the footer, and still end in the box.
-local real_overview = grug_jobs.profession_overview
-grug_jobs.profession_overview = function()
-	local out = {}
-	for i = 1, 4 do
-		out[i] = {name = "Prof " .. i, tier = 1, crafts = 10, needed = 10, capped = true,
-			next_level = 11}
-	end
-	return out
-end
-prof = H.page(warrior, "professions")
-lacks(prof, "Only crafts of the current", "professions: no footer under four capped rows")
-for _, r in ipairs(rects(page_part(prof))) do
-	if r.y + r.h > BOXES_BOTTOM + 1e-6 then
-		check(false, "professions: four capped rows end inside the box at " .. r.y)
-	end
-end
-grug_jobs.profession_overview = real_overview
+-- No Professions mode since Round 45 (the overview is on the Crafting tab).
+lacks(H.page(warrior, nil), "grug_character_professions", "no Professions mode button")
 
 --
 -- 2. The gear box per class

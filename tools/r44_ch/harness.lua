@@ -1,8 +1,8 @@
 -- Round 44 lane CH harness: loads the REAL vendored sfinv, grug_inventory's
 -- equipment.lua, bags.lua (with storage.lua), ui.lua and pages.lua, the REAL
--- grug_gear permissions, grug_achievements and grug_jobs' Character-page
--- body under a minimal `core` stub, plus a small model of the engine's
--- inventory move (IMoveAction::apply: fit, swap, the allow limits, and
+-- grug_gear permissions, grug_achievements and (before Round 45) grug_jobs'
+-- Character-page body under a minimal `core` stub, plus a small model of the
+-- engine's inventory move (IMoveAction::apply: fit, swap, the allow limits, and
 -- move_somewhere for shift-click, which follows the formspec's listring like
 -- guiFormSpecMenu.cpp getNextInventoryRing). Used by portable_test.lua and
 -- bytes.lua; works against an older tree too (bytes.lua's "before").
@@ -310,8 +310,13 @@ dofile(repo .. "/mods/PLAYER/grug_achievements/init.lua")
 core.get_current_modname = function() return "grug_inventory" end
 
 -- grug_jobs' body builder with a fixed overview (four professions; the
--- first capped by the level).
-dofile(repo .. "/mods/PLAYER/grug_jobs/character_tab.lua")
+-- first capped by the level), for a tree before Round 45: the overview left
+-- the Character page for the Crafting tab then (bytes.lua's "before").
+local character_tab = io.open(repo .. "/mods/PLAYER/grug_jobs/character_tab.lua")
+if character_tab then
+	character_tab:close()
+	dofile(repo .. "/mods/PLAYER/grug_jobs/character_tab.lua")
+end
 grug_jobs.profession_overview = function()
 	return {
 		{name = "Weaponsmith", tier = 2, crafts = 15, needed = 15, capped = true,

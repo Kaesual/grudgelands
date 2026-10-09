@@ -51,7 +51,8 @@ end
 --
 -- Character page (Round 44, spec ruling 6 and §3.3, wireframe v1), in real
 -- coordinates: the mode box top left (3D with the cloak picker, Stats,
--- Effects, Achievements, and the professions overview until Round 45), the
+-- Effects, Achievements; the professions overview moved to the Crafting tab
+-- in Round 45), the
 -- gear box top right (eight equipment slots, the Scout's quiver, Return
 -- home), and below them the frame's short inventory view. Both boxes end
 -- above the view's grid.
@@ -63,14 +64,13 @@ local MODE_BOX = {x = 0.2, y = 0.2, w = 7.9, h = BOX_BOTTOM - 0.2}
 local GEAR_BOX = {x = 8.3, y = 0.2, w = 5.0, h = BOX_BOTTOM - 0.2}
 local BOX_COLOR = "#00000040"
 -- The mode body's area inside the mode box, below the mode buttons; the
--- Achievements and Professions bodies are drawn into it by their mods.
+-- Achievements body is drawn into it by its mod.
 local MODE_AREA = {x = 0.4, y = 1.25, w = 7.5, h = BOX_BOTTOM - 0.15 - 1.25}
 local MODES = {
 	{id = "3d", label = "3D", x = 0.35, w = 0.8},
 	{id = "stats", label = "Stats", x = 1.25, w = 1.2},
 	{id = "effects", label = "Effects", x = 2.55, w = 1.4},
 	{id = "achievements", label = "Achievements", x = 4.05, w = 2.1},
-	{id = "professions", label = "Professions", x = 6.25, w = 1.75},
 }
 local MODE_Y, MODE_H = 0.35, 0.7
 
@@ -483,20 +483,8 @@ local function achievements_content(player, context)
 	return ""
 end
 
--- Professions (Round 28 ruling 23, here until Round 45 moves it to
--- Crafting): each known profession's tier and progress; grug_jobs builds the
--- body (it depends on this mod, so it is read at build time).
-local function professions_content(player)
-	local jobs = rawget(_G, "grug_jobs")
-	if jobs and jobs.character_professions_formspec then
-		return jobs.character_professions_formspec(player, MODE_AREA)
-	end
-	return ""
-end
-
 -- Re-sends the cached inventory form only when the Character page shows mode
--- `tab` (grug_jobs calls this after a counted craft, grug_achievements on
--- progress).
+-- `tab` (grug_achievements calls this on progress).
 function grug_inventory.refresh_character_tab(player, tab)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == CHARACTER_PAGE and selected_mode(context) == tab then
@@ -523,8 +511,6 @@ local function mode_content(player, context, selected)
 		fs[#fs + 1] = effects_content(player, context)
 	elseif selected == "achievements" then
 		fs[#fs + 1] = achievements_content(player, context)
-	elseif selected == "professions" then
-		fs[#fs + 1] = professions_content(player)
 	else
 		fs[#fs + 1] = model_content(player)
 	end

@@ -4,7 +4,8 @@
 -- harness of this branch, so the same command measures before and after:
 --   luajit tools/r44_ch/bytes.lua [repo]   (default: this checkout)
 -- The tree before Round 44's Character page has no "3d" mode: that row
--- shows its default (Stats).
+-- shows its default (Stats); since Round 45 the "professions" row shows the
+-- default (3D), the overview being on the Crafting tab.
 
 local here = (arg and arg[0] or ""):match("^(.*)/[^/]*$") or "."
 local repo = arg and arg[1] or "."

@@ -17,7 +17,8 @@
 --   5. the Riding Trainer (grug_mounts/state.lua tier_state + trainer.lua):
 --      all four tiers with the right state, buttons only for "buy";
 --   6. the Character page (grug_inventory/pages.lua): "Damage reduction" with
---      its tooltip, the Professions tab body from grug_jobs/character_tab.lua;
+--      its tooltip; the professions overview body (grug_jobs/overview.lua,
+--      on the Crafting tab since Round 45, no Character mode any more);
 --      the Scout's quiver cell at 0, 100, 101, 181 and 500 arrows (Round 41:
 --      above 100 the total as an overlay, its cover at gui_scaling 1 and 2);
 --   7. retired in Round 45 (the recipe books are gone);
@@ -637,8 +638,8 @@ grug_xp = {get_level = function() return char_level end,
 local refreshed = 0
 grug_inventory.refresh = function() refreshed = refreshed + 1 end
 dofile("mods/PLAYER/grug_jobs/state.lua")
-dofile("mods/PLAYER/grug_jobs/character_tab.lua")
--- The Character page's mode area the body is drawn into (Round 44).
+dofile("mods/PLAYER/grug_jobs/overview.lua")
+-- An area as wide as the Character page's old mode area (Round 44).
 local AREA = {x = 0.4, y = 1.25, w = 7.5, h = 7.8}
 local smith = make_player("smith", nil)
 eq(grug_jobs.professions_formspec(grug_jobs.profession_overview(smith), AREA):find("No professions learned", 1, true) ~= nil,
@@ -716,19 +717,14 @@ has(stats_fs, "label[0.40,3.10;Damage reduction: 12.3%]", "Damage reduction labe
 lacks(stats_fs, "Own-level", "old label gone")
 has(stats_fs, fs_escape("Armor reduction against an enemy of your level."), "tooltip text")
 has(stats_fs, "tooltip[0.40,2.85;5.0,0.50;", "tooltip covers the label line")
-has(stats_fs, "grug_character_professions;Professions]", "Professions tab button")
-character:on_player_receive_fields(smith, context, {grug_character_professions = "Professions"})
-eq(context.grug_character_tab, "professions", "Professions tab selected")
-local tab_fs = character:get(smith, context)
-formspec_ok(tab_fs, "character professions tab")
-has(tab_fs, fs_escape("Weaponsmith — Tier 2"), "Professions tab body")
-lacks(tab_fs, "Damage reduction", "stats hidden on the Professions tab")
+-- Round 45: the overview moved to the Crafting tab (tools/r45_ui).
+lacks(stats_fs, "grug_character_professions", "no Professions mode button")
+lacks(stats_fs, "Weaponsmith — Tier", "no overview on the Character page")
 resent = 0
+context.grug_character_tab = "professions"
 grug_jobs.record_craft(smith, "weaponsmith", 2)
-eq(resent, 1, "a counted craft refreshes the open Professions tab")
+eq(resent, 0, "a counted craft refreshes no Character page")
 context.grug_character_tab = "stats"
-grug_jobs.record_craft(smith, "weaponsmith", 2)
-eq(resent, 1, "no refresh while another tab is open")
 
 -- The Scout's quiver cell (Round 41 ruling 6): above 100 arrows it shows the
 -- true total, a cover over the engine's count corner (sized for the window:
