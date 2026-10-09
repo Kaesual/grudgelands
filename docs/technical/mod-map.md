@@ -71,7 +71,7 @@ mobs_redo fork publishes `mobs`.
 | `grug_professions` | Weaponsmith, Armorsmith, Leatherworker and Tailor improvement catalogues, enchant data, upgrades | `register_enchants`, `register_upgrades` | [professions.md](../design/professions.md), [item_tiers.md](../design/item_tiers.md) |
 | `grug_artisans` | Woodcarver and Goldsmith material, gear and enchant catalogues | none | [professions.md](../design/professions.md) |
 | `grug_smelting` | The smelting nodes' recipe families and alloys | `register_alloy` | [items_crafting.md](../design/items_crafting.md) |
-| `grug_brewing` | The brewing stand node and its recipe adapter | `register_recipe` | [professions.md](../design/professions.md) |
+| `grug_brewing` | The brewing stand node (Alchemy's proximity station) | `register_public_position` | [professions.md](../design/professions.md) |
 | `grug_alchemy` | Alchemist recipes, potions and elixirs | none | [item_tiers.md](../design/item_tiers.md) |
 | `grug_cooking` | The dish catalogue in six tiers, cooking plants | `PLANTS` | [items_crafting.md](../design/items_crafting.md) |
 | `grug_food` | Out-of-combat health and mana food buffs | `register_item`, `heal_multiplier` | [items_crafting.md](../design/items_crafting.md) |

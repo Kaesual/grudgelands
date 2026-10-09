@@ -37,13 +37,16 @@ no per-player wear polling loop is permitted.
 
 ## Providers and service
 
-Every city profession trainer, including Cooking, repairs all eligible owned
-equipment irrespective of the player's professions. Existing faction/service
+Every city profession trainer repairs all eligible owned equipment
+irrespective of the player's professions (the former Cooking trainers are
+ordinary residents since Round 45 and repair nothing). Existing faction/service
 access applies. Riding trainers are not profession trainers. No additional NPC
 or trader distribution is introduced.
 
 The service offers a preview and repair of one item or all eligible items in
-equipment, main and bag inventories. Every player-placed crafting station
+equipment, main and bag inventories. Every player-placed furnace and dual
+furnace (the stations with a window since Round 45; the forge, the benches
+and the brewing stand have none)
 inside an active (activated and fuelled) Claim Stone claim offers the same
 service at the same trader price, as a convenience only (user decision
 2026-09-29, [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)

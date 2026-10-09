@@ -630,3 +630,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   Stop after the end, the take-only output area and Take all.
   `grug_probe_r45_jb` is the smoke boot's disposable probe (registry facts
   the fixture relies on).
+  `r45_st` stations, cooking and alchemy (`portable_test.lua`, the real
+  `grug_brewing`, the `grug_jobs` registry, state, jobs, trainers, station
+  nodes, workspaces and automatic files, `grug_cooking`, `grug_alchemy`
+  recipes, `grug_mobs/start_npcs.lua`, the map and repair providers under one
+  stub engine): proximity stations without `on_rightclick` or lists, the dig
+  and blast refund of old station contents, Cooking learned at join and
+  arrival, the Cooking trainer mapping in each trainer-role reader, an
+  alchemy job making finished potions at the brewing stand (refused without
+  one), inert mixtures, and the 163 quest item objectives.

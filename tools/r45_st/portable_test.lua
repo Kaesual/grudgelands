@@ -33,7 +33,9 @@
 --      finished potions at the stand with Alchemy XP per potion and is
 --      refused without a stand within 4 nodes;
 --   M  the mixtures stay registered as inert items: no record makes or uses
---      one, no ingredient tier, no brewing adapter, no brewing lists.
+--      one, no ingredient tier, no brewing adapter, no brewing lists;
+--   Q  the 163 quest item objectives name no mixture, potion, elixir or gear
+--      (spec §4.7).
 -- Prints "R45 ST PORTABLE PASS checks=<n>" or the failures (exit 1).
 
 local ROOT = arg and arg[1] or "."
@@ -944,8 +946,45 @@ do
 	eq(source:find("grug_brewing", 1, true), nil, "M automatic.lua reads no brewing")
 end
 
+------------------------------------------------------------------------------
+-- Q. The 163 item objectives (spec §4.7): none names an item that disappears
+--    (a mixture) or that only a profession makes (an Alchemy product, gear).
+------------------------------------------------------------------------------
+do
+	local json = dofile(ROOT .. "/tools/r28_b1/json.lua")
+	-- The zone files, listed by the shell (a LuaJIT tool outside the engine
+	-- sandbox: check_lua's sweep 5 names the io.popen).
+	local handle = assert(io.popen('ls "' .. ROOT .. '/mods/PLAYER/grug_quests/data/zones"'))
+	local objectives, flagged = 0, {}
+	for file in handle:lines() do
+		if file:find("%.json$") then
+			local data = json.parse(read_file("mods/PLAYER/grug_quests/data/zones/" .. file))
+			for _, quest in ipairs(data.quests or data) do
+				for _, objective in ipairs(quest.objectives or {}) do
+					if objective.type == "item" then
+						objectives = objectives + 1
+						local item = objective.item or ""
+						local profession_made = false
+						for _, recipe in ipairs(grug_jobs.recipes_for_output(item)) do
+							if recipe.area ~= "basic" and recipe.area ~= "cooking" then
+								profession_made = true
+							end
+						end
+						if item:find("^grug_alchemy:") or item:find("^grug_gear:") or profession_made then
+							flagged[#flagged + 1] = quest.id .. " " .. item
+						end
+					end
+				end
+			end
+		end
+	end
+	handle:close()
+	eq(objectives, 163, "Q the quests hold 163 item objectives")
+	eq(#flagged, 0, "Q none names a mixture, potion, elixir or grug_gear item (" ..
+		table.concat(flagged, ", ") .. ")")
+end
+
 if failures > 0 then
-	print(("%d checks, %d failures"):format(checks, failures))
-	os.exit(1)
+	error(("R45 ST PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R45 ST PORTABLE PASS checks=%d"):format(checks))
