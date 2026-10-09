@@ -104,6 +104,9 @@ end
 
 local sounds = rawget(_G, "default") and default.node_sound_stone_defaults() or nil
 local TEXTURE = "default_obsidian_block.png^[colorize:#7a5cc0:70"
+-- The fuelled stone's look is also its waypoint marker on the map and the
+-- minimap (Round 45 PT9, grug_home.claim_waypoint).
+grug_housing.STONE_TEXTURE = TEXTURE
 local EMPTY_TEXTURE = "default_obsidian_block.png^[colorize:#3a3a3a:120"
 -- R26 ruling 8: the draft looks unfinished, half-transparent like water.
 local DRAFT_TEXTURE = TEXTURE .. "^[opacity:150"

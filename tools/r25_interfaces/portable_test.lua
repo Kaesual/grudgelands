@@ -401,7 +401,45 @@ has(last_shown("owner").fs, "button[3.8,6.75;3.1,0.8;set_home;Set as home]",
 submit(owner, "grug_housing:stone", {set_home = ""})
 eq(home_calls[1], 7, "Set as home passes the claim")
 has(last_shown("owner").fs, "Your Claim Stone is now your home.", "home message shown")
+lacks(last_shown("owner").fs, "tabheader[", "no Waypoints tab without travel from the stone")
 grug_home = nil
+
+-- Round 45 PT9 follow-up: the activated stone's Waypoints tab, with
+-- grug_home's travel from the stone (its rules: tools/r45_pt9).
+do
+	local trips = {}
+	grug_home = {known_waypoints = function()
+		return {{id = "dawnmere", label = "Dawnmere"}, {id = "highcourt", label = "Highcourt"}}
+	end, travel_from_claim = function(_, id)
+		trips[#trips + 1] = id
+		if id == "dawnmere" then return false, "Cannot travel in combat." end
+		return true
+	end}
+	H.open_stone_interface(owner, claim)
+	has(last_shown("owner").fs, "tabheader[0,0;stone_tab;Claim Stone,Waypoints;1;false;false]",
+		"PT9 the owner's form has the two tabs")
+	submit(owner, "grug_housing:stone", {stone_tab = "2"})
+	local wp = last_shown("owner").fs
+	has(wp, "tabheader[0,0;stone_tab;Claim Stone,Waypoints;2;false;false]", "PT9 Waypoints tab selected")
+	has(wp, "label[0.4,1.30;Dawnmere]", "PT9 a discovered waystone listed")
+	has(wp, "go_highcourt;Travel]", "PT9 a Travel button per waystone")
+	lacks(wp, "go_claim", "PT9 the stone itself is not listed")
+	lacks(wp, "list[", "PT9 no fuel slot or inventory on the Waypoints tab")
+	submit(owner, "grug_housing:stone", {go_dawnmere = "Travel"})
+	has(last_shown("owner").fs, "Cannot travel in combat.", "PT9 a refusal shows in the tab")
+	local closes = #closed
+	submit(owner, "grug_housing:stone", {go_highcourt = "Travel"})
+	eq(trips[2], "highcourt", "PT9 Travel asks grug_home for that waystone")
+	check(#closed == closes + 1 and closed[#closed].formname == "grug_housing:stone",
+		"PT9 a started trip closes the form")
+	H.open_stone_interface(owner, claim)
+	has(last_shown("owner").fs, "Fuel: coal lumps or charcoal", "PT9 the form opens on the first tab")
+	submit(owner, "grug_housing:stone", {stone_tab = "2"})
+	submit(owner, "grug_housing:stone", {stone_tab = "1"})
+	has(last_shown("owner").fs, "Fuel: coal lumps or charcoal", "PT9 back to the first tab")
+	submit(owner, "grug_housing:stone", {quit = "true"})
+	grug_home = nil
+end
 
 --
 -- 4. Fuel slot: accept, refuse, partial, no take
@@ -573,6 +611,11 @@ lacks(fs, "perm_list", "draft form: no access list")
 lacks(fs, "list[detached:grug_housing_fuel_owner", "no fuel slot on a draft")
 lacks(fs, "listring[detached:", "no fuel listring on a draft")
 lacks(fs, "set_home", "a draft is no home: no Set-as-home button")
+grug_home.known_waypoints = function() return {} end
+grug_home.travel_from_claim = function() return true end
+H.open_stone_interface(owner, draft)
+lacks(last_shown("owner").fs, "tabheader[", "PT9 a draft is no waypoint: no Waypoints tab")
+grug_home.known_waypoints, grug_home.travel_from_claim = nil, nil
 has(fs, "pick_up;Pick up stone", "a draft can be picked up")
 d = detached["grug_housing_fuel_owner"]
 eq(d.callbacks.allow_put(d.inv, "fuel", 1, ItemStack("default:coal_lump 5"), owner), 0,

@@ -14,8 +14,14 @@
 --    with a message; a stone picked up during the emerge or a stale button
 --    goes nowhere; a moved stone is reached at its new place; a destroyed
 --    one reads "No claim stone" again; only the owner sees it.
--- C. The Map: the stone is a "Your Claim Stone" waypoint marker unless it is
---    the travel home (then the home marker alone marks it).
+-- C. The Map: the stone is a "Your Claim Stone" waypoint marker with the
+--    stone's own texture unless it is the travel home (then the home marker
+--    alone marks it).
+-- D. From the stone (the follow-up: the stone form's Waypoints tab calls
+--    grug_home.travel_from_claim): to a discovered own waystone, beside it,
+--    no cooldown; refused without an activated stone, away from the stone,
+--    in combat, to an unvisited or enemy stone; canceled when the stone goes
+--    during the emerge.
 -- Prints "R45 PT9 PORTABLE PASS checks=<n>" or raises on the first failure.
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 local repo = arg[1] or "."
@@ -312,6 +318,7 @@ check(count(fs, "No claim stone") == 1 and not fs:find("go_claim", 1, true), "B 
 -- ---------------------------------------------------------------------------
 -- C: the Map
 -- ---------------------------------------------------------------------------
+grug_housing.STONE_TEXTURE = "claim_stone_look.png" -- stone.lua's TEXTURE
 rawset(_G, "grug_map", {atlas=dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")})
 rawset(_G, "grug_parties", {view=function() return nil end})
 rawset(_G, "grug_quests", {registered_npcs={}, marker_states=function() return {}, 1 end})
@@ -337,9 +344,45 @@ place("tester", moved, false)
 check(#claim_marks("waypoint") == 0, "C draft, no marker")
 claims.tester.claim.activated_at = clock
 local marks = claim_marks("waypoint")
-check(#marks == 1 and marks[1].label == "Your Claim Stone" and marks[1].kind == "waypoint",
- "C activated stone: one waypoint marker")
+check(#marks == 1 and marks[1].label == "Your Claim Stone" and marks[1].kind == "waypoint" and
+ marks[1].texture == "claim_stone_look.png", "C activated stone: one waypoint marker in the stone's look")
 check(home.set_home_claim(player), "C set the stone as the travel home")
 check(#claim_marks("waypoint") == 0 and #claim_marks("home") == 1, "C the home marker alone marks the home stone")
+
+-- ---------------------------------------------------------------------------
+-- D: from the stone to the waystones
+-- ---------------------------------------------------------------------------
+local function from_stone(id) chat = {}; return home.travel_from_claim(player, id) end
+player.pos = vnew(moved.x + 2, 101, moved.z)
+player.data["grug_home:ready_at"] = "777"
+local ok, why = from_stone("highcourt")
+check(ok and #emerge == 1 and home.is_pending(player), "D trip from the stone starts")
+job = finish()
+check(job.center.x == STONE.highcourt.x and player.pos.x == STONE.highcourt.x + 1 and
+ player.pos.z == 0, "D arrives beside the waystone")
+check(player.data["grug_home:ready_at"] == "777", "D no cooldown")
+drop_timeouts()
+player.pos = vnew(moved.x + 2, 101, moved.z)
+ok, why = from_stone("hearthpine")
+check(not ok and why == "You have not visited that waystone yet.", "D unvisited refused")
+ok, why = from_stone("sunscar")
+check(not ok and why == "That waystone is not on your path.", "D enemy refused")
+ok, why = from_stone("nowhere")
+check(not ok and why == "That waystone is not on your path.", "D unknown id refused")
+player.combat = true; ok, why = from_stone("highcourt"); player.combat = false
+check(not ok and why == "Cannot travel in combat.", "D combat refused")
+player.pos = vnew(moved.x + 9, 101, moved.z)
+ok, why = from_stone("highcourt")
+check(not ok and why == "Stand at your Claim Stone to travel.", "D away from the stone refused")
+player.pos = vnew(moved.x + 2, 101, moved.z)
+ok = from_stone("highcourt"); lose("tester", "destroyed"); finish()
+check(ok and player.pos.x == moved.x + 2 and last_chat() == "Travel canceled.",
+ "D stone gone during the emerge cancels")
+drop_timeouts()
+ok, why = from_stone("highcourt")
+check(not ok and why == "You have no activated Claim Stone." and #emerge == 0, "D no stone refused")
+place("tester", moved, false)
+ok, why = from_stone("highcourt")
+check(not ok and why == "You have no activated Claim Stone.", "D draft refused")
 
 print("R45 PT9 PORTABLE PASS checks=" .. checks)

@@ -154,7 +154,8 @@ end)
 -- Discovered waystones of the player's own network (Round 29, WP17);
 -- undiscovered ones are not shown, and a marker never unlocks travel. The
 -- owner's activated Claim Stone is a waypoint too (Round 45 PT9), marked
--- here unless it is the travel home, which the home marker already shows.
+-- with the stone's own look unless it is the travel home, which the home
+-- marker already shows.
 atlas.register_marker_provider("waypoint", function(player)
  local result = {}
  for _, row in ipairs(grug_home.known_waypoints(player)) do
@@ -165,7 +166,7 @@ atlas.register_marker_provider("waypoint", function(player)
  local claim, home = grug_home.claim_waypoint(player), grug_home.get(player)
  if claim and not (home and home.id == claim.id) then
   result[#result + 1] = {id=claim.id, label=claim.label, position=claim.pos,
-   kind="waypoint", texture="grug_map_waypoint.png", faction=claim.faction}
+   kind="waypoint", texture=claim.texture, faction=claim.faction}
  end
  return result
 end)

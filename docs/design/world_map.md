@@ -86,9 +86,11 @@ fortress; [world.md](world.md) §6) is a marker of kind
 Astra). Undiscovered and enemy waystones are not shown. The provider is
 `waypoint` in `grug_map/providers.lua`, fed by `grug_home.known_waypoints`; a
 marker never unlocks or starts travel. Since Round 45 (PT9) the owner's
-activated Claim Stone is a `waypoint` marker "Your Claim Stone" with the same
-icon (`grug_home.claim_waypoint`), unless it is the travel home, which the
-home marker already shows.
+activated Claim Stone is a `waypoint` marker "Your Claim Stone" in the
+stone's own look (its block texture, `grug_housing.STONE_TEXTURE`;
+`grug_home.claim_waypoint`), unless it is the travel home, which the home
+marker already shows. A marker's own texture wins over its kind's on the
+minimap.
 
 ## Innkeeper home travel
 

@@ -84,13 +84,17 @@ end
 -- Why a trip from `origin` to `target` may not start, or nil when it may.
 -- `t`: alive, faction, race, set, origin, target, at_origin, in_combat,
 -- pending. Travel is free and has no cooldown, so nothing else refuses it.
--- A Claim Stone target (a row with `claim`) needs no visit.
+-- A Claim Stone target (a row with `claim`) needs no visit; the stone is an
+-- origin too (Round 45 PT9 follow-up).
 function M.refusal(t)
  if not t.alive then return "You cannot travel now." end
  if not t.origin or t.faction == nil or t.origin.faction ~= t.faction then
   return "This waystone does not answer you."
  end
- if not t.at_origin then return "Stand at the waystone to travel." end
+ if not t.at_origin then
+  return t.origin.claim and "Stand at your Claim Stone to travel." or
+   "Stand at the waystone to travel."
+ end
  if not t.target or t.target.faction ~= t.faction then
   return "That waystone is not on your path."
  end

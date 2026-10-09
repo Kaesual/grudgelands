@@ -12,7 +12,9 @@
 -- Since Round 45 (PT9) every list ends with the owner's activated Claim
 -- Stone, "Your Claim Stone" (grug_home.claim_waypoint, claim_home.lua),
 -- reached the same way and landing in its arrival cube; without one the
--- entry reads "No claim stone".
+-- entry reads "No claim stone". The stone is an origin too: its owner travels
+-- from it to the discovered waystones (grug_home.travel_from_claim, the stone
+-- form's Waypoints tab).
 local path = core.get_modpath(core.get_current_modname())
 local rules = dofile(path .. "/waypoints_core.lua")
 local KEY = "grug_home:waypoints"
@@ -144,6 +146,57 @@ function grug_home.use_waystone(player, pos)
  core.show_formspec(name, formname, form(player, row))
 end
 
+-- Whether the player stands at the origin: a waystone's reach, or that of
+-- the owner's Claim Stone while it is still the same activated stone.
+local function at_origin(player, origin)
+ if origin.claim then
+  local current = grug_home.claim_waypoint(player)
+  if not current or current.id ~= origin.id then return false end
+ end
+ return rules.near(origin, player:get_pos())
+end
+
+-- Starts a trip from `origin` (a waystone, or the owner's Claim Stone) to
+-- `target` (a waystone, or the Claim Stone): ok, or false and the refusal.
+-- On the server step after the emerge the trip still needs the same living,
+-- out-of-combat player of the same faction at the origin, and a Claim Stone
+-- target still the owner's activated stone.
+local function start_trip(player, origin, target)
+ local name = player:get_player_name()
+ local faction = grug_factions.get_faction(player)
+ local refusal = rules.refusal({alive=player:get_hp() > 0, faction=faction,
+  race=race_of(player), set=known_set(player), origin=origin, target=target,
+  at_origin=origin ~= nil and at_origin(player, origin),
+  in_combat=grug_core.in_combat(player), pending=grug_home.is_pending(player)})
+ if refusal then return false, refusal end
+ local unavailable = target.claim and
+  "Your Claim Stone cannot be reached right now. Please try again." or
+  "The " .. target.label .. " waystone cannot be reached right now. Please try again."
+ return grug_home.travel(player, {pos=target.pos, unavailable=unavailable,
+  check=function(p)
+   if p:get_hp() <= 0 or grug_factions.get_faction(p) ~= faction then return false end
+   if grug_core.in_combat(p) or not at_origin(p, origin) then
+    core.chat_send_player(name, "Travel canceled.")
+    return false
+   end
+   if target.claim then
+    local current = grug_home.claim_waypoint(p)
+    if not current or current.id ~= target.id then
+     core.chat_send_player(name, "Your Claim Stone is gone. Travel canceled.")
+     return false
+    end
+   end
+   return true
+  end,
+  arrival=function()
+   if not target.claim then return arrival_at(target) end
+   -- Emerged, but the arrival cube is not free (as Return home says it).
+   local arrival = grug_home.claim_arrival(target)
+   if not arrival then return nil, "Your Claim Stone's arrival is blocked." end
+   return arrival
+  end}), "Travel is already being prepared."
+end
+
 core.register_on_player_receive_fields(function(player, formname, fields)
  if formname:sub(1, 19) ~= "grug_home:waystone:" then return false end
  local name = player:get_player_name()
@@ -164,49 +217,25 @@ core.register_on_player_receive_fields(function(player, formname, fields)
   end
  end
  if not target then return true end
- local origin = by_id[dialog.origin]
- local faction = grug_factions.get_faction(player)
- local refusal = rules.refusal({alive=player:get_hp() > 0, faction=faction,
-  race=race_of(player), set=known_set(player), origin=origin, target=target,
-  at_origin=rules.near(origin, player:get_pos()),
-  in_combat=grug_core.in_combat(player), pending=grug_home.is_pending(player)})
- if refusal then
+ local ok, refusal = start_trip(player, by_id[dialog.origin], target)
+ if not ok then
   core.chat_send_player(name, refusal)
   return true
  end
  dialogs[name] = nil
  core.close_formspec(name, formname)
- -- On the server step after the emerge the trip still needs the same
- -- living, out-of-combat player of the same faction at the origin stone,
- -- and a Claim Stone target still the owner's activated stone.
- local unavailable = target.claim and
-  "Your Claim Stone cannot be reached right now. Please try again." or
-  "The " .. target.label .. " waystone cannot be reached right now. Please try again."
- grug_home.travel(player, {pos=target.pos, unavailable=unavailable,
-  check=function(p)
-   if p:get_hp() <= 0 or grug_factions.get_faction(p) ~= faction then return false end
-   if grug_core.in_combat(p) or not rules.near(origin, p:get_pos()) then
-    core.chat_send_player(name, "Travel canceled.")
-    return false
-   end
-   if target.claim then
-    local current = grug_home.claim_waypoint(p)
-    if not current or current.id ~= target.id then
-     core.chat_send_player(name, "Your Claim Stone is gone. Travel canceled.")
-     return false
-    end
-   end
-   return true
-  end,
-  arrival=function()
-   if not target.claim then return arrival_at(target) end
-   -- Emerged, but the arrival cube is not free (as Return home says it).
-   local arrival = grug_home.claim_arrival(target)
-   if not arrival then return nil, "Your Claim Stone's arrival is blocked." end
-   return arrival
-  end})
  return true
 end)
+
+-- Round 45 PT9 follow-up: the owner's activated Claim Stone is an origin as
+-- well (the stone form's Waypoints tab, grug_housing/stone_form.lua): from it
+-- to any discovered waystone of the own network, by the waystones' rules.
+-- Returns ok, or false and the refusal line.
+function grug_home.travel_from_claim(player, id)
+ local origin = grug_home.claim_waypoint(player)
+ if not origin then return false, "You have no activated Claim Stone." end
+ return start_trip(player, origin, by_id[id])
+end
 
 -- Discovery by proximity: once a second, every player against the stones of
 -- their own network.
