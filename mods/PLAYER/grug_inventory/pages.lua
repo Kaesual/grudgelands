@@ -596,14 +596,7 @@ end)
 --
 
 local INVENTORY_PAGE = "grug_inventory:inventory"
-local FULL = grug_inventory.FULL_LAYOUT
 local PITCH = 1.25
--- The top row: Bags and Potion belt share the inventory box's width.
-local HALF_W = (FULL.box_w - FULL.gap) / 2
-local BAGS_BOX_X, BELT_BOX_X = FULL.box_x, FULL.box_x + HALF_W + FULL.gap
-local BAGS_X, BELT_X, COINS_X = BAGS_BOX_X + FULL.pad, BELT_BOX_X + FULL.pad,
-	FULL.side_x + FULL.pad
-local TOP_SLOT_Y = FULL.top_y + FULL.label_h
 local SORT_H = 1
 -- Sort ignores clicks for this long after one it ran (spec ruling 5): no
 -- countdown, no resend; the lists the sort changed reach the client on their
@@ -612,38 +605,45 @@ local SORT_COOLDOWN_US = 2500000
 
 local function inventory_content(player)
 	local deposit, deposit_list = grug_money.deposit_location(player)
+	-- The top row: Bags and Potion belt share the inventory box's width.
+	local layout = grug_inventory.FULL_LAYOUT
+	local half_w = (layout.box_w - layout.gap) / 2
+	local bags_box_x, belt_box_x = layout.box_x, layout.box_x + half_w + layout.gap
+	local bags_x, belt_x, coins_x = bags_box_x + layout.pad, belt_box_x + layout.pad,
+		layout.side_x + layout.pad
+	local slot_y = layout.top_y + layout.label_h
 	local fs = {
 		"real_coordinates[true]",
-		grug_inventory.area_box(BAGS_BOX_X, FULL.top_y, HALF_W, FULL.slot_box_h,
+		grug_inventory.area_box(bags_box_x, layout.top_y, half_w, layout.slot_box_h,
 			"Bags"),
-		grug_inventory.area_box(BELT_BOX_X, FULL.top_y, HALF_W, FULL.slot_box_h,
+		grug_inventory.area_box(belt_box_x, layout.top_y, half_w, layout.slot_box_h,
 			"Potion belt"),
-		grug_inventory.area_box(FULL.side_x, FULL.top_y, FULL.side_w,
-			FULL.slot_box_h, "Coins"),
+		grug_inventory.area_box(layout.side_x, layout.top_y, layout.side_w,
+			layout.slot_box_h, "Coins"),
 	}
 	for i = 1, grug_inventory.BAG_COUNT do
 		fs[#fs + 1] = ("list[current_player;%s;%.3f,%.3f;1,1;]"):format(
-			grug_inventory.bag_list(i), BAGS_X + (i - 1) * PITCH, TOP_SLOT_Y)
+			grug_inventory.bag_list(i), bags_x + (i - 1) * PITCH, slot_y)
 	end
-	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(BAGS_X, TOP_SLOT_Y,
+	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(bags_x, slot_y,
 		grug_inventory.BAG_COUNT * PITCH - 0.25,
 		esc("Bag slots — a bag here adds its slots to the inventory below"))
 	local belt = grug_inventory.POTION_BELT_SIZE
 	fs[#fs + 1] = ("list[current_player;%s;%.3f,%.3f;%d,1;]"):format(
-		grug_inventory.POTION_BELT, BELT_X, TOP_SLOT_Y, belt)
-	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(BELT_X, TOP_SLOT_Y,
+		grug_inventory.POTION_BELT, belt_x, slot_y, belt)
+	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(belt_x, slot_y,
 		belt * PITCH - 0.25, esc("Potion belt — potions and elixirs only"))
 	-- The Bag of Coins deposit (Round 34, moved here from the Character page
 	-- in Round 44): a bag put here is credited at once, so the slot is always
 	-- empty and always shows its ghost.
 	fs[#fs + 1] = ("list[%s;%s;%.3f,%.3f;1,1;]"):format(deposit, deposit_list,
-		COINS_X, TOP_SLOT_Y)
+		coins_x, slot_y)
 	fs[#fs + 1] = ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
-		:format(COINS_X, TOP_SLOT_Y)
-	fs[#fs + 1] = ("tooltip[%.3f,%.3f;1,1;%s]"):format(COINS_X, TOP_SLOT_Y,
+		:format(coins_x, slot_y)
+	fs[#fs + 1] = ("tooltip[%.3f,%.3f;1,1;%s]"):format(coins_x, slot_y,
 		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
 	fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.2f;grug_inv_sort;Sort]"):format(
-		FULL.side_x, FULL.inventory_y, FULL.side_w, SORT_H)
+		layout.side_x, layout.inventory_y, layout.side_w, SORT_H)
 	fs[#fs + 1] = ("tooltip[grug_inv_sort;%s]"):format(esc("Sort the inventory " ..
 		"and the bags. The hotbar stays as it is."))
 	return table.concat(fs)
