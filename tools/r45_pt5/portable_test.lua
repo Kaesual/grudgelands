@@ -426,6 +426,89 @@ eq(next_ring(op, "current_player", "main"), "current_player;grug_craft_target",
 eq(next_ring(op, "current_player", "grug_craft_target"), "current_player;grug_inbox",
 	"operation box: the target slot -> inbox")
 
+--
+-- 5. Bags ring like `main` on pages with another list (ui.lua bag_rings)
+--
+
+local TARGET = "grug_craft_target"
+do
+	local p = H.player("bagring", "warrior", {16, 8})
+	local inv = p:get_inventory()
+	inv:set_size(TARGET, 1)
+	inv:set_size(OUTPUT, 4)
+	local context = sfinv.get_or_create_context(p)
+	-- The Crafting page with the operation box: its RING, then the output area's.
+	local content = op
+	local fs = sfinv.make_formspec(p, context, content, "short")
+	eq(next_ring(fs, "current_player", "grug_bag1_content"), "current_player;" .. TARGET,
+		"operation box: bag 1 -> the target slot, like main")
+	eq(next_ring(fs, "current_player", "grug_bag2_content"), "current_player;" .. TARGET,
+		"operation box: bag 2 -> the target slot, like main")
+	eq(next_ring(fs, "current_player", "grug_bag3_content"), nil, "no ring for an empty bag slot")
+	eq(next_ring(fs, "current_player", "main"), "current_player;" .. TARGET,
+		"operation box: main unchanged")
+	eq(next_ring(fs, "current_player", OUTPUT), "current_player;grug_inbox",
+		"operation box: output unchanged")
+	eq(next_ring(fs, "current_player", TARGET), "current_player;grug_inbox",
+		"operation box: target unchanged")
+	inv:set_stack("grug_bag2_content", 3, ItemStack("grug_gear:sword_steel"))
+	eq(H.shift(p, fs, "grug_bag2_content", 3), TARGET, "bag shift-click: the target slot")
+	eq(H.get(p, TARGET, 1), "grug_gear:sword_steel", "bag shift-click: the item is in the slot")
+	eq(H.get(p, "grug_bag2_content", 3), "", "bag shift-click: the bag cell is empty")
+	-- The recipe box: main -> the output area (take-only), the bags the same.
+	fs = sfinv.make_formspec(p, context, "listring[current_player;grug_craft_out]" ..
+		"listring[current_player;grug_inbox]listring[current_player;main]", "short")
+	eq(next_ring(fs, "current_player", "grug_bag1_content"), "current_player;" .. OUTPUT,
+		"recipe box: bag -> the output area, like main")
+	-- No ring for main, no view, or the Character page's own bag rings.
+	fs = sfinv.make_formspec(p, context, "label[0,0;x]", "full")
+	check(not fs:find("listring", 1, true), "a page without rings gets no bag rings")
+	fs = sfinv.make_formspec(p, context, op, false)
+	eq(next_ring(fs, "current_player", "grug_bag1_content"), nil, "no view: no bag rings")
+	local character = H.page(p, "stats")
+	local _, n = character:gsub("listring%[current_player;grug_bag1_content%]", "")
+	eq(n, 1, "Character page: its own bag ring only")
+	eq(next_ring(character, "current_player", "grug_bag1_content"), "current_player;grug_shift",
+		"Character page: bag -> its routing list, unchanged")
+end
+
+-- The REAL creative page (mods/BASE/creative/inventory.lua) on stubs.
+do
+	local detached = {}
+	local function fake_inventory()
+		local lists = {}
+		return {set_size = function(_, l, n) lists[l] = lists[l] or {} end,
+			set_list = function(_, l, v) lists[l] = v end,
+			get_list = function(_, l) return lists[l] end}
+	end
+	core.create_detached_inventory = function(name)
+		detached[name] = fake_inventory()
+		return detached[name]
+	end
+	core.get_inventory = function(loc) return detached[loc.name] end
+	core.get_player_information = function() return nil end
+	-- sfinv's join renders the page before creative's join has run.
+	core.get_player_by_name = function(name)
+		return {get_player_name = function() return name end}
+	end
+	core.is_creative_enabled = function() return true end
+	creative = {get_translator = function(s) return s end}
+	dofile(repo .. "/mods/BASE/creative/inventory.lua")
+	local p = H.player("maker", "warrior", {16})
+	local context = sfinv.get_or_create_context(p)
+	context.page = "creative:all"
+	local fs = sfinv.pages["creative:all"]:get(p, context)
+	check(not fs:find("listring[]", 1, true), "creative: no listring[] (it ringed hotbar and trash)")
+	local creative_list = "detached:creative_maker;main"
+	eq(next_ring(fs, "current_player", "main"), creative_list,
+		"creative: main -> the creative list (which refuses), never the trash")
+	eq(next_ring(fs, "current_player", "grug_bag1_content"), creative_list,
+		"creative: bag -> the creative list, like main")
+	eq(next_ring(fs, "detached:creative_maker", "main"), "current_player;grug_inbox",
+		"creative: the creative list -> inbox")
+	check(not (next_ring(fs, "detached:trash", "main")), "creative: the trash is in no ring")
+end
+
 if failures > 0 then
 	print(("R45 PT5 PORTABLE FAIL %d of %d checks"):format(failures, checks))
 	os.exit(1)

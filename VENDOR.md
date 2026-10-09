@@ -656,6 +656,11 @@ per builder. Reapply after an upstream update:
 - `creative/inventory.lua` (`creative.register_tab`'s page):
   `listring[current_player;grug_inbox]` after the creative list's listring;
   the infinite source keeps its stack (the engine resets it after the move).
+  A second marker removes the empty `listring[]` after the trash list: it
+  rings the last two lists drawn, which in this game's frame (the inventory
+  view comes first) are the hotbar and the trash, so shift-click from `main`
+  deleted the stack. `main` now rings to the creative list, which refuses a
+  put; the trash works by drag.
 
 ## Fresh-server cleanup — 2026-09-13
 

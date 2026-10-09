@@ -33,7 +33,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   content has the whole window. The scroll position is kept per view and sent back with every
   rebuild (the client forgets it on a resend), so equipping a bag or sorting
   keeps the place; a pure scrollbar event re-sends nothing. No listring in
-  the views: shift-click has no job inside one inventory.
+  the views: shift-click has no job inside one inventory. On a page whose
+  rings send `main` to another list (the Crafting tab's target slot or
+  output area, the creative list), each bag the view shows rings to the
+  same list (Round 45 playtest, `ui.lua` `bag_rings`).
 - **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2;
   boxed layout since the Round 45 playtest, `grug_inventory.FULL_LAYOUT`):
   each area has its own box with its label inside, top left above the
@@ -409,8 +412,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   it out at once, so it is always empty; a stack that only partly fits
   leaves the rest in the source, and when nothing fits nothing moves and
   the feed says "No room in your inventory." Bound skills and soulbound
-  items never pass it. Shift-click from `main` still goes to the other
-  inventory's first list.
+  items never pass it. Shift-click from `main` (and, on the inventory
+  window's pages, from a bag) still goes to the other inventory's first
+  list; on the creative page that list refuses it, so nothing moves.
 - **Bag rules** (Round 44, spec §2.3): a bag may sit inside another bag but
   never in its own content list (an unequipped bag is always empty: the
   contents belong to the slot). Swapping to an equal or larger bag keeps the
