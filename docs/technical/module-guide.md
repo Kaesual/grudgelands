@@ -158,8 +158,27 @@ tools](#player-meta-read-by-external-tools).
   finish is an engine cooking recipe `grug_cooking` registers.
   `can_craft_recipe(player, recipe)` is the profession gate (Basic always; a
   profession recipe or station operation needs the profession at the recipe's
-  tier). The Crafting tab is a stub ("Crafting is being rebuilt", `ui.lua`)
-  until lane UI; building it catches the job up.
+  tier).
+- **The Crafting tab** (`ui.lua` the page, `craft_box.lua` the recipe box,
+  Round 45 lane UI; layout `inventory_equipment.md` §1): runtime state in
+  the sfinv context `grug_craft` (area slot, page, applied and typed search,
+  Craftable only, chosen recipe id, last known quantity text, the note of
+  the last refused action, the row ids of the last build); nothing in player
+  meta. Each build runs `update_job(player, "open")`, one
+  `ingredient_counts` pass that feeds ×N, Craftable only and the box, and
+  echoes the field values. A click is handled and answered with one resend;
+  a search within a second of the last is ignored without one. The end
+  resend is a `register_on_job_end` callback for the sources `timer` and
+  `join` while the current page is Crafting (`open`, `start` and `stop` are
+  answered by their own build or click). The middle box is replaceable for
+  lane EU: `register_craft_box(name, {build = fn(player, view) -> formspec,
+  fields = fn(player, st, fields) -> handled})` draws into
+  `grug_jobs.CRAFT_BOX` (`view` = `{st, tab, recipe, job, counts}`, the box
+  named by `grug_craft.box`, default `recipe`); `JOB_RUN_LABELS[kind]` names
+  the running indicator, `progress_bar(x, y, w, h, job, now)` draws the bar
+  (`grug_jobs_progress_bar.png` from `tools/r45_ui/gen_progress_bar.py
+  --check`: 64 fill + 32 full frames, `BAR_FRAMES`), field names are
+  `CRAFT_FIELDS`. Fixture `tools/r45_ui`.
 - **Crafting jobs** (`jobs.lua`, Round 45 lane JB): one job per player in
   player meta `grug_jobs:job` (one `core.serialize`d table: `kind`
   "recipe", `recipe` id, `quantity`, `consumed` itemstrings for the refund,
@@ -226,16 +245,17 @@ tools](#player-meta-read-by-external-tools).
   arrival and at every join, `grug_cooking/init.lua`, through
   `grug_jobs.learn(player, profession, quiet)`). The trainer-role readers ask
   it: `grug_mobs/start_npcs.lua` turns a Cooking trainer socket's NPC into the
-  mender at placement and at every activation (its claim): the title
-  `grug_jobs.MENDER_TITLE` (one constant, a placeholder), the socket's
+  repair NPC at placement and at every activation (its claim): the title
+  `grug_jobs.MENDER_TITLE` (one constant, "Grudge-Free Repairs"), the socket's
   profession kept, so `open_trainer` opens only `grug_repair.open_trainer`'s
   form and the trainer provider (`grug_repair/providers.lua`, any trainer
   socket) and the faction rule apply as to a trainer; `grug_map/providers.lua`
   draws no marker (no repairer has an icon); `grug_core/settlement_sockets.lua` only validates that a trainer
-  socket names a profession, Cooking included (world data unchanged). The Character page's Professions mode (Round 28 ruling 23) is
-  built by `grug_jobs/character_tab.lua` into the mode area `grug_inventory`
-  passes (Round 44); `grug_inventory` owns the mode row and asks for the
-  body, because `grug_jobs` depends on `grug_inventory`. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
+  socket names a profession, Cooking included (world data unchanged). The professions overview (Round 28 ruling 23,
+  `grug_jobs/overview.lua`: `profession_overview` rows,
+  `professions_formspec(rows, area)`) is drawn into the Crafting tab's box
+  while no recipe is chosen; the Character page has no Professions mode
+  since Round 45. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
   with an authenticated Riding socket, never the generic profession hook.
 
 ## Crop registration

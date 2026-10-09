@@ -38,9 +38,9 @@ no per-player wear polling loop is permitted.
 ## Providers and service
 
 Every city profession trainer repairs all eligible owned equipment
-irrespective of the player's professions, and so does the **Mender** (a
-placeholder title) on the former Cooking trainer socket of every start town
-and capital (Round 45; the user, 2026-10-09): a click opens only the repair
+irrespective of the player's professions, and so does **Grudge-Free
+Repairs** (a title, the same in every town) on the former Cooking trainer
+socket of every start town and capital (Round 45; the user, 2026-10-09): a click opens only the repair
 form, with the trainers' prices and rules. Existing faction/service
 access applies. Riding trainers are not profession trainers. No additional NPC
 or trader distribution is introduced.

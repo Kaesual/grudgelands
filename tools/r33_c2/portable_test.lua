@@ -2,9 +2,10 @@
 -- §2.7, §2.8). Loads the REAL files under small stubs and checks:
 --   A. the roster: six primaries, Cooking and Alchemy secondary; a character
 --      learns two primaries plus both secondaries, a third primary is
---      refused, a secondary cannot be unlearned; the Professions tab lists
---      all four inside the page (Round 45: the book slots went with the
---      recipe books);
+--      refused, a secondary cannot be unlearned; the professions overview
+--      lists all four inside the Crafting tab's box (Round 45: the book
+--      slots went with the recipe books, the overview left the Character
+--      page);
 --   B. progression counting (registry.lua + state.lua): an end product
 --      counts, a material and a station (`progress = false`) do not, a
 --      station operation does; the usual tier advance;
@@ -85,10 +86,10 @@ local function make_player(name)
 end
 
 -- ---------------------------------------------------------------------------
--- A. Roster, learning, the Professions tab and the book slots.
+-- A. Roster, learning, the professions overview.
 -- ---------------------------------------------------------------------------
 local jobs = load_jobs()
-dofile(repo .. "/mods/PLAYER/grug_jobs/character_tab.lua")
+dofile(repo .. "/mods/PLAYER/grug_jobs/overview.lua")
 
 eq(#jobs.PRIMARY_PROFESSIONS, 6, "six primaries")
 local primaries = table.concat(jobs.PRIMARY_PROFESSIONS, ",")
@@ -129,16 +130,18 @@ check(not jobs.unlearn(crafter, "alchemist"), "Alchemy cannot be unlearned")
 check(jobs.has(crafter, "alchemist"), "Alchemy stays known")
 
 local overview = jobs.profession_overview(crafter)
-eq(#overview, 4, "four rows on the Professions tab")
+eq(#overview, 4, "four rows in the overview")
 eq(overview[3] and overview[3].name, "Cooking", "Cooking after the primaries")
 eq(overview[4] and overview[4].name, "Alchemy", "Alchemy last")
--- The Character page's mode area (Round 44, real coordinates).
-local area = {x = 0.4, y = 1.25, w = 7.5, h = 7.8}
+-- The Crafting tab's box without a chosen recipe (Round 45, real
+-- coordinates; grug_jobs/craft_box.lua).
+local area = {x = 5.6, y = 1.0, w = 4.4, h = 8.1}
 local tab = jobs.professions_formspec(overview, area)
 local lowest = 0
-for y in tab:gmatch("label%[0%.40,([%d%.]+);") do lowest = math.max(lowest, tonumber(y)) end
+for y in tab:gmatch("label%[5%.60,([%d%.]+);") do lowest = math.max(lowest, tonumber(y)) end
 check(lowest > 0 and lowest <= area.y + area.h - 0.25,
-	"the tab's rows end inside the mode area (" .. lowest .. ")")
+	"the overview's rows end inside the box (" .. lowest .. ")")
+check(tab:find("Alchemy", 1, true) ~= nil, "all four rows fit the box")
 
 
 -- ---------------------------------------------------------------------------

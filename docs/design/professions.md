@@ -51,8 +51,8 @@ personal stations, access, digging) is
   `grug_jobs.PROFESSIONS`), so code asks `grug_jobs.has(player, "alchemist")`.
 - **Seven trainers in every capital:** the six primaries plus Alchemy. The
   Cooking trainer sockets the world data still gives every start and every
-  capital (Round 45) hold a **Mender** (placeholder title,
-  `grug_jobs.MENDER_TITLE`): it teaches nothing and has no trainer dialog and
+  capital (Round 45) hold **Grudge-Free Repairs** (a title, the same in
+  every town, `grug_jobs.MENDER_TITLE`; the user, 2026-10-09): it teaches nothing and has no trainer dialog and
   no map or minimap icon, but its click opens the repair form with the
   trainers' prices, faction and distance rules (the user, 2026-10-09:
   start towns keep a repair point). A runtime mapping in the trainer-role
@@ -208,8 +208,10 @@ items, per-recipe unlocks, keystone redemptions or discovery.
   the current profession tier, awarded at its end; a saturated profession
   advances at the end of its next counting job once the character band
   allows it. Unlearning a profession while its job runs lets the job finish
-  without XP. The list, search and ×N of the Crafting tab: spec §2.17–2.18
-  and §4.2–4.5.
+  without XP. The list, search and ×N of the Crafting tab, its crafting
+  box, output area and progress bar: [inventory_equipment.md](inventory_equipment.md)
+  §1 "The Crafting tab" (spec §2.17–2.18 and §4.2–4.5); the professions
+  overview sits in its box.
 - Unlearning wipes that profession's level and current-tier count. Learning
   it again starts at T1.
 

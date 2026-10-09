@@ -10,9 +10,9 @@ local FORMNAME = "grug_jobs:trainer"
 -- activation), grug_map/providers.lua and open_trainer below.
 grug_jobs.STARTER_PROFESSIONS = {cooking = true}
 
--- The mender's nametag, in this one place (a placeholder; the user picks
--- the final name).
-grug_jobs.MENDER_TITLE = "Mender"
+-- The repair NPC's nametag, in this one place (the user, 2026-10-09: the
+-- same in every town; a title, not a person's name).
+grug_jobs.MENDER_TITLE = "Grudge-Free Repairs"
 
 -- Whether a trainer socket of `profession` holds a trainer.
 function grug_jobs.trainer_teaches(profession)
@@ -33,6 +33,14 @@ local function log_action(event, player, profession, before)
 		tostring(grug_jobs.primary_at(player, 2) or "")))
 end
 
+-- Where a profession's recipes are (Round 45): its area of the Crafting
+-- tab, crafted with its station nearby.
+local function crafting_hint(profession)
+	local info = grug_jobs.station_info(grug_jobs.PROFESSION_STATIONS[profession])
+	return "Craft its recipes in the Crafting tab" ..
+		(info and (", with a " .. info.display_name .. " nearby.") or ".")
+end
+
 local function trainer_formspec(player, profession, confirming)
 	local definition = grug_jobs.PROFESSIONS[profession]
 	local known = grug_jobs.has(player, profession)
@@ -48,9 +56,10 @@ local function trainer_formspec(player, profession, confirming)
 		status = "Learn " .. definition.name .. "?"
 	end
 	-- One text box below the status line holds the notice, the unlearn
-	-- question or the recipe-book hint (Round 34): three lines high, so the
-	-- longest of them (two lines at this width, "Learned Leatherworker. Open
-	-- Inventory > ...") never needs a scrollbar. In legacy coordinates a
+	-- question or the Crafting tab hint (Round 34, Round 45): three lines
+	-- high, so the longest of them (two lines at this width, "Learned
+	-- Leatherworker. Craft its recipes ... Tanning Rack nearby.") never needs
+	-- a scrollbar. In legacy coordinates a
 	-- textarea starts a button half-height (0.35) below its y and is its
 	-- height less the slot gap (0.15) tall, so 1.25 + 0.35 + 1.2 ends above
 	-- the button row at 2.75.
@@ -67,7 +76,7 @@ local function trainer_formspec(player, profession, confirming)
 	elseif session and session.notice then
 		text = session.notice
 	elseif known then
-		text = "Open the Crafting tab and choose this profession's recipe book."
+		text = crafting_hint(profession)
 	end
 	if text then
 		fs[#fs + 1] = ("textarea[0.35,1.25;6.1,1.35;;;%s]"):format(esc(text))
@@ -131,8 +140,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local ok, reason = grug_jobs.learn(player, session.profession)
 		if ok and not before then
 			session.notice = "Learned " ..
-				grug_jobs.PROFESSIONS[session.profession].name ..
-				". Open the Crafting tab and choose its recipe book."
+				grug_jobs.PROFESSIONS[session.profession].name .. ". " ..
+				crafting_hint(session.profession)
 		else
 			session.notice = reason
 		end

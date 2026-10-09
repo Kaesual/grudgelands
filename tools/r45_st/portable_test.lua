@@ -779,7 +779,7 @@ end
 ------------------------------------------------------------------------------
 do
 	local MENDER = grug_jobs.MENDER_TITLE
-	eq(MENDER, "Mender", "T the mender's title (one constant, a placeholder)")
+	eq(MENDER, "Grudge-Free Repairs", "T the repair NPC's title (one constant, the user's pick)")
 	eq(grug_jobs.trainer_teaches("cooking"), false, "T no trainer teaches Cooking")
 	eq(grug_jobs.trainer_teaches("tailor"), true, "T a tailor trainer teaches")
 	eq(grug_jobs.trainer_teaches("alchemist"), true, "T an alchemy trainer teaches")

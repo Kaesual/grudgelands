@@ -517,7 +517,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `r44_ch`: the Character tab. `harness.lua` loads the real vendored sfinv,
   `grug_inventory`'s `equipment.lua`, `bags.lua` (with `storage.lua`),
   `ui.lua` and `pages.lua`, the real `grug_gear` permissions,
-  `grug_achievements` and `grug_jobs/character_tab.lua` under a stub `core`,
+  `grug_achievements` (and, before Round 45, `grug_jobs/character_tab.lua`)
+  under a stub `core`,
   with an engine move model whose shift-click follows the page's own
   listring. `portable_test.lua`: each mode renders inside its box, the gear
   box's slots and hand labels per class, the arrow slot only for Scouts,
@@ -636,7 +637,21 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   recipes, `grug_mobs/start_npcs.lua`, the map and repair providers under one
   stub engine): proximity stations without `on_rightclick` or lists, the dig
   and blast refund of old station contents, Cooking learned at join and
-  arrival, the Cooking trainer mapping in each trainer-role reader (the
-  Mender: repair only, under the trainers' rules), an
+  arrival, the Cooking trainer mapping in each trainer-role reader (Grudge-Free
+  Repairs: repair only, under the trainers' rules), an
   alchemy job making finished potions at the brewing stand (refused without
   one), inert mixtures, and the 163 quest item objectives.
+  `r45_ui` the Crafting tab (`portable_test.lua`, the real vendored sfinv,
+  `grug_inventory`'s `bags.lua` and `ui.lua`, the registry, `state.lua`,
+  `jobs.lua`, `overview.lua`, `ui.lua` and `craft_box.lua` under a stub
+  engine with a wall clock): the page inside the frame and its columns, the
+  area tabs and tier progress, paging, the search and its once-a-second
+  throttle, ×N and Craftable only against the job's ingredient rule (one
+  inventory pass per build), the quantity-field rules, the station hint with
+  the disabled button, the XP hint, the progress bar's `frame_start`, the
+  sends per job (start, end, cancel; none on a pure scrollbar event), the
+  overview in the box and gone from the Character tab; it prints the page's
+  bytes. `gen_progress_bar.py` writes the bar texture (Python standard
+  library; `--check` compares its pixels). `grug_probe_r45_ui` is the smoke
+  boot's disposable probe (the page's bytes with the real registry, list
+  facts, a job's sends).
