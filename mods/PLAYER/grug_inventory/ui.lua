@@ -91,9 +91,10 @@ end
 -- (every other page with an inventory) both draw main[9..] and then each
 -- equipped bag's content list as one 8-wide grid in a scroll_container, and
 -- the hotbar (main[1..8]) below it, outside the scroll area. Bag sizes are
--- multiples of 8, so the grid has no gaps. The hotbar row sits at the same
--- place in both views; the full view shows VIEW_ROWS.full rows, the short one
--- two. No listring: shift-click has no job inside one inventory.
+-- multiples of 8, so the grid has no gaps. The full view shows
+-- VIEW_ROWS.full rows in the Inventory tab's boxed layout (FULL_LAYOUT); the
+-- short one shows two, with the hotbar at the same place in every other tab.
+-- No listring: shift-click has no job inside one inventory.
 --
 -- The scroll position: the client does not keep a scroll_container's
 -- scrollbar across a resend, but sends its value with every event of the form
@@ -116,11 +117,51 @@ local ROW_STEPS = PITCH / SCROLL_FACTOR
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
 grug_inventory.VIEW_ROWS = {full = 8, short = 2}
+-- The background of the window's boxed areas (the Character tab's boxes, the
+-- Inventory tab's areas).
+grug_inventory.BOX_COLOR = "#00000040"
+local HOTBAR_COLOR = "#8a682f44"
+
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 	short = "grug_inv_scroll_short"}
--- Where the views sit, for pages that lay out content around them.
+-- Where the views sit, for pages that lay out content around them. The short
+-- view's place; the full view has its own (FULL_LAYOUT below).
 grug_inventory.VIEW_GEOMETRY = {x = VIEW_X, width = VIEW_W,
 	hotbar_y = HOTBAR_Y, area_bottom = AREA_BOTTOM}
+
+-- The Inventory tab's layout (Round 45 playtest): one box per area with its
+-- label inside, top left above the slots -- Bags and Potion belt side by side
+-- on top, Inventory (the grid and its scrollbar) and Hotbar below them, all
+-- on one left edge and as wide as the top row; Coins and under it Sort in a
+-- column to the right. The group is centred in the window, top and bottom
+-- margins equal. Every number is a box edge or a slot corner; pages.lua draws
+-- the top row from it.
+do
+	local pad, label_h, gap = 0.12, 0.38, 0.1
+	local box_w = VIEW_W + (SCROLLBAR_X - VIEW_X - VIEW_W) + SCROLLBAR_W + 2 * pad
+	local side_w = SLOT + 2 * pad
+	local slot_box_h = label_h + SLOT + pad
+	local grid_h = grug_inventory.VIEW_ROWS.full * PITCH - (PITCH - SLOT)
+	local inventory_h = label_h + grid_h + pad
+	local top_y = (UI.frame_h - (2 * slot_box_h + inventory_h + 2 * gap)) / 2
+	local box_x = (UI.frame_w - (box_w + gap + side_w)) / 2
+	grug_inventory.FULL_LAYOUT = {
+		pad = pad, label_h = label_h, gap = gap,
+		box_x = box_x, box_w = box_w, x = box_x + pad,
+		side_x = box_x + box_w + gap, side_w = side_w,
+		top_y = top_y, slot_box_h = slot_box_h,
+		inventory_y = top_y + slot_box_h + gap, inventory_h = inventory_h,
+		hotbar_box_y = top_y + slot_box_h + gap + inventory_h + gap,
+	}
+end
+local FULL = grug_inventory.FULL_LAYOUT
+
+-- A boxed area's background and its label, top left above the slots.
+function grug_inventory.area_box(x, y, w, h, label, color)
+	return ("box[%.3f,%.3f;%.3f,%.3f;%s]label[%.3f,%.3f;%s]"):format(x, y, w, h,
+		color or grug_inventory.BOX_COLOR, x + FULL.pad, y + FULL.label_h / 2,
+		core.formspec_escape(label))
+end
 
 -- The lists of the scroll area, top to bottom: {list, start, rows}.
 local function view_sections(inv)
@@ -155,26 +196,44 @@ function grug_inventory.inventory_view(player, mode, context)
 	for _, section in ipairs(sections) do rows = rows + section.rows end
 	local area_h = visible * PITCH - (PITCH - SLOT)
 	local area_y = AREA_BOTTOM - area_h
+	local view_x, scrollbar_x, hotbar_y = VIEW_X, SCROLLBAR_X, HOTBAR_Y
 	local field = grug_inventory.SCROLL_FIELDS[mode]
 	local fs = {"real_coordinates[true]"}
+	if mode == "full" then
+		-- The boxed layout: the Inventory and the Hotbar box, drawn first so
+		-- the lists lie on them.
+		view_x, scrollbar_x = FULL.x, FULL.x + (SCROLLBAR_X - VIEW_X)
+		area_y = FULL.inventory_y + FULL.label_h
+		hotbar_y = FULL.hotbar_box_y + FULL.label_h
+		fs[#fs + 1] = grug_inventory.area_box(FULL.box_x, FULL.inventory_y,
+			FULL.box_w, FULL.inventory_h, "Inventory")
+		fs[#fs + 1] = grug_inventory.area_box(FULL.box_x, FULL.hotbar_box_y,
+			FULL.box_w, FULL.slot_box_h, "Hotbar", HOTBAR_COLOR)
+	end
 
 	local max = grug_inventory.view_scroll_max(rows, visible)
 	if max > 0 then
 		local stored = context and context.grug_inv_scroll and
 			context.grug_inv_scroll[mode] or 0
 		local value = math.max(0, math.min(max, math.floor(stored)))
+		-- The engine draws the thumb as thumbsize / (max - min + 1) of the
+		-- track (CGUIScrollBar::setPosRaw with the page size
+		-- guiFormSpecMenu.cpp parseScrollBar sets), so the visible share of
+		-- the rows is visible / rows of max + 1. A thumbsize of a page's steps
+		-- filled the whole track whenever max was below it: no handle to grab.
+		local thumb = math.max(1, math.floor(visible * (max + 1) / rows + 0.5))
 		fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=%d;largestep=%d;" ..
 			"thumbsize=%d;arrows=hide]"):format(max, ROW_STEPS,
-			visible * ROW_STEPS, visible * ROW_STEPS)
+			visible * ROW_STEPS, thumb)
 		fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.2f,%.3f;vertical;%s;%d]"):format(
-			SCROLLBAR_X, area_y, SCROLLBAR_W, area_h, field, value)
+			scrollbar_x, area_y, SCROLLBAR_W, area_h, field, value)
 		-- scrollbaroptions[] applies to every later scrollbar[], page content
 		-- included: back to the engine's defaults (guiFormSpecMenu.h
 		-- parserData::scrollbar_options).
 		fs[#fs + 1] = SCROLLBAR_DEFAULTS
 	end
 	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;vertical;%.3f]"):format(
-		VIEW_X, area_y, VIEW_W, area_h, field, SCROLL_FACTOR)
+		view_x, area_y, VIEW_W, area_h, field, SCROLL_FACTOR)
 	local row = 0
 	for _, section in ipairs(sections) do
 		fs[#fs + 1] = ("list[current_player;%s;0,%.3f;8,%d;%d]"):format(
@@ -183,17 +242,19 @@ function grug_inventory.inventory_view(player, mode, context)
 	end
 	fs[#fs + 1] = "scroll_container_end[]"
 
-	-- The hotbar: its gold band, the engine's hotbar cell art under each slot
-	-- and the first eight cells of main.
-	fs[#fs + 1] = ("box[%.3f,%.3f;%.3f,%.3f;#8a682f44]"):format(VIEW_X - 0.08,
-		HOTBAR_Y - 0.08, VIEW_W + 0.16, SLOT + 0.16)
-	fs[#fs + 1] = ("label[0.3,%.3f;Hotbar]"):format(HOTBAR_Y + SLOT / 2)
+	-- The hotbar: its gold band (the full view's is its box), the engine's
+	-- hotbar cell art under each slot and the first eight cells of main.
+	if mode ~= "full" then
+		fs[#fs + 1] = ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(VIEW_X - 0.08,
+			HOTBAR_Y - 0.08, VIEW_W + 0.16, SLOT + 0.16, HOTBAR_COLOR)
+		fs[#fs + 1] = ("label[0.3,%.3f;Hotbar]"):format(HOTBAR_Y + SLOT / 2)
+	end
 	for index = 0, 7 do
 		fs[#fs + 1] = ("image[%.3f,%.3f;1,1;gui_hb_bg.png]"):format(
-			VIEW_X + index * PITCH, HOTBAR_Y)
+			view_x + index * PITCH, hotbar_y)
 	end
-	fs[#fs + 1] = ("list[current_player;main;%.3f,%.3f;8,1;]"):format(VIEW_X,
-		HOTBAR_Y)
+	fs[#fs + 1] = ("list[current_player;main;%.3f,%.3f;8,1;]"):format(view_x,
+		hotbar_y)
 	return table.concat(fs)
 end
 
