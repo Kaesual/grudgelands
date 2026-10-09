@@ -83,8 +83,9 @@ part of the set: the hoe's till (`default_dig_crumbly`,
   and boss cues are positional on the object or position, heard by everyone
   near. A personal sound ignores `max_hear_distance` in the engine, so
   `grug_ambience` limits its personal positional loops itself (§5.3).
-- **Network:** every one-shot is ephemeral. Frequent events are rate-limited
-  per target (§3.1). Mob hearing stays off.
+- **Network:** every one-shot is ephemeral, except the two ride sounds
+  (gallop, wing beats), which keep a handle so they can be stopped.
+  Frequent events are rate-limited per target (§3.1). Mob hearing stays off.
 - **What the picks teach:** no rain, traffic, microphone wind or steady hiss
   under a bed; no animals the game does not have; no monster voices inside a
   bed; effects short and focused.
@@ -127,7 +128,12 @@ formspecs that drop the prepend. The client plays it at the file's own level
   35: once, when equipped gear, a bow, a tool or a hoe wears into broken,
   never on later uses of the broken item; heard on the wearer up to 8 nodes).
 - **Mounts and boats:** gallop, wing beats and the boat's splash, repeated at
-  their clip length while moving.
+  their clip length while moving. Gallop and wing beats stop at once (a
+  0.1 s fade) when the mount stands still and on every dismount, and the
+  gallop pauses while a ground mount has been off the ground for more than
+  0.5 s (a jump, a fall deeper than about one node) and starts again on
+  landing (Round 45 playtest). The mount's own step reads this; there is
+  no extra timer.
 - **Travel** (waystone, home), **fishing** cast and catch (the splash), and
   the **"Flag me for PvP" button**.
 - **Combat:** the swing into the air (the swing skills' item sound, played by
