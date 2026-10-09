@@ -14,6 +14,8 @@ PASS  tool   step 0.44.0 alone (the tool pinned to the 0.44.0 checkout, on a cop
 PASS  tool   migrate: the events start, step_start/step_done per due step, done; exit 0
 PASS  tool   step 0.44.0 wrote one character's inventory and nothing else
 PASS  tool   the record is 0.45.0
+PASS  chain  the 0.43.0 world crosses 0.44.0 and 0.45.0 in one shipped run: 0.45.0's marker on both characters, rider's grid stored empty with size 0, its gear pinned
+PASS  chain  a copy without a record (0.41.0, the production server's version): one run of this checkout's tool applies 0.44.0 and 0.45.0 from 0.41.0 and leaves the same rows as the shipped run from 0.43.0
 PASS  step   rider (0.44.0 alone): exactly the 8 placed stacks to remove are gone, every other slot of every list unchanged
 PASS  step   rider (0.44.0 alone, and after every due step): no mount item in any list, no skill outside main[1..8]
 PASS  step   rider and walker (0.44.0 alone): player meta unchanged (the purchase record kept)
@@ -26,6 +28,7 @@ PASS  boot   rider after the game's join: no mount item, no skill outside the ho
 PASS  boot   rider's mounts in the quickbar: owned tiers 1, 2 and 5 from the purchase record, one quickbar button each
 PASS  boot   walker after the game's join: its hotbar skill and its apple in place
 PASS  names  0.45.0: every item in group grug_ability is still under grug_abilities: (the hotbar skills the step keeps are the game's skills)
+PASS  chain  saved after boot A: the 0.45.0 join part ran for both (markers gone)
 PASS  boot   saved after boot A: no mount item and no skill outside the hotbar for either character
 
-29 checks, 0 failed
+32 checks, 0 failed

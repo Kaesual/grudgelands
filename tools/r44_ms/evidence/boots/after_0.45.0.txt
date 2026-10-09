@@ -3,7 +3,7 @@ seconds: 30, exit 0
 joins: ['rider logged in (protocol 52), stayed 4.0 s', 'walker logged in (protocol 52), stayed 4.0 s']
 --- log lines
 ACTION[Main]: [grug_core] world version 0.45.0, game 0.45.0: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38915.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31948.
 ACTION[Server]: rider [127.0.0.1] joins game. List of players: rider
 ACTION[Server]: [r44_ms_probe] joined rider
 ACTION[Server]: [grug_core] migration 0.45.0: rider's online work is done

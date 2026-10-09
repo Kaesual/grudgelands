@@ -603,7 +603,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   and both characters join again; a PASS/FAIL table. The exact checks of the
   step read a copy migrated by 0.44.0 alone (the tool in-process, pinned to
   the 0.44.0 checkout), since the shipped run also runs the later declared
-  steps (Round 45).
+  steps (Round 45); it also checks the chain: the 0.43.0 world crosses
+  0.44.0 and 0.45.0 in one shipped run, and a record-less copy (0.41.0, the
+  production server's version) gets the same rows from one run.
 - **Round 45** (`r45_<lane>`): `r45_il` the item level ladder
   (`portable_test.lua`, the real `grug_gear` with its trinkets,
   `grug_quality` and grug_core's level gate under a stub `core`): the
@@ -684,8 +686,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   table, bag sizes and mixture prefix are checked against them), this game
   refuses the world, the shipped tool (`--check`, migrate, `--check`) runs in
   the container and every slot of every list is compared with what the step
-  must leave, and this game boots and two characters join (craft leftovers
-  through the give helper, the output area and the feet; old item levels,
+  must leave, and this game boots and two characters join (craft and
+  `craftresult` leftovers through the give helper, the output area and the feet; old item levels,
   requirements, tooltips, armour and first-tier damage; the offline
   character keeps its marker); a PASS/FAIL table. `portable_test.lua` is the
   join part's fixture (the real `grug_gear`, `grug_quality` and

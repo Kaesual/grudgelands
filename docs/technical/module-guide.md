@@ -1577,7 +1577,7 @@ tools](#player-meta-read-by-external-tools).
   fn(player, marker)}` for a step's online work. A new step adds its version
   here and, when it leaves online work, its handlers (in this file, above the
   registry: the guard collects them at load) and their fixture. 0.45.0's
-  character handler hands craft-grid leftovers over (give helper, output
+  character handler hands craft-grid and `craftresult` leftovers over (give helper, output
   area, feet), refreshes first-tier weapons' capabilities and rebuilds gear
   tooltips (fixture `tools/r45_ms/portable_test.lua`).
 - `grug_core/world_version.lua` (`grug_core.world_version`), loaded first in
@@ -1598,7 +1598,7 @@ tools](#player-meta-read-by-external-tools).
   `codec.py` (`serialize`/`deserialize`, JSON, `ItemStack`), `steps/`
   (`v<major>_<minor>_<patch>.py`; `v0_44_0.py`, the first, removes mount
   items and skills outside the hotbar; `v0_45_0.py` deletes the mixtures,
-  empties the craft grid into free slots and pins the 0.44.0 item level on
+  empties the craft grid and `craftresult` into free slots and pins the 0.44.0 item level on
   unmodified gear, [upgrade contract](upgrade-contract.md) §5.8). Python 3.13, standard library; `psycopg` 3 imported only for
   PostgreSQL. Unit tests: `tools/r43_mt/test_migrate.py` (the container run
   `tools/r43_mt/container_test.sh`; against a copy of the declaration with
