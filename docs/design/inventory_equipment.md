@@ -364,6 +364,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   trinkets) and bags are recipes of their profession. Every area shows all its
   recipes; character level restricts no recipe. The player's engine `craft`
   list has size 0 (a join shrinks it while it is empty).
+- **Crafting jobs and the output area** ([professions.md](professions.md)
+  §1.2): ingredients leave the bags first, then `main[9..]`, the hotbar last
+  (stacks without metadata only); finished stacks land in the output area
+  `grug_craft_out`, four take-only slots created for every player at join
+  (nothing is put, moved or swapped into it). Take all and a cancel's refund
+  go through the give helper.
 - Professional components such as settings are never Basic inputs.
 - Named enchant application and replacement use the owning profession station.
   Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning

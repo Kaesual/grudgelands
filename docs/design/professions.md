@@ -166,8 +166,37 @@ items, per-recipe unlocks, keystone redemptions or discovery.
   effective profession tier at least the recipe tier
   (`grug_jobs.can_craft_recipe`), and its station within 4 nodes when the job
   starts (§1.5). Basic is open to everyone.
-- **The jobs and the Crafting tab** (one timed job per player, the output area,
-  the list with search and ×N): spec §2.17–2.22 and §4.2–4.5.
+- **Crafting jobs** (Round 45, spec §2.19–2.22, §4.4; `grug_jobs/jobs.lua`):
+  every craft is a timed job of the player's own, one job per player, the
+  whole quantity as one job (quantity × duration).
+  - **Start:** the profession gate, the station within 4 nodes (checked only
+    at the start), room in the output area (partial stacks of the same item
+    and several stacks of `stack_max` counted) and the ingredients. A quantity
+    above what the ingredients or the output area allow is refused with the
+    maximum ("… quantity reduced to N"); none at all reads "No space in the
+    output area" or "Not enough ingredients".
+  - **Ingredients** are consumed at the start: the bags first, then
+    `main[9..]`, the hotbar last. Only stacks without metadata count, for item
+    and group entries alike; the list's ×N uses the same rule.
+  - **The output area:** four take-only slots (`grug_craft_out`, every
+    player) shared by all jobs; **Take all** moves it into the inventory in
+    the give order, and what does not fit stays.
+  - **The end:** the result appears in the output area (gear with its base
+    item level, quality and tooltip), the profession XP and the achievement
+    counters count the whole job, and an online player gets the feed line
+    "Hearty Stew ×10 is ready". Jobs run with the window closed and while
+    offline: the job ends at login or when the Crafting tab opens, and by a
+    timer while the player is online.
+  - **Cancel/Stop** refunds every consumed stack (and an enchant's or
+    upgrade's target item) into the inventory, or is refused with "Not enough
+    inventory space to cancel" when the refund does not fit. A Stop after the
+    end time completes the job instead.
+- **A job's XP** is min(crafts, XP left in the tier) for a counting recipe of
+  the current profession tier, awarded at its end; a saturated profession
+  advances at the end of its next counting job once the character band
+  allows it. Unlearning a profession while its job runs lets the job finish
+  without XP. The list, search and ×N of the Crafting tab: spec §2.17–2.18
+  and §4.2–4.5.
 - Unlearning wipes that profession's level and current-tier count. Learning
   it again starts at T1.
 
