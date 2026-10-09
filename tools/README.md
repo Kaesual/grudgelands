@@ -637,8 +637,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   recipes, `grug_mobs/start_npcs.lua`, the map and repair providers under one
   stub engine): proximity stations without `on_rightclick` or lists, the dig
   and blast refund of old station contents, Cooking learned at join and
-  arrival, the Cooking trainer mapping in each trainer-role reader (the
-  Mender: repair only, under the trainers' rules), an
+  arrival, the Cooking trainer mapping in each trainer-role reader (Grudge-Free
+  Repairs: repair only, under the trainers' rules), an
   alchemy job making finished potions at the brewing stand (refused without
   one), inert mixtures, and the 163 quest item objectives.
   `r45_ui` the Crafting tab (`portable_test.lua`, the real vendored sfinv,

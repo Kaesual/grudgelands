@@ -75,7 +75,7 @@ function grug_jobs.professions_formspec(rows, area)
 	end
 	if #rows == 0 then
 		lines(area.y + 0.35, "No professions learned yet. Profession " ..
-			"trainers in the towns and capitals teach them.")
+			"trainers in the capitals teach them.")
 		return table.concat(fs)
 	end
 	local y = area.y + 0.35

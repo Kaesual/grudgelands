@@ -51,8 +51,8 @@ personal stations, access, digging) is
   `grug_jobs.PROFESSIONS`), so code asks `grug_jobs.has(player, "alchemist")`.
 - **Seven trainers in every capital:** the six primaries plus Alchemy. The
   Cooking trainer sockets the world data still gives every start and every
-  capital (Round 45) hold a **Mender** (placeholder title,
-  `grug_jobs.MENDER_TITLE`): it teaches nothing and has no trainer dialog and
+  capital (Round 45) hold **Grudge-Free Repairs** (a title, the same in
+  every town, `grug_jobs.MENDER_TITLE`; the user, 2026-10-09): it teaches nothing and has no trainer dialog and
   no map or minimap icon, but its click opens the repair form with the
   trainers' prices, faction and distance rules (the user, 2026-10-09:
   start towns keep a repair point). A runtime mapping in the trainer-role

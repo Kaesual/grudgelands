@@ -245,8 +245,8 @@ tools](#player-meta-read-by-external-tools).
   arrival and at every join, `grug_cooking/init.lua`, through
   `grug_jobs.learn(player, profession, quiet)`). The trainer-role readers ask
   it: `grug_mobs/start_npcs.lua` turns a Cooking trainer socket's NPC into the
-  mender at placement and at every activation (its claim): the title
-  `grug_jobs.MENDER_TITLE` (one constant, a placeholder), the socket's
+  repair NPC at placement and at every activation (its claim): the title
+  `grug_jobs.MENDER_TITLE` (one constant, "Grudge-Free Repairs"), the socket's
   profession kept, so `open_trainer` opens only `grug_repair.open_trainer`'s
   form and the trainer provider (`grug_repair/providers.lua`, any trainer
   socket) and the faction rule apply as to a trainer; `grug_map/providers.lua`

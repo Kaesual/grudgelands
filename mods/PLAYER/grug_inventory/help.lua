@@ -52,7 +52,7 @@ local SECTIONS = {
 		heading("Your first steps"),
 		"• Your starter weapon is already equipped on the Character page. Open the Talents & Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
 		"• Talk to the people of your start town. A yellow ! above someone means they have a quest for you.",
-		"• Craft a Wooden Pickaxe early: stone and ore need a pickaxe. Dirt, sand and other loose ground dig by hand (or with a skill selected), a shovel is fastest. The Basics book in the Crafting tab shows tools, weapons and armor you can make.",
+		"• Craft a Wooden Pickaxe early: stone and ore need a pickaxe. Dirt, sand and other loose ground dig by hand (or with a skill selected), a shovel is fastest. The Basic area of the Crafting tab lists the tools, torches, blocks and other goods anyone can make.",
 		"",
 		heading("Keys"),
 		"• I opens your inventory. E opens the quickbar: your mounts and boats, the potion belt and Return home; a click uses one and closes it. Z opens the map with your quest log.",
@@ -67,7 +67,7 @@ local SECTIONS = {
 		"• Underground creatures get stronger with depth: 3 levels per 50 nodes below y 0 (level 60 near y -1000), and never weaker than the zone above them.",
 		"",
 		heading("Capitals"),
-		"• Around level 10, head for your people's capital: trainers for every profession, riding, repairs and new quests. No hostile creatures roam there.",
+		"• Around level 10, head for your people's capital: trainers for the professions, riding, repairs and new quests. No hostile creatures roam there.",
 		"• Accord: Highcourt (Humans), Dur Brannoc (Dwarves), Lethariel (Elves). Throng: Gor Drazhak (Orcs), Nhal Veyr (Undead), Kezamba (Trolls).",
 		"",
 		heading("Protected ground"),
@@ -83,19 +83,19 @@ local SECTIONS = {
 		"• Quest givers wait in start towns, capitals, villages and camps. At level 10 your start town sends you on to your capital.",
 		"",
 		heading("Professions"),
-		"• Anyone can craft the plain tools, weapons and armor of every material from the Basics book. Professions improve and enchant gear and make special goods.",
-		"• Learn two primary professions plus the two secondaries, Cooking and Alchemy, which everyone may add. Learning is free: right-click a trainer. Unlearning a primary profession erases its progress.",
-		"• Trainers: every start town has a Cooking trainer; every capital has trainers for all eight professions, each with a public workstation next to it. Learned recipes appear in that profession's book in the Crafting tab.",
-		"• Weaponsmith (Forge): enchants and upgrades swords, daggers and battle axes.",
-		"• Armorsmith (Forge): enchants and upgrades metal armor and shields.",
-		"• Leatherworker (Tanning Rack): leather bags; enchants and upgrades leather armor and bows.",
-		"• Tailor (Tailor Bench): cloth bags (from bolt bundles) and spellbooks; enchants and upgrades cloth armor and spellbooks.",
-		"• Woodcarver (Carving Bench): enchants and upgrades staves and wands.",
+		"• Anyone can craft tools, torches, blocks and other plain goods in the Basic area of the Crafting tab. Weapons, armor, offhands, trinkets and bags come only from professions, which also enchant and upgrade gear.",
+		"• Everyone knows Cooking from the start. Learn two primary professions plus Alchemy, which everyone may add. Learning is free: right-click a trainer. Unlearning a primary profession erases its progress.",
+		"• Trainers: every capital has trainers for the six primary professions and Alchemy, each with a public station next to it. A learned profession gets its own area in the Crafting tab.",
+		"• Weaponsmith (Forge): makes swords, daggers and battle axes; enchants and upgrades them.",
+		"• Armorsmith (Forge): makes metal armor and shields; enchants and upgrades them.",
+		"• Leatherworker (Tanning Rack): makes leather armor, bows and leather bags; enchants and upgrades leather armor and bows.",
+		"• Tailor (Tailor Bench): makes cloth armor, spellbooks and cloth bags (from bolt bundles); enchants and upgrades cloth armor and spellbooks.",
+		"• Woodcarver (Carving Bench): makes staves and wands; enchants and upgrades them.",
 		"• Goldsmith (Jeweller's Bench): cuts gems; makes trinkets and settings; enchants and upgrades trinkets.",
 		"• An enchant grows with the item level up to its tier's top (T1 up to item level 10 ... T6 up to 60); the tooltip names its tier. An upgrade lifts an item to its tier's top item level and keeps its enchants.",
-		"• Alchemy: prepares potion and elixir mixtures in the crafting grid; anyone may finish a mixture at a Brewing Stand. Only alchemists can pick healing herbs.",
-		"• Cooking (grid and furnace): meals with a five-minute buff.",
-		"• A profession starts at tier 1. 10, 15, 20, 25 and 30 crafts at your current tier open the next one, but your level caps it: tier 1 up to level 10, tier 2 from level 11, up to tier 6 from level 51. Only finished goods, enchants and upgrades count: stations and materials such as bolts, settings or cut gems do not.",
+		"• Alchemy (Brewing Stand): brews finished potions and elixirs. Only alchemists can pick healing herbs.",
+		"• Cooking: meals with a five-minute buff. Simple dishes are crafted in the Crafting tab; good dishes are prepared raw there and finished in a furnace.",
+		"• A profession starts at tier 1. 10, 15, 20, 25 and 30 crafts at your current tier open the next one, but your level caps it: tier 1 up to level 10, tier 2 from level 11, up to tier 6 from level 51. Every item a job makes counts, up to what the tier still needs. Only finished goods (gear, trinkets, bags, potions, dishes) and enchants count: upgrades, stations and materials such as bolts, settings or cut gems do not.",
 	})},
 	{id = "basics", label = "Basics", x = 4.6, w = 1.5, text = body({
 		heading("Ores and depth"),
@@ -116,8 +116,10 @@ local SECTIONS = {
 		heading("Smelting"),
 		"• Smelt ore into bars in a Furnace. Alloys need a Dual Furnace: Bronze = Copper + Tin, Steel = Iron + Coal, Silversteel = Steel + Silver, Embersteel = Silversteel + Emberglass, Abyssal Steel = Embersteel + Abyssal Crystal.",
 		"",
-		heading("Crafting book"),
-		"• Basics shows starter recipes right away. Finding a recipe's main material reveals further recipes, even when it is carried in a bag. This only reveals recipes: crafting itself has no level requirement.",
+		heading("Crafting"),
+		"• The Crafting tab has an area for Basic recipes, Cooking, each of your primary professions and Alchemy, and every area shows all its recipes. Search the list, turn its pages or tick Craftable only; ×N says how many times the items in your inventory and bags make a recipe. A profession recipe needs that profession at the recipe's tier.",
+		"• Choose a recipe, set the quantity (or press Max) and press Craft now. The ingredients are taken at once and the job runs on its own, with the window closed and while you are offline too; the result waits in the four Output slots, and Take all moves it into your inventory. Stop gives the ingredients back when your inventory has room.",
+		"• One job at a time. Profession recipes need their station within 4 blocks: a Forge, Tanning Rack, Tailor Bench, Carving Bench, Jeweller's Bench or Brewing Stand. These stations open no window; furnaces and dual furnaces still do.",
 		"",
 		heading("Skills and combat"),
 		"• Skills use the items in your hand slots on the Character page, never one in the hotbar. Select a skill and left-click a target; if the skill is not ready, you strike with your weapon.",
@@ -129,7 +131,7 @@ local SECTIONS = {
 		"• The Inventory tab holds up to four bags of 8 to 32 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
 		"• The potion belt on the Inventory tab holds four potions or elixirs; drink them from the quickbar (E).",
 		"• Eat food out of combat for a five-minute buff: instant healing, regeneration and sometimes extra stats. Only one food buff is active at a time.",
-		"• Gear wears out with use and stops working when broken. Every profession trainer of your faction repairs it for money.",
+		"• Gear wears out with use and stops working when broken. Every profession trainer of your faction repairs it for money, and so does @MENDER@ in every start town and capital.",
 		"",
 		heading("Riding, home and death"),
 		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mounts then wait in the quickbar: press E and click one to mount or dismount.",
@@ -231,6 +233,21 @@ for _, section in ipairs(SECTIONS) do
 	BODIES[section.id] = table.concat(fs)
 end
 
+-- The repair NPC of the starts and capitals is named by one constant,
+-- grug_jobs.MENDER_TITLE (Round 45), never spelled out here. grug_jobs
+-- loads after this mod, so a body naming it carries the marker @MENDER@ and
+-- gets the title at its first build once grug_jobs exists.
+local MENDER_MARK = "@MENDER@"
+local function body_of(id)
+	local text = BODIES[id]
+	if not text:find(MENDER_MARK, 1, true) then return text end
+	local jobs = rawget(_G, "grug_jobs")
+	if not (jobs and jobs.MENDER_TITLE) then return text end
+	text = text:gsub(MENDER_MARK, (esc(jobs.MENDER_TITLE):gsub("%%", "%%%%")))
+	BODIES[id] = text
+	return text
+end
+
 -- The Sound sub-page's controls: grug_ambience builds them per player.
 local function sound_controls(player)
 	local ambience = rawget(_G, "grug_ambience")
@@ -250,7 +267,7 @@ local function help_content(player, context)
 			section.x, BUTTON_Y, section.w, BUTTON_H, field, esc(section.label))
 	end
 	if selected == "sound" then fs[#fs + 1] = sound_controls(player) end
-	fs[#fs + 1] = BODIES[selected]
+	fs[#fs + 1] = body_of(selected)
 	return table.concat(fs)
 end
 
