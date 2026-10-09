@@ -361,9 +361,15 @@ end
 -- Events.
 --
 
+-- A field value trimmed and cut to `limit` characters. The cut to a few
+-- times the limit comes first: a client may send a field of hundreds of
+-- kilobytes, and the trim's pattern takes time that grows with the square
+-- of the spaces in it.
 local function clean(value, limit)
-	return (tostring(value):gsub("[%c]", ""):match("^%s*(.-)%s*$") or ""):sub(1, limit)
+	local text = tostring(value):sub(1, 4 * limit):gsub("[%c]", "")
+	return (text:match("^%s*(.-)%s*$") or ""):sub(1, limit)
 end
+grug_jobs._clean_field = clean
 
 local function receive_fields(player, context, fields)
 	if fields.quit then return end

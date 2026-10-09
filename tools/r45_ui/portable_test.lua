@@ -986,6 +986,65 @@ has(fs, "Any Wood]", "a group entry: Any Wood")
 has(fs, "tooltip[5.6,2.6;4.4,0.4;Oak Plank or Pine Plank]", "the group's members in a tooltip")
 geometry_ok(fs, "long names")
 
+------------------------------------------------------------------------------
+-- F. A huge field value (a crafted client may send hundreds of kilobytes):
+-- cut before the trim, so the event costs no noticeable time.
+------------------------------------------------------------------------------
+do
+	local huge = "a" .. (" "):rep(300000) .. "b"
+	local started = os.clock()
+	click(reader, {[FIELDS.search] = huge, [FIELDS.qty] = huge, [FIELDS.next] = ">"})
+	local spent = os.clock() - started
+	check(spent < 0.2, ("F a 300 KB space-padded field is handled at once (%.3f s)"):format(spent))
+	eq(st_of(reader).typed, "a", "F the search text cut, then trimmed")
+	eq(st_of(reader).qty, "a", "F the quantity text cut, then trimmed")
+	eq(J._clean_field("  12  ", 8), "12", "F a short value trimmed")
+	eq(J._clean_field(("x"):rep(50), 40), ("x"):rep(40), "F a long value cut to the limit")
+end
+
+------------------------------------------------------------------------------
+-- H. The Help and trainer texts after Round 45 (ST's merged result): no
+-- recipe books, crafting grid, mixtures or Cooking trainer; the repair NPC
+-- named from grug_jobs.MENDER_TITLE, never a literal.
+------------------------------------------------------------------------------
+do
+	local function source(path)
+		local f = assert(io.open(ROOT .. path))
+		local text = f:read("*a")
+		f:close()
+		return text
+	end
+	local help = source("/mods/PLAYER/grug_inventory/help.lua")
+	local trainers = source("/mods/PLAYER/grug_jobs/trainers.lua")
+	for _, old in ipairs({"Basics book", "recipe book", "Crafting book", "crafting grid",
+			"mixture", "Cooking trainer", "(grid and furnace)", "trainers for all eight",
+			"Inventory > Crafting"}) do
+		lacks(help, old, "H Help no longer says " .. old)
+		lacks(trainers, old, "H the trainer dialog no longer says " .. old)
+	end
+	lacks(trainers, "choose its recipe", "H the learn notice names no recipe book")
+	lacks(help, "Mender", "H Help never spells the repair NPC's title out")
+	lacks(help, "Grudge-Free Repairs", "H ... not even the final one")
+	has(help, "@MENDER@ in every start town and capital", "H the repair line takes the title")
+	for _, part in ipairs({"Everyone knows Cooking from the start",
+			"Alchemy (Brewing Stand): brews finished potions and elixirs",
+			"Basic area of the Crafting tab", "Take all moves it into your inventory",
+			"These stations open no window; furnaces and dual furnaces still do"}) do
+		has(help, part, "H Help says: " .. part)
+	end
+	-- The page itself, with the title from the constant.
+	core.get_game_info = function() return nil end
+	core.log = function() end
+	J.MENDER_TITLE = "Tinker's Bench"
+	dofile(ROOT .. "/mods/PLAYER/grug_inventory/help.lua")
+	local context = {page = "grug_inventory:help", grug_help_section = "basics"}
+	local page = sfinv.get_formspec(reader, context)
+	has(page, "and so does Tinker's Bench in every start town and capital",
+		"H the Help page names the repair NPC by grug_jobs.MENDER_TITLE")
+	lacks(page, "@MENDER@", "H no marker left on the page")
+	J.MENDER_TITLE = nil
+end
+
 if failures > 0 then
 	error(("R45 UI PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
