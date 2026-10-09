@@ -1,18 +1,20 @@
 --- before
 +++ after
 @@ -2,0 +3 @@
-+'auth' | 'hero' | '#1#N1MR9b/JXQeOwIxzxe8QcQ#QclaxU7Rb0COzZ69qp0PnB42FXOVVoMsQaSa3KZ/Sx4y/9C1DsRME...(370) | 'fly'
-@@ -4,0 +6 @@
++'auth' | 'hero' | '#1#IOx2+Ps/Orv/803T/oXk9Q#n1l5ggV723DIdip6bpiALrBHniZeB4NVGoL4chbaBylJfjglF4zu2...(370) | 'fly'
+@@ -4,0 +6,2 @@
 +'item' | 'hero' | '0:0' | 'default:apple 7 0 "\\u0001description\\u0002Migrated apple\\n\\"0.41.1\\"\\u000...(111)
-@@ -6,0 +9,2 @@
++'meta' | 'bystander' | 'grug_core:migrate:0.45.0' | '1'
+@@ -6,0 +10,3 @@
 +'meta' | 'hero' | 'grug_core:migrate:0.41.3' | 'c-0.41.3'
 +'meta' | 'hero' | 'grug_core:migrate:0.41.4' | 'c-0.41.4'
-@@ -8,0 +13 @@
++'meta' | 'hero' | 'grug_core:migrate:0.45.0' | '1'
+@@ -8,0 +15 @@
 +'meta' | 'hero' | 'it:offline' | '0.41.1'
-@@ -10,0 +16 @@
+@@ -10,0 +18 @@
 +'storage' | 'grug_core' | 'migrate_world:0.41.2' | 'w-0.41.2'
-@@ -12 +18 @@
+@@ -12 +20 @@
 -'storage' | 'grug_probe_r43_it' | 'delete_me' | 'probe'
-+'storage' | 'grug_core' | 'world_version' | '0.44.0'
-@@ -13,0 +20 @@
++'storage' | 'grug_core' | 'world_version' | '0.45.0'
+@@ -13,0 +22 @@
 +'storage' | 'grug_probe_r43_it' | 'offline' | '0.41.1'

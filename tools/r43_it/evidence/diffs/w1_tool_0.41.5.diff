@@ -1,9 +1,13 @@
 --- before
 +++ after
-@@ -15,0 +16 @@
+@@ -6,0 +7 @@
++'meta' | 'bystander' | 'grug_core:migrate:0.45.0' | '1'
+@@ -8,0 +10 @@
++'meta' | 'hero' | 'grug_core:migrate:0.45.0' | '1'
+@@ -14,0 +17 @@
 +'storage' | 'grug_core' | 'migrate_world:0.41.5' | 'w-0.41.5'
-@@ -17 +18 @@
+@@ -16 +19 @@
 -'storage' | 'grug_core' | 'world_version' | '0.41.4'
-+'storage' | 'grug_core' | 'world_version' | '0.44.0'
-@@ -19,0 +21 @@
++'storage' | 'grug_core' | 'world_version' | '0.45.0'
+@@ -18,0 +22 @@
 +'storage' | 'grug_probe_r43_it' | 'offline_reset' | '0.41.5'

@@ -1,0 +1,23 @@
+launcher: staged probe: grug_probe_r45_ms
+seconds: 58, exit 0
+joins: ['scribe registered (protocol 52), stayed 4.0 s', 'sleeper registered (protocol 52), stayed 4.0 s', 'smith registered (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.44.0 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.44.0 (a new world), game 0.44.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32567.
+ACTION[Server]: scribe [127.0.0.1] joins game. List of players: scribe
+ACTION[Server]: [r45_ms_probe] joined scribe
+ACTION[Server]: [r45_ms_probe] built scribe
+ACTION[Server]: [r45_ms_probe] left scribe
+ACTION[Server]: scribe leaves game. List of players: 
+ACTION[Server]: sleeper [127.0.0.1] joins game. List of players: sleeper
+ACTION[Server]: [r45_ms_probe] joined sleeper
+ACTION[Server]: [r45_ms_probe] built sleeper
+ACTION[Server]: [r45_ms_probe] left sleeper
+ACTION[Server]: sleeper leaves game. List of players: 
+ACTION[Server]: smith [127.0.0.1] joins game. List of players: smith
+ACTION[Server]: [r45_ms_probe] joined smith
+ACTION[Server]: [r45_ms_probe] built smith
+ACTION[Server]: [r45_ms_probe] left smith
+ACTION[Server]: smith leaves game. List of players: 
+ACTION[Server]: [r45_ms_probe] observations written: every planned character left

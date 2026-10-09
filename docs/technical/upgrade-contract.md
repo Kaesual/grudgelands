@@ -62,7 +62,7 @@ declaration follows from them.
 which added the `migrate` list of the platform's migration contract):
 
 ```json
-{"schema": 2, "version": "0.44.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0"]}
+{"schema": 2, "version": "0.45.0", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}
 ```
 
 - `version` equals `game.conf`'s `version`. Versions are
@@ -89,7 +89,8 @@ which added the `migrate` list of the platform's migration contract):
   (it crosses 0.40.1, which changed world generation; Round 41's own mapgen
   fix is covered by the same reset). No history before 0.40.0 is audited.
 - 0.43.0 ships the migration foundation alone, with an empty `migrate` list
-  (Round 43 ruling 2); 0.44.0 declares the first real step (§5.8). The
+  (Round 43 ruling 2); 0.44.0 declares the first real step, 0.45.0 the
+  second (§5.8). The
   platform adopts a version with a real step only once its runner is in
   production (Round 44 ruling 3).
 - **History:** released commits stay reachable on `origin/main`; its history
@@ -349,7 +350,13 @@ skip its due steps.
   Round 43's integration suite `tools/r43_it/run.sh` is the pattern; its
   test steps lie below the declared ones, so its tool runs and guard
   messages include the declaration's `migrate` list (since 0.44.0). The
-  step 0.44.0's test is `tools/r44_ms/run.sh` (§5.8).
+  step 0.44.0's test is `tools/r44_ms/run.sh`, 0.45.0's
+  `tools/r45_ms/run.sh` with the join part's fixture
+  `tools/r45_ms/portable_test.lua` (§5.8). A tool run on a world before a
+  step also runs every later declared step, so an older step's exact checks
+  read a copy migrated by that step alone (the tool in-process, pinned to its
+  checkout), and the mechanism's checks leave the declared steps' markers
+  out.
 - Whenever `tools/migrate.py` or `tools/migration/` changes, the test of
   **every** declared step runs in the `debian:trixie` container (older steps
   run on the shared helpers); the tool's unit tests are
@@ -371,9 +378,20 @@ skip its due steps.
 | Step | What it does | Online work | Test |
 |---|---|---|---|
 | 0.44.0 (Round 44, the UI rework) | For every character, offline ones included: every mount item leaves every list, every skill every list but the hotbar (`main` slots 1–8); nothing else changes, the purchased mounts stay in player meta (`grug_mounts:*_tier`) and the quickbar reads them; a character's inventory is written only when something goes. Player inventories only: a crafting station's grid (a detached inventory saved in node meta) may still hold such an item and would need the deferred map part (rare; nothing is lost); a dropped one is deleted | none | `tools/r44_ms/run.sh`: unit tests, then a 0.43.0 world built by the 0.43.0 game, the shipped tool in the runner's container, a boot and joins of 0.44.0 |
+| 0.45.0 (Round 45, the crafting rework) | For every character, offline ones included, in this order: every `grug_alchemy:mixture_*` stack leaves every list (alchemy makes finished potions, the mixtures are inert); the stacks of the engine `craft` grid, then of the engine list `craftresult` (a craft whose follow-up move failed left real items there), move in slot order into **empty** slots of `main[9..]`, the equipped bags (bag slot order, only slots the bag's size holds) and then the hotbar (the give helper's order; empty slots only, the tool cannot read `stack_max`), an empty grid is stored with size 0, `craftresult` keeps its size 1, and what does not fit stays in its list; every gear stack of the 0.44.0 game (weapons, shields, spellbooks, armour, trinkets) without an item level of its own (`grug_ilvl` missing or not above 0) gets the 0.44.0 definition's item level as `grug_ilvl` and, unless it has one, its requirement as `grug_req_level`, in every list (crafted, rolled, upgraded and crowned gear is never touched); the dead `craftpreview` stack and the player meta `grug_jobs:seen_items` go; every character gets the marker. A character's inventory is written only when something changed. Player inventories only: gear and mixtures in node inventories on the map follow the new definitions (accepted, spec §6) | Each character's next join (`grug_core.migrations.handlers["0.45.0"]`, first join callback): what the grid and `craftresult` still hold goes through the give helper, then into the output area `grug_craft_out`, then drops at the feet (ruling 6; a failed drop keeps the rest in the grid and fails the handler); the tool capabilities of a weapon whose damage no longer matches its item level are rewritten (`grug_items.refresh_capabilities`: unmodified first-tier weapons, whose damage the ladder lowered; a broken one keeps them for the repair); every gear tooltip is rebuilt. `grug_inventory`'s own join callback then drops the equipment caches | `tools/r45_ms/run.sh`: unit tests, then a 0.44.0 world built by the 0.44.0 game, the shipped tool in the runner's container (also on PostgreSQL, every row equal to the SQLite result), a boot and joins of 0.45.0; the join part's fixture `tools/r45_ms/portable_test.lua`; the chain from a 0.43.0 world and from a record-less (0.41.0) copy through 0.44.0 and 0.45.0 in one run: `tools/r44_ms/run.sh` |
 
 The 0.44.0 step identifies the items by the 0.43.0 game's names, frozen in
 the step: a skill is any item of `grug_abilities` (`grug_abilities:<id>`,
 registered only by `register_ability`), a mount item one of the six tier
 items of `grug_mounts/catalog.lua`; its end-to-end test proves both against
 the registrations of a running 0.43.0 game.
+
+The 0.45.0 step's tables are the 0.44.0 game's, frozen in the step: the 156
+gear items built from `grug_gear.MATERIALS`, the weapon families, the armour
+lines and slots and the trinket identities, each with its bracket's
+(`_grug_ilvl`, `_grug_req_level`): 3/1, 10/10, 20/20, 30/30, 40/40, 50/50;
+the eight bags and their sizes; the mixture prefix (ST's 40 ids). Its
+end-to-end test proves them against the registrations of a running 0.44.0
+game (every equipment item with an item level, no other equipment, no alias
+to any of them) and shows that every pinned item's 0.45.0 definition
+differs.

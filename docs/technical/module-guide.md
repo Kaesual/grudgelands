@@ -207,8 +207,9 @@ tools](#player-meta-read-by-external-tools).
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
   within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area
   `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at
-  every join; a join handler that runs earlier, such as lane MS's 0.45.0
-  step, calls it before it uses the list).
+  every join; a join handler that runs earlier, such as the 0.45.0
+  migration's join part in `grug_core/migrations.lua`, calls it before it
+  uses the list).
   `register_on_job_end(fn(player, job, outcome, source))` (outcome
   `completed`/`cancelled`; source `timer`, `join`, `open`, `start`, `stop`)
   is where UI resends an open Crafting page;
@@ -1097,7 +1098,10 @@ tools](#player-meta-read-by-external-tools).
   `grug_ench`; its value is `grug_items.enchant_value(stat, ilvl, tier)`
   (`docs/design/item_tiers.md` §1.1), derived on write by grug_quality's one
   store path (rolls, enchants, upgrades, the crown; nothing else writes an
-  item level), never rolled. `grug_items.operation_plan(recipe, stack,
+  item level but the 0.45.0 migration's offline pin), never rolled.
+  `grug_items.refresh_capabilities(stack)` rewrites a stack's tool
+  capabilities from its item level and enchants as that path does (a broken
+  stack keeps them for the repair); the 0.45.0 migration's join part uses it. `grug_items.operation_plan(recipe, stack,
   player[, levels])` handles both station operation kinds
   (`grug_jobs.register_station_operation`: "enchant" and "upgrade") on one
   item behind the profession gate, `operation_result` the same without it (a
@@ -1571,7 +1575,11 @@ tools](#player-meta-read-by-external-tools).
   no `tools/`; `tools/check_upgrade.py` parses this literal and proves it
   equal), and `handlers[version] = {world = fn(marker), character =
   fn(player, marker)}` for a step's online work. A new step adds its version
-  here and, when it leaves online work, its handlers and their fixture.
+  here and, when it leaves online work, its handlers (in this file, above the
+  registry: the guard collects them at load) and their fixture. 0.45.0's
+  character handler hands craft-grid and `craftresult` leftovers over (give helper, output
+  area, feet), refreshes first-tier weapons' capabilities and rebuilds gear
+  tooltips (fixture `tools/r45_ms/portable_test.lua`).
 - `grug_core/world_version.lua` (`grug_core.world_version`), loaded first in
   `grug_core/init.lua`: the record `world_version`, new-world recognition
   (`is_new_world`), the guard (`decide`: newer world or a step between
@@ -1589,13 +1597,14 @@ tools](#player-meta-read-by-external-tools).
   auth and privileges, mod storage, markers, `raw(kind)`, the limit checks),
   `codec.py` (`serialize`/`deserialize`, JSON, `ItemStack`), `steps/`
   (`v<major>_<minor>_<patch>.py`; `v0_44_0.py`, the first, removes mount
-  items and skills outside the hotbar, [upgrade contract](upgrade-contract.md)
-  §5.8). Python 3.13, standard library; `psycopg` 3 imported only for
+  items and skills outside the hotbar; `v0_45_0.py` deletes the mixtures,
+  empties the craft grid and `craftresult` into free slots and pins the 0.44.0 item level on
+  unmodified gear, [upgrade contract](upgrade-contract.md) §5.8). Python 3.13, standard library; `psycopg` 3 imported only for
   PostgreSQL. Unit tests: `tools/r43_mt/test_migrate.py` (the container run
   `tools/r43_mt/container_test.sh`; against a copy of the declaration with
   an empty `migrate` list); end to end with the engine:
   `tools/r43_it/run.sh` (the mechanism) and each step's own test
-  (`tools/r44_ms/run.sh` for 0.44.0).
+  (`tools/r44_ms/run.sh` for 0.44.0, `tools/r45_ms/run.sh` for 0.45.0).
 
 ## Fishing
 

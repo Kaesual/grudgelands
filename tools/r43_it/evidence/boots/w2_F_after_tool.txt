@@ -2,8 +2,8 @@ launcher: staged patch: patch_bump.diff
 seconds: 13, exit 0
 joins: []
 --- log lines
-ACTION[Main]: [grug_core] world version 0.44.0, game 0.44.1: no migration step due
-ACTION[Main]: [r43_it_probe] phase w2_F_after_tool: new_world=false from=0.44.0
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32824.
-ACTION[Server]: [grug_core] world version 0.44.1 recorded (was 0.44.0)
+ACTION[Main]: [grug_core] world version 0.45.0, game 0.45.1: no migration step due
+ACTION[Main]: [r43_it_probe] phase w2_F_after_tool: new_world=false from=0.45.0
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39698.
+ACTION[Server]: [grug_core] world version 0.45.1 recorded (was 0.45.0)
 ACTION[Server]: [r43_it_probe] observations written: no joins planned

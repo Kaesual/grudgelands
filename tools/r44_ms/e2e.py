@@ -20,9 +20,17 @@ client.py for the joins).
   tool     the shipped command line in the platform runner's environment
            (Debian trixie, python3 3.13; tools/r43_it/Containerfile):
            --check, the migration, --check again
+  copy     a copy of the world migrated by step 0.44.0 alone (the tool
+           in-process, pinned to the 0.44.0 checkout): the exact checks of
+           the step read it, since the shipped run also runs the later
+           declared steps (0.45.0 on; Round 45 lane MS)
+  chain    the shipped run crosses 0.44.0 and 0.45.0 at once; a second copy
+           without a record (0.41.0, the production server's version) gets
+           the same rows from one in-process run of this checkout's tool
   boot A   this checkout's game on the migrated world: rider and walker join
-           again; the probe records the inventory as loaded and as the
-           game's join left it, and the owned mounts
+           again; the probe records the inventory as loaded (before
+           grug_core's runner) and as the game's join left it, and the owned
+           mounts
 Every database row the step could change is compared before and after.
 
 Prints the PASS/FAIL table, writes it with the trimmed evidence to the
@@ -33,7 +41,9 @@ Usage: tools/r44_ms/run.sh [EVIDENCE_DIR]   (through the round's process
 queue, one slot: the boots and the container runs go one at a time)
 """
 
+import io
 import json
+from collections import Counter
 import re
 import subprocess
 import sys
@@ -118,7 +128,30 @@ def same_lists(a, b, lists=None):
 
 
 def probe_lists(observed):
-    return {k: v.get("stacks", []) for k, v in (observed or {}).items()}
+    return {k: v.get("stacks") or [] for k, v in (observed or {}).items()}
+
+
+def step_only(run, w):
+    """A copy of the world migrated by step 0.44.0 alone: the tool in-process,
+    pinned to the 0.44.0 checkout (game.conf 0.44.0, the declaration's
+    migrate list ["0.44.0"]), as tools/r44_ms/test_step.py runs it. The later
+    declared steps (0.45.0 on) run in the shipped run too, so this copy is
+    what the exact checks of step 0.44.0 read (Round 45 lane MS)."""
+    copy = run.work / "w_0.44.0_only"
+    it.snapshot(w, copy)
+    conf, decl = run.work / "game_0.44.0.conf", run.work / "upgrade_0.44.0.json"
+    conf.write_text("version = 0.44.0\n")
+    decl.write_text(json.dumps({"schema": 2, "version": "0.44.0", "map_reset": ["0.40.1"],
+                                "new_server": [], "migrate": ["0.44.0"]}))
+    saved = cli.GAME_CONF, cli.DECLARATION
+    cli.GAME_CONF, cli.DECLARATION = conf, decl
+    out, err = io.StringIO(), io.StringIO()
+    try:
+        rc = cli.main(["--world", str(copy)], stdout=out, stderr=err)
+    finally:
+        cli.GAME_CONF, cli.DECLARATION = saved
+    events = [json.loads(line) for line in out.getvalue().splitlines()]
+    return rc, events, copy
 
 
 # -- the scenario -------------------------------------------------------------
@@ -215,6 +248,21 @@ def scenario(run):
           rc == 0 and done.get("world_version") == OLD_VERSION and done.get("due") == DUE
           and done.get("write_checked") == ["player", "auth", "mod_storage"]
           and it.dump(w) == dump_before, "exit %d %s" % (rc, json.dumps(done)))
+    rc44, ev44, w44 = step_only(run, w)
+    # The production path: a world without a record (0.41.0) on a copy,
+    # the whole chain in one run of this checkout's tool (in-process).
+    w41 = run.work / "w_from_0.41.0"
+    it.snapshot(w, w41)
+    it.set_record(w41, None)
+    out41 = io.StringIO()
+    rc41 = cli.main(["--world", str(w41)], stdout=out41, stderr=io.StringIO())
+    ev41 = [json.loads(line) for line in out41.getvalue().splitlines()]
+    only = next((e for e in ev44 if e.get("event") == "step_done"), {})
+    check("tool", "step 0.44.0 alone (the tool pinned to the 0.44.0 checkout, on a copy): "
+                  "exit 0, the copy at 0.44.0",
+          rc44 == 0 and it.last(ev44).get("applied") == ["0.44.0"]
+          and it.storage(w44, "grug_core").get("world_version") == "0.44.0",
+          "exit %d %s" % (rc44, json.dumps(it.last(ev44))))
     rc, ev = it.tool(run, "migrate", w, "-", shipped=True)
     kinds = [e.get("event") for e in ev]
     first = next((e for e in ev if e.get("event") == "step_done"), {})
@@ -226,26 +274,54 @@ def scenario(run):
     check("tool", "step 0.44.0 wrote one character's inventory and nothing else",
           first.get("step") == "0.44.0" and first.get("counts") == {
               "characters": 1, "player_meta": 0, "inventories": 1, "positions": 0,
-              "privileges": 0, "mod_storage": 0, "markers": 0}, json.dumps(first))
+              "privileges": 0, "mod_storage": 0, "markers": 0}
+          and only.get("counts") == first.get("counts"), json.dumps([first, only]))
     check("tool", "the record is %s" % DUE[-1],
           it.storage(w, "grug_core").get("world_version") == DUE[-1])
+    applied = it.last(ev).get("applied") or []
+    chain = state(w)
+    rider_gear = [t for stacks in chain.get("rider", {}).get("inv", {}).values() for t in stacks
+                  if name_of(t).startswith("grug_gear:") and name_of(t) != "grug_gear:arrow"]
+    check("chain", "the 0.43.0 world crosses 0.44.0 and 0.45.0 in one shipped run: 0.45.0's "
+                   "marker on both characters, rider's grid stored empty with size 0, its "
+                   "gear pinned",
+          applied[:2] == ["0.44.0", "0.45.0"]
+          and all(chain[n]["meta"].get("grug_core:migrate:0.45.0") == "1"
+                  for n in ("rider", "walker"))
+          and chain["rider"]["inv"].get("craft") == []
+          and rider_gear and all(ItemStack.parse(t).meta.get("grug_ilvl") for t in rider_gear),
+          json.dumps({"applied": applied, "gear": [t[:50] for t in rider_gear]}))
+    check("chain", "a copy without a record (0.41.0, the production server's version): one "
+                   "run of this checkout's tool applies 0.44.0 and 0.45.0 from 0.41.0 and leaves "
+                   "the same rows as the shipped run from 0.43.0",
+          rc41 == 0 and it.last(ev41).get("applied")[:2] == ["0.44.0", "0.45.0"]
+          and next(e for e in ev41 if e.get("event") == "step_start").get("from") == "0.41.0"
+          and it.dump(w41) == it.dump(w),
+          "exit %d %s" % (rc41, json.dumps(it.last(ev41))))
     after = state(w)
+    after44 = state(w44)
     expected = {k: list(v) for k, v in rider.items()}
     for e in removes:
         expected[e["list"]][e["slot"] - 1] = ""
+    got44 = after44.get("rider", {}).get("inv", {})
     got = after.get("rider", {}).get("inv", {})
-    check("step", "rider: exactly the %d placed stacks to remove are gone, every other slot of "
-                  "every list unchanged" % len(removes),
-          not same_lists(expected, got), json.dumps(same_lists(expected, got)[:6]))
-    check("step", "rider: no mount item in any list, no skill outside main[1..8]",
-          not offenders(got) and offenders(rider), json.dumps(offenders(got)))
-    check("step", "rider and walker: player meta unchanged (the purchase record kept)",
-          all(after[n]["meta"] == before[n]["meta"] for n in ("rider", "walker")))
-    dump_after = it.dump(w)
+    check("step", "rider (0.44.0 alone): exactly the %d placed stacks to remove are gone, every "
+                  "other slot of every list unchanged" % len(removes),
+          not same_lists(expected, got44), json.dumps(same_lists(expected, got44)[:6]))
+    check("step", "rider (0.44.0 alone, and after every due step): no mount item in any list, "
+                  "no skill outside main[1..8]",
+          not offenders(got44) and not offenders(got) and offenders(rider),
+          json.dumps([offenders(got44), offenders(got)]))
+    check("step", "rider and walker (0.44.0 alone): player meta unchanged (the purchase record "
+                  "kept)", all(after44[n]["meta"] == before[n]["meta"] for n in ("rider", "walker")))
+    check("step", "rider and walker after every due step: the purchase record kept",
+          all(after[n]["meta"].get(k) == before[n]["meta"].get(k) for n in ("rider", "walker")
+              for k in ("grug_mounts:land_tier", "grug_mounts:water_tier")))
+    dump_after = it.dump(w44)
     it.world_diff(run, "tool_0.44.0", dump_before, dump_after)
     changed = sorted(set(dump_before) ^ set(dump_after))
-    check("step", "nothing else changed: only rider's item rows and the record (walker's rows, "
-                  "positions, auth, other mod storage untouched)",
+    check("step", "0.44.0 alone changed nothing else: only rider's item rows and the record "
+                  "(walker's rows, positions, auth, other mod storage untouched)",
           changed and all(line.startswith("'item' | 'rider' |")
                           or line.startswith("'storage' | 'grug_core' | 'world_version' |")
                           for line in changed), json.dumps(changed[:6]))
@@ -273,20 +349,31 @@ def scenario(run):
                                                                           sorted(got))[:6]))
     settled = probe_lists(hero.get("settled"))
     keeps = [e for e in entries if e["role"] == "keep"]
+    # Every stack held after the join (name, count, wear): a later declared
+    # step may move a kept stack (0.45.0 empties the craft grid).
+    held = Counter()
+    for stacks in settled.values():
+        for text in stacks:
+            if text:
+                x = ItemStack.parse(text)
+                held[(x.name, x.count, x.wear)] += 1
     lost = []
     for e in keeps:
-        text = (settled.get(e["list"]) or [""] * e["slot"])[e["slot"] - 1]
         # The join refreshes a skill's meta and a tool's description; the
         # loaded check above compares every stack in full.
         if e["item"].startswith(STEP.SKILL_PREFIX):
+            text = (settled.get(e["list"]) or [""] * e["slot"])[e["slot"] - 1]
             ok = name_of(text) == e["item"]
         else:
-            x, y = ItemStack.parse(text or ""), ItemStack.parse(got[e["list"]][e["slot"] - 1])
-            ok = (x.name, x.count, x.wear) == (y.name, y.count, y.wear)
+            y = ItemStack.parse(got44[e["list"]][e["slot"] - 1])
+            ok = held[(y.name, y.count, y.wear)] > 0
+            held[(y.name, y.count, y.wear)] -= 1
+            text = y.to_string()
         if not ok:
             lost.append("%s[%d] %s: %r" % (e["list"], e["slot"], e["item"], text[:60]))
     check("boot", "rider after the game's join: no mount item, no skill outside the hotbar; "
-                  "the hotbar skills and every other kept stack in place (name, count, wear)",
+                  "the hotbar skills in place and every other kept stack held (name, count, "
+                  "wear)",
           settled and not offenders(settled) and not lost,
           json.dumps({"offenders": offenders(settled), "lost": lost}))
     owned = hero.get("mounts") or {}
@@ -309,6 +396,8 @@ def scenario(run):
           and reg.get("hotbar_size") == STEP.HOTBAR,
           json.dumps({"hotbar_size": reg.get("hotbar_size")}))
     final = state(w)
+    check("chain", "saved after boot A: the 0.45.0 join part ran for both (markers gone)",
+          all("grug_core:migrate:0.45.0" not in final[n]["meta"] for n in ("rider", "walker")))
     check("boot", "saved after boot A: no mount item and no skill outside the hotbar for "
                   "either character",
           not any(offenders(final[n]["inv"]) for n in ("rider", "walker")),

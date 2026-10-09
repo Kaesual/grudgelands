@@ -1,2 +1,2 @@
 {"event": "start", "mode": "check", "world": "<run>/w2"}
-{"event": "refusal", "reason": "world_newer", "message": "the world is at 0.45.0, newer than this checkout's 0.44.0: use the checkout of 0.45.0 or newer"}
+{"event": "refusal", "reason": "world_newer", "message": "the world is at 0.46.0, newer than this checkout's 0.45.0: use the checkout of 0.46.0 or newer"}

@@ -1,0 +1,4 @@
+{"event": "start", "mode": "migrate", "world": "/tmp/worlds/all_pg"}
+{"event": "step_start", "step": "0.45.0", "from": "0.44.0"}
+{"event": "step_done", "step": "0.45.0", "counts": {"characters": 3, "player_meta": 2, "inventories": 3, "positions": 0, "privileges": 0, "mod_storage": 0, "markers": 3}}
+{"event": "done", "mode": "migrate", "world_version": "0.44.0", "record": "0.44.0", "new_world": false, "target": "0.45.0", "due": ["0.45.0"], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "postgresql"}, "applied": ["0.45.0"]}

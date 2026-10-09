@@ -13,7 +13,7 @@ PASS  steps       tool (shipped command line): only the declared steps due
 PASS  steps       tool: the four test steps and the declared ones ran in order
 PASS  steps       tool: offline writes and markers are in the databases
 PASS  setup       boot C: the server ran and both characters joined and left
-PASS  guard       a compatible move (0.44.0 to 0.44.1, no step between) starts and bumps the record
+PASS  guard       a compatible move (0.45.0 to 0.45.1, no step between) starts and bumps the record
 PASS  steps       game: the hook's unordered test steps are in step order (with the declared)
 PASS  steps       game: the offline mod-storage write and delete are seen at load
 PASS  steps       game: the world marker ran once at load with its value
@@ -22,7 +22,7 @@ PASS  steps       game, hero's join: the offline meta, inventory and privilege a
 PASS  steps       game, bystander's join: unaffected (no marker, no handler call)
 PASS  steps       after boot C: no marker left in the databases, the handlers' writes saved
 PASS  map reset   on the emptied map the tool runs only the due steps (0.41.5 and the declared)
-PASS  map reset   boot J started from 0.44.0 with the reset pending
+PASS  map reset   boot J started from 0.45.0 with the reset pending
 PASS  map reset   the step's offline write and its world work (after every clear) are done
 PASS  map reset   the map reset is done and the record is at the new version
 PASS  setup       boot D: a new world ran without any join

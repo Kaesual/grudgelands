@@ -9,4 +9,6 @@
 {"event": "step_done", "step": "0.41.4", "counts": {"characters": 1, "player_meta": 0, "inventories": 0, "positions": 0, "privileges": 0, "mod_storage": 0, "markers": 1}}
 {"event": "step_start", "step": "0.44.0", "from": "0.41.4"}
 {"event": "step_done", "step": "0.44.0", "counts": {"characters": 0, "player_meta": 0, "inventories": 0, "positions": 0, "privileges": 0, "mod_storage": 0, "markers": 0}}
-{"event": "done", "mode": "migrate", "world_version": "0.41.0", "record": null, "new_world": false, "target": "0.44.0", "due": ["0.41.1", "0.41.2", "0.41.3", "0.41.4", "0.44.0"], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "sqlite3"}, "applied": ["0.41.1", "0.41.2", "0.41.3", "0.41.4", "0.44.0"]}
+{"event": "step_start", "step": "0.45.0", "from": "0.44.0"}
+{"event": "step_done", "step": "0.45.0", "counts": {"characters": 2, "player_meta": 0, "inventories": 0, "positions": 0, "privileges": 0, "mod_storage": 0, "markers": 2}}
+{"event": "done", "mode": "migrate", "world_version": "0.41.0", "record": null, "new_world": false, "target": "0.45.0", "due": ["0.41.1", "0.41.2", "0.41.3", "0.41.4", "0.44.0", "0.45.0"], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "sqlite3"}, "applied": ["0.41.1", "0.41.2", "0.41.3", "0.41.4", "0.44.0", "0.45.0"]}

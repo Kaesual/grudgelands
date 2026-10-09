@@ -1,2 +1,2 @@
 {"event": "start", "mode": "check", "world": "<run>/w"}
-{"event": "done", "mode": "check", "world_version": "0.43.0", "record": "0.43.0", "new_world": false, "target": "0.44.0", "due": ["0.44.0"], "backends": {"player": "sqlite3", "auth": "sqlite3", "mod_storage": "sqlite3"}, "write_checked": ["player", "auth", "mod_storage"]}
+{"event": "done", "mode": "check", "world_version": "0.43.0", "record": "0.43.0", "new_world": false, "target": "0.45.0", "due": ["0.44.0", "0.45.0"], "backends": {"player": "sqlite3", "auth": "sqlite3", "mod_storage": "sqlite3"}, "write_checked": ["player", "auth", "mod_storage"]}

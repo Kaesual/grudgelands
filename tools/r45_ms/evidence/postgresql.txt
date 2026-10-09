@@ -1,0 +1,13 @@
+PASS postgres started cluster 17, server 17.11 (Debian 17.11-0+deb13u1)
+PASS pg seeding: rows equal the 0.44.0 SQLite world (a grid stack, plain T2 gear, mixtures, seen-items) 
+PASS pg migrate (all on PostgreSQL): step 0.45.0 from 0.44.0 with the SQLite run's counts exit 0 {"event": "step_done", "step": "0.45.0", "counts": {"characters": 3, "player_meta": 2, "inventories": 3, "positions": 0, "privileges": 0, "mod_storage": 0, "markers": 3}} {"event": "done", "mode": "migrate", "world_version": "0.44.0", "record": "0.44.0", "new_world": false, "target": "0.45.0", "due": ["0.45.0"], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "postgresql"}, "applied": ["0.45.0"]}
+PASS pg migrate: every row equals the SQLite world after the same run 
+PASS pg: the grids of scribe and sleeper stored with size 0, smith's kept at 9 with its leftovers; scribe's craftresult kept at 1, empty {"scribe craft": 0, "scribe craftresult": 1, "sleeper craft": 0, "sleeper craftresult": 1, "smith craft": 9, "smith craftresult": 1}
+PASS pg: plain T2 gear pinned at 10 / 10 (smith's equipped Iron Chestplate, scribe's Iron Bow from the grid and Iron Sword from craftresult) ["grug_gear:chest_metal_iron 1 0 \"\\u0001description\\u0002\\u001", "grug_gear:bow_iron 1 0 \"\\u0001description\\u0002\\u001b(c@#FFF", "grug_gear:sword_iron 1 0 \"\\u0001description\\u0002\\u001b(c@#F"]
+PASS pg: no mixture left in any list []
+PASS pg: grug_jobs:seen_items deleted, the marker on all three [["scribe", "grug_core:migrate:0.45.0", "1"], ["sleeper", "grug_core:migrate:0.45.0", "1"], ["smith", "grug_core:migrate:0.45.0", "1"]]
+PASS platform layout (player and auth on PostgreSQL, mod storage SQLite): every row equals the SQLite world after the same run exit 0; 
+PASS platform: the grids of scribe and sleeper stored with size 0, smith's kept at 9 with its leftovers; scribe's craftresult kept at 1, empty {"scribe craft": 0, "scribe craftresult": 1, "sleeper craft": 0, "sleeper craftresult": 1, "smith craft": 9, "smith craftresult": 1}
+PASS platform: plain T2 gear pinned at 10 / 10 (smith's equipped Iron Chestplate, scribe's Iron Bow from the grid and Iron Sword from craftresult) ["grug_gear:chest_metal_iron 1 0 \"\\u0001description\\u0002\\u001", "grug_gear:bow_iron 1 0 \"\\u0001description\\u0002\\u001b(c@#FFF", "grug_gear:sword_iron 1 0 \"\\u0001description\\u0002\\u001b(c@#F"]
+PASS platform: no mixture left in any list []
+PASS platform: grug_jobs:seen_items deleted, the marker on all three [["scribe", "grug_core:migrate:0.45.0", "1"], ["sleeper", "grug_core:migrate:0.45.0", "1"], ["smith", "grug_core:migrate:0.45.0", "1"]]

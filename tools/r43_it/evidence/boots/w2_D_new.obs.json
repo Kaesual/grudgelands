@@ -5,8 +5,8 @@
  "leaves": 0,
  "load": {
   "delete_me": "",
-  "from": "0.44.0",
-  "game": "0.44.0",
+  "from": "0.45.0",
+  "game": "0.45.0",
   "keep": "",
   "new_world": true,
   "offline": "",
@@ -15,7 +15,8 @@
   "reset_pending": false,
   "steps": [
    "0.41.1",
-   "0.44.0"
+   "0.44.0",
+   "0.45.0"
   ]
  },
  "mods_loaded": {
