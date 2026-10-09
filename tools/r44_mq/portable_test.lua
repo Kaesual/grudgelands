@@ -316,6 +316,7 @@ rawset(_G, "grug_home", {
 	known_waypoints = function(p)
 		return p.faction == "accord" and {{id = "ws_hc", label = "Highcourt", pos = {x = 105, z = 60}}} or {}
 	end,
+	claim_waypoint = function() return nil end,
 })
 local parties = {}
 rawset(_G, "grug_parties", {

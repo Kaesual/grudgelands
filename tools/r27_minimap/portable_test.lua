@@ -156,7 +156,7 @@ rawset(_G, "grug_home", {get = function() return HOME end,
 		return {{id = "highcourt", label = "Highcourt", pos = {x = -120, y = 20, z = -1515}},
 			{id = "far", label = "Far Inn", pos = {x = 3000, y = 20, z = 3000}}}
 	end, remaining = function() return 0 end, is_pending = function() return false end,
-	known_waypoints = function() return {} end})
+	known_waypoints = function() return {} end, claim_waypoint = function() return nil end})
 rawset(_G, "grug_zones", {at = function() return nil end})
 rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1}})
 local page

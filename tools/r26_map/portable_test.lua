@@ -91,7 +91,7 @@ rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 rawset(_G, "grug_quests", {registered_npcs = {}, marker_states = function() return {}, 1 end})
 rawset(_G, "grug_parties", {view = function() return nil end})
 rawset(_G, "grug_home", {get = function() return nil end, locations = function() return {} end,
-	known_waypoints = function() return {} end})
+	known_waypoints = function() return {} end, claim_waypoint = function() return nil end})
 rawset(_G, "grug_zones", {at = function() return nil end})
 rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1}})
 local page

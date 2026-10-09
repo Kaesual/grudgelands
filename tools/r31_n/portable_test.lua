@@ -223,6 +223,7 @@ grug_home.locations = function()
 		{id = "sunscar", label = "Sunscar", faction = "throng", pos = {x = 7, y = 10, z = 2400}}}
 end
 grug_home.known_waypoints = function() return {} end
+grug_home.claim_waypoint = function() return nil end
 grug_parties = {view = function() return nil end}
 grug_map = {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")}
 dofile(repo .. "/mods/PLAYER/grug_map/providers.lua")
