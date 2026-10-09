@@ -430,9 +430,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   its affixes change; a plain stack carries no image of its own.
 - **Stations:** a profession recipe needs its station within 4 nodes when its
   job starts (`professions.md` §1.5). Only **furnaces and dual furnaces** keep
-  a dialog with lists. The forge, the four benches and the brewing stand have
-  none: right-clicking one shows that crafting moved to the Crafting tab and,
-  inside an active Claim Stone claim, the repair button
+  a dialog with lists. The forge, the four benches and the brewing stand are
+  proximity stations without a dialog, lists or a right-click action (Round
+  45); inside an active Claim Stone claim the repair button sits in a
+  player-placed furnace's or dual furnace's dialog
   ([durability_repair.md](durability_repair.md)).
 - Authored capital/POI furnaces and dual furnaces are personal workspaces
   keyed by player and physical station: durable inputs, outputs, fuel and

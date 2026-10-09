@@ -1,6 +1,5 @@
 local INACTIVE = "grug_brewing:brewing_stand"
 local ACTIVE = "grug_brewing:brewing_stand_active"
-local recipes = {}
 local station_factory = dofile(core.get_modpath("grug_jobs") .. "/station_nodes.lua")
 station_factory.register_nodes()
 
@@ -9,21 +8,6 @@ grug_brewing.NODE_ACTIVE = ACTIVE
 
 function grug_brewing.register_public_position(pos)
 	station_factory.register_public_position("brewing_stand", pos)
-end
-
-function grug_brewing.register_recipe(recipe)
-	if type(recipe) ~= "table" or recipe.station ~= "brewing_stand" or
-			#recipe.flat_inputs ~= 1 then
-		error("grug_brewing: finishing needs one prepared mixture", 0)
-	end
-	local mixture = recipe.flat_inputs[1]
-	if recipes[mixture] then error("grug_brewing: duplicate mixture", 0) end
-	recipes[mixture] = {output = recipe.output, output_name = recipe.output_name,
-		time = tonumber(recipe.time) or 5}
-end
-
-function grug_brewing.match(mixture)
-	return recipes[mixture]
 end
 
 local function register(name, active)
@@ -55,4 +39,7 @@ local function register(name, active)
 end
 
 register(INACTIVE, false)
+-- The stand the automatic brewing lit before Round 45 (a stable id: worlds
+-- hold it). Nothing lights it now; it goes out at its next node timer
+-- (grug_jobs/workspaces.lua).
 register(ACTIVE, true)

@@ -85,7 +85,8 @@ rawset(_G, "grug_core", {
 })
 rawset(_G, "grug_factions", {get_faction = function() return "accord" end,
 	register_on_faction_chosen = function() end})
-rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
+rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}},
+	trainer_teaches = function(p) return p ~= "cooking" end}) -- Round 45 (lane ST)
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 rawset(_G, "grug_quests", {registered_npcs = {}, marker_states = function() return {}, 1 end})
 rawset(_G, "grug_parties", {view = function() return nil end})

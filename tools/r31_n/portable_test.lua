@@ -184,7 +184,8 @@ local function opener(label) return function() opened[#opened + 1] = label end e
 grug_home = {open_innkeeper = opener("innkeeper")}
 grug_mounts = {open_trainer = opener("mounts")}
 grug_housing = {open_manager = opener("steward")}
-grug_jobs = {open_trainer = opener("trainer"), PROFESSIONS = {tailor = {name = "Tailoring"}}}
+grug_jobs = {open_trainer = opener("trainer"), PROFESSIONS = {tailor = {name = "Tailoring"}},
+	trainer_teaches = function(p) return p ~= "cooking" end} -- Round 45 (lane ST)
 dofile(repo .. "/mods/ENTITIES/grug_mobs/start_villagers.lua")
 
 grug_traders = {PROFESSION_BRACKETS = {}}

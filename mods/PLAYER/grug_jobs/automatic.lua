@@ -1,10 +1,11 @@
--- One bounded process evaluator for shared and personal automatic stations.
--- Only elapsed server game time is accounted; shutdown wall time is excluded.
+-- One bounded process evaluator for shared and personal automatic stations:
+-- the furnace and the dual furnace (the brewing stand's automatic finish went
+-- in Round 45: alchemy jobs make finished potions). Only elapsed server game
+-- time is accounted; shutdown wall time is excluded.
 local automatic = {}
 automatic.sizes = {
 	furnace = {src = 1, fuel = 1, dst = 4},
 	dual_furnace = {input = 2, fuel = 1, output = 2},
-	brewing_stand = {mixture = 1, fuel = 1, output = 2},
 }
 
 local FURNACE_FUELS = {
@@ -13,11 +14,6 @@ local FURNACE_FUELS = {
 }
 
 function automatic.fuel_time(station, stack)
-	if station ~= "furnace" and station ~= "dual_furnace" then
-		local result = core.get_craft_result({method = "fuel", width = 1,
-			items = {stack}})
-		return result.time or 0
-	end
 	local name = stack:get_name()
 	if FURNACE_FUELS[name] then return FURNACE_FUELS[name] end
 	if core.get_item_group(name, "tree") > 0 then return 15 end
@@ -36,10 +32,6 @@ local function recipe_at(station, inv)
 			inv:get_stack("input", 2):get_name())
 		if recipe then return {output = recipe.output, time = recipe.time,
 			list = "input", count = 2} end
-	else
-		local recipe = grug_brewing.match(inv:get_stack("mixture", 1):get_name())
-		if recipe then return {output = recipe.output, time = recipe.time,
-			list = "mixture", count = 1} end
 	end
 end
 
@@ -102,31 +94,11 @@ function automatic.advance(station, inv, state, elapsed)
 			return
 		end
 		if state.fuel <= 0 then
-			-- Brewing keeps its earlier exact-boundary behavior: the next fuel
-			-- item is acquired only once positive elapsed time is available.
-			if station ~= "furnace" and station ~= "dual_furnace" and elapsed <= 0 then return end
 			local fuel_stack = inv:get_stack("fuel", 1)
 			local fuel_time = automatic.fuel_time(station, fuel_stack)
 			if fuel_time <= 0 then state.progress = 0 return end
-			if station == "furnace" or station == "dual_furnace" then
-				fuel_stack:take_item(1)
-				inv:set_stack("fuel", 1, fuel_stack)
-			else
-				-- Brewing retains the engine fuel recipe and replacement semantics.
-				local fuel, after = core.get_craft_result({method = "fuel", width = 1,
-					items = inv:get_list("fuel")})
-				local remaining = ItemStack(after.items[1])
-				local replacements = fuel.replacements or {}
-				if not remaining:is_empty() and core.get_craft_result({method = "fuel",
-						width = 1, items = {remaining}}).time <= 0 then
-					replacements[#replacements + 1] = remaining
-					remaining = ItemStack("")
-				end
-				local slots = fit(inv, output_list, replacements)
-				if not slots then return end
-				inv:set_list(output_list, slots)
-				inv:set_stack("fuel", 1, remaining)
-			end
+			fuel_stack:take_item(1)
+			inv:set_stack("fuel", 1, fuel_stack)
 			state.fuel = fuel_time
 			state.fuel_total = fuel_time
 		end
@@ -136,9 +108,6 @@ function automatic.advance(station, inv, state, elapsed)
 		state.progress = state.progress + step
 		elapsed = elapsed - step
 		if state.progress >= recipe.time then
-			-- Fuel replacements may have used destination room in this iteration.
-			destination = fit(inv, output_list, outputs)
-			if not destination then return end
 			if recipe.after then inv:set_list(recipe.list, recipe.after)
 			else
 				for index = 1, recipe.count do

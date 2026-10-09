@@ -246,3 +246,16 @@ grug_cooking.REFINEMENTS = {
 
 -- Simple meat, fish and bread conversions are universal Basics recipes.
 -- Raw profession dishes award progress only at their preparation.
+
+-- Every character knows Cooking from the start (spec ruling 28, Round 45;
+-- its tiers are kept): a character who does not know it learns it at T1 at
+-- every join, a new one at its arrival. A player still creating a character
+-- stores nothing (grug_classes/selection.lua). No trainer teaches Cooking
+-- (grug_jobs.STARTER_PROFESSIONS).
+local function learn_cooking(player)
+	if grug_classes.get_class(player) and not grug_jobs.has(player, "cooking") then
+		grug_jobs.learn(player, "cooking", true)
+	end
+end
+core.register_on_joinplayer(learn_cooking)
+grug_classes.register_on_arrival(learn_cooking)

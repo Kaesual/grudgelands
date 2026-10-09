@@ -467,7 +467,8 @@ local function station_at(pos, name)
 	world[key(pos)] = name
 	node_metas[key(pos)] = nil
 	local def = core.registered_nodes[name]
-	def.on_construct(pos)
+	-- A forge is a proximity station since Round 45: it builds no lists.
+	if def.on_construct then def.on_construct(pos) end
 	return def, core.get_meta(pos)
 end
 local function as_strings(drops)
@@ -482,6 +483,8 @@ end
 do
 	local pos = vector.new(0, 20, 2)
 	local def, meta = station_at(pos, "grug_jobs:forge")
+	-- The crafting grid an old forge (before Round 45) still holds.
+	meta:get_inventory():set_size("craft", 9)
 	meta:get_inventory():set_stack("craft", 1, ItemStack("default:steel_ingot 3"))
 	meta:set_string(PREFIX .. "alice", core.serialize({lists = {output = {"grug_gear:sword 1"}}}))
 	meta:set_string(PREFIX .. "bob", core.serialize({lists = {craft = {"default:coal_lump 2", ""}}}))

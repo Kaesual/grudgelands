@@ -61,11 +61,9 @@ local function register_station_node(station, info, visual)
 		is_ground_content = false,
 		groups = visual.groups,
 		sounds = type(visual.sounds) == "function" and visual.sounds() or visual.sounds,
-		_grug_station = station, _grug_grid_size = 9,
-		on_construct = function(pos)
-			core.get_meta(pos):get_inventory():set_size("craft", 9)
-			core.get_meta(pos):set_string("infotext", info.display_name)
-		end,
+		-- A proximity station (Round 45, spec ruling 27): no dialog and no
+		-- lists; a profession job only checks that one stands nearby.
+		_grug_station = station,
 	})
 end
 
@@ -137,22 +135,6 @@ function factory.register_nodes()
 		boxes = wood_boxes,
 		groups = {cracky = 2}, sounds = default.node_sound_metal_defaults,
 	}))
-
-	core.register_lbm({
-		label = "Activate profession stations",
-		name = ":grug_jobs:activate_stations",
-		nodenames = {
-			"grug_jobs:forge", "grug_jobs:tanning_rack",
-			"grug_jobs:tailor_bench", "grug_jobs:carving_bench",
-			"grug_jobs:jewellers_bench",
-		},
-		run_at_every_load = true,
-		action = function(pos, node)
-			if core.get_meta(pos):get_inventory():get_size("craft") ~= 9 then
-				core.registered_nodes[node.name].on_construct(pos)
-			end
-		end,
-	})
 end
 
 local STEEL = "grug_materials:steel_bar"

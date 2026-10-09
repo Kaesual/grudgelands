@@ -356,7 +356,7 @@ do
 	grug_jobs = permissive({DURATIONS = {potion = 2, station = 1},
 		register_recipe = function(def) records[#records + 1] = def end,
 		ingredient_list = function(tokens) return tokens end})
-	grug_brewing = {NODE = "grug_brewing:brewing_stand", register_recipe = function() end}
+	grug_brewing = {NODE = "grug_brewing:brewing_stand"}
 	grug_gathering = permissive({})
 	local catalogue = {}
 	local json = read_file("mods/ENTITIES/grug_mobs/data/items.json")
@@ -470,14 +470,17 @@ do
 		ids.elixir_deepwater, "E the four draughts stay")
 	check(not ids.potion_greater_healing and not ids.elixir_stoneskin,
 		"E the old Greater potions and the single Stoneskin are gone")
-	-- The Alchemy area holds exactly these preparations (Round 45: at the
-	-- brewing stand, 2 s each) and the stand's own recipe.
+	-- The Alchemy area holds exactly these products (Round 45: finished
+	-- potions and elixirs at the brewing stand, 2 s each, lane ST) and the
+	-- stand's own recipe.
 	local declared = {}
 	for _, def in ipairs(records) do
-		local id = def.output:match("^grug_alchemy:mixture_(.+)$")
+		local id = def.output ~= "grug_brewing:brewing_stand" and
+			def.output:match("^grug_alchemy:(.+)$")
 		if id then
 			check(def.area == "alchemist" and def.station == "brewing_stand" and def.time == 2,
 				"E " .. id .. " is an Alchemy recipe at the brewing stand, 2 s")
+			check(not id:find("^mixture_"), "E " .. id .. " is a finished product, no mixture")
 			declared[id] = table.concat(def.ingredients, "+")
 		else
 			eq(def.output, "grug_brewing:brewing_stand", "E the only other record is the stand")
@@ -488,7 +491,7 @@ do
 		if declared[row.id] ~= table.concat(row.inputs, "+") then all = false end
 		declared[row.id] = nil
 	end
-	check(all and next(declared) == nil, "E the registry holds every mixture, no other")
+	check(all and next(declared) == nil, "E the registry holds every product, no other")
 end
 
 ------------------------------------------------------------------------------

@@ -31,6 +31,8 @@ grug_repair.register_provider("trainer", function(player, provider)
 	if not definition or grug_factions.get_faction(player) ~= definition.faction then
 		return false
 	end
+	-- Every trainer socket repairs, the mender on a socket whose profession
+	-- no trainer teaches (Round 45, Cooking) included.
 	for _, socket in ipairs(grug_core.settlement_sockets_at(provider.settlement)) do
 		if socket.id == provider.socket and socket.role == "trainer" and
 				socket.profession == provider.profession then

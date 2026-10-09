@@ -229,15 +229,29 @@ tools](#player-meta-read-by-external-tools).
 - **Stations** (`workspaces.lua`): furnaces and dual furnaces keep their dialog;
   authored ones have persistent per-player/per-station workspaces, player-placed
   ones share node inventories. The forge, the benches and the brewing stand
-  show the notice form `grug_jobs:station_notice` ("Crafting moved to the
-  Crafting tab", the repair button inside a claim); their node lists stay so
-  digging releases old contents. Automatic furnace/dual processing is
+  are proximity stations (Round 45 lane ST): no `on_rightclick`, no lists, no
+  activation LBM; a job checks one nearby. Digging or blasting a player-placed
+  station releases every list its node meta still holds (an old crafting
+  grid, an old stand's mixture, fuel and output) and every saved workspace
+  record. A lit brewing stand left by the old automatic brewing goes out at
+  its next node timer. Automatic furnace/dual processing is
   universal and grants no progress. Stations and workspaces are
   `docs/design/inventory_equipment.md` §4 and `professions.md` §1.5, named
   tiered enchantments (including trinkets) `items_crafting.md` §6b, equipment
   separation `items_crafting.md` §3.0.3–§3.0.4 and wear `durability_repair.md`.
-  `grug_jobs.open_trainer(player, profession, pos)` serves the six primaries,
-  Cooking and Alchemy. The professions overview (Round 28 ruling 23,
+  `grug_jobs.open_trainer(player, profession, pos)` serves the six primaries
+  and Alchemy: `grug_jobs.trainer_teaches(profession)` is false for the
+  `STARTER_PROFESSIONS` (Cooking, which every character learns at T1 at its
+  arrival and at every join, `grug_cooking/init.lua`, through
+  `grug_jobs.learn(player, profession, quiet)`). The trainer-role readers ask
+  it: `grug_mobs/start_npcs.lua` turns a Cooking trainer socket's NPC into the
+  mender at placement and at every activation (its claim): the title
+  `grug_jobs.MENDER_TITLE` (one constant, a placeholder), the socket's
+  profession kept, so `open_trainer` opens only `grug_repair.open_trainer`'s
+  form and the trainer provider (`grug_repair/providers.lua`, any trainer
+  socket) and the faction rule apply as to a trainer; `grug_map/providers.lua`
+  draws no marker (no repairer has an icon); `grug_core/settlement_sockets.lua` only validates that a trainer
+  socket names a profession, Cooking included (world data unchanged). The professions overview (Round 28 ruling 23,
   `grug_jobs/overview.lua`: `profession_overview` rows,
   `professions_formspec(rows, area)`) is drawn into the Crafting tab's box
   while no recipe is chosen; the Character page has no Professions mode
@@ -560,12 +574,12 @@ tools](#player-meta-read-by-external-tools).
   selects one of six catch tables through `grug_core.mob_level_at(pos)`; water
   salinity never gates fishing.
   **Alchemy** is split between low-level `grug_brewing` (the inactive/active
-  stand nodes, timer and recipe adapter) and `grug_alchemy` (items, profession
-  recipes and effects). The stand has two reagent slots plus vial, fuel and
-  output. Automatic completion is universal and grants no profession progress;
-  the qualified mixture preparation (an Alchemy recipe at the stand since
-  Round 45; `grug_alchemy` hands the finish table to
-  `grug_brewing.register_recipe` itself) owns progression. Capital
+  stand nodes, a proximity station since Round 45) and `grug_alchemy` (items,
+  profession recipes and effects). Every product is an Alchemy recipe at the
+  stand (2 s) that makes the finished potion or elixir and gives progress; the
+  automatic brewing and its adapter are gone. The 40 `grug_alchemy:mixture_*`
+  ids stay registered as inert items (group `grug_potion_mixture`; no recipe
+  makes or uses them). Capital
   personal workspaces derive from terrain-resolved,
   rotated `public_station` sockets in the themed outer premises.
   `grug_jobs.register_public_position(station, pos)` owns the shared registry;
