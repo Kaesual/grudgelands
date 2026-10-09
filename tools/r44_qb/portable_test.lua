@@ -100,7 +100,9 @@ local world = {}
 local function key(x, y, z) return x .. "," .. y .. "," .. z end
 local function node_at(pos)
 	local x, y, z = math.floor(pos.x + 0.5), math.floor(pos.y + 0.5), math.floor(pos.z + 0.5)
-	return world[key(x, y, z)] or (y < 0 and "default:dirt" or "air")
+	-- Ground up to y = 0 (top at 0.5): a player at y = 0.5 stands on it, as a
+	-- ground mount's summon needs (Round 45 PT6).
+	return world[key(x, y, z)] or (y <= 0 and "default:dirt" or "air")
 end
 
 local serial, chat, shown, afters, emerges = {}, {}, {}, {}, {}

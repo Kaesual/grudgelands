@@ -22,14 +22,19 @@
 --      negating one and an immortal rider take none; a fall into water ends
 --      the ride with no fall damage, also landing on a pool floor with no
 --      step sampled inside the water, and a landing in lava deals none
---      either; a remount starts without a peak; the fall hit dismounts
+--      either (the lava ends the ride); a remount starts without a peak; the fall hit dismounts
 --      (both objects gone); a flyer takes none;
 --   A  water is for boats: a horse walking into water (source, river water
 --      flowing, one node deep) and a flyer descending into it are dismounted
 --      at once where they are (one feed note, the gallop stopped); beside
 --      water and a flyer just above its surface ride on; a boat stays; a
 --      riding or flying mount is refused standing in water, swimming at its
---      surface and from a boat (which stays).
+--      surface and from a boat (which stays); lava one node deep ends the
+--      ride too (its own note, the rider left in it), and no mount is
+--      summoned in lava;
+--   L  a ground mount is summoned only standing on solid ground (also with
+--      just a corner of the player's box over it): refused mid-air, also
+--      from a flyer (which stays); a flyer may be summoned mid-air.
 --
 --   luajit tools/r45_pt6/portable_test.lua [REPO]
 -- Prints "R45 PT6 PORTABLE PASS checks=<n>" or the failures.
@@ -470,7 +475,7 @@ for y = 0, 1 do world[node_key(0, y, 0)] = nil end
 world[node_key(0, 0, 0)] = "lava"
 horse = sit(1)
 eq(fall(horse, 30, {GROUND + 30}), 0, "F a landing in lava deals no fall damage")
-grug_mounts.dismount(ada, "manual", false)
+eq(grug_mounts.active.ada, nil, "F (the lava ended the ride)")
 world[node_key(0, 0, 0)] = nil
 
 -- A dismount mid-air and a remount: the new mount has no peak.
@@ -552,6 +557,38 @@ eq(grug_mounts.active.ada, nil, "A (nothing summoned)")
 for x = -2, 2 do for z = -2, 2 do world[node_key(x, 0, z)] = nil end end
 ada.pos = {x = 0, y = GROUND, z = 0}
 check(grug_mounts.mount(ada, 1), "A on dry ground the horse comes")
+grug_mounts.dismount(ada, "manual", false)
+-- Lava one node deep: the ride ends there too, and no mount is summoned in it.
+record_w = walk_into("lava", 1)
+eq(grug_mounts.active.ada, nil, "A a horse walking into lava one node deep is dismounted")
+eq(last_feed(), "Mounts cannot enter lava.", "A the lava note")
+eq(ada.pos.x, 1, "A the rider is left in the lava (its own damage applies)")
+eq(#fades, 1, "A the gallop stops in lava too")
+world[node_key(0, 0, 0)] = "lava"
+ada.pos = {x = 0, y = GROUND, z = 0}
+ok, message = grug_mounts.mount(ada, 1)
+check(not ok and message == "Mounts cannot be summoned in lava.", "A no horse in lava: " .. tostring(message))
+world[node_key(0, 0, 0)] = nil
+
+------------------------------------------------------------------------------
+-- L: a ground mount needs solid ground.
+------------------------------------------------------------------------------
+ada.pos = {x = 0, y = GROUND + 4, z = 0}
+ok, message = grug_mounts.mount(ada, 1)
+check(not ok and message == "Stand on solid ground to summon this mount.",
+	"L no horse in mid-air (a fall would be cut short): " .. tostring(message))
+ok, message = grug_mounts.mount(ada, 2)
+check(not ok and message == "Stand on solid ground to summon this mount.", "L no race mount in mid-air")
+check(grug_mounts.mount(ada, 3), "L a flyer may be summoned mid-air")
+ok, message = grug_mounts.toggle(ada, 1)
+check(not ok and message == "Stand on solid ground to summon this mount.", "L no horse from a flyer in the air")
+eq(grug_mounts.active.ada and grug_mounts.active.ada.mode, "flight", "L the flyer stays")
+grug_mounts.dismount(ada, "manual", true)
+ada.pos = {x = 2.6, y = GROUND, z = 0} -- the middle over air, a corner over the floor's edge
+check(grug_mounts.mount(ada, 1), "L at the edge of the floor the horse comes")
+grug_mounts.dismount(ada, "manual", false)
+ada.pos = {x = 0, y = GROUND, z = 0}
+check(grug_mounts.mount(ada, 1), "L on the ground the horse comes")
 grug_mounts.dismount(ada, "manual", false)
 
 if failures > 0 then

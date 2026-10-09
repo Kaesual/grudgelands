@@ -485,7 +485,7 @@ eq(controller_of(ada).object:get_pos().y, 0.5, "the Improved Boat floats on the 
 grug_mounts.toggle(ada, 5)
 eq(grug_mounts.active.ada and grug_mounts.active.ada.tier, 5, "Improved Boat -> Boat on water")
 grug_mounts.dismount(ada, nil, true)
-ada.pos = {x = 0, y = 2, z = 0} -- on land, out of the water
+ada.pos = {x = 5, y = 0.5, z = 0} -- on the bank, out of the water (a ground mount needs ground)
 grug_mounts.mount(ada, 1)
 horse = controller_of(ada)
 grug_mounts.toggle(ada, 5)
