@@ -9,6 +9,11 @@
 -- grug_housing.open_stone_interface(player, claim) on the owner's
 -- right-click.
 --
+-- Round 45 PT9 follow-up: the activated stone is a waypoint for its owner, so
+-- its form has a second tab, "Waypoints", with the owner's discovered
+-- waystones to travel to (grug_home.travel_from_claim, the waystones' rules).
+-- A draft has no tabs.
+--
 -- One session per player holds the claim id, never the claim table: every
 -- action re-reads the player's claim from the registry and re-checks that it
 -- is still placed, still the player's own and still within reach.
@@ -139,12 +144,51 @@ local function fuel_section(fs, claim, inv)
 	end
 end
 
+-- grug_home, when it offers travel from the stone (an optional dependency).
+local function travel_api()
+	local home = rawget(_G, "grug_home")
+	if home and type(home.travel_from_claim) == "function" and
+			type(home.known_waypoints) == "function" then
+		return home
+	end
+end
+
+local function tabs(selected)
+	return ("tabheader[0,0;stone_tab;Claim Stone,Waypoints;%d;false;false]"):format(selected)
+end
+
+-- The Waypoints tab: one Travel button per discovered waystone of the own
+-- network; the stone itself is not listed.
+local function waypoints_formspec(player, session, home)
+	local rows = home.known_waypoints(player)
+	local height = 2.6 + 0.7 * math.max(1, #rows)
+	local fs = {("formspec_version[4]size[10.75,%.2f]"):format(height), tabs(2),
+		"label[0.4,0.5;" .. ui.esc("Travel from your Claim Stone") .. "]"}
+	for index, row in ipairs(rows) do
+		local y = 0.6 + 0.7 * index
+		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, ui.esc(row.label))
+		fs[#fs + 1] = ("button[6.9,%.2f;3.45,0.6;go_%s;Travel]"):format(y - 0.3, row.id)
+	end
+	if #rows == 0 then
+		fs[#fs + 1] = "label[0.4,1.3;" .. ui.esc("No waystone discovered yet.") .. "]"
+	end
+	if session.message then
+		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(height - 1.35,
+			ui.text(session.message, session.message_color))
+	end
+	fs[#fs + 1] = ("button_exit[7.25,%.2f;3.1,0.8;close;Close]"):format(height - 1.0)
+	return table.concat(fs)
+end
+
 local function main_formspec(player, claim, session)
 	session.draft = grug_housing.is_draft(claim)
 	if session.draft then return draft_formspec(claim, session) end
+	local home = travel_api()
+	if home and session.tab == 2 then return waypoints_formspec(player, session, home) end
 	local name = player:get_player_name()
 	local inv = "detached:" .. inventory_name(name)
 	local fs = {"formspec_version[4]size[10.75,13]"}
+	if home then fs[#fs + 1] = tabs(1) end
 	fuel_section(fs, claim, inv)
 
 	local rows = access_rows(claim)
@@ -381,6 +425,14 @@ local function pick_up(player, session)
 	show(player, session)
 end
 
+-- The waystone id of a Travel button on the Waypoints tab, if one was pressed.
+local function travel_target(fields)
+	for field in pairs(fields) do
+		local id = field:match("^go_(.+)$")
+		if id then return id end
+	end
+end
+
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == NOTICE then return true end
 	if formname ~= FORMNAME then
@@ -440,6 +492,17 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 				say(session, message or "Your Claim Stone is now your home.")
 			end
 		end
+	elseif fields.stone_tab then
+		session.tab = fields.stone_tab == "2" and 2 or 1
+		say(session, nil)
+	elseif session.tab == 2 and travel_target(fields) and travel_api() then
+		local ok, message = travel_api().travel_from_claim(player, travel_target(fields))
+		if ok then
+			sessions[name] = nil
+			core.close_formspec(name, FORMNAME)
+			return true
+		end
+		say(session, message or "You cannot travel now.", ui.RED)
 	elseif fields.quit then
 		sessions[name] = nil
 		return true

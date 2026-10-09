@@ -52,7 +52,7 @@ function grug_home.claim_waypoint(player)
  local claim = placed_claim(player:get_player_name())
  if not claim or (housing.is_draft and housing.is_draft(claim)) then return nil end
  local row = claim_row(player, claim)
- if row then row.label = "Your Claim Stone" end
+ if row then row.label, row.texture = "Your Claim Stone", housing.STONE_TEXTURE end
  return row
 end
 

@@ -244,6 +244,8 @@ Once activated:
 - The permission list (§6.1).
 - "Set as home": makes the claim the travel-home target (§8).
 - Pick-up (§5).
+- A second tab, **Waypoints** (Round 45 PT9): the owner's discovered
+  waystones, each with Travel (§8).
 
 ### 7.2 Housing Steward
 
@@ -290,7 +292,8 @@ minute); only the draft form (§7.1) counts seconds.
 - Death always respawns at the bound innkeeper, even when the Claim Stone is
   the travel home (ruling 25).
 - Independently of the travel home, the activated stone is a waypoint, "Your
-  Claim Stone", in every waystone's list (Round 45 PT9,
+  Claim Stone", in every waystone's list, and its owner travels from it to
+  the discovered waystones through the form's Waypoints tab (Round 45 PT9,
   [world.md](world.md) §6).
 
 ## 9. Relation to world protection

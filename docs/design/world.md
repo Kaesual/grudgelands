@@ -930,7 +930,11 @@ WP17).
   greyed "No claim stone". Travel there works like waystone travel (free, no
   cooldown, from a waystone) and lands in the stone's arrival cube
   ([housing.md](housing.md) §2); a blocked cube leaves the player in place
-  with a message. It is independent of the stone being the travel home.
+  with a message (no innkeeper fallback: the cube is protected against
+  placing and liquids). It works both ways: the stone form's **Waypoints**
+  tab lists the owner's discovered waystones, and the owner travels from the
+  stone (within the same reach) by the same rules. The stone itself is not
+  listed there. It is independent of the stone being the travel home.
 - **Travel** works **only while standing at a waystone** (within the same
   reach), waystone to waystone: instant, free, no cooldown, alive and out of
   combat. It runs through the innkeeper return's own path (`grug_home.travel`

@@ -75,4 +75,5 @@ Full rules: [housing.md](housing.md) §8.
   since Round 44).
 - Death always respawns at the bound innkeeper, never at the Claim Stone.
 - Independently, the activated stone is the waypoint "Your Claim Stone" in
-  every waystone's list (Round 45 PT9, [world.md](world.md) §6).
+  every waystone's list and an origin for travel to the discovered waystones
+  (Round 45 PT9, [world.md](world.md) §6).

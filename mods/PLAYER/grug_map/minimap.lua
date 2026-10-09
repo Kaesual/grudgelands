@@ -254,8 +254,10 @@ local function static_markers(player)
 	local result = {}
 	for _, marker in ipairs(atlas.collect_markers(player, PROVIDERS)) do
 		if SHOWN[marker.kind] then
+			-- A marker's own texture wins over its kind's (the Claim Stone
+			-- waypoint, Round 45 PT9).
 			local texture = marker.kind == "quest" and QUEST_TEXTURE[marker.status] or
-				KIND_TEXTURE[marker.kind] or marker.texture
+				marker.texture or KIND_TEXTURE[marker.kind]
 			if texture then
 				result[#result + 1] = {x = marker.position.x, z = marker.position.z,
 					texture = texture, kind = marker.kind}
