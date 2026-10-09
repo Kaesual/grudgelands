@@ -32,11 +32,13 @@
 --   grug_jobs.output_capacity(player, recipe)        -> crafts the output area holds
 --   grug_jobs.max_craftable(player, recipe[, counts]) -> n, by_ingredients, by_space
 --   grug_jobs.is_ingredient_stack(stack)             -> the metadata rule
---   grug_jobs.station_nearby(player, station)        -> bool
+--   grug_jobs.station_nearby(player, station)        -> bool, nearest pos
 --   grug_jobs.take_all(player)                       -> moved, left
+--   grug_jobs.register_on_job_start(fn(player, job, station_pos))
 --   grug_jobs.register_on_job_end(fn(player, job, outcome, source))
 --   grug_jobs.register_job_kind(kind, {finish = fn(player, job) -> stacks, label})
---   grug_jobs.begin_job(player, job) -> job copy | nil, reason (a job runs),
+--   grug_jobs.begin_job(player, job[, station_pos]) -> job copy | nil, reason
+--     (a job runs),
 --   grug_jobs.take_ingredients(player, ingredients, quantity) (the parts
 --     start_job uses, for EU's kinds)
 
@@ -321,7 +323,8 @@ end)
 
 --
 -- Stations (spec §2.27, §4.7): a recipe's station kind within 4 nodes,
--- checked once at the start.
+-- checked once at the start. The second result is the nearest such node, the
+-- station the job starts at (its sound plays there, station_sounds.lua).
 --
 
 local station_names = {}
@@ -335,18 +338,33 @@ function grug_jobs.station_nearby(player, station)
 		station_names[station] = names
 	end
 	if #names == 0 then return false end
-	local pos = vector.round(player:get_pos())
+	local at = player:get_pos()
+	local pos = vector.round(at)
 	local found = core.find_nodes_in_area(
 		vector.offset(pos, -STATION_RADIUS, -STATION_RADIUS, -STATION_RADIUS),
 		vector.offset(pos, STATION_RADIUS, STATION_RADIUS, STATION_RADIUS), names)
-	return found ~= nil and #found > 0
+	if not found or #found == 0 then return false end
+	local nearest, best
+	for index = 1, #found do
+		local p = found[index]
+		local dx, dy, dz = p.x - at.x, p.y - at.y, p.z - at.z
+		local d2 = dx * dx + dy * dy + dz * dz
+		if not best or d2 < best then nearest, best = p, d2 end
+	end
+	return true, nearest
 end
 
 --
 -- Kinds, timer, completion.
 --
 
-local end_callbacks = {}
+local start_callbacks, end_callbacks = {}, {}
+-- fn(player, job, station_pos) after a job started (begin_job); station_pos
+-- is the station the start found nearby, nil for a job without a station.
+function grug_jobs.register_on_job_start(fn)
+	start_callbacks[#start_callbacks + 1] = fn
+end
+
 -- fn(player, job, outcome, source) after a job ended: outcome "completed" or
 -- "cancelled"; source "timer", "join", "open" (the Crafting tab is being
 -- built), "start" or "stop". UI resends an open Crafting page from here.
@@ -444,10 +462,11 @@ schedule = function(player, job)
 end
 
 -- Stores a job whose inputs are already taken: `job.duration` seconds from
--- now. Returns the job copy, or nil and the reason while a job runs (a due
--- one completes first): the caller still holds the inputs it took and gives
--- them back. EU's kinds start through this.
-function grug_jobs.begin_job(player, job)
+-- now, and runs the start callbacks with `station_pos` (station_nearby's
+-- node, not stored). Returns the job copy, or nil and the reason while a job
+-- runs (a due one completes first): the caller still holds the inputs it took
+-- and gives them back. EU's kinds start through this.
+function grug_jobs.begin_job(player, job, station_pos)
 	grug_jobs.update_job(player, "start")
 	if read_job(player) then return nil, "A crafting job is already running." end
 	local now = grug_jobs.now()
@@ -458,6 +477,9 @@ function grug_jobs.begin_job(player, job)
 	job.duration = nil
 	write_job(player, job)
 	schedule(player, job)
+	for index = 1, #start_callbacks do
+		start_callbacks[index](player, copy_job(job), station_pos)
+	end
 	return copy_job(job)
 end
 
@@ -483,10 +505,15 @@ function grug_jobs.start_job(player, recipe_id, quantity)
 	end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
 	if not allowed then return refused(reason, "profession") end
-	if recipe.station and not grug_jobs.station_nearby(player, recipe.station) then
-		local info = grug_jobs.station_info(recipe.station)
-		return refused("Requires: " .. (info and info.display_name or recipe.station) ..
-			" nearby", "station")
+	local station_pos
+	if recipe.station then
+		local nearby
+		nearby, station_pos = grug_jobs.station_nearby(player, recipe.station)
+		if not nearby then
+			local info = grug_jobs.station_info(recipe.station)
+			return refused("Requires: " .. (info and info.display_name or recipe.station) ..
+				" nearby", "station")
+		end
 	end
 	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe)
 	if by_space < 1 then return refused("No space in the output area", "space", 0) end
@@ -505,7 +532,8 @@ function grug_jobs.start_job(player, recipe_id, quantity)
 		return refused("Not enough ingredients", "ingredients", 0)
 	end
 	return true, nil, grug_jobs.begin_job(player, {kind = "recipe", recipe = recipe.id,
-		quantity = quantity, consumed = consumed, duration = quantity * recipe.time})
+		quantity = quantity, consumed = consumed, duration = quantity * recipe.time},
+		station_pos)
 end
 
 -- The stacks a cancel hands back: every consumed stack and the target.

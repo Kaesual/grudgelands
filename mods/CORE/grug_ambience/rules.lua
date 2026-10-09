@@ -312,7 +312,7 @@ function R.music_set_on(m, on)
 end
 
 -- ---------------------------------------------------------------------------
--- Forge and fire emitters
+-- Emitters (fire and flowing water)
 -- ---------------------------------------------------------------------------
 
 -- The emitters to play near `pos`. `found` is find_nodes_in_area's grouped

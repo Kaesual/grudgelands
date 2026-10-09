@@ -205,20 +205,31 @@ tools](#player-meta-read-by-external-tools).
   `crafts_from_counts(counts, recipe)`, `output_capacity(player, recipe)`,
   `max_craftable(player, recipe[, counts])` → n, by ingredients, by space;
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
-  within 4 nodes); `take_all(player)` → moved, left. The output area
+  within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area
   `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at
   every join; a join handler that runs earlier, such as lane MS's 0.45.0
   step, calls it before it uses the list).
   `register_on_job_end(fn(player, job, outcome, source))` (outcome
   `completed`/`cancelled`; source `timer`, `join`, `open`, `start`, `stop`)
-  is where UI resends an open Crafting page; `register_job_kind(kind,
-  {finish})`, `begin_job` (nil and the reason while a job runs: the caller
-  gives back what it took) and `take_ingredients` are the parts EU's kinds
+  is where UI resends an open Crafting page;
+  `register_on_job_start(fn(player, job, station_pos))` runs after a job
+  started (`station_pos` the station the start found, nil without one);
+  `register_job_kind(kind, {finish})`, `begin_job(player, job[,
+  station_pos])` (nil and the reason while a job runs: the caller gives
+  back what it took) and `take_ingredients` are the parts EU's kinds
   use. A job is cleared before its kind's `finish` runs, so a hook inside it
   cannot complete it twice; a job without its recipe, or of an unknown kind,
   returns its ingredients and target. A finished recipe job makes its
   stacks (gear through `grug_items.crafted_output`), calls `award_progress`
   once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
+- **Station sounds** (`station_sounds.lua`, Round 45 PT8): a start hook
+  plays the station's sound at the station a job (recipe, enchant or
+  upgrade) starts at: `STATION_SOUNDS` (forge `craft_smithy`, brewing stand
+  `craft_alchemy`, each with its file's length); the other stations are
+  silent. `play_station_sound(pos)` keeps one entry per station node (end
+  time, pending start of a queued sound): a start while the sound plays queues it once, never
+  more (one `core.after`). A recipe made at such a station has no craft cue
+  at its end (`state.lua`'s `craft_sound`). Fixture `tools/r45_pt8`.
 - **Enchants and upgrades as jobs** (`operation_jobs.lua`,
   `operation_box.lua`, Round 45 lane EU): the target slot
   `grug_craft_target` (`TARGET_LIST`, one slot made at join; the allow
@@ -1840,8 +1851,8 @@ tools](#player-meta-read-by-external-tools).
     `init.lua` the runtime: an eight-slot pass of 0.25 s per player
     (`states[name].slot`, assigned on join), one `get_node_raw` probe for
     under water (33 reads while a sea or stream bed exists), one
-    `find_nodes_in_area` above ground for the forge, fire and flowing-water
-    loops (node names from `D.emitter_nodes` plus every flowing liquid whose
+    `find_nodes_in_area` above ground for the fire and flowing-water
+    loops (none at forges and anvils since Round 45 PT8) (node names from `D.emitter_nodes` plus every flowing liquid whose
     source is default or river water, filled on `register_on_mods_loaded`).
     Only names with a shipped file play (`available` from the `sounds/`
     listing, the capital rotations filtered by `music/`), so data may name a file that does

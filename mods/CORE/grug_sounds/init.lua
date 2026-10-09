@@ -130,9 +130,13 @@ local EVENTS = {
 	profession_learned = {name = "grug_sounds_profession_learned", gain = 0.7, personal = true},
 	profession_tier = {name = "grug_sounds_profession_tier", gain = 0.8, personal = true},
 	craft = {name = "grug_sounds_craft", gain = 0.5, distance = 10, pitch = 0.05},
-	craft_smithy = {name = "grug_sounds_craft_smithy", gain = 0.6, distance = 16},
+	-- The forge's and the brewing stand's sounds at a job's start, at the
+	-- station (Round 45 PT8, grug_jobs/station_sounds.lua, which limits them
+	-- per station): no interval, as every position shares the "pos" key and
+	-- two stations starting in one step must not drop each other.
+	craft_smithy = {name = "grug_sounds_craft_smithy", gain = 0.6, distance = 16, interval = 0},
 	craft_cooking = {name = "grug_sounds_craft_cooking", gain = 0.5, distance = 10},
-	craft_alchemy = {name = "grug_sounds_craft_alchemy", gain = 0.5, distance = 10},
+	craft_alchemy = {name = "grug_sounds_craft_alchemy", gain = 0.5, distance = 10, interval = 0},
 	upgrade = {name = "grug_sounds_upgrade", gain = 0.6, distance = 16},
 	crown = {name = "grug_sounds_crown", gain = 0.7, personal = true},
 	repair = {name = "grug_sounds_repair", gain = 0.6, distance = 16},

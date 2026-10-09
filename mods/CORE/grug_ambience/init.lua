@@ -10,10 +10,10 @@
 --   * sparse calls by mood and time of day, a per-player timer, placed at a
 --     point around the player (Round 34: distant thunder on the dragon
 --     islands only);
---   * loops at forges and anvils, hearths and camp fires, and flowing water
---     (never at a water source) near the player: one find_nodes_in_area per
---     pass above ground, the nearest two of each kind, positional, to that
---     player only;
+--   * loops at hearths and camp fires and flowing water (never at a water
+--     source) near the player: one find_nodes_in_area per pass above ground,
+--     the nearest two of each kind, positional, to that player only (Round
+--     45 PT8: none at forges and anvils);
 --   * music only in the six capitals (Round 35, round35-plan.md §2.8): each
 --     capital's rotation plays from entering the city (grug_map's
 --     location.capital_of, with a few nodes of hysteresis at the border) with
