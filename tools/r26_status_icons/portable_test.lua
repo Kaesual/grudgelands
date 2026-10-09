@@ -504,6 +504,7 @@ sfinv = {
 	set_player_inventory_formspec = function() resent = resent + 1 end,
 }
 grug_inventory = {equipment_slots = {}, BOX_COLOR = "#00000040", -- ui.lua's
+	VIEW_GEOMETRY = {top = 10.3}, -- the short view's box top (ui.lua)
 	selected_button_style = function(field, selected)
 		return "style[" .. field .. ";" .. tostring(selected) .. "]"
 	end,
@@ -528,7 +529,7 @@ local page = character:get(alice, context)
 check(page:find("No active effects", 1, true) ~= nil, "effects empty state")
 check(page:find("style[grug_character_effects;true]", 1, true) ~= nil,
 	"effects button styled selected")
-check(page:find("button[1.25,0.35;1.20,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
+check(page:find("button[0.35,0.35;1.20,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
 	"stats mode button")
 
 -- Several effects: icon with frame, name, time, detail.

@@ -11,7 +11,8 @@
 --      style per node state, a node click buys a rank;
 --   3. one tab: grug_classes:talents is "Talents & Skills", the old Skills
 --      page is gone; the catalog row (abilities only, no mounts) under the
---      tree text and above the short inventory, on the hotbar's columns;
+--      tree text and above the short inventory, on the hotbar's columns, in
+--      a "Skills" box like the Hotbar box (Round 45 playtest);
 --   4. the hotbar-only rule for each target list (hotbar, main[9..], every
 --      bag, the potion belt, craft, equipment, the quiver), swaps, puts from
 --      the catalog, one copy; mount items keep main and bags; and, on a
@@ -216,10 +217,28 @@ scout.mount_tier = 1
 form = H.render(scout, "grug_classes:talents")
 local list_x, list_y = form:match("list%[detached:grug_skills_scout;catalog;([%d.]+),([%d.]+);8,1;0%]")
 check(list_x ~= nil, "the catalog list is on the page")
-near(tonumber(list_x), grug_inventory.VIEW_GEOMETRY.x, "on the hotbar's columns")
+check(math.abs(tonumber(list_x) - grug_inventory.VIEW_GEOMETRY.x) < 0.001,
+	"on the hotbar's columns")
 local text_y, text_h = form:match("textarea%[0.25,([%d.]+);13.00,([%d.]+);")
-check(tonumber(list_y) >= tonumber(text_y) + tonumber(text_h), "under the tree's text")
-check(tonumber(list_y) + 1 <= 9.5, "above the short inventory (9.5)")
+local hint_y = tonumber(form:match("label%[[%d.]+,([%d.]+);Drag skills onto the hotbar"))
+check(hint_y and hint_y - 0.25 >= tonumber(text_y) + tonumber(text_h), "under the tree's text")
+-- The Skills box: the Hotbar box's place across, its colour and label style,
+-- a gap above the short view's Inventory box.
+local L = grug_inventory.LAYOUT
+local bx, by, bw, bh, color, lx, ly = form:match(
+	"box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^%]]+)%]label%[([%d.]+),([%d.]+);Skills%]")
+bx, by, bw, bh, lx, ly = tonumber(bx), tonumber(by), tonumber(bw), tonumber(bh),
+	tonumber(lx), tonumber(ly)
+if check(bx ~= nil, "the catalog in a Skills box, labelled inside") then
+	check(math.abs(bx - L.box_x) < 0.001 and math.abs(bw - L.box_w) < 0.001 and
+		math.abs(bh - L.slot_box_h) < 0.001, "the Skills box as wide and high as the Hotbar box")
+	eq(color, grug_inventory.BOX_COLOR, "the Skills box colour")
+	check(math.abs(lx - tonumber(list_x)) < 0.001 and ly > by and ly < tonumber(list_y),
+		"its label top left above the slots")
+	check(tonumber(list_y) > by and tonumber(list_y) + 1 < by + bh, "the slots inside the box")
+	check(math.abs(by + bh + L.gap - grug_inventory.VIEW_GEOMETRY.top) < 0.001,
+		"the box a gap above the short inventory's box")
+end
 check(form:find("list[detached:grug_skills_scout", 1, true) >
 	form:find("real_coordinates[false]", 1, true), "drawn after the view, in the page content")
 has(form, "list[current_player;main;0,0.000;8,3;8]", "the short inventory below")

@@ -35,8 +35,9 @@ axis (D2).
   only through explicit transactions: quest rewards, NPC purchases of
   sellable loot, NPC/player sales and player-to-player trade.
 - **Bag of Coins** (Round 34): the one way money leaves the balance as an
-  item, so players can give money to each other. **Withdraw** on the
-  Character page opens a dialog with gold, silver and copper fields; a whole
+  item, so players can give money to each other. **Withdraw** in the
+  Inventory tab's money row (the Character page until the Round 45
+  playtest) opens a dialog with gold, silver and copper fields; a whole
   amount from 1c up to the balance is taken and one Bag of Coins holding it
   is put into the first empty slot in the give order (`main[9..]`, the
   bags, the hotbar last; [inventory_equipment.md](inventory_equipment.md)

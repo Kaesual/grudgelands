@@ -356,11 +356,13 @@ grug_classes.talent_formspec_content = talent_content
 
 -- The skill catalog row under the tree (spec §3.4, Round 44 plan ruling 4):
 -- grug_skills, which depends on this mod, installs a function(player, y)
--- that returns its formspec part in real coordinates from y down (about 1.4
--- high, above the short inventory at 9.5); without it the page ends with
--- the tree and its text.
+-- that returns its formspec part in real coordinates from y down (its hint
+-- line and its box, CATALOG_H high); without it the page ends with the tree
+-- and its text. The row ends a gap above the short inventory view's box
+-- (grug_inventory.VIEW_GEOMETRY.top, read at build time: this mod does not
+-- depend on grug_inventory).
 grug_classes.skill_catalog_row = nil
-local CATALOG_Y = 7.6
+local CATALOG_H = 1.9
 
 local function refresh_open_page(player)
 	if sfinv.get_page(player) == PAGE_NAME then
@@ -432,9 +434,10 @@ sfinv.register_page(PAGE_NAME, {
 	title = "Talents & Skills",
 	get = function(self, player, context)
 		local catalog = grug_classes.skill_catalog_row
+		local catalog_y = grug_inventory.VIEW_GEOMETRY.top - 0.1 - CATALOG_H
 		return sfinv.make_formspec(player, context,
 			talent_content(player, context) ..
-				(catalog and catalog(player, CATALOG_Y) or ""),
+				(catalog and catalog(player, catalog_y) or ""),
 			"short")
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
