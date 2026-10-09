@@ -1,13 +1,14 @@
 -- Round 35 lane E portable test (night mobs leave at dawn, round35-plan.md
 -- §2.5). Loads the REAL grug_mobs/dawn.lua under small stubs, with the real
--- spawn clock (clock_now) and player-distance test (SR.players_clear) cut out
--- of spawn_regions.lua and the real day-phase edges of grug_core, and checks:
+-- spawn clock (clock_now) cut out of spawn_regions.lua and the real day-phase
+-- edges of grug_core, and checks:
 --   A. the clock: day exactly from DAY_PHASE_START to DAY_PHASE_END;
 --   B. a free region mob spawned for the night leaves by day, quietly (one
 --      smoke puff, one removal), and not before its one-second check;
 --   C. it stays at night, in combat (target, attack or runaway state,
---      engagement, evade run) and while a player is within 32 nodes, and
---      leaves on the next check once neither holds;
+--      engagement, evade run) and while a player is within 64 nodes on every
+--      axis (a cube, edge included; Round 45 playtest, was a 32-node sphere),
+--      and leaves on the next check once neither holds;
 --   D. never touched: a day mob, a mob without a spawn clock (underground,
 --      water, leaders, rares, summons), a camp member, an unknown tag, a boss,
 --      a rare, a tamed or owned mob, a camp post, an NPC;
@@ -32,8 +33,7 @@ end
 -- The real code cut out of the shipped files.
 local regions = read("mods/ENTITIES/grug_mobs/spawn_regions.lua")
 local clock_src = regions:match("\n(local function clock_now%(%).-\nend)\n")
-local clear_src = regions:match("\n(function SR%.players_clear%(.-\nend)\n")
-check(clock_src and clear_src, "clock_now and SR.players_clear found")
+check(clock_src, "clock_now found")
 local atmosphere = read("mods/CORE/grug_core/atmosphere.lua")
 grug_core = {
 	DAY_PHASE_START = tonumber(atmosphere:match("grug_core%.DAY_PHASE_START = ([%d%.]+)")),
@@ -46,10 +46,7 @@ core = {get_timeofday = function() return timeofday end}
 local SR = {}
 local cut = assert(loadstring(clock_src .. "\nreturn clock_now", "clock_now"))
 SR.clock_now = cut()
-local clear_env = setmetatable({SR = SR}, {__index = _G})
-local clear_chunk = assert(loadstring(clear_src, "players_clear"))
-setfenv(clear_chunk, clear_env)
-clear_chunk()
+SR.players_clear = function() error("dawn.lua must not use the spherical SR.players_clear") end
 
 local units = {
 	["z/rats"] = {tag = "z/rats"},
@@ -61,8 +58,8 @@ SR.players = function()
 	fetched = fetched + 1
 	return players
 end
-local function player_at(x)
-	return {get_pos = function() return {x = x, y = 0, z = 0} end}
+local function player_at(x, y, z)
+	return {get_pos = function() return {x = x, y = y or 0, z = z or 0} end}
 end
 
 local puffs, removed = 0, {}
@@ -107,7 +104,7 @@ local rat = night_mob()
 check(not run(rat, 0.75), "B not before the one-second check")
 check(run(rat, 0.25), "B leaves on the check")
 check(removed[rat] and puffs == 1 and grug_mobs.dawn_stats.left == 1, "B one puff, one removal")
-check(grug_mobs.DAWN_NEAR == 32, "B near distance 32")
+check(grug_mobs.DAWN_NEAR == 64, "B near distance 64")
 
 -- C. stays at night, in combat, with a player near; then leaves
 timeofday = 0.9
@@ -136,10 +133,16 @@ end
 players = {player_at(20)}
 rat = night_mob()
 check(not run(rat, 3), "C stays with a player at 20 nodes")
-players = {player_at(31.9)}
-check(not run(rat, 1), "C stays with a player at 31.9 nodes")
-players = {player_at(40), player_at(-33)}
-check(run(rat, 1), "C leaves once every player is beyond 32 nodes")
+players = {player_at(40)}
+check(not run(rat, 1), "C stays with a player at 40 nodes (beyond the old 32)")
+players = {player_at(64)}
+check(not run(rat, 1), "C stays with a player at 64 nodes (the edge counts)")
+players = {player_at(-64, 64, 64)}
+check(not run(rat, 1), "C stays with a player in the cube's corner (64 on every axis)")
+players = {player_at(0, -63.5, 0)}
+check(not run(rat, 1), "C stays with a player 63.5 nodes below")
+players = {player_at(64.1), player_at(0, 65, 0), player_at(10, 10, -70)}
+check(run(rat, 1), "C leaves once every player is beyond 64 nodes on some axis")
 
 players = {player_at(10)}
 rat = night_mob({attack = {}})
