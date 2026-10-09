@@ -91,6 +91,8 @@ function grug_jobs.unlearn(player, profession)
 	end
 	set_int(meta, META_LEVEL .. profession, 0)
 	set_int(meta, META_CRAFTS .. profession, 0)
+	-- A running job of this profession finishes without XP (lane JB).
+	if grug_jobs.forfeit_job_xp then grug_jobs.forfeit_job_xp(player, profession) end
 	local text = "Unlearned " .. definition.name .. "; its progression was lost."
 	message(player, text)
 	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
@@ -111,51 +113,49 @@ function grug_jobs.crafts_in_tier(player, profession)
 	return math.max(0, player:get_meta():get_int(META_CRAFTS .. profession))
 end
 
-local function record_craft(player, profession, tier)
-	if not grug_jobs.has(player, profession) then return false, 0 end
+-- `crafts` crafts of `tier` at once (a job, lane JB): each counts while the
+-- tier's threshold is not reached, so the XP is min(crafts, XP left in the
+-- tier) (spec §2.22); a saturated profession advances at the first counted
+-- craft once the character's level band allows it. Returns whether it
+-- advanced, the level and the XP gained.
+local function record_craft(player, profession, tier, crafts)
+	if not grug_jobs.has(player, profession) then return false, 0, 0 end
 	local current = grug_jobs.profession_level(player, profession)
 	local meta = player:get_meta()
 	if tier ~= current or current >= 6 then
-		return false, current
+		return false, current, 0
 	end
 	local threshold = grug_jobs.CRAFTS_TO_ADVANCE[current]
 	local count = math.min(threshold,
 		math.max(0, meta:get_int(META_CRAFTS .. profession)))
 	-- A capped threshold stays saturated. Entering the next character band does
-	-- not advance automatically; this next successful current-tier craft does.
+	-- not advance automatically; the next successful current-tier craft does.
+	local gained = math.min(math.max(1, crafts or 1), threshold - count)
+	count = count + gained
+	if gained > 0 then set_int(meta, META_CRAFTS .. profession, count) end
 	if count >= threshold and grug_jobs.character_tier(player) > current then
 		set_int(meta, META_LEVEL .. profession, current + 1)
 		set_int(meta, META_CRAFTS .. profession, 0)
 		message(player, grug_jobs.PROFESSIONS[profession].name ..
 			" advanced to tier " .. (current + 1) .. ".")
-		return true, current + 1
-	end
-	if count >= threshold then return false, current end
-	count = count + 1
-	set_int(meta, META_CRAFTS .. profession, count)
-	if count >= threshold and grug_jobs.character_tier(player) > current then
-		set_int(meta, META_LEVEL .. profession, current + 1)
-		set_int(meta, META_CRAFTS .. profession, 0)
-		message(player, grug_jobs.PROFESSIONS[profession].name ..
-			" advanced to tier " .. (current + 1) .. ".")
-		return true, current + 1
-	elseif count >= threshold then
+		return true, current + 1, gained
+	elseif count >= threshold and gained > 0 then
 		message(player, grug_jobs.PROFESSIONS[profession].name ..
 			" tier progress is ready; craft once more at character level " ..
 			(current * 10 + 1) .. " to advance.")
 	end
-	return false, current
+	return false, current, gained
 end
 
 -- Every counted craft also refreshes the Character page's Professions tab
 -- when that tab is the open view (Round 28 ruling 23); otherwise nothing.
-function grug_jobs.record_craft(player, profession, tier)
-	local advanced, level = record_craft(player, profession, tier)
+function grug_jobs.record_craft(player, profession, tier, crafts)
+	local advanced, level, gained = record_craft(player, profession, tier, crafts)
 	if advanced then grug_sounds.play("profession_tier", player) end
 	if grug_inventory.refresh_character_tab then
 		grug_inventory.refresh_character_tab(player, "professions")
 	end
-	return advanced, level
+	return advanced, level, gained
 end
 
 -- The one place a finished craft or station operation awards progress (Round
@@ -189,21 +189,31 @@ function grug_jobs.furnace_take_sound(stack)
 	return finished_dishes[ItemStack(stack):get_name()] and "craft_cooking" or nil
 end
 
--- fn(player, recipe) after every finished craft award_progress counts
--- (grug_achievements counts dishes and potions from it).
+-- fn(player, recipe, items) after every finished craft award_progress counts
+-- (grug_achievements counts dishes and potions from it): `items` is the
+-- number of items the craft or job made.
 function grug_jobs.register_on_award_progress(fn)
 	award_callbacks[#award_callbacks + 1] = fn
 end
 
-function grug_jobs.award_progress(player, recipe)
+-- One finished craft, or a finished job of `crafts` crafts (lane JB): the
+-- sound once, the XP of record_craft (none with `no_xp`: the profession was
+-- unlearned while the job ran), the callbacks with the items made. Returns
+-- whether the profession advanced, its level and the XP gained.
+function grug_jobs.award_progress(player, recipe, crafts, no_xp)
 	if type(recipe) ~= "table" then return false end
+	crafts = crafts or 1
 	grug_sounds.play(craft_sound(recipe), player)
 	if not recipe.progress then return false end
-	local advanced, level = grug_jobs.record_craft(player, recipe.profession, recipe.tier)
-	for index = 1, #award_callbacks do
-		award_callbacks[index](player, recipe)
+	local advanced, level, gained = false, nil, 0
+	if not no_xp then
+		advanced, level, gained = grug_jobs.record_craft(player, recipe.profession,
+			recipe.tier, crafts)
 	end
-	return advanced, level
+	for index = 1, #award_callbacks do
+		award_callbacks[index](player, recipe, crafts * (recipe.count or 1))
+	end
+	return advanced, level, gained
 end
 
 -- Whether the player's professions allow a recipe or station operation: a

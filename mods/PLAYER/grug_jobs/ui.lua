@@ -12,6 +12,8 @@ end
 
 sfinv.override_page("sfinv:crafting", {
 	get = function(self, player, context)
+		-- Opening the tab catches the crafting job up (jobs.lua).
+		grug_jobs.update_job(player, "open")
 		return sfinv.make_formspec(player, context,
 			grug_jobs.crafting_page_content(player), true)
 	end,

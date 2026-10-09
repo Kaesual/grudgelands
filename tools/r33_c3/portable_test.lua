@@ -261,12 +261,13 @@ check(R.has_cloak(book, meta_b, "honored_1"), "P the 50th guard earns Honored")
 pvp_stat(bert, "kills", 3)
 check(not R.has_cloak(book, meta_a, "honored_1"), "P anna is not honored")
 
--- J: counted crafts.
-for _ = 1, 24 do award(bert, {profession = "cooking", output = "grug_cooking:stew 2", progress = true}) end
+-- J: counted crafts (Round 45: the hook gets the items a craft or a whole
+-- crafting job made; without it the record's count).
+for _ = 1, 4 do award(bert, {profession = "cooking", output = "grug_cooking:stew", count = 2, progress = true}, 12) end
 check(not R.has_cloak(book, meta_b, "suppers_ready_1"), "J 48 dishes earn nothing")
-award(bert, {profession = "cooking", output = "grug_cooking:raw_stew_pot", progress = true})
-award(bert, {profession = "cooking", output = "grug_cooking:raw_stew_pot", progress = true})
-eq(R.count(meta_b, "craft:cooking"), 50, "J output counts add up")
+award(bert, {profession = "cooking", output = "grug_cooking:raw_stew_pot", count = 1, progress = true})
+award(bert, {profession = "cooking", output = "grug_cooking:raw_stew_pot", count = 1, progress = true}, 1)
+eq(R.count(meta_b, "craft:cooking"), 50, "J job item counts add up")
 check(R.has_cloak(book, meta_b, "suppers_ready_1"), "J 50 dishes: Supper's Ready")
 for _ = 1, 50 do award(bert, {profession = "alchemist", output = "grug_alchemy:mixture_x", progress = true}) end
 check(R.has_cloak(book, meta_b, "bottle_service_1"), "J 50 potions: Bottle Service")
