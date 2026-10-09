@@ -1,6 +1,6 @@
 # Profession station media
 
-Round 11 imports seven unchanged renamed textures from pinned VoxeLibre
+Round 11 imports three unchanged renamed textures from pinned VoxeLibre
 `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`,
 <https://github.com/VoxeLibre/VoxeLibre>. XSSheep / Pixel Perfection and
 VoxeLibre contributors; **CC BY-SA 4.0**, per upstream `LEGAL.md` texture section.
@@ -10,16 +10,33 @@ VoxeLibre contributors; **CC BY-SA 4.0**, per upstream `LEGAL.md` texture sectio
 | grug_jobs_anvil_top.png | mcl_anvils_anvil_top_damaged_0.png | unchanged copy; native facedir/top rotation |
 | grug_jobs_anvil_base.png | mcl_anvils_anvil_base.png | unchanged copy |
 | grug_jobs_anvil_side.png | mcl_anvils_anvil_side.png | unchanged copy |
-| grug_jobs_loom_top.png | loom_top.png | unchanged copy |
-| grug_jobs_loom_bottom.png | loom_bottom.png | unchanged copy |
-| grug_jobs_loom_side.png | loom_side.png | unchanged copy |
-| grug_jobs_loom_front.png | loom_front.png | unchanged copy |
 
-The goldsmith's top surface uses a native muted-gold texture modifier, retaining
-the dark metal base and side. Four anvil box coordinates follow the upstream
+They texture the forge's anvil. Its four box coordinates follow the upstream
 node geometry in `mods/ITEMS/mcl_anvils/init.lua:383-391`; no upstream falling,
-repair, enchantment, inventory or interaction code is imported. The loom's six
-face ordering follows `mods/ITEMS/mcl_loom/init.lua:8-12`.
+repair, enchantment, inventory or interaction code is imported.
+
+# Round 45 station tiles
+
+Original, AI-assisted pixel art and node-box designs by **GPT-6 Astra
+(Grudgelands)**, 2026-10-09, picked by the user from three proposals per
+station. Authored with **Python/Pillow**; no image-generation service,
+downloaded art or third-party source pixels. Sources and tool disclosure:
+`tools/r45_a2/designs.py` (geometry), `tools/r45_a2/generate.py` (16×16 pixel
+painting and the six-tile bake), `tools/r45_a2/render.py` (preview renderer);
+the record of the pick is `tools/r45_a2/README.md`. The project dedicates any
+rights it holds in these files to **CC0 1.0 Universal (CC0-1.0)**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). `<face>` is each of
+`top`, `bottom`, `right`, `left`, `back`, `front`.
+
+| Files | Author | Source / modifications | License |
+| --- | --- | --- | --- |
+| `textures/grug_jobs_tanning_rack_<face>.png` (6) | GPT-6 Astra (Grudgelands) | Original AI-assisted art; proposal B, stretching trestle | CC0-1.0 |
+| `textures/grug_jobs_tailor_bench_<face>.png` (6) | GPT-6 Astra (Grudgelands) | Original AI-assisted art; proposal B, pattern table | CC0-1.0 |
+| `textures/grug_jobs_carving_bench_<face>.png` (6) | GPT-6 Astra (Grudgelands) | Original AI-assisted art; proposal B, sculptor's stump | CC0-1.0 |
+| `textures/grug_jobs_jewellers_bench_<face>.png` (6) | GPT-6 Astra (Grudgelands) | Original AI-assisted art; proposal A, gem setter's bench | CC0-1.0 |
+
+The brewing stand's tiles from the same package are listed in
+`mods/ITEMS/grug_brewing/LICENSE-media.md`.
 
 # Crafting job progress bar
 

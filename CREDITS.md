@@ -136,8 +136,8 @@ our changes. Derivatives keep their source's licence.
   armour trims by **Aeonix_Aeon**, CC BY 4.0; the basalt
   texture by **Lifora**, CC BY-SA 3.0; the bamboo shoot by **Nicu**, CC BY-SA.
   Used in `grug_mobs`, `grug_mounts`, `grug_gear`, `grug_visuals` (armour),
-  `grug_materials`, `grug_jobs`, `grug_brewing`, `grug_fishing`,
-  `grug_abilities`, `grug_projectiles`, `grug_cooking` and `grug_farming`.
+  `grug_materials`, `grug_jobs`, `grug_fishing`, `grug_abilities`,
+  `grug_projectiles`, `grug_cooking` and `grug_farming`.
 - **Lord of the Test** (<https://github.com/minetest-LOTR/Lord-of-the-Test>) —
   CC BY-SA 3.0: humanoid skins by **Amaz** and **fishyWET** (`grug_mobs`),
   cloth armour by **Amaz** and **Flipsels**, bows and shields (`grug_gear`),

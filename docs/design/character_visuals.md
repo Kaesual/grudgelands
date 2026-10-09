@@ -460,9 +460,11 @@ arc/string crossing and the long arc stands upright facing forward, rather than
 using the diagonal tool convention's lower-left grip.
 
 Use individually licensed and visually inspected pinned-reference media for
-seed silhouettes, hoes, the Tailor loom and the shared smith anvil. The
-Goldsmith uses a muted gold anvil head on a dark base; Woodcarver uses an upright
-bench. Cloth/leather bag variants may share a readable shape with a material
+seed silhouettes, hoes and the shared smith anvil. Since Round 45 the tanning
+rack, tailor bench, carving bench, jeweller's bench and brewing stand are
+original one-node designs the user picked from three proposals each
+(`tools/r45_a2/README.md`), and each trinket identity has its own jewellery
+icon per tier (`tools/r45_a1/README.md`). Cloth/leather bag variants may share a readable shape with a material
 color distinction. Shields, books and bows have representative inventory art
 (the quiver art is the Scout quiver slot's ghost image); never use an
 unwrapped 3D-model texture as an item icon.
