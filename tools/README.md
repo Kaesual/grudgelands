@@ -481,7 +481,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   protocol client), the tool with the undeclared test steps of `steps.py`
   (`tool_run.py`, the tool's Python hook) and the game's test hook naming the
   same steps (`grug_test_migrations.lua`; the declared steps run with them
-  and the guard names them, and when the last declared step is the game's
+  and the guard names them, their own markers left out of the test steps'
+  marker checks, and when the last declared step is the game's
   own version the compatible-move boots stage a game.conf one patch version
   above it): offline writes, world and
   character online work in step order, the start guard's refusals and record,
@@ -599,7 +600,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_probe_r44_ms` and lists its registrations (the step's frozen names
   are checked against them), this game refuses the world, the shipped tool
   (`--check`, migrate, `--check`) runs in the container, and this game boots
-  and both characters join again; a PASS/FAIL table.
+  and both characters join again; a PASS/FAIL table. The exact checks of the
+  step read a copy migrated by 0.44.0 alone (the tool in-process, pinned to
+  the 0.44.0 checkout), since the shipped run also runs the later declared
+  steps (Round 45).
 - **Round 45** (`r45_<lane>`): `r45_il` the item level ladder
   (`portable_test.lua`, the real `grug_gear` with its trinkets,
   `grug_quality` and grug_core's level gate under a stub `core`): the
@@ -668,3 +672,23 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   and Max to the cap, the profession-tier rule, the cost per level, the
   warning's two-step, "Already at the cap", no XP; the boxes' geometry and
   bytes against the recipe box.
+  `r45_ms` the test of the migration step 0.45.0 (mixtures, the craft grid,
+  the item level pin; [upgrade contract](../docs/technical/upgrade-contract.md)
+  §5.8): `run.sh [EVIDENCE_DIR]` (default `evidence/`; one queue slot, about
+  3 minutes) runs `test_step.py` (Python unittest on the Round 43 MT world,
+  the tool pinned to the 0.45.0 checkout: the move order, leftovers, size 0,
+  the pin only without an item level, the tables) in IT's runner image, then
+  `e2e.py`, which reuses `r43_it/it.py` and `client.py`: the 0.44.0 game (a
+  `git archive` of `c913dbbe`) builds three characters with the probe
+  `grug_probe_r45_ms` and lists its registrations (the step's frozen gear
+  table, bag sizes and mixture prefix are checked against them), this game
+  refuses the world, the shipped tool (`--check`, migrate, `--check`) runs in
+  the container and every slot of every list is compared with what the step
+  must leave, and this game boots and two characters join (craft leftovers
+  through the give helper, the output area and the feet; old item levels,
+  requirements, tooltips, armour and first-tier damage; the offline
+  character keeps its marker); a PASS/FAIL table. `portable_test.lua` is the
+  join part's fixture (the real `grug_gear`, `grug_quality` and
+  `grug_core/migrations.lua` under a stub engine): the leftover order, a
+  failing drop without copies, the capabilities refresh, the tooltips, a
+  rerun; it stays in `run_fixtures.sh` for good.

@@ -66,7 +66,7 @@ mobs_redo fork publishes `mobs`.
 | `grug_trees` | The race trees Silverwood and Gravewood | `silverwood_replacements` | [biomes_mobs.md](../design/biomes_mobs.md) |
 | `grug_gathering` | The closed gathering catalogue and harvest authorization | `register_herb_authorizer` | [professions.md](../design/professions.md) |
 | `grug_gear` | Vendor bracket catalogues, weapons, armour and trinket items, tooltips' base text, enchant colours, usage permissions | `initialize_weapon_tooltip`, `describe_stack_base`, `usable_by`, `BRACKETS` | [items_crafting.md](../design/items_crafting.md), [item_tiers.md](../design/item_tiers.md) |
-| `grug_quality` | Per-stack quality, enchantments and their values, found affixes, descriptions, drop chances, the crown (global `grug_items`) | `grug_items.enchant_value`, `crown_item`, `crown_preview`, `regenerate_description`, `POOLS` | [item_tiers.md](../design/item_tiers.md) |
+| `grug_quality` | Per-stack quality, enchantments and their values, found affixes, descriptions, drop chances, the crown (global `grug_items`) | `grug_items.enchant_value`, `crown_item`, `crown_preview`, `regenerate_description`, `refresh_capabilities`, `POOLS` | [item_tiers.md](../design/item_tiers.md) |
 | `grug_repair` | Durability and wear, broken gear, city repair services | `refresh_appearance` | [durability_repair.md](../design/durability_repair.md) |
 | `grug_professions` | Weaponsmith, Armorsmith, Leatherworker and Tailor improvement catalogues, enchant data, upgrades | `register_enchants`, `register_upgrades` | [professions.md](../design/professions.md), [item_tiers.md](../design/item_tiers.md) |
 | `grug_artisans` | Woodcarver and Goldsmith material, gear and enchant catalogues | none | [professions.md](../design/professions.md) |
