@@ -220,8 +220,8 @@ check(list_x ~= nil, "the catalog list is on the page")
 check(math.abs(tonumber(list_x) - grug_inventory.VIEW_GEOMETRY.x) < 0.001,
 	"on the hotbar's columns")
 local text_y, text_h = form:match("textarea%[0.25,([%d.]+);13.00,([%d.]+);")
-local hint_y = tonumber(form:match("label%[[%d.]+,([%d.]+);Drag skills onto the hotbar"))
-check(hint_y and hint_y - 0.25 >= tonumber(text_y) + tonumber(text_h), "under the tree's text")
+local hint_x, hint_y = form:match("label%[([%d.]+),([%d.]+);Drag skills onto the hotbar")
+hint_x, hint_y = tonumber(hint_x), tonumber(hint_y)
 -- The Skills box: the Hotbar box's place across, its colour and label style,
 -- a gap above the short view's Inventory box.
 local L = grug_inventory.LAYOUT
@@ -238,6 +238,11 @@ if check(bx ~= nil, "the catalog in a Skills box, labelled inside") then
 	check(tonumber(list_y) > by and tonumber(list_y) + 1 < by + bh, "the slots inside the box")
 	check(math.abs(by + bh + L.gap - grug_inventory.VIEW_GEOMETRY.top) < 0.001,
 		"the box a gap above the short inventory's box")
+	check(by >= tonumber(text_y) + tonumber(text_h), "under the tree's text")
+	-- The hint beside the label, in the label's strip (Round 45 PT2
+	-- follow-up: seven rows leave no room for a line of its own).
+	check(hint_x and hint_x > lx and math.abs(hint_y - ly) < 0.001,
+		"the hint beside the Skills label")
 end
 check(form:find("list[detached:grug_skills_scout", 1, true) >
 	form:find("real_coordinates[false]", 1, true), "drawn after the view, in the page content")

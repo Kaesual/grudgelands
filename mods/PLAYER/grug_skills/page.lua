@@ -106,21 +106,23 @@ local function create(player)
 	rebuild(player)
 end
 
--- The row: a hint, then the catalog on the hotbar's columns in a "Skills"
--- box like the Hotbar box (grug_inventory.LAYOUT). `y` is the hint's top, in
--- the page's real coordinates; the row is 1.9 high.
+-- The row: the catalog on the hotbar's columns in a "Skills" box like the
+-- Hotbar box (grug_inventory.LAYOUT), the hint beside the box's label. `y`
+-- is the box's top, in the page's real coordinates; the row is the Hotbar
+-- box's height (1.5).
+local HINT_DX = 1.0 -- the hint starts this far right of the "Skills" label
 local function catalog_row(player, y)
 	grug_skills.guard_detached()
 	fill(player)
 	local layout = grug_inventory.LAYOUT
 	local location = "detached:" .. core.formspec_escape(inv_name(player:get_player_name()))
-	local box_y = y + 0.4
-	return ("label[%.3f,%.2f;%s]"):format(layout.x, y + 0.15, core.formspec_escape(
-			"Drag skills onto the hotbar. Drag one back here to remove it.")) ..
-		grug_inventory.area_box(layout.box_x, box_y, layout.box_w,
+	return grug_inventory.area_box(layout.box_x, y, layout.box_w,
 			layout.slot_box_h, "Skills") ..
+		("label[%.3f,%.3f;%s]"):format(layout.x + HINT_DX, y + layout.label_h / 2,
+			core.formspec_escape("Drag skills onto the hotbar. Drag one back here " ..
+				"to remove it.")) ..
 		("list[%s;catalog;%.3f,%.3f;8,1;0]"):format(location, layout.x,
-			box_y + layout.label_h)
+			y + layout.label_h)
 end
 
 grug_skills.catalog_row = catalog_row

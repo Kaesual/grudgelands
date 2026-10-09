@@ -529,7 +529,8 @@ local function geometry_ok(fs, label)
 	local ok = true
 	for _, r in ipairs(rects(part)) do
 		local right, bottom = r.x + r.w, r.y + r.h
-		if r.x < 0 or r.y < 0 or right > 13.5 + 1e-6 or bottom > 9.3 + 1e-6 then
+		if r.x < 0 or r.y < 0 or right > 13.5 + 1e-6 or
+				bottom > grug_inventory.VIEW_GEOMETRY.top - 0.1 + 0.01 then
 			ok = check(false, ("%s: %s at %.2f,%.2f+%.2f,%.2f leaves the page area"):format(
 				label, r.name, r.x, r.y, r.w, r.h))
 		elseif r.y >= 0.95 then
@@ -781,7 +782,7 @@ click(cook, {[FIELDS.area .. "2"] = "Cooking"})
 click(cook, {[FIELDS.row .. "1"] = ""})
 fs = cook.formspec
 eq(st_of(cook).selected, stew.id, "Q a row click chooses the recipe")
-has(fs, "box[0.2,2.35;5,0.56;#8a682f80]", "Q the chosen row is highlighted")
+has(fs, "box[0.2,2.35;5,0.54;#8a682f80]", "Q the chosen row is highlighted")
 has(fs, "item_image[5.6,1.15;0.9,0.9;t:stew]", "Q the output's icon")
 has(fs, "Cooking · Tier 1", "Q the area and tier")
 has(fs, "label[5.6,2.35;Ingredients (have/need)]", "Q the ingredients heading")
@@ -1013,8 +1014,10 @@ lacks(novice.formspec, "experience point", "S no XP hint for a tier above the pr
 -- The crafting box's own part of a build.
 local function box_part(fs)
 	local part = content(fs)
-	local from = part:find("box[5.4,0.95;4.8,8.25;", 1, true)
-	local to = part:find("box[10.4,0.95;2.9,8.25;", 1, true)
+	-- The boxes end a gap above the short view (Round 45 PT2 follow-up).
+	local h = grug_jobs._fs_number(grug_jobs.CRAFT_BOX.h)
+	local from = part:find("box[5.4,0.95;4.8," .. h .. ";", 1, true)
+	local to = part:find("box[10.4,0.95;2.9," .. h .. ";", 1, true)
 	return from and to and part:sub(from, to - 1) or ""
 end
 -- The y of the first label in `part` whose text starts with `text`.
@@ -1094,7 +1097,10 @@ do
 		"D bottom: the quantity row below the middle's notes")
 	check(quantity_y and button_y and quantity_y + 0.6 <= button_y,
 		"D ... and Craft now below the quantity row")
-	eq(button_y, 8.4, "D Craft now at the box's bottom")
+	-- 0.1 above the box's bottom (Round 45 PT2 follow-up: the box ends a gap
+	-- above the short view).
+	eq(button_y, tonumber(grug_jobs._fs_number(grug_jobs.CRAFT_BOX.y +
+		grug_jobs.CRAFT_BOX.h - 0.75)), "D Craft now at the box's bottom")
 	geometry_ok(fs, "D a raw dish")
 	print(("bytes: Crafting tab, a raw dish chosen (description): content %d, page %d"):format(
 		#content(fs), #fs))
@@ -1104,7 +1110,7 @@ do
 	part = box_part(chef.formspec)
 	eq(description_box(part), nil, "D no description when the tooltip is only the name")
 	has(part, "label[5.6,2.35;Ingredients (have/need)]", "D ... the ingredients move up")
-	has(part, "field[6.75,7.65;", "D the quantity row stays above the button")
+	has(part, "field[6.75,7.54;", "D the quantity row stays above the button")
 	-- Gear: the description the job's crafted_output builds, the name line
 	-- dropped; no quantity row.
 	local real_crafted = grug_items.crafted_output
@@ -1175,7 +1181,7 @@ open(reader)
 click(reader, {[FIELDS.row .. "1"] = ""})
 eq(st_of(reader).selected, long.id, "the long-named recipe chosen")
 fs = reader.formspec
-has(fs, "label[0.9,2.63;A Very Long Decorated..]", "the long name clipped in the list")
+has(fs, "label[0.9,2.62;A Very Long Decorated..]", "the long name clipped in the list")
 has(fs, "tooltip[grug_craft_row1;A Very Long Decorated Ceremonial Bookshelf of Oak]",
 	"... in full as the row's tooltip")
 lacks(fs, "tooltip[grug_craft_row2;", "no tooltip for a name that fits")

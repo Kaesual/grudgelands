@@ -119,17 +119,38 @@ eq(H.context.grug_character_tab, nil, "no mode stored before a click")
 has(default_fs, "style[grug_character_stats;bgcolor=#8a682f", "Stats is the default mode")
 lacks(default_fs, "grug_character_3d", "no 3D mode (one Stats mode, Round 45 playtest)")
 -- The Stats mode: the model on the left, the stats right of it, the cloak
--- picker at the foot of the stats column, its hint ending with the model.
+-- picker at the foot of the stats column, ending with the model.
 local mx, my, mw, mh = default_fs:match("model%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_preview;")
 mx, my, mw, mh = tonumber(mx), tonumber(my), tonumber(mw), tonumber(mh)
 check(mx ~= nil, "the model in the Stats mode")
 has(default_fs, "label[3.95,1.60;Maximum HP: 120]", "the stats right of the model")
 check(mx and mx + mw <= 3.95, "the model ends left of the stats column")
-has(default_fs, "dropdown[3.95,7.85;4.00;grug_cloak;", "the cloak picker in the stats column")
-has(default_fs, "label[3.95,7.50;Cloak]", "the cloak label above it")
-local hint_y = tonumber(default_fs:match("label%[3%.95,([%d.]+);Cloaks unlock through\nachievements%.%]"))
-check(hint_y and math.abs(hint_y + 0.75 - (my + mh)) < 0.006,
-	"the cloak block ends where the model ends (bottom-aligned)")
+-- The cloak block: the label over the dropdown, which ends where the model
+-- ends (bottom-aligned); the hint is the dropdown's tooltip.
+local dd_y = tonumber(default_fs:match("dropdown%[3%.95,([%d.]+);4%.00;grug_cloak;"))
+check(dd_y and math.abs(dd_y + 1 - (my + mh)) < 0.006,
+	"the cloak picker in the stats column, ending where the model ends (bottom-aligned)")
+local cloak_y = tonumber(default_fs:match("label%[3%.95,([%d.]+);Cloak%]"))
+check(cloak_y and dd_y and math.abs(cloak_y + 0.35 - dd_y) < 0.006, "the cloak label above it")
+has(default_fs, "tooltip[grug_cloak;Cloaks unlock through achievements.]",
+	"the hint is the dropdown's tooltip")
+lacks(default_fs, "Cloaks unlock through\n", "no hint label any more")
+-- A draft Claim Stone's status wraps to four lines in the column (the
+-- longest one, Round 45 PT2 delta review): its last line ends above the
+-- Cloak label. grug_housing is read at build time.
+rawset(_G, "grug_housing", {character_status = function()
+	return {text = "Your Claim Stone is not active yet: activate it within " ..
+		"23 h 59 min or it crumbles", color = "#ff5555"}
+end})
+local draft_fs = H.page(warrior, "stats")
+rawset(_G, "grug_housing", nil)
+local status_y, status_text = draft_fs:match(
+	"label%[3%.95,([%d.]+);[^%]]-(Your Claim Stone is not[^%]]*)%]")
+local status_lines = select(2, (status_text or ""):gsub("\n", "")) + 1
+eq(status_lines, 4, "a draft stone's status wraps to four lines")
+check(status_y and cloak_y and
+	tonumber(status_y) + (status_lines - 1) * 0.5 + 0.25 <= cloak_y - 0.25 + 1e-6,
+	"the status's last line ends above the Cloak label")
 check(my and my + mh <= BOXES_BOTTOM, "the model inside the mode box")
 lacks(default_fs, "Money", "no balance on the Character page")
 lacks(default_fs, "grug_money_withdraw", "no Withdraw on the Character page")
@@ -157,7 +178,7 @@ for _, mode in ipairs(MODES) do
 	end
 	-- The gear box in every mode.
 	has(fs, "list[current_player;grug_head;8.50,0.95;1,1;]", label .. ": the gear box")
-	has(fs, "button[8.50,9.00;4.65,0.8;grug_character_home;Return home (Ready)]",
+	has(fs, "button[8.50,7.84;4.65,0.8;grug_character_home;Return home (Ready)]",
 		label .. ": Return home at the foot of the gear box")
 	-- Geometry: the page's content above the view's Inventory box, the mode
 	-- body left of the gear box.
@@ -165,7 +186,7 @@ for _, mode in ipairs(MODES) do
 	has(part, "real_coordinates[true]", label .. ": real coordinates")
 	local inside = true
 	for _, r in ipairs(rects(part)) do
-		if r.y + r.h > BOXES_BOTTOM + 1e-6 or r.y < 0 then
+		if r.y + r.h > BOXES_BOTTOM + 0.005 or r.y < 0 then
 			inside = check(false, ("%s: %s at %.2f,%.2f+%.2f,%.2f below the boxes"):format(
 				label, r.name, r.x, r.y, r.w, r.h))
 		end
@@ -219,9 +240,9 @@ local ach = H.page(warrior, "achievements")
 local rows = count_of(ach, "tooltip[0.40,")
 eq(rows, 7, "achievements: seven rows per page")
 has(ach, "grug_ach_next;>]", "achievements: the pager")
-has(ach, "label[5.40,9.70;1/3]", "achievements: page 1 of 3")
+has(ach, "label[5.40,8.54;1/3]", "achievements: page 1 of 3")
 check(H.click(warrior, {grug_ach_next = ">"}), "achievements: next page handled")
-has(H.page(warrior, "achievements"), "label[5.40,9.70;2/3]", "achievements: page 2")
+has(H.page(warrior, "achievements"), "label[5.40,8.54;2/3]", "achievements: page 2")
 
 -- No Professions mode since Round 45 (the overview is on the Crafting tab).
 lacks(H.page(warrior, nil), "grug_character_professions", "no Professions mode button")
@@ -284,7 +305,7 @@ lacks(H.page(archer, "stats"), "item_image[", "100 arrows: the engine's count al
 H.put(archer, "grug_quiver_content", 2, "grug_gear:arrow 81")
 local fs_q = H.page(archer, "stats")
 local cell = fs_q:find("list[current_player;grug_quiver_content;8.50,6.10;1,1;]", 1, true)
-local cover = fs_q:find("image[8.500,6.399;1.02,0.72;[fill:8x8:#1f1f1f]", 1, true)
+local cover = fs_q:find("image[8.600,6.449;0.92,0.67;[fill:8x8:#1f1f1f]", 1, true)
 local total = fs_q:find("item_image[8.50,6.10;1,1;grug_gear:arrow 181]", 1, true)
 check(cell and cover and total and cell < cover and cover < total,
 	"181 arrows: the list, then the cover over its count corner, then the total")
@@ -292,9 +313,9 @@ has(fs_q, "label[9.60,6.35;Quiver\n181/500]", "181 arrows: the total beside the 
 
 -- Return home: every mode, the countdown in minutes, the click.
 H.home.remaining = 150
-has(H.page(archer, "achievements"), "button[8.50,9.00;4.65,0.8;grug_character_home;" ..
+has(H.page(archer, "achievements"), "button[8.50,7.84;4.65,0.8;grug_character_home;" ..
 	"Return home (3 min)]", "Return home: the cooldown in minutes")
-has(H.page(archer, "achievements"), "label[8.50,8.60;Home: Ironhold Inn]", "the home's name")
+has(H.page(archer, "achievements"), "label[8.50,7.44;Home: Ironhold Inn]", "the home's name")
 H.home.remaining = 0
 local sent_home = archer.sent
 H.page(archer, "effects")

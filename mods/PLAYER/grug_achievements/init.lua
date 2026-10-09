@@ -78,7 +78,7 @@ local function announce(player, rows)
 		grug_core.feed(player, "notice", text, "achievement:" ..
 			row.achievement.id .. ":" .. row.tier)
 	end
-	-- The cloak picker (3D mode) and the Achievements list both changed.
+	-- The cloak picker (Stats mode) and the Achievements list both changed.
 	grug_inventory.refresh_character(player)
 end
 
@@ -266,7 +266,7 @@ grug_visuals.register_cloak_source(function(player)
 	return R.cloak_texture(book, meta), R.selected(book, meta)
 end)
 
--- The Character page's cloak picker (3D mode, beside the model). Items are
+-- The Character page's cloak picker (Stats mode, beside the model). Items are
 -- the owned cloaks by name; the client sends the chosen name back.
 function grug_achievements.cloak_dropdown(player, x, y, w)
 	local meta = player:get_meta()

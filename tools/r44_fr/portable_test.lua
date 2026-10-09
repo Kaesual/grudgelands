@@ -5,11 +5,11 @@
 --   1. the tab order: one table (grug_inventory.TAB_ORDER) whatever the
 --      registration order, pages missing from it after it, the Inventory
 --      page as the homepage, no ordering hook left in the page mods;
---   2. the frame: formspec_version 6 with a real-coordinate size as wide as
---      the old legacy size[10.4,11.1] and as high as that or the boxed
---      layout needs (Round 45 playtest: the money row), below 15 units,
---      legacy content after real_coordinates[false], a page's own header
---      (the Map tab) left alone;
+--   2. the frame: formspec_version 6 with a real-coordinate size equal to the
+--      old legacy size[10.4,11.1] (every tab keeps it; the boxed layout with
+--      seven rows and the money row fits it, Round 45 playtest), legacy
+--      content after real_coordinates[false], a page's own header (the Map
+--      tab) left alone;
 --   3. the views, full and short, with 0-4 bags of mixed sizes: main[9..]
 --      first, then each equipped bag's list in slot order as one 8-wide grid
 --      without gaps, the hotbar outside the scroll area and at one place in
@@ -339,15 +339,14 @@ local L = grug_inventory.LAYOUT
 local frame_h = grug_inventory.UI.frame_h
 local header = ("formspec_version[6]size[%.3f,%.3f]"):format(legacy_w, frame_h)
 eq(form:sub(1, #header), header, "fv6 frame, real-coordinate size first")
-check(math.abs(grug_inventory.UI.frame_w - legacy_w) < 1e-9,
-	"the frame is as wide as the old legacy 10.4 x 11.1 window")
--- Round 45 playtest: as high as that or the boxed layout with its margins
--- needs, whichever is more (eight rows and the money row: 14.75). Below 15
--- units the engine keeps its preferred slot size wherever it held before.
-check(frame_h >= legacy_h - 1e-9, "the frame is at least the legacy height")
-check(math.abs(frame_h - math.max(legacy_h, L.hotbar_box_y + L.slot_box_h + L.top_y)) < 1e-9,
-	"the frame fits the boxed layout with equal margins")
-check(frame_h < 15, "the frame stays below 15 units high")
+check(math.abs(grug_inventory.UI.frame_w - legacy_w) < 1e-9 and
+	math.abs(frame_h - legacy_h) < 1e-9,
+	"the frame is the old legacy 10.4 x 11.1 window")
+-- Round 45 playtest (the user, 2026-10-09): seven rows, so the boxed layout
+-- with the money row fits that window, top and bottom margins equal.
+eq(grug_inventory.VIEW_ROWS.full, 7, "the full view shows seven rows")
+check(math.abs(L.top_y - (frame_h - L.hotbar_box_y - L.slot_box_h)) < 1e-9 and
+	L.top_y >= L.gap, "the boxed layout fits the window with equal margins")
 context.page = "grug_inventory:help"
 local help = sfinv.get_formspec(plain, context)
 local rc_false = help:find("real_coordinates[false]", 1, true)
@@ -666,9 +665,9 @@ eq(scroller.sent, sends, "a pure scrollbar event sends nothing")
 eq(ctx.grug_inv_scroll.full, 70, "its value is kept")
 has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;70]",
 	"the next build echoes it")
--- Above the range: clamped (19 rows, 8 visible: 110).
+-- Above the range: clamped (19 rows, 7 visible: 120).
 receive(scroller, "", {grug_inv_scroll_full = "CHG:500"})
-has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;110]",
+has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;120]",
 	"an out-of-range value is clamped on the echo")
 -- Sort: a button event carries VAL; the value is kept and the page acts.
 now_us = 10000000
@@ -694,8 +693,8 @@ eq(scroller.sent, sends, "the cooldown never sends either")
 -- A bag removed: the stored value is clamped to the smaller range.
 scroller.lists.grug_bag4_content, scroller.lists.grug_bag3_content = {}, {}
 ctx.grug_inv_scroll.full = 110
-has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;30]",
-	"after a bag change the echo clamps to the new range (11 rows: 30)")
+has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;40]",
+	"after a bag change the echo clamps to the new range (11 rows: 40)")
 
 -- On another page: the short view's own value; a scrollbar event never
 -- reaches the page handler, a button event does.

@@ -737,16 +737,16 @@ do
 	-- not the borderless tab style that read as text; the open box's button
 	-- gold.
 	lacks(fs, "style[grug_craft_box_", "T no style on the closed boxes' buttons")
-	has(fs, "button[0.2,8.65;2.45,0.55;grug_craft_box_enchant;", "T the enchant button's size")
-	has(fs, "button[2.75,8.65;2.45,0.55;grug_craft_box_upgrade;", "T the upgrade button's size")
-	has(fs, "button[0.2,8.05;0.8,0.55;grug_craft_prev;<]", "T the pager above them")
+	has(fs, "button[0.2,8.45;2.45,0.59;grug_craft_box_enchant;", "T the enchant button's size")
+	has(fs, "button[2.75,8.45;2.45,0.59;grug_craft_box_upgrade;", "T the upgrade button's size")
+	has(fs, "button[0.2,7.85;0.8,0.55;grug_craft_prev;<]", "T the pager above them")
 	local sent = smith.sent
 	click(smith, {grug_craft_box_enchant = "Enchant an item"})
 	eq(st_of(smith).box, "enchant", "T the button opens the enchant box")
 	has(smith.formspec, "style[grug_craft_box_enchant;bgcolor=#8a682f;bgcolor_hovered=#a77f3b;" ..
 		"bgcolor_pressed=#6f5427;border=true]", "T the open box's button in the gold style")
 	lacks(smith.formspec, "style[grug_craft_box_upgrade", "T the other button stays plain")
-	lacks(smith.formspec, "border=false]button[0.2,8.65", "T no borderless entry button")
+	lacks(smith.formspec, "border=false]button[0.2,8.45", "T no borderless entry button")
 	eq(smith.sent, sent + 1, "T one resend")
 	has(smith.formspec, "list[current_player;grug_craft_target;", "T the box draws the slot")
 	-- Round 45 PT5: the output and the slot ring to the shift-click inbox.
@@ -1335,7 +1335,8 @@ local function geometry_ok(fs, label)
 	local ok = true
 	for _, r in ipairs(rects(content(fs))) do
 		local right, bottom = r.x + r.w, r.y + r.h
-		if r.x < 0 or r.y < 0 or right > 13.5 + 1e-6 or bottom > 9.3 + 1e-6 then
+		if r.x < 0 or r.y < 0 or right > 13.5 + 1e-6 or
+				bottom > grug_inventory.VIEW_GEOMETRY.top - 0.1 + 0.01 then
 			ok = check(false, ("%s: %s at %.2f,%.2f+%.2f,%.2f leaves the page area"):format(
 				label, r.name, r.x, r.y, r.w, r.h))
 		elseif r.y >= 0.95 then
@@ -1346,7 +1347,9 @@ local function geometry_ok(fs, label)
 				end
 			end
 			-- The box's own elements end above the button.
-			if r.x >= 5.4 and r.x < 10.2 and r.name == "label" and r.y + r.h > 8.4 + 1e-6 then
+			local button_y = grug_jobs.CRAFT_BOX.y + grug_jobs.CRAFT_BOX.h - 0.75
+			if r.x >= 5.4 and r.x < 10.2 and r.name == "label" and
+					r.y + r.h > button_y + 1e-6 then
 				ok = check(false, ("%s: label %q at %.2f runs into the button"):format(label,
 					r.text or "", r.y))
 			end
@@ -1359,8 +1362,10 @@ local function geometry_ok(fs, label)
 end
 local function box_part(fs)
 	local part = content(fs)
-	local from = part:find("box[5.4,0.95;4.8,8.25;", 1, true)
-	local to = part:find("box[10.4,0.95;2.9,8.25;", 1, true)
+	-- The boxes end a gap above the short view (Round 45 PT2 follow-up).
+	local h = grug_jobs._fs_number(grug_jobs.CRAFT_BOX.h)
+	local from = part:find("box[5.4,0.95;4.8," .. h .. ";", 1, true)
+	local to = part:find("box[10.4,0.95;2.9," .. h .. ";", 1, true)
 	return from and to and part:sub(from, to - 1) or ""
 end
 do

@@ -742,7 +742,7 @@ grug_inventory.has_quiver = function(p) return p:get_player_name() ~= "smith" en
 -- independently of pages.lua: calculateImgsize (padding 0.05 on each side;
 -- getImgsize with the padded screen, its integer min_dim / 15; capped by
 -- fitx / fity for the form's size[13.500,<frame height>] (ui.lua's frame,
--- 14.75 since the Round 45 playtest), so fit = padded size /
+-- 13.673), so fit = padded size /
 -- that size; truncated to v2s32), a position trunc(pos * imgsize)
 -- (getRealCoordinateBasePos :267-271), an image or item_image size
 -- trunc(size * imgsize) (getRealCoordinateGeometry :273-276), a list slot

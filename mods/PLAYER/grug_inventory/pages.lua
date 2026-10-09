@@ -117,14 +117,12 @@ local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.6, BOX_BOTTOM - 1.2
 -- real-coordinate size, Round 44) fits the padded window. Slot and count both
 -- grow with gui_scaling, so the ratio changes mainly where that cap holds (a
 -- small window, a large scale). Without window information (a page built
--- right at join) the cover takes the cell's full width and most of its
--- height: in a small web window at gui_scaling 1.5 the count "100" fills all
--- but two pixels of the slot's width.
+-- right at join) the cover takes most of the cell.
 local function quiver_cover_size(player)
 	local info = core.get_player_window_information(player:get_player_name())
 	if not (info and info.size and info.max_formspec_size and
 			info.real_gui_scaling) then
-		return 1, 0.7
+		return 0.9, 0.65
 	end
 	local width, height = info.size.x * 0.9, info.size.y * 0.9
 	local slot = math.min(0.9 * info.size.x / info.max_formspec_size.x,
@@ -342,9 +340,10 @@ local MODEL = {x = 0.4, y = 1.35, w = 3.3, h = BOX_BOTTOM - 0.25 - 1.35}
 local STAT_X, STAT_Y, STAT_STEP = 3.95, 1.6, 0.5
 local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.15 - STAT_X
 local STAT_CHARS = math.floor(STAT_W / 0.15)
--- The cloak block from its top: the label, the dropdown (one unit high),
--- two lines of hint ending at the model's bottom.
-local CLOAK_Y = MODEL.y + MODEL.h - 2.1
+-- The cloak block: the label and under it the dropdown (one unit high),
+-- ending at the model's bottom; the hint is the dropdown's tooltip, so the
+-- block stays clear of a four-line Claim Stone status (a draft stone's).
+local CLOAK_Y = MODEL.y + MODEL.h - 1
 local function stats_content(player)
 	local mesh, textures = preview_model(player)
 	local class = grug_classes.get_class_def(player)
@@ -398,8 +397,7 @@ local function stats_content(player)
 	if achievements then
 		fs[#fs + 1] = ("label[%.2f,%.2f;Cloak]"):format(STAT_X, CLOAK_Y - 0.35)
 		fs[#fs + 1] = achievements.cloak_dropdown(player, STAT_X, CLOAK_Y, STAT_W)
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X, CLOAK_Y + 1.35,
-			esc("Cloaks unlock through\nachievements."))
+		fs[#fs + 1] = "tooltip[grug_cloak;" .. esc("Cloaks unlock through achievements.") .. "]"
 	end
 	return table.concat(fs)
 end

@@ -504,7 +504,7 @@ sfinv = {
 	set_player_inventory_formspec = function() resent = resent + 1 end,
 }
 grug_inventory = {equipment_slots = {}, BOX_COLOR = "#00000040", -- ui.lua's
-	VIEW_GEOMETRY = {top = 10.3}, -- the short view's box top (ui.lua)
+	VIEW_GEOMETRY = {top = 9.1365}, -- the short view's box top (ui.lua)
 	selected_button_style = function(field, selected)
 		return "style[" .. field .. ";" .. tostring(selected) .. "]"
 	end,
