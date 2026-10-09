@@ -96,6 +96,14 @@ end
 
 local function cycle()
 	local J = grug_jobs
+	-- The stand-in is no ObjectRef: the craft sound skips it.
+	local play = grug_sounds.play
+	grug_sounds.play = function(event, target)
+		if target and target.get_player_name and target:get_player_name() == "r45jb_probe" then
+			return false
+		end
+		return play(event, target)
+	end
 	local inv = core.create_detached_inventory("r45jb_probe", {})
 	inv:set_size("main", 32)
 	local player, fields = stand_in(inv)
@@ -164,6 +172,7 @@ local function cycle()
 	end
 	check(made == 2, "two gear stacks, one per item")
 	core.remove_detached_inventory("r45jb_probe")
+	grug_sounds.play = play
 end
 
 core.register_on_mods_loaded(function()
