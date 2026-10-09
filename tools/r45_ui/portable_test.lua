@@ -33,9 +33,18 @@
 --      room; no resend on a pure scrollbar event or on closing the window;
 --      browsing while a job runs, a second job cannot start; Take all;
 --   O  the professions overview in the crafting box while no recipe is
---      chosen, and gone from the Character tab.
+--      chosen, and gone from the Character tab;
+--   D  Round 45 playtest fix 3: the box in three areas (output; the
+--      description, ingredients, Max and notes; the quantity row and the
+--      button), the description per kind (a raw dish's cooked dish and the
+--      furnace note, gear through crafted_output, none when the tooltip is
+--      only the name, a long one inside the room left), the tiers above the
+--      profession tier hidden in Cooking and the primaries (search and
+--      "Craftable only" on the visible set, the level band's cap), Basic
+--      showing every tier.
 -- Prints byte counts of the page (Basic page 1, a profession area, a page
--- during a job) and "R45 UI PORTABLE PASS checks=<n>" or the failures.
+-- during a job, a raw dish and a gear recipe with their descriptions) and
+-- "R45 UI PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
 local failures, checks = 0, 0
@@ -109,6 +118,7 @@ local function fs_escape(text)
 		:gsub(";", "\\;"):gsub(",", "\\,"):gsub("%$", "\\$"))
 end
 local list_reads = 0
+local furnace_recipes = {}
 core = {
 	registered_items = {},
 	registered_nodes = {},
@@ -157,6 +167,11 @@ core = {
 		return found
 	end,
 	get_translator = function() return function(text) return text end end,
+	-- Engine cooking recipes (furnace): input name -> output name.
+	get_craft_result = function(input)
+		local out = input.method == "cooking" and furnace_recipes[input.items[1]:get_name()]
+		return {item = ItemStack(out or ""), time = out and 5 or 0}, {items = {}}
+	end,
 }
 setmetatable(core, {__index = function(_, key)
 	if type(key) == "string" and key:match("^register_") then return function() end end
@@ -316,6 +331,7 @@ grug_core = {
 		local def = core.registered_items[name:match("^%S*")]
 		return def and def.description:match("^[^\n]*") or name
 	end,
+	plain_text = function(text) return (tostring(text or ""):gsub("\27%([^)]*%)", "")) end,
 }
 grug_classes = {get_class = function() return "warrior" end}
 grug_gear = {initialize_weapon_tooltip = function() return false end}
@@ -385,6 +401,17 @@ local axe = J.register_recipe({area = "weaponsmith", tier = 2, station = "forge"
 	time = 3})
 local stew = J.register_recipe({area = "cooking", tier = 1, output = "t:stew",
 	ingredients = {{item = "t:meat", n = 1}, {item = "t:grain", n = 1}}, time = 1})
+-- A good dish (Round 45 playtest fix 3): its raw assembly is a T2 Cooking
+-- recipe, the furnace finishes it.
+item("t:herb", {description = "Marsh Herb"})
+item("t:roast", {description = "Hunter's Roast\nRestores 30 HP over 10 s.\nWell fed: +2 Stamina",
+	stack_max = 20})
+item("t:raw_roast", {description = "Raw Hunter's Roast\nInedible. Cook this assembled dish in a furnace.",
+	stack_max = 20})
+J.register_ingredient_tier("t:herb", 2)
+local raw_roast = J.register_recipe({area = "cooking", tier = 2, output = "t:raw_roast",
+	ingredients = {{item = "t:meat", n = 1}, {item = "t:herb", n = 1}}, time = 1})
+furnace_recipes["t:raw_roast"] = "t:roast"
 for _, fn in ipairs(callbacks.loaded) do fn() end
 eq(#J.recipes_in_area("basic"), 26, "setup: 26 Basic recipes")
 
@@ -639,12 +666,17 @@ has(fs, "grug_craft_area3;Weaponsmith]", "A the primary slot's tab names its pro
 has(fs, "Tier 1 · 4/10", "A the tier progress")
 has(fs, "box[12,0.45;0.52,0.25;#c9a24a]", "A the tier bar filled 4/10")
 has(fs, "Copper Sword", "A the T1 recipe listed")
-has(fs, "Iron Battle Axe", "A the T2 recipe listed too (every area shows all)")
-check(fs:find("Copper Sword", 1, true) < fs:find("Iron Battle Axe", 1, true),
-	"A tier order")
+-- Round 45 playtest fix 3: tiers above the profession tier are hidden.
+lacks(fs, "Iron Battle Axe", "A the T2 recipe hidden at weaponsmith tier 1")
+p.meta.fields["grug_jobs:level:weaponsmith"] = 2
+fs = open(p)
+check(fs:find("Copper Sword", 1, true) ~= nil and fs:find("Iron Battle Axe", 1, true) ~= nil and
+	fs:find("Copper Sword", 1, true) < fs:find("Iron Battle Axe", 1, true),
+	"A at tier 2 both, in tier order")
 geometry_ok(fs, "A profession area")
 print(("bytes: Crafting tab, a profession area (2 recipes): content %d, page %d"):format(
 	#content(fs), #fs))
+p.meta.fields["grug_jobs:level:weaponsmith"] = 1
 
 ------------------------------------------------------------------------------
 -- L. Paging and the search.
@@ -732,7 +764,7 @@ fs = p.formspec
 has(fs, "Copper Sword", "N the T1 sword is craftable")
 lacks(fs, "Iron Battle Axe", "N the T2 axe is not, at weaponsmith T1")
 click(p, {[FIELDS.only] = "false"})
-has(p.formspec, "Iron Battle Axe", "N without the filter the axe shows again")
+lacks(p.formspec, "Iron Battle Axe", "N without the filter the T2 axe stays hidden at T1")
 
 ------------------------------------------------------------------------------
 -- Q. The crafting box and the quantity field.
@@ -962,9 +994,175 @@ novice.meta.fields["grug_jobs:level:weaponsmith"] = 1
 open(novice)
 click(novice, {[FIELDS.area .. "3"] = "Weaponsmith"})
 click(novice, {[FIELDS.row .. "2"] = ""})
+eq(st_of(novice).selected, nil, "S the hidden T2 axe has no row to click (PT3)")
+-- A choice the list no longer shows (made before a profession was
+-- unlearned and learned again, say) still names the gate.
+st_of(novice).selected = axe.id
+open(novice)
 says(novice.formspec, "Weaponsmith tier 2 required.", "S the tier gate named")
 has(novice.formspec, "grug_craft_recheck;Craft now]", "S ... and the button disabled")
 lacks(novice.formspec, "experience point", "S no XP hint for a tier above the profession")
+
+------------------------------------------------------------------------------
+-- D. Round 45 playtest fix 3: the recipe box in three areas (top: output;
+-- middle: description, ingredients, Max, notes; bottom: quantity row, then
+-- the button), the description per kind, the tier filter per area.
+------------------------------------------------------------------------------
+-- The crafting box's own part of a build.
+local function box_part(fs)
+	local part = content(fs)
+	local from = part:find("box[5.4,0.95;4.8,8.25;", 1, true)
+	local to = part:find("box[10.4,0.95;2.9,8.25;", 1, true)
+	return from and to and part:sub(from, to - 1) or ""
+end
+-- The y of the first label in `part` whose text starts with `text`.
+local function label_y(part, text)
+	for y, body in part:gmatch("label%[[%d%.]+,([%d%.]+);(.-[^\\])%]") do
+		if plain_text(body):sub(1, #text) == text then return tonumber(y) end
+	end
+	return nil
+end
+-- The textarea's text (unescaped) and its geometry.
+local function description_box(fs)
+	local x, y, w, h, text = fs:match("textarea%[([%d%.]+),([%d%.]+);([%d%.]+),([%d%.]+);;;(.-[^\\])%]")
+	if not x then return nil end
+	return {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
+		text = (text:gsub("\\(.)", "%1"))}
+end
+do
+	local chef = new_player("chef")
+	chef.meta.fields["grug_jobs:learned:cooking"] = 1
+	chef.meta.fields["grug_jobs:level:cooking"] = 1
+	put(chef, "main", 9, "t:meat 10")
+	put(chef, "main", 10, "t:herb 10")
+	put(chef, "main", 11, "t:grain 10")
+	open(chef)
+	click(chef, {[FIELDS.area .. "2"] = "Cooking"})
+	-- The tier filter in Cooking: the T2 raw roast is hidden at Cooking T1,
+	-- for the search and "Craftable only" too.
+	fs = chef.formspec
+	lacks(fs, "Raw Hunter's Roast", "D Cooking T1 hides the T2 recipe")
+	advance(1.1)
+	click(chef, {[FIELDS.search] = "roast", [FIELDS.find] = "Search"})
+	says(chef.formspec, "No recipe matches.", "D the search works on the visible set")
+	advance(1.1)
+	click(chef, {[FIELDS.search] = "", [FIELDS.find] = "Search"})
+	click(chef, {[FIELDS.only] = "true"})
+	lacks(chef.formspec, "Raw Hunter's Roast", "D Craftable only works on the visible set")
+	has(chef.formspec, "Hearty Stew", "D ... and keeps the craftable T1 stew")
+	click(chef, {[FIELDS.only] = "false"})
+	-- Cooking T2 (the character's band allows it at level 15): listed.
+	chef.meta.fields["grug_jobs:level:cooking"] = 2
+	fs = open(chef)
+	has(fs, "Raw Hunter's Roast", "D Cooking T2 shows the T2 recipe")
+	check(fs:find("Hearty Stew", 1, true) < fs:find("Raw Hunter's Roast", 1, true),
+		"D tier order")
+	-- The character's band caps the profession tier: at level 5 the T2 recipe
+	-- hides again although the stored tier is 2.
+	character_level = 5
+	lacks(open(chef), "Raw Hunter's Roast", "D the level band caps the visible tiers")
+	character_level = 15
+	open(chef)
+	-- A raw dish: the cooked dish's description and the furnace note.
+	click(chef, {[FIELDS.row .. "2"] = ""})
+	eq(st_of(chef).selected, raw_roast.id, "D the raw roast chosen")
+	fs = chef.formspec
+	local part = box_part(fs)
+	local desc = description_box(part)
+	check(desc ~= nil, "D the description is a read-only textarea (no name)")
+	eq(desc and desc.text, "Hunter's Roast\nRestores 30 HP over 10 s.\nWell fed: +2 Stamina\n" ..
+		"Must be cooked in a furnace to become edible.", "D the cooked dish's text and the note")
+	lacks(desc and desc.text or "", "Inedible", "D not the raw item's own text")
+	has(part, "box[5.6,2.2;4.4,", "D the description's box at the middle's top")
+	lacks(part, "scrollbar[", "D no scrollbar element in the box (a scroll would send events)")
+	lacks(part, "scroll_container[", "D no scroll container in the box")
+	-- The three areas in order.
+	local sub_y = label_y(part, "Cooking · Tier 2")
+	local ingredients_y = label_y(part, "Ingredients (have/need)")
+	local max_y = label_y(part, "Max: ")
+	local hint_y = label_y(part, "Crafting this will")
+	local quantity_y = tonumber(part:match("field%[[%d%.]+,([%d%.]+);"))
+	local button_y = tonumber(part:match("button%[5%.6,([%d%.]+);[%d%.]+,0%.65;grug_craft_go;"))
+	check(sub_y and desc and sub_y + 0.2 <= desc.y, "D top: the output above the description")
+	check(desc and ingredients_y and desc.y + desc.h <= ingredients_y - 0.2,
+		"D middle: the description above the ingredients")
+	check(ingredients_y and max_y and ingredients_y < max_y, "D ... the ingredients above Max")
+	check(max_y and hint_y and max_y < hint_y, "D ... Max above the XP hint")
+	check(hint_y and quantity_y and hint_y + 0.2 <= quantity_y,
+		"D bottom: the quantity row below the middle's notes")
+	check(quantity_y and button_y and quantity_y + 0.6 <= button_y,
+		"D ... and Craft now below the quantity row")
+	eq(button_y, 8.4, "D Craft now at the box's bottom")
+	geometry_ok(fs, "D a raw dish")
+	print(("bytes: Crafting tab, a raw dish chosen (description): content %d, page %d"):format(
+		#content(fs), #fs))
+	-- A simple dish whose tooltip is only its name: no description, the
+	-- ingredients right below the top area.
+	click(chef, {[FIELDS.row .. "1"] = ""})
+	part = box_part(chef.formspec)
+	eq(description_box(part), nil, "D no description when the tooltip is only the name")
+	has(part, "label[5.6,2.35;Ingredients (have/need)]", "D ... the ingredients move up")
+	has(part, "field[6.75,7.65;", "D the quantity row stays above the button")
+	-- Gear: the description the job's crafted_output builds, the name line
+	-- dropped; no quantity row.
+	local real_crafted = grug_items.crafted_output
+	grug_items.crafted_output = function(stack, player)
+		if stack:get_name() ~= "t:sword" then return false end
+		stack:get_meta():set_string("description", core.colorize("#ffffff", "Copper Sword") ..
+			"\nItem level 11\n" .. core.colorize("#9aa0a6", "7 damage, 1.0 s swing") ..
+			"\nUsable by: Warrior\nRequires level 11\nEffective at level " ..
+			grug_xp.get_level(player) .. ": 7 damage per swing")
+		return true
+	end
+	chef.meta.fields["grug_jobs:primary:1"] = "weaponsmith"
+	chef.meta.fields["grug_jobs:level:weaponsmith"] = 1
+	open(chef)
+	click(chef, {[FIELDS.area .. "3"] = "Weaponsmith"})
+	click(chef, {[FIELDS.row .. "1"] = ""})
+	fs = chef.formspec
+	part = box_part(fs)
+	desc = description_box(part)
+	eq(desc and desc.text, "Item level 11\n7 damage, 1.0 s swing\nUsable by: Warrior\n" ..
+		"Requires level 11\nEffective at level 15: 7 damage per swing",
+		"D gear: crafted_output's description for this player, plain, without the name line")
+	lacks(part, "field[", "D gear: no quantity row")
+	geometry_ok(fs, "D gear")
+	print(("bytes: Crafting tab, a gear recipe chosen (description): content %d, page %d"):format(
+		#content(fs), #fs))
+	grug_items.crafted_output = real_crafted
+	-- A long description takes the room left and scrolls; everything stays
+	-- inside the box.
+	local block_def = core.registered_items["t:block01"]
+	local lines = {"Block 01"}
+	for i = 1, 30 do lines[#lines + 1] = "Line " .. i .. " of a long tooltip text" end
+	block_def.description = table.concat(lines, "\n")
+	click(chef, {[FIELDS.area .. "1"] = "Basic"})
+	advance(1.1)
+	click(chef, {[FIELDS.search] = "block 01", [FIELDS.find] = "Search"})
+	click(chef, {[FIELDS.row .. "1"] = ""})
+	fs = chef.formspec
+	part = box_part(fs)
+	desc = description_box(part)
+	check(desc ~= nil and desc.h >= 0.8, "D a long description is drawn")
+	local ingredients_at = label_y(part, "Ingredients (have/need)")
+	local last_label = 0
+	for y, body in part:gmatch("label%[5%.6,([%d%.]+);(.-[^\\])%]") do
+		if body ~= "Quantity" then last_label = math.max(last_label, tonumber(y)) end
+	end
+	check(desc and ingredients_at and desc.y + desc.h < ingredients_at, "D ... above the ingredients")
+	check(last_label + 0.2 <= 7.65, "D ... the middle ends above the quantity row (" ..
+		last_label .. ")")
+	has(desc and desc.text or "", "Line 30 of a long tooltip text", "D ... the whole text (it scrolls)")
+	geometry_ok(fs, "D a long description")
+	block_def.description = "Block 01"
+	-- Basic shows every recipe whatever its tier (the torch counts as T2).
+	eq(torch.tier, 2, "D the torch recipe is T2 (its coal)")
+	local nobody = new_player("nobody")
+	advance(1.1)
+	open(nobody)
+	click(nobody, {[FIELDS.search] = "torch", [FIELDS.find] = "Search"})
+	has(nobody.formspec, "Torch", "D Basic lists a T2 recipe without any profession")
+end
 
 ------------------------------------------------------------------------------
 -- Long names stay inside their column (the web build's window is the same).

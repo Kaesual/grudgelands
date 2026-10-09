@@ -11,7 +11,9 @@
 --           page 1 with nothing chosen and with a recipe chosen, a
 --           profession area, and a page during a job (comparisons, never
 --           targets; the old Crafting page was 1148 / 1009 B of content);
---   sends   a job's start, end and cancel through the page's click handler.
+--   sends   a job's start, end and cancel through the page's click handler;
+--   descriptions (Round 45 playtest fix 3) the gear recipe's and a raw
+--           dish's description in the recipe box.
 -- Ends with "PROBE PASS" or "PROBE FAIL <n>".
 local P = "[r45ui_probe] "
 local failures = 0
@@ -132,6 +134,23 @@ local function page_bytes()
 	click({[F.row .. "1"] = ""})
 	fs = build("Weaponsmith page 1, a recipe chosen")
 	check(fs:find("Requires: Forge nearby", 1, true) ~= nil, "the station hint without a forge")
+	-- Round 45 playtest fix 3: the gear's description as the job makes it,
+	-- and a raw dish's cooked description through the furnace recipe.
+	local gear = fs:match("textarea%[[^;]*;[^;]*;;;(.-[^\\])%]") or ""
+	log("gear description: " .. gear:gsub("\n", " | "))
+	check(gear:find("Item level", 1, true) ~= nil, "the gear recipe shows its item level")
+	local raw = J.recipes_for_output("grug_cooking:raw_stew_pot")[1]
+	check(raw ~= nil, "the raw stew pot recipe")
+	if raw then
+		fields["grug_jobs:learned:cooking"] = 1
+		context.grug_craft.selected = raw.id
+		fs = build("a raw dish chosen")
+		local dish = fs:match("textarea%[[^;]*;[^;]*;;;(.-[^\\])%]") or ""
+		log("raw dish description: " .. dish:gsub("\n", " | "))
+		check(dish:find("Must be cooked in a furnace to become edible.", 1, true) ~= nil,
+			"the raw dish names the furnace")
+		check(dish:find("Inedible", 1, true) == nil, "the raw dish shows the cooked dish")
+	end
 	-- A Basic job: the first item-only recipe with a stackable output.
 	click({[F.area .. "1"] = "Basic"})
 	local basic
