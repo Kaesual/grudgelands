@@ -538,6 +538,21 @@ local function apply_capabilities(stack, totals)
 	end
 end
 
+-- Rewrites a stack's tool capabilities from its item level and enchants, as
+-- a craft or an enchant writes them (a broken stack keeps them for the
+-- repair). The online part of the migration step 0.45.0 calls it for a
+-- weapon whose damage no longer matches its item level: an unmodified
+-- first-tier weapon read its damage from the definition, which the item
+-- level ladder lowered (grug_core/migrations.lua).
+function grug_items.refresh_capabilities(stack)
+	if not stack or stack:is_empty() then return end
+	local totals = {}
+	for _, slot in ipairs(read_affixes(stack:get_meta())) do
+		totals[slot.stat] = (totals[slot.stat] or 0) + slot.value
+	end
+	apply_capabilities(stack, totals)
+end
+
 local function choose_unique(pool, count, rng)
 	local choices = {}
 	for index = 1, #pool do choices[index] = pool[index] end
