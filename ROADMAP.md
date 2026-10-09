@@ -156,7 +156,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 - [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,
   fixed-tier enchanting, wear/repair, profession workspaces, food, farming and fishing.
   The WP44 economy is delivered in Round 29; the items and professions revision
-  (WP5, WP10) in Round 33.
+  (WP5, WP10) in Round 33; the crafting rework (recipe lists, crafting jobs,
+  proximity stations) in Round 45.
 - [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
   persistent same-faction parties and optional HUDs. Since Round 28 quests are
   per-zone data with area, item-group and quest-drop objectives and repeatables;
@@ -395,16 +396,31 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   the pixel-art map with every settlement baked, the map window with the
   quest log and quest targets on Z, the quickbar on E for mounts, boats,
   potions and Return home; the offline step removes the retired mount
-  items and skills outside the hotbar. Complete on 2026-10-09; 0.44.0 not
-  pushed and may wait for the platform's step runner. Next: the GUI test;
-  then [Round 45](docs/planning/round45-plan.md) (crafting rework, Round
-  B).
+  items and skills outside the hotbar. Complete on 2026-10-09; pushed by
+  the user on 2026-10-09 inside `2f918739` (with Round 45 up to EU). Next:
+  the GUI test.
+- [x] **Round 45 "Crafting rework"**
+  ([completion](docs/planning/round45-plan.md#completion-2026-10-09)),
+  version 0.45.0, **migrate** (the second declared step): Round B of the
+  [UI and crafting rework](docs/planning/ui-crafting-rework-plan.md) —
+  recipe lists per area instead of the 3×3 grid and the recipe books,
+  timed crafting jobs with an output area, gear made only by the
+  professions, the item level ladder 1/11/21/…, enchants and +N upgrades
+  as jobs, proximity stations, Cooking known from the start, finished
+  potions at the brewing stand, Grudge-Free Repairs on the former Cooking
+  trainers' places; the user's playtest fixes (the inventory window,
+  mounts, mobs, station sounds, the Claim Stone as a waypoint) and art
+  picks; the offline step removes mixtures, empties the craft grid and
+  keeps old gear at its item level. Complete on 2026-10-09; not pushed.
+  Next: the GUI test; then Round 46 (the waiting point for players in
+  creation stasis).
 
 ### Remaining work
 
-- [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03):
-  whether POIs, camps, outposts, mines and the PvP fortresses are placed per
-  world instead of at fixed positions
+- [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03;
+  taken up again by the user on 2026-10-09 for Round 46): POI placement
+  adapted to the roads and rivers instead of fixed anchors, the long-term
+  fix for random seeds that fail to load
   ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
 - [x] **WP9 (V1):** the level-41–60 main questline and the finale,
   delivered in Round 36 on top of Round 29's front quests and bounties.
@@ -422,13 +438,15 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 40](BACKLOG.md#round-40-carry-overs),
   [Round 41](BACKLOG.md#round-41-carry-overs),
   [Round 42](BACKLOG.md#round-42-carry-overs),
-  [Round 43](BACKLOG.md#round-43-carry-overs) and
-  [Round 44](BACKLOG.md#round-44-carry-overs) carry-overs (Round 40: the
+  [Round 43](BACKLOG.md#round-43-carry-overs),
+  [Round 44](BACKLOG.md#round-44-carry-overs) and
+  [Round 45](BACKLOG.md#round-45-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
   Round 44: theoretical UI and step notes, the map icon overlaps for the
-  GUI test);
+  GUI test; Round 45: theoretical crafting, inventory, mount and step
+  notes, and the user's Round 46 items);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

@@ -12,17 +12,20 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 44 (inventory, map and quickbar; 0.44.0,
-**migrate**) is complete ([plan](docs/planning/round44-plan.md)): the new
-window and tabs, one inventory with bags and Sort, the map window on Z,
-the quickbar on E, and the first declared migration step (mount items and
-skills outside the hotbar removed offline). origin/main is `9dc2fad5`
-(0.43.0, pushed on 2026-10-09 by the coordinator on the user's request);
-0.44.0 is not pushed and may wait on the platform's step runner. Rounds
-25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
-(2026-10-06), Round 42's playtest was accepted (2026-10-08); the GUI tests
-of Rounds 36–38, 40, 41, 43 and 44 are open. Next: Round 44's GUI test and
-push decision; Round 45 (crafting) merges after Round 44. Details:
+**Current state:** Round 45 (crafting rework; 0.45.0, **migrate**) is
+complete ([plan](docs/planning/round45-plan.md)): recipe lists in areas
+instead of the grid and the books, timed crafting jobs with an output
+area, gear only from professions, the item level ladder 1/11/21/…,
+enchants and upgrades as jobs, proximity stations, Cooking from the start,
+finished potions, Grudge-Free Repairs, the playtest fixes, and step
+0.45.0 (mixtures removed, the craft grid emptied, old gear keeps its item
+level). origin/main is `2f918739` (Round 44 and Round 45 up to EU, still
+labelled 0.44.0, pushed by the user on 2026-10-09; production runs
+0.41.0); 0.45.0 is not pushed. Rounds 25–35 count as GUI-accepted (the
+user, 2026-10-05), Round 39 too (2026-10-06), Round 42's playtest was
+accepted (2026-10-08); the GUI tests of Rounds 36–38, 40, 41, 43, 44 and
+45 are open. Next: Round 45's GUI test and push decision; Round 46 (the
+waiting point for players in creation stasis). Details:
 [STATUS](docs/STATUS.md).
 
 ## Language rules
