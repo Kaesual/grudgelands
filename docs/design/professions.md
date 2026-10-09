@@ -93,11 +93,12 @@ personal stations, access, digging) is
   character band does not advance the profession automatically: the next
   successful craft of the previous tier opens the new tier and clears the
   counter. Further crafts while still character-capped count nothing.
-- **Only real recipes count (Round 33, Round 45):** enchants, upgrades and the
+- **Only real recipes count (Round 33, Round 45):** enchants and the
   profession's own end products (gear, trinkets, bags, potions
-  and elixirs, dishes and raw dish assemblies). Stations (Forge, Carving
-  Bench, …), intermediates (settings, cut gems, bolt bundles) and every
-  automatic furnace finish count nothing. A recipe registers as
+  and elixirs, dishes and raw dish assemblies). Upgrades (Round 45, spec
+  §2.31: no XP farm), stations (Forge, Carving Bench, …), intermediates
+  (settings, cut gems, bolt bundles) and every automatic furnace finish
+  count nothing. A recipe registers as
   such with `material = true` or `progress = false`; every craft path and
   station operation awards progress through `grug_jobs.award_progress`. There
   is no fast path for late starters. Every profession still reaches its band
@@ -204,6 +205,17 @@ items, per-recipe unlocks, keystone redemptions or discovery.
     upgrade's target item) into the inventory, or is refused with "Not enough
     inventory space to cancel" when the refund does not fit. A Stop after the
     end time completes the job instead.
+  - **Enchants and upgrades** (Round 45 lane EU, spec §2.24, §2.26; the
+    boxes are [inventory_equipment.md](inventory_equipment.md) §1) are jobs on
+    the item in the Crafting tab's **target slot** (`grug_craft_target`, one
+    piece of equipment): the start takes the item in with the materials, so
+    while the job runs it lives only in the job; the result appears in the
+    output area; a cancel returns the item. The start judges the item as it
+    is then (family, tier, channels, the cap) and needs the profession at the
+    operation's tier, the station nearby and a free output slot. An enchant
+    takes 5 s and counts as one craft; an upgrade of +N levels takes N s,
+    costs N times one own material of the item's tier (a weapon also N
+    Sticks) and gives no XP.
 - **A job's XP** is min(crafts, XP left in the tier) for a counting recipe of
   the current profession tier, awarded at its end; a saturated profession
   advances at the end of its next counting job once the character band
@@ -288,8 +300,9 @@ Two professions dress every class in armour, weapon and offhand (Round 33,
 [item_tiers.md](item_tiers.md) §3.3): Warrior Armorsmith + Weaponsmith, Scout
 Leatherworker + Weaponsmith, Mage and Priest Tailor + Woodcarver; the
 Goldsmith serves every class. An **upgrade** (one per profession and tier)
-lifts an item of its families to its tier's top item level (item_tiers.md
-§3.1).
+adds +N item levels to an item of its families, up to 10 × the item's tier,
+for one own material per level (a weapon also a Stick), without XP
+(item_tiers.md §3.1, Round 45).
 
 ### 2.1 The coverage is complete and overlap-free
 

@@ -96,6 +96,8 @@ function grug_jobs.unlearn(player, profession)
 	set_int(meta, META_CRAFTS .. profession, 0)
 	-- A running job of this profession finishes without XP (lane JB).
 	if grug_jobs.forfeit_job_xp then grug_jobs.forfeit_job_xp(player, profession) end
+	-- An item left in the enchant/upgrade slot comes back (lane EU).
+	if grug_jobs.return_operation_target then grug_jobs.return_operation_target(player) end
 	local text = "Unlearned " .. definition.name .. "; its progression was lost."
 	message(player, text)
 	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end

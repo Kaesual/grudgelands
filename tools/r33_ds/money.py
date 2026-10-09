@@ -31,7 +31,6 @@ POOL = (("weapon", 6), ("chest", 3), ("other", 17))  # 26 equippables per tier
 DROP = {"white": (5.0, 1), "blue": (2.0, 3), "gold": (1.0, 6)}  # percent, sale multiplier
 REPAIR_TODAY = 0.20
 REPAIR_PROPOSED = 1.00
-SIGNATURE_VALUE = (7, 18, 45, 112, 280, 700)  # economy.md: 7c x tier factor
 OWN_MATERIAL_VALUE = {  # sell value of one own material (R3 registry dump)
     "metal bar": (1, 1, 2, 8, 24, 64), "leather": (2, 2, 2, 2, 80, 82),
     "cloth bolt": (2, 10, 26, 28, 4, 42), "graded wood": (0, 0, 0, 0, 0, 0),
@@ -109,14 +108,15 @@ def sinks(bands, after):
 
 
 def upgrade_costs(bands):
-    out = ["| Tier | Two signatures | Two own materials (bar … setting) | Total sell value | "
-           "Minutes of the band's income |", "|---:|---:|---|---:|---:|"]
+    """Round 45: one own material of the item's tier per level (a weapon also a
+    Stick, a Basic craft left out here); a plain base rises 9 levels to its cap."""
+    out = ["| Tier | One level: one own material (bar … setting) | A whole tier (+9 levels) | "
+           "Minutes of the band's income |", "|---:|---|---:|---:|"]
     for tier in range(6):
-        sig = 2 * SIGNATURE_VALUE[tier]
-        mats = [2 * v[tier] for v in OWN_MATERIAL_VALUE.values()]
-        total = sig + max(mats)
-        out.append("| T%d | %s | %s–%s | up to %s | %.1f |" % (
-            tier + 1, C.money(sig), C.money(min(mats)), C.money(max(mats)), C.money(total),
+        mats = [v[tier] for v in OWN_MATERIAL_VALUE.values()]
+        total = 9 * max(mats)
+        out.append("| T%d | %s–%s | up to %s | %.1f |" % (
+            tier + 1, C.money(min(mats)), C.money(max(mats)), C.money(total),
             60.0 * total / bands[tier]["per_hour"]))
     return out
 

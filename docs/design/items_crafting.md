@@ -1521,14 +1521,17 @@ own rules.
 
 ### 6b.1 Profession ownership
 
-Apply enchantments at the owning profession station to the concrete stack.
-Qualified professionals craft base gear and apply or replace its legal
-enchants. Tools are not weapons and receive no ordinary combat enchants.
+Apply enchantments with the owning profession, its station nearby, to the
+concrete stack (Round 45: a job on the item in the Crafting tab's target
+slot, [professions.md](professions.md) §1.2). Qualified professionals craft
+base gear and apply or replace its legal enchants. Tools are not weapons and
+receive no ordinary combat enchants.
 
 Each legal family/stat/channel combination has one named recipe at every
 enchant tier: 552 ordinary family/stat/channel/tier operations plus 36
 Goldsmith trinket operations (three choices per channel across six tiers).
-UI selection distinguishes operations; none is an ingredient-matched recipe. An application acts on the concrete equipment stack, preserves its
+The Crafting tab lists the operations valid for the placed item; none is an
+ingredient-matched recipe. An application acts on the concrete equipment stack, preserves its
 other metadata and wear and leaves the other channel intact. Each stat has a
 fixed colour that the enchanted item shows as a small accent (prefix) and
 fitting (suffix) on its icon, in hand and on the body; every enchanting
@@ -1604,8 +1607,11 @@ state or marker exists.
 ### 6b.5 Qualification and replacement
 
 Qualification and progression use the enchant recipe tier. Both channels are
-available at every tier; mastery does not gate suffix access. Select the named
-operation, inspect the exact preview, then apply it with its material cost.
+available at every tier; mastery does not gate suffix access. Place the item,
+select the named operation from the list of those valid for it (up to the
+profession tier), inspect the exact preview (its tooltip is the result's),
+then start it with its material cost: a 5 s job that holds the item and
+counts one profession craft (Round 45).
 Replacement preserves the other channel, wear and unrelated stack metadata.
 An identical no-op (same stat and tier) is refused without cost or progress.
 Overwriting a higher tier is allowed; the preview warns ("Replaces T7
@@ -1624,10 +1630,12 @@ There are no cultural or PvP finishes (removed in Round 33).
 
 ## 7. Upgrade mechanics
 
-Enchants change through the named replacement workflow in §6b.5. Since Round
-33 a profession **upgrade** (one per profession and tier, at its station)
-lifts an item of its families and material tier T below item level `10 × T`
-to `10 × T`, never lower, and its enchants follow; a **Fallen Crown** lifts
+Enchants change through the named replacement workflow in §6b.5. A
+profession **upgrade** (one per profession and tier, its station nearby;
+Round 45, spec §2.26, §2.32) adds +N item levels to an item of its families
+and material tier T, at most up to `10 × T`, never past it and never lower;
+one level costs one own material of tier T (a weapon also a Stick) and 1 s,
+gives no XP, and its enchants follow; a **Fallen Crown** lifts
 an item to `10 × T + 5` and its enchants one tier, once
 ([item_tiers.md](item_tiers.md) §3, §4). There are no Imbue/Temper kits,
 random crafted application rolls or separate refinement steps.

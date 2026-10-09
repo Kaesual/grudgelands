@@ -9,9 +9,13 @@
 -- own material of tier T + K_loot[S] + family_input[F]. The trinket's prefix
 -- pool uses prefix_loot, its suffix pool suffix_loot.
 --
--- upgrades.json is a list with one entry per profession and tier:
---   {"tier": T, "profession": P, "families": [F...], "own_material_count": 2,
---    "signatures": [item, item], "target_item_level": 10 T}
+-- upgrades.json (Round 45) is the cost of one upgrade level and the
+-- families each profession upgrades:
+--   {"own_material_per_level": 1,
+--    "weapon_extra_per_level": [{"item": item, "n": n}, ...],
+--    "professions": [{"profession": P, "families": [F...]}, ...]}
+-- A level costs the own material of the item's tier, a weapon also the
+-- weapon extra (a Stick); an item rises up to 10 x its material tier.
 
 local M = {}
 
@@ -130,64 +134,61 @@ function M.operation_inputs(by_tier, family, stat, channel, tier, own_material)
 	return {own_material, loot, input}
 end
 
--- Validates the decoded upgrades.json: one entry per profession of
--- `families_of` (profession -> sorted family list, the owners of
--- item_tiers.md §3.3) and tier 1..6, with exactly those families, two own
--- materials, two signature items and the target item level 10 T. Returns
--- the rows keyed by profession, then tier.
-function M.validate_upgrades(rows, families_of)
-	if type(rows) ~= "table" or #rows == 0 then
-		fail("upgrades.json must be a non-empty list")
+-- Validates the decoded upgrades.json (Round 45, spec §2.26, §2.32): the
+-- cost of one upgrade level and one entry per profession of `families_of`
+-- (profession -> sorted family list, the owners of item_tiers.md §3.3) with
+-- exactly those families. Returns {own = <own materials per level>,
+-- weapon_extra = {{item, n}...}, families = {profession -> families}}.
+function M.validate_upgrades(data, families_of)
+	if type(data) ~= "table" or type(data.professions) ~= "table" then
+		fail("upgrades.json must be an object with a professions list")
 	end
-	local by_profession = {}
-	for index = 1, #rows do
-		local row = rows[index]
-		local where = "upgrades.json[" .. index .. "]"
-		if type(row) ~= "table" then fail(where .. " must be an object") end
-		local tier, profession = row.tier, row.profession
-		if type(tier) ~= "number" or tier % 1 ~= 0 or tier < 1 or tier > 6 then
-			fail(where .. " tier must be an integer 1..6")
+	local own = data.own_material_per_level
+	if type(own) ~= "number" or own < 1 or own % 1 ~= 0 then
+		fail("upgrades.json own_material_per_level must be a whole number of 1 or more")
+	end
+	local extra = data.weapon_extra_per_level
+	if type(extra) ~= "table" then fail("upgrades.json weapon_extra_per_level must be a list") end
+	local weapon_extra = {}
+	for index, entry in ipairs(extra) do
+		if type(entry) ~= "table" or not is_item(entry.item) or type(entry.n) ~= "number" or
+				entry.n < 1 or entry.n % 1 ~= 0 then
+			fail("upgrades.json weapon_extra_per_level[" .. index .. "] needs an item and n")
 		end
+		weapon_extra[index] = {item = entry.item, n = entry.n}
+	end
+	local families = {}
+	for index, row in ipairs(data.professions) do
+		local where = "upgrades.json professions[" .. index .. "]"
+		if type(row) ~= "table" then fail(where .. " must be an object") end
+		local profession = row.profession
 		local owned = families_of[profession]
 		if not owned then fail(where .. " has unknown profession " .. tostring(profession)) end
-		where = "upgrades.json " .. profession .. " T" .. tier
-		by_profession[profession] = by_profession[profession] or {}
-		if by_profession[profession][tier] then fail(where .. " is listed twice") end
+		if families[profession] then fail(where .. ": " .. profession .. " is listed twice") end
 		local listed = {}
 		for _, family in ipairs(type(row.families) == "table" and row.families or {}) do
 			listed[#listed + 1] = family
 		end
 		table.sort(listed)
 		if table.concat(listed, ",") ~= table.concat(owned, ",") then
-			fail(where .. " families differ from the profession's (" ..
+			fail(where .. " families differ from " .. profession .. "'s (" ..
 				table.concat(owned, ", ") .. ")")
 		end
-		if row.own_material_count ~= 2 then fail(where .. " needs two own materials") end
-		if type(row.signatures) ~= "table" or #row.signatures ~= 2 or
-				not is_item(row.signatures[1]) or not is_item(row.signatures[2]) then
-			fail(where .. " needs two signature items")
-		end
-		if row.target_item_level ~= 10 * tier then
-			fail(where .. " target item level must be " .. 10 * tier)
-		end
-		by_profession[profession][tier] = row
+		families[profession] = listed
 	end
 	for profession in pairs(families_of) do
-		for tier = 1, 6 do
-			if not (by_profession[profession] or {})[tier] then
-				fail("upgrades.json has no entry for " .. profession .. " T" .. tier)
-			end
-		end
+		if not families[profession] then fail("upgrades.json has no entry for " .. profession) end
 	end
-	return by_profession
+	return {own = own, weapon_extra = weapon_extra, families = families}
 end
 
--- The four material tokens of one upgrade operation.
-function M.upgrade_inputs(row, own_material)
-	if not is_item(own_material) then
-		fail(row.profession .. " T" .. row.tier .. " has no own material")
-	end
-	return {own_material, own_material, row.signatures[1], row.signatures[2]}
+-- The material tokens of one upgrade level: the own material of the item's
+-- tier, `data.own` times (the weapon extra is the operation's weapon_extra).
+function M.upgrade_inputs(data, own_material, where)
+	if not is_item(own_material) then fail(tostring(where) .. " has no own material") end
+	local inputs = {}
+	for index = 1, data.own do inputs[index] = own_material end
+	return inputs
 end
 
 -- Every item the enchant data names, with a readable location, for the

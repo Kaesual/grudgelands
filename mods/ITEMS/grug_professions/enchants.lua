@@ -6,8 +6,8 @@ local METALS = {"bronze", "iron", "steel", "silversteel", "embersteel", "abyssal
 -- Each operation costs the family's own material of its tier, the tier's
 -- loot item for the stat in its channel and the tier's input for the family;
 -- no profession needs another profession's product (checked below once every
--- mod has loaded). Upgrades (data/upgrades.json, item_tiers.md §3) cost two
--- own materials and two signatures of the tier.
+-- mod has loaded). Upgrades (data/upgrades.json, item_tiers.md §3, Round 45)
+-- cost one own material of the item's tier per level, a weapon also a Stick.
 
 local rows = P.read_json("enchants.json")
 if rows == nil then error("grug_professions: data/enchants.json is missing", 0) end
@@ -75,9 +75,10 @@ end
 
 local upgraded_professions = {}
 
--- One upgrade per tier for all of a profession's families: an item of that
--- material tier below item level 10 T becomes 10 T. `representatives[T]` is
--- the display item of the book entry.
+-- One upgrade per tier for all of a profession's families (Round 45): an
+-- item of that material tier gains item levels up to 10 T, one level per
+-- `materials[T]` (and the weapon extra for a weapon), 1 s each, no XP.
+-- `representatives[T]` is the display item of the entry.
 function P.register_upgrades(profession, station, materials, representatives)
 	if upgraded_professions[profession] then
 		error("grug_professions: upgrades of " .. profession .. " registered twice", 0)
@@ -87,17 +88,17 @@ function P.register_upgrades(profession, station, materials, representatives)
 	local words = {}
 	for index, family in ipairs(families) do words[index] = family:gsub("_", " ") end
 	for tier = 1, 6 do
-		local row = P.UPGRADE_DATA[profession][tier]
 		grug_jobs.register_station_operation({
 			id = "upgrade:" .. profession .. ":t" .. tier,
 			profession = profession, station = station, tier = tier,
 			operation = "upgrade", families = families,
-			inputs = {data.upgrade_inputs(row, materials[tier])},
+			inputs = data.upgrade_inputs(P.UPGRADE_DATA, materials[tier],
+				profession .. " T" .. tier),
+			weapon_extra = P.UPGRADE_DATA.weapon_extra,
 			output = representatives[tier],
-			label = "Upgrade — T" .. tier .. " to item level " .. row.target_item_level,
-			hint = table.concat(words, ", ") .. " of tier " .. tier .. " below item level " ..
-				row.target_item_level .. "; becomes item level " .. row.target_item_level ..
-				", its enchants follow.",
+			label = "Upgrade — T" .. tier .. " items up to item level " .. 10 * tier,
+			hint = table.concat(words, ", ") .. " of tier " .. tier .. ": +1 item level per " ..
+				"level up to " .. 10 * tier .. "; their enchants follow.",
 		})
 	end
 end
@@ -172,6 +173,12 @@ core.register_on_mods_loaded(function()
 	for _, ref in ipairs(data.referenced_items(P.ENCHANT_DATA)) do
 		if not core.registered_items[ref.item] then
 			error("grug_professions: " .. ref.where .. " names unregistered item " .. ref.item, 0)
+		end
+	end
+	for _, extra in ipairs(P.UPGRADE_DATA.weapon_extra) do
+		if not core.registered_items[extra.item] then
+			error("grug_professions: upgrades.json weapon_extra_per_level names unregistered item " ..
+				extra.item, 0)
 		end
 	end
 	-- Goal 3: every profession recipe and enchant operation uses only its own

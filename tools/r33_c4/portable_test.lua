@@ -12,13 +12,15 @@
 --   B. the tier is stored per enchant and shown in the tooltip; a found
 --      enchant has the item's tier and exactly the rule's value (no roll),
 --      boss drops at 65/70 carry T7;
---   C. an enchant at the station: the recipe's tier, its value at the item's
---      level, the same enchant refused, the weaker-overwrite warning
+--   C. an enchant on one item (Round 45: the Crafting tab's target slot,
+--      grug_jobs/operation_jobs.lua): the recipe's tier, its value at the
+--      item's level, the same enchant refused, the weaker-overwrite warning
 --      ("Replaces T7 Strength with T6 Strength."), none for a stronger one;
---   D. upgrades: item level 10 x tier, the requirement, enchants follow,
---      never lower (at the top, crowned, boss drops), only the recipe's
---      tier, only the profession's families; each awards profession
---      progress through award_progress;
+--   D. upgrades (Round 45: +N levels up to 10 x tier): the requirement,
+--      enchants follow, never past the cap (at the top, crowned, boss
+--      drops: "Already at the cap"), only the recipe's tier, only the
+--      profession's families; enchants award profession progress through
+--      award_progress, upgrades never;
 --   E. the crown: tier top + 5, every enchant +1 tier (T7 at most), once per
 --      item, refusals (crowned, would lower, would change nothing, no
 --      equipment), the preview text;
@@ -26,8 +28,8 @@
 --      spellbooks at the Tailor (bolts; the recipe 2 bolts + Parchment, no
 --      mastery band since Round 45), the Woodcarver keeps staves and wands;
 --      every enchant
---      takes its channel's loot, every upgrade 2 own materials + the two
---      signatures of upgrades.json; the data files equal tools/r33_ds;
+--      takes its channel's loot, every upgrade level one own material
+--      (Round 45, no signatures); the data files equal tools/r33_ds;
 --   G. the Goldsmith: no Ornament Components, no spellbook, Cut Citrine is
 --      the T1 trinket gem, no Cut Quartz (raw Quartz stays a T1 input);
 --   H. zone leaders and war-camp captains roll the named/elite row
@@ -178,6 +180,14 @@ grug_jobs = {
 		woodcarver = {}, goldsmith = {}},
 	station_info = function(station) return {id = station} end,
 	can_craft_recipe = function() return can_craft, "Weaponsmith tier 6 required." end,
+	ingredient_list = function(tokens)
+		local list, at = {}, {}
+		for _, token in ipairs(tokens) do
+			if at[token] then list[at[token]].n = list[at[token]].n + 1
+			else list[#list + 1] = {item = token, n = 1}; at[token] = #list end
+		end
+		return list
+	end,
 	_flatten_inputs = function(value)
 		local out = {}
 		local function walk(node)
@@ -345,12 +355,11 @@ local UPGRADES = decode_json(read_file("mods/ITEMS/grug_professions/data/upgrade
 -- C. Enchanting at the station.
 ------------------------------------------------------------------------------
 local player = {get_player_name = function() return "smith" end}
-local function plan(id, item, extra_inputs)
+-- Round 45: an operation works on the one item of the target slot; its
+-- materials are the job's (tools/r45_eu), `levels` an upgrade's +N.
+local function plan(id, item, levels)
 	local recipe = assert(grug_jobs.station_operation(id), id)
-	local inputs = {item}
-	for _, token in ipairs(recipe.flat_inputs) do inputs[#inputs + 1] = ItemStack(token) end
-	for _, stack in ipairs(extra_inputs or {}) do inputs[#inputs + 1] = stack end
-	return Q.operation_plan(recipe, inputs, player)
+	return Q.operation_plan(recipe, item, player, levels)
 end
 local function crafted(name, ilvl)
 	local stack = ItemStack(name)
@@ -375,7 +384,8 @@ eq(result.warning, nil, "C a first enchant warns of nothing")
 eq(result.output:get_meta():get_int("grug_quality"), 2, "C one enchant is Uncommon")
 check(description(result.output):find("+11 Strength (T5)", 1, true),
 	"C the tooltip names the tier")
-eq(result.consume[1], 1, "C the item is consumed from the grid")
+check(result.output ~= ember_sword, "C the plan works on a copy")
+eq(#Q.get_affixes(ember_sword), 0, "C the placed item is unchanged")
 local enchanted = result.output
 result = plan("enchant:sword:suffix:crit_percent:t4", enchanted)
 check(result and affix_on(result.output, "suffix").tier == 4 and
@@ -396,8 +406,9 @@ check(result and result.warning == nil, "C a stronger replacement does not warn"
 _, reason = plan("enchant:sword:prefix:str:t6", enchanted)
 eq(reason, "The item tier must be at least the enchantment tier.",
 	"C an enchant above the item's tier is refused")
-_, reason = plan("enchant:sword:prefix:str:t5", enchanted, {ItemStack("default:dirt")})
-eq(reason, "Remove unrelated items from the station.", "C unrelated items are refused")
+-- (Round 45: no station grid, so no unrelated items to refuse.)
+_, reason = plan("enchant:sword:prefix:str:t5", crafted("grug_gear:chest_metal_steel"))
+eq(reason, "This enchantment is for another kind of item.", "C another family is refused")
 can_craft = false
 _, reason = plan("enchant:sword:prefix:str:t5", enchanted)
 eq(reason, "Weaponsmith tier 6 required.", "C the profession gate still decides")
@@ -406,7 +417,12 @@ can_craft = true
 ------------------------------------------------------------------------------
 -- D. Upgrades.
 ------------------------------------------------------------------------------
-result = plan("upgrade:weaponsmith:t5", enchanted)
+-- Round 45: +N item levels up to the cap 10 x tier (a job, tools/r45_eu).
+_, reason = plan("upgrade:weaponsmith:t5", enchanted, 10)
+eq(reason, "At most +9 levels: the cap is item level 50.", "D never past the cap")
+result = plan("upgrade:weaponsmith:t5", enchanted, 3)
+eq(result and result.output:get_meta():get_int("grug_ilvl"), 44, "D +3 levels: 41 to 44")
+result = plan("upgrade:weaponsmith:t5", enchanted, 9)
 check(result ~= nil, "D a T5 sword upgrades at the Weaponsmith's T5 upgrade")
 local upgraded = result.output
 local meta = upgraded:get_meta()
@@ -417,22 +433,22 @@ eq(affix_on(upgraded, "prefix").value, 15, "D Strength follows to its item-level
 check(near(affix_on(upgraded, "suffix").value, 3.5), "D T4 Crit stays at its cap (3.5)")
 eq(meta:get_int("grug_quality"), 3, "D the quality stays")
 check(description(upgraded):find("Item level 50", 1, true), "D the tooltip shows item level 50")
-_, reason = plan("upgrade:weaponsmith:t5", upgraded)
-eq(reason, "The item is already at item level 50 or higher.", "D never twice, never lower")
-_, reason = plan("upgrade:weaponsmith:t6", crafted("grug_gear:sword_embersteel"))
+_, reason = plan("upgrade:weaponsmith:t5", upgraded, 1)
+eq(reason, "Already at the cap (item level 50).", "D at the cap, never lower")
+_, reason = plan("upgrade:weaponsmith:t6", crafted("grug_gear:sword_embersteel"), 1)
 eq(reason, "This upgrade takes tier 6 items.", "D only the recipe's material tier")
-_, reason = plan("upgrade:armorsmith:t5", crafted("grug_gear:sword_embersteel"))
-eq(reason, "Insert an item of the selected family.", "D only the profession's families")
+_, reason = plan("upgrade:armorsmith:t5", crafted("grug_gear:sword_embersteel"), 1)
+eq(reason, "This upgrade is for another kind of item.", "D only the profession's families")
 local book = crafted("grug_gear:spellbook_iron")
-result = plan("upgrade:tailor:t2", book)
+result = plan("upgrade:tailor:t2", book, 9)
 eq(result and result.output:get_meta():get_int("grug_ilvl"), 20, "D the Tailor upgrades a spellbook")
 local bow = crafted("grug_gear:bow_bronze")
-result = plan("upgrade:leatherworker:t1", bow)
+result = plan("upgrade:leatherworker:t1", bow, 9)
 eq(result and result.output:get_meta():get_int("grug_ilvl"), 10, "D the Leatherworker upgrades a bow")
 eq(result and result.output:get_meta():get_int("grug_req_level"), 10,
 	"D a first-bracket item upgraded to 10 requires level 10")
 local trinket = crafted(grug_gear.trinket_item("manawell", 3))
-result = plan("upgrade:goldsmith:t3", trinket)
+result = plan("upgrade:goldsmith:t3", trinket, 9)
 eq(result and result.output:get_meta():get_int("grug_ilvl"), 30, "D the Goldsmith upgrades a trinket")
 -- A boss drop (65/70) is never lowered.
 local boss_item
@@ -443,15 +459,13 @@ for seed = 1, 50 do
 end
 check(boss_item ~= nil, "D a King drops a sword in 50 kills")
 if boss_item then
-	_, reason = plan("upgrade:weaponsmith:t6", boss_item)
-	eq(reason, "The item is already at item level 60 or higher.", "D a boss drop is refused")
+	_, reason = plan("upgrade:weaponsmith:t6", boss_item, 1)
+	eq(reason, "Already at the cap (item level 60).", "D a boss drop is refused")
 end
--- Every upgrade is a progress craft: the real grug_jobs state awards it.
+-- Enchants are progress crafts; upgrades never (Round 45, spec §2.31).
 for _, op in ipairs(operations) do
-	if op.operation == "upgrade" then
-		check(op.progress == true and op.station_operation == true,
-			op.id .. " counts as progress and is keyed by id")
-	end
+	check(op.progress == (op.operation == "enchant") and op.station_operation == true,
+		op.id .. " progress flag and keyed by id")
 end
 
 ------------------------------------------------------------------------------
@@ -476,13 +490,13 @@ do
 	eq(item:get_meta():get_int("grug_crowned"), 0, "E the crown works on a copy")
 	local again, why = Q.crown_item(crowned)
 	check(again == nil and why == "This item is already crowned.", "E once per item")
-	_, why = plan("upgrade:weaponsmith:t5", crowned)
-	eq(why, "The item is already at item level 50 or higher.",
+	_, why = plan("upgrade:weaponsmith:t5", crowned, 1)
+	eq(why, "Already at the cap (item level 50).",
 		"E a crowned item above its tier top is not upgraded")
 	-- An upgraded T6 item with T6 enchants reaches T7 at 65.
 	local abyssal = crafted("grug_gear:sword_abyssal_steel")
 	abyssal = plan("enchant:sword:prefix:str:t6", abyssal).output
-	abyssal = plan("upgrade:weaponsmith:t6", abyssal).output
+	abyssal = plan("upgrade:weaponsmith:t6", abyssal, 9).output
 	local top = Q.crown_item(abyssal)
 	eq(top:get_meta():get_int("grug_ilvl"), 65, "E a T6 item crowns to 65")
 	eq(affix_on(top, "prefix").tier, 7, "E T6 becomes T7")
@@ -569,15 +583,19 @@ eq(enchant_count, 588, "F 588 enchant operations")
 check(family_ok, "F every family is enchanted by its owner at its station")
 check(loot_ok, "F every enchant takes its channel's loot and the family input")
 eq(upgrade_count, 36, "F one upgrade per profession and tier")
-for _, row in ipairs(UPGRADES) do
-	local op = upgrades_seen[row.profession .. ":" .. row.tier]
-	if check(op ~= nil, "F upgrade " .. row.profession .. " T" .. row.tier .. " registered") then
-		eq(table.concat(op.families, ","), table.concat(row.families, ","),
-			"F " .. op.id .. " families")
-		eq(STATION[row.profession], op.station, "F " .. op.id .. " station")
-		local inputs = op.flat_inputs
-		check(#inputs == 4 and inputs[1] == inputs[2] and inputs[3] == row.signatures[1] and
-			inputs[4] == row.signatures[2], "F " .. op.id .. " takes 2 own + the two signatures")
+for _, row in ipairs(UPGRADES.professions) do
+	for tier = 1, 6 do
+		local op = upgrades_seen[row.profession .. ":" .. tier]
+		if check(op ~= nil, "F upgrade " .. row.profession .. " T" .. tier .. " registered") then
+			eq(table.concat(op.families, ","), table.concat(row.families, ","),
+				"F " .. op.id .. " families")
+			eq(STATION[row.profession], op.station, "F " .. op.id .. " station")
+			-- Round 45: one own material per level, no signatures.
+			eq(#op.flat_inputs, UPGRADES.own_material_per_level,
+				"F " .. op.id .. " takes one own material per level")
+			eq(op.weapon_extra[1] and op.weapon_extra[1].item, "default:stick",
+				"F " .. op.id .. " takes a Stick for a weapon")
+		end
 	end
 end
 eq(upgrades_seen["leatherworker:1"].flat_inputs[1], LEATHERS[1], "F Leatherworker upgrades with leather")
@@ -592,11 +610,12 @@ eq(read_file("mods/ITEMS/grug_professions/data/enchants.json"),
 	read_file("tools/r33_ds/enchants_r33.json"), "F enchants.json is the data design's")
 eq(read_file("mods/ITEMS/grug_professions/data/upgrades.json"),
 	read_file("tools/r33_ds/upgrades_r33.json"), "F upgrades.json is the data design's")
-check(not pcall(data.validate_upgrades, {UPGRADES[1]}, P.FAMILY_OWNERS),
+check(not pcall(data.validate_upgrades, {own_material_per_level = 1,
+	weapon_extra_per_level = {}, professions = {UPGRADES.professions[1]}}, P.FAMILY_OWNERS),
 	"F an incomplete upgrade table fails the load")
 do
 	local rows = decode_json(read_file("mods/ITEMS/grug_professions/data/upgrades.json"))
-	rows[1].families = {"sword"}
+	rows.professions[1].families = {"sword"}
 	check(not pcall(data.validate_upgrades, rows, P.FAMILY_OWNERS),
 		"F an upgrade naming foreign families fails the load")
 end
@@ -739,11 +758,11 @@ check(close(white, 5, 0.4) and close(blue, 2, 0.25) and close(gold, 1, 0.2),
 	"H an ordinary mob keeps 5 / 2 / 1 %")
 
 ------------------------------------------------------------------------------
--- Progress: the real grug_jobs state counts an upgrade like an enchant.
+-- Progress: the real grug_jobs state counts an enchant, never an upgrade.
 ------------------------------------------------------------------------------
 do
-	-- Round 45: the station dialogs no longer apply operations (lane EU makes
-	-- them jobs); the counting itself stays.
+	-- Round 45: enchants and upgrades are jobs (lane EU, tools/r45_eu); an
+	-- enchant counts as a craft, an upgrade gives no XP (spec §2.31).
 	local upgrade = grug_jobs.station_operation("upgrade:tailor:t1")
 	local saved = grug_jobs
 	_G.grug_jobs = {}
@@ -763,7 +782,9 @@ do
 	core.chat_send_player = function() end
 	grug_jobs.learn(tailor, "tailor")
 	grug_jobs.award_progress(tailor, upgrade)
-	eq(grug_jobs.crafts_in_tier(tailor, "tailor"), 1, "progress: an upgrade awards one craft")
+	eq(grug_jobs.crafts_in_tier(tailor, "tailor"), 0, "progress: an upgrade awards nothing")
+	grug_jobs.award_progress(tailor, saved.station_operation("enchant:cloth_armor:prefix:int:t1"))
+	eq(grug_jobs.crafts_in_tier(tailor, "tailor"), 1, "progress: an enchant awards one craft")
 	_G.grug_jobs = saved
 end
 

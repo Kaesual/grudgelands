@@ -151,6 +151,34 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (per known profession its tier, "Crafts: n/m toward tier N+1",
     "Highest tier reached." at T6 and the level-cap note, as the Character
     tab did until Round 45; rows that do not fit point to the area tabs).
+  - **The enchant and upgrade boxes** (Round 45 lane EU, spec §2.24, §2.26,
+    §4.6): a learned primary area shows "Enchant an item" and "Upgrade an
+    item" below its list; a recipe row or an area tab returns to the recipe
+    box. Both boxes draw the **target slot** `grug_craft_target` (one piece
+    of equipment; shift-click moves an item of `main` into it; placing or
+    taking it resends the page). The **enchant box**: the slot, an arrow,
+    the preview (the result's image, its computed description as the
+    tooltip), the profession's enchants valid for the item up to the
+    profession tier, best tier first, each with the value it gives on this
+    item ("T5 prefix: +11 Strength"), the chosen one's materials with
+    have/need, the overwrite warning ("Replaces T7 Strength with T6
+    Strength."), the XP hint and **Enchant now** (5 s), which turns into
+    **Cancel**. The **upgrade box**: the slot, the item level and the cap
+    ("Cap 30 (Weaponsmith tier 3)"), **+N levels** with **Max** (to the cap,
+    as far as the materials pay), the resulting item level, the materials
+    for N levels, and **Upgrade now**; a result that needs a higher level
+    than the player's shows the permanent warning "The target item level
+    exceeds your level, you won't be able to use this item before you have
+    reached level N." and the yellow **Upgrade anyway**. The server learns
+    N only with a click, so a click for an item and count not yet shown
+    with the warning shows it and the next one starts (spec §4.3); a count
+    above the cap or the materials is lowered with its note. An item at or
+    above its cap reads "Already at the cap (item level C)." and takes no
+    level. The running job reads "Enchanting…" with the item's name, or
+    "Upgrading…" with "Steel Sword +3 levels". An item left in the slot
+    goes back into the inventory at join and when a profession is unlearned
+    (the give helper, then the output area; with no room anywhere it stays
+    in the slot).
   - **The quantity field** (spec §4.3): Enter recalculates and never starts;
     Craft now above the maximum lowers the field to it with the job's note
     ("Not enough ingredients — quantity reduced to N") and starts nothing;
@@ -420,11 +448,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   (nothing is put, moved or swapped into it). Take all and a cancel's refund
   go through the give helper.
 - Professional components such as settings are never Basic inputs.
-- Named enchant application and replacement use the owning profession station.
-  Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
-  Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are
-  transactional in-place operations on one concrete stack and preserve its
-  metadata and wear. An enchanted weapon, offhand or armour piece shows its
+- Named enchant application and replacement need the owning profession's
+  station nearby. Weaponsmith and Armorsmith share one Forge; Leatherworker
+  uses the Tanning Rack, Tailor the Tailor Bench and Woodcarver the Carving
+  Bench. Since Round 45 they are jobs on the one stack in the target slot
+  (§1, "The enchant and upgrade boxes"): the item stays in the job until the
+  result reaches the output area, and its other metadata and wear are
+  kept. An enchanted weapon, offhand or armour piece shows its
   prefix and suffix colours (character_visuals.md §5a) on its own inventory
   image, which also draws it in hand and when dropped and is rebuilt whenever
   its affixes change; a plain stack carries no image of its own.
