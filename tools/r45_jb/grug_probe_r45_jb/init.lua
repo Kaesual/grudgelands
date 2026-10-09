@@ -162,6 +162,7 @@ local function cycle()
 	local made = 0
 	for index = 1, 4 do
 		local stack = inv:get_stack(J.OUTPUT_LIST, index)
+		log(("gear %s: output slot %d holds %s"):format(gear.id, index, stack:to_string()))
 		if stack:get_name() == gear.output then
 			made = made + 1
 			local meta = stack:get_meta()

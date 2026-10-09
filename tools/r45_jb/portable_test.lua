@@ -186,6 +186,9 @@ function ItemStack(item)
 	local name, count, wear, meta = tostring(item or ""):match("^(%S*)%s*(%d*)%s*(%d*)%s*(.*)$")
 	self.name = name or ""
 	self.count = self.name == "" and 0 or (tonumber(count) or 1)
+	-- The engine reads every tool itemstring as one item.
+	local def = core.registered_items[self.name]
+	if def and def.type == "tool" and self.count > 1 then self.count = 1 end
 	self.wear = tonumber(wear) or 0
 	for key, value in (meta or ""):gmatch("([^=;]+)=([^;]*)") do self.fields[key] = value end
 	return self
@@ -329,7 +332,9 @@ item("t:torch", {description = "Torch"})
 item("t:chest", {description = "Chest", stack_max = 99})
 item("t:bar", {description = "Copper Bar"})
 item("t:sword", {description = "Copper Sword", stack_max = 1, _gear = true,
-	groups = {grug_equip_weapon = 1}})
+	type = "tool", groups = {grug_equip_weapon = 1}})
+item("t:pick", {description = "Old Pick", stack_max = 1, type = "tool"})
+item("t:scrap", {description = "Scrap"})
 item("t:meat", {description = "Meat"})
 item("t:grain", {description = "Wild Grain"})
 item("t:stew", {description = "Hearty Stew", stack_max = 20})
@@ -362,6 +367,8 @@ local chest = J.register_recipe({area = "basic", output = "t:chest",
 	ingredients = {{group = "wood", n = 8}}})
 local mixed = J.register_recipe({area = "basic", output = "t:gem",
 	ingredients = {{group = "wood", n = 2}, {item = "t:oak", n = 1}}})
+local melt = J.register_recipe({area = "basic", output = "t:scrap",
+	ingredients = {{item = "t:pick", n = 2}}})
 local sword = J.register_recipe({area = "weaponsmith", tier = 1, station = "forge",
 	output = "t:sword", ingredients = {{item = "t:bar", n = 2}, {item = "t:stick", n = 1}},
 	time = 3})
@@ -533,6 +540,20 @@ do
 	J.cancel_job(g)
 	eq(count_of(g, "t:oak"), 3, "O cancel returns the oak")
 	eq(count_of(g, "t:pine"), 26, "O cancel returns the pine")
+
+	-- Tools as ingredients: one consumed entry per tool, all refunded.
+	local t = new_player("o5")
+	local worn = ItemStack("t:pick")
+	worn.wear = 300
+	put(t, "main", 9, "t:pick")
+	t.inv:set_stack("main", 10, worn)
+	put(t, "main", 11, "t:pick")
+	check(J.start_job(t, melt.id, 1), "O a job consuming two tools starts")
+	local tools = job_of(t).consumed
+	eq(#tools, 2, "O each tool its own consumed entry")
+	eq(tools[1] .. "|" .. tools[2], "t:pick 1 0|t:pick 1 300", "O the tools in consume order, wear kept")
+	J.cancel_job(t)
+	eq(count_of(t, "t:pick"), 3, "O cancel returns both tools")
 
 	-- An item entry is served before a group entry that also accepts it.
 	local m = new_player("o4")

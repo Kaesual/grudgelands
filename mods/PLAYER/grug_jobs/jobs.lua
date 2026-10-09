@@ -9,8 +9,8 @@
 --   {kind = "recipe", recipe = <registry id>, quantity = <crafts>,
 --    consumed = {<itemstring>, ...}, target = <itemstring> | nil,
 --    start = <seconds>, finish = <seconds>, no_xp = true | nil}
--- `consumed` holds the taken stacks (one itemstring per identity, counts may
--- exceed stack_max) for the refund; `target` is the stack an enchant or an
+-- `consumed` holds the taken stacks (itemstrings of at most stack_max each)
+-- for the refund; `target` is the stack an enchant or an
 -- upgrade works on (lane EU); `no_xp` is set when the job's profession was
 -- unlearned while it ran. Times are os.time() seconds with a sub-second part
 -- (grug_jobs.now), so jobs survive restarts and logouts.
@@ -162,12 +162,18 @@ local function consume_order(inv)
 	return slots
 end
 
--- One identity per stack kind: name and wear (ingredients carry no
--- metadata), the count left out.
-local function identity(stack)
-	local one = ItemStack(stack)
-	one:set_count(1)
-	return one:to_string()
+-- Stacks of at most stack_max holding `count` items like `stack`. Built by
+-- count, never from a counted itemstring: the engine reads every tool
+-- itemstring as one item (ItemStack::deSerialize).
+local function stacks_of(stack, count, into)
+	local most = math.max(1, stack:get_stack_max())
+	while count > 0 do
+		local piece = ItemStack(stack)
+		piece:set_count(math.min(most, count))
+		into[#into + 1] = piece
+		count = count - piece:get_count()
+	end
+	return into
 end
 
 -- Takes `quantity` times the ingredient list (item entries before group
@@ -189,7 +195,7 @@ function grug_jobs.take_ingredients(player, ingredients, quantity)
 	for _, entry in ipairs(ingredients) do
 		if entry.group then ordered[#ordered + 1] = entry end
 	end
-	local taken, order = {}, {}
+	local taken = {}
 	for _, entry in ipairs(ordered) do
 		local need = entry.n * quantity
 		for _, slot in ipairs(slots) do
@@ -199,9 +205,10 @@ function grug_jobs.take_ingredients(player, ingredients, quantity)
 				local piece = stack:take_item(math.min(need, stack:get_count()))
 				need = need - piece:get_count()
 				slot.changed = true
-				local key = identity(piece)
-				if not taken[key] then order[#order + 1] = key end
-				taken[key] = (taken[key] or 0) + piece:get_count()
+				-- Merged into the previous piece while it stays a valid stack.
+				local last = taken[#taken]
+				local rest = last and last:add_item(piece) or piece
+				if not rest:is_empty() then taken[#taken + 1] = rest end
 			end
 		end
 		if need > 0 then return nil end
@@ -210,22 +217,14 @@ function grug_jobs.take_ingredients(player, ingredients, quantity)
 		if slot.changed then inv:set_stack(slot.list, slot.index, slot.stack) end
 	end
 	local consumed = {}
-	for _, key in ipairs(order) do
-		local stack = ItemStack(key)
-		stack:set_count(taken[key])
-		consumed[#consumed + 1] = stack:to_string()
-	end
+	for index, piece in ipairs(taken) do consumed[index] = piece:to_string() end
 	return consumed
 end
 
--- A stack of any count as stacks of at most stack_max.
-local function split(stack, into)
-	stack = ItemStack(stack)
-	local most = math.max(1, stack:get_stack_max())
-	while not stack:is_empty() do
-		into[#into + 1] = stack:take_item(math.min(most, stack:get_count()))
-	end
-	return into
+-- A stored stack (an itemstring) as stacks of at most stack_max.
+local function split(item, into)
+	local stack = ItemStack(item)
+	return stacks_of(stack, stack:get_count(), into)
 end
 
 --
@@ -378,7 +377,7 @@ grug_jobs.register_job_kind("recipe", {
 			return stacks, "Returned ingredients"
 		end
 		local total = recipe.count * job.quantity
-		split(ItemStack(recipe.output .. " " .. total), stacks)
+		stacks_of(ItemStack(recipe.output), total, stacks)
 		local items = rawget(_G, "grug_items")
 		if items and type(items.crafted_output) == "function" then
 			for _, stack in ipairs(stacks) do items.crafted_output(stack, player) end
