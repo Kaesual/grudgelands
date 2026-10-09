@@ -258,8 +258,9 @@ layers).
 Positional loops to the player at nodes near them, found by one
 `find_nodes_in_area` per pass in a box ±12 × ±5 × ±12 around the player.
 Round 45 PT8 (the user, 2026-10-09) removed the hammer loop at the
-profession forge and the cottages anvil: it played with nobody at work; the
-forge now sounds when a job starts there (§3.2).
+profession forge and the cottages anvil, and its file: it played with
+nobody at work; the forge now sounds when a job starts there (§3.2, the
+short hammer cue).
 
 - **fire:** a burning furnace (the public town hearths while they burn) and
   camp fires, heard to 10 nodes;

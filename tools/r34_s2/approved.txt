@@ -21,8 +21,7 @@ grug_music_village_consort.ogg, R34 D.7, https://incompetech.com/music/royalty-f
 grug_ambience_human_meadow.ogg, S2 B1.1, https://freesound.org/people/Garuda1982/sounds/692048/ (Garuda1982, CC0 1.0)
 grug_ambience_night_forest.ogg, S2 B9.1, https://freesound.org/people/fribergmusic2024/sounds/719558/ (fribergmusic2024, CC0 1.0)
 grug_ambience_stream_pond.ogg, S2 B12.2, https://freesound.org/people/mhtaylor67/sounds/236981/ (mhtaylor67, CC0 1.0)
-# Shipped as grug_ambience_forge.ogg (the only forge loop, so no variant suffix; coordinator, phase 2), same bytes as the approved grug_ambience_forge.e2.ogg:
-grug_ambience_forge.ogg, S2 E1.2, https://freesound.org/people/Duasun/sounds/321889/ (Duasun, CC0 1.0)
+# The forge loop (S2 E1.2) was removed in Round 45 PT8 (user, 2026-10-09: the forge sounds only at a job's start, with the short hammer cue of grug_sounds).
 grug_ambience_fire.ogg, S2 E2.1, https://freesound.org/people/Sauron974/sounds/204348/ (Sauron974, CC0 1.0)
 # Music picks (user 2026-10-04): M7, M8 (first 2:00), M10 (first 3:20), M11; M6 also as the main-menu theme (menu/theme.ogg):
 grug_music_a_dragons_lullaby.ogg, S2 M7, https://www.scottbuckley.com.au/library/a-dragons-lullaby-2023/ (Scott Buckley, CC BY 4.0)
