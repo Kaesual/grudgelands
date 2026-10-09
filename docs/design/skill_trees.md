@@ -716,8 +716,9 @@ it at level 1 and then re-tuning it with three separate talents.
 Since Round 44 (`ui-crafting-rework-plan.md` ruling 7 and §3.4) one tab,
 **Talents & Skills**, registered from `grug_classes/talents_ui.lua`, shows
 the class's talent trees; `grug_skills` adds the skill catalogue row under
-them (`inventory_equipment.md` §6) and the shared frame the short inventory
-(the hotbar and two scrolling rows) below. The page uses real coordinates.
+them (`inventory_equipment.md` §6; since the Round 45 playtest in a
+"Skills" box like the Hotbar box, right above the short inventory) and the
+shared frame the short inventory (the hotbar and two scrolling rows) below. The page uses real coordinates.
 
 - **Tree framework** (`grug_classes.layout_tree`): a tree is a list of
   sections (with optional column labels) and a list of nodes `{id, section,

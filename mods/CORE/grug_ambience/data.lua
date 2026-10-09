@@ -31,7 +31,6 @@ D.gains = {
 	town_bed = 0.5,
 	call = 0.35,
 	music = 0.6,
-	forge = 0.6,
 	fire = 0.5,
 	water = 0.5,
 }
@@ -102,9 +101,10 @@ D.calls = {
 -- among the nearest few, so walking along a river does not restart them).
 -- init.lua adds every other registered flowing liquid whose source is one
 -- of the two waters to "water" (never a source node).
+-- Round 45 PT8 (the user, 2026-10-09): no hammer loop at forges and anvils
+-- any more, it sounded with nobody at work; the forge plays its sound when a
+-- job starts there (grug_jobs/station_sounds.lua).
 D.emitter_nodes = {
-	["grug_jobs:forge"] = "forge",
-	["grug_decor:cottages_anvil"] = "forge",
 	-- A burning furnace: the public town hearths are default:furnace and
 	-- turn into this node while they burn (grug_jobs station_nodes.lua).
 	["default:furnace_active"] = "fire",
@@ -113,7 +113,6 @@ D.emitter_nodes = {
 	["default:river_water_flowing"] = "water",
 }
 D.emitters = {
-	forge = {sound = "grug_ambience_forge", hear = 16, limit = 2}, -- S2 E1.2
 	fire = {sound = "grug_ambience_fire", hear = 10, limit = 2}, -- S2 E2.1
 	water = {sound = "grug_ambience_stream_pond", hear = 14, limit = 2}, -- S2 B12.2
 }

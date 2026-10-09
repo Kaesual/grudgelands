@@ -376,8 +376,8 @@ local context = sfinv.get_or_create_context(alice)
 sfinv.set_page(alice, PAGE)
 local out_fs = alice.formspec
 formspec_ok(out_fs, "P out of a party")
-eq(out_fs:sub(1, #"formspec_version[6]size[13.500,13.673]"),
-	"formspec_version[6]size[13.500,13.673]", "P out of a party: the window's frame")
+local frame_header = ("formspec_version[6]size[%.3f,%.3f]"):format(FRAME_W, FRAME_H)
+eq(out_fs:sub(1, #frame_header), frame_header, "P out of a party: the window's frame")
 has(out_fs, "tabheader[0,0;sfinv_nav_tabs;", "P the tab row")
 has(out_fs, "Party & PvP", "P the tab caption")
 no_inventory(out_fs, "P out of a party")
@@ -549,8 +549,8 @@ local help_fs = alice.formspec
 formspec_ok(help_fs, "H Help")
 no_inventory(help_fs, "H Help")
 -- Hypertext bodies in legacy coordinates end inside the window: (y + 0.35
--- + 0.8667 h - 0.1333) slot spacings (help.lua), the window 13.673 real
--- units = 11.85 spacings high.
+-- + 0.8667 h - 0.1333) slot spacings (help.lua), the window FRAME_H real
+-- units (13.673 = 11.85 spacings until the Round 45 playtest) high.
 local window_s = FRAME_H * 13 / 15
 for _, section in ipairs({"start", "quests", "basics", "formulas", "about", "sound"}) do
 	context.grug_help_section = section

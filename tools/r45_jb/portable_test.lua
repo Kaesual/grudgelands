@@ -17,6 +17,8 @@
 --      through grug_items.crafted_output (one call per stack), several
 --      stacks above stack_max, the feed line, the end hook, the craft sound
 --      once, the achievement callback with the job's items; no step work;
+--      the start hook (PT8): once per started job, with the nearest station
+--      in range (none without a station); a forge job ends without a cue;
 --   X  XP = min(crafts, XP left in the tier), only for progress recipes of
 --      the current tier; a saturated profession advances at the job's end;
 --      unlearning during a job finishes it without XP (also after relearning);
@@ -380,6 +382,12 @@ local awards = {}
 J.register_on_award_progress(function(player, recipe, items)
 	awards[#awards + 1] = {name = player:get_player_name(), recipe = recipe.id, items = items}
 end)
+-- Round 45 PT8: the start hook with the station the start found.
+local starts = {}
+J.register_on_job_start(function(player, job, station_pos)
+	starts[#starts + 1] = {name = player:get_player_name(), recipe = job.recipe,
+		pos = station_pos}
+end)
 local ends = {}
 J.register_on_job_end(function(player, job, outcome, source)
 	ends[#ends + 1] = {name = player:get_player_name(), outcome = outcome, source = source,
@@ -593,10 +601,19 @@ do
 	ok = J.start_job(p, sword.id, 1)
 	check(not ok, "S a forge 5 nodes away is out of range")
 	nodes[#nodes + 1] = {name = "t:forge", pos = {x = 4, y = 6, z = -4}}
+	local starts_before = #starts
 	ok = J.start_job(p, sword.id, 1)
 	check(ok, "S a forge within 4 nodes (a corner of the box) allows the start")
+	-- PT8: the start hook runs once, with the nearest forge in range (the
+	-- one 5 nodes away is out of range, a refused start runs no hook).
+	eq(#starts - starts_before, 1, "S one start hook for the started job")
+	local start = starts[#starts]
+	check(start and start.name == "s1" and start.recipe == sword.id and start.pos and
+		start.pos.x == 4 and start.pos.y == 6 and start.pos.z == -4,
+		"S the start hook gets the forge the job starts at")
 	ok, reason, info = J.start_job(p, torch.id, 1)
 	check(not ok and info.code == "busy", "S one job per player")
+	eq(#starts - starts_before, 1, "S a refused start runs no start hook")
 	-- The station counts once, at the start.
 	nodes = {}
 	advance(3.1)
@@ -639,6 +656,8 @@ do
 	local awards_before, sounds_before = #awards, #sounds
 	local ok, _, job = J.start_job(p, stew.id, 10)
 	check(ok, "C a 10-stew job starts")
+	check(starts[#starts].name == "c1" and starts[#starts].pos == nil,
+		"C a job without a station starts with no station position")
 	eq(job.finish - job.start, 10, "C the job lasts quantity × time")
 	eq(#afters > 0, true, "C the online timer is armed")
 	advance(9.9)
@@ -701,13 +720,24 @@ do
 	-- above stack_max.
 	local smith = new_player("c2")
 	J.learn(smith, "weaponsmith")
-	nodes = {{name = "t:forge", pos = {x = 0, y = 10, z = 2}}}
+	-- PT8: two forges in range; the start names the nearer one. The forge
+	-- has a station sound (station_sounds.lua's table), so the job's end
+	-- plays no craft cue: the forge played it at the start.
+	nodes = {{name = "t:forge", pos = {x = 3, y = 10, z = 3}},
+		{name = "t:forge", pos = {x = 0, y = 10, z = 2}}}
+	J.STATION_SOUNDS = {forge = {event = "craft_smithy", seconds = 1.5}}
 	put(smith, "main", 9, "t:bar 10")
 	put(smith, "main", 10, "t:stick 10")
 	local calls = crafted_calls
 	check(J.start_job(smith, sword.id, 3), "C three swords start")
+	local start = starts[#starts]
+	check(start and start.name == "c2" and start.pos and start.pos.x == 0 and
+		start.pos.z == 2, "C the start hook gets the nearest forge")
+	local sounds_at_start = #sounds
 	advance(9)
 	run_timers()
+	eq(#sounds, sounds_at_start, "C a forge job's end plays no craft cue (PT8)")
+	J.STATION_SOUNDS = nil
 	eq(crafted_calls - calls, 3, "C crafted_output once per sword")
 	for index = 1, 3 do
 		local stack = stack_at(smith, OUT, index)

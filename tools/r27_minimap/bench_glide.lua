@@ -121,7 +121,7 @@ rawset(_G, "grug_parties", {view = function()
 end, register_on_change = function() end})
 rawset(_G, "grug_home", {get = function() return nil end, locations = function()
 	return {{id = "inn", label = "Inn", pos = {x = -80, y = 20, z = -1450}}}
-end, known_waypoints = function() return {} end})
+end, known_waypoints = function() return {} end, claim_waypoint = function() return nil end})
 rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 -- The location line under the minimap (Round 28 M1) reads this every step.

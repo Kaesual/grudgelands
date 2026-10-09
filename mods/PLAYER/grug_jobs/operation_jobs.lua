@@ -138,10 +138,15 @@ function grug_jobs.start_operation(player, op_id, levels)
 	end
 	local allowed, why = grug_jobs.can_craft_recipe(player, op)
 	if not allowed then return refused(why, "profession") end
-	if op.station and not grug_jobs.station_nearby(player, op.station) then
-		local info = grug_jobs.station_info(op.station)
-		return refused("Requires: " .. (info and info.display_name or op.station) ..
-			" nearby", "station")
+	local station_pos
+	if op.station then
+		local nearby
+		nearby, station_pos = grug_jobs.station_nearby(player, op.station)
+		if not nearby then
+			local info = grug_jobs.station_info(op.station)
+			return refused("Requires: " .. (info and info.display_name or op.station) ..
+				" nearby", "station")
+		end
 	end
 	local inv = player:get_inventory()
 	-- The item as it is now: whatever changed since the page was drawn is
@@ -170,7 +175,7 @@ function grug_jobs.start_operation(player, op_id, levels)
 	inv:set_stack(TARGET, 1, ItemStack(""))
 	local job, busy = grug_jobs.begin_job(player, {kind = op.operation, operation = op.id,
 		quantity = quantity, consumed = consumed, target = target:to_string(),
-		duration = quantity * SECONDS[op.operation]})
+		duration = quantity * SECONDS[op.operation]}, station_pos)
 	if not job then
 		give_back(player, target, consumed)
 		return refused(busy, "busy")

@@ -135,3 +135,69 @@ function grug_mobs.install_flight_nudge(def)
 		end
 	end
 end
+
+--
+-- THE WINGS BEAT IN THE AIR (Round 45 playtest). mobs_redo picks the fly clip
+-- only in its walk state; its stand state (velocity 0, a fly mob hovers where
+-- it is), the follow pause, the runaway, the in-reach stops of a fight and
+-- stop_attack ask for "stand", "walk" or "run", so a bird hung in the air in
+-- its perched pose. On a flier whose definition has a fly clip, every such
+-- request plays the fly clip while the mob is in the air: inside its element
+-- (flight_check) and not standing on walkable ground out of water, the rule
+-- do_states' walk state and grug_mobs.walk_animation (patrol.lua) already
+-- use. On the ground the clip asked for plays. Installed on the registered
+-- prototype, so every set_animation of the mob (mobs_redo's and ours) passes
+-- here; the dragons switch `fly` at runtime and are covered while it is on.
+--
+-- The swing lock (mobs/api.lua set_animation, Round 37 MB) holds back
+-- "stand", "walk" and "run" but not "fly": while it holds, the request goes
+-- through unchanged so the lock still applies.
+--
+local function in_the_air(self)
+	if not self.fly or not self:flight_check() then
+		return false
+	end
+	local on = core.registered_nodes[self.standing_on]
+	if not (on and on.walkable) then
+		return true
+	end
+	local within = core.registered_nodes[self.standing_in]
+	return (within and within.groups and within.groups.water or 0) ~= 0
+end
+
+local MOVE_CLIPS = {stand = true, walk = true, run = true}
+
+function grug_mobs.flier_clip(self, anim, force)
+	if not MOVE_CLIPS[anim] or not in_the_air(self) then
+		return anim
+	end
+	local temp = self.temp
+	if not force and temp and temp.grug_punch_until
+			and core.get_us_time() / 1000000 < temp.grug_punch_until then
+		return anim
+	end
+	return "fly"
+end
+
+-- An air flier (fly_in "air", alone or in a list) with a fly clip; `fly` or
+-- `keep_flying` on the definition. Called right after mobs:register_mob.
+function grug_mobs.install_flier_animation(name)
+	local proto = core.registered_entities[name]
+	local anims = proto and proto.animation
+	local fly_in = proto and proto.fly_in
+	local in_air = fly_in == "air"
+	if type(fly_in) == "table" then
+		for _, medium in ipairs(fly_in) do
+			if medium == "air" then in_air = true end
+		end
+	end
+	if not (in_air and (proto.fly or proto.keep_flying)
+			and anims and anims.fly_start and anims.fly_end) then
+		return false
+	end
+	local native = proto.set_animation
+	proto.set_animation = function(self, anim, force)
+		return native(self, grug_mobs.flier_clip(self, anim, force), force)
+	end
+	return true
+end

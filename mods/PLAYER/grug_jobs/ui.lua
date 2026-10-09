@@ -70,7 +70,8 @@ local TAB_Y, TAB_H = 0.25, 0.65
 local LIST_X, LIST_W = 0.2, 5.0
 local SEARCH_Y, CHECK_Y = 1.1, 2.0
 local ROW_Y, ROW_H, ICON = 2.35, 0.56, 0.45
-local PAGER_Y = ROW_Y + PER_PAGE * ROW_H + 0.2
+local PAGER_Y = ROW_Y + PER_PAGE * ROW_H + 0.1
+local PAGER_H = 0.55
 local BOX = {x = 5.4, y = 0.95, w = 4.8, h = 8.25}
 local OUT = {x = 10.4, y = 0.95, w = 2.9, h = 8.25}
 grug_jobs.CRAFT_BOX = BOX
@@ -134,10 +135,14 @@ local function tier_progress(player, tab)
 end
 
 --
--- The list (spec §2.17, §2.33, §4.2): every recipe of the area in the
--- registry's stable order (tier, name, id), filtered by the search over the
--- output's name and by "Craftable only" (×N ≥ 1 and the profession's tier
--- allows the recipe); ×N is crafts_from_counts on the build's one pass.
+-- The list (spec §2.17, §4.2): the area's recipes in the registry's stable
+-- order (tier, name, id). A profession area (Cooking, Alchemy and the
+-- primaries alike) shows only the tiers up to the player's profession tier
+-- (profession_level, which the character's level band caps; Round 45
+-- playtest fix 3, correcting spec §2.33's "all recipes"); Basic has no
+-- profession tier and shows every recipe. The search over the output's name
+-- and "Craftable only" (×N ≥ 1) filter that visible set; ×N is
+-- crafts_from_counts on the build's one pass.
 --
 
 local labels, lowered = {}, {}
@@ -158,13 +163,14 @@ local function list_rows(player, st, tab, counts)
 	local rows = {}
 	if not tab.learned then return rows end
 	local query = st.search:lower()
-	local level = tab.area ~= "basic" and grug_jobs.profession_level(player, tab.area) or 6
+	local level = tab.area ~= "basic" and grug_jobs.profession_level(player, tab.area) or nil
 	for _, recipe in ipairs(grug_jobs.recipes_in_area(tab.area)) do
 		label_of(recipe.output)
-		if query == "" or lowered[recipe.output]:find(query, 1, true) then
+		if (not level or recipe.tier <= level) and
+				(query == "" or lowered[recipe.output]:find(query, 1, true)) then
 			if st.only then
 				local crafts = grug_jobs.crafts_from_counts(counts, recipe)
-				if crafts > 0 and recipe.tier <= level then
+				if crafts > 0 then
 					rows[#rows + 1] = {recipe = recipe, n = crafts}
 				end
 			else
@@ -240,10 +246,10 @@ local function list_content(fs, player, st, tab, counts)
 		wrapped_labels(fs, LIST_X + 0.15, ROW_Y + 0.35, LIST_W - 0.3,
 			empty_text(tab, st.search ~= ""))
 	end
-	fs[#fs + 1] = ("button[%s,%s;0.8,0.6;%s;<]label[%s,%s;%s]button[%s,%s;0.8,0.6;%s;>]"):format(
-		n(LIST_X), n(PAGER_Y), F.prev,
-		n(LIST_X + 1.6), n(PAGER_Y + 0.3), ("Page %d of %d"):format(st.page, pages),
-		n(LIST_X + LIST_W - 0.8), n(PAGER_Y), F.next)
+	fs[#fs + 1] = ("button[%s,%s;0.8,%s;%s;<]label[%s,%s;%s]button[%s,%s;0.8,%s;%s;>]"):format(
+		n(LIST_X), n(PAGER_Y), n(PAGER_H), F.prev,
+		n(LIST_X + 1.6), n(PAGER_Y + PAGER_H / 2), ("Page %d of %d"):format(st.page, pages),
+		n(LIST_X + LIST_W - 0.8), n(PAGER_Y), n(PAGER_H), F.next)
 end
 
 --
@@ -320,8 +326,12 @@ function grug_jobs.register_craft_box(name, def)
 	boxes[name] = def
 end
 
--- The row of box buttons below the pager.
-local BOX_BUTTON_Y, BOX_BUTTON_H = PAGER_Y + 0.65, 0.4
+-- The row of box buttons below the pager, down to the boxes' bottom edge.
+-- They are drawn as ordinary buttons (the pane with its border; the shared
+-- unselected tab style has no border and read as plain text in the
+-- playtest), the open box's button in the gold selection style.
+local BOX_BUTTON_Y = PAGER_Y + PAGER_H + 0.05
+local BOX_BUTTON_H = BOX.y + BOX.h - BOX_BUTTON_Y
 local function box_buttons(fs, player, st, tab)
 	local shown = {}
 	for _, name in ipairs(box_order) do
@@ -332,7 +342,9 @@ local function box_buttons(fs, player, st, tab)
 	local w = (LIST_W - 0.1 * (#shown - 1)) / #shown
 	for index, name in ipairs(shown) do
 		local field = F.box .. name
-		fs[#fs + 1] = grug_inventory.selected_button_style(field, st.box == name)
+		if st.box == name then
+			fs[#fs + 1] = grug_inventory.selected_button_style(field, true)
+		end
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(LIST_X + (index - 1) * (w + 0.1)),
 			n(BOX_BUTTON_Y), n(w), n(BOX_BUTTON_H), field, esc(boxes[name].button.label))
 	end

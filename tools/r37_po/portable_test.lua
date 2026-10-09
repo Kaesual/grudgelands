@@ -487,7 +487,8 @@ local home_id = "inn"
 grug_home = {get = function() return home_id and {id = home_id, label = "Inn"} or nil end,
 	locations = function() return {{id = "inn", label = "Inn", pos = {x = 80, y = 10, z = -210}},
 		{id = "inn2", label = "Inn 2", pos = {x = 160, y = 10, z = -190}}} end,
-	known_waypoints = function() return {} end}
+	known_waypoints = function() return {} end,
+	claim_waypoint = function() return nil end}
 grug_jobs = {PROFESSIONS = {}}
 grug_map = {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")}
 local atlas = grug_map.atlas

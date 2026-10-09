@@ -12,7 +12,7 @@
 --      fallback to a shipped bed, the two-pass hysteresis, town gain;
 --   C  calls by mood and time of day;
 --   T  the town flag of grug_map's location resolver;
---   E  forge and fire emitters: the nearest per kind;
+--   E  fire and water emitters: the nearest per kind; none at forges and anvils;
 --   P  settings: /music and /ambience words, volumes;
 --   R  runtime on a fake engine: one pass per player per 2 s in eight
 --      slots; a bed loop to the player only, crossfaded at night and under
@@ -209,12 +209,17 @@ do
 		return table.concat(t, " ")
 	end
 	local rows = R.choose_emitters(found, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, hears, {}, key)
-	check(text(rows) == "fire@0,2 fire@0,5 forge@3,0 forge@6,0",
-		"E the nearest two per kind, sources, cold cauldrons and other nodes ignored: " .. text(rows))
+	-- Round 45 PT8: forges and anvils have no loop any more (their sound plays
+	-- at a job's start, tools/r45_pt8).
+	check(text(rows) == "fire@0,2 fire@0,5",
+		"E the nearest two per kind; forges, anvils, sources, cold cauldrons and other nodes ignored: " ..
+		text(rows))
+	check(D.emitter_nodes["grug_jobs:forge"] == nil and D.emitter_nodes["grug_decor:cottages_anvil"] == nil
+		and D.emitters.forge == nil, "E no loop at forges and anvils (Round 45 PT8)")
 	rows = R.choose_emitters({["default:furnace_active"] = {{x = 11, y = 0, z = 0}},
-		["grug_jobs:forge"] = {{x = 11, y = 0, z = 0}}}, D.emitter_nodes, {x = 0, y = 0, z = 0},
+		["default:water_flowing"] = {{x = 11, y = 0, z = 0}}}, D.emitter_nodes, {x = 0, y = 0, z = 0},
 		limits, hears, {}, key)
-	check(text(rows) == "forge@11,0", "E a node beyond its kind's hearing distance is no candidate")
+	check(text(rows) == "water@11,0", "E a node beyond its kind's hearing distance is no candidate")
 	-- flowing water along a river: a playing loop stays while among the nearest 2 * limit
 	local river = {["default:water_flowing"] = {}}
 	for x = 1, 8 do table.insert(river["default:water_flowing"], {x = x, y = 0, z = 0}) end
@@ -486,8 +491,9 @@ do
 	check(town_fade, "R in town the bed is quieter")
 	in_town.ana = nil
 
-	-- emitters: an anvil, a cauldron and flowing water near the player, a
-	-- forge far away, a water source next to the player (never a loop)
+	-- emitters: an anvil, a furnace and flowing water near the player, a
+	-- forge far away, a water source next to the player (never a loop; since
+	-- Round 45 PT8 neither the anvil nor the forge)
 	found_nodes = {["grug_decor:cottages_anvil"] = {{x = 4, y = 10, z = 0}},
 		["default:furnace_active"] = {{x = 0, y = 10, z = 5}},
 		["grug_jobs:forge"] = {{x = 60, y = 10, z = 0}},
@@ -507,18 +513,19 @@ do
 	local names = {}
 	for _, s in ipairs(loops) do names[#names + 1] = s.spec.name .. "@" .. s.params.pos.x end
 	table.sort(names)
-	check(table.concat(names, " ") == "grug_ambience_fire@0 grug_ambience_forge@4 " ..
+	check(table.concat(names, " ") == "grug_ambience_fire@0 " ..
 		"grug_ambience_stream_pond@-3 grug_ambience_stream_pond@-6" and
-		loops[1].params.to_player == "ana", "R forge, fire and flowing-water loops: " .. table.concat(names, " "))
+		loops[1].params.to_player == "ana", "R fire and flowing-water loops, none at the anvil: " ..
+		table.concat(names, " "))
 	run(2)
-	check(#plays_to("ana", function(s) return s.params.loop and s.params.pos end) == 4,
+	check(#plays_to("ana", function(s) return s.params.loop and s.params.pos end) == 3,
 		"R running loops are not restarted")
 	found_nodes = {}
 	fades = {}
 	run(2)
 	local loop_fades = 0
 	for _, f in ipairs(fades) do if f.gain == 0 then loop_fades = loop_fades + 1 end end
-	check(loop_fades == 4, "R loops fade out when out of reach")
+	check(loop_fades == 3, "R loops fade out when out of reach")
 
 	-- no music outside a capital (Round 35; the music runtime: tools/r35_m)
 	run(600)

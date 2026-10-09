@@ -16,20 +16,23 @@
 -- clock. The fields in `bound` are belt and braces for a mob that is bound to
 -- something else all the same (tamed, owned, a camp post, a route).
 --
--- NEAR is 32 nodes. Region mobs never spawn closer than mob_nospawn_range
--- (24) to a player, so a mob leaves a little farther out than mobs appear;
--- no ambient mob notices a player beyond 18 nodes (its view_range), so a mob
--- about to pick a fight with a player is never taken; and mobs are active
--- only within active_block_range mapblocks (4, about 48-64 nodes): a night
--- mob whose block wakes as a player walks up by day still stands beyond 32
--- nodes on its first check, so it leaves before the player reaches it.
+-- NEAR is 64 nodes, checked as a cube (|dx|, |dy|, |dz| <= 64; the user,
+-- Round 45 playtest, 2026-10-09; it was a 32-node sphere until then). Region
+-- mobs never spawn closer than mob_nospawn_range (24) to a player and no
+-- ambient mob notices a player beyond 18 nodes (its view_range), so a mob
+-- about to pick a fight with a player never leaves. Mobs are active only
+-- within active_block_range mapblocks (4, a sphere of blocks, about 48-80
+-- nodes): a night mob whose block wakes by day mostly stands beyond 64 nodes
+-- on its first check and leaves; one that wakes closer stays until the
+-- player moves off.
 --
 -- Cost: one field test per mob step (do_custom); a night-spawned mob then
 -- checks once a second: the time of day, a few of its own fields and, by day,
--- the distance of each connected player until one is near.
+-- one pass over the connected players (three comparisons each) until one is
+-- near.
 --
 
-grug_mobs.DAWN_NEAR = 32
+grug_mobs.DAWN_NEAR = 64
 grug_mobs.DAWN_INTERVAL = 1
 grug_mobs.dawn_stats = {left = 0}
 
@@ -64,12 +67,26 @@ function grug_mobs.dawn_candidate(ent, clock)
 	return unit ~= nil and not unit.is_camp and not bound(ent)
 end
 
+-- No player inside the cube of half-edge NEAR around `pos` (the edge counts
+-- as inside).
+function grug_mobs.dawn_players_clear(pos, players)
+	local near = grug_mobs.DAWN_NEAR
+	for i = 1, #players do
+		local pp = players[i]:get_pos()
+		if pp and math.abs(pp.x - pos.x) <= near and math.abs(pp.y - pos.y) <= near
+				and math.abs(pp.z - pos.z) <= near then
+			return false
+		end
+	end
+	return true
+end
+
 -- True when `ent` at `pos` leaves now: a candidate, out of combat, no player
 -- within NEAR. `get_players` returns the player list; it is called only when
 -- the rest holds.
 function grug_mobs.dawn_leaves(ent, clock, pos, get_players)
 	return grug_mobs.dawn_candidate(ent, clock) and not grug_mobs.mob_in_combat(ent)
-		and SR.players_clear(pos, grug_mobs.DAWN_NEAR, get_players())
+		and grug_mobs.dawn_players_clear(pos, get_players())
 end
 
 -- Called from do_custom on every step. Returns true when the mob left (the

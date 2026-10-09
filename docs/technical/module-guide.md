@@ -166,7 +166,13 @@ tools](#player-meta-read-by-external-tools).
   the last refused action, the row ids of the last build); nothing in player
   meta. Each build runs `update_job(player, "open")`, one
   `ingredient_counts` pass that feeds ×N, Craftable only and the box, and
-  echoes the field values. A click is handled and answered with one resend;
+  echoes the field values. The list hides a profession area's recipes above
+  `profession_level` (Basic shows all). The recipe box's description is
+  built per build: gear through `grug_items.crafted_output` on a copy (the
+  job's own path), a Cooking output with an engine cooking recipe through
+  `core.get_craft_result` (the cooked dish), else the definition; it is a
+  nameless read-only `textarea[]`, which scrolls on the client without an
+  event. A click is handled and answered with one resend;
   a search within a second of the last is ignored without one. The end
   resend is a `register_on_job_end` callback for the sources `timer` and
   `join` while the current page is Crafting (`open`, `start` and `stop` are
@@ -199,20 +205,31 @@ tools](#player-meta-read-by-external-tools).
   `crafts_from_counts(counts, recipe)`, `output_capacity(player, recipe)`,
   `max_craftable(player, recipe[, counts])` → n, by ingredients, by space;
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
-  within 4 nodes); `take_all(player)` → moved, left. The output area
+  within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area
   `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at
   every join; a join handler that runs earlier, such as lane MS's 0.45.0
   step, calls it before it uses the list).
   `register_on_job_end(fn(player, job, outcome, source))` (outcome
   `completed`/`cancelled`; source `timer`, `join`, `open`, `start`, `stop`)
-  is where UI resends an open Crafting page; `register_job_kind(kind,
-  {finish})`, `begin_job` (nil and the reason while a job runs: the caller
-  gives back what it took) and `take_ingredients` are the parts EU's kinds
+  is where UI resends an open Crafting page;
+  `register_on_job_start(fn(player, job, station_pos))` runs after a job
+  started (`station_pos` the station the start found, nil without one);
+  `register_job_kind(kind, {finish})`, `begin_job(player, job[,
+  station_pos])` (nil and the reason while a job runs: the caller gives
+  back what it took) and `take_ingredients` are the parts EU's kinds
   use. A job is cleared before its kind's `finish` runs, so a hook inside it
   cannot complete it twice; a job without its recipe, or of an unknown kind,
   returns its ingredients and target. A finished recipe job makes its
   stacks (gear through `grug_items.crafted_output`), calls `award_progress`
   once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
+- **Station sounds** (`station_sounds.lua`, Round 45 PT8): a start hook
+  plays the station's sound at the station a job (recipe, enchant or
+  upgrade) starts at: `STATION_SOUNDS` (forge `craft_smithy`, brewing stand
+  `craft_alchemy`, each with its file's length); the other stations are
+  silent. `play_station_sound(pos)` keeps one entry per station node (end
+  time, pending start of a queued sound): a start while the sound plays queues it once, never
+  more (one `core.after`). A recipe made at such a station has no craft cue
+  at its end (`state.lua`'s `craft_sound`). Fixture `tools/r45_pt8`.
 - **Enchants and upgrades as jobs** (`operation_jobs.lua`,
   `operation_box.lua`, Round 45 lane EU): the target slot
   `grug_craft_target` (`TARGET_LIST`, one slot made at join; the allow
@@ -325,8 +342,9 @@ tools](#player-meta-read-by-external-tools).
 ## Mount runtime
 
 - **Mount runtime**: ownership is player meta; the summoned controller and its
-  visible child are ephemeral. The child is hidden only from its local rider in
-  first person. `grug_mounts.dismount` is the shared cleanup path for manual,
+  visible child are ephemeral. The child of a riding or flying mount is
+  attached with `forced_visible`, so its rider sees it in first person; a
+  boat's hull is hidden from its own rider in first person. `grug_mounts.dismount` is the shared cleanup path for manual,
   damage, death, leave, shutdown and external-detach exits and clears the
   runtime-only untimed `mount` status. Mounted players cannot attack. Land
   controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
@@ -1043,10 +1061,23 @@ tools](#player-meta-read-by-external-tools).
   removes a free region mob whose `_grug_spawn_clock` is `"night"` by day
   (`SR.clock_now`) with mobs_redo's smoke puff — no drops, XP or kill
   credit — unless it is in combat or a player is within
-  `grug_mobs.DAWN_NEAR` (32) nodes; one field test per step, a check every
-  `DAWN_INTERVAL` (1 s) per night mob. Camp members (their tag's unit is a
-  camp) and every mob without the clock stay. Fixture and engine probe
-  `tools/r35_e`.
+  `grug_mobs.DAWN_NEAR` (64) nodes on every axis (a cube, edge included,
+  `grug_mobs.dawn_players_clear`; Round 45 playtest, a 32-node sphere
+  before); one field test per step, a check every `DAWN_INTERVAL` (1 s) per
+  night mob. Camp members (their tag's unit is a camp) and every mob without
+  the clock stay. Fixture and engine probe `tools/r35_e`.
+
+## Flier clips
+
+- **Fly clip in the air (Round 45 playtest):** `grug_mobs/flight.lua`
+  `install_flier_animation`, called by `grug_mobs.register_mob` right after
+  `mobs:register_mob`, wraps `set_animation` on the prototype of every air
+  flier (`fly_in` "air" or a list holding it, `fly` or `keep_flying`) that
+  has a fly clip: a "stand", "walk" or "run" request plays "fly" while the
+  mob flies (`self.fly`), is inside its element (`flight_check`) and does
+  not stand on walkable ground out of water — the rule of do_states' walk
+  state and `grug_mobs.walk_animation`. The swing lock still holds those
+  requests back while a punch clip runs. Fixture `tools/r45_pt7`.
 
 ## Mobs in water
 
@@ -1785,9 +1816,12 @@ tools](#player-meta-read-by-external-tools).
   - **`grug_sounds`** (`mods/CORE/grug_sounds/init.lua`) is the one play
     path for effects: `grug_sounds.play(event, target)` with a player, an
     object or a position; `EVENTS` maps an event to its spec (name, gain,
-    pitch, distance, `personal`, `interval`) and an event without a spec is
-    a silent no-op (the approval gate: no spec until the user picked a
-    file). The rate limit is checked before anything is allocated (per
+    pitch, distance, `personal`, `interval`, `stoppable`) and an event
+    without a spec is a silent no-op (the approval gate: no spec until the
+    user picked a file). A `stoppable` event (the gallop and wing beats)
+    keeps the handle of its last play per target, and
+    `grug_sounds.stop(event, target)` fades it out in 0.1 s and lifts the
+    interval, so the next play sounds at once. The rate limit is checked before anything is allocated (per
     event and target: a player name, an ObjectRef with weak keys, or
     `"pos"`). `HOOKS` lists every event a call site may name; a new call
     site adds its event there and its mod depends on `grug_sounds`.
@@ -1817,8 +1851,8 @@ tools](#player-meta-read-by-external-tools).
     `init.lua` the runtime: an eight-slot pass of 0.25 s per player
     (`states[name].slot`, assigned on join), one `get_node_raw` probe for
     under water (33 reads while a sea or stream bed exists), one
-    `find_nodes_in_area` above ground for the forge, fire and flowing-water
-    loops (node names from `D.emitter_nodes` plus every flowing liquid whose
+    `find_nodes_in_area` above ground for the fire and flowing-water
+    loops (none at forges and anvils since Round 45 PT8) (node names from `D.emitter_nodes` plus every flowing liquid whose
     source is default or river water, filled on `register_on_mods_loaded`).
     Only names with a shipped file play (`available` from the `sounds/`
     listing, the capital rotations filtered by `music/`), so data may name a file that does

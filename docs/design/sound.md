@@ -3,7 +3,7 @@
 The game's sound as built in Round 34 ([plan](../planning/round34-plan.md),
 [completion](../planning/round34-plan.md#completion-2026-10-04)): effects at
 the game's events, mob voices by family, quiet ambience beds per region, loops
-at forges, hearths and flowing water, music in the six capitals (since
+at hearths and flowing water, music in the six capitals (since
 Round 35, [plan](../planning/round35-plan.md) §2.8), and per-player
 settings. Sound is part of V1. Two mods own it: `mods/CORE/grug_sounds`
 (effects, the play helper, the formspec click) and `mods/CORE/grug_ambience`
@@ -83,8 +83,9 @@ part of the set: the hoe's till (`default_dig_crumbly`,
   and boss cues are positional on the object or position, heard by everyone
   near. A personal sound ignores `max_hear_distance` in the engine, so
   `grug_ambience` limits its personal positional loops itself (§5.3).
-- **Network:** every one-shot is ephemeral. Frequent events are rate-limited
-  per target (§3.1). Mob hearing stays off.
+- **Network:** every one-shot is ephemeral, except the two ride sounds
+  (gallop, wing beats), which keep a handle so they can be stopped.
+  Frequent events are rate-limited per target (§3.1). Mob hearing stays off.
 - **What the picks teach:** no rain, traffic, microphone wind or steady hiss
   under a bed; no animals the game does not have; no monster voices inside a
   bed; effects short and focused.
@@ -120,14 +121,27 @@ formspecs that drop the prepend. The client plays it at the file's own level
 - **Crafting:** every finished craft by kind through the one progress hook
   (`grug_jobs.award_progress`): the smiths' hammer for Weaponsmith and
   Armorsmith, cooking, alchemy, the plain craft for everything else; upgrade
-  and the crown; repair. A dish or potion taken out of a furnace or brewing
+  and the crown; repair. **Station sounds** (Round 45 PT8, the user,
+  2026-10-09): a station with a sound plays it only when a player starts a
+  job there (a recipe, an enchant or an upgrade), at the station the start
+  found within 4 nodes: the forge the smiths' hammer, the brewing stand the
+  alchemy cue; the other stations have none, furnaces keep their fire loop.
+  A recipe made at such a station has no cue at its end (the station played
+  it at the start). While the sound plays at a station, another start there
+  queues it once more, never more often (four starts within one sound: it
+  plays twice). `grug_jobs/station_sounds.lua`. A dish or potion taken out of a furnace or brewing
   stand plays the cooking or alchemy cue; smelting stays silent.
 - **Items:** equip, the cloak choice, drinking (every potion path; the
   VoxeLibre drinking sound), eating (`grug_food`), and gear breaking (Round
   35: once, when equipped gear, a bow, a tool or a hoe wears into broken,
   never on later uses of the broken item; heard on the wearer up to 8 nodes).
 - **Mounts and boats:** gallop, wing beats and the boat's splash, repeated at
-  their clip length while moving.
+  their clip length while moving. Gallop and wing beats stop at once (a
+  0.1 s fade) when the mount stands still and on every dismount, and the
+  gallop pauses while a ground mount has been off the ground for more than
+  0.5 s (a jump, a fall deeper than about one node) and starts again on
+  landing (Round 45 playtest). The mount's own step reads this; there is
+  no extra timer.
 - **Travel** (waystone, home), **fishing** cast and catch (the splash), and
   the **"Flag me for PvP" button**.
 - **Combat:** the swing into the air (the swing skills' item sound, played by
@@ -239,13 +253,14 @@ most one per 90–240 s. This round ships one: **distant thunder on the dragon
 islands** (four variants). No owl, crow, hawk or wolf calls (user: fewer
 layers).
 
-### 4.4 Loops at forges, hearths and flowing water
+### 4.4 Loops at hearths and flowing water
 
 Positional loops to the player at nodes near them, found by one
-`find_nodes_in_area` per pass in a box ±12 × ±5 × ±12 around the player:
+`find_nodes_in_area` per pass in a box ±12 × ±5 × ±12 around the player.
+Round 45 PT8 (the user, 2026-10-09) removed the hammer loop at the
+profession forge and the cottages anvil: it played with nobody at work; the
+forge now sounds when a job starts there (§3.2).
 
-- **forge:** the profession forge and the cottages anvil (the rebuilt,
-  evenly spaced hammer loop), heard to 16 nodes;
 - **fire:** a burning furnace (the public town hearths while they burn) and
   camp fires, heard to 10 nodes;
 - **flowing water:** only at *flowing* water or river water, never at a

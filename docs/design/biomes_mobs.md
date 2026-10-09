@@ -1116,11 +1116,13 @@ gate, protected surface).
   leaves: it is removed quietly with mobs_redo's despawn smoke puff, without
   drops, XP or kill credit, unless it is in combat (a target, the attack or
   runaway state, an engagement or the evade run home) or a player is within
-  **32 nodes**; then it leaves as soon as neither holds. Day is the spawn
-  clock's day phase (04:30–19:30). 32 nodes lies beyond the 24-node spawn
-  distance and every ambient mob's view range (at most 18) and inside the
-  active-block range, so a night mob whose block wakes by day leaves before a
-  player reaches it. Each night mob checks once a second
+  **64 nodes on every axis** (a cube; Round 45 playtest, the user's decision,
+  32 nodes as a sphere before); then it leaves as soon as neither holds. Day
+  is the spawn clock's day phase (04:30–19:30). 64 nodes lies beyond the
+  24-node spawn distance and every ambient mob's view range (at most 18); a
+  night mob whose block wakes by day (active-block range, about 48–80 nodes)
+  mostly stands farther out and leaves, one that wakes closer stays until
+  the player moves off. Each night mob checks once a second
   (`grug_mobs/dawn.lua`); every other mob pays one field test per step.
 - **Drift band.** No aggressive role spawns within 16 nodes of a road,
   bridge, village, PvP fortress or war camp (Round 31), start town or

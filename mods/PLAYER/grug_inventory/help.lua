@@ -119,7 +119,7 @@ local SECTIONS = {
 		"• Smelt ore into bars in a Furnace. Alloys need a Dual Furnace: Bronze = Copper + Tin, Steel = Iron + Coal, Silversteel = Steel + Silver, Embersteel = Silversteel + Emberglass, Abyssal Steel = Embersteel + Abyssal Crystal.",
 		"",
 		heading("Crafting"),
-		"• The Crafting tab has an area for Basic recipes, Cooking, each of your primary professions and Alchemy, and every area shows all its recipes. Search the list, turn its pages or tick Craftable only; ×N says how many times the items in your inventory and bags make a recipe. A profession recipe needs that profession at the recipe's tier.",
+		"• The Crafting tab has an area for Basic recipes, Cooking, each of your primary professions and Alchemy. Basic shows all its recipes; a profession area shows the recipes up to your tier in it, and each new tier adds its recipes. Search the list, turn its pages or tick Craftable only; ×N says how many times the items in your inventory and bags make a recipe.",
 		"• Choose a recipe, set the quantity (or press Max) and press Craft now. The ingredients are taken at once and the job runs on its own, with the window closed and while you are offline too; the result waits in the four Output slots, and Take all moves it into your inventory. Stop gives the ingredients back when your inventory has room.",
 		"• One job at a time. Recipes, enchants and upgrades of the six primary professions and Alchemy need their station within 4 blocks: a Forge, Tanning Rack, Tailor Bench, Carving Bench, Jeweller's Bench or Brewing Stand; Cooking needs none. These stations open no window; furnaces and dual furnaces still do.",
 		"",

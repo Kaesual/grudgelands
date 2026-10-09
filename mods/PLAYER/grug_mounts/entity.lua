@@ -9,6 +9,10 @@ local WATER_CHECK_INTERVAL = 1
 local SURFACE_SCAN = 16
 local BOAT_RESPONSE = 1.5
 local LANDING_RADIUS = 2
+-- Ride sounds (Round 45 PT6): a ground mount's gallop pauses once the mount
+-- has been off the ground this long (a jump, a fall deeper than about one
+-- node). A step down a slope (0.45 s for one node) keeps the gallop going.
+local AIRBORNE_PAUSE = 0.5
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
 local WARNING_DIRECTIONS = {}
 local DRAGON_ISLANDS = {
@@ -175,6 +179,11 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 			entity._grug_removing = true
 			entity.driver = nil
 			entity._grug_rider = nil
+			-- The gallop or wing beat ends with the ride, not 2 s later.
+			if entity._grug_ride_sound then
+				grug_sounds.stop(entity._grug_ride_sound, object)
+				entity._grug_ride_sound = nil
+			end
 		end
 	end
 	player:set_detach()
@@ -313,6 +322,18 @@ local function set_animation(self, name)
 	self._grug_animation = name
 end
 
+-- The ride sound (gallop, wing beats) plays while `moving` (grug_sounds'
+-- interval paces it, one clip per stride sequence) and stops at once
+-- otherwise. Read on the mount's own step: no extra timer.
+local function ride_sound(self, event, moving)
+	if moving then
+		if grug_sounds.play(event, self.object) then self._grug_ride_sound = event end
+	elseif self._grug_ride_sound then
+		grug_sounds.stop(self._grug_ride_sound, self.object)
+		self._grug_ride_sound = nil
+	end
+end
+
 local function angle_delta(a, b)
 	local delta = (a - b) % (math.pi * 2)
 	if delta > math.pi then delta = delta - math.pi * 2 end
@@ -323,7 +344,7 @@ end
 -- relative rotation keeps a stale rendered body yaw on the client even though
 -- controller velocity already follows the camera. Put the requested yaw on the
 -- rider attachment itself; the visible mount is the rider's child so both turn
--- together, while that child remains automatically hidden in first person.
+-- together, in first person too (the child is forced visible there).
 local function orient_rider(self, player, yaw)
 	if self._grug_attach_yaw and
 			math.abs(angle_delta(yaw, self._grug_attach_yaw)) < math.rad(0.5) then
@@ -355,7 +376,7 @@ local function horizontal_input(control, yaw)
 		math.cos(yaw) * forward + math.sin(yaw) * side, scale
 end
 
-local function land_step(self, control, yaw, dtime)
+local function land_step(self, control, yaw, dtime, moveresult)
 	local tier = grug_mounts.TIERS[self._grug_tier]
 	local velocity = self.object:get_velocity() or {x = 0, y = 0, z = 0}
 	local input_x, input_z, input_scale = horizontal_input(control, yaw)
@@ -379,8 +400,15 @@ local function land_step(self, control, yaw, dtime)
 		z = input_z * horizontal})
 	self.object:set_acceleration({x = 0, y = -9.81, z = 0})
 	set_animation(self, input_scale == 0 and "stand" or "move")
-	-- The gallop's interval paces it: one clip per stride sequence.
-	if horizontal > tier.speed * 0.5 then grug_sounds.play("mount_gallop", self.object) end
+	-- Ground contact is the engine's collision result of this step (nil only
+	-- off-engine: counted as ground).
+	if moveresult and not moveresult.touching_ground then
+		self._grug_airborne = (self._grug_airborne or 0) + dtime
+	else
+		self._grug_airborne = 0
+	end
+	ride_sound(self, "mount_gallop",
+		horizontal > tier.speed * 0.5 and self._grug_airborne < AIRBORNE_PAUSE)
 end
 
 local function flight_step(self, control, yaw)
@@ -400,7 +428,7 @@ local function flight_step(self, control, yaw)
 	self.object:set_velocity({x = input_x * tier.speed * input_scale,
 		y = vertical, z = input_z * tier.speed * input_scale})
 	set_animation(self, input_scale == 0 and vertical == 0 and "stand" or "move")
-	if input_scale > 0 or vertical ~= 0 then grug_sounds.play("mount_wings", self.object) end
+	ride_sound(self, "mount_wings", input_scale > 0 or vertical ~= 0)
 end
 
 -- A boat glides toward the requested velocity (accelerating and braking alike)
@@ -483,7 +511,7 @@ local entity_definition = {
 		return ""
 	end,
 
-	on_step = function(self, dtime)
+	on_step = function(self, dtime, moveresult)
 		local player = self.driver
 		if not valid_player(player) then
 			if not self._grug_removing then self.object:remove() end
@@ -529,7 +557,7 @@ local entity_definition = {
 		orient_rider(self, player, yaw)
 		if tier.mode == "flight" then flight_step(self, control, yaw)
 		elseif tier.mode == "water" then water_step(self, control, yaw, dtime)
-		else land_step(self, control, yaw, dtime) end
+		else land_step(self, control, yaw, dtime, moveresult) end
 	end,
 
 	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
@@ -585,8 +613,14 @@ local visual_definition = {
 		self.object:set_properties({mesh = model.mesh, textures = model.textures,
 			visual_size = {x = model.visual_size.x / rider_size.x,
 				y = model.visual_size.y / rider_size.y}})
+		-- forced_visible: the rider sees the mount's front half in first person
+		-- too (the engine hides a child of the local player there unless the
+		-- attachment forces it; Round 45 PT6, riding and flying mounts). A
+		-- boat's hull stays hidden in first person, as before.
+		local tier = grug_mounts.TIERS[data.tier]
 		self.object:set_attach(player, "", {x = 0, y = -seat / rider_size.y,
-			z = (model.attach_z or 0) / rider_size.x}, {x = 0, y = 0, z = 0}, false)
+			z = (model.attach_z or 0) / rider_size.x}, {x = 0, y = 0, z = 0},
+			tier.mode ~= "water")
 	end,
 	get_staticdata = function() return "" end,
 }

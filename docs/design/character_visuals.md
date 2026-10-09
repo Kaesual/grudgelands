@@ -331,7 +331,8 @@ are kept per character, and so is the choice.
 - The Character page has an **Achievements** mode: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, one column of seven per page (Round 44).
-  Beside the model in the 3D mode, a **dropdown** lists the owned cloaks.
+  Beside the model in the Stats mode (the 3D mode until the Round 45
+  playtest merged the two), a **dropdown** lists the owned cloaks.
   Earning a tier posts a line to the message feed.
 - **On the model:** a cloak hangs from the shoulders to just above the knee.
   It is a thin box behind the body on its own bone, keyed per animation

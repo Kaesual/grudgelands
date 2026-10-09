@@ -9,8 +9,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 1. The inventory window (the "i" key)
 
 - Built on sfinv pages in one frame (Round 44, `grug_inventory/ui.lua`):
-  `formspec_version[6]` with a real-coordinate `size[13.500,13.673]`, the
-  same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size;
+  `formspec_version[6]` with a real-coordinate `size[13.500,14.750]`: as
+  wide as the old legacy 10.4 × 11.1 form (13.5 × 13.673) and, since the
+  Round 45 playtest, as high as the Inventory tab's boxed layout with eight
+  rows and the money row needs (the larger of the two, computed in
+  `ui.lua`). Below 15 units of height the engine keeps its preferred slot
+  size, so slots shrink only where the form already had to fit a small
+  window (a 1280 × 720 web window at GUI scale 1.5: about 47 → 43 px).
+  Every tab keeps that size;
   the Map tab opens the map window, a form of its own sized to the screen
   (Round 44, [world_map.md](world_map.md#map-window)). Page content follows a
   `real_coordinates[false]`, so pages still in legacy coordinates keep their
@@ -25,9 +31,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
   so there are no gaps), and the hotbar (`main[1..8]`) below it, outside the
-  scroll area. **Full** shows eight rows (the Inventory tab, in its boxed
-  layout below); **short** shows two (every other tab with an inventory),
-  with the hotbar at the same place in each of those tabs. The scrollbar's
+  scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
+  `grug_inventory.LAYOUT`): an **Inventory** box with the grid and its
+  scrollbar and the gold **Hotbar** box, each labelled inside, top left
+  above the slots. **Full** shows eight rows (the Inventory tab, layout
+  below); **short** shows two (every other tab with an inventory), its
+  Inventory box right above the Hotbar box. The Hotbar box is at the same
+  place in every tab, so it does not jump on a tab switch; page content
+  ends above the short Inventory box (`VIEW_GEOMETRY.top`). The scrollbar's
   thumb shows the visible share of the rows, so it can be dragged. A page asks the frame for its view and never draws `main`
   itself; Help and Party & PvP show **no** view (Round 44 lane PP): their
   content has the whole window. The scroll position is kept per view and sent back with every
@@ -38,27 +49,34 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   output area, the creative list), each bag the view shows rings to the
   same list (Round 45 playtest, `ui.lua` `bag_rings`).
 - **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2;
-  boxed layout since the Round 45 playtest, `grug_inventory.FULL_LAYOUT`):
+  boxed layout since the Round 45 playtest, `grug_inventory.LAYOUT`):
   each area has its own box with its label inside, top left above the
   slots. Along the top the four **Bags** slots and the four-slot **Potion
-  belt** (`grug_potion_belt`, potions and elixirs only); below them the
-  **Inventory** box (the full view's grid and scrollbar, at most
-  24 + 4 × 32 = 152 slots in 19 rows) and the **Hotbar** box (gold, the
-  other boxes the Character tab's dark tint). Bags, Inventory and Hotbar
-  share one left edge, and Inventory and Hotbar end where the Potion belt
-  ends; right of them the Bag of Coins **deposit slot** in its **Coins** box
-  and **Sort** under it, at the Inventory box's top. The group is centred
-  in the window. Sort orders
+  belt** (`grug_potion_belt`, potions and elixirs only), sharing the full
+  width; below them the **Inventory** box (the full view's grid and
+  scrollbar, at most 24 + 4 × 32 = 152 slots in 19 rows), the **money
+  row** and the **Hotbar** box (gold, the other boxes the Character tab's
+  dark tint). All boxes share one left edge and one right edge; the group
+  is centred in the window. The money row has no box and lies on the slot
+  columns: "Money" over the balance (e.g. "123456g 99s 99c"), **Withdraw**
+  (opens the Bag of Coins dialog, [economy.md](economy.md) §1), the Bag of
+  Coins **deposit slot** and, at the right end with the hotbar's last slot,
+  **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
+  change re-sends the Inventory page while it is the selected page (also
+  with the window closed, so it opens current); money has no gameplay HUD.
+  Sort orders
   `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
   for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
   time, a 32-slot bag cut to 24) is gone.
 - **The Character tab** (Round 44, [UI rework spec](../planning/ui-crafting-rework-plan.md)
   ruling 6 and §3.3; real coordinates): top left the **mode box**, top right
-  the **gear box**, below them the short inventory view. The mode buttons
-  switch the box only, the choice is runtime context (never stored): **3D**
-  (the default: the model and the cloak picker), **Stats**, **Effects** and
-  **Achievements**; the professions overview moved to the Crafting tab in
-  Round 45.
+  the **gear box**, both ending a gap above the short inventory view's box.
+  The mode buttons switch the box only, the choice is runtime context (never
+  stored): **Stats** (the default: the model on the left; right of it the
+  stats and the Claim Stone status, and at the foot the cloak picker,
+  bottom-aligned with the model; 3D and Stats are one mode since the Round
+  45 playtest), **Effects** and **Achievements**; the professions overview
+  moved to the Crafting tab in Round 45.
   The gear box shows the eight equipment slots with each slot's name beside
   it (the hands' names per class, §1 below), the Scout's quiver under them
   and, at its foot in every mode, the travel home's name and the **Return
@@ -75,11 +93,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   From an equipment slot or the quiver the item goes into the inventory in
   the give order (`main[9..]`, the bags, the hotbar last), or stays with a
   feed line when it does not fit. Anything else does not move.
-  The Stats mode shows the current money balance, with balance changes
-  updating the cached Character view; money has no gameplay HUD.
-  Beside the balance a **Withdraw** button handles the Bag of Coins (Round
-  34, [economy.md](economy.md) §1); its deposit slot is on the Inventory tab
-  (Round 44).
+  The balance, **Withdraw** and the deposit slot are on the Inventory tab
+  (the deposit since Round 44, balance and Withdraw since the Round 45
+  playtest).
   Round 19 removes the pool/armor derivation section. Character shows concise
   effective Crit and Dodge alongside armor rating, **Damage reduction** (the
   armor's reduction against an enemy of the character's own level; its tooltip
@@ -138,35 +154,45 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   ("Tier 3 · 7/15" with a small bar, "Tier 6 · highest", "Not learned",
   Basic has none). An empty primary slot or an unlearned profession shows an
   empty list with how to learn it.
-  - **Left, the list** (`professions.md` §1.2): every recipe of the area,
-    ordered by tier, then name; 10 rows per page with "Page x of y"; a row is
+  - **Left, the list** (`professions.md` §1.2): the area's recipes up to
+    the player's profession tier there (Basic: all), ordered by tier, then
+    name; 10 rows per page with "Page x of y"; a row is
     the output's icon, its name (a clipped name shows in full as its
     tooltip) and **×N**, the crafts the ingredients allow by the job's rule
     (stacks without metadata only), counted in one pass over the inventory
     per build. **Search** (the button or Enter) filters by the output's name
     on the server, at most once a second (a quicker request is ignored
-    without a resend); **Craftable only** keeps the rows with ×N ≥ 1 whose
-    tier the profession allows.
-  - **Middle, the crafting box:** the chosen recipe's output (its name in up
-    to two lines, area, tier, "makes N"), the ingredients with icons and
-    have/need for the field's quantity (a group entry reads "Any Wood",
-    its members in the tooltip), "Max: N" ("(output area)" when the room
-    limits it), the **quantity field** with **Max** (stackable outputs only,
-    default 1), the warnings, the note of the last refused action and the
-    XP hint: "Crafting this will give you a <profession> experience point"
-    in green when the job counts toward the tier, grey with "not" for a
-    lower tier, the highest tier or a full tier count. A missing station
-    reads "Requires: <station> nearby" and a missing profession tier its
-    reason; both draw **Craft now** greyed, and a click on it only rebuilds
-    the page (checking the station again). While a job runs the button is
-    **Stop**. Without a chosen recipe the box shows the professions overview
+    without a resend); **Craftable only** keeps the rows with ×N ≥ 1.
+  - **Middle, the crafting box** in three stacked areas (Round 45 playtest
+    fix 3). **Top:** the chosen recipe's output (its name in up to two
+    lines, area, tier, "makes N"). **Middle:** the made item's description
+    as its tooltip reads, without the name line and without colours, in a
+    read-only text area that scrolls when long (a scroll sends nothing) and
+    takes the room the rest leaves; left out when the tooltip is only the
+    name. Gear (weapons, armour, offhands, trinkets, tools) shows the item
+    the job makes (Common, no enchants, the tier's base item level, stats,
+    requirement); a raw dish shows the cooked dish of its furnace recipe and
+    "Must be cooked in a furnace to become edible."; anything else its own
+    description. Below it the ingredients with icons and have/need for the
+    field's quantity (a group entry reads "Any Wood", its members in the
+    tooltip), "Max: N" ("(output area)" when the room limits it), the
+    warnings, the note of the last refused action and the XP hint:
+    "Crafting this will give you a <profession> experience point" in green
+    when the job counts toward the tier, grey with "not" for a lower tier,
+    the highest tier or a full tier count. **Bottom:** the **quantity
+    field** with **Max** (stackable outputs only, default 1), below it
+    **Craft now**. A missing station reads "Requires: <station> nearby" and
+    a missing profession tier its reason; both draw **Craft now** greyed,
+    and a click on it only rebuilds the page (checking the station again).
+    While a job runs the button is **Stop**. Without a chosen recipe the box shows the professions overview
     (per known profession its tier, "Crafts: n/m toward tier N+1",
     "Highest tier reached." at T6 and the level-cap note, as the Character
     tab did until Round 45; rows that do not fit point to the area tabs).
   - **The enchant and upgrade boxes** (Round 45 lane EU, spec §2.24, §2.26,
-    §4.6): a learned primary area shows "Enchant an item" and "Upgrade an
-    item" below its list; a recipe row or an area tab returns to the recipe
-    box. Both boxes draw the **target slot** `grug_craft_target` (one piece
+    §4.6): a learned primary area shows the buttons "Enchant an item" and
+    "Upgrade an item" below its list (ordinary buttons; the open box's one
+    in the gold selection colour); a recipe row or an area tab returns to
+    the recipe box. Both boxes draw the **target slot** `grug_craft_target` (one piece
     of equipment; shift-click moves an item of `main` into it and back out
     through the shift-click inbox, §3; placing or taking it resends the
     page). The **enchant box**: the slot, an arrow,
@@ -465,8 +491,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   craft is an ingredient-list recipe of one area. **Basic** is the area for
   profession-free recipes (tools, blocks, planks, torches, dyes, bolts,
   leather grades, graded wood, arrows, …); gear (weapons, armour, offhands,
-  trinkets) and bags are recipes of their profession. Every area shows all its
-  recipes; character level restricts no recipe. The player's engine `craft`
+  trinkets) and bags are recipes of their profession. Basic shows all its
+  recipes; a profession area shows its recipes up to the player's profession
+  tier (capped by the level band; the user, 2026-10-09, playtest fix PT3).
+  The player's engine `craft`
   list has size 0 (a join shrinks it while it is empty).
 - **Crafting jobs and the output area** ([professions.md](professions.md)
   §1.2): ingredients leave the bags first, then `main[9..]`, the hotbar last
@@ -567,8 +595,8 @@ the Round 19 top-centre text list:
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
 - **Character page modes** (Round 44: a mode box beside the gear box, see
-  §1): "Stats" (pools, armor, damage reduction, crit, dodge, the balance
-  with Withdraw, the Claim Stone status; the **Return home** button with its
+  §1): "Stats" (the model; pools, armor, damage reduction, crit, dodge, the
+  Claim Stone status and the cloak picker beside it; the **Return home** button with its
   cooldown in whole minutes sits in the gear box in every mode, re-sent when
   the text changes, [home_travel.md](home_travel.md)),
   "Effects": icon,
@@ -582,7 +610,8 @@ the Round 19 top-centre text list:
   level: reach level 10N+1, then craft once more for tier N+1") was the
   fifth mode until Round 45 moved it into the Crafting tab's box (§1).
   Since Round 33 "Achievements" sits after Effects, and
-  the **cloak picker** sits beside the model (the 3D mode since Round 44;
+  the **cloak picker** sits beside the model (the 3D mode since Round 44,
+  the Stats mode since the Round 45 playtest, which merged the two;
   [character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list and in the Party & PvP tab's "Current party" table (`parties.md`).
@@ -648,8 +677,9 @@ them.
 
 Since Round 44 (`docs/planning/ui-crafting-rework-plan.md` rulings 8 and §3.4)
 the skill catalog is one row under the talent trees on the **Talents &
-Skills** tab (`skill_trees.md` §3.5), on the hotbar's columns, with the short
-inventory below so tools and food can leave the hotbar. It lists every
+Skills** tab (`skill_trees.md` §3.5), on the hotbar's columns in a
+**Skills** box like the Hotbar box (Round 45 playtest), with the short
+inventory right below so tools and food can leave the hotbar. It lists every
 currently unlocked active ability, nothing else: mounts and boats left it
 (they are in the quickbar). Its detached list is an infinite source and an
 infinite destination: a drag onto a free hotbar slot copies the skill there

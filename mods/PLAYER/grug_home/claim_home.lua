@@ -43,6 +43,19 @@ function grug_home.get(player)
  return grug_home.innkeeper(player)
 end
 
+-- Round 45 PT9: the owner's Claim Stone as a waypoint ("Your Claim Stone"
+-- in every waystone's list, waypoints.lua), whether or not it is the travel
+-- home: the placed, activated claim's row, else nil. A draft is none yet; an
+-- unfuelled stone still is; it goes with the stone (pick-up, destruction, an
+-- admin removal). Same id as the claim home row.
+function grug_home.claim_waypoint(player)
+ local claim = placed_claim(player:get_player_name())
+ if not claim or (housing.is_draft and housing.is_draft(claim)) then return nil end
+ local row = claim_row(player, claim)
+ if row then row.label = "Your Claim Stone" end
+ return row
+end
+
 function grug_home.home_is_claim(player)
  local row = grug_home.get(player)
  return row ~= nil and row.claim ~= nil

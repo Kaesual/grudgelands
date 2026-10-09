@@ -420,6 +420,7 @@ grug_core = permissive({
 		return def and (def.description or name):match("^[^\n]*") or name
 	end,
 	level_scale = function() return 1 end,
+	plain_text = function(text) return (tostring(text or ""):gsub("\27%([^)]*%)", "")) end,
 	get_player_level = function() return character_level end,
 })
 grug_classes = permissive({get_class = function() return "warrior" end,
@@ -464,6 +465,12 @@ local ops_join = #callbacks.join + 1
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/operation_jobs.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/operation_box.lua")
 local J = grug_jobs
+-- Round 45 PT8: the job start hook (the station sound plays from it).
+local job_starts = {}
+J.register_on_job_start(function(player, job, station_pos)
+	job_starts[#job_starts + 1] = {name = player:get_player_name(), kind = job.kind,
+		pos = station_pos}
+end)
 
 -- The enchant and upgrade registrations, as grug_professions loads them.
 loading = "station_operations"
@@ -726,9 +733,20 @@ do
 	fs = smith.formspec
 	has(fs, "grug_craft_box_enchant;Enchant an item]", "T the enchant button in a learned primary")
 	has(fs, "grug_craft_box_upgrade;Upgrade an item]", "T the upgrade button")
+	-- Round 45 playtest fix 3: ordinary buttons (the pane and its border),
+	-- not the borderless tab style that read as text; the open box's button
+	-- gold.
+	lacks(fs, "style[grug_craft_box_", "T no style on the closed boxes' buttons")
+	has(fs, "button[0.2,8.65;2.45,0.55;grug_craft_box_enchant;", "T the enchant button's size")
+	has(fs, "button[2.75,8.65;2.45,0.55;grug_craft_box_upgrade;", "T the upgrade button's size")
+	has(fs, "button[0.2,8.05;0.8,0.55;grug_craft_prev;<]", "T the pager above them")
 	local sent = smith.sent
 	click(smith, {grug_craft_box_enchant = "Enchant an item"})
 	eq(st_of(smith).box, "enchant", "T the button opens the enchant box")
+	has(smith.formspec, "style[grug_craft_box_enchant;bgcolor=#8a682f;bgcolor_hovered=#a77f3b;" ..
+		"bgcolor_pressed=#6f5427;border=true]", "T the open box's button in the gold style")
+	lacks(smith.formspec, "style[grug_craft_box_upgrade", "T the other button stays plain")
+	lacks(smith.formspec, "border=false]button[0.2,8.65", "T no borderless entry button")
 	eq(smith.sent, sent + 1, "T one resend")
 	has(smith.formspec, "list[current_player;grug_craft_target;", "T the box draws the slot")
 	-- Round 45 PT5: the output and the slot ring to the shift-click inbox.
@@ -1032,6 +1050,10 @@ do
 	put(hand, TARGET, 1, crafted("grug_gear:sword_steel"):to_string())
 	stock_enchant(hand, STR_T3)
 	check(J.start_operation(hand, STR_T3.id), "E the job starts")
+	local start = job_starts[#job_starts]
+	check(start and start.name == "hand" and start.kind == "enchant" and start.pos and
+		start.pos.x == 2 and start.pos.y == 10 and start.pos.z == 0,
+		"E the start hook gets the forge the enchant starts at (PT8)")
 	J.unlearn(hand, "weaponsmith")
 	learn(hand, "weaponsmith", 3)
 	pass(5)
@@ -1356,6 +1378,19 @@ do
 	local recipe_fs = smith.formspec
 	geometry_ok(recipe_fs, "P recipe box")
 	local recipe_bytes, recipe_page = #box_part(recipe_fs), #recipe_fs
+	-- Round 45 playtest fix 3: the steel sword's description is the one the
+	-- job makes (real grug_gear and grug_quality), without its name line.
+	do
+		local made = ItemStack("grug_gear:sword_steel")
+		Q.crafted_output(made, smith)
+		local expected = plain_text(made:get_meta():get_string("description"))
+			:match("^[^\n]*\n(.*)$")
+		local area = box_part(recipe_fs):match("textarea%[[%d%.,;]+;;(.-[^\\])%]")
+		eq(area and plain_text(area), expected, "P the sword's description is the job's")
+		has(expected or "", "Item level 21", "P ... with the T3 base item level")
+		has(expected or "", "Requires level 21", "P ... and the requirement")
+		lacks(area or "", "\27", "P ... without colour escapes")
+	end
 	-- The enchant box with a chosen enchant and its overwrite warning.
 	put(smith, TARGET, 1, sword:to_string())
 	enchant_box(smith)

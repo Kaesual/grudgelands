@@ -289,6 +289,9 @@ minute); only the draft form (§7.1) counts seconds.
   Binding an innkeeper also replaces a claim home.
 - Death always respawns at the bound innkeeper, even when the Claim Stone is
   the travel home (ruling 25).
+- Independently of the travel home, the activated stone is a waypoint, "Your
+  Claim Stone", in every waystone's list (Round 45 PT9,
+  [world.md](world.md) §6).
 
 ## 9. Relation to world protection
 

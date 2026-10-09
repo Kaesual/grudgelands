@@ -70,9 +70,21 @@ function M.entries(rows, faction, set, race, here_id)
  return result
 end
 
+-- Round 45 PT9: the owner's activated Claim Stone is a waypoint of its own,
+-- the entry after the list above: "travel" with `claim` (its row), else
+-- "no_claim" (no stone, a draft, picked up or destroyed). Its button is
+-- always CLAIM_ID.
+M.CLAIM_ID = "claim"
+M.CLAIM_LABEL = "Your Claim Stone"
+function M.claim_entry(claim)
+ if claim then return {row = claim, state = "travel"} end
+ return {row = {id = M.CLAIM_ID, label = M.CLAIM_LABEL}, state = "no_claim"}
+end
+
 -- Why a trip from `origin` to `target` may not start, or nil when it may.
 -- `t`: alive, faction, race, set, origin, target, at_origin, in_combat,
 -- pending. Travel is free and has no cooldown, so nothing else refuses it.
+-- A Claim Stone target (a row with `claim`) needs no visit.
 function M.refusal(t)
  if not t.alive then return "You cannot travel now." end
  if not t.origin or t.faction == nil or t.origin.faction ~= t.faction then
@@ -83,7 +95,7 @@ function M.refusal(t)
   return "That waystone is not on your path."
  end
  if t.target.id == t.origin.id then return "You are already here." end
- if not M.known(t.set or {}, t.target, t.race) then
+ if not t.target.claim and not M.known(t.set or {}, t.target, t.race) then
   return "You have not visited that waystone yet."
  end
  if t.in_combat then return "Cannot travel in combat." end

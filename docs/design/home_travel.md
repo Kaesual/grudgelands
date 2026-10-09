@@ -74,3 +74,5 @@ Full rules: [housing.md](housing.md) §8.
   (`grug_map/providers.lua`; the map window and the minimap, without a label
   since Round 44).
 - Death always respawns at the bound innkeeper, never at the Claim Stone.
+- Independently, the activated stone is the waypoint "Your Claim Stone" in
+  every waystone's list (Round 45 PT9, [world.md](world.md) §6).

@@ -1,12 +1,20 @@
 -- The Crafting tab's recipe box (Round 45 lane UI; ui-crafting-rework-plan.md
--- §2.18, §4.2, §4.3), drawn into grug_jobs.CRAFT_BOX by ui.lua: the chosen
--- recipe's output, its ingredients with have/need, the maximum, the
--- quantity field with Max (stackable outputs only, default 1), the
--- warnings (the profession gate, "Requires: <station> nearby"), the note of
--- the last refused action, the XP hint, and Craft now, which turns into Stop
--- while a job runs. Without a chosen recipe the box shows the professions
--- overview (overview.lua): every known profession's tier, progress and the
--- level cap note.
+-- §2.18, §4.2, §4.3; Round 45 playtest fix 3), drawn into grug_jobs.CRAFT_BOX
+-- by ui.lua in three stacked areas:
+--   top     the chosen recipe's output: icon, name, area, tier, "makes N";
+--   middle  the item's description (what its tooltip says, scrolling when
+--           long), the ingredients with have/need, the maximum, the
+--           warnings (the profession gate, "Requires: <station> nearby"),
+--           the note of the last refused action and the XP hint;
+--   bottom  the quantity field with Max (stackable outputs only, default 1)
+--           and below it Craft now, which turns into Stop while a job runs.
+-- Without a chosen recipe the box shows the professions overview
+-- (overview.lua): every known profession's tier, progress and the level cap
+-- note.
+--
+-- The description is a read-only textarea: it scrolls on the client and a
+-- scroll sends nothing to the server. It takes the room the other parts
+-- leave and is left out when the tooltip says nothing beyond the name.
 --
 -- The quantity field (spec §4.3): the server learns the typed number only
 -- with an event. Enter in the field recalculates and never starts; Craft now
@@ -28,8 +36,16 @@ local label_of = grug_jobs.recipe_label
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
 local BUTTON_Y = BOX.y + BOX.h - 0.8
+-- The quantity row sits right above the button.
+local QUANTITY_Y = BUTTON_Y - 0.75
+-- The middle area's first label (its centre) below the top area.
+local MIDDLE_Y = BOX.y + 1.4
 local INGREDIENT_ROWS, INGREDIENT_STEP = 5, 0.45
 local NOTE_STEP = 0.38
+-- The description: the height of a line, the least height worth drawing,
+-- the room a scrollbar takes from the text's width.
+local DESCRIPTION_LINE, DESCRIPTION_MIN, SCROLLBAR_W = 0.35, 0.8, 0.3
+local COOKED_NOTE = "Must be cooked in a furnace to become edible."
 local BOX_COLOR = "#00000040"
 local WARN = "#ff9f5a"
 local NOTE = "#f0c75e"
@@ -104,6 +120,47 @@ end
 
 local function area_name(recipe)
 	return recipe.area == "basic" and "Basic" or grug_jobs.PROFESSIONS[recipe.area].name
+end
+
+-- What the made item's tooltip says, as plain text without the name line
+-- the top area already shows ("" when nothing is left):
+--   gear (whatever grug_items.crafted_output takes: weapons, armour,
+--        offhands, trinkets, tools) is built on a copy exactly as the job
+--        builds it; crafted gear is deterministic (Common, no enchants), so
+--        item level, stats, requirement and durability are the real ones;
+--   a raw dish (a Cooking recipe the furnace finishes) shows the cooked
+--        dish, found through its furnace cooking recipe, and the note;
+--   anything else its definition's description.
+local function description_of(player, recipe)
+	local name, text, note = recipe.output, nil, nil
+	local items = rawget(_G, "grug_items")
+	local stack = ItemStack(name)
+	if items and type(items.crafted_output) == "function" and
+			items.crafted_output(stack, player) then
+		text = stack:get_meta():get_string("description")
+	end
+	if (not text or text == "") and recipe.area == "cooking" then
+		local cooked = core.get_craft_result({method = "cooking", width = 1,
+			items = {ItemStack(name)}})
+		if cooked and cooked.item and not cooked.item:is_empty() then
+			name, note = cooked.item:get_name(), COOKED_NOTE
+		end
+	end
+	if not text or text == "" then
+		local def = core.registered_items[name]
+		text = def and def.description or ""
+	end
+	text = grug_core.plain_text(text)
+	local first, rest = text:match("^([^\n]*)\n?(.*)$")
+	if first:match("^%s*(.-)%s*$") == label_of(recipe.output) then text = rest end
+	if note then text = text == "" and note or (text .. "\n" .. note) end
+	return text:match("^%s*(.-)%s*$")
+end
+
+-- The number of lines `text` wraps to in `width` units.
+local function line_count(text, width)
+	local wrapped = grug_inventory.wrap_text(text, math.floor(width * CHARS))
+	return select(2, wrapped:gsub("\n", "")) + 1
 end
 
 local function ingredient_rows(fs, recipe, counts, quantity, y)
@@ -188,33 +245,56 @@ local function build(player, view)
 		y = y + 0.35
 	end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 1.05), n(y + 0.05), esc(sub))
-	fs[#fs + 1] = ("label[%s,%s;Ingredients (have/need)]"):format(n(X), n(BOX.y + 1.4))
-	y = ingredient_rows(fs, recipe, view.counts, quantity, BOX.y + 1.65)
-	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y + 0.2), esc("Max: " .. most ..
-		(by_space < by_ingredients and " (output area)" or "")))
-	y = y + 0.5
-	if stacks then
-		fs[#fs + 1] = ("label[%s,%s;Quantity]field[%s,%s;1.2,0.6;%s;;%s]" ..
-			"field_close_on_enter[%s;false]button[%s,%s;1,0.6;%s;Max]"):format(
-			n(X), n(y + 0.3), n(X + 1.15), n(y), F.qty, esc(st.qty), F.qty,
-			n(X + 2.45), n(y), F.max)
-		y = y + 0.8
-	end
-	y = y + 0.15
-	local enabled = true
+	-- The middle's warnings, the note and the XP hint, gathered first: the
+	-- description takes the room they and the ingredients leave.
+	local enabled, notes = true, {}
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
 	if not allowed then
 		enabled = false
-		y = wrapped_labels(fs, X, y, W, reason, WARN, NOTE_STEP)
+		notes[#notes + 1] = {reason, WARN}
 	elseif recipe.station and not grug_jobs.station_nearby(player, recipe.station) then
 		enabled = false
 		local info = grug_jobs.station_info(recipe.station)
-		y = wrapped_labels(fs, X, y, W, "Requires: " ..
-			(info and info.display_name or recipe.station) .. " nearby", WARN, NOTE_STEP)
+		notes[#notes + 1] = {"Requires: " .. (info and info.display_name or recipe.station) ..
+			" nearby", WARN}
 	end
-	if st.note then y = wrapped_labels(fs, X, y, W, st.note, NOTE, NOTE_STEP) end
+	if st.note then notes[#notes + 1] = {st.note, NOTE} end
 	local hint, color = xp_hint(player, recipe)
-	if hint then wrapped_labels(fs, X, y, W, hint, color, NOTE_STEP) end
+	if hint then notes[#notes + 1] = {hint, color} end
+	local note_lines = 0
+	for _, entry in ipairs(notes) do note_lines = note_lines + line_count(entry[1], W) end
+	-- Below the description: the heading, the ingredient rows, Max, the notes;
+	-- all of it ends above the quantity row (or the button).
+	local rows = math.min(#recipe.ingredients, INGREDIENT_ROWS)
+	local below = 0.1 + 0.25 + rows * INGREDIENT_STEP + 0.65 + note_lines * NOTE_STEP
+	local limit = (stacks and QUANTITY_Y or BUTTON_Y) - 0.05
+	y = MIDDLE_Y
+	local text = description_of(player, recipe)
+	if text ~= "" then
+		local top = MIDDLE_Y - 0.15
+		local needed = line_count(text, W - SCROLLBAR_W) * DESCRIPTION_LINE + 0.15
+		local height = math.min(needed, limit - below - MIDDLE_Y)
+		if height >= DESCRIPTION_MIN then
+			fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]textarea[%s,%s;%s,%s;;;%s]"):format(
+				n(X), n(top), n(W), n(height), BOX_COLOR, n(X), n(top), n(W), n(height),
+				esc(text))
+			y = top + height + 0.25
+		end
+	end
+	fs[#fs + 1] = ("label[%s,%s;Ingredients (have/need)]"):format(n(X), n(y))
+	y = ingredient_rows(fs, recipe, view.counts, quantity, y + 0.25)
+	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y + 0.2), esc("Max: " .. most ..
+		(by_space < by_ingredients and " (output area)" or "")))
+	y = y + 0.65
+	for _, entry in ipairs(notes) do
+		y = wrapped_labels(fs, X, y, W, entry[1], entry[2], NOTE_STEP)
+	end
+	if stacks then
+		fs[#fs + 1] = ("label[%s,%s;Quantity]field[%s,%s;1.2,0.6;%s;;%s]" ..
+			"field_close_on_enter[%s;false]button[%s,%s;1,0.6;%s;Max]"):format(
+			n(X), n(QUANTITY_Y + 0.3), n(X + 1.15), n(QUANTITY_Y), F.qty, esc(st.qty), F.qty,
+			n(X + 2.45), n(QUANTITY_Y), F.max)
+	end
 	button(fs, job, enabled)
 	return table.concat(fs)
 end
