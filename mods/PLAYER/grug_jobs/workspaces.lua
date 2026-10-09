@@ -1,16 +1,15 @@
 -- Detached inventories are views; node metadata owns every durable workspace.
--- Since Round 45 (lane RG) only furnaces and dual furnaces keep a dialog with
--- lists. The forge, the four benches and the brewing stand show a notice
--- until lane ST makes them proximity stations; their old node-meta contents
--- stay where they are and still come out when a player-placed station is dug
+-- Since Round 45 only furnaces and dual furnaces keep a dialog with lists.
+-- The forge, the four benches and the brewing stand are proximity stations
+-- (spec ruling 27, lane ST): no dialog, no lists; a profession job only
+-- checks that one stands nearby (jobs.lua). Their old node-meta contents stay
+-- where they are and still come out when a player-placed station is dug
 -- (round45-plan.md ruling 3).
 local workspaces = {}
 local automatic = dofile(core.get_modpath("grug_jobs") .. "/automatic.lua")
 local viewers = {}
-local notices = {}
 local sequence = 0
 local FORM = "grug_jobs:workspace"
-local NOTICE_FORM = "grug_jobs:station_notice"
 local PREFIX = "grug_jobs:workspace:"
 local PERSONAL_BURN_UNTIL = "grug_jobs:personal_burn_until"
 local refresh
@@ -235,34 +234,19 @@ local function callbacks(ctx)
 	}
 end
 
--- The notice of a station without a dialog: its name, where crafting went
--- and the repair button. `ctx` is {name, pos, id, station}.
-local function notice_formspec(ctx)
-	local title = grug_jobs.station_info(ctx.station).display_name
-	return "formspec_version[4]size[8,3.6]label[0.5,0.5;" .. core.formspec_escape(title) ..
-		"]label[0.5,1.2;Crafting moved to the Crafting tab.]" ..
-		repair_button(ctx.name, ctx.pos, 0.5, 2.2) ..
-		"button_exit[5.1,2.2;2.4,0.8;close;Close]"
-end
-
--- Opens the station form at `pos`; true when it is shown. `id` (optional)
+-- Opens the furnace or dual-furnace form at `pos`; true when it is shown. `id` (optional)
 -- is the station id a return from the repair form expects (Round 41 ruling
 -- 3): a station dug and replaced at the same place is another station, and
 -- the caller falls back to the inventory.
 function workspaces.open(pos, player, id)
 	local station = node_station(pos)
-	if not station or not player or not player:is_player() then return false end
+	if not DIALOG_STATIONS[station] or not player or not player:is_player() then return false end
 	if id and core.get_meta(pos):get_string("grug_jobs:station_id") ~= id then return false end
 	local name = player:get_player_name()
 	local ctx = {name = name, pos = vector.new(pos), station = station,
 		id = stamp(pos), personal = grug_jobs.is_public_station(station, pos)}
 	if not accessible(ctx, player) then return false end
 	detach(viewers[name])
-	if not DIALOG_STATIONS[station] then
-		notices[name] = ctx
-		core.show_formspec(name, NOTICE_FORM, notice_formspec(ctx))
-		return true
-	end
 	sequence = sequence + 1
 	ctx.detached = "grug_workspace_" .. name .. "_" .. sequence
 	ctx.inv = core.create_detached_inventory(ctx.detached, callbacks(ctx), name)
@@ -300,16 +284,6 @@ local function open_repair(player, ctx)
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
-	if formname == NOTICE_FORM then
-		local name = player:get_player_name()
-		local ctx = notices[name]
-		if fields.quit then notices[name] = nil end
-		if ctx and fields.grug_jobs_repair and accessible(ctx, player) then
-			notices[name] = nil
-			open_repair(player, ctx)
-		end
-		return true
-	end
 	if formname ~= FORM then return false end
 	local ctx = viewers[player:get_player_name()]
 	if not ctx then return true end
@@ -325,9 +299,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 core.register_on_leaveplayer(function(player)
-	local name = player:get_player_name()
-	detach(viewers[name])
-	notices[name] = nil
+	detach(viewers[player:get_player_name()])
 end)
 local accumulator = 0
 core.register_globalstep(function(dtime)
@@ -346,18 +318,20 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
--- The node lists of a station: its automatic lists, else the old crafting
--- grid of the benches and the forge (Round 45: no longer shown, still
--- released on a dig).
+-- The node lists a station keeps: a furnace's and a dual furnace's automatic
+-- lists; a proximity station keeps none.
 local function station_lists(station)
-	return automatic.sizes[station] or {craft = 9}
+	return automatic.sizes[station] or {}
 end
 
--- Everything a station holds: its node lists and every player's saved
--- workspace record. Digging and blasts both release all of it, so other
--- players' invisible leftovers never block a dig (Round 28 ruling 18).
-local function station_contents(pos, station, drops)
-	for list in pairs(station_lists(station)) do
+-- Everything a station holds: every list its node meta has and every
+-- player's saved workspace record. Digging and blasts both release all of
+-- it, so other players' invisible leftovers never block a dig (Round 28
+-- ruling 18). A proximity station built before Round 45 still holds its old
+-- lists (the crafting grid; a brewing stand's mixture, fuel and output),
+-- which come out here too (round45-plan.md ruling 3).
+local function station_contents(pos, drops)
+	for list in pairs(core.get_meta(pos):get_inventory():get_lists()) do
 		default.get_inventory_drops(pos, list, drops)
 	end
 	for key, value in pairs(core.get_meta(pos):to_table().fields or {}) do
@@ -386,6 +360,7 @@ local function install_node(name, station)
 	if not def then return end
 	-- Inventory use is an interaction (a claim's "interact" permission is
 	-- enough, Round 25 ruling 18); digging (`edit`) keeps core.is_protected.
+	local dialog = DIALOG_STATIONS[station]
 	local function allowed(pos, player, edit)
 		if grug_jobs.is_public_station(station, pos) then return false end
 		if not (player and player:is_player() and player:get_hp() > 0 and
@@ -398,36 +373,29 @@ local function install_node(name, station)
 		return not grug_core.interaction_protected(pos, name)
 	end
 	local function update(pos)
-		if automatic.sizes[station] then
-			local meta = core.get_meta(pos)
-			if station == "furnace" or station == "dual_furnace" then
-				local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
-				automatic.advance(station, meta:get_inventory(), state, 0)
-				meta:set_string("grug_jobs:process", core.serialize(state))
-				local node = core.get_node(pos)
-				local inactive = grug_jobs.station_info(station).node
-				local wanted = (state.fuel or 0) > 0 and inactive .. "_active" or inactive
-				if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
-			end
-			local timer = core.get_node_timer(pos)
-			if not timer:is_started() then timer:start(1) end
-		end
+		local meta = core.get_meta(pos)
+		local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
+		automatic.advance(station, meta:get_inventory(), state, 0)
+		meta:set_string("grug_jobs:process", core.serialize(state))
+		local node = core.get_node(pos)
+		local inactive = grug_jobs.station_info(station).node
+		local wanted = (state.fuel or 0) > 0 and inactive .. "_active" or inactive
+		if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
+		local timer = core.get_node_timer(pos)
+		if not timer:is_started() then timer:start(1) end
 		refresh_position(pos)
 	end
-	-- Only a dialog station shows its node lists; the others take nothing.
+	-- Only a dialog station shows its node lists; the others take nothing
+	-- (nor give: their old lists come out only when they are dug).
 	local function allow_put(pos, list, index, stack, player)
-		if not DIALOG_STATIONS[station] or not allowed(pos, player) or
+		if not dialog or not allowed(pos, player) or
 				list == "output" or list == "dst" then return 0 end
 		if not station_lists(station)[list] then return 0 end
 		if list == "fuel" and automatic.fuel_time(station, stack) <= 0 then return 0 end
 		return stack:get_count()
 	end
-	core.override_item(name, {
+	local override = {
 		_grug_station = station,
-		on_construct = function(pos) initialize(pos, station) end,
-		on_rightclick = function(pos, node, player, stack)
-			initialize(pos, station) workspaces.open(pos, player) return stack
-		end,
 		-- Anyone the normal protection allows may dig a player-placed station
 		-- at any time, full or not; authored public stations stay undiggable.
 		can_dig = function(pos, player) return allowed(pos, player, true) end,
@@ -436,17 +404,17 @@ local function install_node(name, station)
 		-- the dug station's own drops (digger's inventory, overflow on the
 		-- ground).
 		preserve_metadata = function(pos, _, _, drops)
-			station_contents(pos, station, drops)
+			station_contents(pos, drops)
 		end,
 		on_blast = function(pos)
 			if grug_jobs.is_public_station(station, pos) then return {} end
-			local drops = station_contents(pos, station, {def.drop or name})
+			local drops = station_contents(pos, {def.drop or name})
 			core.remove_node(pos)
 			return drops
 		end,
 		allow_metadata_inventory_put = allow_put,
 		allow_metadata_inventory_take = function(pos, list, index, stack, player)
-			if not DIALOG_STATIONS[station] or not allowed(pos, player) or
+			if not dialog or not allowed(pos, player) or
 					not station_lists(station)[list] then return 0 end
 			return stack:get_count()
 		end,
@@ -454,37 +422,52 @@ local function install_node(name, station)
 			local stack = core.get_meta(pos):get_inventory():get_stack(from, fi)
 			return math.min(count, allow_put(pos, to, ti, stack, player))
 		end,
-		on_metadata_inventory_put = update, on_metadata_inventory_take = update,
-		on_metadata_inventory_move = update,
-		on_timer = function(pos, elapsed)
-			if not automatic.sizes[station] then return false end
-			initialize(pos, station)
-			local meta = core.get_meta(pos)
-			local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
-			local public = grug_jobs.is_public_station(station, pos)
-			if not public then
-				automatic.advance(station, meta:get_inventory(), state, elapsed)
-				meta:set_string("grug_jobs:process", core.serialize(state))
-			end
-			local running = not public and
-				automatic.running(station, meta:get_inventory(), state) or false
-			local personal_lit = false
-			if station == "furnace" or station == "dual_furnace" then
-				personal_lit = automatic.personal_light_active(core.get_gametime(),
-					meta:get_int(PERSONAL_BURN_UNTIL))
-				if not personal_lit and meta:get_int(PERSONAL_BURN_UNTIL) ~= 0 then
-					meta:set_int(PERSONAL_BURN_UNTIL, 0)
-				end
-			end
+		on_receive_fields = function() end,
+	}
+	if not dialog then
+		-- A proximity station has no dialog (no on_rightclick) and no lists. A
+		-- brewing stand the automatic brewing lit before Round 45 still runs its
+		-- node timer once after loading: it goes out, and the timer stops.
+		override.on_timer = function(pos)
 			local node = core.get_node(pos)
 			local inactive = grug_jobs.station_info(station).node
-			local wanted = ((state.fuel or 0) > 0 or personal_lit) and
-				inactive .. "_active" or inactive
-			if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
-			return running or personal_lit
-		end,
-		on_receive_fields = function() end,
-	})
+			if node.name ~= inactive then node.name = inactive core.swap_node(pos, node) end
+			return false
+		end
+		core.override_item(name, override)
+		return
+	end
+	override.on_construct = function(pos) initialize(pos, station) end
+	override.on_rightclick = function(pos, node, player, stack)
+		initialize(pos, station) workspaces.open(pos, player) return stack
+	end
+	override.on_metadata_inventory_put = update
+	override.on_metadata_inventory_take = update
+	override.on_metadata_inventory_move = update
+	override.on_timer = function(pos, elapsed)
+		initialize(pos, station)
+		local meta = core.get_meta(pos)
+		local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
+		local public = grug_jobs.is_public_station(station, pos)
+		if not public then
+			automatic.advance(station, meta:get_inventory(), state, elapsed)
+			meta:set_string("grug_jobs:process", core.serialize(state))
+		end
+		local running = not public and
+			automatic.running(station, meta:get_inventory(), state) or false
+		local personal_lit = automatic.personal_light_active(core.get_gametime(),
+			meta:get_int(PERSONAL_BURN_UNTIL))
+		if not personal_lit and meta:get_int(PERSONAL_BURN_UNTIL) ~= 0 then
+			meta:set_int(PERSONAL_BURN_UNTIL, 0)
+		end
+		local node = core.get_node(pos)
+		local inactive = grug_jobs.station_info(station).node
+		local wanted = ((state.fuel or 0) > 0 or personal_lit) and
+			inactive .. "_active" or inactive
+		if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
+		return running or personal_lit
+	end
+	core.override_item(name, override)
 end
 
 core.register_on_mods_loaded(function()
@@ -494,26 +477,27 @@ core.register_on_mods_loaded(function()
 		if name == "default:furnace" or name == "default:furnace_active" then station = "furnace" end
 		if name == "grug_smelting:dual_furnace" or name == "grug_smelting:dual_furnace_active" then station = "dual_furnace" end
 		if name == "grug_brewing:brewing_stand" or name == "grug_brewing:brewing_stand_active" then station = "brewing_stand" end
-		if station then names[#names + 1] = name install_node(name, station) end
+		if station then
+			install_node(name, station)
+			if DIALOG_STATIONS[station] then names[#names + 1] = name end
+		end
 	end
 	core.register_lbm({name = ":grug_jobs:workspace_activation", label = "Activate station workspaces",
 		nodenames = names, run_at_every_load = true,
 		action = function(pos)
 			local station = node_station(pos)
 			initialize(pos, station)
-			if station == "furnace" or station == "dual_furnace" then
-				local meta = core.get_meta(pos)
-				local personal_lit = automatic.personal_light_active(core.get_gametime(),
-					meta:get_int(PERSONAL_BURN_UNTIL))
-				if not personal_lit then meta:set_int(PERSONAL_BURN_UNTIL, 0) end
-				local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
-				local shared_lit = (state.fuel or 0) > 0
-				local node = core.get_node(pos)
-				local inactive = grug_jobs.station_info(station).node
-				local wanted = (shared_lit or personal_lit) and inactive .. "_active" or inactive
-				if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
-				if shared_lit or personal_lit then core.get_node_timer(pos):start(1) end
-			end
+			local meta = core.get_meta(pos)
+			local personal_lit = automatic.personal_light_active(core.get_gametime(),
+				meta:get_int(PERSONAL_BURN_UNTIL))
+			if not personal_lit then meta:set_int(PERSONAL_BURN_UNTIL, 0) end
+			local state = core.deserialize(meta:get_string("grug_jobs:process")) or {}
+			local shared_lit = (state.fuel or 0) > 0
+			local node = core.get_node(pos)
+			local inactive = grug_jobs.station_info(station).node
+			local wanted = (shared_lit or personal_lit) and inactive .. "_active" or inactive
+			if node.name ~= wanted then node.name = wanted core.swap_node(pos, node) end
+			if shared_lit or personal_lit then core.get_node_timer(pos):start(1) end
 		end})
 end)
 

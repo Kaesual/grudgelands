@@ -25,9 +25,8 @@
 --      furnace (which refreshes again), also after a repair; its Esc closes;
 --      Close after walking away, after the furnace was replaced or when dead
 --      falls back to the inventory; the repair form of another provider
---      keeps its plain Close. Round 45: a forge shows the notice "Crafting
---      moved to the Crafting tab" (no list, no refresh) whose repair button
---      returns to it.
+--      keeps its plain Close. Round 45: a forge opens no dialog (a
+--      proximity station, lane ST).
 --   G  grass and moss (X-02): grug_core/protection.lua and the two ABMs of
 --      default/functions.lua. In a town, a capital, a POI core or on a road
 --      dirt stays dirt and cobble stays cobble; on open ground both grow.
@@ -567,8 +566,8 @@ end
 ------------------------------------------------------------------------------
 -- F (Round 41 lane UI, ruling 3): Close of the repair form returns to the
 -- station it was opened from, with the real repair providers. Round 45: the
--- recipe book and its Close are gone; a forge or bench shows the notice
--- "Crafting moved to the Crafting tab" with the same repair button.
+-- recipe book and its Close are gone; a forge or bench opens no dialog (lane
+-- ST: proximity stations).
 ------------------------------------------------------------------------------
 do
 	local c = new_engine()
@@ -630,7 +629,7 @@ do
 	function ann:get_hp() return self.hp end
 	function ann:get_inventory_formspec() return "inventory" end
 	E.players = {ann = ann}
-	local FORM, NOTICE = "grug_jobs:workspace", "grug_jobs:station_notice"
+	local FORM = "grug_jobs:workspace"
 	local record = default.node_formspec.shown_form
 	local function last() return E.shown[#E.shown] end
 	local function lands_in_inventory(label)
@@ -689,26 +688,15 @@ do
 	run_receive(ann, form, {close = "Close", quit = "true"})
 	eq(#E.shown, total, "F41 another provider's repair Close only closes")
 
-	-- A forge: the notice, no list, the repair button; repair Close returns to
-	-- the notice; the notice never refreshes on its own.
+	-- A forge (Round 45 lane ST): a proximity station without a dialog. It
+	-- opens nothing, so it offers no repair either (a claim repairs at its
+	-- furnace); the old notice's fields open nothing.
 	place("f1", "grug_jobs:forge")
-	check(grug_jobs.workspaces.open(pos, ann), "F45 the forge opens")
-	local notice = last()
-	eq(notice.form, NOTICE, "F45 the forge shows its notice")
-	check(notice.formspec:find("Crafting moved to the Crafting tab.", 1, true) ~= nil,
-		"F45 the notice says where crafting went")
-	check(not notice.formspec:find("list[", 1, true), "F45 the notice shows no list")
-	local notices = shows(NOTICE)
-	step(1.1) step(1.1)
-	eq(shows(NOTICE), notices, "F45 the notice is not re-shown")
-	form = repair_from(NOTICE)
-	run_receive(ann, form, {close = "Close", quit = "true"})
-	eq(last().form, NOTICE, "F45 repair Close returns to the forge's notice")
-	run_receive(ann, NOTICE, {close = "Close", quit = "true"})
-	ann.pos = P(20, 0, 0)
 	total = #E.shown
-	run_receive(ann, NOTICE, {grug_jobs_repair = "Repair equipment"})
-	eq(#E.shown, total, "F45 a notice field from afar opens nothing")
+	eq(grug_jobs.workspaces.open(pos, ann), false, "F45 the forge opens no dialog")
+	eq(#E.shown, total, "F45 ...and shows nothing")
+	run_receive(ann, "grug_jobs:station_notice", {grug_jobs_repair = "Repair equipment"})
+	eq(#E.shown, total, "F45 the old notice's repair field opens nothing")
 end
 
 ------------------------------------------------------------------------------
