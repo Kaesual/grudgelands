@@ -135,35 +135,45 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   ("Tier 3 · 7/15" with a small bar, "Tier 6 · highest", "Not learned",
   Basic has none). An empty primary slot or an unlearned profession shows an
   empty list with how to learn it.
-  - **Left, the list** (`professions.md` §1.2): every recipe of the area,
-    ordered by tier, then name; 10 rows per page with "Page x of y"; a row is
+  - **Left, the list** (`professions.md` §1.2): the area's recipes up to
+    the player's profession tier there (Basic: all), ordered by tier, then
+    name; 10 rows per page with "Page x of y"; a row is
     the output's icon, its name (a clipped name shows in full as its
     tooltip) and **×N**, the crafts the ingredients allow by the job's rule
     (stacks without metadata only), counted in one pass over the inventory
     per build. **Search** (the button or Enter) filters by the output's name
     on the server, at most once a second (a quicker request is ignored
-    without a resend); **Craftable only** keeps the rows with ×N ≥ 1 whose
-    tier the profession allows.
-  - **Middle, the crafting box:** the chosen recipe's output (its name in up
-    to two lines, area, tier, "makes N"), the ingredients with icons and
-    have/need for the field's quantity (a group entry reads "Any Wood",
-    its members in the tooltip), "Max: N" ("(output area)" when the room
-    limits it), the **quantity field** with **Max** (stackable outputs only,
-    default 1), the warnings, the note of the last refused action and the
-    XP hint: "Crafting this will give you a <profession> experience point"
-    in green when the job counts toward the tier, grey with "not" for a
-    lower tier, the highest tier or a full tier count. A missing station
-    reads "Requires: <station> nearby" and a missing profession tier its
-    reason; both draw **Craft now** greyed, and a click on it only rebuilds
-    the page (checking the station again). While a job runs the button is
-    **Stop**. Without a chosen recipe the box shows the professions overview
+    without a resend); **Craftable only** keeps the rows with ×N ≥ 1.
+  - **Middle, the crafting box** in three stacked areas (Round 45 playtest
+    fix 3). **Top:** the chosen recipe's output (its name in up to two
+    lines, area, tier, "makes N"). **Middle:** the made item's description
+    as its tooltip reads, without the name line and without colours, in a
+    read-only text area that scrolls when long (a scroll sends nothing) and
+    takes the room the rest leaves; left out when the tooltip is only the
+    name. Gear (weapons, armour, offhands, trinkets, tools) shows the item
+    the job makes (Common, no enchants, the tier's base item level, stats,
+    requirement); a raw dish shows the cooked dish of its furnace recipe and
+    "Must be cooked in a furnace to become edible."; anything else its own
+    description. Below it the ingredients with icons and have/need for the
+    field's quantity (a group entry reads "Any Wood", its members in the
+    tooltip), "Max: N" ("(output area)" when the room limits it), the
+    warnings, the note of the last refused action and the XP hint:
+    "Crafting this will give you a <profession> experience point" in green
+    when the job counts toward the tier, grey with "not" for a lower tier,
+    the highest tier or a full tier count. **Bottom:** the **quantity
+    field** with **Max** (stackable outputs only, default 1), below it
+    **Craft now**. A missing station reads "Requires: <station> nearby" and
+    a missing profession tier its reason; both draw **Craft now** greyed,
+    and a click on it only rebuilds the page (checking the station again).
+    While a job runs the button is **Stop**. Without a chosen recipe the box shows the professions overview
     (per known profession its tier, "Crafts: n/m toward tier N+1",
     "Highest tier reached." at T6 and the level-cap note, as the Character
     tab did until Round 45; rows that do not fit point to the area tabs).
   - **The enchant and upgrade boxes** (Round 45 lane EU, spec §2.24, §2.26,
-    §4.6): a learned primary area shows "Enchant an item" and "Upgrade an
-    item" below its list; a recipe row or an area tab returns to the recipe
-    box. Both boxes draw the **target slot** `grug_craft_target` (one piece
+    §4.6): a learned primary area shows the buttons "Enchant an item" and
+    "Upgrade an item" below its list (ordinary buttons; the open box's one
+    in the gold selection colour); a recipe row or an area tab returns to
+    the recipe box. Both boxes draw the **target slot** `grug_craft_target` (one piece
     of equipment; shift-click moves an item of `main` into it; placing or
     taking it resends the page). The **enchant box**: the slot, an arrow,
     the preview (the result's image, its computed description as the

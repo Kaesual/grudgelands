@@ -166,7 +166,13 @@ tools](#player-meta-read-by-external-tools).
   the last refused action, the row ids of the last build); nothing in player
   meta. Each build runs `update_job(player, "open")`, one
   `ingredient_counts` pass that feeds ×N, Craftable only and the box, and
-  echoes the field values. A click is handled and answered with one resend;
+  echoes the field values. The list hides a profession area's recipes above
+  `profession_level` (Basic shows all). The recipe box's description is
+  built per build: gear through `grug_items.crafted_output` on a copy (the
+  job's own path), a Cooking output with an engine cooking recipe through
+  `core.get_craft_result` (the cooked dish), else the definition; it is a
+  nameless read-only `textarea[]`, which scrolls on the client without an
+  event. A click is handled and answered with one resend;
   a search within a second of the last is ignored without one. The end
   resend is a `register_on_job_end` callback for the sources `timer` and
   `join` while the current page is Crafting (`open`, `start` and `stop` are

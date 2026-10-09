@@ -159,10 +159,15 @@ items, per-recipe unlocks, keystone redemptions or discovery.
   ingredients the universal grid used, the profession tier equal to the item's
   tier and the owner's station nearby; the result starts at its tier's base
   item level. Arrows are ammunition and stay Basic.
-- **Visibility** (spec §2.33): every area shows all its recipes; search, pages
-  and "Craftable only" replace the old discovery (no seen list, no starter
-  set). Basic and Cooking are there from the start; the two primaries and
-  Alchemy start empty and are learned at the capital trainers (spec §2.16).
+- **Visibility** (spec §2.33, corrected by the user in Round 45's playtest,
+  2026-10-09): a profession area (Cooking, Alchemy and the primaries) lists
+  only the recipes up to the player's profession tier there (the tier the
+  character's level band allows, as the profession gate counts it); each
+  new tier adds its recipes. Basic has no profession tier and lists all its
+  recipes. Search, pages and "Craftable only" work on the listed recipes and
+  replace the old discovery (no seen list, no starter set). Basic and
+  Cooking are there from the start; the two primaries and Alchemy start
+  empty and are learned at the capital trainers (spec §2.16).
 - **Durations** (spec §2.30), per crafted item; a job lasts quantity ×
   duration:
 
