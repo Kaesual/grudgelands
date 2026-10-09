@@ -46,7 +46,9 @@ function grug_jobs.has(player, profession)
 	return meta:get_int(META_LEARNED .. profession) == 1
 end
 
-function grug_jobs.learn(player, profession)
+-- `quiet` (Round 45, lane ST: Cooking learned at join) skips the chat line,
+-- the sound and the page refresh.
+function grug_jobs.learn(player, profession, quiet)
 	local definition = grug_jobs.PROFESSIONS[profession]
 	if not definition then return false, "Unknown profession." end
 	if grug_jobs.has(player, profession) then
@@ -70,6 +72,7 @@ function grug_jobs.learn(player, profession)
 	set_int(meta, META_LEVEL .. profession, 1)
 	set_int(meta, META_CRAFTS .. profession, 0)
 	local text = "Learned " .. definition.name .. "."
+	if quiet then return true, text end
 	message(player, text)
 	grug_sounds.play("profession_learned", player)
 	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end

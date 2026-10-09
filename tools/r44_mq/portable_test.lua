@@ -298,7 +298,8 @@ rawset(_G, "grug_core", {
 	item_name = function(stack) return stack.name end,
 })
 rawset(_G, "grug_factions", {get_faction = function(p) return p.faction end})
-rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}, alchemist = {name = "Alchemist"}}})
+rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}, alchemist = {name = "Alchemist"}},
+	trainer_teaches = function(p) return p ~= "cooking" end}) -- Round 45 (lane ST)
 rawset(_G, "grug_money", {format = function(c) return c .. "c" end})
 rawset(_G, "grug_zones", {
 	at = function() return {display_name = "Dawnmere Fields"} end,

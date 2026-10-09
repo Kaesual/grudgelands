@@ -32,6 +32,12 @@ personal stations, access, digging) is
   the two secondaries (Alchemy since Round 33). Every player may learn both in
   addition to the two primaries; a secondary cannot be unlearned. Each has its
   own crafting area (§1.2). There is no First Aid.
+  - **Every character knows Cooking from the start** (Round 45, spec ruling
+    28): a character who does not know it learns it at T1 at its arrival and
+    at every join (an existing character at its next join); a known Cooking
+    keeps its tier and crafts. No trainer teaches it
+    (`grug_jobs.STARTER_PROFESSIONS`). Alchemy is still learned at its
+    trainer.
   - Both have the same T1–T6 recipes and profession-level gate as every
     primary profession (§1.2; `items_crafting.md` §3.6, §3.7).
   - **Riding is likewise universal**, but is taught only by the dedicated
@@ -43,8 +49,15 @@ personal stations, access, digging) is
   profession ids are `weaponsmith`, `armorsmith`, `tailor`, `leatherworker`,
   `woodcarver`, `goldsmith`, `cooking` and `alchemist` (Alchemy;
   `grug_jobs.PROFESSIONS`), so code asks `grug_jobs.has(player, "alchemist")`.
-- **Cooking in every start, all eight in every capital.** The eight capital
-  trainers are the six primaries plus Cooking and Alchemy.
+- **Seven trainers in every capital:** the six primaries plus Alchemy. The
+  Cooking trainer sockets the world data still gives every start and every
+  capital (Round 45) hold a **Mender** (placeholder title,
+  `grug_jobs.MENDER_TITLE`): it teaches nothing and has no trainer dialog and
+  no map or minimap icon, but its click opens the repair form with the
+  trainers' prices, faction and distance rules (the user, 2026-10-09:
+  start towns keep a repair point). A runtime mapping in the trainer-role
+  readers decides it (`grug_jobs.trainer_teaches`, applied at placement and
+  at every activation), so no world data changes.
   Capital trainers and their public stations occupy themed outer-district
   premises, reusing suitable shops; vendors remain separate NPCs. Weaponsmith
   and Armorsmith share one forge house with separate trainers and one Forge.
@@ -81,10 +94,10 @@ personal stations, access, digging) is
   successful craft of the previous tier opens the new tier and clears the
   counter. Further crafts while still character-capped count nothing.
 - **Only real recipes count (Round 33, Round 45):** enchants, upgrades and the
-  profession's own end products (gear, trinkets, bags, potion and elixir
-  preparations, dishes and raw dish assemblies). Stations (Forge, Carving
+  profession's own end products (gear, trinkets, bags, potions
+  and elixirs, dishes and raw dish assemblies). Stations (Forge, Carving
   Bench, …), intermediates (settings, cut gems, bolt bundles) and every
-  automatic furnace or brewing finish count nothing. A recipe registers as
+  automatic furnace finish count nothing. A recipe registers as
   such with `material = true` or `progress = false`; every craft path and
   station operation awards progress through `grug_jobs.award_progress`. There
   is no fast path for late starters. Every profession still reaches its band
@@ -266,7 +279,7 @@ Cooking and Alchemy. The roster is organised **by material, never by class**.
 | **Tailor** (`tailor`) | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and spellbooks: craft, enchants and upgrades; cloth bags |
 | **Woodcarver** (`woodcarver`) | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staves and wands (sticks + metal + occult mob components): craft, enchants and upgrades |
 | **Goldsmith** (`goldsmith`) | Settings from tin, iron, steel + copper, gold, embersteel + gold and abyssal steel + gold bars; the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Trinkets for both trinket slots (craft, enchants and upgrades), gem refinement, Settings |
-| **Alchemy** (`alchemist`, secondary) | the four Alchemy herbs plus ungated reagents and mob loot | Potion and elixir mixtures — **gathers its own herbs** |
+| **Alchemy** (`alchemist`, secondary) | the four Alchemy herbs plus ungated reagents and mob loot | Potions and elixirs, brewed at the Brewing Stand — **gathers its own herbs** |
 | **Cooking** (`cooking`, secondary) | farmed and gathered food plants, meat and fish | Dishes and raw dish assemblies (`items_crafting.md` §3.7) |
 
 Two professions dress every class in armour, weapon and offhand (Round 33,

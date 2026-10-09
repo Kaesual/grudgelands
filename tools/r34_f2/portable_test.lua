@@ -294,7 +294,10 @@ do
 			return {description = name, groups = {}}
 		end}),
 		register_craftitem = function() end, override_item = function() end,
-		register_craft = function() end}
+		register_craft = function() end,
+		-- Round 45 (lane ST): Cooking is learned at join and arrival.
+		register_on_joinplayer = function() end}
+	grug_classes = {register_on_arrival = function() end}
 	grug_food = {register_item = function() return true end}
 	grug_jobs = {register_ingredient_tier = function() end, DURATIONS = {food = 1},
 		register_recipe = function(def) routes[#routes + 1] = def end,

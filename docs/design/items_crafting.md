@@ -833,11 +833,12 @@ Recipe access is the effective Alchemy tier ([professions.md](professions.md)
 §1.2), not a herb or keystone gate. Every tier-N recipe contains a
 declared tier-N reagent.
 
-Alchemists prepare a potion from its reagents and vial as an Alchemy recipe
-at a **Brewing Stand** nearby (Round 45, 2 s; spec §2.27), and that qualified
-preparation awards current-tier progress. Round 45 also ends the mixture
-step: the recipes produce the finished potions and elixirs, and the stand's
-automatic brewing goes (lane ST). The stand is a T3 Alchemy recipe (a
+Alchemists brew a potion or elixir from its reagents and vial as an Alchemy
+recipe at a **Brewing Stand** nearby (Round 45, 2 s per item; spec §2.27,
+§2.30): the job makes the finished product, and each one awards current-tier
+progress. There is no mixture step and no automatic brewing; the old
+"Prepared … Mixture" items stay registered as inert items (stable ids) that
+no recipe makes or uses. The stand is a T3 Alchemy recipe (a
 station: it awards no profession progress): three Steel Bars, one Furnace
 and one Glass Bottle. Glass Bottles cost 3 copper.
 
@@ -948,8 +949,10 @@ trophy or cross-profession component.
 Cooking and Alchemy (§3.6) are the two secondary professions; neither costs a
 main profession slot (professions.md §1).
 
-- **Cooking** (trainer, free) uses the profession framework. Learning it opens
-  T1 and shows the complete T1–T6 catalog; profession level gates crafting and
+- **Cooking** (known from the start, Round 45; no trainer) uses the profession
+  framework. Every character knows it at T1 from its arrival (an existing
+  character from its next join; a known tier stays); the Cooking area shows
+  the complete T1–T6 catalog; profession level gates crafting and
   `_grug_ilvl` gates eating independently. There is no Cooking Fire.
 
   **Food restore values** (recovery amended 2026-09-22). A serving lasts **300 s**, ticks every **5 s**,

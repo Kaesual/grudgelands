@@ -44,7 +44,7 @@ leash; bound actors: leash and give-up distance).
   ridden or yield items.
   Trainer, stable and displays use the authored settlement activation identities;
   saving, reload and partial activation must not duplicate them. Riding is absent
-  from every profession trainer, including Cooking trainers in starting villages.
+  from every profession trainer.
 - **Mounts are not a reward and not a drop** — they are bought (§2), and
   buying them is the point (§2 is a gold sink).
 - **Trainer dialogue (Round 28 ruling 19):** all four tiers are always

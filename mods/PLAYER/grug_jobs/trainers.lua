@@ -1,4 +1,24 @@
 local FORMNAME = "grug_jobs:trainer"
+
+-- Professions every character knows from the start (spec ruling 28, Round
+-- 45): no trainer teaches them. The trainer sockets the world data still
+-- gives them (every start and every capital) hold a mender instead: no
+-- trainer dialog, no teaching, no map icon, but a click opens the repair
+-- form with the trainers' rules and prices (the user, 2026-10-09). A
+-- runtime mapping in the trainer-role readers decides it, asking
+-- trainer_teaches: grug_mobs/start_npcs.lua (at placement and at every
+-- activation), grug_map/providers.lua and open_trainer below.
+grug_jobs.STARTER_PROFESSIONS = {cooking = true}
+
+-- The mender's nametag, in this one place (a placeholder; the user picks
+-- the final name).
+grug_jobs.MENDER_TITLE = "Mender"
+
+-- Whether a trainer socket of `profession` holds a trainer.
+function grug_jobs.trainer_teaches(profession)
+	return grug_jobs.PROFESSIONS[profession] ~= nil and
+		not grug_jobs.STARTER_PROFESSIONS[profession]
+end
 local sessions = {}
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -73,6 +93,12 @@ end
 function grug_jobs.open_trainer(player, profession, position, entity)
 	if not player or not player:is_player() or not grug_jobs.PROFESSIONS[profession] then
 		return false
+	end
+	if not grug_jobs.trainer_teaches(profession) then
+		-- A mender: the repair form only (grug_repair's trainer provider
+		-- checks the socket, the distance and the faction).
+		local repair = rawget(_G, "grug_repair")
+		return repair ~= nil and entity ~= nil and repair.open_trainer(player, entity) == true
 	end
 	local name = player:get_player_name()
 	sessions[name] = {profession = profession, entity = entity,
