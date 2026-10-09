@@ -36,7 +36,8 @@
 --      boss item; never a negative +N), lowering above the maximum, no XP,
 --      cancel;
 --   P  the boxes inside the crafting column and above the view, balanced
---      brackets, the bytes against the recipe box (printed).
+--      brackets, the bytes against the recipe box (printed);
+--   H  the Help lines on enchants, upgrades and stations.
 -- Prints "R45 EU PORTABLE PASS checks=<n>" or the failures (exit 1).
 
 local ROOT = arg and arg[1] or "."
@@ -1319,6 +1320,20 @@ do
 	geometry_ok(big, "P the longest list")
 	print(("bytes: enchant box with 72 rows %d (page %d)"):format(#box_part(big), #big))
 	eq(count_text(big, "textlist["), 1, "P one list element")
+end
+
+------------------------------------------------------------------------------
+-- H. The Help lines on enchants and upgrades (UI left them for this lane).
+------------------------------------------------------------------------------
+do
+	local help = read_file("mods/PLAYER/grug_inventory/help.lua")
+	lacks(help, "lifts an item to its tier's top item level", "H the old upgrade line is gone")
+	for _, part in ipairs({"press Enchant an item or Upgrade an item",
+			"An enchant takes 5 s", "An upgrade adds +N item levels, 1 s each, up to 10 × the item's tier",
+			"a weapon also a Stick", "Upgrades give no XP", "Cooking needs none",
+			"upgrades, stations and materials such as bolts, settings or cut gems do not"}) do
+		has(help, part, "H Help says: " .. part)
+	end
 end
 
 if failures > 0 then

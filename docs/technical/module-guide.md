@@ -174,8 +174,11 @@ tools](#player-meta-read-by-external-tools).
   lane EU: `register_craft_box(name, {build = fn(player, view) -> formspec,
   fields = fn(player, st, fields) -> handled})` draws into
   `grug_jobs.CRAFT_BOX` (`view` = `{st, tab, recipe, job, counts}`, the box
-  named by `grug_craft.box`, default `recipe`); `JOB_RUN_LABELS[kind]` names
-  the running indicator, `progress_bar(x, y, w, h, job, now)` draws the bar
+  named by `grug_craft.box`, default `recipe`; a def with `button = {label,
+  shown = fn(player, tab)}` gets a button below the list, field
+  `grug_craft_box_<name>`); `JOB_RUN_LABELS[kind]` names the running
+  indicator and `JOB_TEXTS[kind](job)` its label, `progress_bar(x, y, w, h,
+  job, now)` draws the bar
   (`grug_jobs_progress_bar.png` from `tools/r45_ui/gen_progress_bar.py
   --check`: 64 fill + 32 full frames, `BAR_FRAMES`), field names are
   `CRAFT_FIELDS`. Fixture `tools/r45_ui`.
@@ -210,13 +213,33 @@ tools](#player-meta-read-by-external-tools).
   returns its ingredients and target. A finished recipe job makes its
   stacks (gear through `grug_items.crafted_output`), calls `award_progress`
   once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
+- **Enchants and upgrades as jobs** (`operation_jobs.lua`,
+  `operation_box.lua`, Round 45 lane EU): the target slot
+  `grug_craft_target` (`TARGET_LIST`, one slot made at join; the allow
+  callback takes one piece of equipment, `operation_target(stack)`; a
+  placement resends an open Crafting page). `start_operation(player, op_id,
+  levels)` → ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
+  `profession`, `station`, `cap`, `target`, `space`, `ingredients`) judges
+  the slot's item with `grug_items.operation_result`, needs a free output
+  slot, takes `operation_ingredients(op, stack)` × levels (one own material
+  per upgrade level, a weapon also `weapon_extra`) and the item, then
+  `begin_job` with kind `enchant`/`upgrade`, `operation` the id, `quantity`
+  the levels, `target` the itemstring (a refused begin hands both back).
+  The kinds' finish rebuilds the result from the stored item without the
+  profession gate and calls `award_progress` (XP for enchants only:
+  `progress` is set for enchants, never upgrades). `OPERATION_SECONDS`
+  (enchant 5, upgrade 1 per level). The boxes register as `enchant` and
+  `upgrade` craft boxes with their buttons (`OPERATION_FIELDS`); the
+  upgrade warning is a two-step on `grug_craft.warned` (the item and count
+  the last build showed with the warning). Fixture `tools/r45_eu`.
   Fixture `tools/r45_rg`: record shape, queries, refusals, the conversion
   against the base catalog, gear in its profession, durations, stations, the
   craft list and the removed APIs.
 - Player APIs are `learn`, `unlearn`, `has`, `profession_level`,
   `crafts_in_tier`, `character_tier`, `record_craft`, `award_progress` and
-  `can_craft_recipe`; every craft path and station operation (enchants,
-  profession upgrades) awards progress through `award_progress(player,
+  `can_craft_recipe`; every craft path and station operation (enchants
+  count, profession upgrades play their sound only) goes through
+  `award_progress(player,
   recipe[, crafts[, no_xp]])`, which checks the recipe's flag and counts a
   job's crafts at once (`record_craft(player, profession, tier[, crafts])`:
   min(crafts, XP left in the tier)); `register_on_award_progress(fn(player,
@@ -1037,9 +1060,13 @@ tools](#player-meta-read-by-external-tools).
   `grug_ench`; its value is `grug_items.enchant_value(stat, ilvl, tier)`
   (`docs/design/item_tiers.md` §1.1), derived on write by grug_quality's one
   store path (rolls, enchants, upgrades, the crown; nothing else writes an
-  item level), never rolled. `grug_items.operation_plan` handles both station
-  operation kinds (`grug_jobs.register_station_operation`: "enchant" and
-  "upgrade"); a plan's `warning` names a replaced higher-tier enchant.
+  item level), never rolled. `grug_items.operation_plan(recipe, stack,
+  player[, levels])` handles both station operation kinds
+  (`grug_jobs.register_station_operation`: "enchant" and "upgrade") on one
+  item behind the profession gate, `operation_result` the same without it (a
+  job's end); `enchant_refusal(recipe, stack)` filters the enchant list and
+  `upgrade_span(stack)` gives item level, cap (10 × material tier) and tier;
+  a plan's `warning` names a replaced higher-tier enchant.
   `grug_items.crown_item(stack, player)` / `crown_preview(stack)` apply the
   Fallen Crown (the crown NPC owns the fee and the crown item). Gear drops
   (Round 33) are data in `grug_quality/init.lua`: `grug_items.DROP_CHANCES`
@@ -1061,7 +1088,8 @@ tools](#player-meta-read-by-external-tools).
   server logs. Equipment changes must notify the shared equipment seam.
   Since Round 28 the inputs are data: `grug_professions/data/enchants.json`
   (own material + the channel's loot + a mined or gathered family input per
-  tier) and, since Round 33, `upgrades.json`, checked by the pure
+  tier) and, since Round 33, `upgrades.json` (Round 45: the cost of one
+  level and the families per profession), checked by the pure
   `enchant_data.lua` (`grug_professions/data/README.md`); the family owners
   are `grug_professions.FAMILY_OWNERS`.
 

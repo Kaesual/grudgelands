@@ -655,3 +655,16 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   library; `--check` compares its pixels). `grug_probe_r45_ui` is the smoke
   boot's disposable probe (the page's bytes with the real registry, list
   facts, a job's sends).
+  `r45_eu` enchants and upgrades as jobs (`portable_test.lua`, the real
+  `grug_gear`, `grug_quality`, vendored sfinv, `grug_inventory`'s `bags.lua`
+  and `ui.lua`, the `grug_jobs` registry, state, jobs, overview, ui, craft
+  box, `operation_jobs.lua`, `operation_box.lua` and `station_operations.lua`
+  and the real enchant and upgrade registrations under a stub engine with a
+  wall clock): the data (588 enchants, 36 upgrades, progress only for
+  enchants, one own material per level and a Stick for weapons), the target
+  slot, the enchant list filtered to the valid enchants, the preview equal
+  to the result, 5 s, cancel returning the exact item, a changed target
+  judged again, a refused begin, XP, a restart in the middle of a job; +N
+  and Max to the cap, the profession-tier rule, the cost per level, the
+  warning's two-step, "Already at the cap", no XP; the boxes' geometry and
+  bytes against the recipe box.
