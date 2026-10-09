@@ -457,8 +457,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   craft is an ingredient-list recipe of one area. **Basic** is the area for
   profession-free recipes (tools, blocks, planks, torches, dyes, bolts,
   leather grades, graded wood, arrows, …); gear (weapons, armour, offhands,
-  trinkets) and bags are recipes of their profession. Every area shows all its
-  recipes; character level restricts no recipe. The player's engine `craft`
+  trinkets) and bags are recipes of their profession. Basic shows all its
+  recipes; a profession area shows its recipes up to the player's profession
+  tier (capped by the level band; the user, 2026-10-09, playtest fix PT3).
+  The player's engine `craft`
   list has size 0 (a join shrinks it while it is empty).
 - **Crafting jobs and the output area** ([professions.md](professions.md)
   §1.2): ingredients leave the bags first, then `main[9..]`, the hotbar last
