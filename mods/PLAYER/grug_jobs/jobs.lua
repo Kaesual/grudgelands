@@ -11,7 +11,9 @@
 --    start = <seconds>, finish = <seconds>, no_xp = true | nil}
 -- `consumed` holds the taken stacks (itemstrings of at most stack_max each)
 -- for the refund; `target` is the stack an enchant or an
--- upgrade works on (lane EU); `no_xp` is set when the job's profession was
+-- upgrade works on (lane EU: kind "enchant" or "upgrade", `operation` the
+-- station operation id, `quantity` the levels; operation_jobs.lua); `no_xp`
+-- is set when the job's profession was
 -- unlearned while it ran. Times are os.time() seconds with a sub-second part
 -- (grug_jobs.now), so jobs survive restarts and logouts.
 --
@@ -539,10 +541,13 @@ function grug_jobs.cancel_job(player)
 end
 
 -- Unlearning a profession lets its running job finish without XP
--- (state.lua's unlearn calls this).
+-- (state.lua's unlearn calls this); an enchant or upgrade job names its
+-- station operation (lane EU).
 function grug_jobs.forfeit_job_xp(player, profession)
 	local job = read_job(player)
-	local recipe = job and job.recipe and grug_jobs.recipe(job.recipe)
+	local recipe = job and (job.recipe and grug_jobs.recipe(job.recipe) or
+		job.operation and grug_jobs.station_operation and
+		grug_jobs.station_operation(job.operation))
 	if recipe and recipe.profession == profession and not job.no_xp then
 		job.no_xp = true
 		write_job(player, job)

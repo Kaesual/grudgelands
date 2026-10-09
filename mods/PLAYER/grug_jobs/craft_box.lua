@@ -256,3 +256,7 @@ local function fields(player, st, fields)
 end
 
 grug_jobs.register_craft_box("recipe", {build = build, fields = fields})
+
+-- Shared with lane EU's enchant and upgrade boxes (operation_box.lua).
+grug_jobs._xp_hint = xp_hint
+grug_jobs._ingredient_rows = ingredient_rows

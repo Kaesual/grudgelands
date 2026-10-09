@@ -53,6 +53,7 @@ local F = {
 	only = "grug_craft_only", take = "grug_craft_take",
 	qty = "grug_craft_qty", max = "grug_craft_max",
 	go = "grug_craft_go", stop = "grug_craft_stop", recheck = "grug_craft_recheck",
+	box = "grug_craft_box_",
 }
 grug_jobs.CRAFT_FIELDS = F
 
@@ -252,12 +253,19 @@ end
 -- What the indicator says per job kind; lane EU adds "Enchanting…".
 grug_jobs.JOB_RUN_LABELS = {recipe = "Crafting…"}
 
-local function job_label(job)
+-- The running job's label per kind, fn(job) -> text; lane EU adds the
+-- enchant ("Steel Sword") and upgrade ("Steel Sword +3 levels") texts.
+grug_jobs.JOB_TEXTS = {recipe = function(job)
 	local recipe = job.recipe_def
 	if not recipe then return "" end
 	local total = recipe.count * (job.quantity or 1)
 	local name = label_of(recipe.output)
 	return total > 1 and (name .. " ×" .. total) or name
+end}
+
+local function job_label(job)
+	local text = grug_jobs.JOB_TEXTS[job.kind or "recipe"]
+	return text and text(job) or ""
 end
 
 -- The bar's element: frame_start is the fill frame for the elapsed time,
@@ -298,12 +306,34 @@ end
 -- boxes): def.build(player, view) -> formspec text inside grug_jobs.CRAFT_BOX,
 -- def.fields(player, st, fields) -> true when it handled the event (the page
 -- then resends). `view` = {st, tab, recipe, job, counts}. The box drawn is
--- context.grug_craft.box (default "recipe").
+-- context.grug_craft.box (default "recipe"). A box with `button = {label,
+-- shown = fn(player, tab)}` gets a button below the list where `shown` says
+-- so (lane EU: "Enchant an item", "Upgrade an item" in the primary areas); a
+-- click opens it, a recipe row or an area tab returns to the recipe box.
 --
 
-local boxes = {}
+local boxes, box_order = {}, {}
 function grug_jobs.register_craft_box(name, def)
+	if not boxes[name] then box_order[#box_order + 1] = name end
 	boxes[name] = def
+end
+
+-- The row of box buttons below the pager.
+local BOX_BUTTON_Y, BOX_BUTTON_H = PAGER_Y + 0.65, 0.4
+local function box_buttons(fs, player, st, tab)
+	local shown = {}
+	for _, name in ipairs(box_order) do
+		local button = boxes[name].button
+		if button and button.shown(player, tab) then shown[#shown + 1] = name end
+	end
+	if #shown == 0 then return end
+	local w = (LIST_W - 0.1 * (#shown - 1)) / #shown
+	for index, name in ipairs(shown) do
+		local field = F.box .. name
+		fs[#fs + 1] = grug_inventory.selected_button_style(field, st.box == name)
+		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(LIST_X + (index - 1) * (w + 0.1)),
+			n(BOX_BUTTON_Y), n(w), n(BOX_BUTTON_H), field, esc(boxes[name].button.label))
+	end
 end
 
 local function state_of(context)
@@ -350,6 +380,7 @@ function grug_jobs.crafting_page_content(player, context)
 			n(1.3 * fill))
 	end
 	list_content(fs, player, st, tab, counts)
+	box_buttons(fs, player, st, tab)
 	local box = boxes[st.box or "recipe"] or boxes.recipe
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
 		recipe = st.selected and grug_jobs.recipe(st.selected) or nil})
@@ -392,13 +423,19 @@ local function receive_fields(player, context, fields)
 	local handled = false
 	for index = 1, #AREA_SLOTS do
 		if fields[F.area .. index] then
-			st.slot, st.page, st.selected, st.qty = index, 1, nil, "1"
+			st.slot, st.page, st.selected, st.qty, st.box = index, 1, nil, "1", nil
 			handled = true
 		end
 	end
 	for index = 1, PER_PAGE do
 		if fields[F.row .. index] and st.rows[index] then
-			st.selected, st.qty = st.rows[index], "1"
+			st.selected, st.qty, st.box = st.rows[index], "1", nil
+			handled = true
+		end
+	end
+	for _, name in ipairs(box_order) do
+		if fields[F.box .. name] and boxes[name].button then
+			st.box, st.selected = name, nil
 			handled = true
 		end
 	end
