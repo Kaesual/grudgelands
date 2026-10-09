@@ -615,68 +615,49 @@ local function enchant_name(affix)
 	return "T" .. affix.tier .. " " .. AFFIX[affix.stat].label
 end
 
--- The one item a station operation works on (`accepts(family)`), the
--- consumption of every listed material, and no unrelated stack.
-local function gather_inputs(recipe, inputs, accepts, noun)
-	local source, source_index
-	for index = 1, #inputs do
-		local stack = inputs[index]
-		if stack and not stack:is_empty() and accepts(family_for(stack)) then
-			if source or stack:get_count() ~= 1 then
-				return nil, "Insert exactly one item to " .. noun .. "."
+-- Round 45 (lane EU): an operation works on the one item the player placed
+-- in the Crafting tab's target slot (grug_jobs/operation_jobs.lua); its
+-- materials are the job's ingredients, so a plan judges only the item.
+
+-- Why `recipe`, an enchant, cannot go onto `stack`, or nil when it can (the
+-- Crafting tab lists only these): the recipe's family, an item tier of at
+-- least the enchant's, a stat in one channel only, and a change.
+local function enchant_refusal(recipe, stack)
+	if not stack or stack:is_empty() then return "Place an item to enchant." end
+	if stack:get_count() ~= 1 then return "Place exactly one item." end
+	if family_for(stack) ~= recipe.family then
+		return "This enchantment is for another kind of item."
+	end
+	local tier = material_tier(stack)
+	if not tier or tier < recipe.tier then
+		return "The item tier must be at least the enchantment tier."
+	end
+	local current = read_affixes(stack:get_meta())
+	for index = 1, #current do
+		local affix = current[index]
+		if affix.stat == recipe.enchant_stat then
+			if affix.channel ~= recipe.enchant_channel then
+				return "The other channel already uses this stat."
 			end
-			source, source_index = ItemStack(stack), index
-		end
-	end
-	if not source then return nil, "Insert an item of the selected family." end
-	local consume = {[source_index] = 1}
-	for _, token in ipairs(recipe.flat_inputs) do
-		local found
-		for index = 1, #inputs do
-			local stack = inputs[index]
-			if index ~= source_index and stack and stack:get_name() == token and
-					stack:get_count() > (consume[index] or 0) then
-				consume[index] = (consume[index] or 0) + 1
-				found = true
-				break
+			if affix.tier == recipe.tier then
+				return "This enchantment would not change the item."
 			end
 		end
-		if not found then return nil, "Insert the required " .. noun .. " materials." end
 	end
-	-- Refuse unrelated stacks so the selected operation describes the full grid.
-	for index = 1, #inputs do
-		if inputs[index] and not inputs[index]:is_empty() and not consume[index] then
-			return nil, "Remove unrelated items from the station."
-		end
-	end
-	return source, consume
+	return nil
 end
+grug_items.enchant_refusal = enchant_refusal
 
 -- An enchant writes the recipe's tier into its channel. Overwriting stays
 -- allowed; `warning` names a replaced enchant of a higher tier (a crowned or
 -- boss item's T7, a better found one), whose cap the new one never reaches.
-local function enchant_plan(recipe, inputs, player)
-	local source, consume = gather_inputs(recipe, inputs, function(family)
-		return family == recipe.family
-	end, "enchant")
-	if not source then return nil, consume end
-	local tier = material_tier(source)
-	if not tier or tier < recipe.tier then
-		return nil, "The item tier must be at least the enchantment tier."
-	end
+local function enchant_plan(recipe, stack, player)
+	local reason = enchant_refusal(recipe, stack)
+	if reason then return nil, reason end
+	local source = ItemStack(stack)
 	local current = read_affixes(source:get_meta())
 	local channels = {}
-	for index = 1, #current do
-		local affix = current[index]
-		if affix.channel ~= recipe.enchant_channel and affix.stat == recipe.enchant_stat then
-			return nil, "The other channel already uses this stat."
-		end
-		if affix.channel == recipe.enchant_channel and affix.stat == recipe.enchant_stat and
-				affix.tier == recipe.tier then
-			return nil, "This enchantment would not change the item."
-		end
-		channels[affix.channel] = affix
-	end
+	for index = 1, #current do channels[current[index].channel] = current[index] end
 	local replaced = channels[recipe.enchant_channel]
 	local added = {channel = recipe.enchant_channel, stat = recipe.enchant_stat,
 		tier = recipe.tier}
@@ -691,51 +672,75 @@ local function enchant_plan(recipe, inputs, player)
 		warning = "Replaces " .. enchant_name(replaced) .. " with " ..
 			enchant_name(added) .. "."
 	end
-	return {output = source, consume = consume, recipe = recipe, warning = warning}
+	return {output = source, recipe = recipe, warning = warning}
 end
 
--- A profession upgrade (item_tiers.md §3.1): an item of the recipe's material
--- tier T below item level 10 T rises to 10 T, never lower; its enchants keep
--- stat, channel and tier and follow the new item level.
-local function upgrade_plan(recipe, inputs, player)
-	local source, consume = gather_inputs(recipe, inputs, function(family)
-		return recipe.family_set[family] == true
-	end, "upgrade")
-	if not source then return nil, consume end
-	if material_tier(source) ~= recipe.tier then
+-- An item's upgrade span (item_tiers.md §3.1): its item level, its cap
+-- 10 x its material tier, and that tier; nil and the reason for an item
+-- without either (tools, wood and stone gear). A crowned item, a boss drop
+-- at 65/70 or an item pinned above its tier's top has an item level at or
+-- above the cap: it takes no level.
+function grug_items.upgrade_span(stack)
+	if not stack or stack:is_empty() then return nil, "Place an item to upgrade." end
+	local family = family_for(stack)
+	local tier = material_tier(stack)
+	local ilvl = effective_ilvl(stack)
+	if not family or family == "tool" or not tier or not ilvl then
+		return nil, "This item cannot be upgraded."
+	end
+	return ilvl, 10 * tier, tier
+end
+
+-- A profession upgrade (item_tiers.md §3.1, spec §2.26): `levels` more item
+-- levels on an item of the recipe's families and material tier, never past
+-- the cap; its enchants keep stat, channel and tier and follow the new item
+-- level, and the requirement follows the item level.
+local function upgrade_plan(recipe, stack, player, levels)
+	local ilvl, cap, tier = grug_items.upgrade_span(stack)
+	if not ilvl then return nil, cap end
+	if stack:get_count() ~= 1 then return nil, "Place exactly one item." end
+	if not recipe.family_set[family_for(stack)] then
+		return nil, "This upgrade is for another kind of item."
+	end
+	if tier ~= recipe.tier then
 		return nil, "This upgrade takes tier " .. recipe.tier .. " items."
 	end
-	local target = 10 * recipe.tier
-	if (effective_ilvl(source) or target) >= target then
-		return nil, "The item is already at item level " .. target .. " or higher."
+	if ilvl >= cap then return nil, "Already at the cap (item level " .. cap .. ")." end
+	levels = tonumber(levels)
+	if not levels or levels < 1 or levels % 1 ~= 0 then
+		return nil, "Enter a number of levels of 1 or more."
 	end
+	if ilvl + levels > cap then
+		return nil, "At most +" .. (cap - ilvl) .. " levels: the cap is item level " ..
+			cap .. "."
+	end
+	local source = ItemStack(stack)
 	local meta = source:get_meta()
-	write_item_level_meta(source, meta, target)
+	write_item_level_meta(source, meta, ilvl + levels)
 	store_affixes(source, read_affixes(meta), player)
-	return {output = source, consume = consume, recipe = recipe}
+	return {output = source, recipe = recipe, levels = levels, ilvl = ilvl + levels}
 end
 
--- Deterministic operations work on copies. The station owns the atomic
--- capacity check, material consumption, output delivery and progression.
--- A plan is {output, consume, recipe, warning?}.
-function grug_items.operation_plan(recipe, inputs, player)
-	if type(inputs) ~= "table" or type(recipe) ~= "table" or
-			grug_jobs.station_operation(recipe.id) ~= recipe then
+-- The result of an operation on `stack` (`levels` for an upgrade), without
+-- the profession gate (a job's end: a profession unlearned meanwhile still
+-- finishes its job). Works on a copy. A plan is {output, recipe, warning?,
+-- levels?, ilvl?}, or nil and the refusal.
+function grug_items.operation_result(recipe, stack, player, levels)
+	if type(recipe) ~= "table" or grug_jobs.station_operation(recipe.id) ~= recipe then
+		return nil, "Select a registered operation."
+	end
+	if recipe.operation == "upgrade" then return upgrade_plan(recipe, stack, player, levels) end
+	return enchant_plan(recipe, stack, player)
+end
+
+-- The same behind the profession gate: the preview and the job's start.
+function grug_items.operation_plan(recipe, stack, player, levels)
+	if type(recipe) ~= "table" or grug_jobs.station_operation(recipe.id) ~= recipe then
 		return nil, "Select a registered operation."
 	end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
 	if not allowed then return nil, reason end
-	if recipe.operation == "upgrade" then return upgrade_plan(recipe, inputs, player) end
-	return enchant_plan(recipe, inputs, player)
-end
-
-function grug_items.preview_station_operation(recipe, inputs, player)
-	local plan, reason = grug_items.operation_plan(recipe, inputs, player)
-	return plan and plan.output or nil, reason
-end
-
-function grug_items.apply_station_operation(recipe, inputs, player)
-	return grug_items.preview_station_operation(recipe, inputs, player)
+	return grug_items.operation_result(recipe, stack, player, levels)
 end
 
 -- The crown (round33-plan.md §2.5, item_tiers.md §4): one Fallen Crown lifts

@@ -23,14 +23,15 @@ grade, cloth bolt, graded wood or setting) plus `K_loot[S]` plus
 `family_input[F]`. Its value follows the item's level up to 10 × T
 (grug_quality).
 
-`upgrades.json`: one entry per profession and tier,
-`{"tier", "profession", "families", "own_material_count": 2, "signatures":
-[item, item], "target_item_level": 10 T}`. An upgrade costs two own materials
-of the tier plus the two signatures and lifts an item of that material tier
-below item level 10 T to 10 T.
+`upgrades.json` (Round 45): the cost of one upgrade level and the families
+each profession upgrades, `{"own_material_per_level": 1,
+"weapon_extra_per_level": [{"item", "n"}], "professions": [{"profession",
+"families"}]}`. One level costs the own material of the item's tier, a
+weapon also the weapon extra (one Stick); an item rises one item level per
+level up to 10 × its material tier, 1 s per level, without profession XP.
 
 Load fails when a tier is missing, a stat of any family pool has no loot in
-either channel, a family has no `family_input`, a profession's upgrade rows
-are missing or name other families than it owns, an item is not registered,
+either channel, a family has no `family_input`, a profession's upgrade entry
+is missing or names other families than it owns, an item is not registered,
 an input is another profession's product, or an input has a declared
 ingredient tier above the operation tier.

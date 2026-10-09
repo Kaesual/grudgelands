@@ -3,16 +3,17 @@
 
 The data lane C4 copies: per tier, the enchant loot by channel (prefix and
 suffix of a stat take different items), the six profession upgrades and the
-Alchemy reagents. The checks keep the rules of docs/design/item_tiers.md
-section 2: every input exists for both factions, a scarce input appears only
-in a low-volume recipe and at most once per recipe, every input is of the
-recipe's tier, and every usable signature has a use.
+Alchemy reagents. Since Round 45 an upgrade costs one own material of the
+item's tier per level, a weapon also a Stick, and no signature (spec ruling
+32). The checks keep the rules of docs/design/item_tiers.md section 2: every
+input exists for both factions, a scarce input appears in no enchant, every
+input is of the recipe's tier, and every usable signature has a use.
 
 Usage:
   allocation.py            print the tables (Markdown)
   allocation.py --json     print the proposed enchants.json (prefix_loot /
                            suffix_loot / family_input per tier) and the
-                           upgrade recipes; stored as enchants_r33.json and
+                           upgrade cost; stored as enchants_r33.json and
                            upgrades_r33.json beside this script
   allocation.py --check    exit 1 on a rule violation
 """
@@ -127,36 +128,10 @@ OWN_MATERIAL = {
     "goldsmith": ("Tin Setting", "Iron Setting", "Copper-inlaid Steel Setting", "Gold Setting",
                   "Gold-filigreed Embersteel Setting", "Gold-filigreed Abyssal Steel Setting"),
 }
-LOW_VOLUME = {"weaponsmith", "woodcarver", "goldsmith"}  # one or two items per tier
-UPGRADE = {
-    1: {"weaponsmith": ("boar_tusk", "rat_tail"), "armorsmith": ("crab_leg", "rat_fur_patch"),
-        "woodcarver": ("fine_sinew", "boar_tusk"), "leatherworker": ("rat_fur_patch", "tattered_flesh"),
-        "tailor": ("rat_tail", "tattered_flesh"), "goldsmith": ("crab_eye", "bandit_talisman")},
-    2: {"weaponsmith": ("ridged_boar_tusk", "fang"), "armorsmith": ("ridged_crab_shell", "dense_rat_fur"),
-        "woodcarver": ("tough_sinew", "ridged_boar_tusk"), "leatherworker": ("dense_rat_fur", "foul_flesh"),
-        "tailor": ("knotted_talisman", "sinewy_rat_tail"), "goldsmith": ("clear_crab_eye", "knotted_talisman")},
-    3: {"weaponsmith": ("serrated_fang", "gnarled_boar_tusk"),
-        "armorsmith": ("layered_crab_shell", "braided_sinew"),
-        "woodcarver": ("braided_sinew", "bound_wisp_mote"),
-        "leatherworker": ("coarse_spider_silk", "braided_sinew"),
-        "tailor": ("coarse_spider_silk", "clouded_reed_pearl"),
-        "goldsmith": ("clasped_purse", "clouded_reed_pearl")},
-    4: {"weaponsmith": ("scarred_bear_claw", "marching_bone"),
-        "armorsmith": ("storm_crab_shell", "ironbound_sinew"),
-        "woodcarver": ("bitter_resin", "storm_feather"),
-        "leatherworker": ("ape_hair", "leathery_flesh"),
-        "tailor": ("layered_spider_web", "campaign_talisman"),
-        "goldsmith": ("campaign_purse", "campaign_talisman")},
-    5: {"weaponsmith": ("siege_cat_claw", "scorch_venom"), "armorsmith": ("siege_bone", "siege_weapon_strap"),
-        "woodcarver": ("ash_feather", "siegepack_fang"), "leatherworker": ("siege_weapon_strap", "scorched_flesh"),
-        "tailor": ("siege_talisman", "scorch_venom"), "goldsmith": ("clenched_jaw", "siege_talisman")},
-    6: {"weaponsmith": ("salt_bear_claw", "unquiet_bone"),
-        "armorsmith": ("unquiet_bone", "unbroken_weapon_strap"),
-        "woodcarver": ("salt_barbed_feather", "rime_sinew"),
-        "leatherworker": ("silver_ape_hair", "salt_cured_flesh"),
-        "tailor": ("glass_spider_silk", "glass_venom"),
-        "goldsmith": ("last_hex_shard", "last_pay_talisman")},
-}
+# One upgrade level (Round 45, spec ruling 32): the own material of the item's
+# tier, a weapon also a Stick; no signatures, 1 s per level, no XP.
+UPGRADE_OWN_PER_LEVEL = 1
+UPGRADE_WEAPON_EXTRA = [{"item": "default:stick", "n": 1}]
 
 # Signatures that keep no recipe use, with the reason (item_tiers.md 2.4).
 SELL_ONLY = {
@@ -186,6 +161,14 @@ SELL_ONLY = {
     "abyssal_crab_shell": "scarce (an optional elite on two shores); a hunter's trophy",
     "saltpack_fang": "scarce (one zone, few hounds); a hunter's trophy",
     "salt_chitin": "scarce (one zone, rare weevil); a hunter's trophy",
+    # Round 45: upgrades take no signatures; these were upgrade inputs only.
+    "clasped_purse": "upgrade input until Round 45 (scarce)",
+    "scarred_bear_claw": "upgrade input until Round 45 (scarce)",
+    "bitter_resin": "upgrade input until Round 45 (scarce)",
+    "campaign_purse": "upgrade input until Round 45 (scarce)",
+    "siege_cat_claw": "upgrade input until Round 45 (scarce)",
+    "rime_sinew": "upgrade input until Round 45 (scarce)",
+    "salt_bear_claw": "upgrade input until Round 45 (scarce)",
 }
 
 # Alchemy: tier -> product -> (first, second); every row also takes a Glass
@@ -251,10 +234,6 @@ def uses():
         for stat, (pre, suf) in stats.items():
             out[M + pre].append((tier, "enchant %s prefix" % SHORT[stat], DEMAND[stat] / 2.0))
             out[M + suf].append((tier, "enchant %s suffix" % SHORT[stat], DEMAND[stat] / 2.0))
-    for tier, rows in UPGRADE.items():
-        for prof, pair in rows.items():
-            for item in pair:
-                out[M + item].append((tier, "upgrade %s" % prof, 1.5 if prof in LOW_VOLUME else 2.5))
     for tier, rows in ALCHEMY.items():
         for product, pair in rows.items():
             for item in pair:
@@ -269,7 +248,7 @@ def progression_table():
     for prof in PROFESSIONS:
         cells = []
         for tier in range(1, 7):
-            parts = ["enchants", "upgrade"]
+            parts = ["enchants"]
             if PRODUCTS[prof].get(tier):
                 parts.append(PRODUCTS[prof][tier])
             cells.append(", ".join(parts))
@@ -298,15 +277,6 @@ def check():
     for tier, stats in ENCHANT.items():
         if set(stats) != set(STATS):
             problems.append("T%d enchant stats incomplete" % tier)
-    for tier, rows in UPGRADE.items():
-        if set(rows) != set(PROFESSIONS):
-            problems.append("T%d upgrades incomplete" % tier)
-        for prof, (a, b) in rows.items():
-            if a == b:
-                problems.append("T%d %s upgrade repeats one signature" % (tier, prof))
-            scarce = [x for x in (a, b) if avail[M + x]["grade"] == "scarce"]
-            if len(scarce) > 1 or (scarce and prof not in LOW_VOLUME):
-                problems.append("T%d %s upgrade: scarce input %s" % (tier, prof, scarce))
     for tier, stats in ENCHANT.items():
         for stat, pair in stats.items():
             for item in pair:
@@ -355,15 +325,11 @@ def enchants_json():
 
 
 def upgrades_json():
-    out = []
-    for tier in range(1, 7):
-        for prof in PROFESSIONS:
-            a, b = UPGRADE[tier][prof]
-            out.append({"tier": tier, "profession": prof,
-                        "families": sorted(f for f in OWNER if OWNER[f] == prof),
-                        "own_material_count": 2,
-                        "signatures": [M + a, M + b], "target_item_level": 10 * tier})
-    return out
+    return {"own_material_per_level": UPGRADE_OWN_PER_LEVEL,
+            "weapon_extra_per_level": UPGRADE_WEAPON_EXTRA,
+            "professions": [{"profession": prof,
+                             "families": sorted(f for f in OWNER if OWNER[f] == prof)}
+                            for prof in PROFESSIONS]}
 
 
 def name(item):
@@ -386,14 +352,11 @@ def tables():
     for stat in STATS:
         cells = ["%s / %s" % (name(ENCHANT[t][stat][0]), name(ENCHANT[t][stat][1])) for t in range(1, 7)]
         out.append("| %s | %s |" % (SHORT[stat], " | ".join(cells)))
-    out += ["", "### Upgrade recipes (each also takes 2 × the own material of the tier)", "",
-            "| Profession (families) | " + " | ".join("T%d" % t for t in range(1, 7)) + " |",
-            "|---|" + "---|" * 6]
-    for prof in PROFESSIONS:
-        cells = ["%s + %s" % (name(UPGRADE[t][prof][0]), name(UPGRADE[t][prof][1])) for t in range(1, 7)]
-        out.append("| %s (%s) | %s |" % (prof.capitalize(), FAMILIES[prof], " | ".join(cells)))
     out += ["", "### Counting recipes per profession and tier", ""] + progression_table()
     out += ["", "### Own material of the upgrade and of its enchants", "",
+            "One upgrade level costs %d own material of the item's tier; a weapon also %s." % (
+                UPGRADE_OWN_PER_LEVEL, " and ".join(
+                    "%d %s" % (e["n"], name(e["item"])) for e in UPGRADE_WEAPON_EXTRA)), "",
             "| Profession | " + " | ".join("T%d" % t for t in range(1, 7)) + " |", "|---|" + "---|" * 6]
     for prof in PROFESSIONS:
         out.append("| %s | %s |" % (prof.capitalize(), " | ".join(OWN_MATERIAL[prof])))

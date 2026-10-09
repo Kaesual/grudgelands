@@ -1,11 +1,27 @@
--- Explicitly selected station operations never participate in grid matching.
--- Loaded by the first content catalog after Jobs and Quality are available.
+-- Station operations: enchants and upgrades, named by id, never matched from
+-- ingredients. Loaded by the first content catalog after Jobs and Quality are
+-- available.
+--
+-- Two kinds (Round 33, Round 45 lane EU): an "enchant" writes one stat of its
+-- tier into one channel of an item of `family`; an "upgrade" adds item levels
+-- to an item of one of its `families` and of its material tier, up to the
+-- tier's cap 10 x tier (grug_quality operation_plan does both). Both run as
+-- crafting jobs on the item in the Crafting tab's target slot
+-- (operation_jobs.lua). `ingredients` (registry-style entries, from
+-- `inputs`) are what one enchant or one upgrade level costs; an upgrade of a
+-- weapon also takes `weapon_extra` per level (spec §2.32: a Stick).
 local operations, by_id = {}, {}
+local upgrades = {} -- profession -> tier -> upgrade operation
 
--- Two kinds (Round 33): an "enchant" writes one stat of its tier into one
--- channel of an item of `family`; an "upgrade" lifts an item of one of its
--- `families` and of its material tier to the tier's top item level
--- (grug_quality operation_plan does both).
+local function entry_list(list, label)
+	assert(type(list) == "table", label .. " must be a list")
+	for _, entry in ipairs(list) do
+		assert(type(entry) == "table" and type(entry.item) == "string" and
+			type(entry.n) == "number" and entry.n >= 1 and entry.n % 1 == 0, label .. " differs")
+	end
+	return list
+end
+
 function grug_jobs.register_station_operation(definition)
 	assert(type(definition) == "table", "station operation must be a table")
 	local recipe = table.copy(definition)
@@ -35,15 +51,24 @@ function grug_jobs.register_station_operation(definition)
 			assert(grug_items.enchant_pool(family, "prefix"), "station operation family differs")
 			recipe.family_set[family] = true
 		end
+		recipe.weapon_extra = entry_list(recipe.weapon_extra or {},
+			"station operation weapon_extra")
+		upgrades[recipe.profession] = upgrades[recipe.profession] or {}
+		assert(not upgrades[recipe.profession][recipe.tier],
+			"one upgrade per profession and tier")
+		upgrades[recipe.profession][recipe.tier] = recipe
 	end
 	recipe.flat_inputs = grug_jobs._flatten_inputs(recipe.inputs)
-	assert(#recipe.flat_inputs >= 2, "station operation materials missing")
+	assert(#recipe.flat_inputs >= (recipe.operation == "enchant" and 2 or 1),
+		"station operation materials missing")
+	recipe.ingredients = grug_jobs.ingredient_list(recipe.flat_inputs)
 	recipe.output_name = recipe.output
 	recipe.in_place = true
-	-- Keyed by id in the recipe books, never a recipe for its preview item.
+	-- Keyed by id, never a recipe for its preview item.
 	recipe.station_operation = true
-	-- Every operation is a real recipe and awards progress (state.lua).
-	recipe.progress = true
+	-- Enchants are counting crafts and award progress (state.lua); upgrades
+	-- never do (spec §2.31: cheap upgrades are no XP farm).
+	recipe.progress = recipe.operation == "enchant"
 	operations[#operations + 1] = recipe
 	by_id[recipe.id] = recipe
 	return recipe
@@ -62,6 +87,33 @@ function grug_jobs.station_operations(station)
 	return result
 end
 
+-- The upgrade of `profession` for items of material tier `tier`, or nil.
+function grug_jobs.upgrade_operation(profession, tier)
+	return (upgrades[profession] or {})[tier]
+end
+
+-- What one enchant, or one upgrade level, of `recipe` costs on `stack`: the
+-- operation's ingredients, plus `weapon_extra` for an upgraded weapon.
+function grug_jobs.operation_ingredients(recipe, stack)
+	if recipe.operation ~= "upgrade" or #recipe.weapon_extra == 0 or not stack or
+			core.get_item_group(ItemStack(stack):get_name(), "grug_equip_weapon") <= 0 then
+		return recipe.ingredients
+	end
+	local list = {}
+	for index, entry in ipairs(recipe.ingredients) do list[index] = entry end
+	for _, extra in ipairs(recipe.weapon_extra) do
+		local merged
+		for index, entry in ipairs(list) do
+			if entry.item == extra.item then
+				list[index] = {item = entry.item, n = entry.n + extra.n}
+				merged = true
+			end
+		end
+		if not merged then list[#list + 1] = {item = extra.item, n = extra.n} end
+	end
+	return list
+end
+
 core.register_on_mods_loaded(function()
 	for index = 1, #operations do
 		local recipe = operations[index]
@@ -72,5 +124,9 @@ core.register_on_mods_loaded(function()
 			if grug_jobs.ingredient_tier(item) == recipe.tier then same_tier = true end
 		end
 		assert(same_tier, "station operation needs an ingredient of its own tier")
+		for _, extra in ipairs(recipe.weapon_extra or {}) do
+			assert(core.registered_items[extra.item],
+				"station operation material missing: " .. extra.item)
+		end
 	end
 end)

@@ -183,8 +183,10 @@ character_level = 11
 for _ = 1, 8 do jobs.award_progress(smith, product) end
 eq(jobs.profession_level(smith, "weaponsmith"), 2, "ten counted crafts open tier 2")
 character_level = 5
-check(read("mods/PLAYER/grug_jobs/station_operations.lua"):find("recipe.progress = true", 1, true),
-	"every station operation is flagged as progress")
+-- Round 45 (lane EU): enchants are flagged as progress, upgrades never.
+check(read("mods/PLAYER/grug_jobs/station_operations.lua"):find(
+	'recipe.progress = recipe.operation == "enchant"', 1, true),
+	"every enchant is flagged as progress, no upgrade")
 check(read("mods/PLAYER/grug_jobs/workspaces.lua"):find("record_craft", 1, true) == nil,
 	"the station dialogs never record directly")
 

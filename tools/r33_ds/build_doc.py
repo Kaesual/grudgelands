@@ -54,9 +54,7 @@ def blocks():
         "classcheck": _trim(check),
         "enchantloot": ["#### Enchant loot per channel (prefix / suffix)", ""] + alloc["Enchant loot per channel"],
         "signatures": alloc["Every signature and its uses"],
-        "upgrades": ["#### Upgrade inputs (plus 2 × own material)", ""] + alloc[
-            "Upgrade recipes (each also takes 2 × the own material of the tier)"] + [
-            "", "#### Own material (upgrades and enchants)", ""] + alloc[
+        "upgrades": ["#### Own material (enchants, and one per upgrade level)", ""] + alloc[
             "Own material of the upgrade and of its enchants"],
         "progression": alloc["Counting recipes per profession and tier"],
         "crown": money.sinks(bands, after),
