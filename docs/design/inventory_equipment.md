@@ -25,18 +25,27 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
   so there are no gaps), and the hotbar (`main[1..8]`) below it, outside the
-  scroll area, at the same place in every tab. **Full** shows eight rows
-  (the Inventory tab); **short** shows two (every other tab with an
-  inventory). A page asks the frame for its view and never draws `main`
+  scroll area. **Full** shows eight rows (the Inventory tab, in its boxed
+  layout below); **short** shows two (every other tab with an inventory),
+  with the hotbar at the same place in each of those tabs. The scrollbar's
+  thumb shows the visible share of the rows, so it can be dragged. A page asks the frame for its view and never draws `main`
   itself; Help and Party & PvP show **no** view (Round 44 lane PP): their
   content has the whole window. The scroll position is kept per view and sent back with every
   rebuild (the client forgets it on a resend), so equipping a bag or sorting
   keeps the place; a pure scrollbar event re-sends nothing. No listring in
   the views: shift-click has no job inside one inventory.
-- **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2): along the top the four
-  bag slots, the four-slot **potion belt** (`grug_potion_belt`, potions and
-  elixirs only), the Bag of Coins **deposit slot** and **Sort**; below them
-  the full view, at most 24 + 4 × 32 = 152 slots in 19 rows. Sort orders
+- **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2;
+  boxed layout since the Round 45 playtest, `grug_inventory.FULL_LAYOUT`):
+  each area has its own box with its label inside, top left above the
+  slots. Along the top the four **Bags** slots and the four-slot **Potion
+  belt** (`grug_potion_belt`, potions and elixirs only); below them the
+  **Inventory** box (the full view's grid and scrollbar, at most
+  24 + 4 × 32 = 152 slots in 19 rows) and the **Hotbar** box (gold, the
+  other boxes the Character tab's dark tint). Bags, Inventory and Hotbar
+  share one left edge, and Inventory and Hotbar end where the Potion belt
+  ends; right of them the Bag of Coins **deposit slot** in its **Coins** box
+  and **Sort** under it, at the Inventory box's top. The group is centred
+  in the window. Sort orders
   `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
   for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
   time, a 32-slot bag cut to 24) is gone.

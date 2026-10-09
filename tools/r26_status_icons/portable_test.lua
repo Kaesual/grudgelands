@@ -503,7 +503,7 @@ sfinv = {
 	end,
 	set_player_inventory_formspec = function() resent = resent + 1 end,
 }
-grug_inventory = {equipment_slots = {},
+grug_inventory = {equipment_slots = {}, BOX_COLOR = "#00000040", -- ui.lua's
 	selected_button_style = function(field, selected)
 		return "style[" .. field .. ";" .. tostring(selected) .. "]"
 	end,

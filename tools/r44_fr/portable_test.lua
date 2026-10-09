@@ -10,9 +10,11 @@
 --      a page's own header (the Map tab) left alone;
 --   3. the views, full and short, with 0-4 bags of mixed sizes: main[9..]
 --      first, then each equipped bag's list in slot order as one 8-wide grid
---      without gaps, the hotbar outside the scroll area at one place in both
---      views, slot counts, the scrollbar only when the grid is taller than the
---      view, no listring on the Inventory page;
+--      without gaps, the hotbar outside the scroll area (the short view's at
+--      one place, the full view's in its box), slot counts, the scrollbar only
+--      when the grid is taller than the view with a thumb shorter than its
+--      track, no listring on the Inventory page; the Inventory page's boxed
+--      layout (Round 45 playtest: a box and label per area, edges, Sort);
 --      the view's scrollbaroptions reset to the engine defaults after its
 --      scrollbar, so page scrollbars do not inherit them;
 --   4. the scrollbar echo: CHG and VAL values kept per view, echoed and
@@ -415,6 +417,14 @@ for _, case in ipairs(cases) do
 		if row > visible then
 			eq(tonumber(max), (row - visible) * 10, label .. ": scroll range")
 			has(view, "scrollbar[", label .. ": a scrollbar")
+			-- Round 45 playtest: the engine draws the thumb as
+			-- thumbsize / (max + 1) of the track; it shows the visible share
+			-- of the rows and is shorter than the track, so it can be dragged.
+			local thumb = tonumber(view:match("scrollbaroptions%[min=0;max=%d+;" ..
+				"smallstep=%d+;largestep=%d+;thumbsize=(%d+);arrows=hide%]"))
+			eq(thumb, math.max(1, math.floor(visible * (max + 1) / row + 0.5)),
+				label .. ": the thumb shows the visible share")
+			check(thumb and thumb < max + 1, label .. ": the thumb is shorter than the track")
 			-- The options are reset to the engine's defaults right after the
 			-- view's scrollbar, so a page's own scrollbar[] later in the form
 			-- does not inherit them.
@@ -436,7 +446,13 @@ for _, case in ipairs(cases) do
 		check(tonumber(area_y) + tonumber(area_h) <= hotbars[mode],
 			label .. ": the hotbar is below the scroll area")
 	end
-	eq(hotbars.full, hotbars.short, case.label .. ": the hotbar at one place in both views")
+	-- The short view's hotbar at one place in every tab; the full view's in
+	-- the Inventory tab's boxed layout (Round 45 playtest).
+	eq(hotbars.short, grug_inventory.VIEW_GEOMETRY.hotbar_y, case.label ..
+		": the short view's hotbar at its place")
+	check(math.abs(hotbars.full - (grug_inventory.FULL_LAYOUT.hotbar_box_y +
+		grug_inventory.FULL_LAYOUT.label_h)) < 0.001,
+		case.label .. ": the full view's hotbar in its box")
 end
 -- The short view is the hotbar + two rows; the full view starts below the
 -- Inventory tab's top row and its rows fit the window.
@@ -472,6 +488,68 @@ for _, element in ipairs(list_elements(scroll_part(inventory))) do
 end
 eq(count, 24 + 4 * 32, "the Inventory page shows 152 slots in its grid")
 print(("bytes: Inventory page with four 32-slot bags %d"):format(#inventory))
+
+-- The boxed layout (Round 45 playtest): one box per area with its label
+-- inside, top left above the slots; Bags, Inventory and Hotbar on one left
+-- edge; Inventory and Hotbar end where the Potion belt ends; Coins right of
+-- it, Sort under Coins at the Inventory box's top; the group centred.
+local function num(value) return tonumber(value) end
+local boxes = {}
+for x, y, w, h, color, lx, ly, text in inventory:gmatch(
+		"box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^%]]+)%]" ..
+		"label%[([%d.]+),([%d.]+);([^%]]+)%]") do
+	boxes[text] = {x = num(x), y = num(y), w = num(w), h = num(h), color = color,
+		lx = num(lx), ly = num(ly)}
+end
+local function close(a, b) return a and b and math.abs(a - b) < 0.002 end
+local function slot_at(pattern)
+	local x, y = inventory:match(pattern)
+	return num(x), num(y)
+end
+local slot_x = {}
+local slot_y = {}
+slot_x.Bags, slot_y.Bags = slot_at("list%[current_player;grug_bag1;([%d.]+),([%d.]+);1,1;%]")
+slot_x["Potion belt"], slot_y["Potion belt"] = slot_at(
+	"list%[current_player;" .. grug_inventory.POTION_BELT .. ";([%d.]+),([%d.]+);")
+slot_x.Coins, slot_y.Coins = slot_at("list%[detached:[^;]+;deposit;([%d.]+),([%d.]+);")
+slot_x.Inventory, slot_y.Inventory = slot_at("scroll_container%[([%d.]+),([%d.]+);")
+slot_x.Hotbar, slot_y.Hotbar = slot_at("list%[current_player;main;([%d.]+),([%d.]+);8,1;%]")
+local frame = grug_inventory.UI
+for _, name in ipairs({"Bags", "Potion belt", "Coins", "Inventory", "Hotbar"}) do
+	local box = boxes[name]
+	check(box ~= nil, name .. ": its own box with its label")
+	if box then
+		eq(box.color, name == "Hotbar" and "#8a682f44" or grug_inventory.BOX_COLOR,
+			name .. ": the box colour")
+		check(close(box.lx, slot_x[name]), name .. ": the label at the slots' left edge")
+		check(box.ly > box.y and box.ly < slot_y[name], name .. ": the label above the slots")
+		check(slot_x[name] > box.x and slot_y[name] > box.y, name .. ": the slots inside the box")
+		check(box.x >= 0 and box.y >= 0 and box.x + box.w <= frame.frame_w and
+			box.y + box.h <= frame.frame_h, name .. ": inside the window")
+	end
+end
+if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] and boxes.Coins then
+	check(close(slot_x.Bags, slot_x.Inventory) and close(slot_x.Bags, slot_x.Hotbar),
+		"Bags, Inventory and Hotbar on one left edge")
+	check(close(boxes.Bags.x, boxes.Inventory.x) and close(boxes.Bags.x, boxes.Hotbar.x),
+		"their boxes on one left edge")
+	local belt_right = boxes["Potion belt"].x + boxes["Potion belt"].w
+	check(close(boxes.Inventory.x + boxes.Inventory.w, belt_right) and
+		close(boxes.Hotbar.x + boxes.Hotbar.w, belt_right),
+		"Inventory and Hotbar end where the Potion belt ends")
+	local sb_x, sb_w = inventory:match("scrollbar%[([%d.]+),[%d.]+;([%d.]+),")
+	check(num(sb_x) and num(sb_x) + num(sb_w) < belt_right, "the scrollbar inside the Inventory box")
+	check(boxes.Coins.x > belt_right and close(boxes.Coins.y, boxes.Bags.y),
+		"Coins right of the top row")
+	local sort_x, sort_y, sort_w = inventory:match(
+		"button%[([%d.]+),([%d.]+);([%d.]+),[%d.]+;grug_inv_sort;Sort%]")
+	check(close(num(sort_x), boxes.Coins.x) and close(num(sort_y), boxes.Inventory.y),
+		"Sort under Coins at the Inventory box's top")
+	local right = boxes.Coins.x + boxes.Coins.w
+	check(close(boxes.Bags.x, frame.frame_w - right), "the group centred")
+	check(boxes.Inventory.y > boxes.Bags.y + boxes.Bags.h and
+		boxes.Hotbar.y > boxes.Inventory.y + boxes.Inventory.h, "the boxes do not overlap")
+end
 
 four_context.page = "grug_inventory:character"
 four_context.grug_character_tab = "stats" -- the balance's mode (Round 44 lane CH)
