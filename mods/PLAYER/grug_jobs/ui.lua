@@ -285,9 +285,11 @@ local function output_content(fs, job)
 	local x = OUT.x + 0.2
 	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]label[%s,%s;Output]"):format(n(OUT.x), n(OUT.y),
 		n(OUT.w), n(OUT.h), BOX_COLOR, n(x), n(OUT.y + 0.35))
+	-- Shift-click goes to the inbox (grug_inventory/inbox.lua): main[9..]
+	-- and the bags.
 	fs[#fs + 1] = ("list[current_player;%s;%s,%s;2,2;]listring[current_player;%s]" ..
-		"listring[current_player;main]"):format(grug_jobs.OUTPUT_LIST, n(x),
-		n(OUT.y + 0.7), grug_jobs.OUTPUT_LIST)
+		"listring[current_player;grug_inbox]listring[current_player;main]"):format(
+		grug_jobs.OUTPUT_LIST, n(x), n(OUT.y + 0.7), grug_jobs.OUTPUT_LIST)
 	fs[#fs + 1] = ("button[%s,%s;2.5,0.6;%s;Take all]"):format(n(x), n(OUT.y + 3.1), F.take)
 	local y = OUT.y + 4.15
 	if not job then

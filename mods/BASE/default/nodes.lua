@@ -2488,6 +2488,8 @@ minetest.register_node("default:lava_flowing", {
 
 -- GRUG PATCH: the bookshelf UI opens server-side from on_rightclick
 -- (default/node_formspec.lua); no formspec is stored in node metadata.
+-- GRUG PATCH: shift-click goes to the inbox (grug_inventory/inbox.lua):
+-- main[9..] and the bags.
 local function bookshelf_formspec(pos)
 	local loc = default.node_formspec.location(pos)
 	local formspec =
@@ -2496,6 +2498,7 @@ local function bookshelf_formspec(pos)
 		"list[current_player;main;0,2.85;8,1;]" ..
 		"list[current_player;main;0,4.08;8,3;8]" ..
 		"listring[" .. loc .. ";books]" ..
+		"listring[current_player;grug_inbox]" ..
 		"listring[current_player;main]" ..
 		default.get_hotbar_bg(0,2.85)
 	local invlist = core.get_meta(pos):get_inventory():get_list("books")

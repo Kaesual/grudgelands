@@ -637,6 +637,26 @@ No migration: fresh worlds never carry a stored meta formspec.
   (`grug_jobs/workspaces.lua`, PLY-03) asks it first, so a station form never
   pops back over the recipe book or any other form.
 
+## Round 45 PT5 — the shift-click inbox (2026-10-09)
+
+A listring sends a shift-click into exactly one list, and a full `main`
+refuses it before any Lua callback runs. `grug_inventory/inbox.lua` adds a
+one-slot player list `grug_inbox` that no page draws; its allow callback
+accepts what fits in the give order (main[9..], the bags, the hotbar) and its
+on callback hands the items out through `grug_inventory.give`. Each vendored
+page with another inventory rings that inventory's lists to it, one marker
+per builder. Reapply after an upstream update:
+
+- `default/chests.lua` (`default.chest.get_chest_formspec`),
+  `default/furnace.lua` (both builders; `dst`, `src` and `fuel` each),
+  `default/nodes.lua` (the bookshelf), `vessels/init.lua` (the shelf):
+  `listring[current_player;grug_inbox]` between each node list's listring and
+  the `listring[current_player;main]` after it, so the ring reads
+  [node list, inbox, main] and `main` still shift-clicks into the node list.
+- `creative/inventory.lua` (`creative.register_tab`'s page):
+  `listring[current_player;grug_inbox]` after the creative list's listring;
+  the infinite source keeps its stack (the engine resets it after the move).
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world

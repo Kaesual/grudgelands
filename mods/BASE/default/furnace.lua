@@ -13,6 +13,8 @@ local furnace_fire_sounds = {}
 -- GRUG PATCH: both builders take the furnace position; the UI opens
 -- server-side (default/node_formspec.lua), so its lists name the node
 -- inventory as `nodemeta:<pos>` instead of `context`.
+-- GRUG PATCH: shift-click from a furnace list goes to the inbox
+-- (grug_inventory/inbox.lua): main[9..] and the bags.
 function default.get_furnace_active_formspec(fuel_percent, item_percent, pos)
 	local loc = pos and default.node_formspec.location(pos) or "context"
 	return "size[8,8.5]"..
@@ -26,10 +28,13 @@ function default.get_furnace_active_formspec(fuel_percent, item_percent, pos)
 		"list[current_player;main;0,4.25;8,1;]"..
 		"list[current_player;main;0,5.5;8,3;8]"..
 		"listring["..loc..";dst]"..
+		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
 		"listring["..loc..";src]"..
+		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
 		"listring["..loc..";fuel]"..
+		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
 		default.get_hotbar_bg(0, 4.25)
 end
@@ -45,10 +50,13 @@ function default.get_furnace_inactive_formspec(pos)
 		"list[current_player;main;0,4.25;8,1;]"..
 		"list[current_player;main;0,5.5;8,3;8]"..
 		"listring["..loc..";dst]"..
+		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
 		"listring["..loc..";src]"..
+		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
 		"listring["..loc..";fuel]"..
+		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
 		default.get_hotbar_bg(0, 4.25)
 end

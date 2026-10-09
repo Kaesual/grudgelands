@@ -731,9 +731,12 @@ do
 	eq(st_of(smith).box, "enchant", "T the button opens the enchant box")
 	eq(smith.sent, sent + 1, "T one resend")
 	has(smith.formspec, "list[current_player;grug_craft_target;", "T the box draws the slot")
-	has(smith.formspec, "listring[current_player;grug_craft_out]listring[current_player;main]" ..
-		"listring[current_player;grug_craft_target]listring[current_player;main]",
-		"T shift-click from main reaches the slot, the output still main")
+	-- Round 45 PT5: the output and the slot ring to the shift-click inbox.
+	has(smith.formspec, "listring[current_player;grug_craft_out]" ..
+		"listring[current_player;grug_inbox]listring[current_player;main]" ..
+		"listring[current_player;grug_craft_target]" ..
+		"listring[current_player;grug_inbox]listring[current_player;main]",
+		"T shift-click from main reaches the slot, the output and the slot the inbox")
 	put(smith, "main", 9, crafted("grug_gear:sword_steel"):to_string())
 	sent = smith.sent
 	eq(move(smith, "main", 9, TARGET, 1), 1, "T a sword goes in")

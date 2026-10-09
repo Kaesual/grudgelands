@@ -555,8 +555,9 @@ has(fs, "style[grug_craft_area2,grug_craft_area3,grug_craft_area4,grug_craft_are
 	"P one style for the other tabs")
 has(fs, "Basic: no tier", "P Basic has no tier")
 has(fs, "list[current_player;grug_craft_out;10.6,1.65;2,2;]", "P the four output slots")
-has(fs, "listring[current_player;grug_craft_out]listring[current_player;main]",
-	"P shift-click moves the output into main")
+has(fs, "listring[current_player;grug_craft_out]listring[current_player;grug_inbox]" ..
+	"listring[current_player;main]",
+	"P shift-click moves the output into the inbox (Round 45 PT5: main and the bags)")
 has(fs, "grug_craft_take;Take all]", "P Take all")
 has(fs, "No job running", "P idle status")
 has(fs, "field_close_on_enter[grug_craft_search;false]", "P Enter in the search keeps the window")

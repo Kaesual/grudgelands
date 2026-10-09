@@ -164,8 +164,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     §4.6): a learned primary area shows "Enchant an item" and "Upgrade an
     item" below its list; a recipe row or an area tab returns to the recipe
     box. Both boxes draw the **target slot** `grug_craft_target` (one piece
-    of equipment; shift-click moves an item of `main` into it; placing or
-    taking it resends the page). The **enchant box**: the slot, an arrow,
+    of equipment; shift-click moves an item of `main` into it and back out
+    through the shift-click inbox, §3; placing or taking it resends the
+    page). The **enchant box**: the slot, an arrow,
     the preview (the result's image, its computed description as the
     tooltip), the profession's enchants valid for the item up to the
     profession tier, best tier first, each with the value it gives on this
@@ -193,7 +194,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     ("Not enough ingredients — quantity reduced to N") and starts nothing;
     the field echoes the last value the server knows on every resend.
   - **Right, the output area:** the four take-only slots (shift-click moves
-    a stack into `main`), **Take all** (the give order; what does not fit
+    a stack into the inventory in the give order, through the shift-click
+    inbox, §3), **Take all** (the give order; what does not fit
     stays, with a note), and the job: "No job running", or the green
     "Crafting…" indicator, the job's label ("Hearty Stew ×10") and the
     **progress bar**, one `animated_image[]` of 64 fill and 32 full frames
@@ -397,6 +399,18 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   the same question without changing anything; a source that refuses
   instead of dropping (purchases, the Claim Stone, station results) says
   the inventory is full only when the whole inventory is.
+- **Shift-click from another inventory** (Round 45 playtest) follows the
+  give order too: chests, furnaces, the bookshelf and vessels shelf, the
+  creative inventory, the Claim Stone's fuel slot, the crafting output area
+  and the target slot ring each list to `grug_inbox`, a one-slot player
+  list no page draws (`grug_inventory/inbox.lua`). It takes exactly what
+  `grug_inventory.room_for` says the give helper can place (`main[9..]`,
+  the bags, the hotbar last; arrows into a Scout's quiver first) and hands
+  it out at once, so it is always empty; a stack that only partly fits
+  leaves the rest in the source, and when nothing fits nothing moves and
+  the feed says "No room in your inventory." Bound skills and soulbound
+  items never pass it. Shift-click from `main` still goes to the other
+  inventory's first list.
 - **Bag rules** (Round 44, spec §2.3): a bag may sit inside another bag but
   never in its own content list (an unequipped bag is always empty: the
   contents belong to the slot). Swapping to an equal or larger bag keeps the
