@@ -148,6 +148,22 @@ function grug_inventory.fits(player, stacks)
 	return true
 end
 
+-- How many of `stack` would give take right now (the quiver, then the
+-- order, partial stacks counted)? Changes nothing. The shift-click inbox
+-- (inbox.lua) admits exactly this many.
+function grug_inventory.room_for(player, stack)
+	stack = ItemStack(stack)
+	local inv = player and player:get_inventory()
+	if not inv or stack:is_empty() then return 0 end
+	local count = stack:get_count()
+	if is_arrow(stack) and grug_inventory.has_quiver(player) then
+		local room = grug_inventory.quiver_capacity() - grug_inventory.quiver_count(player)
+		if room > 0 then stack:take_item(math.min(room, count)) end
+	end
+	if stack:is_empty() then return count end
+	return count - fill(cells_of(inv, ordered_slots(inv)), stack):get_count()
+end
+
 --
 -- Bag redistribution (spec §2.3). Bag slot `i` changes from its current
 -- content size to `new_size` (0: the bag leaves). The stacks beyond
