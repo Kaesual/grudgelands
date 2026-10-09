@@ -3,7 +3,7 @@ seconds: 21, exit 0
 joins: ['smith logged in (protocol 52), stayed 4.0 s', 'scribe logged in (protocol 52), stayed 4.0 s']
 --- log lines
 ACTION[Main]: [grug_core] world version 0.45.0, game 0.45.0: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:36448.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:35521.
 ACTION[Server]: smith [127.0.0.1] joins game. List of players: smith
 ACTION[Server]: [r45_ms_probe] joined smith
 ACTION[Server]: [grug_core] migration 0.45.0: smith's online work is done

@@ -26,9 +26,10 @@
 -- into empty inventory slots and pinned the 0.44.0 item level on unmodified
 -- gear; at the character's next join, before every other join callback
 -- (grug_core/world_version.lua), this handler
---   1. hands over what the craft grid still holds (round45-plan.md ruling 6):
---      the give helper, then the crafting output area, then the character's
---      feet; the grid shrinks at the same join (grug_jobs/craft_list.lua);
+--   1. hands over what the craft grid and the engine's craftresult list still
+--      hold (round45-plan.md ruling 6): the give helper, then the crafting
+--      output area, then the character's feet; the grid shrinks at the same
+--      join (grug_jobs/craft_list.lua), craftresult stays empty;
 --   2. rewrites the tool capabilities of every weapon whose damage no longer
 --      matches its item level: an unmodified first-tier weapon read its
 --      damage from the definition, which the item level ladder lowered, and
@@ -43,26 +44,26 @@
 -- The mods it calls load after grug_core; their APIs are looked up at the
 -- join.
 
-local CRAFT = "craft"
+local CRAFT_LISTS = {"craft", "craftresult"}
 local OUTPUT = "grug_craft_out"
 local BROKEN = 65535
 
-local function hand_over_craft(player, inv)
-	for index = 1, inv:get_size(CRAFT) do
-		local stack = inv:get_stack(CRAFT, index)
+local function hand_over(player, inv, list)
+	for index = 1, inv:get_size(list) do
+		local stack = inv:get_stack(list, index)
 		if not stack:is_empty() then
-			-- After each placement the grid keeps exactly what is left.
+			-- After each placement the list keeps exactly what is left.
 			stack = grug_inventory.give(player, stack)
-			inv:set_stack(CRAFT, index, stack)
+			inv:set_stack(list, index, stack)
 			if not stack:is_empty() then
 				grug_jobs.ensure_output_area(player)
 				stack = inv:add_item(OUTPUT, stack)
-				inv:set_stack(CRAFT, index, stack)
+				inv:set_stack(list, index, stack)
 			end
 			if not stack:is_empty() then
 				assert(core.add_item(player:get_pos(), stack),
 					"no room for " .. stack:to_string() .. " and it could not be dropped")
-				inv:set_stack(CRAFT, index, ItemStack(""))
+				inv:set_stack(list, index, ItemStack(""))
 			end
 		end
 	end
@@ -92,8 +93,10 @@ end
 
 local function character_0_45_0(player)
 	local inv = player:get_inventory()
-	if inv:get_size(CRAFT) > 0 and not inv:is_empty(CRAFT) then
-		hand_over_craft(player, inv)
+	for _, list in ipairs(CRAFT_LISTS) do
+		if inv:get_size(list) > 0 and not inv:is_empty(list) then
+			hand_over(player, inv, list)
+		end
 	end
 	for listname, stacks in pairs(inv:get_lists()) do
 		for index, stack in ipairs(stacks) do

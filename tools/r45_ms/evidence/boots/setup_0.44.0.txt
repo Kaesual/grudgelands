@@ -4,7 +4,7 @@ joins: ['scribe registered (protocol 52), stayed 4.0 s', 'sleeper registered (pr
 --- log lines
 ACTION[Main]: [grug_core] world version 0.44.0 recorded for a new world
 ACTION[Main]: [grug_core] world version 0.44.0 (a new world), game 0.44.0: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:36448.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:35521.
 ACTION[Server]: scribe [127.0.0.1] joins game. List of players: scribe
 ACTION[Server]: [r45_ms_probe] joined scribe
 ACTION[Server]: [r45_ms_probe] built scribe

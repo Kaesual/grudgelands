@@ -11,7 +11,8 @@
 -- grug_jobs.ensure_output_area:
 --   A. the registry: 0.45.0 listed after 0.44.0 with a character handler only;
 --   B. craft leftovers (ruling 6): the give helper first, then the output
---      area (created first), then the feet; the grid ends empty;
+--      area (created first), then the feet; the grid ends empty; the
+--      engine's craftresult list the same way, after the grid;
 --   C. a drop that fails stops the handler with the grid holding exactly
 --      what is left (no copy), and the rerun finishes it;
 --   D. tool capabilities: an unmodified first-tier weapon pinned at the old
@@ -297,6 +298,21 @@ do
 	check(#drops == 1 and drops[1]:match("^default:apple 3"),
 		"B the fifth drops at the feet: " .. table.concat(drops, " | "))
 	check(inv:is_empty("craft"), "B the craft grid ends empty")
+	-- The engine's craftresult list: handed out the same way, after the grid.
+	drops = {}
+	local p2, inv2 = new_player("resulter")
+	inv2:set_size("main", 1)
+	inv2:set_stack("main", 1, new_stack("default:torch", 10))
+	inv2:set_size("craft", 9)
+	inv2:set_stack("craft", 1, new_stack("default:stick", 2))
+	inv2:set_size("craftresult", 1)
+	inv2:set_stack("craftresult", 1, new_stack("default:torch", 4))
+	run(p2, "1")
+	check(inv2:get_stack("main", 1).count == 14 and inv2:is_empty("craftresult") and
+		inv2:get_size("craftresult") == 1, "B craftresult's torches merge through the give "
+		.. "helper; the list stays, empty")
+	check(inv2:get_stack("grug_craft_out", 1):to_string():match("^default:stick 2") and #drops == 0,
+		"B ...the grid's sticks went to the output area first")
 end
 
 ------------------------------------------------------------------------------

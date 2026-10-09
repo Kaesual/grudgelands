@@ -10,13 +10,17 @@ item would read the new level). For every character, offline ones included,
 in this order:
 
 1. every stack named `grug_alchemy:mixture_*` leaves every list;
-2. the stacks of the `craft` list move, in craft slot order, into EMPTY slots
-   of main[9..], then the equipped bags' content lists (bag slot order, only
-   slots the bag holds), then the hotbar (main[1..8]) -- the give helper's
-   order; only empty slots, since the tool cannot read stack_max. An empty
-   `craft` is stored with size 0 (the engine re-creates it with 9 slots at
-   every load and keeps a stored size, round45-plan.md section 4.2); what
-   does not fit stays in `craft` for the online part (ruling 6);
+2. the stacks of the `craft` list, then of the engine's `craftresult` list
+   (a craft whose follow-up move failed left real items there; nothing in
+   0.45.0 reaches it), move in slot order into EMPTY slots of main[9..],
+   then the equipped bags' content lists (bag slot order, only slots the bag
+   holds), then the hotbar (main[1..8]) -- the give helper's order; only
+   empty slots, since the tool cannot read stack_max. An empty `craft` is
+   stored with size 0 (the engine re-creates it with 9 slots at every load
+   and keeps a stored size, round45-plan.md section 4.2); `craftresult`
+   keeps its size (1: the engine creates it so for every player and no code
+   resizes it), emptied. What does not fit stays in its list for the online
+   part (ruling 6);
 3. every gear stack of the 0.44.0 game (GEAR below: weapons, shields,
    spellbooks, armour, trinkets) WITHOUT an item level of its own (meta
    `grug_ilvl` missing or not above 0, the game's MetaDataRef:get_int rule)
@@ -28,7 +32,7 @@ in this order:
    `grug_jobs:seen_items` (the retired recipe discovery) is deleted;
 5. the character marker `grug_core:migrate:0.45.0` is set for every
    character; the game's handler (grug_core/migrations.lua) hands
-   craft leftovers over, refreshes the tool capabilities of weapons whose
+   craft and craftresult leftovers over, refreshes the tool capabilities of weapons whose
    damage no longer matches their item level (unmodified first-tier
    weapons) and rebuilds the gear tooltips at the next join.
 
@@ -51,6 +55,8 @@ from migration.codec import ItemStack
 
 HOTBAR = 8
 CRAFT = "craft"
+CRAFTRESULT = "craftresult"
+CRAFT_LISTS = (CRAFT, CRAFTRESULT)
 CRAFTPREVIEW = "craftpreview"
 MAIN = "main"
 BAG_COUNT = 4
@@ -141,21 +147,22 @@ def free_slots(lists):
 
 
 def empty_craft(lists):
-    """Moves the craft stacks into free slots; returns (moved, left)."""
-    craft = lists.get(CRAFT)
-    if craft is None:
-        return 0, 0
+    """Moves the stacks of `craft`, then of `craftresult`, into free slots;
+    returns how many moved."""
     targets = free_slots(lists)
     moved = 0
-    for slot, stack in enumerate(craft.items):
-        if stack.is_empty() or not targets:
+    for list_name in CRAFT_LISTS:
+        source = lists.get(list_name)
+        if source is None:
             continue
-        name, target = targets.pop(0)
-        lists[name].items[target] = stack
-        craft.items[slot] = empty()
-        moved += 1
-    left = sum(1 for stack in craft.items if not stack.is_empty())
-    return moved, left
+        for slot, stack in enumerate(source.items):
+            if stack.is_empty() or not targets:
+                continue
+            name, target = targets.pop(0)
+            lists[name].items[target] = stack
+            source.items[slot] = empty()
+            moved += 1
+    return moved
 
 
 def pin(stack):
@@ -174,10 +181,9 @@ def migrate(world):
     for name in world.characters():
         lists = world.get_inventory(name)
         changed = delete_mixtures(lists) > 0
-        moved, left = empty_craft(lists)
-        changed = changed or moved > 0
+        changed = empty_craft(lists) > 0 or changed
         craft = lists.get(CRAFT)
-        if craft is not None and left == 0 and craft.size > 0:
+        if craft is not None and craft.size > 0 and all(s.is_empty() for s in craft.items):
             craft.items = []
             changed = True
         preview = lists.get(CRAFTPREVIEW)

@@ -70,18 +70,21 @@ OLD_LEVELS = {
     "grug_gear:greataxe_bronze": (3, 1), "grug_gear:feet_metal_bronze": (3, 1),
     "grug_gear:shield_bronze": (3, 1), "grug_gear:chest_metal_iron": (10, 10),
     "grug_gear:manawell_t2": (10, 10), "grug_gear:bow_iron": (10, 10),
+    "grug_gear:sword_iron": (10, 10),
     "grug_gear:head_metal_steel": (20, 20), "grug_gear:wand_steel": (20, 20),
     "grug_gear:dagger_silversteel": (30, 30), "grug_gear:spellbook_embersteel": (40, 40),
     "grug_gear:chest_cloth_silk": (40, 40), "grug_gear:mercy_seal_t6": (50, 50),
     "grug_gear:legs_cloth_stormweave": (50, 50),
 }
-# Where the step moves the craft stacks (craft slot -> (list, slot), 1-based):
-# smith's two free slots are the ones its mixtures leave (main[13], bag 1
-# slot 2), everything else stays in the grid; scribe and sleeper have room.
+# Where the step moves the craft and craftresult stacks ((list, slot) ->
+# (list, slot), 1-based): smith's two free slots are the ones its mixtures
+# leave (main[13], bag 1 slot 2), everything else stays (its craftresult
+# torches too); scribe and sleeper have room.
 MOVES = {
-    "smith": {2: ("main", 13), 3: ("grug_bag1_content", 2)},
-    "scribe": {2: ("main", 10), 3: ("main", 11)},
-    "sleeper": {5: ("main", 10)},
+    "smith": {("craft", 2): ("main", 13), ("craft", 3): ("grug_bag1_content", 2)},
+    "scribe": {("craft", 2): ("main", 10), ("craft", 3): ("main", 11),
+               ("craftresult", 1): ("main", 12)},
+    "sleeper": {("craft", 5): ("main", 10)},
 }
 # ST's mixture ids (r45 ST report): 40.
 MIXTURES = sorted(
@@ -180,12 +183,12 @@ def expected_after(name, before, layout):
             inv[e["list"]][slot] = ""
         elif e["role"] == "pin":
             inv[e["list"]][slot] = with_pin(inv[e["list"]][slot], *OLD_LEVELS[name_of(e["item"])])
-    for craft_slot, (listname, slot) in MOVES[name].items():
-        text = inv["craft"][craft_slot - 1]
+    for (source, source_slot), (listname, slot) in MOVES[name].items():
+        text = inv[source][source_slot - 1]
         if name_of(text) in OLD_LEVELS:
             text = with_pin(text, *OLD_LEVELS[name_of(text)])
         inv[listname][slot - 1] = text
-        inv["craft"][craft_slot - 1] = ""
+        inv[source][source_slot - 1] = ""
     if not any(inv["craft"]):
         inv["craft"] = []
     inv["craftpreview"] = [""] * len(inv.get("craftpreview", []))
@@ -304,10 +307,13 @@ def scenario(run):
           and (smith_built.get("equipment") or {}).get("grug_chest", {}).get("fresh_wearable"),
           json.dumps({"class": layouts["smith"].get("class"),
                       "level": smith_built.get("level")}))
-    check("setup", "saved: the grids hold 9 (smith), 3 (scribe) and 1 (sleeper) stacks; "
-                   "seen-items meta on smith and sleeper",
+    check("setup", "saved: the grids hold 9 (smith), 3 (scribe) and 1 (sleeper) stacks, "
+                   "craftresult a sword (scribe) and torches (smith); seen-items meta on smith "
+                   "and sleeper",
           [sum(1 for x in before[n]["inv"].get("craft", []) if x) for n in CHARACTERS]
-          == [3, 1, 9] and all(before[n]["meta"].get(SEEN) for n in ("smith", "sleeper")))
+          == [3, 1, 9] and all(before[n]["meta"].get(SEEN) for n in ("smith", "sleeper"))
+          and [name_of(before[n]["inv"].get("craftresult", [""])[0]) for n in CHARACTERS]
+          == ["grug_gear:sword_iron", "", "default:torch"])
     dump_before = it.dump(w)
 
     # Boot R: the new game without the tool.
@@ -362,6 +368,13 @@ def scenario(run):
     check("step", "scribe and sleeper: the grid stored with size 0; craftpreview empty for all",
           after["scribe"]["inv"]["craft"] == [] and after["sleeper"]["inv"]["craft"] == []
           and not any(x for n in CHARACTERS for x in after[n]["inv"].get("craftpreview", [])))
+    check("step", "craftresult: scribe's sword moved to main[12] and pinned 10 / 10, the list "
+                  "kept with size 1, empty; smith's torches stay (no room)",
+          after["scribe"]["inv"].get("craftresult") == [""]
+          and name_of(after["scribe"]["inv"]["main"][11]) == "grug_gear:sword_iron"
+          and (parse(after["smith"]["inv"].get("craftresult", [""])[0]).name,
+               parse(after["smith"]["inv"].get("craftresult", [""])[0]).count)
+          == ("default:torch", 2))
     check("step", "no mixture left in any list of any character",
           not any(mixtures_in(after[n]["inv"]) for n in CHARACTERS)
           and all(mixtures_in(before[n]["inv"]) for n in CHARACTERS))
@@ -415,8 +428,11 @@ def scenario(run):
           and not sm_lists.get("craft") and not sc_lists.get("craft")
           and sm.get("marker") == "" and sc.get("marker") == "")
     torch = parse(stack_at(sm, "main", 1))
-    check("boot", "smith: the leftover torches merged through the give helper (main[1] 13)",
-          (torch.name, torch.count) == ("default:torch", 13), stack_at(sm, "main", 1))
+    check("boot", "smith: the leftover torches of the grid and of craftresult merged through "
+                  "the give helper (main[1] 10 + 3 + 2); craftresult empty, size 1",
+          (torch.name, torch.count) == ("default:torch", 15)
+          and sm_lists.get("craftresult") == [""] and sc_lists.get("craftresult") == [""],
+          "%s %s" % (stack_at(sm, "main", 1), sm_lists.get("craftresult")))
     out = [(parse(x).name, parse(x).count) for x in sm_lists.get("grug_craft_out", [])]
     check("boot", "smith: the next four leftovers fill the output area in grid order",
           out == [("default:stick", 6), ("default:paper", 2), ("default:book", 1),
@@ -489,6 +505,7 @@ def scenario(run):
           and tooltip_ok(helm_facts, 20, 20), json.dumps({"at": helm, "facts": helm_facts}))
     rows = [("main", 10, "grug_gear:bow_iron", (10, 10)), ("main", 9, "grug_gear:mercy_seal_t6",
                                                             (50, 50)),
+            ("main", 12, "grug_gear:sword_iron", (10, 10)),
             ("grug_weapon", 1, "grug_gear:sword_bronze", (3, 1))]
     bad = []
     for listname, slot, item, levels in rows:
@@ -497,8 +514,8 @@ def scenario(run):
                 (facts.get("ilvl"), facts.get("req")) != levels or not tooltip_ok(facts, *levels):
             bad.append("%s[%d] %s" % (listname, slot, json.dumps(facts)[:120]))
     apple = parse(stack_at(sc, "main", 11))
-    check("boot", "scribe: the moved bow, the trinket and the equipped sword at their old "
-                  "levels with rebuilt tooltips; the moved apples in main[11]",
+    check("boot", "scribe: the moved bow and craftresult sword, the trinket and the equipped "
+                  "sword at their old levels with rebuilt tooltips; the moved apples in main[11]",
           not bad and (apple.name, apple.count) == ("default:apple", 3), json.dumps(bad))
     weapon = gear_at(sc, "grug_weapon", 1)
     check("boot", "scribe: the plain first-tier sword deals 5 and is wearable at level 1",

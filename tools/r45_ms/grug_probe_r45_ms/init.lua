@@ -29,10 +29,13 @@
 --            unmodified first-tier bow, mixtures in main, a bag and the
 --            craft grid, and a craft grid of which two stacks fit into the
 --            two slots the mixtures free and six do not (one merges at the
---            join, four fill the output area, one drops at the feet);
+--            join, four fill the output area, one drops at the feet), and
+--            a torch stack in the engine's craftresult list (no room either:
+--            merged at the join);
 --   scribe   level 1 without a class: an unmodified sword equipped, a
 --            trinket in main, a helm left in the shift-click slot, a mixture
---            on the potion belt, a craft grid that fits;
+--            on the potion belt, a craft grid that fits and an unmodified
+--            sword in craftresult that fits too;
 --   sleeper  joins only for the setup (offline afterwards): unmodified gear,
 --            a mixture, one craft stack.
 
@@ -250,6 +253,7 @@ local function build_smith(player)
 	place(player, e, "craft", 7, "default:book", "craft")
 	place(player, e, "craft", 8, "default:coal_lump 5", "craft")
 	place(player, e, "craft", 9, "default:clay_lump 3", "craft")
+	place(player, e, "craftresult", 1, "default:torch 2", "craft", "no room: the join merges it")
 	grug_inventory.equipment_changed(player)
 	return {class = grug_classes.get_class(player), entries = e}
 end
@@ -266,6 +270,7 @@ local function build_scribe(player)
 	place(player, e, "craft", 1, MIX .. "potion_cave", "mixture")
 	place(player, e, "craft", 2, acquired(player, "grug_gear:bow_iron"), "craft")
 	place(player, e, "craft", 3, "default:apple 3", "craft")
+	place(player, e, "craftresult", 1, acquired(player, "grug_gear:sword_iron"), "craft")
 	grug_inventory.equipment_changed(player)
 	return {class = grug_classes.get_class(player) or "", entries = e}
 end

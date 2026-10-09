@@ -97,7 +97,7 @@ def hero_lists():
         "main": (32, 8, main),
         "craft": (9, 3, craft),
         "craftpreview": (1, 0, {0: S("default:torch", 4)}),
-        "craftresult": (1, 0, {}),
+        "craftresult": (1, 0, {0: S("default:gravel", 3)}),  # no room left: stays
         "grug_bag1": (1, 0, {0: BAG}),
         "grug_bag1_content": (8, 0, bag),
         "grug_bag2": (1, 0, {}),
@@ -284,6 +284,29 @@ class StepTest(unittest.TestCase):
         self.assertEqual(lists["craft"].size, 9)
         self.assertEqual(lists["craft"].items[4], pinned(SWORD, 3, 1), "pinned in the grid too")
         self.assertTrue(all(s.is_empty() for s in lists["grug_bag1_content"].items))
+
+    def test_craftresult(self):
+        """The engine's craftresult stacks move after the grid's, by the same
+        rules; the list keeps its size, emptied, and what does not fit stays."""
+        spec = {
+            "main": (32, 8, {slot: FILL for slot in range(32) if slot not in (8, 30)}),
+            "craft": (9, 3, {6: S("default:apple", 2)}),
+            "craftresult": (1, 0, {0: AXE}),
+        }
+        self.write(lambda w: w.set_inventory("oldhero", self.build(spec)))
+        self.assertEqual(self.run_tool()[0], 0)
+        lists = self.read(lambda w: w.get_inventory("oldhero"))
+        self.assertEqual(lists["main"].items[8], S("default:apple", 2), "the grid first")
+        self.assertEqual(lists["main"].items[30], pinned(AXE, 3, 1), "then craftresult, pinned")
+        self.assertEqual((lists["craft"].size, lists["craftresult"].size), (0, 1))
+        self.assertTrue(lists["craftresult"].items[0].is_empty())
+        # One free slot only: the grid's stack takes it, craftresult keeps its own.
+        spec["main"] = (32, 8, {slot: FILL for slot in range(32) if slot != 8})
+        self.write(lambda w: w.set_inventory("oldhero", self.build(spec)), "0.44.0")
+        self.assertEqual(self.run_tool()[0], 0)
+        lists = self.read(lambda w: w.get_inventory("oldhero"))
+        self.assertEqual(lists["main"].items[8], S("default:apple", 2))
+        self.assertEqual(lists["craftresult"].items[0], pinned(AXE, 3, 1), "left, pinned in place")
 
     def test_from_the_baseline(self):
         """A world without a record (0.41.0) crosses both steps."""
