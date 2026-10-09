@@ -1043,10 +1043,23 @@ tools](#player-meta-read-by-external-tools).
   removes a free region mob whose `_grug_spawn_clock` is `"night"` by day
   (`SR.clock_now`) with mobs_redo's smoke puff — no drops, XP or kill
   credit — unless it is in combat or a player is within
-  `grug_mobs.DAWN_NEAR` (32) nodes; one field test per step, a check every
-  `DAWN_INTERVAL` (1 s) per night mob. Camp members (their tag's unit is a
-  camp) and every mob without the clock stay. Fixture and engine probe
-  `tools/r35_e`.
+  `grug_mobs.DAWN_NEAR` (64) nodes on every axis (a cube, edge included,
+  `grug_mobs.dawn_players_clear`; Round 45 playtest, a 32-node sphere
+  before); one field test per step, a check every `DAWN_INTERVAL` (1 s) per
+  night mob. Camp members (their tag's unit is a camp) and every mob without
+  the clock stay. Fixture and engine probe `tools/r35_e`.
+
+## Flier clips
+
+- **Fly clip in the air (Round 45 playtest):** `grug_mobs/flight.lua`
+  `install_flier_animation`, called by `grug_mobs.register_mob` right after
+  `mobs:register_mob`, wraps `set_animation` on the prototype of every air
+  flier (`fly_in` "air" or a list holding it, `fly` or `keep_flying`) that
+  has a fly clip: a "stand", "walk" or "run" request plays "fly" while the
+  mob flies (`self.fly`), is inside its element (`flight_check`) and does
+  not stand on walkable ground out of water — the rule of do_states' walk
+  state and `grug_mobs.walk_animation`. The swing lock still holds those
+  requests back while a punch clip runs. Fixture `tools/r45_pt7`.
 
 ## Mobs in water
 
