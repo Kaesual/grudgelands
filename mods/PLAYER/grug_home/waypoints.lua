@@ -199,8 +199,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
    return true
   end,
   arrival=function()
-   if target.claim then return grug_home.claim_arrival(target) end
-   return arrival_at(target)
+   if not target.claim then return arrival_at(target) end
+   -- Emerged, but the arrival cube is not free (as Return home says it).
+   local arrival = grug_home.claim_arrival(target)
+   if not arrival then return nil, "Your Claim Stone's arrival is blocked." end
+   return arrival
   end})
  return true
 end)

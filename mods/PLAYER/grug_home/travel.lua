@@ -220,8 +220,8 @@ end
 -- The waystones' entry into the same path (waypoints.lua). `trip.pos` is
 -- the destination stone, `trip.check(player)` runs on the server step after
 -- the emerge, `trip.arrival(player)` returns a validated arrival position or
--- nil, and `trip.unavailable` is the message for a failed preparation: the
--- player then stays where they are. Nothing is charged and the home cooldown
+-- nil (and optionally its own message), and `trip.unavailable` is the message
+-- for a failed preparation: the player then stays where they are. Nothing is charged and the home cooldown
 -- is not touched. Returns false while another trip is being prepared.
 function grug_home.travel(player, trip)
  local name = name_of(player)
@@ -229,8 +229,9 @@ function grug_home.travel(player, trip)
  sessions[name] = sessions[name] or {}
  prepare(name, {pos=trip.pos, check=trip.check,
   arrive=function(p, failed)
-   local arrival = not failed and trip.arrival(p)
-   if not arrival then return notify(p, trip.unavailable) end
+   local arrival, message
+   if not failed then arrival, message = trip.arrival(p) end
+   if not arrival then return notify(p, message or trip.unavailable) end
    teleport(p, arrival)
    grug_sounds.play("travel", p)
   end,

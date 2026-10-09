@@ -269,8 +269,13 @@ drop_timeouts()
 cells[key(vnew(700, 102, 700))] = "stone"
 open(player, "highcourt"); fields(player, {go_claim="Travel"}); finish()
 check(player.pos.x == STONE.highcourt.x + 1 and
- last_chat() == "Your Claim Stone cannot be reached right now. Please try again.", "B blocked cube stays")
+ last_chat() == "Your Claim Stone's arrival is blocked.", "B blocked cube stays, with the blocked message")
 cells[key(vnew(700, 102, 700))] = nil
+drop_timeouts()
+-- A failed emerge keeps the unavailable message.
+open(player, "highcourt"); fields(player, {go_claim="Travel"}); finish(core.EMERGE_ERRORED)
+check(player.pos.x == STONE.highcourt.x + 1 and
+ last_chat() == "Your Claim Stone cannot be reached right now. Please try again.", "B failed emerge stays")
 drop_timeouts()
 
 -- Picked up during the emerge: the trip is canceled.
