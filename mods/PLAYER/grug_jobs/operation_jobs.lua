@@ -38,13 +38,38 @@ function grug_jobs.operation_target(stack)
 	return family ~= nil and family ~= "tool"
 end
 
+-- An item left in the slot goes back into the inventory (the user,
+-- 2026-10-09): the slot is drawn only in the enchant and upgrade boxes, so a
+-- forgotten item would stay out of sight. Through the give helper, then the
+-- output area; what fits nowhere stays in the slot (never dropped, never
+-- lost). At join and when a profession is unlearned (state.lua).
+function grug_jobs.return_operation_target(player)
+	local inv = player:get_inventory()
+	if inv:get_size(TARGET) < 1 then return end
+	local stack = inv:get_stack(TARGET, 1)
+	if stack:is_empty() then return end
+	local left = grug_inventory.give(player, stack)
+	if not left:is_empty() and inv:get_size(grug_jobs.OUTPUT_LIST) > 0 then
+		left = inv:add_item(grug_jobs.OUTPUT_LIST, left)
+	end
+	inv:set_stack(TARGET, 1, left)
+	if not left:is_empty() then
+		core.log("action", "[grug_jobs] " .. player:get_player_name() ..
+			"'s target item stays in its slot: no room")
+	end
+end
+
 core.register_on_joinplayer(function(player)
 	local inv = player:get_inventory()
 	if inv:get_size(TARGET) ~= 1 then inv:set_size(TARGET, 1) end
+	grug_jobs.ensure_output_area(player)
+	grug_jobs.return_operation_target(player)
 end)
 
 -- One item, and only equipment, goes into the slot (a swap runs this check
--- in both directions).
+-- in both directions). An accepted item returns nothing: the engine stops at
+-- the first number (OR with short-circuit), so a later callback still judges
+-- the list the item leaves.
 core.register_allow_player_inventory_action(function(_, action, inventory, info)
 	local stack
 	if action == "move" and info.to_list == TARGET then
@@ -54,7 +79,7 @@ core.register_allow_player_inventory_action(function(_, action, inventory, info)
 	else
 		return nil
 	end
-	return grug_jobs.operation_target(stack) and 1 or 0
+	if not grug_jobs.operation_target(stack) then return 0 end
 end)
 
 -- Placing or taking the item changes the box (the list of valid enchants,
@@ -185,10 +210,10 @@ end
 grug_jobs.register_job_kind("enchant", {finish = finish})
 grug_jobs.register_job_kind("upgrade", {finish = finish})
 
--- The output area's indicator and label (ui.lua): the wireframe's
--- "Enchanting…" and "Steel Sword +3 levels".
+-- The output area's indicator and label (ui.lua): "Enchanting…" and
+-- "Upgrading…" (the user, 2026-10-09), "Steel Sword +3 levels".
 grug_jobs.JOB_RUN_LABELS.enchant = "Enchanting…"
-grug_jobs.JOB_RUN_LABELS.upgrade = "Crafting…"
+grug_jobs.JOB_RUN_LABELS.upgrade = "Upgrading…"
 local function target_name(job)
 	local stack = ItemStack(job.target or "")
 	if stack:is_empty() then return "" end

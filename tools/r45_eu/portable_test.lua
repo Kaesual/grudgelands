@@ -16,6 +16,9 @@
 --   D  the data: 588 enchants and 36 upgrades, enchants count as progress
 --      and upgrades never, one own material per upgrade level, a Stick on
 --      top for weapons, upgrades.json equals the data design's copy;
+--   A  the allow chain goes on after an accepted item; an item left in the
+--      slot comes back at join and at an unlearn (give helper, output
+--      area, else it stays);
 --   T  the target slot: made at join, takes one piece of equipment only,
 --      placing or taking resends the open Crafting page once; the buttons
 --      only in a learned primary area; tab and row clicks leave the box;
@@ -755,6 +758,67 @@ do
 end
 
 ------------------------------------------------------------------------------
+-- A. The allow chain (review Low 1): an accepted item returns nothing, so a
+-- later callback still judges the move; and the hand-back (the user,
+-- 2026-10-09) of an item left in the slot at join and at an unlearn.
+------------------------------------------------------------------------------
+do
+	local sword = crafted("grug_gear:sword_steel")
+	local inv = smith.inv
+	put(smith, "main", 9, sword:to_string())
+	local later = function(_, action, _, info)
+		if action == "move" and info.from_list == "main" and info.from_index == 9 then return 0 end
+	end
+	table.insert(callbacks.allow, later)
+	eq(move(smith, "main", 9, TARGET, 1), 0, "A a later allow callback still refuses the move")
+	table.remove(callbacks.allow)
+	for _, f in ipairs(callbacks.allow) do
+		local r = f(smith, "move", inv, {from_list = "main", from_index = 9, to_list = TARGET,
+			to_index = 1, count = 1})
+		check(r == nil, "A no callback returns a number for an accepted item")
+	end
+	eq(move(smith, "main", 9, TARGET, 1), 1, "A without it the sword goes in")
+	-- At join it comes back through the give helper.
+	leave(smith)
+	join(smith)
+	check(inv:get_stack(TARGET, 1):is_empty(), "A join: the slot is empty")
+	eq(total(smith, "grug_gear:sword_steel"), 1, "A join: the sword is back, once")
+	check(inv:get_stack("main", 9):get_name() == "grug_gear:sword_steel", "A join: into main[9]")
+	-- An inventory without room: the output area; without room there too it
+	-- stays in the slot.
+	local filler = {}
+	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+		for index = 1, inv:get_size(list) do
+			filler[#filler + 1] = {list, index}
+			inv:set_stack(list, index, ItemStack("default:stick 99"))
+		end
+	end
+	inv:set_stack(TARGET, 1, sword)
+	leave(smith)
+	join(smith)
+	check(inv:get_stack(TARGET, 1):is_empty() and
+		inv:get_stack(OUT, 1):get_name() == "grug_gear:sword_steel",
+		"A a full inventory: into the output area")
+	inv:set_stack(TARGET, 1, inv:get_stack(OUT, 1))
+	for index = 1, 4 do inv:set_stack(OUT, index, ItemStack("default:stick 99")) end
+	leave(smith)
+	join(smith)
+	check(same_item(inv:get_stack(TARGET, 1), sword), "A no room anywhere: it stays in the slot")
+	eq(total(smith, "grug_gear:sword_steel"), 1, "A ... once")
+	for _, slot in ipairs(filler) do inv:set_stack(slot[1], slot[2], ItemStack("")) end
+	for index = 1, 4 do inv:set_stack(OUT, index, ItemStack("")) end
+	-- An unlearn hands it back too.
+	learn(smith, "armorsmith", 1)
+	J.unlearn(smith, "armorsmith")
+	check(inv:get_stack(TARGET, 1):is_empty(), "A unlearn: the slot is empty")
+	eq(total(smith, "grug_gear:sword_steel"), 1, "A unlearn: the sword is back, once")
+	for _, list in ipairs({"main"}) do
+		for index = 1, inv:get_size(list) do inv:set_stack(list, index, ItemStack("")) end
+	end
+	learn(smith, "weaponsmith", 3)
+end
+
+------------------------------------------------------------------------------
 -- E. Enchanting.
 ------------------------------------------------------------------------------
 local function enchant_box(player)
@@ -1076,6 +1140,8 @@ do
 	eq(total(smith, "grug_materials:steel_bar"), 5, "U the bars are held by the job")
 	eq(smith.inv:get_stack(TARGET, 1):is_empty(), true, "U the item left the slot")
 	says(smith.formspec, "Steel Sword +3 levels", "U the job's label")
+	has(smith.formspec, "Upgrading…", "U the indicator says Upgrading…")
+	lacks(smith.formspec, "Crafting…", "U ... not Crafting…")
 	has(smith.formspec, FIELDS.stop .. ";Stop]", "U Stop while it runs")
 	pass(3)
 	eq(J.job_state(smith), nil, "U done after 3 s")

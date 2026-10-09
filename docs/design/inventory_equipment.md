@@ -175,7 +175,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     above the cap or the materials is lowered with its note. An item at or
     above its cap reads "Already at the cap (item level C)." and takes no
     level. The running job reads "Enchanting…" with the item's name, or
-    "Crafting…" with "Steel Sword +3 levels".
+    "Upgrading…" with "Steel Sword +3 levels". An item left in the slot
+    goes back into the inventory at join and when a profession is unlearned
+    (the give helper, then the output area; with no room anywhere it stays
+    in the slot).
   - **The quantity field** (spec §4.3): Enter recalculates and never starts;
     Craft now above the maximum lowers the field to it with the job's note
     ("Not enough ingredients — quantity reduced to N") and starts nothing;

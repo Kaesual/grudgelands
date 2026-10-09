@@ -216,8 +216,10 @@ tools](#player-meta-read-by-external-tools).
 - **Enchants and upgrades as jobs** (`operation_jobs.lua`,
   `operation_box.lua`, Round 45 lane EU): the target slot
   `grug_craft_target` (`TARGET_LIST`, one slot made at join; the allow
-  callback takes one piece of equipment, `operation_target(stack)`; a
-  placement resends an open Crafting page). `start_operation(player, op_id,
+  callback refuses everything else and returns nothing on accept, so later
+  callbacks still judge, `operation_target(stack)`; a placement resends an
+  open Crafting page; `return_operation_target(player)` hands a left item
+  back at join and on an unlearn: give helper, output area, else it stays). `start_operation(player, op_id,
   levels)` → ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
   `profession`, `station`, `cap`, `target`, `space`, `ingredients`) judges
   the slot's item with `grug_items.operation_result`, needs a free output
