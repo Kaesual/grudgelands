@@ -312,7 +312,10 @@ _G.core = {
 	register_craft = function(def)
 		if def.type == "cooking" then cooked[#cooked + 1] = def end
 	end,
+	-- Round 45 (lane ST): Cooking is learned at join and arrival.
+	register_on_joinplayer = function() end,
 }
+_G.grug_classes = {register_on_arrival = function() end}
 _G.grug_food = {register_item = function() return true end}
 _G.grug_jobs = {
 	DURATIONS = {food = 1},

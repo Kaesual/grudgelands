@@ -436,6 +436,26 @@ local placing = false
 -- Set below, next to the rings it re-derives (`idle_ring`).
 local refresh_walk
 
+-- Whether a trainer socket of `profession` holds a trainer (grug_jobs, which
+-- loads after this mod, owns the answer: Round 45 retires the Cooking
+-- trainers, spec ruling 28). Without grug_jobs every trainer stays one.
+local function trainer_teaches(profession)
+	local jobs = rawget(_G, "grug_jobs")
+	return not (jobs and jobs.trainer_teaches) or jobs.trainer_teaches(profession) == true
+end
+
+-- A trainer socket whose profession no trainer teaches holds an ORDINARY
+-- RESIDENT: the settlement's villager name, no profession (so no trainer
+-- dialog, no repair), standing at its socket. The socket and the world data
+-- stay as they are; `install` applies this at placement and the claim at
+-- every activation, so an NPC placed as a trainer before turns ordinary.
+local function install_former_trainer(entity, row)
+	entity._grug_profession = nil
+	entity._grug_npc_name = grug_mobs.settlement_npc_name and
+		grug_mobs.settlement_npc_name(row.key, row.kind, row.race_id, "villager") or nil
+	entity._grug_walker = false
+end
+
 function grug_mobs.start_npc_claim(entity)
 	if type(entity) ~= "table" then
 		return true
@@ -452,6 +472,11 @@ function grug_mobs.start_npc_claim(entity)
 	local key, socket_id = entity._grug_start, entity._grug_socket
 	if type(key) ~= "string" or type(socket_id) ~= "string" then
 		return true -- not a settlement NPC at all (an outpost guard)
+	end
+	if entity._grug_socket_role == "trainer" and entity._grug_profession ~= nil and
+			not trainer_teaches(entity._grug_profession) and by_key[key] then
+		install_former_trainer(entity, by_key[key])
+		if grug_mobs.start_npc_retag then grug_mobs.start_npc_retag(entity) end
 	end
 	local slots = claims_of(key)
 	local other = slots[socket_id]
@@ -1440,7 +1465,11 @@ local function install(entity, row, slot)
 		entity._grug_npc_name = "Housing Steward"
 		entity._grug_walker = false
 	elseif slot.role == "trainer" then
-		grug_mobs.install_profession_trainer(entity, slot)
+		if trainer_teaches(slot.profession) then
+			grug_mobs.install_profession_trainer(entity, slot)
+		else
+			install_former_trainer(entity, row)
+		end
 	end
 	if slot.garrison then
 		install_garrison(entity, slot.garrison)

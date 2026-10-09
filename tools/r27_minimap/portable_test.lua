@@ -455,7 +455,8 @@ end
 grug_core.settlement_socket_settlements = function() return settlements end
 grug_core.settlement_sockets_at = function(key) return sockets[key] or {} end
 core.registered_entities["grug_mobs:king_human"] = {description = "King"}
-rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
+rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}},
+	trainer_teaches = function(p) return p ~= "cooking" end}) -- Round 45 (lane ST)
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 grug_quests.registered_npcs = {
 	giver = {settlement = "highcourt", socket = "giver", title = "Giver"},

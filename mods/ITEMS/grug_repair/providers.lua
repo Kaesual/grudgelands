@@ -20,7 +20,7 @@ grug_repair.register_provider("trainer", function(player, provider)
 			object:get_luaentity() ~= entity or entity._grug_socket_role ~= "trainer" or
 			entity._grug_start ~= provider.settlement or entity._grug_socket ~= provider.socket or
 			entity._grug_profession ~= provider.profession or
-			not grug_jobs.PROFESSIONS[provider.profession] then return false end
+			not grug_jobs.trainer_teaches(provider.profession) then return false end
 	local position = object:get_pos()
 	if distance_squared(player:get_pos(), position) > 64 then return false end
 	local race

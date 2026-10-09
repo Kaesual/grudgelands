@@ -1,4 +1,18 @@
 local FORMNAME = "grug_jobs:trainer"
+
+-- Professions every character knows from the start (spec ruling 28, Round
+-- 45): no trainer teaches them. The trainer sockets the world data still
+-- gives them hold ordinary residents -- no trainer dialog, no map icon, no
+-- repair -- through a runtime mapping in the trainer-role readers, which ask
+-- trainer_teaches: grug_mobs/start_npcs.lua (at placement and at every
+-- activation), grug_map/providers.lua and grug_repair/providers.lua.
+grug_jobs.STARTER_PROFESSIONS = {cooking = true}
+
+-- Whether a trainer socket of `profession` holds a trainer.
+function grug_jobs.trainer_teaches(profession)
+	return grug_jobs.PROFESSIONS[profession] ~= nil and
+		not grug_jobs.STARTER_PROFESSIONS[profession]
+end
 local sessions = {}
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -71,7 +85,7 @@ local function trainer_formspec(player, profession, confirming)
 end
 
 function grug_jobs.open_trainer(player, profession, position, entity)
-	if not player or not player:is_player() or not grug_jobs.PROFESSIONS[profession] then
+	if not player or not player:is_player() or not grug_jobs.trainer_teaches(profession) then
 		return false
 	end
 	local name = player:get_player_name()
