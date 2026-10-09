@@ -890,6 +890,11 @@ do
 	local copy = J.begin_job(e, {kind = "test", consumed = {"t:gem 2 0"},
 		target = target:to_string(), duration = 5})
 	eq(copy.finish - copy.start, 5, "K begin_job sets the times")
+	local stored = e.meta:get_string(J.JOB_KEY)
+	local again, why = J.begin_job(e, {kind = "test", consumed = {"t:oak 1 0"}, duration = 1})
+	check(again == nil and why == "A crafting job is already running.",
+		"K begin_job refuses while a job runs")
+	eq(e.meta:get_string(J.JOB_KEY), stored, "K the refused begin_job kept the stored job")
 	ok = J.cancel_job(e)
 	check(ok, "K the target job cancels")
 	eq(count_of(e, "t:gem"), 2, "K the materials back")
@@ -907,6 +912,43 @@ do
 	advance(1)
 	run_timers()
 	eq(count_of(gone, "t:oak", {[OUT] = true}), 3, "K a removed recipe returns its ingredients")
+
+	-- A job of an unknown kind (an EU job read by a build without EU) falls
+	-- back to the recipe kind: its ingredients and its target come back.
+	local lost = new_player("k6")
+	local axe = ItemStack("t:sword")
+	axe.fields = {grug_quality = "4"}
+	J.begin_job(lost, {kind = "unknown_kind", consumed = {"t:gem 3 0"},
+		target = axe:to_string(), duration = 1})
+	advance(1)
+	run_timers()
+	eq(job_of(lost), nil, "K the unknown-kind job ends")
+	eq(count_of(lost, "t:gem", {[OUT] = true}), 3, "K its ingredients come back")
+	local back
+	for _, stack in ipairs(lost.inv.lists[OUT]) do
+		if stack:get_name() == "t:sword" then back = stack end
+	end
+	check(back and back:get_meta():get_string("grug_quality") == "4",
+		"K its target comes back with its metadata")
+
+	-- A hook inside the job's finish that rebuilds the Crafting page
+	-- (update_job "open") cannot complete the job a second time.
+	local nested = new_player("k7")
+	J.learn(nested, "cooking")
+	put(nested, "main", 9, "t:meat 20")
+	put(nested, "main", 10, "t:grain 20")
+	local inner
+	J.register_on_award_progress(function(player)
+		if player:get_player_name() == "k7" then inner = J.update_job(player, "open") end
+	end)
+	local ends_before = #ends
+	check(J.start_job(nested, stew.id, 3), "K a 3-stew job starts")
+	advance(3)
+	run_timers()
+	eq(inner, false, "K the nested update_job finds no job")
+	eq(count_of(nested, "t:stew", {[OUT] = true}), 3, "K one delivery: 3 stews, not 6")
+	eq(J.crafts_in_tier(nested, "cooking"), 3, "K one award: 3 XP")
+	eq(#ends - ends_before, 1, "K one end hook")
 end
 
 ------------------------------------------------------------------------------

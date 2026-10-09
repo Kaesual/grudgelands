@@ -184,10 +184,13 @@ tools](#player-meta-read-by-external-tools).
   `register_on_job_end(fn(player, job, outcome, source))` (outcome
   `completed`/`cancelled`; source `timer`, `join`, `open`, `start`, `stop`)
   is where UI resends an open Crafting page; `register_job_kind(kind,
-  {finish})`, `begin_job` and `take_ingredients` are the parts EU's kinds
-  use. A finished recipe job makes its stacks (gear through
-  `grug_items.crafted_output`), calls `award_progress` once and feeds
-  "<item> ×N is ready". Fixture `tools/r45_jb`.
+  {finish})`, `begin_job` (nil and the reason while a job runs: the caller
+  gives back what it took) and `take_ingredients` are the parts EU's kinds
+  use. A job is cleared before its kind's `finish` runs, so a hook inside it
+  cannot complete it twice; a job without its recipe, or of an unknown kind,
+  returns its ingredients and target. A finished recipe job makes its
+  stacks (gear through `grug_items.crafted_output`), calls `award_progress`
+  once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
   Fixture `tools/r45_rg`: record shape, queries, refusals, the conversion
   against the base catalog, gear in its profession, durations, stations, the
   craft list and the removed APIs.

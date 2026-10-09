@@ -34,8 +34,9 @@
 --   grug_jobs.take_all(player)                       -> moved, left
 --   grug_jobs.register_on_job_end(fn(player, job, outcome, source))
 --   grug_jobs.register_job_kind(kind, {finish = fn(player, job) -> stacks, label})
---   grug_jobs.begin_job(player, job), grug_jobs.take_ingredients(player,
---     ingredients, quantity) (the parts start_job uses, for EU's kinds)
+--   grug_jobs.begin_job(player, job) -> job copy | nil, reason (a job runs),
+--   grug_jobs.take_ingredients(player, ingredients, quantity) (the parts
+--     start_job uses, for EU's kinds)
 
 local JOB_KEY = "grug_jobs:job"
 local OUTPUT = "grug_craft_out"
@@ -366,14 +367,16 @@ end
 -- A finished recipe job: quantity × count items as stacks of stack_max;
 -- gear through grug_items.crafted_output (base name, quality, item level,
 -- description, weapon tooltip); the XP, sound and achievements once for the
--- whole job (award_progress). A job whose recipe is gone returns its
--- ingredients.
+-- whole job (award_progress). A job whose recipe is gone, and a job of an
+-- unknown kind (which falls back to this one), returns its ingredients and
+-- its target.
 grug_jobs.register_job_kind("recipe", {
 	finish = function(player, job)
 		local recipe = grug_jobs.recipe(job.recipe)
 		local stacks = {}
 		if not recipe then
 			for _, item in ipairs(job.consumed or {}) do split(item, stacks) end
+			if job.target and job.target ~= "" then split(job.target, stacks) end
 			return stacks, "Returned ingredients"
 		end
 		local total = recipe.count * job.quantity
@@ -399,11 +402,14 @@ local function run_end(player, job, outcome, source)
 	end
 end
 
+-- The job and its timer go before finish runs: a callback inside it (a
+-- Crafting page rebuilt by an XP or achievement hook calls update_job) finds
+-- no job, so nothing completes twice.
 local function complete(player, job, source)
 	timers[player:get_player_name()] = nil
+	write_job(player, nil)
 	local kind = kinds[job.kind or "recipe"] or kinds.recipe
 	local stacks, label = kind.finish(player, job)
-	write_job(player, nil)
 	deliver(player, stacks)
 	if label then grug_core.feed(player, "notice", label .. " is ready") end
 	run_end(player, job, "completed", source)
@@ -436,8 +442,12 @@ schedule = function(player, job)
 end
 
 -- Stores a job whose inputs are already taken: `job.duration` seconds from
--- now. EU's kinds start through this.
+-- now. Returns the job copy, or nil and the reason while a job runs (a due
+-- one completes first): the caller still holds the inputs it took and gives
+-- them back. EU's kinds start through this.
 function grug_jobs.begin_job(player, job)
+	grug_jobs.update_job(player, "start")
+	if read_job(player) then return nil, "A crafting job is already running." end
 	local now = grug_jobs.now()
 	job.kind = job.kind or "recipe"
 	job.consumed = job.consumed or {}
