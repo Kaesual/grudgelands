@@ -7,7 +7,7 @@
 -- Queue rule: while the sound plays at a station and another job starts
 -- there, it is queued once more, never more often (four starts within one
 -- sound: the first plays, the second queues one more, the third and fourth
--- add nothing). Per station node: an end time and a queued flag, one
+-- add nothing). Per station node: an end time and a queued start time, one
 -- core.after for a queued sound; nothing runs per step.
 --
 -- The sound is the profession's craft cue (grug_sounds), which before played
@@ -27,8 +27,11 @@ local function seconds()
 	return core.get_us_time() / 1000000
 end
 
--- node position hash -> {ends = seconds, queued = bool}; one entry per
--- station node that sounded since the server started.
+-- node position hash -> {ends = seconds, pending = seconds | nil}: `ends`
+-- is when the last sound played or queued there ends, `pending` the start of
+-- a queued one. Moved forward when a sound is queued, so a start in the step
+-- before the queued sound's core.after runs cannot play on top of it. An
+-- expired entry goes when a start finds it.
 local playing = {}
 
 -- Plays the sound of the station at `pos` (a position station_nearby
@@ -43,18 +46,20 @@ function grug_jobs.play_station_sound(pos)
 	local key = core.hash_node_position(pos)
 	local now = seconds()
 	local slot = playing[key]
-	if not slot or now >= slot.ends then
+	if slot and now >= slot.ends then
+		playing[key], slot = nil, nil
+	end
+	if not slot then
 		if not grug_sounds.play(sound.event, pos) then return false end
-		playing[key] = {ends = now + sound.seconds, queued = false}
+		playing[key] = {ends = now + sound.seconds}
 		return "played"
 	end
-	if slot.queued then return false end
-	slot.queued = true
-	core.after(slot.ends - now, function()
-		slot.queued = false
-		slot.ends = seconds() + sound.seconds
-		grug_sounds.play(sound.event, pos)
-	end)
+	-- One queued sound at most: while it waits, a start adds nothing; once
+	-- it plays, a start queues the next one.
+	if slot.pending and now < slot.pending then return false end
+	local at = slot.ends
+	slot.pending, slot.ends = at, at + sound.seconds
+	core.after(at - now, function() grug_sounds.play(sound.event, pos) end)
 	return "queued"
 end
 

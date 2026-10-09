@@ -221,7 +221,7 @@ tools](#player-meta-read-by-external-tools).
   upgrade) starts at: `STATION_SOUNDS` (forge `craft_smithy`, brewing stand
   `craft_alchemy`, each with its file's length); the other stations are
   silent. `play_station_sound(pos)` keeps one entry per station node (end
-  time, queued flag): a start while the sound plays queues it once, never
+  time, pending start of a queued sound): a start while the sound plays queues it once, never
   more (one `core.after`). A recipe made at such a station has no craft cue
   at its end (`state.lua`'s `craft_sound`). Fixture `tools/r45_pt8`.
 - **Enchants and upgrades as jobs** (`operation_jobs.lua`,

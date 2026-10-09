@@ -15,6 +15,9 @@
 --      sound plays when the first ends; a start while the queued one plays
 --      queues once more; after the end a start plays at once; two stations
 --      are independent;
+--   R  the same under a coarse core.after (the engine's step): a start
+--      between the first sound's end and the queued callback never plays on
+--      top of the queued sound (it queues the next one after it);
 --   S  which stations sound: the forge (craft_smithy) and the brewing stand
 --      (craft_alchemy) at the station's position; the tanning rack, tailor
 --      bench, carving bench, jeweller's bench, furnace and dual furnace, a
@@ -188,6 +191,57 @@ do
 	eq(#played - before, 2, "Q each queues its own")
 	run_until(now + 10)
 	eq(#played - before, 4, "Q each queued sound plays once")
+end
+
+------------------------------------------------------------------------------
+-- R. A coarse core.after (review Low 1): the engine runs a due callback at
+-- the next server step (about 0.09 s), and starts arrive between steps. A
+-- start after the first sound's end but before the queued callback ran must
+-- not play on top of the queued sound.
+------------------------------------------------------------------------------
+do
+	run_until(now + 10)
+	local STEP = 0.09
+	local p = {x = 70, y = 5, z = 0}
+	nodes[key(p)] = "grug_jobs:forge"
+	-- Steps the server from `now` to `t`: due callbacks run at step times only.
+	local function steps_to(t)
+		local step = math.ceil(now / STEP) * STEP
+		while step <= t + 1e-9 do
+			now = step
+			table.sort(afters, function(a, b) return a.at < b.at end)
+			while afters[1] and afters[1].at <= step + 1e-9 do
+				table.remove(afters, 1).fn()
+			end
+			step = step + STEP
+		end
+		now = t
+	end
+	local before = #played
+	local t0 = math.ceil(now / STEP) * STEP + 0.01
+	steps_to(t0)
+	eq(J.play_station_sound(p), "played", "R player 1 plays")
+	steps_to(t0 + 0.5)
+	eq(J.play_station_sound(p), "queued", "R player 2 queues")
+	-- The first sound has ended, the queued callback has not run yet.
+	steps_to(t0 + SMITHY + 0.005)
+	eq(#played - before, 1, "R the queued callback is still waiting")
+	-- The queued sound counts as playing from its due time: this start
+	-- queues the next one after it, never a sound on top.
+	eq(J.play_station_sound(p), "queued", "R a start before the queued callback runs queues after it")
+	eq(#played - before, 1, "R ... and plays nothing now")
+	steps_to(t0 + SMITHY + 0.1)
+	eq(#played - before, 2, "R the queued sound played, one step late at most")
+	eq(J.play_station_sound(p), false, "R a further start adds nothing")
+	steps_to(t0 + 10 * SMITHY)
+	eq(#played - before, 3, "R three sounds for four starts")
+	for index = before + 2, #played do
+		check(played[index].t - played[index - 1].t >= SMITHY - 1e-6,
+			"R no sound on top of another (" .. (played[index].t - played[index - 1].t) .. " s apart)")
+	end
+	-- An expired entry is dropped when a start finds it; a new one plays at once.
+	steps_to(now + 5)
+	eq(J.play_station_sound(p), "played", "R after the end a start plays at once")
 end
 
 ------------------------------------------------------------------------------
