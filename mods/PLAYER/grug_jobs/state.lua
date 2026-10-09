@@ -168,11 +168,16 @@ local award_callbacks = {}
 
 -- Every finished craft passes award_progress, so its sound plays there
 -- (Round 34): station operations by kind, cooking, alchemy and the two smiths
--- by profession, everything else the plain craft.
+-- by profession, everything else the plain craft. A recipe made at a station
+-- with a sound has none at the end: the station played it at the start
+-- (Round 45 PT8, station_sounds.lua); enchants and upgrades keep theirs.
 local CRAFT_SOUNDS = {enchant = "enchant", upgrade = "upgrade", cooking = "craft_cooking",
 	alchemist = "craft_alchemy", weaponsmith = "craft_smithy", armorsmith = "craft_smithy"}
 local function craft_sound(recipe)
-	return CRAFT_SOUNDS[recipe.operation or ""] or CRAFT_SOUNDS[recipe.profession or ""] or "craft"
+	if recipe.operation then return CRAFT_SOUNDS[recipe.operation] or "craft" end
+	local station_sounds = grug_jobs.STATION_SOUNDS
+	if recipe.station and station_sounds and station_sounds[recipe.station] then return nil end
+	return CRAFT_SOUNDS[recipe.profession or ""] or "craft"
 end
 
 -- A product taken out of a furnace (workspaces.lua, which finishes without
@@ -205,7 +210,8 @@ end
 function grug_jobs.award_progress(player, recipe, crafts, no_xp)
 	if type(recipe) ~= "table" then return false end
 	crafts = crafts or 1
-	grug_sounds.play(craft_sound(recipe), player)
+	local sound = craft_sound(recipe)
+	if sound then grug_sounds.play(sound, player) end
 	if not recipe.progress then return false end
 	local advanced, level, gained = false, nil, 0
 	if not no_xp then

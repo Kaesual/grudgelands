@@ -464,6 +464,12 @@ local ops_join = #callbacks.join + 1
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/operation_jobs.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/operation_box.lua")
 local J = grug_jobs
+-- Round 45 PT8: the job start hook (the station sound plays from it).
+local job_starts = {}
+J.register_on_job_start(function(player, job, station_pos)
+	job_starts[#job_starts + 1] = {name = player:get_player_name(), kind = job.kind,
+		pos = station_pos}
+end)
 
 -- The enchant and upgrade registrations, as grug_professions loads them.
 loading = "station_operations"
@@ -1029,6 +1035,10 @@ do
 	put(hand, TARGET, 1, crafted("grug_gear:sword_steel"):to_string())
 	stock_enchant(hand, STR_T3)
 	check(J.start_operation(hand, STR_T3.id), "E the job starts")
+	local start = job_starts[#job_starts]
+	check(start and start.name == "hand" and start.kind == "enchant" and start.pos and
+		start.pos.x == 2 and start.pos.y == 10 and start.pos.z == 0,
+		"E the start hook gets the forge the enchant starts at (PT8)")
 	J.unlearn(hand, "weaponsmith")
 	learn(hand, "weaponsmith", 3)
 	pass(5)
