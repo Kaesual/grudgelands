@@ -112,3 +112,25 @@ modification is "pixel-group mask derived by the generator".
 | `grug_gear_spellbook_ench.png` | the Round 11 book | CC BY-SA 4.0 |
 | `grug_gear_item_<slot>_{metal,leather}_<grade>_ench.png` (48) | the R10 metal and leather icons | as their sources: CC BY-SA 4.0 bases, CC BY 4.0 trims |
 | `grug_gear_item_<slot>_cloth_<grade>_ench.png` (24) | the R10 cloth icons | CC BY-SA 3.0 |
+
+## Round 45 jewellery icons — CC0 1.0
+
+Original, AI-assisted pixel art painted for Grudgelands by **GPT-6 Astra**
+on 2026-10-09: hand-placed 16×16 pixel maps and original material ramps,
+written with **Python/Pillow** and reproducible with
+[`tools/r45_a1/paint_art.py`](../../../tools/r45_a1/paint_art.py). No
+image-generation service, downloads or third-party source pixels. The project
+dedicates any rights it holds in these files to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). The user picked one of
+three proposals per identity (the record of the choice is in
+[`tools/r45_a1/README.md`](../../../tools/r45_a1/README.md)); `{1..6}` means
+every tier from 1 through 6.
+
+| Files | Author | Source / tool disclosure | Licence |
+|---|---|---|---|
+| `grug_gear_trinket_manawell_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; water-drop amulet, proposal A; `paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_trinket_last_light_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; sun locket, proposal A; `paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_trinket_battlebeat_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; beat-marked ring, proposal B; `paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_trinket_apothecary_loop_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; leaf ring, proposal B; `paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_trinket_mercy_seal_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; wing medallion, proposal A; `paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_trinket_reclaimers_mark_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; return-curl medallion, proposal C; `paint_art.py` (Python/Pillow) | CC0-1.0 |
