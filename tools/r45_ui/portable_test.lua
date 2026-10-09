@@ -544,7 +544,8 @@ local sent = p.sent
 local fs = open(p)
 eq(p.sent, sent + 1, "P opening the tab sends the page once")
 formspec_ok(fs, "P page")
-has(fs, "formspec_version[6]size[13.500,13.673]", "P the inventory window's frame")
+has(fs, ("formspec_version[6]size[%.3f,%.3f]"):format(grug_inventory.UI.frame_w,
+	grug_inventory.UI.frame_h), "P the inventory window's frame")
 has(fs, "grug_inv_scroll_short", "P the short inventory view")
 eq(count(fs, "list[current_player;main;"), 2, "P main only in the view")
 for index, label in ipairs({"Basic", "Cooking", "Primary 1", "Primary 2", "Alchemy"}) do

@@ -713,10 +713,10 @@ local context = {page = "grug_inventory:character", grug_character_tab = "stats"
 contexts.smith = context
 local stats_fs = character:get(smith, context)
 formspec_ok(stats_fs, "character stats")
-has(stats_fs, "label[0.40,3.10;Damage reduction: 12.3%]", "Damage reduction label")
+has(stats_fs, "label[3.95,3.10;Damage reduction: 12.3%]", "Damage reduction label")
 lacks(stats_fs, "Own-level", "old label gone")
 has(stats_fs, fs_escape("Armor reduction against an enemy of your level."), "tooltip text")
-has(stats_fs, "tooltip[0.40,2.85;5.0,0.50;", "tooltip covers the label line")
+has(stats_fs, "tooltip[3.95,2.85;4.00,0.50;", "tooltip covers the label line")
 -- Round 45: the overview moved to the Crafting tab (tools/r45_ui).
 lacks(stats_fs, "grug_character_professions", "no Professions mode button")
 lacks(stats_fs, "Weaponsmith — Tier", "no overview on the Character page")
@@ -741,7 +741,8 @@ grug_inventory.has_quiver = function(p) return p:get_player_name() ~= "smith" en
 -- Character page is real coordinates since Round 44), written out here
 -- independently of pages.lua: calculateImgsize (padding 0.05 on each side;
 -- getImgsize with the padded screen, its integer min_dim / 15; capped by
--- fitx / fity for the form's size[13.500,13.673], so fit = padded size /
+-- fitx / fity for the form's size[13.500,<frame height>] (ui.lua's frame,
+-- 14.75 since the Round 45 playtest), so fit = padded size /
 -- that size; truncated to v2s32), a position trunc(pos * imgsize)
 -- (getRealCoordinateBasePos :267-271), an image or item_image size
 -- trunc(size * imgsize) (getRealCoordinateGeometry :273-276), a list slot
@@ -759,7 +760,7 @@ end
 local function real_layout(w, h, gui_scaling)
 	local pw, ph = w * 0.9, h * 0.9
 	local img = math.floor(math.min(get_imgsize(pw, ph, gui_scaling, 1),
-		pw / 13.5, ph / 13.673))
+		pw / 13.5, ph / grug_inventory.UI.frame_h))
 	return {img = img, font = 16 * gui_scaling}
 end
 local function rect_of(layout, x, y, w, h)

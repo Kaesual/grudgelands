@@ -5,16 +5,21 @@
 --   1. the tab order: one table (grug_inventory.TAB_ORDER) whatever the
 --      registration order, pages missing from it after it, the Inventory
 --      page as the homepage, no ordering hook left in the page mods;
---   2. the frame: formspec_version 6 with a real-coordinate size equal to the
---      old legacy size[10.4,11.1], legacy content after real_coordinates[false],
---      a page's own header (the Map tab) left alone;
+--   2. the frame: formspec_version 6 with a real-coordinate size as wide as
+--      the old legacy size[10.4,11.1] and as high as that or the boxed
+--      layout needs (Round 45 playtest: the money row), below 15 units,
+--      legacy content after real_coordinates[false], a page's own header
+--      (the Map tab) left alone;
 --   3. the views, full and short, with 0-4 bags of mixed sizes: main[9..]
 --      first, then each equipped bag's list in slot order as one 8-wide grid
---      without gaps, the hotbar outside the scroll area (the short view's at
---      one place, the full view's in its box), slot counts, the scrollbar only
---      when the grid is taller than the view with a thumb shorter than its
---      track, no listring on the Inventory page; the Inventory page's boxed
---      layout (Round 45 playtest: a box and label per area, edges, Sort);
+--      without gaps, the hotbar outside the scroll area and at one place in
+--      both views, both views boxed (an Inventory and a Hotbar box, labelled
+--      inside), slot counts, the scrollbar only when the grid is taller than
+--      the view with a thumb shorter than its track, no listring on the
+--      Inventory page; the Inventory page's boxed layout (Round 45 playtest:
+--      a box and label per area, edges; the money row between the grid and
+--      the hotbar: the balance, Withdraw, the deposit, Sort, as tall as a
+--      slot, on the slot columns);
 --      the view's scrollbaroptions reset to the engine defaults after its
 --      scrollbar, so page scrollbars do not inherit them;
 --   4. the scrollbar echo: CHG and VAL values kept per view, echoed and
@@ -24,8 +29,9 @@
 --      wrapper; it sorts main[9..]), ignores clicks for 2.5 s after one it
 --      ran, never resends; the potion belt drawn from IH's constants;
 --   6. refresh: a bag change re-renders a page with a view, a stat change
---      only the Character page; the deposit slot on the Inventory page, not
---      on the Character page;
+--      only the Character page, a balance change only the Inventory page;
+--      the deposit slot and Withdraw on the Inventory page, not on the
+--      Character page;
 --   7. every built formspec passes a bracket sanity check; the Inventory
 --      page's bytes with four 32-slot bags are printed (a comparison, not a
 --      target).
@@ -180,6 +186,8 @@ grug_money = {
 	end,
 	format = function(value) return tostring(value) .. "c" end,
 	get = function() return 12345 end,
+	withdraws = 0,
+	show_withdraw = function() grug_money.withdraws = grug_money.withdraws + 1 end,
 }
 grug_classes = {
 	get_class_def = function() return {resource = "mana", name = "Mage"} end,
@@ -327,11 +335,19 @@ end
 
 local legacy_w = 3 / 4 + 5 / 4 * (10.4 - 1) + 1
 local legacy_h = 3 / 4 + 15 / 13 * (11.1 - 1) + 1 + 15 / 13 * 0.35 * 2 / 3
-eq(form:sub(1, #"formspec_version[6]size[13.500,13.673]"),
-	"formspec_version[6]size[13.500,13.673]", "fv6 frame, real-coordinate size first")
-check(math.abs(grug_inventory.UI.frame_w - legacy_w) < 1e-9 and
-	math.abs(grug_inventory.UI.frame_h - legacy_h) < 1e-9,
-	"the frame is the old legacy 10.4 x 11.1 window")
+local L = grug_inventory.LAYOUT
+local frame_h = grug_inventory.UI.frame_h
+local header = ("formspec_version[6]size[%.3f,%.3f]"):format(legacy_w, frame_h)
+eq(form:sub(1, #header), header, "fv6 frame, real-coordinate size first")
+check(math.abs(grug_inventory.UI.frame_w - legacy_w) < 1e-9,
+	"the frame is as wide as the old legacy 10.4 x 11.1 window")
+-- Round 45 playtest: as high as that or the boxed layout with its margins
+-- needs, whichever is more (eight rows and the money row: 14.75). Below 15
+-- units the engine keeps its preferred slot size wherever it held before.
+check(frame_h >= legacy_h - 1e-9, "the frame is at least the legacy height")
+check(math.abs(frame_h - math.max(legacy_h, L.hotbar_box_y + L.slot_box_h + L.top_y)) < 1e-9,
+	"the frame fits the boxed layout with equal margins")
+check(frame_h < 15, "the frame stays below 15 units high")
 context.page = "grug_inventory:help"
 local help = sfinv.get_formspec(plain, context)
 local rc_false = help:find("real_coordinates[false]", 1, true)
@@ -446,13 +462,57 @@ for _, case in ipairs(cases) do
 		check(tonumber(area_y) + tonumber(area_h) <= hotbars[mode],
 			label .. ": the hotbar is below the scroll area")
 	end
-	-- The short view's hotbar at one place in every tab; the full view's in
-	-- the Inventory tab's boxed layout (Round 45 playtest).
-	eq(hotbars.short, grug_inventory.VIEW_GEOMETRY.hotbar_y, case.label ..
-		": the short view's hotbar at its place")
-	check(math.abs(hotbars.full - (grug_inventory.FULL_LAYOUT.hotbar_box_y +
-		grug_inventory.FULL_LAYOUT.label_h)) < 0.001,
+	-- The hotbar at one place in every tab, in its box (Round 45 playtest).
+	check(math.abs(hotbars.full - (L.hotbar_box_y + L.label_h)) < 0.001,
 		case.label .. ": the full view's hotbar in its box")
+	eq(hotbars.short, hotbars.full, case.label .. ": the short view's hotbar at the same place")
+	check(math.abs(hotbars.short - grug_inventory.VIEW_GEOMETRY.hotbar_y) < 0.001,
+		case.label .. ": VIEW_GEOMETRY names it")
+end
+-- Both views boxed: their Inventory box (labelled inside, top left above the
+-- grid) and the same Hotbar box; the short one's right above the Hotbar box,
+-- its top the page content's limit (VIEW_GEOMETRY.top).
+local function view_boxes(fs)
+	local out = {}
+	for x, y, w, h, color, lx, ly, text in fs:gmatch(
+			"box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^%]]+)%]" ..
+			"label%[([%d.]+),([%d.]+);([^%]]+)%]") do
+		out[text] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
+			color = color, lx = tonumber(lx), ly = tonumber(ly)}
+	end
+	return out
+end
+do
+	local four_bags = make_player("vb", lists_with_bags({32, 32, 32, 32}))
+	local full_view = grug_inventory.inventory_view(four_bags, "full", {})
+	local short_view = grug_inventory.inventory_view(four_bags, "short", {})
+	local full, short = view_boxes(full_view), view_boxes(short_view)
+	for _, pair in ipairs({{"full", full, full_view}, {"short", short, short_view}}) do
+		local mode, boxes, view = pair[1], pair[2], pair[3]
+		local inv, hot = boxes.Inventory, boxes.Hotbar
+		if check(inv and hot, mode .. " view: an Inventory and a Hotbar box") then
+			eq(inv.color, grug_inventory.BOX_COLOR, mode .. " view: the Inventory box colour")
+			eq(hot.color, "#8a682f44", mode .. " view: the Hotbar box's gold")
+			local gx, gy = view:match("scroll_container%[([%d.]+),([%d.]+);")
+			check(math.abs(inv.lx - tonumber(gx)) < 0.002 and inv.ly > inv.y and
+				inv.ly < tonumber(gy), mode .. " view: the label inside, top left above the grid")
+			local sb_x, sb_w = view:match("scrollbar%[([%d.]+),[%d.]+;([%d.]+),")
+			check(tonumber(sb_x) + tonumber(sb_w) < inv.x + inv.w,
+				mode .. " view: the scrollbar inside the Inventory box")
+			check(math.abs(inv.x - hot.x) < 0.002 and math.abs(inv.w - hot.w) < 0.002,
+				mode .. " view: the boxes on one left edge, equally wide")
+			check(inv.y + inv.h < hot.y, mode .. " view: the Inventory box above the Hotbar box")
+		end
+	end
+	if full.Hotbar and short.Hotbar and short.Inventory then
+		check(full.Hotbar.x == short.Hotbar.x and full.Hotbar.y == short.Hotbar.y,
+			"the Hotbar box at the same place in both views")
+		check(math.abs(short.Inventory.y + short.Inventory.h + L.gap - short.Hotbar.y) < 0.002,
+			"the short Inventory box right above the Hotbar box")
+		check(math.abs(short.Inventory.y - grug_inventory.VIEW_GEOMETRY.top) < 0.002,
+			"VIEW_GEOMETRY.top is the short Inventory box's top")
+	end
+	lacks(short_view, "label[0.3", "no Hotbar label left of the short view any more")
 end
 -- The short view is the hotbar + two rows; the full view starts below the
 -- Inventory tab's top row and its rows fit the window.
@@ -462,6 +522,8 @@ local _, short_y, _, short_h = short_view:match(
 eq(tonumber(short_h), 2.25, "short view: two rows high")
 check(tonumber(short_y) > 0.375 + 7 * 15 / 13, "short view below legacy content (y 7.0)")
 check(hotbars.full + 1 <= grug_inventory.UI.frame_h, "the hotbar fits the window")
+check(grug_inventory.VIEW_GEOMETRY.top > 0.375 + 7 * 15 / 13,
+	"the short view's box below legacy content (y 7.0)")
 
 --
 -- The Inventory page
@@ -491,16 +553,13 @@ print(("bytes: Inventory page with four 32-slot bags %d"):format(#inventory))
 
 -- The boxed layout (Round 45 playtest): one box per area with its label
 -- inside, top left above the slots; Bags, Inventory and Hotbar on one left
--- edge; Inventory and Hotbar end where the Potion belt ends; Coins right of
--- it, Sort under Coins at the Inventory box's top; the group centred.
+-- edge; Bags and Potion belt share the width, ending where Inventory and
+-- Hotbar end; the group centred. Between the Inventory and the Hotbar box
+-- the money row: "Money" over the balance, Withdraw, the deposit slot and
+-- Sort, as tall as a slot, on the slot columns, Sort ending with the
+-- hotbar's last slot. No Coins box.
 local function num(value) return tonumber(value) end
-local boxes = {}
-for x, y, w, h, color, lx, ly, text in inventory:gmatch(
-		"box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^%]]+)%]" ..
-		"label%[([%d.]+),([%d.]+);([^%]]+)%]") do
-	boxes[text] = {x = num(x), y = num(y), w = num(w), h = num(h), color = color,
-		lx = num(lx), ly = num(ly)}
-end
+local boxes = view_boxes(inventory)
 local function close(a, b) return a and b and math.abs(a - b) < 0.002 end
 local function slot_at(pattern)
 	local x, y = inventory:match(pattern)
@@ -511,11 +570,11 @@ local slot_y = {}
 slot_x.Bags, slot_y.Bags = slot_at("list%[current_player;grug_bag1;([%d.]+),([%d.]+);1,1;%]")
 slot_x["Potion belt"], slot_y["Potion belt"] = slot_at(
 	"list%[current_player;" .. grug_inventory.POTION_BELT .. ";([%d.]+),([%d.]+);")
-slot_x.Coins, slot_y.Coins = slot_at("list%[detached:[^;]+;deposit;([%d.]+),([%d.]+);")
 slot_x.Inventory, slot_y.Inventory = slot_at("scroll_container%[([%d.]+),([%d.]+);")
 slot_x.Hotbar, slot_y.Hotbar = slot_at("list%[current_player;main;([%d.]+),([%d.]+);8,1;%]")
 local frame = grug_inventory.UI
-for _, name in ipairs({"Bags", "Potion belt", "Coins", "Inventory", "Hotbar"}) do
+check(boxes.Coins == nil, "no Coins box")
+for _, name in ipairs({"Bags", "Potion belt", "Inventory", "Hotbar"}) do
 	local box = boxes[name]
 	check(box ~= nil, name .. ": its own box with its label")
 	if box then
@@ -528,7 +587,7 @@ for _, name in ipairs({"Bags", "Potion belt", "Coins", "Inventory", "Hotbar"}) d
 			box.y + box.h <= frame.frame_h, name .. ": inside the window")
 	end
 end
-if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] and boxes.Coins then
+if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] then
 	check(close(slot_x.Bags, slot_x.Inventory) and close(slot_x.Bags, slot_x.Hotbar),
 		"Bags, Inventory and Hotbar on one left edge")
 	check(close(boxes.Bags.x, boxes.Inventory.x) and close(boxes.Bags.x, boxes.Hotbar.x),
@@ -536,27 +595,56 @@ if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] and 
 	local belt_right = boxes["Potion belt"].x + boxes["Potion belt"].w
 	check(close(boxes.Inventory.x + boxes.Inventory.w, belt_right) and
 		close(boxes.Hotbar.x + boxes.Hotbar.w, belt_right),
-		"Inventory and Hotbar end where the Potion belt ends")
-	local sb_x, sb_w = inventory:match("scrollbar%[([%d.]+),[%d.]+;([%d.]+),")
-	check(num(sb_x) and num(sb_x) + num(sb_w) < belt_right, "the scrollbar inside the Inventory box")
-	check(boxes.Coins.x > belt_right and close(boxes.Coins.y, boxes.Bags.y),
-		"Coins right of the top row")
-	local sort_x, sort_y, sort_w = inventory:match(
-		"button%[([%d.]+),([%d.]+);([%d.]+),[%d.]+;grug_inv_sort;Sort%]")
-	check(close(num(sort_x), boxes.Coins.x) and close(num(sort_y), boxes.Inventory.y),
-		"Sort under Coins at the Inventory box's top")
-	local right = boxes.Coins.x + boxes.Coins.w
-	check(close(boxes.Bags.x, frame.frame_w - right), "the group centred")
+		"Bags and Potion belt end where Inventory and Hotbar end")
+	check(close(boxes.Bags.w, boxes["Potion belt"].w) and
+		close(boxes.Bags.y, boxes["Potion belt"].y), "Bags and Potion belt share the width")
+	check(close(boxes.Bags.x, frame.frame_w - belt_right), "the group centred")
+	check(close(boxes.Bags.y, frame.frame_h - boxes.Hotbar.y - boxes.Hotbar.h),
+		"top and bottom margins equal")
 	check(boxes.Inventory.y > boxes.Bags.y + boxes.Bags.h and
 		boxes.Hotbar.y > boxes.Inventory.y + boxes.Inventory.h, "the boxes do not overlap")
+	-- The money row.
+	local inv_bottom, hot_top = boxes.Inventory.y + boxes.Inventory.h, boxes.Hotbar.y
+	local ly, money = inventory:match("label%[[%d.]+,([%d.]+);Money\n([^%]]*)%]")
+	local lx = num(inventory:match("label%[([%d.]+),[%d.]+;Money\n"))
+	eq(money, "12345c", "the balance under Money")
+	local wx, wy, ww, wh = inventory:match(
+		"button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_money_withdraw;Withdraw%]")
+	local dx, dy = slot_at("list%[detached:[^;]+;deposit;([%d.]+),([%d.]+);1,1;%]")
+	local sx, sy, sw, sh = inventory:match(
+		"button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_inv_sort;Sort%]")
+	wx, wy, ww, wh, sx, sy, sw, sh = num(wx), num(wy), num(ww), num(wh), num(sx),
+		num(sy), num(sw), num(sh)
+	if check(lx and wx and dx and sx, "the money row: balance, Withdraw, deposit, Sort") then
+		check(close(wh, 1) and close(sh, 1), "Withdraw and Sort as tall as the slot")
+		check(close(wy, dy) and close(sy, dy), "one row: Withdraw, deposit and Sort level")
+		check(dy > inv_bottom and dy + 1 < hot_top, "the row between Inventory and Hotbar")
+		check(close(dy - inv_bottom, hot_top - dy - 1), "the row centred in its gap")
+		check(close(num(ly), dy + 0.25), "Money and the balance centred on the slot's halves")
+		check(close(lx, slot_x.Hotbar) and lx < wx and wx + ww < dx and dx + 1 < sx,
+			"left to right: balance, Withdraw, deposit, Sort")
+		check(close(sx + sw, slot_x.Hotbar + 7 * 1.25 + 1),
+			"Sort ends with the hotbar's last slot")
+		for _, x in ipairs({wx, dx, sx}) do
+			check(close((x - slot_x.Hotbar) / 1.25, math.floor((x - slot_x.Hotbar) / 1.25 + 0.5)),
+				"the row on the slot columns")
+		end
+		has(inventory, ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
+			:format(dx, dy), "the deposit slot's ghost as before")
+	end
 end
+-- Withdraw on the Inventory page opens grug_money's dialog.
+local withdraws = grug_money.withdraws
+eq(receive(four, "", {grug_money_withdraw = "Withdraw"}), true, "Withdraw is handled")
+eq(grug_money.withdraws, withdraws + 1, "Withdraw opens the dialog")
 
 four_context.page = "grug_inventory:character"
 four_context.grug_character_tab = "stats" -- the balance's mode (Round 44 lane CH)
 local character = sfinv.get_formspec(four, four_context)
 formspec_ok(character, "Character page")
 lacks(character, "deposit;", "no deposit on the Character page")
-has(character, "grug_money_withdraw;Withdraw]", "Withdraw stays beside the balance")
+lacks(character, "grug_money_withdraw", "no Withdraw on the Character page")
+lacks(character, "Money", "no balance on the Character page")
 eq(four_context.grug_inv_view, "short", "the Character page shows the short view")
 print(("bytes: Character page (Stats) with four 32-slot bags %d"):format(#character))
 four_context.page = "grug_inventory:inventory"
@@ -655,6 +743,15 @@ sfinv.set_player_inventory_formspec(refresher, rctx)
 before = refresher.sent
 stat_hooks.status(refresher)
 eq(refresher.sent, before + 1, "a stat change re-renders the Character page")
+-- A balance change re-sends the Inventory page (the money row), nothing else.
+before = refresher.sent
+stat_hooks.money(refresher)
+eq(refresher.sent, before, "a balance change leaves the Character page alone")
+rctx.page = "grug_inventory:inventory"
+sfinv.set_player_inventory_formspec(refresher, rctx)
+before = refresher.sent
+stat_hooks.money(refresher)
+eq(refresher.sent, before + 1, "a balance change re-sends the Inventory page")
 rctx.page = "grug_map:atlas"
 sfinv.set_player_inventory_formspec(refresher, rctx)
 before = refresher.sent

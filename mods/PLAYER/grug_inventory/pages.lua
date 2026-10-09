@@ -50,16 +50,16 @@ end
 
 --
 -- Character page (Round 44, spec ruling 6 and §3.3, wireframe v1), in real
--- coordinates: the mode box top left (3D with the cloak picker, Stats,
--- Effects, Achievements; the professions overview moved to the Crafting tab
--- in Round 45), the
--- gear box top right (eight equipment slots, the Scout's quiver, Return
--- home), and below them the frame's short inventory view. Both boxes end
--- above the view's grid.
+-- coordinates: the mode box top left (Stats with the model and the cloak
+-- picker -- one mode since the Round 45 playtest --, Effects, Achievements;
+-- the professions overview moved to the Crafting tab in Round 45), the gear
+-- box top right (eight equipment slots, the Scout's quiver, Return home), and
+-- below them the frame's short inventory view. Both boxes end a gap above
+-- the view's Inventory box.
 --
 
 local CHARACTER_PAGE = "grug_inventory:character"
-local BOX_BOTTOM = 9.2
+local BOX_BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
 local MODE_BOX = {x = 0.2, y = 0.2, w = 7.9, h = BOX_BOTTOM - 0.2}
 local GEAR_BOX = {x = 8.3, y = 0.2, w = 5.0, h = BOX_BOTTOM - 0.2}
 local BOX_COLOR = grug_inventory.BOX_COLOR
@@ -67,10 +67,9 @@ local BOX_COLOR = grug_inventory.BOX_COLOR
 -- Achievements body is drawn into it by its mod.
 local MODE_AREA = {x = 0.4, y = 1.25, w = 7.5, h = BOX_BOTTOM - 0.15 - 1.25}
 local MODES = {
-	{id = "3d", label = "3D", x = 0.35, w = 0.8},
-	{id = "stats", label = "Stats", x = 1.25, w = 1.2},
-	{id = "effects", label = "Effects", x = 2.55, w = 1.4},
-	{id = "achievements", label = "Achievements", x = 4.05, w = 2.1},
+	{id = "stats", label = "Stats", x = 0.35, w = 1.2},
+	{id = "effects", label = "Effects", x = 1.65, w = 1.4},
+	{id = "achievements", label = "Achievements", x = 3.15, w = 2.1},
 }
 local MODE_Y, MODE_H = 0.35, 0.7
 
@@ -108,7 +107,7 @@ local QUIVER_COVER_OVER = 0.02
 -- line about 1.12 em high.
 local COUNT_W_PX, COUNT_H_PX = 30, 20
 -- Return home at the foot of the gear box, in every mode.
-local HOME_LABEL_Y, HOME_BUTTON_Y = 7.6, 8.0
+local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.6, BOX_BOTTOM - 1.2
 
 -- The cover's size in slot units for this player's window, so the count is
 -- hidden at any GUI scale and window size. The slot is the engine's imgsize
@@ -118,12 +117,14 @@ local HOME_LABEL_Y, HOME_BUTTON_Y = 7.6, 8.0
 -- real-coordinate size, Round 44) fits the padded window. Slot and count both
 -- grow with gui_scaling, so the ratio changes mainly where that cap holds (a
 -- small window, a large scale). Without window information (a page built
--- right at join) the cover takes most of the cell.
+-- right at join) the cover takes the cell's full width and most of its
+-- height: in a small web window at gui_scaling 1.5 the count "100" fills all
+-- but two pixels of the slot's width.
 local function quiver_cover_size(player)
 	local info = core.get_player_window_information(player:get_player_name())
 	if not (info and info.size and info.max_formspec_size and
 			info.real_gui_scaling) then
-		return 0.9, 0.65
+		return 1, 0.7
 	end
 	local width, height = info.size.x * 0.9, info.size.y * 0.9
 	local slot = math.min(0.9 * info.size.x / info.max_formspec_size.x,
@@ -331,28 +332,21 @@ local function gear_content(player, context)
 	return table.concat(fs)
 end
 
--- 3D: the player model and, beside it, the cloak picker (Round 33, §2.10):
--- grug_achievements depends on this mod, so it is read at build time.
-local function model_content(player)
-	local mesh, textures = preview_model(player)
-	local fs = {
-		("model[0.4,1.35;3.3,7.6;grug_preview;%s;%s;0,160]"):format(
-			esc(mesh), esc_texture_list(textures)),
-	}
-	local achievements = rawget(_G, "grug_achievements")
-	if achievements then
-		fs[#fs + 1] = "label[3.95,1.65;Cloak]"
-		fs[#fs + 1] = achievements.cloak_dropdown(player, 3.95, 2.0, 3.8)
-		fs[#fs + 1] = "label[3.95,3.35;" ..
-			esc("Cloaks unlock through\nachievements.") .. "]"
-	end
-	return table.concat(fs)
-end
-
--- Stats: the pools, armor, crit and dodge, the balance with Withdraw, the
--- Claim Stone status.
-local STAT_X, STAT_Y, STAT_STEP = 0.4, 1.6, 0.5
+-- Stats (3D and Stats in one mode since the Round 45 playtest): the player
+-- model on the left; right of it the pools, armor, crit and dodge, the Claim
+-- Stone status, and at the foot, bottom-aligned with the model, the cloak
+-- picker (Round 33, §2.10). The balance and Withdraw are on the Inventory
+-- tab. The column is about 4 units wide: lines wrap at STAT_CHARS (0.15
+-- units a character, a small web window's font against its slots).
+local MODEL = {x = 0.4, y = 1.35, w = 3.3, h = BOX_BOTTOM - 0.25 - 1.35}
+local STAT_X, STAT_Y, STAT_STEP = 3.95, 1.6, 0.5
+local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.15 - STAT_X
+local STAT_CHARS = math.floor(STAT_W / 0.15)
+-- The cloak block from its top: the label, the dropdown (one unit high),
+-- two lines of hint ending at the model's bottom.
+local CLOAK_Y = MODEL.y + MODEL.h - 2.1
 local function stats_content(player)
+	local mesh, textures = preview_model(player)
 	local class = grug_classes.get_class_def(player)
 	local hp = grug_classes.get_pool_breakdown(player, "hp")
 	local mana = class and class.resource == "mana"
@@ -372,30 +366,40 @@ local function stats_content(player)
 		("Damage reduction: %.1f%%"):format(armor_reduction),
 		("Crit: %.1f%%"):format(crit),
 		("Dodge: %.1f%%"):format(dodge),
-		"Money: " .. grug_money.format(grug_money.get(player)),
 	}
-	local fs = {}
+	local fs = {
+		("model[%.2f,%.2f;%.2f,%.2f;grug_preview;%s;%s;0,160]"):format(MODEL.x,
+			MODEL.y, MODEL.w, MODEL.h, esc(mesh), esc_texture_list(textures)),
+	}
 	for index, line in ipairs(lines) do
-		fs[index] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
 			STAT_Y + (index - 1) * STAT_STEP, esc(line))
 	end
 	-- Round 28 ruling 21: the tooltip covers exactly the Damage reduction
 	-- line (a real-coordinate label is centred on its y).
-	fs[#fs + 1] = ("tooltip[%.2f,%.2f;5.0,%.2f;%s]"):format(STAT_X,
-		STAT_Y + 3 * STAT_STEP - STAT_STEP / 2, STAT_STEP,
+	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(STAT_X,
+		STAT_Y + 3 * STAT_STEP - STAT_STEP / 2, STAT_W, STAT_STEP,
 		esc(grug_inventory.wrap_text(DAMAGE_REDUCTION_TOOLTIP, 48)))
-	-- The Bag of Coins (Round 34): Withdraw beside the balance opens
-	-- grug_money's dialog and shares the money line's centre. The deposit
-	-- slot is on the Inventory tab (Round 44).
-	fs[#fs + 1] = ("button[5.6,%.2f;1.9,0.7;grug_money_withdraw;Withdraw]"):format(
-		STAT_Y + 6 * STAT_STEP - 0.35)
-	-- Claim Stone status (Round 25 ruling 14). Neither mod depends on the
-	-- other, so grug_housing is read at build time; it returns "" until the
-	-- player has received a stone and keeps the cached page current itself.
+	-- Claim Stone status (Round 25 ruling 14), wrapped to the column. Neither
+	-- mod depends on the other, so grug_housing is read at build time; it has
+	-- no status until the player has received a stone and keeps the cached
+	-- page current itself.
 	local housing = rawget(_G, "grug_housing")
-	if housing and housing.character_status_formspec then
-		fs[#fs + 1] = housing.character_status_formspec(
-			player:get_player_name(), STAT_X, STAT_Y + 7.5 * STAT_STEP)
+	local status = housing and housing.character_status and
+		housing.character_status(player:get_player_name())
+	if status then
+		local text = esc(grug_inventory.wrap_text(status.text, STAT_CHARS))
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
+			STAT_Y + (#lines + 0.5) * STAT_STEP,
+			status.color and core.colorize(status.color, text) or text)
+	end
+	-- grug_achievements depends on this mod, so it is read at build time.
+	local achievements = rawget(_G, "grug_achievements")
+	if achievements then
+		fs[#fs + 1] = ("label[%.2f,%.2f;Cloak]"):format(STAT_X, CLOAK_Y - 0.35)
+		fs[#fs + 1] = achievements.cloak_dropdown(player, STAT_X, CLOAK_Y, STAT_W)
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X, CLOAK_Y + 1.35,
+			esc("Cloaks unlock through\nachievements."))
 	end
 	return table.concat(fs)
 end
@@ -505,14 +509,12 @@ local function mode_content(player, context, selected)
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
 			mode.x, MODE_Y, mode.w, MODE_H, field, esc(mode.label))
 	end
-	if selected == "stats" then
-		fs[#fs + 1] = stats_content(player)
-	elseif selected == "effects" then
+	if selected == "effects" then
 		fs[#fs + 1] = effects_content(player, context)
 	elseif selected == "achievements" then
 		fs[#fs + 1] = achievements_content(player, context)
 	else
-		fs[#fs + 1] = model_content(player)
+		fs[#fs + 1] = stats_content(player)
 	end
 	return table.concat(fs)
 end
@@ -538,10 +540,6 @@ sfinv.register_page(CHARACTER_PAGE, {
 			if achievements.handle_tab_fields(player, context, fields) then
 				return true
 			end
-		end
-		if fields.grug_money_withdraw then
-			grug_money.show_withdraw(player)
-			return true
 		end
 		if fields.grug_character_home then
 			local home_mod = rawget(_G, "grug_home")
@@ -587,17 +585,19 @@ end)
 
 --
 -- Inventory page (Round 44, spec §3.2, wireframe v1; boxed layout Round 45
--- playtest, ui.lua FULL_LAYOUT): the four bag slots and the potion belt in
--- two boxes along the top, the Bag of Coins deposit in a box right of them
--- and Sort under it, beside the full inventory view (main[9..] and every
--- equipped bag as one scrolling grid, the hotbar below), which draws its own
--- two boxes. Real coordinates; no listring, so shift-click does nothing here
--- (one inventory has no "other side").
+-- playtest, ui.lua LAYOUT): the four bag slots and the potion belt in two
+-- boxes along the top, the full inventory view below them (main[9..] and
+-- every equipped bag as one scrolling grid, the hotbar at the bottom; the
+-- view draws its own two boxes), and between the grid and the hotbar the
+-- money row: the balance, Withdraw, the Bag of Coins deposit and Sort, on
+-- the slot columns. Real coordinates; no listring, so shift-click does
+-- nothing here (one inventory has no "other side").
 --
 
 local INVENTORY_PAGE = "grug_inventory:inventory"
 local PITCH = 1.25
-local SORT_H = 1
+-- The money row's buttons span two slot columns and are as tall as a slot.
+local ROW_BUTTON_W = PITCH + 1
 -- Sort ignores clicks for this long after one it ran (spec ruling 5): no
 -- countdown, no resend; the lists the sort changed reach the client on their
 -- own.
@@ -605,12 +605,11 @@ local SORT_COOLDOWN_US = 2500000
 
 local function inventory_content(player)
 	local deposit, deposit_list = grug_money.deposit_location(player)
-	-- The top row: Bags and Potion belt share the inventory box's width.
-	local layout = grug_inventory.FULL_LAYOUT
+	-- The top row: Bags and Potion belt share the boxes' width.
+	local layout = grug_inventory.LAYOUT
 	local half_w = (layout.box_w - layout.gap) / 2
 	local bags_box_x, belt_box_x = layout.box_x, layout.box_x + half_w + layout.gap
-	local bags_x, belt_x, coins_x = bags_box_x + layout.pad, belt_box_x + layout.pad,
-		layout.side_x + layout.pad
+	local bags_x, belt_x = bags_box_x + layout.pad, belt_box_x + layout.pad
 	local slot_y = layout.top_y + layout.label_h
 	local fs = {
 		"real_coordinates[true]",
@@ -618,8 +617,6 @@ local function inventory_content(player)
 			"Bags"),
 		grug_inventory.area_box(belt_box_x, layout.top_y, half_w, layout.slot_box_h,
 			"Potion belt"),
-		grug_inventory.area_box(layout.side_x, layout.top_y, layout.side_w,
-			layout.slot_box_h, "Coins"),
 	}
 	for i = 1, grug_inventory.BAG_COUNT do
 		fs[#fs + 1] = ("list[current_player;%s;%.3f,%.3f;1,1;]"):format(
@@ -633,17 +630,28 @@ local function inventory_content(player)
 		grug_inventory.POTION_BELT, belt_x, slot_y, belt)
 	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(belt_x, slot_y,
 		belt * PITCH - 0.25, esc("Potion belt — potions and elixirs only"))
-	-- The Bag of Coins deposit (Round 34, moved here from the Character page
-	-- in Round 44): a bag put here is credited at once, so the slot is always
-	-- empty and always shows its ghost.
+	-- The money row (Round 45 playtest; the balance and Withdraw moved here
+	-- from the Character page): "Money" over the balance in columns 1-2
+	-- (a real-coordinate label's lines are half a slot apart, centred on
+	-- their y), Withdraw in columns 3-4, the deposit slot in column 5, Sort
+	-- in columns 7-8, ending with the hotbar's last slot.
+	local row_y, x = layout.money_y, layout.x
+	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, row_y + 0.25,
+		esc("Money\n" .. grug_money.format(grug_money.get(player))))
+	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_money_withdraw;Withdraw]"):format(
+		x + 2 * PITCH, row_y, ROW_BUTTON_W)
+	-- The Bag of Coins deposit (Round 34, moved to this page in Round 44): a
+	-- bag put here is credited at once, so the slot is always empty and
+	-- always shows its ghost.
+	local deposit_x = x + 4 * PITCH
 	fs[#fs + 1] = ("list[%s;%s;%.3f,%.3f;1,1;]"):format(deposit, deposit_list,
-		coins_x, slot_y)
+		deposit_x, row_y)
 	fs[#fs + 1] = ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
-		:format(coins_x, slot_y)
-	fs[#fs + 1] = ("tooltip[%.3f,%.3f;1,1;%s]"):format(coins_x, slot_y,
+		:format(deposit_x, row_y)
+	fs[#fs + 1] = ("tooltip[%.3f,%.3f;1,1;%s]"):format(deposit_x, row_y,
 		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
-	fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.2f;grug_inv_sort;Sort]"):format(
-		layout.side_x, layout.inventory_y, layout.side_w, SORT_H)
+	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_inv_sort;Sort]"):format(
+		x + 6 * PITCH, row_y, ROW_BUTTON_W)
 	fs[#fs + 1] = ("tooltip[grug_inv_sort;%s]"):format(esc("Sort the inventory " ..
 		"and the bags. The hotbar stays as it is."))
 	return table.concat(fs)
@@ -656,6 +664,10 @@ sfinv.register_page(INVENTORY_PAGE, {
 			"full")
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
+		if fields.grug_money_withdraw then
+			grug_money.show_withdraw(player)
+			return true
+		end
 		if fields.grug_inv_sort then
 			local now = core.get_us_time()
 			if now >= (context.grug_inv_sort_ready or 0) then
@@ -693,8 +705,8 @@ function grug_inventory.refresh(player, force)
 	end
 end
 
--- Re-send a cached Character page (any mode) and nothing else: the stat and
--- money hooks below use it, and so does the quiver total (bags.lua), which
+-- Re-send a cached Character page (any mode) and nothing else: the stat
+-- hooks below use it, and so does the quiver total (bags.lua), which
 -- the gear box shows in every mode.
 function grug_inventory.refresh_character(player)
 	local context = sfinv.contexts[player:get_player_name()]
@@ -728,8 +740,12 @@ end)
 -- the equipment-change refresh consumer above after the model and sfinv
 -- context exist.
 
--- Keep the cached Character form current even while inventory is closed, so
--- opening it shows the latest balance. Other selected pages need no rebuild.
+-- Keep the cached Inventory form current even while the window is closed, so
+-- opening it shows the latest balance (the money row). Other selected pages
+-- need no rebuild.
 grug_money.register_on_change(function(player)
-	grug_inventory.refresh_character(player)
+	local context = sfinv.contexts[player:get_player_name()]
+	if context and context.page == INVENTORY_PAGE then
+		sfinv.set_player_inventory_formspec(player, context)
+	end
 end)
