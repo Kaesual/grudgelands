@@ -436,23 +436,28 @@ local placing = false
 -- Set below, next to the rings it re-derives (`idle_ring`).
 local refresh_walk
 
--- Whether a trainer socket of `profession` holds a trainer (grug_jobs, which
--- loads after this mod, owns the answer: Round 45 retires the Cooking
--- trainers, spec ruling 28). Without grug_jobs every trainer stays one.
-local function trainer_teaches(profession)
+-- The title of the NPC on a trainer socket whose profession no trainer
+-- teaches, or nil when the socket holds a trainer (grug_jobs, which loads
+-- after this mod, owns both: Round 45 retires the Cooking trainers, spec
+-- ruling 28). Without grug_jobs every trainer stays one.
+local function mender_title(profession)
 	local jobs = rawget(_G, "grug_jobs")
-	return not (jobs and jobs.trainer_teaches) or jobs.trainer_teaches(profession) == true
+	if not (jobs and jobs.trainer_teaches) or jobs.trainer_teaches(profession) then
+		return nil
+	end
+	return jobs.MENDER_TITLE
 end
 
--- A trainer socket whose profession no trainer teaches holds an ORDINARY
--- RESIDENT: the settlement's villager name, no profession (so no trainer
--- dialog, no repair), standing at its socket. The socket and the world data
--- stay as they are; `install` applies this at placement and the claim at
--- every activation, so an NPC placed as a trainer before turns ordinary.
-local function install_former_trainer(entity, row)
-	entity._grug_profession = nil
-	entity._grug_npc_name = grug_mobs.settlement_npc_name and
-		grug_mobs.settlement_npc_name(row.key, row.kind, row.race_id, "villager") or nil
+-- Such a socket holds a MENDER (the user, 2026-10-09): it teaches nothing
+-- and shows no trainer dialog or map icon, but its click opens the repair
+-- form (grug_jobs.open_trainer). It keeps the socket's profession, so the
+-- repair provider and the faction rule apply as to a trainer, and wears the
+-- role title. The socket and the world data stay as they are; `install`
+-- applies this at placement and the claim at every activation, so an NPC
+-- placed as a trainer before turns into the mender.
+local function install_mender(entity, profession, title)
+	entity._grug_profession = profession
+	entity._grug_npc_name = title
 	entity._grug_walker = false
 end
 
@@ -473,9 +478,10 @@ function grug_mobs.start_npc_claim(entity)
 	if type(key) ~= "string" or type(socket_id) ~= "string" then
 		return true -- not a settlement NPC at all (an outpost guard)
 	end
-	if entity._grug_socket_role == "trainer" and entity._grug_profession ~= nil and
-			not trainer_teaches(entity._grug_profession) and by_key[key] then
-		install_former_trainer(entity, by_key[key])
+	local title = entity._grug_socket_role == "trainer" and
+		mender_title(entity._grug_profession)
+	if title and entity._grug_npc_name ~= title then
+		install_mender(entity, entity._grug_profession, title)
 		if grug_mobs.start_npc_retag then grug_mobs.start_npc_retag(entity) end
 	end
 	local slots = claims_of(key)
@@ -1465,10 +1471,11 @@ local function install(entity, row, slot)
 		entity._grug_npc_name = "Housing Steward"
 		entity._grug_walker = false
 	elseif slot.role == "trainer" then
-		if trainer_teaches(slot.profession) then
-			grug_mobs.install_profession_trainer(entity, slot)
+		local title = mender_title(slot.profession)
+		if title then
+			install_mender(entity, slot.profession, title)
 		else
-			install_former_trainer(entity, row)
+			grug_mobs.install_profession_trainer(entity, slot)
 		end
 	end
 	if slot.garrison then

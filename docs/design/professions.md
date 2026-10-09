@@ -51,10 +51,13 @@ personal stations, access, digging) is
   `grug_jobs.PROFESSIONS`), so code asks `grug_jobs.has(player, "alchemist")`.
 - **Seven trainers in every capital:** the six primaries plus Alchemy. The
   Cooking trainer sockets the world data still gives every start and every
-  capital (Round 45) hold **ordinary residents**: the settlement's villager
-  name, no trainer dialog, no map icon, no repair. A runtime mapping in the
-  trainer-role readers decides it (`grug_jobs.trainer_teaches`, applied at
-  placement and at every activation), so no world data changes.
+  capital (Round 45) hold a **Mender** (placeholder title,
+  `grug_jobs.MENDER_TITLE`): it teaches nothing and has no trainer dialog and
+  no map or minimap icon, but its click opens the repair form with the
+  trainers' prices, faction and distance rules (the user, 2026-10-09:
+  start towns keep a repair point). A runtime mapping in the trainer-role
+  readers decides it (`grug_jobs.trainer_teaches`, applied at placement and
+  at every activation), so no world data changes.
   Capital trainers and their public stations occupy themed outer-district
   premises, reusing suitable shops; vendors remain separate NPCs. Weaponsmith
   and Armorsmith share one forge house with separate trainers and one Forge.

@@ -65,7 +65,7 @@ core.register_on_mods_loaded(function()
 			sockets[id] = socket.pos
 			local label, texture, kind
 			-- A trainer socket of a profession no trainer teaches (Round 45:
-			-- Cooking) holds an ordinary resident: no marker.
+			-- Cooking) holds a mender: no marker (no repairer has an icon).
 			if socket.role == "trainer" and grug_jobs.trainer_teaches(socket.profession) then
 				local profession = assert(grug_jobs.PROFESSIONS[socket.profession])
 				label = profession.name .. " Trainer"

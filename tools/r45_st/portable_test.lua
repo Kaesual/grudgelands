@@ -24,10 +24,11 @@
 --      player still creating a character stores nothing; known tiers and
 --      crafts stay; no trainer teaches it;
 --   T  the trainer mapping in each reader: grug_jobs.trainer_teaches and
---      open_trainer; start_npcs.lua at placement (an ordinary resident on
---      the Cooking socket, the tailor trainer unchanged) and at activation (a
---      saved Cooking trainer turns ordinary); the map's service markers; the
---      repair provider;
+--      open_trainer; start_npcs.lua at placement (a mender on a start town's
+--      Cooking socket, the tailor trainer unchanged) and at activation (a
+--      saved Cooking trainer becomes the mender); the mender's click opens
+--      only the repair form, under the trainers' faction, distance and
+--      socket rules; the map's service markers;
 --   A  alchemy: every catalogue product is one Alchemy record at the brewing
 --      stand, 2 s, giving XP, that makes the finished potion; a job makes
 --      finished potions at the stand with Alchemy XP per potion and is
@@ -417,7 +418,10 @@ grug_classes = {
 	register_on_arrival = function(fn) arrival = fn end,
 	registered_races = {human = {faction = "accord"}},
 }
-grug_factions = {get_faction = function() return "accord" end}
+local factions = {}
+grug_factions = {get_faction = function(player)
+	return factions[player:get_player_name()] or "accord"
+end}
 grug_smelting = {match = function() return nil end}
 
 -- The settlement of the trainer readers: one start with the Cooking trainer
@@ -567,6 +571,12 @@ grug_repair = {
 		return provider ~= nil and repair_providers[provider.kind](player, provider) == true
 	end,
 }
+-- service.lua's quote: the provider check, then the (here empty) bill.
+function grug_repair.quote(player, provider)
+	if not grug_repair.provider_permitted(player, provider) then return nil, "gone" end
+	return {owner = player:get_player_name(), provider = provider, items = {}, total = 0}
+end
+grug_money = {format = function(copper) return copper .. " copper" end}
 dofile(ROOT .. "/mods/ITEMS/grug_repair/providers.lua")
 
 for _, fn in ipairs(callbacks.loaded) do fn() end
@@ -763,9 +773,13 @@ do
 end
 
 ------------------------------------------------------------------------------
--- T. The trainer mapping in each trainer-role reader.
+-- T. The trainer mapping in each trainer-role reader: the Cooking trainer
+--    socket holds a mender (no teaching, no trainer dialog, no map icon; its
+--    click opens the repair form under the trainers' rules).
 ------------------------------------------------------------------------------
 do
+	local MENDER = grug_jobs.MENDER_TITLE
+	eq(MENDER, "Mender", "T the mender's title (one constant, a placeholder)")
 	eq(grug_jobs.trainer_teaches("cooking"), false, "T no trainer teaches Cooking")
 	eq(grug_jobs.trainer_teaches("tailor"), true, "T a tailor trainer teaches")
 	eq(grug_jobs.trainer_teaches("alchemist"), true, "T an alchemy trainer teaches")
@@ -773,12 +787,12 @@ do
 	local visitor = new_player("visitor", {x = 0, y = 10, z = 102})
 	local before = #shown
 	eq(grug_jobs.open_trainer(visitor, "cooking", {x = 2, y = 10, z = 102}), false,
-		"T open_trainer refuses Cooking")
+		"T open_trainer without the NPC opens nothing for Cooking")
 	eq(#shown, before, "T ...and shows no trainer dialog")
 	eq(grug_jobs.open_trainer(visitor, "tailor", {x = -2, y = 10, z = 102}), true,
 		"T open_trainer still opens the tailor trainer")
 
-	-- start_npcs.lua at placement.
+	-- start_npcs.lua at placement (a start town).
 	run_timers()
 	for _, entity in ipairs(live) do
 		if entity.on_tick and entity.object.valid then entity:on_tick() end
@@ -791,50 +805,83 @@ do
 	check(cooking ~= nil and tailor ~= nil, "T both trainer sockets hold an NPC")
 	cooking, tailor = cooking or {}, tailor or {}
 	eq(cooking.name, "grug_mobs:villager_human", "T the Cooking socket holds a villager")
-	eq(cooking._grug_profession, nil, "T ...without a profession")
-	eq(cooking._grug_npc_name, "dawnmere villager", "T ...named as a villager")
+	eq(cooking._grug_npc_name, MENDER, "T ...titled the mender")
+	eq(cooking._grug_profession, "cooking", "T ...keeping its socket's profession for repair")
 	eq(cooking._grug_socket_role, "trainer", "T ...on its unchanged trainer socket")
 	eq(cooking._grug_walker, false, "T ...standing at it")
 	eq(tailor._grug_profession, "tailor", "T the tailor trainer keeps its profession")
 	eq(tailor._grug_npc_name, "Tailor Trainer", "T ...and its name")
 
-	-- At activation: a Cooking trainer saved before Round 45 turns ordinary.
+	-- The mender's click (start_villagers.lua calls open_trainer with the
+	-- NPC): the repair form, never the trainer dialog or a Learn button.
+	local function click(player, entity)
+		before = #shown
+		local opened = grug_jobs.open_trainer(player, entity._grug_profession,
+			entity.object:get_pos(), entity)
+		return opened, shown[#shown], #shown - before
+	end
+	local opened, form, sent = click(visitor, cooking)
+	eq(opened, true, "T the mender's click opens a dialog")
+	eq(sent, 1, "T ...one form")
+	check(form and form.form:find("^grug_repair:service:") ~= nil, "T ...the repair form")
+	check(form and not form.spec:find("Learn", 1, true), "T ...without a Learn button")
+	check(form and form.form ~= "grug_jobs:trainer", "T ...and no trainer dialog")
+	eq(grug_jobs.has(visitor, "cooking"), false, "T ...teaching nothing")
+	-- The trainers' rules: own faction only, within 8 nodes.
+	factions.stranger = "throng"
+	local stranger = new_player("stranger", {x = 0, y = 10, z = 102})
+	opened, _, sent = click(stranger, cooking)
+	eq(opened, false, "T the mender refuses the other faction")
+	eq(sent, 0, "T ...showing nothing")
+	local far = new_player("far", {x = 2, y = 10, z = 120})
+	opened, _, sent = click(far, cooking)
+	eq(opened, false, "T the mender refuses a player 18 nodes away")
+	eq(sent, 0, "T ...showing nothing")
+	eq(grug_repair.can_open_trainer(visitor, cooking), true, "T the mender repairs")
+	eq(grug_repair.can_open_trainer(visitor, tailor), true, "T the tailor trainer repairs")
+	-- An NPC that is not on its socket any more repairs nothing (the socket
+	-- check every trainer gets).
+	cooking.object.pos = vector.new(6, 10, 102)
+	eq(grug_repair.can_open_trainer(visitor, cooking), false, "T a mender off its socket does not")
+	cooking.object.pos = vector.new(2, 10, 102)
+
+	-- At activation: a Cooking trainer saved before Round 45 becomes the mender.
 	retagged = {}
 	local _, saved = activate("grug_mobs:villager_human", core.serialize({
 		_grug_start = "dawnmere", _grug_socket = "trainer_cooking",
 		_grug_socket_role = "trainer", _grug_profession = "cooking",
 		_grug_npc_name = "Cooking Trainer", _grug_placed_at = -1, _grug_walker = false}),
 		{x = 2, y = 10, z = 102})
+	-- Before its first claim its click already opens only the repair form.
+	opened, form = click(visitor, saved)
+	check(opened and form.form:find("^grug_repair:service:") ~= nil,
+		"T a saved Cooking trainer repairs even before its first claim")
 	saved:on_tick()
-	eq(saved._grug_profession, nil, "T a saved Cooking trainer loses its profession at activation")
-	eq(saved._grug_npc_name, "dawnmere villager", "T ...takes the villager name")
-	eq(retagged[1], "dawnmere villager", "T ...and its nametag follows")
+	eq(saved._grug_npc_name, MENDER, "T ...and is titled the mender at activation")
+	eq(saved._grug_profession, "cooking", "T ...keeping its socket's profession")
+	eq(retagged[1], MENDER, "T ...and its nametag follows")
+	retagged = {}
+	saved.temp = nil
+	saved:on_tick()
+	eq(#retagged, 0, "T a mender's next activation renames nothing")
 	local _, saved_tailor = activate("grug_mobs:villager_human", core.serialize({
 		_grug_start = "dawnmere", _grug_socket = "trainer_tailor",
 		_grug_socket_role = "trainer", _grug_profession = "tailor",
 		_grug_npc_name = "Tailor Trainer", _grug_placed_at = -1}), {x = -2, y = 10, z = 102})
 	saved_tailor:on_tick()
 	eq(saved_tailor._grug_profession, "tailor", "T a saved tailor trainer stays a trainer")
+	eq(saved_tailor._grug_npc_name, "Tailor Trainer", "T ...with its name")
 
-	-- The map: no marker for the Cooking socket, the tailor trainer's stays.
+	-- The map: no marker for the mender (no repairer has an icon), the tailor
+	-- trainer's stays.
 	local labels = {}
 	for _, marker in ipairs(marker_providers.service(visitor)) do labels[marker.label] = marker.kind end
 	eq(labels["Tailor Trainer"], "trainer", "T the map marks the tailor trainer")
 	eq(labels["Cooking Trainer"], nil, "T the map marks no Cooking trainer")
-	local trainer_markers = 0
-	for _, kind in pairs(labels) do if kind == "trainer" then trainer_markers = trainer_markers + 1 end end
-	eq(trainer_markers, 1, "T ...one trainer marker in all")
-
-	-- Repair: the tailor trainer offers it, the former Cooking trainer never
-	-- (even a stale entity that still carries the profession).
-	saved_tailor.object.pos = vector.new(-2, 10, 102)
-	eq(grug_repair.can_open_trainer(visitor, saved_tailor), true, "T the tailor trainer repairs")
-	eq(grug_repair.can_open_trainer(visitor, saved), false, "T the former Cooking trainer does not")
-	local _, stale = activate("grug_mobs:villager_human", core.serialize({
-		_grug_start = "dawnmere", _grug_socket = "trainer_cooking",
-		_grug_socket_role = "trainer", _grug_profession = "cooking"}), {x = 2, y = 10, z = 102})
-	eq(grug_repair.can_open_trainer(visitor, stale), false,
-		"T ...not even before its first claim")
+	eq(labels[MENDER], nil, "T ...and no mender")
+	local service_markers = 0
+	for _ in pairs(labels) do service_markers = service_markers + 1 end
+	eq(service_markers, 1, "T ...one service marker in all")
 end
 
 ------------------------------------------------------------------------------

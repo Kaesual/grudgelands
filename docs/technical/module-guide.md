@@ -225,10 +225,13 @@ tools](#player-meta-read-by-external-tools).
   `STARTER_PROFESSIONS` (Cooking, which every character learns at T1 at its
   arrival and at every join, `grug_cooking/init.lua`, through
   `grug_jobs.learn(player, profession, quiet)`). The trainer-role readers ask
-  it: `grug_mobs/start_npcs.lua` turns a Cooking trainer socket's NPC into an
-  ordinary resident at placement and at every activation (its claim),
-  `grug_map/providers.lua` draws no marker, `grug_repair/providers.lua` offers
-  no repair; `grug_core/settlement_sockets.lua` only validates that a trainer
+  it: `grug_mobs/start_npcs.lua` turns a Cooking trainer socket's NPC into the
+  mender at placement and at every activation (its claim): the title
+  `grug_jobs.MENDER_TITLE` (one constant, a placeholder), the socket's
+  profession kept, so `open_trainer` opens only `grug_repair.open_trainer`'s
+  form and the trainer provider (`grug_repair/providers.lua`, any trainer
+  socket) and the faction rule apply as to a trainer; `grug_map/providers.lua`
+  draws no marker (no repairer has an icon); `grug_core/settlement_sockets.lua` only validates that a trainer
   socket names a profession, Cooking included (world data unchanged). The Character page's Professions mode (Round 28 ruling 23) is
   built by `grug_jobs/character_tab.lua` into the mode area `grug_inventory`
   passes (Round 44); `grug_inventory` owns the mode row and asks for the

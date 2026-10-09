@@ -768,8 +768,8 @@ boats stands at every capital stable (above; [boats.md](boats.md) §2).
 Thirty peaceful regional sites (villages, outposts and mines) each provide one
 quest host. Hostile new camps do not gain friendly residents. Each starting
 town and capital has a separate cook questgiver near its oven, distinct from
-the resident on the Cooking trainer socket (an ordinary NPC since Round 45:
-every character knows Cooking). Capitals reuse existing quest shells for their
+the Mender on the Cooking trainer socket (since Round 45 every character
+knows Cooking; the Mender only repairs). Capitals reuse existing quest shells for their
 envoy. Quest identities and journey structure belong to `quests.md`.
 
 ## Decor pass (Round 36)
