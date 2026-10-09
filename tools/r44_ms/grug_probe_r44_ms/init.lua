@@ -9,8 +9,9 @@
 --                 grug_ability, grug_mount; names under grug_abilities: and
 --                 grug_mounts:), so e2e.py can prove the step's frozen names
 --                 against the 0.43.0 game;
---   each join     right after grug_core's migration runner (this callback is
---                 moved to the second place): the inventory as loaded; when
+--   each join     before grug_core's migration runner (this callback is moved
+--                 to the first place, so a later declared step's join part,
+--                 0.45.0 on, has not run yet): the inventory as loaded; when
 --                 the plan's phase starts with "setup" (0.43.0) the character
 --                 is then built (see below); 2.5 s after the join the
 --                 inventory as the game left it, the purchase record, the
@@ -213,7 +214,7 @@ core.register_on_mods_loaded(function()
 	local joins = core.registered_on_joinplayers
 	for i, fn in ipairs(joins) do
 		if fn == on_join then
-			table.insert(joins, 2, table.remove(joins, i))
+			table.insert(joins, 1, table.remove(joins, i))
 			break
 		end
 	end

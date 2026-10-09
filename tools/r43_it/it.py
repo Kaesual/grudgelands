@@ -40,7 +40,9 @@ its tool run.
 
 The declared steps (the declaration's `migrate` list, 0.44.0 on) lie above
 the test steps, so every tool run on a world before them runs them too, and
-the guard names them with the test steps (DECLARED; Round 44 lane MS).
+the guard names them with the test steps (DECLARED; Round 44 lane MS); a
+declared step's own markers (0.45.0 marks every character) are left out of
+the test steps' marker checks (Round 45 lane MS).
 
 Prints a PASS/FAIL table, writes it with trimmed evidence to the evidence
 directory and exits 0 only when every check passed.
@@ -497,7 +499,8 @@ def world1(run):
           and meta.get("it:offline") == "0.41.1"
           and meta.get("grug_core:migrate:0.41.3") == "c-0.41.3"
           and meta.get("grug_core:migrate:0.41.4") == "c-0.41.4"
-          and not any(k.startswith("grug_core:migrate:") for k in player_meta(w1, "bystander"))
+          and not any(k.startswith("grug_core:migrate:") and k[18:] not in DECLARED
+                      for k in player_meta(w1, "bystander"))
           and store.get("offline") == "0.41.1" and "delete_me" not in store
           and store.get("keep") == "probe" and "fly" in privileges(w1, "hero")
           and same_item(main_slot(w1, "hero"), it_steps.APPLE),
@@ -529,7 +532,11 @@ def world1(run):
           and "migrate_world:0.41.2" not in storage(w1, "grug_core"), json.dumps(world_log))
     joins = {j.get("name"): j for j in obs.get("joins") or []}
     hero, bystander = joins.get("hero") or {}, joins.get("bystander") or {}
-    hero_log = [(e.get("step"), e.get("marker"), e.get("pending")) for e in hero.get("log") or []
+    # A declared step's marker (Round 45 on: 0.45.0 marks every character)
+    # waits behind the test steps' and is not theirs to check.
+    hero_log = [(e.get("step"), e.get("marker"),
+                 [v for v in e.get("pending") or [] if v not in DECLARED])
+                for e in hero.get("log") or []
                 if e.get("kind") == "character" and e.get("name") == "hero"]
     check("steps", "game, hero's join: the two markers ran in step order, then were deleted",
           hero_log == [("0.41.3", "c-0.41.3", ["0.41.3", "0.41.4"]),

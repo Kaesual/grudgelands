@@ -361,8 +361,8 @@ def main():
                             "AND attr LIKE 'grug_core:migrate:%%' ORDER BY attr").fetchall()
     check("pg migrate: record and markers", record and bytes(record[0]) == DUE[-1].encode()
           and marker and bytes(marker[0]) == b"w-0.41.2"
-          and char == [("grug_core:migrate:0.41.3", "c-0.41.3"),
-                       ("grug_core:migrate:0.41.4", "c-0.41.4")],
+          and [c for c in char if c[0][18:] not in DECLARED] == [
+              ("grug_core:migrate:0.41.3", "c-0.41.3"), ("grug_core:migrate:0.41.4", "c-0.41.4")],
           "record %r, world marker %r, hero %r" % (record, marker, char))
 
     rc, ev, _ = tool("all_again", world, STEPS)
