@@ -214,26 +214,31 @@ end
 grug_alchemy.CATALOG = catalog
 grug_alchemy.INGREDIENT_TIERS = ingredients
 
+-- Every product is an Alchemy recipe at the brewing stand (Round 45, spec
+-- rulings 27 and 30: 2 s per potion or elixir) that makes the finished
+-- potion; each one gives Alchemy XP (spec ruling 31, the registry's
+-- `progress` default).
+for index = 1, #catalog do
+	local row = catalog[index]
+	grug_jobs.register_recipe({area = "alchemist", tier = row.tier,
+		station = "brewing_stand", output = "grug_alchemy:" .. row.id,
+		ingredients = grug_jobs.ingredient_list(row.inputs),
+		time = grug_jobs.DURATIONS.potion})
+end
+
+-- The prepared mixtures of the automatic brewing before Round 45 stay
+-- registered as inert items (stable ids: chests and dug stations may still
+-- hold them); no recipe makes or uses them. Lane MS deletes them from
+-- characters (round45-plan.md ruling 2).
 for index = 1, #catalog do
 	local row = catalog[index]
 	row.mixture = "grug_alchemy:mixture_" .. row.id
 	core.register_craftitem(row.mixture, {
-		description = "Prepared " .. row.name .. " Mixture\nFinish at a Brewing Stand with fuel.",
+		description = "Prepared " .. row.name .. " Mixture\nNo longer used: " ..
+			"alchemists now brew finished potions and elixirs.",
 		inventory_image = core.registered_items["grug_alchemy:" .. row.id].inventory_image,
 		groups = {grug_potion_mixture = 1}, _grug_tier = row.tier,
 	})
-	grug_jobs.register_ingredient_tier(row.mixture, row.tier)
-	-- Round 45 (lane RG): the preparation is an Alchemy recipe at the brewing
-	-- stand, 2 s; it still makes the mixture, which the stand's automatic
-	-- finish below turns into the potion until lane ST makes the finished
-	-- potion the recipe's output.
-	grug_jobs.register_recipe({area = "alchemist", tier = row.tier,
-		station = "brewing_stand", output = row.mixture,
-		ingredients = grug_jobs.ingredient_list(row.inputs),
-		time = grug_jobs.DURATIONS.potion})
-	grug_brewing.register_recipe({station = "brewing_stand", flat_inputs = {row.mixture},
-		output = "grug_alchemy:" .. row.id, output_name = "grug_alchemy:" .. row.id,
-		time = 5})
 end
 
 -- Housing copy: the stand itself, an Alchemy recipe without XP and without a
