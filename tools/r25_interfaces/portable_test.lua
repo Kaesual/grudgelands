@@ -437,6 +437,18 @@ do
 	submit(owner, "grug_housing:stone", {stone_tab = "2"})
 	submit(owner, "grug_housing:stone", {stone_tab = "1"})
 	has(last_shown("owner").fs, "Fuel: coal lumps or charcoal", "PT9 back to the first tab")
+	-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): Close has
+	-- the focus when the form opens and after a tab click, never the name
+	-- field, which would eat the inventory key.
+	local focus = dofile("tools/r451_kf/focus.lua")
+	local main_fs = last_shown("owner").fs
+	for _, opts in ipairs({{new_form = true}, {preserved = "stone_tab"}}) do
+		local got = focus.initial(main_fs, opts)
+		eq(got and got.name, "close", "0.45.1 Close focused (" ..
+			(opts.new_form and "opened" or "after a tab click") .. ")")
+	end
+	local bare = focus.initial(focus.without_set_focus(main_fs), {preserved = "stone_tab"})
+	eq(bare and bare.name, "perm_name", "0.45.1 without set_focus the name field would be")
 	submit(owner, "grug_housing:stone", {quit = "true"})
 	grug_home = nil
 end

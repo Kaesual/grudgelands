@@ -157,7 +157,10 @@ local function form(player, session)
 	local pages = math.max(1, math.ceil(#rows / PAGE_SIZE))
 	session.page = math.max(1, math.min(pages, session.page))
 	local _, _, crown = find_crown(player:get_inventory())
-	local fs = {"formspec_version[4]size[12,9.4]",
+	-- Close takes the focus at every send (0.45.1): otherwise the engine
+	-- focuses the first preview textarea, which eats the inventory key, or
+	-- keeps a clicked Crown button, which Space would press again.
+	local fs = {"formspec_version[4]size[12,9.4]set_focus[close;true]",
 		"label[0.4,0.45;Crownbinder]",
 		"label[0.4,0.95;" .. esc("\"A crown remembers its king. Lend me one, " ..
 			"and your gear will remember it too.\"") .. "]",

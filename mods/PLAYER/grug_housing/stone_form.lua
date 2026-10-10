@@ -187,7 +187,10 @@ local function main_formspec(player, claim, session)
 	if home and session.tab == 2 then return waypoints_formspec(player, session, home) end
 	local name = player:get_player_name()
 	local inv = "detached:" .. inventory_name(name)
-	local fs = {"formspec_version[4]size[10.75,13]"}
+	-- Close takes the focus at every send (0.45.1): otherwise the engine
+	-- focuses the name field, which eats the inventory key, also after a tab
+	-- switch; the field gets it when the player clicks into it.
+	local fs = {"formspec_version[4]size[10.75,13]set_focus[close;true]"}
 	if home then fs[#fs + 1] = tabs(1) end
 	fuel_section(fs, claim, inv)
 

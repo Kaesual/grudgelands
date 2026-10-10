@@ -308,6 +308,14 @@ local function create_formspec(draft)
 		DARK_BACKGROUND,
 		"label[0.4,0.45;Create your character]",
 	}
+	if draft.faction then
+		-- The chosen faction's button takes the focus at every send (0.45.1):
+		-- otherwise the engine focuses the race textarea, which eats the
+		-- inventory key. Pressing it again changes nothing. Forced: the window
+		-- is also the inventory formspec, where an unforced one would not
+		-- apply when the inventory key opens it.
+		fs[#fs + 1] = "set_focus[faction_" .. draft.faction .. ";true]"
+	end
 	local faction_w = (RIGHT_EDGE - LEFT - 0.2) / #grug_core.faction_ids
 	for index, id in ipairs(grug_core.faction_ids) do
 		local def = grug_core.factions[id]
