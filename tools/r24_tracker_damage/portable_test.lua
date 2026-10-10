@@ -213,6 +213,50 @@ do
 	core.get_connected_players = function() return {} end
 end
 
+-- The head point (0.45.1): the eye height, never above the collision box's
+-- top. A rider's eye height is the mount camera's (up to 3.5); the sit box
+-- (top 1.0) keeps the head inside the mount's body, so a ceiling two nodes up
+-- never suffocates a rider. On foot the eye is inside the box: unchanged.
+do
+	core.registered_nodes["default:stone"] = {}
+	local function at(name, eye_height, box)
+		local p = new_player(name, 100)
+		function p:get_properties()
+			return {hp_max = self.hp_max, eye_height = eye_height, collisionbox = box}
+		end
+		return p
+	end
+	-- A passage two nodes high over a floor at y = 0: stone from y = 2 up.
+	core.get_node = function(pos)
+		return {name = math.floor(pos.y + 0.5) >= 2 and "default:stone" or "air"}
+	end
+	core.get_player_privs = function() return {} end
+	local SIT_BOX = {-0.3, 0, -0.3, 0.3, 1.0, 0.3}
+	local STAND_BOX = {-0.3, 0, -0.3, 0.3, 1.7, 0.3}
+	for _, eye in ipairs({1.95, 2.4, 3.5}) do
+		local rider = at("rider", eye, SIT_BOX)
+		core.get_connected_players = function() return {rider} end
+		env_step(1.0)
+		eq(rider.hp, 100, "a rider (camera " .. eye .. ") under a 2-high ceiling: no suffocation")
+	end
+	local walker = at("walker", 1.47, STAND_BOX)
+	core.get_connected_players = function() return {walker} end
+	env_step(1.0)
+	eq(walker.hp, 100, "standing in a 2-high passage: no suffocation")
+	-- A one-node-high gap (stone from y = 1): the standing head (1.47) is in it.
+	core.get_node = function(pos)
+		return {name = math.floor(pos.y + 0.5) >= 1 and "default:stone" or "air"}
+	end
+	env_step(1.0)
+	eq(walker.hp, 95, "a standing head in stone still suffocates")
+	local sitter = at("sitter", 0.8, SIT_BOX)
+	core.get_connected_players = function() return {sitter} end
+	env_step(1.0)
+	eq(sitter.hp, 95, "a sitting head (0.8) in stone still suffocates")
+	core.get_connected_players = function() return {} end
+	core.registered_nodes["default:stone"] = nil
+end
+
 ------------------------------------------------------------------------------
 -- Ruling 23: tracker.
 ------------------------------------------------------------------------------

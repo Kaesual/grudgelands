@@ -122,14 +122,20 @@ local function in_creation_stasis(player)
 		grug_core.player_in_creation_stasis(player:get_player_name()) == true
 end
 
+-- The head point: the eye height, but never above the body's own box. On
+-- foot the eye is inside the box (stand 1.47 of 1.7, sit 0.8 of 1.0, lay 0.3
+-- of 0.3); a rider's eye height is the camera's, up to 3.5 nodes over the
+-- mount's feet (grug_mounts camera, 0.45.1), so the sit box's top (1.0, inside
+-- the mount's body) stands in for it and a mount fits every gap its body fits.
 local function head_node_def(player, properties)
 	local pos = player:get_pos()
 	if not pos then
 		return nil
 	end
+	local box = properties.collisionbox
 	local head = {
 		x = pos.x,
-		y = pos.y + (properties.eye_height or 1.47),
+		y = pos.y + math.min(properties.eye_height or 1.47, box and box[5] or math.huge),
 		z = pos.z,
 	}
 	local node = core.get_node(head)

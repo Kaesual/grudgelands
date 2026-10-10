@@ -229,7 +229,10 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   Thin doors, panes, shutters, meshes, non-walkable plants, liquids and nodes
   explicitly opting out do not suffocate. The
   character-creation stasis state and players holding the `noclip` privilege
-  are exempt.
+  are exempt. The head point is the eye height above the feet, but never
+  above the top of the player's collision box: on foot the eye is inside the
+  box, while a rider's eye height is the mount camera's (0.45.1, `mounts.md`),
+  so a rider's head point stays at the sit box's top, inside the mount's body.
 - **Lava** (Round 24 ruling 24): **ceil(20% of maximum HP) per second**. The
   engine's once-per-second node-damage tick keeps its cadence, but its flat
   `damage_per_second` (8) is replaced, not added to. The engine picks the
