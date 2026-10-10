@@ -19,6 +19,9 @@
 -- B. The written book's read view (the vendored default craftitems.lua).
 -- S. Every set_focus[] of these windows names an element that is no field
 --    or textarea of the same file.
+-- C. The Character page (every mode) and the Inventory page (pages.lua):
+--    the selected mode's button and a no-op button, never Return home or
+--    Sort.
 -- The standalone windows' own fixtures check theirs with the same model:
 -- tools/r25_interfaces (Claim Stone), tools/r33_c5 (Crownbinder),
 -- tools/r34_f2 (withdraw dialog), tools/r35_c (character creation).
@@ -250,7 +253,7 @@ do
 			"mods/PLAYER/grug_classes/talents_ui.lua", "mods/PLAYER/grug_inventory/help.lua",
 			"mods/ENTITIES/grug_traders/crown.lua", "mods/PLAYER/grug_classes/selection.lua",
 			"mods/PLAYER/grug_housing/stone_form.lua", "mods/PLAYER/grug_money/coins.lua",
-			"mods/BASE/default/craftitems.lua"}) do
+			"mods/BASE/default/craftitems.lua", "mods/PLAYER/grug_inventory/pages.lua"}) do
 		local text = assert(io.open(repo .. "/" .. path)):read("*a")
 		for target in text:gmatch("set_focus%[([%w_]+)") do
 			found = found + 1
@@ -260,6 +263,43 @@ do
 		end
 	end
 	check(found >= 7, "S the windows' set_focus[] found (" .. found .. ")")
+end
+
+--
+-- C. The Character page (every mode) and the Inventory page, built by the
+--    REAL pages.lua on the tools/r44_ch harness (a fresh stub world, loaded
+--    last): with a home set, the engine's last button would be Return home
+--    (Character) or Sort (Inventory), which Space or Enter would press.
+--
+
+do
+	local C = dofile(repo .. "/tools/r44_ch/harness.lua")(repo)
+	local hero = C.player("hero", "warrior", {8}, 30)
+	for _, mode in ipairs({"stats", "effects", "achievements"}) do
+		local page = C.page(hero, mode)
+		check(page:find("grug_character_home", 1, true) ~= nil,
+			"C Character " .. mode .. ": Return home is on the page")
+		local want = "button:grug_character_" .. mode
+		eq(focused(page), want, "C Character " .. mode .. ": focused when opened")
+		eq(focused(page, {preserved = TABS}), want, "C Character " .. mode .. ": after a tab click")
+		eq(focused(page, {preserved = "grug_character_home"}), want,
+			"C Character " .. mode .. ": after a Return home click")
+		eq(focused(F.without_set_focus(page)), "button:grug_character_home",
+			"C Character " .. mode .. ": without set_focus Return home would be")
+	end
+	local context = sfinv.get_or_create_context(hero)
+	context.page = "grug_inventory:inventory"
+	local inv_fs = sfinv.get_formspec(hero, context)
+	for _, opts in ipairs({{}, {preserved = TABS}, {preserved = "grug_inv_sort"}}) do
+		eq(focused(inv_fs, opts), "button:grug_inv_focus", "C Inventory: the no-op button focused" ..
+			(opts.preserved and " (kept: " .. opts.preserved .. ")" or ""))
+	end
+	eq(focused(F.without_set_focus(inv_fs)), "button:grug_inv_sort",
+		"C Inventory: without set_focus Sort would be")
+	check(inv_fs:find("button[0,0;0,0;grug_inv_focus;]", 1, true) ~= nil,
+		"C Inventory: the focus button has no size and no label")
+	check(not sfinv.pages["grug_inventory:inventory"]:on_player_receive_fields(hero, context,
+		{grug_inv_focus = ""}), "C Inventory: pressing the focus button does nothing")
 end
 
 print(("%d checks, %d failures"):format(checks, failures))

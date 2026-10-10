@@ -498,6 +498,12 @@ end
 -- the body. The choice is runtime context (the sfinv context), never stored.
 local function mode_content(player, context, selected)
 	local fs = {
+		-- The selected mode's button takes the focus at every send (0.45.1):
+		-- otherwise the engine focuses the last button, Return home, which
+		-- Space or Enter would press. Re-selecting the mode changes nothing.
+		-- Forced: unforced, it would not apply when the inventory key opens
+		-- the window.
+		("set_focus[grug_character_%s;true]"):format(selected),
 		("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(MODE_BOX.x, MODE_BOX.y, MODE_BOX.w,
 			MODE_BOX.h, BOX_COLOR),
 	}
@@ -611,6 +617,11 @@ local function inventory_content(player)
 	local slot_y = layout.top_y + layout.label_h
 	local fs = {
 		"real_coordinates[true]",
+		-- An invisible button with no action takes the focus at every send
+		-- (0.45.1): otherwise the engine focuses the last button, Sort, which
+		-- Space or Enter would press (Withdraw opens a dialog). Forced:
+		-- unforced, it would not apply when the inventory key opens the window.
+		"set_focus[grug_inv_focus;true]button[0,0;0,0;grug_inv_focus;]",
 		grug_inventory.area_box(bags_box_x, layout.top_y, half_w, layout.slot_box_h,
 			"Bags"),
 		grug_inventory.area_box(belt_box_x, layout.top_y, half_w, layout.slot_box_h,
