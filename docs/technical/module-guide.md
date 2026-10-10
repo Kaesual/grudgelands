@@ -714,8 +714,10 @@ tools](#player-meta-read-by-external-tools).
   the cancellations. Travel cancels through the seam `grug_core.cancel_dash`
   (declared nil in `grug_core/combat.lua`, installed by `charge.lua`).
   Every player carries a `Body` bone-override epsilon from joining on
-  ([upstream-workarounds.md](upstream-workarounds.md) §3). Fixture
-  `tools/r40_ch/portable_test.lua`; headless bench `tools/r40_ch/bench`.
+  ([upstream-workarounds.md](upstream-workarounds.md) §3). Fixtures
+  `tools/r40_ch/portable_test.lua` and `tools/r451_ch/portable_test.lua`
+  (stairs and slopes down and up, the straight drop); headless bench
+  `tools/r40_ch/bench`.
 
 ## Mobs
 

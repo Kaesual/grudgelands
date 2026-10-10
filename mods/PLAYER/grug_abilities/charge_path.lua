@@ -17,7 +17,11 @@
 -- the client extrapolates pos += v*dt + a*dt*dt/2). A hop is solved from its
 -- apex: the arc clears the highest ground under it by CLEAR; when the box
 -- would still touch something on the way, the apex rises in 0.25 m steps and
--- then the takeoff moves back.
+-- then the takeoff moves back. Stairs are one hop over several edges; when
+-- no hop clears the whole flight it lands after an earlier edge of it and
+-- goes on from there (0.45.1). A step down no hop clears (a landing flush
+-- against its riser, the destination right behind it) is run to and dropped
+-- off in a straight line, as on foot (a hop with g = 0).
 --
 -- Holes (the user's ruling §2.16): where the ground ahead drops away -- no
 -- ground within reach, a liquid, or ground lower than the rim -- and comes
@@ -294,6 +298,22 @@ local function plan(world, from, dest, speed)
 		return nil
 	end
 
+	-- A step down taken on foot instead of hopped: the straight line from
+	-- the last sample on the upper ground to the first one below it, the way
+	-- a walker slides off an edge. Clear when the box on the way overlaps nothing that
+	-- rises above the ground it steps off: it may graze that edge, never a
+	-- wall or a roof.
+	local function step_clear(i)
+		local dx, dy = xs[i + 1] - xs[i], hs[i + 1] - hs[i]
+		local steps = max(1, ceil(dx / ARC_STEP))
+		for s = 1, steps - 1 do
+			local x = xs[i] + dx * s / steps
+			local top = overlap_top(q, from.x + ux * x, hs[i] + dy * s / steps, from.z + uz * x)
+			if top and top > hs[i] + EPS then return false end
+		end
+		return true
+	end
+
 	local pre = ceil(HOP_PRE / SAMPLE - EPS)
 	local post = ceil(HOP_POST / SAMPLE - EPS)
 	local longest = max(1, floor(MAX_HOP / SAMPLE + EPS))
@@ -303,7 +323,7 @@ local function plan(world, from, dest, speed)
 		if not jump[i] and flat(i) then
 			i = i + 1
 		else
-			local a, b, keep_b
+			local a, b, keep_b, ends
 			local up = hs[i + 1] > hs[i]
 			if jump[i] then
 				-- A hole: rim to far rim, lengthened below like any hop.
@@ -327,30 +347,50 @@ local function plan(world, from, dest, speed)
 					-- Stairs: further edges the same way, with treads shorter
 					-- than half a hop between them, join one climb (or
 					-- descent), flown as equal hops of at most MAX_HOP each.
+					-- `ends` keeps the sample after each edge of the chain.
 					local stop = limit(i + 1)
 					local c, j = i + 1, i + 1
+					ends = {}
 					while j < stop do
 						if not flat(j) then
 							if (hs[j + 1] > hs[j]) ~= up then break end
 							c = j + 1
-						elseif xs[j] - xs[c] > MAX_HOP / 2 then
-							break
+						else
+							if c == j then ends[#ends + 1] = c end
+							if xs[j] - xs[c] > MAX_HOP / 2 then break end
 						end
 						j = j + 1
 					end
-					local land = min(stop, c + post)
+					if ends[#ends] ~= c then ends[#ends + 1] = c end
+				end
+			end
+			-- The hop to the landing after the chain's edge `c` (nil: as
+			-- set above); the takeoff moves back while none clears.
+			local a0, b0 = a, b
+			local function try(c)
+				a, b = a0, b0
+				if c then
+					local land = min(limit(i + 1), c + post)
 					b = max(b, min(land, a + ceil((land - a) / ceil((land - a) / longest))))
 					-- More hops of this climb follow: lengthening must not
 					-- steal from them.
 					keep_b = b < land
 				end
+				while true do
+					local found = make_hop(a, b)
+					if found or a <= run_start then return found end
+					a = a - 1
+				end
 			end
-			local hop
-			while true do
-				hop = make_hop(a, b)
-				if hop or a <= run_start then break end
-				a = a - 1
+			local hop = try(ends and ends[#ends])
+			-- A chain no hop clears (going down: a landing flush against its
+			-- last riser) lands after an earlier edge of it instead; the
+			-- edges after that come next.
+			for m = (ends and #ends or 1) - 1, 1, -1 do
+				if hop then break end
+				hop = try(ends[m])
 			end
+			local step = not hop and not jump[i] and not up and step_clear(i)
 			-- At dash speed a short hop needs an absurd gravity: lengthen it
 			-- (takeoff earlier going up, landing later going down; a level
 			-- hop both in turn, so the obstacle stays mid-arc) while the
@@ -375,7 +415,19 @@ local function plan(world, from, dest, speed)
 				if not longer then break end
 				hop, a, b = longer, na, nb
 			end
-			if not hop then
+			if step then
+				-- No hop clears this step down: run to its edge and drop off
+				-- it in a straight line (a hop without an arc: no dust in the
+				-- air).
+				if i > run_start then
+					parts[#parts + 1] = {kind = "run", i = run_start, j = i}
+				end
+				local len = xs[i + 1] - xs[i]
+				parts[#parts + 1] = {kind = "hop", i = i, j = i + 1, len = len,
+					t = len / speed, vy = (hs[i + 1] - hs[i]) * speed / len, g = 0,
+					apex = 0, rise = hs[i + 1] - hs[i]}
+				i, run_start = i + 1, i + 1
+			elseif not hop then
 				-- Run up to the edge (or the rim) and stop there; down in a
 				-- drop the path could not climb out of, at that drop's rim.
 				cut_at, cut_why = xs[i + 1], "no hop clears the edge"
@@ -404,13 +456,14 @@ local function plan(world, from, dest, speed)
 					run_start = #parts > 0 and parts[#parts].j or 0
 				end
 				break
+			else
+				if jump[i] then jumps = jumps + 1 end
+				if a > run_start then
+					parts[#parts + 1] = {kind = "run", i = run_start, j = a}
+				end
+				parts[#parts + 1] = hop
+				i, run_start = b, b
 			end
-			if jump[i] then jumps = jumps + 1 end
-			if a > run_start then
-				parts[#parts + 1] = {kind = "run", i = run_start, j = a}
-			end
-			parts[#parts + 1] = hop
-			i, run_start = b, b
 		end
 	end
 	if e > run_start then

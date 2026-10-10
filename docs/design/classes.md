@@ -671,7 +671,10 @@ carrier from the cast position to the destination at a constant **24 m/s**
 and cannot steer; the path is planned once at the cast from the ground along
 the line (`grug_abilities/charge_path.lua`): level ground is a straight run,
 every step, slope, low obstacle (at most 1.6 m) or drop (at most 4 m) is a
-ballistic hop, so uphill the dash reads as leaps.
+ballistic hop, so uphill the dash reads as leaps. Stairs are flown as a few
+longer hops; where no hop clears a whole flight, it lands after an earlier
+step and goes on. A step down that no hop can land behind (the destination
+right behind its edge) is run to and dropped off, as on foot (0.45.1).
 
 - **Holes:** where the ground drops away (no ground, a liquid, or ground
   lower than the rim) and comes back within **4 nodes** (rim to far rim) at
