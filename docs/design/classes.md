@@ -195,7 +195,7 @@ differs:
   may not dig (town ground, walls, undiggable dressing), the client keeps
   pointing, so the refused dig keeps the protection hint and, where
   diggable, the client's cracks; a short tap there still casts a selected
-  self/support skill (Blink in a town, the same 200 ms window as below), a
+  self/support skill (Blink in a town, the same tap window as below), a
   hold only earns the hint. A self or support skill fires once per fresh
   press at its target (air or a hostile for a self skill, an ally for a
   heal) and never from a hold on its own. The only repeat while held: a
@@ -293,12 +293,27 @@ intervening objects (dropped items excepted) matter.
   fallback or attack through that ally.
 - **Hand-diggable node:** dig with hand capabilities, never equipped-weapon
   mining power. On the initial press only, a selected self/support skill
-  waits approximately 200 ms, whether it is ready or not: short release
-  casts (an unready skill reports its refusal at that tap); continued hold
-  digs. Without a selected self/support skill, digging begins immediately.
-  Leaving the initial node discards its pending release-cast. Later held
-  retargeting within the gather hold digs the new node directly; a cooldown
-  becoming ready cannot interrupt the dig.
+  (every self skill and the friendly heals, Heal, Shield and Mend) waits for
+  the release, whether it is ready or not: a release the server sees within
+  0.35 s of the press is a tap and casts (an unready skill reports its
+  refusal at that tap); a longer hold digs. The window absorbs the
+  release's delay (0.45.1, the user's playtest of 2026-10-10; it was
+  200 ms): the press reaches the server at once, the release only with the
+  client's next control report (every server step, 0.09 s) and the next
+  input pass, so a click of up to about 0.15 s still arrives within 0.35 s.
+  Where the crosshair points during the tap does not matter (kiting with the
+  eyes on the ground: another node, air or an actor); the tap still casts
+  on release. The client's own dig completion is an immediate edge and
+  proves the button was held that long, so the dig guard keeps 0.2 s: a
+  completion later than that ends the tap as a hold (a node the hand digs
+  in 0.3 s is dug, nothing is cast; on protected ground only the hint
+  shows), an earlier one (Creative's fast hand)
+  is refused, the client restores the node and digs it again. Without a
+  selected self/support skill, digging begins immediately. Held past the
+  window, the hold digs what it points at, also a new node; a cooldown
+  becoming ready cannot interrupt the dig. A very short click in the air
+  (shorter than one control report, about 0.09 s) can still go unseen
+  (Round 20 limit).
 - **Dropped item:** one pickup attempt at the beginning of each physical press,
   including when inventory is full. That decision does not also cast. The
   hold is a gather hold: it may subsequently dig, attack only once a threat
