@@ -23,7 +23,9 @@
 --      three client time constants, then detaches and puts the player on
 --      the stop (the uphill fix); the Body lead (only on dashes of 3 m or
 --      more, between the epsilon and the lead), the FOV kick, the pose seam
---      and the dust per run segment; the dash's own refusals.
+--      and the dust per run segment; the dash's own refusals; (0.45.1) a
+--      segment ending before the next step is headed for straight, and a
+--      stun inside a straight drop lets go on its takeoff.
 --   C  the REAL kits.lua Charge cast: no target and no room refuse (false,
 --      so try_cast spends nothing); with a destination it starts the dash.
 -- Prints "R40 CH PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -795,6 +797,69 @@ do
 	local obj = core.add_entity({x = 0, y = 0, z = 0}, "grug_abilities:charge_carrier")
 	step()
 	check(not obj.alive, "B9 an orphan carrier removes itself")
+end
+
+-- B10 (0.45.1): a segment that ends before the next step is not handed to
+-- the client to extrapolate a whole step past its end (a short steep hop or
+-- a straight drop would sink the drawn warrior metres into the ground): the
+-- carrier heads straight, without acceleration, for where the plan is one
+-- step on -- at the cast and on every step.
+local function lane_world(top)
+	return function(x, y) return y <= top(x) and "solid" or nil end
+end
+local function heads_straight(label, world, from, dest, target_pos)
+	local pl, mob = setup(world, label, from, target_pos)
+	dash(pl, mob, dest)
+	local carrier = pl:get_attach()
+	local plan = path.plan(path.live, from, dest)
+	local t, bad, short = 0, 0, 0
+	local function look()
+		local _, _, _, index = path.state_at(plan, t)
+		local s = plan.segments[index]
+		if s and index < #plan.segments and s.t0 + s.t < t + DT then
+			short = short + 1
+			local q = path.state_at(plan, t + DT)
+			local e = vector.add(carrier.pos, vector.multiply(carrier.v, DT))
+			if dist(carrier.a, {x = 0, y = 0, z = 0}) > 1e-9 or dist(e, q) > 1e-6 then bad = bad + 1 end
+		end
+	end
+	look()
+	for _ = 1, 30 do
+		if not pl:get_attach() or carrier.v.x == 0 then break end
+		step()
+		t = t + DT
+		look()
+	end
+	check(short > 0 and bad == 0, "B10 " .. label .. ": " .. short ..
+		" segments end before the next step, each one headed for straight (" .. bad .. " not)")
+	run_out()
+	check(rec.rage == 15, "B10 " .. label .. ": the dash still arrives")
+end
+-- Stairs up with treads of three nodes: the first hop (31 ms) ends before
+-- the first step.
+heads_straight("w10up", lane_world(function(x) return x <= 0 and -1 or math.min(8, math.ceil(x / 3)) - 1 end),
+	FROM, {x = 3.7, y = 0.5, z = 0}, {x = 5, y = 0.5, z = 0})
+-- A run to an edge and a straight drop three nodes down onto the destination.
+heads_straight("w10drop", lane_world(function(x) return x <= 2 and -1 or -4 end),
+	FROM, {x = 2.85, y = -3.5, z = 0}, {x = 4.1, y = -3.5, z = 0})
+
+-- B11 (0.45.1): a stun inside a straight drop lets the warrior go on the
+-- drop's takeoff (the drop grazes the edge it leaves), not on the line.
+do
+	local pl, mob = setup(lane_world(function(x) return x <= 2 and -1 or -4 end), "w11", FROM,
+		{x = 4.1, y = -3.5, z = 0})
+	dash(pl, mob, {x = 2.85, y = -3.5, z = 0})
+	local plan = path.plan(path.live, FROM, {x = 2.85, y = -3.5, z = 0})
+	local drop = plan.segments[#plan.segments]
+	check(drop.kind == "hop" and drop.g == 0, "B11 the plan ends in a straight drop")
+	step(drop.t0 + drop.t / 2 - 0.02)
+	step(0.02)
+	stunned[pl.name] = true
+	step(0.0001)
+	local placed = pl.set_pos_calls[1]
+	check(placed and dist(placed.pos, drop.p0) < 1e-9 and rec.rage == 0,
+		"B11 let go on the drop's takeoff (" .. (placed and ("%.2f, %.2f"):format(placed.pos.x,
+			placed.pos.y) or "nowhere") .. "), a miss")
 end
 
 print(("%d checks, %d failures"):format(checks, failures))

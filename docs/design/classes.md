@@ -707,7 +707,8 @@ right behind its edge) is run to and dropped off, as on foot (0.45.1).
 - **Cancelled:** a stun or root on the warrior, death, logout and every
   travel (`grug_home/travel.lua`, before its teleport) end the dash at once
   as a miss, the warrior let go where the planned path is at that moment (a
-  logout mid-hop: on the hop's takeoff, never saved in the air). A warrior
+  logout mid-hop: on the hop's takeoff, never saved in the air; any cancel
+  inside a straight drop: on its top). A warrior
   rooted at the cast does not move.
 - **During the dash** hits reach the warrior (no immunity); knockback and
   pulls do not change where the dash ends. He keeps the charge pose; in third person and for
