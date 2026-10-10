@@ -717,9 +717,40 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (station designs) are the GPT-6 Astra generators with their proposal
   sheets and `final_sheet.png`; `--check` byte-compares the shipped files
   (Python with Pillow, an installed tool for generating art).
-- **0.45.1** (`r451_<lane>`): `r451_mz` the map window's zoom with the
-  soft lock on the player (`portable_test.lua`, the real `grug_map`
+- **0.45.1** (`r451_<lane>`, the fix round after the 0.45.0 playtest;
+  `portable_test.lua` each, real game files under a stub engine):
+  `r451_ch` Charge down and up stairs and slopes (the real planner
+  `charge_path.lua` with `blink.lua`'s destination on built terrain: never
+  cut, the straight drop off a flush last step, the last clearable edge on
+  a blocked flight; an optional second argument loads another planner for a
+  before/after comparison); `r451_cu` the Crafting tab's fixes and the tab
+  order (group ingredient labels and the owned icon, − and +, the search
+  clear, the focus line and its resend, Map & Quests before Help);
+  `r451_kf` the inventory key closing every window (`focus.lua` models the
+  engine's initial focus after `guiFormSpecMenu.cpp`; the inventory pages,
+  the Character and Inventory tabs' harmless focus, the other windows and
+  a scan of every `set_focus` target); `r451_mc` the riding camera, seats
+  and sizes per mount, the Dismount button, the first-mount banner, the
+  flyers' ground frame and flight loop, the ride-only bat mesh and the
+  boat's surface rule; `r451_mc/gen_bat_ride_mesh.py` writes the ridden
+  bats' mesh `grug_mounts_bat_ride.b3d` from the cave bat's (the body bone
+  held at frame 1; stdlib Python, `--check` byte-compares the shipped
+  file); `r451_mc_probe` the never-shipped `/mountcam` mod the user copied
+  into a world's `worldmods/` to tune camera, seat and size (its README
+  has the commands and the values table); `r451_mu` the "Now playing" box
+  (titles and artists against `LICENSE-media.md`, the playing track through
+  the scheduler, the box geometry over desktop and web windows; the
+  minimap's drawing is in `r27_minimap` block P); `r451_mz` the map window's zoom with the
+  soft lock on the player (the real `grug_map`
   `atlas.lua`: centring on the player, clamped at the edges without drift,
   the player's scrolling breaking the lock, 1x restoring it, values of an
   older form read at its zoom); the window's wiring and its focus are in
-  `r44_mq` (section M).
+  `r44_mq` (section M); `r451_nq` the quest giver's preselection and the
+  town NPCs' standing room and re-seat (`engine.sh` with
+  `grug_probe_r451_nq` is the capital NPC socket audit on a seed, one
+  queue slot); `r451_sc` the tap window of self and support skills and the
+  right-click food tap (the real `input.lua` driven at the engine's step);
+  `r451_tr` the trainer window's bottom row, the greetings and the
+  mender's "Grudge-Free Repairs" form; `r451_tx` GPT-6 Astra's proposals
+  (trainer greetings, music-note icons, `paint_art.py`, the offline
+  `review.html`), provenance for the user's picks, not a fixture.
