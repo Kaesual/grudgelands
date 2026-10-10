@@ -1936,7 +1936,8 @@ tools](#player-meta-read-by-external-tools).
   every `textarea[]`, a read-only one too, and an edit box or a table eats
   letter keys. So a window with an edit box or a table names a harmless button in
   `set_focus[<name>;true]`, placed before that button (Party & PvP: Refresh;
-  Talents & Skills: an invisible zero-size button with no action; Help: the
+  Talents & Skills and Inventory: an invisible zero-size button with no
+  action; Character: the selected mode's button, never Return home; Help: the
   open sub-page's button; Claim Stone and Crownbinder: Close; the creation
   window: the chosen faction). Forced, because an unforced `set_focus` only
   applies when the window shows a new form name, and the inventory key opens
