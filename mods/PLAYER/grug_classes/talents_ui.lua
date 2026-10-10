@@ -279,6 +279,12 @@ local function talent_content(player, context)
 	local trees = trees_for_player(player)
 	local fs = {
 		"real_coordinates[true]",
+		-- An invisible button with no action takes the focus at every send
+		-- (0.45.1): otherwise the engine focuses the read-only textarea below,
+		-- which eats the inventory key, and no visible button is harmless
+		-- under Space or Enter (a node buys a rank). Forced: unforced, it
+		-- would not apply when the inventory key opens the window.
+		"set_focus[grug_talent_focus;true]button[0,0;0,0;grug_talent_focus;]",
 		("label[0.25,0.45;%s]"):format(esc((class_def and class_def.name or "No class") ..
 			" talents")),
 		("label[3.60,0.45;%s]"):format(esc(("Talent points available: %d of %d")

@@ -69,7 +69,11 @@ local function content(player, context)
 	local view, pending = grug_parties.view(player), grug_parties.pending(player)
 	local fs = {
 		"real_coordinates[true]",
-		"set_focus[grug_party_invite;false]",
+		-- Refresh takes the focus at every send (0.45.1): otherwise the engine
+		-- focuses a read-only textarea or the member table, and both eat the
+		-- inventory key. Unforced it would not apply when the inventory key
+		-- opens the window; Space or Enter on Refresh is harmless.
+		"set_focus[grug_party_refresh;true]",
 		("checkbox[0.20,0.22;grug_party_invites;Allow invitations;%s]")
 			:format(grug_parties.invitations_enabled(player) and "true" or "false"),
 		("checkbox[3.60,0.22;grug_party_hud;Party HUD;%s]")
