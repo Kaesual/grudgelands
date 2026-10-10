@@ -344,7 +344,13 @@ tools](#player-meta-read-by-external-tools).
 
 - **Mount runtime**: ownership is player meta; the summoned controller and its
   visible child are ephemeral. The child (mount or boat hull) is attached
-  with `forced_visible`, so its rider sees it in first person.
+  with `forced_visible`, so its rider sees it in first person. The rider's
+  camera (0.45.1) is the model's catalogue `camera`, applied by
+  `grug_mounts.apply_camera` after the sit pose: the eye height is the
+  first-person height (the engine puts an attached player's camera at the
+  parent's position plus eye height plus eye offset), the eye offsets carry
+  the rest; the mount's step only restores the sit pose and the camera if a
+  pose change replaced them (one table read a step).
   `grug_mounts.dismount` is the shared cleanup path for manual, damage, death, leave, shutdown and external-detach exits and clears the
   runtime-only untimed `mount` status. Mounted players cannot attack. A land
   controller deals its rider the engine's player fall damage itself (peak

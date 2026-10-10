@@ -26,7 +26,12 @@ leash; bound actors: leash and give-up distance).
   **player state, permanent and per character**,
   and purchase records it; it hands out no item. Owned mounts and boats are
   used from the quickbar (E, §3); the Riding Trainer and the Shipwright say
-  so in their dialogue ("Press E to open your mounts.").
+  so in their dialogue ("Press E to open your mounts."). The first riding
+  mount a character buys (tier 1, where the ladder starts) also shows a
+  one-time banner, "Press E to summon your mount", when the trainer's
+  dialogue closes (0.45.1; once per character, flag `grug_mounts:summon_hint`
+  in player meta; a boat shows none, and a character who owned a mount before
+  0.45.1 gets none).
 - Every capital has one outer-district stable using the same shared building
   design, with the local architectural palette: earth floor, one-node fence,
   clear entrance and a flat roof on exactly six posts, without perimeter walls.
@@ -179,6 +184,18 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   person. Third-person views and other clients show the complete
   rider-and-mount silhouette. Dismount and every
   lifecycle exit remove both ephemeral objects.
+- **The rider's camera** (0.45.1) is set per model (`camera` in the
+  catalogue, in nodes): in first person a sitting rider's eye above the
+  mount's seat and slightly back, so the mount's neck and head show low in
+  the view and the world fills the rest (a horse's rider looks over its
+  head); in third person the camera looks over the rider's head from behind.
+  The engine places an attached player's camera at the mount controller's
+  position plus the eye height plus the eye offset, whatever the seat, so the
+  ride sets the eye height to the first-person height and the offsets to the
+  rest; the dismount gives the standing eye back. Boats keep the plain
+  sitting eye (0.8 above the water surface). Under a ceiling lower than the
+  camera (the riding bodies stay 1.6 high) the view reaches into the ceiling
+  node.
 - Land mounts automatically step over slabs and nominal one-node rises while
   moving forward, without jump input. Their controller uses a **1.01-node**
   step height to clear the engine's strict collision comparison; taller
@@ -197,7 +214,9 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   runtime-only UI state, supplies no movement modifier and is cleared by the
   shared dismount path.
 - Only one active mount entity (mount or boat) may exist per player. The
-  active tier's button dismounts (the quickbar frames it). Another owned
+  active tier's button dismounts (the quickbar frames it), and so does the
+  quickbar's Dismount button below the mounts, shown only while riding
+  (0.45.1). Another owned
   tier's button replaces the active mount when that tier may be summoned
   there; otherwise the active mount stays and the refusal is shown. Every
   dismount removes the ephemeral entity; no horse or flying creature remains
