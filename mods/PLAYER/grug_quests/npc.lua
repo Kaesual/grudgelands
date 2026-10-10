@@ -39,8 +39,24 @@ function Q.status_tooltip(statuses)
 	return core.formspec_escape(table.concat(lines, "\n"))
 end
 
+-- The row a dialog opens on (0.45.1): the first quest ready to complete,
+-- else the first one to accept, else the first row, so a player with several
+-- finished quests just clicks "Complete" again and again.
+local function preselect(rows)
+	local available
+	for index, row in ipairs(rows) do
+		if row.status == "ready" then return index end
+		if row.status == "available" and not available then available = index end
+	end
+	return available or 1
+end
+Q.npc_preselect = preselect
+
 -- The dialog is wide enough for the longest quest title in the list at a
--- full-HD window (the title column is 7 of 16 units).
+-- full-HD window (the title column is 7 of 16 units). `selected` is the row
+-- to show: an index (a click in the list), a quest id (that quest's row if
+-- it is still listed, else the preselection) or nil (the preselection).
+-- `notice` marks a redraw after Accept or Complete.
 function Q.open_npc(player, entity, selected, notice)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
@@ -58,8 +74,15 @@ function Q.open_npc(player, entity, selected, notice)
 	end
 	-- The first open of the dialog plays its cue; a redraw (another quest
 	-- chosen, after Accept or Complete) does not.
-	local redraw = selected ~= nil
-	selected = math.min(math.max(tonumber(selected) or 1, 1), #rows)
+	local redraw = selected ~= nil or notice ~= nil
+	if type(selected) == "string" then
+		local quest_id = selected
+		selected = nil
+		for index, row in ipairs(rows) do
+			if row.id == quest_id then selected = index end
+		end
+	end
+	selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows)
 	local row = rows[selected]
 	local def = Q.registered_quests[row.id]
 	local detail = Q.quest_text(def, id == def.npc) .. "\n\n"
@@ -83,7 +106,10 @@ function Q.open_npc(player, entity, selected, notice)
 		"tooltip[quests;" .. Q.status_tooltip() .. "]" ..
 		"label[0.4,7.3;" .. Q.status_legend() .. "]" ..
 		"textarea[7.8,0.9;7.8,6;;;" .. esc(detail) .. "]" ..
-		"label[0.4,7.9;" .. esc(notice or row.reason or "") .. "]button_exit[13.3,8.4;2.3,0.7;close;Close]"
+		-- The Close button holds the focus (0.45.1): a focused text area or
+		-- list would swallow the inventory key that closes the dialog.
+		"label[0.4,7.9;" .. esc(notice or row.reason or "") .. "]set_focus[close;true]" ..
+		"button_exit[13.3,8.4;2.3,0.7;close;Close]"
 	if row.status == "available" then form = form .. "button[7.8,8.4;2,0.7;accept;Accept]" end
 	if row.status == "ready" then form = form .. "button[7.8,8.4;2,0.7;turnin;Complete]" end
 	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected}
@@ -116,7 +142,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	elseif fields.turnin and def and def.turnin_npc == session.npc then ok, message = Q.turn_in(player, row.id) end
 	if ok ~= nil then
 		sessions[name] = nil
-		if not Q.open_npc(player, session.entity, session.selected, message or "Quest updated.") then
+		-- After a Complete the dialog preselects again; after Accept, or a
+		-- Complete that failed, it stays on that quest while it is listed
+		-- here (an accepted quest handed in elsewhere leaves the list).
+		if not Q.open_npc(player, session.entity, not (fields.turnin and ok) and row.id or nil,
+				message or "Quest updated.") then
 			core.close_formspec(name, FORM)
 		end
 	end
