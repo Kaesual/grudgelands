@@ -6,6 +6,76 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Player experience follow-up (2026-10-11)
+
+Open follow-up work from the user's playtest assessment of 2026-10-11.
+Priority and direction live in the
+[ROADMAP](ROADMAP.md#next-priorities--deepening-the-playable-game).
+These packages refine delivered systems; they do not reopen historical WP
+receipts or change the identity counts below. No round is assigned yet.
+Current design rules remain in force until the respective design pass
+settles their replacements; this entry does not specify new skills, talent
+layouts, resource tables or buff values.
+
+### Classes, talents and progression
+
+- Review all four classes over the leveling journey: starting kits, talent
+  unlocks, the feel of progression and customization, ability interactions
+  and rotations. The user's assessment is that the trees are not yet
+  cohesive and the skills remain basic; the Scout currently feels worst
+  to play and needs particular attention.
+- Review revised kit and talent proposals against the roadmap's direction,
+  including how their mechanics work together in group play and PvP.
+  A working ability implementation alone does not settle class feel or
+  balance.
+- Current owners: [classes](docs/design/classes.md),
+  [talents](docs/design/skill_trees.md), [Scout](docs/design/scout.md),
+  [combat](docs/design/combat_stats.md) and [PvP](docs/design/pvp.md).
+
+### Atmosphere, world variety and resource distribution
+
+- Review music, sound effects, regional ambience and icons for quality and
+  consistency. Preserve what already works: the user particularly likes
+  the human areas' daytime birds and nighttime crickets. Wind-dominated
+  areas currently lack that richness. Use those contrasts to guide the
+  listening and visual review; retain the existing exact-file sound
+  approval process.
+- Review surface variety, tree shapes and city variety, and prepare changes
+  that give exploration and settlements more character.
+- Reassess ore, gem and coal availability through the depth tiers, then
+  revise the distribution design and data. The roadmap's broader ore and
+  gem availability revisits the current tier restrictions; retain the
+  current tables until replacements are decided and checked against
+  gathering and crafting progression.
+- Current owners: [sound](docs/design/sound.md),
+  [world](docs/design/world.md), [settlements](docs/design/settlements.md)
+  and [materials and crafting](docs/design/items_crafting.md).
+
+### Crafting and Cooking variety
+
+- Review the crafting experience as well as the recipe roster. The user
+  considers the current recipes a good foundation; the follow-up should
+  add variety, wit and versatility, especially to Cooking.
+- Explore more distinct and useful buff foods as part of the Cooking
+  design pass, then review their ingredients and usefulness through
+  progression. This is a direction to investigate, not an approved buff
+  list or set of values.
+- Current owners: [professions](docs/design/professions.md),
+  [recipes and food](docs/design/items_crafting.md) and
+  [economy](docs/design/economy.md).
+
+### Quest onboarding and immersion
+
+- Walk the early quest experience from a new player's perspective, identify
+  where the game leaves its mechanics unexplained, and revise the quest
+  flow to teach them more naturally.
+- Review how quest tasks, dialogue and surroundings support immersion;
+  develop improvements on the existing framework rather than treating
+  its delivery as the end of quest refinement.
+- Current owners: [quests](docs/design/quests.md) and
+  [story](docs/design/story.md). Coordinate teaching steps with the class
+  and crafting revisions above.
+
 ## Readiness
 
 There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.

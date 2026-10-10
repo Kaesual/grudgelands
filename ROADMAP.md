@@ -6,6 +6,35 @@ status: [BACKLOG](BACKLOG.md). Rules and numbers: [design index](docs/design/REA
 Earlier delivery narratives are preserved in the
 [historical roadmap](docs/archive/planning/roadmap-before-consolidation.md).
 
+## Next priorities — Deepening the playable game
+
+Direction set by the user on 2026-10-11: the playable foundation needs a
+focused improvement pass to become a rewarding experience throughout.
+These are the next gameplay priorities, alongside the fixes already queued;
+they have no assigned round or release date yet. Delivered systems below
+remain delivered foundations, with this refinement work still ahead.
+
+- **Classes, talents and character progression:** make leveling bring more
+  meaningful customization. Start with fewer skills and let talent choices
+  decide more of which abilities a character gains or leaves out. Build
+  coherent ability interactions and rotations, and improve balance in group
+  play and PvP. The Scout most urgently needs attention to how it feels to play.
+- **World atmosphere, variety and resources:** review music, sounds and
+  icons with care for the details that give each region character. Improve
+  areas dominated by wind, add more surface variety, more varied tree shapes
+  and more distinctive cities. Rebalance ores, gems and coal, with many ores
+  and gems available across more depth tiers.
+- **Crafting with more character and purpose:** build on the improved
+  recipe system with more variety, wit and versatility, especially in
+  Cooking. Explore a broader range of useful food buffs.
+- **Quests that welcome players into the world:** improve how quests teach
+  the game and explore more immersive ways to connect their tasks to the
+  people and places around them.
+
+These are goals for the next design and playtest passes, not changes already
+available in the game. Detailed follow-up scope and current design owners:
+[BACKLOG](BACKLOG.md#player-experience-follow-up-2026-10-11).
+
 ## Vision
 
 - **Two distinct faction continents.** The Accord holds southern Elandor and
@@ -418,6 +447,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 
 ### Remaining work
 
+- [ ] **Deepen the playable game:** the
+  [next priorities](#next-priorities--deepening-the-playable-game) cover
+  classes and progression, atmosphere and resource distribution, crafting
+  variety and quest onboarding. Follow-up work is tracked in the
+  [BACKLOG](BACKLOG.md#player-experience-follow-up-2026-10-11).
 - [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03;
   taken up again by the user on 2026-10-09 for Round 46): POI placement
   adapted to the roads and rivers instead of fixed anchors, the long-term
@@ -496,6 +530,11 @@ through migration steps.
 - [ ] Dungeons, regional apex encounters, reputation and player trading.
 
 ## Phase 3 — Polish
+
+Longer-term work continues beyond the
+[next priorities](#next-priorities--deepening-the-playable-game); class
+balance, atmosphere and quest onboarding are already part of those next
+passes, not postponed to this phase.
 
 - [ ] Original textures, sounds and animated models with complete provenance
   (V1's sound pass, Round 34, uses licence-clean sources first).
