@@ -20,9 +20,9 @@ M.bounds = {x_min = -3600 - OCEAN_MARGIN, x_max = 3600 + OCEAN_MARGIN,
 -- exact, not an approximation.
 --
 -- Flight: the mount entity is clamped to the ceiling each step; its rider sits
--- at most 2.86 nodes above it (grug_mounts catalog seat offsets), the eye is
--- 1.625 above the feet and one server step of climb can overshoot the clamp by
--- about one node. Eight nodes cover that.
+-- at most 3.71 nodes above it (grug_mounts catalog seat offsets; its camera at
+-- most 4.35), the eye is 1.625 above the feet and one server step of climb can
+-- overshoot the clamp by about one node. Eight nodes cover that.
 M.FLIGHT_HEADROOM = 8
 -- Standing: feet one node above the highest solid node plus a 1.25-node jump.
 M.STAND_HEADROOM = 3

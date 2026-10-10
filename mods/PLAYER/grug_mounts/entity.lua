@@ -329,7 +329,8 @@ end
 
 local function set_animation(self, name)
 	if self._grug_animation == name or not self._grug_model.animation then return end
-	local clip = self._grug_model.animation[name]
+	-- A ridden-only clip (catalog `ride_<name>`) replaces the shared one.
+	local clip = self._grug_model.animation["ride_" .. name] or self._grug_model.animation[name]
 	local record = active[self._grug_owner]
 	local visual = record and record.visual
 	if visual and visual:is_valid() then
@@ -715,8 +716,9 @@ local visual_definition = {
 		-- forced_visible: the rider sees the mount's front half, or the boat's
 		-- hull, in first person too (the engine hides a child of the local
 		-- player there unless the attachment forces it; Round 45 PT6).
-		self.object:set_attach(player, "", {x = 0, y = -seat / rider_size.y,
-			z = (model.attach_z or 0) / rider_size.x}, {x = 0, y = 0, z = 0}, true)
+		self.object:set_attach(player, "", {x = (model.attach_x or 0) / rider_size.x,
+			y = -seat / rider_size.y, z = (model.attach_z or 0) / rider_size.x},
+			{x = 0, y = 0, z = 0}, true)
 	end,
 	get_staticdata = function() return "" end,
 }
