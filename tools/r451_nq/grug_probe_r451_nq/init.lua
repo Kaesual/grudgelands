@@ -189,7 +189,7 @@ end
 core.after(2, function()
 	local wanted = {}
 	for _, key in ipairs(cfg.capitals) do wanted[key] = true end
-	local chunks, order = {}, {}
+	local chunks, order, floors = {}, {}, {}
 	for _, record in ipairs(grug_core.settlement_socket_settlements()) do
 		if wanted[record.key] then
 			log(("SETTLEMENT %s slot=%s anchor=%s"):format(record.key, tostring(record.slot),
@@ -211,10 +211,19 @@ core.after(2, function()
 					-- (a head cell in the chunk above reads "ignore" and is
 					-- logged as UNLOADED, not guessed)
 					list[#list + 1] = {key = record.key, socket = socket}
+					-- The floor's chunk, when it is another one, is emerged
+					-- too (after this one), so the FINAL audit is final.
+					local fc = {x = c.x, y = chunk_min(socket.pos.y - 1), z = c.z}
+					if fc.y ~= c.y and not chunks[key3(fc)] then
+						chunks[key3(fc)] = {minp = fc, entries = {}, key = record.key}
+						floors[#floors + 1] = key3(fc)
+						t.chunks = t.chunks + 1
+					end
 				end
 			end
 		end
 	end
+	for _, ck in ipairs(floors) do order[#order + 1] = ck end
 	log(("%d chunks to emerge"):format(#order))
 	local started = core.get_us_time()
 	local i = 0
