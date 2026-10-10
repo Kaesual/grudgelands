@@ -14,7 +14,8 @@
 --      last element, no element outside the window, the button labels fit;
 --   G  a greeting for every trainer profession and the mender, on top of the
 --      trainer window (above the status line and the notice) and in the
---      mender's repair form; none in a teaching trainer's or a station's
+--      mender's repair form, which is titled grug_jobs.MENDER_TITLE; no
+--      greeting and the plain title in a teaching trainer's or a station's
 --      repair form; a 200-character greeting fits whole, above the status
 --      line, with nothing outside the window; the repair form with a full
 --      page of rows stays inside its window;
@@ -446,11 +447,12 @@ for _, items in ipairs({{}, full_page}) do
 	end
 	local info = find_label(form, "All professions can repair your equipment for money.")
 	check(info and ys[#ys] and info.y >= ys[#ys] + 0.42, "mender" .. tag .. ": the greeting above the info line")
-	eq(form.labels[1].text, "Equipment repairs", "mender" .. tag .. ": the title first")
+	eq(form.labels[1].text, "Grudge-Free Repairs", "mender" .. tag .. ": the mender's title first")
 	for _, other in ipairs({{trainer, "teaching trainer"}, {station, "station"}}) do
 		local plain = repair_form(other[1], items, other[2] .. tag)
 		check(line_ys(plain, grug_jobs.GREETINGS.mender)[1] == false, other[2] .. tag .. ": no greeting")
 		eq(plain.H, 9, other[2] .. tag .. ": the form keeps its height")
+		eq(plain.labels[1].text, "Equipment repairs", other[2] .. tag .. ": the plain title")
 		check(find_label(plain, "All professions can repair your equipment for money.").y == 0.9,
 			other[2] .. tag .. ": the info line where it was")
 	end

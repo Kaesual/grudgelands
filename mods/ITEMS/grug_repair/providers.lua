@@ -75,27 +75,27 @@ end
 
 local function esc(text) return core.formspec_escape(tostring(text)) end
 
--- The mender's greeting (0.45.1, fix plan row 12): a trainer provider whose
--- profession no trainer teaches is the mender (grug_jobs.trainer_teaches);
--- its form shows grug_jobs.GREETINGS.mender below the title, one label per
--- wrapped line, and everything below moves down by the greeting's height.
--- A teaching trainer's "Repair equipment" form and the other providers show
--- none.
+-- The mender (0.45.1, fix plan row 12): a trainer provider whose profession
+-- no trainer teaches (grug_jobs.trainer_teaches). Its form is titled
+-- grug_jobs.MENDER_TITLE (the user, 2026-10-10) and shows
+-- grug_jobs.GREETINGS.mender below the title, one label per wrapped line;
+-- everything below moves down by the greeting's height. A teaching
+-- trainer's "Repair equipment" form and the other providers keep the plain
+-- title and show no greeting.
 local GREETING_CHARS = math.floor(10.2 * 6.6)
-local function mender_greeting(provider)
-	if provider.kind ~= "trainer" or grug_jobs.trainer_teaches(provider.profession) then
-		return nil
-	end
-	return grug_jobs.GREETINGS and grug_jobs.GREETINGS.mender
+local function is_mender(provider)
+	return provider.kind == "trainer" and not grug_jobs.trainer_teaches(provider.profession)
 end
 
 local function form(session)
 	local quote = session.quote
 	local pages = math.max(1, math.ceil(#quote.items / PAGE_SIZE))
 	session.page = math.max(1, math.min(pages, session.page))
-	local fs = {"", "label[0.4,0.4;Equipment repairs]"}
+	local mender = is_mender(quote.provider)
+	local greeting = mender and grug_jobs.GREETINGS and grug_jobs.GREETINGS.mender
+	local fs = {"", ("label[0.4,0.4;%s]"):format(mender and esc(grug_jobs.MENDER_TITLE) or
+		"Equipment repairs")}
 	local dy = 0
-	local greeting = mender_greeting(quote.provider)
 	if greeting then
 		for piece in (grug_inventory.wrap_text(greeting, GREETING_CHARS) .. "\n"):gmatch("(.-)\n") do
 			fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.9 + dy, esc(piece))
