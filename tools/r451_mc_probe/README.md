@@ -55,7 +55,7 @@ along your view (less in front of a wall).
 
 ## Models and shipped values
 
-Shipped after the playtests (follow-ups 3 and 4, the user's tuned values). Size is the catalogue's
+Shipped after the playtests (follow-ups 3 to 5, the user's tuned values). Size is the catalogue's
 `visual_size`; seat y is the rider's height above the mount's feet.
 
 | Model | Mount | Size | Seat y (nodes) | First person y, z | Third person y, z |
@@ -68,10 +68,10 @@ Shipped after the playtests (follow-ups 3 and 4, the user's tuned values). Size 
 | `troll` | Kezamba Tiger | 1.45 | 1.52 (was 1.19) | 2.4, -0.2 | 2.4, 0 |
 | `expert_accord` | Accord Eagle | 3 | 1.86, x 0.065 | 2.8, -0.2 | 2.75, 0 |
 | `master_accord` | Steller's Sea Eagle | 4 | 2.56, x 0.087 | 3.6, -0.2 | 3.5, 0 |
-| `expert_throng` | Throng Cave Bat | 3.9 (was 3) | 2.5 (was 1.92) | 3.2, -0.4 | 3.4, 0 |
-| `master_throng` | Giant Blood Bat | 5.46 (was 4.2) | 3.71 (was 2.86) | 4.35, -0.5 | 4.6, 0 |
-| `boat` | Rowboat | 0.98 (was 1) | 0.1, z -0.49 | 0.8, 0 | 0.8, 0 |
-| `improved_boat` | Sailboat | 0.8 (was 1) | 0.08 | 0.8, 0 | 0.8, 0 |
+| `expert_throng` | Throng Cave Bat | 5.07 (was 3) | 2, z -0.2 (was 1.92) | 3.8, -0.4 | 3.4, 0 |
+| `master_throng` | Giant Blood Bat | 7.098 (was 4.2) | 3, z -0.3 (was 2.86) | 5, -0.5 | 4.6, 0 |
+| `boat` | Rowboat | 1.078 (was 1) | 0.2, z -0.4 | 1, 0.2 | 0.8, 0 |
+| `improved_boat` | Sailboat | 0.88 (was 1) | 0.09, z -0.2 | 1, -0.2 | 0.8, 0 |
 
 Before 0.45.1 every land and flying mount had its first-person camera 1.1
 nodes above its feet (inside a horse, at a flyer's feet), boats 0.8.

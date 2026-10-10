@@ -192,8 +192,8 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   The engine places an attached player's camera at the mount controller's
   position plus the eye height plus the eye offset, whatever the seat, so the
   ride sets the eye height to the first-person height and the offsets to the
-  rest; the dismount gives the standing eye back. Boats keep the plain
-  sitting eye (0.8 above the water surface). Under a ceiling lower than the
+  rest; the dismount gives the standing eye back. Boats sit the camera about
+  one node above the water surface. Under a ceiling lower than the
   camera (the riding bodies stay 1.6 high) the view reaches into the ceiling
   node.
 - A flying mount plays its flight loop whenever it is in the air, hovering
@@ -206,18 +206,19 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   displays keep their perched idle.
 - Sizes, seats and the ridden ibex (0.45.1 playtest, then the user's tuned
   values): the stag rides at 120 % of the mob's size, the grave wolf at 125 %
-  and the two bats at 130 %; the capital displays keep their measured size
-  (`display_size`). The ridden bats use a copy of the bat mesh whose body
-  holds still in the flight loop (the original bobs it 0.75 / 1.05 nodes under
-  the rider; `tools/r451_mc/gen_bat_ride_mesh.py`); the displays keep the
-  original (`display_mesh`). Every rider sits on the mount's back (the
-  tiger's and the stag's seats moved onto it) and centred: the eagle mesh's
-  body sits off its origin, so it is shifted under the rider. The boats'
-  hulls are smaller (rowboat 98 %, sailboat 80 %); the boat's physics box, its
-  float height at the water surface and the camera are unchanged. The ridden
-  ibex idles on the first frame of its walk instead of its idle clip (which
-  raises the head and horns through the rider's view), and its camera looks
-  over the horns, which arch back over the seat in the walk.
+  and the two bats at 169 % of their 0.45.0 size; the capital displays keep
+  their measured size (`display_size`). The ridden bats use a copy of the bat
+  mesh whose body holds still in the flight loop (the original bobs it 0.75 /
+  1.05 nodes under the rider; `tools/r451_mc/gen_bat_ride_mesh.py`); the
+  displays keep the original (`display_mesh`). Every rider sits on the
+  mount's back (the tiger's and the stag's seats moved onto it) and centred:
+  the eagle mesh's body sits off its origin, so it is shifted under the
+  rider. The boats' hulls are tuned (rowboat 108 %, sailboat 88 %); the
+  boat's physics box and its float height at the water surface are
+  unchanged. The ridden ibex idles on the first frame of its walk instead of
+  its idle clip (which raises the head and horns through the rider's view),
+  and its camera looks over the horns, which arch back over the seat in the
+  walk.
 - Land mounts automatically step over slabs and nominal one-node rises while
   moving forward, without jump input. Their controller uses a **1.01-node**
   step height to clear the engine's strict collision comparison; taller

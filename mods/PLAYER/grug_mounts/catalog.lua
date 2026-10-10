@@ -66,8 +66,7 @@ local horse_animation = {
 -- point the engine's camera looks over from behind, the rider's head (the
 -- engine keeps it within -1..+1.5 nodes of the first-person height and z
 -- within +-0.5). Measured from the models (seat = attach_y * visual_size.y /
--- 10); entity.lua applies it (grug_mounts.apply_camera). Boats keep the plain
--- sitting eye, 0.8 above the water surface.
+-- 10); entity.lua applies it (grug_mounts.apply_camera).
 local function horse(id, description, texture)
 	return {
 		id = id, description = description,
@@ -202,11 +201,12 @@ grug_mounts.MODELS = {
 		mesh = "grug_mounts_bat_ride.b3d", display_mesh = "grug_mobs_cave_bat.b3d",
 		textures = {"grug_mobs_cave_bat.png^[multiply:#856f8e"},
 		icon = "grug_mounts_icon_expert_throng.png",
-		-- 130 % (0.45.1 playtest: too small); the seat grows with it.
-		visual_size = {x = 3.9, y = 3.9}, display_size = {x = 3, y = 3},
+		-- 169 % of the 0.45.0 size, the seat 2 nodes up and 0.2 back, low on the
+		-- grown body (the user's tuned values, 0.45.1).
+		visual_size = {x = 5.07, y = 5.07}, display_size = {x = 3, y = 3},
 		display_box = {-0.85, -0.1, -0.85, 0.85, 1.55, 0.85},
-		attach_y = 6.4,
-		camera = {first = {y = 3.2, z = -0.4}, third = {y = 3.4, z = 0}},
+		attach_y = 3.945, attach_z = 2,
+		camera = {first = {y = 3.8, z = -0.4}, third = {y = 3.4, z = 0}},
 		animation = {stand = {1, 40, 70}, move = {1, 40, 100}, ground = {1, 1, 1}},
 	},
 	-- Rigid hulls (Lord of the Test, LICENSE-media.md): no animation table.
@@ -218,23 +218,26 @@ grug_mounts.MODELS = {
 		id = "boat", description = "Rowboat",
 		mesh = "grug_mounts_rowboat.b3d", textures = {"default_wood.png"},
 		icon = "grug_mounts_icon_boat.png",
-		-- The hull at 98 % (0.45.1 playtest, the user's tuned value); the
-		-- controller's box, its water surface and the camera stay as they are.
-		visual_size = {x = 0.98, y = 0.98},
+		-- The hull at 108 %, the rower 0.2 up and 0.4 behind the hull's middle
+		-- (behind the middle bench), the camera 1 node up and 0.2 forward (the
+		-- user's tuned values, 0.45.1); the controller's box and its water
+		-- surface stay as they are.
+		visual_size = {x = 1.078, y = 1.078},
 		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
-		-- The rower sits behind the middle bench: the hull is shifted forward.
-		attach_y = 1, attach_z = 4.9,
-		camera = {first = {y = 0.8, z = 0}, third = {y = 0.8, z = 0}},
+		attach_y = 1.855, attach_z = 4,
+		camera = {first = {y = 1, z = 0.2}, third = {y = 0.8, z = 0}},
 	},
 	improved_boat = {
 		id = "improved_boat", description = "Sailboat",
 		mesh = "grug_mounts_sailboat.b3d", textures = {"grug_mounts_sailboat.png"},
 		icon = "grug_mounts_icon_improved_boat.png",
-		-- The hull at 80 % (0.45.1 playtest), the rest as the rowboat.
-		visual_size = {x = 0.8, y = 0.8},
+		-- The hull at 88 %, the sailor 0.2 behind its middle, the camera 1 node
+		-- up and 0.2 back (the user's tuned values, 0.45.1); the box as the
+		-- rowboat's.
+		visual_size = {x = 0.88, y = 0.88},
 		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
-		attach_y = 1, attach_z = 0,
-		camera = {first = {y = 0.8, z = 0}, third = {y = 0.8, z = 0}},
+		attach_y = 1.023, attach_z = 2,
+		camera = {first = {y = 1, z = -0.2}, third = {y = 0.8, z = 0}},
 	},
 	master_throng = {
 		id = "master_throng", description = "Giant Blood Bat",
@@ -243,10 +246,12 @@ grug_mounts.MODELS = {
 		mesh = "grug_mounts_bat_ride.b3d", display_mesh = "grug_mobs_cave_bat.b3d",
 		textures = {"grug_mobs_cave_bat.png^[multiply:#7d3549"},
 		icon = "grug_mounts_icon_master_throng.png",
-		visual_size = {x = 5.46, y = 5.46}, display_size = {x = 4.2, y = 4.2},
+		-- 169 % of the 0.45.0 size, the seat 3 nodes up and 0.3 back (the
+		-- user's tuned values, 0.45.1).
+		visual_size = {x = 7.098, y = 7.098}, display_size = {x = 4.2, y = 4.2},
 		display_box = {-1.15, -0.1, -1.15, 1.15, 2.05, 1.15},
-		attach_y = 6.8,
-		camera = {first = {y = 4.35, z = -0.5}, third = {y = 4.6, z = 0}},
+		attach_y = 4.227, attach_z = 3,
+		camera = {first = {y = 5, z = -0.5}, third = {y = 4.6, z = 0}},
 		animation = {stand = {1, 40, 75}, move = {1, 40, 110}, ground = {1, 1, 1}},
 	},
 }
