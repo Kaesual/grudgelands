@@ -64,7 +64,6 @@ core = {
 	register_on_dieplayer = function() end,
 	chat_send_player = function() end,
 }
-minetest = core
 
 -- The real wrap_text, cut out of grug_inventory/ui.lua.
 grug_inventory = {}
@@ -469,7 +468,6 @@ do
 end
 
 if failures > 0 then
-	print(("R451 TR PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R451 TR PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R451 TR PORTABLE PASS checks=%d"):format(checks))
