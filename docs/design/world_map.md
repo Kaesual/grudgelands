@@ -509,8 +509,9 @@ were in, and quest texts and level routes now name zones.
   minimap hidden or unavailable (switching the minimap on shows it again).
   grug_ambience tells the minimap only when the playing track changes; the
   minimap places the box again after a window or GUI scaling change and
-  sends only what changed. The note icon is a placeholder until the user
-  picks the art (`grug_ambience_note.png`, replaced in place).
+  sends only what changed. The note icon is the user's pick (a silver
+  beamed pair of notes, 24 px art drawn 36 GUI px high, as tall as the two
+  lines).
 - **Territory status** (Round 32, the user's ruling): from the player's
   position, never from the PvP flag (`grug_pvp.territory_at`, the rule the
   location flag follows, [pvp.md](pvp.md) §1), sampled with the location:

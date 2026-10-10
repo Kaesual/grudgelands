@@ -762,7 +762,7 @@ do
 				near(tx, g.text_x) and near(ty, g.text_y) and
 				box.text == ("[fill:%dx%d:#3434344d"):format(g.w, g.h) and
 				math.floor(g.w * box.scale.x * f.hud) == g.w and
-				math.floor(32 * icon.scale.x * f.hud) == g.icon and
+				math.floor(24 * icon.scale.x * f.hud) == g.icon and
 				box.alignment.x == 1 and box.alignment.y == 1 and
 				text.alignment.x == 1 and text.alignment.y == 1 and text.number == 0xf0e6c8 and
 				box.z_index < icon.z_index and by >= top + 20 * f.gui

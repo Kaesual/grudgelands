@@ -82,9 +82,8 @@ local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, playe
 local LOCATION_GAP, LOCATION_COLOR = 4, 0xf0e6c8
 -- The "Now playing" box (0.45.1, geometry in minimap_view.lua
 -- now_playing_box): the inventory window's background (default's
--- gui_formbg.png, #343434) at 30 % alpha, the note icon (a placeholder until
--- the user picks the art; the pick replaces the file), the text in the
--- location line's calm colour.
+-- gui_formbg.png, #343434) at 30 % alpha, the note icon (the user's pick,
+-- 24 px art), the text in the location line's calm colour.
 local PLAYING_BOX_COLOR = "#3434344d"
 local PLAYING_ICON = "grug_ambience_note.png"
 

@@ -8,9 +8,8 @@
 -- grug_core hud_layout.lua and grug_map minimap_view.lua. The minimap's own
 -- drawing of the box is checked in tools/r27_minimap (block P). Checks:
 --   D  data: every track has a title and an artist, the ones its
---      LICENSE-media.md row credits; the placeholder note icon ships with
---      its row (`python3 tools/r451_mu/gen_note_placeholder.py --check`
---      compares the file with its generator);
+--      LICENSE-media.md row credits; the note icon (the user's pick) ships
+--      with its row;
 --   N  which track really plays (rules.lua now_playing) through the
 --      scheduler: none while the first download is pending, the track while
 --      it plays, none in the pause, the next one after it, none on leaving
@@ -77,10 +76,10 @@ do
 	local png = read(MOD .. "/textures/grug_ambience_note.png")
 	local w = png and #png >= 24 and png:sub(13, 16) == "IHDR" and
 		((png:byte(17) * 256 + png:byte(18)) * 256 + png:byte(19)) * 256 + png:byte(20)
-	check(w == 32, "D the note icon ships, 32 px")
+	check(w == 24, "D the note icon ships, 24 px")
 	check(license:find("grug_ambience_note.png", 1, true) and
-		license:find("placeholder", 1, true) and license:find("gen_note_placeholder.py", 1, true),
-		"D the note icon's LICENSE-media row marks it a placeholder")
+		license:find("GPT-6 Astra", 1, true) and license:find("r451_tx/paint_art.py", 1, true) and
+		license:find("CC0-1.0", 1, true), "D the note icon's LICENSE-media row")
 end
 
 -- ---------------------------------------------------------------------------
@@ -179,7 +178,7 @@ do
 		check(fits, "G " .. label .. ": icon and two lines inside the box")
 		check(holds, "G " .. label .. ": the width holds every title and artist")
 	end
-	check(widest <= 280, "G the widest box at 1080p is about 280 px (" .. widest .. ")")
+	check(widest <= 285, "G the widest box at 1080p is about 280 px (" .. widest .. ")")
 end
 
 -- ---------------------------------------------------------------------------

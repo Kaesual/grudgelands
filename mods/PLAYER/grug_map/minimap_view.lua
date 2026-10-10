@@ -160,14 +160,15 @@ end
 -- left-aligned lines right of it, the title and the artist (the name alone:
 -- "by" made the line longer and said nothing the second line does not).
 -- Its text is HUD text in the location line's default font, sized by GUI
--- scaling; the icon is scaled with it, so both are in GUI units here. HUD
+-- scaling; the icon is scaled with it, as high as the two lines (36 GUI px,
+-- the 24 px art at 1.5 times), so both are in GUI units here. HUD
 -- text cannot be measured, so the width comes from the longer line's
--- characters at CHAR_EM of the font size each: the font (Arimo Regular,
+-- characters at `char_em` of the font size each: the font (Arimo Regular,
 -- 16 px at GUI scaling 1) measures 0.40-0.59 em per character over the
 -- shipped titles and artists ("Town Theme RPG" the widest per character,
 -- "Fantasy Orchestral Theme" the longest at 11.8 em), so 0.6 em holds every
--- one. One font line is LINE_EM high.
-V.NOW_PLAYING = {gap = 4, pad = 4, icon = 32, icon_gap = 6, line = 20,
+-- one. One font line is `line_em` high.
+V.NOW_PLAYING = {gap = 4, pad = 4, icon = 36, icon_gap = 6, line = 20,
 	font = 16, char_em = 0.6, line_em = 1.15}
 
 -- The box for `title` and `artist` with the location line's top at
