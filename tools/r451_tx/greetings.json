@@ -1,0 +1,42 @@
+{
+  "weaponsmith": {
+    "A": "Welcome to the forge! If you'd like to turn a bar of metal into a sword worth carrying, I'd be proud to teach you.",
+    "B": "Ready to learn weaponsmithing? I'll show you how to make swords, daggers and greataxes at the forge, one good hammer stroke at a time.",
+    "C": "You've come to learn weaponsmithing? I'll teach you to make swords at the forge; we'll give all that hammering a point."
+  },
+  "armorsmith": {
+    "A": "There's a quiet pride in making armour someone can trust. Join me at the forge, and I'll teach you to make metal armour and shields.",
+    "B": "Let's put that metal to work. I'll teach you to make armour and shields at the forge, from a sturdy helmet to the boots beneath it.",
+    "C": "You can make quite an entrance in metal armour, especially on stairs. I'll teach you to make it, and shields, at the forge."
+  },
+  "alchemist": {
+    "A": "Curious about Alchemy? You're welcome at the brewing stand, where I'll teach you to bottle a little help for the road in potions and elixirs.",
+    "B": "Let's learn Alchemy: ingredients in, useful potions and elixirs out. I'll show you the recipes at the brewing stand.",
+    "C": "With Alchemy, you can keep a little recovery in your pocket. I'll teach you potions at the brewing stand; do mind the corks."
+  },
+  "tailor": {
+    "A": "Ah, you'd like to learn tailoring! Join me at the tailor bench, and we'll make cloth armour, roomy bags and well-bound spellbooks.",
+    "B": "You bring the cloth; I'll teach you what to do with it. At the tailor bench, you can make cloth armour, bags and spellbooks.",
+    "C": "If your bag is full, I can teach you to make another. Come to the tailor bench for bags, cloth armour and spellbooks; the collecting is up to you."
+  },
+  "leatherworker": {
+    "A": "Good leather has many journeys in it. Join me at the tanning rack, and I'll teach you to make leather armour, bags and bows for yours.",
+    "B": "Ready to learn leatherworking? I'll teach you leather armour, bags and bows at the tanning rack: a useful craft for a long road.",
+    "C": "You can wear this craft, carry it or draw a bow with it. I'll teach you leather armour, bags and bows at the tanning rack; it's a versatile line of work."
+  },
+  "woodcarver": {
+    "A": "Welcome, aspiring woodcarver! Take a place at the carving bench, and I'll teach you to shape wands and staves worthy of your next spell.",
+    "B": "Want to make your own wands and staves? I'll teach you woodcarving at the carving bench, from the first cut to a finished caster's weapon.",
+    "C": "You bring the magic; I'll teach you to make something to wave it with. At the carving bench, woodcarving gives you wands and staves."
+  },
+  "goldsmith": {
+    "A": "An eye for the finer things? Join me at the jeweller's bench, and I'll teach you goldsmithing: rings, pendants and little treasures with real purpose.",
+    "B": "Let's give your eye for detail a job. I'll teach you to make rings, amulets and medallions at the jeweller's bench.",
+    "C": "Good things come in small settings. I'll teach you rings, pendants and medallions at the jeweller's bench; you can supply the admiring glances."
+  },
+  "mender": {
+    "A": "Welcome to Grudge-Free Repairs! I'll mend your worn equipment for coin; any grudges it picked up along the way can stay outside.",
+    "B": "You've reached Grudge-Free Repairs: worn equipment fixed for coin. The work has a price; the lack of hard feelings is on the house.",
+    "C": "You've found Grudge-Free Repairs! I'll mend your equipment for coin; old grudges are beyond repair, but your boots aren't."
+  }
+}

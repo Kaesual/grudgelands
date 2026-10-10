@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grudgelands · 0.45.1 TX choices</title>
+<style>
+:root{color-scheme:dark;font:16px/1.55 system-ui,sans-serif;background:#181d21;color:#f5f1e8}
+*{box-sizing:border-box}body{max-width:1160px;margin:auto;padding:32px 24px 80px}
+h1,h2,legend{font-weight:650;line-height:1.25}h1{font-size:36px;margin:12px 0}
+h2{margin-top:48px;font-size:25px}a{color:#ffe5ab}.eyebrow{color:#e6b64d;letter-spacing:.12em;font-size:12px}
+.intro{max-width:760px;color:#bfc8c9}.controls{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+button{font:inherit;border:1px solid #776044;border-radius:5px;background:#302b26;color:#ffe5ab;padding:9px 14px;cursor:pointer}
+button:hover{background:#493b2a}button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #e6b64d;outline-offset:4px}
+fieldset{border:0;padding:0;margin:28px 0}legend{font-size:19px;margin-bottom:12px}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.choice{display:block;background:#22282c;border:1px solid #41474a;border-radius:6px;padding:16px;cursor:pointer}
+.choice:has(input:checked){border-color:#e6b64d;background:#352f25;box-shadow:inset 0 0 0 1px #e6b64d}
+.choice-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;color:#ffe5ab}
+input{accent-color:#e6b64d;margin:0}small{color:#aeb8b9;font-size:11px}.greeting{display:block;margin-top:14px;font-size:15px}
+.icons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.icon-column{min-width:0}.icon-samples{display:flex;align-items:center;justify-content:center;gap:36px;min-height:140px}
+img{image-rendering:pixelated}.icon-choice>span:last-child{display:block;min-height:76px;font-size:14px;color:#c4cccc}
+details{margin:12px 0}summary{cursor:pointer;color:#ffe5ab}.sheet{display:block;width:100%;height:auto;margin-top:16px}
+.handover{padding:24px;background:#22282c;border:1px solid #41474a;border-radius:6px}
+textarea{width:100%;height:250px;resize:vertical;background:#151a1d;color:#e2e6e5;border:1px solid #41474a;padding:14px;font:13px/1.7 ui-monospace,monospace}
+.status{color:#c2cccd;font-size:14px}footer{margin-top:36px;color:#9caaad;font-size:13px}
+@media(max-width:800px){.choices,.icons{grid-template-columns:1fr}body{padding:22px 16px 50px}h1{font-size:29px}}
+</style>
+<header><div class="eyebrow">GRUDGELANDS / RELEASE 0.45.1 / LANE TX</div>
+<h1>A welcome and a little music</h1>
+<p class="intro">Choose a greeting for each trainer and an icon for the music HUD. A is warm and proud, B is brisk and practical, C is playful. You can choose one voice for all greetings or mix individual favourites.</p></header>
+<main><h2>Trainer greetings</h2>
+<div class="controls" aria-label="Choose a voice for all greetings">
+<button type="button" data-voice="A">All A · Warm and proud</button>
+<button type="button" data-voice="B">All B · Brisk and practical</button>
+<button type="button" data-voice="C">All C · Playful</button></div>
+<fieldset><legend>Weaponsmith</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="weaponsmith" value="A"><b>A · Warm and proud</b>
+<small>114 characters</small></span><span class="greeting">Welcome to the forge! If you&#x27;d like to turn a bar of metal into a sword worth carrying, I&#x27;d be proud to teach you.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="weaponsmith" value="B"><b>B · Brisk and practical</b>
+<small>134 characters</small></span><span class="greeting">Ready to learn weaponsmithing? I&#x27;ll show you how to make swords, daggers and greataxes at the forge, one good hammer stroke at a time.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="weaponsmith" value="C"><b>C · Playful</b>
+<small>119 characters</small></span><span class="greeting">You&#x27;ve come to learn weaponsmithing? I&#x27;ll teach you to make swords at the forge; we&#x27;ll give all that hammering a point.</span></label></div></fieldset>
+<fieldset><legend>Armorsmith</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="armorsmith" value="A"><b>A · Warm and proud</b>
+<small>132 characters</small></span><span class="greeting">There&#x27;s a quiet pride in making armour someone can trust. Join me at the forge, and I&#x27;ll teach you to make metal armour and shields.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="armorsmith" value="B"><b>B · Brisk and practical</b>
+<small>131 characters</small></span><span class="greeting">Let&#x27;s put that metal to work. I&#x27;ll teach you to make armour and shields at the forge, from a sturdy helmet to the boots beneath it.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="armorsmith" value="C"><b>C · Playful</b>
+<small>123 characters</small></span><span class="greeting">You can make quite an entrance in metal armour, especially on stairs. I&#x27;ll teach you to make it, and shields, at the forge.</span></label></div></fieldset>
+<fieldset><legend>Alchemy</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="alchemist" value="A"><b>A · Warm and proud</b>
+<small>141 characters</small></span><span class="greeting">Curious about Alchemy? You&#x27;re welcome at the brewing stand, where I&#x27;ll teach you to bottle a little help for the road in potions and elixirs.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="alchemist" value="B"><b>B · Brisk and practical</b>
+<small>116 characters</small></span><span class="greeting">Let&#x27;s learn Alchemy: ingredients in, useful potions and elixirs out. I&#x27;ll show you the recipes at the brewing stand.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="alchemist" value="C"><b>C · Playful</b>
+<small>124 characters</small></span><span class="greeting">With Alchemy, you can keep a little recovery in your pocket. I&#x27;ll teach you potions at the brewing stand; do mind the corks.</span></label></div></fieldset>
+<fieldset><legend>Tailor</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="tailor" value="A"><b>A · Warm and proud</b>
+<small>130 characters</small></span><span class="greeting">Ah, you&#x27;d like to learn tailoring! Join me at the tailor bench, and we&#x27;ll make cloth armour, roomy bags and well-bound spellbooks.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="tailor" value="B"><b>B · Brisk and practical</b>
+<small>124 characters</small></span><span class="greeting">You bring the cloth; I&#x27;ll teach you what to do with it. At the tailor bench, you can make cloth armour, bags and spellbooks.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="tailor" value="C"><b>C · Playful</b>
+<small>146 characters</small></span><span class="greeting">If your bag is full, I can teach you to make another. Come to the tailor bench for bags, cloth armour and spellbooks; the collecting is up to you.</span></label></div></fieldset>
+<fieldset><legend>Leatherworker</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="leatherworker" value="A"><b>A · Warm and proud</b>
+<small>134 characters</small></span><span class="greeting">Good leather has many journeys in it. Join me at the tanning rack, and I&#x27;ll teach you to make leather armour, bags and bows for yours.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="leatherworker" value="B"><b>B · Brisk and practical</b>
+<small>128 characters</small></span><span class="greeting">Ready to learn leatherworking? I&#x27;ll teach you leather armour, bags and bows at the tanning rack: a useful craft for a long road.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="leatherworker" value="C"><b>C · Playful</b>
+<small>153 characters</small></span><span class="greeting">You can wear this craft, carry it or draw a bow with it. I&#x27;ll teach you leather armour, bags and bows at the tanning rack; it&#x27;s a versatile line of work.</span></label></div></fieldset>
+<fieldset><legend>Woodcarver</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="woodcarver" value="A"><b>A · Warm and proud</b>
+<small>136 characters</small></span><span class="greeting">Welcome, aspiring woodcarver! Take a place at the carving bench, and I&#x27;ll teach you to shape wands and staves worthy of your next spell.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="woodcarver" value="B"><b>B · Brisk and practical</b>
+<small>138 characters</small></span><span class="greeting">Want to make your own wands and staves? I&#x27;ll teach you woodcarving at the carving bench, from the first cut to a finished caster&#x27;s weapon.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="woodcarver" value="C"><b>C · Playful</b>
+<small>132 characters</small></span><span class="greeting">You bring the magic; I&#x27;ll teach you to make something to wave it with. At the carving bench, woodcarving gives you wands and staves.</span></label></div></fieldset>
+<fieldset><legend>Goldsmith</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="goldsmith" value="A"><b>A · Warm and proud</b>
+<small>150 characters</small></span><span class="greeting">An eye for the finer things? Join me at the jeweller&#x27;s bench, and I&#x27;ll teach you goldsmithing: rings, pendants and little treasures with real purpose.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="goldsmith" value="B"><b>B · Brisk and practical</b>
+<small>115 characters</small></span><span class="greeting">Let&#x27;s give your eye for detail a job. I&#x27;ll teach you to make rings, amulets and medallions at the jeweller&#x27;s bench.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="goldsmith" value="C"><b>C · Playful</b>
+<small>143 characters</small></span><span class="greeting">Good things come in small settings. I&#x27;ll teach you rings, pendants and medallions at the jeweller&#x27;s bench; you can supply the admiring glances.</span></label></div></fieldset>
+<fieldset><legend>Grudge-Free Repairs</legend><div class="choices"><label class="choice"><span class="choice-top">
+<input type="radio" name="mender" value="A"><b>A · Warm and proud</b>
+<small>128 characters</small></span><span class="greeting">Welcome to Grudge-Free Repairs! I&#x27;ll mend your worn equipment for coin; any grudges it picked up along the way can stay outside.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="mender" value="B"><b>B · Brisk and practical</b>
+<small>131 characters</small></span><span class="greeting">You&#x27;ve reached Grudge-Free Repairs: worn equipment fixed for coin. The work has a price; the lack of hard feelings is on the house.</span></label><label class="choice"><span class="choice-top">
+<input type="radio" name="mender" value="C"><b>C · Playful</b>
+<small>122 characters</small></span><span class="greeting">You&#x27;ve found Grudge-Free Repairs! I&#x27;ll mend your equipment for coin; old grudges are beyond repair, but your boots aren&#x27;t.</span></label></div></fieldset>
+<h2>Music-note icon</h2>
+<p class="intro">Each icon is 24 × 24 pixels with a transparent background. Samples below show 1× and 4×. Open a preview to compare the HUD over bright sky, grassland and a dark cave; click its sheet to inspect it at full size.</p>
+<div class="icons" id="icons"><div class="icon-column"><label class="choice icon-choice"><span class="choice-top">
+<input type="radio" name="note" value="A"><b>A · Golden eighth note</b></span>
+<span class="icon-samples"><img width="24" height="24" src="note/A/grug_ambience_note.png" alt="Golden eighth note at HUD size">
+<img width="96" height="96" src="note/A/grug_ambience_note.png" alt="Golden eighth note at four times HUD size"></span>
+<span>A single curled flag and a warm gold face: the clearest, simplest silhouette.</span></label>
+<details><summary>Preview A: sky, grassland and cave</summary>
+<a href="note/A/preview.png"><img class="sheet" src="note/A/preview.png" alt="Golden eighth note over all three backgrounds, HUD size and 4x"></a></details></div>
+<div class="icon-column"><label class="choice icon-choice"><span class="choice-top">
+<input type="radio" name="note" value="B"><b>B · Silver beamed pair</b></span>
+<span class="icon-samples"><img width="24" height="24" src="note/B/grug_ambience_note.png" alt="Silver beamed pair at HUD size">
+<img width="96" height="96" src="note/B/grug_ambience_note.png" alt="Silver beamed pair at four times HUD size"></span>
+<span>Two ivory-silver notes on a rising beam: a wider, rhythmic silhouette.</span></label>
+<details><summary>Preview B: sky, grassland and cave</summary>
+<a href="note/B/preview.png"><img class="sheet" src="note/B/preview.png" alt="Silver beamed pair over all three backgrounds, HUD size and 4x"></a></details></div>
+<div class="icon-column"><label class="choice icon-choice"><span class="choice-top">
+<input type="radio" name="note" value="C"><b>C · Lute and note</b></span>
+<span class="icon-samples"><img width="24" height="24" src="note/C/grug_ambience_note.png" alt="Lute and note at HUD size">
+<img width="96" height="96" src="note/C/grug_ambience_note.png" alt="Lute and note at four times HUD size"></span>
+<span>A honey-wood lute beside a small gold note: a travelling musician's touch.</span></label>
+<details><summary>Preview C: sky, grassland and cave</summary>
+<a href="note/C/preview.png"><img class="sheet" src="note/C/preview.png" alt="Lute and note over all three backgrounds, HUD size and 4x"></a></details></div></div>
+<p class="intro">Preview boxes use the inventory's #343434 at 77/255 alpha (30.2%). Both text lines use the same illustrative font size. The backdrops are original studies, not engine screenshots; actual HUD text follows client settings.</p>
+<h2>Your selections</h2><div class="handover">
+<p id="status" class="status" aria-live="polite">0 of 9 choices made.</p>
+<textarea id="summary" readonly aria-label="Selection summary for the coordinator"></textarea>
+<div class="controls"><button id="download" type="button" disabled>Download selections.json</button>
+<button id="reset" type="button">Clear choices</button></div>
+<p class="status">Send the downloaded file to the coordinator, or copy the summary above. Choices remain in this tab until you reload or close it. Downloading does not install anything.</p></div></main>
+<footer>Original, AI-assisted icons by GPT-6 Astra · CC0 1.0 · <a href="README.md">Provenance and handover</a> · <a href="greetings.json">Greeting source</a></footer>
+<script>
+"use strict";
+const greetings = {"weaponsmith": {"A": "Welcome to the forge! If you'd like to turn a bar of metal into a sword worth carrying, I'd be proud to teach you.", "B": "Ready to learn weaponsmithing? I'll show you how to make swords, daggers and greataxes at the forge, one good hammer stroke at a time.", "C": "You've come to learn weaponsmithing? I'll teach you to make swords at the forge; we'll give all that hammering a point."}, "armorsmith": {"A": "There's a quiet pride in making armour someone can trust. Join me at the forge, and I'll teach you to make metal armour and shields.", "B": "Let's put that metal to work. I'll teach you to make armour and shields at the forge, from a sturdy helmet to the boots beneath it.", "C": "You can make quite an entrance in metal armour, especially on stairs. I'll teach you to make it, and shields, at the forge."}, "alchemist": {"A": "Curious about Alchemy? You're welcome at the brewing stand, where I'll teach you to bottle a little help for the road in potions and elixirs.", "B": "Let's learn Alchemy: ingredients in, useful potions and elixirs out. I'll show you the recipes at the brewing stand.", "C": "With Alchemy, you can keep a little recovery in your pocket. I'll teach you potions at the brewing stand; do mind the corks."}, "tailor": {"A": "Ah, you'd like to learn tailoring! Join me at the tailor bench, and we'll make cloth armour, roomy bags and well-bound spellbooks.", "B": "You bring the cloth; I'll teach you what to do with it. At the tailor bench, you can make cloth armour, bags and spellbooks.", "C": "If your bag is full, I can teach you to make another. Come to the tailor bench for bags, cloth armour and spellbooks; the collecting is up to you."}, "leatherworker": {"A": "Good leather has many journeys in it. Join me at the tanning rack, and I'll teach you to make leather armour, bags and bows for yours.", "B": "Ready to learn leatherworking? I'll teach you leather armour, bags and bows at the tanning rack: a useful craft for a long road.", "C": "You can wear this craft, carry it or draw a bow with it. I'll teach you leather armour, bags and bows at the tanning rack; it's a versatile line of work."}, "woodcarver": {"A": "Welcome, aspiring woodcarver! Take a place at the carving bench, and I'll teach you to shape wands and staves worthy of your next spell.", "B": "Want to make your own wands and staves? I'll teach you woodcarving at the carving bench, from the first cut to a finished caster's weapon.", "C": "You bring the magic; I'll teach you to make something to wave it with. At the carving bench, woodcarving gives you wands and staves."}, "goldsmith": {"A": "An eye for the finer things? Join me at the jeweller's bench, and I'll teach you goldsmithing: rings, pendants and little treasures with real purpose.", "B": "Let's give your eye for detail a job. I'll teach you to make rings, amulets and medallions at the jeweller's bench.", "C": "Good things come in small settings. I'll teach you rings, pendants and medallions at the jeweller's bench; you can supply the admiring glances."}, "mender": {"A": "Welcome to Grudge-Free Repairs! I'll mend your worn equipment for coin; any grudges it picked up along the way can stay outside.", "B": "You've reached Grudge-Free Repairs: worn equipment fixed for coin. The work has a price; the lack of hard feelings is on the house.", "C": "You've found Grudge-Free Repairs! I'll mend your equipment for coin; old grudges are beyond repair, but your boots aren't."}};
+const keys = Object.keys(greetings);
+const choices = [...keys, "note"];
+function selection() {
+  return Object.fromEntries(choices.map(key => [key,
+    document.querySelector(`input[name="${key}"]:checked`)?.value ?? null]));
+}
+function update() {
+  const picked = selection();
+  const count = Object.values(picked).filter(Boolean).length;
+  document.getElementById("status").textContent = `${count} of 9 choices made.`;
+  document.getElementById("download").disabled = count !== 9;
+  document.getElementById("summary").value = choices.map(key => {
+    const value = picked[key];
+    if (!value) return `${key}: pending`;
+    return key === "note" ? `note: ${value}\n  note/${value}/grug_ambience_note.png`
+      : `${key}: ${value}\n  ${greetings[key][value]}`;
+  }).join("\n\n");
+}
+document.addEventListener("change", update);
+for (const button of document.querySelectorAll("[data-voice]")) {
+  button.addEventListener("click", () => {
+    for (const key of keys) document.querySelector(`input[name="${key}"][value="${button.dataset.voice}"]`).checked = true;
+    update();
+  });
+}
+document.getElementById("reset").addEventListener("click", () => {
+  for (const input of document.querySelectorAll("input")) input.checked = false;
+  update();
+});
+document.getElementById("download").addEventListener("click", () => {
+  const picked = selection();
+  if (Object.values(picked).some(value => value === null)) return;
+  const result = {release: "0.45.1", lane: "TX", greetings: {}, note: {variant: picked.note,
+    path: `tools/r451_tx/note/${picked.note}/grug_ambience_note.png`}};
+  for (const key of keys) result.greetings[key] = {variant: picked[key], text: greetings[key][picked[key]]};
+  const url = URL.createObjectURL(new Blob([JSON.stringify(result, null, 2) + "\n"], {type: "application/json"}));
+  const link = document.createElement("a"); link.href = url; link.download = "r451-tx-selections.json";
+  document.body.append(link); link.click(); link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+update();
+</script></html>
