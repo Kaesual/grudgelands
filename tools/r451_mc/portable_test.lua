@@ -17,8 +17,9 @@
 --   F. the banner "Press E to summon your mount": once per character, for
 --      the first riding mount, when the dialogue closes; none for a later
 --      tier, a boat, or a character who owned a mount before;
---   G. a flyer plays its flight loop in the air, hovering too, and stands
---      only idle on the ground (0.45.1 follow-up).
+--   G. a flyer plays its flight loop in the air, hovering too; on the
+--      ground (summoned, landed, on a slab, idle or moving) it holds one still
+--      level frame without the wing sound (0.45.1 follow-ups).
 --
 --   luajit tools/r451_mc/portable_test.lua [REPO]
 -- Prints "R451 MC PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -65,8 +66,11 @@ vector = {
 }
 
 -- Flat ground up to y = 0 (top at 0.5), air above.
+-- `placed` holds single nodes on top (a slab for the flyers' ground cases).
+local placed = {}
 local function node_at(pos)
-	return math.floor(pos.y + 0.5) <= 0 and "default:dirt" or "air"
+	local x, y, z = math.floor(pos.x + 0.5), math.floor(pos.y + 0.5), math.floor(pos.z + 0.5)
+	return placed[x .. "," .. y .. "," .. z] or (y <= 0 and "default:dirt" or "air")
 end
 
 local serial, shown, banners, feed_lines = {}, {}, {}, {}
@@ -77,6 +81,7 @@ core = {
 	registered_nodes = {
 		air = {walkable = false, liquidtype = "none"},
 		["default:dirt"] = {walkable = true, liquidtype = "none"},
+		["stairs:slab_stone"] = {walkable = true, liquidtype = "none"},
 	},
 	registered_items = {},
 	registered_entities = registered_entities,
@@ -133,7 +138,7 @@ local function new_object(pos, name, staticdata)
 	function object:get_properties() return self.props end
 	function object:set_attach(parent) self.parent = parent end
 	function object:get_attach() return self.parent end
-	function object:set_animation() end
+	function object:set_animation(range) self.anim = copy(range) end
 	if entity.on_activate then entity.on_activate(entity, staticdata, 0) end
 	if not object.valid then return nil end
 	return object
@@ -200,7 +205,9 @@ end
 function player_api.get_animation(player)
 	return {animation = animations[player:get_player_name()]}
 end
-grug_sounds = {play = function() return false end, stop = function() end}
+local sounds_played = {}
+grug_sounds = {play = function(event) sounds_played[#sounds_played + 1] = event return false end,
+	stop = function() end}
 grug_core = {
 	FLIGHT_CEILING = 600,
 	FLASH_COLOR = {error = 1, notice = 2},
@@ -501,33 +508,58 @@ ok, _, hint = grug_mounts.purchase(direct, 1)
 check(ok and not hint, "the flag keeps it to once per character")
 
 ------------------------------------------------------------------------------
--- G. Flyers: the flight loop in the air, hovering too; standing only on the
--- ground. The ground ends at y = 0.5 here.
+-- G. Flyers (0.45.1 follow-up, the user's ruling): in the air the flight loop,
+-- hovering too; on the ground, idle or moving, the still `ground` frame of
+-- the flight loop (level, no wing beat) and no wing sound. The ground's top
+-- is y = 0.5 here; the flyer box's bottom is 0.1 under its origin.
 ------------------------------------------------------------------------------
 for _, ride in ipairs({{"expert_accord", "accord", 3}, {"master_accord", "accord", 4},
 		{"expert_throng", "throng", 3}, {"master_throng", "throng", 4}}) do
-	local flyer = make_player("flyer_" .. ride[1], ride[2], "human")
+	local id = ride[1]
+	local model = MODELS[id]
+	local ground, move = model.animation.ground, model.animation.move
+	check(ground and ground[1] == ground[2], id .. ": one still ground frame")
+	check(ground and ground[1] >= move[1] and ground[1] <= move[2],
+		id .. ": the ground frame is a frame of the flight loop")
+	local flyer = make_player("flyer_" .. id, ride[2], "human")
+	-- Summoned by a player standing on the ground (the box reaches 0.1 into it).
 	grug_mounts.spawn_entity(flyer, ride[3], {x = 0, y = 0.5, z = 0})
 	local record = grug_mounts.active[flyer:get_player_name()]
 	local entity = record.object:get_luaentity()
+	eq(entity._grug_animation, "ground", id .. ": summoned on the ground, the still frame at once")
 	local controls = {}
 	function flyer:get_player_control() return controls end
-	step_mount(flyer)
-	eq(entity._grug_animation, "stand", ride[1] .. ": idle on the ground it stands")
-	controls = {up = true}
-	step_mount(flyer)
-	eq(entity._grug_animation, "move", ride[1] .. ": moving on the ground, the flight loop")
-	controls = {}
-	record.object.pos = {x = 0, y = 12, z = 0}
-	step_mount(flyer)
-	eq(entity._grug_animation, "move", ride[1] .. ": hovering in the air, the flight loop")
-	controls = {sneak = true}
-	step_mount(flyer)
-	eq(entity._grug_animation, "move", ride[1] .. ": descending, the flight loop")
-	controls = {}
-	record.object.pos = {x = 0, y = 0.5, z = 0}
-	step_mount(flyer)
-	eq(entity._grug_animation, "stand", ride[1] .. ": landed and idle, it stands again")
+	local function at(y, label, expected, keys)
+		controls = keys or {}
+		record.object.pos = {x = 0, y = y, z = 0}
+		local before = #sounds_played
+		step_mount(flyer)
+		eq(entity._grug_animation, expected, id .. ": " .. label)
+		local wings = false
+		for index = before + 1, #sounds_played do
+			if sounds_played[index] == "mount_wings" then wings = true end
+		end
+		return wings
+	end
+	at(0.5, "idle where summoned", "ground")
+	eq(record.visual.anim and record.visual.anim.x, ground[1], id .. ": the visual holds the ground frame")
+	check(not at(0.5, "moving on the ground", "ground", {up = true}),
+		id .. ": moving on the ground, no wing sound")
+	-- Where the engine stops a landing: the box's bottom on the ground's top.
+	at(0.6, "landed (resting on the ground's top)", "ground")
+	at(0.6, "landed, pushing down", "ground", {sneak = true})
+	at(0.69, "a hair above the ground", "ground")
+	at(0.9, "hovering 0.3 above the ground", "move")
+	check(at(0.9, "flying low over the ground", "move", {up = true}),
+		id .. ": the wing sound in the air")
+	at(12, "hovering high", "move")
+	at(12, "descending", "move", {sneak = true})
+	-- A slab (top at y = 1.0) at the middle: the flyer rests at 1.1.
+	placed["0,1,0"] = "stairs:slab_stone"
+	at(1.1, "resting on a slab", "ground")
+	placed["0,1,0"] = nil
+	at(1.1, "the slab gone: in the air", "move")
+	at(0.6, "landed again", "ground")
 	grug_mounts.dismount(flyer, "manual", false)
 end
 

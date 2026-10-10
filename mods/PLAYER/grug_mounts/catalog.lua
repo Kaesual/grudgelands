@@ -82,6 +82,12 @@ local function horse(id, description, texture)
 	}
 end
 
+-- A flyer's `ground` clip (0.45.1) is one still frame of its flight loop,
+-- body level and wings out: the eagle model has no walk or folded-wing pose
+-- (its `stand` 1-100 is an upright, wing-beating perch, beak about 30 degrees
+-- higher than in flight), the bat's loop flaps and bobs. The ridden flyer
+-- holds it on the ground (entity.lua flight_step); `stand` stays for the
+-- capital displays.
 -- The tier-2 race mounts and the tier-3/4 flyers get their shared boxes
 -- below (TIER_BODIES). `display_box` is a model's own size, for the riderless
 -- capital displays and their name tags only (grug_mobs/capital_displays.lua);
@@ -157,7 +163,7 @@ grug_mounts.MODELS = {
 		display_box = {-0.9, -0.1, -0.9, 0.9, 1.5, 0.9},
 		attach_y = 6.2,
 		camera = {first = {y = 2.65, z = -0.2}, third = {y = 2.75, z = 0}},
-		animation = {stand = {1, 100, 60}, move = {150, 250, 100}},
+		animation = {stand = {1, 100, 60}, move = {150, 250, 100}, ground = {200, 200, 1}},
 	},
 	master_accord = {
 		id = "master_accord", description = "Steller's Sea Eagle",
@@ -168,7 +174,7 @@ grug_mounts.MODELS = {
 		display_box = {-1.15, -0.1, -1.15, 1.15, 1.9, 1.15},
 		attach_y = 6.4,
 		camera = {first = {y = 3.4, z = -0.2}, third = {y = 3.5, z = 0}},
-		animation = {stand = {1, 100, 70}, move = {150, 250, 110}},
+		animation = {stand = {1, 100, 70}, move = {150, 250, 110}, ground = {200, 200, 1}},
 	},
 	expert_throng = {
 		id = "expert_throng", description = "Throng Cave Bat",
@@ -179,7 +185,7 @@ grug_mounts.MODELS = {
 		display_box = {-0.85, -0.1, -0.85, 0.85, 1.55, 0.85},
 		attach_y = 6.4,
 		camera = {first = {y = 2.6, z = -0.3}, third = {y = 2.8, z = 0}},
-		animation = {stand = {1, 40, 70}, move = {1, 40, 100}},
+		animation = {stand = {1, 40, 70}, move = {1, 40, 100}, ground = {1, 1, 1}},
 	},
 	-- Rigid hulls (Lord of the Test, LICENSE-media.md): no animation table.
 	-- Mesh units are tenths of a node with the bow on +z, the rider's facing.
@@ -214,7 +220,7 @@ grug_mounts.MODELS = {
 		display_box = {-1.15, -0.1, -1.15, 1.15, 2.05, 1.15},
 		attach_y = 6.8,
 		camera = {first = {y = 3.5, z = -0.4}, third = {y = 3.75, z = 0}},
-		animation = {stand = {1, 40, 75}, move = {1, 40, 110}},
+		animation = {stand = {1, 40, 75}, move = {1, 40, 110}, ground = {1, 1, 1}},
 	},
 }
 
