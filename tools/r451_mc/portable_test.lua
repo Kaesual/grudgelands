@@ -25,7 +25,8 @@
 --      on the back, the eagles' mesh centred under the rider, the boats'
 --      hulls smaller with their physics kept, the ibex idling without the
 --      head bob;
---   I. the user's tuned values (follow-up 4) and the bats' still-body ride mesh.
+--   I. the user's tuned values (follow-up 4) and the bats' still-body ride mesh;
+--   J. a boat only at the surface (the top two water nodes), every path.
 --
 --   luajit tools/r451_mc/portable_test.lua [REPO]
 -- Prints "R451 MC PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -88,10 +89,16 @@ core = {
 		air = {walkable = false, liquidtype = "none"},
 		["default:dirt"] = {walkable = true, liquidtype = "none"},
 		["stairs:slab_stone"] = {walkable = true, liquidtype = "none"},
+		["default:water_source"] = {walkable = false, liquidtype = "source", groups = {water = 3}},
+		["default:ice"] = {walkable = true, liquidtype = "none"},
+		["default:stone"] = {walkable = true, liquidtype = "none"},
 	},
 	registered_items = {},
 	registered_entities = registered_entities,
-	get_item_group = function() return 0 end,
+	get_item_group = function(name, group)
+		local def = core.registered_nodes[name]
+		return def and def.groups and def.groups[group] or 0
+	end,
 	get_node_or_nil = function(pos) return {name = node_at(pos)} end,
 	serialize = function(value) serial[#serial + 1] = copy(value); return "S" .. #serial end,
 	deserialize = function(text)
@@ -670,6 +677,65 @@ do
 	file:close()
 	check(text:find("mesh=model.display_mesh or model.mesh", 1, true) ~= nil,
 		"the capital displays use the display mesh")
+end
+
+------------------------------------------------------------------------------
+-- J. A boat only at the surface (0.45.1 follow-up 4): the feet in the top
+-- water node or the one below (the surface at most 2 nodes over the feet),
+-- through every summon path (the quickbar's toggle, mount, the re-summon on a
+-- boat); deeper, under ice or under an overhang: refused.
+------------------------------------------------------------------------------
+do
+	-- A column of water at x = 20: y = -5..0, its top y = 0.5; air above.
+	local function column(top_node)
+		for y = -5, 0 do placed["20," .. y .. ",0"] = "default:water_source" end
+		placed["20,1,0"] = top_node
+	end
+	local function clear()
+		for y = -5, 1 do placed["20," .. y .. ",0"] = nil end
+	end
+	local sailor2 = make_player("deep_sailor", "accord", "human")
+	sailor2.meta["grug_mounts:water_tier"] = 6
+	local function try_at(feet_y, label, expect_ok, expect_text, path)
+		sailor2.pos = {x = 20, y = feet_y, z = 0}
+		local ok, message
+		if path == "toggle" then
+			ok, message = grug_mounts.toggle(sailor2, 5)
+		else
+			ok, message = grug_mounts.mount(sailor2, 5)
+		end
+		eq(ok == true, expect_ok, "boat " .. label)
+		if expect_text then
+			check(type(message) == "string" and message:find(expect_text, 1, true) ~= nil,
+				"boat " .. label .. ": " .. tostring(message))
+		end
+		if ok then
+			near(grug_mounts.active.deep_sailor.object:get_pos().y, 0.5, "boat " .. label .. ": on the surface")
+			grug_mounts.dismount(sailor2, nil, true)
+		end
+	end
+	column(nil)
+	try_at(0.1, "feet in the top water node (swimming at the surface)", true)
+	try_at(-0.5, "feet at the bottom of the top node", true)
+	try_at(-0.9, "feet in the second node (one under the surface)", true, nil, "toggle")
+	try_at(-1.4, "feet 1.9 under the surface (second node)", true)
+	try_at(-1.6, "feet in the third node (2.1 under the surface)", false, "Swim up to the surface")
+	try_at(-3, "feet four nodes down", false, "Swim up to the surface", "toggle")
+	try_at(-5, "feet at the bottom of a six-deep column", false, "Swim up to the surface")
+	column("default:ice")
+	try_at(0.1, "under ice", false, "no open water surface")
+	column("default:stone")
+	try_at(-0.9, "under an overhang", false, "no open water surface")
+	-- A re-summon from a boat (the other boat's button): the boat sits on the
+	-- surface, so the rule holds there.
+	column(nil)
+	sailor2.pos = {x = 20, y = 0.1, z = 0}
+	check(grug_mounts.mount(sailor2, 5), "the rowboat on the surface")
+	local ok = grug_mounts.toggle(sailor2, 6)
+	check(ok, "switching to the sailboat from the rowboat")
+	eq(grug_mounts.active.deep_sailor and grug_mounts.active.deep_sailor.tier, 6, "the sailboat replaced it")
+	grug_mounts.dismount(sailor2, nil, true)
+	clear()
 end
 
 if failures > 0 then
