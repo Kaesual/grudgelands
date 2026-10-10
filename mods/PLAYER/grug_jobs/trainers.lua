@@ -16,27 +16,29 @@ grug_jobs.MENDER_TITLE = "Grudge-Free Repairs"
 
 -- The greetings (0.45.1, fix plan row 12): one per trainer profession, shown
 -- on top of its trainer window, and the mender's, shown in its repair form
--- (grug_repair/providers.lua). The same text in every town. PLACEHOLDERS
--- until the user picks the final texts; the pick replaces only these
--- strings. Each window keeps room for three lines (about 200 characters);
--- a longer text grows the window.
+-- (grug_repair/providers.lua). The same text in every town. Texts by GPT-6
+-- Astra and Opus, picked by the user on 2026-10-10 (the proposals are in
+-- tools/r451_tx). Each window keeps room for three lines (about 200
+-- characters); a longer text grows the window.
 grug_jobs.GREETINGS = {
-	weaponsmith = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
-		"weaponsmithing. Well, you've come to the right place!",
-	armorsmith = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
-		"armorsmithing. Well, you've come to the right place!",
-	alchemist = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
-		"alchemy. Well, you've come to the right place!",
-	tailor = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
-		"tailoring. Well, you've come to the right place!",
-	leatherworker = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
-		"leatherworking. Well, you've come to the right place!",
-	woodcarver = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
-		"woodcarving. Well, you've come to the right place!",
-	goldsmith = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
-		"goldsmithing. Well, you've come to the right place!",
-	mender = "[Placeholder greeting] Welcome, welcome! A witty line about dents, " ..
-		"scratches and forgiveness goes here.",
+	weaponsmith = "Ready to learn weaponsmithing? I'll show you how to make swords, daggers " ..
+		"and battle axes at the forge, one good hammer stroke at a time.",
+	armorsmith = "Ah, you'd like to learn armorsmithing? Wise choice! At this forge I'll " ..
+		"teach you to make metal armor and shields: the kind that answers every " ..
+		"blow with a firm, ringing 'no'.",
+	alchemist = "Curious about Alchemy? You're welcome at the brewing stand, where I'll " ..
+		"teach you to bottle a little help for the road in potions and elixirs.",
+	tailor = "Ah, you'd like to learn tailoring! Join me at the tailor bench, and " ..
+		"we'll make cloth armor, roomy bags and well-bound spellbooks.",
+	leatherworker = "Good leather has many journeys in it. Join me at the tanning rack, and " ..
+		"I'll teach you to make leather armor, bags and bows for yours.",
+	woodcarver = "You bring the magic; I'll teach you to make something to wave it with. " ..
+		"At the carving bench, woodcarving gives you wands and staves.",
+	goldsmith = "An eye for the finer things? Join me at the jeweller's bench, and I'll " ..
+		"teach you goldsmithing: rings, pendants and little treasures with real " ..
+		"purpose.",
+	mender = "Welcome to Grudge-Free Repairs! These lands run on grudges, but I don't: " ..
+		"I'll mend your battered gear for coin and never ask who started it.",
 }
 
 -- Whether a trainer socket of `profession` holds a trainer.
