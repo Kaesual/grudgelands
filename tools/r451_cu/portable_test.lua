@@ -14,7 +14,8 @@
 --      same name count once; the tooltip lists every member; the icon is
 --      the member the player carries most of (the stacks have/need count:
 --      not one with metadata), else the first by name, per player;
---   Q  "−" and "+" at the quantity: "−" only above 1, "+" only below the
+--   Q  "−" and "+" at the quantity: "−" only above 1 (above the maximum
+--      straight to it), "+" only below the
 --      maximum, an invalid value counts as 1, one inventory pass per click,
 --      no buttons and no resend for a non-stackable output, the row inside
 --      the box;
@@ -573,7 +574,9 @@ click(q, {[FIELDS.qty] = "3", [FIELDS.minus] = "−"})
 eq(qty_of(q), "2", "Q − above 1 takes one")
 -- The typed value counts (the click carries the field).
 click(q, {[FIELDS.qty] = "7", [FIELDS.minus] = "−"})
-eq(qty_of(q), "6", "Q − from a typed value above the maximum")
+eq(qty_of(q), "3", "Q − from a typed value above the maximum: straight to the maximum")
+click(q, {[FIELDS.qty] = "4", [FIELDS.minus] = "−"})
+eq(qty_of(q), "3", "Q ... also from one above it")
 click(q, {[FIELDS.qty] = "7", [FIELDS.plus] = "+"})
 eq(qty_of(q), "7", "Q + above the maximum does nothing")
 click(q, {[FIELDS.qty] = "x", [FIELDS.minus] = "−"})
@@ -588,6 +591,8 @@ open(empty)
 select(empty, soup.id)
 click(empty, {[FIELDS.qty] = "1", [FIELDS.plus] = "+"})
 eq(qty_of(empty), "1", "Q + with a maximum of 0 does nothing")
+click(empty, {[FIELDS.qty] = "5", [FIELDS.minus] = "−"})
+eq(qty_of(empty), "1", "Q − above a maximum of 0: 1, never 0")
 -- A non-stackable output: no row, a forged click changes nothing.
 select(q, hammer.id)
 lacks(q.formspec, "grug_craft_minus", "Q no − for a non-stackable output")
