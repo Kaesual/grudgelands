@@ -888,3 +888,244 @@ online work runs at each character's next join (craft leftovers, the T1
 damage refresh, descriptions). No map part. Tested end to end on SQLite,
 on PostgreSQL (all three backends and the platform's layout, every row
 equal to the SQLite result) and as the chain from a record-less copy.
+
+## 0.45.1 fix round (2026-10-10)
+
+The user's playtest of 0.45.0 (production runs 0.45.0) became fourteen
+decided fixes and eleven lanes, all started from main `d4a1e645` on
+2026-10-10 (the fix plan, in German, outside the repository:
+`kaesual-stack/.local/grudgelands-0451-fixplan.md`). Every code lane was
+reviewed by an independent Opus; every fix was made by the lane before
+its merge. **0.45.1 is a compatible patch:** no migration step, no map
+reset, no new world. **Push:** 0.45.1 is not pushed yet (pushed only on
+the user's word).
+
+### Lanes
+
+Main's first-parent merges, in order:
+
+| Lane | Merge (follow-ups) | What | Review |
+|---|---|---|---|
+| TR | `4e870c61` (`f320ee8b`, `7a3eaaa2`) | trainer window with one bottom button row, a greeting per trainer, the mender's form titled Grudge-Free Repairs | MERGE; follow-ups checked by the coordinator |
+| TX | `605722ee` | GPT-6 Astra's greeting and note-icon proposals under `tools/r451_tx` (provenance) | Opus text review with suggestions |
+| SC | `64336d7e` (`f9ba0ede`) | self and support skills: 350 ms tap window, no cancel on aim change; self skills at allies and non-target actors; right-click food tap | MERGE; fix round MERGE |
+| MU | `9f3599de` (`57e9b45e`) | "Now playing" box under the minimap | MERGE |
+| MZ | `542285b8` | map zoom soft lock; the inventory key closes the map | MERGE (two GUI Lows) |
+| CH | `c5ce40cf` (`6d58fe54`) | Charge down and up stairs; no camera dip; safe cancel in a drop | MERGE; follow-up MERGE |
+| CU | `2512c8bd` (`2101ba95`) | group ingredient labels and icon, − and +, search clear, no pre-focus, tab order | MERGE |
+| MC | `7a02f62b` (`bc772f9a`, `e40a2d64`, `961a62bb`, `2bea36c5`, `bf639556`) | riding camera, sizes and seats per mount, Dismount, first-mount banner, flyers' ground frame, ride-only bat mesh, boats at the surface | MERGE AFTER FIXES (Medium: riders suffocated in 2-high passages; fixed); follow-ups 3 and 4 MERGE, the others checked by the coordinator |
+| KF | `ca788210` (`09b837f6`) | harmless forced focus so the inventory key closes every window; Space/Enter on Character and Inventory | MERGE (its side finding became the follow-up) |
+| NQ | `5454a970` (`93adae30`) | quest giver preselection; town NPCs wait for their floor, sunk NPCs re-seated | MERGE |
+| D | this section | CHANGELOG, version 0.45.1, status owners, the boat help line | — |
+
+### Decisions
+
+The user's rulings (2026-10-10), one line each:
+
+1. Group ingredients: up to 3 kinds written out ("Carrot or Cassava"), 4
+   or more a hand-kept name ("Any wool"); the icon is the kind the player
+   carries most of; two cut-off written-out labels accepted.
+2. Charge downhill: run down the last step, cut at the last clearable
+   edge; a stairs-down test.
+3. Quantity `[−][field][+] [Max]`; "−" above the maximum jumps to it.
+4. Quest giver: the first ready quest, else the first acceptable, else the
+   first; after Accept the next acceptable (ready first), else stay.
+5. Self and support skills keep click/hold: a 350 ms window, no cancel on
+   aim change, for all self and support skills; Ice Nova casts at allies;
+   self skills cast at NPCs, traders, tamed mobs and protected players;
+   right-click food uses the same window.
+6. Search: a narrower field, "×" then Search; × shows the full list at
+   once.
+7. Sunk NPCs: check standing room at placement, re-seat on activation (no
+   migration); Kezamba's throne guard to the BACKLOG.
+8. Riding camera per mount, tuned by the user with the never-shipped
+   `/mountcam` probe (stag 120 %, bats 130 %, then three dumps of tuned
+   values); a ride-only bat mesh without the body bob, eagles centred,
+   the ridden ibex idling still; low ceilings in view accepted.
+9. Dismount button in the quickbar while riding, boats included; the
+   first-mount banner for riding mounts only (lost on a disconnect:
+   accepted).
+10. Tabs: Inventory · Character · Talents & Skills · Crafting · Party &
+    PvP · Map & Quests · Help; the map window keeps its "Map" label.
+11. "Now playing": the note icon pick B (36 px), "Town Theme" shortened,
+    the 720p overlap with 10 tracked quests accepted.
+12. Trainers: one bottom button row, greeting on top and notice below,
+    the picked greetings (weaponsmith Astra B, armorsmith Opus, alchemist,
+    tailor, leatherworker and goldsmith Astra A, woodcarver Astra C, mender
+    Opus), the mender's form titled "Grudge-Free Repairs".
+13. The inventory key closes every window: no pre-focused element; text
+    editors and an already chosen list row keep their focus; the
+    Character/Inventory Space/Enter fix added.
+14. Map zoom soft lock on the player until the player scrolls at 2x–8x;
+    a click into the quest text swallows "i" until the next send, Enter
+    closes the map (both kept).
+15. Flyers: the flight loop in the air (hovering included), a still level
+    frame on the ground (within 0.1 node); boats only in the top two water
+    nodes; the help line says "at the surface".
+
+### Numbers worth keeping
+
+- 161 portable fixtures on main (9 new: `r451_ch`, `cu`, `kf`, `mc`,
+  `mu`, `mz`, `nq`, `sc`, `tr`); `mods/` +1,095 −242 lines in 42 files,
+  two new binaries (the note icon, the ridden bats' mesh).
+- **Charge** (cut plans before → after): stairs down with treads 1/2/3
+  nodes 33/36/28 → 0, diagonal 91/95/86 → 0, a gentle slope 88 of 1,291
+  → 0, stairs up with treads 2/3 80/82 → 0; every plan that reached its
+  destination before is unchanged; the worst planning case under 1 ms
+  per cast.
+- **Tap window:** 350 ms = a 0.15 s click + one control report 0.09 s + a
+  frame 0.02 s + one input pass 0.09 s; the dig guard stays 0.2 s.
+- **Sunk NPCs:** the cause is a socket placed over an unfinished chunk
+  shell (Nhal Veyr's sockets at y 48, a chunk border); on a 0.45.0 world
+  the review's boot found 14 sunk NPCs and the fix re-seated all 14.
+- **Mounts**, the shipped values (seat and cameras in nodes above the
+  mount's feet):
+
+  | Model | Size | Seat | First y, z | Third y |
+  |---|---|---|---|---|
+  | Horse | 3 | 1.26 | 2.4, −0.2 | 2.15 |
+  | Ibex | 1.45 | 1.23 | 2.8, −0.3 | 2.15 |
+  | Stag | 9.6 | 1.32 | 2.35, −0.1 | 2.25 |
+  | Boar | 1.55 | 1.14 | 1.95, −0.3 | 2.15 |
+  | Wolf | 2.125 | 1.78 | 2.5, −0.3 | 2.35 |
+  | Tiger | 1.45 | 1.52 | 2.4, −0.2 | 2.4 |
+  | Accord Eagle | 3 | 1.86 | 2.8, −0.2 | 2.75 |
+  | Steller's Sea Eagle | 4 | 2.56 | 3.6, −0.2 | 3.5 |
+  | Throng Cave Bat | 5.07 | 2.00 | 3.8, −0.4 | 3.4 |
+  | Giant Blood Bat | 7.098 | 3.00 | 5, −0.5 | 4.6 |
+  | Rowboat | 1.078 | 0.20 | 1, 0.2 | 0.8 |
+  | Sailboat | 0.88 | 0.09 | 1, −0.2 | 0.8 |
+
+  The tier selection boxes (the highest seat of a tier + 1.8) grew from
+  3.32/3.72/4.66 to 3.58/3.80/4.80 for tiers 2/3/4 (both factions; the
+  collision boxes are unchanged); the bats' torso travel in flight
+  0.75/1.05 → 0 nodes; the 8-node flight headroom still holds (at most
+  about 6 needed).
+- **"Now playing":** about 281 px wide at 1080p, the icon 36 px, the
+  background `#343434` at 30 %.
+- **Trainers:** 11 wide; every picked greeting wraps to 2–3 lines (the
+  longest 173 characters), so the window keeps 5.16 high; the mender's
+  form 10.36.
+
+### Classification
+
+Every lane compatible: layout, texts, runtime state and one new meta
+flag (`grug_mounts:summon_hint`, set at a first riding mount's purchase);
+nothing saved is removed or rewritten, no id changes. The declaration
+only raises the version:
+`{"schema": 2, "version": "0.45.1", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`.
+A 0.45.0 world plays on; the production world's sunk Nhal Veyr NPCs are
+re-seated the next time their area loads.
+
+### Open notes
+
+The reviews' and reports' backlog notes are in the
+[BACKLOG](../../BACKLOG.md#0451-carry-overs).
+
+### GUI checklist (0.45.1)
+
+Desktop (GUI scale 1 and 2, a 720p screen) and the web build (about
+1280 × 720), on a copy of the production world.
+
+**Riding:**
+
+1. Each mount (horse, ibex, stag, boar, wolf, tiger, both eagles, both
+   bats, both boats), first and third person (F7 both ways): ride a
+   slope, jump, turn; the neck and head low in view; stag and tiger
+   riders on the back, eagles centred under you; a ridden ibex and the
+   bats do not bob.
+2. Flyers: climb, descend, hover (flight loop), land (still, level, no
+   wing sound); bats in a 3–4-high tunnel; the larger selection boxes of
+   tiers 2–4 in PvP.
+3. `E` while riding (a boat too) shows Dismount under the mounts; a click
+   dismounts and closes; on foot no button.
+4. A new character buys Apprentice Riding and closes the dialogue: "Press
+   E to summon your mount"; a later tier or a boat shows none.
+5. A boat from the quickbar while wading or swimming at the surface; two
+   or more nodes deeper: "Swim up to the surface to summon a boat."; the
+   hull floats at the same waterline; riding through a 2-high tunnel does
+   not hurt.
+
+**Combat:**
+
+6. Charge a mob lower on a gentle hill with one-node steps, also right
+   behind the last step, and diagonally down a slope: the run reaches it
+   and the hit lands, with no camera dip on long or diagonal stairs
+   (down and up); uphill stairs, a ledge, a low wall, a 4-wide hole as
+   before; a step under an overhang still stops on the step.
+7. Ice Nova, then Blink, Glacial Ward, Sidestep, Sprint, Hold Ground,
+   Heal, Shield and Mend: quick clicks at the ground 1–4 m away, also
+   strafing, cast every time; at the sky at the press; Ice Nova at an
+   ally, a trader, an NPC and a player without PvP casts once; a Heal
+   tapped at the ground heals the ally in the crosshair at release.
+8. Holding LMB with Ice Nova digs dirt; a torch or flower digs without
+   flashing back; Fireball at the ground digs at once; Blink tapped on
+   town ground casts, held it shows the protection hint.
+9. Food: a quick right-click plants or opens; holding eats (the ring at
+   0.35 s).
+
+**Crafting and tabs:**
+
+10. "i" opens and closes Crafting, also with a recipe chosen and in
+    Enchant/Upgrade; typing "iron" + Enter keeps the cursor in the field;
+    a job ending while typing moves the cursor (known).
+11. × right after a search empties the field and shows the full list from
+    page 1.
+12. Ingredients "Carrot or Cassava", "Any wool", "Any planks"; the icon
+    follows the wool you carry most of; the tooltip lists every member;
+    long item names do not touch have/need.
+13. The quantity row at the web size: −, field, + and Max fit, the signs
+    render; "−" above the maximum jumps to it.
+14. The tab bar ends Party & PvP · Map & Quests · Help; Map & Quests
+    opens the map window.
+
+**Quests, towns and trainers:**
+
+15. A quest giver with finished quests opens on the first green one;
+    Complete hands them in one after another, then the first gold one;
+    Accept takes the gold ones in turn, a green one first; after the
+    last the accepted quest stays; "i" closes the dialog, also after a
+    list click; Space and Enter press Close.
+16. Nhal Veyr on the production world: the NPCs in front of the houses
+    stand on the ground after the first visit (server log "re-seated").
+17. Each of the 7 trainers: the greeting in full, "Learn X?", one bottom
+    row with Close on the right; Learn, Unlearn, Confirm/Cancel; Alchemy
+    learned shows only Repair and Close; both slots taken: the refusal
+    fits; no scrollbar; "i" closes in every state; the 11-wide window
+    at a large GUI scale and on the web.
+18. The mender: the title "Grudge-Free Repairs" with its greeting, the
+    rows and the bottom row not cut off; a trainer's "Repair equipment"
+    keeps "Equipment repairs" without a greeting.
+
+**Map and windows:**
+
+19. The map near its centre and near an edge: +, +, −, + stays on your
+    arrow (clamped at the edge, no creep); at 2x scroll (drag, wheel, a
+    bar click), then + and − keep that area; back at 1x it follows you
+    again; every opening (Z and the tab) starts at 1x locked.
+20. "i" closes the map after opening, zooming, a quest click (the
+    selected one too), Abandon → Cancel and a checkbox; after a click
+    into the quest text it stays open until the next refresh (known);
+    arrow keys in the quest list move the focus to the map (known).
+21. "i" closes Talents & Skills (with and without ranks), Party & PvP
+    (alone, in a party, with a notice), every Help sub-page (also reopened
+    on About), the Crownbinder, the creation window, the Claim Stone (also
+    after Waypoints and back), the withdraw dialog and a written book;
+    typing "i" into a field still types it; the invisible Talents and
+    Inventory focus buttons draw nothing.
+22. With a home set: Space or Enter on the Character tab (every mode)
+    does not travel home; Space on the Inventory tab does not sort.
+
+**Music:**
+
+23. In a capital the box appears under the location line with the first
+    track, hides for the pause between tracks, on leaving the city, with
+    `/music off` or `/music 0` and with the minimap hidden, and comes
+    back; readable over bright ground; the right edge at 720p; the icon
+    at 36 px.
+
+### Round-end gates
+
+**Round-end gates on the final branch** (coordinator): pending — full
+`run_fixtures.sh`, `check_upgrade.py`, `check_fresh_server.py`,
+`tools/r451_mc/gen_bat_ride_mesh.py --check`, a smoke boot.
