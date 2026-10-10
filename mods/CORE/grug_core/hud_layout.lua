@@ -151,6 +151,10 @@ layout.anchors = {
 	-- adds one line of about 20 GUI px plus a 4 HUD px gap below the bezel,
 	-- which is no lower than the box: ten tracked quests then clear it while
 	-- H >= 480 gui + 56 hud (536 px at GUI scaling 1, 776 px at 1.5).
+	-- While a capital's music plays, the "Now playing" box (0.45.1,
+	-- minimap.lua) adds 48 GUI px plus a 4 HUD px gap below that line: ten
+	-- tracked quests clear it while H >= 672 gui + 72 hud (744 px at scale 1),
+	-- nine while H >= 632 gui + 72 hud.
 	quest_list = {
 		position = {x = 1, y = 0.5},
 		offset = {x = -20, y = 0},
@@ -427,19 +431,21 @@ layout.anchors.flight_warning = {position = {x = 0.5, y = 0},
 -- top-right corner MINIMAP_EDGE HUD px from the top and right edges. The
 -- quest list clearance above is computed for exactly this box. `window` is
 -- the player's window information; nil gives a 1280 x 720 window at HUD
--- scaling 1. Returns {size, center_x, center_y, hud, width, height}.
+-- scaling 1. Returns {size, center_x, center_y, hud, gui, width, height}
+-- (`gui` sizes the text under the minimap: its location line and, since
+-- 0.45.1, the "Now playing" box).
 layout.MINIMAP_PERCENT = 25
 layout.MINIMAP_EDGE = 10
 
 function layout.minimap_box(window)
-	local hud = scales(window)
+	local hud, gui = scales(window)
 	local size = window and window.size or {x = 1280, y = 720}
 	local width = math.max(1, tonumber(size.x) or 1280)
 	local height = math.max(1, tonumber(size.y) or 720)
 	local side = math.floor(height * layout.MINIMAP_PERCENT / 100)
 	local edge = layout.MINIMAP_EDGE * hud
 	return {size = side, center_x = width - edge - side / 2,
-		center_y = edge + side / 2, hud = hud, width = width, height = height}
+		center_y = edge + side / 2, hud = hud, gui = gui, width = width, height = height}
 end
 
 function layout.xp_label(text)

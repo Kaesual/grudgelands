@@ -291,9 +291,10 @@ local function overlay(fs, player, session, layout, journal, quest)
 	end
 end
 
--- A new session's state: zoom 1, the map's origin, no quest selection.
+-- A new session's state: zoom 1, the map's origin, the soft lock on the
+-- player (atlas.zoom_view), no quest selection.
 function W.new_state()
-	return {zoom = 1, scroll_x = 0, scroll_y = 0}
+	return {zoom = 1, scroll_x = 0, scroll_y = 0, follow = true}
 end
 
 -- The whole window for `player` in state `session`, `info` the window
@@ -316,6 +317,13 @@ function W.formspec(player, session, info)
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
 		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h),
+		-- The inventory key closes a form unless the focused element eats it
+		-- (guiFormSpecMenu.cpp OnEvent; edit boxes, read-only ones included,
+		-- and textlists do). Without this the engine focuses the quest text
+		-- (its first edit box, setInitialFocus) and "i" does nothing. Forced
+		-- on every send: a resend never leaves the focus in the quest list.
+		-- A focused scrollbar keeps only the arrow keys (they scroll the map).
+		("set_focus[%s;true]"):format(SCROLL_X),
 		("label[%.2f,%.2f;Map]"):format(PAD, cy),
 		("button[1.0,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD),
 		("label[1.75,%.2f;%dx]"):format(cy, zoom),
@@ -352,9 +360,10 @@ end
 -- Sessions, sends and the refresh rule
 --
 
--- player name -> session: the window state (zoom, scroll, quest selection),
--- kept between opens until the player leaves; open (see is_open), sent
--- (the last send's core.get_us_time), pending (a send is owed),
+-- player name -> session: the window state (zoom, scroll, follow (the soft
+-- lock, atlas.zoom_view), quest selection), kept between opens until the
+-- player leaves; open (see is_open), sent (the last send's
+-- core.get_us_time), shown_zoom (its zoom), pending (a send is owed),
 -- quiet_until (no send before this, after a scrollbar move), party_sig
 -- (the arrows at the last send), party_checked, sends (a counter for
 -- probes).
@@ -424,6 +433,7 @@ local function send(player, session, now)
 	local name = player:get_player_name()
 	local form = W.formspec(player, session, core.get_player_window_information(name))
 	session.sent, session.pending, session.open = now, false, true
+	session.shown_zoom = session.zoom or 1
 	session.party_sig = W.party_signature(player, session)
 	session.sends = (session.sends or 0) + 1
 	session.bytes = #form
@@ -495,7 +505,7 @@ function W.open(player)
 	local name = player:get_player_name()
 	local session = sessions[name] or W.new_state()
 	sessions[name] = session
-	session.zoom, session.scroll_x, session.scroll_y = 1, 0, 0
+	session.zoom, session.scroll_x, session.scroll_y, session.follow = 1, 0, 0, true
 	session.quest_selected, session.quest_abandon, session.quest_notice = nil, nil, nil
 	session.pending, session.dirty, session.busy, session.party_checked = false, nil, nil, nil
 	session.quiet_until = nil
@@ -528,15 +538,10 @@ function W.handle_fields(player, fields)
 	-- Every event carries both scrollbars (VAL, or CHG for the moved one):
 	-- kept first, so a send below echoes the current view. A scrollbar
 	-- event alone changes nothing else and sends nothing; it holds every
-	-- send for QUIET_US.
-	for _, axis in ipairs({"x", "y"}) do
-		local raw = fields["grug_map_scroll_" .. axis]
-		local kind, value
-		if type(raw) == "string" then kind, value = raw:match("^(%u+):([+-]?%d+)$") end
-		if kind == "CHG" or kind == "VAL" then
-			session["scroll_" .. axis] = atlas.clamp_scroll(tonumber(value), session.zoom or 1)
-		end
-		if kind == "CHG" then session.quiet_until = core.get_us_time() + W.QUIET_US end
+	-- send for QUIET_US. The player's own scrolling at 2x-8x ends the soft
+	-- lock (atlas.zoom_view, atlas.scroll_event).
+	if atlas.scroll_event(session, fields[SCROLL_X], fields[SCROLL_Y], session.shown_zoom) then
+		session.quiet_until = core.get_us_time() + W.QUIET_US
 	end
 	if fields.grug_map_back then
 		W.back(player)
@@ -549,11 +554,9 @@ function W.handle_fields(player, fields)
 		changed = true
 	end
 	if fields.grug_map_zoom_in or fields.grug_map_zoom_out then
-		local old = session.zoom or 1
-		local zoom = atlas.step_zoom(old, fields.grug_map_zoom_in ~= nil)
-		session.scroll_x = atlas.zoom_scroll(session.scroll_x or 0, old, zoom)
-		session.scroll_y = atlas.zoom_scroll(session.scroll_y or 0, old, zoom)
-		session.zoom = zoom
+		-- The player cannot walk while the window is open: the position at
+		-- the click is the soft lock's centre.
+		atlas.zoom_view(session, fields.grug_map_zoom_in ~= nil, atlas.view(), player:get_pos())
 		changed = true
 	end
 	local quest_changed = quest_box.handle(player, session, fields)

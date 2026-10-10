@@ -119,7 +119,8 @@ end
 -- The drawing frame for a minimap `box` (grug_core.hud_layout.minimap_box):
 -- the largest scale f = k / grid (k whole) whose bezel fits the box, the
 -- bezel's diameter and centre (its top-right corner at the box's), the
--- texture's drawn size and the hole radius, all in real screen pixels.
+-- texture's drawn size and the hole radius, all in real screen pixels;
+-- `hud` and `gui` are the box's HUD and GUI scaling.
 function V.frame(v, box)
 	local k = math.max(1, math.floor(box.size / (2 * v.outer) * v.grid))
 	local f = k / v.grid
@@ -130,7 +131,8 @@ function V.frame(v, box)
 		-- the arrow's pixel: the centre rounded; the map is placed on it
 		arrow_x = math.floor(right - diameter / 2 + 0.5),
 		arrow_y = math.floor(top + diameter / 2 + 0.5),
-		hole = v.crop / 2 * f, hud = box.hud, width = box.width, height = box.height}
+		hole = v.crop / 2 * f, hud = box.hud, gui = box.gui or 1, width = box.width,
+		height = box.height}
 end
 
 -- The top-left screen pixel of cell cx/cy's texture with the player at base
@@ -151,6 +153,45 @@ function V.place(v, frame, ox, oy, mx, my, x, z)
 	local sx, sy = mx + (px - ox) * frame.f, my + (py - oy) * frame.f
 	local dx, dy = sx - frame.center_x, sy - frame.center_y
 	return sx, sy, math.sqrt(dx * dx + dy * dy)
+end
+
+-- The "Now playing" box (0.45.1): while a capital's music plays, a small
+-- box under the location line with a music-note icon on the left and two
+-- left-aligned lines right of it, the title and the artist (the name alone:
+-- "by" made the line longer and said nothing the second line does not).
+-- Its text is HUD text in the location line's default font, sized by GUI
+-- scaling; the icon is scaled with it, as high as the two lines (36 GUI px,
+-- the 24 px art at 1.5 times), so both are in GUI units here. HUD
+-- text cannot be measured, so the width comes from the longer line's
+-- characters at `char_em` of the font size each: the font (Arimo Regular,
+-- 16 px at GUI scaling 1) measures 0.40-0.59 em per character over the
+-- shipped titles and artists ("Town Theme" the widest per character,
+-- "Fantasy Orchestral Theme" the longest at 11.8 em), so 0.6 em holds every
+-- one. One font line is `line_em` high.
+V.NOW_PLAYING = {gap = 4, pad = 4, icon = 36, icon_gap = 6, line = 20,
+	font = 16, char_em = 0.6, line_em = 1.15}
+
+-- The box for `title` and `artist` with the location line's top at
+-- `line_top` (real screen pixels): the box's top-left x/y, width and height,
+-- the icon's top-left and size, and the text's top-left. The box sits `gap`
+-- HUD px below the location line's slot (`line` GUI px), centred under the
+-- bezel; a box wider than the bezel ends at the bezel's right edge (the
+-- window's right margin) and grows to the left.
+function V.now_playing_box(frame, line_top, title, artist)
+	local P, gui = V.NOW_PLAYING, frame.gui
+	local chars = math.max(#title, #artist)
+	local text_w = math.ceil(chars * P.char_em * P.font * gui)
+	local pad, icon = math.floor(P.pad * gui + 0.5), math.floor(P.icon * gui + 0.5)
+	local icon_gap = math.floor(P.icon_gap * gui + 0.5)
+	local w = pad + icon + icon_gap + text_w + pad
+	local h = 2 * pad + math.ceil(2 * P.line * gui)
+	local right = frame.center_x + frame.diameter / 2
+	local x = math.floor(math.min(frame.center_x - w / 2, right - w) + 0.5)
+	local y = math.floor(line_top + P.line * gui + P.gap * frame.hud + 0.5)
+	local text_h = 2 * P.line_em * P.font * gui
+	return {x = x, y = y, w = w, h = h,
+		icon_x = x + pad, icon_y = y + math.floor((h - icon) / 2 + 0.5), icon = icon,
+		text_x = x + pad + icon + icon_gap, text_y = y + math.floor((h - text_h) / 2 + 0.5)}
 end
 
 -- A rim arrow for a point at dx/dy (screen, y down) from the centre: on the

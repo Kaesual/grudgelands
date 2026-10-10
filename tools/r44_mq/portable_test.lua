@@ -36,8 +36,13 @@
 --      Abandon with its confirmation, the text (description unwrapped,
 --      objectives, rewards), the ready line, the empty log; the Quests tab
 --      is gone (TAB_ORDER, grug_quests/init.lua);
---   Z  zoom 1-2-4-8 with the view centre kept and scroll values clamped;
---      the Map tab opens the window and goes back to the homepage.
+--   Z  zoom 1-2-4-8 with the view centre kept (once the player scrolled)
+--      and scroll values clamped; the Map tab opens the window and goes
+--      back to the homepage;
+--   M  (0.45.1) the soft lock through the window's events: zoom from 1x
+--      centres on the player, the player's scrolling breaks the lock, 1x
+--      restores it; the map's scrollbar is focused (set before it) so the
+--      inventory key closes the window; a click on the selected quest sends.
 -- Usage (repo root): luajit tools/r44_mq/portable_test.lua [repo]
 local repo = arg and arg[1] or "."
 local failures, checks = 0, 0
@@ -1139,6 +1144,54 @@ do
 	check(not bad and depth == 0, "Z the window's brackets balance")
 	has(form2, "formspec_version[6]", "Z formspec version 6")
 	print(("R44 MQ window bytes (fixture stubs, fallback size): %d"):format(#form2))
+end
+
+-- ---------------------------------------------------------------------------
+-- M (0.45.1 lane MZ): the soft lock through the window's events (the pure
+-- rules: tools/r451_mz) and the focus that lets the inventory key close it
+-- ---------------------------------------------------------------------------
+do
+	local atlas = grug_map.atlas
+	advance(2)
+	shows = {}
+	check(W.open(accord), "M the window opens")
+	local state = W.sessions.ann
+	check(state.follow and state.zoom == 1, "M every opening starts at 1x with the lock")
+	local form = shows[#shows].form
+	local focus = form:find("set_focus[grug_map_scroll_x;true]", 1, true)
+	local bar = form:find("scrollbar%[[^%]]*;grug_map_scroll_x;")
+	check(focus and bar and focus < bar, "M the map's scrollbar is focused, set before it")
+	eq(count(form, "set_focus%["), 1, "M one focus only")
+	advance(2)
+	fields(accord, {grug_map_zoom_in = "+", grug_map_scroll_x = "VAL:0", grug_map_scroll_y = "VAL:0"})
+	local x, y = atlas.centre_scroll(atlas.view(), accord:get_pos(), 2)
+	check(state.zoom == 2 and state.scroll_x == x and state.scroll_y == y and x > 0 and y > 0,
+		"M zoom in from 1x centres on the player")
+	has(shows[#shows].form, (";grug_map_scroll_x;%d]"):format(x), "M the form shows that view")
+	advance(2)
+	local before = sends_to("ann")
+	fields(accord, {grug_map_scroll_x = "CHG:" .. (x + 100), grug_map_scroll_y = "VAL:" .. y})
+	check(not state.follow and state.scroll_x == x + 100, "M the player's scrolling breaks the lock")
+	advance(2)
+	eq(sends_to("ann") - before, 0, "M scrolling still sends nothing")
+	fields(accord, {grug_map_zoom_in = "+", grug_map_scroll_x = "VAL:" .. (x + 100),
+		grug_map_scroll_y = "VAL:" .. y})
+	check(state.zoom == 4 and state.scroll_x == atlas.zoom_scroll(x + 100, 2, 4) and
+		state.scroll_y == atlas.zoom_scroll(y, 2, 4), "M the next zoom keeps the view's centre")
+	advance(2)
+	fields(accord, {grug_map_zoom_out = "-"})
+	advance(2)
+	fields(accord, {grug_map_zoom_out = "-"})
+	check(state.zoom == 1 and state.follow, "M back at 1x restores the lock")
+	-- A click on the already selected quest sends as well: the clicked list
+	-- would keep the focus and eat the inventory key.
+	advance(2)
+	fields(accord, {grug_quest_list = "CHG:1"})
+	check(state.quest_selected ~= nil, "M a quest is selected")
+	advance(2)
+	before = sends_to("ann")
+	fields(accord, {grug_quest_list = "CHG:1"})
+	eq(sends_to("ann") - before, 1, "M a click on the selected row sends the window")
 end
 
 if failures > 0 then

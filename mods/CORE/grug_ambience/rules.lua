@@ -311,6 +311,14 @@ function R.music_set_on(m, on)
 	return nil
 end
 
+-- The track that really plays now, or nil (0.45.1, the "Now playing" box
+-- under the minimap): only while a track plays, so the box hides in the
+-- pause between two tracks, while a pick waits for its download, on leaving
+-- the capital (with the fade-out) and with music off or at volume 0.
+function R.now_playing(m)
+	return m.phase == "play" and m.track or nil
+end
+
 -- ---------------------------------------------------------------------------
 -- Emitters (fire and flowing water)
 -- ---------------------------------------------------------------------------

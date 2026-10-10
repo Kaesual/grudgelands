@@ -23,6 +23,10 @@
 --     core.dynamic_add_media (the next one while the current one plays),
 --     only while that player has music on, and plays in the push callback
 --     (lua_api.md dynamic_add_media);
+--   * while a track really plays, a "Now playing" box under the minimap names
+--     its title and artist (0.45.1; drawn by grug_map minimap.lua). It is
+--     told only when the playing track changes (sync_now_playing): after
+--     each scheduler pass, a delivery and a music switch;
 --   * music and ambience on/off and volume per player in player meta, applied
 --     at once; the Help page's Sound sub-page and /music, /ambience.
 --
@@ -100,7 +104,7 @@ end
 -- name -> {slot, music_on, music_volume, ambience_on, ambience_volume,
 -- bed = {key, handle, gain, want, seen, underwater, music}, emitters =
 -- {[hash] = {handle, gain, kind}}, next_call, music = rules music state,
--- track_handle, track_gain}
+-- track_handle, track_gain, shown_track (the track the minimap's box names)}
 local states = {}
 
 local META = {
@@ -308,6 +312,18 @@ end
 -- ---------------------------------------------------------------------------
 
 local location = grug_map.location
+-- The minimap's "Now playing" box (0.45.1). The portable fixtures' fake
+-- grug_map has no minimap.
+local minimap = grug_map.minimap
+
+-- Tells the minimap the track that plays now (nil: none) when it differs
+-- from the one told last, so a pass that changes nothing sends nothing.
+local function sync_now_playing(name, st)
+	local track = R.now_playing(st.music)
+	if track == st.shown_track then return end
+	st.shown_track = track
+	if minimap then minimap.set_now_playing(name, track and D.tracks[track]) end
+end
 
 local function music_gain(st)
 	return D.gains.music * st.music_volume / 100
@@ -337,7 +353,10 @@ local function push_track(name, st, track)
 		local current = states[player_name]
 		if not current then return end
 		local action, which = R.music_delivered(current.music, D, track, now_seconds())
-		if action == "play" then play_track(player_name, current, which) end
+		if action == "play" then
+			play_track(player_name, current, which)
+			sync_now_playing(player_name, current)
+		end
 	end)
 	stats.pushes = stats.pushes + 1
 	if not ok then
@@ -361,6 +380,8 @@ local function music_pass(name, st, now)
 	elseif action == "stop" then
 		stop_track(st)
 	end
+	-- A track's end (the pause) returns no action, so compare every pass.
+	sync_now_playing(name, st)
 end
 
 -- ---------------------------------------------------------------------------
@@ -478,6 +499,7 @@ function grug_ambience.set(player, channel, on, volume)
 			if R.music_set_on(st.music, audible) == "stop" then
 				stop_track(st)
 			end
+			sync_now_playing(name, st)
 		elseif audible and st.track_handle then
 			local gain = music_gain(st)
 			fade(st.track_handle, st.track_gain, gain, D.volume_fade)

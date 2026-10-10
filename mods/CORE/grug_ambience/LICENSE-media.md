@@ -49,3 +49,18 @@ own pages; the CC BY credits use the composers' attribution wording.
 | `music/grug_music_the_great_sea.ogg` | The Great Sea | Scott Buckley; credit: "'The Great Sea' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au" | [https://www.scottbuckley.com.au/library/the-great-sea/](https://www.scottbuckley.com.au/library/the-great-sea/) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | trimmed to 0:00-2:00 with a 10 s fade-out (the calm part), converted to Ogg Vorbis (stereo, q1), levelled to -18 LUFS |
 | `music/grug_music_town_theme.ogg` | Town Theme RPG | cynicmusic | [https://opengameart.org/content/town-theme-rpg](https://opengameart.org/content/town-theme-rpg) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to Ogg Vorbis (stereo, q1), levelled to -18 LUFS |
 | `music/grug_music_village_consort.ogg` | Village Consort | Kevin MacLeod; credit: "Village Consort" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/ | [https://incompetech.com/music/royalty-free/](https://incompetech.com/music/royalty-free/) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | converted to Ogg Vorbis (stereo, q1), levelled to -18 LUFS |
+
+## Textures
+
+The music-note icon of the "Now playing" box under the minimap (0.45.1):
+original, AI-assisted pixel art by **GPT-6 Astra (Grudgelands)**, 2026-10-10,
+picked by the user from three proposals (variant B). Authored with
+**Python/Pillow** at native integer coordinates; no image-generation service,
+downloaded art or third-party source pixels. Source and tool disclosure:
+`tools/r451_tx/paint_art.py` (the proposals in `tools/r451_tx/note/`). The
+project dedicates any rights it holds in this file to **CC0 1.0 Universal
+(CC0-1.0)** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Author | Source / modifications | License |
+| --- | --- | --- | --- |
+| `textures/grug_ambience_note.png` | GPT-6 Astra (Grudgelands) | Original AI-assisted art; proposal B, a silver beamed pair of notes, 24×24 RGBA, unchanged | CC0-1.0 |

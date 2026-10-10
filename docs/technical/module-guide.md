@@ -580,6 +580,13 @@ tools](#player-meta-read-by-external-tools).
   keeps that decision quiet (`cast`'s `quiet`) and without a tap window
   (`s.pending`).
   A carried RMB press still cancels. Fixture and engine probe `tools/r36_f2`.
+  Since 0.45.1 the tap (`s.pending`, a self or friendly skill pressed at a
+  hand-diggable or protected node) is decided by `TAP_US` (0.35 s, the
+  server-seen release; derivation at the constant) and ignores where the
+  crosshair moves meanwhile; `can_dig` still refuses a completion only
+  before `HOLD_US` (0.2 s), and the `on_dig` wrapper clears `s.pending`
+  when it accepts one, so a completed dig makes the press a hold. Fixture
+  `tools/r451_sc`.
   It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.
@@ -1471,8 +1478,10 @@ tools](#player-meta-read-by-external-tools).
 - **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x/8x
   zoom, native scrollbars and an independent marker layer. Formspec v4 wraps
   the shared legacy inventory window; only Map content switches to real
-  coordinates. Keep center-preserving zoom, fixed-size markers, clipping and
-  hit bounds in the same transform. A new tab visit resets zoom/scroll; live
+  coordinates. Keep the zoom's wanted centre (since 0.45.1 the soft lock on
+  the player until the player scrolls, `atlas.zoom_view` and
+  `atlas.scroll_event`, [world_map.md](../design/world_map.md#atlas-navigation)),
+  fixed-size markers, clipping and hit bounds in the same transform. A new tab visit resets zoom/scroll; live
   updates preserve them. Stable byte-encoded IDs own marker identity. Only open
   Map sessions refresh, at most every 2 s since Round 30 (`page.lua`): a cheap
   signature (zoom, selection, location, minimap switch, arrows on a 0.02-unit
@@ -1888,7 +1897,14 @@ tools](#player-meta-read-by-external-tools).
     drops far nodes itself. `grug_ambience.stats` holds comparison figures
     for the engine probes `tools/r34_s2/engine.sh` and `tools/r35_m/engine.sh`;
     fixtures `tools/r34_s2` (beds, calls, loops, files) and `tools/r35_m`
-    (capital music, either music or the bed, settings).
+    (capital music, either music or the bed, settings). The "Now playing"
+    box (0.45.1): `R.now_playing(m)` is the track in phase "play";
+    `sync_now_playing` compares it with `states[name].shown_track` after each
+    scheduler pass, a delivery and a music switch and calls
+    `grug_map.minimap.set_now_playing(name, D.tracks[id] or nil)` only on a
+    change; the minimap draws the box (`minimap_view.lua`
+    `now_playing_box`, three elements created and removed with the
+    minimap). Fixtures `tools/r451_mu` and `tools/r27_minimap` block P.
 
 ## UI and formspecs
 
