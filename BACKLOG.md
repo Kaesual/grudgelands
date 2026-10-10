@@ -1814,10 +1814,12 @@ the reviews' and reports' backlog notes of the 0.45.1 fix round
 
 - **Charge** (CH): after a lag step the per-segment shortcut can leave
   the carrier off the plan for one step (about 1 run in 14,000 with 10 %
-  lag spikes; the hit and cancels never read it); the pit rollback on
-  45° diagonal stairs with 1-node treads can roll a cut plan back to a
-  false rim and turn a downhill hop into a sloped run that clips step
-  corners (pre-existing, no longer reached in the sweeps); the drawn
+  lag spikes; the hit and cancels never read it); the pit rule on 45°
+  diagonal stairs with 1-node treads can read a corner as a 2-node drop
+  and roll a cut plan back to that false rim (no longer reached in the
+  sweeps); the pit rollback turns a downhill multi-edge hop into a
+  sloped run that clips step corners by up to 0.6 m (pre-existing since
+  Round 40); the drawn
   position on such stairs still goes up to 1.85 m below the ground under
   it (pre-existing, the client's smoothing cuts the corners).
 - **Mounts** (MC): the engine's breath check uses the raised eye height,
@@ -1860,8 +1862,7 @@ the reviews' and reports' backlog notes of the 0.45.1 fix round
   `homes_fallen_west_work_step_candle` (the lift covers it).
 - **Skill taps** (SC): `tools/r451_sc`'s food case at 250 ms also passes
   on the old code and the 0.35 s combat refusal is not covered;
-  `tools/r32_f2` G11 no longer holds a support skill at a hostile past the
-  tap window; `classes.md`'s "any other actor" does not name tamed mobs;
+  `classes.md`'s "any other actor" does not name tamed mobs;
   Ice Nova with the ranged talent pressed at an ally or NPC now says "No
   hostile target in your crosshair." (consistent with an air press).
 - **Trainer window** (TR): the line wrap uses the 6.6-characters-per-unit

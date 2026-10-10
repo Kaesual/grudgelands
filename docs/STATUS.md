@@ -17,7 +17,10 @@ Updated 2026-10-10. This is the delivery pointer, not another game specification
   Lanes' gates: every lane's full fixture run green, `check_fresh_server.py`
   PASS, smoke boots PASS; on lane D's branch `tools/r37_dc`,
   `check_upgrade.py` (0.45.1 against origin/main) PASS. **Round-end gates
-  (coordinator):** pending. No world generation changed (no seed fleet).
+  (coordinator, on `r451-d` at `421c1b41`):** full fixtures 161/161 (lane
+  D's run, the same state), `check_upgrade.py` PASS (0.45.1 against
+  origin/main `d4a1e645`), `check_fresh_server.py` and the release-mode
+  audit PASS, smoke boot PASS; lane D's review MERGE AFTER FIXES, fixed. No world generation changed (no seed fleet).
   The declaration only raises the version:
   `{"schema": 2, "version": "0.45.1", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`;
   a 0.45.0 world plays on, no migration step, no map reset; town NPCs
@@ -39,8 +42,8 @@ Updated 2026-10-10. This is the delivery pointer, not another game specification
     waiting for their floor and re-seated; the trainer window and the
     picked greetings, "Grudge-Free Repairs" as the mender's title; the
     "Now playing" box under the minimap.
-  - Next: the round-end gates, the user's GUI test (desktop and web
-    build) and the push on the user's word; Round 46
+  - Next: the user's GUI test (desktop and web build) and the push on
+    the user's word; Round 46
     ([BACKLOG](../BACKLOG.md#0451-carry-overs)).
 
 - **Round 45 "Crafting rework" complete; 0.45.0 pushed on the user's

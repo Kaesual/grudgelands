@@ -1044,7 +1044,8 @@ Desktop (GUI scale 1 and 2, a 720p screen) and the web build (about
 5. A boat from the quickbar while wading or swimming at the surface; two
    or more nodes deeper: "Swim up to the surface to summon a boat."; the
    hull floats at the same waterline; riding through a 2-high tunnel does
-   not hurt.
+   not hurt; Help names the boat "…in water at the surface…" and Help →
+   About shows 0.45.1.
 
 **Combat:**
 
@@ -1126,6 +1127,9 @@ Desktop (GUI scale 1 and 2, a 720p screen) and the web build (about
 
 ### Round-end gates
 
-**Round-end gates on the final branch** (coordinator): pending — full
-`run_fixtures.sh`, `check_upgrade.py`, `check_fresh_server.py`,
-`tools/r451_mc/gen_bat_ride_mesh.py --check`, a smoke boot.
+**Round-end gates on the final branch** (`r451-d` at `421c1b41`,
+coordinator, 2026-10-10): full `run_fixtures.sh` 161/161 PASS (lane D's
+run, the same state), `check_upgrade.py` PASS (0.45.1 against
+origin/main `d4a1e645`), `check_fresh_server.py` and the release-mode
+audit PASS, headless smoke boot PASS (the script's verdict). Lane D's
+review: MERGE AFTER FIXES (Lows only), fixed.

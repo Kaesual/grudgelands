@@ -37,15 +37,16 @@ are put back on their feet the next time their area loads.
   holding the button still digs. Self skills also cast when you point at
   an ally, an NPC, a trader, a tamed creature or a player you may not
   fight, and a Heal, Shield or Mend tapped at the ground goes to the ally
-  under the crosshair when you let go. Food tells a quick right-click
-  (plant, open) from a hold (eat) as reliably; the eating ring appears a
-  moment later.
+  under the crosshair when you let go. Food now tells a quick
+  right-click (plant, open) from a hold (eat) reliably too; the eating
+  ring appears a moment later.
 - **Crafting:** an ingredient that several items can fill names them
   ("Carrot or Cassava") or its kind ("Any wool"), and its icon shows the
-  one you carry most of. The amount has − and + beside it (− above the
-  most you can make jumps to that most); × beside the search clears it
-  and shows the whole list at once. The tabs now end Party & PvP ·
-  Map & Quests · Help.
+  one you carry most of. The amount has − and + beside it (− on an amount
+  above the maximum jumps to the maximum); × beside the search clears it
+  and shows the whole list at once. The Map tab is now called Map &
+  Quests and comes before Help: the tabs end Party & PvP · Map & Quests
+  · Help.
 - **Quests and towns:** a quest giver opens on the first quest you can
   hand in, else the first you can take, and moves on to the next after
   Complete or Accept. Town NPCs wait for their floor instead of sinking
@@ -54,10 +55,11 @@ are put back on their feet the next time their area loads.
   Grudge-Free Repairs and greets you too.
 - **Map and windows:** zooming the map keeps you in the middle until you
   scroll it yourself; from then on it keeps the place you scrolled to,
-  and back at 1x it follows you again. The inventory key (`I`) closes
-  every window: Talents & Skills, Party & PvP, Crafting, Help, the
-  map, quest givers, trainers, the Crownbinder, the character creation,
-  the Claim Stone, the withdraw dialog and a written book. Space and
+  and back at 1x it follows you again. The inventory key (`I`) now also
+  closes Talents & Skills, Party & PvP, Crafting, Help, the map, quest
+  givers, trainers, the Crownbinder, the character creation, the Claim
+  Stone, the withdraw dialog and a written book (not while you type in a
+  field). Space and
   Enter no longer send you home from the Character tab or sort your
   bags on the Inventory tab.
 - **Music:** in a capital, a small "Now playing" box under the minimap
