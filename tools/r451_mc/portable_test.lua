@@ -16,7 +16,9 @@
 --      click dismounts like the manual dismount and closes the window;
 --   F. the banner "Press E to summon your mount": once per character, for
 --      the first riding mount, when the dialogue closes; none for a later
---      tier, a boat, or a character who owned a mount before.
+--      tier, a boat, or a character who owned a mount before;
+--   G. a flyer plays its flight loop in the air, hovering too, and stands
+--      only idle on the ground (0.45.1 follow-up).
 --
 --   luajit tools/r451_mc/portable_test.lua [REPO]
 -- Prints "R451 MC PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -497,6 +499,37 @@ check(ok and hint == true, "the first purchase answers the hint")
 direct.meta["grug_mounts:land_tier"] = 0
 ok, _, hint = grug_mounts.purchase(direct, 1)
 check(ok and not hint, "the flag keeps it to once per character")
+
+------------------------------------------------------------------------------
+-- G. Flyers: the flight loop in the air, hovering too; standing only on the
+-- ground. The ground ends at y = 0.5 here.
+------------------------------------------------------------------------------
+for _, ride in ipairs({{"expert_accord", "accord", 3}, {"master_accord", "accord", 4},
+		{"expert_throng", "throng", 3}, {"master_throng", "throng", 4}}) do
+	local flyer = make_player("flyer_" .. ride[1], ride[2], "human")
+	grug_mounts.spawn_entity(flyer, ride[3], {x = 0, y = 0.5, z = 0})
+	local record = grug_mounts.active[flyer:get_player_name()]
+	local entity = record.object:get_luaentity()
+	local controls = {}
+	function flyer:get_player_control() return controls end
+	step_mount(flyer)
+	eq(entity._grug_animation, "stand", ride[1] .. ": idle on the ground it stands")
+	controls = {up = true}
+	step_mount(flyer)
+	eq(entity._grug_animation, "move", ride[1] .. ": moving on the ground, the flight loop")
+	controls = {}
+	record.object.pos = {x = 0, y = 12, z = 0}
+	step_mount(flyer)
+	eq(entity._grug_animation, "move", ride[1] .. ": hovering in the air, the flight loop")
+	controls = {sneak = true}
+	step_mount(flyer)
+	eq(entity._grug_animation, "move", ride[1] .. ": descending, the flight loop")
+	controls = {}
+	record.object.pos = {x = 0, y = 0.5, z = 0}
+	step_mount(flyer)
+	eq(entity._grug_animation, "stand", ride[1] .. ": landed and idle, it stands again")
+	grug_mounts.dismount(flyer, "manual", false)
+end
 
 if failures > 0 then
 	print(("%d checks, %d failures"):format(checks, failures))

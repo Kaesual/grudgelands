@@ -502,8 +502,16 @@ local function flight_step(self, control, yaw)
 	self.object:set_acceleration({x = 0, y = 0, z = 0})
 	self.object:set_velocity({x = input_x * tier.speed * input_scale,
 		y = vertical, z = input_z * tier.speed * input_scale})
-	set_animation(self, input_scale == 0 and vertical == 0 and "stand" or "move")
-	ride_sound(self, "mount_wings", input_scale > 0 or vertical ~= 0)
+	-- In the air a flyer always plays its flight loop, hovering too (0.45.1:
+	-- the perched pose held the eagle's head up in the rider's view). Only
+	-- resting on the ground, idle, does it stand. The engine reports no ground
+	-- contact for a still object, so an idle flyer reads the node under its
+	-- middle (one node read per idle step).
+	local idle = input_scale == 0 and vertical == 0
+	local floor = idle and node_definition(position_node({x = pos.x,
+		y = pos.y + self._grug_model.collisionbox[2] - 0.1, z = pos.z}))
+	set_animation(self, floor and floor.walkable and "stand" or "move")
+	ride_sound(self, "mount_wings", not idle)
 end
 
 -- A boat glides toward the requested velocity (accelerating and braking alike)
