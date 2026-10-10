@@ -23,14 +23,17 @@
 --   * afterwards, when nothing got it or a tabheader has it,
 --     setInitialFocus over the window's direct children (not the contents
 --     of a scroll_container): 1. the first empty edit box, 2. the first edit
---     box, 3. the first table, 4. the last button, 5. the first other
---     element that is neither static text nor a tabheader.
+--     box, 3. the first table (a textlist included), 4. the last button,
+--     5. the first other element that is neither static text nor a
+--     tabheader.
 -- Edit boxes are field[] with a name, pwdfield[] and every textarea[] (a
 -- read-only one too: CGUIEditBox::processKey consumes every character key
--- even when not writable). Tables type-ahead on characters (GUITable::OnEvent).
--- Buttons, dropdowns and scrollbars pass letters on to the window, which
--- closes on the inventory key; a focused textlist or checkbox gets the
--- inventory key forwarded (GUIFormSpecMenu::preprocessEvent).
+-- even when not writable). A textlist[] is a GUITable as well (parseTextList),
+-- and tables search as the player types (GUITable::OnEvent consumes every
+-- character key). Buttons, dropdowns and scrollbars pass letters on to the
+-- window, which closes on the inventory key; a focused checkbox (or a
+-- dropdown's open list) gets that key forwarded
+-- (GUIFormSpecMenu::preprocessEvent, list boxes and checkboxes only).
 
 local M = {}
 
@@ -71,7 +74,7 @@ local BUTTONS = {button = true, button_exit = true, button_url = true,
 	button_url_exit = true, button_key = true, image_button = true,
 	image_button_exit = true, item_image_button = true}
 local OTHER = {list = true, checkbox = true, image = true, animated_image = true,
-	item_image = true, textlist = true, dropdown = true, hypertext = true,
+	item_image = true, dropdown = true, hypertext = true,
 	box = true, scrollbar = true, scroll_container = true, model = true}
 -- The parsers that compare the element's name with the one to focus.
 local FOCUSABLE = {checkbox = true, scrollbar = true, table = true,
@@ -102,7 +105,7 @@ function M.describe(e)
 		if kind == "textarea" and name == "" and default == "" then default = label end
 		return name, "editbox", default
 	end
-	if kind == "table" then return name, "table" end
+	if kind == "table" or kind == "textlist" then return name, "table" end
 	if BUTTONS[kind] then return name, "button" end
 	if kind == "tabheader" then return name, "tab" end
 	if kind == "label" or kind == "vertlabel" then return name, "static" end

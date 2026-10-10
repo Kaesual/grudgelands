@@ -1905,10 +1905,10 @@ tools](#player-meta-read-by-external-tools).
 - **Initial focus (0.45.1):** the inventory key closes a window unless the
   focused element eats the key. When a window is built and nothing named in
   `set_focus[]` exists, the engine focuses the first empty edit box, else the
-  first edit box, else the first table, else the last button
-  (`guiFormSpecMenu.cpp` `setInitialFocus`); edit boxes include every
-  `textarea[]`, a read-only one too, and an edit box or a table eats letter
-  keys. So a window with an edit box or a table names a harmless button in
+  first edit box, else the first table (a `textlist[]` is one), else the
+  last button (`guiFormSpecMenu.cpp` `setInitialFocus`); edit boxes include
+  every `textarea[]`, a read-only one too, and an edit box or a table eats
+  letter keys. So a window with an edit box or a table names a harmless button in
   `set_focus[<name>;true]`, placed before that button (Party & PvP: Refresh;
   Talents & Skills: an invisible zero-size button with no action; Help: the
   open sub-page's button; Claim Stone and Crownbinder: Close; the creation

@@ -5,8 +5,8 @@
 --   luajit tools/r451_kf/portable_test.lua [REPO]
 --
 -- M. The focus model (focus.lua, after guiFormSpecMenu.cpp) on small forms:
---    the engine's order (first empty edit box, first edit box, first table,
---    last button, first other), a scroll container's contents not counted,
+--    the engine's order (first empty edit box, first edit box, first table
+--    or textlist, last button, first other), a scroll container's contents not counted,
 --    set_focus forced or on a new form only, before its element only, a
 --    tabheader click re-running the order, a kept name.
 -- I. The inventory pages, built by the REAL vendored sfinv, grug_inventory's
@@ -79,8 +79,11 @@ eq(focused("button[0,0;1,1;b;B]table[0,1;2,1;t;r1;1]"), "table:t", "M a table be
 check(select(2, focused("table[0,1;2,1;t;r1;1]")).eats, "M a table eats letters")
 eq(focused("button[0,0;1,1;a;A]button[0,1;1,1;b;B]checkbox[0,2;c;C;false]"), "button:b",
 	"M the last button")
-eq(focused("label[0,0;x]checkbox[0,2;c;C;false]textlist[0,3;2,2;l;a,b;1]"), "checkbox:c",
+eq(focused("label[0,0;x]checkbox[0,2;c;C;false]dropdown[0,3;2;d;a,b;1]"), "checkbox:c",
 	"M the first element that is no static text")
+eq(focused("button[0,0;1,1;b;B]textlist[0,3;2,2;l;a,b;1]"), "textlist:l",
+	"M a textlist is a table")
+check(select(2, focused("textlist[0,3;2,2;l;a,b;1]")).eats, "M a textlist eats letters")
 eq(focused("field[0,0;2,1;;Static;x]button[0,1;1,1;b;B]"), "button:b",
 	"M an unnamed field is static text")
 eq(focused("scroll_container[0,0;3,3;s;vertical]" .. RO .. "scroll_container_end[]" ..
