@@ -3,7 +3,8 @@
 -- items, trainer, shipwright) and grug_mobs/kraken.lua under a minimal `core`
 -- stub with a small node world:
 --   A. summon rules: feet in water (source and river flowing), the surface
---      and its centring, out of water, too deep, closed surface, combat, dead;
+--      and its centring, out of water, too deep (0.45.1: feet below the top
+--      two water nodes), closed surface, combat, dead;
 --   B. the water-surface controller: floating, rising, falling, glide limit;
 --   C. water contact (ruling 8): removal within the one-second check;
 --   D. the eject seams: HP-change observer and entity on_punch, both leaving
@@ -303,9 +304,13 @@ check(not ok and message:find("water", 1, true), "refused out of water: " .. tos
 ada.pos = {x = 5, y = 0.5, z = 0} -- on the bank next to the water
 ok, message = grug_mounts.mount(ada, 5)
 check(not ok and message:find("stand or swim in water", 1, true), "refused on the bank beside the water")
+-- 0.45.1: only at the surface (feet in the top two water nodes).
 ada.pos = {x = 2.3, y = -2.6, z = 0.2} -- swimming at depth: feet in the y = -3 node
+ok, message = grug_mounts.mount(ada, 5)
+check(not ok and message:find("Swim up to the surface", 1, true), "refused swimming at depth")
+ada.pos = {x = 2.3, y = -0.6, z = 0.2} -- swimming at the surface: feet in the y = -1 node
 ok = grug_mounts.mount(ada, 5)
-check(ok, "summoned while swimming")
+check(ok, "summoned while swimming at the surface")
 local boat = controller_of(ada)
 local p = boat and boat.object:get_pos()
 check(p and p.x == 2 and p.y == 0.5 and p.z == 0, "spawned on the surface, centred on the water node")
@@ -337,7 +342,10 @@ ada.pos = {x = 0, y = -30, z = 0}
 ok, message = grug_mounts.mount(ada, 5)
 check(not ok and message:find("surface", 1, true), "refused deep below the surface")
 ada.pos = {x = 0, y = -10, z = 0}
-check((grug_mounts.mount(ada, 5)), "summoned within the surface scan")
+ok, message = grug_mounts.mount(ada, 5)
+check(not ok and message:find("Swim up to the surface", 1, true), "refused ten nodes down (0.45.1)")
+ada.pos = {x = 0, y = -1, z = 0}
+check((grug_mounts.mount(ada, 5)), "summoned one node under the surface")
 grug_mounts.dismount(ada, nil, true)
 combat.ada = true
 ok, message = grug_mounts.mount(ada, 5)

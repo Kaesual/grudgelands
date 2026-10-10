@@ -94,7 +94,7 @@ function grug_mobs.configure_capital_display(self)
   local key=tier==1 and "t1_"..faction or tier==2 and self._grug_display_race or
    (tier==3 and "expert_" or "master_")..faction
   local model=assert(grug_mounts.MODELS[key],"capital mount appearance missing")
-  self.object:set_properties({visual="mesh",mesh=model.mesh,textures=model.textures,
+  self.object:set_properties({visual="mesh",mesh=model.display_mesh or model.mesh,textures=model.textures,
    visual_size=model.display_size or model.visual_size,collisionbox=model.display_box,
    selectionbox=model.display_box,nametag=""})
   configure_display_tag(self,model.description)

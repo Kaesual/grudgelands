@@ -91,9 +91,9 @@ end
 -- The tier-2 race mounts and the tier-3/4 flyers get their shared boxes
 -- below (TIER_BODIES). `display_box` is a model's own size, for the riderless
 -- capital displays and their name tags only (grug_mobs/capital_displays.lua);
--- it never touches a ridden mount. `display_size` (0.45.1) keeps a display at
--- its measured size where the ridden model grew (the displays' foot heights
--- and stable layout are measured for it). The seat: `attach_y` (times
+-- it never touches a ridden mount. `display_size` and `display_mesh` (0.45.1)
+-- keep a display at its measured size and mesh where the ridden model changed
+-- (the displays' foot heights and stable layout are measured for them). The seat: `attach_y` (times
 -- visual_size.y, tenths of a node) is its height over the mount's feet;
 -- `attach_x` and `attach_z` (tenths of a node) shift the visible mesh under
 -- the rider (and the camera, which stays with the rider) sideways and forward.
@@ -118,7 +118,7 @@ grug_mounts.MODELS = {
 		-- The idle clip also raises the head through the view every few
 		-- seconds, so the ridden ibex idles on the walk's first frame instead
 		-- (0.45.1 playtest; the mesh has no lower head pose but grazing).
-		camera = {first = {y = 2.6, z = -0.3}, third = {y = 2.15, z = 0}},
+		camera = {first = {y = 2.8, z = -0.3}, third = {y = 2.15, z = 0}},
 		animation = {stand = {1, 100, 30}, move = {200, 300, 80}, ride_stand = {200, 200, 1}},
 	},
 	elf = {
@@ -126,11 +126,11 @@ grug_mounts.MODELS = {
 		mesh = "grug_mobs_stag.b3d", textures = {"grug_mobs_stag.png"},
 		icon = "grug_mounts_icon_elf.png",
 		-- 120 % of the mob's size (0.45.1 playtest: too small; the mob is 80 %
-		-- of upstream's to fit its box), the seat on its back (1.34 nodes, the
-		-- back's top 1.32).
+		-- of upstream's to fit its box), the seat on its back (1.32 nodes, the
+		-- back's top; the user's tuned values).
 		visual_size = {x = 9.6, y = 9.6}, display_size = {x = 8, y = 8},
 		display_box = {-0.55, -0.01, -0.55, 0.55, 1.8, 0.55},
-		attach_y = 1.4,
+		attach_y = 1.375,
 		camera = {first = {y = 2.35, z = -0.1}, third = {y = 2.25, z = 0}},
 		animation = {stand = {1, 59, 10}, move = {100, 119, 40}},
 	},
@@ -141,7 +141,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_orc.png",
 		visual_size = {x = 1.55, y = 1.55},
 		display_box = {-0.7, -0.01, -0.7, 0.7, 1.34, 0.7},
-		attach_y = 8.2,
+		-- The seat at 1.14 nodes (the user's tuned value, 0.45.1).
+		attach_y = 7.355,
 		camera = {first = {y = 1.95, z = -0.3}, third = {y = 2.15, z = 0}},
 		animation = {stand = {1, 1, 25}, move = {1, 40, 90}},
 	},
@@ -150,10 +151,12 @@ grug_mounts.MODELS = {
 		mesh = "grug_mobs_wolf.b3d",
 		textures = {"grug_mobs_wolf_blightfang.png^[multiply:#b3a6ca"},
 		icon = "grug_mounts_icon_undead.png",
-		visual_size = {x = 1.7, y = 1.7},
+		-- 125 %, the seat at 1.78 nodes and 0.31 back (the user's tuned values,
+		-- 0.45.1); the displays keep the measured size.
+		visual_size = {x = 2.125, y = 2.125}, display_size = {x = 1.7, y = 1.7},
 		display_box = {-0.55, -0.01, -0.55, 0.55, 1.43, 0.55},
-		attach_y = 8.4,
-		camera = {first = {y = 2.1, z = -0.3}, third = {y = 2.35, z = 0}},
+		attach_y = 8.382, attach_z = 3.125,
+		camera = {first = {y = 2.5, z = -0.3}, third = {y = 2.35, z = 0}},
 		animation = {stand = {1, 1, 25}, move = {1, 40, 100}},
 	},
 	troll = {
@@ -194,7 +197,9 @@ grug_mounts.MODELS = {
 	},
 	expert_throng = {
 		id = "expert_throng", description = "Throng Cave Bat",
-		mesh = "grug_mobs_cave_bat.b3d",
+		-- Ridden: the copy whose body holds still in the flight loop (0.45.1,
+		-- tools/r451_mc/gen_bat_ride_mesh.py); the displays keep the original.
+		mesh = "grug_mounts_bat_ride.b3d", display_mesh = "grug_mobs_cave_bat.b3d",
 		textures = {"grug_mobs_cave_bat.png^[multiply:#856f8e"},
 		icon = "grug_mounts_icon_expert_throng.png",
 		-- 130 % (0.45.1 playtest: too small); the seat grows with it.
@@ -213,12 +218,12 @@ grug_mounts.MODELS = {
 		id = "boat", description = "Rowboat",
 		mesh = "grug_mounts_rowboat.b3d", textures = {"default_wood.png"},
 		icon = "grug_mounts_icon_boat.png",
-		-- The hull at 70 % (0.45.1 playtest: too big in first person); the
+		-- The hull at 98 % (0.45.1 playtest, the user's tuned value); the
 		-- controller's box, its water surface and the camera stay as they are.
-		visual_size = {x = 0.7, y = 0.7},
+		visual_size = {x = 0.98, y = 0.98},
 		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
 		-- The rower sits behind the middle bench: the hull is shifted forward.
-		attach_y = 1, attach_z = 3.5,
+		attach_y = 1, attach_z = 4.9,
 		camera = {first = {y = 0.8, z = 0}, third = {y = 0.8, z = 0}},
 	},
 	improved_boat = {
@@ -233,7 +238,9 @@ grug_mounts.MODELS = {
 	},
 	master_throng = {
 		id = "master_throng", description = "Giant Blood Bat",
-		mesh = "grug_mobs_cave_bat.b3d",
+		-- Ridden: the copy whose body holds still in the flight loop (0.45.1,
+		-- tools/r451_mc/gen_bat_ride_mesh.py); the displays keep the original.
+		mesh = "grug_mounts_bat_ride.b3d", display_mesh = "grug_mobs_cave_bat.b3d",
 		textures = {"grug_mobs_cave_bat.png^[multiply:#7d3549"},
 		icon = "grug_mounts_icon_master_throng.png",
 		visual_size = {x = 5.46, y = 5.46}, display_size = {x = 4.2, y = 4.2},

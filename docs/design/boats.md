@@ -72,9 +72,12 @@ are not nudged into travelling by owning a boat.
   are no docks; the only piers are the four island landings' (§7.1), and a
   boat needs none.
 - The boat appears on the surface of that water column, centred on its water
-  node, with the player seated in it. A column whose surface lies more than 16
-  nodes above the player, or whose surface is closed (ice, a roof), refuses
-  with a message.
+  node, with the player seated in it. Only at the surface (0.45.1): the
+  player's feet must be in the column's top water node or the one below it
+  (the surface at most two nodes above the feet: swimming at the surface or
+  wading); deeper it refuses with "Swim up to the surface to summon a boat.",
+  and a closed surface (ice, a roof) refuses as well. Every summon path keeps
+  the rule (the quickbar's buttons, a switch from one boat to the other).
 - Summoning is also refused in combat (`grug_core.in_combat`) and while dead.
 - **A boat that loses contact with water disappears** (ruling 8). Once per
   second each active boat checks its own node and the node below for

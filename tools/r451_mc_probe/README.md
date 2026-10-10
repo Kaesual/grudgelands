@@ -55,22 +55,22 @@ along your view (less in front of a wall).
 
 ## Models and shipped values
 
-Shipped after the first playtest (follow-up 3). Size is the catalogue's
+Shipped after the playtests (follow-ups 3 and 4, the user's tuned values). Size is the catalogue's
 `visual_size`; seat y is the rider's height above the mount's feet.
 
 | Model | Mount | Size | Seat y (nodes) | First person y, z | Third person y, z |
 |---|---|---|---|---|---|
 | `t1_accord`, `t1_throng`, `human` | Courser, Highcourt Charger (horse) | 3 | 1.26 | 2.4, -0.2 | 2.15, 0 |
-| `dwarf` | Frostbarrow Ibex | 1.45 | 1.23 | 2.6, -0.3 | 2.15, 0 |
-| `elf` | Silverleaf Stag | 9.6 (was 8) | 1.34 (was 1.52) | 2.35, -0.1 | 2.25, 0 |
-| `orc` | War Boar | 1.55 | 1.27 | 1.95, -0.3 | 2.15, 0 |
-| `undead` | Grave Wolf | 1.7 | 1.43 | 2.1, -0.3 | 2.35, 0 |
+| `dwarf` | Frostbarrow Ibex | 1.45 | 1.23 | 2.8, -0.3 | 2.15, 0 |
+| `elf` | Silverleaf Stag | 9.6 (was 8) | 1.32 (was 1.52) | 2.35, -0.1 | 2.25, 0 |
+| `orc` | War Boar | 1.55 | 1.14 (was 1.27) | 1.95, -0.3 | 2.15, 0 |
+| `undead` | Grave Wolf | 2.125 (was 1.7) | 1.78, z -0.31 (was 1.43) | 2.5, -0.3 | 2.35, 0 |
 | `troll` | Kezamba Tiger | 1.45 | 1.52 (was 1.19) | 2.4, -0.2 | 2.4, 0 |
 | `expert_accord` | Accord Eagle | 3 | 1.86, x 0.065 | 2.8, -0.2 | 2.75, 0 |
 | `master_accord` | Steller's Sea Eagle | 4 | 2.56, x 0.087 | 3.6, -0.2 | 3.5, 0 |
 | `expert_throng` | Throng Cave Bat | 3.9 (was 3) | 2.5 (was 1.92) | 3.2, -0.4 | 3.4, 0 |
 | `master_throng` | Giant Blood Bat | 5.46 (was 4.2) | 3.71 (was 2.86) | 4.35, -0.5 | 4.6, 0 |
-| `boat` | Rowboat | 0.7 (was 1) | 0.07, z -0.35 | 0.8, 0 | 0.8, 0 |
+| `boat` | Rowboat | 0.98 (was 1) | 0.1, z -0.49 | 0.8, 0 | 0.8, 0 |
 | `improved_boat` | Sailboat | 0.8 (was 1) | 0.08 | 0.8, 0 | 0.8, 0 |
 
 Before 0.45.1 every land and flying mount had its first-person camera 1.1

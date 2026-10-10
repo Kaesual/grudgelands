@@ -3,10 +3,12 @@ local VISUAL_NAME = "grug_mounts:mount_visual"
 local STATUS_ID = "mount"
 local WARNING_INTERVAL = 1
 -- Boats (docs/design/boats.md): the water-contact check runs once per second
--- (ruling 8); a summon looks this far up for the surface; a boat answers
--- input at this many times its speed per second (full speed in 2/3 s).
+-- (ruling 8); a boat is summoned only by a player whose feet are in the top
+-- SURFACE_DEPTH + 1 water nodes (0.45.1: at the surface, never pulled up from
+-- the depth); a boat answers input at this many times its speed per second
+-- (full speed in 2/3 s).
 local WATER_CHECK_INTERVAL = 1
-local SURFACE_SCAN = 16
+local SURFACE_DEPTH = 1
 local BOAT_RESPONSE = 1.5
 local LANDING_RADIUS = 2
 -- Ride sounds (Round 45 PT6): a ground mount's gallop pauses once the mount
@@ -96,13 +98,15 @@ local function open_cell(pos)
 end
 
 -- The surface above a player whose feet are in water (ruling 5): the top of
--- the water column, with open space above it. nil and the refusal otherwise.
+-- the water column, with open space above it, the feet in its top node or
+-- the one below (the surface at most 2 nodes over the feet: a swimmer at the
+-- surface, a wader). nil and the refusal otherwise.
 function grug_mounts.boat_surface(pos)
 	if not is_water(pos) then
 		return nil, "A boat can only be summoned while you stand or swim in water."
 	end
 	local top = position_node(pos)
-	for _ = 1, SURFACE_SCAN do
+	for _ = 0, SURFACE_DEPTH do
 		local above = {x = top.x, y = top.y + 1, z = top.z}
 		if not is_water(above) then
 			local definition = node_definition(above)
