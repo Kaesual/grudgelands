@@ -707,7 +707,8 @@ eq(p.sent, sent + 1, "L a search resends once")
 fs = p.formspec
 has(fs, "Page 1 of 1", "L the search filters to one page")
 eq(count(fs, "image_button["), 5, "L Block 20..24")
-has(fs, "field[0.2,1.1;3.6,0.6;grug_craft_search;;block 2]", "L the typed text echoed")
+-- 0.45.1: the field is narrower, "×" sits between it and Search.
+has(fs, "field[0.2,1.1;3,0.6;grug_craft_search;;block 2]", "L the typed text echoed")
 -- A second search within a second is ignored: no resend, nothing changes.
 advance(0.5)
 sent = p.sent
@@ -789,7 +790,8 @@ has(fs, "label[5.6,2.35;Ingredients (have/need)]", "Q the ingredients heading")
 has(fs, "item_image[5.6,2.6;0.4,0.4;t:meat]", "Q an ingredient icon")
 has(fs, "30/1]", "Q have/need for one")
 has(fs, "Max: 12]", "Q the maximum (12 grain)")
-has(fs, "field[6.75,", "Q a quantity field for a stackable output")
+-- 0.45.1: Quantity [−][field][+] [Max].
+has(fs, "field[7.45,", "Q a quantity field for a stackable output")
 has(fs, "grug_craft_qty;;1]", "Q the field's default is 1")
 has(fs, "field_close_on_enter[grug_craft_qty;false]", "Q Enter keeps the window open")
 has(fs, "grug_craft_max;Max]", "Q the Max button")
@@ -970,7 +972,7 @@ has(fs, "(c@#ff9f5a)Requires: Forge nearby", "S ... as a warning")
 has(fs, "style[grug_craft_recheck;", "S the button greyed")
 has(fs, "grug_craft_recheck;Craft now]", "S ... and disabled (it cannot start)")
 lacks(fs, "grug_craft_go;", "S no live Craft now")
-lacks(fs, "field[6.75,", "S no quantity field for a non-stackable output")
+lacks(fs, "field[7.45,", "S no quantity field for a non-stackable output")
 says(fs, "Crafting this will not give you a Weaponsmith experience point",
 	"S the XP hint below the profession tier")
 has(fs, "(c@#8a8a8a)Crafting this will not", "S ... in grey")
@@ -1110,7 +1112,7 @@ do
 	part = box_part(chef.formspec)
 	eq(description_box(part), nil, "D no description when the tooltip is only the name")
 	has(part, "label[5.6,2.35;Ingredients (have/need)]", "D ... the ingredients move up")
-	has(part, "field[6.75,7.54;", "D the quantity row stays above the button")
+	has(part, "field[7.45,7.54;", "D the quantity row stays above the button")
 	-- Gear: the description the job's crafted_output builds, the name line
 	-- dropped; no quantity row.
 	local real_crafted = grug_items.crafted_output
@@ -1188,7 +1190,8 @@ lacks(fs, "tooltip[grug_craft_row2;", "no tooltip for a name that fits")
 has(fs, "label[6.65,1.25;A Very Long Decorated]label[6.65,1.6;Ceremonial Bookshelf..]",
 	"the box wraps the name to two lines, the rest clipped")
 has(fs, "label[6.65,2;Basic · Tier 1]", "the area line below it")
-has(fs, "Any Wood]", "a group entry: Any Wood")
+-- 0.45.1: two members are written out (tools/r451_cu checks the labels).
+has(fs, "Oak Plank or Pine", "a group entry of two members written out")
 has(fs, "tooltip[5.6,2.6;4.4,0.4;Oak Plank or Pine Plank]", "the group's members in a tooltip")
 geometry_ok(fs, "long names")
 

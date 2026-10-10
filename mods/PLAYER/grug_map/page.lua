@@ -20,7 +20,7 @@ local function back_home(name)
 end
 
 sfinv.register_page(PAGE, {
-	title = "Map",
+	title = "Map & Quests",
 	on_enter = function(self, player)
 		-- The window replaces the inventory at once; this page's form, sent
 		-- right after by sfinv, only updates the stored inventory form.

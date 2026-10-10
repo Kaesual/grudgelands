@@ -6,8 +6,9 @@
 --           long), the ingredients with have/need, the maximum, the
 --           warnings (the profession gate, "Requires: <station> nearby"),
 --           the note of the last refused action and the XP hint;
---   bottom  the quantity field with Max (stackable outputs only, default 1)
---           and below it Craft now, which turns into Stop while a job runs.
+--   bottom  the quantity row "Quantity [−][field][+] [Max]" (stackable
+--           outputs only, default 1) and below it Craft now, which turns
+--           into Stop while a job runs.
 -- Without a chosen recipe the box shows the professions overview
 -- (overview.lua): every known profession's tier, progress and the level cap
 -- note.
@@ -19,7 +20,11 @@
 -- The quantity field (spec §4.3): the server learns the typed number only
 -- with an event. Enter in the field recalculates and never starts; Craft now
 -- above the maximum lowers the field to it and shows jobs.lua's note
--- without starting; the last known value is echoed on every build.
+-- without starting; the last known value is echoed on every build. "−" and
+-- "+" (0.45.1 fix plan row 3) step the field by one: "−" only above 1, "+"
+-- only below the maximum (max_craftable); a value that is not a whole
+-- number of 1 or more counts as 1, as the build counts it for have/need, so
+-- "−" turns it into 1 and "+" into 2 (when the maximum allows).
 --
 -- A button that cannot start ("Requires: Forge nearby", a missing tier) is
 -- drawn disabled. A formspec button has no disabled state: it is greyed and
@@ -71,33 +76,71 @@ local function quantity_of(text)
 	return nil
 end
 
--- A group entry's icon (its alphabetically first member by name), label
--- ("Any Wood") and tooltip (every member), built once per group.
+-- A group entry (0.45.1 fix plan row 1): up to three members (by name) are
+-- written out ("Carrot", "Carrot or Cassava", "Apple, Pear or Plum"); four
+-- or more read as the group's hand-kept name below. A group of four or more
+-- without one falls back to the generated "Any <Group Name>" label (add its
+-- name here when such a group appears). The tooltip lists every member.
+local GROUP_NAMES = {
+	wool = "Any wool",
+	stone = "Any stone",
+	wood = "Any planks",
+	grug_cooking_fruit = "Any fruit",
+	grug_cooking_berry = "Any berry",
+}
+local WRITTEN_OUT = 3
+
+local function group_label(group, names)
+	if #names == 1 then return names[1] end
+	if #names >= 2 and #names <= WRITTEN_OUT then
+		return table.concat(names, ", ", 1, #names - 1) .. " or " .. names[#names]
+	end
+	return GROUP_NAMES[group] or "Any " .. (group:gsub("_", " "):gsub("(%a)([%w']*)",
+		function(a, b) return a:upper() .. b end))
+end
+
+-- A group's members (every item name, ordered by display name, then name),
+-- label and tooltip, built once per group; the icon is per player
+-- (group_icon).
 local groups = {}
 local function group_info(group)
 	local info = groups[group]
 	if info then return info end
-	local names, by_label = {}, {}
+	local names, by_label, members = {}, {}, {}
 	for name in pairs(core.registered_items) do
 		if core.get_item_group(name, group) > 0 then
 			local label = grug_core.item_name(name)
 			if not by_label[label] then
 				names[#names + 1] = label
-				by_label[label] = name
-			elseif name < by_label[label] then
-				by_label[label] = name
+				by_label[label] = true
 			end
+			members[#members + 1] = {name = name, label = label}
 		end
 	end
 	table.sort(names)
+	table.sort(members, function(a, b)
+		if a.label ~= b.label then return a.label < b.label end
+		return a.name < b.name
+	end)
+	for index, member in ipairs(members) do members[index] = member.name end
 	info = {
-		icon = names[1] and by_label[names[1]] or "",
-		label = "Any " .. (group:gsub("_", " "):gsub("(%a)([%w']*)",
-			function(a, b) return a:upper() .. b end)),
+		members = members,
+		label = group_label(group, names),
 		tooltip = table.concat(names, " or "),
 	}
 	groups[group] = info
 	return info
+end
+
+-- The member the player carries most of (the stacks have/need count,
+-- `counts` from ingredient_counts), else the first member.
+local function group_icon(info, counts)
+	local icon, most = info.members[1] or "", 0
+	for _, name in ipairs(info.members) do
+		local have = counts and counts.items[name] or 0
+		if have > most then icon, most = name, have end
+	end
+	return icon
 end
 
 -- "Crafting this will (not) give you a <profession> experience point", green
@@ -173,14 +216,16 @@ local function ingredient_rows(fs, recipe, counts, quantity, y)
 			label = grug_core.item_name(entry.item)
 		else
 			local info = group_info(entry.group)
-			icon, label, tooltip = info.icon, info.label, info.tooltip
+			icon, label, tooltip = group_icon(info, counts), info.label, info.tooltip
 		end
 		local have = grug_jobs.ingredient_have(counts, entry)
 		local need = entry.n * quantity
 		local amount = have .. "/" .. need
+		-- The name takes the room up to have/need (a written-out group
+		-- reads longer; the tooltip names every member).
 		fs[#fs + 1] = ("item_image[%s,%s;0.4,0.4;%s]label[%s,%s;%s]label[%s,%s;%s]"):format(
 			n(X), n(y), esc(icon), n(X + 0.5), n(y + 0.2),
-			esc(clip(label, math.floor(3.0 * CHARS))),
+			esc(clip(label, math.floor((W - 0.65 - 0.15 * #amount) * CHARS))),
 			n(X + W - 0.15 * #amount), n(y + 0.2),
 			esc(have >= need and amount or core.colorize(NOTE, amount)))
 		if tooltip and tooltip ~= "" then
@@ -224,8 +269,15 @@ local function build(player, view)
 	local stacks = stackable(recipe)
 	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe,
 		view.counts)
-	-- Max (a click) is filled here, from this build's one inventory pass.
+	-- Max and "−"/"+" (clicks) are applied here, from this build's one
+	-- inventory pass.
 	if st.fill_max then st.qty, st.fill_max = tostring(math.max(1, most)), nil end
+	if st.step then
+		local value = quantity_of(st.qty) or 1
+		if st.step < 0 and value > 1 then value = value - 1 end
+		if st.step > 0 and value < most then value = value + 1 end
+		st.qty, st.step = tostring(value), nil
+	end
 	local quantity = stacks and quantity_of(st.qty) or 1
 	local sub = area_name(recipe) .. " · Tier " .. recipe.tier
 	if recipe.count > 1 then sub = sub .. " · makes " .. recipe.count end
@@ -290,10 +342,13 @@ local function build(player, view)
 		y = wrapped_labels(fs, X, y, W, entry[1], entry[2], NOTE_STEP)
 	end
 	if stacks then
-		fs[#fs + 1] = ("label[%s,%s;Quantity]field[%s,%s;1.2,0.6;%s;;%s]" ..
-			"field_close_on_enter[%s;false]button[%s,%s;1,0.6;%s;Max]"):format(
-			n(X), n(QUANTITY_Y + 0.3), n(X + 1.15), n(QUANTITY_Y), F.qty, esc(st.qty), F.qty,
-			n(X + 2.45), n(QUANTITY_Y), F.max)
+		-- Quantity [−][field][+] [Max] across the box's inner width.
+		fs[#fs + 1] = ("label[%s,%s;Quantity]button[%s,%s;0.55,0.6;%s;−]" ..
+			"field[%s,%s;0.95,0.6;%s;;%s]field_close_on_enter[%s;false]" ..
+			"button[%s,%s;0.55,0.6;%s;+]button[%s,%s;0.9,0.6;%s;Max]"):format(
+			n(X), n(QUANTITY_Y + 0.3), n(X + 1.25), n(QUANTITY_Y), F.minus,
+			n(X + 1.85), n(QUANTITY_Y), F.qty, esc(st.qty), F.qty,
+			n(X + 2.85), n(QUANTITY_Y), F.plus, n(X + 3.5), n(QUANTITY_Y), F.max)
 	end
 	button(fs, job, enabled)
 	return table.concat(fs)
@@ -311,6 +366,10 @@ local function fields(player, st, fields)
 	local stacks = stackable(recipe)
 	if fields[F.max] then
 		st.fill_max = true
+		return true
+	end
+	if stacks and (fields[F.minus] or fields[F.plus]) then
+		st.step = fields[F.plus] and 1 or -1
 		return true
 	end
 	if fields.key_enter_field == F.qty then

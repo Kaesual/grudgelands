@@ -1120,7 +1120,7 @@ do
 		shows[n + 1].form == "inventory:grug_inventory:inventory", "Z Back to inventory")
 	-- The Map tab: opens the window, then the homepage on the next step.
 	local page = pages["grug_map:atlas"]
-	check(page and page.title == "Map", "Z the Map tab exists")
+	check(page and page.title == "Map & Quests", "Z the Map tab exists (\"Map & Quests\" since 0.45.1)")
 	shows, after_calls = {}, {}
 	sfinv.set_page(accord, "grug_map:atlas")
 	eq(sends_to("ann"), 1, "Z the Map tab opens the window")

@@ -13,16 +13,17 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size
   (the Inventory tab's boxed layout fits it with seven rows and the money
   row; the user, 2026-10-09);
-  the Map tab opens the map window, a form of its own sized to the screen
-  (Round 44, [world_map.md](world_map.md#map-window)). Page content follows a
+  the Map & Quests tab ("Map" until 0.45.1) opens the map window, a form
+  of its own sized to the screen (Round 44,
+  [world_map.md](world_map.md#map-window)). Page content follows a
   `real_coordinates[false]`, so pages still in legacy coordinates keep their
   place and end before legacy y=7.0; pages in real coordinates start their
   content with `real_coordinates[true]`.
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
-  Character · Talents & Skills · Crafting · Party & PvP · Help · Map. The
-  quest log is in the map window. Creative's tabs, for creative players,
-  follow the table.
+  Character · Talents & Skills · Crafting · Party & PvP · Map & Quests ·
+  Help (0.45.1; before, Help came before Map). The quest log is in the map
+  window. Creative's tabs, for creative players, follow the table.
 - **Inventory views** (`grug_inventory.inventory_view(player, mode,
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
@@ -159,7 +160,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (stacks without metadata only), counted in one pass over the inventory
     per build. **Search** (the button or Enter) filters by the output's name
     on the server, at most once a second (a quicker request is ignored
-    without a resend); **Craftable only** keeps the rows with ×N ≥ 1.
+    without a resend); **×** between the field and Search (0.45.1) empties
+    the field and shows the whole list from page 1 at once, outside that
+    limit; **Craftable only** keeps the rows with ×N ≥ 1. The tab opens
+    with no text field focused, so "i" closes it (0.45.1): every build
+    sets the focus to Search (`set_focus[…;true]`), except the answer to
+    Enter in a text field, which leaves the focus there; closing the
+    window after such an answer resends the page once.
   - **Middle, the crafting box** in three stacked areas (Round 45 playtest
     fix 3). **Top:** the chosen recipe's output (its name in up to two
     lines, area, tier, "makes N"). **Middle:** the made item's description
@@ -171,14 +178,19 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     requirement); a raw dish shows the cooked dish of its furnace recipe and
     "Must be cooked in a furnace to become edible."; anything else its own
     description. Below it the ingredients with icons and have/need for the
-    field's quantity (a group entry reads "Any Wood", its members in the
-    tooltip), "Max: N" ("(output area)" when the room limits it), the
+    field's quantity, "Max: N" ("(output area)" when the room limits it), the
     warnings, the note of the last refused action and the XP hint:
     "Crafting this will give you a <profession> experience point" in green
     when the job counts toward the tier, grey with "not" for a lower tier,
-    the highest tier or a full tier count. **Bottom:** the **quantity
-    field** with **Max** (stackable outputs only, default 1), below it
-    **Craft now**. A missing station reads "Requires: <station> nearby" and
+    the highest tier or a full tier count. A group entry (0.45.1) with up
+    to three members writes them out ("Carrot or Cassava", "A, B or C"; a
+    single member is its name), with four or more it reads as the group's
+    hand-kept name ("Any wool", "Any stone", "Any planks", "Any fruit",
+    "Any berry"; a group without one keeps the generated "Any <Group
+    Name>"); its icon is the member the player carries most of (the stacks
+    have/need count), else the first by name; the tooltip lists every
+    member. **Bottom:** the **quantity row** "Quantity [−][field][+]
+    [Max]" (stackable outputs only, default 1), below it **Craft now**. A missing station reads "Requires: <station> nearby" and
     a missing profession tier its reason; both draw **Craft now** greyed,
     and a click on it only rebuilds the page (checking the station again).
     While a job runs the button is **Stop**. Without a chosen recipe the box shows the professions overview
@@ -219,6 +231,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Craft now above the maximum lowers the field to it with the job's note
     ("Not enough ingredients — quantity reduced to N") and starts nothing;
     the field echoes the last value the server knows on every resend.
+    **−** lowers it by one only above 1, **+** raises it by one only below
+    the maximum (0.45.1); a value that is not a whole number of 1 or more
+    counts as 1, so − makes it 1 and + makes it 2.
   - **Right, the output area:** the four take-only slots (shift-click moves
     a stack into the inventory in the give order, through the shift-click
     inbox, §3), **Take all** (the give order; what does not fit
@@ -742,7 +757,7 @@ default on; empty quest logs and players without a party have no
 corresponding HUD.
 Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
 our own minimap, default on (`world_map.md`). Since Round 44 the quest log
-and that switch live in the map window (Z or the Map tab); the Quests tab
+and that switch live in the map window (Z or the Map & Quests tab); the Quests tab
 is gone. Since Round 31 a PvP tab
 (since Round 44 the PvP section of the Party & PvP tab, `grug_pvp/page.lua`) holds the "Flag me for PvP"
 button, the current state (safe, or flagged with the reason and the seconds
