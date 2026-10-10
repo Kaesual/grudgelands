@@ -636,6 +636,12 @@ local entity_definition = {
 				end
 			end
 		end
+		-- The camera needs the sit pose: a pose change mid-ride would also
+		-- reset the eye height, so it is undone here (one table read a step).
+		if player_api.get_animation(player).animation ~= "sit" then
+			player_api.set_animation(player, "sit", 30)
+			grug_mounts.apply_camera(player, self._grug_model)
+		end
 		local control = player:get_player_control()
 		local yaw = player:get_look_horizontal() or self.object:get_yaw() or 0
 		orient_rider(self, player, yaw)
@@ -708,14 +714,31 @@ local visual_definition = {
 core.register_entity(VISUAL_NAME, visual_definition)
 grug_mounts.visual_definition = visual_definition
 
+-- The rider's camera (catalog `camera`). While attached, the engine puts the
+-- camera at the PARENT's position plus the eye height plus the eye offset
+-- (camera.cpp Camera::update; the attach position does not count), and the
+-- server measures reach from the same eye height (PlayerSAO::getEyePosition).
+-- So the first-person height becomes the eye height itself, which keeps the
+-- third-person offset inside the engine's clamp (l_object.cpp
+-- l_set_eye_offset) on the tallest flyers too. Offsets are in tenths of a
+-- node and turn with the rider's look yaw, which the mount follows. Applied
+-- after the sit pose (its eye height is replaced here); player_api's next
+-- pose change (the dismount's `stand`) brings the standing eye height back.
+function grug_mounts.apply_camera(player, model)
+	local first, third = model.camera.first, model.camera.third
+	player:set_properties({eye_height = first.y})
+	player:set_eye_offset({x = 0, y = 0, z = first.z * 10},
+		{x = 0, y = (third.y - first.y) * 10, z = third.z * 10})
+end
+
 local function attach(player, object, model, skip_animation)
 	local name = player:get_player_name()
 	player_api.player_attached[name] = true
 	local seat = model.attach_y * model.visual_size.y
 	player:set_attach(object, "", {x = 0, y = seat, z = 0},
 		{x = 0, y = -math.deg(player:get_look_horizontal() or 0), z = 0})
-	player:set_eye_offset({x = 0, y = model.eye_y, z = 0}, {x = 0, y = 0, z = 0})
 	if not skip_animation then player_api.set_animation(player, "sit", 30) end
+	grug_mounts.apply_camera(player, model)
 end
 
 function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)

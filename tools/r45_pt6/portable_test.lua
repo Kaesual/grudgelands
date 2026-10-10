@@ -190,7 +190,9 @@ local function make_player(name, faction, race)
 	return player
 end
 
-player_api = {player_attached = {}, set_animation = function() end}
+-- get_animation: the ride's sit-pose guard (0.45.1) reads it each step.
+player_api = {player_attached = {}, set_animation = function() end,
+	get_animation = function() return {animation = "sit"} end}
 grug_core = {
 	FLIGHT_CEILING = 600,
 	is_max_hp_clamp = function() return false end,

@@ -55,6 +55,16 @@ local horse_animation = {
 	move = {1, 40, 100},
 }
 
+-- `camera` (0.45.1): where the rider's camera sits, in nodes. `y` is the
+-- height above the mount's feet (the controller's origin), `z` the distance
+-- along the mount (negative: toward the tail). First person: a sitting
+-- rider's eye above the seat and a little back, so the mount's neck and head
+-- show low in the view (a horse's eye above its head line). Third person: the
+-- point the engine's camera looks over from behind, the rider's head (the
+-- engine keeps it within -1..+1.5 nodes of the first-person height and z
+-- within +-0.5). Measured from the models (seat = attach_y * visual_size.y /
+-- 10); entity.lua applies it (grug_mounts.apply_camera). Boats keep the plain
+-- sitting eye, 0.8 above the water surface.
 local function horse(id, description, texture)
 	return {
 		id = id, description = description,
@@ -63,7 +73,8 @@ local function horse(id, description, texture)
 		icon = "grug_mounts_icon_" .. id .. ".png",
 		visual_size = {x = 3, y = 3},
 		collisionbox = {-0.7, -0.01, -0.7, 0.7, 1.59, 0.7},
-		attach_y = 4.2, eye_y = 3,
+		attach_y = 4.2,
+		camera = {first = {y = 2.4, z = -0.2}, third = {y = 2.15, z = 0}},
 		animation = horse_animation,
 	}
 end
@@ -86,7 +97,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_dwarf.png",
 		visual_size = {x = 1.45, y = 1.45},
 		display_box = {-0.58, -0.01, -0.58, 0.58, 1.45, 0.58},
-		attach_y = 8.5, eye_y = 3,
+		attach_y = 8.5,
+		camera = {first = {y = 2.1, z = -0.3}, third = {y = 2.15, z = 0}},
 		animation = {stand = {1, 100, 30}, move = {200, 300, 80}},
 	},
 	elf = {
@@ -96,7 +108,8 @@ grug_mounts.MODELS = {
 		visual_size = {x = 8, y = 8},
 		display_box = {-0.55, -0.01, -0.55, 0.55, 1.8, 0.55},
 		-- Attachment offsets inherit parent scale: 1.9 * 8 / 10 = 1.52 nodes.
-		attach_y = 1.9, eye_y = 3,
+		attach_y = 1.9,
+		camera = {first = {y = 2.25, z = -0.1}, third = {y = 2.4, z = 0}},
 		animation = {stand = {1, 59, 10}, move = {100, 119, 40}},
 	},
 	orc = {
@@ -106,7 +119,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_orc.png",
 		visual_size = {x = 1.55, y = 1.55},
 		display_box = {-0.7, -0.01, -0.7, 0.7, 1.34, 0.7},
-		attach_y = 8.2, eye_y = 3,
+		attach_y = 8.2,
+		camera = {first = {y = 1.95, z = -0.3}, third = {y = 2.15, z = 0}},
 		animation = {stand = {1, 1, 25}, move = {1, 40, 90}},
 	},
 	undead = {
@@ -116,7 +130,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_undead.png",
 		visual_size = {x = 1.7, y = 1.7},
 		display_box = {-0.55, -0.01, -0.55, 0.55, 1.43, 0.55},
-		attach_y = 8.4, eye_y = 3,
+		attach_y = 8.4,
+		camera = {first = {y = 2.1, z = -0.3}, third = {y = 2.35, z = 0}},
 		animation = {stand = {1, 1, 25}, move = {1, 40, 100}},
 	},
 	troll = {
@@ -126,7 +141,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_troll.png",
 		visual_size = {x = 1.45, y = 1.45},
 		display_box = {-0.68, -0.01, -0.68, 0.68, 1.38, 0.68},
-		attach_y = 8.2, eye_y = 3,
+		attach_y = 8.2,
+		camera = {first = {y = 2.15, z = -0.2}, third = {y = 2.1, z = 0}},
 		animation = {stand = {1, 100, 30}, move = {100, 200, 100}},
 	},
 	expert_accord = {
@@ -136,7 +152,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_expert_accord.png",
 		visual_size = {x = 3, y = 3},
 		display_box = {-0.9, -0.1, -0.9, 0.9, 1.5, 0.9},
-		attach_y = 6.2, eye_y = 3,
+		attach_y = 6.2,
+		camera = {first = {y = 2.65, z = -0.2}, third = {y = 2.75, z = 0}},
 		animation = {stand = {1, 100, 60}, move = {150, 250, 100}},
 	},
 	master_accord = {
@@ -146,7 +163,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_master_accord.png",
 		visual_size = {x = 4, y = 4},
 		display_box = {-1.15, -0.1, -1.15, 1.15, 1.9, 1.15},
-		attach_y = 6.4, eye_y = 3,
+		attach_y = 6.4,
+		camera = {first = {y = 3.4, z = -0.2}, third = {y = 3.5, z = 0}},
 		animation = {stand = {1, 100, 70}, move = {150, 250, 110}},
 	},
 	expert_throng = {
@@ -156,7 +174,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_expert_throng.png",
 		visual_size = {x = 3, y = 3},
 		display_box = {-0.85, -0.1, -0.85, 0.85, 1.55, 0.85},
-		attach_y = 6.4, eye_y = 3,
+		attach_y = 6.4,
+		camera = {first = {y = 2.6, z = -0.3}, third = {y = 2.8, z = 0}},
 		animation = {stand = {1, 40, 70}, move = {1, 40, 100}},
 	},
 	-- Rigid hulls (Lord of the Test, LICENSE-media.md): no animation table.
@@ -171,7 +190,8 @@ grug_mounts.MODELS = {
 		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
 		-- The rower sits behind the middle bench: the hull is shifted forward.
-		attach_y = 1, attach_z = 5, eye_y = 0,
+		attach_y = 1, attach_z = 5,
+		camera = {first = {y = 0.8, z = 0}, third = {y = 0.8, z = 0}},
 	},
 	improved_boat = {
 		id = "improved_boat", description = "Sailboat",
@@ -179,7 +199,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_improved_boat.png",
 		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
-		attach_y = 1, attach_z = 0, eye_y = 0,
+		attach_y = 1, attach_z = 0,
+		camera = {first = {y = 0.8, z = 0}, third = {y = 0.8, z = 0}},
 	},
 	master_throng = {
 		id = "master_throng", description = "Giant Blood Bat",
@@ -188,7 +209,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_master_throng.png",
 		visual_size = {x = 4.2, y = 4.2},
 		display_box = {-1.15, -0.1, -1.15, 1.15, 2.05, 1.15},
-		attach_y = 6.8, eye_y = 3,
+		attach_y = 6.8,
+		camera = {first = {y = 3.5, z = -0.4}, third = {y = 3.75, z = 0}},
 		animation = {stand = {1, 40, 75}, move = {1, 40, 110}},
 	},
 }
