@@ -40,23 +40,25 @@ function Q.status_tooltip(statuses)
 end
 
 -- The row a dialog opens on (0.45.1): the first quest ready to complete,
--- else the first one to accept, else the first row, so a player with several
--- finished quests just clicks "Complete" again and again.
-local function preselect(rows)
+-- else the first one to accept, else `fallback` (default the first row), so
+-- a player with several finished quests just clicks "Complete" again and
+-- again, and one accepting several just clicks "Accept".
+local function preselect(rows, fallback)
 	local available
 	for index, row in ipairs(rows) do
 		if row.status == "ready" then return index end
 		if row.status == "available" and not available then available = index end
 	end
-	return available or 1
+	return available or fallback or 1
 end
 Q.npc_preselect = preselect
 
 -- The dialog is wide enough for the longest quest title in the list at a
 -- full-HD window (the title column is 7 of 16 units). `selected` is the row
 -- to show: an index (a click in the list), a quest id (that quest's row if
--- it is still listed, else the preselection) or nil (the preselection).
--- `notice` marks a redraw after Accept or Complete.
+-- it is still listed, else the preselection), {after = quest id} (the
+-- preselection, else that quest's row) or nil (the preselection). `notice`
+-- marks a redraw after Accept or Complete.
 function Q.open_npc(player, entity, selected, notice)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
@@ -75,14 +77,15 @@ function Q.open_npc(player, entity, selected, notice)
 	-- The first open of the dialog plays its cue; a redraw (another quest
 	-- chosen, after Accept or Complete) does not.
 	local redraw = selected ~= nil or notice ~= nil
-	if type(selected) == "string" then
-		local quest_id = selected
-		selected = nil
+	local listed
+	if type(selected) == "string" or type(selected) == "table" then
+		local quest_id = type(selected) == "table" and selected.after or selected
 		for index, row in ipairs(rows) do
-			if row.id == quest_id then selected = index end
+			if row.id == quest_id then listed = index end
 		end
+		selected = type(selected) == "string" and listed or nil
 	end
-	selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows)
+	selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows, listed)
 	local row = rows[selected]
 	local def = Q.registered_quests[row.id]
 	local detail = Q.quest_text(def, id == def.npc) .. "\n\n"
@@ -142,11 +145,14 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	elseif fields.turnin and def and def.turnin_npc == session.npc then ok, message = Q.turn_in(player, row.id) end
 	if ok ~= nil then
 		sessions[name] = nil
-		-- After a Complete the dialog preselects again; after Accept, or a
-		-- Complete that failed, it stays on that quest while it is listed
-		-- here (an accepted quest handed in elsewhere leaves the list).
-		if not Q.open_npc(player, session.entity, not (fields.turnin and ok) and row.id or nil,
-				message or "Quest updated.") then
+		-- After a Complete the dialog preselects again; after an Accept it
+		-- preselects too and stays on the accepted quest only when nothing
+		-- is ready or acceptable (the user, 2026-10-10); a failed Accept or
+		-- Complete stays on that quest while it is listed here.
+		local target = row.id
+		if ok and fields.turnin then target = nil
+		elseif ok then target = {after = row.id} end
+		if not Q.open_npc(player, session.entity, target, message or "Quest updated.") then
 			core.close_formspec(name, FORM)
 		end
 	end

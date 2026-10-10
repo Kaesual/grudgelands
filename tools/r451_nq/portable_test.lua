@@ -2,9 +2,10 @@
 --
 --   Q. The quest giver's preselection (grug_quests/npc.lua): the dialog opens
 --      on the first quest ready to complete, else the first available one,
---      else the first row; after a Complete it preselects again; after an
---      Accept (or a failed Complete) it stays on that quest while it is
---      listed; a click in the list shows the clicked row; the cue plays on
+--      else the first row; after a Complete or an Accept it preselects again
+--      (after an Accept with nothing ready or acceptable left it stays on the
+--      accepted quest); a failed Accept or Complete stays on that quest; a
+--      click in the list shows the clicked row; the cue plays on
 --      the first open only; the Close button holds the focus.
 --   P. Placement into standing room (grug_mobs/start_npcs.lua `serve`): a
 --      socket with its floor under it is placed at the socket; one whose feet
@@ -144,25 +145,47 @@ do
 	handler(player, "grug_quests:dialogue", {turnin = "Complete"})
 	eq(on_row(), 3, "Q a failed Complete stays on its quest")
 
-	-- Accept stays on the accepted quest while it is listed here.
-	rows = {row("q1", "available"), row("q2", "available"), row("q3", "ready")}
-	Q.open_npc(player, entity)
-	handler(player, "grug_quests:dialogue", {quests = "CHG:2"})
-	Q.accept = function(_, id)
-		for _, r in ipairs(rows) do if r.id == id then r.status = "active" end end
-		return true, "Quest accepted."
+	-- A successful Accept preselects: the next ready, else acceptable quest;
+	-- only when there is none it stays on the accepted quest (the user,
+	-- 2026-10-10).
+	local function accept_marks_active()
+		Q.accept = function(_, id)
+			for _, r in ipairs(rows) do if r.id == id then r.status = "active" end end
+			return true, "Quest accepted."
+		end
 	end
+	accept_marks_active()
+	rows = {row("q1", "available"), row("q2", "available"), row("q3", "available")}
+	Q.open_npc(player, entity)
+	eq(on_row(), 1, "Q opens on the first acceptable quest")
 	handler(player, "grug_quests:dialogue", {accept = "Accept"})
-	eq(on_row(), 2, "Q after Accept the accepted quest stays selected")
-	check(shows("q2"), "Q ...q2")
+	eq(on_row(), 2, "Q after Accept the next acceptable quest is preselected")
+	check(shown:find("Quest accepted.", 1, true) ~= nil, "Q ...with the notice")
+	handler(player, "grug_quests:dialogue", {accept = "Accept"})
+	eq(on_row(), 3, "Q ...and again")
+	handler(player, "grug_quests:dialogue", {accept = "Accept"})
+	eq(on_row(), 3, "Q after the last Accept it stays on the accepted quest")
+	check(shows("q3"), "Q ...q3, now in progress")
+	rows = {row("q1", "active"), row("q2", "available"), row("q3", "ready")}
+	Q.open_npc(player, entity, 2)
+	handler(player, "grug_quests:dialogue", {accept = "Accept"})
+	eq(on_row(), 3, "Q after Accept a ready quest comes first")
+	-- A failed Accept stays on its quest.
+	rows = {row("q1", "available"), row("q2", "available")}
+	Q.open_npc(player, entity, 2)
+	Q.accept = function() return false, "Your quest log is full (20 quests)." end
+	handler(player, "grug_quests:dialogue", {accept = "Accept"})
+	eq(on_row(), 2, "Q a failed Accept stays on its quest")
 	-- An accepted quest handed in elsewhere leaves this list: preselection.
-	handler(player, "grug_quests:dialogue", {quests = "CHG:1"})
+	rows = {row("q1", "available"), row("q2", "active")}
+	Q.open_npc(player, entity, 1)
 	Q.accept = function(_, id)
 		for index, r in ipairs(rows) do if r.id == id then table.remove(rows, index) end end
 		return true, "Quest accepted."
 	end
 	handler(player, "grug_quests:dialogue", {accept = "Accept"})
-	check(shows("q3"), "Q after Accept of a quest handed in elsewhere: the ready quest")
+	eq(on_row(), 1, "Q after Accept of a quest handed in elsewhere: the first row")
+	check(shows("q2"), "Q ...q2")
 	core, grug_sounds, grug_factions, grug_money, grug_core, ItemStack, vector, grug_quests =
 		nil, nil, nil, nil, nil, nil, nil, nil
 end
