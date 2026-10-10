@@ -555,9 +555,10 @@ do -- G11 a self or support skill never fires because a mob walked in.
 	aim(at(new_mob("q")), NODE)
 	hold(2)
 	aim()
-	hold(2)
+	hold(5) -- past the tap window (0.35 s, 0.45.1): a hold, not a click
 	check(#casts == 0 and not range0(), "G11 Blink: a miner is never teleported")
 	release()
+	check(#casts == 0, "G11 Blink: nor on the hold's release")
 	-- An ally passing the crosshair of a held gather press is never healed,
 	-- nor does Ward or Blink fire at it.
 	for _, id in ipairs({"heal", "ward", "blink"}) do
@@ -565,9 +566,10 @@ do -- G11 a self or support skill never fires because a mob walked in.
 		aim(NODE)
 		press()
 		aim(at(ally), NODE)
-		hold(5)
+		hold(7) -- past the tap window (0.35 s, 0.45.1): a hold, not a click
 		check(#casts == 0, "G11 " .. id .. ": an ally walking into a gather hold gets nothing")
 		release()
+		check(#casts == 0, "G11 " .. id .. ": nor on the hold's release")
 	end
 	-- A fresh press on an ally heals it, held on that ally only.
 	select("heal")
