@@ -14,6 +14,31 @@ grug_jobs.STARTER_PROFESSIONS = {cooking = true}
 -- same in every town; a title, not a person's name).
 grug_jobs.MENDER_TITLE = "Grudge-Free Repairs"
 
+-- The greetings (0.45.1, fix plan row 12): one per trainer profession, shown
+-- on top of its trainer window, and the mender's, shown in its repair form
+-- (grug_repair/providers.lua). The same text in every town. PLACEHOLDERS
+-- until the user picks the final texts; the pick replaces only these
+-- strings. Each window keeps room for three lines (about 200 characters);
+-- a longer text grows the window.
+grug_jobs.GREETINGS = {
+	weaponsmith = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
+		"weaponsmithing. Well, you've come to the right place!",
+	armorsmith = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
+		"armorsmithing. Well, you've come to the right place!",
+	alchemist = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
+		"alchemy. Well, you've come to the right place!",
+	tailor = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
+		"tailoring. Well, you've come to the right place!",
+	leatherworker = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
+		"leatherworking. Well, you've come to the right place!",
+	woodcarver = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
+		"woodcarving. Well, you've come to the right place!",
+	goldsmith = "[Placeholder greeting] Ah, you're interested in learning the art of " ..
+		"goldsmithing. Well, you've come to the right place!",
+	mender = "[Placeholder greeting] Welcome, welcome! A witty line about dents, " ..
+		"scratches and forgiveness goes here.",
+}
+
 -- Whether a trainer socket of `profession` holds a trainer.
 function grug_jobs.trainer_teaches(profession)
 	return grug_jobs.PROFESSIONS[profession] ~= nil and
@@ -41,6 +66,21 @@ local function crafting_hint(profession)
 		(info and (", with a " .. info.display_name .. " nearby.") or ".")
 end
 
+-- The window (0.45.1, fix plan row 12), in real coordinates: the title, the
+-- greeting, the status line and one notice (the unlearn question, the last
+-- action's result or the Crafting tab hint, Round 34 and Round 45), then
+-- every button in one bottom row of one height, Close on the right. Plain
+-- labels, one per wrapped line (grug_jobs/overview.lua's way): no edit box,
+-- so the engine's first focus falls on the last button, Close, and the
+-- inventory key closes the window. The greeting keeps room for three lines
+-- and the notice for two, so the window keeps its height across the states;
+-- a longer text grows the window instead of needing a scrollbar.
+local WIDTH, PAD, LINE_STEP = 11, 0.4, 0.42
+local GREETING_LINES, NOTICE_LINES = 3, 2
+local BUTTON_H, BUTTON_GAP, CLOSE_W = 0.8, 0.25, 1.8
+-- Characters per line (overview.lua's estimate: 6.6 per unit).
+local LINE_CHARS = math.floor((WIDTH - 2 * PAD) * 6.6)
+
 local function trainer_formspec(player, profession, confirming)
 	local definition = grug_jobs.PROFESSIONS[profession]
 	local known = grug_jobs.has(player, profession)
@@ -55,19 +95,6 @@ local function trainer_formspec(player, profession, confirming)
 	else
 		status = "Learn " .. definition.name .. "?"
 	end
-	-- One text box below the status line holds the notice, the unlearn
-	-- question or the Crafting tab hint (Round 34, Round 45): three lines
-	-- high, so the longest of them (two lines at this width, "Learned
-	-- Leatherworker. Craft its recipes ... Tanning Rack nearby.") never needs
-	-- a scrollbar. In legacy coordinates a
-	-- textarea starts a button half-height (0.35) below its y and is its
-	-- height less the slot gap (0.15) tall, so 1.25 + 0.35 + 1.2 ends above
-	-- the button row at 2.75.
-	local fs = {
-		"size[6.8,4.5]",
-		("label[0.35,0.35;%s Trainer]"):format(esc(definition.name)),
-		("label[0.35,0.95;%s]"):format(esc(status)),
-	}
 	local session = sessions[player:get_player_name()]
 	local text
 	if confirming then
@@ -78,25 +105,49 @@ local function trainer_formspec(player, profession, confirming)
 	elseif known then
 		text = crafting_hint(profession)
 	end
-	if text then
-		fs[#fs + 1] = ("textarea[0.35,1.25;6.1,1.35;;;%s]"):format(esc(text))
+	local fs = {("label[%.2f,0.50;%s Trainer]"):format(PAD, esc(definition.name))}
+	-- `y` is the centre of the next line (real-coordinate labels are centred
+	-- on their y); a block takes at least `reserved` lines.
+	local y = 1.1
+	local function block(value, reserved)
+		local count = 0
+		if value then
+			for piece in (grug_inventory.wrap_text(value, LINE_CHARS) .. "\n"):gmatch("(.-)\n") do
+				fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(PAD, y + count * LINE_STEP, esc(piece))
+				count = count + 1
+			end
+		end
+		y = y + math.max(count, reserved) * LINE_STEP
 	end
+	block(grug_jobs.GREETINGS[profession], GREETING_LINES)
+	y = y + 0.2
+	block(status, 1)
+	block(text, NOTICE_LINES)
+	local buttons = {}
 	if confirming then
-		fs[#fs + 1] = "button[0.35,2.75;2.0,0.7;grug_jobs_confirm;Confirm unlearn]"
-		fs[#fs + 1] = "button[2.55,2.75;1.3,0.7;grug_jobs_cancel;Cancel]"
+		buttons = {{"grug_jobs_confirm", "Confirm unlearn", 2.8}, {"grug_jobs_cancel", "Cancel", 1.8}}
 	elseif known and definition.class == "primary" then
-		fs[#fs + 1] = "button[0.35,2.75;1.8,0.7;grug_jobs_unlearn;Unlearn]"
+		buttons = {{"grug_jobs_unlearn", "Unlearn", 2.2}}
 	elseif not known then
-		fs[#fs + 1] = ("button[0.35,2.75;2.2,0.7;grug_jobs_learn;Learn %s]")
-			:format(esc(definition.name))
+		buttons = {{"grug_jobs_learn", "Learn " .. definition.name, 3.6}}
 	end
 	local repair = rawget(_G, "grug_repair")
 	if not confirming and repair and session and
 			repair.can_open_trainer(player, session.entity) then
-		fs[#fs + 1] = "button[3.0,2.75;2.2,0.7;grug_jobs_repair;Repair equipment]"
+		buttons[#buttons + 1] = {"grug_jobs_repair", "Repair equipment", 3.0}
 	end
-	fs[#fs + 1] = "button_exit[5.35,3.65;1.1,0.55;grug_jobs_close;Close]"
-	return table.concat(fs)
+	-- The row sits 0.35 below the last line's foot (its centre + 0.21).
+	local row_y = y - LINE_STEP + 0.56
+	local x = PAD
+	for _, button in ipairs(buttons) do
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(x, row_y, button[3],
+			BUTTON_H, button[1], esc(button[2]))
+		x = x + button[3] + BUTTON_GAP
+	end
+	fs[#fs + 1] = ("button_exit[%.2f,%.2f;%.2f,%.2f;grug_jobs_close;Close]"):format(
+		WIDTH - PAD - CLOSE_W, row_y, CLOSE_W, BUTTON_H)
+	return ("formspec_version[4]size[%.2f,%.2f]"):format(WIDTH, row_y + BUTTON_H + PAD) ..
+		table.concat(fs)
 end
 
 function grug_jobs.open_trainer(player, profession, position, entity)

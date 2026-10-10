@@ -408,7 +408,9 @@ grug_core = {
 grug_inventory = {BAG_COUNT = 0, content_list = function(i) return "grug_bag" .. i .. "_content" end,
 	carried_lists = function() return {"main"} end,
 	fits = function() return true end,
-	give = function(player, stack) return player:get_inventory():add_item("main", stack) end}
+	give = function(player, stack) return player:get_inventory():add_item("main", stack) end,
+	-- The trainer window and the mender's form wrap their texts (0.45.1).
+	wrap_text = function(value) return tostring(value or "") end}
 local refreshed = 0
 grug_inventory.refresh = function() refreshed = refreshed + 1 end
 local classes = {}
