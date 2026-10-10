@@ -37,6 +37,12 @@ a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
   available gold, ready to complete green, in progress blue, locked grey; a
   repeatable quest ends in "(R)". The giver's dialog is wide enough for the
   longest title at a full-HD window; quest texts are read-only (Round 35).
+- The giver's dialog opens on the first quest ready to complete, else the
+  first one to accept, else the first in the list, and preselects the same
+  way after every Complete, so several finished quests are handed in by
+  clicking "Complete" again and again; after an Accept (or a Complete that
+  failed) it stays on that quest while it is listed there (0.45.1, the user,
+  2026-10-10). A click in the list shows the clicked quest.
 - A quest HUD toggle lives in the quest log, defaults on and is saved per player.
   No active quests means no quest HUD, without changing the saved preference.
 - Objective families are **item turn-in**, **kill**, **travel**

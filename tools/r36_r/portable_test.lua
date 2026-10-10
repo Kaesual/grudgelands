@@ -214,6 +214,27 @@ local world, set_calls, unloaded = {}, 0, false
 local function key3(p) return p.x .. "," .. p.y .. "," .. p.z end
 local live, players = {}, {}
 local function noop() end
+-- The ground of the socket column at p (x, z), from the registry, cached once
+-- it holds sockets; nil off every socket (0.45.1: start_npcs.lua places only
+-- where an NPC has standing room).
+local ground_of
+local function socket_ground(p)
+	if not ground_of then
+		local found = {}
+		for _, record in ipairs(grug_core.settlement_socket_settlements()) do
+			local list = grug_core.settlement_sockets_at(record.key)
+			-- a war commander's post joins its camp's sockets (pvp_garrison.lua)
+			list[#list + 1] = grug_mobs.pvp_garrison.commander_socket(list)
+			for _, socket in ipairs(list) do
+				local k = socket.pos.x .. "," .. socket.pos.z
+				found[k] = math.min(found[k] or math.huge, socket.pos.y - 1)
+			end
+		end
+		if next(found) == nil then return nil end
+		ground_of = found
+	end
+	return ground_of[p.x .. "," .. p.z]
+end
 local registered_nodes = {}
 local function walkable_def() return {walkable = true} end
 registered_nodes.air = {walkable = false}
@@ -233,9 +254,11 @@ _G.core = setmetatable({
 	after = noop,
 	get_gametime = function() return gametime end,
 	pos_to_string = function(p) return ("(%d,%d,%d)"):format(p.x, p.y, p.z) end,
+	-- Unset cells are air, but stone under a socket (`socket_ground`).
 	get_node_or_nil = function(p)
 		if unloaded then return nil end
-		return {name = world[key3(p)] or "air"}
+		local g = world[key3(p)] == nil and socket_ground(p)
+		return {name = world[key3(p)] or (g and p.y <= g and "default:stone") or "air"}
 	end,
 	get_node = function(p) return {name = world[key3(p)] or "air"} end,
 	set_node = function(p, node) set_calls = set_calls + 1; world[key3(p)] = node.name end,

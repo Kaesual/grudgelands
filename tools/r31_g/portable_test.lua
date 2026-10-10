@@ -263,6 +263,23 @@ local storage = {
 }
 local live = {}
 local function noop() end
+-- The ground of the socket column at p (x, z), from the registry, cached once
+-- it holds sockets; nil off every socket.
+local ground_of
+local function socket_ground(p)
+	if not ground_of then
+		local found = {}
+		for _, record in ipairs(grug_core.settlement_socket_settlements()) do
+			for _, socket in ipairs(grug_core.settlement_sockets_at(record.key)) do
+				local k = socket.pos.x .. "," .. socket.pos.z
+				found[k] = math.min(found[k] or math.huge, socket.pos.y - 1)
+			end
+		end
+		if next(found) == nil then return nil end
+		ground_of = found
+	end
+	return ground_of[p.x .. "," .. p.z]
+end
 _G.core = setmetatable({
 	registered_entities = {},
 	serialize = function(value) serial[#serial + 1] = copy(value); return "S" .. #serial end,
@@ -276,7 +293,14 @@ _G.core = setmetatable({
 	after = noop,
 	get_gametime = function() return gametime end,
 	pos_to_string = function(p) return ("(%d,%d,%d)"):format(p.x, p.y, p.z) end,
-	get_node_or_nil = function() return {name = "default:dirt_with_grass"} end,
+	-- Ground under every registered socket and air above it (0.45.1:
+	-- start_npcs.lua places only where an NPC has standing room).
+	get_node_or_nil = function(p)
+		local g = socket_ground(p)
+		return {name = (g == nil or p.y <= g) and "default:dirt_with_grass" or "air"}
+	end,
+	registered_nodes = {air = {walkable = false, drawtype = "airlike"},
+		["default:dirt_with_grass"] = {walkable = true, drawtype = "normal"}},
 	compare_block_status = function() return false end,
 	dir_to_yaw = function(d) return math.atan2(-d.x, d.z) end,
 	get_mod_storage = function() return storage end,

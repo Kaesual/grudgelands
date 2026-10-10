@@ -436,6 +436,90 @@ local placing = false
 -- Set below, next to the rings it re-derives (`idle_ring`).
 local refresh_walk
 
+--
+-- STANDING ROOM (0.45.1, the half-sunk NPCs of Nhal Veyr). A socket node can
+-- be loaded while the chunk under it, or its own chunk, is still the engine's
+-- unfinished shell around a neighbouring chunk: raw terrain or air where the
+-- settlement's floor will be. An NPC placed then falls into the shell, and the
+-- chunk written later lays the floor around it: it stands one node deep in
+-- the ground (the engine's collision ignores a node a box already overlaps by
+-- more than half). The headless audit (tools/r451_nq) found exactly that, on
+-- sockets one node above a chunk border, and no socket whose own cells are
+-- solid in a finished capital but one (a stair under a work socket).
+--
+-- So `serve` places only into STANDING ROOM: the socket's cell or the first
+-- cell above it within LIFT whose feet and head cells are not walkable and
+-- whose floor is. Without one the socket waits for a later pass; after
+-- PLACE_PATIENCE such passes it is placed at the socket as before (a socket
+-- authored over air must not stay empty for good), with a warning.
+--
+local LIFT = 2
+local PLACE_PATIENCE = 12
+
+-- true/false, or nil while the node is not loaded. An unknown node collides.
+local function walkable_at(x, y, z)
+	local node = core.get_node_or_nil({x = x, y = y, z = z})
+	if not node or node.name == "ignore" then return nil end
+	local def = core.registered_nodes[node.name]
+	return def == nil or def.walkable ~= false
+end
+
+-- The standing cell for socket position `pos`, or nil (none within LIFT, or
+-- a cell on the way is not loaded).
+local function standing_cell(pos)
+	for dy = 0, LIFT do
+		local y = pos.y + dy
+		local below = walkable_at(pos.x, y - 1, pos.z)
+		local feet = walkable_at(pos.x, y, pos.z)
+		local head = walkable_at(pos.x, y + 1, pos.z)
+		if below == nil or feet == nil or head == nil then return nil end
+		if below and not feet and not head then
+			return {x = pos.x, y = y, z = pos.z}
+		end
+	end
+	return nil
+end
+
+--
+-- AND A SUNK NPC IS RE-SEATED WHEN IT ACTIVATES (0.45.1): what repairs a
+-- world whose NPCs already stand in the ground, without a migration. Only an
+-- NPC whose shins (0.3 above its feet) are inside a solid full node is moved:
+-- one walking a stair, passing a door or standing on a slab is not, and
+-- nothing checks again until its next activation. It goes to its socket's
+-- standing cell; a socket without one (or not loaded yet) leaves it as it is.
+-- A capital display is not physical and sets its own height
+-- (capital_displays.lua), so it is never re-seated.
+--
+local FULL_DRAWTYPES = {normal = true, allfaces = true, allfaces_optional = true,
+	glasslike = true, glasslike_framed = true, glasslike_framed_optional = true}
+
+local function reseat_sunk(entity)
+	if entity._grug_capital_display then return end
+	local object = entity.object
+	local pos = object and object:get_pos()
+	local row = by_key[entity._grug_start]
+	local slot = row and row.by_socket[entity._grug_socket]
+	if not pos or not slot then return end
+	-- mobs_redo's live box, else the definition's (no get_properties()).
+	local box = entity._grug_cbox or entity.collisionbox
+	local shin = {x = pos.x, y = math.floor(pos.y + (box and box[2] or 0) + 0.3 + 0.5),
+		z = pos.z}
+	local node = core.get_node_or_nil(shin)
+	local def = node and core.registered_nodes[node.name]
+	if not (def and def.walkable ~= false and FULL_DRAWTYPES[def.drawtype or "normal"]) then
+		return
+	end
+	local cell = standing_cell(slot.pos)
+	if not cell then return end
+	grug_mobs.place_on_ground(object, cell)
+	core.log("action", "[grug_mobs] start npcs " .. row.key .. ": " ..
+		tostring(entity.name) .. " of socket " .. slot.id .. " stood inside " ..
+		node.name .. " at " .. core.pos_to_string(pos, 1) ..
+		" and was re-seated at " .. core.pos_to_string(cell))
+end
+grug_mobs.start_npc_standing_cell = standing_cell
+grug_mobs.start_npc_reseat_sunk = reseat_sunk
+
 -- The title of the NPC on a trainer socket whose profession no trainer
 -- teaches, or nil when the socket holds a trainer (grug_jobs, which loads
 -- after this mod, owns both: Round 45 retires the Cooking trainers, spec
@@ -498,6 +582,7 @@ function grug_mobs.start_npc_claim(entity)
 			end
 			slots[socket_id] = entity
 			refresh_walk(entity)
+			reseat_sunk(entity)
 			return true
 		end
 		core.log("warning", "[grug_mobs] start npcs " .. key .. ": a second " ..
@@ -510,6 +595,7 @@ function grug_mobs.start_npc_claim(entity)
 	end
 	slots[socket_id] = entity
 	refresh_walk(entity)
+	reseat_sunk(entity)
 	return true
 end
 
@@ -1483,7 +1569,7 @@ local function install(entity, row, slot)
 	end
 end
 
-local function place(row, slot)
+local function place(row, slot, cell)
 	-- The settlement key comes along so the families that claim only a keyed
 	-- NPC (guard.lua, bosses.lua) reach the claim with a stray first snapshot.
 	-- A capital display is a plain entity that reads only its own saved
@@ -1497,7 +1583,7 @@ local function place(row, slot)
 		core.serialize({_grug_unplaced = true, _grug_start = row.key,
 			_grug_mixed_race = slot.garrison and slot.garrison.mixed or nil}) or nil
 	placing = true
-	local object = core.add_entity(slot.pos, slot.entity, staticdata)
+	local object = core.add_entity(cell, slot.entity, staticdata)
 	placing = false
 	if not object then return false end
 	local entity = object:get_luaentity()
@@ -1506,8 +1592,9 @@ local function place(row, slot)
 		-- mobs_redo removal path). Nothing to configure and nothing to mark.
 		return false
 	end
-	-- The ground correction mobs:add_mob skips (init.lua place_on_ground).
-	grug_mobs.place_on_ground(object, slot.pos)
+	-- The ground correction mobs:add_mob skips (init.lua place_on_ground),
+	-- on the standing cell `serve` found (the socket, or lifted).
+	grug_mobs.place_on_ground(object, cell)
 	install(entity, row, slot)
 	-- A capital display is a plain Luanti entity, not a mobs_redo mob. Its
 	-- configure hook above writes the authored yaw through ObjectRef:set_yaw and
@@ -1623,7 +1710,20 @@ local function serve(row)
 				mark_placed(row, slot)
 			else
 				local node = core.get_node_or_nil(slot.pos)
-				if node and node.name ~= "ignore" then
+				local cell = node and node.name ~= "ignore" and standing_cell(slot.pos)
+				if node and node.name ~= "ignore" and not cell then
+					-- No standing room yet (STANDING ROOM above): wait, up
+					-- to PLACE_PATIENCE passes, then the socket as before.
+					slot.waited = (slot.waited or 0) + 1
+					if slot.waited >= PLACE_PATIENCE then
+						core.log("warning", "[grug_mobs] start npcs " .. row.key ..
+							": socket " .. slot.id .. " " .. core.pos_to_string(slot.pos) ..
+							" has no standing room after " .. slot.waited ..
+							" passes; placed at the socket")
+						cell = slot.pos
+					end
+				end
+				if cell then
 					if live >= #row.slots then
 						-- THE HARD CAP: a settlement never holds more NPCs than
 						-- it has sockets, whatever its markers say -- the
@@ -1639,13 +1739,15 @@ local function serve(row)
 							": " .. live .. " NPCs already stand in a roster of " ..
 							#row.slots .. "; socket " .. slot.id ..
 							" is left empty")
-					elseif place(row, slot) then
+					elseif place(row, slot, cell) then
+						slot.waited = nil
 						mark_placed(row, slot)
 						live = live + 1
 						new = new + 1
 						core.log("action", "[grug_mobs] start npcs " .. row.key ..
 							": " .. slot.entity .. " placed at socket " ..
-							slot.id .. " " .. core.pos_to_string(slot.pos))
+							slot.id .. " " .. core.pos_to_string(slot.pos) ..
+							(cell.y ~= slot.pos.y and (" (standing at y " .. cell.y .. ")") or ""))
 					end
 				end
 			end

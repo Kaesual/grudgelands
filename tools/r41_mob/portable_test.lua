@@ -172,7 +172,9 @@ _G.core = setmetatable({
 	get_us_time = function() return us_time end,
 	get_gametime = function() return gametime end,
 	pos_to_string = function(p) return ("(%d,%d,%d)"):format(p.x, p.y, p.z) end,
-	get_node_or_nil = function() return {name = "default:dirt_with_grass"} end,
+	-- Flat ground at the anchors' height (y 20) and air above it, so every
+	-- socket (y 1 over its anchor) has standing room (0.45.1).
+	get_node_or_nil = function(p) return {name = p.y <= 20 and "default:dirt_with_grass" or "air"} end,
 	compare_block_status = function() return false end,
 	dir_to_yaw = function(d) return math.atan2(-d.x, d.z) end,
 	get_mod_storage = function() return storage end,

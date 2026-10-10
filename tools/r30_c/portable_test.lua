@@ -49,6 +49,7 @@ local function copy(value)
 end
 
 local serial, logs, steps, loaded, after = {}, {}, {}, {}, {}
+local ground_y -- set with the sockets below
 local entity_defs = {}
 local clock = 1000
 core = {
@@ -64,7 +65,14 @@ core = {
 	after = function(_, fn) after[#after + 1] = fn end,
 	get_gametime = function() return clock end,
 	pos_to_string = function(p) return ("(%d,%d,%d)"):format(p.x, p.y, p.z) end,
-	get_node_or_nil = function() return {name = "default:dirt_with_grass"} end,
+	-- Ground under every socket and air above it (0.45.1: start_npcs.lua
+	-- places only where an NPC has standing room); see `ground_y` below.
+	get_node_or_nil = function(p)
+		local g = ground_y(p)
+		return {name = (g == nil or p.y <= g) and "default:dirt_with_grass" or "air"}
+	end,
+	registered_nodes = {air = {walkable = false, drawtype = "airlike"},
+		["default:dirt_with_grass"] = {walkable = true, drawtype = "normal"}},
 	-- Loaded but nobody near: the start-ready situation (no strikes).
 	compare_block_status = function() return false end,
 }
@@ -144,6 +152,12 @@ local SOCKETS = {
 	{id = "hall_quest", role = "quest", pos = {x = -11, y = 37, z = -2542}, yaw = 0},
 	{id = "idle_green_bench", role = "idle", pos = {x = -6, y = 37, z = -2543}, yaw = 0},
 }
+ground_y = function(p)
+	for _, socket in ipairs(SOCKETS) do
+		if socket.pos.x == p.x and socket.pos.z == p.z then return socket.pos.y - 1 end
+	end
+	return nil
+end
 local progress
 grug_core = {
 	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end,
