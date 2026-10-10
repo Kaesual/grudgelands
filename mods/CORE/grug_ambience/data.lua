@@ -122,7 +122,8 @@ D.emitter_reach = {x = 12, y = 5, z = 12}
 -- Music. Tracks: id -> file (in music/), length in seconds (the shipped
 -- file's; the scheduler has no other way to know when a track ends), and the
 -- title and artist the "Now playing" box under the minimap shows (0.45.1,
--- grug_map minimap.lua), as LICENSE-media.md credits them. Every shipped
+-- grug_map minimap.lua), as LICENSE-media.md credits them (one shortened
+-- display title, marked below). Every shipped
 -- track is listed, also one no rotation names: Master of the Feast (too fast
 -- and high-energy for a town, the user's listening check of Round 35), kept
 -- for a possible music tab (round35-plan.md §2.8).
@@ -138,7 +139,9 @@ D.tracks = {
 	forest_walk = {file = "grug_music_forest_walk.ogg", seconds = 218,
 		title = "Forest Walk", artist = "Alexander Nakarada"}, -- R32 M3
 	town_theme = {file = "grug_music_town_theme.ogg", seconds = 98,
-		title = "Town Theme RPG", artist = "cynicmusic"}, -- R34 D.1
+		-- Shown as "Town Theme" (the user, 0.45.1); the source title is
+		-- "Town Theme RPG", which LICENSE-media.md keeps.
+		title = "Town Theme", artist = "cynicmusic"}, -- R34 D.1
 	thatched_villagers = {file = "grug_music_thatched_villagers.ogg", seconds = 246,
 		title = "Thatched Villagers", artist = "Kevin MacLeod"}, -- R34 D.2
 	minstrel_guild = {file = "grug_music_minstrel_guild.ogg", seconds = 186,

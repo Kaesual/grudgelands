@@ -165,7 +165,7 @@ end
 -- text cannot be measured, so the width comes from the longer line's
 -- characters at `char_em` of the font size each: the font (Arimo Regular,
 -- 16 px at GUI scaling 1) measures 0.40-0.59 em per character over the
--- shipped titles and artists ("Town Theme RPG" the widest per character,
+-- shipped titles and artists ("Town Theme" the widest per character,
 -- "Fantasy Orchestral Theme" the longest at 11.8 em), so 0.6 em holds every
 -- one. One font line is `line_em` high.
 V.NOW_PLAYING = {gap = 4, pad = 4, icon = 36, icon_gap = 6, line = 20,
