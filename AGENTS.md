@@ -12,21 +12,20 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** Round 45 (crafting rework; 0.45.0, **migrate**) is
-complete ([plan](docs/planning/round45-plan.md)): recipe lists in areas
-instead of the grid and the books, timed crafting jobs with an output
-area, gear only from professions, the item level ladder 1/11/21/…,
-enchants and upgrades as jobs, proximity stations, Cooking from the start,
-finished potions, Grudge-Free Repairs, the playtest fixes, and step
-0.45.0 (mixtures removed, the craft grid emptied, old gear keeps its item
-level). origin/main is `2f918739` (Round 44 and Round 45 up to EU, still
-labelled 0.44.0, pushed by the user on 2026-10-09; production runs
-0.41.0); 0.45.0 is pushed on the user's word after the round-end gates.
-Rounds 25–35 count as GUI-accepted (the
-user, 2026-10-05), Round 39 too (2026-10-06), Round 42's playtest was
-accepted (2026-10-08); the GUI tests of Rounds 36–38, 40, 41, 43, 44 and
-45 are open. Next: Round 45's GUI test; Round 46 (the
-waiting point for players in creation stasis). Details:
+**Current state:** 0.45.1, the fix round after the 0.45.0 playtest
+(**compatible**: no migration step, no map reset), is complete on main
+([fix round](docs/planning/round45-plan.md#0451-fix-round-2026-10-10)):
+the riding camera per mount, Dismount, Charge on stairs, reliable
+self-skill clicks, the crafting and quest giver fixes, the inventory key
+closing every window, the map zoom's soft lock, "Now playing" and the
+trainer greetings. It sits on Round 45 (crafting rework; 0.45.0,
+**migrate**, [plan](docs/planning/round45-plan.md)). origin/main is
+`d4a1e645` (0.45.0) and production runs 0.45.0; 0.45.1 is not pushed
+yet (pushed only on the user's word). Rounds 25–35 count as GUI-accepted
+(the user, 2026-10-05), Round 39 too (2026-10-06), Round 42's playtest
+was accepted (2026-10-08); the GUI tests of Rounds 36–38, 40, 41, 43, 44
+and 45 and of 0.45.1 are open. Next: the 0.45.1 GUI test and push;
+Round 46 (the waiting point for players in creation stasis). Details:
 [STATUS](docs/STATUS.md).
 
 ## Language rules

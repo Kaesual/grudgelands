@@ -108,8 +108,16 @@ stats, and the sound controls. The short version:
 
 ## Current state
 
-*Last updated: 2026-10-09. The current version is the newest entry of the
+*Last updated: 2026-10-10. The current version is the newest entry of the
 [changelog](CHANGELOG.md) and shows on Help → About.*
+
+The newest version is 0.45.1, fixes from the 0.45.0 playtest: a
+camera of its own for every mount, a Dismount button, Charge that runs
+down stairs, self skills that cast on every click, clearer crafting
+ingredients with − and + for the amount, quest givers that open on the
+quest you can hand in, the inventory key closing every window, a map
+zoom that stays on you, a "Now playing" box in the capitals and trainers
+who greet you; a 0.45.0 world plays on.
 
 The latest finished round is Round 45 (0.45.0), "Crafting rework":
 recipe lists in areas on the Crafting tab instead of the crafting grid and
@@ -164,8 +172,8 @@ players fight them to mounts that no longer throw you off when a buff
 runs out, and Round 36 brought each faction's main story from level 41 to
 60, with its finale against Isquarre at the rift. A 0.40 world moves
 to 0.41.0 with a map reset, plays on in 0.43.0 and moves to 0.44.0 and
-0.45.0 with the migration tool (one run does both); older worlds start a
-new world.
+0.45.0 with the migration tool (one run does both) and plays on in
+0.45.1; older worlds start a new world.
 
 Not in the game yet: the scripted battles on the war front, and the
 underworld, which is a later expansion. Round-by-round changes are in the
