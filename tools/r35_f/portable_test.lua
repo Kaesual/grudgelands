@@ -424,7 +424,10 @@ do
 	local description = form:match("(textarea%[[^%]]-;)")
 	check(description ~= nil and form:find("textarea%[[%d.]+,[%d.]+;[%d.]+,[%d.]+;;;") ~= nil,
 		"Q the description is a read-only textarea (no name)")
-	check(form:find("button[7.8,8.4;2,0.7;accept;Accept]", 1, true) ~= nil, "Q Accept for the available quest")
+	-- 0.45.1: the dialog opens on the first quest ready to complete (row 2
+	-- here), so it offers Complete, not row 1's Accept.
+	check(form:find("button[7.8,8.4;2,0.7;turnin;Complete]", 1, true) ~= nil and
+		form:find("accept;Accept]", 1, true) == nil, "Q Complete for the preselected ready quest")
 
 	-- No textarea in our mods has a name (a named one is editable).
 	local named, seen = {}, 0

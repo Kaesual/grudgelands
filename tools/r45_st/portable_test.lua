@@ -277,6 +277,24 @@ local mod_paths = {
 	grug_cooking = "/mods/ITEMS/grug_cooking", grug_alchemy = "/mods/ITEMS/grug_alchemy",
 }
 local current_mod = "grug_brewing"
+-- The ground of the socket column at p (x, z), from the registry, cached once
+-- it holds sockets; nil off every socket (0.45.1: start_npcs.lua places only
+-- where an NPC has standing room).
+local ground_of
+local function socket_ground(p)
+	if not ground_of then
+		local found = {}
+		for _, record in ipairs(grug_core.settlement_socket_settlements()) do
+			for _, socket in ipairs(grug_core.settlement_sockets_at(record.key)) do
+				local k = socket.pos.x .. "," .. socket.pos.z
+				found[k] = math.min(found[k] or math.huge, socket.pos.y - 1)
+			end
+		end
+		if next(found) == nil then return nil end
+		ground_of = found
+	end
+	return ground_of[p.x .. "," .. p.z]
+end
 local function register_item(name, def, kind)
 	name = name:gsub("^:", "")
 	def = copy(def)
@@ -287,7 +305,7 @@ local function register_item(name, def, kind)
 end
 core = {
 	registered_items = registered_items,
-	registered_nodes = {},
+	registered_nodes = {air = {walkable = false, drawtype = "airlike"}},
 	registered_entities = entity_defs,
 	register_node = function(name, def) register_item(name, def, "node") end,
 	register_craftitem = function(name, def) register_item(name, def, "craft") end,
@@ -304,9 +322,13 @@ core = {
 	get_modpath = function(name) return ROOT .. assert(mod_paths[name], name) end,
 	get_current_modname = function() return current_mod end,
 	get_meta = node_meta,
+	-- Unset cells are ground, but air above a socket's floor
+	-- (`socket_ground`).
 	get_node_or_nil = function(pos)
 		local name = nodes[pos_key(vector.round(pos))]
-		return {name = name or "default:dirt_with_grass"}
+		local g = not name and grug_core and grug_core.settlement_socket_settlements and
+			socket_ground(pos)
+		return {name = name or ((g and pos.y > g) and "air" or "default:dirt_with_grass")}
 	end,
 	get_node = function(pos) return core.get_node_or_nil(pos) end,
 	swap_node = function(pos, node) nodes[pos_key(pos)] = node.name end,

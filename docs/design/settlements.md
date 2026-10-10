@@ -141,6 +141,15 @@ Decided 2026-09-14.
 - Blueprints export named sockets (guard post, patrol loop, vendor, idle,
   work, quest, king, waypoint) that runtime mods read through one registry,
   see [wp13-npc-sockets-contract.md](../research/wp13-npc-sockets-contract.md).
+- **An NPC is placed only where it can stand** (0.45.1, the user,
+  2026-10-10): on its socket, or the first cell at most two above it, with
+  free feet and head cells and a floor under them. A socket without one
+  waits for a later placement pass (a neighbouring chunk not written yet),
+  and after twelve passes is placed at the socket as before, with a
+  warning. An NPC that activates with its shins inside a solid full node is
+  put back on its socket's standing cell; nothing checks it again until its
+  next activation, and one on a stair, in a door or walking elsewhere is
+  left alone.
 - Every start receives a first NPC roster: two gate guards and one patrol,
   the race's own vendor, residents at doors, benches, work areas and
   **workplaces**, and a quest giver following `quests.md`. A start also
