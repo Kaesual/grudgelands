@@ -46,8 +46,8 @@ personal stations, access, digging) is
     framework profession and is absent from all profession trainer interfaces.
 - **Learning is free** (right-click a trainer). The trainer window
   (0.45.1) shows the trainer's greeting on top (one text per profession,
-  `grug_jobs.GREETINGS`, the same in every town; placeholder texts until the
-  user picks them), the status line and the notice below it, and every
+  `grug_jobs.GREETINGS`, the same in every town; the user's pick of
+  2026-10-10), the status line and the notice below it, and every
   button (Learn or Unlearn, or Confirm unlearn and Cancel; Repair equipment;
   Close on the right) in one bottom row. No text field takes the first
   focus, so the inventory key closes it. Like every service NPC, a

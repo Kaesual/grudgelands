@@ -43,7 +43,7 @@ Repairs** (a title, the same in every town) on the former Cooking trainer
 socket of every start town and capital (Round 45; the user, 2026-10-09): a click opens only the repair
 form, with the trainers' prices and rules; its form is titled with the
 mender's title and shows its greeting below it (0.45.1,
-`grug_jobs.GREETINGS.mender`, placeholder text until the user picks one),
+`grug_jobs.GREETINGS.mender`, the user's pick of 2026-10-10),
 the other repair forms keep the title "Equipment repairs" and show none. Existing
 faction/service access applies. Riding trainers are not profession trainers. No additional NPC
 or trader distribution is introduced.

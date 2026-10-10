@@ -314,6 +314,8 @@ do
 		keys = keys + 1
 		check(key == "mender" or grug_jobs.trainer_teaches(key), "G greeting key is a trainer: " .. key)
 		check(type(text) == "string" and #text > 0, "G greeting text: " .. key)
+		check(not text:lower():find("placeholder", 1, true) and not text:find("[", 1, true),
+			"G the picked text, no placeholder left: " .. key)
 	end
 	eq(keys, 8, "G seven trainer greetings and the mender's")
 	check(grug_jobs.GREETINGS.cooking == nil, "G Cooking has no trainer and no greeting")
@@ -368,6 +370,27 @@ end
 for _, profession in ipairs(TRAINERS) do
 	states(profession, true)
 	states(profession, false)
+end
+
+-- G: the picked texts reach the windows escaped (an apostrophe, a colon and
+-- the woodcarver's ";" stay text): every line of each greeting is one whole
+-- label inside the window (no scrollbar: labels only, the window grows), and
+-- the raw formspec carries the escaped semicolon.
+do
+	repair_allowed = true
+	for _, profession in ipairs(TRAINERS) do
+		local player = new_player("picked_" .. profession)
+		grug_jobs.open_trainer(player, profession, {x = 1, y = 0, z = 0}, {})
+		local entry = last_spec(player:get_player_name())
+		local form = trainer_check(player, profession, "picked " .. profession,
+			"grug_jobs_learn grug_jobs_repair grug_jobs_close")
+		check(shows(form, grug_jobs.GREETINGS[profession]), "G picked " .. profession .. ": shown whole")
+		if profession == "woodcarver" then
+			check(entry.spec:find("You bring the magic\\; I'll teach", 1, true) ~= nil,
+				"G the woodcarver's semicolon is escaped in the formspec")
+		end
+		send(player, {quit = "true"})
+	end
 end
 
 -- B: both primary slots taken: the learn button stays, the status says so.
