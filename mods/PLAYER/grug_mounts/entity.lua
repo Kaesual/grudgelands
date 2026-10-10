@@ -502,16 +502,17 @@ local function flight_step(self, control, yaw)
 	self.object:set_acceleration({x = 0, y = 0, z = 0})
 	self.object:set_velocity({x = input_x * tier.speed * input_scale,
 		y = vertical, z = input_z * tier.speed * input_scale})
-	-- In the air a flyer always plays its flight loop, hovering too (0.45.1:
-	-- the perched pose held the eagle's head up in the rider's view). Only
-	-- resting on the ground, idle, does it stand. The engine reports no ground
-	-- contact for a still object, so an idle flyer reads the node under its
-	-- middle (one node read per idle step).
-	local idle = input_scale == 0 and vertical == 0
-	local floor = idle and node_definition(position_node({x = pos.x,
+	-- In the air a flyer always plays its flight loop, hovering too; on the
+	-- ground, idle or moving, it holds its still `ground` frame, level and
+	-- without a wing beat or the wing sound (0.45.1, the user's ruling). On
+	-- the ground: a walkable node right under the box's bottom (0.1 node) at
+	-- its middle. The engine reports no ground contact for a still object, so
+	-- the step reads that node itself (one node read a step).
+	local floor = node_definition(position_node({x = pos.x,
 		y = pos.y + self._grug_model.collisionbox[2] - 0.1, z = pos.z}))
-	set_animation(self, floor and floor.walkable and "stand" or "move")
-	ride_sound(self, "mount_wings", not idle)
+	local grounded = floor and floor.walkable
+	set_animation(self, grounded and "ground" or "move")
+	ride_sound(self, "mount_wings", not grounded and (input_scale > 0 or vertical ~= 0))
 end
 
 -- A boat glides toward the requested velocity (accelerating and braking alike)
@@ -773,7 +774,8 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 		return false, "The mount appearance failed to activate."
 	end
 	active[name].visual = visual
-	set_animation(entity, "stand")
+	-- A flyer starts in its still ground frame, never the perched `stand`.
+	set_animation(entity, tier.mode == "flight" and "ground" or "stand")
 	local bonus = math.floor((tier.speed / 4 - 1) * 100 + 0.5)
 	grug_core.set_status(player, STATUS_ID, {
 		label = tier.name,

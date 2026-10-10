@@ -197,9 +197,13 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   camera (the riding bodies stay 1.6 high) the view reaches into the ceiling
   node.
 - A flying mount plays its flight loop whenever it is in the air, hovering
-  included (0.45.1, the user's ruling: the eagles' perched pose held the head
-  up in the rider's view); only idle on the ground does it stand (the eagles
-  perch, the bats keep their slower wing loop).
+  included; on the ground, idle or moving, it holds one still frame of that
+  loop, level and without a wing beat or the wing sound (0.45.1, the user's
+  rulings: the eagle's perched clip beats its wings with the beak about 30°
+  up, which filled the rider's view; neither model has a walk or folded-wing
+  pose). On the ground means a walkable node right under the middle of the
+  mount's box (within 0.1 node); 0.1 node higher it is in the air. The capital
+  displays keep their perched idle.
 - Land mounts automatically step over slabs and nominal one-node rises while
   moving forward, without jump input. Their controller uses a **1.01-node**
   step height to clear the engine's strict collision comparison; taller
