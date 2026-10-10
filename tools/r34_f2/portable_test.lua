@@ -203,6 +203,18 @@ do
 		grug_money_gold = "", grug_money_silver = "", grug_money_copper = "5"})
 	check(shown[1] and shown[1][2] == "grug_money:withdraw" and
 		shown[1][3]:find("Your inventory is full.", 1, true), "A the dialog shows the refusal")
+	-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): opened from
+	-- the inventory, Cancel has the focus, not the Gold field (which would
+	-- eat the inventory key); the re-show keeps a field the player typed in.
+	if shown[1] then
+		local focus = dofile(ROOT .. "/tools/r451_kf/focus.lua")
+		local got = focus.initial(shown[1][3], {new_form = true})
+		check(got and got.name == "grug_money_cancel", "A Cancel focused when the dialog opens")
+		got = focus.initial(shown[1][3], {preserved = "grug_money_copper"})
+		check(got and got.name == "grug_money_copper", "A a re-show keeps the typed-in field")
+		got = focus.initial(focus.without_set_focus(shown[1][3]), {new_form = true})
+		check(got and got.name == "grug_money_gold", "A without set_focus the Gold field would be")
+	end
 	p.main[4] = ItemStack("")
 	shown = {}
 	receive(p, "grug_money:withdraw", {key_enter = "true", key_enter_field = "grug_money_copper",

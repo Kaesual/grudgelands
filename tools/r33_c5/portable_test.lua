@@ -650,6 +650,26 @@ do
 	local text, reason = grug_traders.crown_preview(drop)
 	check(text == nil and reason and reason:find("lower", 1, true) ~= nil,
 		"F an item-level-70 drop is not lowered to 65")
+	-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): the window
+	-- focuses Close when it opens and after a Crown click, never a preview
+	-- textarea (which would eat the inventory key).
+	local shown
+	local show_formspec = core.show_formspec
+	core.show_formspec = function(_, formname, form) shown = {formname, form} end
+	grug_traders.open_crownbinder(w, "Crownbinder", {x = 0, y = 0, z = 0}, "accord")
+	core.show_formspec = show_formspec
+	if check(shown and shown[2]:find("textarea[", 1, true) and shown[2]:find(";Crown]", 1, true),
+			"F the window shows preview textareas and a Crown button") then
+		local focus = dofile(ROOT .. "/tools/r451_kf/focus.lua")
+		local crown_button = shown[2]:match(";(crown_%d+);Crown%]")
+		for _, opts in ipairs({{new_form = true}, {preserved = crown_button}}) do
+			local got = focus.initial(shown[2], opts)
+			eq(got and got.name, "close", "F 0.45.1 Close focused (" ..
+				(opts.new_form and "opened" or "after a Crown click") .. ")")
+		end
+		local bare = focus.initial(focus.without_set_focus(shown[2]), {new_form = true})
+		eq(bare and bare.type, "textarea", "F 0.45.1 without set_focus a textarea would be")
+	end
 end
 
 ------------------------------------------------------------------------------

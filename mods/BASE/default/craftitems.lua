@@ -23,7 +23,11 @@ local function formspec_write(title, text)
 end
 
 local function formspec_read(owner, title, string, text, page, page_max)
-	return "label[0.5,0.5;" .. esc(S("by @1", owner)) .. "]" ..
+	-- GRUG PATCH: the ">" button takes the focus at every send (0.45.1);
+	-- otherwise the engine focuses the read-only textarea, which eats the
+	-- inventory key, so the key could not close the book.
+	return "set_focus[book_next;true]" ..
+		"label[0.5,0.5;" .. esc(S("by @1", owner)) .. "]" ..
 		"tablecolumns[color;text]" ..
 		"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 		"table[0.4,0;7,0.5;title;#FFFF00," .. esc(title) .. "]" ..

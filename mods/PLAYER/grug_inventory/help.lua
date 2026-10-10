@@ -260,7 +260,11 @@ end
 local function help_content(player, context)
 	local selected = SECTION_BY_ID[context.grug_help_section] and
 		context.grug_help_section or DEFAULT_SECTION
-	local fs = {}
+	-- The open sub-page's button takes the focus at every send (0.45.1):
+	-- otherwise the engine focuses About's first link textarea, which eats the
+	-- inventory key. Forced: unforced, it would not apply when the inventory
+	-- key opens the window.
+	local fs = {("set_focus[grug_help_%s;true]"):format(selected)}
 	for _, section in ipairs(SECTIONS) do
 		local field = "grug_help_" .. section.id
 		fs[#fs + 1] = grug_inventory.selected_button_style(field,

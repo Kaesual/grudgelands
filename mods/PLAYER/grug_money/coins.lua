@@ -145,6 +145,10 @@ function grug_money.show_withdraw(player, fields, message)
 	fields = fields or {}
 	local fs = {
 		"size[6.4,4.3]",
+		-- Cancel takes the focus when the dialog opens (0.45.1): otherwise the
+		-- engine focuses the Gold field, which eats the inventory key. Not
+		-- forced: a re-show with a refusal keeps the field the player typed in.
+		"set_focus[grug_money_cancel;false]",
 		"label[0.3,0.2;Withdraw into a Bag of Coins]",
 		("label[0.3,0.7;Balance: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
 		("field[0.6,1.9;1.7,0.8;grug_money_gold;Gold;%s]"):format(esc(fields.grug_money_gold)),

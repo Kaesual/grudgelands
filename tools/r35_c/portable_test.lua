@@ -514,6 +514,21 @@ eq(#shown_since(mark, "alice"), 0, "B the window is not re-shown after Esc")
 eq(hint(a), PAUSED, "B paused hint on the window")
 check(has(a.inventory_formspec, "style[race_troll;bgcolor=#8a6a1e;font=bold]"),
 	"B the draft survives Esc in the inventory")
+-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): reopened with
+-- the inventory key (form name "", never a new form) or re-sent after a
+-- click on Create, the window focuses the chosen faction's button, not a
+-- description textarea (which would eat the inventory key).
+do
+	local focus = dofile(repo .. "/tools/r451_kf/focus.lua")
+	form = a.inventory_formspec
+	for _, opts in ipairs({{}, {preserved = "create_character"}}) do
+		local got = focus.initial(form, opts)
+		eq(got and got.name, "faction_throng", "B 0.45.1 the chosen faction focused (" ..
+			(opts.preserved and "re-sent" or "inventory key") .. ")")
+	end
+	local bare = focus.initial(focus.without_set_focus(form), {})
+	eq(bare and bare.type, "textarea", "B 0.45.1 without set_focus a textarea would be")
+end
 
 eq(meta_writes, writes_before, "B no meta write before Create")
 eq(stored("alice"), 0, "B nothing stored before Create")
