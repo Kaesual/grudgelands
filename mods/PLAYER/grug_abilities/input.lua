@@ -3,6 +3,16 @@
 return function(api)
 	local Q, states = grug_abilities, {}
 	local HAND_RANGE, HOLD_US, FOOD_US = 4, 200000, 1500000
+	-- A press at a node with a self or support skill selected is a tap (cast
+	-- on release) when the server sees its release within TAP_US of the
+	-- press, else a hold (dig). The press arrives at once (the native punch);
+	-- the release comes with the client's next control report (every
+	-- dedicated_server_step, 0.09 s, client.cpp:634, plus a client frame; a
+	-- release that stops a dig is sent at once) and is read at the next input
+	-- pass (one more server step). A click of up to about 0.15 s (as
+	-- MODE_GRACE_US) is therefore seen within 0.15 + 0.09 + 0.02 + 0.09 =
+	-- 0.35 s (0.45.1; HOLD_US before, which dropped about every third click).
+	local TAP_US = 350000
 	-- Held food time accrues per observed step, at most this much per step, so
 	-- a server stall cannot turn a click into a hold.
 	local MAX_HELD_STEP_US = 100000
@@ -345,14 +355,13 @@ return function(api)
 				return
 			end
 		end
+		-- A pending tap only waits for its release: where the crosshair wanders
+		-- meanwhile (kiting with the eyes on the ground) changes nothing, the
+		-- cast needs no node. Past TAP_US the press is a hold and acts on what
+		-- it points at now (native digging has accumulated since the press).
 		if s.pending then
-			if hit and hit.type == "node" and same(hit.under, s.pending.pos) and
-					core.get_node_or_nil(hit.under) and core.get_node_or_nil(hit.under).name == s.pending.node then
-				if now - s.pending.started < HOLD_US then return end
-				s.pending = nil -- Native digging has accumulated since the press.
-			else
-				s.pending, s.dig = nil, nil
-			end
+			if now - s.pending.started < TAP_US then return end
+			s.pending = nil
 		end
 		if hit and hit.type == "object" then
 			s.dig = nil
@@ -417,8 +426,7 @@ return function(api)
 			-- Readiness is checked at the tap, which reports a refusal. A
 			-- carried press is no tap: it digs on.
 			if fresh and not carried and support(def) and castable(def, s) then
-				s.pending = {pos = vector.copy(hit.under), started = now, id = def.id,
-					node = core.get_node_or_nil(hit.under).name}
+				s.pending = {started = now, id = def.id}
 			end
 			return
 		end
@@ -429,8 +437,7 @@ return function(api)
 			-- ground): a short tap still casts a self/support skill (Blink in a
 			-- town); holding only earns the protection hint.
 			if fresh and not carried and support(def) and castable(def, s) then
-				s.pending = {pos = vector.copy(hit.under), started = now, id = def.id,
-					node = core.get_node_or_nil(hit.under).name}
+				s.pending = {started = now, id = def.id}
 			end
 			return
 		end
@@ -557,10 +564,10 @@ return function(api)
 		elseif not down then
 			local pending = s.pending
 			s.pending, s.dig = nil, nil
-			if pending and def and pending.id == def.id and hit and hit.type == "node" and
-					same(hit.under, pending.pos) and core.get_node_or_nil(hit.under) and
-					core.get_node_or_nil(hit.under).name == pending.node and
-					core.get_us_time() - pending.started < HOLD_US then
+			-- A tap casts on its release, wherever the crosshair is now (see
+			-- TAP_US and activate).
+			if pending and def and pending.id == def.id and
+					core.get_us_time() - pending.started < TAP_US then
 				cast(player, def, s, hit, true)
 			end
 		end
@@ -707,6 +714,12 @@ return function(api)
 		local hit, distance = ray(player, HAND_RANGE)
 		if not hit or hit.type ~= "node" or not same(pos, hit.under) or
 				not hand_node(player, hit, distance) then return false end
+		-- The client completes a dig only while the button is held, the moment
+		-- its crack time is up, so a completion proves a hold that long: inside
+		-- a pending tap it is refused before HOLD_US (Creative's fast hand, the
+		-- Round 20 limit: the node comes back and is dug again), later it ends
+		-- the tap as a hold (the on_dig wrapper below), so nodes the hand digs
+		-- in 0.3 s never roll back for the longer TAP_US.
 		if s.pending and core.get_us_time() - s.pending.started < HOLD_US then return false end
 		return true -- Native digging already owns time, drops and node callbacks.
 	end
@@ -724,14 +737,23 @@ return function(api)
 			end
 			if original_dig then
 				changes.on_dig = function(pos, node, player)
-					if player and player:is_player() and not M.can_dig(player, pos, node) then
-						-- A refused dig on protected ground is still a protection
-						-- violation (its handlers show the reason, Round 24).
+					if player and player:is_player() then
 						local name = player:get_player_name()
-						if core.is_protected(pos, name) then
-							core.record_protection_violation(pos, name)
+						local allowed_dig = M.can_dig(player, pos, node)
+						-- A completion past HOLD_US makes its press a hold (see
+						-- can_dig), dug or refused: no tap on release.
+						local s = states[name]
+						if s and s.pending and core.get_us_time() - s.pending.started >= HOLD_US then
+							s.pending = nil
 						end
-						return
+						if not allowed_dig then
+							-- A refused dig on protected ground is still a protection
+							-- violation (its handlers show the reason, Round 24).
+							if core.is_protected(pos, name) then
+								core.record_protection_violation(pos, name)
+							end
+							return
+						end
 					end
 					return original_dig(pos, node, player)
 				end
