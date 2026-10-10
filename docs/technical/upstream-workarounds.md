@@ -220,6 +220,37 @@ Engine reference for the line citations: `reference_projects/luanti` at
 - **What to remove then:** the floor of 2 on the search padding
   (`nav.MIN_PADDING` in `grug_nav.lua`).
 
+## 6. `set_focus` without `force` never applies to the player inventory
+
+- **Upstream problem:** `set_focus[<name>;false]` is documented to skip only
+  re-sent formspecs of the same name (`doc/lua_api.md` "set_focus"), but
+  `GUIFormSpecMenu::parseSetFocus` (`src/gui/guiFormSpecMenu.cpp`) applies
+  it only when `m_text_dst->m_formname != m_last_formname`. The player
+  inventory's name is always `""` (`TextDestPlayerInventory`,
+  `src/client/game_formspec.cpp`) and a new menu's `m_last_formname`
+  starts empty, so it never applies there, not even when "i" opens the
+  window. Without it the client focuses the first text field
+  (`setInitialFocus`: the first empty edit box, else the first edit box),
+  and a focused edit box takes the inventory key as a letter
+  (`CGUIEditBox::processKey`, read-only text areas too), so "i" does not
+  close a tab with a field (0.45.1 fix plan row 13).
+- **Issue:** none filed yet (found 2026-10-10).
+- **Affected versions:** unchanged up to `df0487906` (5.17.0-dev).
+- **Our workaround:** the Crafting tab (`mods/PLAYER/grug_jobs/ui.lua`,
+  0.45.1 lane CU) sends `set_focus[grug_craft_find;true]` on every build,
+  so the Search button has the focus (a button lets "i" through to the
+  form). Since a forced focus would also pull the cursor out of a field the
+  player typed in, the resend that answers Enter in a field leaves it out,
+  and the close event after such a build resends the page once with it.
+  Fixture `tools/r451_cu` F.
+- **How to tell upstream fixed it:** a non-forced `set_focus` applies on the
+  first show of a menu (`m_last_formname` differs from the new form's name
+  on a fresh `GUIFormSpecMenu`, or `parseSetFocus` checks for a re-send
+  another way).
+- **What to remove then:** `force` (`true` → `false`), the Enter exception
+  (`st.enter_focus`, `st.field_focus`) and the resend on close in
+  `grug_jobs/ui.lua`.
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields
