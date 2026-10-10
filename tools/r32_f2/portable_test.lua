@@ -543,7 +543,7 @@ do -- G11 a self or support skill never fires because a mob walked in.
 	aim(NODE)
 	press()
 	aim(at(new_mob("p")), NODE)
-	hold(4)
+	hold(8) -- past the tap window (0.35 s, 0.45.1): a hold at the hostile
 	check(not range0() and #casts == 0 and #swings == 0, "G11 Ward: the hold stays gather, nothing cast")
 	aim() -- the crosshair to air while held: no empty-space self cast either
 	hold(3)
@@ -553,9 +553,10 @@ do -- G11 a self or support skill never fires because a mob walked in.
 	aim(NODE)
 	press()
 	aim(at(new_mob("q")), NODE)
-	hold(2)
+	hold(8) -- past the tap window (0.35 s, 0.45.1): a hold at the hostile
+	check(#casts == 0 and #swings == 0 and not range0(), "G11 Blink held at a hostile: nothing")
 	aim()
-	hold(5) -- past the tap window (0.35 s, 0.45.1): a hold, not a click
+	hold(2)
 	check(#casts == 0 and not range0(), "G11 Blink: a miner is never teleported")
 	release()
 	check(#casts == 0, "G11 Blink: nor on the hold's release")
@@ -596,6 +597,9 @@ do -- G11 a self or support skill never fires because a mob walked in.
 	hold(3)
 	check(#casts == 0, "G11 a new press on a node: the earlier ally is not healed")
 	release()
+	-- Released inside the tap window (0.35 s, 0.45.1) the press is a tap: Heal
+	-- casts once, aimed as it is at release (its own ray finds the ally).
+	check(#casts == 1 and casts[1] == "heal", "G11 the tap heals once on release (" .. #casts .. ")")
 	aim(at(ally), NODE)
 	press()
 	release()
