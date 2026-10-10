@@ -21,7 +21,7 @@ a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
 - Exactly 20 active quests maximum; accepting beyond that is refused with a
   clear explanation. Completion or abandonment frees a slot.
 - The quest log supports viewing and abandoning quests. Since Round 44 it
-  is part of the map window (Z or the Map tab,
+  is part of the map window (Z or the Map & Quests tab,
   [world_map.md](world_map.md#map-window); until then a Quests tab): right
   of the map, the list box with the active count, the Quest HUD switch, the
   list and one row with "Track on HUD" on the left and Abandon on the right
