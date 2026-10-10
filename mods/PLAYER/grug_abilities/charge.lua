@@ -202,11 +202,12 @@ end
 -- entity physics may already have moved on along the last segment (down
 -- the old arc past a landing, or pushed by a pull). `ground` takes the last
 -- ground instead: the takeoff of a hop in flight (a logout is saved where
--- it is let go).
+-- it is let go). A straight drop (g = 0) always gives its takeoff: on the
+-- way down it grazes the edge it leaves.
 local function plan_place(run, ground)
 	local pos, _, _, index = path.state_at(run.plan, min(run.t, run.plan.total))
 	local seg = run.plan.segments[index]
-	if ground and seg and seg.kind == "hop" then return vector.new(seg.p0) end
+	if seg and seg.kind == "hop" and (ground or seg.g == 0) then return vector.new(seg.p0) end
 	return pos
 end
 
@@ -220,6 +221,23 @@ local function cancel(name, ground)
 		run.place = plan_place(run, ground)
 	end
 	release(run)
+end
+
+-- A segment that ends before the next step (a hop landing, a short steep
+-- hop, a straight drop): the client would extrapolate it a whole step past
+-- its end, deep below the path. The carrier at `p` (segment `index`, dash
+-- time run.t) heads straight for where the plan is one step on instead, as
+-- the last step does (once per segment; the next switch puts it back).
+local function shortcut(run, obj, index, p, dtime)
+	local plan = run.plan
+	local seg = plan.segments[index]
+	if index < #plan.segments and run.short ~= index and seg.t0 + seg.t < run.t + dtime then
+		run.short = index
+		local q = path.state_at(plan, run.t + dtime)
+		local k = 1 / max(dtime, 0.02)
+		obj:set_velocity({x = (q.x - p.x) * k, y = (q.y - p.y) * k, z = (q.z - p.z) * k})
+		obj:set_acceleration({x = 0, y = 0, z = 0})
+	end
 end
 
 local function carrier_step(self, dtime)
@@ -262,6 +280,7 @@ local function carrier_step(self, dtime)
 		pos = p
 		dust(run, index)
 	end
+	shortcut(run, obj, index, p, dtime)
 	-- The last step before the end: arrive in one more step.
 	if index == #plan.segments and plan.total - run.t < dtime then
 		pos = pos or obj:get_pos()
@@ -347,6 +366,7 @@ function grug_abilities.charge_dash(user, target, dest, def)
 	obj:set_velocity(first.v)
 	obj:set_acceleration(first.a)
 	run.seg = 1
+	shortcut(run, obj, 1, from, STEP)
 	-- The rider faces the dash: the attachment carries the yaw, negated like
 	-- the mounts do (grug_mounts/entity.lua:336-337).
 	local dx, dz = dest.x - from.x, dest.z - from.z
