@@ -20,9 +20,15 @@ in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33, WP9 and
 WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below.
 
-- **Latest delivery:
-  [Round 45 "Crafting rework"](docs/planning/round45-plan.md#completion-2026-10-09)
-  complete** (2026-10-09, `4a892fd6` and lane D; pushed on the user's
+- **Latest delivery: [0.45.1, the fix round after the 0.45.0
+  playtest](docs/planning/round45-plan.md#0451-fix-round-2026-10-10)**
+  (2026-10-10, compatible, not pushed yet): the riding camera per mount,
+  Dismount, Charge on stairs, reliable self-skill clicks, the crafting
+  and quest giver fixes, the inventory key closing every window, the map
+  zoom's soft lock, "Now playing" and the trainer greetings
+  ([carry-overs](#0451-carry-overs)).
+- [Round 45 "Crafting rework"](docs/planning/round45-plan.md#completion-2026-10-09)
+  complete (2026-10-09, `4a892fd6` and lane D; pushed on the user's
   word after the round-end gates;
   version 0.45.0, **migrate**: the second declared step; GUI test open):
   Round B of the UI rework — the recipe registry and the Crafting tab
@@ -1799,6 +1805,69 @@ notes (theoretical, no severity).
   relocation (only a release crossing a map reset and 0.45.0 together,
   which the declaration does not allow today); a nil from `core.add_item`
   would hold the character at every join (safe; a SEVERE line).
+
+### 0.45.1 carry-overs
+
+**Noted 2026-10-10** ([the fix round](docs/planning/round45-plan.md#0451-fix-round-2026-10-10)),
+the reviews' and reports' backlog notes of the 0.45.1 fix round
+(theoretical or accepted, no severity).
+
+- **Charge** (CH): after a lag step the per-segment shortcut can leave
+  the carrier off the plan for one step (about 1 run in 14,000 with 10 %
+  lag spikes; the hit and cancels never read it); the pit rule on 45°
+  diagonal stairs with 1-node treads can read a corner as a 2-node drop
+  and roll a cut plan back to that false rim (no longer reached in the
+  sweeps); the pit rollback turns a downhill multi-edge hop into a
+  sloped run that clips step corners by up to 0.6 m (pre-existing since
+  Round 40); the drawn
+  position on such stairs still goes up to 1.85 m below the ground under
+  it (pre-existing, the client's smoothing cuts the corners).
+- **Mounts** (MC): the engine's breath check uses the raised eye height,
+  so a rider whose camera point is in water (a waterfall) loses breath;
+  the first-mount banner's flag is set at purchase and the banner shown
+  when the dialogue closes, so death, leaving or a refused event before
+  the close lose it; `spawn_entity(..., skip_animation)` has no callers;
+  the ridden wolf's mesh top (about 1.95) is above its 1.59 collision box
+  and clips low ceilings visually; the larger flyer cameras look into
+  ceilings lower than the camera (accepted). Probe only: `/mountcam
+  scale` on a model without `display_size` also scales a capital display
+  that activates meanwhile, and the in-place re-summon skips the boat
+  surface rule.
+- **Gate list:** add `python3 tools/r451_mc/gen_bat_ride_mesh.py --check`
+  (the ridden bats' mesh against its source) to the round-end gates.
+- **"Now playing"** (MU): the box would show if `core.sound_play` ever
+  failed while nothing is audible; at 720p with 10 tracked quests it
+  overlaps the quest list (accepted; clear from 744 px high).
+- **Map window** (MZ): arrow keys in the quest list resend and move the
+  focus to the map scrollbar, so further presses scroll the map (and
+  break the soft lock); a click on the empty part of the list sends
+  nothing and the list keeps the focus (the inventory key is swallowed
+  until the next send); an event of the old form arriving after a send is
+  read at the new zoom (pre-existing, hidden while the lock holds).
+- **Window focus** (KF): the Claim Stone forces its focus on Close at
+  every send, so a redraw while the player types moves the cursor out of
+  the name field; on the creation window's first screen Space picks the
+  last faction (pre-existing, reversible).
+- **Crafting tab** (CU): a resend the player did not ask for (a job's end,
+  the enchant target) moves the cursor out of a typed search; a form shown
+  right after an Enter resend replaces the inventory without a quit, so
+  the next opening focuses the search field once; the item name clip grew
+  from 19 to 21 characters and a wide name could touch have/need.
+- **Town NPCs** (NQ): Kezamba's `throne_guard_west` sank 1.5 nodes into
+  the hall floor on seed 42 within 12 s of following the king (cause
+  unknown; the re-seat repairs it at activation); the re-seat needs the
+  socket's block loaded at the claim; the fallback placement after 60 s
+  can recreate a sunk NPC when the floor chunk stays unfinished that long;
+  the blueprint puts a stair under Nhal Veyr's
+  `homes_fallen_west_work_step_candle` (the lift covers it).
+- **Skill taps** (SC): `tools/r451_sc`'s food case at 250 ms also passes
+  on the old code and the 0.35 s combat refusal is not covered;
+  `classes.md`'s "any other actor" does not name tamed mobs;
+  Ice Nova with the ranged talent pressed at an ally or NPC now says "No
+  hostile target in your crosshair." (consistent with an air press).
+- **Trainer window** (TR): the line wrap uses the 6.6-characters-per-unit
+  estimate; at a large GUI scaling or font (web build) a 67-character
+  line could reach the window edge.
 
 ### Audit 2026-10 open questions
 

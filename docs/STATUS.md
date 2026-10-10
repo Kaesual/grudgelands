@@ -1,6 +1,50 @@
 # Project status
 
-Updated 2026-10-09. This is the delivery pointer, not another game specification.
+Updated 2026-10-10. This is the delivery pointer, not another game specification.
+
+- **0.45.1, the fix round after the 0.45.0 playtest, complete; not
+  pushed yet (pushed only on the user's word)** (2026-10-10, version
+  0.45.1, **compatible**,
+  [lanes, decisions, numbers and GUI checklist](planning/round45-plan.md#0451-fix-round-2026-10-10)).
+  0.45.0 is on origin/main (`d4a1e645`) and production runs it. The
+  user's playtest became fourteen decided fixes in nine code lanes and
+  GPT-6 Astra's proposal lane TX, all from `d4a1e645`, merged up to
+  `bf639556` with their follow-ups; each code lane independently
+  reviewed by Opus (MERGE; MC MERGE AFTER FIXES with a Medium, riders
+  suffocating in 2-high passages, fixed before the merge), the follow-ups
+  on the user's answers delta-reviewed or checked by the coordinator;
+  then this documentation lane D. Main has 161 portable fixtures (9 new).
+  Lanes' gates: every lane's full fixture run green, `check_fresh_server.py`
+  PASS, smoke boots PASS; on lane D's branch `tools/r37_dc`,
+  `check_upgrade.py` (0.45.1 against origin/main) PASS. **Round-end gates
+  (coordinator, on `r451-d` at `421c1b41`):** full fixtures 161/161 (lane
+  D's run, the same state), `check_upgrade.py` PASS (0.45.1 against
+  origin/main `d4a1e645`), `check_fresh_server.py` and the release-mode
+  audit PASS, smoke boot PASS; lane D's review MERGE AFTER FIXES, fixed. No world generation changed (no seed fleet).
+  The declaration only raises the version:
+  `{"schema": 2, "version": "0.45.1", "map_reset": ["0.40.1"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`;
+  a 0.45.0 world plays on, no migration step, no map reset; town NPCs
+  that sank into the floor are re-seated the next time their area loads.
+  - **Riding (MC):** a camera per mount (first and third person) tuned by
+    the user with the never-shipped `/mountcam` probe, sizes and seats,
+    eagles centred, a ride-only bat mesh without the body bob, a still
+    ground frame for flyers, Dismount in the quickbar, the first-mount
+    banner, boats only at the water surface.
+  - **Combat (CH, SC):** Charge runs down and up stairs to its target
+    without a camera dip; self and support skills cast on every click
+    (350 ms tap window), self skills also at allies and non-target
+    actors; the right-click food tap.
+  - **Crafting and windows (CU, KF, MZ):** group ingredient labels and
+    the owned icon, − and +, the search clear, the tab order with Map &
+    Quests before Help; the inventory key closes every window; the map
+    zoom's soft lock on the player.
+  - **Towns and music (NQ, TR, MU):** quest giver preselection, town NPCs
+    waiting for their floor and re-seated; the trainer window and the
+    picked greetings, "Grudge-Free Repairs" as the mender's title; the
+    "Now playing" box under the minimap.
+  - Next: the user's GUI test (desktop and web build) and the push on
+    the user's word; Round 46
+    ([BACKLOG](../BACKLOG.md#0451-carry-overs)).
 
 - **Round 45 "Crafting rework" complete; 0.45.0 pushed on the user's
   word after the round-end gates** (2026-10-09, version 0.45.0,
@@ -932,8 +976,8 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries Round 45 (0.45.0; see the top entry for
-  its push) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+- **Latest game:** main carries 0.45.1 (the fix round, not pushed yet)
+  on Round 45 (0.45.0, pushed, in production) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
   2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
   (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
@@ -1019,9 +1063,8 @@ Updated 2026-10-09. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main was `2f918739` at Round 45's
-  documentation (Round 44 and Round 45 up to EU, labelled 0.44.0, pushed
-  by the user on 2026-10-09); the top entry has the current push line.
+- **Remote observation:** origin/main is `d4a1e645` (0.45.0) at 0.45.1's
+  documentation; the top entry has the current push line.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md) (compatible, map

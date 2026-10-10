@@ -137,7 +137,7 @@ local SECTIONS = {
 		"",
 		heading("Riding, home and death"),
 		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mounts then wait in the quickbar: press E and click one to mount or dismount.",
-		"• The Shipwright beside the Riding Trainer sells a Boat at level 15 and an Improved Boat at level 30. Use the boat from the quickbar (E) while standing or swimming in water, and again to go ashore. Any hit throws you into the water.",
+		"• The Shipwright beside the Riding Trainer sells a Boat at level 15 and an Improved Boat at level 30. Use the boat from the quickbar (E) while standing or swimming in water at the surface, and again to go ashore. Any hit throws you into the water.",
 		"• In every capital the Crownbinder lifts one item with a Fallen Crown and a fee: its item level rises to its tier's top + 5 and its enchants one tier, once per item. The Decor Merchant there sells decorative blocks and lights.",
 		"• Set your home at an innkeeper in a start town or capital of your faction. The Character page and the quickbar (E) have Return home (every 30 minutes, not in combat).",
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
