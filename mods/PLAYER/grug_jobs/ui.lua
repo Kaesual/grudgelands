@@ -27,7 +27,22 @@
 -- timer, only while the player's current page is Crafting) and at a cancel
 -- (the Stop click). The search runs at most once per second: a search
 -- request within a second of the last one is ignored without a resend, like
--- Sort's cooldown (spec ruling 5).
+-- Sort's cooldown (spec ruling 5). "×" beside the field empties it and shows
+-- the whole list at once, outside that limit (0.45.1 fix plan row 6).
+--
+-- Focus (0.45.1 fix plan row 13): the client gives a new form's first text
+-- field the focus unless the form names one (guiFormSpecMenu.cpp
+-- setInitialFocus), and a focused text field takes the inventory key as a
+-- letter, so "i" did not close this tab. Every build sets the focus to the
+-- Search button with set_focus[...;true] (without true it never applies to
+-- the inventory form, whose name is always ""; parseSetFocus), so a field
+-- has the focus only after a click. A button lets "i" through to the form
+-- (Enter or Space press it: Search, which only searches). The one exception
+-- is the resend that answers Enter in a text field (the search, the
+-- quantity, the upgrade levels): it leaves the focus where the player types
+-- (the client keeps it across a resend of the same form); the close event
+-- after such a build resends the page once, so the next opening starts
+-- without a focused field again.
 
 local PAGE = "sfinv:crafting"
 local PER_PAGE = 10
@@ -49,9 +64,10 @@ grug_jobs.BAR_FRAMES = BAR_FRAMES
 local F = {
 	area = "grug_craft_area", row = "grug_craft_row",
 	prev = "grug_craft_prev", next = "grug_craft_next",
-	search = "grug_craft_search", find = "grug_craft_find",
+	search = "grug_craft_search", find = "grug_craft_find", clear = "grug_craft_clear",
 	only = "grug_craft_only", take = "grug_craft_take",
 	qty = "grug_craft_qty", max = "grug_craft_max",
+	minus = "grug_craft_minus", plus = "grug_craft_plus",
 	go = "grug_craft_go", stop = "grug_craft_stop", recheck = "grug_craft_recheck",
 	box = "grug_craft_box_",
 }
@@ -210,10 +226,15 @@ local function list_content(fs, player, st, tab, counts)
 	local rows = list_rows(player, st, tab, counts)
 	local pages = math.max(1, math.ceil(#rows / PER_PAGE))
 	st.page = math.max(1, math.min(pages, st.page))
-	fs[#fs + 1] = ("field[%s,%s;3.6,0.6;%s;;%s]field_close_on_enter[%s;false]"):format(
+	-- set_focus comes before the element it names (lua_api.md); see the
+	-- head comment for when a build leaves it out.
+	if not st.field_focus then
+		fs[#fs + 1] = ("set_focus[%s;true]"):format(F.find)
+	end
+	fs[#fs + 1] = ("field[%s,%s;3,0.6;%s;;%s]field_close_on_enter[%s;false]"):format(
 		n(LIST_X), n(SEARCH_Y), F.search, esc(st.typed), F.search)
-	fs[#fs + 1] = ("button[%s,%s;1.3,0.6;%s;Search]"):format(n(LIST_X + 3.7),
-		n(SEARCH_Y), F.find)
+	fs[#fs + 1] = ("button[%s,%s;0.5,0.6;%s;×]button[%s,%s;1.3,0.6;%s;Search]"):format(
+		n(LIST_X + 3.1), n(SEARCH_Y), F.clear, n(LIST_X + 3.7), n(SEARCH_Y), F.find)
 	fs[#fs + 1] = ("checkbox[%s,%s;%s;Craftable only;%s]"):format(n(LIST_X), n(CHECK_Y),
 		F.only, tostring(st.only))
 	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]"):format(n(LIST_X), n(ROW_Y), n(LIST_W),
@@ -371,6 +392,8 @@ function grug_jobs.crafting_page_content(player, context)
 	local counts = grug_jobs.ingredient_counts(player)
 	local tabs = area_tabs(player)
 	local tab = tabs[st.slot] or tabs[1]
+	-- Whether the page's last build left the focus to a text field.
+	st.field_focus, st.enter_focus = st.enter_focus, nil
 	local fs = {"real_coordinates[true]"}
 	-- Area tabs in the shared selection style: one style[] for the selected
 	-- tab, one naming all the others (style[] takes several names).
@@ -421,14 +444,32 @@ end
 grug_jobs._clean_field = clean
 
 local function receive_fields(player, context, fields)
-	if fields.quit then return end
 	local st = state_of(context)
+	if fields.quit then
+		-- The window closes on a build that left a field focused: resend it
+		-- with the focus on Search for the next opening (head comment).
+		if st.field_focus then
+			sfinv.set_player_inventory_formspec(player, context)
+		end
+		return
+	end
 	-- Every event carries the fields: keep their last known values.
 	if fields[F.search] then st.typed = clean(fields[F.search], SEARCH_CHARS) end
 	if fields[F.qty] then st.qty = clean(fields[F.qty], QUANTITY_CHARS) end
+	-- A resend that answers Enter in a field leaves the focus there.
+	st.enter_focus = fields.key_enter_field ~= nil or nil
+	if fields[F.clear] then
+		-- "×": the whole list at once, not subject to the search's limit.
+		st.note = nil
+		st.typed, st.search, st.page = "", "", 1
+		st.enter_focus = nil
+		sfinv.set_player_inventory_formspec(player, context)
+		return true
+	end
 	if fields[F.find] or fields.key_enter_field == F.search then
 		local now = core.get_us_time()
 		if st.searched_at and now - st.searched_at < SEARCH_INTERVAL_US then
+			st.enter_focus = nil
 			return true -- at most one search per second; no resend
 		end
 		st.searched_at = now
@@ -469,7 +510,10 @@ local function receive_fields(player, context, fields)
 	end
 	local box = boxes[st.box or "recipe"] or boxes.recipe
 	if box.fields(player, st, fields) then handled = true end
-	if not handled then return end
+	if not handled then
+		st.enter_focus = nil
+		return
+	end
 	sfinv.set_player_inventory_formspec(player, context)
 	return true
 end
