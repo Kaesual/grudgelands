@@ -1,11 +1,12 @@
 -- The quickbar (Round 44, ui-crafting-rework-plan.md ruling 9 and §3.5): the
 -- rising edge of aux1 (E; grug_keys) opens a small window on the left of the
--- screen with the character's purchased mounts and boats on top, the potion
--- belt below and the Return home button at the foot. A click uses the mount,
--- boat, potion or Return home and closes the window. The window is sent once
--- per opening and never refreshed. Its own mod because it reaches mounts,
--- home travel and the inventory's belt, and grug_mounts and grug_home already
--- depend on grug_inventory.
+-- screen with the character's purchased mounts and boats on top (and
+-- Dismount below them while riding), the potion belt below and the Return
+-- home button at the foot. A click uses the mount, boat, potion, Dismount or
+-- Return home and closes the window. The window is sent once per opening and
+-- never refreshed. Its own mod because it reaches mounts, home travel and the
+-- inventory's belt, and grug_mounts and grug_home already depend on
+-- grug_inventory.
 --
 -- Every action keeps the gates of its owner: grug_mounts.toggle (combat,
 -- the boat's water surface, the flight rules, dismount of the active tier),
@@ -77,6 +78,14 @@ function grug_quickbar.formspec(player)
 		local rows = math.floor((#tiers - 1) / COLUMNS) + 1
 		y = y + rows * SLOT + (rows - 1) * GAP
 	end
+	-- Dismount (0.45.1): only while riding, the same manual dismount as a
+	-- click on the framed mount.
+	if active then
+		y = y + GAP
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.8;grug_quickbar_dismount;Dismount]"):format(PAD, y,
+			WIDTH - PAD * 2)
+		y = y + 0.8
+	end
 	y = y + 0.45
 	fs[#fs + 1] = ("label[%.3f,%.2f;Potion belt]"):format(PAD, y)
 	y = y + 0.3
@@ -147,6 +156,11 @@ function grug_quickbar.handle_fields(player, fields)
 			acted = true
 			break
 		end
+	end
+	-- A no-op when the ride already ended (dismount answers false).
+	if not acted and fields.grug_quickbar_dismount then
+		grug_mounts.dismount(player, "manual", false)
+		acted = true
 	end
 	if not acted then
 		for index = 1, grug_inventory.POTION_BELT_SIZE do
