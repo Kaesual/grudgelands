@@ -621,10 +621,10 @@ local BANNED = {
 	"Bags page", "Quests page", "Skills page", "Talents page", "Party page", "PvP page",
 	"Inventory > ", "Open Party to",
 }
--- "Talents & Skills tab" and "Party & PvP tab" contain two of the banned
--- phrases; they are the new names.
+-- "Talents & Skills tab", "Party & PvP tab" and "Map & Quests tab" (0.45.1)
+-- contain banned phrases; they are the new names.
 local ALLOWED = {"Talents & Skills tab", "Talents & Skills page", "Party & PvP tab",
-	"Party & PvP page"}
+	"Party & PvP page", "Map & Quests tab", "Map & Quests page"}
 local function offending(text)
 	for _, allowed in ipairs(ALLOWED) do
 		text = text:gsub(allowed:gsub("%p", "%%%0"), "")
