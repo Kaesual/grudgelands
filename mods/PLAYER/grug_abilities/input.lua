@@ -5,7 +5,8 @@ return function(api)
 	local HAND_RANGE, HOLD_US, FOOD_US = 4, 200000, 1500000
 	-- A press at a node with a self or support skill selected is a tap (cast
 	-- on release) when the server sees its release within TAP_US of the
-	-- press, else a hold (dig). The press arrives at once (the native punch);
+	-- press, else a hold (dig); a food RMB press is a click or a hold (eat)
+	-- by the same window (food_hold). The press arrives at once (the native punch);
 	-- the release comes with the client's next control report (every
 	-- dedicated_server_step, 0.09 s, client.cpp:634, plus a client frame; a
 	-- release that stops a dig is sent at once) and is read at the next input
@@ -286,7 +287,7 @@ return function(api)
 		s.pending, s.dig, s.bow_native = nil, nil, nil
 		if not def and is_food(player:get_wielded_item():get_name()) then
 			-- Food owns the whole press, interactive target or not (user ruling
-			-- 2026-09-28): a release before HOLD_US is a click, performed on
+			-- 2026-09-28): a release seen before TAP_US is a click, performed on
 			-- release at the target the press's first native call reported; a
 			-- longer hold eats and the pointed interaction never fires.
 			s.right, s.food = "food", new_food_press(core.get_us_time())
@@ -300,7 +301,9 @@ return function(api)
 			s.right = "other"
 		end
 	end
-	-- Held food: "press" becomes "eating" (or "refused" in combat) at HOLD_US;
+	-- Held food: "press" becomes "eating" (or "refused" in combat) at TAP_US
+	-- (an RMB release always waits for the control report: no packet stops a
+	-- place, so the LMB tap's derivation holds; 0.45.1, it was HOLD_US);
 	-- one portion is due FOOD_US after the press (held time, see above).
 	local function food_hold(player, s)
 		local f, food = s.food, food_api()
@@ -309,7 +312,7 @@ return function(api)
 		f.held = f.held + math.min(now - f.observed, MAX_HELD_STEP_US)
 		f.observed = now
 		local elapsed = f.held
-		if f.stage == "press" and elapsed >= HOLD_US then
+		if f.stage == "press" and elapsed >= TAP_US then
 			f.stage = food.begin_hold(player) and "eating" or "refused"
 		end
 		if f.stage ~= "eating" then return end
@@ -370,11 +373,15 @@ return function(api)
 			local ref = grug_core.combat_actor(hit.ref)
 			-- A support skill acts on the ally a fresh press aims at, and while
 			-- held on that same ally only; an ally passing the crosshair of a
-			-- held press is never healed.
+			-- held press is never healed. An offensive self skill (Ice Nova)
+			-- hits around the caster, never the ally: it fires once, on the
+			-- fresh press (0.45.1).
 			if Q.valid_target(player, ref, "friendly") then
 				if fresh then s.ally = ref end
 				if support(def) and not def.offensive and s.ally == ref then
 					cast(player, def, s, hit, fresh, carried)
+				elseif fresh and def.offensive and def.target_kind == "self" then
+					cast(player, def, s, hit, true, carried)
 				end
 				return
 			end
@@ -409,14 +416,18 @@ return function(api)
 				end
 				return
 			end
-			-- An ally the PvP flag forbids: the cast refuses (and reports) at
-			-- no cost, never healing the caster instead (Round 31 ruling 9).
+			-- An ally the PvP flag forbids: a heal refuses (and reports) at no
+			-- cost, never healing the caster instead (Round 31 ruling 9); a self
+			-- skill, which needs no target, fires on the fresh press.
 			if Q.support_refused(player, ref) then
-				if fresh and def.target_kind == "friendly" then cast(player, def, s, hit, fresh, carried) end
+				if fresh and support(def) then cast(player, def, s, hit, true, carried) end
 				return
 			end
 			-- Actors block action on anything behind them, including drops after
 			-- this press's initial pickup attempt and non-healable service NPCs.
+			-- A self skill needs no target: a fresh press at such an actor (an
+			-- NPC, a trader, a protected player) fires it as at air (0.45.1).
+			if fresh and def.target_kind == "self" then cast(player, def, s, hit, true, carried) end
 			return
 		end
 		if s.mode ~= "combat" and hand_node(player, hit, distance) then
