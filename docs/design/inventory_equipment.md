@@ -732,7 +732,9 @@ a small window on the left of the screen, four inventory-sized slots wide
   riding tier and boat, four to a row, the model's icon, a tooltip with the
   model, tier and speed); the tier being ridden is framed green and its
   button dismounts. Without any: "No mounts or boats yet." The buttons call
-  the mount's own summon path with its gates (`mounts.md` §3).
+  the mount's own summon path with its gates (`mounts.md` §3). While riding,
+  a full-width **Dismount** button below them dismounts like a click on the
+  framed one (0.45.1).
 - **Potion belt:** the four belt slots; a filled one is an item button (the
   count in the item string; a list slot would pick the stack up), an empty
   one draws only the slot. A click uses the potion through its own `on_use`,

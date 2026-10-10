@@ -239,7 +239,9 @@ end
 -- Game stubs.
 ------------------------------------------------------------------------------
 grug_sounds = {play = function() return false end}
-player_api = {player_attached = {}, set_animation = function() end}
+-- get_animation: the ride's sit-pose guard (0.45.1) reads it each step.
+player_api = {player_attached = {}, set_animation = function() end,
+	get_animation = function() return {animation = "sit"} end}
 local combat, feed_lines, statuses = {}, {}, {}
 grug_core = {
 	FLIGHT_CEILING = 600,
@@ -658,14 +660,17 @@ has(grug_mounts.trainer_formspec(rows, nil), "label[0.4,5.45;Press E to open you
 	"the Riding Trainer's tip")
 has(grug_mounts.trainer_formspec(rows, nil, grug_mounts.SERVICES.shipwright),
 	"label[0.4,5.45;Press E to open your mounts.]", "the Shipwright's tip")
-local tip_count = 0
+-- One source per wording: the tip and (0.45.1) the first mount's banner.
+local tip_count, hint_count = 0, 0
 for _, path in ipairs({"catalog.lua", "state.lua", "items.lua", "trainer.lua", "shipwright.lua"}) do
 	local file = assert(io.open(ROOT .. "/mods/PLAYER/grug_mounts/" .. path))
 	local text = file:read("*a")
 	file:close()
-	for _ in text:gmatch("Press E") do tip_count = tip_count + 1 end
+	for _ in text:gmatch("Press E to open") do tip_count = tip_count + 1 end
+	for _ in text:gmatch("Press E to summon") do hint_count = hint_count + 1 end
 end
 eq(tip_count, 1, "one wording of the tip in grug_mounts")
+eq(hint_count, 1, "one wording of the first mount's banner in grug_mounts")
 
 ------------------------------------------------------------------------------
 -- G. Bytes (a comparison only).

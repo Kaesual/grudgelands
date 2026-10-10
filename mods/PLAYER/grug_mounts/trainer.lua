@@ -121,6 +121,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not session or formname ~= session.formname then return true end
 	if fields.quit or not permitted(player, session.entity) then
 		sessions[name] = nil
+		-- The first mount's summon hint waits for the dialogue to close: the
+		-- dialogue would cover the banner, and E works only without it.
+		if fields.quit and session.hint then
+			grug_core.banner(player, grug_mounts.SUMMON_HINT)
+		end
 		return true
 	end
 	local selected
@@ -133,7 +138,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if selected then
 		-- The result goes to the flash line, never to chat, and stays in the
 		-- reopened form (whose box may cover the flash line).
-		local ok, message = grug_mounts.purchase(player, selected)
+		local ok, message, hint = grug_mounts.purchase(player, selected)
+		if hint then session.hint = true end
 		grug_core.flash(player, message, ok and grug_core.FLASH_COLOR.notice or
 			grug_core.FLASH_COLOR.error)
 		core.show_formspec(name, formname, formspec(player, session.service,
