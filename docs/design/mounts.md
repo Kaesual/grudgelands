@@ -196,6 +196,10 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   sitting eye (0.8 above the water surface). Under a ceiling lower than the
   camera (the riding bodies stay 1.6 high) the view reaches into the ceiling
   node.
+- A flying mount plays its flight loop whenever it is in the air, hovering
+  included (0.45.1, the user's ruling: the eagles' perched pose held the head
+  up in the rider's view); only idle on the ground does it stand (the eagles
+  perch, the bats keep their slower wing loop).
 - Land mounts automatically step over slabs and nominal one-node rises while
   moving forward, without jump input. Their controller uses a **1.01-node**
   step height to clear the engine's strict collision comparison; taller
