@@ -75,17 +75,40 @@ end
 
 local function esc(text) return core.formspec_escape(tostring(text)) end
 
+-- The mender's greeting (0.45.1, fix plan row 12): a trainer provider whose
+-- profession no trainer teaches is the mender (grug_jobs.trainer_teaches);
+-- its form shows grug_jobs.GREETINGS.mender below the title, one label per
+-- wrapped line, and everything below moves down by the greeting's height.
+-- A teaching trainer's "Repair equipment" form and the other providers show
+-- none.
+local GREETING_CHARS = math.floor(10.2 * 6.6)
+local function mender_greeting(provider)
+	if provider.kind ~= "trainer" or grug_jobs.trainer_teaches(provider.profession) then
+		return nil
+	end
+	return grug_jobs.GREETINGS and grug_jobs.GREETINGS.mender
+end
+
 local function form(session)
 	local quote = session.quote
 	local pages = math.max(1, math.ceil(#quote.items / PAGE_SIZE))
 	session.page = math.max(1, math.min(pages, session.page))
-	local fs = {"formspec_version[4]size[11,9]",
-		"label[0.4,0.4;Equipment repairs]",
-		"label[0.4,0.9;All professions can repair your equipment for money.]"}
+	local fs = {"", "label[0.4,0.4;Equipment repairs]"}
+	local dy = 0
+	local greeting = mender_greeting(quote.provider)
+	if greeting then
+		for piece in (grug_inventory.wrap_text(greeting, GREETING_CHARS) .. "\n"):gmatch("(.-)\n") do
+			fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.9 + dy, esc(piece))
+			dy = dy + 0.42
+		end
+		dy = dy + 0.1
+	end
+	fs[#fs + 1] = ("label[0.4,%.2f;All professions can repair your equipment for money.]")
+		:format(0.9 + dy)
 	local first = (session.page - 1) * PAGE_SIZE + 1
 	for i = first, math.min(#quote.items, first + PAGE_SIZE - 1) do
 		local row = quote.items[i]
-		local stack, y = row.expected, 1.6 + (i - first) * 0.72
+		local stack, y = row.expected, 1.6 + dy + (i - first) * 0.72
 		local label = stack:get_description():match("^[^\n]+") or stack:get_name()
 		local percent = math.floor((65535 - stack:get_wear()) * 100 / 65535)
 		fs[#fs + 1] = ("item_image[0.4,%.2f;0.6,0.6;%s]"):format(y, esc(stack:get_name()))
@@ -93,12 +116,17 @@ local function form(session)
 		fs[#fs + 1] = ("button[7.8,%.2f;2.7,0.6;repair_%d;Repair %s]")
 			:format(y, i, esc(grug_money.format(row.price)))
 	end
-	if #quote.items == 0 then fs[#fs + 1] = "label[0.4,2;Nothing needs repair.]" end
-	fs[#fs + 1] = ("button[0.4,7.75;3.4,0.7;all;Repair all: %s]")
-		:format(esc(grug_money.format(quote.total)))
-	fs[#fs + 1] = "button[4,7.75;0.7,0.7;previous;<]button[6.5,7.75;0.7,0.7;next;>]"
-	fs[#fs + 1] = ("label[5,8.1;%d / %d]"):format(session.page, pages)
-	fs[#fs + 1] = "button_exit[8.5,7.75;2,0.7;close;Close]"
+	if #quote.items == 0 then
+		fs[#fs + 1] = ("label[0.4,%.2f;Nothing needs repair.]"):format(2 + dy)
+	end
+	local row_y = 7.75 + dy
+	fs[#fs + 1] = ("button[0.4,%.2f;3.4,0.7;all;Repair all: %s]")
+		:format(row_y, esc(grug_money.format(quote.total)))
+	fs[#fs + 1] = ("button[4,%.2f;0.7,0.7;previous;<]button[6.5,%.2f;0.7,0.7;next;>]")
+		:format(row_y, row_y)
+	fs[#fs + 1] = ("label[5,%.2f;%d / %d]"):format(row_y + 0.35, session.page, pages)
+	fs[#fs + 1] = ("button_exit[8.5,%.2f;2,0.7;close;Close]"):format(row_y)
+	fs[1] = ("formspec_version[4]size[11,%.2f]"):format(9 + dy)
 	return table.concat(fs)
 end
 

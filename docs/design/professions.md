@@ -44,7 +44,13 @@ personal stations, access, digging) is
     Riding Trainer in each capital's outer stable, in four steps at levels
     15/30/45/60 (`mounts.md` §1). It costs no main profession slot, is not a
     framework profession and is absent from all profession trainer interfaces.
-- **Learning is free** (right-click a trainer). Like every service NPC, a
+- **Learning is free** (right-click a trainer). The trainer window
+  (0.45.1) shows the trainer's greeting on top (one text per profession,
+  `grug_jobs.GREETINGS`, the same in every town; placeholder texts until the
+  user picks them), the status line and the notice below it, and every
+  button (Learn or Unlearn, or Confirm unlearn and Cancel; Repair equipment;
+  Close on the right) in one bottom row. No text field takes the first
+  focus, so the inventory key closes it. Like every service NPC, a
   trainer serves only its own faction (`grug_factions.serves`). The internal
   profession ids are `weaponsmith`, `armorsmith`, `tailor`, `leatherworker`,
   `woodcarver`, `goldsmith`, `cooking` and `alchemist` (Alchemy;
