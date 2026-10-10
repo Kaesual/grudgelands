@@ -306,7 +306,7 @@ local order = {}
 for _, def in ipairs(sfinv.pages_unordered) do order[#order + 1] = def.name end
 eq(table.concat(order, ","), "grug_inventory:inventory,grug_inventory:character," ..
 	"grug_classes:talents,sfinv:crafting,grug_parties:group," ..
-	"grug_inventory:help,grug_map:atlas,creative:all",
+	"grug_map:atlas,grug_inventory:help,creative:all", -- the map before Help since 0.45.1
 	"tab order follows TAB_ORDER, other pages after it")
 eq(sfinv.get_homepage_name(), "grug_inventory:inventory", "Inventory is the homepage")
 check(sfinv.pages["grug_inventory:bags"] == nil, "the Bags page is gone")
@@ -316,7 +316,7 @@ local context = sfinv.get_or_create_context(plain)
 eq(context.page, "grug_inventory:inventory", "a new context opens Inventory")
 local form = sfinv.get_formspec(plain, context)
 has(form, "tabheader[0,0;sfinv_nav_tabs;Inventory,Character,Talents & Skills,Crafting," ..
-	"Party & PvP,Help,Map;1;true;false]", "the tab captions in order, Inventory selected")
+	"Party & PvP,Map,Help;1;true;false]", "the tab captions in order, Inventory selected")
 
 -- No page mod keeps an ordering hook.
 for _, file in ipairs({"mods/PLAYER/grug_classes/talents_ui.lua",
