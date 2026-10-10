@@ -22,9 +22,11 @@
 -- above the maximum lowers the field to it and shows jobs.lua's note
 -- without starting; the last known value is echoed on every build. "−" and
 -- "+" (0.45.1 fix plan row 3) step the field by one: "−" only above 1, "+"
--- only below the maximum (max_craftable); a value that is not a whole
--- number of 1 or more counts as 1, as the build counts it for have/need, so
--- "−" turns it into 1 and "+" into 2 (when the maximum allows).
+-- only below the maximum (max_craftable); "−" from a value above the
+-- maximum goes straight to the maximum (at least 1; the user, 2026-10-10);
+-- a value that is not a whole number of 1 or more counts as 1, as the build
+-- counts it for have/need, so "−" turns it into 1 and "+" into 2 (when the
+-- maximum allows).
 --
 -- A button that cannot start ("Requires: Forge nearby", a missing tier) is
 -- drawn disabled. A formspec button has no disabled state: it is greyed and
@@ -274,7 +276,9 @@ local function build(player, view)
 	if st.fill_max then st.qty, st.fill_max = tostring(math.max(1, most)), nil end
 	if st.step then
 		local value = quantity_of(st.qty) or 1
-		if st.step < 0 and value > 1 then value = value - 1 end
+		if st.step < 0 and value > 1 then
+			value = value > most and math.max(1, most) or value - 1
+		end
 		if st.step > 0 and value < most then value = value + 1 end
 		st.qty, st.step = tostring(value), nil
 	end

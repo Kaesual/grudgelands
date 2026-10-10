@@ -231,7 +231,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Craft now above the maximum lowers the field to it with the job's note
     ("Not enough ingredients — quantity reduced to N") and starts nothing;
     the field echoes the last value the server knows on every resend.
-    **−** lowers it by one only above 1, **+** raises it by one only below
+    **−** lowers it by one only above 1 (from a value above the maximum
+    straight to the maximum, at least 1), **+** raises it by one only below
     the maximum (0.45.1); a value that is not a whole number of 1 or more
     counts as 1, so − makes it 1 and + makes it 2.
   - **Right, the output area:** the four take-only slots (shift-click moves
