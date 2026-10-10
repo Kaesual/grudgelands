@@ -204,12 +204,16 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   pose). On the ground means a walkable node right under the middle of the
   mount's box (within 0.1 node); 0.1 node higher it is in the air. The capital
   displays keep their perched idle.
-- Sizes, seats and the ridden ibex (0.45.1 playtest): the stag rides at 120 %
-  of the mob's size and the two bats at 130 %; the capital displays keep their
-  measured size (`display_size`). Every rider sits on the mount's back (the
+- Sizes, seats and the ridden ibex (0.45.1 playtest, then the user's tuned
+  values): the stag rides at 120 % of the mob's size, the grave wolf at 125 %
+  and the two bats at 130 %; the capital displays keep their measured size
+  (`display_size`). The ridden bats use a copy of the bat mesh whose body
+  holds still in the flight loop (the original bobs it 0.75 / 1.05 nodes under
+  the rider; `tools/r451_mc/gen_bat_ride_mesh.py`); the displays keep the
+  original (`display_mesh`). Every rider sits on the mount's back (the
   tiger's and the stag's seats moved onto it) and centred: the eagle mesh's
   body sits off its origin, so it is shifted under the rider. The boats'
-  hulls are smaller (rowboat 70 %, sailboat 80 %); the boat's physics box, its
+  hulls are smaller (rowboat 98 %, sailboat 80 %); the boat's physics box, its
   float height at the water surface and the camera are unchanged. The ridden
   ibex idles on the first frame of its walk instead of its idle clip (which
   raises the head and horns through the rider's view), and its camera looks

@@ -17,6 +17,7 @@ so it needs no animation (travel plan, lane B).
 | `grug_mounts_rowboat.b3d` | deasanta | Lord of the Test `f164140154945f0b356521ae721a86e9c7a0e0cf` (https://github.com/minetest-LOTR/Lord-of-the-Test), `mods/boats/models/rowboat.b3d` | WTFPL (`mods/boats/license.txt`, "Authors of media files"; the repository's top-level `LICENSE.txt` LGPL 2.1 covers its code) | Renamed only; byte-identical. Base boat hull; rendered with `default_wood.png` as upstream |
 | `grug_mounts_sailboat.b3d` | deasanta | same commit, `mods/boats/models/sailboat.b3d` | WTFPL (same file) | Renamed only; byte-identical. Improved boat hull |
 | `grug_mounts_sailboat.png` | deasanta | same commit, `mods/boats/textures/sailboat.png` | WTFPL (same file) | Renamed only; byte-identical |
+| `grug_mounts_bat_ride.b3d` | 22i; modified by Grudgelands | VoxeLibre `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`, `mods/ENTITIES/mobs_mc/models/mobs_mc_bat.b3d` (shipped unchanged as `grug_mobs_cave_bat.b3d`) | GPL-3.0-or-later (`mods/ENTITIES/mobs_mc/LICENSE-media.md`, Models); the modified copy under the same licence | 0.45.1: every position key of the `body` bone holds frame 1's position, so the body no longer bobs in the flight loop (wings, head, ears and legs unchanged); written by `tools/r451_mc/gen_bat_ride_mesh.py` (`--check` verifies it). Ridden bats only |
 | `grug_mounts_tiger.png` | Liil/Wilhelmine | animalworld `ac835da96681774679ace90656812aab67e25b5c`, `textures/texturetiger.png` | MIT (`LICENSE`: explicit textures/models/animation clause) | Renamed only; runtime warm-gold modifier |
 
 ## Original boat icons (Round 29)
@@ -61,7 +62,7 @@ auditable.
 | Wolf (Undead T2) | 1–92 | stand 1, movement 1–40 | animated; frame-zero source range clamped to first real key |
 | Tiger (Troll T2) | 1–300 | stand 1–100, movement 100–200 | animated; upstream stand and walk ranges |
 | Eagle / Steller's sea eagle (Accord T3/T4) | 1–350 | stand 1–100 (displays), flight 150–250, on the ground 200 (still) | animated; inside keyed range |
-| Cave bat / giant bat (Throng T3/T4) | 1–81 | stand/flight 1–40, on the ground 1 (still) | animated; inside keyed range |
+| Cave bat / giant bat (Throng T3/T4) | 1–81 | stand/flight 1–40 (displays: the original mesh), ridden: flight 1–40 and on the ground 1 (still) on `grug_mounts_bat_ride.b3d` | animated; inside keyed range; the ridden copy's body holds still |
 
 ## R10 inventory renders
 

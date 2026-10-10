@@ -24,7 +24,8 @@
 --      the bats grown with the displays kept, the tiger's and the stag's seat
 --      on the back, the eagles' mesh centred under the rider, the boats'
 --      hulls smaller with their physics kept, the ibex idling without the
---      head bob.
+--      head bob;
+--   I. the user's tuned values (follow-up 4) and the bats' still-body ride mesh.
 --
 --   luajit tools/r451_mc/portable_test.lua [REPO]
 -- Prints "R451 MC PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -306,12 +307,12 @@ for id, model in pairs(MODELS) do
 			eq(camera.first.z, 0, id .. ": a boat's first z")
 		else
 			-- A sitting rider's eye above the seat, a sitting eye height give or
-			-- take (the ibex's looks over its horns: 1.37).
-			check(camera.first.y >= seat + 0.6 and camera.first.y <= seat + 1.4,
+			-- take (the ibex's looks over its horns: 1.57, the user's value).
+			check(camera.first.y >= seat + 0.6 and camera.first.y <= seat + 1.6,
 				id .. ": first-person height a sitting eye above the seat (" ..
 				camera.first.y .. " vs seat " .. seat .. ")")
 			check(camera.first.z <= 0, id .. ": first person not ahead of the rider")
-			check(camera.third.y >= seat + 0.6, id .. ": third person looks over the rider")
+			check(camera.third.y >= seat + 0.5, id .. ": third person looks over the rider")
 		end
 	end
 end
@@ -576,9 +577,9 @@ local function size_of(id) return MODELS[id].visual_size.y end
 eq(size_of("elf"), 9.6, "the stag at 120 %")
 eq(size_of("expert_throng"), 3.9, "the cave bat at 130 %")
 eq(size_of("master_throng"), 5.46, "the blood bat at 130 %")
-eq(size_of("boat"), 0.7, "the rowboat's hull at 70 %")
+eq(size_of("boat"), 0.98, "the rowboat's hull at 98 % (the user's value)")
 eq(size_of("improved_boat"), 0.8, "the sailboat's hull at 80 %")
-for id, old in pairs({elf = 8, expert_throng = 3, master_throng = 4.2}) do
+for id, old in pairs({elf = 8, undead = 1.7, expert_throng = 3, master_throng = 4.2}) do
 	eq(MODELS[id].display_size and MODELS[id].display_size.y, old, id .. ": the display keeps its size")
 end
 do
@@ -591,7 +592,7 @@ end
 -- Seats measured on the backs (the back's top in the middle: tiger 1.52,
 -- stag at 120 % 1.32; the horse's 1.41 under its 1.26 seat).
 near(seat_of(MODELS.troll), 1.5225, "the tiger's seat on its back")
-check(math.abs(seat_of(MODELS.elf) - 1.32) <= 0.05, "the stag's seat on its back")
+near(seat_of(MODELS.elf), 1.32, "the stag's seat on its back (the user's value)")
 near(seat_of(MODELS.expert_throng), 2.496, "the cave bat's seat grows with it")
 near(seat_of(MODELS.master_throng), 3.7128, "the blood bat's seat grows with it")
 eq(MODELS.troll.camera.first.y, 2.4, "the tiger's camera (the user's value)")
@@ -603,7 +604,7 @@ for _, id in ipairs({"boat", "improved_boat"}) do
 	eq(table.concat(box, ","), "-0.45,-0.3,-0.45,0.45,0.7,0.45", id .. ": the physics box unchanged")
 	check(seat_of(MODELS[id]) < 0.1 and seat_of(MODELS[id]) > 0, id .. ": the rider sits in the smaller hull")
 end
-eq(MODELS.boat.attach_z, 3.5, "the rowboat's bench shift scales with the hull")
+eq(MODELS.boat.attach_z, 4.9, "the rowboat's bench shift (the user's value)")
 -- Centring: the eagles' mesh moves left under the rider; nothing else moves.
 for id, model in pairs(MODELS) do
 	local expected = ({expert_accord = -0.65, master_accord = -0.87})[id] or nil
@@ -635,6 +636,40 @@ do
 	eq(record.visual.anim.x .. "-" .. record.visual.anim.y, "200-200", "and idles still again")
 	eq(table.concat(MODELS.dwarf.animation.stand, ","), "1,100,30", "the displays keep the idle clip")
 	grug_mounts.dismount(dwarf, "manual", false)
+end
+
+------------------------------------------------------------------------------
+-- I. The user's tuned values (0.45.1 follow-up 4) and the ridden bats' mesh.
+------------------------------------------------------------------------------
+eq(MODELS.dwarf.camera.first.y, 2.8, "the ibex's camera (the user's value)")
+eq(MODELS.elf.attach_y, 1.375, "the stag's seat (the user's value)")
+eq(MODELS.orc.attach_y, 7.355, "the boar's seat (the user's value)")
+near(seat_of(MODELS.orc), 1.140025, "the boar's seat at 1.14 nodes")
+eq(size_of("undead"), 2.125, "the wolf at 125 % (the user's value)")
+eq(MODELS.undead.attach_y, 8.382, "the wolf's seat (the user's value)")
+eq(MODELS.undead.attach_z, 3.125, "the wolf's mesh shift (the user's value)")
+eq(MODELS.undead.camera.first.y, 2.5, "the wolf's camera (the user's value)")
+-- Tier 2 shares the selection box of its highest seat: now the wolf's.
+near(MODELS.human.selectionbox[5], seat_of(MODELS.undead) + 1.8,
+	"the tier-2 selection box covers the wolf's rider")
+for _, id in ipairs({"expert_throng", "master_throng"}) do
+	eq(MODELS[id].mesh, "grug_mounts_bat_ride.b3d", id .. ": ridden on the still-body copy")
+	eq(MODELS[id].display_mesh, "grug_mobs_cave_bat.b3d", id .. ": the display keeps the original")
+end
+for id, model in pairs(MODELS) do
+	if id ~= "expert_throng" and id ~= "master_throng" then
+		eq(model.display_mesh, nil, id .. ": no display mesh of its own")
+	end
+end
+do
+	local file = io.open(ROOT .. "/mods/PLAYER/grug_mounts/models/grug_mounts_bat_ride.b3d", "rb")
+	check(file ~= nil, "the bats' ride mesh ships (tools/r451_mc/gen_bat_ride_mesh.py --check)")
+	if file then file:close() end
+	file = assert(io.open(ROOT .. "/mods/ENTITIES/grug_mobs/capital_displays.lua"))
+	local text = file:read("*a")
+	file:close()
+	check(text:find("mesh=model.display_mesh or model.mesh", 1, true) ~= nil,
+		"the capital displays use the display mesh")
 end
 
 if failures > 0 then
