@@ -8,7 +8,8 @@
 -- waystones (Round 29). Settlements, points of interest, kings and dragons
 -- are baked into the minimap's own base image since Round 44 (base.lua,
 -- bake.lua). Under it a line names the player's location (Round 28 M1,
--- location.lua).
+-- location.lua), and while a capital's music plays a "Now playing" box under
+-- that line names the track (0.45.1; grug_ambience tells it which).
 --
 -- Glide (test variant for the playtest): the arrow stays in the centre and
 -- the map moves under it pixel by pixel. The map is ONE
@@ -79,6 +80,12 @@ local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, playe
 -- LOCATION_GAP HUD px below it, in its territory status's colour (Round 32,
 -- location.lua), else the feed's calm notice colour.
 local LOCATION_GAP, LOCATION_COLOR = 4, 0xf0e6c8
+-- The "Now playing" box (0.45.1, geometry in minimap_view.lua
+-- now_playing_box): the inventory window's background (default's
+-- gui_formbg.png, #343434) at 30 % alpha, the note icon (the user's pick,
+-- 24 px art), the text in the location line's calm colour.
+local PLAYING_BOX_COLOR = "#3434344d"
+local PLAYING_ICON = "grug_ambience_note.png"
 
 local base, view -- set by M.install
 local players = {}
@@ -235,7 +242,13 @@ local function create(player, state)
 	hud.location = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
 		alignment = {x = 0, y = 1}, text = "", number = LOCATION_COLOR,
 		z_index = Z.bezel}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
-	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location}
+	hud.playing_box = image(player, Z.bezel, true)
+	hud.playing_icon = image(player, Z.bezel + 1, true)
+	hud.playing_text = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
+		alignment = {x = 1, y = 1}, text = "", number = LOCATION_COLOR,
+		z_index = Z.bezel + 1}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
+	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location,
+		hud.playing_box, hud.playing_icon, hud.playing_text}
 	for _, list in ipairs({hud.markers, hud.party}) do
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
@@ -245,6 +258,8 @@ local function create(player, state)
 	state.mx, state.my, state.drawn_near, state.drawn_frame = nil, nil, nil, nil
 	state.party_shown, state.seen, state.members = nil, {}, {}
 	for i = 1, PARTY_SLOTS do state.seen[i] = {} end
+	-- the new elements are empty: the box is drawn on the first window check
+	state.playing_drawn, state.playing_frame = nil, nil
 end
 
 -- The markers that do not move by themselves (ruling 8): quest givers with
@@ -310,14 +325,41 @@ local function by_priority(a, b)
 end
 local function by_order(a, b) return a.order < b.order end
 
+-- The location line's top (real screen pixels).
+local function location_top(frame)
+	return frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud
+end
+
+-- The "Now playing" box for `state.playing` (a track row of grug_ambience's
+-- data: title and artist; nil hides it). Called only when the track or the
+-- frame changed; like show(), only what changed is sent.
+local function draw_playing(player, state)
+	local hud, frame, track = state.hud, state.frame, state.playing
+	state.playing_drawn, state.playing_frame = track, frame
+	if not track then
+		return show(player, frame, hud.playing_box, "") +
+			show(player, frame, hud.playing_icon, "") +
+			show_text(player, frame, hud.playing_text, "")
+	end
+	local box = V.now_playing_box(frame, location_top(frame), track.title, track.artist)
+	return show(player, frame, hud.playing_box,
+			("[fill:%dx%d:%s"):format(box.w, box.h, PLAYING_BOX_COLOR), box.x, box.y,
+			exact(box.w, box.w, frame)) +
+		show(player, frame, hud.playing_icon, PLAYING_ICON, box.icon_x, box.icon_y,
+			exact(box.icon, texture_size(PLAYING_ICON), frame)) +
+		show_text(player, frame, hud.playing_text, track.title .. "\n" .. track.artist,
+			LOCATION_COLOR, box.text_x, box.text_y)
+end
+
 -- What depends only on the window: the frame, the sea disc, the bezel and
--- the arrow's place and size. The location line is read here too.
+-- the arrow's place and size. The location line is read here too, and the
+-- "Now playing" box is placed again after a window change.
 local function update_window(player, state)
 	local hud, changes = state.hud, 0
 	local box = layout.minimap_box(core.get_player_window_information(player:get_player_name()))
 	local last = state.box
 	if not last or last.size ~= box.size or last.center_x ~= box.center_x or
-			last.center_y ~= box.center_y or last.hud ~= box.hud or
+			last.center_y ~= box.center_y or last.hud ~= box.hud or last.gui ~= box.gui or
 			last.width ~= box.width or last.height ~= box.height then
 		state.box, state.frame = box, V.frame(view, box)
 		forget_positions(hud)
@@ -346,8 +388,12 @@ local function update_window(player, state)
 	local location = grug_map.location
 	local text, color = "", nil
 	if location then text, color = location.text_of(player) end
-	return changes + show_text(player, frame, hud.location, text, color or LOCATION_COLOR,
-		frame.center_x, frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud)
+	changes = changes + show_text(player, frame, hud.location, text, color or LOCATION_COLOR,
+		frame.center_x, location_top(frame))
+	if state.playing_drawn ~= state.playing or state.playing_frame ~= frame then
+		changes = changes + draw_playing(player, state)
+	end
+	return changes
 end
 
 -- The map element and the markers inside the hole, for the map corner
@@ -498,6 +544,20 @@ end
 function M.refresh(player)
 	local state = players[player:get_player_name()]
 	if state and view then update(player, state, true) end
+end
+
+-- The "Now playing" box (0.45.1): grug_ambience tells the track that
+-- really plays (its data row with title and artist) or nil, only when that
+-- changes. With the minimap hidden or unavailable nothing is drawn; the
+-- track is kept, so switching the minimap on shows the box again.
+function M.set_now_playing(name, track)
+	local state = players[name]
+	if not state then return end
+	state.playing = track
+	local player = state.hud and state.frame and core.get_player_by_name(name)
+	if player then
+		M.stats.changes = M.stats.changes + draw_playing(player, state)
+	end
 end
 
 function M.set_enabled(player, enabled)

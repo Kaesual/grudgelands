@@ -307,7 +307,13 @@ broke the immersion).
   and high-energy for a town, the user's listening check of Round 35).
 - **The main-menu theme** is `menu/theme.ogg` (the client plays it in the main
   menu), the same piece as *Fantasy Orchestral Theme*.
-- Track list and lengths: `D.tracks`; credits in [CREDITS.md](../../CREDITS.md).
+- **Now playing** (0.45.1): while a track really plays, a small box under
+  the minimap's location line names its title and artist (`D.tracks`
+  `title` and `artist`, as `LICENSE-media.md` credits them); it is hidden in
+  the pause, on leaving, with music off or at volume 0 and with the minimap
+  hidden ([world_map.md](world_map.md) "Now playing").
+- Track list, lengths, titles and artists: `D.tracks`; credits in
+  [CREDITS.md](../../CREDITS.md).
 
 ## 6. Settings and commands
 

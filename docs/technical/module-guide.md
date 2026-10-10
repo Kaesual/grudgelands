@@ -1889,7 +1889,14 @@ tools](#player-meta-read-by-external-tools).
     drops far nodes itself. `grug_ambience.stats` holds comparison figures
     for the engine probes `tools/r34_s2/engine.sh` and `tools/r35_m/engine.sh`;
     fixtures `tools/r34_s2` (beds, calls, loops, files) and `tools/r35_m`
-    (capital music, either music or the bed, settings).
+    (capital music, either music or the bed, settings). The "Now playing"
+    box (0.45.1): `R.now_playing(m)` is the track in phase "play";
+    `sync_now_playing` compares it with `states[name].shown_track` after each
+    scheduler pass, a delivery and a music switch and calls
+    `grug_map.minimap.set_now_playing(name, D.tracks[id] or nil)` only on a
+    change; the minimap draws the box (`minimap_view.lua`
+    `now_playing_box`, three elements created and removed with the
+    minimap). Fixtures `tools/r451_mu` and `tools/r27_minimap` block P.
 
 ## UI and formspecs
 

@@ -493,6 +493,25 @@ were in, and quest texts and level routes now name zones.
   with the minimap (hidden when the minimap is switched off or unavailable)
   and moved with it when the window changes. Text and colour follow the
   samples within 0.5 s and are sent only when they change.
+- **Now playing** (0.45.1, the user's fix plan row 11): while a capital's
+  music track really plays ([sound.md](sound.md) §5), a small box under the
+  location line (4 HUD px below its line) shows a music-note icon on the
+  left and two left-aligned lines right of it, the title and the artist (the
+  name alone, no "by"), in the location line's calm colour and text size, on
+  the inventory window's background colour (#343434) at 30 % alpha. HUD text
+  cannot be measured, so the box is sized from the longer line's characters
+  at 0.6 em each (the font measures 0.40–0.59 em per character over the
+  shipped titles and artists); it is centred under the bezel and, when wider
+  than the bezel, ends at the bezel's right edge and grows to the left (about
+  280 px for "Fantasy Orchestral Theme" at 1080p). It is hidden in the pause
+  between tracks, while a pick waits for its download, on leaving the
+  capital (with the fade-out), with music off or at volume 0, and with the
+  minimap hidden or unavailable (switching the minimap on shows it again).
+  grug_ambience tells the minimap only when the playing track changes; the
+  minimap places the box again after a window or GUI scaling change and
+  sends only what changed. The note icon is the user's pick (a silver
+  beamed pair of notes, 24 px art drawn 36 GUI px high, as tall as the two
+  lines).
 - **Territory status** (Round 32, the user's ruling): from the player's
   position, never from the PvP flag (`grug_pvp.territory_at`, the rule the
   location flag follows, [pvp.md](pvp.md) §1), sampled with the location:
