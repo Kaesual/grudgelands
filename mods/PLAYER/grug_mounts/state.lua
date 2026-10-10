@@ -6,6 +6,8 @@ local META_KEY = {
 	flight = "grug_mounts:flight_tier",
 	water = "grug_mounts:water_tier",
 }
+-- Set once the first riding mount's summon hint was given (0.45.1).
+local SUMMON_HINT_KEY = "grug_mounts:summon_hint"
 local owned_changed = {}
 
 local function meta_key(mode)
@@ -70,8 +72,15 @@ function grug_mounts.purchase(player, tier_id)
 	if not grug_mounts.model_for(player, tier_id) then return false, "Choose a faction and race before buying a mount." end
 	local price = grug_mounts.PRICES[tier_id]
 	if not grug_money.take(player, price) then return false, "You do not have enough money." end
-	player:get_meta():set_int(meta_key(tier.mode), tier_id)
+	local meta = player:get_meta()
+	meta:set_int(meta_key(tier.mode), tier_id)
 	for _, func in ipairs(owned_changed) do func(player) end
+	-- The first riding mount (tier 1: the ladder starts there) earns the
+	-- one-time summon hint (0.45.1); the third result tells the dialogue to
+	-- show it as a banner when it closes. Once per character; one who owned a
+	-- mount before 0.45.1 gets none.
+	local hint = tier_id == 1 and meta:get_int(SUMMON_HINT_KEY) == 0
+	if hint then meta:set_int(SUMMON_HINT_KEY, 1) end
 	-- The dialogue's tip line (grug_mounts.QUICKBAR_TIP) says where to use it.
-	return true, tier.name .. (tier.mode == "water" and " bought." or " learned.")
+	return true, tier.name .. (tier.mode == "water" and " bought." or " learned."), hint
 end

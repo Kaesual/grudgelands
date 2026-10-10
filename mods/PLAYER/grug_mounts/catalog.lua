@@ -14,6 +14,9 @@ grug_mounts.PRICES = {105, 700, 12900, 73800, 105, 700}
 -- Trainer's and the Shipwright's dialogue show it below the purchase answer,
 -- and the retired items carry it.
 grug_mounts.QUICKBAR_TIP = "Press E to open your mounts."
+-- The one-time banner of the first riding mount (0.45.1; state.lua sets the
+-- flag, trainer.lua shows it when the dialogue closes).
+grug_mounts.SUMMON_HINT = "Press E to summon your mount"
 
 -- `item` is the tier's retired inventory item (items.lua; Round 44: mounts
 -- live in the quickbar, no item is handed out); `icon` is the tier's
