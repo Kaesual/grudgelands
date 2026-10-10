@@ -59,7 +59,8 @@ end
 -- missing from it (creative's tabs for creative players) follow in their
 -- registration order. grug_classes:talents is "Talents & Skills";
 -- "Party & PvP" is grug_parties's page; the quest log lives in the map
--- window (Round 44 MQ).
+-- window (Round 44 MQ), so the map's tab reads "Map & Quests" and comes
+-- before Help (0.45.1 fix plan row 10).
 --
 grug_inventory.TAB_ORDER = {
 	"grug_inventory:inventory",
@@ -67,8 +68,8 @@ grug_inventory.TAB_ORDER = {
 	"grug_classes:talents",
 	"sfinv:crafting",
 	"grug_parties:group",
-	"grug_inventory:help",
 	"grug_map:atlas",
+	"grug_inventory:help",
 }
 
 -- Puts sfinv's page list into TAB_ORDER; run once every page is registered.
