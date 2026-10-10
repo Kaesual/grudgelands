@@ -119,31 +119,48 @@ D.emitters = {
 -- The box searched around the player (half sizes).
 D.emitter_reach = {x = 12, y = 5, z = 12}
 
--- Music. Tracks: id -> file (in music/) and length in seconds (the shipped
--- file's; the scheduler has no other way to know when a track ends). Every
--- shipped track is listed, also one no rotation names: Master of the Feast
--- (too fast and high-energy for a town, the user's listening check of Round
--- 35), kept for a possible music tab (round35-plan.md §2.8).
+-- Music. Tracks: id -> file (in music/), length in seconds (the shipped
+-- file's; the scheduler has no other way to know when a track ends), and the
+-- title and artist the "Now playing" box under the minimap shows (0.45.1,
+-- grug_map minimap.lua), as LICENSE-media.md credits them. Every shipped
+-- track is listed, also one no rotation names: Master of the Feast (too fast
+-- and high-energy for a town, the user's listening check of Round 35), kept
+-- for a possible music tab (round35-plan.md §2.8).
 D.tracks = {
-	memories_of_stone = {file = "grug_music_memories_of_stone.ogg", seconds = 331}, -- R32 M1
-	achaidh_cheide = {file = "grug_music_achaidh_cheide.ogg", seconds = 135}, -- R32 M2
-	soliloquy = {file = "grug_music_soliloquy.ogg", seconds = 225}, -- R32 M4
+	memories_of_stone = {file = "grug_music_memories_of_stone.ogg", seconds = 331,
+		title = "Memories Of Stone", artist = "Scott Buckley"}, -- R32 M1
+	achaidh_cheide = {file = "grug_music_achaidh_cheide.ogg", seconds = 135,
+		title = "Achaidh Cheide", artist = "Kevin MacLeod"}, -- R32 M2
+	soliloquy = {file = "grug_music_soliloquy.ogg", seconds = 225,
+		title = "Soliloquy", artist = "Matthew Pablo"}, -- R32 M4
 	fantasy_orchestral_theme = {file = "grug_music_fantasy_orchestral_theme.ogg",
-		seconds = 192}, -- R32 M6
-	forest_walk = {file = "grug_music_forest_walk.ogg", seconds = 218}, -- R32 M3
-	town_theme = {file = "grug_music_town_theme.ogg", seconds = 98}, -- R34 D.1
-	thatched_villagers = {file = "grug_music_thatched_villagers.ogg", seconds = 246}, -- R34 D.2
-	minstrel_guild = {file = "grug_music_minstrel_guild.ogg", seconds = 186}, -- R34 D.3
-	master_of_the_feast = {file = "grug_music_master_of_the_feast.ogg", seconds = 229}, -- R34 D.4
-	folk_round = {file = "grug_music_folk_round.ogg", seconds = 184}, -- R34 D.5
-	teller_of_the_tales = {file = "grug_music_teller_of_the_tales.ogg", seconds = 213}, -- R34 D.6
-	village_consort = {file = "grug_music_village_consort.ogg", seconds = 215}, -- R34 D.7
-	a_dragons_lullaby = {file = "grug_music_a_dragons_lullaby.ogg", seconds = 169}, -- S2 M7
+		seconds = 192, title = "Fantasy Orchestral Theme", artist = "joth"}, -- R32 M6
+	forest_walk = {file = "grug_music_forest_walk.ogg", seconds = 218,
+		title = "Forest Walk", artist = "Alexander Nakarada"}, -- R32 M3
+	town_theme = {file = "grug_music_town_theme.ogg", seconds = 98,
+		title = "Town Theme RPG", artist = "cynicmusic"}, -- R34 D.1
+	thatched_villagers = {file = "grug_music_thatched_villagers.ogg", seconds = 246,
+		title = "Thatched Villagers", artist = "Kevin MacLeod"}, -- R34 D.2
+	minstrel_guild = {file = "grug_music_minstrel_guild.ogg", seconds = 186,
+		title = "Minstrel Guild", artist = "Kevin MacLeod"}, -- R34 D.3
+	master_of_the_feast = {file = "grug_music_master_of_the_feast.ogg", seconds = 229,
+		title = "Master of the Feast", artist = "Kevin MacLeod"}, -- R34 D.4
+	folk_round = {file = "grug_music_folk_round.ogg", seconds = 184,
+		title = "Folk Round", artist = "Kevin MacLeod"}, -- R34 D.5
+	teller_of_the_tales = {file = "grug_music_teller_of_the_tales.ogg", seconds = 213,
+		title = "Teller of the Tales", artist = "Kevin MacLeod"}, -- R34 D.6
+	village_consort = {file = "grug_music_village_consort.ogg", seconds = 215,
+		title = "Village Consort", artist = "Kevin MacLeod"}, -- R34 D.7
+	a_dragons_lullaby = {file = "grug_music_a_dragons_lullaby.ogg", seconds = 169,
+		title = "A Dragon's Lullaby", artist = "Scott Buckley"}, -- S2 M7
 	-- S2 M8: the first 2:00 (the calm part) with a fade-out.
-	the_great_sea = {file = "grug_music_the_great_sea.ogg", seconds = 120},
+	the_great_sea = {file = "grug_music_the_great_sea.ogg", seconds = 120,
+		title = "The Great Sea", artist = "Scott Buckley"},
 	-- S2 M10: the first 3:20 with a fade-out.
-	katabasis_i = {file = "grug_music_katabasis_i.ogg", seconds = 200},
-	permafrost = {file = "grug_music_permafrost.ogg", seconds = 449}, -- S2 M11
+	katabasis_i = {file = "grug_music_katabasis_i.ogg", seconds = 200,
+		title = "Katabasis I", artist = "Scott Buckley"},
+	permafrost = {file = "grug_music_permafrost.ogg", seconds = 449,
+		title = "Permafrost", artist = "Scott Buckley"}, -- S2 M11
 }
 
 -- One rotation per capital (settlement key -> track ids, played in this
