@@ -165,12 +165,15 @@ function M.handle(player, session, fields)
 	if fields.grug_quest_list then
 		local event = core.explode_textlist_event(fields.grug_quest_list)
 		local rows = session.quest_rows or {}
-		if event.type == "CHG" and rows[event.index] then
+		if (event.type == "CHG" or event.type == "DCL") and rows[event.index] then
 			if session.quest_selected ~= rows[event.index] then
 				session.quest_selected = rows[event.index]
 				session.quest_abandon, session.quest_notice = nil, nil
-				changed = true
 			end
+			-- A click on the selected row sends too: the clicked list holds
+			-- the focus and would eat the inventory key, the window's send
+			-- moves the focus away (window.lua, set_focus).
+			changed = true
 		end
 	end
 	local id = session.quest_selected

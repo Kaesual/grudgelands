@@ -107,15 +107,25 @@ The single full-world view replaces regional cutouts. Each opening of the
 map starts at 1x with origin scroll; no saved zoom/scroll preference. Zoom
 +/- offers 1x, 2x, 4x and 8x (8x added after the Round 26 playtest for
 precise navigation to NPCs; the base image is simply shown larger),
-preserving the current world center and clamping at edges. Native
+clamping at edges. The wanted centre of a zoom step follows a soft lock
+(0.45.1, the user's decision of 2026-10-10): at every opening and again at
+each return to 1x it is the player's own position, so every zoom step, in
+and out, centres the map on the player as well as the edges allow
+(recomputed each step, no drift); once the player moves a scrollbar at
+2x–8x (dragging, the wheel, a click on the bar, also scrolling exactly
+back; the engine reports only the player's own moves as `CHG`) it is the
+current centre of the view, for zooming in and out alike, until the next
+return to 1x. Native
 horizontal/vertical scrollbars reach the complete map at enlarged zooms. No
 drag-to-pan or animation. Never distort/crop the full overview: the map is
 9:8 at every window size. Renderer and marker projection use the same world
 bounds. Markers retain constant UI dimensions: only positions scale with
 zoom; clipping and scroll translate image and markers together. No
 clustered/offset markers. Native scrolling never sends the form; the
-server keeps the scroll values from every event and echoes them on the
-next send, so a send does not move the view. Arrows sit on a 0.02-unit
+server keeps the scroll values from every event (read at the zoom of the
+form they come from; ignored while the soft lock holds, when the server
+owns the view) and echoes them on the next send, so a send does not move
+the view. Arrows sit on a 0.02-unit
 grid. Until Round 44 the Map tab shared the inventory window's size and
 was rebuilt by a 2 s poll (Round 30, perf review #3; Round 32 R1); both
 ended with the [Map window](#map-window).
@@ -130,8 +140,15 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   default field of view a held Z changes nothing visibly) and the Map tab.
   The Map tab opens the window at once and puts the inventory back on its
   homepage on the next step, so the next "i" opens Inventory. Not during
-  character creation or while dead. Esc or the X button closes the window;
-  "Back to inventory" opens the inventory window at Inventory.
+  character creation or while dead. Esc, the inventory key ("i") or the X
+  button closes the window; "Back to inventory" opens the inventory window
+  at Inventory. A focused element that takes typed keys would swallow
+  "i" (the engine focuses the first text box, read-only ones included, and
+  a clicked list keeps the focus), so every send focuses the map's
+  horizontal scrollbar (`set_focus[…;true]`; it keeps only the arrow keys,
+  which scroll the map), and a click on the selected quest sends the
+  window too. A click into the quest text keeps the focus there until the
+  next send.
 - **Size:** 85 % of the client's `max_formspec_size`
   (`core.get_player_window_information`, read at every send) with
   `padding[0,0]` (`max_formspec_size` assumes no padding; the default 0.05
