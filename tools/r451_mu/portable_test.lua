@@ -61,6 +61,9 @@ do
 	for file, title, author in license:gmatch("| `music/([^`]+)` | ([^|]-) | ([^|;]-)[;|]") do
 		credited[file] = {title = title, artist = author:match("^(.-)%s*$")}
 	end
+	-- The one deliberate display title (the user, 0.45.1): shown shorter than
+	-- the source credits it; LICENSE-media.md keeps the source's title.
+	local DISPLAY = {town_theme = {credited = "Town Theme RPG", shown = "Town Theme"}}
 	local count = 0
 	for id, track in pairs(D.tracks) do
 		count = count + 1
@@ -68,7 +71,10 @@ do
 		check(type(track.title) == "string" and track.title ~= "" and
 			type(track.artist) == "string" and track.artist ~= "",
 			"D " .. id .. " has a title and an artist")
-		check(row and row.title == track.title and row.artist == track.artist,
+		local display = DISPLAY[id]
+		local title_ok = row and (display and row.title == display.credited and
+			track.title == display.shown or not display and row.title == track.title)
+		check(title_ok and row.artist == track.artist,
 			"D " .. id .. " as LICENSE-media.md credits it (" .. tostring(row and row.title) ..
 			" / " .. tostring(row and row.artist) .. ")")
 	end
@@ -138,7 +144,7 @@ do
 		minstrel_guild = {6.11, 6.89}, permafrost = {4.89, 6.06},
 		soliloquy = {4.06, 6.61}, teller_of_the_tales = {8.00, 6.89},
 		thatched_villagers = {8.28, 6.89}, the_great_sea = {6.56, 6.06},
-		town_theme = {8.28, 4.89}, village_consort = {6.78, 6.89},
+		town_theme = {5.84, 4.89}, village_consort = {6.78, 6.89},
 	}
 	local WINDOWS = {
 		{x = 1280, y = 720, hud = 1, gui = 1}, {x = 1920, y = 1080, hud = 1, gui = 1},
