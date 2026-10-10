@@ -19,7 +19,12 @@
 --      tier, a boat, or a character who owned a mount before;
 --   G. a flyer plays its flight loop in the air, hovering too; on the
 --      ground (summoned, landed, on a slab, idle or moving) it holds one still
---      level frame without the wing sound (0.45.1 follow-ups).
+--      level frame without the wing sound (0.45.1 follow-ups);
+--   H. the playtest's sizes, seats and centring (follow-up 3): the stag and
+--      the bats grown with the displays kept, the tiger's and the stag's seat
+--      on the back, the eagles' mesh centred under the rider, the boats'
+--      hulls smaller with their physics kept, the ibex idling without the
+--      head bob.
 --
 --   luajit tools/r451_mc/portable_test.lua [REPO]
 -- Prints "R451 MC PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -136,7 +141,7 @@ local function new_object(pos, name, staticdata)
 	function object:set_armor_groups() end
 	function object:set_properties(p) for k, v in pairs(p) do self.props[k] = v end end
 	function object:get_properties() return self.props end
-	function object:set_attach(parent) self.parent = parent end
+	function object:set_attach(parent, bone, position) self.parent, self.attach_pos = parent, copy(position) end
 	function object:get_attach() return self.parent end
 	function object:set_animation(range) self.anim = copy(range) end
 	if entity.on_activate then entity.on_activate(entity, staticdata, 0) end
@@ -300,8 +305,9 @@ for id, model in pairs(MODELS) do
 			eq(camera.third.y, 0.8, id .. ": a boat's third person as before")
 			eq(camera.first.z, 0, id .. ": a boat's first z")
 		else
-			-- A sitting rider's eye above the seat, a sitting eye height give or take.
-			check(camera.first.y >= seat + 0.6 and camera.first.y <= seat + 1.2,
+			-- A sitting rider's eye above the seat, a sitting eye height give or
+			-- take (the ibex's looks over its horns: 1.37).
+			check(camera.first.y >= seat + 0.6 and camera.first.y <= seat + 1.4,
 				id .. ": first-person height a sitting eye above the seat (" ..
 				camera.first.y .. " vs seat " .. seat .. ")")
 			check(camera.first.z <= 0, id .. ": first person not ahead of the rider")
@@ -561,6 +567,74 @@ for _, ride in ipairs({{"expert_accord", "accord", 3}, {"master_accord", "accord
 	at(1.1, "the slab gone: in the air", "move")
 	at(0.6, "landed again", "ground")
 	grug_mounts.dismount(flyer, "manual", false)
+end
+
+------------------------------------------------------------------------------
+-- H. Sizes, seats and centring (0.45.1 follow-up 3).
+------------------------------------------------------------------------------
+local function size_of(id) return MODELS[id].visual_size.y end
+eq(size_of("elf"), 9.6, "the stag at 120 %")
+eq(size_of("expert_throng"), 3.9, "the cave bat at 130 %")
+eq(size_of("master_throng"), 5.46, "the blood bat at 130 %")
+eq(size_of("boat"), 0.7, "the rowboat's hull at 70 %")
+eq(size_of("improved_boat"), 0.8, "the sailboat's hull at 80 %")
+for id, old in pairs({elf = 8, expert_throng = 3, master_throng = 4.2}) do
+	eq(MODELS[id].display_size and MODELS[id].display_size.y, old, id .. ": the display keeps its size")
+end
+do
+	local file = assert(io.open(ROOT .. "/mods/ENTITIES/grug_mobs/capital_displays.lua"))
+	local text = file:read("*a")
+	file:close()
+	check(text:find("visual_size=model.display_size or model.visual_size", 1, true) ~= nil,
+		"the capital displays use the display size")
+end
+-- Seats measured on the backs (the back's top in the middle: tiger 1.52,
+-- stag at 120 % 1.32; the horse's 1.41 under its 1.26 seat).
+near(seat_of(MODELS.troll), 1.5225, "the tiger's seat on its back")
+check(math.abs(seat_of(MODELS.elf) - 1.32) <= 0.05, "the stag's seat on its back")
+near(seat_of(MODELS.expert_throng), 2.496, "the cave bat's seat grows with it")
+near(seat_of(MODELS.master_throng), 3.7128, "the blood bat's seat grows with it")
+eq(MODELS.troll.camera.first.y, 2.4, "the tiger's camera (the user's value)")
+eq(MODELS.expert_accord.camera.first.y, 2.8, "the eagle's camera (the user's value)")
+eq(MODELS.master_accord.camera.first.y, 3.6, "the sea eagle's camera (the user's value)")
+-- The boats: physics, water surface and seat in the hull.
+for _, id in ipairs({"boat", "improved_boat"}) do
+	local box = MODELS[id].collisionbox
+	eq(table.concat(box, ","), "-0.45,-0.3,-0.45,0.45,0.7,0.45", id .. ": the physics box unchanged")
+	check(seat_of(MODELS[id]) < 0.1 and seat_of(MODELS[id]) > 0, id .. ": the rider sits in the smaller hull")
+end
+eq(MODELS.boat.attach_z, 3.5, "the rowboat's bench shift scales with the hull")
+-- Centring: the eagles' mesh moves left under the rider; nothing else moves.
+for id, model in pairs(MODELS) do
+	local expected = ({expert_accord = -0.65, master_accord = -0.87})[id] or nil
+	eq(model.attach_x, expected, id .. ": the sideways shift")
+end
+for _, ride in ipairs({{"expert_accord", "accord", 3, -0.65}, {"master_accord", "accord", 4, -0.87},
+		{"troll", "throng", 2, 0}}) do
+	local rider = make_player("centred_" .. ride[1], ride[2], ride[1] == "troll" and "troll" or "human")
+	grug_mounts.spawn_entity(rider, ride[3], {x = 0, y = 0.5, z = 0})
+	local record = grug_mounts.active[rider:get_player_name()]
+	near(record.visual.attach_pos.x, ride[4], ride[1] .. ": the visual's sideways attach")
+	near(record.visual.attach_pos.y, -seat_of(MODELS[ride[1]]) * 10, ride[1] .. ": the visual under the seat")
+	grug_mounts.dismount(rider, "manual", false)
+end
+-- The ridden ibex idles on the walk's first frame (no head bob); its walk
+-- and every display keep the shared clips.
+do
+	local dwarf = make_player("ibex_rider", "accord", "dwarf")
+	grug_mounts.spawn_entity(dwarf, 2, {x = 0, y = 0.5, z = 0})
+	local record = grug_mounts.active.ibex_rider
+	eq(record.visual.anim and record.visual.anim.x .. "-" .. record.visual.anim.y, "200-200",
+		"the ridden ibex idles on one still frame")
+	local controls = {up = true}
+	function dwarf:get_player_control() return controls end
+	step_mount(dwarf)
+	eq(record.visual.anim.x .. "-" .. record.visual.anim.y, "200-300", "the ridden ibex walks its clip")
+	controls = {}
+	step_mount(dwarf)
+	eq(record.visual.anim.x .. "-" .. record.visual.anim.y, "200-200", "and idles still again")
+	eq(table.concat(MODELS.dwarf.animation.stand, ","), "1,100,30", "the displays keep the idle clip")
+	grug_mounts.dismount(dwarf, "manual", false)
 end
 
 if failures > 0 then

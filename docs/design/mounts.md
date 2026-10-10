@@ -204,6 +204,16 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   pose). On the ground means a walkable node right under the middle of the
   mount's box (within 0.1 node); 0.1 node higher it is in the air. The capital
   displays keep their perched idle.
+- Sizes, seats and the ridden ibex (0.45.1 playtest): the stag rides at 120 %
+  of the mob's size and the two bats at 130 %; the capital displays keep their
+  measured size (`display_size`). Every rider sits on the mount's back (the
+  tiger's and the stag's seats moved onto it) and centred: the eagle mesh's
+  body sits off its origin, so it is shifted under the rider. The boats'
+  hulls are smaller (rowboat 70 %, sailboat 80 %); the boat's physics box, its
+  float height at the water surface and the camera are unchanged. The ridden
+  ibex idles on the first frame of its walk instead of its idle clip (which
+  raises the head and horns through the rider's view), and its camera looks
+  over the horns, which arch back over the seat in the walk.
 - Land mounts automatically step over slabs and nominal one-node rises while
   moving forward, without jump input. Their controller uses a **1.01-node**
   step height to clear the engine's strict collision comparison; taller

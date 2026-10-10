@@ -55,13 +55,13 @@ auditable.
 | Mount family | Mesh keyed range | Frames used while mounted | Result |
 |---|---:|---|---|
 | Horse (both T1, Human T2) | 1–41 | stand 1, movement 1–40 | animated; frame-zero source range clamped to first real key |
-| Ibex (Dwarf T2) | 1–400 | stand 1–100, movement 200–300 | animated; upstream stand and walk ranges |
+| Ibex (Dwarf T2) | 1–400 | stand 1–100 (displays), idle while ridden 200 (still), movement 200–300 | animated; upstream stand and walk ranges |
 | Stag (Elf T2) | 1–150 | stand 1–59, movement 100–119 | animated; inside keyed range |
 | Boar (Orc T2) | 1–82 | stand 1, movement 1–40 | animated; frame-zero source range clamped to first real key |
 | Wolf (Undead T2) | 1–92 | stand 1, movement 1–40 | animated; frame-zero source range clamped to first real key |
 | Tiger (Troll T2) | 1–300 | stand 1–100, movement 100–200 | animated; upstream stand and walk ranges |
-| Eagle / Steller's sea eagle (Accord T3/T4) | 1–350 | stand 1–100, flight 150–250 | animated; inside keyed range |
-| Cave bat / giant bat (Throng T3/T4) | 1–81 | stand/flight 1–40 | animated; inside keyed range |
+| Eagle / Steller's sea eagle (Accord T3/T4) | 1–350 | stand 1–100 (displays), flight 150–250, on the ground 200 (still) | animated; inside keyed range |
+| Cave bat / giant bat (Throng T3/T4) | 1–81 | stand/flight 1–40, on the ground 1 (still) | animated; inside keyed range |
 
 ## R10 inventory renders
 

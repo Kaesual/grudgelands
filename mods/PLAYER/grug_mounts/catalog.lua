@@ -91,7 +91,13 @@ end
 -- The tier-2 race mounts and the tier-3/4 flyers get their shared boxes
 -- below (TIER_BODIES). `display_box` is a model's own size, for the riderless
 -- capital displays and their name tags only (grug_mobs/capital_displays.lua);
--- it never touches a ridden mount.
+-- it never touches a ridden mount. `display_size` (0.45.1) keeps a display at
+-- its measured size where the ridden model grew (the displays' foot heights
+-- and stable layout are measured for it). The seat: `attach_y` (times
+-- visual_size.y, tenths of a node) is its height over the mount's feet;
+-- `attach_x` and `attach_z` (tenths of a node) shift the visible mesh under
+-- the rider (and the camera, which stays with the rider) sideways and forward.
+-- `ride_<clip>` replaces a clip while ridden only.
 grug_mounts.MODELS = {
 	t1_accord = horse("t1_accord", "Accord Courser",
 		"grug_mounts_horse_white.png^[multiply:#91b5ee"),
@@ -107,18 +113,25 @@ grug_mounts.MODELS = {
 		visual_size = {x = 1.45, y = 1.45},
 		display_box = {-0.58, -0.01, -0.58, 0.58, 1.45, 0.58},
 		attach_y = 8.5,
-		camera = {first = {y = 2.1, z = -0.3}, third = {y = 2.15, z = 0}},
-		animation = {stand = {1, 100, 30}, move = {200, 300, 80}},
+		-- The horns arch back over the seat up to 2.4 nodes (the head's rest
+		-- pose, held through the whole walk clip); the camera looks over them.
+		-- The idle clip also raises the head through the view every few
+		-- seconds, so the ridden ibex idles on the walk's first frame instead
+		-- (0.45.1 playtest; the mesh has no lower head pose but grazing).
+		camera = {first = {y = 2.6, z = -0.3}, third = {y = 2.15, z = 0}},
+		animation = {stand = {1, 100, 30}, move = {200, 300, 80}, ride_stand = {200, 200, 1}},
 	},
 	elf = {
 		id = "elf", description = "Silverleaf Stag",
 		mesh = "grug_mobs_stag.b3d", textures = {"grug_mobs_stag.png"},
 		icon = "grug_mounts_icon_elf.png",
-		visual_size = {x = 8, y = 8},
+		-- 120 % of the mob's size (0.45.1 playtest: too small; the mob is 80 %
+		-- of upstream's to fit its box), the seat on its back (1.34 nodes, the
+		-- back's top 1.32).
+		visual_size = {x = 9.6, y = 9.6}, display_size = {x = 8, y = 8},
 		display_box = {-0.55, -0.01, -0.55, 0.55, 1.8, 0.55},
-		-- Attachment offsets inherit parent scale: 1.9 * 8 / 10 = 1.52 nodes.
-		attach_y = 1.9,
-		camera = {first = {y = 2.25, z = -0.1}, third = {y = 2.4, z = 0}},
+		attach_y = 1.4,
+		camera = {first = {y = 2.35, z = -0.1}, third = {y = 2.25, z = 0}},
 		animation = {stand = {1, 59, 10}, move = {100, 119, 40}},
 	},
 	orc = {
@@ -150,8 +163,9 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_troll.png",
 		visual_size = {x = 1.45, y = 1.45},
 		display_box = {-0.68, -0.01, -0.68, 0.68, 1.38, 0.68},
-		attach_y = 8.2,
-		camera = {first = {y = 2.15, z = -0.2}, third = {y = 2.1, z = 0}},
+		-- The seat on its back (1.52 nodes, the back's top; 0.45.1 playtest).
+		attach_y = 10.5,
+		camera = {first = {y = 2.4, z = -0.2}, third = {y = 2.4, z = 0}},
 		animation = {stand = {1, 100, 30}, move = {100, 200, 100}},
 	},
 	expert_accord = {
@@ -161,8 +175,10 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_expert_accord.png",
 		visual_size = {x = 3, y = 3},
 		display_box = {-0.9, -0.1, -0.9, 0.9, 1.5, 0.9},
-		attach_y = 6.2,
-		camera = {first = {y = 2.65, z = -0.2}, third = {y = 2.75, z = 0}},
+		-- The eagle mesh's body sits 0.22 mesh units right of its origin: the
+		-- mesh moves left under the rider (0.45.1 playtest).
+		attach_y = 6.2, attach_x = -0.65,
+		camera = {first = {y = 2.8, z = -0.2}, third = {y = 2.75, z = 0}},
 		animation = {stand = {1, 100, 60}, move = {150, 250, 100}, ground = {200, 200, 1}},
 	},
 	master_accord = {
@@ -172,8 +188,8 @@ grug_mounts.MODELS = {
 		icon = "grug_mounts_icon_master_accord.png",
 		visual_size = {x = 4, y = 4},
 		display_box = {-1.15, -0.1, -1.15, 1.15, 1.9, 1.15},
-		attach_y = 6.4,
-		camera = {first = {y = 3.4, z = -0.2}, third = {y = 3.5, z = 0}},
+		attach_y = 6.4, attach_x = -0.87,
+		camera = {first = {y = 3.6, z = -0.2}, third = {y = 3.5, z = 0}},
 		animation = {stand = {1, 100, 70}, move = {150, 250, 110}, ground = {200, 200, 1}},
 	},
 	expert_throng = {
@@ -181,10 +197,11 @@ grug_mounts.MODELS = {
 		mesh = "grug_mobs_cave_bat.b3d",
 		textures = {"grug_mobs_cave_bat.png^[multiply:#856f8e"},
 		icon = "grug_mounts_icon_expert_throng.png",
-		visual_size = {x = 3, y = 3},
+		-- 130 % (0.45.1 playtest: too small); the seat grows with it.
+		visual_size = {x = 3.9, y = 3.9}, display_size = {x = 3, y = 3},
 		display_box = {-0.85, -0.1, -0.85, 0.85, 1.55, 0.85},
 		attach_y = 6.4,
-		camera = {first = {y = 2.6, z = -0.3}, third = {y = 2.8, z = 0}},
+		camera = {first = {y = 3.2, z = -0.4}, third = {y = 3.4, z = 0}},
 		animation = {stand = {1, 40, 70}, move = {1, 40, 100}, ground = {1, 1, 1}},
 	},
 	-- Rigid hulls (Lord of the Test, LICENSE-media.md): no animation table.
@@ -196,17 +213,20 @@ grug_mounts.MODELS = {
 		id = "boat", description = "Rowboat",
 		mesh = "grug_mounts_rowboat.b3d", textures = {"default_wood.png"},
 		icon = "grug_mounts_icon_boat.png",
-		visual_size = {x = 1, y = 1},
+		-- The hull at 70 % (0.45.1 playtest: too big in first person); the
+		-- controller's box, its water surface and the camera stay as they are.
+		visual_size = {x = 0.7, y = 0.7},
 		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
 		-- The rower sits behind the middle bench: the hull is shifted forward.
-		attach_y = 1, attach_z = 5,
+		attach_y = 1, attach_z = 3.5,
 		camera = {first = {y = 0.8, z = 0}, third = {y = 0.8, z = 0}},
 	},
 	improved_boat = {
 		id = "improved_boat", description = "Sailboat",
 		mesh = "grug_mounts_sailboat.b3d", textures = {"grug_mounts_sailboat.png"},
 		icon = "grug_mounts_icon_improved_boat.png",
-		visual_size = {x = 1, y = 1},
+		-- The hull at 80 % (0.45.1 playtest), the rest as the rowboat.
+		visual_size = {x = 0.8, y = 0.8},
 		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
 		attach_y = 1, attach_z = 0,
 		camera = {first = {y = 0.8, z = 0}, third = {y = 0.8, z = 0}},
@@ -216,10 +236,10 @@ grug_mounts.MODELS = {
 		mesh = "grug_mobs_cave_bat.b3d",
 		textures = {"grug_mobs_cave_bat.png^[multiply:#7d3549"},
 		icon = "grug_mounts_icon_master_throng.png",
-		visual_size = {x = 4.2, y = 4.2},
+		visual_size = {x = 5.46, y = 5.46}, display_size = {x = 4.2, y = 4.2},
 		display_box = {-1.15, -0.1, -1.15, 1.15, 2.05, 1.15},
 		attach_y = 6.8,
-		camera = {first = {y = 3.5, z = -0.4}, third = {y = 3.75, z = 0}},
+		camera = {first = {y = 4.35, z = -0.5}, third = {y = 4.6, z = 0}},
 		animation = {stand = {1, 40, 75}, move = {1, 40, 110}, ground = {1, 1, 1}},
 	},
 }
