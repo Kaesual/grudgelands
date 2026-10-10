@@ -24,6 +24,11 @@
 --      still casts; one at 0.3 s (the hand's dig_immediate time) is
 --      accepted once, its original on_dig runs once and the release casts
 --      nothing; a refused one past 0.2 s (protected ground) is a hold too;
+--   X  a self skill pressed at an actor that is no target of its own (an
+--      ally for Ice Nova, an NPC, a forbidden ally) fires once on the
+--      fresh press; heals and hostile skills there act as before;
+--   F  the food RMB press: a release seen within 0.35 s is the click, a
+--      longer hold starts eating and eats one serving at 1.5 s;
 --   T  the targeted (hostile) skills share no tap: at a node they dig at
 --      once and a quick release casts nothing; at a mob they act at the
 --      press; a self skill at air casts at the press, as before.
@@ -106,6 +111,21 @@ local mob = {get_luaentity = function() return {name = "test:mob"} end,
 	get_pos = function() return vector.new(0, 1, 2) end, is_player = function() return false end}
 local ally = {get_luaentity = function() return nil end,
 	get_pos = function() return vector.new(0, 1, 2) end, is_player = function() return true end}
+-- An NPC (no target for anyone) and an ally the PvP flag forbids supporting.
+local npc = {get_luaentity = function() return {name = "test:npc"} end,
+	get_pos = function() return vector.new(0, 1, 2) end, is_player = function() return false end}
+local refused = {get_luaentity = function() return nil end,
+	get_pos = function() return vector.new(0, 1, 2) end, is_player = function() return true end}
+-- grug_food, as input.lua reaches it (rawget): what the food press did.
+local food_log = {}
+grug_food = {
+	is_food = function(name) return name == "test:bread" end,
+	begin_hold = function() food_log[#food_log + 1] = "begin"; return true end,
+	step_hold = function() end,
+	consume_held = function() food_log[#food_log + 1] = "eat" end,
+	end_hold = function() end,
+	click = function(_, target) food_log[#food_log + 1] = "click:" .. target.type end,
+}
 
 local function node_def(groups)
 	return {walkable = true, groups = groups,
@@ -167,7 +187,7 @@ grug_abilities = {
 		return (ref == mob and kind == "hostile") or (ref == ally and kind == "friendly")
 	end,
 	evading_target = function() return false end,
-	support_refused = function() return false end,
+	support_refused = function(_, ref) return ref == refused end,
 	flash = function(_, msg) flashes[#flashes + 1] = msg end,
 	cancel_bow_draw = function() end,
 	try_cast = function(_, def)
@@ -197,7 +217,8 @@ local player = {
 	get_wield_list = function() return "main" end,
 	get_wield_index = function() return 1 end,
 	get_wielded_item = function()
-		return {get_name = function() return "grug_abilities:" .. wielded end}
+		local name = wielded:find(":", 1, true) and wielded or "grug_abilities:" .. wielded
+		return {get_name = function() return name end}
 	end,
 	set_wielded_item = function() return true end,
 	get_hp = function() return 20 end,
@@ -368,6 +389,80 @@ do
 	release_seen(250)
 	check(list(casts) == "blink" and #dug == 0, "N4 a tap on protected ground casts")
 	protected = nil
+end
+
+------------------------------------------------------------------------------
+-- X: a self skill at an actor that is no target of its own (0.45.1, the
+-- user's answers): it fires once on the fresh press; heals unchanged.
+------------------------------------------------------------------------------
+local function fresh_at(id, ref)
+	select(id)
+	aim(at(ref), NODE)
+	press()
+	local at_press = list(casts)
+	held_until(800)
+	local held = list(casts)
+	release_seen(800)
+	return at_press, held, list(casts)
+end
+do
+	local p, h, r = fresh_at("ice_nova", ally)
+	case("X1", "Ice Nova at an ally: press=" .. p .. " held=" .. h .. " released=" .. r)
+	check(p == "ice_nova" and r == "ice_nova", "X1 Ice Nova at an ally fires once on the fresh press")
+	p, h, r = fresh_at("blink", ally)
+	check(p == "blink" and r == "blink", "X1 Blink at an ally fires once, as before")
+	p, h, r = fresh_at("heal", ally)
+	check(p == "heal", "X1 Heal at an ally heals it, as before")
+	for _, id in ipairs(support_ids) do
+		p, h, r = fresh_at(id, npc)
+		case("X2", id .. " at an NPC: press=" .. p .. " released=" .. r)
+		if defs[id].target_kind == "self" then
+			check(p == id and r == id, "X2 " .. id .. " at an NPC fires once on the fresh press")
+		else
+			check(r == "-", "X2 " .. id .. " at an NPC does nothing, as before")
+		end
+		p, h, r = fresh_at(id, refused)
+		check(p == id and r == id, "X3 " .. id .. " at a forbidden ally: one attempt on the fresh press " ..
+			"(a heal refuses inside try_cast)")
+	end
+	p, h, r = fresh_at("fireball", npc)
+	check(r == "-" and #swings == 0, "X4 a hostile skill at an NPC does nothing, as before")
+end
+
+------------------------------------------------------------------------------
+-- F: the food RMB click or hold, the same window (0.45.1).
+------------------------------------------------------------------------------
+local function food_press(ms)
+	wielded = "test:bread"
+	controls.dig, controls.place = false, false
+	clock = clock + 5000000
+	pass()
+	food_log = {}
+	aim(NODE)
+	controls.place = true
+	pressed_at = clock
+	input.food_native(player, {type = "node", under = NODE.under, above = NODE.above})
+	held_until(ms)
+	clock = pressed_at + ms * 1000
+	controls.place = false
+	pass()
+	return list(food_log)
+end
+do
+	local seen = {}
+	for _, ms in ipairs({120, 250, 330, 400, 1700}) do
+		local log = food_press(ms)
+		seen[#seen + 1] = ms .. "ms:" .. log
+		if ms < 350 then
+			check(log == "click:node", "F food released, seen after " .. ms .. " ms: the click (" .. log .. ")")
+		elseif ms < 1500 then
+			check(log == "begin", "F food released, seen after " .. ms .. " ms: a hold, no click, no eating (" ..
+				log .. ")")
+		else
+			check(log == "begin,eat", "F food held 1.7 s: eats one serving (" .. log .. ")")
+		end
+	end
+	case("F", "food RMB by release delay: " .. table.concat(seen, " "))
 end
 
 ------------------------------------------------------------------------------

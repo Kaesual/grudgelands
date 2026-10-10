@@ -585,8 +585,10 @@ tools](#player-meta-read-by-external-tools).
   server-seen release; derivation at the constant) and ignores where the
   crosshair moves meanwhile; `can_dig` still refuses a completion only
   before `HOLD_US` (0.2 s), and the `on_dig` wrapper clears `s.pending`
-  when it accepts one, so a completed dig makes the press a hold. Fixture
-  `tools/r451_sc`.
+  when it accepts one, so a completed dig makes the press a hold. The food
+  RMB click/hold (`food_hold`) uses the same `TAP_US`, and a self skill
+  fires on the fresh press at any actor that is no target of its own (an
+  ally for Ice Nova, an NPC, a forbidden ally). Fixture `tools/r451_sc`.
   It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.

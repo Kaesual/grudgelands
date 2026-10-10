@@ -197,7 +197,8 @@ differs:
   diggable, the client's cracks; a short tap there still casts a selected
   self/support skill (Blink in a town, the same tap window as below), a
   hold only earns the hint. A self or support skill fires once per fresh
-  press at its target (air or a hostile for a self skill, an ally for a
+  press at its target (for a self skill air or any actor: a hostile, an
+  ally, an NPC, a trader, a protected player, since 0.45.1; an ally for a
   heal) and never from a hold on its own. The only repeat while held: a
   support cast a fresh press began on an ally repeats on that same ally,
   never on another one that walks into the crosshair, and never after that
@@ -290,7 +291,13 @@ intervening objects (dropped items excepted) matter.
   hold strikes.
 - **Friendly player:** use an applicable heal/support action on the eligible
   ally a fresh press aims at, repeated while held on that ally. No Strike
-  fallback or attack through that ally.
+  fallback or attack through that ally. An offensive self skill (Ice Nova,
+  which hits around the caster, never the ally) fires once on the fresh
+  press (0.45.1).
+- **Any other actor** (an NPC, a trader, a protected player, an ally the
+  PvP flag forbids supporting): a selected self skill fires once on the
+  fresh press, as at air (0.45.1); a heal at a forbidden ally refuses at no
+  cost; nothing else acts, and nothing behind the actor is reached.
 - **Hand-diggable node:** dig with hand capabilities, never equipped-weapon
   mining power. On the initial press only, a selected self/support skill
   (every self skill and the friendly heals, Heal, Shield and Mend) waits for
@@ -298,12 +305,16 @@ intervening objects (dropped items excepted) matter.
   0.35 s of the press is a tap and casts (an unready skill reports its
   refusal at that tap); a longer hold digs. The window absorbs the
   release's delay (0.45.1, the user's playtest of 2026-10-10; it was
-  200 ms): the press reaches the server at once, the release only with the
-  client's next control report (every server step, 0.09 s) and the next
-  input pass, so a click of up to about 0.15 s still arrives within 0.35 s.
+  200 ms): the press reaches the server at once; the release does too while
+  the client was digging the node (its stop-digging packet carries the
+  controls), otherwise only with the client's next control report (every
+  server step, 0.09 s), and the server reads it at its next input pass, so
+  a click of up to about 0.15 s arrives within 0.35 s in the worst case.
   Where the crosshair points during the tap does not matter (kiting with the
   eyes on the ground: another node, air or an actor); the tap still casts
-  on release. The client's own dig completion is an immediate edge and
+  on release, aimed as it is then: a heal (Heal, Shield, Mend) tapped at
+  the ground goes to the ally under the crosshair at release, else to the
+  caster (the user, 0.45.1). The client's own dig completion is an immediate edge and
   proves the button was held that long, so the dig guard keeps 0.2 s: a
   completion later than that ends the tap as a hold (a node the hand digs
   in 0.3 s is dug, nothing is cast; on protected ground only the hint
@@ -375,20 +386,22 @@ change, death, leave). Other instant bow skills retain their LMB casts and
 authored ammo/cooldowns.
 
 Food owns its whole RMB press, whatever it points at (ruling 2026-09-28). A
-release within 200 ms is a **click**: on release it performs the ordinary
+release the server sees within 0.35 s of the press is a **click** (0.45.1,
+it was 200 ms: an RMB release always waits for the control report, the
+derivation of the LMB tap window above): on release it performs the ordinary
 right-click at the target the press began on — placing a placeable food
 (apple, meat blocks), planting, or opening the pointed door, container, NPC or
-trader. Holding 200 ms or longer is a **hold**: it eats one serving 1.5 s after
+trader. Holding longer is a **hold**: it eats one serving 1.5 s after
 the press and never interacts with the pointed node or entity; engine place
 repeats during the hold do nothing, and placeable foods show no client
 placement preview. Pointing at nothing, a hold eats as well. In combat the
-hold is refused at the 200 ms mark with "Cannot eat while in combat." (no
+hold is refused at the 0.35 s mark with "Cannot eat while in combat." (no
 visual, no slowdown); a click in combat still places or interacts. While
 eating, the wielded item hides, the food's image shows large at the bottom
 centre behind the HUD and bobs, crumbs fly from the head every 0.2 s, the
 eating sound loops at half gain and walk speed is ×0.35. The crosshair
 progress ring (the bow draw ring's frames, tinted green, never the gold full
-frame) appears when the hold is confirmed at 200 ms and fills with held time
+frame) appears when the hold is confirmed at 0.35 s and fills with held time
 / 1.5 s; it disappears on every end of eating (release, portion eaten,
 cancel, stun, item or slot change, death, leave) and never appears on a
 combat refusal. Release before 1.5 s

@@ -337,7 +337,7 @@ local function stop_hold_feedback(player)
 	hold_feedback[name] = nil
 end
 
--- A confirmed hold (contextual input, 200 ms after the press) starts eating.
+-- A confirmed hold (contextual input, 0.35 s after the press) starts eating.
 -- In combat it refuses immediately with the existing notice: no visual, no
 -- slowdown and no portion. Returns true while eating runs.
 function grug_food.begin_hold(player)
