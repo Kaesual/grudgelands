@@ -25,7 +25,12 @@
 --      Round 44) inside the hole only, quest states as icons; party members inside as heading arrows, outside as rim arrows
 --      on the bezel; window resize relayouts; the switch (in the map window
 --      since Round 44, tools/r44_mq) hides and shows the minimap and
---      persists in meta; every texture exists.
+--      persists in meta; every texture exists;
+--   P  the "Now playing" box (0.45.1 lane MU; the scheduler side and the
+--      geometry over windows: tools/r451_mu): drawn under the location line
+--      when grug_ambience names a track, only changes sent, placed again on
+--      a window or GUI scaling change, gone with the minimap and back with
+--      it, hidden for no track.
 -- Prints "R27 MINIMAP PORTABLE PASS checks=<n>" or the failures, plus the
 -- measured per-update cost as a comparison.
 local repo = arg[1] or "."
@@ -86,10 +91,13 @@ rawset(_G, "core", {
 	get_current_modname = function() return "grug_map" end,
 	get_modpath = function(mod)
 		local roots = {grug_map = "/mods/PLAYER/grug_map", grug_jobs = "/mods/PLAYER/grug_jobs",
-			grug_mounts = "/mods/PLAYER/grug_mounts", grug_core = "/mods/CORE/grug_core"}
+			grug_mounts = "/mods/PLAYER/grug_mounts", grug_core = "/mods/CORE/grug_core",
+			grug_ambience = "/mods/CORE/grug_ambience"}
 		return roots[mod] and repo .. roots[mod] or nil
 	end,
-	get_modnames = function() return {"grug_core", "grug_jobs", "grug_map", "grug_mounts"} end,
+	get_modnames = function()
+		return {"grug_ambience", "grug_core", "grug_jobs", "grug_map", "grug_mounts"}
+	end,
 	get_worldpath = function() return "/nonexistent-world" end,
 	get_us_time = function()
 		local ok, ffi = pcall(require, "ffi")
@@ -727,12 +735,85 @@ check(#elements(me) == 0, "R stays off")
 minimap.set_enabled(me, true)
 check(minimap.enabled(me) and #by_text(me, "^%[combine:") == 1, "R switch on restores it")
 
+-- ---------------------------------------------------------------------------
+-- P: the "Now playing" box (0.45.1)
+-- ---------------------------------------------------------------------------
+do
+	local feast = {title = "Fantasy Orchestral Theme", artist = "joth"}
+	local lullaby = {title = "A Dragon's Lullaby", artist = "Scott Buckley"}
+	local function parts(track)
+		local text = track.title .. "\n" .. track.artist
+		return by_text(me, "^%[fill:%d+x%d+:#3434344d$")[1],
+			by_text(me, "^grug_ambience_note%.png$")[1],
+			by_text(me, "^" .. text:gsub("%p", "%%%0") .. "$")[1]
+	end
+	-- Placed as minimap_view's geometry says, under the location line.
+	local function placed(track, label)
+		local f = frame_of(me)
+		local top = f.center_y + f.diameter / 2 + 4 * f.hud
+		local g = V.now_playing_box(f, top, track.title, track.artist)
+		local box, icon, text = parts(track)
+		local ok = box and icon and text and true or false
+		if ok then
+			local bx, by = screen(box, me)
+			local ix, iy = screen(icon, me)
+			local tx, ty = screen(text, me)
+			ok = near(bx, g.x) and near(by, g.y) and near(ix, g.icon_x) and near(iy, g.icon_y) and
+				near(tx, g.text_x) and near(ty, g.text_y) and
+				box.text == ("[fill:%dx%d:#3434344d"):format(g.w, g.h) and
+				math.floor(g.w * box.scale.x * f.hud) == g.w and
+				math.floor(32 * icon.scale.x * f.hud) == g.icon and
+				box.alignment.x == 1 and box.alignment.y == 1 and
+				text.alignment.x == 1 and text.alignment.y == 1 and text.number == 0xf0e6c8 and
+				box.z_index < icon.z_index and by >= top + 20 * f.gui
+		end
+		check(ok, "P " .. label)
+	end
+	step(WINDOW)
+	local idle = me.sent
+	step(WINDOW)
+	check(me.sent == idle and #by_text(me, "^%[fill:") == 0, "P no box while nothing plays")
+	minimap.set_now_playing("me", feast)
+	placed(feast, "a track: the box, the note and its two lines under the location line (720p)")
+	local sent = me.sent
+	minimap.set_now_playing("me", feast)
+	for _ = 1, 4 do step(WINDOW) end
+	check(me.sent == sent, "P the same track and idle window checks send nothing")
+	minimap.set_now_playing("me", lullaby)
+	check(me.sent - sent <= 6, "P another track: at most position, size and text of three elements")
+	placed(lullaby, "another track is placed again")
+	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
+	step(WINDOW)
+	placed(lullaby, "a resize places the box again (1080p)")
+	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1.5}
+	step(WINDOW)
+	placed(lullaby, "a GUI scaling change alone places it again")
+	windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 2, real_gui_scaling = 2}
+	step(WINDOW)
+	placed(lullaby, "HUD and GUI scaling 2")
+	minimap.set_enabled(me, false)
+	minimap.set_now_playing("me", feast)
+	check(#elements(me) == 0, "P a hidden minimap shows no box, also for a new track")
+	minimap.set_enabled(me, true)
+	placed(feast, "switching the minimap on shows the box of the playing track")
+	minimap.set_now_playing("me", nil)
+	check(#by_text(me, "^%[fill:") == 0 and #by_text(me, "^grug_ambience_note") == 0 and
+		#by_text(me, "Fantasy") == 0, "P no track: the box is hidden")
+	sent = me.sent
+	minimap.set_now_playing("me", nil)
+	step(WINDOW)
+	check(me.sent == sent, "P hidden stays quiet")
+	windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 1, real_gui_scaling = 1}
+	step(WINDOW)
+	frame = frame_of(me)
+end
+
 -- Every texture the minimap draws exists.
 do
 	local missing = {}
 	local function exists(name)
 		for _, dir in ipairs({"/mods/PLAYER/grug_map/textures/", "/mods/PLAYER/grug_jobs/textures/",
-				"/mods/PLAYER/grug_mounts/textures/"}) do
+				"/mods/PLAYER/grug_mounts/textures/", "/mods/CORE/grug_ambience/textures/"}) do
 			local f = io.open(repo .. dir .. name, "rb")
 			if f then f:close() return true end
 		end
@@ -741,7 +822,7 @@ do
 	local names = {"grug_map_minimap_bezel.png", "grug_map_quest_available.png",
 		"grug_map_quest_locked.png", "grug_map_quest_ready.png", "grug_map_quest_active.png",
 		"grug_map_innkeeper.png", "grug_map_trainer_tailor.png", "grug_map_home.png",
-		"grug_map_heading_gold_00.png"}
+		"grug_map_heading_gold_00.png", "grug_ambience_note.png"}
 	for f = 0, 15 do
 		names[#names + 1] = ("grug_map_rim_cyan_%02d.png"):format(f)
 		names[#names + 1] = ("grug_map_heading_cyan_%02d.png"):format(f)
