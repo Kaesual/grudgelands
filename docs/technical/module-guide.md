@@ -574,6 +574,13 @@ tools](#player-meta-read-by-external-tools).
   keeps that decision quiet (`cast`'s `quiet`) and without a tap window
   (`s.pending`).
   A carried RMB press still cancels. Fixture and engine probe `tools/r36_f2`.
+  Since 0.45.1 the tap (`s.pending`, a self or friendly skill pressed at a
+  hand-diggable or protected node) is decided by `TAP_US` (0.35 s, the
+  server-seen release; derivation at the constant) and ignores where the
+  crosshair moves meanwhile; `can_dig` still refuses a completion only
+  before `HOLD_US` (0.2 s), and the `on_dig` wrapper clears `s.pending`
+  when it accepts one, so a completed dig makes the press a hold. Fixture
+  `tools/r451_sc`.
   It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.

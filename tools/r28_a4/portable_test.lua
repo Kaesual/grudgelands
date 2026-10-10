@@ -563,11 +563,11 @@ do -- M4 self skill: empty-air press and the node tap.
 	check(#flashes == 0, "M4 node press waits for the tap decision")
 	release()
 	check(#flashes == 1 and flashes[1] == "Blink is not ready.", "M4 the tap reports the refusal")
-	-- Holding past 200 ms digs: no message.
+	-- Holding past the tap window (0.35 s since 0.45.1) digs: no message.
 	clock = clock + 2000000
 	reset_log()
 	press()
-	hold(6)
+	hold(8)
 	release()
 	check(#flashes == 0, "M4 a dig hold reports nothing")
 	refusals.blink = nil
@@ -718,11 +718,11 @@ do -- L10 a protected wall in a town: gather (the hint path); Blink's tap there.
 	check(#casts == 0, "L10 Blink waits for the tap decision")
 	release()
 	check(casts[1] == "blink", "L10 Blink tap on protected ground casts")
-	-- Holding there casts nothing.
+	-- Holding there past the tap window casts nothing.
 	clock = clock + 2000000
 	reset_log()
 	press()
-	hold(6)
+	hold(8)
 	release()
 	check(#casts == 0, "L10 a hold on protected ground casts nothing")
 	node_at[pkey(NODE_HIT.under)] = nil
