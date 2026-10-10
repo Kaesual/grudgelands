@@ -50,6 +50,62 @@ function M.zoom_scroll(value, old_zoom, new_zoom)
 	return M.clamp_scroll((value + 500) * new_zoom / old_zoom - 500, new_zoom)
 end
 
+-- The scroll pair that puts world `position` in the middle of the viewport
+-- at `zoom`, as far as the clamp allows (near the map's edge the point is
+-- shown off centre).
+function M.centre_scroll(view, position, zoom)
+	local fx = (position.x - view.min_x) / (view.max_x - view.min_x)
+	local fy = (view.max_z - position.z) / (view.max_z - view.min_z)
+	return M.clamp_scroll(fx * 1000 * zoom - 500, zoom),
+		M.clamp_scroll(fy * 1000 * zoom - 500, zoom)
+end
+
+-- The map window's view {zoom, scroll_x, scroll_y, follow} (0.45.1, the
+-- user's soft lock). While `follow` is set (every opening, and again at
+-- each return to 1x) every zoom step centres on the player's position, in
+-- and out alike, recomputed each time so edges cause no drift. The player's
+-- own scrolling at 2x-8x clears it; from then on a zoom step keeps the
+-- current centre of the view.
+function M.zoom_view(state, zoom_in, view, position)
+	local old = state.zoom or 1
+	local zoom = M.step_zoom(old, zoom_in)
+	if zoom == 1 then state.follow = true end
+	if state.follow and position then
+		state.scroll_x, state.scroll_y = M.centre_scroll(view, position, zoom)
+	else
+		state.scroll_x = M.zoom_scroll(state.scroll_x or 0, old, zoom)
+		state.scroll_y = M.zoom_scroll(state.scroll_y or 0, old, zoom)
+	end
+	state.zoom = zoom
+end
+
+-- The scrollbar fields of one window event ("CHG:<n>" for the bar the
+-- player moved, "VAL:<n>" for the other; the engine sends CHG only for the
+-- player's own moves, never for a form the server sent). `shown_zoom` is the
+-- zoom of the form the values come from (a zoom step may still be owed).
+-- A CHG at 2x-8x ends the soft lock; while it holds the server owns the
+-- view and the echoed values are ignored. True when a bar was moved.
+function M.scroll_event(state, raw_x, raw_y, shown_zoom)
+	local values, moved = {}, false
+	for axis, raw in pairs({x = raw_x, y = raw_y}) do
+		local kind, value
+		if type(raw) == "string" then kind, value = raw:match("^(%u+):([+-]?%d+)$") end
+		if kind == "CHG" or kind == "VAL" then
+			values[axis] = tonumber(value)
+			moved = moved or kind == "CHG"
+		end
+	end
+	local zoom = state.zoom or 1
+	if moved and zoom > 1 then state.follow = false end
+	if state.follow then return moved end
+	local shown = shown_zoom or zoom
+	for axis, value in pairs(values) do
+		value = M.clamp_scroll(value, shown)
+		state["scroll_" .. axis] = shown == zoom and value or M.zoom_scroll(value, shown, zoom)
+	end
+	return moved
+end
+
 function M.contains(view, position)
 	return type(position) == "table" and type(position.x) == "number" and
 		type(position.z) == "number" and position.x >= view.min_x and
