@@ -1472,8 +1472,10 @@ tools](#player-meta-read-by-external-tools).
 - **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x/8x
   zoom, native scrollbars and an independent marker layer. Formspec v4 wraps
   the shared legacy inventory window; only Map content switches to real
-  coordinates. Keep center-preserving zoom, fixed-size markers, clipping and
-  hit bounds in the same transform. A new tab visit resets zoom/scroll; live
+  coordinates. Keep the zoom's wanted centre (since 0.45.1 the soft lock on
+  the player until the player scrolls, `atlas.zoom_view` and
+  `atlas.scroll_event`, [world_map.md](../design/world_map.md#atlas-navigation)),
+  fixed-size markers, clipping and hit bounds in the same transform. A new tab visit resets zoom/scroll; live
   updates preserve them. Stable byte-encoded IDs own marker identity. Only open
   Map sessions refresh, at most every 2 s since Round 30 (`page.lua`): a cheap
   signature (zoom, selection, location, minimap switch, arrows on a 0.02-unit

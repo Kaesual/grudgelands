@@ -717,3 +717,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (station designs) are the GPT-6 Astra generators with their proposal
   sheets and `final_sheet.png`; `--check` byte-compares the shipped files
   (Python with Pillow, an installed tool for generating art).
+- **0.45.1** (`r451_<lane>`): `r451_mz` the map window's zoom with the
+  soft lock on the player (`portable_test.lua`, the real `grug_map`
+  `atlas.lua`: centring on the player, clamped at the edges without drift,
+  the player's scrolling breaking the lock, 1x restoring it, values of an
+  older form read at its zoom); the window's wiring and its focus are in
+  `r44_mq` (section M).
