@@ -1,8 +1,10 @@
 -- Character creation (round35-plan.md §2.9): faction, race, class and look in
 -- one window, all final. While a character is unfinished the player remains
 -- frozen and engine-immortal (creation stasis). The window waits for the
--- selected server-wide preparation plan. Existing characters reconnecting
--- during preparation wait without changing position.
+-- selected server-wide preparation plan. Every player whose wait ends in a
+-- teleport (an unfinished character's arrival, a map reset's relocation)
+-- waits at the shared waiting point from the moment it joins; a complete
+-- character reconnecting during preparation waits without changing position.
 --
 -- The choices are a DRAFT that lives only in this session (a Lua table):
 -- nothing is written to the player before "Create character", and a
@@ -151,6 +153,27 @@ local function reassert_player_lock(player)
 	end
 end
 
+-- The waiting point (Round 46): above the outermost chunk the engine can
+-- generate (mapgen_limit 31007 and chunksize 5 end it at y = 30927), so no
+-- map is generated around a player held there, and inside the object limit.
+-- The client treats the unloaded blocks as solid. All waiting players share
+-- it, so the few air chunks the view cone may still request below 30927 are
+-- generated once.
+local WAITING_POINT = {x = 0, y = 31000, z = 0}
+
+-- At the start of a session: a player whose wait ends in a teleport waits at
+-- the waiting point. That is a character with a map-reset backlog (the
+-- relocation) and one that is not complete (new, drafting, or created but not
+-- arrived: the arrival). A disconnect there is safe, because the backlog
+-- record or the arriving mark stays until that teleport, and the next join
+-- comes back here. A complete character without a backlog leaves the wait
+-- without a teleport and keeps its position.
+local function move_to_waiting_point(player, relocate)
+	if relocate or not character_complete(player) then
+		player:set_pos(WAITING_POINT)
+	end
+end
+
 local function lock_player(player)
 	-- The platform's map reset (grug_core/map_reset.lua): a created character
 	-- that has not been moved to its race start since is held as well.
@@ -162,6 +185,7 @@ local function lock_player(player)
 	local name = player:get_player_name()
 	local session = creation_sessions[name]
 	if not session then
+		move_to_waiting_point(player, relocate)
 		local armor = player:get_armor_groups() or {}
 		-- NO PHYSICS SNAPSHOT. The old code captured speed/jump/gravity here
 		-- and wrote them back in release_player, which meant a slow running
@@ -550,8 +574,8 @@ local function start_arrival_load(player)
 end
 
 -- The map reset's relocation of an existing character (preparation_only with
--- `relocate`): held like any reconnect during preparation until the
--- preparation is ready (finish_if_ready's first gate), then until its race
+-- `relocate`): held at the waiting point until the preparation is ready
+-- (finish_if_ready's first gate), then until its race
 -- start has loaded; then moved there without the arrival flow, its map-bound
 -- player state cleared and the world's record written
 -- (grug_core.map_reset.relocated). A failure is logged and disconnects the
@@ -678,7 +702,7 @@ finish_if_ready = function(player)
 
 	-- Position first, then clear the arriving mark. A disconnect before the
 	-- asynchronous load completes therefore cannot leave a finished character
-	-- behind at the unsafe engine spawn.
+	-- behind at the waiting point.
 	grug_core.invalidate_combat_identity(player)
 	player:set_pos(session.spawn_pos)
 	player:get_meta():set_string(META_ARRIVING, "")
@@ -953,7 +977,8 @@ core.register_on_joinplayer(function(player)
 end)
 
 -- New-player callbacks run before the server sends the initial position. This
--- prevents even the first gravity/damage tick at the engine-selected spawn.
+-- prevents even the first gravity/damage tick at the engine-selected spawn,
+-- and the move to the waiting point happens before the client sees that spawn.
 core.register_on_newplayer(function(player)
 	lock_player(player)
 end)

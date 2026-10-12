@@ -268,7 +268,8 @@ local function sample(player, rec)
 end
 
 -- Dead players keep their record untouched until the respawn (death cleared
--- it); players in character creation stand at the engine spawn.
+-- it); players in character creation stand at the waiting point or their
+-- old position.
 local function samplable(player)
 	return player:get_hp() > 0 and not (grug_core.player_in_creation_stasis and
 		grug_core.player_in_creation_stasis(player:get_player_name()))

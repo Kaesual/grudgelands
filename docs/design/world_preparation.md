@@ -2,7 +2,8 @@
 
 Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
 Bounded full-throughput scheduling approved 2026-09-23. Full-column extent and
-the air-chunk fast path decided 2026-09-28 (Round 23, WP48).
+the air-chunk fast path decided 2026-09-28 (Round 23, WP48). The waiting point
+decided 2026-10-09 (Round 46).
 
 
 ### Preparation modes and readiness
@@ -200,6 +201,51 @@ the current step, including the retry form; world.md §7, Round 24 ruling 32).
 Readiness replaces an open waiting screen with the creation window (one
 window since Round 35), changes only the hint when it was dismissed, and
 releases an existing complete character without regranting its kit.
+
+### The waiting point
+
+The engine generates map around every connected player, frozen or not (the
+active blocks and the block sending's view cone), so a waiting player would
+compete with the preparation for the one emerge thread. Every player whose
+wait ends in a teleport therefore waits at one fixed **waiting point,
+(0, 31000, 0)**, from the moment the session starts
+(`grug_classes/selection.lua`, `lock_player`, reached from `on_newplayer`
+and `on_joinplayer`):
+
+- **Moved:** a character with a map-reset backlog
+  (`grug_core.map_reset.needs_relocation`; the relocation teleport ends the
+  wait, [upgrade contract](../technical/upgrade-contract.md) §3.3) and every
+  character that is not complete: new, drafting, or created but not arrived
+  (the arrival teleport ends the wait). This holds during and after the
+  preparation.
+- **Not moved:** a complete character without a backlog. It leaves the wait
+  without a teleport, so it keeps its position (the Round 14 rule; today
+  unreachable, because readiness is monotonic and a map reset gives every
+  complete character a backlog, and kept as a guard).
+- **A disconnect at the waiting point is safe:** the backlog record or the
+  arriving mark stays until its teleport, so the next join comes back to the
+  same wait. The old position is not kept; none of the moved cases needs it.
+- **Why this point:** with `mapgen_limit = 31007` and `chunksize = 5` the
+  outermost generatable chunk ends at y = 30927 (`get_mapgen_edges`). Every
+  chunk above fails `ServerMap::initBlockMake`, so its requests are cancelled
+  without mapgen; at y = 31000 the whole active-block sphere lies there, and
+  the point is inside the object limit. The client treats the unloaded blocks
+  as solid (no fall). Only the view cone may request a few chunks below
+  y = 30927; they are pure air (the air-chunk fast path below), and because
+  every waiting player shares the point they are generated once.
+- **Join timing:** player meta is loaded before any callback, the map reset's
+  applied value is fixed at mod load, and `on_newplayer` runs before the
+  engine sends the first position, so a new client never sees the engine's
+  spawn. `on_joinplayer` runs before the next environment step, so nothing is
+  emerged at an old position; a stale client position is reset by the
+  movement check like after any teleport.
+- **Not used:** `static_spawnpoint` (builtin's spawn hook would also move
+  every respawn there), a point anywhere else (its active blocks would be
+  generated), spreading players over x/z (one shared point generates its air
+  chunks once).
+- **Accepted:** waiting players see each other at the point, and the
+  atmosphere mood (resolved by x/z) is the Battlegrounds'. PvP location
+  sampling and the location HUD skip creation stasis.
 
 ## Air-chunk fast path (emerge environment)
 
