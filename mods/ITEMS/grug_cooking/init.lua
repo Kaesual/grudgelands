@@ -114,6 +114,9 @@ local MUSHROOM = "group:grug_cooking_mushroom"
 
 -- A dish without inputs comes only from its raw assembly (below) in the
 -- furnace (Round 28 ruling 27: no direct recipe duplicates that line).
+-- Round 46 (the user's direction for T3+): Mushroom Skewer, Forager's Pot and
+-- Cocoa-Rubbed Game add an ingredient of the tier below, the T5 salt dishes
+-- take the T5 Salt Crust.
 -- Within a tier a stronger dish costs more to make (Round 34 ruling 3): the
 -- Caster dish, which adds mana regeneration to the same HP terms, needs more
 -- input value (vendor payouts) than the Hearty and Hunter dishes of its tier.
@@ -130,7 +133,7 @@ local DISHES = {
 		{MEAT, FRUIT}),
 	dish("foragers_pot", "Forager's Pot", 3, "hearty"),
 	dish("mushroom_skewer", "Mushroom Skewer", 3, "caster",
-		{G .. "mushroom", G .. "mushroom"}),
+		{G .. "mushroom", G .. "mushroom", FRUIT}),
 	dish("onion_seared_steak", "Onion-Seared Steak", 3, "hunter",
 		{MEAT, EARLY_SPICE, G .. "mushroom"}),
 	dish("marsh_roast", "Marsh Roast", 4, "hearty"),
@@ -140,14 +143,14 @@ local DISHES = {
 		{MEAT, MEAT, G .. "melon", G .. "mushroom"}),
 	dish("kelp_wrapped_roast", "Kelp-Wrapped Roast", 5, "hearty"),
 	dish("stormkelp_broth", "Stormkelp Broth", 5, "caster",
-		{G .. "stormkelp", G .. "stormkelp", ANY_FISH, G .. "rock_salt"}),
+		{G .. "stormkelp", G .. "stormkelp", ANY_FISH, C .. "salt_crust"}),
 	dish("salt_crusted_fish", "Salt-Crusted Fish", 5, "hunter",
-		{ANY_FISH, G .. "rock_salt"}),
+		{ANY_FISH, C .. "salt_crust"}),
 	dish("grand_feast", "Grand Feast", 6, "hearty"),
 	dish("jungle_cocoa", "Jungle Cocoa", 6, "caster",
 		{G .. "wild_cocoa", G .. "wild_cocoa", G .. "rock_salt"}),
 	dish("cocoa_rubbed_game", "Cocoa-Rubbed Game", 6, "hunter",
-		{MEAT, G .. "wild_cocoa", EARLY_SPICE}),
+		{MEAT, G .. "wild_cocoa", G .. "rock_salt"}),
 	-- One plain dish per tier (Round 46 ruling 13): weaker than the three
 	-- roles, from few ingredients found in every zone of its band (the band's
 	-- fish from T2); the 11-20 zones cook the T1 and T2 ones.
@@ -219,7 +222,7 @@ local RAW_ASSEMBLIES = {
 	{tier = 2, id = "raw_pumpkin_pot", output = DISHES[4].item,
 		inputs = {C .. "pumpkin", MEAT, C .. "wild_grain"}},
 	{tier = 3, id = "raw_foragers_pot", output = DISHES[7].item,
-		inputs = {C .. "cave_cap", MEAT, STAPLE}},
+		inputs = {C .. "cave_cap", MEAT, C .. "pumpkin"}},
 	{tier = 4, id = "raw_marsh_roast", output = DISHES[10].item,
 		inputs = {MEAT, G .. "marshbloom", C .. "frost_melon"}},
 	{tier = 5, id = "raw_kelp_roast", output = DISHES[13].item,
@@ -256,7 +259,7 @@ core.register_craftitem("grug_cooking:bread", {
 	inventory_image = "grug_cooking_bread.png",
 	_grug_tier = 1,
 })
-assert(grug_food.register_item("grug_cooking:bread", 1, "dish", "hearty"),
+assert(grug_food.register_item("grug_cooking:bread", 1, "dish", "plain"),
 	"grug_cooking: failed to register bread")
 core.register_craft({type = "cooking", output = "grug_cooking:bread",
 	recipe = C .. "wild_grain", cooktime = 5})

@@ -527,20 +527,22 @@ function grug_food.register_item(item_name, tier, kind, role)
 	return true
 end
 
+-- The furnace conversions (Cooked Meat, the Meat Block, Cooked Fish; Bread
+-- in grug_cooking) are plain dishes (Round 46).
 local CURRENT_FOODS = {
 	{"default:apple", 1, "raw", "hp"},
 	{"default:blueberries", 1, "raw", "hp"},
 	{"mobs:meat_raw", 1, "raw", "hp"},
-	{"mobs:meat", 1, "dish", "hearty"},
+	{"mobs:meat", 1, "dish", "plain"},
 	{"mobs:meatblock_raw", 1, "raw", "hp"},
-	{"mobs:meatblock", 1, "dish", "hearty"},
+	{"mobs:meatblock", 1, "dish", "plain"},
 	{"grug_mobs:raw_fish", 1, "raw", "hp"},
 	{"grug_fishing:silver_trout", 2, "raw", "hp"},
 	{"grug_fishing:mire_carp", 3, "raw", "hp"},
 	{"grug_fishing:frostfin", 4, "raw", "hp"},
 	{"grug_fishing:ember_eel", 5, "raw", "hp"},
 	{"grug_fishing:storm_tuna", 6, "raw", "hp"},
-	{"grug_fishing:cooked_fish", 1, "dish", "hearty"},
+	{"grug_fishing:cooked_fish", 1, "dish", "plain"},
 }
 
 for index = 1, #CURRENT_FOODS do
