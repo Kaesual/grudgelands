@@ -334,15 +334,17 @@ else
 		local start = grug_core.start_position("accord", "human")
 		check(vector.equals(fakes.oldhero.pos, start), "oldhero moved to the human start " ..
 			core.pos_to_string(fakes.oldhero.pos))
-		check(fakes.oldhero.moves == 1, "one move")
+		-- Round 46 (tools/r46_wt): the waiting point at join, then the start.
+		check(fakes.oldhero.moves == 2, "two moves: the waiting point, then the start")
 		check(not grug_core.player_in_creation_stasis("oldhero"), "oldhero released")
 		check(fakes.oldhero.armor.immortal == nil, "...no longer immortal")
 		check(meta("oldhero", "grug_home:claim") == "", "the home claim is cleared")
 		check(meta("oldhero", "grug_xp:xp") == "50000", "the XP stays")
 		check(meta("oldhero", "grug_classes:class") == "warrior", "the class stays")
 		check(arrivals == 0, "no arrival flow")
-		check(fakes.newbie.moves == 0 and meta("newbie", "grug_classes:race") == "",
-			"the new character is in creation, never moved")
+		check(fakes.newbie.moves == 1 and fakes.newbie.pos.y == 31000 and
+			meta("newbie", "grug_classes:race") == "",
+			"the new character is in creation at the waiting point, never relocated")
 		return emerged(saved.claim_pos, 8), 60
 	end)
 	stage("boot 2: the old claim node is gone", function()

@@ -754,3 +754,21 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   mender's "Grudge-Free Repairs" form; `r451_tx` GPT-6 Astra's proposals
   (trainer greetings, music-note icons, `paint_art.py`, the offline
   `review.html`), provenance for the user's picks, not a fixture.
+- **Round 46** (`r46_<lane>`): `r46_wt` the waiting point
+  (`portable_test.lua`, the real vendored sfinv, `grug_core`'s
+  `map_reset.lua`, `grug_factions` and `grug_classes/selection.lua` under a
+  stub engine with reset 1 applied): the rule matrix at the start of a
+  session (new, mid-draft, created but not arrived and backlog players moved
+  to (0, 31000, 0) once; a complete character without a backlog held where
+  it stands; no session when ready), the arrival and relocation teleports,
+  disconnects at the waiting point, the constant and its place in
+  `lock_player`, and the chunk edge y = 30927 from the game's
+  `minetest.conf`. `engine.py OUT_DIR` is the engine run (one queue slot
+  through the round's `engine_run.sh`, about 3 minutes): one boot of a fresh
+  world (seed 42, reset 1 staged) with the disposable probe
+  `grug_probe_r46_wt` and real protocol clients (`r43_it/client.py`, with
+  block acknowledgements and position reports like a standard client);
+  characters saved at old positions rejoin during the preparation, the probe
+  counts the generated chunks near each old position, the engine spawn and
+  the waiting point, and checks the teleports and the disconnects;
+  `evidence/` holds the run's receipts.
