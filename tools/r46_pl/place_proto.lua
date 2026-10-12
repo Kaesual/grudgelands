@@ -12,11 +12,20 @@
 -- 16-node coarse grid of the water layout, with the exact checks (natural
 -- relief on a 4-node lattice, inland water, the F3 wet-core rule) on the
 -- best coarse candidates only, and a stepwise relaxation when a row finds
--- nothing. Writes OUT_PREFIX.anchors.tsv (id, template, slot, x, z, zone,
--- relax step, candidates passing the coarse filter), OUT_PREFIX.zones.tsv
--- (a 32-node raster: x, z, zone number or 0, 1 on inland water) for
--- render_proto.py, and prints the timings and a summary. The rules here are the note's proposal in miniature.
+-- nothing. Writes for render_proto.py
+--   OUT_PREFIX.anchors.tsv  id, template, slot, x, z, zone, relax step
+--                           ("fixed" for a fixed anchor), candidates passing
+--                           the coarse filter, mapgen level at the centre,
+--                           half the fitting square, label
+--   OUT_PREFIX.zones.tsv    the 16-node raster: x, z, zone number or 0, 1 on
+--                           inland water
+--   OUT_PREFIX.rivers.tsv   river id, then x z pairs of each wet run
+-- and prints the timings and a summary. The rules here are the note's
+-- proposal in miniature. TODAY=1 builds today's world instead (every anchor
+-- at its authored position, the zone field, bowls and water knowing them
+-- all, as main does now) and writes the same files with relax step "today".
 local repo, seed, prefix = arg[1], arg[2], arg[3]
+local today = os.getenv("TODAY") == "1"
 assert(repo and seed and prefix, "usage: place_proto.lua REPO SEED OUT_PREFIX")
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 _G.core = _G.core or {}
@@ -49,6 +58,7 @@ for _, row in ipairs(base.claim_exclusions) do
 		view.claim_exclusions[#view.claim_exclusions + 1] = row
 	end
 end
+if today then view = base end
 
 local W = A.world(seed, nil, {roads = false, protection = A.square_cities(120)})
 local horizontal = W.horizontal_factory({source = view, schemas = A.schemas,
@@ -86,11 +96,11 @@ for iz = 0, NZ - 1 do
 end
 local t3 = clock()
 -- The coarse raster for the preview (x, z, zone number or 0, 1 when the
--- natural ground is inland water at the cell centre).
+-- ground is inland water at the cell centre) and the river runs.
 do
 	local zf = assert(io.open(prefix .. ".zones.tsv", "w"))
-	for iz = 0, NZ - 1, 2 do
-		for ix = 0, NX - 1, 2 do
+	for iz = 0, NZ - 1 do
+		for ix = 0, NX - 1 do
 			local k = iz * NX + ix
 			local x, z = GX0 + ix * C, GZ0 + iz * C
 			local wet = (zone_of[k] and sampler.maybe_wet(x, z) and
@@ -99,6 +109,15 @@ do
 		end
 	end
 	zf:close()
+	local rf = assert(io.open(prefix .. ".rivers.tsv", "w"))
+	for _, run in ipairs(height.river_polylines()) do
+		local parts = {tostring(run.id)}
+		for _, p in ipairs(run.points) do
+			parts[#parts + 1] = ("%d %d"):format(floor(p.x + 0.5), floor(p.z + 0.5))
+		end
+		rf:write(table.concat(parts, "\t") .. "\n")
+	end
+	rf:close()
 end
 
 local profile = {}
@@ -235,10 +254,29 @@ local function exact(x, z, core_half, rule, relief_max)
 	return hi - lo, near
 end
 
+-- One anchor row: the mapgen level at its centre, half its fitting square
+-- (a start's town square, a capital's reserved square) and its label (the
+-- settlement roster's; a dragon or a start takes its zone's name).
+local label_of = {}
+for _, p in ipairs(A.settlement.roster) do label_of[p.anchor_id] = p.label end
 local out = assert(io.open(prefix .. ".anchors.tsv", "w"))
+local function write_row(id, kind, slot, x, z, zone, step, count)
+	local p = profile[kind]
+	local half = p.fitting_width / 2
+	if slot == "capital" then half = 266 elseif slot == "start" then half = 76 end
+	local level = horizontal.zone_level_at(x, z, zone) or 0
+	out:write(("%s\t%s\t%s\t%d\t%d\t%d\t%s\t%d\t%d\t%d\t%s\n"):format(id, kind, slot,
+		x, z, zone, step, count, level, half,
+		label_of[id] or base.zones[zone].display_name))
+end
 for _, a in ipairs(view.anchors) do
-	out:write(("%s\t%s\t%s\t%d\t%d\t%d\tfixed\t0\n"):format(a.id, a.template_id, a.slot_id,
-		a.position.x, a.position.z, a.zone_numeric_id))
+	write_row(a.id, a.template_id, a.slot_id, a.position.x, a.position.z,
+		a.zone_numeric_id, today and not is_fixed(a) and "today" or "fixed", 0)
+end
+if today then
+	out:close()
+	print(("seed %s: today's layout written (%d anchors)"):format(seed, #view.anchors))
+	return
 end
 local summary, relaxed, failed, t_scan = {}, {}, {}, clock()
 local by_kind = {}
@@ -349,8 +387,8 @@ for _, kind in ipairs(ORDER) do
 			placed[#placed + 1] = {x = choice.x, z = choice.z, half = fit_half, zone = zone,
 				kind = kind}
 			if step_used > 1 then relaxed[#relaxed + 1] = a.id .. ":" .. step_used end
-			out:write(("%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\n"):format(a.id, kind, a.slot_id,
-				choice.x, choice.z, zone, step_used, coarse_count))
+			write_row(a.id, kind, a.slot_id, choice.x, choice.z, zone, tostring(step_used),
+				coarse_count)
 		else
 			failed[#failed + 1] = a.id
 		end
