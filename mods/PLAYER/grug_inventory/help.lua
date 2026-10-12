@@ -65,6 +65,7 @@ local SECTIONS = {
 		"• Your faction lives on its own continent. Your start town lies in a level 1-10 zone on its outer side, and levels rise toward the front where the two continents meet: 11-20 home zones, the capital zones (20-30) and heartlands (21-30), 31-40 frontiers, 31-59 on the front itself and level 60 on the two dragon islands.",
 		"• Zones of level 31 and above are contested by both factions.",
 		"• Underground creatures get stronger with depth: 3 levels per 50 nodes below y 0 (level 60 near y -1000), and never weaker than the zone above them.",
+		"• Cave creatures appear in the dark from just below y 0, in shallow caves too. A torch keeps new ones away within 4 blocks of it; from the fifth block on they can appear.",
 		"",
 		heading("Capitals"),
 		"• Around level 10, head for your people's capital: trainers for the professions, riding, repairs and new quests. No hostile creatures roam there.",
