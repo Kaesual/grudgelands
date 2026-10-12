@@ -375,7 +375,7 @@ SPAWNS_FILE_KEYS = ("zone", "palette", "recipe", "notes")
 PALETTE_KEYS = ("families", "exact_mobs", "night_fallback", "boar", "lookalikes")
 RECIPE_KEYS = ("from", "to", "belts", "camps", "leaders", "places", "critters", "notes")
 BELT_KEYS = ("id", "share", "levels", "max_from", "kinds", "notes")
-KIND_KEYS = ("id", "name", "day", "night", "density", "notes")
+KIND_KEYS = ("id", "name", "day", "night", "density", "quest_target", "notes")
 CAMP_KEYS = ("id", "name", "belt", "site", "roster", "slots", "respawn", "min_player_distance", "apart",
              "notes")
 # Camp POIs a recipe camp may stand on (the zone atlas's `camps` types);
@@ -647,6 +647,8 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
             if krow.get("density") not in DENSITIES:
                 err("E-enum", kpath + ".density", "density %r must be sparse, normal or dense"
                     % krow.get("density"))
+            if "quest_target" in krow and krow["quest_target"] is not True:
+                err("E-recipe", kpath + ".quest_target", "quest_target is true or absent")
             kind = {"id": krow["id"], "name": krow.get("name"), "unit": "kind", "type": t,
                     "belt": belt["id"], "density": krow.get("density"), "rosters": {}, "inherits": []}
             for clock in ("day", "night"):

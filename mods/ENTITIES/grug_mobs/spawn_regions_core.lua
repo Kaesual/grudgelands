@@ -33,9 +33,11 @@
 --   4. Types: shore > bank > swamp > forest > highland > open.
 --   5. Regions: connected cells of one kind (the kind a belt gives a type);
 --      small fragments merge into the neighbour they share most edges with
---      (same belt preferred), large ones split into compact parts. A kind
---      with no component of full size first takes a compact block of its
---      belt (by its type's share, else the belt's commonest other type).
+--      (same belt preferred), large ones split into compact parts. A
+--      quest-named kind (`quest_target`) with no region after the merges
+--      takes a compact block of its belt (by its type's share, else the
+--      belt's commonest other type), never a cell of any kind's largest
+--      region, and the regions are built again.
 --   6. Population: a kind's day and night rosters, levels belt-range x role
 --      range, a density class.
 --   7. Camps: on a camp POI of the world model (the cells the camp radius
@@ -147,7 +149,7 @@ local RECIPE_KEYS = {from = true, to = true, belts = true, camps = true,
 local BELT_KEYS = {id = true, share = true, levels = true, max_from = true,
 	kinds = true, notes = true}
 local KIND_KEYS = {id = true, name = true, day = true, night = true,
-	density = true, notes = true}
+	density = true, quest_target = true, notes = true}
 local CAMP_KEYS = {id = true, name = true, belt = true, site = true, roster = true,
 	slots = true, respawn = true, min_player_distance = true, apart = true,
 	notes = true}
@@ -393,8 +395,14 @@ function M.parse_recipe(zone_id, recipe, ctx)
 				if not M.DENSITY[krow.density] then
 					fail(kw, "density must be sparse, normal or dense")
 				end
+				if krow.quest_target ~= nil and krow.quest_target ~= true then
+					fail(kw, "quest_target is true or absent")
+				end
+				-- quest_target (Round 46): a quest's area or text names the kind,
+				-- so it forms a region on every seed (build step 5).
 				local kind = {id = krow.id, name = krow.name, type = t, belt = belt,
-					density = krow.density, tag = zone_id .. "/" .. krow.id, rosters = {}}
+					density = krow.density, tag = zone_id .. "/" .. krow.id, rosters = {},
+					quest_target = krow.quest_target == true}
 				for _, clock in ipairs({"day", "night"}) do
 					local value = krow[clock]
 					if value == "open" then
@@ -1525,21 +1533,124 @@ function M.build(zone_id, q, recipe)
 			end
 		end
 	end
-	flood()
 	local function min_size(r)
 		return r.kind.type == "shore" and M.MIN_STRIP or M.MIN_CELLS
 	end
+	local function sort_cells(r)
+		table.sort(r.cells, function(a, b) return a.order < b.order end)
+	end
 
-	-- Every kind forms a region (Round 46): a kind with no component of
-	-- full size (it would merge away) takes a compact block of MIN_CELLS
-	-- cells of its belt outside camps. The block grows from the belt's best
-	-- cell for the kind's type (its shore, bank, swamp or forest share, or
-	-- for highland its slope or height over the zone median), taking the
-	-- best neighbour next (then the nearest to the seed, then grid order);
-	-- an open kind, or one whose type no cell of the belt shows, takes the
-	-- cells of the belt's commonest other type. A seed whose ground cannot
-	-- hold the block passes to the next. Where every kind forms, nothing
-	-- changes. A block is routine: a note (`map.notes`, logged at action
+	-- Merge fragments below the minimum into the neighbour region they
+	-- share most edges with (same belt first). Smallest first.
+	local function merge()
+		for _, r in ipairs(regions) do sort_cells(r) end
+		local merged_away = {}
+		while true do
+			local small = {}
+			for _, r in ipairs(regions) do
+				if not merged_away[r] and not r.stuck and #r.cells < min_size(r) then
+					small[#small + 1] = r
+				end
+			end
+			if #small == 0 then break end
+			table.sort(small, function(a, b)
+				if #a.cells ~= #b.cells then return #a.cells < #b.cells end
+				return a.cells[1].order < b.cells[1].order
+			end)
+			local r = small[1]
+			local edges, rank = {}, {}
+			local list = {}
+			for _, c in ipairs(r.cells) do
+				for n = 1, 8 do
+					local nb = cells[key(c.i + N8[n][1], c.j + N8[n][2])]
+					local other = nb and nb.region
+					if other and other ~= r then
+						if not edges[other] then
+							edges[other] = 0
+							list[#list + 1] = other
+						end
+						-- An edge counts 1, a corner contact a little.
+						edges[other] = edges[other] + (n <= 4 and 1 or 0.01)
+					end
+				end
+			end
+			-- A merge into another belt must not put the fragment two belts
+			-- from one of its other neighbours: such a neighbour cannot take it.
+			local function smooth_with(belt)
+				for _, c in ipairs(r.cells) do
+					for n = 1, 8 do
+						local nb = cells[key(c.i + N8[n][1], c.j + N8[n][2])]
+						if nb and nb.region ~= r and math.abs(nb.belt - belt) > 1 then
+							return false
+						end
+					end
+				end
+				return true
+			end
+			local best, best_key
+			for _, other in ipairs(list) do
+				if other.belt == r.belt or smooth_with(other.belt) then
+					rank[other] = (other.belt == r.belt and 1000 or 0) + edges[other]
+					if not best or rank[other] > best_key + 1e-12 or
+							(math.abs(rank[other] - best_key) <= 1e-12 and
+								other.cells[1].order < best.cells[1].order) then
+						best, best_key = other, rank[other]
+					end
+				end
+			end
+			if not best then
+				-- An isolated fragment (an islet), or one that no neighbour can
+				-- take without a two-belt step: it stays a small region.
+				r.stuck = true
+			else
+				for _, c in ipairs(r.cells) do
+					c.region = best
+					c.kind = best.kind
+					c.belt = best.belt
+					best.cells[#best.cells + 1] = c
+				end
+				sort_cells(best)
+				r.cells = {}
+				merged_away[r] = true
+			end
+		end
+		local kept = {}
+		for _, r in ipairs(regions) do
+			if not merged_away[r] then kept[#kept + 1] = r end
+		end
+		regions = kept
+	end
+	-- The cells' kinds and belts before the merges: the fallback below
+	-- rebuilds from them.
+	local before = {}
+	for idx, c in ipairs(order) do before[idx] = {c.kind, c.belt} end
+	flood()
+	-- Each kind's largest full-size component, before the merges (the
+	-- guard of the fallback below).
+	local whole = {}
+	for _, reg in ipairs(regions) do
+		if #reg.cells >= min_size(reg) and
+				(not whole[reg.kind] or #reg.cells > #whole[reg.kind].cells) then
+			whole[reg.kind] = reg
+		end
+	end
+	merge()
+
+	-- A quest-named kind forms a region (Round 46): a kind whose recipe row
+	-- sets `quest_target` (a quest's area or text names it) and that has no
+	-- region after the merges takes a compact block of MIN_CELLS cells of
+	-- its belt outside camps, and the regions are built again. The block
+	-- grows from the belt's best cell for the kind's type (its shore, bank,
+	-- swamp or forest share, or for highland its slope or height over the
+	-- zone median), taking the best neighbour next (then the nearest to the
+	-- seed, then grid order); an open kind, or one whose type no cell of the
+	-- belt shows, takes the cells of the belt's commonest other type. A seed
+	-- whose ground cannot hold the block passes to the next. A block never
+	-- takes a cell of any kind's largest full-size component (or, for a
+	-- kind that formed only through the merges, of its largest region), so
+	-- every kind that formed keeps it whole (a loss would be a warning).
+	-- Other kinds keep the terrain's answer: no region where their ground
+	-- is absent. A block is routine: a note (`map.notes`, logged at action
 	-- level); a kind whose belt has no room for one is a warning.
 	local SHARE = {
 		shore = function(c) return c.shore end,
@@ -1550,25 +1661,30 @@ function M.build(zone_id, q, recipe)
 			return math.max(c.slope / M.HIGH_SLOPE, (c.h - median) / math.max(1, high_line - median))
 		end,
 	}
-	-- A block takes no cell a full-size component needs to stay full size
-	-- (`spare`: its cells above the minimum), so no kind that forms is lost.
-	local formed, spare = {}, {}
+	local formed, largest = {}, {}
 	for _, r in ipairs(regions) do
-		if #r.cells >= min_size(r) then
-			formed[r.kind] = true
-			spare[r] = #r.cells - min_size(r)
-		end
+		formed[r.kind] = true
+		if not largest[r.kind] or #r.cells > #largest[r.kind].cells then largest[r.kind] = r end
 	end
-	local taken, blocks = {}, 0
+	local missing = {}
 	for _, kind in ipairs(recipe.kinds) do
-		if not formed[kind] then
+		if kind.quest_target and not formed[kind] then missing[#missing + 1] = kind end
+	end
+	map.kind_blocks = 0
+	if #missing > 0 then
+		local protected = {}
+		for _, kind in ipairs(recipe.kinds) do
+			local keep = whole[kind] or largest[kind]
+			for _, c in ipairs(keep and keep.cells or {}) do protected[c] = true end
+		end
+		for idx, c in ipairs(order) do
+			c.kind, c.belt, c.region = before[idx][1], before[idx][2], nil
+		end
+		local taken = {}
+		for _, kind in ipairs(missing) do
 			local b = kind.belt.index
 			local function free(c)
-				return c.belt == b and not c.camp and not taken[c] and (spare[c.region] or 1) > 0
-			end
-			-- a component's spare cells left for the block being grown
-			local function room(c, used)
-				return not spare[c.region] or spare[c.region] > (used[c.region] or 0)
+				return c.belt == b and not c.camp and not taken[c] and not protected[c]
 			end
 			local score, cands = {}, {}
 			local share, rule = SHARE[kind.type], kind.type .. " share"
@@ -1604,15 +1720,14 @@ function M.build(zone_id, q, recipe)
 			local tried, block = {}, nil
 			for _, seed in ipairs(cands) do
 				if not tried[seed] then
-					local list, inside, used = {seed}, {[seed] = true}, {}
+					local list, inside = {seed}, {[seed] = true}
 					tried[seed] = true
-					if spare[seed.region] then used[seed.region] = 1 end
 					while #list < M.MIN_CELLS do
 						local best, bs, bd
 						for _, cur in ipairs(list) do
 							for n = 1, 8 do
 								local nb = cells[key(cur.i + N8[n][1], cur.j + N8[n][2])]
-								if nb and not inside[nb] and free(nb) and room(nb, used) then
+								if nb and not inside[nb] and free(nb) then
 									local v = score[nb] or 0
 									local d = (nb.i - seed.i) ^ 2 + (nb.j - seed.j) ^ 2
 									if not best or v > bs or (v == bs and (d < bd or
@@ -1626,7 +1741,6 @@ function M.build(zone_id, q, recipe)
 						list[#list + 1] = best
 						inside[best] = true
 						tried[best] = true
-						if spare[best.region] then used[best.region] = (used[best.region] or 0) + 1 end
 					end
 					if #list >= M.MIN_CELLS then
 						block = list
@@ -1638,9 +1752,8 @@ function M.build(zone_id, q, recipe)
 				for _, c in ipairs(block) do
 					c.kind = kind
 					taken[c] = true
-					if spare[c.region] then spare[c.region] = spare[c.region] - 1 end
 				end
-				blocks = blocks + 1
+				map.kind_blocks = map.kind_blocks + 1
 				notes[#notes + 1] = ("kind %s of belt %s forms no region: it takes a block " ..
 					"of %d cells by %s"):format(kind.id, kind.belt.id, #block, rule)
 			else
@@ -1648,95 +1761,15 @@ function M.build(zone_id, q, recipe)
 					"no block of %d cells"):format(kind.id, kind.belt.id, M.MIN_CELLS)
 			end
 		end
-	end
-	map.kind_blocks = blocks
-	if blocks > 0 then
-		for _, c in ipairs(order) do c.region = nil end
 		flood()
-	end
-	local function sort_cells(r)
-		table.sort(r.cells, function(a, b) return a.order < b.order end)
-	end
-	for _, r in ipairs(regions) do sort_cells(r) end
-
-	-- Merge fragments below the minimum into the neighbour region they
-	-- share most edges with (same belt first). Smallest first.
-	local merged_away = {}
-	while true do
-		local small = {}
-		for _, r in ipairs(regions) do
-			if not merged_away[r] and not r.stuck and #r.cells < min_size(r) then
-				small[#small + 1] = r
+		merge()
+		local now = {}
+		for _, r in ipairs(regions) do now[r.kind] = true end
+		for _, kind in ipairs(recipe.kinds) do
+			if formed[kind] and not now[kind] then
+				warnings[#warnings + 1] = ("kind %s lost its region to a fallback block"):format(kind.id)
 			end
 		end
-		if #small == 0 then break end
-		table.sort(small, function(a, b)
-			if #a.cells ~= #b.cells then return #a.cells < #b.cells end
-			return a.cells[1].order < b.cells[1].order
-		end)
-		local r = small[1]
-		local edges, rank = {}, {}
-		local list = {}
-		for _, c in ipairs(r.cells) do
-			for n = 1, 8 do
-				local nb = cells[key(c.i + N8[n][1], c.j + N8[n][2])]
-				local other = nb and nb.region
-				if other and other ~= r then
-					if not edges[other] then
-						edges[other] = 0
-						list[#list + 1] = other
-					end
-					-- An edge counts 1, a corner contact a little.
-					edges[other] = edges[other] + (n <= 4 and 1 or 0.01)
-				end
-			end
-		end
-		-- A merge into another belt must not put the fragment two belts
-		-- from one of its other neighbours: such a neighbour cannot take it.
-		local function smooth_with(belt)
-			for _, c in ipairs(r.cells) do
-				for n = 1, 8 do
-					local nb = cells[key(c.i + N8[n][1], c.j + N8[n][2])]
-					if nb and nb.region ~= r and math.abs(nb.belt - belt) > 1 then
-						return false
-					end
-				end
-			end
-			return true
-		end
-		local best, best_key
-		for _, other in ipairs(list) do
-			if other.belt == r.belt or smooth_with(other.belt) then
-				rank[other] = (other.belt == r.belt and 1000 or 0) + edges[other]
-				if not best or rank[other] > best_key + 1e-12 or
-						(math.abs(rank[other] - best_key) <= 1e-12 and
-							other.cells[1].order < best.cells[1].order) then
-					best, best_key = other, rank[other]
-				end
-			end
-		end
-		if not best then
-			-- An isolated fragment (an islet), or one that no neighbour can
-			-- take without a two-belt step: it stays a small region.
-			r.stuck = true
-		else
-			for _, c in ipairs(r.cells) do
-				c.region = best
-				c.kind = best.kind
-				c.belt = best.belt
-				best.cells[#best.cells + 1] = c
-			end
-			sort_cells(best)
-			r.cells = {}
-			merged_away[r] = true
-		end
-	end
-	do
-		local kept = {}
-		for _, r in ipairs(regions) do
-			if not merged_away[r] then kept[#kept + 1] = r end
-		end
-		regions = kept
 	end
 
 	-- Split regions above the maximum into compact parts: farthest-point

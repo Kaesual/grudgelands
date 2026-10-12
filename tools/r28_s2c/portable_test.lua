@@ -14,9 +14,9 @@
 --    reaches its top.
 -- C. The shipped recipes of the six zones parse with the game's own
 --    spawn_regions_core.lua against the catalogue and the served band.
--- D. Leaders on every seed (synthetic world): a kind without ground takes a
---    block (Round 46); where its belt has no room for one, its leader falls
---    back to the belt's open kind, then to the belt's largest region; two
+-- D. Leaders on every seed (synthetic world): a kind without a region falls
+--    back to the belt's open kind, then to the belt's largest region (a
+--    quest-named kind without room for its block, Round 46: a warning); two
 --    leaders of one kind stand LEADER_SPACING apart; the level stays.
 -- E. Every shipped recipe on the real world of seed 7: every leader stands
 --    inside its belt and adjacent regions (eight neighbours) are at most one
@@ -197,43 +197,45 @@ local function skind(id, role, density)
 	return {id = id, name = id, day = {{role = role, weight = 1}},
 		night = {{role = role, weight = 1}}, density = density or "normal"}
 end
--- `top_share`: the top belt's share (default 50; 1.2 gives it 10 cells, too
--- few for a kind without ground to take a block, Round 46).
-local function srecipe(top_kinds, leaders, top_share)
-	top_share = top_share or 50
+local function srecipe(top_kinds, leaders)
 	return {from = {border = SC}, to = {border = SB}, belts = {
-		{id = "low", share = 100 - top_share, levels = {11, 14}, kinds = {open = skind("low_open", "low")}},
-		{id = "high", share = top_share, levels = {15, 20}, kinds = top_kinds}},
+		{id = "low", share = 50, levels = {11, 14}, kinds = {open = skind("low_open", "low")}},
+		{id = "high", share = 50, levels = {15, 20}, kinds = top_kinds}},
 		leaders = leaders}
 end
 local function sbuild(q, recipe)
 	return CORE.build(SA, q, CORE.parse_recipe(SA, recipe, SCTX))
 end
 do
-	-- No forest anywhere: since Round 46 the kind takes a block of its belt
-	-- and its leader stands in it.
+	-- No forest anywhere: the kind has no region; its leader falls back to
+	-- the belt's open kind.
 	local q = synthetic("grug_meadows")
-	local wood = {open = skind("high_open", "high"), forest = skind("high_wood", "high")}
 	local chief = {{role = "chief", at = {kind = "high_wood", pick = "farthest_from_roads"}, respawn = 300}}
-	local m = sbuild(q, srecipe(wood, chief))
+	local function wood(flag)
+		local w = {open = skind("high_open", "high"), forest = skind("high_wood", "high")}
+		w.forest.quest_target = flag
+		return w
+	end
+	local m = sbuild(q, srecipe(wood(nil), chief))
 	local l = m.leaders[1]
-	check(#m.problems == 0 and l and l.fallback == nil and l.region.kind.id == "high_wood" and
-		l.region.size >= CORE.MIN_CELLS and m.kind_blocks == 1, "D: a kind without ground takes a block")
-	-- A belt too small for that block (10 cells): the belt's open kind.
-	m = sbuild(q, srecipe(wood, chief, 1.2))
-	l = m.leaders[1]
 	check(#m.problems == 0 and l and l.fallback == "high_open" and l.region.kind.id == "high_open" and
-		l.region.belt == 2 and l.level == 20 and m.kind_blocks == 0 and #m.warnings == 1 and
+		l.region.belt == 2 and l.level == 20 and m.kind_blocks == 0,
+		"D: a kind without a region falls back to the belt's open kind")
+	-- Quest-named (Round 46): the belt is one part of the open kind, which a
+	-- block never cuts, so there is no room: a warning, the same chain.
+	m = sbuild(q, srecipe(wood(true), chief))
+	l = m.leaders[1]
+	check(#m.problems == 0 and l and l.fallback == "high_open" and m.kind_blocks == 0 and #m.warnings == 1 and
 		m.warnings[1]:find("kind high_wood of belt high forms no region and its belt holds no block",
 			1, true) ~= nil,
-		"D: a kind without a region falls back to the belt's open kind (no room for a block: a warning)")
+		"D: a quest-named kind without room for a block: a warning, the leader falls back")
 	check(CORE.stats(m).leaders[1].fallback == "high_open", "D: stats name the fallback")
-	-- Neither the kind nor the open kind has a region (the small top belt is
-	-- swamp and its sea edge a shore kind): the belt's largest region.
+	-- Neither the kind nor the open kind has a region (the top belt is swamp
+	-- and its sea edges a shore kind): the belt's largest region.
 	q = synthetic("grug_swamp")
 	m = sbuild(q, srecipe({open = skind("high_open", "high"), swamp = skind("high_fen", "high", "sparse"),
 		shore = skind("high_strand", "high", "dense"), forest = skind("high_wood", "high")},
-		{{role = "chief", at = {kind = "high_wood", pick = "farthest_from_roads"}, respawn = 300}}, 1.2))
+		{{role = "chief", at = {kind = "high_wood", pick = "farthest_from_roads"}, respawn = 300}}))
 	l = m.leaders[1]
 	local largest
 	for _, r in ipairs(m.regions) do

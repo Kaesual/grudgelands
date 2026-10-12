@@ -26,6 +26,11 @@ the Round 28 quest format on every seed:
     a recipe (`zone/id`, a bare id is the file's zone) that is placed on
     every seed.
 
+Every kind a quest's area or a placeholder names carries `"quest_target":
+true` in its recipe row (the region builder gives such a kind a region on
+every seed, Round 46), and no other kind does; tools/r28_regions/
+quest_kinds.py sets the flags. A difference is MISSING.
+
 A Round 31 PvP POI (a fortress or Battlegrounds camp, by its settlement
 key) is a fixed catalogue anchor on every seed: as an area its garrison's
 roles (r28common.pvp_pois, the game's catalogue) stand there by day and by
@@ -241,6 +246,71 @@ class World:
         return gaps, problems
 
 
+def quest_named_kinds(quests, spawns):
+    """({zone: {kind id}} the quests name, {zone: {kind id}} whose recipe row
+    sets `quest_target`): a kind an objective's or quest drop's `area` names,
+    or a placeholder target of a title or text that resolves to a kind (the
+    order of World.placeholder_target). A named kind carries the flag, so
+    the region builder gives it a region on every seed (Round 46)."""
+    kinds, flagged, leader_zone, places = {}, {}, {}, {}
+    for path in sorted(Path(spawns).glob("*.spawns.json")):
+        data = json.loads(path.read_text())
+        recipe = data.get("recipe")
+        if not recipe:
+            continue
+        zone = data["zone"]
+        kinds[zone], flagged[zone] = set(), set()
+        for belt in recipe.get("belts") or []:
+            for kind in (belt.get("kinds") or {}).values():
+                kinds[zone].add(kind["id"])
+                if kind.get("quest_target") is True:
+                    flagged[zone].add(kind["id"])
+        for row in recipe.get("leaders") or []:
+            leader_zone[row["role"]] = zone
+        places[zone] = {row["id"] for row in recipe.get("places") or []}
+    pois, clash = C.pvp_pois(), C.clash_sites()
+    named = {}
+
+    def add(zone, kid):
+        if kid in kinds.get(zone, ()):
+            named.setdefault(zone, set()).add(kid)
+
+    for qpath in sorted(Path(quests).glob("*.json")):
+        file_zone = qpath.name.split(".", 1)[0]
+        for quest in json.loads(qpath.read_text()).get("quests") or []:
+            rows = [o for o in quest.get("objectives") or [] if o.get("type") in ("kill", "item")]
+            rows += quest.get("quest_drops") or []
+            for row in rows:
+                if row.get("roles") and row.get("area"):
+                    add(*area_ref(row["area"], file_zone))
+            for key in ("title", "text"):
+                for _, args in PLACEHOLDER.findall(quest.get(key) or ""):
+                    qualified, _, rest = args.split(":")[-1].rpartition("/")
+                    if rest in leader_zone and (not qualified or qualified == leader_zone[rest]):
+                        continue
+                    if rest in pois and (not qualified or qualified == pois[rest]["zone"]):
+                        continue
+                    if rest in clash and (not qualified or qualified == clash[rest]["zone"]):
+                        continue
+                    if rest in places.get(qualified or file_zone, ()):
+                        continue
+                    add(qualified or file_zone, rest)
+    return named, flagged
+
+
+def flag_problems(named, flagged):
+    """The kinds whose `quest_target` flag differs from the quests' names."""
+    out = []
+    for zone in sorted(set(named) | set(flagged)):
+        for kid in sorted(named.get(zone, set()) - flagged.get(zone, set())):
+            out.append("%s/%s: a quest names it, its recipe row lacks \"quest_target\": true "
+                       "(tools/r28_regions/quest_kinds.py)" % (zone, kid))
+        for kid in sorted(flagged.get(zone, set()) - named.get(zone, set())):
+            out.append("%s/%s: its recipe row sets quest_target, no quest names it "
+                       "(tools/r28_regions/quest_kinds.py)" % (zone, kid))
+    return out
+
+
 def area_ref(area, zone):
     """`zone/id` of an objective's area (a bare id is the file's zone)."""
     return area.split("/", 1) if "/" in area else (zone, area)
@@ -334,10 +404,13 @@ def main():
         for quest in data.get("quests") or []:
             check_quest(world, quest, file_zone, new)
 
+    named, flagged = quest_named_kinds(args.quests, args.spawns)
+    new["missing"].extend(flag_problems(named, flagged))
     missing = new["missing"]
     print("Quest targets against the spawn regions of seeds %s" % ", ".join(seeds))
     print("  targets: ok %d, MISSING on some seed %d, CLOCK %d" % (
         len(new["ok"]), len(missing), len(new["clock"])))
+    print("  quest-named kinds (quest_target): %d" % sum(len(v) for v in named.values()))
     if missing:
         print("MISSING (no region or leader spot on that seed, or no such target):")
         for m in missing:
