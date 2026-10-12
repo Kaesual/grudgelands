@@ -845,4 +845,4 @@ already launched projectiles continue. Gravity is unchanged. Stun and root have
 independent lifetimes; root/slow immunity does not grant stun immunity. Death
 and disconnect clear player control. Nova respects accepted damage/PvP gates
 and movement immunity. Its baseline excludes Fireball-specific talents; Rimebite
-adds 25 % of a base hit and half spell power once before spell scaling.
+adds 25 % of a spell base hit and half spell power once before spell scaling.

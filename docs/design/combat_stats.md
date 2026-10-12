@@ -74,8 +74,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   caster weapon in the slot (empty, another family, broken) adds 0: the
   spell base is the level half alone, half of today's (the user,
   2026-10-12; Mage and Priest start with the Bronze Staff). Fireball, Ice Nova and Smite add spell power to it
-  (`grug_core.spell_base`); talent damage terms stay percentages of `B(L)`,
-  and healing keeps the support factor.
+  (`grug_core.spell_base`). The Mage's and Priest's talent damage terms
+  follow it as percentages of a **spell base hit** `B(L) × S / Bw(L)`:
+  exactly today's with an own-level staff or wand, scaled like the spell
+  with an older one, half without one (the user, 2026-10-12). Warrior and
+  Scout talent terms stay on `B(L)`; healing keeps the support factor.
 - **Support factor** (Round 36) = `1 + gear Int / 10 / B(L)` on
   pool-derived healing and absorbs, where gear Int is the Intelligence above
   the class's own level growth (`grug_classes.get_support_factor`). Gear
@@ -93,7 +96,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   settlement; a positive authored damage value settles to at least 1.
   `B(L)` is also "a base hit": talent damage terms (and Charge's 12 %) are
   percentages of it, so they keep their share at every level
-  ([skill_trees.md](skill_trees.md) §2.10, Round 35).
+  ([skill_trees.md](skill_trees.md) §2.10, Round 35); a caster's terms use
+  the spell base hit above (Round 46).
 - **Support values are already level-derived and are never level-scaled a
   second time.** Heal and Shield are each 25% of `P(L)`; each Mend tick
   is 8%. Multiply that pool share by the support factor, then pass the

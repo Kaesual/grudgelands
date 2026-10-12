@@ -17,6 +17,11 @@
 --   E. the real Fireball and Ice Nova value functions use the spell base, no
 --      spell site reads baseline_weapon_damage any more, Smite uses it;
 --   F. the staff and wand tooltip line matches the combat value.
+--   G. the caster talent amounts (the user's answer of 2026-10-12): the real
+--      talent_level_amount gives a Mage or Priest damage key its share of
+--      the base hit times spell base / Bw(L): today's numbers with an
+--      own-level staff or wand at L1/30/60, scaled with a first-tier weapon
+--      and halved without one; Warrior and Scout keys stay on the base hit.
 --
 -- Usage (repo root): luajit tools/r46_cb/portable_test.lua [REPO]
 local ROOT = arg[1] or "."
@@ -222,7 +227,7 @@ grug_core.get_equipped_weapon = function() return slot end
 grug_items = {effective_ilvl = function(stack)
 	return stack._ilvl or stack:get_definition()._grug_ilvl
 end}
-assert(loadstring(cut(KITS, "\n(local function caster_weapon_ilvl%(player%).-\n" ..
+assert(loadstring(cut(KITS, "\n(function grug_abilities%.caster_weapon_ilvl%(player%).-\n" ..
 	"function grug_abilities%.spell_base%(player%).-\nend)\n", "caster lookup")))()
 slot = stack_of("staff", {def_ilvl = 1})
 near(grug_abilities.spell_base({}), 14.5, "D the Bronze Staff at L60")
@@ -290,5 +295,53 @@ check(grug_gear.spell_base_line("sword", 30) == nil and
 	grug_gear.spell_base_line("greataxe", 30) == nil and
 	grug_gear.spell_base_line("dagger", 30) == nil and
 	grug_gear.spell_base_line("bow", 30) == nil, "F no line on other families")
+
+------------------------------------------------------------------------------
+-- G: the caster talent amounts.
+------------------------------------------------------------------------------
+grug_xp = {get_level = function() return level end}
+grug_core.armor_k = function(l) return 20 + 0.5 * l end
+assert(loadstring(cut(read("mods/PLAYER/grug_classes/talents.lua"),
+	"\n(local LEVEL_SCALED_KEYS = %b{}.-\nfunction grug_classes%.talent_level_amount" ..
+	"%(player, key, value%).-\nend)\n", "the talent level amounts")))()
+local SPELL = {"fireball_damage_add", "fireball_splash", "whitehot_damage",
+	"cinderfall_damage", "control_damage_add", "smite_damage_add",
+	"smite_damage_while_shielded_add", "word_of_ruin_damage"}
+local spell_set = {}
+for _, key in ipairs(SPELL) do
+	spell_set[key] = true
+	check(grug_classes.TALENT_SPELL_KEYS[key] == true, "G " .. key .. " follows the weapon")
+end
+for key, unit in pairs(grug_classes.TALENT_LEVEL_SCALED_KEYS) do
+	if not spell_set[key] then
+		check(not grug_classes.TALENT_SPELL_KEYS[key], "G " .. key .. " stays on the base hit")
+	end
+end
+grug_items = {effective_ilvl = function(stack) return stack._ilvl end}
+local amount = grug_classes.talent_level_amount
+for _, l in ipairs({1, 30, 60}) do
+	level = l
+	local today = 20 * grug_core.baseline_melee_total(l) / 100
+	local ratio = grug_core.spell_base(l, 1) / grug_core.baseline_weapon_damage(l)
+	for _, key in ipairs(SPELL) do
+		slot = stack_of("wand", {ilvl = l})
+		check(amount({}, key, 20) == today, "G own-level wand " .. key .. " at L" .. l)
+		slot = stack_of("staff", {ilvl = l})
+		check(amount({}, key, 20) == today, "G own-level staff " .. key .. " at L" .. l)
+		slot = stack_of("staff", {ilvl = 1})
+		near(amount({}, key, 20), today * ratio, "G T1 staff " .. key .. " at L" .. l)
+		slot = nil
+		near(amount({}, key, 20), today * 0.5, "G no weapon " .. key .. " at L" .. l)
+	end
+	for _, key in ipairs({"melee_damage_add", "loose_damage_add", "longshot_damage_add"}) do
+		slot = nil
+		check(amount({}, key, 20) == today, "G " .. key .. " unchanged at L" .. l)
+	end
+end
+level = 60
+slot = stack_of("staff", {ilvl = 1})
+near(amount({}, "fireball_damage_add", 20), 20 * 43.7 / 100 * 14.5 / 25,
+	"G Tinder 5/5 with the Bronze Staff at L60")
+check(amount({}, "crit_chance_add", 5) == 5, "G an unscaled key is its value")
 
 print(("R46 CB PASS (%d checks)"):format(checks))

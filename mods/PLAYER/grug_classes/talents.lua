@@ -173,7 +173,8 @@ grug_classes.TALENT_WINDOW_KEYS = WINDOW_KEYS
 --             gear is exactly 100 %);
 --   armor  -- % of grug_core.armor_k(level), the rating that halves the hit
 --             of a same-level attacker.
--- Like the flat values they replace, the amounts do not grow with gear.
+-- Like the flat values they replace, the amounts do not grow with gear --
+-- except the caster keys below, which follow the staff or wand (Round 46).
 local LEVEL_SCALED_KEYS = {
 	armor_percent_add = "armor",
 	armor_rating_add_low_hp = "armor",
@@ -192,12 +193,45 @@ local LEVEL_SCALED_KEYS = {
 
 grug_classes.TALENT_LEVEL_SCALED_KEYS = LEVEL_SCALED_KEYS
 
+-- The Mage's and Priest's damage keys (Round 46, the user's answer of
+-- 2026-10-12): they follow the caster weapon like the spell they add to.
+-- Their reference is a "spell base hit", the base hit times spell base /
+-- Bw(L) (grug_core.spell_base), so an own-level staff or wand keeps every
+-- number exactly, an older one weakens the talent part in the same
+-- proportion as the spell, and none halves it. Warrior and Scout keys stay
+-- on the base hit.
+local SPELL_KEYS = {
+	fireball_damage_add = true,
+	fireball_splash = true,
+	whitehot_damage = true,
+	cinderfall_damage = true,
+	control_damage_add = true,
+	smite_damage_add = true,
+	smite_damage_while_shielded_add = true,
+	word_of_ruin_damage = true,
+}
+
+grug_classes.TALENT_SPELL_KEYS = SPELL_KEYS
+
 local function level_reference(unit, level)
 	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
 	if unit == "armor" then
 		return grug_core.armor_k(level)
 	end
 	return grug_core.baseline_melee_total(level)
+end
+
+-- Spell base / Bw(L) for the player's caster weapon at `level`: 1 with an
+-- own-level staff or wand, 0.5 without one. grug_abilities owns the weapon
+-- lookup and loads after this mod; without it the ratio is 1.
+function grug_classes.spell_weapon_ratio(player, level)
+	local abilities = rawget(_G, "grug_abilities")
+	if not abilities or type(abilities.caster_weapon_ilvl) ~= "function" then
+		return 1
+	end
+	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
+	return grug_core.spell_base(level, abilities.caster_weapon_ilvl(player))
+		/ grug_core.baseline_weapon_damage(level)
 end
 
 -- What a stored value of `key` is worth at the player's level: the value
@@ -208,7 +242,12 @@ function grug_classes.talent_level_amount(player, key, value)
 	if not unit then
 		return value
 	end
-	return value * level_reference(unit, grug_xp.get_level(player)) / 100
+	local level = grug_xp.get_level(player)
+	local amount = value * level_reference(unit, level) / 100
+	if SPELL_KEYS[key] then
+		amount = amount * grug_classes.spell_weapon_ratio(player, level)
+	end
+	return amount
 end
 
 --
@@ -523,7 +562,7 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "tinder", tree = "ember", chain = "blaze", tier = 1,
 	name = "Tinder",
-	description = "Fireball damage +4% of a base hit per rank.",
+	description = "Fireball damage +4% of a spell base hit per rank.",
 	effects = {fireball_damage_add = {4, 8, 12, 16, 20}},
 })
 grug_classes.register_talent({
@@ -536,7 +575,7 @@ grug_classes.register_talent({
 	id = "brand", tree = "ember", chain = "blaze", tier = 3,
 	keystone = true, replaces = "fireball",
 	name = "Brand",
-	description = "Fireball's impact splashes 6 / 9 / 12% of a base hit " ..
+	description = "Fireball's impact splashes 6 / 9 / 12% of a spell base hit " ..
 		"plus half your spell power to every other hostile within 2 m.",
 	effects = {fireball_splash = {6, 9, 12}},
 })
@@ -546,7 +585,7 @@ grug_classes.register_talent({
 	name = "Whitehot",
 	description = "Once every 60 s, the first Fireball that crits starts " ..
 		"8 s in which Fireball costs 3% instead of 6% base mana and deals " ..
-		"+30% of a base hit.",
+		"+30% of a spell base hit.",
 	effects = {whitehot_window = {8}, whitehot_damage = {30}},
 })
 grug_classes.register_talent({
@@ -567,7 +606,7 @@ grug_classes.register_talent({
 	keystone = true, ability = "cinderfall",
 	name = "Cinderfall",
 	description = "New skill: 12% base mana, 10 s cooldown, 20 m; a burst dealing " ..
-		"15 / 20 / 25% of a base hit plus spell power to every hostile " ..
+		"15 / 20 / 25% of a spell base hit plus spell power to every hostile " ..
 		"within 3 m of it.",
 	effects = {cinderfall_damage = {15, 20, 25}},
 })
@@ -609,8 +648,8 @@ grug_classes.register_talent({
 	id = "rimebite", tree = "rime", chain = "frost", tier = 4,
 	capstone = true,
 	name = "Rimebite",
-	description = "Every root Ice Nova applies also deals 25% of a base " ..
-		"hit plus half your spell power on application.",
+	description = "Every root Ice Nova applies also deals 25% of a spell " ..
+		"base hit plus half your spell power on application.",
 	effects = {control_damage_add = {25}},
 })
 grug_classes.register_talent({
@@ -716,7 +755,7 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "sharpened_word", tree = "reckoning", chain = "word", tier = 1,
 	name = "Sharpened Word",
-	description = "Smite damage +4% of a base hit per rank.",
+	description = "Smite damage +4% of a spell base hit per rank.",
 	effects = {smite_damage_add = {4, 8, 12, 16, 20}},
 })
 grug_classes.register_talent({
@@ -730,7 +769,7 @@ grug_classes.register_talent({
 	keystone = true, ability = "word_of_ruin",
 	name = "Word of Ruin",
 	description = "New skill: 8% base mana, 12 s cooldown, 20 m; " ..
-		"18 / 24 / 30% of a base hit plus spell power damage, healing you " ..
+		"18 / 24 / 30% of a spell base hit plus spell power damage, healing you " ..
 		"for 50% of it.",
 	effects = {word_of_ruin_damage = {18, 24, 30}},
 })
@@ -753,7 +792,7 @@ grug_classes.register_talent({
 	id = "warded_wrath", tree = "reckoning", chain = "wrath", tier = 2,
 	name = "Warded Wrath",
 	description = "While you carry an absorb shield, Smite deals " ..
-		"+4 / 8 / 12 / 16% of a base hit.",
+		"+4 / 8 / 12 / 16% of a spell base hit.",
 	effects = {smite_damage_while_shielded_add = {4, 8, 12, 16}},
 })
 grug_classes.register_talent({

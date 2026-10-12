@@ -131,7 +131,8 @@ end
 -- The item level of the caster weapon (a staff or a wand) in the Weapon
 -- slot, nil without one; get_equipped_weapon already drops a broken or
 -- unusable stack. Upgrades and the crown count (grug_items.effective_ilvl).
-local function caster_weapon_ilvl(player)
+-- Public: the caster talent amounts read it too (grug_classes talents.lua).
+function grug_abilities.caster_weapon_ilvl(player)
 	local weapon = grug_core.get_equipped_weapon(player)
 	if not weapon or weapon:is_empty() then
 		return nil
@@ -150,7 +151,7 @@ end
 -- ruling 10): half from the level, half from the caster weapon.
 function grug_abilities.spell_base(player)
 	return grug_core.spell_base(grug_core.get_player_level(player),
-		caster_weapon_ilvl(player))
+		grug_abilities.caster_weapon_ilvl(player))
 end
 
 -- Heal, Mend, Shield, Recompense and Glacial Ward: a share of the base pool

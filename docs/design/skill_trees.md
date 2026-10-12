@@ -286,13 +286,13 @@ with every weapon, +3 per hit taken, −5/s out of combat).
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `spell base + spell power` raw value gains 4 / 8 / 12 / 16 / 20 % of a base hit before the damage fit (§2.10) | the Fireball values in `kits.lua` | `fireball_damage_add` |
+| 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `spell base + spell power` raw value gains 4 / 8 / 12 / 16 / 20 % of a spell base hit before the damage fit (§2.10) | the Fireball values in `kits.lua` | `fireball_damage_add` |
 | 2 | **Firebrand** | Blaze | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance (30 % cap holds) | `grug_classes.get_crit_chance_raw` | `crit_chance_add` |
-| 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `6 / 9 / 12 % of a base hit + spell power / 2` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same homing flight | the Fireball projectile's on-hit plus its radius loop | `fireball_splash` |
-| 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+30 % of a base hit**. *Limit: 8 s, **60 s cooldown** on the trigger.* | the central cost seam `grug_abilities.cost_for` and the Fireball values | `whitehot_window`, `whitehot_damage` |
+| 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `6 / 9 / 12 % of a spell base hit + spell power / 2` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same homing flight | the Fireball projectile's on-hit plus its radius loop | `fireball_splash` |
+| 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+30 % of a spell base hit**. *Limit: 8 s, **60 s cooldown** on the trigger.* | the central cost seam `grug_abilities.cost_for` and the Fireball values | `whitehot_window`, `whitehot_damage` |
 | 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes.get_pool_breakdown` | `max_mana_percent_add` |
 | 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball acquisition range 20 m → 21.5 / 23 / 24.5 / 26 m at release; no later range expiry | `grug_abilities.get_range` (Fireball's `range_talent`) and the current combat ray at release; the flight distance at Fireball's spawn call | `fireball_range_add` |
-| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first solid contact or actor the crosshair ray meets, dealing `15 / 20 / 25 % of a base hit + spell power` to every hostile within 3 m of it | new (`cinderfall` in `kits.lua`); `grug_core.combat_ray` plus the radius loop | `cinderfall_damage` |
+| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first solid contact or actor the crosshair ray meets, dealing `15 / 20 / 25 % of a spell base hit + spell power` to every hostile within 3 m of it | new (`cinderfall` in `kits.lua`); `grug_core.combat_ray` plus the radius loop | `cinderfall_damage` |
 | 8 | **Ashfall** | Cinder | 4 | 3 | — | Cinderfall's radius 3 m → 4 / 5 / 6 m | the Cinderfall registration | `cinderfall_radius_add` |
 
 Far Cast increases acquisition reach only. Once released, Fireball follows its
@@ -307,7 +307,7 @@ besides its capstone — see §2.9's note on the bounded pass.
 | 1 | **Deep Chill** | Frost | 1 | 5 | — | Ice Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | the Ice Nova cast in `kits.lua` | `ice_nova_root_add` |
 | 2 | **Hoarfrost** | Frost | 2 | 4 | — | Ice Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | the Ice Nova cast | `ice_nova_slow_add` |
 | 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Ice Nova** | Ice Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | the Ice Nova cast body and its radius origin | `ice_nova_ranged` |
-| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | Ice Nova adds `25 % of a base hit + spell power / 2` to its quarter-Fireball baseline before spell scaling, once per accepted hit | the Ice Nova cast | `control_damage_add` |
+| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | Ice Nova adds `25 % of a spell base hit + spell power / 2` to its quarter-Fireball baseline before spell scaling, once per accepted hit | the Ice Nova cast | `control_damage_add` |
 | 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration ×1.4 / ×1.8 / ×2.2 / ×2.6 / ×3.0 (the base rate is `max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)` mana/s, combat_stats.md §5) | `grug_abilities.mana_regen_rate` | `combat_mana_regen_add` |
 | 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities.effective_cooldown` (Blink's `cooldown_talent`) — **not** the registration constant | `blink_cooldown_sub` |
 | 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool times the support factor (gear Intelligence) for 10 s | new (`glacial_ward` in `kits.lua`); `grug_core.add_absorb` | `glacial_ward_absorb` |
@@ -337,12 +337,12 @@ Mend is Mercy's **keystone**, registered before WP11 and `talent_gated`;
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite's `1.5 × (spell base + spell power)` raw value gains 4 / 8 / 12 / 16 / 20 % of a base hit before the damage fit (§2.10) | the Smite values in `kits.lua` | `smite_damage_add` |
+| 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite's `1.5 × (spell base + spell power)` raw value gains 4 / 8 / 12 / 16 / 20 % of a spell base hit before the damage fit (§2.10) | the Smite values in `kits.lua` | `smite_damage_add` |
 | 2 | **Swift Word** | Word | 2 | 4 | — | Smite cooldown 2 s → 1.9 / 1.8 / 1.7 / 1.6 s | `grug_abilities.effective_cooldown` (Smite's `cooldown_talent`) — **not** the registration constant | `smite_cooldown_sub` |
-| 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8% base mana, 12 s cooldown, 20 m; `18 / 24 / 30 % of a base hit + spell power` damage, healing the Priest for 50 % of it | new (`word_of_ruin` in `kits.lua`); `grug_core.deal_ability_damage` returns the post-crit amount, healed back with `grug_core.heal_player(…, {no_crit = true})` | `word_of_ruin_damage` |
+| 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8% base mana, 12 s cooldown, 20 m; `18 / 24 / 30 % of a spell base hit + spell power` damage, healing the Priest for 50 % of it | new (`word_of_ruin` in `kits.lua`); `grug_core.deal_ability_damage` returns the post-crit amount, healed back with `grug_core.heal_player(…, {no_crit = true})` | `word_of_ruin_damage` |
 | 4 | **Last Word** *(capstone)* | Word | 4 | **1** | **effect** ‼ | while the Priest is below 25 % max HP, Word of Ruin's drain heals for **150 %** of the damage dealt — above the 100 % the pipeline otherwise allows — and the trigger resets Word of Ruin's cooldown, so a second cast drains inside the window. *Limit: 12 s per trigger, **180 s cooldown**.* | the drain half of the Word of Ruin registration | `drain_ratio_override` |
 | 5 | **Hard Faith** | Wrath | 1 | 5 | — | +2 / 4 / 6 / 8 / 10 percentage points crit chance (30 % cap holds) | `grug_classes.get_crit_chance_raw` | `crit_chance_add` |
-| 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+4 / 8 / 12 / 16 % of a base hit` | the Smite values, gated on `grug_core.get_absorb(user) > 0` | `smite_damage_while_shielded_add` |
+| 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+4 / 8 / 12 / 16 % of a spell base hit` | the Smite values, gated on `grug_core.get_absorb(user) > 0` | `smite_damage_while_shielded_add` |
 | 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool times the support factor on a landed cast at most once every 6 s (internal cooldown, Round 35), refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement, `grug_abilities.cost_for` and `grug_core.add_absorb` | `smite_absorb` |
 | 8 | **Hardened** | Wrath | 4 | 3 | — | max HP +2 / 4 / 6% of the class base pool | `grug_classes.get_pool_breakdown` | `max_hp_percent_add` |
 
@@ -475,13 +475,20 @@ consumer still adds it where it added the flat value:
   hit before the scalar; a same-level Fireball with an own-level staff or wand and no other gear is
   exactly 100 %,
   and after the scalar a base hit is one eighth of the base pool (17 / 95 /
-  337 damage at levels 10 / 30 / 60). Tinder, Brand, Whitehot, Cinderfall,
-  Rimebite, Sharpened Word, Warded Wrath, Word of Ruin, Strong Draw, Longshot,
-  Fine Edge; Charge's base damage (12 %) follows the same rule;
+  337 damage at levels 10 / 30 / 60). Strong Draw, Longshot, Fine Edge;
+  Charge's base damage (12 %) follows the same rule;
+- **caster damage — % of a spell base hit** (Round 46, the user's answer of
+  2026-10-12): `B(L) × spell base / Bw(L)` (`combat_stats.md` §2), the base
+  hit scaled like the spell by the staff or wand. With an own-level staff or
+  wand it is exactly the base hit; a first-tier weapon gives 0.58 of it at
+  level 60, no caster weapon 0.5 (`grug_classes.TALENT_SPELL_KEYS`,
+  `spell_weapon_ratio`). Tinder, Brand, Whitehot, Cinderfall, Rimebite,
+  Sharpened Word, Warded Wrath, Word of Ruin;
 - **armour — % of `K(L)`** at the character's own level, the rating that halves
   a same-level hit: Ironbound and Unbroken's emergency rating.
 
-The amounts do not grow with gear, like the flat values they replace, so the
+The amounts do not grow with gear, like the flat values they replace (the
+caster amounts only follow the staff or wand like their spell), so the
 itemization ceiling of `combat_stats.md` §2 stays separate. Each percentage
 kept the former flat value at the middle of the levels where the talent can
 be held (tier 1 level 30, tier 2 35, tier 3 45, tier 4 50); the user then
