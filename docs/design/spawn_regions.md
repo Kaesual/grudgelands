@@ -87,10 +87,11 @@ random numbers, no dependence on table order.
    `open` kind, or a kind whose type no cell of the belt shows, takes the
    cells of the belt's commonest other type. A block never takes the cells a
    full-size part of another kind needs to stay full size, so no kind that
-   forms is lost. The block is a WARNING in the stats and the game's log
-   (like the camp road fallback); where every kind forms nothing changes.
-   Without room for a block (a belt of a few cells) the warning says so and
-   the kind's leader takes the fallback chain of step 8.
+   forms is lost. A block is routine: a note in the stats and an action
+   line in the game's log (not repeated on a cache hit); where every kind
+   forms nothing changes. Without room for a block (a belt of a few cells)
+   the stats and the log carry a WARNING and the kind's leader takes the
+   fallback chain of step 8.
 6. **Population.** A belt maps each type to a **kind**: a name, a day and a
    night roster and a density class. A type without its own entry uses the
    belt's `open` kind (the explicit parent rule). A role's levels in a region

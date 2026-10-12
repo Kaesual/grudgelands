@@ -806,8 +806,9 @@ end
 
 function M.build(zone_id, q, recipe)
 	local CELL, SUB, PITCH = M.CELL, M.SUB, M.PITCH
-	local problems, warnings = {}, {}
-	local map = {zone = zone_id, recipe = recipe, problems = problems, warnings = warnings}
+	local problems, warnings, notes = {}, {}, {}
+	local map = {zone = zone_id, recipe = recipe, problems = problems, warnings = warnings,
+		notes = notes}
 
 	-- Samples: global sample coords (sx, sz) at world (8 sx + 4, 8 sz + 4).
 	local s_owner, s_water, s_h, s_biome, s_prot = {}, {}, {}, {}, {}
@@ -1538,7 +1539,8 @@ function M.build(zone_id, q, recipe)
 	-- an open kind, or one whose type no cell of the belt shows, takes the
 	-- cells of the belt's commonest other type. A seed whose ground cannot
 	-- hold the block passes to the next. Where every kind forms, nothing
-	-- changes; a block is a warning, like the camp fallback.
+	-- changes. A block is routine: a note (`map.notes`, logged at action
+	-- level); a kind whose belt has no room for one is a warning.
 	local SHARE = {
 		shore = function(c) return c.shore end,
 		bank = function(c) return c.bank end,
@@ -1639,7 +1641,7 @@ function M.build(zone_id, q, recipe)
 					if spare[c.region] then spare[c.region] = spare[c.region] - 1 end
 				end
 				blocks = blocks + 1
-				warnings[#warnings + 1] = ("kind %s of belt %s forms no region: it takes a block " ..
+				notes[#notes + 1] = ("kind %s of belt %s forms no region: it takes a block " ..
 					"of %d cells by %s"):format(kind.id, kind.belt.id, #block, rule)
 			else
 				warnings[#warnings + 1] = ("kind %s of belt %s forms no region and its belt holds " ..
@@ -2163,7 +2165,7 @@ function M.stats(map)
 	local n = #map.order
 	local out = {cells = n, belts = {}, kinds = {}, regions = #map.regions,
 		sizes = {}, islet_cells = map.islet_cells, camps = {}, leaders = {}, places = {},
-		problems = map.problems, warnings = map.warnings}
+		problems = map.problems, warnings = map.warnings, notes = map.notes}
 	for b, belt in ipairs(recipe.belts) do
 		out.belts[b] = {id = belt.id, levels = belt.levels, cells = 0}
 	end

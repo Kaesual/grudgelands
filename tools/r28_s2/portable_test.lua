@@ -411,7 +411,8 @@ check(map.leaders[1].x == 400 and map.leaders[1].z == -500 and map.leaders[1].le
 -- Every kind forms a region (Round 46): a kind with no full-size component
 -- takes a compact block of MIN_CELLS cells of its belt; nothing changes
 -- where every kind forms.
-check(build(deep_copy(base)).kind_blocks == 0, "every kind forms: no block")
+map = build(deep_copy(base))
+check(map.kind_blocks == 0 and #map.notes == 0, "every kind forms: no block, no note")
 local function world(over)
 	local zones = {}
 	for k, v in pairs(ZONES) do zones[k] = v end
@@ -444,9 +445,11 @@ local mud = block_of(map, "mudbanks")
 check(bank_cells > 0 and bank_cells < CORE.MIN_CELLS, "the pond gives fewer bank cells than a region (" ..
 	bank_cells .. ")")
 check(mud and mud.size >= CORE.MIN_CELLS and best_bank.region == mud and map.kind_blocks == 1 and
-	#map.warnings == 1 and map.warnings[1]:find("kind mudbanks of belt all forms no region: it takes " ..
-	"a block of 8 cells by bank share", 1, true) ~= nil,
-	"a bank kind without a region takes a block round the best bank cell (" .. tostring(map.warnings[1]) .. ")")
+	#map.warnings == 0 and #map.notes == 1 and map.notes[1]:find("kind mudbanks of belt all forms no " ..
+	"region: it takes a block of 8 cells by bank share", 1, true) ~= nil and
+	CORE.stats(map).notes[1] == map.notes[1],
+	"a bank kind without a region takes a block round the best bank cell, a note (" ..
+	tostring(map.notes[1]) .. ")")
 local again = CORE.build(A, POND, parse(bank_recipe()))
 local same = block_of(again, "mudbanks") ~= nil and block_of(again, "mudbanks").size == mud.size
 for i, c in ipairs(mud.cells) do
@@ -456,8 +459,8 @@ end
 check(same, "the block is deterministic")
 -- No bank ground at all: the belt's commonest other type.
 map = build(bank_recipe())
-check(block_of(map, "mudbanks") and map.warnings[1]:find("by the belt's commonest type open", 1, true) ~= nil,
-	"a bank kind on dry land takes cells of the commonest type (" .. tostring(map.warnings[1]) .. ")")
+check(block_of(map, "mudbanks") and map.notes[1]:find("by the belt's commonest type open", 1, true) ~= nil,
+	"a bank kind on dry land takes cells of the commonest type (" .. tostring(map.notes[1]) .. ")")
 -- An open kind on all-forest land (its sea edges a shore kind) takes cells
 -- of the commonest other type.
 local function forest_recipe()
@@ -468,9 +471,9 @@ local function forest_recipe()
 end
 map = CORE.build(A, world({biome_at = function() return "grug_deep_forest" end}), parse(forest_recipe()))
 check(block_of(map, "all_open") and block_of(map, "all_open").size >= CORE.MIN_CELLS and
-	map.warnings[1]:find("kind all_open of belt all forms no region: it takes a block of 8 cells by " ..
+	map.notes[1]:find("kind all_open of belt all forms no region: it takes a block of 8 cells by " ..
 	"the belt's commonest type forest", 1, true) ~= nil and #map.by_kind.deepwood >= 1,
-	"an open kind on all-forest land takes forest cells (" .. tostring(map.warnings[1]) .. ")")
+	"an open kind on all-forest land takes forest cells (" .. tostring(map.notes[1]) .. ")")
 print("C: builder")
 
 print(("R28 S2 PORTABLE PASS checks=%d"):format(checks))

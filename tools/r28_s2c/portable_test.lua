@@ -223,8 +223,10 @@ do
 	m = sbuild(q, srecipe(wood, chief, 1.2))
 	l = m.leaders[1]
 	check(#m.problems == 0 and l and l.fallback == "high_open" and l.region.kind.id == "high_open" and
-		l.region.belt == 2 and l.level == 20 and m.kind_blocks == 0,
-		"D: a kind without a region falls back to the belt's open kind")
+		l.region.belt == 2 and l.level == 20 and m.kind_blocks == 0 and #m.warnings == 1 and
+		m.warnings[1]:find("kind high_wood of belt high forms no region and its belt holds no block",
+			1, true) ~= nil,
+		"D: a kind without a region falls back to the belt's open kind (no room for a block: a warning)")
 	check(CORE.stats(m).leaders[1].fallback == "high_open", "D: stats name the fallback")
 	-- Neither the kind nor the open kind has a region (the small top belt is
 	-- swamp and its sea edge a shore kind): the belt's largest region.
