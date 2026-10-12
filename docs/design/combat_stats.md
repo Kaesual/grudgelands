@@ -1209,11 +1209,13 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   target first), otherwise from a 20 m ray of its own.
   Relative to the viewer's level L (mobs), a gradient by d = mob level − L
   (Round 46; one integer RGB colour per level, `con_gradient` in
-  `target_frame.lua`):
+  `target_frame.lua`). A mob is gray exactly when its kill would pay the
+  viewer nothing: the frame asks the settlement's own predicate
+  `grug_mobs.player_kill_xp` (`levels.lua`), so the two cannot drift:
 
 | Relation | Color | XP |
 |----------|-------|----|
-| d ≤ −7 | gray `#aaaaaa` | none, "(no XP)" |
+| no XP (d ≤ −7, own faction, critter, `_grug_xp_reward` 0) | gray `#aaaaaa` | none, "(no XP)" |
 | d = −6 … 0 | green `#55ff55` to yellow `#ffff55`, evenly per level | 10–100 % (−15 % per level below) |
 | d = +1 … +5 | yellow to red `#ff5555`, evenly per level | 110–150 % (+10 % per level above) |
 | d > +5 | red `#ff5555` | 150 % |

@@ -6,8 +6,10 @@
 -- the thing the player is LOOKING at, colored relative to the viewer.
 --
 -- MOBS — con color against the viewer's own level L, a gradient by
--- d = mob level - L (the gray line is grug_xp.GRAY_GAP, Round 46 ruling 5):
---   d <= -7      gray   (gray kill: no XP)
+-- d = mob level - L (Round 46 ruling 5):
+--   no XP        gray with "(no XP)": every mob whose kill pays this viewer
+--                nothing (grug_mobs.player_kill_xp is 0: d <= -7, the
+--                viewer's own faction, a critter, a `_grug_xp_reward` of 0)
 --   d = -6 .. 0  green to yellow, evenly per level (less XP further below)
 --   d = 0 .. +5  yellow to red, evenly per level (more XP, up to +50 %)
 --   d >= +5      red
@@ -56,11 +58,14 @@ local function con_gradient(d)
 	return 0xff0055 + (255 - 34 * math.min(d, 5)) * 0x100
 end
 
-local function con_color(mob_level, player_level)
-	if grug_xp.is_gray(mob_level, player_level) then
+-- Gray exactly when the kill would pay this viewer nothing: the payout's
+-- own predicate (levels.lua), so the frame and the settlement cannot drift.
+local function con_color(mob, player)
+	local player_level = grug_xp.get_level(player)
+	if grug_mobs.player_kill_xp(mob, player, player_level) <= 0 then
 		return COLOR_GRAY
 	end
-	return con_gradient(mob_level - player_level)
+	return con_gradient(mob._grug_level - player_level)
 end
 
 -- The PvP marker of an enemy player and whether the pair can fight, or nil
@@ -205,7 +210,7 @@ local function update(player, frame)
 		end
 	elseif target then
 		local mob = target
-		color = con_color(mob._grug_level, grug_xp.get_level(player))
+		color = con_color(mob, player)
 		text = grug_mobs.tag_text(mob)
 		if color == COLOR_GRAY then
 			text = text .. " (no XP)"
