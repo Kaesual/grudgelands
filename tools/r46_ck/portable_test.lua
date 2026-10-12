@@ -13,10 +13,12 @@
 --      every start zone cooks at least two T1 recipes, every 11-20 zone the
 --      T1 and the T2 plain dish, every zone the plain dish of its level band,
 --      and Frostbarrow (the Dwarf's 21-30 zone) a T3 recipe;
---   D. the craft count (the real grug_jobs registry.lua and jobs.lua): ×N
---      (crafts_from_counts) equals what take_ingredients can take for every
---      Cooking recipe on several inventories, an item in two groups included
---      (carrot and cassava are a root and a staple).
+--   D. the craft count (the real grug_jobs registry.lua and jobs.lua through
+--      jobs_harness.lua): ×N (crafts_from_counts) equals what
+--      take_ingredients can take for every Cooking recipe on several
+--      inventories, an item in two groups included (carrot and cassava are a
+--      root and a staple); the review's worst case (128 full slots) reads the
+--      job ceiling + 1. Timing: bench_count.lua.
 -- The fix round (the user, 2026-10-12) also checks: Cooked Meat, the Meat
 -- Block, Cooked Fish and Bread are plain; the four higher-tier swaps.
 -- The before/after lists per race: luajit tools/r46_ck/cook_local.lua.
@@ -221,99 +223,8 @@ end
 -- D. The craft count against the take.
 ------------------------------------------------------------------------------
 do
-	local items = {}
-	core = setmetatable({
-		registered_items = items,
-		get_item_group = function(name, group)
-			local def = items[name]
-			return def and def.groups and def.groups[group] or 0
-		end,
-		register_craftitem = function(name, def)
-			def.groups = def.groups or {}
-			items[name] = def
-		end,
-		override_item = function(name, def)
-			items[name] = items[name] or {groups = {}}
-			for key, value in pairs(def) do items[name][key] = value end
-		end,
-		get_us_time = function() return 0 end,
-		log = function() end,
-	}, {__index = function(_, key)
-		if type(key) == "string" and key:match("^register_") then return function() end end
-	end})
-	local Stack = {}
-	Stack.__index = Stack
-	function ItemStack(value)
-		if type(value) == "table" then
-			return setmetatable({name = value.name, count = value.count}, Stack)
-		end
-		local name, count = tostring(value or ""):match("^(%S*)%s*(%d*)")
-		return setmetatable({name = name, count = name == "" and 0 or tonumber(count) or 1}, Stack)
-	end
-	function Stack:get_name() return self.count > 0 and self.name or "" end
-	function Stack:get_count() return self.count end
-	function Stack:is_empty() return self.count <= 0 end
-	function Stack:get_stack_max() return 99 end
-	function Stack:get_meta() return {get_keys = function() return {} end} end
-	function Stack:take_item(n)
-		n = math.min(n, self.count)
-		self.count = self.count - n
-		return setmetatable({name = self.name, count = n}, Stack)
-	end
-	function Stack:add_item(other)
-		if self.name == other.name then
-			self.count = self.count + other.count
-			return ItemStack("")
-		end
-		return other
-	end
-	function Stack:to_string() return self.name .. " " .. self.count end
-	grug_inventory = {BAG_COUNT = 1, content_list = function() return "bag1" end,
-		carried_lists = function() return {"main", "bag1"} end}
-	-- A player whose bag holds the first stacks and main the rest (the take
-	-- reads the bag first).
-	local function player_with(list)
-		local lists = {bag1 = {}, main = {}}
-		for index, entry in ipairs(list) do
-			local into = index <= 2 and lists.bag1 or lists.main
-			into[#into + 1] = ItemStack(entry)
-		end
-		for _ = #lists.main + 1, 8 do lists.main[#lists.main + 1] = ItemStack("") end
-		local inv = {}
-		function inv:get_size(name) return #(lists[name] or {}) end
-		function inv:get_list(name)
-			local out = {}
-			for i, stack in ipairs(lists[name] or {}) do out[i] = ItemStack(stack) end
-			return out
-		end
-		function inv:set_stack(name, i, stack) lists[name][i] = ItemStack(stack) end
-		return {get_inventory = function() return inv end}
-	end
-
-	grug_jobs = {}
-	dofile(ROOT .. "/mods/PLAYER/grug_jobs/registry.lua")
-	dofile(ROOT .. "/mods/PLAYER/grug_jobs/jobs.lua")
-	grug_classes = {register_on_arrival = function() end}
-	grug_food = {register_item = function() return true end}
-	grug_cooking = nil
-	for _, name in ipairs({"mobs:meat_raw", "grug_mobs:raw_fish", "grug_gathering:potato",
-			"grug_gathering:corn", "grug_gathering:mushroom", "grug_gathering:melon",
-			"grug_gathering:marshbloom", "grug_gathering:stormkelp", "grug_gathering:rock_salt",
-			"grug_gathering:wild_cocoa", "default:apple", "default:blueberries"}) do
-		core.register_craftitem(name, {description = name})
-	end
-	for _, name in ipairs({"grug_mobs:raw_fish", "grug_fishing:silver_trout",
-			"grug_fishing:mire_carp", "grug_fishing:frostfin", "grug_fishing:ember_eel",
-			"grug_fishing:storm_tuna"}) do
-		core.register_craftitem(name, {description = name, groups = {food_fish_raw = 1}})
-	end
-	dofile(ROOT .. "/mods/ITEMS/grug_cooking/init.lua")
-	local recipes = grug_jobs.recipes_for_area and grug_jobs.recipes_for_area("cooking") or {}
-	if #recipes == 0 then
-		for _, recipe in ipairs(grug_jobs.recipes) do
-			if recipe.area == "cooking" then recipes[#recipes + 1] = recipe end
-		end
-	end
+	local H = dofile(ROOT .. "/tools/r46_ck/jobs_harness.lua")(ROOT)
+	local player_with, recipes, items = H.player_with, H.recipes, H.items
 	check(#recipes == 24, "D 24 Cooking recipes (got " .. #recipes .. ")")
 	local mash = grug_jobs.recipes_for_output("grug_cooking:sweetroot_mash")[1]
 	local function crafts(list, recipe)
@@ -327,8 +238,29 @@ do
 		"D 6 Cassava + 2 Wild Grain: two")
 	eq(crafts({"grug_gathering:potato 1", "grug_cooking:carrot 2", "grug_cooking:wild_grain 3"},
 		mash), 1, "D a potato as the staple: one")
+	-- The review's worst case (128 slots, half Cassava 99, half Wild Grain
+	-- 99; Round 46 fix round): 2112 crafts fit, more than one job takes (the
+	-- output area holds 4 x 99), so ×N reads the ceiling + 1, which a take
+	-- still manages. With 8 Cassava stacks the search finds the exact 264.
+	local worst, search = {}, {}
+	for index = 1, 128 do
+		worst[index] = (index % 2 == 1 and "grug_cooking:cassava" or "grug_cooking:wild_grain") .. " 99"
+		search[index] = (index <= 8 and "grug_cooking:cassava" or "grug_cooking:wild_grain") .. " 99"
+	end
+	local function count_in(list)
+		return grug_jobs.crafts_from_counts(grug_jobs.ingredient_counts(player_with(list, 64)), mash)
+	end
+	eq(count_in(worst), 397, "D the worst case reads the job ceiling + 1")
+	check(grug_jobs.take_ingredients(player_with(worst, 64), mash.ingredients, 2112) ~= nil and
+		grug_jobs.take_ingredients(player_with(worst, 64), mash.ingredients, 2113) == nil,
+		"D ...where the take manages 2112 and no more")
+	eq(count_in(search), 264, "D the searched case: 264")
+	check(grug_jobs.take_ingredients(player_with(search, 64), mash.ingredients, 264) ~= nil and
+		grug_jobs.take_ingredients(player_with(search, 64), mash.ingredients, 265) == nil,
+		"D ...exactly what the take manages")
 	-- Every recipe on a few inventories: the count is exactly what the take
-	-- can take (it succeeds at ×N and fails at ×N+1).
+	-- can take (it succeeds at ×N and fails at every quantity above, up to the
+	-- per-entry total).
 	local names = {}
 	for name in pairs(items) do names[#names + 1] = name end
 	table.sort(names)
@@ -367,7 +299,16 @@ do
 			if n > 0 then positive = positive + 1 end
 			local ok_n = n == 0 or grug_jobs.take_ingredients(player_with(list),
 				recipe.ingredients, n) ~= nil
-			local more = grug_jobs.take_ingredients(player_with(list), recipe.ingredients, n + 1)
+			local counts = grug_jobs.ingredient_counts(player_with(list))
+			local bound = n + 1
+			for _, entry in ipairs(recipe.ingredients) do
+				bound = math.max(bound, math.floor(grug_jobs.ingredient_have(counts, entry) / entry.n))
+			end
+			local more
+			for quantity = n + 1, bound do
+				more = more or grug_jobs.take_ingredients(player_with(list), recipe.ingredients,
+					quantity)
+			end
 			if not ok_n or more ~= nil then
 				mismatches = mismatches + 1
 				print("D mismatch " .. recipe.output .. " x" .. n .. ": " .. table.concat(list, ", "))

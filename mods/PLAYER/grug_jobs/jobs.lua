@@ -209,10 +209,23 @@ local function dry_take(order, ingredients, quantity)
 	return true
 end
 
+-- The most crafts one job of `recipe` can ever take: the empty output area
+-- (OUTPUT_SIZE stacks of the output's stack_max) over the recipe's count;
+-- nil for an operation's ingredient list, which has no output.
+local function job_ceiling(recipe)
+	if not recipe.output then return nil end
+	local most = math.max(1, ItemStack(recipe.output):get_stack_max())
+	return math.floor(OUTPUT_SIZE * most / (recipe.count or 1))
+end
+
 -- The crafts the counted stacks allow: the per-entry totals, and when one
 -- item could serve two entries (Round 46: carrot and cassava are both a root
 -- and a staple) the largest quantity the take itself succeeds with, so ×N
--- never promises more than a job can take.
+-- never promises more than a job can take. That search runs over the
+-- quantity by halving (the take only gets harder as the quantity grows),
+-- from the per-entry total capped one above the job ceiling: a value above
+-- what any job takes reads as "ceiling + 1", so max_craftable and the start
+-- refusals see the same comparisons as with the exact count.
 function grug_jobs.crafts_from_counts(counts, recipe)
 	local crafts
 	for _, entry in ipairs(recipe.ingredients) do
@@ -221,9 +234,19 @@ function grug_jobs.crafts_from_counts(counts, recipe)
 	end
 	crafts = crafts or 0
 	if crafts > 0 and counts.order and overlapping(counts, recipe.ingredients) then
-		while crafts > 0 and not dry_take(counts.order, recipe.ingredients, crafts) do
-			crafts = crafts - 1
+		local ceiling = job_ceiling(recipe)
+		local high = ceiling and math.min(crafts, ceiling + 1) or crafts
+		if dry_take(counts.order, recipe.ingredients, high) then return high end
+		local low = 0 -- low always fits, high never does
+		while high - low > 1 do
+			local middle = math.floor((low + high) / 2)
+			if dry_take(counts.order, recipe.ingredients, middle) then
+				low = middle
+			else
+				high = middle
+			end
 		end
+		return low
 	end
 	return crafts
 end
