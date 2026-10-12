@@ -38,8 +38,10 @@
 -- its nearness to the Battlegrounds and the road, every other kind in an
 -- order seeded by the world and the anchor, so a POI takes no more of the
 -- flattest ground than its rules ask); the exact tests walk them until
--- FINALISTS pass, and SHA-256 of seed and anchor id picks one of those. A row that finds nothing relaxes step by step (R.STEPS), then
--- takes the last resort; placement never raises for a world.
+-- FINALISTS pass (near_water from the third step on: those near water when
+-- any is), and SHA-256 of seed and anchor id picks one of those. A row that
+-- finds nothing relaxes step by step (R.STEPS), then takes the last resort;
+-- placement never raises for a world.
 --
 -- Deterministic: integer cells, explicit sort ties, no `pairs` order. Main
 -- computes it once; the text goes to emerge and the layout cache.
@@ -433,15 +435,24 @@ return function(wp40_directory, raw_sha256)
 					if l.x ~= r.x then return l.x < r.x end
 					return l.z < r.z
 				end)
-				local pass = {}
+				-- near_water: required in steps 1-2; after them a spot near water
+				-- is preferred (the finalists are those near water when any is).
+				local prefer = rule.near_water and step_index >= 3
+				local pass, wet = {}, {}
 				for i = 1, min(#cands, R.EXACT_MAX) do
 					local c = cands[i]
 					local relief, near = exact(a, c.x, c.z, core_half, rule, relief_max, zone)
-					if relief and (not rule.near_water or near or step_index >= 3) then
-						pass[#pass + 1] = c
-						if #pass >= R.FINALISTS then break end
+					if relief and (not rule.near_water or near or prefer) then
+						if prefer and near then
+							wet[#wet + 1] = c
+							if #wet >= R.FINALISTS then break end
+						elseif #pass < R.FINALISTS then
+							pass[#pass + 1] = c
+							if not prefer and #pass >= R.FINALISTS then break end
+						end
 					end
 				end
+				if #wet > 0 then pass = wet end
 				if #pass > 0 then
 					local c = pass[pick_index(a.id, #pass)]
 					return {x = c.x, z = c.z, step = step_index}

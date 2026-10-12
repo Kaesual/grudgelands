@@ -1184,9 +1184,13 @@ stay fixed.
   Battlegrounds zone at their catalogue levels, 128 nodes from a boat path's
   mainland end, and every PvP POI 120 nodes from every other.
 - **The choice.** Candidates are the cells of the water layout's 16-node
-  grid that pass the cheap tests; the exact tests walk them by score until
-  eight pass, and a hash of the world seed and the anchor id picks one of
-  those, so every world differs and every spot is good ground. Order: fixed
+  grid that pass the cheap tests; the exact tests walk them in an order
+  seeded by the world and the anchor (mines by their hills, fortresses by
+  their nearness to the Battlegrounds and the road) until eight pass, and a
+  hash of the world seed and the anchor id picks one of those, so every
+  world differs and every spot is good ground. A Mirefolk camp needs its
+  water in the first two steps and prefers it after them (the eight are
+  those near water when any is). Order: fixed
   anchors first, then fortresses, war camps, villages, mines, outposts,
   bandit camps, Mirefolk camps, clash sites and rare dens; rows a later round
   appends go into a later `pass`, so the earlier ones keep their places.
@@ -1204,10 +1208,11 @@ stay fixed.
   slot, kind, band, no coordinates) and one composition row with its
   blueprint; a kind is one rules entry beside its fitting profile (whose
   `trail` flag joins it to the road network). An anchor row may declare an
-  **underground reservation** `underground = {width, depth}`: a square under
-  its centre that is protected and kept free of caves from its placement
-  height down to `depth` (Round 46 ships none; later content's shafts and
-  chambers use it).
+  **underground reservation**, the named field
+  `underground = {width = W, depth = D}` (`source.anchor_of` parses it): a
+  square under its centre that is protected and kept free of caves from its
+  placement height down to `depth` (Round 46 ships none; later content's
+  shafts and chambers use it).
 
 ## 9. Zone neighbors, roads and trails
 
