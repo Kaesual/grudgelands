@@ -46,6 +46,7 @@ rework is **parked** as a future work package
 | DP | Depth pulse: a design note for the user's decision, then the build | 1 (note), 2 (build) | design, then code | build: the user's decision, UW merged |
 | UW | Underground spawns from −1, light, sight, elites; torches | 2 | code + data | XP merged (both touch `grug_mobs`) |
 | RP | Repair only in towns; the Grudge-Free Repairs map and minimap icon | 2 | code + art | ART pick |
+| ID | A dropdown per group ingredient in the crafting box; one torch recipe for coal or charcoal (added by the user, 2026-10-12) | 2 | code + UI | CK's count fix and UW merged |
 | D | Documentation, version 0.46.0, the declaration's map-reset entry, gate list | 3 | docs | last merge |
 
 The user's GUI test follows the round; findings go into a fix round as
@@ -66,6 +67,7 @@ Estimates (unmeasured, for planning only), each lane plus its review:
 | DP | 3 note + 8–10 build |
 | UW | 4–6 |
 | RP | 3–4 |
+| ID | 4–6 |
 | D | 3 |
 
 PL is the largest and riskiest lane.
