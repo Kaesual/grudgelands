@@ -1163,6 +1163,8 @@ stay fixed.
   land of the POI's own zone (so off the sea and the bays); no inland water
   under the building core plus a dry pad, the water layout's own river guard
   (Round 34 F3) and the core's ground not below water within 24 nodes; the
+  fitting square clear of every authored lake's bounds (Moonfall's crescent
+  shapes the ground round its water); the
   natural relief under the core within the kind's limit and never above 40
   (a placed POI gets no calm bowl); fitting squares 16 nodes apart from every
   anchor and **128 nodes from a start town's or a capital's square**; the

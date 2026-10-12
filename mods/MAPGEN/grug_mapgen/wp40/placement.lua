@@ -4,7 +4,7 @@
 --
 --   local P = dofile(wp40 .. "/placement.lua")(wp40, raw_sha256)
 --   local fixed = P.fixed_view(source)        -- the source of the placement session
---   local positions, stats = P.place(seed, source, horizontal, height)
+--   local positions, stats = P.place(seed, source, horizontal, height, authored)
 --   local text = P.serialize(source, positions)  -- main: payload and cache
 --   local positions = P.parse(text, source)      -- emerge, a cache hit
 --   local world_source = P.view(source, positions)
@@ -31,7 +31,9 @@
 --     bowl threshold (a placed POI gets no calm bowl);
 --   * no inland water under the core plus its dry pad, the river guard of
 --     the water layout (`wet_core`, Round 34 F3) and the core's ground not
---     below water within WATER_REACH.
+--     below water within WATER_REACH; the fitting square clear of every
+--     authored lake's bounds (`water_authored.lua`: they shape the fitted
+--     ground round their water, e.g. Moonfall's crescent).
 -- The coarse tests sort the candidates by score; the exact tests walk them
 -- until FINALISTS pass, and SHA-256 of seed and anchor id picks one of
 -- those. A row that finds nothing relaxes step by step (R.STEPS), then
@@ -153,8 +155,9 @@ return function(wp40_directory, raw_sha256)
 
 	-- The placement itself. `horizontal` and `height` are the placement
 	-- session (built on `fixed_view(source)`, main only: it needs the water
-	-- layout's coarse grid). Returns {anchor id -> {x, z, step}} and stats.
-	function M.place(seed, source, horizontal, height)
+	-- layout's coarse grid); `authored` the world's authored lake rows (their
+	-- bounds). Returns {anchor id -> {x, z, step}} and stats.
+	function M.place(seed, source, horizontal, height, authored)
 		local started = os.clock()
 		local grid = height.water_coarse_grid()
 		if type(grid) ~= "table" then fail("the water layout's coarse grid is missing") end
@@ -353,6 +356,12 @@ return function(wp40_directory, raw_sha256)
 					if q.town then
 						local gap = fit_half + q.half + R.TOWN_GAP
 						if abs(q.x - x) < gap and abs(q.z - z) < gap then return false end
+					end
+				end
+				for _, row in ipairs(authored or {}) do
+					if x + fit_half > row.min_x and x - fit_half < row.max_x and
+							z + fit_half > row.min_z and z - fit_half < row.max_z then
+						return false
 					end
 				end
 				return true

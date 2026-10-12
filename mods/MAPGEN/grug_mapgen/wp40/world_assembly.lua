@@ -177,7 +177,7 @@ return function(wp40_directory, raw_sha256)
 					water = W.water, terrain_cache = W.terrain,
 					start_grounds = A.start_grounds}).new_runtime(seed)
 				positions, W.placement_stats = A.placement.place(seed, A.source, horizontal,
-					height)
+					height, W.water.authored)
 				-- kept only for a tool that asks (the placement fixture re-places
 				-- on it); the runtime lets it go
 				if variant.keep_placement_session then

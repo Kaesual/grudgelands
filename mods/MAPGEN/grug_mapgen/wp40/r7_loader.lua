@@ -453,6 +453,9 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		-- Natural vegetation density for runtime renewal (vegetation_density.lua).
 		vegetation = built.vegetation,
 		preparation_source = built.preparation_source,
+		-- The POI placement of this world (Round 46, `placement.lua` text:
+		-- one "<anchor id> <x> <z> <step>" line per placed anchor).
+		placement_layout_text = payload.placement_layout,
 		-- The inland water layout for the world map: its text (cache key) and
 		-- river centrelines (the relief grid is too coarse for rivers).
 		water_layout_text = runtime.water_layout_text(),

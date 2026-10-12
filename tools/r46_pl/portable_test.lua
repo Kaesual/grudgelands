@@ -13,8 +13,9 @@
 -- R  every rule on every placed anchor: in its zone on land (fitting
 --    square), dry core and the river guard (F3), relief under the core at
 --    most 40, fitting squares 16 apart and 128 from the towns' squares,
---    the kind's spacing (PvP POIs at least 120), the fortress side and the
---    war camps' half, levels and boat gap, the middle-road corridor, the
+--    the kind's spacing (PvP POIs at least 120), clear of the authored
+--    lakes' bounds, the fortress side and the war camps' half, levels and
+--    boat gap, the middle-road corridor, the
 --    band on step 1, and no last resort on this seed.
 -- L  the last resort: a rule no spot can meet (relief below zero) gives
 --    every clash site a dry-core place (step 7) and no error; a placed
@@ -148,6 +149,10 @@ do
 						("R %s %d from %s"):format(a.id, gap, b.id))
 				end
 			end
+			for _, row in ipairs(W.water.authored) do
+				check(not (x + fit > row.min_x and x - fit < row.max_x and z + fit > row.min_z and
+					z - fit < row.max_z), "R " .. a.id .. " clear of the authored lake " .. row.id)
+			end
 			if corridor[zone] then
 				check(abs(x) >= max(R.CORRIDOR.min, core + R.CORRIDOR.reserve),
 					"R " .. a.id .. " off the middle road's axis")
@@ -199,7 +204,7 @@ end
 do
 	local saved = R.KINDS.clash.relief
 	R.KINDS.clash.relief = -1
-	local ok, positions, stats = pcall(P.place, SEED, A.source, hs, hh)
+	local ok, positions, stats = pcall(P.place, SEED, A.source, hs, hh, W.water.authored)
 	R.KINDS.clash.relief = saved
 	check(ok, "L an impossible rule is no error: " .. tostring(positions))
 	local clashes = 0
@@ -216,7 +221,7 @@ do
 	odd.anchors[#odd.anchors + 1] = {numeric_id = #odd.anchors + 1, id = "anchor_999",
 		zone_numeric_id = 2, slot_id = "odd", template_id = "no_such_kind",
 		placement_mode = "placed", band = "mid", pass = 2}
-	check(not pcall(P.place, SEED, odd, hs, hh), "L a kind without rules is refused")
+	check(not pcall(P.place, SEED, odd, hs, hh, W.water.authored), "L a kind without rules is refused")
 end
 
 -- U and Z: the zones session on the world's source with one reservation
