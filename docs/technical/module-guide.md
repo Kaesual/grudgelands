@@ -1238,7 +1238,13 @@ tools](#player-meta-read-by-external-tools).
   - **The Bag of Coins** (`grug_money/coins.lua`, Round 34) is the only
     money item: `withdraw` goes through `take_with_inventory`, the deposit
     slot is a per-player detached list that destroys the bag in `on_put`;
-    the amount is item meta (`bag_amount`), never a price class.
+    the amount is item meta (`bag_amount`), never a price class. Round 46:
+    mobs drop it (`grug_mobs.drop_coin_bag`, rolled in the loot gate
+    `_item_drop_filter`, aggro.lua; grug_money is an optional dependency of
+    grug_mobs), and the bag's own `on_pickup` deposits it at once
+    (`auto_deposit_pickup`, the deposit slot's rules) while the player's
+    toggle (`auto_deposit`, meta `grug_money:auto_deposit`) is on, else
+    hands it to `core.item_pickup`.
   - **One price module owns every payout** (`grug_traders/prices.lua`,
     pure rules in `price_rules.lua`; Round 29): loot and gathered goods by
     class × tier factor, processed goods by their cheapest recipe, sold

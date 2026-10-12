@@ -57,8 +57,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   is centred in the window. The money row has no box and lies on the slot
   columns: "Money" over the balance (e.g. "123456g 99s 99c"), **Withdraw**
   (opens the Bag of Coins dialog, [economy.md](economy.md) §1), the Bag of
-  Coins **deposit slot** and, at the right end with the hotbar's last slot,
-  **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
+  Coins **deposit slot**, its **Auto** checkbox (deposit coin bags
+  automatically on pickup, Round 46) and, at the right end with the hotbar's
+  last slot, **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
   change re-sends the Inventory page while it is the selected page (also
   with the window closed, so it opens current); money has no gameplay HUD.
   Sort orders
