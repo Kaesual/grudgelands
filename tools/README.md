@@ -799,3 +799,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the depth probe's before/after logs (`r24_density_xp/run.sh` with
   `POINTS=depth`: three points at y −30, −300 and −900 under Hearthpine and
   a torch room).
+  `r46_dp` the depth pulse (`portable_test.lua`: the real
+  `grug_mobs/depth_pulse.lua` on a voxel stub with a stepping raycast and
+  the real particle helper and catalogue: the curve, caps and roster, the
+  placement cases (open cave, corridor, sealed 7×7 room, 3×3 bunker, 1×2
+  pocket, ground arrivals, water and lava), the refusals and the owed
+  arrival, the 2 s warning and its 32 particles, the arrival's fields, the
+  fade, the slicing and the data around the module); `pulse_curves.py`
+  the design note's offline estimates (the note's options, not the decided
+  curve); `probe_physical.sh` with `grug_probe_r46_dp` the engine probe
+  that the cave flyers are physical; `evidence/` the depth probe's
+  before/after logs (`r24_density_xp/run.sh` with `POINTS=pulse`: rooms at
+  y −400, −1000 and −1500 with stand-in players).

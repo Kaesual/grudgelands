@@ -249,9 +249,10 @@ DP.world = {
 		end
 		return mobs:can_spawn(pos, name)
 	end,
-	-- The first blocking node on the segment: {under, above} or nil.
+	-- The first blocking node on the segment: {under, above} or nil. Liquids
+	-- are pointed too, so water and lava stop a ray like rock.
 	ray = function(from, to)
-		for pointed in core.raycast(from, to, false, false) do
+		for pointed in core.raycast(from, to, false, true) do
 			if pointed.type == "node" and blocks_def(node_def(pointed.under)) then
 				return {under = pointed.under, above = pointed.above}
 			end
