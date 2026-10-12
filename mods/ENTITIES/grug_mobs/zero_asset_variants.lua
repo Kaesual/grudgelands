@@ -261,44 +261,48 @@ mobs:spawn({
 	min_height = -100, max_height = -1,
 })
 
--- Blood Bat: hostile cave-bat tint and swarm dive.
-local blood_bat = {
-	description = "Blood Bat",
-	_grug_voice = "critter",
-	clock = "any",
-	type = "monster",
-	_grug_spawn_domains = {"underground"},
-	reach = 2,
-	attack_type = "dogfight",
-	attack_players = true,
-	group_attack = true,
-	fly = true,
-	fly_in = "air",
-	jump = false,
-	fear_height = 0,
-	walk_velocity = 1.5,
-	run_velocity = 4.6,
-	stepheight = 1.1,
-	view_range = 12,
-	visual = "mesh",
-	mesh = "grug_mobs_cave_bat.b3d",
-	textures = {{"grug_mobs_cave_bat.png^[multiply:#8f2635"}},
-	visual_size = {x = 1.25, y = 1.25},
-	collisionbox = {-0.31, -0.01, -0.31, 0.31, 1.11, 0.31},
-	makes_footstep_sound = false,
-	animation = {
-		stand_start = 1, stand_end = 40, stand_speed = 80,
-		walk_start = 1, walk_end = 40, walk_speed = 80,
-		run_start = 1, run_end = 40, run_speed = 80,
-		fly_start = 1, fly_end = 40, fly_speed = 80,
-		punch_start = 1, punch_end = 40, punch_speed = 100,
-	},
-	drops = {{name = "mobs:meat_raw", chance = 1, min = 1, max = 1}},
-	water_damage = 0,
-	lava_damage = 4,
-	light_damage = 0,
-}
-grug_mobs.register_mob("grug_mobs:blood_bat", blood_bat)
+-- Blood Bat: hostile cave-bat tint and swarm dive. The Riftwing below shares
+-- the definition.
+local function hostile_bat_def(description, texture)
+	return {
+		description = description,
+		_grug_voice = "critter",
+		clock = "any",
+		type = "monster",
+		_grug_spawn_domains = {"underground"},
+		reach = 2,
+		attack_type = "dogfight",
+		attack_players = true,
+		group_attack = true,
+		fly = true,
+		fly_in = "air",
+		jump = false,
+		fear_height = 0,
+		walk_velocity = 1.5,
+		run_velocity = 4.6,
+		stepheight = 1.1,
+		view_range = 12,
+		visual = "mesh",
+		mesh = "grug_mobs_cave_bat.b3d",
+		textures = {{texture}},
+		visual_size = {x = 1.25, y = 1.25},
+		collisionbox = {-0.31, -0.01, -0.31, 0.31, 1.11, 0.31},
+		makes_footstep_sound = false,
+		animation = {
+			stand_start = 1, stand_end = 40, stand_speed = 80,
+			walk_start = 1, walk_end = 40, walk_speed = 80,
+			run_start = 1, run_end = 40, run_speed = 80,
+			fly_start = 1, fly_end = 40, fly_speed = 80,
+			punch_start = 1, punch_end = 40, punch_speed = 100,
+		},
+		drops = {{name = "mobs:meat_raw", chance = 1, min = 1, max = 1}},
+		water_damage = 0,
+		lava_damage = 4,
+		light_damage = 0,
+	}
+end
+grug_mobs.register_mob("grug_mobs:blood_bat",
+	hostile_bat_def("Blood Bat", "grug_mobs_cave_bat.png^[multiply:#8f2635"))
 
 mobs:spawn({
 	name = "grug_mobs:blood_bat",
@@ -307,6 +311,16 @@ mobs:spawn({
 	interval = 20, chance = 2200, active_object_count = 4,
 	min_height = -300, max_height = -101,
 })
+
+-- Riftwing (Round 46 lane DP, the user's roster R2): the deep band's own
+-- flyer, a violet glowing cave bat, a little faster than the Blood Bat. It has
+-- no spawn row: only the depth pulse brings it, below y -1000
+-- (depth_pulse.lua). No new media: the cave-bat mesh with a runtime modifier.
+local riftwing = hostile_bat_def("Riftwing",
+	"grug_mobs_cave_bat.png^[multiply:#7a4fd6")
+riftwing.run_velocity = 5
+riftwing.glow = 3
+grug_mobs.register_mob("grug_mobs:riftwing", riftwing)
 
 -- Stone Mite: deep hostile crawler swarm.
 local stone_mite = common_ground({

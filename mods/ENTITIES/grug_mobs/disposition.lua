@@ -37,6 +37,7 @@ classify("aggressive", {
 	"ice_whelp", "jungle_ape", "jungle_lynx", "jungle_spider",
 	"jungle_wyvern", "kraken", "lava_flan", "mesa_golem", "mirefolk",
 	"oerkki", "pale_spider", "panther", "plaguehide_bear", "poacher", "rift_boss", "rift_spawn",
+	"riftwing",
 	"scorpion", "serpent", "skeleton_archer", "skeleton_raider",
 	"snow_leopard", "speargrass_tiger", "spiderling", "stone_golem",
 	"stone_mite", "storm_whelp", "sun_dried_husk", "viper", "vulture",

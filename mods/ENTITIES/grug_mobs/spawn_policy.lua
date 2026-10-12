@@ -184,8 +184,9 @@ local UNDERGROUND_MOBS = {
 	["grug_mobs:dungeon_master"] = true,
 	["grug_mobs:lava_flan"] = true,
 	["grug_mobs:ember_wisp"] = true,
-	["grug_mobs:land_guard"] = true,
-	["grug_mobs:rift_spawn"] = true,
+	-- The Land Guard and the Rift Spawn have no cave row since Round 46: below
+	-- y -1000 the depth pulse brings them (depth_pulse.lua), which bypasses
+	-- this ABM policy like the spawn regions do.
 }
 
 local RACE_FACTIONS = {

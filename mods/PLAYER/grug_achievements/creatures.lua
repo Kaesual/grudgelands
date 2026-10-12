@@ -30,10 +30,10 @@ C.ANIMALS = set({
 	"goblin_hound", "gull", "hare", "hyena", "ibex", "jungle_ape",
 	"jungle_boar", "jungle_lynx", "jungle_spider", "kraken", "mountain_ram",
 	"pale_spider", "panther", "parrot", "plague_boar", "plaguehide_bear",
-	"plains_runner", "rabbit", "reed_angelfish", "reef_lurker", "scorpion",
-	"serpent", "shore_crab", "snow_leopard", "song_bird", "speargrass_tiger",
-	"spiderling", "stag", "stone_mite", "tapir", "viper", "vulture",
-	"wild_turkey", "wolf", "zebra",
+	"plains_runner", "rabbit", "reed_angelfish", "reef_lurker", "riftwing",
+	"scorpion", "serpent", "shore_crab", "snow_leopard", "song_bird",
+	"speargrass_tiger", "spiderling", "stag", "stone_mite", "tapir", "viper",
+	"vulture", "wild_turkey", "wolf", "zebra",
 })
 
 C.ZOMBIES = set({"zombie", "sun_dried_husk"})

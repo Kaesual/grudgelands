@@ -95,10 +95,8 @@ local rift = {
 }
 
 grug_mobs.register_mob("grug_mobs:rift_spawn", rift)
-mobs:spawn({name = "grug_mobs:rift_spawn",
-	nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
-	interval = 30, chance = 5000, active_object_count = 2,
-	min_height = -31000, max_height = -1000})
+-- Its deep row went with Round 46 (lane DP, WP audit E4): below y -1000 the
+-- Rift Spawn comes with the depth pulse (depth_pulse.lua).
 -- The surface row of the four front and island zones (spawn_policy.lua
 -- RECIPE_ZONE_ROWS) states its final numbers: until Round 30 the Round 24
 -- palette budget turned the registered chance 6000 and cap 1 into chance
