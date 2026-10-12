@@ -496,38 +496,6 @@
       },
       "lesson": "Travel handoff to the home zone.",
       "duration_min": 6
-    },
-    {
-      "id": "stillgrave_hunt_bounty",
-      "line": "hunt",
-      "giver": "r14_undead_elder",
-      "turnin": "r14_undead_elder",
-      "min_level": 9,
-      "level": 9,
-      "requires": [
-        "stillgrave_hunt_05"
-      ],
-      "title": "Bounty: A Census With Teeth",
-      "text": "The Bone Gnawers in the {name:deadlands}, which lies {zone_area:deadlands}, have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "monstrous_rat"
-          ],
-          "count": 6,
-          "area": "kragmar_stillgrave_hollow/deadlands"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable tail of the hunt line.",
-      "duration_min": 8
     }
   ]
 }

@@ -195,38 +195,6 @@
       "duration_min": 12,
       "optional": true,
       "group": true
-    },
-    {
-      "id": "lethariel_front_bounty",
-      "line": "front",
-      "giver": "r20_elf_capital_envoy",
-      "turnin": "r20_elf_capital_envoy",
-      "min_level": 58,
-      "level": 59,
-      "requires": [
-        "lethariel_front_04"
-      ],
-      "title": "Bounty: Eyes Beyond the Lanterns",
-      "text": "When the lanterns are lit, Gloom Panthers begin their hunt in the {name:front_skyglass_canopy/high_canopy}. Bring down five there after dark, and I will pay a bounty so our watchers can make their rounds. You may accept the bounty again twenty-five minutes after each turn-in. The forest has time to spare; those walking home tonight do not.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "glass_shadow_panther"
-          ],
-          "count": 5,
-          "area": "front_skyglass_canopy/high_canopy"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Repeatable hunting bounty, upper Skyglass by night.",
-      "duration_min": 10
     }
   ]
 }

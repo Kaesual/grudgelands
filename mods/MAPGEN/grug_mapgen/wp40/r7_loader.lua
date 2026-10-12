@@ -42,9 +42,9 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	local now = type(core_api.get_us_time) == "function" and function()
 		return core_api.get_us_time() / 1000000 end or os.clock
 	local layout_cache, cache_key, cached, cache_reason, cache_damaged
-	-- The same key parts, published for the other world-folder caches (the
-	-- region maps, grug_mobs/spawn_regions_cache.lua; the zone markers,
-	-- grug_map/location.lua), so the mapgen tree is digested once per start.
+	-- The same key parts, published for the other world-folder cache (the
+	-- region maps, grug_mobs/spawn_regions_cache.lua), so the mapgen tree is
+	-- digested once per start.
 	local world_key
 	local world_dir = type(core_api.get_worldpath) == "function" and
 		core_api.get_worldpath() or nil

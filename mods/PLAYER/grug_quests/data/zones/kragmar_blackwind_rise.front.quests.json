@@ -161,37 +161,6 @@
       "duration_min": 10
     },
     {
-      "id": "bw_front_hollow_bounty",
-      "line": "front",
-      "giver": "r20_anchor_040_host",
-      "turnin": "r20_anchor_040_host",
-      "min_level": 52,
-      "level": 53,
-      "requires": [
-        "bw_front_hollow_05"
-      ],
-      "title": "Bounty: Premature Shrouds",
-      "text": "Tomb Widows in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, begin their shrouding work after dark. They rarely wait for the occupant to stop objecting. Kill five there at night and return for payment; this bounty opens again twenty-five minutes after turn-in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "salt_web_spider"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/bonewood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
       "id": "bw_front_ashveil_01",
       "line": "front",
       "giver": "r20_anchor_039_host",
@@ -349,46 +318,6 @@
       "duration_min": 15,
       "optional": true,
       "group": true
-    },
-    {
-      "id": "bw_front_ashveil_bounty",
-      "line": "front",
-      "giver": "r20_anchor_039_host",
-      "turnin": "r20_anchor_039_host",
-      "min_level": 57,
-      "level": 58,
-      "requires": [
-        "bw_front_ashveil_04"
-      ],
-      "title": "Bounty: A Patient Listener",
-      "text": "Some of the dead need someone to hear them before they can be still. Destroy five Last-Watch Sentries at night in the {name:front_gravesalt_escarpment/ossuary_wood}, which lies {zone_area:front_gravesalt_escarpment/ossuary_wood}, and bring me two Unquiet Bones. You may take this bounty again half an hour after turn-in; I can always make time to listen.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "last_watch_skeleton_raider"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/ossuary_wood"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:unquiet_bone",
-          "count": 2,
-          "roles": [
-            "last_watch_skeleton_raider"
-          ],
-          "area": "front_gravesalt_escarpment/ossuary_wood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1800
-      },
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "duration_min": 12
     },
     {
       "id": "throng_main_02",

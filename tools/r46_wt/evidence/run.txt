@@ -1,0 +1,26 @@
+22:34:23 steady #1 connected
+22:34:23 arriver #1 connected
+22:34:23 oldhero #1 connected
+22:34:23 leaver #1 connected
+22:34:26 oldhero #1 left
+22:34:26 leaver #1 left
+22:34:26 arriver #1 left
+22:34:26 steady #1 left
+22:34:27 newbie #1 connected
+22:34:27 arriver #2 connected
+22:34:27 steady #2 connected
+22:34:27 oldhero #2 connected
+22:34:27 leaver #2 connected
+22:34:31 arriver #2 left
+22:34:31 leaver #2 left
+22:35:14 preparation ready
+22:35:14 arriver #3 connected
+22:35:14 leaver #3 connected
+22:35:15 all settled
+22:35:20 leaver #3 left
+22:35:20 oldhero #2 left
+22:35:20 steady #2 left
+22:35:20 arriver #3 left
+22:35:21 newbie #1 left
+22:35:24 launcher exit 0 after 201 s
+22:35:24 r46 wt engine: PASS

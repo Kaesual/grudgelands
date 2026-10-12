@@ -5,10 +5,11 @@
 -- color, so the "how dangerous is this to ME" signal lives in a HUD line:
 -- the thing the player is LOOKING at, colored relative to the viewer.
 --
--- MOBS — con color against the viewer's own level:
---   mob <= L-10  gray   (gray kill: no XP)
---   L-10 < mob <= L  green
---   mob > L      red
+-- MOBS — con color against the viewer's own level (the gray line is
+-- grug_xp.GRAY_GAP, Round 46 ruling 5):
+--   mob <= L-7   gray   (gray kill: no XP)
+--   L-7 < mob <= L  green (less XP the further below)
+--   mob > L      red    (more XP, up to +50 %)
 --
 -- PLAYERS — "<Name> — <The Faction>", colored by RELATION to the viewer:
 --   same faction   green
@@ -44,7 +45,7 @@ local COLOR_RED = 0xff5555
 local frames = {}
 
 local function con_color(mob_level, player_level)
-	if mob_level <= player_level - 10 then
+	if grug_xp.is_gray(mob_level, player_level) then
 		return COLOR_GRAY
 	elseif mob_level <= player_level then
 		return COLOR_GREEN

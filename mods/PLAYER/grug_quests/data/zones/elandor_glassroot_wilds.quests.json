@@ -267,38 +267,6 @@
       },
       "lesson": "Band end: handoff to a front host.",
       "duration_min": 10
-    },
-    {
-      "id": "glassroot_bounty_spiders",
-      "line": "canopy",
-      "giver": "r20_anchor_036_host",
-      "turnin": "r20_anchor_036_host",
-      "min_level": 38,
-      "level": 39,
-      "requires": [
-        "glassroot_canopy_03"
-      ],
-      "title": "Bounty: Leave a Path Unspun",
-      "text": "Each night the Canopy Weavers stitch the {name:canopy}, which lies {zone_area:canopy}, shut like a sack someone means to carry off. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; weavers this diligent never run short of thread.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "canopy_web_spider"
-          ],
-          "count": 8,
-          "area": "elandor_glassroot_wilds/canopy"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 10,
-      "repeatable": {
-        "cooldown": 1500
-      }
     }
   ]
 }

@@ -174,38 +174,6 @@
       "optional": true
     },
     {
-      "id": "speargrass_bounty",
-      "line": "yard",
-      "giver": "r20_anchor_065_host",
-      "turnin": "r20_anchor_065_host",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "speargrass_yard_02"
-      ],
-      "title": "Bounty: Stripes on the Payroll",
-      "text": "Tallgrass Tigers keep prowling the {name:hunting_grounds} by day, and chasing them off is eating into our work. Kill six and return for the yard's bounty. The job opens again twenty minutes after you collect; I can pay for dead tigers or lost shifts, and I prefer the tigers.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_stalking_tiger"
-          ],
-          "count": 6,
-          "area": "kragmar_speargrass_reach/hunting_grounds"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
-    },
-    {
       "id": "speargrass_watch_01",
       "line": "watch",
       "giver": "r20_anchor_042_host",

@@ -328,6 +328,9 @@ and with own-level weapons, and rage per second per weapon.
 **Goal:**
 - The 23 sell-only drops no longer drop; they stay registered.
 - Coin bags compensate the lost income.
+- A checkbox next to the Bag of Coins deposit slot, **on by default**,
+  credits picked-up bags straight to the player's money (the user,
+  2026-10-12), so nobody drags every bag into the slot by hand.
 - Cloth drops at 1/1 with stack 1–2.
 - Spiders spawn in the level-41–50 zones, so T5 silk has a source and
   `items_crafting.md` is right again.
@@ -477,7 +480,8 @@ Per lane the gates of the [round workflow](../process/round-workflow.md#3-gates)
 - **Professions and cooking:** cloth drops; a Troll and an Undead cook in
   their start zone; a plain dish is weaker than a hearty one.
 - **No repeatables;** a mob drops no sell-only item but sometimes a coin
-  bag.
+  bag, which goes straight to the purse with the auto-deposit box on and
+  into the inventory with it off.
 - **Repair:** only at a town mender; the repair icon on map and minimap; no
   repair at the claim stone or furnace.
 

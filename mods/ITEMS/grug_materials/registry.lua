@@ -7,36 +7,35 @@
 -- Tier N rock is "ordinary stone compressed by depth" (Round 24 ruling 1):
 -- a pick of tier >= N digs it at any y. The y bands only say where mapgen
 -- places each rock; no pick is limited by depth.
--- `ilvl` is the old base item level (3/10/.../50), unread since the item
--- level ladder (round45-plan.md §4.1): a tier's item levels live in
--- grug_gear.BRACKETS. The field stays because this table is part of the WP43
--- projection whose digest grug_mapgen pins (wp40/r7_manifest.lua); changing
--- it means re-pinning that mapgen manifest.
+-- A tier's item levels live in grug_gear.BRACKETS (the item level ladder),
+-- not here. This table is part of the WP43 projection whose digest
+-- grug_mapgen pins (wp40/r7_manifest.lua); changing it means re-pinning that
+-- mapgen manifest.
 grug_materials.TIERS = {
 	{id = 1, key = "bronze", name = "Bronze", min_level = 1, max_level = 10,
-		ilvl = 3, y_max = 31000, y_min = -100,
+		y_max = 31000, y_min = -100,
 		node = "default:stone", bar_item = "grug_materials:bronze_bar",
 		block_node = "grug_materials:bronze_block"},
 	{id = 2, key = "iron", name = "Iron", min_level = 11, max_level = 20,
-		ilvl = 10, y_max = -101, y_min = -300,
+		y_max = -101, y_min = -300,
 		node = "grug_materials:t2_stone", bar_item = "grug_materials:iron_bar",
 		block_node = "grug_materials:iron_block"},
 	{id = 3, key = "steel", name = "Steel", min_level = 21, max_level = 30,
-		ilvl = 20, y_max = -301, y_min = -500,
+		y_max = -301, y_min = -500,
 		node = "grug_materials:t3_stone", bar_item = "grug_materials:steel_bar",
 		block_node = "grug_materials:steel_block"},
 	{id = 4, key = "silversteel", name = "Silversteel", min_level = 31,
-		max_level = 40, ilvl = 30, y_max = -501,
+		max_level = 40, y_max = -501,
 		y_min = -700, node = "grug_materials:t4_stone",
 		bar_item = "grug_materials:silversteel_bar",
 		block_node = "grug_materials:silversteel_block"},
 	{id = 5, key = "embersteel", name = "Embersteel", min_level = 41,
-		max_level = 50, ilvl = 40, y_max = -701,
+		max_level = 50, y_max = -701,
 		y_min = -1000, node = "grug_materials:t5_stone",
 		bar_item = "grug_materials:embersteel_bar",
 		block_node = "grug_materials:embersteel_block"},
 	{id = 6, key = "abyssal_steel", name = "Abyssal Steel", min_level = 51,
-		max_level = 60, ilvl = 50, y_max = -1001,
+		max_level = 60, y_max = -1001,
 		y_min = -31000, node = "grug_materials:t6_stone",
 		bar_item = "grug_materials:abyssal_steel_bar",
 		block_node = "grug_materials:abyssal_steel_block"},
@@ -128,7 +127,8 @@ end
 
 -- Natural resource taxonomy. Every resource occurs on the whole map; only
 -- depth decides where. The six gems (`gem = true`) are depth-tiered (economy
--- plan §6): each occurs only in the tier rock of its harvest tier.
+-- plan §6): each occurs in the tier rock of its harvest tier and, thinner,
+-- one and two tiers deeper (Round 46 ruling 3, DENSITY.gem below).
 grug_materials.RESOURCES = {
 	{key = "coal", name = "Coal", natural_node = "default:stone_with_coal",
 		raw_item = "default:coal_lump", harvest_tier = 1},
@@ -297,9 +297,11 @@ grug_materials.RACE_REGIONS = {
 }
 
 grug_materials.DENSITY = {
-	-- Every gem: one per this many host nodes of its own tier rock, nowhere
-	-- else (economy plan §6.1). Only Diamond (T6) reaches the deep bands.
-	gem = {host_nodes_per_ore = 512},
+	-- Every gem: one per this many host nodes of its own tier rock, and at
+	-- half and a quarter of that density one and two tiers deeper (Round 46
+	-- ruling 3); nowhere else. Its harvest tier stays its own tier. Diamond,
+	-- Ruby and Sapphire reach the deep bands through T6.
+	gem = {host_nodes_per_ore = 512, deeper_host_nodes_per_ore = {1024, 2048}},
 	abyssal_crystal = {
 		first_tier = 5,
 		host_nodes_per_ore = {[5] = 512, [6] = 256},

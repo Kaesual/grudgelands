@@ -142,38 +142,6 @@
       "duration_min": 8
     },
     {
-      "id": "blackwind_ashes_bounty",
-      "line": "ashes",
-      "giver": "r20_anchor_039_host",
-      "turnin": "r20_anchor_039_host",
-      "min_level": 32,
-      "level": 33,
-      "requires": [
-        "blackwind_ashes_02"
-      ],
-      "title": "Bounty: A Recurring Appetite",
-      "text": "The Gale Bears in the {name:bonewood} remain unmoved by our casualty reports. Kill six during daylight and collect your pay. Twenty minutes after payment, I can offer the bounty again; apparently we are budgeting for an endless appetite.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_bear"
-          ],
-          "count": 6,
-          "area": "kragmar_blackwind_rise/bonewood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
-    },
-    {
       "id": "blackwind_arch_01",
       "line": "arch",
       "giver": "r20_anchor_040_host",
@@ -292,38 +260,6 @@
       "duration_min": 15,
       "optional": true,
       "group": true
-    },
-    {
-      "id": "blackwind_arch_bounty",
-      "line": "arch",
-      "giver": "r20_anchor_040_host",
-      "turnin": "r20_anchor_040_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "blackwind_arch_03"
-      ],
-      "title": "Bounty: Webs on the Supply Line",
-      "text": "Night brings Moor Widows to the {name:hollowwood}, which lies {zone_area:hollowwood}, and by morning our supply routes look ready for embalming. Kill six and return for payment. The bounty opens again twenty minutes after you collect; I shall keep a line in the accounts for unwanted shrouds.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "grave_web_spider"
-          ],
-          "count": 6,
-          "area": "kragmar_blackwind_rise/hollowwood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
     }
   ]
 }

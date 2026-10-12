@@ -140,38 +140,6 @@
       "duration_min": 10
     },
     {
-      "id": "gor_drazhak_bounty",
-      "line": "muster",
-      "giver": "r20_orc_capital_envoy",
-      "turnin": "r20_orc_capital_envoy",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "gor_drazhak_muster_03"
-      ],
-      "title": "Bounty: A Toll Paid in Arrows",
-      "text": "More Toll Archers have settled into the {name:tollcamp}; evidently word travels slower than greed. Kill six and return for your bounty. You may take the job again twenty minutes after collecting your pay.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "toll_bandit_archer"
-          ],
-          "count": 6,
-          "area": "kragmar_gor_drazhak/tollcamp"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
-    },
-    {
       "id": "gor_drazhak_provisions_01",
       "line": "provisions",
       "giver": "r20_orc_capital_cook",

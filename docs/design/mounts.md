@@ -132,7 +132,7 @@ superseded.
 
 | Tier | Level | Target reliable net solo earning time | Price |
 |---|---:|---:|---:|
-| Apprentice — slow land mount | 15 | about 15 minutes | 1s5c |
+| Apprentice — slow land mount | 15 | about 15 minutes | 1s10c |
 | Journeyman — fast land mount | 30 | about 45 minutes | 7s |
 | Expert — slow flying mount | 45 | about 2 hours | 1g29s |
 | Master — fast flying mount | 60 | about 5 hours | 7g38s |

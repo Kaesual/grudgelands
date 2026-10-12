@@ -16,8 +16,7 @@
         {
           "npc": "r15_human_local",
           "lines": [
-            "stores",
-            "bounty"
+            "stores"
           ]
         }
       ]
@@ -282,38 +281,6 @@
       "climax": true
     },
     {
-      "id": "goldmead_bounty_rats",
-      "line": "bounty",
-      "giver": "r15_human_local",
-      "turnin": "r15_human_local",
-      "min_level": 18,
-      "level": 19,
-      "requires": [
-        "goldmead_harvest_03"
-      ],
-      "title": "Bounty: Fresh Ventilation",
-      "text": "I mend the sacks; the Sack Gnawers put in fresh ventilation. Kill eight after dark in the {name:hedgerows}, which run {zone_area:hedgerows}, and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 8,
-          "area": "elandor_goldmead_vale/hedgerows"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Repeatable bounty: optional XP and copper.",
-      "duration_min": 8
-    },
-    {
       "id": "goldmead_watch_01",
       "line": "watch",
       "giver": "r14_human_scout",
@@ -395,38 +362,6 @@
       },
       "lesson": "A quest giver inside a hostile camp.",
       "duration_min": 5
-    },
-    {
-      "id": "goldmead_bounty_bandits",
-      "line": "watch",
-      "giver": "r14_human_scout",
-      "turnin": "r14_human_scout",
-      "min_level": 17,
-      "level": 17,
-      "requires": [
-        "goldmead_watch_03"
-      ],
-      "title": "Bounty: Steady Employment",
-      "text": "Another batch of False Bailiffs is collecting at the {name:bandit_camp} {dir_from_giver:bandit_camp}; apparently robbery offers steady employment. Defeat eight and report back for payment, by day or night. You can take this bounty again twenty minutes after turning it in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "quarrelsome_bandit"
-          ],
-          "count": 8,
-          "area": "elandor_goldmead_vale/bandit_camp"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Repeatable bounty at the end of the watch line.",
-      "duration_min": 8
     },
     {
       "id": "goldmead_testimony_01",

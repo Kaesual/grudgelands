@@ -1,0 +1,7 @@
+staged patch: reset.patch
+staged probe: grug_probe_r46_wt
+headless boot: PASS (port 39604, 290 s)
+log: <run>/server.log
+seed = 42
+102:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39604.
+kept: <run>
