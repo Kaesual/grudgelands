@@ -295,29 +295,35 @@ for _, s in ipairs(starts) do
 		end
 	end
 end
+-- Each capital's band along a diagonal stretch: the north-east one first,
+-- then the others (Round 46: POIs and so roads move per world, and a stretch
+-- a road crosses keeps no band cover there).
 for _, c in ipairs(capitals) do
 	local shape = W.capital_shapes[c.anchor]
 	local own = static(c.x, c.z, "vegetation")
-	-- the north-east stretch of the band: walk out to the wall line
-	local step = 0
-	while shape.inside(c.x + step, c.z + step) do step = step + 1 end
-	local bx, bz = c.x + step + 10, c.z + step + 10
 	local band, edge, woody, refused = 0, 0, 0, 0
-	for cz = floor(bz / 16) - 2, floor(bz / 16) + 2 do
-		for cx = floor(bx / 16) - 2, floor(bx / 16) + 2 do
-			for _, cand in ipairs(cell_candidates(cx, cz)) do
-				local row = rows[cand.catalog]
-				local d2 = shape.distance2(cand.x, cand.z)
-				if d2 ~= nil and d2 > 0 and static(cand.x, cand.z, "vegetation") == own then
-					-- a city's outer ring may lie beyond its graded collar, where
-					-- the planner hosts every row and the writer refuses them
-					if not writer_accepts(row, cand.x, cand.z) then
-						refused = refused + 1
-					elseif d2 <= shape.edge_reach * shape.edge_reach then
-						edge = edge + 1
-					else
-						band = band + 1
-						if not BAND_ROWS[row.id] then woody = woody + 1 end
+	for _, d in ipairs({{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}) do
+		if band > 0 then break end
+		-- walk out along the diagonal to the wall line
+		local step = 0
+		while shape.inside(c.x + d[1] * step, c.z + d[2] * step) do step = step + 1 end
+		local bx, bz = c.x + d[1] * (step + 10), c.z + d[2] * (step + 10)
+		for cz = floor(bz / 16) - 2, floor(bz / 16) + 2 do
+			for cx = floor(bx / 16) - 2, floor(bx / 16) + 2 do
+				for _, cand in ipairs(cell_candidates(cx, cz)) do
+					local row = rows[cand.catalog]
+					local d2 = shape.distance2(cand.x, cand.z)
+					if d2 ~= nil and d2 > 0 and static(cand.x, cand.z, "vegetation") == own then
+						-- a city's outer ring may lie beyond its graded collar, where
+						-- the planner hosts every row and the writer refuses them
+						if not writer_accepts(row, cand.x, cand.z) then
+							refused = refused + 1
+						elseif d2 <= shape.edge_reach * shape.edge_reach then
+							edge = edge + 1
+						else
+							band = band + 1
+							if not BAND_ROWS[row.id] then woody = woody + 1 end
+						end
 					end
 				end
 			end

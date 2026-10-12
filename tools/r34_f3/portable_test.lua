@@ -8,14 +8,17 @@
 -- clearances; 2996858566870034, whose tributary would join its parent across
 -- anchor 31's core after the parent went round it; and 12345) the inland
 -- water layout is built through the real height session (water_inputs, no
--- roads), then:
---   1. the build passes: its guard (`water_layout.wet_core`) found no core
---      within a river's wet limit;
+-- roads; since Round 46 the placement session of `world_assembly.lua`, whose
+-- water knows only the fixed POIs: the rift sites, dragon arenas and apex
+-- mines), then:
+--   1. the build passes: its guard (`water_layout.wet_core`) found no fixed
+--      core within a river's wet limit;
 --   2. checked here again, every POI core keeps a margin >= 0 to every wet
---      segment's wet limit; the closest core and its margin are printed;
---   3. seed 12345 has no detour conflict, so its layout text is the one main
---      built before this lane (sha256 pinned below): a course without a
---      conflict keeps the per-core detour exactly;
+--      segment's wet limit, the fixed ones and every POI this world placed
+--      (`placement.lua` keeps them off the water); the closest core and its
+--      margin are printed;
+--   3. seed 12345's layout text is pinned (sha256 below): the water depends
+--      on the seed and the fixed anchors alone;
 --   4. every tributary's junction stretch (its last segment) is at most 320
 --      nodes (the reason at tools/seed_fleet/seed.lua JOIN_MAX);
 --   5. the guard names the river and core: on the built layout a stand-in
@@ -28,8 +31,9 @@ if #seeds == 0 then
 	seeds = {"17713522922938657774", "5575844014311305038", "6410640627505506314",
 		"4282870288782723", "2996858566870034", "12345"}
 end
--- the water layout text of seed 12345 on main f6d11c95 (before this lane)
-local PINNED = {["12345"] = "f140b58b8913b6a01e2313d4f2563b7e425be89564ac6a2c9ce11aa71e9a1d54"}
+-- the water layout text of seed 12345 (Round 46: re-pinned, the water reads
+-- only the fixed POIs now; Round 34 pinned f140b58b... on main f6d11c95)
+local PINNED = {["12345"] = "97b0685d49eecc178b905d8330bdaa6ad04fa1ebd03605bf044923fb552f1e23"}
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1
@@ -42,27 +46,14 @@ local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
 local tdata = dofile(dir .. "/terrain_data.lua")
 local P = tdata.water
-local source = dofile(dir .. "/source/simple_map.lua")
-local settlement = dofile(dir .. "/r7_settlement.lua")
-local palette = dofile(dir .. "/../wp13/palette.lua")
-local TWIN = {["default:dirt_with_dry_grass"] = "default:dry_dirt_with_dry_grass"}
-local start_grounds = {}
-for _, profile in ipairs(settlement.roster) do
-	if profile.slot == "start" then
-		local ground = palette.races[profile.race].ground
-		start_grounds[profile.anchor_id] = {ground = TWIN[ground] or ground}
-	end
-end
+local A = dofile(dir .. "/world_assembly.lua")(dir, sha)
 
--- The water layout of one seed as main builds it (the layout, its text and
--- the POI cores the build read).
+-- The water layout of one seed as main builds it (the layout, its text, the
+-- POI cores the build read, which are the fixed ones, and the cores of the
+-- POIs the world placed on it).
 local function build(seed)
-	local simple_map_factory = dofile(dir .. "/simple_map.lua")(dofile(dir .. "/zone_field.lua"))
-	local horizontal = simple_map_factory({source = source, schemas = dofile(dir .. "/schemas.lua"),
-		canonical = dofile(dir .. "/canonical.lua"),
-		deterministic = dofile(dir .. "/deterministic.lua"), raw_sha256 = sha,
-		capital_protection = {}}).new(seed)
-	local module = dofile(dir .. "/water_layout.lua")(P)
+	local W = A.world(seed, nil, {roads = false, protection = A.square_cities(120)})
+	local module = W.water.module
 	local held = {}
 	local plain = module.build
 	module.build = function(s, opts)
@@ -70,13 +61,17 @@ local function build(seed)
 		held.layout = plain(s, opts)
 		return held.layout
 	end
-	local water = {module = module, authored = dofile(dir .. "/water_authored.lua")(P)}
-	dofile(dir .. "/height.lua")({source = source, canonical = dofile(dir .. "/canonical.lua"),
-		deterministic = dofile(dir .. "/deterministic.lua"), raw_sha256 = sha,
-		horizontal_session = horizontal,
-		terrain_field = dofile(dir .. "/terrain_field.lua")(tdata), water = water,
-		reuse = {}, start_grounds = start_grounds}).new_runtime(seed)
-	return module, held.layout, water.cache.text, held.pois
+	local source = W.place()
+	local profile = {}
+	for _, p in ipairs(source.anchor_profiles) do profile[p.id] = p end
+	local placed = {}
+	for _, a in ipairs(source.anchors) do
+		if a.placement_mode == "placed" then
+			placed[#placed + 1] = {x = a.position.x, z = a.position.z, id = a.id, slot = a.slot_id,
+				r = profile[a.template_id].building_core_width * 0.75}
+		end
+	end
+	return module, held.layout, W.water.cache.text, held.pois, placed
 end
 
 -- The closest approach of any wet segment's water to any core (negative:
@@ -110,10 +105,14 @@ end
 
 for _, seed in ipairs(seeds) do
 	local t0 = os.clock()
-	local ok, module, layout, text, pois = pcall(build, seed)
+	local ok, module, layout, text, pois, placed = pcall(build, seed)
 	check(ok, ("seed %s: the water layout builds (%s)"):format(seed, tostring(module)))
-	check(type(pois) == "table" and #pois > 90, "seed " .. seed .. ": the POI cores reached the build")
-	local margin, at = closest(layout, pois)
+	check(type(pois) == "table" and #pois == 8, "seed " .. seed .. ": the fixed POI cores reached the build")
+	check(#placed == 98, "seed " .. seed .. ": the placed POIs")
+	local all = {}
+	for _, p in ipairs(pois) do all[#all + 1] = p end
+	for _, p in ipairs(placed) do all[#all + 1] = p end
+	local margin, at = closest(layout, all)
 	check(margin >= 0, ("seed %s: %s keeps its core dry (margin %.1f)"):format(seed, at, margin))
 	-- a tributary's junction stretch stays short (bound and reason:
 	-- tools/seed_fleet/seed.lua JOIN_MAX)
@@ -143,8 +142,8 @@ for _, seed in ipairs(seeds) do
 	local rid, p = module.wet_core(module.deserialize(text), {pois[1], probe})
 	check(type(rid) == "number" and p == probe,
 		("seed %s: the guard names a river and the stand-in core"):format(seed))
-	check(module.wet_core(module.deserialize(text), pois) == nil,
-		"seed " .. seed .. ": the guard passes the real cores")
+	check(module.wet_core(module.deserialize(text), all) == nil,
+		"seed " .. seed .. ": the guard passes the real cores, fixed and placed")
 	print(("seed %s: closest core %s margin %.1f, longest junction stretch %.1f, layout %s, %.1f s")
 		:format(seed, at, margin, join, digest:sub(1, 16), os.clock() - t0))
 end

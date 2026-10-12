@@ -100,9 +100,17 @@ vector = {distance = function() return 1 end}
 -- anchors (r7_settlement.lua's roster), the fortress registered as its seat
 -- race, its three quest sockets at the anchor.
 local ROSTER = dofile(path("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua")).roster
+-- Round 46: a placed anchor has no position outside a world; it stands in
+-- here near its zone's hub (on the zone's own side of z = 0), a fixed one at
+-- its source position.
+local ANCHOR_SOURCE = dofile(path("mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua"))
 local places = {}
 for _, row in ipairs(ROSTER) do
-	places[row.key] = {x = row.x, z = row.z, name = row.label}
+	local a = ANCHOR_SOURCE.anchors[row.numeric_id]
+	local hub = ANCHOR_SOURCE.zones[a.zone_numeric_id].hub
+	local at = a.position or {x = hub.x + (row.numeric_id % 9) * 24 - 96,
+		z = hub.z + (hub.z < 0 and -1 or 1) * (row.numeric_id % 5) * 24}
+	places[row.key] = {x = at.x, z = at.z, name = row.label}
 	places[row.anchor_id] = places[row.key]
 end
 local CATALOG = dofile(path("mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"))
