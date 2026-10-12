@@ -5,6 +5,23 @@ Prepared 2026-10-12 from the class, talent and hotbar discussion of
 execution plan. Its purpose is to resume the discussion on another computer
 without reconstructing the conversation.
 
+Continuation 2026-10-12: the user requested the remaining three classes in
+parallel, followed by coordinator review and a balancing correction round for
+all four. The [four-class review package](class-redesign/README.md) holds those
+proposals and the reviewed Mage amendments. It supersedes the sequential
+continuation instruction below for that task, but is not design acceptance or
+an implementation plan.
+
+Targeting follow-up, 2026-10-12: the user approved retaining first-person
+crosshair interaction and the six related ability changes. Their current
+owner is [ability targeting](../design/ability_targeting.md); the
+[implementation design](class-redesign/implementation-design.md) is the
+entry point for the redesign's planning. It supersedes earlier selection wording
+here without accepting every candidate number or closing the design round.
+
+Parked 2026-10-12: the rework is a future work package; resume with the
+[continuation plan](class-redesign/continuation.md).
+
 The goal is more noticeable character growth and more meaningful build
 choices, with a small starting kit, earlier talent unlocks and a satisfying
 rotation and flexibility using four to six equipped combat skills. Characters
@@ -84,6 +101,13 @@ to customization; the initial unlock count is not a mandatory button quota.
    choice. The earlier self-centered fire aura is not the selected ultimate.
 8. Offensive elemental effects target enemies; they must not ignite or damage
    the environment. Ice Cage remains a separate, unresolved terrain question.
+9. **Priest damage stays slightly below Fire Mage damage**, including an
+   offensively specialized Priest (user clarification, 2026-10-12). Healing
+   must not come on top of the Fire Mage's offensive strength. Frost pays for
+   slow and freeze with lower damage. This is a qualitative tuning direction,
+   not a fixed percentage or a requirement that every individual hit be lower.
+   The [cross-class review](class-redesign/balance.md) records the candidate
+   arithmetic and remaining gameplay checks.
 
 ### 3.2 Hotbar layouts
 

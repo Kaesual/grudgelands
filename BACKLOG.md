@@ -28,6 +28,14 @@ layouts, resource tables or buff values.
   including how their mechanics work together in group play and PvP.
   A working ability implementation alone does not settle class feel or
   balance.
+- **Redesign proposal parked (2026-10-12):** the four-class package is a
+  future work package with a preparatory planning round before any
+  implementation ([continuation plan](docs/planning/class-redesign/continuation.md)).
+  Player feedback ranks other problems first.
+- **Warrior rage per hit scales with weapon speed** (the user, 2026-10-12,
+  for the next round, independent of the redesign): a slower weapon gives
+  more rage per hit, so fast weapons such as daggers no longer generate more
+  rage per second.
 - Current owners: [classes](docs/design/classes.md),
   [talents](docs/design/skill_trees.md), [Scout](docs/design/scout.md),
   [combat](docs/design/combat_stats.md) and [PvP](docs/design/pvp.md).

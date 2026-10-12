@@ -3,9 +3,19 @@
 Updated 2026-10-10. This is the delivery pointer, not another game specification.
 
 Planning pointer added 2026-10-12: the [class and hotbar redesign
-handoff](planning/class-redesign-handoff.md) preserves the next-round
+handoff](planning/class-redesign-handoff.md) preserves the redesign
 discussion and the proposed Mage. This is pre-planning only; the delivery
 state below is unchanged. [Open design choices](../TODO-design-classes.md).
+The [four-class review package](planning/class-redesign/README.md) continues
+that discussion with the three requested class drafts, reviewed Mage amendments
+and a cross-class balancing correction round. It awaits the user's overview
+review. The [implementation design](planning/class-redesign/implementation-design.md)
+now consolidates the planning foundation and links the approved future
+[targeting contract](design/ability_targeting.md). Full numerical/graph
+acceptance and implementation remain pending. HTML previews live in the
+user's home artifact folder, not the repository. **Parked 2026-10-12** as a
+future work package after two reviews; the next round focuses on world
+generation. Resume with the [continuation plan](planning/class-redesign/continuation.md).
 
 - **0.45.1, the fix round after the 0.45.0 playtest, complete; not
   pushed yet (pushed only on the user's word)** (2026-10-10, version

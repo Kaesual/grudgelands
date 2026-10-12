@@ -19,6 +19,8 @@ remain delivered foundations, with this refinement work still ahead.
   decide more of which abilities a character gains or leaves out. Build
   coherent ability interactions and rotations, and improve balance in group
   play and PvP. The Scout most urgently needs attention to how it feels to play.
+  A four-class redesign proposal is parked as a future work package
+  (2026-10-12); player feedback ranks other problems first.
 - **World atmosphere, variety and resources:** review music, sounds and
   icons with care for the details that give each region character. Improve
   areas dominated by wind, add more surface variety, more varied tree shapes
