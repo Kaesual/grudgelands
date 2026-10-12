@@ -394,10 +394,11 @@ function source.anchor_of(index, row)
 	end
 	local under = row.underground
 	if under ~= nil then
-		if type(under) ~= "table" or type(under.width) ~= "number" or under.width <= 0 or
-				type(under.depth) ~= "number" or under.depth <= 0 then
+		if type(under) ~= "table" or type(under.width) ~= "number" or
+				not (under.width > 0 and under.width < math.huge) or type(under.depth) ~= "number" or
+				not (under.depth > 0 and under.depth < math.huge) then
 			error("simple_map: anchor " .. anchor.id ..
-				" underground needs {width = W, depth = D}, both positive", 0)
+				" underground needs {width = W, depth = D}, both positive and finite", 0)
 		end
 		anchor.underground = {width=under.width,depth=under.depth}
 	end

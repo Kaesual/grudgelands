@@ -239,6 +239,10 @@ do
 		"U an anchor row carries its underground field")
 	check(not pcall(A.source.anchor_of, 1, {1, "x", "village", "placed", "mid", underground = {width = 40}}),
 		"U an underground field without a depth is refused")
+	check(not pcall(A.source.anchor_of, 1, {1, "x", "village", "placed", "mid",
+		underground = {width = 0 / 0, depth = 160}}) and not pcall(A.source.anchor_of, 1,
+		{1, "x", "village", "placed", "mid", underground = {width = 40, depth = math.huge}}),
+		"U a NaN or infinite underground value is refused")
 	village.underground = parsed.underground
 	source.claim_exclusions = A.source.claim_exclusions_of(source.anchors)
 	local under_id = ("exclude:anchor:%s:under"):format(village.id)
