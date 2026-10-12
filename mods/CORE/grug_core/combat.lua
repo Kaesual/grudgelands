@@ -101,6 +101,28 @@ function grug_core.baseline_weapon_damage(level)
 	return math.floor(4 + 0.35 * level + 0.5)
 end
 
+-- A caster weapon's share of the spell base (Round 46 ruling 10, option B):
+-- the one-handed base damage at the weapon's own item level, without the
+-- family factor -- a wand's damage, and what a staff would deal at x1.0. At
+-- the character's level both equal baseline_weapon_damage, so own-level
+-- caster gear keeps the spell numbers. The item level is not capped at 60:
+-- item level 65/70 boss gear adds a little.
+function grug_core.caster_weapon_value(ilvl)
+	ilvl = math.max(1, math.floor(tonumber(ilvl) or 1))
+	return math.floor(4 + 0.35 * ilvl + 0.5)
+end
+
+-- The base Fireball, Ice Nova and Smite add spell power to: half the level
+-- baseline, half the equipped caster weapon (ruling 10). `weapon_ilvl` nil --
+-- no usable staff or wand in the Weapon slot -- adds nothing, so the spell
+-- base is the level half alone (the user, 2026-10-12; every class starts
+-- with its caster weapon). The half-point is kept; the damage scalar floors
+-- once.
+function grug_core.spell_base(level, weapon_ilvl)
+	local weapon = weapon_ilvl and grug_core.caster_weapon_value(weapon_ilvl) or 0
+	return 0.5 * grug_core.baseline_weapon_damage(level) + 0.5 * weapon
+end
+
 -- The Strength term keeps its fraction like live melee damage since Round 33
 -- (grug_classes.get_melee_bonus), so same-level damage meets the fit exactly
 -- (Round 34 ruling 6). Public as "a base hit" before the scalar: level-proof

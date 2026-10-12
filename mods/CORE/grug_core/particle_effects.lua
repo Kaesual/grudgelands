@@ -450,6 +450,22 @@ register("whelp_arrival", {
 		vel = {{-1, 0.5, -1}, {1, 2, 1}}, exp = {0.6, 0.9}, size = {4, 6}, glow = 0}),
 })
 
+-- The depth pulse (Round 46 lane DP, grug_mobs/depth_pulse.lua). Its 2 s
+-- warning: dark violet motes drawn in to the spot where an arrival will
+-- appear, played at 0 s and 1 s (a spawner lives at most 1 s); then a short
+-- burst when the body appears, the same burst when an arrival fades. 32
+-- particles per arrival, 8 per fade. Glowing, so they read in a dark cave.
+register("depth_windup", {
+	spawner(12, 1, {color = "#5b2a9e", fade = false, shape = {"sphere", {0, 0.6, 0}, 1.4, true},
+		attract = {origin = {0, 0.6, 0}, strength = 1.2, kill = true}, exp = {0.6, 0.8},
+		size = {2, 3}, glow = 12}),
+})
+register("depth_burst", {
+	single(8, {color = "#7b3fc8", shape = {"sphere", {0, 0.6, 0}, 0.3, false},
+		vel = {{-1.5, -0.5, -1.5}, {1.5, 1.5, 1.5}}, exp = {0.4, 0.6}, size = {2.5, 3.5},
+		glow = 12}),
+})
+
 -- The Kraken's drag: bubbles around the dragged player.
 register("kraken_drag", {
 	spawner(16, 0.1, {at = "target", tex = "mobs_bubble_particle.png",

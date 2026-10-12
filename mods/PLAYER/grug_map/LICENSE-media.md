@@ -76,3 +76,16 @@ are in `tools/r44_ar/README.md`.
 | `art/font.png` and `art/font.txt` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; three original proportional seven-pixel uppercase fonts, 41 glyphs each, with red start metadata; `tools/r44_ar/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_map_crosshair.png` and `textures/grug_map_ring.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; red 16×16 target reticles and white 32×32 region rings; `tools/r44_ar/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `tools/r44_ar/variants/{A,B,C}/sheet.png` (repository-relative) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; comparison layouts, terrain patches and original caption glyphs, Python/Pillow; labelled existing-icon samples retain the CC0 provenance documented above | CC0-1.0 |
+
+# Repair marker (Round 46)
+
+The mender's (Grudge-Free Repairs) map and minimap marker, the user's pick
+of the Round 46 proposals. Hand-placed pixel grids written with
+**Python/Pillow**; no image-generation service, downloaded art or
+third-party source pixels. The project dedicates any rights it holds in
+this original to **CC0 1.0 Universal (CC0-1.0)**. The proposals and their
+provenance are in `tools/r46_art/README.md`.
+
+| Files (final paths relative to this mod) | Author | Source / tool disclosure | License |
+|------|--------|--------------------------|---------|
+| `textures/grug_map_repair.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; a 16×16 hammer over an anvil, copied from `tools/r46_art/repair/A1c/grug_map_repair.png`; `tools/r46_art/paint_art.py` (Python/Pillow) | CC0-1.0 |

@@ -151,7 +151,9 @@ tools](#player-meta-read-by-external-tools).
   engine grid routes by `tools/r45_rg/gen_basic_recipes.lua` (`--check`;
   input `tools/r45_rg/corpus_base.lua` from `dump_corpus.sh`), plus the
   stairs and walls families made per material by
-  `register_basic_catalog`'s loop; edit it as data. Gear recipes are
+  `register_basic_catalog`'s loop; a later change is a row of
+  `tools/r45_rg/edits.lua` (a count, a removed row or an added row, with its round), which
+  the generator applies and the fixture accepts. Gear recipes are
   registered by their family's owner (`grug_professions/base_recipes.lua`
   through `grug_professions.family_owner`, trinkets in
   `grug_artisans/goldsmith.lua`). Nothing matches a craft grid and nothing
@@ -167,8 +169,18 @@ tools](#player-meta-read-by-external-tools).
   Round 45 lane UI; layout `inventory_equipment.md` §1): runtime state in
   the sfinv context `grug_craft` (area slot, page, applied and typed search,
   Craftable only, chosen recipe id, last known quantity text, the note of
-  the last refused action, the row ids of the last build); nothing in player
-  meta. Each build runs `update_job(player, "open")`, one
+  the last refused action, the row ids of the last build, and since Round 46
+  the chosen kinds `picks` (group -> item) of the recipe `picks_for` and the
+  built dropdowns `pick_rows`); nothing in player meta. A group entry with
+  two or more carried kinds gets `dropdown[...;grug_craft_pick_<serial>_<index>;
+  ...;true]` (index events; `pick_serial` counts the box's builds); `fields`
+  applies a value of the newest build's serial that differs from the built
+  index, so the values every other event carries change nothing and a change
+  on a page the server already replaced is ignored.
+  `crafting_picks(st, recipe, counts)` (craft_box.lua) drops a pick whose
+  kind is no longer carried or whose group shows no dropdown, and every pick
+  when another recipe is chosen; ui.lua passes the result to the chosen
+  row's ×N. Each build runs `update_job(player, "open")`, one
   `ingredient_counts` pass that feeds ×N, Craftable only and the box, and
   echoes the field values. The list hides a profession area's recipes above
   `profession_level` (Basic shows all). The recipe box's description is
@@ -191,13 +203,13 @@ tools](#player-meta-read-by-external-tools).
   job, now)` draws the bar
   (`grug_jobs_progress_bar.png` from `tools/r45_ui/gen_progress_bar.py
   --check`: 64 fill + 32 full frames, `BAR_FRAMES`), field names are
-  `CRAFT_FIELDS`. Fixture `tools/r45_ui`.
+  `CRAFT_FIELDS`. Fixtures `tools/r45_ui`, `tools/r46_id` (the dropdowns).
 - **Crafting jobs** (`jobs.lua`, Round 45 lane JB): one job per player in
   player meta `grug_jobs:job` (one `core.serialize`d table: `kind`
   "recipe", `recipe` id, `quantity`, `consumed` itemstrings for the refund,
   `target` itemstring for lane EU's enchant and upgrade kinds, `start` and
   `finish` in os.time() seconds with a sub-second part from `grug_jobs.now()`,
-  `no_xp` after an unlearn). `start_job(player, recipe_id, quantity)` →
+  `no_xp` after an unlearn). `start_job(player, recipe_id, quantity[, picks])` →
   ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
   `profession`, `station`, `space`, `ingredients`); `cancel_job(player)` →
   ok, `"completed"`/`"cancelled"` or the refusal; `job_state(player)` (a copy,
@@ -206,8 +218,14 @@ tools](#player-meta-read-by-external-tools).
   `core.after` per online player with a job, no globalstep.
   `ingredient_counts(player)` (one pass over `main` and the bags, stacks
   without metadata: `is_ingredient_stack`), `ingredient_have(counts, entry)`,
-  `crafts_from_counts(counts, recipe)`, `output_capacity(player, recipe)`,
-  `max_craftable(player, recipe[, counts])` → n, by ingredients, by space;
+  `crafts_from_counts(counts, recipe[, picks])` (when one item satisfies two entries,
+  a dry-run take on the counted stacks, searched by halving up to one above
+  the job ceiling of four output stacks; Round 46), `output_capacity(player, recipe)`,
+  `max_craftable(player, recipe[, counts[, picks]])` → n, by ingredients, by space;
+  `picks` (group -> item, the crafting box's choice) goes through
+  `picked_ingredients(ingredients, picks)`, which turns each chosen group
+  entry into an item entry and merges entries of one item (without picks the
+  list itself), and `start_job` counts and takes that list;
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
   within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area
   `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at
@@ -296,8 +314,10 @@ tools](#player-meta-read-by-external-tools).
   `grug_jobs.MENDER_TITLE` (one constant, "Grudge-Free Repairs"), the socket's
   profession kept, so `open_trainer` opens only `grug_repair.open_trainer`'s
   form and the trainer provider (`grug_repair/providers.lua`, any trainer
-  socket) and the faction rule apply as to a trainer; `grug_map/providers.lua`
-  draws no marker (no repairer has an icon); `grug_core/settlement_sockets.lua` only validates that a trainer
+  socket, the only repair provider since Round 46: no station repairs) and the
+  faction rule apply as to a trainer; `grug_map/providers.lua` marks it as a
+  `service` with `grug_map_repair.png` and the title as label (no tooltip,
+  Round 46); `grug_core/settlement_sockets.lua` only validates that a trainer
   socket names a profession, Cooking included (world data unchanged). The professions overview (Round 28 ruling 23,
   `grug_jobs/overview.lua`: `profession_overview` rows,
   `professions_formspec(rows, area)`) is drawn into the Crafting tab's box
@@ -626,7 +646,7 @@ tools](#player-meta-read-by-external-tools).
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
   refresh path as talents. `grug_food.TIERS` owns fixed instant HP, minimum
-  level and the Hearty/Caster/Hunter dish data; raw foods, including Wild
+  level and the Hearty/Caster/Hunter/Plain dish data; raw foods, including Wild
   Cocoa, always regenerate 2% HP per 5 s. Food lasts 300 s. Eating during
   combat is refused before consumption; accepted food heals instantly, and its
   regeneration pauses during later combat while secondary modifiers persist. The
@@ -635,7 +655,7 @@ tools](#player-meta-read-by-external-tools).
   equipment slot (Round 33) and all consumables; `grug_quality` wraps it so
   a stack's own `grug_req_level` (drops, upgrades, the crown) wins. Potions
   retain their instant channel and shared persistent cooldown.
-  `grug_cooking` owns the mapgen-free plant items, the 12 dish recipes, the six
+  `grug_cooking` owns the mapgen-free plant items, the 18 dish recipes, the six
   raw assembled dishes (Cooking recipes since Round 45) and their engine
   furnace routes. `grug_fishing.table_for(pos)`
   selects one of six catch tables through `grug_core.mob_level_at(pos)`; water
@@ -969,6 +989,21 @@ tools](#player-meta-read-by-external-tools).
     but no step weighs every camp against every player (fixture
     `tools/r28_s1`, section "Round 32 F4"). Rules: [spawn_regions.md](../design/spawn_regions.md),
     [biomes_mobs.md](../design/biomes_mobs.md) §4.2.
+  - `depth_pulse.lua` (Round 46, `grug_mobs.depth_pulse`): the depth pulse
+    below y −300 ([biomes_mobs.md](../design/biomes_mobs.md) §4.1). One
+    throttled globalstep serves the players and the live arrivals in four
+    slices of each second; per player a roll (`DP.rate`), the shared cap
+    within 24 nodes (`DP.cap`, `_grug_pulse` entities), a spot by up to four
+    rays (`DP.find_spot` over `DP.world`), the refusals (`DP.refused`), a
+    2 s wind-up (`depth_windup`, `depth_burst` in
+    `grug_core/particle_effects.lua`) and `grug_mobs.add_mob` with
+    `ignore_count`; the arrival gets `_grug_pulse`, `_grug_no_coin_bag`,
+    `static_save = false` and `underground_spawned(..., skip_elite)`, and
+    fades after 10 s without a target. `DP.players` is the seam the depth
+    probe (`tools/r24_density_xp` `POINTS=pulse`) replaces with stand-ins;
+    the pure parts are driven by `tools/r46_dp`. The roster bands
+    (`DP.ROSTERS`) also feed the names inventory (`tools/r38_names`,
+    source `depth_pulse`).
   - Since Round 36 a relevel recomposes a humanoid's skin and
     `grug_mobs.refresh_visual` puts the zone tint (the corrupted sub-types'
     ember) back on top through `grug_mobs.reapply_zone_variant`
@@ -1242,7 +1277,19 @@ tools](#player-meta-read-by-external-tools).
   - **The Bag of Coins** (`grug_money/coins.lua`, Round 34) is the only
     money item: `withdraw` goes through `take_with_inventory`, the deposit
     slot is a per-player detached list that destroys the bag in `on_put`;
-    the amount is item meta (`bag_amount`), never a price class.
+    the amount is item meta (`bag_amount`), never a price class. Round 46:
+    mobs drop it (`grug_mobs.drop_coin_bag`, rolled in the loot gate
+    `_item_drop_filter`, aggro.lua; grug_money is an optional dependency of
+    grug_mobs), and the bag's own `on_pickup` deposits it at once
+    (`auto_deposit_pickup`, the deposit slot's rules) while the player's
+    toggle (`auto_deposit`, meta `grug_money:auto_deposit`) is on, else
+    hands it to `core.item_pickup`. A credited bag sets
+    `_grug_no_pickup_feed` on its item entity, so grug_core's pickup wrapper
+    (`feed.lua`) adds no item line next to "Deposited Xc.". A mob definition
+    with `_grug_no_coin_bag = true` (the Kraken; kept by
+    `register_level_cfg`, since mobs_redo copies no custom def field into
+    the entity) or a live mob with that field never rolls a bag
+    (`grug_mobs.no_coin_bag`).
   - **One price module owns every payout** (`grug_traders/prices.lua`,
     pure rules in `price_rules.lua`; Round 29): loot and gathered goods by
     class × tier factor, processed goods by their cheapest recipe, sold
@@ -1675,8 +1722,8 @@ tools](#player-meta-read-by-external-tools).
   **Landmine since WP25: `default:stone` no longer exists below −100.**
   Every node whitelist, every `wherein`/`place_on` and every mob spawn
   `nodes` list that means "underground rock" has to carry
-  `group:grug_stratum` as well, or it silently narrows to the −40…−100
-  sliver. WP25 repaired exactly that on four cave spawn rows (zombie,
+  `group:grug_stratum` as well, or it silently narrows to the −1…−100
+  sliver (−40…−100 until Round 46). WP25 repaired exactly that on four cave spawn rows (zombie,
   giant spider, stone + mesa golem); `default:stone` itself carries
   `grug_stratum = 1`, so the group alone is the complete predicate.
   **Two Lua environments, and the split is the rule, not a detail**: a pass
@@ -1811,8 +1858,11 @@ tools](#player-meta-read-by-external-tools).
   mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`
   and `grug_mobs/spawn_policy.lua` do the gating on top, against `grug_zones`.
   `register_spawn_role` also owns each family's `clock`; its spawn wrapper
-  stamps the mobs_redo light/day convention and the night `aoc`, while rows
-  wholly below y = -40 remain light-only. Never hand-maintain those fields on
+  stamps the mobs_redo light/day convention and the night `aoc`, while
+  underground rows (top at or below `grug_mobs.UNDERGROUND_TOP` = −1, Round
+  46; −40 before) remain light-only and get the underground `on_spawn`
+  (`underground_spawned`: the sight and the elite roll, `skip_elite` for a
+  caller with its own spawn rule). Never hand-maintain those fields on
   a new surface row. Since Round 30 (P2) a surface row no zone keeps
   registers no ABM at all (`spawn_policy.lua` `spawn_row_kept`; the spawn
   regions own every zone's surface), and every remaining row goes through

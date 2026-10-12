@@ -533,7 +533,8 @@ local function mender_title(profession)
 end
 
 -- Such a socket holds a MENDER (the user, 2026-10-09): it teaches nothing
--- and shows no trainer dialog or map icon, but its click opens the repair
+-- and shows no trainer dialog (the map marks it with the repair icon,
+-- grug_map/providers.lua), but its click opens the repair
 -- form (grug_jobs.open_trainer). It keeps the socket's profession, so the
 -- repair provider and the faction rule apply as to a trainer, and wears the
 -- role title. The socket and the world data stay as they are; `install`

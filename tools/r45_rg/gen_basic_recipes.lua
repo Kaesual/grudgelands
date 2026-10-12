@@ -163,10 +163,32 @@ for output, rows in pairs(by_output) do
 end
 table.sort(walls, function(a, b) return a[1] < b[1] end)
 
+-- Later edits (tools/r45_rg/edits.lua): a changed count, a removed row or
+-- an added row.
+for _, edit in ipairs(dofile(root .. "/tools/r45_rg/edits.lua")) do
+	if edit.added then
+		local tokens = {}
+		for _, entry in ipairs(edit.added) do
+			for _ = 1, entry.n do
+				tokens[#tokens + 1] = entry.group and ("group:" .. entry.group) or entry.item
+			end
+		end
+		local signature = signature_of(tokens)
+		assert(not seen[edit.output .. "|" .. signature], "edit adds an existing row")
+		plain[#plain + 1] = {output = edit.output, count = edit.count,
+			ingredients = edit.added, signature = signature}
+	else
+		local row = seen[edit.output .. "|" .. edit.signature]
+		assert(row and row.count == edit.was, "edit of a missing or changed row: " ..
+			edit.output .. "|" .. edit.signature)
+		if edit.removed then row.removed = true else row.count = edit.count end
+	end
+end
+
 local basic = {}
 for _, row in ipairs(plain) do
 	if row.family then counts.family = counts.family + 1
-	else basic[#basic + 1] = row end
+	elseif not row.removed then basic[#basic + 1] = row end
 end
 counts.basic = #basic
 table.sort(basic, function(a, b)
@@ -179,9 +201,9 @@ local lines = {
 	"-- The Basic recipe catalog (Round 45, round45-plan.md §3 and §4.2): every",
 	"-- profession-free recipe as an ingredient list. Converted from the engine",
 	"-- grid routes of the base commit by tools/r45_rg/gen_basic_recipes.lua",
-	"-- (its --check compares); edit it as data from",
-	"-- now on and rerun nothing. registry.lua registers each row in the",
-	"-- \"basic\" area and makes the loop-made families below.",
+	"-- (its --check compares); a later change is a row of",
+	"-- tools/r45_rg/edits.lua, then rerun the generator. registry.lua registers",
+	"-- each row in the \"basic\" area and makes the loop-made families below.",
 	"return {",
 	"\trecipes = {",
 }

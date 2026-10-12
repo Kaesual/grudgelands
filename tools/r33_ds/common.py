@@ -35,6 +35,20 @@ def baseline_weapon(level):
     return rnd(4 + 0.35 * level)
 
 
+def caster_weapon(ilvl):
+    """grug_core.caster_weapon_value: a staff's or wand's share of the spell
+    base, the one-handed damage at its item level without the family factor;
+    0 without a caster weapon (ilvl None)."""
+    return 0 if ilvl is None else rnd(4 + 0.35 * max(1, ilvl))
+
+
+def spell_base(level, ilvl):
+    """grug_core.spell_base (Round 46 ruling 10): half Bw(L), half the caster
+    weapon at its own item level; equals Bw(L) at ilvl = L, Bw(L)/2 without
+    a caster weapon (ilvl None)."""
+    return 0.5 * baseline_weapon(max(1, min(60, level))) + 0.5 * caster_weapon(ilvl)
+
+
 def base_hit(level):
     """B(L) = grug_core.baseline_melee_total: Bw(L) + the Warrior's Str/10."""
     level = max(1, min(60, level))

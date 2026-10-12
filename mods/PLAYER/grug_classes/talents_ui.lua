@@ -81,6 +81,14 @@ local function level_scaled_text(player, def)
 				ranks[#ranks + 1] = "+" .. level_number(factor *
 					grug_classes.talent_level_amount(player, effect_key, value))
 			end
+			if unit == "damage" and grug_classes.TALENT_SPELL_KEYS[effect_key] then
+				-- A caster key follows the staff or wand (Round 46).
+				return (" At your level and with your staff or wand a spell " ..
+					"base hit is %d damage: %s damage."):format(
+					math.floor(grug_core.base_pool(level) / 8 *
+						grug_classes.spell_weapon_ratio(player, level)),
+					table.concat(ranks, " / "))
+			end
 			if unit == "damage" then
 				return (" At your level a base hit is %d damage: %s damage."):format(
 					math.floor(grug_core.base_pool(level) / 8),

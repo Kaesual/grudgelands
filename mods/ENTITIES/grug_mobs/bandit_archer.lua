@@ -81,11 +81,7 @@ archer.run_velocity = 4.0
 archer._grug_soft_deaggro = false
 archer.view_range = 16 -- it shoots; it needs to see further than a brawler
 
-local bandit_drops = archer.drops
-archer.drops = function(pos)
-	local drops = bandit_drops(pos)
-	drops[#drops + 1] = {name = "grug_mobs:arrow", chance = 3, min = 1, max = 1}
-	return drops
-end
+-- The bandit's drops function as it is: the sell-only arrow bundle no
+-- longer drops (Round 46 ruling 12; coin bags, aggro.lua).
 
 grug_mobs.register_mob("grug_mobs:bandit_archer", archer)

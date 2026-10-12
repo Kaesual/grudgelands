@@ -57,8 +57,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   is centred in the window. The money row has no box and lies on the slot
   columns: "Money" over the balance (e.g. "123456g 99s 99c"), **Withdraw**
   (opens the Bag of Coins dialog, [economy.md](economy.md) §1), the Bag of
-  Coins **deposit slot** and, at the right end with the hotbar's last slot,
-  **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
+  Coins **deposit slot**, its **Auto** checkbox (deposit coin bags
+  automatically on pickup, Round 46) and, at the right end with the hotbar's
+  last slot, **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
   change re-sends the Inventory page while it is the selected page (also
   with the window closed, so it opens current); money has no gameplay HUD.
   Sort orders
@@ -189,7 +190,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     "Any berry"; a group without one keeps the generated "Any <Group
     Name>"); its icon is the member the player carries most of (the stacks
     have/need count), else the first by name; the tooltip lists every
-    member. **Bottom:** the **quantity row** "Quantity [−][field][+]
+    member. Where the player carries two or more kinds of a group entry
+    (Round 46, the user's request), a **dropdown** replaces its name:
+    "Automatic" (the first matching stacks in the take order), then each
+    carried kind with its count. The choice drives Max, the list's ×N of
+    the recipe, **Craft now** and the take; it is page state only (never
+    saved), choosing another recipe starts it on Automatic, and a chosen
+    kind no longer carried, or a group left with one kind, falls back to
+    Automatic on the next build. **Bottom:** the **quantity row** "Quantity [−][field][+]
     [Max]" (stackable outputs only, default 1), below it **Craft now**. A missing station reads "Requires: <station> nearby" and
     a missing profession tier its reason; both draw **Craft now** greyed,
     and a click on it only rebuilds the page (checking the station again).
@@ -530,9 +538,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   job starts (`professions.md` §1.5). Only **furnaces and dual furnaces** keep
   a dialog with lists. The forge, the four benches and the brewing stand are
   proximity stations without a dialog, lists or a right-click action (Round
-  45); inside an active Claim Stone claim the repair button sits in a
-  player-placed furnace's or dual furnace's dialog
-  ([durability_repair.md](durability_repair.md)).
+  45). No station repairs: repair happens only in towns (Round 46,
+  [durability_repair.md](durability_repair.md)).
 - Authored capital/POI furnaces and dual furnaces are personal workspaces
   keyed by player and physical station: durable inputs, outputs, fuel and
   processing state per player. Player-placed ones share node inventories;

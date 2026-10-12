@@ -621,7 +621,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the engine's grid routes, the registry, the gear families and the vendor
   payouts (`corpus_base.lua` is the base commit's dump, the generator's input);
   `gen_basic_recipes.lua` converts it into `grug_jobs/basic_recipes.lua`
-  (`--check`, `--report`); `portable_test.lua` loads the real registry, the
+  (`--check`, `--report`), applying the later edits of `edits.lua` (Round 46:
+  one torch recipe, 10 per coal or charcoal); `portable_test.lua` loads the real registry, the
   Basic catalog and the profession catalogs under a stub engine: the record
   shape, queries and refusals, the conversion of every grid route, gear in
   its profession, durations, stations, the craft list at a join and the
@@ -771,7 +772,55 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   characters saved at old positions rejoin during the preparation, the probe
   counts the generated chunks near each old position, the engine spawn and
   the waiting point, and checks the teleports and the disconnects;
-  `evidence/` holds the run's receipts.
+  `evidence/` holds the run's receipts;
+  `r46_ck` cooking for every start zone:
+  `locality.lua` reads the shipped world data (zone biomes and level bands,
+  the wild plant and gathering catalogs, the catch tables, the mobs' meat
+  drops) and the real cooking catalog, and says which Cooking recipes each
+  zone can make from its own ingredients; `cook_local.lua [REPO] [--before
+  OLD_REPO] [--all | --recipes]` prints them per race (before and after
+  against a `git archive` of an older commit) or per recipe;
+  `portable_test.lua` checks the plain food role (weaker than every role per
+  tier), the six plain dishes, the staple and raw fish groups, and the
+  coverage (two T1 recipes in every start zone, the T1 and T2 plain dishes in
+  every 11-20 zone, every zone its band's plain dish, a T3 recipe in
+  Frostbarrow), that ×N equals what a job can take for every Cooking recipe
+  on many inventories (overlapping groups included; `jobs_harness.lua`
+  loads the real `grug_jobs` registry and jobs under a stub engine), the
+  plain furnace foods and the four ingredient swaps; `bench_count.lua [REPO]
+  [ROUNDS]` (LuaJIT, also `-joff`) times that count per page view on the
+  review's worst case and a realistic inventory;
+  `r46_uw` underground spawns and torches
+  (`portable_test.lua` on the real spawn roster of
+  `r24_density_xp/roster.lua`: every underground row from y −1, light 7 or
+  any, its `on_spawn`; the policy at the boundary, the start footprint and
+  the elite floor; the sight and the 4 % elite roll of
+  `underground_spawned`; `pending_level`; the torch row). `evidence/` holds
+  the depth probe's before/after logs (`r24_density_xp/run.sh` with
+  `POINTS=depth`: three points at y −30, −300 and −900 under Hearthpine and
+  a torch room);
+  `r46_id` the kind per group ingredient in the crafting box
+  (`portable_test.lua`, `r45_ui`'s stubs with the real `grug_jobs` page and
+  box: the dropdown only with two or more kinds carried, the choice changing
+  Max, ×N and the take, the fallback to Automatic, no resend on unchanged
+  values or a scroll, the dropdown inside the box; then on the real Basic
+  and Cooking catalogs through `r46_ck/jobs_harness.lua` that ×N equals what
+  the take takes for every recipe with a group entry, with and without a
+  choice, and the one torch recipe; `--bytes` prints only the page bytes, also
+  against a `git archive` of an older commit); `bench_picks.lua [REPO]
+  [ROUNDS]` times the count with a choice next to `r46_ck/bench_count.lua`;
+  `r46_dp` the depth pulse (`portable_test.lua`: the real
+  `grug_mobs/depth_pulse.lua` on a voxel stub with a stepping raycast and
+  the real particle helper and catalogue: the curve, caps and roster, the
+  placement cases (open cave, corridor, sealed 7×7 room, 3×3 bunker, 1×2
+  pocket, ground arrivals, water and lava), the refusals and the owed
+  arrival, the 2 s warning and its 32 particles, the arrival's fields, the
+  fade, the slicing and the data around the module); `pulse_curves.py`
+  the design note's offline estimates (the note's options, not the decided
+  curve); `probe_physical.sh` with `grug_probe_r46_dp` the engine probe
+  that the cave flyers are physical; `evidence/` the depth probe's
+  before/after logs (`r24_density_xp/run.sh` with `POINTS=pulse`: rooms at
+  y −400, −1000 and −1500 with stand-in players);
   `r46_pl` seed-dependent POI placement: `portable_test.lua` (seed 42's
   real world: determinism and the placement text, the fixed/placed split,
   every rule on every placed anchor, the last resort, an underground

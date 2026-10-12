@@ -18,7 +18,7 @@
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "alderwood", "name": "Causeway Alderwood",
             "day": [{"role": "causeway_brigand", "weight": 3}, {"role": "coal_purse_factor", "weight": 1}],
-            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "causeway_brigand", "weight": 1}], "density": "normal"},
+            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal"},
           "highland": {"id": "dikes", "name": "Causeway Dikes",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
             "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
@@ -38,7 +38,7 @@
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "wraithwood", "name": "Causeway Wraithwood",
             "day": [{"role": "causeway_brigand", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
-            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}], "density": "normal"},
+            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal"},
           "highland": {"id": "ramparts", "name": "Causeway Ramparts",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
             "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
@@ -58,7 +58,7 @@
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "gallows_wood", "name": "Causeway Gallows Wood",
             "day": [{"role": "causeway_aqueduct_bowman", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}], "density": "normal"},
+            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal"},
           "highland": {"id": "arch_heights", "name": "Causeway Arch Heights",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
             "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}

@@ -150,6 +150,11 @@ end
 for output, gear in pairs(corpus.gear) do
 	registered[output]._grug_bracket = gear.bracket
 end
+-- A later edit's items (tools/r45_rg/edits.lua; the charcoal of Round 46 is
+-- registered by grug_smelting, which this stub does not load).
+for _, edit in ipairs(dofile(repo .. "/tools/r45_rg/edits.lua")) do
+	for _, entry in ipairs(edit.added or {}) do ensure(entry.item or "") end
+end
 
 ------------------------------------------------------------------------------
 -- R: the registry under test, first with synthetic records.
@@ -327,6 +332,18 @@ local function elsewhere(output)
 		output == "grug_brewing:brewing_stand"
 end
 local by_key, matched = {}, {}
+-- Later edits (tools/r45_rg/edits.lua): a route's changed count, a removed
+-- route, a row no route made.
+local edited_count, added_rows, removed_routes = {}, {}, {}
+for _, edit in ipairs(dofile(repo .. "/tools/r45_rg/edits.lua")) do
+	if edit.added then
+		added_rows[#added_rows + 1] = edit
+	elseif edit.removed then
+		removed_routes[edit.output .. "|" .. edit.signature .. "|" .. edit.was] = true
+	else
+		edited_count[edit.output .. "|" .. edit.signature .. "|" .. edit.was] = edit.count
+	end
+end
 for _, recipe in ipairs(J.recipes) do
 	by_key[recipe.output .. "|" .. record_signature(recipe) .. "|" .. recipe.count] = recipe
 end
@@ -341,8 +358,14 @@ for _, route in ipairs(corpus.engine) do
 			local tokens = {}
 			for index, token in ipairs(route.items) do tokens[index] = resolve(token) end
 			local key = route.output .. "|" .. signature_of(tokens) .. "|" .. route.count
+			if edited_count[key] then
+				key = route.output .. "|" .. signature_of(tokens) .. "|" .. edited_count[key]
+			end
 			local recipe = by_key[key]
-			if check(recipe ~= nil, "C " .. key .. " has its record") then
+			if removed_routes[key] then
+				check(recipe == nil, "C the removed route " .. key .. " has no record")
+				dropped = dropped + 1
+			elseif check(recipe ~= nil, "C " .. key .. " has its record") then
 				converted = converted + 1
 				matched[recipe] = true
 				local gear = corpus.gear[route.output]
@@ -356,8 +379,15 @@ for _, route in ipairs(corpus.engine) do
 end
 print(("conversion: %d grid routes of the base catalog, %d converted, %d dropped"):format(
 	routes, converted, dropped))
+for _, edit in ipairs(added_rows) do
+	local recipe = by_key[edit.output .. "|" .. record_signature({ingredients = edit.added}) ..
+		"|" .. edit.count]
+	if check(recipe ~= nil, "C the added row of " .. edit.output .. " has its record") then
+		matched[recipe] = true
+	end
+end
 for _, recipe in ipairs(J.recipes_in_area("basic")) do
-	check(matched[recipe], "C Basic " .. recipe.id .. " comes from a grid route")
+	check(matched[recipe], "C Basic " .. recipe.id .. " comes from a grid route or an edit")
 end
 -- The old registry's bench recipes (tailor, tanning rack, jeweller's bench).
 for _, row in ipairs(corpus.registry) do

@@ -153,9 +153,18 @@ local RECIPE_ZONE_ROWS = {
 		front_wyrmglass_crown = true},
 }
 
+-- Round 46 ruling 15: the underground begins just below the surface. A row
+-- is an underground row when its top (`max_height`, where the mob stands)
+-- is at most UNDERGROUND_TOP; mobs_redo raises the matched node by one
+-- before the height test, so such a row matches nodes y <= -2, and the
+-- policy's underground domain is exactly the nodes y < UNDERGROUND_TOP.
+-- Until Round 46 both stood at -40 and the band -1 .. -40 spawned nothing.
+local UNDERGROUND_TOP = -1
+grug_mobs.UNDERGROUND_TOP = UNDERGROUND_TOP
+
 -- The existing cave rows are exact. Keeping this list closed preserves their
--- y < -40 behavior without letting a new Grudgelands family silently bypass
--- the named-zone policy merely because it added a negative-height ABM.
+-- underground behavior without letting a new Grudgelands family silently
+-- bypass the named-zone policy merely because it added a negative-height ABM.
 local UNDERGROUND_MOBS = {
 	["grug_mobs:zombie"] = true,
 	["grug_mobs:giant_spider"] = true,
@@ -175,8 +184,9 @@ local UNDERGROUND_MOBS = {
 	["grug_mobs:dungeon_master"] = true,
 	["grug_mobs:lava_flan"] = true,
 	["grug_mobs:ember_wisp"] = true,
-	["grug_mobs:land_guard"] = true,
-	["grug_mobs:rift_spawn"] = true,
+	-- The Land Guard and the Rift Spawn have no cave row since Round 46: below
+	-- y -1000 the depth pulse brings them (depth_pulse.lua), which bypasses
+	-- this ABM policy like the spawn regions do.
 }
 
 local RACE_FACTIONS = {
@@ -301,6 +311,7 @@ local claim_hostile_spawns = {}
 local spawn_clocks = {}
 local ambient_density_spawns = {}
 local natural_min_levels = {}
+local elite_spawns = {} -- mobs whose definition is elite (golems, Land Guard)
 local zone_palette_at
 
 local function validate_clock(clock, name)
@@ -334,6 +345,7 @@ function grug_mobs.register_spawn_role(name, def)
 	claim_hostile_spawns[name] = hostile_spawns[name] and def.type ~= "npc"
 	spawn_clocks[name] = def.clock
 	natural_min_levels[name] = def._grug_min_level or 1
+	elite_spawns[name] = def._grug_tier == "elite"
 	-- Ordinary natural rows include hostile creatures and neutral huntable
 	-- wildlife. Critters are scenery, while NPC/rare/boss/encounter populations
 	-- have authored or dedicated owners and never inherit ambient tuning.
@@ -374,6 +386,60 @@ function grug_mobs.claim_refuses_spawn(name, pos)
 	end
 	local claim = housing.claim_at(pos)
 	return claim ~= nil and housing.is_active(claim) == true
+end
+
+--
+-- Round 46 ruling 15: what an underground row's spawn adds, called from the
+-- row's on_spawn (prepare_spawn_row) right after mobs_redo created the mob,
+-- before its first tick. Hostile mobs only; critters keep their own sight
+-- and never turn elite.
+--
+-- Sight: an underground spawn is never closer than `mob_nospawn_range` (24)
+-- to a player, beyond every cave mob's own view range (10-16), so a fresh
+-- mob never saw the player it spawned for. Its view range is raised to
+-- reach that distance plus two nodes (the mob stands one node above the
+-- tested point and looks from its eye). A plain entity field, so it is
+-- saved with the mob; the def and the surface rows of the same mob keep
+-- theirs.
+--
+-- Elite roll: UNDERGROUND_ELITE_CHANCE of these spawns become elite
+-- (set_tier: x3 HP, x1.8 damage, x4 XP and the elite wind-up telegraph),
+-- never inside a start footprint and never below UNDERGROUND_ELITE_MIN_LEVEL.
+-- A def-elite (golems, the Land Guard) stays what it is. `skip_elite` lets a
+-- caller with its own spawn rule (the depth pulse) keep the sight without
+-- the roll.
+--
+grug_mobs.UNDERGROUND_ELITE_CHANCE = 0.04
+grug_mobs.UNDERGROUND_ELITE_MIN_LEVEL = 5
+
+-- mobs_redo's own default for the setting is 12; read on the first spawn.
+local underground_view_range
+function grug_mobs.underground_view_range()
+	if not underground_view_range then
+		underground_view_range =
+			(tonumber(core.settings:get("mob_nospawn_range")) or 12) + 2
+	end
+	return underground_view_range
+end
+
+function grug_mobs.underground_spawned(ent, pos, skip_elite)
+	if not ent or not ent.object or not hostile_spawns[ent.name] then
+		return false
+	end
+	local sight = grug_mobs.underground_view_range()
+	if (ent.view_range or 0) < sight then
+		ent.view_range = sight
+	end
+	if skip_elite or math.random() >= grug_mobs.UNDERGROUND_ELITE_CHANCE or
+			grug_mobs.in_start_footprint(pos.x, pos.z, pos.y) then
+		return false
+	end
+	local level = grug_mobs.pending_level(ent)
+	if not level or level < grug_mobs.UNDERGROUND_ELITE_MIN_LEVEL then
+		return false
+	end
+	grug_mobs.set_tier(ent, "elite")
+	return ent._grug_tier == "elite"
 end
 
 local function clock_for_palette(name, palette)
@@ -427,7 +493,7 @@ end
 
 -- `zone_id` is optional and wins over the zone of `pos` (clock_palette_at).
 function grug_mobs.spawn_clock_for(name, pos, zone_id)
-	if pos and pos.y < -40 then
+	if pos and pos.y < UNDERGROUND_TOP then
 		return "any"
 	end
 	local zone_palette = zone_id and ZONE_MOB_PALETTES[zone_id] or
@@ -464,8 +530,15 @@ function grug_mobs.prepare_spawn_row(def)
 			row[key] = value
 		end
 	end
-	if row.max_height and row.max_height <= -40 then
+	if row.max_height and row.max_height <= UNDERGROUND_TOP then
 		row.day_toggle = nil
+		-- Round 46: the sight and the elite roll of an underground spawn
+		-- (grug_mobs.underground_spawned below), after the row's own hook.
+		local own = row.on_spawn
+		row.on_spawn = function(ent, pos)
+			if own then own(ent, pos) end
+			grug_mobs.underground_spawned(ent, pos)
+		end
 		return row
 	end
 	-- A recipe zone's kept row states its final chance and cap (above).
@@ -627,7 +700,7 @@ function grug_mobs.compile_spawn_domains(domains, mob_name)
 end
 
 function grug_mobs.spawn_domain_at(pos)
-	if pos.y < -40 then
+	if pos.y < UNDERGROUND_TOP then
 		return "underground"
 	end
 	if grug_zones.pvp_rule_at(pos) == "contested" then
@@ -753,14 +826,24 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if INDEPENDENT_AUTHORITY[mob_name] then
 		return true
 	end
-	if pos.y < -40 then
-		return UNDERGROUND_MOBS[mob_name] == true
+	if pos.y < UNDERGROUND_TOP then
+		if not UNDERGROUND_MOBS[mob_name] then
+			return false
+		end
+		-- Round 46: the elite floor of the underground elite roll
+		-- (underground_spawned) holds for an elite by definition too, so a
+		-- shallow cave of a start zone never spawns an elite golem.
+		if elite_spawns[mob_name] then
+			local level = grug_zones.mob_level_at(pos)
+			return level ~= nil and level >= grug_mobs.UNDERGROUND_ELITE_MIN_LEVEL
+		end
+		return true
 	end
 	if not grug_mobs.spawn_clock_allows(mob_name, pos) then
 		return false
 	end
-	-- The cave ABMs end at -40, but the stable depth domain begins strictly
-	-- below it. Surface ABMs begin at zero, so the intervening band is closed.
+	-- Surface rows begin at zero and the underground domain below -1: the
+	-- one node layer at y = -1 between them stays closed.
 	if pos.y < 0 then
 		return false
 	end
@@ -820,11 +903,12 @@ end
 -- only zone-less land columns are dragon-channel floors at height 0, under
 -- the sea at water level 1 (checked on seeds 12345 and 42). Such a row is
 -- retired: mobs_redo still records it (mobs.spawning_mobs, the chance
--- override), but no ABM is registered for it. Underground rows (y <= -40)
--- and the independent authorities (Kraken, Reed Angelfish) stay, merged by
--- spawn_abms.lua. `max_y` is the row's top.
+-- override), but no ABM is registered for it. Underground rows (top at or
+-- below UNDERGROUND_TOP) and the independent authorities (Kraken, Reed
+-- Angelfish) stay, merged by spawn_abms.lua. `max_y` is the row's top.
 function grug_mobs.spawn_row_kept(name, max_y)
-	if max_y <= -40 or INDEPENDENT_AUTHORITY[name] or RECIPE_ZONE_ROWS[name] then
+	if max_y <= UNDERGROUND_TOP or INDEPENDENT_AUTHORITY[name] or
+			RECIPE_ZONE_ROWS[name] then
 		return true
 	end
 	local SR = grug_mobs.spawn_regions

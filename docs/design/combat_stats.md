@@ -65,6 +65,20 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Spell power** = Int/10, fractions included (Round 33). It is the flat
   term of damaging spells; like every damage it is floored once after the
   level scalar (Round 36: spells no longer round before it).
+- **Spell base** (Round 46 ruling 10) = `0.5 × round(4 + 0.35L) + 0.5 ×
+  round(4 + 0.35 × ilvl)`: half the level baseline weapon, half the staff or
+  wand in the Weapon slot at its own item level, without the family factor
+  (the staff's ×1.2 is melee only). An own-level staff or wand therefore
+  gives exactly the level baseline; a first-tier weapon (ilvl 1) gives 9.5
+  instead of 15 at level 30 and 14.5 instead of 25 at level 60. No usable
+  caster weapon in the slot (empty, another family, broken) adds 0: the
+  spell base is the level half alone, half of today's (the user,
+  2026-10-12; Mage and Priest start with the Bronze Staff). Fireball, Ice Nova and Smite add spell power to it
+  (`grug_core.spell_base`). The Mage's and Priest's talent damage terms
+  follow it as percentages of a **spell base hit** `B(L) × S / Bw(L)`:
+  exactly today's with an own-level staff or wand, scaled like the spell
+  with an older one, half without one (the user, 2026-10-12). Warrior and
+  Scout talent terms stay on `B(L)`; healing keeps the support factor.
 - **Support factor** (Round 36) = `1 + gear Int / 10 / B(L)` on
   pool-derived healing and absorbs, where gear Int is the Intelligence above
   the class's own level growth (`grug_classes.get_support_factor`). Gear
@@ -82,7 +96,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   settlement; a positive authored damage value settles to at least 1.
   `B(L)` is also "a base hit": talent damage terms (and Charge's 12 %) are
   percentages of it, so they keep their share at every level
-  ([skill_trees.md](skill_trees.md) §2.10, Round 35).
+  ([skill_trees.md](skill_trees.md) §2.10, Round 35); a caster's terms use
+  the spell base hit above (Round 46).
 - **Support values are already level-derived and are never level-scaled a
   second time.** Heal and Shield are each 25% of `P(L)`; each Mend tick
   is 8%. Multiply that pool share by the support factor, then pass the
@@ -388,7 +403,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   Mob/boss/guard missiles lock their valid attack target under the same initial
   range/line-of-sight rule. Smite stays immediate; area skills stay area skills.
 - Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
-  range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
+  range**, **20 m/s nominal speed**, the spell base + spell power and
   its existing talent effects. Scout arrows retain bounded draw and ammo rules:
   a full draw takes the bow's 2.5 s, shortened only by Fletching and the
   bow's own attack-speed affix (not the rest of the equipment), and Loose deals
@@ -483,7 +498,9 @@ Normal tier at level L:
   No mob uses the boss tier before
   the round-6 king/dragon content. The single implementation table and formula
   are the `TIERS` table and `grug_mobs.stats_for` in
-  `mods/ENTITIES/grug_mobs/levels.lua`.
+  `mods/ENTITIES/grug_mobs/levels.lua`. An underground row's spawn turns
+  elite at **4 %** from level 5, never in a start footprint (Round 46,
+  [biomes_mobs.md](biomes_mobs.md) "Underground spawns").
 - **Three mob classes** (decided 2026-08-08, full rule in
   `biomes_mobs.md` §3.0): **critters** (small animals — always level 1,
   always **1 HP**, **0 XP**, **food-only drops**, **no fall damage**,
@@ -636,8 +653,10 @@ Normal tier at level L:
   guards farm it). Faction NPCs drop only when killed by ENEMY players
   (PvP); NPC-vs-mob kills never drop. Kills LotT's armor-litter
   problem. What drops is the mob's family table for its level band where
-  one exists, else its static list (Round 28 ruling 36, `biomes_mobs.md`
-  "Round 28 sub-types and loot by band").
+  one exists (an empty band drops nothing), else its static list (Round 28
+  ruling 36, `biomes_mobs.md` "Round 28 sub-types and loot by band"). A
+  looted kill of anything but a faction NPC or a critter also rolls a coin
+  bag (Round 46, [economy.md](economy.md) §1).
 - **Bounded-actor soft de-aggro:** where the retained encounter policy enables
   it, beyond ~25 m a chasing actor drops to walk speed. Round 18 ordinary
   damage-sustained world mobs do not use this slowdown or distance give-up;
@@ -794,12 +813,13 @@ is the last T3 node, y = −501 begins contested T4 (Round 31; it was T5 from
 region continues to select deep regional resources, but never changes the
 universal PvP/terrain rule below −500.
 
-**Depth buys frequency, not stats.** Past the level-60 cap the axis
-keeps going as *spawn pressure*: a player-centric arrival pulse whose
-rate grows with depth, so deep mining happens under permanent
-interruption rather than against bigger numbers. That is a spawn rule
-and it lives in `biomes_mobs.md` §4.1 — curve, cap and roster in one
-place.
+**Depth buys frequency, not stats.** Below −300 the axis adds *spawn
+pressure*: a player-centric arrival pulse whose rate grows with depth
+(0.5 arrivals a minute at −300, 1 at −1000, 2 from −2000; Round 46), so deep
+mining happens under interruption rather than against bigger numbers. An
+arrival takes the ordinary underground level of its spot and is never
+rolled elite. That is a spawn rule and it lives in `biomes_mobs.md` §4.1 —
+curve, cap and roster in one place.
 
 ## 4. Threat (aggro) system
 
@@ -1192,13 +1212,20 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   twice a second from the crosshair's own skill ray when that ray reaches
   20 m and settles the question (nothing in reach, a wall, or a framable
   target first), otherwise from a 20 m ray of its own.
-  Relative to the viewer's level L (mobs):
+  Relative to the viewer's level L (mobs), a gradient by d = mob level − L
+  (Round 46; one integer RGB colour per level, `con_gradient` in
+  `target_frame.lua`). A mob is gray exactly when its kill would pay the
+  viewer nothing: the frame asks the settlement's own predicate
+  `grug_mobs.player_kill_xp` (`levels.lua`), so the two cannot drift:
 
 | Relation | Color | XP |
 |----------|-------|----|
-| mob ≤ L−7 | gray | none, "(no XP)" |
-| L−7 < mob ≤ L | green | 10–100 % (−15 % per level below) |
-| mob > L | red | 110–150 % (+10 % per level above) |
+| no XP (d ≤ −7, own faction, critter, `_grug_xp_reward` 0) | gray `#aaaaaa` | none, "(no XP)" |
+| d = −6 … 0 | green `#55ff55` to yellow `#ffff55`, evenly per level | 10–100 % (−15 % per level below) |
+| d = +1 … +5 | yellow to red `#ff5555`, evenly per level | 110–150 % (+10 % per level above) |
+| d > +5 | red `#ff5555` | 150 % |
+
+  Players keep their relation colours: own faction green, enemy red, gray when there is nothing at stake.
 
 - **No skull tier** and no extra damage modifier for high-level mobs —
   mob damage already scales via the level formulas; the nametag carries

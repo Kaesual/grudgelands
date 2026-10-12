@@ -42,35 +42,10 @@ grug_repair.register_provider("trainer", function(player, provider)
 	return false
 end)
 
+-- The trainer is the only provider: repair happens only in towns (Round 46
+-- ruling 16; the claim stations' repair of Round 29 is gone).
 function grug_repair.can_open_trainer(player, entity)
 	return grug_repair.provider_permitted(player, trainer_provider(entity))
-end
-
--- Claim stations (durability_repair.md, D7): a player-placed crafting station
--- inside an active Claim Stone claim repairs at the same trader price, for
--- anyone who may use that station. Authored public stations stand in cities
--- and never inside a claim.
-local function station_provider(pos)
-	if type(pos) ~= "table" then return nil end
-	return {kind = "station", pos = vector.new(pos)}
-end
-
-grug_repair.register_provider("station", function(player, provider)
-	local pos = provider.pos
-	local node = pos and core.get_node_or_nil(pos)
-	local station = node and (core.registered_nodes[node.name] or {})._grug_station
-	if not station or grug_jobs.is_public_station(station, pos) or
-			distance_squared(player:get_pos(), pos) > 64 then
-		return false
-	end
-	local housing = rawget(_G, "grug_housing")
-	local claim = housing and housing.claim_at(pos)
-	return claim ~= nil and housing.is_active(claim) and
-		not grug_core.interaction_protected(pos, player:get_player_name())
-end)
-
-function grug_repair.can_open_station(player, pos)
-	return grug_repair.provider_permitted(player, station_provider(pos))
 end
 
 local function esc(text) return core.formspec_escape(tostring(text)) end
@@ -80,8 +55,8 @@ local function esc(text) return core.formspec_escape(tostring(text)) end
 -- grug_jobs.MENDER_TITLE (the user, 2026-10-10) and shows
 -- grug_jobs.GREETINGS.mender below the title, one label per wrapped line;
 -- everything below moves down by the greeting's height. A teaching
--- trainer's "Repair equipment" form and the other providers keep the plain
--- title and show no greeting.
+-- trainer's "Repair equipment" form keeps the plain title and shows no
+-- greeting.
 local GREETING_CHARS = math.floor(10.2 * 6.6)
 local function is_mender(provider)
 	return provider.kind == "trainer" and not grug_jobs.trainer_teaches(provider.profession)
@@ -130,15 +105,11 @@ local function form(session)
 	return table.concat(fs)
 end
 
--- `on_close(player)` (optional) runs on the form's Close button, not on Esc:
--- a station's form passes its return (Round 41 ruling 3); the other
--- providers pass none, and Close just closes.
-function grug_repair.open(player, provider, on_close)
+function grug_repair.open(player, provider)
 	local quote, reason = grug_repair.quote(player, provider)
 	if not quote then return false, reason end
 	serial = serial + 1
-	local session = {quote = quote, page = 1, formname = PREFIX .. serial,
-		on_close = on_close}
+	local session = {quote = quote, page = 1, formname = PREFIX .. serial}
 	sessions[player:get_player_name()] = session
 	core.show_formspec(player:get_player_name(), session.formname, form(session))
 	return true
@@ -148,10 +119,6 @@ function grug_repair.open_trainer(player, entity)
 	return grug_repair.open(player, trainer_provider(entity))
 end
 
-function grug_repair.open_station(player, pos, on_close)
-	return grug_repair.open(player, station_provider(pos), on_close)
-end
-
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname:sub(1, #PREFIX) ~= PREFIX then return false end
 	local name = player:get_player_name()
@@ -159,8 +126,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not session or session.formname ~= formname then return true end
 	if fields.quit or not grug_repair.provider_permitted(player, session.quote.provider) then
 		sessions[name] = nil
-		-- Close is a button_exit: it sends "close" with "quit", Esc "quit" alone.
-		if fields.close and session.on_close then session.on_close(player) end
 		return true
 	end
 	local selected, count
@@ -174,7 +139,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local _, reason = grug_repair.apply(player, quote)
 		core.chat_send_player(name, reason)
 		sessions[name] = nil
-		grug_repair.open(player, session.quote.provider, session.on_close)
+		grug_repair.open(player, session.quote.provider)
 	elseif fields.next or fields.previous then
 		session.page = session.page + (fields.next and 1 or -1)
 		core.show_formspec(name, formname, form(session))

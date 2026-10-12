@@ -321,6 +321,9 @@ grug_core = setmetatable({
 	combat_debug_due = function() return false end,
 	get_player_level = function() return 30 end,
 	baseline_weapon_damage = function() return 10 end,
+	-- Round 46 ruling 10: the spell base reads the Weapon slot (empty here).
+	spell_base = function() return 10 end,
+	get_equipped_weapon = function() return nil end,
 	baseline_melee_total = function() return 10 end,
 	base_pool = function() return 100 end,
 	get_absorb = function() return 0 end,

@@ -262,16 +262,11 @@ function grug_mobs.award_kill_xp(self)
 			local player = eligible[i]
 			local player_level = grug_xp.get_level(player)
 			-- Round 46 ruling 5: the player's own-level kill equivalent times
-			-- the level-difference factor and the tier multiplier, then the
-			-- gray rule (also over a `_grug_xp_reward`) and the split.
+			-- the level-difference factor and the tier multiplier, 0 for every
+			-- no-XP case (grug_mobs.player_kill_xp, levels.lua, which the
+			-- target frame's gray reads too), then the split.
 			-- Kill XP carries no race bonus (only source "quest" is scaled).
-			local xp = grug_mobs.kill_xp(self, player_level)
-			if grug_xp.is_gray(self._grug_level or 1, player_level)
-					or grug_factions.same_faction(player, self.object) then
-				xp = 0
-			else
-				xp = math.floor(xp / count)
-			end
+			local xp = math.floor(grug_mobs.player_kill_xp(self, player, player_level) / count)
 			if xp > 0 then
 				-- The gain shows in the message feed (grug_xp.add_xp), not chat.
 				grug_xp.add_xp(player, xp, "kill")
@@ -1132,6 +1127,8 @@ dofile(modpath .. "/lava_flan.lua")
 dofile(modpath .. "/ember_wisp.lua")
 dofile(modpath .. "/land_guard.lua")
 dofile(modpath .. "/rift_spawn.lua")
+-- Round 46 lane DP: the depth pulse (its roster names the mobs above).
+dofile(modpath .. "/depth_pulse.lua")
 -- Round 36: the rift at one clash site, its void crack and the rift boss.
 dofile(modpath .. "/rift.lua")
 dofile(modpath .. "/war_construct.lua")

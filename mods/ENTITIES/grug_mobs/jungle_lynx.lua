@@ -69,10 +69,11 @@ local lynx = {
 	-- are byte-identical to wolf.lua/hyena.lua; the third slot is the
 	-- family's own trophy — §3.1's raptor row spells out "raptor claw 1/3"
 	-- where the wolf row has "fang 1/3" (same chance, same shape).
+	-- Round 46 ruling 12: the sell-only raptor claw no longer drops (coin
+	-- bags, aggro.lua); meat and leather stay.
 	drops = {
 		{name = "mobs:meat_raw", chance = 1, min = 1, max = 1},
 		{name = "mobs:leather", chance = 2, min = 1, max = 1},
-		{name = "grug_mobs:raptor_claw", chance = 3, min = 1, max = 1},
 	},
 
 	water_damage = 0,

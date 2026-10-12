@@ -72,7 +72,7 @@ local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_hom
 	waypoint = "grug_map_waypoint.png"}
 -- Which markers keep a slot when more than MARKER_SLOTS are in the circle
 -- (the densest capital window holds 15 of these besides home and waystones,
--- Round 44).
+-- Round 44; the mender's marker of Round 46 adds at most one).
 local PRIORITY = {quest = 1, steward = 2, service = 2, home = 3, innkeeper = 4,
 	trainer = 5, waypoint = 6}
 local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}

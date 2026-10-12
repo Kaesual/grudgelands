@@ -298,7 +298,12 @@ burn time; arrow shows recipe progress. Personal/shared inventory semantics
 remain unchanged. Active personal jobs illuminate the physical furnace until
 the latest observed private fuel piece expires; only that cosmetic deadline is
 shared, while each player's flame and progress remain private. Charcoal does
-not replace mined coal in Steel or coal quests.
+not replace mined coal in Steel or coal quests. Torches are one Basic recipe:
+**1 Coal or 1 Charcoal + 1 stick → 10 torches** (Round 46 ruling 4; 4 per
+coal before), light 12; the vendor torch stays 1c. Charcoal is in the coal
+group with the coal lump, so the recipe takes either (the crafting box
+chooses which, [inventory_equipment.md](inventory_equipment.md) §1), and
+Black Dye takes charcoal too.
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
 the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
@@ -796,13 +801,19 @@ upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md)
 
 **Material chain**: 2 cloth + thread → bolt, as Basic recipes (no
 profession, no progress). Authored grades are **T1 linen
-scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
+scrap → patch bolt** (start-zone zombies, L3+ and mostly by night, the start
+camps' outlaws and the tailor shop's 3c scrap — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
 bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
 item `grug_mobs:spider_silk`, shown as **Raw Silk** because T5/T6 outlaws drop
-it too); decided 2026-08-13:
+it too). The cloth-dropping humanoids (zombie, outlaw, goblin, mirefolk,
+skeleton, witch) drop their band's tier cloth on every looted kill in a band
+whose table has a cloth row, 1–2 pieces (Round 46 ruling 11; outlaw silk at
+bands 5–6 likewise); decided 2026-08-13:
 **T5 spider silk → silk bolt** (pure silk, the same 2 + thread pattern;
-spiders exist 25–60 on both continents) and **T6 spider silk + stormkelp →
+spiders live at 21–60 on both continents and in both 41–50 fronts by night,
+the Broken Causeway's woods and the Shattered Line's bluffs and swamps, since
+Round 46) and **T6 spider silk + stormkelp →
 stormweave bolt** — stormkelp (coast 45–60, both continents,
 `biomes_mobs.md` §6) doubles as a weaving fiber here; its spice role is
 unchanged, and the T6 bolt gives the level-45–60 coast zones an economic
@@ -975,17 +986,21 @@ main profession slot (professions.md §1).
   Accepted food heals instantly; its regeneration pauses during later combat,
   while secondary modifiers remain active.
 
-  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
-  |---|---:|---:|---:|---|---|---|
-  | T1 | 1 | 5 | 4% | — | — | — |
-  | T2 | 11 | 15 | 5% | — | — | — |
-  | T3 | 21 | 40 | 6% | +2% HP pool | +2% mana pool | +2% HP pool |
-  | T4 | 31 | 90 | 7% | +4% HP pool | +4% mana pool | +4% HP pool |
-  | T5 | 41 | 180 | 8% | +6% HP pool | +6% mana pool | +1% Crit |
-  | T6 | 51 | 300 | 10% | +8% HP pool | +8% mana pool | +1% Crit |
+  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Plain regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
+  |---|---:|---:|---:|---:|---|---|---|
+  | T1 | 1 | 5 | 4% | 3% | — | — | — |
+  | T2 | 11 | 15 | 5% | 4% | — | — | — |
+  | T3 | 21 | 40 | 6% | 6% | +2% HP pool | +2% mana pool | +2% HP pool |
+  | T4 | 31 | 90 | 7% | 7% | +4% HP pool | +4% mana pool | +4% HP pool |
+  | T5 | 41 | 180 | 8% | 8% | +6% HP pool | +6% mana pool | +1% Crit |
+  | T6 | 51 | 300 | 10% | 10% | +8% HP pool | +8% mana pool | +1% Crit |
 
   Hearty and Hunter dishes regenerate HP. Caster dishes regenerate both HP and
-  mana at the listed rate. Every raw edible regenerates 2% maximum HP per tick;
+  mana at the listed rate. **Plain dishes** (Round 46 ruling 13) are always
+  weaker than the three roles: the tier's instant HP and HP regeneration with
+  no secondary, and one point less regeneration at T1 and T2, where the roles
+  have no secondary. The furnace conversions (Cooked Meat, the Meat Block,
+  Cooked Fish, Bread) are T1 plain dishes too. Every raw edible regenerates 2% maximum HP per tick;
   Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
 
   **Cooking plant sources.** The current farming and renewal contract is in
@@ -1010,7 +1025,9 @@ main profession slot (professions.md §1).
   Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, the Raw
   Meat Block T1, ordinary Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom
   T3 and Wild Cocoa T6. The five band fish are T2–T6 respectively. Cooked
-  Meat, Cooked Fish, Bread and the Meat Block are T1 Hearty dishes.
+  Meat, Cooked Fish, Bread and the Meat Block are T1 plain dishes (Round 46;
+  Hearty before). The band fish are also Cooking ingredients of their own
+  tier.
 
   **Cooking area.** Every row is a Cooking recipe (1 s, no station; Round 45)
   and contains at least one ingredient registered at its own recipe tier. The
@@ -1019,22 +1036,37 @@ main profession slot (professions.md §1).
   dish costs more to make, never less (Round 34): the Caster dish (HP and mana
   regeneration) needs more input value, counted in vendor payouts, than the
   Hearty and Hunter dishes of its tier (HP only; their secondaries differ in
-  kind and count as equal).
+  kind and count as equal). The plain dish stands outside that comparison:
+  its value is that every zone of its band can cook it from local
+  ingredients (Round 46), whatever its inputs pay at a vendor.
+
+  In the tables a vegetable is carrot, cassava, potato or corn (every start
+  zone grows one; Round 46), and raw fish is ordinary Raw Fish or any band
+  fish (Round 46; Corn-Crusted Fish keeps Raw Fish alone). Following the
+  user's direction for the higher tiers (Round 46), Mushroom Skewer,
+  Forager's Pot and Cocoa-Rubbed Game add an ingredient of the tier below
+  from other zones, and the two T5 salt dishes use the T5 Salt Crust.
 
   | Tier | Role | Inputs | Output |
   |---|---|---|---|
-  | T1 | Caster | 2 carrot or cassava + potato or corn + Wild Grain | Sweetroot Mash |
-  | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
+  | T1 | Caster | 2 carrot or cassava + a vegetable + Wild Grain | Sweetroot Mash |
+  | T1 | Hunter | Raw Fish + corn | Corn-Crusted Fish |
+  | T1 | Plain | raw meat + Wild Onion or Fire Pepper | Spiced Skewer |
   | T2 | Caster | 3 berries + Pumpkin + Sugar Cane | Berry Preserve |
   | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
-  | T3 | Caster | 2 mushrooms | Mushroom Skewer |
+  | T2 | Plain | Silver Trout + Wild Grain | Pan-Fried Trout |
+  | T3 | Caster | 2 mushrooms + apple or berries | Mushroom Skewer |
   | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
+  | T3 | Plain | Mire Carp + Mushroom or Cave Cap | Mire Carp Stew |
   | T4 | Caster | raw fish + 2 Marshbloom | Marshbloom Chowder |
   | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
-  | T5 | Caster | 2 Stormkelp + raw fish + Rock Salt | Stormkelp Broth |
-  | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
+  | T4 | Plain | Frostfin + Mushroom or Cave Cap | Frostfin Fillet |
+  | T5 | Caster | 2 Stormkelp + raw fish + Salt Crust | Stormkelp Broth |
+  | T5 | Hunter | raw fish + Salt Crust | Salt-Crusted Fish |
+  | T5 | Plain | Ember Eel + corn | Smoked Ember Eel |
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
-  | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
+  | T6 | Hunter | raw meat + Wild Cocoa + Rock Salt | Cocoa-Rubbed Game |
+  | T6 | Plain | Storm Tuna + Stormkelp | Kelp-Steamed Tuna |
 
   **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
   Cooked Fish and Wild Grain → Bread are universal furnace recipes with no
@@ -1045,9 +1077,9 @@ main profession slot (professions.md §1).
 
   | Tier | Raw assembly inputs | Furnace output |
   |---|---|---|
-  | T1 | raw meat + potato or corn + Wild Grain | Hearty Stew |
+  | T1 | raw meat + a vegetable + Wild Grain | Hearty Stew |
   | T2 | pumpkin + raw meat + Wild Grain | Pumpkin Stew |
-  | T3 | Cave Cap + raw meat + potato or corn | Forager's Pot |
+  | T3 | Cave Cap + raw meat + Pumpkin | Forager's Pot |
   | T4 | raw meat + Marshbloom + Frost Melon | Marsh Roast |
   | T5 | raw meat + Stormkelp + Salt Crust | Kelp-Wrapped Roast |
   | T6 | 2 raw meat + Wild Cocoa + Salt Crust | Grand Feast |
@@ -1652,8 +1684,9 @@ random crafted application rolls or separate refinement steps.
 
 Money is owned by [economy.md](economy.md); this section kept a copy of its
 tables until Round 37. All values use ledger copper (100c = 1s, 100s = 1g);
-no creature, NPC or world node drops currency or a physical coin, and
-physical Gold is a separate Goldsmith/build material (economy.md §1).
+no world node drops currency; a mob kill may drop a Bag of Coins (Round 46,
+economy.md §1), and physical Gold is a separate Goldsmith/build material
+(economy.md §1).
 
 - §8.1 income and reference values, the loot and gathered payouts and the
   anti-loop audit → economy.md §2 and §3;

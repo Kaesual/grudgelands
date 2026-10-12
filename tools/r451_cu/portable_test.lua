@@ -9,7 +9,8 @@
 -- craft_box.lua, and grug_map's page.lua. Checks:
 --   G  group ingredients: one member reads as its name, two as "A or B",
 --      three as "A, B or C"; four or more as the hand-kept name ("Any
---      wool", "Any stone", "Any planks", "Any fruit", "Any berry") or, for a
+--      wool", "Any stone", "Any planks", "Any fruit", "Any berry", and since
+--      Round 46 "Any vegetable" and "Any raw fish") or, for a
 --      group without one, the generated "Any <Group Name>"; members of the
 --      same name count once; the tooltip lists every member; the icon is
 --      the member the player carries most of (the stacks have/need count:
@@ -354,6 +355,15 @@ item("t:fruit_jungle", {description = "Jungle Berry", groups = {grug_cooking_ber
 for _, kind in ipairs({"Basil", "Dill", "Mint", "Sage"}) do
 	item("t:herb_" .. kind:lower(), {description = kind, groups = {grug_misc_herb = 1}})
 end
+-- Round 46 (lane CK): the four staples and the six raw fish.
+for _, kind in ipairs({"Carrot", "Cassava", "Corn", "Potato"}) do
+	item("t:staple_" .. kind:lower(), {description = kind, groups = {grug_cooking_staple = 1}})
+end
+for _, kind in ipairs({"Raw Fish", "Silver Trout", "Mire Carp", "Frostfin", "Ember Eel",
+		"Storm Tuna"}) do
+	item("t:fish_" .. kind:lower():gsub(" ", "_"), {description = kind,
+		groups = {food_fish_raw = 1}})
+end
 item("t:soup", {description = "Soup", stack_max = 20})
 item("t:hammer", {description = "Hammer", stack_max = 1, type = "tool"})
 for i = 1, 24 do
@@ -469,11 +479,19 @@ local function count(text, needle)
 end
 
 
--- The labels of a build's ingredient rows, in order, and their icons.
+-- The labels of a build's ingredient rows, in order, and their icons. A
+-- group of which two or more kinds are carried shows a dropdown instead of
+-- its name since Round 46 (lane ID): its label reads "dropdown:<items>".
 local function ingredient_labels(fs)
 	local out = {}
-	for icon, text in fs:gmatch("item_image%[5%.6,[%d%.]+;0%.4,0%.4;([^%]]*)%]label%[6%.1,[%d%.]+;(.-[^\\])%]") do
-		out[#out + 1] = {icon = icon, label = text}
+	for icon, kind, text in fs:gmatch("item_image%[5%.6,[%d%.]+;0%.4,0%.4;([^%]]*)%]" ..
+			"(%a+)%[6%.1,[%d%.]+;(.-[^\\])%]") do
+		if kind == "label" then
+			out[#out + 1] = {icon = icon, label = text}
+		elseif kind == "dropdown" then
+			out[#out + 1] = {icon = icon, label = "dropdown:" ..
+				(text:match("^[%d%.]+,[%d%.]+;[%w_]+;(.-);%d+;true$") or text)}
+		end
 	end
 	return out
 end
@@ -529,6 +547,16 @@ eq(rows[2] and rows[2].label, "Any fruit", "G grug_cooking_fruit reads Any fruit
 eq(rows[3] and rows[3].label, "Any berry", "G grug_cooking_berry reads Any berry")
 eq(rows[4] and rows[4].label, "Any Grug Misc Herb",
 	"G four members without a hand-kept name: the generated label")
+-- Round 46 (lane CK): the staple and raw fish groups, through the shared row
+-- builder (a recipe list shows at most five rows).
+do
+	local fs = {}
+	J._ingredient_rows(fs, {ingredients = {{group = "grug_cooking_staple", n = 1},
+		{group = "food_fish_raw", n = 1}}}, {items = {}, groups = {}}, 1, 0)
+	rows = ingredient_labels(table.concat(fs))
+	eq(rows[1] and rows[1].label, "Any vegetable", "G grug_cooking_staple reads Any vegetable")
+	eq(rows[2] and rows[2].label, "Any raw fish", "G food_fish_raw reads Any raw fish")
+end
 
 ------------------------------------------------------------------------------
 -- Q. "−" and "+" at the quantity.

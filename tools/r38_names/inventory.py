@@ -589,11 +589,11 @@ class Model:
         # Underground casts.
         under = re.findall(r'\["grug_mobs:(\w+)"\]\s*=\s*true',
                            balanced(ptext, ptext.index("{", ptext.index("local UNDERGROUND_MOBS"))))
-        self.source("underground", "underground cast (closed list; rows below y = -40)",
+        self.source("underground", "underground cast (closed list; rows whose top is y -1 or lower, Round 46)",
                     r.cite(policy, r"local UNDERGROUND_MOBS"))
         for entity in under:
             bf = self.base_facts(entity)
-            cave = [row for row in rows.get(entity, []) if row[1] <= -40]
+            cave = [row for row in rows.get(entity, []) if row[1] <= -1]
             if not cave:
                 raise SystemExit("inventory: no cave spawn row for %s" % entity)
             top = max(row[1] for row in cave)
@@ -615,6 +615,38 @@ class Model:
                            "rows": sorted({row[2] for row in cave}),
                            "notes": ["level = max(the zone field's surface level above, depth level), "
                                      "y %d..%d; under every zone" % (bottom, top)]})
+
+        # The depth pulse's cast (Round 46 lane DP): its roster bands in
+        # depth_pulse.lua. A mob the underground rows already name keeps that
+        # slot; one only the pulse brings gets a slot from its band's top.
+        pulse = MOBS + "/depth_pulse.lua"
+        qtext = r.text(pulse)
+        self.source("depth_pulse", "depth pulse arrivals (roster bands by depth, Round 46 lane DP)",
+                    r.cite(pulse, r"DP\.ROSTERS = \{"))
+        named = {s["role"] for s in self.slots if s["source"] == "underground"}
+        pulse_tops = {}
+        for band in re.finditer(r"\{top = (-?\d+), mobs = \{(.*?\})\}\}",
+                                balanced(qtext, qtext.index("{", qtext.index("DP.ROSTERS"))), re.S):
+            for entity in re.findall(r'\{"(\w+)", \d+\}', band.group(2)):
+                pulse_tops[entity] = max(pulse_tops.get(entity, -31000), int(band.group(1)))
+        for entity in sorted(pulse_tops):
+            if entity in named:
+                continue
+            bf = self.base_facts(entity)
+            top = pulse_tops[entity]
+            lo = hi = bf["fixed"] if bf["fixed"] else None
+            if lo is None:
+                lo, hi = max(bf["min"], depth_level(top)), 60
+            self.add_slot({"key": "world/%s/%s" % (entity, band_key(lo, hi)), "zone": None,
+                           "source": "depth_pulse", "name": bf["name"], "name_source": "entity description",
+                           "name_where": bf["where"], "entity": "grug_mobs:" + entity, "role": entity,
+                           "family": entity, "base": "grug_mobs:" + entity,
+                           "tier": bf["tier"], "authored_tier": bf["tier"], "leader": False,
+                           "disposition": bf["disposition"], "size": 1.0, "drops": None,
+                           "role_levels": [lo, hi], "levels": [lo, hi], "clocks": ["cave"],
+                           "depth": [-31000, top],
+                           "notes": ["depth pulse arrival, y %d and below; level = the spot's "
+                                     "underground level" % top]})
 
         # Independent water authorities.
         for entity in re.findall(r'\["grug_mobs:(\w+)"\]\s*=\s*true',

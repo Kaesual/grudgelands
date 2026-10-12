@@ -1797,10 +1797,10 @@
     "tier": "normal",
     "levels": [
       21,
-      40
+      50
     ],
     "drops": "spider",
-    "notes": "Night; Whitebridge, Moonfall and Ashenward. Existing web slow; leave a clear retreat."
+    "notes": "Night; Whitebridge, Moonfall and Ashenward; since Round 46 also The Broken Causeway's woods and The Shattered Line (41-50), the T5 silk source. Existing web slow; leave a clear retreat."
   },
   {
     "role": "grave_web_spider",

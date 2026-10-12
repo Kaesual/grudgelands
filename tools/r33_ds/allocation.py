@@ -171,6 +171,16 @@ SELL_ONLY = {
     "salt_bear_claw": "upgrade input until Round 45 (scarce)",
 }
 
+# The sell-only drops that stopped dropping (Round 46 ruling 12; a kill pays
+# a coin bag instead, grug_mobs aggro.lua). They stay registered and sellable.
+NO_DROP_R46 = {
+    "abyssal_crab_shell", "arrow", "blunt_croc_tooth", "ridged_croc_tooth", "croc_tooth",
+    "bone_chitin", "layered_bone_chitin", "campaign_purse", "chipped_core", "siege_core",
+    "stone_core", "veined_core", "concentrated_venom", "mild_venom", "feather",
+    "mourning_resin", "raptor_claw", "reed_pearl", "restless_wisp_mote", "salt_bear_claw",
+    "scarred_bear_claw", "saltpack_fang", "thin_slime_gel",
+}
+
 # Alchemy: tier -> product -> (first, second); every row also takes a Glass
 # Bottle. Herbs and cooking goods carry their mod prefix, mob loot does not.
 G, K = "grug_gathering:", "grug_cooking:"
@@ -369,7 +379,8 @@ def tables():
     for tier, item_id in sorted(rows):
         a = avail[item_id]
         label = "; ".join(lbl for _, lbl, _ in used.get(item_id, [])) or (
-            "sell-only: " + SELL_ONLY.get(item_id[len(M):], "?"))
+            "sell-only: " + SELL_ONLY.get(item_id[len(M):], "?") +
+            ("; no longer drops (Round 46)" if item_id[len(M):] in NO_DROP_R46 else ""))
         load = sum(d for _, _, d in used.get(item_id, []))
         today = "enchant" if item_id in today_used else ("recipe" if item_id == M + "fang" else "—")
         out.append("| %d | %s | %d/%d/%d | %s | %s | %.1f | %s |" % (

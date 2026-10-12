@@ -386,6 +386,18 @@ local function resolve_level(self, cfg, tier)
 	return math.max(1, math.min(cap, math.round(level)))
 end
 
+-- The level a mob has, or the one its first tick will give it, without
+-- writing it: for a decision taken at spawn time, before ensure_init (the
+-- underground elite roll, spawn_policy.lua). nil for a mob without a level
+-- config.
+function grug_mobs.pending_level(ent)
+	local cfg = ent and level_cfg[ent.name]
+	if not cfg then
+		return nil
+	end
+	return ent._grug_level or resolve_level(ent, cfg, ent._grug_tier or cfg.tier)
+end
+
 -- Called from grug_mobs.register_mob for every mob def. Also normalizes the
 -- def's armor so a mob is never armor-less during the single step between
 -- activation and its first do_custom tick (mobs_redo builds the armor
@@ -400,6 +412,9 @@ function grug_mobs.register_level_cfg(name, def)
 		fixed = def._grug_fixed_level,
 		tier = tier,
 		xp_override = def._grug_xp_reward,
+		-- Like xp_override: mobs_redo copies only its field whitelist into the
+		-- entity table, so a def's `_grug_no_coin_bag` lives here (Round 46).
+		no_coin_bag = def._grug_no_coin_bag == true,
 		hp_scale = def._grug_hp_scale,
 		-- A sub-type's tier is authored data (subtypes.lua, Round 28 ruling
 		-- 35): no spawn roll a base family carries may promote it.
@@ -534,6 +549,30 @@ function grug_mobs.kill_xp(self, player_level)
 	end
 	local t = tier_def(self._grug_tier)
 	return t.xp_flat or grug_xp.kill_xp(level, player_level, t.xp)
+end
+
+-- Whether this mob's kill never rolls a coin bag (aggro.lua drop_coin_bag):
+-- its definition's `_grug_no_coin_bag` (the Kraken, read at registration) or
+-- the live mob's own field (set per mob, e.g. a depth-pulse arrival).
+function grug_mobs.no_coin_bag(self)
+	if self._grug_no_coin_bag then return true end
+	local cfg = level_cfg[self.name]
+	return cfg ~= nil and cfg.no_coin_bag == true
+end
+
+-- The one no-XP predicate (Round 46): this player's kill XP for this mob
+-- before the split, 0 for every case that pays nothing -- the gray line
+-- (grug_xp.is_gray, also over a `_grug_xp_reward`), a mob of the player's own
+-- faction, a critter (tier xp 0) and a `_grug_xp_reward` of 0 (the Kraken,
+-- the reed angelfish). The kill settlement (init.lua award_kill_xp) pays it
+-- and the target frame shows a mob gray with "(no XP)" exactly when it is 0.
+function grug_mobs.player_kill_xp(self, player, player_level)
+	player_level = player_level or grug_xp.get_level(player)
+	if grug_xp.is_gray(self._grug_level or 1, player_level)
+			or grug_factions.same_faction(player, self.object) then
+		return 0
+	end
+	return grug_mobs.kill_xp(self, player_level)
 end
 
 -- Promote/demote a live mob to a registered tier: applies the

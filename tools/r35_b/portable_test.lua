@@ -193,16 +193,17 @@ do
 		"fireball_damage_add") == 0, "C no Tinder, no bonus")
 end
 
--- D. The tooltip shows the amounts at the viewer's level.
+-- D. The tooltip shows the amounts at the viewer's level. Round 46: a caster
+-- key names the spell base hit (here without grug_abilities, ratio 1).
 do
 	local tinder = grug_classes.registered_talents.tinder
 	local at30 = grug_classes.talent_description_for(new_player("mage", 30), tinder)
 	local at60 = grug_classes.talent_description_for(new_player("mage", 60), tinder)
 	check(at30:find(tinder.description, 1, true) == 1, "D the rule text stays first")
-	check(at30:find("At your level a base hit is 95 damage: " ..
+	check(at30:find("At your level and with your staff or wand a spell base hit is 95 damage: " ..
 		"+3.8 / +7.6 / +11 / +15 / +19 damage.", 1, true) ~= nil,
 		"D Tinder at level 30: " .. at30)
-	check(at60:find("At your level a base hit is 337 damage: " ..
+	check(at60:find("At your level and with your staff or wand a spell base hit is 337 damage: " ..
 		"+13 / +27 / +40 / +54 / +67 damage.", 1, true) ~= nil,
 		"D Tinder at level 60: " .. at60)
 	local ironbound = grug_classes.talent_description_for(new_player("warrior", 60),
@@ -211,7 +212,7 @@ do
 		1, true) ~= nil, "D Ironbound at level 60: " .. ironbound)
 	local whitehot = grug_classes.talent_description_for(new_player("mage", 50),
 		grug_classes.registered_talents.whitehot)
-	check(whitehot:find("At your level a base hit is 240 damage: +72 damage.",
+	check(whitehot:find("At your level and with your staff or wand a spell base hit is 240 damage: +72 damage.",
 		1, true) ~= nil, "D Whitehot at level 50: " .. whitehot)
 	local weathered = grug_classes.talent_description_for(new_player("warrior", 30),
 		grug_classes.registered_talents.weathered)

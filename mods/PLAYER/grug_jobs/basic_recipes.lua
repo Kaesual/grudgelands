@@ -1,9 +1,9 @@
 -- The Basic recipe catalog (Round 45, round45-plan.md §3 and §4.2): every
 -- profession-free recipe as an ingredient list. Converted from the engine
 -- grid routes of the base commit by tools/r45_rg/gen_basic_recipes.lua
--- (its --check compares); edit it as data from
--- now on and rerun nothing. registry.lua registers each row in the
--- "basic" area and makes the loop-made families below.
+-- (its --check compares); a later change is a row of
+-- tools/r45_rg/edits.lua, then rerun the generator. registry.lua registers
+-- each row in the "basic" area and makes the loop-made families below.
 return {
 	recipes = {
 		{output = "beds:bed_bottom", count = 1, ingredients = {{item = "wool:white", n = 3}, {group = "wood", n = 3}}},
@@ -60,7 +60,7 @@ return {
 		{output = "default:stick", count = 4, ingredients = {{group = "wood", n = 2}}},
 		{output = "default:stone_block", count = 9, ingredients = {{item = "default:stone", n = 9}}},
 		{output = "default:stonebrick", count = 4, ingredients = {{item = "default:stone", n = 4}}},
-		{output = "default:torch", count = 4, ingredients = {{item = "default:coal_lump", n = 1}, {group = "stick", n = 1}}},
+		{output = "default:torch", count = 10, ingredients = {{group = "coal", n = 1}, {group = "stick", n = 1}}},
 		{output = "default:wood", count = 1, ingredients = {{item = "default:bush_stem", n = 1}}},
 		{output = "default:wood", count = 4, ingredients = {{item = "default:tree", n = 1}}},
 		{output = "doors:door_glass", count = 1, ingredients = {{item = "default:glass", n = 6}}},

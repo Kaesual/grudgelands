@@ -44,6 +44,6 @@ local master = {
 
 grug_mobs.register_mob("grug_mobs:dungeon_master", master)
 mobs:spawn({name = "grug_mobs:dungeon_master",
-	nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
+	nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
 	interval = 20, chance = 3200, active_object_count = 2,
 	min_height = -1000, max_height = -500})

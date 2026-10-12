@@ -315,12 +315,23 @@ for _, zone in ipairs(palette_zones) do
 	local x0 = ZONE_X[zone]
 	for _, time in ipairs({0.5, 0.0}) do
 		old_world.time, new_world.time = time, time
-		for _, y in ipairs({-60, -20, 3, 120}) do
+		-- y -1, not -20: Round 46 moved the underground up to node y -2
+		-- (spawn_policy.lua UNDERGROUND_TOP), so -20 differs from the
+		-- baseline on purpose; -1 is the layer both keep closed.
+		for _, y in ipairs({-60, -1, 3, 120}) do
 			for dz = 0, 17 do
 				local pos = {x = x0 + 5, y = y, z = 100 + dz}
 				for _, name in ipairs(mob_names) do
 					local a = OLD.spawn_policy_allows(name, pos)
 					local b = NEW.spawn_policy_allows(name, pos)
+					-- Round 46 lane DP: the Land Guard and the Rift Spawn left the
+					-- underground ABM list on purpose (the depth pulse brings them
+					-- below -1000), so underground the new policy refuses them.
+					if y < -1 and (name == "grug_mobs:land_guard" or
+							name == "grug_mobs:rift_spawn") then
+						check(b == false, "moved to the depth pulse " .. name)
+						a = b
+					end
 					if a ~= b then
 						error(("FAIL fallback identity %s %s y=%d z=%d t=%s: %s vs %s")
 							:format(zone, name, y, pos.z, time, tostring(a), tostring(b)))

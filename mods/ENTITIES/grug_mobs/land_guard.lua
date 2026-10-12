@@ -30,7 +30,5 @@ local guard = {
 }
 
 grug_mobs.register_mob("grug_mobs:land_guard", guard)
-mobs:spawn({name = "grug_mobs:land_guard",
-	nodes = {"group:grug_stratum"}, max_light = 5,
-	interval = 30, chance = 9000, active_object_count = 1,
-	min_height = -31000, max_height = -1000})
+-- No spawn row since Round 46 (lane DP, WP audit E4): the Bedrock Sentinel
+-- comes only with the depth pulse below y -1000 (depth_pulse.lua).

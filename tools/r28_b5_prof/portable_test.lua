@@ -352,7 +352,8 @@ for _, dish in ipairs(grug_cooking.DISHES) do
 		eq(recipes, 1, dish.id .. " keeps its recipe")
 	end
 end
-eq(listed_dishes, 12, "twelve dishes keep a recipe")
+-- Round 46 (lane CK): the six plain dishes join the twelve.
+eq(listed_dishes, 18, "eighteen dishes keep a recipe")
 for _, raw in ipairs(grug_cooking.RAW_ASSEMBLIES) do
 	check(FURNACE_ONLY[raw.output:match(":(.+)$")], raw.id .. " finishes a furnace-only dish")
 	eq((routes_for(raw.item)), 1, raw.id .. " is a Cooking recipe")

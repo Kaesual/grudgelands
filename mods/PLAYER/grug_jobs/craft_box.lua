@@ -28,6 +28,23 @@
 -- counts it for have/need, so "−" turns it into 1 and "+" into 2 (when the
 -- maximum allows).
 --
+-- The kind per group ingredient (Round 46 lane ID, the user's request of
+-- 2026-10-12): a group entry whose kinds the player carries two or more of
+-- gets a dropdown instead of its name: "Automatic" (the first matching
+-- stacks in the take order, as without a choice), then each carried kind
+-- with its count. The choice drives the Max, the list's ×N of the recipe,
+-- Craft now and the take (jobs.lua picked_ingredients). It is per player in
+-- the page state, never saved, and another chosen recipe starts on
+-- Automatic; a chosen kind no longer carried, or a group left with one
+-- kind, falls back to Automatic on the next build. A changed dropdown sends an
+-- event and the page is resent (with index_event, the event names the
+-- index; a value equal to the built one is no change, so the dropdowns'
+-- values that every other event carries change nothing). The dropdowns are
+-- named grug_craft_pick_<serial>_<index>, the serial counted per build of
+-- the box: a change made on a page the server has already replaced (a
+-- click on another recipe whose page has not arrived yet) names an old
+-- serial and is ignored.
+--
 -- A button that cannot start ("Requires: Forge nearby", a missing tier) is
 -- drawn disabled. A formspec button has no disabled state: it is greyed and
 -- named grug_craft_recheck, and a click only rebuilds the page, which checks
@@ -48,6 +65,9 @@ local QUANTITY_Y = BUTTON_Y - 0.75
 -- The middle area's first label (its centre) below the top area.
 local MIDDLE_Y = BOX.y + 1.4
 local INGREDIENT_ROWS, INGREDIENT_STEP = 5, 0.45
+-- A row with a dropdown: the dropdown's height and the row's step.
+local DROPDOWN_H, DROPDOWN_STEP = 0.5, 0.6
+local PICK = "grug_craft_pick_"
 local NOTE_STEP = 0.38
 -- The description: the height of a line, the least height worth drawing,
 -- the room a scrollbar takes from the text's width.
@@ -89,6 +109,8 @@ local GROUP_NAMES = {
 	wood = "Any planks",
 	grug_cooking_fruit = "Any fruit",
 	grug_cooking_berry = "Any berry",
+	grug_cooking_staple = "Any vegetable",
+	food_fish_raw = "Any raw fish",
 }
 local WRITTEN_OUT = 3
 
@@ -143,6 +165,49 @@ local function group_icon(info, counts)
 		if have > most then icon, most = name, have end
 	end
 	return icon
+end
+
+-- The kinds of a group entry the player carries (`counts` from
+-- ingredient_counts: stacks without metadata), in the group's member order:
+-- {{name = <item>, count = <n>}, ...}; empty for an item entry.
+local function carried_kinds(entry, counts)
+	local kinds = {}
+	if entry.group and counts then
+		for _, name in ipairs(group_info(entry.group).members) do
+			local have = counts.items[name] or 0
+			if have > 0 then kinds[#kinds + 1] = {name = name, count = have} end
+		end
+	end
+	return kinds
+end
+
+-- The chosen kinds of `recipe` (st.picks: group -> item, chosen for the
+-- recipe st.picks_for) that still hold: a pick stays while its group shows
+-- the dropdown (two or more kinds carried) and the player carries the chosen
+-- kind; anything else falls back to Automatic. Another recipe has none.
+-- Returns the picks or nil (ui.lua asks it for the list's ×N, the build for
+-- the box).
+function grug_jobs.crafting_picks(st, recipe, counts)
+	if not recipe or not st.picks or st.picks_for ~= recipe.id then
+		st.picks, st.picks_for = nil, nil
+		return nil
+	end
+	local kept
+	for _, entry in ipairs(recipe.ingredients) do
+		local pick = entry.group and st.picks[entry.group]
+		if pick then
+			local kinds = carried_kinds(entry, counts)
+			for _, kind in ipairs(kinds) do
+				if #kinds >= 2 and kind.name == pick then
+					kept = kept or {}
+					kept[entry.group] = pick
+				end
+			end
+		end
+	end
+	st.picks = kept
+	if not kept then st.picks_for = nil end
+	return kept
 end
 
 -- "Crafting this will (not) give you a <profession> experience point", green
@@ -208,33 +273,68 @@ local function line_count(text, width)
 	return select(2, wrapped:gsub("\n", "")) + 1
 end
 
-local function ingredient_rows(fs, recipe, counts, quantity, y)
+-- The number of rows the box shows for `list`.
+local function shown_rows(list)
+	return #list > INGREDIENT_ROWS and INGREDIENT_ROWS - 1 or #list
+end
+
+-- `choice` (the recipe box only; nil for lane EU's boxes): {picks = the
+-- chosen kinds, serial = the build's, rows = {}}; a group entry with two or more carried kinds
+-- gets its dropdown and choice.rows[index] = {group, names (the dropdown's
+-- kinds after "Automatic"), selected (the built index)}.
+local function ingredient_rows(fs, recipe, counts, quantity, y, choice)
 	local list = recipe.ingredients
-	local shown = #list > INGREDIENT_ROWS and INGREDIENT_ROWS - 1 or #list
+	local shown = shown_rows(list)
 	for index = 1, shown do
 		local entry = list[index]
+		local kinds = choice and carried_kinds(entry, counts) or {}
+		local pick = choice and choice.picks and entry.group and choice.picks[entry.group]
 		local icon, label, tooltip = entry.item, nil, nil
 		if entry.item then
 			label = grug_core.item_name(entry.item)
 		else
 			local info = group_info(entry.group)
-			icon, label, tooltip = group_icon(info, counts), info.label, info.tooltip
+			icon, label, tooltip = pick or group_icon(info, counts), info.label, info.tooltip
 		end
-		local have = grug_jobs.ingredient_have(counts, entry)
+		local have = pick and (counts.items[pick] or 0) or
+			grug_jobs.ingredient_have(counts, entry)
 		local need = entry.n * quantity
 		local amount = have .. "/" .. need
-		-- The name takes the room up to have/need (a written-out group
-		-- reads longer; the tooltip names every member).
-		fs[#fs + 1] = ("item_image[%s,%s;0.4,0.4;%s]label[%s,%s;%s]label[%s,%s;%s]"):format(
-			n(X), n(y), esc(icon), n(X + 0.5), n(y + 0.2),
-			esc(clip(label, math.floor((W - 0.65 - 0.15 * #amount) * CHARS))),
-			n(X + W - 0.15 * #amount), n(y + 0.2),
-			esc(have >= need and amount or core.colorize(NOTE, amount)))
-		if tooltip and tooltip ~= "" then
-			fs[#fs + 1] = ("tooltip[%s,%s;%s,0.4;%s]"):format(n(X), n(y), n(W),
-				esc(grug_inventory.wrap_text(tooltip, 40)))
+		local amount_text = esc(have >= need and amount or core.colorize(NOTE, amount))
+		local room = W - 0.65 - 0.15 * #amount
+		if #kinds >= 2 then
+			-- The dropdown takes the name's room; the tooltip stays on the icon.
+			local items, names, selected = {"Automatic"}, {}, 1
+			local chars = math.floor((room - 0.45) * CHARS)
+			for k, kind in ipairs(kinds) do
+				names[k] = kind.name
+				items[k + 1] = esc(clip(grug_core.item_name(kind.name) .. " (" ..
+					kind.count .. ")", chars))
+				if kind.name == pick then selected = k + 1 end
+			end
+			choice.rows[index] = {group = entry.group, names = names, selected = selected}
+			fs[#fs + 1] = ("item_image[%s,%s;0.4,0.4;%s]dropdown[%s,%s;%s,%s;%s%d_%d;%s;%d;true]" ..
+				"label[%s,%s;%s]"):format(n(X), n(y + 0.05), esc(icon), n(X + 0.5), n(y),
+				n(room), n(DROPDOWN_H), PICK, choice.serial, index, table.concat(items, ","), selected,
+				n(X + W - 0.15 * #amount), n(y + 0.25), amount_text)
+			if tooltip and tooltip ~= "" then
+				fs[#fs + 1] = ("tooltip[%s,%s;0.4,0.4;%s]"):format(n(X), n(y + 0.05),
+					esc(grug_inventory.wrap_text(tooltip, 40)))
+			end
+			y = y + DROPDOWN_STEP
+		else
+			-- The name takes the room up to have/need (a written-out group
+			-- reads longer; the tooltip names every member).
+			fs[#fs + 1] = ("item_image[%s,%s;0.4,0.4;%s]label[%s,%s;%s]label[%s,%s;%s]"):format(
+				n(X), n(y), esc(icon), n(X + 0.5), n(y + 0.2),
+				esc(clip(label, math.floor(room * CHARS))),
+				n(X + W - 0.15 * #amount), n(y + 0.2), amount_text)
+			if tooltip and tooltip ~= "" then
+				fs[#fs + 1] = ("tooltip[%s,%s;%s,0.4;%s]"):format(n(X), n(y), n(W),
+					esc(grug_inventory.wrap_text(tooltip, 40)))
+			end
+			y = y + INGREDIENT_STEP
 		end
-		y = y + INGREDIENT_STEP
 	end
 	if shown < #list then
 		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 0.5), n(y + 0.2),
@@ -266,11 +366,13 @@ local function build(player, view)
 		fs[#fs + 1] = grug_jobs.professions_formspec(grug_jobs.profession_overview(player),
 			{x = X, y = BOX.y + 0.05, w = W, h = bottom - BOX.y - 0.1})
 		if job then button(fs, job) end
+		st.pick_rows = nil
 		return table.concat(fs)
 	end
 	local stacks = stackable(recipe)
+	local picks = grug_jobs.crafting_picks(st, recipe, view.counts)
 	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe,
-		view.counts)
+		view.counts, picks)
 	-- Max and "−"/"+" (clicks) are applied here, from this build's one
 	-- inventory pass.
 	if st.fill_max then st.qty, st.fill_max = tostring(math.max(1, most)), nil end
@@ -322,7 +424,14 @@ local function build(player, view)
 	-- Below the description: the heading, the ingredient rows, Max, the notes;
 	-- all of it ends above the quantity row (or the button).
 	local rows = math.min(#recipe.ingredients, INGREDIENT_ROWS)
-	local below = 0.1 + 0.25 + rows * INGREDIENT_STEP + 0.65 + note_lines * NOTE_STEP
+	local dropdowns = 0
+	for index = 1, shown_rows(recipe.ingredients) do
+		if #carried_kinds(recipe.ingredients[index], view.counts) >= 2 then
+			dropdowns = dropdowns + 1
+		end
+	end
+	local below = 0.1 + 0.25 + rows * INGREDIENT_STEP +
+		dropdowns * (DROPDOWN_STEP - INGREDIENT_STEP) + 0.65 + note_lines * NOTE_STEP
 	local limit = (stacks and QUANTITY_Y or BUTTON_Y) - 0.05
 	y = MIDDLE_Y
 	local text = description_of(player, recipe)
@@ -338,7 +447,10 @@ local function build(player, view)
 		end
 	end
 	fs[#fs + 1] = ("label[%s,%s;Ingredients (have/need)]"):format(n(X), n(y))
-	y = ingredient_rows(fs, recipe, view.counts, quantity, y + 0.25)
+	st.pick_serial = (st.pick_serial or 0) + 1
+	local choice = {picks = picks, serial = st.pick_serial, rows = {}}
+	y = ingredient_rows(fs, recipe, view.counts, quantity, y + 0.25, choice)
+	st.pick_rows = {recipe = recipe.id, serial = choice.serial, rows = choice.rows}
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y + 0.2), esc("Max: " .. most ..
 		(by_space < by_ingredients and " (output area)" or "")))
 	y = y + 0.65
@@ -367,6 +479,22 @@ local function fields(player, st, fields)
 	if fields[F.recheck] then return true end
 	local recipe = st.selected and grug_jobs.recipe(st.selected)
 	if not recipe then return false end
+	-- A dropdown whose value differs from the built one was changed (only
+	-- the built recipe's dropdowns: a row click carries the old ones; only
+	-- the newest build's serial: an older page's change is stale).
+	local picked = false
+	local built = st.pick_rows
+	if built and built.recipe == recipe.id then
+		for index, row in pairs(built.rows) do
+			local value = tonumber(fields[PICK .. built.serial .. "_" .. index])
+			if value and value ~= row.selected and value >= 1 and value % 1 == 0 and
+					value <= #row.names + 1 then
+				st.picks = st.picks_for == recipe.id and st.picks or {}
+				st.picks[row.group] = row.names[value - 1]
+				st.picks_for, picked = recipe.id, true
+			end
+		end
+	end
 	local stacks = stackable(recipe)
 	if fields[F.max] then
 		st.fill_max = true
@@ -385,7 +513,8 @@ local function fields(player, st, fields)
 	end
 	if fields[F.go] then
 		local ok, reason, info = grug_jobs.start_job(player, recipe.id,
-			stacks and (quantity_of(st.qty) or st.qty) or 1)
+			stacks and (quantity_of(st.qty) or st.qty) or 1,
+			st.picks_for == recipe.id and st.picks or nil)
 		if not ok then
 			st.note = reason
 			if info and (info.code == "space" or info.code == "ingredients") and
@@ -395,7 +524,7 @@ local function fields(player, st, fields)
 		end
 		return true
 	end
-	return false
+	return picked
 end
 
 grug_jobs.register_craft_box("recipe", {build = build, fields = fields})

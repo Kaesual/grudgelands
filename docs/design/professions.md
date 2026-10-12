@@ -58,8 +58,8 @@ personal stations, access, digging) is
 - **Seven trainers in every capital:** the six primaries plus Alchemy. The
   Cooking trainer sockets the world data still gives every start and every
   capital (Round 45) hold **Grudge-Free Repairs** (a title, the same in
-  every town, `grug_jobs.MENDER_TITLE`; the user, 2026-10-09): it teaches nothing and has no trainer dialog and
-  no map or minimap icon, but its click opens the repair form with the
+  every town, `grug_jobs.MENDER_TITLE`; the user, 2026-10-09): it teaches nothing and has no trainer dialog,
+  its map and minimap marker is the repair icon (Round 46), and its click opens the repair form with the
   trainers' prices, faction and distance rules (the user, 2026-10-09:
   start towns keep a repair point). A runtime mapping in the trainer-role
   readers decides it (`grug_jobs.trainer_teaches`, applied at placement and
@@ -202,7 +202,11 @@ items, per-recipe unlocks, keystone redemptions or discovery.
     output area" or "Not enough ingredients".
   - **Ingredients** are consumed at the start: the bags first, then
     `main[9..]`, the hotbar last. Only stacks without metadata count, for item
-    and group entries alike; the list's ×N uses the same rule.
+    and group entries alike; the list's ×N uses the same rule, and where one
+    item could fill two entries (carrot and cassava are a root and a staple)
+    ×N is what the take itself manages (Round 46). A group entry may name
+    the kind the job takes (the crafting box's dropdown, Round 46); ×N and
+    the take then count only that kind for it.
   - **The output area:** four take-only slots (`grug_craft_out`, every
     player) shared by all jobs; **Take all** moves it into the inventory in
     the give order, and what does not fit stays.
@@ -362,8 +366,8 @@ profession's product (§3 below).
 
 V1 repair is the explicit exception to profession ownership: every profession
 trainer repairs every repairable item of a player of its faction for money
-only. Player-placed stations inside an active Claim Stone claim offer the same
-service ([durability_repair.md](durability_repair.md)). Material-matched
+only. Repair happens only in towns; no station repairs (Round 46,
+[durability_repair.md](durability_repair.md)). Material-matched
 repair is backlog work, not a hidden benefit of learning the item's owning
 profession.
 
