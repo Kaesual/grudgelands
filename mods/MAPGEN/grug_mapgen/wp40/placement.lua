@@ -34,9 +34,11 @@
 --     below water within WATER_REACH; the fitting square clear of every
 --     authored lake's bounds (`water_authored.lua`: they shape the fitted
 --     ground round their water, e.g. Moonfall's crescent).
--- The coarse tests sort the candidates by score; the exact tests walk them
--- until FINALISTS pass, and SHA-256 of seed and anchor id picks one of
--- those. A row that finds nothing relaxes step by step (R.STEPS), then
+-- The coarse tests sort the candidates (a mine by its hills, a fortress by
+-- its nearness to the Battlegrounds and the road, every other kind in an
+-- order seeded by the world and the anchor, so a POI takes no more of the
+-- flattest ground than its rules ask); the exact tests walk them until
+-- FINALISTS pass, and SHA-256 of seed and anchor id picks one of those. A row that finds nothing relaxes step by step (R.STEPS), then
 -- takes the last resort; placement never raises for a world.
 --
 -- Deterministic: integer cells, explicit sort ties, no `pairs` order. Main
@@ -367,6 +369,8 @@ return function(wp40_directory, raw_sha256)
 				return true
 			end
 
+			-- the seeded order of this row's candidates
+			local salt = pick_index(a.id .. ":order", 1000003) - 1
 			local choice
 			local function try_step(step_index, step)
 				local relief_max = min(rule.relief * step.relief, RELIEF_CAP)
@@ -402,7 +406,12 @@ return function(wp40_directory, raw_sha256)
 						end
 					end
 					if ok then
-						local score = relief
+						-- A kind without a preference takes any spot that meets its
+						-- rules, in a seeded order: the flattest ground stays free
+						-- for the region maps' own camps (a steep zone has little).
+						local score = ((x + 4096) * 7919 + (z + 4096) * 104729 + salt) % 1000003
+						score = (score * score + salt) % 1000003
+						if rule.hills or rule.fortress then score = relief end
 						if rule.hills then
 							local top = H[k]
 							for dz = -rule.hills, rule.hills, C do
