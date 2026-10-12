@@ -20,7 +20,8 @@
 -- L  the last resort: a rule no spot can meet (relief below zero) gives
 --    every clash site a dry-core place (step 7) and no error; a placed
 --    anchor of a kind without rules is refused.
--- U  an underground reservation row: its claim exclusion, its protected
+-- U  an underground reservation row (the anchor row's parsed `underground`
+--    field, a bad one refused): its claim exclusion, its protected
 --    floor (placement minus its depth) and its cave rule over its whole
 --    width, never the plants on its ground.
 -- Z  the zones session answers every placed anchor at its placed position,
@@ -230,7 +231,15 @@ do
 	for _, a in ipairs(source.anchors) do
 		if not village and a.template_id == "village" then village = a end
 	end
-	village.underground = {width = 40, depth = 160}
+	-- the row as `simple_map.lua` parses it (its named `underground` field)
+	local parsed = A.source.anchor_of(village.numeric_id, {village.zone_numeric_id, village.slot_id,
+		village.template_id, "placed", village.band, underground = {width = 40, depth = 160}})
+	check(parsed.id == village.id and parsed.underground.width == 40 and parsed.underground.depth == 160 and
+		A.source.anchor_of(1, {1, "start", "start", "authored_fixed", 0, 0, 0}).underground == nil,
+		"U an anchor row carries its underground field")
+	check(not pcall(A.source.anchor_of, 1, {1, "x", "village", "placed", "mid", underground = {width = 40}}),
+		"U an underground field without a depth is refused")
+	village.underground = parsed.underground
 	source.claim_exclusions = A.source.claim_exclusions_of(source.anchors)
 	local under_id = ("exclude:anchor:%s:under"):format(village.id)
 	local row

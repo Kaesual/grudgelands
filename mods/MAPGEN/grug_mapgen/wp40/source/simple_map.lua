@@ -377,10 +377,10 @@ local anchor_rows = {
 	{37,"pvp_throng_high","pvp_camp_high","placed"},
 }
 
-source.anchors = {}
-local rare_routes = 0
-for index = 1, #anchor_rows do
-	local row = anchor_rows[index]
+-- One anchor row as the source's anchor record. A row may carry the named
+-- field `underground = {width = W, depth = D}` (an underground reservation,
+-- see `claim_exclusions_of` below; no shipped row does).
+function source.anchor_of(index, row)
 	local anchor = {numeric_id=index,id=("anchor_%03d"):format(index),
 		zone_numeric_id=row[1],slot_id=row[2],template_id=row[3],
 		placement_mode=row[4]}
@@ -392,8 +392,23 @@ for index = 1, #anchor_rows do
 		anchor.approved_candidate_index = row[5]
 		anchor.position = point(row[6],row[7])
 	end
+	local under = row.underground
+	if under ~= nil then
+		if type(under) ~= "table" or type(under.width) ~= "number" or under.width <= 0 or
+				type(under.depth) ~= "number" or under.depth <= 0 then
+			error("simple_map: anchor " .. anchor.id ..
+				" underground needs {width = W, depth = D}, both positive", 0)
+		end
+		anchor.underground = {width=under.width,depth=under.depth}
+	end
+	return anchor
+end
+source.anchors = {}
+local rare_routes = 0
+for index = 1, #anchor_rows do
+	local row = anchor_rows[index]
 	if row[3] == "rare_route" then rare_routes = rare_routes + 1 end
-	source.anchors[index] = anchor
+	source.anchors[index] = source.anchor_of(index, row)
 end
 -- The named-rare patrol routes (the `rare_route` rows above), in anchor
 -- order: each route's ordered patrol points, relative to its anchor's
@@ -542,10 +557,11 @@ for profile_index = 1, #source.anchor_profiles do
 	profile_by_id[profile.id] = profile
 end
 -- An anchor row may declare an underground reservation (Round 46, design
--- note Q7): `underground = {width, depth}`, a square of `width` nodes under
--- its centre, protected and kept free of caves from its placement height
--- down to `depth` nodes below it (the same floor and cave rule as the
--- anchor's own envelope, `zones.lua` and `r6_settlement.r30_cave_limit`).
+-- note Q7): `underground = {width = W, depth = D}` (`source.anchor_of`), a
+-- square of `width` nodes under its centre, protected and kept free of caves
+-- from its placement height down to `depth` nodes below it (the same floor
+-- and cave rule as the anchor's own envelope, `zones.lua` and
+-- `r6_settlement.r30_cave_limit`).
 source.claim_exclusion_recipes[#source.claim_exclusion_recipes+1] =
 	{id="exclude_underground_v1",kind="underground_reservation",
 		footprint_policy_id="centered_half_open_square_v1"}
