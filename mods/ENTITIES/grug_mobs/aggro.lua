@@ -847,9 +847,10 @@ end
 -- a tier factor of copper per kill: the mean sell value the removed rows paid
 -- per kill (0.5 / 1.6 / 3.9 / 10.4 / 11.8 / 51.2c by band; the measured
 -- loot, tools/r29_e1 and tools/r29_e4/income.py LOOT_PER_KILL). Critters,
--- faction NPCs and a mob whose definition sets `_grug_no_coin_bag = true`
--- roll no bag: the flag marks a mob whose kill must never pay money (the
--- Kraken; the depth pulse's arrivals), set once on the registered def.
+-- faction NPCs and a mob flagged `_grug_no_coin_bag = true` roll no bag: the
+-- flag marks a mob whose kill must never pay money, on its definition (the
+-- Kraken; read at registration, levels.lua) or on the live mob (the depth
+-- pulse's arrivals); grug_mobs.no_coin_bag answers both.
 --
 grug_mobs.COIN_BAG = {
 	chance = 8,
@@ -866,7 +867,7 @@ end
 -- the copper it dropped, or nil.
 function grug_mobs.drop_coin_bag(self)
 	if not (grug_money and grug_money.make_bag) or self._grug_faction or
-			self._grug_no_coin_bag or grug_mobs.disposition(self) == "critter" or
+			grug_mobs.no_coin_bag(self) or grug_mobs.disposition(self) == "critter" or
 			math.random(grug_mobs.COIN_BAG.chance) ~= 1 then
 		return nil
 	end
