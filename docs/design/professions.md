@@ -303,7 +303,7 @@ Cooking and Alchemy. The roster is organised **by material, never by class**.
 | **Leatherworker** (`leatherworker`) | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor and bows: craft, enchants and upgrades; leather bags |
 | **Tailor** (`tailor`) | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and spellbooks: craft, enchants and upgrades; cloth bags |
 | **Woodcarver** (`woodcarver`) | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staves and wands (sticks + metal + occult mob components): craft, enchants and upgrades |
-| **Goldsmith** (`goldsmith`) | Settings from tin, iron, steel + copper, gold, embersteel + gold and abyssal steel + gold bars; the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Trinkets for both trinket slots (craft, enchants and upgrades), gem refinement, Settings |
+| **Goldsmith** (`goldsmith`) | Settings from tin, iron, steel + copper, gold, embersteel + gold and abyssal steel + gold bars; the six depth-tiered gems (each from its own tier rock, Citrine T1 … Diamond T6) | Trinkets for both trinket slots (craft, enchants and upgrades), gem refinement, Settings |
 | **Alchemy** (`alchemist`, secondary) | the four Alchemy herbs plus ungated reagents and mob loot | Potions and elixirs, brewed at the Brewing Stand — **gathers its own herbs** |
 | **Cooking** (`cooking`, secondary) | farmed and gathered food plants, meat and fish | Dishes and raw dish assemblies (`items_crafting.md` §3.7) |
 
