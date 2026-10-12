@@ -813,12 +813,13 @@ is the last T3 node, y = −501 begins contested T4 (Round 31; it was T5 from
 region continues to select deep regional resources, but never changes the
 universal PvP/terrain rule below −500.
 
-**Depth buys frequency, not stats.** Past the level-60 cap the axis
-keeps going as *spawn pressure*: a player-centric arrival pulse whose
-rate grows with depth, so deep mining happens under permanent
-interruption rather than against bigger numbers. That is a spawn rule
-and it lives in `biomes_mobs.md` §4.1 — curve, cap and roster in one
-place.
+**Depth buys frequency, not stats.** Below −300 the axis adds *spawn
+pressure*: a player-centric arrival pulse whose rate grows with depth
+(0.5 arrivals a minute at −300, 1 at −1000, 2 from −2000; Round 46), so deep
+mining happens under interruption rather than against bigger numbers. An
+arrival takes the ordinary underground level of its spot and is never
+rolled elite. That is a spawn rule and it lives in `biomes_mobs.md` §4.1 —
+curve, cap and roster in one place.
 
 ## 4. Threat (aggro) system
 

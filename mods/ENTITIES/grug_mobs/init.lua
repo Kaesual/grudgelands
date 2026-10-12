@@ -1127,6 +1127,8 @@ dofile(modpath .. "/lava_flan.lua")
 dofile(modpath .. "/ember_wisp.lua")
 dofile(modpath .. "/land_guard.lua")
 dofile(modpath .. "/rift_spawn.lua")
+-- Round 46 lane DP: the depth pulse (its roster names the mobs above).
+dofile(modpath .. "/depth_pulse.lua")
 -- Round 36: the rift at one clash site, its void crack and the rift boss.
 dofile(modpath .. "/rift.lua")
 dofile(modpath .. "/war_construct.lua")

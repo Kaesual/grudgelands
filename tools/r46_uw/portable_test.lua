@@ -60,7 +60,9 @@ for index, row in ipairs(roster.rows) do
 			"A " .. row.name .. " surface row stays above ground: " .. tostring(row.min_height))
 	end
 end
-check(underground_rows >= 20, "A the underground rows are seen: " .. underground_rows)
+-- 18 since lane DP: the deep rows of the Land Guard and the Rift Spawn moved
+-- into the depth pulse (depth_pulse.lua).
+check(underground_rows >= 18, "A the underground rows are seen: " .. underground_rows)
 for _, name in ipairs({"zombie", "giant_spider", "stone_golem", "mesa_golem", "cave_bat",
 		"cave_crawler", "giant_rat", "spiderling"}) do
 	check(reaching["grug_mobs:" .. name], "A " .. name .. " reaches up to -1")
@@ -104,7 +106,9 @@ check(allows("grug_mobs:zombie", {x = 0, y = -5, z = 0}), "B a normal mob below 
 level_here = gm.UNDERGROUND_ELITE_MIN_LEVEL
 check(allows("grug_mobs:stone_golem", {x = 0, y = -5, z = 0}), "B golem at the floor")
 level_here = 60
-check(allows("grug_mobs:land_guard", {x = 0, y = -1200, z = 0}), "B Land Guard deep")
+-- Lane DP: the Land Guard has no ABM row any more (the depth pulse brings it,
+-- outside this policy), so the closed underground list refuses it.
+check(not allows("grug_mobs:land_guard", {x = 0, y = -1200, z = 0}), "B no Land Guard row deep")
 
 -- ---------------------------------------------------------------------------
 -- C. underground_spawned and the row hook

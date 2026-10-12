@@ -72,6 +72,25 @@ if MODE == "depth" then
 	CENSUS = {50, 100, 150}
 	WINDOW = 150
 end
+-- Pulse mode (Round 46 lane DP; mode.txt "pulse", run.sh POINTS=pulse): three
+-- points under the same column at y -400, -1000 and -1500, each with a
+-- disposable 21x5x21 room carved around it (the same room before and after)
+-- and a stationary stand-in player standing on its floor, handed to the depth
+-- pulse as its player list. A stand-in is no target, so an arrival fades
+-- after its 10 s; the census counts pulse arrivals apart from the ambient
+-- hostiles, and the pulse counters are logged at the end.
+local PULSE_POINTS = {
+	{id = "pulse400", x = -1800, z = -2380, h = -400},
+	{id = "pulse1000", x = -1800, z = -2380, h = -1000},
+	{id = "pulse1500", x = -1800, z = -2380, h = -1500},
+}
+local PULSE_ROOM = {half = 10, height = 5}
+if MODE == "pulse" then
+	POINTS = PULSE_POINTS
+	CENSUS = {60, 120, 180, 240}
+	WINDOW = 240
+end
+local DEEP = MODE == "depth" or MODE == "pulse"
 
 local function log(msg) core.log("action", P .. msg) end
 
@@ -80,19 +99,26 @@ if MODE == "depth" then
 	-- Round 46 lane UW: its tree has the underground boundary constant.
 	variant = grug_mobs.UNDERGROUND_TOP and "round46" or "baseline"
 end
+if MODE == "pulse" then
+	variant = grug_mobs.depth_pulse and "pulse" or "baseline"
+end
 
 local function census_depth(label)
 	for _, point in ipairs(POINTS) do
 		local center = {x = point.x, y = point.h, z = point.z}
 		-- shallow: hostiles standing above y -40.5, the band without
 		-- underground spawns before Round 46.
-		local hostile, elite, other_mobs, objects, shallow = 0, 0, 0, 0, 0
+		local hostile, elite, other_mobs, objects, shallow, pulse = 0, 0, 0, 0, 0, 0
 		local by_name = {}
 		for _, object in ipairs(core.get_objects_inside_radius(center, RADIUS)) do
 			objects = objects + 1
 			local ent = object:get_luaentity()
 			if ent and ent.name and ent.name:sub(1, 10) == "grug_mobs:" then
-				if grug_mobs.spawn_role_hostile(ent.name) then
+				if ent._grug_pulse then
+					pulse = pulse + 1
+					local short = "pulse:" .. ent.name:sub(11)
+					by_name[short] = (by_name[short] or 0) + 1
+				elseif grug_mobs.spawn_role_hostile(ent.name) then
 					hostile = hostile + 1
 					if object:get_pos().y > -40.5 then shallow = shallow + 1 end
 					local short = ent.name:sub(11)
@@ -110,9 +136,10 @@ local function census_depth(label)
 		for name, count in pairs(by_name) do names[#names + 1] = name .. "=" .. count end
 		table.sort(names)
 		log(("depth %s %s %s hostile=%d elite=%d shallow=%d other_mobs=%d objects=%d " ..
-			"level=%s [%s]"):format(variant, label, point.id, hostile, elite, shallow,
+			"level=%s [%s]%s"):format(variant, label, point.id, hostile, elite, shallow,
 			other_mobs, objects,
-			tostring(grug_zones.mob_level_at(center)), table.concat(names, " ")))
+			tostring(grug_zones.mob_level_at(center)), table.concat(names, " "),
+			MODE == "pulse" and (" pulse=" .. pulse) or ""))
 	end
 end
 
@@ -151,8 +178,66 @@ local function torch_room()
 		tostring(after_r), tostring(before_r)))
 end
 
+-- Pulse mode: the rooms, carved once before the window.
+local function pulse_rooms()
+	local air, stone = core.get_content_id("air"), core.get_content_id("default:stone")
+	for _, point in ipairs(POINTS) do
+		local half, height = PULSE_ROOM.half, PULSE_ROOM.height
+		local minp = {x = point.x - half - 1, y = point.h - 1, z = point.z - half - 1}
+		local maxp = {x = point.x + half + 1, y = point.h + height, z = point.z + half + 1}
+		local vm = core.get_voxel_manip()
+		local emin, emax = vm:read_from_map(minp, maxp)
+		local area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+		local data = vm:get_data()
+		for z = minp.z, maxp.z do
+			for y = minp.y, maxp.y do
+				for x = minp.x, maxp.x do
+					local inside = math.abs(x - point.x) <= half and math.abs(z - point.z) <= half
+						and y >= point.h and y < point.h + height
+					data[area:index(x, y, z)] = inside and air or stone
+				end
+			end
+		end
+		vm:set_data(data)
+		vm:write_to_map(true)
+	end
+end
+
+local function pulse_stand_ins()
+	local list = {}
+	for _, point in ipairs(POINTS) do
+		local pos = {x = point.x, y = point.h - 0.5, z = point.z}
+		list[#list + 1] = {
+			get_pos = function() return {x = pos.x, y = pos.y, z = pos.z} end,
+			get_player_name = function() return "probe_" .. point.id end,
+			get_hp = function() return 20 end,
+		}
+	end
+	return list
+end
+
+local function pulse_counters()
+	local DP = grug_mobs.depth_pulse
+	if not DP then
+		log("pulse counters: none (no depth pulse in this tree)")
+		return
+	end
+	local keys = {}
+	for k in pairs(DP.stats) do keys[#keys + 1] = k end
+	table.sort(keys)
+	local parts = {}
+	for _, k in ipairs(keys) do parts[#parts + 1] = k .. "=" .. DP.stats[k] end
+	log(("pulse counters %s: %s; live arrivals %d"):format(variant,
+		table.concat(parts, " "), #DP.arrivals))
+	local c = DP.probe_cost
+	if c then
+		log(("pulse step cost: %d steps, %d us in all, %.1f us mean, %d us max"):format(
+			c.calls, c.us, c.calls > 0 and c.us / c.calls or 0, c.max))
+	end
+end
+
 local function census(label)
-	if MODE == "depth" then return census_depth(label) end
+	if DEEP then return census_depth(label) end
 	for _, point in ipairs(POINTS) do
 		local center = {x = point.x, y = point.h, z = point.z}
 		local budgeted, natural, other = 0, 0, 0
@@ -210,6 +295,30 @@ local function start_measuring()
 			tostring(grug_zones.mob_level_at({x = point.x, y = point.h, z = point.z}))))
 	end
 	mobs._grug_probe_players = players
+	if MODE == "pulse" then
+		pulse_rooms()
+		if grug_mobs.depth_pulse then
+			local DP = grug_mobs.depth_pulse
+			local stand_ins = pulse_stand_ins()
+			DP.players = function() return stand_ins end
+			-- The step's own cost over the window (a comparison, not a budget).
+			local step = DP.step
+			DP.probe_cost = {calls = 0, us = 0, max = 0}
+			DP.step = function(...)
+				local t0 = core.get_us_time()
+				step(...)
+				local us = core.get_us_time() - t0
+				local c = DP.probe_cost
+				c.calls, c.us, c.max = c.calls + 1, c.us + us, math.max(c.max, us)
+			end
+		end
+		run_window("night", function()
+			pulse_counters()
+			log("RESULT DONE " .. variant)
+			core.request_shutdown("r24 density probe done", false, 0)
+		end)
+		return
+	end
 	if MODE == "depth" then
 		torch_room()
 		run_window("night", function()
@@ -231,7 +340,7 @@ core.after(2, function()
 	for _, point in ipairs(POINTS) do
 		local minp = {x = point.x - 56, y = point.h - 32, z = point.z - 56}
 		local maxp = {x = point.x + 55, y = point.h + 47, z = point.z + 55}
-		if MODE == "depth" then
+		if DEEP then
 			minp.y, maxp.y = point.h - 40, point.h + 39
 		end
 		for bx = math.floor(minp.x / 16), math.floor(maxp.x / 16) do

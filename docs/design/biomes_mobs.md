@@ -665,7 +665,8 @@ column gives the underground rows.
 | Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | — | Zombie table | Zombie / sand-gold modifier |
 | Song Bird | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
 | Spiderling | weak web (20% slow, 2 s) | any (cave) | y −1…−100 (−40 until Round 46), L1–6 | raw silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
-| Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
+| Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18; the depth pulse below −300 (§4.1) | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
+| Riftwing | swarm dive | any (cave) | only the depth pulse, below −1000, L60 (§4.1) | meat 1/1 | Cave Bat / violet modifier, glow 3, ×1.25 |
 | Stone Mite | swarms | any (cave) | y ≤ −700, L42–60 | nothing (its stone core 1/8 no longer drops, Round 46) | Cave Crawler / stone-grey modifier, ×1.33 |
 
 **Round 8 start-zone families** (on the surface placed by the recipes,
@@ -1000,91 +1001,101 @@ mechanisms. Round 16 expressly authorized
 the fightable surface rate/cap increase without a new PERF campaign; old WP6
 ring measurements cannot be promoted into fresh acceptance evidence.
 
-### 4.1 The depth phase-in pulse (decided 2026-08-08)
+### 4.1 The depth pulse (decided 2026-08-08, built Round 46)
 
-**Approved future WP34 scope** (kept, for later; WP audit E5). Placement
-geometry and the below-−1000 servant roster remain open in
-`TODO-design-depth.md`; the pulse is not current runtime behavior. Existing
-cave rows remain separate (since Round 30 merged into the one underground
-spawn ABM, §4). The Land Guard and the Rift Spawn's deep row, which ship today
-as ordinary rows below −1000 (`grug_mobs/land_guard.lua`, `rift_spawn.lua`),
-join the pulse when it ships (WP audit E4); the Rift Spawn's surface row
-stays.
+Runtime: `grug_mobs/depth_pulse.lua` (Round 46 lane DP, ruling 14, the
+user's decisions of 2026-10-12 on the lane's design note; WP34). The Land
+Guard (Bedrock Sentinel) and the Rift Spawn's deep row joined it (WP audit
+E4): neither has a cave row any more; the Rift Spawn's surface row stays.
 
 Depth is a danger axis, not only a material axis (`combat_stats.md` §3,
-`world.md` §4c). Because regular mobs cap at level 60, everything past
-that cap has to be bought with **frequency**: a trickle that never lets
-a miner finish clearing the room, so deep mining happens under permanent
-pressure. This section owns that trickle.
+`world.md` §4c). Because regular mobs cap at level 60, deeper danger is
+bought with **frequency**: arrivals that keep a miner under pressure. This
+section owns them.
 
 **Mechanism: a player-centric pulse in a throttled
-`register_globalstep`, never an ABM.** The reason belongs here, because
-it is the constraint that rules out the obvious answer and it will be
-re-discovered otherwise: `mobs:spawn` registers a **static** ABM whose
-`chance` and `active_object_count` are fixed at registration time, and
-**`aoc` counts per entity NAME inside a 128-node sphere, shared by every
-row of that name** (see the note above §4's table). A second, deeper row
-for an existing mob therefore cannot carry a larger budget than the
-shallow one, and a rate that varies continuously *within* a band is not
-expressible in the ABM model at all. A pulse also scales with player
-presence instead of with how much air the mapgen happened to carve,
-which is the right cost model at the 100-player target.
+`register_globalstep`, never an ABM.** `mobs:spawn` registers a static ABM
+whose `chance` and `active_object_count` are fixed at registration, and
+**`aoc` counts per entity name inside a 128-node sphere, shared by every row
+of that name** (the note above §4's table): a deeper row cannot carry a
+larger budget than the shallow one, and a rate that grows within a band is
+not expressible. A pulse also scales with player presence rather than with
+the air the mapgen carved. The step serves the players and the live arrivals
+in four slices of each second (the spawn regions' pattern), so no step
+serves every player.
 
-**The arrival curve** — one formula, safe by construction:
+**The curve** (arrivals per minute, linear in depth between the points):
 
-`arrivals_per_minute = min(R_MAX, max(0, (−y − Y0) · R_MAX / SPAN))`
-with **Y0 = 300**, **R_MAX = 6/min**, **SPAN = 1700**.
+| Depth | Arrivals/min | One every |
+|---|---|---|
+| above −300 | 0 — no pulse | — |
+| −300 | 0.5 | 120 s |
+| −1000 | 1 | 60 s |
+| −2000 and below | 2 | 30 s |
 
-| Depth | Arrivals/min |
+Each player rolls once a second with chance `rate / 60`, only while nothing
+is pending for them and the cap has room.
+
+**Cap:** **2** down to −500 (the last T3 node), **4** down to −1000, **6**
+below, counted over every pulse arrival within **24 nodes** of the player,
+whoever's roll brought it, so a group shares one cap.
+
+**Placement (light-independent):** up to four rays from the player's eyes in
+random, mostly horizontal directions, at most 14 nodes long; the spot is the
+last open node (not solid, not liquid, harmless) before rock and must fit the
+body. The first spot **6–14 nodes** away wins, so every arrival appears in
+open line of sight and a flyer has a straight way in. Failing that, the
+farthest spot of at least **3** nodes is taken: a dug-out room about 7×7 or
+larger is not safe, while a 3×3 bunker or a 1×2 pocket leaves no spot, and
+the arrival is skipped and stays owed (at most one, retried each second). A
+ground arrival settles on the floor at most 4 nodes below its spot. The pulse
+never places, digs or removes a node.
+
+**Refusals:** no mob level at the spot (deep-ocean columns), a start
+footprint, hard-protected ground, an active claim, a player within 3 nodes;
+at the end of the warning the spot is checked again (room, nobody standing
+in it), and mobs_redo's global limit of 600 applies (the arrivals are not
+authored). A refused or failed arrival stays owed; a full cap drops it.
+
+**Warning:** **2 s**, silent (no sound without the user's pick): the
+particle effect `depth_windup` (12 glowing dark-violet motes drawn in to the
+spot) at 0 s and 1 s, then `depth_burst` (8) as the body appears — **32
+particles per arrival**.
+
+**Level and tier:** the arrival takes the ordinary underground level of its
+spot (`mob_level_at`, like every cave mob) and is **never rolled elite**
+(`underground_spawned` with `skip_elite`; the Bedrock Sentinel stays the
+def-elite it is). It gets the underground sight (view range 26, "Underground spawns" in §3.1).
+
+**The roster** (by the player's depth band; mostly flyers, the user's
+ruling 14):
+
+| Band | Arrivals |
 |---|---|
-| above −300 | 0 — the pulse does not exist here |
-| −1000 | ~2.5 |
-| −1500 | ~4.2 |
-| −2000 and below | 6 (the ceiling) |
+| −300 … −700 | Blood Bat 60 %, Glowwing 40 % |
+| −701 … −1000 | Blood Bat 50 %, Ember Wisp 30 %, Glowwing 20 % |
+| below −1000 | **Riftwing** 60 %, Ember Wisp 20 %, Rift Spawn 15 %, Bedrock Sentinel 5 % |
 
-The `min()` is what makes the formula hold below −2000 instead of
-growing without bound; the `max(0, …)` is what keeps the overworld free
-of it. These are starting values, calibrated in a runtime test the way
-`docs/research/wp6_spawn_budget.md` calibrated the ABM rows.
+The **Riftwing** is the deep band's own flyer and only the pulse brings it:
+the Blood Bat's definition with the cave-bat texture under a runtime violet
+modifier, glow 3 and run speed 5 (no new media). Every flyer here is
+physical (engine probe, Round 46: mobs_redo registers every mob with
+`physical = true`; a def's `physical = false` is not read). Flyers never
+search a route; a spot in line of sight gives them a straight way in.
 
-**Concurrent cap: 6 phase-in mobs per player.** This is the real safety
-valve and the number the 100-player target actually cares about — it is
-checked first in the runtime test. A modest concurrent cap with a high
-arrival rate is also far cheaper than a swarm, and it is the shape the
-design wants anyway: pressure, not a wall of bodies.
+**Fade:** an arrival without a target for **10 s** fades away (`depth_burst`,
+8 motes) and is removed — no XP, no loot — which frees its place under the
+cap. Arrivals are never saved (`static_save = false`).
 
-**Light-independent, and it may place a mob inside a sealed room.**
-Wherever the pulse is active it ignores light entirely, and it is
-allowed to put an arrival into a chamber the player dug out and walled
-up. That is deliberate and it is the whole mechanic: dropping `max_light`
-alone would only kill the *lit* cave, never the 3×3 bunker, because a
-sealed room offers no spawn position at all — "there are no safe places
-down here" has to be literally true or it is decoration. Every arrival
-carries a **~2 s telegraph** (particle burst + sound) before it exists,
-on the pattern of the elite wind-up of `combat_stats.md` §3, so the
-player is warned by the world rather than ambushed by a rule.
+**Rewards:** a killed arrival pays ordinary kill XP and its family drops,
+but **no coin bag** (`_grug_no_coin_bag` on the live entity; ambient mobs of
+the same registration keep theirs).
 
-**The roster is staged, and it needs no new mob to ship:**
-
-- **−300 … −1000: the existing cave families** (§3.1's cave note —
-  Zombie, Giant Spider, Stone Golem), levelled by `mob_level_at` like
-  everything else. The fiction reads as the local dead being drawn
-  upward from below rather than as an invasion, which is exactly what
-  this band is.
-- **below −1000: the deep band's own servants**, not local wildlife. The
-  dedicated content roster plugs into this same pulse and accounting model;
-  the ordinary surface/cave ABM rows do not become a second deep-spawn source.
-
-The consequence is worth stating: because the shallow half reuses rows
-that already exist, **the depth work can ship without a single new
-mob**, and the servant roster becomes content that lands on top rather
-than a blocker underneath.
-
-**The ABM cave rows are untouched.** They stay exactly as §4's table
-registers them (merged into one dispatching ABM since Round 30, rates
-unchanged) and remain the ambient cave life; the pulse is a second,
-independent source layered over them, and it is the only one that scales
-with depth.
+**The ABM cave rows stay** the ambient cave life (§4, merged into one
+dispatching ABM since Round 30); the pulse is a second, independent source
+layered over them and the only one that scales with depth. Its arrivals
+bypass the per-name aoc (`ignore_count`) but count toward it, so near a
+player they hold back ambient rows of the same name.
 
 ### 4.2 Spawn regions (Round 28 rulings 3, 34, 37, 38; Lane S1)
 
@@ -1391,7 +1402,7 @@ The current family classification is:
 | Disposition | Existing families and named variants |
 |---|---|
 | Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker |
-| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings and the PvP fortress Generals |
+| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings and the PvP fortress Generals |
 | Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish |
 | Independent role | Accord/Throng guards, land guards, royal guards, PvP camp captains and the Generals' bodyguards, and peaceful settlement NPCs |
 

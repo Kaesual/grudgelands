@@ -324,6 +324,14 @@ for _, zone in ipairs(palette_zones) do
 				for _, name in ipairs(mob_names) do
 					local a = OLD.spawn_policy_allows(name, pos)
 					local b = NEW.spawn_policy_allows(name, pos)
+					-- Round 46 lane DP: the Land Guard and the Rift Spawn left the
+					-- underground ABM list on purpose (the depth pulse brings them
+					-- below -1000), so underground the new policy refuses them.
+					if y < -1 and (name == "grug_mobs:land_guard" or
+							name == "grug_mobs:rift_spawn") then
+						check(b == false, "moved to the depth pulse " .. name)
+						a = b
+					end
 					if a ~= b then
 						error(("FAIL fallback identity %s %s y=%d z=%d t=%s: %s vs %s")
 							:format(zone, name, y, pos.z, time, tostring(a), tostring(b)))

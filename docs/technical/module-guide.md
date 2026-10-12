@@ -989,6 +989,21 @@ tools](#player-meta-read-by-external-tools).
     but no step weighs every camp against every player (fixture
     `tools/r28_s1`, section "Round 32 F4"). Rules: [spawn_regions.md](../design/spawn_regions.md),
     [biomes_mobs.md](../design/biomes_mobs.md) §4.2.
+  - `depth_pulse.lua` (Round 46, `grug_mobs.depth_pulse`): the depth pulse
+    below y −300 ([biomes_mobs.md](../design/biomes_mobs.md) §4.1). One
+    throttled globalstep serves the players and the live arrivals in four
+    slices of each second; per player a roll (`DP.rate`), the shared cap
+    within 24 nodes (`DP.cap`, `_grug_pulse` entities), a spot by up to four
+    rays (`DP.find_spot` over `DP.world`), the refusals (`DP.refused`), a
+    2 s wind-up (`depth_windup`, `depth_burst` in
+    `grug_core/particle_effects.lua`) and `grug_mobs.add_mob` with
+    `ignore_count`; the arrival gets `_grug_pulse`, `_grug_no_coin_bag`,
+    `static_save = false` and `underground_spawned(..., skip_elite)`, and
+    fades after 10 s without a target. `DP.players` is the seam the depth
+    probe (`tools/r24_density_xp` `POINTS=pulse`) replaces with stand-ins;
+    the pure parts are driven by `tools/r46_dp`. The roster bands
+    (`DP.ROSTERS`) also feed the names inventory (`tools/r38_names`,
+    source `depth_pulse`).
   - Since Round 36 a relevel recomposes a humanoid's skin and
     `grug_mobs.refresh_visual` puts the zone tint (the corrupted sub-types'
     ember) back on top through `grug_mobs.reapply_zone_variant`

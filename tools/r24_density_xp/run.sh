@@ -15,7 +15,9 @@
 #
 # POINTS=depth (Round 46 lane UW) measures the three depth points instead
 # (the probe's header); BASE is then the commit without the lane's
-# grug_mobs change. LAUNCHER=<command> replaces tools/luanti_headless.sh
+# grug_mobs change. POINTS=pulse (Round 46 lane DP) measures the depth pulse
+# at y -400, -1000 and -1500 (carved rooms, stand-in players; the probe's
+# header). LAUNCHER=<command> replaces tools/luanti_headless.sh
 # (e.g. the round's engine_run.sh queue, which calls it with the same
 # environment from the repository root).
 #
