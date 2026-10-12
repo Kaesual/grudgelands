@@ -22,17 +22,20 @@ def _add(add, key):
 def warrior_dps(level, ilvl, add=None, family="sword"):
     """Strike on the weapon's swing clock plus Mighty Blow procs on rage.
 
-    Rage: +8 per landed swing, +3 per hit taken (one mob hit per second,
-    minus dodged hits). Mighty Blow replaces a due swing at 25 rage with
-    floor(1.5 W) + melee bonus (kits.lua:357-399).
+    Rage: 8 x the weapon's base swing interval per landed swing (Round 46
+    ruling 9: the same 8 per second for every weapon; attack speed adds its
+    share), +3 per hit taken (one mob hit per second, minus dodged hits).
+    Mighty Blow replaces a due swing at 25 rage with floor(1.5 W) + melee
+    bonus (kits.lua:357-399).
     """
     a = C.attributes("warrior", level)
     weapon = C.weapon_damage(ilvl, family)
     melee = (a["str"] + _add(add, "str")) / 10.0
     dex = a["dex"] + _add(add, "dex")
-    swings = (1 + _add(add, "attack_speed_percent") / 100.0) / C.WEAPONS[family][1]
+    interval = C.WEAPONS[family][1]
+    swings = (1 + _add(add, "attack_speed_percent") / 100.0) / interval
     taken = 1.0 - C.dodge_chance(dex, _add(add, "dodge_percent"))
-    procs = min(swings, (8 * swings + 3 * taken) / 25.0)
+    procs = min(swings, (8 * interval * swings + 3 * taken) / 25.0)
     extra = math.floor(1.5 * weapon) - weapon
     crit = C.crit_chance(dex, _add(add, "crit_percent"))
     return (swings * (weapon + melee) + procs * extra) * C.crit_factor(crit)
@@ -63,11 +66,12 @@ def _cost(level, percent):
 
 
 def mage_damage(level, ilvl, add=None):
-    """Fireball until the fight's mana runs out: Bw(L) + Int/10 per cast,
+    """Fireball until the fight's mana runs out: the spell base (half Bw(L),
+    half the caster weapon at item level ilvl; Round 46) + Int/10 per cast,
     6 % of P(L) per cast, at most one cast a second (kits.lua:545-620)."""
     a = C.attributes("mage", level)
     casts = min(FIGHT, _fight_mana(level, add) / _cost(level, 6))
-    hit = C.baseline_weapon(level) + (a["int"] + _add(add, "int")) / 10.0
+    hit = C.spell_base(level, ilvl) + (a["int"] + _add(add, "int")) / 10.0
     crit = C.crit_chance(a["dex"] + _add(add, "dex"), _add(add, "crit_percent"))
     return casts * hit * C.crit_factor(crit)
 
@@ -85,11 +89,11 @@ def priest_healing(level, ilvl, add=None):
 
 
 def priest_smite(level, ilvl, add=None):
-    """Smite until the fight's mana runs out: 1.5 x (Bw + Int/10), 5 % P,
-    one cast every 2 s (kits.lua:737-795)."""
+    """Smite until the fight's mana runs out: 1.5 x (spell base + Int/10),
+    5 % P, one cast every 2 s (kits.lua:737-795)."""
     a = C.attributes("priest", level)
     casts = min(FIGHT / 2.0, _fight_mana(level, add) / _cost(level, 5))
-    hit = 1.5 * (C.baseline_weapon(level) + (a["int"] + _add(add, "int")) / 10.0)
+    hit = 1.5 * (C.spell_base(level, ilvl) + (a["int"] + _add(add, "int")) / 10.0)
     crit = C.crit_chance(a["dex"] + _add(add, "dex"), _add(add, "crit_percent"))
     return casts * hit * C.crit_factor(crit)
 

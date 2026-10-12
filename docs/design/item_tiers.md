@@ -165,8 +165,8 @@ and +69 % at 70 (table "A full set at level 60"), the order of the design's
 | Item level | Warrior, damage set | Scout, damage set | Mage, damage set (short fight / mana-bound) | Warrior, 5 × HP |
 |---:|---:|---:|---:|---:|
 | 60 | +47 % | +49 % | +45 % / +80 % | +20 % |
-| 65 | +57 % | +59 % | +50 % / +88 % | +27 % |
-| 70 | +69 % | +69 % | +57 % / +97 % | +32 % |
+| 65 | +57 % | +59 % | +53 % / +91 % | +27 % |
+| 70 | +69 % | +69 % | +62 % / +103 % | +32 % |
 
 Damage sets: an attribute on every one of the eight items, two Crit enchants, Attack speed on the weapon (Warrior, Scout); the Mage's remaining six channels Mana. Against the same character in plain item-level-60 gear (Appendix A).
 <!-- end generated -->
@@ -188,19 +188,19 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 | Point | Target | damage: Str | damage: Crit | damage: Attack speed | damage (battle axe): Str | damage (battle axe): Crit | damage (battle axe): Attack speed | survival: HP | survival: Armor (2H) | survival: Armor (shield) | survival: Armor (shield, foe +5) | Dex rider: Dex → damage | Dex rider: Dex → EHP |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | T1 mid | 1.8 | 2.1 | 1.8 | 1.7 | 1.5 | 1.8 | 1.7 | 1.8 | 1.5 | 1.2 | 1.1 | 0.0 | 0.1 |
-| T1 top | 2.0 | 2.2 | 2.0 | 1.9 | 1.6 | 2.0 | 1.9 | 2.0 | 2.1 | 1.5 | 1.4 | 0.1 | 0.2 |
-| T2 mid | 2.2 | 2.5 | 2.3 | 2.1 | 1.8 | 2.3 | 2.1 | 2.2 | 2.6 | 1.8 | 1.8 | 0.1 | 0.3 |
-| T2 top | 2.4 | 2.5 | 2.4 | 2.3 | 1.8 | 2.4 | 2.3 | 2.4 | 3.0 | 2.1 | 2.0 | 0.2 | 0.4 |
-| T3 mid | 2.6 | 2.5 | 2.6 | 2.5 | 1.8 | 2.6 | 2.5 | 2.6 | 3.4 | 2.3 | 2.2 | 0.2 | 0.5 |
-| T3 top | 2.8 | 2.9 | 2.8 | 2.7 | 2.1 | 2.8 | 2.7 | 2.8 | 3.6 | 2.4 | 2.4 | 0.3 | 0.6 |
-| T4 mid | 3.0 | 2.9 | 3.0 | 2.9 | 2.2 | 3.0 | 2.9 | 3.0 | 3.8 | 2.5 | 2.5 | 0.3 | 0.7 |
-| T4 top | 3.2 | 3.2 | 3.3 | 3.1 | 2.4 | 3.3 | 3.1 | 3.2 | 4.0 | 2.7 | 2.6 | 0.3 | 0.8 |
-| T5 mid | 3.4 | 3.4 | 3.4 | 3.3 | 2.5 | 3.4 | 3.2 | 3.4 | 4.1 | 2.7 | 2.7 | 0.4 | 1.0 |
-| T5 top | 3.6 | 3.5 | 3.6 | 3.5 | 2.7 | 3.6 | 3.4 | 3.6 | 4.3 | 2.8 | 2.7 | 0.4 | 1.1 |
-| T6 mid | 3.8 | 3.8 | 3.8 | 3.7 | 2.8 | 3.8 | 3.6 | 3.8 | 4.3 | 1.8 | 2.8 | 0.5 | 1.2 |
-| T6 top | 4.0 | 3.9 | 4.0 | 3.9 | 2.9 | 4.0 | 3.8 | 4.0 | 4.4 | 0.4 | 2.3 | 0.6 | 1.4 |
-| T7 65 | 4.2 | 4.1 | 4.2 | 4.1 | 3.0 | 4.2 | 4.0 | 4.2 | 4.6 | 0.0 | 2.4 | 0.6 | 1.5 |
-| T7 70 | 4.4 | 4.5 | 4.4 | 4.3 | 3.3 | 4.4 | 4.2 | 4.4 | 4.8 | 0.0 | 2.5 | 0.6 | 1.6 |
+| T1 top | 2.0 | 2.2 | 2.0 | 1.9 | 1.5 | 2.0 | 1.9 | 2.0 | 2.1 | 1.5 | 1.4 | 0.1 | 0.2 |
+| T2 mid | 2.2 | 2.5 | 2.3 | 2.1 | 1.7 | 2.3 | 2.1 | 2.2 | 2.6 | 1.8 | 1.8 | 0.1 | 0.3 |
+| T2 top | 2.4 | 2.5 | 2.4 | 2.3 | 1.7 | 2.4 | 2.3 | 2.4 | 3.0 | 2.1 | 2.0 | 0.2 | 0.4 |
+| T3 mid | 2.6 | 2.5 | 2.6 | 2.5 | 1.7 | 2.6 | 2.5 | 2.6 | 3.4 | 2.3 | 2.2 | 0.2 | 0.5 |
+| T3 top | 2.8 | 2.9 | 2.8 | 2.7 | 2.0 | 2.8 | 2.7 | 2.8 | 3.6 | 2.4 | 2.4 | 0.3 | 0.6 |
+| T4 mid | 3.0 | 2.9 | 3.0 | 2.9 | 2.1 | 3.0 | 2.9 | 3.0 | 3.8 | 2.5 | 2.5 | 0.3 | 0.7 |
+| T4 top | 3.2 | 3.2 | 3.3 | 3.1 | 2.3 | 3.3 | 3.1 | 3.2 | 4.0 | 2.7 | 2.6 | 0.3 | 0.8 |
+| T5 mid | 3.4 | 3.4 | 3.4 | 3.3 | 2.4 | 3.4 | 3.2 | 3.4 | 4.1 | 2.7 | 2.7 | 0.4 | 1.0 |
+| T5 top | 3.6 | 3.5 | 3.6 | 3.5 | 2.6 | 3.6 | 3.4 | 3.6 | 4.3 | 2.8 | 2.7 | 0.4 | 1.1 |
+| T6 mid | 3.8 | 3.8 | 3.8 | 3.7 | 2.7 | 3.8 | 3.6 | 3.8 | 4.3 | 1.8 | 2.8 | 0.5 | 1.2 |
+| T6 top | 4.0 | 3.9 | 4.0 | 3.9 | 2.8 | 4.0 | 3.8 | 4.0 | 4.4 | 0.4 | 2.3 | 0.6 | 1.4 |
+| T7 65 | 4.2 | 4.1 | 4.2 | 4.1 | 2.9 | 4.2 | 4.0 | 4.2 | 4.6 | 0.0 | 2.4 | 0.6 | 1.5 |
+| T7 70 | 4.4 | 4.5 | 4.4 | 4.3 | 3.2 | 4.4 | 4.2 | 4.4 | 4.8 | 0.0 | 2.5 | 0.6 | 1.6 |
 
 #### Scout
 
@@ -241,8 +241,8 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 | T5 top | 3.6 | 4.0 | 3.6 | 3.7 | 3.6 |
 | T6 mid | 3.8 | 4.2 | 3.8 | 3.9 | 3.8 |
 | T6 top | 4.0 | 4.3 | 4.0 | 4.0 | 4.0 |
-| T7 65 | 4.2 | 4.8 | 4.2 | 4.2 | 4.2 |
-| T7 70 | 4.4 | 5.5 | 4.4 | 4.3 | 4.4 |
+| T7 65 | 4.2 | 4.7 | 4.2 | 4.2 | 4.2 |
+| T7 70 | 4.4 | 5.3 | 4.4 | 4.3 | 4.4 |
 
 #### Priest
 
@@ -262,8 +262,8 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 | T5 top | 3.6 | 4.0 | 3.6 | 3.7 | 4.6 | 3.6 | 3.7 | 3.6 |
 | T6 mid | 3.8 | 4.2 | 3.8 | 3.9 | 4.9 | 3.8 | 3.9 | 3.8 |
 | T6 top | 4.0 | 4.3 | 4.0 | 4.0 | 5.0 | 4.0 | 4.0 | 4.0 |
-| T7 65 | 4.2 | 4.8 | 4.2 | 4.2 | 5.6 | 4.2 | 4.2 | 4.2 |
-| T7 70 | 4.4 | 5.5 | 4.4 | 4.3 | 6.3 | 4.4 | 4.3 | 4.4 |
+| T7 65 | 4.2 | 4.8 | 4.2 | 4.2 | 5.4 | 4.2 | 4.2 | 4.2 |
+| T7 70 | 4.4 | 5.5 | 4.4 | 4.3 | 6.0 | 4.4 | 4.3 | 4.4 |
 <!-- end generated -->
 
 ### 1.3 What the check shows
@@ -303,7 +303,8 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   full when a fight runs the pool dry (elites, bosses, chained pulls) and not
   at all in a short fight. A fully damage-enchanted level-60 Mage gains +45 %
   in short fights and +80 % in mana-bound ones (table "A full set at level
-  60").
+  60"); at item level 65 and 70 the staff or wand adds its half of the spell
+  base (Round 46).
 - **The Scout's full damage set** gains +49 / +59 / +69 % at item level 60 /
   65 / 70 (Warrior +47 / +57 / +69 %). Its Dexterity on all eight items also
   raises Crit (§1.4), which the Warrior's Strength does not; with the Round 33
@@ -848,19 +849,24 @@ All from the shipped code (Round 33 survey, verified by hand):
 
 - **Warrior:** Strike on the weapon's swing clock (`full_punch_interval /
   (1 + attack speed)`), damage `W + Str/10`; Mighty Blow replaces a due swing
-  at 25 rage with `floor(1.5 W) + Str/10`; rage +8 per landed swing and +3 per
-  hit taken, one mob hit per second (`grug_abilities/kits.lua:357-399`,
-  `init.lua:93-111`).
+  at 25 rage with `floor(1.5 W) + Str/10`; rage `8 × the weapon's base swing
+  interval / 1 s` per landed swing (8 per second for every weapon; Round 46)
+  and +3 per hit taken, one mob hit per second (`grug_abilities/kits.lua`
+  `mighty_blow`, `init.lua` `swing_rage`).
 - **Scout:** full-draw Loose `(bow + Dex/10) × 2.25` every
   `2.5 s / (1 + the bow's own attack speed)` (`grug_abilities/scout.lua:63-87,
   335-357`).
-- **Mage:** Fireball `Bw(L) + Int/10`, 6 % of P(L) per cast, at most one cast a
+- **Spell base** `S = 0.5 Bw(L) + 0.5 round(4 + 0.35 ilvl)`: half the level
+  baseline, half the staff or wand at its own item level without the family
+  factor; `S = Bw(L)` at ilvl = L; no usable caster weapon adds 0 (Round
+  46; `grug_core/combat.lua` `spell_base`).
+- **Mage:** Fireball `S + Int/10`, 6 % of P(L) per cast, at most one cast a
   second; the fight's mana is the pool plus 60 s of in-combat regeneration
   `max(0.25 (1 + 0.15 L), 0.0025 × max mana)` (`kits.lua:545-620`,
   `init.lua:131-145`).
 - **Priest:** Heal `25 % P(L) × (1 + gear Int / 10 / B(L))` (Round 36;
   `grug_classes/stats.lua` `get_support_factor`, `kits.lua` `support_value`),
-  8 % P(L), heals crit ×2 (v2); Smite `1.5 (Bw + Int/10)`, 5 %, every 2 s
+  8 % P(L), heals crit ×2 (v2); Smite `1.5 (S + Int/10)`, 5 %, every 2 s
   (`kits.lua`, `grug_core/combat.lua` `heal_player`).
 - **Crit** `5 % + 0.05 % Dex + gear`, cap 30 %, ×2 on every swing, spell, arrow
   and heal (v2; before Round 33 0.1 % and ×1.5); **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**

@@ -65,6 +65,20 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Spell power** = Int/10, fractions included (Round 33). It is the flat
   term of damaging spells; like every damage it is floored once after the
   level scalar (Round 36: spells no longer round before it).
+- **Spell base** (Round 46 ruling 10) = `0.5 × round(4 + 0.35L) + 0.5 ×
+  round(4 + 0.35 × ilvl)`: half the level baseline weapon, half the staff or
+  wand in the Weapon slot at its own item level, without the family factor
+  (the staff's ×1.2 is melee only). An own-level staff or wand therefore
+  gives exactly the level baseline; a first-tier weapon (ilvl 1) gives 9.5
+  instead of 15 at level 30 and 14.5 instead of 25 at level 60. No usable
+  caster weapon in the slot (empty, another family, broken) adds 0: the
+  spell base is the level half alone, half of today's (the user,
+  2026-10-12; Mage and Priest start with the Bronze Staff). Fireball, Ice Nova and Smite add spell power to it
+  (`grug_core.spell_base`). The Mage's and Priest's talent damage terms
+  follow it as percentages of a **spell base hit** `B(L) × S / Bw(L)`:
+  exactly today's with an own-level staff or wand, scaled like the spell
+  with an older one, half without one (the user, 2026-10-12). Warrior and
+  Scout talent terms stay on `B(L)`; healing keeps the support factor.
 - **Support factor** (Round 36) = `1 + gear Int / 10 / B(L)` on
   pool-derived healing and absorbs, where gear Int is the Intelligence above
   the class's own level growth (`grug_classes.get_support_factor`). Gear
@@ -82,7 +96,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   settlement; a positive authored damage value settles to at least 1.
   `B(L)` is also "a base hit": talent damage terms (and Charge's 12 %) are
   percentages of it, so they keep their share at every level
-  ([skill_trees.md](skill_trees.md) §2.10, Round 35).
+  ([skill_trees.md](skill_trees.md) §2.10, Round 35); a caster's terms use
+  the spell base hit above (Round 46).
 - **Support values are already level-derived and are never level-scaled a
   second time.** Heal and Shield are each 25% of `P(L)`; each Mend tick
   is 8%. Multiply that pool share by the support factor, then pass the
@@ -388,7 +403,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   Mob/boss/guard missiles lock their valid attack target under the same initial
   range/line-of-sight rule. Smite stays immediate; area skills stay area skills.
 - Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
-  range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
+  range**, **20 m/s nominal speed**, the spell base + spell power and
   its existing talent effects. Scout arrows retain bounded draw and ammo rules:
   a full draw takes the bow's 2.5 s, shortened only by Fletching and the
   bow's own attack-speed affix (not the rest of the equipment), and Loose deals

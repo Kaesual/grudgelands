@@ -56,6 +56,14 @@ assert(loadstring(cut(combat, "(function grug_core%.scale_player_damage%(.-\nend
 local GROWTH = {warrior = {str = 3, int = 0, dex = 1}, mage = {str = 0, int = 3, dex = 1},
 	priest = {str = 1, int = 2, dex = 1}, scout = {str = 1, int = 1, dex = 2}}
 grug_core.get_player_level = function(player) return player.level end
+-- Round 46 ruling 10: the spell base reads the Weapon slot. These players
+-- carry an own-level wand, which keeps the Round 36 spell numbers.
+grug_abilities = {}
+grug_core.get_equipped_weapon = function(player)
+	return {ilvl = player.level, is_empty = function() return false end,
+		get_definition = function() return {groups = {wand = 1, grug_caster_weapon = 1}} end}
+end
+grug_items = {effective_ilvl = function(stack) return stack.ilvl end}
 grug_core.status_modifier_sum = function() return 0 end
 grug_core.absorb_modifier = function() return 0 end
 grug_core.register_on_status_modifiers_changed = function() end
