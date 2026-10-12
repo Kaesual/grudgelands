@@ -227,8 +227,9 @@ function grug_mobs.cleanup_xp_participants(self)
 end
 
 -- Settle XP once at the universal mob-death boundary. Eligible participants
--- are online and within 40 m at death; each receives their own capped/gray
--- value divided by the same eligible head count. Friendly-faction recipients
+-- are online and within 40 m at death; each receives their own value (level
+-- difference, gray rule) divided by the same eligible head count, which
+-- counts every eligible member, a gray one too. Friendly-faction recipients
 -- receive nothing from their own guards.
 local eligible_kill_callbacks = {}
 function grug_mobs.register_on_eligible_kill(callback)
@@ -260,11 +261,12 @@ function grug_mobs.award_kill_xp(self)
 		for i = 1, count do
 			local player = eligible[i]
 			local player_level = grug_xp.get_level(player)
-			-- Round 28 ruling 30: one kill equivalent M(min(mob, player + 5))
-			-- times the tier multiplier, then the gray rule and the split.
+			-- Round 46 ruling 5: the player's own-level kill equivalent times
+			-- the level-difference factor and the tier multiplier, then the
+			-- gray rule (also over a `_grug_xp_reward`) and the split.
 			-- Kill XP carries no race bonus (only source "quest" is scaled).
 			local xp = grug_mobs.kill_xp(self, player_level)
-			if (self._grug_level or 1) <= player_level - 10
+			if grug_xp.is_gray(self._grug_level or 1, player_level)
 					or grug_factions.same_faction(player, self.object) then
 				xp = 0
 			else

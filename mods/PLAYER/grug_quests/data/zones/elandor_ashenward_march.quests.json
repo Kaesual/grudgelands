@@ -231,38 +231,6 @@
       "duration_min": 10
     },
     {
-      "id": "ashenward_bounty_raiders",
-      "line": "rations",
-      "giver": "r20_anchor_031_host",
-      "turnin": "r20_anchor_031_host",
-      "min_level": 32,
-      "level": 32,
-      "requires": [
-        "ashenward_rations_01"
-      ],
-      "title": "Bounty: No Rations for the Dead",
-      "text": "Every night, Bone Levies haunt the ration road through the {name:ashfields}, which lie {zone_area:ashfields}, though not one of them has a stomach left to fill. Break six of them after dark so my drivers can deliver supper to someone who'll eat it. This bounty is repeatable, twenty minutes after you turn it in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "march_skeleton_raider"
-          ],
-          "count": 6,
-          "area": "elandor_ashenward_march/ashfields"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 8,
-      "repeatable": {
-        "cooldown": 1200
-      }
-    },
-    {
       "id": "ashenward_hedge_01",
       "line": "hedge",
       "giver": "r20_anchor_032_host",
@@ -405,38 +373,6 @@
       "duration_min": 15,
       "climax": true,
       "group": true
-    },
-    {
-      "id": "ashenward_bounty_shamblers",
-      "line": "hedge",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 38,
-      "level": 39,
-      "requires": [
-        "ashenward_hedge_02"
-      ],
-      "title": "Bounty: Let the Watch Come Home",
-      "text": "After dark, Trench Shamblers cross the {name:warfields}, which lie {zone_area:warfields}, and every returning patrol has to fight through them. Put down eight at night so I can count my soldiers through the gate instead of wondering. This bounty becomes available again twenty-five minutes after you turn it in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "unrelenting_zombie"
-          ],
-          "count": 8,
-          "area": "elandor_ashenward_march/warfields"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 10,
-      "repeatable": {
-        "cooldown": 1500
-      }
     },
     {
       "id": "accord_main_impounded",

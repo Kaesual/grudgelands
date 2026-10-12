@@ -301,38 +301,6 @@
       },
       "lesson": "Travel handoff to the faction's contested zones.",
       "duration_min": 10
-    },
-    {
-      "id": "nhal_veyr_provisions_bounty",
-      "line": "provisions",
-      "giver": "r20_undead_capital_cook",
-      "turnin": "r20_undead_capital_cook",
-      "min_level": 26,
-      "level": 26,
-      "requires": [
-        "nhal_veyr_provisions_02"
-      ],
-      "title": "Bounty: The Kitchen Keeps Going",
-      "text": "Plague Razorbacks root through the {name:gravefields}, which lies {zone_area:gravefields}, by day, and the kitchen pays for every hunt that keeps them off the mourners' paths. Kill six and come back with the news; keep whatever meat you carve, since I am paying for the quiet, not the pork. I can offer this again thirty minutes after you hand it in, by which time someone will certainly be asking about supper.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "monstrous_boar"
-          ],
-          "count": 6,
-          "area": "kragmar_nhal_veyr/gravefields"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1800
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunting contract.",
-      "duration_min": 8
     }
   ]
 }

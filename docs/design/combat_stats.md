@@ -472,9 +472,11 @@ Normal tier at level L:
 
 - **HP** = `20 + 5×L + 0.66×L²` · **Damage/hit** =
   `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **XP** = one kill
-  equivalent `M(L) = 25 + 5×L` (Round 28 ruling 30, `grug_xp.mob_xp`;
-  `progression.md` "Kill XP"). There is no other kill multiplier (the Round
-  16 ×1.5 is gone) and no race bonus on kill XP.
+  equivalent `M(L) = 25 + 5×L` for a player of the mob's own level
+  (`grug_xp.mob_xp`); other players get `M(player level)` times the
+  level-difference factor (Round 46 ruling 5, `progression.md` "Kill XP").
+  There is no other kill multiplier (the Round 16 ×1.5 is gone) and no race
+  bonus on kill XP.
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
   **boss tier (18,000 HP flat; normal damage, XP and armor; no telegraph)**.
@@ -608,17 +610,19 @@ Normal tier at level L:
   82 kill equivalents to level 10, 968 to level 60); quest rewards and
   gathering XP (ore, gem and fish) carry part of it (`progression.md` "XP
   units and level curve", "Gathering XP").
-- **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
-  XP (kills trivial-mob farming).
-- **XP level cap**: calculate each recipient's formula with effective mob
-  level `min(actual mob level, player level + 5)`. The gray test still reads
-  the actual mob level (`grug_mobs.kill_xp` in
-  `mods/ENTITIES/grug_mobs/levels.lua`, settlement `grug_mobs.award_kill_xp`
+- **Gray kills award no XP**: a mob at level ≤ killer level − 7 gives 0
+  XP (kills trivial-mob farming; Round 46 ruling 5).
+- **XP by level difference** (Round 46 ruling 5): each recipient's XP is
+  `M(player level)` times 1 − 0.15 per level the mob is below (−6 … −1) or
+  1 + 0.10 per level above (+1 … +5), at most 1.5, times the tier multiplier
+  (`grug_xp.kill_xp`, called by `grug_mobs.kill_xp` in
+  `mods/ENTITIES/grug_mobs/levels.lua`; settlement `grug_mobs.award_kill_xp`
   in `init.lua`).
 - **XP participation and split**: a participant dealt accepted damage to the
   mob or delivered effective healing to an existing participant. At death,
   only participants who are online and within 40 m count; divide the award by
-  that eligible count after calculating the cap and gray rule per recipient. A
+  that eligible count after calculating the level difference and gray rule
+  per recipient; a gray member still counts in the head count. A
   player receives no XP from a mob of their own faction
   (`grug_mobs.award_kill_xp`). Settlement occurs once at the
   shared mobs_redo death boundary regardless of whether a player, NPC, mob or
@@ -693,7 +697,7 @@ Normal tier at level L:
   designed fixed entity. Its implemented uses are the Kraken (an elite)
   at L70 and every WP13 king at L65. No second king-specific fixed-level path exists.
 
-| Mob level | HP | Dmg/hit | Kill XP (normal, solo) | Elite / rare XP |
+| Mob level | HP | Dmg/hit | Kill XP (normal, solo, own level) | Elite / rare XP |
 |-----------|----|---------|-----------------------:|----------------:|
 | 1 | 26 | 2.3 | 30 | 120 / 180 |
 | 10 | 136 | 5.5 | 75 | 300 / 450 |
@@ -1192,9 +1196,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 
 | Relation | Color | XP |
 |----------|-------|----|
-| mob ≤ L−10 | gray | none |
-| L−10 < mob ≤ L | green | normal |
-| mob > L | red | normal |
+| mob ≤ L−7 | gray | none, "(no XP)" |
+| L−7 < mob ≤ L | green | 10–100 % (−15 % per level below) |
+| mob > L | red | 110–150 % (+10 % per level above) |
 
 - **No skull tier** and no extra damage modifier for high-level mobs —
   mob damage already scales via the level formulas; the nametag carries

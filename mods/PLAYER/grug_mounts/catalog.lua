@@ -8,7 +8,7 @@ grug_mounts.FLIGHT_CEILING = grug_core.FLIGHT_CEILING
 -- 5 h of reliable net solo income at their level, the Boat like Apprentice
 -- and the Improved Boat like Journeyman Riding (economy.md section 4.2).
 -- Derived and checked by tools/r29_e4/income.py (economy plan, E4).
-grug_mounts.PRICES = {105, 700, 12900, 73800, 105, 700}
+grug_mounts.PRICES = {110, 700, 12900, 73800, 110, 700}
 
 -- The quickbar tip (Round 44, ui-crafting-rework-plan.md §3.5): the Riding
 -- Trainer's and the Shipwright's dialogue show it below the purchase answer,

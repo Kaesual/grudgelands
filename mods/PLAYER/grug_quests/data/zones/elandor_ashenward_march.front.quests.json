@@ -337,38 +337,6 @@
       "group": true
     },
     {
-      "id": "lasthedge_front_bounty",
-      "line": "front",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 47,
-      "level": 48,
-      "requires": [
-        "lasthedge_front_04"
-      ],
-      "title": "Bounty: Room for a Lookout",
-      "text": "The Crest Tigers have picked the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, for themselves, and I need it for a lookout. Bring down five there by day for a bounty. You can take the job again twenty-five minutes after each turn-in; apparently my sentries and the cats share a taste in views.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_stalking_tiger"
-          ],
-          "count": 5,
-          "area": "front_shattered_line/siegecrest"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Repeatable hunting bounty, upper Shattered Line by day.",
-      "duration_min": 10
-    },
-    {
       "id": "lasthedge_front_06",
       "line": "front",
       "giver": "r20_anchor_032_host",

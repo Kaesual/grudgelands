@@ -241,37 +241,6 @@
       "duration_min": 8
     },
     {
-      "id": "kezamba_smokehouse_bounty",
-      "line": "smokehouse",
-      "giver": "r20_troll_capital_cook",
-      "turnin": "r20_troll_capital_cook",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "kezamba_smokehouse_02"
-      ],
-      "title": "Bounty: The Smoke Must Rise",
-      "text": "The fire settles down, a fresh queue forms, and back I go to feeding Kezamba. Kill six Vine Razorbacks by day in the {name:vinewood} for this repeatable bounty. You can take it again twenty minutes after turning it in; the city's appetite has no such pause.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "monstrous_boar"
-          ],
-          "count": 6,
-          "area": "kragmar_kezamba/vinewood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
       "id": "kezamba_smokehouse_optional_revenants",
       "line": "smokehouse",
       "giver": "r20_troll_capital_cook",

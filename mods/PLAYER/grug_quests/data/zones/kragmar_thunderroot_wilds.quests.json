@@ -133,38 +133,6 @@
       "duration_min": 10
     },
     {
-      "id": "thunderroot_storm_bounty",
-      "line": "storm",
-      "giver": "r20_anchor_048_host",
-      "turnin": "r20_anchor_048_host",
-      "min_level": 34,
-      "level": 36,
-      "requires": [
-        "thunderroot_storm_04"
-      ],
-      "title": "Bounty: The Chorus Returns",
-      "text": "The Thunder Apes have claimed the day's chorus in the {name:deepwood}; even the birds sound offended. Kill six there by day and return for your reward. Wait twenty minutes after collecting before taking this bounty again; that gives me time to remember what a bird sounds like.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_ape"
-          ],
-          "count": 6,
-          "area": "kragmar_thunderroot_wilds/deepwood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
-    },
-    {
       "id": "thunderroot_rainchar_01",
       "line": "rainchar",
       "giver": "r20_anchor_048_host",

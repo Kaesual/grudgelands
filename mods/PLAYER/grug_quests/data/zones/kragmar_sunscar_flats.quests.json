@@ -198,38 +198,6 @@
       "duration_min": 6
     },
     {
-      "id": "sunscar_bounty",
-      "line": "hunt",
-      "giver": "r14_orc_elder",
-      "turnin": "r14_orc_elder",
-      "min_level": 9,
-      "level": 9,
-      "requires": [
-        "sunscar_hunt_05"
-      ],
-      "title": "Bounty: A Thirst for Trouble",
-      "text": "Every Water Thief who wanders into the {name:thieves_camp} thinks the last lot merely lacked talent. Kill six and return for the clan's bounty. You can take the job again twenty minutes after collecting your pay; apparently the supply of fools needs less time.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "confused_bandit"
-          ],
-          "count": 6,
-          "area": "kragmar_sunscar_flats/thieves_camp"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
-    },
-    {
       "id": "sunscar_tools_01",
       "line": "tools",
       "giver": "r14_orc_elder",

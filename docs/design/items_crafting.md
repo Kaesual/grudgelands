@@ -585,9 +585,9 @@ shovels need a character level by material tier; the tier is the tool's own
 
 **Gathering XP** (Round 24 ruling 28, 2026-09-29). Every natural ore or gem
 node a player digs and every fish caught gives XP (formula and table in
-[progression.md](progression.md) "Gathering XP"): 0.10 kill equivalents per ore
-node, 0.20 per gem node (the six depth-tiered species), 0.33 per fish, of
-`M(min(reference level, player level + 5))` (Round 28 ruling 32) with reference level 10 × harvest
+[progression.md](progression.md) "Gathering XP"): 0.05 kill equivalents per ore
+node, 0.10 per gem node (the six depth-tiered species), 0.33 per fish, of
+`M(min(reference level, player level))` (Round 46 ruling 7) with reference level 10 × harvest
 tier (T1 10 … T6 60) or 10 × the water's zone band. The harvest callback of the
 node_dig wrapper settles it, so only a successful player dig of a natural
 resource node pays; explosions and mobs never dig through it, and ore nodes
