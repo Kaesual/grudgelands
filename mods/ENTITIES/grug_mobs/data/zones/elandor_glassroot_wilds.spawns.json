@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "fringe", "name": "Glassroot Fringe",
             "day": [{"role": "watchful_stag", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "streams", "name": "Glassroot Streams",
             "day": [{"role": "coiled_serpent", "weight": 1}],
             "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
@@ -23,7 +23,7 @@
         "kinds": {
           "open": {"id": "tangle", "name": "Glassroot Tangle",
             "day": [{"role": "territorial_ape", "weight": 3}, {"role": "territorial_bear", "weight": 1}],
-            "night": [{"role": "stalking_panther", "weight": 3}, {"role": "canopy_web_spider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "stalking_panther", "weight": 3}, {"role": "canopy_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "rootbanks", "name": "Glassroot Rootbanks",
             "day": [{"role": "coiled_serpent", "weight": 1}],
             "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
@@ -37,13 +37,13 @@
         "kinds": {
           "open": {"id": "canopy", "name": "Glassroot Canopy",
             "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
-            "night": [{"role": "canopy_web_spider", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal"},
+            "night": [{"role": "canopy_web_spider", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "far_shore", "name": "Glassroot Far Shore",
             "day": [{"role": "breakwater_crab", "weight": 1}],
             "night": "open", "density": "dense"},
           "bank": {"id": "serpent_pools", "name": "Glassroot Serpent Pools",
             "day": [{"role": "coiled_serpent", "weight": 1}],
-            "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse", "quest_target": true},
           "swamp": {"id": "rotfen", "name": "Glassroot Rotfen",
             "day": "open",
             "night": [{"role": "battle_wisp", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "sparse"}

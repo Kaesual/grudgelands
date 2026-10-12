@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "blightfields", "name": "Nhal Veyr Blightfields",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "debtbound_husk", "weight": 1}],
-            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "sumpbanks", "name": "Nhal Veyr Sumpbanks",
             "day": [{"role": "moss_antler_stag", "weight": 1}],
             "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
@@ -23,7 +23,7 @@
         "kinds": {
           "open": {"id": "gravefields", "name": "Nhal Veyr Gravefields",
             "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "mournbanks", "name": "Nhal Veyr Mournbanks",
             "day": [{"role": "moss_antler_stag", "weight": 1}],
             "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
@@ -37,7 +37,7 @@
         "kinds": {
           "open": {"id": "tombfields", "name": "Nhal Veyr Tombfields",
             "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "stubborn_husk", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "deadwater", "name": "Nhal Veyr Deadwater",
             "day": [{"role": "moss_antler_stag", "weight": 1}],
             "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "sparse"},

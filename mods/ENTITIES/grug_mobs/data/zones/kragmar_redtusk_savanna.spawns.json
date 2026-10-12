@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "grasslands", "name": "Redtusk Grasslands",
             "day": [{"role": "watchful_zebra", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
-            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "quarrelsome_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "quarrelsome_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Redtusk Strand",
             "day": [{"role": "tidepool_crab", "weight": 1}],
             "night": [{"role": "muttering_husk", "weight": 1}], "density": "dense"},
@@ -26,7 +26,7 @@
         "kinds": {
           "open": {"id": "tallgrass", "name": "Redtusk Tallgrass",
             "day": [{"role": "watchful_zebra", "weight": 3}, {"role": "bristling_boar", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "shallows", "name": "Redtusk Shallows",
             "day": [{"role": "tidepool_crab", "weight": 3}, {"role": "reefclaw_crab", "weight": 1}],
             "night": [{"role": "parched_husk", "weight": 3}, {"role": "muttering_husk", "weight": 1}], "density": "dense"},
@@ -43,7 +43,7 @@
         "kinds": {
           "open": {"id": "borderveld", "name": "Redtusk Borderveld",
             "day": [{"role": "bristling_boar", "weight": 3}, {"role": "watchful_zebra", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "parched_husk", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "parched_husk", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "mudholes", "name": "Redtusk Mudholes",
             "day": [{"role": "watchful_zebra", "weight": 1}],
             "night": [{"role": "parched_husk", "weight": 1}], "density": "sparse"},

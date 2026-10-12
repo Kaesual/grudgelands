@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "badlands", "name": "Bannerbreak Badlands",
             "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "marching_husk", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "swamp": {"id": "sinkmire", "name": "Bannerbreak Sinkmire",
             "day": [{"role": "watchful_carrion_crow", "weight": 1}],
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
@@ -23,7 +23,7 @@
         "kinds": {
           "open": {"id": "warplains", "name": "Bannerbreak Warplains",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "warpack_hyena", "weight": 1}],
-            "night": [{"role": "warpack_hyena", "weight": 3}, {"role": "marching_husk", "weight": 1}], "density": "normal"},
+            "night": [{"role": "warpack_hyena", "weight": 3}, {"role": "marching_husk", "weight": 1}], "density": "normal", "quest_target": true},
           "swamp": {"id": "crowmire", "name": "Bannerbreak Crowmire",
             "day": [{"role": "watchful_carrion_crow", "weight": 1}],
             "night": [{"role": "watchful_carrion_crow", "weight": 1}], "density": "sparse"},
@@ -37,7 +37,7 @@
         "kinds": {
           "open": {"id": "redcut_flats", "name": "Bannerbreak Redcut Flats",
             "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "unrelenting_husk", "weight": 1}],
-            "night": [{"role": "unrelenting_husk", "weight": 3}, {"role": "warpack_hyena", "weight": 1}], "density": "normal"},
+            "night": [{"role": "unrelenting_husk", "weight": 3}, {"role": "warpack_hyena", "weight": 1}], "density": "normal", "quest_target": true},
           "swamp": {"id": "carrion_fen", "name": "Bannerbreak Carrion Fen",
             "day": [{"role": "watchful_carrion_crow", "weight": 1}],
             "night": [{"role": "unrelenting_husk", "weight": 1}], "density": "sparse"},

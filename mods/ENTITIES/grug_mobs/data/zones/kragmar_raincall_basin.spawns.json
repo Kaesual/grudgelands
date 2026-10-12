@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "rainwood", "name": "Raincall Rainwood",
             "day": [{"role": "reed_tapir", "weight": 3}, {"role": "young_boar", "weight": 1}],
-            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "quarrelsome_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "quarrelsome_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "reedbanks", "name": "Raincall Reedbanks",
             "day": [{"role": "reed_tapir", "weight": 1}],
             "night": [{"role": "reed_fang_viper", "weight": 1}], "density": "sparse"},
@@ -23,7 +23,7 @@
         "kinds": {
           "open": {"id": "cloudwood", "name": "Raincall Cloudwood",
             "day": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "bristling_boar", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "tidepools", "name": "Raincall Tidepools",
             "day": [{"role": "tidepool_crab", "weight": 3}, {"role": "reefclaw_crab", "weight": 1}],
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "dense"},

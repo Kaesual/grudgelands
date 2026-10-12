@@ -13,7 +13,7 @@
             "night": [{"role": "last_watch_zombie", "weight": 3}, {"role": "crown_frost_stray", "weight": 1}], "density": "dense"},
           "highland": {"id": "spires", "name": "Wyrmglass Spires",
             "day": [{"role": "crown_crag_eagle", "weight": 3}, {"role": "last_pay_archer", "weight": 1}],
-            "night": [{"role": "rime_pelt_leopard", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal"}
+            "night": [{"role": "rime_pelt_leopard", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal", "quest_target": true}
         }
       }
     ],

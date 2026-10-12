@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "timberline", "name": "Hearthpine Timberline",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {
@@ -20,7 +20,7 @@
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"},
           "shore": {"id": "shingle", "name": "Hearthpine Shingle",
             "day": [{"role": "quiet_shore_crab", "weight": 1}],
-            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "forest": {"id": "pinewood", "name": "Hearthpine Pinewood",
             "day": [{"role": "small_boar", "weight": 1}],
             "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
@@ -34,10 +34,10 @@
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
           "shore": {"id": "rockpools", "name": "Hearthpine Rockpools",
             "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
-            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "forest": {"id": "high_pines", "name": "Hearthpine High Pines",
             "day": [{"role": "young_ibex", "weight": 3}, {"role": "small_fox", "weight": 1}],
-            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal"}
+            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {

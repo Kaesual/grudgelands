@@ -18,7 +18,7 @@
             "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "sparse"},
           "forest": {"id": "bonewood", "name": "Ossuary Bonewood",
             "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
-            "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "cairn_ridge", "name": "Ossuary Cairn Ridge",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
             "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
@@ -29,7 +29,7 @@
         "kinds": {
           "open": {"id": "barrowlands", "name": "Ossuary Barrowlands",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "territorial_bear", "weight": 1}],
-            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "saltbones", "name": "Ossuary Saltbones",
             "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
             "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "dense"},
@@ -38,7 +38,7 @@
             "night": [{"role": "grave_web_spider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "webwood", "name": "Ossuary Webwood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
-            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "barrow_ridge", "name": "Ossuary Barrow Ridge",
             "day": [{"role": "marrow_weevil", "weight": 1}],
             "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
@@ -58,7 +58,7 @@
             "night": [{"role": "grave_web_spider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "deepwood", "name": "Ossuary Deepwood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
-            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crypt_heights", "name": "Ossuary Crypt Heights",
             "day": [{"role": "marrow_weevil", "weight": 1}],
             "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}

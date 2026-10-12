@@ -18,7 +18,7 @@
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "bonewood", "name": "Blackwind Bonewood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
-            "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "barrow_ridge", "name": "Blackwind Barrow Ridge",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
@@ -41,7 +41,7 @@
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "webwood", "name": "Blackwind Webwood",
             "day": [{"role": "marrow_weevil", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crags", "name": "Blackwind Crags",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
@@ -61,7 +61,7 @@
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "hollowwood", "name": "Blackwind Hollowwood",
             "day": [{"role": "marrow_weevil", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "summits", "name": "Blackwind Summits",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}

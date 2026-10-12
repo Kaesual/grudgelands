@@ -15,7 +15,7 @@
             "night": [{"role": "marching_zombie", "weight": 1}], "density": "sparse"},
           "forest": {"id": "cinderwood", "name": "Ashenward Cinderwood",
             "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
-            "night": [{"role": "rootbound_treant", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+            "night": [{"role": "rootbound_treant", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {
@@ -29,7 +29,7 @@
             "night": [{"role": "battle_wisp", "weight": 1}], "density": "sparse"},
           "forest": {"id": "hedgewood", "name": "Ashenward Hedgewood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal"},
+            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crow_ridges", "name": "Ashenward Crow Ridges",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
             "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"}

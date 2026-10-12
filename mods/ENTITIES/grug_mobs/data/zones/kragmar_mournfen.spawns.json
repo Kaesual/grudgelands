@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "blightfields", "name": "Mournfen Blightfields",
             "day": [{"role": "young_boar", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}],
-            "night": [{"role": "granary_rat", "weight": 3}, {"role": "quarrelsome_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "granary_rat", "weight": 3}, {"role": "quarrelsome_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Mournfen Strand",
             "day": [{"role": "tidepool_crab", "weight": 1}],
             "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"},
@@ -26,13 +26,13 @@
         "kinds": {
           "open": {"id": "barrowfields", "name": "Mournfen Barrowfields",
             "day": [{"role": "bristling_boar", "weight": 3}, {"role": "muttering_husk", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "reedbanks", "name": "Mournfen Reedbanks",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "wispfen", "name": "Mournfen Wispfen",
             "day": "open",
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse", "quest_target": true},
           "highland": {"id": "barrows", "name": "Mournfen Barrows",
             "day": "open",
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"}
@@ -43,7 +43,7 @@
         "kinds": {
           "open": {"id": "gravemoor", "name": "Mournfen Gravemoor",
             "day": [{"role": "bristling_boar", "weight": 3}, {"role": "parched_husk", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "muttering_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "muttering_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "drowned_banks", "name": "Mournfen Drowned Banks",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
