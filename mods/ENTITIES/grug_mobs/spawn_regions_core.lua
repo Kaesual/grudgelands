@@ -1381,71 +1381,86 @@ function M.build(zone_id, q, recipe)
 		-- `steep`: the flattest block that meets every rule but the slope,
 		-- taken only when no block meets them all (a belt on steep ground)
 		-- and only up to HIGH_SLOPE (steeper ground is no camp site).
-		local best, best_score, best_slope, steep, steep_slope
-		for _, c in ipairs(order) do
-			if belts[c.belt] == camp.belt and not c.camp then
-				local ok, slope_sum, road = true, 0, huge
-				local has_high = false
-				for a = -1, 1 do
-					for b = -1, 1 do
-						local n = cells[key(c.i + a, c.j + b)]
-						if not n or n.camp or n.prot > 0 or n.drift > 0 then
-							ok = false
-						else
-							slope_sum = slope_sum + n.slope
-							if n.road < road then road = n.road end
-							if n.type == "highland" then has_high = true end
-						end
-					end
-				end
-				if ok and road >= M.CAMP_ROAD_MIN then
-					for _, other in ipairs(camps) do
-						if math.max(math.abs(other.cell.i - c.i), math.abs(other.cell.j - c.j)) <
-								camp.apart then
-							ok = false
-						end
-					end
-					-- The block takes the camp's belt: the one-belt step holds.
-					local inside = function(nb)
-						return math.max(math.abs(nb.i - c.i), math.abs(nb.j - c.j)) <= 1
-					end
+		-- `road_min`: CAMP_ROAD_MIN; when no block meets it, the search runs
+		-- once more with 0 (a narrow belt crossed by roads, e.g. between a
+		-- capital city and its zone border: the camp keeps out of the drift
+		-- band and protected ground, never out of its belt; a warning).
+		local function search(road_min)
+			local best, best_score, best_slope, steep, steep_slope
+			for _, c in ipairs(order) do
+				if belts[c.belt] == camp.belt and not c.camp then
+					local ok, slope_sum, road = true, 0, huge
+					local has_high = false
 					for a = -1, 1 do
 						for b = -1, 1 do
-							if ok and not fits(cells[key(c.i + a, c.j + b)], c.belt, inside) then
+							local n = cells[key(c.i + a, c.j + b)]
+							if not n or n.camp or n.prot > 0 or n.drift > 0 then
+								ok = false
+							else
+								slope_sum = slope_sum + n.slope
+								if n.road < road then road = n.road end
+								if n.type == "highland" then has_high = true end
+							end
+						end
+					end
+					if ok and road >= road_min then
+						for _, other in ipairs(camps) do
+							if math.max(math.abs(other.cell.i - c.i), math.abs(other.cell.j - c.j)) <
+									camp.apart then
 								ok = false
 							end
 						end
-					end
-				end
-				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 > M.CAMP_SLOPE then
-					if not steep_slope or slope_sum < steep_slope then
-						steep, steep_slope = c, slope_sum
-					end
-				elseif ok and road >= M.CAMP_ROAD_MIN then
-					-- Forest edge: forest within two cells, but not forest all
-					-- round.
-					local forest, total = 0, 0
-					for a = -2, 2 do
-						for b = -2, 2 do
-							local n = cells[key(c.i + a, c.j + b)]
-							if n then
-								total = total + 1
-								if n.forest then forest = forest + 1 end
+						-- The block takes the camp's belt: the one-belt step holds.
+						local inside = function(nb)
+							return math.max(math.abs(nb.i - c.i), math.abs(nb.j - c.j)) <= 1
+						end
+						for a = -1, 1 do
+							for b = -1, 1 do
+								if ok and not fits(cells[key(c.i + a, c.j + b)], c.belt, inside) then
+									ok = false
+								end
 							end
 						end
 					end
-					local edge = forest > 0 and forest < total
-					local score = (edge and 2 or 0) + (has_high and 1 or 0) +
-						0.5 * (1 - math.min(1, slope_sum / 9)) +
-						0.25 * math.min(road, cap) / cap
-					if not best_score or score > best_score + 1e-9 then
-						best, best_score, best_slope = c, score, slope_sum / 9
+					if ok and road >= road_min and slope_sum / 9 > M.CAMP_SLOPE then
+						if not steep_slope or slope_sum < steep_slope then
+							steep, steep_slope = c, slope_sum
+						end
+					elseif ok and road >= road_min then
+						-- Forest edge: forest within two cells, but not forest all
+						-- round.
+						local forest, total = 0, 0
+						for a = -2, 2 do
+							for b = -2, 2 do
+								local n = cells[key(c.i + a, c.j + b)]
+								if n then
+									total = total + 1
+									if n.forest then forest = forest + 1 end
+								end
+							end
+						end
+						local edge = forest > 0 and forest < total
+						local score = (edge and 2 or 0) + (has_high and 1 or 0) +
+							0.5 * (1 - math.min(1, slope_sum / 9)) +
+							0.25 * math.min(road, cap) / cap
+						if not best_score or score > best_score + 1e-9 then
+							best, best_score, best_slope = c, score, slope_sum / 9
+						end
 					end
 				end
 			end
+			if not best and steep and steep_slope / 9 <= M.HIGH_SLOPE then
+				best, best_score, best_slope = steep, 0, steep_slope / 9
+			end
+			return best, best_score, best_slope
 		end
-		if not best and steep and steep_slope / 9 <= M.HIGH_SLOPE then
-			best, best_score, best_slope = steep, 0, steep_slope / 9
+		local best, best_score, best_slope = search(M.CAMP_ROAD_MIN)
+		if not best then
+			best, best_score, best_slope = search(0)
+			if best then
+				warnings[#warnings + 1] = ("camp %s stands within %d nodes of a road: no block " ..
+					"of belt %s met every rule"):format(camp.id, M.CAMP_ROAD_MIN, camp.belt.id)
+			end
 		end
 		if best then
 			local unit = new_camp(camp, best, best.x, best.z)
