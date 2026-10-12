@@ -831,4 +831,28 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `bands.lua` is the record of how each placed anchor's `band` was taken
   from its pre-Round-46 position (it needs those coordinates and no longer
   runs). The Round 31 pick tools (`r31_m/candidates.lua`, `pick.lua`) are
-  retired; `r31_m/spacing_check.lua` checks the placed PvP POIs per seed.
+  retired; `r31_m/spacing_check.lua` checks the placed PvP POIs per seed;
+  `r46_or` the ore, gem and coal census: `run.sh OUT_DIR [TIMEOUT]` (one
+  engine boot with the disposable probe `grug_probe_or`, `SEED=`) counts
+  every resource per tier band in one 80 × 80 chunk column from y +127 to
+  −1312 against the band's host rock; `evidence/` holds seed 12345's
+  census (the rule and its pins are checked by `r29_mres` and `r24_mining`);
+  `r46_xp` kill XP by level difference (`portable_test.lua`: the factor
+  at every d from −8 to +8 and the XP table, the target frame's gradient
+  and gray for every mob that pays the viewer no XP, no repeatable quest
+  left and every hub line with a quest, saved state with removed quest ids,
+  the "(R)" legend); `r46_cb` rage by weapon speed and the spell base
+  (`portable_test.lua`: rage per swing by the base interval for every
+  family and the hand, the swing path's grants, the Strike tooltip, the
+  spell base with an own-level, a first-tier and no caster weapon, the
+  spell sites and tooltips, the caster talent amounts); `r46_lt` loot,
+  coin bags and cloth (`portable_test.lua`: no sell-only drop in any row,
+  the tier cloth rows, the spider band 5, the coin bag's band amounts and
+  roll, the automatic deposit on pickup and its fallbacks;
+  `names_proposal.json` the two new spider names); `r46_rp` repair only in
+  towns (`portable_test.lua`: the trainer as the only repair provider, the
+  mender's map marker and icon without a tooltip, the Help line, no
+  furnace repair path); `r46_art` GPT-6 Astra's repair marker proposals
+  (`paint_art.py`, `--check` verifies every PNG; `repair/` with every take
+  and the user's pick A1c; the offline `review.html`), provenance for the
+  user's pick, not a fixture.

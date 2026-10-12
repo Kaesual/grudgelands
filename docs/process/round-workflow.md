@@ -87,6 +87,7 @@ per session). Cross-provider CLI mechanics:
 | `python3 tools/r28_design/validate.py --game` | — | when quest, mob or catalogue data changed | — | yes |
 | `tools/r29_e4/income.py --check` | — | when loot, repair, quest copper or a price changed | — | yes |
 | The topic checks AGENTS.md names (`r28_regions/run.sh` after a recipe change, `r33_ds/build_doc.py --check`, `r38_names/check_rules.py --shipped` and `r38_names/guarantee.py --check` (names; Round 38, replacing the retired `r28_names/build_review.py --check`), `r31_b/gen_enchant_masks.py --check`, `r33_c3/gen_cloak_model.py --check`, `web_data/export.lua --check`, `web_data/model/build_glb.py --check` and `check_glb.py` (web data; Round 39)) | — | when that topic changed | — | — |
+| `python3 tools/r451_mc/gen_bat_ride_mesh.py --check` (the ridden bats' mesh against its source; 0.45.1) | — | when the bat models or the tool changed | — | yes |
 | One smoke boot of the final branch (`tools/luanti_headless.sh`) | — | yes | — | one boot of main |
 | Seed fleet (below) | — | `quick` for world-generation changes | — | `full` when owed |
 | Before/after numbers on the same seed, area and probe | — | when the lane touches a hot path | — | — |
@@ -141,8 +142,9 @@ fixtures of every declared step stay in `tools/run_fixtures.sh` for good
 the end, once the mapgen is finished
 ([interpreter strategy](../technical/luanti-lua.md#interpreter-and-test-strategy)).
 
-**Seed fleet** (user decisions 2026-10-04 and 2026-10-05; POIs stay at fixed
-anchors, so robustness across seeds comes from testing).
+**Seed fleet** (user decisions 2026-10-04 and 2026-10-05; since Round 46
+most POIs are placed per seed, and robustness across seeds still comes from
+testing).
 `tools/seed_fleet/run.sh` builds the real mapgen runtime (up to the R7
 anchor roster) and plans and writes five chunks per seed for the fixed seeds
 of `tools/seed_fleet/seeds.txt`, 8 in parallel under idle scheduling, never
