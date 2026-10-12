@@ -230,9 +230,9 @@ and `on_joinplayer`):
   chunk above fails `ServerMap::initBlockMake`, so its requests are cancelled
   without mapgen; at y = 31000 the whole active-block sphere lies there, and
   the point is inside the object limit. The client treats the unloaded blocks
-  as solid (no fall). Only the view cone may request a few chunks below
-  y = 30927; they are pure air (the air-chunk fast path below), and because
-  every waiting player shares the point they are generated once.
+  as solid (no fall). The block sender stalls at the player's own block,
+  whose chunk can never be generated, so nothing below y = 30927 is requested
+  either (0 chunks measured, `tools/r46_wt` engine run).
 - **Join timing:** player meta is loaded before any callback, the map reset's
   applied value is fixed at mod load, and `on_newplayer` runs before the
   engine sends the first position, so a new client never sees the engine's
@@ -241,8 +241,8 @@ and `on_joinplayer`):
   movement check like after any teleport.
 - **Not used:** `static_spawnpoint` (builtin's spawn hook would also move
   every respawn there), a point anywhere else (its active blocks would be
-  generated), spreading players over x/z (one shared point generates its air
-  chunks once).
+  generated), spreading players over x/z (one shared point: any chunk a
+  waiting player could ever cause would be generated once).
 - **Accepted:** waiting players see each other at the point, and the
   atmosphere mood (resolved by x/z) is the Battlegrounds'. PvP location
   sampling and the location HUD skip creation stasis.

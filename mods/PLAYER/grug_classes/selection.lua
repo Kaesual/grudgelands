@@ -156,9 +156,9 @@ end
 -- The waiting point (Round 46): above the outermost chunk the engine can
 -- generate (mapgen_limit 31007 and chunksize 5 end it at y = 30927), so no
 -- map is generated around a player held there, and inside the object limit.
--- The client treats the unloaded blocks as solid. All waiting players share
--- it, so the few air chunks the view cone may still request below 30927 are
--- generated once.
+-- The client treats the unloaded blocks as solid. The block sender stalls at
+-- the player's own block, whose chunk can never be generated, so nothing
+-- below 30927 is requested either (0 chunks measured, tools/r46_wt).
 local WAITING_POINT = {x = 0, y = 31000, z = 0}
 
 -- At the start of a session: a player whose wait ends in a teleport waits at
