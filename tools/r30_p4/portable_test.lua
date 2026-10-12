@@ -544,9 +544,10 @@ do
 		is_player = function() return true end,
 		hud_add = function() return 7 end,
 		hud_change = function(_, _, key, value) frame_hud[key] = value end}
-	_G.grug_mobs = {tag_text = function(m) return "mob " .. m.name end}
-	-- Round 46: the con colour asks grug_xp for the gray line.
-	_G.grug_xp = {get_level = function() return 5 end, is_gray = function() return false end}
+	-- Round 46: the frame's gray asks the payout's predicate (any XP here).
+	_G.grug_mobs = {tag_text = function(m) return "mob " .. m.name end,
+		player_kill_xp = function() return 1 end}
+	_G.grug_xp = {get_level = function() return 5 end}
 	_G.grug_factions = {get_faction = function() return "accord" end,
 		display_name = function() return "The Accord" end}
 	local players = {viewer}

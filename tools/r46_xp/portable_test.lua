@@ -6,9 +6,11 @@
 --      per kill at player levels 10, 30 and 60 for d = -7, -3, 0, +3, +6,
 --      normal and elite (printed for the lane report), and the factor at
 --      every d from -8 to +8;
---   B. the target frame's con colour: gray with "(no XP)" from 7 below,
---      then a gradient per level, green at 6 below, yellow at the own
---      level, red from 5 above;
+--   B. the target frame's con colour: gray with "(no XP)" for every mob
+--      whose kill pays the viewer nothing (7 below, a critter, a
+--      `_grug_xp_reward` of 0, the viewer's own faction; the settlement's
+--      own predicate grug_mobs.player_kill_xp), else a gradient per level,
+--      green at 6 below, yellow at the own level, red from 5 above;
 --   C. the shipped quest files hold no repeatable quest, and every hub
 --      line of a giver still has a quest;
 --   D. saved quest state holding removed quest ids (an active and tracked
@@ -112,10 +114,17 @@ do
 		is_player = function(obj) return type(obj) == "table" and obj.is_player ~= nil and
 			obj:is_player() end,
 	}
+	-- The real grug_xp and levels.lua of A: the frame asks the payout's own
+	-- predicate, grug_mobs.player_kill_xp.
 	local level = 30
-	grug_xp = {get_level = function() return level end, is_gray = X.is_gray, GRAY_GAP = X.GRAY_GAP}
-	grug_mobs = {tag_text = function(mob) return "Boar L" .. mob._grug_level end}
-	grug_factions = {}
+	X.get_level = function() return level end
+	grug_xp = X
+	grug_mobs.tag_text = function(mob) return "Boar L" .. mob._grug_level end
+	grug_factions = {same_faction = function(_, object)
+		return object ~= nil and object.faction == "accord"
+	end}
+	grug_mobs.register_level_cfg("test:kraken", {_grug_xp_reward = 0})
+	grug_mobs.register_level_cfg("test:fixed", {_grug_xp_reward = 77})
 	local looking_at
 	grug_abilities = {crosshair = {recent_aim = function()
 		return {ray = {range = 30, reason = "object", distance = 5,
@@ -131,8 +140,10 @@ do
 	}
 	core.get_connected_players = function() return {viewer} end
 	for _, fn in ipairs(joins) do fn(viewer) end
-	local function frame_of(mob_level)
-		local mob = {_grug_level = mob_level, health = 10}
+	local function frame_of(mob_level, opts)
+		opts = opts or {}
+		local mob = {name = opts.name or "test:mob", _grug_level = mob_level,
+			_grug_tier = opts.tier or "normal", health = 10, object = {faction = opts.faction}}
 		looking_at = {is_player = function() return false end,
 			get_luaentity = function() return mob end}
 		for _, fn in ipairs(steps) do fn(0.5) end
@@ -156,6 +167,30 @@ do
 	text, color = frame_of(1)
 	eq(color, 0xffff55, "B a level-1 player on a level-1 mob: yellow")
 	level = 30
+	-- Every other zero-XP case is gray with "(no XP)" too (the user, Round 46),
+	-- read from the predicate the kill settlement pays by.
+	local function no_xp(label, mob_level, opts)
+		text, color = frame_of(mob_level, opts)
+		eq(color, 0xaaaaaa, "B " .. label .. ": gray")
+		eq(text, "Boar L" .. mob_level .. " (no XP)", "B " .. label .. ": (no XP)")
+	end
+	no_xp("a critter (tier xp 0)", 30, {tier = "critter"})
+	no_xp("a _grug_xp_reward of 0 (the Kraken)", 35, {name = "test:kraken", tier = "elite"})
+	no_xp("a mob of the viewer's own faction", 31, {faction = "accord"})
+	no_xp("an own-faction elite guard above the viewer", 40, {faction = "accord", tier = "elite"})
+	text, color = frame_of(31, {faction = "throng"})
+	eq(color, 0xffdd55, "B an enemy-faction mob keeps its gradient colour")
+	text, color = frame_of(30, {name = "test:fixed"})
+	eq(text, "Boar L30", "B a positive _grug_xp_reward pays, so no (no XP)")
+	no_xp("a positive _grug_xp_reward 7 below (the gray line covers overrides)", 23,
+		{name = "test:fixed"})
+	-- The predicate is what the settlement pays before the split.
+	local viewer_mob = {name = "test:mob", _grug_level = 33, _grug_tier = "normal", object = {}}
+	eq(grug_mobs.player_kill_xp(viewer_mob, viewer, 30), 227.5, "B the predicate: 175 x 1.3 at +3 (floored at the split)")
+	eq(grug_mobs.player_kill_xp(viewer_mob, viewer, 40), 0, "B ...and 0 at 7 below")
+	local init_src = read(repo .. "/mods/ENTITIES/grug_mobs/init.lua")
+	check(init_src:find("math.floor(grug_mobs.player_kill_xp(self, player, player_level) / count)", 1, true)
+		~= nil, "B the kill settlement pays the same predicate")
 	core, grug_abilities, grug_factions = nil, nil, nil
 end
 

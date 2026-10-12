@@ -536,6 +536,21 @@ function grug_mobs.kill_xp(self, player_level)
 	return t.xp_flat or grug_xp.kill_xp(level, player_level, t.xp)
 end
 
+-- The one no-XP predicate (Round 46): this player's kill XP for this mob
+-- before the split, 0 for every case that pays nothing -- the gray line
+-- (grug_xp.is_gray, also over a `_grug_xp_reward`), a mob of the player's own
+-- faction, a critter (tier xp 0) and a `_grug_xp_reward` of 0 (the Kraken,
+-- the reed angelfish). The kill settlement (init.lua award_kill_xp) pays it
+-- and the target frame shows a mob gray with "(no XP)" exactly when it is 0.
+function grug_mobs.player_kill_xp(self, player, player_level)
+	player_level = player_level or grug_xp.get_level(player)
+	if grug_xp.is_gray(self._grug_level or 1, player_level)
+			or grug_factions.same_faction(player, self.object) then
+		return 0
+	end
+	return grug_mobs.kill_xp(self, player_level)
+end
+
 -- Promote/demote a live mob to a registered tier: applies the
 -- multipliers, scale, tint and nametag. Idempotent, and safe to call before
 -- the mob's first tick (the tier is stored and picked up by ensure_init).
