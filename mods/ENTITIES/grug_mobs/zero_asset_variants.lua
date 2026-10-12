@@ -256,9 +256,9 @@ grug_mobs.register_mob("grug_mobs:spiderling", spiderling)
 mobs:spawn({
 	name = "grug_mobs:spiderling",
 	nodes = {"default:stone", "group:grug_stratum"},
-	max_light = 5,
+	max_light = 7,
 	interval = 20, chance = 2400, active_object_count = 3,
-	min_height = -100, max_height = -40,
+	min_height = -100, max_height = -1,
 })
 
 -- Blood Bat: hostile cave-bat tint and swarm dive.
@@ -303,7 +303,7 @@ grug_mobs.register_mob("grug_mobs:blood_bat", blood_bat)
 mobs:spawn({
 	name = "grug_mobs:blood_bat",
 	nodes = {"default:stone", "group:grug_stratum"},
-	max_light = 5,
+	max_light = 7,
 	interval = 20, chance = 2200, active_object_count = 4,
 	min_height = -300, max_height = -101,
 })
@@ -342,7 +342,7 @@ grug_mobs.register_mob("grug_mobs:stone_mite", stone_mite)
 mobs:spawn({
 	name = "grug_mobs:stone_mite",
 	nodes = {"group:grug_stratum"},
-	max_light = 5,
+	max_light = 7,
 	interval = 20, chance = 2000, active_object_count = 5,
 	min_height = -31000, max_height = -700,
 })

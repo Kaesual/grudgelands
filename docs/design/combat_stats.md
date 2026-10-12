@@ -498,7 +498,9 @@ Normal tier at level L:
   No mob uses the boss tier before
   the round-6 king/dragon content. The single implementation table and formula
   are the `TIERS` table and `grug_mobs.stats_for` in
-  `mods/ENTITIES/grug_mobs/levels.lua`.
+  `mods/ENTITIES/grug_mobs/levels.lua`. An underground row's spawn turns
+  elite at **4 %** from level 5, never in a start footprint (Round 46,
+  [biomes_mobs.md](biomes_mobs.md) "Underground spawns").
 - **Three mob classes** (decided 2026-08-08, full rule in
   `biomes_mobs.md` §3.0): **critters** (small animals — always level 1,
   always **1 HP**, **0 XP**, **food-only drops**, **no fall damage**,

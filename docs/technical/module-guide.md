@@ -151,7 +151,9 @@ tools](#player-meta-read-by-external-tools).
   engine grid routes by `tools/r45_rg/gen_basic_recipes.lua` (`--check`;
   input `tools/r45_rg/corpus_base.lua` from `dump_corpus.sh`), plus the
   stairs and walls families made per material by
-  `register_basic_catalog`'s loop; edit it as data. Gear recipes are
+  `register_basic_catalog`'s loop; a later change is a row of
+  `tools/r45_rg/edits.lua` (a count or an added row, with its round), which
+  the generator applies and the fixture accepts. Gear recipes are
   registered by their family's owner (`grug_professions/base_recipes.lua`
   through `grug_professions.family_owner`, trinkets in
   `grug_artisans/goldsmith.lua`). Nothing matches a craft grid and nothing
@@ -1688,8 +1690,8 @@ tools](#player-meta-read-by-external-tools).
   **Landmine since WP25: `default:stone` no longer exists below −100.**
   Every node whitelist, every `wherein`/`place_on` and every mob spawn
   `nodes` list that means "underground rock" has to carry
-  `group:grug_stratum` as well, or it silently narrows to the −40…−100
-  sliver. WP25 repaired exactly that on four cave spawn rows (zombie,
+  `group:grug_stratum` as well, or it silently narrows to the −1…−100
+  sliver (−40…−100 until Round 46). WP25 repaired exactly that on four cave spawn rows (zombie,
   giant spider, stone + mesa golem); `default:stone` itself carries
   `grug_stratum = 1`, so the group alone is the complete predicate.
   **Two Lua environments, and the split is the rule, not a detail**: a pass
@@ -1804,8 +1806,11 @@ tools](#player-meta-read-by-external-tools).
   mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`
   and `grug_mobs/spawn_policy.lua` do the gating on top, against `grug_zones`.
   `register_spawn_role` also owns each family's `clock`; its spawn wrapper
-  stamps the mobs_redo light/day convention and the night `aoc`, while rows
-  wholly below y = -40 remain light-only. Never hand-maintain those fields on
+  stamps the mobs_redo light/day convention and the night `aoc`, while
+  underground rows (top at or below `grug_mobs.UNDERGROUND_TOP` = −1, Round
+  46; −40 before) remain light-only and get the underground `on_spawn`
+  (`underground_spawned`: the sight and the elite roll, `skip_elite` for a
+  caller with its own spawn rule). Never hand-maintain those fields on
   a new surface row. Since Round 30 (P2) a surface row no zone keeps
   registers no ABM at all (`spawn_policy.lua` `spawn_row_kept`; the spawn
   regions own every zone's surface), and every remaining row goes through

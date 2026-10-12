@@ -304,7 +304,8 @@ end
 do
 	local abms, loaded = fake_engine()
 	local kept_ask = {}
-	_G.grug_mobs = {spawn_row_kept = function(name, max_y)
+	-- UNDERGROUND_TOP: spawn_policy.lua's underground boundary (Round 46).
+	_G.grug_mobs = {UNDERGROUND_TOP = -1, spawn_row_kept = function(name, max_y)
 		kept_ask[#kept_ask + 1] = name
 		return name ~= "retired"
 	end}
@@ -449,6 +450,9 @@ do
 	end
 	local G = load_policy()
 	check(G.spawn_row_kept("grug_mobs:cave_bat", -40), "E underground kept")
+	-- Round 46: the underground begins just below the surface.
+	check(G.UNDERGROUND_TOP == -1 and G.spawn_row_kept("grug_mobs:wolf", -1) and
+		not G.spawn_row_kept("grug_mobs:wolf", 0), "E underground from a top of -1")
 	check(G.spawn_row_kept("grug_mobs:kraken", 4), "E Kraken kept")
 	check(G.spawn_row_kept("grug_mobs:reed_angelfish", 600), "E Angelfish kept")
 	check(G.spawn_row_kept("grug_mobs:rift_spawn", 600), "E Rift Spawn surface kept")

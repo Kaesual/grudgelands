@@ -621,7 +621,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the engine's grid routes, the registry, the gear families and the vendor
   payouts (`corpus_base.lua` is the base commit's dump, the generator's input);
   `gen_basic_recipes.lua` converts it into `grug_jobs/basic_recipes.lua`
-  (`--check`, `--report`); `portable_test.lua` loads the real registry, the
+  (`--check`, `--report`), applying the later edits of `edits.lua` (Round 46:
+  10 torches per coal or charcoal); `portable_test.lua` loads the real registry, the
   Basic catalog and the profession catalogs under a stub engine: the record
   shape, queries and refusals, the conversion of every grid route, gear in
   its profession, durations, stations, the craft list at a join and the
@@ -788,4 +789,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   loads the real `grug_jobs` registry and jobs under a stub engine), the
   plain furnace foods and the four ingredient swaps; `bench_count.lua [REPO]
   [ROUNDS]` (LuaJIT, also `-joff`) times that count per page view on the
-  review's worst case and a realistic inventory.
+  review's worst case and a realistic inventory;
+  `r46_uw` underground spawns and torches
+  (`portable_test.lua` on the real spawn roster of
+  `r24_density_xp/roster.lua`: every underground row from y −1, light 7 or
+  any, its `on_spawn`; the policy at the boundary, the start footprint and
+  the elite floor; the sight and the 4 % elite roll of
+  `underground_spawned`; `pending_level`; the torch rows). `evidence/` holds
+  the depth probe's before/after logs (`r24_density_xp/run.sh` with
+  `POINTS=depth`: three points at y −30, −300 and −900 under Hearthpine and
+  a torch room).

@@ -589,11 +589,11 @@ class Model:
         # Underground casts.
         under = re.findall(r'\["grug_mobs:(\w+)"\]\s*=\s*true',
                            balanced(ptext, ptext.index("{", ptext.index("local UNDERGROUND_MOBS"))))
-        self.source("underground", "underground cast (closed list; rows below y = -40)",
+        self.source("underground", "underground cast (closed list; rows whose top is y -1 or lower, Round 46)",
                     r.cite(policy, r"local UNDERGROUND_MOBS"))
         for entity in under:
             bf = self.base_facts(entity)
-            cave = [row for row in rows.get(entity, []) if row[1] <= -40]
+            cave = [row for row in rows.get(entity, []) if row[1] <= -1]
             if not cave:
                 raise SystemExit("inventory: no cave spawn row for %s" % entity)
             top = max(row[1] for row in cave)

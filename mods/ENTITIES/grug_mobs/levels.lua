@@ -386,6 +386,18 @@ local function resolve_level(self, cfg, tier)
 	return math.max(1, math.min(cap, math.round(level)))
 end
 
+-- The level a mob has, or the one its first tick will give it, without
+-- writing it: for a decision taken at spawn time, before ensure_init (the
+-- underground elite roll, spawn_policy.lua). nil for a mob without a level
+-- config.
+function grug_mobs.pending_level(ent)
+	local cfg = ent and level_cfg[ent.name]
+	if not cfg then
+		return nil
+	end
+	return ent._grug_level or resolve_level(ent, cfg, ent._grug_tier or cfg.tier)
+end
+
 -- Called from grug_mobs.register_mob for every mob def. Also normalizes the
 -- def's armor so a mob is never armor-less during the single step between
 -- activation and its first do_custom tick (mobs_redo builds the armor

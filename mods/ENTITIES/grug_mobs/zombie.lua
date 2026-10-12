@@ -7,7 +7,7 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	clock = {settled = "night", war = "night", blight = "any"},
 	type = "monster",
 	-- "underground" is the T7 addition: §3.1's cave paragraph reuses Zombie,
-	-- Giant Spider and Stone Golem below y -40 with the depth axis supplying
+	-- Giant Spider and Stone Golem below y -1 with the depth axis supplying
 	-- the level. Surface and cave habitat remain controlled by the accepted
 	-- node/biome and height whitelists; no retired surface ring is recreated.
 	-- HP/damage/XP and armor come from the level engine (levels.lua); the
@@ -156,15 +156,17 @@ mobs:spawn({
 -- and one at y -1200 at L60 — the same engine-owned path every surface mob
 -- uses, no _grug_fixed_level, no per-row tuning.
 --
--- HEIGHTS: min_height -31000 / max_height -40 with the ZONE gate doing the
--- real work. The two are consistent, but read api.lua before touching them:
--- mobs_redo calls mobs:spawn_abm_check with the ABM's NODE position
--- (api.lua:4322-4510) and only THEN moves the spawn position one node up
--- (api.lua:4390-4448), and the min/max height comparison happens on that raised
--- position (api.lua:4390-4448). So max_height -40 admits node y <= -41, and
--- spawn_policy.lua returns "underground" for exactly y < -40 — every node
+-- HEIGHTS: min_height -31000 / max_height -1 (grug_mobs.UNDERGROUND_TOP,
+-- Round 46; -40 before) with the ZONE gate doing the real work. The two are
+-- consistent, but read api.lua before touching them: mobs_redo calls
+-- mobs:spawn_abm_check with the ABM's NODE position (api.lua:4322-4510) and
+-- only THEN moves the spawn position one node up (api.lua:4390-4448), and the
+-- min/max height comparison happens on that raised position
+-- (api.lua:4390-4448). So max_height -1 admits node y <= -2, and
+-- spawn_policy.lua returns "underground" for exactly y < -1 — every node
 -- this row can match is inside the zone, and nothing is silently thrown away
--- at the boundary.
+-- at the boundary. The row's on_spawn gets the underground sight and elite
+-- roll (spawn_policy.lua prepare_spawn_row, underground_spawned).
 --
 -- WHY THE CAVE ROWS MATTER: every surface row in the roster carries
 -- min_height 0 (§4), so before T7 the whole underground was empty. These
@@ -194,7 +196,9 @@ mobs:spawn({
 	-- performance argument above holds unchanged: the group is still only
 	-- matched where the implicit {"air"} neighbour makes it a cave wall.
 	nodes = {"default:stone", "group:grug_stratum"},
-	max_light = 5,
+	-- Round 46 ruling 15: every underground row spawns up to light 7 (5
+	-- before), so a torch (light 12) keeps only about five nodes clear.
+	max_light = 7,
 	-- No day_toggle: it is always night down there, and the light gate above
 	-- already does the work. Setting day_toggle = false would additionally
 	-- forbid cave spawns during the surface day, which is not the intent.
@@ -202,5 +206,5 @@ mobs:spawn({
 	chance = 1600,
 	active_object_count = 4,
 	min_height = -31000,
-	max_height = -40,
+	max_height = -1,
 })

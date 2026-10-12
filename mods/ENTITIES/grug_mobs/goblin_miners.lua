@@ -60,7 +60,7 @@ for _, row in ipairs({
 }) do
 	mobs:spawn({
 		name = "grug_mobs:" .. row.name,
-		nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
+		nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
 		interval = 20, chance = row.chance, active_object_count = row.aoc,
 		min_height = -300, max_height = -100,
 	})
