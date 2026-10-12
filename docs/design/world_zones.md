@@ -1344,8 +1344,9 @@ code, not by this document.
 
   The quarter-density floor retains older inputs at depth; T1 Iron keeps its
   former density as a bootstrap exception. Gold peaks at T4 and remains
-  useful at T5/T6, matching Goldsmith demand. T3 is the Steel band (Iron Bar
-  + mined Coal), so Iron and Coal there carry the T2 supply (Round 46). A
+  useful at T5/T6, matching Goldsmith demand. T3 is the Steel band (Iron
+  Bar and mined Coal), so Iron and Coal there carry the T2 supply (Round
+  46). A
   next-tier ingredient peaks in the band where its consumers mine: Iron in
   T2, Silver in T4, Emberglass in T5, Abyssal Crystal in T6. All resources
   together are about 5.4 % of the host rock in T1, 3.7 % in T2 and T3, 4.1 %
