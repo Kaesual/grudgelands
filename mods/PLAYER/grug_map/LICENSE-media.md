@@ -88,4 +88,4 @@ provenance are in `tools/r46_art/README.md`.
 
 | Files (final paths relative to this mod) | Author | Source / tool disclosure | License |
 |------|--------|--------------------------|---------|
-| `textures/grug_map_repair.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; a 16×16 hammer over an anvil, copied from `tools/r46_art/repair/A1a/grug_map_repair.png`; `tools/r46_art/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_map_repair.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; a 16×16 hammer over an anvil, copied from `tools/r46_art/repair/A1c/grug_map_repair.png`; `tools/r46_art/paint_art.py` (Python/Pillow) | CC0-1.0 |
