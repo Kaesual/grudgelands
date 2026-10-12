@@ -479,11 +479,19 @@ local function count(text, needle)
 end
 
 
--- The labels of a build's ingredient rows, in order, and their icons.
+-- The labels of a build's ingredient rows, in order, and their icons. A
+-- group of which two or more kinds are carried shows a dropdown instead of
+-- its name since Round 46 (lane ID): its label reads "dropdown:<items>".
 local function ingredient_labels(fs)
 	local out = {}
-	for icon, text in fs:gmatch("item_image%[5%.6,[%d%.]+;0%.4,0%.4;([^%]]*)%]label%[6%.1,[%d%.]+;(.-[^\\])%]") do
-		out[#out + 1] = {icon = icon, label = text}
+	for icon, kind, text in fs:gmatch("item_image%[5%.6,[%d%.]+;0%.4,0%.4;([^%]]*)%]" ..
+			"(%a+)%[6%.1,[%d%.]+;(.-[^\\])%]") do
+		if kind == "label" then
+			out[#out + 1] = {icon = icon, label = text}
+		elseif kind == "dropdown" then
+			out[#out + 1] = {icon = icon, label = "dropdown:" ..
+				(text:match("^[%d%.]+,[%d%.]+;[%w_]+;(.-);%d+;true$") or text)}
+		end
 	end
 	return out
 end
