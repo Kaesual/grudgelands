@@ -123,11 +123,11 @@ local skeleton = {
 		punch_start = 70, punch_end = 90, punch_speed = 15,
 	},
 
-	-- Skeleton table (§3.1): bone 1/1, linen scrap 1/2, arrows 1/3.
+	-- Skeleton table (§3.1): bone 1/1, linen scrap 1/2. The sell-only arrow
+	-- bundle no longer drops (Round 46 ruling 12; coin bags, aggro.lua).
 	drops = {
 		{name = "grug_mobs:bone", chance = 1, min = 1, max = 1},
 		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
-		{name = "grug_mobs:arrow", chance = 3, min = 1, max = 1},
 	},
 
 	water_damage = 0,

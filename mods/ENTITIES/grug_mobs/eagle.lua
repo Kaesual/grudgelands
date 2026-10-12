@@ -93,16 +93,10 @@ local function eagle_def(description, texture)
 		-- Bird-of-prey table (§3.2): shared verbatim between Crag Eagle and
 		-- Vulture.
 		--
-		-- PLAIN FEATHER moved here in WP36 (§3.0/§6): it used to fall off the
-		-- Gull and the Parrot, i.e. off two 1 HP critters, which made arrow
-		-- fletching a walk rather than a fight. The critters are food-only
-		-- now and this family is the material's only source — one on each
-		-- continent (Crag Eagle / Vulture), so §6's "every row has at least
-		-- one source per continent" still holds. Chance 2 keeps it clearly
-		-- below the sharp feather, which stays the family's signature drop.
+		-- The plain feather (sell-only since no recipe uses it) no longer drops
+		-- (Round 46 ruling 12; coin bags, aggro.lua). The bowyer still sells it.
 		drops = {
 			{name = "grug_mobs:sharp_feather", chance = 1, min = 1, max = 2},
-			{name = "grug_mobs:feather", chance = 2, min = 1, max = 2},
 			{name = "mobs:meat_raw", chance = 2, min = 1, max = 1},
 		},
 

@@ -147,8 +147,8 @@ local function golem_def(description, texture)
 		},
 
 		-- Golem table (§3.2): shared verbatim between Stone and Mesa Golem.
+		-- The sell-only stone core no longer drops (Round 46 ruling 12).
 		drops = {
-			{name = "grug_mobs:stone_core", chance = 1, min = 1, max = 1},
 			{name = "default:iron_lump", chance = 2, min = 1, max = 1},
 			{name = "grug_materials:rough_citrine", chance = 8, min = 1, max = 1},
 		},

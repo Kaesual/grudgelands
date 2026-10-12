@@ -91,11 +91,11 @@ local crocodile = {
 		punch_start = 100, punch_end = 200,
 	},
 
-	-- §3.1 swamp row: scaled hide 1/1 [leather], meat, croc tooth 1/3.
+	-- §3.1 swamp row: scaled hide 1/1 [leather], meat. The sell-only croc
+	-- tooth no longer drops (Round 46 ruling 12; coin bags, aggro.lua).
 	drops = {
 		{name = "grug_mobs:scaled_hide", chance = 1, min = 1, max = 1},
 		{name = "mobs:meat_raw", chance = 1, min = 1, max = 1},
-		{name = "grug_mobs:croc_tooth", chance = 3, min = 1, max = 1},
 	},
 
 	water_damage = 0,

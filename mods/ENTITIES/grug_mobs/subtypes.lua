@@ -365,8 +365,10 @@ function grug_mobs.level_band(level)
 end
 
 -- The drop rows of this mob from its family table, or nil when the family
--- has no table or the table has no (or an empty) row list for the mob's band: the caller then
--- keeps the definition's static drops (aggro.lua _item_drop_filter). A leader
+-- has no table or the table has no row list for the mob's band: the caller then
+-- keeps the definition's static drops (aggro.lua _item_drop_filter). An empty
+-- row list is a band that drops nothing (Round 46: the sell-only rows went,
+-- e.g. the venomous family's band 1), never the static fallback. A leader
 -- (sub-type `leader`, or `_grug_leader` on a placed leader) adds the
 -- family's leader_bonus. The rows are fresh tables every call.
 function grug_mobs.band_drop_rows(self)
@@ -374,7 +376,7 @@ function grug_mobs.band_drop_rows(self)
 	local sub = SUBTYPES[role]
 	local entry = DROPS[sub and sub.drops or role]
 	local rows = entry and entry.bands[grug_mobs.level_band(self._grug_level)]
-	if not rows or #rows == 0 then
+	if not rows then
 		return nil
 	end
 	local out = {}

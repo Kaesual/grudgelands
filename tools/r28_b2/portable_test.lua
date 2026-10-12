@@ -531,7 +531,10 @@ check(z5 == "grug_materials:bronze_bar/20/1-1 grug_mobs:zombie_flesh/1/1-1"
 check(rows_of(drops_at("grug_mobs:zombie", 15)):find("grug_materials:iron_bar/10/1-1", 1, true),
 	"zombie band 2 without rows: static drops (iron) as fallback")
 check(rows_of(drops_at("grug_mobs:large_rat", 2)) == "grug_mobs:rat_tail/1/1-1", "large rat band 1")
-check(same(drops_at("grug_mobs:large_rat", 15), rat.drops), "empty band list: the base's static drops")
+-- Round 46 (lane LT): an empty band list drops nothing (the sell-only rows
+-- went, e.g. the venomous family's band 1); it was the static fallback.
+local rat15 = drops_at("grug_mobs:large_rat", 15)
+check(type(rat15) == "table" and #rat15 == 0, "empty band list: no drops, no static fallback")
 check(rows_of(drops_at("grug_mobs:rat_king_odo", 10)) ==
 	"grug_mobs:rat_fur_patch/1/2-3 grug_mobs:rat_tail/1/1-1", "leader sub-type gets the bonus")
 check(rows_of(drops_at("grug_mobs:large_rat", 2, {_grug_leader = true})) ==
