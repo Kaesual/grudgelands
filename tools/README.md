@@ -820,4 +820,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   curve); `probe_physical.sh` with `grug_probe_r46_dp` the engine probe
   that the cave flyers are physical; `evidence/` the depth probe's
   before/after logs (`r24_density_xp/run.sh` with `POINTS=pulse`: rooms at
-  y −400, −1000 and −1500 with stand-in players).
+  y −400, −1000 and −1500 with stand-in players);
+  `r46_pl` seed-dependent POI placement: `portable_test.lua` (seed 42's
+  real world: determinism and the placement text, the fixed/placed split,
+  every rule on every placed anchor, the last resort, an underground
+  reservation row, the zones session's anchors and the layout cache's
+  placement section); `overview.lua REPO SEED PREFIX` and `render.py PREFIX
+  OUT_DIR NAME` draw the whole map with zones, water, roads and every anchor
+  by kind plus three 2x crops and a facts file (the user's review page);
+  `bands.lua` is the record of how each placed anchor's `band` was taken
+  from its pre-Round-46 position (it needs those coordinates and no longer
+  runs). The Round 31 pick tools (`r31_m/candidates.lua`, `pick.lua`) are
+  retired; `r31_m/spacing_check.lua` checks the placed PvP POIs per seed.

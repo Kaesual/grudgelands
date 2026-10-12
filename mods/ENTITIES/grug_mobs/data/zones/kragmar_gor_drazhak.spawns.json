@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "steppe", "name": "Gor Drazhak Steppe",
             "day": [{"role": "watchful_zebra", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
-            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "waterholes", "name": "Gor Drazhak Waterholes",
             "day": [{"role": "watchful_zebra", "weight": 1}],
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
@@ -23,7 +23,7 @@
         "kinds": {
           "open": {"id": "badlands", "name": "Gor Drazhak Badlands",
             "day": [{"role": "dustpack_hyena", "weight": 3}, {"role": "watchful_zebra", "weight": 1}],
-            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "debtbound_husk", "weight": 1}], "density": "normal"},
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "debtbound_husk", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "wallows", "name": "Gor Drazhak Wallows",
             "day": [{"role": "watchful_zebra", "weight": 1}],
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},

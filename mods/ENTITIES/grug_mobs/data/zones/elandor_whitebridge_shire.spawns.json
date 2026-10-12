@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "meadows", "name": "Whitebridge Meadows",
             "day": [{"role": "furrow_boar", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal"},
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Whitebridge Strand",
             "day": [{"role": "bank_crab", "weight": 1}],
             "night": "open", "density": "dense"},
@@ -18,7 +18,7 @@
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "forest": {"id": "oakwood", "name": "Whitebridge Oakwood",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
-            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal"}
+            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {
@@ -32,10 +32,10 @@
             "night": "open", "density": "dense"},
           "bank": {"id": "willowbanks", "name": "Whitebridge Willowbanks",
             "day": "open",
-            "night": [{"role": "briarpack_wolf", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "briarpack_wolf", "weight": 1}], "density": "sparse", "quest_target": true},
           "forest": {"id": "briarwood", "name": "Whitebridge Briarwood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal"}
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {

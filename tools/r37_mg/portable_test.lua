@@ -172,8 +172,9 @@ do
 	-- inside plan_slice and the traceback names that line
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local A = dofile(wp40 .. "/world_assembly.lua")(wp40, R.sha)
-	local W = A.world("1", {water = R.main.water_layout_text(),
-		road = R.main.road_layout_text(), capital = R.main.capital_layout_text()})
+	local W = A.world("1", {placement = R.main.placement_layout_text(),
+		water = R.main.water_layout_text(), road = R.main.road_layout_text(),
+		capital = R.main.capital_layout_text()})
 	W.capitals()
 	local BAD_X, BAD_Z = 0, 1850
 	local zones_factory = function(deps)
@@ -196,7 +197,7 @@ do
 		adapter_factory = dofile(wp40 .. "/map_adapter.lua"),
 		manifest_module = dofile(wp40 .. "/mapgen_manifest.lua"),
 		allocator_factory = dofile(wp40 .. "/counting_allocator.lua"),
-		source = A.source, schemas = A.schemas, canonical = A.canonical,
+		source = W.place(), schemas = A.schemas, canonical = A.canonical,
 		deterministic = A.deterministic, index128 = A.index128,
 		horizontal_factory = W.horizontal_factory, height_factory = W.height_factory,
 		terrain_field = A.terrain_field, raw_sha256 = R.sha})

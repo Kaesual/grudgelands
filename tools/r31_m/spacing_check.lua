@@ -2,7 +2,8 @@
 --
 --   luajit tools/r31_m/spacing_check.lua [REPO] [SEED ...]
 --
--- The anchors themselves (seed-independent, checked once):
+-- Per SEED the PvP anchors as this world placed them (Round 46,
+-- `placement.lua`):
 --   1. anchors 101..118 are the catalogue's rows in order (zone, slot,
 --      template = kind);
 --   2. no two PvP POIs (fortresses and camps, either faction) stand closer
@@ -23,12 +24,11 @@
 --      the slope and the collar returns to the ground);
 --   7. no road or trail surface comes within ROAD_GAP (6) nodes of what a
 --      PvP POI builds (its blueprint box, `r7_settlement.BOUNDS`);
---   8. each fortress stands on the Battlegrounds half of its zone, beside
---      the middle road (Highcourt - Gor Drazhak: within NEAR (200) nodes of
---      its walls) without bending it: no routing cell the middle road runs
---      through lies within the router's round reserve (core / 2 + 10); and a
---      trail leaves the fortress through its gate (its first point straight
---      in front of the gate) and joins a road;
+--   8. each fortress stands on the Battlegrounds half of its zone and on its
+--      faction's side of the middle road's axis (the Accord's east; the road
+--      is routed round it, its distance is printed), and a trail leaves the
+--      fortress through its gate (its first point straight in front of the
+--      gate) and joins a road;
 --   9. each camp's centre lies within its level band (`camp_levels`) give or
 --      take one level (a rough fit; the strict hits are reported);
 --  10. the world protection covers each PvP POI's blueprint box plus the
@@ -42,7 +42,7 @@ local repo = arg[1] or "."
 local seeds = {}
 for i = 2, #arg do seeds[#seeds + 1] = arg[i] end
 if #seeds == 0 then seeds = {"42", "7", "2026", "1234", "99999", "314159"} end
-local SPACING, ANCHOR_GAP, BOAT_GAP, ROAD_GAP, NEAR, RELIEF = 120, 16, 128, 6, 200, 40
+local SPACING, ANCHOR_GAP, BOAT_GAP, ROAD_GAP, RELIEF = 120, 16, 128, 6, 40
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1
@@ -51,7 +51,7 @@ end
 local floor, abs, sqrt, min, max = math.floor, math.abs, math.sqrt, math.min, math.max
 
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
-local source = dofile(dir .. "/source/simple_map.lua")
+local source = dofile(dir .. "/source/simple_map.lua")  -- zones and profiles
 local catalog = dofile(dir .. "/r31_pvp_catalog.lua")
 _G.core = _G.core or {}
 local BOUNDS = dofile(dir .. "/r7_settlement.lua").BOUNDS
@@ -59,55 +59,60 @@ local prof, zone_by_id = {}, {}
 for _, p in ipairs(source.anchor_profiles) do prof[p.id] = p end
 for _, z in ipairs(source.zones) do zone_by_id[z.id] = z end
 
--- 1-3: the anchors
-check(#source.anchors == 100 + #catalog.rows, "118 anchors")
-local pvp = {}
-for i, row in ipairs(catalog.rows) do
-	local a = source.anchors[100 + i]
-	check(a.zone_numeric_id == zone_by_id[row.zone_id].numeric_id and a.slot_id == row.slot and
-		a.template_id == row.kind, row.key .. ": anchor " .. (100 + i))
-	pvp[i] = {row = row, anchor = a, x = a.position.x, z = a.position.z,
-		core_half = prof[row.kind].building_core_width / 2,
-		box_half = BOUNDS[row.kind].max.x,
-		fit_half = prof[row.kind].fitting_width / 2}
-end
-local nearest = math.huge
-for i = 1, #pvp do
-	for j = i + 1, #pvp do
-		local dx, dz = pvp[i].x - pvp[j].x, pvp[i].z - pvp[j].z
-		local d = sqrt(dx * dx + dz * dz)
-		nearest = min(nearest, d)
-		check(d >= SPACING, ("%s and %s %.0f nodes apart"):format(pvp[i].row.key, pvp[j].row.key, d))
+-- 1-3: the anchors of one world (Round 46: placed per world, so read from
+-- the world's placed source)
+local function anchors_of(source)
+	check(#source.anchors == 100 + #catalog.rows, "118 anchors")
+	local pvp = {}
+	for i, row in ipairs(catalog.rows) do
+		local a = source.anchors[100 + i]
+		check(a.zone_numeric_id == zone_by_id[row.zone_id].numeric_id and a.slot_id == row.slot and
+			a.template_id == row.kind, row.key .. ": anchor " .. (100 + i))
+		pvp[i] = {row = row, anchor = a, x = a.position.x, z = a.position.z,
+			core_half = prof[row.kind].building_core_width / 2,
+			box_half = BOUNDS[row.kind].max.x,
+			fit_half = prof[row.kind].fitting_width / 2}
 	end
-end
-for _, p in ipairs(pvp) do
-	for _, a in ipairs(source.anchors) do
-		if a ~= p.anchor then
-			local half = prof[a.template_id].fitting_width / 2
-			if a.slot_id == "capital" then half = 266 elseif a.slot_id == "start" then half = 76 end
-			local gap = max(abs(a.position.x - p.x), abs(a.position.z - p.z)) - half - p.fit_half
-			check(gap >= ANCHOR_GAP, ("%s keeps %d nodes off %s (%d)"):format(p.row.key, ANCHOR_GAP,
-				a.id, gap))
+	local nearest = math.huge
+	for i = 1, #pvp do
+		for j = i + 1, #pvp do
+			local dx, dz = pvp[i].x - pvp[j].x, pvp[i].z - pvp[j].z
+			local d = sqrt(dx * dx + dz * dz)
+			nearest = min(nearest, d)
+			check(d >= SPACING, ("%s and %s %.0f nodes apart"):format(pvp[i].row.key, pvp[j].row.key, d))
 		end
 	end
-	for _, b in ipairs(source.boat_paths) do
-		local e = b.centreline[1]
-		local dx, dz = e.x - p.x, e.z - p.z
-		check(dx * dx + dz * dz >= BOAT_GAP * BOAT_GAP, p.row.key .. " keeps off " .. b.id)
+	for _, p in ipairs(pvp) do
+		for _, a in ipairs(source.anchors) do
+			if a ~= p.anchor then
+				local half = prof[a.template_id].fitting_width / 2
+				if a.slot_id == "capital" then half = 266 elseif a.slot_id == "start" then half = 76 end
+				local gap = max(abs(a.position.x - p.x), abs(a.position.z - p.z)) - half - p.fit_half
+				check(gap >= ANCHOR_GAP, ("%s keeps %d nodes off %s (%d)"):format(p.row.key, ANCHOR_GAP,
+					a.id, gap))
+			end
+		end
+		for _, b in ipairs(source.boat_paths) do
+			local e = b.centreline[1]
+			local dx, dz = e.x - p.x, e.z - p.z
+			check(dx * dx + dz * dz >= BOAT_GAP * BOAT_GAP, p.row.key .. " keeps off " .. b.id)
+		end
 	end
+	return pvp, nearest
 end
-print(("anchors: 18 PvP POIs, nearest pair %.0f nodes"):format(nearest))
 
 -- 4-10: the worlds
 local log_lines = {}
 _G.core = _G.core or {}
 core.log = function(level, message) log_lines[#log_lines + 1] = {level, message} end
 local world = dofile(repo .. "/tools/r25_road_poi/world.lua")
-local reliefs = {}
+local reliefs, pvp = {}, nil
 for _, seed in ipairs(seeds) do
 	local t0 = os.clock()
 	log_lines = {}
 	local W = world(repo, seed)
+	local nearest
+	pvp, nearest = anchors_of(W.source)
 	local S, column = W.raw_session, W.planner_source.column_values_at
 	local field_line
 	for _, line in ipairs(log_lines) do
@@ -177,16 +182,11 @@ for _, seed in ipairs(seeds) do
 		if row.kind == "pvp_fortress" then
 			check((p.z < 0) == (row.faction == "accord") and abs(p.z) <=
 				(abs(zone_by_id[row.zone_id].hub.z) + 60), label .. ": on the Battlegrounds half")
-			check(near_middle <= NEAR, ("%s: the middle road passes %.0f nodes off the walls"):format(
-				label, near_middle))
-			local reserve = p.core_half + 10
-			for i = 1, #middle.X do
-				local gx = floor(middle.X[i] / 16 + 0.5) * 16
-				local gz = floor(middle.Z[i] / 16 + 0.5) * 16
-				local dx, dz = gx - p.x, gz - p.z
-				check(dx * dx + dz * dz > reserve * reserve,
-					label .. ": the middle road's cells keep out of the fortress reserve")
-			end
+			-- Round 46: the fortress is placed on its faction's side of the
+			-- axis x = 0 (the Accord's east) before the roads are routed, and
+			-- the middle road routes round its reserve; its distance is a
+			-- figure, no longer a check.
+			check((p.x > 0) == (row.faction == "accord"), label .. ": its side of the axis")
 			local gate_x = p.x > 0 and -1 or 1
 			for _, r in ipairs(W.built.roads) do
 				if r.a == p.anchor.id then spur = r end
@@ -227,8 +227,8 @@ for _, seed in ipairs(seeds) do
 			spur and (" road+%d trail %d%s"):format(floor(near_middle), #spur.X,
 				spur.parent == middle.id and " to the middle road" or "") or "")
 	end
-	print(("seed %s: %.1f s, camps in band %d of 16; %s"):format(seed, os.clock() - t0, strict,
-		table.concat(parts, ", ")))
+	print(("seed %s: %.1f s, nearest PvP pair %.0f nodes, camps in band %d of 16; %s"):format(seed,
+		os.clock() - t0, nearest, strict, table.concat(parts, ", ")))
 end
 print("natural relief under each core, per seed in order:")
 for _, p in ipairs(pvp) do

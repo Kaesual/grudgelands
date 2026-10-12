@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "canopy", "name": "Whispering Canopy",
             "day": [{"role": "reed_tapir", "weight": 3}, {"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal"},
+            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Whispering Strand",
             "day": [{"role": "bank_crab", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "dense"},
@@ -26,10 +26,10 @@
         "kinds": {
           "open": {"id": "thicket", "name": "Whispering Thicket",
             "day": [{"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal"},
+            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "mudbanks", "name": "Whispering Mudbanks",
             "day": [{"role": "reed_crocodile", "weight": 1}],
-            "night": [{"role": "reed_crocodile", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "reed_crocodile", "weight": 1}], "density": "sparse", "quest_target": true},
           "swamp": {"id": "hushmire", "name": "Whispering Hushmire",
             "day": [{"role": "sullen_bog_ooze", "weight": 1}],
             "night": [{"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"}

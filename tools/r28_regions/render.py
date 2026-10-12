@@ -428,6 +428,8 @@ def write_stats(doc, path):
         lines.append("- PROBLEM: %s" % p)
     for w in st.get("warnings") or []:
         lines.append("- WARNING: %s" % w)
+    for n in st.get("notes") or []:
+        lines.append("- Note: %s" % n)
     lines.append("")
     lines.append("## Directions")
     lines.append("")

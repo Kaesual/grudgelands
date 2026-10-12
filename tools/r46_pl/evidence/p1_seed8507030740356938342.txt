@@ -1,0 +1,12 @@
+ACTION[Main]: [grug_mapgen] POI placement: 2 rows relaxed a rule (anchor:step anchor_103:2, anchor_026:2), placed in 0.53 s
+ACTION[Main]: [grug_mapgen] world layouts: cache miss (no cache file), built in runtime construction 20.9 s (placement 0.5 s, water 0.7 s, roads 4.6 s, capitals 7.3 s), stored grug_world_layouts.txt (465798 bytes)
+ACTION[Server]: [r46_pl_probe] first boot: placement saved
+ACTION[Emerge-0]: [r46_pl_probe] pvp_fortress_accord (pvp_fortress) at 288,56,-512 emerged in 8.5 s
+ACTION[Emerge-0]: [r46_pl_probe] copperfell_village (village) at -2240,64,-2240 emerged in 13.3 s
+ACTION[Emerge-0]: [r46_pl_probe] RESULT PASS checks=26 failures=0
+ACTION[Main]: [grug_mapgen] POI placement: 2 rows relaxed a rule (anchor:step anchor_103:2, anchor_026:2), placed in 0.53 s
+ACTION[Main]: [grug_mapgen] world layouts: cache hit (grug_world_layouts.txt), runtime construction 4.8 s; skipped layout builds of the first start: placement 0.5 s, water 0.7 s, roads 4.6 s, capitals 7.3 s (its construction took 20.9 s); the placement, capital and road figures above are from that start
+ACTION[Server]: [r46_pl_probe] second boot: placement equal to the first boot's
+ACTION[Emerge-0]: [r46_pl_probe] pvp_fortress_accord (pvp_fortress) at 288,56,-512 emerged in 2.9 s
+ACTION[Emerge-0]: [r46_pl_probe] copperfell_village (village) at -2240,64,-2240 emerged in 0.6 s
+ACTION[Emerge-0]: [r46_pl_probe] RESULT PASS checks=27 failures=0

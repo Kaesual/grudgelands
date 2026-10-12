@@ -33,7 +33,7 @@ return function(repo, seed)
 
 	-- The world session, overlaid as grug_zones publishes it.
 	local raw_session, planner_source = W.zones().new_with_planner_source_runtime(seed, 1)
-	local roster = dofile(dir .. "/r7_anchor_roster.lua")(A.source, raw_session,
+	local roster = dofile(dir .. "/r7_anchor_roster.lua")(W.source, raw_session,
 		planner_source, sha)
 	local session = dofile(dir .. "/r7_zone_overlay.lua")(raw_session, roster)
 	local t2 = os.clock()
@@ -48,7 +48,7 @@ return function(repo, seed)
 		river_polylines = water.cache.sampler.polylines(),
 		road_polylines = roads.module.polylines(roads.module.deserialize(roads.cache.text)),
 	}
-	return {zones = zones, wp40 = wp40, session = session, source = A.source,
+	return {zones = zones, wp40 = wp40, session = session, source = W.source,
 		planner_source = planner_source,
 		height = W.planning_session, road_module = roads.module,
 		road_layout = roads.module.deserialize(roads.cache.text),

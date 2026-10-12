@@ -17,7 +17,9 @@
 --    POIs (centre, cells within the camp radius, the stated belt and its
 --    levels, the POI cell's own belt in the stats and a warning when it lies
 --    more than one belt away, generated camps kept apart, a leader at the
---    POI).
+--    POI), a quest-named kind forming a region (the fallback block by the
+--    kind's type share or the belt's commonest other type, the guard of the
+--    other kinds' largest parts, no block without quest_target).
 -- Prints "R28 S2 PORTABLE PASS checks=<n>" or raises on the first failure.
 local repo = arg[1] or "."
 local checks = 0
@@ -406,6 +408,101 @@ map = build(with_camps({bandit_camp()},
 	{{role = "chief", at = {camp = "bandits"}, respawn = 300}}))
 check(map.leaders[1].x == 400 and map.leaders[1].z == -500 and map.leaders[1].level == 20,
 	"a leader at a POI camp stands at the POI at its fixed level")
+
+-- A quest-named kind forms a region (Round 46): a kind with `quest_target`
+-- and no region after the merges takes a compact block of MIN_CELLS cells of
+-- its belt, never a cell of another kind's largest full-size component; a
+-- kind without the flag keeps no region; nothing changes where every kind
+-- forms.
+map = build(deep_copy(base))
+check(map.kind_blocks == 0 and #map.notes == 0, "every kind forms: no block, no note")
+local function world(over)
+	local zones = {}
+	for k, v in pairs(ZONES) do zones[k] = v end
+	for k, v in pairs(over) do zones[k] = v end
+	return CORE.queries({zones = zones, road_polylines = {}, source = SOURCE,
+		column_values_at = function() return "land", nil, nil, nil, nil, nil, nil, "river" end})
+end
+-- A forest stripe x in [192, 256) splits the meadow: the west part is the
+-- open kind's largest component, the stripe the forest kind's; a 16x16
+-- pond just east of the stripe gives fewer bank cells than a region needs.
+local function stripe_biome(x) return x >= 192 and x < 256 and "grug_deep_forest" or "grug_meadows" end
+local STRIPE = world({biome_at = stripe_biome})
+local POND = world({biome_at = stripe_biome, water_class_at = function(x, z)
+	if not zone_at(x, z) then return "deep_ocean" end
+	if x >= 256 and x < 272 and z >= -312 and z < -296 then return "planned_water" end
+	return "land"
+end})
+local function bank_recipe(flag)
+	local kinds = kind("all_open", "boar")
+	kinds.bank = {id = "mudbanks", name = "Mudbanks", day = "open", night = "open", density = "normal",
+		quest_target = flag}
+	kinds.forest = {id = "deepwood", name = "Deepwood", day = "open", night = "open", density = "normal"}
+	kinds.swamp = {id = "fen", name = "Fen", day = "open", night = "open", density = "normal"}
+	return {belts = {{id = "all", share = 100, levels = {11, 20}, kinds = kinds}}}
+end
+parse_fails(bank_recipe(false), "quest_target is true or absent", "quest_target false is refused")
+local function block_of(m, kind_id)
+	local list = m.by_kind[kind_id] or {}
+	return #list == 1 and list[1] or nil
+end
+map = CORE.build(A, POND, parse(bank_recipe(true)))
+local bank_cells, best_bank = 0, nil
+local guard_ok = true
+for _, c in ipairs(map.order) do
+	if c.type == "bank" then bank_cells = bank_cells + 1 end
+	if not best_bank or c.bank > best_bank.bank then best_bank = c end
+	-- the guard: the stripe's forest and the west meadow keep their kinds
+	if (c.type == "forest" and c.kind.id ~= "deepwood") or (c.i < 6 and c.kind.id ~= "all_open") then
+		guard_ok = false
+	end
+end
+local mud = block_of(map, "mudbanks")
+check(bank_cells > 0 and bank_cells < CORE.MIN_CELLS, "the pond gives fewer bank cells than a region (" ..
+	bank_cells .. ")")
+check(mud and mud.size >= CORE.MIN_CELLS and best_bank.region == mud and map.kind_blocks == 1 and
+	#map.warnings == 0 and #map.notes == 1 and map.notes[1]:find("kind mudbanks of belt all forms no " ..
+	"region: it takes a block of 8 cells by bank share", 1, true) ~= nil and
+	CORE.stats(map).notes[1] == map.notes[1],
+	"a quest-named bank kind without a region takes a block round the best bank cell, a note (" ..
+	tostring(map.notes[1]) .. ")")
+check(guard_ok, "the block next to the forest stripe takes none of its cells nor the open kind's largest part")
+check(map.by_kind.fen == nil, "a kind without quest_target and without ground keeps no region")
+local again = CORE.build(A, POND, parse(bank_recipe(true)))
+local same = block_of(again, "mudbanks") ~= nil and block_of(again, "mudbanks").size == mud.size
+for i, c in ipairs(mud.cells) do
+	local o = block_of(again, "mudbanks").cells[i]
+	if not o or o.i ~= c.i or o.j ~= c.j then same = false end
+end
+check(same, "the block is deterministic")
+map = CORE.build(A, POND, parse(bank_recipe(nil)))
+check(map.kind_blocks == 0 and map.by_kind.mudbanks == nil and #map.notes == 0,
+	"the same kind without quest_target takes no block")
+-- No bank ground at all: the belt's commonest other type among the free
+-- cells (the east meadow).
+map = CORE.build(A, STRIPE, parse(bank_recipe(true)))
+check(block_of(map, "mudbanks") and map.notes[1]:find("by the belt's commonest type open", 1, true) ~= nil and
+	block_of(map, "mudbanks").cells[1].i >= 8,
+	"a bank kind on dry land takes cells of the commonest free type (" .. tostring(map.notes[1]) .. ")")
+-- An open kind on all-forest land: the forest is one component (kept
+-- whole), so the block takes the smaller beach.
+local function forest_recipe()
+	local kinds = kind("all_open", "boar")
+	kinds.open.quest_target = true
+	kinds.forest = {id = "deepwood", name = "Deepwood", day = "open", night = "open", density = "normal"}
+	kinds.shore = {id = "beach", name = "Beach", day = "open", night = "open", density = "normal"}
+	return {belts = {{id = "all", share = 100, levels = {11, 20}, kinds = kinds}}}
+end
+map = CORE.build(A, world({biome_at = function() return "grug_deep_forest" end}), parse(forest_recipe()))
+local forest_kept = true
+for _, c in ipairs(map.order) do
+	if c.type == "forest" and c.kind.id ~= "deepwood" then forest_kept = false end
+end
+check(block_of(map, "all_open") and forest_kept and map.notes[1] ~= nil and
+	map.notes[1]:find("kind all_open of belt all forms no region: it takes a block of 8 cells by " ..
+	"the belt's commonest type shore", 1, true) ~= nil,
+	"an open kind on all-forest land keeps off the forest and takes the free beach (" ..
+	tostring(map.notes[1]) .. ")")
 print("C: builder")
 
 print(("R28 S2 PORTABLE PASS checks=%d"):format(checks))

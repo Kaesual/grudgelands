@@ -9,19 +9,28 @@
 -- with. No engine global is read: `raw_sha256` is the only seam.
 --
 --   local A = dofile(wp40 .. "/world_assembly.lua")(wp40, raw_sha256)
---   local W = A.world(seed, texts)   -- texts {water, road, capital} or nil
+--   local W = A.world(seed, texts)   -- texts {placement, water, road, capital} or nil
+--   local source = W.place()         -- the world's placed source (Round 46)
 --   W.capitals()                     -- plan (no capital text) and join
 --
--- `A.world` builds no layout itself: the water and the roads are routed by
--- the first height session that asks (`height.lua`), the capitals by
--- `W.plan_capitals` (`W.capitals` = plan, then `W.join_capitals`). A tool
--- that needs only the planning phase calls `W.plan_capitals` alone.
+-- `A.world` builds no layout itself. `W.place` (asked by every session
+-- factory first) places the POIs (`placement.lua`) on a placement session
+-- of the fixed anchors only, which also lays out the inland water, or
+-- parses the placement text main handed over; `W.source` is then this
+-- world's source, every anchor with its position, and every session of the
+-- world runs on it (`A.source` is the authored source: the fixed anchors'
+-- positions only). The roads are routed by the first height session that
+-- asks (`height.lua`), the capitals by `W.plan_capitals` (`W.capitals` =
+-- plan, then `W.join_capitals`). A tool that needs only the planning phase
+-- calls `W.plan_capitals` alone.
 --
 -- `variant` (tools only; the runtime passes none) leaves parts out:
 --   roads = false    no road layout (terrain and biomes only);
 --   protection = shapes   the protected cities stood in by these shapes
 --                    ({anchor id -> {member = function(x, z)}}) instead of
---                    the capitals' own, for a world without capital planning.
+--                    the capitals' own, for a world without capital planning;
+--   keep_placement_session = true   W.placement_session keeps the placement's
+--                    horizontal and height sessions.
 return function(wp40_directory, raw_sha256)
 	local function fail(message)
 		error("WP40 world assembly: " .. message, 0)
@@ -53,6 +62,7 @@ return function(wp40_directory, raw_sha256)
 	local water_authored_factory = dofile(wp40_directory .. "/water_authored.lua")
 	local road_module = dofile(wp40_directory .. "/road_layout.lua")
 	A.zones_factory = dofile(wp40_directory .. "/zones.lua")
+	A.placement = dofile(wp40_directory .. "/placement.lua")(wp40_directory, raw_sha256)
 
 	-- The ground node each start's blueprint lays on its pad (its race's WP13
 	-- palette), which the band round the pad carries out into the natural
@@ -118,6 +128,7 @@ return function(wp40_directory, raw_sha256)
 		texts = texts or {}
 		variant = variant or {}
 		if (texts.road == nil) ~= (texts.capital == nil) or
+				(texts.capital ~= nil and texts.placement == nil) or
 				(variant.protection ~= nil and texts.capital ~= nil) then
 			fail("layout texts differ")
 		end
@@ -140,16 +151,65 @@ return function(wp40_directory, raw_sha256)
 		-- flushed) is handed to the world build's first height session request
 		-- instead of building a second one (`height.lua` new_runtime).
 		W.reuse = {}
+		-- The natural terrain field, built by the world's first height session
+		-- and shared by the later ones (`height.lua` terrain_cache).
+		W.terrain = {}
+
+		-- THE PLACEMENT (Round 46): main places the POIs on a placement
+		-- session of its own (a horizontal and a roadless height session on
+		-- the fixed anchors; the height session lays out the inland water,
+		-- which every later session shares), emerge and a layout-cache hit
+		-- parse main's text. Idempotent; every session factory asks it first.
+		W.placement_text = texts.placement
+		function W.place()
+			if W.source then return W.source end
+			local positions
+			if W.placement_text ~= nil then
+				positions = A.placement.parse(W.placement_text, A.source)
+			else
+				local fixed = A.placement.fixed_view(A.source)
+				local horizontal = simple_map_factory({source = fixed, schemas = A.schemas,
+					canonical = A.canonical, deterministic = A.deterministic,
+					raw_sha256 = raw_sha256, capital_protection = W.protection_holder}).new(seed)
+				local height = height_module_factory({source = fixed, canonical = A.canonical,
+					deterministic = A.deterministic, raw_sha256 = raw_sha256,
+					horizontal_session = horizontal, terrain_field = A.terrain_field,
+					water = W.water, terrain_cache = W.terrain,
+					start_grounds = A.start_grounds}).new_runtime(seed)
+				positions, W.placement_stats = A.placement.place(seed, A.source, horizontal,
+					height, W.water.authored)
+				-- kept only for a tool that asks (the placement fixture re-places
+				-- on it); the runtime lets it go
+				if variant.keep_placement_session then
+					W.placement_session = {horizontal = horizontal, height = height}
+				end
+				W.placement_text = A.placement.serialize(A.source, positions)
+			end
+			W.source = A.placement.view(A.source, positions)
+			return W.source
+		end
+		-- Every session of the world runs on the world's placed source; a
+		-- caller may still name the authored one.
+		local function world_source(dependencies)
+			local source = W.place()
+			if dependencies.source ~= A.source and dependencies.source ~= source then
+				fail("a world's sessions run on its own source")
+			end
+			return source
+		end
 		function W.horizontal_factory(dependencies)
 			local bound = {}
 			for key, value in pairs(dependencies) do bound[key] = value end
+			bound.source = world_source(dependencies)
 			bound.capital_protection = W.protection_holder
 			return simple_map_factory(bound)
 		end
 		function W.height_factory(dependencies)
 			local bound = {}
 			for key, value in pairs(dependencies) do bound[key] = value end
+			bound.source = world_source(dependencies)
 			bound.water = W.water
+			bound.terrain_cache = W.terrain
 			bound.roads = W.roads
 			bound.reuse = W.reuse
 			bound.start_grounds = A.start_grounds
@@ -168,10 +228,10 @@ return function(wp40_directory, raw_sha256)
 			if variant.protection ~= nil or not W.roads then
 				fail("a world without capitals plans none")
 			end
-			W.planning_horizontal = W.horizontal_factory({source = A.source,
+			W.planning_horizontal = W.horizontal_factory({source = W.place(),
 				schemas = A.schemas, canonical = A.canonical,
 				deterministic = A.deterministic, raw_sha256 = raw_sha256}).new(seed)
-			W.planning_session = W.height_factory({source = A.source,
+			W.planning_session = W.height_factory({source = W.source,
 				canonical = A.canonical, deterministic = A.deterministic,
 				raw_sha256 = raw_sha256, horizontal_session = W.planning_horizontal,
 				terrain_field = A.terrain_field}).new_runtime(seed)
@@ -180,7 +240,7 @@ return function(wp40_directory, raw_sha256)
 			-- in emerge.
 			W.capital_layout_text, W.capital_rows, W.capital_stats = A.capitals.plan_all({
 				seed = seed, session = W.planning_session,
-				roads = W.roads.module, anchors = A.source.anchors,
+				roads = W.roads.module, anchors = W.source.anchors,
 				profiles = A.capital_profiles, kits = A.capital_kits,
 				prepared = W.capital_plots, authored = W.water.authored,
 				simplex = A.terrain_field.simplex, proxy = A.terrain_data.water.LAKE_PROXY})
@@ -232,7 +292,7 @@ return function(wp40_directory, raw_sha256)
 		-- The zones module over this world's factories (`zones.lua`; the
 		-- runtime builds its own through `r5.lua` with the same dependencies).
 		function W.zones()
-			return A.zones_factory({source = A.source, schemas = A.schemas,
+			return A.zones_factory({source = W.place(), schemas = A.schemas,
 				canonical = A.canonical, deterministic = A.deterministic,
 				index128 = A.index128, horizontal_factory = W.horizontal_factory,
 				height_factory = W.height_factory, terrain_field = A.terrain_field,

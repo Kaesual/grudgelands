@@ -766,6 +766,15 @@ sites have multiple structures; encounter clearings and rare pads have no
 buildings and keep their centres open (their dressing: "Decor pass" below). Villages include four to six buildings. Shared building components
 are allowed; an identical rotated town layout is not the design.
 
+Since Round 46 every composition but the starts', the capitals', the dragon
+arenas', the apex camps' and the four rift sites' stands where its world
+places its anchor ([world_zones.md](world_zones.md) §8.5): a composition is
+position-free (its rows in `r20_poi_catalog.lua`, the per-zone rows of
+`r7_settlement.lua` and `r31_pvp_catalog.lua` hold no coordinates), its
+anchor is read from the zones session by zone and slot, and a fortress's gate
+turn follows its faction, which the placement keeps on its side of the
+middle road.
+
 Art uses the existing settlement projection, actor-root priority and reserved
 footprints. It neither adds duplicate bosses/guards/resources nor expands
 terrain reservations. The frontier bandit camp's building core is 16 nodes

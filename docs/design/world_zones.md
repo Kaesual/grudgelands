@@ -34,11 +34,14 @@ of commit `082982da`.
   across immutable ocean channels, not to the land-adjacency graph.
 - The macro-map is fixed by one authored layout rather than regenerated from
   each world seed. Every named zone has a stable hub, approximate extent,
-  level range and biome palette, and every anchor has a fixed position. The
-  world seed varies terrain, biome detail, content, the course of coastline
-  and zone borders within bounded warps (§7.2, §7.3) and therefore the course
-  of roads. It never moves a hub or an anchor, never puts an anchor into
-  another zone or into the water and never changes the macro silhouette.
+  level range and biome palette. The start towns, capitals, dragon arenas,
+  apex mines and the four rift sites have fixed positions; every other POI
+  is placed per world by rules (§8.5, Round 46). The world seed varies
+  terrain, biome detail, content, the course of coastline and zone borders
+  within bounded warps (§7.2, §7.3), the POI positions and therefore the
+  course of roads. It never moves a hub or a fixed anchor, never puts an
+  anchor into another zone or into the water and never changes the macro
+  silhouette.
 - The two faction sides are **progression and content-budget mirrors, not
   geometric mirrors**. They receive equivalent access to level bands,
   materials, PvP fronts, travel services and POI budgets, while their shapes,
@@ -277,15 +280,18 @@ rewrite records the WP40 model it replaced.
 - World axes stay conventional: west/east is x, Kragmar lies north at positive
   z, Elandor lies south at negative z, and the shared front is centred on z = 0.
 - One authored layout fixes the macro silhouette, the zone hubs, the island
-  hubs and every anchor position. The world seed drives the warps of §7.2 and
-  §7.3, so every world has its own coastline and zone borders, plus its own
-  terrain and road courses (§9.2). It never moves a hub or an anchor, never
-  changes which zone an anchor belongs to and never changes the macro
-  silhouette a player learns from the map (Round 22 D24).
-- When a world is built, one cheap self-check confirms that every anchor lies
-  in its own zone and on land, every zone is connected and the dragon channels
-  keep their width. If it fails for a seed, that world falls back to a weaker
-  warp and logs a warning; it is a safeguard, not a test suite.
+  hubs and the positions of the fixed anchors (start towns, capitals, dragon
+  arenas, apex mines, the four rift sites). The world seed drives the warps
+  of §7.2 and §7.3, so every world has its own coastline and zone borders,
+  plus its own terrain, POI positions (§8.5) and road courses (§9.2). It
+  never moves a hub or a fixed anchor, never changes which zone an anchor
+  belongs to and never changes the macro silhouette a player learns from the
+  map (Round 22 D24).
+- When a world is built, one cheap self-check confirms that every fixed
+  anchor lies in its own zone and on land, every zone is connected and the
+  dragon channels keep their width. If it fails for a seed, that world falls
+  back to a weaker warp and logs a warning; it is a safeguard, not a test
+  suite. A placed POI meets the same rule by the choice of its spot (§8.5).
 - Because coast, borders and roads differ per world, the server renders the
   world map for its own world at first start (§13.1, `world_map.md`).
 - The **Battlegrounds** are the four front zones between the continents
@@ -413,10 +419,11 @@ rewrite records the WP40 model it replaced.
   clash sites, rares) moved about 120 nodes toward their home side and stay
   in their zones; Coalbrand Yard and Sunderstrap Camp also moved to
   |x| = 96 so the middle road (§9.2) runs straight.
-- The warp is damped near every fixed anchor, so each anchor's footprint
-  (start town, capital envelope, village, outpost, camp, mine, clash site,
-  dragon arena) stays inside its own zone. If an anchor would still leave its
-  zone, the fix is stronger damping or a smaller warp, never a repair pass.
+- The warp is damped near every fixed anchor, so each fixed anchor's
+  footprint (start town, capital envelope, dragon arena, apex mine, rift
+  site) stays inside its own zone. If an anchor would still leave its zone,
+  the fix is stronger damping or a smaller warp, never a repair pass. A
+  placed POI (§8.5) is chosen on the finished field and never bends it.
 - Every zone stays one connected region. This is checked (§14), not solved.
 - **Gameplay neighbors are geometric.** Two zones are neighbors when they
   share a land border of meaningful length; a single-point or very short
@@ -962,14 +969,15 @@ spawns from the town's protected floor upward (its placement height − 100,
 Round 24 ruling 30); caves deeper under a start town keep their ordinary
 population. A capital city refuses every ambient non-critter spawn (§3).
 
-POI abbreviations:
+POI abbreviations (every POI but S, C, D/M6 and the four rift sites is
+placed per world, §8.5):
 
 - **S** = starting settlement, graveyard and waypoint;
 - **C** = capital, king, service hub and waypoint;
 - **V** = mandatory village; **O×n** = n ordinary outpost slots;
-- **B** = one of the two fixed bandit camps for that race;
+- **B** = one of the two bandit camps for that race;
 - **M** = that race's one peaceful mining camp;
-- **W** = a fixed Mirefolk wetland camp;
+- **W** = a Mirefolk wetland camp;
 - **K×n** = n dedicated war-front clash anchors;
 - **D/M6** = dragon lair plus the apex mining camp;
 - **R:name** = the migrated named-rare route;
@@ -1132,6 +1140,79 @@ and gem terraces. None
 is player-visible. Their flavor (trenches, siege ramps, colossi, galleries)
 may return as POI or dressing content; anchors that stood in them, such as the
 apex mining camps, keep their positions.
+
+### 8.5 Seed-dependent POI placement (Round 46)
+
+The villages, outposts, bandit and Mirefolk camps, mines, clash sites (but
+the four rift sites), rare dens, the two PvP fortresses and the sixteen war
+camps have no authored position: every world places them by rules
+(`wp40/placement.lua`, the kinds' rules in `wp40/placement_rules.lua`;
+round46-plan.md §4.2, rulings 2 and 17). The start towns, capitals, dragon
+arenas, apex mines and the rift sites (`r20_anchor_076`, `077`, `084`, `085`)
+stay fixed.
+
+- **Where it runs.** Main places the POIs on a placement session of the
+  fixed anchors alone: the zone field's keypoints, the terrain field's calm
+  bowls and the inland water's keep-outs and river detours know only the
+  fixed anchors, so the natural ground and the water are the same before and
+  after placement. Core fitting, roads, the capitals, protection, the region
+  maps and the quest targets follow on the placed positions. Main computes
+  the placement once; its text travels in the `ipc_set` payload and the
+  layout cache (§13.4); emerge and a cache hit only parse it.
+- **The rules every kind shares.** The fitting square plus 24 nodes lies on
+  land of the POI's own zone (so off the sea and the bays); no inland water
+  under the building core plus a dry pad, the water layout's own river guard
+  (Round 34 F3) and the core's ground not below water within 24 nodes; the
+  fitting square clear of every authored lake's bounds (Moonfall's crescent
+  shapes the ground round its water); the
+  natural relief under the core within the kind's limit and never above 40
+  (a placed POI gets no calm bowl); fitting squares 16 nodes apart from every
+  anchor and **128 nodes from a start town's or a capital's square**; the
+  kind's spacing from every other placed POI; in the zones the middle road
+  crosses, |x| at least max(80, core / 2 + 58); and the POI's **level band**:
+  the third of its zone's level range it had before Round 46 (`band` on its
+  anchor row; a camp on a recipe site takes its recipe camp's belt), read on
+  the mapgen level field.
+- **Kinds.** Villages relief 12, spacing 192; outposts, bandit camps 16 and
+  160; mines 20 and 160, preferring ground the terrain round them rises
+  above; Mirefolk camps 10 and 160 with inland water within 64 nodes; clash
+  sites 20 and 160 (the island ones stay on their island); rare dens 28 and
+  96, their patrol points on dry land in the zone; the **fortresses** on
+  their faction's side of the middle road's axis (the Accord's east, the
+  Throng's west, 88 to 448 nodes off it), so the gate faces the road on every
+  world; the **war camps** on their own faction's half of their
+  Battlegrounds zone at their catalogue levels, 128 nodes from a boat path's
+  mainland end, and every PvP POI 120 nodes from every other.
+- **The choice.** Candidates are the cells of the water layout's 16-node
+  grid that pass the cheap tests; the exact tests walk them in an order
+  seeded by the world and the anchor (mines by their hills, fortresses by
+  their nearness to the Battlegrounds and the road) until eight pass, and a
+  hash of the world seed and the anchor id picks one of those, so every
+  world differs and every spot is good ground. A Mirefolk camp needs its
+  water in the first two steps and prefers it after them (the eight are
+  those near water when any is). Order: fixed
+  anchors first, then fortresses, war camps, villages, mines, outposts,
+  bandit camps, Mirefolk camps, clash sites and rare dens; rows a later round
+  appends go into a later `pass`, so the earlier ones keep their places.
+- **Fallbacks.** A row that finds nothing relaxes step by step: the band by
+  one third (a war camp by one level), relief × 1.5, spacing × 0.75 and a
+  smaller zone margin, then band ± 2, relief × 2 and spacing × 0.5, then
+  relief × 3 and spacing × 0.25 (never above the 40 relief cap, PvP POIs
+  never under 120). Never relaxed: the own zone, land, the dry core and F3,
+  the town gaps, the fortress side and the camp half. Then the last resort:
+  the zone's flattest dry-core cell, band and spacing ignored, with a
+  warning; a zone without any dry core would take its flattest cell and a
+  `[GRUG-SEVERE]` report. A world never fails to load because of
+  placement. The main log names every relaxed row (`POI placement:`).
+- **Extension.** A POI is one anchor row in `source/simple_map.lua` (zone,
+  slot, kind, band, no coordinates) and one composition row with its
+  blueprint; a kind is one rules entry beside its fitting profile (whose
+  `trail` flag joins it to the road network). An anchor row may declare an
+  **underground reservation**, the named field
+  `underground = {width = W, depth = D}` (`source.anchor_of` parses it): a
+  square under its centre that is protected and kept free of caves from its
+  placement height down to `depth` (Round 46 ships none; later content's
+  shafts and chambers use it).
 
 ## 9. Zone neighbors, roads and trails
 
@@ -1839,12 +1920,12 @@ numeric-truncated seed.
 
 ### 13.4 World-folder layout cache (Round 22, D71)
 
-- Main builds three layouts per world: inland water (§7.4), roads (§9) and
-  the capital layouts (§12). They travel to emerge as texts in the `ipc_set`
-  payload; emerge never builds them. The same payload carries
+- Main builds four layouts per world: the POI placement (§8.5), inland water
+  (§7.4), roads (§9) and the capital layouts (§12). They travel to emerge as
+  texts in the `ipc_set` payload; emerge never builds them. The same payload carries
   `prepared_blueprints`, main's preparations of the lazy settlement
   blueprints (`docs/design/settlements.md`), which the cache does not store.
-- After the first build, main stores exactly those three texts in the world
+- After the first build, main stores exactly those four texts in the world
   folder, in `grug_world_layouts.txt` (`wp40/layout_cache.lua`). A later boot
   loads them **only when the stored key equals the current key** and then
   builds its sessions from the texts, exactly as emerge does. Every other
@@ -1853,9 +1934,10 @@ numeric-truncated seed.
   file of the `grug_mapgen` mod (the whole tree, so a new or edited module
   can never be missed; any edit to the mapgen code rebuilds once), the v7
   mapgen settings and the Lua interpreter. Nothing else feeds the layouts.
-- The file is text: a format line, the key lines, one section per text
-  (water, road, capital) and one small diagnostics section (the first
-  start's capital and road log lines, the road showcase spots for
+- The file is text (format `grug_world_layouts_v2` since Round 46): a format
+  line, the key lines, one section per text (placement, water, road,
+  capital) and one small diagnostics section (the first start's placement,
+  capital and road log lines, the road showcase spots for
   `/road_spots`, the build seconds), each with its length and SHA-256, and a
   final SHA-256 over everything before it. A missing, truncated, edited or
   otherwise damaged file is never used: it is rebuilt (a damaged file with
@@ -1877,7 +1959,7 @@ numeric-truncated seed.
   ([spawn_regions.md](spawn_regions.md#cache-and-memory)) and, until Round
   44, the Map tab's zone grid ([world_map.md](world_map.md)).
 - The full-world preparation identity (the "authority changed" guard) binds
-  a digest of the three texts besides its source files, so it changes when
+  a digest of the four texts besides its source files, so it changes when
   a world's layouts or those sources change, whether the layouts were built
   or loaded.
 - Deleting the file is always safe: the next boot rebuilds the same layouts.
@@ -1901,7 +1983,8 @@ playtests; numbers support that judgment and never replace it.
   - starts and capitals are connected by road;
   - roads are walkable (at most ½ node between neighboring road columns);
   - POI footprints stand on solid ground;
-  - every fixed anchor lies inside its own zone;
+  - every anchor lies inside its own zone (a fixed one by the zone field, a
+    placed one by its placement rules, §8.5);
   - every zone is one connected region;
   - the dragon channels keep their §7.4 widths.
 - **Chunk seam check.** The same column queried from two adjacent chunks
@@ -1938,53 +2021,32 @@ and quests are in [pvp.md](pvp.md) §6–§7.
 
 **V1 PvP POIs (Round 31, [pvp-plan](../planning/pvp-plan.md) rulings
 17–22).** Anchors 101–118 (`source/simple_map.lua`, the rows of
-`r31_pvp_catalog.lua`), fixed on every seed like every anchor:
+`r31_pvp_catalog.lua`), placed per world since Round 46 (§8.5):
 
-- **Fortresses:** Ashenward Bastion (Accord) at (136, −488) in Ashenward
-  March and Bannerbreak Warhold (Throng) at (−80, 632) in Bannerbreak Mesa,
-  on the Battlegrounds half of their zone beside the middle road (§9.2).
-  Placement priorities (user, after the second preview): no lake, river or
-  sea under the core and its apron on any of the six seeds; low relief
-  (preferably at most about 25, at most 40); as close to the Battlegrounds
-  as the zone allows; the distance to the road is a soft wish (up to about
-  200 nodes; the gate trail connects it). No dry spot on Ashenward's
-  Battlegrounds half within 200 nodes of the road stays under 25, so
-  Ashenward Bastion takes the flattest dry one nearest the Battlegrounds
-  (relief at most 33 on the six seeds).
-  **The road has priority** (user ruling after the first preview): no
-  routing cell the middle road uses lies within the router's reserve round
-  a fortress (core / 2 + 10), so the road keeps the course it has without
-  the fortress (checked against that course on the six seeds); its surface
-  passes 20–134 nodes from the walls (Bannerbreak 20–45, Ashenward 51–134).
-  The rest of the network is routed round the PvP POIs' reserves too, so
-  several secondary roads and trails take a different course than without
-  them: 0–6 per seed on the six tested seeds.
-  The one gate faces the road's axis and a trail (§9.3) joins it to the
-  road. Each fortress has a waystone (`world.md` §6).
+- **Fortresses:** Ashenward Bastion (Accord) in Ashenward March and
+  Bannerbreak Warhold (Throng) in Bannerbreak Mesa, on their faction's side
+  of the middle road's axis x = 0 (the Accord's east, the Throng's west,
+  88–448 nodes off it), in the zone's level third they stood in before Round
+  46 (the Battlegrounds side), dry and flat (relief 12, relaxed only by the
+  rules of §8.5), the score preferring the Battlegrounds edge and the axis.
+  The roads are routed after placement and bend round the fortress's
+  reserve (core / 2 + 10); the middle road passes beside it. The one gate
+  faces the road's axis and a trail (§9.3) joins it to the road. Each
+  fortress has a waystone (`world.md` §6).
 - **Camps:** per Battlegrounds zone and faction one lower and one higher
-  camp on the own faction's side of z = 0 (gate toward the own continent):
-  the lower toward the own frontier, the higher toward the middle, where the
-  zone's level field (§2, rising from both edges to the middle) gives
-  roughly the camp's band (the band ±1 on the six tested seeds).
-
-  | Zone | Accord lower / higher | Throng lower / higher |
-  |---|---|---|
-  | Gravesalt Escarpment | (−2144, −264) / (−1896, −80) | (−1520, 240) / (−1464, 24) |
-  | The Broken Causeway | (−912, −360) / (−728, −64) | (−896, 368) / (−216, 40) |
-  | The Shattered Line | (512, −288) / (944, −16) | (1216, 288) / (648, 48) |
-  | The Skyglass Canopy | (2304, −256) / (2080, −56) | (2376, 304) / (2384, 40) |
-
-- **Spacing:** no two PvP POIs closer than 120 nodes (the nearest pair is
-  223 apart); each fitting square keeps 16 nodes off every other anchor's,
-  and a camp 128 nodes off a boat path's mainland end.
-- **Slope:** the positions were chosen on the six quest-lane seeds among
-  centres whose natural ground under the core varies by at most 40 nodes on
-  every seed (above 40 the terrain field lays a calm bowl, §7.5; up to it
-  the flat core is cut into the slope and the collar returns to the ground),
-  preferring the flattest. Checked offline by
+  camp on the own faction's half of the zone (at least 16 nodes off z = 0;
+  gate toward the own continent), each where the zone's level field (§2,
+  rising from both edges to the middle) gives its catalogue band
+  (`camp_levels`, relaxed by one level, then two).
+- **Spacing:** no two PvP POIs closer than 120 nodes (160 by default); each
+  fitting square keeps 16 nodes off every other anchor's and 128 off a
+  town's, and a camp 128 nodes off a boat path's mainland end.
+- **Slope:** natural ground under the core varies by at most 12 (fortress)
+  or 16 (camps) on the first step and never above 40 (§8.5: a placed POI
+  gets no calm bowl). Checked offline per world by
   `tools/r31_m/spacing_check.lua` (zone field at full warp, roads routed and
   off the POIs, cores in zone, dry and flat, relief at most 40, the
-  fortress trail out of the gate).
+  fortress trail out of the gate) and `tools/r46_pl/portable_test.lua`.
 - **Protection:** the blueprint's cells plus 10 nodes on every side in x and
   z (from 10 below the placement height to 10 above the highest node), kind
   `fortress` or `war_camp` (`world_protection.lua`, hint "Fortress –

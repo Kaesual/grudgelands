@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "berrywoods", "name": "Lorindor Berrywoods",
             "day": [{"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "pearl_shore", "name": "Lorindor Pearl Shore",
             "day": [{"role": "bank_crab", "weight": 1}],
             "night": "open", "density": "dense"},
@@ -23,10 +23,10 @@
         "kinds": {
           "open": {"id": "elderwood", "name": "Lorindor Elderwood",
             "day": [{"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "shell_strand", "name": "Lorindor Shell Strand",
             "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
-            "night": "open", "density": "dense"},
+            "night": "open", "density": "dense", "quest_target": true},
           "swamp": {"id": "wisp_marsh", "name": "Lorindor Wisp Marsh",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
@@ -37,7 +37,7 @@
         "kinds": {
           "open": {"id": "paleroots", "name": "Lorindor Paleroots",
             "day": [{"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true},
           "swamp": {"id": "blackfen", "name": "Lorindor Blackfen",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}

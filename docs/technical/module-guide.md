@@ -1746,6 +1746,25 @@ tools](#player-meta-read-by-external-tools).
   chunk is dropped, so tall trees thin out in height bands and along chunk
   borders (`docs/research/wp40-simple-map-r6-contract.md` §8.2, "Treeless
   bands").
+  **Seed-dependent POI placement** (Round 46, `world_zones.md` §8.5):
+  `A.source` is the authored source, whose placed anchors
+  (`placement_mode = "placed"`) carry no position; `W.place()` returns the
+  world's source (`W.source`, every anchor with its position and its claim
+  exclusions rebuilt by `source.claim_exclusions_of`), and every session
+  factory of the world (`W.horizontal_factory`, `W.height_factory`,
+  `W.zones`) runs on it. `W.place` builds the placement session on
+  `placement.fixed_view(source)` (a roadless height session that also lays
+  out the inland water) and calls `placement.place`, or parses the
+  placement text (emerge, a layout-cache hit; `r7_runtime.lua`'s
+  `placement_layout_text`, the `ipc_set` field `placement_layout`, the cache
+  section `placement`, and `layouts_digest`). Only `source.fixed_anchors`
+  feed `zone_field.keypoints`, the terrain field's bowls and the water
+  inputs; a world's height sessions share one terrain field
+  (`terrain_cache`). The kinds' rules are data (`placement_rules.lua`); the
+  activation roster, the consumer payload and the road trails (`trail` on
+  the fitting profile) find their anchors by kind, never by index. Tools read
+  anchor positions from `W.source` or the zones session, never from the
+  authored source (`tools/r46_pl/portable_test.lua`).
   **Current zone/level queries** (published by `grug_core/zone_authority.lua`,
   which is also the sole publisher of the `grug_zones` global — it refuses to
   install if something else already published it) — this is the whole
@@ -1792,12 +1811,13 @@ tools](#player-meta-read-by-external-tools).
   kind, faction, band; `camp_levels`, `camp_race` through the blueprint
   options' `raw_sha256` seam, the same in main and emerge, `SEAT_RACE`),
   `r7_settlement.lua` binds every row to its anchor (all or none) and the
-  gate turn, and `r31_pvp_poi_blueprint.lua` is the pure cell builder
+  gate turn (by faction; since Round 46 the placement keeps the fortress on
+  its side of the middle road), and `r31_pvp_poi_blueprint.lua` is the pure cell builder
   (sockets as landmarks; `landmarks.race`/`faction` name what the
   settlement registers as). `road_layout.lua` routes a fortress's gate trail
-  (`GATE_STRETCH`) and every road round the PvP POIs' reserves; the
-  fortress spots lie clear of the middle road's course, which keeps it,
-  while other secondary roads and trails may change (0–6 per seed). `world_protection.lua` grows a PvP
+  (`GATE_STRETCH`) and every road round the PvP POIs' reserves (since Round
+  46 the POIs are placed before the roads are routed, so every road bends
+  round them). `world_protection.lua` grows a PvP
   slot's box by `PVP_MARGIN` (10), kinds `fortress` and `war_camp`. The
   dragon arenas: the `dragon` profile carries `arena_radius` 40 and
   `bowl_core_width` 32; `height.lua` grades the round floor;

@@ -5,8 +5,9 @@
 -- per-blueprint rebuild at first touch (`r7_settlement.lua` config,
 -- `cells_of`), not a second preparation at load.
 
+-- `placement_layout_text` (Round 46, the POI positions of `placement.lua`),
 -- `water_layout_text`, `road_layout_text` and `capital_layout_text` are the
--- serialized inland water, road and capital layouts main built and handed
+-- serialized placement, inland water, road and capital layouts main built and handed
 -- over (emerge), or main's own from the world-folder layout cache on a later
 -- boot (`layout_cache.lua`, plan D71); nil in main on a world's first start,
 -- which builds them (plan D37, D60).
@@ -18,7 +19,8 @@
 -- that touches it and checked there against main's identity and landmarks
 -- (`r7_settlement.lua` config); nil in main.
 return function(core_api, wp40_directory, schematic_directory, projection, catalog,
-		water_layout_text, road_layout_text, capital_layout_text, prepared_handover)
+		water_layout_text, road_layout_text, capital_layout_text, prepared_handover,
+		placement_layout_text)
 	local function fail(message)
 		error("WP40 R7 runtime: " .. message, 0)
 	end
@@ -32,6 +34,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			(road_layout_text ~= nil and type(road_layout_text) ~= "string") or
 			(capital_layout_text ~= nil and type(capital_layout_text) ~= "string") or
 			((road_layout_text == nil) ~= (capital_layout_text == nil)) or
+			(placement_layout_text ~= nil and type(placement_layout_text) ~= "string") or
+			(capital_layout_text ~= nil and placement_layout_text == nil) or
 			(prepared_handover ~= nil and (type(prepared_handover) ~= "table" or
 				capital_layout_text == nil)) then
 		fail("construction seam differs")
@@ -124,9 +128,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- every session of this runtime is built with.
 	local assembly = dofile(wp40_directory .. "/world_assembly.lua")(wp40_directory,
 		raw_sha256)
-	local world = assembly.world(construction_seed, {water = water_layout_text,
-		road = road_layout_text, capital = capital_layout_text})
-	local source, schemas, canonical = assembly.source, assembly.schemas,
+	local world = assembly.world(construction_seed, {placement = placement_layout_text,
+		water = water_layout_text, road = road_layout_text, capital = capital_layout_text})
+	-- The world's placed source (Round 46): every anchor with its position.
+	local source, schemas, canonical = world.place(), assembly.schemas,
 		assembly.canonical
 	local deterministic, index128 = assembly.deterministic, assembly.index128
 	local terrain_field = assembly.terrain_field
@@ -212,9 +217,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		local capitals_seconds = 0
 		for _, st in ipairs(capital_stats) do capitals_seconds = capitals_seconds + st.seconds end
 		local water_stats = water.cache and water.cache.stats
+		local placement_stats = world.placement_stats
 		local road_stats = roads.cache and roads.cache.layout and roads.cache.layout.stats
 		layout_seconds = {water = water_stats and water_stats.t_total or 0,
-			roads = road_stats and road_stats.t_total or 0, capitals = capitals_seconds}
+			roads = road_stats and road_stats.t_total or 0, capitals = capitals_seconds,
+			placement = placement_stats and placement_stats.seconds or 0}
 	end
 	local settlements = {}
 	local settlement_palette, settlement_seen = {}, {}
@@ -294,11 +301,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- cache, plan D71).
 	local function layouts_digest()
 		if not water.cache or type(water.cache.text) ~= "string" or not roads.cache or
-				type(roads.cache.text) ~= "string" or type(capital_layout_text) ~= "string" then
+				type(roads.cache.text) ~= "string" or type(capital_layout_text) ~= "string" or
+				type(world.placement_text) ~= "string" then
 			fail("layout texts missing for the preparation identity")
 		end
 		return sha256_hex(sha256_hex(water.cache.text) .. ":" ..
-			sha256_hex(roads.cache.text) .. ":" .. sha256_hex(capital_layout_text))
+			sha256_hex(roads.cache.text) .. ":" .. sha256_hex(capital_layout_text) .. ":" ..
+			sha256_hex(world.placement_text))
 	end
 	local function build(native_identities, expected_manifest_sha256, evidence_mode,
 			authority_only)
@@ -589,6 +598,14 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		return out
 	end
+	-- The POI placement text (Round 46; main hands it to emerge through
+	-- ipc_set) and main's placement statistics (nil when the text came in).
+	function module.placement_layout_text()
+		return world.placement_text
+	end
+	function module.placement_stats()
+		return world.placement_stats
+	end
 	-- The serialized water layout of the last built session (main hands it to
 	-- emerge through ipc_set).
 	function module.water_layout_text()
@@ -616,7 +633,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	function module.capital_protection()
 		return world.protection_holder.shapes
 	end
-	-- Main's layout build CPU seconds {water, roads, capitals}; nil when the
+	-- Main's layout build CPU seconds {water, roads, capitals, placement}; nil when the
 	-- layout texts were handed in.
 	function module.layout_build_seconds()
 		return layout_seconds

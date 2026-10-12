@@ -27,6 +27,6 @@ return function(repo, seed)
 		return module
 	end
 	local session, planner_source = W.zones().new_with_planner_source_runtime(seed, 1)
-	return {session = session, planner_source = planner_source, source = A.source,
+	return {session = session, planner_source = planner_source, source = W.source,
 		horizontal = captured.horizontal}
 end

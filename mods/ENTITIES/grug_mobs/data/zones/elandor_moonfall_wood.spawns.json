@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "eaves", "name": "Moonfall Eaves",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal"},
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal", "quest_target": true},
           "swamp": {"id": "mistmarsh", "name": "Moonfall Mistmarsh",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
@@ -20,10 +20,10 @@
         "kinds": {
           "open": {"id": "deepwood", "name": "Moonfall Deepwood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "moonstrand", "name": "Moonfall Moonstrand",
             "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
-            "night": "open", "density": "dense"},
+            "night": "open", "density": "dense", "quest_target": true},
           "swamp": {"id": "wisp_fen", "name": "Moonfall Wisp Fen",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
@@ -34,7 +34,7 @@
         "kinds": {
           "open": {"id": "elderwood", "name": "Moonfall Elderwood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "night_shore", "name": "Moonfall Night Shore",
             "day": [{"role": "armored_crab", "weight": 1}],
             "night": "open", "density": "dense"},

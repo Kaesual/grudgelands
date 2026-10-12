@@ -67,6 +67,12 @@ local function height_factory(dependencies)
 	-- keeps the built layout and sampler. Optional: without it (offline
 	-- tools) the world has no roads.
 	local road_dependency = dependencies.roads
+	-- The natural terrain field (optional, Round 46): a table shared by every
+	-- session of one world (`world_assembly.lua` W.terrain) keeps the field
+	-- the first session built. It is a pure function of the seed and the
+	-- fixed anchors, the same in every session, so later ones (the capital
+	-- planner's, the runtime's) skip its construction.
+	local terrain_cache = dependencies.terrain_cache
 	-- Start town ground (plan D78): {start anchor id -> {ground node name}}
 	-- from the WP13 palettes (`r7_runtime.lua`), the ground each start town's
 	-- blueprint lays on its pad. The band around the pad carries it out into
@@ -253,15 +259,25 @@ local function height_factory(dependencies)
 			return SEA, owner
 		end
 
-		local field = terrain_field.new(full_seed_string, {
-			zones = source.zones, anchors = source.anchors,
-			anchor_profiles = source.anchor_profiles,
-			zone_at = function(x, z)
-				local class, owner = column_class(x, z)
-				return class == LAND and owner or nil
-			end,
-			land_at = function(x, z) return (column_class(x, z)) == LAND end,
-		})
+		local field = terrain_cache and terrain_cache.seed == full_seed_string and
+			terrain_cache.field
+		if not field then
+			field = terrain_field.new(full_seed_string, {
+				-- the fixed anchors only (Round 46): a placed POI gets no calm
+				-- bowl, so the natural ground is the same before and after
+				-- placement
+				zones = source.zones, anchors = source.fixed_anchors or source.anchors,
+				anchor_profiles = source.anchor_profiles,
+				zone_at = function(x, z)
+					local class, owner = column_class(x, z)
+					return class == LAND and owner or nil
+				end,
+				land_at = function(x, z) return (column_class(x, z)) == LAND end,
+			})
+			if terrain_cache then
+				terrain_cache.seed, terrain_cache.field = full_seed_string, field
+			end
+		end
 		local edge_noise = terrain_field.simplex(full_seed_string, "start_edge")
 		local ground_noise = terrain_field.simplex(full_seed_string, "start_ground")
 		local poi_edge_noise = terrain_field.simplex(full_seed_string, "poi_edge")
@@ -293,9 +309,12 @@ local function height_factory(dependencies)
 				local row = source.anchor_profiles[index]
 				profiles[row.id] = row
 			end
+			-- The fixed anchors only (Round 46): water is laid out before
+			-- placement, and a placed POI keeps off water by its own rules.
 			local keepouts, pois = {}, {}
-			for index = 1, #source.anchors do
-				local a = source.anchors[index]
+			local fixed_anchors = source.fixed_anchors or source.anchors
+			for index = 1, #fixed_anchors do
+				local a = fixed_anchors[index]
 				local x, z = a.position.x, a.position.z
 				if a.slot_id == "start" or a.slot_id == "capital" then
 					local start = a.slot_id == "start"
@@ -798,7 +817,8 @@ local function height_factory(dependencies)
 			local selected = horizontal.selected_anchor_by_id(anchor.id) or {
 				x = anchor.position.x, z = anchor.position.z,
 				selection_mode = anchor.placement_mode == "authored_fixed" and
-					"authored_fixed" or "frozen_layout",
+					"authored_fixed" or (anchor.placement_mode == "placed" and "placed" or
+					"frozen_layout"),
 				approved_candidate_index = anchor.approved_candidate_index}
 			local profile = anchor_profile_by_id[anchor.template_id]
 			if not profile then fail("anchor profile reference differs") end

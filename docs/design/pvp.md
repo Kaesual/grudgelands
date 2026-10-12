@@ -148,9 +148,9 @@ eligibility and flag".
 
 ## 6. PvP points of interest
 
-One fortress per faction and 16 Battlegrounds camps, fixed anchors 101–118
-on every seed (positions, placement priorities, spacing and protection:
-[world_zones.md](world_zones.md) §16; garrison and respawn rules:
+One fortress per faction and 16 Battlegrounds camps, anchors 101–118
+placed per world by rules since Round 46 (placement rules, spacing and
+protection: [world_zones.md](world_zones.md) §8.5 and §16; garrison and respawn rules:
 [world.md](world.md) §4). All are protected POIs with a 10-node margin,
 refuse ambient hostile spawns and nudge idle roaming mobs away (a mob in
 combat may follow its target in).
@@ -160,7 +160,7 @@ combat may follow its target in).
 | | Accord | Throng |
 |---|---|---|
 | Name | Ashenward Bastion | Bannerbreak Warhold |
-| Zone, position | Ashenward March, (136, −488) | Bannerbreak Mesa, (−80, 632) |
+| Zone, position | Ashenward March, east of the middle road | Bannerbreak Mesa, west of the middle road |
 | General | General Haldren Ashward | General Grask Oathscar |
 | Seat race (registry, General's look) | human | orc |
 

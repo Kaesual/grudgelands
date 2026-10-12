@@ -200,10 +200,11 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     and POI protection use the corridors and boxes below). Terrain-derived
     placement heights are immutable mapgen output,
     but no first generated chunk owns the decision. Terrain fitting adapts to
-    every fixed reserved anchor position; WP13 may not invent a replacement
-    position. The construction self-check (`world_zones.md` §7.1) confirms
-    that every anchor lies in its own zone and on land, so no POI anchor
-    disappears silently.
+    every anchor position (fixed, or placed per world by its rules,
+    `world_zones.md` §8.5); WP13 may not invent a replacement position. The
+    construction self-check (`world_zones.md` §7.1) confirms that every fixed
+    anchor lies in its own zone and on land, the placement rules do the same
+    for a placed one, so no POI anchor disappears silently.
 - **R1b — Roads and POIs are protected** (Round 25 rulings 15–17,
   2026-09-29), in every territory and for every player:
   - **Roads**, their bridges and future waypoints. Sideways the corridor is
@@ -517,7 +518,8 @@ visible:
   the HP of his level, like the start zones' leaders (`grug_mobs.LEADER`;
   `grug_mobs/pvp_garrison.lua`).
 - Each named zone reserves its required outposts, patrols and special camps
-  explicitly (the authored anchor roster, `world_zones.md` §8).
+  explicitly (the authored anchor roster, `world_zones.md` §8); where they
+  stand is decided per world by the placement rules (`world_zones.md` §8.5).
 - **Ordinary guards attack enemy players and monsters, never arbitrary NPCs**
   (`attack_npcs = false`). Dedicated war-front soldiers are the scoped
   exception: their authored encounter anchors may target the opposing

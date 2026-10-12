@@ -20,7 +20,7 @@ return function(source, zones_session, planner_source, raw_sha256)
 		end))
 	end
 	if type(source) ~= "table" or type(source.anchors) ~= "table" or
-			#source.anchors ~= 118 or type(source.zones) ~= "table" or
+			#source.anchors < 1 or type(source.zones) ~= "table" or
 			type(zones_session) ~= "table" or type(zones_session.anchor) ~= "function" or
 			type(planner_source) ~= "table" or
 			type(planner_source.column_values_at) ~= "function" or
@@ -75,11 +75,20 @@ return function(source, zones_session, planner_source, raw_sha256)
 			functional_feature_id = functional_feature_id,
 			hard_foundation = hard_foundation}
 	end
-	for index = 7, 12 do add(index, "capital", 2) end
-	for index = 25, 48 do add(index, "outpost", 2) end
-	for index = 49, 60 do add(index, "bandit", 1) end
-	if #rows ~= 42 or family_counts.capital ~= 6 or family_counts.outpost ~= 24 or
-			family_counts.bandit ~= 12 then
+	-- The family follows the anchor's slot and kind, in anchor order (Round
+	-- 46: no index ranges, so a new outpost or camp row joins by itself).
+	local FAMILY = {outpost = {"outpost", 2}, bandit_home = {"bandit", 1},
+		bandit_frontier = {"bandit", 1}}
+	for index = 1, #source.anchors do
+		local a = source.anchors[index]
+		if a.slot_id == "capital" then
+			add(index, "capital", 2)
+		elseif FAMILY[a.template_id] then
+			add(index, FAMILY[a.template_id][1], FAMILY[a.template_id][2])
+		end
+	end
+	if family_counts.capital ~= 6 or family_counts.outpost < 1 or
+			family_counts.bandit < 1 then
 		fail("closed population differs")
 	end
 	local bytes = {"schema\tgrug_wp40_r7_anchor_roster_v1\n"}

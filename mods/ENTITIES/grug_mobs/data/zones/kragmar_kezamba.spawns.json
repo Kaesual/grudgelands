@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "canopy", "name": "Kezamba Canopy",
             "day": [{"role": "reed_tapir", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
-            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "riverbanks", "name": "Kezamba Riverbanks",
             "day": [{"role": "reed_tapir", "weight": 1}],
             "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
@@ -20,7 +20,7 @@
         "kinds": {
           "open": {"id": "vinewood", "name": "Kezamba Vinewood",
             "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
-            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "mudbanks", "name": "Kezamba Mudbanks",
             "day": [{"role": "reed_tapir", "weight": 1}],
             "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
@@ -31,7 +31,7 @@
         "kinds": {
           "open": {"id": "wildwood", "name": "Kezamba Wildwood",
             "day": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "monstrous_boar", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "reed_fang_viper", "weight": 1}], "density": "normal"},
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "reed_fang_viper", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "floodbanks", "name": "Kezamba Floodbanks",
             "day": [{"role": "reed_jungle_lynx", "weight": 1}],
             "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "sparse"}

@@ -1,8 +1,9 @@
 -- World-folder layout cache (Round 22, plan D71; world_zones.md §13.4).
 --
--- Main builds the inland water, road and capital layouts once per world and
--- hands their texts to emerge (`ipc_set`). This module stores exactly those
--- three texts in the world folder after the first build, plus a small block
+-- Main builds the POI placement (Round 46) and the inland water, road and
+-- capital layouts once per world and hands their texts to emerge
+-- (`ipc_set`). This module stores exactly those four texts in the world
+-- folder after the first build, plus a small block
 -- of build diagnostics (log lines, road showcase spots, build seconds), and
 -- returns them on a later boot ONLY when the stored key equals the current
 -- one. The key names everything the layouts depend on: a format version, the
@@ -26,9 +27,9 @@ return function(deps)
 		type(deps.list_dir) == "function" and type(deps.write) == "function" and
 		type(deps.identity) == "function", "WP40 layout cache dependencies differ")
 	local sha256 = deps.sha256
-	local M = {FORMAT = "grug_world_layouts_v1", FILE = "grug_world_layouts.txt"}
-	-- The sections in file order; the first three are the ipc_set texts.
-	local SECTIONS = {"water", "road", "capital", "meta"}
+	local M = {FORMAT = "grug_world_layouts_v2", FILE = "grug_world_layouts.txt"}
+	-- The sections in file order; the first four are the ipc_set texts.
+	local SECTIONS = {"placement", "water", "road", "capital", "meta"}
 	local KEY_NAMES = {"format", "seed", "source", "settings", "interpreter"}
 
 	-- Byte order, never Lua's locale-dependent `<`.
@@ -82,12 +83,12 @@ return function(deps)
 
 	-- Diagnostics block: `logs` {{level, text}}, `spots` {{name, kind, x, y, z,
 	-- road}} (the road showcase), `seconds` {construction, water, roads,
-	-- capitals} of the build that wrote the file.
+	-- capitals, placement} of the build that wrote the file.
 	local function encode_meta(meta)
 		local out = {}
 		local s = meta.seconds or {}
-		out[#out + 1] = string.format("seconds %.3f %.3f %.3f %.3f", s.construction or 0,
-			s.water or 0, s.roads or 0, s.capitals or 0)
+		out[#out + 1] = string.format("seconds %.3f %.3f %.3f %.3f %.3f", s.construction or 0,
+			s.water or 0, s.roads or 0, s.capitals or 0, s.placement or 0)
 		for _, row in ipairs(meta.logs or {}) do
 			assert(not row[2]:find("[\r\n]"), "layout cache log line spans lines")
 			out[#out + 1] = "log " .. row[1] .. " " .. row[2]
@@ -101,15 +102,16 @@ return function(deps)
 	local function decode_meta(text)
 		local meta = {logs = {}, spots = {}}
 		for line in text:gmatch("([^\n]*)\n") do
-			local a, b, c, d = line:match("^seconds (%S+) (%S+) (%S+) (%S+)$")
+			local a, b, c, d, e = line:match("^seconds (%S+) (%S+) (%S+) (%S+) (%S+)$")
 			if a then
 				meta.seconds = {construction = tonumber(a), water = tonumber(b),
-					roads = tonumber(c), capitals = tonumber(d)}
+					roads = tonumber(c), capitals = tonumber(d), placement = tonumber(e)}
 				for _, value in pairs(meta.seconds) do
 					if value ~= value then return nil end
 				end
 				if not (meta.seconds.construction and meta.seconds.water and
-						meta.seconds.roads and meta.seconds.capitals) then
+						meta.seconds.roads and meta.seconds.capitals and
+						meta.seconds.placement) then
 					return nil
 				end
 			elseif line:match("^log ") then
@@ -139,8 +141,8 @@ return function(deps)
 		for _, part in ipairs(parts) do
 			if part[1] ~= "format" then out[#out + 1] = part[1] .. "=" .. part[2] .. "\n" end
 		end
-		local bodies = {water = texts.water, road = texts.road, capital = texts.capital,
-			meta = encode_meta(meta or {})}
+		local bodies = {placement = texts.placement, water = texts.water, road = texts.road,
+			capital = texts.capital, meta = encode_meta(meta or {})}
 		for _, name in ipairs(SECTIONS) do
 			local body = bodies[name]
 			if type(body) ~= "string" or body == "" then
@@ -154,8 +156,8 @@ return function(deps)
 		return head .. "end " .. sha256(head) .. "\n"
 	end
 
-	-- `bytes` against the current key parts. Returns {water, road, capital,
-	-- meta} on a match; otherwise nil, the reason and whether the file is
+	-- `bytes` against the current key parts. Returns {placement, water, road,
+	-- capital, meta} on a match; otherwise nil, the reason and whether the file is
 	-- damaged (a warning) rather than merely built for another key.
 	function M.decode(bytes, parts)
 		if type(bytes) ~= "string" or bytes == "" then return nil, "empty cache file", true end
@@ -208,7 +210,8 @@ return function(deps)
 		if pos ~= #bytes + 1 then return nil, "trailing bytes after the file hash", true end
 		local meta = decode_meta(out.meta)
 		if not meta then return nil, "diagnostics block differs", true end
-		return {water = out.water, road = out.road, capital = out.capital, meta = meta}
+		return {placement = out.placement, water = out.water, road = out.road,
+			capital = out.capital, meta = meta}
 	end
 
 	function M.path(world_dir)

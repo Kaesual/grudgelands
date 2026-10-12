@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "plains", "name": "Speargrass Plains",
             "day": [{"role": "watchful_zebra", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
-            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Speargrass Strand",
             "day": [{"role": "bank_crab", "weight": 1}],
             "night": [{"role": "dust_stinger", "weight": 1}], "density": "dense"},
@@ -26,7 +26,7 @@
         "kinds": {
           "open": {"id": "tallgrass", "name": "Speargrass Tallgrass",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "watchful_zebra", "weight": 1}],
-            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "shallows", "name": "Speargrass Shallows",
             "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "dense"},
@@ -43,7 +43,7 @@
         "kinds": {
           "open": {"id": "hunting_grounds", "name": "Speargrass Hunting Grounds",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
-            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "dry_wells", "name": "Speargrass Dry Wells",
             "day": [{"role": "watchful_zebra", "weight": 1}],
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},

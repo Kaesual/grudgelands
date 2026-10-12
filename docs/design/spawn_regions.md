@@ -77,6 +77,25 @@ random numbers, no dependence on table order.
    (farthest-point seeds grown together, three Lloyd rounds). On Dawnmere
    regions are 3–40 cells, median 12–19 (about 100–200 m across); a lone
    islet cell with no land neighbour stays a region of its own.
+   **A quest-named kind forms a region** (Round 46). A kind whose recipe
+   row sets `"quest_target": true` (a quest's area or a title/text
+   placeholder names it; `tools/r28_regions/quest_kinds.py` sets the flags
+   and `quest_targets.py` fails on a kind whose flag differs) and that has
+   no region after the merges takes a compact block of 8 cells of its belt
+   outside the camps, and the regions are built again. The block grows from
+   the belt's best cell for the kind's type (its shore, bank, swamp or
+   forest share; for highland its slope or height over the zone's median),
+   adding the best neighbouring cell each time (then the nearest to the
+   start, then grid order); an `open` kind, or a kind whose type no cell of
+   the belt shows, takes the cells of the belt's commonest other type. A
+   block never takes a cell of any kind's largest full-size part (before
+   the merges; for a kind that formed only through them, its largest
+   region), so every kind that formed keeps that part whole; a kind lost
+   anyway would be a WARNING. A block is routine: a note in the stats and
+   an action line in the game's log (not repeated on a cache hit). Without
+   room for a block the stats and the log carry a WARNING and the kind's
+   leader takes the fallback chain of step 8. Every other kind keeps the
+   terrain's answer: where its type is absent on a seed it has no region.
 6. **Population.** A belt maps each type to a **kind**: a name, a day and a
    night roster and a density class. A type without its own entry uses the
    belt's `open` kind (the explicit parent rule). A role's levels in a region
@@ -89,7 +108,9 @@ random numbers, no dependence on table order.
    the last belt ends at the top of the zone's band. The game refuses a
    recipe that breaks this at load; `validate.py` reports `E-recipe-cover`.
 7. **Camps.** Camps on a POI come first: the centre is the POI's anchor
-   (fitted per seed), the camp's region the zone's land cells within the
+   (placed and fitted per seed, [world_zones.md](world_zones.md) §8.5: the
+   placement keeps a recipe-site camp in its recipe camp's belt on the
+   mapgen level field, so the warning below is the check), the camp's region the zone's land cells within the
    camp radius (40 nodes, box distance to the cell), its belt and levels
    the camp's stated `belt` (checked at load like any camp's, so the camp
    stands on every seed and its quest levels are exact). The belt the POI's
@@ -125,8 +146,9 @@ random numbers, no dependence on table order.
 8. **Leaders** stand on every seed (Round 28 S2c). A camp leader stands at
    its camp's centre. A kind leader stands on the best cell (farthest from
    roads, then deepest inside its region) of the largest region of its kind;
-   where the kind has no region on the seed, the chain goes on to the belt's
-   `open` kind and then to every region of the belt, largest first (a camp
+   where the kind has no region on the seed (for a quest-named kind only
+   when its belt has no room for a block, step 5), the chain goes on to the
+   belt's `open` kind and then to every region of the belt, largest first (a camp
    leader whose camp found no site takes that chain in the camp's belt; the
    stats name the fallback kind). The chain never leaves the belt, so the
    leader's fixed level (the top of its belt within its role's levels) stays
@@ -403,7 +425,7 @@ kill of any listed role counts, so one of them is a placed leader or stands
 in a kind or camp of the file's zone that forms one), and every
 placeholder target of the title and text (else the text has no direction
 there), and every "use at a place" objective's place (a clash site is
-always there; a quest place must be placed). A target missing on some seed
+placed on every seed, Round 46; a quest place must be placed). A target missing on some seed
 fails the run (MISSING). It notes
 the clock a target is met at when only one, and lists under CLOCK a quest
 whose text names only the other clock ("after dark" for a day role). An

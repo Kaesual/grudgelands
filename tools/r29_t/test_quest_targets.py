@@ -9,8 +9,9 @@ given an area, leaders of the file's zone and of another zone, item sources
 and quest drops, roles without an area (any listed role counts), placeholder
 targets, the clock note and CLOCK, objectives in the retired `mobs`
 format, "use at a place" objectives and quest places (Round 36: a clash
-site, a quest place placed on every seed or not, an unknown place), and the
-exit status (1 MISSING, 2 stale stats, 0 clean).
+site, a quest place placed on every seed or not, an unknown place), the
+`quest_target` flag of every quest-named kind (Round 46: missing or extra
+is MISSING), and the exit status (1 MISSING, 2 stale stats, 0 clean).
 
 Usage (repo root): python3 tools/r29_t/test_quest_targets.py
 """
@@ -108,11 +109,17 @@ QUESTS = [
 ]
 
 
-def write_world(root, quests, stats=STATS):
+def write_world(root, quests, stats=STATS, flags=()):
+    """`flags`: the kind ids whose recipe row sets quest_target (Round 46)."""
     spawns, regions, qdir = root / "spawns", root / "regions", root / "quests"
     for d in (spawns, regions, qdir):
         d.mkdir(parents=True, exist_ok=True)
     for zone, recipe in RECIPES.items():
+        recipe = json.loads(json.dumps(recipe))
+        for belt in recipe["belts"]:
+            for kind in belt["kinds"].values():
+                if kind["id"] in flags:
+                    kind["quest_target"] = True
         (spawns / (zone + ".spawns.json")).write_text(json.dumps({"zone": zone, "recipe": recipe}))
     for (short, seed), (counts, leaders) in stats.items():
         lines = ["# stats", "", "| Kind | Belt | Type | Density | Land share | Regions | Day | Night |",
@@ -181,6 +188,8 @@ with tempfile.TemporaryDirectory() as tmp:
         (("q_use_unknown obj 1", "nowhere_well is no quest place"), "an unknown use place"),
     ]:
         check(line_with(missing, *parts) is not None, label + ": MISSING")
+    check(line_with(missing, "elandor_alpha_fields/copse", "lacks \"quest_target\": true") is not None,
+          "a quest-named kind without quest_target: MISSING")
     clock = out.split("CLOCK (", 1)[1].split("\nok:", 1)[0] if "CLOCK (" in out else ""
     check(line_with(clock, "q_clock", "names the night", "day only") is not None, "CLOCK: a night text on day boars")
     check(line_with(clock, "q_kind") is None and line_with(clock, "q_bare_area") is None, "CLOCK: matching texts pass")
@@ -188,14 +197,21 @@ with tempfile.TemporaryDirectory() as tmp:
     check(line_with(missing, "q_not_in_area", "large_rat does not spawn") is None, "a role in the area is no problem")
 
     good = [q for q in QUESTS if q["id"] in ("q_kind", "q_bare_area", "q_leader", "q_sources", "q_noarea")]
-    code, out = run(write_world(Path(tmp) / "good", good), verbose=False)
+    code, out = run(write_world(Path(tmp) / "good", good, flags={"meadows"}), verbose=False)
     check(code == 0, "every target forms: exit status 0 (got %d)" % code)
     check(line_with(out, "targets: ok 8, MISSING on some seed 0, CLOCK 0") is not None,
           "counts of a clean run: " + out.splitlines()[1])
+    check(line_with(out, "quest-named kinds (quest_target): 1") is not None, "one quest-named kind")
+    code, out = run(write_world(Path(tmp) / "unflagged", good), verbose=False)
+    check(code == 1 and line_with(out, "elandor_alpha_fields/meadows", "lacks") is not None,
+          "the quest-named kind without its flag: MISSING")
+    code, out = run(write_world(Path(tmp) / "extra", good, flags={"meadows", "oakwood"}), verbose=False)
+    check(code == 1 and line_with(out, "elandor_beta_wood/oakwood", "no quest names it") is not None,
+          "a flag no quest needs: MISSING")
 
     stale = dict(STATS)
     stale[("alpha", "2")] = ({"meadows": 3, "camp": 1}, ["chief"])
-    code, out = run(write_world(Path(tmp) / "stale", good, stale), verbose=False)
+    code, out = run(write_world(Path(tmp) / "stale", good, stale, {"meadows"}), verbose=False)
     check(code == 2 and "STALE" in out, "stats without a recipe kind: exit status 2")
 
 print("%d checks, %d failures" % (checks, failures))

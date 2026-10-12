@@ -125,8 +125,11 @@ do
 		if anchor.slot_id == "start" or anchor.slot_id == "capital" or
 				anchor.slot_id:match("^village_") or anchor.slot_id:match("^outpost_") or
 				anchor.slot_id == "pvp_fortress" then
-			rows[#rows + 1] = {kind = icons.kind(anchor.slot_id), x = anchor.position.x,
-				z = anchor.position.z}
+			-- a placed anchor has no position in the authored source (Round
+			-- 46, placed per world): a distinct stand-in on its faction's side
+			local at = anchor.position or {x = anchor.numeric_id * 32,
+				z = anchor.zone_numeric_id <= 16 and -1000 or 1000}
+			rows[#rows + 1] = {kind = icons.kind(anchor.slot_id), x = at.x, z = at.z}
 		end
 	end
 	local items = B.items(rows, {}, {})

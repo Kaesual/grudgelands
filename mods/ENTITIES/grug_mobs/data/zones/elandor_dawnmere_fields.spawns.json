@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "home_fields", "name": "Dawnmere Home Fields",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {
@@ -17,7 +17,7 @@
         "kinds": {
           "open": {"id": "meadows", "name": "Dawnmere Meadows",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"},
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Dawnmere Strand",
             "day": [{"role": "quiet_shore_crab", "weight": 1}],
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
@@ -34,7 +34,7 @@
         "kinds": {
           "open": {"id": "pastures", "name": "Dawnmere Pastures",
             "day": [{"role": "small_fox", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
-            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal"},
+            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "tideflats", "name": "Dawnmere Tideflats",
             "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
@@ -54,7 +54,7 @@
             "night": [{"role": "monstrous_rat", "weight": 1}], "density": "normal"},
           "shore": {"id": "wreck_coast", "name": "Dawnmere Wreck Coast",
             "day": [{"role": "giant_crab", "weight": 1}],
-            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "forest": {"id": "darkwood", "name": "Dawnmere Darkwood",
             "day": [{"role": "aggressive_boar", "weight": 1}],
             "night": [{"role": "drowned_zombie", "weight": 1}], "density": "normal"},

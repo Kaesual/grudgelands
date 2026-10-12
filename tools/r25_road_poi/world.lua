@@ -23,8 +23,10 @@ return function(repo, seed)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local sha = common.new_sha256()
 	local A = dofile(dir .. "/world_assembly.lua")(dir, sha)
-	local source, settlement, index128 = A.source, A.settlement, A.index128
+	local settlement, index128 = A.settlement, A.index128
 	local W = A.world(seed, nil, {protection = A.square_cities(120)})
+	-- the world's placed source (Round 46): every anchor with its position
+	local source = W.place()
 	local roads = W.roads
 	-- the height session itself is kept for the tools that ask the natural
 	-- (pre-fitting) ground (`natural_height_at`)

@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "dead_furrows", "name": "Stillgrave Dead Furrows",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {
@@ -17,7 +17,7 @@
         "kinds": {
           "open": {"id": "ashfields", "name": "Stillgrave Ashfields",
             "day": [{"role": "small_boar", "weight": 3}, {"role": "braindead_zombie", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 3}, {"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "large_rat", "weight": 3}, {"role": "braindead_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "bone_strand", "name": "Stillgrave Bone Strand",
             "day": [{"role": "quiet_shore_crab", "weight": 1}],
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
@@ -31,10 +31,10 @@
         "kinds": {
           "open": {"id": "blightmoor", "name": "Stillgrave Blightmoor",
             "day": [{"role": "young_gaunt_stag", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
-            "night": [{"role": "rabid_rat", "weight": 3}, {"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "rabid_rat", "weight": 3}, {"role": "sluggish_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "saltbones", "name": "Stillgrave Saltbones",
             "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
-            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "highland": {"id": "cairn_ridge", "name": "Stillgrave Cairn Ridge",
             "day": [{"role": "sluggish_zombie", "weight": 3}, {"role": "young_gaunt_stag", "weight": 1}],
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"}

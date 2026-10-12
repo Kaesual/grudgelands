@@ -15,7 +15,7 @@
             "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"},
           "forest": {"id": "lower_pines", "name": "Copperfell Lower Pines",
             "day": [{"role": "young_boar", "weight": 3}, {"role": "young_fox", "weight": 1}],
-            "night": [{"role": "granary_rat", "weight": 3}, {"role": "ore_thieving_goblin", "weight": 1}], "density": "normal"}
+            "night": [{"role": "granary_rat", "weight": 3}, {"role": "ore_thieving_goblin", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {
@@ -26,7 +26,7 @@
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"},
           "forest": {"id": "pine_slopes", "name": "Copperfell Pine Slopes",
             "day": [{"role": "surefoot_ibex", "weight": 3}, {"role": "bristling_boar", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "ibex_ledges", "name": "Copperfell Ibex Ledges",
             "day": [{"role": "surefoot_ibex", "weight": 1}],
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"}

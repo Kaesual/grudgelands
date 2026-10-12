@@ -538,7 +538,9 @@ local function zones_factory(dependencies)
 					record.slot_id ~= source_anchor.slot_id or
 					record.template_id ~= source_anchor.template_id or
 					record.selection_mode ~= (source_anchor.placement_mode ==
-						"authored_fixed" and "authored_fixed" or "frozen_layout") or
+						"authored_fixed" and "authored_fixed" or
+						(source_anchor.placement_mode == "placed" and "placed" or
+						"frozen_layout")) or
 					record.approved_candidate_index ~=
 						source_anchor.approved_candidate_index or
 					record.x ~= source_anchor.position.x or
@@ -1013,6 +1015,14 @@ local function zones_factory(dependencies)
 					if not anchor then fail("exclusion anchor missing: " .. tostring(row.id)) end
 					exclusion_floor_by_id[row.id] =
 						integer(anchor.y, "anchor placement height") - PROTECTION_DEPTH
+				elseif row.recipe_id == "exclude_underground_v1" then
+					-- An underground reservation (Round 46): its own depth below
+					-- the anchor's placement height.
+					local anchor = anchor_record_by_id[row.source_id]
+					if not anchor then fail("exclusion anchor missing: " .. tostring(row.id)) end
+					exclusion_floor_by_id[row.id] =
+						integer(anchor.y, "anchor placement height") -
+						integer(row.depth, "underground reservation depth")
 				elseif row.recipe_id == "exclude_active_core_v1" then
 					local hard = hard_by_id[row.source_id]
 					if not hard then fail("exclusion hard core missing: " .. tostring(row.id)) end

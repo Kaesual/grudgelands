@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "orchards", "name": "Goldmead Orchards",
             "day": [{"role": "young_fox", "weight": 3}, {"role": "young_boar", "weight": 1}],
-            "night": [{"role": "granary_rat", "weight": 3}, {"role": "snaring_poacher", "weight": 1}], "density": "normal"},
+            "night": [{"role": "granary_rat", "weight": 3}, {"role": "snaring_poacher", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Goldmead Strand",
             "day": [{"role": "tidepool_crab", "weight": 1}],
             "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"},
@@ -29,7 +29,7 @@
         "kinds": {
           "open": {"id": "wheatfields", "name": "Goldmead Wheatfields",
             "day": [{"role": "bristling_boar", "weight": 3}, {"role": "young_boar", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal"},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "tideflats", "name": "Goldmead Tideflats",
             "day": [{"role": "reefclaw_crab", "weight": 3}, {"role": "tidepool_crab", "weight": 1}],
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "dense"},
@@ -41,7 +41,7 @@
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
           "forest": {"id": "thickets", "name": "Goldmead Thickets",
             "day": [{"role": "rabid_fox", "weight": 3}, {"role": "young_boar", "weight": 1}],
-            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal", "quest_target": true}
         }
       },
       {

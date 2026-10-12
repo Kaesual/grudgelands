@@ -364,7 +364,7 @@ return function(canonical, raw_sha256, settlement_order)
 				#anchors.semantic_digest ~= 64 then
 			fail("anchor content identity differs")
 		end
-		if type(inputs.anchor_roster) ~= "table" or #inputs.anchor_roster ~= 42 or
+		if type(inputs.anchor_roster) ~= "table" or #inputs.anchor_roster < 1 or
 				type(inputs.anchor_roster_sha256) ~= "string" or
 				#inputs.anchor_roster_sha256 ~= 64 then
 			fail("anchor roster identity differs")

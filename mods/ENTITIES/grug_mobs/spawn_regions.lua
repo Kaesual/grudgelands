@@ -351,6 +351,11 @@ local function build_map(zone_id, rec)
 	for _, warning in ipairs(map.warnings) do
 		core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. warning)
 	end
+	-- Routine notes (a kind's fallback block, Round 46); not kept in the
+	-- cache, so a cache hit does not repeat them.
+	for _, note in ipairs(map.notes or {}) do
+		core.log("action", "[grug_mobs] spawn regions " .. zone_id .. ": " .. note)
+	end
 	return map
 end
 

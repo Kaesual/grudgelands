@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "glades", "name": "Lethariel Glades",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "orchard_fox", "weight": 1}],
-            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "brooks", "name": "Lethariel Brooks",
             "day": "open",
             "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
@@ -20,7 +20,7 @@
         "kinds": {
           "open": {"id": "greatwood", "name": "Lethariel Greatwood",
             "day": [{"role": "redfang_fox", "weight": 3}, {"role": "orchard_fox", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "fernbrooks", "name": "Lethariel Fernbrooks",
             "day": "open",
             "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}

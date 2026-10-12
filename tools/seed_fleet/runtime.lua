@@ -154,7 +154,8 @@ return function(repo, seed, mode)
 		R.authority = R.main.build_authority(native.identities())
 		local runtime = runtime_factory(fake, wp40, schematics, projection, catalog,
 			R.main.water_layout_text(), R.main.road_layout_text(),
-			R.main.capital_layout_text(), R.main.prepared_handover())
+			R.main.capital_layout_text(), R.main.prepared_handover(),
+			R.main.placement_layout_text())
 		register_palette(runtime)
 		R.built = runtime.build(native.identities(), R.authority.manifest.sha256)
 		if R.built.full_seed ~= R.authority.full_seed then error("main/emerge seed differs") end
