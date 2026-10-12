@@ -593,9 +593,10 @@ end)
 -- boxes along the top, the full inventory view below them (main[9..] and
 -- every equipped bag as one scrolling grid, the hotbar at the bottom; the
 -- view draws its own two boxes), and between the grid and the hotbar the
--- money row: the balance, Withdraw, the Bag of Coins deposit and Sort, on
--- the slot columns. Real coordinates; no listring, so shift-click does
--- nothing here (one inventory has no "other side").
+-- money row: the balance, Withdraw, the Bag of Coins deposit, its automatic
+-- deposit checkbox and Sort, on the slot columns. Real coordinates; no
+-- listring, so shift-click does nothing here (one inventory has no "other
+-- side").
 --
 
 local INVENTORY_PAGE = "grug_inventory:inventory"
@@ -642,8 +643,9 @@ local function inventory_content(player)
 	-- The money row (Round 45 playtest; the balance and Withdraw moved here
 	-- from the Character page): "Money" over the balance in columns 1-2
 	-- (a real-coordinate label's lines are half a slot apart, centred on
-	-- their y), Withdraw in columns 3-4, the deposit slot in column 5, Sort
-	-- in columns 7-8, ending with the hotbar's last slot.
+	-- their y), Withdraw in columns 3-4, the deposit slot in column 5, the
+	-- automatic deposit's checkbox in column 6 (Round 46), Sort in columns
+	-- 7-8, ending with the hotbar's last slot.
 	local row_y, x = layout.money_y, layout.x
 	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, row_y + 0.25,
 		esc("Money\n" .. grug_money.format(grug_money.get(player))))
@@ -659,6 +661,13 @@ local function inventory_content(player)
 		:format(deposit_x, row_y)
 	fs[#fs + 1] = ("tooltip[%.3f,%.3f;1,1;%s]"):format(deposit_x, row_y,
 		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
+	-- Round 46: the automatic deposit on pickup, in column 6 (a real-coordinate
+	-- checkbox's y is its middle); its label is short to fit the column, the
+	-- tooltip says it in full.
+	fs[#fs + 1] = ("checkbox[%.3f,%.3f;grug_money_auto_deposit;Auto;%s]"):format(
+		x + 5 * PITCH, row_y + 0.5, tostring(grug_money.auto_deposit(player)))
+	fs[#fs + 1] = ("tooltip[grug_money_auto_deposit;%s]"):format(
+		esc("Deposit coin bags automatically on pickup"))
 	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_inv_sort;Sort]"):format(
 		x + 6 * PITCH, row_y, ROW_BUTTON_W)
 	fs[#fs + 1] = ("tooltip[grug_inv_sort;%s]"):format(esc("Sort the inventory " ..
@@ -675,6 +684,13 @@ sfinv.register_page(INVENTORY_PAGE, {
 	on_player_receive_fields = function(self, player, context, fields)
 		if fields.grug_money_withdraw then
 			grug_money.show_withdraw(player)
+			return true
+		end
+		if fields.grug_money_auto_deposit then
+			grug_money.set_auto_deposit(player, fields.grug_money_auto_deposit == "true")
+			-- The stored window must carry the new tick, or reopening the
+			-- inventory would show the old one; only this toggle resends.
+			sfinv.set_player_inventory_formspec(player, context)
 			return true
 		end
 		if fields.grug_inv_sort then

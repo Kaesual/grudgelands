@@ -225,6 +225,7 @@ grug_money = {
 	deposit_location = function(player)
 		return "detached:grug_money_deposit_" .. player:get_player_name(), "deposit"
 	end,
+	auto_deposit = function() return true end, -- Round 46: the Inventory page's checkbox
 	format = function(value) return ("%dg %ds %dc"):format(math.floor(value / 10000),
 		math.floor(value / 100) % 100, value % 100) end,
 	get = function() return 123456 end,
