@@ -70,8 +70,11 @@ local function add_item_group(item, group)
 	core.override_item(item, {groups = groups})
 end
 
+-- The staple counts every start's own vegetable (Round 46 ruling 13: carrot
+-- and cassava join potato and corn), so all six starts cook two T1 recipes.
 local INGREDIENT_GROUPS = {
-	grug_cooking_staple = {"grug_gathering:potato", "grug_gathering:corn"},
+	grug_cooking_staple = {"grug_gathering:potato", "grug_gathering:corn",
+		"grug_cooking:carrot", "grug_cooking:cassava"},
 	grug_cooking_root = {"grug_cooking:carrot", "grug_cooking:cassava"},
 	grug_cooking_berry = {"default:blueberries", "grug_cooking:blightberry",
 		"grug_cooking:sunberry", "grug_cooking:jungle_berry"},
@@ -80,11 +83,14 @@ local INGREDIENT_GROUPS = {
 		"grug_cooking:jungle_berry"},
 	grug_cooking_early_spice = {"grug_cooking:wild_onion",
 		"grug_cooking:fire_pepper"},
+	grug_cooking_mushroom = {"grug_gathering:mushroom", "grug_cooking:cave_cap"},
 }
 
 for group, members in pairs(INGREDIENT_GROUPS) do
 	for index = 1, #members do add_item_group(members[index], group) end
 end
+
+grug_cooking.INGREDIENT_GROUPS = INGREDIENT_GROUPS
 
 local function dish(id, description, tier, role, inputs)
 	return {id = id, item = "grug_cooking:" .. id, description = description,
@@ -96,11 +102,15 @@ local G = "grug_gathering:"
 local C = "grug_cooking:"
 local MEAT = "mobs:meat_raw"
 local FISH = "grug_mobs:raw_fish"
+-- Raw Fish and the five band fish (grug_fishing) share this group.
+local ANY_FISH = "group:food_fish_raw"
+local F = "grug_fishing:"
 local STAPLE = "group:grug_cooking_staple"
 local ROOT = "group:grug_cooking_root"
 local BERRY = "group:grug_cooking_berry"
 local FRUIT = "group:grug_cooking_fruit"
 local EARLY_SPICE = "group:grug_cooking_early_spice"
+local MUSHROOM = "group:grug_cooking_mushroom"
 
 -- A dish without inputs comes only from its raw assembly (below) in the
 -- furnace (Round 28 ruling 27: no direct recipe duplicates that line).
@@ -125,19 +135,33 @@ local DISHES = {
 		{MEAT, EARLY_SPICE, G .. "mushroom"}),
 	dish("marsh_roast", "Marsh Roast", 4, "hearty"),
 	dish("marshbloom_chowder", "Marshbloom Chowder", 4, "caster",
-		{FISH, G .. "marshbloom", G .. "marshbloom"}),
+		{ANY_FISH, G .. "marshbloom", G .. "marshbloom"}),
 	dish("hunters_feast", "Hunter's Feast", 4, "hunter",
 		{MEAT, MEAT, G .. "melon", G .. "mushroom"}),
 	dish("kelp_wrapped_roast", "Kelp-Wrapped Roast", 5, "hearty"),
 	dish("stormkelp_broth", "Stormkelp Broth", 5, "caster",
-		{G .. "stormkelp", G .. "stormkelp", FISH, G .. "rock_salt"}),
+		{G .. "stormkelp", G .. "stormkelp", ANY_FISH, G .. "rock_salt"}),
 	dish("salt_crusted_fish", "Salt-Crusted Fish", 5, "hunter",
-		{FISH, G .. "rock_salt"}),
+		{ANY_FISH, G .. "rock_salt"}),
 	dish("grand_feast", "Grand Feast", 6, "hearty"),
 	dish("jungle_cocoa", "Jungle Cocoa", 6, "caster",
 		{G .. "wild_cocoa", G .. "wild_cocoa", G .. "rock_salt"}),
 	dish("cocoa_rubbed_game", "Cocoa-Rubbed Game", 6, "hunter",
 		{MEAT, G .. "wild_cocoa", EARLY_SPICE}),
+	-- One plain dish per tier (Round 46 ruling 13): weaker than the three
+	-- roles, from few ingredients found in every zone of its band (the band's
+	-- fish from T2); the 11-20 zones cook the T1 and T2 ones.
+	dish("spiced_skewer", "Spiced Skewer", 1, "plain", {MEAT, EARLY_SPICE}),
+	dish("pan_fried_trout", "Pan-Fried Trout", 2, "plain",
+		{F .. "silver_trout", C .. "wild_grain"}),
+	dish("mire_carp_stew", "Mire Carp Stew", 3, "plain",
+		{F .. "mire_carp", MUSHROOM}),
+	dish("frostfin_fillet", "Frostfin Fillet", 4, "plain",
+		{F .. "frostfin", MUSHROOM}),
+	dish("smoked_ember_eel", "Smoked Ember Eel", 5, "plain",
+		{F .. "ember_eel", G .. "corn"}),
+	dish("kelp_steamed_tuna", "Kelp-Steamed Tuna", 6, "plain",
+		{F .. "storm_tuna", G .. "stormkelp"}),
 }
 
 for index = 1, #DISHES do
@@ -154,7 +178,9 @@ end
 grug_cooking.DISHES = DISHES
 
 local INGREDIENT_TIERS = {
-	[MEAT] = 1, [FISH] = 1,
+	[MEAT] = 1, [FISH] = 1, [ANY_FISH] = 1,
+	[F .. "silver_trout"] = 2, [F .. "mire_carp"] = 3, [F .. "frostfin"] = 4,
+	[F .. "ember_eel"] = 5, [F .. "storm_tuna"] = 6,
 	[G .. "potato"] = 1, [G .. "corn"] = 1,
 	[C .. "wild_grain"] = 1, [C .. "carrot"] = 1,
 	[C .. "cassava"] = 1, [C .. "wild_onion"] = 1,
@@ -165,7 +191,7 @@ local INGREDIENT_TIERS = {
 	[C .. "sunberry"] = 2, [C .. "jungle_berry"] = 2,
 	[C .. "sugar_cane"] = 2,
 	[BERRY] = 2, [FRUIT] = 2,
-	[G .. "mushroom"] = 3, [C .. "cave_cap"] = 3,
+	[G .. "mushroom"] = 3, [C .. "cave_cap"] = 3, [MUSHROOM] = 3,
 	[G .. "melon"] = 4, [G .. "marshbloom"] = 4,
 	[C .. "frost_melon"] = 4,
 	[G .. "rock_salt"] = 5, [G .. "stormkelp"] = 5,

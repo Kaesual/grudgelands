@@ -89,6 +89,8 @@ local GROUP_NAMES = {
 	wood = "Any planks",
 	grug_cooking_fruit = "Any fruit",
 	grug_cooking_berry = "Any berry",
+	grug_cooking_staple = "Any vegetable",
+	food_fish_raw = "Any raw fish",
 }
 local WRITTEN_OUT = 3
 
