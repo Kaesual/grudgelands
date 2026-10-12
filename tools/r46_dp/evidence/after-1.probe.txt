@@ -1,0 +1,19 @@
+ACTION[Emerge-0]: [r24_density_probe] emerged 3 areas in 19.8 s
+ACTION[Server]: [r24_density_probe] point pulse400 zone=elandor_hearthpine_vale level=24
+ACTION[Server]: [r24_density_probe] point pulse1000 zone=elandor_hearthpine_vale level=60
+ACTION[Server]: [r24_density_probe] point pulse1500 zone=elandor_hearthpine_vale level=60
+ACTION[Server]: [r24_density_probe] window pulse night start (240 s)
+ACTION[Server]: [r24_density_probe] depth pulse night@60 pulse400 hostile=7 elite=0 shallow=0 other_mobs=2 objects=18 level=24 [crystal_shard=1 giant_spider=2 oerkki=2 zombie=2] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@60 pulse1000 hostile=8 elite=2 shallow=0 other_mobs=0 objects=16 level=60 [ember_wisp=1 giant_spider=1 lava_flan*L58=1 lava_flan=1 stone_mite=2 zombie*L60=1 zombie=1] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@60 pulse1500 hostile=12 elite=1 shallow=0 other_mobs=1 objects=26 level=60 [ember_wisp=3 giant_spider=2 lava_flan=1 stone_mite=2 zombie*L60=1 zombie=3] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@120 pulse400 hostile=7 elite=0 shallow=0 other_mobs=3 objects=22 level=24 [crystal_shard=1 giant_spider=2 oerkki=2 pulse:blood_bat=1 zombie=2] pulse=1
+ACTION[Server]: [r24_density_probe] depth pulse night@120 pulse1000 hostile=8 elite=2 shallow=0 other_mobs=1 objects=18 level=60 [dungeon_master=1 giant_spider=1 lava_flan*L58=1 lava_flan=1 stone_mite=2 zombie*L60=1 zombie=1] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@120 pulse1500 hostile=13 elite=1 shallow=0 other_mobs=3 objects=32 level=60 [ember_wisp=2 giant_spider=2 lava_flan=1 stone_mite=5 zombie*L60=1 zombie=2] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@180 pulse400 hostile=7 elite=0 shallow=0 other_mobs=3 objects=20 level=24 [crystal_shard=1 giant_spider=2 oerkki=2 zombie=2] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@180 pulse1000 hostile=7 elite=2 shallow=0 other_mobs=3 objects=20 level=60 [giant_spider=1 lava_flan*L58=1 lava_flan=2 stone_mite=1 zombie*L60=1 zombie=1] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@180 pulse1500 hostile=13 elite=1 shallow=0 other_mobs=2 objects=30 level=60 [ember_wisp=2 giant_spider=2 lava_flan=2 stone_mite=4 zombie*L60=1 zombie=2] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@240 pulse400 hostile=8 elite=0 shallow=0 other_mobs=3 objects=22 level=24 [crystal_shard=1 giant_spider=3 oerkki=2 zombie=2] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@240 pulse1000 hostile=7 elite=2 shallow=0 other_mobs=1 objects=16 level=60 [ember_wisp=1 giant_spider=1 lava_flan*L58=1 lava_flan=1 stone_mite=1 zombie*L60=1 zombie=1] pulse=0
+ACTION[Server]: [r24_density_probe] depth pulse night@240 pulse1500 hostile=13 elite=1 shallow=0 other_mobs=3 objects=32 level=60 [ember_wisp=2 giant_spider=2 lava_flan=2 stone_mite=4 zombie*L60=1 zombie=2] pulse=0
+ACTION[Server]: [r24_density_probe] pulse counters pulse: faded=19 placed=19 rolls=19 spawned=19; live arrivals 0
+ACTION[Server]: [r24_density_probe] RESULT DONE pulse

@@ -229,6 +229,11 @@ local function pulse_counters()
 	for _, k in ipairs(keys) do parts[#parts + 1] = k .. "=" .. DP.stats[k] end
 	log(("pulse counters %s: %s; live arrivals %d"):format(variant,
 		table.concat(parts, " "), #DP.arrivals))
+	local c = DP.probe_cost
+	if c then
+		log(("pulse step cost: %d steps, %d us in all, %.1f us mean, %d us max"):format(
+			c.calls, c.us, c.calls > 0 and c.us / c.calls or 0, c.max))
+	end
 end
 
 local function census(label)
@@ -293,8 +298,19 @@ local function start_measuring()
 	if MODE == "pulse" then
 		pulse_rooms()
 		if grug_mobs.depth_pulse then
+			local DP = grug_mobs.depth_pulse
 			local stand_ins = pulse_stand_ins()
-			grug_mobs.depth_pulse.players = function() return stand_ins end
+			DP.players = function() return stand_ins end
+			-- The step's own cost over the window (a comparison, not a budget).
+			local step = DP.step
+			DP.probe_cost = {calls = 0, us = 0, max = 0}
+			DP.step = function(...)
+				local t0 = core.get_us_time()
+				step(...)
+				local us = core.get_us_time() - t0
+				local c = DP.probe_cost
+				c.calls, c.us, c.max = c.calls + 1, c.us + us, math.max(c.max, us)
+			end
 		end
 		run_window("night", function()
 			pulse_counters()
