@@ -621,7 +621,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the engine's grid routes, the registry, the gear families and the vendor
   payouts (`corpus_base.lua` is the base commit's dump, the generator's input);
   `gen_basic_recipes.lua` converts it into `grug_jobs/basic_recipes.lua`
-  (`--check`, `--report`); `portable_test.lua` loads the real registry, the
+  (`--check`, `--report`), applying the later edits of `edits.lua` (Round 46:
+  10 torches per coal or charcoal); `portable_test.lua` loads the real registry, the
   Basic catalog and the profession catalogs under a stub engine: the record
   shape, queries and refusals, the conversion of every grid route, gear in
   its profession, durations, stations, the craft list at a join and the
@@ -754,3 +755,47 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   mender's "Grudge-Free Repairs" form; `r451_tx` GPT-6 Astra's proposals
   (trainer greetings, music-note icons, `paint_art.py`, the offline
   `review.html`), provenance for the user's picks, not a fixture.
+- **Round 46** (`r46_<lane>`): `r46_wt` the waiting point
+  (`portable_test.lua`, the real vendored sfinv, `grug_core`'s
+  `map_reset.lua`, `grug_factions` and `grug_classes/selection.lua` under a
+  stub engine with reset 1 applied): the rule matrix at the start of a
+  session (new, mid-draft, created but not arrived and backlog players moved
+  to (0, 31000, 0) once; a complete character without a backlog held where
+  it stands; no session when ready), the arrival and relocation teleports,
+  disconnects at the waiting point, the constant and its place in
+  `lock_player`, and the chunk edge y = 30927 from the game's
+  `minetest.conf`. `engine.py OUT_DIR` is the engine run (one queue slot
+  through the round's `engine_run.sh`, about 3 minutes): one boot of a fresh
+  world (seed 42, reset 1 staged) with the disposable probe
+  `grug_probe_r46_wt` and real protocol clients (`r43_it/client.py`, with
+  block acknowledgements and position reports like a standard client);
+  characters saved at old positions rejoin during the preparation, the probe
+  counts the generated chunks near each old position, the engine spawn and
+  the waiting point, and checks the teleports and the disconnects;
+  `evidence/` holds the run's receipts;
+  `r46_ck` cooking for every start zone:
+  `locality.lua` reads the shipped world data (zone biomes and level bands,
+  the wild plant and gathering catalogs, the catch tables, the mobs' meat
+  drops) and the real cooking catalog, and says which Cooking recipes each
+  zone can make from its own ingredients; `cook_local.lua [REPO] [--before
+  OLD_REPO] [--all | --recipes]` prints them per race (before and after
+  against a `git archive` of an older commit) or per recipe;
+  `portable_test.lua` checks the plain food role (weaker than every role per
+  tier), the six plain dishes, the staple and raw fish groups, and the
+  coverage (two T1 recipes in every start zone, the T1 and T2 plain dishes in
+  every 11-20 zone, every zone its band's plain dish, a T3 recipe in
+  Frostbarrow), that ×N equals what a job can take for every Cooking recipe
+  on many inventories (overlapping groups included; `jobs_harness.lua`
+  loads the real `grug_jobs` registry and jobs under a stub engine), the
+  plain furnace foods and the four ingredient swaps; `bench_count.lua [REPO]
+  [ROUNDS]` (LuaJIT, also `-joff`) times that count per page view on the
+  review's worst case and a realistic inventory;
+  `r46_uw` underground spawns and torches
+  (`portable_test.lua` on the real spawn roster of
+  `r24_density_xp/roster.lua`: every underground row from y −1, light 7 or
+  any, its `on_spawn`; the policy at the boundary, the start footprint and
+  the elite floor; the sight and the 4 % elite roll of
+  `underground_spawned`; `pending_level`; the torch rows). `evidence/` holds
+  the depth probe's before/after logs (`r24_density_xp/run.sh` with
+  `POINTS=depth`: three points at y −30, −300 and −900 under Hearthpine and
+  a torch room).

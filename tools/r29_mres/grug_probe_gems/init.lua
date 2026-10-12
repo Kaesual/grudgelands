@@ -4,7 +4,8 @@
 -- Emerges one 64 x 64 column (X0..X0+63, Z0..Z0+63) from y +50 down to
 -- y -1300 in open ground and counts, per tier band, the band's tier rock,
 -- every ore and every gem. Each gem must occur only in the band of its own
--- tier, at roughly one per 512 host nodes there (host = the band's tier rock
+-- tier and the two below it (Round 46), at roughly one per 512 host nodes in
+-- its own band (host = the band's tier rock
 -- plus every resource node in it, i.e. the rock before P8 placed its veins).
 -- Ends the server itself; "RESULT PASS" is the verdict line.
 
@@ -55,10 +56,13 @@ local function survey()
 			if resource.gem then
 				local count = counts[resource.natural_node] or 0
 				parts[#parts + 1] = tostring(count)
-				if resource.harvest_tier == band then
+				-- Round 46 ruling 3: also one and two tiers deeper, thinner
+				-- (the per-band census is tools/r46_or).
+				local depth = band - resource.harvest_tier
+				if depth == 0 then
 					own = count
-				else
-					check(count == 0, resource.key .. " outside its band in band " .. band)
+				elseif depth < 0 or depth > 2 then
+					check(count == 0, resource.key .. " outside its bands in band " .. band)
 				end
 			end
 		end

@@ -203,10 +203,10 @@ mobs:spawn({
 	-- at -100 after the mapgen strata, which would leave this row firing in a
 	-- 60-node sliver instead of the whole cave system.
 	nodes = {"default:stone", "group:grug_stratum"},
-	max_light = 5,
+	max_light = 7,
 	interval = 20,
 	chance = 1800,
 	active_object_count = 4,
 	min_height = -31000,
-	max_height = -40,
+	max_height = -1,
 })

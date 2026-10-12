@@ -2,12 +2,13 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-The game ships 540 quests, one data file per zone plus a front file per
-front host (`quests.md`, "Quest data"): Round 29's 491 — one track per race
+The game ships 485 quests, one data file per zone plus a front file per
+front host (`quests.md`, "Quest data"): Round 29's quests — one track per race
 from the start zone to its heartland, the contested 31–40 zones and the 41–60
-front with its repeatable and island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
+front with its island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
 Round 31's 24 PvP fortress quests (§4) and Round 36's 25 for the main line
-of levels 41–60 (WP9, `story.md` §2a).
+of levels 41–60 (WP9, `story.md` §2a). Round 46 removed Round 29's 55
+repeatable quests (ruling 8; 436 of its 491 remain).
 
 ## 1. Leveling pace
 
@@ -17,8 +18,10 @@ of levels 41–60 (WP9, `story.md` §2a).
 - The curve is measured in **kill equivalents** (Round 28 rulings 30–32,
   2026-10-01; section "XP units and level curve" below): early levels need
   8 same-level kills' worth of XP, rising linearly to about 25 at level 59.
-  Quests carry most of it (Ruling 33: questing covers about 90 % of a start
-  zone's band and about 80 % elsewhere). Tune with playtests, not redesigns.
+  Quests, kills and gathering carry it with **no fixed questing share**
+  (Round 46 ruling 6, retiring Ruling 33's shares of about 90 % / 80 % /
+  70 %): the XP mix follows the game's decisions, and players also mine a
+  lot. Tune with playtests, not redesigns.
 
 ## XP units and level curve
 
@@ -71,8 +74,10 @@ level-1 mob, not 3×.
 - **Quest rewards** are authored as a **weight in KE** at the quest's reward
   level: `XP = round(weight × M(quest level))` (`grug_xp.quest_reward(level,
   weight)`); the human +10 % quest bonus applies on top when the reward is
-  granted (source `quest`). Weights and the per-band budget (Ruling 33) are
-  set by the design frame (`docs/planning/round28-design-frame.md` §2.2).
+  granted (source `quest`). Weights are set by the design frame
+  (`docs/planning/round28-design-frame.md` §2.2); its per-band questing and
+  reward shares (Ruling 33) are retired (Round 46 ruling 6), and the ledger
+  (`tools/r28_design/ledger.py`) reports the shares without targets.
 - **Kill XP** and **gathering XP**: sections below.
 - One place: `grug_xp.mob_xp`, `grug_xp.level_xp`, `grug_xp.quest_reward`,
   `grug_xp.gather_xp` and the level table in `mods/PLAYER/grug_xp/init.lua`.
@@ -186,50 +191,70 @@ owner.
 
 ## Kill XP
 
-Round 28 ruling 30 (2026-10-01). A kill pays each eligible participant
+Round 46 ruling 5 (2026-10-12), replacing Round 28 ruling 30's
+`M(min(mob level, player level + 5))` and its gray line at 10 below. A kill
+pays each eligible participant
 
-`XP = M(min(mob level, player level + 5)) × tier multiplier`, then divided by
-the eligible head count (rounded down),
+`XP = M(player level) × f(d) × tier multiplier`, then divided by the
+eligible head count (rounded down once),
 
-with tier multipliers normal ×1, elite ×4, rare ×6. The boss tier pays the
-normal ×1 (its HP is flat, `combat_stats.md` §3); critters pay 0; a def's
-`_grug_xp_reward` overrides the formula (the Kraken: 0). The Round 16 ×1.5 is
-gone: the unit itself was raised.
+with d = mob level − player level and the level-difference factor
 
-- **Gray rule:** a mob at level ≤ player level − 10 gives that player 0.
-- **Cap:** the formula reads at most player level + 5; the gray test reads
-  the mob's actual level.
-- **Split:** each recipient's own capped value divided by the same eligible
-  count (online, within 40 nodes, accepted damage or effective healing);
-  no XP from a mob of the player's own faction; one settlement per death.
+| d | ≤ −7 | −6 … −1 | 0 | +1 … +5 | above +5 |
+|---|---|---|---|---|---|
+| f(d) | 0 (gray) | 1 − 0.15·\|d\| | 1 | 1 + 0.10·d | 1.5 |
+
+and the tier multipliers normal ×1, elite ×4, rare ×6. The boss tier pays the
+normal ×1 (its HP is flat, `combat_stats.md` §3), so kings, dragons and the
+camp guards follow the same rule with their tiers; critters pay 0; a def's
+`_grug_xp_reward` overrides the formula (the Kraken and the reed angelfish:
+0). Players never give XP (PvP keeps statistics only, `pvp.md`). The level
+table is unchanged: its k(L) already rises linearly to three times k(2) at
+level 59 to 60.
+
+- **Gray rule:** a mob 7 or more levels below the player gives that player 0
+  (`grug_xp.is_gray`, `grug_xp.GRAY_GAP`), an override too; the target frame
+  shows such a mob gray with "(no XP)" (`combat_stats.md` §6).
+- **Split:** each recipient's own value divided by the same eligible count
+  (online, within 40 nodes, accepted damage or effective healing); **every
+  eligible member counts in the head count**, a gray one too; no XP from a
+  mob of the player's own faction; one settlement per death. Quest kill
+  credit is independent of XP (a gray kill still counts).
 - **No race bonus on kills:** the only XP race bonus is the human +10 % on
   quest rewards.
-- Examples (solo): L1 mob at L1 30, L3 mob at L1 40, L20 mob at L1 55 (cap),
-  L10 elite at L10 300, L10 rare 450; two players at L10 and L1 on an L10
-  mob receive 37 and 27.
+- One place: `grug_xp.kill_percent` (f in whole percent) and
+  `grug_xp.kill_xp` in `mods/PLAYER/grug_xp/init.lua`, called by
+  `grug_mobs.kill_xp`.
+- Examples (solo): an L1 player gets 30 from an L1 mob, 36 from an L3 mob
+  and 45 from an L6 or higher one; an L30 player gets 0 from an L23 mob, 96
+  from an L27, 175 from an L30, 227 from an L33 and 262 from an L36; an L10
+  elite at L10 300, an L10 rare 450; an L70 elite guard at L60 1950. Two
+  players at L10 and L1 on an L10 mob receive 37 and 22.
 
 ## Gathering XP
 
 Round 24 ruling 28 (2026-09-29), in kill equivalents since Round 28 ruling 32
-(2026-10-01). XP sources are mob kills, quest rewards, administrator grants
+(2026-10-01), ratios and reference level since Round 46 ruling 7
+(2026-10-12). XP sources are mob kills, quest rewards, administrator grants
 and gathering. Every natural ore or gem node a player digs and every fish a
 player catches gives
 
-`XP = ratio × M(min(reference level, player level + 5))`, rounded half up,
+`XP = ratio × M(min(reference level, player level))`, rounded half up,
 
 | Source | Ratio (KE) | Reference level |
 |---|---:|---|
-| ore node (every natural resource node that is not a gem) | 0.10 | 10 × harvest tier: T1 10 … T5 50 |
-| gem node (the six depth-tiered gems) | 0.20 | 10 × harvest tier: Citrine (T1) 10 … Diamond (T6) 60 |
+| ore node (every natural resource node that is not a gem) | 0.05 | 10 × harvest tier: T1 10 … T5 50 |
+| gem node (the six depth-tiered gems) | 0.10 | 10 × harvest tier: Citrine (T1) 10 … Diamond (T6) 60 |
 | fish (not junk from the catch table) | 0.33 | 10 × the water's zone band: 10 … 60 |
 
-The ratios are the Round 24 factors (1.5 / 3 / 5 against a 15L kill)
-carried over to the new unit.
+Round 46 halved the ore and gem ratios (gems still pay twice an ore node) and
+dropped the +5-level reach for all gathering: a player below a node's
+reference level reads their own level. The fish ratio is unchanged.
 
-- There is no gray rule: T1 ore always pays (8 XP at level 5 and above).
-- Examples: coal at level 1 gives 6 (0.1 × M(6) = 5.5 rounded up); a
-  Sapphire (T4) at level 30 gives 40; a band-1 fish at level 1 gives 18; a band-6 fish at
-  level 60 gives 107.
+- There is no gray rule: T1 ore always pays (4 XP at level 10 and above).
+- Examples: coal at level 1 gives 2 (0.05 × M(1) = 1.5 rounded up); a
+  Sapphire (T4) at level 30 gives 18; a band-1 fish at level 1 gives 10; a
+  band-6 fish at level 60 gives 107.
 - The ratios and the formula live in one place, `grug_xp.GATHER_XP_RATIO`
   and `grug_xp.gather_xp` (`mods/PLAYER/grug_xp/init.lua`); XP is added
   with source `gathering`, which carries no race or class bonus. The

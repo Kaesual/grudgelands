@@ -112,44 +112,6 @@ function grug_jobs.is_ingredient_stack(stack)
 end
 local plain = grug_jobs.is_ingredient_stack
 
--- One pass over the hotbar, `main` and the bags: {items = {name -> count},
--- groups = {}} (group totals filled on demand by ingredient_have).
-function grug_jobs.ingredient_counts(player)
-	local inv = player:get_inventory()
-	local items = {}
-	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
-		for _, stack in ipairs(inv:get_list(list) or {}) do
-			if plain(stack) then
-				local name = stack:get_name()
-				items[name] = (items[name] or 0) + stack:get_count()
-			end
-		end
-	end
-	return {items = items, groups = {}}
-end
-
-function grug_jobs.ingredient_have(counts, entry)
-	if entry.item then return counts.items[entry.item] or 0 end
-	local total = counts.groups[entry.group]
-	if total == nil then
-		total = 0
-		for name, count in pairs(counts.items) do
-			if core.get_item_group(name, entry.group) > 0 then total = total + count end
-		end
-		counts.groups[entry.group] = total
-	end
-	return total
-end
-
-function grug_jobs.crafts_from_counts(counts, recipe)
-	local crafts
-	for _, entry in ipairs(recipe.ingredients) do
-		local n = math.floor(grug_jobs.ingredient_have(counts, entry) / entry.n)
-		if crafts == nil or n < crafts then crafts = n end
-	end
-	return crafts or 0
-end
-
 -- The slots ingredients are taken from, in order: the bags, main[9..], the
 -- hotbar last.
 local function consume_order(inv)
@@ -165,6 +127,128 @@ local function consume_order(inv)
 	add("main", HOTBAR + 1, size)
 	add("main", 1, math.min(HOTBAR, size))
 	return slots
+end
+
+-- One pass over the hotbar, `main` and the bags: {items = {name -> count},
+-- groups = {}, order = {{name, count}, ...}} (group totals filled on demand
+-- by ingredient_have; `order` the ingredient stacks in the consume order, for
+-- the dry-run take of crafts_from_counts).
+function grug_jobs.ingredient_counts(player)
+	local inv = player:get_inventory()
+	local items, order, lists = {}, {}, {}
+	for _, slot in ipairs(consume_order(inv)) do
+		lists[slot.list] = lists[slot.list] or inv:get_list(slot.list) or {}
+		local stack = lists[slot.list][slot.index]
+		if stack and plain(stack) then
+			local name = stack:get_name()
+			items[name] = (items[name] or 0) + stack:get_count()
+			order[#order + 1] = {name, stack:get_count()}
+		end
+	end
+	return {items = items, groups = {}, order = order}
+end
+
+function grug_jobs.ingredient_have(counts, entry)
+	if entry.item then return counts.items[entry.item] or 0 end
+	local total = counts.groups[entry.group]
+	if total == nil then
+		total = 0
+		for name, count in pairs(counts.items) do
+			if core.get_item_group(name, entry.group) > 0 then total = total + count end
+		end
+		counts.groups[entry.group] = total
+	end
+	return total
+end
+
+-- Whether a carried item satisfies two entries of `ingredients` (one item
+-- in two groups, or a named item inside a group): only then can the take
+-- fall short of the per-entry totals. Two item entries never share a name.
+local function overlapping(counts, ingredients)
+	for _, entry in ipairs(ingredients) do
+		if entry.group then
+			for name in pairs(counts.items) do
+				if core.get_item_group(name, entry.group) > 0 then
+					for _, other in ipairs(ingredients) do
+						if other ~= entry and grug_jobs.ingredient_accepts(other, name) then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+	return false
+end
+
+-- The take of take_ingredients (item entries before group entries, each in
+-- the consume order) on a copy of the counted stacks: whether `quantity`
+-- crafts fit.
+local function dry_take(order, ingredients, quantity)
+	local left = {}
+	for index, row in ipairs(order) do left[index] = row[2] end
+	local ordered = {}
+	for _, entry in ipairs(ingredients) do
+		if entry.item then ordered[#ordered + 1] = entry end
+	end
+	for _, entry in ipairs(ingredients) do
+		if entry.group then ordered[#ordered + 1] = entry end
+	end
+	for _, entry in ipairs(ordered) do
+		local need = entry.n * quantity
+		for index, row in ipairs(order) do
+			if need <= 0 then break end
+			if left[index] > 0 and grug_jobs.ingredient_accepts(entry, row[1]) then
+				local piece = math.min(need, left[index])
+				left[index] = left[index] - piece
+				need = need - piece
+			end
+		end
+		if need > 0 then return false end
+	end
+	return true
+end
+
+-- The most crafts one job of `recipe` can ever take: the empty output area
+-- (OUTPUT_SIZE stacks of the output's stack_max) over the recipe's count;
+-- nil for an operation's ingredient list, which has no output.
+local function job_ceiling(recipe)
+	if not recipe.output then return nil end
+	local most = math.max(1, ItemStack(recipe.output):get_stack_max())
+	return math.floor(OUTPUT_SIZE * most / (recipe.count or 1))
+end
+
+-- The crafts the counted stacks allow: the per-entry totals, and when one
+-- item could serve two entries (Round 46: carrot and cassava are both a root
+-- and a staple) the largest quantity the take itself succeeds with, so ×N
+-- never promises more than a job can take. That search runs over the
+-- quantity by halving (the take only gets harder as the quantity grows),
+-- from the per-entry total capped one above the job ceiling: a value above
+-- what any job takes reads as "ceiling + 1", so max_craftable and the start
+-- refusals see the same comparisons as with the exact count.
+function grug_jobs.crafts_from_counts(counts, recipe)
+	local crafts
+	for _, entry in ipairs(recipe.ingredients) do
+		local n = math.floor(grug_jobs.ingredient_have(counts, entry) / entry.n)
+		if crafts == nil or n < crafts then crafts = n end
+	end
+	crafts = crafts or 0
+	if crafts > 0 and counts.order and overlapping(counts, recipe.ingredients) then
+		local ceiling = job_ceiling(recipe)
+		local high = ceiling and math.min(crafts, ceiling + 1) or crafts
+		if dry_take(counts.order, recipe.ingredients, high) then return high end
+		local low = 0 -- low always fits, high never does
+		while high - low > 1 do
+			local middle = math.floor((low + high) / 2)
+			if dry_take(counts.order, recipe.ingredients, middle) then
+				low = middle
+			else
+				high = middle
+			end
+		end
+		return low
+	end
+	return crafts
 end
 
 -- Stacks of at most stack_max holding `count` items like `stack`. Built by

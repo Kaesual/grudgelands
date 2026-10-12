@@ -22,8 +22,7 @@
         {
           "npc": "r20_anchor_030_host",
           "lines": [
-            "river",
-            "bounty"
+            "river"
           ]
         }
       ]
@@ -367,38 +366,6 @@
       "lesson": "Named normal leader at the camp centre.",
       "duration_min": 8,
       "climax": true
-    },
-    {
-      "id": "whitebridge_bounty_spiders",
-      "line": "bounty",
-      "giver": "r20_anchor_030_host",
-      "turnin": "r20_anchor_030_host",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "whitebridge_river_01"
-      ],
-      "title": "Bounty: Webs Enough for a Wagon",
-      "text": "The Orbweavers have strung the {name:thornwood}, which lies {zone_area:thornwood}, with enough web to wrap a wagon. Kill six there after dark and report back for your bounty. I can offer the job again twenty-five minutes after you turn it in; bring yourself back, and leave the spiders where they fall.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "briar_web_spider"
-          ],
-          "count": 6,
-          "area": "elandor_whitebridge_shire/thornwood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Repeatable night bounty.",
-      "duration_min": 8
     }
   ]
 }

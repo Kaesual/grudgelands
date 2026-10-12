@@ -28,8 +28,7 @@
         {
           "npc": "r14_orc_scout",
           "lines": [
-            "watch",
-            "bounty"
+            "watch"
           ]
         }
       ]
@@ -354,38 +353,6 @@
         "items": []
       },
       "duration_min": 6
-    },
-    {
-      "id": "redtusk_bounty",
-      "line": "bounty",
-      "giver": "r14_orc_scout",
-      "turnin": "r14_orc_scout",
-      "min_level": 18,
-      "level": 19,
-      "requires": [
-        "redtusk_watch_02"
-      ],
-      "title": "Bounty: Teeth in the Dark",
-      "text": "Rope Gnawers keep chewing their way through our night supplies on the {name:borderveld}. Kill six after dark and report back for your pay. The bounty is available again twenty minutes after you collect; I expect we will still have rats.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 6,
-          "area": "kragmar_redtusk_savanna/borderveld"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 8,
-      "optional": true
     },
     {
       "id": "redtusk_ransom_01",

@@ -309,34 +309,6 @@
       },
       "duration_min": 8,
       "optional": true
-    },
-    {
-      "id": "lethariel_provisions_bounty",
-      "line": "provisions",
-      "giver": "r20_elf_capital_cook",
-      "turnin": "r20_elf_capital_cook",
-      "min_level": 22,
-      "level": 23,
-      "requires": [
-        "lethariel_provisions_01"
-      ],
-      "title": "Bounty: Hunger Returns to Court",
-      "text": "We have recipes older than the Accord and a larder that never survives the week. Bring me eight pieces of Raw Meat here in Lethariel for payment. This supply order is repeatable; long life has done nothing to diminish anyone's appetite.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "repeatable": {
-        "cooldown": 1800
-      },
-      "duration_min": 5
     }
   ]
 }

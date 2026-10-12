@@ -62,41 +62,6 @@
       "group": true
     },
     {
-      "id": "durbrannoc_front_bounty",
-      "line": "front",
-      "giver": "r20_dwarf_capital_envoy",
-      "turnin": "r20_dwarf_capital_envoy",
-      "min_level": 60,
-      "level": 60,
-      "requires": [
-        "durbrannoc_front_01"
-      ],
-      "title": "Bounty: The Clan's Standing Order",
-      "text": "The clan has placed another order for Rime Sinew, with an impressive number of signatures from dwarves staying home. Take a boat to the Wyrmglass Crown and hunt Rimehorn Rams by day on the {name:front_wyrmglass_crown/scree}. Bring me four Rime Sinew for payment. You can take this bounty again one hour after each turn-in; I'll keep the signatories busy finding your coin.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:rime_sinew",
-          "count": 4,
-          "roles": [
-            "rimehorn_ram"
-          ],
-          "area": "front_wyrmglass_crown/scree"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 3600
-      },
-      "rewards": {
-        "weight": 0,
-        "copper": 600,
-        "items": []
-      },
-      "lesson": "Island salvage bounty: coin at the cap.",
-      "duration_min": 25,
-      "optional": true
-    },
-    {
       "id": "accord_main_island_cairn",
       "line": "front",
       "giver": "r20_dwarf_capital_envoy",

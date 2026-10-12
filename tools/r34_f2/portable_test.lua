@@ -330,6 +330,12 @@ do
 		["grug_cooking:frost_melon"] = 3, ["grug_gathering:marshbloom"] = 4,
 		["grug_gathering:stormkelp"] = 5, ["grug_gathering:rock_salt"] = 5,
 		["grug_cooking:salt_crust"] = 5, ["grug_gathering:wild_cocoa"] = 6,
+		-- Round 46 (lane CK): the plain dishes' band fish (their own tier),
+		-- the raw fish group (Raw Fish) and the mushroom group (both T3).
+		["grug_fishing:silver_trout"] = 2, ["grug_fishing:mire_carp"] = 3,
+		["grug_fishing:frostfin"] = 4, ["grug_fishing:ember_eel"] = 5,
+		["grug_fishing:storm_tuna"] = 6, ["group:food_fish_raw"] = 1,
+		["group:grug_cooking_mushroom"] = 3,
 	}
 	local function cost(inputs)
 		local sum = 0

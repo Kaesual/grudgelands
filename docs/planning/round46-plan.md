@@ -46,6 +46,7 @@ rework is **parked** as a future work package
 | DP | Depth pulse: a design note for the user's decision, then the build | 1 (note), 2 (build) | design, then code | build: the user's decision, UW merged |
 | UW | Underground spawns from −1, light, sight, elites; torches | 2 | code + data | XP merged (both touch `grug_mobs`) |
 | RP | Repair only in towns; the Grudge-Free Repairs map and minimap icon | 2 | code + art | ART pick |
+| ID | A dropdown per group ingredient in the crafting box; one torch recipe for coal or charcoal (added by the user, 2026-10-12) | 2 | code + UI | CK's count fix and UW merged |
 | D | Documentation, version 0.46.0, the declaration's map-reset entry, gate list | 3 | docs | last merge |
 
 The user's GUI test follows the round; findings go into a fix round as
@@ -66,6 +67,7 @@ Estimates (unmeasured, for planning only), each lane plus its review:
 | DP | 3 note + 8–10 build |
 | UW | 4–6 |
 | RP | 3–4 |
+| ID | 4–6 |
 | D | 3 |
 
 PL is the largest and riskiest lane.
@@ -328,6 +330,9 @@ and with own-level weapons, and rage per second per weapon.
 **Goal:**
 - The 23 sell-only drops no longer drop; they stay registered.
 - Coin bags compensate the lost income.
+- A checkbox next to the Bag of Coins deposit slot, **on by default**,
+  credits picked-up bags straight to the player's money (the user,
+  2026-10-12), so nobody drags every bag into the slot by hand.
 - Cloth drops at 1/1 with stack 1–2.
 - Spiders spawn in the level-41–50 zones, so T5 silk has a source and
   `items_crafting.md` is right again.
@@ -477,7 +482,8 @@ Per lane the gates of the [round workflow](../process/round-workflow.md#3-gates)
 - **Professions and cooking:** cloth drops; a Troll and an Undead cook in
   their start zone; a plain dish is weaker than a hearty one.
 - **No repeatables;** a mob drops no sell-only item but sometimes a coin
-  bag.
+  bag, which goes straight to the purse with the auto-deposit box on and
+  into the inventory with it off.
 - **Repair:** only at a town mender; the repair icon on map and minimap; no
   repair at the claim stone or furnace.
 

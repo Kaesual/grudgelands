@@ -19,7 +19,8 @@
 --      Inventory page; the Inventory page's boxed layout (Round 45 playtest:
 --      a box and label per area, edges; the money row between the grid and
 --      the hotbar: the balance, Withdraw, the deposit, Sort, as tall as a
---      slot, on the slot columns);
+--      slot, on the slot columns; Round 46: the automatic deposit checkbox
+--      in column 6, its toggle stored and resent once);
 --      the view's scrollbaroptions reset to the engine defaults after its
 --      scrollbar, so page scrollbars do not inherit them;
 --   4. the scrollbar echo: CHG and VAL values kept per view, echoed and
@@ -188,6 +189,10 @@ grug_money = {
 	get = function() return 12345 end,
 	withdraws = 0,
 	show_withdraw = function() grug_money.withdraws = grug_money.withdraws + 1 end,
+	-- Round 46: the automatic deposit toggle, per player name.
+	auto_off = {},
+	auto_deposit = function(player) return not grug_money.auto_off[player:get_player_name()] end,
+	set_auto_deposit = function(player, on) grug_money.auto_off[player:get_player_name()] = not on end,
 }
 grug_classes = {
 	get_class_def = function() return {resource = "mana", name = "Mage"} end,
@@ -630,12 +635,37 @@ if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] then
 		end
 		has(inventory, ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
 			:format(dx, dy), "the deposit slot's ghost as before")
+		-- Round 46 (lane LT): the automatic deposit checkbox in column 6,
+		-- between the deposit slot and Sort, its middle on the slot's middle;
+		-- ticked by default, the full sentence in its tooltip.
+		local cx, cy, ticked = inventory:match(
+			"checkbox%[([%d.]+),([%d.]+);grug_money_auto_deposit;Auto;(%a+)%]")
+		cx, cy = num(cx), num(cy)
+		if check(cx and cy, "the automatic deposit checkbox") then
+			check(close(cx, slot_x.Hotbar + 5 * 1.25) and dx + 1 < cx and cx + 1.25 <= sx + 0.002,
+				"the checkbox in column 6, between the deposit and Sort")
+			check(close(cy, dy + 0.5), "the checkbox centred on the row")
+			eq(ticked, "true", "the checkbox ticked by default")
+			has(inventory, "tooltip[grug_money_auto_deposit;Deposit coin bags automatically on pickup]",
+				"the checkbox's tooltip")
+		end
 	end
 end
 -- Withdraw on the Inventory page opens grug_money's dialog.
 local withdraws = grug_money.withdraws
 eq(receive(four, "", {grug_money_withdraw = "Withdraw"}), true, "Withdraw is handled")
 eq(grug_money.withdraws, withdraws + 1, "Withdraw opens the dialog")
+-- The checkbox's own event stores the choice and resends the page once, so
+-- the stored window carries the tick; Withdraw or Sort never touch it.
+local sent_before = four.sent
+eq(receive(four, "", {grug_money_auto_deposit = "false"}), true, "the checkbox event is handled")
+eq(grug_money.auto_off.four, true, "unticked: the automatic deposit is off")
+eq(four.sent, sent_before + 1, "the toggle resends the page once")
+has(four.formspec, ";grug_money_auto_deposit;Auto;false]", "the resent page shows it unticked")
+eq(receive(four, "", {grug_money_auto_deposit = "true"}), true, "ticking it again")
+eq(grug_money.auto_off.four, false, "ticked: the automatic deposit is on")
+receive(four, "", {grug_money_withdraw = "Withdraw"})
+eq(grug_money.auto_off.four, false, "Withdraw leaves the toggle alone")
 
 four_context.page = "grug_inventory:character"
 four_context.grug_character_tab = "stats" -- the balance's mode (Round 44 lane CH)

@@ -9,8 +9,7 @@
         {
           "npc": "r14_dwarf_steward",
           "lines": [
-            "survey",
-            "bounties"
+            "survey"
           ]
         },
         {
@@ -40,8 +39,7 @@
         {
           "npc": "r14_dwarf_captive",
           "lines": [
-            "dig",
-            "bounties"
+            "dig"
           ]
         }
       ]
@@ -198,38 +196,6 @@
       "duration_min": 5
     },
     {
-      "id": "copperfell_bounty_rats",
-      "line": "bounties",
-      "giver": "r14_dwarf_steward",
-      "turnin": "r14_dwarf_steward",
-      "min_level": 12,
-      "level": 12,
-      "requires": [
-        "copperfell_survey_02"
-      ],
-      "title": "Bounty: Accounts Receivable",
-      "text": "Another page chewed, another bounty posted; at least this expense is easy to explain. Kill six Packrats in the {name:lower_pines} at night, then return for payment. This bounty is repeatable twenty minutes after you hand it in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "granary_rat"
-          ],
-          "count": 6,
-          "area": "elandor_copperfell_foothills/lower_pines"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 6,
-      "repeatable": {
-        "cooldown": 1200
-      }
-    },
-    {
       "id": "copperfell_watch_01",
       "line": "watch",
       "giver": "r14_dwarf_scout",
@@ -370,38 +336,6 @@
       "climax": true
     },
     {
-      "id": "copperfell_bounty_gnawers",
-      "line": "watch",
-      "giver": "r14_dwarf_scout",
-      "turnin": "r14_dwarf_scout",
-      "min_level": 17,
-      "level": 17,
-      "requires": [
-        "copperfell_watch_04"
-      ],
-      "title": "Bounty: Another Wheel Down",
-      "text": "I've patched the track, and something underneath is already undoing my work. Kill six Burrow Gnawers on the {name:pine_slopes} at night and report back for payment. This bounty is repeatable twenty minutes after you hand it in; I'll have the next shovel of gravel ready.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 6,
-          "area": "elandor_copperfell_foothills/pine_slopes"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 6,
-      "repeatable": {
-        "cooldown": 1200
-      }
-    },
-    {
       "id": "copperfell_dig_01",
       "line": "dig",
       "giver": "r14_dwarf_captive",
@@ -493,38 +427,6 @@
       },
       "lesson": "Home zone to capital handoff.",
       "duration_min": 8
-    },
-    {
-      "id": "copperfell_bounty_dig",
-      "line": "bounties",
-      "giver": "r14_dwarf_captive",
-      "turnin": "r14_dwarf_captive",
-      "min_level": 19,
-      "level": 19,
-      "requires": [
-        "copperfell_dig_02"
-      ],
-      "title": "Bounty: Rocks in Lieu of Rent",
-      "text": "More Rubble Slingers have moved into the {name:goblin_dig}, and they're still throwing our mountain at us. Defeat six there and come back for your pay. This bounty is repeatable thirty minutes after you hand it in; I'll keep the account open.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "rubble_goblin_slinger"
-          ],
-          "count": 6,
-          "area": "elandor_copperfell_foothills/goblin_dig"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Optional repeatable camp clearance.",
-      "duration_min": 8,
-      "repeatable": {
-        "cooldown": 1800
-      }
     }
   ]
 }

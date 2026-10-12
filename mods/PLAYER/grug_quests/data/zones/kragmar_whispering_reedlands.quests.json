@@ -199,37 +199,6 @@
       "duration_min": 9
     },
     {
-      "id": "whispering_cut_bounty",
-      "line": "cut",
-      "giver": "r20_anchor_066_host",
-      "turnin": "r20_anchor_066_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "whispering_cut_02"
-      ],
-      "title": "Bounty: Jaws on the Haul Path",
-      "text": "Every flood leaves fresh Logbacks in the {name:mudbanks} {dir_from_giver:mudbanks}, and none has offered to pull a cart. Kill six there, by day or night, for this repeatable bounty. It opens again twenty minutes after you turn it in; stone waits patiently, but my haulers should not have to.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_crocodile"
-          ],
-          "count": 6,
-          "area": "kragmar_whispering_reedlands/mudbanks"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
       "id": "whispering_voice_01",
       "line": "voice",
       "giver": "r20_anchor_046_host",

@@ -26,10 +26,13 @@ local function miner_def(description, texture, ranged)
 		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
 		selectionbox = {-0.3, 0, -0.25, 0.3, 1.25, 0.35, rotate = true},
 		makes_footstep_sound = true, animation = animation,
-		drops = {
+		-- The ranged kind's sell-only arrow bundle no longer drops (Round 46
+		-- ruling 12; coin bags, aggro.lua); the purse stays a melee drop.
+		drops = ranged and {
 			{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
-			{name = ranged and "grug_mobs:arrow" or "grug_mobs:stolen_purse",
-				chance = ranged and 3 or 8, min = 1, max = 1},
+		} or {
+			{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
+			{name = "grug_mobs:stolen_purse", chance = 8, min = 1, max = 1},
 		},
 		water_damage = 0, lava_damage = 4, light_damage = 0,
 	}
@@ -57,7 +60,7 @@ for _, row in ipairs({
 }) do
 	mobs:spawn({
 		name = "grug_mobs:" .. row.name,
-		nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
+		nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
 		interval = 20, chance = row.chance, active_object_count = row.aoc,
 		min_height = -300, max_height = -100,
 	})

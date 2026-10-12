@@ -22,7 +22,8 @@
 --      are sent (a still player sends nothing); the arrow stays centred and
 --      the map and markers move together; a new texture only on a new cell;
 --      markers of the ruling-8 kinds (trainers by profession icon since
---      Round 44) inside the hole only, quest states as icons; party members inside as heading arrows, outside as rim arrows
+--      Round 44; the mender's repair icon since Round 46) inside the hole
+--      only, quest states as icons; party members inside as heading arrows, outside as rim arrows
 --      on the bezel; window resize relayouts; the switch (in the map window
 --      since Round 44, tools/r44_mq) hides and shows the minimap and
 --      persists in meta; every texture exists;
@@ -445,6 +446,8 @@ end
 local settlements = {{key = "highcourt", race_id = "human", anchor = {x = 0, z = -1500}}}
 local sockets = {highcourt = {
 	{id = "t1", role = "trainer", profession = "tailor", pos = {x = 75, y = 30, z = -1530}},
+	-- Round 46 (lane RP): the mender on the Cooking socket, its repair icon.
+	{id = "mender", role = "trainer", profession = "cooking", pos = {x = 70, y = 30, z = -1525}},
 	{id = "steward", role = "housing_manager", pos = {x = -25, y = 30, z = -1435}},
 	{id = "riding", role = "riding_trainer", pos = {x = 60, y = 30, z = -1420}},
 	{id = "throne", role = "king", pos = {x = 10, y = 30, z = -1480}},
@@ -463,7 +466,8 @@ end
 grug_core.settlement_socket_settlements = function() return settlements end
 grug_core.settlement_sockets_at = function(key) return sockets[key] or {} end
 core.registered_entities["grug_mobs:king_human"] = {description = "King"}
-rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}},
+rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}, cooking = {name = "Cooking"}},
+	MENDER_TITLE = "Grudge-Free Repairs",
 	trainer_teaches = function(p) return p ~= "cooking" end}) -- Round 45 (lane ST)
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 grug_quests.registered_npcs = {
@@ -568,6 +572,7 @@ check(has("grug_map_housing_steward.png") == 1, "R Housing Steward shown")
 check(has("grug_map_trainer_tailor.png") == 1 and has("grug_mounts_icon_human.png") == 1,
 	"R trainers shown (profession icon and riding)")
 check(has("grug_map_innkeeper.png") == 1, "R innkeeper shown (the far inn is not)")
+check(has("grug_map_repair.png") == 1, "R the mender shown with the repair icon (Round 46)")
 check(has("grug_mobs_item_fallen_crown.png") == 0, "R no king marker")
 do
 	local riding = by_text(me, "^grug_mounts_icon_human%.png$")[1]

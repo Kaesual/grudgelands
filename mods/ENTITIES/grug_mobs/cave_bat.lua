@@ -100,17 +100,17 @@ grug_mobs.register_mob("grug_mobs:cave_bat", bat)
 -- The node list, the heights and the light gate are the canonical cave row
 -- zombie.lua documents in full — read that comment before touching any of
 -- them. In short: `group:grug_stratum` is mandatory next to `default:stone`
--- (WP25 replaced all rock below -100), max_height -40 is exactly the
--- boundary the stable spawn policy calls `underground`, and `max_light 5` without
+-- (WP25 replaced all rock below -100), max_height -1 is exactly the
+-- boundary the stable spawn policy calls `underground`, and `max_light 7` without
 -- `day_toggle` means "dark, whatever the surface clock says" — which is why
 -- this row counts in the day AND the night column of the budget audit.
 mobs:spawn({
 	name = "grug_mobs:cave_bat",
 	nodes = {"default:stone", "group:grug_stratum"},
-	max_light = 5,
+	max_light = 7,
 	interval = 20,
 	chance = 2200,
 	active_object_count = 2,
 	min_height = -31000,
-	max_height = -40,
+	max_height = -1,
 })

@@ -19,8 +19,8 @@ local construct = {
 		run_start = 40, run_end = 80, run_speed = 25,
 		punch_start = 80, punch_end = 90, punch_speed = 15,
 	},
+	-- The sell-only stone core no longer drops (Round 46 ruling 12).
 	drops = {
-		{name = "grug_mobs:stone_core", chance = 1, min = 1, max = 1},
 		{name = "grug_materials:iron_bar", chance = 1, min = 2, max = 4},
 	},
 	water_damage = 0, lava_damage = 4, light_damage = 0,

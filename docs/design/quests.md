@@ -9,7 +9,9 @@ and quest copper by Round 29 Lane Q1, 2026-10-02
 quest files and the front bounty baseline
 ([round plan](../planning/round29-plan.md#completion-2026-10-02)); the "use at
 a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
-2026-10-05 ([plan](../planning/round36-plan.md) §2.5, §2.7).
+2026-10-05 ([plan](../planning/round36-plan.md) §2.5, §2.7); the repeatable
+quests removed by Round 46 ruling 8, 2026-10-12
+([plan](../planning/round46-plan.md) §2).
 
 
 ### Confirmed by the user
@@ -35,7 +37,8 @@ a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
 - Quest lists (the quest giver's dialog and the quest log) show each quest's
   status as the entry's colour, explained by a legend or the list's tooltip:
   available gold, ready to complete green, in progress blue, locked grey; a
-  repeatable quest ends in "(R)". The giver's dialog is wide enough for the
+  repeatable quest ends in "(R)", which the legend explains only while a
+  repeatable quest is registered (none ships, below). The giver's dialog is wide enough for the
   longest title at a full-HD window; quest texts are read-only (Round 35).
 - The giver's dialog opens on the first quest ready to complete, else the
   first one to accept, else the first in the list, and preselects the same
@@ -137,10 +140,10 @@ minimap.
 
 Round 29 replaced the 240 quests of Rounds 14–20 with 491 quests in the
 per-zone quest files (below): one track per race from the start zone to its
-heartland, the contested 31–40 zones, and the 41–60 front with repeatable
-and island bounties. Round 31 adds 24 PvP fortress quests (below) and Round
-36 the main line's 25 (below; 540 in total). This is an editorial budget,
-not a filler quota.
+heartland, the contested 31–40 zones, and the 41–60 front with island
+bounties. Round 31 adds 24 PvP fortress quests (below) and Round 36 the main
+line's 25 (below); Round 46 removed Round 29's 55 repeatable quests (485 in
+total). This is an editorial budget, not a filler quota.
 Offer roughly three independent local starter tasks across the adventure giver
 and a separate cook near an oven. Compatible tasks share an outing; avoid
 repeated returns for increasing counts of the same mob. Optional item/cooking
@@ -377,20 +380,23 @@ counted name, names the text never says).
 
 ## Repeatable quests (Ruling 42)
 
-A quest with `repeatable = {cooldown}` can be taken again once the cooldown
-(seconds of real time) has passed since its turn-in. It is labelled
-"Repeatable" in the dialogue list and detail (with the cooldown), the quest
-log and the HUD; while it cools down the giver lists it with "Repeatable
-again in N min.". Its first completion counts for every quest that requires
-it; a repeat starts its counters from zero. Repeatables are given by existing
-NPCs on one of their two lines; bounties are repeatables (`round28-design-frame.md` §4.8).
+**No repeatable quest ships** (Round 46 ruling 8): Round 29's 55
+repeatable bounties, the 11 `bounty`/`bounties` giver lines that held
+nothing else and the front bounty baseline (two repeats per bounty in the
+41–60 budget) are removed.
+A saved quest state that still holds one of their ids drops it from the
+active and tracked quests at load; `completed` and `cooldowns` entries are
+only looked up by id (`state.lua`, `tools/r46_xp`). The island bounties are
+one-time quests and stay: they pay coin and materials and count nothing
+toward leveling.
 
-**Front bounty baseline** (Round 29): the 41–60 leveling budget of a
-faction's front route counts **two repeats per bounty** (N = 2;
-`ledger.py --track <race> --repeat 2`). At N = 2 the front quests carry
-about 67–73 % of the 41–50 and 51–60 bands for both factions; further
-repeats are extra, never part of the baseline. Island bounties pay coin and
-materials and count nothing toward leveling.
+The mechanism stays for later content: a quest with
+`repeatable = {cooldown}` can be taken again once the cooldown (seconds of
+real time) has passed since its turn-in. It is labelled "Repeatable" in the
+dialogue list and detail (with the cooldown), the quest log and the HUD;
+while it cools down the giver lists it with "Repeatable again in N min.".
+Its first completion counts for every quest that requires it; a repeat
+starts its counters from zero.
 
 ## Quest data (per zone)
 
@@ -429,8 +435,9 @@ Quest content is data, one file per zone, read at load by
 - **Chapter chains** (Round 36): `requires` crosses files, and a quest whose
   `min_level` is below a prerequisite's opens only at the prerequisite's
   level, so its shown gate would be wrong: `validate.py` warns
-  (`W-chain-gate`; two shipped bounties carry it, one level apart). The
-  main line's chapter gates (41, 46, 53, 60) follow from it.
+  (`W-chain-gate`; no shipped quest carries it since Round 46 removed the
+  two bounties that did). The main line's chapter gates (41, 46, 53, 60)
+  follow from it.
 - **Turn-in hook and tags** (Round 36): `grug_quests.register_on_turn_in(fn)`
   calls `fn(player, quest_id, def)` once per completed turn-in (a
   repeatable at each), after the state and the rewards are stored; a refused

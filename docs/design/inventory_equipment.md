@@ -57,8 +57,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   is centred in the window. The money row has no box and lies on the slot
   columns: "Money" over the balance (e.g. "123456g 99s 99c"), **Withdraw**
   (opens the Bag of Coins dialog, [economy.md](economy.md) §1), the Bag of
-  Coins **deposit slot** and, at the right end with the hotbar's last slot,
-  **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
+  Coins **deposit slot**, its **Auto** checkbox (deposit coin bags
+  automatically on pickup, Round 46) and, at the right end with the hotbar's
+  last slot, **Sort**; Withdraw and Sort are exactly as tall as the slot. A balance
   change re-sends the Inventory page while it is the selected page (also
   with the window closed, so it opens current); money has no gameplay HUD.
   Sort orders
@@ -530,9 +531,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   job starts (`professions.md` §1.5). Only **furnaces and dual furnaces** keep
   a dialog with lists. The forge, the four benches and the brewing stand are
   proximity stations without a dialog, lists or a right-click action (Round
-  45); inside an active Claim Stone claim the repair button sits in a
-  player-placed furnace's or dual furnace's dialog
-  ([durability_repair.md](durability_repair.md)).
+  45). No station repairs: repair happens only in towns (Round 46,
+  [durability_repair.md](durability_repair.md)).
 - Authored capital/POI furnaces and dual furnaces are personal workspaces
   keyed by player and physical station: durable inputs, outputs, fuel and
   processing state per player. Player-placed ones share node inventories;

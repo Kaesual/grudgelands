@@ -9,8 +9,7 @@
         {
           "npc": "r14_troll_steward",
           "lines": [
-            "rains",
-            "bounty"
+            "rains"
           ]
         },
         {
@@ -28,8 +27,7 @@
         {
           "npc": "r14_troll_scout",
           "lines": [
-            "watch",
-            "bounty"
+            "watch"
           ]
         }
       ]
@@ -434,68 +432,6 @@
         "items": []
       },
       "duration_min": 6
-    },
-    {
-      "id": "raincall_bounty_village",
-      "line": "bounty",
-      "giver": "r14_troll_steward",
-      "turnin": "r14_troll_steward",
-      "min_level": 17,
-      "level": 19,
-      "requires": [
-        "raincall_rains_04"
-      ],
-      "title": "Bounty: Claws Above the Gardens",
-      "text": "Servals keep prowling the {name:highwood}, {zone_area:highwood}, by day, and our gardeners have enough to wrestle with. Kill six for this repeatable bounty. You can take it again twenty minutes after turning it in; I suspect the cats will keep their side of that arrangement.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_jungle_lynx"
-          ],
-          "count": 6,
-          "area": "kragmar_raincall_basin/highwood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "raincall_bounty_outpost",
-      "line": "bounty",
-      "giver": "r14_troll_scout",
-      "turnin": "r14_troll_scout",
-      "min_level": 18,
-      "level": 19,
-      "requires": [
-        "raincall_watch_03"
-      ],
-      "title": "Bounty: Teeth on the Ropes",
-      "text": "Another rope chewed through, another scout walking in circles. Kill eight Stilt Gnawers after dark in the {name:highwood} for this repeatable bounty. It opens again twenty minutes after you turn it in; until the rats learn a different trade, I will keep paying.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 8,
-          "area": "kragmar_raincall_basin/highwood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 9
     }
   ]
 }

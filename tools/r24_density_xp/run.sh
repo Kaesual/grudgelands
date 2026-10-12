@@ -13,6 +13,12 @@
 # Copies the server log and the probe lines to OUT_DIR and removes the run
 # directory. Exit 0 when the probe reached "RESULT DONE".
 #
+# POINTS=depth (Round 46 lane UW) measures the three depth points instead
+# (the probe's header); BASE is then the commit without the lane's
+# grug_mobs change. LAUNCHER=<command> replaces tools/luanti_headless.sh
+# (e.g. the round's engine_run.sh queue, which calls it with the same
+# environment from the repository root).
+#
 # Usage: tools/r24_density_xp/run.sh OUT_DIR before|after [TIMEOUT_SECONDS]
 set -euo pipefail
 export LC_ALL=C
@@ -32,9 +38,14 @@ case "$variant" in
 		git -C "$repo" diff -R "$base" -- mods/ENTITIES/grug_mobs >>"$patch_file" ;;
 	*) echo "variant must be before or after" >&2; exit 2 ;;
 esac
+probe="$out/grug_probe_r24_density"
+rm -rf "$probe"
+cp -r "$here/grug_probe_r24_density" "$probe"
+echo "${POINTS:-surface}" >"$probe/mode.txt"
+read -r -a launcher <<< "${LAUNCHER:-$repo/tools/luanti_headless.sh}"
 set +e
-SEED=4242424242 PROBE="$here/grug_probe_r24_density" GAME_PATCH="$patch_file" KEEP=1 \
-	"$repo/tools/luanti_headless.sh" "$timeout_s" >"$out/headless.txt" 2>&1
+(cd "$repo" && SEED=4242424242 PROBE="$probe" GAME_PATCH="$patch_file" KEEP=1 \
+	"${launcher[@]}" "$timeout_s") >"$out/headless.txt" 2>&1
 boot=$?
 set -e
 root="$(sed -n 's/^kept: //p' "$out/headless.txt" | tail -n 1)"

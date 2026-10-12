@@ -149,8 +149,11 @@ waypoints, parties, the bound innkeeper (a stable id).
 
 - On join, a created character (`grug_classes:race` stored) whose record is
   below the world's is held by character creation's own hold
-  (`grug_classes/selection.lua`: frozen, immortal, the waiting screen), like
-  every existing character during world preparation.
+  (`grug_classes/selection.lua`: frozen, immortal, the waiting screen) and
+  moved at once to the waiting point (0, 31000, 0), where the engine
+  generates no map ([world preparation](../design/world_preparation.md#the-waiting-point)).
+  Its old position is not kept: a disconnect there leaves the record
+  unwritten, and the next join comes back to the same wait.
 - Once the preparation is ready and its race start has loaded
   (`grug_factions.prepare_spawn`), it is moved there without the arrival
   flow or the welcome, its map-bound player state is cleared
@@ -159,8 +162,10 @@ waypoints, parties, the bound innkeeper (a stable id).
 - A failed load is logged at error level, leaves the record unwritten and
   disconnects the player with a short message; the next join tries again.
 - **New characters:** `on_newplayer`, and a join without a stored
-  `grug_classes:race`, record the world's applied value without a move. The
-  creation stasis (`grug_core.player_in_creation_stasis`) decides nothing.
+  `grug_classes:race`, record the world's applied value and need no
+  relocation; they wait at the waiting point like every unfinished character
+  and arrive at their race start. The creation stasis
+  (`grug_core.player_in_creation_stasis`) decides nothing.
   A created character that had not arrived yet takes the arrival teleport to
   its race start, which writes the record too.
 

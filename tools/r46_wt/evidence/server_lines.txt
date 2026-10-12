@@ -1,0 +1,30 @@
+ACTION[Main]: [grug_core] map reset 1: cleared the world preparation progress
+ACTION[Main]: [grug_core] map reset 1: cleared the grug_mobs actor records
+ACTION[Main]: [grug_core] map reset 1: cleared the housing claims
+ACTION[Main]: [grug_core] map reset 1 applied to the world (was 0)
+ACTION[Main]: [grug_core] world preparation mode=starts cursor=0/84
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39604.
+ACTION[Server]: steady [127.0.0.1] joins game. List of players: steady
+ACTION[Server]: oldhero [127.0.0.1] joins game. List of players: steady oldhero
+ACTION[Server]: arriver [127.0.0.1] joins game. List of players: steady oldhero arriver
+ACTION[Server]: leaver [127.0.0.1] joins game. List of players: arriver steady oldhero leaver
+ACTION[Server]: leaver leaves game. List of players: arriver steady oldhero 
+ACTION[Server]: oldhero leaves game. List of players: arriver steady 
+ACTION[Server]: steady leaves game. List of players: arriver 
+ACTION[Server]: arriver leaves game. List of players: 
+ACTION[Server]: newbie [127.0.0.1] joins game. List of players: newbie
+ACTION[Server]: steady [127.0.0.1] joins game. List of players: newbie steady
+ACTION[Server]: oldhero [127.0.0.1] joins game. List of players: steady newbie oldhero
+ACTION[Server]: arriver [127.0.0.1] joins game. List of players: steady oldhero newbie arriver
+ACTION[Server]: leaver [127.0.0.1] joins game. List of players: arriver steady oldhero newbie leaver
+ACTION[Server]: arriver leaves game. List of players: leaver steady oldhero newbie 
+ACTION[Server]: leaver leaves game. List of players: steady oldhero newbie 
+ACTION[Server]: [grug_core] map reset 1: oldhero moved to the race start
+ACTION[Server]: arriver [127.0.0.1] joins game. List of players: steady oldhero newbie arriver
+ACTION[Server]: leaver [127.0.0.1] joins game. List of players: arriver steady oldhero newbie leaver
+ACTION[Server]: [grug_core] map reset 1: leaver moved to the race start
+ACTION[Server]: oldhero leaves game. List of players: arriver leaver steady newbie 
+ACTION[Server]: leaver leaves game. List of players: arriver steady newbie 
+ACTION[Server]: steady leaves game. List of players: arriver newbie 
+ACTION[Server]: arriver leaves game. List of players: newbie 
+ACTION[Server]: newbie leaves game. List of players: 

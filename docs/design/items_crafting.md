@@ -206,21 +206,26 @@ it has no cut form (Round 33: Cut Citrine is the T1 trinket gem). Gems use
 progression resources and are never called gems.
 
 **Gems are depth-tiered, not regional** (Round 29, economy plan §6). Each of
-the six species has one tier and occurs **only in the tier rock of that
-tier**, identically in every race region, zone and faction; its harvest tier
-equals its tier, so it needs the pick of its layer:
+the six species has one tier and occurs **in the tier rock of that tier and,
+thinner, in the two tier rocks below it** (Round 46 ruling 3), identically in
+every race region, zone and faction. Its harvest tier equals its tier at any
+depth, so it needs the pick of its own layer; the deeper rock needs the
+deeper pick anyway, so no new gate appears (Coal at depth works the same
+way). Gathering XP follows the harvest tier too: a Citrine dug in T3 rock pays
+T1 gem XP.
 
-| Tier | Tier rock | Gem |
-|---|---|---|
-| T1 | `default:stone`, y ≥ −100 | Citrine |
-| T2 | `t2_stone`, −101…−300 | Jade |
-| T3 | `t3_stone`, −301…−500 | Garnet |
-| T4 | `t4_stone`, −501…−700 | Sapphire |
-| T5 | `t5_stone`, −701…−1000 | Ruby |
-| T6 | `t6_stone`, below −1000 | Diamond |
+| Tier | Tier rock | Own gem | Also, thinner (one, two tiers deeper) |
+|---|---|---|---|
+| T1 | `default:stone`, y ≥ −100 | Citrine | — |
+| T2 | `t2_stone`, −101…−300 | Jade | Citrine |
+| T3 | `t3_stone`, −301…−500 | Garnet | Jade, Citrine |
+| T4 | `t4_stone`, −501…−700 | Sapphire | Garnet, Jade |
+| T5 | `t5_stone`, −701…−1000 | Ruby | Sapphire, Garnet |
+| T6 | `t6_stone`, below −1000 | Diamond | Ruby, Sapphire |
 
 *Why:* one depth ladder for ores and gems; no contested route is needed for a
-gem, and no enchant waits on another region's gem.
+gem, and no enchant waits on another region's gem. A miner in deeper rock
+still meets the lower gems now and then.
 
 Each surface/depth column has exactly one race region, independent of
 political territory or PvP state; it selects the region's signature wood:
@@ -236,15 +241,18 @@ political territory or PvP state; it selects the region's signature wood:
 
 **Density shape and calibration targets:**
 
-- Every gem: about **one per 512 eligible host nodes in its own band**, none
-  elsewhere. Full table: [world_zones.md §11](world_zones.md#11-resource-loot-and-poi-budgets).
+- Every gem: about **one per 512 eligible host nodes in its own band**, one
+  per 1024 one tier deeper and one per 2048 two tiers deeper (half and a
+  quarter of its density), none elsewhere. Full table: [world_zones.md
+  §11](world_zones.md#11-resource-loot-and-poi-budgets).
 - Continental Abyssal Crystal exists for both factions throughout T5 and T6.
   Accepted Round 21 calibrations are **one crystal per 512 eligible host nodes in
   T5 and per 256 in T6**; the y = −701…−1000 entry
   band alone must yield enough for an
   Abyssal Steel pick without T6 access.
-- At y = −1500…−1999, ordinary continental ores, Diamond and Abyssal
-  Crystal receive **+25%** bounded placement budget; at y ≤ −2000 they
+- At y = −1500…−1999, ordinary continental ores, the T6 gems (Diamond,
+  Ruby, Sapphire) and Abyssal Crystal receive **+25%** bounded placement
+  budget; at y ≤ −2000 they
   receive **+50%**, capped. Trophies, king loot, claims and
   unique quest sources never receive this multiplier. It is mapgen placement,
   not runtime ore respawn.
@@ -290,7 +298,9 @@ burn time; arrow shows recipe progress. Personal/shared inventory semantics
 remain unchanged. Active personal jobs illuminate the physical furnace until
 the latest observed private fuel piece expires; only that cosmetic deadline is
 shared, while each player's flame and progress remain private. Charcoal does
-not replace mined coal in Steel or coal quests.
+not replace mined coal in Steel or coal quests. Torches are a Basic recipe:
+**1 Coal or 1 Charcoal + 1 stick → 10 torches** (Round 46 ruling 4; 4 per
+coal before), light 12; the vendor torch stays 1c.
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
 the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
@@ -577,9 +587,9 @@ shovels need a character level by material tier; the tier is the tool's own
 
 **Gathering XP** (Round 24 ruling 28, 2026-09-29). Every natural ore or gem
 node a player digs and every fish caught gives XP (formula and table in
-[progression.md](progression.md) "Gathering XP"): 0.10 kill equivalents per ore
-node, 0.20 per gem node (the six depth-tiered species), 0.33 per fish, of
-`M(min(reference level, player level + 5))` (Round 28 ruling 32) with reference level 10 × harvest
+[progression.md](progression.md) "Gathering XP"): 0.05 kill equivalents per ore
+node, 0.10 per gem node (the six depth-tiered species), 0.33 per fish, of
+`M(min(reference level, player level))` (Round 46 ruling 7) with reference level 10 × harvest
 tier (T1 10 … T6 60) or 10 × the water's zone band. The harvest callback of the
 node_dig wrapper settles it, so only a successful player dig of a natural
 resource node pays; explosions and mobs never dig through it, and ore nodes
@@ -788,13 +798,19 @@ upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md)
 
 **Material chain**: 2 cloth + thread → bolt, as Basic recipes (no
 profession, no progress). Authored grades are **T1 linen
-scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
+scrap → patch bolt** (start-zone zombies, L3+ and mostly by night, the start
+camps' outlaws and the tailor shop's 3c scrap — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
 bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
 item `grug_mobs:spider_silk`, shown as **Raw Silk** because T5/T6 outlaws drop
-it too); decided 2026-08-13:
+it too). The cloth-dropping humanoids (zombie, outlaw, goblin, mirefolk,
+skeleton, witch) drop their band's tier cloth on every looted kill in a band
+whose table has a cloth row, 1–2 pieces (Round 46 ruling 11; outlaw silk at
+bands 5–6 likewise); decided 2026-08-13:
 **T5 spider silk → silk bolt** (pure silk, the same 2 + thread pattern;
-spiders exist 25–60 on both continents) and **T6 spider silk + stormkelp →
+spiders live at 21–60 on both continents and in both 41–50 fronts by night,
+the Broken Causeway's woods and the Shattered Line's bluffs and swamps, since
+Round 46) and **T6 spider silk + stormkelp →
 stormweave bolt** — stormkelp (coast 45–60, both continents,
 `biomes_mobs.md` §6) doubles as a weaving fiber here; its spice role is
 unchanged, and the T6 bolt gives the level-45–60 coast zones an economic
@@ -967,17 +983,21 @@ main profession slot (professions.md §1).
   Accepted food heals instantly; its regeneration pauses during later combat,
   while secondary modifiers remain active.
 
-  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
-  |---|---:|---:|---:|---|---|---|
-  | T1 | 1 | 5 | 4% | — | — | — |
-  | T2 | 11 | 15 | 5% | — | — | — |
-  | T3 | 21 | 40 | 6% | +2% HP pool | +2% mana pool | +2% HP pool |
-  | T4 | 31 | 90 | 7% | +4% HP pool | +4% mana pool | +4% HP pool |
-  | T5 | 41 | 180 | 8% | +6% HP pool | +6% mana pool | +1% Crit |
-  | T6 | 51 | 300 | 10% | +8% HP pool | +8% mana pool | +1% Crit |
+  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Plain regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
+  |---|---:|---:|---:|---:|---|---|---|
+  | T1 | 1 | 5 | 4% | 3% | — | — | — |
+  | T2 | 11 | 15 | 5% | 4% | — | — | — |
+  | T3 | 21 | 40 | 6% | 6% | +2% HP pool | +2% mana pool | +2% HP pool |
+  | T4 | 31 | 90 | 7% | 7% | +4% HP pool | +4% mana pool | +4% HP pool |
+  | T5 | 41 | 180 | 8% | 8% | +6% HP pool | +6% mana pool | +1% Crit |
+  | T6 | 51 | 300 | 10% | 10% | +8% HP pool | +8% mana pool | +1% Crit |
 
   Hearty and Hunter dishes regenerate HP. Caster dishes regenerate both HP and
-  mana at the listed rate. Every raw edible regenerates 2% maximum HP per tick;
+  mana at the listed rate. **Plain dishes** (Round 46 ruling 13) are always
+  weaker than the three roles: the tier's instant HP and HP regeneration with
+  no secondary, and one point less regeneration at T1 and T2, where the roles
+  have no secondary. The furnace conversions (Cooked Meat, the Meat Block,
+  Cooked Fish, Bread) are T1 plain dishes too. Every raw edible regenerates 2% maximum HP per tick;
   Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
 
   **Cooking plant sources.** The current farming and renewal contract is in
@@ -1002,7 +1022,9 @@ main profession slot (professions.md §1).
   Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, the Raw
   Meat Block T1, ordinary Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom
   T3 and Wild Cocoa T6. The five band fish are T2–T6 respectively. Cooked
-  Meat, Cooked Fish, Bread and the Meat Block are T1 Hearty dishes.
+  Meat, Cooked Fish, Bread and the Meat Block are T1 plain dishes (Round 46;
+  Hearty before). The band fish are also Cooking ingredients of their own
+  tier.
 
   **Cooking area.** Every row is a Cooking recipe (1 s, no station; Round 45)
   and contains at least one ingredient registered at its own recipe tier. The
@@ -1011,22 +1033,37 @@ main profession slot (professions.md §1).
   dish costs more to make, never less (Round 34): the Caster dish (HP and mana
   regeneration) needs more input value, counted in vendor payouts, than the
   Hearty and Hunter dishes of its tier (HP only; their secondaries differ in
-  kind and count as equal).
+  kind and count as equal). The plain dish stands outside that comparison:
+  its value is that every zone of its band can cook it from local
+  ingredients (Round 46), whatever its inputs pay at a vendor.
+
+  In the tables a vegetable is carrot, cassava, potato or corn (every start
+  zone grows one; Round 46), and raw fish is ordinary Raw Fish or any band
+  fish (Round 46; Corn-Crusted Fish keeps Raw Fish alone). Following the
+  user's direction for the higher tiers (Round 46), Mushroom Skewer,
+  Forager's Pot and Cocoa-Rubbed Game add an ingredient of the tier below
+  from other zones, and the two T5 salt dishes use the T5 Salt Crust.
 
   | Tier | Role | Inputs | Output |
   |---|---|---|---|
-  | T1 | Caster | 2 carrot or cassava + potato or corn + Wild Grain | Sweetroot Mash |
-  | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
+  | T1 | Caster | 2 carrot or cassava + a vegetable + Wild Grain | Sweetroot Mash |
+  | T1 | Hunter | Raw Fish + corn | Corn-Crusted Fish |
+  | T1 | Plain | raw meat + Wild Onion or Fire Pepper | Spiced Skewer |
   | T2 | Caster | 3 berries + Pumpkin + Sugar Cane | Berry Preserve |
   | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
-  | T3 | Caster | 2 mushrooms | Mushroom Skewer |
+  | T2 | Plain | Silver Trout + Wild Grain | Pan-Fried Trout |
+  | T3 | Caster | 2 mushrooms + apple or berries | Mushroom Skewer |
   | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
+  | T3 | Plain | Mire Carp + Mushroom or Cave Cap | Mire Carp Stew |
   | T4 | Caster | raw fish + 2 Marshbloom | Marshbloom Chowder |
   | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
-  | T5 | Caster | 2 Stormkelp + raw fish + Rock Salt | Stormkelp Broth |
-  | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
+  | T4 | Plain | Frostfin + Mushroom or Cave Cap | Frostfin Fillet |
+  | T5 | Caster | 2 Stormkelp + raw fish + Salt Crust | Stormkelp Broth |
+  | T5 | Hunter | raw fish + Salt Crust | Salt-Crusted Fish |
+  | T5 | Plain | Ember Eel + corn | Smoked Ember Eel |
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
-  | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
+  | T6 | Hunter | raw meat + Wild Cocoa + Rock Salt | Cocoa-Rubbed Game |
+  | T6 | Plain | Storm Tuna + Stormkelp | Kelp-Steamed Tuna |
 
   **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
   Cooked Fish and Wild Grain → Bread are universal furnace recipes with no
@@ -1037,9 +1074,9 @@ main profession slot (professions.md §1).
 
   | Tier | Raw assembly inputs | Furnace output |
   |---|---|---|
-  | T1 | raw meat + potato or corn + Wild Grain | Hearty Stew |
+  | T1 | raw meat + a vegetable + Wild Grain | Hearty Stew |
   | T2 | pumpkin + raw meat + Wild Grain | Pumpkin Stew |
-  | T3 | Cave Cap + raw meat + potato or corn | Forager's Pot |
+  | T3 | Cave Cap + raw meat + Pumpkin | Forager's Pot |
   | T4 | raw meat + Marshbloom + Frost Melon | Marsh Roast |
   | T5 | raw meat + Stormkelp + Salt Crust | Kelp-Wrapped Roast |
   | T6 | 2 raw meat + Wild Cocoa + Salt Crust | Grand Feast |
@@ -1169,7 +1206,7 @@ becoming a side door around the pick-tier gate of §3.0.4.
 | Contested approaches 31–40 | equivalent T4 access | T4, elite chances on elites | all six race approaches are contested |
 | Front 41–50 | equivalent T5 access | T5, elite chances on elites | The Broken Causeway and The Shattered Line; war-front objectives and quest hooks; no free supply crates |
 | High front 51–60 / endpoints 60 | equivalent T6 access | T6; elites common | two contested dragons and the apex camps |
-| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; one gem per tier rock (§3.0.1); deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
+| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; each gem from its own tier rock, thinner two tiers deeper (§3.0.1); deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**
@@ -1644,8 +1681,9 @@ random crafted application rolls or separate refinement steps.
 
 Money is owned by [economy.md](economy.md); this section kept a copy of its
 tables until Round 37. All values use ledger copper (100c = 1s, 100s = 1g);
-no creature, NPC or world node drops currency or a physical coin, and
-physical Gold is a separate Goldsmith/build material (economy.md §1).
+no world node drops currency; a mob kill may drop a Bag of Coins (Round 46,
+economy.md §1), and physical Gold is a separate Goldsmith/build material
+(economy.md §1).
 
 - §8.1 income and reference values, the loot and gathered payouts and the
   anti-loop audit → economy.md §2 and §3;

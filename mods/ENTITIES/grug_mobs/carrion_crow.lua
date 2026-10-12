@@ -87,12 +87,10 @@ local crow = {
 		punch_start = 140, punch_end = 160, punch_speed = 50,
 	},
 
-	-- §3.1 war-coast row: "Carrion Crow (flees, feather)". The feather SURVIVES
-	-- here — §3.0/§6 move it off the CRITTERS (gull, parrot), and this mob is
-	-- prey, not a critter. It is what makes the war coast worth walking by day.
-	drops = {
-		{name = "grug_mobs:feather", chance = 1, min = 1, max = 1},
-	},
+	-- §3.1 war-coast row: "Carrion Crow (flees, feather)". The sell-only
+	-- feather no longer drops (Round 46 ruling 12); a kill pays through the
+	-- coin bag roll (aggro.lua) instead.
+	drops = {},
 
 	water_damage = 0,
 	lava_damage = 4,

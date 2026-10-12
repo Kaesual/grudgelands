@@ -337,6 +337,8 @@ eq(grug_core.picked_up_count("grug_mobs:leather 5", "grug_mobs:leather 2"), 3, "
 eq(grug_core.picked_up_count("grug_mobs:leather 5", "grug_mobs:leather 5"), 0, "nothing picked up")
 local entity_def = {on_punch = function(self, hitter)
 	if hitter._full then return end
+	-- What a self-reporting on_pickup does (Round 46, a deposited coin bag).
+	if self._deposited then self._grug_no_pickup_feed = true end
 	self.itemstring = self._rest or ""
 end}
 core.registered_entities["__builtin:item"] = entity_def
@@ -350,6 +352,12 @@ alice._full = true
 ent:on_punch(alice)
 eq(line_text(alice, 1), "+3 Light Leather", "a refused pickup reports nothing")
 alice._full = nil
+-- Round 46: an on_pickup that reports itself (a deposited coin bag) marks
+-- the entity, and no item line follows.
+local bag = setmetatable({itemstring = "grug_mobs:leather 2", _rest = "", _deposited = true},
+	{__index = entity_def})
+bag:on_punch(alice)
+eq(line_text(alice, 1), "+3 Light Leather", "a self-reported pickup adds no item line")
 
 -- Cost (a comparison, not a gate): one post plus the expiry passes it causes.
 do

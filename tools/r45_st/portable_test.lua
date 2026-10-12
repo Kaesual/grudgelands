@@ -35,7 +35,7 @@
 --      refused without a stand within 4 nodes;
 --   M  the mixtures stay registered as inert items: no record makes or uses
 --      one, no ingredient tier, no brewing adapter, no brewing lists;
---   Q  the 163 quest item objectives name no mixture, potion, elixir or gear
+--   Q  the 158 quest item objectives name no mixture, potion, elixir or gear
 --      (spec §4.7).
 -- Prints "R45 ST PORTABLE PASS checks=<n>" or the failures (exit 1).
 
@@ -559,8 +559,9 @@ factory.install_jobs(grug_jobs)
 
 current_mod = "grug_cooking"
 grug_food = {register_item = function() return true end}
+-- Round 46 (lane CK): the mushroom joins a cooking group too.
 for _, name in ipairs({"grug_gathering:potato", "grug_gathering:corn",
-		"default:blueberries", "default:apple"}) do
+		"default:blueberries", "default:apple", "grug_gathering:mushroom"}) do
 	core.register_craftitem(name, {description = name})
 end
 dofile(ROOT .. "/mods/ITEMS/grug_cooking/init.lua")
@@ -798,8 +799,9 @@ end
 
 ------------------------------------------------------------------------------
 -- T. The trainer mapping in each trainer-role reader: the Cooking trainer
---    socket holds a mender (no teaching, no trainer dialog, no map icon; its
---    click opens the repair form under the trainers' rules).
+--    socket holds a mender (no teaching, no trainer dialog, the repair icon
+--    on the map since Round 46; its click opens the repair form under the
+--    trainers' rules).
 ------------------------------------------------------------------------------
 do
 	local MENDER = grug_jobs.MENDER_TITLE
@@ -896,16 +898,19 @@ do
 	eq(saved_tailor._grug_profession, "tailor", "T a saved tailor trainer stays a trainer")
 	eq(saved_tailor._grug_npc_name, "Tailor Trainer", "T ...with its name")
 
-	-- The map: no marker for the mender (no repairer has an icon), the tailor
-	-- trainer's stays.
-	local labels = {}
-	for _, marker in ipairs(marker_providers.service(visitor)) do labels[marker.label] = marker.kind end
+	-- The map: the tailor trainer's marker stays. Round 46 (lane RP): the
+	-- mender is marked as a service with the repair icon (was: no marker).
+	local labels, textures = {}, {}
+	for _, marker in ipairs(marker_providers.service(visitor)) do
+		labels[marker.label], textures[marker.label] = marker.kind, marker.texture
+	end
 	eq(labels["Tailor Trainer"], "trainer", "T the map marks the tailor trainer")
 	eq(labels["Cooking Trainer"], nil, "T the map marks no Cooking trainer")
-	eq(labels[MENDER], nil, "T ...and no mender")
+	eq(labels[MENDER], "service", "T ...but the mender, as a service")
+	eq(textures[MENDER], "grug_map_repair.png", "T ...with the repair icon")
 	local service_markers = 0
 	for _ in pairs(labels) do service_markers = service_markers + 1 end
-	eq(service_markers, 1, "T ...one service marker in all")
+	eq(service_markers, 2, "T ...two service markers in all")
 end
 
 ------------------------------------------------------------------------------
@@ -1018,7 +1023,8 @@ do
 end
 
 ------------------------------------------------------------------------------
--- Q. The 163 item objectives (spec §4.7): none names an item that disappears
+-- Q. The 158 item objectives (spec §4.7; 163 before Round 46 removed the
+--    repeatable quests): none names an item that disappears
 --    (a mixture) or that only a profession makes (an Alchemy product, gear).
 ------------------------------------------------------------------------------
 do
@@ -1050,7 +1056,7 @@ do
 		end
 	end
 	handle:close()
-	eq(objectives, 163, "Q the quests hold 163 item objectives")
+	eq(objectives, 158, "Q the quests hold 158 item objectives (Round 46: five were on repeatables)")
 	eq(#flagged, 0, "Q none names a mixture, potion, elixir or grug_gear item (" ..
 		table.concat(flagged, ", ") .. ")")
 end

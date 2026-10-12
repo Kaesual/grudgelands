@@ -64,13 +64,17 @@ core.register_on_mods_loaded(function()
 			local id = settlement.key .. "/" .. socket.id
 			sockets[id] = socket.pos
 			local label, texture, kind
-			-- A trainer socket of a profession no trainer teaches (Round 45:
-			-- Cooking) holds a mender: no marker (no repairer has an icon).
 			if socket.role == "trainer" and grug_jobs.trainer_teaches(socket.profession) then
 				local profession = assert(grug_jobs.PROFESSIONS[socket.profession])
 				label = profession.name .. " Trainer"
 				texture = grug_map.trainer_icon(socket.profession)
 				kind = "trainer"
+			-- A trainer socket of a profession no trainer teaches (Round 45:
+			-- Cooking) holds the mender, marked as a service with the repair
+			-- icon (Round 46 RP; the repairing trainers keep their own).
+			elseif socket.role == "trainer" and grug_jobs.PROFESSIONS[socket.profession] then
+				label, texture = grug_jobs.MENDER_TITLE, "grug_map_repair.png"
+				kind = "service"
 			elseif socket.role == "riding_trainer" then
 				label, texture = "Riding Trainer", "grug_mounts_icon_" .. settlement.race_id .. ".png"
 				kind = "trainer"

@@ -10,7 +10,7 @@ local META_RESPEC_USED = "grug_classes:respec_used"
 -- Respec copper price per level bracket (1-10 ... 51-60): five minutes of
 -- reliable net solo income (economy.md section 4), derived and checked by
 -- tools/r29_e4/income.py (economy plan, E4). The first respec is free.
-grug_classes.RESPEC_PRICES = {15, 35, 75, 200, 525, 1200}
+grug_classes.RESPEC_PRICES = {15, 35, 75, 200, 550, 1200}
 
 local function esc(text)
 	return core.formspec_escape(tostring(text or ""))
@@ -80,6 +80,14 @@ local function level_scaled_text(player, def)
 			for _, value in ipairs(values) do
 				ranks[#ranks + 1] = "+" .. level_number(factor *
 					grug_classes.talent_level_amount(player, effect_key, value))
+			end
+			if unit == "damage" and grug_classes.TALENT_SPELL_KEYS[effect_key] then
+				-- A caster key follows the staff or wand (Round 46).
+				return (" At your level and with your staff or wand a spell " ..
+					"base hit is %d damage: %s damage."):format(
+					math.floor(grug_core.base_pool(level) / 8 *
+						grug_classes.spell_weapon_ratio(player, level)),
+					table.concat(ranks, " / "))
 			end
 			if unit == "damage" then
 				return (" At your level a base hit is %d damage: %s damage."):format(

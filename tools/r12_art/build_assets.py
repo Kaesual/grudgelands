@@ -73,10 +73,10 @@ def jar():
     return im
 
 
-def skewer():
+def skewer(chunks=("#9b5a31", "#ceb17a", "#794425")):
     im = canvas(); d = ImageDraw.Draw(im)
     d.line((2, 13, 13, 2), fill=OUTLINE, width=2); d.line((3, 12, 13, 2), fill="#a96c34")
-    for x,y,c in [(5,10,"#9b5a31"),(8,7,"#ceb17a"),(11,4,"#794425")]:
+    for (x,y),c in zip([(5,10),(8,7),(11,4)], chunks):
         d.ellipse((x-2,y-2,x+2,y+2), fill=OUTLINE); d.rectangle((x-1,y-1,x+1,y+1), fill=c)
     return im
 
@@ -158,6 +158,13 @@ def main():
         "grand_feast": platter("#b05a2a", "#efa34a", "#78508e", True),
         "jungle_cocoa": mug(),
         "cocoa_rubbed_game": platter("#63331f", "#9d5b34", "#7a322c", True),
+        # Round 46: the six plain dishes.
+        "spiced_skewer": skewer(("#9b4a2a", "#c8402c", "#8a4426")),
+        "pan_fried_trout": fish("#c08a4a"),
+        "mire_carp_stew": pot("#5d6b3f", [(5,7,"#8fa36b"),(9,8,"#b99b68")]),
+        "frostfin_fillet": platter("#9cc3e0", "#e6f2fa", "#6f8f4a"),
+        "smoked_ember_eel": fish("#9a3f24"),
+        "kelp_steamed_tuna": platter("#7c6bc2", "#a99ae0", "#3c8290"),
     }
     for name, image in foods.items(): save(image, COOK / ("grug_cooking_dish_" + name + ".png"))
     raw_names = ["raw_stew_pot", "raw_pumpkin_pot", "raw_foragers_pot", "raw_marsh_roast", "raw_kelp_roast", "raw_grand_feast"]

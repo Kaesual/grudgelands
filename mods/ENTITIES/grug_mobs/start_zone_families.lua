@@ -226,9 +226,9 @@ mobs:spawn({name = "grug_mobs:giant_rat",
 	interval = 20, chance = 1600, active_object_count = 4,
 	min_height = 0, max_height = 600})
 mobs:spawn({name = "grug_mobs:giant_rat",
-	nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
+	nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
 	interval = 20, chance = 1800, active_object_count = 4,
-	min_height = -300, max_height = -40})
+	min_height = -300, max_height = -1})
 
 local function poison_family(description, mesh, texture, size, box, animation,
 		spawn_check, clock)

@@ -5,10 +5,11 @@ icons and replaces the generic runtime-colourized results with project art.
 
 ## Round 12 cooking results — CC0 1.0
 
-The 18 `grug_cooking_dish_*.png` files, six `grug_cooking_raw_*.png` files and
-`grug_cooking_bread.png` are original Grudgelands pixel art, authored as
-explicit 16x16 geometry in `tools/r12_art/build_assets.py`. They are dedicated
-to the public domain under CC0 1.0 Universal.
+The 24 `grug_cooking_dish_*.png` files (the six plain dishes added in Round
+46), six `grug_cooking_raw_*.png` files and `grug_cooking_bread.png` are
+original Grudgelands pixel art, authored as explicit 16x16 geometry in
+`tools/r12_art/build_assets.py`. They are dedicated to the public domain under
+CC0 1.0 Universal.
 
 An OpenAI image-generation concept sheet informed the high-level vocabulary
 (bowls, pots, platter, jar, mug and tied raw bundles), but no generated pixels
