@@ -6,40 +6,51 @@ grug_food = {}
 grug_food.DURATION = 300
 grug_food.INTERVAL = 5
 
+-- The plain role (Round 46 ruling 13) is the dish a zone can always cook from
+-- its own ingredients: the tier's instant HP and HP regeneration, no
+-- secondary, and always weaker than the three roles: one point less
+-- regeneration at T1 and T2 (where the roles have no secondary), the missing
+-- secondary from T3.
 grug_food.TIERS = {
 	[1] = {instant_hp = 5, min_level = 1, dishes = {
 		hearty = {regen = {hp = 4}, modifiers = {}},
 		caster = {regen = {hp = 4, mana = 4}, modifiers = {}},
 		hunter = {regen = {hp = 4}, modifiers = {}},
+		plain = {regen = {hp = 3}, modifiers = {}},
 	}},
 	[2] = {instant_hp = 15, min_level = 11, dishes = {
 		hearty = {regen = {hp = 5}, modifiers = {}},
 		caster = {regen = {hp = 5, mana = 5}, modifiers = {}},
 		hunter = {regen = {hp = 5}, modifiers = {}},
+		plain = {regen = {hp = 4}, modifiers = {}},
 	}},
 	[3] = {instant_hp = 40, min_level = 21, dishes = {
 		hearty = {regen = {hp = 6}, modifiers = {hp_pool_percent = 2}},
 		caster = {regen = {hp = 6, mana = 6},
 			modifiers = {mana_pool_percent = 2}},
 		hunter = {regen = {hp = 6}, modifiers = {hp_pool_percent = 2}},
+		plain = {regen = {hp = 6}, modifiers = {}},
 	}},
 	[4] = {instant_hp = 90, min_level = 31, dishes = {
 		hearty = {regen = {hp = 7}, modifiers = {hp_pool_percent = 4}},
 		caster = {regen = {hp = 7, mana = 7},
 			modifiers = {mana_pool_percent = 4}},
 		hunter = {regen = {hp = 7}, modifiers = {hp_pool_percent = 4}},
+		plain = {regen = {hp = 7}, modifiers = {}},
 	}},
 	[5] = {instant_hp = 180, min_level = 41, dishes = {
 		hearty = {regen = {hp = 8}, modifiers = {hp_pool_percent = 6}},
 		caster = {regen = {hp = 8, mana = 8},
 			modifiers = {mana_pool_percent = 6}},
 		hunter = {regen = {hp = 8}, modifiers = {crit_percent = 1}},
+		plain = {regen = {hp = 8}, modifiers = {}},
 	}},
 	[6] = {instant_hp = 300, min_level = 51, dishes = {
 		hearty = {regen = {hp = 10}, modifiers = {hp_pool_percent = 8}},
 		caster = {regen = {hp = 10, mana = 10},
 			modifiers = {mana_pool_percent = 8}},
 		hunter = {regen = {hp = 10}, modifiers = {crit_percent = 1}},
+		plain = {regen = {hp = 10}, modifiers = {}},
 	}},
 }
 
@@ -516,20 +527,22 @@ function grug_food.register_item(item_name, tier, kind, role)
 	return true
 end
 
+-- The furnace conversions (Cooked Meat, the Meat Block, Cooked Fish; Bread
+-- in grug_cooking) are plain dishes (Round 46).
 local CURRENT_FOODS = {
 	{"default:apple", 1, "raw", "hp"},
 	{"default:blueberries", 1, "raw", "hp"},
 	{"mobs:meat_raw", 1, "raw", "hp"},
-	{"mobs:meat", 1, "dish", "hearty"},
+	{"mobs:meat", 1, "dish", "plain"},
 	{"mobs:meatblock_raw", 1, "raw", "hp"},
-	{"mobs:meatblock", 1, "dish", "hearty"},
+	{"mobs:meatblock", 1, "dish", "plain"},
 	{"grug_mobs:raw_fish", 1, "raw", "hp"},
 	{"grug_fishing:silver_trout", 2, "raw", "hp"},
 	{"grug_fishing:mire_carp", 3, "raw", "hp"},
 	{"grug_fishing:frostfin", 4, "raw", "hp"},
 	{"grug_fishing:ember_eel", 5, "raw", "hp"},
 	{"grug_fishing:storm_tuna", 6, "raw", "hp"},
-	{"grug_fishing:cooked_fish", 1, "dish", "hearty"},
+	{"grug_fishing:cooked_fish", 1, "dish", "plain"},
 }
 
 for index = 1, #CURRENT_FOODS do

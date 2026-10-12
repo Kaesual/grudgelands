@@ -202,7 +202,9 @@ items, per-recipe unlocks, keystone redemptions or discovery.
     output area" or "Not enough ingredients".
   - **Ingredients** are consumed at the start: the bags first, then
     `main[9..]`, the hotbar last. Only stacks without metadata count, for item
-    and group entries alike; the list's ×N uses the same rule.
+    and group entries alike; the list's ×N uses the same rule, and where one
+    item could fill two entries (carrot and cassava are a root and a staple)
+    ×N is what the take itself manages (Round 46).
   - **The output area:** four take-only slots (`grug_craft_out`, every
     player) shared by all jobs; **Take all** moves it into the inventory in
     the give order, and what does not fit stays.

@@ -559,8 +559,9 @@ factory.install_jobs(grug_jobs)
 
 current_mod = "grug_cooking"
 grug_food = {register_item = function() return true end}
+-- Round 46 (lane CK): the mushroom joins a cooking group too.
 for _, name in ipairs({"grug_gathering:potato", "grug_gathering:corn",
-		"default:blueberries", "default:apple"}) do
+		"default:blueberries", "default:apple", "grug_gathering:mushroom"}) do
 	core.register_craftitem(name, {description = name})
 end
 dofile(ROOT .. "/mods/ITEMS/grug_cooking/init.lua")

@@ -1,7 +1,8 @@
 # Round 12 art evidence
 
-`build_assets.py` deterministically builds the 18 dishes, six raw assemblies,
-Bread, six Wands and six double-bit Greataxes. Run it with Python 3 and Pillow;
+`build_assets.py` deterministically builds the 24 dishes (the six plain
+dishes since Round 46), six raw assemblies, Bread, six Wands and six
+double-bit Greataxes. Run it with Python 3 and Pillow;
 paths resolve from the script location.
 
 The project-authored sprites use explicit 16x16 geometry and fixed palettes.

@@ -104,8 +104,8 @@ local function run()
 		check(not recipe.output:find("fitting", 1, true), "recipe makes " .. recipe.output)
 	end
 
-	-- 3. Cooking: six furnace-only dishes, twelve Cooking recipes (Round 45:
-	-- recipe lists, no grid route).
+	-- 3. Cooking: six furnace-only dishes, eighteen Cooking recipes (Round 45:
+	-- recipe lists, no grid route; Round 46: the six plain dishes).
 	local furnace_only = {hearty_stew = true, pumpkin_stew = true, foragers_pot = true,
 		marsh_roast = true, kelp_wrapped_roast = true, grand_feast = true}
 	local grid_dishes = 0
@@ -126,7 +126,7 @@ local function run()
 			check(listed == 1, dish.id .. " keeps its Cooking recipe")
 		end
 	end
-	check(grid_dishes == 12, "twelve grid dishes (got " .. grid_dishes .. ")")
+	check(grid_dishes == 18, "eighteen listed dishes (got " .. grid_dishes .. ")")
 	local raw = core.get_craft_result({method = "cooking", width = 1,
 		items = {"grug_cooking:raw_stew_pot"}})
 	check(raw.item:get_name() == "grug_cooking:hearty_stew", "Raw Hearty Stew bakes into Hearty Stew")

@@ -206,7 +206,8 @@ tools](#player-meta-read-by-external-tools).
   `core.after` per online player with a job, no globalstep.
   `ingredient_counts(player)` (one pass over `main` and the bags, stacks
   without metadata: `is_ingredient_stack`), `ingredient_have(counts, entry)`,
-  `crafts_from_counts(counts, recipe)`, `output_capacity(player, recipe)`,
+  `crafts_from_counts(counts, recipe)` (a dry-run take on the counted stacks
+  when one item satisfies two entries; Round 46), `output_capacity(player, recipe)`,
   `max_craftable(player, recipe[, counts])` → n, by ingredients, by space;
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
   within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area
@@ -626,7 +627,7 @@ tools](#player-meta-read-by-external-tools).
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
   refresh path as talents. `grug_food.TIERS` owns fixed instant HP, minimum
-  level and the Hearty/Caster/Hunter dish data; raw foods, including Wild
+  level and the Hearty/Caster/Hunter/Plain dish data; raw foods, including Wild
   Cocoa, always regenerate 2% HP per 5 s. Food lasts 300 s. Eating during
   combat is refused before consumption; accepted food heals instantly, and its
   regeneration pauses during later combat while secondary modifiers persist. The
@@ -635,7 +636,7 @@ tools](#player-meta-read-by-external-tools).
   equipment slot (Round 33) and all consumables; `grug_quality` wraps it so
   a stack's own `grug_req_level` (drops, upgrades, the crown) wins. Potions
   retain their instant channel and shared persistent cooldown.
-  `grug_cooking` owns the mapgen-free plant items, the 12 dish recipes, the six
+  `grug_cooking` owns the mapgen-free plant items, the 18 dish recipes, the six
   raw assembled dishes (Cooking recipes since Round 45) and their engine
   furnace routes. `grug_fishing.table_for(pos)`
   selects one of six catch tables through `grug_core.mob_level_at(pos)`; water

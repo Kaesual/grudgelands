@@ -975,17 +975,21 @@ main profession slot (professions.md §1).
   Accepted food heals instantly; its regeneration pauses during later combat,
   while secondary modifiers remain active.
 
-  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
-  |---|---:|---:|---:|---|---|---|
-  | T1 | 1 | 5 | 4% | — | — | — |
-  | T2 | 11 | 15 | 5% | — | — | — |
-  | T3 | 21 | 40 | 6% | +2% HP pool | +2% mana pool | +2% HP pool |
-  | T4 | 31 | 90 | 7% | +4% HP pool | +4% mana pool | +4% HP pool |
-  | T5 | 41 | 180 | 8% | +6% HP pool | +6% mana pool | +1% Crit |
-  | T6 | 51 | 300 | 10% | +8% HP pool | +8% mana pool | +1% Crit |
+  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Plain regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
+  |---|---:|---:|---:|---:|---|---|---|
+  | T1 | 1 | 5 | 4% | 3% | — | — | — |
+  | T2 | 11 | 15 | 5% | 4% | — | — | — |
+  | T3 | 21 | 40 | 6% | 6% | +2% HP pool | +2% mana pool | +2% HP pool |
+  | T4 | 31 | 90 | 7% | 7% | +4% HP pool | +4% mana pool | +4% HP pool |
+  | T5 | 41 | 180 | 8% | 8% | +6% HP pool | +6% mana pool | +1% Crit |
+  | T6 | 51 | 300 | 10% | 10% | +8% HP pool | +8% mana pool | +1% Crit |
 
   Hearty and Hunter dishes regenerate HP. Caster dishes regenerate both HP and
-  mana at the listed rate. Every raw edible regenerates 2% maximum HP per tick;
+  mana at the listed rate. **Plain dishes** (Round 46 ruling 13) are always
+  weaker than the three roles: the tier's instant HP and HP regeneration with
+  no secondary, and one point less regeneration at T1 and T2, where the roles
+  have no secondary. The furnace conversions (Cooked Meat, the Meat Block,
+  Cooked Fish, Bread) are T1 plain dishes too. Every raw edible regenerates 2% maximum HP per tick;
   Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
 
   **Cooking plant sources.** The current farming and renewal contract is in
@@ -1010,7 +1014,9 @@ main profession slot (professions.md §1).
   Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, the Raw
   Meat Block T1, ordinary Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom
   T3 and Wild Cocoa T6. The five band fish are T2–T6 respectively. Cooked
-  Meat, Cooked Fish, Bread and the Meat Block are T1 Hearty dishes.
+  Meat, Cooked Fish, Bread and the Meat Block are T1 plain dishes (Round 46;
+  Hearty before). The band fish are also Cooking ingredients of their own
+  tier.
 
   **Cooking area.** Every row is a Cooking recipe (1 s, no station; Round 45)
   and contains at least one ingredient registered at its own recipe tier. The
@@ -1019,22 +1025,37 @@ main profession slot (professions.md §1).
   dish costs more to make, never less (Round 34): the Caster dish (HP and mana
   regeneration) needs more input value, counted in vendor payouts, than the
   Hearty and Hunter dishes of its tier (HP only; their secondaries differ in
-  kind and count as equal).
+  kind and count as equal). The plain dish stands outside that comparison:
+  its value is that every zone of its band can cook it from local
+  ingredients (Round 46), whatever its inputs pay at a vendor.
+
+  In the tables a vegetable is carrot, cassava, potato or corn (every start
+  zone grows one; Round 46), and raw fish is ordinary Raw Fish or any band
+  fish (Round 46; Corn-Crusted Fish keeps Raw Fish alone). Following the
+  user's direction for the higher tiers (Round 46), Mushroom Skewer,
+  Forager's Pot and Cocoa-Rubbed Game add an ingredient of the tier below
+  from other zones, and the two T5 salt dishes use the T5 Salt Crust.
 
   | Tier | Role | Inputs | Output |
   |---|---|---|---|
-  | T1 | Caster | 2 carrot or cassava + potato or corn + Wild Grain | Sweetroot Mash |
-  | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
+  | T1 | Caster | 2 carrot or cassava + a vegetable + Wild Grain | Sweetroot Mash |
+  | T1 | Hunter | Raw Fish + corn | Corn-Crusted Fish |
+  | T1 | Plain | raw meat + Wild Onion or Fire Pepper | Spiced Skewer |
   | T2 | Caster | 3 berries + Pumpkin + Sugar Cane | Berry Preserve |
   | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
-  | T3 | Caster | 2 mushrooms | Mushroom Skewer |
+  | T2 | Plain | Silver Trout + Wild Grain | Pan-Fried Trout |
+  | T3 | Caster | 2 mushrooms + apple or berries | Mushroom Skewer |
   | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
+  | T3 | Plain | Mire Carp + Mushroom or Cave Cap | Mire Carp Stew |
   | T4 | Caster | raw fish + 2 Marshbloom | Marshbloom Chowder |
   | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
-  | T5 | Caster | 2 Stormkelp + raw fish + Rock Salt | Stormkelp Broth |
-  | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
+  | T4 | Plain | Frostfin + Mushroom or Cave Cap | Frostfin Fillet |
+  | T5 | Caster | 2 Stormkelp + raw fish + Salt Crust | Stormkelp Broth |
+  | T5 | Hunter | raw fish + Salt Crust | Salt-Crusted Fish |
+  | T5 | Plain | Ember Eel + corn | Smoked Ember Eel |
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
-  | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
+  | T6 | Hunter | raw meat + Wild Cocoa + Rock Salt | Cocoa-Rubbed Game |
+  | T6 | Plain | Storm Tuna + Stormkelp | Kelp-Steamed Tuna |
 
   **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
   Cooked Fish and Wild Grain → Bread are universal furnace recipes with no
@@ -1045,9 +1066,9 @@ main profession slot (professions.md §1).
 
   | Tier | Raw assembly inputs | Furnace output |
   |---|---|---|
-  | T1 | raw meat + potato or corn + Wild Grain | Hearty Stew |
+  | T1 | raw meat + a vegetable + Wild Grain | Hearty Stew |
   | T2 | pumpkin + raw meat + Wild Grain | Pumpkin Stew |
-  | T3 | Cave Cap + raw meat + potato or corn | Forager's Pot |
+  | T3 | Cave Cap + raw meat + Pumpkin | Forager's Pot |
   | T4 | raw meat + Marshbloom + Frost Melon | Marsh Roast |
   | T5 | raw meat + Stormkelp + Salt Crust | Kelp-Wrapped Roast |
   | T6 | 2 raw meat + Wild Cocoa + Salt Crust | Grand Feast |
