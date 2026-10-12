@@ -119,16 +119,6 @@ local function advance(ctx)
 	return changed_inventory
 end
 
--- The repair button a station inside an active Claim Stone claim adds
--- (grug_repair), or "".
-local function repair_button(name, pos, x, y)
-	local repair = rawget(_G, "grug_repair")
-	if repair and repair.can_open_station(core.get_player_by_name(name), pos) then
-		return ("button[%g,%g;2.4,0.8;grug_jobs_repair;Repair equipment]"):format(x, y)
-	end
-	return ""
-end
-
 -- Shift-click: each station list rings to the shift-click inbox
 -- (grug_inventory/inbox.lua: into main[9..] and the bags), `main` to the
 -- first station list. The list name is spelled out: fixtures stub
@@ -170,7 +160,6 @@ local function formspec(ctx)
 		"image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]" ..
 		(progress_percent > 0 and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
 			progress_percent .. ":gui_furnace_arrow_fg.png^[transformR270]" or "") ..
-		repair_button(ctx.name, ctx.pos, 9.3, 4.95) ..
 		"list[current_player;main;1,6;8,1;]list[current_player;main;1,7.25;8,3;8]" ..
 		default.get_hotbar_bg(1, 6)
 end
@@ -242,14 +231,11 @@ local function callbacks(ctx)
 	}
 end
 
--- Opens the furnace or dual-furnace form at `pos`; true when it is shown. `id` (optional)
--- is the station id a return from the repair form expects (Round 41 ruling
--- 3): a station dug and replaced at the same place is another station, and
--- the caller falls back to the inventory.
-function workspaces.open(pos, player, id)
+-- Opens the furnace or dual-furnace form at `pos`; true when it is shown.
+-- No station repairs (Round 46 ruling 16: repair only in towns).
+function workspaces.open(pos, player)
 	local station = node_station(pos)
 	if not DIALOG_STATIONS[station] or not player or not player:is_player() then return false end
-	if id and core.get_meta(pos):get_string("grug_jobs:station_id") ~= id then return false end
 	local name = player:get_player_name()
 	local ctx = {name = name, pos = vector.new(pos), station = station,
 		id = stamp(pos), personal = grug_jobs.is_public_station(station, pos)}
@@ -271,37 +257,12 @@ function workspaces.open(pos, player, id)
 	return true
 end
 
--- Close of a station's repair form (Round 41 ruling 3): back to the station
--- form at `origin` ({pos, id}) when it can be reopened there, else the
--- inventory.
-local function close_to_origin(player, origin)
-	if origin and workspaces.open(origin.pos, player, origin.id) then return true end
-	core.show_formspec(player:get_player_name(), "", player:get_inventory_formspec())
-	return false
-end
-
--- The repair form replaces the station form and the session ends; its Close
--- returns here, Esc closes everything.
-local function open_repair(player, ctx)
-	local repair = rawget(_G, "grug_repair")
-	if not repair then return end
-	local origin = {pos = vector.new(ctx.pos), id = ctx.id}
-	repair.open_station(player, origin.pos, function(closer)
-		close_to_origin(closer, origin)
-	end)
-end
-
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORM then return false end
 	local ctx = viewers[player:get_player_name()]
 	if not ctx then return true end
 	if fields.quit then detach(ctx) return true end
 	if not accessible(ctx, player) then return true end
-	if fields.grug_jobs_repair then
-		detach(ctx)
-		open_repair(player, ctx)
-		return true
-	end
 	refresh(ctx, true)
 	return true
 end)

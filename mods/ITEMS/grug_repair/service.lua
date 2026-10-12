@@ -25,8 +25,9 @@ function grug_repair.cost(stack)
 	return math.ceil(grug_repair.FACTOR * price * stack:get_wear() / 65535)
 end
 
--- providers.lua registers the city trainers and the claim stations. Merely
--- placing a crafting station outside an active claim grants no repair.
+-- providers.lua registers the town trainers, the mender included. Repair
+-- happens only in towns (Round 46 ruling 16): no claim, furnace or other
+-- station repairs.
 function grug_repair.register_provider(kind, permitted)
 	assert(type(kind) == "string" and not provider_types[kind])
 	assert(type(permitted) == "function")
