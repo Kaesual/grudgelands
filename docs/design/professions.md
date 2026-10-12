@@ -58,8 +58,8 @@ personal stations, access, digging) is
 - **Seven trainers in every capital:** the six primaries plus Alchemy. The
   Cooking trainer sockets the world data still gives every start and every
   capital (Round 45) hold **Grudge-Free Repairs** (a title, the same in
-  every town, `grug_jobs.MENDER_TITLE`; the user, 2026-10-09): it teaches nothing and has no trainer dialog and
-  no map or minimap icon, but its click opens the repair form with the
+  every town, `grug_jobs.MENDER_TITLE`; the user, 2026-10-09): it teaches nothing and has no trainer dialog,
+  its map and minimap marker is the repair icon (Round 46), and its click opens the repair form with the
   trainers' prices, faction and distance rules (the user, 2026-10-09:
   start towns keep a repair point). A runtime mapping in the trainer-role
   readers decides it (`grug_jobs.trainer_teaches`, applied at placement and
@@ -362,8 +362,8 @@ profession's product (§3 below).
 
 V1 repair is the explicit exception to profession ownership: every profession
 trainer repairs every repairable item of a player of its faction for money
-only. Player-placed stations inside an active Claim Stone claim offer the same
-service ([durability_repair.md](durability_repair.md)). Material-matched
+only. Repair happens only in towns; no station repairs (Round 46,
+[durability_repair.md](durability_repair.md)). Material-matched
 repair is backlog work, not a hidden benefit of learning the item's owning
 profession.
 

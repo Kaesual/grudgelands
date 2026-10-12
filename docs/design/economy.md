@@ -164,14 +164,14 @@ precedence over preserving the exact mathematical ratio.
 - Small/steady: vendor goods, job supplies, bags, potions and other ordinary
   consumables.
 - **Repair:** broken gear is never destroyed; at zero durability its effects
-  stop until repaired with ledger money at any city profession trainer, including
-  Cooking. The cost is `ceil(1.00 × reference purchase price × missing
+  stop until repaired with ledger money at any town profession trainer or at
+  Grudge-Free Repairs (the former Cooking trainer socket). The cost is `ceil(1.00 × reference purchase price × missing
   durability fraction)` per item (Round 33: wearing an item out once costs
   its price), from the §2 purchase table; intact items are
   free. Anyone may repair any eligible item, with no profession or material
-  requirement. Crafting stations inside an active Claim Stone claim offer the
-  same repair at the same trader price, as a convenience (D7). The precise
-  eligibility, price catalog, transaction and claim-station rules are in
+  requirement. Repair happens only in towns (Round 46 ruling 16): the
+  claim-station repair (D7) is removed. The precise eligibility, price
+  catalog and transaction rules are in
   [durability_repair.md](durability_repair.md).
 - **Talent respec:** repeatable **in the talent UI — there is no class
   trainer and no NPC** (user ruling 4 of 2026-09-16, `skill_trees.md` §5,

@@ -530,9 +530,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   job starts (`professions.md` §1.5). Only **furnaces and dual furnaces** keep
   a dialog with lists. The forge, the four benches and the brewing stand are
   proximity stations without a dialog, lists or a right-click action (Round
-  45); inside an active Claim Stone claim the repair button sits in a
-  player-placed furnace's or dual furnace's dialog
-  ([durability_repair.md](durability_repair.md)).
+  45). No station repairs: repair happens only in towns (Round 46,
+  [durability_repair.md](durability_repair.md)).
 - Authored capital/POI furnaces and dual furnaces are personal workspaces
   keyed by player and physical station: durable inputs, outputs, fuel and
   processing state per player. Player-placed ones share node inventories;

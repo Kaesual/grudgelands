@@ -62,7 +62,10 @@ Round 44. The Housing Steward has its own
 marker (kind `steward`, a cottage-and-key icon, Round 26 playtest), drawn above
 trainers and innkeepers but below quest, party and player markers. The
 capital services of Round 33 share that layer (kind `service`, Round 34): the
-Crownbinder (a crown over an anvil) and the Decor Merchant (a lantern). NPC markers do not query live
+Crownbinder (a crown over an anvil) and the Decor Merchant (a lantern); since
+Round 46 also Grudge-Free Repairs, the mender of every start town and capital
+(a hammer over an anvil; the repairing profession trainers keep their own
+icons). NPC markers do not query live
 entities, load terrain, reveal health or indicate respawn state. All NPC/player
 hover tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
@@ -71,8 +74,8 @@ is necessary. Map markers confer no remote interaction or travel.
 Round 31 (PvP ruling 13): **the NPC's faction decides who sees its
 marker.** Each NPC marker carries its NPC's faction (the race's; a quest
 giver's own race where it names one). A player sees only the own faction's
-quest givers, trainers, Housing Stewards, Crownbinders, Decor Merchants and
-innkeepers; a character without a faction yet sees no NPC markers. Both
+quest givers, trainers, Housing Stewards, Crownbinders, Decor Merchants,
+menders and innkeepers; a character without a faction yet sees no NPC markers. Both
 factions can have markers in one zone (a spy in a contested zone), each seen
 only by its own side. The base with its baked layer (the kings and dragons
 included) and roads stay complete for everyone; since Round 44 the
@@ -171,8 +174,8 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   target rings, the own faction's trainers (the profession icons, riding
   the mount icon; 0.23 units at 1x and 2x, two thirds of the 0.34 icons,
   0.34 at 4x and 8x), innkeepers, the home and discovered waystones, the
-  Housing Steward, the Crownbinder and the Decor Merchant (their icons,
-  0.34, without tooltips; each NPC of the own faction only, like the
+  Housing Steward, the Crownbinder, the Decor Merchant and the mender
+  (Round 46) (their icons, 0.34, without tooltips; each NPC of the own faction only, like the
   minimap), a question mark at the hand-in NPC of every active quest of the
   own faction (silver in progress, gold when one of its quests is ready;
   the NPC's name as tooltip, the only tooltips of the map), quest target
@@ -424,8 +427,8 @@ drawn from the base image above. The gliding version (approved in playtest,
   [Baked layer](#baked-layer)); they glide with the map as part of it.
 - **Markers** are separate HUD elements, never pixels of the map texture:
   quest givers with their per-player state (ready, available, active,
-  locked: the "!" and "?"), the Housing Steward, the Crownbinder and the
-  Decor Merchant, profession trainers with their profession's icon (Round
+  locked: the "!" and "?"), the Housing Steward, the Crownbinder, the
+  Decor Merchant and the mender (Round 46), profession trainers with their profession's icon (Round
   44) and Riding trainers with the mount icon, innkeepers, the player's home
   (the bound innkeeper or Claim Stone) and discovered waystones (Round 29),
   each NPC of the own faction only (Round 31). The user kept this set in
