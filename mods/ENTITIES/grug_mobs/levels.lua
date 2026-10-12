@@ -412,6 +412,9 @@ function grug_mobs.register_level_cfg(name, def)
 		fixed = def._grug_fixed_level,
 		tier = tier,
 		xp_override = def._grug_xp_reward,
+		-- Like xp_override: mobs_redo copies only its field whitelist into the
+		-- entity table, so a def's `_grug_no_coin_bag` lives here (Round 46).
+		no_coin_bag = def._grug_no_coin_bag == true,
 		hp_scale = def._grug_hp_scale,
 		-- A sub-type's tier is authored data (subtypes.lua, Round 28 ruling
 		-- 35): no spawn roll a base family carries may promote it.
@@ -546,6 +549,15 @@ function grug_mobs.kill_xp(self, player_level)
 	end
 	local t = tier_def(self._grug_tier)
 	return t.xp_flat or grug_xp.kill_xp(level, player_level, t.xp)
+end
+
+-- Whether this mob's kill never rolls a coin bag (aggro.lua drop_coin_bag):
+-- its definition's `_grug_no_coin_bag` (the Kraken, read at registration) or
+-- the live mob's own field (set per mob, e.g. a depth-pulse arrival).
+function grug_mobs.no_coin_bag(self)
+	if self._grug_no_coin_bag then return true end
+	local cfg = level_cfg[self.name]
+	return cfg ~= nil and cfg.no_coin_bag == true
 end
 
 -- The one no-XP predicate (Round 46): this player's kill XP for this mob

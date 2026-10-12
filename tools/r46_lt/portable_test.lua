@@ -338,6 +338,9 @@ check(bag_def and type(bag_def.on_pickup) == "function", "C the bag has its own 
 grug_mobs = {}
 dofile(ROOT .. "/" .. MOBS .. "/disposition.lua")
 dofile(ROOT .. "/" .. MOBS .. "/aggro.lua")
+-- The real registration data (levels.lua: the def's flags a live mob reads).
+grug_xp = {mob_xp = function(level) return 25 + 5 * level end}
+dofile(ROOT .. "/" .. MOBS .. "/levels.lua")
 -- subtypes.lua's band rule and drop rows (loaded there; the rows are r28_b2's).
 function grug_mobs.level_band(level)
 	return math.max(1, math.min(6, math.floor(((level or 1) - 1) / 10) + 1))
@@ -410,9 +413,21 @@ eq(grug_mobs.drop_coin_bag(mob("grug_mobs:guard_accord", 30, {_grug_faction = "a
 	"B a faction NPC drops no bag")
 eq(#added, before, "B nothing added for the faction NPC")
 queue = {1, "lo"}
-eq(grug_mobs.drop_coin_bag(mob("grug_mobs:kraken", 60, {_grug_no_coin_bag = true})), nil,
-	"B a mob flagged _grug_no_coin_bag drops no bag")
+eq(grug_mobs.drop_coin_bag(mob("grug_mobs:pulse_bat", 60, {_grug_no_coin_bag = true})), nil,
+	"B a live mob flagged _grug_no_coin_bag drops no bag")
 eq(#added, before, "B nothing added for the flagged mob")
+-- A def flag reaches the live mob through the registration, which copies no
+-- custom field into the entity table (the Kraken's case).
+grug_mobs.register_level_cfg("grug_mobs:test_kraken", {_grug_no_coin_bag = true})
+grug_mobs.register_level_cfg("grug_mobs:test_wolf", {})
+queue = {1, "lo"}
+eq(grug_mobs.drop_coin_bag(mob("grug_mobs:test_kraken", 60)), nil,
+	"B a def flagged _grug_no_coin_bag: its live mob drops no bag")
+eq(#added, before, "B nothing added for the registered flag")
+queue = {1, "lo"}
+check(grug_mobs.drop_coin_bag(mob("grug_mobs:test_wolf", 60)) ~= nil and #added == before + 1,
+	"B a registered def without the flag still drops")
+before = #added
 check(read(MOBS .. "/kraken.lua"):find("_grug_no_coin_bag = true", 1, true),
 	"B the Kraken carries the flag")
 queue = {}

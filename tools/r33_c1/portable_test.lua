@@ -623,6 +623,13 @@ do
 	grug_mobs.register_level_cfg("grug_mobs:kraken", def)
 	check(grug_mobs.kill_xp(mob, 60) == 0 and grug_mobs.kill_xp(mob, 30) == 0,
 		"J its kill XP is 0")
+	-- Round 46: the def's _grug_no_coin_bag reaches the live mob through the
+	-- registration (the live table above does not carry the field).
+	check(mob._grug_no_coin_bag == nil and grug_mobs.no_coin_bag(mob) == true,
+		"J the Kraken rolls no coin bag (its def flag, read at registration)")
+	check(grug_mobs.no_coin_bag({name = "grug_mobs:other"}) == false and
+		grug_mobs.no_coin_bag({name = "grug_mobs:other", _grug_no_coin_bag = true}) == true,
+		"J ...another mob only with its own field")
 	-- (an ordinary level-70 elite pays, so the 0 is the Kraken's own; Round 46
 	-- ruling 5: 4 x M(60) x 1.5 at more than five levels above, was 4 x M(65))
 	check(grug_mobs.kill_xp({name = "grug_mobs:other", _grug_level = 70,
