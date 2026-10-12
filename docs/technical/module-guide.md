@@ -1271,7 +1271,10 @@ tools](#player-meta-read-by-external-tools).
     hands it to `core.item_pickup`. A credited bag sets
     `_grug_no_pickup_feed` on its item entity, so grug_core's pickup wrapper
     (`feed.lua`) adds no item line next to "Deposited Xc.". A mob definition
-    with `_grug_no_coin_bag = true` (the Kraken) never rolls a bag.
+    with `_grug_no_coin_bag = true` (the Kraken; kept by
+    `register_level_cfg`, since mobs_redo copies no custom def field into
+    the entity) or a live mob with that field never rolls a bag
+    (`grug_mobs.no_coin_bag`).
   - **One price module owns every payout** (`grug_traders/prices.lua`,
     pure rules in `price_rules.lua`; Round 29): loot and gathered goods by
     class × tier factor, processed goods by their cheapest recipe, sold
