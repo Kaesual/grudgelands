@@ -858,7 +858,7 @@ All from the shipped code (Round 33 survey, verified by hand):
   335-357`).
 - **Spell base** `S = 0.5 Bw(L) + 0.5 round(4 + 0.35 ilvl)`: half the level
   baseline, half the staff or wand at its own item level without the family
-  factor; `S = Bw(L)` at ilvl = L; no caster weapon counts as ilvl 1 (Round
+  factor; `S = Bw(L)` at ilvl = L; no usable caster weapon adds 0 (Round
   46; `grug_core/combat.lua` `spell_base`).
 - **Mage:** Fireball `S + Int/10`, 6 % of P(L) per cast, at most one cast a
   second; the fight's mana is the pool plus 60 s of in-combat regeneration

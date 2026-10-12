@@ -71,8 +71,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   (the staff's ×1.2 is melee only). An own-level staff or wand therefore
   gives exactly the level baseline; a first-tier weapon (ilvl 1) gives 9.5
   instead of 15 at level 30 and 14.5 instead of 25 at level 60. No usable
-  caster weapon in the slot (empty, another family, broken) counts as item
-  level 1. Fireball, Ice Nova and Smite add spell power to it
+  caster weapon in the slot (empty, another family, broken) adds 0: the
+  spell base is the level half alone, half of today's (the user,
+  2026-10-12; Mage and Priest start with the Bronze Staff). Fireball, Ice Nova and Smite add spell power to it
   (`grug_core.spell_base`); talent damage terms stay percentages of `B(L)`,
   and healing keeps the support factor.
 - **Support factor** (Round 36) = `1 + gear Int / 10 / B(L)` on

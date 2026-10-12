@@ -11,8 +11,8 @@
 --   C. the Strike tooltip names the equipped weapon's per-hit value;
 --   D. the spell base (ruling 10, option B): an own-level staff or wand
 --      reproduces today's Bw(L) at every level, a first-tier weapon at L30
---      and L60 gives the option-B value, no caster weapon counts as item
---      level 1; the real caster lookup reads the Weapon slot's staff or wand
+--      and L60 gives the option-B value, no caster weapon adds 0 (the
+--      user, 2026-10-12: half the base); the real caster lookup reads the Weapon slot's staff or wand
 --      at its effective item level and ignores other weapons;
 --   E. the real Fireball and Ice Nova value functions use the spell base, no
 --      spell site reads baseline_weapon_damage any more, Smite uses it;
@@ -208,12 +208,12 @@ for level = 1, 60 do
 	near(grug_core.spell_base(level, level), bw, "D own level equals Bw at L" .. level)
 	near(grug_core.caster_weapon_value(level), bw, "D the weapon value at L" .. level)
 end
-near(grug_core.spell_base(1, nil), grug_core.baseline_weapon_damage(1),
-	"D level 1 without a caster weapon is unchanged")
+near(grug_core.spell_base(1, nil), 0.5 * grug_core.baseline_weapon_damage(1),
+	"D level 1 without a caster weapon: the level half alone")
 near(grug_core.spell_base(30, 1), 0.5 * 15 + 0.5 * 4, "D a T1 weapon at L30: 9.5")
 near(grug_core.spell_base(60, 1), 0.5 * 25 + 0.5 * 4, "D a T1 weapon at L60: 14.5")
-near(grug_core.spell_base(60, nil), grug_core.spell_base(60, 1),
-	"D no caster weapon counts as item level 1")
+near(grug_core.spell_base(60, nil), 12.5, "D no caster weapon at L60: 25 / 2")
+near(grug_core.spell_base(30, nil), 7.5, "D no caster weapon at L30: 15 / 2")
 near(grug_core.spell_base(60, 70), 0.5 * 25 + 0.5 * 29, "D item level 70 at L60")
 
 local level, slot = 60, nil
@@ -231,9 +231,11 @@ near(grug_abilities.spell_base({}), 25, "D an upgraded own-level wand at L60")
 slot = stack_of("staff", {def_ilvl = 51, ilvl = 60})
 near(grug_abilities.spell_base({}), 25, "D an upgraded own-level staff at L60")
 slot = stack_of("sword", {def_ilvl = 51, ilvl = 60})
-near(grug_abilities.spell_base({}), 14.5, "D a sword is no caster weapon")
+near(grug_abilities.spell_base({}), 12.5, "D a sword is no caster weapon")
+slot = stack_of("dagger", {def_ilvl = 51, ilvl = 60})
+near(grug_abilities.spell_base({}), 12.5, "D a dagger is no caster weapon")
 slot = nil
-near(grug_abilities.spell_base({}), 14.5, "D an empty Weapon slot")
+near(grug_abilities.spell_base({}), 12.5, "D an empty Weapon slot")
 level = 30
 slot = stack_of("wand", {def_ilvl = 21, ilvl = 30})
 near(grug_abilities.spell_base({}), 15, "D an own-level wand at L30")
@@ -268,6 +270,8 @@ near(nova_values({}).damage, (25 + 3) / 4, "E an own-level Ice Nova is today's 7
 slot = stack_of("staff", {ilvl = 1})
 near(fireball_values({}).damage, 14.5 + 3, "E a Bronze Staff Fireball at L60")
 near(nova_values({}).damage, (14.5 + 3) / 4, "E a Bronze Staff Ice Nova at L60")
+slot = nil
+near(fireball_values({}).damage, 12.5 + 3, "E a Fireball without a caster weapon at L60")
 
 ------------------------------------------------------------------------------
 -- F: the staff and wand tooltip line.

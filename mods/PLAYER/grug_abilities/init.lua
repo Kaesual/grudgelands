@@ -86,8 +86,8 @@ end
 -- "in combat the resource is effectively unlimited" finding with option (b) --
 -- lower the income and add decay: a landed full swing grants 8 instead of 12,
 -- a hit taken 3 instead of 4, and rage bleeds 5/s (it was 2/s) while
--- grug_core.in_combat is false. The numbers are named here because five swing
--- sites and one hit-taken site share them, and the talents Stoke and Spite add
+-- grug_core.in_combat is false. The numbers are named here because three swing
+-- grant sites and one hit-taken site share them, and the talents Stoke and Spite add
 -- to them (skill_trees.md §2.1/§2.2).
 --
 -- Round 46 ruling 9: RAGE_PER_SWING is the grant of a swing on the reference

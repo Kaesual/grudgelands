@@ -472,7 +472,8 @@ consumer still adds it where it added the flat value:
 
 - **damage — % of a base hit:** `B(L)` of the damage fit
   (`grug_core.baseline_melee_total`, `combat_stats.md` §2), the raw same-level
-  hit before the scalar; a same-level Fireball without gear is exactly 100 %,
+  hit before the scalar; a same-level Fireball with an own-level staff or wand and no other gear is
+  exactly 100 %,
   and after the scalar a base hit is one eighth of the base pool (17 / 95 /
   337 damage at levels 10 / 30 / 60). Tinder, Brand, Whitehot, Cinderfall,
   Rimebite, Sharpened Word, Warded Wrath, Word of Ruin, Strong Draw, Longshot,

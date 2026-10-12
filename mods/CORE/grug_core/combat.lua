@@ -114,12 +114,13 @@ end
 
 -- The base Fireball, Ice Nova and Smite add spell power to: half the level
 -- baseline, half the equipped caster weapon (ruling 10). `weapon_ilvl` nil --
--- no staff or wand in the Weapon slot -- counts as a first-tier caster
--- weapon at item level 1, the starter staff's. The half-point is kept; the
--- damage scalar floors once.
+-- no usable staff or wand in the Weapon slot -- adds nothing, so the spell
+-- base is the level half alone (the user, 2026-10-12; every class starts
+-- with its caster weapon). The half-point is kept; the damage scalar floors
+-- once.
 function grug_core.spell_base(level, weapon_ilvl)
-	return 0.5 * grug_core.baseline_weapon_damage(level)
-		+ 0.5 * grug_core.caster_weapon_value(weapon_ilvl or 1)
+	local weapon = weapon_ilvl and grug_core.caster_weapon_value(weapon_ilvl) or 0
+	return 0.5 * grug_core.baseline_weapon_damage(level) + 0.5 * weapon
 end
 
 -- The Strength term keeps its fraction like live melee damage since Round 33

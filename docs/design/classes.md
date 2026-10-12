@@ -765,7 +765,7 @@ Nova became the rotation pivot — kiting IS the Mage fantasy here.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Targeted homing projectile, nominal 20 m/s and initial range 20 m; current aim/LOS required at release. Baseline weapon + spell power through the damage fit at impact. No target or input inside the interval costs nothing; at most eight shots per owner/session may be active. |
+| Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Targeted homing projectile, nominal 20 m/s and initial range 20 m; current aim/LOS required at release. The spell base (combat_stats §2) + spell power through the damage fit at impact. No target or input inside the interval costs nothing; at most eight shots per owner/session may be active. |
 | Ice Nova | 10% base mana | 12 s | Deals one quarter of (the spell base + spell power; combat_stats §2), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
 | Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction, never through walls. Escape valve. Targeting below. |
 
