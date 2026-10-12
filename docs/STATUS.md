@@ -2,6 +2,11 @@
 
 Updated 2026-10-10. This is the delivery pointer, not another game specification.
 
+Planning pointer added 2026-10-12: the [class and hotbar redesign
+handoff](planning/class-redesign-handoff.md) preserves the next-round
+discussion and the proposed Mage. This is pre-planning only; the delivery
+state below is unchanged. [Open design choices](../TODO-design-classes.md).
+
 - **0.45.1, the fix round after the 0.45.0 playtest, complete; not
   pushed yet (pushed only on the user's word)** (2026-10-10, version
   0.45.1, **compatible**,
