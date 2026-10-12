@@ -189,6 +189,15 @@ for _, band in ipairs({"5", "6"}) do
 	check(silk and silk.chance == 1 and silk.min == 1 and silk.max == 2,
 		"A outlaw band " .. band .. ": silk 1/1 x1-2")
 end
+-- The user (2026-10-12): no second scrap row next to the tier cloth in
+-- bands 2-6; band 1's scrap is that band's tier cloth.
+for _, name in ipairs({"zombie", "outlaw"}) do
+	for band = 2, 6 do
+		for _, row in ipairs(family[name].bands[tostring(band)] or {}) do
+			check(row.item ~= "grug_mobs:linen_scrap", "A " .. name .. " band " .. band .. ": no scrap row")
+		end
+	end
+end
 -- The rows that lost their only item are empty lists (drop nothing).
 for _, at in ipairs({{"venomous", "1"}, {"venomous", "3"}, {"wisp", "4"}}) do
 	local rows = family[at[1]].bands[at[2]]
