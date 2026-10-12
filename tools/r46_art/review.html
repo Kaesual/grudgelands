@@ -17,6 +17,8 @@ a { color: #ffe5ab; }
 fieldset { border: 0; padding: 0; margin: 32px 0; }
 legend { margin-bottom: 16px; }
 .choices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.corrections { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+summary { cursor: pointer; color: #ffe5ab; }
 .card { border: 1px solid #556067; background: #242b30; border-radius: 8px; overflow: hidden; }
 .card:has(input:checked) { border-color: #e6b64d; box-shadow: 0 0 0 2px #e6b64d; }
 label { display: block; padding: 18px 16px 0; cursor: pointer; }
@@ -43,8 +45,31 @@ footer { margin-top: 32px; font-size: 13px; }
 <div class="eyebrow">GRUDGELANDS / ROUND 46 / LANE ART</div>
 <h1>Grudge-Free Repairs</h1>
 <p class="intro">Choose a repair marker for the world map and minimap. Each proposal is shown at 16 pixels and 4× on light terrain, grassland and the dark minimap colour. View at 100% browser zoom to judge the smallest samples.</p>
+<p class="intro">A's hammer-over-anvil composition was preferred. A1–A3 correct the rounded head and short handle: squared steel ends, a longer wooden shaft and three poses. The original A–D files are preserved below.</p>
 </header>
 <main>
+<fieldset><legend>Three corrected hammers</legend>
+<div class="choices corrections">
+<article class="card">
+<label><span class="choice-title"><input type="radio" name="repair" value="A1">A1 · Raised hammer</span><span class="description">A compact steel head raised on the left; its long wooden shaft slopes down to the right.</span>
+<span class="swatch light"><img class="native" src="repair/A1/grug_map_repair.png" alt="A1 at native size"><img class="large" src="repair/A1/grug_map_repair.png" alt="A1 enlarged four times"></span>
+<span class="swatch green"><img class="native" src="repair/A1/grug_map_repair.png" alt="A1 on grassland"><img class="large" src="repair/A1/grug_map_repair.png" alt=""></span>
+<span class="swatch dark"><img class="native" src="repair/A1/grug_map_repair.png" alt="A1 on the dark minimap"><img class="large" src="repair/A1/grug_map_repair.png" alt=""></span></label>
+<p class="links"><a href="repair/A1/preview.png">Compare with existing services</a></p></article>
+<article class="card">
+<label><span class="choice-title"><input type="radio" name="repair" value="A2">A2 · Horizontal hammer</span><span class="description">A rectangular, upright steel head across a long horizontal shaft, held just above the anvil.</span>
+<span class="swatch light"><img class="native" src="repair/A2/grug_map_repair.png" alt="A2 at native size"><img class="large" src="repair/A2/grug_map_repair.png" alt="A2 enlarged four times"></span>
+<span class="swatch green"><img class="native" src="repair/A2/grug_map_repair.png" alt="A2 on grassland"><img class="large" src="repair/A2/grug_map_repair.png" alt=""></span>
+<span class="swatch dark"><img class="native" src="repair/A2/grug_map_repair.png" alt="A2 on the dark minimap"><img class="large" src="repair/A2/grug_map_repair.png" alt=""></span></label>
+<p class="links"><a href="repair/A2/preview.png">Compare with existing services</a></p></article>
+<article class="card">
+<label><span class="choice-title"><input type="radio" name="repair" value="A3">A3 · Striking hammer</span><span class="description">The head meets the anvil face, the shaft rises right, and two pale spark pixels mark the strike.</span>
+<span class="swatch light"><img class="native" src="repair/A3/grug_map_repair.png" alt="A3 at native size"><img class="large" src="repair/A3/grug_map_repair.png" alt="A3 enlarged four times"></span>
+<span class="swatch green"><img class="native" src="repair/A3/grug_map_repair.png" alt="A3 on grassland"><img class="large" src="repair/A3/grug_map_repair.png" alt=""></span>
+<span class="swatch dark"><img class="native" src="repair/A3/grug_map_repair.png" alt="A3 on the dark minimap"><img class="large" src="repair/A3/grug_map_repair.png" alt=""></span></label>
+<p class="links"><a href="repair/A3/preview.png">Compare with existing services</a></p></article>
+</div></fieldset>
+<details><summary>Original proposals A–D (unchanged)</summary>
 <fieldset><legend>Four takes on repair</legend>
 <div class="choices">
 <article class="card">
@@ -71,13 +96,16 @@ footer { margin-top: 32px; font-size: 13px; }
 <span class="swatch green"><img class="native" src="repair/D/grug_map_repair.png" alt="D on grassland"><img class="large" src="repair/D/grug_map_repair.png" alt=""></span>
 <span class="swatch dark"><img class="native" src="repair/D/grug_map_repair.png" alt="D on the dark minimap"><img class="large" src="repair/D/grug_map_repair.png" alt=""></span></label>
 <p class="links"><a href="repair/D/preview.png">Compare with existing services</a></p></article>
-</div></fieldset>
+</div></fieldset></details>
 <div class="handover"><label for="choice">Your choice for the integration lane</label>
-<textarea id="choice" readonly aria-live="polite" placeholder="Select A, B, C or D above, then copy your choice back to the conversation."></textarea>
+<textarea id="choice" readonly aria-live="polite" placeholder="Select A1, A2 or A3 above, then copy your choice back to the conversation."></textarea>
 <small>This page prepares text only. Your choice is not sent or saved automatically.</small></div>
 <h2>Among the existing services</h2>
-<p class="intro">Weaponsmith, Armorsmith and Crownbinder sit immediately beside A–D. All eight trainers and the other service markers are included. Scroll horizontally on smaller screens; the sheet keeps its original pixel size.</p>
+<p class="intro">Weaponsmith, Armorsmith and Crownbinder sit immediately beside the original A and A1–A3. All eight trainers and the other service markers are included. Scroll horizontally on smaller screens; the sheet keeps its original pixel size.</p>
+<div class="sheet" tabindex="0" role="region" aria-label="Corrected hammer comparison, scroll horizontally"><img src="repair/overview-a.png" width="1280" height="870" alt="Original A and corrections A1, A2 and A3 among existing service icons on three backgrounds at native and fourfold size. The proposed markers have underlined labels."></div>
+<details><summary>Original comparison sheet A–D</summary>
 <div class="sheet" tabindex="0" role="region" aria-label="Service icon comparison, scroll horizontally"><img src="repair/overview.png" width="1280" height="870" alt="A, B, C and D among all existing service icons on three backgrounds at native and fourfold size. The proposed markers have underlined letters."></div>
+</details>
 </main>
 <footer>Original, AI-assisted pixel art by GPT-6 Astra for Grudgelands · CC0 1.0 · <a href="README.md">Provenance and reproduction</a> · <a href="paint_art.py">Pixel-grid source</a></footer>
 <script>

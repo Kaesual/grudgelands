@@ -104,6 +104,65 @@ GRIDS = {
         "..##............",
         "................",
     ),
+    # A corrections: straight shafts meet the middle of compact steel heads.
+    # A1's head axis (-1, 2) is perpendicular to its shaft (2, 1);
+    # A3 mirrors those directions vertically.
+    # A's anvil keeps its face, neck and foot; one bevel row is removed to
+    # leave a clear gap under the longer handles. All three use that anvil.
+    "A1": (
+        "...####.........",
+        "...#hm#.........",
+        "..#hm#..........",
+        "..#ms#w#........",
+        ".####.#ww#......",
+        "........#ww#....",
+        "..........#ww#..",
+        "............##..",
+        "................",
+        "..###########...",
+        ".#hhmmmmmmmmm#..",
+        "...###sss###....",
+        ".....#sms#......",
+        "....#mmsss#.....",
+        "...#########....",
+        "................",
+    ),
+    "A2": (
+        "................",
+        "................",
+        ".####...........",
+        ".#hm###########.",
+        ".#mswwwwwwwwww#.",
+        ".#ms###########.",
+        ".####...........",
+        "................",
+        "................",
+        "..###########...",
+        ".#hhmmmmmmmmm#..",
+        "...###sss###....",
+        ".....#sms#......",
+        "....#mmsss#.....",
+        "...#########....",
+        "................",
+    ),
+    "A3": (
+        "................",
+        "............##..",
+        "..........#ww#..",
+        "........#ww#....",
+        ".####.#ww#......",
+        "..#ms#w#........",
+        "..#hm#..........",
+        "...#hm#.h.......",
+        "...####h........",
+        "..###########...",
+        ".#hhmmmmmmmmm#..",
+        "...###sss###....",
+        ".....#sms#......",
+        "....#mmsss#.....",
+        "...#########....",
+        "................",
+    ),
 }
 
 TITLES = {
@@ -111,12 +170,18 @@ TITLES = {
     "B": "CROSSED REPAIR TOOLS",
     "C": "MENDED SHIELD",
     "D": "RIVETED BLADE",
+    "A1": "RAISED SMITH'S HAMMER",
+    "A2": "HORIZONTAL SMITH'S HAMMER",
+    "A3": "STRIKING SMITH'S HAMMER",
 }
 DESCRIPTIONS = {
     "A": "A LIGHT HAMMER ABOVE A LOW STEEL ANVIL.",
     "B": "AN OPEN WRENCH CROSSED WITH A SMALL HAMMER.",
     "C": "THREE BRASS STAPLES BRIDGE A SPLIT SHIELD.",
     "D": "A DIAGONAL BLADE JOINED BY A BRASS REPAIR STRAP.",
+    "A1": "AN ANGLED STEEL HEAD WITH A LONG, STRAIGHT WOODEN SHAFT.",
+    "A2": "A SQUARE-ENDED HEAD ACROSS A HORIZONTAL WOODEN SHAFT.",
+    "A3": "A LOW STRIKING HEAD WITH TWO SPARK PIXELS AT THE ANVIL FACE.",
 }
 
 # Exact base colours from grug_map/base.lua REGION.human, REGION.troll and
@@ -183,7 +248,7 @@ def text_image(message, letters, scale=1, colour="#F5ECD7"):
     return result.resize((width * scale, 7 * scale), NEAREST)
 
 
-def preview(icons, letters, variant=None):
+def preview(icons, letters, variant=None, corrections=False):
     sheet = Image.new("RGBA", (1280, 870), "#191F23")
 
     def label(message, x, y, scale=1, colour="#F5ECD7", centered=False):
@@ -191,10 +256,14 @@ def preview(icons, letters, variant=None):
         sheet.alpha_composite(rendered, (x - rendered.width // 2 if centered else x, y))
 
     label("GRUDGELANDS - ROUND 46 - REPAIR MARKER", 32, 24, 2, "#E6B64D")
-    label(f"{variant} - {TITLES[variant]}" if variant else "FOUR WAYS TO MEND", 32, 53, 3)
-    label(DESCRIPTIONS[variant] if variant else
-          "A HAMMER AND ANVIL    B CROSSED TOOLS    C MENDED SHIELD    D RIVETED BLADE",
-          32, 91)
+    title = f"{variant} - {TITLES[variant]}" if variant else "FOUR WAYS TO MEND"
+    description = DESCRIPTIONS[variant] if variant else (
+        "A HAMMER AND ANVIL    B CROSSED TOOLS    C MENDED SHIELD    D RIVETED BLADE")
+    if corrections:
+        title = "A - THREE CLEARER HAMMERS"
+        description = "A ORIGINAL    A1 RAISED    A2 HORIZONTAL    A3 STRIKING"
+    label(title, 32, 53, 3)
+    label(description, 32, 91)
 
     refs = []
     for code, _, name in REFERENCES:
@@ -202,7 +271,10 @@ def preview(icons, letters, variant=None):
             im = opened.copy()
         assert im.size == (16, 16) and im.mode == "RGBA", name
         refs.append((code, im, False))
-    proposals = [(key, icons[key], True) for key in (variant or "ABCD")]
+    keys = ("A", "A1", "A2", "A3") if corrections else "ABCD"
+    if variant:
+        keys = (variant,)
+    proposals = [(key, icons[key], True) for key in keys]
     # The three smithing-adjacent services immediately precede every proposal.
     entries = refs[:3] + proposals + refs[3:]
     pitch = 68 if variant is None else 82
@@ -234,12 +306,13 @@ def preview(icons, letters, variant=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Compare all nine PNGs without writing")
+    parser.add_argument("--check", action="store_true", help="Compare all sixteen PNGs without writing")
     args = parser.parse_args()
     icons = {key: sprite(key) for key in GRIDS}
-    assert len({im.tobytes() for im in icons.values()}) == 4
+    assert len({im.tobytes() for im in icons.values()}) == len(GRIDS)
     letters = map_letters()
     outputs = {OUT / "overview.png": preview(icons, letters)}
+    outputs[OUT / "overview-a.png"] = preview(icons, letters, corrections=True)
     for key, im in icons.items():
         outputs[OUT / key / "grug_map_repair.png"] = im
         outputs[OUT / key / "preview.png"] = preview(icons, letters, key)

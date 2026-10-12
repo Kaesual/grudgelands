@@ -1,14 +1,40 @@
 # Round 46 ART — Repair marker proposals
 
-Four original, AI-assisted pixel-art proposals by **GPT-6 Astra** for
-Grudgelands, created on 2026-10-12. Offered under **CC0 1.0 Universal
+Four original proposals and three corrected A takes, original AI-assisted
+pixel art by **GPT-6 Astra** for Grudgelands, created on 2026-10-12.
+Offered under **CC0 1.0 Universal
 (CC0-1.0)**: the project dedicates any rights it holds in these originals
 to CC0. No downloaded artwork or third-party source images were used.
 
-Open [the local review page](review.html) to compare A–D and prepare a
+Open [the local review page](review.html) to compare A1–A3 and prepare a
 choice to send back. Nothing is preselected. The page works offline and
-does not submit or install anything. The [overview](repair/overview.png)
-places all four proposals among the existing service markers.
+does not submit or install anything. The [A comparison](repair/overview-a.png)
+places the original A and its three corrections among the existing service
+markers. The [original overview](repair/overview.png) and every earlier
+A–D sprite and preview are unchanged.
+
+## A corrections
+
+The user preferred A's hammer-over-anvil composition but found the head
+rounded and the handle too short. These takes replace it with a compact,
+straight-edged steel head across a long, straight wooden shaft. The shaft
+from the head's centre to the grip is about twice the head's length.
+The diagonal shafts use a 2:1 pixel step (about 27 degrees); their heads
+lean across them. The head ends are squared, without A's rounded underside.
+
+| Take | Pose | Sprite | Preview |
+| --- | --- | --- | --- |
+| A1 | Raised head on the left, with the long shaft sloping down to the right. | [16×16](repair/A1/grug_map_repair.png) | [Comparison](repair/A1/preview.png) |
+| A2 | Horizontal shaft just above the anvil, across a rectangular, upright head. | [16×16](repair/A2/grug_map_repair.png) | [Comparison](repair/A2/preview.png) |
+| A3 | Head lowered to the anvil face, shaft rising right, with two pale spark pixels. | [16×16](repair/A3/grug_map_repair.png) | [Comparison](repair/A3/preview.png) |
+
+All three keep A's outline and five opaque colours. The anvil keeps A's
+face, neck and foot; removing one bevel row makes room above it. These
+frameless tool silhouettes remain separate from the Weaponsmith's framed
+sword and the Armorsmith's framed chestplate. The sparks in A3 are painted
+pixels only, with no runtime particle effect.
+
+## Original proposals (unchanged)
 
 | Variant | Take | Sprite | Preview |
 | --- | --- | --- | --- |
@@ -23,6 +49,10 @@ places all four proposals among the existing service markers.
   transparent backgrounds, binary alpha and five or six opaque colours.
 - `repair/{A,B,C,D}/preview.png`: four 1280×870 RGBA comparison sheets.
 - `repair/overview.png`: one 1280×870 RGBA overview.
+- `repair/{A1,A2,A3}/grug_map_repair.png`: three 16×16 RGBA sprites with
+  transparent backgrounds, binary alpha and five opaque colours each.
+- `repair/{A1,A2,A3}/preview.png`: three 1280×870 RGBA comparison sheets.
+- `repair/overview-a.png`: original A and A1–A3 on a 1280×870 RGBA sheet.
 - `paint_art.py`: reproducible Python/Pillow generator and source pixel grids.
 - `review.html`: local selection page; all assets are relative local paths.
 
@@ -60,8 +90,8 @@ python3 tools/r46_art/paint_art.py
 python3 tools/r46_art/paint_art.py --check
 ```
 
-The check compares all nine PNGs with the generated pixels, dimensions
-and modes, and checks that the four sprites differ, have binary alpha,
+The check compares all sixteen PNGs with the generated pixels, dimensions
+and modes, and checks that the seven sprites differ, have binary alpha,
 are 16×16 RGBA and use at most six opaque colours. Preview scaling is
 nearest-neighbour throughout. View the HTML at 100% browser zoom for its
 16 CSS-pixel samples; the PNG sheets preserve exact 1× and 4× source sizes.
