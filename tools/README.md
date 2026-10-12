@@ -754,3 +754,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   mender's "Grudge-Free Repairs" form; `r451_tx` GPT-6 Astra's proposals
   (trainer greetings, music-note icons, `paint_art.py`, the offline
   `review.html`), provenance for the user's picks, not a fixture.
+- **Round 46** (`r46_<lane>`): `r46_ck` cooking for every start zone:
+  `locality.lua` reads the shipped world data (zone biomes and level bands,
+  the wild plant and gathering catalogs, the catch tables, the mobs' meat
+  drops) and the real cooking catalog, and says which Cooking recipes each
+  zone can make from its own ingredients; `cook_local.lua [REPO] [--before
+  OLD_REPO] [--all | --recipes]` prints them per race (before and after
+  against a `git archive` of an older commit) or per recipe;
+  `portable_test.lua` checks the plain food role (weaker than every role per
+  tier), the six plain dishes, the staple and raw fish groups, and the
+  coverage (two T1 recipes in every start zone, the T1 and T2 plain dishes in
+  every 11-20 zone, every zone its band's plain dish, a T3 recipe in
+  Frostbarrow).
