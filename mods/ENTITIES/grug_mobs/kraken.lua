@@ -35,6 +35,7 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	-- farm at the world edge (no gear, no bag, no drop list below).
 	_grug_xp_reward = 0,
 	_grug_no_quality_loot = true,
+	_grug_no_coin_bag = true, -- Round 46: no coin bag either (aggro.lua)
 	_grug_spawn_check = in_deep_ocean,
 	-- Both generic aggro rules are off: the Kraken has its own stable
 	-- water-class leash below, and it must keep full swim speed while hunting,

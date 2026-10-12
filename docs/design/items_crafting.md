@@ -802,8 +802,9 @@ starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
 bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
 item `grug_mobs:spider_silk`, shown as **Raw Silk** because T5/T6 outlaws drop
 it too). The cloth-dropping humanoids (zombie, outlaw, goblin, mirefolk,
-skeleton, witch) drop their band's tier cloth on every kill, 1–2 pieces
-(Round 46 ruling 11; outlaw silk at bands 5–6 likewise); decided 2026-08-13:
+skeleton, witch) drop their band's tier cloth on every looted kill in a band
+whose table has a cloth row, 1–2 pieces (Round 46 ruling 11; outlaw silk at
+bands 5–6 likewise); decided 2026-08-13:
 **T5 spider silk → silk bolt** (pure silk, the same 2 + thread pattern;
 spiders live at 21–60 on both continents and in both 41–50 fronts by night,
 the Broken Causeway's woods and the Shattered Line's bluffs and swamps, since

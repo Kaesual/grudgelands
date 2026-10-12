@@ -272,6 +272,9 @@ end
 
 -- Registered here, before any later mod's mods-loaded hook, so a wrapper
 -- installed later (grug_abilities' contextual input) delegates to this one.
+-- An item's on_pickup that reports the pickup itself sets
+-- `_grug_no_pickup_feed` on the item entity (Round 46: a Bag of Coins
+-- deposited on pickup shows only "Deposited Xc."), and no item line follows.
 core.register_on_mods_loaded(function()
 	local item = core.registered_entities["__builtin:item"]
 	local pickup = item and item.on_punch
@@ -282,7 +285,9 @@ core.register_on_mods_loaded(function()
 		if before and before ~= "" and hitter and hitter.is_player and
 				hitter:is_player() then
 			local taken = grug_core.picked_up_count(before, self.itemstring)
-			if taken > 0 then grug_core.feed_item(hitter, ItemStack(before), taken) end
+			if taken > 0 and not self._grug_no_pickup_feed then
+				grug_core.feed_item(hitter, ItemStack(before), taken)
+			end
 		end
 		return result
 	end

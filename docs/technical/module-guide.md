@@ -1248,7 +1248,10 @@ tools](#player-meta-read-by-external-tools).
     grug_mobs), and the bag's own `on_pickup` deposits it at once
     (`auto_deposit_pickup`, the deposit slot's rules) while the player's
     toggle (`auto_deposit`, meta `grug_money:auto_deposit`) is on, else
-    hands it to `core.item_pickup`.
+    hands it to `core.item_pickup`. A credited bag sets
+    `_grug_no_pickup_feed` on its item entity, so grug_core's pickup wrapper
+    (`feed.lua`) adds no item line next to "Deposited Xc.". A mob definition
+    with `_grug_no_coin_bag = true` (the Kraken) never rolls a bag.
   - **One price module owns every payout** (`grug_traders/prices.lua`,
     pure rules in `price_rules.lua`; Round 29): loot and gathered goods by
     class × tier factor, processed goods by their cheapest recipe, sold

@@ -400,6 +400,12 @@ queue = {1, "lo"}
 eq(grug_mobs.drop_coin_bag(mob("grug_mobs:guard_accord", 30, {_grug_faction = "accord"})), nil,
 	"B a faction NPC drops no bag")
 eq(#added, before, "B nothing added for the faction NPC")
+queue = {1, "lo"}
+eq(grug_mobs.drop_coin_bag(mob("grug_mobs:kraken", 60, {_grug_no_coin_bag = true})), nil,
+	"B a mob flagged _grug_no_coin_bag drops no bag")
+eq(#added, before, "B nothing added for the flagged mob")
+check(read(MOBS .. "/kraken.lua"):find("_grug_no_coin_bag = true", 1, true),
+	"B the Kraken carries the flag")
 queue = {}
 
 -- The expected copper per kill is half a tier factor.
@@ -417,8 +423,11 @@ math.random = real_random
 local p = make_player("picker")
 check(grug_money.auto_deposit(p), "C on by default (no meta)")
 local bag37 = grug_money.make_bag(37)
-local left = bag_def.on_pickup(bag37, p, {type = "object"})
+local entity = {}
+local function pointed(ent) return {type = "object", ref = {get_luaentity = function() return ent end}} end
+local left = bag_def.on_pickup(bag37, p, pointed(entity))
 check(left:is_empty(), "C on: the bag leaves the ground")
+eq(entity._grug_no_pickup_feed, true, "C on: the generic pickup line is skipped")
 eq(grug_money.get(p), 37, "C on: credited")
 eq(#pickups, 0, "C on: not put into the inventory")
 eq(feeds[#feeds], "Deposited 37c.", "C on: the feed says so")
@@ -427,8 +436,10 @@ eq(sounds, 1, "C on: the money sound")
 grug_money.set_auto_deposit(p, false)
 eq(p.meta[grug_money.AUTO_DEPOSIT_KEY], "off", "C off: stored as \"off\"")
 check(not grug_money.auto_deposit(p), "C off: read back")
-left = bag_def.on_pickup(grug_money.make_bag(20), p, {type = "object"})
+local plain = {}
+left = bag_def.on_pickup(grug_money.make_bag(20), p, pointed(plain))
 eq(#pickups, 1, "C off: the ordinary pickup")
+eq(plain._grug_no_pickup_feed, nil, "C off: the pickup keeps its item line")
 check(left:is_empty(), "C off: picked up into the inventory")
 eq(grug_money.get(p), 37, "C off: not credited")
 p.full = true

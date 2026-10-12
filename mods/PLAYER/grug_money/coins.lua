@@ -30,6 +30,11 @@ core.register_craftitem(BAG, {
 	-- and the deposit slot would take it, else picked up as any item.
 	on_pickup = function(itemstack, picker, pointed_thing, ...)
 		if grug_money.auto_deposit_pickup(picker, itemstack) then
+			-- Its "Deposited" line replaces the generic pickup line
+			-- (grug_core/feed.lua); a refused bag keeps the item line.
+			local ref = pointed_thing and pointed_thing.ref
+			local entity = ref and ref.get_luaentity and ref:get_luaentity()
+			if entity then entity._grug_no_pickup_feed = true end
 			itemstack:take_item(1)
 			return itemstack
 		end

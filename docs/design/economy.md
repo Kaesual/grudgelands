@@ -53,17 +53,19 @@ axis (D2).
   (signatures and generics no recipe or quest uses) no longer drop; they
   stay registered and sellable. Instead every looted kill (the loot gate of
   [combat_stats.md](combat_stats.md) §3: a player tag, no faction NPC, no
-  critter) drops a Bag of Coins 1 time in 8, holding a whole amount from half
-  to one and a half times its level band's mean: 4c, 10c, 26c, 64c, 1s 60c,
-  4s for bands 1–6 (4 × the tier factor), so a kill pays half a tier factor
-  of copper on average, about the mean the removed rows paid
-  (`grug_mobs.COIN_BAG`, `tools/r29_e4/income.py` LOOT_PER_KILL).
+  critter, no mob flagged `_grug_no_coin_bag` such as the Kraken) drops a
+  Bag of Coins 1 time in 8, holding a whole amount from half to one and a
+  half times its level band's mean: 4c, 10c, 26c, 64c, 1s 60c, 4s for bands
+  1–6 (4 × the tier factor), so a kill pays half a tier factor of copper on
+  average, about the mean the removed rows paid (`grug_mobs.COIN_BAG`,
+  `tools/r29_e4/income.py` LOOT_PER_KILL).
 - **Automatic deposit** (Round 46, the user): the Inventory tab's money row
   has a checkbox "Auto" (tooltip "Deposit coin bags automatically on
   pickup"), on by default (player meta `grug_money:auto_deposit` is "off"
   only when unticked). While it is on, picking up a Bag of Coins credits it
-  at once under the deposit slot's rules; a bag the slot would refuse (empty,
-  or over the clamp) is picked up as an item.
+  at once under the deposit slot's rules, with one feed line "Deposited
+  Xc."; a bag the slot would refuse (empty, or over the clamp) is picked up
+  as an item with the usual pickup line.
 - Physical Gold is a separate universal luxury/jewelry/build material. Gold
   ore, bars and blocks never add to the money balance, and a ledger payment
   never consumes inventory Gold.
@@ -175,10 +177,11 @@ precedence over preserving the exact mathematical ratio.
   the change per band (−3.1 % at 1–10 to +1.5 % at 51–60). The table above
   is the estimate with those terms; the prices below come from it.
 
-  Round 46 (ruling 12): the coin bags and the 1/1 cloth raise the estimate
-  to 1s90c / 4s36c / 10s34c / 25s71c / 69s66c / 1g67s23c per hour (+10 %,
-  +2 %, +14 %, +5 %, +8 %, +13 %): the measured median kill barely felt the
-  removed rows, the bags pay their mean. The prices stay; `income.py
+  Round 46: with the coin bags and the 1/1 cloth (rulings 11, 12) and the
+  round's other changes, the estimate is 1s96c / 4s39c / 10s38c / 25s75c /
+  69s78c / 1g67s23c per hour (+14 %, +3 %, +14 %, +6 %, +8 %, +13 % over the
+  table above): the measured median kill barely felt the removed rows, the
+  bags pay their mean. The prices stay; `income.py
   --check` accepts a shipped price within 20 % of the estimate's.
 
 ## 4. Sinks
