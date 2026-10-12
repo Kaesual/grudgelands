@@ -248,6 +248,11 @@ local WEAPONS = {
 		group = "bow", bow = true},
 }
 
+-- The one-handed base damage at an item level, before the family factor.
+local function one_hand_damage(ilvl)
+	return math.floor(4 + 0.35 * ilvl + 0.5)
+end
+
 function grug_gear.weapon_damage_at_level(ilvl, family)
 	local factor = 1
 	for _, weapon in ipairs(WEAPONS) do
@@ -256,8 +261,20 @@ function grug_gear.weapon_damage_at_level(ilvl, family)
 			break
 		end
 	end
-	local one_hand = math.floor(4 + 0.35 * ilvl + 0.5)
-	return math.max(1, math.floor(one_hand * factor + 0.5))
+	return math.max(1, math.floor(one_hand_damage(ilvl) * factor + 0.5))
+end
+
+-- The caster weapon's spell line (Round 46 ruling 10): half of the base of
+-- Fireball, Ice Nova and Smite comes from the staff or wand, its one-handed
+-- damage at its item level without the family factor
+-- (grug_core.caster_weapon_value; the other half is the level baseline).
+-- nil for every other family.
+function grug_gear.spell_base_line(family, ilvl)
+	if family ~= "staff" and family ~= "wand" then
+		return nil
+	end
+	return ("%d spell base: half of your spells' base damage"):format(
+		one_hand_damage(math.max(1, math.floor(tonumber(ilvl) or 1))))
 end
 
 --
@@ -325,6 +342,11 @@ function grug_gear.describe_stack_base(stack, ilvl)
 		if damage > 0 then
 			lines[#lines + 1] = core.colorize(STAT_COLOR, weapon_stats(damage,
 				base_caps.full_punch_interval or 1.4, def._grug_hands or 1))
+		end
+		local spell_line = grug_gear.spell_base_line(
+			def._grug_weapon_family or family, ilvl or def._grug_ilvl)
+		if spell_line then
+			lines[#lines + 1] = core.colorize(STAT_COLOR, spell_line)
 		end
 		lines[#lines + 1] = core.colorize(STAT_COLOR,
 			grug_gear.equip_hint(def._grug_weapon_family or family))
@@ -500,9 +522,11 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		if w.bow then groups.grug_bow = 1 end
 		local image = "grug_gear_item_" .. w.key .. "_" .. metal.key .. ".png"
 		if w.bow then image = BOW_IMAGE[bracket] end
+		local spell_line = grug_gear.spell_base_line(w.key, br.ilvl)
 		core.register_tool(itemname, {
 			description = describe(metal.name, w.noun, br.ilvl,
 				weapon_stats(damage, w.fpi, w.hands) ..
+				(spell_line and "\n" .. spell_line or "") ..
 				"\n" .. grug_gear.equip_hint(w.key)),
 			-- One sprite per family AND material, all in the one diagonal
 			-- convention (grip bottom-left) the wield transform is derived for.
@@ -687,8 +711,11 @@ core.register_on_mods_loaded(function()
 			local damage = damage_groups.fleshy
 			if type(damage) == "number" and damage > 0 then
 				local label = ((def.description or itemname):gsub("\n.*", ""))
+				local spell_line = grug_gear.spell_base_line(
+					def._grug_weapon_family, def._grug_ilvl)
 				local stat_line = weapon_stats(damage,
 					caps.full_punch_interval or 1.4, def._grug_hands or 1) ..
+					(spell_line and "\n" .. spell_line or "") ..
 					"\n" .. grug_gear.equip_hint(def._grug_weapon_family)
 				core.override_item(itemname, {
 					description = describe(label, nil, def._grug_ilvl, stat_line) ..

@@ -128,6 +128,31 @@ local function spell_damage_value(player, amount)
 	return amount * (1 + percent / 100)
 end
 
+-- The item level of the caster weapon (a staff or a wand) in the Weapon
+-- slot, nil without one; get_equipped_weapon already drops a broken or
+-- unusable stack. Upgrades and the crown count (grug_items.effective_ilvl).
+local function caster_weapon_ilvl(player)
+	local weapon = grug_core.get_equipped_weapon(player)
+	if not weapon or weapon:is_empty() then
+		return nil
+	end
+	local def = weapon:get_definition() or {}
+	local groups = def.groups or {}
+	if (groups.staff or 0) <= 0 and (groups.wand or 0) <= 0 and
+			(groups.grug_caster_weapon or 0) <= 0 then
+		return nil
+	end
+	local items = rawget(_G, "grug_items")
+	return items and items.effective_ilvl(weapon) or tonumber(def._grug_ilvl)
+end
+
+-- Fireball's, Ice Nova's and Smite's base before spell power (Round 46
+-- ruling 10): half from the level, half from the caster weapon.
+function grug_abilities.spell_base(player)
+	return grug_core.spell_base(grug_core.get_player_level(player),
+		caster_weapon_ilvl(player))
+end
+
 -- Heal, Mend, Shield, Recompense and Glacial Ward: a share of the base pool
 -- times the support factor (gear Intelligence, grug_classes stats.lua).
 local function support_value(player, percent)
@@ -234,6 +259,25 @@ function grug_abilities.swing_stats(player, equipped)
 	return damage, fpi
 end
 
+-- The melee weapon's BASE swing interval (Round 46 ruling 9): its item
+-- definition's, before the attack-speed enchant shortens the stack's copy;
+-- the bare hand's without a weapon. A landed swing's rage scales with it.
+function grug_abilities.base_swing_interval(player, equipped)
+	local stack = equipped
+	if stack == nil then
+		stack = grug_core.get_melee_weapon(player)
+	end
+	if not stack or stack:is_empty() then
+		return bare_hand.interval
+	end
+	local caps = (stack:get_definition() or {}).tool_capabilities or {}
+	local fpi = caps.full_punch_interval
+	if type(fpi) ~= "number" or fpi <= 0 then
+		return bare_hand.interval
+	end
+	return fpi
+end
+
 -- Working title kept from the design file. Deliberately a plain English verb,
 -- not an ability name from an existing commercial game.
 local strike_description = "A full melee swing with your equipped weapon. " ..
@@ -252,8 +296,10 @@ local strike_def = {
 		if not class_def or class_def.resource ~= "rage" then
 			return strike_description
 		end
+		-- The equipped weapon's grant per hit (ruling 9), one decimal.
+		local rage = ("%.1f"):format(grug_abilities.swing_rage(player))
 		return strike_description .. " Generates " ..
-			grug_abilities.swing_rage(player) .. " rage when it lands."
+			(rage:gsub("%.0$", "")) .. " rage when it lands."
 	end,
 	-- Bone white, deliberately neutral (E8): the four class colours carry the
 	-- ability identities and a fifth colour would compete with them. With an
@@ -544,8 +590,7 @@ local function fireball_values(user)
 	local window = grug_classes.get_talent_bonus(user, "whitehot_damage")
 	return {
 		damage = spell_damage_value(user,
-			grug_core.baseline_weapon_damage(
-				grug_core.get_player_level(user))
+			grug_abilities.spell_base(user)
 			+ grug_classes.get_spell_power_bonus(user)
 			+ grug_classes.get_talent_bonus(user, "fireball_damage_add") + window),
 	}
@@ -558,11 +603,13 @@ grug_abilities.register_ability({
 	kind = "cast",
 	target_kind = "hostile",
 	description = "Hurls fire along your crosshair for up to 20 m;\n" ..
-		"damage scales with your level; requires a visible hostile target.",
+		"damage scales with your level and your staff or wand;\n" ..
+		"requires a visible hostile target.",
 	values = fireball_values,
 	description_for = function(user, def)
 		return ("Hurls fire along your crosshair for up to 20 m:\n" ..
-			"%d damage; requires a visible hostile target."):format(
+			"%d damage, from your level and your staff or wand;\n" ..
+			"requires a visible hostile target."):format(
 				effective_number(user, def.values(user).damage))
 	end,
 	color = "#ff8833",
@@ -622,7 +669,7 @@ local function nova_values(user)
 	local control = grug_classes.get_talent_bonus(user, "control_damage_add")
 	local power = grug_classes.get_spell_power_bonus(user)
 	return {damage = spell_damage_value(user,
-		(grug_core.baseline_weapon_damage(grug_core.get_player_level(user)) + power) / 4
+		(grug_abilities.spell_base(user) + power) / 4
 		+ control + (control > 0 and power / 2 or 0))}
 end
 
@@ -740,10 +787,10 @@ grug_abilities.register_ability({
 	name = "Smite",
 	kind = "cast",
 	target_kind = "hostile",
-	description = "Smites an enemy up to 20 m away; damage scales with your level.",
+	description = "Smites an enemy up to 20 m away; damage scales with your " ..
+		"level and your staff or wand.",
 	values = function(user, assume_shielded)
-		local damage = (grug_core.baseline_weapon_damage(
-				grug_core.get_player_level(user))
+		local damage = (grug_abilities.spell_base(user)
 			+ grug_classes.get_spell_power_bonus(user)) * 1.5
 			+ grug_classes.get_talent_bonus(user, "smite_damage_add")
 		if assume_shielded == nil then
@@ -764,8 +811,8 @@ grug_abilities.register_ability({
 		if shielded > unshielded then
 			suffix = (" (+%d while shielded)"):format(shielded - unshielded)
 		end
-		return ("Smites an enemy up to 20 m away for %d damage%s."):format(
-			unshielded, suffix)
+		return ("Smites an enemy up to 20 m away for %d damage%s,\n" ..
+			"from your level and your staff or wand."):format(unshielded, suffix)
 	end,
 	color = "#ffd97a",
 	cost = {mana_percent = 5},
