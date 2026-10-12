@@ -1192,13 +1192,18 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   twice a second from the crosshair's own skill ray when that ray reaches
   20 m and settles the question (nothing in reach, a wall, or a framable
   target first), otherwise from a 20 m ray of its own.
-  Relative to the viewer's level L (mobs):
+  Relative to the viewer's level L (mobs), a gradient by d = mob level − L
+  (Round 46; one integer RGB colour per level, `con_gradient` in
+  `target_frame.lua`):
 
 | Relation | Color | XP |
 |----------|-------|----|
-| mob ≤ L−7 | gray | none, "(no XP)" |
-| L−7 < mob ≤ L | green | 10–100 % (−15 % per level below) |
-| mob > L | red | 110–150 % (+10 % per level above) |
+| d ≤ −7 | gray `#aaaaaa` | none, "(no XP)" |
+| d = −6 … 0 | green `#55ff55` to yellow `#ffff55`, evenly per level | 10–100 % (−15 % per level below) |
+| d = +1 … +5 | yellow to red `#ff5555`, evenly per level | 110–150 % (+10 % per level above) |
+| d > +5 | red `#ff5555` | 150 % |
+
+  Players keep their relation colours: own faction green, enemy red, gray when there is nothing at stake.
 
 - **No skull tier** and no extra damage modifier for high-level mobs —
   mob damage already scales via the level formulas; the nametag carries

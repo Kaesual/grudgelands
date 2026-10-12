@@ -7,7 +7,8 @@
 --      normal and elite (printed for the lane report), and the factor at
 --      every d from -8 to +8;
 --   B. the target frame's con colour: gray with "(no XP)" from 7 below,
---      green from 6 below to the own level, red above;
+--      then a gradient per level, green at 6 below, yellow at the own
+--      level, red from 5 above;
 --   C. the shipped quest files hold no repeatable quest, and every hub
 --      line of a giver still has a quest;
 --   D. saved quest state holding removed quest ids (an active and tracked
@@ -142,11 +143,19 @@ do
 	eq(color, 0xaaaaaa, "B 7 below: gray")
 	text, color = frame_of(24)
 	eq(text, "Boar L24", "B 6 below: no (no XP)")
-	eq(color, 0x55ff55, "B 6 below: green")
-	text, color = frame_of(30)
-	eq(color, 0x55ff55, "B own level: green")
-	text, color = frame_of(31)
-	eq(color, 0xff5555, "B above: red")
+	-- The gradient (Round 46 follow-up): green at -6, yellow at 0, red from +5.
+	local gradient = {[-8] = 0xaaaaaa, [-7] = 0xaaaaaa, [-6] = 0x55ff55, [-5] = 0x71ff55,
+		[-4] = 0x8eff55, [-3] = 0xaaff55, [-2] = 0xc6ff55, [-1] = 0xe3ff55, [0] = 0xffff55,
+		[1] = 0xffdd55, [2] = 0xffbb55, [3] = 0xff9955, [4] = 0xff7755, [5] = 0xff5555,
+		[6] = 0xff5555, [12] = 0xff5555}
+	for _, d in ipairs({-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 12}) do
+		text, color = frame_of(30 + d)
+		eq(color, gradient[d], ("B the colour at d = %d is %06x"):format(d, gradient[d]))
+	end
+	level = 1
+	text, color = frame_of(1)
+	eq(color, 0xffff55, "B a level-1 player on a level-1 mob: yellow")
+	level = 30
 	core, grug_abilities, grug_factions = nil, nil, nil
 end
 
