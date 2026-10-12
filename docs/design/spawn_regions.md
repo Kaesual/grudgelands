@@ -89,7 +89,9 @@ random numbers, no dependence on table order.
    the last belt ends at the top of the zone's band. The game refuses a
    recipe that breaks this at load; `validate.py` reports `E-recipe-cover`.
 7. **Camps.** Camps on a POI come first: the centre is the POI's anchor
-   (fitted per seed), the camp's region the zone's land cells within the
+   (placed and fitted per seed, [world_zones.md](world_zones.md) §8.5: the
+   placement keeps a recipe-site camp in its recipe camp's belt on the
+   mapgen level field, so the warning below is the check), the camp's region the zone's land cells within the
    camp radius (40 nodes, box distance to the cell), its belt and levels
    the camp's stated `belt` (checked at load like any camp's, so the camp
    stands on every seed and its quest levels are exact). The belt the POI's
@@ -403,7 +405,7 @@ kill of any listed role counts, so one of them is a placed leader or stands
 in a kind or camp of the file's zone that forms one), and every
 placeholder target of the title and text (else the text has no direction
 there), and every "use at a place" objective's place (a clash site is
-always there; a quest place must be placed). A target missing on some seed
+placed on every seed, Round 46; a quest place must be placed). A target missing on some seed
 fails the run (MISSING). It notes
 the clock a target is met at when only one, and lists under CLOCK a quest
 whose text names only the other clock ("after dark" for a day role). An

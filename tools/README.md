@@ -772,3 +772,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   counts the generated chunks near each old position, the engine spawn and
   the waiting point, and checks the teleports and the disconnects;
   `evidence/` holds the run's receipts.
+  `r46_pl` seed-dependent POI placement: `portable_test.lua` (seed 42's
+  real world: determinism and the placement text, the fixed/placed split,
+  every rule on every placed anchor, the last resort, an underground
+  reservation row, the zones session's anchors and the layout cache's
+  placement section); `overview.lua REPO SEED PREFIX` and `render.py PREFIX
+  OUT_DIR NAME` draw the whole map with zones, water, roads and every anchor
+  by kind plus three 2x crops and a facts file (the user's review page);
+  `bands.lua` is the record of how each placed anchor's `band` was taken
+  from its pre-Round-46 position (it needs those coordinates and no longer
+  runs). The Round 31 pick tools (`r31_m/candidates.lua`, `pick.lua`) are
+  retired; `r31_m/spacing_check.lua` checks the placed PvP POIs per seed.
