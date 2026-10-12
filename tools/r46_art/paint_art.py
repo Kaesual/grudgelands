@@ -163,6 +163,47 @@ GRIDS = {
         "...#########....",
         "................",
     ),
+    # A1a keeps A1's hammer and the empty separation row pixel for pixel.
+    # The face stays at y=9; three steel rows fill the body, the horn points
+    # left, and the wider waist and foot use the last row of the canvas.
+    "A1a": (
+        "...####.........",
+        "...#hm#.........",
+        "..#hm#..........",
+        "..#ms#w#........",
+        ".####.#ww#......",
+        "........#ww#....",
+        "..........#ww#..",
+        "............##..",
+        "................",
+        "....###########.",
+        ".###hhmmmmmmmm#.",
+        "#hmmmmmmmmmsss#.",
+        ".####smmmmmss#..",
+        ".....#smmmss#...",
+        "....#mmmmssss#..",
+        "...###########..",
+    ),
+    # A1b keeps the head and shaft angle but removes one 2:1 shaft step.
+    # The anvil starts one row higher and has four steel rows in its body.
+    "A1b": (
+        "...####.........",
+        "...#hm#.........",
+        "..#hm#..........",
+        "..#ms#w#........",
+        ".####.#ww#......",
+        "........#ww#....",
+        "..........##....",
+        "................",
+        "....###########.",
+        ".###hhmmmmmmmm#.",
+        "#hmmmmmmmmmsss#.",
+        ".###smmmmmmsss#.",
+        "....#smmmmmss#..",
+        ".....#smmmss#...",
+        "....#mmmmssss#..",
+        "...###########..",
+    ),
 }
 
 TITLES = {
@@ -173,6 +214,8 @@ TITLES = {
     "A1": "RAISED SMITH'S HAMMER",
     "A2": "HORIZONTAL SMITH'S HAMMER",
     "A3": "STRIKING SMITH'S HAMMER",
+    "A1a": "HEAVY ANVIL - ORIGINAL HAMMER",
+    "A1b": "HEAVY ANVIL - SHORTER SHAFT",
 }
 DESCRIPTIONS = {
     "A": "A LIGHT HAMMER ABOVE A LOW STEEL ANVIL.",
@@ -182,6 +225,8 @@ DESCRIPTIONS = {
     "A1": "AN ANGLED STEEL HEAD WITH A LONG, STRAIGHT WOODEN SHAFT.",
     "A2": "A SQUARE-ENDED HEAD ACROSS A HORIZONTAL WOODEN SHAFT.",
     "A3": "A LOW STRIKING HEAD WITH TWO SPARK PIXELS AT THE ANVIL FACE.",
+    "A1a": "A1'S HAMMER UNCHANGED, A THREE-ROW STEEL BODY, LEFT HORN AND BROAD FOOT.",
+    "A1b": "ONE LESS SHAFT STEP, A FOUR-ROW STEEL BODY MAKES THE ANVIL DOMINANT.",
 }
 
 # Exact base colours from grug_map/base.lua REGION.human, REGION.troll and
@@ -236,7 +281,7 @@ def map_letters():
 
 
 def text_image(message, letters, scale=1, colour="#F5ECD7"):
-    glyphs = [letters[ch] for ch in message]
+    glyphs = [letters[ch] for ch in message.upper()]
     width = sum(im.width + 1 for im in glyphs) - 1
     result = Image.new("RGBA", (width, 7))
     x = 0
@@ -248,7 +293,7 @@ def text_image(message, letters, scale=1, colour="#F5ECD7"):
     return result.resize((width * scale, 7 * scale), NEAREST)
 
 
-def preview(icons, letters, variant=None, corrections=False):
+def preview(icons, letters, variant=None, corrections=False, anvils=False):
     sheet = Image.new("RGBA", (1280, 870), "#191F23")
 
     def label(message, x, y, scale=1, colour="#F5ECD7", centered=False):
@@ -262,6 +307,9 @@ def preview(icons, letters, variant=None, corrections=False):
     if corrections:
         title = "A - THREE CLEARER HAMMERS"
         description = "A ORIGINAL    A1 RAISED    A2 HORIZONTAL    A3 STRIKING"
+    if anvils:
+        title = "A1 - TWO HEAVIER ANVILS"
+        description = "A1 PREVIOUS    A1a ORIGINAL HAMMER, HEAVY ANVIL    A1b SHORTER SHAFT, LARGER ANVIL"
     label(title, 32, 53, 3)
     label(description, 32, 91)
 
@@ -272,6 +320,8 @@ def preview(icons, letters, variant=None, corrections=False):
         assert im.size == (16, 16) and im.mode == "RGBA", name
         refs.append((code, im, False))
     keys = ("A", "A1", "A2", "A3") if corrections else "ABCD"
+    if anvils:
+        keys = ("A1", "A1a", "A1b")
     if variant:
         keys = (variant,)
     proposals = [(key, icons[key], True) for key in keys]
@@ -306,13 +356,14 @@ def preview(icons, letters, variant=None, corrections=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Compare all sixteen PNGs without writing")
+    parser.add_argument("--check", action="store_true", help="Compare all generated PNGs without writing")
     args = parser.parse_args()
     icons = {key: sprite(key) for key in GRIDS}
     assert len({im.tobytes() for im in icons.values()}) == len(GRIDS)
     letters = map_letters()
     outputs = {OUT / "overview.png": preview(icons, letters)}
     outputs[OUT / "overview-a.png"] = preview(icons, letters, corrections=True)
+    outputs[OUT / "overview-a1.png"] = preview(icons, letters, anvils=True)
     for key, im in icons.items():
         outputs[OUT / key / "grug_map_repair.png"] = im
         outputs[OUT / key / "preview.png"] = preview(icons, letters, key)

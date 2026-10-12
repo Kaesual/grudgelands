@@ -1,17 +1,40 @@
 # Round 46 ART — Repair marker proposals
 
-Four original proposals and three corrected A takes, original AI-assisted
-pixel art by **GPT-6 Astra** for Grudgelands, created on 2026-10-12.
+Four original proposals, three corrected A takes and two heavier A1
+anvils, original AI-assisted pixel art by **GPT-6 Astra** for Grudgelands,
+created on 2026-10-12.
 Offered under **CC0 1.0 Universal
 (CC0-1.0)**: the project dedicates any rights it holds in these originals
 to CC0. No downloaded artwork or third-party source images were used.
 
-Open [the local review page](review.html) to compare A1–A3 and prepare a
-choice to send back. Nothing is preselected. The page works offline and
-does not submit or install anything. The [A comparison](repair/overview-a.png)
-places the original A and its three corrections among the existing service
-markers. The [original overview](repair/overview.png) and every earlier
-A–D sprite and preview are unchanged.
+The latest [A1 comparison](repair/overview-a1.png) places **A1, A1a and
+A1b** among the existing service markers on all three backgrounds.
+The earlier [local review page](review.html) still compares A1–A3 and
+prepares a choice to send back. Nothing is preselected. The page works
+offline and does not submit or install anything. The [A comparison](repair/overview-a.png)
+places the original A and its three hammer corrections among the existing
+service markers. All earlier sprites, previews, overviews and the review
+page remain unchanged.
+
+## A1 heavier anvils — fix round 2
+
+The user preferred A1's raised hammer but found its anvil too thin.
+Both new takes give the anvil a stepped horn on the left, a deep steel
+body, a solid six-pixel waist and a broad foot. They retain the one-pixel
+contour, the same five opaque colours and the frameless silhouette,
+distinct from the Weaponsmith's framed sword and the Armorsmith's framed
+chestplate.
+
+| Take | Change | Sprite | Preview |
+| --- | --- | --- | --- |
+| A1a | A1's hammer is pixel-identical; the anvil grows downward to the bottom row, with three steel rows between its outlines. | [16×16](repair/A1a/grug_map_repair.png) | [Comparison](repair/A1a/preview.png) |
+| A1b | The same hammerhead and shaft angle, with one 2:1 shaft step removed; the anvil starts one row higher and has four steel rows, making it the dominant shape. | [16×16](repair/A1b/grug_map_repair.png) | [Comparison](repair/A1b/preview.png) |
+
+A1a retains the original blank row below the hammer and the original
+anvil top height. A1b also keeps one clear row between hammer and anvil.
+Both feet reach row 16; every sprite remains on a transparent 16×16 canvas.
+These are review proposals for the user's choice, under the same CC0
+dedication above.
 
 ## A corrections
 
@@ -53,6 +76,10 @@ pixels only, with no runtime particle effect.
   transparent backgrounds, binary alpha and five opaque colours each.
 - `repair/{A1,A2,A3}/preview.png`: three 1280×870 RGBA comparison sheets.
 - `repair/overview-a.png`: original A and A1–A3 on a 1280×870 RGBA sheet.
+- `repair/{A1a,A1b}/grug_map_repair.png`: two 16×16 RGBA sprites with
+  transparent backgrounds, binary alpha and the same five opaque colours.
+- `repair/{A1a,A1b}/preview.png`: two 1280×870 RGBA comparison sheets.
+- `repair/overview-a1.png`: A1, A1a and A1b on a 1280×870 RGBA sheet.
 - `paint_art.py`: reproducible Python/Pillow generator and source pixel grids.
 - `review.html`: local selection page; all assets are relative local paths.
 
@@ -90,8 +117,8 @@ python3 tools/r46_art/paint_art.py
 python3 tools/r46_art/paint_art.py --check
 ```
 
-The check compares all sixteen PNGs with the generated pixels, dimensions
-and modes, and checks that the seven sprites differ, have binary alpha,
+The check compares all twenty-one PNGs with the generated pixels, dimensions
+and modes, and checks that the nine sprites differ, have binary alpha,
 are 16×16 RGBA and use at most six opaque colours. Preview scaling is
 nearest-neighbour throughout. View the HTML at 100% browser zoom for its
 16 CSS-pixel samples; the PNG sheets preserve exact 1× and 4× source sizes.
