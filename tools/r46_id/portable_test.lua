@@ -460,11 +460,16 @@ local function dropdowns(fs)
 	local out = {}
 	for x, y, w, h, index, items, selected in content(fs):gmatch(
 			"dropdown%[([%d%.]+),([%d%.]+);([%d%.]+),([%d%.]+);" .. PICK ..
-			"(%d+);(.-[^\\]);(%d+);true%]") do
+			"%d+_(%d+);(.-[^\\]);(%d+);true%]") do
 		out[tonumber(index)] = {x = tonumber(x), y = tonumber(y), w = tonumber(w),
 			h = tonumber(h), items = items, selected = tonumber(selected)}
 	end
 	return out
+end
+-- The name of the current build's dropdown `index` (the serial per build).
+local function pick(player, index)
+	local built = st_of(player).pick_rows
+	return PICK .. (built and built.serial or 0) .. "_" .. index
 end
 local function n_dropdowns(fs)
 	local total = 0
@@ -554,7 +559,7 @@ eq(d[1] and d[1].items, "Automatic,Carrot (10),Cassava (4)",
 eq(d[2] and d[2].items, "Automatic,Carrot (10),Cassava (4)",
 	"D the staple's dropdown: the potato is not carried")
 eq(d[1] and d[1].selected, 1, "D Automatic is chosen")
-lacks(p.formspec, PICK .. "3", "D an item entry has no dropdown")
+lacks(p.formspec, pick(p, 3), "D an item entry has no dropdown")
 fits(p.formspec, "D two dropdowns")
 -- Automatic equals the count without a choice (today's behaviour).
 local counts = J.ingredient_counts(p)
@@ -578,7 +583,7 @@ rebuild(p)
 -- C. The choice.
 ------------------------------------------------------------------------------
 local sent = p.sent
-click(p, {[PICK .. "1"] = "3"})
+click(p, {[pick(p, 1)] = "3"})
 eq(p.sent, sent + 1, "C a changed dropdown resends once")
 eq(st_of(p).picks and st_of(p).picks.root, "t:cassava", "C the root takes cassava")
 d = dropdowns(p.formspec)
@@ -590,26 +595,26 @@ has(p.formspec, "item_image[5.6,", "C the row keeps its icon")
 check(content(p.formspec):find("0.4,0.4;t:cassava]dropdown[", 1, true) ~= nil,
 	"C the icon shows the chosen kind")
 -- Both groups on cassava: three per craft.
-click(p, {[PICK .. "2"] = "3"})
+click(p, {[pick(p, 2)] = "3"})
 eq(max_of(p.formspec), 1, "C both groups on cassava: 4 make 1 (3 per craft)")
 -- Back to Automatic for the staple.
-click(p, {[PICK .. "2"] = "1"})
+click(p, {[pick(p, 2)] = "1"})
 eq(st_of(p).picks.staple, nil, "C Automatic clears the choice")
 eq(max_of(p.formspec), 2, "C Max back to 2")
 -- The dropdowns' values every other event carries change nothing.
 sent = p.sent
-check(not click(p, {[PICK .. "1"] = "3", [PICK .. "2"] = "1"}),
+check(not click(p, {[pick(p, 1)] = "3", [pick(p, 2)] = "1"}),
 	"C values equal to the built ones: not handled")
 eq(p.sent, sent, "C ... and nothing is resent")
-click(p, {[SCROLL] = "CHG:3", [PICK .. "1"] = "3"})
+click(p, {[SCROLL] = "CHG:3", [pick(p, 1)] = "3"})
 eq(p.sent, sent, "C a pure scrollbar event resends nothing")
 eq(st_of(p).picks.root, "t:cassava", "C ... and keeps the choice")
 -- A value out of range is ignored.
-click(p, {[PICK .. "1"] = "9"})
+click(p, {[pick(p, 1)] = "9"})
 eq(st_of(p).picks.root, "t:cassava", "C an index out of range changes nothing")
 -- Craft now with the choice: cassava for the root, Automatic's carrot for
 -- the staple.
-click(p, {[FIELDS.qty] = "2", [FIELDS.go] = "Craft now", [PICK .. "1"] = "3", [PICK .. "2"] = "1"})
+click(p, {[FIELDS.qty] = "2", [FIELDS.go] = "Craft now", [pick(p, 1)] = "3", [pick(p, 2)] = "1"})
 check(J.job_state(p) ~= nil, "C the job starts")
 eq(count_of(p, "t:cassava"), 0, "C the take: all four cassava for the root")
 eq(count_of(p, "t:carrot"), 8, "C ... one carrot per craft for the staple")
@@ -625,7 +630,7 @@ eq(count_of(p, "t:mash"), 2, "F the job made two")
 -- A group left with one kind while the chosen kind is still carried.
 put(p, "main", 11, "t:cassava 4")
 rebuild(p)
-click(p, {[PICK .. "1"] = "2"})
+click(p, {[pick(p, 1)] = "2"})
 eq(st_of(p).picks.root, "t:carrot", "F the root takes carrot")
 p.inv:set_stack("main", 9, ItemStack(""))
 rebuild(p)
@@ -634,9 +639,9 @@ eq(st_of(p).picks, nil, "F the chosen kind no longer carried: Automatic")
 -- take of another kind.
 put(p, "main", 9, "t:carrot 10")
 rebuild(p)
-click(p, {[PICK .. "1"] = "3"})
+click(p, {[pick(p, 1)] = "3"})
 p.inv:set_stack("main", 11, ItemStack(""))
-click(p, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now", [PICK .. "1"] = "3"})
+click(p, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now", [pick(p, 1)] = "3"})
 eq(J.job_state(p), nil, "F a stale choice starts nothing")
 eq(count_of(p, "t:carrot"), 10, "F ... and takes nothing")
 eq(st_of(p).picks, nil, "F ... and the page falls back to Automatic")
@@ -646,14 +651,23 @@ put(p, "main", 13, "t:coal 3")
 put(p, "main", 14, "t:charcoal 5")
 put(p, "main", 15, "t:stick 20")
 rebuild(p)
-click(p, {[PICK .. "1"] = "3"})
+click(p, {[pick(p, 1)] = "3"})
 eq(st_of(p).picks.root, "t:cassava", "F cassava chosen for the mash")
 local rows = st_of(p).rows
 local torch_row
 for index, id in ipairs(rows) do if id == torch.id then torch_row = index end end
-click(p, {[FIELDS.row .. torch_row] = "", [PICK .. "1"] = "3", [PICK .. "2"] = "1"})
+click(p, {[FIELDS.row .. torch_row] = "", [pick(p, 1)] = "3", [pick(p, 2)] = "1"})
 eq(st_of(p).selected, torch.id, "F the torch chosen")
 eq(st_of(p).picks, nil, "F another recipe: no choice (the old values ignored)")
+-- A change made on the mash's page after the torch row was clicked (before
+-- the torch's page arrived) names the old build's serial: ignored.
+do
+	local stale = PICK .. (st_of(p).pick_rows.serial - 1) .. "_1"
+	local before = p.sent
+	check(not click(p, {[stale] = "2"}), "F a stale page's dropdown change: not handled")
+	eq(st_of(p).picks, nil, "F ... it chooses nothing on the new page")
+	eq(p.sent, before, "F ... and resends nothing")
+end
 eq(dropdowns(p.formspec)[1] and dropdowns(p.formspec)[1].selected, 1,
 	"F ... its dropdown on Automatic")
 select(p, mash.id)
@@ -676,11 +690,11 @@ eq(d[2], nil, "T one kind of stick: no dropdown")
 has(p.formspec, "Charcoal or Coal Lump", "T the group's name in the tooltip")
 eq(max_of(p.formspec), 8, "T Automatic: 3 coal and 5 charcoal")
 fits(p.formspec, "T the torch")
-click(p, {[PICK .. "1"] = "3"})
+click(p, {[pick(p, 1)] = "3"})
 eq(max_of(p.formspec), 3, "T coal lump chosen: 3")
-click(p, {[PICK .. "1"] = "2"})
+click(p, {[pick(p, 1)] = "2"})
 eq(max_of(p.formspec), 5, "T charcoal chosen: 5")
-click(p, {[FIELDS.qty] = "5", [FIELDS.go] = "Craft now", [PICK .. "1"] = "2"})
+click(p, {[FIELDS.qty] = "5", [FIELDS.go] = "Craft now", [pick(p, 1)] = "2"})
 eq(count_of(p, "t:charcoal"), 0, "T the take: the charcoal")
 eq(count_of(p, "t:coal"), 3, "T ... and no coal")
 finish_job(p)

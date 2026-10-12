@@ -172,9 +172,11 @@ tools](#player-meta-read-by-external-tools).
   the last refused action, the row ids of the last build, and since Round 46
   the chosen kinds `picks` (group -> item) of the recipe `picks_for` and the
   built dropdowns `pick_rows`); nothing in player meta. A group entry with
-  two or more carried kinds gets `dropdown[...;grug_craft_pick_<index>;...;
-  true]` (index events); `fields` applies a value that differs from the built
-  index, so the values every other event carries change nothing.
+  two or more carried kinds gets `dropdown[...;grug_craft_pick_<serial>_<index>;
+  ...;true]` (index events; `pick_serial` counts the box's builds); `fields`
+  applies a value of the newest build's serial that differs from the built
+  index, so the values every other event carries change nothing and a change
+  on a page the server already replaced is ignored.
   `crafting_picks(st, recipe, counts)` (craft_box.lua) drops a pick whose
   kind is no longer carried or whose group shows no dropdown, and every pick
   when another recipe is chosen; ui.lua passes the result to the chosen

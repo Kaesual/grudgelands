@@ -39,7 +39,11 @@
 -- kind, falls back to Automatic on the next build. A changed dropdown sends an
 -- event and the page is resent (with index_event, the event names the
 -- index; a value equal to the built one is no change, so the dropdowns'
--- values that every other event carries change nothing).
+-- values that every other event carries change nothing). The dropdowns are
+-- named grug_craft_pick_<serial>_<index>, the serial counted per build of
+-- the box: a change made on a page the server has already replaced (a
+-- click on another recipe whose page has not arrived yet) names an old
+-- serial and is ignored.
 --
 -- A button that cannot start ("Requires: Forge nearby", a missing tier) is
 -- drawn disabled. A formspec button has no disabled state: it is greyed and
@@ -275,7 +279,7 @@ local function shown_rows(list)
 end
 
 -- `choice` (the recipe box only; nil for lane EU's boxes): {picks = the
--- chosen kinds, rows = {}}; a group entry with two or more carried kinds
+-- chosen kinds, serial = the build's, rows = {}}; a group entry with two or more carried kinds
 -- gets its dropdown and choice.rows[index] = {group, names (the dropdown's
 -- kinds after "Automatic"), selected (the built index)}.
 local function ingredient_rows(fs, recipe, counts, quantity, y, choice)
@@ -309,9 +313,9 @@ local function ingredient_rows(fs, recipe, counts, quantity, y, choice)
 				if kind.name == pick then selected = k + 1 end
 			end
 			choice.rows[index] = {group = entry.group, names = names, selected = selected}
-			fs[#fs + 1] = ("item_image[%s,%s;0.4,0.4;%s]dropdown[%s,%s;%s,%s;%s%d;%s;%d;true]" ..
+			fs[#fs + 1] = ("item_image[%s,%s;0.4,0.4;%s]dropdown[%s,%s;%s,%s;%s%d_%d;%s;%d;true]" ..
 				"label[%s,%s;%s]"):format(n(X), n(y + 0.05), esc(icon), n(X + 0.5), n(y),
-				n(room), n(DROPDOWN_H), PICK, index, table.concat(items, ","), selected,
+				n(room), n(DROPDOWN_H), PICK, choice.serial, index, table.concat(items, ","), selected,
 				n(X + W - 0.15 * #amount), n(y + 0.25), amount_text)
 			if tooltip and tooltip ~= "" then
 				fs[#fs + 1] = ("tooltip[%s,%s;0.4,0.4;%s]"):format(n(X), n(y + 0.05),
@@ -443,9 +447,10 @@ local function build(player, view)
 		end
 	end
 	fs[#fs + 1] = ("label[%s,%s;Ingredients (have/need)]"):format(n(X), n(y))
-	local choice = {picks = picks, rows = {}}
+	st.pick_serial = (st.pick_serial or 0) + 1
+	local choice = {picks = picks, serial = st.pick_serial, rows = {}}
 	y = ingredient_rows(fs, recipe, view.counts, quantity, y + 0.25, choice)
-	st.pick_rows = {recipe = recipe.id, rows = choice.rows}
+	st.pick_rows = {recipe = recipe.id, serial = choice.serial, rows = choice.rows}
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y + 0.2), esc("Max: " .. most ..
 		(by_space < by_ingredients and " (output area)" or "")))
 	y = y + 0.65
@@ -475,12 +480,13 @@ local function fields(player, st, fields)
 	local recipe = st.selected and grug_jobs.recipe(st.selected)
 	if not recipe then return false end
 	-- A dropdown whose value differs from the built one was changed (only
-	-- the built recipe's dropdowns: a row click carries the old ones).
+	-- the built recipe's dropdowns: a row click carries the old ones; only
+	-- the newest build's serial: an older page's change is stale).
 	local picked = false
 	local built = st.pick_rows
 	if built and built.recipe == recipe.id then
 		for index, row in pairs(built.rows) do
-			local value = tonumber(fields[PICK .. index])
+			local value = tonumber(fields[PICK .. built.serial .. "_" .. index])
 			if value and value ~= row.selected and value >= 1 and value % 1 == 0 and
 					value <= #row.names + 1 then
 				st.picks = st.picks_for == recipe.id and st.picks or {}
