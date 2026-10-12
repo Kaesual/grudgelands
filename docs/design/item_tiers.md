@@ -419,13 +419,13 @@ before Round 33.
 | 1 | Crab Leg | 3/3/0 | common | enchant Str suffix; enchant Armor suffix; Stoneskin Elixir I | 3.2 | — |
 | 1 | Fine Sinew | 1/3/0 | regular | enchant Dex suffix; enchant HP suffix | 2.8 | — |
 | 1 | Fox Tail | 3/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
-| 1 | Mild Venom | 0/2/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
-| 1 | Cat Claw | 0/1/0 | one faction | sell-only: one faction (Throng start zone only) | 0.0 | — |
+| 1 | Mild Venom | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
+| 1 | Cat Claw | 0/0/0 | none | sell-only: one faction (Throng start zone only); no longer drops (Round 46) | 0.0 | — |
 | 1 | Rat Fur Patch | 3/3/0 | common | enchant Dodge prefix; enchant Armor prefix | 1.5 | enchant |
 | 1 | Rat Tail | 3/3/0 | common | enchant Dex prefix; enchant Speed prefix; enchant Speed suffix; enchant Dodge suffix | 3.0 | enchant |
 | 1 | Tattered Flesh | 3/3/0 | common | enchant HP prefix; Elixir of Vigor I | 2.5 | enchant |
 | 2 | Bitter Venom | 0/4/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
-| 2 | Blunt Crocodile Tooth | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 2 | Blunt Crocodile Tooth | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 2 | Brush Fox Tail | 3/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
 | 2 | Clear Crab Eye | 3/3/0 | regular | enchant Int prefix; enchant Mana prefix; Elixir of Focus II | 3.5 | enchant |
 | 2 | Dense Rat Fur | 3/3/0 | common | enchant Dodge prefix; enchant Armor prefix | 1.5 | enchant |
@@ -433,53 +433,53 @@ before Round 33.
 | 2 | Foul Flesh | 6/6/0 | common | enchant HP prefix | 1.5 | enchant |
 | 2 | Hooked Cat Claw | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 2 | Knotted Talisman | 6/6/0 | common | enchant Int suffix; enchant Mana suffix | 2.5 | — |
-| 2 | Reed Pearl | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 2 | Reed Pearl | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 2 | Ridged Boar Tusk | 3/3/0 | common | enchant Str prefix; enchant Crit prefix; Elixir of Precision II | 3.5 | enchant |
 | 2 | Ridged Crab Shell | 3/3/0 | regular | enchant Armor suffix; Stoneskin Elixir II | 1.8 | — |
 | 2 | Sinewy Rat Tail | 3/3/0 | common | enchant Dex prefix; enchant Speed prefix; enchant Speed suffix; enchant Dodge suffix | 3.0 | enchant |
 | 2 | Stolen Purse | 1/0/0 | one faction | sell-only: one faction (Accord only); a trash-class purse | 0.0 | — |
-| 2 | Thin Slime Gel | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 2 | Thin Slime Gel | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 2 | Tough Sinew | 4/5/0 | common | enchant Dex suffix; enchant HP suffix; Elixir of Vigor II | 3.8 | — |
 | 2 | Wisp Mote | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 3 | Balanced Weapon Strap | 6/3/0 | common | enchant Dex prefix; enchant Speed prefix | 1.8 | enchant |
 | 3 | Barbed Feather | 1/1/0 | regular | enchant Speed suffix | 0.5 | — |
-| 3 | Ivory Chitin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 3 | Ivory Chitin | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 3 | Bound Wisp Mote | 3/2/0 | common | enchant Int suffix; enchant Mana prefix; Cave Draught | 3.5 | — |
 | 3 | Braided Sinew | 7/7/0 | common | enchant Dex suffix; enchant HP suffix | 2.8 | — |
-| 3 | Chipped Core | 0/0/0 | none | sell-only: no placed source (stone golems are not in a spawn recipe) | 0.0 | — |
+| 3 | Chipped Core | 0/0/0 | none | sell-only: no placed source (stone golems are not in a spawn recipe); no longer drops (Round 46) | 0.0 | — |
 | 3 | Clasped Purse | 2/1/0 | scarce | sell-only: upgrade input until Round 45 (scarce) | 0.0 | — |
 | 3 | Clouded Reed Pearl | 2/1/0 | regular | enchant Mana suffix | 1.0 | — |
 | 3 | Coarse Spider Silk | 2/1/0 | regular | enchant Dodge prefix | 0.8 | — |
 | 3 | Coded Talisman | 6/3/0 | common | enchant Int prefix | 1.5 | enchant |
-| 3 | Concentrated Venom | 0/3/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 3 | Concentrated Venom | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 3 | Etched Bone | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 3 | Gnarled Boar Tusk | 2/2/0 | common | enchant Str suffix | 1.5 | — |
 | 3 | Layered Crab Shell | 4/4/0 | common | enchant Armor prefix; enchant Armor suffix; Stoneskin Elixir III | 2.5 | — |
-| 3 | Lichen Resin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 3 | Lichen Resin | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 3 | Pickled Flesh | 3/3/0 | common | enchant HP prefix | 1.5 | enchant |
-| 3 | Ridged Crocodile Tooth | 0/2/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 3 | Ridged Crocodile Tooth | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 3 | Serrated Fang | 3/3/0 | common | enchant Crit prefix; Elixir of Precision III | 2.0 | — |
 | 3 | Shearing Cat Claw | 1/4/0 | common | enchant Crit suffix; enchant Dodge suffix | 1.8 | — |
 | 3 | Silver-Tip Fox Tail | 2/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
 | 3 | Hard-Set Molar | 3/3/0 | common | enchant Str prefix | 1.5 | enchant |
 | 4 | Ape Hair | 1/1/0 | regular | enchant Dex suffix | 1.2 | — |
 | 4 | Bitter Resin | 1/1/0 | scarce | sell-only: upgrade input until Round 45 (scarce) | 0.0 | — |
-| 4 | Campaign Purse | 1/1/0 | scarce | sell-only: upgrade input until Round 45 (scarce) | 0.0 | — |
+| 4 | Campaign Purse | 0/0/0 | none | sell-only: upgrade input until Round 45 (scarce); no longer drops (Round 46) | 0.0 | — |
 | 4 | Campaign Talisman | 3/3/0 | common | enchant Int prefix; enchant Mana prefix; Elixir of Focus IV | 3.5 | enchant |
 | 4 | Gritted Teeth | 3/3/0 | common | enchant Str prefix; enchant Crit prefix | 2.5 | enchant |
 | 4 | Hex Bottle Shard | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 4 | Ironbound Sinew | 3/1/0 | common | enchant HP suffix; Elixir of Vigor IV | 2.5 | — |
-| 4 | Layered Chitin | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
+| 4 | Layered Chitin | 0/0/0 | none | sell-only: one faction (Throng only); no longer drops (Round 46) | 0.0 | — |
 | 4 | Layered Spider Web | 2/2/0 | regular | enchant Dodge prefix | 0.8 | — |
 | 4 | Leathery Flesh | 3/3/0 | common | enchant HP prefix; Healing Potion IV | 2.5 | enchant |
 | 4 | Drilled Bone | 2/2/0 | common | enchant Armor prefix | 0.8 | — |
 | 4 | Razor Cat Claw | 2/2/0 | common | enchant Crit suffix; enchant Dodge suffix; Elixir of Precision IV | 2.8 | — |
 | 4 | Reinforced Weapon Strap | 3/3/0 | common | enchant Dex prefix; enchant Speed prefix | 1.8 | enchant |
-| 4 | Guttering Wisp Mote | 2/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
-| 4 | Scarred Bear Claw | 2/1/0 | scarce | sell-only: upgrade input until Round 45 (scarce) | 0.0 | — |
+| 4 | Guttering Wisp Mote | 0/0/0 | none | sell-only: one faction (Accord only); no longer drops (Round 46) | 0.0 | — |
+| 4 | Scarred Bear Claw | 0/0/0 | none | sell-only: upgrade input until Round 45 (scarce); no longer drops (Round 46) | 0.0 | — |
 | 4 | Pitted Crab Shell | 2/2/0 | regular | enchant Armor suffix | 0.8 | — |
 | 4 | Storm Feather | 2/1/0 | common | enchant Int suffix; enchant Mana suffix | 2.5 | — |
-| 4 | Veined Core | 1/0/0 | one faction | sell-only: no regular source (one unique elite) | 0.0 | — |
+| 4 | Veined Core | 0/0/0 | none | sell-only: no regular source (one unique elite); no longer drops (Round 46) | 0.0 | — |
 | 4 | Warpack Fang | 3/2/0 | common | enchant Str suffix; enchant Speed suffix | 2.0 | — |
 | 5 | Ash Feather | 0/0/2 | scarce | enchant Int suffix; enchant Dodge suffix | 2.2 | — |
 | 5 | Clenched Jaw | 0/0/2 | regular | enchant Str prefix; enchant Crit prefix; enchant Armor suffix | 3.2 | enchant |
@@ -487,11 +487,11 @@ before Round 33.
 | 5 | Scorched Flesh | 0/0/2 | common | enchant HP prefix; enchant HP suffix; Elixir of Vigor V | 4.0 | enchant |
 | 5 | Siege Bone | 0/0/2 | regular | enchant Armor prefix; Stoneskin Elixir V | 1.8 | — |
 | 5 | Notched Cat Claw | 0/0/1 | scarce | sell-only: upgrade input until Round 45 (scarce) | 0.0 | — |
-| 5 | Siege Core | 0/0/2 | scarce | sell-only: no regular source (two unique elites) | 0.0 | — |
+| 5 | Siege Core | 0/0/0 | none | sell-only: no regular source (two unique elites); no longer drops (Round 46) | 0.0 | — |
 | 5 | Siege Talisman | 0/0/2 | regular | enchant Int prefix; enchant Mana prefix; enchant Mana suffix | 3.5 | enchant |
 | 5 | Siege Weapon Strap | 0/0/2 | regular | enchant Dex prefix; enchant Dex suffix; enchant Speed prefix; enchant Dodge prefix | 3.8 | enchant |
 | 5 | Siegepack Fang | 0/0/2 | regular | enchant Str suffix; enchant Crit suffix; Elixir of Precision V | 3.5 | — |
-| 6 | Abyssal Crab Shell | 0/0/2 | scarce | sell-only: scarce (an optional elite on two shores); a hunter's trophy | 0.0 | — |
+| 6 | Abyssal Crab Shell | 0/0/0 | none | sell-only: scarce (an optional elite on two shores); a hunter's trophy; no longer drops (Round 46) | 0.0 | — |
 | 6 | Gleaming Cat Claw | 0/0/3 | regular | enchant Crit suffix; enchant Dodge suffix | 1.8 | — |
 | 6 | Glass Silk | 0/0/3 | regular | enchant Dodge prefix | 0.8 | — |
 | 6 | Glass Venom | 0/0/2 | regular | enchant Speed suffix | 0.5 | — |
@@ -500,10 +500,10 @@ before Round 33.
 | 6 | Last-Pay Talisman | 0/0/4 | regular | enchant Int prefix; enchant Mana prefix | 2.5 | enchant |
 | 6 | Rime Sinew | 0/0/2 | scarce | sell-only: upgrade input until Round 45 (scarce) | 0.0 | — |
 | 6 | Salt-Barbed Feather | 0/0/4 | regular | enchant Mana suffix | 1.0 | — |
-| 6 | Blighted Bear Claw | 0/0/1 | scarce | sell-only: upgrade input until Round 45 (scarce) | 0.0 | — |
+| 6 | Blighted Bear Claw | 0/0/0 | none | sell-only: upgrade input until Round 45 (scarce); no longer drops (Round 46) | 0.0 | — |
 | 6 | Salt Chitin | 0/0/1 | scarce | sell-only: scarce (one zone, rare weevil); a hunter's trophy | 0.0 | — |
 | 6 | Salt-Cured Flesh | 0/0/4 | common | enchant HP prefix; enchant HP suffix; Elixir of Vigor VI | 4.0 | enchant |
-| 6 | Saltpack Fang | 0/0/1 | scarce | sell-only: scarce (one zone, few hounds); a hunter's trophy | 0.0 | — |
+| 6 | Saltpack Fang | 0/0/0 | none | sell-only: scarce (one zone, few hounds); a hunter's trophy; no longer drops (Round 46) | 0.0 | — |
 | 6 | Silver Mane | 0/0/2 | regular | enchant Dex suffix | 1.2 | — |
 | 6 | Unbroken Weapon Strap | 0/0/4 | regular | enchant Dex prefix; enchant Speed prefix; enchant Armor prefix | 2.5 | enchant |
 | 6 | Unquiet Bone | 0/0/4 | common | enchant Str suffix; enchant Armor suffix; Stoneskin Elixir VI | 3.2 | — |
@@ -655,8 +655,9 @@ The bags and spellbooks in this table need only their profession tier (Round
   [economy.md](economy.md) §4.1, from the same income estimate as the mount
   prices (`tools/r29_e4/income.py`): 1g 45s on the estimate before Round 33.
   **As built: 1g 48s** (`grug_traders.CROWN_FEE`), the same rule on the
-  estimate with the Round 33 terms (column "after" below; accepted by the
-  coordinator). The Fallen Crown stays unsellable.
+  estimate with the Round 33 terms (accepted by the coordinator). Round 46's
+  coin bags raised the estimate (column "after" below); the fee stays within
+  `income.py --check`'s 20 % corridor. The Fallen Crown stays unsellable.
 - Re-enchanting a crowned item uses T1–T6 recipes only; the station preview
   names a weaker replacement, e.g. "replaces T7 Strength with T6 Strength".
 
@@ -667,9 +668,9 @@ eight King kills, next to Master Riding's five hours.
 <!-- generated: crown -->
 | Sink | Rule | Price (today's band-6 income) | Price (after) |
 |---|---|---:|---:|
-| Crown fee (option 1) | 30 min of band-6 income | 73s | 74s |
-| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 45s | 1g 48s |
-| Crown fee (option 3) | 2 h of band-6 income | 2g 91s | 2g 95s |
+| Crown fee (option 1) | 30 min of band-6 income | 83s | 84s |
+| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 65s | 1g 67s |
+| Crown fee (option 3) | 2 h of band-6 income | 3g 30s | 3g 34s |
 <!-- end generated -->
 
 ## 5. Potions and elixirs
@@ -796,12 +797,12 @@ too), which sell for about 3–15 minutes of the band's income:
 <!-- generated: upgradecost -->
 | Tier | One level: one own material (bar … setting) | A whole tier (+9 levels) | Minutes of the band's income |
 |---:|---|---:|---:|
-| T1 | 0c–2c | up to 18c | 5.9 |
-| T2 | 0c–10c | up to 90c | 12.4 |
-| T3 | 0c–26c | up to 2s 34c | 15.2 |
-| T4 | 0c–28c | up to 2s 52c | 6.2 |
-| T5 | 0c–80c | up to 7s 20c | 6.7 |
-| T6 | 0c–82c | up to 7s 38c | 3.0 |
+| T1 | 0c–2c | up to 18c | 5.3 |
+| T2 | 0c–10c | up to 90c | 12.1 |
+| T3 | 0c–26c | up to 2s 34c | 13.4 |
+| T4 | 0c–28c | up to 2s 52c | 5.9 |
+| T5 | 0c–80c | up to 7s 20c | 6.2 |
+| T6 | 0c–82c | up to 7s 38c | 2.7 |
 <!-- end generated -->
 
 ### 6.4 The culture vendor
@@ -835,12 +836,12 @@ column shows a player in gold gear). Mount and respec prices move by less than
 <!-- generated: income -->
 | Band | Net/h today | Gear sales/h | Repair/h today | Repair/h new (blue) | Repair/h new (gold) | Net/h after (blue) | Change | Repair share today → after (blue / gold) |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| 1 → 10 | 1s 82c | 8c | 3c | 17c | 34c | 1s 77c | -3.1 % | 1.9 % → 8.9 % / 17.8 % |
-| 10 → 20 | 4s 37c | 17c | 6c | 29c | 57c | 4s 31c | -1.4 % | 1.3 % → 6.2 % / 12.5 % |
-| 20 → 30 | 9s 21c | 35c | 11c | 53c | 1s 6c | 9s 14c | -0.8 % | 1.1 % → 5.5 % / 10.9 % |
-| 30 → 40 | 24s 43c | 85c | 21c | 1s 5c | 2s 11c | 24s 44c | +0.0 % | 0.9 % → 4.1 % / 8.3 % |
-| 40 → 50 | 64s 24c | 1s 94c | 40c | 1s 99c | 3s 98c | 64s 59c | +0.5 % | 0.6 % → 3.0 % / 6.0 % |
-| 50 → 60 | 1g 45s 46c | 5s 67c | 87c | 4s 35c | 8s 71c | 1g 47s 64c | +1.5 % | 0.6 % → 2.9 % / 5.7 % |
+| 1 → 10 | 2s 2c | 8c | 3c | 17c | 34c | 1s 96c | -2.8 % | 1.7 % → 8.1 % / 16.2 % |
+| 10 → 20 | 4s 45c | 17c | 6c | 29c | 57c | 4s 39c | -1.4 % | 1.3 % → 6.1 % / 12.3 % |
+| 20 → 30 | 10s 45c | 35c | 11c | 53c | 1s 6c | 10s 38c | -0.7 % | 1.0 % → 4.8 % / 9.7 % |
+| 30 → 40 | 25s 74c | 85c | 21c | 1s 5c | 2s 11c | 25s 75c | +0.0 % | 0.8 % → 3.9 % / 7.9 % |
+| 40 → 50 | 69s 43c | 1s 94c | 40c | 1s 99c | 3s 98c | 69s 78c | +0.5 % | 0.6 % → 2.8 % / 5.6 % |
+| 50 → 60 | 1g 65s 4c | 5s 67c | 87c | 4s 35c | 8s 71c | 1g 67s 23c | +1.3 % | 0.5 % → 2.5 % / 5.1 % |
 <!-- end generated -->
 
 ## Appendix A: the models

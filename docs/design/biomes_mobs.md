@@ -559,9 +559,9 @@ and the Mage take damage sooner"):
 |-----|------|-----------|-------|-------|-------|
 | Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.6 (WP6 retune to 4.4, band raise 2026-09-16) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
-| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | the zombie band table (Round 28, "Loot by band"): rotting flesh 1/2; linen scrap 1/2; the band's flesh 1/2 in bands 1–2 and 1/3 from band 3, where its tooth adds 1/6 (Round 35) and cloth (linen cloth from band 2, heavy cloth from band 3) 1/2; the band's tier bar 1/50. Static fallback, unused while the table covers every band: zombie flesh 1/1; linen scrap 1/2; iron bar 1/10 | mobs_mc_zombie (have) |
+| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | the zombie band table (Round 28, "Loot by band"): rotting flesh 1/2; the band's flesh 1/2 in bands 1–2 and 1/3 from band 3, where its tooth adds 1/6 (Round 35); its tier cloth (linen scrap in band 1, linen cloth in band 2, heavy cloth from band 3) 1/1 ×1–2 (Round 46 ruling 11; scrap drops only in band 1, where it is the tier cloth; the second scrap row of bands 2–6 went, the user, 2026-10-12); the band's tier bar 1/50. Static fallback, unused while the table covers every band: zombie flesh 1/1; linen scrap 1/2; iron bar 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
-| **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
+| **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table (its arrows 1/3 no longer drop, Round 46) | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
 **Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (Throng names
 in parentheses, same drop tables):
@@ -572,7 +572,7 @@ in parentheses, same drop tables):
 | Bear (Plaguehide Bear) — elite variant "Elder" ×1.4 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | raw silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 4.6 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
-| Skeleton Archer | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
+| Skeleton Archer | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2 (arrows no longer drop, Round 46) | mobs_mc_skeleton |
 | **Bone Weevil** — bone forest **and blight** (the two "creepy" biomes; one entity name, one `aoc` budget, per-biome tint stamped at spawn) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_silverfish, bone-pale + blight tints |
 
 **Mountain pair — grug_crags (A) ↔ grug_badlands (T):**
@@ -580,7 +580,7 @@ in parentheses, same drop tables):
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
 | Crag Eagle (Vulture) | dive-bombs — a real **flier** (`fly` in air) on `dogfight`, whose vertical tracking drives it down onto a grounded target and back up: that IS the swoop, and it needs no projectile asset | day | 4.6 heartland | sharp feather 1/1 ×1–2; meat 1/2 | animalworld eagle (+tint) |
-| Stone Golem (Mesa Golem) — **elite** (armor 80, telegraphed slam) | hurls rocks (dogshoot) | 24 h | 4.6 | stone core 1/1; iron lump 1/2; gem 1/8 | mobs_monster stone monster |
+| Stone Golem (Mesa Golem) — **elite** (armor 80, telegraphed slam) | hurls rocks (dogshoot) | 24 h | 4.6 | iron lump 1/2; gem 1/8 (the stone core no longer drops, Round 46) | mobs_monster stone monster |
 | Mountain Ram | grazes (**passive prey**, §3.0) | day | 4.6 | meat 1/1; **heavy** leather 1/4 `[leather]` — the ram is the crags' heavy-leather source, which is why it is prey and not a critter | mobs_mc sheepfur retexture |
 | Hyena — savanna+badlands (Throng's wolf-mirror, wolf drop table) | hunts in packs | 24 h | 4.6 | wolf table | animalworld hyena |
 
@@ -621,7 +621,7 @@ grug_jungle_edge:
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.6, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
+| Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.6, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat (the croc tooth no longer drops, Round 46) | animalworld crocodile |
 | Bog Ooze | engulfs (slow tank: touch damage aura, **flat 2 damage**, radius 2 — the one hand-written damage number in the roster; its melee is level-scaled as usual) | 24 h | 2.6 | slime gel 1/1 ×1–2 (no recipe use since Round 33); vendor trash | mobs_mc_slime retint |
 | Mirefolk (fish-folk humanoid, camps at swamp pools; the classic-MMO fish-folk memory) | swarms (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
 | **Bog Fowl** — the swamp critter; universal biome, so the one new critter both continents share | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (**not** its upstream's feather) | mobs_mc_chicken, marsh tint |
@@ -646,7 +646,8 @@ other crabs; the dragon islands have none.
 
 **Front families:** Skeleton Raider (dogshoot, night — battlefield dead;
 skeleton table + heavy cloth 1/3) and Carrion Crow (**passive prey**,
-§3.0 — grazes/scavenges, no aggro, retaliates; feather 1/1).
+§3.0 — grazes/scavenges, no aggro, retaliates; its feather no longer drops,
+Round 46).
 Faction NPC outposts/guards are WP6, not part of this catalog.
 
 **Round 8 zero-asset variants:** these families reuse shipped animated meshes
@@ -656,13 +657,13 @@ column gives the underground rows.
 
 | Mob | Verb | Clock | Cave row | Drops | Visual source |
 |-----|------|-------|----------|-------|---------------|
-| Poacher | dogshoot, roaming | night | — | Bandit table + arrows 1/3 | Bandit Archer / dark skin modifier |
+| Poacher | dogshoot, roaming | night | — | Bandit table (its arrows 1/3 no longer drop, Round 46) | Bandit Archer / dark skin modifier |
 | Frost Stray | dogshoot | night | — | Skeleton table | Skeleton Archer / ice-blue modifier |
 | Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | — | Zombie table | Zombie / sand-gold modifier |
 | Song Bird | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
 | Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | raw silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
 | Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
-| Stone Mite | swarms | any (cave) | y ≤ −700, L42–60 | stone core 1/8 | Cave Crawler / stone-grey modifier, ×1.33 |
+| Stone Mite | swarms | any (cave) | y ≤ −700, L42–60 | nothing (its stone core 1/8 no longer drops, Round 46) | Cave Crawler / stone-grey modifier, ×1.33 |
 
 **Round 8 start-zone families** (on the surface placed by the recipes,
 [zone_mobs.md](zone_mobs.md)). Giant Rat also occupies the entrance and
@@ -686,7 +687,7 @@ give it mixed silhouettes. Wisp blink destinations must have two open nodes, nev
 
 | Mob | Verb | Clock | Drops | Visual source |
 |-----|------|-------|-------|---------------|
-| Goblin Raider / Slinger / Raider Hound | group raid, leashless; Slinger dogshoots the Golem stone; hound rushes | night | linen scrap; purse or arrows; hound meat | goblins goblin + gobdog, CC BY-SA 3.0 |
+| Goblin Raider / Slinger / Raider Hound | group raid, leashless; Slinger dogshoots the Golem stone; hound rushes | night | linen scrap; purse (melee; the slinger's arrows no longer drop, Round 46); hound meat | goblins goblin + gobdog, CC BY-SA 3.0 |
 | Snow Leopard | stalks (silent approach, pounce) | night | panther table | animalworld Snowleopard mesh and original skin, MIT |
 | Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
 | Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
@@ -828,7 +829,8 @@ is the Wolf; base drops match via the shared wolf table.
 **What "shared table" binds** (resolved in WP6): the first two slots —
 the food/meat drop and the leather tier with its chance — are identical
 item-for-item across a pair. The **third slot carries the family's own
-flavor**: wolf/hyena → *fang* 1/3, Jungle Lynx → *raptor claw* 1/3;
+flavor**: wolf/hyena → *fang* 1/3, Jungle Lynx → *raptor claw* 1/3 (no
+longer drops, Round 46);
 bear → *bear claw* 1/4, jungle ape → *ape hair* 1/4. The economic value
 of the pair stays equal (same tier, same chance), the trophy does not —
 "same loot, different look" applies to the trophy too, and a literally
@@ -1251,10 +1253,10 @@ nodes and, thinner, one and two tiers deeper (Round 46). The signature wood foll
 | Heavy leather `[leather]` | 25–60 | bears, elder bears, rams | plaguehide bears, jungle apes |
 | Scaled hide `[leather]` | 25–60 | crocodiles (swamp), serpents (fringe) | crocodiles, serpents |
 | Sleek pelt (Leatherworker T5/T6 input) | 38–60 | panthers (jungle fringe) | panthers (deep jungle) |
-| Linen **scrap** (trash tier, sells; not the cloth) | 1–30 | zombies, skeletons | same |
+| Linen **scrap** (trash tier, sells; the T1 cloth) | 1–10 (Round 46: the band tables drop it in band 1 only) | band-1 zombies and outlaws; the outlaw, goblin and mirefolk leaders' bonus; underground skeletons and goblin miners (static rows) | same |
 | Linen cloth | 10–30 | home-zone **bandit camps**, mirefolk | same |
 | Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
-| Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
+| Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 21–60 | deep-forest/fringe spiders; both 41–50 fronts by night (Round 46); T5–T6 outlaws | bone-forest/jungle spiders; the same fronts and outlaws |
 | Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
 | Food plants, **found-only** (everyone, never farmable) | 25–60 (wild cocoa 51–60) | mushrooms (deep forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemy) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
@@ -1528,11 +1530,12 @@ family), else its role. The band is `floor((level − 1) / 10) + 1` (1–10 → 
 … 51–60 → 6). Where `drops.json` has rows for the family and band, those rows
 replace the mob's static drops (chance 1 in N, `min`/`max`); a leader (the
 sub-type's `leader` flag or a placed leader's `_grug_leader`) adds the
-family's `leader_bonus`. A family without a table, or without rows for that
-band (missing or an empty list), keeps the definition's static drops (a
-sub-type's are its base's). The player-tag rule, the
-profession drop hooks and quality loot apply unchanged; a table can give
-drops to a mob that has no static drops.
+family's `leader_bonus`. A family without a table, or without a row list
+for that band, keeps the definition's static drops (a sub-type's are its
+base's); an empty row list drops nothing (Round 46, where the sell-only rows
+went). A looted kill also rolls a coin bag ([economy.md](economy.md) §1).
+The player-tag rule, the profession drop hooks and quality loot apply
+unchanged; a table can give drops to a mob that has no static drops.
 
 Seven drop families are named after existing roles, so those existing mobs
 (not only their sub-types) use the band tables in the bands listed, and their
@@ -1547,13 +1550,17 @@ static rows above apply only outside them:
   and 1/3 in band 2 (a T2 item; Round 35 halved the band-1 chance), the
   band's tail 1/3 (Fox Tail, Brush, Silver-Tip).
 - **Bear** (bands 3, 4, 6): meat 1/1 ×1 (was ×2), heavy leather 1/3 (was
-  1/2), Bear Claw 1/3 (was 1/4), from band 4 also the band's claw 1/3.
-- **Crocodile** (bands 2–3): meat 1/1, Crocodile Tooth 1/6 (a T4 item no
-  recipe uses; 1/3 before Round 35) and the band's tooth 1/3; no guaranteed
-  Scaled Hide any more.
-- **Wisp** (bands 2–4): the band's mote 1/3 (it had no drops).
-- **Mirefolk** (bands 2–3): linen cloth (band 2) or heavy cloth (band 3) 1/2,
-  the band's reed pearl 1/3, Shiny Scale 1/4; no Raw Fish any more.
+  1/2), Bear Claw 1/3 (was 1/4); the band's own claw from band 4 (Scarred,
+  Blighted) no longer drops (Round 46).
+- **Crocodile** (bands 2–3): meat 1/1; no guaranteed Scaled Hide any more.
+  Its teeth (Crocodile Tooth 1/6, the band's tooth 1/3) no longer drop
+  (Round 46).
+- **Wisp** (bands 2–4): the band's mote 1/3 (it had no drops); band 4's
+  Restless Wisp Mote no longer drops (Round 46), so band 4 drops nothing.
+- **Mirefolk** (bands 2–3): linen cloth (band 2) or heavy cloth (band 3) 1/1
+  ×1–2 (Round 46), the band's reed pearl 1/3 (band 3 only since Round 46:
+  the band-2 Reed Pearl no longer drops), Shiny Scale 1/4; no Raw Fish any
+  more.
 
 **Quest-only drops** (ruling 41) use
 `grug_mobs.register_participant_drop_hook(fn)`: once per kill with at least

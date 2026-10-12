@@ -15,7 +15,7 @@
             "night": [{"role": "siege_husk", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "sparse"},
           "highland": {"id": "bluffs", "name": "Shattered Line Bluffs",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "siege_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal"}
         }
       },
       {
@@ -26,7 +26,7 @@
             "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "swamp": {"id": "mudholes", "name": "Shattered Line Mudholes",
             "day": [{"role": "siege_husk", "weight": 3}, {"role": "unburied_husk", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "unburied_husk", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "sparse"},
           "highland": {"id": "ramparts", "name": "Shattered Line Ramparts",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "coal_purse_factor", "weight": 1}],
             "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal"}
@@ -40,7 +40,7 @@
             "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "swamp": {"id": "bloodmire", "name": "Shattered Line Bloodmire",
             "day": [{"role": "unburied_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "unburied_husk", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "unburied_husk", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "sparse"},
           "highland": {"id": "siegecrest", "name": "Shattered Line Siegecrest",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
             "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal"}

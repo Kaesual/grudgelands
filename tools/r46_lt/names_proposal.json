@@ -1,0 +1,30 @@
+{
+  "zone": "world",
+  "lane": "R46-LT",
+  "slots": {
+    "front_broken_causeway/briar_web_spider/L41-43": {
+      "name": "Ford Weaver",
+      "reason": "Round 46 lane LT: the T5 spider (briar_web_spider widened to 41-50), spins over the Causeway's fords and alderwood; one T5 name per zone, two words"
+    },
+    "front_broken_causeway/briar_web_spider/L44-47": {
+      "name": "Ford Weaver",
+      "reason": "Round 46 lane LT: the T5 spider (briar_web_spider widened to 41-50), spins over the Causeway's fords and alderwood; one T5 name per zone, two words"
+    },
+    "front_broken_causeway/briar_web_spider/L48-50": {
+      "name": "Ford Weaver",
+      "reason": "Round 46 lane LT: the T5 spider (briar_web_spider widened to 41-50), spins over the Causeway's fords and alderwood; one T5 name per zone, two words"
+    },
+    "front_shattered_line/briar_web_spider/L41-43": {
+      "name": "Trench Widow",
+      "reason": "Round 46 lane LT: the T5 spider (briar_web_spider widened to 41-50), nests in the Shattered Line's trenches and sumps; one T5 name per zone, two words"
+    },
+    "front_shattered_line/briar_web_spider/L44-47": {
+      "name": "Trench Widow",
+      "reason": "Round 46 lane LT: the T5 spider (briar_web_spider widened to 41-50), nests in the Shattered Line's trenches and sumps; one T5 name per zone, two words"
+    },
+    "front_shattered_line/briar_web_spider/L48-50": {
+      "name": "Trench Widow",
+      "reason": "Round 46 lane LT: the T5 spider (briar_web_spider widened to 41-50), nests in the Shattered Line's trenches and sumps; one T5 name per zone, two words"
+    }
+  }
+}

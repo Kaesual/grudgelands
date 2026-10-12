@@ -651,8 +651,10 @@ Normal tier at level L:
   guards farm it). Faction NPCs drop only when killed by ENEMY players
   (PvP); NPC-vs-mob kills never drop. Kills LotT's armor-litter
   problem. What drops is the mob's family table for its level band where
-  one exists, else its static list (Round 28 ruling 36, `biomes_mobs.md`
-  "Round 28 sub-types and loot by band").
+  one exists (an empty band drops nothing), else its static list (Round 28
+  ruling 36, `biomes_mobs.md` "Round 28 sub-types and loot by band"). A
+  looted kill of anything but a faction NPC or a critter also rolls a coin
+  bag (Round 46, [economy.md](economy.md) §1).
 - **Bounded-actor soft de-aggro:** where the retained encounter policy enables
   it, beyond ~25 m a chasing actor drops to walk speed. Round 18 ordinary
   damage-sustained world mobs do not use this slowdown or distance give-up;

@@ -796,13 +796,19 @@ upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md)
 
 **Material chain**: 2 cloth + thread → bolt, as Basic recipes (no
 profession, no progress). Authored grades are **T1 linen
-scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
+scrap → patch bolt** (start-zone zombies, L3+ and mostly by night, the start
+camps' outlaws and the tailor shop's 3c scrap — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
 bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
 item `grug_mobs:spider_silk`, shown as **Raw Silk** because T5/T6 outlaws drop
-it too); decided 2026-08-13:
+it too). The cloth-dropping humanoids (zombie, outlaw, goblin, mirefolk,
+skeleton, witch) drop their band's tier cloth on every looted kill in a band
+whose table has a cloth row, 1–2 pieces (Round 46 ruling 11; outlaw silk at
+bands 5–6 likewise); decided 2026-08-13:
 **T5 spider silk → silk bolt** (pure silk, the same 2 + thread pattern;
-spiders exist 25–60 on both continents) and **T6 spider silk + stormkelp →
+spiders live at 21–60 on both continents and in both 41–50 fronts by night,
+the Broken Causeway's woods and the Shattered Line's bluffs and swamps, since
+Round 46) and **T6 spider silk + stormkelp →
 stormweave bolt** — stormkelp (coast 45–60, both continents,
 `biomes_mobs.md` §6) doubles as a weaving fiber here; its spice role is
 unchanged, and the T6 bolt gives the level-45–60 coast zones an economic
@@ -1673,8 +1679,9 @@ random crafted application rolls or separate refinement steps.
 
 Money is owned by [economy.md](economy.md); this section kept a copy of its
 tables until Round 37. All values use ledger copper (100c = 1s, 100s = 1g);
-no creature, NPC or world node drops currency or a physical coin, and
-physical Gold is a separate Goldsmith/build material (economy.md §1).
+no world node drops currency; a mob kill may drop a Bag of Coins (Round 46,
+economy.md §1), and physical Gold is a separate Goldsmith/build material
+(economy.md §1).
 
 - §8.1 income and reference values, the loot and gathered payouts and the
   anti-loop audit → economy.md §2 and §3;

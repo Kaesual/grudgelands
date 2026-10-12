@@ -85,14 +85,14 @@ local raider = {
 		punch_start = 70, punch_end = 90, punch_speed = 15,
 	},
 
-	-- Skeleton table (§3.1/§3.2) — the first three rows are byte-identical
-	-- to skeleton_archer.lua's on purpose (bone 1/1 x1-2, linen scrap 1/2,
-	-- arrows 1/3) — plus the war-coast heavy cloth 1/3 of the §3.1 row (§6
-	-- lists "war-coast raiders" as a heavy-cloth source).
+	-- Skeleton table (§3.1/§3.2) — the first two rows are byte-identical
+	-- to skeleton_archer.lua's on purpose (bone 1/1, linen scrap 1/2; the
+	-- sell-only arrow bundle no longer drops, Round 46 ruling 12) — plus the
+	-- war-coast heavy cloth 1/3 of the §3.1 row (§6 lists "war-coast raiders"
+	-- as a heavy-cloth source).
 	drops = {
 		{name = "grug_mobs:bone", chance = 1, min = 1, max = 1},
 		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
-		{name = "grug_mobs:arrow", chance = 3, min = 1, max = 1},
 		{name = "grug_mobs:heavy_cloth", chance = 3, min = 1, max = 1},
 	},
 

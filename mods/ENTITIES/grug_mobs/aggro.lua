@@ -807,7 +807,8 @@ end
 -- the roll can never corrupt the def's own table — or nil when this mob must
 -- not drop anything at all. The list is the mob's family table for its level
 -- band (Round 28 ruling 36, subtypes.lua band_drop_rows) where one exists,
--- else the definition's static drops.
+-- else the definition's static drops. A looted kill also rolls its coin bag
+-- (below), dropped here directly: a drop row cannot carry the bag's amount.
 --
 --   (a) faction NPC: loot only from a PvP kill by an ENEMY-faction player;
 --       NPC-vs-mob and friendly kills never drop (kills LotT's armor litter)
@@ -835,9 +836,55 @@ function grug_mobs.player_drop_tagger(self)
 	end
 end
 
+--
+-- Coin bags (Round 46 ruling 12): the sell-only drops went, and a kill pays
+-- their value as money instead. A kill that passes the loot gate above rolls
+-- 1 in COIN_BAG.chance for one Bag of Coins (grug_money.make_bag, the same
+-- item as a withdrawn bag), holding a whole copper amount from half to one
+-- and a half times its level band's mean, so the expected payout per kill is
+-- the band's mean / chance. A mean is 4 x the band's price tier factor
+-- (grug_traders price_rules TIER_FACTOR 1, 2.6, 6.4, 16, 40, 100), i.e. half
+-- a tier factor of copper per kill: the mean sell value the removed rows paid
+-- per kill (0.5 / 1.6 / 3.9 / 10.4 / 11.8 / 51.2c by band; the measured
+-- loot, tools/r29_e1 and tools/r29_e4/income.py LOOT_PER_KILL). Critters,
+-- faction NPCs and a mob whose definition sets `_grug_no_coin_bag = true`
+-- roll no bag: the flag marks a mob whose kill must never pay money (the
+-- Kraken; the depth pulse's arrivals), set once on the registered def.
+--
+grug_mobs.COIN_BAG = {
+	chance = 8,
+	copper = {4, 10, 26, 64, 160, 400}, -- mean bag by level band 1..6
+}
+
+-- The copper range of a bag at this level band: {lo, hi}.
+function grug_mobs.coin_bag_range(band)
+	local mean = grug_mobs.COIN_BAG.copper[band] or grug_mobs.COIN_BAG.copper[1]
+	return {math.max(1, math.floor(mean / 2 + 0.5)), math.floor(mean * 3 / 2 + 0.5)}
+end
+
+-- Rolls the coin bag of one looted kill and drops it at the mob; returns
+-- the copper it dropped, or nil.
+function grug_mobs.drop_coin_bag(self)
+	if not (grug_money and grug_money.make_bag) or self._grug_faction or
+			self._grug_no_coin_bag or grug_mobs.disposition(self) == "critter" or
+			math.random(grug_mobs.COIN_BAG.chance) ~= 1 then
+		return nil
+	end
+	local pos = self.object and self.object:get_pos()
+	if not pos then return nil end
+	local range = grug_mobs.coin_bag_range(grug_mobs.level_band(self._grug_level))
+	local copper = math.random(range[1], range[2])
+	local obj = core.add_item(pos, grug_money.make_bag(copper))
+	if obj then
+		obj:set_velocity({x = math.random() - 0.5, y = 5, z = math.random() - 0.5})
+	end
+	return copper
+end
+
 function grug_mobs._item_drop_filter(self, drops)
 	local tagger = grug_mobs.player_drop_tagger(self)
 	if not tagger then return nil end
+	grug_mobs.drop_coin_bag(self)
 	local copy = grug_mobs.band_drop_rows(self)
 	if not copy then
 		copy = {}

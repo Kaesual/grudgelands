@@ -45,14 +45,8 @@ poacher.dogshoot_count2_max = 3
 poacher.run_velocity = 4.0
 poacher._grug_soft_deaggro = false
 poacher.view_range = 16
-local poacher_drops = poacher.drops
-poacher.drops = function(pos)
-	local drops = poacher_drops(pos)
-	drops[#drops + 1] = {
-		name = "grug_mobs:arrow", chance = 3, min = 1, max = 1,
-	}
-	return drops
-end
+-- The bandit's drops function as it is: the sell-only arrow bundle no
+-- longer drops (Round 46 ruling 12; coin bags, aggro.lua).
 grug_mobs.register_mob("grug_mobs:poacher", poacher)
 
 mobs:spawn({
@@ -107,10 +101,10 @@ local frost_stray = common_ground({
 		shoot_start = 70, shoot_end = 90, shoot_speed = 15,
 		punch_start = 70, punch_end = 90, punch_speed = 15,
 	},
+	-- No sell-only arrow bundle (Round 46 ruling 12).
 	drops = {
 		{name = "grug_mobs:bone", chance = 1, min = 1, max = 1},
 		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
-		{name = "grug_mobs:arrow", chance = 3, min = 1, max = 1},
 	},
 })
 grug_mobs.register_mob("grug_mobs:frost_stray", frost_stray)
@@ -340,7 +334,8 @@ local stone_mite = common_ground({
 		run_start = 1, run_end = 20, run_speed = 50,
 		punch_start = 1, punch_end = 20, punch_speed = 60,
 	},
-	drops = {{name = "grug_mobs:stone_core", chance = 8, min = 1, max = 1}},
+	-- The sell-only stone core no longer drops (Round 46 ruling 12).
+	drops = {},
 })
 grug_mobs.register_mob("grug_mobs:stone_mite", stone_mite)
 

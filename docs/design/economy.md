@@ -30,10 +30,10 @@ axis (D2).
   interior zeros are retained: `5c`, `1s 5c`, `1g 0s 5c`. One formatter owns
   Character-screen, chat and trade UI output. The current balance is shown
   on Character and relevant trade screens; there is no persistent money HUD.
-- Money is a **ledger-only universal transaction currency**. No NPC, mob or
-  world node drops money or a physical coin item. Currency enters or moves
-  only through explicit transactions: quest rewards, NPC purchases of
-  sellable loot, NPC/player sales and player-to-player trade.
+- Money is a **ledger-only universal transaction currency**. No NPC or
+  world node drops money. Currency enters or moves only through explicit
+  transactions: quest rewards, NPC purchases of sellable loot, NPC/player
+  sales, player-to-player trade and the coin bags mobs drop (below).
 - **Bag of Coins** (Round 34): the one way money leaves the balance as an
   item, so players can give money to each other. **Withdraw** in the
   Inventory tab's money row (the Character page until the Round 45
@@ -49,6 +49,23 @@ axis (D2).
   neither sell nor buy it (no price class: payout 0). It drops, is picked up
   and stored like any item, despawns on the ground after the engine's item
   lifetime and burns in lava or fire; no transfer is logged.
+- **Coin bags from mobs** (Round 46 ruling 12): the 23 sell-only mob drops
+  (signatures and generics no recipe or quest uses) no longer drop; they
+  stay registered and sellable. Instead every looted kill (the loot gate of
+  [combat_stats.md](combat_stats.md) §3: a player tag, no faction NPC, no
+  critter, no mob flagged `_grug_no_coin_bag` such as the Kraken) drops a
+  Bag of Coins 1 time in 8, holding a whole amount from half to one and a
+  half times its level band's mean: 4c, 10c, 26c, 64c, 1s 60c, 4s for bands
+  1–6 (4 × the tier factor), so a kill pays half a tier factor of copper on
+  average, about the mean the removed rows paid (`grug_mobs.COIN_BAG`,
+  `tools/r29_e4/income.py` LOOT_PER_KILL).
+- **Automatic deposit** (Round 46, the user): the Inventory tab's money row
+  has a checkbox "Auto" (tooltip "Deposit coin bags automatically on
+  pickup"), on by default (player meta `grug_money:auto_deposit` is "off"
+  only when unticked). While it is on, picking up a Bag of Coins credits it
+  at once under the deposit slot's rules, with one feed line "Deposited
+  Xc."; a bag the slot would refuse (empty, or over the clamp) is picked up
+  as an item with the usual pickup line.
 - Physical Gold is a separate universal luxury/jewelry/build material. Gold
   ore, bars and blocks never add to the money balance, and a ledger payment
   never consumes inventory Gold.
@@ -128,16 +145,17 @@ precedence over preserving the exact mathematical ratio.
 ## 3. Income streams and tier pacing
 
 - **Quest rewards** provide the baseline from the first starter quest.
-- **Selling loot** provides the universal combat income. Traders buy every mob
-  drop; humanoids are not a privileged money source. A stolen purse may exist
+- **Selling loot** provides the universal combat income, with the coin bags
+  of §1 (Round 46) in place of the removed sell-only drops. Traders buy every
+  mob drop; humanoids are not a privileged money source. A stolen purse may exist
   as an ordinary sellable trash item, but opening or dropping it never changes
   the ledger directly.
 - Gathered materials enter the same sell-price system. Player trade is their
   intended high-value market; NPC prices remain a floor.
 - Ordinary quest income and the expected vendor value of level-appropriate
   mob/NPC loot grow on the same approximate ×2.5 tier index as Common gear.
-  "Loot income scales" always means expected sellable-loot value, never direct
-  coin drops. Scaling prices and ordinary income together preserves the
+  "Loot income scales" means expected sellable-loot value plus the coin
+  bags' expected copper (half a tier factor per kill). Scaling prices and ordinary income together preserves the
   intended time-to-buy for baseline gear.
 - Reliable net solo income is measured after routine level-appropriate repair
   and consumable costs and excludes rare jackpots, boss rewards and a
@@ -158,6 +176,13 @@ precedence over preserving the exact mathematical ratio.
   at factor 1.00 ([item_tiers.md](item_tiers.md) §6.5); `income.py` prints
   the change per band (−3.1 % at 1–10 to +1.5 % at 51–60). The table above
   is the estimate with those terms; the prices below come from it.
+
+  Round 46: with the coin bags and the 1/1 cloth (rulings 11, 12) and the
+  round's other changes, the estimate is 1s96c / 4s39c / 10s38c / 25s75c /
+  69s78c / 1g67s23c per hour (+14 %, +3 %, +14 %, +6 %, +8 %, +13 % over the
+  table above): the measured median kill barely felt the removed rows, the
+  bags pay their mean. The prices stay; `income.py
+  --check` accepts a shipped price within 20 % of the estimate's.
 
 ## 4. Sinks
 

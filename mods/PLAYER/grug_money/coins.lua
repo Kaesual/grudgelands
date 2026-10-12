@@ -9,6 +9,10 @@
 
 local BAG = "grug_money:bag_of_coins"
 local AMOUNT_KEY = "grug_money:bag_copper"
+-- Player meta: "off" when the player unticked "Deposit coin bags
+-- automatically on pickup" (Round 46); absent means on.
+local AUTO_DEPOSIT_KEY = "grug_money:auto_deposit"
+grug_money.AUTO_DEPOSIT_KEY = AUTO_DEPOSIT_KEY
 local DEPOSIT_LIST = "deposit"
 local WITHDRAW_FORM = "grug_money:withdraw"
 grug_money.BAG = BAG
@@ -21,6 +25,21 @@ core.register_craftitem(BAG, {
 	inventory_image = "grug_money_bag_of_coins.png",
 	stack_max = 1,
 	groups = {not_in_creative_inventory = 1},
+	-- Every pickup of a dropped bag (builtin item entity, item_entity.lua
+	-- on_punch) comes here: deposited at once when the player wants that
+	-- and the deposit slot would take it, else picked up as any item.
+	on_pickup = function(itemstack, picker, pointed_thing, ...)
+		if grug_money.auto_deposit_pickup(picker, itemstack) then
+			-- Its "Deposited" line replaces the generic pickup line
+			-- (grug_core/feed.lua); a refused bag keeps the item line.
+			local ref = pointed_thing and pointed_thing.ref
+			local entity = ref and ref.get_luaentity and ref:get_luaentity()
+			if entity then entity._grug_no_pickup_feed = true end
+			itemstack:take_item(1)
+			return itemstack
+		end
+		return core.item_pickup(itemstack, picker, pointed_thing, ...)
+	end,
 })
 
 -- A Bag of Coins holding `copper` (a whole number of at least 1).
@@ -93,6 +112,36 @@ function grug_money.deposit_allowed(player, stack)
 		return 0, "You cannot carry that much money."
 	end
 	return 1
+end
+
+--
+-- Automatic deposit on pickup (Round 46, the user's addition to ruling 12):
+-- a Bag of Coins picked up from the ground is credited like one put into the
+-- deposit slot, under the same rules; refused, it lands in the inventory.
+--
+
+function grug_money.auto_deposit(player)
+	return player:get_meta():get_string(AUTO_DEPOSIT_KEY) ~= "off"
+end
+
+function grug_money.set_auto_deposit(player, on)
+	player:get_meta():set_string(AUTO_DEPOSIT_KEY, on and "" or "off")
+end
+
+-- Credits one bag of `stack` to `picker` when the toggle is on and the
+-- deposit rules allow it; returns whether it did (the caller removes the bag).
+function grug_money.auto_deposit_pickup(picker, stack)
+	if not picker or not picker.is_player or not picker:is_player() or
+			not grug_money.auto_deposit(picker) or
+			grug_money.deposit_allowed(picker, stack) ~= 1 then
+		return false
+	end
+	local copper = grug_money.bag_amount(stack)
+	grug_money.add(picker, copper)
+	grug_sounds.play("money", picker)
+	grug_core.feed(picker, "notice", "Deposited " .. grug_money.format(copper) .. ".",
+		"grug_money_bag")
+	return true
 end
 
 --
