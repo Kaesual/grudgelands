@@ -384,7 +384,9 @@ end
 -- The rage dump (kit tuning 2026-08-06): no own cooldown — at the rage
 -- income of the day a cooldown left the Warrior permanently rage-capped.
 -- Ruling 25 (2026-09-16) lowered that income to 8 per landed swing, so
--- this now procs about every fourth swing rather than every other one.
+-- this now procs about every fourth swing rather than every other one; since
+-- Round 46 the grant scales with the weapon's swing interval, so that is
+-- about every 3 s with every weapon.
 grug_abilities.register_ability({
 	id = "mighty_blow",
 	kind = "swing",
@@ -405,8 +407,9 @@ grug_abilities.register_ability({
 	range = 3,
 	-- The proc REPLACES the plain hit (classes.md §3): floor(weapon x 1.5) +
 	-- melee bonus, x3 threat. No charge timer -- the rage cost IS the limiter
-	-- (about every fourth swing at the ruling-25 income of +8 per landed
-	-- hit; it was every other swing at the old +12).
+	-- (about every fourth sword swing at the ruling-25 income of +8 per
+	-- landed hit, about every 3 s with any weapon since Round 46; it was
+	-- every other swing at the old +12).
 	proc_swing = function(user, target, ctx)
 		local tpos = target:get_pos() -- before the punch (lethal invalidates refs)
 		-- Heavy Hand (skill_trees.md §2.2): +0.1 weapon-damage multiplier per

@@ -112,7 +112,7 @@ Core principles:
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
 | Mana | Mage, Priest | `round(20 + 5L + 0.66L²)`, before mana-percent gear/talents (combat_stats §2) | `1 + 0.15 × level` mana/s out of combat, a lower in-combat rate (combat_stats §5) |
-| Rage | Warrior | 0–100, starts at 0 | **+8** per landed §2b authoritative swing (native tool and fist packets deal nothing and earn none, combat_stats §2); **+3** per hit taken, +15 from Charge; decays **5/s** out of combat. Ruling 25 of 2026-09-16 lowered the income and raised the decay — the ledger and what it buys are in §3 |
+| Rage | Warrior | 0–100, starts at 0 | **+8 × the weapon's base swing interval / 1 s** per landed §2b authoritative swing (native tool and fist packets deal nothing and earn none, combat_stats §2): the same 8 per second with every weapon; **+3** per hit taken, +15 from Charge; decays **5/s** out of combat. Ruling 25 of 2026-09-16 lowered the income and raised the decay, Round 46 ruling 9 tied it to the swing interval — the ledger and what it buys are in §3 |
 
 - **Rage is granted on damage that actually landed**, not on a swing
   attempted: a target that cancels the punch (a vendor NPC, an evading
@@ -525,7 +525,9 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   defenses; invalid lifecycle/target cancels. See `combat_stats.md` for the
   shared Round 17 contract, also used by non-player projectiles.
 - Fireball retains 6% base mana, 20 m initial range, 20 m/s nominal speed and
-  baseline weapon damage + spell power, with existing talent modifiers.
+  the spell base (half the level baseline weapon, half the equipped staff or
+  wand at its own item level; combat_stats §2, Round 46) + spell power, with
+  existing talent modifiers.
 - Friendly heals and shields resolve through currently pointed valid in-range
   visible ally → self, with no ally-memory fallback (user ruling 2026-09-24). A hostile, NPC, guard, item or dead player
   is not an eligible ally target. Input routing may consume a drop click for
@@ -582,7 +584,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + melee attribute/10 (Scout Dex, otherwise Str; fractions count), crit ×2, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
+| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + melee attribute/10 (Scout Dex, otherwise Str; fractions count), crit ×2, threat ×1. Grants the Warrior 8 rage × the weapon's base swing interval / 1 s per landed swing (§1, §3); the tooltip shows the equipped weapon's value. Hold or click LMB. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
@@ -728,7 +730,7 @@ the resource is effectively unlimited". Ruling 25 answers it with **option
 
 | Source | Rage | Note |
 |--------|------|------|
-| a landed full swing | **+8** | was +12. Only an authoritative swing (Strike or a swing skill) lands; native tool and fist packets deal nothing and pay nothing. |
+| a landed full swing | **+8 × base swing interval / 1 s** | was +12. Round 46 ruling 9: dagger 5.6, sword and wand 8, battle axe and staff 11.2, bare hand 7.2 per hit — 8 per second with every weapon. The interval is the weapon's base one: the attack-speed enchant swings faster and so earns more per second. Fractions are kept; the bar shows whole points. Only an authoritative swing (Strike or a swing skill) lands; native tool and fist packets deal nothing and pay nothing. |
 | a hit taken | **+3** | was +4. The orc race passive adds +1 (`world.md` §7). |
 | Charge | +15 | unchanged; it is an engage tool, not income. |
 | out of combat | **−5 per second** | was −2 per second, on the shared `grug_core.in_combat` state (combat_stats §5). |
@@ -739,14 +741,17 @@ weapon hit and the Reclaimer's Mark's rage on an XP-eligible kill
 (`items_crafting.md` §6.2,
 [trinket exception](items_crafting.md#trinket-exception-one-prefix-one-suffix-one-special)).
 
-What that buys, from an empty bar: **13 landed swings to full** instead of 9,
-**4 swings per Mighty Blow** instead of 3, and a full bar bleeds out in
+What that buys, from an empty bar: **13 landed sword swings to full** (12.5 s
+of swinging with any weapon) instead of 9, **a Mighty Blow about every 3 s**
+(every 4th sword swing, 5th dagger swing, 3rd battle-axe swing) instead of
+every 3rd sword swing, and a full bar bleeds out in
 **20 seconds** of peace instead of 50. A swing skill with no charge timer is
 still limited by its resource alone — which is what Mighty Blow was built to
 be — but the limit is now something the player feels.
 
 Two WP11 talents lean on this ledger and are calibrated against it: **Stoke**
-(Ruin, +1 rage per landed swing per rank, so 4/4 restores the old +12) and
+(Ruin, +1 rage per landed swing per rank on the 1 s reference, scaled by the
+weapon's interval like the base, so 4/4 restores the old +12 per sword swing) and
 **Spite** (Bulwark, +1 rage per hit taken per rank, so 5/5 reaches +8).
 
 ## 4. Mage (Mana)
@@ -761,7 +766,7 @@ Nova became the rotation pivot — kiting IS the Mage fantasy here.
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Targeted homing projectile, nominal 20 m/s and initial range 20 m; current aim/LOS required at release. Baseline weapon + spell power through the damage fit at impact. No target or input inside the interval costs nothing; at most eight shots per owner/session may be active. |
-| Ice Nova | 10% base mana | 12 s | Deals one quarter of (level-baseline weapon damage + spell power), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
+| Ice Nova | 10% base mana | 12 s | Deals one quarter of (the spell base + spell power; combat_stats §2), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
 | Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction, never through walls. Escape valve. Targeting below. |
 
 **Blink targeting** (playtest ruling, 2026-09-28). The look ray runs from the
@@ -808,7 +813,7 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (baseline weapon + spell power), then the damage fit. Solo viability. |
+| Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (the spell base + spell power; combat_stats §2), then the damage fit. Solo viability. |
 | Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool times the support factor (gear Intelligence, `combat_stats.md` §2; exactly 25% without Intelligence gear). Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
 | Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool times the support factor for 15 s or until consumed. |
 | Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool times the support factor every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |

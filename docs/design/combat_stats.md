@@ -65,6 +65,16 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Spell power** = Int/10, fractions included (Round 33). It is the flat
   term of damaging spells; like every damage it is floored once after the
   level scalar (Round 36: spells no longer round before it).
+- **Spell base** (Round 46 ruling 10) = `0.5 × round(4 + 0.35L) + 0.5 ×
+  round(4 + 0.35 × ilvl)`: half the level baseline weapon, half the staff or
+  wand in the Weapon slot at its own item level, without the family factor
+  (the staff's ×1.2 is melee only). An own-level staff or wand therefore
+  gives exactly the level baseline; a first-tier weapon (ilvl 1) gives 9.5
+  instead of 15 at level 30 and 14.5 instead of 25 at level 60. No usable
+  caster weapon in the slot (empty, another family, broken) counts as item
+  level 1. Fireball, Ice Nova and Smite add spell power to it
+  (`grug_core.spell_base`); talent damage terms stay percentages of `B(L)`,
+  and healing keeps the support factor.
 - **Support factor** (Round 36) = `1 + gear Int / 10 / B(L)` on
   pool-derived healing and absorbs, where gear Int is the Intelligence above
   the class's own level growth (`grug_classes.get_support_factor`). Gear
@@ -388,7 +398,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   Mob/boss/guard missiles lock their valid attack target under the same initial
   range/line-of-sight rule. Smite stays immediate; area skills stay area skills.
 - Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
-  range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
+  range**, **20 m/s nominal speed**, the spell base + spell power and
   its existing talent effects. Scout arrows retain bounded draw and ammo rules:
   a full draw takes the bow's 2.5 s, shortened only by Fletching and the
   bow's own attack-speed affix (not the rest of the equipment), and Loose deals

@@ -465,7 +465,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "stoke", tree = "ruin", chain = "hammer", tier = 2,
 	name = "Stoke",
-	description = "+1 rage per landed swing, per rank (base 8).",
+	description = "+1 rage per landed swing, per rank (base 8), " ..
+		"on a 1.0 s weapon; it scales with the weapon's swing time.",
 	effects = {rage_per_swing_add = {1, 2, 3, 4}},
 })
 grug_classes.register_talent({

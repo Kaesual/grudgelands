@@ -255,7 +255,7 @@ yet.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Heavy Hand** | Hammer | 1 | 5 | — | Mighty Blow ×1.5 → ×1.6 / 1.7 / 1.8 / 1.9 / 2.0 weapon damage | the Mighty Blow proc in `kits.lua` | `mighty_blow_multiplier_add` |
-| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8) | the swing rage in `grug_abilities/init.lua` (`swing_rage`) and its authoritative callers | `rage_per_swing_add` |
+| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8); base and bonus are per 1 s of the weapon's base swing interval (Round 46), so per second every weapon gains the same | the swing rage in `grug_abilities/init.lua` (`swing_rage`) and its authoritative callers | `rage_per_swing_add` |
 | 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **replaces Mighty Blow** | Mighty Blow also strikes every other hostile within 3 m for **half** its total, rounded down, at ×3 threat — the game's first melee cleave, on the key Mighty Blow already occupies | the Mighty Blow proc plus a hostile-radius loop | `mighty_blow_cleave` |
 | 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **15 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 15 s, **60 s cooldown** on the trigger.* | `grug_classes.get_crit_chance_raw` and the cap in `grug_classes.get_crit_chance` | `crit_chance_add_window`, `crit_cap_override` |
 | 5 | **Keen Edge** | Lash | 1 | 5 | — | +2 / 4 / 6 / 8 / 10 percentage points crit chance (30 % cap holds) | `grug_classes.get_crit_chance_raw` | `crit_chance_add` |
@@ -279,13 +279,14 @@ its 12 % of a base hit and its 15 rage are untouched by any talent.
 
 **Rage is a limiter.** Stoke adds to it, Heavy Hand and Broadstroke spend it;
 all three are calibrated against the rage ledger of ruling 25 (`classes.md`
-§3: +8 per landed swing, +3 per hit taken, −5/s out of combat).
+§3: +8 per landed swing on the 1 s reference interval, i.e. 8 per second
+with every weapon, +3 per hit taken, −5/s out of combat).
 
 ### 2.3 Mage — Ember
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `baseline weapon + spell power` raw value gains 4 / 8 / 12 / 16 / 20 % of a base hit before the damage fit (§2.10) | the Fireball values in `kits.lua` | `fireball_damage_add` |
+| 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `spell base + spell power` raw value gains 4 / 8 / 12 / 16 / 20 % of a base hit before the damage fit (§2.10) | the Fireball values in `kits.lua` | `fireball_damage_add` |
 | 2 | **Firebrand** | Blaze | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance (30 % cap holds) | `grug_classes.get_crit_chance_raw` | `crit_chance_add` |
 | 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `6 / 9 / 12 % of a base hit + spell power / 2` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same homing flight | the Fireball projectile's on-hit plus its radius loop | `fireball_splash` |
 | 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+30 % of a base hit**. *Limit: 8 s, **60 s cooldown** on the trigger.* | the central cost seam `grug_abilities.cost_for` and the Fireball values | `whitehot_window`, `whitehot_damage` |
@@ -336,7 +337,7 @@ Mend is Mercy's **keystone**, registered before WP11 and `talent_gated`;
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite's `1.5 × (baseline weapon + spell power)` raw value gains 4 / 8 / 12 / 16 / 20 % of a base hit before the damage fit (§2.10) | the Smite values in `kits.lua` | `smite_damage_add` |
+| 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite's `1.5 × (spell base + spell power)` raw value gains 4 / 8 / 12 / 16 / 20 % of a base hit before the damage fit (§2.10) | the Smite values in `kits.lua` | `smite_damage_add` |
 | 2 | **Swift Word** | Word | 2 | 4 | — | Smite cooldown 2 s → 1.9 / 1.8 / 1.7 / 1.6 s | `grug_abilities.effective_cooldown` (Smite's `cooldown_talent`) — **not** the registration constant | `smite_cooldown_sub` |
 | 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8% base mana, 12 s cooldown, 20 m; `18 / 24 / 30 % of a base hit + spell power` damage, healing the Priest for 50 % of it | new (`word_of_ruin` in `kits.lua`); `grug_core.deal_ability_damage` returns the post-crit amount, healed back with `grug_core.heal_player(…, {no_crit = true})` | `word_of_ruin_damage` |
 | 4 | **Last Word** *(capstone)* | Word | 4 | **1** | **effect** ‼ | while the Priest is below 25 % max HP, Word of Ruin's drain heals for **150 %** of the damage dealt — above the 100 % the pipeline otherwise allows — and the trigger resets Word of Ruin's cooldown, so a second cast drains inside the window. *Limit: 12 s per trigger, **180 s cooldown**.* | the drain half of the Word of Ruin registration | `drain_ratio_override` |
