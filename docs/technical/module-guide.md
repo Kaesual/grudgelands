@@ -206,8 +206,9 @@ tools](#player-meta-read-by-external-tools).
   `core.after` per online player with a job, no globalstep.
   `ingredient_counts(player)` (one pass over `main` and the bags, stacks
   without metadata: `is_ingredient_stack`), `ingredient_have(counts, entry)`,
-  `crafts_from_counts(counts, recipe)` (a dry-run take on the counted stacks
-  when one item satisfies two entries; Round 46), `output_capacity(player, recipe)`,
+  `crafts_from_counts(counts, recipe)` (when one item satisfies two entries,
+  a dry-run take on the counted stacks, searched by halving up to one above
+  the job ceiling of four output stacks; Round 46), `output_capacity(player, recipe)`,
   `max_craftable(player, recipe[, counts])` → n, by ingredients, by space;
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
   within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area

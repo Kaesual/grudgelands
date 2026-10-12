@@ -784,5 +784,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   coverage (two T1 recipes in every start zone, the T1 and T2 plain dishes in
   every 11-20 zone, every zone its band's plain dish, a T3 recipe in
   Frostbarrow), that ×N equals what a job can take for every Cooking recipe
-  on many inventories (overlapping groups included), the plain furnace
-  foods and the four ingredient swaps.
+  on many inventories (overlapping groups included; `jobs_harness.lua`
+  loads the real `grug_jobs` registry and jobs under a stub engine), the
+  plain furnace foods and the four ingredient swaps; `bench_count.lua [REPO]
+  [ROUNDS]` (LuaJIT, also `-joff`) times that count per page view on the
+  review's worst case and a realistic inventory.
