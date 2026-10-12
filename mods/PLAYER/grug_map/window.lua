@@ -10,9 +10,10 @@
 -- The overlay (ruling 12, with the user's additions of 2026-10-08) is plain
 -- image[] elements: the player's and the party's arrows, the home,
 -- discovered waystones, the own faction's trainers (two thirds size at zoom
--- 1x and 2x), Housing Stewards, capital services and innkeepers, and a
--- question mark at the NPC of each active quest (silver in progress, gold
--- ready to hand in) with the NPC's name as its only tooltip. Settlements,
+-- 1x and 2x), Housing Stewards, capital services, the mender (Round 46)
+-- and innkeepers, and a question mark at the NPC of each active quest
+-- (silver in progress, gold ready to hand in) with the NPC's name as its
+-- only tooltip. Settlements,
 -- camps, bosses and region names are pixels of the base image (bake.lua);
 -- of the other faction nothing is drawn beyond that baked layer except the
 -- selected quest's own targets.

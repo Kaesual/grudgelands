@@ -14,7 +14,8 @@
 --      images; no Steward, services, other innkeepers, zone markers or
 --      exclamation marks; a question mark at the hand-in NPC of each active
 --      quest (silver in progress, gold ready) with the NPC's name as its
---      only tooltip; the other faction's NPCs never;
+--      only tooltip; the other faction's NPCs never; the mender's repair
+--      icon (Round 46) like the services, without a tooltip;
 --   T  the quest target index (role -> regions, area -> regions, leaders)
 --      and the targets: crosshairs (leaders, talk NPCs, use places) before
 --      rings, at most five rings, the nearest the player, a kill objective
@@ -274,6 +275,8 @@ local settlements = {
 local sockets = {
 	highcourt = {
 		{id = "t1", role = "trainer", profession = "tailor", pos = {x = 120, y = 10, z = 110}},
+		-- Round 46 (lane RP): the mender on the Cooking socket has a marker.
+		{id = "mender", role = "trainer", profession = "cooking", pos = {x = 125, y = 10, z = 115}},
 		{id = "ride", role = "riding_trainer", pos = {x = 130, y = 10, z = 90}},
 		{id = "steward", role = "housing_manager", pos = {x = 140, y = 10, z = 95}},
 		{id = "crown", role = "crownbinder", pos = {x = 150, y = 10, z = 95}},
@@ -282,6 +285,7 @@ local sockets = {
 	},
 	gor_drazhak = {
 		{id = "t1", role = "trainer", profession = "alchemist", pos = {x = -2010, y = 10, z = 1510}},
+		{id = "mender", role = "trainer", profession = "cooking", pos = {x = -2015, y = 10, z = 1505}},
 		{id = "q_war", role = "quest", pos = {x = -2020, y = 10, z = 1520}},
 	},
 }
@@ -303,7 +307,8 @@ rawset(_G, "grug_core", {
 	item_name = function(stack) return stack.name end,
 })
 rawset(_G, "grug_factions", {get_faction = function(p) return p.faction end})
-rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}, alchemist = {name = "Alchemist"}},
+rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}, alchemist = {name = "Alchemist"},
+	cooking = {name = "Cooking"}}, MENDER_TITLE = "Grudge-Free Repairs",
 	trainer_teaches = function(p) return p ~= "cooking" end}) -- Round 45 (lane ST)
 rawset(_G, "grug_money", {format = function(c) return c .. "c" end})
 rawset(_G, "grug_zones", {
@@ -496,8 +501,9 @@ do
 	check(find_image(list, "grug_map_waypoint.png") ~= nil, "O a discovered waystone")
 	-- The user's answer of 2026-10-08: the Steward, the services and the
 	-- innkeepers come back (own faction, like the minimap), no tooltips.
+	-- Round 46 (lane RP): the mender's repair icon among them.
 	for _, texture in ipairs({"grug_map_housing_steward.png", "grug_map_crownbinder.png",
-			"grug_map_innkeeper.png"}) do
+			"grug_map_innkeeper.png", "grug_map_repair.png"}) do
 		local image = find_image(list, texture)
 		check(image and near(image.w, 0.34), "O drawn: " .. texture)
 	end
@@ -547,6 +553,8 @@ do
 	end
 	eq(count(map_part(W.formspec(throng, tstate, nil)), "grug_map_innkeeper%.png"), 1,
 		"O throng sees its own innkeeper only")
+	eq(count(map_part(W.formspec(throng, tstate, nil)), "grug_map_repair%.png"), 1,
+		"O throng sees its own mender only (Round 46)")
 	has(map_part(W.formspec(throng, tstate, nil)), ";Warlord Gash]", "O throng's quest NPC")
 	-- A party member: a cyan arrow.
 	local bea = make_player("bea", {x = 600, z = 600}, "accord")

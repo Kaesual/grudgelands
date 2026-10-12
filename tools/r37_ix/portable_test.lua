@@ -20,13 +20,12 @@
 --      grug_jobs/workspaces.lua. The 1 s pass re-shows the furnace form only
 --      while it is the open form: a form another mod shows and a closed form
 --      stop it, and the session ends; the form has no recipe-book button
---      (Round 45). Round 41 lane UI (ruling 3), with the REAL
---      grug_repair/providers.lua: the repair form's Close returns to the
---      furnace (which refreshes again), also after a repair; its Esc closes;
---      Close after walking away, after the furnace was replaced or when dead
---      falls back to the inventory; the repair form of another provider
---      keeps its plain Close. Round 45: a forge opens no dialog (a
---      proximity station, lane ST).
+--      (Round 45). With the REAL grug_repair/providers.lua (Round 46 lane
+--      RP, repair only in towns): a furnace inside an active claim shows no
+--      repair button, the old repair field opens no repair form and no
+--      station provider exists; another provider's repair form keeps its
+--      plain Close. Round 45: a forge opens no dialog (a proximity station,
+--      lane ST).
 --   G  grass and moss (X-02): grug_core/protection.lua and the two ABMs of
 --      default/functions.lua. In a town, a capital, a POI core or on a road
 --      dirt stays dirt and cobble stays cobble; on open ground both grow.
@@ -564,10 +563,11 @@ do
 end
 
 ------------------------------------------------------------------------------
--- F (Round 41 lane UI, ruling 3): Close of the repair form returns to the
--- station it was opened from, with the real repair providers. Round 45: the
--- recipe book and its Close are gone; a forge or bench opens no dialog (lane
--- ST: proximity stations).
+-- F (Round 41 lane UI, ruling 3; Round 46 lane RP): with the real repair
+-- providers, a furnace inside an active claim offers no repair any more
+-- (repair only in towns); the Round 41 return from the repair form went
+-- with it. Round 45: the recipe book and its Close are gone; a forge or
+-- bench opens no dialog (lane ST: proximity stations).
 ------------------------------------------------------------------------------
 do
 	local c = new_engine()
@@ -585,7 +585,8 @@ do
 			return {display_name = NAMES[station], node = station == "forge" and
 				"grug_jobs:forge" or "default:furnace"}
 		end,
-		-- A player-placed station inside a claim: shared, and it repairs.
+		-- A player-placed station inside a claim: shared (it repaired until
+		-- Round 46).
 		is_public_station = function() return false end,
 	}
 	function c.create_detached_inventory() return E.new_inventory() end
@@ -627,70 +628,34 @@ do
 	local ann = new_player("ann", {pos = P(1, 0, 0)})
 	ann.hp = 20
 	function ann:get_hp() return self.hp end
-	function ann:get_inventory_formspec() return "inventory" end
 	E.players = {ann = ann}
 	local FORM = "grug_jobs:workspace"
-	local record = default.node_formspec.shown_form
 	local function last() return E.shown[#E.shown] end
-	local function lands_in_inventory(label)
-		eq(last().form, "", label .. ": the inventory is shown")
-	end
 
-	-- The repair form: Close returns to the furnace, also after a repair.
-	local function repair_from(form_name)
-		check(grug_jobs.workspaces.open(pos, ann), "F41 the station opens for repair")
-		eq(last().form, form_name, "F41 the station shows " .. form_name)
-		run_receive(ann, form_name, {grug_jobs_repair = "Repair equipment"})
-		local form = last().form
-		check(form:match("^grug_repair:service:") ~= nil, "F41 the repair button shows the repair form")
-		return form
-	end
-	local form = repair_from(FORM)
-	local furnace_shows = shows(FORM)
-	run_receive(ann, form, {close = "Close", quit = "true"})
-	eq(shows(FORM), furnace_shows + 1, "F41 repair Close returns to the furnace form")
-	eq(record("ann"), FORM, "F41 the furnace form is open after the repair form")
-	step(1.1)
-	eq(shows(FORM), furnace_shows + 2, "F41 the returned furnace form refreshes each second")
-	form = repair_from(FORM)
-	run_receive(ann, form, {all = "Repair all"})
-	form = last().form
-	check(form:match("^grug_repair:service:") ~= nil, "F41 a repair redraws the repair form")
-	furnace_shows = shows(FORM)
-	run_receive(ann, form, {close = "Close", quit = "true"})
-	eq(shows(FORM), furnace_shows + 1, "F41 repair Close after a repair returns to the furnace")
-	-- Esc on the repair form closes everything.
-	form = repair_from(FORM)
-	local total = #E.shown
-	run_receive(ann, form, {quit = "true"})
-	eq(#E.shown, total, "F41 Esc on the repair form shows nothing")
-	-- Close after walking away, after the furnace was replaced or when dead
-	-- falls back to the inventory.
-	form = repair_from(FORM)
-	ann.pos = P(20, 0, 0)
-	run_receive(ann, form, {close = "Close", quit = "true"})
-	lands_in_inventory("F41 repair Close after walking away")
-	ann.pos = P(1, 0, 0)
-	form = repair_from(FORM)
-	place("s2") -- dug and a new furnace placed at the same spot
-	run_receive(ann, form, {close = "Close", quit = "true"})
-	lands_in_inventory("F41 repair Close after the furnace was replaced")
-	place("s1")
-	form = repair_from(FORM)
-	ann.hp = 0
-	run_receive(ann, form, {close = "Close", quit = "true"})
-	lands_in_inventory("F41 repair Close when dead")
-	ann.hp = 20
+	-- Round 46 (lane RP, ruling 16: repair only in towns): the furnace inside
+	-- an active claim offers no repair, and the station provider is gone.
+	-- Replaces the Round 41 return-from-repair checks, whose path is removed.
+	check(grug_jobs.workspaces.open(pos, ann), "F46 the claim furnace opens its form")
+	eq(last().form, FORM, "F46 ...the furnace form")
+	check(not last().formspec:find("grug_jobs_repair", 1, true) and
+		not last().formspec:find("Repair", 1, true), "F46 ...without a repair button")
+	run_receive(ann, FORM, {grug_jobs_repair = "Repair equipment"})
+	check(last().form:match("^grug_repair:service:") == nil,
+		"F46 the old repair field opens no repair form")
+	eq(grug_repair.can_open_station, nil, "F46 no can_open_station")
+	eq(grug_repair.open_station, nil, "F46 no open_station")
+	eq(grug_repair.provider_permitted(ann, {kind = "station", pos = pos}), false,
+		"F46 no station provider is registered")
 	-- Another provider's repair form keeps its plain Close.
 	check(grug_repair.open(ann, {kind = "test"}), "F41 another provider opens the repair form")
-	form = last().form
-	total = #E.shown
+	local form = last().form
+	local total = #E.shown
 	run_receive(ann, form, {close = "Close", quit = "true"})
 	eq(#E.shown, total, "F41 another provider's repair Close only closes")
 
 	-- A forge (Round 45 lane ST): a proximity station without a dialog. It
-	-- opens nothing, so it offers no repair either (a claim repairs at its
-	-- furnace); the old notice's fields open nothing.
+	-- opens nothing, so it offers no repair either; the old notice's fields
+	-- open nothing.
 	place("f1", "grug_jobs:forge")
 	total = #E.shown
 	eq(grug_jobs.workspaces.open(pos, ann), false, "F45 the forge opens no dialog")

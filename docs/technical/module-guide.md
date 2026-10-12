@@ -297,8 +297,10 @@ tools](#player-meta-read-by-external-tools).
   `grug_jobs.MENDER_TITLE` (one constant, "Grudge-Free Repairs"), the socket's
   profession kept, so `open_trainer` opens only `grug_repair.open_trainer`'s
   form and the trainer provider (`grug_repair/providers.lua`, any trainer
-  socket) and the faction rule apply as to a trainer; `grug_map/providers.lua`
-  draws no marker (no repairer has an icon); `grug_core/settlement_sockets.lua` only validates that a trainer
+  socket, the only repair provider since Round 46: no station repairs) and the
+  faction rule apply as to a trainer; `grug_map/providers.lua` marks it as a
+  `service` with `grug_map_repair.png` and the title as label (no tooltip,
+  Round 46); `grug_core/settlement_sockets.lua` only validates that a trainer
   socket names a profession, Cooking included (world data unchanged). The professions overview (Round 28 ruling 23,
   `grug_jobs/overview.lua`: `profession_overview` rows,
   `professions_formspec(rows, area)`) is drawn into the Crafting tab's box

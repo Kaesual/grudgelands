@@ -49,15 +49,17 @@ faction/service access applies. Riding trainers are not profession trainers. No 
 or trader distribution is introduced.
 
 The service offers a preview and repair of one item or all eligible items in
-equipment, main and bag inventories. Every player-placed furnace and dual
-furnace (the stations with a window since Round 45; the forge, the benches
-and the brewing stand have none)
-inside an active (activated and fuelled) Claim Stone claim offers the same
-service at the same trader price, as a convenience only (user decision
-2026-09-29, [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
-D7): its window shows a "Repair equipment" button to anyone who may use the
-station there (a claim's interact permission is enough). Repair at wilderness
-stations outside a claim, in a draft or an expired claim is not offered.
+equipment, main and bag inventories.
+
+**Repair happens only in towns** (Round 46 ruling 16, the user's decision of
+2026-10-12): the trainers and Grudge-Free Repairs above are the only
+providers. No Claim Stone claim, furnace, dual furnace or other station
+repairs, and no crafting table or craft grid does (the engine craft grid is
+gone since Round 45). The claim-station repair of Round 29 (2026-09-29 D7)
+is removed. Grudge-Free Repairs carries its own map and minimap marker, a
+hammer over an anvil, without a tooltip like every service marker
+([world_map.md](world_map.md)); the repairing profession trainers keep
+their trainer icons.
 
 ## Price
 
