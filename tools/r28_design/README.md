@@ -274,8 +274,8 @@ python3 tools/r28_design/ledger.py \
   atlas band (`--atlas`), else its quests' median band, or `zone:lo-hi`. For
   alternative zones (two sister zones) run one ledger per alternative.
 - `--lines front` (comma list) counts only those quest lines, e.g.
-  `--route <the 31-40 and capital zones> --lines front --start-level 40
-  --repeat 3` for `ledger/front.md`.
+  `--route <the 31-40 and capital zones> --lines front --start-level 40`
+  for `ledger/front.md`.
 - Kill objectives and quest drops on a leader (of any zone) use its fixed
   level; on a PvP garrison (Round 31) the garrison's levels and tiers as
   `pvp_garrison.lua`'s `G.slot` places them (`r28common.pvp_pois` reads both
@@ -283,19 +283,21 @@ python3 tools/r28_design/ledger.py \
 - Walks the route quest by quest (prerequisites first, then by `min_level`)
   with a simulated player and counts real XP: quest rewards
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives
-  (`count × M(min(mob level, player level + 5))`, averaged over the levels
-  the target role is met at in the kind or camp, gray rule, elite ×4), kills behind item requests for mob drops
+  (`count ×` the kill XP of `r28common.kill_xp`: `M(player level)` times the
+  level-difference factor of Round 46 ruling 5, averaged over the levels
+  the target role is met at in the kind or camp, gray rule at 7 below, elite ×4), kills behind item requests for mob drops
   (quest-only drops: `count × chance`; family drops from `catalog/drops.json`
   by band for the drop family — a sub-type's `drops`, else an existing mob's
   own role — else today's entity drops; drops from earlier quest kills are used
   first), and gathering behind item requests (ores/gems/fish; bars and alloys
-  resolve to their ores; ore 0.10, gem 0.20, fish 0.33 KE at `10 × tier`).
+  resolve to their ores; ore 0.05, gem 0.10, fish 0.33 KE at
+  `min(10 × tier, player level)`).
   Crafted items, logs and talk objectives give no XP. When the player is below
   a quest's `min_level`, the missing XP is added as free play and noted.
 - Reports per band: XP needed (and KE), rewards, quest kills, drop kills,
-  gathering, questing total and share, reward share, free play and flags
-  against the frame's targets (1→10: ≈90 % questing / ≈40 % rewards; 10→40:
-  ≈80 % / ≈40 %; 40→60: ≈70 % / ≈35 %), ±10 points (`--tolerance`). Then per
+  gathering, questing total and share, reward share and free play. The
+  frame's questing and reward-share targets (Ruling 33) are retired (Round
+  46 ruling 6), so nothing is flagged and `--tolerance`/`--strict` are gone. Then per
   zone (level in/out, the `duration_min` sum) and per kill quest (area,
   count, species mix per clock as `day: role weight; night: role weight`,
   mob levels, player level, XP).
@@ -304,12 +306,11 @@ python3 tools/r28_design/ledger.py \
   member needs their own requested items (ordinary drops go to one player,
   quest-only drops roll per member). Group quests (`"group": true`) count for
   the party only (`--solo-group` to include them solo).
-- `--repeat N` counts every repeatable quest N times (front bands target
-  "incl. repeatables"); `--skip-optional` drops `"optional": true` quests;
+- `--repeat N` counts every repeatable quest N times (none ships since
+  Round 46 ruling 8); `--skip-optional` drops `"optional": true` quests;
   `--start-level N` for contested and front routes (the first band's need
   then starts at N).
-- Exit 0: the targets are rough guides for the solo route, the duo table is
-  informational. `--strict` exits 1 when a band is flagged.
+- Exit 0 (2 for unreadable design files); the duo table is informational.
 
 ## 5. Design overlay maps: `overlay.py`
 

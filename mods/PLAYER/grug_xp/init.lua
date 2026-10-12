@@ -11,20 +11,45 @@ grug_xp.MAX_LEVEL = 60
 
 --
 -- XP units (Round 28 rulings 30-32, progression.md). Every XP amount is
--- measured in kill equivalents: M(L), the XP of one normal-tier kill at level
--- L. Kills, the level curve, quest rewards and gathering all derive from it,
+-- measured in kill equivalents: M(L), the XP a level-L player earns for one
+-- normal-tier kill of their own level. Kills, the level curve, quest rewards and gathering all derive from it,
 -- so retuning means editing this block only. tools/r28_design/r28common.py
 -- implements the same formulas for the design ledger; tools/r28_b3_xp
 -- cross-checks both.
 --
 
--- A reward reads its level at most this far above the player's (kill and
--- gathering XP).
-grug_xp.LEVEL_OFFSET = 5
-
 -- M(L) = 25 + 5L: L1 30, L10 75, L30 175, L60 325.
 function grug_xp.mob_xp(level)
 	return 25 + 5 * level
+end
+
+-- Kill XP by level difference (Round 46 ruling 5). d = mob level - player
+-- level; the gray line is d <= -GRAY_GAP (no XP, the target frame's gray).
+grug_xp.GRAY_GAP = 7
+
+function grug_xp.is_gray(mob_level, player_level)
+	return mob_level - player_level <= -grug_xp.GRAY_GAP
+end
+
+-- The factor of d in whole percent (integers, so the game and the ledger
+-- round alike): 0 at d <= -7, 100 - 15|d| for -6..-1, 100 at 0,
+-- 100 + 10d for +1..+5 and 150 above +5.
+function grug_xp.kill_percent(mob_level, player_level)
+	local d = mob_level - player_level
+	if d <= -grug_xp.GRAY_GAP then
+		return 0
+	elseif d < 0 then
+		return 100 + 15 * d
+	end
+	return 100 + 10 * math.min(d, 5)
+end
+
+-- One recipient's kill XP before the split: the own-level kill equivalent of
+-- the PLAYER's level, times the level-difference factor and the tier
+-- multiplier (elite 4, rare 6). Not rounded: the split floors once.
+function grug_xp.kill_xp(mob_level, player_level, tier_mult)
+	return grug_xp.mob_xp(player_level)
+		* grug_xp.kill_percent(mob_level, player_level) * (tier_mult or 1) / 100
 end
 
 -- XP from `level` to `level + 1`: M(L) x k(L) rounded to tens, with
@@ -157,16 +182,17 @@ end
 
 --
 -- Gathering XP (Round 24 ruling 28, in kill equivalents since Round 28
--- ruling 32):
+-- ruling 32, ratios and reference Round 46 ruling 7):
 --
---   XP = ratio x M(min(reference level, player level + 5)), rounded half up
+--   XP = ratio x M(min(reference level, player level)), rounded half up
 --
 -- The reference level is the top of a ten-level band: 10 x harvest tier for
 -- an ore or gem node (T1 10 .. T6 60), 10 x the water's zone band for a fish
--- (10 .. 60). No gray rule: T1 always pays. Source "gathering" carries no race
--- or class bonus (grug_classes.get_xp_bonus scales only "quest").
+-- (10 .. 60); a player below it reads their own level. No gray rule: T1
+-- always pays. Source "gathering" carries no race or class bonus
+-- (grug_classes.get_xp_bonus scales only "quest").
 --
-grug_xp.GATHER_XP_RATIO = {ore = 0.10, gem = 0.20, fish = 0.33}
+grug_xp.GATHER_XP_RATIO = {ore = 0.05, gem = 0.10, fish = 0.33}
 
 function grug_xp.gathering_reference_level(tier_or_band)
 	return 10 * tier_or_band
@@ -177,7 +203,7 @@ function grug_xp.gather_xp(kind, reference_level, player_level)
 	if not ratio then
 		error("[grug_xp] unknown gathering kind " .. tostring(kind))
 	end
-	local level = math.min(reference_level, player_level + grug_xp.LEVEL_OFFSET)
+	local level = math.min(reference_level, player_level)
 	return math.floor(ratio * grug_xp.mob_xp(level) + 0.5)
 end
 
