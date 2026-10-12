@@ -36,9 +36,10 @@ is open.
   fleets 100/100 for OR and PL, quest targets on six seeds 1060 ok and 0
   missing, `check_fresh_server.py` PASS, smoke boots PASS; on lane D's
   branch `tools/r37_dc`, `check_upgrade.py` (0.46.0 against origin/main
-  `0e6b3061`) PASS. **Round-end gates (coordinator):** *pending — full
-  fixtures, the full seed fleet, `check_upgrade.py`,
-  `check_fresh_server.py`, `gen_bat_ride_mesh.py --check`, smoke boot.*
+  `0e6b3061`) PASS. **Round-end gates (coordinator, 2026-10-13):** full
+  fixtures 171/171, the full seed fleet 304/304, `check_upgrade.py`,
+  `check_fresh_server.py`, `gen_bat_ride_mesh.py --check` and a smoke boot
+  PASS.
   OR and PL change world generation (**map reset**), every other lane is
   compatible; the declaration is
   `{"schema": 2, "version": "0.46.0", "map_reset": ["0.40.1", "0.46.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`:
@@ -66,8 +67,7 @@ is open.
     the mender's icon A1c.
   - **The waiting point (WT):** (0, 31000, 0) for every player whose wait
     ends in a teleport; 0 chunks generated around them.
-  - Next: the round-end gates, the sync and the user's GUI test (desktop
-    and web build, new worlds); a fix round from its findings; the push
+  - Next: the user's GUI test (desktop and web build, new worlds); a fix round from its findings; the push
     on the user's word ([BACKLOG](../BACKLOG.md#round-46-carry-overs)).
 
 - **0.45.1, the fix round after the 0.45.0 playtest, complete and

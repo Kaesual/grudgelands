@@ -838,7 +838,10 @@ worlds.
 
 ### Round-end gates
 
-**Round-end gates on the final branch** (coordinator): *to be filled in:
-full fixtures, full seed fleet, `check_upgrade.py`,
-`check_fresh_server.py`, `gen_bat_ride_mesh.py --check`, smoke boot,
-lane D's review.*
+**Round-end gates** (coordinator, 2026-10-13): full fixtures 171/171 on
+lane D's branch (`745ae841`) and 170/170 on main after the DP merge; the
+full seed fleet on main `54190e98` 304 of 304 seeds (30 min, 4 parallel);
+`check_upgrade.py` (0.46.0 against origin/main) PASS;
+`check_fresh_server.py` PASS; `gen_bat_ride_mesh.py --check` OK; smoke
+boot PASS. Lane D was checked by the coordinator (CHANGELOG, declaration,
+gates) instead of a separate review.
