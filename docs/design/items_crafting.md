@@ -298,9 +298,12 @@ burn time; arrow shows recipe progress. Personal/shared inventory semantics
 remain unchanged. Active personal jobs illuminate the physical furnace until
 the latest observed private fuel piece expires; only that cosmetic deadline is
 shared, while each player's flame and progress remain private. Charcoal does
-not replace mined coal in Steel or coal quests. Torches are a Basic recipe:
+not replace mined coal in Steel or coal quests. Torches are one Basic recipe:
 **1 Coal or 1 Charcoal + 1 stick → 10 torches** (Round 46 ruling 4; 4 per
-coal before), light 12; the vendor torch stays 1c.
+coal before), light 12; the vendor torch stays 1c. Charcoal is in the coal
+group with the coal lump, so the recipe takes either (the crafting box
+chooses which, [inventory_equipment.md](inventory_equipment.md) §1), and
+Black Dye takes charcoal too.
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
 the **dual furnace** (ported from LotT, §1.1) does two-input alloys.

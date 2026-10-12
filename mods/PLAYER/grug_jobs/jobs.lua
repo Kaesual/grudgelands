@@ -22,15 +22,17 @@
 -- state catches up. Nothing runs per step.
 --
 -- API (lane UI, ST and EU):
---   grug_jobs.start_job(player, recipe_id, quantity) -> ok, reason, info
+--   grug_jobs.start_job(player, recipe_id, quantity[, picks]) -> ok, reason, info
 --   grug_jobs.cancel_job(player)                     -> ok, reason
 --   grug_jobs.job_state(player)                      -> nil | copy of the job
 --   grug_jobs.update_job(player, source)             -> true when it completed
 --   grug_jobs.ingredient_counts(player)              -> counts (one pass)
 --   grug_jobs.ingredient_have(counts, entry)         -> count
---   grug_jobs.crafts_from_counts(counts, recipe)     -> crafts the counts allow
+--   grug_jobs.picked_ingredients(ingredients, picks) -> the list with the chosen kinds
+--   grug_jobs.crafts_from_counts(counts, recipe[, picks]) -> crafts the counts allow
 --   grug_jobs.output_capacity(player, recipe)        -> crafts the output area holds
---   grug_jobs.max_craftable(player, recipe[, counts]) -> n, by_ingredients, by_space
+--   grug_jobs.max_craftable(player, recipe[, counts[, picks]])
+--                                                    -> n, by_ingredients, by_space
 --   grug_jobs.is_ingredient_stack(stack)             -> the metadata rule
 --   grug_jobs.station_nearby(player, station)        -> bool, nearest pos
 --   grug_jobs.take_all(player)                       -> moved, left
@@ -209,6 +211,33 @@ local function dry_take(order, ingredients, quantity)
 	return true
 end
 
+-- The ingredient list with the kinds a player chose (Round 46 lane ID, the
+-- crafting box's dropdowns): `picks` maps a group to one of its members, and
+-- each group entry of that group becomes an entry of that item. Two entries
+-- of one item merge (a group may pick the item another entry names, or two
+-- groups the same item), so the per-entry totals and the take stay exact.
+-- Without picks (Automatic) the list itself, unchanged.
+function grug_jobs.picked_ingredients(ingredients, picks)
+	if not picks or next(picks) == nil then return ingredients end
+	local list, at = {}, {}
+	for _, entry in ipairs(ingredients) do
+		local item = entry.item
+		if not item and picks[entry.group] and
+				grug_jobs.ingredient_accepts(entry, picks[entry.group]) then
+			item = picks[entry.group]
+		end
+		if not item then
+			list[#list + 1] = entry
+		elseif at[item] then
+			list[at[item]].n = list[at[item]].n + entry.n
+		else
+			list[#list + 1] = {item = item, n = entry.n}
+			at[item] = #list
+		end
+	end
+	return list
+end
+
 -- The most crafts one job of `recipe` can ever take: the empty output area
 -- (OUTPUT_SIZE stacks of the output's stack_max) over the recipe's count;
 -- nil for an operation's ingredient list, which has no output.
@@ -225,22 +254,24 @@ end
 -- quantity by halving (the take only gets harder as the quantity grows),
 -- from the per-entry total capped one above the job ceiling: a value above
 -- what any job takes reads as "ceiling + 1", so max_craftable and the start
--- refusals see the same comparisons as with the exact count.
-function grug_jobs.crafts_from_counts(counts, recipe)
+-- refusals see the same comparisons as with the exact count. `picks`
+-- (picked_ingredients) counts the chosen kinds instead of their groups.
+function grug_jobs.crafts_from_counts(counts, recipe, picks)
+	local ingredients = grug_jobs.picked_ingredients(recipe.ingredients, picks)
 	local crafts
-	for _, entry in ipairs(recipe.ingredients) do
+	for _, entry in ipairs(ingredients) do
 		local n = math.floor(grug_jobs.ingredient_have(counts, entry) / entry.n)
 		if crafts == nil or n < crafts then crafts = n end
 	end
 	crafts = crafts or 0
-	if crafts > 0 and counts.order and overlapping(counts, recipe.ingredients) then
+	if crafts > 0 and counts.order and overlapping(counts, ingredients) then
 		local ceiling = job_ceiling(recipe)
 		local high = ceiling and math.min(crafts, ceiling + 1) or crafts
-		if dry_take(counts.order, recipe.ingredients, high) then return high end
+		if dry_take(counts.order, ingredients, high) then return high end
 		local low = 0 -- low always fits, high never does
 		while high - low > 1 do
 			local middle = math.floor((low + high) / 2)
-			if dry_take(counts.order, recipe.ingredients, middle) then
+			if dry_take(counts.order, ingredients, middle) then
 				low = middle
 			else
 				high = middle
@@ -351,10 +382,11 @@ end
 
 -- The largest quantity a job of `recipe` may start with now, and both
 -- limits (the ingredients, the output area); `counts` from
--- ingredient_counts may be passed to share one inventory pass.
-function grug_jobs.max_craftable(player, recipe, counts)
+-- ingredient_counts may be passed to share one inventory pass, `picks` the
+-- chosen kinds (picked_ingredients).
+function grug_jobs.max_craftable(player, recipe, counts, picks)
 	local by_ingredients = grug_jobs.crafts_from_counts(
-		counts or grug_jobs.ingredient_counts(player), recipe)
+		counts or grug_jobs.ingredient_counts(player), recipe, picks)
 	local by_space = grug_jobs.output_capacity(player, recipe)
 	return math.min(by_ingredients, by_space), by_ingredients, by_space
 end
@@ -574,8 +606,10 @@ end
 -- Starts a job of `quantity` crafts. Returns true, nil, the job copy; or
 -- false, the reason and {code, max}: code "busy", "recipe", "quantity",
 -- "profession", "station", "space" or "ingredients"; `max` (space and
--- ingredients) is the quantity that would start, 0 when none.
-function grug_jobs.start_job(player, recipe_id, quantity)
+-- ingredients) is the quantity that would start, 0 when none. `picks`
+-- (picked_ingredients): the count and the take use the chosen kinds; a
+-- chosen kind the player no longer carries refuses as "ingredients".
+function grug_jobs.start_job(player, recipe_id, quantity, picks)
 	-- A job past its end completes first; a running one blocks.
 	grug_jobs.update_job(player, "start")
 	if read_job(player) then
@@ -599,7 +633,8 @@ function grug_jobs.start_job(player, recipe_id, quantity)
 				" nearby", "station")
 		end
 	end
-	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe)
+	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe, nil,
+		picks)
 	if by_space < 1 then return refused("No space in the output area", "space", 0) end
 	if by_ingredients < 1 then return refused("Not enough ingredients", "ingredients", 0) end
 	if quantity > most then
@@ -610,7 +645,8 @@ function grug_jobs.start_job(player, recipe_id, quantity)
 		return refused("Not enough ingredients — quantity reduced to " .. most,
 			"ingredients", most)
 	end
-	local consumed = grug_jobs.take_ingredients(player, recipe.ingredients, quantity)
+	local consumed = grug_jobs.take_ingredients(player,
+		grug_jobs.picked_ingredients(recipe.ingredients, picks), quantity)
 	if not consumed then
 		-- Only when two entries of one recipe accept the same item.
 		return refused("Not enough ingredients", "ingredients", 0)

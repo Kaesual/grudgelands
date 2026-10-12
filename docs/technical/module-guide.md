@@ -152,7 +152,7 @@ tools](#player-meta-read-by-external-tools).
   input `tools/r45_rg/corpus_base.lua` from `dump_corpus.sh`), plus the
   stairs and walls families made per material by
   `register_basic_catalog`'s loop; a later change is a row of
-  `tools/r45_rg/edits.lua` (a count or an added row, with its round), which
+  `tools/r45_rg/edits.lua` (a count, a removed row or an added row, with its round), which
   the generator applies and the fixture accepts. Gear recipes are
   registered by their family's owner (`grug_professions/base_recipes.lua`
   through `grug_professions.family_owner`, trinkets in
@@ -169,8 +169,18 @@ tools](#player-meta-read-by-external-tools).
   Round 45 lane UI; layout `inventory_equipment.md` §1): runtime state in
   the sfinv context `grug_craft` (area slot, page, applied and typed search,
   Craftable only, chosen recipe id, last known quantity text, the note of
-  the last refused action, the row ids of the last build); nothing in player
-  meta. Each build runs `update_job(player, "open")`, one
+  the last refused action, the row ids of the last build, and since Round 46
+  the chosen kinds `picks` (group -> item) of the recipe `picks_for` and the
+  built dropdowns `pick_rows`); nothing in player meta. A group entry with
+  two or more carried kinds gets `dropdown[...;grug_craft_pick_<serial>_<index>;
+  ...;true]` (index events; `pick_serial` counts the box's builds); `fields`
+  applies a value of the newest build's serial that differs from the built
+  index, so the values every other event carries change nothing and a change
+  on a page the server already replaced is ignored.
+  `crafting_picks(st, recipe, counts)` (craft_box.lua) drops a pick whose
+  kind is no longer carried or whose group shows no dropdown, and every pick
+  when another recipe is chosen; ui.lua passes the result to the chosen
+  row's ×N. Each build runs `update_job(player, "open")`, one
   `ingredient_counts` pass that feeds ×N, Craftable only and the box, and
   echoes the field values. The list hides a profession area's recipes above
   `profession_level` (Basic shows all). The recipe box's description is
@@ -193,13 +203,13 @@ tools](#player-meta-read-by-external-tools).
   job, now)` draws the bar
   (`grug_jobs_progress_bar.png` from `tools/r45_ui/gen_progress_bar.py
   --check`: 64 fill + 32 full frames, `BAR_FRAMES`), field names are
-  `CRAFT_FIELDS`. Fixture `tools/r45_ui`.
+  `CRAFT_FIELDS`. Fixtures `tools/r45_ui`, `tools/r46_id` (the dropdowns).
 - **Crafting jobs** (`jobs.lua`, Round 45 lane JB): one job per player in
   player meta `grug_jobs:job` (one `core.serialize`d table: `kind`
   "recipe", `recipe` id, `quantity`, `consumed` itemstrings for the refund,
   `target` itemstring for lane EU's enchant and upgrade kinds, `start` and
   `finish` in os.time() seconds with a sub-second part from `grug_jobs.now()`,
-  `no_xp` after an unlearn). `start_job(player, recipe_id, quantity)` →
+  `no_xp` after an unlearn). `start_job(player, recipe_id, quantity[, picks])` →
   ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
   `profession`, `station`, `space`, `ingredients`); `cancel_job(player)` →
   ok, `"completed"`/`"cancelled"` or the refusal; `job_state(player)` (a copy,
@@ -208,10 +218,14 @@ tools](#player-meta-read-by-external-tools).
   `core.after` per online player with a job, no globalstep.
   `ingredient_counts(player)` (one pass over `main` and the bags, stacks
   without metadata: `is_ingredient_stack`), `ingredient_have(counts, entry)`,
-  `crafts_from_counts(counts, recipe)` (when one item satisfies two entries,
+  `crafts_from_counts(counts, recipe[, picks])` (when one item satisfies two entries,
   a dry-run take on the counted stacks, searched by halving up to one above
   the job ceiling of four output stacks; Round 46), `output_capacity(player, recipe)`,
-  `max_craftable(player, recipe[, counts])` → n, by ingredients, by space;
+  `max_craftable(player, recipe[, counts[, picks]])` → n, by ingredients, by space;
+  `picks` (group -> item, the crafting box's choice) goes through
+  `picked_ingredients(ingredients, picks)`, which turns each chosen group
+  entry into an item entry and merges entries of one item (without picks the
+  list itself), and `start_job` counts and takes that list;
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
   within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area
   `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at

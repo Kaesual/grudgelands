@@ -40,10 +40,12 @@ local SMELTS = {
 -- WP26 chose, not one it inherited.
 local SMELT_TIME = 10
 
+-- In default's coal group with the coal lump (Round 46 lane ID): the one
+-- torch recipe takes either ("Charcoal or Coal Lump"), and so does black dye.
 core.register_craftitem("grug_smelting:charcoal", {
 	description = "Charcoal",
 	inventory_image = "default_coal_lump.png^[colorize:#302a28:110",
-	groups = {grug_furnace_fuel = 1},
+	groups = {grug_furnace_fuel = 1, coal = 1},
 })
 
 core.register_craft({

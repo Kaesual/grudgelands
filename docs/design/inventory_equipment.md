@@ -190,7 +190,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     "Any berry"; a group without one keeps the generated "Any <Group
     Name>"); its icon is the member the player carries most of (the stacks
     have/need count), else the first by name; the tooltip lists every
-    member. **Bottom:** the **quantity row** "Quantity [−][field][+]
+    member. Where the player carries two or more kinds of a group entry
+    (Round 46, the user's request), a **dropdown** replaces its name:
+    "Automatic" (the first matching stacks in the take order), then each
+    carried kind with its count. The choice drives Max, the list's ×N of
+    the recipe, **Craft now** and the take; it is page state only (never
+    saved), choosing another recipe starts it on Automatic, and a chosen
+    kind no longer carried, or a group left with one kind, falls back to
+    Automatic on the next build. **Bottom:** the **quantity row** "Quantity [−][field][+]
     [Max]" (stackable outputs only, default 1), below it **Craft now**. A missing station reads "Requires: <station> nearby" and
     a missing profession tier its reason; both draw **Craft now** greyed,
     and a click on it only rebuilds the page (checking the station again).

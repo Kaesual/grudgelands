@@ -162,7 +162,8 @@ end
 -- playtest fix 3, correcting spec §2.33's "all recipes"); Basic has no
 -- profession tier and shows every recipe. The search over the output's name
 -- and "Craftable only" (×N ≥ 1) filter that visible set; ×N is
--- crafts_from_counts on the build's one pass.
+-- crafts_from_counts on the build's one pass, for the chosen recipe with the
+-- kinds its dropdowns chose (craft_box.lua, Round 46 lane ID).
 --
 
 local labels, lowered = {}, {}
@@ -177,9 +178,15 @@ local function label_of(output)
 end
 grug_jobs.recipe_label = label_of
 
+-- ×N of one row: the chosen recipe counts its chosen kinds (`picks`).
+local function crafts_of(st, counts, recipe, picks)
+	return grug_jobs.crafts_from_counts(counts, recipe,
+		recipe.id == st.selected and picks or nil)
+end
+
 -- {recipe, n} rows of the tab (n filled for every row when "Craftable only"
 -- needs it, else later for the shown page only).
-local function list_rows(player, st, tab, counts)
+local function list_rows(player, st, tab, counts, picks)
 	local rows = {}
 	if not tab.learned then return rows end
 	local query = st.search:lower()
@@ -189,7 +196,7 @@ local function list_rows(player, st, tab, counts)
 		if (not level or recipe.tier <= level) and
 				(query == "" or lowered[recipe.output]:find(query, 1, true)) then
 			if st.only then
-				local crafts = grug_jobs.crafts_from_counts(counts, recipe)
+				local crafts = crafts_of(st, counts, recipe, picks)
 				if crafts > 0 then
 					rows[#rows + 1] = {recipe = recipe, n = crafts}
 				end
@@ -222,8 +229,8 @@ local function wrapped_labels(fs, x, y, width, text, color, step)
 end
 grug_jobs._wrapped_labels = wrapped_labels
 
-local function list_content(fs, player, st, tab, counts)
-	local rows = list_rows(player, st, tab, counts)
+local function list_content(fs, player, st, tab, counts, picks)
+	local rows = list_rows(player, st, tab, counts, picks)
 	local pages = math.max(1, math.ceil(#rows / PER_PAGE))
 	st.page = math.max(1, math.min(pages, st.page))
 	-- set_focus comes before the element it names (lua_api.md); see the
@@ -244,7 +251,7 @@ local function list_content(fs, player, st, tab, counts)
 	for index = 1, math.min(PER_PAGE, #rows - first) do
 		local row = rows[first + index]
 		local recipe = row.recipe
-		local crafts = row.n or grug_jobs.crafts_from_counts(counts, recipe)
+		local crafts = row.n or crafts_of(st, counts, recipe, picks)
 		local y = ROW_Y + (index - 1) * ROW_H
 		st.rows[index] = recipe.id
 		if recipe.id == st.selected then
@@ -420,11 +427,12 @@ function grug_jobs.crafting_page_content(player, context)
 			n(bar_x), n(TAB_Y + TAB_H / 2 - 0.125), n(bar_x), n(TAB_Y + TAB_H / 2 - 0.125),
 			n(1.3 * fill))
 	end
-	list_content(fs, player, st, tab, counts)
+	local recipe = st.selected and grug_jobs.recipe(st.selected) or nil
+	list_content(fs, player, st, tab, counts, grug_jobs.crafting_picks(st, recipe, counts))
 	box_buttons(fs, player, st, tab)
 	local box = boxes[st.box or "recipe"] or boxes.recipe
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
-		recipe = st.selected and grug_jobs.recipe(st.selected) or nil})
+		recipe = recipe})
 	output_content(fs, job)
 	return table.concat(fs)
 end
