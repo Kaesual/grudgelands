@@ -1,0 +1,6 @@
+ACTION[Main]: [grug_mapgen] POI placement: 2 rows relaxed a rule (anchor:step anchor_106:2, anchor_026:2), placed in 0.43 s
+ACTION[Main]: [grug_mapgen] world layouts: cache miss (no cache file), built in runtime construction 20.1 s (placement 0.4 s, water 0.7 s, roads 4.6 s, capitals 7.4 s), stored grug_world_layouts.txt (429846 bytes)
+ACTION[Server]: [r46_pl_probe] first boot: placement saved
+ACTION[Emerge-0]: [r46_pl_probe] pvp_camp_broken_causeway_accord_low (pvp_camp_low) at -240,86,-384 emerged in 12.0 s
+ACTION[Emerge-0]: [r46_pl_probe] r20_anchor_061 (mine) at -2288,179,-1152 emerged in 4.7 s
+ACTION[Emerge-0]: [r46_pl_probe] RESULT PASS checks=24 failures=0
