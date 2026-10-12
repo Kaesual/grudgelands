@@ -65,7 +65,8 @@ delivered behavior.
   Critters, underground rows, the Kraken and Reed Angelfish, NPCs, authored
   guards, camps, patrols, kings, dragons, summoned/encounter adds, bosses and
   named rares are neither counted nor limited. An ordinary (non-critter) ABM
-  row above y = −40, today the Kraken's, keeps the Round 16 rule (1.3x
+  row above the underground (its top above y = −1), today the Kraken's,
+  keeps the Round 16 rule (1.3x
   attempt frequency and a nearest-integer 1.3x species cap); the Rift
   Spawn's surface row states its final numbers (§4).
 - Target patch model: logical biomes vary only inside their zone-owned
@@ -551,7 +552,9 @@ and the Mage take damage sooner"):
   (`combat_stats.md` §4), and both rules exist because the mob keeps a target
   it can no longer see; a `view_range` above 16 starts eating into them.
   Free-roaming mobs end a fight by the ambient pursuit clock instead, so for
-  them a longer sight only means pulls from further away.
+  them a longer sight only means pulls from further away. The one exception
+  is a hostile spawned by an underground row: it sees `mob_nospawn_range` +
+  2 = **26 m** (Round 46, "Underground spawns" in §3.1's cave note).
 
 **Settled biomes, all six:**
 
@@ -660,13 +663,14 @@ column gives the underground rows.
 | Frost Stray | dogshoot | night | — | Skeleton table | Skeleton Archer / ice-blue modifier |
 | Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | — | Zombie table | Zombie / sand-gold modifier |
 | Song Bird | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
-| Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | raw silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
+| Spiderling | weak web (20% slow, 2 s) | any (cave) | y −1…−100 (−40 until Round 46), L3–6 | raw silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
 | Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
 | Stone Mite | swarms | any (cave) | y ≤ −700, L42–60 | stone core 1/8 | Cave Crawler / stone-grey modifier, ×1.33 |
 
 **Round 8 start-zone families** (on the surface placed by the recipes,
 [zone_mobs.md](zone_mobs.md)). Giant Rat also occupies the entrance and
-middle caves from y −40 to −300, where the surface clock is ignored.
+middle caves from y −1 (−40 until Round 46) to −300, where the surface clock
+is ignored.
 
 | Mob | Verb | Clock | Cave row | Drops | Visual source |
 |-----|------|-------|----------|-------|---------------|
@@ -675,7 +679,7 @@ middle caves from y −40 to −300, where the surface clock is ignored.
 | Wild Turkey | flees (**critter**, L1 fixed) | day | — | meat 1/1 — food only | animalia turkey, MIT |
 | Plains Runner | grazes (**passive prey**: fights back when attacked; Round 24, was a critter) | day | — | meat 1/1 | animalworld nandu, MIT |
 | Tapir | grazes (**passive prey**) | day | — | stag table | animalworld tapir, MIT |
-| Giant Rat | swarms; one pull calls nearby rats (the start-zone roles fight alone) | night on surface; any in caves | y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
+| Giant Rat | swarms; one pull calls nearby rats (the start-zone roles fight alone) | night on surface; any in caves | y −1…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
 | Scorpion | poisons (1 damage / 2 s for 6 s) | night (Sunscar's recipe also has it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
 | Viper | poisons (1 damage / 2 s for 6 s) | night (Kapok's and the Causeway's recipes also have it by day) | — | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
 
@@ -757,7 +761,33 @@ deep-ocean-only spawning needs no separate mechanism.
 
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term
-of `mob_level_at`. **Two cave-only critters since 2026-08-08** (§3.0 —
+of `mob_level_at`.
+
+**Underground spawns (Round 46 ruling 15).** The underground begins just
+below the surface: an underground row's top is y −1
+(`grug_mobs.UNDERGROUND_TOP`), so it hosts on stone and strata from node
+y −2 down, and the policy's underground domain is node y < −1; surface rows
+begin at 0, and only the node layer y = −1 between them stays closed (the
+band −1 … −40 spawned nothing before). Near the surface the level is the
+surface field's (`max(surface, depth)`, depth level 1–2 down to −40); the
+start footprint (down to its floor, 100 below the town) refuses every
+hostile as on the surface. Every underground row spawns up to **light 7**
+(5 before; the golems keep any light), with no clock: a torch (light 12)
+keeps the nodes within 4 steps clear and a mob may stand from the fifth
+(before: from the seventh). Each underground row's spawn then
+(`spawn_policy.lua` `underground_spawned`, the row's `on_spawn` after its
+own):
+
+- **sight:** a hostile's view range rises to `mob_nospawn_range` + 2 =
+  **26 m** (the cave mobs see 10–16), so a fresh mob at the minimum spawn
+  distance sees the player it spawned for; a plain field, saved with the
+  mob; the surface rows of the same family keep their own;
+- **elite roll:** **4 %** become elite (`set_tier`: ×3 HP, ×1.8 damage, ×4
+  XP and the elite wind-up telegraph, `combat_stats.md` §3), never in a
+  start footprint and never below level **5**; the same floor refuses an
+  elite family (Stone and Mesa Golem) underground below level 5. A def-elite
+  stays as it is; a caller with its own spawn rule (the depth pulse, §4.1)
+  passes `skip_elite`. **Two cave-only critters since 2026-08-08** (§3.0 —
 before them every single thing that moved underground wanted the player
 dead): **Cave Bat** (flier, `mobs_mc_bat`, no retint) and **Cave
 Crawler** (`mobs_mc_silverfish`, no retint). Both are `critter`-tier, so
@@ -871,7 +901,8 @@ land outside every zone is dragon-channel floor under water, so on the
 surface only the recipes' critters and the Rift Spawn's surface row stay
 (the list below; the pre-recipe row table is archived). The
 remaining rows run through three merged ABMs, one per node set: underground
-(stone and strata, y ≤ −40), water (Kraken, Reed Angelfish) and surface
+(stone and strata, rows whose top is y −1 or lower), water (Kraken, Reed
+Angelfish) and surface
 (`grug_mobs/spawn_abms.lua`). A merged ABM takes its rows' shortest interval
 `I`; its dispatcher picks at most one row per triggered node, by one roll
 against the cumulative probabilities `p = C × I / (c × i)` of the rows hosted
@@ -898,8 +929,9 @@ keys (Scorpion in Sunscar, Viper in Kapok: `any`, Round 24). `grug_mobs`
 stamps day rows with `min_light = 10` plus `day_toggle = true` (so torch light
 at night never opens a day row), night rows with `max_light = 5` plus
 `day_toggle = false`, and leaves any-time rows ungated.
-Rows wholly below y = -40 are the exception: their family clock is ignored,
-they retain only their explicit light filter, and they never receive a
+Underground rows (top at y −1 or lower; −40 until Round 46) are the
+exception: their family clock is ignored, they retain only their explicit
+light filter (light ≤ 7, or none for the golems), and they never receive a
 `day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
 and chance stay unchanged; the Rift Spawn's surface row states its final
 chance 4000 and cap 3 (the effective numbers of its Round 24 palette budget,
@@ -940,7 +972,8 @@ Golem, Cave Bat, Cave Crawler) and the Kraken were never part of it.
 are in the mob files): the critters the recipes keep (Rabbit, Hare, Gull on
 beach ground, Parrot, Bone Weevil, Bog Fowl, Wild Turkey and Song Bird;
 [zone_mobs.md](zone_mobs.md) lists them per zone), the Rift Spawn's surface
-row (Gravesalt, Skyglass and both islands), every underground row (y ≤ −40,
+row (Gravesalt, Skyglass and both islands), every underground row (top at
+y −1 or lower,
 the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken,
 Reed Angelfish). Every other surface row registers no ABM, the Shore Crab's
 and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
@@ -1119,7 +1152,7 @@ gate, protected surface).
   **64 nodes on every axis** (a cube; Round 45 playtest, the user's decision,
   32 nodes as a sphere before); then it leaves as soon as neither holds. Day
   is the spawn clock's day phase (04:30–19:30). 64 nodes lies beyond the
-  24-node spawn distance and every ambient mob's view range (at most 18); a
+  24-node spawn distance and every surface mob's view range (at most 18); a
   night mob whose block wakes by day (active-block range, about 48–80 nodes)
   mostly stands farther out and leaves, one that wakes closer stays until
   the player moves off. Each night mob checks once a second

@@ -1,0 +1,16 @@
+ACTION[Emerge-0]: [r24_density_probe] emerged 4 areas in 19.7 s
+ACTION[Server]: [r24_density_probe] point depth30 zone=elandor_hearthpine_vale level=3
+ACTION[Server]: [r24_density_probe] point depth300 zone=elandor_hearthpine_vale level=18
+ACTION[Server]: [r24_density_probe] point depth900 zone=elandor_hearthpine_vale level=54
+ACTION[Server]: [r24_density_probe] torch light along the floor (distance:light) 0:12 1:11 2:10 3:9 4:8 5:7 6:6 7:5 8:4 9:3 10:2; first spawnable distance at light<=7: 5, at light<=5: 7
+ACTION[Server]: [r24_density_probe] window baseline night start (150 s)
+ACTION[Server]: [r24_density_probe] depth baseline night@50 depth30 hostile=7 elite=0 other_mobs=2 objects=18 level=3 [giant_rat=1 giant_spider=3 spiderling=2 zombie=1]
+ACTION[Server]: [r24_density_probe] depth baseline night@50 depth300 hostile=6 elite=0 other_mobs=1 objects=14 level=18 [giant_rat=1 giant_spider=1 glowwing=1 goblin_miner=1 goblin_miner_slinger=1 oerkki=1]
+ACTION[Server]: [r24_density_probe] depth baseline night@50 depth900 hostile=14 elite=1 other_mobs=2 objects=32 level=54 [dungeon_master=2 ember_wisp=3 giant_spider=1 lava_flan=3 stone_golem*L56=1 stone_mite=2 zombie=2]
+ACTION[Server]: [r24_density_probe] depth baseline night@100 depth30 hostile=7 elite=0 other_mobs=1 objects=16 level=3 [giant_rat=1 giant_spider=3 spiderling=2 zombie=1]
+ACTION[Server]: [r24_density_probe] depth baseline night@100 depth300 hostile=12 elite=0 other_mobs=2 objects=28 level=18 [giant_rat=2 giant_spider=1 glowwing=2 goblin_miner=3 goblin_miner_slinger=1 oerkki=2 zombie=1]
+ACTION[Server]: [r24_density_probe] depth baseline night@100 depth900 hostile=11 elite=1 other_mobs=2 objects=26 level=54 [dungeon_master=1 ember_wisp=2 giant_spider=1 lava_flan=2 stone_golem*L56=1 stone_mite=3 zombie=1]
+ACTION[Server]: [r24_density_probe] depth baseline night@150 depth30 hostile=7 elite=0 other_mobs=2 objects=18 level=3 [giant_rat=1 giant_spider=3 spiderling=2 zombie=1]
+ACTION[Server]: [r24_density_probe] depth baseline night@150 depth300 hostile=14 elite=0 other_mobs=2 objects=32 level=18 [blood_bat=2 giant_rat=3 giant_spider=1 glowwing=2 goblin_miner=2 goblin_miner_slinger=1 oerkki=2 zombie=1]
+ACTION[Server]: [r24_density_probe] depth baseline night@150 depth900 hostile=10 elite=1 other_mobs=2 objects=24 level=54 [dungeon_master=1 ember_wisp=2 giant_spider=1 lava_flan=1 stone_golem*L56=1 stone_mite=3 zombie=1]
+ACTION[Server]: [r24_density_probe] RESULT DONE baseline
