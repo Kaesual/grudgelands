@@ -77,7 +77,10 @@ PL is the largest and riskiest lane.
 2. **Seed-dependent placement:**
    - **Randomized per seed:** villages, outposts, bandit camps, Mirefolk
      camps, mines, clash sites, the PvP war camps and the two fortresses.
-   - **Fixed:** start towns, capitals, dragon arenas and rift sites.
+   - **Fixed:** start towns, capitals, dragon arenas and rift sites. The
+     rift sites are the four clash anchors that the rift reads
+     (`r20_anchor_076`, `077`, `084`, `085`); every other clash site is
+     randomized.
    - **Built for extension:** a later POI kind is added as data and placed
      randomly in its target zone. Quest-bearing POIs with an underground
      part (e.g. a mine with a lift) are a later round's content. This round
@@ -134,6 +137,8 @@ PL is the largest and riskiest lane.
     repair, no crafting-table repair station.
 17. **Tests in the mapgen lanes:** as few CPU-heavy runs as possible during
     development; the full runs once at the end.
+18. **Emberglass stays unchanged.** Its T5 peak follows the pattern that an
+    ingredient peaks where its consumers mine.
 
 ## 3. The resource table (lane OR)
 
@@ -168,7 +173,6 @@ Changes are in bold.
   - Vein sizes, harvest tiers and the deep-band multipliers (×1.25 below
     −1500, ×1.5 below −2000).
   - The "exclusion ⊆ dig-forbidden" rule of Round 40.
-- **Emberglass** stays unchanged unless the user decides otherwise (§8).
 - **Gem harvest tier stays the gem's own tier.** Deeper rock needs the
   deeper pick anyway, so no new gate appears; Coal at depth already works
   this way.
@@ -350,6 +354,12 @@ and with own-level weapons, and rage per second per weapon.
   - The Dwarf has no local T3 recipe.
 - Icons come from the existing CC0 generator script; the web data export
   is rebuilt.
+- **The user's direction for higher tiers:** recipes there may need more
+  ingredients from more zones, for example a T3 dish with two T3
+  ingredients and one T2 ingredient. The lane checks whether the existing
+  T3–T6 dishes already work this way and proposes small ingredient changes
+  where they do not. Proposals only; no further recipes beyond the six
+  plain dishes.
 
 **Report:** for each race, which recipes each start and follow-up zone can
 cook locally, before and after.
@@ -515,8 +525,5 @@ After merges: `tools/sync_to_luanti.sh`.
 
 ## 8. Open questions for the user
 
-1. **Emberglass:** the coordinator recommends leaving it unchanged. Its
-   peak in T5 follows the same pattern as Iron, Silver and Abyssal Crystal:
-   the ingredient peaks where the players who consume it mine. Decide
-   before OR starts.
-2. **The depth pulse design:** after DP's note.
+1. **The depth pulse design:** after DP's note.
+2. **CK's ingredient proposals** for higher-tier dishes, if any.
