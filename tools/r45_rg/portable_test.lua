@@ -332,12 +332,14 @@ local function elsewhere(output)
 		output == "grug_brewing:brewing_stand"
 end
 local by_key, matched = {}, {}
--- Later edits (tools/r45_rg/edits.lua): a route's changed count, a row no
--- route made.
-local edited_count, added_rows = {}, {}
+-- Later edits (tools/r45_rg/edits.lua): a route's changed count, a removed
+-- route, a row no route made.
+local edited_count, added_rows, removed_routes = {}, {}, {}
 for _, edit in ipairs(dofile(repo .. "/tools/r45_rg/edits.lua")) do
 	if edit.added then
 		added_rows[#added_rows + 1] = edit
+	elseif edit.removed then
+		removed_routes[edit.output .. "|" .. edit.signature .. "|" .. edit.was] = true
 	else
 		edited_count[edit.output .. "|" .. edit.signature .. "|" .. edit.was] = edit.count
 	end
@@ -360,7 +362,10 @@ for _, route in ipairs(corpus.engine) do
 				key = route.output .. "|" .. signature_of(tokens) .. "|" .. edited_count[key]
 			end
 			local recipe = by_key[key]
-			if check(recipe ~= nil, "C " .. key .. " has its record") then
+			if removed_routes[key] then
+				check(recipe == nil, "C the removed route " .. key .. " has no record")
+				dropped = dropped + 1
+			elseif check(recipe ~= nil, "C " .. key .. " has its record") then
 				converted = converted + 1
 				matched[recipe] = true
 				local gear = corpus.gear[route.output]

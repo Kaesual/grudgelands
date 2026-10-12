@@ -20,7 +20,8 @@
 --    outside the start footprint and without `skip_elite`; the row's own
 --    on_spawn still runs first.
 -- D. levels.lua pending_level: the level ensure_init will give, unwritten.
--- E. The torch rows of the Basic catalog: 10 per coal lump, 10 per charcoal.
+-- E. The torch row of the Basic catalog: 10 per coal lump or charcoal (one
+--    recipe with the coal group since Round 46 lane ID; charcoal is in it).
 -- Prints "R46 UW PORTABLE PASS checks=<n>" or raises.
 
 local repo = arg and arg[1] or "."
@@ -195,18 +196,22 @@ check(gm.pending_level({name = "unknown"}) == nil, "D no config: nil")
 -- ---------------------------------------------------------------------------
 -- E. Torches
 -- ---------------------------------------------------------------------------
+-- Lane ID merged the two rows into one (the coal group: coal lump and
+-- charcoal).
 local catalog = dofile(repo .. "/mods/PLAYER/grug_jobs/basic_recipes.lua")
 local torches = {}
 for _, recipe in ipairs(catalog.recipes) do
 	if recipe.output == "default:torch" then
-		torches[recipe.ingredients[1].item or "?"] = recipe.count
-		check(#recipe.ingredients == 2 and recipe.ingredients[2].group == "stick" and
-			recipe.ingredients[2].n == 1 and recipe.ingredients[1].n == 1,
-			"E a torch row is one fuel and one stick")
+		torches[#torches + 1] = recipe
+		check(#recipe.ingredients == 2 and recipe.ingredients[1].group == "coal" and
+			recipe.ingredients[2].group == "stick" and recipe.ingredients[2].n == 1 and
+			recipe.ingredients[1].n == 1, "E the torch row is one coal and one stick")
 	end
 end
-check(torches["default:coal_lump"] == 10, "E 10 torches per coal lump")
-check(torches["grug_smelting:charcoal"] == 10, "E 10 torches per charcoal")
+check(#torches == 1 and torches[1].count == 10, "E one torch row: 10 per coal or charcoal")
+local smelting = io.open(repo .. "/mods/ITEMS/grug_smelting/recipes.lua"):read("*a")
+check(smelting:find("groups = {grug_furnace_fuel = 1, coal = 1}", 1, true) ~= nil,
+	"E charcoal is in the coal group")
 local light = io.open(repo .. "/mods/BASE/default/torch.lua"):read("*a")
 local twelve = 0
 for _ in light:gmatch("light_source = 12") do twelve = twelve + 1 end
