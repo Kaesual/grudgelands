@@ -305,38 +305,6 @@
       "climax": true
     },
     {
-      "id": "durbrannoc_provisions_bounty",
-      "line": "provisions",
-      "giver": "r20_dwarf_capital_cook",
-      "turnin": "r20_dwarf_capital_cook",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "durbrannoc_provisions_01"
-      ],
-      "title": "Bounty: Supper for a City",
-      "text": "The forge bell rings, the doors open, and suddenly every dwarf in Dur Brannoc is starving. Hunt six Bighorn Rams by day on the {name:heights}, which lie {zone_area:heights}, then come back for your bounty. It's repeatable twenty minutes after you hand it in; I've yet to meet a city that stays fed.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "hill_ram"
-          ],
-          "count": 6,
-          "area": "elandor_dur_brannoc/heights"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 7,
-      "repeatable": {
-        "cooldown": 1200
-      }
-    },
-    {
       "id": "durbrannoc_gate_stormvault",
       "line": "gate",
       "giver": "r20_dwarf_capital_envoy",

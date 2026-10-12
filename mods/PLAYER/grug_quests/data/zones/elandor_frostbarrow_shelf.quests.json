@@ -9,8 +9,7 @@
         {
           "npc": "r20_anchor_014_host",
           "lines": [
-            "sleds",
-            "bounties"
+            "sleds"
           ]
         }
       ]
@@ -147,38 +146,6 @@
       },
       "lesson": "Handoff to the zone's third hub.",
       "duration_min": 8
-    },
-    {
-      "id": "frostbarrow_bounty_leopards",
-      "line": "bounties",
-      "giver": "r20_anchor_014_host",
-      "turnin": "r20_anchor_014_host",
-      "min_level": 22,
-      "level": 22,
-      "requires": [
-        "frostbarrow_sleds_01"
-      ],
-      "title": "Bounty: Pawprints by the Runners",
-      "text": "Fresh pawprints beside the sled marks, close enough to make my beard bristle. Kill six Tarn Cats in the {name:pinewood} at night and report back for your bounty. You can repeat it twenty minutes after handing it in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "prowling_snow_leopard"
-          ],
-          "count": 6,
-          "area": "elandor_frostbarrow_shelf/pinewood"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 6,
-      "repeatable": {
-        "cooldown": 1200
-      }
     },
     {
       "id": "frostbarrow_cutting_01",
@@ -374,38 +341,6 @@
       "lesson": "Optional night hunt of the top belt.",
       "duration_min": 10,
       "optional": true
-    },
-    {
-      "id": "frostbarrow_bounty_pinchers",
-      "line": "watch",
-      "giver": "r20_anchor_026_host",
-      "turnin": "r20_anchor_026_host",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "frostbarrow_watch_01"
-      ],
-      "title": "Bounty: Claws with the Tide",
-      "text": "The tide has brought us another welcome committee with claws. Kill six Barnacle Pinchers on the {name:rime_shore} {dir_from_giver:rime_shore} by day and return for your bounty. This job is repeatable thirty minutes after you hand it in; the sea has never respected a finished shift.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "armored_crab"
-          ],
-          "count": 6,
-          "area": "elandor_frostbarrow_shelf/rime_shore"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 8,
-      "repeatable": {
-        "cooldown": 1800
-      }
     }
   ]
 }

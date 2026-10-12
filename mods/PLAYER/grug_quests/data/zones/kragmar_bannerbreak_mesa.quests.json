@@ -149,38 +149,6 @@
       "climax": true
     },
     {
-      "id": "bannerbreak_ramp_bounty",
-      "line": "ramp",
-      "giver": "r20_anchor_043_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 35,
-      "level": 36,
-      "requires": [
-        "bannerbreak_ramp_03"
-      ],
-      "title": "Bounty: Teeth After Dark",
-      "text": "Night wagons need an escort through the {name:warplains}, which lie {zone_area:warplains}, and the Warpack Hyenas have volunteered to eat it. Kill six there after dark and bring yourself back for payment. You can take the bounty again twenty minutes after collecting; keeping wagon crews alive is money well spent.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "warpack_hyena"
-          ],
-          "count": 6,
-          "area": "kragmar_bannerbreak_mesa/warplains"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
-    },
-    {
       "id": "bannerbreak_standard_01",
       "line": "standard",
       "giver": "r20_anchor_044_host",
@@ -323,38 +291,6 @@
       "duration_min": 15,
       "optional": true,
       "group": true
-    },
-    {
-      "id": "bannerbreak_standard_bounty",
-      "line": "standard",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "bannerbreak_standard_04"
-      ],
-      "title": "Bounty: More Holes to Patch",
-      "text": "The Trench Archers at the {name:sunderstrap_camp} {dir_from_giver:sunderstrap_camp} keep putting arrows through supplies my fighters bled to bring here. Kill six and collect your bounty. Twenty minutes after payment you can take it again; I will keep paying as long as they keep drawing bows.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "entrenched_bandit_archer"
-          ],
-          "count": 6,
-          "area": "kragmar_bannerbreak_mesa/sunderstrap_camp"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
     },
     {
       "id": "throng_main_01",

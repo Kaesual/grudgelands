@@ -22,20 +22,28 @@ local STATUS_NAMES = {available = {"Available", "gold"}, ready = {"Ready to comp
 function Q.list_entry(title, status, repeatable)
 	return Q.STATUS_COLORS[status] .. core.formspec_escape(title .. (repeatable and " (R)" or ""))
 end
+-- The legend explains "(R)" only while a repeatable quest is registered
+-- (Round 46 ruling 8 removed the shipped ones; the mechanism stays).
+local function any_repeatable()
+	for _, def in pairs(Q.registered_quests) do
+		if def.repeatable then return true end
+	end
+	return false
+end
 -- The legend as one coloured line, and as the list's tooltip (escaped).
 function Q.status_legend(statuses)
 	local parts = {}
 	for _, status in ipairs(statuses or STATUS_ORDER) do
 		parts[#parts + 1] = core.colorize(Q.STATUS_COLORS[status], STATUS_NAMES[status][1])
 	end
-	return core.formspec_escape(table.concat(parts, "   ") .. "   (R) Repeatable")
+	return core.formspec_escape(table.concat(parts, "   ") .. (any_repeatable() and "   (R) Repeatable" or ""))
 end
 function Q.status_tooltip(statuses)
 	local lines = {}
 	for _, status in ipairs(statuses or STATUS_ORDER) do
 		lines[#lines + 1] = STATUS_NAMES[status][1] .. ": " .. STATUS_NAMES[status][2]
 	end
-	lines[#lines + 1] = "(R): repeatable"
+	if any_repeatable() then lines[#lines + 1] = "(R): repeatable" end
 	return core.formspec_escape(table.concat(lines, "\n"))
 end
 

@@ -66,39 +66,6 @@
       "duration_min": 12
     },
     {
-      "id": "gd_front_island",
-      "line": "front",
-      "giver": "r20_orc_capital_envoy",
-      "turnin": "r20_orc_capital_envoy",
-      "min_level": 60,
-      "level": 60,
-      "requires": [
-        "gd_front_02"
-      ],
-      "title": "Bounty: Dead Weight Ashore",
-      "text": "The sea keeps dumping soldiers on Stormscale Summit, and the Last-Watch Mummies insist they are still fit for duty. Buy a boat from the Shipwright and sail to the island, then destroy eight by day on the {name:front_stormscale_summit/wreck_shore}, which lies {zone_area:front_stormscale_summit/wreck_shore}. Return for coin from the war chest. You can take the bounty again one hour after turn-in; the sea has plenty of reserves.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "last_watch_husk"
-          ],
-          "count": 8,
-          "area": "front_stormscale_summit/wreck_shore"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 3600
-      },
-      "rewards": {
-        "weight": 0,
-        "copper": 600,
-        "items": []
-      },
-      "duration_min": 30,
-      "optional": true
-    },
-    {
       "id": "throng_main_island_wreck",
       "line": "front",
       "giver": "r20_orc_capital_envoy",

@@ -291,37 +291,6 @@
       },
       "duration_min": 10,
       "optional": true
-    },
-    {
-      "id": "moonfall_stars_bounty",
-      "line": "stars",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "moonfall_stars_03"
-      ],
-      "title": "Bounty: Keep the View Clear",
-      "text": "Each clear night should add a little to our knowledge, not another layer of web to the lenses. Kill six Gloam Weavers after dark in the {name:deepwood} and return for the Observatory's payment. The bounty stands as long as the spiders keep weaving, which, judging by their diligence, will be some time.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "briar_web_spider"
-          ],
-          "count": 6,
-          "area": "elandor_moonfall_wood/deepwood"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "duration_min": 8
     }
   ]
 }

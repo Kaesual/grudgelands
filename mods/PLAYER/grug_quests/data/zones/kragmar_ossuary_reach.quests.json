@@ -9,8 +9,7 @@
         {
           "npc": "r20_anchor_020_host",
           "lines": [
-            "names",
-            "bounties"
+            "names"
           ]
         }
       ]
@@ -316,38 +315,6 @@
       },
       "lesson": "Travel handoff from the heartland to the faction's contested zones.",
       "duration_min": 10
-    },
-    {
-      "id": "ossuary_names_bounty",
-      "line": "bounties",
-      "giver": "r20_anchor_020_host",
-      "turnin": "r20_anchor_020_host",
-      "min_level": 22,
-      "level": 22,
-      "requires": [
-        "ossuary_names_01"
-      ],
-      "title": "Bounty: Teeth in the Catalogue",
-      "text": "Ash Howlers hunt the {name:ashfields}, which lies {zone_area:ashfields}, after dark, and I cannot keep revising the catalogue to account for digestion. Kill six and report back. This task is available again twenty minutes after you hand it in; the shelves will stay labelled, even if I have to keep filling them.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "briarpack_wolf"
-          ],
-          "count": 6,
-          "area": "kragmar_ossuary_reach/ashfields"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunting contract.",
-      "duration_min": 8
     }
   ]
 }

@@ -160,37 +160,6 @@
       ]
     },
     {
-      "id": "bb_front_ramp_bounty",
-      "line": "front",
-      "giver": "r20_anchor_043_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 46,
-      "level": 47,
-      "requires": [
-        "bb_front_ramp_04"
-      ],
-      "title": "Bounty: Bad Career Choices",
-      "text": "Another lot of Causeway Brigands thinks robbing the Throng will pay. Kill five by day in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and come back for your reward. You can take this bounty again twenty minutes after turning it in; somebody out there keeps hiring.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "causeway_brigand"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/wraithwood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
       "id": "bb_front_torn_01",
       "line": "front",
       "giver": "r20_anchor_044_host",
@@ -409,37 +378,6 @@
         "items": []
       },
       "duration_min": 12
-    },
-    {
-      "id": "bb_front_torn_bounty",
-      "line": "front",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 48,
-      "level": 49,
-      "requires": [
-        "bb_front_torn_05"
-      ],
-      "title": "Bounty: Stripes at the Front",
-      "text": "Crest Tigers care very little whose colours a soldier wears, which makes them the one thing on this front both armies agree about. Kill five by day on the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, and collect your reward from me. The bounty is available again twenty minutes after turn-in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_stalking_tiger"
-          ],
-          "count": 5,
-          "area": "front_shattered_line/siegecrest"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "duration_min": 10
     },
     {
       "id": "bannerbreak_warhold_call",
