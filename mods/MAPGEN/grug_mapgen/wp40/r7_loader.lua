@@ -95,7 +95,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		local started = now()
 		local constructed = dofile(wp40 .. "/r7_runtime.lua")(core_api, wp40,
 			default_path .. "/schematics", projection, catalog,
-			texts and texts.water, texts and texts.road, texts and texts.capital)
+			texts and texts.water, texts and texts.road, texts and texts.capital, nil,
+			texts and texts.placement)
 		local seconds = now() - started
 		return constructed, constructed.build_authority(native.identities()), seconds
 	end
@@ -230,6 +231,30 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		for _, row in ipairs(cached.meta.logs) do core_api.log(row[1], row[2]) end
 	end
 
+	-- THE POI PLACEMENT (Round 46, `placement.lua`): one line with the rows
+	-- that relaxed a rule, a warning for a row that took the last resort and
+	-- a [GRUG-SEVERE] report for one whose core is not dry (the world loads
+	-- in every case; nil stats when the text came in).
+	local placement_stats = runtime.placement_stats()
+	if placement_stats then
+		diagnose("action", string.format("[grug_mapgen] POI placement: %d rows relaxed " ..
+			"a rule%s, placed in %.2f s", #placement_stats.relaxed,
+			#placement_stats.relaxed > 0 and (" (anchor:step " ..
+				table.concat(placement_stats.relaxed, ", ") .. ")") or "",
+			placement_stats.seconds or 0))
+		if #placement_stats.last_resort > 0 then
+			diagnose("warning", "[grug_mapgen] POI placement: no place met the rules, " ..
+				"the last resort was taken for " ..
+				table.concat(placement_stats.last_resort, ", "))
+		end
+		if #placement_stats.wet > 0 and type(core_owner.severe) == "table" and
+				type(core_owner.severe.report) == "function" then
+			core_owner.severe.report("mapgen", "a POI found no dry ground in its zone",
+				"placement.lua wet resort: " .. table.concat(placement_stats.wet, ", "),
+				"placement_wet")
+		end
+	end
+
 	-- THE CAPITAL LAYOUTS (Round 22 capital planner): one line per capital
 	-- with the planner's figures, so a playtest log says what this world got.
 	local capital_stats = runtime.capital_stats()
@@ -315,7 +340,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	-- in main). Main keeps the same texts in the world-folder cache (D71).
 	local payload = {schema = "grug_wp40_r7_ipc_v1",
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
-		projection = projection, water_layout = runtime.water_layout_text(),
+		projection = projection, placement_layout = runtime.placement_layout_text(),
+		water_layout = runtime.water_layout_text(),
 		road_layout = runtime.road_layout_text(),
 		capital_layout = runtime.capital_layout_text(),
 		-- Main's preparations of every lazy blueprint (identity, palette,
@@ -387,27 +413,30 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		local s = cached.meta.seconds
 		core_api.log("action", string.format("[grug_mapgen] world layouts: cache hit " ..
 			"(%s), runtime construction %.1f s; skipped layout builds of the first " ..
-			"start: water %.1f s, roads %.1f s, capitals %.1f s (its construction took " ..
-			"%.1f s); the capital and road figures above are from that start",
-			layout_cache.FILE, construction_seconds, s.water, s.roads, s.capitals,
-			s.construction))
+			"start: placement %.1f s, water %.1f s, roads %.1f s, capitals %.1f s (its " ..
+			"construction took %.1f s); the placement, capital and road figures above " ..
+			"are from that start",
+			layout_cache.FILE, construction_seconds, s.placement, s.water, s.roads,
+			s.capitals, s.construction))
 	else
 		local built_seconds = runtime.layout_build_seconds() or {}
 		local stored, bytes, store_error = false, 0, nil
 		if layout_cache then
 			local ok, result, count = pcall(layout_cache.store, world_dir, cache_key,
-				{water = payload.water_layout, road = payload.road_layout,
-					capital = payload.capital_layout},
+				{placement = payload.placement_layout, water = payload.water_layout,
+					road = payload.road_layout, capital = payload.capital_layout},
 				{logs = diagnostics, spots = road_spots, seconds = {
 					construction = construction_seconds, water = built_seconds.water,
-					roads = built_seconds.roads, capitals = built_seconds.capitals}})
+					roads = built_seconds.roads, capitals = built_seconds.capitals,
+					placement = built_seconds.placement}})
 			if ok then stored, bytes = result, count else store_error = tostring(result) end
 		end
 		core_api.log(cache_damaged and "warning" or "action", string.format(
 			"[grug_mapgen] world layouts: cache miss (%s), built in runtime " ..
-			"construction %.1f s (water %.1f s, roads %.1f s, capitals %.1f s)%s",
-			cache_reason or "?", construction_seconds, built_seconds.water or 0,
-			built_seconds.roads or 0, built_seconds.capitals or 0,
+			"construction %.1f s (placement %.1f s, water %.1f s, roads %.1f s, " ..
+			"capitals %.1f s)%s",
+			cache_reason or "?", construction_seconds, built_seconds.placement or 0,
+			built_seconds.water or 0, built_seconds.roads or 0, built_seconds.capitals or 0,
 			stored and string.format(", stored %s (%d bytes)", layout_cache.FILE, bytes)
 				or ""))
 		if layout_cache and not stored then

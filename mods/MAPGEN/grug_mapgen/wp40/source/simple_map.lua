@@ -236,6 +236,19 @@ source.boat_parity_policy = {
 		{"boat_wyrmglass_north","boat_stormscale_north"}},
 }
 
+-- The anchors (Round 46, seed-dependent placement). A FIXED row carries its
+-- position: {zone, slot, template, mode, candidate index, x, z}, mode
+-- "authored_fixed" (starts, capitals, dragon arenas, apex mines) or
+-- "layout_fixed" (the four rift sites, anchors 76, 77, 84 and 85, whose
+-- crack plan the rift reads). A PLACED row carries none: {zone, slot,
+-- template, "placed"[, band[, pass]]}. `placement.lua` places it on every
+-- world by its kind's rules (`placement_rules.lua`) and hands the position
+-- out by anchor id (`world_assembly.lua` W.source); nothing else holds it.
+-- `band` is the level third of its zone ("low", "mid", "high") it stood in
+-- before Round 46 (`tools/r46_pl/bands.lua`, six seeds), or its recipe
+-- camp's belt; the war camps take their levels from `r31_pvp_catalog.lua`.
+-- `pass` (default 1) orders later additions after every earlier row, so
+-- appending rows keeps the earlier ones where they stand.
 local anchor_rows = {
 	{1,"start","start","authored_fixed",0,-1800,-2550},
 	{6,"start","start","authored_fixed",0,0,-2550},
@@ -249,144 +262,148 @@ local anchor_rows = {
 	{19,"capital","capital_undead","authored_fixed",0,-1800,1500},
 	{24,"capital","capital_orc","authored_fixed",0,0,1500},
 	{29,"capital","capital_troll","authored_fixed",0,1800,1500},
-	{2,"village_1","village","layout_fixed",2,-1868,-2036},
-	{4,"village_1","village","layout_fixed",3,-2404,-1576},
-	{7,"village_1","village","layout_fixed",1,-120,-2020},
-	{9,"village_1","village","layout_fixed",3,-924,-1556},
-	{12,"village_1","village","layout_fixed",1,1900,-2020},
-	{14,"village_1","village","layout_fixed",3,876,-1556},
-	{18,"village_1","village","layout_fixed",1,-1900,2020},
-	{20,"village_1","village","layout_fixed",1,-2380,1600},
-	{23,"village_1","village","layout_fixed",2,-88,2004},
-	{25,"village_1","village","layout_fixed",2,-868,1564},
-	{28,"village_1","village","layout_fixed",3,1876,2044},
-	{30,"village_1","village","layout_fixed",3,876,1604},
-	{2,"outpost_1","outpost","layout_fixed",1,-2100,-2100},
-	{4,"outpost_1","outpost","layout_fixed",1,-2300,-1250},
-	{5,"outpost_1","outpost","layout_fixed",3,-2074,-826},
-	{5,"outpost_2","outpost","layout_fixed",1,-1500,-570},
-	{7,"outpost_1","outpost","layout_fixed",3,176,-2026},
-	{9,"outpost_1","outpost","layout_fixed",2,-618,-1266},
-	{10,"outpost_1","outpost","layout_fixed",1,-350,-850},
-	{10,"outpost_2","outpost","layout_fixed",1,300,-570},
-	{12,"outpost_1","outpost","layout_fixed",1,2100,-2100},
-	{14,"outpost_1","outpost","layout_fixed",3,626,-1226},
-	{15,"outpost_1","outpost","layout_fixed",3,2376,-1326},
-	{16,"outpost_1","outpost","layout_fixed",2,1932,-686},
-	{18,"outpost_1","outpost","layout_fixed",1,-2100,2100},
-	{20,"outpost_1","outpost","layout_fixed",2,-2268,1234},
-	{21,"outpost_1","outpost","layout_fixed",2,-2018,834},
-	{21,"outpost_2","outpost","layout_fixed",2,-1468,554},
-	{23,"outpost_1","outpost","layout_fixed",3,176,2074},
-	{25,"outpost_1","outpost","layout_fixed",1,-650,1250},
-	{26,"outpost_1","outpost","layout_fixed",3,-374,874},
-	{26,"outpost_2","outpost","layout_fixed",3,276,594},
-	{28,"outpost_1","outpost","layout_fixed",2,2132,2084},
-	{30,"outpost_1","outpost","layout_fixed",2,682,1234},
-	{31,"outpost_1","outpost","layout_fixed",1,2400,1350},
-	{32,"outpost_1","outpost","layout_fixed",1,1900,670},
-	{2,"bandit_1","bandit_home","layout_fixed",2,-1568,-2066},
-	{5,"bandit_1","bandit_frontier","layout_fixed",3,-1824,-526},
-	{7,"bandit_1","bandit_home","layout_fixed",1,320,-1980},
-	{10,"bandit_1","bandit_frontier","layout_fixed",3,-96,-526},
-	{12,"bandit_1","bandit_home","layout_fixed",2,1632,-2066},
-	{16,"bandit_1","bandit_frontier","layout_fixed",3,1776,-526},
-	{18,"bandit_1","bandit_home","layout_fixed",1,-1600,2050},
-	{21,"bandit_1","bandit_frontier","layout_fixed",1,-1800,550},
-	{23,"bandit_1","bandit_home","layout_fixed",1,320,1980},
-	{26,"bandit_1","bandit_frontier","layout_fixed",2,96,534},
-	{28,"bandit_1","bandit_home","layout_fixed",2,1632,2034},
-	{32,"bandit_1","bandit_frontier","layout_fixed",3,1776,574},
-	{4,"mine","mine","layout_fixed",2,-2418,-1296},
-	{9,"mine","mine","layout_fixed",3,-1074,-1256},
-	{14,"mine","mine","layout_fixed",3,1026,-1256},
-	{20,"mine","mine","layout_fixed",2,-2418,1264},
-	{25,"mine","mine","layout_fixed",1,-1050,1280},
-	{30,"mine","mine","layout_fixed",3,1026,1304},
-	{9,"mirefolk","mirefolk","layout_fixed",1,-620,-1760},
-	{14,"mirefolk","mirefolk","layout_fixed",3,1096,-1716},
-	{18,"mirefolk","mirefolk","layout_fixed",3,-2074,2274},
-	{30,"mirefolk","mirefolk","layout_fixed",3,1096,1764},
-	{10,"clash_1","clash","layout_fixed",3,-274,-416},
-	{10,"clash_2","clash","layout_fixed",1,250,-440},
-	{26,"clash_1","clash","layout_fixed",2,-218,424},
-	{26,"clash_2","clash","layout_fixed",2,282,424},
-	{33,"clash_1","clash","layout_fixed",3,-3024,194},
+	{2,"village_1","village","placed","mid"},
+	{4,"village_1","village","placed","mid"},
+	{7,"village_1","village","placed","mid"},
+	{9,"village_1","village","placed","mid"},
+	{12,"village_1","village","placed","mid"},
+	{14,"village_1","village","placed","mid"},
+	{18,"village_1","village","placed","high"},
+	{20,"village_1","village","placed","mid"},
+	{23,"village_1","village","placed","mid"},
+	{25,"village_1","village","placed","mid"},
+	{28,"village_1","village","placed","mid"},
+	{30,"village_1","village","placed","mid"},
+	{2,"outpost_1","outpost","placed","mid"},
+	{4,"outpost_1","outpost","placed","high"},
+	{5,"outpost_1","outpost","placed","mid"},
+	{5,"outpost_2","outpost","placed","high"},
+	{7,"outpost_1","outpost","placed","mid"},
+	{9,"outpost_1","outpost","placed","high"},
+	{10,"outpost_1","outpost","placed","mid"},
+	{10,"outpost_2","outpost","placed","high"},
+	{12,"outpost_1","outpost","placed","mid"},
+	{14,"outpost_1","outpost","placed","high"},
+	{15,"outpost_1","outpost","placed","high"},
+	{16,"outpost_1","outpost","placed","mid"},
+	{18,"outpost_1","outpost","placed","mid"},
+	{20,"outpost_1","outpost","placed","high"},
+	{21,"outpost_1","outpost","placed","mid"},
+	{21,"outpost_2","outpost","placed","high"},
+	{23,"outpost_1","outpost","placed","mid"},
+	{25,"outpost_1","outpost","placed","high"},
+	{26,"outpost_1","outpost","placed","mid"},
+	{26,"outpost_2","outpost","placed","high"},
+	{28,"outpost_1","outpost","placed","mid"},
+	{30,"outpost_1","outpost","placed","high"},
+	{31,"outpost_1","outpost","placed","high"},
+	{32,"outpost_1","outpost","placed","mid"},
+	{2,"bandit_1","bandit_home","placed","mid"},
+	{5,"bandit_1","bandit_frontier","placed","high"},
+	{7,"bandit_1","bandit_home","placed","mid"},
+	{10,"bandit_1","bandit_frontier","placed","high"},
+	{12,"bandit_1","bandit_home","placed","mid"},
+	{16,"bandit_1","bandit_frontier","placed","high"},
+	{18,"bandit_1","bandit_home","placed","high"},
+	{21,"bandit_1","bandit_frontier","placed","high"},
+	{23,"bandit_1","bandit_home","placed","high"},
+	{26,"bandit_1","bandit_frontier","placed","high"},
+	{28,"bandit_1","bandit_home","placed","high"},
+	{32,"bandit_1","bandit_frontier","placed","high"},
+	{4,"mine","mine","placed","high"},
+	{9,"mine","mine","placed","high"},
+	{14,"mine","mine","placed","high"},
+	{20,"mine","mine","placed","high"},
+	{25,"mine","mine","placed","high"},
+	{30,"mine","mine","placed","high"},
+	{9,"mirefolk","mirefolk","placed","low"},
+	{14,"mirefolk","mirefolk","placed","low"},
+	{18,"mirefolk","mirefolk","placed","low"},
+	{30,"mirefolk","mirefolk","placed","low"},
+	{10,"clash_1","clash","placed","high"},
+	{10,"clash_2","clash","placed","high"},
+	{26,"clash_1","clash","placed","high"},
+	{26,"clash_2","clash","placed","high"},
+	{33,"clash_1","clash","placed","mid"},
 	{34,"clash_1","clash","layout_fixed",1,-2200,-80},
 	{34,"clash_2","clash","layout_fixed",2,-1768,64},
-	{35,"clash_1","clash","layout_fixed",3,-1274,-76},
-	{35,"clash_2","clash","layout_fixed",3,-774,124},
-	{35,"clash_3","clash","layout_fixed",3,-274,-76},
-	{36,"clash_1","clash","layout_fixed",1,250,100},
-	{36,"clash_2","clash","layout_fixed",2,782,-116},
-	{36,"clash_3","clash","layout_fixed",2,1282,84},
+	{35,"clash_1","clash","placed","high"},
+	{35,"clash_2","clash","placed","mid"},
+	{35,"clash_3","clash","placed","high"},
+	{36,"clash_1","clash","placed","high"},
+	{36,"clash_2","clash","placed","high"},
+	{36,"clash_3","clash","placed","high"},
 	{37,"clash_1","clash","layout_fixed",2,1832,-96},
 	{37,"clash_2","clash","layout_fixed",3,2176,104},
-	{38,"clash_1","clash","layout_fixed",1,3000,170},
+	{38,"clash_1","clash","placed","mid"},
 	{33,"dragon","dragon","authored_fixed",0,-3260,-40},
 	{38,"dragon","dragon","authored_fixed",0,3260,-40},
 	{33,"apex_mine","apex_mine","authored_fixed",0,-3200,80},
 	{38,"apex_mine","apex_mine","authored_fixed",0,3200,80},
-	{7,"rare_grimtusk","rare_route","layout_fixed",2,152,-2116},
-	{10,"rare_old_whitefang","rare_route","layout_fixed",1,-180,-770},
-	{5,"rare_korgans_bane","rare_route","layout_fixed",3,-1874,-716},
-	{37,"rare_silkfang","rare_route","layout_fixed",3,2026,94},
-	{21,"rare_marrowclaw","rare_route","layout_fixed",2,-1818,724},
-	{26,"rare_dustwing","rare_route","layout_fixed",3,156,794},
-	{38,"rare_emerald_coil","rare_route","layout_fixed",1,3000,-120},
-	{23,"rare_ashmaw","rare_route","layout_fixed",2,152,2084},
-	{35,"rare_captain_bonerattle","rare_route","layout_fixed",2,-568,64},
-	{36,"rare_captain_bonerattle","rare_route","layout_fixed",1,600,-80},
+	{7,"rare_grimtusk","rare_route","placed","mid"},
+	{10,"rare_old_whitefang","rare_route","placed","mid"},
+	{5,"rare_korgans_bane","rare_route","placed","mid"},
+	{37,"rare_silkfang","rare_route","placed","high"},
+	{21,"rare_marrowclaw","rare_route","placed","mid"},
+	{26,"rare_dustwing","rare_route","placed","mid"},
+	{38,"rare_emerald_coil","rare_route","placed","mid"},
+	{23,"rare_ashmaw","rare_route","placed","mid"},
+	{35,"rare_captain_bonerattle","rare_route","placed","high"},
+	{36,"rare_captain_bonerattle","rare_route","placed","high"},
 	-- Round 31 PvP POIs (pvp-plan rulings 17-22), anchors 101..118 in the
 	-- order of `r31_pvp_catalog.lua` (slot and template id = the catalogue
-	-- row's slot and kind). The fortresses stand on the Battlegrounds half of
-	-- their zone beside the middle road (Ashenward Bastion east of it,
-	-- Bannerbreak Warhold west), clear of the cells it runs through on every
-	-- tested seed, so it keeps its own course; their gate faces the road and
-	-- a trail runs from the gate to it (`road_layout.lua` inputs); the camps sit on
-	-- their own faction's side of the Battlegrounds, the lower camp toward the
-	-- own frontier and the higher toward the middle, where the zone's level
-	-- field gives their bands. Every core's natural relief stays at most 40
-	-- nodes and every fortress core is dry on the six quest-lane seeds; a
-	-- fortress stands as near the Battlegrounds as that allows, the road
-	-- distance only a soft wish (`tools/r31_m/candidates.lua` and
-	-- `pick.lua` chose them; `tools/r31_m/spacing_check.lua` checks them).
-	{10,"pvp_fortress","pvp_fortress","layout_fixed",1,136,-488},
-	{26,"pvp_fortress","pvp_fortress","layout_fixed",1,-80,632},
-	{34,"pvp_accord_low","pvp_camp_low","layout_fixed",1,-2144,-264},
-	{34,"pvp_accord_high","pvp_camp_high","layout_fixed",1,-1896,-80},
-	{34,"pvp_throng_low","pvp_camp_low","layout_fixed",1,-1520,240},
-	{34,"pvp_throng_high","pvp_camp_high","layout_fixed",1,-1464,24},
-	{35,"pvp_accord_low","pvp_camp_low","layout_fixed",1,-912,-360},
-	{35,"pvp_accord_high","pvp_camp_high","layout_fixed",1,-728,-64},
-	{35,"pvp_throng_low","pvp_camp_low","layout_fixed",1,-896,368},
-	{35,"pvp_throng_high","pvp_camp_high","layout_fixed",1,-216,40},
-	{36,"pvp_accord_low","pvp_camp_low","layout_fixed",1,512,-288},
-	{36,"pvp_accord_high","pvp_camp_high","layout_fixed",1,944,-16},
-	{36,"pvp_throng_low","pvp_camp_low","layout_fixed",1,1216,288},
-	{36,"pvp_throng_high","pvp_camp_high","layout_fixed",1,648,48},
-	{37,"pvp_accord_low","pvp_camp_low","layout_fixed",1,2304,-256},
-	{37,"pvp_accord_high","pvp_camp_high","layout_fixed",1,2080,-56},
-	{37,"pvp_throng_low","pvp_camp_low","layout_fixed",1,2376,304},
-	{37,"pvp_throng_high","pvp_camp_high","layout_fixed",1,2384,40},
+	-- row's slot and kind). Their rules (`placement_rules.lua`): a fortress
+	-- beside the middle road on its faction's side of it (Ashenward Bastion
+	-- east, Bannerbreak Warhold west, so its gate faces the road), a camp on
+	-- its own faction's half of its Battlegrounds zone at its catalogue
+	-- levels, every PvP POI at least 120 nodes from every other.
+	{10,"pvp_fortress","pvp_fortress","placed","high"},
+	{26,"pvp_fortress","pvp_fortress","placed","mid"},
+	{34,"pvp_accord_low","pvp_camp_low","placed"},
+	{34,"pvp_accord_high","pvp_camp_high","placed"},
+	{34,"pvp_throng_low","pvp_camp_low","placed"},
+	{34,"pvp_throng_high","pvp_camp_high","placed"},
+	{35,"pvp_accord_low","pvp_camp_low","placed"},
+	{35,"pvp_accord_high","pvp_camp_high","placed"},
+	{35,"pvp_throng_low","pvp_camp_low","placed"},
+	{35,"pvp_throng_high","pvp_camp_high","placed"},
+	{36,"pvp_accord_low","pvp_camp_low","placed"},
+	{36,"pvp_accord_high","pvp_camp_high","placed"},
+	{36,"pvp_throng_low","pvp_camp_low","placed"},
+	{36,"pvp_throng_high","pvp_camp_high","placed"},
+	{37,"pvp_accord_low","pvp_camp_low","placed"},
+	{37,"pvp_accord_high","pvp_camp_high","placed"},
+	{37,"pvp_throng_low","pvp_camp_low","placed"},
+	{37,"pvp_throng_high","pvp_camp_high","placed"},
 }
 
 source.anchors = {}
+local rare_routes = 0
 for index = 1, #anchor_rows do
 	local row = anchor_rows[index]
 	local anchor = {numeric_id=index,id=("anchor_%03d"):format(index),
 		zone_numeric_id=row[1],slot_id=row[2],template_id=row[3],
-		placement_mode=row[4],approved_candidate_index=row[5],
-		position=point(row[6],row[7])}
+		placement_mode=row[4]}
+	if row[4] == "placed" then
+		anchor.approved_candidate_index = 1
+		anchor.band = row[5]
+		anchor.pass = row[6] or 1
+	else
+		anchor.approved_candidate_index = row[5]
+		anchor.position = point(row[6],row[7])
+	end
+	if row[3] == "rare_route" then rare_routes = rare_routes + 1 end
 	source.anchors[index] = anchor
 end
--- The named-rare patrol routes of anchors 91..100 (the `rare_route` rows
--- above), in anchor order: each route's ordered patrol points, relative to
--- its anchor's position. All ten share one authored shape. The only reader
--- is `r7_consumer_payload.lua` (-> the grug_core zone authority).
+-- The named-rare patrol routes (the `rare_route` rows above), in anchor
+-- order: each route's ordered patrol points, relative to its anchor's
+-- position. All share one authored shape. The readers are
+-- `r7_consumer_payload.lua` (-> the grug_core zone authority) and the rare
+-- dens' placement rule (every point on dry land in the zone).
+source.rare_patrol_shape = {point(-48,-24),point(16,40),point(56,-16)}
 source.rare_patrol_offsets = {}
-for route = 1, 10 do
-	source.rare_patrol_offsets[route] = {point(-48,-24),point(16,40),point(56,-16)}
+for route = 1, rare_routes do
+	source.rare_patrol_offsets[route] = source.rare_patrol_shape
 end
 
 source.relief_profiles = {
@@ -447,6 +464,8 @@ source.logical_biome_selector = {
 	share_audit_tolerance_percentage_points=5,
 }
 
+-- `trail = true`: a POI of this kind on the two mainlands joins the road
+-- network by a trail (`road_layout.lua` inputs, D19).
 source.anchor_profiles = {
 	{id="start",shape="flat",fitting_width=128,blend_width=256,start_collar=24,max_cut=8,max_fill=8,force_native_dungeon=false},
 	{id="capital_dwarf",shape="granite_terrace",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
@@ -456,11 +475,11 @@ source.anchor_profiles = {
 	{id="capital_orc",shape="mesa_shelf",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="capital_troll",shape="cenote_terrace",fitting_width=512,blend_width=704,civic_width=96,capital_collar=40,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="village",shape="gentle_grade",building_core_width=24,fitting_width=96,blend_width=160,force_native_dungeon=false},
-	{id="outpost",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
-	{id="bandit_home",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
-	{id="bandit_frontier",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
-	{id="mine",shape="gentle_grade",building_core_width=20,fitting_width=80,blend_width=128,force_native_dungeon=false},
-	{id="mirefolk",shape="shallow_marsh_island",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
+	{id="outpost",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false,trail=true},
+	{id="bandit_home",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false,trail=true},
+	{id="bandit_frontier",shape="gentle_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false,trail=true},
+	{id="mine",shape="gentle_grade",building_core_width=20,fitting_width=80,blend_width=128,force_native_dungeon=false,trail=true},
+	{id="mirefolk",shape="shallow_marsh_island",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false,trail=true},
 	{id="clash",shape="battlefield_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
 	-- A dragon arena (Round 31 DA2): a round floor of `arena_radius` nodes
 	-- around the anchor (the dragon's leash, height.lua and arena_writer.lua);
@@ -473,7 +492,7 @@ source.anchor_profiles = {
 	-- blueprint box (r7_settlement BOUNDS) in its half-open square; a camp's
 	-- is one node wider, the fortress's 60: a flat apron of 5 or 6 nodes
 	-- round its 49-node walls, where the gate trail arrives.
-	{id="pvp_fortress",shape="gentle_grade",building_core_width=60,fitting_width=120,blend_width=184,force_native_dungeon=false},
+	{id="pvp_fortress",shape="gentle_grade",building_core_width=60,fitting_width=120,blend_width=184,force_native_dungeon=false,trail=true},
 	{id="pvp_camp_low",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
 	{id="pvp_camp_high",shape="gentle_grade",building_core_width=28,fitting_width=72,blend_width=120,force_native_dungeon=false},
 }
@@ -522,43 +541,79 @@ for profile_index = 1, #source.anchor_profiles do
 	local profile = source.anchor_profiles[profile_index]
 	profile_by_id[profile.id] = profile
 end
-source.claim_exclusions = {}
-local function add_exclusion(row)
-	source.claim_exclusions[#source.claim_exclusions+1] = row
+-- An anchor row may declare an underground reservation (Round 46, design
+-- note Q7): `underground = {width, depth}`, a square of `width` nodes under
+-- its centre, protected and kept free of caves from its placement height
+-- down to `depth` nodes below it (the same floor and cave rule as the
+-- anchor's own envelope, `zones.lua` and `r6_settlement.r30_cave_limit`).
+source.claim_exclusion_recipes[#source.claim_exclusion_recipes+1] =
+	{id="exclude_underground_v1",kind="underground_reservation",
+		footprint_policy_id="centered_half_open_square_v1"}
+
+-- The claim exclusions of a set of anchors that all carry a position: the
+-- static source holds those of its fixed anchors; a world's placed source
+-- (`placement.lua` view) builds its own from every anchor.
+function source.claim_exclusions_of(anchors)
+	local list = {}
+	local function add_exclusion(row)
+		list[#list+1] = row
+	end
+	for anchor_index = 1, #anchors do
+		local anchor = anchors[anchor_index]
+		local profile = profile_by_id[anchor.template_id]
+		local identity_index = anchor.placement_mode == "authored_fixed" and 1 or
+			anchor.approved_candidate_index
+		add_exclusion({
+			id=("exclude:anchor:%s:%02d"):format(anchor.id,identity_index),
+			recipe_id="exclude_anchor_blend_v1",source_id=anchor.id,
+			center=point(anchor.position.x,anchor.position.z),
+			total_width=profile.blend_width,
+			coverage="complete_fitting_plus_blend_envelope",
+		})
+		local under = anchor.underground
+		if under then
+			add_exclusion({
+				id=("exclude:anchor:%s:under"):format(anchor.id),
+				recipe_id="exclude_underground_v1",source_id=anchor.id,
+				center=point(anchor.position.x,anchor.position.z),
+				total_width=under.width,depth=under.depth,
+				coverage="underground_reservation",
+			})
+		end
+	end
+	for bay_index = 1, #source.bays do
+		local bay = source.bays[bay_index]
+		add_exclusion({id="exclude:water:"..bay.id,
+			recipe_id="exclude_planned_water_v1",source_id=bay.id,
+			coverage="complete_analytic_mask"})
+	end
+	for _, collection in ipairs({source.islands,source.channels}) do
+		for record_index = 1, #collection do
+			local record = collection[record_index]
+			add_exclusion({id="exclude:coast:"..record.id,
+				recipe_id="exclude_coast_v1",source_id=record.id,
+				projection_width=source.shelf_width,
+				coverage="coast_water_and_projection"})
+		end
+	end
+	for hard_index = 1, #source.hard_protection do
+		local hard = source.hard_protection[hard_index]
+		add_exclusion({id="exclude:active:"..hard.id,
+			recipe_id="exclude_active_core_v1",source_id=hard.id,
+			coverage="exact_active_hard_footprint"})
+	end
+	return list
 end
-for anchor_index = 1, #source.anchors do
-	local anchor = source.anchors[anchor_index]
-	local profile = profile_by_id[anchor.template_id]
-	local identity_index = anchor.placement_mode == "authored_fixed" and 1 or
-		anchor.approved_candidate_index
-	add_exclusion({
-		id=("exclude:anchor:%s:%02d"):format(anchor.id,identity_index),
-		recipe_id="exclude_anchor_blend_v1",source_id=anchor.id,
-		center=point(anchor.position.x,anchor.position.z),
-		total_width=profile.blend_width,
-		coverage="complete_fitting_plus_blend_envelope",
-	})
-end
-for bay_index = 1, #source.bays do
-	local bay = source.bays[bay_index]
-	add_exclusion({id="exclude:water:"..bay.id,
-		recipe_id="exclude_planned_water_v1",source_id=bay.id,
-		coverage="complete_analytic_mask"})
-end
-for _, collection in ipairs({source.islands,source.channels}) do
-	for record_index = 1, #collection do
-		local record = collection[record_index]
-		add_exclusion({id="exclude:coast:"..record.id,
-			recipe_id="exclude_coast_v1",source_id=record.id,
-			projection_width=source.shelf_width,
-			coverage="coast_water_and_projection"})
+
+-- The fixed anchors in anchor order (every reader before placement sees
+-- only these: the zone field's keypoints, the terrain field's bowls and the
+-- inland water's keep-outs and POI detours), and their claim exclusions.
+source.fixed_anchors = {}
+for index = 1, #source.anchors do
+	if source.anchors[index].placement_mode ~= "placed" then
+		source.fixed_anchors[#source.fixed_anchors+1] = source.anchors[index]
 	end
 end
-for hard_index = 1, #source.hard_protection do
-	local hard = source.hard_protection[hard_index]
-	add_exclusion({id="exclude:active:"..hard.id,
-		recipe_id="exclude_active_core_v1",source_id=hard.id,
-		coverage="exact_active_hard_footprint"})
-end
+source.claim_exclusions = source.claim_exclusions_of(source.fixed_anchors)
 
 return source

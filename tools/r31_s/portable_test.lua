@@ -294,7 +294,7 @@ local function with_anchors(rows)
 	for i, row in ipairs(rows) do
 		local z = zone_of[row.zone_id]
 		local n = #copy.anchors + 1
-		-- positions either side of x = 0 and on it (the gate turn rule)
+		-- positions either side of x = 0 and on it (no longer read: Round 46)
 		copy.anchors[n] = {numeric_id = n, id = ("anchor_%03d"):format(n),
 			zone_numeric_id = z.index, slot_id = row.slot, template_id = row.kind,
 			position = {x = ({-150, 0, 150})[i % 3 + 1], z = 0}}
@@ -310,8 +310,11 @@ for i, profile in ipairs(profiles) do
 	local row = catalog.rows[i]
 	check(profile.key == row.key and profile.numeric_id == 100 + i and
 		profile.bounds == row.kind and profile.slot == row.slot, row.key .. ": bound profile")
-	local x = profile.x
-	local want = row.kind == "pvp_fortress" and (x > 0 and 1 or x < 0 and 3) or
+	-- Round 46: the profile holds no position (the anchor is placed per
+	-- world); the fortress's side of the road is a placement rule, so its
+	-- gate turn follows the faction (the Accord's stands east of x = 0)
+	check(profile.x == nil and profile.z == nil, row.key .. ": no position in the profile")
+	local want = row.kind == "pvp_fortress" and (row.faction == "accord" and 1 or 3) or
 		(row.faction == "accord" and 0 or 2)
 	check(profile.art.turns == want, row.key .. ": gate turn rule")
 	for _, seed in ipairs({"42", "7", "-12345678901234"}) do
@@ -327,7 +330,7 @@ for i, profile in ipairs(profiles) do
 		else
 			check(race == catalog.camp_race(sha, seed, profile.numeric_id, row.faction), row.key .. ": rolled race")
 		end
-		local socket_rows = settlement.sockets(prepared, {x = profile.x, y = 20, z = profile.z})
+		local socket_rows = settlement.sockets(prepared, {x = 0, y = 20, z = 0})
 		check(register(profile.key, race, socket_rows, profile.label) == #socket_rows,
 			row.key .. ": registers")
 	end

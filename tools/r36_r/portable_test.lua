@@ -77,6 +77,9 @@ local mobs_dir = repo .. "/mods/ENTITIES/grug_mobs"
 local json = dofile(repo .. "/tools/r28_b1/json.lua")
 local R = dofile(mobs_dir .. "/rift_core.lua")
 local poi_rows = dofile(wp40 .. "/r20_poi_catalog.lua")
+-- The rift sites are fixed anchors: their position is the source's (Round
+-- 46: the catalogue holds none).
+local map_source = dofile(wp40 .. "/source/simple_map.lua")
 _G.core = {}
 local build_r20 = dofile(wp40 .. "/r20_poi_blueprint.lua")
 local wp = dofile(wp40 .. "/world_protection.lua")
@@ -109,7 +112,10 @@ do
 		check(art and art.kind == "clash", "S " .. key .. " is a clash site")
 		check(art and (art.zone_id == "front_gravesalt_escarpment" or
 			art.zone_id == "front_skyglass_canopy"), "S " .. key .. " lies in a 51-60 zone")
-		local anchor = {x = art.x, y = ANCHOR_Y[key], z = art.z}
+		local fixed = map_source.anchors[art.number]
+		check(fixed and fixed.placement_mode ~= "placed" and fixed.position ~= nil,
+			"S " .. key .. " is a fixed anchor")
+		local anchor = {x = fixed.position.x, y = ANCHOR_Y[key], z = fixed.position.z}
 		local bp = blueprint(art)
 		sites[key] = {art = art, anchor = anchor, bp = bp}
 		protection_rows[#protection_rows + 1] = {key = key, slot = art.slot, anchor = anchor,

@@ -2,7 +2,9 @@
 -- remain private to the authenticated R4 session; this graph contains only
 -- stable anchor references and the ten reviewed rare patrol offsets. The
 -- ordered offsets are the exact authored `rare_patrol_offsets` of
--- source/simple_map.lua (the rare_route anchors, numeric IDs 91..100). R7
+-- source/simple_map.lua (the rare_route anchors in anchor order; the
+-- outposts and rare routes are found by kind, Round 46, so a new row joins
+-- without a code change). R7
 -- freezes the complete returned graph in its source projection, so this is
 -- the sole live copy rather than a second policy hidden in a consumer.
 
@@ -19,9 +21,8 @@ return function(source, sha256_hex)
 		fail("SHA-256 seam differs")
 	end
 	if type(source) ~= "table" or type(source.anchors) ~= "table" or
-			type(source.zones) ~= "table" or #source.anchors ~= 118 or
-			#source.zones ~= 38 or type(source.rare_patrol_offsets) ~= "table" or
-			#source.rare_patrol_offsets ~= 10 then
+			type(source.zones) ~= "table" or #source.anchors < 12 or
+			#source.zones ~= 38 or type(source.rare_patrol_offsets) ~= "table" then
 		fail("source population differs")
 	end
 	local function anchor_ref(anchor, required_slot)
@@ -60,20 +61,26 @@ return function(source, sha256_hex)
 		races[#races + 1] = {race_id = race, faction_id = start.faction,
 			start = start.reference, capital = capital.reference}
 	end
-	local outposts = {}
-	for index = 25, 48 do
-		local reference, zone = anchor_ref(source.anchors[index])
-		local race = zone.race_region
-		if not source.anchors[index].slot_id:match("^outpost_%d+$") or
-				type(race) ~= "string" or not starts[race] then
-			fail("outpost roster differs")
+	local outposts, rare_anchors = {}, {}
+	for index = 1, #source.anchors do
+		local anchor = source.anchors[index]
+		if anchor.template_id == "outpost" then
+			local reference, zone = anchor_ref(anchor)
+			local race = zone.race_region
+			if not anchor.slot_id:match("^outpost_%d+$") or
+					type(race) ~= "string" or not starts[race] then
+				fail("outpost roster differs")
+			end
+			outposts[#outposts + 1] = {race_id = race,
+				faction_id = starts[race].faction, anchor = reference}
+		elseif anchor.template_id == "rare_route" then
+			rare_anchors[#rare_anchors + 1] = anchor
 		end
-		outposts[#outposts + 1] = {race_id = race,
-			faction_id = starts[race].faction, anchor = reference}
 	end
+	if #rare_anchors ~= #source.rare_patrol_offsets then fail("rare roster differs") end
 	local rare_routes = {}
-	for offset = 1, 10 do
-		local anchor = source.anchors[90 + offset]
+	for offset = 1, #rare_anchors do
+		local anchor = rare_anchors[offset]
 		local offsets = source.rare_patrol_offsets[offset]
 		local reference = anchor_ref(anchor)
 		if anchor.template_id ~= "rare_route" or
@@ -90,7 +97,8 @@ return function(source, sha256_hex)
 			end
 			patrol[index] = {x = point.x, z = point.z}
 		end
-		rare_routes[offset] = {id = RARE_IDS[offset], anchor = reference,
+		rare_routes[offset] = {id = RARE_IDS[offset] or anchor.slot_id:gsub("^rare_", ""),
+			anchor = reference,
 			patrol_offsets = patrol}
 	end
 	local payload = {schema = "grug_wp40_r7_consumer_payload_v1",

@@ -59,7 +59,7 @@ local function build(seed)
 		return module
 	end
 	local session, planner_source = W.zones().new_with_planner_source_runtime(seed, 1)
-	return session, planner_source, held.height, A.source
+	return session, planner_source, held.height, W.source
 end
 
 -- road_writer.lua under a stub engine: content ids are the node names.

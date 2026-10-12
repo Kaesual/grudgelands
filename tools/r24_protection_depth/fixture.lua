@@ -67,11 +67,11 @@ local function build_world(seed)
 	local A = dofile(dir .. "/world_assembly.lua")(dir, sha)
 	local W = A.world(seed, nil, {roads = false, protection = A.square_cities(CITY_HALF)})
 	local session, planner_source = W.zones().new_with_planner_source_runtime(seed, 1)
-	local roster = dofile(dir .. "/r7_anchor_roster.lua")(A.source, session,
+	local roster = dofile(dir .. "/r7_anchor_roster.lua")(W.source, session,
 		planner_source, sha)
 	local overlay = dofile(dir .. "/r7_zone_overlay.lua")(session, roster)
 	return {session = session, overlay = overlay, planner_source = planner_source,
-		source = A.source, roster = roster}
+		source = W.source, roster = roster}
 end
 
 -- ---------------------------------------------------------------------------
@@ -663,13 +663,19 @@ local function addendum_checks(W, seed)
 	lines[#lines + 1] = ("seed %s: envelope land columns whose surface lies below the" ..
 		" floor: %s"):format(seed, table.concat(parts, "; "))
 	check(#report > 0, "some envelope reaches ground below its floor")
-	if seed == "4242424242" then
-		local found
-		for _, r in ipairs(report) do if r.id == "anchor_075" then found = r end end
-		-- The island's whole-island coast envelope keeps every other surface
-		-- writer off these columns; only P9G treats it as nonblocking.
-		check(found and found.p9g >= 1000 and found.surface == 0,
-			"anchor_075 shore: >= 1000 P9G columns below the floor, island coast kept")
+	-- A dragon island's whole-island coast envelope keeps every other surface
+	-- writer off its anchors' columns below the floor; only P9G treats it as
+	-- nonblocking. (Round 46: anchor_075 is placed per world, no longer on
+	-- the shore where seed 4242424242 put 1000 such columns under it, so the
+	-- rule is checked on every island anchor the report names.)
+	local island = {}
+	for _, a in ipairs(source.anchors) do
+		if a.zone_numeric_id == 33 or a.zone_numeric_id == 38 then island[a.id] = true end
+	end
+	for _, r in ipairs(report) do
+		if island[r.id] then
+			check(r.surface == 0, r.id .. " island: no surface writer below the floor")
+		end
 	end
 	-- 2. Mapgen and renewal give the same cave answer. The writer's input is
 	--    gathered as cave_content_allowed_at gathers it; renewal is the real

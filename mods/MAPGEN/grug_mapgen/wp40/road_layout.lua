@@ -2541,8 +2541,9 @@ local function new_module(P)
 	-- Network inputs from the source anchors (world_zones.md §9): nodes
 	-- (capitals, starts, villages, one contested endpoint per frontier zone:
 	-- the outpost or clash site nearest the own capital, D18), trail nodes
-	-- (every other outpost, mine, bandit and Mirefolk camp on the two
-	-- mainlands, D19), reserved areas (capital squares, D59; start envelopes;
+	-- (every other POI on the two mainlands whose kind's profile says
+	-- `trail`: outposts, mines, bandit and Mirefolk camps, the fortresses;
+	-- D19), reserved areas (capital squares, D59; start envelopes;
 	-- POI cores), the build order and the loop candidates. `position_of(id)`
 	-- returns an anchor's fitted x, z and (optionally) its fitted ground y.
 	---------------------------------------------------------------------------
@@ -2621,9 +2622,7 @@ local function new_module(P)
 		for _, a in ipairs(source.anchors) do
 			local t = a.template_id
 			local fac = faction(a.zone_numeric_id)
-			if not used[a.id] and fac ~= "front" and (t == "outpost" or t == "mine" or
-					t == "bandit_home" or t == "bandit_frontier" or t == "mirefolk" or
-					t == "pvp_fortress") then
+			if not used[a.id] and fac ~= "front" and prof[t].trail then
 				local x, z, core_y = pos(a)
 				local node = {id = a.id, kind = t, x = x, z = z, y = core_y,
 					core = prof[t].building_core_width, faction = fac, zone = a.zone_numeric_id}

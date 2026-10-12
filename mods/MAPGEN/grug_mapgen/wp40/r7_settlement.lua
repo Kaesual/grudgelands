@@ -379,41 +379,41 @@ M.roster = {
 	-- its roster position. The home villages, corresponding first outposts and
 	-- inner bandit camps are the exact stable anchors named by the story catalog.
 	{
-		key="copperfell_village",label="Copperfell Village",race="dwarf",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_013",numeric_id=13,x=-1868,z=-2036,blueprint_file="r7_copperfell_village_blueprint.lua",blueprint_schema="grug_r14_copperfell_village_v1",identity_schema="grug_r14_copperfell_village_identity_v1",config_schema="grug_r14_copperfell_village_config_v1",ledger_schema="grug_r14_copperfell_village_ledger_v1",metrics_schema="grug_r14_copperfell_village_metrics_v1",delta_schema="grug_r14_copperfell_village_delta_v1"},
+		key="copperfell_village",label="Copperfell Village",race="dwarf",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_013",numeric_id=13,blueprint_file="r7_copperfell_village_blueprint.lua",blueprint_schema="grug_r14_copperfell_village_v1",identity_schema="grug_r14_copperfell_village_identity_v1",config_schema="grug_r14_copperfell_village_config_v1",ledger_schema="grug_r14_copperfell_village_ledger_v1",metrics_schema="grug_r14_copperfell_village_metrics_v1",delta_schema="grug_r14_copperfell_village_delta_v1"},
 	{
-		key="goldmead_village",label="Goldmead Village",race="human",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_015",numeric_id=15,x=-120,z=-2020,blueprint_file="r7_goldmead_village_blueprint.lua",blueprint_schema="grug_r14_goldmead_village_v1",identity_schema="grug_r14_goldmead_village_identity_v1",config_schema="grug_r14_goldmead_village_config_v1",ledger_schema="grug_r14_goldmead_village_ledger_v1",metrics_schema="grug_r14_goldmead_village_metrics_v1",delta_schema="grug_r14_goldmead_village_delta_v1"},
+		key="goldmead_village",label="Goldmead Village",race="human",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_015",numeric_id=15,blueprint_file="r7_goldmead_village_blueprint.lua",blueprint_schema="grug_r14_goldmead_village_v1",identity_schema="grug_r14_goldmead_village_identity_v1",config_schema="grug_r14_goldmead_village_config_v1",ledger_schema="grug_r14_goldmead_village_ledger_v1",metrics_schema="grug_r14_goldmead_village_metrics_v1",delta_schema="grug_r14_goldmead_village_delta_v1"},
 	{
-		key="starbough_village",label="Starbough Village",race="elf",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_017",numeric_id=17,x=1900,z=-2020,blueprint_file="r7_starbough_village_blueprint.lua",blueprint_schema="grug_r14_starbough_village_v1",identity_schema="grug_r14_starbough_village_identity_v1",config_schema="grug_r14_starbough_village_config_v1",ledger_schema="grug_r14_starbough_village_ledger_v1",metrics_schema="grug_r14_starbough_village_metrics_v1",delta_schema="grug_r14_starbough_village_delta_v1"},
+		key="starbough_village",label="Starbough Village",race="elf",slot="village_1",bounds="poi",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_017",numeric_id=17,blueprint_file="r7_starbough_village_blueprint.lua",blueprint_schema="grug_r14_starbough_village_v1",identity_schema="grug_r14_starbough_village_identity_v1",config_schema="grug_r14_starbough_village_config_v1",ledger_schema="grug_r14_starbough_village_ledger_v1",metrics_schema="grug_r14_starbough_village_metrics_v1",delta_schema="grug_r14_starbough_village_delta_v1"},
 	{
-		key="mournfen_village",label="Mournfen Village",race="undead",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_019",numeric_id=19,x=-1900,z=2020,blueprint_file="r7_mournfen_village_blueprint.lua",blueprint_schema="grug_r14_mournfen_village_v1",identity_schema="grug_r14_mournfen_village_identity_v1",config_schema="grug_r14_mournfen_village_config_v1",ledger_schema="grug_r14_mournfen_village_ledger_v1",metrics_schema="grug_r14_mournfen_village_metrics_v1",delta_schema="grug_r14_mournfen_village_delta_v1"},
+		key="mournfen_village",label="Mournfen Village",race="undead",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_019",numeric_id=19,blueprint_file="r7_mournfen_village_blueprint.lua",blueprint_schema="grug_r14_mournfen_village_v1",identity_schema="grug_r14_mournfen_village_identity_v1",config_schema="grug_r14_mournfen_village_config_v1",ledger_schema="grug_r14_mournfen_village_ledger_v1",metrics_schema="grug_r14_mournfen_village_metrics_v1",delta_schema="grug_r14_mournfen_village_delta_v1"},
 	{
-		key="redtusk_village",label="Redtusk Village",race="orc",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_021",numeric_id=21,x=-88,z=2004,blueprint_file="r7_redtusk_village_blueprint.lua",blueprint_schema="grug_r14_redtusk_village_v1",identity_schema="grug_r14_redtusk_village_identity_v1",config_schema="grug_r14_redtusk_village_config_v1",ledger_schema="grug_r14_redtusk_village_ledger_v1",metrics_schema="grug_r14_redtusk_village_metrics_v1",delta_schema="grug_r14_redtusk_village_delta_v1"},
+		key="redtusk_village",label="Redtusk Village",race="orc",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_021",numeric_id=21,blueprint_file="r7_redtusk_village_blueprint.lua",blueprint_schema="grug_r14_redtusk_village_v1",identity_schema="grug_r14_redtusk_village_identity_v1",config_schema="grug_r14_redtusk_village_config_v1",ledger_schema="grug_r14_redtusk_village_ledger_v1",metrics_schema="grug_r14_redtusk_village_metrics_v1",delta_schema="grug_r14_redtusk_village_delta_v1"},
 	{
-		key="raincall_village",label="Raincall Village",race="troll",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_023",numeric_id=23,x=1876,z=2044,blueprint_file="r7_raincall_village_blueprint.lua",blueprint_schema="grug_r14_raincall_village_v1",identity_schema="grug_r14_raincall_village_identity_v1",config_schema="grug_r14_raincall_village_config_v1",ledger_schema="grug_r14_raincall_village_ledger_v1",metrics_schema="grug_r14_raincall_village_metrics_v1",delta_schema="grug_r14_raincall_village_delta_v1"},
+		key="raincall_village",label="Raincall Village",race="troll",slot="village_1",bounds="poi",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_023",numeric_id=23,blueprint_file="r7_raincall_village_blueprint.lua",blueprint_schema="grug_r14_raincall_village_v1",identity_schema="grug_r14_raincall_village_identity_v1",config_schema="grug_r14_raincall_village_config_v1",ledger_schema="grug_r14_raincall_village_ledger_v1",metrics_schema="grug_r14_raincall_village_metrics_v1",delta_schema="grug_r14_raincall_village_delta_v1"},
 	{
-		key="copperfell_outpost",label="Copperfell Outpost",race="dwarf",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_025",numeric_id=25,x=-2100,z=-2100,blueprint_file="r7_copperfell_outpost_blueprint.lua",blueprint_schema="grug_r14_copperfell_outpost_v1",identity_schema="grug_r14_copperfell_outpost_identity_v1",config_schema="grug_r14_copperfell_outpost_config_v1",ledger_schema="grug_r14_copperfell_outpost_ledger_v1",metrics_schema="grug_r14_copperfell_outpost_metrics_v1",delta_schema="grug_r14_copperfell_outpost_delta_v1",reserve_anchor_root=true},
+		key="copperfell_outpost",label="Copperfell Outpost",race="dwarf",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_025",numeric_id=25,blueprint_file="r7_copperfell_outpost_blueprint.lua",blueprint_schema="grug_r14_copperfell_outpost_v1",identity_schema="grug_r14_copperfell_outpost_identity_v1",config_schema="grug_r14_copperfell_outpost_config_v1",ledger_schema="grug_r14_copperfell_outpost_ledger_v1",metrics_schema="grug_r14_copperfell_outpost_metrics_v1",delta_schema="grug_r14_copperfell_outpost_delta_v1",reserve_anchor_root=true},
 	{
-		key="goldmead_outpost",label="Goldmead Outpost",race="human",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_029",numeric_id=29,x=176,z=-2026,blueprint_file="r7_goldmead_outpost_blueprint.lua",blueprint_schema="grug_r14_goldmead_outpost_v1",identity_schema="grug_r14_goldmead_outpost_identity_v1",config_schema="grug_r14_goldmead_outpost_config_v1",ledger_schema="grug_r14_goldmead_outpost_ledger_v1",metrics_schema="grug_r14_goldmead_outpost_metrics_v1",delta_schema="grug_r14_goldmead_outpost_delta_v1",reserve_anchor_root=true},
+		key="goldmead_outpost",label="Goldmead Outpost",race="human",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_029",numeric_id=29,blueprint_file="r7_goldmead_outpost_blueprint.lua",blueprint_schema="grug_r14_goldmead_outpost_v1",identity_schema="grug_r14_goldmead_outpost_identity_v1",config_schema="grug_r14_goldmead_outpost_config_v1",ledger_schema="grug_r14_goldmead_outpost_ledger_v1",metrics_schema="grug_r14_goldmead_outpost_metrics_v1",delta_schema="grug_r14_goldmead_outpost_delta_v1",reserve_anchor_root=true},
 	{
-		key="starbough_outpost",label="Starbough Outpost",race="elf",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_033",numeric_id=33,x=2100,z=-2100,blueprint_file="r7_starbough_outpost_blueprint.lua",blueprint_schema="grug_r14_starbough_outpost_v1",identity_schema="grug_r14_starbough_outpost_identity_v1",config_schema="grug_r14_starbough_outpost_config_v1",ledger_schema="grug_r14_starbough_outpost_ledger_v1",metrics_schema="grug_r14_starbough_outpost_metrics_v1",delta_schema="grug_r14_starbough_outpost_delta_v1",reserve_anchor_root=true},
+		key="starbough_outpost",label="Starbough Outpost",race="elf",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_033",numeric_id=33,blueprint_file="r7_starbough_outpost_blueprint.lua",blueprint_schema="grug_r14_starbough_outpost_v1",identity_schema="grug_r14_starbough_outpost_identity_v1",config_schema="grug_r14_starbough_outpost_config_v1",ledger_schema="grug_r14_starbough_outpost_ledger_v1",metrics_schema="grug_r14_starbough_outpost_metrics_v1",delta_schema="grug_r14_starbough_outpost_delta_v1",reserve_anchor_root=true},
 	{
-		key="mournfen_outpost",label="Mournfen Outpost",race="undead",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_037",numeric_id=37,x=-2100,z=2100,blueprint_file="r7_mournfen_outpost_blueprint.lua",blueprint_schema="grug_r14_mournfen_outpost_v1",identity_schema="grug_r14_mournfen_outpost_identity_v1",config_schema="grug_r14_mournfen_outpost_config_v1",ledger_schema="grug_r14_mournfen_outpost_ledger_v1",metrics_schema="grug_r14_mournfen_outpost_metrics_v1",delta_schema="grug_r14_mournfen_outpost_delta_v1",reserve_anchor_root=true},
+		key="mournfen_outpost",label="Mournfen Outpost",race="undead",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_037",numeric_id=37,blueprint_file="r7_mournfen_outpost_blueprint.lua",blueprint_schema="grug_r14_mournfen_outpost_v1",identity_schema="grug_r14_mournfen_outpost_identity_v1",config_schema="grug_r14_mournfen_outpost_config_v1",ledger_schema="grug_r14_mournfen_outpost_ledger_v1",metrics_schema="grug_r14_mournfen_outpost_metrics_v1",delta_schema="grug_r14_mournfen_outpost_delta_v1",reserve_anchor_root=true},
 	{
-		key="redtusk_outpost",label="Redtusk Outpost",race="orc",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_041",numeric_id=41,x=176,z=2074,blueprint_file="r7_redtusk_outpost_blueprint.lua",blueprint_schema="grug_r14_redtusk_outpost_v1",identity_schema="grug_r14_redtusk_outpost_identity_v1",config_schema="grug_r14_redtusk_outpost_config_v1",ledger_schema="grug_r14_redtusk_outpost_ledger_v1",metrics_schema="grug_r14_redtusk_outpost_metrics_v1",delta_schema="grug_r14_redtusk_outpost_delta_v1",reserve_anchor_root=true},
+		key="redtusk_outpost",label="Redtusk Outpost",race="orc",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_041",numeric_id=41,blueprint_file="r7_redtusk_outpost_blueprint.lua",blueprint_schema="grug_r14_redtusk_outpost_v1",identity_schema="grug_r14_redtusk_outpost_identity_v1",config_schema="grug_r14_redtusk_outpost_config_v1",ledger_schema="grug_r14_redtusk_outpost_ledger_v1",metrics_schema="grug_r14_redtusk_outpost_metrics_v1",delta_schema="grug_r14_redtusk_outpost_delta_v1",reserve_anchor_root=true},
 	{
-		key="raincall_outpost",label="Raincall Outpost",race="troll",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_045",numeric_id=45,x=2132,z=2084,blueprint_file="r7_raincall_outpost_blueprint.lua",blueprint_schema="grug_r14_raincall_outpost_v1",identity_schema="grug_r14_raincall_outpost_identity_v1",config_schema="grug_r14_raincall_outpost_config_v1",ledger_schema="grug_r14_raincall_outpost_ledger_v1",metrics_schema="grug_r14_raincall_outpost_metrics_v1",delta_schema="grug_r14_raincall_outpost_delta_v1",reserve_anchor_root=true},
+		key="raincall_outpost",label="Raincall Outpost",race="troll",slot="outpost_1",bounds="poi_outpost",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_045",numeric_id=45,blueprint_file="r7_raincall_outpost_blueprint.lua",blueprint_schema="grug_r14_raincall_outpost_v1",identity_schema="grug_r14_raincall_outpost_identity_v1",config_schema="grug_r14_raincall_outpost_config_v1",ledger_schema="grug_r14_raincall_outpost_ledger_v1",metrics_schema="grug_r14_raincall_outpost_metrics_v1",delta_schema="grug_r14_raincall_outpost_delta_v1",reserve_anchor_root=true},
 	{
-		key="copperfell_bandit_camp",label="Copperfell Bandit Camp",race="dwarf",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_049",numeric_id=49,x=-1568,z=-2066,blueprint_file="r7_copperfell_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_copperfell_bandit_camp_v1",identity_schema="grug_r14_copperfell_bandit_camp_identity_v1",config_schema="grug_r14_copperfell_bandit_camp_config_v1",ledger_schema="grug_r14_copperfell_bandit_camp_ledger_v1",metrics_schema="grug_r14_copperfell_bandit_camp_metrics_v1",delta_schema="grug_r14_copperfell_bandit_camp_delta_v1",reserve_anchor_root=true},
+		key="copperfell_bandit_camp",label="Copperfell Bandit Camp",race="dwarf",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_copperfell_foothills",anchor_id="anchor_049",numeric_id=49,blueprint_file="r7_copperfell_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_copperfell_bandit_camp_v1",identity_schema="grug_r14_copperfell_bandit_camp_identity_v1",config_schema="grug_r14_copperfell_bandit_camp_config_v1",ledger_schema="grug_r14_copperfell_bandit_camp_ledger_v1",metrics_schema="grug_r14_copperfell_bandit_camp_metrics_v1",delta_schema="grug_r14_copperfell_bandit_camp_delta_v1",reserve_anchor_root=true},
 	{
-		key="goldmead_bandit_camp",label="Goldmead Bandit Camp",race="human",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_051",numeric_id=51,x=320,z=-1980,blueprint_file="r7_goldmead_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_goldmead_bandit_camp_v1",identity_schema="grug_r14_goldmead_bandit_camp_identity_v1",config_schema="grug_r14_goldmead_bandit_camp_config_v1",ledger_schema="grug_r14_goldmead_bandit_camp_ledger_v1",metrics_schema="grug_r14_goldmead_bandit_camp_metrics_v1",delta_schema="grug_r14_goldmead_bandit_camp_delta_v1",reserve_anchor_root=true},
+		key="goldmead_bandit_camp",label="Goldmead Bandit Camp",race="human",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_goldmead_vale",anchor_id="anchor_051",numeric_id=51,blueprint_file="r7_goldmead_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_goldmead_bandit_camp_v1",identity_schema="grug_r14_goldmead_bandit_camp_identity_v1",config_schema="grug_r14_goldmead_bandit_camp_config_v1",ledger_schema="grug_r14_goldmead_bandit_camp_ledger_v1",metrics_schema="grug_r14_goldmead_bandit_camp_metrics_v1",delta_schema="grug_r14_goldmead_bandit_camp_delta_v1",reserve_anchor_root=true},
 	{
-		key="starbough_bandit_camp",label="Starbough Bandit Camp",race="elf",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_053",numeric_id=53,x=1632,z=-2066,blueprint_file="r7_starbough_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_starbough_bandit_camp_v1",identity_schema="grug_r14_starbough_bandit_camp_identity_v1",config_schema="grug_r14_starbough_bandit_camp_config_v1",ledger_schema="grug_r14_starbough_bandit_camp_ledger_v1",metrics_schema="grug_r14_starbough_bandit_camp_metrics_v1",delta_schema="grug_r14_starbough_bandit_camp_delta_v1",reserve_anchor_root=true},
+		key="starbough_bandit_camp",label="Starbough Bandit Camp",race="elf",slot="bandit_1",bounds="poi",lazy=true,zone_id="elandor_starbough_vale",anchor_id="anchor_053",numeric_id=53,blueprint_file="r7_starbough_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_starbough_bandit_camp_v1",identity_schema="grug_r14_starbough_bandit_camp_identity_v1",config_schema="grug_r14_starbough_bandit_camp_config_v1",ledger_schema="grug_r14_starbough_bandit_camp_ledger_v1",metrics_schema="grug_r14_starbough_bandit_camp_metrics_v1",delta_schema="grug_r14_starbough_bandit_camp_delta_v1",reserve_anchor_root=true},
 	{
-		key="mournfen_bandit_camp",label="Mournfen Bandit Camp",race="undead",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_055",numeric_id=55,x=-1600,z=2050,blueprint_file="r7_mournfen_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_mournfen_bandit_camp_v1",identity_schema="grug_r14_mournfen_bandit_camp_identity_v1",config_schema="grug_r14_mournfen_bandit_camp_config_v1",ledger_schema="grug_r14_mournfen_bandit_camp_ledger_v1",metrics_schema="grug_r14_mournfen_bandit_camp_metrics_v1",delta_schema="grug_r14_mournfen_bandit_camp_delta_v1",reserve_anchor_root=true},
+		key="mournfen_bandit_camp",label="Mournfen Bandit Camp",race="undead",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_mournfen",anchor_id="anchor_055",numeric_id=55,blueprint_file="r7_mournfen_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_mournfen_bandit_camp_v1",identity_schema="grug_r14_mournfen_bandit_camp_identity_v1",config_schema="grug_r14_mournfen_bandit_camp_config_v1",ledger_schema="grug_r14_mournfen_bandit_camp_ledger_v1",metrics_schema="grug_r14_mournfen_bandit_camp_metrics_v1",delta_schema="grug_r14_mournfen_bandit_camp_delta_v1",reserve_anchor_root=true},
 	{
-		key="redtusk_bandit_camp",label="Redtusk Bandit Camp",race="orc",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_057",numeric_id=57,x=320,z=1980,blueprint_file="r7_redtusk_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_redtusk_bandit_camp_v1",identity_schema="grug_r14_redtusk_bandit_camp_identity_v1",config_schema="grug_r14_redtusk_bandit_camp_config_v1",ledger_schema="grug_r14_redtusk_bandit_camp_ledger_v1",metrics_schema="grug_r14_redtusk_bandit_camp_metrics_v1",delta_schema="grug_r14_redtusk_bandit_camp_delta_v1",reserve_anchor_root=true},
+		key="redtusk_bandit_camp",label="Redtusk Bandit Camp",race="orc",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_redtusk_savanna",anchor_id="anchor_057",numeric_id=57,blueprint_file="r7_redtusk_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_redtusk_bandit_camp_v1",identity_schema="grug_r14_redtusk_bandit_camp_identity_v1",config_schema="grug_r14_redtusk_bandit_camp_config_v1",ledger_schema="grug_r14_redtusk_bandit_camp_ledger_v1",metrics_schema="grug_r14_redtusk_bandit_camp_metrics_v1",delta_schema="grug_r14_redtusk_bandit_camp_delta_v1",reserve_anchor_root=true},
 	{
-		key="raincall_bandit_camp",label="Raincall Bandit Camp",race="troll",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_059",numeric_id=59,x=1632,z=2034,blueprint_file="r7_raincall_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_raincall_bandit_camp_v1",identity_schema="grug_r14_raincall_bandit_camp_identity_v1",config_schema="grug_r14_raincall_bandit_camp_config_v1",ledger_schema="grug_r14_raincall_bandit_camp_ledger_v1",metrics_schema="grug_r14_raincall_bandit_camp_metrics_v1",delta_schema="grug_r14_raincall_bandit_camp_delta_v1",reserve_anchor_root=true},
+		key="raincall_bandit_camp",label="Raincall Bandit Camp",race="troll",slot="bandit_1",bounds="poi",lazy=true,zone_id="kragmar_raincall_basin",anchor_id="anchor_059",numeric_id=59,blueprint_file="r7_raincall_bandit_camp_blueprint.lua",blueprint_schema="grug_r14_raincall_bandit_camp_v1",identity_schema="grug_r14_raincall_bandit_camp_identity_v1",config_schema="grug_r14_raincall_bandit_camp_config_v1",ledger_schema="grug_r14_raincall_bandit_camp_ledger_v1",metrics_schema="grug_r14_raincall_bandit_camp_metrics_v1",delta_schema="grug_r14_raincall_bandit_camp_delta_v1",reserve_anchor_root=true},
 }
 
 -- The remaining authored roster uses the same projection/manifest authority.
@@ -426,7 +426,7 @@ for _, art in ipairs(round20_catalog) do
 	M.roster[#M.roster+1]={key=art.key,label=art.label,race=art.race,slot=art.slot,
 		bounds=bounds_key,lazy=true,zone_id=art.zone_id,
 		anchor_id=("anchor_%03d"):format(art.number),numeric_id=art.number,
-		x=art.x,z=art.z,blueprint_file="r20_poi_blueprint.lua",art=art,
+		blueprint_file="r20_poi_blueprint.lua",art=art,
 		blueprint_schema=stem.."_v1",identity_schema=stem.."_identity_v1",
 		config_schema=stem.."_config_v1",ledger_schema=stem.."_ledger_v1",
 		metrics_schema=stem.."_metrics_v1",delta_schema=stem.."_delta_v1",
@@ -438,14 +438,14 @@ end
 -- kind). Every row has its anchor; a missing one is an authoring error.
 --
 -- The one gate faces where players come from: a fortress's faces the middle
--- road along x = 0 (west when the fortress stands east of it, east when
--- west, and toward its own continent when it stands on the line); a camp's
--- faces its own continent (Elandor at -z, Kragmar at +z). A row's own
--- `turns` overrides the rule.
-function M.pvp_gate_turns(row, x)
+-- road along x = 0, which the placement rules keep on the faction's side
+-- (`placement_rules.lua`: the Accord's east of it, so its gate faces west;
+-- the Throng's west, its gate facing east); a camp's faces its own
+-- continent (Elandor at -z, Kragmar at +z). A row's own `turns` overrides
+-- the rule. Seed-free, so the blueprint is too.
+function M.pvp_gate_turns(row)
 	if row.turns ~= nil then return row.turns end
-	if row.kind == "pvp_fortress" and x > 0 then return 1 end
-	if row.kind == "pvp_fortress" and x < 0 then return 3 end
+	if row.kind == "pvp_fortress" then return row.faction == "accord" and 1 or 3 end
 	return row.faction == "accord" and 0 or 2
 end
 
@@ -471,10 +471,9 @@ function M.pvp_profiles(source)
 			race = pvp_catalog.SEAT_RACE[row.faction], slot = row.slot,
 			bounds = row.kind, lazy = true, zone_id = row.zone_id,
 			anchor_id = a.id, numeric_id = a.numeric_id,
-			x = a.position.x, z = a.position.z,
 			blueprint_file = "r31_pvp_poi_blueprint.lua",
 			art = {kind = row.kind, faction = row.faction, band = row.band,
-				turns = M.pvp_gate_turns(row, a.position.x)},
+				turns = M.pvp_gate_turns(row)},
 			blueprint_schema = stem .. "_v1", identity_schema = stem .. "_identity_v1",
 			config_schema = stem .. "_config_v1", ledger_schema = stem .. "_ledger_v1",
 			metrics_schema = stem .. "_metrics_v1", delta_schema = stem .. "_delta_v1",
@@ -510,6 +509,10 @@ local PROFILE_FIELDS = {"key", "label", "race", "slot", "bounds", "zone_id",
 	"identity_schema", "config_schema", "ledger_schema", "metrics_schema",
 	"delta_schema"}
 local NUMBER_FIELDS = {numeric_id = true, x = true, z = true}
+-- A start's and a capital's profile carries its fixed position; every
+-- other settlement's anchor is placed per world (Round 46) and read from
+-- the zones session.
+local OPTIONAL_FIELDS = {x = true, z = true}
 
 -- Packed cell key. The duplicate-cell check used to build one string per
 -- cell; a 100,000-cell capital core would allocate 100,000 of them per
@@ -857,7 +860,8 @@ local function check_profile(profile)
 	for _, field in ipairs(PROFILE_FIELDS) do
 		local value = profile[field]
 		local wanted = NUMBER_FIELDS[field] and "number" or "string"
-		if type(value) ~= wanted or (wanted == "string" and value == "") then
+		if (value ~= nil or not OPTIONAL_FIELDS[field]) and
+				(type(value) ~= wanted or (wanted == "string" and value == "")) then
 			error("WP13 settlement: profile field " .. field .. " differs", 0)
 		end
 	end
@@ -1214,7 +1218,7 @@ function M.config(prepared, content, raw_sha256)
 		local anchor = dependencies.zones_session.anchor(profile.zone_id, profile.slot)
 		if type(anchor) ~= "table" or anchor.id ~= profile.anchor_id or
 				anchor.numeric_id ~= profile.numeric_id or
-				anchor.x ~= profile.x or anchor.z ~= profile.z or
+				(profile.x ~= nil and (anchor.x ~= profile.x or anchor.z ~= profile.z)) or
 				type(anchor.y) ~= "number" or anchor.y % 1 ~= 0 then
 			fail("stable " .. profile.slot .. " anchor differs")
 		end

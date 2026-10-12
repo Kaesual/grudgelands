@@ -1,15 +1,16 @@
--- Round 31 Lane M portable test (LuaJIT): the PvP POI placement as data and
--- its consumers, without building a world (tools/r31_m/spacing_check.lua
--- checks the anchors on real worlds).
+-- Round 31 Lane M portable test (LuaJIT): the PvP POIs as data and their
+-- consumers, on the placed anchors of seed 42 (Round 46: the anchors are
+-- placed per world, `placement.lua`; tools/r31_m/spacing_check.lua checks
+-- their rules on six seeds).
 --
 --   luajit tools/r31_m/portable_test.lua [REPO]
 --
 --   1. anchors 101..118 are the catalogue's rows in order (zone, slot,
---      template = kind, `layout_fixed`), each kind's fitting profile holds
+--      template = kind, `placed`), each kind's fitting profile holds
 --      its blueprint box (the fortress with an apron of at least 5 nodes),
---      and each fortress stands on the Battlegrounds half of its zone, off
---      the middle road's axis, its gate (`r7_settlement.pvp_gate_turns`)
---      facing the axis;
+--      and each fortress stands on its faction's side of the middle road's
+--      axis (the Accord's east), its gate (`r7_settlement.pvp_gate_turns`,
+--      seed-free) facing the axis;
 --   1b. the road layout's inputs (`road_layout.inputs`): a fortress is a
 --      trail node whose gate side is the same as the blueprint's turn, a
 --      PvP camp is none (the Battlegrounds have no trails), and every PvP
@@ -17,9 +18,9 @@
 --   2. `r7_settlement.pvp_profiles` binds all 18 to their anchors and the
 --      roster carries them once; on the source without anchors 101..118 the
 --      binding is refused (no "none bound" branch is left);
---   3. the R7 consumers that count anchors accept the 118: the consumer
---      payload is byte-identical to the one of the first 100 anchors (its
---      frozen digest in `r7_manifest.lua` does not move), and the activation
+--   3. the R7 consumers find their anchors by kind: the consumer payload is
+--      byte-identical to the one of the first 100 anchors (its frozen
+--      digest in `r7_manifest.lua` does not move), and the activation
 --      roster stays the 42 capitals, outposts and bandit camps (the PvP POIs
 --      carry no activation node) on a stub session;
 --   4. world protection: the PvP slots answer "fortress" or "war_camp", a PvP
@@ -44,11 +45,12 @@ end
 
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 _G.core = _G.core or {}
-local source = dofile(dir .. "/source/simple_map.lua")
-local catalog = dofile(dir .. "/r31_pvp_catalog.lua")
-local settlement = dofile(dir .. "/r7_settlement.lua")
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
+-- seed 42's placed source (the authored one holds no placed position)
+local source = dofile(dir .. "/world_assembly.lua")(dir, sha).world("42").place()
+local catalog = dofile(dir .. "/r31_pvp_catalog.lua")
+local settlement = dofile(dir .. "/r7_settlement.lua")
 local zone_by_id, prof = {}, {}
 for _, z in ipairs(source.zones) do zone_by_id[z.id] = z end
 for _, p in ipairs(source.anchor_profiles) do prof[p.id] = p end
@@ -59,7 +61,7 @@ for i, row in ipairs(catalog.rows) do
 	local a = source.anchors[100 + i]
 	check(a.numeric_id == 100 + i and a.id == ("anchor_%03d"):format(100 + i), row.key .. ": id")
 	check(a.zone_numeric_id == zone_by_id[row.zone_id].numeric_id and a.slot_id == row.slot and
-		a.template_id == row.kind and a.placement_mode == "layout_fixed" and
+		a.template_id == row.kind and a.placement_mode == "placed" and
 		a.approved_candidate_index == 1, row.key .. ": zone, slot, template")
 	local box = settlement.BOUNDS[row.kind]
 	local half = prof[row.kind].building_core_width / 2
@@ -68,8 +70,9 @@ for i, row in ipairs(catalog.rows) do
 	if row.kind == "pvp_fortress" then
 		local hub = zone_by_id[row.zone_id].hub
 		check(a.position.x ~= 0 and math.abs(a.position.z) < math.abs(hub.z) and
-			(a.position.z < 0) == (row.faction == "accord"), row.key .. ": Battlegrounds half")
-		check(settlement.pvp_gate_turns(row, a.position.x) == (a.position.x > 0 and 1 or 3),
+			(a.position.z < 0) == (row.faction == "accord") and
+			(a.position.x > 0) == (row.faction == "accord"), row.key .. ": its side, Battlegrounds half")
+		check(settlement.pvp_gate_turns(row) == (a.position.x > 0 and 1 or 3),
 			row.key .. ": gate toward the middle road's axis")
 		check(half - box.max.x >= 5, row.key .. ": a flat apron round the walls")
 	else
@@ -91,7 +94,7 @@ for i, row in ipairs(catalog.rows) do
 		row.key .. ": the router reserves the core")
 	if row.kind == "pvp_fortress" then
 		-- quarter turns about +y take the gate (local -z) to the world
-		local turns = settlement.pvp_gate_turns(row, a.position.x)
+		local turns = settlement.pvp_gate_turns(row)
 		local gx, gz = ({{0, -1}, {-1, 0}, {0, 1}, {1, 0}})[turns + 1][1],
 			({{0, -1}, {-1, 0}, {0, 1}, {1, 0}})[turns + 1][2]
 		check(n and n.kind == "pvp_fortress" and n.gate_x == gx and n.gate_z == gz and
@@ -109,8 +112,7 @@ for _, p in ipairs(settlement.roster) do
 	if p.blueprint_file == "r31_pvp_poi_blueprint.lua" then in_roster = in_roster + 1 end
 end
 check(in_roster == 18, "the roster carries them once")
-local first100 = {}
-for k, v in pairs(source) do first100[k] = v end
+local first100 = setmetatable({}, {__index = source})
 first100.anchors = {}
 for i = 1, 100 do first100.anchors[i] = source.anchors[i] end
 check(not pcall(settlement.pvp_profiles, first100), "a source without them is refused")
@@ -119,15 +121,7 @@ check(not pcall(settlement.pvp_profiles, first100), "a source without them is re
 local payload_factory = dofile(dir .. "/r7_consumer_payload.lua")
 local function sha_hex(bytes) return common.hex(sha(bytes)) end
 local payload = payload_factory(source, sha_hex)
-check(not pcall(payload_factory, first100, sha_hex), "the payload refuses 100 anchors now")
--- The payload of the first 100 anchors, read through a source that only
--- reports 118 (the count is the one thing that changed).
-local padded = {}
-for k, v in pairs(first100) do padded[k] = v end
-padded.anchors = {}
-for i = 1, 100 do padded.anchors[i] = source.anchors[i] end
-for i = 101, 118 do padded.anchors[i] = {id = "pad", zone_numeric_id = 1, slot_id = "pad"} end
-check(payload_factory(padded, sha_hex).sha256 == payload.sha256,
+check(payload_factory(first100, sha_hex).sha256 == payload.sha256,
 	"the consumer payload does not see the PvP anchors")
 local roster_factory = dofile(dir .. "/r7_anchor_roster.lua")
 local session = {anchor = function(zone_id, slot_id)

@@ -271,8 +271,9 @@ local function is_island_region(region)
 end
 
 -- ---------------------------------------------------------------- key points
--- Every fixed point the field keeps: anchors (with their fitting-width or
--- hard-protected footprint), zone hubs, island landings and boat-path mainland ends.
+-- Every fixed point the field keeps: the fixed anchors (with their
+-- fitting-width or hard-protected footprint), zone hubs, island landings and
+-- boat-path mainland ends.
 local function footprint_samples(cx, cz, half, step)
 	local s = {{cx, cz}}
 	if half <= 0 then return s end
@@ -296,7 +297,9 @@ function M.keypoints(source)
 		hard[r.id] = r.total_width or r.bound_width
 	end
 	local kp = {}
-	for _, a in ipairs(source.anchors) do
+	-- Only the fixed anchors (Round 46): a placed POI is chosen on the
+	-- finished field, so it never bends a border or the coast.
+	for _, a in ipairs(source.fixed_anchors or source.anchors) do
 		local p = prof[a.template_id]
 		-- the footprint that must be in-zone and on land: the fitting square
 		-- (villages 96, ...); for starts the square that holds the start town

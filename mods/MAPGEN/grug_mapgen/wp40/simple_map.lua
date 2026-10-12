@@ -512,6 +512,14 @@ return function(zone_field)
 					-- included, so the band grows no trees; "cover" opens a share
 					-- of the band to ground cover (Round 36 W3).
 					shape.kind = "start_town" shape.center = record.center
+				elseif recipe == "exclude_underground_v1" then
+					-- An underground reservation (Round 46): a square under the
+					-- anchor; it answers the territory rule and keeps caves out
+					-- of its whole width, never the plants on its ground.
+					shape.kind = "square" shape.center = exclusion.center
+					shape.total_width = exclusion.total_width
+					shape.cave_core_width = exclusion.total_width
+					shape.anchor_blend = true
 				elseif recipe == "exclude_active_core_v1" then
 					shape.kind = "square" shape.center = record.center
 					shape.total_width = hard_recipe_by_id[record.recipe_id].total_width or 1
@@ -838,9 +846,11 @@ return function(zone_field)
 					end
 				end
 				if not match then return nil end
+				if not match.position then fail("placed anchor without its world's position") end
 				return {x = match.position.x, z = match.position.z, anchor_id = match.id,
 					selection_mode = match.placement_mode == "authored_fixed" and
-						"authored_fixed" or "frozen_layout",
+						"authored_fixed" or (match.placement_mode == "placed" and "placed" or
+						"frozen_layout"),
 					approved_candidate_index = match.approved_candidate_index}
 			end
 
