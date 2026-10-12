@@ -206,21 +206,26 @@ it has no cut form (Round 33: Cut Citrine is the T1 trinket gem). Gems use
 progression resources and are never called gems.
 
 **Gems are depth-tiered, not regional** (Round 29, economy plan §6). Each of
-the six species has one tier and occurs **only in the tier rock of that
-tier**, identically in every race region, zone and faction; its harvest tier
-equals its tier, so it needs the pick of its layer:
+the six species has one tier and occurs **in the tier rock of that tier and,
+thinner, in the two tier rocks below it** (Round 46 ruling 3), identically in
+every race region, zone and faction. Its harvest tier equals its tier at any
+depth, so it needs the pick of its own layer; the deeper rock needs the
+deeper pick anyway, so no new gate appears (Coal at depth works the same
+way). Gathering XP follows the harvest tier too: a Citrine dug in T3 rock pays
+T1 gem XP.
 
-| Tier | Tier rock | Gem |
-|---|---|---|
-| T1 | `default:stone`, y ≥ −100 | Citrine |
-| T2 | `t2_stone`, −101…−300 | Jade |
-| T3 | `t3_stone`, −301…−500 | Garnet |
-| T4 | `t4_stone`, −501…−700 | Sapphire |
-| T5 | `t5_stone`, −701…−1000 | Ruby |
-| T6 | `t6_stone`, below −1000 | Diamond |
+| Tier | Tier rock | Own gem | Also, thinner (one, two tiers deeper) |
+|---|---|---|---|
+| T1 | `default:stone`, y ≥ −100 | Citrine | — |
+| T2 | `t2_stone`, −101…−300 | Jade | Citrine |
+| T3 | `t3_stone`, −301…−500 | Garnet | Jade, Citrine |
+| T4 | `t4_stone`, −501…−700 | Sapphire | Garnet, Jade |
+| T5 | `t5_stone`, −701…−1000 | Ruby | Sapphire, Garnet |
+| T6 | `t6_stone`, below −1000 | Diamond | Ruby, Sapphire |
 
 *Why:* one depth ladder for ores and gems; no contested route is needed for a
-gem, and no enchant waits on another region's gem.
+gem, and no enchant waits on another region's gem. A miner in deeper rock
+still meets the lower gems now and then.
 
 Each surface/depth column has exactly one race region, independent of
 political territory or PvP state; it selects the region's signature wood:
@@ -236,15 +241,18 @@ political territory or PvP state; it selects the region's signature wood:
 
 **Density shape and calibration targets:**
 
-- Every gem: about **one per 512 eligible host nodes in its own band**, none
-  elsewhere. Full table: [world_zones.md §11](world_zones.md#11-resource-loot-and-poi-budgets).
+- Every gem: about **one per 512 eligible host nodes in its own band**, one
+  per 1024 one tier deeper and one per 2048 two tiers deeper (half and a
+  quarter of its density), none elsewhere. Full table: [world_zones.md
+  §11](world_zones.md#11-resource-loot-and-poi-budgets).
 - Continental Abyssal Crystal exists for both factions throughout T5 and T6.
   Accepted Round 21 calibrations are **one crystal per 512 eligible host nodes in
   T5 and per 256 in T6**; the y = −701…−1000 entry
   band alone must yield enough for an
   Abyssal Steel pick without T6 access.
-- At y = −1500…−1999, ordinary continental ores, Diamond and Abyssal
-  Crystal receive **+25%** bounded placement budget; at y ≤ −2000 they
+- At y = −1500…−1999, ordinary continental ores, the T6 gems (Diamond,
+  Ruby, Sapphire) and Abyssal Crystal receive **+25%** bounded placement
+  budget; at y ≤ −2000 they
   receive **+50%**, capped. Trophies, king loot, claims and
   unique quest sources never receive this multiplier. It is mapgen placement,
   not runtime ore respawn.
@@ -577,9 +585,9 @@ shovels need a character level by material tier; the tier is the tool's own
 
 **Gathering XP** (Round 24 ruling 28, 2026-09-29). Every natural ore or gem
 node a player digs and every fish caught gives XP (formula and table in
-[progression.md](progression.md) "Gathering XP"): 0.10 kill equivalents per ore
-node, 0.20 per gem node (the six depth-tiered species), 0.33 per fish, of
-`M(min(reference level, player level + 5))` (Round 28 ruling 32) with reference level 10 × harvest
+[progression.md](progression.md) "Gathering XP"): 0.05 kill equivalents per ore
+node, 0.10 per gem node (the six depth-tiered species), 0.33 per fish, of
+`M(min(reference level, player level))` (Round 46 ruling 7) with reference level 10 × harvest
 tier (T1 10 … T6 60) or 10 × the water's zone band. The harvest callback of the
 node_dig wrapper settles it, so only a successful player dig of a natural
 resource node pays; explosions and mobs never dig through it, and ore nodes
@@ -1174,7 +1182,7 @@ becoming a side door around the pick-tier gate of §3.0.4.
 | Contested approaches 31–40 | equivalent T4 access | T4, elite chances on elites | all six race approaches are contested |
 | Front 41–50 | equivalent T5 access | T5, elite chances on elites | The Broken Causeway and The Shattered Line; war-front objectives and quest hooks; no free supply crates |
 | High front 51–60 / endpoints 60 | equivalent T6 access | T6; elites common | two contested dragons and the apex camps |
-| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; one gem per tier rock (§3.0.1); deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
+| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; each gem from its own tier rock, thinner two tiers deeper (§3.0.1); deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**

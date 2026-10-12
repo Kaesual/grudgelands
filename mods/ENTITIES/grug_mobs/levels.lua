@@ -514,7 +514,10 @@ function grug_mobs.ensure_init(self)
 	end
 end
 
--- XP a player earns for killing this mob, before the gray rule.
+-- XP a player earns for killing this mob, before the split (Round 46
+-- ruling 5, grug_xp.kill_xp: the player's own-level kill equivalent times
+-- the level-difference factor, 0 at the gray line, times the tier
+-- multiplier). Without a player level: the mob's own-level value.
 -- An explicit `_grug_xp_reward` in the def wins (Kraken: 0 = never a farm).
 function grug_mobs.kill_xp(self, player_level)
 	local cfg = level_cfg[self.name]
@@ -525,11 +528,12 @@ function grug_mobs.kill_xp(self, player_level)
 		return self._grug_xp
 	end
 	local level = self._grug_level or 1
-	if player_level ~= nil then
-		level = math.min(level, player_level + grug_xp.LEVEL_OFFSET)
+	if player_level == nil then
+		local _, _, xp = grug_mobs.stats_for(level, self._grug_tier)
+		return xp
 	end
-	local _, _, xp = grug_mobs.stats_for(level, self._grug_tier)
-	return xp
+	local t = tier_def(self._grug_tier)
+	return t.xp_flat or grug_xp.kill_xp(level, player_level, t.xp)
 end
 
 -- Promote/demote a live mob to a registered tier: applies the

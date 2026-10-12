@@ -5,12 +5,14 @@ Python 3 standard library only. Formulas follow the Round 28 plan, Rulings
 
   M(L)            = 25 + 5 L                (XP of one normal kill at level L)
   XP(L -> L + 1)  = round(M(L) * k(L), tens), k(L) = 8 + 0.29 (L - 1)
-  kill XP         = M(min(mob level, player level + 5)) * tier multiplier,
-                    0 when mob level <= player level - 10 (gray rule),
-                    floor-divided by the number of eligible participants
+  kill XP         = M(player level) * f(d) * tier multiplier (Round 46
+                    ruling 5), d = mob level - player level, f in whole
+                    percent: 0 at d <= -7 (gray rule), 100 - 15 |d| for
+                    -6..-1, 100 + 10 d for 0..+5, 150 above; floored once
+                    after dividing by the number of eligible participants
   quest XP        = round(weight * M(quest level)); human +10 % on top
-  gathering XP    = round(ratio * M(min(10 * tier, player level + 5))),
-                    ratio ore 0.10, gem 0.20, fish 0.33
+  gathering XP    = round(ratio * M(min(10 * tier, player level))),
+                    ratio ore 0.05, gem 0.10, fish 0.33 (Round 46 ruling 7)
 """
 import json
 import math
@@ -28,24 +30,17 @@ GAME_ZONE_DIRS = (REPO / "mods" / "ENTITIES" / "grug_mobs" / "data" / "zones",
 
 LEVEL_CAP = 60
 TIER_MULT = {"normal": 1, "elite": 4, "rare": 6}
-GATHER_RATIO = {"ore": 0.10, "gem": 0.20, "fish": 0.33}
-GRAY_GAP = 10
-LEVEL_OFFSET = 5
+GATHER_RATIO = {"ore": 0.05, "gem": 0.10, "fish": 0.33}
+GRAY_GAP = 7
 HUMAN_QUEST_BONUS = 1.1
 
 STATS = ("str", "dex", "int", "attack_speed_percent", "crit_percent",
          "max_hp_percent", "max_mana_percent", "dodge_percent", "armor_rating")
 
-# Bands of the frame's table (section 2.2): (from level, to level, questing
-# target, reward-share target). "start" applies to the 1 -> 10 band.
-BANDS = [
-    (1, 10, 0.90, 0.40),
-    (10, 20, 0.80, 0.40),
-    (20, 30, 0.80, 0.40),
-    (30, 40, 0.80, 0.40),
-    (40, 50, 0.70, 0.35),
-    (50, 60, 0.70, 0.35),
-]
+# Bands of the frame's table (section 2.2): (from level, to level). Their
+# questing and reward-share targets (Ruling 33) are retired: Round 46 ruling 6
+# fixes no share, the XP mix follows the game's decisions.
+BANDS = [(1, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60)]
 
 SNAKE = re.compile(r"^[a-z][a-z0-9_]*$")
 ITEM_ID = re.compile(r"^[a-z][a-z0-9_]*:[a-z0-9_]+$")
@@ -89,11 +84,19 @@ def ke_between(lo, hi):
     return sum(level_xp(level) / M(level) for level in range(lo, hi))
 
 
-def kill_xp(mob_level, player_level, tier="normal", participants=1):
-    if mob_level <= player_level - GRAY_GAP:
+def kill_percent(mob_level, player_level):
+    """The level-difference factor in whole percent (grug_xp.kill_percent)."""
+    d = mob_level - player_level
+    if d <= -GRAY_GAP:
         return 0
-    level = min(mob_level, player_level + LEVEL_OFFSET)
-    return int(M(level) * TIER_MULT.get(tier, 1)) // participants
+    if d < 0:
+        return 100 + 15 * d
+    return 100 + 10 * min(d, 5)
+
+
+def kill_xp(mob_level, player_level, tier="normal", participants=1):
+    xp = M(player_level) * kill_percent(mob_level, player_level) * TIER_MULT.get(tier, 1)
+    return xp // (100 * participants)
 
 
 def expected_kill_xp(level_range, player_level, tier="normal", participants=1):
@@ -111,7 +114,7 @@ def quest_xp(weight, quest_level, human=False):
 
 def gathering_xp(kind, tier, player_level):
     reference = 10 * tier
-    return round_half_up(GATHER_RATIO[kind] * M(min(reference, player_level + LEVEL_OFFSET)))
+    return round_half_up(GATHER_RATIO[kind] * M(min(reference, player_level)))
 
 
 def band_of_level(level):

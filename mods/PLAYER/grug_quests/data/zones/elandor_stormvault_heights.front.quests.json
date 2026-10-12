@@ -177,38 +177,6 @@
       "group": true
     },
     {
-      "id": "archshadow_front_bounty",
-      "line": "front",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 48,
-      "level": 49,
-      "requires": [
-        "archshadow_front_03"
-      ],
-      "title": "Bounty: An Arrow Too Many",
-      "text": "Senn's Aqueduct Bowmen are still at work in the {name:front_broken_causeway/gallows_wood}, which lies {zone_area:front_broken_causeway/gallows_wood}, despite the change in management. Defeat five there by day for a bounty. The bounty stands again twenty-five minutes after each turn-in; I've a budget for clearing the road and every intention of spending it.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "causeway_aqueduct_bowman"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/gallows_wood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Repeatable hunting bounty, upper Causeway: close in on archers.",
-      "duration_min": 10
-    },
-    {
       "id": "archshadow_front_05",
       "line": "front",
       "giver": "r20_anchor_028_host",
@@ -475,38 +443,6 @@
       "duration_min": 12,
       "optional": true,
       "group": true
-    },
-    {
-      "id": "splitbolt_front_bounty",
-      "line": "front",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 54,
-      "level": 55,
-      "requires": [
-        "splitbolt_front_05"
-      ],
-      "title": "Bounty: Cobwebs Are a Hazard",
-      "text": "My crews keep finding fresh webs in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Kill five Tomb Widows there at night and collect a bounty. The job is available again twenty-five minutes after each turn-in. I'd sooner budget for you than keep replacing workers' boots with the workers still in them.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "salt_web_spider"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/tombwood"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Repeatable hunting bounty, Gravesalt middle belt.",
-      "duration_min": 10
     },
     {
       "id": "splitbolt_front_06",

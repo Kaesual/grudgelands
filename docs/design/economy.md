@@ -200,7 +200,7 @@ precedence over preserving the exact mathematical ratio.
   `progression.md` §2). The price is **five minutes of measured reliable net
   solo income** at the character's own bracket, rounded by §4.1's rule
   (ruling 22), and **the first respec of a character is free**: **15c, 35c,
-  75c, 2s, 5s25c and 12s** for the brackets 1–10 to 51–60
+  75c, 2s, 5s50c and 12s** for the brackets 1–10 to 51–60
   (`grug_classes.RESPEC_PRICES`). This retires "repeatable at the class
   trainer, rising with level".
 - **The crown** (Round 33, [item_tiers.md](item_tiers.md) §4): the
@@ -247,11 +247,11 @@ Apprentice Riding and the Improved Boat as much as Journeyman Riding
 
 | Purchase | Level | Income time | Price |
 |---|---:|---|---:|
-| Apprentice Riding | 15 | 15 min | 1s5c |
+| Apprentice Riding | 15 | 15 min | 1s10c |
 | Journeyman Riding | 30 | 45 min | 7s |
 | Expert Riding | 45 | 2 h | 1g29s |
 | Master Riding | 60 | 5 h | 7g38s |
-| Boat | 15 | as Apprentice | 1s5c |
+| Boat | 15 | as Apprentice | 1s10c |
 | Improved Boat | 30 | as Journeyman | 7s |
 
 This replaces the obsolete fixed 1s/8s/30s/60s table; the fast level-60

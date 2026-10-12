@@ -623,9 +623,10 @@ do
 	grug_mobs.register_level_cfg("grug_mobs:kraken", def)
 	check(grug_mobs.kill_xp(mob, 60) == 0 and grug_mobs.kill_xp(mob, 30) == 0,
 		"J its kill XP is 0")
-	-- (an ordinary level-70 elite pays, so the 0 is the Kraken's own)
+	-- (an ordinary level-70 elite pays, so the 0 is the Kraken's own; Round 46
+	-- ruling 5: 4 x M(60) x 1.5 at more than five levels above, was 4 x M(65))
 	check(grug_mobs.kill_xp({name = "grug_mobs:other", _grug_level = 70,
-		_grug_tier = "elite"}, 60) == 4 * grug_xp.mob_xp(65), "J ...an ordinary elite's is not")
+		_grug_tier = "elite"}, 60) == 4 * grug_xp.mob_xp(60) * 1.5, "J ...an ordinary elite's is not")
 end
 
 if failures > 0 then

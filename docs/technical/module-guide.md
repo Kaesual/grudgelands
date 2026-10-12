@@ -45,7 +45,11 @@ tools](#player-meta-read-by-external-tools).
   The choices are a session-only draft (`session.draft`, checked again at
   Create); "Create character" calls `set_faction`, `set_race`, the panel's
   `store` and `set_class` at once and sets `grug_classes:arriving`, which
-  keeps the character in stasis until the arrival teleport clears it. Esc
+  keeps the character in stasis until the arrival teleport clears it. A
+  session whose wait ends in a teleport (arrival or map-reset relocation)
+  starts at the waiting point (0, 31000, 0)
+  ([world preparation](../design/world_preparation.md#the-waiting-point);
+  fixture `tools/r46_wt`). Esc
   closes a form for good (Round 24 ruling 32); the current window is always
   the player's inventory formspec, while sfinv is suspended through the
   vendored `sfinv.inventory_suspended` hook (VENDOR.md), and "" submissions

@@ -236,38 +236,6 @@
       "climax": true
     },
     {
-      "id": "highcourt_bounty_razorbacks",
-      "line": "provisions",
-      "giver": "r20_human_capital_cook",
-      "turnin": "r20_human_capital_cook",
-      "min_level": 27,
-      "level": 28,
-      "requires": [
-        "highcourt_provisions_02"
-      ],
-      "title": "Bounty: Replanted, Again",
-      "text": "Yet again the gardeners are replanting the {name:outer_fields}, which lie {zone_area:outer_fields}, and the Razorbacks appear to regard this as attentive service. Bring down six by day and return for your bounty. I can pay for another hunt twenty-five minutes after you turn this one in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "monstrous_boar"
-          ],
-          "count": 6,
-          "area": "elandor_highcourt/outer_fields"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1500
-      },
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Repeatable bounty in the late outskirts.",
-      "duration_min": 8
-    },
-    {
       "id": "highcourt_dispatch_01",
       "line": "dispatch",
       "giver": "r20_human_capital_cook",

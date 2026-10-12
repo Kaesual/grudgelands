@@ -86,18 +86,30 @@ end
 -- "in combat the resource is effectively unlimited" finding with option (b) --
 -- lower the income and add decay: a landed full swing grants 8 instead of 12,
 -- a hit taken 3 instead of 4, and rage bleeds 5/s (it was 2/s) while
--- grug_core.in_combat is false. The numbers are named here because five swing
--- sites and one hit-taken site share them, and the talents Stoke and Spite add
+-- grug_core.in_combat is false. The numbers are named here because three swing
+-- grant sites and one hit-taken site share them, and the talents Stoke and Spite add
 -- to them (skill_trees.md §2.1/§2.2).
 --
+-- Round 46 ruling 9: RAGE_PER_SWING is the grant of a swing on the reference
+-- interval (1 s, a sword). A landed swing grants it times the weapon's BASE
+-- swing interval over the reference, so a slow weapon earns more per hit and
+-- every weapon the same per second; the attack-speed enchant keeps its rage
+-- share because it shortens only the stack's interval, not the base one.
+-- The fraction is kept: add_rage stores floats and the HUD floors them.
+--
 grug_abilities.RAGE_PER_SWING = 8
+grug_abilities.RAGE_SWING_REFERENCE = 1.0
 grug_abilities.RAGE_PER_HIT_TAKEN = 3
 grug_abilities.RAGE_DECAY_PER_SECOND = 5
 
--- Rage for one landed full swing, Stoke included.
-local function swing_rage(player)
-	return grug_abilities.RAGE_PER_SWING
-		+ grug_classes.get_talent_bonus(player, "rage_per_swing_add")
+-- Rage for one landed full swing, Stoke included. `interval` is the weapon's
+-- base swing interval (grug_abilities.base_swing_interval); without it the
+-- currently equipped melee weapon's is read (the Strike tooltip).
+local function swing_rage(player, interval)
+	interval = interval or grug_abilities.base_swing_interval(player)
+	return (grug_abilities.RAGE_PER_SWING
+		+ grug_classes.get_talent_bonus(player, "rage_per_swing_add"))
+		* interval / grug_abilities.RAGE_SWING_REFERENCE
 end
 grug_abilities.swing_rage = swing_rage
 
@@ -1163,6 +1175,8 @@ local function prepare_authoritative_swing(player, target, token)
 		-- total with the once-scaled total before armor and crit.
 		extra_damage = swing.scaled_damage - normal_damage,
 		threat_mult = swing.threat_mult,
+		-- The weapon's base interval scales the swing's rage (ruling 9).
+		base_fpi = swing.base_fpi,
 		debug_name = swing.debug_name,
 		transaction = swing.debug_name and swing or nil,
 		proc = swing.proc,
@@ -1201,7 +1215,8 @@ local function finish_authoritative_swing(context, result)
 	end
 	if not context.proc then
 		if result.grant_rage then
-			grug_abilities.add_rage(context.player, swing_rage(context.player))
+			grug_abilities.add_rage(context.player,
+				swing_rage(context.player, context.base_fpi))
 		end
 		grant_battlebeat()
 		return false
@@ -1213,7 +1228,8 @@ local function finish_authoritative_swing(context, result)
 		core.log("error", "[grug_abilities] authoritative proc lost its " ..
 			"affordable resource before commit: " .. context.proc.id)
 		if result.grant_rage then
-			grug_abilities.add_rage(context.player, swing_rage(context.player))
+			grug_abilities.add_rage(context.player,
+				swing_rage(context.player, context.base_fpi))
 		end
 		grant_battlebeat()
 		return false
@@ -1231,7 +1247,8 @@ local function finish_authoritative_swing(context, result)
 	-- the landed swing's grant instead of silently discarding it before Mighty
 	-- Blow's cost opens room in the pool.
 	if result.grant_rage then
-		grug_abilities.add_rage(context.player, swing_rage(context.player))
+		grug_abilities.add_rage(context.player,
+			swing_rage(context.player, context.base_fpi))
 	end
 	grant_battlebeat()
 	return true
@@ -1385,6 +1402,7 @@ attempt_swing = function(player, selected, held, latched)
 	local transaction = {
 		weapon_damage = weapon_damage,
 		fpi = fpi,
+		base_fpi = grug_abilities.base_swing_interval(player, weapon),
 		melee_bonus = melee_bonus,
 		raw_damage = raw_damage,
 		proc = proc,

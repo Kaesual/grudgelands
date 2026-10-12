@@ -168,38 +168,6 @@
       "duration_min": 10
     },
     {
-      "id": "stormvault_bounty_strays",
-      "line": "passes",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 32,
-      "level": 32,
-      "requires": [
-        "stormvault_passes_02"
-      ],
-      "title": "Bounty: Bones Off the Road",
-      "text": "Every night, Rime Strays insist on holding the {name:passes}, which lie {zone_area:passes}. Break six after dark; I want wagons rattling through there, not ribcages. This bounty is repeatable, twenty minutes after you turn it in.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "rime_skeleton_stray"
-          ],
-          "count": 6,
-          "area": "elandor_stormvault_heights/passes"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 8,
-      "repeatable": {
-        "cooldown": 1200
-      }
-    },
-    {
       "id": "stormvault_sighting_01",
       "line": "sighting",
       "giver": "r20_anchor_028_host",
@@ -340,38 +308,6 @@
       "duration_min": 15,
       "climax": true,
       "group": true
-    },
-    {
-      "id": "stormvault_bounty_shamblers",
-      "line": "sighting",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 38,
-      "level": 39,
-      "requires": [
-        "stormvault_sighting_03"
-      ],
-      "title": "Bounty: An Overdue Dismissal",
-      "text": "The Trench Shamblers in the {name:frostfields}, which lie {zone_area:frostfields}, still march after dark, long past any reasonable end to their service. Put down eight of them so the living watch can hold its ground. You may take this bounty again twenty-five minutes after turning it in; I'll keep the pay ready.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "unrelenting_zombie"
-          ],
-          "count": 8,
-          "area": "elandor_stormvault_heights/frostfields"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Optional repeatable hunt.",
-      "duration_min": 10,
-      "repeatable": {
-        "cooldown": 1500
-      }
     }
   ]
 }

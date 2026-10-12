@@ -233,37 +233,6 @@
         "items": []
       },
       "duration_min": 8
-    },
-    {
-      "id": "totemwater_tides_bounty",
-      "line": "tides",
-      "giver": "r20_anchor_047_host",
-      "turnin": "r20_anchor_047_host",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "totemwater_tides_02"
-      ],
-      "title": "Bounty: What the Tide Brings",
-      "text": "The tide lays Barnacle Pinchers across the {name:breakers} {dir_from_giver:breakers} as though scattering seeds. Kill six by day for this repeatable bounty. You can take it again twenty minutes after turning it in; no gift of foresight is needed to know I will still want them gone.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "armored_crab"
-          ],
-          "count": 6,
-          "area": "kragmar_totemwater_reach/breakers"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 1200
-      },
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 9
     }
   ]
 }

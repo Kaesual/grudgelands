@@ -44,7 +44,7 @@ theft or pickup rules and no item/entity persistence.
   He is a passive, invulnerable service NPC; he sells the two boats and
   nothing else, and buys nothing.
 - **Boat from character level 15, Improved Boat from level 30 (requires the
-  Boat)** (ruling 3). The Boat costs as much as Apprentice Riding (**1s5c**),
+  Boat)** (ruling 3). The Boat costs as much as Apprentice Riding (**1s10c**),
   the Improved Boat as much as Journeyman Riding (**7s**) (`economy.md` §4.2,
   Round 29 lane E4). No materials, no recipe, nothing at character
   creation.

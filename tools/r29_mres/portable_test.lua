@@ -2,13 +2,17 @@
 -- Loads the REAL files under minimal stubs and checks:
 --   1. the material registry: six gems, one per tier, harvest tier = tier,
 --      every gem with cut and block form; no grades, no per-race gem columns;
---      one gem density (1 per 512 host nodes);
---   2. the mapgen rows (r7_r6_manifest.lua): each gem only in its own tier
---      band at 512, first tier = harvest tier; the Diamond deep multipliers
---      as arithmetic (host nodes per gem at -1500...-1999 and below -2000);
---   3. the WP43 projection (wp43_handoff.lua): no grade table, the gem density;
+--      one gem density (1 per 512 host nodes), half and a quarter of it one
+--      and two tiers deeper (Round 46 ruling 3);
+--   2. the mapgen rows (r7_r6_manifest.lua): each gem in its own tier band at
+--      512, one tier deeper at 1024, two tiers deeper at 2048, nowhere else,
+--      first tier = harvest tier; Coal 96 and Iron 128 in T3 (Round 46 T3
+--      correction); the Diamond deep multipliers as arithmetic (host nodes
+--      per gem at -1500...-1999 and below -2000);
+--   3. the WP43 projection (wp43_handoff.lua): no grade table, the gem
+--      densities;
 --   4. the real R6 content module accepts the rows and refuses a gem moved
---      out of its band or a different gem density;
+--      out of its bands or a different gem density;
 --   5. the Goldsmith (goldsmith.lua under stubs): every cut at its mining
 --      tier, trinket gems by recipe tier, the bonus yield only for gems;
 --   6. enchants.json: every gem input at or below the enchant tier, the
@@ -88,6 +92,12 @@ end
 eq(M.DENSITY.g1, nil, "no G1 density")
 eq(M.DENSITY.g2, nil, "no G2 density")
 eq(M.DENSITY.gem and M.DENSITY.gem.host_nodes_per_ore, 512, "gem density")
+-- Round 46 ruling 3: half and a quarter of the gem density one and two tiers
+-- deeper.
+local DEEPER = M.DENSITY.gem and M.DENSITY.gem.deeper_host_nodes_per_ore or {}
+eq(#DEEPER, 2, "two deeper gem densities")
+eq(DEEPER[1], 1024, "gem density one tier deeper")
+eq(DEEPER[2], 2048, "gem density two tiers deeper")
 
 -- 2. Mapgen rows ----------------------------------------------------------------
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
@@ -102,11 +112,15 @@ for tier, key in ipairs(GEMS) do
 	if check(row ~= nil, key .. " mapgen row") then
 		eq(row.first_tier, tier, key .. " first tier")
 		for band = 1, 6 do
-			eq(row.denominators[band], band == tier and 512 or false,
-				key .. " denominator in band " .. band)
+			local expected = band == tier and 512 or band == tier + 1 and 1024 or
+				band == tier + 2 and 2048 or false
+			eq(row.denominators[band], expected, key .. " denominator in band " .. band)
 		end
 	end
 end
+-- Round 46: T3 is the Steel band (Iron Bar + mined Coal); both at T2 supply.
+eq(row_by_key.coal.denominators[3], 96, "Coal in T3")
+eq(row_by_key.iron.denominators[3], 128, "Iron in T3")
 -- Diamond in the deep bands: the row's multiplier on its 512 host nodes.
 local diamond = row_by_key.diamond
 local deep_1500 = 512 * diamond.deep_1500_1999_denominator /
@@ -116,7 +130,8 @@ local deep_2000 = 512 * diamond.deep_2000_floor_denominator /
 check(math.abs(deep_1500 - 409.6) < 1e-9, "Diamond -1500...-1999: one per 409.6")
 check(math.abs(deep_2000 - 1024 / 3) < 1e-9, "Diamond below -2000: one per 341.3")
 for tier = 1, 5 do
-	-- Only Diamond's band (T6, below -1000) reaches the deep bands.
+	-- Only T6 (below -1000) reaches the deep bands: Diamond at its own
+	-- density, Ruby and Sapphire at their deeper ones.
 	check(M.TIERS[tier].y_min > -1500, GEMS[tier] .. " band ends above -1500")
 end
 
@@ -134,6 +149,10 @@ M.PICK_PROFILES = M.PICK_PROFILES or {}
 local projection = handoff.project(M)
 eq(projection.gem_grades, nil, "projection has no gem grades")
 eq(projection.density.gem.host_nodes_per_ore, 512, "projected gem density")
+eq(projection.density.gem.deeper_host_nodes_per_ore[1], 1024,
+	"projected gem density one tier deeper")
+eq(projection.density.gem.deeper_host_nodes_per_ore[2], 2048,
+	"projected gem density two tiers deeper")
 eq(projection.density.g2, nil, "projection has no G2 density")
 
 -- 4. The real R6 content module -----------------------------------------------
@@ -151,10 +170,20 @@ for _, row in ipairs(B.manifest.resources) do
 	if row.key == "jade" then jade = row end
 end
 content_fails(function() jade.denominators[3] = 512 end,
-	function() jade.denominators[3] = false end, "a gem outside its band is refused")
+	function() jade.denominators[3] = 1024 end,
+	"a gem at its own density one tier deeper is refused")
+content_fails(function() jade.denominators[5] = 4096 end,
+	function() jade.denominators[5] = false end,
+	"a gem three tiers deeper is refused")
+content_fails(function() jade.denominators[1] = 1024 end,
+	function() jade.denominators[1] = false end,
+	"a gem above its own tier is refused")
 content_fails(function() B.projection.density.gem.host_nodes_per_ore = 256 end,
 	function() B.projection.density.gem.host_nodes_per_ore = 512 end,
 	"a different gem density is refused")
+content_fails(function() B.projection.density.gem.deeper_host_nodes_per_ore[1] = 512 end,
+	function() B.projection.density.gem.deeper_host_nodes_per_ore[1] = 1024 end,
+	"a different deeper gem density is refused")
 check(pcall(B.content), "R6 content accepts the restored rows")
 
 -- 5. Goldsmith -----------------------------------------------------------------

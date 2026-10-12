@@ -57,39 +57,6 @@
       "duration_min": 10
     },
     {
-      "id": "nv_front_island",
-      "line": "front",
-      "giver": "r20_undead_capital_envoy",
-      "turnin": "r20_undead_capital_envoy",
-      "min_level": 60,
-      "level": 60,
-      "requires": [
-        "nv_front_02"
-      ],
-      "title": "Bounty: Older Than the Records",
-      "text": "The Frostbones on The Wyrmglass Crown have outlasted every record I can find of them. Get a boat from the Shipwright and sail across the channel to the island, then destroy eight at night in the {name:front_wyrmglass_crown/scree}, which lies {zone_area:front_wyrmglass_crown/scree}. Return for your payment in coin; the bounty becomes available again one hour after turn-in. Do return in person, please, rather than as another entry.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "crown_frost_stray"
-          ],
-          "count": 8,
-          "area": "front_wyrmglass_crown/scree"
-        }
-      ],
-      "repeatable": {
-        "cooldown": 3600
-      },
-      "rewards": {
-        "weight": 0,
-        "copper": 600,
-        "items": []
-      },
-      "duration_min": 30,
-      "optional": true
-    },
-    {
       "id": "throng_main_island_cairn",
       "line": "front",
       "giver": "r20_undead_capital_envoy",

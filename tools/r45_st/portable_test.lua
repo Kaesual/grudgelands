@@ -35,7 +35,7 @@
 --      refused without a stand within 4 nodes;
 --   M  the mixtures stay registered as inert items: no record makes or uses
 --      one, no ingredient tier, no brewing adapter, no brewing lists;
---   Q  the 163 quest item objectives name no mixture, potion, elixir or gear
+--   Q  the 158 quest item objectives name no mixture, potion, elixir or gear
 --      (spec §4.7).
 -- Prints "R45 ST PORTABLE PASS checks=<n>" or the failures (exit 1).
 
@@ -1018,7 +1018,8 @@ do
 end
 
 ------------------------------------------------------------------------------
--- Q. The 163 item objectives (spec §4.7): none names an item that disappears
+-- Q. The 158 item objectives (spec §4.7; 163 before Round 46 removed the
+--    repeatable quests): none names an item that disappears
 --    (a mixture) or that only a profession makes (an Alchemy product, gear).
 ------------------------------------------------------------------------------
 do
@@ -1050,7 +1051,7 @@ do
 		end
 	end
 	handle:close()
-	eq(objectives, 163, "Q the quests hold 163 item objectives")
+	eq(objectives, 158, "Q the quests hold 158 item objectives (Round 46: five were on repeatables)")
 	eq(#flagged, 0, "Q none names a mixture, potion, elixir or grug_gear item (" ..
 		table.concat(flagged, ", ") .. ")")
 end

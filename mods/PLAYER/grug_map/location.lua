@@ -201,8 +201,9 @@ core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
 		local name = player:get_player_name()
 		local rec = players[name]
-		-- During character creation the player stands at the engine's spawn
-		-- spot: no sample, so neither the line nor the banner names it; the
+		-- During character creation the player waits at the waiting point
+		-- (or, held during preparation, at its old position): no sample, so
+		-- neither the line nor the banner names it; the
 		-- first sample after release shows the start town.
 		if rec and now >= rec.next_sample and not (grug_core.player_in_creation_stasis and
 				grug_core.player_in_creation_stasis(name)) then

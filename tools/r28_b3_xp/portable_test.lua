@@ -5,12 +5,15 @@
 --   1. the unit and the curve: M(L) = 25 + 5L, XP per level rounded to tens,
 --      4,200 XP to level 10 and 194,220 to level 60, level_from_xp on both
 --      sides of every threshold, set_xp capped at the level-60 total;
---   2. kill XP through the real settlement: the level cap (player + 5), the
---      gray rule, elite x4 / rare x6, boss and critter tiers, the
---      `_grug_xp_reward` override, the participant split with each
---      recipient's own cap, same-faction refusal, no x1.5 and no race bonus;
---   3. gathering XP (ore 0.10, gem 0.20, fish 0.33 of M(min(ref, L + 5))),
---      quiet awards and no race bonus;
+--   2. kill XP through the real settlement (Round 46 ruling 5): M(player
+--      level) times the level-difference factor (-15 % per level below,
+--      +10 % per level above, at most +50 %), the gray rule at 7 below,
+--      elite x4 / rare x6, boss and critter tiers, the `_grug_xp_reward`
+--      override, the participant split with each recipient's own value and
+--      a gray member in the head count, same-faction refusal, no x1.5 and
+--      no race bonus;
+--   3. gathering XP (ore 0.05, gem 0.10, fish 0.33 of M(min(ref, L)),
+--      Round 46 ruling 7), quiet awards and no race bonus;
 --   4. quest_reward(level, weight) and the human +10 % applied by add_xp;
 --   5. cross-check: every line printed by ledger_values.py (the design
 --      ledger's r28common.py) recomputed here must be identical: M, the
@@ -207,11 +210,18 @@ do
 	local b = make_player("bob", nil, {human = true})
 	at_level(a, 1)
 	eq(settle(mob(1, "normal", {a})).alice, 30, "L1 kill at L1: 30 (no x1.5)")
-	eq(settle(mob(3, "normal", {a})).alice, 40, "L3 kill at L1: 40 = 1.33 x an L1 kill")
-	eq(settle(mob(20, "normal", {a})).alice, 55, "L20 kill at L1: capped at L6, 55")
+	-- Round 46 ruling 5 (was M(min(mob, player + 5)), gray at 10 below).
+	eq(settle(mob(3, "normal", {a})).alice, 36, "L3 kill at L1: 30 x 1.2 = 36")
+	eq(settle(mob(6, "normal", {a})).alice, 45, "L6 kill at L1: 30 x 1.5 = 45")
+	eq(settle(mob(20, "normal", {a})).alice, 45, "L20 kill at L1: capped at x 1.5, 45")
 	at_level(a, 15)
-	eq(settle(mob(5, "normal", {a})).alice, nil, "gray: L5 at L15 gives nothing")
-	eq(settle(mob(6, "normal", {a})).alice, 55, "L6 at L15 is not gray: 55")
+	eq(settle(mob(8, "normal", {a})).alice, nil, "gray: L8 at L15 (7 below) gives nothing")
+	eq(settle(mob(9, "normal", {a})).alice, 10, "L9 at L15 is not gray: 100 x 0.10 = 10")
+	eq(settle(mob(12, "normal", {a})).alice, 55, "L12 at L15: 100 x 0.55 = 55")
+	eq(settle(mob(14, "normal", {a})).alice, 85, "L14 at L15: 100 x 0.85 = 85")
+	eq(settle(mob(15, "normal", {a})).alice, 100, "L15 at L15: 100")
+	eq(settle(mob(18, "normal", {a})).alice, 130, "L18 at L15: 100 x 1.3 = 130")
+	check(X.is_gray(8, 15) and not X.is_gray(9, 15), "is_gray: the line at 7 below")
 	at_level(a, 10)
 	eq(settle(mob(10, "elite", {a})).alice, 300, "elite x4 at L10: 300")
 	eq(settle(mob(10, "rare", {a})).alice, 450, "rare x6 at L10: 450")
@@ -224,15 +234,22 @@ do
 	eq(settle(mob(60, "normal", {a}, {name = "test:fixed"})).alice, 77,
 		"_grug_xp_reward 77 pays exactly 77")
 	at_level(a, 60)
-	eq(settle(mob(65, "boss", {a})).alice, 350, "L65 boss at L60: M(65) = 350")
-	eq(settle(mob(70, "elite", {a})).alice, 1400, "L70 elite guard at L60: 4 x M(65)")
+	eq(settle(mob(65, "boss", {a})).alice, 487, "L65 boss at L60: 325 x 1.5 = 487.5 -> 487")
+	eq(settle(mob(70, "elite", {a})).alice, 1950, "L70 elite guard at L60: 4 x 325 x 1.5")
+	eq(settle(mob(53, "elite", {a})).alice, nil, "an elite 7 below is gray too")
 	-- Split: each recipient's own cap, divided by the head count.
 	at_level(a, 10)
 	at_level(b, 1)
 	local got = settle(mob(10, "normal", {a, b}))
 	eq(got.alice, 37, "split: L10 player gets floor(75 / 2)")
-	eq(got.bob, 27, "split: L1 player gets floor(M(6) / 2)")
-	eq(last_granted.bob, 27, "no race bonus on kills (human bob)")
+	eq(got.bob, 22, "split: L1 player gets floor(30 x 1.5 / 2)")
+	eq(last_granted.bob, 22, "no race bonus on kills (human bob)")
+	-- A gray member still counts in the head count (ruling 5).
+	at_level(a, 20)
+	got = settle(mob(10, "normal", {a, b}))
+	eq(got.alice, nil, "split: the gray L20 member gets nothing")
+	eq(got.bob, 22, "split: ...and still halves the L1 member's 45")
+	at_level(a, 10)
 	-- Out of range participants are not counted.
 	b.pos = {x = 100, y = 0, z = 0}
 	got = settle(mob(10, "normal", {a, b}))
@@ -253,22 +270,24 @@ end
 -- 3. Gathering XP.
 ------------------------------------------------------------------------------
 do
-	eq(X.GATHER_XP_RATIO.ore, 0.10, "ore ratio")
-	eq(X.GATHER_XP_RATIO.gem, 0.20, "gem ratio")
+	-- Round 46 ruling 7 (was ore 0.10, gem 0.20 and a reference of L + 5).
+	eq(X.GATHER_XP_RATIO.ore, 0.05, "ore ratio")
+	eq(X.GATHER_XP_RATIO.gem, 0.10, "gem ratio")
 	eq(X.GATHER_XP_RATIO.fish, 0.33, "fish ratio")
-	eq(X.gather_xp("ore", 10, 1), 6, "T1 ore at L1: 0.1 x M(6) = 5.5 -> 6")
-	eq(X.gather_xp("ore", 10, 60), 8, "T1 ore at L60: 0.1 x M(10) = 7.5 -> 8")
-	eq(X.gather_xp("gem", 40, 30), 40, "G2 gem at L30: 0.2 x M(35)")
-	eq(X.gather_xp("fish", 10, 1), 18, "band 1 fish at L1: 0.33 x M(6)")
+	eq(X.gather_xp("ore", 10, 1), 2, "T1 ore at L1: 0.05 x M(1) = 1.5 -> 2")
+	eq(X.gather_xp("ore", 10, 60), 4, "T1 ore at L60: 0.05 x M(10) = 3.75 -> 4")
+	eq(X.gather_xp("gem", 40, 30), 18, "T4 gem at L30: 0.1 x M(30) = 17.5 -> 18")
+	eq(X.gather_xp("gem", 40, 60), 23, "T4 gem at L60: 0.1 x M(40) = 22.5 -> 23")
+	eq(X.gather_xp("fish", 10, 1), 10, "band 1 fish at L1: 0.33 x M(1) = 9.9 -> 10")
 	eq(X.gather_xp("fish", 60, 60), 107, "band 6 fish at L60: 0.33 x M(60)")
 	check(not pcall(X.gather_xp, "wood", 10, 1), "unknown kind raises")
 	local p = make_player("miner", nil, {human = true})
 	at_level(p, 12)
 	fed = {}
-	eq(X.award_gathering(p, "gem", 20), 22, "award at L12: 0.2 x M(min(20, 17))")
+	eq(X.award_gathering(p, "gem", 20), 9, "award at L12: 0.1 x M(min(20, 12)) = 8.5 -> 9")
 	eq(grants[#grants].source, "gathering", "source gathering")
-	eq(grants[#grants].granted, 22, "no race bonus on gathering")
-	eq(fed[1], 22, "a loud award posts its XP")
+	eq(grants[#grants].granted, 9, "no race bonus on gathering")
+	eq(fed[1], 9, "a loud award posts its XP")
 	fed = {}
 	eq(X.award_gathering(p, "fish", 10, true), 25, "quiet fish award at L12: 0.33 x M(10)")
 	eq(#fed, 0, "a quiet award posts nothing")
