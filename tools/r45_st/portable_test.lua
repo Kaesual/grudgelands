@@ -798,8 +798,9 @@ end
 
 ------------------------------------------------------------------------------
 -- T. The trainer mapping in each trainer-role reader: the Cooking trainer
---    socket holds a mender (no teaching, no trainer dialog, no map icon; its
---    click opens the repair form under the trainers' rules).
+--    socket holds a mender (no teaching, no trainer dialog, the repair icon
+--    on the map since Round 46; its click opens the repair form under the
+--    trainers' rules).
 ------------------------------------------------------------------------------
 do
 	local MENDER = grug_jobs.MENDER_TITLE
@@ -896,16 +897,19 @@ do
 	eq(saved_tailor._grug_profession, "tailor", "T a saved tailor trainer stays a trainer")
 	eq(saved_tailor._grug_npc_name, "Tailor Trainer", "T ...with its name")
 
-	-- The map: no marker for the mender (no repairer has an icon), the tailor
-	-- trainer's stays.
-	local labels = {}
-	for _, marker in ipairs(marker_providers.service(visitor)) do labels[marker.label] = marker.kind end
+	-- The map: the tailor trainer's marker stays. Round 46 (lane RP): the
+	-- mender is marked as a service with the repair icon (was: no marker).
+	local labels, textures = {}, {}
+	for _, marker in ipairs(marker_providers.service(visitor)) do
+		labels[marker.label], textures[marker.label] = marker.kind, marker.texture
+	end
 	eq(labels["Tailor Trainer"], "trainer", "T the map marks the tailor trainer")
 	eq(labels["Cooking Trainer"], nil, "T the map marks no Cooking trainer")
-	eq(labels[MENDER], nil, "T ...and no mender")
+	eq(labels[MENDER], "service", "T ...but the mender, as a service")
+	eq(textures[MENDER], "grug_map_repair.png", "T ...with the repair icon")
 	local service_markers = 0
 	for _ in pairs(labels) do service_markers = service_markers + 1 end
-	eq(service_markers, 1, "T ...one service marker in all")
+	eq(service_markers, 2, "T ...two service markers in all")
 end
 
 ------------------------------------------------------------------------------
