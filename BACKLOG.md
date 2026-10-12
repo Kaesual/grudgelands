@@ -80,6 +80,13 @@ layouts, resource tables or buff values.
 - Review how quest tasks, dialogue and surroundings support immersion;
   develop improvements on the existing framework rather than treating
   its delivery as the end of quest refinement.
+- **Player feedback 2026-10-12, deferred to the quest/content round:**
+  fewer distinct mob names and roles (461 names; one route meets 177),
+  fewer and merged loot items with their recipes, and quest variety with
+  new objective types at the new seed-placed POIs (about 83 % of quests are
+  kill or kill-for-drop). Round 46 removes the repeatables, stops the 23
+  sell-only drops and prepares the placement
+  ([Round 46 plan](docs/planning/round46-plan.md)).
 - Current owners: [quests](docs/design/quests.md) and
   [story](docs/design/story.md). Coordinate teaching steps with the class
   and crafting revisions above.

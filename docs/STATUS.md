@@ -17,6 +17,11 @@ user's home artifact folder, not the repository. **Parked 2026-10-12** as a
 future work package after two reviews; the next round focuses on world
 generation. Resume with the [continuation plan](planning/class-redesign/continuation.md).
 
+**Round 46 planned** (2026-10-12): [world generation and player
+feedback](planning/round46-plan.md) — seed-dependent placement, the
+ore/gem/coal table, XP, underground, depth pulse, rage and caster weapons,
+loot, cooking, no repeatables, repair in towns; 0.46.0 with a map reset.
+
 - **0.45.1, the fix round after the 0.45.0 playtest, complete; not
   pushed yet (pushed only on the user's word)** (2026-10-10, version
   0.45.1, **compatible**,
