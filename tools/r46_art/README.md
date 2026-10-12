@@ -1,20 +1,41 @@
 # Round 46 ART — Repair marker proposals
 
-Four original proposals, three corrected A takes and two heavier A1
-anvils, original AI-assisted pixel art by **GPT-6 Astra** for Grudgelands,
+Four original proposals, three corrected A takes, two heavier A1
+anvils and two closer-hammer A1a takes, original AI-assisted pixel art
+by **GPT-6 Astra** for Grudgelands,
 created on 2026-10-12.
 Offered under **CC0 1.0 Universal
 (CC0-1.0)**: the project dedicates any rights it holds in these originals
 to CC0. No downloaded artwork or third-party source images were used.
 
-The latest [A1 comparison](repair/overview-a1.png) places **A1, A1a and
-A1b** among the existing service markers on all three backgrounds.
+The latest [closer-hammer comparison](repair/overview-a1c.png) places
+**A1a, A1c and A1d** among the existing service markers on all three
+backgrounds. The earlier [A1 comparison](repair/overview-a1.png) places
+**A1, A1a and A1b** among the same markers.
 The earlier [local review page](review.html) still compares A1–A3 and
 prepares a choice to send back. Nothing is preselected. The page works
 offline and does not submit or install anything. The [A comparison](repair/overview-a.png)
 places the original A and its three hammer corrections among the existing
 service markers. All earlier sprites, previews, overviews and the review
 page remain unchanged.
+
+## A1a closer hammer — fix round 3
+
+The user picked A1a and requested a smaller gap between hammer and anvil.
+Both takes translate the complete hammer straight down, keeping its exact
+head, shaft length, angle and colours. A1a's heavy anvil stays pixel-identical.
+
+| Take | Change | Sprite | Preview |
+| --- | --- | --- | --- |
+| A1c | The complete A1a hammer moves down exactly one pixel. | [16×16](repair/A1c/grug_map_repair.png) | [Comparison](repair/A1c/preview.png) |
+| A1d | The complete A1a hammer moves down exactly two pixels; the grip's dark end meets the anvil's dark top edge. | [16×16](repair/A1d/grug_map_repair.png) | [Comparison](repair/A1d/preview.png) |
+
+In A1d, two identical dark contour pixels coincide at `(12, 9)` and
+`(13, 9)` (zero-based); no steel or wooden fill is covered or repainted.
+The head remains above the face: with the approved angle and full shaft
+preserved, the grip reaches the anvil first. Both takes retain the five
+opaque colours and transparent 16×16 canvas. All earlier artwork and the
+review page remain unchanged. These proposals use the same CC0 dedication.
 
 ## A1 heavier anvils — fix round 2
 
@@ -80,6 +101,10 @@ pixels only, with no runtime particle effect.
   transparent backgrounds, binary alpha and the same five opaque colours.
 - `repair/{A1a,A1b}/preview.png`: two 1280×870 RGBA comparison sheets.
 - `repair/overview-a1.png`: A1, A1a and A1b on a 1280×870 RGBA sheet.
+- `repair/{A1c,A1d}/grug_map_repair.png`: two 16×16 RGBA sprites with
+  transparent backgrounds, binary alpha and the same five opaque colours.
+- `repair/{A1c,A1d}/preview.png`: two 1280×870 RGBA comparison sheets.
+- `repair/overview-a1c.png`: A1a, A1c and A1d on a 1280×870 RGBA sheet.
 - `paint_art.py`: reproducible Python/Pillow generator and source pixel grids.
 - `review.html`: local selection page; all assets are relative local paths.
 
@@ -117,8 +142,8 @@ python3 tools/r46_art/paint_art.py
 python3 tools/r46_art/paint_art.py --check
 ```
 
-The check compares all twenty-one PNGs with the generated pixels, dimensions
-and modes, and checks that the nine sprites differ, have binary alpha,
+The check compares all twenty-six PNGs with the generated pixels, dimensions
+and modes, and checks that the eleven sprites differ, have binary alpha,
 are 16×16 RGBA and use at most six opaque colours. Preview scaling is
 nearest-neighbour throughout. View the HTML at 100% browser zoom for its
 16 CSS-pixel samples; the PNG sheets preserve exact 1× and 4× source sizes.

@@ -204,6 +204,46 @@ GRIDS = {
         "....#mmmmssss#..",
         "...###########..",
     ),
+    # A1a's complete hammer translated down by one pixel, without rotation.
+    # The heavy anvil remains pixel-identical at y=9..15.
+    "A1c": (
+        "................",
+        "...####.........",
+        "...#hm#.........",
+        "..#hm#..........",
+        "..#ms#w#........",
+        ".####.#ww#......",
+        "........#ww#....",
+        "..........#ww#..",
+        "............##..",
+        "....###########.",
+        ".###hhmmmmmmmm#.",
+        "#hmmmmmmmmmsss#.",
+        ".####smmmmmss#..",
+        ".....#smmmss#...",
+        "....#mmmmssss#..",
+        "...###########..",
+    ),
+    # The same translation by two pixels. Only the grip's two contour pixels
+    # share the anvil's top contour (x=12..13, y=9); no fill is covered.
+    "A1d": (
+        "................",
+        "................",
+        "...####.........",
+        "...#hm#.........",
+        "..#hm#..........",
+        "..#ms#w#........",
+        ".####.#ww#......",
+        "........#ww#....",
+        "..........#ww#..",
+        "....###########.",
+        ".###hhmmmmmmmm#.",
+        "#hmmmmmmmmmsss#.",
+        ".####smmmmmss#..",
+        ".....#smmmss#...",
+        "....#mmmmssss#..",
+        "...###########..",
+    ),
 }
 
 TITLES = {
@@ -216,6 +256,8 @@ TITLES = {
     "A3": "STRIKING SMITH'S HAMMER",
     "A1a": "HEAVY ANVIL - ORIGINAL HAMMER",
     "A1b": "HEAVY ANVIL - SHORTER SHAFT",
+    "A1c": "HAMMER ONE PIXEL CLOSER",
+    "A1d": "HAMMER TWO PIXELS CLOSER",
 }
 DESCRIPTIONS = {
     "A": "A LIGHT HAMMER ABOVE A LOW STEEL ANVIL.",
@@ -227,6 +269,8 @@ DESCRIPTIONS = {
     "A3": "A LOW STRIKING HEAD WITH TWO SPARK PIXELS AT THE ANVIL FACE.",
     "A1a": "A1'S HAMMER UNCHANGED, A THREE-ROW STEEL BODY, LEFT HORN AND BROAD FOOT.",
     "A1b": "ONE LESS SHAFT STEP, A FOUR-ROW STEEL BODY MAKES THE ANVIL DOMINANT.",
+    "A1c": "A1a'S COMPLETE HAMMER ONE PIXEL LOWER, THE SAME HEAVY ANVIL.",
+    "A1d": "A1a'S COMPLETE HAMMER TWO PIXELS LOWER, THE SAME HEAVY ANVIL.",
 }
 
 # Exact base colours from grug_map/base.lua REGION.human, REGION.troll and
@@ -293,7 +337,7 @@ def text_image(message, letters, scale=1, colour="#F5ECD7"):
     return result.resize((width * scale, 7 * scale), NEAREST)
 
 
-def preview(icons, letters, variant=None, corrections=False, anvils=False):
+def preview(icons, letters, variant=None, corrections=False, anvils=False, closer=False):
     sheet = Image.new("RGBA", (1280, 870), "#191F23")
 
     def label(message, x, y, scale=1, colour="#F5ECD7", centered=False):
@@ -310,6 +354,9 @@ def preview(icons, letters, variant=None, corrections=False, anvils=False):
     if anvils:
         title = "A1 - TWO HEAVIER ANVILS"
         description = "A1 PREVIOUS    A1a ORIGINAL HAMMER, HEAVY ANVIL    A1b SHORTER SHAFT, LARGER ANVIL"
+    if closer:
+        title = "A1a - HAMMER CLOSER TO THE ANVIL"
+        description = "A1a PICKED ORIGINAL    A1c ONE PIXEL LOWER    A1d TWO PIXELS LOWER"
     label(title, 32, 53, 3)
     label(description, 32, 91)
 
@@ -322,6 +369,8 @@ def preview(icons, letters, variant=None, corrections=False, anvils=False):
     keys = ("A", "A1", "A2", "A3") if corrections else "ABCD"
     if anvils:
         keys = ("A1", "A1a", "A1b")
+    if closer:
+        keys = ("A1a", "A1c", "A1d")
     if variant:
         keys = (variant,)
     proposals = [(key, icons[key], True) for key in keys]
@@ -364,6 +413,7 @@ def main():
     outputs = {OUT / "overview.png": preview(icons, letters)}
     outputs[OUT / "overview-a.png"] = preview(icons, letters, corrections=True)
     outputs[OUT / "overview-a1.png"] = preview(icons, letters, anvils=True)
+    outputs[OUT / "overview-a1c.png"] = preview(icons, letters, closer=True)
     for key, im in icons.items():
         outputs[OUT / key / "grug_map_repair.png"] = im
         outputs[OUT / key / "preview.png"] = preview(icons, letters, key)
