@@ -12,7 +12,8 @@
 --     (spawn_policy.lua grug_mobs.spawn_row_kept): the spawn regions own the
 --     surface of every recipe zone;
 --   * every other row joins one merged ABM per node set: "underground"
---     (stone and strata, y <= -40), "water" (water sources: Kraken, Reed
+--     (stone and strata, rows whose top is at most grug_mobs.UNDERGROUND_TOP,
+--     -1 since Round 46), "water" (water sources: Kraken, Reed
 --     Angelfish) and "surface" (the recipes' critters and the Rift Spawn's
 --     surface row). A merged ABM's nodes and neighbours are the union of its
 --     rows', its y range their hull and its interval their shortest one.
@@ -41,7 +42,7 @@ local groups = {} -- group name -> {rows = {...}}
 local finalized = false
 
 local function group_of(spec)
-	if spec.max_y <= -40 then
+	if spec.max_y <= grug_mobs.UNDERGROUND_TOP then
 		return "underground"
 	end
 	for _, node in ipairs(spec.nodenames) do

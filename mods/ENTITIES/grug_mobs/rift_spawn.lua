@@ -96,7 +96,7 @@ local rift = {
 
 grug_mobs.register_mob("grug_mobs:rift_spawn", rift)
 mobs:spawn({name = "grug_mobs:rift_spawn",
-	nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
+	nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
 	interval = 30, chance = 5000, active_object_count = 2,
 	min_height = -31000, max_height = -1000})
 -- The surface row of the four front and island zones (spawn_policy.lua

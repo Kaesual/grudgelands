@@ -31,6 +31,6 @@ local guard = {
 
 grug_mobs.register_mob("grug_mobs:land_guard", guard)
 mobs:spawn({name = "grug_mobs:land_guard",
-	nodes = {"group:grug_stratum"}, max_light = 5,
+	nodes = {"group:grug_stratum"}, max_light = 7,
 	interval = 30, chance = 9000, active_object_count = 1,
 	min_height = -31000, max_height = -1000})

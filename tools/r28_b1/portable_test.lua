@@ -315,7 +315,10 @@ for _, zone in ipairs(palette_zones) do
 	local x0 = ZONE_X[zone]
 	for _, time in ipairs({0.5, 0.0}) do
 		old_world.time, new_world.time = time, time
-		for _, y in ipairs({-60, -20, 3, 120}) do
+		-- y -1, not -20: Round 46 moved the underground up to node y -2
+		-- (spawn_policy.lua UNDERGROUND_TOP), so -20 differs from the
+		-- baseline on purpose; -1 is the layer both keep closed.
+		for _, y in ipairs({-60, -1, 3, 120}) do
 			for dz = 0, 17 do
 				local pos = {x = x0 + 5, y = y, z = 100 + dz}
 				for _, name in ipairs(mob_names) do

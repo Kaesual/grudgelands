@@ -56,6 +56,6 @@ local oerkki = {
 
 grug_mobs.register_mob("grug_mobs:oerkki", oerkki)
 mobs:spawn({name = "grug_mobs:oerkki",
-	nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
+	nodes = {"default:stone", "group:grug_stratum"}, max_light = 7,
 	interval = 20, chance = 2500, active_object_count = 3,
 	min_height = -700, max_height = -300})

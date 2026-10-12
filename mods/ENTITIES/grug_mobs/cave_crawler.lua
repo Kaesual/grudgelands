@@ -91,10 +91,10 @@ grug_mobs.register_mob("grug_mobs:cave_crawler", crawler)
 mobs:spawn({
 	name = "grug_mobs:cave_crawler",
 	nodes = {"default:stone", "group:grug_stratum"},
-	max_light = 5,
+	max_light = 7,
 	interval = 20,
 	chance = 2200,
 	active_object_count = 1,
 	min_height = -31000,
-	max_height = -40,
+	max_height = -1,
 })
