@@ -28,7 +28,9 @@
 --   roads = false    no road layout (terrain and biomes only);
 --   protection = shapes   the protected cities stood in by these shapes
 --                    ({anchor id -> {member = function(x, z)}}) instead of
---                    the capitals' own, for a world without capital planning.
+--                    the capitals' own, for a world without capital planning;
+--   keep_placement_session = true   W.placement_session keeps the placement's
+--                    horizontal and height sessions.
 return function(wp40_directory, raw_sha256)
 	local function fail(message)
 		error("WP40 world assembly: " .. message, 0)
@@ -176,6 +178,11 @@ return function(wp40_directory, raw_sha256)
 					start_grounds = A.start_grounds}).new_runtime(seed)
 				positions, W.placement_stats = A.placement.place(seed, A.source, horizontal,
 					height)
+				-- kept only for a tool that asks (the placement fixture re-places
+				-- on it); the runtime lets it go
+				if variant.keep_placement_session then
+					W.placement_session = {horizontal = horizontal, height = height}
+				end
 				W.placement_text = A.placement.serialize(A.source, positions)
 			end
 			W.source = A.placement.view(A.source, positions)

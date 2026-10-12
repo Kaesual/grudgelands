@@ -118,7 +118,15 @@ end
 -- writes the same kinds onto the terrain's floor).
 local ARENA_GROUND = {wyrmglass = "default:gravel",
 	stormscale = "grug_nodes:dirt_with_canopy_litter"}
+-- A fixed anchor's position (Round 46: the roster holds none; a placed
+-- anchor has none outside a world, so its row reads "placed").
+local function anchor_xz(profile)
+	local a = source.anchors[profile.numeric_id]
+	if a and a.position then return a.position.x, a.position.z end
+	return nil
+end
 local function arena_cells(profile)
+	local ax, az = assert(anchor_xz(profile))
 	local zone = zones[profile.zone_id]
 	local theme = assert(arena_layout.THEMES[zone.id])
 	local N, r = arena_layout.NODES, arena_radius
@@ -127,7 +135,7 @@ local function arena_cells(profile)
 		for dx = -r - 1, r + 1 do
 			if dx * dx + dz * dz <= (r + 1) * (r + 1) then
 				local kind, detail, extra = arena_layout.hazard_at(theme, r, dx, dz,
-					profile.x + dx, profile.z + dz)
+					ax + dx, az + dz)
 				local floor = ARENA_GROUND[theme.id]
 				if kind == "thin_ice" or kind == "ember" or kind == "basalt" then floor = N[kind] end
 				if not (dx == 0 and dz == 0) then cells[#cells + 1] = {dx, 0, dz, floor, 0} end
@@ -249,7 +257,8 @@ for _, profile in ipairs(settlement.roster) do
 		local row = {key = profile.key, group = group, label = profile.label, race = race,
 			zone_id = profile.zone_id, zone_name = zone.display_name,
 			level_min = zone.level_min, level_max = zone.level_max, numeric_id = n,
-			x = profile.x, z = profile.z, turns = art.turns or 0,
+			x = anchor_xz(profile) or "placed", z = select(2, anchor_xz(profile)) or "placed",
+			turns = art.turns or 0,
 			variants = table.concat(variants, ","), seed_races = seed_races}
 		local values = {}
 		for i, f in ipairs(meta_fields) do values[i] = tostring(row[f]) end

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Round 46 lane PL: preview pictures and facts of one seed's prototype
-placement (tools/r46_pl/place_proto.lua), for the user's review before the
-build.
+"""Round 46 lane PL: pictures and facts of one seed's POI placement
+(tools/r46_pl/overview.lua) for the user's review page.
 
-    python3 tools/r46_pl/render_proto.py PREFIX OUT_DIR NAME [--title TEXT]
+    python3 tools/r46_pl/render.py PREFIX OUT_DIR NAME [--title TEXT]
+                                    [--short TEXT] [--caption TEXT]
 
-PREFIX is place_proto.lua's OUT_PREFIX (its .zones.tsv, .rivers.tsv and
-.anchors.tsv). Writes to OUT_DIR:
+PREFIX is overview.lua's OUT_PREFIX (its .zones.tsv, .rivers.tsv,
+.anchors.tsv and, when present, .roads.tsv; the design note's prototype
+wrote the same files without roads). Writes to OUT_DIR:
   NAME_map.png     the whole map, about 1200 px wide: zones (thin darker
                    borders), inland water and rivers, the fixed anchors as
                    white outlines, every placed POI as its kind's glyph,
@@ -19,7 +20,7 @@ PREFIX is place_proto.lua's OUT_PREFIX (its .zones.tsv, .rivers.tsv and
                    camp positions, the smallest distance of a placed POI to a
                    start town and to a capital;
   NAME_anchors.tsv a copy of the anchor rows (the key to the numbers).
-Roads are not drawn: the game routes them after placement. Needs Pillow.
+Roads and trails are drawn when the roads file is there. Needs Pillow.
 """
 import argparse
 import colorsys
@@ -39,7 +40,8 @@ CROPS = {
               "of the Broken Causeway and the Shattered Line.", (-1500, -850, 1500, 850)),
 }
 MAP_WIDTH = 1200
-CAPTION = "Roads are not shown: the game routes them after placement."
+CAPTION = ("Roads (light) and trails (thin) as routed after placement; the capitals' "
+           "streets are not drawn.")
 
 # kind -> (legend name, shape, fill colour)
 KINDS = {
@@ -85,6 +87,28 @@ def zone_colour(n):
     v = 0.50 + (n % 4) * 0.06
     r, g, b = colorsys.hsv_to_rgb(h, s, v)
     return (int(r * 255), int(g * 255), int(b * 255))
+
+
+def load_roads(prefix):
+    roads = []
+    if os.path.exists(prefix + ".roads.tsv"):
+        for line in open(prefix + ".roads.tsv"):
+            parts = line.rstrip("\n").split("\t")
+            roads.append((parts[1], [tuple(int(v) for v in p.split()) for p in parts[2:]]))
+    return roads
+
+
+def draw_roads(img, view, roads):
+    d = ImageDraw.Draw(img)
+    big = view.scale > 0.3
+    for kind, pts in roads:
+        xy = [view.px(x, z) for x, z in pts]
+        if len(xy) < 2:
+            continue
+        if kind == "trail":
+            d.line(xy, fill=(200, 180, 140), width=2 if big else 1)
+        else:
+            d.line(xy, fill=(245, 225, 170), width=3 if big else 2)
 
 
 def load(prefix):
@@ -273,12 +297,13 @@ def header(d, width, title, subtitle):
         d.text((12, 32 + i * 18), text, font=f, fill=(200, 200, 200))
 
 
-def render_map(cells, rivers, anchors, path, title):
+def render_map(cells, rivers, anchors, path, title, roads=()):
     scale = MAP_WIDTH / (EXTENT[2] - EXTENT[0])
     view = View(EXTENT, scale, HEAD)
     w, h = view.size()
     img = Image.new("RGB", (w, h + HEAD + 150), (16, 22, 34))
     draw_terrain(img, view, cells, rivers)
+    draw_roads(img, view, roads)
     draw_anchors(img, view, anchors, 4.5)
     d = ImageDraw.Draw(img)
     header(d, w, title, CAPTION + " White outlines: fixed anchors. Zone borders darker.")
@@ -286,12 +311,13 @@ def render_map(cells, rivers, anchors, path, title):
     img.crop((0, 0, w, bottom + 6)).save(path)
 
 
-def render_crop(cells, rivers, anchors, zones, path, title, detail, rect):
+def render_crop(cells, rivers, anchors, zones, path, title, detail, rect, roads=()):
     scale = 2 * MAP_WIDTH / (EXTENT[2] - EXTENT[0])
     view = View(rect, scale, HEAD)
     w, h = view.size()
     img = Image.new("RGB", (w, h + HEAD), (16, 22, 34))
     draw_terrain(img, view, cells, rivers, zones)
+    draw_roads(img, view, roads)
     draw_anchors(img, view, anchors, 7, numbers=True)
     header(ImageDraw.Draw(img), w, title, detail + " 2x crop; numbers are anchor numbers "
            "(see the anchors file). " + CAPTION)
@@ -341,7 +367,7 @@ def facts(anchors, zones, path, title):
     out.append("")
     out += ["## Nearest placed POI to a start town and to a capital", "",
             "Gap: between the POI's fitting square and the start's 152 town square or the "
-            "capital's 532 reserved square (the rule keeps at least 48).", ""]
+            "capital's 532 reserved square (the rule keeps at least 128).", ""]
     for label, group in (("Start town", starts), ("Capital", caps)):
         g = min(((gap(a, b), a, b) for a in placed for b in group), key=lambda t: t[0])
         c = min(((dist(a, b), a, b) for a in placed for b in group), key=lambda t: t[0])
@@ -366,13 +392,14 @@ def main():
     if args.caption:
         CAPTION = args.caption
     cells, rivers, anchors = load(args.prefix)
+    roads = load_roads(args.prefix)
     zones = zone_rows()
     title = args.title or args.name
     base = os.path.join(args.out_dir, args.name)
-    render_map(cells, rivers, anchors, base + "_map.png", title)
+    render_map(cells, rivers, anchors, base + "_map.png", title, roads)
     for key, (label, detail, rect) in CROPS.items():
         render_crop(cells, rivers, anchors, zones, base + "_%s.png" % key,
-                    "%s: %s" % (args.short or title, label), detail, rect)
+                    "%s: %s" % (args.short or title, label), detail, rect, roads)
     facts(anchors, zones, base + "_facts.md", title)
     shutil.copyfile(args.prefix + ".anchors.tsv", base + "_anchors.tsv")
 
