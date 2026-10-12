@@ -1307,15 +1307,18 @@ code, not by this document.
   Mournfen and Whispering Reedlands for the Throng.
 - Named rares migrate as listed in §8. Their level is clamped into the owning
   zone's band; no old ring coordinate survives.
-- **Gems are depth-tiered** (Round 29, economy plan §6): each of the six
-  species has one tier and occurs only in that tier's rock, identically in
-  every race region, zone and faction: T1 Citrine (`default:stone`,
-  y ≥ −100), T2 Jade, T3 Garnet, T4 Sapphire, T5 Ruby, T6 Diamond (below
-  −1000). Its harvest tier equals its tier. One rough density for all six:
-  one gem per 512 eligible host nodes in its band, in veins of at most two
-  nodes (the former G1 veins held three); the deep multipliers apply to
-  Diamond like every T6 resource.
-- **Round 21 density calibration (accepted 2026-09-24):**
+- **Gems are depth-tiered** (Round 29, economy plan §6; Round 46 ruling 3):
+  each of the six species has one tier and occurs in that tier's rock and,
+  thinner, in the two tier rocks below it, identically in every race region,
+  zone and faction: T1 Citrine (`default:stone`, y ≥ −100), T2 Jade, T3
+  Garnet, T4 Sapphire, T5 Ruby, T6 Diamond (below −1000). Its harvest tier
+  equals its tier at any depth. One rough density for all six: one gem per
+  512 eligible host nodes in its own band, per 1024 one tier deeper and per
+  2048 two tiers deeper, in veins of at most two nodes (the former G1 veins
+  held three); the deep multipliers apply to the T6 gems (Diamond, Ruby,
+  Sapphire) like every T6 resource.
+- **Round 21 density calibration (accepted 2026-09-24; Round 46 changes in
+  T3 and the gem rows):**
   numbers below are eligible host nodes per target resource node. Dashes mean
   absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
   Keep existing vein caps and first-appearance/harvest boundaries. These are
@@ -1323,25 +1326,31 @@ code, not by this document.
 
   | Resource | T1 | T2 | T3 | T4 | T5 | T6 |
   |---|---:|---:|---:|---:|---:|---:|
-  | Coal | 64 | 128 | 128 | 128 | 128 | 128 |
+  | Coal | 64 | 128 | 96 | 128 | 128 | 128 |
   | Copper | 96 | 192 | 384 | 384 | 384 | 384 |
   | Tin | 96 | 192 | 384 | 384 | 384 | 384 |
-  | Iron | 128 | 96 | 192 | 384 | 384 | 384 |
+  | Iron | 128 | 96 | 128 | 384 | 384 | 384 |
   | Quartz | 128 | 256 | 512 | 512 | 512 | 512 |
   | Gold | — | 512 | 256 | 128 | 256 | 256 |
   | Silver | — | — | 256 | 128 | 256 | 512 |
   | Emberglass | — | — | — | 256 | 128 | 256 |
   | Abyssal Crystal | — | — | — | — | 512 | 256 |
-  | Citrine | 512 | — | — | — | — | — |
-  | Jade | — | 512 | — | — | — | — |
-  | Garnet | — | — | 512 | — | — | — |
-  | Sapphire | — | — | — | 512 | — | — |
-  | Ruby | — | — | — | — | 512 | — |
+  | Citrine | 512 | 1024 | 2048 | — | — | — |
+  | Jade | — | 512 | 1024 | 2048 | — | — |
+  | Garnet | — | — | 512 | 1024 | 2048 | — |
+  | Sapphire | — | — | — | 512 | 1024 | 2048 |
+  | Ruby | — | — | — | — | 512 | 1024 |
   | Diamond | — | — | — | — | — | 512 |
 
   The quarter-density floor retains older inputs at depth; T1 Iron keeps its
   former density as a bootstrap exception. Gold peaks at T4 and remains
-  useful at T5/T6, matching Goldsmith demand.
+  useful at T5/T6, matching Goldsmith demand. T3 is the Steel band (Iron
+  Bar and mined Coal), so Iron and Coal there carry the T2 supply (Round
+  46). A
+  next-tier ingredient peaks in the band where its consumers mine: Iron in
+  T2, Silver in T4, Emberglass in T5, Abyssal Crystal in T6. All resources
+  together are about 5.4 % of the host rock in T1, 3.7 % in T2 and T3, 4.1 %
+  in T4, 3.9 % in T5 and 3.5 % in T6.
 - **Ground anyone may dig carries the ordinary distribution** (user ruling
   2026-10-07): ores, coal and gems are absent only where digging is
   forbidden for everyone, never in ground some player may dig.

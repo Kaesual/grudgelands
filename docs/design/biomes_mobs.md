@@ -1220,8 +1220,8 @@ universal fantastic progression resources rather than gems.
 
 Gems are depth-tiered and the same in every region (Round 29,
 `items_crafting.md` §3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire,
-T5 Ruby, T6 Diamond, each only in its own tier rock, about one per 512 host
-nodes there. The signature wood follows the owning `race_region` column:
+T5 Ruby, T6 Diamond, each in its own tier rock at about one per 512 host
+nodes and, thinner, one and two tiers deeper (Round 46). The signature wood follows the owning `race_region` column:
 
 | Faction | Race region | Signature wood |
 |---|---|---|
@@ -1266,7 +1266,7 @@ nodes there. The signature wood follows the owning `race_region` column:
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, bear claw (slime gel, one faction, has no recipe use since Round 33) | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |
-| Gems | depth axis (one per tier rock) | all six, each in its own tier rock | same |
+| Gems | depth axis (own tier rock, thinner two tiers deeper) | all six, each from its own tier rock | same |
 
 Every row has at least one source per continent. Race woods are
 deliberately asymmetric (identity); base recipes accept `group:wood`.

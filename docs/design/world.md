@@ -322,8 +322,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   Natural resources need the pick of the layer where they first appear, at any
   depth: T1 digs Copper, Tin, Coal, Iron, Quartz and Citrine; T2 Gold and
   Jade; T3 Silver and Garnet; T4 Emberglass and Sapphire; T5 Abyssal Crystal
-  and Ruby; T6 Diamond. Each gem occurs only in the rock of its own tier,
-  everywhere (`items_crafting.md` §3.0.1). A weaker pick cannot dig the ore at all
+  and Ruby; T6 Diamond. Each gem occurs in the rock of its own tier and,
+  thinner, one and two tiers deeper, everywhere (`items_crafting.md` §3.0.1). A weaker pick cannot dig the ore at all
   (the former under-tier shatter path is retired). Crafted storage/building
   blocks are never natural resources: any real pick recovers them where
   territory allows, and they always drop themselves.

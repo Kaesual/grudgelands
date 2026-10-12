@@ -110,7 +110,7 @@ local SECTIONS = {
 		"• Silver: below y -300; Steel pick or better.",
 		"• Emberglass: below y -500; Silversteel pick or better.",
 		"• Abyssal Crystal: below y -700; Embersteel pick or better.",
-		"• Gems: one kind per layer, only in that layer's stone and everywhere on the map: Citrine down to y -100 (any pick), Jade from y -101 (Iron), Garnet from y -301 (Steel), Sapphire from y -501 (Silversteel), Ruby from y -701 (Embersteel) and Diamond from y -1001 (Abyssal Steel).",
+		"• Gems: one kind per layer, most common in that layer's stone and rarer one and two layers deeper, everywhere on the map: Citrine down to y -100 (any pick), Jade from y -101 (Iron), Garnet from y -301 (Steel), Sapphire from y -501 (Silversteel), Ruby from y -701 (Embersteel) and Diamond from y -1001 (Abyssal Steel). A gem found deeper still needs its own layer's pick.",
 		"• A pick that is too weak cannot dig the stone or ore at all.",
 		"• Better tools need a character level: Iron picks, axes and shovels from level 5, Steel from 15, Silversteel from 25, Embersteel from 35 and Abyssal Steel from 45; the tooltip shows it. Wood, stone and bronze tools need none.",
 		"• Every ore or gem you dig and every fish you catch gives XP; deeper ores, gems (more than ores) and fish from higher-level waters give more.",
