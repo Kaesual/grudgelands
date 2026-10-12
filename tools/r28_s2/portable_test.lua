@@ -17,7 +17,8 @@
 --    POIs (centre, cells within the camp radius, the stated belt and its
 --    levels, the POI cell's own belt in the stats and a warning when it lies
 --    more than one belt away, generated camps kept apart, a leader at the
---    POI).
+--    POI), every kind forming a region (the fallback block by the kind's
+--    type share or the belt's commonest other type, a no-op otherwise).
 -- Prints "R28 S2 PORTABLE PASS checks=<n>" or raises on the first failure.
 local repo = arg[1] or "."
 local checks = 0
@@ -406,6 +407,70 @@ map = build(with_camps({bandit_camp()},
 	{{role = "chief", at = {camp = "bandits"}, respawn = 300}}))
 check(map.leaders[1].x == 400 and map.leaders[1].z == -500 and map.leaders[1].level == 20,
 	"a leader at a POI camp stands at the POI at its fixed level")
+
+-- Every kind forms a region (Round 46): a kind with no full-size component
+-- takes a compact block of MIN_CELLS cells of its belt; nothing changes
+-- where every kind forms.
+check(build(deep_copy(base)).kind_blocks == 0, "every kind forms: no block")
+local function world(over)
+	local zones = {}
+	for k, v in pairs(ZONES) do zones[k] = v end
+	for k, v in pairs(over) do zones[k] = v end
+	return CORE.queries({zones = zones, road_polylines = {}, source = SOURCE,
+		column_values_at = function() return "land", nil, nil, nil, nil, nil, nil, "river" end})
+end
+-- A 16x16 pond at (200, -312): fewer bank cells than a region needs.
+local POND = world({water_class_at = function(x, z)
+	if not zone_at(x, z) then return "deep_ocean" end
+	if x >= 200 and x < 216 and z >= -312 and z < -296 then return "planned_water" end
+	return "land"
+end})
+local function bank_recipe()
+	local kinds = kind("all_open", "boar")
+	kinds.bank = {id = "mudbanks", name = "Mudbanks", day = "open", night = "open", density = "normal"}
+	return {belts = {{id = "all", share = 100, levels = {11, 20}, kinds = kinds}}}
+end
+local function block_of(m, kind_id)
+	local list = m.by_kind[kind_id] or {}
+	return #list == 1 and list[1] or nil
+end
+map = CORE.build(A, POND, parse(bank_recipe()))
+local bank_cells, best_bank = 0, nil
+for _, c in ipairs(map.order) do
+	if c.type == "bank" then bank_cells = bank_cells + 1 end
+	if not best_bank or c.bank > best_bank.bank then best_bank = c end
+end
+local mud = block_of(map, "mudbanks")
+check(bank_cells > 0 and bank_cells < CORE.MIN_CELLS, "the pond gives fewer bank cells than a region (" ..
+	bank_cells .. ")")
+check(mud and mud.size >= CORE.MIN_CELLS and best_bank.region == mud and map.kind_blocks == 1 and
+	#map.warnings == 1 and map.warnings[1]:find("kind mudbanks of belt all forms no region: it takes " ..
+	"a block of 8 cells by bank share", 1, true) ~= nil,
+	"a bank kind without a region takes a block round the best bank cell (" .. tostring(map.warnings[1]) .. ")")
+local again = CORE.build(A, POND, parse(bank_recipe()))
+local same = block_of(again, "mudbanks") ~= nil and block_of(again, "mudbanks").size == mud.size
+for i, c in ipairs(mud.cells) do
+	local o = block_of(again, "mudbanks").cells[i]
+	if not o or o.i ~= c.i or o.j ~= c.j then same = false end
+end
+check(same, "the block is deterministic")
+-- No bank ground at all: the belt's commonest other type.
+map = build(bank_recipe())
+check(block_of(map, "mudbanks") and map.warnings[1]:find("by the belt's commonest type open", 1, true) ~= nil,
+	"a bank kind on dry land takes cells of the commonest type (" .. tostring(map.warnings[1]) .. ")")
+-- An open kind on all-forest land (its sea edges a shore kind) takes cells
+-- of the commonest other type.
+local function forest_recipe()
+	local kinds = kind("all_open", "boar")
+	kinds.forest = {id = "deepwood", name = "Deepwood", day = "open", night = "open", density = "normal"}
+	kinds.shore = {id = "beach", name = "Beach", day = "open", night = "open", density = "normal"}
+	return {belts = {{id = "all", share = 100, levels = {11, 20}, kinds = kinds}}}
+end
+map = CORE.build(A, world({biome_at = function() return "grug_deep_forest" end}), parse(forest_recipe()))
+check(block_of(map, "all_open") and block_of(map, "all_open").size >= CORE.MIN_CELLS and
+	map.warnings[1]:find("kind all_open of belt all forms no region: it takes a block of 8 cells by " ..
+	"the belt's commonest type forest", 1, true) ~= nil and #map.by_kind.deepwood >= 1,
+	"an open kind on all-forest land takes forest cells (" .. tostring(map.warnings[1]) .. ")")
 print("C: builder")
 
 print(("R28 S2 PORTABLE PASS checks=%d"):format(checks))

@@ -33,7 +33,9 @@
 --   4. Types: shore > bank > swamp > forest > highland > open.
 --   5. Regions: connected cells of one kind (the kind a belt gives a type);
 --      small fragments merge into the neighbour they share most edges with
---      (same belt preferred), large ones split into compact parts.
+--      (same belt preferred), large ones split into compact parts. A kind
+--      with no component of full size first takes a compact block of its
+--      belt (by its type's share, else the belt's commonest other type).
 --   6. Population: a kind's day and night rosters, levels belt-range x role
 --      range, a density class.
 --   7. Camps: on a camp POI of the world model (the cells the camp radius
@@ -1071,6 +1073,13 @@ function M.build(zone_id, q, recipe)
 			c.drift, c.prot = drift / n, prot / n
 			c.road = road
 			c.forest = M.FOREST_BIOMES[best] == true
+			-- Swamp and forest shares of the land samples (the fallback
+			-- block of a kind that forms no region scores by them).
+			local forest_n = 0
+			for _, bi in ipairs(bids) do
+				if M.FOREST_BIOMES[bi] then forest_n = forest_n + biomes[bi] end
+			end
+			c.swamp_share, c.forest_share = (biomes.swamp or 0) / n, forest_n / n
 			heights[#heights + 1] = c.h
 		end
 	end
@@ -1488,29 +1497,160 @@ function M.build(zone_id, q, recipe)
 	end
 
 	-- 5. Regions: components of one kind (8 neighbours), outside camps.
-	local regions = {}
+	local regions
 	local function new_region(kind, belt)
 		local r = {kind = kind, belt = belt, cells = {}}
 		regions[#regions + 1] = r
 		return r
 	end
-	for _, c in ipairs(order) do
-		if not c.camp and not c.region then
-			local r = new_region(c.kind, c.belt)
-			local stack = {c}
-			c.region = r
-			while #stack > 0 do
-				local cur = table.remove(stack)
-				r.cells[#r.cells + 1] = cur
-				for n = 1, 8 do
-					local nb = cells[key(cur.i + N8[n][1], cur.j + N8[n][2])]
-					if nb and not nb.camp and not nb.region and nb.kind == c.kind then
-						nb.region = r
-						stack[#stack + 1] = nb
+	local function flood()
+		regions = {}
+		for _, c in ipairs(order) do
+			if not c.camp and not c.region then
+				local r = new_region(c.kind, c.belt)
+				local stack = {c}
+				c.region = r
+				while #stack > 0 do
+					local cur = table.remove(stack)
+					r.cells[#r.cells + 1] = cur
+					for n = 1, 8 do
+						local nb = cells[key(cur.i + N8[n][1], cur.j + N8[n][2])]
+						if nb and not nb.camp and not nb.region and nb.kind == c.kind then
+							nb.region = r
+							stack[#stack + 1] = nb
+						end
 					end
 				end
 			end
 		end
+	end
+	flood()
+	local function min_size(r)
+		return r.kind.type == "shore" and M.MIN_STRIP or M.MIN_CELLS
+	end
+
+	-- Every kind forms a region (Round 46): a kind with no component of
+	-- full size (it would merge away) takes a compact block of MIN_CELLS
+	-- cells of its belt outside camps. The block grows from the belt's best
+	-- cell for the kind's type (its shore, bank, swamp or forest share, or
+	-- for highland its slope or height over the zone median), taking the
+	-- best neighbour next (then the nearest to the seed, then grid order);
+	-- an open kind, or one whose type no cell of the belt shows, takes the
+	-- cells of the belt's commonest other type. A seed whose ground cannot
+	-- hold the block passes to the next. Where every kind forms, nothing
+	-- changes; a block is a warning, like the camp fallback.
+	local SHARE = {
+		shore = function(c) return c.shore end,
+		bank = function(c) return c.bank end,
+		swamp = function(c) return c.swamp_share end,
+		forest = function(c) return c.forest_share end,
+		highland = function(c)
+			return math.max(c.slope / M.HIGH_SLOPE, (c.h - median) / math.max(1, high_line - median))
+		end,
+	}
+	-- A block takes no cell a full-size component needs to stay full size
+	-- (`spare`: its cells above the minimum), so no kind that forms is lost.
+	local formed, spare = {}, {}
+	for _, r in ipairs(regions) do
+		if #r.cells >= min_size(r) then
+			formed[r.kind] = true
+			spare[r] = #r.cells - min_size(r)
+		end
+	end
+	local taken, blocks = {}, 0
+	for _, kind in ipairs(recipe.kinds) do
+		if not formed[kind] then
+			local b = kind.belt.index
+			local function free(c)
+				return c.belt == b and not c.camp and not taken[c] and (spare[c.region] or 1) > 0
+			end
+			-- a component's spare cells left for the block being grown
+			local function room(c, used)
+				return not spare[c.region] or spare[c.region] > (used[c.region] or 0)
+			end
+			local score, cands = {}, {}
+			local share, rule = SHARE[kind.type], kind.type .. " share"
+			for _, c in ipairs(order) do
+				local v = share and free(c) and share(c) or 0
+				if v > 0 then
+					score[c] = v
+					cands[#cands + 1] = c
+				end
+			end
+			if #cands == 0 then
+				local count, common = {}, nil
+				for _, c in ipairs(order) do
+					if free(c) and c.type ~= kind.type then
+						count[c.type] = (count[c.type] or 0) + 1
+					end
+				end
+				for _, t in ipairs(M.TYPES) do
+					if count[t] and (not common or count[t] > count[common]) then common = t end
+				end
+				for _, c in ipairs(order) do
+					if common and free(c) and c.type == common then
+						score[c] = 1
+						cands[#cands + 1] = c
+					end
+				end
+				rule = "the belt's commonest type " .. tostring(common)
+			end
+			table.sort(cands, function(p, o)
+				if score[p] ~= score[o] then return score[p] > score[o] end
+				return p.order < o.order
+			end)
+			local tried, block = {}, nil
+			for _, seed in ipairs(cands) do
+				if not tried[seed] then
+					local list, inside, used = {seed}, {[seed] = true}, {}
+					tried[seed] = true
+					if spare[seed.region] then used[seed.region] = 1 end
+					while #list < M.MIN_CELLS do
+						local best, bs, bd
+						for _, cur in ipairs(list) do
+							for n = 1, 8 do
+								local nb = cells[key(cur.i + N8[n][1], cur.j + N8[n][2])]
+								if nb and not inside[nb] and free(nb) and room(nb, used) then
+									local v = score[nb] or 0
+									local d = (nb.i - seed.i) ^ 2 + (nb.j - seed.j) ^ 2
+									if not best or v > bs or (v == bs and (d < bd or
+											(d == bd and nb.order < best.order))) then
+										best, bs, bd = nb, v, d
+									end
+								end
+							end
+						end
+						if not best then break end
+						list[#list + 1] = best
+						inside[best] = true
+						tried[best] = true
+						if spare[best.region] then used[best.region] = (used[best.region] or 0) + 1 end
+					end
+					if #list >= M.MIN_CELLS then
+						block = list
+						break
+					end
+				end
+			end
+			if block then
+				for _, c in ipairs(block) do
+					c.kind = kind
+					taken[c] = true
+					if spare[c.region] then spare[c.region] = spare[c.region] - 1 end
+				end
+				blocks = blocks + 1
+				warnings[#warnings + 1] = ("kind %s of belt %s forms no region: it takes a block " ..
+					"of %d cells by %s"):format(kind.id, kind.belt.id, #block, rule)
+			else
+				warnings[#warnings + 1] = ("kind %s of belt %s forms no region and its belt holds " ..
+					"no block of %d cells"):format(kind.id, kind.belt.id, M.MIN_CELLS)
+			end
+		end
+	end
+	map.kind_blocks = blocks
+	if blocks > 0 then
+		for _, c in ipairs(order) do c.region = nil end
+		flood()
 	end
 	local function sort_cells(r)
 		table.sort(r.cells, function(a, b) return a.order < b.order end)
@@ -1519,9 +1659,6 @@ function M.build(zone_id, q, recipe)
 
 	-- Merge fragments below the minimum into the neighbour region they
 	-- share most edges with (same belt first). Smallest first.
-	local function min_size(r)
-		return r.kind.type == "shore" and M.MIN_STRIP or M.MIN_CELLS
-	end
 	local merged_away = {}
 	while true do
 		local small = {}

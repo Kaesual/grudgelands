@@ -77,6 +77,20 @@ random numbers, no dependence on table order.
    (farthest-point seeds grown together, three Lloyd rounds). On Dawnmere
    regions are 3–40 cells, median 12–19 (about 100–200 m across); a lone
    islet cell with no land neighbour stays a region of its own.
+   **Every kind forms a region** (Round 46): before the merges, a kind of
+   the recipe with no connected part of full size (it would merge away, or
+   has no ground at all on the seed) takes a compact block of 8 cells of its
+   belt outside the camps. The block grows from the belt's best cell for
+   the kind's type (its shore, bank, swamp or forest share; for highland its
+   slope or height over the zone's median), adding the best neighbouring
+   cell each time (then the nearest to the start, then grid order); an
+   `open` kind, or a kind whose type no cell of the belt shows, takes the
+   cells of the belt's commonest other type. A block never takes the cells a
+   full-size part of another kind needs to stay full size, so no kind that
+   forms is lost. The block is a WARNING in the stats and the game's log
+   (like the camp road fallback); where every kind forms nothing changes.
+   Without room for a block (a belt of a few cells) the warning says so and
+   the kind's leader takes the fallback chain of step 8.
 6. **Population.** A belt maps each type to a **kind**: a name, a day and a
    night roster and a density class. A type without its own entry uses the
    belt's `open` kind (the explicit parent rule). A role's levels in a region
@@ -127,7 +141,8 @@ random numbers, no dependence on table order.
 8. **Leaders** stand on every seed (Round 28 S2c). A camp leader stands at
    its camp's centre. A kind leader stands on the best cell (farthest from
    roads, then deepest inside its region) of the largest region of its kind;
-   where the kind has no region on the seed, the chain goes on to the belt's
+   where the kind has no region on the seed (since Round 46 only a belt
+   without room for its block, step 5), the chain goes on to the belt's
    `open` kind and then to every region of the belt, largest first (a camp
    leader whose camp found no site takes that chain in the camp's belt; the
    stats name the fallback kind). The chain never leaves the belt, so the
