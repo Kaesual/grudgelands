@@ -12,6 +12,93 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.46.0 — world generation and player feedback (2026-10-13)
+
+Villages, camps, mines and the PvP places are placed anew on every world,
+the ore and gem table is revised, and the players' feedback of 2026-10-12
+is answered: XP, caves, rage, loot, cooking, repairs. **Map reset**
+needed: world generation changed, so an existing world's map is generated
+anew from its seed. Characters keep their level, gear, inventory, money,
+quests, professions, mounts and waypoints, as in every map reset; their
+position and home claim go with the old map. No migration step: the new
+version reads every character as it is. The production server stays on
+0.45.1 for now and moves later, with one update that combines several
+releases.
+
+- **World and map:** villages, outposts, bandit and Mirefolk camps, mines,
+  clash sites, rare creature dens, the sixteen PvP war camps and the two
+  fortresses no longer stand at fixed spots: every world places them by
+  rules for each kind, on dry, fitting ground in their own zone and level
+  band, away from towns, rivers and the coast. Two worlds with different
+  seeds look different. Start towns, capitals, the dragon arenas, the apex
+  mines and the four rift sites stay where they were, and each fortress
+  keeps its side of the middle road. Roads lead to the new places and
+  quest markers point to them. Seeds that failed to load (a river covering
+  a camp) now load. A new world's first start takes about a second longer.
+- **Mining and gathering:** every gem is also found one layer deeper (at
+  half its usual rate) and two layers deeper (at a quarter), and it still
+  needs its own layer's pick. The Steel layer (y −301 to −500) holds more
+  Coal and Iron. Ore and gems give half the XP they did (a gem still twice
+  an ore), and ore, gems and fish above your level pay as at your level.
+  One Coal Lump or Charcoal and one Stick make 10 torches instead of 4, in
+  one recipe; Charcoal also makes black dye.
+- **XP and quests:** a kill pays XP by the level difference: 15 % less per
+  level below yours, none from 7 levels below; 10 % more per level above,
+  up to one and a half times at 5 above. Elites still pay four times,
+  rares six times; in a party everyone still counts. The name line over
+  what you look at shades from green through yellow at your level to red
+  at 5 above, and every creature that gives you no XP (7 below, small
+  animals, your own faction's guards) shows grey with (no XP). The 55
+  repeatable bounty quests are gone; a bounty in your quest log simply
+  disappears. Apprentice Riding and the Boat cost 1s 10c, the bracket-5
+  respec 5s 50c.
+- **Combat:** a Warrior's rage per hit follows the weapon's speed: a dagger
+  gives less per hit, a battle axe more, every weapon the same rage per
+  second (the Strike tooltip shows the value). A Mage's or Priest's spells
+  take half their base damage from the equipped staff or wand: with
+  own-level gear nothing changes, an old staff hits a little weaker, no
+  staff or wand hits at half the base. Their damage talents follow the
+  same base; staff, wand and talent tooltips say so.
+- **Loot, money and crafting:** creatures no longer drop the 23 items that
+  were only good for selling. Instead about one kill in eight drops a Bag
+  of Coins of the area's worth; with the new Auto box beside the coin slot
+  ticked (the default), a picked-up bag goes straight to your money.
+  Creatures that drop cloth (zombies, outlaws and the like) now drop it on
+  every looted kill, one or two at a time, and spiders roam the level
+  41–50 zones again by night, so silk has a source there. In the crafting
+  box, an ingredient that several kinds you carry can fill has a dropdown:
+  Automatic, or the kind to use.
+- **Cooking:** a new kind of dish, **plain**: tier healing and a little
+  regeneration, no extra stat, always weaker than the other dishes. Six
+  plain dishes, one per tier, from few local ingredients (Spiced Skewer,
+  Pan-Fried Trout, Mire Carp Stew, Frostfin Fillet, Smoked Ember Eel,
+  Kelp-Steamed Tuna); Cooked Meat, the Meat Block, Cooked Fish and Bread
+  are plain now. Carrot and Cassava count as staples, so every start zone
+  and every level 11–20 zone can cook with what grows there. The fish
+  dishes that needed Raw Fish take any raw fish, and five recipes changed
+  an ingredient (Mushroom Skewer, Raw Forager's Pot, Salt-Crusted Fish and
+  Stormkelp Broth, Cocoa-Rubbed Game).
+- **The underground and the depth pulse:** cave creatures appear from just
+  below y 0 down, in shallow caves too, and in more of the dark: within 4
+  blocks of a torch none appear, from the fifth they can. They notice you
+  from about 26 blocks, and about one in 25 from level 5 on is an elite
+  with the usual warning. Below y −300 the **depth pulse** sends flying
+  servants after miners: after a silent two-second violet glow a Blood
+  Bat, Glowwing, Ember Wisp or, below −1000, the new Riftwing, a Rift
+  Spawn or a Bedrock Sentinel appears 6 to 14 blocks away in sight. One
+  comes about every two minutes at −300, every minute at −1000 and every
+  30 seconds from −2000, never more than a few at once, never in claims or
+  towns; it fades when it loses you and pays full XP and its family's
+  loot, but no Bag of Coins.
+- **Towns and repair:** gear is repaired only in towns, by the profession
+  trainers and the mender of Grudge-Free Repairs; claim furnaces no longer
+  repair. The mender has a hammer-and-anvil icon on the map and the
+  minimap.
+- **Joining a server:** a new character, one still being created, and every
+  character after a map reset wait at a quiet spot high above the world,
+  where nothing loads around them, until their start town is ready; then
+  they arrive there.
+
 ## 0.45.1 — fix round after the 0.45.0 playtest (2026-10-10)
 
 Fixes from the 0.45.0 playtest. Existing worlds play on: no migration

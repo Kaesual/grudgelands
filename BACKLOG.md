@@ -32,10 +32,6 @@ layouts, resource tables or buff values.
   future work package with a preparatory planning round before any
   implementation ([continuation plan](docs/planning/class-redesign/continuation.md)).
   Player feedback ranks other problems first.
-- **Warrior rage per hit scales with weapon speed** (the user, 2026-10-12,
-  for the next round, independent of the redesign): a slower weapon gives
-  more rage per hit, so fast weapons such as daggers no longer generate more
-  rage per second.
 - Current owners: [classes](docs/design/classes.md),
   [talents](docs/design/skill_trees.md), [Scout](docs/design/scout.md),
   [combat](docs/design/combat_stats.md) and [PvP](docs/design/pvp.md).
@@ -51,10 +47,11 @@ layouts, resource tables or buff values.
 - Review surface variety, tree shapes and city variety, and prepare changes
   that give exploration and settlements more character.
 - Reassess ore, gem and coal availability through the depth tiers, then
-  revise the distribution design and data. The roadmap's broader ore and
-  gem availability revisits the current tier restrictions; retain the
-  current tables until replacements are decided and checked against
-  gathering and crafting progression.
+  revise the distribution design and data. Round 46 made a first pass
+  (gems one and two tiers deeper at half and a quarter, Coal and Iron
+  raised in T3; [items_crafting.md §3.0.1](docs/design/items_crafting.md#301-universal-materials-and-resource-taxonomy));
+  a broader revision is checked against gathering and crafting
+  progression first.
 - Current owners: [sound](docs/design/sound.md),
   [world](docs/design/world.md), [settlements](docs/design/settlements.md)
   and [materials and crafting](docs/design/items_crafting.md).
@@ -84,8 +81,8 @@ layouts, resource tables or buff values.
   fewer distinct mob names and roles (461 names; one route meets 177),
   fewer and merged loot items with their recipes, and quest variety with
   new objective types at the new seed-placed POIs (about 83 % of quests are
-  kill or kill-for-drop). Round 46 removes the repeatables, stops the 23
-  sell-only drops and prepares the placement
+  kill or kill-for-drop). Round 46 removed the repeatables, stopped the 23
+  sell-only drops and built the placement
   ([Round 46 plan](docs/planning/round46-plan.md)).
 - Current owners: [quests](docs/design/quests.md) and
   [story](docs/design/story.md). Coordinate teaching steps with the class
@@ -94,8 +91,8 @@ layouts, resource tables or buff values.
 ## Readiness
 
 There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.
-**47 delivered**, **3 canceled** (WP16, WP37, WP49), **4 open or partial**
-(WP34, WP42, WP46, WP48).
+**48 delivered**, **3 canceled** (WP16, WP37, WP49), **3 open or partial**
+(WP42, WP46, WP48).
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
@@ -103,11 +100,20 @@ WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
 WP28 followed in Round 26, WP50 in Round 27, WP17 and WP44 in Round 29, WP41
 in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33, WP9 and
 WP13 in Round 36. The audit's letters and numbers (for
-example E5) are cited below.
+example E5) are cited below. WP34 followed in Round 46.
 
-- **Latest delivery: [0.45.1, the fix round after the 0.45.0
-  playtest](docs/planning/round45-plan.md#0451-fix-round-2026-10-10)**
-  (2026-10-10, compatible, not pushed yet): the riding camera per mount,
+- **Latest delivery: [Round 46 "World generation and player
+  feedback"](docs/planning/round46-plan.md#completion-2026-10-13)**
+  (2026-10-13, version 0.46.0, **map reset**, not pushed yet; GUI test
+  open): seed-dependent POI placement, the revised ore, gem and coal
+  table, kill XP by level difference, the repeatables removed, underground
+  spawns and the depth pulse (WP34), rage by weapon speed and the caster
+  spell base, coin bags, plain dishes, repair only in towns and the
+  waiting point ([Round 46](#round-46--world-generation-and-player-feedback),
+  [carry-overs](#round-46-carry-overs)).
+- [0.45.1, the fix round after the 0.45.0
+  playtest](docs/planning/round45-plan.md#0451-fix-round-2026-10-10)
+  (2026-10-10, compatible, pushed, in production): the riding camera per mount,
   Dismount, Charge on stairs, reliable self-skill clicks, the crafting
   and quest giver fixes, the inventory key closing every window, the map
   zoom's soft lock, "Now playing" and the trainer greetings
@@ -382,7 +388,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP31 | [Mounts](docs/planning/work-package-scopes.md#wp31) | Delivered (C3); prices merged into WP44 and set in Round 29; boats are the water mode since Round 29. | WP40 ✅ |
 | WP32 | [Farming](docs/planning/work-package-scopes.md#wp32) | Delivered 2026-09-29 (C4), GUI-accepted with Rounds 25–35 (the user, 2026-10-05); Claim Stone integration shipped with WP24. | WP24 ✅, WP33 ✅ |
 | WP33 | Gathering/source catalog | Delivered; Round 23 replaces exact-baseline renewal with habitat-driven renewal ([receipt](docs/research/round23-habitat-renewal.md)). Current rules: topic design. | — |
-| WP34 | [Deep spawn pulse](docs/planning/work-package-scopes.md#wp34) | Only the depth pulse remains; kept, for later (E5). Renewable camp resources removed. the Land Guard and the Rift Spawn's deep row join the pulse (E4); placement and servant roster open. | WP6 ✅, WP40 ✅ |
+| WP34 | [Deep spawn pulse](docs/planning/work-package-scopes.md#wp34) | Delivered in Round 46 ([completion](docs/planning/round46-plan.md#completion-2026-10-13), rules [biomes_mobs.md §4.1](docs/design/biomes_mobs.md#41-the-depth-pulse-decided-2026-08-08-built-round-46)): the user's curve below −300, flying servants in line of sight, the Riftwing below −1000; the Land Guard and the Rift Spawn's deep row joined the pulse (E4). Renewable camp resources removed. | WP6 ✅, WP40 ✅ |
 | WP35 | Equipped weapon source and appearance | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP36 | Reference submodules and first runtime fixes | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP37 | [Surface-density cut](docs/planning/work-package-scopes.md#wp37) | Canceled 2026-09-29: superseded by Round 24 ruling 27 (about 1.5× density). Only Bone Weevil and Bog Fowl get 0.75 density (`chance` 2200 → 2933), delivered with WP28 (C6). | WP6 ✅ |
@@ -1763,10 +1769,7 @@ else open.
 - **Map window** (MQ): `zoom_fov` 72 replaces the 15° zoom creative mode
   gives; while Charge's field of view is active, Z shows "Zoom currently
   disabled"; the old probe `tools/r27_quest_item_names` still reads the
-  Quests page (outside `run_fixtures.sh`); the stale comment in
-  `grug_mapgen/wp40/r7_loader.lua:46-47` (zone markers as a `world_key`
-  reader) waits for the next real mapgen change, since a comment edit there
-  invalidates the world-layout cache.
+  Quests page (outside `run_fixtures.sh`).
 - **Quickbar** (QB): an open quickbar is never refreshed; `grug_mounts`
   still depends on `grug_inventory`, which it no longer uses;
   `grug_mounts.register_on_owned_tiers_changed` has no listener.
@@ -1818,24 +1821,6 @@ world generation changed.
 the user's items for later rounds and the reviews' and reports' backlog
 notes (theoretical, no severity).
 
-- **The waiting point for players in creation stasis** (the user,
-  Round 46): every player whose wait ends in a teleport waits at
-  (0, 31000, 0), where no map is generated around them; the spec is
-  ready (`grudgelands-orchestration/r46/waiting-point-spec.md`, outside
-  the repository).
-- **Random seeds can fail at load** ("river covers the core of POI", e.g.
-  seed 8507030740356938342, already in 0.44.0); the user's long-term fix
-  is POI placement adapted to the roads and rivers (Round 46;
-  [seed-dependent POI placement](#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
-- **A map and minimap icon for Grudge-Free Repairs** (the user, Round 46):
-  a repair icon without a tooltip; new art and the user's pick.
-- **Repair only in towns** (the user leans to it): remove claim repair,
-  the furnaces' included; a crafting-table repair station is dropped
-  (repairs stay scarce so players meet).
-- **`grug_materials/registry.lua` `TIERS[].ilvl`** still says 3/10/…/50
-  (unread, part of the pinned WP43 projection): fold it into the next
-  mapgen change with the `r7_loader.lua:46-47` comment
-  ([Round 44 carry-overs](#round-44-carry-overs)).
 - **Night mobs and idle players** (PT7): a player who stands still or is
   away keeps every night mob within 64 nodes (up to about 110 at the
   cube's corners) all day; watch it.
@@ -1918,8 +1903,6 @@ the reviews' and reports' backlog notes of the 0.45.1 fix round
   scale` on a model without `display_size` also scales a capital display
   that activates meanwhile, and the in-place re-summon skips the boat
   surface rule.
-- **Gate list:** add `python3 tools/r451_mc/gen_bat_ride_mesh.py --check`
-  (the ridden bats' mesh against its source) to the round-end gates.
 - **"Now playing"** (MU): the box would show if `core.sound_play` ever
   failed while nothing is audible; at 720p with 10 tracked quests it
   overlaps the quest list (accepted; clear from 744 px high).
@@ -1953,6 +1936,123 @@ the reviews' and reports' backlog notes of the 0.45.1 fix round
 - **Trainer window** (TR): the line wrap uses the 6.6-characters-per-unit
   estimate; at a large GUI scaling or font (web build) a 67-character
   line could reach the window edge.
+
+### Round 46 — world generation and player feedback
+
+**Delivered 2026-10-13, not pushed yet (pushed only on the user's word)**
+([completion](docs/planning/round46-plan.md#completion-2026-10-13), plan
+[round46-plan.md](docs/planning/round46-plan.md)); every code lane
+independently reviewed by Opus, the follow-up deltas XPC, XPC2, CKF and
+LTF checked by the coordinator, ART picked by the user. Version 0.46.0, **map reset**: world generation changed; no
+migration step, and the production world moves later with one combined
+update.
+
+- **Placement** (PL): villages, outposts, camps, mines, clash sites, rare
+  dens and the PvP sites per seed
+  ([world_zones.md §8.5](docs/design/world_zones.md#85-seed-dependent-poi-placement-round-46));
+  quest-named region kinds always form a region
+  ([spawn_regions.md](docs/design/spawn_regions.md#how-a-region-map-is-built)).
+- **Resources** (OR): the §3 table of the plan, gems one and two tiers
+  deeper ([items_crafting.md §3.0.1](docs/design/items_crafting.md#301-universal-materials-and-resource-taxonomy)).
+- **XP and quests** (XP, XPC, XPC2): kill XP by level difference, gray at
+  −7 and for every no-XP mob, the con gradient, gathering XP, the 55
+  repeatables removed ([progression.md](docs/design/progression.md),
+  [combat_stats.md](docs/design/combat_stats.md)).
+- **Underground and the depth pulse** (UW, DP): spawns from y −1, light 7,
+  sight 26, 4 % elites; WP34's pulse with the Riftwing
+  ([biomes_mobs.md §4.1](docs/design/biomes_mobs.md#41-the-depth-pulse-decided-2026-08-08-built-round-46)).
+- **Combat** (CB): rage by base swing interval, the caster spell base
+  half from the weapon, caster talents on the spell base
+  ([combat_stats.md](docs/design/combat_stats.md),
+  [skill_trees.md](docs/design/skill_trees.md)).
+- **Loot, cooking, crafting, repair** (LT, LTF, CK, CKF, ID, RP, ART):
+  coin bags with the Auto box, cloth 1/1, spiders at 41–50; the plain
+  role and six plain dishes; the ×N count by halving; the ingredient
+  dropdown and one torch recipe; repair only in towns with the mender's
+  icon ([economy.md](docs/design/economy.md),
+  [items_crafting.md](docs/design/items_crafting.md),
+  [durability_repair.md](docs/design/durability_repair.md)).
+- **The waiting point** (WT)
+  ([world_preparation.md](docs/design/world_preparation.md#the-waiting-point)).
+
+### Round 46 carry-overs
+
+**Noted 2026-10-13** ([completion](docs/planning/round46-plan.md#completion-2026-10-13)),
+the reviews' and reports' backlog notes (theoretical or accepted, no
+severity).
+
+- **Depth pulse** (DP): the rate runs about 7 % below the curve (the slice
+  timer resets instead of subtracting, as in `spawn_regions`); an arrival
+  can come back as an ordinary saved mob after a server crash (its static
+  copy is written before `static_save = false`); a pending wind-up still
+  spawns after the player climbed above −300 or teleported (it fades after
+  10 s); in a group each player can have one wind-up pending, so the
+  shared cap can be exceeded by up to players − 1 for a moment; flyers
+  have no route search and rely on the fade round corners; watch the
+  Emberglass income from Ember Wisp arrivals.
+- **Underground spawns** (UW): the golems' level-5 elite floor applies at
+  every depth, so the L2–4 golems that spawned at −41 … −74 under
+  low-level zones are gone (the user's answer covers it in intent;
+  `names.json` keeps their slots at L1–60, harmless); the merged
+  underground ABM now also rolls in the −1 … −40 band under every surface
+  player, unmeasured (a `POINTS=surface` census would compare); underground
+  ranged mobs (Goblin Pelter, Fire Hurler) engage from 26 nodes and the
+  pack alert reaches 26 (GUI checklist).
+- **Waiting point** (WT): a stray item dropped at the feet on join
+  (`equipment.lua:245`) may land at the waiting point; every active-block
+  cycle and send step re-queues the waiting players' missing blocks as
+  cancelled emerges, one database read each (shared, unmeasured); the
+  unreachable "complete without backlog" branch can go; with the movement
+  anticheat disabled a server would accept one stale old-position packet;
+  `tools/r41_up`'s engine probe edits were not re-run in the engine.
+- **Combat** (CB): `grug_core/combat.lua:118-119` says every class starts
+  with its caster weapon (only the Mage and the Priest do); a caster
+  talent tooltip says "with your staff or wand" with an empty slot (the
+  number is right; GUI checklist); `combat_stats.md:76` is one unwrapped
+  line; `tools/r46_cb` stubs a broken or unequippable staff instead of
+  testing it; `r35_b`/`r36_k` `numbers.py` keep the old flat rage model
+  (historical printouts).
+- **Repair** (RP): `tools/r451_tr/portable_test.lua:460` still builds a
+  `{kind="station"}` repair form through its stubs; the
+  `grug_quality/init.lua:455-456` comment names "the station's repair
+  button"; `default`'s `toolrepair` craft is registered but unreachable
+  (vendored; a GRUG PATCH could clear it).
+- **XP and quests** (XP): removed quests leave dead `cooldowns` and
+  `completed` entries in saved state (only looked up by id); quest XP
+  pays its full quest level to an over-levelled player; the ledger's
+  `--repeat` and the repeatable mechanism are dormant; the fixture stubs
+  in `r28_a3:97`, `r28_b1:487`, `r28_b2:205` and `r28_s1:968` still set
+  the removed `LEVEL_OFFSET`.
+- **Crafting** (ID, CK): Craft now from a page older than the last server
+  build reads its dropdown values against the new rows (the Round 45
+  stale-page gap; nothing is lost); the enchant and upgrade boxes have no
+  dropdown; the Crafting help has no line about the dropdown; a group
+  entry takes the first matching slot (Salt-Crusted Fish can use a Storm
+  Tuna before a Raw Fish); at levels 1–3 a T1 plain and a Hearty dish
+  both heal 1 HP per tick (rounding); Dawnmere's onion grows only in its
+  5 % deep forest and Speargrass's Mushroom in 5 %; Silver Trout in every
+  11–20 zone assumes water there (GUI checklist); Spiced Skewer's icon is
+  close to Mushroom Skewer's and Pan-Fried Trout's to Corn-Crusted Fish's
+  (look and feel).
+- **Economy** (LT, XP): reprice mounts, respecs and the crown fee once
+  after this round (every price is within the 20 % corridor; the largest
+  gap is the bracket-6 respec, 12s against 14s); coin bags also roll for
+  mobs with empty drops, such as the enrage-only dragon whelps (the
+  uniform rule).
+- **Placement** (PL): the coarse zone test is lopsided when `reach` is not
+  a multiple of 16 (the + side keeps about 16 instead of 24; fixing it
+  moves every POI); the last resorts ignore `ANCHOR_GAP` and `WET_RESORT`
+  the town gaps (never reached); the Round 34 F3 guard on fixed POIs is
+  watched by the full fleet; Mournfen's bandit camp lies more than one
+  belt from its band on seed 99999 (a closer band proxy); `check_lua.sh`
+  sweep 5 flags `io.popen` in `tools/r31_q/portable_test.lua:79`
+  (pre-existing).
+- **Names** (PL): `tools/r38_names/inventory.py --check` reports stale
+  files on main (already before the round).
+- **Texts** (OR): the Frostbarrow Garnet quest text says "below the copper
+  and jade", but Jade now reaches T3 and T4 too (flavour; a quest-text
+  pass); `economy-vendor-plan.md` and `round29-plan.md` keep the old gem
+  rule as history.
 
 ### Audit 2026-10 open questions
 
@@ -2178,41 +2278,22 @@ Side findings: the vendor Uncommon is gone and shields, spellbooks and
 trinkets drop from mobs (Round 33); royal guards and other encounter adds
 drop no gear by design (Round 34 ruling 7).
 
-### Seed-dependent POI placement (user, 2026-10-03; optional, set aside)
+### Seed-dependent POI placement (user, 2026-10-03; delivered in Round 46)
 
-**Taken up again by the user (2026-10-09) for Round 46:** random seeds can
-still fail at load ("river covers the core of POI", e.g. seed
-8507030740356938342); the long-term fix is POI placement adapted to the
-roads and rivers instead of fixed anchors. The record below is the earlier
-state.
-
-Set aside by the user (2026-10-03): optional, not planned for now; POIs and
-the fortresses stay at their fixed positions. Confirmed by the user
-(2026-10-04, after the Round 34 seed failure): the map stays as it is; robustness comes
-from testing (a seed fleet before merging world-generation changes and at the end of
-such rounds), not from moving POIs. If they move,
-the zone's mob-level distribution must be respected too (a POI's level band
-must fit the level field where it lands).
-
-Today every one of the 118 anchors has fixed coordinates in
-`grug_mapgen/wp40/source/simple_map.lua` (`layout_fixed` / `authored_fixed`,
-"frozen layout"); the world plan builds on them in a fixed order (core
-flattening, road routing, protection, region-map cache, quest targets).
-The proposal, if chosen:
-
-- **Start towns and capitals stay fixed.**
-- **POIs, camps (bandit, Mirefolk, PvP war camps), outposts, mines and the
-  two PvP fortresses are placed per seed**, once at the first world build,
-  as well fitted to the terrain as possible and by each kind's rules (for
-  the fortresses: dry, flat, near the Battlegrounds and the middle road).
-- Shape: run the placement pick that lane M built offline
-  (`tools/r31_m/candidates.lua`, `pick.lua`, `spacing_check.lua`) on the
-  natural terrain before flattening and road routing; identical in the main
-  and emerge environments; spacing and zone/level-band rules checked
-  online; the result stored in the world-layout cache. Quest texts already
-  use placeholders, so positions may change per world.
-- Risk: it reorders the world plan; frozen pins, quest-target checks on six
-  seeds and the region-map cache must follow.
+**Done:** delivered in Round 46 lane PL
+([completion](docs/planning/round46-plan.md#completion-2026-10-13)); the
+rules are [world_zones.md §8.5](docs/design/world_zones.md#85-seed-dependent-poi-placement-round-46).
+Villages, outposts, bandit and Mirefolk camps, mines, clash sites (but the
+four rift sites), rare dens, the two PvP fortresses and the sixteen war
+camps are placed per seed by rules for each kind, once per world, on the
+natural terrain before core fitting and road routing, identical in the main
+and emerge environments and stored in the world-layout cache; start towns,
+capitals, dragon arenas, apex mines and the rift sites stay fixed. Seed
+8507030740356938342 loads. The request (set aside 2026-10-03 and 2026-10-04
+in favour of the seed fleet, taken up again on 2026-10-09) also asked that
+a POI's level band fits the level field where it lands, which the rules
+keep. A catalog row may declare an underground reservation; quest-bearing
+POIs with an underground part are later content.
 
 ### Enchantment and item-level revision (user, 2026-10-03; a later round)
 

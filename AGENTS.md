@@ -12,20 +12,22 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.45.1, the fix round after the 0.45.0 playtest
-(**compatible**: no migration step, no map reset), is complete on main
-([fix round](docs/planning/round45-plan.md#0451-fix-round-2026-10-10)):
-the riding camera per mount, Dismount, Charge on stairs, reliable
-self-skill clicks, the crafting and quest giver fixes, the inventory key
-closing every window, the map zoom's soft lock, "Now playing" and the
-trainer greetings. It sits on Round 45 (crafting rework; 0.45.0,
-**migrate**, [plan](docs/planning/round45-plan.md)). origin/main is
-`d4a1e645` (0.45.0) and production runs 0.45.0; 0.45.1 is not pushed
-yet (pushed only on the user's word). Rounds 25–35 count as GUI-accepted
-(the user, 2026-10-05), Round 39 too (2026-10-06), Round 42's playtest
-was accepted (2026-10-08); the GUI tests of Rounds 36–38, 40, 41, 43, 44
-and 45 and of 0.45.1 are open. Next: the 0.45.1 GUI test and push;
-Round 46 (the waiting point for players in creation stasis). Details:
+**Current state:** 0.46.0, Round 46 "World generation and player
+feedback" (**map reset**: world generation changed; no migration step), is
+complete on main
+([completion](docs/planning/round46-plan.md#completion-2026-10-13)):
+seed-dependent placement of villages, camps, mines and the PvP places, the
+new ore, gem and coal table, kill XP by level difference, no repeatables,
+underground spawns and the depth pulse, rage by weapon speed, caster spells
+half from the weapon, coin bags instead of sell-only drops, plain dishes,
+repair only in towns and the waiting point. origin/main carries 0.45.1 and
+production runs it; 0.46.0 is not pushed yet (pushed only on the user's
+word), and the production world moves later with one combined update.
+Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
+(2026-10-06), Round 42's playtest was accepted (2026-10-08); the GUI tests
+of Rounds 36–38, 40, 41, 43–46 and of 0.45.1 are open. The class redesign
+is parked ([continuation](docs/planning/class-redesign/continuation.md)).
+Next: the Round 46 GUI test and a fix round. Details:
 [STATUS](docs/STATUS.md).
 
 ## Language rules
@@ -320,8 +322,9 @@ The topic rules below name the one path to use; the
   --game`, `ledger.py --track <race>`.
 - **All travel** (home return, respawn, waystones) goes through
   `grug_home/travel.lua`; boats are water mounts in `grug_mounts`. Gems are
-  depth-tiered, each in its own tier rock; there are no gem grades and no apex
-  sockets.
+  depth-tiered: each in its own tier rock, one tier deeper at half and two
+  tiers deeper at a quarter of its density (Round 46), always with its own
+  tier's harvest tier; there are no gem grades and no apex sockets.
 
 ### Performance
 

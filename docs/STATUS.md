@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-10. This is the delivery pointer, not another game specification.
+Updated 2026-10-13. This is the delivery pointer, not another game specification.
 
 Planning pointer added 2026-10-12: the [class and hotbar redesign
 handoff](planning/class-redesign-handoff.md) preserves the redesign
@@ -16,14 +16,62 @@ acceptance and implementation remain pending. HTML previews live in the
 user's home artifact folder, not the repository. **Parked 2026-10-12** as a
 future work package after two reviews; the next round focuses on world
 generation. Resume with the [continuation plan](planning/class-redesign/continuation.md).
+Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
+is open.
 
-**Round 46 planned** (2026-10-12): [world generation and player
-feedback](planning/round46-plan.md) — seed-dependent placement, the
-ore/gem/coal table, XP, underground, depth pulse, rage and caster weapons,
-loot, cooking, no repeatables, repair in towns; 0.46.0 with a map reset.
+- **Round 46 "World generation and player feedback" complete; 0.46.0 not
+  pushed yet (pushed only on the user's word)** (2026-10-13, version
+  0.46.0, **map reset**,
+  [plan, decisions, numbers and GUI checklist](planning/round46-plan.md#completion-2026-10-13)).
+  origin/main is `0e6b3061` (0.45.1) and production runs 0.45.1; the
+  production world is not moved to 0.46.0 now but later with one combined
+  update (plan §5). From main `31f16c11`: OR, XP, WT, XPC, ART, CB, XPC2,
+  CK, RP, LT, CKF, UW, ID, LTF, DP and PL merged up to `54190e98`, then
+  this documentation lane D; each code lane independently reviewed by
+  Opus (OR, CB, CK, DP and PL MERGE AFTER FIXES, PL twice with a Medium,
+  the quest targets, then the fallback's breadth; every fix made before
+  the merge), the follow-up deltas XPC, XPC2, CKF and LTF checked by the
+  coordinator, ART on the user's picks. Main has 171 portable fixtures (10
+  new). Lanes' gates: every lane's full fixture run green, `quick` seed
+  fleets 100/100 for OR and PL, quest targets on six seeds 1060 ok and 0
+  missing, `check_fresh_server.py` PASS, smoke boots PASS; on lane D's
+  branch `tools/r37_dc`, `check_upgrade.py` (0.46.0 against origin/main
+  `0e6b3061`) PASS. **Round-end gates (coordinator, 2026-10-13):** full
+  fixtures 171/171, the full seed fleet 304/304, `check_upgrade.py`,
+  `check_fresh_server.py`, `gen_bat_ride_mesh.py --check` and a smoke boot
+  PASS.
+  OR and PL change world generation (**map reset**), every other lane is
+  compatible; the declaration is
+  `{"schema": 2, "version": "0.46.0", "map_reset": ["0.40.1", "0.46.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`:
+  the second declared map reset, no migration step.
+  - **World generation (OR, PL):** the §3 resource table with gems one
+    and two tiers deeper (census T1–T6 5.40 / 3.75 / 3.66 / 4.05 / 3.86
+    / 3.47 %); villages, outposts, camps, mines, clash sites, rare dens
+    and the PvP sites placed per seed by rules per kind (98 rows), the
+    fixed kinds unchanged, the failing seed loads, quest-named region
+    kinds always form a region; first start about +1 s.
+  - **XP and quests (XP, XPC, XPC2):** kill XP by level difference with
+    gray at −7 and for every no-XP mob, the con gradient, gathering XP
+    halved without the +5, the 55 repeatables removed, Ruling 33 retired.
+  - **Underground (UW, DP):** spawns from y −1 up to light 7 (a torch
+    keeps 4 nodes clear), sight 26, 4 % elites from level 5, 10 torches
+    per coal or charcoal; the depth pulse below −300 on the user's curve
+    with the Riftwing below −1000 (12.5 µs per step).
+  - **Combat (CB):** the same rage per second for every weapon; caster
+    spells half from the staff or wand, caster talents on the spell base.
+  - **Loot, cooking, crafting, repair (LT, LTF, CK, CKF, ID, RP, ART):**
+    coin bags with the Auto box instead of the 23 sell-only drops (income
+    +2 … +14 % by band), cloth 1/1, spiders at 41–50; the plain role and
+    six plain dishes (every start zone cooks); the ×N count by halving;
+    the ingredient dropdown and one torch recipe; repair only in towns,
+    the mender's icon A1c.
+  - **The waiting point (WT):** (0, 31000, 0) for every player whose wait
+    ends in a teleport; 0 chunks generated around them.
+  - Next: the user's GUI test (desktop and web build, new worlds); a fix round from its findings; the push
+    on the user's word ([BACKLOG](../BACKLOG.md#round-46-carry-overs)).
 
-- **0.45.1, the fix round after the 0.45.0 playtest, complete; not
-  pushed yet (pushed only on the user's word)** (2026-10-10, version
+- **0.45.1, the fix round after the 0.45.0 playtest, complete and
+  pushed; production runs it** (2026-10-10, version
   0.45.1, **compatible**,
   [lanes, decisions, numbers and GUI checklist](planning/round45-plan.md#0451-fix-round-2026-10-10)).
   0.45.0 is on origin/main (`d4a1e645`) and production runs it. The
@@ -62,9 +110,9 @@ loot, cooking, no repeatables, repair in towns; 0.46.0 with a map reset.
     waiting for their floor and re-seated; the trainer window and the
     picked greetings, "Grudge-Free Repairs" as the mender's title; the
     "Now playing" box under the minimap.
-  - Next: the user's GUI test (desktop and web build) and the push on
-    the user's word; Round 46
-    ([BACKLOG](../BACKLOG.md#0451-carry-overs)).
+  - Pushed on the user's word (origin/main `0e6b3061` carries it);
+    production runs 0.45.1. Next: the user's GUI test (desktop and web
+    build) ([BACKLOG](../BACKLOG.md#0451-carry-overs)).
 
 - **Round 45 "Crafting rework" complete; 0.45.0 pushed on the user's
   word after the round-end gates** (2026-10-09, version 0.45.0,
@@ -996,8 +1044,8 @@ loot, cooking, no repeatables, repair in towns; 0.46.0 with a map reset.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.45.1 (the fix round, not pushed yet)
-  on Round 45 (0.45.0, pushed, in production) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+- **Latest game:** main carries 0.46.0 (Round 46, a map reset, not pushed
+  yet) on 0.45.1 (pushed, in production) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
   2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
   (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
@@ -1027,7 +1075,9 @@ loot, cooking, no repeatables, repair in towns; 0.46.0 with a map reset.
   Round 24 was accepted earlier, and its build contains Rounds 20–23 and
   the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06,
   Round 42 by the user's playtest on 2026-10-08.
-  **Rounds 36–38, 40, 41 and 43–45 are open** (Round 45's
+  **Rounds 36–38, 40, 41 and 43–46 and 0.45.1 are open** (Round 46's
+  [checklist](planning/round46-plan.md#gui-checklist-round-46), 0.45.1's
+  [checklist](planning/round45-plan.md#gui-checklist-0451), Round 45's
   [checklist](planning/round45-plan.md#gui-checklist), Round 44's
   [checklist](planning/round44-plan.md#gui-checklist); Round 43's
   [checklist](planning/round43-plan.md#gui-checklist) is short: a 0.42.0
@@ -1083,7 +1133,7 @@ loot, cooking, no repeatables, repair in towns; 0.46.0 with a map reset.
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main is `d4a1e645` (0.45.0) at 0.45.1's
+- **Remote observation:** origin/main is `0e6b3061` (0.45.1) at 0.46.0's
   documentation; the top entry has the current push line.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the

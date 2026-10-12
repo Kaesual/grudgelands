@@ -93,6 +93,10 @@ which added the `migrate` list of the platform's migration contract):
   second (§5.8). The
   platform adopts a version with a real step only once its runner is in
   production (Round 44 ruling 3).
+- 0.46.0 (Round 46) declares the second map reset: seed-dependent POI
+  placement and the new ore, gem and coal table change world generation.
+  It declares no step; the production world is not moved now but later in
+  one combined update ([round 46 plan](../planning/round46-plan.md#5-rules)).
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the

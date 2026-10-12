@@ -1,8 +1,8 @@
 # Round 46 — World generation and player feedback
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-12 from the user's decisions
-of the same day. Status: **planned**; starts after a context compaction and
-the user's go.
+of the same day. Status: **complete** (2026-10-13, version 0.46.0, **map
+reset**; [completion](#completion-2026-10-13)).
 
 The main focus is world generation. **Seed-dependent placement** replaces
 the fixed coordinates of villages, outposts, camps, mines and the PvP sites
@@ -533,3 +533,315 @@ After merges: `tools/sync_to_luanti.sh`.
 
 1. **The depth pulse design:** after DP's note.
 2. **CK's ingredient proposals** for higher-tier dishes, if any.
+
+## Completion (2026-10-13)
+
+Every lane is merged on main; this lane D (this section and the status
+owners) follows PL on main `54190e98`. **0.46.0 is a map reset:** world
+generation changed (placement, the resource table), and no lane needs a
+migration step. The production world (0.45.1) is not moved now; a later
+combined update takes it across several releases (§5). **Push:** 0.46.0
+is not pushed yet (pushed only on the user's word); origin/main is
+`0e6b3061` (0.45.1), which production runs.
+
+### Lanes
+
+Main's first-parent merges from `31f16c11`, in order (the plan's own
+updates `b47fdc7c`, the coin-bag Auto box, and `4d3a0685`, lane ID, lie
+between them):
+
+| Lane | Merge (follow-ups) | What | Review |
+|---|---|---|---|
+| OR | `a8c85077` (`82ac44d8`) | the §3 table: Coal 96 and Iron 128 in T3, gems one and two tiers deeper at 1/1024 and 1/2048; `TIERS[].ilvl` dropped; the `r7_loader` comment; WP43 projection re-pinned | MERGE AFTER FIXES (Medium: the Help gem line), fixed |
+| XP | `fb524129` | kill XP by level difference (gray at −7), gathering XP 0.05/0.10/0.33 without +5, the 55 repeatables and 11 hub lines removed, Ruling 33 retired; three prices over a rounding edge | MERGE |
+| WT | `82567b16` | the waiting point (0, 31000, 0) for players whose wait ends in a teleport | MERGE (doc nits fixed) |
+| XPC | `29a26134` | the con colour as a green–yellow–red gradient per level | coordinator-checked delta |
+| ART | `af7435b1`, `9783e969` | GPT-6 Astra's repair marker proposals (CC0, generator committed), four rounds to the user's pick A1c | the user's picks |
+| CB | `de7da34c` | rage per hit by the base swing interval; the caster spell base half from the staff or wand; caster talent terms on the spell base | MERGE AFTER FIXES (two doc lines), fixed; delta MERGE |
+| XPC2 | `0daa32bb` | every mob that pays the viewer no kill XP shows gray, one predicate for payout and frame | coordinator-checked delta |
+| CK | `f0fd0844` | the plain food role, carrot and cassava as staples, six plain dishes, band fish in fish dishes, furnace foods plain, four ingredient swaps; ×N respects overlapping groups | MERGE AFTER FIXES (×N overcount), fixed; delta MERGE |
+| RP | `b7d05a5a` | claim-stone and furnace repair removed; the mender's icon A1c on map and minimap | MERGE |
+| LT | `0f5d9f36` | the 23 sell-only drops off, coin bags (1 in 8) with the Auto box, tier cloth 1/1 ×1–2, scrap rows off in bands 2–6, spiders at 41–50 | MERGE (Lows fixed) |
+| CKF | `2389231f` | the ×N overlap count by halving with the output ceiling | coordinator-checked delta |
+| UW | `a0ad8834` | underground spawns from y −1, light 7, sight 26, 4 % elites from level 5; 10 torches per coal or charcoal | MERGE |
+| ID | `38c49eb0` (`ac874261`) | a dropdown per group ingredient in the crafting box; one torch recipe of `group:coal` | MERGE (stale-event fix) |
+| LTF | `4c665966` | the no-coin-bag flag reaches the live mob (the Kraken) | coordinator-checked delta |
+| DP | `0225b4ae` | the depth pulse below −300 with the user's curve, the Riftwing below −1000 | MERGE AFTER FIXES, fixed at the merge |
+| PL | `54190e98` | seed-dependent placement of villages, outposts, camps, mines, clash sites, rare dens and the PvP sites; quest-named region kinds always form a region | MERGE AFTER FIXES (Medium: 13 quest targets missing), fixed; delta MERGE AFTER FIXES (the fallback restricted to quest-named kinds, plus a guard), fixed |
+| D | this section | CHANGELOG, version and declaration, status owners, the Help cave line, the gate list | — |
+
+Main has 171 portable fixtures (10 new: `r46_wt`, `xp`, `cb`, `lt`, `ck`,
+`rp`, `uw`, `id`, `dp`, `pl`); `mods/` +3,499 −3,184 lines in 181 files,
+three new Lua files (`grug_mobs/depth_pulse.lua`, `wp40/placement.lua`,
+`wp40/placement_rules.lua`).
+
+### Decisions during the round
+
+The user's decisions of 2026-10-12 and 2026-10-13, one line each (the
+coordinator log is outside the repository):
+
+1. **ART:** icon A, then a hammer that reads as one (A1–A3), a heavier
+   anvil (A1a/A1b), the hammer one pixel closer: **A1c**.
+2. **DP-1:** no pulse above −300; 0.5 arrivals a minute at −300, rising
+   linearly to 1 at −1000 and 2 at −2000, flat below; the level is the
+   cave level at the arrival spot.
+3. **DP-2 … DP-8** as recommended: caps 2/4/6 (to −500 / to −1000 /
+   below) shared within 24 nodes; a silent 2 s warning with 32 particles;
+   6–14 nodes in line of sight, sealed rooms down to 3, no room → skip, no
+   node changed; claims, start footprints and hard protection refuse;
+   never elite; roster R2 with the new Riftwing, Rift Spawn and Bedrock
+   Sentinel; fade after 10 s without a target; full XP, family drops, no
+   coin bag.
+4. **CB-1:** without a usable staff or wand the weapon half is 0.
+5. **CB-2:** (B) caster talent damage terms scale with the spell base.
+6. **CB-3:** no staff fix; new casters keep the Bronze Staff.
+7. **CB-4:** the staff, wand and spell tooltip texts are fine.
+8. **XP-1:** a green–yellow–red con gradient per level (gray at −7);
+   then gray for every mob that gives the viewer no XP.
+9. **XP-2:** the price commit stays; **XP-3:** the repeatable mechanism
+   stays for later content.
+10. **CK-1:** plain dishes stand outside the Round 34 cost rule;
+    **CK-2:** Cooked Meat, the Meat Block, Cooked Fish and Bread are plain;
+    **CK-3:** the four ingredient swaps.
+11. **×N count:** the 12 ms worst case is not acceptable → CKF (halving
+    and the output ceiling).
+12. **LT:** the Auto box beside the coin slot, on by default; Q1 the
+    linen scrap rows of bands 2–6 removed; Q2 the label "Auto", Q3
+    spiders as a minor role, Q4 coin bags for every looted kill.
+13. **PL-1** rare dens placed per seed; **PL-2** apex mines fixed;
+    **PL-3** the island clash sites 075 and 086 bound to their islands;
+    **PL-4** fortress sides fixed (Accord east, Throng west); **PL-5** 128
+    nodes to capitals and start towns; **PL-6** the build after the
+    prototype renders; the build renders (seeded order) shown again.
+14. **UW-1** 4 % elites from level 5; **UW-2** the level-5 floor also for
+    the def-elite golems; **UW-3** the Help line about caves and torches
+    (this lane).
+15. **Lane ID** added: a dropdown per group ingredient and one torch
+    recipe for coal or charcoal; charcoal in the coal group, so black dye
+    takes it too.
+16. **Hotbar A/B** prepared by a read-only survey; its timing is open.
+
+The coordinator decided the PL note's other questions as recommended, the
+×N fix (a) in `jobs.lua`, the region notes at action level and the PL
+fallback restricted to quest-named kinds with its guard. DP's two build
+questions (the rate linear in depth; the 3-node minimum, which leaves a
+3×3 bunker safe) are built as the lane recommended.
+
+### Deviations from the plan
+
+- **Lane ID** joined in wave 2 (the user, 2026-10-12); four small
+  follow-up deltas (XPC, XPC2, CKF, LTF) came from the user's answers and
+  one DP side finding.
+- **Torch radius:** a mob may stand from the fifth step of a torch
+  (light 12 − 5 = 7), so 4 nodes stay clear, not 5.
+- **The depth pulse** took over the Land Guard's and the Rift Spawn's deep
+  rows; both left `UNDERGROUND_MOBS`.
+- **The golems' elite floor** removed the L2–4 golems at −41 … −74 under
+  low-level zones (the user's UW-2 covers it in intent).
+- **Placement:** candidates are walked in a seeded order (mines and
+  fortresses by score) instead of flattest-first, and a placed POI keeps
+  clear of every authored lake's bounds; both found in the build.
+- **Quest targets:** three region kinds vanished on single seeds (one
+  already on main); a fallback block now forms each of the 137
+  quest-named kinds, never cutting another kind's largest region.
+- **The WT refutation:** the view cone requests no air chunks below the
+  waiting point (0 measured); the docs say so.
+
+### Numbers worth keeping
+
+Comparisons, not targets.
+
+- **Resource share per band** (OR census, seed 12345, one 80 × 80 column
+  to −1312): T1 5.40 %, T2 3.75 %, T3 3.66 %, T4 4.05 %, T5 3.86 %, T6
+  3.47 % (table: 5.40 / 3.74 / 3.66 / 4.05 / 3.86 / 3.47; before 5.4 /
+  3.65 / 3.0 / 3.9 / 3.7 / 3.3); every resource within about 2 % of its
+  denominator.
+- **Kill XP per kill, solo** (normal / elite):
+
+  | Player | d −7 | −3 | 0 | +3 | +6 |
+  |---|---:|---:|---:|---:|---:|
+  | L10 | 0 / 0 | 41 / 165 | 75 / 300 | 97 / 390 | 112 / 450 |
+  | L30 | 0 / 0 | 96 / 385 | 175 / 700 | 227 / 910 | 262 / 1050 |
+  | L60 | 0 / 0 | 178 / 715 | 325 / 1300 | 422 / 1690 | 487 / 1950 |
+
+  The ledger's free play over the whole journey rises by 77–128 kill
+  equivalents (of 968) per race route; quest shares per band now 59–99 %.
+- **Rage per second:** 8 with every weapon (before: dagger 11.4, sword 8,
+  battle axe 5.7, hand 8.9); per hit 5.6 / 8 / 11.2 / 7.2; Mighty Blow
+  every 3.1 s from swings alone.
+- **Fireball at L60** (no gear Int, no crit): own-level staff or wand 337,
+  T1 staff 256, no caster weapon 240; with Tinder 5/5: 404 / 295 / 274.
+- **Income per hour** (`income.py`, by band 1–10 … 51–60): 172 / 428 /
+  911 / 2440 / 6448 / 14764c before → 196 / 439 / 1038 / 2575 / 6978 /
+  16723c after; tier cloth per hour T1 6.0 → 17.9, T5 silk 3.1 → 7.1.
+- **Cooking locality** (zones that cook a recipe of their own band): T1
+  2/6 → 6/6, T3 7/14 → 14/14, T4 2/6 → 6/6, T5 1/2 → 2/2, T6 1/4 → 4/4
+  (T2 6/6).
+- **Underground population** (`r24_density_xp`, hostiles within 56 nodes
+  / entities, seed 4242424242 under Hearthpine): −30 7.0 / 17 → 8.7–9.0 /
+  23; −300 10.7 / 25 → 14.7–18.0 / 32–41; −900 11.7 / 27 → 14.0–16.3 /
+  29–37. With the pulse (`POINTS=pulse`): −400 9 / 18–22 → 7–8 ambient, 0–1
+  pulse / 18–22; −1000 6 / 14–18 → 7–8 / 16–20; −1500 12–14 / 30–34 →
+  12–13 / 26–32. Pulse step 12.5 µs mean, 368 µs max.
+- **The waiting point:** 0 chunks generated around moved and waiting
+  players (the control that stayed: 14).
+- **First start** (seed 42): offline 18.1–19.3 s → 19.2–20.1 s
+  (placement 0.4–0.6 s); engine 19.6–21.0 s, a cache hit 4.7–4.8 s.
+- **Quest targets on six seeds:** 1047 ok and 13 missing → 1060 ok, 0
+  missing, with 3 fallback blocks on 3 of 228 maps.
+- **×N count** (`r46_ck/bench_count.lua`, Sweetroot Mash, worst case):
+  3.32 ms (LuaJIT) / 11.29 ms (`-joff`) → 0.002 / 0.004 ms; a whole
+  Cooking page 3.40 / 11.40 → 0.047 / 0.055 ms.
+- **Crafting page** with two dropdowns: 3552 → 3652 B.
+
+### Classification
+
+- **Map reset:** OR and PL (world generation). The layout and region-map
+  caches rebuild once (their keys digest the mapgen tree and the
+  recipes).
+- **Compatible:** every other lane. Saved state the new code reads
+  differently, for the later combined update:
+  - quest state: the removed repeatables drop from the active and tracked
+    lists at load; their `completed` and `cooldowns` entries stay dead;
+  - running crafting jobs of a changed recipe (the torch, Mushroom
+    Skewer, Raw Forager's Pot, Salt-Crusted Fish, Stormkelp Broth,
+    Cocoa-Rubbed Game) return their ingredients;
+  - new player meta `grug_money:auto_deposit` ("off" only; absent = on);
+  - underground mobs save a `view_range` field; pulse arrivals are never
+    saved;
+  - a player who leaves at the waiting point is saved at (0, 31000, 0)
+    and returns to the same flow.
+- **The declaration:**
+  `{"schema": 2, "version": "0.46.0", "map_reset": ["0.40.1", "0.46.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0"]}`.
+
+### Open notes
+
+The reviews' and reports' backlog notes are in the
+[BACKLOG](../../BACKLOG.md#round-46-carry-overs).
+
+### GUI checklist (Round 46)
+
+Desktop (GUI scale 1 and 2) and the web build (about 1280 × 720), on new
+worlds.
+
+**Placement:**
+
+1. Two worlds with different seeds (for example 42 and 2026): villages,
+   bandit and Mirefolk camps, mines, outposts, clash sites and rare dens
+   stand at different, plausible places in their zones, on dry, fairly
+   flat ground, never in a river; start towns, capitals, dragon arenas,
+   apex mines and the four rift sites are unchanged.
+2. Roads and trails reach the moved places; the fortresses' gates face
+   the middle road, the Accord's on the east side, the Throng's on the
+   west; the war camps sit in their zones.
+3. The map and minimap icons and the quest markers (a camp, a mine, a
+   leader, a quest area) point to the moved places on both seeds.
+4. Seed 8507030740356938342 loads.
+
+**Joining:**
+
+5. A new character joins and waits without terrain loading around it,
+   creates, and arrives at its race start; leaving mid-creation or before
+   arriving and rejoining continues normally.
+6. After a map reset an existing character waits, then lands at its race
+   start; an ordinary rejoin keeps its position.
+
+**Mining and torches:**
+
+7. T2 rock has an occasional Citrine, T3 Jade and rarer Citrine, T6 Ruby
+   and Sapphire next to Diamond; a deeper gem still reads "Requires a
+   T<own> pick" and pays its own tier's XP; T3 feels richer in Iron and
+   Coal.
+8. Coal at level 1 gives +2 XP, T1 ore at level 10+ +4.
+9. One recipe "Charcoal or Coal Lump" + a Stick → 10 torches; black dye
+   from Charcoal.
+
+**XP and quests:**
+
+10. A mob 3 levels below gives about 55 %, 3 above 130 %; the name line
+    shades green (6 below) → yellow (own level) → red (5 above); 7 below,
+    critters, own-faction guards and the Kraken show gray with (no XP).
+11. No Bounty quests anywhere (the Copperfell steward, Raincall); the
+    quest dialog's legend has no "(R)"; Help → Levels shows the new text.
+12. Apprentice Riding and the Boat cost 1s 10c, the bracket-5 respec
+    5s 50c.
+
+**Underground:**
+
+13. At y −5 … −30 outside a start town cave mobs appear; none inside the
+    town footprint; none within 4 nodes of a torch, some from about the
+    fifth; Help → Levels has the cave line.
+14. A cave mob about 25 nodes away comes at you; underground ranged mobs
+    (Goblin Pelter, Fire Hurler) shoot from about 26 nodes.
+15. An occasional gold elite with the wind-up from level 5 on; none, and
+    no golem, in level 1–4 caves.
+
+**The depth pulse:**
+
+16. At −300 … −350 an arrival about every 2 min: the violet wind-up for
+    2 s, then a Blood Bat or Glowwing 6–14 nodes away in view, attacking;
+    at −1000 about one a minute; at −2000 about every 30 s.
+17. Below −1000: Riftwings (violet, glowing), Ember Wisps, Rift Spawn,
+    sometimes a Bedrock Sentinel; nothing arrives above −300; a walled
+    3×3 cell gets nothing, a 7×7 room does; nothing in a claim.
+18. An arrival that loses you fades after 10 s; kills give XP and family
+    drops, never a coin bag, never a gold elite tint (the Sentinel stays
+    its own elite); the web build stays smooth with several deep players.
+
+**Combat:**
+
+19. A Warrior's Strike tooltip shows 5.6 with a dagger, 8 with a sword,
+    11.2 with a battle axe; dagger and axe fill the bar equally fast per
+    second.
+20. A level-30+ caster with a T1 staff hits visibly weaker than with an
+    own-level staff or wand, and with none at half the base; Fireball and
+    Smite tooltips change on equip; staff and wand tooltips show the
+    "spell base" line.
+21. A caster talent tooltip with an empty weapon slot: the number is
+    halved, the wording still says "with your staff or wand" (judge it).
+
+**Loot and money:**
+
+22. No sell-only drop; about one kill in eight a Bag of Coins; with Auto
+    ticked it goes to your money on pickup ("Deposited Xc.", no "+1 Bag of
+    Coins" line), unticked into your bags; the Auto box between the coin
+    slot and Sort, its tooltip readable, not clipped on the web; reopening
+    keeps the tick.
+23. Zombies and outlaws drop tier cloth (1–2) on every looted kill;
+    spiders by night in both level 41–50 fronts (Ford Weaver, Trench
+    Widow); the Kraken drops no coin bag.
+
+**Crafting and cooking:**
+
+24. Sweetroot Mash with carrot and cassava: two dropdowns; Cassava for
+    the root lowers Max and ×N and Craft now takes cassava; the torch with
+    coal and charcoal: Automatic = the sum, Coal Lump takes only coal;
+    a used-up kind falls back to Automatic or the dropdown goes; another
+    recipe starts on Automatic; the dropdown fits the box on the web and
+    its list opens over the rows below.
+25. A Troll in Kapok and an Undead in Stillgrave cook Sweetroot Mash, Raw
+    Hearty Stew and Spiced Skewer from local food; a level 11–20 zone
+    cooks Pan-Fried Trout (Silver Trout from its water).
+26. Spiced Skewer, Cooked Meat and Bread show 3 % (plain) against Hearty
+    Stew's 4 % (tooltip and Effects); the labels "Any vegetable", "Any raw
+    fish", "Cave Cap or Mushroom"; the six new icons readable (Spiced
+    Skewer next to Mushroom Skewer, Pan-Fried Trout next to Corn-Crusted
+    Fish).
+
+**Repair:**
+
+27. The hammer-and-anvil icon at Grudge-Free Repairs on the map window and
+    the minimap in a capital and a start town, no tooltip, not the other
+    faction's; a town trainer and the mender repair; a furnace in a claim
+    has no "Repair equipment"; Help → Bags, food and repair says "only in
+    towns"; Help → About shows 0.46.0.
+
+### Round-end gates
+
+**Round-end gates** (coordinator, 2026-10-13): full fixtures 171/171 on
+lane D's branch (`745ae841`) and 170/170 on main after the DP merge; the
+full seed fleet on main `54190e98` 304 of 304 seeds (30 min, 4 parallel);
+`check_upgrade.py` (0.46.0 against origin/main) PASS;
+`check_fresh_server.py` PASS; `gen_bat_ride_mesh.py --check` OK; smoke
+boot PASS. Lane D was checked by the coordinator (CHANGELOG, declaration,
+gates) instead of a separate review.

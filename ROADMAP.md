@@ -25,7 +25,8 @@ remain delivered foundations, with this refinement work still ahead.
   icons with care for the details that give each region character. Improve
   areas dominated by wind, add more surface variety, more varied tree shapes
   and more distinctive cities. Rebalance ores, gems and coal, with many ores
-  and gems available across more depth tiers.
+  and gems available across more depth tiers (a first pass shipped in
+  0.46.0: gems one and two tiers deeper, more Coal and Iron in T3).
 - **Crafting with more character and purpose:** build on the improved
   recipe system with more variety, wit and versatility, especially in
   Cooking. Explore a broader range of useful food buffs.
@@ -443,9 +444,21 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   mounts, mobs, station sounds, the Claim Stone as a waypoint) and art
   picks; the offline step removes mixtures, empties the craft grid and
   keeps old gear at its item level. Complete on 2026-10-09; pushed on the
-  user's word after the round-end gates.
-  Next: the GUI test; then Round 46 (the waiting point for players in
-  creation stasis).
+  user's word after the round-end gates. Its fix round 0.45.1
+  ([fix round](docs/planning/round45-plan.md#0451-fix-round-2026-10-10))
+  is pushed and in production.
+- [x] **Round 46 "World generation and player feedback"**
+  ([completion](docs/planning/round46-plan.md#completion-2026-10-13)),
+  version 0.46.0, **map reset**: villages, outposts, camps, mines, clash
+  sites, rare dens and the PvP sites placed per seed by rules for each
+  kind; the revised ore, gem and coal table (gems one and two tiers
+  deeper); kill XP by level difference with the gray line at −7, gathering
+  XP cut, the repeatable quests removed; underground spawns from y −1 with
+  elites and the depth pulse (WP34) below −300; rage by weapon speed and
+  caster spells half from the weapon; coin bags instead of the sell-only
+  drops; plain dishes so every start zone cooks; repair only in towns; the
+  waiting point. Complete on 2026-10-13; not pushed yet (pushed only on
+  the user's word). Next: the GUI test and a fix round.
 
 ### Remaining work
 
@@ -454,11 +467,12 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   classes and progression, atmosphere and resource distribution, crafting
   variety and quest onboarding. Follow-up work is tracked in the
   [BACKLOG](BACKLOG.md#player-experience-follow-up-2026-10-11).
-- [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03;
-  taken up again by the user on 2026-10-09 for Round 46): POI placement
-  adapted to the roads and rivers instead of fixed anchors, the long-term
-  fix for random seeds that fail to load
-  ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
+- [x] **Seed-dependent POI placement:** delivered in Round 46 (0.46.0):
+  POIs are placed per seed by rules for each kind instead of fixed
+  anchors, which also loads the seeds that failed before
+  ([world_zones.md §8.5](docs/design/world_zones.md#85-seed-dependent-poi-placement-round-46)).
+  Quest-bearing POIs with an underground part are later content; the
+  rows' underground reservation is the hook.
 - [x] **WP9 (V1):** the level-41–60 main questline and the finale,
   delivered in Round 36 on top of Round 29's front quests and bounties.
 - Round 34's late fix: the ~1 % seed load failure is fixed (F3, rivers never
@@ -476,14 +490,17 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 41](BACKLOG.md#round-41-carry-overs),
   [Round 42](BACKLOG.md#round-42-carry-overs),
   [Round 43](BACKLOG.md#round-43-carry-overs),
-  [Round 44](BACKLOG.md#round-44-carry-overs) and
-  [Round 45](BACKLOG.md#round-45-carry-overs) carry-overs (Round 40: the
+  [Round 44](BACKLOG.md#round-44-carry-overs),
+  [Round 45](BACKLOG.md#round-45-carry-overs),
+  [0.45.1](BACKLOG.md#0451-carry-overs) and
+  [Round 46](BACKLOG.md#round-46-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
   Round 44: theoretical UI and step notes, the map icon overlaps for the
   GUI test; Round 45: theoretical crafting, inventory, mount and step
-  notes, and the user's Round 46 items);
+  notes; Round 46: depth pulse, spawn, placement, crafting and price
+  notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
@@ -492,9 +509,10 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 - [x] **WP13:** the POI review (audit E2) done in Round 36 as a render page
   with the user's verdicts instead of a walk, and the decor pass it asked
   for; the reworked places are in the Round 36 GUI checklist.
-- [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
-  roster stay open in TODO-design-depth.md. Renewable camp resources are
-  removed; the T6 lava lakes stay planned.
+- [x] **WP34 depth pulse:** delivered in Round 46 (0.46.0) on the user's
+  design decision: flying servants below −300, the Riftwing below −1000
+  ([biomes_mobs.md §4.1](docs/design/biomes_mobs.md#41-the-depth-pulse-decided-2026-08-08-built-round-46)).
+  Renewable camp resources are removed; the T6 lava lakes stay planned.
 - [ ] **WP46 / WP48:** the fire/explosion guard is deferred until a fire or explosion source exists (expected with V2's Nether)
   (nothing damages terrain today); writer performance is parked until a playtest shows
   slowness.
