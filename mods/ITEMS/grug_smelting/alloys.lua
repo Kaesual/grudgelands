@@ -72,7 +72,7 @@ end
 
 -- The either-order matcher. Both slots must carry a material: an empty slot
 -- has the name "" and no recipe names it, so a lone Iron Bar next to burning
--- Coal in the FUEL slot matches nothing (task card gate 2).
+-- Anthracite in the FUEL slot matches nothing (task card gate 2).
 function grug_smelting.match(first, second)
 	if type(first) ~= "string" or first == "" or
 			type(second) ~= "string" or second == "" then
