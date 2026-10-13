@@ -530,7 +530,7 @@ local function deliver(player, stacks)
 	return was_empty and not inv:is_empty(OUTPUT)
 end
 
--- Take-only: nothing is put or moved into the output area (a swap runs
+-- Take-only: nothing is put or moved into the overflow (a swap runs
 -- this check in both directions, so a swap cannot fill it either).
 core.register_allow_player_inventory_action(function(_, action, _, info)
 	if (action == "move" and info.to_list == OUTPUT) or

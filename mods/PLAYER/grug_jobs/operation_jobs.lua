@@ -216,7 +216,7 @@ end
 grug_jobs.register_job_kind("enchant", {finish = finish})
 grug_jobs.register_job_kind("upgrade", {finish = finish})
 
--- The output area's indicator and label (ui.lua): "Enchanting…" and
+-- The running job's indicator and label (ui.lua): "Enchanting…" and
 -- "Upgrading…" (the user, 2026-10-09), "Steel Sword +3 levels".
 grug_jobs.JOB_RUN_LABELS.enchant = "Enchanting…"
 grug_jobs.JOB_RUN_LABELS.upgrade = "Upgrading…"

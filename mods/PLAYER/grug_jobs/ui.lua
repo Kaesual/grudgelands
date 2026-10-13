@@ -30,10 +30,11 @@
 -- player's current page is Crafting) and at a cancel (the Stop click); a
 -- craft delivered into the inventory sends nothing (the client shows the
 -- lists live), the overflow appearing or emptying sends it once, and so
--- does a scan that unlocks a Basic recipe (discovery.lua). The search runs at most once per second: a search
--- request within a second of the last one is ignored without a resend, like
--- Sort's cooldown (spec ruling 5). "×" beside the field empties it and shows
--- the whole list at once, outside that limit (0.45.1 fix plan row 6).
+-- does a scan that unlocks a Basic recipe (discovery.lua). The search runs
+-- at most once per second: a search request within a second of the last
+-- one is ignored without a resend, like Sort's cooldown (spec ruling 5).
+-- "×" beside the field empties it and shows the whole list at once, outside
+-- that limit (0.45.1 fix plan row 6).
 --
 -- Focus (0.45.1 fix plan row 13): the client gives a new form's first text
 -- field the focus unless the form names one (guiFormSpecMenu.cpp
@@ -295,7 +296,7 @@ local function list_content(fs, player, st, tab, counts, picks)
 end
 
 --
--- The output area and the running job (spec §2.20, §4.5).
+-- The running job and the overflow (spec §2.20, §4.5; Round 47).
 --
 
 -- What the indicator says per job kind; lane EU adds "Enchanting…".
