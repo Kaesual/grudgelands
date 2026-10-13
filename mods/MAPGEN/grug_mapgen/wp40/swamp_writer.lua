@@ -7,7 +7,8 @@
 --   * the pools: a kept pool column whose ground lies one above its level
 --     loses its top node (only when nothing but air or a plant stands on
 --     it), then water sources fill the level (and the node below in a
---     2-deep column) in place of the mud. The pool rule keeps every side of
+--     2-deep column) in place of the mud; where the top stays, the column
+--     keeps its mud and gets no water. The pool rule keeps every side of
 --     every water node solid or water of the same level, and the surface
 --     skin stays closed round a pool, so no water can flow;
 --   * on the water: waterlilies on inner pool columns, reeds rooted in the
@@ -109,16 +110,25 @@ function M.config(core_api)
 									write(x, level + 1, z, air, 0)
 								end
 							end
-							for y = level, level - depth + 1, -1 do
-								if GROUND[at(x, y, z)] then write(x, y, z, WATER, 0) end
+							-- Water (and the plants on it) only where the top is open:
+							-- a kept top (something walkable stands on it, or it
+							-- lies in the owner above) keeps its mud below too, so
+							-- no water is hidden under ground; a kept column is
+							-- always safe for its neighbours (swamp_pools.lua).
+							if open then
+								for y = level, level - depth + 1, -1 do
+									if GROUND[at(x, y, z)] then write(x, y, z, WATER, 0) end
+								end
 							end
 							local inner = true
 							for _, d in ipairs(SIDES) do
 								if not pools.at(x + d[1], z + d[2]) then inner = false end
 							end
 							local roll = pools.hash(x, z, 811) % 100
-							if inner then
-								if open and roll < LILY_PCT and at(x, level + 1, z) == air then
+							if not open then
+								-- nothing on a kept column
+							elseif inner then
+								if roll < LILY_PCT and at(x, level + 1, z) == air then
 									write(x, level + 1, z, LILY, pools.hash(x, z, 823) % 4)
 								end
 							elseif roll < ROOTED_PCT then

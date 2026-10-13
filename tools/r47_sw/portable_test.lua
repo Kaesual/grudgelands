@@ -29,8 +29,9 @@
 --      ring cover the pools.
 --   F. the swamp pass (wp40/swamp_writer.lua) on a fake successor context:
 --      water at the level, the top node of a column one above it removed,
---      a column with a log standing on it keeps its top, plants only over
---      air, lilies on water, nothing outside the owner.
+--      a column with a log standing on it keeps its top and its mud (no
+--      water hidden under it), plants only over air, lilies on water,
+--      nothing outside the owner.
 --
 -- Usage (repo root): luajit tools/r47_sw/portable_test.lua [REPO]
 local repo = arg and arg[1] or "."
@@ -378,15 +379,20 @@ for key, cell in pairs(kept) do
 	local x, z = key:match("^(%-?%d+),(%-?%d+)$")
 	x, z = tonumber(x), tonumber(z)
 	if context.inside_owner(x, cell.level, z) then
-		if settled(x, cell.level, z) ~= WATER then wrong = wrong + 1 end
 		local g = ground(x, z)
 		local logged = log_column[1] == x and log_column[2] == z
-		if g == cell.level + 1 then
-			local top = settled(x, g, z)
-			if logged then
-				check(top == MUD, "a column with a log on it keeps its top")
-			elseif top ~= 1 and top ~= LILY then
-				wrong = wrong + 1
+		if logged then
+			-- the top stays, and so does the mud under it: no hidden water
+			check(settled(x, g, z) == MUD, "a column with a log on it keeps its top")
+			for y = cell.level - cell.depth + 1, cell.level do
+				check(settled(x, y, z) == MUD, "no water under a kept top")
+			end
+			check(settled(x, cell.level - cell.depth, z) == MUD, "no rooted reeds under a kept top")
+		else
+			if settled(x, cell.level, z) ~= WATER then wrong = wrong + 1 end
+			if g == cell.level + 1 then
+				local top = settled(x, g, z)
+				if top ~= 1 and top ~= LILY then wrong = wrong + 1 end
 			end
 		end
 		if settled(x, cell.level + 1, z) == LILY then lilies = lilies + 1 end

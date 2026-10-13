@@ -153,7 +153,7 @@ swamp_grass_5|grug_swamp|simple|default:grass_5|grug_nodes:mud_with_wet_grass|1|
 swamp_junglegrass|grug_swamp|simple|default:junglegrass|grug_nodes:mud_with_wet_grass|1|20|none|4
 swamp_moss_carpet|grug_swamp|simple|grug_nodes:moss_carpet|grug_nodes:mud|1|16|none|4
 swamp_papyrus|grug_swamp|template|papyrus_on_dirt.mts|grug_nodes:mud|1|50|surface_y_1_to_4;replace_dirt_with_mud;center_xz;quarter_turn_rotation|1
-swamp_tree|grug_swamp|template|treegen:swamp|grug_nodes:mud|1|120|center_xz;quarter_turn_rotation|-
+swamp_tree|grug_swamp|template|treegen:swamp|grug_nodes:mud|1|120|stilt_ground;center_xz;quarter_turn_rotation|-
 ]]
 
 local function fields(line)

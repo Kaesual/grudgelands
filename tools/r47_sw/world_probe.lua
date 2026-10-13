@@ -152,6 +152,23 @@ for _, minp in ipairs(chunks) do
 			end
 		end
 	end
+	-- stilt ends: a gravewood twig under a gravewood branch or base (the
+	-- bottom of a swamp tree's stilt); hanging when no walkable node is under it
+	local TWIG, BRANCH, BASE = cid("grug_trees:gravewood_twig"),
+		cid("grug_trees:gravewood_branch"), cid("grug_trees:gravewood_base")
+	for z = minp.z, minp.z + 79 do
+		for x = minp.x, minp.x + 79 do
+			for y = minp.y + 1, minp.y + 78 do
+				if at(x, y, z) == TWIG then
+					local up = at(x, y + 1, z)
+					if (up == BRANCH or up == BASE) and at(x, y - 1, z) ~= TWIG then
+						total.stilts = (total.stilts or 0) + 1
+						if not solid(at(x, y - 1, z)) then total.hanging = (total.hanging or 0) + 1 end
+					end
+				end
+			end
+		end
+	end
 	print(("chunk %d,%d,%d swamp_columns=%d water=%d flowing=%d write=%.1fs"):format(
 		minp.x, minp.y, minp.z, columns, water, flowing, result.write_seconds))
 	total.columns = total.columns + columns
@@ -170,6 +187,7 @@ end
 if rawget(_G, "SW_DEBUG") then print("debug: " .. list(SW_DEBUG)) end
 print("tops: " .. list(tops))
 print("plants: " .. list(plants))
-print(("SWAMP %s chunks=%d columns=%d water=%d flowing=%d liquid_flowing=%d"):format(seed,
-	total.chunks, total.columns, total.water, total.flowing, total.liquid_flowing))
+print(("SWAMP %s chunks=%d columns=%d water=%d flowing=%d liquid_flowing=%d stilt_ends=%d hanging=%d")
+	:format(seed, total.chunks, total.columns, total.water, total.flowing, total.liquid_flowing,
+		total.stilts or 0, total.hanging or 0))
 if total.flowing > 0 or total.liquid_flowing > 0 then error("pool check failed", 0) end

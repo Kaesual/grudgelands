@@ -183,6 +183,10 @@ local function planner_factory()
 		--     lies and a swamp without water grows none (Round 22 Phase 5).
 		--     The candidate cell must hold water itself, which keeps the
 		--     neighbourhood test off dry cells.
+		--   `stilt_ground` (the swamp tree, Round 47 lane SW): no column within
+		--     2 (square) lies lower than the root's ground or is a pool, so
+		--     every stilt (out 1-2, a corner more) ends on ground; higher
+		--     ground only shortens a stilt (its cells are optional).
 		local decoration_biome, decoration_height_rule = {}, {}
 		for index = 1, #decorations do
 			local set = {}
@@ -192,7 +196,8 @@ local function planner_factory()
 			decoration_height_rule[index] =
 				rule:find("surface_y_at_least_60", 1, true) and 1 or
 				(rule:find("surface_y_at_most_32", 1, true) and 2 or
-					(rule:find("surface_y_1_to_4", 1, true) and 3 or 0))
+					(rule:find("surface_y_1_to_4", 1, true) and 3 or
+						(rule:find("stilt_ground", 1, true) and 4 or 0)))
 		end
 		-- Vegetation and altitude (Round 23 Phase 2, habitat_registry.lua):
 		-- each row's class picks one per-column factor; a column is eligible
@@ -451,6 +456,22 @@ local function planner_factory()
 			return false
 		end
 
+		-- True when no column within two nodes (square) of (x, z) has its
+		-- ground below `ground` and none is a pool (the swamp tree's stilts,
+		-- rule 4: a stilt over water would hang).
+		local function ground_round(x, z, ground)
+			if pools and pools.near(x, z) then return false end
+			for dz = -2, 2 do
+				for dx = -2, 2 do
+					if dx ~= 0 or dz ~= 0 then
+						local _, _, _, _, _, terrain_y = planner_source.column_values_at(x + dx, z + dz)
+						if terrain_y < ground then return false end
+					end
+				end
+			end
+			return true
+		end
+
 		local function rank_less(left, right)
 			if left.digest ~= right.digest then return hash.less_bytes(left.digest, right.digest) end
 			if left.z ~= right.z then return left.z < right.z end
@@ -552,6 +573,8 @@ local function planner_factory()
 							decoration_biome[catalog][scratch.biome[column]] and
 							water_beside(scratch.x[column], scratch.z[column], terrain_y) or
 							false
+					elseif height_rule == 4 then
+						special_ok = ground_round(scratch.x[column], scratch.z[column], terrain_y)
 					end
 					local cover = terrain_y >= 1 and special_ok and
 						decoration_biome[catalog][scratch.biome[column]] and

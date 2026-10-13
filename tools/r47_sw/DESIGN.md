@@ -190,7 +190,8 @@ pool or beside one (an opening would drain it); the swamp pass
 (`wp40/swamp_writer.lua`, in the R7 successor right after the road
 dressing, before P9G and world content, which then see the water) writes
 the water through `write_road`, only over a swamp ground, removes a
-levelled top only when nothing but air or a plant stands on it, and adds
+levelled top only when nothing but air or a plant stands on it (where the
+top stays, the column keeps its mud: no water hidden under ground), and adds
 the waterlilies (22 % of inner pool columns), reeds rooted in the bed
 (`grug_nodes:mud_with_reeds`, 30 % of bank pool columns, 1–2 above the
 water) and, on the dry bank, reeds 1–2 high (32 %), cattails (18 %) and
@@ -214,8 +215,12 @@ carpets (12 %).
 - **Swamp trees**: the `swamp` row of TC's species table
   (`tree_templates.lua`: 32 variants, gravewood wood, swamp leaves, hanging
   moss). Its stilts (limb cells up to one above the stem's lowest log) are
-  optional cells like leaves, so uneven ground shortens a stilt instead of
-  refusing the tree. No swamp sapling: the row is not renewed.
+  optional cells like leaves, so higher ground shortens a stilt instead of
+  refusing the tree. The concept's flat 5 × 5 placement is the row's
+  `stilt_ground` rule (r6_planner.lua, rule 4): no column within 2 lies
+  lower than the root's ground or is a pool, so every stilt ends on ground
+  (seed 12345, 12 chunks of the probe: 0 of 39 stilt ends hang; without the
+  rule 5 of 47 did). No swamp sapling: the row is not renewed.
 - **Content**: six production rows (116 → 122); the three new grounds in
   `grug_materials.NATURAL_GROUND_NODES`; pins in their own commit.
 - **Habitats**: the swamp's mob spawn lists (`grug_mobs/*.lua`,
