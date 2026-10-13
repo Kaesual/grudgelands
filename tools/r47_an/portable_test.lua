@@ -126,6 +126,9 @@ dofile(repo .. "/mods/ITEMS/grug_materials/registry.lua")
 grug_materials.resource_ore_description = function(resource)
 	return resource.name .. " Ore\nRequires a T" .. resource.harvest_tier .. " pick"
 end
+-- and set_gate_groups, by its bytes (lane OR's level scale).
+assert(loadstring(read("mods/ITEMS/grug_materials/mining.lua"):match(
+	"(function grug_materials%.set_gate_groups.-\nend)")))()
 dofile(repo .. "/mods/ITEMS/grug_materials/ores.lua")
 local M = grug_materials
 local anthracite = M.RESOURCE_BY_KEY.anthracite
@@ -136,7 +139,8 @@ eq(anthracite.natural_node, "grug_materials:stone_with_anthracite", "A the ore n
 local ore = nodes[anthracite.natural_node]
 check(ore ~= nil, "A the ore node is registered")
 eq(ore and ore.groups.grug_resource, 2, "A ore resource tier 2")
-eq(ore and ore.groups.level, M.level_for_tier(2), "A ore level is its tier's level")
+eq(ore and ore.groups.level, 2, "A ore level 2: the Iron pick (maxlevel 2) digs it")
+eq(M.resource_level(anthracite), 2, "A resource level 2")
 eq(ore and ore.groups.grug_natural, 1, "A ore is natural")
 eq(ore and ore.drop, "grug_materials:anthracite", "A ore drops Anthracite")
 check(items["grug_materials:anthracite"] ~= nil, "A the item is registered")
@@ -145,8 +149,13 @@ eq(core.get_item_group("grug_materials:anthracite", "coal"), 0,
 eq(M.RESOURCE_BY_KEY.coal.harvest_tier, 1, "A Coal stays any pick")
 
 local rows = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua")().resources
-local denominators = {}
-for _, row in ipairs(rows) do denominators[row.key] = row.denominators end
+local denominators, half_of = {}, {}
+for _, row in ipairs(rows) do
+	denominators[row.key], half_of[row.key] = row.denominators, row.lower_half_of
+end
+eq(half_of.anthracite, 2, "A Anthracite in T2 only in the lower half (lower_half_of = 2)")
+eq(M.TIERS[2].lower_half_y_max, -201, "A T2's lower half is y -201...-300")
+eq(half_of.coal, nil, "A Coal fills its bands")
 local coal, anth, iron = denominators.coal, denominators.anthracite, denominators.iron
 eq(coal[1], 64, "A Coal T1 64")
 eq(coal[2], 128, "A Coal T2 128")
