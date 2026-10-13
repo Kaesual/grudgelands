@@ -17,6 +17,10 @@
 -- (CC BY-SA 3.0) -- see LICENSE-media.md for attribution and the exact
 -- ImageMagick operations.
 --
+-- shapes.lua adds the tree shape nodes (trunk quarter, limb base, branch,
+-- twig) of all seven wood types, the jungle bark and the leaf decay of every
+-- wood (Round 47).
+--
 -- R7 P9 resolves Silverwood through default's aspen plus replacements and
 -- Gravewood through this mod's original .mts assets in the single mapgen
 -- transaction. The great_silverwood.mts treehouse remains WP13.
@@ -198,13 +202,6 @@ core.register_node("grug_trees:silverwood_sapling", {
 	end,
 })
 
--- Aspen's leafdecay radius, because it is aspen's schematic.
-default.register_leafdecay({
-	trunks = {"grug_trees:silverwood_tree"},
-	leaves = {"grug_trees:silverwood_leaves"},
-	radius = 3,
-})
-
 --
 -- Gravewood (Undead) -- mostly bare branches, sparse grey leaf remnants
 --
@@ -246,12 +243,6 @@ core.register_node("grug_trees:gravewood_leaves", {
 	drop = "",
 	sounds = default.node_sound_leaves_defaults(),
 	after_place_node = after_place_leaves,
-})
-
-default.register_leafdecay({
-	trunks = {"grug_trees:gravewood_tree"},
-	leaves = {"grug_trees:gravewood_leaves"},
-	radius = 3,
 })
 
 core.register_node("grug_trees:gravewood_sapling", {
@@ -315,3 +306,7 @@ core.register_craft({
 	recipe = "grug_trees:gravewood_tree",
 	burntime = 30,
 })
+
+-- The tree shape nodes of every wood type, the leaf decay of all seven woods
+-- (radius 3, the shapes included) and the leaf and ground connect sides.
+dofile(core.get_modpath("grug_trees") .. "/shapes.lua")
