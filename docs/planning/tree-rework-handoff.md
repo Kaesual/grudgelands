@@ -12,9 +12,10 @@ a readable growth logic (stem → limbs → twigs → leaf clusters at the twig
 ends, thinning outwards), variation from that logic's parameters rather than
 noise, round irregular crowns, each species keeping its character.
 
-**Status: the concept is approved** in a 3D browser viewer ("everything fits
-now"). Nothing is in the game yet. Everything shown in the viewer was designed
-to be buildable in Luanti exactly as shown.
+**Status: built in Round 47** (0.47.0, lanes TA, TB, TC, SW and TD;
+[completion](round47-plan.md#completion-2026-10-14)). The concept was
+approved in a 3D browser viewer ("everything fits now"); everything shown in
+the viewer was designed to be buildable in Luanti exactly as shown.
 
 - Viewer: [`tools/r46_tree/concept/trees.html`](../../tools/r46_tree/concept/trees.html)
   (open in a browser; Four / Grove / Shapes views, seeds, leaves off,

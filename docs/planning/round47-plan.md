@@ -1,7 +1,8 @@
 # Round 47 — Trees, mining progression and crafting feedback
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-13 from the user's decisions
-of the same day. Status: **in progress** (the user's "go", 2026-10-13).
+of the same day. Status: **complete** (2026-10-14, version 0.47.0, **map
+reset** plus the migration step 0.47.0; [completion](#completion-2026-10-14)).
 
 The main focus is the **tree rework**: the concept approved in Round 46
 ([handoff](tree-rework-handoff.md)) is built into the game, and every world
@@ -610,3 +611,324 @@ is removed (purely decorative; plaza, court and avenue edges stay).
 towards the trunk axis are closed with the trunk's end-grain (top)
 texture, so a partly felled thick trunk shows cut wood, not a see-through
 or hollow shell.
+
+## Completion (2026-10-14)
+
+Every build lane is merged on main; this lane D (this section and the
+status owners) follows on main `b3a30ab0`. Lane TD's measurement is the
+round's last input (TD numbers: pending). **0.47.0 is a map reset plus a
+migration step:** world generation changed (trees, the swamp, the ore
+rows, town compositions), and the pick level scale moved, so the tool
+capabilities that crafted and broken tools keep in item meta are rebuilt
+at each character's next join (step 0.47.0). The production world
+(0.45.1) moves to 0.47.0 in one update and crosses both map resets
+(0.46.0 was never deployed on its own). **Push:** the user pushed main at
+`b3a30ab0` as a backup (2026-10-14); this closing documentation is not
+pushed yet (pushed only on the user's word). Production runs 0.45.1.
+
+### Lanes
+
+Main's first-parent merges from `18befb9b`, in order (the plan's own
+updates `6a9b6775`, `28ea4193`, `047c4456`, `4d02b3c8`, `d7c78d6c`,
+`82bf56ec`, `e65bf60a`, `67c679fc`, `e4323194`, `df37d6cb`, `e14b270b`,
+`f44ca99a`, `b109b9c1` and `b3a30ab0` lie between them):
+
+| Lane | Merge (follow-ups) | What | Review |
+|---|---|---|---|
+| FS | `0860dd28` | the `furnace` ambience kind at 0.3 (60 % of fire) for both furnaces, the Dual Furnace sounds, the loop stops on dig with a 0.25 s fade | MERGE |
+| TB | `7e1b46a9` | `wp40/treegen.lua`, a pure 1:1 port of `treegen.js`, equal on 4,800 trees under LuaJIT and Lua 5.1 | MERGE |
+| ART | `3cbb9f40` | GPT-6 Astra's swamp set, the olive swamp leaves and the Anthracite set (CC0, generators committed; tools only) | the user's picks |
+| TA | `89b7f99a` (`b201d0f8`, `a497a1f0`, `8ffa1274`) | 28 shape nodes (octagon quarter mesh, limb base, branch, twig) for seven woods, leaf and ground connect sides, jungle bark M, leaf decay radius 3; the swamp names required; the quarter's inner faces closed, then as the end grain's centre strip | MERGE; delta MERGE; the face deltas checked by the coordinator |
+| SW 1 | `51291dce` | the swamp species in both generators, the swamp nodes (nothing placed) | MERGE |
+| NZ | `3cc5cd1f` (`279b45e2`) | the facing check over 454 compositions (230 failing sockets → 0), the banner 4 s, first-entry zone XP | MERGE AFTER FIXES (a doc line; no chime at the level cap), fixed; delta MERGE |
+| CR | `352da411` | delivery into the inventory item by item with a self-draining overflow; the Basic unlock by held ingredients | MERGE (two minors fixed before the merge) |
+| OR | `9b83d3f8` (`102b05a5`) | the lower-half field, Iron behind Bronze (level scale +1, dig times kept), the step 0.47.0; merged with the 0.47.0 declaration and the CHANGELOG placeholder | MERGE |
+| AN | `973dc446` | Anthracite (T2 lower half, replaces Coal from T3), Steel from Anthracite only, alloys 10 s, the torch, fuel 120 s, the claim stone's time cap, enchant inputs | MERGE; delta MERGE (after OR) |
+| ML | `6758e98e` | the map window's marker layers, quest mode, every marker named, party names every 2 s, one-line zone labels, world images without baked icons | MERGE (the zone-label delta checked by the coordinator) |
+| TC | `b6d4888e` (`046d1699`), `4075b4bc`, `6747152d`, `00d0c13b` (`bbf8d707`, `62d7460e`) | trees from the seeded generator in the wild, saplings and towns; then dense groves, town greening and the wild density back (per-cell reservation, `TREE_SPACING`); capital greening; the fix round (city trees released on idle, cut trees newest first, plot kerbs removed) | MERGE (town trees 801 → 527 put to the user); deltas MERGE ×3 |
+| SW 2 | `6cb71e25` | the swamp in the world: ground mix, pools that never flow, plants, swamp trees on stilts, mobs and gathering on the new grounds | MERGE (two Lows fixed); delta MERGE |
+| TD | TD numbers: pending | forest render cost, desktop | — |
+| D | this section | CHANGELOG, status owners, BACKLOG carry-overs, the tools index, the gate list | — |
+
+Main has 181 portable fixtures (10 new: `r47_ta`, `tb`, `or`, `ms`, `an`,
+`fs`, `cr`, `nz`, `sw`, `tc`; lane ML extended `r44_mq`); `mods/` +7,154
+−1,256 lines in 180 files, twelve new Lua files (`grug_trees/shapes.lua`
+and `growth.lua`, `grug_materials/torch.lua`, `wp40/treegen.lua`,
+`tree_templates.lua`, `swamp_pools.lua` and `swamp_writer.lua`,
+`wp13/city_green.lua`, `grug_jobs/basic_unlock.lua`, `grug_map/layers.lua`,
+`zone_labels.lua` and `zone_discovery.lua`).
+
+### Decisions during the round
+
+The user's decisions of 2026-10-13 and 2026-10-14, one line each (the
+coordinator log is outside the repository):
+
+1. **Swamp concept** picked with ART's textures as shown; swamp leaves
+   olive (a new node, painted by ART); pools keep the default water.
+2. **Anthracite set** (lump, ore, torch) as painted.
+3. **Swamp pools on slopes:** never flowing water; gentle slopes levelled
+   slightly for a small pool, steep slopes without pools.
+4. **FS:** camp fires keep fading on the next pass; the furnace kind
+   keeps its own loop limit.
+5. **AN:** claim activation stays Coal or Charcoal; the Steel quest texts
+   name Anthracite. **CR:** the five questions as built (silent first
+   scan, only Basic tokens stored, no Take all, orders capped by room,
+   enchant and upgrade results into the inventory). **NZ:** weight 0.75,
+   capital zones and feet-height nodes do not count.
+6. **Trunk quarter inner faces:** closed with the end grain, then the
+   user's idea: a one-pixel centre strip of the top texture stretched
+   down the face, so the cut reads as a longitudinal section.
+7. **Map layers** as lane ML (the user's work package); its questions as
+   recommended: icons 0.34, the rift boss with the clash icon, the §8
+   defaults, zone labels on one line ("Name 1–10") over a smaller box.
+8. **TC:** town tree seeds the same in every world, the crags pine
+   without snow, forest density and leaves with TD; small dense groves
+   welcome.
+9. **Town groves** never empty: denser, crowns interleaving, the
+   narrowest fitting variant where room is tight (after the review
+   counted 801 → 527 town trees).
+10. **Wild forests** back near today's count: only wood cells reserved,
+    crowns interleave, one density parameter (`TREE_SPACING`).
+11. **Town greening** on free areas; the dense groves accepted; the
+    capitals' open grass between the districts greened by the same rule.
+12. **Capital city trees** differ per world (accepted); plot collars stay
+    unplanted; the stone kerb round every capital plot removed.
+13. **Swamp build:** swamp trees keep their row density (1/120); moss
+    soil joins the swamp-only mob lists.
+14. **No web client measurement**; TD's desktop numbers accepted as they
+    come, full leaves and `TREE_SPACING = 4` stay, a marked regression
+    goes to the GUI test, not a change.
+15. **Push:** the user pushed main as a backup (`b3a30ab0`); further
+    pushes only on the user's word.
+
+The coordinator decided as recommended: OR's step (crafted tools keep
+stored capabilities, so characters need a step across the map reset),
+declared together with OR's merge to keep main green; the hint "Requires
+a Bronze pick"; the centre strip built byte-identical to the variant the
+user saw; SW's node name `mud_with_wet_grass`; ML's button threshold
+(two rows below 1.25 units of spare height).
+
+### Deviations from the plan
+
+- **Lane ML** joined in wave 2 (the user's work package, 2026-10-13).
+- **The step 0.47.0** was not foreseen: §4.12 planned a map reset only;
+  lane OR found the stored tool capabilities and built the step, and the
+  coordinator declared 0.47.0 with OR's merge instead of lane D.
+- **Forest density:** TC's first build lost about a third of the wild
+  trees (bigger trees reserved bigger boxes); the per-cell reservation
+  brought them back above today's count.
+- **Town trees** grew three steps beyond the plan (groves, town greening,
+  capital greening). The capitals' open grass lies in no planner slot,
+  so it is greened by the city overlay in the R7 settlement successor
+  (`wp13/city_green.lua`), per world, instead of fixed compositions in
+  unused slots.
+- **Swamp:** stilt cells are optional like leaves, and a `stilt_ground`
+  rule keeps swamp trees off pool edges and downslopes; the writer's
+  surface-skin openings are suppressed at pools; lilies and rooted reeds
+  come from the swamp pass, not a decoration row.
+- **TD** measured the desktop client only (the user, 2026-10-14).
+- **Lane FX** (the 0.46.0 GUI test's findings) did not start: the GUI test
+  of 0.46.0 is still open and folds into this round's.
+- **AN:** the Anthracite torch goes out silently in a flood (the vendored
+  hiss is a raw `sound_play`); two load checks needed a small
+  `grug_jobs.token_registered` for group tokens.
+- **TA** moved no WP40 pin; the quarter mesh draws with back-face culling
+  on (mesh tiles default to off).
+
+### Numbers worth keeping
+
+Comparisons, not targets.
+
+- **Town trees** (compositions, the same in every world): 801 before the
+  round → 527 after TC → 938 with the dense groves → 1,095 with town
+  greening; after the capital greening and the kerb removal the capitals'
+  compositions hold Highcourt 83, Dur Brannoc 62, Gor Drazhak 35,
+  Lethariel 141, Kezamba 37 and Nhal Veyr 70. **City trees** on seed
+  12345: about 1,560 (Highcourt 300, Dur Brannoc 261, Gor Drazhak 284,
+  Lethariel 313, Kezamba 197, Nhal Veyr 204).
+- **Wild forests** (22 forest chunks, today → TC → now): seed 12345 321
+  → 198 → 339 trees, seed 17713522922938657774 281 → 182 → 322; owner
+  clips 30.0 → 31.5 % and 21.4 → 26.8 % of the candidates.
+- **Swamp** (seed 12345): ground mud 54 %, wet grass 15 %, lighter mud
+  13 %, mottled 10 %, moss soil 9 %; in-engine pool checks on two seeds,
+  0 flowing nodes and 0 open sides; swamp trunk nodes in 12 probe chunks
+  183 → 103 after the stilt rule (about 44 % fewer trees); swamp tops in
+  the swamp mob lists 91 → 100 % with moss soil.
+- **Per-band census** (seed 12345): Iron in T1 6,204 → 2,336, Silver in T3
+  4,777 → 2,405, Emberglass in T4 4,534 → 2,176, Abyssal Crystal in T5
+  1,543 → 700, each upper half 0; Anthracite in T2 2,364, all in the lower
+  half; Anthracite against Iron from T3 down 12,739 / 9,553, 9,068 /
+  3,021, 6,161 / 2,064, 12,150 / 4,042; band shares T1–T6 4.91 / 3.94 /
+  3.47 / 3.85 / 3.75 / 3.47 %; no Coal below −300.
+- **Dig times:** the engine matrix of every tool over 689 nodes, 17,225
+  pairs: 2 differ (Iron Ore with the Wood and the Stone pick, now refused).
+- **Compositions CPU** (contended runs): 2.52 s before the round → 3.88 s
+  after TC → 4.39 s with the groves → 5.48 s with town greening; the
+  capital greening's own step 4.08 → 4.79 s.
+- **Chunk writes round the capitals:** 150 chunks round the six capitals
+  35.22 → 38.20 s (+8 %); deciding a capital's city trees 0.23–0.42 s
+  CPU; the city trees' memos, 5.5–19.8 MB per capital, now go at idle.
+- **Generator:** a template set of 240 trees 194 ms (LuaJIT) / 633 ms
+  (Lua 5.1); with the swamp 234 ms for 272 trees; at load the variants
+  take 0.18–0.26 s in the main and 0.30–0.38 s in the emerge environment.
+  A trunk quarter is 16 triangles (12 before its inner faces closed).
+- **Zone discovery XP** at the zone's own level: L1 23, L11 60, L21 98,
+  L31 135, L41 173, L51 210, L60 244; all 32 zones at level 60 3,738 XP
+  (1.9 % of the way to 60).
+- **Map window** (seed 42, 1920 × 1080): 2.9 (None) to 8.5 KB (Towns) a
+  layer, quest mode 3.9 KB; world image icons 124 → 0; party sends per
+  minute while walking 12 → 30; zone label overlaps at 1x 3 → 0 pairs at
+  1080p and 79 → 46 at 1035 × 696.
+- **Crafting:** a character that held 300 items stores at most 211
+  tokens (4,658 B); a scan about 16 µs for 109 slots; the Basic page
+  3,172 B, 4,469 B with the overflow shown.
+- **Render cost (TD, desktop, software rendering, so only the ratios
+  count):** new trees draw 1.5–7× the quads of today's, forests cost
+  about 40–60 % more frame time, a dense grove 2.5–3.7× an empty view,
+  half leaves save about a quarter. TD numbers: pending.
+
+### Classification
+
+- **Map reset:** TA (connect overrides), TC, SW, OR and AN (world
+  generation, town compositions, ore rows), NZ's Kezamba bench. The world
+  map image and the layout caches rebuild once.
+- **Migrate:** OR's step 0.47.0 (stored tool capabilities rebuilt at
+  join; offline only markers).
+- **Compatible:** TB, FS, CR, NZ, ML. Saved state the new code reads
+  differently: the new player meta `grug_jobs:held` (missing = a silent
+  first scan) and `grug_map:visited_zones` (the current zone marked
+  silently at the first login; after the reset that is the start zone);
+  new optional job fields `delivered` and `picks` (jobs from before finish
+  as before); an old output-area stack drains into the inventory at the
+  first join; claim stones' `paid_until` is read unchanged.
+- **The declaration:**
+  `{"schema": 2, "version": "0.47.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0"]}`.
+
+### Open notes
+
+The reviews' and reports' backlog notes are in the
+[BACKLOG](../../BACKLOG.md#round-47-carry-overs).
+
+### GUI checklist (Round 47)
+
+Desktop (GUI scale 1 and 2) and the web build (about 1280 × 720), on new
+worlds; Round 46's [checklist](round46-plan.md#gui-checklist-round-46) is
+still open and is tested on the same build.
+
+**Check first:**
+
+1. Frame rate on a real GPU in an apple, a jungle and a silverwood forest,
+   in a dense grove (Lethariel or Highcourt) and in a capital, desktop and
+   web. TD (software rendering): new trees draw 1.5–7× the quads of
+   today's, dense groves about 2.5–3.7× an empty view, half leaves would
+   save about a quarter.
+
+**Trees:**
+
+2. Every species in the wild on two seeds; the trees differ between them;
+   forests about as dense as before, crowns interleaving in places, no
+   half crowns at chunk borders.
+3. Octagon trunks, limb joins, twigs into the leaves, roots only on
+   ground; on the web client the quarter mesh draws.
+4. Jungle trees, their log and the kapok town trees show bark M.
+5. Dig one quarter out of a 2×2 trunk: the gap shows cut wood (the end
+   grain's centre strip), not a hollow shell.
+6. Leaves of every tree, the swamp leaves and the hanging moss decay
+   after felling; the shapes are not in the creative inventory, and
+   placing a `/give`n twig does nothing.
+7. A sapling of each species grows a generated tree; picked apples
+   regrow. The crags pine has no snow.
+
+**Towns and capitals:**
+
+8. Town trees in Dawnmere, Hearthpine, Kapok, Silverleaf, Stillgrave,
+   Sunscar and Kezamba; the named groves (Highcourt's market and lore
+   groves, Lethariel's groves, Nhal Veyr's copses) dense, none empty.
+9. The capitals' open grass and yards greened; no tree on a street,
+   square, door or NPC; no stone kerb round a plot; 1–6 stems per capital
+   stand on street side slopes (judge them). Town, capital and forest
+   density as a whole.
+
+**The swamp:**
+
+10. On two seeds: the mixed ground, pools one or two deep with lilies and
+    reeds, plants, swamp trees on stilts with hanging moss; about 44 %
+    fewer swamp trees than before the stilt rule (none beside a pool or on
+    a downslope): judge the density.
+11. Dig a bank block next to a pool: water flows only from your opening.
+    Crocodiles, bog oozes and bog fowl spawn, also on moss soil.
+
+**Mining:**
+
+12. No Iron above y −50; a Stone pick on Iron says "Requires a Bronze
+    pick", a Bronze pick digs it at the old speed; T2–T6 rock digs as fast
+    as in 0.45 with the stone sound.
+13. Silver only below −400 in T3, Emberglass below −600, Abyssal Crystal
+    below −850.
+14. Anthracite from y −200 down and no Coal below −300; a Stone or Bronze
+    pick fails on Anthracite, an Iron pick digs it.
+15. The Anthracite torch on floor, wall and ceiling, brighter; cave
+    spawns stay about 6 nodes away.
+
+**Steel, furnaces and the Claim Stone:**
+
+16. Steel only from Anthracite; a Bronze bar in 10 s.
+17. A burning town hearth and a personal furnace are clearly quieter than
+    a camp fire; a burning Dual Furnace plays the loop; dig or blow one up:
+    silence within about a quarter second, also for a second player; a
+    furnace out of fuel fades within a few seconds; fire loops near camps
+    and furnaces together (up to 2 + 2) do not pile up badly.
+18. The Claim Stone takes Anthracite as 1.5 lumps, refuses a piece that
+    does not fit, and its label ("Lump 7 h 16 min, Anthracite 10 h 54
+    min; …") fits on the web; pick-up refunds Charcoal; T2 armour enchants
+    accept Charcoal.
+
+**Crafting:**
+
+19. A craft lands in the inventory item by item; a full inventory refuses
+    the start ("Not enough room in inventory"), Max shows the room.
+20. Filling up mid-craft puts the rest in Overflow, which empties about
+    1 s after a slot frees; Stop keeps the finished items; enchant and
+    upgrade results land in the inventory.
+21. A fresh character sees only Stick and the wooden tools; a dug tree
+    gives "New recipe: Apple Wood Planks" within half a second, a pickup
+    within 10 s.
+
+**NPCs and zones:**
+
+22. Silverleaf's bowyer and market keeper, Dawnmere's barn and smithy
+    residents and its green sitter, a village of each race, a capital
+    hall's service resident and the PvP camp gate guards face away from
+    walls; the two stall keepers (Silverleaf's market, Lethariel's armoury
+    counter) now face the street, not their counter: judge them.
+23. The zone banner stays about 4 s.
+24. A new character: nothing in its start zone; the next zone "+N XP" and
+    the level-up chime; again nothing; a capital zone or the open sea
+    nothing; an existing character gets no XP at login.
+
+**The map window:**
+
+25. The layer buttons: one row at 1080p, two at small windows; the active
+    one highlighted; every layer shows only its markers, each with a
+    tooltip; selecting a quest shows its targets with the objective lines
+    and the hand-in NPC; a layer button deselects; a party member's arrow
+    has the name and moves about every 2 s; the world map has no baked
+    icons, the minimap is unchanged; zone labels on one line, readable on
+    the web.
+26. At 16:9 a gap of about 0.85 units under the map at 1080p; POI
+    tooltips repeat the kind ("Bandit camp: Goldmead Bandit Camp"); at
+    720p a quest text that overflows its box resets its scroll about three
+    times as often in a moving party.
+
+**The update:**
+
+27. A 0.45.1 world taken to 0.47.0 with the map reset and the step: an
+    old Iron pick digs T2 rock again after the join, a broken tool stays
+    broken; Help → About shows 0.47.0.
+
+### Round-end gates
+
+**Round-end gates** (coordinator): pending — full fixtures, the full seed
+fleet on main, `check_upgrade.py`, `check_fresh_server.py` and a smoke
+boot. On lane D's branch: `tools/r37_dc` and `check_upgrade.py` (0.47.0
+against origin/main) PASS.
