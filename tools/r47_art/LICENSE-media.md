@@ -55,3 +55,65 @@ Attribution and licence checked in the vendored
 [`default/license.txt`](../../mods/BASE/default/license.txt) and the
 [`grug_nodes` media ledger](../../mods/ITEMS/grug_nodes/LICENSE-media.md).
 Existing project attribution is also in [CREDITS.md](../../CREDITS.md).
+
+## Original Anthracite textures
+
+Made by **GPT-6 Astra**, **2026-10-13**, for Grudgelands. The project
+dedicates any rights it holds in these six independently drawn textures
+and their generator to **CC0 1.0 Universal (CC0-1.0)**:
+<https://creativecommons.org/publicdomain/zero/1.0/>.
+The shaft positions follow the required existing texture/UV interface;
+the artwork, palettes, fracture grids and flame sequences are original.
+No downloaded material, recoloured source pixels or traced flame frames
+are used in the six textures.
+
+Source: [`anthracite/generate.py`](anthracite/generate.py), run with
+`python3 tools/r47_art/anthracite/generate.py` and installed Pillow 12.3.0.
+Comparison labels reuse the original CC0 font in
+[`swamp/generate.py`](swamp/generate.py).
+
+| File | Author | Source / generator | License | Modifications |
+| --- | --- | --- | --- | --- |
+| `anthracite/anthracite_lump.png` | GPT-6 Astra | [generate.py](anthracite/generate.py) | CC0-1.0 | Original pixel art |
+| `anthracite/mineral_anthracite.png` | GPT-6 Astra | [generate.py](anthracite/generate.py) | CC0-1.0 | Original transparent ore overlay |
+| `anthracite/anthracite_torch_on_floor.png` | GPT-6 Astra | [generate.py](anthracite/generate.py) | CC0-1.0 | Original pixel art; frame 02 of the floor animation |
+| `anthracite/anthracite_torch_on_floor_animated.png` | GPT-6 Astra | [generate.py](anthracite/generate.py) | CC0-1.0 | Original 16-frame animation in the existing floor layout |
+| `anthracite/anthracite_torch_on_ceiling_animated.png` | GPT-6 Astra | [generate.py](anthracite/generate.py) | CC0-1.0 | Original 16-frame animation in the existing ceiling sheet layout |
+| `anthracite/anthracite_torch_animated.png` | GPT-6 Astra | [generate.py](anthracite/generate.py) | CC0-1.0 | Original 16-frame animation in the existing diagonal wall sheet layout |
+
+## Anthracite comparisons
+
+These two comparison files include the existing artwork listed below,
+under **CC BY-SA 3.0 Unported**
+(<https://creativecommons.org/licenses/by-sa/3.0/>).
+The original layout, labels and artwork contributed to the comparisons
+are also offered under that licence to distribute the combined files.
+This does not change the CC0 dedication of the six separate new textures.
+
+| File | Author | Source / generator | License | Modifications |
+| --- | --- | --- | --- | --- |
+| `anthracite/preview.png` | GPT-6 Astra (new artwork, layout and font); Gambit (Coal lump); celeron55 (Coal ore); VanessaE (torches); Cisoun (stone); Grudgelands contributors (tier rocks) | [generate.py](anthracite/generate.py), local inputs below | CC BY-SA 3.0 Unported | Nearest-neighbour scaling, frame extraction, ore compositing on stone, plain backgrounds and labels |
+| `anthracite/torch-compare.gif` | GPT-6 Astra (new artwork, layout and font); VanessaE (Coal torches) | [generate.py](anthracite/generate.py), three local animated torch inputs below | CC BY-SA 3.0 Unported | Nearest-neighbour scaling, shared palette quantization, labels and a 3.3-second loop |
+
+Per-file comparison inputs, all read locally; no source media is downloaded
+or copied into the new texture files:
+
+| Local input | Author | Original source | Exact license | Use in comparison |
+| --- | --- | --- | --- | --- |
+| `mods/BASE/default/textures/default_coal_lump.png` | Gambit | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_coal_lump.png) | CC BY-SA 3.0 Unported | Scaled on plain backgrounds |
+| `mods/BASE/default/textures/default_mineral_coal.png` | celeron55 / Perttu Ahola (README default attribution) | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_mineral_coal.png) | CC BY-SA 3.0 Unported | Scaled on plain backgrounds and composited on the three rocks |
+| `mods/BASE/default/textures/default_torch_on_floor.png` | VanessaE | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_torch_on_floor.png) | CC BY-SA 3.0 Unported | Scaled on plain backgrounds |
+| `mods/BASE/default/textures/default_torch_on_floor_animated.png` | VanessaE | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_torch_on_floor_animated.png) | CC BY-SA 3.0 Unported | Complete strips and extracted frames; GIF palette conversion |
+| `mods/BASE/default/textures/default_torch_on_ceiling_animated.png` | VanessaE | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_torch_on_ceiling_animated.png) | CC BY-SA 3.0 Unported | Complete strips and extracted frames; GIF palette conversion |
+| `mods/BASE/default/textures/default_torch_animated.png` | VanessaE | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_torch_animated.png) | CC BY-SA 3.0 Unported | Complete strips and extracted frames; GIF palette conversion |
+| `mods/BASE/default/textures/default_stone.png` | Cisoun | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_stone.png) | CC BY-SA 3.0 Unported | Coal and Anthracite overlay composites |
+| `mods/ITEMS/grug_materials/textures/grug_materials_t3_stone.png` | Cisoun; Grudgelands contributors (tier derivation) | [Local source and derivation ledger](../../mods/ITEMS/grug_materials/LICENSE-media.md#91-tier-rocks--cc-by-sa-30-unported-minetest_game-derivatives) | CC BY-SA 3.0 Unported | Coal and Anthracite overlay composites; existing tint/cracks unchanged |
+| `mods/ITEMS/grug_materials/textures/grug_materials_t6_stone.png` | Cisoun; Grudgelands contributors (tier derivation) | [Local source and derivation ledger](../../mods/ITEMS/grug_materials/LICENSE-media.md#91-tier-rocks--cc-by-sa-30-unported-minetest_game-derivatives) | CC BY-SA 3.0 Unported | Coal and Anthracite overlay composites; existing tint/cracks unchanged |
+
+Attribution was checked in the vendored
+[`default/README.txt`](../../mods/BASE/default/README.txt) (including its
+default attribution for unlisted media),
+[`default/license.txt`](../../mods/BASE/default/license.txt) and the
+[`grug_materials` ledger](../../mods/ITEMS/grug_materials/LICENSE-media.md).
+These existing media authors are already named in
+[CREDITS.md](../../CREDITS.md).
