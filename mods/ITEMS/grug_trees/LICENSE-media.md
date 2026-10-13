@@ -19,9 +19,9 @@ color's luma, then `-tint 100` with the target color (`-sigmoidal-contrast`
 restores local contrast after a strong gamma lift). Alpha channels are
 preserved.
 
-Silverwood reuses default's
-`schematics/aspen_tree_from_sapling.mts` (LGPL-2.1+ / CC BY-SA 3.0,
-unmodified) and only substitutes nodes at placement time.
+Since Round 47 every tree, silverwood included, comes from the seeded
+generator (`mods/MAPGEN/grug_mapgen/wp40/treegen.lua`, Grudgelands code);
+this mod ships no tree schematic.
 
 | File | Derived from | Author | License | Modifications |
 |------|--------------|--------|---------|---------------|
