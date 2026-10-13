@@ -565,7 +565,13 @@ After merges: `tools/sync_to_luanti.sh`.
 
 ## 8. Open questions for the user
 
-1. **Leaf counts and forest density** (incl. dense groves): after TD.
+1. ~~Leaf counts and forest density~~ — **settled (the user,
+   2026-10-14):** no web client measurement; TD's desktop numbers are
+   accepted as they come out, the game keeps full leaves and today's
+   density (`TREE_SPACING = 4`); a marked regression is flagged for the
+   user's GUI test, not changed in this round. After TD the coordinator
+   runs lane D and the full seed fleet and closes the round without
+   another check-in; push only on the user's word.
 
 Settled: lane ART's Anthracite set (lump, ore, torch) as painted (the
 user, 2026-10-13); town trees use the generator (ruling 3); the swamp concept and
