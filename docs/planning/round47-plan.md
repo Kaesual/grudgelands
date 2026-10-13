@@ -54,6 +54,7 @@ The hotbar rework (prepared, not scheduled) and the class rework
 | NZ | NPC facing check and data fixes; zone banner 4 s; first-entry zone XP and sound | 1 | code + data | — |
 | ART | Astra: swamp texture set first (for SW's concept), then the Anthracite set | 1 | art | — |
 | SW | Swamp: a three.js concept (ground, pools, plants, swamp trees) for the user's pick, then the build | 1 (concept), 2 (build) | concept, then mapgen | build: the user's pick, TC merged |
+| ML | Map window marker layers: one layer at a time, every marker named, party names, no icons baked into the world map ([work package](round47-map-layers.md), added 2026-10-13) | 2 | code + UI | — |
 | D | Documentation, version 0.47.0, the upgrade declaration, gate list | 3 | docs | last merge |
 
 The user's GUI test of 0.46.0 is still open. Its findings join this round
@@ -74,6 +75,7 @@ Estimates (unmeasured, for planning only), each lane plus its review:
 | NZ | 6–8 |
 | ART | 3–5 |
 | SW | 4–6 concept + 10–14 build |
+| ML | 8–12 |
 | D | 3 |
 
 TC is the largest and riskiest lane. AN touches the most files.
@@ -534,6 +536,7 @@ Per lane the gates of the [round workflow](../process/round-workflow.md#3-gates)
 | CR | `grug_jobs` jobs, ui and state, a discovery module, `tools/r45_ui`, `tools/r45_jb` |
 | NZ | blueprint sockets (`wp13`, `r14_poi_blueprint.lua`), `grug_map/location*`, a zone-discovery module, `grug_xp` calls |
 | SW | the concept under `tools/`; the build: `wp40` swamp rows, new swamp nodes, the swamp species in both generators |
+| ML | `grug_map` window, providers, bake/base (world map variants only), settlement icons, quest box, textures, a zone-placement module, `tools/r44_mq`, `docs/design/world_map.md` |
 
 **Merge order:**
 - OR before AN: both edit resource rows and `grug_materials`.
@@ -550,6 +553,7 @@ Per lane the gates of the [round workflow](../process/round-workflow.md#3-gates)
 
 **The user's touchpoints:**
 - the swamp concept (a page);
+- the map layers' screenshots (icon size, zone labels, the §8 defaults of the work package);
 - ART's texture picks;
 - TD's numbers (the leaf decision);
 - the GUI test of 0.46.0, if not done before;
