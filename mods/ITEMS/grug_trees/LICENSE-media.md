@@ -1,6 +1,6 @@
 # Media Origin & Licenses (grug_trees)
 
-All textures except the jungle bark (below) are **derived works** of minetest_game media
+All textures except the jungle bark and the Round 47 swamp textures (below) are **derived works** of minetest_game media
 (`mods/BASE/default/textures`, vendored from
 <https://github.com/luanti-org/minetest_game> at `b5243f3`, see VENDOR.md).
 
@@ -62,3 +62,10 @@ sets it on `default:jungletree` and the jungle shape nodes; the vendored
 here byte for byte; `tools/r47_ta/portable_test.lua` checks the two are
 equal), distributed under the project's GPL-3.0-or-later license. It holds
 no texture pixels.
+
+## Original swamp textures (Round 47) — CC0 1.0
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_trees_swamp_hanging_moss.png` | `tools/r47_art/swamp/hanging_moss.png` (lane ART, commit `3480a978`, generator `tools/r47_art/swamp/generate.py`, provenance in `tools/r47_art/LICENSE-media.md`) | GPT-6 Astra | CC0 1.0 (<https://creativecommons.org/publicdomain/zero/1.0/>) | renamed only |
+| `grug_trees_swamp_leaves.png` | `tools/r47_art/swamp/swamp_leaves.png` (lane ART, commit `d7996ec8`, generator `tools/r47_art/swamp/generate_leaves.py`, provenance in `tools/r47_art/LICENSE-media.md`) | GPT-6 Astra | CC0 1.0 | renamed only |

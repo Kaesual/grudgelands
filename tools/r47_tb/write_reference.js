@@ -28,7 +28,7 @@ var OUT = path.join(__dirname, 'reference.lua');
 var G = require(SOURCE);
 
 var M = 2147483647;
-var KIND = {trunk: 1, quarter: 2, base: 3, branch: 4, twig: 5, leaves: 6, fruit: 7};
+var KIND = {trunk: 1, quarter: 2, base: 3, branch: 4, twig: 5, leaves: 6, fruit: 7, moss: 8};
 
 function Digest() { this.h1 = 0; this.h2 = 0; }
 Digest.prototype.feed = function (v) {
@@ -79,7 +79,7 @@ var SAME = [[2147483646, 0], [2147483645, -1], [-7, -1], [2147483647, 1]];
 var ROOTED = ['apple', 'jungle', 'kapok'];
 var FULL = [['apple', 1, 'flat'], ['jungle', 1, 'flat'], ['kapok', 1, 'flat'], ['kapok', 1, 'bumpy'],
 	['acacia', 1, 'flat'], ['pine', 1, 'flat'], ['aspen', 1, 'flat'], ['silverwood', 1, 'flat'],
-	['gravewood', 1, 'flat']];
+	['gravewood', 1, 'flat'], ['swamp', 1, 'flat']];
 
 // The Shapes view's root study: [ground, trunk width, per side [h, reach,
 // fork] or null, bumpy seed].
