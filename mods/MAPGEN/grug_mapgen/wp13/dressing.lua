@@ -453,14 +453,28 @@ local function loader(directory)
 		end
 		if not best then return false end
 		buf.grown_stems[#buf.grown_stems + 1] = {x, z}
+		-- Every write is recorded with what it replaced, so a tree a later
+		-- write cuts goes out whole (parts.lua `Buffer:cells`).
+		buf.grown_trees = buf.grown_trees or {}
+		buf.grown_wood = buf.grown_wood or {}
+		local tree = {writes = {}, species = species, x = x, z = z}
+		buf.grown_trees[#buf.grown_trees + 1] = tree
+		local id = #buf.grown_trees
+		buf.writing_tree = true
 		for _, write in ipairs(best) do
 			local bx, by, bz, cell, turns = write[1], write[2], write[3], write[4], write[5]
 			local name = name_of(cell.name)
 			local param2 = parts.rotate_param2(cell.param2, parts.param2_kind(name), turns)
 			local key = bx .. ":" .. by .. ":" .. bz
+			local old = buf:at(bx, by, bz)
+			tree.writes[#tree.writes + 1] = {key = key, name = name,
+				prev_name = old and old.name, prev_param2 = old and old.param2,
+				wood = cell.flag ~= trees.LEAF}
 			buf:put(bx, by, bz, name, param2)
 			grown_leaves[key] = cell.flag == trees.LEAF and true or nil
+			buf.grown_wood[key] = cell.flag ~= trees.LEAF and id or nil
 		end
+		buf.writing_tree = nil
 		return true
 	end
 
