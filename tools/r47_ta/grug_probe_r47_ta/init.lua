@@ -17,7 +17,8 @@
 --      branch, twig, a leaf above the twig and one beside it) and two roots
 --      at its foot (a base and a twig on the grass), a 3 x 3 apple trunk
 --      (quarter corners, log edges and centre), a 2 x 2 apple trunk, a lone
---      standing quarter and five lying ones (facedir 4, 8, 12, 16, 20).
+--      standing quarter and five lying ones (facedir 4, 8, 12, 16, 20); a
+--      2 x 2 jungle and a 3 x 3 apple trunk with one quarter dug out (Q5).
 --   R  template rotation (check 4): one small cell set (a 2 x 2 apple quarter
 --      trunk three high, a limb east, a twig north under a leaf, a root base
 --      south) turned 0, 90, 180 and 270 degrees by the real
@@ -27,7 +28,7 @@ local P = "[r47ta] "
 local NAME = "grugcap"
 local GROUND_Y = 500
 local SETTLE = tonumber(core.settings:get("r47ta_settle") or "") or 8
-local FILTER = core.settings:get("r47ta_shots") or "GQR"
+local FILTER = core.settings:get("r47ta_shots") or "G,Q,R"
 
 local function log(msg) core.log("action", P .. msg) end
 
@@ -151,6 +152,14 @@ local function build_quarters(c)
 	for i, facedir in ipairs({4, 8, 12, 16, 20}) do
 		put(at(c, 11 + 2 * i, 1, -2), s.quarter, facedir)
 	end
+	-- partly felled: a 2 x 2 jungle and a 3 x 3 apple trunk with the
+	-- camera-side (+x, -z) quarter dug out two above the grass
+	local cut2 = at(c, -22, 1, 1)
+	trunk("jungle", cut2.x, cut2.z, cut2.y, cut2.y + 4, 2)
+	core.remove_node({x = cut2.x + 1, y = cut2.y + 1, z = cut2.z})
+	local cut3 = at(c, -33, 1, 2)
+	trunk("apple", cut3.x, cut3.z, cut3.y, cut3.y + 4, 3)
+	core.remove_node({x = cut3.x + 2, y = cut3.y + 1, z = cut3.z})
 end
 
 -- The real template expander over one probe definition.
@@ -236,20 +245,27 @@ local SHOTS = {
 	{name = "Q2_jungle_trunk_close", hub = "Q", u = -3.5, h = 3.5, v = -6.5, pitch = 12},
 	{name = "Q3_quarters_top", hub = "Q", u = 1, h = 17, v = -9, pitch = 58},
 	{name = "Q4_lying_quarters", hub = "Q", u = 17, h = 3, v = -7, pitch = 18},
+	{name = "Q5_cut_jungle_2x2", hub = "Q", u = -25, h = 2.6, v = -4, pitch = 6, yaw = 48},
+	{name = "Q5_cut_apple_3x3", hub = "Q", u = -36.5, h = 2.6, v = -4.5, pitch = 6, yaw = 48},
 	{name = "R1_rotations_raised", hub = "R", u = 0, h = 10, v = -9, pitch = 45},
 	{name = "R2_rotations_eye", hub = "R", u = 0, h = 3.5, v = -12, pitch = 8},
 }
 do
 	local kept = {}
 	for _, shot in ipairs(SHOTS) do
-		if FILTER:find(shot.name:sub(1, 1), 1, true) then kept[#kept + 1] = shot end
+		for prefix in FILTER:gmatch("[^,]+") do
+			if shot.name:sub(1, #prefix) == prefix then
+				kept[#kept + 1] = shot
+				break
+			end
+		end
 	end
 	SHOTS = kept
 end
 
 local function camera_of(shot)
 	local pos = at(hub(shot.hub), shot.u, shot.h, shot.v)
-	return pos, 90, shot.pitch
+	return pos, shot.yaw or 90, shot.pitch
 end
 
 ---------------------------------------------------------------------------

@@ -18,7 +18,9 @@
 --      moss too, its twig joins the swamp leaves, and shapes.lua fails at load
 --      when either swamp node is missing;
 --   D. jungle bark M on default:jungletree and the jungle shapes, the PNGs
---      and the quarter .obj byte-equal to their Round 46 sources;
+--      and the quarter .obj byte-equal to their Round 46 sources; the mesh's
+--      two axis-side faces closed with the end grain, its rings continuing
+--      the top cap's;
 --   E. template rotation: the real wp40/r6_templates.lua turns a small cell
 --      set (a 2 x 2 quarter trunk with a limb along x and one along z) so that
 --      for all four turns every quarter's corner faces the trunk axis and
@@ -366,6 +368,66 @@ check(read("mods/ITEMS/grug_trees/textures/grug_trees_jungle_bark_top.png") ==
 check(read("mods/ITEMS/grug_trees/models/grug_tree_quarter_oct.obj") ==
 	read("tools/r46_tree/concept/models/grug_tree_quarter_oct.obj"),
 	"the quarter mesh is shapes.js's output")
+
+-- The mesh: caps and the two closed axis-side faces in the end-grain group
+-- (material 1), three bark faces (material 2). In the file x is mirrored
+-- for the loader, so the axis-side faces lie on x = -0.5 (the node's +x)
+-- and z = 0.5; along their top edge they take the top cap's texture
+-- coordinates, so the rings run on.
+do
+	local obj = read("mods/ITEMS/grug_trees/models/grug_tree_quarter_oct.obj")
+	local v, vt, groups, current = {}, {}, {}, nil
+	for line in obj:gmatch("[^\n]+") do
+		local x, y, z = line:match("^v (%S+) (%S+) (%S+)$")
+		if x then v[#v + 1] = {tonumber(x), tonumber(y), tonumber(z)} end
+		local tu, tv = line:match("^vt (%S+) (%S+)$")
+		if tu then vt[#vt + 1] = {tonumber(tu), tonumber(tv)} end
+		local g = line:match("^usemtl (%S+)$")
+		if g then current = g; groups[g] = {} end
+		if line:match("^f ") then
+			local face = {}
+			for vi, ti in line:gmatch("(%d+)/(%d+)/%d+") do
+				face[#face + 1] = {v = v[tonumber(vi)], t = vt[tonumber(ti)]}
+			end
+			table.insert(groups[current], face)
+		end
+	end
+	local caps, bark = groups.caps or {}, groups.bark or {}
+	eq(#caps, 8, "end-grain group: 6 cap triangles and 2 axis-side quads")
+	eq(#bark, 3, "bark group: 3 side quads")
+	local tris = 0
+	for _, list in ipairs({caps, bark}) do
+		for _, face in ipairs(list) do tris = tris + #face - 2 end
+	end
+	eq(tris, 16, "triangles per quarter (12 before the axis faces were closed)")
+	local top_uv = {}
+	for _, face in ipairs(caps) do
+		if #face == 3 and face[1].v[2] == 0.5 then
+			for _, corner in ipairs(face) do
+				top_uv[corner.v[1] .. "," .. corner.v[3]] = corner.t
+			end
+		end
+	end
+	local planes = {}
+	for _, face in ipairs(caps) do
+		if #face == 4 then
+			local on_x, on_z = true, true
+			for _, corner in ipairs(face) do
+				on_x = on_x and corner.v[1] == -0.5
+				on_z = on_z and corner.v[3] == 0.5
+				if corner.v[2] == 0.5 then
+					local cap = top_uv[corner.v[1] .. "," .. corner.v[3]]
+					check(cap and cap[1] == corner.t[1] and cap[2] == corner.t[2],
+						"axis-side face continues the top cap's rings at " ..
+						corner.v[1] .. "," .. corner.v[3])
+				end
+			end
+			planes[#planes + 1] = on_x and "x" or (on_z and "z" or "?")
+		end
+	end
+	table.sort(planes)
+	eq(table.concat(planes, ","), "x,z", "the closed faces are the two axis sides")
+end
 
 -- ---------------------------------------------------------------------------
 -- E. template rotation through the real r6_templates.lua

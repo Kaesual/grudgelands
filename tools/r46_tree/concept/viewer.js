@@ -281,7 +281,7 @@
 		function conv(poly, tile) {
 			return {tile: tile, verts: poly.map(function (v) { return {p: turn(v.p), n: turn(v.n), uv: v.uv}; })};
 		}
-		var out = m.caps.map(function (p) { return conv(p, 'top'); }).concat(m.sides.map(function (p) { return conv(p, 'bark'); }));
+		var out = m.caps.concat(m.inner).map(function (p) { return conv(p, 'top'); }).concat(m.sides.map(function (p) { return conv(p, 'bark'); }));
 		meshCache[k] = out;
 		return out;
 	}
@@ -402,9 +402,9 @@
 			if (n.kind === 'trunk') {
 				boxes = [[-8, -8, -8, 8, 8, 8]];
 			} else if (n.kind === 'quarter') {
-				// mesh: side quads plus cap triangles (two per quad)
+				// mesh: side and axis-side quads plus cap triangles (two per quad)
 				var qm = TreeShapes.quarterMesh(state.profile);
-				total += qm.sides.length + qm.caps.length / 2;
+				total += qm.sides.length + qm.inner.length + qm.caps.length / 2;
 				return;
 			} else {
 				var sh = BOXES[n.kind], joins = CONNECTS[n.kind];

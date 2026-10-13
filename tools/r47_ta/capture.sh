@@ -18,7 +18,8 @@
 # Usage: XVFB=/path/to/Xvfb tools/r47_ta/capture.sh OUT_DIR
 #   WIDTH/HEIGHT (default 1600 x 900), SHADOWS=0 turns dynamic shadows off,
 #   SMOOTH=0 turns smooth lighting off, SHOTS=<prefixes> takes only the
-#   shots whose names start with one of the letters (e.g. SHOTS=Q),
+#   shots whose names start with one of the comma-separated prefixes
+#   (e.g. SHOTS=Q or SHOTS=Q5,R),
 #   SUFFIX=<text> appended to every file name, SETTLE=<seconds> before each
 #   shot (default 8), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default
 #   /usr/lib64/dri). Run it through the shared Lua queue (one boot).
@@ -33,7 +34,7 @@ width="${WIDTH:-1600}"; height="${HEIGHT:-900}"
 shadows="$([[ "${SHADOWS:-1}" == "1" ]] && echo true || echo false)"
 settle="${SETTLE:-8}"
 smooth="$([[ "${SMOOTH:-1}" == "1" ]] && echo true || echo false)"
-shots_filter="${SHOTS:-GQR}"; suffix="${SUFFIX:-}"
+shots_filter="${SHOTS:-G,Q,R}"; suffix="${SUFFIX:-}"
 server_timeout=330; client_timeout=320
 mkdir -p "$out"
 out="$(cd "$out" && pwd -P)"
