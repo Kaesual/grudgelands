@@ -1605,7 +1605,11 @@ tools](#player-meta-read-by-external-tools).
   (`location.capital_of(name)`, the settlement key of a town row whose anchor
   slot is `capital`, kept while the city is within `L.CAPITAL_MARGIN` nodes:
   `location_view.lua` `capital_at`, up to eight footprint queries per sample
-  only while leaving), which decides where music plays.
+  only while leaving), which decides where music plays. Since Round 47 the
+  sample hands a changed zone id (and the player's first sample) to
+  `location.discovery`, the first-entry zone XP that `init.lua` installs
+  from `zone_discovery.lua` (`D.new(api)` pure over its calls, fixture
+  `tools/r47_nz`); a fixture that loads `location.lua` alone runs without it.
   Round 31: NPC markers carry their NPC's faction and the service and
   quest-giver lists are split per viewer faction once at load. Since Round
   44 settlements, camps, points of interest, kings and dragons are no

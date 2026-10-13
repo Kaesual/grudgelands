@@ -181,7 +181,7 @@ local function loader(directory)
 				return {
 					plots.work("muster_spar_south", "spar", 0, -2, 0),
 					plots.work("muster_spar_north", "spar", 0, 2, 2),
-					plots.work("muster_rake", "sweep", -8, -9, 0),
+					plots.work("muster_rake", "sweep", -8, -9, 2), -- Round 47: 0 faced the wood pile
 				}
 			end},
 		-- 2. THE PACK PEN: the goats the garrison marches with, the trough they
@@ -232,7 +232,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("garrison_green", 4, -5, 0),
+					plots.spare("garrison_green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

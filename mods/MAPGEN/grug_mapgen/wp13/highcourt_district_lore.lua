@@ -177,7 +177,7 @@ local function loader(directory)
 				return {
 					plots.work("beds_west", "tend", -2, -4, 3),
 					plots.work("beds_east", "tend", 2, -4, 1),
-					plots.spare("sexton", 7, -8, 0),
+					plots.spare("sexton", 7, -8, 2), -- Round 47: 0 faced a tree
 				}
 			end},
 		-- 4. THE QUIET GREEN inside the lot grid: a columnar tree rather than
@@ -193,7 +193,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("green", 4, -5, 0),
+					plots.spare("green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

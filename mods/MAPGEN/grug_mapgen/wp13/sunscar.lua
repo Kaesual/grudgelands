@@ -241,7 +241,8 @@ local function loader(directory)
 			y = 1, z = 8, dir = {x = 1, z = 0}},
 		{id = "idle_beast_pen", role = "idle", tags = {"work"}, x = -25, y = 1,
 			z = -2, dir = {x = -1, z = 0}},
-		{id = "idle_armoury_forge", role = "idle", tags = {"fire"}, x = 20,
+		-- Round 47: `door`, it stands before the armoury's door.
+		{id = "idle_armoury_forge", role = "idle", tags = {"fire", "door"}, x = 20,
 			y = 1, z = -2, dir = {x = 1, z = 0}},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket

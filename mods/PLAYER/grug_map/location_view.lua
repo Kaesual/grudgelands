@@ -7,9 +7,9 @@
 local L = {}
 
 -- Each player's location is sampled every SAMPLE seconds; a banner shows its
--- name for DISPLAY seconds.
+-- name for DISPLAY seconds (Round 47 ruling 21: 4 s, was 1.5 s).
 L.SAMPLE = 1.0
-L.DISPLAY = 1.5
+L.DISPLAY = 4
 -- Shown where no zone owns the column (the open sea), as in the map window.
 L.OPEN_SEA = "Open sea"
 
@@ -33,7 +33,9 @@ L.OPEN_SEA = "Open sea"
 --   resolve(x, z) -> the text: the town's name inside a start town or a
 --     capital city, else the zone's display name, else OPEN_SEA; inside a
 --     town also true (grug_ambience's quieter town bed, Round 34) and the
---     town's row (its `capital` key: Round 35's capital music);
+--     town's row (its `capital` key: Round 35's capital music); outside
+--     every town false, nil and the zone id (nil at sea; Round 47's zone
+--     discovery);
 --   town_at(x, z) -> the town row whose footprint holds the column, or nil.
 function L.resolver(opts)
 	local zone_at, names, towns = opts.zone_at, opts.names, opts.towns
@@ -56,7 +58,7 @@ function L.resolver(opts)
 		if town then return town.name, true, town end
 		local id = zone_at(x, z)
 		if not id then return L.OPEN_SEA end
-		return names[id] or id
+		return names[id] or id, false, nil, id
 	end
 	return resolve, town_at
 end

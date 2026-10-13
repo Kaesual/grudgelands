@@ -167,7 +167,7 @@ local function loader(directory)
 				return {
 					plots.work("pasture_saw", "chop", -8, -9, 0),
 					plots.work("pasture_tend", "tend", 6, -9, 0),
-					plots.spare("pasture", 10, -11, 0),
+					plots.spare("pasture", 10, -11, 2), -- Round 47: 0 faced a post
 				}
 			end},
 		-- 3. THE WOOD YARD: stacked timber, two chopping blocks and the two
@@ -200,7 +200,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("green", 4, -5, 0),
+					plots.spare("green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

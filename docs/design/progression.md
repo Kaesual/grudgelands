@@ -235,8 +235,9 @@ level 59 to 60.
 
 Round 24 ruling 28 (2026-09-29), in kill equivalents since Round 28 ruling 32
 (2026-10-01), ratios and reference level since Round 46 ruling 7
-(2026-10-12). XP sources are mob kills, quest rewards, administrator grants
-and gathering. Every natural ore or gem node a player digs and every fish a
+(2026-10-12). XP sources are mob kills, quest rewards, administrator grants,
+gathering and the first entry into a zone (Round 47, "Zone discovery" in
+[world_map.md](world_map.md#zone-and-town-names)). Every natural ore or gem node a player digs and every fish a
 player catches gives
 
 `XP = ratio × M(min(reference level, player level))`, rounded half up,

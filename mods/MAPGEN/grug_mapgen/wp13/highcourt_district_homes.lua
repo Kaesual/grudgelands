@@ -124,7 +124,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function(area)
 				return {
-					plots.vendor("baker", "baker", area.x1 - 4, area.z0, 0),
+					plots.vendor("baker", "baker", area.x1 - 4, area.z0, 2), -- Round 47: 0 faced a post
 					plots.work("oven", "stall", area.x1 - 2, area.z0, 0),
 				}
 			end},
@@ -182,7 +182,7 @@ local function loader(directory)
 				return {
 					plots.work("green_saw", "chop", -8, -9, 0),
 					plots.work("green_beds", "tend", 6, -10, 0),
-					plots.spare("goose", 10, -11, 0),
+					plots.spare("goose", 10, -11, 2), -- Round 47: 0 faced a post
 				}
 			end},
 		-- 3. THE LANE PARK: a crossing of paths, benches under two standards,
@@ -218,7 +218,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("beds", "tend", 0, 0, 3),
-					plots.spare("kitchen", 4, -5, 0),
+					plots.spare("kitchen", 4, -5, 2), -- Round 47: 0 faced a tree
 				}
 			end},
 	}

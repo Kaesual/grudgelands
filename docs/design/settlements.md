@@ -526,6 +526,16 @@ creatures ignore settlement NPCs" is replaced by the first point here):
   spots and its villagers are the same list, every destination is permanently
   occupied, and the amble is people trading doorsteps.
 
+Decided in Round 47 (ruling 20): **no NPC faces a wall.** A standing NPC —
+every role but a patrol waypoint, spares included, with a `door` socket
+turned round as above — never has a solid node at head height one or two
+nodes ahead of it unless the feature of its work stands there first (an
+anvil, a stall's counter under open air, a woodcutter's log, a drill post, a
+shrine). Something at the feet only (a low wall, a bench, a crate) is no
+wall. Where the houses of the races differ, a Round 14 village turns its
+sockets per race. `tools/r47_nz/facing.lua` checks every composition and
+its fixture holds the rule.
+
 Decided 2026-09-15 after the third NPC playtest ("nobody does anything, and I
 want lived-in settlements without paying for it in server load"):
 
