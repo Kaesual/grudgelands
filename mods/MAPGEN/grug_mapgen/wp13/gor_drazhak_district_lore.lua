@@ -51,7 +51,7 @@ local function loader(directory)
 			extra_sockets = function(area)
 				return {
 					plots.work("hall_pray", "pray", 0, area.oz - 2, 0),
-					plots.idle("hall_step", -2, area.oz - 1, 2, {"door"}),
+					plots.idle("hall_step", -2, area.oz - 1, 0, {"door"}), -- Round 47: `door` turned 2 to a post
 				}
 			end},
 
@@ -81,7 +81,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("totem_carve_west", "carve", -5, -6, 3),
-					plots.spare("totem_carve_east", 5, 6, 1),
+					plots.spare("totem_carve_east", 5, 6, 3), -- Round 47: 1 faced a post
 					plots.idle("totem_pray", 0, -2, 2, {"work"}),
 					plots.idle("totem_bench", -2, -10, 0, {"bench"}, 2),
 					plots.spare("totem_court", 8, -8, 0),
@@ -215,7 +215,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function(area)
 				return {
-					plots.spare("bone_store_carve", area.x0 + 3, area.z1 - 2, 3),
+					plots.spare("bone_store_carve", area.x0 + 3, area.z1 - 2, 1), -- Round 47: 3 faced a post
 				}
 			end},
 
@@ -265,7 +265,8 @@ local function loader(directory)
 	local FILL = {
 		-- 1. THE ANCESTOR FIELD: the older burial ground outside the barrow
 		-- wall, with the shrubs grown back over half of it.
-		{id = "bone_ancestor_field", yard = {},
+		-- Round 47: its gate spare looks out of the field (0 faced a post).
+		{id = "bone_ancestor_field", yard = {}, gate_face = 2,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.low_wall_line(buf, palette, -11, 11, 11, 11)

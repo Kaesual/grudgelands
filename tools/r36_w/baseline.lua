@@ -8,7 +8,8 @@
 --   luajit tools/r36_w/baseline.lua REPO > tools/r36_w/baseline.tsv
 --
 -- (written once from main before the decor pass; portable_test.lua compares
--- the current tree's record with that file). As a module:
+-- the current tree's record with that file). Rewritten by Round 47 lane NZ
+-- for the NPC facing fixes (ruling 20): 77 socket facings, nothing else. As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}

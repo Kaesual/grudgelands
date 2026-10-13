@@ -276,7 +276,9 @@ return function(options, profile)
 		socket("gate_east","guard_post",2,-r+3,0,-1,{tags={"gate"}})
 		local posts={{"keep_door_west",-3,10,0,-1},{"keep_door_east",3,10,0,-1},
 			{"yard_west",-8,-4,0,-1},{"yard_east",8,-4,0,-1},
-			{"gate_inner_west",-5,-18,0,-1},{"gate_inner_east",5,-18,0,-1},
+			-- Round 47: the two by the gate watch its passage (they faced the
+			-- curtain wall two nodes ahead, 0,-1).
+			{"gate_inner_west",-5,-18,1,0},{"gate_inner_east",5,-18,-1,0},
 			{"corner_southwest",-19,-19,1,0},{"corner_southeast",19,-19,-1,0},
 			{"corner_northwest",-19,19,1,0},{"corner_northeast",19,19,-1,0}}
 		for _,q in ipairs(posts) do socket(q[1],"guard_post",q[2],q[3],q[4],q[5],{tags={"inner"}}) end
@@ -375,14 +377,17 @@ return function(options, profile)
 			end
 			-- Straw targets: a drill line inside the palisade.
 			for _,x in ipairs({-4,-2}) do put(x,1,nz+2,c.post); put(x,2,nz+2,"grug_decor:cottages_straw_bale") end
-			socket("gate_west","guard_post",-2,-r+2,0,-1,{tags={"gate"}})
-			socket("gate_east","guard_post",2,-r+2,0,-1,{tags={"gate"}})
-			socket("tower_west","guard_post",-10,-7,0,-1,{tags={"camp"}})
-			socket("tower_east","guard_post",10,-7,0,-1,{tags={"camp"}})
+			-- Round 47: the gate pair flank the gateway and face across it
+			-- (they faced the flag posts in the palisade, 0,-1); the tower
+			-- guards turn from their ladders to the camp.
+			socket("gate_west","guard_post",-2,-r+2,1,0,{tags={"gate"}})
+			socket("gate_east","guard_post",2,-r+2,-1,0,{tags={"gate"}})
+			socket("tower_west","guard_post",-10,-7,1,0,{tags={"camp"}})
+			socket("tower_east","guard_post",10,-7,-1,0,{tags={"camp"}})
 			socket("yard_west","guard_post",-5,captain_z,0,-1,{tags={"camp"}})
 		else
-			socket("gate_west","guard_post",-2,-r+2,0,-1,{tags={"gate"}})
-			socket("gate_east","guard_post",2,-r+2,0,-1,{tags={"gate"}})
+			socket("gate_west","guard_post",-2,-r+2,1,0,{tags={"gate"}})
+			socket("gate_east","guard_post",2,-r+2,-1,0,{tags={"gate"}})
 			socket("yard_west","guard_post",-4,captain_z,0,-1,{tags={"camp"}})
 			socket("yard_east","guard_post",4,captain_z,0,-1,{tags={"camp"}})
 		end

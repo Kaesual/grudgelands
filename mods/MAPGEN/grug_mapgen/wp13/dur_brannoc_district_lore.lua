@@ -237,7 +237,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("deep_green", 4, -5, 0),
+					plots.spare("deep_green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

@@ -166,12 +166,14 @@ local function loader(directory)
 			y = 1, z = -22, dir = {x = 0, z = 1}},
 		{id = "idle_court_bench", role = "idle", tags = {"bench"}, x = -7,
 			y = 1, z = 5, dir = {x = 0, z = -1}},
-		{id = "idle_bowyer", role = "idle", tags = {"work"}, x = 28, y = 1,
+		-- Round 47: `door`, it stands before the bowyer's door.
+		{id = "idle_bowyer", role = "idle", tags = {"work", "door"}, x = 28, y = 1,
 			z = -1, dir = {x = 1, z = 0}},
 		-- The covered market's hanging lanterns are the only open flame the
-		-- glade keeps outdoors; this is its fireside.
+		-- glade keeps outdoors; this is its fireside. Round 47: it faced the
+		-- market's corner post a node away (-1,0); it looks along the bays.
 		{id = "idle_market", role = "idle", tags = {"fire"}, x = -31, y = 1,
-			z = 0, dir = {x = -1, z = 0}},
+			z = 0, dir = {x = 0, z = 1}},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
 		-- is a spawn socket like an `idle` one and its resident never leaves
@@ -181,8 +183,11 @@ local function loader(directory)
 		-- market's own slate counter.
 		{id = "work_planters", role = "work", activity = "tend",
 			tags = {"work"}, x = 4, y = 1, z = 11, dir = {x = 0, z = 1}},
+		-- Round 47: the "counter" was the market's wall course under its
+		-- windows, so the keeper faced a wall (0,-1); it now stands with its
+		-- back to the market, facing the glade.
 		{id = "work_market", role = "work", activity = "stall", tags = {"work"},
-			x = -33, y = 1, z = 5, dir = {x = 0, z = -1}},
+			x = -33, y = 1, z = 5, dir = {x = 0, z = 1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 20, y = 1,

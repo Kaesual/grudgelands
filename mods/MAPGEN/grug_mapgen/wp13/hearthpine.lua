@@ -122,8 +122,9 @@ local function loader(directory)
 			z = 1, dir = {x = 1, z = 0}},
 		{id = "idle_workyard", role = "idle", tags = {"work"}, x = -19, y = 1,
 			z = 17, dir = {x = -1, z = 0}},
+		-- Round 47: turned round to the plaza; it faced the forge's door post.
 		{id = "idle_forge_door", role = "idle", tags = {"fire"}, x = 2, y = 1,
-			z = -10, dir = {x = 0, z = -1}},
+			z = -10, dir = {x = 0, z = 1}},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
 		-- is a spawn socket like an `idle` one and its resident never leaves

@@ -768,7 +768,9 @@ local function loader(directory)
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
 				corner.face, {group = WATCH, order = corner.order})
 		end
-		socket("gate_post_south", "guard_post", -4, 1, -RADIUS + 3, 2)
+		-- Round 47: it watches the gate mouth (1); facing out (2) it faced
+		-- a gate totem two nodes ahead.
+		socket("gate_post_south", "guard_post", -4, 1, -RADIUS + 3, 1)
 		socket("gate_post_west", "guard_post", -RADIUS + 3, 1, -4, 1)
 		-- The fishmonger behind his counter and his `stall` workplace beside
 		-- him. `stall` is answered geometrically -- "a counter (any solid node

@@ -367,14 +367,16 @@ local function loader(directory)
 			patrol(sockets, id .. "_deck_b", spec.patrol_group,
 				(spec.order or 1) + 1, last_x - 1, deck + 1, last_z - 1, 3)
 		end
-		socket(sockets, id .. "_porch", "idle", mid_x, deck + 1, hz0 - 1, 2,
+		-- Round 47: facing the door (0), which `door` turns round to the
+		-- deck; 2 had turned it to the door.
+		socket(sockets, id .. "_porch", "idle", mid_x, deck + 1, hz0 - 1, 0,
 			{tags = {"door"}})
 		-- The verandah spot, on the deck's own z- corner. It is NOT at the foot
 		-- of the flight: the flight's lowest tread stands on the WORLD's ground
 		-- and this part writes no ground course there, so a socket at the
 		-- landing would be one `finish` cannot prove anybody can stand on.
-		socket(sockets, id .. "_verandah", "idle", 1, deck + 1, base + 2, 1,
-			{tags = {"work"}})
+		socket(sockets, id .. "_verandah", "idle", 1, deck + 1, base + 2, 3,
+			{tags = {"work"}}) -- Round 47: 1 faced a post
 
 		return finish(buf, w, depth, top_of(buf), {
 			doors = doors,
@@ -759,7 +761,7 @@ local function loader(directory)
 			{activity = "pray"})
 		socket(sockets, id .. "_quest", "quest", mid + 2, 1, pz0 - 2, 0,
 			{tags = {"door"}})
-		socket(sockets, id .. "_idle", "idle", 2, 1, mid, 1, {tags = {"fire"}})
+		socket(sockets, id .. "_idle", "idle", 2, 1, mid, 3, {tags = {"fire"}}) -- Round 47: 1 faced the wall
 		if spec.patrol_group then
 			patrol(sockets, id .. "_watch", spec.patrol_group, spec.order or 1,
 				last - 1, 1, mid, 3)

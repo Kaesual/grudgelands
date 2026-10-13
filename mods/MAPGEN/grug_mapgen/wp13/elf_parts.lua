@@ -369,7 +369,9 @@ local function loader(directory)
 		local id = spec.id or "tree_platform"
 		socket(sockets, id .. "_deck", "idle", c + 1, deck + 1, c, 3,
 			{tags = {"door"}})
-		socket(sockets, id .. "_foot", "idle", c, 1, c + 2, 2,
+		-- Round 47: facing 0, away from the trunk two nodes behind it
+		-- (2 faced the trunk).
+		socket(sockets, id .. "_foot", "idle", c, 1, c + 2, 0,
 			{tags = {"bench"}})
 
 		return finish(buf, size, size, top_of(buf), {

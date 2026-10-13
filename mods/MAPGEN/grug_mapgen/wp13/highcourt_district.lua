@@ -35,8 +35,10 @@ local function loader(directory)
 	local function shop_counter(buf, palette, area)
 		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
 	end
-	local function shop_vendor(id, kind, area)
-		return plots.vendor(id, kind, area.x1 - 4, area.z0, 0)
+	-- `face` (default 0, the shop) turns a trader whose shop front has a
+	-- post where the counter would be (Round 47, NPCs face away from walls).
+	local function shop_vendor(id, kind, area, face)
+		return plots.vendor(id, kind, area.x1 - 4, area.z0, face or 0)
 	end
 
 	-- The roster, in the order the plots take the quadrant's nine lots.
@@ -146,7 +148,7 @@ local function loader(directory)
 				return {
 					plots.spare("store", area.x1 - 1, area.z1 - 1, 2),
 					plots.work("block", "chop", area.x0 + 3, area.z0, 0),
-					shop_vendor("butcher", "butcher", area),
+					shop_vendor("butcher", "butcher", area, 2), -- Round 47: a post at 0
 				}
 			end},
 	}
@@ -255,7 +257,7 @@ local function loader(directory)
 				return {
 					plots.work("row_west", "farm", -4, -6, 0),
 					plots.work("row_east", "farm", 4, -6, 0),
-					plots.spare("gardens", 7, -8, 0),
+					plots.spare("gardens", 7, -8, 2), -- Round 47: 0 faced a tree
 				}
 			end},
 		--
@@ -273,7 +275,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("green", 4, -5, 0),
+					plots.spare("green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

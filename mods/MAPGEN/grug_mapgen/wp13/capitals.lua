@@ -610,7 +610,10 @@ local function loader(directory)
 			{tags = {"bench"}})
 		socket(sockets, "hall_idle_east", "idle", w - 3, base + 1, 10, 3,
 			{tags = {"bench"}})
-		socket(sockets, "hall_idle_service", "idle", 2, base + 1, service_z, 1,
+		-- Round 47: `door` turns a socket round, so its facing names the
+		-- service door (3) and the resident looks into the hall; facing 1
+		-- had turned it to the door.
+		socket(sockets, "hall_idle_service", "idle", 2, base + 1, service_z, 3,
 			{tags = {"door"}})
 
 		roofs.raster(buf, spec.roof_palette or palette, field)
@@ -1699,7 +1702,9 @@ local function loader(directory)
 		local sockets = {}
 		socket(sockets, id .. "_groom", "idle", cx, 1, d - 3, 2,
 			{tags = {"work"}})
-		socket(sockets, id .. "_gate", "idle", cx, 1, 2, 0, {tags = {"door"}})
+		-- Round 47: facing the door (2), which `door` turns round into the
+		-- stable; facing 0 had turned it to the door.
+		socket(sockets, id .. "_gate", "idle", cx, 1, 2, 2, {tags = {"door"}})
 		return district(part, sockets)
 	end
 

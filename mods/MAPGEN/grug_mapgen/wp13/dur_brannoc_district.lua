@@ -163,7 +163,7 @@ local function loader(directory)
 			extra_sockets = function(area)
 				return {
 					plots.work("ore_sort", "mine", area.x0 + 3, area.z0, 0),
-					plots.spare("ore_yard", area.x1 - 1, area.z0, 0),
+					plots.spare("ore_yard", area.x1 - 1, area.z0, 2), -- Round 47: 0 faced a post
 				}
 			end},
 		-- 9. The store. Door index 4, single leaf: the `store` kit stands its
@@ -274,7 +274,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("forge_green", 4, -5, 0),
+					plots.spare("forge_green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

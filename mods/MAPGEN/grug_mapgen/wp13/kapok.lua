@@ -182,8 +182,9 @@ local function loader(directory)
 			y = 1, z = 27, dir = {x = 1, z = 0}},
 		{id = "idle_drying_shed", role = "idle", tags = {"work"}, x = -17,
 			y = 1, z = 24, dir = {x = -1, z = 0}},
+		-- Round 47: was 1,0, into the smoke house's raised floor.
 		{id = "idle_smoker", role = "idle", tags = {"fire"}, x = 13, y = 1,
-			z = 20, dir = {x = 1, z = 0}},
+			z = 20, dir = {x = 0, z = -1}},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
 		-- is a spawn socket like an `idle` one and its resident never leaves

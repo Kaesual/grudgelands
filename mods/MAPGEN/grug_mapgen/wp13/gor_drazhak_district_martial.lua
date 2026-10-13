@@ -266,7 +266,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("muster_rake", "sweep", 0, -9, 0),
-					plots.spare("muster_saw", -8, -9, 0),
+					plots.spare("muster_saw", -8, -9, 2), -- Round 47: 0 faced the wood pile
 					plots.spare("muster_spar_a", -3, 4, 1),
 					plots.spare("muster_spar_b", -1, 4, 3),
 				}
@@ -299,7 +299,7 @@ local function loader(directory)
 				return {
 					plots.work("paddock_tend", "tend", 6, -10, 0),
 					plots.spare("paddock_forage", -6, -4, 2),
-					plots.spare("paddock", 10, -11, 0),
+					plots.spare("paddock", 10, -11, 2), -- Round 47: 0 faced a post
 				}
 			end},
 
@@ -335,7 +335,7 @@ local function loader(directory)
 				return {
 					plots.work("guard_fire_brew", "brew", 0, 0, 0),
 					plots.spare("guard_fire_seat", -4, -3, 0, 2),
-					plots.spare("guard_fire", 4, -5, 0),
+					plots.spare("guard_fire", 4, -5, 2), -- Round 47: 0 faced a tree
 				}
 			end},
 	}

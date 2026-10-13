@@ -96,7 +96,7 @@ local function loader(directory)
 				return {
 					plots.idle("lodge_step", area.x0 + 4, area.z1 - 2, 2,
 						{"door"}),
-					plots.spare("round_lodge", area.x1 - 1, area.z1 - 4, 3),
+					plots.spare("round_lodge", area.x1 - 1, area.z1 - 4, 1), -- Round 47: 3 faced a post
 				}
 			end},
 
@@ -282,7 +282,7 @@ local function loader(directory)
 				return {
 					plots.work("clan_ground_brew", "brew", 0, 1, 0),
 					plots.spare("clan_ground_forage", -6, -5, 2),
-					plots.spare("clan_ground", 10, -11, 0),
+					plots.spare("clan_ground", 10, -11, 2), -- Round 47: 0 faced a post
 				}
 			end},
 
@@ -359,7 +359,7 @@ local function loader(directory)
 				return {
 					plots.spare("green_seat", -4, -3, 0, 2),
 					plots.work("green_forage", "forage", 0, -1, 0),
-					plots.spare("warren_green", 4, -5, 0),
+					plots.spare("warren_green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

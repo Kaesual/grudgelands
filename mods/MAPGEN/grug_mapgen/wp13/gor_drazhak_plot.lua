@@ -397,7 +397,7 @@ local function loader(directory)
 		-- 150..170 resident band (2026-09-15).
 		if plot.fill then
 			sockets[#sockets + 1] = {id = plot.id .. "_gate_spare",
-				role = "idle", x = 0, y = 1, z = z0 + 2, face = 0,
+				role = "idle", x = 0, y = 1, z = z0 + 2, face = plot.gate_face or 0,
 				spawn = false}
 		else
 			sockets[#sockets + 1] = {id = plot.id .. "_gate_idle",
