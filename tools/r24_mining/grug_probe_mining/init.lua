@@ -183,14 +183,26 @@ local function probe_player(item)
 	}
 end
 
+-- The probe digger is no real player: it is unprotected and, for the tool
+-- level gate (ruling 29, grug_core's level authority reads player meta),
+-- level 60 (Round 47: the stub player has no meta).
 local function with_unprotected_probe(fn)
 	local previous = core.is_protected
 	core.is_protected = function(pos, name)
 		if name == PROBE_NAME then return false end
 		return previous(pos, name)
 	end
+	local previous_level = grug_core.get_player_level
+	grug_core.get_player_level = function(player)
+		if player and player.get_player_name and
+				player:get_player_name() == PROBE_NAME then
+			return 60
+		end
+		return previous_level(player)
+	end
 	local ok, err = pcall(fn)
 	core.is_protected = previous
+	grug_core.get_player_level = previous_level
 	check(ok, "transaction scenario ran (" .. tostring(err) .. ")")
 end
 
