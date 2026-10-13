@@ -158,8 +158,9 @@ universal pick.
 | T6 | 51–60 | 51 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | `grug_materials:t6_stone`, below −1000 | no T7 prerequisite |
 
 - Wood and Stone starter picks are not extra material tiers. They are T1
-  picks (T1 rock and T1 resources); Bronze is the best T1 pick. Wood and Stone
-  gear has no item level and carries no level requirement.
+  picks (T1 rock and every T1 resource but Iron); Bronze is the best T1 pick
+  and the only one that digs Iron (Round 47 ruling 7). Wood and Stone gear
+  has no item level and carries no level requirement.
 - Gold is a universal luxury, jewelry and building material, never a tool
   metal. There is no Gold weapon, armor or pick. Physical Gold and ledger money
   are separate systems (`economy.md` §1).
@@ -183,22 +184,31 @@ Every natural resource has a minimum **harvest tier**: the pick tier of the
 rock layer where it first appears (Round 24 ruling 2). A weaker pick cannot dig
 the ore at all (§3.0.4). The tier holds at any depth, so Coal exposed at
 y = −600 is still mined with a T1 pick. Tool-metal ores are therefore mined
-one tier below the gear they make.
+one tier below the gear they make. Iron is the one T1 resource that needs a
+metal pick: the Bronze pick (Round 47 ruling 7).
 
 | Minimum pick tier | Natural resources |
 |---|---|
-| T1 — any pick, incl. the Wood/Stone starters | Coal, Copper, Tin, Iron, Quartz; Citrine |
+| T1 — any pick, incl. the Wood/Stone starters | Coal, Copper, Tin, Quartz; Citrine |
+| T1 — the Bronze pick (not Wood or Stone) | Iron |
 | T2 | Gold; Jade |
 | T3 | Silver; Garnet |
 | T4 | Emberglass; Sapphire |
 | T5 | Abyssal Crystal; Ruby |
 | T6 | Diamond; T6 rock (below −1000) needs the T6 pick |
 
-**Iron needs only a T1 pick** (Round 24, 2026-09-29). The former 2026-08-13
-metal-pick rule for Iron relied on the retired under-tier shatter path and was
-never shipped; with engine-native tier gating every T1 pick, the Wood and
-Stone starters included, digs every T1 resource. The ladder stays
-non-circular: starter pick → Copper + Tin → dual furnace → Bronze pick.
+**Iron needs the Bronze pick** (Round 47 ruling 7, 2026-10-13; the Round 24
+rule let every T1 pick dig it). Wood and Stone picks no longer dig Iron Ore,
+whose tooltip reads "Requires a Bronze pick". The ladder stays non-circular:
+starter pick → Copper + Tin → dual furnace → Bronze pick → Iron. Iron stays
+a T1 resource (harvest tier 1: gathering XP and prices are unchanged).
+
+**Next-tier ores lie in the lower half of the band before** (Round 47 ruling
+6). An ore that belongs to the next tier occurs in the band before its own
+only in that band's lower half, at the same density: Iron in T1 only at
+y −50…−100, Silver in T3 only at −401…−500, Emberglass in T4 only at
+−601…−700 and Abyssal Crystal in T5 only at −851…−1000; in every deeper band
+they fill the whole band (densities: `world_zones.md` §11).
 
 Quartz is a universal T1 mineral at every depth and a raw T1 enchant input;
 it has no cut form (Round 33: Cut Citrine is the T1 trinket gem). Gems use
@@ -480,22 +490,35 @@ reach:
   Textures: the tier rocks read as the same stone, progressively darker and
   slightly cooler with depth (items art, Round 24 ruling 16).
 
-**Engine-native gating** (ruling 4). A rock or resource that needs a pick of
-tier N carries the node group `level = N − 1`; a tier-t pick carries
-`maxlevel = t − 1` on its `cracky` and `grug_resource` capabilities. Luanti's
-`getDigParams` skips a capability whose `maxlevel` is below the node `level`,
-so the client itself predicts "not diggable": a too-weak pick shows no cracks
-and cannot dig at all (ruling 3), for rock and resources alike and at any
-depth. Only tier rock and natural resources may carry a non-zero `level`;
-storage blocks, obsidian and every other node are normalized to none.
+**Engine-native gating** (ruling 4; the level scale of Round 47 ruling 7).
+The Wood and Stone picks carry `maxlevel = 0`, a metal pick of tier t
+`maxlevel = t` (Bronze 1, Iron 2 … Abyssal Steel 6) on its `cracky`,
+`grug_resource` and `grug_pick_level` capabilities. A rock or resource that
+needs the metal pick of tier N ≥ 2 carries the node group `level = N`, T1
+rock and the T1 resources none, and Iron Ore `level = 1` (the Bronze pick);
+every gated node mirrors its level as `grug_pick_level`. Luanti's
+`getDigParams` skips a capability whose `maxlevel` is below the node
+`level`, so the client itself predicts "not diggable": a too-weak pick shows
+no cracks and cannot dig at all (ruling 3), for rock and resources alike and
+at any depth. Only tier rock and natural resources may carry a non-zero
+`level`; storage blocks, obsidian and every other node are normalized to
+none.
 
 - **Speed:** a higher pick digs lower rock faster. The engine divides the
   dig time by the level difference when it exceeds 1; the per-tier `times` of
   the pick profiles apply on top. For every rock a pick reaches, each higher
   pick is strictly faster than the one below it.
+- **Times kept through the Round 47 shift:** every pick digs every node as
+  fast as before the shift (only Iron Ore with Wood and Stone is refused;
+  `tools/r47_or/evidence/dig_table.txt`). On a level-0 node the engine now
+  divides a tier-t pick's time by t instead of t − 1, so its `cracky` and
+  `grug_resource` times carry the factor t / max(1, t − 1); the gated nodes
+  dig through `grug_pick_level` at the profile's ordinary time, which the
+  engine prefers as the faster capability.
 - **Resources:** every pick's `grug_resource` capability carries one ordinary
   time for all five harvest ratings; the level gate alone decides access.
-  Descriptions read "<Resource> Ore / Requires a T<N> pick".
+  Descriptions read "<Resource> Ore / Requires a T<N> pick", Iron Ore's
+  "Requires a Bronze pick".
 
 **Loose ground** (ruling 5). Every generated ground node except stone — dirt
 and its litter/snow variants, sand, silver sand, gravel, clay, snow, snow
@@ -539,7 +562,8 @@ every 0.25 s):
   active Claim Stone claim, `housing.md` §6), "Accord home territory –
   protected", "Throng home territory – protected", "Open sea – protected"; a
   player without a faction reads "Protected – choose a faction first";
-- rock or resource too hard for the wielded tool: "Requires a T<N> pick";
+- rock or resource too hard for the wielded tool: "Requires a T<N> pick"
+  ("Requires a Bronze pick" on Iron Ore);
 - a broken pick on rock or ore: "Your pick is broken – repair it".
 
 The protection line does not depend on the wielded item (bare hand, skill,
@@ -601,7 +625,8 @@ anti-cheat check.
 
 `grug_materials` remains the sole public owner of the tier and harvest
 taxonomy: `TIERS`, `tier_at(y)`, `stratum_node_for(y)`, `level_for_tier(tier)`,
-`required_pick_tier(node)`, `DECORATIVE_ROCKS`, `PICK_PROFILES` /
+`resource_level(resource)`, `required_pick_tier(node)`, `DECORATIVE_ROCKS`,
+`PICK_PROFILES` /
 `build_pick_capabilities`, the read-only
 `mining_decision` and `register_on_harvest`. Its `core.node_dig` wrapper
 re-checks the engine rule server-side for natural nodes, records protection
