@@ -265,7 +265,7 @@ local function loader(directory)
 	--
 	-- `height` is the caller's old stem length and no longer read: the
 	-- generator decides a tree's height.
-	local TREE_ATTEMPTS = 8
+	local TREE_ATTEMPTS = 4
 	local TREE_TOP = 21
 	local tree_module
 	local function tree_templates()
