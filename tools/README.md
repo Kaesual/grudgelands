@@ -879,4 +879,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   matrix of every pick, axe and shovel over every node a tool digs or that
   carries a level, `dig_table.py BEFORE AFTER` the before/after table
   (`evidence/`: both matrices, the table, the seed 12345 census of
-  `r46_or/run.sh`).
+  `r46_or/run.sh`); `r47_ms` the test of the migration step 0.47.0 (the
+  tool capabilities stored on crafted and broken tools rebuilt at the join):
+  `run.sh [EVIDENCE_DIR]` runs `test_step.py` (the offline step: markers
+  only) in the runner's container and `e2e.py` (a 0.45.1 world built by the
+  0.45.1 game with `grug_probe_r47_ms`, the guard's refusal, the tool, a
+  boot and a join of this checkout; until lane D declares 0.47.0 it stages
+  the game as 0.47.0 and runs the tool through `tool_run.py` with that
+  declaration); `portable_test.lua` the join part (stays in
+  `run_fixtures.sh`); `evidence/` the last run.
