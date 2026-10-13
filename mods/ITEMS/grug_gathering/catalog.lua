@@ -9,7 +9,7 @@ local NODE_SOURCE_SHA256 =
 local HARVEST_SOURCE_SHA256 =
 	"23cec2bdb27a8aaf85652515326b5f2d688ff8a806a37ca1bf1cf631b82a10fe"
 local EXPECTED_MANIFEST_SHA256 =
-	"56a3daf013148e997ac6b3386e2fd406dd97dc63d092e5b571349e9f3039633c"
+	"2bac7904e80f468713d1312dc6a4e367abdecc35d654392df7ecc7b0ff76c75c"
 
 local PLACEMENT = {
 	schema = "P9G-1",
@@ -43,11 +43,27 @@ local ALL_DRY_HOSTS = {
 	{biome = "grug_meadows", support = "default:dirt_with_grass"},
 	{biome = "grug_pine_hills", support = "default:dirt_with_coniferous_litter"},
 	{biome = "grug_savanna", support = "default:dry_dirt_with_dry_grass"},
+	{biome = "grug_swamp", support = "grug_nodes:dirt_with_moss"},
 	{biome = "grug_swamp", support = "grug_nodes:mud"},
+	{biome = "grug_swamp", support = "grug_nodes:mud_dry"},
+	{biome = "grug_swamp", support = "grug_nodes:mud_mottled"},
+	{biome = "grug_swamp", support = "grug_nodes:mud_with_wet_grass"},
 }
 
 local function host(biome, support, zone)
 	return {biome = biome, support = support, zone = zone}
+end
+
+-- The swamp's mixed ground (Round 47 lane SW): every swamp host stands on
+-- any of its five grounds, so the swamp's sources keep their habitat.
+local SWAMP_GROUND = {"grug_nodes:dirt_with_moss", "grug_nodes:mud", "grug_nodes:mud_dry",
+	"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass"}
+local function swamp_hosts(zone)
+	local result = {}
+	for _, support in ipairs(SWAMP_GROUND) do
+		result[#result + 1] = host("grug_swamp", support, zone)
+	end
+	return result
 end
 
 local function p9g(id, key, name, density, zones, hosts, shore, kind, grade,
@@ -85,7 +101,7 @@ local function extended_hosts(zones, original, extra_zone)
    result[#result + 1] = host(value.biome, value.support, zone)
   end
  end
- result[#result + 1] = host("grug_swamp", "grug_nodes:mud", extra_zone)
+ for _, swamp in ipairs(swamp_hosts(extra_zone)) do result[#result + 1] = swamp end
  table.sort(result, function(a, b)
   return a.zone .. "/" .. a.biome .. "/" .. a.support <
    b.zone .. "/" .. b.biome .. "/" .. b.support
@@ -132,7 +148,7 @@ local P9G = {
 	p9g("wp33_marshbloom_source_v1", "marshbloom", "Marshbloom", 512, {
 		"elandor_lorindor", "elandor_whitebridge_shire",
 		"kragmar_ossuary_reach", "kragmar_whispering_reedlands",
-	}, {host("grug_swamp", "grug_nodes:mud")}, "none", "spice", 2, true,
+	}, swamp_hosts(), "none", "spice", 2, true,
 		"default_marram_grass_2.png^[colorize:#84b7a0:115"),
 	p9g("wp33_melon_source_v1", "melon", "Melon", 512, {
 		"elandor_glassroot_wilds", "front_skyglass_canopy",
@@ -165,7 +181,11 @@ local P9G = {
 	}, {
 		host("grug_bone_forest", "grug_nodes:dirt_with_bone_litter"),
 		host("grug_deep_forest", "grug_nodes:dirt_with_forest_litter"),
+		host("grug_swamp", "grug_nodes:dirt_with_moss"),
 		host("grug_swamp", "grug_nodes:mud"),
+		host("grug_swamp", "grug_nodes:mud_dry"),
+		host("grug_swamp", "grug_nodes:mud_mottled"),
+		host("grug_swamp", "grug_nodes:mud_with_wet_grass"),
 	}, "kragmar_speargrass_reach"), "none", "found_only_food", nil, false,
 		"default_pine_bush_sapling.png^[colorize:#9b7653:150"),
 	p9g("wp33_potato_source_v1", "potato", "Potato", 256, {
@@ -228,7 +248,7 @@ local REUSE = {
 		farmable = true},
 	{placement_class = "reuse_r6_source", id = "wp33_gravewood_r6_reuse_v1",
 		key = "gravewood", name = "Gravewood", feature_ids = {
-			"blight_gravewood", "bone_forest_gravewood"},
+			"blight_gravewood", "bone_forest_gravewood", "swamp_tree"},
 		source_items = {"grug_trees:gravewood_tree"},
 		outputs = {"grug_trees:gravewood_wood"}, harvest_kind = "signature_wood",
 		farmable = false},

@@ -84,7 +84,8 @@ grug_mobs.register_mob("grug_mobs:plague_boar",
 mobs:spawn({
 	name = "grug_mobs:plague_boar",
 	nodes = {
-		"grug_nodes:blight_dirt", "grug_nodes:mud",
+		"grug_nodes:blight_dirt", "grug_nodes:mud", "grug_nodes:mud_dry",
+		"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass",
 		"grug_nodes:dirt_with_bone_litter",
 	},
 	min_light = 10,
@@ -120,7 +121,8 @@ mobs:spawn({
 	nodes = {
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
 		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle patches
-		"grug_nodes:mud",
+		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass",
 	},
 	min_light = 10,
 	interval = 20,

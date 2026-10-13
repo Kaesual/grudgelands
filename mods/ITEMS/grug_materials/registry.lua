@@ -123,6 +123,10 @@ grug_materials.NATURAL_GROUND_NODES = {
 	"grug_nodes:dirt_with_silver_litter",
 	"grug_nodes:dirt_with_canopy_litter",
 	"grug_nodes:mud",
+	-- the swamp's mixed ground (Round 47 lane SW)
+	"grug_nodes:mud_dry",
+	"grug_nodes:mud_mottled",
+	"grug_nodes:mud_with_wet_grass",
 	"grug_nodes:mesa_clay",
 }
 

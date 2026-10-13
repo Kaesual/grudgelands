@@ -10,7 +10,7 @@ return function(dependencies)
 		terrain_field = true,
 		raw_sha256 = true, hash_factory = true, content_factory = true,
 		templates_factory = true, planner_factory = true, settlement_factory = true,
-		habitat = true, tree_templates = true,
+		habitat = true, tree_templates = true, swamp_pools = true,
 	}
 	for key in pairs(dependencies) do
 		if not ALLOWED[key] then
@@ -97,7 +97,8 @@ return function(dependencies)
 		integer(configured_water_level, "configured water level", -31000, 31000)
 		if configured_water_level ~= 1 then fail("fail_manifest", "water level differs") end
 		local content_module = dependencies.content_factory(manifest_values,
-			content_contract, wp43_projection, dependencies.habitat)
+			content_contract, wp43_projection, dependencies.habitat,
+			dependencies.swamp_pools)
 		-- The world's own trees (Round 47 lane TC): the generated variants
 		-- come from this seed string in every environment, and their rows'
 		-- settlement classes are settled before the planner reads a row.

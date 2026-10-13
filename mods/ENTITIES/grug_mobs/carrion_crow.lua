@@ -137,7 +137,8 @@ mobs:spawn({
 		"grug_nodes:mesa_clay", -- grug_badlands
 		"default:gravel", -- grug_crags
 		"default:snowblock", -- grug_crags_snowy
-		"grug_nodes:mud", -- grug_swamp
+		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass", -- grug_swamp
 		-- No `default:sand`: every authenticated grug_beach cell is the Gull's
 		-- day slot and is already covered.
 	},

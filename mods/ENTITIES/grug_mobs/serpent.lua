@@ -84,7 +84,8 @@ mobs:spawn({
 	nodes = {
 		"default:dirt_with_rainforest_litter", -- jungle edge / jungle fringe
 		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (WP36 top)
-		"grug_nodes:mud", -- grug_swamp
+		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass", -- grug_swamp
 	},
 	min_light = 10,
 	interval = 20,

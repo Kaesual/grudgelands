@@ -2439,6 +2439,8 @@ local function settlement_factory()
 			capture_private_buffers = capture_private_buffers,
 			r8_strata = r8_strata, r8_surfaces = surfaces,
 			r8_select_surface = select_surface, r8_horizontal = horizontal,
+			-- the swamp's pools (Round 47 lane SW, swamp_pools.lua), or nil
+			swamp_pools = content.swamp_pools(full_seed, planner_source),
 			r8_apply_strata = r8_apply_strata, r8_plan_cave = r8_plan_cave,
 			r24_layers = r24_layers, r24_apply_fill_layers = r24_apply_fill_layers,
 			r24_fill_stone = r24_fill_stone,
@@ -2727,7 +2729,11 @@ local function settlement_factory()
 						if has_native_air then
 							excluded = surface_skin_excluded(x, z, water_class,
 								functional_kind, hard_foundation)
-							if not excluded and water_class == "land" then
+							-- A swamp pool and its banks keep their skin (Round 47
+							-- lane SW): an opening there would drain the pool.
+							if not excluded and water_class == "land" and
+									not (helpers.swamp_pools and
+										helpers.swamp_pools.guard(x, z)) then
 								opened = r9_surface_skin_open(skin_context, x, z)
 							end
 						end

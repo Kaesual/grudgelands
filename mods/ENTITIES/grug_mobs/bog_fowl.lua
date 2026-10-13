@@ -93,7 +93,10 @@ grug_mobs.register_mob("grug_mobs:bog_fowl", fowl)
 -- cannot change a night column.
 mobs:spawn({
 	name = "grug_mobs:bog_fowl",
-	nodes = {"grug_nodes:mud"}, -- grug_swamp
+	-- the swamp's mixed ground (Round 47); moss soil too (the user,
+	-- 2026-10-13): these spawns are zone-gated to the swamp family
+	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss"}, -- grug_swamp
 	min_light = 10,
 	interval = 20,
 	chance = 2933,

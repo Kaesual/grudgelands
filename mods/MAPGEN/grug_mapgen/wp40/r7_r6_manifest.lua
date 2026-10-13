@@ -89,7 +89,9 @@ tin|1|96;192;384;384;384;384|8
 
 -- id|biomes|kind|asset or node|host|numerator|denominator|rules|settlement
 -- class. A template asset `treegen:<species>` is a generated tree of this
--- world (Round 47, tree_templates.lua; class "-": computed).
+-- world (Round 47, tree_templates.lua; class "-": computed). The swamp
+-- rows' hosts are the mixed ground's (r6_content.lua SWAMP_HOSTS, Round 47
+-- lane SW); the host here is one of them.
 local DECORATION_ROWS = [[
 badlands_dry_shrub|grug_badlands;grug_badlands_east|simple|default:dry_shrub|grug_nodes:mesa_clay|1|125|param2_4|4
 badlands_large_cactus|grug_badlands;grug_badlands_east|template|large_cactus.mts|grug_nodes:mesa_clay|1|1000|center_xz;quarter_turn_rotation|1
@@ -142,7 +144,16 @@ savanna_dry_grass_4|grug_savanna|simple|default:dry_grass_4|default:dry_dirt_wit
 savanna_dry_grass_5|grug_savanna|simple|default:dry_grass_5|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
 savanna_dry_shrub|grug_savanna|simple|default:dry_shrub|default:dry_dirt_with_dry_grass|1|250|param2_4|4
 swamp_dry_shrub|grug_swamp|simple|default:dry_shrub|grug_nodes:mud|1|250|param2_4|4
+swamp_fern_1|grug_swamp|simple|default:fern_1|grug_nodes:dirt_with_moss|1|14|one_entry_per_variant|4
+swamp_fern_2|grug_swamp|simple|default:fern_2|grug_nodes:dirt_with_moss|1|14|one_entry_per_variant|4
+swamp_fern_3|grug_swamp|simple|default:fern_3|grug_nodes:dirt_with_moss|1|14|one_entry_per_variant|4
+swamp_grass_3|grug_swamp|simple|default:grass_3|grug_nodes:mud_with_wet_grass|1|9|one_entry_per_variant|4
+swamp_grass_4|grug_swamp|simple|default:grass_4|grug_nodes:mud_with_wet_grass|1|9|one_entry_per_variant|4
+swamp_grass_5|grug_swamp|simple|default:grass_5|grug_nodes:mud_with_wet_grass|1|9|one_entry_per_variant|4
+swamp_junglegrass|grug_swamp|simple|default:junglegrass|grug_nodes:mud_with_wet_grass|1|20|none|4
+swamp_moss_carpet|grug_swamp|simple|grug_nodes:moss_carpet|grug_nodes:mud|1|16|none|4
 swamp_papyrus|grug_swamp|template|papyrus_on_dirt.mts|grug_nodes:mud|1|50|surface_y_1_to_4;replace_dirt_with_mud;center_xz;quarter_turn_rotation|1
+swamp_tree|grug_swamp|template|treegen:swamp|grug_nodes:mud|1|120|stilt_ground;center_xz;quarter_turn_rotation|-
 ]]
 
 local function fields(line)

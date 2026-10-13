@@ -16,7 +16,10 @@ local soil={
  savanna={"default:dry_dirt_with_dry_grass","default:dry_dirt","grug_nodes:mesa_clay"},
  blight={"grug_nodes:blight_dirt","grug_nodes:ash_ground","grug_nodes:dirt_with_bone_litter"},
  jungle_edge={"default:dirt_with_rainforest_litter","grug_nodes:dirt_with_canopy_litter","grug_nodes:mud"},
- badlands={"grug_nodes:mesa_clay"},swamp={"grug_nodes:mud"},crags={"default:gravel"}}
+ badlands={"grug_nodes:mesa_clay"},crags={"default:gravel"},
+ -- Round 47 lane SW: the swamp's mixed ground
+ swamp={"grug_nodes:mud","grug_nodes:mud_dry","grug_nodes:mud_mottled",
+  "grug_nodes:mud_with_wet_grass","grug_nodes:dirt_with_moss"}}
 local function hosts(keys)
  local out={};for _,key in ipairs(keys) do out["grug_"..key]=soil[key] end;return out
 end

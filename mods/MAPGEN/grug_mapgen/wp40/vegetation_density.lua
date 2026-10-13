@@ -107,6 +107,9 @@ return function(deps)
 		-- The large-cactus seedling needs group:sand; badlands are mesa clay.
 		badlands_large_cactus = "cactus seedling cannot grow on mesa clay",
 		swamp_papyrus = "reed stand, not a sapling species",
+		-- Round 47 lane SW: no swamp sapling exists (the swamp tree grows
+		-- from gravewood's wood, whose leaves drop no sapling).
+		swamp_tree = "no swamp sapling",
 	}
 	-- Simple decorations that are not vegetation.
 	local NOT_VEGETATION = {["grug_nodes:bone_pile"] = true}

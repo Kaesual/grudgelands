@@ -43,7 +43,7 @@ return function(treegen)
 
 	-- Species in a fixed order. `wood` names the TA shape set
 	-- (grug_trees:<wood>_quarter|base|branch|twig); kapok grows from jungle
-	-- wood (handoff §3). The swamp tree joins with its rows (lane SW).
+	-- wood (handoff §3).
 	M.SPECIES = {
 		{key = "apple", count = 32, wood = "apple", trunk = "default:tree",
 			leaves = "default:leaves", fruit = "default:apple"},
@@ -61,6 +61,15 @@ return function(treegen)
 			trunk = "grug_trees:silverwood_tree", leaves = "grug_trees:silverwood_leaves"},
 		{key = "gravewood", count = 32, wood = "gravewood",
 			trunk = "grug_trees:gravewood_tree", leaves = "grug_trees:gravewood_leaves"},
+		-- The swamp tree (Round 47 lane SW): gravewood's wood, its own olive
+		-- leaves and hanging moss.
+		-- Its stilts (the limb cells up to one above the stem's lowest log)
+		-- are optional like leaves: a stilt cell the ground takes is left
+		-- out, so on uneven ground a stilt ends on the higher ground instead
+		-- of refusing the tree (`stilts`).
+		{key = "swamp", count = 32, wood = "gravewood",
+			trunk = "grug_trees:gravewood_tree", leaves = "grug_trees:swamp_leaves",
+			moss = "grug_trees:swamp_hanging_moss", stilts = true},
 	}
 	M.BY_KEY = {}
 	for index = 1, #M.SPECIES do
@@ -91,6 +100,22 @@ return function(treegen)
 	M.STEM, M.LIMB, M.LEAF = 1, 2, 3
 	local FLAG = {trunk = 1, quarter = 1, base = 2, branch = 2, twig = 2,
 		leaves = 3, fruit = 3, moss = 3}
+	-- The flag of a node of a tree: a stilt of a `stilts` species (a limb
+	-- cell up to one above the stem's lowest log) is optional (LEAF).
+	local function stilt_foot(row, tree)
+		if not row.stilts then return nil end
+		local foot
+		for index = 1, #tree.nodes do
+			local node = tree.nodes[index]
+			if FLAG[node.kind] == 1 and (foot == nil or node.y < foot) then foot = node.y end
+		end
+		return foot
+	end
+	local function flag_of(node, foot)
+		local flag = FLAG[node.kind]
+		if foot and flag == 2 and node.y <= foot + 1 then return 3 end
+		return flag
+	end
 
 	-- Every node name a species places, sorted.
 	function M.names(key)
@@ -149,6 +174,7 @@ return function(treegen)
 		local row = M.BY_KEY[key]
 		if not row then error("tree templates: unknown species " .. tostring(key), 0) end
 		local tree = treegen.generate(key, seed, is_ground)
+		local foot = stilt_foot(row, tree)
 		local root_set = {}
 		for index = 1, #tree.roots do
 			local r = tree.roots[index]
@@ -159,7 +185,7 @@ return function(treegen)
 			local node = tree.nodes[index]
 			cells[index] = {x = node.x, y = node.y, z = node.z,
 				name = name_of(row, node.kind), param2 = node.rot,
-				flag = FLAG[node.kind],
+				flag = flag_of(node, foot),
 				root = root_set[node.x .. "," .. node.y .. "," .. node.z] == true}
 		end
 		return cells, tree
@@ -174,6 +200,7 @@ return function(treegen)
 	function M.variant(key, seed)
 		local row = M.BY_KEY[key]
 		local tree = treegen.generate(key, seed)
+		local foot_y = stilt_foot(row, tree)
 		local roots = {}
 		for index = 1, #tree.roots do
 			local r = tree.roots[index]
@@ -209,7 +236,7 @@ return function(treegen)
 				v.rname[root_index], v.rparam2[root_index] = name, node.rot
 				bound(node.x, node.y, node.z)
 			else
-				add(node.x, node.y, node.z, name, node.rot, FLAG[node.kind])
+				add(node.x, node.y, node.z, name, node.rot, flag_of(node, foot_y))
 				if node.y == 0 and FLAG[node.kind] == M.STEM then
 					foot[#foot + 1] = {node.x, node.z, name, node.rot}
 				end

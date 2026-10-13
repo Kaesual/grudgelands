@@ -184,7 +184,8 @@ local wisp = {
 }
 grug_mobs.register_mob("grug_mobs:wisp", wisp)
 mobs:spawn({name = "grug_mobs:wisp",
-	nodes = {"grug_nodes:mud", "grug_nodes:dirt_with_silver_litter",
+	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_silver_litter",
 		"grug_nodes:dirt_with_forest_litter", "grug_nodes:dirt_with_bone_litter",
 		"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter"},
 	interval = 20, chance = 2200, active_object_count = 3,

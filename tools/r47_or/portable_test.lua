@@ -175,6 +175,15 @@ if ok_ffi then
 			table.remove(projection.resources, index)
 		end
 	end
+	-- Round 47 lane SW adds the swamp's three new grounds to the natural
+	-- ground list; without them the rest is unchanged.
+	local SWAMP = {["grug_nodes:mud_dry"] = true, ["grug_nodes:mud_mottled"] = true,
+		["grug_nodes:mud_with_wet_grass"] = true}
+	for index = #projection.natural_ground_nodes, 1, -1 do
+		if SWAMP[projection.natural_ground_nodes[index]] then
+			table.remove(projection.natural_ground_nodes, index)
+		end
+	end
 	check(digest(projection) ==
 		"dccd68e9032403bcea294efd2035165501043ab1aa008561cad5547eb2e2c7c7",
 		"the projection without lower_half_y_max, pick_level and Anthracite is the Round 46 pin")

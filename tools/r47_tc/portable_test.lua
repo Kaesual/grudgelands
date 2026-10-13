@@ -108,14 +108,16 @@ end
 -- A. templates from the seed
 -- ---------------------------------------------------------------------------
 local trees, hash = load_stack()
-check(trees.total() == 32 * 7 + 16, "the species table counts 240 variants")
+check(trees.total() == 32 * 8 + 16, "the species table counts 272 variants")
+-- Re-pinned in Round 47 lane SW: the swamp species joins the table (32
+-- variants), which adds its digests to every world's roll-up.
 local PINNED = {
-	["0"] = "dce0f93aa99d7e0538ac3470656c412def403cc6ac6af91781fd506d58d2096a",
-	["1"] = "1c6b8f5c5f271e35312d9095bff5f3cd83e175593d044a85b6aa9accdcc71b0d",
-	["12345"] = "fcc48388f754d266c44d04b29376a92cd5e8b629ba7378ca9bf2620ee83aec5e",
-	["9007199254740992"] = "32af1598b19035952ae4a229723f40f03324d9d8233a68b34f358ce4e0570795",
-	["17713522922938657774"] = "27bd9ddb39087f7e067a2d33d0d26b3ca83cb27dfab725eaca12ada758734b5c",
-	["18446744073709551615"] = "cff9ec4f183d5cd9d38efe03198d7e70d6056ffc673a8d9b5068c234591e39a7",
+	["0"] = "32db91ace668a658ca91449ef13a17c8093e74cbf398ef6388a1245513caa7c6",
+	["1"] = "f825090a2ea5927c8aa4dc4620f4a8e362e615c91302fc0bb4b26ccadf4fac61",
+	["12345"] = "d39db26481cee771b85ce87d8af692d1c95d2d5b2ff3f236af139f0527f12b6f",
+	["9007199254740992"] = "b363897d30db7f95ec13fdc857a91562133d8ba0b129bdf56b49d0a18a01db54",
+	["17713522922938657774"] = "b1a9a3fb2bdf274969f7b621e1235ef069f45faf4e0c9ac7e3254fbe20170134",
+	["18446744073709551615"] = "0e3ad986a547286032cd5aff117e7286b78a9b004ccc71b4892e9af99c783859",
 }
 local ORDER = {"0", "1", "12345", "9007199254740992", "17713522922938657774",
 	"18446744073709551615"}
@@ -157,7 +159,7 @@ for _, row in ipairs(manifest.decorations) do
 		check(row.settlement_class == nil, row.id .. " pins no settlement class")
 	end
 end
-check(#generated_rows == 14, "fourteen tree rows are generated (" .. #generated_rows .. ")")
+check(#generated_rows == 15, "fifteen tree rows are generated (" .. #generated_rows .. ")")
 
 -- ---------------------------------------------------------------------------
 -- B. every variant of a world
@@ -172,7 +174,10 @@ for _, record in ipairs(sample.records()) do
 		local foot, fruit_ok = false, true
 		local cells = {}
 		for c = 1, v.count do
-			if v.x[c] == 0 and v.y[c] == 0 and v.z[c] == 0 and v.flag[c] == trees.STEM then
+			-- a stilt species' stem stands 1-2 up on its stilts (lane SW)
+			local foot_y = trees.BY_KEY[record.species].stilts and v.y[c] >= 1 and
+				v.y[c] <= 2 and v.y[c] or 0
+			if v.x[c] == 0 and v.y[c] == foot_y and v.z[c] == 0 and v.flag[c] == trees.STEM then
 				foot = true
 			end
 			if v.name[c] == "default:apple" and v.param2[c] ~= 0 then fruit_ok = false end

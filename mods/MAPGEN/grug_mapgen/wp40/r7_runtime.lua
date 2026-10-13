@@ -154,6 +154,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local world_catalog = dofile(wp40_directory .. "/world_content_catalog.lua")
 	local habitat_registry = dofile(wp40_directory .. "/habitat_registry.lua")
 	local world_factory = dofile(wp40_directory .. "/world_content.lua")
+	-- Round 47 lane SW: the swamp's pools and their plants.
+	local swamp_writer = dofile(wp40_directory .. "/swamp_writer.lua")
 	local consumer_payload_factory = dofile(
 		wp40_directory .. "/r7_consumer_payload.lua")
 	local r7_manifest_factory = dofile(wp40_directory .. "/r7_manifest.lua")
@@ -182,7 +184,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		raw_sha256 = raw_sha256, hash_factory = hash_factory,
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
 		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory,
-		habitat = habitat_registry, tree_templates = tree_templates})
+		habitat = habitat_registry, tree_templates = tree_templates,
+		swamp_pools = dofile(wp40_directory .. "/swamp_pools.lua")})
 	if type(r6_module.new_runtime) ~= "function" or
 			type(r6_module.new_authority) ~= "function" then
 		fail("R6 runtime constructor differs")
@@ -372,7 +375,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				world_factory(world_catalog, content_set.p9g, habitat_registry),
 				dofile(wp40_directory .. "/road_writer.lua")(core_api, source),
 				dofile(wp40_directory .. "/arena_writer.lua")(core_api, source,
-					dofile(wp40_directory .. "/arena_layout.lua")))
+					dofile(wp40_directory .. "/arena_layout.lua")),
+				swamp_writer.config(core_api))
 		end
 		local consumer_payload = consumer_payload_factory(source, sha256_hex)
 		local constructor, session, writer, zones_session, settlement_fixture,
@@ -473,6 +477,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					extra_natural_names = (function()
 						local names = {}
 						for _, name in ipairs(world_catalog.names) do names[#names + 1] = name end
+						-- the swamp pass's plants (Round 47 lane SW)
+						for _, name in ipairs(swamp_writer.NATURAL_NAMES) do
+							names[#names + 1] = name
+						end
 						return names
 					end)(),
 					decorations = r6_manifest.decorations,
