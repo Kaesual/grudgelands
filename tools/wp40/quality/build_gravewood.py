@@ -44,7 +44,9 @@ def build(name, tall):
         data = node.encode('ascii')
         header += struct.pack('>H', len(data)) + data
     data = b''.join(struct.pack('>H', value) for value in ids) + bytes(prob) + bytes(param2)
-    path = ROOT / 'mods/ITEMS/grug_trees/schematics' / name
+    # Round 47: the assets left the game (every tree is generated); they are
+    # the tree concept viewer's "today" gravewood.
+    path = ROOT / 'tools/r46_tree/concept/today' / name
     path.write_bytes(header + zlib.compress(data, 9))
     print(f'{name}: size={size}, connected wood={len(wood)}, optional leaf cells={len(leaves)}')
 
