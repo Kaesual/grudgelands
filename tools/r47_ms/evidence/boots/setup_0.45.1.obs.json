@@ -1,0 +1,188 @@
+{
+ "finish": "every planned character left",
+ "game": "0.45.1",
+ "joins": [
+  {
+   "built_ok": true,
+   "loaded": {
+    "marker": "",
+    "tools": null
+   },
+   "name": "miner",
+   "settled": {
+    "marker": "",
+    "tools": {
+     "grug_bag1_content[2]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"cracky\":{\"maxlevel\":1,\"times\":[null,2.125,0.85000002384185791,0.42500001192092896],\"uses\":200},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,50.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":2,\"times\":[null,3.1600000858306885,1.9600000381469727,0.69999998807907104],\"uses\":67},\"grug_resource\":{\"maxlevel\":1,\"times\":[null,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896],\"uses\":200}},\"max_drop_level\":0,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 0.42500001192092896,
+       "stone": 0.42500001192092896,
+       "t2_stone": 0.42500001192092896
+      },
+      "item": "grug_materials:pick_iron",
+      "kept": false,
+      "maxlevel": 1,
+      "stored": true,
+      "wear": 0
+     },
+     "grug_craft_out[1]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"cracky\":{\"maxlevel\":0,\"times\":[null,2.25,0.89999997615814209,0.44999998807907104],\"uses\":300},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,60.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":2,\"times\":[null,3.2999999523162842,2.0999999046325684,0.69999998807907104],\"uses\":34},\"grug_resource\":{\"maxlevel\":0,\"times\":[null,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104],\"uses\":300}},\"max_drop_level\":1,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 0.44999998807907104,
+       "stone": 0.44999998807907104,
+       "t2_stone": false
+      },
+      "item": "grug_materials:pick_bronze",
+      "kept": false,
+      "maxlevel": 0,
+      "stored": true,
+      "wear": 0
+     },
+     "main[10]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"choppy\":{\"maxlevel\":2,\"times\":[null,2.5,1.3999999761581421,1.0],\"uses\":112}},\"max_drop_level\":1,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": false,
+       "stone": false,
+       "t2_stone": false
+      },
+      "item": "grug_materials:axe_steel",
+      "kept": false,
+      "maxlevel": false,
+      "stored": true,
+      "wear": 0
+     },
+     "main[11]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.3999999761581421,\"groupcaps\":null,\"max_drop_level\":1,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 0.42500001192092896,
+       "stone": 0.42500001192092896,
+       "t2_stone": 0.42500001192092896
+      },
+      "item": "grug_materials:pick_iron",
+      "kept": true,
+      "maxlevel": 1,
+      "stored": true,
+      "wear": 65535
+     },
+     "main[12]": {
+      "as_crafted_now": true,
+      "caps_text": "",
+      "definition": true,
+      "dig": {
+       "iron_ore": 1,
+       "stone": 1,
+       "t2_stone": false
+      },
+      "item": "grug_materials:pick_stone",
+      "kept": false,
+      "maxlevel": 0,
+      "stored": false,
+      "wear": 0
+     },
+     "main[13]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":8},\"full_punch_interval\":1.0,\"groupcaps\":null,\"max_drop_level\":0,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": false,
+       "stone": false,
+       "t2_stone": false
+      },
+      "item": "grug_gear:sword_iron",
+      "kept": false,
+      "maxlevel": false,
+      "stored": true,
+      "wear": 0
+     },
+     "main[1]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"cracky\":{\"maxlevel\":1,\"times\":[null,2.125,0.85000002384185791,0.42500001192092896],\"uses\":200},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,50.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":2,\"times\":[null,3.1600000858306885,1.9600000381469727,0.69999998807907104],\"uses\":67},\"grug_resource\":{\"maxlevel\":1,\"times\":[null,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896],\"uses\":200}},\"max_drop_level\":0,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 0.42500001192092896,
+       "stone": 0.42500001192092896,
+       "t2_stone": 0.42500001192092896
+      },
+      "item": "grug_materials:pick_iron",
+      "kept": false,
+      "maxlevel": 1,
+      "stored": true,
+      "wear": 0
+     },
+     "main[2]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"cracky\":{\"maxlevel\":0,\"times\":[null,2.25,0.89999997615814209,0.44999998807907104],\"uses\":300},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,60.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":2,\"times\":[null,3.2999999523162842,2.0999999046325684,0.69999998807907104],\"uses\":34},\"grug_resource\":{\"maxlevel\":0,\"times\":[null,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104],\"uses\":300}},\"max_drop_level\":1,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 0.44999998807907104,
+       "stone": 0.44999998807907104,
+       "t2_stone": false
+      },
+      "item": "grug_materials:pick_bronze",
+      "kept": false,
+      "maxlevel": 0,
+      "stored": true,
+      "wear": 0
+     },
+     "main[3]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.2000000476837158,\"groupcaps\":{\"cracky\":{\"maxlevel\":0,\"times\":[null,null,null,1.6000000238418579],\"uses\":30},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,60.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":1,\"times\":[null,6.0,3.0,0.69999998807907104],\"uses\":10},\"grug_resource\":{\"maxlevel\":0,\"times\":[null,1.6000000238418579,1.6000000238418579,1.6000000238418579,1.6000000238418579,1.6000000238418579,1.6000000238418579],\"uses\":30}},\"max_drop_level\":0,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 1.600000023841858,
+       "stone": 1.600000023841858,
+       "t2_stone": false
+      },
+      "item": "grug_materials:pick_wood",
+      "kept": false,
+      "maxlevel": 0,
+      "stored": true,
+      "wear": 0
+     }
+    }
+   }
+  },
+  {
+   "built_ok": true,
+   "loaded": {
+    "marker": "",
+    "tools": null
+   },
+   "name": "sleeper",
+   "settled": {
+    "marker": "",
+    "tools": {
+     "main[1]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"cracky\":{\"maxlevel\":1,\"times\":[null,2.125,0.85000002384185791,0.42500001192092896],\"uses\":200},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,50.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":2,\"times\":[null,3.1600000858306885,1.9600000381469727,0.69999998807907104],\"uses\":67},\"grug_resource\":{\"maxlevel\":1,\"times\":[null,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896,0.42500001192092896],\"uses\":200}},\"max_drop_level\":0,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 0.42500001192092896,
+       "stone": 0.42500001192092896,
+       "t2_stone": 0.42500001192092896
+      },
+      "item": "grug_materials:pick_iron",
+      "kept": false,
+      "maxlevel": 1,
+      "stored": true,
+      "wear": 0
+     }
+    }
+   }
+  }
+ ],
+ "leaves": 2,
+ "load": {
+  "from": "0.45.1",
+  "new_world": true
+ },
+ "phase": "setup_0.45.1"
+}
