@@ -857,6 +857,8 @@ local function loader(directory)
 		-- capitals carry theirs. What does NOT stay is anything -- air most of
 		-- all -- that landed in a lagoon or ravine column without being
 		-- authored there: an air cell over the cenote is a hole in the lake.
+		-- Round 47 town greening: the race's trees on the open wild ground.
+		layout.green(buf, timber, RADIUS, sockets, doorways)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do

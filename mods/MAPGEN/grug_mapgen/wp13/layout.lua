@@ -160,6 +160,63 @@ local function loader(directory)
 		return true
 	end
 
+	-- TOWN GREENING (Round 47, the user: "more trees in towns, especially the
+	-- capitals"; a first version by gut feeling). After a start or a capital
+	-- core is built, its open wild ground gets small groups of the race's
+	-- generated trees: a lattice of GREEN_STEP nodes over the pad, each
+	-- point jittered by a hash, carries a group of 1 to 5 trees (a single,
+	-- often along an edge, or a little stand) at fixed offsets about it.
+	-- A stem goes only on wild soil with its 3 x 3 natural and free
+	-- (`tree_room`), GREEN_KEEP nodes clear of every NPC socket (the
+	-- waypoint, quest givers, vendors, stations' workers: what the map
+	-- window marks) and every door; the tree routine fits every cell (no
+	-- wood on anything built, narrow variants where room is tight, leaves
+	-- merge). Roads, plazas, paving and floors are not wild soil. Returns the
+	-- trees planted. Deterministic: positions and pool choices are hashes.
+	local GREEN_STEP, GREEN_KEEP = 11, 4
+	local GREEN_GROUP = {{0, 0}, {4, 1}, {-3, 3}, {1, -4}, {-4, -2}}
+	local GREEN_ROUTINE = {
+		["default:tree"] = "broadleaf", ["default:pine_tree"] = "tree",
+		["grug_trees:silverwood_tree"] = "columnar", ["default:aspen_tree"] = "columnar",
+		["grug_trees:gravewood_tree"] = "gravewood", ["default:acacia_tree"] = "acacia",
+		["default:jungletree"] = "jungle_tree",
+	}
+	function M.green(buf, palette, radius, sockets, doors)
+		local draw = dressing[GREEN_ROUTINE[palette.node("tree_log")] or "broadleaf"]
+		local keep = {}
+		for _, list in ipairs({sockets or {}, doors or {}}) do
+			for _, point in ipairs(list) do keep[#keep + 1] = point end
+		end
+		local function clear(x, z)
+			for _, point in ipairs(keep) do
+				if math.abs(point.x - x) <= GREEN_KEEP and math.abs(point.z - z) <= GREEN_KEEP then
+					return false
+				end
+			end
+			return M.natural_area(buf, x - 1, z - 1, x + 1, z + 1) and M.tree_room(buf, x, z)
+		end
+		local saved = buf.tree_spacing
+		buf.tree_spacing = 4
+		local planted = 0
+		for gz = -radius + 4, radius - 4, GREEN_STEP do
+			for gx = -radius + 4, radius - 4, GREEN_STEP do
+				local hash = ((gx + 500) * 7919 + (gz + 500) * 104729) % 9973
+				local cx, cz = gx + hash % 5 - 2, gz + math.floor(hash / 5) % 5 - 2
+				local size = 1 + math.floor(hash / 25) % 5
+				for member = 1, size do
+					local offset = GREEN_GROUP[member]
+					local x, z = cx + offset[1], cz + offset[2]
+					if math.abs(x) <= radius - 3 and math.abs(z) <= radius - 3 and clear(x, z) and
+							draw(buf, palette, x, z) then
+						planted = planted + 1
+					end
+				end
+			end
+		end
+		buf.tree_spacing = saved
+		return planted
+	end
+
 	function M.free_area(buf, x1, z1, x2, z2, height)
 		for z = z1, z2 do
 			for x = x1, x2 do
