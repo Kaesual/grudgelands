@@ -203,9 +203,9 @@ today's quads per tree (apple the most, through its fuller crown; gravewood 7.8Ã
   **not pushed and not deployed**; the user's GUI test of 0.46.0 is pending
   (checklist in [`round46-plan.md`](round46-plan.md) "Completion"). Findings from it
   may join the build round.
-- The tree build is also a map reset. Coordinator's recommendation to the user,
-  **not yet decided by the user**: deploy 0.46.0 together with the trees so the
-  production world resets once.
+- The tree build is also a map reset. **The user decided (2026-10-13): 0.46.0,
+  the trees and further map-touching items of the next round go to the server
+  together**, so the production world resets once.
 - Bark M replaces the jungle tree textures, which live in the vendored
   `mods/BASE/default` (`default_jungletree.png`, `default_jungletree_top.png`):
   either a `-- GRUG PATCH:` texture override with a VENDOR.md entry, or new
