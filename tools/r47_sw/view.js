@@ -74,7 +74,8 @@
 		mud_light: 'mud_dry_top', mud_light_side: 'mud_dry_side',
 		mud_mottled: 'mud_mottled_top', mud_mottled_side: 'mud_mottled_side',
 		wet_grass: 'wet_grass_top', wet_grass_side: 'wet_grass_side',
-		moss_carpet: 'moss_carpet_top', reeds: 'reeds', cattail: 'cattails', hanging_moss: 'hanging_moss'
+		moss_carpet: 'moss_carpet_top', reeds: 'reeds', cattail: 'cattails', hanging_moss: 'hanging_moss',
+		leaves_olive: 'swamp_leaves'
 	};
 	// slots without a texture of their own
 	var SAME = {mud_light_side: 'mud_light', mud_mottled_side: 'mud_mottled'};

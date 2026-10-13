@@ -42,7 +42,7 @@ TEXTURES["character"] = "mods/BASE/player_api/models/character.png"
 # The ART lane's proposals (tools/r47_art/swamp, CC0, provenance in
 # tools/r47_art/LICENSE-media.md); before that branch is merged, its worktree.
 ART_FILES = ("mud_dry_top", "mud_dry_side", "mud_mottled_top", "mud_mottled_side", "wet_grass_top",
-             "wet_grass_side", "moss_carpet_top", "reeds", "cattails", "hanging_moss")
+             "wet_grass_side", "moss_carpet_top", "reeds", "cattails", "hanging_moss", "swamp_leaves")
 ART_DIRS = [os.path.join(ROOT, "tools", "r47_art", "swamp"),
             os.path.join(ROOT, "..", "r47-art", "tools", "r47_art", "swamp")]
 ART_DIR = next((d for d in ART_DIRS if os.path.isdir(d)), ART_DIRS[0])
