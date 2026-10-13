@@ -14,9 +14,10 @@
 -- over the 256 param2 values, src/client/texturesource.cpp getPalette).
 --
 -- Every species keeps inside a bounding box that fits the world generator's
--- template limits (x and z at most 16 wide, grug_mapgen wp40/r6_templates.lua), and every
--- leaf keeps a wood cell within its leaf decay radius: a leaf that would have
--- none is dropped (the engine would decay it at the first nearby cut).
+-- template limits (x and z at most 16 wide, grug_mapgen
+-- wp40/r6_templates.lua), and every leaf keeps a wood cell within its leaf
+-- decay radius: a leaf that would have none is dropped (the engine would
+-- decay it at the first nearby cut).
 --
 -- Plain Lua 5.1, pure, no engine calls, deterministic (no pairs order reaches
 -- the output, x * x instead of powers).
@@ -175,13 +176,13 @@ local function fingers(tree, rng, cx, cy, cz, reach, count)
 end
 
 -- A buttress fin leaving the trunk at (x, z) in direction d: `length` cells,
--- `height` nodes high at the trunk, falling to one node at its tip.
+-- `height` nodes high at the trunk. Its top falls concave, steep at the
+-- trunk and flat towards the tip (the square of the remaining length), so it
+-- reads as a flare rather than a stepped ramp.
 local function fin(tree, x, z, d, length, height)
 	for step = 1, length do
-		local h = height
-		if length > 1 then
-			h = math.floor(height - (height - 1) * (step - 1) / (length - 1) + 0.5)
-		end
+		local left = (length - step + 1) / length
+		local h = math.max(1, math.floor(height * left * left + 0.5))
 		for y = 1, h do
 			put(tree, x + d[1] * (step - 1), y, z + d[2] * (step - 1), "root")
 		end
@@ -291,6 +292,7 @@ M.SPECIES.jungle = {
 				put(tree, x, y, z, "trunk")
 			end
 		end
+		p.top_x, p.top_z = x, z
 		local reach_room = 6 - math.max(math.abs(x), math.abs(z))
 		-- the flare
 		p.roots = rng.int(2, 4)
@@ -322,15 +324,19 @@ M.SPECIES.jungle = {
 		put(tree, x, p.trunk_h + 1, z, "branch")
 		-- spurs
 		p.spurs = rng.int(1, 2)
+		local spur_y = rng.int(3, math.max(3, p.trunk_h - 3))
+		local spur_d = rng.int(1, 4)
 		for _ = 1, p.spurs do
-			local y = rng.int(3, math.max(3, p.trunk_h - 3))
-			local d = CARDINAL[rng.int(1, 4)]
-			local cx = (y > p.lean and p.lean > 0) and x or 0
-			local cz = (y > p.lean and p.lean > 0) and z or 0
-			local length = rng.int(1, 2)
-			limb(tree, cx, y, cz, cx + d[1] * length, y + 1, cz + d[2] * length, 0)
-			pad(tree, rng, cx + d[1] * length, y + 1, cz + d[2] * length, 1, 0,
-				rng.int(0, 3), 0.3)
+			-- a short twig with a small bunch at its tip; a second one higher
+			-- up on the next side
+			local d = CARDINAL[spur_d]
+			local cx = (spur_y > p.lean and p.lean > 0) and x or 0
+			local cz = (spur_y > p.lean and p.lean > 0) and z or 0
+			local ex, ez = cx + d[1] * 2, cz + d[2] * 2
+			limb(tree, cx, spur_y, cz, ex, spur_y + 1, ez, 0)
+			pad(tree, rng, ex, spur_y + 2, ez, 1, 1, rng.int(0, 3), 0.3)
+			spur_y = math.min(p.trunk_h - 2, spur_y + 2)
+			spur_d = spur_d % 4 + 1
 		end
 	end,
 }
@@ -339,15 +345,15 @@ M.SPECIES.jungle = {
 -- or 2 x 2 throughout, ends in a log leader; four to six buttress fins run
 -- out from the foot; near the top four to six thick limbs reach out almost
 -- level and carry flat pads that join into a wide, uneven umbrella: up to 15
--- nodes across and 19 to 24 high (today's schematic: 7 across, 33 above the
+-- nodes across and 16 to 21 high (today's schematic: 7 across, 33 above the
 -- ground).
 M.SPECIES.kapok = {
 	id = "kapok", wood = "jungle", decay_radius = 2,
 	bounds = {x1 = -7, x2 = 8, y1 = 1, y2 = 28, z1 = -7, z2 = 8},
 	build = function(tree, rng)
 		local p = tree.params
-		p.size = rng.chance(0.5) and 3 or 2
-		p.trunk_h = rng.int(16, 20)
+		p.size = rng.chance(0.6) and 3 or 2
+		p.trunk_h = rng.int(13, 17)
 		local base = p.size == 3 and -1 or 0
 		local top3 = 0
 		if p.size == 3 then
@@ -363,6 +369,7 @@ M.SPECIES.kapok = {
 		local lx, lz = x2 + rng.int(0, 1), z2 + rng.int(0, 1)
 		trunk_section(tree, 1, lx, lz, top2 + 1, p.trunk_h)
 		p.top3, p.top2 = top3, top2
+		p.top_x, p.top_z = lx, lz
 		-- buttress fins
 		local lo, hi = base, base + p.size - 1
 		local candidates = {}
@@ -401,7 +408,7 @@ M.SPECIES.kapok = {
 					placed[#placed + 1] = c
 					per_side[side] = true
 					local length = p.size == 3 and rng.int(3, 5) or rng.int(2, 4)
-					fin(tree, c.x, c.z, c.d, length, rng.int(3, 5))
+					fin(tree, c.x, c.z, c.d, length, rng.int(3, 4))
 				end
 			end
 		end
@@ -412,9 +419,9 @@ M.SPECIES.kapok = {
 		local cx, cz = lx, lz
 		for index = 1, p.limbs do
 			local radius = rng.int(2, 3)
-			local reach = math.min(rng.int(4, 6), 6 - radius)
+			local reach = math.min(rng.int(5, 6), 6 - radius)
 			local start = p.trunk_h - rng.int(0, 5)
-			local rise = rng.int(1, 2)
+			local rise = rng.int(0, 3)
 			local ex = cx + round(dirs[index][1] * reach)
 			local ez = cz + round(dirs[index][2] * reach)
 			local ey = start + rise
@@ -424,7 +431,7 @@ M.SPECIES.kapok = {
 			p.pads[#p.pads + 1] = radius
 		end
 		-- the crown over the leader
-		p.top_pad = rng.int(3, 4)
+		p.top_pad = rng.int(2, 3)
 		put(tree, cx, p.trunk_h + 1, cz, "branch")
 		pad(tree, rng, cx, p.trunk_h + 2, cz, p.top_pad, 1, rng.int(0, 3), 0.25)
 		fingers(tree, rng, cx, p.trunk_h + 1, cz, p.top_pad - 1, 4)
@@ -455,7 +462,7 @@ M.SPECIES.apple = {
 	build = function(tree, rng)
 		local p = tree.params
 		p.size = rng.chance(0.25) and 2 or 1
-		p.trunk_h = p.size == 2 and rng.int(3, 5) or rng.int(3, 4)
+		p.trunk_h = rng.int(3, 5)
 		trunk_section(tree, p.size, 0, 0, 1, p.trunk_h)
 		local cx, cz = 0, 0
 		if p.size == 2 then
@@ -478,27 +485,31 @@ M.SPECIES.apple = {
 			end
 		end
 		local fork = p.trunk_h + (p.size == 2 and 1 or 0)
-		p.limbs = p.size == 2 and rng.int(3, 4) or rng.int(2, 3)
+		p.fork, p.top_x, p.top_z = fork, cx, cz
+		p.limbs = p.size == 2 and rng.int(3, 4) or rng.int(2, 4)
 		p.clusters = {}
 		local dirs = spread(rng, p.limbs)
 		local tint = rng.int(0, 3)
+		-- each limb carries a domed cluster three nodes high; clusters at
+		-- different heights and reaches give the crown its uneven outline
 		for index = 1, p.limbs do
-			local radius = p.size == 2 and rng.int(2, 3) or 2
-			local reach = math.min(rng.int(1, 3), 6 - radius)
-			local rise = rng.int(2, 3)
+			local radius = rng.int(2, 3)
+			local reach = math.min(rng.int(2, 3), 6 - radius)
+			local rise = rng.int(1, 3)
 			local ex = cx + round(dirs[index][1] * reach)
 			local ez = cz + round(dirs[index][2] * reach)
 			local ey = fork + rise
 			limb(tree, cx, fork, cz, ex, ey, ez, 0.7)
 			put(tree, ex, ey + 1, ez, "twig")
-			pad(tree, rng, ex, ey + 1, ez, radius, 2,
+			pad(tree, rng, ex, ey + 1, ez, radius, 1,
 				rng.chance(0.7) and tint or (tint + 1) % 4, 0.3)
 			p.clusters[#p.clusters + 1] = radius
 		end
-		local crown = p.size == 2 and 3 or rng.int(2, 3)
+		local crown = rng.int(2, 3)
+		local crown_y = fork + rng.int(3, 4)
 		put(tree, cx, fork + 1, cz, "branch")
-		put(tree, cx, fork + 2, cz, "twig")
-		pad(tree, rng, cx, fork + 3, cz, crown, 2, tint, 0.3)
+		for y = fork + 2, crown_y - 1 do put(tree, cx, y, cz, "twig") end
+		pad(tree, rng, cx, crown_y, cz, crown, 1, tint, 0.3)
 		p.crown = crown
 	end,
 	-- apples on the underside of the crown

@@ -6,8 +6,9 @@
 --      wood type's trunk, keeps the trunk's groups (tree, choppy), stays out
 --      of the creative inventory and refuses to be placed; the connected
 --      shapes join the whole family; leaf decay of the row's leaves lists
---      the trunk and all four shapes with default's radius; the tinted leaves
---      get paramtype2 "color" and the palette;
+--      the trunk and all four shapes with default's radius; a tinted stand-in
+--      of the leaves gets paramtype2 "color" and the palette, default's
+--      leaves stay untouched (the world generator's content digest);
 --   C. the corner piece: for each inward direction its facedir param2 turns
 --      the boxes so the inner corner is filled and the outer corner is cut;
 --   G. the generator, 300 seeds per species: the same seed builds the same
@@ -56,8 +57,10 @@ for _, name in ipairs({"default:jungletree", "default:tree"}) do
 	registered[name] = {name = name, description = name, groups = copy(TRUNK_GROUPS),
 		sounds = {}}
 end
+local LEAF_DROP = {max_items = 1, items = {{items = {"sapling"}, rarity = 20}}}
 for _, name in ipairs({"default:jungleleaves", "default:leaves", "default:apple"}) do
-	registered[name] = {name = name, groups = {leaves = 1}}
+	registered[name] = {name = name, type = "node", mod_origin = "default",
+		groups = {leaves = 1}, tiles = {name .. ".png"}, drop = LEAF_DROP}
 end
 core = {
 	registered_nodes = registered,
@@ -132,9 +135,23 @@ for _, row in ipairs(T.WOODS) do
 end
 eq(registered["default:jungletree"].groups.not_in_creative_inventory, nil,
 	"R the trunk's own groups untouched")
-for _, leaf in ipairs(T.TINTED_LEAVES) do
-	eq(registered[leaf].paramtype2, "color", "R " .. leaf .. " is colourable")
-	eq(registered[leaf].palette, T.LEAF_PALETTE, "R " .. leaf .. " palette")
+for _, row in ipairs(T.WOODS) do
+	local leaf = T.tinted_leaves_name(row.key)
+	local source = registered[row.leaves[#row.leaves]]
+	local def = registered[leaf]
+	if check(def ~= nil, "R tinted stand-in " .. leaf) then
+		eq(def.paramtype2, "color", "R " .. leaf .. " is colourable")
+		eq(def.palette, T.LEAF_PALETTE, "R " .. leaf .. " palette")
+		eq(def.tiles[1], source.tiles[1], "R " .. leaf .. " keeps the texture")
+		eq(def.drop.items[1].items[1], source.drop.items[1].items[1],
+			"R " .. leaf .. " drops what the leaves drop")
+		eq(def.groups.leaves, 1, "R " .. leaf .. " is leaves")
+		eq(def.groups.not_in_creative_inventory, 1, "R " .. leaf .. " hidden")
+		check(decay[leaf] ~= nil, "R " .. leaf .. " decays")
+	end
+	-- the world generator's frozen content digest covers default's leaves
+	eq(source.paramtype2, nil, "R " .. row.leaves[#row.leaves] .. " untouched")
+	eq(T.names(row.key).leaves, leaf, "R the drafts use the tinted stand-in")
 end
 check(not T.LEAF_PALETTE:find("%.png"), "R the palette is generated, no texture file")
 

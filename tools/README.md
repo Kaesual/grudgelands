@@ -856,3 +856,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`paint_art.py`, `--check` verifies every PNG; `repair/` with every take
   and the user's pick A1c; the offline `review.html`), provenance for the
   user's pick, not a fixture.
+  `r46_tree` the tree prototype (a draft, not merged into world generation):
+  `portable_test.lua` loads the real `mods/ITEMS/grug_treeproto` (the four
+  wood shapes per wood type, their drops, groups, placement refusal and leaf
+  decay, the tinted stand-in leaves, the corner rotation, the generator over
+  300 seeds per species: determinism, bounding box, one piece of wood, leaves
+  within decay range, and the face counter); `capture.sh OUT_DIR`
+  (`XVFB=`, one queue slot for the server and one for the client) boots the
+  game with the disposable probe `grug_probe_r46_tree`, which builds five
+  flat test areas at y = 500 with today's trees and the drafts, and takes the
+  engine screenshots with one real client on a private Xvfb; the probe's
+  METRIC lines are the node and face counts.

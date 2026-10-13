@@ -14,7 +14,7 @@
 --           every straight piece, elbow, fork and end. It joins whatever wood
 --           of the same type touches its faces.
 --   twig    the same at 6/16: limb tips and the twigs that carry a crown.
---   root    a buttress fin: a vertical board 8/16 thick and a full node
+--   root    a buttress fin: a vertical board 6/16 thick and a full node
 --           high, also connected, so a row of them is one board that steps
 --           down away from the trunk.
 --
@@ -29,7 +29,7 @@ local M = {}
 -- Half widths in sixteenths.
 local BRANCH = 5
 local TWIG = 3
-local FIN = 4
+local FIN = 3
 
 -- The six arms of a connected box of half width `h`, by engine side name
 -- (lua_api.md "Node boxes": front is -z, back +z, left -x, right +x).

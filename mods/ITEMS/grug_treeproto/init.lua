@@ -8,8 +8,8 @@
 --   metrics.lua    node and face counts by the client's culling rules
 --
 -- This file registers the shapes for every wood type in WOODS (one row per
--- wood type, one loop), gives the tinted leaves their palette and extends
--- leaf decay so the shapes hold leaves like the trunk does.
+-- wood type, one loop) and a tinted stand-in of its leaves, and extends leaf
+-- decay so the shapes hold leaves like the trunk does.
 --
 -- Every shape drops the wood type's normal trunk (as the tier rocks all drop
 -- Cobble), copies the trunk's groups (tree, choppy, its level), stays out of
@@ -26,16 +26,19 @@ grug_treeproto.shapes = shapes
 grug_treeproto.generator = generator
 grug_treeproto.metrics = dofile(modpath .. "/metrics.lua")(shapes)
 
--- One row per wood type. `decay_radius` is default's leaf decay radius for
--- these leaves outside mapgen v6 (default/nodes.lua "register trees for
--- leafdecay"). A new wood type is one more row.
+-- One row per wood type. `leaves` are the leaf decay list of the wood (its
+-- leaves last), `fruit` what a fruit cell places, `decay_radius` default's
+-- leaf decay radius for these leaves outside mapgen v6 (default/nodes.lua
+-- "register trees for leafdecay"). A new wood type is one more row.
 grug_treeproto.WOODS = {
 	{key = "jungle", trunk = "default:jungletree",
 		top = "default_jungletree_top.png", bark = "default_jungletree.png",
-		leaves = {"default:jungleleaves"}, decay_radius = 2},
+		leaves = {"default:jungleleaves"}, fruit = "default:jungleleaves",
+		decay_radius = 2},
 	{key = "oak", trunk = "default:tree",
 		top = "default_tree_top.png", bark = "default_tree.png",
-		leaves = {"default:apple", "default:leaves"}, decay_radius = 3},
+		leaves = {"default:apple", "default:leaves"}, fruit = "default:apple",
+		decay_radius = 3},
 }
 
 -- Four leaf tints on one leaf node: param2 is a palette index. The palette
@@ -45,11 +48,18 @@ grug_treeproto.WOODS = {
 -- after_place_leaves writes to mark a player's leaves (and which leaf decay
 -- then skips), therefore keeps the untinted pixel 0. Hardware colouring
 -- multiplies, so every tint is a little darker than the texture.
+--
+-- The prototype does NOT change default's leaves: their paramtype2 is part
+-- of the world generator's frozen content digest (grug_mapgen
+-- wp40/r7_manifest.lua "frozen content semantics"), which an override breaks
+-- at load. It registers one tinted stand-in per wood type instead, a copy of
+-- the wood's leaves (same texture, drops and decay) with the palette; the
+-- drafts use it. Integration would put the palette on the real leaves and
+-- renew that pin (a map reset).
 grug_treeproto.LEAF_PALETTE = "[fill:8x1:#ffffff" ..
 	"^[fill:1x1:1,0:#d6ebbf" ..
 	"^[fill:1x1:2,0:#bfd2b0" ..
 	"^[fill:1x1:3,0:#fff0bf"
-grug_treeproto.TINTED_LEAVES = {"default:jungleleaves", "default:leaves"}
 
 local function node_box(boxes)
 	local result = {}
@@ -83,12 +93,17 @@ function grug_treeproto.shape_name(wood_key, shape)
 	return "grug_treeproto:" .. wood_key .. "_" .. shape
 end
 
+-- The tinted stand-in leaves of one wood type.
+function grug_treeproto.tinted_leaves_name(wood_key)
+	return "grug_treeproto:" .. wood_key .. "_leaves"
+end
+
 -- kind -> node name for the generator's cells of one wood type.
 function grug_treeproto.names(wood_key)
 	for _, row in ipairs(grug_treeproto.WOODS) do
 		if row.key == wood_key then
-			local names = {trunk = row.trunk, leaves = row.leaves[#row.leaves],
-				fruit = row.leaves[1]}
+			local names = {trunk = row.trunk,
+				leaves = grug_treeproto.tinted_leaves_name(row.key), fruit = row.fruit}
 			for _, shape in ipairs(shapes.ORDER) do
 				names[shape] = grug_treeproto.shape_name(row.key, shape)
 			end
@@ -131,19 +146,23 @@ for _, row in ipairs(grug_treeproto.WOODS) do
 			_grug_trunk = row.trunk,
 		})
 	end
+	local source = core.registered_nodes[row.leaves[#row.leaves]]
+	assert(source, "grug_treeproto: no leaves " .. row.leaves[#row.leaves])
+	local tinted = table.copy(source)
+	tinted.name, tinted.type, tinted.mod_origin = nil, nil, nil
+	tinted.paramtype2 = "color"
+	tinted.palette = grug_treeproto.LEAF_PALETTE
+	tinted.groups.not_in_creative_inventory = 1
+	tinted._grug_leaves = row.leaves[#row.leaves]
+	core.register_node(grug_treeproto.tinted_leaves_name(row.key), tinted)
+	local leaves = table.copy(row.leaves)
+	leaves[#leaves + 1] = grug_treeproto.tinted_leaves_name(row.key)
 	-- Leaf decay keeps leaves that have any of the family within the radius;
 	-- registering again replaces default's callbacks for these leaves and
 	-- this trunk with the same function over the longer list.
 	default.register_leafdecay({
 		trunks = family,
-		leaves = row.leaves,
+		leaves = leaves,
 		radius = row.decay_radius,
-	})
-end
-
-for _, name in ipairs(grug_treeproto.TINTED_LEAVES) do
-	core.override_item(name, {
-		paramtype2 = "color",
-		palette = grug_treeproto.LEAF_PALETTE,
 	})
 end
