@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Paint six original 16 px bark pairs and a comparison sheet. No downloads.
+"""Paint twelve original 16 px bark pairs and two comparison sheets. No downloads.
 
 The authored pixel maps and palettes are CC0-1.0; generator/rendering code is
 GPL-3.0-or-later. Existing comparison textures retain CC BY-SA 3.0.
@@ -171,6 +171,162 @@ ART = {
         "wood": ["9d8052", "bca170", "7e6543", "a6895b", "68583d"],
         "center": (7.3, 7.3),
     },
+    "g": {
+        "name": "Quiet russet",
+        "idea": "B refined: calm red-brown ridges with soft, unbroken shoulders.",
+        "palette": {"a": "6d4b37", "b": "7d573e", "c": "886146",
+                    "d": "5c402f", "e": "51392d"},
+        "pixels": """
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadaabbccdaa
+            abbcadaabbccdaa
+            abbcadaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbccdaa
+            abbcadaaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+        """,
+        "wood": ["a27650", "b68b5f", "8d6344", "a97e55", "704c35"],
+        "center": (7.4, 7.2),
+        "crack": [(3, 10), (4, 10)],
+    },
+    "h": {
+        "name": "Deep chestnut",
+        "idea": "Darker, warmer chestnut with broad copper-brown raised plates.",
+        "palette": {"a": "5e3b2b", "b": "704530", "c": "815339",
+                    "d": "4b3026", "e": "3e2b24"},
+        "pixels": """
+            abbccdaeaabbcda
+            abbccdaeaabbcda
+            abbccdaeaabbcda
+            abbcddaaaabbcda
+            abbcdaaaaabbcda
+            abbcdaaaabbccda
+            abbcdaaaabbccda
+            abbccdaaabbcdda
+            abbccdaaabbcdaa
+            abbccdaaabbcdaa
+            abbccdaaaabcdaa
+            abbcddaaaabcdaa
+            abbcddaeaabcdaa
+            abbccdaeaabbcda
+            abbccdaeaabbcda
+        """,
+        "wood": ["966344", "ae7b53", "7c5038", "9f6b49", "603d2c"],
+        "center": (7.7, 7.7),
+        "crack": [(11, 4), (11, 5), (10, 6)],
+    },
+    "i": {
+        "name": "Moss in the folds",
+        "idea": "Russet bark with two tiny, fresh-green moss pockets in the furrows.",
+        "palette": {"a": "6d4b37", "b": "7d573e", "c": "886146",
+                    "d": "5c402f", "e": "51392d", "m": "507b31", "l": "79a83e"},
+        "pixels": """
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadmaabbcdaa
+            abbcadlaabbcdaa
+            abbcammaabbcdaa
+            abbcadaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcmmaa
+            abbcdaaabbcldaa
+            abbcadaaabbmdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+        """,
+        "wood": ["a27650", "b68b5f", "8d6344", "a97e55", "704c35"],
+        "center": (7.4, 7.2),
+        "crack": [(3, 10), (4, 10)],
+    },
+    "j": {
+        "name": "Single green thread",
+        "idea": "Warm brown ridges and one bright, single-pixel climbing liana.",
+        "palette": {"a": "6d4b37", "b": "7d573e", "c": "886146",
+                    "d": "5c402f", "e": "51392d", "m": "639331", "l": "89b842"},
+        "pixels": """
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadaabbccdaa
+            abbcadaabbccdaa
+            abbcadaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbccdaa
+            abbcadaaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+        """,
+        "wood": ["a27650", "b68b5f", "8d6344", "a97e55", "704c35"],
+        "center": (7.4, 7.2),
+        "crack": [(3, 10), (4, 10)],
+    },
+    "k": {
+        "name": "Fine red grain",
+        "idea": "Cinnamon-red bark with finer, softly broken vertical grain.",
+        "palette": {"a": "78503a", "b": "875d43", "c": "956b4c",
+                    "d": "694530", "e": "5a3c2d"},
+        "pixels": """
+            abcdabdaadbcdaa
+            abcdabdaadbcdaa
+            abcdabdaadbcdaa
+            abdabbdaadbcdaa
+            abdabbdaadbcdaa
+            abdaabcdaabcdaa
+            abdabbcdabbcdaa
+            abdaabbdabbdaaa
+            abcdaabdabbdaaa
+            abcdaabdabcdaaa
+            abcdaabdabcdaaa
+            abcdaadabbcdaaa
+            abcdabdaadbcdaa
+            abcdabdaadbcdaa
+            abcdabdaadbcdaa
+        """,
+        "wood": ["ac7b53", "bd9262", "996b49", "b18459", "7c5238"],
+        "center": (7.1, 7.6),
+        "crack": [(12, 9), (11, 9)],
+    },
+    "l": {
+        "name": "Lichen freckles",
+        "idea": "Soft terracotta-brown ridges with just a few green lichen flecks.",
+        "palette": {"a": "794d37", "b": "875b41", "c": "95684a",
+                    "d": "63402f", "e": "53372b", "m": "699140", "l": "92b653"},
+        "pixels": """
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+            abbclmaabbccdaa
+            abbcmdaabbccdaa
+            abbcadaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabbcdaaa
+            abbcdaaabblmaaa
+            abbcdaaabbccdaa
+            abbcadaaabbcdaa
+            abbcadeaabbcdaa
+            abbcadeaabbcdaa
+        """,
+        "wood": ["ac7a53", "bf9263", "966447", "b38058", "754b36"],
+        "center": (7.8, 7.3),
+        "crack": [(4, 4), (5, 5)],
+    },
 }
 
 
@@ -190,6 +346,11 @@ def paint_pair(key, art):
             canvas[y][x] = "m"
             canvas[y][x + 1] = "l" if y in (2, 3, 6, 7, 10, 11) else "m"
             canvas[y][x + 2] = "e"
+    if key == "j":
+        # One pixel wide even at the join; brown still occupies 15/16 of the tile.
+        vine_x = [5, 5, 5, 6, 6, 6, 7, 7, 7, 6, 6, 6, 5, 5, 5]
+        for y, x in enumerate(vine_x):
+            canvas[y][x] = "l" if y in (3, 4, 9, 10) else "m"
     side = Image.new("RGBA", (16, 16))
     side.putdata([palette[canvas[y % 15][x % 15]] for y in range(16) for x in range(16)])
     top = side.copy()
@@ -209,7 +370,7 @@ def paint_pair(key, art):
     crack = {"a": [(11, 4), (11, 5)], "b": [(3, 10), (4, 10), (5, 9)],
              "c": [(11, 11), (10, 10)], "d": [(10, 3), (10, 4), (9, 5)],
              "e": [(4, 4), (5, 5)], "f": [(12, 8), (11, 8), (10, 9)]}
-    for p in crack[key]:
+    for p in art["crack"] if "crack" in art else crack[key]:
         top.putpixel(p, wood[4])
     return side, top
 
@@ -314,18 +475,24 @@ def mockup(side, top, leaves):
     return Image.fromarray(pixels).convert("RGBA")
 
 
-def preview(pairs):
+def preview(pairs, round3=False):
     today = Image.open(DEFAULT / "default_jungletree.png").convert("RGBA")
     old_top = Image.open(DEFAULT / "default_jungletree_top.png").convert("RGBA")
     leaves = Image.open(DEFAULT / "default_jungleleaves.png").convert("RGBA")
-    width, card_w, card_h = 2160, 1048, 488
+    # Round 3 keeps the six-card layout, adding a B column to each comparison.
+    extra = 502 if round3 else 0
+    width, card_w, card_h = 2160 + 2 * extra, 1048 + extra, 488
     sheet = Image.new("RGBA", (width, 1640), "#eeeede")
     draw = ImageDraw.Draw(sheet)
     font = lambda size: ImageFont.truetype("DejaVuSans.ttf", size)
     regular, small, title = font(17), font(14), font(25)
-    draw.text((32, 25), "JUNGLE BARK  /  SIX MATERIAL STUDIES", font=font(34), fill="#263629")
+    heading = ("JUNGLE BARK  /  ROUND 3  /  BROWN & RUSSET" if round3 else
+               "JUNGLE BARK  /  SIX MATERIAL STUDIES")
+    draw.text((32, 25), heading, font=font(34), fill="#263629")
     draw.text((34, 72), "16 x 16 pixels  /  original CC0 candidates  /  same geometry, leaves and lighting in every comparison", font=regular, fill="#58604c")
     old_mock = mockup(today, old_top, leaves)
+    if round3:
+        b_mock = mockup(*pairs["b"], leaves)
 
     def paste_tile(im, position, size, background="#d5d9c7"):
         x,y = position
@@ -334,20 +501,28 @@ def preview(pairs):
         tile = im.resize((size,size), NEAREST)
         sheet.alpha_composite(tile, (x,y))
 
-    for i, (key, art) in enumerate(ART.items()):
-        x, y = 24+(i%2)*1064, 114+(i//2)*504
+    for i, key in enumerate("ghijkl" if round3 else "abcdef"):
+        art = ART[key]
+        x, y = 24+(i%2)*(1064 + extra), 114+(i//2)*504
         draw.rounded_rectangle((x,y,x+card_w,y+card_h), radius=10, fill="#f9f8ee", outline="#cdd1bc", width=1)
         draw.text((x+20,y+16), key.upper() + "  /  " + art["name"], font=title, fill="#293a2d")
         draw.text((x+20,y+52), art["idea"], font=small, fill="#657057")
         side, top = pairs[key]
-        draw.text((x+20,y+84), "CANDIDATE  /  4 x 4 tiles", font=small, fill="#3c573e")
-        draw.text((x+228,y+84), "TODAY  /  4 x 4 tiles", font=small, fill="#777761")
-        paste_tile(tiled(side), (x+20,y+108), 192)
-        paste_tile(tiled(today), (x+228,y+108), 192)
-        draw.text((x+462,y+84), "CANDIDATE", font=small, fill="#3c573e")
-        draw.text((x+752,y+84), "TODAY", font=small, fill="#777761")
-        sheet.alpha_composite(mockup(side, top, leaves), (x+450,y+106))
-        sheet.alpha_composite(old_mock, (x+744,y+106))
+        comparisons = [("CANDIDATE", side, mockup(side, top, leaves))]
+        if round3:
+            comparisons.append(("B / RUSSET RIDGES", pairs["b"][0], b_mock))
+        comparisons.append(("TODAY", today, old_mock))
+        mock_x = 658 if round3 else 450
+        for column, (label, bark, model) in enumerate(comparisons):
+            colour = "#3c573e" if column == 0 else "#777761"
+            repeat_label = ("B  /  4 x 4 tiles" if label.startswith("B /") else
+                            label + "  /  4 x 4 tiles")
+            draw.text((x+20+column*208,y+84), repeat_label, font=small, fill=colour)
+            paste_tile(tiled(bark), (x+20+column*208,y+108), 192)
+            # Preserve the exact round-2 label positions and pixels.
+            label_offset = 12 if column == 0 else 8
+            draw.text((x+mock_x+column*294+label_offset,y+84), label, font=small, fill=colour)
+            sheet.alpha_composite(model, (x+mock_x+column*294,y+106))
         draw.text((x+20,y+315), "BARK", font=small, fill="#657057")
         draw.text((x+132,y+315), "END GRAIN", font=small, fill="#657057")
         draw.text((x+244,y+315), "LEAVES", font=small, fill="#657057")
@@ -356,7 +531,10 @@ def preview(pairs):
         paste_tile(leaves, (x+244,y+338), 96)
         draw.text((x+359,y+315), "1:1", font=small, fill="#657057")
         paste_tile(tiled(side), (x+356,y+338), 64)
-        draw.text((x+452,y+412), "2 x 2 stepped column / grain follows the limb", font=regular, fill="#58604c")
+        if round3:
+            draw.text((x+452,y+315), "B / END GRAIN", font=small, fill="#657057")
+            paste_tile(pairs["b"][1], (x+452,y+338), 96)
+        draw.text((x+mock_x+2,y+412), "2 x 2 stepped column / grain follows the limb", font=regular, fill="#58604c")
         draw.text((x+20,y+456), "Nearest-neighbour only. Software material mock-up; not an engine screenshot.", font=small, fill="#777c66")
     draw.text((34,1620), "Comparison media: Cisoun / paramat / PilzAdam, CC BY-SA 3.0. See LICENSE-media.md. New PNG pairs: CC0 1.0.", font=small, fill="#657057")
     return sheet
@@ -383,17 +561,26 @@ def main():
             validate(im, name)
             outputs[name] = im
     outputs["preview.png"] = preview(pairs)
+    outputs["preview-r3.png"] = preview(pairs, round3=True)
     for name, im in outputs.items():
         path = HERE / name
         if args.check:
             with Image.open(path) as saved:
                 assert saved.mode == im.mode and saved.size == im.size, name
                 assert saved.tobytes() == im.tobytes(), (name, "generated pixels differ")
-                if name != "preview.png":
+                if name.startswith("jungle_bark_"):
                     validate(saved, name)
         else:
+            # Leave the round-2 files untouched when regenerating round 3.
+            if path.exists():
+                with Image.open(path) as saved:
+                    if (saved.mode == im.mode and saved.size == im.size and
+                            saved.tobytes() == im.tobytes()):
+                        continue
             im.save(path)
-    print(f"{'Checked' if args.check else 'Painted'} 12 opaque RGBA 16x16 textures and preview.png; both opposite edges match on all 12 textures.")
+    print(f"{'Checked' if args.check else 'Painted'} {2 * len(pairs)} opaque RGBA "
+          "16x16 textures and preview.png / preview-r3.png; "
+          "both opposite edges match on every texture.")
 
 
 if __name__ == "__main__":
