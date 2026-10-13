@@ -151,6 +151,18 @@ local function token_of(entry)
 end
 grug_jobs.ingredient_token = token_of
 
+-- Whether an ingredient token names something that exists: a registered
+-- item, or a "group:<name>" with at least one registered member (Round 47:
+-- enchant inputs may name a group).
+function grug_jobs.token_registered(token)
+	local group = type(token) == "string" and token:match("^group:(.+)$")
+	if not group then return core.registered_items[token] ~= nil end
+	for name in pairs(core.registered_items) do
+		if core.get_item_group(name, group) > 0 then return true end
+	end
+	return false
+end
+
 -- Whether an item (a name) is accepted by one ingredient entry.
 function grug_jobs.ingredient_accepts(entry, name)
 	if entry.item then return entry.item == name end

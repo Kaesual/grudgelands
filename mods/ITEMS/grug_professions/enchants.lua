@@ -171,7 +171,7 @@ core.register_on_mods_loaded(function()
 		end
 	end
 	for _, ref in ipairs(data.referenced_items(P.ENCHANT_DATA)) do
-		if not core.registered_items[ref.item] then
+		if not grug_jobs.token_registered(ref.item) then
 			error("grug_professions: " .. ref.where .. " names unregistered item " .. ref.item, 0)
 		end
 	end

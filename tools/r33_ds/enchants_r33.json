@@ -65,7 +65,7 @@
       "sword": "grug_materials:copper_bar",
       "dagger": "grug_materials:rough_jade",
       "greataxe": "grug_materials:iron_bar",
-      "metal_armor": "default:coal_lump",
+      "metal_armor": "group:coal",
       "shield": "grug_materials:iron_bar",
       "leather_armor": "grug_materials:copper_bar",
       "cloth_armor": "grug_materials:quartz",
@@ -100,10 +100,10 @@
       "armor_rating": "grug_mobs:layered_crab_shell"
     },
     "family_input": {
-      "sword": "default:coal_lump",
+      "sword": "grug_materials:anthracite",
       "dagger": "grug_materials:rough_garnet",
       "greataxe": "grug_materials:iron_bar",
-      "metal_armor": "default:coal_lump",
+      "metal_armor": "grug_materials:anthracite",
       "shield": "grug_materials:iron_bar",
       "leather_armor": "grug_materials:rough_jade",
       "cloth_armor": "grug_materials:rough_citrine",

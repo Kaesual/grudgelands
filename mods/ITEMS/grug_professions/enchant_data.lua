@@ -5,6 +5,8 @@
 -- enchants.json is a list with one entry per tier 1..6:
 --   {"tier": T, "prefix_loot": {stat: item}, "suffix_loot": {stat: item},
 --    "family_input": {family: item}}
+-- A family input may also be "group:<name>" (Round 47 ruling 13: the T2
+-- Coal input is `group:coal`, so Charcoal works): any member of the group.
 -- An enchant of tier T for family F, stat S and channel K costs the family's
 -- own material of tier T + K_loot[S] + family_input[F]. The trinket's prefix
 -- pool uses prefix_loot, its suffix pool suffix_loot.
