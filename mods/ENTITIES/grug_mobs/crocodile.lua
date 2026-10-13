@@ -124,7 +124,8 @@ grug_mobs.register_mob("grug_mobs:crocodile", crocodile)
 -- "any light" = no min_light/max_light and no day_toggle: 24 h (§3.1).
 mobs:spawn({
 	name = "grug_mobs:crocodile",
-	nodes = {"grug_nodes:mud"}, -- grug_swamp
+	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry",
+		"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass"}, -- grug_swamp
 	interval = 20,
 	chance = 1800,
 	active_object_count = 3,

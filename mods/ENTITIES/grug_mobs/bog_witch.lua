@@ -64,7 +64,8 @@ local witch = {
 
 grug_mobs.register_mob("grug_mobs:bog_witch", witch)
 mobs:spawn({name = "grug_mobs:bog_witch",
-	nodes = {"grug_nodes:mud", "grug_nodes:dirt_with_bone_litter",
+	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_bone_litter",
 		"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter"},
 	interval = 20, chance = 2400, active_object_count = 3,
 	min_height = 0, max_height = 600})

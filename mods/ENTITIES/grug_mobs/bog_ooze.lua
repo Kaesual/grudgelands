@@ -89,7 +89,8 @@ grug_mobs.register_mob("grug_mobs:bog_ooze", bog_ooze)
 -- "any light" = no min_light/max_light and no day_toggle: 24 h (§3.1).
 mobs:spawn({
 	name = "grug_mobs:bog_ooze",
-	nodes = {"grug_nodes:mud"}, -- grug_swamp
+	nodes = {"grug_nodes:mud", "grug_nodes:mud_dry",
+		"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass"}, -- grug_swamp
 	interval = 20,
 	chance = 2000,
 	active_object_count = 3,

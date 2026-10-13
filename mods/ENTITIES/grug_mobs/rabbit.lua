@@ -97,7 +97,8 @@ mobs:spawn({
 		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
 		"default:gravel", -- grug_crags
 		"default:snowblock", -- grug_crags_snowy
-		"grug_nodes:mud", -- grug_swamp
+		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass", -- grug_swamp
 		"default:sand", -- grug_beach
 	},
 	min_light = 10,
@@ -128,7 +129,8 @@ mobs:spawn({
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
 		"grug_nodes:blight_dirt", -- grug_blight
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
-		"grug_nodes:mud", -- grug_swamp
+		"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
+		"grug_nodes:mud_with_wet_grass", -- grug_swamp
 		"default:sand", -- grug_beach
 	},
 	min_light = 10,

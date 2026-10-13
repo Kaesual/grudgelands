@@ -608,6 +608,7 @@ local GROUND = {
 	"grug_nodes:dirt_with_forest_litter", "grug_nodes:dirt_with_canopy_litter",
 	"grug_nodes:dirt_with_bone_litter", "grug_nodes:blight_dirt",
 	"grug_nodes:ash_ground", "grug_nodes:mesa_clay", "grug_nodes:mud",
+	"grug_nodes:mud_dry", "grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass",
 }
 
 local function ground_list()

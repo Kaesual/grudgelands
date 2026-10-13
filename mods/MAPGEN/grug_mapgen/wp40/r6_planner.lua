@@ -132,6 +132,9 @@ local function planner_factory()
 
 		local surfaces = content.surfaces()
 		local select_surface = content.new_surface_selector(full_seed, planner_source)
+		-- The swamp's pools (Round 47 lane SW, swamp_pools.lua): no
+		-- decoration roots in a pool column (the swamp pass writes its water).
+		local pools = content.swamp_pools(full_seed, planner_source)
 		local resources = content.resources()
 		local decorations = content.decorations()
 		local surface_by_id, biome_ref, race_ref, stable_ref = {}, {}, {}, {}
@@ -358,6 +361,9 @@ local function planner_factory()
 			if river_id ~= nil then p7_support, cover_support = false, false end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
 			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
+				p7_support, cover_support = false, false
+			end
+			if pools and biome == "grug_swamp" and pools.at(x, z) then
 				p7_support, cover_support = false, false
 			end
 			-- A wet sealed (river or lake) column's bed is its terrain

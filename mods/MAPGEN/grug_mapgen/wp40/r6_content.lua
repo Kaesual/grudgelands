@@ -7,8 +7,10 @@ local function wet_bed_names(id, bed)
 	return {bed, "default:sand", "default:gravel", "default:stone"}
 end
 
+-- `swamp_pools` (optional, Round 47 lane SW): the swamp_pools.lua factory;
+-- without it (portable tools that build no world) the swamp has no pools.
 local function content_factory(manifest_values, content_contract, wp43_projection,
-		habitat)
+		habitat, swamp_pools)
 	local MAX_SAFE = 9007199254740991
 	if type(habitat) ~= "table" or type(habitat.vegetation_rule) ~= "function" then
 		error("fail_source: habitat authority missing", 0)
@@ -308,7 +310,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 
 	local decorations, decoration_by_id = {}, {}
 	if dense(manifest_values.decorations, "decoration catalog",
-			"fail_content_manifest") ~= 52 then
+			"fail_content_manifest") ~= 61 then
 		fail("fail_content_manifest", "expanded decoration population differs")
 	end
 	for index = 1, #manifest_values.decorations do
@@ -647,6 +649,37 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	-- Papyrus stands at the water (r6_planner rule 3), where the near-water
 	-- material turns the swamp's mud into sand; the reeds root there too.
 	decoration_cover.swamp_papyrus.grug_swamp[content_ref_by_name["default:sand"]] = 1
+	-- The swamp's mixed ground (Round 47 lane SW, tools/r47_sw/DESIGN.md):
+	-- its rows name their hosts here, each with the cover divisor the
+	-- planner thins by (1: every eligible column, 4: a quarter of them), in
+	-- place of the row's one host.
+	local SWAMP_HOSTS
+	do
+		local MUD, DRY, WET = "grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled"
+		local GRASS, MOSS = "grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss"
+		local tall = {[GRASS] = 1, [MUD] = 4, [DRY] = 4, [WET] = 4}
+		local fern = {[MOSS] = 1, [WET] = 4}
+		SWAMP_HOSTS = {
+			swamp_tree = {[MUD] = 1, [DRY] = 1, [WET] = 1, [GRASS] = 1, [MOSS] = 1},
+			swamp_grass_3 = tall, swamp_grass_4 = tall, swamp_grass_5 = tall,
+			swamp_junglegrass = tall,
+			swamp_fern_1 = fern, swamp_fern_2 = fern, swamp_fern_3 = fern,
+			swamp_moss_carpet = {[MUD] = 1, [WET] = 1, [DRY] = 2},
+			swamp_dry_shrub = {[MUD] = 1, [DRY] = 1},
+			swamp_papyrus = {[MUD] = 1, [WET] = 1, ["default:sand"] = 1},
+		}
+	end
+	for id, hosts in pairs(SWAMP_HOSTS) do
+		local biomes = decoration_cover[id]
+		if not biomes or not biomes.grug_swamp then
+			fail("fail_content_manifest", "swamp decoration row missing: " .. id)
+		end
+		local cover = {}
+		for name, divisor in pairs(hosts) do
+			cover[require_role(name, 1, p7_classes, "swamp host")] = divisor
+		end
+		biomes.grug_swamp = cover
+	end
 	function module.decoration_cover(id, biome, support_ref)
 		local biomes = decoration_cover[id]
 		local hosts = biomes and biomes[biome]
@@ -656,6 +689,18 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	-- built once per seed, so the planner, the surface selector and renewal
 	-- share one object. The forest field's per-zone normalisation reads the
 	-- planner source's horizontal zones.
+	-- The swamp pools of one world (swamp_pools.lua): built once per seed and
+	-- shared by the surface selector, the planner, the writer's surface skin
+	-- and the swamp pass, so they can never disagree. Nil without the factory.
+	local swamp_pool_sets = {}
+	function module.swamp_pools(full_seed, planner_source)
+		if swamp_pools == nil then return nil end
+		local pools = swamp_pool_sets[full_seed]
+		if pools then return pools end
+		pools = swamp_pools(full_seed, planner_source)
+		swamp_pool_sets[full_seed] = pools
+		return pools
+	end
 	local vegetation_rules = {}
 	function module.vegetation_rule(full_seed, planner_source)
 		local rule = vegetation_rules[full_seed]
@@ -670,6 +715,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	end
 	function module.new_surface_selector(full_seed, planner_source)
 		local vegetation = module.vegetation_rule(full_seed, planner_source)
+		local pools = module.swamp_pools(full_seed, planner_source)
 		local phase = 0
 		for index = 1, #full_seed do
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
@@ -896,10 +942,45 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 		local SNOW_FLOOR = habitat.VEGETATION.SNOW_LINE - habitat.VEGETATION.JITTER -
 			habitat.VEGETATION.SNOW_BAND
+		-- The swamp's ground mix (Round 47 lane SW, tools/r47_sw/DESIGN.md):
+		-- today's mud with patches of the lighter mud, wet grass and moss
+		-- soil; the mottled mud in wet hollows and round the pools; a pool
+		-- column keeps plain mud over a filler of 3 (its bed and banks stay
+		-- mud down to the deepest water). Rows per top node and filler depth.
+		local SWAMP_MUD, SWAMP_DRY = "grug_nodes:mud", "grug_nodes:mud_dry"
+		local SWAMP_WET, SWAMP_GRASS = "grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass"
+		local SWAMP_MOSS = "grug_nodes:dirt_with_moss"
+		local swamp_rows = {}
+		for _, name in ipairs({SWAMP_MUD, SWAMP_DRY, SWAMP_WET, SWAMP_GRASS, SWAMP_MOSS}) do
+			swamp_rows[name] = {}
+			for _, depth in ipairs({2, 3}) do
+				local row = deep_copy(surface_by_id.grug_swamp)
+				row.top = name
+				row.top_ref = require_role(name, 1, p7_classes, "swamp top")
+				row.filler_depth = depth
+				swamp_rows[name][depth] = row
+			end
+		end
+		local function swamp_row(x, z)
+			if pools then
+				if pools.at(x, z) then return swamp_rows[SWAMP_MUD][3] end
+				if pools.near(x, z) then return swamp_rows[SWAMP_WET][2] end
+			end
+			local moss = noise(x, z, 20, 73400323)
+			local wet = math.floor((2 * noise(x, z, 12, 61203457) +
+				noise(x, z, 5, 61203461)) / 3)
+			local dry = noise(x, z, 9, 52428833)
+			local name = SWAMP_MUD
+			if moss > 760 then name = SWAMP_MOSS
+			elseif wet > 700 then name = SWAMP_GRASS
+			elseif wet < 300 then name = SWAMP_WET
+			elseif dry < 340 then name = SWAMP_DRY end
+			return swamp_rows[name][2]
+		end
 		-- The dry, non-town, non-shore row of a column, and whether it is a
 		-- steep rock face.
 		local function dry_row(id, x, z, terrain_y, patch, detail, depth)
-			if id == "grug_swamp" then return surface_by_id[id], false end
+			if id == "grug_swamp" then return swamp_row(x, z), false end
 			local kind = 1
 			if patch > 880 then kind = 4
 			elseif patch > 780 then kind = 3

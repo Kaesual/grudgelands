@@ -108,7 +108,7 @@ end
 -- A. templates from the seed
 -- ---------------------------------------------------------------------------
 local trees, hash = load_stack()
-check(trees.total() == 32 * 7 + 16, "the species table counts 240 variants")
+check(trees.total() == 32 * 8 + 16, "the species table counts 272 variants")
 local PINNED = {
 	["0"] = "dce0f93aa99d7e0538ac3470656c412def403cc6ac6af91781fd506d58d2096a",
 	["1"] = "1c6b8f5c5f271e35312d9095bff5f3cd83e175593d044a85b6aa9accdcc71b0d",
@@ -157,7 +157,7 @@ for _, row in ipairs(manifest.decorations) do
 		check(row.settlement_class == nil, row.id .. " pins no settlement class")
 	end
 end
-check(#generated_rows == 14, "fourteen tree rows are generated (" .. #generated_rows .. ")")
+check(#generated_rows == 15, "fifteen tree rows are generated (" .. #generated_rows .. ")")
 
 -- ---------------------------------------------------------------------------
 -- B. every variant of a world
@@ -172,7 +172,10 @@ for _, record in ipairs(sample.records()) do
 		local foot, fruit_ok = false, true
 		local cells = {}
 		for c = 1, v.count do
-			if v.x[c] == 0 and v.y[c] == 0 and v.z[c] == 0 and v.flag[c] == trees.STEM then
+			-- a stilt species' stem stands 1-2 up on its stilts (lane SW)
+			local foot_y = trees.BY_KEY[record.species].stilts and v.y[c] >= 1 and
+				v.y[c] <= 2 and v.y[c] or 0
+			if v.x[c] == 0 and v.y[c] == foot_y and v.z[c] == 0 and v.flag[c] == trees.STEM then
 				foot = true
 			end
 			if v.name[c] == "default:apple" and v.param2[c] ~= 0 then fruit_ok = false end
