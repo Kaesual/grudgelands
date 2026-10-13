@@ -868,6 +868,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   box, one wood piece, clean joins at the slanted trunk pieces, leaf decay
   reach for 500 seeds per species, that the .obj files are current and that
   the page's scripts parse.
+- **Round 47** (`r47_<lane>`): `r47_ta` the tree shape nodes
+  (`portable_test.lua`: the 28 `grug_trees:<wood>_quarter|base|branch|twig`
+  nodes against `r46_tree/concept/shapes.js`, drops, groups, sounds,
+  connects, placement refusal, the leaf and ground `connect_sides`
+  overrides and that they change nothing else, leaf decay in radius 3,
+  jungle bark M and the mesh byte-equal to their Round 46 sources, and the
+  real `wp40/r6_templates.lua` turning quarters and limb grain for all four
+  rotations); `capture.sh` with `grug_probe_r47_ta` the engine captures of
+  a test patch (the Round 46 TREE capture brought back: Xvfb and one real
+  client; bark grain, quarter lighting, seams and mirroring, template
+  rotation; `SMOOTH=0`, `SHOTS=`, `SUFFIX=`), one queue run of two slots;
   `r47_tb` the Lua port of the tree generator
   (`mods/MAPGEN/grug_mapgen/wp40/treegen.lua`, pure Lua for the main and
   the mapgen environment): `write_reference.js` (`--check`) writes
