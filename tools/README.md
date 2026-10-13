@@ -874,7 +874,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the page's scripts parse.
 - **Round 47** (`r47_<lane>`): `r47_cr` the Basic recipe unlock
   (`portable_test.lua`, the real `grug_jobs` registry with the real Basic
-  catalog and `discovery.lua` under a stub engine): the starter set, the
+  catalog and `basic_unlock.lua` under a stub engine): the starter set, the
   silent first scan, groups by any member, the feed line with its count,
   when the scan runs (an action or a dug node within 0.5 s, the 10 s
   sweep, one slot per step); it prints the stored set's size for a

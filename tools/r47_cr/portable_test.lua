@@ -1,11 +1,11 @@
 -- Round 47 lane CR portable test (LuaJIT): the Basic recipe unlock
--- (round47-plan.md ruling 19, §4.8; grug_jobs/discovery.lua).
+-- (round47-plan.md ruling 19, §4.8; grug_jobs/basic_unlock.lua).
 --
 --   luajit tools/r47_cr/portable_test.lua [REPO]
 --
 -- Loads the REAL grug_jobs registry.lua with the REAL Basic catalog
 -- (basic_recipes.lua through register_basic_catalog; stand-in items for its
--- names, the groups' members set here) and the REAL discovery.lua under a
+-- names, the groups' members set here) and the REAL basic_unlock.lua under a
 -- stub engine with player meta, inventories and the globalstep. Checks:
 --   T  the starter set: sticks and every wooden tool are known from the
 --      start, nothing else of Basic; profession recipes are not its
@@ -14,7 +14,8 @@
 --      existing one at its first login after the update) is scanned at its
 --      join, silently; what it holds is known at once; the key is written;
 --   G  a group ingredient counts when any member was held; an item entry
---      only by its own name; items with metadata count (held is held);
+--      only by its own name; items with metadata count (held is held); any
+--      list counts (the overflow);
 --   M  "New recipe: X" for one, "New recipes: X and N more" for several,
 --      one line per scan, the open page resent unless the scan is quiet;
 --      nothing for a scan that unlocks nothing;
@@ -176,7 +177,7 @@ for _, fn in ipairs(callbacks.loaded) do fn() end
 
 local J = grug_jobs
 J.refresh_crafting_page = function(player) refreshes[#refreshes + 1] = player:get_player_name() end
-dofile(ROOT .. "/mods/PLAYER/grug_jobs/discovery.lua")
+dofile(ROOT .. "/mods/PLAYER/grug_jobs/basic_unlock.lua")
 eq(#callbacks.step, 1, "S one globalstep")
 
 local basic = J.recipes_in_area("basic")
@@ -200,7 +201,6 @@ local function new_player(name, items, meta_fields)
 	local inv = new_inventory()
 	inv:set_size("main", 32)
 	inv:set_size("grug_craft_out", 4)
-	inv:set_size("craftpreview", 1)
 	for index, itemstring in ipairs(items or {}) do inv:set_stack("main", index, itemstring) end
 	local meta = new_meta()
 	for key, value in pairs(meta_fields or {}) do meta.fields[key] = value end
@@ -322,13 +322,10 @@ do
 	p.inv:set_stack("main", 12, tagged)
 	J.scan_held(p)
 	check(known_outputs(p)["default:wood"], "G a stack with metadata counts as held")
-	-- Any list counts: the overflow and the equipment too; not the preview.
+	-- Any list counts: the overflow too.
 	p.inv:set_stack("grug_craft_out", 1, "default:clay_lump 4")
-	p.inv:set_stack("craftpreview", 1, "default:paper 1")
 	J.scan_held(p)
-	known = known_outputs(p)
-	check(known["default:clay"], "G an item in the overflow counts")
-	check(not known["default:book"], "G the engine's craft preview does not")
+	check(known_outputs(p)["default:clay"], "G an item in the overflow counts")
 	leave(p)
 end
 

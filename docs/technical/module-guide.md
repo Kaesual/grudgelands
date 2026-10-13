@@ -262,14 +262,14 @@ tools](#player-meta-read-by-external-tools).
   returns its ingredients and target. A finished recipe job makes its
   stacks (gear through `grug_items.crafted_output`), calls `award_progress`
   once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
-- **The Basic unlock** (`discovery.lua`, Round 47 lane CR, ruling 19): the
+- **The Basic unlock** (`basic_unlock.lua`, Round 47 lane CR, ruling 19): the
   held set in player meta `grug_jobs:held` (the format word `1`, then the
   sorted tokens a Basic recipe names, item names and `group:<name>`,
   space-separated; read once per session, written when it grows; about
   4.7 KB once every ingredient was held). `recipe_known(player, recipe)`
   (true outside Basic and for the starter outputs `HELD_STARTER`: the
   stick and the four wooden tools), `scan_held(player[, quiet])` (every
-  list but the craft preview; returns the recipes it unlocked and feeds
+  list; returns the recipes it unlocked and feeds
   "New recipe: X" / "New recipes: X and N more", resends an open page
   unless quiet; the first scan of a character without the key is silent),
   `held_dirty(player)` (jobs.lua after a delivery). When: at the join,

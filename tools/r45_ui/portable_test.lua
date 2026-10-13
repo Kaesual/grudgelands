@@ -1232,10 +1232,10 @@ do
 	geometry_ok(fs, "D a long description")
 	block_def.description = "Block 01"
 	-- Round 47 ruling 19 turns Round 45's "Basic shows every recipe" round:
-	-- Basic lists a recipe once every ingredient was held (discovery.lua,
+	-- Basic lists a recipe once every ingredient was held (basic_unlock.lua,
 	-- loaded from here on), whatever its tier (the torch counts as T2).
 	eq(torch.tier, 2, "D the torch recipe is T2 (its coal)")
-	dofile(ROOT .. "/mods/PLAYER/grug_jobs/discovery.lua")
+	dofile(ROOT .. "/mods/PLAYER/grug_jobs/basic_unlock.lua")
 	local nobody = new_player("nobody")
 	advance(1.1)
 	open(nobody)

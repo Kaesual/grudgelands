@@ -16,8 +16,8 @@
 -- update and new characters at their first join.
 --
 -- The scan reads every list of the player's inventory (equipment, bags,
--- the overflow and the target slot included; not the engine's craft
--- preview). When it runs (as Round 37's discovery did, commit c232bdea):
+-- the overflow and the target slot included; the engine's craft lists are
+-- empty, the grid having size 0). When it runs (as Round 37's discovery did, commit c232bdea):
 --   - at join (the first-login scan) and before the Crafting tab is built
 --     (ui.lua, quiet: the build shows the result);
 --   - in the player's slot of SLOTS x SLOT_PERIOD = 0.5 s after an
@@ -152,16 +152,14 @@ function grug_jobs.scan_held(player, quiet)
 	local first = player:get_meta():get_string(HELD_KEY) == ""
 	local held = load(player)
 	local new = {}
-	for listname, list in pairs(inv:get_lists()) do
-		if listname ~= "craftpreview" then
-			for _, stack in ipairs(list) do
-				local name = stack:get_name()
-				if name ~= "" then
-					for _, token in ipairs(tokens_of(name)) do
-						if not held[token] then
-							held[token] = true
-							new[#new + 1] = token
-						end
+	for _, list in pairs(inv:get_lists()) do
+		for _, stack in ipairs(list) do
+			local name = stack:get_name()
+			if name ~= "" then
+				for _, token in ipairs(tokens_of(name)) do
+					if not held[token] then
+						held[token] = true
+						new[#new + 1] = token
 					end
 				end
 			end
