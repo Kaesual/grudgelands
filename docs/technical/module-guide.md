@@ -1813,6 +1813,16 @@ tools](#player-meta-read-by-external-tools).
   (`grug_trees/growth.lua`) and the town trees (`wp13/dressing.lua`) use the
   same generator. A change to the generator or the species table moves the
   sample pins of `tools/r47_tc/portable_test.lua`.
+  **The swamp's pools** (Round 47 lane SW, `tools/r47_sw/DESIGN.md`):
+  `wp40/swamp_pools.lua` (pure, per column, from the seed and the planner
+  source's analytic values) decides the pools by the user's rule: gentle
+  ground only, at most one node levelled, never a lower neighbour pool, so
+  no water flows. One object per seed (`content.swamp_pools`) is read by the
+  surface selector (mud under a pool, mottled mud round it), the planner (no
+  decoration root in a pool), the writer's surface skin (no opening at or
+  beside a pool) and the swamp pass `wp40/swamp_writer.lua`, which the R7
+  successor runs right after the road dressing (water, waterlilies, rooted
+  and bank reeds, cattails, carpets, through `write_road`).
   **Seed-dependent POI placement** (Round 46, `world_zones.md` §8.5):
   `A.source` is the authored source, whose placed anchors
   (`placement_mode = "placed"`) carry no position; `W.place()` returns the
