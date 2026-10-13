@@ -1308,7 +1308,15 @@ treeless; every grove and copse plot has trees. **Town greening**
 (Round 47, a first version): after a start or a capital core is built,
 its open wild ground gets small groups of 1–5 of the race's trees on an
 11-node hashed lattice, never on roads, plazas or paving, 4 nodes clear of
-every NPC socket and door (`wp13/layout.lua` `green`).
+every NPC socket and door (`wp13/layout.lua` `green`); the capital plots
+green their yards the same way. **Capital greening**: the city ground
+between the core, the plots, the streets and the squares carries the same
+groups (`wp13/city_green.lua`, written by the capital's city edge overlay
+per mapchunk, per world): every cell inside the city and 12 from the wall
+line, wood clear of every plot's collar and approach, leaves of the plot
+itself, the trunk on dry level ground off the streets; between groups a
+priority by hash keeps stems 4 apart and wood apart, crowns merge. A tree
+whose wood a later prop of a composition overwrites is taken out whole.
 
 Missing assets summary: silverwood + gravewood textures (retints),
 great_silverwood.mts treehouse schematic (WP13; ordinary trees are generated), adobe/

@@ -25,7 +25,7 @@
 #   client loads a far area), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX>
 #   (default /usr/lib64/dri), MODE=groves takes the capital groves and
 #   Hearthpine instead of the forests and saplings, MODE=greening wide views
-#   of two capitals and two starts. Run it through the
+#   of Highcourt, Lethariel and Gor Drazhak (VIEW=<client viewing range>). Run it through the
 #   shared Lua queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
@@ -114,7 +114,7 @@ screen_w = $width
 screen_h = $height
 fullscreen = false
 enable_sound = false
-viewing_range = 140
+viewing_range = ${VIEW:-140}
 fps_max = 20
 hud_scaling = 1
 gui_scaling = 1

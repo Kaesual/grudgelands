@@ -592,6 +592,13 @@ function Buffer:put(x, y, z, name, param2)
 	end
 	local key = x .. ":" .. y .. ":" .. z
 	local cell = self.cell[key]
+	-- A later write onto a town tree's wood (Round 47: a prop, a wall, a
+	-- bed laid after the tree) cuts that tree; `cells()` takes it out whole.
+	local wood_owner = self.grown_wood and self.grown_wood[key]
+	if wood_owner and not self.writing_tree then
+		self.cut_trees = self.cut_trees or {}
+		self.cut_trees[wood_owner] = true
+	end
 	if cell then
 		cell.name, cell.param2 = name, param2
 		return
@@ -655,7 +662,47 @@ function Buffer:ring(x1, z1, x2, z2, y1, y2, name, param2)
 	end
 end
 
+-- A town tree a later write cut (`dressing.grown` records every tree's
+-- writes in `grown_trees`): every cell it still holds goes back to what was
+-- there before it, so no tree stands with a prop through its trunk or limb.
+local function settle_cut_trees(self)
+	if not self.cut_trees or next(self.cut_trees) == nil then return end
+	local removed = false
+	for id in pairs(self.cut_trees) do
+		local tree = self.grown_trees[id]
+		for index = #tree.writes, 1, -1 do
+			local w = tree.writes[index]
+			local cell = self.cell[w.key]
+			if cell and cell.name == w.name then
+				if w.prev_name then
+					cell.name, cell.param2 = w.prev_name, w.prev_param2
+				else
+					cell.removed = true
+					self.cell[w.key] = nil
+					removed = true
+				end
+			end
+			if self.grown_wood[w.key] == id then self.grown_wood[w.key] = nil end
+			if self.grown_leaves then self.grown_leaves[w.key] = nil end
+		end
+		tree.cut = true
+	end
+	self.cut_trees = {}
+	if removed then
+		local order, count = {}, 0
+		for index = 1, self.count do
+			local cell = self.order[index]
+			if not cell.removed then
+				count = count + 1
+				order[count] = cell
+			end
+		end
+		self.order, self.count = order, count
+	end
+end
+
 function Buffer:cells()
+	settle_cut_trees(self)
 	return self.order, self.count
 end
 

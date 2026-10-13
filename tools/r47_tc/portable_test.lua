@@ -515,6 +515,137 @@ do
 	check(groves >= 8, "the grove and copse plots were found (" .. groves .. ")")
 end
 
+-- E4. capital greening (wp13/city_green.lua) on a synthetic city: a square
+-- wall of half 120 round the anchor, one plot, a street; the trees stand
+-- only on the open ground, keep their stems apart, never share wood, and a
+-- mapchunk split writes exactly the cells of the whole (the seam rule).
+do
+	local green_module = dofile(wp13 .. "/city_green.lua")(wp13)
+	local pts = {}
+	for i = -120, 119, 8 do pts[#pts + 1] = {i, -120} end
+	for i = -120, 119, 8 do pts[#pts + 1] = {120, i} end
+	for i = 120, -119, -8 do pts[#pts + 1] = {i, 120} end
+	for i = 120, -119, -8 do pts[#pts + 1] = {-120, i} end
+	local layout = {wall = {pts = pts}, squares = {{x = 70, z = -70, r = 6}}}
+	local anchor = {x = 1000, z = 2000}
+	local plot = {min_x = 1060, max_x = 1080, min_z = 2060, max_z = 2080, turns = 0}
+	local function column(x, z)
+		local road = (x - anchor.x) == 30 or (x - anchor.x) == 31
+		local ground = 10 + (z - anchor.z > 90 and 1 or 0)
+		return ground, nil, road
+	end
+	local function make()
+		return green_module.new({race = "human", anchor = anchor, layout = layout,
+			plots = {plot}, column = column})
+	end
+	local green = make()
+	local box = {min_x = anchor.x - 130, max_x = anchor.x + 130,
+		min_z = anchor.z - 130, max_z = anchor.z + 130}
+	local cells = green.cells(box)
+	check(#cells > 1000, "the synthetic city grows trees (" .. #cells .. " cells)")
+	local by, wood_names = {}, {}
+	for _, row in ipairs(trees.SPECIES) do
+		for _, key in ipairs({"trunk", "quarter", "base", "branch", "twig"}) do
+			wood_names[row[key]] = true
+		end
+	end
+	local ok_place, unique, stems = true, true, {}
+	for _, c in ipairs(cells) do
+		local k = c.x .. ":" .. c.y .. ":" .. c.z
+		if by[k] then unique = false end
+		by[k] = c
+		local lx, lz = c.x - anchor.x, c.z - anchor.z
+		local wood = wood_names[c.name]
+		-- wood clear of the plot's collar (8 + 1) and approach (12, front -z),
+		-- a leaf of the plot itself (2)
+		local m = wood and 9 or 2
+		if (math.abs(lx) <= 53 and math.abs(lz) <= 53) or math.abs(lx) > 108 or
+				math.abs(lz) > 108 or (c.x >= plot.min_x - m and c.x <= plot.max_x + m and
+					c.z >= plot.min_z - m - (wood and 12 or 0) and c.z <= plot.max_z + m) or
+				((lx == 30 or lx == 31) and c.y <= column(c.x, c.z) + 3) then
+			ok_place = false
+		end
+		if wood_names[c.name] and c.y == 11 then stems[#stems + 1] = c end
+	end
+	check(ok_place, "no city tree in the core, near the wall, on a plot or low over the street")
+	check(unique, "no two city trees write one cell")
+	check(#stems > 20, "the city has trees (" .. #stems .. " trunk feet)")
+	local again = make().cells(box)
+	local same = #again == #cells
+	for i = 1, math.min(#again, #cells) do
+		local a, b = again[i], cells[i]
+		if a.x ~= b.x or a.y ~= b.y or a.z ~= b.z or a.name ~= b.name or a.param2 ~= b.param2 then
+			same = false
+		end
+	end
+	check(same, "the city trees are deterministic")
+	local split, parts_seen = {}, 0
+	local fresh = make()
+	for _, sub in ipairs({
+			{min_x = box.min_x, max_x = anchor.x - 1, min_z = box.min_z, max_z = anchor.z - 1},
+			{min_x = anchor.x, max_x = box.max_x, min_z = box.min_z, max_z = anchor.z - 1},
+			{min_x = box.min_x, max_x = anchor.x - 1, min_z = anchor.z, max_z = box.max_z},
+			{min_x = anchor.x, max_x = box.max_x, min_z = anchor.z, max_z = box.max_z}}) do
+		for _, c in ipairs(fresh.cells(sub)) do
+			split[c.x .. ":" .. c.y .. ":" .. c.z] = c.name
+			parts_seen = parts_seen + 1
+		end
+	end
+	local seam = parts_seen == #cells
+	for k, c in pairs(by) do if split[k] ~= c.name then seam = false end end
+	check(seam, "four mapchunk parts write exactly the whole city's tree cells")
+end
+
+-- E5. over every composition (the POIs, the starts, every capital core and
+-- plot): no write after a town tree cuts its wood -- every tree still
+-- standing holds all its wood cells, and a tree a later prop cut is gone.
+do
+	local buffers = {}
+	local real_dofile = dofile
+	rawset(_G, "dofile", function(path, ...)
+		local result = real_dofile(path, ...)
+		if type(path) == "string" and path:match("wp13/parts%.lua$") and
+				type(result) == "table" and not result.r47tc_wrapped then
+			local make = result.buffer
+			result.buffer = function(...)
+				local b = make(...)
+				buffers[#buffers + 1] = b
+				return b
+			end
+			result.r47tc_wrapped = true
+		end
+		return result
+	end)
+	real_dofile(repo .. "/tools/r36_w/baseline.lua")(repo)
+	rawset(_G, "dofile", real_dofile)
+	local standing, cut, broken = 0, 0, 0
+	for _, b in ipairs(buffers) do
+		b:cells()
+		for _, tree in ipairs(b.grown_trees or {}) do
+			if tree.cut then
+				cut = cut + 1
+				for _, w in ipairs(tree.writes) do
+					local cell = b.cell[w.key]
+					if w.wood and cell and cell.name == w.name and
+							(not w.prev_name or w.prev_name ~= w.name) then
+						broken = broken + 1
+					end
+				end
+			else
+				standing = standing + 1
+				for _, w in ipairs(tree.writes) do
+					local cell = b.cell[w.key]
+					if w.wood and (not cell or cell.name ~= w.name) then broken = broken + 1 end
+				end
+			end
+		end
+	end
+	print(("E5: %d town trees standing, %d cut by a later write and taken out"):format(
+		standing, cut))
+	check(standing > 800, "the town trees stand (" .. standing .. ")")
+	check(broken == 0, "no later write cuts a town tree's wood (" .. broken .. " cells)")
+end
+
 -- ---------------------------------------------------------------------------
 -- F. markers
 -- ---------------------------------------------------------------------------

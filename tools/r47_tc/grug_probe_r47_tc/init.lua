@@ -266,7 +266,7 @@ core.register_globalstep(function(dtime)
 		core.set_timeofday(TIME_OF_DAY)
 		local started = core.get_us_time()
 		if MODE == "greening" then
-			for _, key in ipairs({"highcourt", "lethariel", "dawnmere", "stillgrave"}) do
+			for _, key in ipairs({"highcourt", "lethariel", "gor_drazhak"}) do
 				local a = grug_core.settlement_socket_anchor(key)
 				if a then
 					spots["W_" .. key] = {x = a.x, y = a.y, z = a.z}
@@ -302,7 +302,7 @@ core.register_globalstep(function(dtime)
 		state.pending = 0
 		for label, s in pairs(spots) do
 			state.pending = state.pending + 1
-			local r = MODE == "greening" and label ~= "T" and 100 or 44
+			local r = MODE == "greening" and label ~= "T" and 200 or 44
 			core.emerge_area({x = s.x - r, y = s.y - 8, z = s.z - r},
 				{x = s.x + r, y = s.y + 44, z = s.z + r}, function(_, _, remaining)
 					if remaining == 0 then
@@ -316,10 +316,10 @@ core.register_globalstep(function(dtime)
 		log(string.format("emerge done in %.1f s",
 			(core.get_us_time() - state.emerge_started) / 1e6))
 		if MODE == "greening" then
-			for _, key in ipairs({"highcourt", "lethariel", "dawnmere", "stillgrave"}) do
+			for _, key in ipairs({"highcourt", "lethariel", "gor_drazhak"}) do
 				if spots["W_" .. key] then
 					SHOTS[#SHOTS + 1] = {name = "W_" .. key .. "_wide", spot = "W_" .. key,
-						dx = 95, dy = 70, dz = 0, yaw = 90, pitch = 33, first = true}
+						dx = 150, dy = 85, dz = 0, yaw = 90, pitch = 26, first = true}
 				end
 			end
 		elseif MODE == "groves" then

@@ -1296,6 +1296,21 @@ function M.config(prepared, content, raw_sha256)
 				active = false, idle = 0}
 			if descriptor.kind == "overlay" then
 				state.edge = blueprint.city.make({x = anchor.x, z = anchor.z})
+				-- The city's trees (Round 47 capital greening): clear of every
+				-- placed plot's rect (its collar and approach added there).
+				if type(blueprint.city.green) == "function" then
+					local rects = {}
+					for other = 1, #prepared.blueprints do
+						local b = prepared.blueprints[other]
+						if b.descriptor.kind == "reference" then
+							local rect = M.plot_rect(b, anchor.x, anchor.z)
+							rect.turns = b.descriptor.turns or 0
+							rects[#rects + 1] = rect
+						end
+					end
+					state.green = blueprint.city.green({x = anchor.x, z = anchor.z}, rects,
+						column)
+				end
 				local b = blueprint.bounds
 				state.box = {min_x = anchor.x + b.min.x, max_x = anchor.x + b.max.x,
 					min_z = anchor.z + b.min.z, max_z = anchor.z + b.max.z}
@@ -1605,6 +1620,12 @@ function M.config(prepared, content, raw_sha256)
 					local cells = state.edge.cells({min_x = context.min_x,
 						max_x = context.max_x, min_z = context.min_z,
 						max_z = context.max_z}, column)
+					if state.green then
+						local trees = state.green.cells({min_x = context.min_x,
+							max_x = context.max_x, min_z = context.min_z,
+							max_z = context.max_z})
+						for tree_index = 1, #trees do cells[#cells + 1] = trees[tree_index] end
+					end
 					for cell_index = 1, #cells do
 						local cell = cells[cell_index]
 						local ref = refs[cell.name]
