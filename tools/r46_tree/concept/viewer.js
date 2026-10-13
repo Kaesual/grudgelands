@@ -692,15 +692,20 @@
 		label('2×2, limb bases', -6.5, 6.2, 0, '');
 		label('3×3', 2, 6.2, 0, '');
 		label('log → base → branch → twig → leaves', 10, 6.2, 0, '');
-		// roots on flat ground: a 3 x 3 (high 2, reach 3, a fork) and a
-		// 2 x 2 (high 1, reach 2), each trying all four sides
-		buildTree(content, TreeGen.rootStudy(flatGround, 3, 3, 1), woods, -7, -10);
-		buildTree(content, TreeGen.rootStudy(flatGround, 2, 2, 0), woods, 1, -10);
-		label('roots: 3×3, 3 out, fork', -6, 5.2, -10, '');
-		label('roots: 2×2, 2 out', 0.5, 5.2, -10, '');
+		// roots on flat ground, [h, reach, fork] per side (+x, +z, -x, -z):
+		// kapok feet (3 x 3, 2 x 2), a jungle with one raised root, an apple
+		// with two one-cell roots
+		buildTree(content, TreeGen.rootStudy(flatGround, 3, [[3, 3, 1], [2, 2, 0], [0, 3, -1], [2, 3, 1]]), woods, -9, -10);
+		buildTree(content, TreeGen.rootStudy(flatGround, 2, [[2, 2, 1], [3, 3, 0], [0, 2, 0], [2, 3, -1]]), woods, -2, -10);
+		buildTree(content, TreeGen.rootStudy(flatGround, 2, [[2, 2, 0], null, [0, 2, 0], null]), woods, 4, -10);
+		buildTree(content, TreeGen.rootStudy(flatGround, 2, [[0, 1, 0], null, [0, 1, 0], null]), woods, 9, -10);
+		label('kapok 3×3 foot', -8, 6.2, -10, '');
+		label('kapok 2×2 foot', -2.5, 6.2, -10, '');
+		label('jungle, a raised root', 3.5, 6.2, -10, '');
+		label('apple, 1-long roots', 8.5, 6.2, -10, '');
 		// a hillside: the foot stands 2 up; west of the trunk the ground
 		// falls away, east of it it rises: no root there
-		var hx = 10, hz = -10, lift = 2;
+		var hx = 16, hz = -10, lift = 2;
 		function height(x, z) {
 			if (x <= hx - 2 || x > hx + 4 || z < hz - 4 || z > hz + 3) { return 0; }
 			return x >= hx + 2 ? 3 : 2;
@@ -713,13 +718,13 @@
 		}
 		addTerrain(content, terrain);
 		var hill = function (x, y, z) { return y + lift < height(x + hx, z + hz); };
-		buildTree(content, TreeGen.rootStudy(hill, 2, 2, 0), woods, hx, hz, hill, lift);
+		buildTree(content, TreeGen.rootStudy(hill, 2, [[2, 2, 0], [2, 3, 1], [2, 2, 0], [2, 3, -1]]), woods, hx, hz, hill, lift);
 		label('hillside: falls away west, rises east', hx, 7.2, hz, '');
 		var fig = playerFigure();
 		fig.position.set(-1, 0, 3);
 		content.add(fig);
 		state.trees = [];
-		var box = new THREE.Box3(new THREE.Vector3(-10, 0, -4), new THREE.Vector3(15, 7, 14));
+		var box = new THREE.Box3(new THREE.Vector3(-12, 0, -4), new THREE.Vector3(21, 7, 14));
 		applyToggles();
 		buildGrid(box);
 		frame(box, 0.7);

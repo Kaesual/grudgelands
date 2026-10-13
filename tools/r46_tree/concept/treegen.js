@@ -929,29 +929,34 @@
 
 	// ================================================================ roots
 
-	// Roots: a few pieces at the foot of a thick trunk that lie on the
-	// ground and taper into it: a limb base beside the trunk, (a branch,)
-	// a twig at the end; a long one may fork a twig sideways from its
-	// branch. Only the base and the twig join the ground, and only through
-	// their bottom (they list soil and the like in connects_to; ground
-	// nodes declare connect_sides = {"top"}); a branch never does. So a
-	// root rests on the ground at the trunk and dives in at its end: no stub
-	// under every cell (a comb), no legs, at most one branch cell between
-	// that keeps 3/16 above the ground, like a root arching slightly.
+	// Roots: pieces at the foot of a thick trunk, built from the existing
+	// pieces. A root leaves the trunk at height h (0, 2 or 3), one cell out:
+	// limb bases from there straight down beside the trunk to the ground (a
+	// buttress rib fused to the trunk, each base joining it sideways), then
+	// on along the ground (a branch, a twig at the end) as a flare; a fork
+	// adds a toe twig sideways where the flare leaves the rib. Only the base
+	// and the twig join the ground, and only through their bottom (they list
+	// soil and the like in connects_to; ground nodes declare connect_sides =
+	// {"top"}); a branch never does. So the rib stands on the ground, the
+	// flare dives in at its end: no stub under every cell (a comb), no
+	// free-standing legs, at most one branch cell 3/16 above the ground.
 	//
 	// Every root cell needs ground right under its column at the trunk's
 	// foot level (isGround(x, -1, z)) and none at the root's own level
 	// (isGround(x, 0, z) false), the cells must be free and touch no other
-	// wood; else that root (or fork) is left out. Roots draw their numbers
-	// from their own random stream, all before any ground test, so the rest
-	// of the tree is the same on any terrain.
+	// wood than the trunk (rib) and the root itself; else that root (or
+	// fork) is left out. Roots draw their numbers from their own random
+	// stream, all before any ground test, so the rest of the tree is the
+	// same on any terrain.
 	//
-	// Per species: apple rarely and only 2 x 2; jungle only 2 x 2, a bit more
-	// often; kapok always, 2-3 out, sometimes forked; the others never.
+	// Per species: apple rarely and only 2 x 2, one cell (a base at the
+	// foot); jungle only 2 x 2, a bit more often, 2 out, a third of them
+	// starting 2 up; kapok always, mostly from 2-3 up, 2-3 out, often forked.
+	// high: percent for h = 0, 2 (the rest 3).
 	var ROOTS = {
-		apple: {pct: 25, min: 1, max: 2, reach: [2, 2], fork: 0},
-		jungle: {pct: 45, min: 1, max: 3, reach: [2, 2], fork: 0},
-		kapok: {pct: 100, min: 0, max: 0, reach: [2, 3], fork: 35}
+		apple: {pct: 25, min: 1, max: 2, reach: [1, 1], high: [100, 0], fork: 0},
+		jungle: {pct: 45, min: 1, max: 3, reach: [2, 2], high: [65, 35], fork: 0},
+		kapok: {pct: 100, min: 0, max: 0, reach: [2, 3], high: [20, 45], fork: 55}
 	};
 
 	// The stem cells of layer y that lie furthest out on side d (CARD).
@@ -967,9 +972,21 @@
 		return cells;
 	}
 
-	function rootCellOk(t, x, y, z, px, py, pz) {
+	// A root cell: ground under its column at the foot level, none at the
+	// root's level, free, and touching no wood but its predecessor (and the
+	// trunk, for a rib base).
+	function rootCellOk(t, c, p) {
+		var x = c[0], y = c[1], z = c[2];
 		if (!t.isGround(x, -1, z) || t.isGround(x, 0, z) || getCell(t, x, y, z) !== undefined) { return false; }
-		return cleanStep(t, x, y, z, px, py, pz);
+		for (var i = 0; i < 6; i++) {
+			var nx = x + NEIGHBOURS[i][0], ny = y + NEIGHBOURS[i][1], nz = z + NEIGHBOURS[i][2];
+			var nk = key(nx, ny, nz);
+			if (!(nx === p[0] && ny === p[1] && nz === p[2]) && isWood(t, nx, ny, nz) &&
+				!(c[3] === 'base' && t.stemSet[nk] === true)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// Place a list of cells [x, y, z, kind, rot] after `from` if every one
@@ -977,9 +994,8 @@
 	function placeRun(t, from, run) {
 		var p = from;
 		for (var i = 0; i < run.length; i++) {
-			var c = run[i];
-			if (!rootCellOk(t, c[0], c[1], c[2], p[0], p[1], p[2])) { return false; }
-			p = c;
+			if (!rootCellOk(t, run[i], p)) { return false; }
+			p = run[i];
 		}
 		for (var j = 0; j < run.length; j++) {
 			putCell(t, run[j][0], run[j][1], run[j][2], run[j][3], run[j][4]);
@@ -996,14 +1012,16 @@
 		var go = chance(rng, plan.pct);
 		var s0 = rint(rng, 0, 3);
 		var count = rint(rng, plan.min, plan.max);
-		// what each side would get: [anchor index, reach, fork side or 0]
+		// what each side would get: [anchor index, reach, fork side or 0, h]
 		var wish = [];
 		for (var d = 0; d < 4; d++) {
 			var n = plan.max === 0 ? rint(rng, 1, 2) : 0;   // kapok: per side
 			var list = [];
 			for (var k = 0; k < 2; k++) {
+				var hp = rint(rng, 0, 99);
 				list.push([rint(rng, 0, 2), rint(rng, plan.reach[0], plan.reach[1]),
-					chance(rng, plan.fork) ? (chance(rng, 50) ? 1 : -1) : 0]);
+					chance(rng, plan.fork) ? (chance(rng, 50) ? 1 : -1) : 0,
+					hp < plan.high[0] ? 0 : (hp < plan.high[0] + plan.high[1] ? 2 : 3)]);
 			}
 			wish.push({n: n, list: list});
 		}
@@ -1016,43 +1034,52 @@
 			if (plan.max !== 0 && count === 2 && i === 2) { want = 1; }
 			for (var r = 0; r < want; r++) {
 				var w = wish[side].list[r];
-				var cells = sideCells(t, 0, side);
-				// two roots on one side leave from its two ends
-				var at = want === 2 ? (r === 0 ? 0 : cells.length - 1) : w[0] % cells.length;
-				if (rootRun(t, cells[at], side, w[1], w[2])) { made = made + 1; }
+				var cells = sideCells(t, w[3], side);
+				if (cells.length > 0) {
+					// two roots on one side leave from its two ends
+					var at = want === 2 ? (r === 0 ? 0 : cells.length - 1) : w[0] % cells.length;
+					if (rootRun(t, cells[at], side, w[3], w[1], w[2])) { made = made + 1; }
+				}
 			}
 		}
 		t.facts.roots = made;
 	}
 
-	// One root from stem cell a (x, z) on side d, `reach` out along the
-	// ground: base, branch..., twig. `fork` (+1 / -1 / 0) adds a twig to one
-	// side of its first branch cell.
-	function rootRun(t, a, d, reach, fork) {
+	// One root from stem cell a (x, z) on side d: a base one out at height
+	// h, bases straight down beside the trunk to the ground, then on along
+	// the ground to `reach` out (branch..., twig). `fork` (+1 / -1 / 0) adds a
+	// toe twig to one side of the first ground cell beyond the rib.
+	function rootRun(t, a, d, h, reach, fork) {
 		var dx = CARD[d][0], dz = CARD[d][1];
 		var hrot = dx !== 0 ? 12 : 4;
 		var run = [];
-		for (var out = 1; out <= reach; out++) {
-			run.push([a[0] + dx * out, 0, a[1] + dz * out, out === 1 ? 'base' : (out === reach ? 'twig' : 'branch'), hrot]);
+		for (var y = h; y >= 0; y--) {
+			run.push([a[0] + dx, y, a[1] + dz, 'base', y === h ? hrot : 0]);
 		}
-		if (!placeRun(t, [a[0], 0, a[1]], run)) { return false; }
-		if (fork !== 0 && reach >= 3) {
-			var c = run[1];
+		for (var out = 2; out <= reach; out++) {
+			run.push([a[0] + dx * out, 0, a[1] + dz * out, out === reach ? 'twig' : 'branch', hrot]);
+		}
+		if (!placeRun(t, [a[0], h, a[1]], run)) { return false; }
+		if (fork !== 0 && reach >= 2) {
+			var c = run[h + 1];
 			placeRun(t, c, [[c[0] - dz * fork, 0, c[2] + dx * fork, 'twig', dx !== 0 ? 4 : 12]]);
 		}
 		return true;
 	}
 
-	// The Shapes view's root study: a w x w trunk 4 high on the given ground
-	// with one root tried on each side (from the side's middle cell), a fork
-	// on side 1 when `fork` is set.
-	function rootStudy(isGround, w, reach, fork) {
+	// The Shapes view's root study: a w x w trunk 5 high on the given ground
+	// with one root tried on each side (from the side's middle cell), each
+	// side's root given as [h, reach, fork] in `specs`.
+	function rootStudy(isGround, w, specs) {
 		var t = newTree('kapok', 0, isGround);
 		var ax = w === 2 ? 0 : 1;
-		for (var y = 0; y < 4; y++) { trunkLayer(t, y, ax, ax, w); }
+		for (var y = 0; y < 5; y++) { trunkLayer(t, y, ax, ax, w); }
 		for (var d = 0; d < 4; d++) {
-			var cells = sideCells(t, 0, d);
-			rootRun(t, cells[idiv(cells.length, 2)], d, reach, d === 1 ? fork : 0);
+			var sp = specs[d];
+			if (sp) {
+				var cells = sideCells(t, sp[0], d);
+				rootRun(t, cells[idiv(cells.length, 2)], d, sp[0], sp[1], sp[2]);
+			}
 		}
 		return finish(t);
 	}

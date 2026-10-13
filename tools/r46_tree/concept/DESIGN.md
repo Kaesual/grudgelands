@@ -1,4 +1,4 @@
-# Tree concepts — growth model per species (Round 46, lane TREE, steps 2–4)
+# Tree concepts — growth model per species (Round 46, lane TREE, steps 2–5)
 
 The viewer (`trees.html`, built by `build.py`) runs the generator in
 `treegen.js`; the wood shapes are data in `shapes.js` (which also writes the
@@ -131,26 +131,28 @@ and every end is a two-pronged claw whose prongs go level or up (down only
 on a drooping end). The top is a broken stub. 1–4 grey tufts (radius 1.1–1.6;
 step 3: more foliage). Keeps: bent, mostly bare.
 
-## Roots (step 4)
+## Roots (steps 4–5)
 
-A few pieces at the foot of a thick trunk that lie on the ground and taper
-into it, using the existing pieces (no new shape): a limb base beside the
-trunk, a branch (only in 3-long roots) and a twig at the end; a 3-long root
-may fork a twig sideways from its branch. Only the base and the twig join
-the ground, and only through their bottom: they list the ground in
-`connects_to` (`group:soil` — dirt, grass, the litters, blight dirt, mud —
-plus `group:sand`, `default:gravel`; mesa clay if roots ever come there), and
-the ground nodes declare `connect_sides = {"top"}`. So the base rests on the
-ground at the trunk and the twig dives in at the end; a branch between them
-keeps 3/16 above the ground like a root arching slightly. Tried and dropped:
-roots leaving the trunk at knee height and stepping down (they read as legs
-or a spider), and roots where every cell joins the ground (a comb of stubs).
+Pieces at the foot of a thick trunk, from the existing shapes (no new one).
+A root leaves the trunk at height h (0, 2 or 3) one cell out: limb bases go
+from there straight down beside the trunk to the ground — a buttress rib
+fused to the trunk, each base joining it sideways through its long arm —
+then the root runs on along the ground (a branch, a twig at the end) as a
+flare; a fork adds a toe twig sideways where the flare leaves the rib. Only
+the base and the twig join the ground, and only through their bottom: they
+list the ground in `connects_to` (`group:soil` — dirt, grass, the litters,
+blight dirt, mud — plus `group:sand`, `default:gravel`; mesa clay if roots
+ever come there), and the ground nodes declare `connect_sides = {"top"}`. So
+the rib stands on the ground and the flare dives in at its end; a branch in a
+3-long flare keeps 3/16 above the ground like a root arching slightly.
+Tried and dropped: roots stepping down away from the trunk (legs, a
+spider), and roots where every cell joins the ground (a comb of stubs).
 
 | species | when | roots |
 |---|---|---|
-| apple | 2 × 2 trees, 25 % of them (≈ 10 % of all apples) | 1–2, opposite sides, 2 out |
-| jungle | 2 × 2 trees, 45 % of them (≈ 15 % of all) | 1–3 on different sides, 2 out |
-| kapok | always | per side 1–2 (2 from a 3 × 3 side leave its two ends), 2–3 out, 35 % of the 3-long ones fork |
+| apple | 2 × 2 trees, 25 % of them (≈ 10 % of all apples) | 1–2, opposite sides, one cell: a base at the foot diving in |
+| jungle | 2 × 2 trees, 45 % of them (≈ 15 % of all) | 1–3 on different sides, 2 out; 35 % start 2 up (a rib) |
+| kapok | always | per side 1–2 (2 from a 3 × 3 side leave its two ends), 2–3 out; start at 2 (45 %), 3 (35 %) or the foot (20 %); 55 % fork |
 | others | never | — |
 
 **Ground test.** The generator takes `isGround(x, y, z)` (tree coordinates,
@@ -158,7 +160,9 @@ the foot on y = -1). Every root cell needs ground right under its column at
 the foot level (`isGround(x, -1, z)`), none at the root's own level
 (`isGround(x, 0, z)` false: the terrain does not rise there), a free cell and
 no other wood touching it; else that root (or fork) is left out as a whole.
-Roots draw their numbers from their own random stream before any test, so
+A rib's cells may touch the trunk; any other wood touching a root cell
+rules it out. Roots draw their numbers from their own random stream before
+any test, so
 the rest of the tree is the same on any terrain (checked). The Shapes view
 shows a hillside: west of the trunk the ground falls away, east of it it
 rises, so only the north and south roots grow.

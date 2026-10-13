@@ -9,7 +9,8 @@
 // quarter pieces carry facedir 0..3, base/branch/twig/log grain 0, 4 or 12;
 // a quarter is met from the side only by trunk pieces or a limb base, from
 // above only by a quarter of the same turn or a twig; the .obj files match;
-// roots only in apple / jungle (2 x 2) and kapok (always), only where the
+// roots only in apple / jungle (2 x 2) and kapok (always), apple ones one
+// cell long, all within their reach of the trunk, only where the
 // ground test passes, and the tree otherwise the same on any ground.
 // Then the inline scripts of trees.html must parse.
 'use strict';
@@ -97,6 +98,19 @@ G.ORDER.forEach(function (sp) {
 			fail(sp + ' ' + seed + ' has roots');
 		}
 		if (sp === 'kapok' && !a.roots.length) { fail(sp + ' ' + seed + ' kapok without roots'); }
+		// apple roots are one cell (a base at the foot); every root cell lies
+		// within its species' reach (apple 1, jungle 2, kapok 3) of the trunk
+		var reach = {apple: 1, jungle: 2, kapok: 3}[sp];
+		a.roots.forEach(function (r) {
+			var n = map[r[0] + ',' + r[1] + ',' + r[2]];
+			if (sp === 'apple' && !(r[1] === 0 && n.kind === 'base')) { fail(sp + ' ' + seed + ' apple root longer than 1'); }
+			var near = false;
+			a.nodes.forEach(function (m) {
+				if ((m.kind === 'quarter' || m.kind === 'trunk') && m.y === 0 &&
+					Math.abs(m.x - r[0]) + Math.abs(m.z - r[2]) <= reach + 1) { near = true; }
+			});
+			if (!near) { fail(sp + ' ' + seed + ' root reaches too far'); }
+		});
 		if (a.roots.length) { agg.rooted++; agg.roots += a.roots.length; }
 		var top = function (x, z) { return ((x + 50) * 7919 + (z + 50) * 104729 + seed * 31) % 3 - 1; };
 		var bumpy = function (x, y, z) { return y < top(x, z); };
