@@ -9,9 +9,10 @@
 //   quarter  MESH (drawtype "mesh", paramtype2 facedir 0..3): a quarter of
 //            a chamfered trunk column. Its inner corner (the trunk axis) is
 //            at +x +z for facedir 0. The outline seen from above runs from
-//            the +x border to the +z border through PROFILES[name]; the two
-//            faces on the axis side are left out (they always touch the
-//            other quarters or log cubes). Caps top and bottom.
+//            the +x border to the +z border through PROFILES[name]. Caps
+//            top and bottom; the two faces on the axis side (+x and +z for
+//            facedir 0) are closed with the end grain (Round 47, the user:
+//            a partly felled trunk shows cut wood, not a hollow shell).
 //   branch   connected node box, 10/16 thick.
 //   twig     connected node box, 6/16 thick; the only piece that also
 //            connects to leaves (only to a leaf above it, see LEAF_SIDES)
@@ -111,13 +112,31 @@
 				caps.push([v(axis), v(p1), v(p2)]);
 			});
 		}
-		return {sides: sides, caps: caps};
+		// The two axis-side faces, end grain (tile 1) like the caps: each
+		// takes the top cap's texture coordinates along their shared top
+		// edge, so the rings run on across that edge and down the face (the
+		// face shows the end-grain picture standing up, hinged at the cap).
+		var inner = [];
+		// The +z face (x runs along it) and the +x face (z runs along it),
+		// each the whole node side from the axis edge to the far border.
+		[false, true].forEach(function (fixedX) {
+			var quad = [];
+			[[0.5, -0.5], [-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]].forEach(function (e) {
+				var along = e[0], y = e[1];
+				quad.push(fixedX ?
+					{p: [0.5, y, along], n: [1, 0, 0], uv: [y + 0.5, along + 0.5]} :
+					{p: [along, y, 0.5], n: [0, 0, 1], uv: [along + 0.5, y + 0.5]});
+			});
+			inner.push(quad);
+		});
+		return {sides: sides, caps: caps, inner: inner};
 	}
 
 	// A Wavefront OBJ for the engine: Luanti's loader negates x and flips v
 	// (irr/src/COBJMeshFileLoader.cpp readVec3 / readUV, "change
 	// handedness"), so x and v are written mirrored here. Two material
-	// groups: caps first (tile 1, *_tree_top), sides second (tile 2, bark).
+	// groups: caps and the two axis-side faces first (tile 1, *_tree_top),
+	// sides second (tile 2, bark).
 	function toObj(name) {
 		var m = quarterMesh(name);
 		var out = ['# Grudgelands R46 tree concept: trunk quarter piece "' + name + '"',
@@ -138,6 +157,7 @@
 		}
 		var caps = [], sides = [];
 		m.caps.forEach(function (t) { emit(windOut(t), caps); });
+		m.inner.forEach(function (q) { emit(windOut(q), caps); });
 		m.sides.forEach(function (q) { emit(windOut(q), sides); });
 		lines = out.concat(['g caps', 'usemtl caps'], caps, ['g bark', 'usemtl bark'], sides);
 		return lines.join('\n') + '\n';
