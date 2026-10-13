@@ -13,7 +13,7 @@
 --     the shipped quests). Source "discovery": no race bonus, the usual
 --     "+N XP" feed line.
 --   * The level-up sound plays once: by grug_xp when the grant levels the
---     character up, else here.
+--     character up, else here; never for a grant of 0 (the level cap).
 --   * The visited set lives in player meta (KEY, a core.serialize'd sorted
 --     list of zone ids). A character without one (a new character, or one
 --     from before Round 47) gets the zone it stands in marked SILENTLY at its
@@ -43,7 +43,7 @@ end
 -- api:
 --   record(id)               -> zone record or nil (grug_zones.get)
 --   level(player)            -> character level
---   add_xp(player, n, source)
+--   add_xp(player, n, source) -> ok, granted
 --   quest_reward(level, weight)
 --   play(event, player)      grug_sounds.play
 --   read(player), write(player, text)   the KEY meta string
@@ -106,11 +106,13 @@ function D.new(api)
 		save(player, set)
 		local before = api.level(player)
 		local amount = D.amount(record.level_min, before, api.quest_reward)
-		api.add_xp(player, amount, D.SOURCE)
-		if api.level(player) == before then
+		local _, granted = api.add_xp(player, amount, D.SOURCE)
+		-- At the level cap set_xp clamps the grant to 0: no XP, no fanfare
+		-- (the zone stays visited).
+		if (granted or 0) > 0 and api.level(player) == before then
 			api.play("level_up", player)
 		end
-		return amount
+		return granted or 0
 	end
 
 	return E

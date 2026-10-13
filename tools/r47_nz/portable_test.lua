@@ -334,6 +334,20 @@ do
 	for _, fn in ipairs(leaves) do fn(cid) end
 	online.cid = nil
 
+	-- At the level cap: set_xp grants 0, so no feed line and no fanfare, but
+	-- the zone is marked.
+	local eve = new_player("eve", {x = 300, y = 10, z = -2600},
+		grug_xp.xp_for_level(grug_xp.MAX_LEVEL), serialize({"elandor_dawnmere_fields"}))
+	step(1.1)
+	local fed_before, plays_before = #fed, #sounds
+	eve.pos = {x = 300, y = 10, z = -2100}
+	step(1.1)
+	check(#fed == fed_before and #sounds == plays_before and
+		visited(eve).elandor_goldmead_vale,
+		"Z at the level cap: no XP, no sound, the zone marked")
+	for _, fn in ipairs(leaves) do fn(eve) end
+	online.eve = nil
+
 	-- The pure rules.
 	check(D.real(RECORDS.elandor_goldmead_vale) and not D.real(RECORDS.elandor_highcourt) and
 		not D.real(nil), "Z a real zone: a zone record that is not civic")

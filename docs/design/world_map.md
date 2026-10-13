@@ -561,7 +561,8 @@ were in, and quest texts and level routes now name zones.
   quarter of the median quest weight of 3 kill equivalents, so a high zone
   pays no more than the character's own level — with source `discovery` (no
   race bonus, the usual "+N XP" feed line) and the level-up sound, once even
-  when the XP levels the character up. A real zone is any zone but the six
+  when the XP levels the character up; at the level cap no XP is granted
+  and no sound plays, the zone is still marked. A real zone is any zone but the six
   civic capital zones; a start town or capital city is its town, never a
   zone, and the open sea has none. The visited zones are kept per character
   in player meta (`grug_map:visited_zones`). A character without that record
