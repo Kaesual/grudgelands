@@ -786,8 +786,7 @@ local function loader(directory)
 							tz + 1) and
 						layout.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
 							height + 2) then
-					dressing.gravewood(buf, undead, tx, tz, height)
-					trees = trees + 1
+					if dressing.gravewood(buf, undead, tx, tz, height) then trees = trees + 1 end
 				end
 			end
 		end

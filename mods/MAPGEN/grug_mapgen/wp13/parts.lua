@@ -201,6 +201,26 @@ local SHAPED = {
 }
 for name in pairs(SHAPED) do PARAM2_KIND[name] = M.FACEDIR end
 
+-- The tree shape nodes (Round 47, mods/ITEMS/grug_trees/shapes.lua): the
+-- quarter, limb base, branch and twig of every wood, facedir nodes the
+-- generated town trees write (wp13/dressing.lua). They are the one family
+-- that lies on its side: a limb's bark grain runs along z or x (facedir 4
+-- or 12), so `Buffer:put` lets them take every facedir axis and
+-- `rotate_param2` turns those axes with the plot.
+local TREE_PIECES = {}
+for _, wood in ipairs({"apple", "jungle", "acacia", "pine", "aspen", "silverwood",
+		"gravewood"}) do
+	for _, shape in ipairs({"quarter", "base", "branch", "twig"}) do
+		local name = "grug_trees:" .. wood .. "_" .. shape
+		TREE_PIECES[name] = true
+		PARAM2_KIND[name] = M.FACEDIR
+	end
+end
+
+function M.tree_piece(name)
+	return TREE_PIECES[name] == true
+end
+
 function M.shaped(name)
 	return SHAPED[name] == true or name:sub(1, 7) == "stairs:"
 end
@@ -458,6 +478,15 @@ function M.wallmounted_support(dx, dy, dz)
 	return value
 end
 
+-- facedir 4..19 turned by 0..3 quarter turns about +Y (rows of
+-- wp40/r6_templates.lua's FACEDIR_ROTATE).
+local LYING_FACEDIR_TURN = {
+	4,13,10,19, 5,14,11,16, 6,15,8,17, 7,12,9,18,
+	8,17,6,15, 9,18,7,12, 10,19,4,13, 11,16,5,14,
+	12,9,18,7, 13,10,19,4, 14,11,16,5, 15,8,17,6,
+	16,5,14,11, 17,6,15,8, 18,7,12,9, 19,4,13,10,
+}
+
 -- One quarter turn about +Y maps local +Z to world +X and local +X to
 -- world -Z; that is the same convention the renderer's `--view` uses.
 function M.rotate_param2(param2, kind, turns)
@@ -478,13 +507,18 @@ function M.rotate_param2(param2, kind, turns)
 		for _ = 1, turns do value = step[value] or value end
 		return value
 	end
-	-- facedir: only the upright (axis 0) and the upside-down (axis 20)
-	-- families occur in settlements. Upside-down nodes turn the other way,
-	-- because flipping about a horizontal axis reverses the sense of Y.
+	-- facedir: the upright (axis 0) and the upside-down (axis 20) families,
+	-- and the lying tree pieces (axes 4..19, `M.tree_piece`). Upside-down
+	-- nodes turn the other way, because flipping about a horizontal axis
+	-- reverses the sense of Y; a lying piece's axis turns with the plot
+	-- (+Z to +X, the facedir table wp40/r6_templates.lua turns templates by).
 	local axis = param2 - (param2 % 4)
 	local rot = param2 % 4
 	if axis == 0 then return (rot + turns) % 4 end
 	if axis == 20 then return 20 + ((rot - turns) % 4) end
+	if axis >= 4 and axis <= 16 then
+		return LYING_FACEDIR_TURN[(param2 - 4) * 4 + turns + 1]
+	end
 	error("wp13 parts: unsupported facedir axis " .. tostring(axis), 0)
 end
 
@@ -545,7 +579,7 @@ function Buffer:put(x, y, z, name, param2)
 	-- this is the construction-time half, written without a registry.
 	if M.param2_kind(name) == M.FACEDIR then
 		local axis = param2 - (param2 % 4)
-		if axis ~= 0 then
+		if axis ~= 0 and not (TREE_PIECES[name] and param2 < 24) then
 			if axis ~= UPSIDE_DOWN then
 				error("wp13 parts: settlements use only the upright and the " ..
 					"upside-down facedir axis, not " .. axis, 0)

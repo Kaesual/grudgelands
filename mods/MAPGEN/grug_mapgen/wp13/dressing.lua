@@ -239,164 +239,126 @@ local function loader(directory)
 		buf:put(x, 3, z, palette.node("roof_slab"))
 	end
 
-	-- A pine: a bare trunk carrying a layered, tapering crown.
+	-- TREES (Round 47 lane TC, ruling 3): every town tree is the seeded
+	-- generator's (wp40/treegen.lua through wp40/tree_templates.lua), so a
+	-- town's trees match the wild ones. The routine names the species (a
+	-- pine, an apple, an aspen-like column, an acacia, a gravewood, a jungle
+	-- tree, a kapok) and the palette names the wood: its `tree_log` picks the
+	-- shape nodes of that wood and `tree_leaves` the foliage, so a palette
+	-- of another wood still grows the routine's shape. Apples hang only on
+	-- apple wood.
 	--
-	-- The proportions are those of the vendored pine schematics
-	-- (mods/BASE/default/schematics/pine_tree.mts and small_pine.mts): the
-	-- crown occupies only the top four or five courses, the widest ring is
-	-- two nodes out and sits at the bottom of the crown, and everything
-	-- below that is clear stem. The previous version started its crown three
-	-- nodes above the ground on a five node stem, which read as a shrub from
-	-- every camera angle.
+	-- The seed is the town's own: a hash of the species, the stem's
+	-- pad-local position and the attempt, the same on every start and in
+	-- every world (a composition is the same in every world). A tree is
+	-- tried with up to TREE_ATTEMPTS seeds and the first that fits is
+	-- written: every cell over the composition's own ground (a ground cell
+	-- at y = 0 under its column, the rule `layout.free` uses), below `top`
+	-- (21 by default: a start's and a capital plot's authorized volume end
+	-- at 24, and a plot clears two courses above its tallest cell; 40 for the
+	-- kapok of a capital core), and no wood cell on a built cell (one neither absent
+	-- nor air). A leaf on a built cell is left out; among the seeds without
+	-- a wood collision the first with no such leaf wins, else the one with
+	-- the fewest. Nothing fits: no tree, and the routine returns false
+	-- (true when it planted). Roots test the pad's ground like the world's
+	-- (wild soil under the column at the foot, none at the foot's level).
 	--
-	-- `height` is the trunk: the lowest needle sits at `height - 4`, so a
-	-- nine node stem shows five clear logs and an eleven node stem seven.
-	-- The crown is cut with a parity notch per layer, so neighbouring trees
-	-- of the same height are not the same silhouette.
-	function M.tree(buf, palette, x, z, height)
-		local log = palette.node("tree_log")
-		local needles = palette.node("tree_leaves")
-		for y = 1, height do buf:put(x, y, z, log) end
-		-- reach per crown layer, from the widest ring up to the tip
-		local LAYERS = {
-			{offset = -4, reach = 2, notch = true},
-			{offset = -3, reach = 2, notch = false},
-			{offset = -2, reach = 1, notch = false},
-			{offset = -1, reach = 1, notch = true},
-			{offset = 0, reach = 1, notch = false},
-		}
-		for index = 1, #LAYERS do
-			local layer = LAYERS[index]
-			local y = height + layer.offset
-			if y >= 2 then
-				local reach = layer.reach
-				for dz = -reach, reach do
-					for dx = -reach, reach do
-						local span = math.abs(dx) + math.abs(dz)
-						local corner = math.abs(dx) == reach and
-							math.abs(dz) == reach
-						local skip = corner or
-							(layer.notch and span == reach and
-								(x + z + dx + dz) % 2 == 1)
-						if span <= reach and not skip and
-								not (dx == 0 and dz == 0) then
-							buf:put(x + dx, y, z + dz, needles)
-						end
-					end
-				end
-			end
+	-- `height` is the caller's old stem length and no longer read: the
+	-- generator decides a tree's height.
+	local TREE_ATTEMPTS = 8
+	local TREE_TOP = 21
+	local tree_module
+	local function tree_templates()
+		if not tree_module then
+			local wp40 = directory .. "/../wp40"
+			tree_module = dofile(wp40 .. "/tree_templates.lua")(
+				dofile(wp40 .. "/treegen.lua"))
 		end
-		buf:put(x, height + 1, z, needles)
+		return tree_module
+	end
+	local SPECIES_SALT = {apple = 1, jungle = 2, kapok = 3, acacia = 4, pine = 5,
+		aspen = 6, silverwood = 7, gravewood = 8}
+	local function tree_seed(species, x, z, attempt)
+		return ((x + 4096) * 73856093 + (z + 4096) * 19349663 +
+			attempt * 83492791 + SPECIES_SALT[species] * 15485863) % 2147483646 - 1
 	end
 
-	-- A broadleaf tree on the proportions of the vendored apple tree
-	-- (mods/BASE/default/schematics/apple_tree.mts, decoded: 7 x 8 x 7, four
-	-- clear trunk logs, then four crown courses). `height` is the trunk, so a
-	-- four log stem shows the whole stem below the lowest leaf and a six log
-	-- stem an orchard standard.
-	--
-	-- The crown is four diamonds clipped to the 7 x 7 box, widest at the
-	-- bottom, exactly as the schematic: |dx| + |dz| <= 4 (capped at reach 3),
-	-- then <= 3, then <= 3 capped at reach 2, then the plus. Two branch logs
-	-- sit inside the lowest crown course, which is what gives the schematic
-	-- its silhouette; a parity notch keeps neighbouring crowns distinct.
-	function M.broadleaf(buf, palette, x, z, height)
-		local log = palette.node("tree_log")
-		local leaves = palette.node("tree_leaves")
-		for y = 1, height do buf:put(x, y, z, log) end
-		local LAYERS = {
-			{offset = 1, span = 4, reach = 3, notch = true},
-			{offset = 2, span = 3, reach = 3, notch = false},
-			{offset = 3, span = 3, reach = 2, notch = false},
-			{offset = 4, span = 1, reach = 1, notch = false},
-		}
-		for index = 1, #LAYERS do
-			local layer = LAYERS[index]
-			local y = height + layer.offset
-			for dz = -layer.reach, layer.reach do
-				for dx = -layer.reach, layer.reach do
-					local span = math.abs(dx) + math.abs(dz)
-					local skip = layer.notch and span == layer.span and
-						(x + z + dx + dz) % 2 == 1
-					if span <= layer.span and not skip and
-							not (dx == 0 and dz == 0) then
-						buf:put(x + dx, y, z + dz, leaves)
-					end
+	function M.grown(buf, palette, species, x, z, top)
+		local trees = tree_templates()
+		top = top or TREE_TOP
+		local log, leaves = palette.node("tree_log"), palette.node("tree_leaves")
+		-- the palette's wood: the species row whose trunk the palette logs are
+		local wood
+		for _, row in ipairs(trees.SPECIES) do
+			if row.trunk == log then wood = row break end
+		end
+		if not wood then error("wp13 dressing: no tree wood for " .. log, 0) end
+		local names = {trunk = log, quarter = wood.quarter, base = wood.base,
+			branch = wood.branch, twig = wood.twig, leaves = leaves}
+		local own = trees.BY_KEY[species]
+		local function soil(tx, ty, tz)
+			local cell = buf:at(x + tx, ty + 1, z + tz)
+			return cell ~= nil and parts.wild_soil(cell.name)
+		end
+		local best, best_leaves
+		for attempt = 0, TREE_ATTEMPTS - 1 do
+			local cells = trees.tree(species, tree_seed(species, x, z, attempt), soil)
+			local fits, blocked = true, 0
+			for index = 1, #cells do
+				local cell = cells[index]
+				local cx, cy, cz = x + cell.x, cell.y + 1, z + cell.z
+				local ground = buf:at(cx, 0, cz)
+				local at = buf:at(cx, cy, cz)
+				local built = at ~= nil and at.name ~= "air"
+				if ground == nil or ground.name == "air" or cy > top or
+						(built and cell.flag ~= trees.LEAF) then
+					fits = false
+					break
+				end
+				if built then
+					cell.skip = true
+					blocked = blocked + 1
 				end
 			end
-			buf:put(x, y, z, leaves)
+			if fits and (not best or blocked < best_leaves) then
+				best, best_leaves = cells, blocked
+				if blocked == 0 then break end
+			end
 		end
-		-- Branch logs in the lowest crown course, as the schematic has them.
-		for _, branch in ipairs({{-1, 0}, {1, 1}}) do
-			buf:put(x + branch[1], height + 1, z + branch[2], log)
+		if not best then return false end
+		for index = 1, #best do
+			local cell = best[index]
+			if not cell.skip then
+				-- the cell's own name for its kind in the palette's wood
+				local name = cell.name
+				if name == own.trunk then name = names.trunk
+				elseif name == own.quarter then name = names.quarter
+				elseif name == own.base then name = names.base
+				elseif name == own.branch then name = names.branch
+				elseif name == own.twig then name = names.twig
+				elseif name == own.leaves then name = names.leaves
+				elseif name == own.fruit and wood.fruit ~= own.fruit then name = names.leaves
+				end
+				buf:put(x + cell.x, cell.y + 1, z + cell.z, name, cell.param2)
+			end
 		end
+		return true
 	end
 
-	-- A columnar tree on the proportions of the vendored aspen, course for
-	-- course. `mods/BASE/default/schematics/aspen_tree.mts` decodes (5 x 14 x
-	-- 5, trunk at its centre column) to:
-	--
-	--     y 0-5   trunk only, six clear logs
-	--     y 6     3 x 3 leaf ring round the trunk
-	--     y 7     full 5 x 5 leaf square round the trunk
-	--     y 8     3 x 3      y 9  5 x 5      y 10 3 x 3     y 11 5 x 5
-	--     y 12    3 x 3, and its CENTRE is a leaf: the trunk stopped at 11
-	--     y 13    one leaf, alone, two courses above the last log
-	--
-	-- Silverwood IS that schematic with the aspen nodes replaced
-	-- (`grug_trees.silverwood_replacements`), so this is the silhouette the
-	-- surrounding elf forest actually grows and an authored grove matches it.
-	--
-	-- Two things were wrong with the first version and the review caught
-	-- both. The top leaf sat at `height + 1`, one course short, on top of the
-	-- last crown course instead of clear above it. And the wide courses
-	-- carried a parity notch -- every other edge cell dropped, keyed on the
-	-- stem's position -- meant to keep neighbouring stems from sharing a
-	-- silhouette. It took 868 leaf cells out of the corpus and left each of
-	-- them with no leaf, log or anything else across any of its six faces:
-	-- the crowns were lace. The aspen's own alternation of 3 x 3 and 5 x 5
-	-- already breaks the outline, and the stem heights already vary, so the
-	-- notch bought nothing the schematic was not doing better.
-	--
-	-- Leaf decay: default registers aspen leaves with radius 3, and no leaf
-	-- here is further than 2 from the trunk in x/z and 2 above the last log,
-	-- so every one of them stays inside the radius of its own stem.
-	--
-	-- `height` is the trunk: a twelve log stem reproduces the schematic
-	-- exactly, and a shorter one keeps the six clear logs and loses crown
-	-- courses from the bottom, never from the top.
-	function M.columnar(buf, palette, x, z, height)
-		local log = palette.node("tree_log")
-		local leaves = palette.node("tree_leaves")
-		for y = 1, height do buf:put(x, y, z, log) end
-		-- Reach per crown course, counted down from the top log: 1 is the
-		-- 3 x 3 ring, 2 the full 5 x 5 square.
-		local LAYERS = {
-			{offset = -5, reach = 1}, {offset = -4, reach = 2},
-			{offset = -3, reach = 1}, {offset = -2, reach = 2},
-			{offset = -1, reach = 1}, {offset = 0, reach = 2},
-			{offset = 1, reach = 1},
-		}
-		for index = 1, #LAYERS do
-			local layer = LAYERS[index]
-			local y = height + layer.offset
-			if y >= 2 then
-				for dz = -layer.reach, layer.reach do
-					for dx = -layer.reach, layer.reach do
-						if dx ~= 0 or dz ~= 0 then
-							buf:put(x + dx, y, z + dz, leaves)
-						elseif y > height then
-							-- The last crown course stands above the stem, so
-							-- its centre is a leaf, not the log that is not
-							-- there.
-							buf:put(x, y, z, leaves)
-						end
-					end
-				end
-			end
-		end
-		buf:put(x, height + 2, z, leaves)
+	-- The routines the settlements call, one per species.
+	function M.tree(buf, palette, x, z) return M.grown(buf, palette, "pine", x, z) end
+	function M.broadleaf(buf, palette, x, z) return M.grown(buf, palette, "apple", x, z) end
+	function M.columnar(buf, palette, x, z)
+		local species = palette.node("tree_log") == "default:aspen_tree" and "aspen" or
+			"silverwood"
+		return M.grown(buf, palette, species, x, z)
 	end
+	function M.acacia(buf, palette, x, z) return M.grown(buf, palette, "acacia", x, z) end
+	function M.gravewood(buf, palette, x, z) return M.grown(buf, palette, "gravewood", x, z) end
+	function M.jungle_tree(buf, palette, x, z) return M.grown(buf, palette, "jungle", x, z) end
+	-- The kapok stands in a capital core, whose authorized volume reaches 40.
+	function M.emergent(buf, palette, x, z) return M.grown(buf, palette, "kapok", x, z, 40) end
+
 
 	-- A raised terrace: a masonry podium `height` nodes tall with a flight of
 	-- steps up its `side` ("z-", "z+", "x-" or "x+"), three treads wide and
@@ -423,49 +385,6 @@ local function loader(directory)
 					buf:put(sx, y, sz, palette.node("plaza"))
 				end
 				parts.stair(buf, sx, tread, sz, palette.node("roof_stair"), face)
-			end
-		end
-	end
-
-	-- A savanna acacia on the proportions of the vendored schematic
-	-- (mods/BASE/default/schematics/acacia_tree.mts, decoded: 9 x 9 x 9, five
-	-- clear trunk logs, then two branch arms climbing diagonally to opposite
-	-- corners and a flat two-course umbrella over them). That flat crown on a
-	-- long bare stem is the whole silhouette of the dry flats, and it is the
-	-- opposite of both the conifer and the apple standard: nothing tapers,
-	-- and the widest part is the very top.
-	--
-	-- `height` is the trunk, so the lowest leaf sits at `height + 1` and the
-	-- stem is clear all the way. The branch arms are logs inside the crown,
-	-- exactly as the schematic has them; a parity notch on the outermost ring
-	-- keeps neighbouring crowns from being the same shape.
-	function M.acacia(buf, palette, x, z, height)
-		local log = palette.node("tree_log")
-		local leaves = palette.node("tree_leaves")
-		for y = 1, height do buf:put(x, y, z, log) end
-		-- Two arms, each climbing one node out and one node up, as the
-		-- schematic's branches do.
-		local arm = ((x + z) % 2 == 0) and 1 or -1
-		for step = 1, 2 do
-			buf:put(x + arm * step, height - 2 + step, z + arm * step, log)
-			buf:put(x - arm * step, height - 2 + step, z - arm * step, log)
-		end
-		local LAYERS = {
-			{offset = 1, span = 4, reach = 3, notch = true},
-			{offset = 2, span = 3, reach = 2, notch = false},
-		}
-		for index = 1, #LAYERS do
-			local layer = LAYERS[index]
-			local y = height + layer.offset
-			for dz = -layer.reach, layer.reach do
-				for dx = -layer.reach, layer.reach do
-					local span = math.abs(dx) + math.abs(dz)
-					local skip = layer.notch and span == layer.span and
-						(x + z + dx + dz) % 2 == 1
-					if span <= layer.span and not skip then
-						buf:put(x + dx, y, z + dz, leaves)
-					end
-				end
 			end
 		end
 	end
@@ -625,51 +544,6 @@ local function loader(directory)
 			palette.node("grass_tuft")
 		buf:put(x, 1, z, name, parts.place_param2(name))
 		return name
-	end
-
-	-- A gravewood: the bent, mostly bare dead tree of the blight basin.
-	--
-	-- The proportions are decoded from the mod's own assets
-	-- (`mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts`, 7 x 7 x 7,
-	-- and `grug_gravewood_tall.mts`, 7 x 9 x 7): three clear stem logs, the
-	-- first fork on the fourth course, bent branch runs that reach two or
-	-- three nodes out while rising one, and only four to six grey leaf
-	-- remnants in the whole crown -- a tenth of what a pine or an apple
-	-- carries. Nothing here is a broad canopy.
-	--
-	-- The one deliberate difference from the assets is that the stem carries
-	-- on to its own tip and ends in a leaf remnant. The schematics let the
-	-- trunk stop in mid-air under a fork, and the settlement tree invariant
-	-- (every leaf rooted on an unbroken stem that starts on the ground) is
-	-- worth more than that detail, which the branch runs give back anyway.
-	--
-	-- `height` is the stem. Three of the four arms are taken, chosen by
-	-- position, so neighbouring gravewoods are not the same silhouette.
-	local GRAVEWOOD_ARMS = {
-		{dx = 1, dz = 0, lift = -3, reach = 3},
-		{dx = -1, dz = 0, lift = -2, reach = 2},
-		{dx = 0, dz = 1, lift = -1, reach = 2},
-		{dx = 0, dz = -1, lift = -2, reach = 3},
-	}
-
-	function M.gravewood(buf, palette, x, z, height)
-		local log = palette.node("tree_log")
-		local leaves = palette.node("tree_leaves")
-		for y = 1, height do buf:put(x, y, z, log) end
-		buf:put(x, height + 1, z, leaves)
-		local skip = (x * 37 + z * 53) % 4 + 1
-		for index = 1, #GRAVEWOOD_ARMS do
-			local arm = GRAVEWOOD_ARMS[index]
-			if index ~= skip then
-				local tip_y = height + arm.lift
-				for step = 1, arm.reach do
-					tip_y = height + arm.lift + math.floor(step / 2)
-					buf:put(x + arm.dx * step, tip_y, z + arm.dz * step, log)
-				end
-				buf:put(x + arm.dx * arm.reach, tip_y + 1,
-					z + arm.dz * arm.reach, leaves)
-			end
-		end
 	end
 
 	-- A grave: a flagstone laid in the blight with an upright marker on it.
@@ -843,112 +717,6 @@ local function loader(directory)
 			end
 		end
 		return sown_bones, sown_shrubs
-	end
-
-	-- A jungle tree on the proportions of the vendored schematic
-	-- (mods/BASE/default/schematics/jungle_tree.mts, decoded: 5 x 17 x 5).
-	-- What makes that tree recognisable is not its crown but its silhouette:
-	-- a plus-shaped buttress root three courses high, then a bare single-log
-	-- trunk for two thirds of its height, four small leaf spurs on alternating
-	-- diagonals, and only then a flat crown in the top three courses -- two
-	-- full 5 x 5 leaf slabs and a 3 x 3 cap. A pine's tapering cone and an
-	-- oak's round ball are both wrong for it.
-	--
-	-- `height` is the trunk: the crown occupies `height + 1` to `height + 3`.
-	function M.jungle_tree(buf, palette, x, z, height)
-		local log = palette.node("tree_log")
-		local leaves = palette.node("tree_leaves")
-		for y = 1, height do buf:put(x, y, z, log) end
-		-- The buttress: the four orthogonal neighbours, three courses high.
-		for _, step in ipairs({{0, -1}, {-1, 0}, {1, 0}, {0, 1}}) do
-			for y = 1, 3 do
-				buf:put(x + step[1], y, z + step[2], log)
-			end
-		end
-		-- Four leaf spurs, one per diagonal, climbing the bare trunk. The
-		-- starting diagonal comes off the position, so two neighbouring trees
-		-- of the same height do not carry the same branches.
-		local DIAGONAL = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}}
-		for index = 1, 4 do
-			local spur = DIAGONAL[(index + x + z) % 4 + 1]
-			local y = height - 6 + index
-			if y >= 5 then
-				for dz = 0, 2 do
-					for dx = 0, 2 do
-						if dx + dz > 0 then
-							buf:put(x + spur[1] * dx, y, z + spur[2] * dz, leaves)
-						end
-					end
-				end
-				buf:put(x + spur[1], y, z + spur[2], log)
-			end
-		end
-		-- The crown: two full slabs and a cap, the schematic's own shape.
-		for _, offset in ipairs({1, 2}) do
-			for dz = -2, 2 do
-				for dx = -2, 2 do
-					buf:put(x + dx, height + offset, z + dz, leaves)
-				end
-			end
-		end
-		for dz = -1, 1 do
-			for dx = -1, 1 do
-				buf:put(x + dx, height + 3, z + dz, leaves)
-			end
-		end
-	end
-
-	-- An emergent kapok, on the proportions of
-	-- mods/BASE/default/schematics/emergent_jungle_tree.mts (7 x 37 x 7): a
-	-- buttressed base five cells across, a solid three-by-three trunk, leaf
-	-- collars where the branches leave it, and a seven-cell crown that stands
-	-- clear of everything else. The schematic is thirty-seven courses tall
-	-- and the authorized blueprint volume is twenty-seven, so the trunk is
-	-- shortened and nothing else is: the proportions of base, collar and
-	-- crown are the schematic's.
-	--
-	-- `height` is the top trunk course; the crown reaches `height + 4`.
-	function M.emergent(buf, palette, x, z, height)
-		local log = palette.node("tree_log")
-		local leaves = palette.node("tree_leaves")
-		for y = 1, height do
-			for dz = -1, 1 do
-				for dx = -1, 1 do
-					buf:put(x + dx, y, z + dz, log)
-				end
-			end
-		end
-		-- The buttress: the arms of a five-cell plus, four courses high.
-		for y = 1, 4 do
-			for _, step in ipairs({{0, -2}, {-2, 0}, {2, 0}, {0, 2}}) do
-				buf:put(x + step[1], y, z + step[2], log)
-			end
-		end
-		-- Two leaf collars on the bare trunk, where a branch whorl leaves it.
-		for _, offset in ipairs({8, 4}) do
-			local y = height - offset
-			if y >= 6 then
-				for dz = -2, 2 do
-					for dx = -2, 2 do
-						if math.abs(dx) == 2 or math.abs(dz) == 2 then
-							buf:put(x + dx, y, z + dz, leaves)
-						end
-					end
-				end
-			end
-		end
-		-- The crown: hollow shoulders, a solid course, a cap.
-		local LAYERS = {{1, 4, 3}, {2, 4, 3}, {3, 6, 3}, {4, 3, 2}}
-		for _, layer in ipairs(LAYERS) do
-			local y = height + layer[1]
-			for dz = -layer[3], layer[3] do
-				for dx = -layer[3], layer[3] do
-					if math.abs(dx) + math.abs(dz) <= layer[2] then
-						buf:put(x + dx, y, z + dz, leaves)
-					end
-				end
-			end
-		end
 	end
 
 	-- A totem post: stacked logs banded with the palette's accent stone under
