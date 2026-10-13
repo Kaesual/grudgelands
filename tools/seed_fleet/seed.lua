@@ -20,8 +20,9 @@
 -- written after the sample.
 --
 -- Prints one line, "OK <seed> <seconds> <roster sha256> chunks=<n>
--- chunk_seconds=<s>" or "FAIL <seed> <seconds> <error>" and then raises (a
--- non-zero exit). A failure in the per-chunk path names the chunk.
+-- chunk_seconds=<s> trees=<the generated tree templates' roll-up, 16 hex>" or
+-- "FAIL <seed> <seconds> <error>" and then raises (a non-zero exit). A failure
+-- in the per-chunk path names the chunk.
 local repo, seed = arg[1], arg[2]
 assert(repo and seed and seed:match("^%d+$"), "usage: seed.lua REPO SEED")
 local t0 = os.clock()
@@ -126,6 +127,16 @@ end
 
 local ok, err = pcall(build)
 local roster = ok and R.built.anchor_roster.sha256
+-- The seed's generated tree templates (Round 47): the expander checked every
+-- variant while the runtime was built (bounds, vocabulary, decoration role);
+-- the manifest publishes their roll-up, printed so two runs can be compared.
+local trees
+if ok then
+	trees = R.built.manifest.values.r6_generated_templates_sha256
+	if type(trees) ~= "string" or not trees:match("^%x+$") or #trees ~= 64 then
+		ok, err = false, "generated tree templates missing from the manifest"
+	end
+end
 local chunks, chunk_seconds = 0, 0
 if ok then
 	local started = os.clock()
@@ -158,7 +169,7 @@ end
 local seconds = ("%.1f"):format(os.clock() - t0)
 if ok then
 	print("OK", seed, seconds, roster, "chunks=" .. chunks,
-		("chunk_seconds=%.1f"):format(chunk_seconds))
+		("chunk_seconds=%.1f"):format(chunk_seconds), "trees=" .. trees:sub(1, 16))
 else
 	print("FAIL", seed, seconds, (tostring(err):gsub("[\t\n]", " ")))
 	error("seed " .. seed .. " failed", 0)

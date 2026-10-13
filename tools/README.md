@@ -928,3 +928,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   refund through the real api, the torch triple and its Basic row, the
   enchant inputs and group tokens; `evidence/` the seed 12345 census of
   `r46_or/run.sh` before and after lane OR's merge).
+  `r47_tc` the trees in the world (`portable_test.lua`: the real template
+  expander's variants for six sample world seeds pinned as one roll-up each,
+  among them seeds above 2^53 and the u64 maximum, the seed string used
+  exactly, two independent loads equal; every variant's seed, trunk foot,
+  box, roots and turned bounds; the roots pass's rule; sapling growth on a
+  stub world; the town trees of `wp13/dressing.lua`; the trunk markers of
+  `vegetation_density.lua`; the node names against the registry). After a
+  change to the generator or the species table, rerun it and renew the
+  pins it prints. `forest.lua REPO SEED [CHUNKS_PER_BIOME]` writes forest
+  chunks of one seed through the seed fleet's runtime and prints the
+  writer's template counts (candidates, owner clips, accepted, root runs)
+  and the construction's CPU seconds; `capture.sh` with
+  `grug_probe_r47_tc` the engine captures of forests, a grown sapling and
+  a town.
