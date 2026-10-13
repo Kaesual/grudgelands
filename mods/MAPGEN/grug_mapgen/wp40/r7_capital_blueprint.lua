@@ -105,6 +105,7 @@ function M.source(key, layout, text, kit)
 	end
 	local path = library.path()
 	local city_edge = dofile(path .. "/city_edge.lua")(path)
+	local city_green = dofile(path .. "/city_green.lua")(path)
 	-- The overlay's names are the edge's plus what the plot collars and
 	-- approaches write (`r7_settlement.lua`, `wp13/plot_approach.lua`): the
 	-- race's ground, subsoil, path paving and stair. They reach the shared
@@ -117,6 +118,8 @@ function M.source(key, layout, text, kit)
 		local p = palettes.new(cfg.race)
 		local seen = {}
 		local list = city_edge.names(cfg.race, dims.model)
+		-- the city's trees (Round 47 capital greening, `wp13/city_green.lua`)
+		for _, name in ipairs(city_green.names(cfg.race)) do list[#list + 1] = name end
 		for _, name in ipairs({p.node("ground"), p.node("subsoil"),
 				p.maybe("castle_paving") or p.node("plaza"),
 				p.maybe("castle_wall_stair") or p.node("roof_stair")}) do
@@ -162,10 +165,18 @@ function M.source(key, layout, text, kit)
 			count = #layout.wall.pts,
 			reach = {min_x = math.floor(min_x - extra), max_x = math.ceil(max_x + extra),
 				min_z = math.floor(min_z - extra), max_z = math.ceil(max_z + extra)},
-			y_min = math.floor(y_low) - 24, y_max = math.ceil(y_high) + 8,
+			-- the city's trees stand up to 27 above the ground the walls stand on
+			y_min = math.floor(y_low) - 24, y_max = math.ceil(y_high) + 30,
 			names = names,
 			make = function(anchor)
 				return city_edge.new(cfg.race, dims.model, layout, dims, anchor)
+			end,
+			-- The city's trees on its open ground (Round 47 capital greening):
+			-- `plots` the world rects of the placed plots, `column` the final
+			-- column answers the edge uses.
+			green = function(anchor, plots, column)
+				return city_green.new({race = cfg.race, anchor = anchor, layout = layout,
+					plots = plots, column = column})
 			end,
 		},
 	}

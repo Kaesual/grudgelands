@@ -77,6 +77,7 @@ local function loader(directory)
 	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local layout = dofile(directory .. "/layout.lua")(directory)
 	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local dwarf = dofile(directory .. "/dwarf_dressing.lua")(directory)
 
@@ -424,6 +425,9 @@ local function loader(directory)
 				palette.node("path"), palette.maybe("ground_straw")})
 		parts.resolve_panes(buf)
 
+		-- Round 47 town greening: the race's trees on the plot's open wild
+		-- ground (the same in every world, as the plot is).
+		layout.green(buf, palette, M.REACH, sockets, points.doors)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end
