@@ -109,13 +109,15 @@ end
 -- ---------------------------------------------------------------------------
 local trees, hash = load_stack()
 check(trees.total() == 32 * 8 + 16, "the species table counts 272 variants")
+-- Re-pinned in Round 47 lane SW: the swamp species joins the table (32
+-- variants), which adds its digests to every world's roll-up.
 local PINNED = {
-	["0"] = "dce0f93aa99d7e0538ac3470656c412def403cc6ac6af91781fd506d58d2096a",
-	["1"] = "1c6b8f5c5f271e35312d9095bff5f3cd83e175593d044a85b6aa9accdcc71b0d",
-	["12345"] = "fcc48388f754d266c44d04b29376a92cd5e8b629ba7378ca9bf2620ee83aec5e",
-	["9007199254740992"] = "32af1598b19035952ae4a229723f40f03324d9d8233a68b34f358ce4e0570795",
-	["17713522922938657774"] = "27bd9ddb39087f7e067a2d33d0d26b3ca83cb27dfab725eaca12ada758734b5c",
-	["18446744073709551615"] = "cff9ec4f183d5cd9d38efe03198d7e70d6056ffc673a8d9b5068c234591e39a7",
+	["0"] = "32db91ace668a658ca91449ef13a17c8093e74cbf398ef6388a1245513caa7c6",
+	["1"] = "f825090a2ea5927c8aa4dc4620f4a8e362e615c91302fc0bb4b26ccadf4fac61",
+	["12345"] = "d39db26481cee771b85ce87d8af692d1c95d2d5b2ff3f236af139f0527f12b6f",
+	["9007199254740992"] = "b363897d30db7f95ec13fdc857a91562133d8ba0b129bdf56b49d0a18a01db54",
+	["17713522922938657774"] = "b1a9a3fb2bdf274969f7b621e1235ef069f45faf4e0c9ac7e3254fbe20170134",
+	["18446744073709551615"] = "0e3ad986a547286032cd5aff117e7286b78a9b004ccc71b4892e9af99c783859",
 }
 local ORDER = {"0", "1", "12345", "9007199254740992", "17713522922938657774",
 	"18446744073709551615"}
