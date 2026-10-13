@@ -1,10 +1,9 @@
 # Work package draft — map window marker layers
 
-Status: draft for the round coordinator, 2026-10-13: a late Round 47
-lane or the next round (the coordinator and the user decide; §7 has the
-conflict check). Rulings in §2 are the user's (chat of 2026-10-13); §8
-lists the defaults the draft chose. Nothing of this is in the repository
-yet.
+Status: **scheduled as Round 47 lane ML** (the user, 2026-10-13). Rulings
+in §2 are the user's (chat of 2026-10-13); §8 lists the defaults the draft
+chose, which the lane builds unless the user overrides them after the
+screenshots.
 
 ## 1. Goals and reasons
 
