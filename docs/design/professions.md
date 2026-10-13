@@ -146,8 +146,10 @@ Three consequences:
 
 The 3×3 crafting grid and the recipe books are gone
 ([ui-crafting-rework-plan.md](../planning/ui-crafting-rework-plan.md) §2.16–2.36,
-§4.1). Profession level is the sole recipe-permission progression: no book
-items, per-recipe unlocks, keystone redemptions or discovery.
+§4.1). Profession level is the sole recipe-permission progression of the
+profession areas: no book items, per-recipe unlocks or keystone redemptions.
+Basic lists what the character has held the ingredients of (Round 47,
+"Visibility" below).
 
 - **One recipe registry** (`grug_jobs/registry.lua`): every craft is an
   ingredient list — items or item groups, each with a count — and one output
@@ -169,9 +171,20 @@ items, per-recipe unlocks, keystone redemptions or discovery.
   2026-10-09): a profession area (Cooking, Alchemy and the primaries) lists
   only the recipes up to the player's profession tier there (the tier the
   character's level band allows, as the profession gate counts it); each
-  new tier adds its recipes. Basic has no profession tier and lists all its
-  recipes. Search, pages and "Craftable only" work on the listed recipes and
-  replace the old discovery (no seen list, no starter set). Basic and
+  new tier adds its recipes. Basic has no profession tier; since Round 47
+  (ruling 19) it lists a recipe once the character has held every
+  ingredient at least once (a group ingredient when any member was held,
+  whatever the stack's metadata), and sticks and every wooden tool (the
+  pickaxe, axe, shovel and hoe of wood) from the start. A scan of every
+  list of the character's inventory notices what it holds: at every
+  inventory action, dug node or crafted delivery (within half a second),
+  every 10 s for anything else (pickups, rewards), at the join and before
+  the Crafting tab is built. A scan that lists new recipes writes one feed
+  line, "New recipe: Torch" or "New recipes: Torch and 4 more". The first
+  scan of a character (a new one at its first join, an existing one at its
+  first login after the update) is silent. The held set lives in player
+  meta `grug_jobs:held` (only the tokens a Basic recipe names). Search,
+  pages and "Craftable only" work on the listed recipes. Basic and
   Cooking are there from the start; the two primaries and Alchemy start
   empty and are learned at the capital trainers (spec §2.16).
 - **Durations** (spec §2.30), per crafted item; a job lasts quantity ×

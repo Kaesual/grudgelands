@@ -183,7 +183,8 @@ tools](#player-meta-read-by-external-tools).
   row's ×N. Each build runs `update_job(player, "open")`, one
   `ingredient_counts` pass that feeds ×N, Craftable only and the box, and
   echoes the field values. The list hides a profession area's recipes above
-  `profession_level` (Basic shows all). The recipe box's description is
+  `profession_level`, Basic's above what `recipe_known` allows (Round 47;
+  each build scans the inventory first, quietly). The recipe box's description is
   built per build: gear through `grug_items.crafted_output` on a copy (the
   job's own path), a Cooking output with an engine cooking recipe through
   `core.get_craft_result` (the cooked dish), else the definition; it is a
@@ -261,6 +262,21 @@ tools](#player-meta-read-by-external-tools).
   returns its ingredients and target. A finished recipe job makes its
   stacks (gear through `grug_items.crafted_output`), calls `award_progress`
   once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
+- **The Basic unlock** (`discovery.lua`, Round 47 lane CR, ruling 19): the
+  held set in player meta `grug_jobs:held` (the format word `1`, then the
+  sorted tokens a Basic recipe names, item names and `group:<name>`,
+  space-separated; read once per session, written when it grows; about
+  4.7 KB once every ingredient was held). `recipe_known(player, recipe)`
+  (true outside Basic and for the starter outputs `HELD_STARTER`: the
+  stick and the four wooden tools), `scan_held(player[, quiet])` (every
+  list but the craft preview; returns the recipes it unlocked and feeds
+  "New recipe: X" / "New recipes: X and N more", resends an open page
+  unless quiet; the first scan of a character without the key is silent),
+  `held_dirty(player)` (jobs.lua after a delivery). When: at the join,
+  before the Crafting tab's build, and in the player's slot (5 slots of
+  0.1 s, one slot's players per step) when an inventory action, a dug node
+  or a delivery marked it, else every 10 s. Fixture `tools/r47_cr`; the
+  list filter in `tools/r45_ui`.
 - **Station sounds** (`station_sounds.lua`, Round 45 PT8): a start hook
   plays the station's sound at the station a job (recipe, enchant or
   upgrade) starts at: `STATION_SOUNDS` (forge `craft_smithy`, brewing stand

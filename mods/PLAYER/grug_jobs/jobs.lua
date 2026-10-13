@@ -524,6 +524,8 @@ local function deliver(player, stacks)
 			core.add_item(player:get_pos(), left)
 		end
 	end
+	-- Items arrived without an inventory action: the recipe scan looks soon.
+	if grug_jobs.held_dirty then grug_jobs.held_dirty(player) end
 	if overflowed then grug_jobs.watch_overflow(player) end
 	return was_empty and not inv:is_empty(OUTPUT)
 end

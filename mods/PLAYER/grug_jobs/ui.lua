@@ -29,7 +29,8 @@
 -- at its start (the Craft now click), at its end (the timer, only while the
 -- player's current page is Crafting) and at a cancel (the Stop click); a
 -- craft delivered into the inventory sends nothing (the client shows the
--- lists live), and the overflow appearing or emptying sends it once. The search runs at most once per second: a search
+-- lists live), the overflow appearing or emptying sends it once, and so
+-- does a scan that unlocks a Basic recipe (discovery.lua). The search runs at most once per second: a search
 -- request within a second of the last one is ignored without a resend, like
 -- Sort's cooldown (spec ruling 5). "×" beside the field empties it and shows
 -- the whole list at once, outside that limit (0.45.1 fix plan row 6).
@@ -165,7 +166,9 @@ end
 -- primaries alike) shows only the tiers up to the player's profession tier
 -- (profession_level, which the character's level band caps; Round 45
 -- playtest fix 3, correcting spec §2.33's "all recipes"); Basic has no
--- profession tier and shows every recipe. The search over the output's name
+-- profession tier and shows the recipes the character knows (Round 47
+-- ruling 19: every ingredient held once, or the starter set;
+-- grug_jobs.recipe_known, discovery.lua). The search over the output's name
 -- and "Craftable only" (×N ≥ 1) filter that visible set; ×N is
 -- crafts_from_counts on the build's one pass, for the chosen recipe with the
 -- kinds its dropdowns chose (craft_box.lua, Round 46 lane ID).
@@ -196,9 +199,11 @@ local function list_rows(player, st, tab, counts, picks)
 	if not tab.learned then return rows end
 	local query = st.search:lower()
 	local level = tab.area ~= "basic" and grug_jobs.profession_level(player, tab.area) or nil
+	-- discovery.lua's rule (absent in harnesses that load no discovery).
+	local known = tab.area == "basic" and grug_jobs.recipe_known
 	for _, recipe in ipairs(grug_jobs.recipes_in_area(tab.area)) do
 		label_of(recipe.output)
-		if (not level or recipe.tier <= level) and
+		if (not level or recipe.tier <= level) and (not known or known(player, recipe)) and
 				(query == "" or lowered[recipe.output]:find(query, 1, true)) then
 			if st.only then
 				local crafts = crafts_of(st, counts, recipe, picks)
@@ -355,7 +360,8 @@ end
 
 -- Resends the Crafting page when it is the player's current page (the
 -- server cannot tell whether the window is open; a resend while it is
--- closed is cheap): jobs.lua when the overflow appears or empties.
+-- closed is cheap): jobs.lua when the overflow appears or empties,
+-- discovery.lua when a scan unlocks a recipe.
 function grug_jobs.refresh_crafting_page(player)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == PAGE then
@@ -545,8 +551,11 @@ end
 
 sfinv.override_page(PAGE, {
 	get = function(self, player, context)
-		-- Opening the tab catches the crafting job up (jobs.lua).
+		-- Opening the tab catches the crafting job up (jobs.lua) and scans
+		-- the inventory for Basic recipes first (discovery.lua; quiet: this
+		-- build shows the result).
 		grug_jobs.update_job(player, "open")
+		if grug_jobs.scan_held then grug_jobs.scan_held(player, true) end
 		return sfinv.make_formspec(player, context,
 			grug_jobs.crafting_page_content(player, context), "short")
 	end,

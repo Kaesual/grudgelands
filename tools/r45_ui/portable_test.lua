@@ -45,7 +45,10 @@
 --      only the name, a long one inside the room left), the tiers above the
 --      profession tier hidden in Cooking and the primaries (search and
 --      "Craftable only" on the visible set, the level band's cap), Basic
---      showing every tier.
+--      showing every tier of what it lists; Round 47 ruling 19: Basic lists
+--      what the character has held every ingredient of (a group by any
+--      member), with search and "Craftable only" on that list, the feed
+--      line "New recipe: X".
 -- Prints byte counts of the page (Basic page 1, a profession area, a page
 -- during a job, a raw dish and a gear recipe with their descriptions) and
 -- "R45 UI PORTABLE PASS checks=<n>" or the failures.
@@ -304,6 +307,15 @@ local function new_inventory()
 			if not s:is_empty() then return false end
 		end
 		return true
+	end
+	-- (Round 47: the recipe scan reads every list.)
+	function inv:get_lists()
+		local out = {}
+		for name, l in pairs(self.lists) do
+			out[name] = {}
+			for i = 1, #l do out[name][i] = ItemStack(l[i]) end
+		end
+		return out
 	end
 	function inv:add_item(list, stack)
 		stack = ItemStack(stack)
@@ -1219,13 +1231,41 @@ do
 	has(desc and desc.text or "", "Line 30 of a long tooltip text", "D ... the whole text (it scrolls)")
 	geometry_ok(fs, "D a long description")
 	block_def.description = "Block 01"
-	-- Basic shows every recipe whatever its tier (the torch counts as T2).
+	-- Round 47 ruling 19 turns Round 45's "Basic shows every recipe" round:
+	-- Basic lists a recipe once every ingredient was held (discovery.lua,
+	-- loaded from here on), whatever its tier (the torch counts as T2).
 	eq(torch.tier, 2, "D the torch recipe is T2 (its coal)")
+	dofile(ROOT .. "/mods/PLAYER/grug_jobs/discovery.lua")
 	local nobody = new_player("nobody")
 	advance(1.1)
 	open(nobody)
+	lacks(nobody.formspec, "Block 01", "D a fresh character's Basic list leaves out what it never held")
 	click(nobody, {[FIELDS.search] = "torch", [FIELDS.find] = "Search"})
-	has(nobody.formspec, "Torch", "D Basic lists a T2 recipe without any profession")
+	says(nobody.formspec, "No recipe matches.", "D ... the search too")
+	click(nobody, {[FIELDS.only] = "true"})
+	says(nobody.formspec, "No recipe matches.", "D ... and Craftable only")
+	click(nobody, {[FIELDS.only] = "false"})
+	put(nobody, "main", 9, "t:stick 1")
+	put(nobody, "main", 10, "t:coal 1")
+	local feeds = #feed_lines
+	open(nobody)
+	has(nobody.formspec, "Torch", "D held once: Basic lists the T2 recipe without any profession")
+	eq(feed_lines[#feed_lines], "New recipe: Torch", "D the feed line names it")
+	eq(#feed_lines - feeds, 1, "D ... once")
+	put(nobody, "main", 9, "")
+	put(nobody, "main", 10, "")
+	open(nobody)
+	has(nobody.formspec, "Torch", "D ... and keeps it once the items are gone")
+	-- A group ingredient counts when any member was held: a pine plank for
+	-- the long bookshelf's six planks of any wood.
+	advance(1.1)
+	click(nobody, {[FIELDS.search] = "", [FIELDS.find] = "Search"})
+	lacks(nobody.formspec, "A Very Long", "D the bookshelf is not listed yet")
+	put(nobody, "main", 9, "t:pine 1")
+	open(nobody)
+	has(nobody.formspec, "A Very Long", "D one pine plank lists the any-wood recipe")
+	lacks(nobody.formspec, "Block 01", "D ... not the oak-only blocks")
+	geometry_ok(nobody.formspec, "D a fresh character's Basic list")
 end
 
 ------------------------------------------------------------------------------
