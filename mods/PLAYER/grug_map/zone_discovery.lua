@@ -90,7 +90,8 @@ function D.new(api)
 
 	-- The player entered `zone` (nil in a town or at sea). A first entry into
 	-- a real zone grants the XP and the sound once; returns the XP granted
-	-- (nil for none).
+	-- (0 at the level cap; nil when the entry grants nothing else, e.g. a
+	-- zone already visited).
 	function E.enter(player, zone)
 		if not zone then return nil end
 		local record = api.record(zone)
