@@ -149,6 +149,12 @@ grug_materials.RESOURCES = {
 		harvest_tier = 1, gem = true},
 	{key = "gold", name = "Gold", natural_node = "default:stone_with_gold",
 		raw_item = "default:gold_lump", harvest_tier = 2},
+	-- Round 47 rulings 8-9: the deep coal. It starts in the lower half of T2
+	-- (mixed with Coal) and replaces Coal from T3 down; Steel takes it. Not in
+	-- `group:coal`: every place that accepts it names it.
+	{key = "anthracite", name = "Anthracite",
+		natural_node = "grug_materials:stone_with_anthracite",
+		raw_item = "grug_materials:anthracite", harvest_tier = 2},
 	{key = "jade", name = "Jade",
 		natural_node = "grug_materials:stone_with_jade",
 		raw_item = "grug_materials:rough_jade",

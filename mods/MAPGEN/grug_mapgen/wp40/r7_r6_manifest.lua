@@ -66,8 +66,9 @@ grug_swamp|grug_nodes:mud|grug_nodes:mud|2|grug_nodes:mud|grug_nodes:mud|-
 
 local RESOURCE_ROWS = [[
 abyssal_crystal|5|-;-;-;-;512;256|2
+anthracite|2|-;256;96;128;128;128|8
 citrine|1|512;1024;2048;-;-;-|2
-coal|1|64;128;96;128;128;128|8
+coal|1|64;128;-;-;-;-|8
 copper|1|96;192;384;384;384;384|8
 diamond|6|-;-;-;-;-;512|2
 emberglass|4|-;-;-;256;128;256|4

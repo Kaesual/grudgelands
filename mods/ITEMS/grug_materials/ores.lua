@@ -5,7 +5,17 @@
 local ORE_VISUALS = {
 	quartz = true, silver = true, citrine = true, garnet = true, jade = true,
 	emberglass = true, diamond = true, sapphire = true, ruby = true,
-	abyssal_crystal = true,
+	abyssal_crystal = true, anthracite = true,
+}
+
+-- PLACEHOLDER (Round 47 lane AN): Anthracite shows tinted coal textures until
+-- lane ART's Anthracite set is picked. The picked files take the names
+-- `grug_materials_mineral_anthracite.png` (the ore overlay, drawn over
+-- `default_stone.png` like the overlays above) and
+-- `grug_materials_anthracite_lump.png` (the lump); then this table and the
+-- anthracite row of ITEM_VISUALS go.
+local PLACEHOLDER_ORE_TILES = {
+	anthracite = "default_stone.png^(default_mineral_coal.png^[colorize:#4a5a6e:110)",
 }
 
 -- Vendor payouts are grug_traders' price module (class and harvest tier).
@@ -20,6 +30,7 @@ local ITEM_VISUALS = {
 	sapphire = {"default_diamond.png", "#235ac7:190"},
 	ruby = {"default_diamond.png", "#c51d35:195"},
 	abyssal_crystal = {"default_diamond.png", "#3a1f6e:210"},
+	anthracite = {"default_coal_lump.png", "#4a5a6e:90"}, -- PLACEHOLDER (above)
 }
 
 local function item_texture(key)
@@ -33,7 +44,8 @@ local function register_owned_resource(resource)
 	end
 	core.register_node(resource.natural_node, {
 		description = grug_materials.resource_ore_description(resource),
-		tiles = {"default_stone.png^grug_materials_mineral_" .. resource.key .. ".png"},
+		tiles = {PLACEHOLDER_ORE_TILES[resource.key] or
+			"default_stone.png^grug_materials_mineral_" .. resource.key .. ".png"},
 		groups = {grug_natural = 1, grug_resource = resource.harvest_tier,
 			level = grug_materials.level_for_tier(resource.harvest_tier)},
 		drop = resource.raw_item,
