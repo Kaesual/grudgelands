@@ -33,6 +33,7 @@ button { font: inherit; border: 1px solid var(--line); background: var(--chip); 
 	border-radius: 6px; padding: 4px 10px; cursor: pointer; }
 button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+select { font: inherit; padding: 3px 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
 input[type=text] { font: inherit; width: 150px; padding: 4px 6px; border: 1px solid var(--line);
 	border-radius: 6px; background: var(--bg); color: var(--ink); }
 label { display: inline-flex; gap: 4px; align-items: center; color: var(--muted); cursor: pointer; }
@@ -83,6 +84,9 @@ body.bare header, body.bare aside { display: none; }
 		<label><input type="checkbox" id="leaves"> leaves</label>
 		<label><input type="checkbox" id="grid"> grid</label>
 		<label><input type="checkbox" id="today"> today</label>
+		<label><input type="checkbox" id="tl"> twigs join leaves above</label>
+		<label>trunk <select id="profile"><option value="oct">octagon (3 faces)</option><option value="round">16-gon (5 faces)</option></select></label>
+		<label>jungle bark <select id="bark"></select></label>
 		<button id="copy">Copy node list (JSON)</button>
 	</div>
 </header>
@@ -92,11 +96,11 @@ body.bare header, body.bare aside { display: none; }
 		<div id="readout"></div>
 		<h2>Shapes (per wood type)</h2>
 		<div class="shapes">
-			<p><b>quarter</b> — the faceted trunk piece, facedir 0..3 (inner corner = trunk axis at +x +z for 0). Four make a 2×2 trunk, they round the corners of a 3×3. Four facets stepping out, the outermost half width so the neighbour completes it:<br>
-			<code>{-8,-8, 4, 8,8, 8}</code><br><code>{-6,-8,-1, 8,8, 4}</code><br><code>{-1,-8,-6, 8,8,-1}</code><br><code>{ 4,-8,-8, 8,8,-6}</code></p>
-			<p><b>branch</b> — connected node box, 10/16 thick: core <code>{-5,-5,-5,5,5,5}</code>, arm e.g. right <code>{5,-5,-5,8,5,5}</code>, one arm per face neighbour that is wood.</p>
-			<p><b>twig</b> — the same at 6/16: core <code>{-3,-3,-3,3,3,3}</code>, arm right <code>{3,-3,-3,8,3,3}</code>.</p>
-			<p>The plain log cube (existing) fills trunk interiors and is the first piece of the thickest limbs. Branch, twig and log take facedir only for the bark: param2 0 / 4 / 12 = grain along y / z / x (connected boxes never turn, their tiles do). Leaves are the existing full cubes. Boxes in sixteenths: x1, y1, z1, x2, y2, z2.</p>
+			<p><b>quarter</b> — a <b>mesh</b> (.obj, facedir 0..3; inner corner = trunk axis at +x +z for 0), a quarter of a chamfered column. Outline from above, outwards from the axis in sixteenths: octagon (16,0)→(16,7)→(7,16)→(0,16): a 7/16 half flat, a slant, a 7/16 half flat, so two pieces make one 14/16 face; 16-gon (16,0)→(16,3.2)→(13.6,9.1)→(9.1,13.6)→(3.2,16)→(0,16). Faces on the axis side are left out; caps take <code>*_tree_top</code>, sides the bark with the grain up the trunk. Four make a 2×2, they round the corners of a 3×3 (edges and centre are logs). Collision/selection: the full cube.</p>
+			<p><b>base</b> — connected node box, 12/16 thick: core <code>{-6,-6,-6,6,6,6}</code>, level arms reaching 8/16 into the neighbour, e.g. right <code>{6,-6,-6,16,6,6}</code>; top/bottom to the border. The first cell of a limb leaving a trunk: its arm meets the slanted face without a gap and, towards the branch, ends as a short sleeve (taper 16 → 12 → 10).</p>
+			<p><b>branch</b> — connected node box, 10/16: core <code>{-5,-5,-5,5,5,5}</code>, arm right <code>{5,-5,-5,8,5,5}</code>.</p>
+			<p><b>twig</b> — the same at 6/16: core <code>{-3,-3,-3,3,3,3}</code>, arm right <code>{3,-3,-3,8,3,3}</code>; the only piece that also joins leaves, and only a leaf above it (leaves get <code>connect_sides = {"bottom"}</code>), so twig ends reach up into their foliage.</p>
+			<p>Logs (existing cubes) make 1×1 trunks and fill wide ones. Base, branch, twig and log take facedir only for the bark: param2 0 / 4 / 12 = grain along y / z / x. Boxes in sixteenths: x1, y1, z1, x2, y2, z2.</p>
 		</div>
 		<p class="hint">Drag to orbit, right-drag to pan, wheel to zoom. Counts: wood = log + quarter + branch + twig; shape nodes = quarter + branch + twig. “today” = the current schematic (probabilistic nodes counted as present).</p>
 	</aside>
@@ -133,9 +137,194 @@ var TEXTURES = {
 "grug_trees_gravewood_tree_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAEdUExURQcFAwUEAgYFAwQDAggHBB4YDwoIBRoUDScfFSggFUI2JTgtHzQqHCYfFA8MBwkHBAICARYSC11NOY99ZYJwWXVjTHppUYp4YIt5YZaEbKCOd8Kzn2tbRQUEAxkTDJKAaFxNOHBfSG1cRl9PO2JSPXNiS3xqU52Lc6WUfRAMCBwWDpOBaVtMOIZ0XJmHb6uZg7amkLurlhIOCX1sVGhXQYBuVoh2Xo58ZK6dhyMcEkw+LJeFbnhmT4FvVx0XD4NxWmVVP2hYQnZlTjEoGxsVDm5dRkU5KHJhSllKNnJgSjMpHA4LB1ZHNGpZQ3VkTU5ALmZWQFNFMkQ4Jy0kGG5eRwIBAWBRPEA0JEk8KgEBAE9BLwgGBCAaESkhFv///34Gb0UAAAABYktHRF4E1mG7AAAAB3RJTUUH6ggGEDgBEq6pRAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wNy0wMlQyMjoyMTo1MiswMDowMFoQLg4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDctMDJUMjI6MjE6NTIrMDA6MDArTZayAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTA4LTA2VDE2OjU2OjAxKzAwOjAw5cE4agAAAP1JREFUGNMdj1lTgmAUQO+9H5XmgiKBFCmLaAkSimSZK0ZQmVqarf7/v9HY05k5M+fhACARMkTagyEHdHB4lEofZ7K5fJ4vIAIVhZJ4IsliWTk9U88RqFKVNN0wa4ZVb1xcIlDTdlqua1957XZdSRNQp+T4XTu47rVuAuV2L+R+V7jzPHfgDqujfSLVxpPetNdSG2F5hsDuo4dYjSbJY61hyE8I7Dl0/Lk+CAZT+0XMEjA+nC+WK/P1LZK18ZqAdaylsdEtYxPGi2GOAXtXV9uPz3mS9LdDu0KAX00tSQTHVK3Y/+YRsPBT/E1lM7P1bjfieAQO2f8/ETGGyP0BifkjewJ2eGEAAAAASUVORK5CYII=",
 "grug_trees_silverwood_leaves": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAADJUExURZOmgaGykHWJYnyQao2ge4CUbX+TbIOWcJqsiYWZc4SXcXeLZIicdoyfeoygeoaac3mNZm+DXHiMZXCEXYKVb4CUbnaKY4ebdXOHYG2BWoGVboOWcIibdYyfeoygenyQaoWZc3+TbISXcXCEXZaohHaKY3OHYHqOZ3WJYoCUbXeLZHiMZYaac4icdoKVb2+DXICUbpmrh36Sa22BWnuPaJqsiZKkgI2ge3mNZoebdaGykIqeeJOmgYGVbo+ifJSmgqGzkaW3lf///1wGjucAAAAbdFJOUwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJliEEcAAAABYktHREIQ1z30AAAAB3RJTUUH6ggGEDgBEq6pRAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wNy0wMlQyMjoyMTo1MiswMDowMFoQLg4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDctMDJUMjI6MjE6NTIrMDA6MDArTZayAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTA4LTA2VDE2OjU2OjAxKzAwOjAw5cE4agAAAOdJREFUGNMVzotagjAUAOATyGQHvGEZhbqzA44xhpSKZmWX93+pvv4n+AGK9eYu2K7DUaRIizHEXFIldwbjsLbUSEhS1+rJdGd82LH1BLR3Zdsguf7llfgwg952fDxRzK7lYr4YQYIDscM0OF/6N40ZKC0xypbJvfS889UDkFptNyI7d49XCjCNAFlbquRBp8l/ZAUryc6+Tz7cZ6G15QbyJPeOBXJbmu5mGLbV7OkrxYUMy+8rKQdqH2WmdXno6tGPvwyQKHN0tm1+SYVdrZeA1M+709HTlHOuPQMhi4Fu5llGGAgx/gM0eR2TqV5bugAAAABJRU5ErkJggg==",
 "grug_trees_silverwood_tree": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAADqUExURdTa4d7i6NPZ4NHX38LK08zS28PL1Nfc4+Pn7M/V3dLY3+To7c7U3MjP16Wuu5ehrsvR2t3h59ne5L/H0Nbb4tDW3tjd49vg5trf5d/j6V9pd8bN1snQ2LvDzSkvOE1XY9zh58DI0XB7iSUrMx0iKTlCTEZQW3qFk3eCkDlBSyQqMkJLVywzPIGMmoSPnT1GUbrCzM3T28rQ2cHJ0sTM1ZmjsIaRn3R/jZCbqK22wTY+SFZhbn+Jl+Dk6rzEznaBjyYsNC00PTxFUEFKVqq0v7O8x4CLmEBJVSowOaKruKavvMfO1oWQnv///w/d8W8AAAABYktHRE2AaCBlAAAAB3RJTUUH6ggGEDgBEq6pRAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wNy0wMlQyMjoyMTo1MiswMDowMFoQLg4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDctMDJUMjI6MjE6NTIrMDA6MDArTZayAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTA4LTA2VDE2OjU2OjAxKzAwOjAw5cE4agAAAOJJREFUGNMdyOlWwjAQBtBvWuIwMcGQtmm0RYMr7kJx3/cF3/95PMf78wKU5b1MLXFftGCZQQZ2sGKZyA0VPKPIyypUNedxlTQJsAZlmrYuw//yCOsbPtMBtbNiKI03sbW9s7snVNYlTfYPDo9wfDLiLNS9IoIM+VOQ9BO54Fsd26CHAoVwVpG2U3DgWV7Caqcsk7ZeOyXSIXbCwmK5mZvoJeI8hSr6Ll1cXg2alF/j5vYumLnr3We1TeXDI56eX14nb0Ugp+bvH59f+P4Z67CwhhuB4fALtGPduTC1BjxLafEHIaAV0OR0rp0AAAAASUVORK5CYII=",
-"grug_trees_silverwood_tree_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAD2UExURcnN08PIztPX28vQ1Nnc4NDU2MTJz8/T19/h5crP093g5NTY3Njb39bZ3b/EycDFyrzBx7G3vrC1vLC2vK2zura7wrG2vbW6wa+1u7O5v6uxuMfL0bvAxri9w8TJzrm+xLS5wLW7wbe8wr3DyL7DycXKz6eutZ+mrcHGy6Sqsayyuaass6mvtq60u8LGzMbK0Li+xNrd4Z2jq7K4vre9w6Kor6Cmrr3CyKOqsbq/xaKosJ6lrKqwt7K4v8jM0tfa3qOpsLS6wKCnrpuhqZmgqMPIzaGnr6WrsqiutZ6kq7m/xdDU2czR1aettJyiqtHV2dLW2v///2LkYaAAAAABYktHRFGUaXwqAAAAB3RJTUUH6ggGEDgBEq6pRAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wNy0wMlQyMjoyMTo1MiswMDowMFoQLg4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDctMDJUMjI6MjE6NTIrMDA6MDArTZayAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTA4LTA2VDE2OjU2OjAxKzAwOjAw5cE4agAAAPVJREFUGNMFwQlCgkAUANAPjIAQiwQY44yAErGWsZgUIqDZZsv9T9N7AAzLoQkvsOJUAvlKAVXTZ8a1adnzG8PBkwWwhC5dzycrsg7k21AA7i6isZmkWZJ79w+bR0BFZCwJcSOG58tFxQFkQb3J3NKnTlRqFQJh+7RzYsLwxCS+VsrQPJMXJ/Qz6rS6HewVEPbBzEpxWONUx3rVwaG32mFs8zLPKG4qBdTjkOZFH58w9tP1XATUe1uMcYJxntgRnUJ0fG2K81jXdfamq+8ScKuPT2q0+mww6JdxATgAnybjuY3L/vtnJ8nQXVgOyV33K/KIkdHfP6YeIYLVk77qAAAAAElFTkSuQmCC"
+"grug_trees_silverwood_tree_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAD2UExURcnN08PIztPX28vQ1Nnc4NDU2MTJz8/T19/h5crP093g5NTY3Njb39bZ3b/EycDFyrzBx7G3vrC1vLC2vK2zura7wrG2vbW6wa+1u7O5v6uxuMfL0bvAxri9w8TJzrm+xLS5wLW7wbe8wr3DyL7DycXKz6eutZ+mrcHGy6Sqsayyuaass6mvtq60u8LGzMbK0Li+xNrd4Z2jq7K4vre9w6Kor6Cmrr3CyKOqsbq/xaKosJ6lrKqwt7K4v8jM0tfa3qOpsLS6wKCnrpuhqZmgqMPIzaGnr6WrsqiutZ6kq7m/xdDU2czR1aettJyiqtHV2dLW2v///2LkYaAAAAABYktHRFGUaXwqAAAAB3RJTUUH6ggGEDgBEq6pRAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wNy0wMlQyMjoyMTo1MiswMDowMFoQLg4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDctMDJUMjI6MjE6NTIrMDA6MDArTZayAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTA4LTA2VDE2OjU2OjAxKzAwOjAw5cE4agAAAPVJREFUGNMFwQlCgkAUANAPjIAQiwQY44yAErGWsZgUIqDZZsv9T9N7AAzLoQkvsOJUAvlKAVXTZ8a1adnzG8PBkwWwhC5dzycrsg7k21AA7i6isZmkWZJ79w+bR0BFZCwJcSOG58tFxQFkQb3J3NKnTlRqFQJh+7RzYsLwxCS+VsrQPJMXJ/Qz6rS6HewVEPbBzEpxWONUx3rVwaG32mFs8zLPKG4qBdTjkOZFH58w9tP1XATUe1uMcYJxntgRnUJ0fG2K81jXdfamq+8ScKuPT2q0+mww6JdxATgAnybjuY3L/vtnJ8nQXVgOyV33K/KIkdHfP6YeIYLVk77qAAAAAElFTkSuQmCC",
+"jungle_bark_a": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAArUlEQVR4nJVTMQ7DIAy8oEwFM7ZLx0r9Yj+Qpe/slDFOu7ZDBTKOIeEWkMWdz2cxTM/HFwAieUgs/BZ3xv8NQcNtKgYsYlWAQugSyQLSMoyRqg7SfAm8rocFF+ajGfh8aiFTQHbfG8XpcLR1CR1wJCodtMgQ+RQOmgwDukkWmD+vbnIWSOQh8JZlkOXqHQCcT9dcsP5EK5sxXW6X++4IunshIBHJV3+jXnv3FjR+FuBFhjjANLgAAAAASUVORK5CYII=",
+"jungle_bark_a_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIElEQVR4nI1Ty0rDQBQ9hoDBZprgwlXGbAv9gXxBv8kfcON3uOwXWOm60LXQbZjsLNrpRDBQoos413lkqgcGLnfunDn3dXH/cPcFAFM2gYmj+jBshSGGwUXseX6wqGZkP212RBIkqObcuxR1A14WFpkmHFUg6sYKTFiO17cWn+pAPl4WVkzkSktYTsf17d8lRN2QoqNSgwJXov4xy1JI2Y7m7qUg6oZ+zbKUArQtZYvitrTSAYDIbY0Z0PUxuj7YKEwZQ3RW3z/g0Q9pnAAAl9HpTwJSwMuC5EvZUvFMO0jwuH72VCQsR9fHo231Uri5+h0Os4j6kTtIy9WW9sKqgTtlepRxnSIEIti8COuimnMiXK62gLGNZuuDTTYX5hy+Ad48ayXWGbq7AAAAAElFTkSuQmCC",
+"jungle_bark_b": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAw0lEQVR4nK2SwQqCQBRFTwlapBLYxmUb+4LwE/qSPtZfkKBdbhyQNDIhapMyNqND2FvOvHfm3vtmdjzsXxtvAcDaW3G6CETVAHB9PNkGSwDkniTNCFwbgDkTSwGYXjcCJisAOn8/A+RwWvlttfKTNNMDdP6Q/MvDssLRDHThfdtTAGdxH2MqZdyC7F0X7v/WWJQ35TIva+35qALfsXo5mCA9QByFg4270Afpqw8qCFwb37EQVdMpycsaPmuNo7AHmRziG8CXRAAaKfiRAAAAAElFTkSuQmCC",
+"jungle_bark_b_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABOUlEQVR4nJWTv0rDUBTGfzGJVLQiqcF/JBgKDnaUonVwE8HRB+jmA/gkvkMfwNHFrUtwcGwHUQottgZph+BQbYMu3pCbexvwbOfP993vnHOPcX1R/9kslwDYKK/yMhwz/vwGIP5KCCorAGRrHp9HVNaWAbDQ2E2zoQtz/9BRYoZQcHlekxJhuyv5jbNDyW/dPakKBMj3HHzPkQBvvXf6g4lCtpSXlAX2B5MUlM8tJBBA2zKpBi7VwMW2TIlIIcj3L2w2T5jNE22ueXUkKwjb3VRiNXAVgIj5niMNOCXIDua196EQZGPKEMV+RZ9RPAXAtkxsy5SIRI12jVE8JeoMqdd2FRW6DSgEW+ultHARoJBA9Jb/hdn8XrAtxYz8MZ2e7Be+eNsK00NSFPA3nKJrPD7Yka5R+xP/Y7+uJm0g0mD5GwAAAABJRU5ErkJggg==",
+"jungle_bark_c": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA2UlEQVR4nKVTSwqDMBB9FRGDItnULFJ6oV6gvX7Bgq5CUFLctAuZOH6igm+VxbxfMrk8X48fABRFDgCwtgXBtB0AQOYZ+Ayfi3ASEwFZiMUAuR8SAID77XqYvCpgrNslvT+1P8chsmm7SYJEOXyxFPcJ+O3PkaiBqEu5X8HaduK+RV4VCKFqjD/zanFgHqB7wJiEi/gEiXI+JnegGrSNfS3Q1wKpG585UW6ooEu5KULgq+wT6FKuRuM1QtClRETkvhYLl859V4k0UzUG8ZzI9yETadCdTE//xj8sd1nKPiwhQgAAAABJRU5ErkJggg==",
+"jungle_bark_c_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQElEQVR4nIVTwUrDQBB9DbUKLSVS0qJLQAShEA8eCu3ZHIVAbwr1D/ws74J3j0KEHHpQCESCUBKhpRhKSxNy0INumc1u4ruE7Oy8efN2pnZ9c/UNAO12CwCwWq3Bkaw3AAC91QS9Q+9pqMDd7WVVGABQpz+Obf1L8vj0pibgya7nl1YbDfpwbEsgERS4ng+TGaUE0ecS7KgDx7Zw//AiE3DMooV0xoldz8do0BcVTMZDofrZ6bFEEISxUp30CrR6muVIs7y0JSUBTa7CZDxUE3CZB/t7wrcIbqLW6G2BvyfiCMJYSl5+bSSSRm/7q+D5fQqQ/k1mIM1yBGGMIIyRZjkuzk8wff2QSDTW1RHNk90BNdFkxq6lWbRA57ApKGVdHXWaTIPFiaQxPonRPEFNtY3c4aJpqm1UTiJ3uLjOKvwAqwp8mS31AXQAAAAASUVORK5CYII=",
+"jungle_bark_d": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAfUlEQVR4nGOszA76L8TPxcDAwMAgwMfJwMDAwPDh03eGR8/fM3z9/pPh7cdvDAwMDAxyEoIMPFzsDDC176DiTAwUgkFowIdP3+H+o8gFPFzslBnw5dtPygwgFsANEODjZPjw6Tv5BlDsgmFgwIdP3+GZiRTAgi4AM4Ru6QAAukIjD7VCvGAAAAAASUVORK5CYII=",
+"jungle_bark_d_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABMklEQVR4nH2TPUvDUBSGH4twsRQ/GgTJYNChQ+Mi1qFxCk4OLrr6C+wvcPDH+AM6O3aRZjDgYjM4KHWIg6R+oJY76dIbb5N780IIuTnnPec5h7tw0Tv5ba7UAVhdXgLg/XPK88sb31NJ9vEDwObGGo26QMVOZuc1KnR+dshl77gqhEX9Y3dn2xhUNBkMR2WDMPABiOLEaPI6+WK92aDbaRMGPv3r23IHUZzguY7VwHMdojih22mbEZTGaWasbpJ1iK0tN38O9lql/6dH+/8Gir8oKSVSytwQyDGMHdj4q1RDW0uRXQiBEAKAh6c0P9eHaJ2BnqBLFTGuUUmhSCkZpxme61jxSgaqgkpQ7yJeyWAwHJW2oU9b57Z2cHf/CLPbGAb+XNJV/2buNloR9ITidTbpDw5Gb4zm35BOAAAAAElFTkSuQmCC",
+"jungle_bark_e": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAzUlEQVR4nK2TzQ7BQBCAPxJNkZaSoOLK2Qt4AO/g7kG9gHuv4i+hrU3bRA9ctFnVVdRcZ/fbb2ZnKsvF/AZgGXWONR+AgxMw6lpcRASAadRJziThPnJVSsYToBe3AJjOhmxObu7rbaOhBmTDlJQ/MgCY6Da7vU9/3EwtkGouBMilyJCkBE+E7wGeCHFFRO2sQaYfeTb/+wVVjbu9/zavNIg7V5CGqtAge9ketDg4Aaamq/1/7YE80i+AZB/Wq+1HsBSQt0xF+rkG30ZpwB1b7ksrqvQQwQAAAABJRU5ErkJggg==",
+"jungle_bark_e_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABPElEQVR4nIWTPUvDQBjHfxU9KFihSsASO4RsBSdrp0JBdHCS7iJdxM0P4+pS/AKls0UQOtV2ErqIdAghakDxDSGLDvbOu+ZS/8tdnpdf7p57ntzJ4f43QLGQ52npFYDHu0821oq8vX8BsFLII2OkXqa+RTLUatZTtm5vlLIZgOPGzu+mAYPh2AisVSsc7G6p73anbwKkUyaWXccARFFMEMYKJrWgBw2GYx6eP1RyEP4l2aApAMD2psfN7QQhBL7n4nsuQggFkhBZoxQAYH11We2TJAHA91zjpMYJbBXXk+WqX8cAyIpmSQiR6cvsA1uirYhWQNl1uJ+EVnsQxtSqlXQfMH3fKDKr/Z8UoN3p02rWKZWcVBfO/kRXbnaYVDvPUbc3yh6m8+srYxpPj/bUffVplLI2kq6zi8u5/h9/Dm98ncL6EQAAAABJRU5ErkJggg==",
+"jungle_bark_f": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAoElEQVR4nL2TsQoCMRBEnyLI3RFIais/x2+x8outrBMMJhgFLc5AErxwcsHptpl9O8OuTsfDSw49AEp0aOsxNweAtncAzNWz30kA5NDjQiA8ngCsWaj/GKT4VQNtfTuCGKAS298MYgOlUvzYQJVgrjKDqe2plOimDRYTRJUBfqtvFsH5YqA4ray67Qk11CgXQjZv0qFMmE8e4zfmS5p94xtsJjtMjI5N3gAAAABJRU5ErkJggg==",
+"jungle_bark_f_top": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQ0lEQVR4nJWTQUtCQRSFv8KEq4i2KAQRiQQFcdEiN4q7FuFPadV/8i+0Cjdim1oESmFQxDMeRAlqkkOvoFYzvJn3MjqrO2/uOffcO+9unJ4cf+fSKQC2M8JsqZi/rwCYLT8AmL8p9go5AHLpFKsgIPj8AiDBL+g0Ktb57PIuNs8INGtF66I/GJm43apbgufXD1EBl1QqZE3sPU7w/IUROzrYN442XUulQtaQNSn8PVwkVkATRYRqOY+I4PkLSywi0KwV6Q9GpnK1nLeS3PNaB+FKSimUUrFEPdTIM4aH5+Jq/GriyBDbrbq5HN8/AyAiiAgAL8uAw+oOu5mkJZoAuLh5olkr4vkL40CLaLhES+A/bawVaLfqkXd2EW7VEtBtuAlxCO+F5eB2MrW2sdOo0O0NI9uY3EqYbYz9EzW6veGfbn4Az8N4App6pxsAAAAASUVORK5CYII="
 };
 var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"trunk":14,"twig":0},"depth":9,"height":9,"max":[4,8,4],"min":[-4,0,-4],"nodes":[{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"trunk","rot":0,"x":0,"y":4,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":5,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":5,"z":0},{"kind":"trunk","rot":0,"x":1,"y":5,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":6,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":6,"z":1},{"kind":"trunk","rot":0,"x":1,"y":6,"z":-1},{"kind":"trunk","rot":0,"x":2,"y":6,"z":2},{"kind":"leaves","rot":0,"x":-4,"y":7,"z":-4},{"kind":"leaves","rot":0,"x":-4,"y":7,"z":-3},{"kind":"leaves","rot":0,"x":-4,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-4,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":7,"z":-4},{"kind":"leaves","rot":0,"x":-3,"y":7,"z":-3},{"kind":"leaves","rot":0,"x":-3,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-3,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-4},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-3},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-4},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-3},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":2},{"kind":"leaves","rot":0,"x":1,"y":7,"z":3},{"kind":"leaves","rot":0,"x":1,"y":7,"z":4},{"kind":"trunk","rot":0,"x":2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":1},{"kind":"leaves","rot":0,"x":2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":3},{"kind":"leaves","rot":0,"x":2,"y":7,"z":4},{"kind":"leaves","rot":0,"x":3,"y":7,"z":1},{"kind":"leaves","rot":0,"x":3,"y":7,"z":2},{"kind":"leaves","rot":0,"x":3,"y":7,"z":3},{"kind":"leaves","rot":0,"x":3,"y":7,"z":4},{"kind":"leaves","rot":0,"x":4,"y":7,"z":1},{"kind":"leaves","rot":0,"x":4,"y":7,"z":2},{"kind":"leaves","rot":0,"x":4,"y":7,"z":3},{"kind":"leaves","rot":0,"x":4,"y":7,"z":4},{"kind":"leaves","rot":0,"x":-4,"y":8,"z":0},{"kind":"leaves","rot":0,"x":-4,"y":8,"z":1},{"kind":"leaves","rot":0,"x":-4,"y":8,"z":2},{"kind":"leaves","rot":0,"x":-4,"y":8,"z":3},{"kind":"leaves","rot":0,"x":-4,"y":8,"z":4},{"kind":"leaves","rot":0,"x":-3,"y":8,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":8,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":8,"z":2},{"kind":"leaves","rot":0,"x":-3,"y":8,"z":3},{"kind":"leaves","rot":0,"x":-3,"y":8,"z":4},{"kind":"leaves","rot":0,"x":-2,"y":8,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":8,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":8,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":8,"z":3},{"kind":"leaves","rot":0,"x":-2,"y":8,"z":4},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":3},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":4},{"kind":"leaves","rot":0,"x":0,"y":8,"z":-4},{"kind":"leaves","rot":0,"x":0,"y":8,"z":-3},{"kind":"leaves","rot":0,"x":0,"y":8,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":8,"z":0},{"kind":"leaves","rot":0,"x":0,"y":8,"z":1},{"kind":"leaves","rot":0,"x":0,"y":8,"z":2},{"kind":"leaves","rot":0,"x":0,"y":8,"z":3},{"kind":"leaves","rot":0,"x":0,"y":8,"z":4},{"kind":"leaves","rot":0,"x":1,"y":8,"z":-4},{"kind":"leaves","rot":0,"x":1,"y":8,"z":-3},{"kind":"leaves","rot":0,"x":1,"y":8,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":2,"y":8,"z":-4},{"kind":"leaves","rot":0,"x":2,"y":8,"z":-3},{"kind":"leaves","rot":0,"x":2,"y":8,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":8,"z":0},{"kind":"leaves","rot":0,"x":3,"y":8,"z":-4},{"kind":"leaves","rot":0,"x":3,"y":8,"z":-3},{"kind":"leaves","rot":0,"x":3,"y":8,"z":-2},{"kind":"leaves","rot":0,"x":3,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":8,"z":0},{"kind":"leaves","rot":0,"x":4,"y":8,"z":-4},{"kind":"leaves","rot":0,"x":4,"y":8,"z":-3},{"kind":"leaves","rot":0,"x":4,"y":8,"z":-2},{"kind":"leaves","rot":0,"x":4,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":4,"y":8,"z":0}],"note":"acacia_tree.mts","width":9,"wood":14},"apple":{"count":{"branch":0,"fruit":4,"leaves":72,"quarter":0,"trunk":9,"twig":0},"depth":7,"height":8,"max":[3,7,3],"min":[-3,0,-3],"nodes":[{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":4,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":4,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":4,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":4,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":4,"z":-1},{"kind":"fruit","rot":0,"x":-2,"y":4,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":4,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":4,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":4,"z":-3},{"kind":"leaves","rot":0,"x":-1,"y":4,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":4,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":4,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":4,"z":3},{"kind":"leaves","rot":0,"x":0,"y":4,"z":-3},{"kind":"fruit","rot":0,"x":0,"y":4,"z":-2},{"kind":"trunk","rot":0,"x":0,"y":4,"z":0},{"kind":"fruit","rot":0,"x":0,"y":4,"z":2},{"kind":"leaves","rot":0,"x":0,"y":4,"z":3},{"kind":"leaves","rot":0,"x":1,"y":4,"z":-3},{"kind":"leaves","rot":0,"x":1,"y":4,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":4,"z":1},{"kind":"leaves","rot":0,"x":1,"y":4,"z":2},{"kind":"leaves","rot":0,"x":1,"y":4,"z":3},{"kind":"leaves","rot":0,"x":2,"y":4,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":4,"z":-1},{"kind":"fruit","rot":0,"x":2,"y":4,"z":0},{"kind":"leaves","rot":0,"x":2,"y":4,"z":1},{"kind":"leaves","rot":0,"x":2,"y":4,"z":2},{"kind":"leaves","rot":0,"x":3,"y":4,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":4,"z":0},{"kind":"leaves","rot":0,"x":3,"y":4,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":5,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":5,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":5,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":5,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":5,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":5,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":5,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":5,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":5,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":5,"z":2},{"kind":"leaves","rot":0,"x":0,"y":5,"z":-3},{"kind":"leaves","rot":0,"x":0,"y":5,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":5,"z":2},{"kind":"leaves","rot":0,"x":0,"y":5,"z":3},{"kind":"leaves","rot":0,"x":1,"y":5,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":5,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":5,"z":1},{"kind":"leaves","rot":0,"x":1,"y":5,"z":2},{"kind":"leaves","rot":0,"x":2,"y":5,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":5,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":5,"z":0},{"kind":"leaves","rot":0,"x":2,"y":5,"z":1},{"kind":"leaves","rot":0,"x":2,"y":5,"z":2},{"kind":"leaves","rot":0,"x":3,"y":5,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":6,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":6,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":2},{"kind":"leaves","rot":0,"x":0,"y":6,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":6,"z":0},{"kind":"leaves","rot":0,"x":0,"y":6,"z":1},{"kind":"leaves","rot":0,"x":0,"y":6,"z":2},{"kind":"leaves","rot":0,"x":1,"y":6,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":6,"z":0},{"kind":"leaves","rot":0,"x":1,"y":6,"z":1},{"kind":"leaves","rot":0,"x":1,"y":6,"z":2},{"kind":"leaves","rot":0,"x":2,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":6,"z":0},{"kind":"leaves","rot":0,"x":2,"y":6,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":0},{"kind":"leaves","rot":0,"x":0,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":7,"z":0},{"kind":"leaves","rot":0,"x":0,"y":7,"z":1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":0}],"note":"apple_tree.mts (meadows, deep and elf forest)","width":7,"wood":9},"aspen":{"count":{"branch":0,"fruit":0,"leaves":106,"quarter":0,"trunk":12,"twig":0},"depth":5,"height":14,"max":[2,13,2],"min":[-2,0,-2],"nodes":[{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"trunk","rot":0,"x":0,"y":4,"z":0},{"kind":"trunk","rot":0,"x":0,"y":5,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":1},{"kind":"leaves","rot":0,"x":0,"y":6,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":6,"z":0},{"kind":"leaves","rot":0,"x":0,"y":6,"z":1},{"kind":"leaves","rot":0,"x":1,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":6,"z":0},{"kind":"leaves","rot":0,"x":1,"y":6,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":2},{"kind":"leaves","rot":0,"x":0,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":7,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":7,"z":0},{"kind":"leaves","rot":0,"x":0,"y":7,"z":1},{"kind":"leaves","rot":0,"x":0,"y":7,"z":2},{"kind":"leaves","rot":0,"x":1,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":0},{"kind":"leaves","rot":0,"x":1,"y":7,"z":1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":7,"z":0},{"kind":"leaves","rot":0,"x":2,"y":7,"z":1},{"kind":"leaves","rot":0,"x":2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":1},{"kind":"leaves","rot":0,"x":0,"y":8,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":8,"z":0},{"kind":"leaves","rot":0,"x":0,"y":8,"z":1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":1,"y":8,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":2},{"kind":"leaves","rot":0,"x":0,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":9,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":9,"z":0},{"kind":"leaves","rot":0,"x":0,"y":9,"z":1},{"kind":"leaves","rot":0,"x":0,"y":9,"z":2},{"kind":"leaves","rot":0,"x":1,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":9,"z":0},{"kind":"leaves","rot":0,"x":1,"y":9,"z":1},{"kind":"leaves","rot":0,"x":1,"y":9,"z":2},{"kind":"leaves","rot":0,"x":2,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":9,"z":0},{"kind":"leaves","rot":0,"x":2,"y":9,"z":1},{"kind":"leaves","rot":0,"x":2,"y":9,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":1},{"kind":"leaves","rot":0,"x":0,"y":10,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":10,"z":0},{"kind":"leaves","rot":0,"x":0,"y":10,"z":1},{"kind":"leaves","rot":0,"x":1,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":10,"z":0},{"kind":"leaves","rot":0,"x":1,"y":10,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":2},{"kind":"leaves","rot":0,"x":0,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":11,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":11,"z":0},{"kind":"leaves","rot":0,"x":0,"y":11,"z":1},{"kind":"leaves","rot":0,"x":0,"y":11,"z":2},{"kind":"leaves","rot":0,"x":1,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":11,"z":0},{"kind":"leaves","rot":0,"x":1,"y":11,"z":1},{"kind":"leaves","rot":0,"x":1,"y":11,"z":2},{"kind":"leaves","rot":0,"x":2,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":11,"z":0},{"kind":"leaves","rot":0,"x":2,"y":11,"z":1},{"kind":"leaves","rot":0,"x":2,"y":11,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":12,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":12,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":12,"z":1},{"kind":"leaves","rot":0,"x":0,"y":12,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":12,"z":0},{"kind":"leaves","rot":0,"x":0,"y":12,"z":1},{"kind":"leaves","rot":0,"x":1,"y":12,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":12,"z":0},{"kind":"leaves","rot":0,"x":1,"y":12,"z":1},{"kind":"leaves","rot":0,"x":0,"y":13,"z":0}],"note":"aspen_tree.mts","width":5,"wood":12},"gravewood":{"count":{"branch":0,"fruit":0,"leaves":5,"quarter":0,"trunk":17,"twig":0},"depth":5,"height":7,"max":[2,6,2],"min":[-3,0,-2],"nodes":[{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":-2,"y":3,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":3,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"trunk","rot":0,"x":1,"y":3,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":4,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":4,"z":0},{"kind":"trunk","rot":0,"x":-2,"y":4,"z":1},{"kind":"trunk","rot":0,"x":1,"y":4,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":4,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":4,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":5,"z":1},{"kind":"trunk","rot":0,"x":0,"y":5,"z":2},{"kind":"trunk","rot":0,"x":1,"y":5,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":5,"z":0},{"kind":"trunk","rot":0,"x":1,"y":5,"z":1},{"kind":"trunk","rot":0,"x":1,"y":5,"z":2},{"kind":"leaves","rot":0,"x":2,"y":5,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":6,"z":2},{"kind":"leaves","rot":0,"x":1,"y":6,"z":-2}],"note":"grug_gravewood_small.mts (blight; the tall one in bone forest: 23 logs, 8 leaves)","width":6,"wood":17},"jungle":{"count":{"branch":0,"fruit":0,"leaves":90,"quarter":0,"trunk":35,"twig":0},"depth":5,"height":17,"max":[2,16,2],"min":[-2,0,-2],"nodes":[{"kind":"trunk","rot":0,"x":-1,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":0,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":0,"z":1},{"kind":"trunk","rot":0,"x":1,"y":0,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":1},{"kind":"trunk","rot":0,"x":1,"y":1,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":1},{"kind":"trunk","rot":0,"x":1,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"trunk","rot":0,"x":0,"y":4,"z":0},{"kind":"trunk","rot":0,"x":0,"y":5,"z":0},{"kind":"trunk","rot":0,"x":0,"y":6,"z":0},{"kind":"trunk","rot":0,"x":0,"y":7,"z":0},{"kind":"trunk","rot":0,"x":0,"y":8,"z":0},{"kind":"leaves","rot":0,"x":0,"y":8,"z":1},{"kind":"leaves","rot":0,"x":0,"y":8,"z":2},{"kind":"leaves","rot":0,"x":1,"y":8,"z":0},{"kind":"trunk","rot":0,"x":1,"y":8,"z":1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":2},{"kind":"leaves","rot":0,"x":2,"y":8,"z":0},{"kind":"leaves","rot":0,"x":2,"y":8,"z":1},{"kind":"leaves","rot":0,"x":2,"y":8,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":9,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":2},{"kind":"trunk","rot":0,"x":0,"y":9,"z":0},{"kind":"leaves","rot":0,"x":0,"y":9,"z":1},{"kind":"leaves","rot":0,"x":0,"y":9,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":0},{"kind":"leaves","rot":0,"x":0,"y":10,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":10,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":10,"z":0},{"kind":"leaves","rot":0,"x":0,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":11,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":11,"z":0},{"kind":"leaves","rot":0,"x":1,"y":11,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":11,"z":0},{"kind":"leaves","rot":0,"x":2,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":11,"z":0},{"kind":"trunk","rot":0,"x":0,"y":12,"z":0},{"kind":"leaves","rot":0,"x":0,"y":12,"z":1},{"kind":"leaves","rot":0,"x":0,"y":12,"z":2},{"kind":"leaves","rot":0,"x":1,"y":12,"z":0},{"kind":"trunk","rot":0,"x":1,"y":12,"z":1},{"kind":"leaves","rot":0,"x":1,"y":12,"z":2},{"kind":"leaves","rot":0,"x":2,"y":12,"z":0},{"kind":"leaves","rot":0,"x":2,"y":12,"z":1},{"kind":"leaves","rot":0,"x":2,"y":12,"z":2},{"kind":"trunk","rot":0,"x":0,"y":13,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":14,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":14,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":14,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":14,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":14,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":14,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":14,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":14,"z":2},{"kind":"leaves","rot":0,"x":0,"y":14,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":14,"z":0},{"kind":"leaves","rot":0,"x":0,"y":14,"z":1},{"kind":"leaves","rot":0,"x":0,"y":14,"z":2},{"kind":"leaves","rot":0,"x":1,"y":14,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":14,"z":0},{"kind":"trunk","rot":0,"x":1,"y":14,"z":1},{"kind":"leaves","rot":0,"x":1,"y":14,"z":2},{"kind":"leaves","rot":0,"x":2,"y":14,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":14,"z":0},{"kind":"leaves","rot":0,"x":2,"y":14,"z":1},{"kind":"leaves","rot":0,"x":2,"y":14,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":15,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":15,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":15,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":15,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":15,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":15,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":15,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":15,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":15,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":15,"z":2},{"kind":"leaves","rot":0,"x":0,"y":15,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":15,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":15,"z":0},{"kind":"leaves","rot":0,"x":0,"y":15,"z":1},{"kind":"leaves","rot":0,"x":0,"y":15,"z":2},{"kind":"leaves","rot":0,"x":1,"y":15,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":15,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":15,"z":0},{"kind":"leaves","rot":0,"x":1,"y":15,"z":1},{"kind":"leaves","rot":0,"x":1,"y":15,"z":2},{"kind":"leaves","rot":0,"x":2,"y":15,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":15,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":15,"z":0},{"kind":"leaves","rot":0,"x":2,"y":15,"z":1},{"kind":"leaves","rot":0,"x":2,"y":15,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":16,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":16,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":16,"z":1},{"kind":"leaves","rot":0,"x":0,"y":16,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":16,"z":0},{"kind":"leaves","rot":0,"x":0,"y":16,"z":1},{"kind":"leaves","rot":0,"x":1,"y":16,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":16,"z":0},{"kind":"leaves","rot":0,"x":1,"y":16,"z":1}],"note":"jungle_tree.mts","width":5,"wood":35},"kapok":{"count":{"branch":0,"fruit":0,"leaves":232,"quarter":0,"trunk":309,"twig":0},"depth":7,"height":33,"max":[3,32,3],"min":[-3,0,-3],"nodes":[{"kind":"trunk","rot":0,"x":-3,"y":0,"z":-3},{"kind":"trunk","rot":0,"x":-3,"y":0,"z":3},{"kind":"trunk","rot":0,"x":-2,"y":0,"z":-2},{"kind":"trunk","rot":0,"x":-2,"y":0,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":0,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":0,"z":2},{"kind":"trunk","rot":0,"x":-1,"y":0,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":0,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":0,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":0,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":0,"z":2},{"kind":"trunk","rot":0,"x":0,"y":0,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":0,"z":1},{"kind":"trunk","rot":0,"x":1,"y":0,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":0,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":0,"z":0},{"kind":"trunk","rot":0,"x":1,"y":0,"z":1},{"kind":"trunk","rot":0,"x":1,"y":0,"z":2},{"kind":"trunk","rot":0,"x":2,"y":0,"z":-2},{"kind":"trunk","rot":0,"x":2,"y":0,"z":-1},{"kind":"trunk","rot":0,"x":2,"y":0,"z":1},{"kind":"trunk","rot":0,"x":2,"y":0,"z":2},{"kind":"trunk","rot":0,"x":3,"y":0,"z":-3},{"kind":"trunk","rot":0,"x":3,"y":0,"z":3},{"kind":"trunk","rot":0,"x":-3,"y":1,"z":-3},{"kind":"trunk","rot":0,"x":-3,"y":1,"z":3},{"kind":"trunk","rot":0,"x":-2,"y":1,"z":-2},{"kind":"trunk","rot":0,"x":-2,"y":1,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":1,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":1,"z":2},{"kind":"trunk","rot":0,"x":-1,"y":1,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":1,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":1,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":1,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":1,"z":2},{"kind":"trunk","rot":0,"x":0,"y":1,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":1},{"kind":"trunk","rot":0,"x":1,"y":1,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":1,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":1,"z":0},{"kind":"trunk","rot":0,"x":1,"y":1,"z":1},{"kind":"trunk","rot":0,"x":1,"y":1,"z":2},{"kind":"trunk","rot":0,"x":2,"y":1,"z":-2},{"kind":"trunk","rot":0,"x":2,"y":1,"z":-1},{"kind":"trunk","rot":0,"x":2,"y":1,"z":1},{"kind":"trunk","rot":0,"x":2,"y":1,"z":2},{"kind":"trunk","rot":0,"x":3,"y":1,"z":-3},{"kind":"trunk","rot":0,"x":3,"y":1,"z":3},{"kind":"trunk","rot":0,"x":-3,"y":2,"z":-3},{"kind":"trunk","rot":0,"x":-3,"y":2,"z":3},{"kind":"trunk","rot":0,"x":-2,"y":2,"z":-2},{"kind":"trunk","rot":0,"x":-2,"y":2,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":2,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":2,"z":2},{"kind":"trunk","rot":0,"x":-1,"y":2,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":2,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":2,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":2,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":2,"z":2},{"kind":"trunk","rot":0,"x":0,"y":2,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":1},{"kind":"trunk","rot":0,"x":1,"y":2,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":2,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":2,"z":0},{"kind":"trunk","rot":0,"x":1,"y":2,"z":1},{"kind":"trunk","rot":0,"x":1,"y":2,"z":2},{"kind":"trunk","rot":0,"x":2,"y":2,"z":-2},{"kind":"trunk","rot":0,"x":2,"y":2,"z":-1},{"kind":"trunk","rot":0,"x":2,"y":2,"z":1},{"kind":"trunk","rot":0,"x":2,"y":2,"z":2},{"kind":"trunk","rot":0,"x":3,"y":2,"z":-3},{"kind":"trunk","rot":0,"x":3,"y":2,"z":3},{"kind":"trunk","rot":0,"x":-2,"y":3,"z":-2},{"kind":"trunk","rot":0,"x":-2,"y":3,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":3,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":3,"z":2},{"kind":"trunk","rot":0,"x":-1,"y":3,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":3,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":3,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":3,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":3,"z":2},{"kind":"trunk","rot":0,"x":0,"y":3,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":1},{"kind":"trunk","rot":0,"x":1,"y":3,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":3,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":3,"z":0},{"kind":"trunk","rot":0,"x":1,"y":3,"z":1},{"kind":"trunk","rot":0,"x":1,"y":3,"z":2},{"kind":"trunk","rot":0,"x":2,"y":3,"z":-2},{"kind":"trunk","rot":0,"x":2,"y":3,"z":-1},{"kind":"trunk","rot":0,"x":2,"y":3,"z":1},{"kind":"trunk","rot":0,"x":2,"y":3,"z":2},{"kind":"trunk","rot":0,"x":-2,"y":4,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":4,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":4,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":4,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":4,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":4,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":4,"z":2},{"kind":"trunk","rot":0,"x":0,"y":4,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":4,"z":0},{"kind":"trunk","rot":0,"x":0,"y":4,"z":1},{"kind":"trunk","rot":0,"x":1,"y":4,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":4,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":4,"z":0},{"kind":"trunk","rot":0,"x":1,"y":4,"z":1},{"kind":"trunk","rot":0,"x":1,"y":4,"z":2},{"kind":"trunk","rot":0,"x":2,"y":4,"z":-1},{"kind":"trunk","rot":0,"x":2,"y":4,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":5,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":5,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":5,"z":1},{"kind":"trunk","rot":0,"x":0,"y":5,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":5,"z":0},{"kind":"trunk","rot":0,"x":0,"y":5,"z":1},{"kind":"trunk","rot":0,"x":1,"y":5,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":5,"z":0},{"kind":"trunk","rot":0,"x":1,"y":5,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":6,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":6,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":6,"z":1},{"kind":"trunk","rot":0,"x":0,"y":6,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":6,"z":0},{"kind":"trunk","rot":0,"x":0,"y":6,"z":1},{"kind":"trunk","rot":0,"x":1,"y":6,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":6,"z":0},{"kind":"trunk","rot":0,"x":1,"y":6,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":7,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":7,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":7,"z":1},{"kind":"trunk","rot":0,"x":0,"y":7,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":7,"z":0},{"kind":"trunk","rot":0,"x":0,"y":7,"z":1},{"kind":"trunk","rot":0,"x":1,"y":7,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":7,"z":0},{"kind":"trunk","rot":0,"x":1,"y":7,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":8,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":8,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":8,"z":1},{"kind":"trunk","rot":0,"x":0,"y":8,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":8,"z":0},{"kind":"trunk","rot":0,"x":0,"y":8,"z":1},{"kind":"trunk","rot":0,"x":1,"y":8,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":8,"z":0},{"kind":"trunk","rot":0,"x":1,"y":8,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":9,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":9,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":9,"z":1},{"kind":"trunk","rot":0,"x":0,"y":9,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":9,"z":0},{"kind":"trunk","rot":0,"x":0,"y":9,"z":1},{"kind":"trunk","rot":0,"x":1,"y":9,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":9,"z":0},{"kind":"trunk","rot":0,"x":1,"y":9,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":10,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":10,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":10,"z":1},{"kind":"trunk","rot":0,"x":0,"y":10,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":10,"z":0},{"kind":"trunk","rot":0,"x":0,"y":10,"z":1},{"kind":"trunk","rot":0,"x":1,"y":10,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":10,"z":0},{"kind":"trunk","rot":0,"x":1,"y":10,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":11,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":11,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":11,"z":1},{"kind":"trunk","rot":0,"x":0,"y":11,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":11,"z":0},{"kind":"trunk","rot":0,"x":0,"y":11,"z":1},{"kind":"trunk","rot":0,"x":1,"y":11,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":11,"z":0},{"kind":"trunk","rot":0,"x":1,"y":11,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":12,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":12,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":12,"z":1},{"kind":"trunk","rot":0,"x":0,"y":12,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":12,"z":0},{"kind":"trunk","rot":0,"x":0,"y":12,"z":1},{"kind":"trunk","rot":0,"x":1,"y":12,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":12,"z":0},{"kind":"trunk","rot":0,"x":1,"y":12,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":13,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":13,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":13,"z":1},{"kind":"trunk","rot":0,"x":0,"y":13,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":13,"z":0},{"kind":"trunk","rot":0,"x":0,"y":13,"z":1},{"kind":"trunk","rot":0,"x":1,"y":13,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":13,"z":0},{"kind":"trunk","rot":0,"x":1,"y":13,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":14,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":14,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":14,"z":1},{"kind":"trunk","rot":0,"x":0,"y":14,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":14,"z":0},{"kind":"trunk","rot":0,"x":0,"y":14,"z":1},{"kind":"trunk","rot":0,"x":1,"y":14,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":14,"z":0},{"kind":"trunk","rot":0,"x":1,"y":14,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":15,"z":-3},{"kind":"leaves","rot":0,"x":-3,"y":15,"z":-2},{"kind":"leaves","rot":0,"x":-3,"y":15,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":15,"z":-3},{"kind":"trunk","rot":0,"x":-2,"y":15,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":15,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":15,"z":-3},{"kind":"leaves","rot":0,"x":-1,"y":15,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":15,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":15,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":15,"z":1},{"kind":"trunk","rot":0,"x":0,"y":15,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":15,"z":0},{"kind":"trunk","rot":0,"x":0,"y":15,"z":1},{"kind":"trunk","rot":0,"x":1,"y":15,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":15,"z":0},{"kind":"trunk","rot":0,"x":1,"y":15,"z":1},{"kind":"trunk","rot":0,"x":-1,"y":16,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":16,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":16,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":16,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":16,"z":3},{"kind":"trunk","rot":0,"x":0,"y":16,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":16,"z":0},{"kind":"trunk","rot":0,"x":0,"y":16,"z":1},{"kind":"trunk","rot":0,"x":0,"y":16,"z":2},{"kind":"leaves","rot":0,"x":0,"y":16,"z":3},{"kind":"trunk","rot":0,"x":1,"y":16,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":16,"z":0},{"kind":"trunk","rot":0,"x":1,"y":16,"z":1},{"kind":"leaves","rot":0,"x":1,"y":16,"z":2},{"kind":"leaves","rot":0,"x":1,"y":16,"z":3},{"kind":"trunk","rot":0,"x":-1,"y":17,"z":0},{"kind":"trunk","rot":0,"x":0,"y":17,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":17,"z":0},{"kind":"trunk","rot":0,"x":0,"y":17,"z":1},{"kind":"leaves","rot":0,"x":1,"y":17,"z":-3},{"kind":"leaves","rot":0,"x":1,"y":17,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":17,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":17,"z":0},{"kind":"leaves","rot":0,"x":2,"y":17,"z":-3},{"kind":"trunk","rot":0,"x":2,"y":17,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":17,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":17,"z":-3},{"kind":"leaves","rot":0,"x":3,"y":17,"z":-2},{"kind":"leaves","rot":0,"x":3,"y":17,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":18,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":18,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":18,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":18,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":18,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":18,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":18,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":18,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":18,"z":1},{"kind":"trunk","rot":0,"x":0,"y":18,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":18,"z":0},{"kind":"trunk","rot":0,"x":0,"y":18,"z":1},{"kind":"trunk","rot":0,"x":1,"y":18,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":19,"z":0},{"kind":"trunk","rot":0,"x":0,"y":19,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":19,"z":0},{"kind":"trunk","rot":0,"x":0,"y":19,"z":1},{"kind":"trunk","rot":0,"x":1,"y":19,"z":0},{"kind":"trunk","rot":0,"x":1,"y":19,"z":1},{"kind":"leaves","rot":0,"x":1,"y":19,"z":2},{"kind":"leaves","rot":0,"x":1,"y":19,"z":3},{"kind":"leaves","rot":0,"x":2,"y":19,"z":1},{"kind":"trunk","rot":0,"x":2,"y":19,"z":2},{"kind":"leaves","rot":0,"x":2,"y":19,"z":3},{"kind":"leaves","rot":0,"x":3,"y":19,"z":1},{"kind":"leaves","rot":0,"x":3,"y":19,"z":2},{"kind":"leaves","rot":0,"x":3,"y":19,"z":3},{"kind":"leaves","rot":0,"x":-1,"y":20,"z":-3},{"kind":"leaves","rot":0,"x":-1,"y":20,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":20,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":20,"z":0},{"kind":"leaves","rot":0,"x":0,"y":20,"z":-3},{"kind":"trunk","rot":0,"x":0,"y":20,"z":-2},{"kind":"trunk","rot":0,"x":0,"y":20,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":20,"z":0},{"kind":"trunk","rot":0,"x":0,"y":20,"z":1},{"kind":"leaves","rot":0,"x":1,"y":20,"z":-3},{"kind":"leaves","rot":0,"x":1,"y":20,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":20,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":20,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":21,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":21,"z":2},{"kind":"leaves","rot":0,"x":-3,"y":21,"z":3},{"kind":"leaves","rot":0,"x":-2,"y":21,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":21,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":21,"z":3},{"kind":"trunk","rot":0,"x":-1,"y":21,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":21,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":21,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":21,"z":3},{"kind":"trunk","rot":0,"x":0,"y":21,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":21,"z":0},{"kind":"trunk","rot":0,"x":0,"y":21,"z":1},{"kind":"trunk","rot":0,"x":1,"y":21,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":22,"z":0},{"kind":"trunk","rot":0,"x":0,"y":22,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":22,"z":0},{"kind":"trunk","rot":0,"x":0,"y":22,"z":1},{"kind":"leaves","rot":0,"x":1,"y":22,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":22,"z":0},{"kind":"leaves","rot":0,"x":1,"y":22,"z":1},{"kind":"leaves","rot":0,"x":2,"y":22,"z":-1},{"kind":"trunk","rot":0,"x":2,"y":22,"z":0},{"kind":"leaves","rot":0,"x":2,"y":22,"z":1},{"kind":"leaves","rot":0,"x":3,"y":22,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":22,"z":0},{"kind":"leaves","rot":0,"x":3,"y":22,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":23,"z":-3},{"kind":"leaves","rot":0,"x":-3,"y":23,"z":-2},{"kind":"leaves","rot":0,"x":-3,"y":23,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":23,"z":-3},{"kind":"trunk","rot":0,"x":-2,"y":23,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":23,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":23,"z":-3},{"kind":"leaves","rot":0,"x":-1,"y":23,"z":-2},{"kind":"trunk","rot":0,"x":-1,"y":23,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":23,"z":0},{"kind":"trunk","rot":0,"x":0,"y":23,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":23,"z":0},{"kind":"trunk","rot":0,"x":0,"y":23,"z":1},{"kind":"trunk","rot":0,"x":1,"y":23,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":24,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":24,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":24,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":24,"z":3},{"kind":"trunk","rot":0,"x":0,"y":24,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":24,"z":0},{"kind":"trunk","rot":0,"x":0,"y":24,"z":1},{"kind":"trunk","rot":0,"x":0,"y":24,"z":2},{"kind":"leaves","rot":0,"x":0,"y":24,"z":3},{"kind":"trunk","rot":0,"x":1,"y":24,"z":0},{"kind":"leaves","rot":0,"x":1,"y":24,"z":1},{"kind":"leaves","rot":0,"x":1,"y":24,"z":2},{"kind":"leaves","rot":0,"x":1,"y":24,"z":3},{"kind":"trunk","rot":0,"x":-1,"y":25,"z":0},{"kind":"trunk","rot":0,"x":0,"y":25,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":25,"z":0},{"kind":"trunk","rot":0,"x":0,"y":25,"z":1},{"kind":"leaves","rot":0,"x":1,"y":25,"z":-3},{"kind":"leaves","rot":0,"x":1,"y":25,"z":-2},{"kind":"trunk","rot":0,"x":1,"y":25,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":25,"z":0},{"kind":"leaves","rot":0,"x":2,"y":25,"z":-3},{"kind":"trunk","rot":0,"x":2,"y":25,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":25,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":25,"z":-3},{"kind":"leaves","rot":0,"x":3,"y":25,"z":-2},{"kind":"leaves","rot":0,"x":3,"y":25,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":26,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":26,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":26,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":26,"z":-1},{"kind":"trunk","rot":0,"x":-2,"y":26,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":26,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":26,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":26,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":26,"z":1},{"kind":"trunk","rot":0,"x":0,"y":26,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":26,"z":0},{"kind":"trunk","rot":0,"x":0,"y":26,"z":1},{"kind":"trunk","rot":0,"x":1,"y":26,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":27,"z":0},{"kind":"trunk","rot":0,"x":0,"y":27,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":27,"z":0},{"kind":"trunk","rot":0,"x":0,"y":27,"z":1},{"kind":"trunk","rot":0,"x":1,"y":27,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":28,"z":-2},{"kind":"leaves","rot":0,"x":-3,"y":28,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":28,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":28,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":28,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":28,"z":-3},{"kind":"leaves","rot":0,"x":-2,"y":28,"z":3},{"kind":"leaves","rot":0,"x":-1,"y":28,"z":-3},{"kind":"trunk","rot":0,"x":-1,"y":28,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":28,"z":0},{"kind":"trunk","rot":0,"x":-1,"y":28,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":28,"z":3},{"kind":"leaves","rot":0,"x":0,"y":28,"z":-3},{"kind":"trunk","rot":0,"x":0,"y":28,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":28,"z":1},{"kind":"leaves","rot":0,"x":0,"y":28,"z":3},{"kind":"leaves","rot":0,"x":1,"y":28,"z":-3},{"kind":"trunk","rot":0,"x":1,"y":28,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":28,"z":0},{"kind":"trunk","rot":0,"x":1,"y":28,"z":1},{"kind":"leaves","rot":0,"x":1,"y":28,"z":3},{"kind":"leaves","rot":0,"x":2,"y":28,"z":-3},{"kind":"leaves","rot":0,"x":2,"y":28,"z":3},{"kind":"leaves","rot":0,"x":3,"y":28,"z":-2},{"kind":"leaves","rot":0,"x":3,"y":28,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":28,"z":0},{"kind":"leaves","rot":0,"x":3,"y":28,"z":1},{"kind":"leaves","rot":0,"x":3,"y":28,"z":2},{"kind":"leaves","rot":0,"x":-3,"y":29,"z":-2},{"kind":"leaves","rot":0,"x":-3,"y":29,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":29,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":29,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":29,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":29,"z":-3},{"kind":"leaves","rot":0,"x":-2,"y":29,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":29,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":29,"z":3},{"kind":"leaves","rot":0,"x":-1,"y":29,"z":-3},{"kind":"trunk","rot":0,"x":-1,"y":29,"z":-1},{"kind":"trunk","rot":0,"x":-1,"y":29,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":29,"z":3},{"kind":"leaves","rot":0,"x":0,"y":29,"z":-3},{"kind":"leaves","rot":0,"x":0,"y":29,"z":3},{"kind":"leaves","rot":0,"x":1,"y":29,"z":-3},{"kind":"trunk","rot":0,"x":1,"y":29,"z":-1},{"kind":"trunk","rot":0,"x":1,"y":29,"z":1},{"kind":"leaves","rot":0,"x":1,"y":29,"z":3},{"kind":"leaves","rot":0,"x":2,"y":29,"z":-3},{"kind":"leaves","rot":0,"x":2,"y":29,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":29,"z":2},{"kind":"leaves","rot":0,"x":2,"y":29,"z":3},{"kind":"leaves","rot":0,"x":3,"y":29,"z":-2},{"kind":"leaves","rot":0,"x":3,"y":29,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":29,"z":0},{"kind":"leaves","rot":0,"x":3,"y":29,"z":1},{"kind":"leaves","rot":0,"x":3,"y":29,"z":2},{"kind":"leaves","rot":0,"x":-3,"y":30,"z":-2},{"kind":"leaves","rot":0,"x":-3,"y":30,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":30,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":30,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":30,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":30,"z":-3},{"kind":"trunk","rot":0,"x":-2,"y":30,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":30,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":30,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":30,"z":1},{"kind":"trunk","rot":0,"x":-2,"y":30,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":30,"z":3},{"kind":"leaves","rot":0,"x":-1,"y":30,"z":-3},{"kind":"leaves","rot":0,"x":-1,"y":30,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":30,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":30,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":30,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":30,"z":3},{"kind":"leaves","rot":0,"x":0,"y":30,"z":-3},{"kind":"leaves","rot":0,"x":0,"y":30,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":30,"z":2},{"kind":"leaves","rot":0,"x":0,"y":30,"z":3},{"kind":"leaves","rot":0,"x":1,"y":30,"z":-3},{"kind":"leaves","rot":0,"x":1,"y":30,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":30,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":30,"z":1},{"kind":"leaves","rot":0,"x":1,"y":30,"z":2},{"kind":"leaves","rot":0,"x":1,"y":30,"z":3},{"kind":"leaves","rot":0,"x":2,"y":30,"z":-3},{"kind":"trunk","rot":0,"x":2,"y":30,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":30,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":30,"z":0},{"kind":"leaves","rot":0,"x":2,"y":30,"z":1},{"kind":"trunk","rot":0,"x":2,"y":30,"z":2},{"kind":"leaves","rot":0,"x":2,"y":30,"z":3},{"kind":"leaves","rot":0,"x":3,"y":30,"z":-2},{"kind":"leaves","rot":0,"x":3,"y":30,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":30,"z":0},{"kind":"leaves","rot":0,"x":3,"y":30,"z":1},{"kind":"leaves","rot":0,"x":3,"y":30,"z":2},{"kind":"leaves","rot":0,"x":-3,"y":31,"z":-2},{"kind":"leaves","rot":0,"x":-3,"y":31,"z":-1},{"kind":"leaves","rot":0,"x":-3,"y":31,"z":0},{"kind":"leaves","rot":0,"x":-3,"y":31,"z":1},{"kind":"leaves","rot":0,"x":-3,"y":31,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":31,"z":-3},{"kind":"leaves","rot":0,"x":-2,"y":31,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":31,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":31,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":31,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":31,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":31,"z":3},{"kind":"leaves","rot":0,"x":-1,"y":31,"z":-3},{"kind":"leaves","rot":0,"x":-1,"y":31,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":31,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":31,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":31,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":31,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":31,"z":3},{"kind":"leaves","rot":0,"x":0,"y":31,"z":-3},{"kind":"leaves","rot":0,"x":0,"y":31,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":31,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":31,"z":0},{"kind":"leaves","rot":0,"x":0,"y":31,"z":1},{"kind":"leaves","rot":0,"x":0,"y":31,"z":2},{"kind":"leaves","rot":0,"x":0,"y":31,"z":3},{"kind":"leaves","rot":0,"x":1,"y":31,"z":-3},{"kind":"leaves","rot":0,"x":1,"y":31,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":31,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":31,"z":0},{"kind":"leaves","rot":0,"x":1,"y":31,"z":1},{"kind":"leaves","rot":0,"x":1,"y":31,"z":2},{"kind":"leaves","rot":0,"x":1,"y":31,"z":3},{"kind":"leaves","rot":0,"x":2,"y":31,"z":-3},{"kind":"leaves","rot":0,"x":2,"y":31,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":31,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":31,"z":0},{"kind":"leaves","rot":0,"x":2,"y":31,"z":1},{"kind":"leaves","rot":0,"x":2,"y":31,"z":2},{"kind":"leaves","rot":0,"x":2,"y":31,"z":3},{"kind":"leaves","rot":0,"x":3,"y":31,"z":-2},{"kind":"leaves","rot":0,"x":3,"y":31,"z":-1},{"kind":"leaves","rot":0,"x":3,"y":31,"z":0},{"kind":"leaves","rot":0,"x":3,"y":31,"z":1},{"kind":"leaves","rot":0,"x":3,"y":31,"z":2},{"kind":"leaves","rot":0,"x":-2,"y":32,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":32,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":32,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":32,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":32,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":32,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":32,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":32,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":32,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":32,"z":2},{"kind":"leaves","rot":0,"x":0,"y":32,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":32,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":32,"z":0},{"kind":"leaves","rot":0,"x":0,"y":32,"z":1},{"kind":"leaves","rot":0,"x":0,"y":32,"z":2},{"kind":"leaves","rot":0,"x":1,"y":32,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":32,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":32,"z":0},{"kind":"leaves","rot":0,"x":1,"y":32,"z":1},{"kind":"leaves","rot":0,"x":1,"y":32,"z":2},{"kind":"leaves","rot":0,"x":2,"y":32,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":32,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":32,"z":0},{"kind":"leaves","rot":0,"x":2,"y":32,"z":1},{"kind":"leaves","rot":0,"x":2,"y":32,"z":2}],"note":"emergent_jungle_tree.mts, placed 4 nodes deep (buried logs not shown or counted)","width":7,"wood":309},"pine":{"count":{"branch":0,"fruit":0,"leaves":86,"quarter":0,"trunk":14,"twig":0},"depth":5,"height":16,"max":[2,15,2],"min":[-2,0,-2],"nodes":[{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"trunk","rot":0,"x":0,"y":4,"z":0},{"kind":"trunk","rot":0,"x":0,"y":5,"z":0},{"kind":"trunk","rot":0,"x":0,"y":6,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":2},{"kind":"leaves","rot":0,"x":0,"y":7,"z":-2},{"kind":"trunk","rot":0,"x":0,"y":7,"z":0},{"kind":"leaves","rot":0,"x":0,"y":7,"z":2},{"kind":"leaves","rot":0,"x":1,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":7,"z":0},{"kind":"leaves","rot":0,"x":2,"y":7,"z":1},{"kind":"leaves","rot":0,"x":2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":1},{"kind":"leaves","rot":0,"x":0,"y":8,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":8,"z":0},{"kind":"leaves","rot":0,"x":0,"y":8,"z":1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":1,"y":8,"z":1},{"kind":"trunk","rot":0,"x":0,"y":9,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":10,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":2},{"kind":"leaves","rot":0,"x":0,"y":10,"z":-2},{"kind":"trunk","rot":0,"x":0,"y":10,"z":0},{"kind":"leaves","rot":0,"x":0,"y":10,"z":2},{"kind":"leaves","rot":0,"x":1,"y":10,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":10,"z":1},{"kind":"leaves","rot":0,"x":1,"y":10,"z":2},{"kind":"leaves","rot":0,"x":2,"y":10,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":10,"z":0},{"kind":"leaves","rot":0,"x":2,"y":10,"z":1},{"kind":"leaves","rot":0,"x":2,"y":10,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":1},{"kind":"leaves","rot":0,"x":0,"y":11,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":11,"z":0},{"kind":"leaves","rot":0,"x":0,"y":11,"z":1},{"kind":"leaves","rot":0,"x":1,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":11,"z":0},{"kind":"leaves","rot":0,"x":1,"y":11,"z":1},{"kind":"trunk","rot":0,"x":0,"y":12,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":13,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":13,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":13,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":13,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":13,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":13,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":13,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":13,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":13,"z":2},{"kind":"leaves","rot":0,"x":0,"y":13,"z":-2},{"kind":"trunk","rot":0,"x":0,"y":13,"z":0},{"kind":"leaves","rot":0,"x":0,"y":13,"z":2},{"kind":"leaves","rot":0,"x":1,"y":13,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":13,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":13,"z":1},{"kind":"leaves","rot":0,"x":1,"y":13,"z":2},{"kind":"leaves","rot":0,"x":2,"y":13,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":13,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":13,"z":0},{"kind":"leaves","rot":0,"x":2,"y":13,"z":1},{"kind":"leaves","rot":0,"x":2,"y":13,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":14,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":14,"z":1},{"kind":"leaves","rot":0,"x":0,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":14,"z":0},{"kind":"leaves","rot":0,"x":0,"y":14,"z":1},{"kind":"leaves","rot":0,"x":1,"y":14,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":14,"z":0},{"kind":"leaves","rot":0,"x":1,"y":14,"z":1},{"kind":"leaves","rot":0,"x":0,"y":15,"z":0}],"note":"pine_tree.mts (small_pine_tree.mts: 12 high, 9 logs, 55 needles)","width":5,"wood":14},"silverwood":{"count":{"branch":0,"fruit":0,"leaves":106,"quarter":0,"trunk":12,"twig":0},"depth":5,"height":14,"max":[2,13,2],"min":[-2,0,-2],"nodes":[{"kind":"trunk","rot":0,"x":0,"y":0,"z":0},{"kind":"trunk","rot":0,"x":0,"y":1,"z":0},{"kind":"trunk","rot":0,"x":0,"y":2,"z":0},{"kind":"trunk","rot":0,"x":0,"y":3,"z":0},{"kind":"trunk","rot":0,"x":0,"y":4,"z":0},{"kind":"trunk","rot":0,"x":0,"y":5,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":6,"z":1},{"kind":"leaves","rot":0,"x":0,"y":6,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":6,"z":0},{"kind":"leaves","rot":0,"x":0,"y":6,"z":1},{"kind":"leaves","rot":0,"x":1,"y":6,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":6,"z":0},{"kind":"leaves","rot":0,"x":1,"y":6,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":7,"z":2},{"kind":"leaves","rot":0,"x":0,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":7,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":7,"z":0},{"kind":"leaves","rot":0,"x":0,"y":7,"z":1},{"kind":"leaves","rot":0,"x":0,"y":7,"z":2},{"kind":"leaves","rot":0,"x":1,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":0},{"kind":"leaves","rot":0,"x":1,"y":7,"z":1},{"kind":"leaves","rot":0,"x":1,"y":7,"z":2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":7,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":7,"z":0},{"kind":"leaves","rot":0,"x":2,"y":7,"z":1},{"kind":"leaves","rot":0,"x":2,"y":7,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":8,"z":1},{"kind":"leaves","rot":0,"x":0,"y":8,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":8,"z":0},{"kind":"leaves","rot":0,"x":0,"y":8,"z":1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":8,"z":0},{"kind":"leaves","rot":0,"x":1,"y":8,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":9,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":9,"z":2},{"kind":"leaves","rot":0,"x":0,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":9,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":9,"z":0},{"kind":"leaves","rot":0,"x":0,"y":9,"z":1},{"kind":"leaves","rot":0,"x":0,"y":9,"z":2},{"kind":"leaves","rot":0,"x":1,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":9,"z":0},{"kind":"leaves","rot":0,"x":1,"y":9,"z":1},{"kind":"leaves","rot":0,"x":1,"y":9,"z":2},{"kind":"leaves","rot":0,"x":2,"y":9,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":9,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":9,"z":0},{"kind":"leaves","rot":0,"x":2,"y":9,"z":1},{"kind":"leaves","rot":0,"x":2,"y":9,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":10,"z":1},{"kind":"leaves","rot":0,"x":0,"y":10,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":10,"z":0},{"kind":"leaves","rot":0,"x":0,"y":10,"z":1},{"kind":"leaves","rot":0,"x":1,"y":10,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":10,"z":0},{"kind":"leaves","rot":0,"x":1,"y":10,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":0},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":1},{"kind":"leaves","rot":0,"x":-2,"y":11,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":1},{"kind":"leaves","rot":0,"x":-1,"y":11,"z":2},{"kind":"leaves","rot":0,"x":0,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":0,"y":11,"z":-1},{"kind":"trunk","rot":0,"x":0,"y":11,"z":0},{"kind":"leaves","rot":0,"x":0,"y":11,"z":1},{"kind":"leaves","rot":0,"x":0,"y":11,"z":2},{"kind":"leaves","rot":0,"x":1,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":1,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":11,"z":0},{"kind":"leaves","rot":0,"x":1,"y":11,"z":1},{"kind":"leaves","rot":0,"x":1,"y":11,"z":2},{"kind":"leaves","rot":0,"x":2,"y":11,"z":-2},{"kind":"leaves","rot":0,"x":2,"y":11,"z":-1},{"kind":"leaves","rot":0,"x":2,"y":11,"z":0},{"kind":"leaves","rot":0,"x":2,"y":11,"z":1},{"kind":"leaves","rot":0,"x":2,"y":11,"z":2},{"kind":"leaves","rot":0,"x":-1,"y":12,"z":-1},{"kind":"leaves","rot":0,"x":-1,"y":12,"z":0},{"kind":"leaves","rot":0,"x":-1,"y":12,"z":1},{"kind":"leaves","rot":0,"x":0,"y":12,"z":-1},{"kind":"leaves","rot":0,"x":0,"y":12,"z":0},{"kind":"leaves","rot":0,"x":0,"y":12,"z":1},{"kind":"leaves","rot":0,"x":1,"y":12,"z":-1},{"kind":"leaves","rot":0,"x":1,"y":12,"z":0},{"kind":"leaves","rot":0,"x":1,"y":12,"z":1},{"kind":"leaves","rot":0,"x":0,"y":13,"z":0}],"note":"aspen_tree.mts with silverwood nodes","width":5,"wood":12}};
+var JUNGLE_BARKS = ["a", "b", "c", "d", "e", "f"];
+</script>
+<script>
+// Round 46 lane TREE, step 3: the wood shapes of the tree concept, as data.
+//
+// Used by the viewer (inlined into trees.html) and by node:
+//   node tools/r46_tree/concept/shapes.js        # writes models/*.obj
+//
+// Units are sixteenths of a node, centred on the node (-8..8), Luanti axes
+// (x east, y up, z north). Four shapes per wood type:
+//
+//   quarter  MESH (drawtype "mesh", paramtype2 facedir 0..3): a quarter of
+//            a chamfered trunk column. Its inner corner (the trunk axis) is
+//            at +x +z for facedir 0. The outline seen from above runs from
+//            the +x border to the +z border through PROFILES[name]; the two
+//            faces on the axis side are left out (they always touch the
+//            other quarters or log cubes). Caps top and bottom.
+//   branch   connected node box, 10/16 thick.
+//   twig     connected node box, 6/16 thick; the only piece that also
+//            connects to leaves (only to a leaf above it, see LEAF_SIDES).
+//   base     connected node box, 12/16 thick: the first cell of a limb
+//            that leaves a trunk sideways. Its four level arms reach 8/16
+//            into the neighbour cell, so they meet a slanted trunk face
+//            without a gap (the slant lies at most 8/16 inside the cell
+//            border where the arm is) and, towards a branch, end half way
+//            into it as a short sleeve (a taper 16 -> 12 -> 10). Thicker
+//            than the branch, so no face of it is coplanar with a branch
+//            face. Node box extents up to +-1.0 node: inside the engine's
+//            soft limit of +-1.45 (lua_api.md "Node boxes").
+/* exported TreeShapes */
+(function (root) {
+	'use strict';
+
+	// Outline points from the +x border (16, 0) to the +z border (0, 16),
+	// measured outwards from the axis corner: (along x, along z).
+	var PROFILES = {
+		// octagon: half-width flat, one slant, half-width flat. The flats
+		// are 7/16 so two quarters make a 14/16 face across their border;
+		// the slant is 12.7/16 long: nearly a regular octagon.
+		oct: [[16, 0], [16, 7], [7, 16], [0, 16]],
+		// sixteen-gon: half-width flat, two slants, half-width flat (a regular
+		// 16-gon with an apothem of one node).
+		round: [[16, 0], [16, 3.18], [13.56, 9.06], [9.06, 13.56], [3.18, 16], [0, 16]]
+	};
+
+	var BASE_HALF = 6, BASE_REACH = 16;     // arm ends 8/16 into the neighbour
+	function connected(h, reach) {
+		return {
+			core: [-h, -h, -h, h, h, h],
+			top: [-h, h, -h, h, 8, h], bottom: [-h, -8, -h, h, -h, h],
+			front: [-h, -h, -reach, h, h, -h], back: [-h, -h, h, h, h, reach],
+			left: [-reach, -h, -h, -h, h, h], right: [h, -h, -h, reach, h, h]
+		};
+	}
+	var BOXES = {
+		branch: connected(5, 8),
+		twig: connected(3, 8),
+		base: connected(BASE_HALF, BASE_REACH)
+	};
+	// Which neighbours each connected piece joins (the node's connects_to).
+	var CONNECTS = {
+		branch: {trunk: true, quarter: true, base: true, branch: true, twig: true},
+		twig: {trunk: true, quarter: true, base: true, branch: true, twig: true, leaves: true},
+		base: {trunk: true, quarter: true, base: true, branch: true, twig: true}
+	};
+
+	// Leaves get connect_sides = {"bottom"}; src/nodedef.cpp nodeboxConnects
+	// then lets a twig join a leaf only through the twig's top: a twig end
+	// reaches up into the foliage it carries, without arms into every leaf
+	// around it.
+	var LEAF_SIDES = {top: true};
+
+	// The quarter mesh at facedir 0 in node units (-0.5..0.5): side quads
+	// and cap triangles, each vertex {p: [x, y, z], n: [x, y, z], uv: [u, v]}
+	// with v = 0 at the bottom of the texture (OBJ convention). Bark: u runs
+	// round the outline in node units (the texture repeats), v up the trunk,
+	// so the grain runs along the trunk. Caps: planar, as a cube's top.
+	function quarterMesh(name) {
+		var pts = PROFILES[name];
+		function cell(p) { return [(8 - p[0]) / 16, (8 - p[1]) / 16]; }
+		var sides = [], caps = [];
+		var s = 0;
+		for (var i = 0; i + 1 < pts.length; i++) {
+			var a = cell(pts[i]), b = cell(pts[i + 1]);
+			var dx = pts[i + 1][0] - pts[i][0], dz = pts[i + 1][1] - pts[i][1];
+			var len = Math.sqrt(dx * dx + dz * dz) / 16;
+			// outward normal: away from the axis corner in outline coordinates,
+			// then turned into cell coordinates (which run the other way)
+			var ox = dz, oz = -dx;
+			if (ox * (pts[i][0] + pts[i + 1][0]) + oz * (pts[i][1] + pts[i + 1][1]) < 0) { ox = -ox; oz = -oz; }
+			var ol = Math.sqrt(ox * ox + oz * oz);
+			var nx = -ox / ol, nz = -oz / ol;
+			var n = [nx, 0, nz];
+			sides.push([
+				{p: [a[0], -0.5, a[1]], n: n, uv: [s, 0]},
+				{p: [b[0], -0.5, b[1]], n: n, uv: [s + len, 0]},
+				{p: [b[0], 0.5, b[1]], n: n, uv: [s + len, 1]},
+				{p: [a[0], 0.5, a[1]], n: n, uv: [s, 1]}
+			]);
+			s = s + len;
+		}
+		// caps: a fan from the axis corner
+		var axis = [0.5, 0.5];
+		for (var c = 0; c + 1 < pts.length; c++) {
+			var p1 = cell(pts[c]), p2 = cell(pts[c + 1]);
+			[[0.5, 1], [-0.5, -1]].forEach(function (yy) {
+				var y = yy[0], ny = yy[1];
+				function v(q) { return {p: [q[0], y, q[1]], n: [0, ny, 0], uv: [q[0] + 0.5, q[1] + 0.5]}; }
+				caps.push([v(axis), v(p1), v(p2)]);
+			});
+		}
+		return {sides: sides, caps: caps};
+	}
+
+	// A Wavefront OBJ for the engine: Luanti's loader negates x and flips v
+	// (irr/src/COBJMeshFileLoader.cpp readVec3 / readUV, "change
+	// handedness"), so x and v are written mirrored here. Two material
+	// groups: caps first (tile 1, *_tree_top), sides second (tile 2, bark).
+	function toObj(name) {
+		var m = quarterMesh(name);
+		var out = ['# Grudgelands R46 tree concept: trunk quarter piece "' + name + '"',
+			'# facedir 0 = inner corner (trunk axis) at +x +z; 1 unit = 1 node',
+			'# generated by tools/r46_tree/concept/shapes.js'];
+		var vi = 0, lines = [];
+		function fmt(x) { return (Math.round(x * 10000) / 10000).toString(); }
+		function emit(poly, group) {
+			var idx = [];
+			poly.forEach(function (v) {
+				out.push('v ' + fmt(-v.p[0]) + ' ' + fmt(v.p[1]) + ' ' + fmt(v.p[2]));
+				out.push('vt ' + fmt(v.uv[0]) + ' ' + fmt(v.uv[1]));
+				out.push('vn ' + fmt(-v.n[0]) + ' ' + fmt(v.n[1]) + ' ' + fmt(v.n[2]));
+				vi = vi + 1;
+				idx.push(vi + '/' + vi + '/' + vi);
+			});
+			group.push('f ' + idx.join(' '));
+		}
+		var caps = [], sides = [];
+		m.caps.forEach(function (t) { emit(windOut(t), caps); });
+		m.sides.forEach(function (q) { emit(windOut(q), sides); });
+		lines = out.concat(['g caps', 'usemtl caps'], caps, ['g bark', 'usemtl bark'], sides);
+		return lines.join('\n') + '\n';
+	}
+
+	// Order a polygon counter-clockwise seen from its normal, in the OBJ's
+	// mirrored (right-handed) frame.
+	function windOut(poly) {
+		var p = poly.map(function (v) { return [-v.p[0], v.p[1], v.p[2]]; });
+		var n = [-poly[0].n[0], poly[0].n[1], poly[0].n[2]];
+		var e1 = [p[1][0] - p[0][0], p[1][1] - p[0][1], p[1][2] - p[0][2]];
+		var e2 = [p[2][0] - p[0][0], p[2][1] - p[0][1], p[2][2] - p[0][2]];
+		var c = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+		if (c[0] * n[0] + c[1] * n[1] + c[2] * n[2] < 0) { return poly.slice().reverse(); }
+		return poly;
+	}
+
+	var api = {PROFILES: PROFILES, BOXES: BOXES, CONNECTS: CONNECTS, LEAF_SIDES: LEAF_SIDES, quarterMesh: quarterMesh, toObj: toObj,
+		BASE_HALF: BASE_HALF, BASE_REACH: BASE_REACH};
+	if (typeof module !== 'undefined' && module.exports) {
+		module.exports = api;
+		if (require.main === module) {
+			var fs = require('fs'), path = require('path');
+			var dir = path.join(__dirname, 'models');
+			if (!fs.existsSync(dir)) { fs.mkdirSync(dir); }
+			Object.keys(PROFILES).forEach(function (name) {
+				var file = path.join(dir, 'grug_tree_quarter_' + name + '.obj');
+				fs.writeFileSync(file, toObj(name));
+				console.log('wrote ' + path.relative(process.cwd(), file));
+			});
+		}
+	}
+	root.TreeShapes = api;
+})(typeof window !== 'undefined' ? window : this);
+
 </script>
 <script>
 // Round 46 lane TREE, step 2: the seeded tree generator of the concept viewer.
@@ -245,13 +434,13 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 
 	// ---------------------------------------------------------------- cells
 
-	var RANK = {leaves: 1, fruit: 2, twig: 3, branch: 4, trunk: 5, quarter: 5};
-	var WOOD = {trunk: true, quarter: true, branch: true, twig: true};
+	var RANK = {leaves: 1, fruit: 2, twig: 3, branch: 4, base: 5, trunk: 6, quarter: 6};
+	var WOOD = {trunk: true, quarter: true, base: true, branch: true, twig: true};
 
 	function key(x, y, z) { return ((y + 64) * 256 + (x + 128)) * 256 + (z + 128); }
 
 	function newTree(species, seed) {
-		return {species: species, seed: seed, cells: {}, order: [], stemList: [], clusters: [],
+		return {species: species, seed: seed, cells: {}, order: [], stemList: [], stemSet: {}, clusters: [],
 			path: [], facts: {}};
 	}
 
@@ -279,7 +468,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		var k = key(x, y, z);
 		var known = t.cells[k] !== undefined;
 		putCell(t, x, y, z, kind, rot);
-		if (!known) { t.stemList.push(k); }
+		if (!known) { t.stemList.push(k); t.stemSet[k] = true; }
 	}
 
 	// facedir of a quarter piece whose inner corner (the trunk axis) lies
@@ -531,38 +720,36 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 
 	// ---------------------------------------------------------------- finish
 
-	// Collars: a quarter piece is rounded off at its outer corner, so wood
-	// that meets it from the side or sits on it would overhang the rounding.
-	// Such a quarter becomes a plain log cube (where a limb leaves, the trunk
-	// swells, as a real branch collar does). A quarter under a quarter of
-	// the same turn stays.
-	function collars(t) {
+	// Limb bases: where a limb leaves the trunk sideways, its first cell is
+	// the thicker base piece, whose level arms reach half a node into the
+	// trunk cell and so close the gap to a slanted trunk face. A branch or a
+	// lying log beside a stem log or quarter becomes a base; so does a twig
+	// beside a quarter (it would leave a gap); a twig beside a log meets its
+	// flat face and stays.
+	function limbBases(t) {
 		var turn = [];
 		for (var i = 0; i < t.order.length; i++) {
-			var c = t.cells[t.order[i]];
-			if (c.kind === 'quarter') {
-				var up = getCell(t, c.x, c.y + 1, c.z);
-				var swell = up !== undefined && WOOD[up.kind] === true &&
-					!(up.kind === 'quarter' && up.rot === c.rot);
+			var k = t.order[i];
+			var c = t.cells[k];
+			if (t.stemSet[k] !== true && (c.kind === 'branch' || c.kind === 'twig' || c.kind === 'trunk')) {
 				for (var n = 0; n < 6; n++) {
 					var d = NEIGHBOURS[n];
-					if (d[1] === 0) {
-						var nb = getCell(t, c.x + d[0], c.y, c.z + d[2]);
-						if (nb !== undefined && (nb.kind === 'branch' || nb.kind === 'twig' ||
-							(nb.kind === 'trunk' && nb.rot !== 0))) {
-							swell = true;
-						}
+					var nk = key(c.x + d[0], c.y, c.z + d[2]);
+					var nb = t.cells[nk];
+					if (d[1] === 0 && nb !== undefined && t.stemSet[nk] === true &&
+						(nb.kind === 'quarter' || (nb.kind === 'trunk' && c.kind !== 'twig'))) {
+						turn.push(c);
+						break;
 					}
 				}
-				if (swell) { turn.push(c); }
 			}
 		}
-		for (var j = 0; j < turn.length; j++) { turn[j].kind = 'trunk'; turn[j].rot = 0; }
+		for (var j = 0; j < turn.length; j++) { turn[j].kind = 'base'; }
 	}
 
 	function finish(t) {
 		var nodes = [];
-		var count = {trunk: 0, quarter: 0, branch: 0, twig: 0, leaves: 0, fruit: 0};
+		var count = {trunk: 0, quarter: 0, base: 0, branch: 0, twig: 0, leaves: 0, fruit: 0};
 		var minX = 999, maxX = -999, minZ = 999, maxZ = -999, maxY = -999;
 		for (var i = 0; i < t.order.length; i++) {
 			var c = t.cells[t.order[i]];
@@ -581,8 +768,8 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		}
 		return {
 			species: t.species, seed: t.seed, nodes: nodes, count: count,
-			wood: count.trunk + count.quarter + count.branch + count.twig,
-			shapes: count.quarter + count.branch + count.twig,
+			wood: count.trunk + count.quarter + count.base + count.branch + count.twig,
+			shapes: count.quarter + count.base + count.branch + count.twig,
 			height: maxY + 1, width: maxX - minX + 1, depth: maxZ - minZ + 1,
 			min: [minX, 0, minZ], max: [maxX, maxY, maxZ], facts: t.facts
 		};
@@ -634,10 +821,9 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		for (y = 0; y < bole; y++) {
 			if (w === 2) { trunkLayer(t, y, 0, 0, 2); } else { stemCell(t, 0, y, 0, 'trunk', 0); }
 		}
-		if (w === 2) { flare(t, 0, 0, 0, 2); }
 		var top = bole - 1;
-		var rx = rint(rng, 56, 70);              // crown radius, 3.5..4.4 nodes
-		var ry = rint(rng, 44, 52);              // crown half height
+		var rx = rint(rng, 60, 74);              // crown radius, 3.75..4.6 nodes
+		var ry = rint(rng, 46, 54);              // crown half height
 		var ax16 = w === 2 ? 0 : 8;              // trunk axis in p16
 		var lean = chance(rng, 45) ? rint(rng, 0, 3) : -1;
 		var cx = ax16, cz = ax16;
@@ -657,8 +843,8 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 				var e1 = limb(t, st[0], top, st[1], cellOf(offX(cx, d, reach)), cellOf(cy + rint(rng, -6, 6)),
 					cellOf(offZ(cz, d, reach)), 0, 70, OUT_FIRST);
 				var path = t.path;
-				cluster(t, mid(e1[0]), mid(e1[1]) + 2, mid(e1[2]), rint(rng, 28, 34), rint(rng, 24, 28),
-					rint(rng, 28, 34), -99);
+				cluster(t, mid(e1[0]), mid(e1[1]) + 2, mid(e1[2]), rint(rng, 30, 38), rint(rng, 26, 30),
+					rint(rng, 30, 38), -99);
 				// the fork: up and in, and sideways along the rim
 				var ur = idiv(rx * rint(rng, 50, 70), 100);
 				var e2 = limb(t, e1[0], e1[1], e1[2], cellOf(offX(cx, d, ur)), cellOf(cy + idiv(ry * rint(rng, 55, 75), 100)),
@@ -676,23 +862,11 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 				}
 			}
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 62, 38, rint(rng, 1, 99999), 3);
 		hangFruit(t, rng, rint(rng, 3, 7));
 		t.facts = {trunk: w + 'x' + w, bole: bole, limbs: limbs,
 			crown: (idiv(rx * 2, 16) + 1) + ' wide', lean: lean >= 0 ? ['+x', '+z', '-x', '-z'][lean] : 'none'};
-	}
-
-	// A subtle flare: the ground layer of a wide trunk keeps square log
-	// corners instead of the rounded pieces.
-	function flare(t, y, ax2, az2, w) {
-		var x0 = idiv(ax2 - w, 2), z0 = idiv(az2 - w, 2);
-		for (var i = 0; i < w; i++) {
-			for (var j = 0; j < w; j++) {
-				var c = getCell(t, x0 + i, y, z0 + j);
-				if (c !== undefined && c.kind === 'quarter') { c.kind = 'trunk'; c.rot = 0; }
-			}
-		}
 	}
 
 	// The cardinal step (dx, dz) of direction index 0..3 (DIR16 index 4 d).
@@ -704,7 +878,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		var h = rint(rng, 12, 15);              // total height target
 		var top = h - 4;                         // last trunk layer
 		var w = chance(rng, 30) ? 2 : 1;
-		var wide = w === 2 ? idiv(top * 70, 100) : 0;
+		var wide = w === 2 ? top + 1 : 0;      // a 2 x 2 stem stays straight
 		var x = 0, z = 0;
 		// the stem wanders: one side-step low, often a second one higher up
 		// that turns back or aside, so the stem swings round its foot
@@ -713,10 +887,10 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		var k2 = imax(k1 + 4, rint(rng, idiv(top, 2) + 2, top - 2));
 		var d1 = rint(rng, 0, 3);
 		var d2 = (d1 + rint(rng, 1, 3)) % 4;
-		var kinks = (chance(rng, 60) && k2 <= top - 1) ? 2 : 1;
+		var kinks = w === 2 ? 0 : ((chance(rng, 60) && k2 <= top - 1) ? 2 : 1);
 		var y;
 		for (y = 0; y <= top; y++) {
-			if (y === k1 || (kinks === 2 && y === k2)) {
+			if ((kinks >= 1 && y === k1) || (kinks === 2 && y === k2)) {
 				// the 1 x 1 stem steps aside: for one layer it stands on
 				// two logs, a knee
 				var d = y === k1 ? d1 : d2;
@@ -724,16 +898,11 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 				x = x + CARD[d][0]; z = z + CARD[d][1];
 			}
 			if (y < wide) {
-				trunkLayer(t, y, 2 * x, 2 * z, 2);
+				trunkLayer(t, y, 0, 0, 2);
 			} else {
-				if (y === wide && w === 2) {
-					// the stem goes on from the 2 x 2's cell towards the lean
-					x = x + (CARD[d1][0] < 0 ? -1 : 0); z = z + (CARD[d1][1] < 0 ? -1 : 0);
-				}
 				stemCell(t, x, y, z, 'trunk', 0);
 			}
 		}
-		if (w === 2) { flare(t, 0, 0, 0, 2); }
 		var limbs = rint(rng, 3, 5);
 		var a0 = rint(rng, 0, 15);
 		var ly = top - 1;
@@ -763,8 +932,14 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		}
 		// the leader ends in the highest clump
 		var lead = rint(rng, 1, 2);
-		column(t, x, top + 1, top + lead, z, 'branch');
-		cluster(t, mid(x), mid(top + lead) + 8, mid(z), rint(rng, 40, 48), rint(rng, 30, 36),
+		var lx16 = mid(x), lz16 = mid(z);
+		if (w === 2) {
+			for (y = top + 1; y <= top + lead; y++) { trunkLayer(t, y, 0, 0, 2); }
+			lx16 = 0; lz16 = 0;
+		} else {
+			column(t, x, top + 1, top + lead, z, 'branch');
+		}
+		cluster(t, lx16, mid(top + lead) + 8, lz16, rint(rng, 40, 48), rint(rng, 30, 36),
 			rint(rng, 40, 48), -99);
 		// small clumps low on the stem where a dormant bud broke out
 		var buds = rint(rng, 0, 2);
@@ -780,7 +955,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 				}
 			}
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 58, 45, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: w + 'x' + w + ' wandering', kinks: kinks, clumps: made + 1};
 	}
@@ -802,13 +977,9 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 			}
 			trunkLayer(t, y, ax2, az2, (w === 3 && y < narrow) ? 3 : 2);
 		}
-		if (w === 3) { flare(t, 0, 1, 1, 3); flare(t, 1, 1, 1, 3); } else { flare(t, 0, 0, 0, 2); }
-		// above the crown base the column goes on as one log and a leader
-		var lx = idiv(ax2, 2) + (CARD[lean][0] < 0 ? -1 : 0);
-		var lz = idiv(az2, 2) + (CARD[lean][1] < 0 ? -1 : 0);
+		// above the crown base the 2 x 2 column goes on as the leader
 		var top = h - 4;
-		column(t, lx, base + 1, base + 3, lz, 'trunk');
-		column(t, lx, base + 4, top, lz, 'branch');
+		for (y = base + 1; y <= top; y++) { trunkLayer(t, y, ax2, az2, 2); }
 		var cx16 = ax2 * 8, cz16 = az2 * 8;
 		var n1 = rint(rng, 4, 6);
 		var a0 = rint(rng, 0, 15);
@@ -819,7 +990,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 			var reach = rint(rng, 54, 70);
 			var rise = rint(rng, 24, 56);
 			var end = limb(t, st[0], sy, st[1], cellOf(offX(cx16, az, reach)), sy + cellOf(rise + 8),
-				cellOf(offZ(cz16, az, reach)), 2, 70, OUT_FIRST);
+				cellOf(offZ(cz16, az, reach)), 0, 70, OUT_FIRST);
 			if (chance(rng, 50) && t.path.length >= 4) {
 				// a clump hangs under the middle of the limb
 				var hp = t.path[idiv(t.path.length, 2)];
@@ -840,15 +1011,16 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		for (var j = 0; j < n2; j++) {
 			var bz = a0 + idiv(8, n1) + idiv(16 * j, n2) + rint(rng, -1, 1);
 			var r2 = rint(rng, 32, 48);
-			var e2 = limb(t, lx, y2, lz, cellOf(offX(mid(lx), bz, r2)), y2 + rint(rng, 1, 2),
-				cellOf(offZ(mid(lz), bz, r2)), 0, 50, OUT_FIRST);
+			var s2 = trunkEdge(t, y2, bz);
+			var e2 = limb(t, s2[0], y2, s2[1], cellOf(offX(cx16, bz, r2 + 8)), y2 + rint(rng, 1, 2),
+				cellOf(offZ(cz16, bz, r2 + 8)), 0, 50, OUT_FIRST);
 			cluster(t, mid(e2[0]), mid(e2[1]) + 10, mid(e2[2]), rint(rng, 36, 44), rint(rng, 24, 28),
 				rint(rng, 36, 44), -2);
 		}
 		// the dome that joins the clumps, and the top
 		cluster(t, cx16, mid(base + 5), cz16, rint(rng, 60, 72), rint(rng, 44, 52), rint(rng, 60, 72), -2);
-		cluster(t, mid(lx), mid(top) + 6, mid(lz), rint(rng, 44, 52), rint(rng, 28, 32), rint(rng, 44, 52), -1);
-		collars(t);
+		cluster(t, cx16, mid(top) + 6, cz16, rint(rng, 44, 52), rint(rng, 28, 32), rint(rng, 44, 52), -1);
+		limbBases(t);
 		fillLeaves(t, 60, 40, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: w + 'x' + w + (w === 3 ? ' to 2x2' : ''), crownBase: base, limbs: n1 + n2};
 	}
@@ -892,9 +1064,9 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		}
 		for (var p = 0; p < pads.length; p++) {
 			var r = rint(rng, 42, 52);
-			cluster(t, mid(pads[p][0]), mid(level), mid(pads[p][2]), r, rint(rng, 18, 22), r, 0);
+			cluster(t, mid(pads[p][0]), mid(level), mid(pads[p][2]), r, rint(rng, 20, 24), r, -1);
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 55, 40, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1, ' + h + ' high', fork: limbs + ' limbs', canopy: 'at ' + level};
 	}
@@ -928,7 +1100,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		}
 		cluster(t, 8, mid(apex - 1), 8, 18, 30, 18, -1);
 		putCell(t, 0, apex, 0, 'leaves', 0);
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 70, 22, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1 tapering', whorls: whorls, base: (idiv(rbase * 2, 16) + 1) + ' wide'};
 	}
@@ -950,7 +1122,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 			}
 			stemCell(t, x, y, z, y >= apex - 2 ? 'twig' : 'branch', 0);
 		}
-		var rx = rint(rng, 34, 42);
+		var rx = rint(rng, 42, 52);
 		var cy = idiv((bole + 1 + apex + 1) * 16, 2);
 		var ry = (apex + 1 - bole) * 8 + 2;
 		cluster(t, 8 + x * 8, cy, 8 + z * 8, rx, ry, rx, -99);
@@ -966,7 +1138,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 			az = az + 5;
 			y2 = y2 + rint(rng, 1, 2);
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 60, 35, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1 slender', bole: bole, crown: (idiv(rx * 2, 16) + 1) + ' wide'};
 	}
@@ -988,34 +1160,34 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		for (var i = 0; i < limbs; i++) {
 			var az = a0 + idiv(16 * i, limbs) + rint(rng, -1, 1);
 			var sy = bole + (i % 3);
-			var e1 = limb(t, x, sy, z, cellOf(offX(mid(x), az, 32)), sy + 1, cellOf(offZ(mid(z), az, 32)),
+			var so = rint(rng, 32, 44);
+			var e1 = limb(t, x, sy, z, cellOf(offX(mid(x), az, so)), sy + 1, cellOf(offZ(mid(z), az, so)),
 				0, 100, OUT_FIRST);
 			var lt = apex - rint(rng, 3, 5);
 			var e2 = limb(t, e1[0], e1[1], e1[2], e1[0], lt, e1[2], 0, 45, UP_FIRST);
-			var rr = rint(rng, 24, 30);
-			cluster(t, mid(e2[0]), idiv((e1[1] + 2 + lt + 2) * 16, 2), mid(e2[2]), rr,
-				(lt - e1[1]) * 8 + 10, rr, -99);
+			// the column reaches 2-3 below where the limb turns upright
+			var rr = rint(rng, 28, 36);
+			cluster(t, mid(e2[0]), idiv((e1[1] + lt + 2) * 16, 2) - 12, mid(e2[2]), rr,
+				(lt - e1[1]) * 8 + 34, rr, -99);
 		}
-		cluster(t, mid(x), idiv((bole + 4 + apex + 1) * 16, 2), mid(z), rint(rng, 26, 32),
-			(apex - bole - 2) * 8, rint(rng, 26, 32), -99);
-		collars(t);
+		cluster(t, mid(x), idiv((bole + 2 + apex + 1) * 16, 2), mid(z), rint(rng, 30, 36),
+			(apex - bole) * 8 + 8, rint(rng, 30, 36), -99);
+		limbBases(t);
 		fillLeaves(t, 62, 32, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1', age: old ? 'old' : 'young', bole: bole, limbs: limbs};
 	}
 
 	// GRAVEWOOD: a dead tree. The stem bends one way as it climbs, a few
-	// bare limbs reach out low and end in two-pronged claws, some hooked up,
-	// some drooping; a grey tuft here and there at most.
+	// bare limbs reach out level or rising and end in two-pronged claws, a
+	// quarter hooked up, a few drooping; a few grey tufts.
 	function gravewood(t, rng) {
 		var h = rint(rng, 6, 10);
 		var top = h - 2;
-		var w = chance(rng, 25) ? 2 : 1;
 		var lean = rint(rng, 0, 3);
 		var k1 = rint(rng, 2, 3), k2 = chance(rng, 55) ? rint(rng, k1 + 2, imax(k1 + 2, top - 1)) : -1;
 		var d2 = chance(rng, 60) ? lean : (lean + (chance(rng, 50) ? 1 : 3)) % 4;
 		var x = 0, z = 0;
-		if (w === 2) { trunkLayer(t, 0, 0, 0, 2); trunkLayer(t, 1, 0, 0, 2); flare(t, 0, 0, 0, 2); }
-		for (var y = w === 2 ? 2 : 0; y <= top; y++) {
+		for (var y = 0; y <= top; y++) {
 			if (y === k1 || y === k2) {
 				var d = y === k1 ? lean : d2;
 				stemCell(t, x + CARD[d][0], y - 1, z + CARD[d][1], 'trunk', 0);
@@ -1034,32 +1206,36 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 			var ly = rint(rng, idiv(h * 45, 100), top);
 			var c = trunkEdge(t, ly, az);
 			var reach = rint(rng, 44, 70);
-			var rise = rint(rng, -10, 12);
+			var rise = rint(rng, -4, 16);
 			var e = limb(t, c[0], ly, c[1], cellOf(offX(mid(c[0]), az, reach)), ly + cellOf(rise + 8),
 				cellOf(offZ(mid(c[1]), az, reach)), 0, 55, OUT_FIRST);
-			var end = rint(rng, 0, 9);
-			if (end < 2) {
+			var end = rint(rng, 0, 19);          // 25 % hooked, 15 % drooping
+			var prong = rint(rng, 0, 1);
+			if (end < 5) {
 				e = limb(t, e[0], e[1], e[2], e[0], e[1] + 1, e[2], 0, 0, UP_FIRST);
-			} else if (end < 6) {
+				prong = 1;
+			} else if (end < 8) {
 				e = limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(az) + 8), e[1] - 1,
 					e[2] + cellOf(dirZ(az) + 8), 0, 0, OUT_FIRST);
+				prong = -1;
 			}
 			// the claw: two prongs
 			for (var f = -1; f <= 1; f += 2) {
 				var fa = az + 3 * f;
-				limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(fa) + 8), e[1] + (end < 2 ? 1 : (end < 6 ? -1 : 0)),
+				limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(fa) + 8), e[1] + prong,
 					e[2] + cellOf(dirZ(fa) + 8), 0, 0, OUT_FIRST);
 			}
 			tips.push(e);
 		}
-		var tufts = rint(rng, 0, 3);
+		var tufts = rint(rng, 1, 4);
 		for (var j = 0; j < tufts && j < tips.length; j++) {
 			var tp = tips[rint(rng, 0, tips.length - 1)];
-			cluster(t, mid(tp[0]), mid(tp[1]) + 8, mid(tp[2]), rint(rng, 14, 20), 12, rint(rng, 14, 20), 0);
+			cluster(t, mid(tp[0]), mid(tp[1]) + 8, mid(tp[2]), rint(rng, 18, 26), rint(rng, 14, 18),
+				rint(rng, 18, 26), -1);
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 50, 40, rint(rng, 1, 99999), 3);
-		t.facts = {trunk: w + 'x' + w + ' bent', limbs: limbs, tufts: tufts};
+		t.facts = {trunk: '1x1 bent', limbs: limbs, tufts: tufts};
 	}
 
 	// ================================================================ table
@@ -1107,22 +1283,12 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 
 	// ------------------------------------------------------------- shapes
 
-	// Boxes in sixteenths, x1 y1 z1 x2 y2 z2, centred on the node.
-	var QUARTER = [
-		[-8, -8, 4, 8, 8, 8],
-		[-6, -8, -1, 8, 8, 4],
-		[-1, -8, -6, 8, 8, -1],
-		[4, -8, -8, 8, 8, -6]
-	];
-	function armsOf(h) {
-		return {
-			core: [-h, -h, -h, h, h, h],
-			top: [-h, h, -h, h, 8, h], bottom: [-h, -8, -h, h, -h, h],
-			front: [-h, -h, -8, h, h, -h], back: [-h, -h, h, h, h, 8],
-			left: [-8, -h, -h, -h, h, h], right: [h, -h, -h, 8, h, h]
-		};
-	}
-	var BRANCH = armsOf(5), TWIG = armsOf(3);
+	// The shapes live in shapes.js (TreeShapes): the quarter is a mesh, the
+	// others are connected node boxes in sixteenths, x1 y1 z1 x2 y2 z2.
+	var BOXES = TreeShapes.BOXES, CONNECTS = TreeShapes.CONNECTS;
+	// Leaves declare connect_sides = {"bottom"}: a twig joins a leaf only
+	// above it (nodeboxConnects checks the target's connect_sides).
+	function leafJoin(side) { return state.twigLeaves && TreeShapes.LEAF_SIDES[side] === true; }
 	var SIDE_DIRS = {top: [0, 1, 0], bottom: [0, -1, 0], right: [1, 0, 0], left: [-1, 0, 0],
 		back: [0, 0, 1], front: [0, 0, -1]};
 	var SIDE_ORDER = ['top', 'bottom', 'front', 'left', 'back', 'right'];
@@ -1187,6 +1353,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		t.magFilter = THREE.NearestFilter;
 		t.minFilter = THREE.NearestFilter;
 		t.generateMipmaps = false;
+		t.wrapS = t.wrapT = THREE.RepeatWrapping;   // box faces past the node border wrap
 		t.encoding = THREE.sRGBEncoding;
 		return t;
 	}
@@ -1251,15 +1418,27 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		gravewood: {bark: 'grug_trees_gravewood_tree', top: 'grug_trees_gravewood_tree_top', leaves: 'gravewood_leaves', ground: 'grug_nodes_blight_dirt'}
 	};
 
+	// Jungle bark candidates found by build.py (JUNGLE_BARKS: ids whose
+	// side and top textures are in TEXTURES as jungle_bark_<id>[_top]).
+	function woodsOf(sp) {
+		var w = WOODS[sp];
+		if ((sp === 'jungle' || sp === 'kapok') && state.bark !== 'today' &&
+			JUNGLE_BARKS.indexOf(state.bark) >= 0) {
+			var top = TEXTURES['jungle_bark_' + state.bark + '_top'] ? 'jungle_bark_' + state.bark + '_top' : w.top;
+			return {bark: 'jungle_bark_' + state.bark, top: top, leaves: w.leaves, ground: w.ground};
+		}
+		return w;
+	}
+
 	var CONCEPT = {
-		apple: 'A short stout bole opens into 3–5 scaffold limbs and a short leader; the round crown sits on their ends, bulging where each limb ends. Apples hang under the crown.',
+		apple: 'A short stout bole (2×2 in 40 %) opens into 3–4 scaffold limbs that climb at about 45° in upright planes and fork at the rim, up-and-in and sideways; the round crown sits on their ends, lumpy where twigs end. Apples hang under it.',
 		jungle: 'A tall stem that wanders (one or two side-steps), sheds its lower limbs and carries its crown as separate clumps at the ends of long limbs, the highest on the leader.',
-		kapok: 'The giant: a long clear 3×3 or 2×2 column, square at the foot, stepping in to 2×2; at 60 % height 4–6 wide limbs rise gently and fork, a second shorter tier above: a broad high crown.',
-		acacia: 'A short trunk forks into a wide V of thick limbs; every limb end climbs to one common level and spreads into flat pads that merge into an umbrella.',
+		kapok: 'The giant: a long clear 3×3 or 2×2 column stepping in to a 2×2 leader; at 60 % height 4–6 wide limbs leave through limb bases, rise gently and fork, a second shorter tier above, a dome joining the clumps: a broad high crown.',
+		acacia: 'A short trunk forks into a wide V of thick limbs; every limb end climbs to one common level and spreads into pads that start on the twigs and merge into an umbrella.',
 		pine: 'A straight stem thinning from log to branch to twig, a whorl of short twigs every 2–3 nodes; each whorl carries a needle skirt, wide below, narrow above: a layered cone.',
-		aspen: 'A slender stem with a long bare bole, then a narrow tall oval crown on short twigs that spiral up the leader (5/16 turn each); some tops bend a little.',
-		silverwood: 'Tall and elegant: a long clear bole (2×2 low down in older trees), then 3–5 limbs that step out once and rise parallel to the leader, each in a slim leaf column: a flame.',
-		gravewood: 'Dead: the stem bends as it climbs, 3–5 bare limbs reach out low and end in hooked or drooping two-pronged claws; a grey tuft here and there at most.'
+		aspen: 'A slender stem with a long bare bole, then a tall oval crown on short twigs that spiral up the leader (5/16 turn each); some tops bend a little.',
+		silverwood: 'Tall and elegant: a long clear slender bole, then 3–5 limbs that step out 2–3 and rise parallel to the leader, each in a leaf column reaching down to where it turns upright: a flame.',
+		gravewood: 'Dead: the stem bends as it climbs, 3–5 bare limbs reach out level or rising and end in two-pronged claws (a quarter hooked up, a few drooping); a few grey tufts.'
 	};
 
 	// ----------------------------------------------------------- meshing
@@ -1343,7 +1522,49 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		}
 	}
 
-	var WOODKIND = {trunk: true, quarter: true, branch: true, twig: true};
+	var WOODKIND = {trunk: true, quarter: true, base: true, branch: true, twig: true};
+
+	// The quarter mesh turned by facedir like rotateMeshBy6dFacedir does for
+	// 0..3 (the same turn as a node box: (x, z) -> (z, -x) per step), cached.
+	var meshCache = {};
+	function quarterPolys(profile, rot) {
+		var k = profile + rot;
+		if (meshCache[k]) { return meshCache[k]; }
+		var m = TreeShapes.quarterMesh(profile);
+		function turn(v) {
+			var x = v[0], z = v[2];
+			for (var i = 0; i < rot % 4; i++) { var a = x; x = z; z = -a; }
+			return [x, v[1], z];
+		}
+		function conv(poly, tile) {
+			return {tile: tile, verts: poly.map(function (v) { return {p: turn(v.p), n: turn(v.n), uv: v.uv}; })};
+		}
+		var out = m.caps.map(function (p) { return conv(p, 'top'); }).concat(m.sides.map(function (p) { return conv(p, 'bark'); }));
+		meshCache[k] = out;
+		return out;
+	}
+
+	// One mesh polygon (Luanti coordinates, node units) into a bucket.
+	function addPoly(buckets, tex, ox, oy, oz, poly) {
+		var bk = buckets.get(tex, 'wood');
+		var base = bk.pos.length / 3;
+		var pts = [];
+		poly.verts.forEach(function (v) {
+			var p = [ox + v.p[0], oy + v.p[1], -(oz + v.p[2])];
+			pts.push(p);
+			bk.pos.push(p[0], p[1], p[2]);
+			bk.nor.push(v.n[0], v.n[1], -v.n[2]);
+			bk.uv.push(v.uv[0], v.uv[1]);
+		});
+		var n = poly.verts[0].n;
+		var e1 = [pts[1][0] - pts[0][0], pts[1][1] - pts[0][1], pts[1][2] - pts[0][2]];
+		var e2 = [pts[2][0] - pts[0][0], pts[2][1] - pts[0][1], pts[2][2] - pts[0][2]];
+		var cx = e1[1] * e2[2] - e1[2] * e2[1], cy = e1[2] * e2[0] - e1[0] * e2[2], cz = e1[0] * e2[1] - e1[1] * e2[0];
+		var fwd = cx * n[0] + cy * n[1] - cz * n[2] >= 0;
+		for (var j = 1; j + 1 < pts.length; j++) {
+			if (fwd) { bk.idx.push(base, base + j, base + j + 1); } else { bk.idx.push(base, base + j + 1, base + j); }
+		}
+	}
 
 	// One tree (node list) into meshes added to `group`, offset by (dx, dz)
 	// in Luanti coordinates.
@@ -1373,18 +1594,18 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 				}
 				addCuboid(buckets, 'wood', ox, oy, oz, [-8, -8, -8, 8, 8, 8], faceTiles(woodTiles, nd.rot), skip);
 			} else if (nd.kind === 'quarter') {
-				var qt = faceTiles(woodTiles, nd.rot);
-				for (var b = 0; b < QUARTER.length; b++) {
-					addCuboid(buckets, 'wood', ox, oy, oz, rotateBox(QUARTER[b], nd.rot), qt, null);
-				}
-			} else if (nd.kind === 'branch' || nd.kind === 'twig') {
-				var shape = nd.kind === 'branch' ? BRANCH : TWIG;
+				// a mesh node: tiles {top, bark}, no face culling either way
+				quarterPolys(state.profile, nd.rot).forEach(function (poly) {
+					addPoly(buckets, poly.tile === 'top' ? woods.top : woods.bark, ox, oy, oz, poly);
+				});
+			} else if (BOXES[nd.kind]) {
+				var shape = BOXES[nd.kind], joins = CONNECTS[nd.kind];
 				var bt = faceTiles(barkTiles, nd.rot);
 				addCuboid(buckets, 'wood', ox, oy, oz, shape.core, bt, null);
 				for (var s = 0; s < SIDE_ORDER.length; s++) {
 					var side = SIDE_ORDER[s], sd = SIDE_DIRS[side];
 					var nb2 = at(nd.x + sd[0], nd.y + sd[1], nd.z + sd[2]);
-					if (nb2 !== undefined && WOODKIND[nb2.kind]) {
+					if (nb2 !== undefined && joins[nb2.kind] && !(nb2.kind === 'leaves' && !leafJoin(side))) {
 						addCuboid(buckets, 'wood', ox, oy, oz, shape[side], bt, null);
 					}
 				}
@@ -1428,13 +1649,16 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 			if (n.kind === 'trunk') {
 				boxes = [[-8, -8, -8, 8, 8, 8]];
 			} else if (n.kind === 'quarter') {
-				boxes = QUARTER.map(function (b) { return rotateBox(b, n.rot); });
+				// mesh: side quads plus cap triangles (two per quad)
+				var qm = TreeShapes.quarterMesh(state.profile);
+				total += qm.sides.length + qm.caps.length / 2;
+				return;
 			} else {
-				var sh = n.kind === 'branch' ? BRANCH : TWIG;
+				var sh = BOXES[n.kind], joins = CONNECTS[n.kind];
 				boxes = [sh.core];
 				SIDE_ORDER.forEach(function (side) {
 					var sd = SIDE_DIRS[side], nb = at(n.x + sd[0], n.y + sd[1], n.z + sd[2]);
-					if (nb && WOODKIND[nb.kind]) { boxes.push(sh[side]); }
+					if (nb && joins[nb.kind] && !(nb.kind === 'leaves' && !leafJoin(side))) { boxes.push(sh[side]); }
 				});
 			}
 			boxes.forEach(function (b) {
@@ -1555,6 +1779,9 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		leaves: params.get('leaves') !== '0',
 		grid: params.get('grid') === '1',
 		today: params.get('today') !== '0',
+		profile: params.get('profile') === 'round' ? 'round' : 'oct',
+		twigLeaves: params.get('tl') !== '0',
+		bark: params.get('bark') || 'today',
 		trees: []
 	};
 	if (TreeGen.ORDER.indexOf(state.species) < 0) { state.species = 'apple'; }
@@ -1620,7 +1847,7 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 	function build() {
 		dispose();
 		resize();
-		var woods = WOODS[state.species];
+		var woods = woodsOf(state.species);
 		setGround(woods.ground);
 		var placed = [];
 		var trees = [];
@@ -1691,36 +1918,45 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		var nodes = [];
 		function add(x, y, z, kind, rot) { nodes.push({x: x, y: y, z: z, kind: kind, rot: rot || 0}); }
 		var y;
-		for (y = 0; y < 4; y++) {
-			[[-1, -1], [0, -1], [-1, 0], [0, 0]].forEach(function (c) {
-				add(c[0] - 6, y, c[1], (y === 0 || y === 2 && c[0] === 0 && c[1] === 0) ? 'trunk' : 'quarter',
-					TreeGen.quarterRot(c[0] === -1 ? 1 : -1, c[1] === -1 ? 1 : -1));
+		// a 2 x 2 trunk (axis at x = -6, z = 0) with a limb to +x and one
+		// towards the viewer (-z), both through a limb base
+		for (y = 0; y < 5; y++) {
+			[[-7, -1], [-6, -1], [-7, 0], [-6, 0]].forEach(function (c) {
+				add(c[0], y, c[1], 'quarter', TreeGen.quarterRot(c[0] === -7 ? 1 : -1, c[1] === -1 ? 1 : -1));
 			});
 		}
-		add(-5, 2, 0, 'branch', 12); add(-4, 2, 0, 'branch', 12); add(-4, 3, 0, 'branch', 0); add(-3, 3, 0, 'twig', 12);
-		add(-4, 4, 0, 'twig', 0);
-		for (y = 0; y < 4; y++) {
+		add(-5, 2, 0, 'base', 12); add(-4, 2, 0, 'branch', 12); add(-4, 3, 0, 'branch', 0);
+		add(-3, 3, 0, 'twig', 12); add(-3, 4, 0, 'twig', 0);
+		add(-7, 1, -2, 'base', 4); add(-7, 1, -3, 'branch', 4); add(-7, 2, -3, 'twig', 0);
+		// a 3 x 3 trunk (centre x = 2): limbs from a corner piece and an edge log
+		for (y = 0; y < 5; y++) {
 			for (var i = -1; i <= 1; i++) {
 				for (var j = -1; j <= 1; j++) {
 					var corner = i !== 0 && j !== 0;
-					add(i + 2, y, j, corner && y > 0 ? 'quarter' : 'trunk', TreeGen.quarterRot(-i, -j));
+					add(i + 2, y, j, corner ? 'quarter' : 'trunk', TreeGen.quarterRot(-i, -j));
 				}
 			}
 		}
-		add(6, 0, 0, 'trunk', 0); add(6, 1, 0, 'trunk', 0); add(6, 2, 0, 'branch', 0);
-		add(7, 2, 0, 'branch', 12); add(7, 3, 0, 'branch', 0); add(8, 3, 0, 'twig', 12); add(7, 4, 0, 'twig', 0);
-		add(6, 3, 0, 'twig', 0); add(6, 3, 1, 'twig', 4); add(6, 4, 1, 'twig', 0);
-		var tree = {nodes: nodes, min: [-8, 0, -2], max: [9, 4, 2], height: 5};
+		add(4, 3, 1, 'base', 12); add(5, 3, 1, 'branch', 12); add(5, 4, 1, 'twig', 0);
+		add(2, 2, -2, 'base', 4); add(2, 2, -3, 'branch', 4); add(2, 3, -3, 'twig', 0);
+		// a 1 x 1 log: base, branch, twig, into leaves
+		add(8, 0, 0, 'trunk', 0); add(8, 1, 0, 'trunk', 0); add(8, 2, 0, 'trunk', 0); add(8, 3, 0, 'twig', 0);
+		add(9, 2, 0, 'base', 12); add(10, 2, 0, 'branch', 12); add(10, 3, 0, 'branch', 0);
+		add(11, 3, 0, 'twig', 12); add(11, 4, 0, 'twig', 0);
+		[[11, 5, 0], [12, 4, 0], [12, 5, 0], [11, 4, 1], [11, 4, -1], [11, 5, 1], [8, 4, 0], [10, 4, 0]].forEach(function (c) {
+			add(c[0], c[1], c[2], 'leaves', 0);
+		});
+		var tree = {nodes: nodes, min: [-8, 0, -3], max: [12, 5, 1], height: 6};
 		var meshes = buildTree(content, tree, woods, 0, 0);
 		leafMeshes = meshes.leaves;
-		label('2×2 trunk, collar', -6.5, 5.2, 0, '');
-		label('3×3 trunk', 2, 5.2, 0, '');
-		label('branch → twig', 7, 5.2, 0, '');
+		label('2×2, limb bases', -6.5, 6.2, 0, '');
+		label('3×3', 2, 6.2, 0, '');
+		label('log → base → branch → twig → leaves', 10, 6.2, 0, '');
 		var fig = playerFigure();
-		fig.position.set(-2, 0, 3);
+		fig.position.set(-1, 0, 3);
 		content.add(fig);
 		state.trees = [];
-		var box = new THREE.Box3(new THREE.Vector3(-9, 0, -3), new THREE.Vector3(10, 5, 3));
+		var box = new THREE.Box3(new THREE.Vector3(-9, 0, -3), new THREE.Vector3(13, 6, 4));
 		applyToggles();
 		buildGrid(box);
 		frame(box, 0.7);
@@ -1836,6 +2072,9 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 		document.getElementById('leaves').checked = state.leaves;
 		document.getElementById('grid').checked = state.grid;
 		document.getElementById('today').checked = state.today;
+		document.getElementById('tl').checked = state.twigLeaves;
+		document.getElementById('profile').value = state.profile;
+		document.getElementById('bark').value = JUNGLE_BARKS.indexOf(state.bark) >= 0 ? state.bark : 'today';
 	}
 	Array.prototype.forEach.call(document.querySelectorAll('[data-mode]'), function (b) {
 		b.onclick = function () { state.mode = b.dataset.mode; syncUi(); build(); };
@@ -1856,6 +2095,17 @@ var TODAY = {"acacia":{"count":{"branch":0,"fruit":0,"leaves":81,"quarter":0,"tr
 	document.getElementById('leaves').onchange = function (e) { state.leaves = e.target.checked; applyToggles(); };
 	document.getElementById('grid').onchange = function (e) { state.grid = e.target.checked; applyToggles(); };
 	document.getElementById('today').onchange = function (e) { state.today = e.target.checked; build(); };
+	document.getElementById('tl').onchange = function (e) { state.twigLeaves = e.target.checked; build(); };
+	var profileSel = document.getElementById('profile');
+	profileSel.onchange = function () { state.profile = profileSel.value; build(); };
+	var barkSel = document.getElementById('bark');
+	['today'].concat(JUNGLE_BARKS).forEach(function (id) {
+		var o = document.createElement('option');
+		o.value = id;
+		o.textContent = id === 'today' ? 'today' : id;
+		barkSel.appendChild(o);
+	});
+	barkSel.onchange = function () { state.bark = barkSel.value; build(); };
 	document.getElementById('copy').onclick = function () {
 		var out = state.trees.map(function (p) {
 			return {species: p.tree.species, seed: p.tree.seed, at: [p.dx, 0, p.dz], nodes: p.tree.nodes};

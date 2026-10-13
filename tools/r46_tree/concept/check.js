@@ -6,7 +6,9 @@
 // same node list twice; the tree fits 16 x 16 nodes and 32 high; no node
 // below the ground; all wood is one face-connected piece standing on the
 // ground; every leaf has wood within the leaf decay reach (3, cube search);
-// quarter pieces carry facedir 0..3, branch/twig/log grain 0, 4 or 12.
+// quarter pieces carry facedir 0..3, base/branch/twig/log grain 0, 4 or 12;
+// a quarter is met from the side only by trunk pieces or a limb base, from
+// above only by a quarter of the same turn or a twig; the .obj files match.
 // Then the inline scripts of trees.html must parse.
 'use strict';
 var fs = require('fs');
@@ -15,7 +17,8 @@ var vm = require('vm');
 var G = require('./treegen.js');
 
 var N = parseInt(process.argv[2] || '500', 10);
-var WOOD = {trunk: true, quarter: true, branch: true, twig: true};
+var WOOD = {trunk: true, quarter: true, base: true, branch: true, twig: true};
+var S = require('./shapes.js');
 var failures = 0;
 function fail(msg) { failures++; if (failures < 30) { console.log('FAIL ' + msg); } }
 
@@ -37,7 +40,7 @@ G.ORDER.forEach(function (sp) {
 			maxY = Math.max(maxY, n.y);
 			if (n.y < 0) { fail(sp + ' ' + seed + ' node below ground'); }
 			if (n.kind === 'quarter' && !(n.rot >= 0 && n.rot <= 3)) { fail(sp + ' ' + seed + ' quarter rot ' + n.rot); }
-			if ((n.kind === 'trunk' || n.kind === 'branch' || n.kind === 'twig') && [0, 4, 12].indexOf(n.rot) < 0) {
+			if ((n.kind === 'trunk' || n.kind === 'base' || n.kind === 'branch' || n.kind === 'twig') && [0, 4, 12].indexOf(n.rot) < 0) {
 				fail(sp + ' ' + seed + ' grain rot ' + n.rot);
 			}
 		});
@@ -57,6 +60,20 @@ G.ORDER.forEach(function (sp) {
 			});
 		}
 		if (Object.keys(seen).length !== wood.length) { fail(sp + ' ' + seed + ' wood in ' + 'more than one piece'); }
+		// a slanted quarter is met only by what closes cleanly: from the side
+		// by other trunk pieces or a limb base, from above by a quarter of the
+		// same turn or a twig (6/16 fits inside the slant)
+		a.nodes.forEach(function (n) {
+			if (n.kind !== 'quarter') { return; }
+			[[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (d) {
+				var nb = map[(n.x + d[0]) + ',' + n.y + ',' + (n.z + d[1])];
+				if (nb && (nb.kind === 'branch' || nb.kind === 'twig')) { fail(sp + ' ' + seed + ' ' + nb.kind + ' beside a quarter'); }
+			});
+			var up = map[n.x + ',' + (n.y + 1) + ',' + n.z];
+			if (up && WOOD[up.kind] && up.kind !== 'twig' && !(up.kind === 'quarter' && up.rot === n.rot)) {
+				fail(sp + ' ' + seed + ' ' + up.kind + ' on a quarter');
+			}
+		});
 		// leaves within reach 3 of wood (cube search)
 		a.nodes.forEach(function (n) {
 			if (n.kind !== 'leaves') { return; }
@@ -87,6 +104,13 @@ while ((m = re.exec(html)) !== null) {
 	try { new vm.Script(m[1]); count++; } catch (e) { fail('inline script ' + count + ' does not parse: ' + e.message); }
 }
 if (!/three@0\.147\.0\/build\/three\.min\.js/.test(html)) { fail('three.js is not pinned to 0.147.0'); }
+// the committed .obj files match the shape data
+Object.keys(S.PROFILES).forEach(function (name) {
+	var file = path.join(__dirname, 'models', 'grug_tree_quarter_' + name + '.obj');
+	if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== S.toObj(name)) {
+		fail(file + ' is stale: run node shapes.js');
+	}
+});
 console.log(count + ' inline scripts parse');
 console.log(failures ? failures + ' FAILURES' : 'PASS (' + N + ' seeds x ' + G.ORDER.length + ' species)');
 process.exit(failures ? 1 : 0);

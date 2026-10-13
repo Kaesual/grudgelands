@@ -869,10 +869,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   METRIC lines are the node and face counts.
   `r46_tree/concept` the step-2 tree concept viewer (browser only, no engine
   work): `treegen.js` the seeded generator for all eight species (integer
-  maths, written to be ported to Lua line by line), `viewer.js` the three.js
-  side that meshes nodes the way the client does, `DESIGN.md` the growth
-  concept per species; `build.py` (`--check`) inlines both, the repo's
-  textures and today's schematics (`mts.py`) into `trees.html`;
-  `node check.js [seeds]` checks determinism, the 16 x 16 x 32 box, one
-  wood piece, leaf decay reach for 500 seeds per species and that the page's
-  scripts parse.
+  maths, written to be ported to Lua line by line), `shapes.js` the wood
+  shapes (trunk quarter mesh, limb base, branch, twig; `node shapes.js`
+  writes `models/*.obj`), `viewer.js` the three.js side that meshes nodes the
+  way the client does, `DESIGN.md` the growth concept per species and the
+  engine facts; `build.py` (`--check`, `--bark-dir`) inlines them, the repo's
+  textures, today's schematics (`mts.py`) and any jungle bark candidates into
+  `trees.html`; `node check.js [seeds]` checks determinism, the 16 x 16 x 32
+  box, one wood piece, clean joins at the slanted trunk pieces, leaf decay
+  reach for 500 seeds per species, that the .obj files are current and that
+  the page's scripts parse.

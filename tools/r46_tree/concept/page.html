@@ -33,6 +33,7 @@ button { font: inherit; border: 1px solid var(--line); background: var(--chip); 
 	border-radius: 6px; padding: 4px 10px; cursor: pointer; }
 button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+select { font: inherit; padding: 3px 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
 input[type=text] { font: inherit; width: 150px; padding: 4px 6px; border: 1px solid var(--line);
 	border-radius: 6px; background: var(--bg); color: var(--ink); }
 label { display: inline-flex; gap: 4px; align-items: center; color: var(--muted); cursor: pointer; }
@@ -83,6 +84,9 @@ body.bare header, body.bare aside { display: none; }
 		<label><input type="checkbox" id="leaves"> leaves</label>
 		<label><input type="checkbox" id="grid"> grid</label>
 		<label><input type="checkbox" id="today"> today</label>
+		<label><input type="checkbox" id="tl"> twigs join leaves above</label>
+		<label>trunk <select id="profile"><option value="oct">octagon (3 faces)</option><option value="round">16-gon (5 faces)</option></select></label>
+		<label>jungle bark <select id="bark"></select></label>
 		<button id="copy">Copy node list (JSON)</button>
 	</div>
 </header>
@@ -92,11 +96,11 @@ body.bare header, body.bare aside { display: none; }
 		<div id="readout"></div>
 		<h2>Shapes (per wood type)</h2>
 		<div class="shapes">
-			<p><b>quarter</b> — the faceted trunk piece, facedir 0..3 (inner corner = trunk axis at +x +z for 0). Four make a 2×2 trunk, they round the corners of a 3×3. Four facets stepping out, the outermost half width so the neighbour completes it:<br>
-			<code>{-8,-8, 4, 8,8, 8}</code><br><code>{-6,-8,-1, 8,8, 4}</code><br><code>{-1,-8,-6, 8,8,-1}</code><br><code>{ 4,-8,-8, 8,8,-6}</code></p>
-			<p><b>branch</b> — connected node box, 10/16 thick: core <code>{-5,-5,-5,5,5,5}</code>, arm e.g. right <code>{5,-5,-5,8,5,5}</code>, one arm per face neighbour that is wood.</p>
-			<p><b>twig</b> — the same at 6/16: core <code>{-3,-3,-3,3,3,3}</code>, arm right <code>{3,-3,-3,8,3,3}</code>.</p>
-			<p>The plain log cube (existing) fills trunk interiors and is the first piece of the thickest limbs. Branch, twig and log take facedir only for the bark: param2 0 / 4 / 12 = grain along y / z / x (connected boxes never turn, their tiles do). Leaves are the existing full cubes. Boxes in sixteenths: x1, y1, z1, x2, y2, z2.</p>
+			<p><b>quarter</b> — a <b>mesh</b> (.obj, facedir 0..3; inner corner = trunk axis at +x +z for 0), a quarter of a chamfered column. Outline from above, outwards from the axis in sixteenths: octagon (16,0)→(16,7)→(7,16)→(0,16): a 7/16 half flat, a slant, a 7/16 half flat, so two pieces make one 14/16 face; 16-gon (16,0)→(16,3.2)→(13.6,9.1)→(9.1,13.6)→(3.2,16)→(0,16). Faces on the axis side are left out; caps take <code>*_tree_top</code>, sides the bark with the grain up the trunk. Four make a 2×2, they round the corners of a 3×3 (edges and centre are logs). Collision/selection: the full cube.</p>
+			<p><b>base</b> — connected node box, 12/16 thick: core <code>{-6,-6,-6,6,6,6}</code>, level arms reaching 8/16 into the neighbour, e.g. right <code>{6,-6,-6,16,6,6}</code>; top/bottom to the border. The first cell of a limb leaving a trunk: its arm meets the slanted face without a gap and, towards the branch, ends as a short sleeve (taper 16 → 12 → 10).</p>
+			<p><b>branch</b> — connected node box, 10/16: core <code>{-5,-5,-5,5,5,5}</code>, arm right <code>{5,-5,-5,8,5,5}</code>.</p>
+			<p><b>twig</b> — the same at 6/16: core <code>{-3,-3,-3,3,3,3}</code>, arm right <code>{3,-3,-3,8,3,3}</code>; the only piece that also joins leaves, and only a leaf above it (leaves get <code>connect_sides = {"bottom"}</code>), so twig ends reach up into their foliage.</p>
+			<p>Logs (existing cubes) make 1×1 trunks and fill wide ones. Base, branch, twig and log take facedir only for the bark: param2 0 / 4 / 12 = grain along y / z / x. Boxes in sixteenths: x1, y1, z1, x2, y2, z2.</p>
 		</div>
 		<p class="hint">Drag to orbit, right-drag to pan, wheel to zoom. Counts: wood = log + quarter + branch + twig; shape nodes = quarter + branch + twig. “today” = the current schematic (probabilistic nodes counted as present).</p>
 	</aside>
@@ -105,6 +109,9 @@ body.bare header, body.bare aside { display: none; }
 <script src="%THREE_BASE%/examples/js/controls/OrbitControls.js"></script>
 <script>
 /*DATA*/
+</script>
+<script>
+/*SHAPES*/
 </script>
 <script>
 /*TREEGEN*/

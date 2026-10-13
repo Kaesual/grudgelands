@@ -5,8 +5,11 @@
     python3 -I tools/r46_tree/concept/build.py --check   # fail if stale
     python3 -I tools/r46_tree/concept/build.py --three-base URL --out FILE
 
-Inlines page.html, treegen.js, viewer.js, the repo's textures (as data: URIs)
-and today's tree schematics (as node lists, for comparison) into one page.
+Inlines page.html, shapes.js, treegen.js, viewer.js, the repo's textures (as
+data: URIs), today's tree schematics (as node lists, for comparison) and the
+jungle bark candidates found in --bark-dir (default: the artist lane's
+worktree, ../r46-astree/tools/r46_tree/astra/bark; none found is fine) into
+one page.
 Run from anywhere; paths are relative to the repository root.
 """
 import argparse
@@ -116,19 +119,40 @@ def today_tree(species):
     }
 
 
+BARK_DIR = os.path.join(ROOT, "..", "r46-astree", "tools", "r46_tree", "astra", "bark")
+
+
+def jungle_barks(bark_dir):
+    """Candidate jungle barks: jungle_bark_<id>.png (+ _top.png), sorted."""
+    found = []
+    if os.path.isdir(bark_dir):
+        for name in sorted(os.listdir(bark_dir)):
+            if name.startswith("jungle_bark_") and name.endswith(".png") and not name.endswith("_top.png"):
+                found.append(name[len("jungle_bark_"):-len(".png")])
+    return found
+
+
 def read(name):
     with open(os.path.join(HERE, name), encoding="utf-8") as handle:
         return handle.read()
 
 
-def build(three_base):
+def build(three_base, bark_dir):
     textures = {name: data_uri(find_texture(rel)) for name, rel in sorted(TEXTURES.items())}
+    barks = jungle_barks(bark_dir)
+    for bark in barks:
+        textures["jungle_bark_" + bark] = data_uri(os.path.join(bark_dir, "jungle_bark_" + bark + ".png"))
+        top = os.path.join(bark_dir, "jungle_bark_" + bark + "_top.png")
+        if os.path.exists(top):
+            textures["jungle_bark_" + bark + "_top"] = data_uri(top)
     today = {sp: today_tree(sp) for sp in sorted(TODAY)}
     data = ("var TEXTURES = " + json.dumps(textures, indent=0, sort_keys=True) + ";\n" +
-            "var TODAY = " + json.dumps(today, separators=(",", ":"), sort_keys=True) + ";")
+            "var TODAY = " + json.dumps(today, separators=(",", ":"), sort_keys=True) + ";\n" +
+            "var JUNGLE_BARKS = " + json.dumps(barks) + ";")
     page = read("page.html")
     page = page.replace("%THREE_BASE%", three_base)
     page = page.replace("/*DATA*/", data)
+    page = page.replace("/*SHAPES*/", read("shapes.js"))
     page = page.replace("/*TREEGEN*/", read("treegen.js"))
     page = page.replace("/*VIEWER*/", read("viewer.js"))
     return page
@@ -139,8 +163,10 @@ def main():
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--three-base", default=THREE_BASE)
     parser.add_argument("--out", default=os.path.join(HERE, "trees.html"))
+    parser.add_argument("--bark-dir", default=BARK_DIR,
+                        help="where the jungle bark candidates are looked for")
     args = parser.parse_args()
-    page = build(args.three_base)
+    page = build(args.three_base, args.bark_dir)
     if args.check:
         with open(args.out, encoding="utf-8") as handle:
             if handle.read() != page:

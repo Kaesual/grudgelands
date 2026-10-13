@@ -105,13 +105,13 @@
 
 	// ---------------------------------------------------------------- cells
 
-	var RANK = {leaves: 1, fruit: 2, twig: 3, branch: 4, trunk: 5, quarter: 5};
-	var WOOD = {trunk: true, quarter: true, branch: true, twig: true};
+	var RANK = {leaves: 1, fruit: 2, twig: 3, branch: 4, base: 5, trunk: 6, quarter: 6};
+	var WOOD = {trunk: true, quarter: true, base: true, branch: true, twig: true};
 
 	function key(x, y, z) { return ((y + 64) * 256 + (x + 128)) * 256 + (z + 128); }
 
 	function newTree(species, seed) {
-		return {species: species, seed: seed, cells: {}, order: [], stemList: [], clusters: [],
+		return {species: species, seed: seed, cells: {}, order: [], stemList: [], stemSet: {}, clusters: [],
 			path: [], facts: {}};
 	}
 
@@ -139,7 +139,7 @@
 		var k = key(x, y, z);
 		var known = t.cells[k] !== undefined;
 		putCell(t, x, y, z, kind, rot);
-		if (!known) { t.stemList.push(k); }
+		if (!known) { t.stemList.push(k); t.stemSet[k] = true; }
 	}
 
 	// facedir of a quarter piece whose inner corner (the trunk axis) lies
@@ -391,38 +391,36 @@
 
 	// ---------------------------------------------------------------- finish
 
-	// Collars: a quarter piece is rounded off at its outer corner, so wood
-	// that meets it from the side or sits on it would overhang the rounding.
-	// Such a quarter becomes a plain log cube (where a limb leaves, the trunk
-	// swells, as a real branch collar does). A quarter under a quarter of
-	// the same turn stays.
-	function collars(t) {
+	// Limb bases: where a limb leaves the trunk sideways, its first cell is
+	// the thicker base piece, whose level arms reach half a node into the
+	// trunk cell and so close the gap to a slanted trunk face. A branch or a
+	// lying log beside a stem log or quarter becomes a base; so does a twig
+	// beside a quarter (it would leave a gap); a twig beside a log meets its
+	// flat face and stays.
+	function limbBases(t) {
 		var turn = [];
 		for (var i = 0; i < t.order.length; i++) {
-			var c = t.cells[t.order[i]];
-			if (c.kind === 'quarter') {
-				var up = getCell(t, c.x, c.y + 1, c.z);
-				var swell = up !== undefined && WOOD[up.kind] === true &&
-					!(up.kind === 'quarter' && up.rot === c.rot);
+			var k = t.order[i];
+			var c = t.cells[k];
+			if (t.stemSet[k] !== true && (c.kind === 'branch' || c.kind === 'twig' || c.kind === 'trunk')) {
 				for (var n = 0; n < 6; n++) {
 					var d = NEIGHBOURS[n];
-					if (d[1] === 0) {
-						var nb = getCell(t, c.x + d[0], c.y, c.z + d[2]);
-						if (nb !== undefined && (nb.kind === 'branch' || nb.kind === 'twig' ||
-							(nb.kind === 'trunk' && nb.rot !== 0))) {
-							swell = true;
-						}
+					var nk = key(c.x + d[0], c.y, c.z + d[2]);
+					var nb = t.cells[nk];
+					if (d[1] === 0 && nb !== undefined && t.stemSet[nk] === true &&
+						(nb.kind === 'quarter' || (nb.kind === 'trunk' && c.kind !== 'twig'))) {
+						turn.push(c);
+						break;
 					}
 				}
-				if (swell) { turn.push(c); }
 			}
 		}
-		for (var j = 0; j < turn.length; j++) { turn[j].kind = 'trunk'; turn[j].rot = 0; }
+		for (var j = 0; j < turn.length; j++) { turn[j].kind = 'base'; }
 	}
 
 	function finish(t) {
 		var nodes = [];
-		var count = {trunk: 0, quarter: 0, branch: 0, twig: 0, leaves: 0, fruit: 0};
+		var count = {trunk: 0, quarter: 0, base: 0, branch: 0, twig: 0, leaves: 0, fruit: 0};
 		var minX = 999, maxX = -999, minZ = 999, maxZ = -999, maxY = -999;
 		for (var i = 0; i < t.order.length; i++) {
 			var c = t.cells[t.order[i]];
@@ -441,8 +439,8 @@
 		}
 		return {
 			species: t.species, seed: t.seed, nodes: nodes, count: count,
-			wood: count.trunk + count.quarter + count.branch + count.twig,
-			shapes: count.quarter + count.branch + count.twig,
+			wood: count.trunk + count.quarter + count.base + count.branch + count.twig,
+			shapes: count.quarter + count.base + count.branch + count.twig,
 			height: maxY + 1, width: maxX - minX + 1, depth: maxZ - minZ + 1,
 			min: [minX, 0, minZ], max: [maxX, maxY, maxZ], facts: t.facts
 		};
@@ -494,10 +492,9 @@
 		for (y = 0; y < bole; y++) {
 			if (w === 2) { trunkLayer(t, y, 0, 0, 2); } else { stemCell(t, 0, y, 0, 'trunk', 0); }
 		}
-		if (w === 2) { flare(t, 0, 0, 0, 2); }
 		var top = bole - 1;
-		var rx = rint(rng, 56, 70);              // crown radius, 3.5..4.4 nodes
-		var ry = rint(rng, 44, 52);              // crown half height
+		var rx = rint(rng, 60, 74);              // crown radius, 3.75..4.6 nodes
+		var ry = rint(rng, 46, 54);              // crown half height
 		var ax16 = w === 2 ? 0 : 8;              // trunk axis in p16
 		var lean = chance(rng, 45) ? rint(rng, 0, 3) : -1;
 		var cx = ax16, cz = ax16;
@@ -517,8 +514,8 @@
 				var e1 = limb(t, st[0], top, st[1], cellOf(offX(cx, d, reach)), cellOf(cy + rint(rng, -6, 6)),
 					cellOf(offZ(cz, d, reach)), 0, 70, OUT_FIRST);
 				var path = t.path;
-				cluster(t, mid(e1[0]), mid(e1[1]) + 2, mid(e1[2]), rint(rng, 28, 34), rint(rng, 24, 28),
-					rint(rng, 28, 34), -99);
+				cluster(t, mid(e1[0]), mid(e1[1]) + 2, mid(e1[2]), rint(rng, 30, 38), rint(rng, 26, 30),
+					rint(rng, 30, 38), -99);
 				// the fork: up and in, and sideways along the rim
 				var ur = idiv(rx * rint(rng, 50, 70), 100);
 				var e2 = limb(t, e1[0], e1[1], e1[2], cellOf(offX(cx, d, ur)), cellOf(cy + idiv(ry * rint(rng, 55, 75), 100)),
@@ -536,23 +533,11 @@
 				}
 			}
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 62, 38, rint(rng, 1, 99999), 3);
 		hangFruit(t, rng, rint(rng, 3, 7));
 		t.facts = {trunk: w + 'x' + w, bole: bole, limbs: limbs,
 			crown: (idiv(rx * 2, 16) + 1) + ' wide', lean: lean >= 0 ? ['+x', '+z', '-x', '-z'][lean] : 'none'};
-	}
-
-	// A subtle flare: the ground layer of a wide trunk keeps square log
-	// corners instead of the rounded pieces.
-	function flare(t, y, ax2, az2, w) {
-		var x0 = idiv(ax2 - w, 2), z0 = idiv(az2 - w, 2);
-		for (var i = 0; i < w; i++) {
-			for (var j = 0; j < w; j++) {
-				var c = getCell(t, x0 + i, y, z0 + j);
-				if (c !== undefined && c.kind === 'quarter') { c.kind = 'trunk'; c.rot = 0; }
-			}
-		}
 	}
 
 	// The cardinal step (dx, dz) of direction index 0..3 (DIR16 index 4 d).
@@ -564,7 +549,7 @@
 		var h = rint(rng, 12, 15);              // total height target
 		var top = h - 4;                         // last trunk layer
 		var w = chance(rng, 30) ? 2 : 1;
-		var wide = w === 2 ? idiv(top * 70, 100) : 0;
+		var wide = w === 2 ? top + 1 : 0;      // a 2 x 2 stem stays straight
 		var x = 0, z = 0;
 		// the stem wanders: one side-step low, often a second one higher up
 		// that turns back or aside, so the stem swings round its foot
@@ -573,10 +558,10 @@
 		var k2 = imax(k1 + 4, rint(rng, idiv(top, 2) + 2, top - 2));
 		var d1 = rint(rng, 0, 3);
 		var d2 = (d1 + rint(rng, 1, 3)) % 4;
-		var kinks = (chance(rng, 60) && k2 <= top - 1) ? 2 : 1;
+		var kinks = w === 2 ? 0 : ((chance(rng, 60) && k2 <= top - 1) ? 2 : 1);
 		var y;
 		for (y = 0; y <= top; y++) {
-			if (y === k1 || (kinks === 2 && y === k2)) {
+			if ((kinks >= 1 && y === k1) || (kinks === 2 && y === k2)) {
 				// the 1 x 1 stem steps aside: for one layer it stands on
 				// two logs, a knee
 				var d = y === k1 ? d1 : d2;
@@ -584,16 +569,11 @@
 				x = x + CARD[d][0]; z = z + CARD[d][1];
 			}
 			if (y < wide) {
-				trunkLayer(t, y, 2 * x, 2 * z, 2);
+				trunkLayer(t, y, 0, 0, 2);
 			} else {
-				if (y === wide && w === 2) {
-					// the stem goes on from the 2 x 2's cell towards the lean
-					x = x + (CARD[d1][0] < 0 ? -1 : 0); z = z + (CARD[d1][1] < 0 ? -1 : 0);
-				}
 				stemCell(t, x, y, z, 'trunk', 0);
 			}
 		}
-		if (w === 2) { flare(t, 0, 0, 0, 2); }
 		var limbs = rint(rng, 3, 5);
 		var a0 = rint(rng, 0, 15);
 		var ly = top - 1;
@@ -623,8 +603,14 @@
 		}
 		// the leader ends in the highest clump
 		var lead = rint(rng, 1, 2);
-		column(t, x, top + 1, top + lead, z, 'branch');
-		cluster(t, mid(x), mid(top + lead) + 8, mid(z), rint(rng, 40, 48), rint(rng, 30, 36),
+		var lx16 = mid(x), lz16 = mid(z);
+		if (w === 2) {
+			for (y = top + 1; y <= top + lead; y++) { trunkLayer(t, y, 0, 0, 2); }
+			lx16 = 0; lz16 = 0;
+		} else {
+			column(t, x, top + 1, top + lead, z, 'branch');
+		}
+		cluster(t, lx16, mid(top + lead) + 8, lz16, rint(rng, 40, 48), rint(rng, 30, 36),
 			rint(rng, 40, 48), -99);
 		// small clumps low on the stem where a dormant bud broke out
 		var buds = rint(rng, 0, 2);
@@ -640,7 +626,7 @@
 				}
 			}
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 58, 45, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: w + 'x' + w + ' wandering', kinks: kinks, clumps: made + 1};
 	}
@@ -662,13 +648,9 @@
 			}
 			trunkLayer(t, y, ax2, az2, (w === 3 && y < narrow) ? 3 : 2);
 		}
-		if (w === 3) { flare(t, 0, 1, 1, 3); flare(t, 1, 1, 1, 3); } else { flare(t, 0, 0, 0, 2); }
-		// above the crown base the column goes on as one log and a leader
-		var lx = idiv(ax2, 2) + (CARD[lean][0] < 0 ? -1 : 0);
-		var lz = idiv(az2, 2) + (CARD[lean][1] < 0 ? -1 : 0);
+		// above the crown base the 2 x 2 column goes on as the leader
 		var top = h - 4;
-		column(t, lx, base + 1, base + 3, lz, 'trunk');
-		column(t, lx, base + 4, top, lz, 'branch');
+		for (y = base + 1; y <= top; y++) { trunkLayer(t, y, ax2, az2, 2); }
 		var cx16 = ax2 * 8, cz16 = az2 * 8;
 		var n1 = rint(rng, 4, 6);
 		var a0 = rint(rng, 0, 15);
@@ -679,7 +661,7 @@
 			var reach = rint(rng, 54, 70);
 			var rise = rint(rng, 24, 56);
 			var end = limb(t, st[0], sy, st[1], cellOf(offX(cx16, az, reach)), sy + cellOf(rise + 8),
-				cellOf(offZ(cz16, az, reach)), 2, 70, OUT_FIRST);
+				cellOf(offZ(cz16, az, reach)), 0, 70, OUT_FIRST);
 			if (chance(rng, 50) && t.path.length >= 4) {
 				// a clump hangs under the middle of the limb
 				var hp = t.path[idiv(t.path.length, 2)];
@@ -700,15 +682,16 @@
 		for (var j = 0; j < n2; j++) {
 			var bz = a0 + idiv(8, n1) + idiv(16 * j, n2) + rint(rng, -1, 1);
 			var r2 = rint(rng, 32, 48);
-			var e2 = limb(t, lx, y2, lz, cellOf(offX(mid(lx), bz, r2)), y2 + rint(rng, 1, 2),
-				cellOf(offZ(mid(lz), bz, r2)), 0, 50, OUT_FIRST);
+			var s2 = trunkEdge(t, y2, bz);
+			var e2 = limb(t, s2[0], y2, s2[1], cellOf(offX(cx16, bz, r2 + 8)), y2 + rint(rng, 1, 2),
+				cellOf(offZ(cz16, bz, r2 + 8)), 0, 50, OUT_FIRST);
 			cluster(t, mid(e2[0]), mid(e2[1]) + 10, mid(e2[2]), rint(rng, 36, 44), rint(rng, 24, 28),
 				rint(rng, 36, 44), -2);
 		}
 		// the dome that joins the clumps, and the top
 		cluster(t, cx16, mid(base + 5), cz16, rint(rng, 60, 72), rint(rng, 44, 52), rint(rng, 60, 72), -2);
-		cluster(t, mid(lx), mid(top) + 6, mid(lz), rint(rng, 44, 52), rint(rng, 28, 32), rint(rng, 44, 52), -1);
-		collars(t);
+		cluster(t, cx16, mid(top) + 6, cz16, rint(rng, 44, 52), rint(rng, 28, 32), rint(rng, 44, 52), -1);
+		limbBases(t);
 		fillLeaves(t, 60, 40, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: w + 'x' + w + (w === 3 ? ' to 2x2' : ''), crownBase: base, limbs: n1 + n2};
 	}
@@ -752,9 +735,9 @@
 		}
 		for (var p = 0; p < pads.length; p++) {
 			var r = rint(rng, 42, 52);
-			cluster(t, mid(pads[p][0]), mid(level), mid(pads[p][2]), r, rint(rng, 18, 22), r, 0);
+			cluster(t, mid(pads[p][0]), mid(level), mid(pads[p][2]), r, rint(rng, 20, 24), r, -1);
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 55, 40, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1, ' + h + ' high', fork: limbs + ' limbs', canopy: 'at ' + level};
 	}
@@ -788,7 +771,7 @@
 		}
 		cluster(t, 8, mid(apex - 1), 8, 18, 30, 18, -1);
 		putCell(t, 0, apex, 0, 'leaves', 0);
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 70, 22, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1 tapering', whorls: whorls, base: (idiv(rbase * 2, 16) + 1) + ' wide'};
 	}
@@ -810,7 +793,7 @@
 			}
 			stemCell(t, x, y, z, y >= apex - 2 ? 'twig' : 'branch', 0);
 		}
-		var rx = rint(rng, 34, 42);
+		var rx = rint(rng, 42, 52);
 		var cy = idiv((bole + 1 + apex + 1) * 16, 2);
 		var ry = (apex + 1 - bole) * 8 + 2;
 		cluster(t, 8 + x * 8, cy, 8 + z * 8, rx, ry, rx, -99);
@@ -826,7 +809,7 @@
 			az = az + 5;
 			y2 = y2 + rint(rng, 1, 2);
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 60, 35, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1 slender', bole: bole, crown: (idiv(rx * 2, 16) + 1) + ' wide'};
 	}
@@ -848,34 +831,34 @@
 		for (var i = 0; i < limbs; i++) {
 			var az = a0 + idiv(16 * i, limbs) + rint(rng, -1, 1);
 			var sy = bole + (i % 3);
-			var e1 = limb(t, x, sy, z, cellOf(offX(mid(x), az, 32)), sy + 1, cellOf(offZ(mid(z), az, 32)),
+			var so = rint(rng, 32, 44);
+			var e1 = limb(t, x, sy, z, cellOf(offX(mid(x), az, so)), sy + 1, cellOf(offZ(mid(z), az, so)),
 				0, 100, OUT_FIRST);
 			var lt = apex - rint(rng, 3, 5);
 			var e2 = limb(t, e1[0], e1[1], e1[2], e1[0], lt, e1[2], 0, 45, UP_FIRST);
-			var rr = rint(rng, 24, 30);
-			cluster(t, mid(e2[0]), idiv((e1[1] + 2 + lt + 2) * 16, 2), mid(e2[2]), rr,
-				(lt - e1[1]) * 8 + 10, rr, -99);
+			// the column reaches 2-3 below where the limb turns upright
+			var rr = rint(rng, 28, 36);
+			cluster(t, mid(e2[0]), idiv((e1[1] + lt + 2) * 16, 2) - 12, mid(e2[2]), rr,
+				(lt - e1[1]) * 8 + 34, rr, -99);
 		}
-		cluster(t, mid(x), idiv((bole + 4 + apex + 1) * 16, 2), mid(z), rint(rng, 26, 32),
-			(apex - bole - 2) * 8, rint(rng, 26, 32), -99);
-		collars(t);
+		cluster(t, mid(x), idiv((bole + 2 + apex + 1) * 16, 2), mid(z), rint(rng, 30, 36),
+			(apex - bole) * 8 + 8, rint(rng, 30, 36), -99);
+		limbBases(t);
 		fillLeaves(t, 62, 32, rint(rng, 1, 99999), 3);
 		t.facts = {trunk: '1x1', age: old ? 'old' : 'young', bole: bole, limbs: limbs};
 	}
 
 	// GRAVEWOOD: a dead tree. The stem bends one way as it climbs, a few
-	// bare limbs reach out low and end in two-pronged claws, some hooked up,
-	// some drooping; a grey tuft here and there at most.
+	// bare limbs reach out level or rising and end in two-pronged claws, a
+	// quarter hooked up, a few drooping; a few grey tufts.
 	function gravewood(t, rng) {
 		var h = rint(rng, 6, 10);
 		var top = h - 2;
-		var w = chance(rng, 25) ? 2 : 1;
 		var lean = rint(rng, 0, 3);
 		var k1 = rint(rng, 2, 3), k2 = chance(rng, 55) ? rint(rng, k1 + 2, imax(k1 + 2, top - 1)) : -1;
 		var d2 = chance(rng, 60) ? lean : (lean + (chance(rng, 50) ? 1 : 3)) % 4;
 		var x = 0, z = 0;
-		if (w === 2) { trunkLayer(t, 0, 0, 0, 2); trunkLayer(t, 1, 0, 0, 2); flare(t, 0, 0, 0, 2); }
-		for (var y = w === 2 ? 2 : 0; y <= top; y++) {
+		for (var y = 0; y <= top; y++) {
 			if (y === k1 || y === k2) {
 				var d = y === k1 ? lean : d2;
 				stemCell(t, x + CARD[d][0], y - 1, z + CARD[d][1], 'trunk', 0);
@@ -894,32 +877,36 @@
 			var ly = rint(rng, idiv(h * 45, 100), top);
 			var c = trunkEdge(t, ly, az);
 			var reach = rint(rng, 44, 70);
-			var rise = rint(rng, -10, 12);
+			var rise = rint(rng, -4, 16);
 			var e = limb(t, c[0], ly, c[1], cellOf(offX(mid(c[0]), az, reach)), ly + cellOf(rise + 8),
 				cellOf(offZ(mid(c[1]), az, reach)), 0, 55, OUT_FIRST);
-			var end = rint(rng, 0, 9);
-			if (end < 2) {
+			var end = rint(rng, 0, 19);          // 25 % hooked, 15 % drooping
+			var prong = rint(rng, 0, 1);
+			if (end < 5) {
 				e = limb(t, e[0], e[1], e[2], e[0], e[1] + 1, e[2], 0, 0, UP_FIRST);
-			} else if (end < 6) {
+				prong = 1;
+			} else if (end < 8) {
 				e = limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(az) + 8), e[1] - 1,
 					e[2] + cellOf(dirZ(az) + 8), 0, 0, OUT_FIRST);
+				prong = -1;
 			}
 			// the claw: two prongs
 			for (var f = -1; f <= 1; f += 2) {
 				var fa = az + 3 * f;
-				limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(fa) + 8), e[1] + (end < 2 ? 1 : (end < 6 ? -1 : 0)),
+				limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(fa) + 8), e[1] + prong,
 					e[2] + cellOf(dirZ(fa) + 8), 0, 0, OUT_FIRST);
 			}
 			tips.push(e);
 		}
-		var tufts = rint(rng, 0, 3);
+		var tufts = rint(rng, 1, 4);
 		for (var j = 0; j < tufts && j < tips.length; j++) {
 			var tp = tips[rint(rng, 0, tips.length - 1)];
-			cluster(t, mid(tp[0]), mid(tp[1]) + 8, mid(tp[2]), rint(rng, 14, 20), 12, rint(rng, 14, 20), 0);
+			cluster(t, mid(tp[0]), mid(tp[1]) + 8, mid(tp[2]), rint(rng, 18, 26), rint(rng, 14, 18),
+				rint(rng, 18, 26), -1);
 		}
-		collars(t);
+		limbBases(t);
 		fillLeaves(t, 50, 40, rint(rng, 1, 99999), 3);
-		t.facts = {trunk: w + 'x' + w + ' bent', limbs: limbs, tufts: tufts};
+		t.facts = {trunk: '1x1 bent', limbs: limbs, tufts: tufts};
 	}
 
 	// ================================================================ table

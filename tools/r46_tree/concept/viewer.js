@@ -13,22 +13,12 @@
 
 	// ------------------------------------------------------------- shapes
 
-	// Boxes in sixteenths, x1 y1 z1 x2 y2 z2, centred on the node.
-	var QUARTER = [
-		[-8, -8, 4, 8, 8, 8],
-		[-6, -8, -1, 8, 8, 4],
-		[-1, -8, -6, 8, 8, -1],
-		[4, -8, -8, 8, 8, -6]
-	];
-	function armsOf(h) {
-		return {
-			core: [-h, -h, -h, h, h, h],
-			top: [-h, h, -h, h, 8, h], bottom: [-h, -8, -h, h, -h, h],
-			front: [-h, -h, -8, h, h, -h], back: [-h, -h, h, h, h, 8],
-			left: [-8, -h, -h, -h, h, h], right: [h, -h, -h, 8, h, h]
-		};
-	}
-	var BRANCH = armsOf(5), TWIG = armsOf(3);
+	// The shapes live in shapes.js (TreeShapes): the quarter is a mesh, the
+	// others are connected node boxes in sixteenths, x1 y1 z1 x2 y2 z2.
+	var BOXES = TreeShapes.BOXES, CONNECTS = TreeShapes.CONNECTS;
+	// Leaves declare connect_sides = {"bottom"}: a twig joins a leaf only
+	// above it (nodeboxConnects checks the target's connect_sides).
+	function leafJoin(side) { return state.twigLeaves && TreeShapes.LEAF_SIDES[side] === true; }
 	var SIDE_DIRS = {top: [0, 1, 0], bottom: [0, -1, 0], right: [1, 0, 0], left: [-1, 0, 0],
 		back: [0, 0, 1], front: [0, 0, -1]};
 	var SIDE_ORDER = ['top', 'bottom', 'front', 'left', 'back', 'right'];
@@ -93,6 +83,7 @@
 		t.magFilter = THREE.NearestFilter;
 		t.minFilter = THREE.NearestFilter;
 		t.generateMipmaps = false;
+		t.wrapS = t.wrapT = THREE.RepeatWrapping;   // box faces past the node border wrap
 		t.encoding = THREE.sRGBEncoding;
 		return t;
 	}
@@ -157,15 +148,27 @@
 		gravewood: {bark: 'grug_trees_gravewood_tree', top: 'grug_trees_gravewood_tree_top', leaves: 'gravewood_leaves', ground: 'grug_nodes_blight_dirt'}
 	};
 
+	// Jungle bark candidates found by build.py (JUNGLE_BARKS: ids whose
+	// side and top textures are in TEXTURES as jungle_bark_<id>[_top]).
+	function woodsOf(sp) {
+		var w = WOODS[sp];
+		if ((sp === 'jungle' || sp === 'kapok') && state.bark !== 'today' &&
+			JUNGLE_BARKS.indexOf(state.bark) >= 0) {
+			var top = TEXTURES['jungle_bark_' + state.bark + '_top'] ? 'jungle_bark_' + state.bark + '_top' : w.top;
+			return {bark: 'jungle_bark_' + state.bark, top: top, leaves: w.leaves, ground: w.ground};
+		}
+		return w;
+	}
+
 	var CONCEPT = {
-		apple: 'A short stout bole opens into 3–5 scaffold limbs and a short leader; the round crown sits on their ends, bulging where each limb ends. Apples hang under the crown.',
+		apple: 'A short stout bole (2×2 in 40 %) opens into 3–4 scaffold limbs that climb at about 45° in upright planes and fork at the rim, up-and-in and sideways; the round crown sits on their ends, lumpy where twigs end. Apples hang under it.',
 		jungle: 'A tall stem that wanders (one or two side-steps), sheds its lower limbs and carries its crown as separate clumps at the ends of long limbs, the highest on the leader.',
-		kapok: 'The giant: a long clear 3×3 or 2×2 column, square at the foot, stepping in to 2×2; at 60 % height 4–6 wide limbs rise gently and fork, a second shorter tier above: a broad high crown.',
-		acacia: 'A short trunk forks into a wide V of thick limbs; every limb end climbs to one common level and spreads into flat pads that merge into an umbrella.',
+		kapok: 'The giant: a long clear 3×3 or 2×2 column stepping in to a 2×2 leader; at 60 % height 4–6 wide limbs leave through limb bases, rise gently and fork, a second shorter tier above, a dome joining the clumps: a broad high crown.',
+		acacia: 'A short trunk forks into a wide V of thick limbs; every limb end climbs to one common level and spreads into pads that start on the twigs and merge into an umbrella.',
 		pine: 'A straight stem thinning from log to branch to twig, a whorl of short twigs every 2–3 nodes; each whorl carries a needle skirt, wide below, narrow above: a layered cone.',
-		aspen: 'A slender stem with a long bare bole, then a narrow tall oval crown on short twigs that spiral up the leader (5/16 turn each); some tops bend a little.',
-		silverwood: 'Tall and elegant: a long clear bole (2×2 low down in older trees), then 3–5 limbs that step out once and rise parallel to the leader, each in a slim leaf column: a flame.',
-		gravewood: 'Dead: the stem bends as it climbs, 3–5 bare limbs reach out low and end in hooked or drooping two-pronged claws; a grey tuft here and there at most.'
+		aspen: 'A slender stem with a long bare bole, then a tall oval crown on short twigs that spiral up the leader (5/16 turn each); some tops bend a little.',
+		silverwood: 'Tall and elegant: a long clear slender bole, then 3–5 limbs that step out 2–3 and rise parallel to the leader, each in a leaf column reaching down to where it turns upright: a flame.',
+		gravewood: 'Dead: the stem bends as it climbs, 3–5 bare limbs reach out level or rising and end in two-pronged claws (a quarter hooked up, a few drooping); a few grey tufts.'
 	};
 
 	// ----------------------------------------------------------- meshing
@@ -249,7 +252,49 @@
 		}
 	}
 
-	var WOODKIND = {trunk: true, quarter: true, branch: true, twig: true};
+	var WOODKIND = {trunk: true, quarter: true, base: true, branch: true, twig: true};
+
+	// The quarter mesh turned by facedir like rotateMeshBy6dFacedir does for
+	// 0..3 (the same turn as a node box: (x, z) -> (z, -x) per step), cached.
+	var meshCache = {};
+	function quarterPolys(profile, rot) {
+		var k = profile + rot;
+		if (meshCache[k]) { return meshCache[k]; }
+		var m = TreeShapes.quarterMesh(profile);
+		function turn(v) {
+			var x = v[0], z = v[2];
+			for (var i = 0; i < rot % 4; i++) { var a = x; x = z; z = -a; }
+			return [x, v[1], z];
+		}
+		function conv(poly, tile) {
+			return {tile: tile, verts: poly.map(function (v) { return {p: turn(v.p), n: turn(v.n), uv: v.uv}; })};
+		}
+		var out = m.caps.map(function (p) { return conv(p, 'top'); }).concat(m.sides.map(function (p) { return conv(p, 'bark'); }));
+		meshCache[k] = out;
+		return out;
+	}
+
+	// One mesh polygon (Luanti coordinates, node units) into a bucket.
+	function addPoly(buckets, tex, ox, oy, oz, poly) {
+		var bk = buckets.get(tex, 'wood');
+		var base = bk.pos.length / 3;
+		var pts = [];
+		poly.verts.forEach(function (v) {
+			var p = [ox + v.p[0], oy + v.p[1], -(oz + v.p[2])];
+			pts.push(p);
+			bk.pos.push(p[0], p[1], p[2]);
+			bk.nor.push(v.n[0], v.n[1], -v.n[2]);
+			bk.uv.push(v.uv[0], v.uv[1]);
+		});
+		var n = poly.verts[0].n;
+		var e1 = [pts[1][0] - pts[0][0], pts[1][1] - pts[0][1], pts[1][2] - pts[0][2]];
+		var e2 = [pts[2][0] - pts[0][0], pts[2][1] - pts[0][1], pts[2][2] - pts[0][2]];
+		var cx = e1[1] * e2[2] - e1[2] * e2[1], cy = e1[2] * e2[0] - e1[0] * e2[2], cz = e1[0] * e2[1] - e1[1] * e2[0];
+		var fwd = cx * n[0] + cy * n[1] - cz * n[2] >= 0;
+		for (var j = 1; j + 1 < pts.length; j++) {
+			if (fwd) { bk.idx.push(base, base + j, base + j + 1); } else { bk.idx.push(base, base + j + 1, base + j); }
+		}
+	}
 
 	// One tree (node list) into meshes added to `group`, offset by (dx, dz)
 	// in Luanti coordinates.
@@ -279,18 +324,18 @@
 				}
 				addCuboid(buckets, 'wood', ox, oy, oz, [-8, -8, -8, 8, 8, 8], faceTiles(woodTiles, nd.rot), skip);
 			} else if (nd.kind === 'quarter') {
-				var qt = faceTiles(woodTiles, nd.rot);
-				for (var b = 0; b < QUARTER.length; b++) {
-					addCuboid(buckets, 'wood', ox, oy, oz, rotateBox(QUARTER[b], nd.rot), qt, null);
-				}
-			} else if (nd.kind === 'branch' || nd.kind === 'twig') {
-				var shape = nd.kind === 'branch' ? BRANCH : TWIG;
+				// a mesh node: tiles {top, bark}, no face culling either way
+				quarterPolys(state.profile, nd.rot).forEach(function (poly) {
+					addPoly(buckets, poly.tile === 'top' ? woods.top : woods.bark, ox, oy, oz, poly);
+				});
+			} else if (BOXES[nd.kind]) {
+				var shape = BOXES[nd.kind], joins = CONNECTS[nd.kind];
 				var bt = faceTiles(barkTiles, nd.rot);
 				addCuboid(buckets, 'wood', ox, oy, oz, shape.core, bt, null);
 				for (var s = 0; s < SIDE_ORDER.length; s++) {
 					var side = SIDE_ORDER[s], sd = SIDE_DIRS[side];
 					var nb2 = at(nd.x + sd[0], nd.y + sd[1], nd.z + sd[2]);
-					if (nb2 !== undefined && WOODKIND[nb2.kind]) {
+					if (nb2 !== undefined && joins[nb2.kind] && !(nb2.kind === 'leaves' && !leafJoin(side))) {
 						addCuboid(buckets, 'wood', ox, oy, oz, shape[side], bt, null);
 					}
 				}
@@ -334,13 +379,16 @@
 			if (n.kind === 'trunk') {
 				boxes = [[-8, -8, -8, 8, 8, 8]];
 			} else if (n.kind === 'quarter') {
-				boxes = QUARTER.map(function (b) { return rotateBox(b, n.rot); });
+				// mesh: side quads plus cap triangles (two per quad)
+				var qm = TreeShapes.quarterMesh(state.profile);
+				total += qm.sides.length + qm.caps.length / 2;
+				return;
 			} else {
-				var sh = n.kind === 'branch' ? BRANCH : TWIG;
+				var sh = BOXES[n.kind], joins = CONNECTS[n.kind];
 				boxes = [sh.core];
 				SIDE_ORDER.forEach(function (side) {
 					var sd = SIDE_DIRS[side], nb = at(n.x + sd[0], n.y + sd[1], n.z + sd[2]);
-					if (nb && WOODKIND[nb.kind]) { boxes.push(sh[side]); }
+					if (nb && joins[nb.kind] && !(nb.kind === 'leaves' && !leafJoin(side))) { boxes.push(sh[side]); }
 				});
 			}
 			boxes.forEach(function (b) {
@@ -461,6 +509,9 @@
 		leaves: params.get('leaves') !== '0',
 		grid: params.get('grid') === '1',
 		today: params.get('today') !== '0',
+		profile: params.get('profile') === 'round' ? 'round' : 'oct',
+		twigLeaves: params.get('tl') !== '0',
+		bark: params.get('bark') || 'today',
 		trees: []
 	};
 	if (TreeGen.ORDER.indexOf(state.species) < 0) { state.species = 'apple'; }
@@ -526,7 +577,7 @@
 	function build() {
 		dispose();
 		resize();
-		var woods = WOODS[state.species];
+		var woods = woodsOf(state.species);
 		setGround(woods.ground);
 		var placed = [];
 		var trees = [];
@@ -597,36 +648,45 @@
 		var nodes = [];
 		function add(x, y, z, kind, rot) { nodes.push({x: x, y: y, z: z, kind: kind, rot: rot || 0}); }
 		var y;
-		for (y = 0; y < 4; y++) {
-			[[-1, -1], [0, -1], [-1, 0], [0, 0]].forEach(function (c) {
-				add(c[0] - 6, y, c[1], (y === 0 || y === 2 && c[0] === 0 && c[1] === 0) ? 'trunk' : 'quarter',
-					TreeGen.quarterRot(c[0] === -1 ? 1 : -1, c[1] === -1 ? 1 : -1));
+		// a 2 x 2 trunk (axis at x = -6, z = 0) with a limb to +x and one
+		// towards the viewer (-z), both through a limb base
+		for (y = 0; y < 5; y++) {
+			[[-7, -1], [-6, -1], [-7, 0], [-6, 0]].forEach(function (c) {
+				add(c[0], y, c[1], 'quarter', TreeGen.quarterRot(c[0] === -7 ? 1 : -1, c[1] === -1 ? 1 : -1));
 			});
 		}
-		add(-5, 2, 0, 'branch', 12); add(-4, 2, 0, 'branch', 12); add(-4, 3, 0, 'branch', 0); add(-3, 3, 0, 'twig', 12);
-		add(-4, 4, 0, 'twig', 0);
-		for (y = 0; y < 4; y++) {
+		add(-5, 2, 0, 'base', 12); add(-4, 2, 0, 'branch', 12); add(-4, 3, 0, 'branch', 0);
+		add(-3, 3, 0, 'twig', 12); add(-3, 4, 0, 'twig', 0);
+		add(-7, 1, -2, 'base', 4); add(-7, 1, -3, 'branch', 4); add(-7, 2, -3, 'twig', 0);
+		// a 3 x 3 trunk (centre x = 2): limbs from a corner piece and an edge log
+		for (y = 0; y < 5; y++) {
 			for (var i = -1; i <= 1; i++) {
 				for (var j = -1; j <= 1; j++) {
 					var corner = i !== 0 && j !== 0;
-					add(i + 2, y, j, corner && y > 0 ? 'quarter' : 'trunk', TreeGen.quarterRot(-i, -j));
+					add(i + 2, y, j, corner ? 'quarter' : 'trunk', TreeGen.quarterRot(-i, -j));
 				}
 			}
 		}
-		add(6, 0, 0, 'trunk', 0); add(6, 1, 0, 'trunk', 0); add(6, 2, 0, 'branch', 0);
-		add(7, 2, 0, 'branch', 12); add(7, 3, 0, 'branch', 0); add(8, 3, 0, 'twig', 12); add(7, 4, 0, 'twig', 0);
-		add(6, 3, 0, 'twig', 0); add(6, 3, 1, 'twig', 4); add(6, 4, 1, 'twig', 0);
-		var tree = {nodes: nodes, min: [-8, 0, -2], max: [9, 4, 2], height: 5};
+		add(4, 3, 1, 'base', 12); add(5, 3, 1, 'branch', 12); add(5, 4, 1, 'twig', 0);
+		add(2, 2, -2, 'base', 4); add(2, 2, -3, 'branch', 4); add(2, 3, -3, 'twig', 0);
+		// a 1 x 1 log: base, branch, twig, into leaves
+		add(8, 0, 0, 'trunk', 0); add(8, 1, 0, 'trunk', 0); add(8, 2, 0, 'trunk', 0); add(8, 3, 0, 'twig', 0);
+		add(9, 2, 0, 'base', 12); add(10, 2, 0, 'branch', 12); add(10, 3, 0, 'branch', 0);
+		add(11, 3, 0, 'twig', 12); add(11, 4, 0, 'twig', 0);
+		[[11, 5, 0], [12, 4, 0], [12, 5, 0], [11, 4, 1], [11, 4, -1], [11, 5, 1], [8, 4, 0], [10, 4, 0]].forEach(function (c) {
+			add(c[0], c[1], c[2], 'leaves', 0);
+		});
+		var tree = {nodes: nodes, min: [-8, 0, -3], max: [12, 5, 1], height: 6};
 		var meshes = buildTree(content, tree, woods, 0, 0);
 		leafMeshes = meshes.leaves;
-		label('2×2 trunk, collar', -6.5, 5.2, 0, '');
-		label('3×3 trunk', 2, 5.2, 0, '');
-		label('branch → twig', 7, 5.2, 0, '');
+		label('2×2, limb bases', -6.5, 6.2, 0, '');
+		label('3×3', 2, 6.2, 0, '');
+		label('log → base → branch → twig → leaves', 10, 6.2, 0, '');
 		var fig = playerFigure();
-		fig.position.set(-2, 0, 3);
+		fig.position.set(-1, 0, 3);
 		content.add(fig);
 		state.trees = [];
-		var box = new THREE.Box3(new THREE.Vector3(-9, 0, -3), new THREE.Vector3(10, 5, 3));
+		var box = new THREE.Box3(new THREE.Vector3(-9, 0, -3), new THREE.Vector3(13, 6, 4));
 		applyToggles();
 		buildGrid(box);
 		frame(box, 0.7);
@@ -742,6 +802,9 @@
 		document.getElementById('leaves').checked = state.leaves;
 		document.getElementById('grid').checked = state.grid;
 		document.getElementById('today').checked = state.today;
+		document.getElementById('tl').checked = state.twigLeaves;
+		document.getElementById('profile').value = state.profile;
+		document.getElementById('bark').value = JUNGLE_BARKS.indexOf(state.bark) >= 0 ? state.bark : 'today';
 	}
 	Array.prototype.forEach.call(document.querySelectorAll('[data-mode]'), function (b) {
 		b.onclick = function () { state.mode = b.dataset.mode; syncUi(); build(); };
@@ -762,6 +825,17 @@
 	document.getElementById('leaves').onchange = function (e) { state.leaves = e.target.checked; applyToggles(); };
 	document.getElementById('grid').onchange = function (e) { state.grid = e.target.checked; applyToggles(); };
 	document.getElementById('today').onchange = function (e) { state.today = e.target.checked; build(); };
+	document.getElementById('tl').onchange = function (e) { state.twigLeaves = e.target.checked; build(); };
+	var profileSel = document.getElementById('profile');
+	profileSel.onchange = function () { state.profile = profileSel.value; build(); };
+	var barkSel = document.getElementById('bark');
+	['today'].concat(JUNGLE_BARKS).forEach(function (id) {
+		var o = document.createElement('option');
+		o.value = id;
+		o.textContent = id === 'today' ? 'today' : id;
+		barkSel.appendChild(o);
+	});
+	barkSel.onchange = function () { state.bark = barkSel.value; build(); };
 	document.getElementById('copy').onclick = function () {
 		var out = state.trees.map(function (p) {
 			return {species: p.tree.species, seed: p.tree.seed, at: [p.dx, 0, p.dz], nodes: p.tree.nodes};
