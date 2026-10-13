@@ -1,7 +1,7 @@
 # Round 47 — Trees, mining progression and crafting feedback
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-13 from the user's decisions
-of the same day. Status: **planned**, waiting for the user's "go".
+of the same day. Status: **in progress** (the user's "go", 2026-10-13).
 
 The main focus is the **tree rework**: the concept approved in Round 46
 ([handoff](tree-rework-handoff.md)) is built into the game, and every world
@@ -85,8 +85,8 @@ TC is the largest and riskiest lane. AN touches the most files.
 2. **Generated from the world seed** at every server start, in both Lua
    environments. There is no file in the world folder, so every world has
    its own trees.
-3. **Town trees** use the generator too (the handoff's recommendation;
-   the user has not ruled on it yet, see §8).
+3. **Town trees** use the generator too (the handoff's recommendation,
+   accepted with the user's "go").
 4. **Leaf cost:** decided on TD's measured numbers, not before.
 5. **Swamp trees**, alike in spirit to gravewood: their own species in the
    generator, built from gravewood's wood nodes.
@@ -552,7 +552,7 @@ After merges: `tools/sync_to_luanti.sh`.
 
 ## 8. Open questions for the user
 
-1. **Town trees** through the generator too? Recommendation: yes, so towns
-   match the wild.
-2. **The swamp concept:** after SW's page.
-3. **Leaf counts:** after TD.
+1. **The swamp concept:** after SW's page.
+2. **Leaf counts:** after TD.
+
+Settled: town trees use the generator (ruling 3).
