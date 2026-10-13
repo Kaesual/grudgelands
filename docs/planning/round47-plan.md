@@ -615,8 +615,9 @@ or hollow shell.
 ## Completion (2026-10-14)
 
 Every build lane is merged on main; this lane D (this section and the
-status owners) follows on main `b3a30ab0`. Lane TD's measurement is the
-round's last input (TD numbers: pending). **0.47.0 is a map reset plus a
+status owners) follows on main `5493c37c` (lane TD's measurement, merged
+last: desktop only, software rendering, so only its ratios count; the user
+accepted them as they are). **0.47.0 is a map reset plus a
 migration step:** world generation changed (trees, the swamp, the ore
 rows, town compositions), and the pick level scale moved, so the tool
 capabilities that crafted and broken tools keep in item meta are rebuilt
@@ -647,7 +648,7 @@ updates `6a9b6775`, `28ea4193`, `047c4456`, `4d02b3c8`, `d7c78d6c`,
 | ML | `6758e98e` | the map window's marker layers, quest mode, every marker named, party names every 2 s, one-line zone labels, world images without baked icons | MERGE (the zone-label delta checked by the coordinator) |
 | TC | `b6d4888e` (`046d1699`), `4075b4bc`, `6747152d`, `00d0c13b` (`bbf8d707`, `62d7460e`) | trees from the seeded generator in the wild, saplings and towns; then dense groves, town greening and the wild density back (per-cell reservation, `TREE_SPACING`); capital greening; the fix round (city trees released on idle, cut trees newest first, plot kerbs removed) | MERGE (town trees 801 → 527 put to the user); deltas MERGE ×3 |
 | SW 2 | `6cb71e25` | the swamp in the world: ground mix, pools that never flow, plants, swamp trees on stilts, mobs and gathering on the new grounds | MERGE (two Lows fixed); delta MERGE |
-| TD | TD numbers: pending | forest render cost, desktop | — |
+| TD | `5493c37c` | forest and capital render cost, desktop (llvmpipe; tools only, no fixture): quads per tree, vertices, draw calls, frame time and memory, today → new, trimmed crowns, a dense grove, Highcourt | — (tools only, no game change) |
 | D | this section | CHANGELOG, status owners, BACKLOG carry-overs, the tools index, the gate list | — |
 
 Main has 181 portable fixtures (10 new: `r47_ta`, `tb`, `or`, `ms`, `an`,
@@ -782,10 +783,29 @@ Comparisons, not targets.
 - **Crafting:** a character that held 300 items stores at most 211
   tokens (4,658 B); a scan about 16 µs for 109 slots; the Basic page
   3,172 B, 4,469 B with the overflow shown.
-- **Render cost (TD, desktop, software rendering, so only the ratios
-  count):** new trees draw 1.5–7× the quads of today's, forests cost
-  about 40–60 % more frame time, a dense grove 2.5–3.7× an empty view,
-  half leaves save about a quarter. TD numbers: pending.
+- **Render cost (TD, desktop, 1280 × 720, software rendering (llvmpipe),
+  so only the ratios count; seed 12345, a 128 × 128 test forest at about
+  each world's density):**
+  - quads per tree, today → new: apple 454 → 2,292, jungle 574 → 1,224,
+    kapok 1,585 → 5,122, acacia 514 → 1,130, pine 402 → 1,072, aspen 559
+    → 853, silverwood 551 → 2,139, gravewood 110 → 839 (1.5–7.6×);
+  - frame time over the empty platform, today → new: apple ×1.37 → ×2.15,
+    jungle 1.81 → 2.30, pine 1.31 → 1.97, silverwood 1.35 → 2.09, aspen
+    1.17 → 1.78, kapok 1.27 → 1.73; acacia and gravewood stay cheap;
+  - draw calls rise only 0–50 %, far less than vertices;
+  - crowns trimmed to 50 % leaves save about 25–30 % of the added
+    vertices and frame time (75 % about half that); not built;
+  - a dense grove holds about 1.5–2.7× the vertices of the whole new
+    scene where it stands;
+  - Highcourt, today → with the capital greening: +83 % vertices (634 k
+    → 1,157 k), about +35 % frame time, draw calls 379 → 488, the largest
+    single step measured;
+  - the swamp tree is not measured (it has no "today" to compare).
+
+  **The user's ruling (2026-10-14):** accepted as is; full leaves and
+  `TREE_SPACING = 4` stay, and the user checks on a real GPU. TD's two
+  questions are settled by it: the leaf counts (full crowns) and the
+  capital greening (kept).
 
 ### Classification
 
@@ -818,10 +838,14 @@ still open and is tested on the same build.
 **Check first:**
 
 1. Frame rate on a real GPU in an apple, a jungle and a silverwood forest,
-   in a dense grove (Lethariel or Highcourt) and in a capital, desktop and
-   web. TD (software rendering): new trees draw 1.5–7× the quads of
-   today's, dense groves about 2.5–3.7× an empty view, half leaves would
-   save about a quarter.
+   in a dense grove (Lethariel or Highcourt) and in Highcourt's square (or
+   another capital: the capital greening is the largest single step),
+   desktop and web. TD (software rendering, ratios only): new trees draw
+   1.5–7.6× the quads of today's, a forest's frame time over an empty
+   view rises from about 1.3–1.8× to 2.0–2.3×, a dense grove holds
+   1.5–2.7× the vertices of the new scene, Highcourt +83 % vertices and
+   about +35 % frame time; half leaves would save about 25–30 % of the
+   added cost.
 
 **Trees:**
 

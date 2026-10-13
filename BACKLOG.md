@@ -2119,8 +2119,8 @@ severity).
   air); root runs on hilly jungle are often dropped (slopes); kapoks are
   still lost in the chunk height band ([MGT-03](#audit-2026-10-later-fix-packages));
   the vendored default tree `.mts` files are no longer read by the game
-  (only the concept viewer's "today" and lane TD's today forest) and can
-  go after TD.
+  (only the concept viewer's "today" reads them; lane TD's probe keeps
+  its own copies) and can go once the viewer has its own.
 - **Tree nodes and the generator** (TA, TB): `tools/wp13/node_tiles.json`
   does not see tile overrides, so blueprint previews show the old jungle
   bark; mesa clay is not ground, so roots there do not join; farm soil
@@ -2177,7 +2177,13 @@ severity).
   `display_name` would show its key; `targets.lua:145` gives no
   crosshair fallback to a role whose regions an earlier objective marked
   (no shipped quest has one).
-- **Render cost** (TD): TD numbers: pending.
+- **Render cost** (TD): measured on the desktop only with software
+  rendering (llvmpipe), so only the ratios count; accepted as is by the
+  user (full leaves, `TREE_SPACING = 4`), who checks on a real GPU
+  (GUI checklist). Trimmed crowns stay an option (50 % leaves save about
+  25–30 % of the added cost, most for apple, silverwood and kapok); the
+  web client is unmeasured (it draws about 2.8× the area at its viewing
+  range of 320); the swamp tree is unmeasured (no "today" to compare).
 - **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` in
   `tools/r45_ms/portable_test.lua` and `tools/r45_rg/portable_test.lua:546`.
 

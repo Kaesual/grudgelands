@@ -30,8 +30,13 @@ is open.
   main `18befb9b`: FS, TB, ART, TA (three follow-ups), SW step 1, NZ, CR,
   OR (with the 0.47.0 declaration), AN, ML, TC (with the groves and
   density follow-up, the capital greening and a fix round) and SW step 2
-  merged up to `00d0c13b`; lane TD's desktop measurement (TD numbers:
-  pending) and this documentation lane D close it. Each code lane
+  merged up to `00d0c13b`, then lane TD's desktop measurement
+  (`5493c37c`; llvmpipe, so only the ratios count: a forest's frame time
+  over an empty view about 1.3–1.8× → 2.0–2.3×, draw calls +0–50 %,
+  Highcourt with the capital greening +83 % vertices and about +35 %
+  frame time; accepted as is by the user, full leaves and
+  `TREE_SPACING = 4` stay, the user checks on a real GPU) and this
+  documentation lane D close it. Each code lane
   independently reviewed by Opus (NZ MERGE AFTER FIXES, a doc line and no
   chime at the level cap, fixed; every follow-up delta with game logic
   reviewed again, the display deltas checked by the coordinator; ART on
