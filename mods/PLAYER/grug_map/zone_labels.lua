@@ -14,12 +14,13 @@ local Z = {}
 
 Z.GRID_STEP = 32
 -- The label's geometry in formspec units: a label[] without a size centres
--- each line on its y and spaces lines 0.5 apart (guiFormSpecMenu.cpp
--- parseLabel, real coordinates); the box adds PAD_X and PAD_Y round the
--- text. Text width is not known on the server: CHAR_EM em per character of
--- the client's font (font_size 16 by default, times its real GUI scaling),
--- LINE_EM em per line of text.
-Z.LINE_STEP, Z.PAD_X, Z.PAD_Y = 0.5, 0.08, 0.04
+-- its line on its y (guiFormSpecMenu.cpp parseLabel, real coordinates) and
+-- would space a second line 0.5 units apart, much more than a line of text
+-- at 1080p, so each line is a label[] of its own, one line height apart;
+-- the box adds PAD_X and PAD_Y round the text. Text width is not known on
+-- the server: CHAR_EM em per character of the client's font (font_size 16
+-- by default, times its real GUI scaling), LINE_EM em per line of text.
+Z.PAD_X, Z.PAD_Y = 0.08, 0.03
 Z.CHAR_EM, Z.LINE_EM, Z.FONT_PX = 0.52, 1.2, 16
 Z.BOX = "#1a1208a0"
 
@@ -63,20 +64,25 @@ function Z.box(name, band, metrics)
 	local chars = math.max(length(name), length(band or ""))
 	local lines = (band and band ~= "") and 2 or 1
 	local w = chars * metrics.char + 2 * Z.PAD_X
-	local h = (lines - 1) * Z.LINE_STEP + metrics.line + 2 * Z.PAD_Y
+	local h = lines * metrics.line + 2 * Z.PAD_Y
 	return {w = w, h = h, dy = -h / 2}
 end
 
--- The formspec elements of one label centred at sx/sy (units): the box and
--- one label[] with both lines, its first line's centre where the box puts
--- it. `esc` is core.formspec_escape.
-function Z.elements(list, sx, sy, name, band, metrics, esc)
+-- The formspec elements of one label centred at sx/sy (units), kept inside
+-- a map of max_w x max_h units (the scroll container clips what lies
+-- outside): the box, then a label[] per line. `esc` is
+-- core.formspec_escape.
+function Z.elements(list, sx, sy, name, band, metrics, esc, max_w, max_h)
 	local box = Z.box(name, band, metrics)
 	local x0, y0 = sx - box.w / 2, sy + box.dy
+	if max_w then x0 = math.max(0, math.min(max_w - box.w, x0)) end
+	if max_h then y0 = math.max(0, math.min(max_h - box.h, y0)) end
 	list[#list + 1] = ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(x0, y0, box.w, box.h, Z.BOX)
-	local text = (band and band ~= "") and (name .. "\n" .. band) or name
-	list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X,
-		y0 + Z.PAD_Y + metrics.line / 2, esc(text))
+	local y = y0 + Z.PAD_Y + metrics.line / 2
+	list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X, y, esc(name))
+	if band and band ~= "" then
+		list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X, y + metrics.line, esc(band))
+	end
 	return box
 end
 

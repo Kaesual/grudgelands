@@ -692,8 +692,10 @@ do
 	-- Zones: a box and a two-line label per zone, no icons or tooltips.
 	map = layer_form(accord, "zones")
 	eq(count(map, "box%["), 2, "O Zones: a box per zone")
-	has(map, "Dawnmere Fields\nLevels 1–10]", "O Zones: name and level band")
-	has(map, "kezamba\nLevel 60]", "O Zones: a single-level band")
+	has(map, ";Dawnmere Fields]", "O Zones: the name")
+	has(map, ";Levels 1–10]", "O Zones: the level band, a line of its own")
+	has(map, ";Level 60]", "O Zones: a single-level band")
+	eq(count(map, "label%["), 4, "O Zones: two labels per zone")
 	eq(count(map, "tooltip%["), 0, "O Zones: no tooltips")
 	local zbox = map:find("box%[")
 	local zlabel = map:find("label%[[^%]]*Dawnmere Fields")
@@ -1578,16 +1580,23 @@ do
 	local fallback = Z.metrics(nil)
 	check(near(fallback.char, m.char), "ZL the fallback is 1080p at GUI scale 1")
 	local box = Z.box("Dawnmere Fields", "Levels 1–10", m)
-	check(near(box.w, 15 * m.char + 2 * Z.PAD_X) and near(box.h, 0.5 + m.line + 2 * Z.PAD_Y),
+	check(near(box.w, 15 * m.char + 2 * Z.PAD_X) and near(box.h, 2 * m.line + 2 * Z.PAD_Y),
 		"ZL the box fits the longer line (the en dash counts once) and two lines")
 	local list = {}
 	Z.elements(list, 5, 5, "Dawnmere Fields", "Levels 1–10", m, fs_escape)
 	local bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
 	local lx, ly = list[2]:match("^label%[([%d.]+),([%d.]+);")
+	local _, ly2 = list[3]:match("^label%[([%d.]+),([%d.]+);")
 	check(near(tonumber(bx) + tonumber(bw) / 2, 5, 0.002) and near(tonumber(by) + tonumber(bh) / 2, 5, 0.002),
 		"ZL the box centred on the label point")
 	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), tonumber(by) + Z.PAD_Y + m.line / 2, 0.002),
 		"ZL the first line inside the box (label[] centres a line on its y)")
+	check(near(tonumber(ly2) - tonumber(ly), m.line, 0.002), "ZL the band a line height below")
+	list = {}
+	Z.elements(list, 0.1, 9.9, "Dawnmere Fields", "Levels 1–10", m, fs_escape, 10, 10)
+	bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
+	check(near(tonumber(bx), 0, 0.002) and near(tonumber(by) + tonumber(bh), 10, 0.002),
+		"ZL a label at the map's edge stays inside it")
 	-- Placement on a toy grid: a 10x6 zone "a" left, a 4x6 zone "b" right,
 	-- water around; the poles of inaccessibility, nudged off an obstacle.
 	local nx, nz = 16, 8

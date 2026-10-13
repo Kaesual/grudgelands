@@ -323,16 +323,24 @@ while its quit arrives after it; the window's next event proves it is
 shown and marks it open again, so clicks are answered.
 
 Comparisons (not targets; seed 42, an Accord or Throng viewer with seven
-active quests at its start town, engine probe `tools/r44_mq/grug_probe_r44_mq`):
-the window is about 5.0 KB at zoom 1x and 5.1 KB at 8x with no quest
-selected (53 images, 7 tooltips, 3 buttons), 5.8/5.9 KB with a kill
-quest selected (its three targets, Track on HUD and Abandon); before
-Round 44 the Map
+active quests at its start town, engine probe `tools/r44_mq/grug_probe_r44_mq`,
+2026-10-13). Round 47, at 85 % of 1920×1080 (one button row), zoom 1x/8x,
+the Accord viewer: Quests 6.0/6.1 KB (30 markers, each with its tooltip;
+the Throng viewer 32), Bosses 5.1/5.1 KB (19), Trainers 7.1/7.3 KB (39),
+Towns 8.3/8.5 KB (54), POIs 7.3/7.5 KB (40), PvP 4.9/4.9 KB (18), Zones
+6.2/6.3 KB (38 labels and boxes), None 2.9/2.9 KB; quest mode with the
+first kill quest 3.9/3.9 KB (its three targets and the hand-in NPC, four
+tooltips). The eight buttons with their tooltips and styles are part of
+every figure. Round 44's window on the same seed and day: 5.0/5.1 KB with
+no quest selected (53 images, 7 tooltips, 3 buttons), 5.7/5.8 KB with that
+kill quest selected; before Round 44 the Map
 tab was 34.1/34.3 KB (MB's base: 78 image buttons, 38 buttons, 114 tooltips)
 plus the Quests tab's 2.0 KB, and about 67.5 KB before MB. Sends per minute
-(the fixture's clock): alone 0 standing or walking, in a party with a
-walking member 12, in a party standing still 0; before, the open Map tab's
-2 s poll sent a walking viewer up to 30.
+(the fixture's clock): alone 0 standing or walking; in a party with a
+member moving about an arrow cell per check 30 (12 with Round 44's 5 s
+check); in a party standing still 0; 60 party windows walking together at
+least 19 each, the pass budget holding them about 3 s apart; before Round
+44, the open Map tab's 2 s poll sent a walking viewer up to 30.
 
 ## Baked layer
 

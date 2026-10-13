@@ -335,7 +335,8 @@ local function overlay(fs, player, session, layout, quest, info)
 			for _, zone in ipairs(layers.zones) do
 				local sx, sy = at(zone)
 				if sx then
-					layers.zone_labels.elements(under, sx, sy, zone.name, zone.band, metrics, esc)
+					layers.zone_labels.elements(under, sx, sy, zone.name, zone.band, metrics, esc,
+						mw, mh)
 					session.marker_count = session.marker_count + 1
 				end
 			end
