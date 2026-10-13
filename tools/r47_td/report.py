@@ -9,6 +9,8 @@ in brackets, the spread (lowest..highest run). Columns:
   kvert    thousands of vertices drawn per frame (renderMap SOLID + TRANS)
   blocks   MapBlocks drawn per frame
   ft       frame time mean and 95th percentile, ms (llvmpipe, see measure.sh)
+  ft/empty the frame time mean over the same run's empty platform in the
+           same window (cancels part of the machine's load drift)
   rss      the client's resident memory, MiB (mean over the window)
   mesh     the client's mesh making (ms, summed) from BUILT until meshed
 Windows: W wide view, I inside turn, T top view (the whole forest in the
@@ -63,8 +65,8 @@ def main():
         order = group[0]["order"]
         print("### %s (%d run%s; load %s)\n" % (label, len(group), "" if len(group) == 1 else "s",
               ", ".join("/".join(r.get("loadavg", [])) for r in group)))
-        print("| scene | trees | leaves | mesh ms | window | draws | kvert | blocks | ft mean | ft p95 | rss MiB |")
-        print("|---|---|---|---|---|---|---|---|---|---|---|")
+        print("| scene | trees | leaves | mesh ms | window | draws | kvert | blocks | ft mean | ft p95 | ft/empty | rss MiB |")
+        print("|---|---|---|---|---|---|---|---|---|---|---|---|")
         for scene in order:
             built = group[0]["scenes"][scene]["built"].split()
             fields = dict(word.split("=", 1) for word in built if "=" in word)
@@ -76,7 +78,13 @@ def main():
             mesh = cell([r["scenes"][scene].get("mesh_ms", 0) for r in group], "%.0f")
             for window in ("W", "I", "T"):
                 stats = [window_stats(r["scenes"][scene]["windows"].get(window, {})) for r in group]
-                print("| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
+                ratio = []
+                for r, st in zip(group, stats):
+                    if "empty" in r["scenes"]:
+                        e = window_stats(r["scenes"]["empty"]["windows"].get(window, {}))["ft"]
+                        if e:
+                            ratio.append(st["ft"] / e)
+                print("| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
                     scene if window == "W" else "", trees if window == "W" else "",
                     leaves if window == "W" else "", mesh if window == "W" else "", window,
                     cell([s["draws"] for s in stats], "%.0f"),
@@ -84,6 +92,7 @@ def main():
                     cell([s["blocks"] for s in stats], "%.0f"),
                     cell([s["ft"] for s in stats], "%.1f"),
                     cell([s["p95"] for s in stats], "%.1f"),
+                    cell(ratio, "%.2f"),
                     cell([s["rss"] for s in stats], "%.0f")))
         print()
         if "empty" in order:
