@@ -773,6 +773,8 @@ local function loader(directory)
 		parts.resolve_panes(buf)
 
 		-- 14. Canonical cell list, bounds and palette.
+		-- Round 47 town greening: the race's trees on the open wild ground.
+		layout.green(buf, dwarf, RADIUS, sockets, doorways)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end

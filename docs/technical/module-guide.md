@@ -1809,7 +1809,10 @@ tools](#player-meta-read-by-external-tools).
   manifest publishes their roll-up, `r6_generated_templates_sha256`, and
   both environments log it); its settlement class is computed, never pinned.
   The writer turns a variant per placement and places its roots
-  (`kept_root_runs`) with a two-read ground test per cell. Saplings
+  (`kept_root_runs`) with a two-read ground test per cell; a generated tree
+  reserves only its wood (occupancy -1) and leaf cells (-4), so crowns
+  interleave, and `TREE_SPACING` (roots apart, Chebyshev) is the one
+  forest density parameter. Saplings
   (`grug_trees/growth.lua`) and the town trees (`wp13/dressing.lua`) use the
   same generator. A change to the generator or the species table moves the
   sample pins of `tools/r47_tc/portable_test.lua`.

@@ -436,6 +436,90 @@ do
 		"settlement turns: grain along z -> x, along x -> z, quarters by one")
 end
 
+-- E2. dense town trees (groves follow-up): on one pad a lattice of trees
+-- three nodes apart (a grove's spacing): wood never lands on wood or on a
+-- built cell, a leaf never replaces anything, the crowns interleave.
+do
+	local dressing = dofile(wp13 .. "/dressing.lua")(wp13)
+	local elf = palettes.new("elf")
+	local buf = pad(16)
+	buf.tree_spacing = 3
+	buf:fill(-16, 1, 15, 16, 3, 16, "default:cobble")
+	local wood_names = {}
+	for _, row in ipairs(trees.SPECIES) do
+		for _, key in ipairs({"trunk", "quarter", "base", "branch", "twig"}) do
+			wood_names[row[key]] = true
+		end
+	end
+	local real_put = buf.put
+	local violations, wood_puts, leaf_on_leaf = 0, 0, 0
+	buf.put = function(self, x, y, z, name, param2)
+		local old = self:at(x, y, z)
+		if old and old.name ~= "air" then
+			if not wood_names[name] then violations = violations + 1 end
+			if wood_names[old.name] or old.name == "default:cobble" then
+				violations = violations + 1
+			end
+			if not wood_names[name] then leaf_on_leaf = leaf_on_leaf + 1 end
+		end
+		if wood_names[name] then wood_puts = wood_puts + 1 end
+		return real_put(self, x, y, z, name, param2)
+	end
+	local planted = 0
+	for gx = -12, 12, 3 do
+		for gz = -12, 12, 3 do
+			if dressing.columnar(buf, elf, gx, gz, 10) then planted = planted + 1 end
+		end
+	end
+	check(planted >= 12, "a dense lattice plants a grove (" .. planted .. " trees)")
+	check(violations == 0, "no wood on wood or a built cell, no leaf replacing anything (" ..
+		violations .. ")")
+	check(leaf_on_leaf == 0 and wood_puts > 0, "crowns merge without a leaf overwrite")
+end
+-- E3. every capital grove and copse plot has trees again (>= 4 each).
+do
+	local counting = 0
+	local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
+	local real_dofile = dofile
+	local function counted(loader)
+		return function(...)
+			local M = loader(...)
+			for _, name in ipairs({"tree", "broadleaf", "columnar", "acacia", "gravewood",
+					"jungle_tree", "emergent"}) do
+				local routine = M[name]
+				M[name] = function(...)
+					local planted = routine(...)
+					if planted then counting = counting + 1 end
+					return planted
+				end
+			end
+			return M
+		end
+	end
+	rawset(_G, "dofile", function(path, ...)
+		local result = real_dofile(path, ...)
+		if type(path) == "string" and path:match("wp13/dressing%.lua$") then
+			return counted(result)
+		end
+		return result
+	end)
+	local groves = 0
+	for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak",
+			"kezamba"}) do
+		local kit = capital.kit(key)
+		for _, plot in ipairs(kit.plots) do
+			if plot.id:match("grove") or plot.id:match("copse") then
+				counting = 0
+				plot.build()
+				groves = groves + 1
+				check(counting >= 4, key .. "/" .. plot.id .. " has trees (" .. counting .. ")")
+			end
+		end
+	end
+	rawset(_G, "dofile", real_dofile)
+	check(groves >= 8, "the grove and copse plots were found (" .. groves .. ")")
+end
+
 -- ---------------------------------------------------------------------------
 -- F. markers
 -- ---------------------------------------------------------------------------

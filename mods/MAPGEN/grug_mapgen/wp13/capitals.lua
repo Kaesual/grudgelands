@@ -1800,11 +1800,18 @@ local function loader(directory)
 			end
 		end
 
+		-- A dense grove (Round 47 groves follow-up): four stems in each
+		-- quarter between the cross paths, the inner pair two nodes off the
+		-- path and the outer pair one node in from the edge, so the
+		-- generated crowns interleave over the paths and to the plot's edge;
+		-- a stem whose tree does not fit stays out (`dressing.grown`).
 		local trees = 0
-		for _, spot in ipairs({{2, 2}, {last - 2, 2}, {2, last - 2},
-				{last - 2, last - 2}, {centre - 4, centre + 4}}) do
-			plant(buf, palette, spot[1], spot[2], spec.height or 8)
-			trees = trees + 1
+		buf.tree_spacing = 3
+		local near, far = centre - 3, 1
+		for _, sx in ipairs({far, near, last - near, last - far}) do
+			for _, sz in ipairs({far, near, last - near, last - far}) do
+				if plant(buf, palette, sx, sz, spec.height or 8) then trees = trees + 1 end
+			end
 		end
 		dressing.undergrowth(buf, palette, 0, 0, last, last, 6)
 		for _, spot in ipairs({{centre - 2, 2}, {centre + 2, last - 2}}) do
