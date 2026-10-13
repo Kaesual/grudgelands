@@ -872,7 +872,8 @@ rewrite records the WP40 model it replaced.
     rows) place like the engine's own schematics: a leaf (a cell without
     force placement) that would hit ground is left out instead of rejecting
     the whole bush. The stem keeps the full rule, so no bush floats or buries
-    its stem. Trees keep the whole-template clearance rule.
+    its stem. The generated trees (Round 47) leave out a leaf against the
+    ground the same way; their wood keeps the whole-template clearance rule.
 - **Substrate.** Native v7 remains the substrate for caves, ores, dungeons
   and strata, but its heightmap never selects the final surface, a mask, an
   operation or a priority. The writer may read that heightmap only as a local

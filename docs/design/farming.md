@@ -97,7 +97,9 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
 - *Trees* and *shrubs* (bushes, the blueberry bush included) are two separate
   classes, each counted against its own density by its trunks or stems,
   divided by the marker columns one grown plant of that template has; planted
-  saplings count as plants.
+  saplings count as plants. A generated tree (Round 47) is counted by its
+  trunk logs and trunk quarters, divided by the mean trunk columns of the
+  world's variants of its species.
 - Every decoration species' rate is multiplied by its altitude class factor
   at the spot, from the same vegetation rule the generator uses
   (`habitat_registry.lua` `vegetation_rule`, [world_zones.md](world_zones.md)
@@ -153,7 +155,8 @@ Shoreline species count at most two eligible supports per box width.
 
 **Trees.** Trees and bushes renew as saplings of the species the biome
 naturally grows (setting `grug_tree_regrowth`, default on), which then grow
-through the vendored sapling timers. No sapling is placed within 10 nodes of
+through the vendored sapling timers into the generator's trees (Round 47,
+[biomes_mobs.md](biomes_mobs.md) §5). No sapling is placed within 10 nodes of
 any non-natural node, farm soil or unloaded terrain. Natural nodes are air,
 liquids, generated ground and ores (`grug_natural`), the tree, leaf, sapling,
 flora and fruit families and every node the generator places as vegetation.

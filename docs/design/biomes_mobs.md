@@ -177,17 +177,17 @@ placeholder.
 
 | Biome | Trees / schematics | Ground cover & gathering | Notes |
 |-------|--------------------|--------------------------|-------|
-| grug_meadows | apple_tree.mts sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[spice T1]` | fields/roads near settlements (WP13) |
-| grug_pine_hills | pine_tree.mts + small_pine (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss on stone `[herb T1]` | scattered boulders (deco) |
-| grug_elf_forest | silverwood (retinted aspen_tree.mts) + apple mix (fill 0.007) | pale grass, white flowers; wild berries `[food]`; sunleaf `[spice T1]` | great-silverwood only via settlement schematics |
-| grug_deep_forest | apple + aspen dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food found-only]`; dragonweed edge `[herb T2]` | dark, high tree density |
-| grug_crags | snowy_pine above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
-| grug_savanna | acacia_tree.mts sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
+| grug_meadows | apple (generated) sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[spice T1]` | fields/roads near settlements (WP13) |
+| grug_pine_hills | pine (generated; two rows) (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss on stone `[herb T1]` | scattered boulders (deco) |
+| grug_elf_forest | silverwood + apple mix (generated) (fill 0.007) | pale grass, white flowers; wild berries `[food]`; sunleaf `[spice T1]` | great-silverwood only via settlement schematics |
+| grug_deep_forest | apple + aspen (generated) dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food found-only]`; dragonweed edge `[herb T2]` | dark, high tree density |
+| grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
+| grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
 | grug_badlands (+ `_east`) | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
-| grug_blight | gravewood (knotted dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
-| grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
-| grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025; emergent trees everywhere except zones of mountain relief); papyrus lives at the water in the swamp (§2.1) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
+| grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
+| grug_bone_forest | gravewood (generated) dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
+| grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
+| grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); papyrus lives at the water in the swamp (§2.1) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[found-only salt, inedible]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -233,21 +233,31 @@ band, snow line, groves and clearings, deep forest and deep jungle trees
 ×1.5). The four "shrub band only" rows grow nothing below the tree start. Template schematics are
 centred in x/z and rotate by a domain-separated choice among 0/90/180/270
 degrees. The blueberry bush and fallen apple log use y offset +1; the log is
-centred only in x and replaces its unavailable brown mushroom with `air`. The
-emergent jungle tree uses y offset −4 and grows everywhere except in zones of
-mountain relief (Round 22 D37; the natural jungle spans y 0–400), and all
-other template offsets are zero. The manifest still names these two site
-rules by their flat-world tokens (`surface_y_at_most_32`, `surface_y_1_to_4`),
-which the r6_catalog digest pin freezes; `r6_planner.lua` reads them as the
-rules above. Silverwood applies the accepted aspen-node
-replacement. Every dry shrub has exact `param2 = 4`. Gravewood uses original
-7×7×7 (Blight) and 7×9×7 (Bone Forest) schematics with 17/23 face-connected
-wood cells and only 5/8 optional dead-leaf cells (MTS probability value 96 each; mapgen inclusion 3/8).
-Every wood cell and vertical slice is mandatory, preserving connected branches.
-Leaves have a grey tint, decay within radius 3 of wood, and drop nothing.
-Saplings choose either size and a quarter-turn rotation, using these same assets;
-obstructed or unloaded growth volumes retry without removing the sapling. Simple variant ranges above mean one independently
-settled entry per named variant at the displayed fill.
+centred only in x and replaces its unavailable brown mushroom with `air`; all
+other schematic offsets are zero. The kapok grows everywhere except in zones
+of mountain relief (Round 22 D37; the natural jungle spans y 0–400). The
+manifest still names these two site rules by their flat-world tokens
+(`surface_y_at_most_32`, `surface_y_1_to_4`); `r6_planner.lua` reads them as
+the rules above. Every dry shrub has exact `param2 = 4`.
+
+**The trees are generated per world** (Round 47 rulings 1–3; the approved
+concept is `tools/r46_tree/concept/DESIGN.md`). The fourteen tree rows
+(apple, aspen, silverwood, jungle tree, kapok, pine, acacia and gravewood)
+name a species of the seeded generator (`wp40/treegen.lua`), not a
+schematic. Every world builds its own variants of each species from its
+seed at every server start: 32 per species, 16 kapoks
+(`wp40/tree_templates.lua`); a tree candidate takes one variant and one
+quarter turn by a digest of its root. Wide trunks (2 × 2, 3 × 3) stand on one
+buried layer, so a gentle slope shows no gap under a corner. A leaf that
+would hit the ground is left out; every wood cell needs free space, as
+before. Roots (apple and jungle on some 2 × 2 trees, every kapok) are placed
+run by run where each cell has ground right under it at the foot and none at
+the foot's level, never where the ground falls away or rises. Kapok grows
+from jungle wood; silverwood and gravewood are their own species with their
+own nodes. Leaves decay within radius 3 of wood; the gravewood's grey leaves
+drop nothing. Saplings grow the generator's tree of their species too (§5).
+Simple variant ranges above mean one independently settled entry per named
+variant at the displayed fill.
 
 Candidate cells are globally anchored 16-column squares. Deterministic
 per-world placement and rotation replace engine randomness and the legacy
@@ -1240,14 +1250,14 @@ instant visual identity, and "same loot, different look" between
 mirrored biomes. Wood from all six trees is `group:wood` (base recipes
 accept any; race woods matter for looks + settlement schematics).
 
-| Race | Tree (name) | Schematic source | Nodes (new unless BASE) | Build-material set | Grows in |
+| Race | Tree (name) | Tree source (Round 47: the generator's species) | Nodes (new unless BASE) | Build-material set | Grows in |
 |------|-------------|------------------|--------------------------|--------------------|----------|
-| Human | Oak | BASE apple_tree.mts | default tree/wood (desc "Oak") | oak planks, cobble, brick, thatch (grug_nodes:thatch, straw retint) | meadows, deep forest |
-| Dwarf | Mountain Pine | BASE pine_tree.mts (+snowy) | default pine | pine planks, stonebrick, grug_nodes:carved_granite (stone retint) | pine hills, crags edge |
-| Elf | Silverwood | aspen_tree.mts node-substituted (**new** silverwood variant) + **new** great_silverwood.mts (treehouse base, §1.4) | grug_trees:silverwood_{tree,wood,leaves,sapling} — pale bark/leaf retint of aspen | silverwood planks, grug_nodes:marble (white stone retint; sold by dwarven vendors — trade hook) | elf forest only (the deep forest grows real aspen, §2) |
-| Orc | Spikethorn Acacia | BASE acacia_tree.mts | default acacia | acacia planks, grug_nodes:adobe (dry-dirt+straw craft), bone block | savanna, badlands edge |
-| Troll | Kapok | BASE jungle_tree.mts + emergent | default junglewood (jungle bark M on the tree, Round 47) | jungle planks, mossycobble, grug_nodes:carved_totem (deco) | jungle edge, deep jungle |
-| Undead | Gravewood | two original dead-tree .mts files (bent, forked wood with scattered grey dead leaves) | grug_trees:gravewood_{tree,wood,leaves,sapling} — blackened apple-log retint | gravewood planks, grug_nodes:cursed_cobble (mossycobble retint), bone block | blight, bone forest, swamp variant |
+| Human | Oak | apple | default tree/wood (desc "Oak") | oak planks, cobble, brick, thatch (grug_nodes:thatch, straw retint) | meadows, deep forest |
+| Dwarf | Mountain Pine | pine | default pine | pine planks, stonebrick, grug_nodes:carved_granite (stone retint) | pine hills, crags edge |
+| Elf | Silverwood | silverwood (its own tall, columnar species) + **new** great_silverwood.mts (treehouse base, §1.4) | grug_trees:silverwood_{tree,wood,leaves,sapling} — pale bark/leaf retint of aspen | silverwood planks, grug_nodes:marble (white stone retint; sold by dwarven vendors — trade hook) | elf forest only (the deep forest grows real aspen, §2) |
+| Orc | Spikethorn Acacia | acacia | default acacia | acacia planks, grug_nodes:adobe (dry-dirt+straw craft), bone block | savanna, badlands edge |
+| Troll | Kapok | jungle tree + kapok | default junglewood (jungle bark M on the tree, Round 47) | jungle planks, mossycobble, grug_nodes:carved_totem (deco) | jungle edge, deep jungle |
+| Undead | Gravewood | gravewood (bent, forked dead wood with scattered grey dead leaves) | grug_trees:gravewood_{tree,wood,leaves,sapling} — blackened apple-log retint | gravewood planks, grug_nodes:cursed_cobble (mossycobble retint), bone block | blight, bone forest, swamp variant |
 
 **Tree shape nodes** (Round 47, `grug_trees/shapes.lua`; the approved
 concept in [tree-rework-handoff.md](../planning/tree-rework-handoff.md) §3).
@@ -1266,10 +1276,26 @@ hanging moss decay to gravewood wood); the base and the twig join the ground onl
 below them (every `group:soil` and `group:sand` node and `default:gravel`
 declare `connect_sides = {"top"}`, 26 nodes with the swamp ground). The
 jungle tree and the jungle pieces wear the jungle bark M (`grug_trees_jungle_bark*.png`, CC0). The
-world generator and saplings place the pieces (Round 47 lanes TB/TC).
+world generator, saplings and town trees place the pieces (Round 47 lanes TB/TC).
+
+**Saplings** (Round 47) grow the generator's tree of their species — apple
+(`default:sapling`), jungle tree, kapok (`default:emergent_jungle_sapling`),
+acacia, pine, aspen, silverwood and gravewood — with a seed hashed from the
+world seed and the sapling's position, so one spot always grows the same
+tree (`grug_trees/growth.lua`). The growth conditions stay default's (soil
+below, light 13). A tree takes only free cells (air or a plant a node may
+replace) that the terrain guard allows; a wood cell that does not fit fails
+the growth and the sapling tries again later, a leaf there is left out.
+Roots test the real ground. Placing a sapling checks protection over the
+volume its species can grow into (x and z ±8, up to its tallest tree).
+Apples grow as natural apples (param2 0) and regrow. **Town trees**
+(`wp13/dressing.lua`) are the generator's trees too, in the palette's wood,
+seeded by their spot in the composition (the same in every world), each
+the first of four seeds that fits the composition's ground and its built
+cells; a spot where none fits stays treeless.
 
 Missing assets summary: silverwood + gravewood textures (retints),
-great_silverwood.mts treehouse schematic (WP13; the ordinary Gravewood schematics are shipped), adobe/
+great_silverwood.mts treehouse schematic (WP13; ordinary trees are generated), adobe/
 marble/carved_granite/thatch/bone block/cursed_cobble/carved_totem
 node textures (retints). All 2D retints of MTG media (CC BY-SA 3.0) —
 license-clean, keep attribution.

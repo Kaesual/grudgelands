@@ -178,6 +178,14 @@ schematic, with `core.get_node`. Cost: the ground nodes' `connect_sides`
 override and the new `connects_to` change the frozen mapgen digest (map
 reset, fine per the user).
 
+*Built (Round 47 lane TC):* the variants are made from each world's seed at
+every start (`wp40/tree_templates.lua`; no schematic files), each carrying
+its root runs; the R7 writer places a run where every cell has ground under
+its column at the foot and none at the foot's level, a fork's toe only with
+its run (`r6_templates.lua` `kept_root_runs`). Saplings grow the generator's
+tree with the real ground as `isGround` (`grug_trees/growth.lua`), so their
+roots follow the generator's own rule exactly.
+
 ## Shapes (per wood type: 4, the budget)
 
 Boxes in sixteenths, `x1, y1, z1, x2, y2, z2`, centred on the node.
