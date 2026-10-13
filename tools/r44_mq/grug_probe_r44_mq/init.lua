@@ -7,10 +7,15 @@
 --   * before Round 44 MQ (no grug_map.window): the Map tab's formspec bytes
 --     at zoom 1x and 8x and the Quests tab's bytes;
 --   * after: the map window's bytes at zoom 1x and 8x, at the fallback size
---     and at 85 % of a 1920x1080 screen at GUI scale 1, with the first quest
---     selected (the default) and with the first kill quest selected, its
---     element counts and drawn targets, and the quest target index's size
---     and build time.
+--     and at 85 % of a 1920x1080 screen at GUI scale 1, with no quest
+--     selected and with the first kill quest selected, its element counts
+--     and drawn targets, and the quest target index's size and build time;
+--   * Round 47 (lane ML, grug_map.layers present): the same per marker
+--     layer and in quest mode (the first kill quest), with the drawn
+--     markers and tooltips; the layers' static rows and the zone labels'
+--     placement figures; and how many quest texts overflow the quest text
+--     box at 1920x1080 and 1280x720 (an estimate: the text's words wrapped
+--     at 0.5 em per character of the default 16 px font, 1.2 em per line).
 local P = "[r44mq_probe] "
 local function log(text) core.log("action", P .. text) end
 
@@ -52,10 +57,11 @@ local function count(form, pattern)
 end
 
 local function elements(form)
-	return ("image_button %d, button %d, image %d, tooltip %d, style %d, textlist %d"):format(
+	return ("image_button %d, button %d, image %d, tooltip %d, style %d, textlist %d, " ..
+		"label %d, box %d"):format(
 		count(form, "image_button%["), count(form, "[^_]button%["),
 		count(form, "[^_]image%["), count(form, "tooltip%["), count(form, "style%["),
-		count(form, "textlist%["))
+		count(form, "textlist%["), count(form, "label%["), count(form, "box%["))
 end
 
 -- The seven lowest-level quests whose giver is of `faction` (id order on a
@@ -112,13 +118,122 @@ local function before(faction)
 	sfinv.contexts[name] = nil
 end
 
+local SIZES = {{"fallback", nil},
+	{"1920x1080", {size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 72, y = 1080 / 72},
+		real_gui_scaling = 1}}}
+
+-- Round 47: every layer and quest mode.
+local function layers_after(faction)
+	local W = grug_map.window
+	local state, kill = quest_state(faction)
+	local name = "r44mq_" .. faction
+	local player = fake_player(name, faction, start_of(faction), state)
+	local modes = {}
+	for _, layer in ipairs(grug_map.layers.LIST) do modes[#modes + 1] = {layer.id, nil} end
+	modes[#modes + 1] = {"quest", kill}
+	for _, size in ipairs(SIZES) do
+		for _, mode in ipairs(modes) do
+			for _, zoom in ipairs({1, 8}) do
+				local view = W.new_state()
+				view.zoom = zoom
+				view.layer = mode[2] and "quests" or mode[1]
+				view.quest_selected = mode[2]
+				local form = W.formspec(player, view, size[2])
+				log(("layers %s %s (%.2fx%.2f, %d button rows) %s zoom %dx: %d bytes (%s; " ..
+					"markers %d, targets %d, map tooltips %d)"):format(faction, size[1], view.layout.w,
+					view.layout.h, view.layout.buttons.rows, mode[2] and ("quest " .. mode[2]) or mode[1],
+					zoom, #form, elements(form), view.marker_count or 0, view.target_count or 0,
+					view.tooltip_count or 0))
+			end
+		end
+	end
+end
+
+local function layer_rows()
+	local L = grug_map.layers
+	local counts = {}
+	for _, name in ipairs({"settlement", "boss", "poi", "pvp"}) do
+		local kinds = {}
+		for _, row in ipairs(L.rows[name]) do kinds[row.kind] = (kinds[row.kind] or 0) + 1 end
+		local parts = {}
+		for kind, n in pairs(kinds) do parts[#parts + 1] = kind .. " " .. n end
+		table.sort(parts)
+		counts[#counts + 1] = ("%s %d (%s)"):format(name, #L.rows[name], table.concat(parts, ", "))
+	end
+	log("layer rows: " .. table.concat(counts, "; "))
+	local s = L.zone_stats or {}
+	log(("zone labels: %d placed, at 1x on 1920x1080 %d overlapping pairs, %d over a region " ..
+		"name; grid %.3f s, total %.3f s"):format(s.zones or 0, s.overlapping or 0, s.on_names or 0,
+		s.grid_s or 0, s.total_s or 0))
+	for _, zone in ipairs(L.zones) do
+		log(("zone label %s at %d,%d: %s / %s"):format(zone.id, zone.x, zone.z, zone.name, zone.band))
+	end
+	for _, name in ipairs({"boss", "pvp"}) do
+		for _, row in ipairs(L.rows[name]) do
+			log(("row %s %s: %s"):format(name, row.kind, (row.detail or row.label):gsub("\n", " / ")))
+		end
+	end
+end
+
+-- Round 47 §6.1: how many quest texts scroll in the quest text box. The text
+-- is quest_box.lua's own (every quest active on one stand-in, each selected
+-- in turn); the wrap is estimated.
+local function overflow()
+	local W = grug_map.window
+	local quest_box = dofile(core.get_modpath("grug_map") .. "/quest_box.lua")
+	local active = {}
+	for id in pairs(grug_quests.registered_quests) do active[id] = {} end
+	local player = fake_player("r44mq_text", "accord", {x = 0, y = 10, z = 0},
+		{active = active, completed = {}, tracked = {}, hud = true, cooldowns = {}})
+	local journal = grug_quests.journal(player)
+	local screens = {{"1920x1080", 1920, 1080, 72}, {"1280x720", 1280, 720, 0.5555 * 96}}
+	for _, screen in ipairs(screens) do
+		local info = {size = {x = screen[2], y = screen[3]},
+			max_formspec_size = {x = screen[2] / screen[4], y = screen[3] / screen[4]}}
+		local layout = W.layout(W.window_size(info))
+		local px = screen[4]
+		local scrolling, longest, total = 0, 0, 0
+		for _, quest in ipairs(journal.quests) do
+			local form = quest_box.content({quest_selected = quest.id}, journal, layout.column)
+			local w, h, text = form:match("textarea%[[%d.]+,[%d.]+;([%d.]+),([%d.]+);;;(.-)%]$")
+			if not w then w, h, text = form:match("textarea%[[%d.]+,[%d.]+;([%d.]+),([%d.]+);;;(.-)%]label") end
+			if w then
+				text = text:gsub("\\(.)", "%1")
+				local per_line = math.floor(tonumber(w) * px / (16 * 0.5))
+				local lines = 0
+				for paragraph in (text .. "\n"):gmatch("(.-)\n") do
+					local line = 0
+					lines = lines + 1
+					for word in paragraph:gmatch("%S+") do
+						local len = #word:gsub("[\128-\191]", "")
+						if line > 0 and line + 1 + len > per_line then
+							lines, line = lines + 1, len
+						else
+							line = line + (line > 0 and 1 or 0) + len
+						end
+					end
+				end
+				local visible = math.floor(tonumber(h) * px / (16 * 1.2))
+				total = total + 1
+				if lines > visible then scrolling = scrolling + 1 end
+				if lines > longest then longest = lines end
+				if total == 1 then
+					log(("quest text box %s: %.2fx%.2f units, about %d characters x %d lines"):format(
+						screen[1], tonumber(w), tonumber(h), per_line, visible))
+				end
+			end
+		end
+		log(("quest texts %s: %d of %d overflow the text box (longest about %d lines)"):format(
+			screen[1], scrolling, total, longest))
+	end
+end
+
 local function after(faction)
 	local W = grug_map.window
 	local state, kill = quest_state(faction)
 	local name = "r44mq_" .. faction
 	local player = fake_player(name, faction, start_of(faction), state)
-	local sizes = {{"fallback", nil},
-		{"1920x1080", {max_formspec_size = {x = 1920 / 72, y = 1080 / 72}}}}
+	local sizes = SIZES
 	for _, size in ipairs(sizes) do
 		for _, selected in ipairs({false, true}) do
 			for _, zoom in ipairs({1, 8}) do
@@ -182,7 +297,17 @@ core.register_globalstep(function(dtime)
 	done = true
 	local ok, err = pcall(function()
 		for _, faction in ipairs(grug_core.faction_ids) do
-			if grug_map.window then after(faction) else before(faction) end
+			if grug_map.layers then
+				layers_after(faction)
+			elseif grug_map.window then
+				after(faction)
+			else
+				before(faction)
+			end
+		end
+		if grug_map.layers then
+			layer_rows()
+			overflow()
 		end
 		if grug_map.window then coverage() end
 		if grug_map.quest_targets then

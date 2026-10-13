@@ -1,8 +1,9 @@
 -- The baked map layer (Round 44, world_map.md "Baked layer"): settlement,
 -- point-of-interest and boss icons and the region names in a pixel font,
 -- drawn by the base renderer (base.lua) into the map images themselves.
--- The world-map image gets the icons and the names, the minimap's image the
--- small icons only. PURE Lua: no engine calls, so the portable fixture
+-- The world-map image gets the names only since Round 47 (lane ML: the map
+-- window shows the places in its marker layers, layers.lua), the minimap's
+-- image the small icons only. PURE Lua: no engine calls, so the portable fixture
 -- (tools/r44_mb/portable_test.lua) runs it as it ships. The art and the font
 -- come as data from baked_art.lua (tools/r44_mb/gen_baked_art.py), since
 -- the engine decodes no PNG for Lua.
@@ -14,12 +15,10 @@
 
 local B = {}
 
--- Draw scale per image, nearest-neighbour. A 16 px icon is 32 px in the
--- normal image (about 0.37 formspec units on the Map tab at zoom 1, where
--- the overlay icons are 0.34) and 96 px in the high one (0.33); the 6 px
--- minimap icons stay as they are (about 18 screen pixels at 1080p, beside
--- the minimap's 16 px markers). Names use the same scale as the icons:
--- a cap height of 14 px at normal, 42 at high.
+-- Draw scale per image, nearest-neighbour. The names have a cap height of
+-- 14 px in the normal image and 42 in the high one (until Round 47 also the
+-- world map's icons: 32 and 96 px); the 6 px minimap icons stay as they are
+-- (about 18 screen pixels at 1080p, beside the minimap's 16 px markers).
 B.SCALE = {normal = 2, high = 6, mini = 1}
 -- Light names on a dark halo of one glyph pixel read on land and sea.
 B.TEXT = {243, 232, 200}
@@ -252,6 +251,12 @@ function B.draw_label(pixels, width, height, font, row, cx, cy, scale)
 		end
 	end
 	return {x0, y0, x0 + w, y0 + h}
+end
+
+-- The world map's layer (Round 47 ruling 4): the names of `layer`, no
+-- icons. The minimap's image keeps the whole layer.
+function B.world_layer(layer)
+	return {items = {}, labels = layer.labels}
 end
 
 local function overlap(a, b)

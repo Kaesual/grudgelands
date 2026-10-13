@@ -878,10 +878,13 @@ for faction, race in pairs(GENERALS) do
 end
 
 -- Static authored navigation locations; no live entity or respawn information.
+-- `entity` names the dragon's registration (the map's Bosses layer reads its
+-- level, Round 47).
 function grug_mobs.dragon_map_markers()
 	local result = {}
 	for id, row in pairs(DRAGONS) do
-		result[#result + 1] = {id = "dragon:" .. id, name = row.name, pos = dragon_pos(row)}
+		result[#result + 1] = {id = "dragon:" .. id, name = row.name, pos = dragon_pos(row),
+			entity = row.entity}
 	end
 	table.sort(result, function(a, b) return a.id < b.id end)
 	return result

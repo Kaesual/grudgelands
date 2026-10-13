@@ -1631,8 +1631,9 @@ tools](#player-meta-read-by-external-tools).
   Zone and town names (Round 28 M1): `location.lua` samples each player's
   location every second, writes the line under the minimap and the entry
   banner (until Round 44 it also placed one zone marker per zone at
-  startup, with a zone-grid cache in the world folder; the map window draws
-  none, so both are gone); the pure
+  startup, with a zone-grid cache in the world folder; since Round 47 the
+  map window's Zones layer places text labels by the same rule in
+  `layers.lua`/`zone_labels.lua`, without a cache); the pure
   `location_view.lua` holds the rules (fixture `tools/r28_m1`). Since
   Round 32 each sample also takes the territory status
   (`grug_pvp.territory_at`, the PvP flag's own rule, never the flag): it
@@ -1651,14 +1652,22 @@ tools](#player-meta-read-by-external-tools).
   from `zone_discovery.lua` (`D.new(api)` pure over its calls, fixture
   `tools/r47_nz`); a fixture that loads `location.lua` alone runs without it.
   Round 31: NPC markers carry their NPC's faction and the service and
-  quest-giver lists are split per viewer faction once at load. Since Round
-  44 settlements, camps, points of interest, kings and dragons are no
-  markers: `settlement_icons.lua` (pure) maps a settlement's anchor slot to
-  its baked icon kind, the same for every viewer (ruling 5 ended Round 31's
-  per-faction hiding). The
-  map window builds its overlay per send, and the minimap re-asks its
-  static markers on `register_on_faction_chosen`. Fixtures `tools/r31_n`,
-  `tools/r31_m`, `tools/r44_mb`.
+  quest-giver lists are split per viewer faction once at load.
+  `settlement_icons.lua` (pure) maps a settlement's anchor slot to its icon
+  kind and, since Round 47, to its map window layer, the same for every
+  viewer (Round 44 ruling 5 ended Round 31's per-faction hiding). In Rounds
+  44–46 settlements, camps, kings and dragons were only baked icons; since
+  Round 47 the world map's image bakes the region names only (the minimap's
+  keeps the icons), and `layers.lua` (loaded by `window.lua`) builds the
+  marker layers: the static rows of settlements, places and bosses once in
+  its mods-loaded hook (providers `settlement`, `poi`, `pvp`, `boss`; boss
+  levels through `grug_mobs.fixed_level`, the dragons' entities from
+  `grug_mobs.dragon_map_markers`) and the zone labels (`zone_labels.lua`,
+  pure: the grid sampled from the world authority, Round 28's pole
+  placement). The map window builds its overlay per send from the session's
+  layer, and the minimap re-asks its static markers on
+  `register_on_faction_chosen`. Fixtures `tools/r31_n`, `tools/r31_m`,
+  `tools/r44_mb`, `tools/r44_mq`.
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
 
 ## Preparation

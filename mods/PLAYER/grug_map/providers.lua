@@ -141,15 +141,16 @@ atlas.register_marker_provider("home", function(player)
  for _, row in ipairs(grug_home.locations()) do
   local chosen = selected and selected.id == row.id
   if visible(row, faction) then
+   -- `detail` is the map window's tooltip (Round 47).
    result[#result + 1] = {id=row.id, label=row.label .. " Innkeeper",
-    detail=row.label .. (chosen and " — Your home / Innkeeper" or " — Innkeeper"),
+    detail=(chosen and "Your home: " or "") .. row.label .. " Innkeeper",
     position=row.pos, kind=chosen and "home" or "innkeeper", faction=row.faction}
   end
  end
  -- A Claim Stone travel home (grug_home claim_home.lua) is marked at its stone.
  if selected and selected.claim then
   result[#result + 1] = {id=selected.id, label="Your Claim Stone",
-   detail="Claim Stone — Your home", position=selected.pos, kind="home",
+   detail="Your home: Claim Stone", position=selected.pos, kind="home",
    faction=selected.faction}
  end
  return result

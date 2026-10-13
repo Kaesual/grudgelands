@@ -99,11 +99,13 @@ eligibility and flag".
   Housing Stewards, Crownbinders and waystones serve only their own faction; everyone else
   hears "<NPC> I serve only The Accord." (or The Throng), at most once every
   two seconds ([settlements.md](settlements.md)).
-- **Map and minimap** show only the own faction's NPC markers. The map
-  image itself is the same for both factions, with every settlement, the
-  enemy's starts, capitals, villages, outposts and fortress included, and
-  every king and both dragons baked into it (Round 44 ruling 5, which ended
-  Round 31's hiding of the enemy's places; [world_map.md](world_map.md)).
+- **Map and minimap** show only the own faction's NPC markers. Every
+  settlement, the enemy's starts, capitals, villages, outposts and fortress
+  included, every king and both dragons are the same for both factions:
+  baked into the minimap's image (Round 44 ruling 5, which ended Round 31's
+  hiding of the enemy's places) and, since Round 47, markers of the map
+  window's settlement, place and boss layers showing both factions (ruling
+  5 of the map layers; [world_map.md](world_map.md#map-window)).
 - Enemy guards drop War Trophies and heavy cloth only to an enemy player's
   kill (`grug_mobs/guard.lua`).
 

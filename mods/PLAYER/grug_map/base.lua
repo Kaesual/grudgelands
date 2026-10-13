@@ -3,11 +3,12 @@
 -- Coast, zone borders and (from Round 22 Phase 4) roads differ per world
 -- seed, so the base cannot ship as a pre-rendered texture. The server renders
 -- it once from the public world authority (grug_zones), caches it in the world
--- directory and announces it as startup media. Since Round 44 the settlement,
--- point-of-interest and boss icons and the region names are baked into it
--- (bake.lua): the Map tab's image carries icons and names, the minimap's its
--- own small icons and no names. Every other marker stays a separate layer
--- (page.lua, minimap.lua).
+-- directory and announces it as startup media. Since Round 44 the region
+-- names and the settlement, point-of-interest and boss icons are baked into
+-- it (bake.lua): the map window's image carries the names (since Round 47 no
+-- icons: the window shows those places in its marker layers, layers.lua),
+-- the minimap's its own small icons and no names. Every other marker stays
+-- a separate layer (window.lua, minimap.lua).
 --
 -- Only pure public queries are used (water_class_at, id_at, get,
 -- terrain_height_at) plus the river centrelines grug_mapgen publishes and the
@@ -354,7 +355,8 @@ local function encode_tiles(pixels, width, tiles)
 end
 
 -- `layer` ({items, labels, art}, baked_layer below) is baked into both
--- images; nil (offline crops) bakes nothing.
+-- images, the world map's its names only (Round 47); nil (offline crops)
+-- bakes nothing.
 local function render(zones, view, spec, layer)
 	local WIDTH, HEIGHT, R = spec.width, spec.height, spec.relief
 	local started = core.get_us_time()
@@ -489,17 +491,17 @@ local function render(zones, view, spec, layer)
 	local copied = core.get_us_time()
 	local baked = {icons = 0, names = 0, icon_overlaps = 0, name_overlaps = 0}
 	if layer then
-		baked = bake.draw(pixels, WIDTH, HEIGHT, view, layer, layer.art,
+		baked = bake.draw(pixels, WIDTH, HEIGHT, view, bake.world_layer(layer), layer.art,
 			bake.SCALE[spec.quality] or bake.SCALE.normal, true, "")
 	end
 	local tiles = M.tiles(WIDTH, HEIGHT)
 	local total = encode_tiles(pixels, WIDTH, tiles)
 	local encoded = core.get_us_time()
-	local mini_total, mini_tiles = 0, nil
+	local mini_total, mini_tiles, mini_icons = 0, nil, 0
 	if mini then
 		if layer then
-			bake.draw(mini_pixels, mini.width, mini.height, view, layer, layer.art,
-				bake.SCALE.mini, false, "_mini")
+			mini_icons = bake.draw(mini_pixels, mini.width, mini.height, view, layer, layer.art,
+				bake.SCALE.mini, false, "_mini").icons
 		end
 		mini_tiles = M.tiles(mini.width, mini.height, M.MINI_PREFIX)
 		mini_total = encode_tiles(mini_pixels, mini.width, mini_tiles)
@@ -507,7 +509,7 @@ local function render(zones, view, spec, layer)
 	local finished = core.get_us_time()
 	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
 		"(zones/water %.2f s, relief step %d %.2f s, colour %.2f s, bake+encode %.2f s, " ..
-		"%d tiles, %d bytes; minimap copy %s %.2f s, %d bytes; baked %d icons " ..
+		"%d tiles, %d bytes; minimap copy %s %.2f s, %d bytes, %d icons; baked %d icons " ..
 		"(%d overlapping pairs) and %d names (%d over an icon))"):
 		format(WIDTH, HEIGHT, spec.quality, (finished - started) / 1e6,
 		(classified - started) / 1e6,
@@ -515,7 +517,7 @@ local function render(zones, view, spec, layer)
 		(shaded - classified) / 1e6, (coloured - shaded) / 1e6,
 		(encoded - copied) / 1e6, #tiles, total,
 		mini and (mini.width .. "x" .. mini.height) or "none",
-		(copied - coloured + finished - encoded) / 1e6, mini_total,
+		(copied - coloured + finished - encoded) / 1e6, mini_total, mini_icons,
 		baked.icons, baked.icon_overlaps, baked.names, baked.name_overlaps))
 	return tiles, mini_tiles
 end

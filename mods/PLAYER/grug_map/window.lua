@@ -7,22 +7,28 @@
 -- with the zoom, the location, the minimap switch, "Back to inventory" and
 -- the close button.
 --
--- The overlay (ruling 12, with the user's additions of 2026-10-08) is plain
--- image[] elements: the player's and the party's arrows, the home,
--- discovered waystones, the own faction's trainers (two thirds size at zoom
--- 1x and 2x), Housing Stewards, capital services, the mender (Round 46)
--- and innkeepers, and a question mark at the NPC of each active quest
--- (silver in progress, gold ready to hand in) with the NPC's name as its
--- only tooltip. Settlements,
--- camps, bosses and region names are pixels of the base image (bake.lua);
--- of the other faction nothing is drawn beyond that baked layer except the
--- selected quest's own targets.
+-- The overlay (Round 47 lane ML, the work package's rulings 1-10; until
+-- then Round 44's fixed set) is plain image[] elements with positional
+-- tooltips. The player picks ONE marker layer with the row of buttons under
+-- the map (layers.lua: quest givers, bosses, trainers, towns and travel,
+-- points of interest, PvP, zone names, none; one or two rows, the active
+-- one highlighted). Selecting a quest in the list is its own mode: only
+-- that quest's targets (targets.lua, each with its objectives' lines as
+-- tooltip) and its hand-in NPC, no button highlighted; a layer button
+-- deselects the quest. In every mode the player's gold arrow and the
+-- party's cyan arrows (the member's name as tooltip). Every marker has a
+-- tooltip; the client shows the first rect under the pointer
+-- (guiFormSpecMenu.cpp drawMenu), so they are sent topmost first. The base
+-- image carries only the region names (bake.lua). NPC layers show the own
+-- faction only, settlement and place layers both (ruling 5).
 --
 -- Refresh (spec §3.6): event-driven. A click, zoom, quest selection or a
 -- quest change sends the window again, at most once per SEND_GAP_US per
 -- player; an event inside that gap is owed and goes out when the gap ends
 -- (the trailing send). In a party the arrows are checked every PARTY_US and
--- the window is sent only when a member's arrow moved. Alone, nothing is
+-- the window is sent only when a member's arrow moved (every 2 s since
+-- Round 47 ruling 8; 5 s before). A layer click is an event like a zoom
+-- click. Alone, nothing is
 -- sent without an event. A scrollbar move never sends (the client moves the
 -- image and the overlay together; the server keeps the position and echoes
 -- it on the next send) and holds every send for QUIET_US.
@@ -30,6 +36,7 @@ local modpath = core.get_modpath(core.get_current_modname())
 local atlas = grug_map.atlas
 local targets = dofile(modpath .. "/targets.lua")
 local quest_box = dofile(modpath .. "/quest_box.lua")
+local layers = dofile(modpath .. "/layers.lua")
 
 local W = {}
 grug_map.window = W
@@ -42,7 +49,7 @@ W.FRACTION = 0.85
 W.FALLBACK = {x = 20, y = 12}
 W.MIN = {x = 16, y = 10}
 W.SEND_GAP_US = 1000000
-W.PARTY_US = 5000000
+W.PARTY_US = 2000000
 -- A scrollbar move holds every send for QUIET_US (the old Map tab's rule):
 -- a form rebuilt while the player drags the scrollbar would break the drag.
 W.QUIET_US = 500000
@@ -50,23 +57,31 @@ local PASS = 0.1
 
 -- Layout in real coordinates: the header row, the 9:8 map with its
 -- scrollbars, the quest column (at least COLUMN_MIN wide, COLUMN_SHARE of
--- the window, plus whatever the map's aspect leaves).
+-- the window, plus whatever the map's aspect leaves), the layer buttons
+-- under the horizontal scrollbar (Round 47): BUTTON_TOP below it, one row
+-- when every button gets at least BUTTON_MIN units, else two.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
 local COLUMN_MIN, COLUMN_SHARE = 6.5, 0.3
+local BUTTON_H, BUTTON_GAP, BUTTON_TOP = 0.6, 0.1, 0.15
+W.BUTTON_MIN = 1.25
 -- Overlay sizes in formspec units, constant at every zoom (only positions
 -- scale): icons as before Round 44, trainers two thirds at 1x and 2x
--- (ruling 12), arrows, the crosshair; rings at least RING_MIN across.
+-- (Round 44 ruling 12), arrows, the crosshair; rings at least RING_MIN across.
 -- RING_MIN (the user, 2026-10-08: a ring clearly visible at zoom 1): the
 -- ring texture is 32 px with a 1 px line, so below 32 screen pixels
 -- nearest-neighbour scaling drops parts of the line. 0.7 units are about
 -- 50 px at 1080p and 37 px at 720p (GUI scale 1, 72 and 53 px per unit),
 -- about twice an icon.
 local ICON, TRAINER_SMALL, ARROW, CROSSHAIR, RING_MIN = 0.34, 0.23, 0.42, 0.5, 0.7
+-- The former baked icons (settlements, camps, bosses; Round 47): the
+-- overlay's size, for the user's pick after the screenshots.
+W.PLACE_ICON = 0.34
 -- Arrows sit on a grid of ARROW_STEP units (about a screen pixel); the
 -- party check compares these cells, so a move inside one sends nothing.
 local ARROW_STEP = 0.02
 local RING = "grug_map_ring.png^[multiply:#ff8c1a^[opacity:190"
-local QUEST_TEXTURE = {active = "grug_map_quest_active.png", ready = "grug_map_quest_ready.png"}
+local QUEST_TEXTURE = {active = "grug_map_quest_active.png", ready = "grug_map_quest_ready.png",
+	available = "grug_map_quest_available.png", locked = "grug_map_quest_locked.png"}
 local SCROLL_X, SCROLL_Y = "grug_map_scroll_x", "grug_map_scroll_y"
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
@@ -87,17 +102,33 @@ function W.window_size(info)
 	return math.floor(w * 100) / 100, math.floor(h * 100) / 100
 end
 
--- Where everything sits in a w x h window.
+-- Where everything sits in a w x h window. The header and the quest column
+-- keep Round 44's places (ruling 10): the column stands where the map
+-- without the button rows would end, and the map gives up only the height
+-- the rows need beyond the window's spare room. `buttons` is {rows,
+-- per_row, w, h, gap, y}.
 function W.layout(w, h)
+	local count = #layers.LIST
 	local map_y = PAD + HEADER_H + 0.2
-	local avail_h = h - map_y - PAD - BAR - BAR_GAP
 	local column = math.max(COLUMN_MIN, w * COLUMN_SHARE)
 	local avail_w = w - 2 * PAD - BAR - BAR_GAP - GAP - column
-	local map_w = math.min(avail_w, avail_h * 9 / 8)
+	local function map_width(rows)
+		local reserve = rows > 0 and BUTTON_TOP + rows * BUTTON_H + (rows - 1) * BUTTON_GAP or 0
+		return math.min(avail_w, (h - map_y - PAD - BAR - BAR_GAP - reserve) * 9 / 8)
+	end
+	local rows, per_row = 1, count
+	local map_w = map_width(1)
+	if (map_w - (count - 1) * BUTTON_GAP) / count < W.BUTTON_MIN then
+		rows, per_row = 2, math.ceil(count / 2)
+		map_w = map_width(2)
+	end
 	local map_h = map_w * 8 / 9
-	local column_x = PAD + map_w + BAR_GAP + BAR + GAP
+	local column_x = PAD + map_width(0) + BAR_GAP + BAR + GAP
 	return {w = w, h = h, map_x = PAD, map_y = map_y, map_w = map_w, map_h = map_h,
-		column = {x = column_x, y = map_y, w = w - PAD - column_x, h = h - PAD - map_y}}
+		column = {x = column_x, y = map_y, w = w - PAD - column_x, h = h - PAD - map_y},
+		buttons = {rows = rows, per_row = per_row, h = BUTTON_H, gap = BUTTON_GAP,
+			w = (map_w - (per_row - 1) * BUTTON_GAP) / per_row,
+			y = map_y + map_h + BAR_GAP + BAR + BUTTON_TOP}}
 end
 
 --
@@ -149,44 +180,50 @@ local function arrow_cell(view, position, layout, zoom)
 	return math.floor(sx / ARROW_STEP + 0.5), math.floor(sy / ARROW_STEP + 0.5)
 end
 
--- The markers of the overlay (ruling 12) from the providers: player and
--- party arrows, the home, waystones, trainers and (the user, 2026-10-08)
--- the Housing Steward, the capital services and the innkeepers, each NPC of
--- the own faction only (providers.lua), like the minimap; no zone markers.
-local PROVIDERS = {player = true, party = true, home = true, waypoint = true, service = true}
-local KINDS = {player = true, party = true, home = true, waypoint = true, trainer = true,
-	steward = true, service = true, innkeeper = true}
+-- Marker textures by kind where the provider gives none.
 local KIND_TEXTURE = {home = "grug_map_home.png", innkeeper = "grug_map_innkeeper.png"}
-function W.overlay_markers(player)
-	local result = {}
-	for _, marker in ipairs(atlas.collect_markers(player, PROVIDERS)) do
-		if KINDS[marker.kind] then result[#result + 1] = marker end
+
+-- The session's layer (layers.lua), the default for a new or unknown one.
+function W.layer_of(session)
+	local layer = layers.BY_ID[session.layer or ""]
+	if not layer then
+		session.layer = layers.DEFAULT
+		layer = layers.BY_ID[layers.DEFAULT]
 	end
+	return layer
+end
+
+-- The markers of a layer from its providers (each NPC of the own faction
+-- only, providers.lua; settlements and places of both, layers.lua), in draw
+-- order: the former baked kinds first in the baked layer's order, then the
+-- rest in atlas.collect_markers' order. Zones and None have none.
+function W.layer_markers(player, layer)
+	if not layer.providers then return {} end
+	local rows = atlas.collect_markers(player, layer.providers)
+	local keyed = {}
+	for index, marker in ipairs(rows) do
+		keyed[index] = {marker = marker, rank = layers.ORDER[marker.kind] or math.huge,
+			index = index}
+	end
+	table.sort(keyed, function(a, b)
+		if a.rank ~= b.rank then return a.rank < b.rank end
+		return a.index < b.index
+	end)
+	local result = {}
+	for index, row in ipairs(keyed) do result[index] = row.marker end
 	return result
 end
 
--- The question marks (ruling 12): the hand-in NPC of every active quest,
--- gold when one of its quests is ready, else silver; own faction only.
--- {{id, title, position, status}} in id order.
-function W.quest_marks(player, journal)
-	local faction = grug_factions.get_faction(player) or ""
-	local by_id, ids = {}, {}
-	for _, quest in ipairs(journal.quests) do
-		local npc = grug_map.quest_npc(quest.npc)
-		if npc and grug_map.marker_visible(npc, faction) then
-			local mark = by_id[npc.id]
-			if not mark then
-				mark = {id = npc.id, title = npc.title, position = npc.position, status = "active"}
-				by_id[npc.id] = mark
-				ids[#ids + 1] = npc.id
-			end
-			if quest.ready then mark.status = "ready" end
-		end
+-- The hand-in NPC of the selected quest (quest mode, ruling 2 and §3):
+-- {id, title, position, status} with status "ready" or "active", or nil
+-- (an NPC of the other faction stays unmarked, ruling 13 of Round 31).
+function W.handin_mark(player, quest)
+	local npc = quest and grug_map.quest_npc(quest.npc)
+	if not npc or not grug_map.marker_visible(npc, grug_factions.get_faction(player) or "") then
+		return nil
 	end
-	table.sort(ids)
-	local result = {}
-	for k, id in ipairs(ids) do result[k] = by_id[id] end
-	return result
+	return {id = npc.id, title = npc.title, position = npc.position,
+		status = quest.ready and "ready" or "active"}
 end
 
 -- Settlement key -> anchor (a garrison camp's place), built on first need.
@@ -229,73 +266,150 @@ local function image(list, sx, sy, size, texture)
 	list[#list + 1] = ("image[%.3f,%.3f;%.3f,%.3f;%s]"):format(sx - size / 2, sy - size / 2,
 		size, size, esc(texture))
 end
+local function tip(list, sx, sy, size, text)
+	if text and text ~= "" then
+		list[#list + 1] = ("tooltip[%.3f,%.3f;%.3f,%.3f;%s]"):format(sx - size / 2,
+			sy - size / 2, size, size, esc(text))
+	end
+end
 
--- The overlay inside the map's scroll containers, bottom to top: rings,
--- trainers, home and waystones, question marks (with their tooltips),
--- crosshairs, party arrows, the player's arrow.
-local function overlay(fs, player, session, layout, journal, quest)
+-- The tooltip of quest targets marking `objectives` (indices into the
+-- quest's objective rows): one objective line each.
+local function objective_lines(quest, objectives)
+	local lines = {}
+	for _, k in ipairs(objectives or {}) do
+		local row = quest.objectives[k]
+		if row then lines[#lines + 1] = quest_box.objective_label(row) end
+	end
+	return table.concat(lines, "\n")
+end
+
+-- The overlay inside the map's scroll containers, bottom to top: in quest
+-- mode the target rings, the hand-in NPC's question mark and the
+-- crosshairs, else the layer's markers or zone labels; then the party's
+-- arrows and the player's. Every tooltip after the images, topmost first.
+local function overlay(fs, player, session, layout, quest, info)
 	local zoom = session.zoom or 1
 	local view = atlas.view()
 	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
 	local function at(position)
 		return atlas.world_to_screen(view, position, 0, 0, mw, mh)
 	end
-	local rings, icons, marks, crosses, arrows = {}, {}, {}, {}, {}
-	local found = W.quest_targets(player, quest)
-	session.target_count = 0
-	if found then
-		local units = mw / (view.max_x - view.min_x)
-		for _, ring in ipairs(found.rings) do
-			local sx, sy = at(ring)
-			if sx then
-				local size = math.max(RING_MIN, 2 * targets.ring_radius(ring.size, CELL) * units)
-				image(rings, sx, sy, size, RING)
-				session.target_count = session.target_count + 1
+	-- Draw lists bottom to top, each with its tooltips.
+	local under, icons, marks, crosses, arrows = {}, {}, {}, {}, {}
+	local tips = {[under] = {}, [icons] = {}, [marks] = {}, [crosses] = {}, [arrows] = {}}
+	session.target_count, session.marker_count = 0, 0
+	if quest then
+		local found = W.quest_targets(player, quest)
+		if found then
+			local units = mw / (view.max_x - view.min_x)
+			for _, ring in ipairs(found.rings) do
+				local sx, sy = at(ring)
+				if sx then
+					local size = math.max(RING_MIN, 2 * targets.ring_radius(ring.size, CELL) * units)
+					image(under, sx, sy, size, RING)
+					tip(tips[under], sx, sy, size, objective_lines(quest, ring.objectives))
+					session.target_count = session.target_count + 1
+				end
+			end
+			for _, spot in ipairs(found.crosshairs) do
+				local sx, sy = at(spot)
+				if sx then
+					image(crosses, sx, sy, CROSSHAIR, "grug_map_crosshair.png")
+					tip(tips[crosses], sx, sy, CROSSHAIR, objective_lines(quest, spot.objectives))
+					session.target_count = session.target_count + 1
+				end
 			end
 		end
-		for _, spot in ipairs(found.crosshairs) do
-			local sx, sy = at(spot)
-			if sx then
-				image(crosses, sx, sy, CROSSHAIR, "grug_map_crosshair.png")
-				session.target_count = session.target_count + 1
-			end
-		end
-	end
-	for _, marker in ipairs(W.overlay_markers(player)) do
-		local arrow = marker.kind == "player" or marker.kind == "party"
-		if arrow then
-			local cx, cy = arrow_cell(view, marker.position, layout, zoom)
-			if cx then
-				local tint = marker.kind == "player" and "gold" or "cyan"
-				image(arrows, cx * ARROW_STEP, cy * ARROW_STEP, ARROW,
-					("grug_map_heading_%s_%02d.png"):format(tint, atlas.heading_frame(marker.heading)))
-			end
-		else
-			local sx, sy = at(marker.position)
-			if sx then
-				local texture = KIND_TEXTURE[marker.kind] or marker.texture
-				local size = marker.kind == "trainer" and zoom <= 2 and TRAINER_SMALL or ICON
-				if texture then image(icons, sx, sy, size, texture) end
-			end
-		end
-	end
-	for _, mark in ipairs(W.quest_marks(player, journal)) do
-		local sx, sy = at(mark.position)
+		local mark = W.handin_mark(player, quest)
+		local sx, sy
+		if mark then sx, sy = at(mark.position) end
 		if sx then
 			image(marks, sx, sy, ICON, QUEST_TEXTURE[mark.status])
-			marks[#marks + 1] = ("tooltip[%.3f,%.3f;%.3f,%.3f;%s]"):format(sx - ICON / 2,
-				sy - ICON / 2, ICON, ICON, esc(mark.title))
+			tip(tips[marks], sx, sy, ICON, mark.title)
+		end
+	else
+		local layer = W.layer_of(session)
+		if layer.zones then
+			local metrics = layers.zone_labels.metrics(info)
+			for _, zone in ipairs(layers.zones) do
+				local sx, sy = at(zone)
+				if sx then
+					layers.zone_labels.elements(under, sx, sy, zone.name, zone.band, metrics, esc,
+						mw, mh)
+					session.marker_count = session.marker_count + 1
+				end
+			end
+		end
+		for _, marker in ipairs(W.layer_markers(player, layer)) do
+			local sx, sy = at(marker.position)
+			local texture = marker.kind == "quest" and QUEST_TEXTURE[marker.status] or
+				KIND_TEXTURE[marker.kind] or marker.texture
+			if sx and texture then
+				local size = layers.ORDER[marker.kind] and W.PLACE_ICON or
+					(marker.kind == "trainer" and zoom <= 2 and TRAINER_SMALL) or ICON
+				image(icons, sx, sy, size, texture)
+				tip(tips[icons], sx, sy, size, marker.kind == "quest" and marker.label or marker.detail)
+				session.marker_count = session.marker_count + 1
+			end
 		end
 	end
-	for _, list in ipairs({rings, icons, marks, crosses, arrows}) do
+	-- The arrows of every mode (ruling 3): the party's with the member's
+	-- name, the player's on top, without a tooltip (§8 default).
+	for _, marker in ipairs(atlas.collect_markers(player, layers.ARROWS)) do
+		local cx, cy = arrow_cell(view, marker.position, layout, zoom)
+		if cx then
+			local tint = marker.kind == "player" and "gold" or "cyan"
+			image(arrows, cx * ARROW_STEP, cy * ARROW_STEP, ARROW,
+				("grug_map_heading_%s_%02d.png"):format(tint, atlas.heading_frame(marker.heading)))
+			if marker.kind == "party" then
+				tip(tips[arrows], cx * ARROW_STEP, cy * ARROW_STEP, ARROW, marker.label)
+			end
+		end
+	end
+	local order = {under, icons, marks, crosses, arrows}
+	for _, list in ipairs(order) do
 		for _, element in ipairs(list) do fs[#fs + 1] = element end
+	end
+	local count = 0
+	for k = #order, 1, -1 do
+		local list = tips[order[k]]
+		for i = #list, 1, -1 do
+			fs[#fs + 1] = list[i]
+			count = count + 1
+		end
+	end
+	session.tooltip_count = count
+end
+
+-- The layer buttons under the horizontal scrollbar (ruling 1): one or two
+-- rows as wide as the map, the active layer in the shared selection style,
+-- none in quest mode (ruling 2); each button's tooltip its long name.
+local function layer_buttons(fs, layout, session, quest_mode)
+	local b = layout.buttons
+	local active = not quest_mode and W.layer_of(session).id or nil
+	local others = {}
+	for _, layer in ipairs(layers.LIST) do
+		if layer.id ~= active then others[#others + 1] = "grug_map_layer_" .. layer.id end
+	end
+	if active then
+		fs[#fs + 1] = grug_inventory.selected_button_style("grug_map_layer_" .. active, true)
+	end
+	fs[#fs + 1] = (grug_inventory.selected_button_style("@", false):gsub("^style%[@;",
+		"style[" .. table.concat(others, ",") .. ";", 1))
+	for index, layer in ipairs(layers.LIST) do
+		local row, col = math.floor((index - 1) / b.per_row), (index - 1) % b.per_row
+		local name = "grug_map_layer_" .. layer.id
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.2f;%s;%s]"):format(layout.map_x + col * (b.w + b.gap),
+			b.y + row * (b.h + b.gap), b.w, b.h, name, esc(layer.label))
+		fs[#fs + 1] = ("tooltip[%s;%s]"):format(name, esc(layer.title))
 	end
 end
 
 -- A new session's state: zoom 1, the map's origin, the soft lock on the
--- player (atlas.zoom_view), no quest selection.
+-- player (atlas.zoom_view), no quest selection, the default layer.
 function W.new_state()
-	return {zoom = 1, scroll_x = 0, scroll_y = 0, follow = true}
+	return {zoom = 1, scroll_x = 0, scroll_y = 0, follow = true, layer = layers.DEFAULT}
 end
 
 -- The whole window for `player` in state `session`, `info` the window
@@ -341,7 +455,7 @@ function W.formspec(player, session, info)
 			SCROLL_Y, layout.map_h / 1000),
 		("image[0,0;%.3f,%.3f;%s]"):format(mw, mh, esc(atlas.view().texture)),
 	}
-	overlay(fs, player, session, layout, journal, quest)
+	overlay(fs, player, session, layout, quest, info)
 	fs[#fs + 1] = "scroll_container_end[]scroll_container_end[]"
 	-- Scrollbar values are transport state: echoed from the last event.
 	local limit = atlas.scroll_limit(zoom)
@@ -353,6 +467,7 @@ function W.formspec(player, session, info)
 		layout.map_x + layout.map_w + BAR_GAP, layout.map_y, BAR, layout.map_h, SCROLL_Y,
 		session.scroll_y or 0)
 	fs[#fs + 1] = SCROLLBAR_DEFAULTS
+	layer_buttons(fs, layout, session, quest ~= nil)
 	fs[#fs + 1] = quest_box.content(session, journal, layout.column)
 	return table.concat(fs)
 end
@@ -362,8 +477,9 @@ end
 --
 
 -- player name -> session: the window state (zoom, scroll, follow (the soft
--- lock, atlas.zoom_view), quest selection), kept between opens until the
--- player leaves; open (see is_open), sent (the last send's
+-- lock, atlas.zoom_view), quest selection, the chosen layer), kept between
+-- opens until the player leaves (the layer survives an opening, Round 47
+-- §8 default: session only); open (see is_open), sent (the last send's
 -- core.get_us_time), shown_zoom (its zoom), pending (a send is owed),
 -- quiet_until (no send before this, after a scrollbar move), party_sig
 -- (the arrows at the last send), party_checked, sends (a counter for
@@ -464,7 +580,7 @@ end
 W.CHECKS_PER_PASS, W.BUILDS_PER_PASS = 8, 2
 local function due_at(session)
 	local at = session.pending and session.sent + W.SEND_GAP_US or
-		(session.party_checked or session.sent) + W.PARTY_US
+		math.max(session.party_checked or 0, session.sent) + W.PARTY_US
 	return math.max(at, session.quiet_until or 0)
 end
 function W.pass(now)
@@ -559,6 +675,17 @@ function W.handle_fields(player, fields)
 		-- the click is the soft lock's centre.
 		atlas.zoom_view(session, fields.grug_map_zoom_in ~= nil, atlas.view(), player:get_pos())
 		changed = true
+	end
+	-- A layer button (ruling 2): that layer, and the quest deselected.
+	for _, layer in ipairs(layers.LIST) do
+		if fields["grug_map_layer_" .. layer.id] then
+			if session.layer ~= layer.id or session.quest_selected then
+				session.layer = layer.id
+				quest_box.deselect(session)
+				changed = true
+			end
+			break
+		end
 	end
 	local quest_changed = quest_box.handle(player, session, fields)
 	session.busy = nil
