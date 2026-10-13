@@ -208,7 +208,8 @@ core.register_on_joinplayer(function(player)
 	local slot = joined % SLOTS + 1
 	slot_of[name], visits[name], dirty[name] = slot, 0, nil
 	members[slot][name] = true
-	-- The first-login scan (and the starter kit's items for a new one).
+	-- The first-login scan. A new character's starter kit arrives later, at
+	-- "Create character" (grug_factions), and is found by the next scan.
 	grug_jobs.scan_held(player, true)
 end)
 
