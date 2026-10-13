@@ -169,6 +169,8 @@ TC is the largest and riskiest lane. AN touches the most files.
     gentle slopes the ground may be levelled slightly for a small pool; on
     steep slopes there are no pools, the ground mix, plants and trees are
     enough there. Levelling never touches towns, POIs or protected ground.
+    The build's questions (the user): swamp trees stay at their row
+    density; moss soil joins the swamp-only mob lists.
 
 **Coordinator choices** (details the user did not rule on; a lane may
 propose otherwise in its report):
