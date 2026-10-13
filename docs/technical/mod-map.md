@@ -61,7 +61,7 @@ mobs_redo fork publishes `mobs`.
 
 | Mod | Owns | Seams other mods use | Rules |
 |---|---|---|---|
-| `grug_materials` | The six material tiers, tier rock and mining, ores, resources, the race-region registry, tool lifetimes and the tool aliases | `TIERS`, `RESOURCES`, `PROCESSED_MATERIALS`, `TOOL_ALIASES`, `register_on_harvest` | [items_crafting.md](../design/items_crafting.md) |
+| `grug_materials` | The six material tiers, tier rock and mining, ores, resources, the race-region registry, tool lifetimes and the tool aliases, the Anthracite torch | `TIERS`, `RESOURCES`, `PROCESSED_MATERIALS`, `TOOL_ALIASES`, `register_on_harvest` | [items_crafting.md](../design/items_crafting.md) |
 | `grug_nodes` | Signature surface and structure nodes, crop soil and crop visuals | `crop_visual`, `bind_crop_soil_callbacks` | [farming.md](../design/farming.md) |
 | `grug_trees` | The race trees Silverwood and Gravewood | `silverwood_replacements` | [biomes_mobs.md](../design/biomes_mobs.md) |
 | `grug_gathering` | The closed gathering catalogue and harvest authorization | `register_herb_authorizer` | [professions.md](../design/professions.md) |

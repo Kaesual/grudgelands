@@ -1259,7 +1259,7 @@ license-clean, keep attribution.
 
 The universal metal/pick spine is available on both faction sides and never
 requires a gem: Bronze (Copper + Tin), Iron,
-Steel (Iron Bar + mined Coal), Silversteel (Steel + Silver), Embersteel
+Steel (Iron Bar + Anthracite), Silversteel (Steel + Silver), Embersteel
 (Silversteel + Emberglass) and Abyssal Steel (Embersteel + Abyssal Crystal).
 Quartz is a universal T1 mineral and enchant input without a cut form. Emberglass and Abyssal Crystal are
 universal fantastic progression resources rather than gems.

@@ -1488,7 +1488,9 @@ tools](#player-meta-read-by-external-tools).
     `remaining_seconds`, `permission(claim, name)` →
     `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)` → claim
     plus state `never`/`carried`/`placed`/`destroyed`/`removed`/`needs_stone`,
-    `issue_stone`, `activate`, `add_fuel`, `pick_up`, `set_permission`,
+    `issue_stone`, `activate`, `add_fuel(claim, count, itemname)` (per-item
+    seconds `FUEL_ITEMS`, cap `FUEL_CAP_SECONDS`, Round 47),
+    `fuel_seconds`, `fuel_room_seconds`, `pick_up`, `set_permission`,
     `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,
     `activated`, `fuel`, `permission`, `picked_up`, `destroyed`, `removed`,
     `draft_expired`, `expired`. Constants `RADIUS = 50`, `MIN_Y = −100`.

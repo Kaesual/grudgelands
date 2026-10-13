@@ -1399,7 +1399,7 @@ code, not by this document.
   held three); the deep multipliers apply to the T6 gems (Diamond, Ruby,
   Sapphire) like every T6 resource.
 - **Round 21 density calibration (accepted 2026-09-24; Round 46 changes in
-  T3 and the gem rows):**
+  T3 and the gem rows; Round 47 Anthracite):**
   numbers below are eligible host nodes per target resource node. Dashes mean
   absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
   Keep existing vein caps and first-appearance/harvest boundaries. These are
@@ -1407,7 +1407,8 @@ code, not by this document.
 
   | Resource | T1 | T2 | T3 | T4 | T5 | T6 |
   |---|---:|---:|---:|---:|---:|---:|
-  | Coal | 64 | 128 | 96 | 128 | 128 | 128 |
+  | Coal | 64 | 128 | — | — | — | — |
+  | Anthracite | — | 256 ½ | 96 | 128 | 128 | 128 |
   | Copper | 96 | 192 | 384 | 384 | 384 | 384 |
   | Tin | 96 | 192 | 384 | 384 | 384 | 384 |
   | Iron | 128 | 96 | 128 | 384 | 384 | 384 |
@@ -1426,11 +1427,15 @@ code, not by this document.
   The quarter-density floor retains older inputs at depth; T1 Iron keeps its
   former density as a bootstrap exception. Gold peaks at T4 and remains
   useful at T5/T6, matching Goldsmith demand. T3 is the Steel band (Iron
-  Bar and mined Coal), so Iron and Coal there carry the T2 supply (Round
-  46). A
+  Bar and Anthracite), so Iron and Anthracite there carry the T2 supply
+  (Round 46; Round 47 rulings 8–9: Anthracite replaces Coal from T3 down,
+  so no Coal ore lies below y −300, and from T3 down it is never rarer than
+  Iron: every alloy bar from T3 to T6 holds one Steel bar, so one
+  Anthracite and one Iron Bar). "½" means only the lower half of the band
+  (T2: y −201…−300), with the same denominator. A
   next-tier ingredient peaks in the band where its consumers mine: Iron in
   T2, Silver in T4, Emberglass in T5, Abyssal Crystal in T6. All resources
-  together are about 5.4 % of the host rock in T1, 3.7 % in T2 and T3, 4.1 %
+  together are about 5.4 % of the host rock in T1, 3.9 % in T2, 3.7 % in T3, 4.1 %
   in T4, 3.9 % in T5 and 3.5 % in T6.
 - **Ground anyone may dig carries the ordinary distribution** (user ruling
   2026-10-07): ores, coal and gems are absent only where digging is
