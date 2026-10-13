@@ -248,9 +248,52 @@ core.register_node("grug_trees:gravewood_leaves", {
 	after_place_node = after_place_leaves,
 })
 
+-- The swamp tree (Round 47 lane SW, tools/r47_sw/DESIGN.md) grows from
+-- gravewood's wood with its own olive leaves and hanging moss. Both decay
+-- with gravewood's wood (the generator keeps them within 3 of it) and
+-- drop nothing, as gravewood's leaves.
+core.register_node("grug_trees:swamp_leaves", {
+	description = "Swamp Leaves",
+	drawtype = "allfaces_optional",
+	-- Lane ART's olive leaves (CC0, LICENSE-media.md).
+	tiles = {"grug_trees_swamp_leaves.png"},
+	paramtype = "light",
+	waving = 1,
+	is_ground_content = false,
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	drop = "",
+	sounds = default.node_sound_leaves_defaults(),
+	after_place_node = after_place_leaves,
+})
+
+-- Hanging moss trails 1-3 nodes below leaves and limbs. Not an attached
+-- node: `attached_node = 4` needs a walkable node above, so the second
+-- node of a strand would fall; it goes with the tree's leaf decay instead.
+core.register_node("grug_trees:swamp_hanging_moss", {
+	description = "Hanging Moss",
+	drawtype = "plantlike",
+	tiles = {"grug_trees_swamp_hanging_moss.png"},
+	inventory_image = "grug_trees_swamp_hanging_moss.png",
+	wield_image = "grug_trees_swamp_hanging_moss.png",
+	paramtype = "light",
+	sunlight_propagates = true,
+	walkable = false,
+	waving = 1,
+	is_ground_content = false,
+	selection_box = {type = "fixed", fixed = {-5 / 16, -0.5, -5 / 16, 5 / 16, 0.5, 5 / 16}},
+	groups = {snappy = 3, leafdecay = 3, flammable = 2},
+	drop = "",
+	sounds = default.node_sound_leaves_defaults(),
+	after_place_node = after_place_leaves,
+})
+
+-- One registration for everything that decays with gravewood's wood: a
+-- second registration with the same trunk would replace the first one's
+-- trunk callback (default.register_leafdecay overrides after_destruct).
 default.register_leafdecay({
 	trunks = {"grug_trees:gravewood_tree"},
-	leaves = {"grug_trees:gravewood_leaves"},
+	leaves = {"grug_trees:gravewood_leaves", "grug_trees:swamp_leaves",
+		"grug_trees:swamp_hanging_moss"},
 	radius = 3,
 })
 

@@ -96,6 +96,120 @@ core.register_node("grug_nodes:mud", {
 	sounds = default.node_sound_dirt_defaults(),
 })
 
+-- The varied swamp (Round 47 lane SW, tools/r47_sw/DESIGN.md; lane ART's
+-- textures, CC0, see LICENSE-media.md). Registered here next to the mud;
+-- the world generator places them from build step 2 on. The two mud
+-- variants and the wet grass are surface variants of the mud: the same
+-- groups, and they drop plain mud, as the litters drop plain dirt.
+core.register_node("grug_nodes:mud_dry", {
+	description = "Dry Swamp Mud",
+	tiles = {"grug_nodes_mud_dry_top.png", "grug_nodes_mud_dry_side.png",
+		"grug_nodes_mud_dry_side.png"},
+	groups = dirt_groups({mud = 1}),
+	drop = "grug_nodes:mud",
+	sounds = default.node_sound_dirt_defaults(),
+})
+
+core.register_node("grug_nodes:mud_mottled", {
+	description = "Wet Swamp Mud",
+	tiles = {"grug_nodes_mud_mottled_top.png", "grug_nodes_mud_mottled_side.png",
+		"grug_nodes_mud_mottled_side.png"},
+	groups = dirt_groups({mud = 1}),
+	drop = "grug_nodes:mud",
+	sounds = default.node_sound_dirt_defaults(),
+})
+
+-- The wet grass's side is a whole texture (no overlay); its bottom is the
+-- mottled mud's side, as lane ART laid it out.
+core.register_node("grug_nodes:mud_with_wet_grass", {
+	description = "Mud with Wet Grass",
+	tiles = {"grug_nodes_wet_grass_top.png", "grug_nodes_mud_mottled_side.png",
+		{name = "grug_nodes_wet_grass_side.png", tileable_vertical = false}},
+	groups = dirt_groups({mud = 1}),
+	drop = "grug_nodes:mud",
+	sounds = litter_sounds,
+})
+
+-- A thin moss carpet on the ground (1/16 high), like a waterlily on land:
+-- it goes when its ground goes (attached below), anything may be built into
+-- it and water washes it away.
+core.register_node("grug_nodes:moss_carpet", {
+	description = "Moss Carpet",
+	drawtype = "nodebox",
+	tiles = {"grug_nodes_moss_carpet_top.png"},
+	inventory_image = "grug_nodes_moss_carpet_top.png",
+	wield_image = "grug_nodes_moss_carpet_top.png",
+	use_texture_alpha = "clip",
+	paramtype = "light",
+	sunlight_propagates = true,
+	walkable = false,
+	buildable_to = true,
+	floodable = true,
+	node_box = {type = "fixed", fixed = {-0.5, -0.5, -0.5, 0.5, -7 / 16, 0.5}},
+	groups = {snappy = 3, attached_node = 3, flammable = 2},
+	sounds = default.node_sound_leaves_defaults(),
+})
+
+-- Reeds stand in stacks of one or two on land, like papyrus (digging one
+-- takes those above it); in a pool they grow out of the mud bed through
+-- the water as the rooted form below.
+core.register_node("grug_nodes:reeds", {
+	description = "Reeds",
+	drawtype = "plantlike",
+	tiles = {"grug_nodes_reeds.png"},
+	inventory_image = "grug_nodes_reeds.png",
+	wield_image = "grug_nodes_reeds.png",
+	paramtype = "light",
+	sunlight_propagates = true,
+	walkable = false,
+	waving = 1,
+	selection_box = {type = "fixed", fixed = {-6 / 16, -0.5, -6 / 16, 6 / 16, 0.5, 6 / 16}},
+	groups = {snappy = 3, flammable = 2},
+	sounds = default.node_sound_leaves_defaults(),
+	after_dig_node = function(pos, node, metadata, digger)
+		default.dig_up(pos, node, digger)
+	end,
+})
+
+-- The pool form: the mud bed with reeds growing up through the water
+-- (a leveled plantlike_rooted node like grug_mapgen's waterweed; param2 is
+-- the height in sixteenths, so the water column stays whole). It is the
+-- bed: digging it gives the mud back.
+core.register_node("grug_nodes:mud_with_reeds", {
+	description = "Mud with Reeds",
+	drawtype = "plantlike_rooted",
+	waving = 1,
+	tiles = {"grug_nodes_mud.png"},
+	special_tiles = {{name = "grug_nodes_reeds.png", tileable_vertical = true}},
+	inventory_image = "grug_nodes_reeds.png",
+	wield_image = "grug_nodes_reeds.png",
+	paramtype = "light",
+	paramtype2 = "leveled",
+	-- the mud's digging (loose ground), but no soil: nothing grows on it
+	groups = grug_materials.natural_groups({crumbly = 3, grug_loose = 3,
+		not_in_creative_inventory = 1}),
+	sounds = default.node_sound_dirt_defaults(),
+	selection_box = {type = "fixed", fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}},
+	drop = "grug_nodes:mud",
+})
+
+-- Cattails: one node, on land beside the water only (a rooted form would
+-- repeat the seed heads once per node of height).
+core.register_node("grug_nodes:cattails", {
+	description = "Cattails",
+	drawtype = "plantlike",
+	tiles = {"grug_nodes_cattails.png"},
+	inventory_image = "grug_nodes_cattails.png",
+	wield_image = "grug_nodes_cattails.png",
+	paramtype = "light",
+	sunlight_propagates = true,
+	walkable = false,
+	waving = 1,
+	selection_box = {type = "fixed", fixed = {-6 / 16, -0.5, -6 / 16, 6 / 16, 0.5, 6 / 16}},
+	groups = {snappy = 3, flammable = 2, attached_node = 1},
+	sounds = default.node_sound_leaves_defaults(),
+})
+
 --
 -- Stone-ish
 --

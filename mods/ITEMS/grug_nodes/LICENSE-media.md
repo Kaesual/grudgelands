@@ -1,10 +1,11 @@
 # Media Origin & Licenses (grug_nodes)
 
-Two groups, listed in their own tables below:
+Three groups, listed in their own tables below:
 
 1. **Biome signature tops (WP18)** — derived works of minetest_game
    textures, CC BY-SA 3.0.
 2. **Own pixel art (WP6)** — original, CC0 1.0.
+3. **Swamp set (Round 47)** — original, CC0 1.0, by GPT-6 Astra.
 
 ## 1. Biome signature tops — derived from minetest_game
 
@@ -66,3 +67,29 @@ deterministically — re-running the script reproduces the PNG byte for byte.
 |------|--------|---------|-------|
 | `grug_nodes_guard_banner.png` | Grudgelands project | CC0 1.0 | generator, art `GUARD_BANNER`, weathered-wood + linen palette — tile of the nodebox `grug_nodes:guard_banner` (WP6/T8 guard post): columns 6–9 are the pole, columns 10–14 / rows 1–7 the flag board, the unused rest is transparent (`use_texture_alpha = "clip"`) |
 | `grug_mobs_camp_fire.png` (served from `grug_mobs/textures`) | Grudgelands project | CC0 1.0 | generator, art `CAMP_FIRE`, ash/stone/ember palette — game-wide media used by the lower-layer node `grug_nodes:camp_fire`; behaviour is attached later by `grug_mobs` |
+
+## 3. Swamp set (Round 47) — CC0 1.0
+
+Original 16×16 RGBA textures made by **GPT-6 Astra** (2026-10-13) for
+Grudgelands from independently authored pixel grids and palettes, no
+downloaded or third-party pixels; the user picked them on the swamp concept
+page (Round 47). Generator: `tools/r47_art/swamp/generate.py` (lane ART,
+commit `3480a978`; provenance in `tools/r47_art/LICENSE-media.md`). Copied
+byte for byte under this mod's texture prefix.
+
+**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_nodes_mud_dry_top.png` | `tools/r47_art/swamp/mud_dry_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_mud_dry_side.png` | `tools/r47_art/swamp/mud_dry_side.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_mud_mottled_top.png` | `tools/r47_art/swamp/mud_mottled_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_mud_mottled_side.png` | `tools/r47_art/swamp/mud_mottled_side.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wet_grass_top.png` | `tools/r47_art/swamp/wet_grass_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wet_grass_side.png` | `tools/r47_art/swamp/wet_grass_side.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_moss_carpet_top.png` | `tools/r47_art/swamp/moss_carpet_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_reeds.png` | `tools/r47_art/swamp/reeds.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_cattails.png` | `tools/r47_art/swamp/cattails.png` | GPT-6 Astra | CC0 1.0 | renamed only |
+
+`grug_nodes:mud_with_reeds` binds `grug_nodes_mud.png` (section 1) and
+`grug_nodes_reeds.png`; no further bitmap.
