@@ -26,14 +26,17 @@ Decided 2026-09-21; Round 14 user Go.
   terrain height on one fixed grid per map quality on every server (D29: no
   time budget, hardware never changes the image); the render is paid once per
   world at first start, then the cached image is reused (sizes and times
-  below). Since Round 44 the settlement, point-of-interest and boss icons
-  and the region names are baked into it ([Baked layer](#baked-layer)). No
+  below). Since Round 44 the region names are baked into it, and until
+  Round 47 the settlement, point-of-interest and boss icons were too
+  ([Baked layer](#baked-layer)); the minimap's copy keeps them. No
   pre-rendered atlas image ships.
 - Separate the shared map base from marker records and world-to-screen mapping.
-  Markers must remain extensible for hover tooltips and/or click actions. Only
-  the places that are the same for every player (settlements, points of
-  interest, kings, dragons) and the region names are baked (Round 44, the
-  user's ruling); everything per player stays a marker.
+  Markers must remain extensible for hover tooltips and/or click actions. The
+  world map's image carries only the region names; the places that are the
+  same for every player (settlements, points of interest, kings, dragons)
+  are markers of the map window's layers since Round 47 (baked into its
+  image in Rounds 44–46, the user's ruling then) and stay baked into the
+  minimap's image.
 - Map visibility never unlocks waypoint travel. Actual visit-unlock is the
   waystones' authority ([world.md](world.md) §6); a map marker grants no travel.
 - Since Round 27 the same base image also feeds our own HUD minimap, which
@@ -44,21 +47,23 @@ Decided 2026-09-21; Round 14 user Go.
 
 Decided 2026-09-21: viewer position is a gold directional triangle; online
 party members use cyan directional triangles. Offline members have no live
-map position. The viewer draws above other markers. Since Round 44 the
-arrows carry no names or tooltips and markers take no clicks; when the
-world map sends them is the [Map window](#map-window)'s refresh rule.
-Closed maps receive no formspec refreshes.
+map position. The viewer draws above other markers. Since Round 47 the
+party arrows carry the member's name as tooltip (the viewer's own arrow
+none); markers take no clicks. Both arrows show in every layer and in
+quest mode; when the world map sends them is the
+[Map window](#map-window)'s refresh rule. Closed maps receive no formspec
+refreshes.
 
 Round 16 (approved 2026-09-22): authored quest givers have individual icon
 markers with the same per-player ready/available/active/locked precedence as
-world symbols. Since Round 44 the world map shows only the subset of
-ruling 12 ([Map window](#map-window)): no Steward, services, other
-innkeepers or "!", question marks only for active quests; the minimap keeps
-the full set below. Include individual profession/Riding trainers at their
+world symbols. Since Round 47 the world map shows them in its Quests layer,
+the same states as the minimap ([Map window](#map-window)); in Round 44–46
+it showed only a question mark at the hand-in NPC of each active quest.
+Include individual profession/Riding trainers at their
 authored locations (since Round 44 one icon per profession,
 `grug_map_trainer_<profession>.png` by GPT-6 Astra, replacing the book;
-Riding keeps the mount icon); the six kings and two dragons are baked since
-Round 44. The Housing Steward has its own
+Riding keeps the mount icon); the six kings and two dragons are markers of
+the Bosses layer since Round 47 (baked in Rounds 44–46). The Housing Steward has its own
 marker (kind `steward`, a cottage-and-key icon, Round 26 playtest), drawn above
 trainers and innkeepers but below quest, party and player markers. The
 capital services of Round 33 share that layer (kind `service`, Round 34): the
@@ -66,8 +71,8 @@ Crownbinder (a crown over an anvil) and the Decor Merchant (a lantern); since
 Round 46 also Grudge-Free Repairs, the mender of every start town and capital
 (a hammer over an anvil; the repairing profession trainers keep their own
 icons). NPC markers do not query live
-entities, load terrain, reveal health or indicate respawn state. All NPC/player
-hover tooltips contain only the name. Markers are not clustered, displaced or
+entities, load terrain, reveal health or indicate respawn state. NPC and
+player tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
 is necessary. Map markers confer no remote interaction or travel.
 
@@ -77,9 +82,11 @@ giver's own race where it names one). A player sees only the own faction's
 quest givers, trainers, Housing Stewards, Crownbinders, Decor Merchants,
 menders and innkeepers; a character without a faction yet sees no NPC markers. Both
 factions can have markers in one zone (a spy in a contested zone), each seen
-only by its own side. The base with its baked layer (the kings and dragons
-included) and roads stay complete for everyone; since Round 44 the
-selected quest's own targets show wherever they are.
+only by its own side. The settlement, place and boss layers show both
+factions (Round 47 ruling 5; in Rounds 44–46 everything was baked into the
+image for everyone, Round 44 ruling 5), and the base and its roads stay
+complete for everyone; since Round 44 the selected quest's own targets
+show wherever they are.
 
 Round 29 (WP17): every **discovered** waystone of the player's own network
 (three starts, three capitals and, since Round 31, the faction's PvP
@@ -167,29 +174,89 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
 - **Layout:** a header row (the zoom, the location as "Current:", the
   minimap switch "Show minimap", stored per player in player meta, or "No
   minimap available", "Back to inventory", the close button); the 9:8 map
-  with its scrollbars on the left; the quest column on the right, at least
-  6.5 units and 30 % of the window wide plus what the map's aspect leaves.
-- **Overlay** (ruling 12; the Steward, services and innkeepers added back
-  by the user, 2026-10-08), plain `image[]` elements, bottom to top: quest
-  target rings, the own faction's trainers (the profession icons, riding
-  the mount icon; 0.23 units at 1x and 2x, two thirds of the 0.34 icons,
-  0.34 at 4x and 8x), innkeepers, the home and discovered waystones, the
-  Housing Steward, the Crownbinder, the Decor Merchant and the mender
-  (Round 46) (their icons, 0.34, without tooltips; each NPC of the own faction only, like the
-  minimap), a question mark at the hand-in NPC of every active quest of the
-  own faction (silver in progress, gold when one of its quests is ready;
-  the NPC's name as tooltip, the only tooltips of the map), quest target
-  crosshairs, the party's cyan arrows, the player's gold arrow. No
-  exclamation marks and no zone markers; nothing of the other faction
-  beyond the baked layer except the selected quest's own targets. No
-  search, list, legend or filters.
+  with its scrollbars on the left and the layer buttons under it; the quest
+  column on the right, at least 6.5 units and 30 % of the window wide plus
+  what the map's aspect leaves. The header and the quest column keep their
+  Round 44 size and place (Round 47 ruling 10): the column stands where the
+  map without buttons would end. The buttons sit 0.15 units under the
+  horizontal scrollbar, left-aligned with the map and as wide as it, 0.6
+  units high: one row when each of the eight gets at least 1.25 units,
+  else two rows of four. Where the window has spare height under the map
+  the map keeps its size; otherwise it gives up the rows' height. Seed-free
+  figures (the fixture `tools/r44_mq`, GUI scale 1): at 1920×1080 one row,
+  the map 11.64 wide (12.49 before Round 47); at 1280×720 two rows, 9.42
+  (11.05); at 1035×696 two rows in the spare height, 8.84 unchanged; at
+  the 16×10 floor (GUI scale 1.5 on 1080p) two rows, 7.76 (8.35).
+- **Marker layers** (Round 47, the user's rulings of 2026-10-13, the
+  [work package](../planning/round47-map-layers.md); until then Round 44's
+  fixed overlay of ruling 12): the player picks **one** layer at a time
+  with the buttons; the active one is highlighted in the shared selection
+  style (a gold tint and a border), each button's tooltip is its long
+  name. A new session starts on Quests; the chosen layer is kept between
+  openings until the player leaves (not stored). Buttons, not a dropdown:
+  every send recreates a dropdown and closes an open list, and opening it
+  sends no event the server could wait for.
+
+  | Button | Long name | Content | Factions | Tooltip |
+  |---|---|---|---|---|
+  | Quests | Quest givers | every quest giver by its state, the minimap's set and precedence: gold "?" ready, "!" available, silver "?" active, grey "!" locked | own | the NPC's name |
+  | Bosses | Kings & bosses | the six kings, the two dragons (a dragon arena within 64 nodes of its dragon is one icon), the rift boss at his clash site (the clash icon), the rare dens | both | the name, with the level where the registry has a fixed one ("King of Highcourt (level 65)"); a den its name, "Rare den" and the level at its anchor |
+  | Trainers | Trainers & traders | the profession and Riding trainers (0.23 units at 1x and 2x), the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
+  | Towns | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
+  | POIs | Points of interest | bandit and Mirefolk camps, mines and gem camps, clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
+  | PvP | PvP | the two fortresses and the war camps | both | the name |
+  | Zones | Zones | every zone's name and level band as text | — | — |
+  | None | No markers | only the arrows | — | — |
+
+  Generals, captains and the other leaders stay unmarked outside a selected
+  quest's crosshairs. Markers are not clustered or moved apart; within a
+  layer the former baked kinds draw in the baked layer's order (war camps,
+  outposts, villages, mines, clash sites, rare dens, camps, fortresses,
+  starts, capitals, kings with the rift boss, dragons), the NPCs and travel
+  above them. Settlements, places and bosses are built once at start from
+  the settlement registry, the king sockets, `grug_mobs.dragon_map_markers`
+  and the rift's site, never from live entities.
+- **Icons:** the former baked 16 px art, shipped as
+  `grug_map_<kind>.png` (byte copies of `grug_map/art/baked_<kind>.png`),
+  0.34 units at every zoom like the other overlay icons (the user picks
+  the size after the screenshots); the other icons as before (0.34,
+  trainers 0.23 at 1x and 2x).
+- **Quest mode** (Round 47 ruling 2): a quest selected in the list shows
+  only its targets ([Quest targets](#quest-targets)) and its hand-in NPC
+  (silver "?" in progress, gold when ready; the NPC's name as tooltip), and
+  no button is highlighted. Every ring and crosshair has the line of each
+  objective it marks as tooltip ("Defeat Barrow Piglet: 0/8 (level 1–2)",
+  one line each when two share a crosshair). Any layer button deselects the
+  quest and shows that layer; a selected quest that leaves the log
+  (handed in, abandoned) falls back to the last chosen layer.
+- **Tooltips:** every marker has one (positional `tooltip[]`, no hover
+  delay, re-evaluated every frame, so a resend does not hide it). The
+  client shows the first rect under the pointer (`guiFormSpecMenu.cpp`
+  drawMenu), so they are sent topmost first: the party arrows', then the
+  markers' in reverse draw order. They are clipped to the map's view.
+- **Zones layer** (Round 47 ruling 7): one `label[]` per zone, its name on
+  the first line and its level band ("Levels 1–10", "Level 60") on the
+  second, over a translucent dark box (`#1a1208a0`), at a constant text
+  size at every zoom; the box is sized from the text at 0.52 em per
+  character of the client's font (16 px times its GUI scaling, from the
+  window information). Placement (`grug_map/zone_labels.lua`) reuses Round
+  28 M1's: at start each zone's land is sampled on a 32-node grid and its
+  label put at the cell farthest from its border and coast (the pole of
+  inaccessibility), nudged clear of the labels placed before it and of the
+  baked region names, sized at 1x on a 1920×1080 window; it is not cached.
+  At 1x small zones may still collide (seed 42 figures below).
 - **Quest boxes** (ruling 14, the quest log of [quests.md](quests.md)):
   the list box (the active count, the Quest HUD switch, the list, Track on
   HUD and Abandon with its confirmation) and below it the selected quest's
   title, level and zone, its text and where to hand it in. Nothing is
   preselected (the user, 2026-10-08): every opening starts without a
   selection, the text box asks to select a quest, and the map shows quest
-  targets only after the player clicked one.
+  targets only after the player clicked one. A layer button deselects the
+  quest (Round 47): the list shows no selection, the text box its hint, and
+  Track on HUD and Abandon are hidden as with no selection. The quest text
+  box is recreated by every send (`guiFormSpecMenu.cpp`), so a long text
+  scrolled down jumps back to the top when a party member's move sends the
+  window (accepted, Round 47 ruling 9); the list keeps its scroll.
 
 ### Quest targets
 
@@ -228,13 +295,17 @@ objectives with a crosshair, 266 with rings).
 
 ### Refresh
 
-Event-driven (spec §3.6): a click (zoom, the switch, the quest boxes), a
-quest selection or a quest change (`grug_quests.register_on_markers_changed`:
+Event-driven (spec §3.6): a click (zoom, the switch, a layer button, the
+quest boxes), a quest selection or a quest change (`grug_quests.register_on_markers_changed`:
 accept, kill credit, abandon, held objective items, a level) sends the
 window again, at most once a second per player; an event inside that
 second is owed and goes out when it ends (one trailing send). In a party
-the arrows are compared every 5 s and the window is sent only when a
-member's arrow (the viewer's included) moved to another grid cell. Alone,
+the arrows are compared every 2 s (Round 47 ruling 8; 5 s before), counted
+from the later of the last check and the last send, and the window is sent
+only when a member's arrow (the viewer's included) moved to another grid
+cell (0.02 units: about 12 nodes at 1x on a 1920×1080 window, so a walking
+member moves an arrow about every 3 s there and every check at 2x and
+more). Alone,
 nothing is sent without an event: the player's own arrow shows where they
 stood at the last send. A scrollbar move sends nothing and holds every
 send for 0.5 s after it (the old Map tab's rule: a form rebuilt during a
@@ -265,10 +336,13 @@ walking member 12, in a party standing still 0; before, the open Map tab's
 
 ## Baked layer
 
-Round 44 (the UI rework spec, rulings 11 and 13; plan ruling 5). The base
+Round 44 (the UI rework spec, rulings 11 and 13; plan ruling 5); since
+Round 47 (ruling 4) the world map's `normal` and `high` images get the
+region names only, and the icons stay in the minimap's image. The base
 renderer draws, into the image itself:
 
-- **Icons** of every settlement by its anchor slot (`grug_map/settlement_icons.lua`):
+- **Icons** (the minimap's image only since Round 47) of every settlement
+  by its anchor slot (`grug_map/settlement_icons.lua`):
   start towns, capitals, villages, outposts, PvP fortresses, Battlegrounds
   war camps, bandit and Mirefolk camps (red warning details), mines and gem
   camps (`mine`, `apex_mine`), clash sites (`clash_*`), rare dens
@@ -277,7 +351,8 @@ renderer draws, into the image itself:
   captains and the rift boss stay unmarked. **Every settlement is baked for
   everyone**, the other faction's starts, capitals, villages, outposts and
   fortress included (Round 44 ruling 5; it ends Round 31's per-faction
-  hiding). Draw order bottom to top: war camps, outposts, villages, mines,
+  hiding; the map window's layers keep it, Round 47 ruling 5). Draw order
+  bottom to top: war camps, outposts, villages, mines,
   clash sites, rare dens, bandit and Mirefolk camps, fortresses, starts,
   capitals, kings, dragons; icons are not moved apart (a king stands about
   32 nodes from his capital's anchor, so his crown covers most of the
@@ -287,9 +362,9 @@ renderer draws, into the image itself:
   22 macro layout; the island names stand north of their islands over the
   sea, one word per line. Names draw above the icons.
 
-Two variants: the **Map tab's image** gets the 16 px icons scaled ×2 at
-`normal` (32 px, about 0.37 formspec units at zoom 1, beside the overlay's
-0.34) and ×6 at `high` (96 px, 0.33), and the names at the same scale; the
+Two variants: the **map window's image** gets the names at ×2 at `normal`
+and ×6 at `high` (in Rounds 44–46 also the 16 px icons at the same scale:
+32 px, about 0.37 formspec units at zoom 1, and 96 px, 0.33); the
 **minimap's image** gets the hand-drawn 6 px icons unscaled (about 18 screen
 pixels at 1080p) and no names. Both grow with the zoom like the terrain.
 The art (lane AR, `grug_map/art/`) reaches Lua as data:
@@ -297,11 +372,15 @@ The art (lane AR, `grug_map/art/`) reaches Lua as data:
 tells a stale copy), because the engine decodes no PNG for Lua. The cache
 key covers the drawing code (`bake.lua`), the art and font versions and
 every icon's kind and place, so new art, a new layout or a moved settlement
-re-renders the map at the next start. Each render logs the drawn icons and
-names and how many pairs overlap (seed 42: 124 icons, 58 overlapping pairs
-at normal, 44 at high; 10 and 8 names over an icon). The map window draws no
-settlement, camp, king or dragon markers and no region-name text; the
-minimap shows its baked icons under its markers.
+re-renders the map at the next start (so does `base.lua`'s own source:
+Round 47's change re-rendered every world once). Each render logs the drawn
+icons and names and how many pairs overlap, and the minimap's icon count
+(seed 42, Round 44: 124 icons, 58 overlapping pairs at normal, 44 at high;
+10 and 8 names over an icon; since Round 47 0 icons in the world map's
+image, 9 names, and the minimap's 124). The map window draws the
+settlements, camps, kings and dragons as markers of its layers
+([Map window](#map-window)) and no region-name text; the minimap shows its
+baked icons under its markers.
 
 ## Map quality and relief
 
@@ -577,10 +656,14 @@ were in, and quest texts and level routes now name zones.
   underground mob level follows depth, so a range would only confuse).
   Each sample adds the status's two zone queries (`pvp_rule_at`,
   `faction_at`) to the location's one.
-- **Zone markers on the Map tab (Round 28 to 43, gone in Round 44):** one
-  marker per zone, a pennant icon with the zone name and level band in its
-  tooltip. The map window draws none (ruling 12; the user, 2026-10-08), so
-  their placement at start, their provider and the zone-grid cache
-  `grug_map_zone_grid.txt` are gone; a world's old file stays unread.
-- **Kings** carry no name on the map since Round 44: they are baked icons
-  without a tooltip (until then "King of Highcourt" markers).
+- **Zone names on the map:** Rounds 28 to 43 had one Map tab marker per
+  zone (a pennant icon, the name and level band in its tooltip); Round 44's
+  window had none. Since Round 47 the map window's **Zones** layer shows
+  every zone's name and level band as text ([Map window](#map-window)),
+  placed at start by Round 28's rule; the zone-grid cache
+  `grug_map_zone_grid.txt` stays gone (the grid is sampled at every start,
+  seed 42 0.13 s), and a world's old file stays unread.
+- **Kings** are markers of the map window's Bosses layer since Round 47,
+  with name and level ("King of Highcourt (level 65)"); in Rounds 44–46
+  they were baked icons without a tooltip, until then "King of Highcourt"
+  markers.

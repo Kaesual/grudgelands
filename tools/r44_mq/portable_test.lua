@@ -169,10 +169,10 @@ rawset(_G, "core", {
 	colorize = function(_, text) return text end,
 	-- Round 47: the Bosses layer reads the bosses' names and fixed levels.
 	registered_entities = {
-		["grug_mobs:king_human"] = {description = "King of Highcourt", _grug_fixed_level = 65},
-		["grug_mobs:king_orc"] = {description = "Dur Gash King", _grug_fixed_level = 65},
-		["grug_mobs:ice_dragon"] = {description = "Rimewing", _grug_fixed_level = 70},
-		["grug_mobs:rift_boss"] = {description = "Vharos the Torn", _grug_fixed_level = 60},
+		["grug_mobs:king_human"] = {description = "King of Highcourt"},
+		["grug_mobs:king_orc"] = {description = "Dur Gash King"},
+		["grug_mobs:ice_dragon"] = {description = "Rimewing"},
+		["grug_mobs:rift_boss"] = {description = "Vharos the Torn"},
 	},
 })
 rawset(_G, "minetest", core)
@@ -428,7 +428,10 @@ local maps = {
 		region(meadow, 0, 1200, 16)}},
 	kezamba = {regions = {region(jungle, 50, 50, 20)}},
 }
+local FIXED_LEVELS = {["grug_mobs:king_human"] = 65, ["grug_mobs:king_orc"] = 65,
+	["grug_mobs:ice_dragon"] = 70, ["grug_mobs:rift_boss"] = 60}
 rawset(_G, "grug_mobs", {
+	fixed_level = function(name) return FIXED_LEVELS[name] end,
 	dragon_map_markers = function()
 		return {{id = "dragon:wyrmglass", name = "The Rimewing", pos = {x = -3260, y = 30, z = -40},
 			entity = "grug_mobs:ice_dragon"}}

@@ -79,8 +79,7 @@ end
 -- A boss's name with its level where the registry has a fixed one:
 -- "King of Highcourt (level 65)".
 local function with_level(name, entity)
-	local def = entity and core.registered_entities[entity]
-	local level = def and def._grug_fixed_level
+	local level = entity and grug_mobs.fixed_level(entity)
 	return level and ("%s (level %d)"):format(name, level) or name
 end
 

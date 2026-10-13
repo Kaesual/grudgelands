@@ -569,9 +569,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   page's bytes.
   `r44_mq`: `portable_test.lua` loads the real `grug_keys` and
   `grug_map`'s `atlas.lua`, `providers.lua`, `page.lua` and `window.lua`
-  (with `targets.lua` and `quest_box.lua`) under a stub `core`: the key
-  edges, the window size and layout, the overlay per faction and quest
-  state, the quest target index and the crosshair-before-rings rule with
+  (with `targets.lua`, `quest_box.lua` and, since Round 47, `layers.lua`
+  and `zone_labels.lua`) under a stub `core`: the key
+  edges, the window size and layout (Round 47: the layer button rows), the
+  overlay per layer, faction and quest mode (Round 47: one layer at a time,
+  the tooltips topmost first, the deselection on a layer click, the zone
+  labels, the layer icons), the quest target index and the crosshair-before-rings rule with
   the five-ring cap (garrison camps and the rift boss as crosshairs), the
   refresh rule (throttle, trailing send, party checks, the pass budget, the
   0.5 s scroll pause, a send that crossed a close), the quest boxes (no
@@ -579,8 +582,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the sends per minute alone and in a party. The disposable probe
   `grug_probe_r44_mq` (staged with `PROBE=`) logs the map formspec's bytes
   per faction at zoom 1x and 8x (the Map and Quests tabs before Round 44 MQ,
-  the map window after), the target index's size and build time and how
-  many quest objectives the targets mark.
+  the map window after, since Round 47 per marker layer and in quest mode
+  with the drawn markers and tooltips, the layers' rows, the zone labels'
+  placement and the overflowing quest texts), the target index's size and
+  build time and how many quest objectives the targets mark.
   `r44_qb`: `portable_test.lua` loads the real `grug_keys`,
   `grug_quickbar`, `grug_mounts` (catalog, state, entity, items, trainer,
   shipwright), `grug_traders/potion.lua`, `grug_alchemy/effects.lua` and
@@ -921,3 +926,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the game as 0.47.0 and runs the tool through `tool_run.py` with that
   declaration); `portable_test.lua` the join part (stays in
   `run_fixtures.sh`); `evidence/` the last run.
+  `r47_ml` the map window's marker layers (the fixture is `r44_mq`'s):
+  `capture.sh OUT_DIR` with `grug_probe_r47_ml` the engine screenshots of
+  every layer, the zone layer at 1x and 4x and quest mode (the TA method:
+  Xvfb and one real client; `WIDTH`/`HEIGHT`, `SEED`, `SUFFIX=`), the
+  pointer put over a marker by `warp.py` so each shot shows a tooltip; one
+  queue run of one slot.

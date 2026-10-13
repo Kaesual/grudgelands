@@ -398,6 +398,14 @@ function grug_mobs.pending_level(ent)
 	return ent._grug_level or resolve_level(ent, cfg, ent._grug_tier or cfg.tier)
 end
 
+-- A registered mob's hand-set level (`_grug_fixed_level`: the kings, the
+-- dragons, the rift boss), or nil. Read-only; mobs_redo keeps no `_grug_`
+-- field in the entity table, so the map's Bosses layer asks here (Round 47).
+function grug_mobs.fixed_level(name)
+	local cfg = level_cfg[name]
+	return cfg and cfg.fixed or nil
+end
+
 -- Called from grug_mobs.register_mob for every mob def. Also normalizes the
 -- def's armor so a mob is never armor-less during the single step between
 -- activation and its first do_custom tick (mobs_redo builds the armor
