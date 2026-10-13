@@ -341,14 +341,15 @@ local function loader(directory)
 				-- A colonnade is a roof on pillars and has nothing to sit on,
 				-- so the bench comes with the plot. `sit` sits ON the seat --
 				-- a seat is a walkable node -- which is why the socket is at
-				-- y = 2.
+				-- y = 2. Round 47: bench and sitter look out of the colonnade
+				-- (2); facing 0 they faced its wall a node ahead.
 				decorate = function(buf, palette, area)
 					area.dressing.bench(buf, palette, area.x0 + 2,
-						area.z0 + 2, 0, 3, "x")
+						area.z0 + 2, 2, 3, "x")
 				end,
 				extra_sockets = function(area)
 					return {work("moot_sit", "sit", area.x0 + 3, area.z0 + 2,
-						0, {"bench"}, 2)}
+						2, {"bench"}, 2)}
 				end},
 			{id = "vine_well", module = "capitals", make = "well_court",
 				order = 9, spec = {size = 11}, margin = 4, garden = true},
@@ -565,7 +566,7 @@ local function loader(directory)
 				extra_sockets = function(area)
 					return {work("grove_forage", "forage", area.x0 + 2,
 							area.z0 + 2, 0),
-						spare("grove", area.x1 - 2, area.z0 + 2, 0)}
+						spare("grove", area.x1 - 2, area.z0 + 2, 2)} -- Round 47: 0 faced a tree
 				end},
 			{id = "totem_green", yard = {}, order = 11, decorate = green,
 				extra_sockets = function(area)

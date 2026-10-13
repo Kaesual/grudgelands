@@ -183,7 +183,8 @@ tools](#player-meta-read-by-external-tools).
   row's ×N. Each build runs `update_job(player, "open")`, one
   `ingredient_counts` pass that feeds ×N, Craftable only and the box, and
   echoes the field values. The list hides a profession area's recipes above
-  `profession_level` (Basic shows all). The recipe box's description is
+  `profession_level`, Basic's above what `recipe_known` allows (Round 47;
+  each build scans the inventory first, quietly). The recipe box's description is
   built per build: gear through `grug_items.crafted_output` on a copy (the
   job's own path), a Cooking output with an engine cooking recipe through
   `core.get_craft_result` (the cooked dish), else the definition; it is a
@@ -209,29 +210,45 @@ tools](#player-meta-read-by-external-tools).
   "recipe", `recipe` id, `quantity`, `consumed` itemstrings for the refund,
   `target` itemstring for lane EU's enchant and upgrade kinds, `start` and
   `finish` in os.time() seconds with a sub-second part from `grug_jobs.now()`,
-  `no_xp` after an unlearn). `start_job(player, recipe_id, quantity[, picks])` →
+  `no_xp` after an unlearn; Round 47: `delivered`, the crafts of a recipe
+  job delivered so far, and `picks`, the chosen kinds; a job without
+  `delivered` delivers at its end only). `start_job(player, recipe_id, quantity[, picks])` →
   ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
-  `profession`, `station`, `space`, `ingredients`); `cancel_job(player)` →
-  ok, `"completed"`/`"cancelled"` or the refusal; `job_state(player)` (a copy,
-  no side effects); `update_job(player, source)` completes a due job (login,
-  the tab's build) and otherwise arms the timer; the timer is one
-  `core.after` per online player with a job, no globalstep.
+  `profession`, `station`, `ingredients`, `space`: the whole order's result
+  does not fit into the inventory once its ingredients are taken,
+  `output_fits`); `cancel_job(player)` → ok, `"completed"`/`"cancelled"` or
+  the refusal (it delivers what is due, refunds the unfinished crafts'
+  ingredients per entry in the take's order and awards the delivered crafts
+  with `award_progress(..., quiet)`); `job_state(player)` (a copy, no side
+  effects); `update_job(player, source)` completes a due job (login, the
+  tab's build), else delivers the crafts finished so far and arms the
+  timer; the timer is one `core.after` per online player with a job, at
+  the next craft's end, no globalstep.
   `ingredient_counts(player)` (one pass over `main` and the bags, stacks
   without metadata: `is_ingredient_stack`), `ingredient_have(counts, entry)`,
   `crafts_from_counts(counts, recipe[, picks])` (when one item satisfies two entries,
-  a dry-run take on the counted stacks, searched by halving up to one above
-  the job ceiling of four output stacks; Round 46), `output_capacity(player, recipe)`,
-  `max_craftable(player, recipe[, counts[, picks]])` → n, by ingredients, by space;
+  a dry-run take on the counted stacks, searched by halving from the
+  per-entry total; Round 46, uncapped since Round 47),
+  `output_fits(player, ingredients, quantity, stacks[, counts])` (the take on
+  copies, then `grug_inventory.fits` with those copies standing in for the
+  lists; `counts.lists` lends the pass's lists, nothing is written),
+  `max_craftable(player, recipe[, counts[, picks]])` → n, by ingredients, by
+  space (the crafts whose result fits, searched by halving);
   `picks` (group -> item, the crafting box's choice) goes through
   `picked_ingredients(ingredients, picks)`, which turns each chosen group
   entry into an item entry and merges entries of one item (without picks the
   list itself), and `start_job` counts and takes that list;
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
-  within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. The output area
+  within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. Finished
+  stacks go through the give helper; the rest into the overflow
   `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at
   every join; a join handler that runs earlier, such as the 0.45.0
   migration's join part in `grug_core/migrations.lua`, calls it before it
-  uses the list).
+  uses the list), then the feet. `watch_overflow(player)` drains it by one
+  `core.after` chain per player while it holds something (`take_all` every
+  `OVERFLOW_POLL` s, started by a delivery into it and at the join);
+  `refresh_crafting_page(player)` (ui.lua) resends an open Crafting page
+  when the overflow appears or empties.
   `register_on_job_end(fn(player, job, outcome, source))` (outcome
   `completed`/`cancelled`; source `timer`, `join`, `open`, `start`, `stop`)
   is where UI resends an open Crafting page;
@@ -245,6 +262,21 @@ tools](#player-meta-read-by-external-tools).
   returns its ingredients and target. A finished recipe job makes its
   stacks (gear through `grug_items.crafted_output`), calls `award_progress`
   once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
+- **The Basic unlock** (`basic_unlock.lua`, Round 47 lane CR, ruling 19): the
+  held set in player meta `grug_jobs:held` (the format word `1`, then the
+  sorted tokens a Basic recipe names, item names and `group:<name>`,
+  space-separated; read once per session, written when it grows; about
+  4.7 KB once every ingredient was held). `recipe_known(player, recipe)`
+  (true outside Basic and for the starter outputs `HELD_STARTER`: the
+  stick and the four wooden tools), `scan_held(player[, quiet])` (every
+  list; returns the recipes it unlocked and feeds
+  "New recipe: X" / "New recipes: X and N more", resends an open page
+  unless quiet; the first scan of a character without the key is silent),
+  `held_dirty(player)` (jobs.lua after a delivery). When: at the join,
+  before the Crafting tab's build, and in the player's slot (5 slots of
+  0.1 s, one slot's players per step) when an inventory action, a dug node
+  or a delivery marked it, else every 10 s. Fixture `tools/r47_cr`; the
+  list filter in `tools/r45_ui`.
 - **Station sounds** (`station_sounds.lua`, Round 45 PT8): a start hook
   plays the station's sound at the station a job (recipe, enchant or
   upgrade) starts at: `STATION_SOUNDS` (forge `craft_smithy`, brewing stand
@@ -259,11 +291,11 @@ tools](#player-meta-read-by-external-tools).
   callback refuses everything else and returns nothing on accept, so later
   callbacks still judge, `operation_target(stack)`; a placement resends an
   open Crafting page; `return_operation_target(player)` hands a left item
-  back at join and on an unlearn: give helper, output area, else it stays). `start_operation(player, op_id,
+  back at join and on an unlearn: give helper, overflow, else it stays). `start_operation(player, op_id,
   levels)` → ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
   `profession`, `station`, `cap`, `target`, `space`, `ingredients`) judges
-  the slot's item with `grug_items.operation_result`, needs a free output
-  slot, takes `operation_ingredients(op, stack)` × levels (one own material
+  the slot's item with `grug_items.operation_result`, needs room for the
+  result in the inventory once the materials are taken (`output_fits`), takes `operation_ingredients(op, stack)` × levels (one own material
   per upgrade level, a weapon also `weapon_extra`) and the item, then
   `begin_job` with kind `enchant`/`upgrade`, `operation` the id, `quantity`
   the levels, `target` the itemstring (a refused begin hands both back).
@@ -1219,17 +1251,23 @@ tools](#player-meta-read-by-external-tools).
     natural ground from `is_ground_content`: the engine defaults that field
     to true even for saplings and decorations. `NATURAL_GROUND_SET` is the
     audited lookup, not a second extension point.
-  - The engine gates tiers: tier rock and resources carry node `level =
-    tier - 1`, every Grudgelands pick carries `maxlevel = tier - 1` on
-    `cracky` and `grug_resource`, so the client predicts a too-weak pick as
-    unable to dig (no cracks). No other node may carry a `level`; the startup
-    audit checks this and an engine dig matrix. Loose generated ground carries
-    `grug_loose` (= its `crumbly` rating) and no level; shovels and axes carry
+  - The engine gates tiers (level scale of Round 47): tier rock and
+    resources of tier N >= 2 carry node `level = N`, tier 1 none, Iron Ore
+    `level = 1` (`resource_level`: its `pick_level`), mirrored as
+    `grug_pick_level`; the Wood and Stone picks carry `maxlevel = 0`, a metal
+    pick of tier t `maxlevel = t` on `cracky`, `grug_resource` and
+    `grug_pick_level`, so the client predicts a too-weak pick as unable to
+    dig (no cracks). The `cracky`/`grug_resource` times carry the factor
+    t / max(1, t - 1) and the gated nodes dig through `grug_pick_level`, so
+    the shift kept every dig time (`build_pick_capabilities`). No other node
+    may carry a `level`; the startup audit checks this and an engine dig
+    matrix. Loose generated ground carries `grug_loose` (= its `crumbly`
+    rating) and no level; shovels and axes carry
     `grug_shovel_tier`/`grug_axe_tier`. The engine's default dig sound is
-    `default_dig_<group>` and these two groups have no such file, so a node
-    of either without its own `dig` sound gets one after all mods load
-    (`dig_sounds.lua`, Round 35: resources the stone dig, loose ground the
-    crumbly one). The `core.node_dig` wrapper re-checks
+    `default_dig_<group>` and these three groups have no such file, so a node
+    of any of them without its own `dig` sound gets one after all mods load
+    (`dig_sounds.lua`, Round 35: resources and gated rock the stone dig,
+    loose ground the crumbly one). The `core.node_dig` wrapper re-checks
     protection and the engine rule for natural nodes (`mining_decision`
     returns `protected`/`too_low_level`/`too_hard`/`allowed`; `too_low_level`
     applies on any node a pick/axe/shovel above the player's level would dig,
@@ -1607,7 +1645,11 @@ tools](#player-meta-read-by-external-tools).
   (`location.capital_of(name)`, the settlement key of a town row whose anchor
   slot is `capital`, kept while the city is within `L.CAPITAL_MARGIN` nodes:
   `location_view.lua` `capital_at`, up to eight footprint queries per sample
-  only while leaving), which decides where music plays.
+  only while leaving), which decides where music plays. Since Round 47 the
+  sample hands a changed zone id (and the player's first sample) to
+  `location.discovery`, the first-entry zone XP that `init.lua` installs
+  from `zone_discovery.lua` (`D.new(api)` pure over its calls, fixture
+  `tools/r47_nz`); a fixture that loads `location.lua` alone runs without it.
   Round 31: NPC markers carry their NPC's faction and the service and
   quest-giver lists are split per viewer faction once at load. Since Round
   44 settlements, camps, points of interest, kings and dragons are no
@@ -1962,6 +2004,13 @@ tools](#player-meta-read-by-external-tools).
     `find_nodes_in_area` above ground for the fire and flowing-water
     loops (none at forges and anvils since Round 45 PT8) (node names from `D.emitter_nodes` plus every flowing liquid whose
     source is default or river water, filled on `register_on_mods_loaded`).
+    Round 47: both burning furnaces are the `furnace` kind (the fire loop at
+    `D.gains.furnace`); a kind with `stop_on_destruct` gets an `on_destruct`
+    on its nodes (wrapping the node's own, installed in the same
+    `register_on_mods_loaded`) that calls `grug_ambience.stop_emitters_at`:
+    the loop at that position fades out over `D.stop_fade` for every
+    listener, a lookup per online player on that event only; fixture
+    `tools/r47_fs`, engine probe `tools/r47_fs/engine.sh`.
     Only names with a shipped file play (`available` from the `sounds/`
     listing, the capital rotations filtered by `music/`), so data may name a file that does
     not ship. Music files live in `music/` (never `sounds/`) and are pushed

@@ -110,6 +110,47 @@ local function character_0_45_0(player)
 	end
 end
 
+--
+-- 0.47.0, the character part. The online part of the migration step 0.47.0
+-- (Round 47 lane OR; tools/migration/steps/v0_47_0.py, which only sets the
+-- marker on every character). Round 47 shifted the pick level scale by one
+-- (Iron behind the Bronze pick, plan ruling 7): every pick's definition has
+-- a new maxlevel, new times and a new `grug_pick_level` capability. A
+-- crafted gathering tool carries a copy of its definition's capabilities in
+-- its item meta (grug_quality `crafted_output`), a broken one the copy kept
+-- for the repair (`_grug_repair_caps`, also written by grug_repair when a
+-- plain tool breaks); those copies still hold the old scale, so an old Iron
+-- pick could not dig T2 rock any more. At the character's next join, before
+-- every other join callback, this handler rebuilds them from the current
+-- definition (`grug_items.refresh_capabilities`, the craft path's own
+-- rebuild) for every tool stack (grug_quality family "tool": picks, axes,
+-- shovels, hoes) that carries either copy, in every list of the player's
+-- inventory: main with the hotbar, the bags' content lists, the crafting
+-- output area and every other list. A tool without a copy already reads its
+-- definition and is not touched. Safe to run again: a rebuild over a rebuilt
+-- stack writes the same values, and a stack is written back only when a copy
+-- changed.
+
+local function character_0_47_0(player)
+	local inv = player:get_inventory()
+	for listname, stacks in pairs(inv:get_lists()) do
+		for index, stack in ipairs(stacks) do
+			if not stack:is_empty() and grug_items.family_for(stack) == "tool" then
+				local meta = stack:get_meta()
+				local caps = meta:get_string("tool_capabilities")
+				local kept = meta:get_string("_grug_repair_caps")
+				if caps ~= "" or kept ~= "" then
+					grug_items.refresh_capabilities(stack)
+					if meta:get_string("tool_capabilities") ~= caps or
+							meta:get_string("_grug_repair_caps") ~= kept then
+						inv:set_stack(listname, index, stack)
+					end
+				end
+			end
+		end
+	end
+end
+
 grug_core.migrations = {
 	-- The declaration's `migrate` list, ascending: the guard refuses a world
 	-- whose record lies before one of them. tools/check_upgrade.py proves this
@@ -117,6 +158,7 @@ grug_core.migrations = {
 	versions = {
 		"0.44.0", -- mount items and skills outside the hotbar removed; offline only
 		"0.45.0", -- mixtures deleted, craft grid emptied, item level pinned; a join part
+		"0.47.0", -- gathering tools' stored capabilities rebuilt; a join part
 	},
 	-- Online work, only for a step that leaves some:
 	--   handlers["x.y.z"] = {
@@ -125,5 +167,6 @@ grug_core.migrations = {
 	--   }
 	handlers = {
 		["0.45.0"] = {character = character_0_45_0},
+		["0.47.0"] = {character = character_0_47_0},
 	},
 }

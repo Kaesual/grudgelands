@@ -159,9 +159,12 @@ local function loader(directory)
 			y = 1, z = 9, dir = {x = 0, z = 1}},
 		{id = "idle_green_bench", role = "idle", tags = {"bench"}, x = -6,
 			y = 1, z = 7, dir = {x = 0, z = -1}},
-		{id = "idle_barn", role = "idle", tags = {"work"}, x = -19, y = 1,
+		-- Round 47: both stand before their building's door, so they carry
+		-- `door` and the consumer turns them to the street (the first tag
+		-- stays the spoken line).
+		{id = "idle_barn", role = "idle", tags = {"work", "door"}, x = -19, y = 1,
 			z = 0, dir = {x = -1, z = 0}},
-		{id = "idle_smithy", role = "idle", tags = {"fire"}, x = 22, y = 1,
+		{id = "idle_smithy", role = "idle", tags = {"fire", "door"}, x = 22, y = 1,
 			z = -1, dir = {x = 1, z = 0}},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
@@ -178,8 +181,10 @@ local function loader(directory)
 		-- stands on the first tilled row and works the one in front of it.
 		{id = "work_field", role = "work", activity = "farm", tags = {"work"},
 			x = 18, y = 1, z = 31, dir = {x = 0, z = 1}},
+		-- Round 47: it sat facing the house wall a node away; it looks out
+		-- over the green.
 		{id = "work_green_seat", role = "work", activity = "sit",
-			tags = {"bench"}, x = -5, y = 1, z = 15, dir = {x = -1, z = 0}},
+			tags = {"bench"}, x = -5, y = 1, z = 15, dir = {x = 1, z = 0}},
 		-- The elder stands ON the hall's doorstep, so its authored facing is
 		-- the door -- and `door` is what turns the NPC round to the street
 		-- (start_npcs.lua `socket_face_yaw`, playtest round 2).
@@ -208,7 +213,7 @@ local function loader(directory)
 			y = 1, z = -12, dir = {x = 0, z = 1}},
 		-- the cobble of the hall walk
 		{id = "idle_spare_3", role = "idle", spawn = false, x = -5,
-			y = 1, z = 14, dir = {x = 0, z = -1}},
+			y = 1, z = 14, dir = {x = 1, z = 0}}, -- Round 47: was 0,-1 (a shutter)
 	}
 
 	return function()

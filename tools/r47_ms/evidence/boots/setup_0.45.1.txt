@@ -1,0 +1,18 @@
+launcher: staged probe: grug_probe_r47_ms
+seconds: 50, exit 0
+joins: ['miner registered (protocol 52), stayed 4.0 s', 'sleeper registered (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.45.1 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.45.1 (a new world), game 0.45.1: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:36874.
+ACTION[Server]: miner [127.0.0.1] joins game. List of players: miner
+ACTION[Server]: [r47_ms_probe] joined miner
+ACTION[Server]: [r47_ms_probe] built miner
+ACTION[Server]: [r47_ms_probe] left miner
+ACTION[Server]: miner leaves game. List of players: 
+ACTION[Server]: sleeper [127.0.0.1] joins game. List of players: sleeper
+ACTION[Server]: [r47_ms_probe] joined sleeper
+ACTION[Server]: [r47_ms_probe] built sleeper
+ACTION[Server]: [r47_ms_probe] left sleeper
+ACTION[Server]: sleeper leaves game. List of players: 
+ACTION[Server]: [r47_ms_probe] observations written: every planned character left

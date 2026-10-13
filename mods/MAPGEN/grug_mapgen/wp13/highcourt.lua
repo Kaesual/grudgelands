@@ -848,7 +848,8 @@ local function loader(directory)
 				corner.face, {group = WATCH, order = corner.order})
 		end
 		socket("court_idle_well", "idle", 44, 1, 27, 0, {tags = {"work"}})
-		socket("court_idle_yard", "idle", 34, 1, 20, 0, {tags = {"work"}})
+		-- Round 47: faced 2 (0 faced a window).
+		socket("court_idle_yard", "idle", 34, 1, 20, 2, {tags = {"work"}})
 		socket("forecourt_idle_west", "idle", -6, 1, 3, 1, {tags = {"bench"}})
 		socket("forecourt_idle_east", "idle", 7, 1, 3, 3, {tags = {"bench"}})
 		--

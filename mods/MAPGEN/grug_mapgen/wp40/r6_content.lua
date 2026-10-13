@@ -104,26 +104,27 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	}
 	-- Gems (economy plan §6, Round 46 ruling 3): each in the tier rock of its
 	-- own tier, then at 2x and 4x the denominator one and two tiers deeper.
-	-- Iron in T3 carries the Round 46 Steel-band correction. Round 47
-	-- (rulings 8-9): Anthracite starts in T2 (mixed with Coal; the lower
-	-- half is lane OR's field, a full-band placeholder until it merges) and
-	-- replaces Coal from T3 down: no Coal below y -300.
+	-- Iron in T3 carries the Round 46 Steel-band correction. The fourth
+	-- entry is the row's `lower_half_of` band (Round 47 ruling 6): a
+	-- next-tier ore lies only in the lower half of the band before its own.
+	-- Round 47 (rulings 8-9): Anthracite starts in the lower half of T2
+	-- (mixed with Coal) and replaces Coal from T3 down: no Coal below y -300.
 	local RESOURCE_EXPECTED = {
-		abyssal_crystal = {5, 2, {false, false, false, false, 512, 256}},
-		anthracite = {2, 8, {false, 256, 96, 128, 128, 128}},
+		abyssal_crystal = {5, 2, {false, false, false, false, 512, 256}, 5},
+		anthracite = {2, 8, {false, 256, 96, 128, 128, 128}, 2},
 		citrine = {1, 2, {512, 1024, 2048, false, false, false}},
 		coal = {1, 8, {64, 128, false, false, false, false}},
 		copper = {1, 8, {96, 192, 384, 384, 384, 384}},
 		diamond = {6, 2, {false, false, false, false, false, 512}},
-		emberglass = {4, 4, {false, false, false, 256, 128, 256}},
+		emberglass = {4, 4, {false, false, false, 256, 128, 256}, 4},
 		garnet = {3, 2, {false, false, 512, 1024, 2048, false}},
 		gold = {2, 4, {false, 512, 256, 128, 256, 256}},
-		iron = {1, 8, {128, 96, 128, 384, 384, 384}},
+		iron = {1, 8, {128, 96, 128, 384, 384, 384}, 1},
 		jade = {2, 2, {false, 512, 1024, 2048, false, false}},
 		quartz = {1, 8, {128, 256, 512, 512, 512, 512}},
 		ruby = {5, 2, {false, false, false, false, 512, 1024}},
 		sapphire = {4, 2, {false, false, false, 512, 1024, 2048}},
-		silver = {3, 4, {false, false, 256, 128, 256, 512}},
+		silver = {3, 4, {false, false, 256, 128, 256, 512}, 3},
 		tin = {1, 8, {96, 192, 384, 384, 384, 384}},
 	}
 	local function fail(prefix, message)
@@ -283,13 +284,15 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		exact_fields(row, {key = true, first_tier = true,
 			denominators = true, max_nodes_per_vein = true,
 			deep_1500_1999_numerator = true, deep_1500_1999_denominator = true,
-			deep_2000_floor_numerator = true, deep_2000_floor_denominator = true},
+			deep_2000_floor_numerator = true, deep_2000_floor_denominator = true,
+			lower_half_of = "optional"},
 			"resource row", "fail_resource_manifest")
 		local expected = RESOURCE_EXPECTED[text(row.key, "resource key", "fail_resource_manifest")]
 		if not expected or resource_by_key[row.key] or
 				row.first_tier ~= expected[1] or row.max_nodes_per_vein ~= expected[2] or
 				dense(row.denominators, "resource denominators", "fail_resource_manifest") ~= 6 or
 				not equal_array(row.denominators, expected[3]) or
+				row.lower_half_of ~= expected[4] or
 				row.deep_1500_1999_numerator ~= 5 or
 				row.deep_1500_1999_denominator ~= 4 or
 				row.deep_2000_floor_numerator ~= 3 or
@@ -370,6 +373,22 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	for key in pairs(RESOURCE_EXPECTED) do
 		if not projected_resources[key] then
 			fail("fail_resource_manifest", "WP43 resource missing " .. key)
+		end
+	end
+	-- A lower-half row needs its band's denominator and the band's half
+	-- boundary strictly inside the band, T1 counted from y 0 (the writer
+	-- reads it from the projection's tiers, r6_settlement.lua).
+	for index = 1, #resources do
+		local row = resources[index]
+		local band = row.lower_half_of
+		if band ~= nil then
+			local tier = wp43_projection.tiers[band]
+			local half = type(tier) == "table" and tier.lower_half_y_max
+			if not row.denominators[band] or type(half) ~= "number" or
+					half % 1 ~= 0 or half <= tier.y_min or
+					half >= math.min(0, tier.y_max) then
+				fail("fail_resource_manifest", "lower half differs at " .. row.key)
+			end
 		end
 	end
 	local density = wp43_projection.density

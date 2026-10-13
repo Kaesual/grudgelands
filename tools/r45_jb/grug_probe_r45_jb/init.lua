@@ -9,7 +9,8 @@
 --   engine    ItemStack counts above stack_max, get_keys on a fresh stack,
 --             core.serialize keeping sub-second times;
 --   cycle     one Basic job and one gear job on a detached inventory with a
---             stand-in player: consumption, completion, the output stacks,
+--             stand-in player: consumption, completion, the output stacks
+--             (in the inventory since Round 47; the overflow stays empty),
 --             crafted_output's metadata, the refund.
 -- Ends with "PROBE PASS" or "PROBE FAIL <n>".
 local P = "[r45jb_probe] "
@@ -141,15 +142,17 @@ local function cycle()
 	job.finish = J.now() - 0.01
 	fields[J.JOB_KEY] = core.serialize(job)
 	check(J.update_job(player, "open"), "a due job completes on update")
+	-- Round 47: the result goes into the inventory.
 	local total = 0
-	for index = 1, 4 do
-		local stack = inv:get_stack(J.OUTPUT_LIST, index)
-		if stack:get_name() == basic.output then total = total + stack:get_count() end
-		check(stack:get_count() <= stack:get_stack_max(), "output slot " .. index .. " within stack_max")
+	for index = 1, inv:get_size("main") do
+		local stack = inv:get_stack("main", index)
+		if stack:get_name() == basic.output then
+			total = total + stack:get_count()
+			check(stack:get_count() <= stack:get_stack_max(), "main slot " .. index .. " within stack_max")
+		end
 	end
-	check(total == quantity * basic.count, "the output holds quantity x count (" .. total .. ")")
-	local moved = J.take_all(player)
-	check(moved and inv:is_empty(J.OUTPUT_LIST), "Take all empties the output area")
+	check(total == quantity * basic.count, "the inventory holds quantity x count (" .. total .. ")")
+	check(inv:is_empty(J.OUTPUT_LIST), "the overflow stays empty")
 	-- A gear job: crafted_output on each stack.
 	local gear
 	for _, recipe in ipairs(J.recipes_in_area("weaponsmith")) do
@@ -160,10 +163,10 @@ local function cycle()
 	J.begin_job(player, {kind = "recipe", recipe = gear.id, quantity = 2, duration = 0})
 	check(J.update_job(player, "open"), "the gear job completes")
 	local made = 0
-	for index = 1, 4 do
-		local stack = inv:get_stack(J.OUTPUT_LIST, index)
-		log(("gear %s: output slot %d holds %s"):format(gear.id, index, stack:to_string()))
+	for index = 1, inv:get_size("main") do
+		local stack = inv:get_stack("main", index)
 		if stack:get_name() == gear.output then
+			log(("gear %s: main slot %d holds %s"):format(gear.id, index, stack:to_string()))
 			made = made + 1
 			local meta = stack:get_meta()
 			check(meta:get_int("grug_quality") == 1 and meta:get_int("grug_ilvl") > 0,

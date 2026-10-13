@@ -180,7 +180,8 @@ local function loader(directory)
 			y = 1, z = 32, dir = {x = 0, z = 1}},
 		{id = "idle_court_settle", role = "idle", tags = {"bench"}, x = -10,
 			y = 1, z = 4, dir = {x = 0, z = -1}},
-		{id = "idle_bone_works", role = "idle", tags = {"work"}, x = 22, y = 1,
+		-- Round 47: `door`, it stands before the bone works' door.
+		{id = "idle_bone_works", role = "idle", tags = {"work", "door"}, x = 22, y = 1,
 			z = -1, dir = {x = 1, z = 0}},
 		-- The gate braziers at (-4, -58) and (4, -58) are the only fire an
 		-- arrival sees; this spot stands at the western one.

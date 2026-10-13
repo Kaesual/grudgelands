@@ -43,6 +43,18 @@ local DECOR = {
 	},
 }
 
+-- Round 47 (ruling 20, NPCs face away from walls): the village sockets
+-- stand at the same places in every race, but the houses differ per race,
+-- so a facing that looks into the open in one race looks at a house post or
+-- wall in another. These rows turn a socket per race (socket id -> facing);
+-- tools/r47_nz/facing.lua is the check.
+local VILLAGE_FACING = {
+	dwarf = {resident_work = {x = 1, z = 0}},
+	elf = {quest_local = {x = 0, z = 1}},
+	undead = {quest_local = {x = 0, z = 1}},
+	orc = {quest_local = {x = 0, z = 1}},
+}
+
 return function(spec)
 	local palettes = {
 		dwarf={ground="default:dirt_with_coniferous_litter",foundation="default:stonebrick",wall="default:pine_wood",post="default:pine_tree",roof="stairs:slab_pine_wood",accent="default:copperblock"},
@@ -280,6 +292,10 @@ return function(spec)
 			{id="quest_local",role="quest",x=-2,y=1,z=-2,dir={x=0,z=-1}},
 			{id="resident_work",role="idle",x=-2,y=1,z=0,dir={x=-1,z=0},tags={"work"}},
 			{id="resident_spare",role="idle",x=0,y=1,z=-3,dir={x=0,z=-1},spawn=false}}
+		for _,s in ipairs(sockets) do
+			local turn=VILLAGE_FACING[race] and VILLAGE_FACING[race][s.id]
+			if turn then s.dir={x=turn.x,z=turn.z} end
+		end
 	elseif spec.kind=="outpost" then
 		if race=="human" then
 			lookout(-4,3,2,4,true); house("side office",4,4,2,2,3,0)

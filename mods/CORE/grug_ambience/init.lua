@@ -13,7 +13,9 @@
 --   * loops at hearths and camp fires and flowing water (never at a water
 --     source) near the player: one find_nodes_in_area per pass above ground,
 --     the nearest two of each kind, positional, to that player only (Round
---     45 PT8: none at forges and anvils);
+--     45 PT8: none at forges and anvils). Round 47: both burning furnaces
+--     are their own, quieter kind, and a dug or destroyed one stops at once
+--     for every listener (its on_destruct, stop_emitters_at);
 --   * music only in the six capitals (Round 35, round35-plan.md §2.8): each
 --     capital's rotation plays from entering the city (grug_map's
 --     location.capital_of, with a few nodes of hysteresis at the border) with
@@ -167,6 +169,24 @@ local function emitter_gain(st, kind)
 	return D.gains[kind] * st.ambience_volume / 100
 end
 
+-- Fades out every listener's loop at `pos` over D.stop_fade (Round 47
+-- ruling 16). The on_destruct of a `stop_on_destruct` kind's node calls it
+-- (hooked below), so a dug or blown-up furnace falls silent at once rather
+-- than on the next pass: one table lookup per online player, on that node
+-- event only. A furnace that goes out (swap_node, no on_destruct) still
+-- fades on the next pass.
+local function stop_emitters_at(pos)
+	local hash = core.hash_node_position(pos)
+	for _, st in pairs(states) do
+		local emitter = st.emitters[hash]
+		if emitter then
+			fade(emitter.handle, emitter.gain, 0, D.stop_fade)
+			st.emitters[hash] = nil
+		end
+	end
+end
+grug_ambience.stop_emitters_at = stop_emitters_at
+
 -- Kind -> hearing distance. The engine ignores max_hear_distance for a
 -- to_player sound, so the choice below drops nodes farther than this.
 local emitter_hears = {}
@@ -190,6 +210,18 @@ core.register_on_mods_loaded(function()
 		if core.registered_nodes[node] then emitter_names[#emitter_names + 1] = node end
 	end
 	table.sort(emitter_names)
+	-- on_destruct runs on every removal (a dig, an explosion's on_blast, a
+	-- set_node over it), never on swap_node; the node's own one still runs.
+	for node, kind in pairs(D.emitter_nodes) do
+		local def = core.registered_nodes[node]
+		if def and D.emitters[kind] and D.emitters[kind].stop_on_destruct then
+			local previous = def.on_destruct
+			core.override_item(node, {on_destruct = function(pos)
+				stop_emitters_at(pos)
+				if previous then return previous(pos) end
+			end})
+		end
+	end
 end)
 
 -- The loops near `pos`: start the chosen ones, fade out the rest.

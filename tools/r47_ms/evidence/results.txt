@@ -1,0 +1,23 @@
+PASS  setup  the 0.45.1 commit 0e6b3061 exported (its game and launcher)
+PASS  setup  boot S (0.45.1): a new world, miner and sleeper joined, were built and left
+PASS  setup  0.45.1: a crafted Iron pick stores its copy (maxlevel 1), digs T2 rock and Stone in 0.425 s
+PASS  setup  0.45.1: every crafted tool carries a copy, the broken one the repair's (7 stacks), the plain Stone pick none
+PASS  guard  boot R (0.47.0): the 0.45.1 world without the tool is refused, naming the step 0.47.0 and the command line
+PASS  guard  the refused start wrote nothing
+PASS  tool   --check: world 0.45.1, due [0.47.0], nothing written
+PASS  tool   migrate: start, step_start, step_done, done; exit 0
+PASS  tool   step 0.47.0 wrote two markers and nothing else
+PASS  step   both characters carry the marker; inventories and the other meta unchanged; the record is 0.47.0
+PASS  step   nothing else changed: the two meta rows and the record
+PASS  tool   --check after: world 0.47.0, nothing due
+PASS  boot   boot A (0.47.0): starts from 0.47.0; miner joined with the marker and left
+PASS  boot   as loaded (before the runner): the old copy (maxlevel 1) cannot dig T2 rock (level 2 now): what the step repairs
+PASS  boot   after the join: every stored copy rebuilt as a craft makes it now (the new maxlevels; Iron Ore by Bronze and Iron, not by Wood), in main, the hotbar, the bag and the output area
+PASS  boot   after the join: the Iron pick digs T2 rock again and Stone in 0.425 s, as before the step
+PASS  boot   the broken Iron pick stays broken; its repair copy is the new one
+PASS  boot   the plain Stone pick gets no copy and, like every Stone pick now, does not dig Iron Ore
+PASS  boot   the crafted Iron Sword's capabilities are not touched
+PASS  boot   the marker is cleared at the join
+PASS  boot   saved after boot A: miner's marker gone; sleeper (offline) keeps its marker and its inventory
+
+21 checks, 0 failed (pre-declaration)

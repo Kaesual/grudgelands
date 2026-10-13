@@ -1,0 +1,9 @@
+--- before
++++ after
+@@ -15,0 +16 @@
++'meta' | 'miner' | 'grug_core:migrate:0.47.0' | '1'
+@@ -17,0 +19 @@
++'meta' | 'sleeper' | 'grug_core:migrate:0.47.0' | '1'
+@@ -23 +25 @@
+-'storage' | 'grug_core' | 'world_version' | '0.45.1'
++'storage' | 'grug_core' | 'world_version' | '0.47.0'

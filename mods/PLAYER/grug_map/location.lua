@@ -17,6 +17,9 @@
 --   * the entry banner shows a new location or status top centre for
 --     DISPLAY seconds, debounced (location_view.lua), with the territory
 --     line under the name;
+--   * a changed zone at a sample, and a player's first sample, go to the
+--     zone discovery (zone_discovery.lua, Round 47) when init.lua installed
+--     it as `discovery`;
 --   * (until Round 44 the Map tab also got one marker per zone with its
 --     level band, placed at start; the map window draws none, ruling 12,
 --     so the placement and its zone-grid cache are gone).
@@ -80,8 +83,9 @@ end
 -- Per-player location and the entry banner
 -- ---------------------------------------------------------------------------
 
--- player name -> {state, text, status, town, capital, next_sample, banner,
--- line, offset_y, shown_text, shown_line, shown_color}
+-- player name -> {state, text, status, town, capital, zone, next_sample,
+-- banner, line, offset_y, shown_text, shown_line, shown_color}; `zone` is
+-- the last sample's zone id (false for none, nil before the first sample)
 local players = {}
 -- player name -> true while a banner display runs
 local busy = {}
@@ -123,19 +127,36 @@ function M.capital_of(name)
 	return rec and rec.capital or nil
 end
 
+-- The zone a sample found (nil in a town or at sea) against the last one:
+-- only a change, or the player's first sample, reaches the discovery. The
+-- first sample also names the zone under a town (a new character's start
+-- town: its start zone is marked silently).
+local function discover(player, rec, zone, pos)
+	local discovery = M.discovery
+	if not discovery or not resolve then return end
+	local key = zone or false
+	if rec.zone == key then return end
+	if rec.zone == nil then
+		discovery.start(player, zone or grug_zones.id_at(pos.x, pos.z))
+	end
+	rec.zone = key
+	discovery.enter(player, zone)
+end
+
 -- Returns the location text (nil for none) and the territory status.
 local function sample(player, rec)
 	local started = core.get_us_time()
 	local pos = player:get_pos()
-	local text, town, here = "", false, nil
+	local text, town, here, zone = "", false, nil, nil
 	if resolve then
-		text, town, here = resolve(pos.x, pos.z)
+		text, town, here, zone = resolve(pos.x, pos.z)
 		rec.capital = L.capital_at(town_at, rec.capital, pos.x, pos.z, here)
 	end
 	local status = territory(player, pos)
 	M.stats.samples = M.stats.samples + 1
 	M.stats.us = M.stats.us + (core.get_us_time() - started)
 	rec.text, rec.status, rec.town = text, status, town == true
+	discover(player, rec, zone, pos)
 	return text ~= "" and text or nil, status
 end
 

@@ -11,27 +11,31 @@
 -- not here. This table is part of the WP43 projection whose digest
 -- grug_mapgen pins (wp40/r7_manifest.lua); changing it means re-pinning that
 -- mapgen manifest.
+-- `lower_half_y_max` (Round 47 ruling 6) is the top of the band's lower
+-- half: a resource row whose `lower_half_of` names this band lies only at
+-- or below it (wp40/r7_r6_manifest.lua). T1 counts from y 0 (sea level), so
+-- its lower half is y -50 ... -100; T6 has none.
 grug_materials.TIERS = {
 	{id = 1, key = "bronze", name = "Bronze", min_level = 1, max_level = 10,
-		y_max = 31000, y_min = -100,
+		y_max = 31000, y_min = -100, lower_half_y_max = -50,
 		node = "default:stone", bar_item = "grug_materials:bronze_bar",
 		block_node = "grug_materials:bronze_block"},
 	{id = 2, key = "iron", name = "Iron", min_level = 11, max_level = 20,
-		y_max = -101, y_min = -300,
+		y_max = -101, y_min = -300, lower_half_y_max = -201,
 		node = "grug_materials:t2_stone", bar_item = "grug_materials:iron_bar",
 		block_node = "grug_materials:iron_block"},
 	{id = 3, key = "steel", name = "Steel", min_level = 21, max_level = 30,
-		y_max = -301, y_min = -500,
+		y_max = -301, y_min = -500, lower_half_y_max = -401,
 		node = "grug_materials:t3_stone", bar_item = "grug_materials:steel_bar",
 		block_node = "grug_materials:steel_block"},
 	{id = 4, key = "silversteel", name = "Silversteel", min_level = 31,
 		max_level = 40, y_max = -501,
-		y_min = -700, node = "grug_materials:t4_stone",
+		y_min = -700, lower_half_y_max = -601, node = "grug_materials:t4_stone",
 		bar_item = "grug_materials:silversteel_bar",
 		block_node = "grug_materials:silversteel_block"},
 	{id = 5, key = "embersteel", name = "Embersteel", min_level = 41,
 		max_level = 50, y_max = -701,
-		y_min = -1000, node = "grug_materials:t5_stone",
+		y_min = -1000, lower_half_y_max = -851, node = "grug_materials:t5_stone",
 		bar_item = "grug_materials:embersteel_bar",
 		block_node = "grug_materials:embersteel_block"},
 	{id = 6, key = "abyssal_steel", name = "Abyssal Steel", min_level = 51,
@@ -63,13 +67,21 @@ function grug_materials.stratum_node_for(y)
 	return TIERS[grug_materials.tier_at(y)].node
 end
 
--- Engine dig gate (Round 24 rulings 3-4): a natural node that needs a pick
--- of tier N carries the node group `level = N - 1`, and a tier-t pick carries
--- `maxlevel = t - 1` on its `cracky` and `grug_resource` capabilities, so the
--- engine (client prediction included) refuses a weaker pick. Tier 1 needs no
--- level group: absent means 0.
+-- Engine dig gate (Round 24 rulings 3-4; the scale shifted by one in Round
+-- 47 for ruling 7, Iron behind the Bronze pick): the Wood and Stone picks
+-- carry `maxlevel = 0`, a metal pick of tier t `maxlevel = t` (Bronze 1 ...
+-- Abyssal Steel 6), and a natural node that needs the metal pick of tier N
+-- carries the node group `level = N`, so the engine (client prediction
+-- included) refuses a weaker pick. Tier 1 needs no metal and no level group
+-- (absent means 0): every pick digs it. A resource may name its own level
+-- (`pick_level`, `resource_level` below): Iron Ore needs the Bronze pick.
 function grug_materials.level_for_tier(tier)
-	return math.max(0, math.floor(tonumber(tier) or 1) - 1)
+	tier = math.floor(tonumber(tier) or 1)
+	return tier > 1 and tier or 0
+end
+
+function grug_materials.resource_level(resource)
+	return resource.pick_level or grug_materials.level_for_tier(resource.harvest_tier)
 end
 
 -- Decorative rocks (Round 24 ruling 8): any pick digs them, they drop
@@ -136,8 +148,9 @@ grug_materials.RESOURCES = {
 		raw_item = "default:copper_lump", harvest_tier = 1},
 	{key = "tin", name = "Tin", natural_node = "default:stone_with_tin",
 		raw_item = "default:tin_lump", harvest_tier = 1},
+	-- Round 47 ruling 7: a T1 resource behind the Bronze pick (level 1).
 	{key = "iron", name = "Iron", natural_node = "default:stone_with_iron",
-		raw_item = "default:iron_lump", harvest_tier = 1},
+		raw_item = "default:iron_lump", harvest_tier = 1, pick_level = 1},
 	{key = "quartz", name = "Quartz",
 		natural_node = "grug_materials:stone_with_quartz",
 		raw_item = "grug_materials:quartz", harvest_tier = 1},
@@ -383,6 +396,12 @@ local function validate_registry()
 		if i > 1 and tier.y_max ~= TIERS[i - 1].y_min - 1 then
 			registry_error("gap or overlap above tier " .. tier.key)
 		end
+		local half = tier.lower_half_y_max
+		if (half == nil) ~= (i == TIER_COUNT) or (half ~= nil and
+				(half ~= math.floor(half) or half >= math.min(0, tier.y_max) or
+					half <= tier.y_min)) then
+			registry_error("invalid lower half of tier " .. tier.key)
+		end
 		tier_keys[tier.key], tier_nodes[tier.node] = true, true
 		tier_bars[tier.bar_item], tier_blocks[tier.block_node] = true, true
 	end
@@ -410,6 +429,13 @@ local function validate_registry()
 		end
 		if resource.harvest_tier < 1 or resource.harvest_tier > TIER_COUNT then
 			registry_error("invalid harvest tier for " .. resource.key)
+		end
+		-- An own pick level only between its tier's and the next tier's.
+		local level = resource.pick_level
+		if level ~= nil and (level ~= math.floor(level) or
+				level < grug_materials.level_for_tier(resource.harvest_tier) or
+				level >= grug_materials.level_for_tier(resource.harvest_tier + 1)) then
+			registry_error("invalid pick level for " .. resource.key)
 		end
 		resource_keys[resource.key] = true
 		nodes[resource.natural_node] = true

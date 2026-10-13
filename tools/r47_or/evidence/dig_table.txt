@@ -1,0 +1,66 @@
+Dig matrix before -> after (engine core.get_dig_params, seconds; '-' = the tool's own capabilities cannot dig it)
+
+Node levels that changed:
+  default:stone_with_gold: level 1 -> 2
+  default:stone_with_iron: level 0 -> 1
+  grug_materials:abyssal_crystal_ore: level 4 -> 5
+  grug_materials:stone_with_diamond: level 5 -> 6
+  grug_materials:stone_with_emberglass: level 3 -> 4
+  grug_materials:stone_with_garnet: level 2 -> 3
+  grug_materials:stone_with_jade: level 1 -> 2
+  grug_materials:stone_with_ruby: level 4 -> 5
+  grug_materials:stone_with_sapphire: level 3 -> 4
+  grug_materials:stone_with_silver: level 2 -> 3
+  grug_materials:t2_stone: level 1 -> 2
+  grug_materials:t3_stone: level 2 -> 3
+  grug_materials:t4_stone: level 3 -> 4
+  grug_materials:t5_stone: level 4 -> 5
+  grug_materials:t6_stone: level 5 -> 6
+
+Picks by node class (wood, stone, bronze, iron, steel, silversteel, embersteel, abyssal_steel):
+  [level 0 cracky 0 resource 0 stratum 0 loose 0] 160 node(s): beds:bed_bottom, beds:bed_top, beds:fancy_bed_bottom, beds:fancy_bed_top, default:acacia_bush_stem, default:acacia_tree (+154 more)
+      - | - | - | - | - | - | - | -
+  [level 0 cracky 0 resource 0 stratum 0 loose 0] 24 node(s): default:acacia_bush_sapling, default:acacia_sapling, default:apple, default:aspen_sapling, default:blueberry_bush_leaves_with_berries, default:blueberry_bush_sapling (+18 more)
+      0.5000 | 0.5000 | 0.5000 | 0.5000 | 0.5000 | 0.5000 | 0.5000 | 0.5000
+  [level 0 cracky 0 resource 0 stratum 0 loose 0] 1 node(s): grug_housing:claim_stone_empty
+      60.0000 | 60.0000 | 60.0000 | 50.0000 | 40.0000 | 30.0000 | 20.0000 | 10.0000
+  [level 0 cracky 0 resource 0 stratum 0 loose 2] 2 node(s): default:gravel, grug_nodes:mesa_clay
+      3.0000 | 2.4000 | 1.0500 | 0.9800 | 0.9000 | 0.8000 | 0.7000 | 0.6000
+  [level 0 cracky 0 resource 0 stratum 0 loose 3] 25 node(s): default:clay, default:desert_sand, default:dirt, default:dirt_with_coniferous_litter, default:dirt_with_dry_grass, default:dirt_with_grass (+19 more)
+      0.7000 | 0.7000 | 0.3500 | 0.3500 | 0.3500 | 0.3500 | 0.3200 | 0.2800
+  [level 0 cracky 0 resource 1 stratum 0 loose 0] 5 node(s): default:stone_with_coal, default:stone_with_copper, default:stone_with_tin, grug_materials:stone_with_citrine, grug_materials:stone_with_quartz
+      1.6000 | 1.0000 | 0.4500 | 0.4250 | 0.2000 | 0.1167 | 0.0750 | 0.0500
+  [level 0 cracky 1 resource 0 stratum 0 loose 0] 80 node(s): default:obsidian, default:obsidian_block, default:obsidianbrick, doors:door_steel_a, doors:door_steel_b, doors:door_steel_c (+74 more)
+      - | - | 2.2500 | 2.1250 | 1.0000 | 0.5833 | 0.3750 | 0.2500
+  [level 0 cracky 2 resource 0 stratum 0 loose 0] 205 node(s): default:desert_sandstone_block, default:desert_sandstone_brick, default:desert_stone_block, default:desert_stonebrick, default:furnace, default:furnace_active (+199 more)
+      - | 2.0000 | 0.9000 | 0.8500 | 0.4000 | 0.2333 | 0.1500 | 0.1000
+  [level 0 cracky 3 resource 0 stratum 0 loose 0] 171 node(s): default:brick, default:cave_ice, default:coalblock, default:cobble, default:coral_brown, default:coral_orange (+165 more)
+      1.6000 | 1.0000 | 0.4500 | 0.4250 | 0.2000 | 0.1167 | 0.0750 | 0.0500
+  [level 0 cracky 3 resource 0 stratum 1 loose 0] 1 node(s): default:stone
+      1.6000 | 1.0000 | 0.4500 | 0.4250 | 0.2000 | 0.1167 | 0.0750 | 0.0500
+  [level 1 cracky 0 resource 1 stratum 0 loose 0] 1 node(s): default:stone_with_iron
+      1.6000->- | 1.0000->- | 0.4500 | 0.4250 | 0.2000 | 0.1167 | 0.0750 | 0.0500
+  [level 2 cracky 0 resource 2 stratum 0 loose 0] 2 node(s): default:stone_with_gold, grug_materials:stone_with_jade
+      - | - | - | 0.4250 | 0.4000 | 0.1750 | 0.1000 | 0.0625
+  [level 2 cracky 3 resource 0 stratum 2 loose 0] 1 node(s): grug_materials:t2_stone
+      - | - | - | 0.4250 | 0.4000 | 0.1750 | 0.1000 | 0.0625
+  [level 3 cracky 0 resource 3 stratum 0 loose 0] 2 node(s): grug_materials:stone_with_garnet, grug_materials:stone_with_silver
+      - | - | - | - | 0.4000 | 0.3500 | 0.1500 | 0.0833
+  [level 3 cracky 3 resource 0 stratum 3 loose 0] 1 node(s): grug_materials:t3_stone
+      - | - | - | - | 0.4000 | 0.3500 | 0.1500 | 0.0833
+  [level 4 cracky 0 resource 4 stratum 0 loose 0] 2 node(s): grug_materials:stone_with_emberglass, grug_materials:stone_with_sapphire
+      - | - | - | - | - | 0.3500 | 0.3000 | 0.1250
+  [level 4 cracky 3 resource 0 stratum 4 loose 0] 1 node(s): grug_materials:t4_stone
+      - | - | - | - | - | 0.3500 | 0.3000 | 0.1250
+  [level 5 cracky 0 resource 5 stratum 0 loose 0] 2 node(s): grug_materials:abyssal_crystal_ore, grug_materials:stone_with_ruby
+      - | - | - | - | - | - | 0.3000 | 0.2500
+  [level 5 cracky 3 resource 0 stratum 5 loose 0] 1 node(s): grug_materials:t5_stone
+      - | - | - | - | - | - | 0.3000 | 0.2500
+  [level 6 cracky 0 resource 6 stratum 0 loose 0] 1 node(s): grug_materials:stone_with_diamond
+      - | - | - | - | - | - | - | 0.2500
+  [level 6 cracky 3 resource 0 stratum 6 loose 0] 1 node(s): grug_materials:t6_stone
+      - | - | - | - | - | - | - | 0.2500
+
+Pairs that differ (2 of 17225):
+  default:stone_with_iron x grug_materials:pick_stone: 1.0000 -> -
+  default:stone_with_iron x grug_materials:pick_wood: 1.6000 -> -

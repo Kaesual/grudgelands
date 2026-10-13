@@ -434,7 +434,7 @@ local function loader(directory)
 		-- NPC seam), and a district of nine plots with four inhabited ones
 		-- is not a district anybody lives in.
 		sockets[#sockets + 1] = {id = plot.id .. "_gate_idle", role = "idle",
-			x = 0, y = 1, z = z0 + 2, face = 0, tags = {"door"}}
+			x = 0, y = 1, z = z0 + 2, face = plot.gate_face or 0, tags = {"door"}}
 		-- Whatever this plot alone publishes: the martial district's guard
 		-- posts, a district's two spare wander spots. It is handed the same
 		-- ground rectangle the decoration was, because a socket is a promise

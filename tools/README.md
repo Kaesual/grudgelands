@@ -635,7 +635,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   at login and on opening the tab (a server restart in the middle of a job
   included), gear through `crafted_output`, several output stacks above
   `stack_max`, XP per job and after an unlearn, cancel with and without room,
-  Stop after the end, the take-only output area and Take all.
+  Stop after the end, the take-only output area and Take all; since Round 47
+  the room check for the whole order, per-craft delivery into the inventory,
+  the refund of unfinished crafts, the overflow and its drain.
   `grug_probe_r45_jb` is the smoke boot's disposable probe (registry facts
   the fixture relies on).
   `r45_st` stations, cooking and alchemy (`portable_test.lua`, the real
@@ -657,7 +659,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   inventory pass per build), the quantity-field rules, the station hint with
   the disabled button, the XP hint, the progress bar's `frame_start`, the
   sends per job (start, end, cancel; none on a pure scrollbar event), the
-  overview in the box and gone from the Character tab; it prints the page's
+  overview in the box and gone from the Character tab, since Round 47 the
+  overflow shown only while it holds something and Basic's held-once
+  listing; it prints the page's
   bytes. `gen_progress_bar.py` writes the bar texture (Python standard
   library; `--check` compares its pixels). `grug_probe_r45_ui` is the smoke
   boot's disposable probe (the page's bytes with the real registry, list
@@ -835,8 +839,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `r46_or` the ore, gem and coal census: `run.sh OUT_DIR [TIMEOUT]` (one
   engine boot with the disposable probe `grug_probe_or`, `SEED=`) counts
   every resource per tier band in one 80 × 80 chunk column from y +127 to
-  −1312 against the band's host rock; `evidence/` holds seed 12345's
-  census (the rule and its pins are checked by `r29_mres` and `r24_mining`);
+  −1312 against the band's host rock (since Round 47 split at each band's
+  lower-half boundary: a `lower_half_of` ore must be absent above it);
+  `evidence/` holds seed 12345's Round 46 census (the rule and its pins are
+  checked by `r29_mres` and `r24_mining`);
   `r46_xp` kill XP by level difference (`portable_test.lua`: the factor
   at every d from −8 to +8 and the XP table, the target frame's gradient
   and gray for every mob that pays the viewer no XP, no repeatable quest
@@ -868,3 +874,50 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   box, one wood piece, clean joins at the slanted trunk pieces, leaf decay
   reach for 500 seeds per species, that the .obj files are current and that
   the page's scripts parse.
+- **Round 47** (`r47_<lane>`): `r47_ta` the tree shape nodes
+  (`portable_test.lua`: the 28 `grug_trees:<wood>_quarter|base|branch|twig`
+  nodes against `r46_tree/concept/shapes.js`, drops, groups, sounds,
+  connects, placement refusal, the leaf and ground `connect_sides`
+  overrides and that they change nothing else, leaf decay in radius 3,
+  jungle bark M and the mesh byte-equal to their Round 46 sources, and the
+  real `wp40/r6_templates.lua` turning quarters and limb grain for all four
+  rotations); `capture.sh` with `grug_probe_r47_ta` the engine captures of
+  a test patch (the Round 46 TREE capture brought back: Xvfb and one real
+  client; bark grain, quarter lighting, seams and mirroring, template
+  rotation; `SMOOTH=0`, `SHOTS=`, `SUFFIX=`), one queue run of two slots;
+  `r47_tb` the Lua port of the tree generator
+  (`mods/MAPGEN/grug_mapgen/wp40/treegen.lua`, pure Lua for the main and
+  the mapgen environment): `write_reference.js` (`--check`) writes
+  `reference.lua` from `r46_tree/concept/treegen.js` (per-seed digests of
+  300 seeds per species on flat and, for the rooted species, bumpy ground,
+  the root study, nine full node lists and the digest of `treegen.js`);
+  `portable_test.lua` checks the port against it (and that it is pure), with
+  `time` as a second argument also the time per tree per species. After a
+  change to `treegen.js`, port it and rerun the writer.
+  `r47_cr` the Basic recipe unlock
+  (`portable_test.lua`, the real `grug_jobs` registry with the real Basic
+  catalog and `basic_unlock.lua` under a stub engine): the starter set, the
+  silent first scan, groups by any member, the feed line with its count,
+  when the scan runs (an action or a dug node within 0.5 s, the 10 s
+  sweep, one slot per step); it prints the stored set's size for a
+  character that held 300 items and a scan's cost. `grug_probe_r47_cr` is
+  the UI probe (formspec dumps of a fresh character's Basic list and of the
+  overflow shown and hidden);
+  `r47_or` the lower-half rule and the Bronze gate
+  (`portable_test.lua`: the level scale, every dig time of the mining
+  harness against `evidence/dig_matrix_before.tsv`, the WP43 projection pin
+  moving by the two new fields only, the lower-half rows and the R6 content
+  refusals, the real writer on seed 12345 across the four half boundaries);
+  `run_dig.sh OUT_DIR [TIMEOUT]` with `grug_probe_dig` the engine's dig
+  matrix of every pick, axe and shovel over every node a tool digs or that
+  carries a level, `dig_table.py BEFORE AFTER` the before/after table
+  (`evidence/`: both matrices, the table, the seed 12345 census of
+  `r46_or/run.sh`); `r47_ms` the test of the migration step 0.47.0 (the
+  tool capabilities stored on crafted and broken tools rebuilt at the join):
+  `run.sh [EVIDENCE_DIR]` runs `test_step.py` (the offline step: markers
+  only) in the runner's container and `e2e.py` (a 0.45.1 world built by the
+  0.45.1 game with `grug_probe_r47_ms`, the guard's refusal, the tool, a
+  boot and a join of this checkout; until lane D declares 0.47.0 it stages
+  the game as 0.47.0 and runs the tool through `tool_run.py` with that
+  declaration); `portable_test.lua` the join part (stays in
+  `run_fixtures.sh`); `evidence/` the last run.

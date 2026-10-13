@@ -1399,9 +1399,13 @@ code, not by this document.
   held three); the deep multipliers apply to the T6 gems (Diamond, Ruby,
   Sapphire) like every T6 resource.
 - **Round 21 density calibration (accepted 2026-09-24; Round 46 changes in
-  T3 and the gem rows; Round 47 Anthracite):**
+  T3 and the gem rows, Round 47 the lower halves and Anthracite):**
   numbers below are eligible host nodes per target resource node. Dashes mean
   absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
+  "½" means only the lower half of that band at the same denominator, so the
+  band's total halves (Round 47 ruling 6): T1 y −50…−100 (T1 counted from
+  y 0), T2 −201…−300 (Anthracite), T3 −401…−500, T4 −601…−700, T5 −851…−1000
+  (`grug_materials.TIERS[].lower_half_y_max`, the row field `lower_half_of`).
   Keep existing vein caps and first-appearance/harvest boundaries. These are
   placement budgets, not independent discovery odds or measured mining time.
 
@@ -1411,12 +1415,12 @@ code, not by this document.
   | Anthracite | — | 256 ½ | 96 | 128 | 128 | 128 |
   | Copper | 96 | 192 | 384 | 384 | 384 | 384 |
   | Tin | 96 | 192 | 384 | 384 | 384 | 384 |
-  | Iron | 128 | 96 | 128 | 384 | 384 | 384 |
+  | Iron | 128 ½ | 96 | 128 | 384 | 384 | 384 |
   | Quartz | 128 | 256 | 512 | 512 | 512 | 512 |
   | Gold | — | 512 | 256 | 128 | 256 | 256 |
-  | Silver | — | — | 256 | 128 | 256 | 512 |
-  | Emberglass | — | — | — | 256 | 128 | 256 |
-  | Abyssal Crystal | — | — | — | — | 512 | 256 |
+  | Silver | — | — | 256 ½ | 128 | 256 | 512 |
+  | Emberglass | — | — | — | 256 ½ | 128 | 256 |
+  | Abyssal Crystal | — | — | — | — | 512 ½ | 256 |
   | Citrine | 512 | 1024 | 2048 | — | — | — |
   | Jade | — | 512 | 1024 | 2048 | — | — |
   | Garnet | — | — | 512 | 1024 | 2048 | — |
@@ -1425,18 +1429,22 @@ code, not by this document.
   | Diamond | — | — | — | — | — | 512 |
 
   The quarter-density floor retains older inputs at depth; T1 Iron keeps its
-  former density as a bootstrap exception. Gold peaks at T4 and remains
+  former density as a bootstrap exception, in T1's lower half only. A
+  next-tier ingredient lies in the band before its own only in that band's
+  lower half (Round 47): the next tier is found by digging deep in the
+  current one. Gold peaks at T4 and remains
   useful at T5/T6, matching Goldsmith demand. T3 is the Steel band (Iron
   Bar and Anthracite), so Iron and Anthracite there carry the T2 supply
   (Round 46; Round 47 rulings 8–9: Anthracite replaces Coal from T3 down,
   so no Coal ore lies below y −300, and from T3 down it is never rarer than
   Iron: every alloy bar from T3 to T6 holds one Steel bar, so one
-  Anthracite and one Iron Bar). "½" means only the lower half of the band
-  (T2: y −201…−300), with the same denominator. A
+  Anthracite and one Iron Bar). A
   next-tier ingredient peaks in the band where its consumers mine: Iron in
   T2, Silver in T4, Emberglass in T5, Abyssal Crystal in T6. All resources
-  together are about 5.4 % of the host rock in T1, 3.9 % in T2, 3.7 % in T3, 4.1 %
-  in T4, 3.9 % in T5 and 3.5 % in T6.
+  together are about 4.9 % of the host rock in T1, 3.9 % in T2, 3.5 % in T3,
+  3.8 % in T4 and T5 and 3.5 % in T6 (the Round 47 census of seed
+  12345, `tools/r47_or/evidence/census_seed12345.txt` and, with
+  Anthracite, `tools/r47_an/evidence/census_seed12345.txt`).
 - **Ground anyone may dig carries the ordinary distribution** (user ruling
   2026-10-07): ores, coal and gems are absent only where digging is
   forbidden for everyone, never in ground some player may dig.

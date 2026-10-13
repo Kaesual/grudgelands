@@ -9,6 +9,7 @@
 -- against its denominator N (wp40/r7_r6_manifest.lua). Checks:
 --   * a resource with no denominator in a band has no node there (the gem
 --     bands: own tier, one and two tiers deeper, nowhere else);
+--   * a lower-half resource (Round 47) has no node above its band's half;
 --   * the band share within 10 % of the table (budget rounding and veins
 --     cut by caves or collisions; rough targets only).
 -- The column must be open land: the probe logs the columns that answer a
@@ -40,8 +41,11 @@ end
 -- The live mapgen rows, read from the shipped constructor values.
 local rows = dofile(core.get_modpath("grug_mapgen") ..
 	"/wp40/r7_r6_manifest.lua")().resources
-local denominator_of = {}
-for _, row in ipairs(rows) do denominator_of[row.key] = row.denominators end
+local denominator_of, lower_half_of = {}, {}
+for _, row in ipairs(rows) do
+	denominator_of[row.key] = row.denominators
+	lower_half_of[row.key] = row.lower_half_of
+end
 
 local function ground_report()
 	local flagged, kinds, water = 0, {}, {}
@@ -67,6 +71,21 @@ local function ground_report()
 		table.concat(kind_parts, " "), table.concat(parts, " ")))
 end
 
+-- One side of a band: host and per-resource counts in y_min..y_max.
+local function count_side(names, y_min, y_max)
+	if y_min > y_max then return 0, {} end
+	local _, counts = core.find_nodes_in_area({x = X0, y = y_min, z = Z0},
+		{x = X0 + 79, y = y_max, z = Z0 + 79}, names)
+	local host = 0
+	for _, name in ipairs(names) do host = host + (counts[name] or 0) end
+	return host, counts
+end
+
+-- Round 47 (ruling 6): a row's `lower_half_of` band holds the resource only
+-- at or below the band's `lower_half_y_max`. Each band with a boundary is
+-- counted in its two halves; a lower-half resource must be absent from the
+-- upper one and its denominator is checked against the lower half's host,
+-- every other resource against the whole band's.
 local function survey()
 	local tiers = grug_materials.TIERS
 	local resources = grug_materials.RESOURCES
@@ -79,17 +98,27 @@ local function survey()
 		local y_min = math.max(Y_BOTTOM, tier.y_min)
 		local names = {tier.node}
 		for i = 1, #resources do names[#names + 1] = resources[i].natural_node end
-		local _, counts = core.find_nodes_in_area({x = X0, y = y_min, z = Z0},
-			{x = X0 + 79, y = y_max, z = Z0 + 79}, names)
-		local host, total, expected_share = 0, 0, 0
-		for _, name in ipairs(names) do host = host + (counts[name] or 0) end
+		local half = tier.lower_half_y_max
+		local split = half and math.max(y_min - 1, math.min(y_max, half)) or y_min - 1
+		local upper_host, upper = count_side(names, split + 1, y_max)
+		local lower_host, lower = count_side(names, y_min, split)
+		local host = upper_host + lower_host
+		local total, expected = 0, 0
 		local parts = {}
 		for _, resource in ipairs(resources) do
-			local count = counts[resource.natural_node] or 0
+			local name = resource.natural_node
+			local up, low = upper[name] or 0, lower[name] or 0
+			local count = up + low
 			local denominator = denominator_of[resource.key][band]
 			total = total + count
-			if denominator then
-				expected_share = expected_share + 1 / denominator
+			if denominator and lower_half_of[resource.key] == band then
+				expected = expected + lower_host / denominator
+				check(up == 0, resource.key .. " above the T" .. band .. " half: " .. up)
+				parts[#parts + 1] = ("%s=%d lower half (1/%s vs %d, upper %d)"):format(
+					resource.key, count, low > 0 and ("%.0f"):format(lower_host / low) or "-",
+					denominator, up)
+			elseif denominator then
+				expected = expected + host / denominator
 				parts[#parts + 1] = ("%s=%d (1/%s vs %d)"):format(resource.key, count,
 					count > 0 and ("%.0f"):format(host / count) or "-", denominator)
 			else
@@ -99,8 +128,10 @@ local function survey()
 			end
 		end
 		local share = host > 0 and total / host or 0
-		log(("T%d | y %d..%d | host %d | resources %d | share %.2f %% (table %.2f %%, ratio %.3f)"):format(
-			band, y_min, y_max, host, total, 100 * share, 100 * expected_share,
+		local expected_share = host > 0 and expected / host or 0
+		log(("T%d | y %d..%d | host %d (lower half from y %s: %d) | resources %d | share %.2f %% (table %.2f %%, ratio %.3f)"):format(
+			band, y_min, y_max, host, half and tostring(half) or "-", lower_host, total,
+			100 * share, 100 * expected_share,
 			expected_share > 0 and share / expected_share or 0))
 		log(("T%d | %s"):format(band, table.concat(parts, "; ")))
 		check(host > 100000, "band " .. band .. " has host rock")

@@ -290,7 +290,7 @@ local function loader(directory)
 				return {
 					plots.work("pen_saw", "chop", -8, -9, 0),
 					plots.spare("pen_forage", -6, -4, 2),
-					plots.spare("stock_pen", 10, -11, 0),
+					plots.spare("stock_pen", 10, -11, 2), -- Round 47: 0 faced a post
 				}
 			end},
 
@@ -329,7 +329,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("spoil_pick", "forage", -4, -1, 2),
-					plots.spare("spoil_saw", -6, -5, 0),
+					plots.spare("spoil_saw", -6, -5, 2), -- Round 47: 0 faced a post
 					plots.spare("spoil", 6, 6, 2),
 				}
 			end},

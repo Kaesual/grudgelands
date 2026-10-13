@@ -928,9 +928,9 @@ local function loader(directory)
 		socket("platform_post_west", "guard_post", PLATFORM.x1 + 2,
 			PLATFORM.top + 1, PLATFORM.z1 + 1, 2)
 		socket("platform_post_east", "guard_post", PLATFORM.x2 - 3,
-			PLATFORM.top + 1, PLATFORM.z1 + 1, 2)
+			PLATFORM.top + 1, PLATFORM.z1 + 1, 0) -- Round 47: 2 faced the wall
 		socket("platform_idle", "idle", PLATFORM.x1 + 4, PLATFORM.top + 1,
-			PLATFORM.z2 - 1, 0, {tags = {"work"}})
+			PLATFORM.z2 - 1, 2, {tags = {"work"}}) -- Round 47: 0 faced the wall
 		-- The muster court's own people: four work spots at the court's
 		-- features and the fires and benches the rest of the quarter stands at.
 		-- THE MUSTER GROUND'S OWN PAIR. A `spar` socket's feature is its
@@ -941,12 +941,14 @@ local function loader(directory)
 		socket("court_work_spar_b", "work", 31, 1, 24, 3, {activity = "spar"})
 		socket("court_work_fire", "work", 37, 1, 19, 0, {activity = "brew"})
 		socket("court_work_rack", "work", 26, 1, 39, 0, {activity = "sweep"})
-		socket("court_idle_store", "idle", 36, 1, 20, 3, {tags = {"work"}})
+		socket("court_idle_store", "idle", 36, 1, 20, 1, {tags = {"work"}}) -- Round 47: 3 faced a post
 		socket("court_idle_wain", "idle", 37, 1, 31, 1, {tags = {"work"}})
-		socket("court_idle_fire", "idle", 23, 1, 17, 1, {tags = {"fire"}})
+		socket("court_idle_fire", "idle", 23, 1, 17, 3, {tags = {"fire"}}) -- Round 47: 1 faced a post
 		socket("court_idle_bench", "idle", 43, 1, 37, 1, {tags = {"bench"}})
 		socket("forecourt_idle_west", "idle", -9, 1, 3, 1, {tags = {"door"}})
-		socket("forecourt_idle_east", "idle", 3, 1, 4, 3, {tags = {"door"}})
+		-- Round 47: facing the door (1), which `door` turns round; 3 had
+		-- turned it to the wall.
+		socket("forecourt_idle_east", "idle", 3, 1, 4, 1, {tags = {"door"}})
 		socket("crossing_idle_west", "idle", -5, 1, -4, 0, {tags = {"bench"}})
 		socket("crossing_idle_east", "idle", 5, 1, -4, 2, {tags = {"bench"}})
 		-- SPARE SPOTS. `spawn = false` is the sockets contract's own word for

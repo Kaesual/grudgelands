@@ -293,8 +293,9 @@ function handoff.validate_public(materials, projection)
 		fail("tier projection count mismatch")
 	end
 	for i, tier in ipairs(projection.tiers) do
+		-- Round 47 level scale: tier 1 needs no level, tier N >= 2 level N.
 		if materials.TIER_BY_KEY[tier.key] ~= materials.TIERS[i] or
-				materials.level_for_tier(i) ~= i - 1 then
+				materials.level_for_tier(i) ~= (i > 1 and i or 0) then
 			fail("tier public lookup mismatch for " .. tier.key)
 		end
 		for _, y in ipairs({tier.y_min - 1, tier.y_min, tier.y_min + 1,

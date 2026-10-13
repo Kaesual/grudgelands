@@ -68,6 +68,9 @@ local function loader(directory)
 		-- it publishes here is the district's spare wander spot and, at the
 		-- west one, a mourner at the candle on its step.
 		{id = "homes_fallen_west", module = "buildings", make = "ruin",
+			-- Round 47: the gate spot looks along the street; both ways
+			-- in and out the ruin's walls stand a node away.
+			gate_face = 1,
 			order = 5, spec = {w = 9, d = 9, wall_h = 5, phase = 0},
 			decorate = barred_and_lit,
 			extra_sockets = function(area)
@@ -75,6 +78,9 @@ local function loader(directory)
 					area.ox + 4, area.oz - 4, 0)}
 			end},
 		{id = "homes_fallen_east", module = "buildings", make = "ruin",
+			-- Round 47: the gate spot looks along the street; both ways
+			-- in and out the ruin's walls stand a node away.
+			gate_face = 1,
 			order = 6, spec = {w = 9, d = 11, wall_h = 5, phase = 2},
 			decorate = barred_and_lit,
 			extra_sockets = function(area)
@@ -228,7 +234,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("green", 4, -5, 0),
+					plots.spare("green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

@@ -1,0 +1,26 @@
+# LC_ALL=C KEEP=1 PROBE=tools/r47_cr/grug_probe_r47_cr tools/luanti_headless.sh 120
+# (2026-10-13, branch r47-cr, seed 12538923519178656012; boot PASS; the [r47cr_probe] lines of server.log)
+[r47cr_probe] bytes a fresh character's Basic page: content 2114, page 3172
+[r47cr_probe] fresh rows: Stick | Wooden Axe | Wooden Pickaxe | Wooden Shovel | Wooden Hoe
+[r47cr_probe] fresh pager: Page 1 of 1
+[r47cr_probe] fresh: 5 of 402 Basic recipes known
+[r47cr_probe] ok a fresh character knows the five starter recipes
+[r47cr_probe] ok the first scan says nothing
+[r47cr_probe] ok the first scan stores the empty set
+[r47cr_probe] bytes after holding a tree and coal: content 2611, page 3669
+[r47cr_probe] held rows: Apple Wood Planks | Coal Block | Stick | Wooden Axe | Wooden Pickaxe | Wooden Shovel | Black Dye | Wooden Hoe
+[r47cr_probe] held feed: New recipes: Apple Wood Planks and 2 more
+[r47cr_probe] ok the feed line
+[r47cr_probe] held set: 1 default:coal_lump default:tree group:coal
+[r47cr_probe] overflow empty, right column: box[10.4,0.95;2.9,8.09;#00000040]label[10.6,1.35;No job running]
+[r47cr_probe] ok no overflow slots while empty
+[r47cr_probe] bytes with something in the overflow: content 3411, page 4469
+[r47cr_probe] overflow shown, right column: box[10.4,0.95;2.9,8.09;#00000040]label[10.6,1.35;No job running]label[10.6,3.55;(c@#f0c75e)Overflow(c@#fff)]list[current_player;grug_craft_out;10.6,3.9;2,2;]listring[current_player;grug_craft_out]listring[current_player;grug_inbox]listring[current_player;main]label[10.6,6.5;(c@#9a9a9a)These move into(c@#fff)]label[10.6,6.9;(c@#9a9a9a)your inventory(c@#fff)]label[10.6,7.3;(c@#9a9a9a)when there is(c@#fff)]label[10.6,7.7;(c@#9a9a9a)room.(c@#fff)]
+[r47cr_probe] ok the overflow slots while it holds something
+[r47cr_probe] ok the planks-from-tree recipe
+[r47cr_probe] ok a 2-craft job of planks starts (nil)
+[r47cr_probe] deliver at 1.2 s: 4 planks, job running
+[r47cr_probe] ok one craft delivered at 1.2 s
+[r47cr_probe] deliver at 2.3 s: 8 planks, job done
+[r47cr_probe] ok both at the end
+[r47cr_probe] PROBE PASS

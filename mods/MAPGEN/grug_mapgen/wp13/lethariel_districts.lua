@@ -43,8 +43,10 @@ local function loader(directory)
 	local function shop_counter(buf, palette, area)
 		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
 	end
-	local function shop_vendor(id, kind, area)
-		return plots.vendor(id, kind, area.x1 - 4, area.z0, 0)
+	-- `face` (default 0, the shop) turns a trader whose shop front has a
+	-- post where the counter would be (Round 47, NPCs face away from walls).
+	local function shop_vendor(id, kind, area, face)
+		return plots.vendor(id, kind, area.x1 - 4, area.z0, face or 0)
 	end
 	-- A TRAINING DUMMY, the feature the sockets contract's `spar` activity
 	-- names: "another `spar` socket or a training dummy (a fence post or a
@@ -61,8 +63,9 @@ local function loader(directory)
 	-- And the work socket at the counter's own far end, facing it: `stall` is
 	-- the sockets contract's "stands at a counter", and a counter is a solid
 	-- node at waist height, which is exactly what `dressing.counter` writes.
-	local function shop_work(id, area)
-		return plots.work(id, "stall", area.x1 - 5, area.z0, 0)
+	-- `face` as for `shop_vendor` (Round 47).
+	local function shop_work(id, area, face)
+		return plots.work(id, "stall", area.x1 - 5, area.z0, face or 0)
 	end
 
 	----------------------------------------------------------------------
@@ -184,7 +187,7 @@ local function loader(directory)
 				return {
 					plots.spare("bakehouse", area.x1 - 1, area.z1 - 1, 2),
 					plots.work("oven", "stall", area.x0 + 2, area.z0, 0),
-					shop_vendor("baker", "baker", area),
+					shop_vendor("baker", "baker", area, 2), -- Round 47: a post at 0
 				}
 			end},
 	}
@@ -293,7 +296,7 @@ local function loader(directory)
 				-- x = -4: the plot builder sets a bench at x 3..5 on this very
 				-- row, and a guard standing in it is a guard standing in a
 				-- bench.
-				return {plots.guard_post("barracks_gate", -4, area.z0 + 2, 0)}
+				return {plots.guard_post("barracks_gate", -4, area.z0 + 2, 2)}
 			end},
 		-- The armoury, with the armourer's counter on the apron.
 		{id = "martial_armoury", module = "buildings", make = "workshop",
@@ -306,7 +309,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function(area)
 				return {
-					shop_work("counter", area),
+					shop_work("counter", area, 2), -- Round 47: a post at 0
 					shop_vendor("armourer", "armourer", area),
 				}
 			end},
@@ -315,7 +318,7 @@ local function loader(directory)
 		{id = "martial_tower", module = "buildings", make = "watchpost",
 			order = 3, spec = {w = 9, d = 9, wall_h = 4},
 			extra_sockets = function(area)
-				return {plots.guard_post("tower", -3, area.z0 + 2, 0)}
+				return {plots.guard_post("tower", -3, area.z0 + 2, 2)}
 			end},
 		-- The muster hall.
 		{id = "martial_hall", module = "buildings", make = "hall",
@@ -690,7 +693,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
-					plots.spare("green", 4, -5, 0),
+					plots.spare("green", 4, -5, 2), -- Round 47: 0 faced the green's tree
 				}
 			end},
 	}

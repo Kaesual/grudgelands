@@ -64,22 +64,26 @@ grug_savanna|default:dry_dirt_with_dry_grass|default:dry_dirt|3|default:sand|def
 grug_swamp|grug_nodes:mud|grug_nodes:mud|2|grug_nodes:mud|grug_nodes:mud|-
 ]]
 
+-- key|first tier|host nodes per ore by band T1..T6|max nodes per vein, and
+-- an optional fifth field `lower_half_of` (Round 47 ruling 6): in that band
+-- the ore lies only at or below the band's `lower_half_y_max`
+-- (grug_materials.TIERS) at the same denominator, so the band total halves.
 local RESOURCE_ROWS = [[
-abyssal_crystal|5|-;-;-;-;512;256|2
-anthracite|2|-;256;96;128;128;128|8
+abyssal_crystal|5|-;-;-;-;512;256|2|5
+anthracite|2|-;256;96;128;128;128|8|2
 citrine|1|512;1024;2048;-;-;-|2
 coal|1|64;128;-;-;-;-|8
 copper|1|96;192;384;384;384;384|8
 diamond|6|-;-;-;-;-;512|2
-emberglass|4|-;-;-;256;128;256|4
+emberglass|4|-;-;-;256;128;256|4|4
 garnet|3|-;-;512;1024;2048;-|2
 gold|2|-;512;256;128;256;256|4
-iron|1|128;96;128;384;384;384|8
+iron|1|128;96;128;384;384;384|8|1
 jade|2|-;512;1024;2048;-;-|2
 quartz|1|128;256;512;512;512;512|8
 ruby|5|-;-;-;-;512;1024|2
 sapphire|4|-;-;-;512;1024;2048|2
-silver|3|-;-;256;128;256;512|4
+silver|3|-;-;256;128;256;512|4|3
 tin|1|96;192;384;384;384;384|8
 ]]
 
@@ -178,6 +182,7 @@ return function()
 		resources[#resources + 1] = {key = row[1],
 			first_tier = assert(tonumber(row[2])), denominators = denominators,
 			max_nodes_per_vein = assert(tonumber(row[4])),
+			lower_half_of = row[5] and assert(tonumber(row[5])) or nil,
 			deep_1500_1999_numerator = 5, deep_1500_1999_denominator = 4,
 			deep_2000_floor_numerator = 3, deep_2000_floor_denominator = 2}
 	end)

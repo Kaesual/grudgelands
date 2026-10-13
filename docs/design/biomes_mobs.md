@@ -1246,8 +1246,27 @@ accept any; race woods matter for looks + settlement schematics).
 | Dwarf | Mountain Pine | BASE pine_tree.mts (+snowy) | default pine | pine planks, stonebrick, grug_nodes:carved_granite (stone retint) | pine hills, crags edge |
 | Elf | Silverwood | aspen_tree.mts node-substituted (**new** silverwood variant) + **new** great_silverwood.mts (treehouse base, §1.4) | grug_trees:silverwood_{tree,wood,leaves,sapling} — pale bark/leaf retint of aspen | silverwood planks, grug_nodes:marble (white stone retint; sold by dwarven vendors — trade hook) | elf forest only (the deep forest grows real aspen, §2) |
 | Orc | Spikethorn Acacia | BASE acacia_tree.mts | default acacia | acacia planks, grug_nodes:adobe (dry-dirt+straw craft), bone block | savanna, badlands edge |
-| Troll | Kapok | BASE jungle_tree.mts + emergent | default junglewood | jungle planks, mossycobble, grug_nodes:carved_totem (deco) | jungle edge, deep jungle |
+| Troll | Kapok | BASE jungle_tree.mts + emergent | default junglewood (jungle bark M on the tree, Round 47) | jungle planks, mossycobble, grug_nodes:carved_totem (deco) | jungle edge, deep jungle |
 | Undead | Gravewood | two original dead-tree .mts files (bent, forked wood with scattered grey dead leaves) | grug_trees:gravewood_{tree,wood,leaves,sapling} — blackened apple-log retint | gravewood planks, grug_nodes:cursed_cobble (mossycobble retint), bone block | blight, bone forest, swamp variant |
+
+**Tree shape nodes** (Round 47, `grug_trees/shapes.lua`; the approved
+concept in [tree-rework-handoff.md](../planning/tree-rework-handoff.md) §3).
+Seven wood types — `apple` (`default:tree`), `jungle` (`default:jungletree`,
+also kapok), `acacia`, `pine`, `aspen` (`default:*`), `silverwood` and
+`gravewood` (`grug_trees:*`) — each get four pieces:
+`grug_trees:<wood>_quarter` (a quarter of an octagon trunk, mesh
+`grug_tree_quarter_oct.obj`, facedir 0–3), `_base` (limb base, 12/16),
+`_branch` (10/16) and `_twig` (6/16), connected boxes whose bark grain
+follows facedir 0 / 4 / 12 (along y / z / x). Each piece drops its trunk,
+copies its groups and sounds, keeps its leaves from decaying within 3 nodes
+(radius 3 for every wood, the shapes included) and cannot be placed by a
+player. Twigs join a leaf only above them (the seven woods' leaves and the
+swamp leaves declare `connect_sides = {"bottom"}`; the swamp leaves and
+hanging moss decay to gravewood wood); the base and the twig join the ground only
+below them (every `group:soil` and `group:sand` node and `default:gravel`
+declare `connect_sides = {"top"}`, 26 nodes with the swamp ground). The
+jungle tree and the jungle pieces wear the jungle bark M (`grug_trees_jungle_bark*.png`, CC0). The
+world generator and saplings place the pieces (Round 47 lanes TB/TC).
 
 Missing assets summary: silverwood + gravewood textures (retints),
 great_silverwood.mts treehouse schematic (WP13; the ordinary Gravewood schematics are shipped), adobe/
