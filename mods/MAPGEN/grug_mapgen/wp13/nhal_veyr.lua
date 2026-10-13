@@ -784,8 +784,7 @@ local function loader(directory)
 				if hash % 5 < 3 and tree_ground(tx, tz) and
 						layout.natural_area(buf, tx - 1, tz - 1, tx + 1,
 							tz + 1) and
-						layout.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
-							height + 2) then
+						layout.tree_room(buf, tx, tz) then
 					if dressing.gravewood(buf, undead, tx, tz, height) then trees = trees + 1 end
 				end
 			end

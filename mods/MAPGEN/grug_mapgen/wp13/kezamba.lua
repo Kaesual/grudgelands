@@ -692,8 +692,7 @@ local function loader(directory)
 				{-38, 20, 15}, {44, -20, 16}, {-36, 30, 15}, {-16, -26, 16},
 				{-42, -20, 15}, {16, -8, 16}, {-40, 44, 15}}) do
 			if mask.pad_area(spot[1] - 3, spot[2] - 3, spot[1] + 3, spot[2] + 3)
-					and layout.free_area(buf, spot[1] - 3, spot[2] - 3,
-						spot[1] + 3, spot[2] + 3, 21) then
+					and layout.tree_room(buf, spot[1], spot[2]) then
 				if dressing.emergent(buf, timber, spot[1], spot[2], spot[3]) then
 					emergents = emergents + 1
 				end
@@ -711,8 +710,7 @@ local function loader(directory)
 				{-6, -28, 9}, {12, -8, 8}, {-16, 16, 9}, {-24, 16, 8},
 				{-38, 40, 9}, {-44, 36, 8}, {28, -8, 9}}) do
 			if mask.pad_area(spot[1] - 2, spot[2] - 2, spot[1] + 2, spot[2] + 2)
-					and layout.free_area(buf, spot[1] - 2, spot[2] - 2,
-						spot[1] + 2, spot[2] + 2, 14) then
+					and layout.tree_room(buf, spot[1], spot[2]) then
 				if dressing.jungle_tree(buf, timber, spot[1], spot[2], spot[3]) then
 					canopy = canopy + 1
 				end

@@ -137,6 +137,29 @@ local function loader(directory)
 		return true
 	end
 
+	-- Room for a town tree's stem (Round 47 groves follow-up): the stem's
+	-- column and its eight neighbours hold nothing built in the four courses
+	-- above the ground, another town tree's leaf aside. The tree routine
+	-- itself (`dressing.grown`) fits every cell; this keeps a trunk off a
+	-- wall's foot, nothing more, so crowns may interleave.
+	function M.tree_room(buf, x, z)
+		local leaves = buf.grown_leaves or {}
+		for dz = -1, 1 do
+			for dx = -1, 1 do
+				local below = buf:at(x + dx, 0, z + dz)
+				if below == nil or below.name == "air" then return false end
+				for y = 1, 4 do
+					local cell = buf:at(x + dx, y, z + dz)
+					if cell ~= nil and cell.name ~= "air" and
+							not leaves[(x + dx) .. ":" .. y .. ":" .. (z + dz)] then
+						return false
+					end
+				end
+			end
+		end
+		return true
+	end
+
 	function M.free_area(buf, x1, z1, x2, z2, height)
 		for z = z1, z2 do
 			for x = x1, x2 do
@@ -189,7 +212,7 @@ local function loader(directory)
 		for _, spot in ipairs(spots) do
 			local x, z, height = spot[1], spot[2], spot[3] or 10
 			if M.natural(buf, x, z) and
-					M.free_area(buf, x - 2, z - 2, x + 2, z + 2, height + 1) then
+					M.tree_room(buf, x, z) then
 				if dressing.tree(buf, palette, x, z, height) then planted = planted + 1 end
 			end
 		end
@@ -217,8 +240,7 @@ local function loader(directory)
 				local tz = z + math.floor(hash / 3) % 3 - 1
 				local stem = height + hash % 2
 				if M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
-						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
-							stem + 5) then
+						M.tree_room(buf, tx, tz) then
 					if draw(buf, palette, tx, tz, stem) then planted = planted + 1 end
 				end
 			end
@@ -241,8 +263,7 @@ local function loader(directory)
 				local height = 5 + hash % 3
 				if hash % 5 < 3 and
 						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
-						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
-							height + 2) then
+						M.tree_room(buf, tx, tz) then
 					if dressing.gravewood(buf, palette, tx, tz, height) then planted = planted + 1 end
 				end
 			end
@@ -284,8 +305,7 @@ local function loader(directory)
 			if tx >= -radius + 3 and tx <= radius - 3 and
 					tz >= -radius + 3 and tz <= radius - 3 and
 					M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
-					M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
-						height + 2) then
+					M.tree_room(buf, tx, tz) then
 				if dressing.columnar(buf, palette, tx, tz, height) then planted = planted + 1 end
 			end
 		end
@@ -326,8 +346,7 @@ local function loader(directory)
 						tx >= -radius + 3 and tx <= radius - 3 and
 						tz >= -radius + 3 and tz <= radius - 3 and
 						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
-						M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
-							height + 2) then
+						M.tree_room(buf, tx, tz) then
 					if dressing.tree(buf, palette, tx, tz, height) then planted = planted + 1 end
 				end
 			end
@@ -352,8 +371,7 @@ local function loader(directory)
 						tx >= -radius + 3 and tx <= radius - 3 and
 						tz >= -radius + 3 and tz <= radius - 3 and
 						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
-						M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
-							height + 4) then
+						M.tree_room(buf, tx, tz) then
 					if dressing.jungle_tree(buf, palette, tx, tz, height) then planted = planted + 1 end
 				end
 			end
@@ -386,8 +404,9 @@ local function loader(directory)
 		for _, spot in ipairs(spots) do
 			local x, z, height = spot[1], spot[2], spot[3] or 18
 			if rooted(x - 2, z - 2, x + 2, z + 2) and
-					M.free_area(buf, x - 3, z - 3, x + 3, z + 3, height + 5) then
-				if dressing.emergent(buf, palette, x, z, height) then planted = planted + 1 end
+					M.tree_room(buf, x, z) then
+				-- a start's authorized volume ends at y 24
+				if dressing.emergent(buf, palette, x, z, height, 24) then planted = planted + 1 end
 			end
 		end
 		return planted
