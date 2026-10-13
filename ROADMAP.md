@@ -26,7 +26,8 @@ remain delivered foundations, with this refinement work still ahead.
   areas dominated by wind, add more surface variety, more varied tree shapes
   and more distinctive cities. Rebalance ores, gems and coal, with many ores
   and gems available across more depth tiers (a first pass shipped in
-  0.46.0: gems one and two tiers deeper, more Coal and Iron in T3).
+  0.46.0: gems one and two tiers deeper, more Coal and Iron in T3; 0.47.0
+  added generated trees, the swamp and a mining ladder with Anthracite).
 - **Crafting with more character and purpose:** build on the improved
   recipe system with more variety, wit and versatility, especially in
   Cooking. Explore a broader range of useful food buffs.
@@ -457,8 +458,21 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   elites and the depth pulse (WP34) below −300; rage by weapon speed and
   caster spells half from the weapon; coin bags instead of the sell-only
   drops; plain dishes so every start zone cooks; repair only in towns; the
-  waiting point. Complete on 2026-10-13; not pushed yet (pushed only on
-  the user's word). Next: the GUI test and a fix round.
+  waiting point. Complete on 2026-10-13; never deployed on its own, it
+  ships with 0.47.0.
+- [x] **Round 47 "Trees, mining progression and crafting feedback"**
+  ([completion](docs/planning/round47-plan.md#completion-2026-10-14)),
+  version 0.47.0, **map reset** plus the step 0.47.0: trees from a seeded
+  generator in every world (shape nodes, roots, saplings, town groves,
+  greened towns and capitals); the swamp with its ground mix, pools,
+  plants and stilted trees; next-tier ores only in the lower half of the
+  band before, Iron behind a Bronze pick, Anthracite replacing Coal from
+  T3 and the only Steel source; quieter furnaces; crafts delivered into
+  the inventory and Basic recipes unlocked by held ingredients; NPCs
+  facing away from walls and first-entry zone XP; the map window's
+  marker layers. Complete on 2026-10-14; main pushed by the user as a
+  backup, the closing documentation on the user's word. Next: the GUI
+  test of 0.46.0 and 0.47.0 together.
 
 ### Remaining work
 
@@ -492,15 +506,16 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 43](BACKLOG.md#round-43-carry-overs),
   [Round 44](BACKLOG.md#round-44-carry-overs),
   [Round 45](BACKLOG.md#round-45-carry-overs),
-  [0.45.1](BACKLOG.md#0451-carry-overs) and
-  [Round 46](BACKLOG.md#round-46-carry-overs) carry-overs (Round 40: the
+  [0.45.1](BACKLOG.md#0451-carry-overs),
+  [Round 46](BACKLOG.md#round-46-carry-overs) and
+  [Round 47](BACKLOG.md#round-47-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
   Round 44: theoretical UI and step notes, the map icon overlaps for the
   GUI test; Round 45: theoretical crafting, inventory, mount and step
   notes; Round 46: depth pulse, spawn, placement, crafting and price
-  notes);
+  notes; Round 47: tree, swamp, mining, crafting and map window notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

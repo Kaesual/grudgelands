@@ -12,11 +12,101 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.47.0 — trees, mining progression and crafting feedback (in progress)
+## 0.47.0 — trees, mining progression and crafting feedback (2026-10-14)
 
-Round 47 is under way ([plan](docs/planning/round47-plan.md)); lane D writes
-this entry when the round closes. **Map reset** plus a migration step (stored
-tool capabilities are rebuilt at the next join).
+New trees grown from each world's seed, a swamp worth walking through, a
+mining ladder with Anthracite and Steel, quieter furnaces, crafts that land
+in your bags and recipes you discover by holding their ingredients.
+**Map reset** needed: world generation changed, so an existing world's map
+is generated anew from its seed. Characters keep their level, gear,
+inventory, money, quests, professions, mounts and waypoints; their
+position and home claim go with the old map. **Plus a migration step:**
+the copies of tool capabilities that crafted and broken tools keep are
+rebuilt at each character's next join (last point below).
+
+- **Trees and forests:** every tree species grows from a generator with a
+  stem, limbs, twigs and round, uneven crowns, and every world has its own
+  trees: 32 shapes per species (16 for the kapok) made from the world's
+  seed at each start. Thick trunks have slanted, eight-sided sides,
+  limbs join the trunk, twigs reach into the leaves, and apple, jungle and
+  kapok trees put roots on the ground around them. A partly felled thick
+  trunk shows cut wood. Jungle trees have a new deep red-brown bark. Every
+  trunk piece drops its log; the pieces cannot be placed. Leaves decay
+  once no wood of their tree is within 3 blocks. Wild forests are about
+  as dense as before, with crowns that sometimes interleave, and a
+  planted sapling grows a tree of the same kind (apples on it regrow).
+- **Towns and capitals:** town trees come from the same generator. Town
+  groves are denser and never empty, start towns gain trees on free
+  ground, and the six capitals get trees on the open grass between their
+  districts and in their yards (about 1,560 on a world, different on
+  every world), never on streets, squares, doors or near an NPC. The
+  stone kerb round each capital plot is gone.
+- **The swamp:** the ground mixes mud, lighter and mottled mud, wet grass
+  and moss soil. Small pools one or two blocks deep with waterlilies and
+  reeds lie on flat ground and never spill; reeds, cattails, ferns, tall
+  grass and moss carpets grow round them. Swamp trees stand low and
+  crooked on short stilts, with sparse olive leaves and hanging moss.
+  Crocodiles, bog oozes and bog fowl spawn on all the new grounds.
+- **Mining and ores:** an ore that belongs to the next layer lies only in
+  the lower half of the layer above it: no Iron above y −50, Silver
+  below −400, Emberglass below −600, Abyssal Crystal below −850. Iron now
+  needs a Bronze pick ("Requires a Bronze pick"); Wood and Stone picks no
+  longer dig it, and every other dig time stays the same. **Anthracite**
+  is a new ore from y −200 (with an Iron pick) that replaces Coal from
+  y −300 down; below −300 there is no Coal. Anthracite burns 120 s in a
+  furnace (Coal 80 s), and 1 Anthracite and 1 Stick make 10 Anthracite
+  Torches, which light wider (14) and keep cave creatures about 6 blocks
+  away (a Coal torch 4).
+- **Steel and furnaces:** Steel is Iron Bar + Anthracite in the Dual
+  Furnace, and only that. Every alloy takes 10 s, like a bar. The Dual
+  Furnace now plays the furnace's fire sound, both furnaces play it at
+  60 % of the old volume (camp fires are unchanged), and a dug furnace
+  falls silent within a quarter second.
+- **Claim Stone:** its fuel limit is time, about 30 days (99 lumps'
+  worth); Anthracite counts as one and a half lumps. A piece goes in only
+  if all of its time fits, otherwise the stone says how much more it
+  takes. Picking the stone up still refunds the rest in Charcoal, and
+  activation still takes 5 Coal or Charcoal. T2 armour enchants take any
+  coal (Charcoal too), T3 sword and armour enchants take Anthracite.
+- **Crafting:** finished items go straight into your inventory, one by
+  one as each craft finishes. A craft starts only if its result fits once
+  the ingredients are taken ("Not enough room in inventory"; Max counts
+  the room). If your bags fill up meanwhile, the rest waits in an
+  **Overflow** area that shows only then and empties itself as soon as
+  there is room; Take all is gone. Enchants and upgrades also deliver into
+  the inventory. **Basic recipes unlock** once you have held every
+  ingredient at least once (any kind counts for "any wood" and the like):
+  "New recipe: …" tells you. Sticks and the wooden tools are known from
+  the start; an existing character's bags are scanned silently at its
+  first login.
+- **NPCs and zones:** town, village, camp and capital NPCs no longer stand
+  facing a wall. The zone banner stays 4 s. The first time a character
+  enters a zone it gains about a quarter of a quest's XP at the zone's
+  level (or its own, if lower) with the level-up chime; towns, capital
+  zones and the open sea do not count. After the map reset every
+  character starts in its start zone, so the zones it knew before pay
+  once more.
+- **The map window:** buttons under the map pick one layer at a time:
+  Quests, Bosses, Trainers, Towns, POIs, PvP, Zones or None; every marker
+  has a tooltip with its name. Selecting a quest shows only its targets,
+  each with its objective lines, and its hand-in NPC. Party members'
+  arrows carry their names and move every 2 s. The world map image no
+  longer has icons baked in (the minimap keeps them); zone names show on
+  one line with their level band ("Dawnmere Fields 1–10").
+- **This release needs a map reset and a migration step** (for the
+  server's host): stop the server, back the world up, empty the map, run
+  `python3 tools/migrate.py --world <world directory>` from the new
+  version's checkout, raise `grug_reset_world` and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#1-four-outcomes)).
+  The tool only marks each character; at its next join the game rebuilds
+  its picks, axes, shovels and hoes from their current definition, so an
+  Iron pick crafted before keeps digging T2 rock (a broken tool stays
+  broken). 0.46.0
+  was never deployed on its own: a world on 0.45.1 crosses both map
+  resets and the 0.47.0 step in this one update, and gets every 0.46.0
+  change below with it (0.47.0's ore rows replace 0.46.0's extra Coal in
+  the Steel layer: no Coal below −300).
 
 ## 0.46.0 — world generation and player feedback (2026-10-13)
 

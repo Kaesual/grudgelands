@@ -90,14 +90,16 @@ and its profession trainers.
 
 ## Current state
 
-**0.46.0** places villages, camps, mines and the PvP strongholds anew on
-every world and spreads gems over more depths. It also answers player
-feedback: XP by level difference, cave creatures from just below the
-surface and a depth pulse for deep miners, rage by weapon speed, coin bags
-instead of junk loot, plain dishes for every start zone and repairs only in
-towns. Recent updates rebuilt crafting around searchable recipes and timed
-jobs, brought bags into one inventory, and added a combined map and quest
-window plus the quickbar for mounts and potions.
+**0.47.0** grows new trees from each world's seed, with thick trunks,
+limbs, twigs and roots, in the wild and in greener towns and capitals, and
+gives the swamp its own ground, pools, plants and stilted trees. Mining
+gains a ladder: the next layer's ore lies deeper, Iron needs a Bronze pick,
+and Anthracite replaces Coal deep down and makes Steel. Crafts land in your
+bags, Basic recipes appear once you have held their ingredients, NPCs no
+longer face walls, a first visit to a zone pays XP and the map window shows
+one marker layer at a time. 0.46.0 before it placed villages, camps, mines
+and the PvP strongholds anew on every world and answered player feedback
+on XP, caves, rage, loot, cooking and repairs.
 
 Read the [changelog](CHANGELOG.md) for changes and upgrade requirements,
 and the [project status](docs/STATUS.md) for delivery and playtest progress.

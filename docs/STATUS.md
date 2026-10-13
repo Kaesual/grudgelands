@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-13. This is the delivery pointer, not another game specification.
+Updated 2026-10-14. This is the delivery pointer, not another game specification.
 
 Planning pointer added 2026-10-12: the [class and hotbar redesign
 handoff](planning/class-redesign-handoff.md) preserves the redesign
@@ -19,13 +19,69 @@ generation. Resume with the [continuation plan](planning/class-redesign/continua
 Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
 is open.
 
-- **Round 46 "World generation and player feedback" complete; 0.46.0 not
-  pushed yet (pushed only on the user's word)** (2026-10-13, version
+- **Round 47 "Trees, mining progression and crafting feedback" complete
+  on main; the closing documentation not pushed yet (pushed only on the
+  user's word)** (2026-10-14, version 0.47.0, **map reset** plus the
+  migration step 0.47.0,
+  [plan, decisions, numbers and GUI checklist](planning/round47-plan.md#completion-2026-10-14)).
+  The user pushed main at `b3a30ab0` (every build lane merged) as a
+  backup; production runs 0.45.1 and moves to 0.47.0 in one update that
+  crosses both map resets (0.46.0 was never deployed on its own). From
+  main `18befb9b`: FS, TB, ART, TA (three follow-ups), SW step 1, NZ, CR,
+  OR (with the 0.47.0 declaration), AN, ML, TC (with the groves and
+  density follow-up, the capital greening and a fix round) and SW step 2
+  merged up to `00d0c13b`, then lane TD's desktop measurement
+  (`5493c37c`; llvmpipe, so only the ratios count: a forest's frame time
+  over an empty view about 1.3–1.8× → 2.0–2.3×, draw calls +0–50 %,
+  Highcourt with the capital greening +83 % vertices and about +35 %
+  frame time; accepted as is by the user, full leaves and
+  `TREE_SPACING = 4` stay, the user checks on a real GPU) and this
+  documentation lane D close it. Each code lane
+  independently reviewed by Opus (NZ MERGE AFTER FIXES, a doc line and no
+  chime at the level cap, fixed; every follow-up delta with game logic
+  reviewed again, the display deltas checked by the coordinator; ART on
+  the user's picks). Main has 181 portable fixtures (10 new). Lanes'
+  gates: every lane's full fixture run green, `quick` seed fleets 100/100
+  for OR, AN, TC (each step) and SW, and 100/100 on main `6cb71e25`;
+  `check_fresh_server.py` PASS, smoke boots PASS; on lane D's branch
+  `tools/r37_dc` and `check_upgrade.py` (0.47.0 against origin/main) PASS.
+  **Round-end gates (coordinator):** pending.
+  The declaration is
+  `{"schema": 2, "version": "0.47.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0"]}`:
+  the third map reset and the third step (stored tool capabilities rebuilt
+  at each character's next join).
+  - **Trees (TA, TB, TC, TD):** 28 shape nodes for seven woods (octagon
+    quarter mesh, limbs, twigs, roots, jungle bark M); the generator in
+    Lua, 32 variants per species (kapok 16) from the world seed at every
+    start; wild forests 321 → 339 and 281 → 322 trees in 22 chunks on two
+    seeds; saplings grow generated trees; town trees 801 → 1,095 in the
+    compositions plus about 1,560 city trees in the capitals (seed 12345).
+  - **The swamp (SW, ART):** the ground mix, pools that never flow, reeds,
+    cattails, moss carpets, swamp trees on stilts with olive leaves and
+    hanging moss, the swamp mobs on the new grounds.
+  - **Mining (OR, AN):** next-tier ores only in the lower half of the band
+    before, Iron behind a Bronze pick with every dig time kept;
+    Anthracite from T2's lower half, no Coal below −300, Steel only from
+    Anthracite, the Anthracite torch (light 14), fuel 120 s, the claim
+    stone's cap in time; all alloys 10 s.
+  - **Furnaces, crafting (FS, CR):** both furnaces at 60 % and silent on
+    dig, the Dual Furnace sounds; crafts into the inventory item by item
+    with a self-draining Overflow; Basic recipes unlock by held
+    ingredients.
+  - **NPCs, zones, map (NZ, ML):** 230 sockets facing walls → 0, the
+    banner 4 s, first-entry zone XP; the map window's eight marker layers,
+    quest mode, named markers and party names.
+  - Next: the round-end gates, then the user's GUI test of 0.46.0 and
+    0.47.0 together (frame rate on a real GPU first); the push on the
+    user's word ([BACKLOG](../BACKLOG.md#round-47-carry-overs)).
+
+- **Round 46 "World generation and player feedback" complete; 0.46.0
+  never deployed on its own** (2026-10-13, version
   0.46.0, **map reset**,
   [plan, decisions, numbers and GUI checklist](planning/round46-plan.md#completion-2026-10-13)).
-  origin/main is `0e6b3061` (0.45.1) and production runs 0.45.1; the
-  production world is not moved to 0.46.0 now but later with one combined
-  update (plan §5). From main `31f16c11`: OR, XP, WT, XPC, ART, CB, XPC2,
+  At its close origin/main was `0e6b3061` (0.45.1); the user pushed it
+  with Round 47's main (`b3a30ab0`, 2026-10-14), and production moves
+  from 0.45.1 to 0.47.0 in one update (Round 47). From main `31f16c11`: OR, XP, WT, XPC, ART, CB, XPC2,
   CK, RP, LT, CKF, UW, ID, LTF, DP and PL merged up to `54190e98`, then
   this documentation lane D; each code lane independently reviewed by
   Opus (OR, CB, CK, DP and PL MERGE AFTER FIXES, PL twice with a Medium,
@@ -67,8 +123,8 @@ is open.
     the mender's icon A1c.
   - **The waiting point (WT):** (0, 31000, 0) for every player whose wait
     ends in a teleport; 0 chunks generated around them.
-  - Next: the user's GUI test (desktop and web build, new worlds); a fix round from its findings; the push
-    on the user's word ([BACKLOG](../BACKLOG.md#round-46-carry-overs)).
+  - Its GUI test (desktop and web build, new worlds) is still open and
+    runs with Round 47's ([BACKLOG](../BACKLOG.md#round-46-carry-overs)).
 
 - **0.45.1, the fix round after the 0.45.0 playtest, complete and
   pushed; production runs it** (2026-10-10, version
@@ -1044,8 +1100,10 @@ is open.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.46.0 (Round 46, a map reset, not pushed
-  yet) on 0.45.1 (pushed, in production) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+- **Latest game:** main carries 0.47.0 (Round 47, a map reset plus the
+  step 0.47.0) on 0.46.0 (Round 46, a map reset, never deployed on its
+  own; both on origin/main `b3a30ab0`, pushed by the user as a backup) on
+  0.45.1 (pushed, in production) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
   2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
   (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
@@ -1133,8 +1191,9 @@ is open.
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main is `0e6b3061` (0.45.1) at 0.46.0's
-  documentation; the top entry has the current push line.
+- **Remote observation:** origin/main is `b3a30ab0` (every Round 47 build
+  lane, the user's backup push) at 0.47.0's documentation; production runs
+  0.45.1; the top entry has the current push line.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md) (compatible, map
