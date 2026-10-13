@@ -521,7 +521,7 @@
 		today: params.get('today') !== '0',
 		profile: 'oct',
 		twigLeaves: params.get('tl') !== '0',
-		bark: params.get('bark') || 'today',
+		bark: params.get('bark') || DEFAULT_BARK,
 		trees: []
 	};
 	if (TreeGen.ORDER.indexOf(state.species) < 0) { state.species = 'apple'; }

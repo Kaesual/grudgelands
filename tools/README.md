@@ -856,19 +856,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`paint_art.py`, `--check` verifies every PNG; `repair/` with every take
   and the user's pick A1c; the offline `review.html`), provenance for the
   user's pick, not a fixture.
-  `r46_tree` the tree prototype (a draft, not merged into world generation):
-  `portable_test.lua` loads the real `mods/ITEMS/grug_treeproto` (the four
-  wood shapes per wood type, their drops, groups, placement refusal and leaf
-  decay, the tinted stand-in leaves, the corner rotation, the generator over
-  300 seeds per species: determinism, bounding box, one piece of wood, leaves
-  within decay range, and the face counter); `capture.sh OUT_DIR`
-  (`XVFB=`, one queue slot for the server and one for the client) boots the
-  game with the disposable probe `grug_probe_r46_tree`, which builds five
-  flat test areas at y = 500 with today's trees and the drafts, and takes the
-  engine screenshots with one real client on a private Xvfb; the probe's
-  METRIC lines are the node and face counts.
-  `r46_tree/concept` the step-2 tree concept viewer (browser only, no engine
-  work): `treegen.js` the seeded generator for all eight species (integer
+  `r46_tree/concept` the approved Round 46 tree concept viewer (browser only,
+  no engine work; handoff: `docs/planning/tree-rework-handoff.md`): `treegen.js` the seeded generator for all eight species (integer
   maths, written to be ported to Lua line by line), `shapes.js` the wood
   shapes (trunk quarter mesh, limb base, branch, twig; `node shapes.js`
   writes `models/*.obj`), `viewer.js` the three.js side that meshes nodes the

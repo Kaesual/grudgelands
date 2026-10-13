@@ -8,8 +8,9 @@
 Inlines page.html, shapes.js, treegen.js, viewer.js, the repo's textures (as
 data: URIs), today's tree schematics (as node lists, for comparison) and the
 jungle bark candidates found in --bark-dir (default: the artist lane's
-worktree, ../r46-astree/tools/r46_tree/astra/bark; none found is fine) into
-one page.
+tools/r46_tree/astra/bark in this checkout, else the artist's worktree next
+to it; none found is fine, the default bark M then falls back to today's)
+into one page.
 Run from anywhere; paths are relative to the repository root.
 """
 import argparse
@@ -120,7 +121,13 @@ def today_tree(species):
     }
 
 
-BARK_DIR = os.path.join(ROOT, "..", "r46-astree", "tools", "r46_tree", "astra", "bark")
+# The chosen bark (M) and the other candidates are the artist's
+# (tools/r46_tree/astra/bark in the same checkout once both branches are
+# merged); before that, the artist's worktree next to this one.
+BARK_DIRS = [os.path.join(ROOT, "tools", "r46_tree", "astra", "bark"),
+             os.path.join(ROOT, "..", "r46-astree", "tools", "r46_tree", "astra", "bark")]
+BARK_DIR = next((d for d in BARK_DIRS if os.path.isdir(d)), BARK_DIRS[0])
+DEFAULT_BARK = "m"   # the user's pick, Round 46
 
 
 def jungle_barks(bark_dir):
@@ -149,7 +156,8 @@ def build(three_base, bark_dir):
     today = {sp: today_tree(sp) for sp in sorted(TODAY)}
     data = ("var TEXTURES = " + json.dumps(textures, indent=0, sort_keys=True) + ";\n" +
             "var TODAY = " + json.dumps(today, separators=(",", ":"), sort_keys=True) + ";\n" +
-            "var JUNGLE_BARKS = " + json.dumps(barks) + ";")
+            "var JUNGLE_BARKS = " + json.dumps(barks) + ";\n" +
+            "var DEFAULT_BARK = " + json.dumps(DEFAULT_BARK if DEFAULT_BARK in barks else "today") + ";")
     page = read("page.html")
     page = page.replace("%THREE_BASE%", three_base)
     page = page.replace("/*DATA*/", data)
