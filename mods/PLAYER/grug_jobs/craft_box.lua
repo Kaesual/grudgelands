@@ -452,7 +452,7 @@ local function build(player, view)
 	y = ingredient_rows(fs, recipe, view.counts, quantity, y + 0.25, choice)
 	st.pick_rows = {recipe = recipe.id, serial = choice.serial, rows = choice.rows}
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y + 0.2), esc("Max: " .. most ..
-		(by_space < by_ingredients and " (output area)" or "")))
+		(by_space < by_ingredients and " (inventory room)" or "")))
 	y = y + 0.65
 	for _, entry in ipairs(notes) do
 		y = wrapped_labels(fs, X, y, W, entry[1], entry[2], NOTE_STEP)

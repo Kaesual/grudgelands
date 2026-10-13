@@ -484,10 +484,10 @@ local function row_n(fs, label)
 	return tonumber(content(fs):match(label .. "%]label%[[%d%.]+,[%d%.]+;[^%]]-×(%d+)"))
 end
 local function rebuild(player) return click(player, {[FIELDS.recheck] = ""}) end
+-- (Round 47: the result lands in the inventory; Take all is gone.)
 local function finish_job(player)
 	advance(3600)
 	run_timers()
-	click(player, {[FIELDS.take] = ""})
 end
 local BOX = J.CRAFT_BOX
 local QUANTITY_Y = BOX.y + BOX.h - 1.5

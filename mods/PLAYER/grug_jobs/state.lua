@@ -205,12 +205,13 @@ end
 
 -- One finished craft, or a finished job of `crafts` crafts (lane JB): the
 -- sound once, the XP of record_craft (none with `no_xp`: the profession was
--- unlearned while the job ran), the callbacks with the items made. Returns
--- whether the profession advanced, its level and the XP gained.
-function grug_jobs.award_progress(player, recipe, crafts, no_xp)
+-- unlearned while the job ran), the callbacks with the items made. `quiet`
+-- leaves the sound out (the crafts a cancelled job delivered, Round 47).
+-- Returns whether the profession advanced, its level and the XP gained.
+function grug_jobs.award_progress(player, recipe, crafts, no_xp, quiet)
 	if type(recipe) ~= "table" then return false end
 	crafts = crafts or 1
-	local sound = craft_sound(recipe)
+	local sound = not quiet and craft_sound(recipe)
 	if sound then grug_sounds.play(sound, player) end
 	if not recipe.progress then return false end
 	local advanced, level, gained = false, nil, 0

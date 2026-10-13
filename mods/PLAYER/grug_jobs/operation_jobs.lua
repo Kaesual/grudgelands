@@ -4,8 +4,9 @@
 -- created for every player at join; only equipment goes in). A job's start
 -- takes the item in with the materials (jobs.lua's take_ingredients), so
 -- while the job runs the item lives only in the job's `target`; the result
--- appears in the output area; a cancel returns the exact item and the
--- materials (jobs.lua's refund).
+-- goes into the inventory (the start checks the room, Round 47), else the
+-- overflow; a cancel returns the exact item and the materials (jobs.lua's
+-- refund).
 --   enchant  one station operation (station_operations.lua), 5 s; profession
 --            XP like any counting craft: one per job, capped by the tier
 --            (spec §2.22, §2.31);
@@ -21,8 +22,9 @@
 --   grug_jobs.operation_target(stack)        -> whether the slot takes it
 --   grug_jobs.start_operation(player, op_id, levels) -> ok, reason, info
 --     ({code, max}: "busy", "recipe", "quantity", "profession", "station",
---      "cap", "target", "space", "ingredients"; `max` the levels that would
---      start for "cap" and "ingredients")
+--      "cap", "target", "ingredients", "space" (the result would not fit
+--      into the inventory once the materials are taken); `max` the levels
+--      that would start for "cap" and "ingredients")
 
 local TARGET = "grug_craft_target"
 grug_jobs.TARGET_LIST = TARGET
@@ -41,8 +43,9 @@ end
 -- An item left in the slot goes back into the inventory (the user,
 -- 2026-10-09): the slot is drawn only in the enchant and upgrade boxes, so a
 -- forgotten item would stay out of sight. Through the give helper, then the
--- output area; what fits nowhere stays in the slot (never dropped, never
--- lost). At join and when a profession is unlearned (state.lua).
+-- overflow (which drains into the inventory, jobs.lua); what fits nowhere
+-- stays in the slot (never dropped, never lost). At join and when a
+-- profession is unlearned (state.lua).
 function grug_jobs.return_operation_target(player)
 	local inv = player:get_inventory()
 	if inv:get_size(TARGET) < 1 then return end
@@ -53,6 +56,7 @@ function grug_jobs.return_operation_target(player)
 		left = inv:add_item(grug_jobs.OUTPUT_LIST, left)
 	end
 	inv:set_stack(TARGET, 1, left)
+	grug_jobs.watch_overflow(player)
 	if not left:is_empty() then
 		core.log("action", "[grug_jobs] " .. player:get_player_name() ..
 			"'s target item stays in its slot: no room")
@@ -100,13 +104,6 @@ end)
 
 local function refused(reason, code, max)
 	return false, reason, {code = code, max = max}
-end
-
-local function output_has_room(inv)
-	for index = 1, inv:get_size(grug_jobs.OUTPUT_LIST) do
-		if inv:get_stack(grug_jobs.OUTPUT_LIST, index):is_empty() then return true end
-	end
-	return false
 end
 
 -- Hands back what a refused begin took: the item into its slot, the
@@ -161,14 +158,18 @@ function grug_jobs.start_operation(player, op_id, levels)
 	end
 	local plan, reason = grug_items.operation_result(op, target, player, quantity)
 	if not plan then return refused(reason, "target") end
-	if not output_has_room(inv) then return refused("No space in the output area", "space", 0) end
 	local ingredients = grug_jobs.operation_ingredients(op, target)
-	local have = grug_jobs.crafts_from_counts(grug_jobs.ingredient_counts(player),
-		{ingredients = ingredients})
+	local counts = grug_jobs.ingredient_counts(player)
+	local have = grug_jobs.crafts_from_counts(counts, {ingredients = ingredients})
 	if have < 1 then return refused("Not enough ingredients", "ingredients", 0) end
 	if quantity > have then
 		return refused("Not enough ingredients — levels reduced to " .. have,
 			"ingredients", have)
+	end
+	-- The result goes into the inventory (Round 47 ruling 18): it has to fit
+	-- once the materials are taken.
+	if not grug_jobs.output_fits(player, ingredients, quantity, {plan.output}, counts) then
+		return refused(grug_jobs.NO_ROOM, "space", 0)
 	end
 	local consumed = grug_jobs.take_ingredients(player, ingredients, quantity)
 	if not consumed then return refused("Not enough ingredients", "ingredients", 0) end
@@ -215,7 +216,7 @@ end
 grug_jobs.register_job_kind("enchant", {finish = finish})
 grug_jobs.register_job_kind("upgrade", {finish = finish})
 
--- The output area's indicator and label (ui.lua): "Enchanting…" and
+-- The running job's indicator and label (ui.lua): "Enchanting…" and
 -- "Upgrading…" (the user, 2026-10-09), "Steel Sword +3 levels".
 grug_jobs.JOB_RUN_LABELS.enchant = "Enchanting…"
 grug_jobs.JOB_RUN_LABELS.upgrade = "Upgrading…"

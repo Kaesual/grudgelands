@@ -239,9 +239,10 @@ do
 	eq(crafts({"grug_gathering:potato 1", "grug_cooking:carrot 2", "grug_cooking:wild_grain 3"},
 		mash), 1, "D a potato as the staple: one")
 	-- The review's worst case (128 slots, half Cassava 99, half Wild Grain
-	-- 99; Round 46 fix round): 2112 crafts fit, more than one job takes (the
-	-- output area holds 4 x 99), so ×N reads the ceiling + 1, which a take
-	-- still manages. With 8 Cassava stacks the search finds the exact 264.
+	-- 99; Round 46 fix round): 2112 crafts fit. Round 47: a job is no longer
+	-- capped by the output area (its result goes into the inventory), so ×N
+	-- reads the exact 2112, from one dry take. With 8 Cassava stacks the
+	-- search finds the exact 264.
 	local worst, search = {}, {}
 	for index = 1, 128 do
 		worst[index] = (index % 2 == 1 and "grug_cooking:cassava" or "grug_cooking:wild_grain") .. " 99"
@@ -250,7 +251,7 @@ do
 	local function count_in(list)
 		return grug_jobs.crafts_from_counts(grug_jobs.ingredient_counts(player_with(list, 64)), mash)
 	end
-	eq(count_in(worst), 397, "D the worst case reads the job ceiling + 1")
+	eq(count_in(worst), 2112, "D the worst case reads the exact count")
 	check(grug_jobs.take_ingredients(player_with(worst, 64), mash.ingredients, 2112) ~= nil and
 		grug_jobs.take_ingredients(player_with(worst, 64), mash.ingredients, 2113) == nil,
 		"D ...where the take manages 2112 and no more")

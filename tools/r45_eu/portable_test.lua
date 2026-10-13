@@ -556,6 +556,18 @@ end
 local function put(player, list, index, itemstring)
 	player.inv:set_stack(list, index, ItemStack(itemstring))
 end
+-- Round 47: a job's result lands in the inventory (the give helper's order).
+-- The result: the one stack of `name` the player carries in main; taken out
+-- (as from the old output slot) when `take` is set.
+local function result_of(player, name, take)
+	for index, stack in ipairs(player.inv:get_list("main")) do
+		if stack:get_name() == name then
+			if take then player.inv:set_stack("main", index, ItemStack("")) end
+			return stack
+		end
+	end
+	return ItemStack("")
+end
 -- Every item of `name` the player holds in any list, the job's target and
 -- consumed stacks included (an item is never lost or duplicated).
 local function total(player, name)
@@ -805,8 +817,8 @@ do
 	check(inv:get_stack(TARGET, 1):is_empty(), "A join: the slot is empty")
 	eq(total(smith, "grug_gear:sword_steel"), 1, "A join: the sword is back, once")
 	check(inv:get_stack("main", 9):get_name() == "grug_gear:sword_steel", "A join: into main[9]")
-	-- An inventory without room: the output area; without room there too it
-	-- stays in the slot.
+	-- An inventory without room: the overflow (the output list); without
+	-- room there too it stays in the slot.
 	local filler = {}
 	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
 		for index = 1, inv:get_size(list) do
@@ -819,7 +831,7 @@ do
 	join(smith)
 	check(inv:get_stack(TARGET, 1):is_empty() and
 		inv:get_stack(OUT, 1):get_name() == "grug_gear:sword_steel",
-		"A a full inventory: into the output area")
+		"A a full inventory: into the overflow")
 	inv:set_stack(TARGET, 1, inv:get_stack(OUT, 1))
 	for index = 1, 4 do inv:set_stack(OUT, index, ItemStack("default:stick 99")) end
 	leave(smith)
@@ -939,16 +951,16 @@ do
 	check(J.job_state(smith) ~= nil, "E not done at 4.9 s")
 	pass(0.1)
 	eq(J.job_state(smith), nil, "E done at 5 s")
-	local out = smith.inv:get_stack(OUT, 1)
-	check(same_item(out, expected), "E the result equals the preview")
-	eq(total(smith, "grug_gear:sword_steel"), 1, "E one sword, in the output area")
+	local out = result_of(smith, "grug_gear:sword_steel")
+	-- (through the give helper, which adds the "Effective at level" line)
+	check(returned_item(out, expected), "E the result equals the preview")
+	eq(total(smith, "grug_gear:sword_steel"), 1, "E one sword, in the inventory")
 	eq(J.crafts_in_tier(smith, "weaponsmith"), crafts_before + 1, "E one XP for the enchant")
 	eq(feed_lines[#feed_lines], "Heavy Steel Sword is ready", "E the feed line")
 
 	-- The overwrite warning: a T2 Strength on the T3 one; the same T3 is gone
 	-- from the list, and so is Strength in the other channel.
-	smith.inv:set_stack(TARGET, 1, out)
-	smith.inv:set_stack(OUT, 1, ItemStack(""))
+	smith.inv:set_stack(TARGET, 1, result_of(smith, "grug_gear:sword_steel", true))
 	fs = open(smith)
 	entries = list_entries(fs)
 	eq(#entries, 36 - 1 - 3, "E the same enchant and the other channel's Strength leave the list")
@@ -984,7 +996,7 @@ do
 	end
 end
 
--- The station, the output area, a changed target, a refused begin.
+-- The station, the room for the result, a changed target, a refused begin.
 do
 	clear(smith)
 	local sword = crafted("grug_gear:sword_steel")
@@ -999,11 +1011,21 @@ do
 	local ok, reason, info = J.start_operation(smith, STR_T3.id)
 	check(not ok and info.code == "station", "E the start refuses away from the forge")
 	at_forge(smith)
-	for index = 1, 4 do put(smith, OUT, index, "default:stick 99") end
+	-- Round 47: the result has to fit into the inventory once the materials
+	-- are taken (two enchants' worth: the take empties no slot).
+	local filled = {}
+	for index = 1, 32 do
+		if smith.inv:get_stack("main", index):is_empty() then
+			filled[#filled + 1] = index
+			put(smith, "main", index, "default:dirt 99")
+		end
+	end
+	local held = total(smith, "grug_materials:steel_bar")
 	ok, reason = J.start_operation(smith, STR_T3.id)
-	eq(reason, "No space in the output area", "E no output space")
-	check(same_item(smith.inv:get_stack(TARGET, 1), sword), "E nothing taken without space")
-	for index = 1, 4 do put(smith, OUT, index, "") end
+	eq(reason, "Not enough room in inventory", "E no room for the result")
+	check(same_item(smith.inv:get_stack(TARGET, 1), sword), "E nothing taken without room")
+	eq(total(smith, "grug_materials:steel_bar"), held, "E ... not a bar")
+	for _, index in ipairs(filled) do put(smith, "main", index, "") end
 	-- The item changed after the page showed the enchant: the start judges
 	-- the item now in the slot.
 	local enchanted = Q.operation_plan(STR_T3, sword, smith).output
@@ -1058,7 +1080,7 @@ do
 	learn(hand, "weaponsmith", 3)
 	pass(5)
 	eq(J.crafts_in_tier(hand, "weaponsmith"), 0, "E an unlearn during the job gives no XP")
-	check(not hand.inv:get_stack(OUT, 1):is_empty(), "E ... but the job finishes")
+	check(not result_of(hand, "grug_gear:sword_steel"):is_empty(), "E ... but the job finishes")
 	leave(hand)
 end
 
@@ -1094,7 +1116,8 @@ do
 	check(J.job_state(r) ~= nil, "E ... still running at 4.9 s")
 	pass(0.1)
 	eq(J.job_state(r), nil, "E ... and ends at 5 s")
-	check(same_item(r.inv:get_stack(OUT, 1), expected), "E the result after the restart")
+	check(returned_item(result_of(r, "grug_gear:sword_steel"), expected),
+		"E the result after the restart")
 	eq(total(r, "grug_gear:sword_steel"), 1, "E one sword after the restart")
 	-- Logged out until after the end: it completes at login.
 	clear(r)
@@ -1105,7 +1128,8 @@ do
 	advance(60)
 	join(r)
 	eq(J.job_state(r), nil, "E a job past its end completes at login")
-	check(same_item(r.inv:get_stack(OUT, 1), expected), "E ... with the same result")
+	check(returned_item(result_of(r, "grug_gear:sword_steel"), expected),
+		"E ... with the same result")
 	leave(r)
 end
 
@@ -1170,7 +1194,7 @@ do
 	has(smith.formspec, FIELDS.stop .. ";Stop]", "U Stop while it runs")
 	pass(3)
 	eq(J.job_state(smith), nil, "U done after 3 s")
-	local out = smith.inv:get_stack(OUT, 1)
+	local out = result_of(smith, "grug_gear:sword_steel")
 	eq(Q.effective_ilvl(out), 24, "U item level 24")
 	eq(out:get_meta():get_int("grug_req_level"), 24, "U the requirement follows")
 	local affix = Q.get_affixes(out)[1]
@@ -1193,7 +1217,7 @@ do
 	local ok, reason = J.start_operation(smith, J.upgrade_operation("armorsmith", 3).id, 2)
 	check(ok, "U an Armorsmith raises the chest without sticks (" .. tostring(reason) .. ")")
 	pass(2)
-	eq(Q.effective_ilvl(smith.inv:get_stack(OUT, 1)), 23, "U the chest at 23")
+	eq(Q.effective_ilvl(result_of(smith, "grug_gear:chest_metal_steel")), 23, "U the chest at 23")
 	eq(total(smith, "grug_materials:steel_bar"), 0, "U two bars, no stick")
 	J.unlearn(smith, "armorsmith")
 	-- Cancel returns the item and the materials.
@@ -1239,7 +1263,8 @@ do
 	click(smith, {[OF.upgrade] = "Upgrade anyway", [OF.levels] = "6"})
 	check(J.job_state(smith) ~= nil, "U the second click starts")
 	pass(6)
-	eq(Q.effective_ilvl(smith.inv:get_stack(OUT, 1)), 27, "U item level 27 above the player's")
+	eq(Q.effective_ilvl(result_of(smith, "grug_gear:sword_steel")), 27,
+		"U item level 27 above the player's")
 	-- Max fills to the cap even above the level, and shows the warning.
 	clear(smith)
 	put(smith, TARGET, 1, sword:to_string())
@@ -1272,7 +1297,7 @@ do
 	has(smith.formspec, OF.levels .. ";;9]", "U +10 on a level-1 item is lowered to 9")
 	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "9"})
 	pass(9)
-	local top = smith.inv:get_stack(OUT, 1)
+	local top = result_of(smith, "grug_gear:sword_bronze")
 	eq(Q.effective_ilvl(top), 10, "U a T2 smith raises a T1 sword to 10, never past it")
 	-- Already at the cap: an upgraded item, a crowned one and a boss drop.
 	learn(smith, "weaponsmith", 6)

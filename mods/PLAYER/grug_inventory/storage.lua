@@ -61,12 +61,20 @@ end
 
 -- The cells of `slots` with a working copy of each stack (one get_list per
 -- list, not one get_stack per slot; get_list already returns copies).
-local function cells_of(inv, slots)
+-- `given` (fits) maps a list name to stacks that stand in for that list;
+-- they are copied, never written.
+local function cells_of(inv, slots, given)
 	local lists, cells = {}, {}
 	for _, slot in ipairs(slots) do
 		local list = lists[slot.list]
 		if not list then
-			list = inv:get_list(slot.list) or {}
+			local stand_in = given and given[slot.list]
+			if stand_in then
+				list = {}
+				for index, stack in pairs(stand_in) do list[index] = ItemStack(stack) end
+			else
+				list = inv:get_list(slot.list) or {}
+			end
 			lists[slot.list] = list
 		end
 		cells[#cells + 1] = {list = slot.list, index = slot.index,
@@ -126,14 +134,16 @@ end
 
 -- Would `stacks` (a list of stacks or item strings, or one stack) all fit,
 -- given in this order? Same order and rules as give, partial stacks counted;
--- changes nothing.
-function grug_inventory.fits(player, stacks)
+-- changes nothing. `lists` (optional) maps list names to stacks that stand
+-- in for those lists: the inventory as it would be after a change not yet
+-- made (grug_jobs' start check: after the ingredients are taken).
+function grug_inventory.fits(player, stacks, lists)
 	local inv = player and player:get_inventory()
 	if not inv then return false end
 	if type(stacks) ~= "table" then stacks = {stacks} end
 	local quiver_room = grug_inventory.has_quiver(player) and
 		grug_inventory.quiver_capacity() - grug_inventory.quiver_count(player) or 0
-	local cells = cells_of(inv, ordered_slots(inv))
+	local cells = cells_of(inv, ordered_slots(inv), lists)
 	for _, item in ipairs(stacks) do
 		local stack = ItemStack(item)
 		if quiver_room > 0 and not stack:is_empty() and is_arrow(stack) then

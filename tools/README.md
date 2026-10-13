@@ -635,7 +635,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   at login and on opening the tab (a server restart in the middle of a job
   included), gear through `crafted_output`, several output stacks above
   `stack_max`, XP per job and after an unlearn, cancel with and without room,
-  Stop after the end, the take-only output area and Take all.
+  Stop after the end, the take-only output area and Take all; since Round 47
+  the room check for the whole order, per-craft delivery into the inventory,
+  the refund of unfinished crafts, the overflow and its drain.
   `grug_probe_r45_jb` is the smoke boot's disposable probe (registry facts
   the fixture relies on).
   `r45_st` stations, cooking and alchemy (`portable_test.lua`, the real
@@ -657,7 +659,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   inventory pass per build), the quantity-field rules, the station hint with
   the disabled button, the XP hint, the progress bar's `frame_start`, the
   sends per job (start, end, cancel; none on a pure scrollbar event), the
-  overview in the box and gone from the Character tab; it prints the page's
+  overview in the box and gone from the Character tab, since Round 47 the
+  overflow shown only while it holds something and Basic's held-once
+  listing; it prints the page's
   bytes. `gen_progress_bar.py` writes the bar texture (Python standard
   library; `--check` compares its pixels). `grug_probe_r45_ui` is the smoke
   boot's disposable probe (the page's bytes with the real registry, list
@@ -888,3 +892,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `portable_test.lua` checks the port against it (and that it is pure), with
   `time` as a second argument also the time per tree per species. After a
   change to `treegen.js`, port it and rerun the writer.
+  `r47_cr` the Basic recipe unlock
+  (`portable_test.lua`, the real `grug_jobs` registry with the real Basic
+  catalog and `basic_unlock.lua` under a stub engine): the starter set, the
+  silent first scan, groups by any member, the feed line with its count,
+  when the scan runs (an action or a dug node within 0.5 s, the 10 s
+  sweep, one slot per step); it prints the stored set's size for a
+  character that held 300 items and a scan's cost. `grug_probe_r47_cr` is
+  the UI probe (formspec dumps of a fresh character's Basic list and of the
+  overflow shown and hidden).

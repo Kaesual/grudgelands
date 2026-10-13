@@ -243,6 +243,13 @@ local function new_inventory()
 		end
 		return rest
 	end
+	-- (Round 47: the crafting overflow asks whether its list is empty.)
+	function inv:is_empty(list)
+		for _, slot in ipairs(self.lists[list] or {}) do
+			if not slot:is_empty() then return false end
+		end
+		return true
+	end
 	function inv:count(list, name)
 		local n = 0
 		for _, slot in ipairs(self.lists[list] or {}) do
@@ -986,9 +993,10 @@ do
 	eq(inv:count("main", "grug_gathering:gravemoss"), 0, "A ...and consumes the herbs")
 	clock = clock + 4
 	run_timers()
-	eq(inv:count("grug_craft_out", "grug_alchemy:potion_healing_t1"), 2,
-		"A the finished potions are in the output area")
-	eq(inv:count("grug_craft_out", "grug_alchemy:mixture_potion_healing_t1"), 0, "A ...no mixture")
+	-- (Round 47: finished items go into the inventory.)
+	eq(inv:count("main", "grug_alchemy:potion_healing_t1"), 2,
+		"A the finished potions are in the inventory")
+	eq(inv:count("main", "grug_alchemy:mixture_potion_healing_t1"), 0, "A ...no mixture")
 	eq(grug_jobs.crafts_in_tier(alchemist, "alchemist"), 2, "A one Alchemy XP per potion")
 	-- The herb gate stays: only an alchemist gathers herbs.
 	check(herb_authorizer ~= nil, "A the herb gate is registered")

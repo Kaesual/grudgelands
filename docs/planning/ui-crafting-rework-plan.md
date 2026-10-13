@@ -328,7 +328,10 @@ Game:
     profession tier (**corrected in Round 45**, the user at the playtest;
     before: every area shows all). Search, pages and "Craftable only"
     replace the discovery (the seen-items list, its inventory scan and the
-    starter flags go).
+    starter flags go). *Note 2026-10-13: Round 47 changes this for Basic
+    (round47-plan.md ruling 19): Basic lists a recipe once every ingredient
+    was held, with sticks and the wooden tools from the start;
+    [professions.md](../design/professions.md) §1.2 holds the rule.*
 34. **Gear recipes** keep today's Basics ingredients, moved to their
     profession; the profession tier needed equals the item's tier; the
     station within 4 nodes; the result starts at its tier's base item level

@@ -9,7 +9,8 @@
 --   target  an engine itemstring of an enchanted sword comes back with the
 --           same metadata (the job stores its target as one);
 --   enchant a job: the item leaves the slot, ends after 5 s with the result
---           the preview showed, one XP;
+--           the preview showed in the inventory (Round 47; the overflow
+--           stays empty), one XP;
 --   upgrade +3 on a steel sword: 3 s, item level 24, three bars and three
 --           sticks, no XP;
 --   bytes   the Crafting page with the enchant box (a T3 sword, a chosen
@@ -30,6 +31,17 @@ local function same_meta(a, b)
 	for key, value in pairs(tb) do if ta[key] ~= value then return false, key end end
 	return a:get_name() == b:get_name() and a:get_count() == b:get_count() and
 		a:get_wear() == b:get_wear()
+end
+
+-- The result: the one stack of `name` in main, taken out of it.
+local function take_result(inv, name)
+	for index, stack in ipairs(inv:get_list("main")) do
+		if stack:get_name() == name then
+			inv:set_stack("main", index, ItemStack(""))
+			return stack
+		end
+	end
+	return ItemStack("")
 end
 
 local function stand_in(inv)
@@ -132,11 +144,18 @@ local function run(done)
 	local xp = J.crafts_in_tier(player, "weaponsmith")
 	core.after(5.2, function()
 		J.update_job(player, "open")
-		local out = inv:get_stack(J.OUTPUT_LIST, 1)
-		check(J.job_state(player) == nil and same_meta(out, expected),
-			"enchant: the result is the preview's")
+		check(inv:is_empty(J.OUTPUT_LIST), "enchant: the overflow stays empty")
+		-- Round 47: the result reaches the inventory through the give helper,
+		-- which sets a weapon's tooltip up as any pickup does: the preview
+		-- handed over the same way.
+		local out = take_result(inv, "grug_gear:sword_steel")
+		local handed = ItemStack(expected)
+		grug_gear.initialize_weapon_tooltip(handed, player)
+		local same, key = same_meta(out, handed)
+		check(J.job_state(player) == nil and same,
+			"enchant: the result is the preview's, in the inventory" ..
+			(key and (" (differs: " .. key .. ")") or ""))
 		check(J.crafts_in_tier(player, "weaponsmith") == xp + 1, "enchant: one XP")
-		inv:set_stack(J.OUTPUT_LIST, 1, ItemStack(""))
 		-- An upgrade job: +3 on a plain steel sword.
 		local plain = ItemStack("grug_gear:sword_steel")
 		Q.crafted_output(plain, player)
@@ -154,7 +173,8 @@ local function run(done)
 		xp = J.crafts_in_tier(player, "weaponsmith")
 		core.after(3.2, function()
 			J.update_job(player, "open")
-			local result = inv:get_stack(J.OUTPUT_LIST, 1)
+			check(inv:is_empty(J.OUTPUT_LIST), "upgrade: the overflow stays empty")
+			local result = take_result(inv, "grug_gear:sword_steel")
 			check(Q.effective_ilvl(result) == 24 and
 				result:get_meta():get_int("grug_req_level") == 24, "upgrade: item level 24")
 			check(count(inv, "grug_materials:steel_bar") == 2 and count(inv, "default:stick") == 2,
