@@ -163,6 +163,10 @@ TC is the largest and riskiest lane. AN touches the most files.
     **Picked (2026-10-13):** the concept page with lane ART's swamp
     textures as shown; swamp-tree leaves olive (a new leaves node, painted
     by ART); pools keep the default water.
+    **Pools on slopes (the user):** a pool never makes flowing water. On
+    gentle slopes the ground may be levelled slightly for a small pool; on
+    steep slopes there are no pools, the ground mix, plants and trees are
+    enough there. Levelling never touches towns, POIs or protected ground.
 
 **Coordinator choices** (details the user did not rule on; a lane may
 propose otherwise in its report):
