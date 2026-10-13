@@ -542,18 +542,32 @@ were in, and quest texts and level routes now name zones.
   The open sea and a character without a faction have no status: no
   territory line, the feed's calm notice colour.
 - **Entry banner:** when the location **or** the territory status changes,
-  the name shows top centre for 1.5 s at 2.5 times the default font, bold,
+  the name shows top centre for 4 s (Round 47 ruling 21; 1.5 s before) at
+  2.5 times the default font, bold,
   in the status colour, below the
   target frame's line (`hud_layout.zone_banner_offset`), clear of the
   level-up banner (0.25 of the window height) and the flash line (0.35).
   While a display runs no new one starts; when it ends, a fresh sample
   decides: a location or status other than the one just shown displays at
   once, otherwise the banner hides (leaving a city and coming back within
-  the 1.5 s shows nothing new). Crossing y −501 under friendly or enemy land
+  the 4 s shows nothing new). Crossing y −501 under friendly or enemy land
   (through caves or shafts too) shows the same name again with the new line
   and colour; crossing it in a contested zone shows nothing; a zone change
   always shows. The location a player joins in shows once on join. A change
   shows within about a second.
+- **Zone discovery** (Round 47 ruling 22, `grug_map/zone_discovery.lua`):
+  the first time a character enters a **real zone** it gets
+  `grug_xp.quest_reward(min(zone level_min, character level), 0.75)` XP — a
+  quarter of the median quest weight of 3 kill equivalents, so a high zone
+  pays no more than the character's own level — with source `discovery` (no
+  race bonus, the usual "+N XP" feed line) and the level-up sound, once even
+  when the XP levels the character up. A real zone is any zone but the six
+  civic capital zones; a start town or capital city is its town, never a
+  zone, and the open sea has none. The visited zones are kept per character
+  in player meta (`grug_map:visited_zones`). A character without that record
+  — a new one, or one from before Round 47 — gets the zone it stands in at
+  its first location sample marked silently: a new character's start zone.
+  It runs in the location sample only when the zone changes.
 - **Territory line** (Round 32; it replaces Round 31's PvP subtitle): one
   centred line in the default size, bold, in the same colour under the name
   (`hud_layout.zone_subtitle_offset`; the flight-boundary warning sits one

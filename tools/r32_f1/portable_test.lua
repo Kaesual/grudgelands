@@ -44,6 +44,10 @@ local FRIENDLY, CONTESTED, ENEMY = "Friendly Territory", "Contested Territory (P
 -- P: pure rules (location_view.lua)
 -- ---------------------------------------------------------------------------
 local L = dofile(repo .. "/mods/PLAYER/grug_map/location_view.lua")
+-- The times are written for the first 1.5 s display and scaled to DISPLAY
+-- (Round 47 ruling 21: 4 s; tools/r47_nz pins the value).
+-- (rounded to 1/64 s, so a display's end is exactly its start + DISPLAY)
+local function t(x) return math.floor(x * L.DISPLAY / 1.5 * 64 + 0.5) / 64 end
 do
 	eq(L.line("friendly"), FRIENDLY, "P friendly line")
 	eq(L.line("contested"), CONTESTED, "P contested line")
@@ -55,44 +59,44 @@ do
 	eq(L.color(nil, NOTICE), NOTICE, "P no status: the neutral colour")
 
 	local s = L.new_state()
-	eq(L.sample(s, "Home", 0, "friendly"), "Home", "P join shows the name")
-	eq(L.sample(s, "Home", 1, "friendly"), nil, "P busy: nothing")
-	eq(L.expire(s, "Home", 1.5, "friendly"), false, "P same place at the end: hide")
-	eq(L.sample(s, "Home", 2, "friendly"), nil, "P unchanged: nothing")
+	eq(L.sample(s, "Home", t(0), "friendly"), "Home", "P join shows the name")
+	eq(L.sample(s, "Home", t(1), "friendly"), nil, "P busy: nothing")
+	eq(L.expire(s, "Home", t(1.5), "friendly"), false, "P same place at the end: hide")
+	eq(L.sample(s, "Home", t(2), "friendly"), nil, "P unchanged: nothing")
 	-- Below y -501 under own land: the same name again with the new status.
-	eq(L.sample(s, "Home", 3, "contested"), "Home", "P friendly -> contested by depth shows")
+	eq(L.sample(s, "Home", t(3), "contested"), "Home", "P friendly -> contested by depth shows")
 	eq(s.shown_status, "contested", "P ...with the contested status")
-	eq(L.expire(s, "Home", 4.5, "contested"), false, "P then hides")
-	eq(L.sample(s, "Home", 5, "friendly"), "Home", "P contested -> friendly shows")
-	L.expire(s, "Home", 6.5, "friendly")
+	eq(L.expire(s, "Home", t(4.5), "contested"), false, "P then hides")
+	eq(L.sample(s, "Home", t(5), "friendly"), "Home", "P contested -> friendly shows")
+	L.expire(s, "Home", t(6.5), "friendly")
 	-- A zone change always shows, with or without a status change.
-	eq(L.sample(s, "Front", 7, "contested"), "Front", "P into a contested zone")
-	L.expire(s, "Front", 8.5, "contested")
-	eq(L.sample(s, "Front", 9, "contested"), nil,
+	eq(L.sample(s, "Front", t(7), "contested"), "Front", "P into a contested zone")
+	L.expire(s, "Front", t(8.5), "contested")
+	eq(L.sample(s, "Front", t(9), "contested"), nil,
 		"P a depth crossing inside a contested zone shows nothing")
-	eq(L.sample(s, "Front Two", 10, "contested"), "Front Two",
+	eq(L.sample(s, "Front Two", t(10), "contested"), "Front Two",
 		"P a zone change with the same status shows")
-	L.expire(s, "Front Two", 11.5, "contested")
+	L.expire(s, "Front Two", t(11.5), "contested")
 	-- Enemy land and its depth.
-	eq(L.sample(s, "Ember", 12, "enemy"), "Ember", "P into enemy land")
-	L.expire(s, "Ember", 13.5, "enemy")
-	eq(L.sample(s, "Ember", 14, "contested"), "Ember", "P enemy -> contested by depth shows")
-	L.expire(s, "Ember", 15.5, "contested")
-	eq(L.sample(s, "Ember", 16, "enemy"), "Ember", "P contested -> enemy shows")
+	eq(L.sample(s, "Ember", t(12), "enemy"), "Ember", "P into enemy land")
+	L.expire(s, "Ember", t(13.5), "enemy")
+	eq(L.sample(s, "Ember", t(14), "contested"), "Ember", "P enemy -> contested by depth shows")
+	L.expire(s, "Ember", t(15.5), "contested")
+	eq(L.sample(s, "Ember", t(16), "enemy"), "Ember", "P contested -> enemy shows")
 	-- A status change during a display waits for its end, then shows.
-	eq(L.sample(s, "Ember", 16.5, "contested"), nil, "P busy: a status change waits")
-	eq(L.expire(s, "Ember", 17.5, "contested"), "Ember", "P ...and shows at the end")
+	eq(L.sample(s, "Ember", t(16.5), "contested"), nil, "P busy: a status change waits")
+	eq(L.expire(s, "Ember", t(17.5), "contested"), "Ember", "P ...and shows at the end")
 	eq(s.shown_status, "contested", "P ...with the new status")
 	-- ...and a change undone during the display shows nothing more.
-	eq(L.sample(s, "Ember", 18, "enemy"), nil, "P busy again")
-	eq(L.expire(s, "Ember", 19, "contested"), false, "P back to what is shown: hide")
+	eq(L.sample(s, "Ember", t(18), "enemy"), nil, "P busy again")
+	eq(L.expire(s, "Ember", t(19), "contested"), false, "P back to what is shown: hide")
 	-- No location: nothing.
-	eq(L.sample(L.new_state(), nil, 0, "friendly"), nil, "P no location: nothing")
+	eq(L.sample(L.new_state(), nil, t(0), "friendly"), nil, "P no location: nothing")
 	-- No status (the open sea): the name shows; gaining one shows again.
 	s = L.new_state()
-	eq(L.sample(s, "Open sea", 0, nil), "Open sea", "P the open sea shows")
-	L.expire(s, "Open sea", 1.5, nil)
-	eq(L.sample(s, "Open sea", 2, nil), nil, "P ...once")
+	eq(L.sample(s, "Open sea", t(0), nil), "Open sea", "P the open sea shows")
+	L.expire(s, "Open sea", t(1.5), nil)
+	eq(L.sample(s, "Open sea", t(2), nil), nil, "P ...once")
 end
 
 -- ---------------------------------------------------------------------------
@@ -185,6 +189,10 @@ do
 	for _, fn in ipairs(loaded) do fn() end
 	local M = grug_map.location
 
+	-- Long enough for a display to end (Round 47: DISPLAY 4 s, was 1.5 s),
+	-- in whole seconds more than the first 2 s, keeping the sample phase.
+	local EXTRA = math.ceil(L.DISPLAY - 1.5)
+	local WAIT = 2 + EXTRA
 	local function step(seconds)
 		local target = now_us + seconds * 1e6
 		while now_us < target - 1 do
@@ -245,7 +253,7 @@ do
 	shows(banner, line, "Home Vale", FRIENDLY, GREEN, "R join: own land, green")
 	local text, color = M.text_of(ann)
 	check(text == "Home Vale" and color == GREEN, "R the minimap line is green")
-	step(1.6)
+	step(1.6 + EXTRA)
 	check(banner.text == "" and line.text == "", "R both lines hide together")
 	-- The PvP button in friendly land: still "Friendly Territory".
 	flagged.ann = true
@@ -258,42 +266,42 @@ do
 	until_shown(banner, "Home Vale")
 	shows(banner, line, "Home Vale", CONTESTED, YELLOW, "R own land at y -501: contested")
 	eq(select(2, M.text_of(ann)), YELLOW, "R the minimap line turns yellow")
-	step(2)
+	step(WAIT)
 	eq(banner.text, "", "R hidden after its display")
 	ann.pos.y = -500
 	until_shown(banner, "Home Vale")
 	shows(banner, line, "Home Vale", FRIENDLY, GREEN, "R back up at y -500: friendly again")
-	step(2)
+	step(WAIT)
 	-- Into the contested zone: always shows; its depth crossing does not.
 	ann.pos = {x = 50, y = 10, z = 0}
 	until_shown(banner, "The Front")
 	shows(banner, line, "The Front", CONTESTED, YELLOW, "R a contested zone: yellow")
-	step(2)
+	step(WAIT)
 	ann.pos.y = -600
-	step(2)
+	step(WAIT)
 	eq(banner.text, "", "R a depth crossing in a contested zone shows nothing")
 	ann.pos.y = 10
-	step(2)
+	step(WAIT)
 	eq(banner.text, "", "R ...nor back up")
 	-- Over the open sea: the name, no line, the notice colour.
 	ann.pos = {x = 150, y = 0, z = 0}
 	until_shown(banner, "Open sea")
 	shows(banner, line, "Open sea", "", NOTICE, "R the open sea: no line, neutral")
 	eq(select(2, M.text_of(ann)), NOTICE, "R the minimap line is neutral at sea")
-	step(2)
+	step(WAIT)
 	-- Enemy land and its depth.
 	ann.pos = {x = 250, y = 10, z = 0}
 	until_shown(banner, "Ember Hold")
 	shows(banner, line, "Ember Hold", ENEMY, RED, "R enemy land: red")
-	step(2)
+	step(WAIT)
 	ann.pos.y = -501
 	until_shown(banner, "Ember Hold")
 	shows(banner, line, "Ember Hold", CONTESTED, YELLOW, "R enemy land at y -501: contested")
-	step(2)
+	step(WAIT)
 	ann.pos.y = 10
 	until_shown(banner, "Ember Hold")
 	shows(banner, line, "Ember Hold", ENEMY, RED, "R enemy land back up: red")
-	step(2)
+	step(WAIT)
 	-- Cost: the territory adds two zone queries to the name's one.
 	local samples = M.stats.samples - samples_before
 	check(samples > 0 and queries - queries_before <= 3 * samples,
@@ -307,14 +315,14 @@ do
 	-- status would only change the text. Here: two enemy displays in a row.
 	ann.pos = {x = 250, y = -501, z = 0}
 	until_shown(banner, "Ember Hold")
-	step(2)
+	step(WAIT)
 	sent = ann.sent
 	ann.pos.y = 10
 	until_shown(banner, "Ember Hold")
 	-- name, line and both colours: the name is restored, the line and the
 	-- colours change, nothing else
 	eq(ann.sent - sent, 4, "R a status change writes name, line and both colours once")
-	step(2)
+	step(WAIT)
 	for _, fn in ipairs(leaves) do fn(ann) end
 	players.ann = nil
 	text, color = M.text_of("ann")

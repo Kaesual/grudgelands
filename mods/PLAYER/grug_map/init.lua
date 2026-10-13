@@ -14,5 +14,7 @@ dofile(modpath .. "/providers.lua")
 dofile(modpath .. "/page.lua")
 -- After page.lua (its layout places the zone markers) and providers.lua.
 dofile(modpath .. "/location.lua")
+-- Round 47: first-entry zone XP, fed by the location samples.
+grug_map.location.discovery = dofile(modpath .. "/zone_discovery.lua").runtime()
 -- The map window (Z and the Map tab), with the quest boxes and targets.
 dofile(modpath .. "/window.lua")

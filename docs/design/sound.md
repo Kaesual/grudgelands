@@ -118,6 +118,10 @@ formspecs that drop the prepend. The client plays it at the file's own level
 - **Quests:** the quest text (a page turning), abandon, complete.
 - **Trade and money:** buy and sell (coins); money on a Bag of Coins deposit.
 - **Progression:** level-up (a fanfare), profession learned, profession tier.
+  A first entry into a zone plays the level-up fanfare too (Round 47 ruling
+  22, "Zone discovery" in
+  [world_map.md](world_map.md#zone-and-town-names)), once even when its XP
+  levels the character up.
 - **Crafting:** every finished craft by kind through the one progress hook
   (`grug_jobs.award_progress`): the smiths' hammer for Weaponsmith and
   Armorsmith, cooking, alchemy, the plain craft for everything else; upgrade

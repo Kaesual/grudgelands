@@ -13,7 +13,7 @@
 --      runs, an unchanged sample shows nothing;
 --   T, P  (zone tooltips and the zone markers' placement; gone in Round
 --      44 with the zone markers, which the map window does not draw);
---   R  runtime: banner element on join, the join banner, 1.5 s display then
+--   R  runtime: banner element on join, the join banner, DISPLAY s then
 --      hidden, the debounce through the real globalstep, text_of for the
 --      minimap line, no zone-marker provider (Round 44), HUD traffic
 --      only on changes, nothing during character creation; L layout: the
@@ -82,36 +82,43 @@ end
 -- ---------------------------------------------------------------------------
 -- D: debounce
 -- ---------------------------------------------------------------------------
+-- The times are written for the first 1.5 s display and scaled to DISPLAY
+-- (Round 47 ruling 21: 4 s; tools/r47_nz pins the value).
+-- (rounded to 1/64 s, so a display's end is exactly its start + DISPLAY)
+local function t(x) return math.floor(x * L.DISPLAY / 1.5 * 64 + 0.5) / 64 end
+-- A runtime wait over a display grows by whole seconds, keeping the phase
+-- of the one-second samples.
+local EXTRA = math.ceil(L.DISPLAY - 1.5)
 do
 	local s = L.new_state()
-	check(L.sample(s, "Dawnmere Fields", 0) == "Dawnmere Fields", "D join shows the location")
-	check(L.sample(s, "Dawnmere Fields", 0.5) == nil, "D busy: nothing")
-	check(L.expire(s, "Dawnmere Fields", 1.4) == nil, "D before the end: nothing")
-	check(L.expire(s, "Dawnmere Fields", 1.5) == false, "D end, same place: hide")
+	check(L.sample(s, "Dawnmere Fields", t(0)) == "Dawnmere Fields", "D join shows the location")
+	check(L.sample(s, "Dawnmere Fields", t(0.5)) == nil, "D busy: nothing")
+	check(L.expire(s, "Dawnmere Fields", t(1.4)) == nil, "D before the end: nothing")
+	check(L.expire(s, "Dawnmere Fields", t(1.5)) == false, "D end, same place: hide")
 	check(s.busy_until == nil, "D idle after hiding")
-	check(L.sample(s, "Dawnmere Fields", 2) == nil, "D unchanged sample: nothing")
-	-- The brief's example: enter the city, leave and re-enter within 1.5 s.
-	check(L.sample(s, "Highcourt City", 10) == "Highcourt City", "D enter city: shows")
-	check(L.sample(s, "Highcourt", 11) == nil, "D left the city while busy: nothing")
-	check(L.expire(s, "Highcourt City", 11.5) == false, "D back in the city at the end: hide")
+	check(L.sample(s, "Dawnmere Fields", t(2)) == nil, "D unchanged sample: nothing")
+	-- The brief's example: enter the city, leave and re-enter within the display.
+	check(L.sample(s, "Highcourt City", t(10)) == "Highcourt City", "D enter city: shows")
+	check(L.sample(s, "Highcourt", t(11)) == nil, "D left the city while busy: nothing")
+	check(L.expire(s, "Highcourt City", t(11.5)) == false, "D back in the city at the end: hide")
 	check(s.shown == "Highcourt City", "D shown stays the city")
 	-- A -> B -> A
 	local a = L.new_state()
-	L.sample(a, "A", 0)
-	L.expire(a, "A", 1.5)
-	check(L.sample(a, "B", 3) == "B", "D A->B shows B")
-	check(L.sample(a, "A", 4) == nil, "D A->B->A: A waits")
-	check(L.expire(a, "A", 4.5) == "A", "D A->B->A: A shows when B ends")
-	check(a.busy_until == 6, "D the follow-up display runs 1.5 s")
-	check(L.expire(a, "A", 6) == false, "D then hides")
+	L.sample(a, "A", t(0))
+	L.expire(a, "A", t(1.5))
+	check(L.sample(a, "B", t(3)) == "B", "D A->B shows B")
+	check(L.sample(a, "A", t(4)) == nil, "D A->B->A: A waits")
+	check(L.expire(a, "A", t(4.5)) == "A", "D A->B->A: A shows when B ends")
+	check(a.busy_until == t(6), "D the follow-up display runs DISPLAY s")
+	check(L.expire(a, "A", t(6)) == false, "D then hides")
 	-- A -> B -> C
 	local c = L.new_state()
-	L.sample(c, "A", 0)
-	L.expire(c, "A", 1.5)
-	L.sample(c, "B", 2)
-	check(L.sample(c, "C", 3) == nil, "D A->B->C: C waits")
-	check(L.expire(c, "C", 3.5) == "C", "D A->B->C: C shows when B ends")
-	check(L.sample(L.new_state(), nil, 0) == nil, "D no location: nothing")
+	L.sample(c, "A", t(0))
+	L.expire(c, "A", t(1.5))
+	L.sample(c, "B", t(2))
+	check(L.sample(c, "C", t(3)) == nil, "D A->B->C: C waits")
+	check(L.expire(c, "C", t(3.5)) == "C", "D A->B->C: C shows when B ends")
+	check(L.sample(L.new_state(), nil, t(0)) == nil, "D no location: nothing")
 end
 
 -- ---------------------------------------------------------------------------
@@ -233,8 +240,8 @@ do
 	check(p.huds[banner].text == "Dawnmere Fields", "R join shows the location")
 	check(M.text_of(p) == "Dawnmere Fields" and M.text_of("p1") == "Dawnmere Fields",
 		"R text_of feeds the minimap line")
-	step(1.6)
-	check(p.huds[banner].text == "", "R hidden after 1.5 s")
+	step(1.6 + EXTRA)
+	check(p.huds[banner].text == "", "R hidden after DISPLAY s")
 	local sent = p.sent
 	step(5)
 	check(p.sent == sent, "R a player standing still sends nothing")
@@ -247,7 +254,7 @@ do
 	step(0.5)
 	check(M.text_of(p) == "Dawnmere Fields", "R the minimap line follows at once")
 	p.pos = {x = 10, y = 10, z = -2540}
-	step(1.5)
+	step(1.5 + EXTRA)
 	check(p.huds[banner].text == "", "R back in town at the end: no new banner")
 	-- A -> B -> C: start zone, Goldmead (village), Highcourt city.
 	p.pos = {x = -120, y = 10, z = -2020}
@@ -256,9 +263,9 @@ do
 	p.pos = {x = 0, y = 10, z = -1500}
 	step(0.3)
 	check(p.huds[banner].text == "Goldmead Vale", "R the city waits for the display to end")
-	step(1.3)
+	step(1.3 + EXTRA)
 	check(p.huds[banner].text == "Highcourt", "R then the city shows")
-	step(2)
+	step(2 + EXTRA)
 	check(p.huds[banner].text == "", "R and hides")
 	for _, fn in ipairs(leaves) do fn(p) end
 	players.p1 = nil
