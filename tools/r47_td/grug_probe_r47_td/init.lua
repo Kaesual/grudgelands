@@ -15,20 +15,21 @@
 --             jungle tree 4 deep), N_TODAY trees, each tree's x/z box free
 --             of every other box (the world writer's rule before TC's
 --             follow-up: an accepted tree reserves its whole box)
---   new_main  the generated trees (wp40/tree_templates.lua, 32 variants,
---             kapok 16), N_MAIN trees (the density main's writer gives,
---             tools/r47_td/density.lua), boxes as above
---   new50, new75   the generated trees at N_TODAY with the crowns trimmed to
---             50 % and 75 % of their leaves: per variant the leaves farthest
---             from any wood cell go first (ties by a position hash); fruit
---             stays
---   new       the generated trees at N_TODAY, only wood reserved: a tree is
---             refused when one of its wood cells (trunk, quarter, limb,
---             root) comes within one node of another tree's wood; leaves
---             go only into air, so crowns interleave
+--   first     the generated trees (wp40/tree_templates.lua, 32 variants,
+--             kapok 16), N_FIRST trees (the density after lane TC's first
+--             step, 046d1699, tools/r47_td/density.lua), boxes as above
+--   new50, new75   "new" with the crowns trimmed to 50 % and 75 % of their
+--             leaves: per variant the leaves farthest from any wood cell go
+--             first (ties by a position hash); fruit stays
+--   new       the generated trees at N_NEW (the density of TC's follow-up,
+--             4075b4bc) by that writer's rule: a tree's wood (trunk,
+--             quarter, limb, root) never lands on another tree's wood, its
+--             root keeps TREE_SPACING = 4 (Chebyshev) from every other
+--             root, a leaf goes only into air (the first leaf stays) and
+--             wood may take another tree's leaf, so crowns interleave
 --   grove     "new" plus a dense grove: the middle 48 x 48 columns packed
---             with more generated trees by the same wood rule until 400
---             candidates in a row fail
+--             with more generated trees by the same rule until 400
+--             candidates in a row fail (the densest the rule allows)
 -- Every scene uses the same candidate positions (a PcgRandom stream per
 -- species), so the scenes differ only by tree, count and rule. Trunks keep
 -- off the middle 3 x 3 columns and the leaves of the inside camera's cells
@@ -54,7 +55,7 @@ end
 local MODE = setting("mode", "forest")
 local SPECIES = setting("species", "apple")
 local SCENES = setting("scenes", MODE == "capital" and "capital" or
-	"empty,today,new_main,new50,new75,new,grove")
+	"empty,today,first,new50,new75,new,grove")
 local CAPITAL = setting("capital", "highcourt")
 local W_SECONDS = tonumber(setting("w", "6"))
 local I_SECONDS = tonumber(setting("i", "10"))
@@ -71,22 +72,29 @@ local function log(msg) core.log("action", P .. msg) end
 -- Trees per 1000 land columns in the species' home biome, from
 -- tools/r47_td/density.lua over seeds 12345 (3 chunks per biome) and
 -- 17713522922938657774 (4), pooled: today = the commit before lane TC's
--- merge (e65bf60a), main = 046d1699. Home biomes: apple, aspen deep forest;
--- silverwood elf forest; jungle jungle edge + fringe; kapok fringe;
--- acacia savanna; pine pine hills; gravewood bone forest. Times 16.384
--- (the forest's 128 x 128 columns) gives the counts.
+-- merge (e65bf60a), first = TC's first step (046d1699), new = TC's
+-- follow-up (4075b4bc). Home biomes: apple, aspen deep forest; silverwood
+-- elf forest; jungle jungle edge + fringe; kapok fringe (+ deep jungle for
+-- the writer's rows); acacia savanna; pine pine hills; gravewood bone
+-- forest. The tool's trunk clusters miss leaning generated trunks, so for
+-- generated acacia, kapok and gravewood (and apple, new) the writer's own
+-- accepted rows count. Times 16.384 (the forest's 128 x 128 columns) gives
+-- the counts.
 local DENSITY = {
-	apple = {4.05, 1.50}, aspen = {1.43, 2.21}, silverwood = {2.40, 1.45},
-	jungle = {6.05, 2.60}, kapok = {0.55, 0.12}, acacia = {0.78, 0.49},
-	pine = {3.07, 2.87}, gravewood = {2.13, 0.67},
+	apple = {4.05, 1.50, 3.44}, aspen = {1.43, 2.21, 3.83},
+	silverwood = {2.40, 1.45, 2.38}, jungle = {6.05, 2.60, 5.71},
+	kapok = {0.55, 0.12, 0.52}, acacia = {0.78, 0.65, 0.84},
+	pine = {3.07, 2.87, 3.53}, gravewood = {2.13, 0.94, 1.70},
 }
+local TREE_SPACING = 4
 local function count(per_1000, override)
 	local n = tonumber(setting(override, ""))
 	if n then return n end
 	return math.max(1, math.floor(per_1000 * 16.384 + 0.5))
 end
 local N_TODAY = count(DENSITY[SPECIES] and DENSITY[SPECIES][1] or 1, "n_today")
-local N_MAIN = count(DENSITY[SPECIES] and DENSITY[SPECIES][2] or 1, "n_main")
+local N_FIRST = count(DENSITY[SPECIES] and DENSITY[SPECIES][2] or 1, "n_first")
+local N_NEW = count(DENSITY[SPECIES] and DENSITY[SPECIES][3] or 1, "n_new")
 
 -- Today's schematics (copies in this probe's schematics/, from
 -- mods/BASE/default/schematics and tools/r46_tree/concept/today).
@@ -219,9 +227,10 @@ local function plan_today(n)
 	return placed
 end
 
--- new: {x, z, v}; rule "box" or "wood"; `wood` (shared between calls) holds
--- the reserved wood columns as "x,z" -> true.
-local function plan_new(list, n, rule, half, wood, boxes, start, give_up)
+-- new: {x, z, v}; rule "box" or "cells" (TC's follow-up); `wood` and
+-- `roots` (shared between calls) hold the placed wood cells as "x,y,z" ->
+-- true and the roots.
+local function plan_new(list, n, rule, half, wood, boxes, roots, start, give_up)
 	local placed, misses = {}, 0
 	for i = start or 1, #CANDIDATES do
 		if #placed >= n or (give_up and misses >= give_up) then break end
@@ -242,18 +251,23 @@ local function plan_new(list, n, rule, half, wood, boxes, start, give_up)
 		if ok and rule == "box" then
 			ok = not overlaps(boxes, box)
 		elseif ok then
-			for _, w in ipairs(v.wood) do
-				if wood[(x + w.x) .. "," .. (z + w.z)] then ok = false break end
+			for _, r in ipairs(roots) do
+				if math.abs(r[1] - x) < TREE_SPACING and math.abs(r[2] - z) < TREE_SPACING then
+					ok = false
+					break
+				end
+			end
+			if ok then
+				for _, w in ipairs(v.wood) do
+					if wood[(x + w.x) .. "," .. w.y .. "," .. (z + w.z)] then ok = false break end
+				end
 			end
 		end
 		if ok then
 			misses = 0
 			boxes[#boxes + 1] = box
-			for _, w in ipairs(v.wood) do
-				for dx = -1, 1 do
-					for dz = -1, 1 do wood[(x + w.x + dx) .. "," .. (z + w.z + dz)] = true end
-				end
-			end
+			roots[#roots + 1] = {x, z}
+			for _, w in ipairs(v.wood) do wood[(x + w.x) .. "," .. w.y .. "," .. (z + w.z)] = true end
 			placed[#placed + 1] = {x = x, z = z, v = v}
 		else
 			misses = misses + 1
@@ -293,13 +307,13 @@ local function build(scene)
 	local new_trees = {}
 	if scene ~= "empty" and scene ~= "today" then
 		VARIANTS = VARIANTS or variants(SPECIES)
-		local wood, boxes = {}, {}
-		if scene == "new_main" then
-			new_trees = plan_new(VARIANTS, N_MAIN, "box", FOREST, wood, boxes)
+		local wood, boxes, roots = {}, {}, {}
+		if scene == "first" then
+			new_trees = plan_new(VARIANTS, N_FIRST, "box", FOREST, wood, boxes, roots)
 		else
-			new_trees = plan_new(VARIANTS, N_TODAY, "wood", FOREST, wood, boxes)
+			new_trees = plan_new(VARIANTS, N_NEW, "cells", FOREST, wood, boxes, roots)
 			if scene == "grove" then
-				local extra = plan_new(VARIANTS, 100000, "wood", GROVE, wood, boxes, 1, 400)
+				local extra = plan_new(VARIANTS, 100000, "cells", GROVE, wood, boxes, roots, 1, 400)
 				info.grove = #extra
 				for _, t in ipairs(extra) do new_trees[#new_trees + 1] = t end
 			end
@@ -505,8 +519,8 @@ core.register_globalstep(function(dtime)
 		core.emerge_area(p1, p2, function(_, _, remaining)
 			if remaining == 0 then state.pending = false end
 		end)
-		log(("mode %s species %s n_today %d n_main %d scenes %s"):format(MODE, SPECIES,
-			N_TODAY, N_MAIN, SCENES))
+		log(("mode %s species %s n_today %d n_first %d n_new %d scenes %s"):format(MODE,
+			SPECIES, N_TODAY, N_FIRST, N_NEW, SCENES))
 	elseif state.phase == "emerge" then
 		if state.pending then return end
 		log(("emerge done in %.1f s"):format((core.get_us_time() - state.emerge_started) / 1e6))

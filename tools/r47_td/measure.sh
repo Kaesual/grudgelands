@@ -26,7 +26,7 @@
 #        [SCENES=<list>] tools/r47_td/measure.sh OUT_DIR
 #   WIDTH/HEIGHT (default 1280 x 720, the web build's window), VIEW (viewing
 #   range, default 190, the desktop default), W/I (window seconds, default
-#   6/8), N_TODAY/N_MAIN (override the probe's tree counts), LP_THREADS
+#   6/8), N_TODAY/N_FIRST/N_NEW (override the probe's tree counts), LP_THREADS
 #   (llvmpipe threads, default 8), XVFB_DRIVERS (default /usr/lib64/dri).
 #   Run it as a measuring engine run (one boot; the shared queue).
 # Writes OUT_DIR/run.json (tools/r47_td/report.py reads it), the
@@ -83,7 +83,8 @@ cp "$repo/minetest.conf" "$patchdir/b/minetest.conf"
 		"$mode" "$species" "${W:-6}" "${I:-8}"
 	[[ -n "$scenes" ]] && printf 'r47td_scenes = %s\n' "$scenes"
 	[[ -n "${N_TODAY:-}" ]] && printf 'r47td_n_today = %s\n' "$N_TODAY"
-	[[ -n "${N_MAIN:-}" ]] && printf 'r47td_n_main = %s\n' "$N_MAIN"
+	[[ -n "${N_FIRST:-}" ]] && printf 'r47td_n_first = %s\n' "$N_FIRST"
+	[[ -n "${N_NEW:-}" ]] && printf 'r47td_n_new = %s\n' "$N_NEW"
 	[[ -n "${CAPITAL:-}" ]] && printf 'r47td_capital = %s\n' "$CAPITAL"
 	true
 } >>"$patchdir/b/minetest.conf"
