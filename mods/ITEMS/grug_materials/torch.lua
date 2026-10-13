@@ -14,17 +14,14 @@ local WALL = "grug_materials:anthracite_torch_wall"
 local CEILING = "grug_materials:anthracite_torch_ceiling"
 local LIGHT = 14
 
--- PLACEHOLDER (Round 47 lane AN): the vendored torch textures, tinted, until
--- lane ART's Anthracite set is picked. The picked files take these names, in
--- the vendored torch's formats: `grug_materials_anthracite_torch_on_floor.png`
--- (16 x 16, inventory and wield image) and
--- `grug_materials_anthracite_torch_on_floor_animated.png` (16 x 256, 16
--- frames, the tile of all three meshes, as default_torch_on_floor_animated.png;
--- the vendored triple uses no other torch texture).
-local TINT = "^[colorize:#7fb4ff:70"
-local INVENTORY_IMAGE = "default_torch_on_floor.png" .. TINT
+-- Textures: lane ART's Anthracite set (the user's pick of 2026-10-13), in
+-- the vendored torch's formats. All three meshes sample the floor sheet, as
+-- the vendored triple does with default_torch_on_floor_animated.png; the
+-- set's ceiling and wall sheets keep the vendored files' layouts for a mesh
+-- that would sample them.
+local INVENTORY_IMAGE = "grug_materials_anthracite_torch_on_floor.png"
 local TILE = {
-	name = "default_torch_on_floor_animated.png" .. TINT,
+	name = "grug_materials_anthracite_torch_on_floor_animated.png",
 	animation = {type = "vertical_frames", aspect_w = 16, aspect_h = 16, length = 3.3},
 }
 

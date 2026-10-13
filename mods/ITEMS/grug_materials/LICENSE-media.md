@@ -1,8 +1,9 @@
 # Media Origin & Licenses (grug_materials)
 
-**Thirty stored files: twelve tool sprites since WP13's round-2 tool ladder
-(§0 below) and eighteen rock and mineral textures since Round 24 (§9);
-everything else is a runtime registration.** Apart from those, the mod's
+**Thirty-six stored files: twelve tool sprites since WP13's round-2 tool
+ladder (§0 below), eighteen rock and mineral textures since Round 24 (§9)
+and the six Anthracite textures of Round 47 (§10); everything else is a
+runtime registration.** Apart from those, the mod's
 registrations use vendored minetest_game media unchanged, generate a tinted
 derivative at runtime with Luanti texture modifiers, or copy a vendored node
 definition under a canonical name.
@@ -88,6 +89,7 @@ the same light stone background, is used at every depth (Round 24 ruling 17).
 | `grug_materials:stone_with_sapphire` | `grug_materials_mineral_sapphire.png` |
 | `grug_materials:stone_with_ruby` | `grug_materials_mineral_ruby.png` |
 | `grug_materials:abyssal_crystal_ore` | `grug_materials_mineral_abyssal_crystal.png` |
+| `grug_materials:stone_with_anthracite` | `grug_materials_mineral_anthracite.png` (§10) |
 
 The five upstream natural ores retain their vendored textures under their
 upstream IDs: `default:stone_with_coal`, `default:stone_with_copper`,
@@ -115,6 +117,9 @@ tiles use the raw-item chain without `^[brighten`.
 
 `grug_materials:emberglass_shard` uses
 `default_mese_crystal_fragment.png^[colorize:#ff7a2e:45`.
+
+`grug_materials:anthracite` (raw item, no cut form or block) uses the stored
+`grug_materials_anthracite_lump.png` (§10).
 
 ## 4. Processed bars and storage blocks
 
@@ -151,6 +156,11 @@ vendored helper overlays `default_mese_post_light_side.png` and
 | `grug_materials:emberglass_post_light_junglewood` | `default_fence_junglewood.png` |
 | `grug_materials:emberglass_post_light_pine_wood` | `default_fence_pine_wood.png` |
 | `grug_materials:emberglass_post_light_aspen_wood` | `default_fence_aspen_wood.png` |
+
+The Anthracite torch (`grug_materials:anthracite_torch`, `_wall`,
+`_ceiling`; Round 47) uses the vendored meshes `torch_floor.obj`,
+`torch_wall.obj` and `torch_ceiling.obj` unchanged with the stored §10
+textures.
 
 The internal `default_mese*.png` filenames in §§3 and 5 are provenance
 names of vendored assets. They are not player-facing legacy item/node IDs and
@@ -270,3 +280,25 @@ which that licence allows in a CC BY-SA 4.0 adaptation.
 Only the silver overlay stays in minetest_game's streak language, like the
 vendored coal, copper, tin, iron and gold ores; gems and crystals use the
 VoxeLibre gem motifs, so the two families read apart.
+
+## 10. Round 47 Anthracite set — CC0 1.0
+
+Original textures made by **GPT-6 Astra**, 2026-10-13, for Grudgelands
+(Round 47 lane ART, picked by the user the same day); the project dedicates
+any rights it holds in them and their generator to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). No downloaded
+material, recoloured source pixels or traced flame frames are used; the torch
+sheets keep the vendored torch files' pixel layout (the mesh UV interface).
+Source: `tools/r47_art/anthracite/generate.py` (run with `python3
+tools/r47_art/anthracite/generate.py`, Pillow 12.3.0), with its own ledger
+`tools/r47_art/LICENSE-media.md` (branch `r47-art`, commit `ce79f5b3`). The
+files are copied unchanged and renamed with this mod's prefix.
+
+| File | Lane ART source | Use | Author and licence |
+|---|---|---|---|
+| `grug_materials_anthracite_lump.png` | `anthracite/anthracite_lump.png` | the Anthracite item | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_mineral_anthracite.png` | `anthracite/mineral_anthracite.png` | ore overlay over `default_stone.png` (§2) | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_anthracite_torch_on_floor.png` | `anthracite/anthracite_torch_on_floor.png` | torch inventory and wield image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_anthracite_torch_on_floor_animated.png` | `anthracite/anthracite_torch_on_floor_animated.png` | the tile of the floor, wall and ceiling meshes (16 frames, 3.3 s) | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_anthracite_torch_on_ceiling_animated.png` | `anthracite/anthracite_torch_on_ceiling_animated.png` | not sampled by the current meshes (the vendored ceiling sheet's layout) | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_anthracite_torch_animated.png` | `anthracite/anthracite_torch_animated.png` | not sampled by the current meshes (the vendored wall sheet's layout) | GPT-6 Astra — CC0-1.0 |
