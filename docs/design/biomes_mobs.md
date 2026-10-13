@@ -1304,7 +1304,11 @@ cell except another town tree's leaf; a leaf off the ground or on a built
 cell is left out, so crowns interleave and merge (at most half the leaves
 left out). Stems keep 5 nodes apart, 3 in a capital's grove (four stems
 per quarter between its cross paths). A spot where nothing fits stays
-treeless; every grove and copse plot has trees.
+treeless; every grove and copse plot has trees. **Town greening**
+(Round 47, a first version): after a start or a capital core is built,
+its open wild ground gets small groups of 1–5 of the race's trees on an
+11-node hashed lattice, never on roads, plazas or paving, 4 nodes clear of
+every NPC socket and door (`wp13/layout.lua` `green`).
 
 Missing assets summary: silverwood + gravewood textures (retints),
 great_silverwood.mts treehouse schematic (WP13; ordinary trees are generated), adobe/
