@@ -65,7 +65,7 @@ centred on the node. Exact data: `shapes.js`; rationale: `DESIGN.md` "Shapes".
 
 | shape | drawtype | geometry | param2 |
 |---|---|---|---|
-| quarter | `mesh`, `grug_tree_quarter_oct.obj` | outline seen from above, outwards from the axis corner: (16,0) → (16,7) → (7,16) → (0,16); full height; caps (material 1, `*_tree_top`) and bark sides (material 2, u round the outline, v up: grain along the trunk); the two axis-side faces closed with the end grain (material 1; Round 47, the user: a partly felled trunk shows cut wood), its texture continuing the top cap's along their shared edge; collision/selection: full cube | facedir 0..3, inner corner (trunk axis) at +x +z for 0 |
+| quarter | `mesh`, `grug_tree_quarter_oct.obj` | outline seen from above, outwards from the axis corner: (16,0) → (16,7) → (7,16) → (0,16); full height; caps (material 1, `*_tree_top`) and bark sides (material 2, u round the outline, v up: grain along the trunk); the two axis-side faces closed with the end grain (material 1; Round 47, the user: a partly felled trunk shows cut wood), as a cut along the trunk (the cap's edge texel row stretched down the face, meeting the cap's rings); collision/selection: full cube | facedir 0..3, inner corner (trunk axis) at +x +z for 0 |
 | base | connected nodebox | core `{-6,-6,-6,6,6,6}`; level arms to 16, e.g. right `{6,-6,-6,16,6,6}`, front `{-6,-6,-16,6,6,-6}`; top/bottom arms to the border | facedir 0 / 4 / 12 = bark grain along y / z / x (tiles only) |
 | branch | connected nodebox | core `{-5,-5,-5,5,5,5}`, arms to the border, e.g. right `{5,-5,-5,8,5,5}` | as base |
 | twig | connected nodebox | core `{-3,-3,-3,3,3,3}`, arm right `{3,-3,-3,8,3,3}` | as base |

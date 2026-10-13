@@ -11,8 +11,9 @@
 //            at +x +z for facedir 0. The outline seen from above runs from
 //            the +x border to the +z border through PROFILES[name]. Caps
 //            top and bottom; the two faces on the axis side (+x and +z for
-//            facedir 0) are closed with the end grain (Round 47, the user:
-//            a partly felled trunk shows cut wood, not a hollow shell).
+//            facedir 0) are closed with the end grain as a cut along the
+//            trunk (Round 47, the user: a partly felled trunk shows cut wood,
+//            not a hollow shell): the cap's edge row stretched down the face.
 //   branch   connected node box, 10/16 thick.
 //   twig     connected node box, 6/16 thick; the only piece that also
 //            connects to leaves (only to a leaf above it, see LEAF_SIDES)
@@ -112,10 +113,16 @@
 				caps.push([v(axis), v(p1), v(p2)]);
 			});
 		}
-		// The two axis-side faces, end grain (tile 1) like the caps: each
-		// takes the top cap's texture coordinates along their shared top
-		// edge, so the rings run on across that edge and down the face (the
-		// face shows the end-grain picture standing up, hinged at the cap).
+		// The two axis-side faces, end grain (tile 1) like the caps, as a
+		// cut along the trunk (Round 47, the user): the one texel row of the
+		// end grain under their shared top edge with the top cap, stretched
+		// down the whole face. Along the edge each face keeps the cap's
+		// texture coordinate, so the rings meet the cap's there and run down
+		// the trunk as stripes; across it every vertex takes the same
+		// coordinate, half a texel (1/32 of a 16-px texture) inside the
+		// cap's border, so the whole face samples the row the cap shows at
+		// that edge rather than the wrapped one beyond it.
+		var ROW = 1 - 1 / 32;
 		var inner = [];
 		// The +z face (x runs along it) and the +x face (z runs along it),
 		// each the whole node side from the axis edge to the far border.
@@ -124,8 +131,8 @@
 			[[0.5, -0.5], [-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]].forEach(function (e) {
 				var along = e[0], y = e[1];
 				quad.push(fixedX ?
-					{p: [0.5, y, along], n: [1, 0, 0], uv: [y + 0.5, along + 0.5]} :
-					{p: [along, y, 0.5], n: [0, 0, 1], uv: [along + 0.5, y + 0.5]});
+					{p: [0.5, y, along], n: [1, 0, 0], uv: [ROW, along + 0.5]} :
+					{p: [along, y, 0.5], n: [0, 0, 1], uv: [along + 0.5, ROW]});
 			});
 			inner.push(quad);
 		});
