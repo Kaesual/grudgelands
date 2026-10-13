@@ -45,11 +45,16 @@ layouts, resource tables or buff values.
   listening and visual review; retain the existing exact-file sound
   approval process.
 - Review surface variety, tree shapes and city variety, and prepare changes
-  that give exploration and settlements more character.
+  that give exploration and settlements more character. Round 47 built the
+  tree rework (generated trees per world, greener towns and capitals) and
+  the swamp ([Round 47](#round-47--trees-mining-progression-and-crafting-feedback));
+  the other biomes' surfaces and city variety stay open.
 - Reassess ore, gem and coal availability through the depth tiers, then
   revise the distribution design and data. Round 46 made a first pass
   (gems one and two tiers deeper at half and a quarter, Coal and Iron
-  raised in T3; [items_crafting.md §3.0.1](docs/design/items_crafting.md#301-universal-materials-and-resource-taxonomy));
+  raised in T3; [items_crafting.md §3.0.1](docs/design/items_crafting.md#301-universal-materials-and-resource-taxonomy)),
+  Round 47 a second (next-tier ores only in the lower half of the band
+  before, Iron behind a Bronze pick, Anthracite replacing Coal from T3);
   a broader revision is checked against gathering and crafting
   progression first.
 - Current owners: [sound](docs/design/sound.md),
@@ -102,10 +107,20 @@ in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33, WP9 and
 WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below. WP34 followed in Round 46.
 
-- **Latest delivery: [Round 46 "World generation and player
-  feedback"](docs/planning/round46-plan.md#completion-2026-10-13)**
-  (2026-10-13, version 0.46.0, **map reset**, not pushed yet; GUI test
-  open): seed-dependent POI placement, the revised ore, gem and coal
+- **Latest delivery: [Round 47 "Trees, mining progression and crafting
+  feedback"](docs/planning/round47-plan.md#completion-2026-10-14)**
+  (2026-10-14, version 0.47.0, **map reset** plus the step 0.47.0; main
+  pushed by the user as a backup, the closing docs not yet; GUI test
+  open): trees from the seeded generator, greener towns and capitals, the
+  swamp, the lower-half ore rule and the Bronze gate, Anthracite and Steel
+  from it, quieter furnaces, crafts into the inventory, the Basic unlock by
+  held ingredients, NPC facing, first-entry zone XP and the map window's
+  marker layers ([Round 47](#round-47--trees-mining-progression-and-crafting-feedback),
+  [carry-overs](#round-47-carry-overs)).
+- [Round 46 "World generation and player
+  feedback"](docs/planning/round46-plan.md#completion-2026-10-13)
+  (2026-10-13, version 0.46.0, **map reset**, never deployed on its own;
+  GUI test open): seed-dependent POI placement, the revised ore, gem and coal
   table, kill XP by level difference, the repeatables removed, underground
   spawns and the depth pulse (WP34), rage by weapon speed and the caster
   spell base, coin bags, plain dishes, repair only in towns and the
@@ -1745,8 +1760,9 @@ world generation changed.
 
 **Noted 2026-10-09** ([completion](docs/planning/round44-plan.md#completion-2026-10-09)),
 the reviews' and reports' backlog notes (theoretical, no severity). The map
-icon overlaps (and MB's GUI tuning) wait for the GUI test; MB has nothing
-else open.
+icon overlaps (and MB's GUI tuning) wait for the GUI test; since Round 47
+the world map image has no baked icons (they are layer markers), so the
+overlaps remain on the minimap only. MB has nothing else open.
 
 - **Window frame** (FR): reopening the inventory shows the scrollbar
   position of the last send, not where the player left it; a page with no
@@ -2054,6 +2070,114 @@ severity).
   pass); `economy-vendor-plan.md` and `round29-plan.md` keep the old gem
   rule as history.
 
+### Round 47 — trees, mining progression and crafting feedback
+
+**Delivered 2026-10-14; main pushed by the user as a backup at `b3a30ab0`,
+the closing documentation not yet (pushed only on the user's word)**
+([completion](docs/planning/round47-plan.md#completion-2026-10-14), plan
+[round47-plan.md](docs/planning/round47-plan.md)); every code lane
+independently reviewed by Opus, every follow-up delta with game logic
+reviewed again, ART on the user's picks. Version 0.47.0, **map reset**
+plus the step 0.47.0 (stored tool capabilities rebuilt at join); the
+production world moves from 0.45.1 in one update.
+
+- **Trees** (TA, TB, TC, TD): the shape nodes, the generator in Lua, 32
+  variants per species from the world seed, roots and saplings, town
+  groves, town and capital greening
+  ([handoff](docs/planning/tree-rework-handoff.md),
+  [biomes_mobs.md §5](docs/design/biomes_mobs.md)).
+- **The swamp** (SW, ART): the ground mix, pools that never flow, plants
+  and swamp trees ([world_zones.md](docs/design/world_zones.md),
+  `tools/r47_sw/DESIGN.md`).
+- **Mining** (OR, AN): the lower-half rule, Iron behind Bronze, Anthracite,
+  Steel from it, the Anthracite torch, the claim stone's time cap
+  ([items_crafting.md](docs/design/items_crafting.md),
+  [world_zones.md §11](docs/design/world_zones.md)); the step
+  ([upgrade contract §5.8](docs/technical/upgrade-contract.md#58-the-declared-steps)).
+- **Furnaces and crafting** (FS, CR): the furnace sound
+  ([sound.md](docs/design/sound.md)); delivery with the overflow and the
+  Basic unlock ([professions.md](docs/design/professions.md)).
+- **NPCs, zones and the map** (NZ, ML): NPC facing
+  ([settlements.md](docs/design/settlements.md)), zone discovery and the
+  marker layers ([world_map.md](docs/design/world_map.md)).
+
+### Round 47 carry-overs
+
+**Noted 2026-10-14** ([completion](docs/planning/round47-plan.md#completion-2026-10-14)),
+the reviews' and reports' backlog notes (theoretical or accepted, no
+severity).
+
+- **Trees in the world** (TC): stems on street side slopes in the
+  capitals (1–6 per capital stand on cut or embankment columns, never on
+  the street surface; `r7_settlement.lua` counts only `surface` as road);
+  fixed compositions in unused planner slots stay an option for city
+  ground (the city overlay greens it per world instead); the ±1 candidate
+  offset of `layout.green` can put a stem 3 from a socket (a needle at y 3
+  near Dur Brannoc's `watch_south_east`); a claim made after a sapling
+  was planted is not checked when the tree grows (it fills only free
+  air); root runs on hilly jungle are often dropped (slopes); kapoks are
+  still lost in the chunk height band ([MGT-03](#audit-2026-10-later-fix-packages));
+  the vendored default tree `.mts` files are no longer read by the game
+  (only the concept viewer's "today" and lane TD's today forest) and can
+  go after TD.
+- **Tree nodes and the generator** (TA, TB): `tools/wp13/node_tiles.json`
+  does not see tile overrides, so blueprint previews show the old jungle
+  bark; mesa clay is not ground, so roots there do not join; farm soil
+  also declares `connect_sides` top (harmless); `treegen.lua`'s `ORDER`,
+  `WOOD` and `ROOTS` are live tables (a caller that changes them changes
+  generation), and `generate` does not refuse a non-integer seed (TC
+  checks its derived seed).
+- **The swamp** (SW): a pool whose level is a chunk's top y and whose
+  ground is one up can leave a dry 1-deep dip, possibly with a lily on
+  the mud (cosmetic; no water hidden or flowing); the planner's
+  `ground_round`, like `water_beside`, reads columns up to 2 past the
+  world bound; many swamp trees fall away at chunk borders (4 of 27
+  candidates accepted in the probe); the pass's cost was not reported
+  (the reviewer's comparison: 0.3–0.5 s per chunk at base, 0.3–0.8 s
+  after); `r47_tc` B accepts a stem foot at y 0–2 for stilt species
+  (looser than needed).
+- **Mining and Anthracite** (OR, AN): grug_quality still stores
+  capabilities on crafted tools, which carry no damage or speed (stopping
+  it would make future scale changes step-free); `audit.lua`
+  `NON_METAL_PICKS` hard-codes the Wood and Stone picks (a new non-metal
+  pick fails the start loudly); a future tool without `_grug_tool_uses`
+  or with its own `after_use` would feel the engine's changed wear factor
+  on level-0 nodes; the Anthracite torch goes out silently in a flood (the
+  vendored hiss is a raw `sound_play`); `grug_housing` `api.lua:280` falls
+  back to a lump's seconds for an unknown item (its only caller filters
+  first); Anthracite prices as a T2 raw ore, so the Steel payout rises
+  (`income.py` passes); two unused torch sheets ship, as in the vendored
+  set.
+- **Furnace sound** (FS): `grug_ambience/mod.conf` still says "forge and
+  fire loops" (stale since Round 45); no explosion in the game removes
+  nodes, so "blown up" is reachable only through `on_blast` callers; a
+  player near furnaces and camp fires can hear up to 2 + 2 fire loops
+  (GUI checklist; sharing one limit is a small change).
+- **Crafting** (CR): pickups wait for the 10 s sweep before a recipe
+  unlocks (hooking the give helper would make it instant); Max may
+  undershoot when a larger take frees a slot (the start check is exact);
+  a Stop at the moment the overflow first fills sends the page twice.
+- **NPCs and zones** (NZ): two stall keepers (Silverleaf's `work_market`,
+  Lethariel's `martial_armoury_work_counter`) face the street, not their
+  counter (ruling 20 over the
+  [socket contract §8.1](docs/research/wp13-npc-sockets-contract.md#81-the-work-role);
+  GUI checklist); the
+  facing check reads one composition at a time, not neighbouring plots,
+  the capital core or terrain; no "Discovered: …" text line (the banner
+  names the zone).
+- **Map window** (ML): zone labels crowd on small windows (46 overlapping
+  pairs at 1035 × 696); a ring's tooltip covers its whole square; the web
+  build's label and box rendering is unchecked; at 16:9 a gap of about
+  0.85 units stays under the map; POI tooltips repeat the kind; at 720p
+  the 2 s party refresh resets an overflowing quest text's scroll three
+  times as often (all GUI checklist); a settlement without a
+  `display_name` would show its key; `targets.lua:145` gives no
+  crosshair fallback to a role whose regions an earlier objective marked
+  (no shipped quest has one).
+- **Render cost** (TD): TD numbers: pending.
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` in
+  `tools/r45_ms/portable_test.lua` and `tools/r45_rg/portable_test.lua:546`.
+
 ### Audit 2026-10 open questions
 
 **Open, for the user** (collected 2026-10-05 from the
@@ -2112,7 +2236,8 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
   shields, unlike lava and drowning: intended? ([core code](docs/audit-2026-10/code/06-core-hud-ambience.md))
 - **CORE-03** — switching off the atmosphere (a graphics fallback) also
   mutes the ambience beds: keep the beds then? ([core code](docs/audit-2026-10/code/06-core-hud-ambience.md))
-- **ITM-16 / fuels** — furnaces burn only coal, charcoal and logs, the
+- **ITM-16 / fuels** — furnaces burn only coal, charcoal, Anthracite (Round
+  47) and logs, the
   brewing stand the engine fuels (planks yes, charcoal no): intended? The
   brewing stand takes no fuel since Round 45 (no automatic brewing); the
   furnace half stays open.

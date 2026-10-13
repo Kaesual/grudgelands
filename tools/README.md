@@ -898,7 +898,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the root study, nine full node lists and the digest of `treegen.js`);
   `portable_test.lua` checks the port against it (and that it is pure), with
   `time` as a second argument also the time per tree per species. After a
-  change to `treegen.js`, port it and rerun the writer.
+  change to `treegen.js`, port it and rerun the writer;
   `r47_cr` the Basic recipe unlock
   (`portable_test.lua`, the real `grug_jobs` registry with the real Basic
   catalog and `basic_unlock.lua` under a stub engine): the starter set, the
@@ -925,7 +925,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   boot and a join of this checkout; until lane D declares 0.47.0 it stages
   the game as 0.47.0 and runs the tool through `tool_run.py` with that
   declaration); `portable_test.lua` the join part (stays in
-  `run_fixtures.sh`); `evidence/` the last run.
+  `run_fixtures.sh`); `evidence/` the last run;
   `r47_an` Anthracite (`portable_test.lua`: the ore row and node, the WP40
   rows (no Coal below T2, the T2 lower half, never rarer than Iron from
   T3), Steel only from Anthracite and the 10 s alloys with the smelting
@@ -950,6 +950,39 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   pins it prints. `forest.lua REPO SEED [CHUNKS_PER_BIOME]` writes forest
   chunks of one seed through the seed fleet's runtime and prints the
   writer's template counts (candidates, owner clips, accepted, root runs)
-  and the construction's CPU seconds; `capture.sh` with
-  `grug_probe_r47_tc` the engine captures of forests, a grown sapling and
-  a town.
+  and the construction's CPU seconds; `town_trees.lua REPO [all]` the
+  trees each composition's dressing plants, per town; `city_trees.lua REPO
+  SEED` the capitals' city trees of one seed and the CPU of deciding them;
+  `city_memory.lua REPO SEED` what one capital's city trees hold and that
+  their chunks come out the same in reverse order and after the idle
+  release; `capital_chunks.lua REPO SEED [N]` the write time of the
+  mapchunks round each capital; `capture.sh` with `grug_probe_r47_tc` the
+  engine captures of forests, a grown sapling, a town and the greened
+  capitals;
+  `r47_fs` the furnace loop (`portable_test.lua`: the real
+  `grug_ambience` on a fake engine: both burning furnaces in the `furnace`
+  kind at 60 % of the fire gain, the stop on dig or blast for every
+  listener with its fade, camp fires and a furnace that goes out
+  unchanged); `engine.sh OUT_DIR [TIMEOUT]` with `grug_probe_r47_fs` the
+  same on the real engine paths (a dig and a blast);
+  `r47_nz` NPC facing and zone discovery (`portable_test.lua`: `facing.lua`
+  over every composition with NPC sockets, no NPC facing a wall within two
+  nodes without a work feature; the banner's 4 s; the first-entry XP, the
+  single level-up sound, the visited set and its silent marks through the
+  real `grug_xp` and `location.lua`);
+  `r47_sw` the swamp (`portable_test.lua`: the swamp nodes, their groups,
+  drops, dig times and leaf decay through the r24 mining harness; the pool
+  rule of `wp40/swamp_pools.lua` and the swamp pass); the browser concept
+  `swamp.html` built by `build.py` (`--check`, `--art-dir`) from
+  `page.html`, `patch.js`, `view.js` and the tree concept, `node check.js`
+  its patch and tree rules, `node digest.js` that the eight approved
+  species stay unchanged (`species_digest.txt`); `DESIGN.md` the swamp as
+  built; `world_probe.lua REPO SEED [CHUNKS] [GRID]` the ground mix, pools
+  (no water that can flow), plants and trunks through the seed fleet's
+  writer; `capture.sh` with `grug_probe_r47_sw` the in-engine pool check
+  and the swamp screenshots on a seed;
+  `r47_art` GPT-6 Astra's swamp and Anthracite textures (`swamp/` and
+  `anthracite/` with their generators and preview sheets, provenance in
+  `LICENSE-media.md`; the user's picks ship in `grug_nodes`, `grug_trees`
+  and `grug_materials`), provenance, not a fixture;
+  `r47_td` the forest render cost: TD numbers: pending.
