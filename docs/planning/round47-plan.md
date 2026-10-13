@@ -586,7 +586,12 @@ the smallest fitting variant where room is tight (the user, after the TC
 review counted 801 → 527 town trees and 8 empty named groves). The wild
 forests too come back to roughly today's tree count per area (the user
 found the ~33 % loss too much): only wood cells are reserved, crowns
-interleave; the density is one parameter, and TD measures its cost.
+interleave; the density is one parameter, and TD measures its cost. **Town
+greening** (the user): capitals and start towns get generated trees on
+free areas — small groups and single trees on edges, courtyards and open
+grass, never on roads, plazas, doors, NPC sockets, waypoints, quest
+targets or stations; a first version by gut feeling, the user's fixes
+after captures; TD adds a capital view.
 
 **Trunk quarters, inner faces (the user, 2026-10-13):** the two faces
 towards the trunk axis are closed with the trunk's end-grain (top)
