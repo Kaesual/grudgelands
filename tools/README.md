@@ -867,3 +867,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   flat test areas at y = 500 with today's trees and the drafts, and takes the
   engine screenshots with one real client on a private Xvfb; the probe's
   METRIC lines are the node and face counts.
+  `r46_tree/concept` the step-2 tree concept viewer (browser only, no engine
+  work): `treegen.js` the seeded generator for all eight species (integer
+  maths, written to be ported to Lua line by line), `viewer.js` the three.js
+  side that meshes nodes the way the client does, `DESIGN.md` the growth
+  concept per species; `build.py` (`--check`) inlines both, the repo's
+  textures and today's schematics (`mts.py`) into `trees.html`;
+  `node check.js [seeds]` checks determinism, the 16 x 16 x 32 box, one
+  wood piece, leaf decay reach for 500 seeds per species and that the page's
+  scripts parse.
