@@ -79,6 +79,14 @@
 
 	var loader = new THREE.TextureLoader();
 	var texCache = {};
+	// Textures the page derives from repo textures as the nodes would:
+	// gravewood leaves as the node registers them; the swamp tree's leaves
+	// and hanging moss as stand-ins (Round 47 lane SW, placeholders).
+	var DERIVED = {
+		gravewood_leaves: {src: 'default_leaves', colour: 0x858585, ratio: 210},
+		swamp_leaves: {src: 'default_jungleleaves', colour: 0x5d6b3a, ratio: 110},
+		swamp_moss: {src: 'default_junglegrass', colour: 0x8d9a7a, ratio: 150, flipY: true}
+	};
 	function nearest(t) {
 		t.magFilter = THREE.NearestFilter;
 		t.minFilter = THREE.NearestFilter;
@@ -90,26 +98,28 @@
 	function texture(name) {
 		if (texCache[name]) { return texCache[name]; }
 		var t;
-		if (name === 'gravewood_leaves') {
-			// default_leaves.png^[colorize:#858585:210, as the node registers it
+		var der = DERIVED[name];
+		if (der) {
+			// a texture modifier on a repo texture: ^[transformFY, ^[colorize
 			var canvas = document.createElement('canvas');
 			canvas.width = 16; canvas.height = 16;
 			t = nearest(new THREE.CanvasTexture(canvas));
 			var img = new Image();
 			img.onload = function () {
 				var g = canvas.getContext('2d');
+				if (der.flipY) { g.translate(0, 16); g.scale(1, -1); }
 				g.drawImage(img, 0, 0);
 				var d = g.getImageData(0, 0, 16, 16);
-				var a = 210 / 255;
+				var a = der.ratio / 255, c = der.colour;
 				for (var i = 0; i < d.data.length; i += 4) {
-					d.data[i] = d.data[i] * (1 - a) + 0x85 * a;
-					d.data[i + 1] = d.data[i + 1] * (1 - a) + 0x85 * a;
-					d.data[i + 2] = d.data[i + 2] * (1 - a) + 0x85 * a;
+					d.data[i] = d.data[i] * (1 - a) + (c >> 16) * a;
+					d.data[i + 1] = d.data[i + 1] * (1 - a) + ((c >> 8) & 255) * a;
+					d.data[i + 2] = d.data[i + 2] * (1 - a) + (c & 255) * a;
 				}
 				g.putImageData(d, 0, 0);
 				t.needsUpdate = true;
 			};
-			img.src = TEXTURES.default_leaves;
+			img.src = TEXTURES[der.src];
 		} else {
 			t = nearest(loader.load(TEXTURES[name]));
 		}
@@ -145,7 +155,8 @@
 		pine: {bark: 'default_pine_tree', top: 'default_pine_tree_top', leaves: 'default_pine_needles', ground: 'default_coniferous_litter'},
 		aspen: {bark: 'default_aspen_tree', top: 'default_aspen_tree_top', leaves: 'default_aspen_leaves', ground: 'grug_nodes_forest_litter'},
 		silverwood: {bark: 'grug_trees_silverwood_tree', top: 'grug_trees_silverwood_tree_top', leaves: 'grug_trees_silverwood_leaves', ground: 'grug_nodes_silver_litter'},
-		gravewood: {bark: 'grug_trees_gravewood_tree', top: 'grug_trees_gravewood_tree_top', leaves: 'gravewood_leaves', ground: 'grug_nodes_blight_dirt'}
+		gravewood: {bark: 'grug_trees_gravewood_tree', top: 'grug_trees_gravewood_tree_top', leaves: 'gravewood_leaves', ground: 'grug_nodes_blight_dirt'},
+		swamp: {bark: 'grug_trees_gravewood_tree', top: 'grug_trees_gravewood_tree_top', leaves: 'swamp_leaves', ground: 'grug_nodes_mud'}
 	};
 
 	// Jungle bark candidates found by build.py (JUNGLE_BARKS: ids whose
@@ -168,7 +179,8 @@
 		pine: 'A straight stem thinning from log to branch to twig, a whorl of short twigs every 2–3 nodes; each whorl carries a needle skirt, wide below, narrow above: a layered cone.',
 		aspen: 'A slender stem with a long bare bole, then a tall oval crown on short twigs that spiral up the leader (5/16 turn each); some tops bend a little.',
 		silverwood: 'Tall and elegant: a long clear slender bole, then 3–5 limbs that step out 2–3 and rise parallel to the leader, each in a leaf column reaching down to where it turns upright: a flame.',
-		gravewood: 'Dead: the stem bends as it climbs, 3–5 bare limbs reach out level or rising and end in two-pronged claws (a quarter hooked up, a few drooping); a few grey tufts.'
+		gravewood: 'Dead: the stem bends as it climbs, 3–5 bare limbs reach out level or rising and end in two-pronged claws (a quarter hooked up, a few drooping); a few grey tufts.',
+		swamp: 'Round 47 concept (tools/r47_sw): gravewood wood, low and crooked. The stem stands 1–2 up on 3–4 short stilt roots that run out 1–2 and drop into the mud; it zigzags as it climbs. 3–5 long, almost level limbs (a third drooping) end in short forks under flat sparse pads; hanging moss trails below. Leaves and moss here are tinted stand-ins.'
 	};
 
 	// ----------------------------------------------------------- meshing
@@ -352,6 +364,8 @@
 				addCuboid(buckets, 'leaves', ox, oy, oz, [-8, -8, -8, 8, 8, 8], leafTiles, null);
 			} else if (nd.kind === 'fruit') {
 				addPlantlike(buckets, 'default_apple', ox, oy, oz);
+			} else if (nd.kind === 'moss') {
+				addPlantlike(buckets, 'swamp_moss', ox, oy, oz);
 			}
 		}
 		var meshes = {wood: [], leaves: []};
@@ -383,7 +397,7 @@
 		var total = 0;
 		tree.nodes.forEach(function (n) {
 			if (n.kind === 'leaves') { total += 6; return; }
-			if (n.kind === 'fruit') { total += 4; return; }
+			if (n.kind === 'fruit' || n.kind === 'moss') { total += 4; return; }
 			var boxes = [];
 			if (n.kind === 'trunk') {
 				boxes = [[-8, -8, -8, 8, 8, 8]];
@@ -566,7 +580,7 @@
 
 	// ------------------------------------------------------------- build
 
-	var SPACING = {apple: 10, jungle: 9, kapok: 15, acacia: 13, pine: 6, aspen: 5, silverwood: 7, gravewood: 7};
+	var SPACING = {apple: 10, jungle: 9, kapok: 15, acacia: 13, pine: 6, aspen: 5, silverwood: 7, gravewood: 7, swamp: 12};
 
 	function todayTree(species) {
 		var t = TODAY[species];

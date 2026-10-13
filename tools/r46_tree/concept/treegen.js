@@ -429,6 +429,7 @@
 			var c = t.cells[t.order[i]];
 			if (c.kind !== 'gone') {
 				nodes.push({k: t.order[i], x: c.x, y: c.y, z: c.z, kind: c.kind, rot: c.rot});
+				if (count[c.kind] === undefined) { count[c.kind] = 0; }   // moss (swamp only)
 				count[c.kind] = count[c.kind] + 1;
 				minX = imin(minX, c.x); maxX = imax(maxX, c.x);
 				minZ = imin(minZ, c.z); maxZ = imax(maxZ, c.z);
@@ -913,6 +914,157 @@
 		t.facts = {trunk: '1x1 bent', limbs: limbs, tufts: tufts};
 	}
 
+	// SWAMP (Round 47 lane SW): gravewood's wood, low and crooked, wide and
+	// sparse. The stem stands 1-2 nodes up on 3-4 short stilt roots: each
+	// leaves the stem sideways (a limb base), runs 1-2 out and drops
+	// straight to the ground, where its twig dives into the mud; a quarter
+	// of them turn a corner on the way out. Above the stilts the stem zigzags
+	// (a knee towards its lean, often a second one right above, turned
+	// aside); it is 4-5 logs long. 3-5 long
+	// limbs leave the upper stem almost level, evenly round, a third with a
+	// drooping end, each ending in a short level fork under a flat sparse
+	// pad; a stub leader carries a small pad. Hanging moss trails 1-3 nodes
+	// below leaves and limbs. Stilts and moss draw from the tree's one
+	// stream; nothing tests the ground (the stilts always end at the foot).
+	function swampLegOk(t, run, from) {
+		var p = from;
+		for (var i = 0; i < run.length; i++) {
+			var c = run[i];
+			if (getCell(t, c[0], c[1], c[2]) !== undefined) { return false; }
+			for (var n = 0; n < 6; n++) {
+				var nx = c[0] + NEIGHBOURS[n][0], ny = c[1] + NEIGHBOURS[n][1], nz = c[2] + NEIGHBOURS[n][2];
+				if (!(nx === p[0] && ny === p[1] && nz === p[2]) && isWood(t, nx, ny, nz)) { return false; }
+			}
+			p = c;
+		}
+		return true;
+	}
+
+	// Is there wood within the leaf decay reach of (x, y, z) (cube search)?
+	function nearWood(t, x, y, z, reach) {
+		for (var dx = -reach; dx <= reach; dx++) {
+			for (var dy = -reach; dy <= reach; dy++) {
+				for (var dz = -reach; dz <= reach; dz++) {
+					if (isWood(t, x + dx, y + dy, z + dz)) { return true; }
+				}
+			}
+		}
+		return false;
+	}
+
+	function swamp(t, rng) {
+		var stilt = rint(rng, 1, 2);             // the stem's foot stands this high
+		var top = stilt + rint(rng, 3, 4);        // last stem layer
+		var lean = rint(rng, 0, 3);
+		var k1 = stilt + 3;
+		var d2 = (lean + (chance(rng, 50) ? 1 : 3)) % 4;
+		var k2 = (chance(rng, 55) && k1 + 1 <= top) ? k1 + 1 : -1;
+		var x = 0, z = 0, y;
+		for (y = stilt; y <= top; y++) {
+			if (y === k1 || y === k2) {
+				var d = y === k1 ? lean : d2;
+				stemCell(t, x + CARD[d][0], y - 1, z + CARD[d][1], 'trunk', 0);
+				x = x + CARD[d][0]; z = z + CARD[d][1];
+			}
+			stemCell(t, x, y, z, 'trunk', 0);
+		}
+		// the stilts: from the foot (or one above), out 1-2, then down
+		var legs = rint(rng, 3, 4);
+		var s0 = rint(rng, 0, 3);
+		var made = 0;
+		for (var i = 0; i < 4; i++) {
+			var side = (s0 + i) % 4;
+			// a stilt that leaves one up drops 2 out, clear of the stem's foot
+			var out = rint(rng, 1, 2);
+			var ys = (out === 2 && chance(rng, 45)) ? stilt + 1 : stilt;
+			var turn = chance(rng, 25) ? (chance(rng, 50) ? 1 : 3) : -1;
+			if (i < legs) {
+				var dx = CARD[side][0], dz = CARD[side][1];
+				var hr = dx !== 0 ? 12 : 4;
+				var run = [];
+				var lx = 0, lz = 0;
+				for (var o = 1; o <= out; o++) {
+					lx = lx + dx; lz = lz + dz;
+					run.push([lx, ys, lz, o === 1 ? 'base' : 'branch', hr]);
+				}
+				if (turn >= 0) {
+					var tside = (side + turn) % 4;
+					lx = lx + CARD[tside][0]; lz = lz + CARD[tside][1];
+					run.push([lx, ys, lz, 'branch', CARD[tside][0] !== 0 ? 12 : 4]);
+				}
+				for (var ly = ys - 1; ly >= 0; ly--) {
+					run.push([lx, ly, lz, ly === 0 ? 'twig' : 'branch', 0]);
+				}
+				if (swampLegOk(t, run, [0, ys, 0])) {
+					for (var r = 0; r < run.length; r++) {
+						putCell(t, run[r][0], run[r][1], run[r][2], run[r][3], run[r][4]);
+					}
+					made = made + 1;
+				}
+			}
+		}
+		// the crown: long limbs, almost level, evenly round
+		var limbs = rint(rng, 3, 5);
+		var a0 = rint(rng, 0, 15);
+		var pads = [];
+		for (var j = 0; j < limbs; j++) {
+			var az = a0 + idiv(16 * j, limbs) + rint(rng, -1, 1);
+			var sy = rint(rng, imax(stilt + 3, top - 2), top);
+			var c = trunkEdge(t, sy, az);
+			var reach = rint(rng, 48, 76);
+			var rise = rint(rng, -2, 14);
+			var tx = imax(-5, imin(5, cellOf(offX(mid(c[0]), az, reach))));
+			var tz = imax(-5, imin(5, cellOf(offZ(mid(c[1]), az, reach))));
+			var e = limb(t, c[0], sy, c[1], tx, sy + cellOf(rise + 8), tz, 0, 60, OUT_FIRST);
+			if (rint(rng, 0, 2) === 0) {
+				// a drooping end: one out and down
+				e = limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(az) + 8), e[1] - 1,
+					e[2] + cellOf(dirZ(az) + 8), 0, 0, OUT_FIRST);
+			}
+			for (var f = -1; f <= 1; f += 2) {
+				var fa = az + 3 * f;
+				limb(t, e[0], e[1], e[2], e[0] + cellOf(dirX(fa) + 8), e[1],
+					e[2] + cellOf(dirZ(fa) + 8), 0, 0, OUT_FIRST);
+			}
+			pads.push(e);
+		}
+		// a stub leader with a small pad
+		var la = rint(rng, 0, 15);
+		var le = limb(t, x, top, z, x + cellOf(dirX(la) + 8), top + 1, z + cellOf(dirZ(la) + 8), 0, 0, UP_FIRST);
+		for (var p = 0; p < pads.length; p++) {
+			var rr = rint(rng, 30, 42);
+			cluster(t, mid(pads[p][0]), mid(pads[p][1]) + 14, mid(pads[p][2]), rr, rint(rng, 14, 18), rr, 0);
+		}
+		cluster(t, mid(le[0]), mid(le[1]) + 10, mid(le[2]), rint(rng, 22, 28), 14, rint(rng, 22, 28), 0);
+		limbBases(t);
+		fillLeaves(t, 30, 58, rint(rng, 1, 99999), 3);
+		// hanging moss under leaves and limbs with open air below, within the
+		// leaf decay reach of wood so it goes when the tree goes
+		var cand = [];
+		for (var q = 0; q < t.order.length; q++) {
+			var hc = t.cells[t.order[q]];
+			if ((hc.kind === 'leaves' || hc.kind === 'branch' || hc.kind === 'twig') && hc.y >= 3 &&
+				t.stemSet[t.order[q]] !== true && getCell(t, hc.x, hc.y - 1, hc.z) === undefined) {
+				cand.push(t.order[q]);
+			}
+		}
+		cand.sort(function (a, b) { return a - b; });
+		var strands = rint(rng, 4, 9), hung = 0;
+		for (var s = 0; s < strands && cand.length > 0; s++) {
+			var at = rint(rng, 0, cand.length - 1);
+			var hk = t.cells[cand[at]];
+			cand.splice(at, 1);
+			var len = rint(rng, 1, 3);
+			for (var m = 1; m <= len; m++) {
+				var my = hk.y - m;
+				if (my < 1 || getCell(t, hk.x, my, hk.z) !== undefined || !nearWood(t, hk.x, my, hk.z, 3)) { break; }
+				putCell(t, hk.x, my, hk.z, 'moss', 0);
+				hung = hung + 1;
+			}
+		}
+		t.facts = {trunk: '1x1 crooked', stilts: made + ' (' + stilt + ' up)', limbs: limbs, moss: hung};
+	}
+
 	// ================================================================ table
 
 	var SPECIES = {
@@ -923,9 +1075,10 @@
 		pine: {salt: 5, grow: pine},
 		aspen: {salt: 6, grow: aspen},
 		silverwood: {salt: 7, grow: silverwood},
-		gravewood: {salt: 8, grow: gravewood}
+		gravewood: {salt: 8, grow: gravewood},
+		swamp: {salt: 9, grow: swamp}
 	};
-	var ORDER = ['apple', 'jungle', 'kapok', 'acacia', 'pine', 'aspen', 'silverwood', 'gravewood'];
+	var ORDER = ['apple', 'jungle', 'kapok', 'acacia', 'pine', 'aspen', 'silverwood', 'gravewood', 'swamp'];
 
 	// ================================================================ roots
 
