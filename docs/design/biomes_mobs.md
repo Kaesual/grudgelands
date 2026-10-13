@@ -250,7 +250,13 @@ seed at every server start: 32 per species, 16 kapoks
 quarter turn by a digest of its root. Wide trunks (2 × 2, 3 × 3) stand on one
 buried layer, so a gentle slope shows no gap under a corner. A leaf that
 would hit the ground is left out; every wood cell needs free space, as
-before. Roots (apple and jungle on some 2 × 2 trees, every kapok) are placed
+before. Generated trees interleave their crowns: a tree reserves only its
+own wood and leaf cells, wood never lands on another decoration's wood or
+box, a leaf on another tree's leaf is left out (the first stays), wood may
+take another tree's leaf, and two generated trees of one mapchunk keep
+their roots 4 nodes apart (`TREE_SPACING` in `r6_settlement.lua`, the
+forest density parameter). Every tree still lies wholly inside its
+mapchunk, so no crown is cut at a border. Roots (apple and jungle on some 2 × 2 trees, every kapok) are placed
 run by run where each cell has ground right under it at the foot and none at
 the foot's level, never where the ground falls away or rises. Kapok grows
 from jungle wood; silverwood and gravewood are their own species with their
@@ -1290,9 +1296,15 @@ Roots test the real ground. Placing a sapling checks protection over the
 volume its species can grow into (x and z ±8, up to its tallest tree).
 Apples grow as natural apples (param2 0) and regrow. **Town trees**
 (`wp13/dressing.lua`) are the generator's trees too, in the palette's wood,
-seeded by their spot in the composition (the same in every world), each
-the first of four seeds that fits the composition's ground and its built
-cells; a spot where none fits stays treeless.
+drawn from a town pool of 24 trees per species in four turns (the same
+in every world): four candidates hashed by the spot, then the eight
+narrowest at the spot and one node beside it. Wood needs the
+composition's ground under it, its trunk foot on wild soil and no built
+cell except another town tree's leaf; a leaf off the ground or on a built
+cell is left out, so crowns interleave and merge (at most half the leaves
+left out). Stems keep 5 nodes apart, 3 in a capital's grove (four stems
+per quarter between its cross paths). A spot where nothing fits stays
+treeless; every grove and copse plot has trees.
 
 Missing assets summary: silverwood + gravewood textures (retints),
 great_silverwood.mts treehouse schematic (WP13; ordinary trees are generated), adobe/
