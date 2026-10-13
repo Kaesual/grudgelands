@@ -1260,11 +1260,12 @@ also kapok), `acacia`, `pine`, `aspen` (`default:*`), `silverwood` and
 follows facedir 0 / 4 / 12 (along y / z / x). Each piece drops its trunk,
 copies its groups and sounds, keeps its leaves from decaying within 3 nodes
 (radius 3 for every wood, the shapes included) and cannot be placed by a
-player. Twigs join a leaf only above them (the seven leaves declare
-`connect_sides = {"bottom"}`); the base and the twig join the ground only
+player. Twigs join a leaf only above them (the seven woods' leaves and the
+swamp leaves declare `connect_sides = {"bottom"}`; the swamp leaves and
+hanging moss decay to gravewood wood); the base and the twig join the ground only
 below them (every `group:soil` and `group:sand` node and `default:gravel`
-declare `connect_sides = {"top"}`, 23 nodes). The jungle tree and the jungle
-pieces wear the jungle bark M (`grug_trees_jungle_bark*.png`, CC0). The
+declare `connect_sides = {"top"}`, 26 nodes with the swamp ground). The
+jungle tree and the jungle pieces wear the jungle bark M (`grug_trees_jungle_bark*.png`, CC0). The
 world generator and saplings place the pieces (Round 47 lanes TB/TC).
 
 Missing assets summary: silverwood + gravewood textures (retints),
