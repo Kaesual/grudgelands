@@ -1,6 +1,6 @@
 # Media Origin & Licenses (grug_trees)
 
-All textures are **derived works** of minetest_game media
+All textures except the jungle bark and the Round 47 swamp textures (below) are **derived works** of minetest_game media
 (`mods/BASE/default/textures`, vendored from
 <https://github.com/luanti-org/minetest_game> at `b5243f3`, see VENDOR.md).
 
@@ -42,3 +42,30 @@ GPL-3.0-or-later license. They contain node references, not imported texture pix
 The dead-leaf node uses `default_leaves.png` with the engine texture modifier
 `^[colorize:#858585:210`; this grey-tinted derivative retains the above
 minetest_game attribution and CC BY-SA 3.0 license.
+
+## Jungle bark and the trunk quarter mesh (Round 47)
+
+The jungle bark is the Round 46 artist pick **M**, copied unchanged from
+`tools/r46_tree/astra/bark/` (provenance there: `LICENSE-media.md` and the
+generator `generate.py`) under this mod's own texture names. `shapes.lua`
+sets it on `default:jungletree` and the jungle shape nodes; the vendored
+`default_jungletree*.png` stay unchanged.
+
+| File | Source | Author | License | Modifications |
+|------|--------|--------|---------|---------------|
+| `grug_trees_jungle_bark.png` | `tools/r46_tree/astra/bark/jungle_bark_m.png` (original pixel map M) | GPT-6 Astra | CC0 1.0 Universal | none (renamed copy) |
+| `grug_trees_jungle_bark_top.png` | `tools/r46_tree/astra/bark/jungle_bark_m_top.png` (original end-grain painter M) | GPT-6 Astra | CC0 1.0 Universal | none (renamed copy) |
+
+`models/grug_tree_quarter_oct.obj` is Grudgelands geometry written by
+`node tools/r46_tree/concept/shapes.js` (it writes
+`tools/r46_tree/concept/models/grug_tree_quarter_oct.obj`, which is copied
+here byte for byte; `tools/r47_ta/portable_test.lua` checks the two are
+equal), distributed under the project's GPL-3.0-or-later license. It holds
+no texture pixels.
+
+## Original swamp textures (Round 47) — CC0 1.0
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_trees_swamp_hanging_moss.png` | `tools/r47_art/swamp/hanging_moss.png` (lane ART, commit `3480a978`, generator `tools/r47_art/swamp/generate.py`, provenance in `tools/r47_art/LICENSE-media.md`) | GPT-6 Astra | CC0 1.0 (<https://creativecommons.org/publicdomain/zero/1.0/>) | renamed only |
+| `grug_trees_swamp_leaves.png` | `tools/r47_art/swamp/swamp_leaves.png` (lane ART, commit `d7996ec8`, generator `tools/r47_art/swamp/generate_leaves.py`, provenance in `tools/r47_art/LICENSE-media.md`) | GPT-6 Astra | CC0 1.0 | renamed only |

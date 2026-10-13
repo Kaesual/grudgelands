@@ -35,14 +35,14 @@ TEXTURES = {
         "default_pine_tree", "default_pine_tree_top", "default_pine_needles",
         "default_aspen_tree", "default_aspen_tree_top", "default_aspen_leaves",
         "default_grass", "default_grass_side", "default_dirt", "default_dry_grass",
-        "default_coniferous_litter")
+        "default_coniferous_litter", "default_junglegrass")
 }
 for name in ("grug_trees_silverwood_tree", "grug_trees_silverwood_tree_top",
              "grug_trees_silverwood_leaves", "grug_trees_gravewood_tree",
              "grug_trees_gravewood_tree_top"):
     TEXTURES[name] = "mods/ITEMS/grug_trees/textures/" + name + ".png"
 for name in ("grug_nodes_canopy_litter", "grug_nodes_forest_litter",
-             "grug_nodes_silver_litter", "grug_nodes_blight_dirt"):
+             "grug_nodes_silver_litter", "grug_nodes_blight_dirt", "grug_nodes_mud"):
     TEXTURES[name] = "mods/BASE/grug_nodes/textures/" + name + ".png"
 TEXTURES["character"] = "mods/BASE/player_api/models/character.png"
 

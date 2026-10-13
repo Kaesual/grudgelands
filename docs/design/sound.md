@@ -129,7 +129,8 @@ formspecs that drop the prepend. The client plays it at the file's own level
   2026-10-09): a station with a sound plays it only when a player starts a
   job there (a recipe, an enchant or an upgrade), at the station the start
   found within 4 nodes: the forge the smiths' hammer, the brewing stand the
-  alchemy cue; the other stations have none, furnaces keep their fire loop.
+  alchemy cue; the other stations have none, burning furnaces keep their
+  loop (§4.4).
   A recipe made at such a station has no cue at its end (the station played
   it at the start). While the sound plays at a station, another start there
   queues it once more, never more often (four starts within one sound: it
@@ -266,8 +267,13 @@ profession forge and the cottages anvil, and its file: it played with
 nobody at work; the forge now sounds when a job starts there (§3.2, the
 short hammer cue).
 
-- **fire:** a burning furnace (the public town hearths while they burn) and
-  camp fires, heard to 10 nodes;
+- **fire:** camp fires, heard to 10 nodes;
+- **furnace** (Round 47, the user, 2026-10-13): a burning furnace (the
+  public town hearths while they burn) and a burning Dual Furnace, the same
+  fire loop at 60 % of the fire gain, heard as far. Digging or blowing up a
+  burning furnace stops its loop for every listener at once, with a short
+  fade (the node's `on_destruct`); one that goes out fades on the next pass
+  like every other loop;
 - **flowing water:** only at *flowing* water or river water, never at a
   source, heard to 14 nodes. Flowing water is rare in our worlds (6 of 768
   16 × 16 columns in twelve sampled regions, seed 12345).

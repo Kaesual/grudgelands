@@ -8,8 +8,10 @@
 -- grug_ambience/data.lua. Checks:
 --   N  no sound without a job: loading registers no globalstep, ABM, LBM or
 --      timer and plays nothing; the ambience has no loop at forges and
---      anvils (the fire loop at a burning furnace stays); the only trigger
---      is the job start hook;
+--      anvils (a burning furnace and a burning Dual Furnace keep a loop,
+--      their own kind since Round 47: the fire loop at 60 % of the fire
+--      gain, stopped when dug; camp fires keep the fire kind); the only
+--      trigger is the job start hook;
 --   Q  the queue rule per station node: four starts within one sound play it
 --      once and queue it once (the third and fourth add nothing); the queued
 --      sound plays when the first ends; a start while the queued one plays
@@ -129,7 +131,23 @@ do
 			not node:find("anvil", 1, true), "N no forge or anvil emitter: " .. node)
 	end
 	eq(D.emitters.forge, nil, "N the forge loop kind is gone")
-	eq(D.emitter_nodes["default:furnace_active"], "fire", "N a burning furnace keeps its fire loop")
+	-- Round 47 rulings 14-16: both burning furnaces are their own kind, the
+	-- fire loop at 60 % of the fire gain, stopped at once when dug (the stop
+	-- itself: tools/r47_fs); camp fires keep the fire kind.
+	eq(D.emitter_nodes["default:furnace_active"], "furnace", "N a burning furnace has the furnace loop")
+	eq(D.emitter_nodes["grug_smelting:dual_furnace_active"], "furnace",
+		"N a burning Dual Furnace has the furnace loop too")
+	eq(D.emitter_nodes["default:furnace"], nil, "N a cold furnace is silent")
+	eq(D.emitter_nodes["grug_smelting:dual_furnace"], nil, "N a cold Dual Furnace is silent")
+	eq(D.emitter_nodes["grug_nodes:camp_fire"], "fire", "N a camp fire keeps the fire loop")
+	eq(D.emitters.furnace.sound, D.emitters.fire.sound, "N the furnace loop is the fire loop")
+	eq(D.emitters.furnace.hear, D.emitters.fire.hear, "N ... heard as far")
+	eq(D.emitters.furnace.limit, D.emitters.fire.limit, "N ... as many at once")
+	check(math.abs(D.gains.furnace - 0.6 * D.gains.fire) < 1e-9,
+		"N the furnace gain is 60 % of the fire gain (" .. tostring(D.gains.furnace) .. ")")
+	eq(D.gains.fire, 0.5, "N the fire gain is unchanged")
+	eq(D.emitters.furnace.stop_on_destruct, true, "N a dug furnace stops its loop")
+	eq(D.emitters.fire.stop_on_destruct, nil, "N the fire kind is unchanged")
 end
 
 ------------------------------------------------------------------------------

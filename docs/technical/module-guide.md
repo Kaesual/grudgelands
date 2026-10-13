@@ -1964,6 +1964,13 @@ tools](#player-meta-read-by-external-tools).
     `find_nodes_in_area` above ground for the fire and flowing-water
     loops (none at forges and anvils since Round 45 PT8) (node names from `D.emitter_nodes` plus every flowing liquid whose
     source is default or river water, filled on `register_on_mods_loaded`).
+    Round 47: both burning furnaces are the `furnace` kind (the fire loop at
+    `D.gains.furnace`); a kind with `stop_on_destruct` gets an `on_destruct`
+    on its nodes (wrapping the node's own, installed in the same
+    `register_on_mods_loaded`) that calls `grug_ambience.stop_emitters_at`:
+    the loop at that position fades out over `D.stop_fade` for every
+    listener, a lookup per online player on that event only; fixture
+    `tools/r47_fs`, engine probe `tools/r47_fs/engine.sh`.
     Only names with a shipped file play (`available` from the `sounds/`
     listing, the capital rotations filtered by `music/`), so data may name a file that does
     not ship. Music files live in `music/` (never `sounds/`) and are pushed

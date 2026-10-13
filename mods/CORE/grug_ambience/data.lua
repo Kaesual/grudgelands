@@ -32,8 +32,15 @@ D.gains = {
 	call = 0.35,
 	music = 0.6,
 	fire = 0.5,
+	-- The burning furnaces: 60 % of the fire gain (Round 47 ruling 15, the
+	-- user, 2026-10-13); camp fires keep `fire`.
+	furnace = 0.3,
 	water = 0.5,
 }
+
+-- The fade of a loop whose node was dug or destroyed, seconds (Round 47
+-- ruling 16: silent at once, without a click).
+D.stop_fade = 0.25
 
 -- Seconds between two calls for one player: a random value in this range.
 D.call_gap = {90, 240}
@@ -104,16 +111,25 @@ D.calls = {
 -- Round 45 PT8 (the user, 2026-10-09): no hammer loop at forges and anvils
 -- any more, it sounded with nobody at work; the forge plays its sound when a
 -- job starts there (grug_jobs/station_sounds.lua).
+-- Round 47 (rulings 14-16, the user, 2026-10-13): both burning furnaces are
+-- their own kind, the same fire loop at a lower gain; a kind with
+-- `stop_on_destruct` fades out at once for every listener when its node is
+-- dug or destroyed (init.lua hooks the node's on_destruct), instead of on
+-- the next pass.
 D.emitter_nodes = {
 	-- A burning furnace: the public town hearths are default:furnace and
 	-- turn into this node while they burn (grug_jobs station_nodes.lua).
-	["default:furnace_active"] = "fire",
+	["default:furnace_active"] = "furnace",
+	-- The Dual Furnace while it burns (grug_jobs workspaces.lua swaps it).
+	["grug_smelting:dual_furnace_active"] = "furnace",
 	["grug_nodes:camp_fire"] = "fire",
 	["default:water_flowing"] = "water",
 	["default:river_water_flowing"] = "water",
 }
 D.emitters = {
 	fire = {sound = "grug_ambience_fire", hear = 10, limit = 2}, -- S2 E2.1
+	furnace = {sound = "grug_ambience_fire", hear = 10, limit = 2,
+		stop_on_destruct = true}, -- S2 E2.1
 	water = {sound = "grug_ambience_stream_pond", hear = 14, limit = 2}, -- S2 B12.2
 }
 -- The box searched around the player (half sizes).
