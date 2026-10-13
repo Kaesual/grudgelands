@@ -868,3 +868,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   box, one wood piece, clean joins at the slanted trunk pieces, leaf decay
   reach for 500 seeds per species, that the .obj files are current and that
   the page's scripts parse.
+  `r47_tb` the Lua port of the tree generator
+  (`mods/MAPGEN/grug_mapgen/wp40/treegen.lua`, pure Lua for the main and
+  the mapgen environment): `write_reference.js` (`--check`) writes
+  `reference.lua` from `r46_tree/concept/treegen.js` (per-seed digests of
+  300 seeds per species on flat and, for the rooted species, bumpy ground,
+  the root study, nine full node lists and the digest of `treegen.js`);
+  `portable_test.lua` checks the port against it (and that it is pure), with
+  `time` as a second argument also the time per tree per species. After a
+  change to `treegen.js`, port it and rerun the writer.
