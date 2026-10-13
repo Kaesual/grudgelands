@@ -583,7 +583,10 @@ TD's numbers, together with the leaf counts; **small dense groves are
 welcome** (e.g. crowns allowed to interleave in places). Town groves
 are never left empty: their trees stand denser, crowns interleaving,
 the smallest fitting variant where room is tight (the user, after the TC
-review counted 801 → 527 town trees and 8 empty named groves).
+review counted 801 → 527 town trees and 8 empty named groves). The wild
+forests too come back to roughly today's tree count per area (the user
+found the ~33 % loss too much): only wood cells are reserved, crowns
+interleave; the density is one parameter, and TD measures its cost.
 
 **Trunk quarters, inner faces (the user, 2026-10-13):** the two faces
 towards the trunk axis are closed with the trunk's end-grain (top)
