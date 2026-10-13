@@ -563,7 +563,7 @@ After merges: `tools/sync_to_luanti.sh`.
 
 ## 8. Open questions for the user
 
-1. **Leaf counts:** after TD.
+1. **Leaf counts and forest density** (incl. dense groves): after TD.
 
 Settled: lane ART's Anthracite set (lump, ore, torch) as painted (the
 user, 2026-10-13); town trees use the generator (ruling 3); the swamp concept and
@@ -574,6 +574,13 @@ Charcoal, the Steel quest texts name Anthracite; CR: silent first scan,
 only Basic ingredient tokens stored, no "Take all", orders capped by room,
 enchant and upgrade results into the inventory; NZ: quarter weight 0.75,
 capital zones and feet-height nodes do not count).
+
+**Forest density (the user, 2026-10-13, on lane TC's questions):** town
+trees stay the same in every world, unplantable town spots stay treeless,
+the crags pine needs no snow. The forests' density (about 30 % fewer trees
+than today, because larger trees reserve larger boxes) is decided with
+TD's numbers, together with the leaf counts; **small dense groves are
+welcome** (e.g. crowns allowed to interleave in places).
 
 **Trunk quarters, inner faces (the user, 2026-10-13):** the two faces
 towards the trunk axis are closed with the trunk's end-grain (top)
