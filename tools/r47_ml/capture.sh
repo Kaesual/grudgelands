@@ -18,7 +18,8 @@
 # Usage: XVFB=/path/to/Xvfb tools/r47_ml/capture.sh OUT_DIR
 #   WIDTH/HEIGHT (default 1920 x 1080), SEED (default 42), SUFFIX=<text>
 #   appended to every file name, SETTLE=<seconds> before each shot (default
-#   4), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri).
+#   4), SHOTS=<prefixes> only the shots whose names start with one of the
+#   comma-separated prefixes (e.g. SHOTS=L7), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri).
 #   Run it through the shared Lua queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
@@ -28,7 +29,7 @@ repo="$(cd "$here/../.." && pwd -P)"
 out="${1:?usage: capture.sh OUT_DIR}"
 xvfb="${XVFB:?set XVFB to an Xvfb binary}"
 width="${WIDTH:-1920}"; height="${HEIGHT:-1080}"
-settle="${SETTLE:-4}"; suffix="${SUFFIX:-}"; seed="${SEED:-42}"
+settle="${SETTLE:-4}"; suffix="${SUFFIX:-}"; seed="${SEED:-42}"; shots="${SHOTS:-}"
 server_timeout=330; client_timeout=320
 mkdir -p "$out"
 out="$(cd "$out" && pwd -P)"
@@ -71,6 +72,7 @@ cat >>"$patchdir/b/minetest.conf" <<CONF
 # Round 47 ML capture probe
 mobs_spawn = false
 r47ml_settle = $settle
+r47ml_shots = $shots
 CONF
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 

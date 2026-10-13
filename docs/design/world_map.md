@@ -234,22 +234,23 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   client shows the first rect under the pointer (`guiFormSpecMenu.cpp`
   drawMenu), so they are sent topmost first: the party arrows', then the
   markers' in reverse draw order. They are clipped to the map's view.
-- **Zones layer** (Round 47 ruling 7): per zone its name and, a line
-  below, its level band ("Levels 1–10", "Level 60"), one `label[]` per
-  line one line height apart (a two-line label would put them 0.5 units
-  apart), over a translucent dark box (`#1a1208a0`) kept inside the map, at
-  a constant text size at every zoom; the box is sized from the text at
-  0.52 em per character and 1.2 em per line of the client's font (16 px
-  times its GUI scaling; pixels per unit from the window information). Placement (`grug_map/zone_labels.lua`) reuses Round
+- **Zones layer** (Round 47 ruling 7; the one line is the user's pick of
+  2026-10-13 after the screenshots): per zone one `label[]` with its name
+  and level band on one line ("Dawnmere Fields 1–10", "Stormscale Summit
+  60"), over a tight translucent dark box (`#1a1208a0`) kept inside the
+  map, at a constant text size at every zoom; the box is sized from the
+  text at 0.52 em per character and 1.2 em of line height of the client's
+  font (16 px times its GUI scaling; pixels per unit from the window
+  information). Placement (`grug_map/zone_labels.lua`) reuses Round
   28 M1's: at start each zone's land is sampled on a 32-node grid and its
   label put at the cell farthest from its border and coast (the pole of
   inaccessibility), nudged clear of the labels placed before it and of the
   baked region names, sized at 1x on a 1920×1080 window; it is not cached.
-  At 1x small zones may still collide: seed 42 has 38 labels, 3
-  overlapping pairs and none over a region name at 1x on 1920×1080
-  (placement 0.14 s at start, the grid 0.13 of it); on smaller windows
-  (1035×696: 8.84 units of map at 53 px per unit) the same text covers
-  much more of the map.
+  At 1x small zones may still collide: seed 42 has 38 labels, at 1x on
+  1920×1080 no overlapping pair and none over a region name, on 1035×696
+  (8.84 units of map at 53 px per unit) 46 overlapping pairs and 6 over a
+  region name (the two-line labels before the user's pick: 3 and 0, 79 and
+  16); placement 0.13 s at start, the grid 0.12 of it.
 - **Quest boxes** (ruling 14, the quest log of [quests.md](quests.md)):
   the list box (the active count, the Quest HUD switch, the list, Track on
   HUD and Abandon with its confirmation) and below it the selected quest's
@@ -333,7 +334,8 @@ active quests at its start town, engine probe `tools/r44_mq/grug_probe_r44_mq`,
 the Accord viewer: Quests 6.0/6.1 KB (30 markers, each with its tooltip;
 the Throng viewer 32), Bosses 5.1/5.2 KB (19), Trainers 7.1/7.3 KB (39),
 Towns 8.3/8.5 KB (54), POIs 7.3/7.5 KB (40), PvP 4.9/4.9 KB (18), Zones
-6.9/7.1 KB (38 boxes with two labels each), None 2.9/2.9 KB; quest mode with the
+5.8 KB at 1x and 5.9 KB at 4x (38 boxes and labels; the capture probe
+`tools/r47_ml`, one-line labels), None 2.9/2.9 KB; quest mode with the
 first kill quest 3.9/3.9 KB (its three targets and the hand-in NPC, four
 tooltips). The eight buttons with their tooltips and styles are part of
 every figure. Round 44's window on the same seed and day: 5.0/5.1 KB with

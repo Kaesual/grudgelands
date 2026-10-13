@@ -218,3 +218,11 @@ Proof (comparisons, not targets):
 - The player's own arrow: no tooltip (default) or "You".
 - A **None** layer (only the arrows): included by default; drop it if the
   user does not want it.
+
+**Decided (the user, 2026-10-13, after the lane's screenshots):** the
+defaults above as built (layer memory session only, locked quest givers
+shown, the table's button order, no tooltip on the own arrow, None
+included); the former baked icons at 0.34 units; the rift boss keeps the
+clash site's icon; the Zones layer shows name and level band on one line
+("Dawnmere Fields 1–10") with a smaller, tighter box. The two-row
+threshold (1.25 units per button) stays.

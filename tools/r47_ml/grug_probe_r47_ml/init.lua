@@ -65,6 +65,23 @@ local SHOTS = {
 		end},
 }
 
+-- SHOTS=<prefixes> (capture.sh): only the shots whose names start with one.
+do
+	local filter = core.settings:get("r47ml_shots") or ""
+	if filter ~= "" then
+		local kept = {}
+		for _, shot in ipairs(SHOTS) do
+			for prefix in filter:gmatch("[^,]+") do
+				if shot.name:sub(1, #prefix) == prefix then
+					kept[#kept + 1] = shot
+					break
+				end
+			end
+		end
+		SHOTS = kept
+	end
+end
+
 local state = {phase = "wait", clock = 0}
 
 local function submit(player, fields)

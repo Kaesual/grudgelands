@@ -156,6 +156,10 @@ end
 -- boxes as obstacles, then the placement.
 L.REFERENCE = {size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 72, y = 1080 / 72},
 	real_gui_scaling = 1}
+-- The collision count is also logged for the user's small window (1035x696,
+-- 53.3 px per unit like 720p).
+L.SMALL = {size = {x = 1035, y = 696},
+	max_formspec_size = {x = 1035 / (0.5555 * 96), y = 696 / (0.5555 * 96)}, real_gui_scaling = 1}
 local function place_zones()
 	if not grug_core.zone_authority_installed() then return end
 	local started = core.get_us_time()
@@ -204,12 +208,24 @@ local function place_zones()
 		end
 	end
 	local overlapping, on_names = zone_labels.overlaps(placed, names)
+	-- The same labels' boxes at 1x on the small window.
+	local small_layout = W.layout(W.window_size(L.SMALL))
+	local small_nodes = (view.max_x - view.min_x) / small_layout.map_w
+	local small_metrics = zone_labels.metrics(L.SMALL)
+	local small = {}
+	for _, zone in ipairs(L.zones) do
+		local box = zone_labels.box(zone.name, zone.band, small_metrics)
+		small[#small + 1] = {x = zone.x, z = zone.z, rx = box.w / 2 * small_nodes,
+			rz = box.h / 2 * small_nodes}
+	end
+	local small_overlapping, small_on_names = zone_labels.overlaps(small, names)
 	L.zone_stats = {zones = #L.zones, overlapping = overlapping, on_names = on_names,
+		small_overlapping = small_overlapping, small_on_names = small_on_names,
 		grid_s = (sampled - started) / 1e6, total_s = (core.get_us_time() - started) / 1e6}
 	core.log("action", ("[grug_map] placed %d zone labels in %.3f s (grid %dx%d sampled " ..
-		"in %.3f s); at 1x on 1920x1080 %d overlapping pairs, %d over a region name"):format(
-		#L.zones, L.zone_stats.total_s, grid.nx, grid.nz, L.zone_stats.grid_s, overlapping,
-		on_names))
+		"in %.3f s); at 1x on 1920x1080 %d overlapping pairs, %d over a region name; " ..
+		"on 1035x696 %d and %d"):format(#L.zones, L.zone_stats.total_s, grid.nx, grid.nz,
+		L.zone_stats.grid_s, overlapping, on_names, small_overlapping, small_on_names))
 end
 
 -- After providers.lua's hook (registered earlier, so it runs first) and the

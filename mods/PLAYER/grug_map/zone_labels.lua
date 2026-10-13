@@ -1,7 +1,8 @@
 -- Zone names on the map window's Zones layer (Round 47 lane ML,
 -- docs/design/world_map.md "Map window"; the work package's ruling 7): one
--- label per zone, its name on the first line and its level band on the
--- second, with a translucent box behind it. The placement is Round 28 M1's
+-- label per zone, its name and level band on one line ("Dawnmere Fields
+-- 1–10", the user's pick of 2026-10-13), with a tight translucent box behind
+-- it. The placement is Round 28 M1's
 -- (commit 42c1f418, removed in Round 44): each zone's label sits at the land
 -- cell of that zone farthest from its border and coast (the pole of
 -- inaccessibility on a GRID_STEP grid), nudged clear of the labels placed
@@ -14,22 +15,25 @@ local Z = {}
 
 Z.GRID_STEP = 32
 -- The label's geometry in formspec units: a label[] without a size centres
--- its line on its y (guiFormSpecMenu.cpp parseLabel, real coordinates) and
--- would space a second line 0.5 units apart, much more than a line of text
--- at 1080p, so each line is a label[] of its own, one line height apart;
--- the box adds PAD_X and PAD_Y round the text. Text width is not known on
--- the server: CHAR_EM em per character of the client's font (font_size 16
--- by default, times its real GUI scaling), LINE_EM em per line of text.
-Z.PAD_X, Z.PAD_Y = 0.08, 0.03
+-- its line on its y (guiFormSpecMenu.cpp parseLabel, real coordinates); the
+-- box adds PAD_X and PAD_Y round the text. Text width is not known on the
+-- server: CHAR_EM em per character of the client's font (font_size 16 by
+-- default, times its real GUI scaling), LINE_EM em for the line's height.
+Z.PAD_X, Z.PAD_Y = 0.05, 0.01
 Z.CHAR_EM, Z.LINE_EM, Z.FONT_PX = 0.52, 1.2, 16
 Z.BOX = "#1a1208a0"
 
--- "Levels 1–10", or "Level 60" for a single-level zone ("" without a band).
+-- The level band "1–10", or "60" for a single-level zone ("" without one).
 function Z.band(record)
 	local low, high = record.level_min, record.level_max
 	if type(low) ~= "number" or type(high) ~= "number" then return "" end
-	if low == high then return ("Level %d"):format(low) end
-	return ("Levels %d–%d"):format(low, high)
+	if low == high then return tostring(low) end
+	return ("%d–%d"):format(low, high)
+end
+
+-- The label's one line: "Dawnmere Fields 1–10".
+function Z.text(name, band)
+	return (band and band ~= "") and (name .. " " .. band) or name
 end
 
 -- The text metrics {char, line} in formspec units for a client window
@@ -61,28 +65,22 @@ end
 -- The label box of a zone {w, h, dy} in units for `metrics`: dy is the box
 -- top relative to the label's centre point (the box is centred on it).
 function Z.box(name, band, metrics)
-	local chars = math.max(length(name), length(band or ""))
-	local lines = (band and band ~= "") and 2 or 1
-	local w = chars * metrics.char + 2 * Z.PAD_X
-	local h = lines * metrics.line + 2 * Z.PAD_Y
+	local w = length(Z.text(name, band)) * metrics.char + 2 * Z.PAD_X
+	local h = metrics.line + 2 * Z.PAD_Y
 	return {w = w, h = h, dy = -h / 2}
 end
 
 -- The formspec elements of one label centred at sx/sy (units), kept inside
 -- a map of max_w x max_h units (the scroll container clips what lies
--- outside): the box, then a label[] per line. `esc` is
--- core.formspec_escape.
+-- outside): the box, then the label[]. `esc` is core.formspec_escape.
 function Z.elements(list, sx, sy, name, band, metrics, esc, max_w, max_h)
 	local box = Z.box(name, band, metrics)
 	local x0, y0 = sx - box.w / 2, sy + box.dy
 	if max_w then x0 = math.max(0, math.min(max_w - box.w, x0)) end
 	if max_h then y0 = math.max(0, math.min(max_h - box.h, y0)) end
 	list[#list + 1] = ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(x0, y0, box.w, box.h, Z.BOX)
-	local y = y0 + Z.PAD_Y + metrics.line / 2
-	list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X, y, esc(name))
-	if band and band ~= "" then
-		list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X, y + metrics.line, esc(band))
-	end
+	list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X, y0 + box.h / 2,
+		esc(Z.text(name, band)))
 	return box
 end
 

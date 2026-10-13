@@ -692,10 +692,10 @@ do
 	-- Zones: a box and a two-line label per zone, no icons or tooltips.
 	map = layer_form(accord, "zones")
 	eq(count(map, "box%["), 2, "O Zones: a box per zone")
-	has(map, ";Dawnmere Fields]", "O Zones: the name")
-	has(map, ";Levels 1–10]", "O Zones: the level band, a line of its own")
-	has(map, ";Level 60]", "O Zones: a single-level band")
-	eq(count(map, "label%["), 4, "O Zones: two labels per zone")
+	-- (the user, 2026-10-13: name and band on one line)
+	has(map, ";Dawnmere Fields 1–10]", "O Zones: name and level band on one line")
+	has(map, ";kezamba 60]", "O Zones: a single-level band")
+	eq(count(map, "label%["), 2, "O Zones: one label per zone")
 	eq(count(map, "tooltip%["), 0, "O Zones: no tooltips")
 	local zbox = map:find("box%[")
 	local zlabel = map:find("label%[[^%]]*Dawnmere Fields")
@@ -1568,8 +1568,9 @@ end
 -- ---------------------------------------------------------------------------
 do
 	local Z = grug_map.layers.zone_labels
-	eq(Z.band({level_min = 1, level_max = 10}), "Levels 1–10", "ZL a level band")
-	eq(Z.band({level_min = 60, level_max = 60}), "Level 60", "ZL a single level")
+	eq(Z.band({level_min = 1, level_max = 10}), "1–10", "ZL a level band")
+	eq(Z.band({level_min = 60, level_max = 60}), "60", "ZL a single level")
+	eq(Z.text("Dawnmere Fields", "1–10"), "Dawnmere Fields 1–10", "ZL one line")
 	eq(Z.band({}), "", "ZL no band")
 	local m = Z.metrics({size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 72, y = 15},
 		real_gui_scaling = 1})
@@ -1579,21 +1580,19 @@ do
 	check(m2.char > m.char, "ZL text is wider in units on a smaller screen")
 	local fallback = Z.metrics(nil)
 	check(near(fallback.char, m.char), "ZL the fallback is 1080p at GUI scale 1")
-	local box = Z.box("Dawnmere Fields", "Levels 1–10", m)
-	check(near(box.w, 15 * m.char + 2 * Z.PAD_X) and near(box.h, 2 * m.line + 2 * Z.PAD_Y),
-		"ZL the box fits the longer line (the en dash counts once) and two lines")
+	local box = Z.box("Dawnmere Fields", "1–10", m)
+	check(near(box.w, 20 * m.char + 2 * Z.PAD_X) and near(box.h, m.line + 2 * Z.PAD_Y),
+		"ZL the box fits the one line (the en dash counts once)")
 	local list = {}
-	Z.elements(list, 5, 5, "Dawnmere Fields", "Levels 1–10", m, fs_escape)
+	Z.elements(list, 5, 5, "Dawnmere Fields", "1–10", m, fs_escape)
 	local bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
 	local lx, ly = list[2]:match("^label%[([%d.]+),([%d.]+);")
-	local _, ly2 = list[3]:match("^label%[([%d.]+),([%d.]+);")
 	check(near(tonumber(bx) + tonumber(bw) / 2, 5, 0.002) and near(tonumber(by) + tonumber(bh) / 2, 5, 0.002),
 		"ZL the box centred on the label point")
-	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), tonumber(by) + Z.PAD_Y + m.line / 2, 0.002),
-		"ZL the first line inside the box (label[] centres a line on its y)")
-	check(near(tonumber(ly2) - tonumber(ly), m.line, 0.002), "ZL the band a line height below")
+	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), 5, 0.002) and #list == 2,
+		"ZL one label centred in the box (label[] centres its line on its y)")
 	list = {}
-	Z.elements(list, 0.1, 9.9, "Dawnmere Fields", "Levels 1–10", m, fs_escape, 10, 10)
+	Z.elements(list, 0.1, 9.9, "Dawnmere Fields", "1–10", m, fs_escape, 10, 10)
 	bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
 	check(near(tonumber(bx), 0, 0.002) and near(tonumber(by) + tonumber(bh), 10, 0.002),
 		"ZL a label at the map's edge stays inside it")
