@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Paint twelve original 16 px bark pairs and two comparison sheets. No downloads.
+"""Paint six original 16 px bark pairs and the round-4 comparison sheet. No downloads.
 
 The authored pixel maps and palettes are CC0-1.0; generator/rendering code is
 GPL-3.0-or-later. Existing comparison textures retain CC BY-SA 3.0.
@@ -21,36 +21,11 @@ NEAREST = Image.Resampling.NEAREST
 # last row/column repeat the first: explicit, equal opposite edges in 16 px.
 # Features were drawn across that join; no outline is put around the tile.
 ART = {
-    "a": {
-        "name": "Kapok ash",
-        "idea": "Warm pale-grey bark, broad smooth areas and sparse sage lichen.",
-        "palette": {"a": "858a78", "b": "939783", "c": "a0a38f",
-                    "d": "777d6b", "e": "636c59", "m": "6f805c", "l": "86966b"},
-        "pixels": """
-            aabbbbaaaddaaaa
-            aabbbbaaaadaaaa
-            aabbcbaaaaaaaaa
-            aaabcbbaaaaaaaa
-            daabbbaaaabaaaa
-            daabbbaaabbbbaa
-            daabbaaabbbbbaa
-            aaabaaaabbbcbaa
-            aaaaaaaabbbbbaa
-            aaaaaaaabbbbaaa
-            aamaaaaabbbaaaa
-            ammlaaaabbaaada
-            aamlbaaaaaaaada
-            aabbbaaaaaaadda
-            aabbbbaaaddaaaa
-        """,
-        "wood": ["b6b094", "cbc2a0", "aea384", "bdb290", "9a9275"],
-        "center": (7.2, 7.5),
-    },
-    "b": {
-        "name": "Russet ridges",
-        "idea": "Dark red-brown bark with broad overlapping ridges and warm cuts.",
-        "palette": {"a": "654735", "b": "79543d", "c": "896148",
-                    "d": "523b2f", "e": "44342c", "f": "966d50"},
+    "m": {
+        "name": "Deep russet ridges",
+        "idea": "B's overlapping ridges, now deep red-brown with warm raised edges.",
+        "palette": {"a": "532718", "b": "6d331e", "c": "843f24",
+                    "d": "3e1d14", "e": "2f1712"},
         "pixels": """
             abbcaddeaabbcda
             abbcaddeaabbcda
@@ -68,264 +43,140 @@ ART = {
             abbcdeaaabbadaa
             abbcaddeaabbcda
         """,
-        "wood": ["a87850", "c39968", "8a5b3e", "ad7c53", "734d36"],
+        "wood": ["8b492b", "a15d35", "6e341f", "934e2e", "492316"],
         "center": (7.5, 7.1),
+        "crack": [(3, 10), (4, 10), (5, 9)],
     },
-    "c": {
-        "name": "Moss islands",
-        "idea": "Cool weathered bark with clustered olive moss in the hollows.",
-        "palette": {"a": "58594b", "b": "666757", "c": "767560",
-                    "d": "484d40", "e": "3d4438", "m": "5e7042", "l": "798652"},
+    "n": {
+        "name": "Mahogany plates",
+        "idea": "Near-mahogany plates, wine-brown shadows and small copper highlights.",
+        "palette": {"a": "452019", "b": "5e2a1f", "c": "763928",
+                    "d": "351a15", "e": "291510", "f": "8c492e"},
         "pixels": """
-            aabbaaaddaabbba
-            aabbaaaddaabbba
-            aabcaaadaaabbba
-            aabccaaaaaabbba
-            aabcbaaaaaabbda
-            aabbbadaaammmda
-            aaabbadaammlmda
-            aaabadaammllmda
-            aaabadaammmlmaa
-            aaabadadaammmaa
-            mmabaadadaaabaa
-            mlmbaaadaaabbaa
-            lmmbaaaddaabbaa
-            mmabbaaedaabbba
-            aabbaaaddaabbba
+            aabbccadeaabbca
+            aabbccadeaabbca
+            aabbccadeaabbca
+            aabcfbadaabbcca
+            aabcfbadaabbcca
+            aabcbbaaaabbcda
+            aabcbaaaabbcdda
+            aabcbaaaabbcdaa
+            aabcbaaaabbcdaa
+            aabccbaaabbcfaa
+            aabccbaaabbcfaa
+            aabcbbaaabbcdaa
+            aabbcbadeabbcda
+            aabbccadeaabbca
+            aabbccadeaabbca
         """,
-        "wood": ["99916f", "b4aa82", "7c765a", "a19874", "69654f"],
-        "center": (7.2, 7.8),
-    },
-    "d": {
-        "name": "Broad flutes",
-        "idea": "Deep narrow furrows between wide, gently turning umber buttress ribs.",
-        "palette": {"a": "796b52", "b": "8b7a5c", "c": "9b8865",
-                    "d": "625844", "e": "4f493a", "f": "6d614b"},
-        "pixels": """
-            abbccbfdeefabba
-            abbccbfdeefabba
-            abbccbfdeefabba
-            abbccbfdeefabba
-            abbcbafdeefabba
-            abbcbaadeefabba
-            abbcbafdeefabba
-            abbcbafdeefabba
-            abcbbafdeefabba
-            abcbbafdeefabba
-            abcbbafdeefabba
-            abcbbafdeefabba
-            abcbbafdeefabba
-            abbcbafdeefabba
-            abbccbfdeefabba
-        """,
-        "wood": ["b29a70", "ccb487", "93805d", "b9a177", "7e6e51"],
-        "center": (7.6, 7.7),
-    },
-    "e": {
-        "name": "Climbing vines",
-        "idea": "Quiet cocoa bark crossed by one slender winding green vine.",
-        "palette": {"a": "675c49", "b": "786952", "c": "88765c",
-                    "d": "594f40", "e": "4b4938", "m": "626e43", "l": "7b8652"},
-        "pixels": """
-            aabbaaaddaabbba
-            aabbaaaddaabbba
-            aabbbaadaabbcba
-            aabbbbaaaabbcba
-            aabbcbaaaaabcba
-            aabbcbaaaabbbba
-            aabbbaaaaabbbaa
-            aabbbaadaabbbaa
-            aaabbaaddaabbaa
-            aaabbaaddaabbaa
-            aaabbaaedaabbaa
-            aaabbaaedaabbba
-            aaabbaaedaabbba
-            aabbaaaddaabbba
-            aabbaaaddaabbba
-        """,
-        "wood": ["ae9470", "c7ad85", "91795b", "b49a76", "79674f"],
-        "center": (7.8, 7.2),
-    },
-    "f": {
-        "name": "Quiet olive",
-        "idea": "A restrained olive-brown alternative with fewer, softer vertical folds.",
-        "palette": {"a": "716b49", "b": "817653", "c": "92835c",
-                    "d": "605e42", "e": "505039", "f": "77704d"},
-        "pixels": """
-            abbcbaaddeaabfa
-            abbcbaaddeaabfa
-            abbcbaaddeaabfa
-            abbcbaaddaabbfa
-            abbbbaaddaabbfa
-            abbbbaddaaabbfa
-            abbbaaddaabbbaa
-            abbbaaddaabbbaa
-            abbaaaddaabbcaa
-            abbaaaddaabbcaa
-            abbaaddaabbbcaa
-            abbaaddeaabbbaa
-            abbaaddeaabbbaa
-            abbbaddeaabbfaa
-            abbcbaaddeaabfa
-        """,
-        "wood": ["9d8052", "bca170", "7e6543", "a6895b", "68583d"],
-        "center": (7.3, 7.3),
-    },
-    "g": {
-        "name": "Quiet russet",
-        "idea": "B refined: calm red-brown ridges with soft, unbroken shoulders.",
-        "palette": {"a": "6d4b37", "b": "7d573e", "c": "886146",
-                    "d": "5c402f", "e": "51392d"},
-        "pixels": """
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadaabbccdaa
-            abbcadaabbccdaa
-            abbcadaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbccdaa
-            abbcadaaabbcdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-        """,
-        "wood": ["a27650", "b68b5f", "8d6344", "a97e55", "704c35"],
-        "center": (7.4, 7.2),
-        "crack": [(3, 10), (4, 10)],
-    },
-    "h": {
-        "name": "Deep chestnut",
-        "idea": "Darker, warmer chestnut with broad copper-brown raised plates.",
-        "palette": {"a": "5e3b2b", "b": "704530", "c": "815339",
-                    "d": "4b3026", "e": "3e2b24"},
-        "pixels": """
-            abbccdaeaabbcda
-            abbccdaeaabbcda
-            abbccdaeaabbcda
-            abbcddaaaabbcda
-            abbcdaaaaabbcda
-            abbcdaaaabbccda
-            abbcdaaaabbccda
-            abbccdaaabbcdda
-            abbccdaaabbcdaa
-            abbccdaaabbcdaa
-            abbccdaaaabcdaa
-            abbcddaaaabcdaa
-            abbcddaeaabcdaa
-            abbccdaeaabbcda
-            abbccdaeaabbcda
-        """,
-        "wood": ["966344", "ae7b53", "7c5038", "9f6b49", "603d2c"],
+        "wood": ["78412d", "8e5236", "603021", "80452e", "3e2119"],
         "center": (7.7, 7.7),
         "crack": [(11, 4), (11, 5), (10, 6)],
     },
-    "i": {
-        "name": "Moss in the folds",
-        "idea": "Russet bark with two tiny, fresh-green moss pockets in the furrows.",
-        "palette": {"a": "6d4b37", "b": "7d573e", "c": "886146",
-                    "d": "5c402f", "e": "51392d", "m": "507b31", "l": "79a83e"},
-        "pixels": """
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadmaabbcdaa
-            abbcadlaabbcdaa
-            abbcammaabbcdaa
-            abbcadaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcmmaa
-            abbcdaaabbcldaa
-            abbcadaaabbmdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-        """,
-        "wood": ["a27650", "b68b5f", "8d6344", "a97e55", "704c35"],
-        "center": (7.4, 7.2),
-        "crack": [(3, 10), (4, 10)],
-    },
-    "j": {
-        "name": "Single green thread",
-        "idea": "Warm brown ridges and one bright, single-pixel climbing liana.",
-        "palette": {"a": "6d4b37", "b": "7d573e", "c": "886146",
-                    "d": "5c402f", "e": "51392d", "m": "639331", "l": "89b842"},
-        "pixels": """
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-            abbcadaabbccdaa
-            abbcadaabbccdaa
-            abbcadaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbcdaaa
-            abbcdaaabbccdaa
-            abbcadaaabbcdaa
-            abbcadeaabbcdaa
-            abbcadeaabbcdaa
-        """,
-        "wood": ["a27650", "b68b5f", "8d6344", "a97e55", "704c35"],
-        "center": (7.4, 7.2),
-        "crack": [(3, 10), (4, 10)],
-    },
-    "k": {
+    "o": {
         "name": "Fine red grain",
-        "idea": "Cinnamon-red bark with finer, softly broken vertical grain.",
-        "palette": {"a": "78503a", "b": "875d43", "c": "956b4c",
-                    "d": "694530", "e": "5a3c2d"},
+        "idea": "Deep red-brown with three fine, uneven strands and close growth rings.",
+        "palette": {"a": "59281a", "b": "70351f", "c": "864129",
+                    "d": "411e16", "e": "341812"},
         "pixels": """
-            abcdabdaadbcdaa
-            abcdabdaadbcdaa
-            abcdabdaadbcdaa
-            abdabbdaadbcdaa
-            abdabbdaadbcdaa
-            abdaabcdaabcdaa
-            abdabbcdabbcdaa
-            abdaabbdabbdaaa
-            abcdaabdabbdaaa
-            abcdaabdabcdaaa
-            abcdaabdabcdaaa
-            abcdaadabbcdaaa
-            abcdabdaadbcdaa
-            abcdabdaadbcdaa
-            abcdabdaadbcdaa
+            abcdaadbcadabda
+            abcdaadbcadabda
+            abcdaadbcadabda
+            abdcaadbbadabca
+            abdbaadbbadabca
+            abdaaabcdaabbda
+            abdaaabcdaabbda
+            abdaabbcdaabcda
+            abdaabbdaaabcda
+            abcdaabdaaabbda
+            abcdaabdaadbcda
+            abcdabddaadbbaa
+            abcdaadbaadbcaa
+            abcdaadbcadabda
+            abcdaadbcadabda
         """,
-        "wood": ["ac7b53", "bd9262", "996b49", "b18459", "7c5238"],
+        "wood": ["86452a", "995532", "723722", "8e4b2d", "4c2519"],
         "center": (7.1, 7.6),
         "crack": [(12, 9), (11, 9)],
     },
-    "l": {
-        "name": "Lichen freckles",
-        "idea": "Soft terracotta-brown ridges with just a few green lichen flecks.",
-        "palette": {"a": "794d37", "b": "875b41", "c": "95684a",
-                    "d": "63402f", "e": "53372b", "m": "699140", "l": "92b653"},
+    "p": {
+        "name": "Split russet",
+        "idea": "Strong russet ribs, deep branching furrows and broken warm crests.",
+        "palette": {"a": "602817", "b": "7a341c", "c": "934624",
+                    "d": "411c12", "e": "2c160f"},
+        "pixels": """
+            abbcddeaabbccda
+            abbcddeaabbccda
+            abbcddeaabbcdda
+            abccdeaaabcddaa
+            abcddeaaabcdaaa
+            abcddeaaabcdaaa
+            abcdaaaabbcdaea
+            abcdaaaabbccdea
+            abbcdaaaabccdea
+            abbccdaaabccdea
+            abbcddaaabbcdea
+            abbcdedaabbcdda
+            abbcddeaabbcdaa
+            abbcddeaabbccda
+            abbcddeaabbccda
+        """,
+        "wood": ["91472a", "a75b31", "71321c", "9a4e2b", "4a2316"],
+        "center": (7.6, 7.3),
+        "crack": [(4, 4), (5, 5), (6, 5), (12, 10), (11, 10)],
+    },
+    "q": {
+        "name": "Moss in red folds",
+        "idea": "Deep russet ridges with two tiny fresh-green pockets in the hollows.",
+        "palette": {"a": "532718", "b": "6d331e", "c": "843f24",
+                    "d": "3e1d14", "e": "2f1712", "m": "487f25", "l": "79ac35"},
+        "pixels": """
+            abbcaddeaabbcda
+            abbcaddeaabbcda
+            abbcddeaabbccda
+            abbcdmlaabbccda
+            abbcdaeaabbccda
+            abbdaaaaabccdda
+            abcdaaaabbcddaa
+            abcdaaabbccdaaa
+            abcdeaabbccmmaa
+            abcdeaabccdlmaa
+            abcdeaabccdaaaa
+            abbdeaaabcdaaaa
+            abbddeaaabdaaaa
+            abbcdeaaabbadaa
+            abbcaddeaabbcda
+        """,
+        "wood": ["8b492b", "a15d35", "6e341f", "934e2e", "492316"],
+        "center": (7.5, 7.1),
+        "crack": [(3, 10), (4, 10), (5, 9)],
+    },
+    "r": {
+        "name": "Liana over red folds",
+        "idea": "Quiet dark red-brown folds and one thin, fresh-green climbing liana.",
+        "palette": {"a": "522419", "b": "692e1e", "c": "803c26",
+                    "d": "3c1c15", "e": "2e1711", "m": "457a23", "l": "6ca332"},
         "pixels": """
             abbcadeaabbcdaa
             abbcadeaabbcdaa
             abbcadeaabbcdaa
             abbcadeaabbcdaa
-            abbclmaabbccdaa
-            abbcmdaabbccdaa
+            abbcadaabbccdaa
+            abbcadaabbccdaa
             abbcadaabbcdaaa
             abbcdaaabbcdaaa
             abbcdaaabbcdaaa
             abbcdaaabbcdaaa
-            abbcdaaabblmaaa
+            abbcdaaabbcdaaa
             abbcdaaabbccdaa
             abbcadaaabbcdaa
             abbcadeaabbcdaa
             abbcadeaabbcdaa
         """,
-        "wood": ["ac7a53", "bf9263", "966447", "b38058", "754b36"],
-        "center": (7.8, 7.3),
-        "crack": [(4, 4), (5, 5)],
+        "wood": ["85422a", "9a5531", "6b301f", "8d492d", "452218"],
+        "center": (7.4, 7.2),
+        "crack": [(3, 10), (4, 10)],
+        "vine": [6, 6, 6, 7, 7, 7, 8, 8, 8, 7, 7, 7, 6, 6, 6],
     },
 }
 
@@ -339,17 +190,9 @@ def paint_pair(key, art):
     assert len(rows) == 15 and all(len(row) == 15 for row in rows), key
     palette = {k: rgba(v) for k, v in art["palette"].items()}
     canvas = [list(row) for row in rows]
-    if key == "e":
-        # One connected, authored tendril, wrapping through the vertical join.
-        vine_x = [3, 3, 4, 4, 5, 6, 7, 7, 7, 6, 5, 5, 4, 3, 3]
-        for y, x in enumerate(vine_x):
-            canvas[y][x] = "m"
-            canvas[y][x + 1] = "l" if y in (2, 3, 6, 7, 10, 11) else "m"
-            canvas[y][x + 2] = "e"
-    if key == "j":
-        # One pixel wide even at the join; brown still occupies 15/16 of the tile.
-        vine_x = [5, 5, 5, 6, 6, 6, 7, 7, 7, 6, 6, 6, 5, 5, 5]
-        for y, x in enumerate(vine_x):
+    if "vine" in art:
+        # One pixel wide through the vertical join; 16 green pixels in 256.
+        for y, x in enumerate(art["vine"]):
             canvas[y][x] = "l" if y in (3, 4, 9, 10) else "m"
     side = Image.new("RGBA", (16, 16))
     side.putdata([palette[canvas[y % 15][x % 15]] for y in range(16) for x in range(16)])
@@ -367,10 +210,7 @@ def paint_pair(key, art):
                          3 if r > 1.25 else 0)
                 top.putpixel((x, y), wood[index])
     # A short drying split, kept away from all tile boundaries.
-    crack = {"a": [(11, 4), (11, 5)], "b": [(3, 10), (4, 10), (5, 9)],
-             "c": [(11, 11), (10, 10)], "d": [(10, 3), (10, 4), (9, 5)],
-             "e": [(4, 4), (5, 5)], "f": [(12, 8), (11, 8), (10, 9)]}
-    for p in art["crack"] if "crack" in art else crack[key]:
+    for p in art["crack"]:
         top.putpixel(p, wood[4])
     return side, top
 
@@ -475,24 +315,19 @@ def mockup(side, top, leaves):
     return Image.fromarray(pixels).convert("RGBA")
 
 
-def preview(pairs, round3=False):
+def preview(pairs):
     today = Image.open(DEFAULT / "default_jungletree.png").convert("RGBA")
     old_top = Image.open(DEFAULT / "default_jungletree_top.png").convert("RGBA")
     leaves = Image.open(DEFAULT / "default_jungleleaves.png").convert("RGBA")
-    # Round 3 keeps the six-card layout, adding a B column to each comparison.
-    extra = 502 if round3 else 0
-    width, card_w, card_h = 2160 + 2 * extra, 1048 + extra, 488
+    # Keep the original two-column, three-row layout and candidate/today pairs.
+    width, card_w, card_h = 2160, 1048, 488
     sheet = Image.new("RGBA", (width, 1640), "#eeeede")
     draw = ImageDraw.Draw(sheet)
     font = lambda size: ImageFont.truetype("DejaVuSans.ttf", size)
     regular, small, title = font(17), font(14), font(25)
-    heading = ("JUNGLE BARK  /  ROUND 3  /  BROWN & RUSSET" if round3 else
-               "JUNGLE BARK  /  SIX MATERIAL STUDIES")
-    draw.text((32, 25), heading, font=font(34), fill="#263629")
+    draw.text((32, 25), "JUNGLE BARK  /  ROUND 4  /  DEEP RED-BROWN", font=font(34), fill="#263629")
     draw.text((34, 72), "16 x 16 pixels  /  original CC0 candidates  /  same geometry, leaves and lighting in every comparison", font=regular, fill="#58604c")
     old_mock = mockup(today, old_top, leaves)
-    if round3:
-        b_mock = mockup(*pairs["b"], leaves)
 
     def paste_tile(im, position, size, background="#d5d9c7"):
         x,y = position
@@ -501,25 +336,19 @@ def preview(pairs, round3=False):
         tile = im.resize((size,size), NEAREST)
         sheet.alpha_composite(tile, (x,y))
 
-    for i, key in enumerate("ghijkl" if round3 else "abcdef"):
-        art = ART[key]
-        x, y = 24+(i%2)*(1064 + extra), 114+(i//2)*504
+    for i, (key, art) in enumerate(ART.items()):
+        x, y = 24+(i%2)*1064, 114+(i//2)*504
         draw.rounded_rectangle((x,y,x+card_w,y+card_h), radius=10, fill="#f9f8ee", outline="#cdd1bc", width=1)
         draw.text((x+20,y+16), key.upper() + "  /  " + art["name"], font=title, fill="#293a2d")
         draw.text((x+20,y+52), art["idea"], font=small, fill="#657057")
         side, top = pairs[key]
-        comparisons = [("CANDIDATE", side, mockup(side, top, leaves))]
-        if round3:
-            comparisons.append(("B / RUSSET RIDGES", pairs["b"][0], b_mock))
-        comparisons.append(("TODAY", today, old_mock))
-        mock_x = 658 if round3 else 450
+        comparisons = [("CANDIDATE", side, mockup(side, top, leaves)),
+                       ("TODAY", today, old_mock)]
+        mock_x = 450
         for column, (label, bark, model) in enumerate(comparisons):
             colour = "#3c573e" if column == 0 else "#777761"
-            repeat_label = ("B  /  4 x 4 tiles" if label.startswith("B /") else
-                            label + "  /  4 x 4 tiles")
-            draw.text((x+20+column*208,y+84), repeat_label, font=small, fill=colour)
+            draw.text((x+20+column*208,y+84), label + "  /  4 x 4 tiles", font=small, fill=colour)
             paste_tile(tiled(bark), (x+20+column*208,y+108), 192)
-            # Preserve the exact round-2 label positions and pixels.
             label_offset = 12 if column == 0 else 8
             draw.text((x+mock_x+column*294+label_offset,y+84), label, font=small, fill=colour)
             sheet.alpha_composite(model, (x+mock_x+column*294,y+106))
@@ -531,9 +360,6 @@ def preview(pairs, round3=False):
         paste_tile(leaves, (x+244,y+338), 96)
         draw.text((x+359,y+315), "1:1", font=small, fill="#657057")
         paste_tile(tiled(side), (x+356,y+338), 64)
-        if round3:
-            draw.text((x+452,y+315), "B / END GRAIN", font=small, fill="#657057")
-            paste_tile(pairs["b"][1], (x+452,y+338), 96)
         draw.text((x+mock_x+2,y+412), "2 x 2 stepped column / grain follows the limb", font=regular, fill="#58604c")
         draw.text((x+20,y+456), "Nearest-neighbour only. Software material mock-up; not an engine screenshot.", font=small, fill="#777c66")
     draw.text((34,1620), "Comparison media: Cisoun / paramat / PilzAdam, CC BY-SA 3.0. See LICENSE-media.md. New PNG pairs: CC0 1.0.", font=small, fill="#657057")
@@ -560,8 +386,7 @@ def main():
             name = f"jungle_bark_{key}{suffix}.png"
             validate(im, name)
             outputs[name] = im
-    outputs["preview.png"] = preview(pairs)
-    outputs["preview-r3.png"] = preview(pairs, round3=True)
+    outputs["preview-r4.png"] = preview(pairs)
     for name, im in outputs.items():
         path = HERE / name
         if args.check:
@@ -571,7 +396,7 @@ def main():
                 if name.startswith("jungle_bark_"):
                     validate(saved, name)
         else:
-            # Leave the round-2 files untouched when regenerating round 3.
+            # Preserve identical files when regenerating.
             if path.exists():
                 with Image.open(path) as saved:
                     if (saved.mode == im.mode and saved.size == im.size and
@@ -579,7 +404,7 @@ def main():
                         continue
             im.save(path)
     print(f"{'Checked' if args.check else 'Painted'} {2 * len(pairs)} opaque RGBA "
-          "16x16 textures and preview.png / preview-r3.png; "
+          "16x16 textures and preview-r4.png; "
           "both opposite edges match on every texture.")
 
 
