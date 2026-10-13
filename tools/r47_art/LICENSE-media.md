@@ -9,9 +9,14 @@ their generator to **CC0 1.0 Universal (CC0-1.0)**:
 <https://creativecommons.org/publicdomain/zero/1.0/>.
 No downloaded material or third-party source pixels are used in them.
 
-The complete source is
+The initial ten textures' source is
 [`tools/r47_art/swamp/generate.py`](swamp/generate.py), executed with
 `python3 tools/r47_art/swamp/generate.py` using installed Pillow 12.3.0.
+The additional olive leaves have their own complete source in
+[`swamp/generate_leaves.py`](swamp/generate_leaves.py), executed with
+`python3 tools/r47_art/swamp/generate_leaves.py` using the same Pillow version.
+Its leaf clusters and six-colour palette are original; the generator is
+also dedicated to CC0-1.0 and reuses the original sibling's CC0 label font.
 
 | File | Author | Source / generator | License | Modifications |
 | --- | --- | --- | --- | --- |
@@ -25,17 +30,19 @@ The complete source is
 | `swamp/reeds.png` | GPT-6 Astra | [generate.py](swamp/generate.py) | CC0-1.0 | Original pixel art |
 | `swamp/cattails.png` | GPT-6 Astra | [generate.py](swamp/generate.py) | CC0-1.0 | Original pixel art |
 | `swamp/hanging_moss.png` | GPT-6 Astra | [generate.py](swamp/generate.py) | CC0-1.0 | Original pixel art |
+| `swamp/swamp_leaves.png` | GPT-6 Astra | [generate_leaves.py](swamp/generate_leaves.py) | CC0-1.0 | Original olive pixel art with wrapped clusters and binary alpha cutouts |
 
 ## Comparison sheet
 
 | File | Author | Source / generator | License | Modifications |
 | --- | --- | --- | --- | --- |
 | `swamp/preview.png` | GPT-6 Astra (layout, font and new artwork); Calinou (papyrus); random-geek and Neuromancer (source dirt), Grudgelands contributors (mud recolour) | [generate.py](swamp/generate.py), with the two local references below | CC BY-SA 3.0 Unported for the comparison; the separately supplied original textures remain CC0-1.0 | Nearest-neighbour enlargement, repetition, alpha compositing on plain backgrounds and labels |
+| `swamp/preview-leaves.png` | GPT-6 Astra (layout, font and original swamp artwork); PilzAdam (jungle leaves); Cisoun (leaves and source bark); Grudgelands contributors (gravewood bark recolour) | [generate_leaves.py](swamp/generate_leaves.py), local references below | CC BY-SA 3.0 Unported for the comparison; the separately supplied new leaves and other original textures remain CC0-1.0 | Grey colour interpolation for gravewood leaves, nearest-neighbour enlargement, repetition, plain-background compositing, front-view leaf-pad mock and labels |
 
-The comparison includes existing media under **CC BY-SA 3.0 Unported**
-(<https://creativecommons.org/licenses/by-sa/3.0/>); it is not entirely
-CC0. The original work contributed to the comparison is also offered
-under that licence to distribute the combined sheet.
+The comparisons include existing media under **CC BY-SA 3.0 Unported**
+(<https://creativecommons.org/licenses/by-sa/3.0/>); they are not entirely
+CC0. The original work contributed to the comparisons is also offered
+under that licence to distribute the combined sheets.
 
 - **Papyrus:** Calinou,
   [`default_papyrus.png`](../../mods/BASE/default/textures/default_papyrus.png),
@@ -50,10 +57,27 @@ under that licence to distribute the combined sheet.
   <https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_dirt.png>;
   the comparison only scales and repeats the existing recoloured asset.
 
+The leaves comparison additionally reads these existing files locally;
+their pixels occur only in the comparison, never in `swamp_leaves.png`:
+
+| Local input | Author | Original source | Exact license | Use in comparison |
+| --- | --- | --- | --- | --- |
+| `mods/BASE/default/textures/default_jungleleaves.png` | PilzAdam | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_jungleleaves.png) | CC BY-SA 3.0 Unported | Labelled 1× and 8× samples on both backgrounds |
+| `mods/BASE/default/textures/default_leaves.png` | Cisoun | [Pinned source](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_leaves.png) | CC BY-SA 3.0 Unported | Grey `#858585` tint at 210/255, matching gravewood's registered modifier with nearest-integer rounding; original cutouts retained |
+| `mods/ITEMS/grug_trees/textures/grug_trees_gravewood_tree.png` | Cisoun (source bark); Grudgelands contributors (recolour) | [Source bark](https://github.com/luanti-org/minetest_game/blob/b5243f3/mods/default/textures/default_tree.png), [local derivation ledger](../../mods/ITEMS/grug_trees/LICENSE-media.md) | CC BY-SA 3.0 Unported | Existing dark recolour, enlarged in the palette comparison and repeated for the mock trunk |
+
+The leaves comparison also uses GPT-6 Astra's `swamp/hanging_moss.png`,
+`swamp/moss_carpet_top.png` and `swamp/wet_grass_top.png`, all independently
+authored CC0-1.0 work recorded above, unchanged except for scaling and
+compositing in the sheet.
+
 Attribution and licence checked in the vendored
 [`default/README.txt`](../../mods/BASE/default/README.txt),
 [`default/license.txt`](../../mods/BASE/default/license.txt) and the
 [`grug_nodes` media ledger](../../mods/ITEMS/grug_nodes/LICENSE-media.md).
+The leaves comparison also uses the
+[`grug_trees` media ledger](../../mods/ITEMS/grug_trees/LICENSE-media.md)
+and the gravewood texture modifier in its `init.lua`.
 Existing project attribution is also in [CREDITS.md](../../CREDITS.md).
 
 ## Original Anthracite textures
