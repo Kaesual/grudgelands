@@ -196,3 +196,19 @@ today's quads per tree (apple the most, through its fuller crown; gravewood 7.8Ã
    Recommendation: yes, the same cells, so towns match the wild.
 3. If the cost lane finds the leaf counts too heavy on the web client: trim
    crowns or accept? Recommendation: decide on measured numbers, not before.
+
+## 8. Release context (coordinator, 2026-10-13)
+
+- Main is release **0.46.0** (a map reset, world generation and player feedback),
+  **not pushed and not deployed**; the user's GUI test of 0.46.0 is pending
+  (checklist in [`round46-plan.md`](round46-plan.md) "Completion"). Findings from it
+  may join the build round.
+- The tree build is also a map reset. Coordinator's recommendation to the user,
+  **not yet decided by the user**: deploy 0.46.0 together with the trees so the
+  production world resets once.
+- Bark M replaces the jungle tree textures, which live in the vendored
+  `mods/BASE/default` (`default_jungletree.png`, `default_jungletree_top.png`):
+  either a `-- GRUG PATCH:` texture override with a VENDOR.md entry, or new
+  `grug_*` texture names on the jungle nodes; the build round picks one. The
+  artist's hand-made apple study (`tools/r46_tree/astra/apple.html`) was not
+  chosen; it stays as reference only.
