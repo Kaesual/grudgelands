@@ -191,8 +191,8 @@ end
 -- E  emitters
 -- ---------------------------------------------------------------------------
 do
-	local limits = {forge = 2, fire = 2, water = 2}
-	local hears = {forge = 16, fire = 10, water = 14}
+	local limits = {forge = 2, fire = 2, furnace = 2, water = 2}
+	local hears = {forge = 16, fire = 10, furnace = 10, water = 14}
 	local key = function(p) return p.x .. "," .. p.y .. "," .. p.z end
 	local found = {
 		["grug_jobs:forge"] = {{x = 10, y = 0, z = 0}},
@@ -211,7 +211,8 @@ do
 	local rows = R.choose_emitters(found, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, hears, {}, key)
 	-- Round 45 PT8: forges and anvils have no loop any more (their sound plays
 	-- at a job's start, tools/r45_pt8).
-	check(text(rows) == "fire@0,2 fire@0,5",
+	-- Round 47: a burning furnace is the furnace kind (same loop, lower gain).
+	check(text(rows) == "furnace@0,2 furnace@0,5",
 		"E the nearest two per kind; forges, anvils, sources, cold cauldrons and other nodes ignored: " ..
 		text(rows))
 	check(D.emitter_nodes["grug_jobs:forge"] == nil and D.emitter_nodes["grug_decor:cottages_anvil"] == nil
@@ -360,6 +361,10 @@ do
 		end,
 		formspec_escape = function(text) return text end,
 		log = function() end,
+		-- Round 47: init.lua hooks the furnaces' on_destruct (tools/r47_fs).
+		override_item = function(name, fields)
+			for k, v in pairs(fields) do core.registered_nodes[name][k] = v end
+		end,
 	}
 	rawset(_G, "core", fake_core)
 	local mood = {}
