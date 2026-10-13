@@ -171,8 +171,9 @@ for _, wood in ipairs(WOODS) do
 			if shape == "quarter" then
 				eq(def.drawtype, "mesh", name .. " drawtype")
 				eq(def.mesh, "grug_tree_quarter_oct.obj", name .. " mesh")
-				check(deep_equal(def.tiles, {trunk.tiles[1], trunk.tiles[#trunk.tiles]}),
-					name .. " tiles: caps the trunk top, sides its bark")
+				check(deep_equal(def.tiles, {{name = trunk.tiles[1], backface_culling = true},
+					{name = trunk.tiles[#trunk.tiles], backface_culling = true}}),
+					name .. " tiles: caps the trunk top, sides its bark, front faces only")
 				local full = {type = "fixed", fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}}
 				check(deep_equal(def.selection_box, full), name .. " selection box full")
 				check(deep_equal(def.collision_box, full), name .. " collision box full")
@@ -312,7 +313,9 @@ local BARK = {"grug_trees_jungle_bark_top.png", "grug_trees_jungle_bark_top.png"
 	"grug_trees_jungle_bark.png"}
 check(deep_equal(nodes["default:jungletree"].tiles, BARK), "default:jungletree wears bark M")
 check(deep_equal(nodes["grug_trees:jungle_quarter"].tiles,
-	{"grug_trees_jungle_bark_top.png", "grug_trees_jungle_bark.png"}), "jungle quarter wears bark M")
+	{{name = "grug_trees_jungle_bark_top.png", backface_culling = true},
+		{name = "grug_trees_jungle_bark.png", backface_culling = true}}),
+	"jungle quarter wears bark M")
 for _, shape in ipairs({"base", "branch", "twig"}) do
 	check(deep_equal(nodes["grug_trees:jungle_" .. shape].tiles, {"grug_trees_jungle_bark.png"}),
 		"jungle " .. shape .. " wears bark M")

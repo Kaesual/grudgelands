@@ -113,9 +113,13 @@ for _, wood in ipairs(WOODS) do
 		}
 		if shape == "quarter" then
 			-- Material groups of the mesh: caps (end grain), then the bark.
+			-- Mesh tiles default to no backface culling; the concept draws
+			-- front faces only (shapes.js winds every face outwards), so the
+			-- two open axis-side faces stay open as in the viewer.
 			def.drawtype = "mesh"
 			def.mesh = "grug_tree_quarter_oct.obj"
-			def.tiles = {top, bark}
+			def.tiles = {{name = top, backface_culling = true},
+				{name = bark, backface_culling = true}}
 			def.selection_box = {type = "fixed", fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}}
 			def.collision_box = def.selection_box
 		else
