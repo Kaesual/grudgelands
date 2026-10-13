@@ -17,7 +17,7 @@
 local P = "[r47tc] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r47tc_settle") or "") or 6
-local FILTER = core.settings:get("r47tc_shots") or "F,S,T,G"
+local FILTER = core.settings:get("r47tc_shots") or "F,S,T,G,W"
 local TIME_OF_DAY = 0.42
 -- "groves" (the groves follow-up): the capital groves and Hearthpine instead
 -- of the forests and saplings.
@@ -265,7 +265,15 @@ core.register_globalstep(function(dtime)
 		player:set_physics_override({gravity = 0, speed = 0, jump = 0})
 		core.set_timeofday(TIME_OF_DAY)
 		local started = core.get_us_time()
-		if MODE == "groves" then
+		if MODE == "greening" then
+			for _, key in ipairs({"highcourt", "lethariel", "dawnmere", "stillgrave"}) do
+				local a = grug_core.settlement_socket_anchor(key)
+				if a then
+					spots["W_" .. key] = {x = a.x, y = a.y, z = a.z}
+					log("spot W_" .. key .. " at " .. core.pos_to_string(a))
+				end
+			end
+		elseif MODE == "groves" then
 			-- the first grove or copse socket of three capitals, and
 			-- Hearthpine's anchor
 			for _, row in ipairs({{"lethariel", "G1_lethariel_grove"},
@@ -294,8 +302,9 @@ core.register_globalstep(function(dtime)
 		state.pending = 0
 		for label, s in pairs(spots) do
 			state.pending = state.pending + 1
-			core.emerge_area({x = s.x - 44, y = s.y - 8, z = s.z - 44},
-				{x = s.x + 44, y = s.y + 44, z = s.z + 44}, function(_, _, remaining)
+			local r = MODE == "greening" and label ~= "T" and 100 or 44
+			core.emerge_area({x = s.x - r, y = s.y - 8, z = s.z - r},
+				{x = s.x + r, y = s.y + 44, z = s.z + r}, function(_, _, remaining)
 					if remaining == 0 then
 						state.pending = state.pending - 1
 						log("emerged " .. label)
@@ -306,7 +315,14 @@ core.register_globalstep(function(dtime)
 		if state.pending > 0 then return end
 		log(string.format("emerge done in %.1f s",
 			(core.get_us_time() - state.emerge_started) / 1e6))
-		if MODE == "groves" then
+		if MODE == "greening" then
+			for _, key in ipairs({"highcourt", "lethariel", "dawnmere", "stillgrave"}) do
+				if spots["W_" .. key] then
+					SHOTS[#SHOTS + 1] = {name = "W_" .. key .. "_wide", spot = "W_" .. key,
+						dx = 95, dy = 70, dz = 0, yaw = 90, pitch = 33, first = true}
+				end
+			end
+		elseif MODE == "groves" then
 			for _, label in ipairs({"G1_lethariel_grove", "G2_highcourt_grove",
 					"G3_nhal_veyr_copse"}) do
 				if spots[label] then

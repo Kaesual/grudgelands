@@ -24,7 +24,8 @@
 #   shot (default 6; the first shot of a scene waits twice as long: the
 #   client loads a far area), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX>
 #   (default /usr/lib64/dri), MODE=groves takes the capital groves and
-#   Hearthpine instead of the forests and saplings. Run it through the
+#   Hearthpine instead of the forests and saplings, MODE=greening wide views
+#   of two capitals and two starts. Run it through the
 #   shared Lua queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
@@ -37,7 +38,7 @@ width="${WIDTH:-1600}"; height="${HEIGHT:-900}"
 shadows="$([[ "${SHADOWS:-1}" == "1" ]] && echo true || echo false)"
 settle="${SETTLE:-6}"
 smooth="$([[ "${SMOOTH:-1}" == "1" ]] && echo true || echo false)"
-shots_filter="${SHOTS:-F,S,T,G}"; suffix="${SUFFIX:-}"
+shots_filter="${SHOTS:-F,S,T,G,W}"; suffix="${SUFFIX:-}"
 server_timeout=300; client_timeout=290
 mkdir -p "$out"
 out="$(cd "$out" && pwd -P)"
