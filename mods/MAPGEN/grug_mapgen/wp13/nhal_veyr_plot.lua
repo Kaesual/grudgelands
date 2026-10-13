@@ -321,8 +321,8 @@ local function loader(directory)
 		local points = {sockets = {}, doors = {}, room_corner = {}, inside = {}}
 		if plot.yard then
 			-- A yard's own gate: three columns of path at the street edge, so
-			-- the field is entered from the lane rather than walked into over
-			-- its own kerb, and the two lamps every plot carries.
+			-- the field is entered from the lane rather than across its edge, and
+			-- the two lamps every plot carries.
 			for z = z0, z0 + 1 do
 				for x = -1, 1 do
 					buf:put(x, 0, z, palette.node("path"))
