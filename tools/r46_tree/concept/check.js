@@ -8,7 +8,9 @@
 // ground; every leaf has wood within the leaf decay reach (3, cube search);
 // quarter pieces carry facedir 0..3, base/branch/twig/log grain 0, 4 or 12;
 // a quarter is met from the side only by trunk pieces or a limb base, from
-// above only by a quarter of the same turn or a twig; the .obj files match.
+// above only by a quarter of the same turn or a twig; the .obj files match;
+// roots only in apple / jungle (2 x 2) and kapok (always), only where the
+// ground test passes, and the tree otherwise the same on any ground.
 // Then the inline scripts of trees.html must parse.
 'use strict';
 var fs = require('fs');
@@ -24,7 +26,7 @@ function fail(msg) { failures++; if (failures < 30) { console.log('FAIL ' + msg)
 
 var summary = [];
 G.ORDER.forEach(function (sp) {
-	var agg = {wood: 0, leaves: 0, shapes: 0, height: 0, maxH: 0, maxW: 0, minH: 99};
+	var agg = {wood: 0, leaves: 0, shapes: 0, height: 0, maxH: 0, maxW: 0, minH: 99, rooted: 0, roots: 0};
 	for (var seed = 1; seed <= N; seed++) {
 		var a = G.generate(sp, seed);
 		var b = G.generate(sp, seed);
@@ -87,13 +89,35 @@ G.ORDER.forEach(function (sp) {
 			}
 			fail(sp + ' ' + seed + ' leaf out of decay reach');
 		});
+		// roots: only apple / jungle (2 x 2 only) and kapok (always); on an
+		// uneven ground only where its test passes, and the rest of the tree
+		// the same as on flat ground
+		var thick = a.nodes.some(function (n) { return n.y === 0 && n.kind === 'quarter'; });
+		if (a.roots.length && !(sp === 'kapok' || ((sp === 'apple' || sp === 'jungle') && thick))) {
+			fail(sp + ' ' + seed + ' has roots');
+		}
+		if (sp === 'kapok' && !a.roots.length) { fail(sp + ' ' + seed + ' kapok without roots'); }
+		if (a.roots.length) { agg.rooted++; agg.roots += a.roots.length; }
+		var top = function (x, z) { return ((x + 50) * 7919 + (z + 50) * 104729 + seed * 31) % 3 - 1; };
+		var bumpy = function (x, y, z) { return y < top(x, z); };
+		var c = G.generate(sp, seed, bumpy);
+		c.roots.forEach(function (r) {
+			if (!bumpy(r[0], -1, r[2]) || bumpy(r[0], 0, r[2])) { fail(sp + ' ' + seed + ' root without ground test'); }
+		});
+		var rootKey = {};
+		a.roots.concat(c.roots).forEach(function (r) { rootKey[r.join(',')] = true; });
+		var strip = function (t) {
+			return JSON.stringify(t.nodes.filter(function (n) { return !rootKey[n.x + ',' + n.y + ',' + n.z]; }));
+		};
+		if (strip(a) !== strip(c)) { fail(sp + ' ' + seed + ' tree changes with the ground'); }
 		agg.wood += a.wood; agg.leaves += a.count.leaves; agg.shapes += a.shapes; agg.height += a.height;
 		agg.maxH = Math.max(agg.maxH, a.height); agg.minH = Math.min(agg.minH, a.height);
 		agg.maxW = Math.max(agg.maxW, maxX - minX + 1, maxZ - minZ + 1);
 	}
 	summary.push(sp + ': mean wood ' + (agg.wood / N).toFixed(1) + ', leaves ' + (agg.leaves / N).toFixed(1) +
 		', shape nodes ' + (agg.shapes / N).toFixed(1) + ', height ' + agg.minH + '-' + agg.maxH +
-		' (mean ' + (agg.height / N).toFixed(1) + '), widest ' + agg.maxW);
+		' (mean ' + (agg.height / N).toFixed(1) + '), widest ' + agg.maxW +
+		(agg.rooted ? ', rooted ' + agg.rooted + ' (' + agg.roots + ' root cells)' : ''));
 });
 summary.forEach(function (l) { console.log(l); });
 

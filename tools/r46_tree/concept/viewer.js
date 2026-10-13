@@ -163,7 +163,7 @@
 	var CONCEPT = {
 		apple: 'A short stout bole (2×2 in 40 %) opens into 3–4 scaffold limbs that climb at about 45° in upright planes and fork at the rim, up-and-in and sideways; the round crown sits on their ends, lumpy where twigs end. Apples hang under it.',
 		jungle: 'A tall stem that wanders (one or two side-steps), sheds its lower limbs and carries its crown as separate clumps at the ends of long limbs, the highest on the leader.',
-		kapok: 'The giant: a long clear 3×3 or 2×2 column stepping in to a 2×2 leader; at 60 % height 4–6 wide limbs leave through limb bases, rise gently and fork, a second shorter tier above, a dome joining the clumps: a broad high crown.',
+		kapok: 'The giant: a long clear 3×3 or 2×2 column, rooted with surface roots that taper into the ground; a 3×3 steps in to the 2×2 leader only inside the crown. At 60 % height 4–6 wide limbs leave through limb bases, rise gently and fork, a second shorter tier above, a dome joining the clumps: a broad high crown.',
 		acacia: 'A short trunk forks into a wide V of thick limbs; every limb end climbs to one common level and spreads into pads that start on the twigs and merge into an umbrella.',
 		pine: 'A straight stem thinning from log to branch to twig, a whorl of short twigs every 2–3 nodes; each whorl carries a needle skirt, wide below, narrow above: a layered cone.',
 		aspen: 'A slender stem with a long bare bole, then a tall oval crown on short twigs that spiral up the leader (5/16 turn each); some tops bend a little.',
@@ -298,7 +298,13 @@
 
 	// One tree (node list) into meshes added to `group`, offset by (dx, dz)
 	// in Luanti coordinates.
-	function buildTree(group, tree, woods, dx, dz) {
+	function flatGround(x, y) { return y < 0; }
+
+	// isGround(x, y, z) in the tree's coordinates (default: flat ground),
+	// dy lifts the tree (its foot on a raised terrain).
+	function buildTree(group, tree, woods, dx, dz, isGround, dy) {
+		isGround = isGround || flatGround;
+		dy = dy || 0;
 		var map = {};
 		var nodes = tree.nodes;
 		var i;
@@ -313,7 +319,7 @@
 		var leafTiles = faceTiles([woods.leaves, woods.leaves, woods.leaves, woods.leaves, woods.leaves, woods.leaves], 0);
 		for (i = 0; i < nodes.length; i++) {
 			var nd = nodes[i];
-			var ox = nd.x + dx, oy = nd.y + 0.5, oz = nd.z + dz;
+			var ox = nd.x + dx, oy = nd.y + 0.5 + dy, oz = nd.z + dz;
 			if (nd.kind === 'trunk') {
 				// a full cube: faces against another full cube are culled
 				var skip = [];
@@ -335,7 +341,10 @@
 				for (var s = 0; s < SIDE_ORDER.length; s++) {
 					var side = SIDE_ORDER[s], sd = SIDE_DIRS[side];
 					var nb2 = at(nd.x + sd[0], nd.y + sd[1], nd.z + sd[2]);
-					if (nb2 !== undefined && joins[nb2.kind] && !(nb2.kind === 'leaves' && !leafJoin(side))) {
+					var join = nb2 !== undefined ? (joins[nb2.kind] && !(nb2.kind === 'leaves' && !leafJoin(side))) :
+						(TreeShapes.GROUND_KINDS[nd.kind] === true && TreeShapes.GROUND_SIDES[side] === true &&
+							isGround(nd.x + sd[0], nd.y + sd[1], nd.z + sd[2]));
+					if (join) {
 						addCuboid(buckets, 'wood', ox, oy, oz, shape[side], bt, null);
 					}
 				}
@@ -389,6 +398,7 @@
 				SIDE_ORDER.forEach(function (side) {
 					var sd = SIDE_DIRS[side], nb = at(n.x + sd[0], n.y + sd[1], n.z + sd[2]);
 					if (nb && joins[nb.kind] && !(nb.kind === 'leaves' && !leafJoin(side))) { boxes.push(sh[side]); }
+					if (!nb && TreeShapes.GROUND_KINDS[n.kind] && side === 'bottom' && n.y === 0) { boxes.push(sh[side]); }
 				});
 			}
 			boxes.forEach(function (b) {
@@ -509,7 +519,7 @@
 		leaves: params.get('leaves') !== '0',
 		grid: params.get('grid') === '1',
 		today: params.get('today') !== '0',
-		profile: params.get('profile') === 'round' ? 'round' : 'oct',
+		profile: 'oct',
 		twigLeaves: params.get('tl') !== '0',
 		bark: params.get('bark') || 'today',
 		trees: []
@@ -682,15 +692,68 @@
 		label('2×2, limb bases', -6.5, 6.2, 0, '');
 		label('3×3', 2, 6.2, 0, '');
 		label('log → base → branch → twig → leaves', 10, 6.2, 0, '');
+		// roots on flat ground: a 3 x 3 (high 2, reach 3, a fork) and a
+		// 2 x 2 (high 1, reach 2), each trying all four sides
+		buildTree(content, TreeGen.rootStudy(flatGround, 3, 3, 1), woods, -7, -10);
+		buildTree(content, TreeGen.rootStudy(flatGround, 2, 2, 0), woods, 1, -10);
+		label('roots: 3×3, 3 out, fork', -6, 5.2, -10, '');
+		label('roots: 2×2, 2 out', 0.5, 5.2, -10, '');
+		// a hillside: the foot stands 2 up; west of the trunk the ground
+		// falls away, east of it it rises: no root there
+		var hx = 10, hz = -10, lift = 2;
+		function height(x, z) {
+			if (x <= hx - 2 || x > hx + 4 || z < hz - 4 || z > hz + 3) { return 0; }
+			return x >= hx + 2 ? 3 : 2;
+		}
+		var terrain = [];
+		for (var tx = hx - 3; tx <= hx + 4; tx++) {
+			for (var tz = hz - 4; tz <= hz + 3; tz++) {
+				for (var ty = 0; ty < height(tx, tz); ty++) { terrain.push([tx, ty, tz, ty === height(tx, tz) - 1]); }
+			}
+		}
+		addTerrain(content, terrain);
+		var hill = function (x, y, z) { return y + lift < height(x + hx, z + hz); };
+		buildTree(content, TreeGen.rootStudy(hill, 2, 2, 0), woods, hx, hz, hill, lift);
+		label('hillside: falls away west, rises east', hx, 7.2, hz, '');
 		var fig = playerFigure();
 		fig.position.set(-1, 0, 3);
 		content.add(fig);
 		state.trees = [];
-		var box = new THREE.Box3(new THREE.Vector3(-9, 0, -3), new THREE.Vector3(13, 6, 4));
+		var box = new THREE.Box3(new THREE.Vector3(-10, 0, -4), new THREE.Vector3(15, 7, 14));
 		applyToggles();
 		buildGrid(box);
 		frame(box, 0.7);
 		readout();
+	}
+
+	// Terrain cubes [x, y, z, isTop] for the hillside: grass on top, dirt
+	// below, faces between terrain cubes culled.
+	function addTerrain(group, cells) {
+		var set = {};
+		cells.forEach(function (c) { set[c[0] + ',' + c[1] + ',' + c[2]] = true; });
+		var buckets = new Buckets();
+		var top = faceTiles(['default_grass', 'default_dirt', 'default_grass_side', 'default_grass_side',
+			'default_grass_side', 'default_grass_side'], 0);
+		var dirt = faceTiles(['default_dirt', 'default_dirt', 'default_dirt', 'default_dirt', 'default_dirt',
+			'default_dirt'], 0);
+		cells.forEach(function (c) {
+			var skip = FACE_DIRS.map(function (d) {
+				return set[(c[0] + d[0]) + ',' + (c[1] + d[1]) + ',' + (c[2] + d[2])] === true || (c[1] === 0 && d[1] < 0);
+			});
+			addCuboid(buckets, 'wood', c[0], c[1] + 0.5, c[2], [-8, -8, -8, 8, 8, 8], c[3] ? top : dirt, skip);
+		});
+		Object.keys(buckets.map).forEach(function (k) {
+			var bk = buckets.map[k];
+			var g = new THREE.BufferGeometry();
+			g.setAttribute('position', new THREE.Float32BufferAttribute(bk.pos, 3));
+			g.setAttribute('normal', new THREE.Float32BufferAttribute(bk.nor, 3));
+			g.setAttribute('uv', new THREE.Float32BufferAttribute(bk.uv, 2));
+			g.setIndex(bk.idx);
+			var mesh = new THREE.Mesh(g, material(bk.tex, 'wood'));
+			mesh.castShadow = true;
+			mesh.receiveShadow = true;
+			group.add(mesh);
+		});
 	}
 
 	function buildGrid(box) {
@@ -803,7 +866,6 @@
 		document.getElementById('grid').checked = state.grid;
 		document.getElementById('today').checked = state.today;
 		document.getElementById('tl').checked = state.twigLeaves;
-		document.getElementById('profile').value = state.profile;
 		document.getElementById('bark').value = JUNGLE_BARKS.indexOf(state.bark) >= 0 ? state.bark : 'today';
 	}
 	Array.prototype.forEach.call(document.querySelectorAll('[data-mode]'), function (b) {
@@ -826,8 +888,6 @@
 	document.getElementById('grid').onchange = function (e) { state.grid = e.target.checked; applyToggles(); };
 	document.getElementById('today').onchange = function (e) { state.today = e.target.checked; build(); };
 	document.getElementById('tl').onchange = function (e) { state.twigLeaves = e.target.checked; build(); };
-	var profileSel = document.getElementById('profile');
-	profileSel.onchange = function () { state.profile = profileSel.value; build(); };
 	var barkSel = document.getElementById('bark');
 	['today'].concat(JUNGLE_BARKS).forEach(function (id) {
 		var o = document.createElement('option');

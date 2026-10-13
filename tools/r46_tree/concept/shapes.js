@@ -14,13 +14,15 @@
 //            other quarters or log cubes). Caps top and bottom.
 //   branch   connected node box, 10/16 thick.
 //   twig     connected node box, 6/16 thick; the only piece that also
-//            connects to leaves (only to a leaf above it, see LEAF_SIDES).
+//            connects to leaves (only to a leaf above it, see LEAF_SIDES)
+//            and to the ground (only below it, see GROUND_SIDES).
 //   base     connected node box, 12/16 thick: the first cell of a limb
 //            that leaves a trunk sideways. Its four level arms reach 8/16
 //            into the neighbour cell, so they meet a slanted trunk face
 //            without a gap (the slant lies at most 8/16 inside the cell
 //            border where the arm is) and, towards a branch, end half way
-//            into it as a short sleeve (a taper 16 -> 12 -> 10). Thicker
+//            into it as a short sleeve (a taper 16 -> 12 -> 10); it also
+//            joins the ground below it (roots, see GROUND_SIDES). Thicker
 //            than the branch, so no face of it is coplanar with a branch
 //            face. Node box extents up to +-1.0 node: inside the engine's
 //            soft limit of +-1.45 (lua_api.md "Node boxes").
@@ -34,10 +36,7 @@
 		// octagon: half-width flat, one slant, half-width flat. The flats
 		// are 7/16 so two quarters make a 14/16 face across their border;
 		// the slant is 12.7/16 long: nearly a regular octagon.
-		oct: [[16, 0], [16, 7], [7, 16], [0, 16]],
-		// sixteen-gon: half-width flat, two slants, half-width flat (a regular
-		// 16-gon with an apothem of one node).
-		round: [[16, 0], [16, 3.18], [13.56, 9.06], [9.06, 13.56], [3.18, 16], [0, 16]]
+		oct: [[16, 0], [16, 7], [7, 16], [0, 16]]
 	};
 
 	var BASE_HALF = 6, BASE_REACH = 16;     // arm ends 8/16 into the neighbour
@@ -66,6 +65,12 @@
 	// reaches up into the foliage it carries, without arms into every leaf
 	// around it.
 	var LEAF_SIDES = {top: true};
+	// Ground nodes (soil, sand, gravel, litter) get connect_sides = {"top"}
+	// and the base and the twig list them in connects_to: they join the
+	// ground only through their bottom. The branch does not, so a root lies
+	// on the ground (base) or dives in (twig), never a stub under every cell.
+	var GROUND_SIDES = {bottom: true};
+	var GROUND_KINDS = {base: true, twig: true};
 
 	// The quarter mesh at facedir 0 in node units (-0.5..0.5): side quads
 	// and cap triangles, each vertex {p: [x, y, z], n: [x, y, z], uv: [u, v]}
@@ -150,7 +155,7 @@
 		return poly;
 	}
 
-	var api = {PROFILES: PROFILES, BOXES: BOXES, CONNECTS: CONNECTS, LEAF_SIDES: LEAF_SIDES, quarterMesh: quarterMesh, toObj: toObj,
+	var api = {PROFILES: PROFILES, BOXES: BOXES, CONNECTS: CONNECTS, LEAF_SIDES: LEAF_SIDES, GROUND_SIDES: GROUND_SIDES, GROUND_KINDS: GROUND_KINDS, quarterMesh: quarterMesh, toObj: toObj,
 		BASE_HALF: BASE_HALF, BASE_REACH: BASE_REACH};
 	if (typeof module !== 'undefined' && module.exports) {
 		module.exports = api;

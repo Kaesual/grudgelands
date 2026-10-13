@@ -110,10 +110,13 @@
 
 	function key(x, y, z) { return ((y + 64) * 256 + (x + 128)) * 256 + (z + 128); }
 
-	function newTree(species, seed) {
+	function newTree(species, seed, isGround) {
 		return {species: species, seed: seed, cells: {}, order: [], stemList: [], stemSet: {}, clusters: [],
-			path: [], facts: {}};
+			path: [], facts: {}, roots: [], isGround: isGround};
 	}
+
+	// The flat ground of the viewer: everything below the tree's foot.
+	function flatGround(x, y, z) { return y < 0; }
 
 	function getCell(t, x, y, z) { return t.cells[key(x, y, z)]; }
 
@@ -442,7 +445,7 @@
 			wood: count.trunk + count.quarter + count.base + count.branch + count.twig,
 			shapes: count.quarter + count.base + count.branch + count.twig,
 			height: maxY + 1, width: maxX - minX + 1, depth: maxZ - minZ + 1,
-			min: [minX, 0, minZ], max: [maxX, maxY, maxZ], facts: t.facts
+			min: [minX, 0, minZ], max: [maxX, maxY, maxZ], facts: t.facts, roots: t.roots
 		};
 	}
 
@@ -631,26 +634,27 @@
 		t.facts = {trunk: w + 'x' + w + ' wandering', kinks: kinks, clumps: made + 1};
 	}
 
-	// KAPOK: the emergent giant. A long clear column that steps in from
-	// 3 x 3 to 2 x 2, then a broad high crown on wide, gently rising limbs.
+	// KAPOK: the emergent giant. A long clear column, 3 x 3 or 2 x 2; a
+	// 3 x 3 steps in to the 2 x 2 leader only inside the crown, just above
+	// where the big limbs leave, so the ledge hides among them. Then a broad
+	// high crown on wide, gently rising limbs.
 	function kapok(t, rng) {
 		var h = rint(rng, 22, 27);
 		var w = chance(rng, 60) ? 3 : 2;
 		var base = idiv(h * 60, 100) + rint(rng, -1, 1);   // crown base
 		var ax2 = w === 3 ? 1 : 0, az2 = ax2;
-		var narrow = w === 3 ? rint(rng, 6, 9) : base + 1;   // 3x3 -> 2x2
+		var narrow = base + 1;                    // 3x3 -> 2x2, inside the crown
 		var lean = rint(rng, 0, 3);
+		var top = h - 4;
 		var y;
-		for (y = 0; y <= base; y++) {
+		for (y = 0; y <= top; y++) {
 			if (w === 3 && y === narrow) {
 				ax2 = ax2 + (CARD[lean][0] + CARD[(lean + 1) % 4][0] < 0 ? -1 : 1);
 				az2 = az2 + (CARD[lean][1] + CARD[(lean + 1) % 4][1] < 0 ? -1 : 1);
 			}
+			// above the crown base the 2 x 2 column goes on as the leader
 			trunkLayer(t, y, ax2, az2, (w === 3 && y < narrow) ? 3 : 2);
 		}
-		// above the crown base the 2 x 2 column goes on as the leader
-		var top = h - 4;
-		for (y = base + 1; y <= top; y++) { trunkLayer(t, y, ax2, az2, 2); }
 		var cx16 = ax2 * 8, cz16 = az2 * 8;
 		var n1 = rint(rng, 4, 6);
 		var a0 = rint(rng, 0, 15);
@@ -923,15 +927,148 @@
 	};
 	var ORDER = ['apple', 'jungle', 'kapok', 'acacia', 'pine', 'aspen', 'silverwood', 'gravewood'];
 
-	function generate(species, seed) {
-		var row = SPECIES[species];
-		var t = newTree(species, seed);
-		var rng = newRng(seed, row.salt);
-		row.grow(t, rng);
+	// ================================================================ roots
+
+	// Roots: a few pieces at the foot of a thick trunk that lie on the
+	// ground and taper into it: a limb base beside the trunk, (a branch,)
+	// a twig at the end; a long one may fork a twig sideways from its
+	// branch. Only the base and the twig join the ground, and only through
+	// their bottom (they list soil and the like in connects_to; ground
+	// nodes declare connect_sides = {"top"}); a branch never does. So a
+	// root rests on the ground at the trunk and dives in at its end: no stub
+	// under every cell (a comb), no legs, at most one branch cell between
+	// that keeps 3/16 above the ground, like a root arching slightly.
+	//
+	// Every root cell needs ground right under its column at the trunk's
+	// foot level (isGround(x, -1, z)) and none at the root's own level
+	// (isGround(x, 0, z) false), the cells must be free and touch no other
+	// wood; else that root (or fork) is left out. Roots draw their numbers
+	// from their own random stream, all before any ground test, so the rest
+	// of the tree is the same on any terrain.
+	//
+	// Per species: apple rarely and only 2 x 2; jungle only 2 x 2, a bit more
+	// often; kapok always, 2-3 out, sometimes forked; the others never.
+	var ROOTS = {
+		apple: {pct: 25, min: 1, max: 2, reach: [2, 2], fork: 0},
+		jungle: {pct: 45, min: 1, max: 3, reach: [2, 2], fork: 0},
+		kapok: {pct: 100, min: 0, max: 0, reach: [2, 3], fork: 35}
+	};
+
+	// The stem cells of layer y that lie furthest out on side d (CARD).
+	function sideCells(t, y, d) {
+		var best = -999, cells = [];
+		for (var i = 0; i < t.stemList.length; i++) {
+			var c = t.cells[t.stemList[i]];
+			if (c.y === y && (c.kind === 'quarter' || c.kind === 'trunk')) {
+				var dot = CARD[d][0] * c.x + CARD[d][1] * c.z;
+				if (dot > best) { best = dot; cells = [[c.x, c.z]]; } else if (dot === best) { cells.push([c.x, c.z]); }
+			}
+		}
+		return cells;
+	}
+
+	function rootCellOk(t, x, y, z, px, py, pz) {
+		if (!t.isGround(x, -1, z) || t.isGround(x, 0, z) || getCell(t, x, y, z) !== undefined) { return false; }
+		return cleanStep(t, x, y, z, px, py, pz);
+	}
+
+	// Place a list of cells [x, y, z, kind, rot] after `from` if every one
+	// passes the ground and space test.
+	function placeRun(t, from, run) {
+		var p = from;
+		for (var i = 0; i < run.length; i++) {
+			var c = run[i];
+			if (!rootCellOk(t, c[0], c[1], c[2], p[0], p[1], p[2])) { return false; }
+			p = c;
+		}
+		for (var j = 0; j < run.length; j++) {
+			putCell(t, run[j][0], run[j][1], run[j][2], run[j][3], run[j][4]);
+			t.roots.push([run[j][0], run[j][1], run[j][2]]);
+		}
+		return true;
+	}
+
+	function roots(t, seed) {
+		var plan = ROOTS[t.species];
+		if (plan === undefined) { return; }
+		var rng = newRng(seed, 1000 + SPECIES[t.species].salt);
+		var thick = sideCells(t, 0, 0).length >= 2;
+		var go = chance(rng, plan.pct);
+		var s0 = rint(rng, 0, 3);
+		var count = rint(rng, plan.min, plan.max);
+		// what each side would get: [anchor index, reach, fork side or 0]
+		var wish = [];
+		for (var d = 0; d < 4; d++) {
+			var n = plan.max === 0 ? rint(rng, 1, 2) : 0;   // kapok: per side
+			var list = [];
+			for (var k = 0; k < 2; k++) {
+				list.push([rint(rng, 0, 2), rint(rng, plan.reach[0], plan.reach[1]),
+					chance(rng, plan.fork) ? (chance(rng, 50) ? 1 : -1) : 0]);
+			}
+			wish.push({n: n, list: list});
+		}
+		if (!go || !thick) { return; }
+		var made = 0;
+		for (var i = 0; i < 4; i++) {
+			var side = (s0 + i) % 4;
+			var want = plan.max === 0 ? wish[side].n : ((i < count && (count < 3 || i < 3)) ? 1 : 0);
+			if (plan.max !== 0 && count === 2 && i === 1) { want = 0; }   // two roots: opposite sides
+			if (plan.max !== 0 && count === 2 && i === 2) { want = 1; }
+			for (var r = 0; r < want; r++) {
+				var w = wish[side].list[r];
+				var cells = sideCells(t, 0, side);
+				// two roots on one side leave from its two ends
+				var at = want === 2 ? (r === 0 ? 0 : cells.length - 1) : w[0] % cells.length;
+				if (rootRun(t, cells[at], side, w[1], w[2])) { made = made + 1; }
+			}
+		}
+		t.facts.roots = made;
+	}
+
+	// One root from stem cell a (x, z) on side d, `reach` out along the
+	// ground: base, branch..., twig. `fork` (+1 / -1 / 0) adds a twig to one
+	// side of its first branch cell.
+	function rootRun(t, a, d, reach, fork) {
+		var dx = CARD[d][0], dz = CARD[d][1];
+		var hrot = dx !== 0 ? 12 : 4;
+		var run = [];
+		for (var out = 1; out <= reach; out++) {
+			run.push([a[0] + dx * out, 0, a[1] + dz * out, out === 1 ? 'base' : (out === reach ? 'twig' : 'branch'), hrot]);
+		}
+		if (!placeRun(t, [a[0], 0, a[1]], run)) { return false; }
+		if (fork !== 0 && reach >= 3) {
+			var c = run[1];
+			placeRun(t, c, [[c[0] - dz * fork, 0, c[2] + dx * fork, 'twig', dx !== 0 ? 4 : 12]]);
+		}
+		return true;
+	}
+
+	// The Shapes view's root study: a w x w trunk 4 high on the given ground
+	// with one root tried on each side (from the side's middle cell), a fork
+	// on side 1 when `fork` is set.
+	function rootStudy(isGround, w, reach, fork) {
+		var t = newTree('kapok', 0, isGround);
+		var ax = w === 2 ? 0 : 1;
+		for (var y = 0; y < 4; y++) { trunkLayer(t, y, ax, ax, w); }
+		for (var d = 0; d < 4; d++) {
+			var cells = sideCells(t, 0, d);
+			rootRun(t, cells[idiv(cells.length, 2)], d, reach, d === 1 ? fork : 0);
+		}
 		return finish(t);
 	}
 
-	var api = {generate: generate, ORDER: ORDER, WOOD: WOOD, quarterRot: quarterRot,
+	// isGround(x, y, z) in tree coordinates says whether that cell is ground
+	// (the tree's foot stands on y = -1); the default is flat ground.
+	function generate(species, seed, isGround) {
+		var row = SPECIES[species];
+		var t = newTree(species, seed, isGround || flatGround);
+		var rng = newRng(seed, row.salt);
+		row.grow(t, rng);
+		roots(t, seed);
+		return finish(t);
+	}
+
+	var api = {generate: generate, rootStudy: rootStudy, ORDER: ORDER, WOOD: WOOD, quarterRot: quarterRot, ROOTS: ROOTS,
 		newRng: newRng, rint: rint};
 	if (typeof module !== 'undefined' && module.exports) { module.exports = api; }
 	root.TreeGen = api;

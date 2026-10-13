@@ -33,7 +33,8 @@ TEXTURES = {
         "default_acacia_tree", "default_acacia_tree_top", "default_acacia_leaves",
         "default_pine_tree", "default_pine_tree_top", "default_pine_needles",
         "default_aspen_tree", "default_aspen_tree_top", "default_aspen_leaves",
-        "default_grass", "default_dry_grass", "default_coniferous_litter")
+        "default_grass", "default_grass_side", "default_dirt", "default_dry_grass",
+        "default_coniferous_litter")
 }
 for name in ("grug_trees_silverwood_tree", "grug_trees_silverwood_tree_top",
              "grug_trees_silverwood_leaves", "grug_trees_gravewood_tree",

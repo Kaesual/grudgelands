@@ -1,4 +1,4 @@
-# Tree concepts — growth model per species (Round 46, lane TREE, steps 2–3)
+# Tree concepts — growth model per species (Round 46, lane TREE, steps 2–4)
 
 The viewer (`trees.html`, built by `build.py`) runs the generator in
 `treegen.js`; the wood shapes are data in `shapes.js` (which also writes the
@@ -20,6 +20,7 @@ Common rules, all species:
   quarter would overhang its slant. A 3 × 3 steps in to a 2 × 2 diagonally:
   the 2 × 2's corner piece then stands on the 3 × 3's corner piece of the same
   turn, the rest on logs, so the outline above lies inside the one below.
+- **Roots** (step 4): only at the foot of thick trunks, see "Roots" below.
 - **Limbs** are staircases of face-connected cells that follow the straight
   line from their start to their target (the axis lagging furthest behind
   steps next). A limb leaving its parent sideways takes a level first step.
@@ -68,8 +69,11 @@ Keeps: taller than apple, irregular, crown in clumps (the user likes it).
 
 ## Kapok — the emergent giant
 
-21–26 high. A 3 × 3 column (60 %) stepping in to 2 × 2 at 6–9 towards its
-lean, or a 2 × 2 one; the 2 × 2 goes on as the leader to 4 below the top. At
+21–26 high. A 3 × 3 column (60 %) or a 2 × 2 one. A 3 × 3 keeps its width up to
+the crown base and steps in to the 2 × 2 leader one above it, towards its lean
+(step 4: was at 6–9 high, where the ledge showed; now it sits among the big
+limbs and under the dome). The 2 × 2 goes on as the leader to 4 below the top.
+Always rooted (see "Roots"). At
 60 % ± 1 of the height 4–6 big limbs leave through limb bases, reach 3.4–4.4
 out and rise 1.5–3.5, fork into two twigs with a clump each; half carry a
 clump under their middle. A second tier of 2–4 shorter limbs 3–4 higher sits
@@ -127,16 +131,59 @@ and every end is a two-pronged claw whose prongs go level or up (down only
 on a drooping end). The top is a broken stub. 1–4 grey tufts (radius 1.1–1.6;
 step 3: more foliage). Keeps: bent, mostly bare.
 
+## Roots (step 4)
+
+A few pieces at the foot of a thick trunk that lie on the ground and taper
+into it, using the existing pieces (no new shape): a limb base beside the
+trunk, a branch (only in 3-long roots) and a twig at the end; a 3-long root
+may fork a twig sideways from its branch. Only the base and the twig join
+the ground, and only through their bottom: they list the ground in
+`connects_to` (`group:soil` — dirt, grass, the litters, blight dirt, mud —
+plus `group:sand`, `default:gravel`; mesa clay if roots ever come there), and
+the ground nodes declare `connect_sides = {"top"}`. So the base rests on the
+ground at the trunk and the twig dives in at the end; a branch between them
+keeps 3/16 above the ground like a root arching slightly. Tried and dropped:
+roots leaving the trunk at knee height and stepping down (they read as legs
+or a spider), and roots where every cell joins the ground (a comb of stubs).
+
+| species | when | roots |
+|---|---|---|
+| apple | 2 × 2 trees, 25 % of them (≈ 10 % of all apples) | 1–2, opposite sides, 2 out |
+| jungle | 2 × 2 trees, 45 % of them (≈ 15 % of all) | 1–3 on different sides, 2 out |
+| kapok | always | per side 1–2 (2 from a 3 × 3 side leave its two ends), 2–3 out, 35 % of the 3-long ones fork |
+| others | never | — |
+
+**Ground test.** The generator takes `isGround(x, y, z)` (tree coordinates,
+the foot on y = -1). Every root cell needs ground right under its column at
+the foot level (`isGround(x, -1, z)`), none at the root's own level
+(`isGround(x, 0, z)` false: the terrain does not rise there), a free cell and
+no other wood touching it; else that root (or fork) is left out as a whole.
+Roots draw their numbers from their own random stream before any test, so
+the rest of the tree is the same on any terrain (checked). The Shapes view
+shows a hillside: west of the trunk the ground falls away, east of it it
+rises, so only the north and south roots grow.
+
+**In the engine.** Schematic and decoration placement cannot test the ground
+per cell, so the roots are not in the schematic. The cheapest place is the
+Lua pass that already writes the tree: the WP40 template rows are
+materialised by the R7 writer on a VoxelManip, so each template variant
+carries its root runs as a list of optional cells, and the writer tests the
+few column nodes from the data it already holds (two reads per root cell)
+and writes a run only if all pass. Saplings do the same after placing the
+schematic, with `core.get_node`. Cost: the ground nodes' `connect_sides`
+override and the new `connects_to` change the frozen mapgen digest (map
+reset, fine per the user).
+
 ## Shapes (per wood type: 4, the budget)
 
 Boxes in sixteenths, `x1, y1, z1, x2, y2, z2`, centred on the node.
 
 | shape | geometry | notes |
 |---|---|---|
-| quarter | **mesh** (`models/grug_tree_quarter_oct.obj`): outline from above, outwards from the axis corner, (16,0) → (16,7) → (7,16) → (0,16) | facedir 0..3, inner corner (trunk axis) at +x +z for 0. Three faces: a 7/16 half flat, a slant 12.7/16 long, a 7/16 half flat, so two pieces form one 14/16 face: a near-regular octagon column. Alternative `grug_tree_quarter_round.obj`, a 16-gon quarter (16,0) → (16,3.2) → (13.6,9.1) → (9.1,13.6) → (3.2,16) → (0,16): five faces, rounder; the viewer's "trunk" picker shows both. The two axis-side faces are left out (they always touch other trunk pieces). Two material groups: caps (tile 1, `*_tree_top`, planar) and bark (tile 2, u round the outline, v up the trunk: grain along the trunk). 6 / 10 triangles of sides plus 6 / 10 cap triangles. Collision and selection box: the full node (an approximation). |
-| base | core `{-6,-6,-6,6,6,6}`; level arms to 8/16 past the border, e.g. right `{6,-6,-6,16,6,6}`; top/bottom arms to the border | connected; joins trunk pieces, other bases, branches, twigs. The arm toward the trunk ends where the slant lies at most 8/16 inside the border (octagon: 7/16 at the arm's edge; 16-gon: 8/16), so the join closes; towards the branch it ends half way into the branch cell as a sleeve (taper 12 → 10). 12/16 vs the branch's 10/16: no coplanar faces, no z-fighting. Extents ±1.0 node, inside the engine's soft limit ±1.45. Cost: the 4th shape slot, and up to ~5 hidden quads of overdraw per base (the part inside the trunk). |
+| quarter | **mesh** (`models/grug_tree_quarter_oct.obj`): outline from above, outwards from the axis corner, (16,0) → (16,7) → (7,16) → (0,16) | facedir 0..3, inner corner (trunk axis) at +x +z for 0. Three faces: a 7/16 half flat, a slant 12.7/16 long, a 7/16 half flat, so two pieces form one 14/16 face: a near-regular octagon column (the user's pick in step 3; a 16-gon quarter with five faces, (16,0) → (16,3.2) → (13.6,9.1) → (9.1,13.6) → (3.2,16) → (0,16), was tried and dropped). The two axis-side faces are left out (they always touch other trunk pieces). Two material groups: caps (tile 1, `*_tree_top`, planar) and bark (tile 2, u round the outline, v up the trunk: grain along the trunk). 6 side triangles plus 6 cap triangles. Collision and selection box: the full node (an approximation). |
+| base | core `{-6,-6,-6,6,6,6}`; level arms to 8/16 past the border, e.g. right `{6,-6,-6,16,6,6}`; top/bottom arms to the border | connected; joins trunk pieces, other bases, branches, twigs, and the ground below it (roots). The arm toward the trunk ends where the slant lies at most 8/16 inside the border (7/16 at the arm's edge), so the join closes; towards the branch it ends half way into the branch cell as a sleeve (taper 12 → 10). 12/16 vs the branch's 10/16: no coplanar faces, no z-fighting. Extents ±1.0 node, inside the engine's soft limit ±1.45. Cost: the 4th shape slot, and up to ~5 hidden quads of overdraw per base (the part inside the trunk). |
 | branch | core `{-5,-5,-5,5,5,5}`, arms to the border, e.g. right `{5,-5,-5,8,5,5}` | connected to trunk pieces, bases, branches, twigs. |
-| twig | core `{-3,-3,-3,3,3,3}`, arm right `{3,-3,-3,8,3,3}` | as branch, plus leaves (only a leaf above: leaves' `connect_sides = {"bottom"}`). Joining leaves on all sides made every twig inside a crown a six-armed star, busy through the see-through leaves; upward only reads as "the twig carries its foliage". |
+| twig | core `{-3,-3,-3,3,3,3}`, arm right `{3,-3,-3,8,3,3}` | as branch, plus leaves (only a leaf above: leaves' `connect_sides = {"bottom"}`) and the ground (only below: ground's `connect_sides = {"top"}`). Joining leaves on all sides made every twig inside a crown a six-armed star, busy through the see-through leaves; upward only reads as "the twig carries its foliage". |
 
 **1 × 1 trunks** stay plain log cubes: the four shapes are spent (a chamfered
 single log would be a fifth), a branch or base meets a cube's flat face
