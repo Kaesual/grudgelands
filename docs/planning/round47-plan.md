@@ -564,4 +564,14 @@ After merges: `tools/sync_to_luanti.sh`.
 Settled: lane ART's Anthracite set (lump, ore, torch) as painted (the
 user, 2026-10-13); town trees use the generator (ruling 3); the swamp concept and
 its textures (ruling 23); the furnace-sound questions (camp fires keep
-fading on the next pass; the furnace kind keeps its own loop limit).
+fading on the next pass; the furnace kind keeps its own loop limit);
+the lanes' questions as recommended (AN: claim activation stays Coal or
+Charcoal, the Steel quest texts name Anthracite; CR: silent first scan,
+only Basic ingredient tokens stored, no "Take all", orders capped by room,
+enchant and upgrade results into the inventory; NZ: quarter weight 0.75,
+capital zones and feet-height nodes do not count).
+
+**Trunk quarters, inner faces (the user, 2026-10-13):** the two faces
+towards the trunk axis are closed with the trunk's end-grain (top)
+texture, so a partly felled thick trunk shows cut wood, not a see-through
+or hollow shell.
