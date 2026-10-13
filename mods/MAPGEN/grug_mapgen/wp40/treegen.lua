@@ -14,9 +14,11 @@
 -- cell 0, a 2 x 2 trunk on the corner between cells -1 and 0). Kinds (names
 -- as data, mapped to node names by the caller): trunk (the plain log cube),
 -- quarter (the faceted trunk piece), base (the limb base), branch, twig
--- (connected node boxes), leaves, fruit. `rot` is the facedir param2: for a
+-- (connected node boxes), leaves, fruit, moss (the swamp tree's hanging
+-- moss). `rot` is the facedir param2: for a
 -- quarter the corner it rounds (0..3), for trunk / base / branch / twig the
--- axis its bark grain runs along (0 = y, 4 = z, 12 = x); leaves and fruit 0.
+-- axis its bark grain runs along (0 = y, 4 = z, 12 = x); leaves, fruit and
+-- moss 0.
 -- is_ground(x, y, z) in tree coordinates says whether that cell is ground
 -- (the foot stands on y = -1); nil means flat ground (y < 0). Only roots ask
 -- it, after all their random numbers are drawn, so the rest of the tree is
@@ -458,6 +460,7 @@ local function finish(t)
 		local c = t.cells[t.order[i]]
 		if c.kind ~= "gone" then
 			keyed[#keyed + 1] = {k = t.order[i], x = c.x, y = c.y, z = c.z, kind = c.kind, rot = c.rot}
+			if count[c.kind] == nil then count[c.kind] = 0 end   -- moss (swamp only)
 			count[c.kind] = count[c.kind] + 1
 			min_x = imin(min_x, c.x); max_x = imax(max_x, c.x)
 			min_z = imin(min_z, c.z); max_z = imax(max_z, c.z)
@@ -951,6 +954,164 @@ local function gravewood(t, rng)
 	t.facts = {trunk = "1x1 bent", limbs = limbs, tufts = tufts}
 end
 
+-- SWAMP (Round 47 lane SW): gravewood's wood, low and crooked, wide and
+-- sparse. The stem stands 1-2 nodes up on 3-4 short stilt roots: each
+-- leaves the stem sideways (a limb base), runs 1-2 out and drops
+-- straight to the ground, where its twig dives into the mud; a quarter
+-- of them turn a corner on the way out. Above the stilts the stem zigzags
+-- (a knee towards its lean, often a second one right above, turned
+-- aside); it is 4-5 logs long. 3-5 long limbs leave the upper stem almost
+-- level, evenly round, a third with a drooping end, each ending in a
+-- short level fork under a flat sparse pad; a stub leader carries a small
+-- pad. Hanging moss (kind "moss") trails 1-3 nodes below leaves and limbs.
+-- Stilts and moss draw from the tree's one stream; nothing tests the
+-- ground (the stilts always end at the foot).
+local function swamp_leg_ok(t, run, from)
+	local p = from
+	for i = 1, #run do
+		local c = run[i]
+		if get_cell(t, c[1], c[2], c[3]) ~= nil then return false end
+		for n = 1, 6 do
+			local nbd = NEIGHBOURS[n]
+			local nx, ny, nz = c[1] + nbd[1], c[2] + nbd[2], c[3] + nbd[3]
+			if not (nx == p[1] and ny == p[2] and nz == p[3]) and is_wood(t, nx, ny, nz) then return false end
+		end
+		p = c
+	end
+	return true
+end
+
+-- Is there wood within the leaf decay reach of (x, y, z) (cube search)?
+local function near_wood(t, x, y, z, reach)
+	for dx = -reach, reach do
+		for dy = -reach, reach do
+			for dz = -reach, reach do
+				if is_wood(t, x + dx, y + dy, z + dz) then return true end
+			end
+		end
+	end
+	return false
+end
+
+local function swamp(t, rng)
+	local stilt = rint(rng, 1, 2)             -- the stem's foot stands this high
+	local top = stilt + rint(rng, 3, 4)       -- last stem layer
+	local lean = rint(rng, 0, 3)
+	local k1 = stilt + 3
+	local d2 = (lean + (chance(rng, 50) and 1 or 3)) % 4
+	local k2 = -1
+	if chance(rng, 55) and k1 + 1 <= top then k2 = k1 + 1 end
+	local x, z = 0, 0
+	for y = stilt, top do
+		if y == k1 or y == k2 then
+			local d = y == k1 and lean or d2
+			stem_cell(t, x + CARD[d + 1][1], y - 1, z + CARD[d + 1][2], "trunk", 0)
+			x = x + CARD[d + 1][1]; z = z + CARD[d + 1][2]
+		end
+		stem_cell(t, x, y, z, "trunk", 0)
+	end
+	-- the stilts: from the foot (or one above), out 1-2, then down
+	local legs = rint(rng, 3, 4)
+	local s0 = rint(rng, 0, 3)
+	local made = 0
+	for i = 0, 3 do
+		local side = (s0 + i) % 4
+		-- a stilt that leaves one up drops 2 out, clear of the stem's foot
+		local out = rint(rng, 1, 2)
+		local ys = stilt
+		if out == 2 and chance(rng, 45) then ys = stilt + 1 end
+		local turn = -1
+		if chance(rng, 25) then turn = chance(rng, 50) and 1 or 3 end
+		if i < legs then
+			local dx, dz = CARD[side + 1][1], CARD[side + 1][2]
+			local hr = dx ~= 0 and 12 or 4
+			local run = {}
+			local lx, lz = 0, 0
+			for o = 1, out do
+				lx = lx + dx; lz = lz + dz
+				run[#run + 1] = {lx, ys, lz, o == 1 and "base" or "branch", hr}
+			end
+			if turn >= 0 then
+				local tcard = CARD[(side + turn) % 4 + 1]
+				lx = lx + tcard[1]; lz = lz + tcard[2]
+				run[#run + 1] = {lx, ys, lz, "branch", tcard[1] ~= 0 and 12 or 4}
+			end
+			for ly = ys - 1, 0, -1 do
+				run[#run + 1] = {lx, ly, lz, ly == 0 and "twig" or "branch", 0}
+			end
+			if swamp_leg_ok(t, run, {0, ys, 0}) then
+				for r = 1, #run do
+					local c = run[r]
+					put_cell(t, c[1], c[2], c[3], c[4], c[5])
+				end
+				made = made + 1
+			end
+		end
+	end
+	-- the crown: long limbs, almost level, evenly round
+	local limbs = rint(rng, 3, 5)
+	local a0 = rint(rng, 0, 15)
+	local pads = {}
+	for j = 0, limbs - 1 do
+		local az = a0 + idiv(16 * j, limbs) + rint(rng, -1, 1)
+		local sy = rint(rng, imax(stilt + 3, top - 2), top)
+		local c = trunk_edge(t, sy, az)
+		local reach = rint(rng, 48, 76)
+		local rise = rint(rng, -2, 14)
+		local tx = imax(-5, imin(5, cell_of(off_x(mid(c[1]), az, reach))))
+		local tz = imax(-5, imin(5, cell_of(off_z(mid(c[2]), az, reach))))
+		local e = limb(t, c[1], sy, c[2], tx, sy + cell_of(rise + 8), tz, 0, 60, OUT_FIRST)
+		if rint(rng, 0, 2) == 0 then
+			-- a drooping end: one out and down
+			e = limb(t, e[1], e[2], e[3], e[1] + cell_of(dir_x(az) + 8), e[2] - 1,
+				e[3] + cell_of(dir_z(az) + 8), 0, 0, OUT_FIRST)
+		end
+		for f = -1, 1, 2 do
+			local fa = az + 3 * f
+			limb(t, e[1], e[2], e[3], e[1] + cell_of(dir_x(fa) + 8), e[2],
+				e[3] + cell_of(dir_z(fa) + 8), 0, 0, OUT_FIRST)
+		end
+		pads[#pads + 1] = e
+	end
+	-- a stub leader with a small pad
+	local la = rint(rng, 0, 15)
+	local le = limb(t, x, top, z, x + cell_of(dir_x(la) + 8), top + 1, z + cell_of(dir_z(la) + 8), 0, 0, UP_FIRST)
+	for p = 1, #pads do
+		local rr = rint(rng, 30, 42)
+		cluster(t, mid(pads[p][1]), mid(pads[p][2]) + 14, mid(pads[p][3]), rr, rint(rng, 14, 18), rr, 0)
+	end
+	cluster(t, mid(le[1]), mid(le[2]) + 10, mid(le[3]), rint(rng, 22, 28), 14, rint(rng, 22, 28), 0)
+	limb_bases(t)
+	fill_leaves(t, 30, 58, rint(rng, 1, 99999), 3)
+	-- hanging moss under leaves and limbs with open air below, within the
+	-- leaf decay reach of wood so it goes when the tree goes
+	local cand = {}
+	for q = 1, #t.order do
+		local hc = t.cells[t.order[q]]
+		if (hc.kind == "leaves" or hc.kind == "branch" or hc.kind == "twig") and hc.y >= 3 and
+				t.stem_set[t.order[q]] ~= true and get_cell(t, hc.x, hc.y - 1, hc.z) == nil then
+			cand[#cand + 1] = t.order[q]
+		end
+	end
+	sort(cand)
+	local strands, hung = rint(rng, 4, 9), 0
+	local s = 0
+	while s < strands and #cand > 0 do
+		local at = rint(rng, 0, #cand - 1)
+		local hk = t.cells[cand[at + 1]]
+		remove(cand, at + 1)
+		local len = rint(rng, 1, 3)
+		for m = 1, len do
+			local my = hk.y - m
+			if my < 1 or get_cell(t, hk.x, my, hk.z) ~= nil or not near_wood(t, hk.x, my, hk.z, 3) then break end
+			put_cell(t, hk.x, my, hk.z, "moss", 0)
+			hung = hung + 1
+		end
+		s = s + 1
+	end
+	t.facts = {trunk = "1x1 crooked", stilts = made .. " (" .. stilt .. " up)", limbs = limbs, moss = hung}
+end
+
 -- ================================================================ table
 
 local SPECIES = {
@@ -962,8 +1123,9 @@ local SPECIES = {
 	aspen = {salt = 6, grow = aspen},
 	silverwood = {salt = 7, grow = silverwood},
 	gravewood = {salt = 8, grow = gravewood},
+	swamp = {salt = 9, grow = swamp},
 }
-local ORDER = {"apple", "jungle", "kapok", "acacia", "pine", "aspen", "silverwood", "gravewood"}
+local ORDER = {"apple", "jungle", "kapok", "acacia", "pine", "aspen", "silverwood", "gravewood", "swamp"}
 
 -- ================================================================ roots
 

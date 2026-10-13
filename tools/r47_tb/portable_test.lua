@@ -49,7 +49,7 @@ local REF = dofile(ROOT .. "/tools/r47_tb/reference.lua")
 
 -- The digest of write_reference.js.
 local M = 2147483647
-local KIND = {trunk = 1, quarter = 2, base = 3, branch = 4, twig = 5, leaves = 6, fruit = 7}
+local KIND = {trunk = 1, quarter = 2, base = 3, branch = 4, twig = 5, leaves = 6, fruit = 7, moss = 8}
 local function new_digest() return {h1 = 0, h2 = 0} end
 local function feed(d, v)
 	d.h1 = (d.h1 * 1000003 + v + 1000) % M
@@ -104,7 +104,7 @@ end
 -- C. per seed
 local rooted = {}
 for _, sp in ipairs(REF.rooted) do rooted[sp] = true end
-check(#T.ORDER == 8, "eight species")
+check(#T.ORDER == 9, "nine species (the eight approved and swamp, Round 47 lane SW)")
 local trees = 0
 for _, sp in ipairs(T.ORDER) do
 	local flat_list, bumpy_list = REF.flat[sp], REF.bumpy[sp]
