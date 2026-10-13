@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f5ed">
+<title>Apfelbaum · Grudgelands Formstudie</title>
+<style>
+  :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#263c30;background:#f6f5ed;font-synthesis:none}
+  *{box-sizing:border-box}body{margin:0}button,input,textarea{font:inherit}button{cursor:pointer;color:inherit}
+  button:focus-visible,input:focus-visible,summary:focus-visible,textarea:focus-visible{outline:3px solid #a16238;outline-offset:4px}
+  header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid #dcded1;gap:16px}
+  .wordmark{letter-spacing:.19em;font-size:12px;font-weight:750}.edition{font-size:12px;color:#617262;text-align:right}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 320px;min-height:calc(100dvh - 76px)}
+  .stage{position:relative;min-height:640px;height:calc(100dvh - 76px);overflow:hidden;background:#dfe8db}
+  #view{width:100%;height:100%;display:block;touch-action:none;outline-offset:-4px}
+  .tag{position:absolute;top:24px;left:26px;pointer-events:none;font-size:11px;letter-spacing:.17em;color:#465a46}
+  .views{position:absolute;top:18px;right:20px;display:flex;gap:3px;background:#f6f5ede8;padding:4px;border-radius:24px;border:1px solid #fff9}
+  .views button{border:0;border-radius:18px;padding:8px 12px;font-size:12px;background:transparent}
+  .views button[aria-pressed=true]{background:#2e4938;color:#fff}.views button:hover{box-shadow:inset 0 0 0 1px #83967b}
+  .stage-note{position:absolute;bottom:22px;left:26px;font-size:11px;line-height:1.65;color:#344f38;pointer-events:none;background:#f6f5edd9;padding:9px 13px;border-radius:4px}
+  #load-state{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);max-width:80%;padding:18px 22px;background:#f6f5ed;border:1px solid #a8b5a0;border-radius:6px;text-align:center;font-size:14px;line-height:1.6}
+  aside{padding:32px 25px 24px;border-left:1px solid #dcded1;max-height:calc(100dvh - 76px);overflow-y:auto}
+  .eyebrow{margin:0 0 12px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#73816b}
+  h1{font:normal 45px/1.05 Georgia,"Times New Roman",serif;letter-spacing:-.045em;margin:0 0 18px}
+  .description{font-size:13px;line-height:1.75;margin:0 0 21px;color:#5d6a59}
+  .dimensions{display:flex;gap:26px;padding:17px 0;border-top:1px solid #dcded1;border-bottom:1px solid #dcded1;margin-bottom:21px}
+  .dimensions strong{display:block;font:normal 25px/1.1 Georgia,serif}.dimensions span{font-size:10px;line-height:2;color:#74806b}
+  .switches{display:grid;gap:15px;margin-bottom:23px}.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-size:13px}
+  .switch input{appearance:none;width:35px;height:21px;border-radius:20px;margin:0;background:#bbc3b3;position:relative;cursor:pointer;flex:none}
+  .switch input:after{content:"";position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .12s}
+  .switch input:checked{background:#45623e}.switch input:checked:after{transform:translateX(14px)}
+  .copy{width:100%;background:#2e4938;color:#fff;border:0;border-radius:5px;padding:13px 8px;font-size:12px}.copy:hover{background:#416247}
+  #copy-state{font-size:11px;line-height:1.5;color:#6b795f;min-height:32px;margin:7px 0 14px}
+  #manual-copy{width:100%;height:120px;font:11px monospace;resize:vertical}
+  details{border-top:1px solid #dcded1;padding:15px 0}summary{cursor:pointer;font-size:12px;font-weight:600;list-style-position:outside;margin-left:12px}
+  .counts{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:12px;margin:15px 0 0;color:#62705a}.counts dt,.counts dd{margin:0}.counts dd{font-variant-numeric:tabular-nums}
+  .total{border-top:1px solid #dcded1;padding-top:8px;color:#2e4938;font-weight:600}
+  .shape-note{font-size:11px;line-height:1.65;color:#6b765f;margin:15px 0 12px}h2{font-size:12px;margin:17px 0 6px}
+  pre{font:10px/1.75 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;background:#eaece1;padding:10px;border-radius:4px;margin:5px 0}
+  .colophon{font-size:10px;color:#8a917e;margin:22px 0 0;line-height:1.65}noscript{position:absolute;top:30%;left:5%;padding:20px;background:#fff}
+  @media(max-width:760px){header{height:62px;padding:0 18px}.edition{font-size:10px}.wordmark{font-size:10px}main{display:flex;flex-direction:column;min-height:0}.stage{height:64dvh;min-height:420px;max-height:720px}aside{max-height:none;border-left:0;border-top:1px solid #dcded1;padding:25px 22px}.tag{top:19px;left:18px;font-size:9px}.views{top:41px;right:12px}.views button{padding:7px 10px}.stage-note{left:15px;bottom:14px;font-size:10px;padding:7px 10px}h1{font-size:38px}.description{max-width:520px}.switches{gap:18px}.copy{max-width:400px}.dimensions{gap:40px}}
+</style>
+</head>
+<body>
+<header><div class="wordmark">GRUDGELANDS</div><div class="edition">Baumstudie 01 · Apfelbaum<br>Round 46 / Astra</div></header>
+<main>
+  <section class="stage" aria-label="Interaktive 3D-Ansicht des Apfelbaums">
+    <canvas id="view" tabindex="0" aria-label="3D-Baum. Ziehen zum Drehen, Mausrad zum Zoomen, rechte Maustaste zum Verschieben. Pfeiltasten verschieben die Ansicht."></canvas>
+    <div class="tag">VON HAND GESETZT / EINZELBAUM</div>
+    <nav class="views" aria-label="Blickrichtung">
+      <button type="button" data-view="perspective" aria-pressed="true">Perspektive</button>
+      <button type="button" data-view="front" aria-pressed="false">Vorn</button>
+      <button type="button" data-view="top" aria-pressed="false">Oben</button>
+    </nav>
+    <div class="stage-note">Ziehen: drehen · Rad: zoomen · Rechtsziehen: verschieben<br>Touch: ein Finger dreht · zwei Finger zoomen / verschieben<br>Maßfigur: 2 Knoten</div>
+    <div id="load-state" role="status">Die 3D-Ansicht wird geladen …</div>
+    <noscript>Für die drehbare 3D-Ansicht bitte JavaScript aktivieren.</noscript>
+  </section>
+  <aside>
+    <p class="eyebrow">Eine Form zum Anschauen</p>
+    <h1>Apfelbaum</h1>
+    <p class="description">Ein kräftiger Stamm trägt drei aufstrebende Astzüge. Der tiefere Westast öffnet die Krone seitlich; der höhere Leitast verschiebt ihren Scheitel ein wenig nach hinten. Fünf Äpfel sitzen am Laubsaum.</p>
+    <div class="dimensions"><div><strong id="height">–</strong><span>Knoten hoch</span></div><div><strong id="width">–</strong><span>Breite × Tiefe</span></div></div>
+    <div class="switches">
+      <label class="switch" for="leaves">Laub und Äpfel <input id="leaves" type="checkbox" checked></label>
+      <label class="switch" for="grid">Raster · 1 Knoten <input id="grid" type="checkbox"></label>
+    </div>
+    <button type="button" class="copy" id="copy">Copy node list (JSON)</button>
+    <p id="copy-state" role="status" aria-live="polite">Alle Positionen und Drehungen, ohne Ansichtsobjekte.</p>
+    <textarea id="manual-copy" aria-label="Knotenliste zum manuellen Kopieren" hidden readonly></textarea>
+    <details open><summary>Knoten im Baum</summary><dl id="counts" class="counts"></dl></details>
+    <details id="shape-panel"><summary>Die drei Holzformen · 1/16</summary>
+      <p class="shape-note">Lokale Boxen: [x₁,y₁,z₁,x₂,y₂,z₂] / 16. Der Knoten reicht von −8 bis +8. Die Blätter bleiben ganze Würfel.</p>
+      <div id="shapes"></div>
+      <p class="shape-note">Viertel: Innenkante bei +x/+z; rot = facedir 0–3, je Schritt (x,z) → (z,−x). Äste und Zweige drehen sich nicht. Jeder Arm erscheint genau bei einem Holznachbarn auf der entsprechenden Seite.</p>
+      <p class="shape-note">Die äußersten Viertelflächen messen 4/16; zwei Nachbarstücke verbinden sie zu 8/16. Rinde folgt der Hauptachse des Knotens, als drei Texturvarianten derselben Astform. Stammstirnflächen zeigen Stirnholz.</p>
+    </details>
+    <p class="colophon">Modell und Platzierung: GPT-6 Astra<br>Texturen: Cisoun, celeron55, TumeniNodes · CC BY-SA 3.0<br>Quelle: mods/BASE/default · unverändert eingebettet<br>three.js r147 · Geometrie in Knoten und Sechzehnteln</p>
+  </aside>
+</main>
+<script id="tree-data" type="application/json">[{"x":0,"y":0,"z":0,"kind":"quarter","rot":0},{"x":1,"y":0,"z":0,"kind":"quarter","rot":3},{"x":0,"y":0,"z":1,"kind":"quarter","rot":1},{"x":1,"y":0,"z":1,"kind":"quarter","rot":2},{"x":0,"y":1,"z":0,"kind":"quarter","rot":0},{"x":1,"y":1,"z":0,"kind":"quarter","rot":3},{"x":0,"y":1,"z":1,"kind":"quarter","rot":1},{"x":1,"y":1,"z":1,"kind":"quarter","rot":2},{"x":0,"y":2,"z":0,"kind":"quarter","rot":0},{"x":1,"y":2,"z":0,"kind":"quarter","rot":3},{"x":0,"y":2,"z":1,"kind":"quarter","rot":1},{"x":1,"y":2,"z":1,"kind":"quarter","rot":2},{"x":0,"y":3,"z":0,"kind":"quarter","rot":0},{"x":1,"y":3,"z":0,"kind":"quarter","rot":3},{"x":0,"y":3,"z":1,"kind":"quarter","rot":1},{"x":1,"y":3,"z":1,"kind":"quarter","rot":2},{"x":0,"y":4,"z":-2,"kind":"fruit","rot":0},{"x":1,"y":4,"z":-1,"kind":"branch","rot":0},{"x":-1,"y":4,"z":0,"kind":"branch","rot":0},{"x":0,"y":4,"z":0,"kind":"branch","rot":0},{"x":1,"y":4,"z":0,"kind":"branch","rot":0},{"x":-2,"y":4,"z":1,"kind":"fruit","rot":0},{"x":1,"y":4,"z":1,"kind":"branch","rot":0},{"x":3,"y":4,"z":2,"kind":"fruit","rot":0},{"x":0,"y":5,"z":-2,"kind":"leaves","rot":0},{"x":1,"y":5,"z":-2,"kind":"leaves","rot":0},{"x":-2,"y":5,"z":-1,"kind":"leaves","rot":0},{"x":1,"y":5,"z":-1,"kind":"branch","rot":0},{"x":2,"y":5,"z":-1,"kind":"leaves","rot":0},{"x":3,"y":5,"z":-1,"kind":"fruit","rot":0},{"x":-3,"y":5,"z":0,"kind":"leaves","rot":0},{"x":-2,"y":5,"z":0,"kind":"branch","rot":0},{"x":-1,"y":5,"z":0,"kind":"branch","rot":0},{"x":-2,"y":5,"z":1,"kind":"leaves","rot":0},{"x":1,"y":5,"z":1,"kind":"branch","rot":0},{"x":2,"y":5,"z":1,"kind":"branch","rot":0},{"x":3,"y":5,"z":1,"kind":"leaves","rot":0},{"x":2,"y":5,"z":2,"kind":"leaves","rot":0},{"x":3,"y":5,"z":2,"kind":"leaves","rot":0},{"x":2,"y":5,"z":3,"kind":"leaves","rot":0},{"x":0,"y":6,"z":-3,"kind":"leaves","rot":0},{"x":1,"y":6,"z":-3,"kind":"leaves","rot":0},{"x":-2,"y":6,"z":-2,"kind":"leaves","rot":0},{"x":-1,"y":6,"z":-2,"kind":"leaves","rot":0},{"x":0,"y":6,"z":-2,"kind":"leaves","rot":0},{"x":1,"y":6,"z":-2,"kind":"leaves","rot":0},{"x":2,"y":6,"z":-2,"kind":"leaves","rot":0},{"x":3,"y":6,"z":-2,"kind":"leaves","rot":0},{"x":-2,"y":6,"z":-1,"kind":"twig","rot":0},{"x":-1,"y":6,"z":-1,"kind":"leaves","rot":0},{"x":0,"y":6,"z":-1,"kind":"leaves","rot":0},{"x":1,"y":6,"z":-1,"kind":"branch","rot":0},{"x":2,"y":6,"z":-1,"kind":"leaves","rot":0},{"x":3,"y":6,"z":-1,"kind":"leaves","rot":0},{"x":-3,"y":6,"z":0,"kind":"twig","rot":0},{"x":-2,"y":6,"z":0,"kind":"branch","rot":0},{"x":-1,"y":6,"z":0,"kind":"leaves","rot":0},{"x":0,"y":6,"z":0,"kind":"leaves","rot":0},{"x":1,"y":6,"z":0,"kind":"leaves","rot":0},{"x":2,"y":6,"z":0,"kind":"twig","rot":0},{"x":3,"y":6,"z":0,"kind":"leaves","rot":0},{"x":4,"y":6,"z":0,"kind":"leaves","rot":0},{"x":-3,"y":6,"z":1,"kind":"leaves","rot":0},{"x":-2,"y":6,"z":1,"kind":"twig","rot":0},{"x":-1,"y":6,"z":1,"kind":"leaves","rot":0},{"x":0,"y":6,"z":1,"kind":"leaves","rot":0},{"x":1,"y":6,"z":1,"kind":"leaves","rot":0},{"x":2,"y":6,"z":1,"kind":"branch","rot":0},{"x":3,"y":6,"z":1,"kind":"twig","rot":0},{"x":4,"y":6,"z":1,"kind":"leaves","rot":0},{"x":-2,"y":6,"z":2,"kind":"leaves","rot":0},{"x":-1,"y":6,"z":2,"kind":"leaves","rot":0},{"x":1,"y":6,"z":2,"kind":"leaves","rot":0},{"x":2,"y":6,"z":2,"kind":"twig","rot":0},{"x":3,"y":6,"z":2,"kind":"leaves","rot":0},{"x":4,"y":6,"z":2,"kind":"leaves","rot":0},{"x":1,"y":6,"z":3,"kind":"leaves","rot":0},{"x":2,"y":6,"z":3,"kind":"twig","rot":0},{"x":3,"y":6,"z":3,"kind":"leaves","rot":0},{"x":2,"y":6,"z":4,"kind":"fruit","rot":0},{"x":-1,"y":7,"z":-3,"kind":"leaves","rot":0},{"x":0,"y":7,"z":-3,"kind":"leaves","rot":0},{"x":1,"y":7,"z":-3,"kind":"leaves","rot":0},{"x":2,"y":7,"z":-3,"kind":"leaves","rot":0},{"x":-2,"y":7,"z":-2,"kind":"leaves","rot":0},{"x":-1,"y":7,"z":-2,"kind":"leaves","rot":0},{"x":0,"y":7,"z":-2,"kind":"leaves","rot":0},{"x":1,"y":7,"z":-2,"kind":"twig","rot":0},{"x":2,"y":7,"z":-2,"kind":"leaves","rot":0},{"x":3,"y":7,"z":-2,"kind":"leaves","rot":0},{"x":-3,"y":7,"z":-1,"kind":"leaves","rot":0},{"x":-2,"y":7,"z":-1,"kind":"leaves","rot":0},{"x":-1,"y":7,"z":-1,"kind":"leaves","rot":0},{"x":0,"y":7,"z":-1,"kind":"twig","rot":0},{"x":1,"y":7,"z":-1,"kind":"twig","rot":0},{"x":2,"y":7,"z":-1,"kind":"leaves","rot":0},{"x":3,"y":7,"z":-1,"kind":"leaves","rot":0},{"x":4,"y":7,"z":-1,"kind":"leaves","rot":0},{"x":-3,"y":7,"z":0,"kind":"leaves","rot":0},{"x":-2,"y":7,"z":0,"kind":"twig","rot":0},{"x":-1,"y":7,"z":0,"kind":"leaves","rot":0},{"x":0,"y":7,"z":0,"kind":"leaves","rot":0},{"x":1,"y":7,"z":0,"kind":"leaves","rot":0},{"x":2,"y":7,"z":0,"kind":"twig","rot":0},{"x":3,"y":7,"z":0,"kind":"leaves","rot":0},{"x":4,"y":7,"z":0,"kind":"leaves","rot":0},{"x":-3,"y":7,"z":1,"kind":"leaves","rot":0},{"x":-2,"y":7,"z":1,"kind":"leaves","rot":0},{"x":-1,"y":7,"z":1,"kind":"leaves","rot":0},{"x":0,"y":7,"z":1,"kind":"leaves","rot":0},{"x":1,"y":7,"z":1,"kind":"leaves","rot":0},{"x":2,"y":7,"z":1,"kind":"leaves","rot":0},{"x":3,"y":7,"z":1,"kind":"twig","rot":0},{"x":4,"y":7,"z":1,"kind":"leaves","rot":0},{"x":-3,"y":7,"z":2,"kind":"leaves","rot":0},{"x":-2,"y":7,"z":2,"kind":"leaves","rot":0},{"x":-1,"y":7,"z":2,"kind":"leaves","rot":0},{"x":0,"y":7,"z":2,"kind":"leaves","rot":0},{"x":1,"y":7,"z":2,"kind":"leaves","rot":0},{"x":2,"y":7,"z":2,"kind":"leaves","rot":0},{"x":3,"y":7,"z":2,"kind":"leaves","rot":0},{"x":-1,"y":7,"z":3,"kind":"leaves","rot":0},{"x":0,"y":7,"z":3,"kind":"leaves","rot":0},{"x":1,"y":7,"z":3,"kind":"leaves","rot":0},{"x":2,"y":7,"z":3,"kind":"twig","rot":0},{"x":3,"y":7,"z":3,"kind":"leaves","rot":0},{"x":1,"y":7,"z":4,"kind":"leaves","rot":0},{"x":2,"y":7,"z":4,"kind":"leaves","rot":0},{"x":0,"y":8,"z":-3,"kind":"leaves","rot":0},{"x":1,"y":8,"z":-3,"kind":"leaves","rot":0},{"x":-1,"y":8,"z":-2,"kind":"leaves","rot":0},{"x":0,"y":8,"z":-2,"kind":"leaves","rot":0},{"x":1,"y":8,"z":-2,"kind":"leaves","rot":0},{"x":2,"y":8,"z":-2,"kind":"leaves","rot":0},{"x":3,"y":8,"z":-2,"kind":"leaves","rot":0},{"x":-2,"y":8,"z":-1,"kind":"leaves","rot":0},{"x":-1,"y":8,"z":-1,"kind":"leaves","rot":0},{"x":0,"y":8,"z":-1,"kind":"twig","rot":0},{"x":1,"y":8,"z":-1,"kind":"leaves","rot":0},{"x":2,"y":8,"z":-1,"kind":"leaves","rot":0},{"x":3,"y":8,"z":-1,"kind":"leaves","rot":0},{"x":-2,"y":8,"z":0,"kind":"leaves","rot":0},{"x":-1,"y":8,"z":0,"kind":"leaves","rot":0},{"x":0,"y":8,"z":0,"kind":"leaves","rot":0},{"x":1,"y":8,"z":0,"kind":"leaves","rot":0},{"x":2,"y":8,"z":0,"kind":"leaves","rot":0},{"x":3,"y":8,"z":0,"kind":"leaves","rot":0},{"x":4,"y":8,"z":0,"kind":"leaves","rot":0},{"x":-2,"y":8,"z":1,"kind":"leaves","rot":0},{"x":-1,"y":8,"z":1,"kind":"leaves","rot":0},{"x":0,"y":8,"z":1,"kind":"leaves","rot":0},{"x":1,"y":8,"z":1,"kind":"leaves","rot":0},{"x":2,"y":8,"z":1,"kind":"leaves","rot":0},{"x":3,"y":8,"z":1,"kind":"leaves","rot":0},{"x":-1,"y":8,"z":2,"kind":"leaves","rot":0},{"x":0,"y":8,"z":2,"kind":"leaves","rot":0},{"x":1,"y":8,"z":2,"kind":"leaves","rot":0},{"x":2,"y":8,"z":2,"kind":"leaves","rot":0},{"x":3,"y":8,"z":2,"kind":"leaves","rot":0},{"x":0,"y":8,"z":3,"kind":"leaves","rot":0},{"x":1,"y":8,"z":3,"kind":"leaves","rot":0},{"x":0,"y":9,"z":-2,"kind":"leaves","rot":0},{"x":1,"y":9,"z":-2,"kind":"leaves","rot":0},{"x":2,"y":9,"z":-2,"kind":"leaves","rot":0},{"x":-1,"y":9,"z":-1,"kind":"leaves","rot":0},{"x":0,"y":9,"z":-1,"kind":"leaves","rot":0},{"x":1,"y":9,"z":-1,"kind":"leaves","rot":0},{"x":2,"y":9,"z":-1,"kind":"leaves","rot":0},{"x":3,"y":9,"z":-1,"kind":"leaves","rot":0},{"x":-1,"y":9,"z":0,"kind":"leaves","rot":0},{"x":0,"y":9,"z":0,"kind":"leaves","rot":0},{"x":1,"y":9,"z":0,"kind":"leaves","rot":0},{"x":2,"y":9,"z":0,"kind":"leaves","rot":0},{"x":0,"y":9,"z":1,"kind":"leaves","rot":0},{"x":1,"y":9,"z":1,"kind":"leaves","rot":0}]</script>
+<script id="shape-data" type="application/json">{"quarter":{"type":"fixed","boxes":[[-8,-8,4,-4,8,8],[-4,-8,-4,4,8,8],[4,-8,-8,8,8,8]]},"branch":{"type":"connected","core":[-5,-5,-5,5,5,5],"arms":{"top":[-5,5,-5,5,8,5],"bottom":[-5,-8,-5,5,-5,5],"front":[-5,-5,-8,5,5,-5],"back":[-5,-5,5,5,5,8],"left":[-8,-5,-5,-5,5,5],"right":[5,-5,-5,8,5,5]}},"twig":{"type":"connected","core":[-2,-2,-2,2,2,2],"arms":{"top":[-2,2,-2,2,8,2],"bottom":[-2,-8,-2,2,-2,2],"front":[-2,-2,-8,2,2,-2],"back":[-2,-2,2,2,2,8],"left":[-8,-2,-2,-2,2,2],"right":[2,-2,-2,8,2,2]}}}</script>
+<script id="texture-data" type="application/json">{"bark":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAQlBMVEUlGhA2Kh40KBwnHBMwJBlKPC1BMyVRQzM7LyI6LSEuIRgrHxVJOis+MiQ4LSBOPS9GOCpENygyJxxBNiYiFw4rHRRm8zmNAAAAqklEQVQYGQXBhQHAMAwDMIfLvP9fnQR8lPdsQZZWy7kCWsh3C4SbcRKAlKjvgM3VmT5gcKbU4/PmiVkA6qROlo/RGEUA9aOt3nW8LK0C8EJphYKtXikCjPSqZQ5ufPEJ0EuB9bRr+GARoL8M48mIdm4R4FZT00CNRIsFOETeObSuxMmBh12Gl5lS3n6G4L1cNem8XWdWEjw5pI3nmGybSYDv5N585jXWHlR/IpEIPoIsCgwAAAAASUVORK5CYII=","end":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABVlBMVEU5Lh9DNCM/MyMzKh3q0JzpyovjunnWoGLUnmBLOyczKx3w3rfs0Z7pzZbmxpPlwormxoXmwYPjwILfuX/kwH3euHnht3fetXbcsXXdtHPbsHPZqGjYo2XYomHRml9vQi5PNyXy4Lrt0ZXr0pTt0pHrz4/qzIzkvYTju4Dgu3vetnTYqXLfs3HZrnDWp2/crmvYpmfTomfQlFTNjFOtelGreEumcUuWbEiUZUWca0ObZECGWTyEVTl2TzdmQC04Lh736r3v2a/u2az03aDy2ZzozJzw0JLlxY3kxYjhvofnw4Xdt3vbtnvWr3jjvHfdsG/jr2vNnmfVmmXFkmHPk123h1nAilbKjVKielKkdVLGgU6bcE3Hf0Wlb0ONZEOFWz+QWjp8UjiEUDaCTzaJTTVjSjOBRzNNPS1lPClJNyVGOiRSMSI9MCE7Kx8sIBgrHxclHhcbFhPR7MKzAAAA9klEQVQYGQXB04IDQRQFwHO7x8FkYk9s28natm3//8tW4R2MgQNEBM6hgt28PAy6R612bzKJfX8BbLyfdmy7RUdmeXG29Qmw55Q74guEQyVvzrrwBLDHpKwLgm3eEo/nEl0CM9Oys2zLrtj1uWzimkCm2CzXlywWwSUYqSHARu7QasVetOtBq5TpANN7/7En6K/sbYasJfEUmL5KsjPqc625irYdxxlB+5Ci+UY1fHjuFyPrFwTN9DYCBZ83UJA8eaPHof3uVmuXJ1FFadaM5B0Bf6OIotTlcHDD4zyIAfh5G98O2q3OVb8/VGOACo0IHETEOaD+Axe4I2yoTQ96AAAAAElFTkSuQmCC","leaf":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABhklEQVR4AT3SBY5kMQwE0NxhppmZSbDMJFxmuP81snlWZyRF8bfLVWXnp+mjcRrfH+T2upmXT6a5xGm8Gebevp2H637cNQe3eDnLzcGtOznp0a9lfvFvG8XutC0JHISDSw846nK+EbTHTX0Ra4jm88cJArGTxNcDjECsWRz1+98KAduSiNzUNA0WoZ6KkxgRrj/vVmxyc1ntAptX7CTN9lMaU7GugaK9BAGyGIGdzbs5QKhoevJ3Ve0azc1JEAyWvayuTz0BlA9zRgJZOYAa1MSJsiU6ahzCBtjcVBCVmGVOgIMAkGWu6s7gLNec2IARKISC+dxXUgQ2zyUCuXDoGbFisyBqjiUChCtEpcaZ10GsHlgA6pi9P+uWVNXS+cO2LjMINavXv1UQb31VRwAczWIz2wUiBJyoGUmPd5YwClt1OazGt+fjjHVNddluwhrZpeoAW5BcPfU14ptL9sUcYbmbEZg6RTGw9xYjgPET1X0RN6eEhQAZQY5dc8vHmAjkSiynOcT+A7LZFiNTpzO9AAAAAElFTkSuQmCC","apple":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAV1BMVEUAAADgFA2nBAApAADlOTTiIRwXVwDABQCrBACgBACTAwCJAwDMLSgbYgDfBwB0AQBmAQBhAQBWAABKAAA/AADkQjynNTPdLii/LCjAEg2XEA0VTgAzAADAPhVVAAAAAXRSTlMAQObYZgAAAFJJREFUGNOtyLcBgDAMAEEk54Azmf3npJNxRcN3f9OPyflLLjmsNilZ9/rdr+ehuxjPuQCVO2x8EYCFwAUQELARRAUAaBlBjgrR1g5Tqe1m9GMPCEsCtsNdxNYAAAAASUVORK5CYII=","grass":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAArlBMVEU4YhY5Yxc5ZBY6ZBg6ZRc7Yxc7ZBY7Zhg7Zxc8ZRc8aBg9Zhg9aRk9ahg+aBg+aRc+axk+cBo/ahg/cBhAaxlAbBhAbhhAbhpAcRlAcxtBbRlBbxlBcBhBcRtBdBxBdRtCcBpCcRlCcxtCdBpCdhxDdBxDdRtDeBxEdR1EdhxEdxtEeBpFdx1FeBxGeB5GeR1HeR9IeiBIex9IfB5JeR9Jeh5JfCBKex9KfB5KfSE8mWaKAAAA2klEQVQYGQXBgUKCMBQF0IdNkRcSEYzkVmM6RiOnhbTR//9Y59AtiszVTJtXraomZRrCJcQyh7FaY0NMXe7uE/RiM2inBMidDhl6bKn9hBmNprIgXoMTBTPq0Wu6pvwdfOmWKoEObU/JDxfTm5zjNMiXr5iQk9KaJ4l8r7Jn2W1pBbrB3sCsdsR5JMVxEckBp1o2aVp6yj58TJgb9EBZ/3qySoALEjG0rurnQFLsGhzF2Q/VOEiA4EwFKZXtzPGackfZ7M+cA5wWl/j4sBJKu+c63pP3uWmk+fsHOJAawOkrkdAAAAAASUVORK5CYII="}</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+const NODES = JSON.parse(document.getElementById("tree-data").textContent);
+const SHAPES = JSON.parse(document.getElementById("shape-data").textContent);
+const TEXTURES = JSON.parse(document.getElementById("texture-data").textContent);
+const SIDES = {top:[0,1,0],bottom:[0,-1,0],front:[0,0,-1],back:[0,0,1],left:[-1,0,0],right:[1,0,0]};
+const WOOD = new Set(["trunk","quarter","branch","twig"]);
+const CELL = new Map(NODES.map(n => [[n.x,n.y,n.z].join(","),n]));
+const count = Object.fromEntries(["trunk","quarter","branch","twig","leaves","fruit"].map(k => [k,NODES.filter(n => n.kind===k).length]));
+const labels = {trunk:"Volle Stammwürfel",quarter:"Stammviertel",branch:"Äste · 10/16",twig:"Zweige · 4/16",leaves:"Laubwürfel",fruit:"Äpfel"};
+const bounds = Object.fromEntries(["x","y","z"].map(k => [k,[Math.min(...NODES.map(n=>n[k]))-.5,Math.max(...NODES.map(n=>n[k]))+.5]]));
+document.getElementById("height").textContent = bounds.y[1]-bounds.y[0];
+document.getElementById("width").textContent = `${bounds.x[1]-bounds.x[0]} × ${bounds.z[1]-bounds.z[0]}`;
+const countsElement = document.getElementById("counts");
+for (const kind of Object.keys(count)) {
+  const dt=document.createElement("dt"),dd=document.createElement("dd");
+  dt.textContent=labels[kind];dd.textContent=count[kind];countsElement.append(dt,dd);
+}
+const totalLabel=document.createElement("dt"),totalNumber=document.createElement("dd");
+totalLabel.textContent="Gesamt";totalNumber.textContent=NODES.length;totalLabel.className=totalNumber.className="total";
+countsElement.append(totalLabel,totalNumber);
+for (const [kind,shape] of Object.entries(SHAPES)) {
+  const h=document.createElement("h2"),pre=document.createElement("pre");
+  h.textContent={quarter:"Viertelstück · feste Boxen",branch:"Ast · Kern + verbundene Arme",twig:"Zweig · Kern + verbundene Arme"}[kind];
+  pre.textContent=shape.boxes ? shape.boxes.map(b=>"["+b.join(",")+"]").join("\n") :
+    "core   ["+shape.core.join(",")+"]\n"+Object.entries(shape.arms).map(([side,b])=>side.padEnd(7)+"["+b.join(",")+"]").join("\n");
+  document.getElementById("shapes").append(h,pre);
+}
+
+function connections(n) {
+  return Object.fromEntries(Object.entries(SIDES).map(([side,d]) => {
+    const neighbour=CELL.get([n.x+d[0],n.y+d[1],n.z+d[2]].join(","));
+    return [side,!!neighbour && WOOD.has(neighbour.kind)];
+  }));
+}
+function rotateBox(box,rot) {
+  let [x0,y0,z0,x1,y1,z1]=box;
+  for(let i=0;i<rot;i++) [x0,z0,x1,z1]=[z0,-x1,z1,-x0];
+  return [x0,y0,z0,x1,y1,z1];
+}
+function nodeBoxes(n) {
+  if(n.kind==="quarter") return SHAPES.quarter.boxes.map(b=>rotateBox(b,n.rot));
+  if(n.kind==="trunk" || n.kind==="leaves") return [[-8,-8,-8,8,8,8]];
+  const shape=SHAPES[n.kind];
+  if(!shape) return [];
+  const joins=connections(n);
+  return [shape.core,...Object.entries(shape.arms).filter(([side])=>joins[side]).map(([,box])=>box)];
+}
+function grainAxis(n) {
+  if(n.kind==="quarter" || n.kind==="trunk") return "y";
+  const c=connections(n),score={y:Number(c.top)+Number(c.bottom),x:Number(c.left)+Number(c.right),z:Number(c.front)+Number(c.back)};
+  // Straight pairs win; elbows use y, then x, then z. Material variants only.
+  return ["y","x","z"].reduce((a,b)=>score[b]>score[a]?b:a);
+}
+document.getElementById("copy").addEventListener("click",async()=>{
+  const text=JSON.stringify(NODES,null,2)+"\n",state=document.getElementById("copy-state"),fallback=document.getElementById("manual-copy");
+  try {
+    if(!navigator.clipboard) throw new Error("Clipboard unavailable");
+    await navigator.clipboard.writeText(text);
+    fallback.hidden=true;state.textContent=`${NODES.length} Knoten kopiert.`;
+  } catch (_) {
+    fallback.value=text;fallback.hidden=false;fallback.focus();fallback.select();
+    let copied=false;
+    try {copied=typeof document.execCommand==="function" && document.execCommand("copy");} catch (_) { /* Keep the selected manual copy field. */ }
+    if(copied) {fallback.hidden=true;state.textContent=`${NODES.length} Knoten kopiert.`;document.getElementById("copy").focus();}
+    else state.textContent="Knotenliste markiert: bitte mit Strg/Cmd+C oder dem Textmenü kopieren.";
+  }
+});
+
+async function startViewer() {
+  const loading=document.getElementById("load-state");
+  if(!window.THREE || !THREE.OrbitControls) throw new Error("Die 3D-Bibliothek konnte nicht geladen werden. Für den ersten Aufruf ist eine Verbindung zu cdn.jsdelivr.net nötig.");
+  const canvas=document.getElementById("view"),stage=canvas.parentElement;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0xdfe8db);scene.fog=new THREE.Fog(0xdfe8db,35,90);
+  const camera=new THREE.PerspectiveCamera(39,1,.1,160);
+  const controls=new THREE.OrbitControls(camera,canvas);
+  controls.enableDamping=true;controls.dampingFactor=.09;controls.minDistance=4;controls.maxDistance=45;
+  controls.maxPolarAngle=Math.PI/2-.025;controls.target.set(.4,4.1,.3);
+  controls.listenToKeyEvents(canvas);
+  scene.add(new THREE.HemisphereLight(0xf7fbff,0x8a9267,1.05));
+  const sun=new THREE.DirectionalLight(0xfff4d9,1.15);sun.position.set(-9,18,10);
+  sun.target.position.set(0,4,0);scene.add(sun.target);sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-13;sun.shadow.camera.right=13;
+  sun.shadow.camera.top=13;sun.shadow.camera.bottom=-13;sun.shadow.camera.near=1;sun.shadow.camera.far=45;
+  sun.shadow.bias=-.00015;sun.shadow.normalBias=.015;sun.shadow.radius=3;scene.add(sun);
+  const loader=new THREE.TextureLoader(),texture={};
+  await Promise.all(Object.entries(TEXTURES).map(async([name,uri])=>{
+    const t=await loader.loadAsync(uri);t.magFilter=THREE.NearestFilter;t.minFilter=THREE.NearestFilter;
+    t.generateMipmaps=false;t.encoding=THREE.sRGBEncoding;texture[name]=t;
+  }));
+  const materials={bark:new THREE.MeshLambertMaterial({map:texture.bark}),end:new THREE.MeshLambertMaterial({map:texture.end}),
+    leaf:new THREE.MeshLambertMaterial({map:texture.leaf,alphaTest:.5}),
+    apple:new THREE.MeshLambertMaterial({map:texture.apple,alphaTest:.5,side:THREE.DoubleSide})};
+  const buffers=Object.fromEntries(Object.keys(materials).map(k=>[k,{position:[],normal:[],uv:[]}]));
+  const faceInfo=[{axis:"y",normal:[0,1,0]},{axis:"y",normal:[0,-1,0]},
+    {axis:"x",normal:[1,0,0]},{axis:"x",normal:[-1,0,0]},
+    {axis:"z",normal:[0,0,1]},{axis:"z",normal:[0,0,-1]}];
+  function uvAt(p,normal,rot,axis) {
+    let [x,y,z]=p,[nx,ny,nz]=normal;
+    // Inverse facedir for quarter textures; connected geometry never rotates.
+    for(let i=0;i<rot;i++) {[x,z]=[-z,x];[nx,nz]=[-nz,nx];}
+    let u,v;
+    if(ny>0) [u,v]=[x+.5,z+.5];else if(ny<0) [u,v]=[x+.5,.5-z];
+    else if(nx>0) [u,v]=[z+.5,y+.5];else if(nx<0) [u,v]=[.5-z,y+.5];
+    else if(nz>0) [u,v]=[.5-x,y+.5];else [u,v]=[x+.5,y+.5];
+    // Equivalent to a node's six tile definitions, never per-arm UV trickery.
+    if((axis==="x" && !nx) || (axis==="z" && nx)) [u,v]=[1-v,u];
+    return [u,v];
+  }
+  function appendBox(n,box) {
+    const [x0,y0,z0,x1,y1,z1]=box.map(v=>v/16),axis=grainAxis(n);
+    const faces=[[[x0,y1,z0],[x0,y1,z1],[x1,y1,z1],[x1,y1,z0]],
+      [[x0,y0,z1],[x0,y0,z0],[x1,y0,z0],[x1,y0,z1]],
+      [[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]],
+      [[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[x0,y0,z0]],
+      [[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[x0,y0,z1]],
+      [[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[x1,y0,z0]]];
+    faces.forEach((vertices,i)=>{
+      const info=faceInfo[i],key=n.kind==="leaves"?"leaf":(n.kind==="quarter"||n.kind==="trunk")&&info.axis==="y"?"end":"bark",b=buffers[key];
+      for(const j of [0,1,2,0,2,3]) {
+        const p=vertices[j];b.position.push(p[0]+n.x,p[1]+n.y,p[2]+n.z);b.normal.push(...info.normal);
+        b.uv.push(...uvAt(p,info.normal,n.kind==="quarter"?n.rot:0,n.kind==="leaves"?"y":axis));
+      }
+    });
+  }
+  function appendApple(n) {
+    // Existing default:apple, plantlike with visual_scale=1: engine cross at 46/-44 degrees.
+    const b=buffers.apple;
+    for(const degrees of [46,-44]) {
+      const angle=degrees*Math.PI/180,c=Math.cos(angle),s=Math.sin(angle);
+      const vertices=[[-.5,.5],[.5,.5],[.5,-.5],[-.5,-.5]],uv=[[0,1],[1,1],[1,0],[0,0]];
+      for(const j of [0,2,1,0,3,2]) {
+        const [x,y]=vertices[j];b.position.push(n.x+x*c,n.y+y,n.z+x*s);
+        b.normal.push(-s,0,c);b.uv.push(...uv[j]);
+      }
+    }
+  }
+  for(const n of NODES) {
+    if(n.kind==="fruit") appendApple(n);else for(const box of nodeBoxes(n)) appendBox(n,box);
+  }
+  const meshes={};
+  for(const [key,b] of Object.entries(buffers)) {
+    const g=new THREE.BufferGeometry();
+    for(const name of ["position","normal","uv"]) g.setAttribute(name,new THREE.Float32BufferAttribute(b[name],name==="uv"?2:3));
+    g.computeBoundingSphere();const m=new THREE.Mesh(g,materials[key]);m.castShadow=true;m.receiveShadow=true;
+    if(key==="leaf" || key==="apple") m.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:materials[key].map,alphaTest:.5,side:materials[key].side});
+    meshes[key]=m;scene.add(m);
+  }
+  texture.grass.wrapS=texture.grass.wrapT=THREE.RepeatWrapping;texture.grass.repeat.set(180,180);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshLambertMaterial({map:texture.grass,color:0xc6c9aa}));
+  ground.rotation.x=-Math.PI/2;ground.position.y=-.5;ground.receiveShadow=true;scene.add(ground);
+  const grid=new THREE.GridHelper(24,24,0x607b51,0x718764);grid.position.set(.5,-.49,.5);
+  grid.material.transparent=true;grid.material.opacity=.5;grid.visible=false;scene.add(grid);
+  // A deliberately plain, two-node-tall measuring figure, outside the tree's data.
+  const figure=new THREE.Group();figure.position.set(-4.6,-.5,2.7);scene.add(figure);
+  const coat=new THREE.MeshLambertMaterial({color:0x53665d}),skin=new THREE.MeshLambertMaterial({color:0xd7bf96}),boots=new THREE.MeshLambertMaterial({color:0x3f4b42});
+  function figureBox(w,h,d,x,y,z,material){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;figure.add(m);}
+  figureBox(.5,.5,.5,0,1.75,0,skin);figureBox(.58,.7,.32,0,1.15,0,coat);
+  for(const sign of [-1,1]) {figureBox(.21,.8,.27,sign*.15,.4,0,boots);figureBox(.19,.65,.24,sign*.4,1.16,0,coat);}
+  const leavesToggle=document.getElementById("leaves"),gridToggle=document.getElementById("grid");
+  function updateVisibility(){meshes.leaf.visible=meshes.apple.visible=leavesToggle.checked;grid.visible=gridToggle.checked;}
+  leavesToggle.addEventListener("change",updateVisibility);gridToggle.addEventListener("change",updateVisibility);updateVisibility();
+  let currentView="perspective",initial=true;
+  function preset(name) {
+    currentView=name;controls.target.set(.35,4.15,.3);
+    const distance=camera.aspect<.9?24:21;
+    if(name==="front") camera.position.set(.35,5.1,distance+.3);
+    else if(name==="top") {controls.target.set(.5,0,.5);camera.position.set(.5,26,.501);}
+    else {const direction=new THREE.Vector3(1,.45,1.4).normalize();camera.position.copy(controls.target).addScaledVector(direction,distance);}
+    controls.update();
+    for(const button of document.querySelectorAll("[data-view]")) button.setAttribute("aria-pressed",String(button.dataset.view===name));
+  }
+  for(const button of document.querySelectorAll("[data-view]")) button.addEventListener("click",()=>preset(button.dataset.view));
+  controls.addEventListener("start",()=>{for(const b of document.querySelectorAll("[data-view]"))b.setAttribute("aria-pressed","false");});
+  function resize(){const width=stage.clientWidth,height=stage.clientHeight;renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();if(initial){preset(currentView);initial=false;}}
+  const observer=new ResizeObserver(resize);observer.observe(stage);resize();
+  // Expose the rendered data and boxes for reproducible, read-only browser checks.
+  window.treeViewer={nodes:NODES,shapes:SHAPES,nodeBoxes,connections,grainAxis,meshes,camera,controls,renderer,scene,grid,figure,preset,count};
+  loading.hidden=true;document.documentElement.dataset.viewer="ready";
+  function animate(){requestAnimationFrame(animate);if(document.hidden)return;controls.update();renderer.render(scene,camera);}
+  animate();
+}
+startViewer().catch(error=>{
+  document.getElementById("load-state").textContent=error.message||"Die 3D-Ansicht konnte nicht gestartet werden.";
+  document.documentElement.dataset.viewer="error";
+  console.error(error);
+});
+</script>
+</body>
+</html>
