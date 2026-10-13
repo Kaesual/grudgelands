@@ -1,13 +1,16 @@
 -- Mining tiers, dig transaction and punch hints (WP43, Round 24 rulings 1-7).
 --
--- Tier rock and resources are gated by the ENGINE: a node that needs a pick
--- of tier N carries `level = N - 1` (registry.lua `level_for_tier`), a tier-t
--- pick carries `maxlevel = t - 1` on `cracky` and `grug_resource`. The client
--- predicts that from the definitions alone, so a too-weak pick shows no
--- cracks and cannot dig at all (Luanti src/tool.cpp getDigParams: a groupcap
--- whose maxlevel is below the node level is skipped; a higher pick divides
--- the time by the level difference). There is no depth limit per pick and no
--- dig-without-drop path any more. Loose ground has no level and no tool gate.
+-- Tier rock and resources are gated by the ENGINE: a node that needs the
+-- metal pick of tier N carries `level = N` (registry.lua `level_for_tier`,
+-- `resource_level`: Iron Ore 1, every other tier-1 node none), a metal pick
+-- of tier t carries `maxlevel = t` on every rock capability and the Wood and
+-- Stone picks `maxlevel = 0` (Round 47 ruling 7). The client predicts that
+-- from the definitions alone, so a too-weak pick shows no cracks and cannot
+-- dig at all (Luanti src/tool.cpp getDigParams: a groupcap whose maxlevel is
+-- below the node level is skipped; a higher pick divides the time by the
+-- level difference when it exceeds 1). There is no depth limit per pick and
+-- no dig-without-drop path any more. Loose ground has no level and no tool
+-- gate.
 --
 -- Server protection stays authoritative (builtin core.node_dig); this file
 -- adds a server-side re-check of the same engine rule for natural nodes, the
@@ -24,8 +27,10 @@ local TIER_COUNT = #grug_materials.TIERS
 -- complete without registering WP29's final gear catalog. WP22 owns the later
 -- speed/durability calibration; consumers should build capabilities from this
 -- table instead of copying its values. `cracky_times` and `ordinary_time` are
--- the times at level difference 0 and 1; the engine divides them by the level
--- difference when a pick digs rock two or more tiers below its own.
+-- the times on the pick's own band (level difference 0); the engine divides
+-- them by the level difference when a pick digs a node two or more levels
+-- below its own (the capability builder keeps the Round 46 times, see
+-- `level_zero_factor`).
 grug_materials.PICK_PROFILES = {
 	[1] = {tier = 1, key = "bronze", ordinary_time = 0.45, uses = 300,
 		punch_attack_uses = 180,
@@ -73,8 +78,51 @@ local function resource_times(ordinary_time)
 	return times
 end
 
+-- One ordinary time for every gated level 1..6 (`grug_pick_level`, below).
+local function gated_times(ordinary_time)
+	local times = {}
+	for level = 1, TIER_COUNT do
+		times[level] = ordinary_time
+	end
+	return times
+end
+
+-- Dig times kept through the Round 47 level shift. Before it a tier-t pick
+-- had `maxlevel = t - 1`, so the engine divided its times on a level-0 node
+-- by max(1, t - 1); now it divides by max(1, t). The `cracky` and
+-- `grug_resource` times carry the factor back, so every pick digs Stone,
+-- Cobble, every placed rock and the level-0 ores exactly as fast as before.
+-- That factor would slow the gated nodes (tier rock T2+, the gated
+-- resources), whose level difference did not change, so they dig through
+-- their own capability: each carries `grug_pick_level = <its level>` and
+-- every pick a `grug_pick_level` capability at the profile's ordinary time,
+-- which the engine prefers as the faster one. Bronze (maxlevel 1) and the
+-- Wood and Stone picks (0) need no factor.
+local function level_zero_factor(maxlevel)
+	return math.max(1, maxlevel) / math.max(1, maxlevel - 1)
+end
+
+local function scaled_times(times, factor)
+	local result = {}
+	for rating, seconds in pairs(times) do
+		result[rating] = seconds * factor
+	end
+	return result
+end
+
+-- The gate groups of a natural node of `level` into `groups` (in place):
+-- `level` and its mirror `grug_pick_level`, both absent at level 0.
+function grug_materials.set_gate_groups(groups, level)
+	level = level and level > 0 and level or nil
+	groups.level = level
+	groups.grug_pick_level = level
+	return groups
+end
+
 -- Build a fresh capability table. `values` exists for the three deliberately
 -- weaker T1 starter picks; omitting it selects the published tier profile.
+-- `values.maxlevel` is the Wood and Stone picks' 0; a metal pick's is its
+-- tier.
 function grug_materials.build_pick_capabilities(tier, values)
 	tier = exact_tier(tier)
 	if not tier then
@@ -94,20 +142,26 @@ function grug_materials.build_pick_capabilities(tier, values)
 			not punch_attack_uses or punch_attack_uses <= 0 then
 		error("grug_materials: invalid pick capability values")
 	end
-	local maxlevel = grug_materials.level_for_tier(tier)
+	local maxlevel = tonumber(values.maxlevel) or tier
+	if maxlevel ~= 0 and maxlevel ~= tier then
+		error("grug_materials: a pick's maxlevel is its tier or 0")
+	end
+	local factor = level_zero_factor(maxlevel)
 	return {
 		full_punch_interval = values.full_punch_interval or
 			profile.full_punch_interval or 1.0,
 		max_drop_level = max_drop_level,
 		punch_attack_uses = punch_attack_uses,
 		groupcaps = {
-			cracky = {times = copy_times(values.cracky_times or
-				profile.cracky_times), uses = uses,
+			cracky = {times = scaled_times(values.cracky_times or
+				profile.cracky_times, factor), uses = uses,
 				maxlevel = maxlevel},
 			grug_loose = {times = copy_times(values.loose_times), uses = uses,
 				maxlevel = tonumber(values.loose_maxlevel) or 0},
-			grug_resource = {times = resource_times(ordinary_time),
-				uses = uses, maxlevel = maxlevel},
+			grug_resource = {times = scaled_times(resource_times(ordinary_time),
+				factor), uses = uses, maxlevel = maxlevel},
+			grug_pick_level = {times = gated_times(ordinary_time), uses = uses,
+				maxlevel = maxlevel},
 		},
 		damage_groups = table.copy(values.damage_groups or profile.damage_groups or
 			{fleshy = 4}),
@@ -227,13 +281,23 @@ function grug_materials.apply_tool_level_tooltips()
 	return names
 end
 
+-- The pick a node level needs, as the tooltips and hints name it: level 0
+-- any pick ("a T1 pick"), level 1 the Bronze pick (Iron Ore, Round 47
+-- ruling 7), level N the metal pick of tier N.
+function grug_materials.pick_requirement(level)
+	level = math.floor(tonumber(level) or 0)
+	if level == 1 then return "Requires a Bronze pick" end
+	return "Requires a T" .. math.max(1, level) .. " pick"
+end
+
 function grug_materials.tier_rock_description(tier)
-	return "Stone\nRequires a T" .. tier .. " pick"
+	return "Stone\n" .. grug_materials.pick_requirement(
+		grug_materials.level_for_tier(tier))
 end
 
 function grug_materials.resource_ore_description(resource)
-	return resource.name .. " Ore\nRequires a T" .. resource.harvest_tier ..
-		" pick"
+	return resource.name .. " Ore\n" .. grug_materials.pick_requirement(
+		grug_materials.resource_level(resource))
 end
 
 function grug_materials.is_natural_node(node_name, def)
@@ -353,6 +417,7 @@ function grug_materials.mining_decision(pos, node, digger)
 	end
 	result.pick_tier = stack and grug_materials.pick_tier_for_stack(stack) or nil
 	result.required_tier = grug_materials.required_pick_tier(node.name, def)
+	result.required_pick_level = tonumber((def.groups or {}).level) or 0
 	result.resource_harvest_tier = exact_tier((def.groups or {}).grug_resource)
 	if is_player(digger) and not grug_materials.stack_can_dig(stack, def) then
 		result.allowed = false
@@ -462,8 +527,9 @@ function grug_materials.protection_hint(pos, name)
 	return nil
 end
 
-function grug_materials.too_hard_hint(required_tier)
-	return "Requires a T" .. required_tier .. " pick"
+-- `level` is the node's level group (pick_requirement above).
+function grug_materials.too_hard_hint(level)
+	return grug_materials.pick_requirement(level)
 end
 
 grug_materials.BROKEN_PICK_HINT = "Your pick is broken – repair it"
@@ -475,7 +541,7 @@ function grug_materials.emit_mining_failure(pos, digger, decision)
 		message = grug_materials.protection_hint(pos, name) or "Protected"
 	elseif decision.reason == "too_hard" then
 		message = decision.broken_pick and grug_materials.BROKEN_PICK_HINT or
-			grug_materials.too_hard_hint(decision.required_tier)
+			grug_materials.too_hard_hint(decision.required_pick_level)
 	elseif decision.reason == "too_low_level" then
 		message = grug_materials.tool_level_hint(decision.tool_name,
 			decision.required_level)
@@ -525,7 +591,7 @@ function grug_materials.punch_hint(pos, node, puncher)
 		if wields_broken(stack) and grug_materials.pick_tier_for_stack(stack) then
 			return grug_materials.BROKEN_PICK_HINT
 		end
-		return grug_materials.too_hard_hint(required)
+		return grug_materials.too_hard_hint((def.groups or {}).level)
 	end
 	return nil
 end

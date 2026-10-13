@@ -79,6 +79,10 @@ return function(canonical, raw_sha256, settlement_order)
 	-- quarter of the gem density (`DENSITY.gem.deeper_host_nodes_per_ore`), and
 	-- the unread `TIERS[].ilvl` field is dropped; only the WP43 projection
 	-- moves. Was `d30874df59b16e25...`.
+	-- Round 47 OR: every tier but T6 publishes `lower_half_y_max` (ruling 6,
+	-- the lower half a `lower_half_of` resource row is limited to) and the
+	-- Iron resource row `pick_level = 1` (ruling 7, Iron behind the Bronze
+	-- pick); only the WP43 projection moves. Was `dccd68e9032403bc...`.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -493,7 +497,7 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.decoded_templates ~=
 				"766f28cc566f8c55b6512ce8fdc1342d9819228a2e39065fb2eb728ad6fab683" or
 			frozen.wp43_projection ~=
-				"dccd68e9032403bcea294efd2035165501043ab1aa008561cad5547eb2e2c7c7" or
+				"d78726f71bc347b5e0b6bb2764a617a349dcb979d90d44409826b4431e4139fa" or
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" then
 			fail("frozen source projection differs: accepted=" ..

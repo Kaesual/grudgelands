@@ -325,23 +325,28 @@ local function ladder(family, tier)
 		family .. "_" .. M.TIERS[tier].key
 end
 
-local picks = {{"grug_materials:pick_wood", 1}, {"grug_materials:pick_stone", 1}}
-for tier = 1, 6 do picks[#picks + 1] = {ladder("pick", tier), tier} end
+-- {name, tier, maxlevel}: Round 47 ruling 7 shifts the level scale, the
+-- Wood and Stone picks stay at 0 and a metal pick of tier t carries t.
+local picks = {{"grug_materials:pick_wood", 1, 0}, {"grug_materials:pick_stone", 1, 0}}
+for tier = 1, 6 do picks[#picks + 1] = {ladder("pick", tier), tier, tier} end
 local loose = {}
 for _, name in ipairs(M.NATURAL_GROUND_NODES) do
 	if name ~= "default:stone" then loose[#loose + 1] = name end
 end
 
 for _, pick in ipairs(picks) do
-	local name, tier = pick[1], pick[2]
+	local name, tier, maxlevel = pick[1], pick[2], pick[3]
 	check(items[name].groups.grug_pick_tier == tier, name .. " tier group")
 	for _, row in ipairs(M.TIERS) do
-		check(dig_with(row.node, name).diggable == (tier >= row.id),
-			name .. " on " .. row.node)
+		check(dig_with(row.node, name).diggable == (tier >= row.id and
+			(maxlevel > 0 or row.id == 1)), name .. " on " .. row.node)
 	end
 	for _, resource in ipairs(M.RESOURCES) do
+		-- Iron Ore is the one tier-1 resource the Wood and Stone picks miss.
 		check(dig_with(resource.natural_node, name).diggable ==
-			(tier >= resource.harvest_tier), name .. " on " .. resource.natural_node)
+			(tier >= resource.harvest_tier and
+				(maxlevel > 0 or resource.key ~= "iron")),
+			name .. " on " .. resource.natural_node)
 	end
 	for _, rock in ipairs(M.DECORATIVE_ROCKS) do
 		check(dig_with(rock.node, name).diggable, name .. " on " .. rock.node)
@@ -375,14 +380,37 @@ for _, item in ipairs({"", "grug_materials:shovel_steel", "grug_materials:axe_ab
 		check(dig_with(node_name, item).diggable, "'" .. item .. "' on " .. node_name)
 	end
 end
--- A deep T1 resource is still T1: groups carry no y at all.
+-- A deep T1 resource is still T1: groups carry no y at all. Round 47: Iron
+-- Ore needs the Bronze pick (level 1), every tier-N node N >= 2 level N, and
+-- `grug_pick_level` mirrors the level.
 check(nodes["default:stone_with_coal"].groups.level == nil and
-	nodes["default:stone_with_iron"].groups.level == nil, "T1 ores carry no level")
-check(nodes["grug_materials:abyssal_crystal_ore"].groups.level == 4, "T5 ore level 4")
+	nodes["default:stone_with_copper"].groups.level == nil and
+	nodes["default:stone_with_tin"].groups.level == nil and
+	nodes["grug_materials:stone_with_quartz"].groups.level == nil and
+	nodes["grug_materials:stone_with_citrine"].groups.level == nil,
+	"Coal, Copper, Tin, Quartz and Citrine carry no level")
+check(nodes["default:stone_with_iron"].groups.level == 1 and
+	nodes["default:stone_with_iron"].groups.grug_pick_level == 1 and
+	nodes["default:stone_with_iron"].groups.grug_resource == 1, "Iron Ore level 1, still T1")
+check(nodes["default:stone_with_gold"].groups.level == 2, "T2 ore level 2")
+check(nodes["grug_materials:abyssal_crystal_ore"].groups.level == 5 and
+	nodes["grug_materials:abyssal_crystal_ore"].groups.grug_pick_level == 5, "T5 ore level 5")
+check(nodes["grug_materials:stone_with_diamond"].groups.level == 6, "T6 gem level 6")
+check(nodes["default:stone"].groups.level == nil and
+	nodes["default:stone"].groups.grug_pick_level == nil, "T1 rock carries no level")
 for i = 2, 6 do
-	check(nodes[M.TIERS[i].node].groups.level == i - 1, M.TIERS[i].node .. " level")
+	check(nodes[M.TIERS[i].node].groups.level == i and
+		nodes[M.TIERS[i].node].groups.grug_pick_level == i, M.TIERS[i].node .. " level")
 	check(nodes[M.TIERS[i].node].drop == "default:cobble", M.TIERS[i].node .. " drop")
 end
+for _, pick in ipairs(picks) do
+	local groupcaps = items[pick[1]].tool_capabilities.groupcaps
+	check(groupcaps.cracky.maxlevel == pick[3] and
+		groupcaps.grug_resource.maxlevel == pick[3] and
+		groupcaps.grug_pick_level.maxlevel == pick[3], pick[1] .. " maxlevel " .. pick[3])
+end
+check(nodes["default:stone_with_iron"].description == "Iron Ore\nRequires a Bronze pick",
+	"Iron Ore tooltip names the Bronze pick")
 for _, node_name in ipairs(loose) do
 	local groups = nodes[node_name].groups
 	check((groups.level or 0) == 0 and groups.grug_loose == groups.crumbly and
@@ -444,7 +472,11 @@ local cases = {
 	{"grug_materials:t2_stone", "grug_materials:pick_iron", true, nil},
 	{"grug_materials:t5_stone", "grug_materials:pick_steel", false, "Requires a T5 pick"},
 	{"default:stone_with_gold", "grug_materials:pick_wood", false, "Requires a T2 pick"},
-	{"default:stone_with_iron", "grug_materials:pick_wood", true, nil},
+	-- Round 47 ruling 7: Iron needs the Bronze pick.
+	{"default:stone_with_iron", "grug_materials:pick_wood", false, "Requires a Bronze pick"},
+	{"default:stone_with_iron", "grug_materials:pick_stone", false, "Requires a Bronze pick"},
+	{"default:stone_with_iron", "grug_materials:pick_bronze", true, nil},
+	{"default:stone_with_coal", "grug_materials:pick_stone", true, nil},
 	{"grug_materials:stone_with_sapphire", "grug_materials:pick_silversteel", true, nil},
 	{"grug_materials:stone_with_diamond", "grug_materials:pick_silversteel", false,
 		"Requires a T6 pick"},

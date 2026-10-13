@@ -34,8 +34,9 @@ local function register_owned_resource(resource)
 	core.register_node(resource.natural_node, {
 		description = grug_materials.resource_ore_description(resource),
 		tiles = {"default_stone.png^grug_materials_mineral_" .. resource.key .. ".png"},
-		groups = {grug_natural = 1, grug_resource = resource.harvest_tier,
-			level = grug_materials.level_for_tier(resource.harvest_tier)},
+		groups = grug_materials.set_gate_groups({grug_natural = 1,
+			grug_resource = resource.harvest_tier},
+			grug_materials.resource_level(resource)),
 		drop = resource.raw_item,
 		is_ground_content = true,
 		sounds = default.node_sound_stone_defaults(),

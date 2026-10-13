@@ -1,11 +1,14 @@
 -- Startup contract audit. Structural checks run in registry.lua; this pass
 -- verifies the fully loaded engine registry and fails before a world starts.
 --
--- Round 24 mining contract (items_crafting.md §3.0.4): tier-N rock and
--- tier-N resources carry `level = N - 1` and nothing else does; a tier-t pick
--- digs exactly the rock and resources of tier <= t, faster the higher it is;
--- loose ground has no level and the hand digs it; a shovel beats the pick of
--- its tier on loose ground. The matrix below asks the engine itself
+-- Round 24 mining contract (items_crafting.md §3.0.4), level scale of Round
+-- 47: tier-N rock and tier-N resources carry `level = N` for N >= 2 and
+-- none at tier 1, Iron Ore `level = 1` (its `pick_level`), mirrored as
+-- `grug_pick_level`, and nothing else carries either; the Wood and Stone
+-- picks carry `maxlevel = 0` and a metal pick of tier t `maxlevel = t`, so a
+-- pick digs exactly the nodes whose level it reaches, faster the higher it
+-- is; loose ground has no level and the hand digs it; a shovel beats the
+-- pick of its tier on loose ground. The matrix below asks the engine itself
 -- (`core.get_dig_params`, the same getDigParams the client predicts with).
 
 local function fail(message)
@@ -18,6 +21,30 @@ end
 
 local function level_of(groups)
 	return tonumber((groups or {}).level) or 0
+end
+
+-- The two picks that are no metal (overrides.lua): maxlevel 0.
+local NON_METAL_PICKS = {
+	["grug_materials:pick_wood"] = true,
+	["grug_materials:pick_stone"] = true,
+}
+
+local function pick_maxlevel(name, tier)
+	return NON_METAL_PICKS[name] and 0 or tier
+end
+
+-- The level a natural node must carry: its resource's or its stratum's.
+local function expected_level(name, groups)
+	local resource = groups.grug_resource and
+		grug_materials.resource_for_node(name)
+	if resource then return grug_materials.resource_level(resource) end
+	local stratum = tonumber(groups.grug_stratum)
+	if stratum then return grug_materials.level_for_tier(stratum) end
+	return 0
+end
+
+local function gate_mirrored(groups)
+	return (tonumber(groups.grug_pick_level) or 0) == level_of(groups)
 end
 
 local function first_line(text)
@@ -44,7 +71,9 @@ local function check_registry()
 		local def = core.registered_nodes[tier.node]
 		local groups = def and def.groups or {}
 		if not def or groups.grug_stratum ~= tier.id or groups.grug_natural ~= 1 or
-				groups.cracky ~= 3 or level_of(groups) ~= tier.id - 1 or
+				groups.cracky ~= 3 or
+				level_of(groups) ~= grug_materials.level_for_tier(tier.id) or
+				not gate_mirrored(groups) or
 				def.drop ~= "default:cobble" or first_line(def.description) ~= "Stone" or
 				not tostring(def.description):find("Requires a T" .. tier.id ..
 					" pick", 1, true) then
@@ -56,6 +85,7 @@ local function check_registry()
 		local def = core.registered_nodes[rock.node]
 		local groups = def and def.groups or {}
 		if not def or groups.cracky ~= 3 or level_of(groups) ~= 0 or
+				groups.grug_pick_level or
 				groups.grug_stratum or groups.grug_resource or
 				def.drop ~= rock.node then
 			fail("missing or misclassified decorative rock " .. rock.node)
@@ -67,7 +97,10 @@ local function check_registry()
 		local groups = node and node.groups or {}
 		if not node or groups.grug_natural ~= 1 or
 				groups.grug_resource ~= resource.harvest_tier or
-				level_of(groups) ~= resource.harvest_tier - 1 then
+				level_of(groups) ~= grug_materials.resource_level(resource) or
+				not gate_mirrored(groups) or
+				not tostring(node.description):find(grug_materials.pick_requirement(
+					grug_materials.resource_level(resource)), 1, true) then
 			fail("missing or misclassified resource node " .. resource.natural_node)
 		end
 		if groups.cracky then
@@ -92,6 +125,7 @@ local function check_registry()
 			fail("generated ground lacks natural marker: " .. node_name)
 		end
 		if node_name ~= "default:stone" and (level_of(groups) ~= 0 or
+				groups.grug_pick_level or
 				(tonumber(groups.grug_loose) or 0) <= 0 or
 				groups.grug_loose ~= groups.crumbly) then
 			fail("loose ground is gated or lacks its loose rating: " .. node_name)
@@ -105,7 +139,8 @@ local function check_registry()
 		local block = rawget(core.registered_nodes, material.block_node)
 		local groups = block and block.groups or {}
 		if not block or groups.grug_natural or groups.grug_resource or
-				groups.grug_stratum or level_of(groups) > 0 then
+				groups.grug_stratum or level_of(groups) > 0 or
+				groups.grug_pick_level then
 			fail("missing or misclassified storage node " .. material.block_node)
 		end
 		if block.drop ~= material.block_node then
@@ -170,7 +205,6 @@ local function check_levels()
 	for name, def in pairs(core.registered_nodes) do
 		local groups = def.groups or {}
 		local level = level_of(groups)
-		local required = grug_materials.required_pick_tier(name, def)
 		if groups.grug_resource then
 			local resource = grug_materials.resource_for_node(name)
 			if not resource or groups.grug_resource ~= resource.harvest_tier or
@@ -178,11 +212,11 @@ local function check_levels()
 				fail("unregistered or malformed resource group: " .. name)
 			end
 		end
-		if level > 0 and (required == nil or level ~= required - 1) then
-			fail("node carries a level outside the tier contract: " .. name)
+		if level ~= expected_level(name, groups) then
+			fail("node level outside the tier contract: " .. name)
 		end
-		if required and level ~= required - 1 then
-			fail("tier node lacks its level: " .. name)
+		if not gate_mirrored(groups) then
+			fail("node level and grug_pick_level disagree: " .. name)
 		end
 	end
 end
@@ -196,16 +230,19 @@ local function check_tools()
 			local tier = tonumber(pick_tier)
 			if not tier or tier ~= math.floor(tier) or tier < 1 or tier > 6 or
 				not caps.cracky or not caps.grug_resource or not caps.grug_loose or
-				caps.cracky.maxlevel ~= tier - 1 or
-				caps.grug_resource.maxlevel ~= tier - 1 then
+				not caps.grug_pick_level or
+				caps.cracky.maxlevel ~= pick_maxlevel(name, tier) or
+				caps.grug_resource.maxlevel ~= pick_maxlevel(name, tier) or
+				caps.grug_pick_level.maxlevel ~= pick_maxlevel(name, tier) then
 				fail("invalid Grudgelands pick contract: " .. name)
 			end
 			for harvest_tier = 1, #grug_materials.TIERS do
-				if not caps.grug_resource.times[harvest_tier] then
+				if not caps.grug_resource.times[harvest_tier] or
+						not caps.grug_pick_level.times[harvest_tier] then
 					fail("incomplete resource capability on " .. name)
 				end
 			end
-		elseif caps.cracky or caps.grug_resource then
+		elseif caps.cracky or caps.grug_resource or caps.grug_pick_level then
 			-- A foreign rock-digging tool would bypass the tier ladder.
 			fail("rock-digging capability outside the pick ladder: " .. name)
 		end
@@ -262,8 +299,9 @@ local function check_tools()
 		local profile = grug_materials.PICK_PROFILES[tier]
 		local caps = grug_materials.build_pick_capabilities(tier)
 		if not profile or profile.tier ~= tier or
-			caps.groupcaps.cracky.maxlevel ~= tier - 1 or
-			caps.groupcaps.grug_resource.maxlevel ~= tier - 1 or
+			caps.groupcaps.cracky.maxlevel ~= tier or
+			caps.groupcaps.grug_resource.maxlevel ~= tier or
+			caps.groupcaps.grug_pick_level.maxlevel ~= tier or
 			profile.key ~= grug_materials.TIERS[tier].key or
 			profile.ordinary_time <= 0 or profile.uses <= 0 then
 			fail("invalid pure pick profile at tier " .. tier)
@@ -303,17 +341,20 @@ local function check_dig_matrix()
 		return params
 	end
 
-	-- Every pick in the registry, starters included: tier gate for rock and
+	-- Every pick in the registry, starters included: level gate for rock and
 	-- resources at any depth, decorative rock always.
 	for name, def in pairs(core.registered_items) do
 		local tier = tonumber((def.groups or {}).grug_pick_tier)
 		if tier then
 			local caps = def.tool_capabilities
+			local maxlevel = pick_maxlevel(name, tier)
 			for _, row in ipairs(grug_materials.TIERS) do
-				expect(row.node, caps, tier >= row.id, name)
+				expect(row.node, caps,
+					maxlevel >= grug_materials.level_for_tier(row.id), name)
 			end
 			for _, resource in ipairs(grug_materials.RESOURCES) do
-				expect(resource.natural_node, caps, tier >= resource.harvest_tier, name)
+				expect(resource.natural_node, caps,
+					maxlevel >= grug_materials.resource_level(resource), name)
 			end
 			for _, rock in ipairs(grug_materials.DECORATIVE_ROCKS) do
 				expect(rock.node, caps, true, name)

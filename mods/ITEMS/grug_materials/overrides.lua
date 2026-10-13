@@ -18,8 +18,8 @@ local function natural_resource(item_name, tier)
 		error("grug_materials: missing resource registry row for " .. item_name)
 	end
 	edit_groups(item_name, function(groups)
-		local level = grug_materials.level_for_tier(tier)
-		groups.level = level > 0 and level or nil
+		grug_materials.set_gate_groups(groups,
+			grug_materials.resource_level(resource))
 		groups.cracky = nil
 		groups.grug_natural = 1
 		groups.grug_resource = tier
@@ -37,7 +37,7 @@ natural_resource("default:stone_with_gold", 2)
 
 -- T1 rock keeps its upstream name (Round 24 ruling 1): no level, any pick.
 edit_groups("default:stone", function(groups)
-	groups.level = nil
+	grug_materials.set_gate_groups(groups, 0)
 	groups.grug_natural = 1
 	groups.grug_stratum = 1
 end)
@@ -141,12 +141,14 @@ for _, row in ipairs({
 end
 
 -- Preserve WP25's effective ordinary-rock values. The three starter picks are
--- all T1 (maxlevel 0: T1 rock and T1 resources); their differing speeds and
--- uses remain their ordinary equipment quality.
+-- all T1; their differing speeds and uses remain their ordinary equipment
+-- quality. Wood and Stone are no metal (maxlevel 0: every tier-1 node but
+-- Iron Ore), Bronze is the tier-1 metal pick (maxlevel 1: Iron Ore too;
+-- Round 47 ruling 7).
 pick_groups("grug_materials:pick_wood", 1)
 core.override_item("grug_materials:pick_wood", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
-		ordinary_time = 1.60, uses = 30, full_punch_interval = 1.2,
+		maxlevel = 0, ordinary_time = 1.60, uses = 30, full_punch_interval = 1.2,
 		cracky_times = {[3] = 1.60}, damage_groups = {fleshy = 2},
 		loose_times = grug_materials.build_loose_times(
 			starter_shovel_times["grug_materials:shovel_wood"]),
@@ -158,7 +160,7 @@ core.override_item("grug_materials:pick_wood", {
 pick_groups("grug_materials:pick_stone", 1)
 core.override_item("grug_materials:pick_stone", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
-		ordinary_time = 1.00, uses = 60, full_punch_interval = 1.3,
+		maxlevel = 0, ordinary_time = 1.00, uses = 60, full_punch_interval = 1.3,
 		cracky_times = {[2] = 2.0, [3] = 1.00}, damage_groups = {fleshy = 3},
 		loose_times = grug_materials.build_loose_times(
 			starter_shovel_times["grug_materials:shovel_stone"]),

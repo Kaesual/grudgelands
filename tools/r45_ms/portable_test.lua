@@ -264,8 +264,9 @@ local function has(text, needle) return text:find(needle, 1, true) ~= nil end
 -- A. The registry.
 ------------------------------------------------------------------------------
 local registry = grug_core.migrations
-check(#registry.versions == 2 and registry.versions[1] == "0.44.0" and
-	registry.versions[2] == "0.45.0", "A versions are 0.44.0, 0.45.0")
+-- Later steps follow (Round 47: 0.47.0); the first two stay these.
+check(#registry.versions >= 2 and registry.versions[1] == "0.44.0" and
+	registry.versions[2] == "0.45.0", "A versions begin 0.44.0, 0.45.0")
 local handler = registry.handlers["0.45.0"]
 check(handler and type(handler.character) == "function" and handler.world == nil,
 	"A 0.45.0 has a character handler and no world handler")

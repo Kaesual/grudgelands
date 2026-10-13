@@ -29,8 +29,8 @@ for i = 2, #grug_materials.TIERS do
 	core.register_node(tier.node, {
 		description = grug_materials.tier_rock_description(i),
 		tiles = {ROCK_TILES[key]},
-		groups = {cracky = 3, level = grug_materials.level_for_tier(i),
-			grug_natural = 1, grug_stratum = i},
+		groups = grug_materials.set_gate_groups({cracky = 3, grug_natural = 1,
+			grug_stratum = i}, grug_materials.level_for_tier(i)),
 		drop = "default:cobble",
 		is_ground_content = true,
 		sounds = default.node_sound_stone_defaults(),

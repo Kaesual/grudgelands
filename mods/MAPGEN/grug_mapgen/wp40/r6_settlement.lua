@@ -1575,6 +1575,15 @@ local function settlement_factory()
 			return #tier_by_y, tier_by_y[#tier_by_y].node
 		end
 
+		-- Round 47 ruling 6: in its `lower_half_of` band a resource lies only
+		-- at or below the band's `lower_half_y_max` (WP43 tiers); in every
+		-- other band with a denominator it fills the whole band.
+		local function resource_active(resource, tier, y)
+			if not resource.denominators[tier] then return false end
+			return resource.lower_half_of ~= tier or
+				y <= tier_by_y[tier].lower_half_y_max
+		end
+
 		local function deep_band(y)
 			if y >= -1499 then return "ordinary", 1, 1 end
 			if y >= -1999 then return "deep_1500_1999", 5, 4 end
@@ -2239,6 +2248,7 @@ local function settlement_factory()
 							for x = min_x, min_x + 15 do
 								local column = (z - min_z) * 16 + (x - min_x) + 1
 								if census_column_allowed[column] and
+										resource_active(resource, tier, y) and
 										census_occupancy[local_index(x, y, z)] ~= -1 then
 									eligible = eligible + 1
 									local coordinate = coordinate_scratch[eligible]
@@ -3010,17 +3020,22 @@ local function settlement_factory()
 									local tier, host_name = tier_at(segment_y)
 									local band, multiplier_numerator,
 										multiplier_denominator = deep_band(segment_y)
+									local active = resource_active(resource, tier, segment_y)
 									local segment_end = segment_y
 									while segment_end < last_y do
 										local ntier = tier_at(segment_end + 1)
 										local nband = deep_band(segment_end + 1)
-										if ntier ~= tier or nband ~= band then break end
+										if ntier ~= tier or nband ~= band or
+												resource_active(resource, ntier, segment_end + 1) ~=
+													active then
+											break
+										end
 										segment_end = segment_end + 1
 									end
 									local host_ref = content.content_ref(host_name)
 									local host_cid = host_ref and contract.content_cids[host_ref]
 									local eligible = 0
-									if host_cid and resource.denominators[tier] then
+									if host_cid and active then
 										for z = math.max(min_z, cell_z * 16),
 												math.min(max_z, cell_z * 16 + 15) do
 											for y = segment_y, segment_end do

@@ -1251,17 +1251,23 @@ tools](#player-meta-read-by-external-tools).
     natural ground from `is_ground_content`: the engine defaults that field
     to true even for saplings and decorations. `NATURAL_GROUND_SET` is the
     audited lookup, not a second extension point.
-  - The engine gates tiers: tier rock and resources carry node `level =
-    tier - 1`, every Grudgelands pick carries `maxlevel = tier - 1` on
-    `cracky` and `grug_resource`, so the client predicts a too-weak pick as
-    unable to dig (no cracks). No other node may carry a `level`; the startup
-    audit checks this and an engine dig matrix. Loose generated ground carries
-    `grug_loose` (= its `crumbly` rating) and no level; shovels and axes carry
+  - The engine gates tiers (level scale of Round 47): tier rock and
+    resources of tier N >= 2 carry node `level = N`, tier 1 none, Iron Ore
+    `level = 1` (`resource_level`: its `pick_level`), mirrored as
+    `grug_pick_level`; the Wood and Stone picks carry `maxlevel = 0`, a metal
+    pick of tier t `maxlevel = t` on `cracky`, `grug_resource` and
+    `grug_pick_level`, so the client predicts a too-weak pick as unable to
+    dig (no cracks). The `cracky`/`grug_resource` times carry the factor
+    t / max(1, t - 1) and the gated nodes dig through `grug_pick_level`, so
+    the shift kept every dig time (`build_pick_capabilities`). No other node
+    may carry a `level`; the startup audit checks this and an engine dig
+    matrix. Loose generated ground carries `grug_loose` (= its `crumbly`
+    rating) and no level; shovels and axes carry
     `grug_shovel_tier`/`grug_axe_tier`. The engine's default dig sound is
-    `default_dig_<group>` and these two groups have no such file, so a node
-    of either without its own `dig` sound gets one after all mods load
-    (`dig_sounds.lua`, Round 35: resources the stone dig, loose ground the
-    crumbly one). The `core.node_dig` wrapper re-checks
+    `default_dig_<group>` and these three groups have no such file, so a node
+    of any of them without its own `dig` sound gets one after all mods load
+    (`dig_sounds.lua`, Round 35: resources and gated rock the stone dig,
+    loose ground the crumbly one). The `core.node_dig` wrapper re-checks
     protection and the engine rule for natural nodes (`mining_decision`
     returns `protected`/`too_low_level`/`too_hard`/`allowed`; `too_low_level`
     applies on any node a pick/axe/shovel above the player's level would dig,

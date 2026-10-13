@@ -839,8 +839,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `r46_or` the ore, gem and coal census: `run.sh OUT_DIR [TIMEOUT]` (one
   engine boot with the disposable probe `grug_probe_or`, `SEED=`) counts
   every resource per tier band in one 80 × 80 chunk column from y +127 to
-  −1312 against the band's host rock; `evidence/` holds seed 12345's
-  census (the rule and its pins are checked by `r29_mres` and `r24_mining`);
+  −1312 against the band's host rock (since Round 47 split at each band's
+  lower-half boundary: a `lower_half_of` ore must be absent above it);
+  `evidence/` holds seed 12345's Round 46 census (the rule and its pins are
+  checked by `r29_mres` and `r24_mining`);
   `r46_xp` kill XP by level difference (`portable_test.lua`: the factor
   at every d from −8 to +8 and the XP table, the target frame's gradient
   and gray for every mob that pays the viewer no XP, no repeatable quest
@@ -900,4 +902,22 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   sweep, one slot per step); it prints the stored set's size for a
   character that held 300 items and a scan's cost. `grug_probe_r47_cr` is
   the UI probe (formspec dumps of a fresh character's Basic list and of the
-  overflow shown and hidden).
+  overflow shown and hidden);
+  `r47_or` the lower-half rule and the Bronze gate
+  (`portable_test.lua`: the level scale, every dig time of the mining
+  harness against `evidence/dig_matrix_before.tsv`, the WP43 projection pin
+  moving by the two new fields only, the lower-half rows and the R6 content
+  refusals, the real writer on seed 12345 across the four half boundaries);
+  `run_dig.sh OUT_DIR [TIMEOUT]` with `grug_probe_dig` the engine's dig
+  matrix of every pick, axe and shovel over every node a tool digs or that
+  carries a level, `dig_table.py BEFORE AFTER` the before/after table
+  (`evidence/`: both matrices, the table, the seed 12345 census of
+  `r46_or/run.sh`); `r47_ms` the test of the migration step 0.47.0 (the
+  tool capabilities stored on crafted and broken tools rebuilt at the join):
+  `run.sh [EVIDENCE_DIR]` runs `test_step.py` (the offline step: markers
+  only) in the runner's container and `e2e.py` (a 0.45.1 world built by the
+  0.45.1 game with `grug_probe_r47_ms`, the guard's refusal, the tool, a
+  boot and a join of this checkout; until lane D declares 0.47.0 it stages
+  the game as 0.47.0 and runs the tool through `tool_run.py` with that
+  declaration); `portable_test.lua` the join part (stays in
+  `run_fixtures.sh`); `evidence/` the last run.

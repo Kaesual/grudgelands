@@ -5,6 +5,9 @@
 -- were silent. A node of either group without its own dig sound gets the
 -- shipped one of its kind: a resource the stone's, loose ground the crumbly
 -- one (what dirt and a bare hand on sand play). Existing files only (user).
+-- Since Round 47 the gated tier rock digs through `grug_pick_level`
+-- (mining.lua) and gets the stone's dig too: the same file and gain the
+-- engine's `cracky` group sound played for it before.
 
 grug_materials.RESOURCE_DIG_SOUND = {name = "default_dig_cracky", gain = 0.5}
 grug_materials.LOOSE_DIG_SOUND = {name = "default_dig_crumbly", gain = 0.4}
@@ -13,7 +16,9 @@ grug_materials.LOOSE_DIG_SOUND = {name = "default_dig_crumbly", gain = 0.4}
 function grug_materials.missing_dig_sound(def)
 	if def.sounds and def.sounds.dig then return nil end
 	local groups = def.groups or {}
-	if (groups.grug_resource or 0) > 0 then return grug_materials.RESOURCE_DIG_SOUND end
+	if (groups.grug_resource or 0) > 0 or (groups.grug_pick_level or 0) > 0 then
+		return grug_materials.RESOURCE_DIG_SOUND
+	end
 	if (groups.grug_loose or 0) > 0 then return grug_materials.LOOSE_DIG_SOUND end
 	return nil
 end
