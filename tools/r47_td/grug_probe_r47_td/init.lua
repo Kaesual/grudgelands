@@ -37,7 +37,8 @@
 -- (camera 24 nodes outside the forest's west edge, 22 up, looking east,
 -- 18 degrees down) for r47td_w seconds, a screenshot ("<scene>:shot"), then
 -- the inside view I (the middle, eye height, one full turn in r47td_i
--- seconds).
+-- seconds), and the top view T (150 over the middle, straight down, 3 s:
+-- the whole forest in view, for the vertices per tree).
 --
 -- Mode "capital": the capital r47td_capital (a settlement key, default
 -- highcourt): W from 35 over its anchor's ground, 45 south, looking north 35
@@ -378,6 +379,7 @@ local CAM = {}
 local function forest_cameras()
 	CAM.W = {pos = {x = C.x - FOREST - 24, y = SKY_Y + 1 + 22, z = C.z}, yaw = 270, pitch = 18}
 	CAM.I = {pos = {x = C.x, y = SKY_Y + 1 + 1.625, z = C.z}, yaw = 0, pitch = 0, turn = true}
+	CAM.T = {pos = {x = C.x, y = SKY_Y + 1 + 150, z = C.z}, yaw = 0, pitch = 90}
 end
 
 local state = {phase = "wait", clock = 0}
@@ -514,6 +516,7 @@ core.register_globalstep(function(dtime)
 			log("capital ground " .. g)
 			CAM.W = {pos = {x = a.x, y = g + 35, z = a.z - 45}, yaw = 0, pitch = 35}
 			CAM.I = {pos = {x = a.x, y = g + 14, z = a.z}, yaw = 0, pitch = 12, turn = true}
+			CAM.T = {pos = {x = a.x, y = g + 150, z = a.z}, yaw = 0, pitch = 90}
 		end
 		hide_hud(player)
 		state.scene_index = 0
@@ -522,7 +525,8 @@ core.register_globalstep(function(dtime)
 	elseif state.phase ~= "done" then
 		state.t = state.t + dtime
 		core.set_timeofday(TIME_OF_DAY)
-		local cam = (state.phase == "I" or state.phase == "I_wait") and CAM.I or CAM.W
+		local cam = (state.phase == "I" or state.phase == "I_wait") and CAM.I or
+			((state.phase == "T" or state.phase == "T_wait") and CAM.T or CAM.W)
 		clear_objects(cam.pos)
 		hold(player, cam, state.phase == "I" and state.t or 0)
 		local scene = state.scene
@@ -549,6 +553,16 @@ core.register_globalstep(function(dtime)
 		elseif state.phase == "I" then
 			if state.t >= I_SECONDS then
 				log("END " .. scene .. " I")
+				state.phase, state.t = "T_wait", 0
+			end
+		elseif state.phase == "T_wait" then
+			if state.t >= 2 then
+				state.phase, state.t = "T", 0
+				log("BEGIN " .. scene .. " T")
+			end
+		elseif state.phase == "T" then
+			if state.t >= 3 then
+				log("END " .. scene .. " T")
 				next_scene()
 			end
 		end
