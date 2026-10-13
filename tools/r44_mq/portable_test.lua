@@ -1,7 +1,8 @@
--- Round 44 lane MQ portable test: the map and quest window. Loads the REAL
--- grug_keys/init.lua and grug_map's atlas.lua, providers.lua, page.lua,
--- window.lua (with targets.lua and quest_box.lua) under a minimal `core`
--- stub and checks:
+-- Round 44 lane MQ portable test: the map and quest window, extended by
+-- Round 47 lane ML (the marker layers). Loads the REAL grug_keys/init.lua
+-- and grug_map's atlas.lua, providers.lua, page.lua, window.lua (with
+-- targets.lua, quest_box.lua, layers.lua, zone_labels.lua, bake.lua and
+-- settlement_icons.lua) under a minimal `core` stub and checks:
 --   K  the key helper: a callback per key on the rising edge only (not
 --      while held, not on release, not on a player's first step), zoom and
 --      aux1 apart, one control read per player per step; zoom_fov 72 on
@@ -9,13 +10,19 @@
 --   S  the window size: FRACTION of max_formspec_size, the fixed fallback
 --      without it, the floor; the layout inside the window (9:8 map, the
 --      quest column at least 6.5 wide, scrollbars beside the map);
---   O  the overlay per faction and quest state: arrows, home, waystones and
---      the own faction's trainers (two thirds size at 1x and 2x) as plain
---      images; no Steward, services, other innkeepers, zone markers or
---      exclamation marks; a question mark at the hand-in NPC of each active
---      quest (silver in progress, gold ready) with the NPC's name as its
---      only tooltip; the other faction's NPCs never; the mender's repair
---      icon (Round 46) like the services, without a tooltip;
+--   O  (Round 47 lane ML; Round 44's fixed overlay before) one marker layer
+--      at a time (layers.lua): every layer draws its own markers and none
+--      of another's; Quests the own givers by state (locked ones too),
+--      Trainers the own trainers (two thirds size at 1x and 2x) and
+--      services, Towns both factions' settlements and the own innkeepers,
+--      home and waystones, Bosses the kings, the dragon once beside its
+--      arena, the rift boss and the rare den with their levels, POIs and
+--      PvP both factions' places, Zones a box and a two-line label per
+--      zone, None only the arrows; every marker's tooltip, topmost first,
+--      the party arrow with the member's name in every layer and mode;
+--      quest mode: the targets with their objectives' lines and the
+--      hand-in NPC, nothing of the layer, no button highlighted; the
+--      buttons in the work package's order, the active one highlighted;
 --   T  the quest target index (role -> regions, area -> regions, leaders)
 --      and the targets: crosshairs (leaders, talk NPCs, use places) before
 --      rings, at most five rings, the nearest the player, a kill objective
@@ -25,7 +32,8 @@
 --   R  the refresh rule: an event sends at once, a second one inside a
 --      second is owed and goes out when the second is over (one trailing
 --      send), a scrollbar event alone sends nothing, alone nothing is sent
---      without an event, in a party at most every 5 s and only when a
+--      without an event, in a party at most every 2 s (Round 47 ruling 8;
+--      5 s before) and only when a
 --      member moved, a replaced window gets nothing, a send that crossed a
 --      close works again after the window's next event, a scrollbar move
 --      holds every send for 0.5 s; the sends per minute
@@ -43,7 +51,22 @@
 --   M  (0.45.1) the soft lock through the window's events: zoom from 1x
 --      centres on the player, the player's scrolling breaks the lock, 1x
 --      restores it; the map's scrollbar is focused (set before it) so the
---      inventory key closes the window; a click on the selected quest sends.
+--      inventory key closes the window; a click on the selected quest sends;
+--   L  (Round 47) the layer buttons: one row at 1920x1080 and 2560x1440,
+--      two at 1035x696 and 1280x720, as wide as the map, under its
+--      scrollbar, the quest column at its Round 44 place, the map at
+--      1035x696 at its size; a click picks a layer in one send, the active
+--      one sends nothing, any layer button deselects the quest (list, text
+--      box, Abandon), a quest leaving the log falls back to the layer, the
+--      layer survives an opening but not leaving the game; the static rows
+--      built once;
+--   ZL (Round 47) zone_labels.lua: the band text, the text metrics from the
+--      window information, the box and the label inside it, the placement
+--      (poles of inaccessibility, nudged off names), the overlap count; the
+--      start's placement and its one grid sampling;
+--   I  (Round 47) the layer icons are the baked art's byte copies with a
+--      LICENSE-media row, every row's texture ships, the world map's baked
+--      layer has names and no icons, the minimap's the whole layer.
 -- Usage (repo root): luajit tools/r44_mq/portable_test.lua [repo]
 local repo = arg and arg[1] or "."
 local failures, checks = 0, 0
@@ -144,6 +167,13 @@ rawset(_G, "core", {
 	log = function() end,
 	after = function(_, fn, ...) after_calls[#after_calls + 1] = {fn = fn, args = {...}} end,
 	colorize = function(_, text) return text end,
+	-- Round 47: the Bosses layer reads the bosses' names and fixed levels.
+	registered_entities = {
+		["grug_mobs:king_human"] = {description = "King of Highcourt", _grug_fixed_level = 65},
+		["grug_mobs:king_orc"] = {description = "Dur Gash King", _grug_fixed_level = 65},
+		["grug_mobs:ice_dragon"] = {description = "Rimewing", _grug_fixed_level = 70},
+		["grug_mobs:rift_boss"] = {description = "Vharos the Torn", _grug_fixed_level = 60},
+	},
 })
 rawset(_G, "minetest", core)
 rawset(_G, "default", {node_formspec = {shown_form = function(name) return shown[name] end}})
@@ -205,6 +235,8 @@ local function journal_of(p)
 end
 local quest_calls = {}
 local markers_changed = {}
+-- Round 47: the Quests layer's giver states (grug_quests.marker_states).
+local giver_states = {}
 local registered_quests = {
 	q_kill = {id = "q_kill", level = 4, zone = "dawnmere", npc = "elder", turnin_npc = "elder",
 		objectives = {
@@ -233,7 +265,7 @@ rawset(_G, "grug_quests", {
 		warlord = {title = "Warlord Gash"}},
 	journal = function(p) return journal_of(p) end,
 	register_on_markers_changed = function(fn) markers_changed[#markers_changed + 1] = fn end,
-	marker_states = function() return {}, 1 end,
+	marker_states = function() return giver_states, 1 end,
 	use_place_xz = function(ref) return ref == "dawnmere/old_well" and {x = 300, z = -100} or nil end,
 	list_entry = function(title, status, repeatable)
 		return "#" .. status .. fs_escape(title .. (repeatable and " (R)" or ""))
@@ -266,11 +298,40 @@ rawset(_G, "grug_quests", {
 
 -- Two factions' settlements: Highcourt (accord) and Gor Drazhak (throng),
 -- each with a trainer, a riding trainer, the Steward, a Crownbinder and the
--- quest NPCs' sockets.
+-- quest NPCs' sockets. Round 47: their slots and names for the layers, and
+-- one place of every other kind (camps, mines, a clash site, a rare den, the
+-- PvP places, a dragon arena beside its dragon and one far from it).
 local settlements = {
-	{key = "highcourt", race_id = "human", anchor = {x = 100, z = 100}},
-	{key = "pvp_camp_x_throng_low", race_id = "orc", anchor = {x = -900, z = 700}},
-	{key = "gor_drazhak", race_id = "orc", anchor = {x = -2000, z = 1500}},
+	{key = "highcourt", race_id = "human", anchor = {x = 100, y = 10, z = 100}, slot = "capital",
+		display_name = "Highcourt"},
+	{key = "pvp_camp_x_throng_low", race_id = "orc", anchor = {x = -900, y = 10, z = 700},
+		slot = "pvp_throng_low", display_name = "Front Throng Low Camp"},
+	{key = "gor_drazhak", race_id = "orc", anchor = {x = -2000, y = 10, z = 1500}, slot = "capital",
+		display_name = "Gor Drazhak"},
+	{key = "dawnmere", race_id = "human", anchor = {x = 20, y = 10, z = -300}, slot = "start",
+		display_name = "Dawnmere"},
+	{key = "r20_051", race_id = "orc", anchor = {x = -1700, y = 10, z = 1300}, slot = "village_1",
+		display_name = "Speargrass Wellhold"},
+	{key = "r20_052", race_id = "human", anchor = {x = 300, y = 10, z = 200}, slot = "outpost_1",
+		display_name = "Oakspan Tollhouse"},
+	{key = "r20_053", race_id = "human", anchor = {x = 520, y = 10, z = 520}, slot = "bandit_1",
+		display_name = "Coalbrand Yard"},
+	{key = "r20_054", race_id = "troll", anchor = {x = 700, y = 10, z = -700}, slot = "mirefolk",
+		display_name = "Mire Hollow"},
+	{key = "r20_055", race_id = "human", anchor = {x = 800, y = 10, z = 100}, slot = "mine",
+		display_name = "Bridgechalk Dig"},
+	{key = "r20_056", race_id = "dwarf", anchor = {x = -3100, y = 10, z = 300}, slot = "apex_mine",
+		display_name = "Wyrmglass Fault Camp"},
+	{key = "r20_057", race_id = "human", anchor = {x = -1500, y = 10, z = 900}, slot = "clash_1",
+		display_name = "Ashen Wheelbreak"},
+	{key = "r20_058", race_id = "human", anchor = {x = 400, y = 10, z = -500}, slot = "rare_grimtusk",
+		display_name = "Grimtusk's Rooting"},
+	{key = "pvp_fortress_accord", race_id = "human", anchor = {x = -400, y = 10, z = -900},
+		slot = "pvp_fortress", display_name = "Ashenward Bastion"},
+	{key = "r20_059", race_id = "dwarf", anchor = {x = -3250, y = 10, z = -30}, slot = "dragon",
+		display_name = "Wyrmglass Dragonspire"},
+	{key = "r20_060", race_id = "troll", anchor = {x = 3250, y = 10, z = -30}, slot = "dragon",
+		display_name = "Stormscale Dragonroost"},
 }
 local sockets = {
 	highcourt = {
@@ -282,6 +343,7 @@ local sockets = {
 		{id = "crown", role = "crownbinder", pos = {x = 150, y = 10, z = 95}},
 		{id = "q_elder", role = "quest", pos = {x = 160, y = 10, z = 120}},
 		{id = "q_smith", role = "quest", pos = {x = 170, y = 10, z = 130}},
+		{id = "throne", role = "king", pos = {x = 100, y = 12, z = 132}},
 	},
 	gor_drazhak = {
 		{id = "t1", role = "trainer", profession = "alchemist", pos = {x = -2010, y = 10, z = 1510}},
@@ -305,15 +367,28 @@ rawset(_G, "grug_core", {
 		return {{race_id = "human", faction_id = "accord"}, {race_id = "orc", faction_id = "throng"}}
 	end,
 	item_name = function(stack) return stack.name end,
+	mob_level_at = function(pos) return pos.x == 400 and 12 or 30 end,
 })
 rawset(_G, "grug_factions", {get_faction = function(p) return p.faction end})
 rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}, alchemist = {name = "Alchemist"},
 	cooking = {name = "Cooking"}}, MENDER_TITLE = "Grudge-Free Repairs",
 	trainer_teaches = function(p) return p ~= "cooking" end}) -- Round 45 (lane ST)
 rawset(_G, "grug_money", {format = function(c) return c .. "c" end})
+-- Round 47: the zone queries the Zones layer samples. Land west of x 0 is
+-- Dawnmere, east of it Kezamba, inside a 2400-node square; the rest is sea.
+local zone_records = {
+	dawnmere = {display_name = "Dawnmere Fields", numeric_id = 1, level_min = 1, level_max = 10},
+	kezamba = {display_name = "kezamba", numeric_id = 2, level_min = 60, level_max = 60},
+}
+local zone_samples = 0
 rawset(_G, "grug_zones", {
 	at = function() return {display_name = "Dawnmere Fields"} end,
-	get = function(id) return {display_name = id == "dawnmere" and "Dawnmere Fields" or id} end,
+	get = function(id) return zone_records[id] or {display_name = id} end,
+	water_class_at = function(x, z)
+		zone_samples = zone_samples + 1
+		return (math.abs(x) < 1200 and math.abs(z) < 1200) and "land" or "deep_ocean"
+	end,
+	id_at = function(x) return x < 0 and "dawnmere" or "kezamba" end,
 })
 local homes = {}
 rawset(_G, "grug_home", {
@@ -354,7 +429,10 @@ local maps = {
 	kezamba = {regions = {region(jungle, 50, 50, 20)}},
 }
 rawset(_G, "grug_mobs", {
-	dragon_map_markers = function() return {} end,
+	dragon_map_markers = function()
+		return {{id = "dragon:wyrmglass", name = "The Rimewing", pos = {x = -3260, y = 30, z = -40},
+			entity = "grug_mobs:ice_dragon"}}
+	end,
 	rift_rules = {SITE = "r20_anchor_077"},
 	spawn_regions = {
 		place = function(key) return key == "r20_anchor_077" and {x = -1500, z = 900, name = "Tombroad"} or nil end,
@@ -391,6 +469,12 @@ rawset(_G, "sfinv", {
 	make_formspec = function(_, _, content) return content end,
 })
 rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1}})
+do -- the shared selection style, as grug_inventory/ui.lua ships it
+	local source = read("mods/PLAYER/grug_inventory/ui.lua")
+	local body = source:match("\n(function grug_inventory%.selected_button_style.-\nend)\n")
+	assert(body, "grug_inventory.selected_button_style not found")
+	assert(loadstring(body))()
+end
 
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")})
 local minimap_on = {}
@@ -437,7 +521,9 @@ do
 		check(L.column.x + L.column.w <= size[1] + 1e-9 and L.column.y + L.column.h <= size[2] + 1e-9,
 			label .. ": column inside the window")
 		check(L.map_y + L.map_h + 0.35 <= size[2] - 0.2 + 1e-9, label .. ": map and scrollbar inside")
-		check(L.map_w > 8, label .. (": map at least 8 wide (%.2f)"):format(L.map_w))
+		-- Round 47: two button rows take 1.45 units at the 16x10 floor (GUI
+		-- scale 1.5 on 1080p), so the map there is 7.76 wide (8.35 before).
+		check(L.map_w > 7.5, label .. (": map at least 7.5 wide (%.2f)"):format(L.map_w))
 	end
 	local L = W.layout(22.66, 12.75)
 	print(("R44 MQ window 1920x1080 (GUI scale 1): 22.66x12.75, map %.2fx%.2f, column %.2f"):format(
@@ -485,90 +571,221 @@ local function map_part(form)
 	return form:match("scroll_container%[.-scroll_container_end%[%]scroll_container_end%[%]") or ""
 end
 
-do
+-- Round 47 (lane ML): one marker layer at a time. A layer's state as the
+-- window shows it.
+local function layer_form(p, layer, zoom, info)
 	local state = W.new_state()
-	state.quest_selected = "q_enemy" -- an item quest: no targets
-	local form = W.formspec(accord, state, nil)
-	local map = map_part(form)
-	local list = images(map)
-	check(find_image(list, "grug_map_base.png") ~= nil, "O the base image")
-	check(find_image(list, "grug_map_heading_gold_00.png") ~= nil, "O the player's arrow")
-	local trainer = find_image(list, "grug_map_trainer_tailor.png")
-	check(trainer and near(trainer.w, 0.23), "O own trainer, two thirds size at 1x")
-	check(find_image(list, "grug_mounts_icon_human.png") ~= nil, "O own riding trainer (mount icon)")
-	check(find_image(list, "grug_map_trainer_alchemist.png") == nil, "O no trainer of the other faction")
-	check(find_image(list, "grug_map_home.png") ~= nil, "O the home")
-	check(find_image(list, "grug_map_waypoint.png") ~= nil, "O a discovered waystone")
-	-- The user's answer of 2026-10-08: the Steward, the services and the
-	-- innkeepers come back (own faction, like the minimap), no tooltips.
-	-- Round 46 (lane RP): the mender's repair icon among them.
-	for _, texture in ipairs({"grug_map_housing_steward.png", "grug_map_crownbinder.png",
-			"grug_map_innkeeper.png", "grug_map_repair.png"}) do
-		local image = find_image(list, texture)
-		check(image and near(image.w, 0.34), "O drawn: " .. texture)
+	state.layer, state.zoom = layer, zoom or 1
+	local form = W.formspec(p, state, info)
+	return map_part(form), state, form
+end
+local function textures_of(map)
+	local set = {}
+	for _, image in ipairs(images(map)) do set[image.texture] = (set[image.texture] or 0) + 1 end
+	return set
+end
+-- The markers each layer owns (by texture): none of them in another layer.
+local OWN = {
+	quests = {"grug_map_quest_available.png", "grug_map_quest_locked.png"},
+	bosses = {"grug_map_king.png", "grug_map_dragon.png", "grug_map_rare_den.png", "grug_map_clash.png"},
+	trainers = {"grug_map_trainer_tailor.png", "grug_mounts_icon_human.png",
+		"grug_map_housing_steward.png", "grug_map_crownbinder.png", "grug_map_repair.png"},
+	towns = {"grug_map_capital.png", "grug_map_start.png", "grug_map_village.png",
+		"grug_map_outpost.png", "grug_map_home.png", "grug_map_innkeeper.png", "grug_map_waypoint.png"},
+	pois = {"grug_map_bandit.png", "grug_map_mirefolk.png", "grug_map_mine.png"},
+	pvp = {"grug_map_fortress.png", "grug_map_war_camp.png"},
+}
+-- (the rift boss in Bosses uses the clash site's icon; POIs has the clash
+-- site itself: both are checked by tooltip below)
+
+do
+	giver_states.elder, giver_states.smith, giver_states.warlord = "available", "locked", "ready"
+	local state = W.new_state()
+	eq(state.layer, "quests", "O a new session starts on the Quests layer (§3 default)")
+	-- One layer only: every layer shows its own markers and none of the
+	-- others'; the base image and the player's arrow in every one.
+	for _, layer in ipairs(grug_map.layers.LIST) do
+		local map = layer_form(accord, layer.id)
+		local set = textures_of(map)
+		check(set["grug_map_base.png"] == 1, "O " .. layer.id .. ": the base image")
+		check(set["grug_map_heading_gold_00.png"] == 1, "O " .. layer.id .. ": the player's arrow")
+		for other, list in pairs(OWN) do
+			for _, texture in ipairs(list) do
+				if other == layer.id then
+					check(set[texture] ~= nil, "O " .. layer.id .. " draws " .. texture)
+				elseif not (texture == "grug_map_clash.png" and (layer.id == "pois" or
+						layer.id == "bosses")) then
+					check(set[texture] == nil, "O " .. layer.id .. " draws no " .. texture)
+				end
+			end
+		end
+		eq(count(map, "image_button%["), 0, "O " .. layer.id .. ": no image buttons on the map")
+		eq(count(map, "[^_]button%["), 0, "O " .. layer.id .. ": no buttons on the map")
 	end
-	eq(count(map, "grug_map_innkeeper%.png"), 1, "O the other own innkeeper (the home has its icon)")
-	for _, texture in ipairs({"grug_map_zone.png", "grug_map_quest_available.png",
-			"grug_map_quest_locked.png"}) do
-		check(find_image(list, texture) == nil, "O not drawn: " .. texture)
+	-- Quests: the own faction's givers by state, the NPC's name as tooltip.
+	local map = layer_form(accord, "quests")
+	has(map, ";Elder Maren]", "O Quests: the giver's name as tooltip")
+	has(map, ";Smith Doran]", "O Quests: a locked giver is shown (§8 default) with its name")
+	lacks(map, "Warlord Gash", "O Quests: no giver of the other faction")
+	lacks(map, "grug_map_quest_ready.png", "O Quests: the other faction's ready giver is not drawn")
+	eq(count(map, "tooltip%["), 2, "O Quests: one tooltip per marker")
+	giver_states.elder = "ready"
+	eq(count(layer_form(accord, "quests"), "grug_map_quest_ready%.png"), 1, "O Quests: ready is gold")
+	giver_states.elder = "active"
+	eq(count(layer_form(accord, "quests"), "grug_map_quest_active%.png"), 1, "O Quests: active is silver")
+	has(layer_form(throng, "quests"), ";Warlord Gash]", "O Quests: the other side sees its own giver")
+	-- Trainers & traders: the own faction's, two thirds at 1x and 2x.
+	map = layer_form(accord, "trainers")
+	local trainer = find_image(images(map), "grug_map_trainer_tailor.png")
+	check(trainer and near(trainer.w, 0.23), "O Trainers: two thirds size at 1x")
+	trainer = find_image(images(layer_form(accord, "trainers", 2)), "grug_map_trainer_tailor.png")
+	check(trainer and near(trainer.w, 0.23), "O Trainers: two thirds at 2x")
+	trainer = find_image(images(layer_form(accord, "trainers", 4)), "grug_map_trainer_tailor.png")
+	check(trainer and near(trainer.w, 0.34), "O Trainers: full size at 4x")
+	for _, text in ipairs({"Tailor Trainer", "Riding Trainer", "Housing Steward", "Crownbinder",
+			"Grudge-Free Repairs"}) do
+		has(map, ";" .. text .. "]", "O Trainers: tooltip " .. text)
 	end
-	eq(count(map, "image_button%["), 0, "O no image buttons on the map")
-	eq(count(map, "[^_]button%["), 0, "O no buttons on the map")
-	-- Question marks: elder (q_kill in progress, q_wolf ready) gold; smith
-	-- (q_talk ready, q_use in progress) gold; warlord (other faction) none.
-	local marks = 0
-	for _, image in ipairs(list) do
-		if image.texture:find("grug_map_quest_", 1, true) then marks = marks + 1 end
+	lacks(map, "grug_map_trainer_alchemist.png", "O Trainers: none of the other faction")
+	local tmap = layer_form(throng, "trainers")
+	check(tmap:find("grug_map_trainer_alchemist.png", 1, true) and
+		not tmap:find("grug_map_trainer_tailor.png", 1, true), "O Trainers: the throng sees its own")
+	-- Towns & travel: both factions' settlements, the own innkeepers and
+	-- travel.
+	map = layer_form(accord, "towns")
+	local set = textures_of(map)
+	eq(set["grug_map_capital.png"], 2, "O Towns: both factions' capitals (ruling 5)")
+	has(map, ";Gor Drazhak]", "O Towns: the other faction's capital by name")
+	has(map, ";Speargrass Wellhold]", "O Towns: the other faction's village")
+	has(map, ";Oakspan Tollhouse]", "O Towns: an outpost")
+	eq(set["grug_map_innkeeper.png"], 1, "O Towns: the other own innkeeper (the home has its icon)")
+	has(map, ";Dawnmere Innkeeper]", "O Towns: an innkeeper's tooltip")
+	has(map, ";Your home: Highcourt Innkeeper]", "O Towns: the home's tooltip")
+	has(map, ";Highcourt Waystone]", "O Towns: a discovered waystone")
+	lacks(map, "Gor Drazhak Innkeeper", "O Towns: no innkeeper of the other faction")
+	set = textures_of(layer_form(throng, "towns"))
+	check(set["grug_map_capital.png"] == 2 and set["grug_map_innkeeper.png"] == 1 and
+		not set["grug_map_waypoint.png"] and not set["grug_map_home.png"],
+		"O Towns: the throng sees both capitals, its innkeeper, no waystone undiscovered")
+	-- Bosses: kings, the dragon once, the rift boss, the rare den; levels.
+	map = layer_form(accord, "bosses")
+	set = textures_of(map)
+	has(map, ";King of Highcourt (level 65)]", "O Bosses: the king with his level")
+	has(map, ";The Rimewing (level 70)]", "O Bosses: the dragon with its level")
+	eq(set["grug_map_dragon.png"], 2, "O Bosses: the dragon, and the arena far from it (SAME_PLACE)")
+	has(map, ";Stormscale Dragonroost]", "O Bosses: the arena without its dragon keeps its marker")
+	lacks(map, "Wyrmglass Dragonspire", "O Bosses: the arena beside its dragon is one icon")
+	has(map, ";Vharos the Torn (level 60)]", "O Bosses: the rift boss at his site")
+	has(map, ";Grimtusk's Rooting\nRare den\\, level 12]", "O Bosses: the rare den with its level")
+	-- POIs and PvP, both factions, kind and name.
+	map = layer_form(accord, "pois")
+	for _, text in ipairs({"Bandit camp: Coalbrand Yard", "Mirefolk camp: Mire Hollow",
+			"Mine: Bridgechalk Dig", "Gem camp: Wyrmglass Fault Camp", "Clash site: Ashen Wheelbreak"}) do
+		has(map, ";" .. text .. "]", "O POIs: " .. text)
 	end
-	eq(marks, 2, "O one question mark per hand-in NPC of the own faction")
-	eq(count(map, "grug_map_quest_ready%.png"), 2, "O a ready quest makes its NPC gold")
-	has(map, ";Elder Maren]", "O the NPC's name as tooltip")
-	has(map, ";Smith Doran]", "O the second NPC's tooltip")
-	lacks(map, "Warlord Gash", "O no mark at the other faction's NPC")
-	eq(count(map, "tooltip%["), 2, "O only quest NPCs carry tooltips")
-	-- In progress only: silver.
-	journals.ann.quests[2].ready = false
-	journals.ann.quests[3].ready = false
-	form = W.formspec(accord, state, nil)
-	eq(count(map_part(form), "grug_map_quest_active%.png"), 2, "O in progress: silver")
-	journals.ann.quests[2].ready = true
-	journals.ann.quests[3].ready = true
-	-- Zoom 4x: trainers full size.
-	state.zoom = 4
-	trainer = find_image(images(map_part(W.formspec(accord, state, nil))), "grug_map_trainer_tailor.png")
-	check(trainer and near(trainer.w, 0.34), "O trainers full size at 4x")
-	state.zoom = 2
-	trainer = find_image(images(map_part(W.formspec(accord, state, nil))), "grug_map_trainer_tailor.png")
-	check(trainer and near(trainer.w, 0.23), "O trainers two thirds at 2x")
-	-- The other faction's viewer: its own trainer, no accord NPCs, its quest's
-	-- NPC.
-	local tstate = W.new_state()
-	list = images(map_part(W.formspec(throng, tstate, nil)))
-	check(find_image(list, "grug_map_trainer_alchemist.png") ~= nil, "O throng sees its trainer")
-	check(find_image(list, "grug_map_trainer_tailor.png") == nil, "O throng sees no accord trainer")
-	check(find_image(list, "grug_map_waypoint.png") == nil, "O no waystone undiscovered")
-	for _, texture in ipairs({"grug_map_housing_steward.png", "grug_map_crownbinder.png",
-			"grug_map_home.png"}) do
-		check(find_image(list, texture) == nil, "O throng sees no accord " .. texture)
-	end
-	eq(count(map_part(W.formspec(throng, tstate, nil)), "grug_map_innkeeper%.png"), 1,
-		"O throng sees its own innkeeper only")
-	eq(count(map_part(W.formspec(throng, tstate, nil)), "grug_map_repair%.png"), 1,
-		"O throng sees its own mender only (Round 46)")
-	has(map_part(W.formspec(throng, tstate, nil)), ";Warlord Gash]", "O throng's quest NPC")
-	-- A party member: a cyan arrow.
+	map = layer_form(throng, "pvp")
+	has(map, ";Ashenward Bastion]", "O PvP: the other faction's fortress")
+	has(map, ";Front Throng Low Camp]", "O PvP: a war camp")
+	-- Zones: a box and a two-line label per zone, no icons or tooltips.
+	map = layer_form(accord, "zones")
+	eq(count(map, "box%["), 2, "O Zones: a box per zone")
+	has(map, "Dawnmere Fields\nLevels 1–10]", "O Zones: name and level band")
+	has(map, "kezamba\nLevel 60]", "O Zones: a single-level band")
+	eq(count(map, "tooltip%["), 0, "O Zones: no tooltips")
+	local zbox = map:find("box%[")
+	local zlabel = map:find("label%[[^%]]*Dawnmere Fields")
+	check(zbox and zlabel and zbox < zlabel, "O Zones: the box before (under) its label")
+	-- None: only the arrows.
+	map = layer_form(accord, "none")
+	eq(#images(map), 2, "O None: the base and the arrow only")
+	-- A party member: a cyan arrow with the name, in every layer and mode;
+	-- tooltips topmost first (the client takes the first rect).
 	local bea = make_player("bea", {x = 600, z = 600}, "accord")
 	players.bea = bea
 	parties.ann, parties.bea = {"ann", "bea"}, {"ann", "bea"}
-	list = images(map_part(W.formspec(accord, state, nil)))
-	check(find_image(list, "grug_map_heading_cyan_00.png") ~= nil, "O a party member's arrow")
-	-- Draw order: arrows last, the player's on top.
-	local form2 = map_part(W.formspec(accord, state, nil))
-	local gold = form2:find("grug_map_heading_gold", 1, true)
-	local cyan = form2:find("grug_map_heading_cyan", 1, true)
-	local mark = form2:find("grug_map_quest_", 1, true)
-	check(gold and cyan and mark and mark < cyan and cyan < gold, "O order: marks, party, player")
+	for _, layer in ipairs(grug_map.layers.LIST) do
+		map = layer_form(accord, layer.id)
+		check(map:find("grug_map_heading_cyan_00.png", 1, true) and map:find(";bea]", 1, true),
+			"O " .. layer.id .. ": the party arrow with the member's name")
+		local gold = map:find("grug_map_heading_gold", 1, true)
+		local cyan = map:find("grug_map_heading_cyan", 1, true)
+		local first_image = map:find("[^_]image%[[^%]]*grug_map_quest_") or 0
+		check(gold and cyan and cyan < gold and first_image < cyan, "O " .. layer.id ..
+			": order markers, party, player")
+		local tip = map:find("tooltip%[")
+		check(not tip or tip > gold, "O " .. layer.id .. ": tooltips after every image")
+		check(not tip or map:find("tooltip%[[^%]]*;bea%]") == tip,
+			"O " .. layer.id .. ": the party arrow's tooltip first")
+	end
+	local state_q = W.new_state()
+	state_q.quest_selected = "q_enemy"
+	map = map_part(W.formspec(accord, state_q, nil))
+	check(map:find(";bea]", 1, true) ~= nil, "O quest mode: the party arrow with its name")
+	-- Tooltips in reverse draw order: of two overlapping icons the one
+	-- drawn later (on top) has the earlier tooltip.
+	map = layer_form(accord, "towns")
+	local drawn, tipped = {}, {}
+	for _, image in ipairs(images(map)) do
+		if not image.texture:find("heading", 1, true) then drawn[#drawn + 1] = image.texture end
+	end
+	for text in map:gmatch("tooltip%[[^;]*;[^;]*;([^%]]*)%]") do tipped[#tipped + 1] = text end
+	-- (bake.KINDS: war camps, outposts, villages, ... starts, capitals)
+	eq(tipped[#tipped], "Oakspan Tollhouse", "O the bottom marker's tooltip last (the outpost, drawn first)")
+	check(drawn[2] == "grug_map_outpost.png" and drawn[#drawn - 1] == "grug_map_home.png",
+		"O the outpost drawn first above the base, the NPCs and travel above the towns")
+	eq(tipped[2], "Highcourt Waystone", "O the topmost marker's tooltip right after the party arrow's")
 	parties.ann, parties.bea, players.bea = nil, nil, nil
+	giver_states.elder, giver_states.smith, giver_states.warlord = nil, nil, nil
+end
+
+-- Quest mode (ruling 2, §3): the selected quest's targets with their
+-- objective lines and its hand-in NPC, nothing of the layer; no layer
+-- button highlighted.
+do
+	giver_states.elder, giver_states.smith = "available", "available"
+	local state = W.new_state()
+	state.layer = "towns"
+	state.quest_selected = "q_kill"
+	local form = W.formspec(accord, state, nil)
+	local map = map_part(form)
+	local set = textures_of(map)
+	check(set["grug_map_crosshair.png"] == 1 and set["grug_map_quest_active.png"] == 1,
+		"Quest mode: the crosshair and the hand-in NPC (silver, in progress)")
+	check(not set["grug_map_capital.png"] and not set["grug_map_quest_available.png"],
+		"Quest mode: nothing of the layer or the Quests layer")
+	has(map, ";Elder Maren]", "Quest mode: the hand-in NPC's name")
+	has(map, ";Defeat q_kill1: 3/7]", "Quest mode: a ring's tooltip is its objective's line")
+	has(map, ";Defeat q_kill2: 0/1]", "Quest mode: the crosshair's tooltip")
+	eq(count(form, "bgcolor=#8a682f"), 0, "Quest mode: no layer button highlighted")
+	-- Two objectives on one crosshair share it, one line each.
+	journals.ann.quests[#journals.ann.quests + 1] = {id = "q_two", title = "Two", description = "",
+		objectives = {{type = "kill", count = 0, required = 1, what = "crumb"},
+			{type = "kill", count = 0, required = 2, what = "crumb again"}},
+		ready = false, npc = "smith", rewards = {copper = 0, items = {}}, reward_xp = 0}
+	registered_quests.q_two = {id = "q_two", level = 4, zone = "dawnmere", npc = "smith",
+		turnin_npc = "smith", objectives = {{type = "kill", mobs = {"grug_mobs:crumb"}, count = 1},
+			{type = "kill", mobs = {"grug_mobs:crumb"}, count = 2}}}
+	state.quest_selected = "q_two"
+	map = map_part(W.formspec(accord, state, nil))
+	eq(count(map, "grug_map_crosshair%.png"), 1, "Quest mode: one crosshair for both")
+	has(map, ";Defeat crumb: 0/1\nDefeat crumb again: 0/2]", "Quest mode: both lines on it")
+	table.remove(journals.ann.quests)
+	registered_quests.q_two = nil
+	-- Outside quest mode the active layer's button is highlighted.
+	state.quest_selected = nil
+	form = W.formspec(accord, state, nil)
+	has(form, "style[grug_map_layer_towns;bgcolor=#8a682f", "O the active layer's button highlighted")
+	eq(count(form, "bgcolor=#8a682f"), 1, "O exactly one button highlighted")
+	for _, layer in ipairs(grug_map.layers.LIST) do
+		has(form, ";grug_map_layer_" .. layer.id .. ";" .. layer.label .. "]", "O button " .. layer.label)
+		has(form, "tooltip[grug_map_layer_" .. layer.id .. ";" .. fs_escape(layer.title) .. "]",
+			"O button tooltip " .. layer.title)
+	end
+	local labels = {}
+	for _, layer in ipairs(grug_map.layers.LIST) do labels[#labels + 1] = layer.label end
+	eq(table.concat(labels, ","), "Quests,Bosses,Trainers,Towns,POIs,PvP,Zones,None",
+		"O button order as in the work package's table (§8 default)")
+	giver_states.elder, giver_states.smith = nil, nil
 end
 
 -- ---------------------------------------------------------------------------
@@ -647,6 +864,13 @@ do
 		{type = "kill", mobs = {"grug_mobs:crumb"}, count = 1}}}
 	found = targets.targets(index, same, nil, {x = 0, z = 0}, lookup)
 	eq(#found.crosshairs, 2, "T one crosshair per spot (the leader twice: once)")
+	-- Round 47: each target names the objectives it marks (the tooltips).
+	eq(table.concat(found.crosshairs[1].objectives, ","), "1", "T the talk crosshair marks objective 1")
+	eq(table.concat(found.crosshairs[2].objectives, ","), "2,3", "T the shared crosshair marks both")
+	found = targets.targets(index, registered_quests.q_kill, rows(registered_quests.q_kill, {}),
+		{x = 450, z = 450}, lookup)
+	check(found.rings[1].objectives[1] == 1 and #found.rings[1].objectives == 1 and
+		found.crosshairs[1].objectives[1] == 2, "T the camp rings mark objective 1, the leader 2")
 
 	-- In the form: rings under the crosshair, tinted and semi-transparent,
 	-- sized by the region (at least RING_MIN).
@@ -733,7 +957,8 @@ do
 		advance(1)
 	end
 	eq(sends_to("ann") - before, 0, "R alone and walking: no send")
-	-- In a party with a walking member: at most every 5 s.
+	-- In a party with a walking member: at most every 2 s (Round 47 ruling
+	-- 8; every 5 s before, about 12 sends a minute).
 	local bea = make_player("bea", {x = 600, z = 600}, "accord")
 	players.bea = bea
 	parties.ann, parties.bea = {"ann", "bea"}, {"ann", "bea"}
@@ -752,10 +977,12 @@ do
 		end
 	end
 	local party_moving = sends_to("ann") - before
-	check(party_moving >= 10 and party_moving <= 12, "R party moving: about 12 sends a minute (" ..
+	check(party_moving >= 28 and party_moving <= 30, "R party moving: about 30 sends a minute (" ..
 		party_moving .. ")")
-	check(min_gap >= 5e6 - 1, "R party sends at least 5 s apart")
-	-- In a party, standing still: nothing.
+	check(min_gap >= 2e6 - 1, "R party sends at least 2 s apart")
+	-- In a party, standing still: nothing (after the check that sends the
+	-- last step).
+	advance(2.1)
 	before = sends_to("ann")
 	advance(60)
 	local party_still = sends_to("ann") - before
@@ -874,11 +1101,11 @@ do
 	eq(sends_to("ann") - before, 0, "R the pause restarts with every move")
 	advance(0.2)
 	eq(sends_to("ann") - before, 1, "R the owed send goes out after the pause")
-	-- In a party: the 5 s check waits for the pause too.
+	-- In a party: the 2 s check (5 s before Round 47) waits for the pause too.
 	local cara = make_player("cara", {x = 600, z = 600}, "accord")
 	players.cara = cara
 	parties.ann, parties.cara = {"ann", "cara"}, {"ann", "cara"}
-	advance(4.8)
+	advance(1.8)
 	cara.pos = {x = 900, z = 900}
 	before = sends_to("ann")
 	local held = clock_us
@@ -889,7 +1116,7 @@ do
 	eq(sends_to("ann") - before, 0, "R the party check waits while the scrollbar moves")
 	advance(0.6)
 	eq(sends_to("ann") - before, 1, "R ...and sends once it is still")
-	check(clock_us - held >= 2e6, "R (the drag lasted past the 5 s check)")
+	check(clock_us - held >= 2e6, "R (the drag lasted past the 2 s check)")
 	parties.ann, parties.cara, players.cara = nil, nil, nil
 	shown.ann = nil
 	fields(accord, {quit = "true"})
@@ -940,7 +1167,10 @@ local function budget_run(n, seconds)
 	W.party_signature = function(...) checks_now = checks_now + 1; return real(...) end
 	local times = {}
 	for _ = 1, math.floor(seconds / 0.1 + 0.5) do
-		for _, p in ipairs(list) do p.pos = {x = p.pos.x + 0.5, z = p.pos.z} end
+		-- 10 nodes a second (riding): an arrow cell (about 13 nodes at 1x)
+		-- per 2 s check, so every check finds a move (Round 47: 0.5 before,
+		-- with the 5 s check)
+		for _, p in ipairs(list) do p.pos = {x = p.pos.x + 1, z = p.pos.z} end
 		local before = #shows
 		checks_now = 0
 		clock_us = clock_us + 100000
@@ -976,9 +1206,10 @@ do
 	local r = budget_run(12, 60)
 	check(r.builds <= 2, "B 12 windows: at most two pass sends per pass (" .. r.builds .. ")")
 	check(r.checks <= 8, "B 12 windows: at most eight party checks per pass (" .. r.checks .. ")")
-	check(r.least >= 5 - 1e-6, ("B 12 windows: party sends at least 5 s apart (%.2f)"):format(r.least))
-	check(r.most <= 5.3 + 1e-6, ("B 12 windows: none waits much past 5 s (%.2f)"):format(r.most))
-	check(r.fewest >= 11, "B 12 windows: each about 12 sends a minute (" .. r.fewest .. ")")
+	-- Round 47: the party check every 2 s (5 s before: about 12 a minute).
+	check(r.least >= 2 - 1e-6, ("B 12 windows: party sends at least 2 s apart (%.2f)"):format(r.least))
+	check(r.most <= 2.3 + 1e-6, ("B 12 windows: none waits much past 2 s (%.2f)"):format(r.most))
+	check(r.fewest >= 27, "B 12 windows: each about 30 sends a minute (" .. r.fewest .. ")")
 	r = budget_run(60, 60)
 	check(r.builds <= 2 and r.checks <= 8, ("B 60 windows: the budget holds (%d sends, %d checks)")
 		:format(r.builds, r.checks))
@@ -1200,6 +1431,222 @@ do
 	before = sends_to("ann")
 	fields(accord, {grug_quest_list = "CHG:1"})
 	eq(sends_to("ann") - before, 1, "M a click on the selected row sends the window")
+end
+
+-- ---------------------------------------------------------------------------
+-- L (Round 47 lane ML): the layer buttons' layout, layer switching through
+-- the window's events, the quest deselection, the zone labels, the icons
+-- and the baked layer
+-- ---------------------------------------------------------------------------
+do
+	-- The layout: one row at 1920x1080, two at the user's 1035x696 (and at
+	-- 720p), the header and the quest column where Round 44 put them.
+	local function round44_column(w, h)
+		local map_y = 0.25 + 0.6 + 0.2
+		local column = math.max(6.5, w * 0.3)
+		local map_w = math.min(w - 0.5 - 0.35 - 0.3 - column, (h - map_y - 0.25 - 0.35) * 9 / 8)
+		local x = 0.25 + map_w + 0.35 + 0.3
+		return x, w - 0.25 - x, map_w
+	end
+	local sizes = {
+		{"1920x1080", 1920, 1080, 72, 1},
+		{"1035x696", 1035, 696, 0.5555 * 96, 2},
+		{"1280x720", 1280, 720, 0.5555 * 96, 2},
+		{"2560x1440", 2560, 1440, 96, 1},
+	}
+	for _, size in ipairs(sizes) do
+		local info = {size = {x = size[2], y = size[3]},
+			max_formspec_size = {x = size[2] / size[4], y = size[3] / size[4]}, real_gui_scaling = 1}
+		local w, h = W.window_size(info)
+		local L = W.layout(w, h)
+		local b = L.buttons
+		local label = "L layout " .. size[1]
+		eq(b.rows, size[5], label .. ": button rows")
+		check(b.w >= W.BUTTON_MIN - 1e-9, label .. (": buttons at least %.2f wide (%.2f)"):format(
+			W.BUTTON_MIN, b.w))
+		check(near(b.per_row * b.w + (b.per_row - 1) * b.gap, L.map_w, 1e-6), label ..
+			": the buttons as wide as the map")
+		check(b.y >= L.map_y + L.map_h + 0.35 - 1e-9, label .. ": the buttons under the scrollbar")
+		check(b.y + b.rows * b.h + (b.rows - 1) * b.gap <= h - 0.25 + 1e-9, label ..
+			": the buttons inside the window")
+		local cx, cw, old_w = round44_column(w, h)
+		check(near(L.column.x, cx, 1e-9) and near(L.column.w, cw, 1e-9), label ..
+			": the quest column keeps its place and size (ruling 10)")
+		print(("R47 ML layout %s: window %.2fx%.2f, map %.2fx%.2f (Round 44: %.2f wide), " ..
+			"%d button row(s) of %.2f, spare %.2f"):format(size[1], w, h, L.map_w, L.map_h, old_w,
+			b.rows, b.w, h - 0.25 - (b.y + b.rows * b.h + (b.rows - 1) * b.gap)))
+		if size[1] == "1035x696" then
+			check(near(L.map_w, old_w, 1e-9), label .. ": the map keeps its size (spare height)")
+		end
+	end
+
+	-- Switching through the window's events.
+	advance(2)
+	shows = {}
+	W.open(accord)
+	local state = W.sessions.ann
+	eq(state.layer, "quests", "L the window opens on Quests")
+	advance(2)
+	local before = sends_to("ann")
+	fields(accord, {grug_map_layer_towns = "Towns"})
+	eq(state.layer, "towns", "L a button picks its layer")
+	eq(sends_to("ann") - before, 1, "L a layer click sends once")
+	has(shows[#shows].form, "style[grug_map_layer_towns;bgcolor=#8a682f", "L the new layer highlighted")
+	check(map_part(shows[#shows].form):find("grug_map_capital.png", 1, true) ~= nil, "L its markers shown")
+	advance(2)
+	before = sends_to("ann")
+	fields(accord, {grug_map_layer_towns = "Towns"})
+	eq(sends_to("ann") - before, 0, "L the active layer's button changes nothing")
+	-- A quest selection is its own mode; a layer button deselects it.
+	advance(2)
+	fields(accord, {grug_quest_list = "CHG:1"})
+	eq(state.quest_selected, "q_kill", "L a quest selected")
+	local form = shows[#shows].form
+	check(not map_part(form):find("grug_map_capital.png", 1, true), "L quest mode hides the layer")
+	eq(count(form, "bgcolor=#8a682f"), 0, "L no button highlighted in quest mode")
+	state.quest_abandon = "q_kill"
+	advance(2)
+	before = sends_to("ann")
+	fields(accord, {grug_map_layer_pois = "POIs"})
+	check(state.quest_selected == nil and state.quest_abandon == nil, "L a layer click deselects the quest")
+	eq(state.layer, "pois", "L ...and shows that layer")
+	eq(sends_to("ann") - before, 1, "L ...in one send")
+	form = shows[#shows].form
+	check(form:match(";grug_quest_list;[^%]]*;0;false%]") ~= nil, "L the list back to no selection")
+	has(form, "Select a quest to read it and to see its targets on the map.", "L the text box's hint")
+	lacks(form, "grug_quest_abandon", "L Abandon acts on no quest")
+	check(map_part(form):find("grug_map_bandit.png", 1, true) ~= nil and
+		count(map_part(form), "crosshair") == 0, "L the layer, no targets")
+	-- The active layer's button in quest mode deselects too.
+	advance(2)
+	fields(accord, {grug_quest_list = "CHG:1"})
+	advance(2)
+	fields(accord, {grug_map_layer_pois = "POIs"})
+	check(state.quest_selected == nil, "L the last layer's button deselects as well")
+	-- A selected quest that leaves the log: back to the last layer.
+	advance(2)
+	fields(accord, {grug_quest_list = "CHG:4"})
+	local id = state.quest_selected
+	check(id ~= nil, "L a quest selected again")
+	local saved = journals.ann.quests
+	local kept = {}
+	for _, row in ipairs(saved) do if row.id ~= id then kept[#kept + 1] = row end end
+	journals.ann.quests = kept
+	form = W.formspec(accord, state, nil)
+	check(state.quest_selected == nil and map_part(form):find("grug_map_bandit.png", 1, true) ~= nil,
+		"L a quest that left the log: the last chosen layer")
+	journals.ann.quests = saved
+	-- The layer is kept between openings (session only, §8 default), the
+	-- quest selection is not.
+	fields(accord, {grug_quest_list = "CHG:1"})
+	shown.ann = nil
+	fields(accord, {quit = "true"})
+	advance(2)
+	W.open(accord)
+	check(state.layer == "pois" and state.quest_selected == nil,
+		"L a new opening keeps the layer, without a quest")
+	for _, fn in ipairs(on_leave) do fn(accord) end
+	W.open(accord)
+	eq(W.sessions.ann.layer, "quests", "L after leaving the game: Quests again")
+	shown.ann = nil
+	fields(accord, {quit = "true"})
+	-- The static layers are built once at start: the providers return the
+	-- same rows on every call.
+	local rows = grug_map.layers.rows
+	check(#rows.settlement == 5 and #rows.poi == 5 and #rows.pvp == 2 and #rows.boss == 5,
+		("L the static rows (%d towns, %d POIs, %d PvP, %d bosses)"):format(#rows.settlement,
+			#rows.poi, #rows.pvp, #rows.boss))
+end
+
+-- ---------------------------------------------------------------------------
+-- ZL: the zone labels (zone_labels.lua) and the start's placement
+-- ---------------------------------------------------------------------------
+do
+	local Z = grug_map.layers.zone_labels
+	eq(Z.band({level_min = 1, level_max = 10}), "Levels 1–10", "ZL a level band")
+	eq(Z.band({level_min = 60, level_max = 60}), "Level 60", "ZL a single level")
+	eq(Z.band({}), "", "ZL no band")
+	local m = Z.metrics({size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 72, y = 15},
+		real_gui_scaling = 1})
+	check(near(m.char, 16 * 0.52 / 72) and near(m.line, 16 * 1.2 / 72), "ZL metrics at 72 px per unit")
+	local m2 = Z.metrics({size = {x = 1035, y = 696}, max_formspec_size = {x = 1035 / 53.33, y = 696 / 53.33},
+		real_gui_scaling = 1})
+	check(m2.char > m.char, "ZL text is wider in units on a smaller screen")
+	local fallback = Z.metrics(nil)
+	check(near(fallback.char, m.char), "ZL the fallback is 1080p at GUI scale 1")
+	local box = Z.box("Dawnmere Fields", "Levels 1–10", m)
+	check(near(box.w, 15 * m.char + 2 * Z.PAD_X) and near(box.h, 0.5 + m.line + 2 * Z.PAD_Y),
+		"ZL the box fits the longer line (the en dash counts once) and two lines")
+	local list = {}
+	Z.elements(list, 5, 5, "Dawnmere Fields", "Levels 1–10", m, fs_escape)
+	local bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
+	local lx, ly = list[2]:match("^label%[([%d.]+),([%d.]+);")
+	check(near(tonumber(bx) + tonumber(bw) / 2, 5, 0.002) and near(tonumber(by) + tonumber(bh) / 2, 5, 0.002),
+		"ZL the box centred on the label point")
+	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), tonumber(by) + Z.PAD_Y + m.line / 2, 0.002),
+		"ZL the first line inside the box (label[] centres a line on its y)")
+	-- Placement on a toy grid: a 10x6 zone "a" left, a 4x6 zone "b" right,
+	-- water around; the poles of inaccessibility, nudged off an obstacle.
+	local nx, nz = 16, 8
+	local cells = {}
+	for gz = 0, nz - 1 do
+		for gx = 0, nx - 1 do
+			local id = false
+			if gz >= 1 and gz <= 6 then
+				if gx >= 1 and gx <= 10 then id = "a" elseif gx >= 11 and gx <= 14 then id = "b" end
+			end
+			cells[gz * nx + gx + 1] = id
+		end
+	end
+	local grid = {nx = nx, nz = nz, step = 10, min_x = 0, max_z = 80, cells = cells}
+	local depth = Z.depths(grid)
+	check(depth[1] == 0 and depth[3 * nx + 5 + 1] > depth[1 * nx + 1 + 1], "ZL depth grows inland")
+	local points = Z.place(grid, {{id = "a", rx = 5, rz = 5}, {id = "b", rx = 5, rz = 5}}, {})
+	check(points.a and points.b and points.a.x < 110 and points.b.x > 110, "ZL one label per zone in it")
+	local blocked = Z.place(grid, {{id = "a", rx = 5, rz = 5}},
+		{{x = points.a.x, z = points.a.z, rx = 10, rz = 10, soft = true}})
+	check(blocked.a.x ~= points.a.x or blocked.a.z ~= points.a.z, "ZL nudged off a region name")
+	local p1, p2 = Z.overlaps({{x = 0, z = 0, rx = 5, rz = 5}, {x = 8, z = 0, rx = 5, rz = 5},
+		{x = 50, z = 0, rx = 5, rz = 5}}, {{x = 50, z = 3, rx = 2, rz = 2}})
+	check(p1 == 1 and p2 == 1, "ZL overlaps counted (one pair, one over a name)")
+	-- The start's placement: the fixture's two zones, each labelled on its
+	-- own land, the grid sampled once.
+	local zones = grug_map.layers.zones
+	eq(#zones, 2, "ZL a label per zone with land")
+	check(zones[1].id == "dawnmere" and zones[1].x < 0 and zones[2].id == "kezamba" and zones[2].x > 0,
+		"ZL in zone order, each on its own land")
+	local stats = grug_map.layers.zone_stats
+	check(stats and stats.zones == 2, "ZL the placement's figures")
+	eq(zone_samples, 225 * 200, "ZL the grid sampled once at start (32 nodes, 225x200)")
+end
+
+-- ---------------------------------------------------------------------------
+-- I: the layer icons and the baked layer (Round 47 ruling 4)
+-- ---------------------------------------------------------------------------
+do
+	local licence = read("mods/PLAYER/grug_map/LICENSE-media.md")
+	local B = dofile(repo .. "/mods/PLAYER/grug_map/bake.lua")
+	for _, kind in ipairs(B.KINDS) do
+		local shipped = read("mods/PLAYER/grug_map/textures/grug_map_" .. kind .. ".png")
+		local art = read("mods/PLAYER/grug_map/art/baked_" .. kind .. ".png")
+		check(shipped ~= "" and shipped == art, "I grug_map_" .. kind .. ".png is the baked art's copy")
+	end
+	has(licence, "textures/grug_map_{start,capital,village,outpost,fortress,war_camp,bandit,mirefolk," ..
+		"mine,clash,rare_den,king,dragon}.png", "I the icons' LICENSE-media row")
+	-- Every texture a layer row names ships.
+	for name, list in pairs(grug_map.layers.rows) do
+		for _, row in ipairs(list) do
+			check(read("mods/PLAYER/grug_map/textures/" .. row.texture) ~= "", "I " .. name .. " " ..
+				row.id .. ": " .. row.texture .. " ships")
+		end
+	end
+	local layer = {items = {{kind = "village", x = 0, z = 0}}, labels = B.REGION_LABELS}
+	local world = B.world_layer(layer)
+	check(#world.items == 0 and world.labels == B.REGION_LABELS, "I the world map's layer: names, no icons")
+	local base = read("mods/PLAYER/grug_map/base.lua")
+	check(base:find("bake.draw(pixels, WIDTH, HEIGHT, view, bake.world_layer(layer)", 1, true) and
+		base:find("bake.draw(mini_pixels, mini.width, mini.height, view, layer, layer.art", 1, true),
+		"I base.lua: the world images get the names only, the minimap the whole layer")
 end
 
 if failures > 0 then

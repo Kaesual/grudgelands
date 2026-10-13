@@ -6,7 +6,8 @@
 -- and passes their fields here; the selected quest also picks the map's
 -- quest targets (targets.lua). State lives in the window's session:
 -- quest_selected, quest_abandon (the quest whose confirmation is shown),
--- quest_notice and quest_rows (list row -> quest id).
+-- quest_notice and quest_rows (list row -> quest id). A click on one of the
+-- map's layer buttons deselects the quest (M.deselect, Round 47).
 local M = {}
 
 local function esc(value)
@@ -22,10 +23,12 @@ end
 
 -- One line per objective (ruling 41): "Bring Wood Axe: 0/1", with the
 -- targets' level range (Lane Q0): "Defeat Barrow Piglet: 0/8 (level 1–2)".
+-- Also the map's quest target tooltips (Round 47).
 local function objective_label(objective)
 	return ("%s: %d/%d%s"):format(grug_quests.objective_action(objective),
 		objective.count, objective.required, grug_quests.objective_levels_text(objective))
 end
+M.objective_label = objective_label
 
 -- The selected quest of the journal and its row, or nil: nothing is
 -- preselected (the user, 2026-10-08), so the map shows quest targets only
@@ -37,6 +40,12 @@ function M.selected(journal, session)
 	end
 	session.quest_selected = nil
 	return nil, nil
+end
+
+-- A click on a map layer button (Round 47 ruling 2) ends quest mode: the
+-- list goes back to no selection and the text box to its hint.
+function M.deselect(session)
+	session.quest_selected, session.quest_abandon, session.quest_notice = nil, nil, nil
 end
 
 -- Description, objective lines and the reward line, separated by an empty

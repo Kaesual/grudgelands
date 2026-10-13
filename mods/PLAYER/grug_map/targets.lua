@@ -18,7 +18,9 @@
 --     at its place.
 -- Crosshairs come first (a quest "kill seven bandits and their leader"
 -- shows the leader's crosshair however many rings there are); then at most
--- MAX_RINGS rings, the regions nearest the player. A finished kill or use
+-- MAX_RINGS rings, the regions nearest the player. Every crosshair and ring
+-- names the objectives it marks (their indices in def.objectives, Round 47:
+-- the map's tooltips show their lines). A finished kill or use
 -- objective marks nothing; a talk objective counts from the start (a
 -- travel quest's destination), so its NPC stays marked while the quest is
 -- active. Item objectives (gathering, ore, quest drops) and roles outside
@@ -78,7 +80,8 @@ function M.size(index)
 end
 
 -- The targets of quest `def` for a player at `pos` ({x, z}): {crosshairs =
--- {{x, z}, ...}, rings = {{x, z, size}, ...}}. `progress` is the journal's
+-- {{x, z, objectives}, ...}, rings = {{x, z, size, objectives}, ...}}, with
+-- `objectives` the indices of the objectives each marks, ascending. `progress` is the journal's
 -- objective rows (count, required) in the order of def.objectives;
 -- `lookup.npc(id)` and `lookup.place(ref)` give a talk NPC's and a use
 -- place's {x, z} or nil; `lookup.area(ref)` a garrison camp's and
@@ -86,22 +89,40 @@ end
 function M.targets(index, def, progress, pos, lookup)
 	local crosshairs, rings, seen = {}, {}, {}
 	local spots = {}
+	local current -- the objective being marked
+	local function note(list)
+		if list[#list] ~= current then list[#list + 1] = current end
+	end
 	local function crosshair(spot)
 		local key = spot and (spot.x .. "," .. spot.z)
-		if key and not spots[key] then
-			spots[key] = true
-			crosshairs[#crosshairs + 1] = {x = spot.x, z = spot.z}
+		if not key then return end
+		local mark = spots[key]
+		if not mark then
+			mark = {x = spot.x, z = spot.z, objectives = {}}
+			spots[key] = mark
+			crosshairs[#crosshairs + 1] = mark
 		end
+		note(mark.objectives)
 	end
+	-- True when a region of the list (in `zone`, if given) is marked.
 	local function ring_list(list, zone)
+		local matched = false
 		for _, entry in ipairs(list or {}) do
-			if (not zone or entry.zone == zone) and not seen[entry] then
-				seen[entry] = true
-				rings[#rings + 1] = entry
+			if not zone or entry.zone == zone then
+				local objectives = seen[entry]
+				if not objectives then
+					objectives = {}
+					seen[entry] = objectives
+					rings[#rings + 1] = entry
+				end
+				note(objectives)
+				matched = true
 			end
 		end
+		return matched
 	end
 	for index_, objective in ipairs(def.objectives) do
+		current = index_
 		local row = progress and progress[index_]
 		local open = not row or row.count < row.required
 		if objective.type == "talk" then
@@ -121,9 +142,9 @@ function M.targets(index, def, progress, pos, lookup)
 						crosshair(lookup.area and lookup.area(objective.area))
 					end
 				else
-					local before = #rings
-					ring_list(index.roles[role], def.zone)
-					if #rings == before then crosshair(lookup.role and lookup.role(role)) end
+					if not ring_list(index.roles[role], def.zone) then
+						crosshair(lookup.role and lookup.role(role))
+					end
 				end
 			end
 		end
@@ -141,7 +162,7 @@ function M.targets(index, def, progress, pos, lookup)
 	local nearest = {}
 	for k = 1, math.min(M.MAX_RINGS, #rings) do
 		local entry = rings[k]
-		nearest[k] = {x = entry.x, z = entry.z, size = entry.size}
+		nearest[k] = {x = entry.x, z = entry.z, size = entry.size, objectives = seen[entry]}
 	end
 	return {crosshairs = crosshairs, rings = nearest}
 end
