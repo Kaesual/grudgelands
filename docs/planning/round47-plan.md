@@ -556,8 +556,8 @@ After merges: `tools/sync_to_luanti.sh`.
 ## 8. Open questions for the user
 
 1. **Leaf counts:** after TD.
-2. **The Anthracite textures:** ART's set, waiting for the user's pick.
 
-Settled: town trees use the generator (ruling 3); the swamp concept and
+Settled: lane ART's Anthracite set (lump, ore, torch) as painted (the
+user, 2026-10-13); town trees use the generator (ruling 3); the swamp concept and
 its textures (ruling 23); the furnace-sound questions (camp fires keep
 fading on the next pass; the furnace kind keeps its own loop limit).
