@@ -12,6 +12,12 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.47.0 — trees, mining progression and crafting feedback (in progress)
+
+Round 47 is under way ([plan](docs/planning/round47-plan.md)); lane D writes
+this entry when the round closes. **Map reset** plus a migration step (stored
+tool capabilities are rebuilt at the next join).
+
 ## 0.46.0 — world generation and player feedback (2026-10-13)
 
 Villages, camps, mines and the PvP places are placed anew on every world,
