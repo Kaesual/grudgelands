@@ -595,7 +595,10 @@ grass, never on roads, plazas, doors, NPC sockets, waypoints, quest
 targets or stations; a first version by gut feeling, the user's fixes
 after captures; TD adds a capital view. The dense groves are
 accepted as built; the capitals' open grass between the districts is
-greened by the same rule (the user, 2026-10-13).
+greened by the same rule (the user, 2026-10-13). The city-ground
+trees differ per world with each world's capital layout (accepted); plot
+collars stay unplanted; the one-node stone kerb around every capital plot
+is removed (purely decorative; plaza, court and avenue edges stay).
 
 **Trunk quarters, inner faces (the user, 2026-10-13):** the two faces
 towards the trunk axis are closed with the trunk's end-grain (top)
