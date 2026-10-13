@@ -239,34 +239,49 @@ local function loader(directory)
 		buf:put(x, 3, z, palette.node("roof_slab"))
 	end
 
-	-- TREES (Round 47 lane TC, ruling 3): every town tree is the seeded
-	-- generator's (wp40/treegen.lua through wp40/tree_templates.lua), so a
-	-- town's trees match the wild ones. The routine names the species (a
-	-- pine, an apple, an aspen-like column, an acacia, a gravewood, a jungle
-	-- tree, a kapok) and the palette names the wood: its `tree_log` picks the
-	-- shape nodes of that wood and `tree_leaves` the foliage, so a palette
-	-- of another wood still grows the routine's shape. Apples hang only on
-	-- apple wood.
+	-- TREES (Round 47 lane TC, ruling 3; groves follow-up): every town tree
+	-- is the seeded generator's (wp40/treegen.lua through
+	-- wp40/tree_templates.lua), so a town's trees match the wild ones. The
+	-- routine names the species (a pine, an apple, an aspen-like column, an
+	-- acacia, a gravewood, a jungle tree, a kapok) and the palette names the
+	-- wood: its `tree_log` picks the shape nodes of that wood and
+	-- `tree_leaves` the foliage, so a palette of another wood still grows the
+	-- routine's shape. Apples hang only on apple wood.
 	--
-	-- The seed is the town's own: a hash of the species, the stem's
-	-- pad-local position and the attempt, the same on every start and in
-	-- every world (a composition is the same in every world). A tree is
-	-- tried with up to TREE_ATTEMPTS seeds and the first that fits is
-	-- written: every cell over the composition's own ground (a ground cell
-	-- at y = 0 under its column, the rule `layout.free` uses), below `top`
-	-- (21 by default: a start's and a capital plot's authorized volume end
-	-- at 24, and a plot clears two courses above its tallest cell; 40 for the
-	-- kapok of a capital core), and no wood cell on a built cell (one neither absent
-	-- nor air). A leaf on a built cell is left out; among the seeds without
-	-- a wood collision the first with no such leaf wins, else the one with
-	-- the fewest. Nothing fits: no tree, and the routine returns false
-	-- (true when it planted). Roots test the pad's ground like the world's
-	-- (wild soil under the column at the foot, none at the foot's level).
+	-- THE TOWN POOL: per species TREE_POOL trees of fixed town seeds (the
+	-- same in every world and on every start, as every composition is),
+	-- each in four quarter turns. A spot first tries TREE_ATTEMPTS pool
+	-- entries chosen by a hash of its pad-local position, then, where room
+	-- is tight, the TREE_SMALLEST narrowest entries (by footprint) in every
+	-- turn, at the spot and one node beside it.
+	--
+	-- A candidate fits when every wood cell (trunk, limb, twig) stands over
+	-- the composition's own ground (a ground cell at y = 0 under its column,
+	-- the rule `layout.free` uses), below `top` (21 by default: a start's and
+	-- a capital plot's authorized volume end at 24, and a plot clears two
+	-- courses above its tallest cell; 40 for the kapok of a capital core),
+	-- the trunk's foot on wild soil (never on a path or paving), and no wood
+	-- cell on a built cell (one neither absent nor air) other than another
+	-- town tree's leaf. A leaf off the ground, above the top or on a built
+	-- cell is left out (a leaf never replaces anything; two crowns merge,
+	-- the first leaf stays). So trees interleave their crowns, never their
+	-- wood. A candidate is good when it leaves out at most a quarter of its
+	-- leaves; the first good one is written, else the fitting one that
+	-- leaves out the fewest, if that is at most half. Nothing fits: no tree,
+	-- and the routine returns false (true when it planted). Roots test the
+	-- pad's ground like the world's, run by run (wild soil under the column
+	-- at the foot, none at the foot's level, a free cell).
 	--
 	-- `height` is the caller's old stem length and no longer read: the
 	-- generator decides a tree's height.
+	local TREE_POOL = 24
 	local TREE_ATTEMPTS = 4
+	local TREE_SMALLEST = 8
 	local TREE_TOP = 21
+	-- Two town trees' stems keep this many nodes apart (Chebyshev, strictly
+	-- less refuses); a composition may set `buf.tree_spacing` lower (the
+	-- capitals' dense groves: 3).
+	local TREE_SPACING = 5
 	local tree_module
 	local function tree_templates()
 		if not tree_module then
@@ -283,6 +298,48 @@ local function loader(directory)
 			attempt * 83492791 + SPECIES_SALT[species] * 15485863) % 2147483646 - 1
 	end
 
+	-- The species' town pool: {cells (no roots), runs, area}, and the pool
+	-- indices from the smallest footprint up.
+	local pools = {}
+	local function pool_of(species)
+		local pool = pools[species]
+		if pool then return pool end
+		local trees = tree_templates()
+		pool = {entries = {}, smallest = {}}
+		for k = 1, TREE_POOL do
+			local cells, tree = trees.tree(species, tree_seed(species, 0, 0, k))
+			local body, by_key = {}, {}
+			for _, cell in ipairs(cells) do
+				if cell.root then by_key[cell.x .. "," .. cell.y .. "," .. cell.z] = cell
+				else body[#body + 1] = cell end
+			end
+			local runs = {}
+			for _, run in ipairs(tree.root_runs) do
+				local list = {parent = run.parent}
+				for r = run.first, run.last do
+					local at = tree.roots[r]
+					list[#list + 1] = by_key[at[1] .. "," .. at[2] .. "," .. at[3]]
+				end
+				runs[#runs + 1] = list
+			end
+			pool.entries[k] = {cells = body, runs = runs,
+				area = tree.width * tree.depth, seed = k}
+			pool.smallest[k] = k
+		end
+		table.sort(pool.smallest, function(a, b)
+			local ea, eb = pool.entries[a], pool.entries[b]
+			if ea.area ~= eb.area then return ea.area < eb.area end
+			return a < b
+		end)
+		pools[species] = pool
+		return pool
+	end
+
+	local function turn(x, z, turns)
+		for _ = 1, turns do x, z = z, -x end
+		return x, z
+	end
+
 	function M.grown(buf, palette, species, x, z, top)
 		local trees = tree_templates()
 		top = top or TREE_TOP
@@ -293,54 +350,116 @@ local function loader(directory)
 			if row.trunk == log then wood = row break end
 		end
 		if not wood then error("wp13 dressing: no tree wood for " .. log, 0) end
-		local names = {trunk = log, quarter = wood.quarter, base = wood.base,
-			branch = wood.branch, twig = wood.twig, leaves = leaves}
 		local own = trees.BY_KEY[species]
-		local function soil(tx, ty, tz)
-			local cell = buf:at(x + tx, ty + 1, z + tz)
+		local function name_of(name)
+			if name == own.trunk then return log
+			elseif name == own.quarter then return wood.quarter
+			elseif name == own.base then return wood.base
+			elseif name == own.branch then return wood.branch
+			elseif name == own.twig then return wood.twig
+			elseif name == own.leaves then return leaves
+			elseif name == own.fruit and wood.fruit ~= own.fruit then return leaves
+			end
+			return name
+		end
+		buf.grown_leaves = buf.grown_leaves or {}
+		buf.grown_stems = buf.grown_stems or {}
+		local grown_leaves = buf.grown_leaves
+		local spacing = buf.tree_spacing or TREE_SPACING
+		for _, stem in ipairs(buf.grown_stems) do
+			if math.abs(stem[1] - x) < spacing and math.abs(stem[2] - z) < spacing then
+				return false
+			end
+		end
+		local function soil(bx, by, bz)
+			local cell = buf:at(bx, by, bz)
 			return cell ~= nil and parts.wild_soil(cell.name)
 		end
-		local best, best_leaves
-		for attempt = 0, TREE_ATTEMPTS - 1 do
-			local cells = trees.tree(species, tree_seed(species, x, z, attempt), soil)
-			local fits, blocked = true, 0
-			for index = 1, #cells do
-				local cell = cells[index]
-				local cx, cy, cz = x + cell.x, cell.y + 1, z + cell.z
-				local ground = buf:at(cx, 0, cz)
-				local at = buf:at(cx, cy, cz)
+		-- One candidate: the cells to write, the leaves left out and the
+		-- leaves, or nil when its wood does not fit.
+		local function try(entry, turns, sx, sz)
+			local writes, skipped, leaf_count = {}, 0, 0
+			for _, cell in ipairs(entry.cells) do
+				local cx, cz = turn(cell.x, cell.z, turns)
+				local bx, by, bz = sx + cx, cell.y + 1, sz + cz
+				local ground = buf:at(bx, 0, bz)
+				local at = buf:at(bx, by, bz)
 				local built = at ~= nil and at.name ~= "air"
-				if ground == nil or ground.name == "air" or cy > top or
-						(built and cell.flag ~= trees.LEAF) then
-					fits = false
-					break
-				end
-				if built then
-					cell.skip = true
-					blocked = blocked + 1
+				if cell.flag == trees.LEAF then
+					leaf_count = leaf_count + 1
+					if ground == nil or ground.name == "air" or by > top or built then
+						skipped = skipped + 1
+					else
+						writes[#writes + 1] = {bx, by, bz, cell, turns}
+					end
+				else
+					if ground == nil or ground.name == "air" or by > top or
+							(cell.y == 0 and not parts.wild_soil(ground.name)) or
+							(built and not grown_leaves[bx .. ":" .. by .. ":" .. bz]) then
+						return nil
+					end
+					writes[#writes + 1] = {bx, by, bz, cell, turns}
 				end
 			end
-			if fits and (not best or blocked < best_leaves) then
-				best, best_leaves = cells, blocked
-				if blocked == 0 then break end
+			-- roots, run by run, a fork only with its parent run
+			local kept = {}
+			for index, run in ipairs(entry.runs) do
+				local ok = run.parent == 0 or kept[run.parent] == true
+				for _, cell in ipairs(ok and run or {}) do
+					local cx, cz = turn(cell.x, cell.z, turns)
+					local bx, by, bz = sx + cx, cell.y + 1, sz + cz
+					local at = buf:at(bx, by, bz)
+					if not soil(bx, 0, bz) or soil(bx, 1, bz) or
+							(at ~= nil and at.name ~= "air") then
+						ok = false
+						break
+					end
+				end
+				kept[index] = ok
+				if ok then
+					for _, cell in ipairs(run) do
+						local cx, cz = turn(cell.x, cell.z, turns)
+						writes[#writes + 1] = {sx + cx, cell.y + 1, sz + cz, cell, turns}
+					end
+				end
+			end
+			return writes, skipped, leaf_count
+		end
+		local pool = pool_of(species)
+		local hash = tree_seed(species, x, z, 0) + 1
+		local candidates = {}
+		for attempt = 0, TREE_ATTEMPTS - 1 do
+			candidates[#candidates + 1] = {(hash + attempt) % TREE_POOL + 1,
+				(math.floor(hash / TREE_POOL) + attempt) % 4, 0, 0}
+		end
+		for _, offset in ipairs({{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+			for rank = 1, TREE_SMALLEST do
+				for turns = 0, 3 do
+					candidates[#candidates + 1] = {pool.smallest[rank], turns,
+						offset[1], offset[2]}
+				end
+			end
+		end
+		local best, best_skipped
+		for _, candidate in ipairs(candidates) do
+			local writes, skipped, leaf_count = try(pool.entries[candidate[1]],
+				candidate[2], x + candidate[3], z + candidate[4])
+			if writes then
+				if skipped * 4 <= leaf_count then best = writes break end
+				if skipped * 2 <= leaf_count and (not best or skipped < best_skipped) then
+					best, best_skipped = writes, skipped
+				end
 			end
 		end
 		if not best then return false end
-		for index = 1, #best do
-			local cell = best[index]
-			if not cell.skip then
-				-- the cell's own name for its kind in the palette's wood
-				local name = cell.name
-				if name == own.trunk then name = names.trunk
-				elseif name == own.quarter then name = names.quarter
-				elseif name == own.base then name = names.base
-				elseif name == own.branch then name = names.branch
-				elseif name == own.twig then name = names.twig
-				elseif name == own.leaves then name = names.leaves
-				elseif name == own.fruit and wood.fruit ~= own.fruit then name = names.leaves
-				end
-				buf:put(x + cell.x, cell.y + 1, z + cell.z, name, cell.param2)
-			end
+		buf.grown_stems[#buf.grown_stems + 1] = {x, z}
+		for _, write in ipairs(best) do
+			local bx, by, bz, cell, turns = write[1], write[2], write[3], write[4], write[5]
+			local name = name_of(cell.name)
+			local param2 = parts.rotate_param2(cell.param2, parts.param2_kind(name), turns)
+			local key = bx .. ":" .. by .. ":" .. bz
+			buf:put(bx, by, bz, name, param2)
+			grown_leaves[key] = cell.flag == trees.LEAF and true or nil
 		end
 		return true
 	end
@@ -356,8 +475,11 @@ local function loader(directory)
 	function M.acacia(buf, palette, x, z) return M.grown(buf, palette, "acacia", x, z) end
 	function M.gravewood(buf, palette, x, z) return M.grown(buf, palette, "gravewood", x, z) end
 	function M.jungle_tree(buf, palette, x, z) return M.grown(buf, palette, "jungle", x, z) end
-	-- The kapok stands in a capital core, whose authorized volume reaches 40.
-	function M.emergent(buf, palette, x, z) return M.grown(buf, palette, "kapok", x, z, 40) end
+	-- The kapok: a capital core's authorized volume reaches 40 (the default
+	-- here), a start's 24 (`top`).
+	function M.emergent(buf, palette, x, z, _, top)
+		return M.grown(buf, palette, "kapok", x, z, top or 40)
+	end
 
 
 	-- A raised terrace: a masonry podium `height` nodes tall with a flight of

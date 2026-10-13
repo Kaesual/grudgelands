@@ -580,7 +580,20 @@ trees stay the same in every world, unplantable town spots stay treeless,
 the crags pine needs no snow. The forests' density (about 30 % fewer trees
 than today, because larger trees reserve larger boxes) is decided with
 TD's numbers, together with the leaf counts; **small dense groves are
-welcome** (e.g. crowns allowed to interleave in places).
+welcome** (e.g. crowns allowed to interleave in places). Town groves
+are never left empty: their trees stand denser, crowns interleaving,
+the smallest fitting variant where room is tight (the user, after the TC
+review counted 801 → 527 town trees and 8 empty named groves). The wild
+forests too come back to roughly today's tree count per area (the user
+found the ~33 % loss too much): only wood cells are reserved, crowns
+interleave; the density is one parameter, and TD measures its cost. **Town
+greening** (the user): capitals and start towns get generated trees on
+free areas — small groups and single trees on edges, courtyards and open
+grass, never on roads, plazas, doors, NPC sockets, waypoints, quest
+targets or stations; a first version by gut feeling, the user's fixes
+after captures; TD adds a capital view. The dense groves are
+accepted as built; the capitals' open grass between the districts is
+greened by the same rule (the user, 2026-10-13).
 
 **Trunk quarters, inner faces (the user, 2026-10-13):** the two faces
 towards the trunk axis are closed with the trunk's end-grain (top)
