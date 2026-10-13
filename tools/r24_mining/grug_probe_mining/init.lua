@@ -94,13 +94,16 @@ local function matrix()
 			cells[#cells + 1] = params.diggable and
 				string.format("%.3f%s", params.time, params.hand and "h" or "") or "-"
 			-- Expectations: rock/resource only by a pick of tier >= required;
+			-- Iron Ore not by the Wood and Stone picks (Round 47 ruling 7);
 			-- decorative rock by any pick; loose ground by everything (hand
 			-- fallback included); the tree by everything.
 			local required = column[3]
 			local expected
 			if column[2]:find("stone") or column[2]:find("ore") or
 					column[1] == "coal" then
-				expected = row[4] == "pick" and row[3] >= required
+				expected = row[4] == "pick" and row[3] >= required and
+					not (column[1] == "iron" and
+						(row[1] == "pick_wood" or row[1] == "pick_stone"))
 			elseif column[1] == "slate" or column[1] == "basalt" or
 					column[1] == "granite" then
 				expected = row[4] == "pick"
@@ -142,7 +145,8 @@ end
 local function registrations()
 	for i = 2, 6 do
 		local def = core.registered_nodes["grug_materials:t" .. i .. "_stone"]
-		check(def and def.groups.level == i - 1 and def.groups.grug_stratum == i and
+		check(def and def.groups.level == i and def.groups.grug_pick_level == i and
+			def.groups.grug_stratum == i and
 			def.drop == "default:cobble" and def.description:find("^Stone\n") ~= nil and
 			def.description:find("Requires a T" .. i .. " pick", 1, true) ~= nil,
 			"t" .. i .. "_stone registration")
@@ -199,6 +203,9 @@ local function transaction(base)
 			{"grug_materials:t6_stone", "grug_materials:pick_abyssal_steel", true, nil},
 			{"default:stone_with_gold", "grug_materials:pick_stone", false, "Requires a T2 pick"},
 			{"default:stone_with_coal", "grug_materials:pick_wood", true, nil},
+			{"default:stone_with_iron", "grug_materials:pick_stone", false,
+				"Requires a Bronze pick"},
+			{"default:stone_with_iron", "grug_materials:pick_bronze", true, nil},
 			{"grug_materials:stone_with_silver", "grug_materials:pick_iron", false, "Requires a T3 pick"},
 			{"default:stone", "", false, "Requires a T1 pick"},
 			{"default:stone", "grug_materials:shovel_steel", false, "Requires a T1 pick"},
