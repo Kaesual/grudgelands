@@ -350,9 +350,9 @@ example E5) are cited below. WP34 followed in Round 46.
 - Open work without its own WP: friendly-guard healing stays deferred as a
   coherent support-combat feature (rule owner `combat_stats.md`); the T6 lava
   lakes of `world.md` §4c stay planned (E3) with no scheduled owner. Repair at
-  crafting stations inside a claim (D7) shipped in Round 29; since Round 45
-  only player-placed furnaces and dual furnaces offer it (the user leans to
-  repair only in towns, [Round 45 carry-overs](#round-45-carry-overs)).
+  crafting stations inside a claim (D7) shipped in Round 29 and was removed
+  in Round 46: gear is repaired only in towns
+  ([Round 46](#round-46--world-generation-and-player-feedback)).
 - **October 2026 audit:** the design questions that block no fix are in
   [Audit 2026-10 open questions](#audit-2026-10-open-questions), the fix
   packages after Round 37 in
@@ -1761,8 +1761,9 @@ world generation changed.
 **Noted 2026-10-09** ([completion](docs/planning/round44-plan.md#completion-2026-10-09)),
 the reviews' and reports' backlog notes (theoretical, no severity). The map
 icon overlaps (and MB's GUI tuning) wait for the GUI test; since Round 47
-the world map image has no baked icons (they are layer markers), so the
-overlaps remain on the minimap only. MB has nothing else open.
+the world map image has no baked icons: on the world map they are layer
+markers, one layer at a time (not measured for overlaps); the minimap keeps
+its baked icons. MB has nothing else open.
 
 - **Window frame** (FR): reopening the inventory shows the scrollbar
   position of the last send, not where the player left it; a page with no
@@ -1955,13 +1956,13 @@ the reviews' and reports' backlog notes of the 0.45.1 fix round
 
 ### Round 46 — world generation and player feedback
 
-**Delivered 2026-10-13, not pushed yet (pushed only on the user's word)**
+**Delivered 2026-10-13; pushed by the user with Round 47's main (`b3a30ab0`,
+2026-10-14); never deployed on its own, production moves 0.45.1 → 0.47.0**
 ([completion](docs/planning/round46-plan.md#completion-2026-10-13), plan
 [round46-plan.md](docs/planning/round46-plan.md)); every code lane
 independently reviewed by Opus, the follow-up deltas XPC, XPC2, CKF and
 LTF checked by the coordinator, ART picked by the user. Version 0.46.0, **map reset**: world generation changed; no
-migration step, and the production world moves later with one combined
-update.
+migration step.
 
 - **Placement** (PL): villages, outposts, camps, mines, clash sites, rare
   dens and the PvP sites per seed
@@ -2135,7 +2136,9 @@ severity).
   candidates accepted in the probe); the pass's cost was not reported
   (the reviewer's comparison: 0.3–0.5 s per chunk at base, 0.3–0.8 s
   after); `r47_tc` B accepts a stem foot at y 0–2 for stilt species
-  (looser than needed).
+  (looser than needed); there is no swamp sapling (swamp leaves drop
+  nothing, like gravewood's; TC's sapling growth covers the eight other
+  species).
 - **Mining and Anthracite** (OR, AN): grug_quality still stores
   capabilities on crafted tools, which carry no damage or speed (stopping
   it would make future scale changes step-free); `audit.lua`

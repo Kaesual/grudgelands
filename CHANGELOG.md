@@ -105,7 +105,8 @@ rebuilt at each character's next join (last point below).
   broken). 0.46.0
   was never deployed on its own: a world on 0.45.1 crosses both map
   resets and the 0.47.0 step in this one update, and gets every 0.46.0
-  change below with it.
+  change below with it (0.47.0's ore rows replace 0.46.0's extra Coal in
+  the Steel layer: no Coal below −300).
 
 ## 0.46.0 — world generation and player feedback (2026-10-13)
 

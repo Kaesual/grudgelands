@@ -922,9 +922,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `run.sh [EVIDENCE_DIR]` runs `test_step.py` (the offline step: markers
   only) in the runner's container and `e2e.py` (a 0.45.1 world built by the
   0.45.1 game with `grug_probe_r47_ms`, the guard's refusal, the tool, a
-  boot and a join of this checkout; until lane D declares 0.47.0 it stages
-  the game as 0.47.0 and runs the tool through `tool_run.py` with that
-  declaration); `portable_test.lua` the join part (stays in
+  boot and a join of this checkout, through the shipped `migrate.py`; before
+  0.47.0 was declared it staged the game as 0.47.0 and ran the tool through
+  `tool_run.py`); `portable_test.lua` the join part (stays in
   `run_fixtures.sh`); `evidence/` the last run;
   `r47_an` Anthracite (`portable_test.lua`: the ore row and node, the WP40
   rows (no Coal below T2, the T2 lower half, never rarer than Iron from

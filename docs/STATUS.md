@@ -1095,8 +1095,10 @@ is open.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.46.0 (Round 46, a map reset, not pushed
-  yet) on 0.45.1 (pushed, in production) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+- **Latest game:** main carries 0.47.0 (Round 47, a map reset plus the
+  step 0.47.0) on 0.46.0 (Round 46, a map reset, never deployed on its
+  own; both on origin/main `b3a30ab0`, pushed by the user as a backup) on
+  0.45.1 (pushed, in production) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
   2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
   (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
@@ -1184,8 +1186,9 @@ is open.
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main is `0e6b3061` (0.45.1) at 0.46.0's
-  documentation; the top entry has the current push line.
+- **Remote observation:** origin/main is `b3a30ab0` (every Round 47 build
+  lane, the user's backup push) at 0.47.0's documentation; production runs
+  0.45.1; the top entry has the current push line.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md) (compatible, map

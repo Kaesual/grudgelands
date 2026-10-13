@@ -874,8 +874,8 @@ still open and is tested on the same build.
 
 16. Steel only from Anthracite; a Bronze bar in 10 s.
 17. A burning town hearth and a personal furnace are clearly quieter than
-    a camp fire; a burning Dual Furnace plays the loop; dig or blow one up:
-    silence within about a quarter second, also for a second player; a
+    a camp fire; a burning Dual Furnace plays the loop; dig one: silence
+    within about a quarter second, also for a second player; a
     furnace out of fuel fades within a few seconds; fire loops near camps
     and furnaces together (up to 2 + 2) do not pile up badly.
 18. The Claim Stone takes Anthracite as 1.5 lumps, refuses a piece that
@@ -899,7 +899,7 @@ still open and is tested on the same build.
 22. Silverleaf's bowyer and market keeper, Dawnmere's barn and smithy
     residents and its green sitter, a village of each race, a capital
     hall's service resident and the PvP camp gate guards face away from
-    walls; the two stall keepers (Silverleaf's market, Lethariel's armoury
+    walls, and a stable's gate resident faces into the stable; the two stall keepers (Silverleaf's market, Lethariel's armoury
     counter) now face the street, not their counter: judge them.
 23. The zone banner stays about 4 s.
 24. A new character: nothing in its start zone; the next zone "+N XP" and
@@ -914,7 +914,8 @@ still open and is tested on the same build.
     and the hand-in NPC; a layer button deselects; a party member's arrow
     has the name and moves about every 2 s; the world map has no baked
     icons, the minimap is unchanged; zone labels on one line, readable on
-    the web.
+    the web, though they crowd in small windows (46 overlapping pairs at
+    1035 × 696); a ring's tooltip covers its whole square.
 26. At 16:9 a gap of about 0.85 units under the map at 1080p; POI
     tooltips repeat the kind ("Bandit camp: Goldmead Bandit Camp"); at
     720p a quest text that overflows its box resets its scroll about three
