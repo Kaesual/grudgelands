@@ -10,8 +10,8 @@
 local ui = {}
 
 -- Fuel kinds and the lump duration come from the claim core (api.lua):
--- grug_housing.is_fuel, LUMP_SECONDS and FUEL_MAX. The fuel slot shows the
--- unburnt lumps, ceil(remaining / LUMP_SECONDS).
+-- grug_housing.is_fuel, fuel_seconds, LUMP_SECONDS and FUEL_MAX. The fuel
+-- slot shows the unburnt time in lumps, ceil(remaining / LUMP_SECONDS).
 ui.DAY = 86400
 ui.RED = "#ff6060"
 ui.GREEN = "#8fdc7a"

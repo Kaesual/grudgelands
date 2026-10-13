@@ -8,9 +8,12 @@ automatic.sizes = {
 	dual_furnace = {input = 2, fuel = 1, output = 2},
 }
 
+-- Seconds of flame per item in both furnaces; wood burns 15 s (below).
+-- Round 47 ruling 11: Anthracite 120 s.
 local FURNACE_FUELS = {
 	["default:coal_lump"] = 80,
 	["grug_smelting:charcoal"] = 80,
+	["grug_materials:anthracite"] = 120,
 }
 
 function automatic.fuel_time(station, stack)

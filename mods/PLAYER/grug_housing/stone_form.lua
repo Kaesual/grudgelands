@@ -120,10 +120,10 @@ local function fuel_section(fs, claim, inv)
 		(grug_housing.remaining_seconds(claim) or 0) or 0
 	local lumps = ui.lumps(left)
 	fs[#fs + 1] = "label[0.4,0.5;Your Claim Stone]"
-	fs[#fs + 1] = "label[0.4,1.1;Fuel: coal lumps or charcoal]"
+	fs[#fs + 1] = "label[0.4,1.1;Fuel: coal lumps, charcoal or anthracite]"
 	fs[#fs + 1] = ("list[%s;%s;0.4,1.4;1,1;]"):format(inv, LIST)
 	if lumps > 0 then
-		-- The slot itself stays empty so coal and charcoal can both be put;
+		-- The slot itself stays empty so every fuel kind can be put;
 		-- the burning lumps are drawn over it (images take no clicks).
 		fs[#fs + 1] = ("item_image[0.4,1.4;1,1;%s]"):format(ui.DISPLAY_FUEL)
 		fs[#fs + 1] = ("label[%.2f,2.15;%d]"):format(lumps >= 10 and 1.0 or 1.12, lumps)
@@ -136,7 +136,7 @@ local function fuel_section(fs, claim, inv)
 			"No fuel: anyone can access your home right now", ui.RED))
 	end
 	fs[#fs + 1] = "label[1.7,2.15;" ..
-		ui.esc("One lump burns 7 h 16 min, 99 lumps about 30 days.") .. "]"
+		ui.esc("A lump burns 7 h 16 min, anthracite 10 h 54 min; it holds about 30 days.") .. "]"
 	local wait = grug_housing.pickup_wait(claim) or 0
 	if wait > 0 then
 		fs[#fs + 1] = "label[1.7,2.6;" .. ui.esc("Pick-up possible in " ..
@@ -313,23 +313,33 @@ local function ensure_inventory(name)
 			local session = sessions[name]
 			local claim = current_claim(player, session)
 			local count = stack:get_count()
-			local accepted = 0
+			local item = stack:get_name()
+			local accepted, room = 0, 0
 			if claim then
+				room = grug_housing.fuel_room_seconds(claim)
 				session.busy = true
-				accepted = tonumber(grug_housing.add_fuel(claim, count)) or 0
+				accepted = tonumber(grug_housing.add_fuel(claim, count, item)) or 0
 				session.busy = nil
 				accepted = math.max(0, math.min(count, math.floor(accepted)))
 			end
 			local rest = count - accepted
 			if rest > 0 then
-				give_back(player, ItemStack(stack:get_name() .. " " .. rest))
+				give_back(player, ItemStack(item .. " " .. rest))
 			end
 			if not session then return end
-			if accepted == 0 then
+			local each = grug_housing.fuel_seconds(item)
+			if accepted == 0 and room > 0 and each > grug_housing.LUMP_SECONDS then
+				-- Round 47 ruling 12: a piece goes in only if its whole time fits.
+				local def = (core.registered_items or {})[item]
+				local label = def and def.description and
+					def.description:match("^[^\n]*") or item
+				say(session, ("Not enough room for one %s (%s): the stone takes only %s more."):format(
+					label, ui.format_remaining(each), ui.format_remaining(room)), ui.RED)
+			elseif accepted == 0 then
 				say(session, ("The fuel slot is full (%d lumps)."):format(
 					grug_housing.FUEL_MAX), ui.RED)
 			elseif rest > 0 then
-				say(session, ("Added %d, %d returned: the slot holds at most %d."):format(
+				say(session, ("Added %d, %d returned: the slot holds at most %d lumps' worth."):format(
 					accepted, rest, grug_housing.FUEL_MAX))
 			else
 				say(session, ("Added %d."):format(accepted))
