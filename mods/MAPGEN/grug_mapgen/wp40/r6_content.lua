@@ -971,10 +971,10 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				noise(x, z, 5, 61203461)) / 3)
 			local dry = noise(x, z, 9, 52428833)
 			local name = SWAMP_MUD
-			if moss > 760 then name = SWAMP_MOSS
-			elseif wet > 700 then name = SWAMP_GRASS
+			if moss > 820 then name = SWAMP_MOSS
+			elseif wet > 680 then name = SWAMP_GRASS
 			elseif wet < 300 then name = SWAMP_WET
-			elseif dry < 340 then name = SWAMP_DRY end
+			elseif dry < 300 then name = SWAMP_DRY end
 			return swamp_rows[name][2]
 		end
 		-- The dry, non-town, non-shore row of a column, and whether it is a

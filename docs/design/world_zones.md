@@ -768,8 +768,15 @@ rewrite records the WP40 model it replaced.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
-  on a 64-node field. Wet-bed and beach-shore patches follow §7.4; dry swamp
-  surfaces retain mud.
+  on a 64-node field. Wet-bed and beach-shore patches follow §7.4. Dry swamp
+  surfaces (Round 47, `tools/r47_sw/DESIGN.md`) mix today's mud with a
+  lighter mud, wet grass and moss soil in noise patches and turn to mottled
+  mud in wet hollows and round the swamp's pools: small pools 1–2 deep on
+  flat or gentle ground only (a 5 × 5 window within one node; at most one node
+  levelled, never at a claim, road, coast, surface cave or within two nodes
+  of other water), kept only where no neighbouring pool lies lower, so their
+  water never flows (`wp40/swamp_pools.lua`, written by the swamp pass
+  `wp40/swamp_writer.lua` after the road dressing).
   The base R6 surface table is refined by the following fertile palettes;
   all existing biome decorations accept every fertile variant at their
   existing density and retain their species, elevation and protection rules.

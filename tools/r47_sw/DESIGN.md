@@ -107,7 +107,7 @@ tree is the same on any terrain; the patch places trees only on flat land.
 The stilts and moss use the tree's one random stream (no own stream, unlike
 roots, because nothing depends on the ground).
 
-## The nodes (built in step 1, registered, not placed yet)
+## The nodes (built in step 1, placed from step 2 on)
 
 The user picked the concept with lane ART's textures and the olive leaves
 (2026-10-13). Ground and plants live in `grug_nodes` next to the mud (they
@@ -154,89 +154,79 @@ Existing nodes reused: `grug_nodes:mud`, `grug_nodes:dirt_with_moss`,
 `default:water_source`, `grug_mapgen:freshwater_waterlily`, ferns, grasses,
 junglegrass, dry shrub.
 
-## The pool rule on real terrain (user ruling, plan ruling 23)
+## The pool rule on real terrain (user ruling, plan ruling 23) — built
 
 A pool must never create flowing water. On gentle slopes the ground may be
 levelled slightly so a small pool fits; on steep slopes pools are left out
 (the ground mix, plants and trees carry the swamp there). Levelling never
-touches towns, POIs or protected ground. The concept patch is flat, so it
-shows only the flat case; the rule for step 2:
+touches towns, POIs or protected ground. Built in step 2 as
+`mods/MAPGEN/grug_mapgen/wp40/swamp_pools.lua` (pure, per column):
 
-1. **Candidates**: swamp columns where the pool noise is below the pool
-   threshold (as in the concept), not excluded: the column and its 8
-   neighbours outside every claim exclusion the content tail already uses
-   (`ctx.exclusion_at`: towns, capitals, POI cores and margins, roads,
-   protected ground; the terrain damage guard's ground), and at least 2
-   columns away from planned water, banks and the sea (a swamp pool never
-   meets other water, so its level is its own).
-2. **Gentle or steep**: take the ground tops `h` of the column's 5 × 5 window
-   (itself ± 2) from the analytic terrain (`ctx.column_values_at`, valid
-   outside the owner chunk too). Relief = max − min. **Gentle: relief ≤ 1**;
-   **steep: relief ≥ 2 → no pool** in that column.
-3. **Level**: the column's water level `L` = the lowest ground top in its
-   5 × 5 window. The column's water top is at `L`: if its own ground was at
-   `L + 1`, that top node is removed (air) — **levelling is at most one node,
-   and only downwards, only in the pool column itself**; the banks stay as
-   they are (every one of them is ≥ `L` by the definition of `L`). Water
-   fills `L` (and `L − 1` for a 2-deep column), the bed below stays mud.
-4. **No flow, after levelling**: a water source spreads only sideways into
-   air at its level or lower, and down. A pool column is kept only if none
-   of its 8 neighbours is a pool column with a lower level `L'` (else its
-   water at `L` would spill into that neighbour's air at `L`). Dropping a
-   column restores its ground (top `h ≥ L'` of every neighbour, since the
-   neighbour's window holds it), so it never breaks a kept neighbour: **one
-   pass decides**, and every kept water node then has, on each side, ground
-   at least as high as its top, or water at the same level. Non-pool
-   neighbours are ≥ `L` by step 3.
-5. **2 deep** only where the column is kept, the deeper noise holds and all
-   4 side neighbours are kept pool columns with the same `L`.
-6. Everything above reads only analytic heights and the noise of a 9 × 9
-   window round the column, so a column decides the same in every chunk
-   (no cross-chunk state), the same way `world_content.lua`'s freshwater
-   pass reads `column_values_at`.
+1. **Candidate**: a dry swamp land column whose pool noise (two octaves,
+   periods 11 and 6) lies below 370/1024, with its 8 neighbours dry swamp
+   land too, none of the 9 under a static claim exclusion (towns, capitals,
+   POI cores and margins, protected ground), a road or inland-water
+   overlay, a functional surface, a hard foundation, a coast material or a
+   surface cave, and no water column (sea, lake, river) in its 5 × 5 window.
+2. **Gentle or steep**: the ground tops of the 5 × 5 window differ by at
+   most 1 (gentle), else no pool. Ground at least 2.
+3. **Level** `L`: the window's lowest ground top. A column one above it
+   loses its top node: **at most one node, only downwards, only in the
+   pool column**. Water fills `L` (and `L − 1` when 2 deep).
+4. **No flow**: a candidate is kept only if none of its 8 neighbours is a
+   candidate with a lower level. A dropped column keeps its ground, at
+   least each neighbour's level (their windows hold it), so one pass
+   decides; every kept water node has ground or water of its own level on
+   its four sides and ground or water below.
+5. **2 deep** where the deep noise (period 9) lies below 290 and all four
+   side neighbours are kept with the same level.
+6. Only analytic heights and noise of a 9 × 9 window: every chunk decides
+   the same.
 
-Plants and lilies follow the kept pools; trees keep their 5 × 5 flat test
-(`relief = 0`) on the final ground.
+Around it: the surface selector gives a pool column plain mud over a filler
+of 3 and the columns within 2 of a pool mottled mud; the planner roots no
+decoration in a pool column; the writer's surface skin never opens at a
+pool or beside one (an opening would drain it); the swamp pass
+(`wp40/swamp_writer.lua`, in the R7 successor right after the road
+dressing, before P9G and world content, which then see the water) writes
+the water through `write_road`, only over a swamp ground, removes a
+levelled top only when nothing but air or a plant stands on it, and adds
+the waterlilies (22 % of inner pool columns), reeds rooted in the bed
+(`grug_nodes:mud_with_reeds`, 30 % of bank pool columns, 1–2 above the
+water) and, on the dry bank, reeds 1–2 high (32 %), cattails (18 %) and
+carpets (12 %).
 
-## Mapping to the WP40 pipeline
+## As built (step 2)
 
-Facts at `d459eef2`:
-- biome row `grug_swamp|grug_nodes:mud|grug_nodes:mud|2|grug_nodes:mud|grug_nodes:mud|-`
-  (`wp40/r7_r6_manifest.lua`);
-- `r6_content.lua`: `dry_row` returns the swamp's plain surface before any
-  patch noise, and `fertile_palettes` has no swamp entry;
-- decoration rows `swamp_dry_shrub` (simple, 1/250) and `swamp_papyrus`
-  (template `papyrus_on_dirt.mts`, 1/50, surface y 1–4) are the swamp's
-  only ones;
-- waterlilies come from `world_content.lua`'s freshwater pass, in every
-  biome, on planned water 2–6 deep, 1/192 — not on 1-deep pools.
-
-Suggested place for each part (the build lane decides):
-
-1. **Ground mix**: a swamp palette in `fertile_palettes` and a swamp branch in
-   `dry_row` instead of its early return, with the rules above (light mud,
-   wet grass from patch noise; mottled mud needs the distance to the pools,
-   so it belongs with step 2).
-2. **Pools and hummocks**: a deterministic pass over swamp columns in the
-   R7 writer's content tail (where `world_content.lua` places freshwater
-   plants with `reef_noise`), writing 1–2 water sources into the top mud
-   when the column and its eight neighbours are flat swamp land inside the
-   owner chunk (`ctx.inside_owner`, `ctx.column_values_at`). The tail's
-   P9G writer knows only its 36 content refs today; water and the new
-   ground nodes would join that list, or the pass goes into the surface
-   writer. Hummocks (+1) are the same pass or a small terrain offset.
-3. **Plants**: rows for the plain chances (tall grass on wet grass, ferns on
-   moss soil, carpets, dry shrub) as `simple` decoration rows; the
-   bank and shade rules (beside water, near a trunk) need the tail pass of
-   step 2 (it knows the pools; the catalog's `shore` test is the model);
-   waterlilies on swamp pools in the same pass (the freshwater rule wants
-   depth ≥ 2), rooted reeds as P9G writes with a leveled param2 like the
-   waterweed.
-4. **Trees**: templates of the `swamp` species through TC's template
-   mechanism, a template decoration row on swamp ground; the 5 × 5 flat
-   test and the 8-node spacing are the writer's (decorations can not test
-   a footprint), or accept a stilt that ends a node above lower ground.
-5. The swamp species in both generators with TB's equality fixture.
-
-All of this changes the frozen mapgen digests (map reset, fine). Pins move
-in `wp40/r7_manifest.lua` and the WP43 projection.
+- **Ground mix** (`r6_content.lua`, `dry_row`'s swamp branch): moss soil
+  where a period-20 noise lies above 820, wet grass where the wet noise
+  (periods 12 and 5) lies above 680, mottled mud below 300, the lighter mud
+  where a period-9 noise lies below 300, else mud; mottled within 2 of a
+  pool. Shares of the noise alone over the whole map (seed 12345): mud 54 %,
+  wet grass 15 %, lighter mud 13 %, mottled 10 % (more round the pools),
+  moss soil 9 %.
+- **Rows** (`r7_r6_manifest.lua`, hosts in `r6_content.lua` SWAMP_HOSTS):
+  `swamp_tree` 1/120 (treegen:swamp) on all five grounds; tall grass 3–5
+  1/9 each and junglegrass 1/20 on wet grass (a quarter on the muds); ferns
+  1–3 1/14 each on moss soil (a quarter on mottled); moss carpet 1/16 on the
+  muds; dry shrub on mud and the lighter mud; papyrus as before (mud,
+  mottled mud, sand).
+- **Swamp trees**: the `swamp` row of TC's species table
+  (`tree_templates.lua`: 32 variants, gravewood wood, swamp leaves, hanging
+  moss). Its stilts (limb cells up to one above the stem's lowest log) are
+  optional cells like leaves, so uneven ground shortens a stilt instead of
+  refusing the tree. No swamp sapling: the row is not renewed.
+- **Content**: six production rows (116 → 122); the three new grounds in
+  `grug_materials.NATURAL_GROUND_NODES`; pins in their own commit.
+- **Habitats**: the swamp's mob spawn lists (`grug_mobs/*.lua`,
+  `spawn_regions.lua`) take mud_dry, mud_mottled and mud_with_wet_grass
+  next to mud (not moss soil: those lists name nodes for every biome, and
+  moss soil is also the elf forest's); the gathering catalog's swamp hosts,
+  world content's swamp soil and the P9G hosts take all five grounds (they
+  are per biome); renewal knows the pass's plants as natural.
+- **Proof**: `tools/r47_sw/portable_test.lua` (the rule on a synthetic
+  world with flat, gentle and steep swamp, a town, a lake, a road, a cave
+  and a coast: no pool where it must not be, no open water side; the pass
+  on a fake context), `tools/r47_sw/world_probe.lua` (the real writer over
+  the seed fleet's fake VoxelManip), `tools/r47_sw/capture.sh` (engine
+  screenshots and the in-engine pool check).
