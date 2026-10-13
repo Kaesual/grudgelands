@@ -23,7 +23,9 @@
 #   SUFFIX=<text> appended to every file name, SETTLE=<seconds> before each
 #   shot (default 6; the first shot of a scene waits twice as long: the
 #   client loads a far area), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX>
-#   (default /usr/lib64/dri). Run it through the shared Lua queue (one boot).
+#   (default /usr/lib64/dri), MODE=groves takes the capital groves and
+#   Hearthpine instead of the forests and saplings. Run it through the
+#   shared Lua queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
 export LC_ALL=C
@@ -35,7 +37,7 @@ width="${WIDTH:-1600}"; height="${HEIGHT:-900}"
 shadows="$([[ "${SHADOWS:-1}" == "1" ]] && echo true || echo false)"
 settle="${SETTLE:-6}"
 smooth="$([[ "${SMOOTH:-1}" == "1" ]] && echo true || echo false)"
-shots_filter="${SHOTS:-F,S,T}"; suffix="${SUFFIX:-}"
+shots_filter="${SHOTS:-F,S,T,G}"; suffix="${SUFFIX:-}"
 server_timeout=300; client_timeout=290
 mkdir -p "$out"
 out="$(cd "$out" && pwd -P)"
@@ -81,6 +83,7 @@ grug_atmosphere_zones = false
 mobs_spawn = false
 r47tc_settle = $settle
 r47tc_shots = $shots_filter
+r47tc_mode = ${MODE:-forests}
 CONF
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 
