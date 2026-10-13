@@ -37,7 +37,7 @@ local origin -- set from the arrived player's position
 local function hub(id)
 	return {x = origin.x + HUBS[id] * 300, y = GROUND_Y, z = origin.z}
 end
-local U_MIN, U_MAX, V_MIN, V_MAX = -76, 40, -24, 24
+local U_MIN, U_MAX, V_MIN, V_MAX = -40, 40, -24, 24
 local TIME_OF_DAY = 0.34
 
 local function at(center, u, h, v)
@@ -54,17 +54,6 @@ end
 local GY, GZ, GX = 0, 4, 12 -- facedir: grain along y, z (u), x (v)
 local SHAPES = grug_trees.shape_nodes
 
--- Probe-only quarters with the centre-row variant of the mesh
--- (tools/r47_ta/variant_obj.js), for the Q6v comparison.
-local VARIANT = {}
-for _, wood in ipairs({"jungle", "apple"}) do
-	local def = table.copy(core.registered_nodes[SHAPES[wood].quarter])
-	def.mesh = "r47ta_quarter_centre_row.obj"
-	def.name, def.type, def.mod_origin = nil, nil, nil
-	VARIANT[wood] = "grug_probe_r47_ta:" .. wood .. "_quarter_centre_row"
-	core.register_node(VARIANT[wood], def)
-end
-
 -- A quarter's facedir for a trunk cell: facedir 0 has the trunk axis at
 -- +x +z, each step turns (x, z) -> (z, -x).
 local function quarter_facedir(dx, dz)
@@ -76,7 +65,7 @@ end
 
 -- A trunk of quarters (n = 2) or quarter corners around logs (n = 3) on the
 -- world cells x0.., z0.., layers y1..y2.
-local function trunk(wood, x0, z0, y1, y2, n, quarter)
+local function trunk(wood, x0, z0, y1, y2, n)
 	local log_name = grug_trees.shape_woods[wood].trunk
 	local c = (n - 1) / 2
 	for y = y1, y2 do
@@ -85,7 +74,7 @@ local function trunk(wood, x0, z0, y1, y2, n, quarter)
 				local pos = {x = x0 + i, y = y, z = z0 + k}
 				local corner = (i == 0 or i == n - 1) and (k == 0 or k == n - 1)
 				if corner then
-					put(pos, quarter or SHAPES[wood].quarter, quarter_facedir(c - i, c - k))
+					put(pos, SHAPES[wood].quarter, quarter_facedir(c - i, c - k))
 				else
 					put(pos, log_name, GY)
 				end
@@ -171,12 +160,6 @@ local function build_quarters(c)
 	local cut3 = at(c, -33, 1, 1)
 	trunk("apple", cut3.x, cut3.z, cut3.y, cut3.y + 4, 2)
 	core.remove_node({x = cut3.x + 1, y = cut3.y + 1, z = cut3.z})
-	-- the same two with the probe's centre-row variant of the mesh
-	for i, wood in ipairs({"jungle", "apple"}) do
-		local cut = at(c, -44 - 11 * i, 1, 1)
-		trunk(wood, cut.x, cut.z, cut.y, cut.y + 4, 2, VARIANT[wood])
-		core.remove_node({x = cut.x + 1, y = cut.y + 1, z = cut.z})
-	end
 end
 
 -- The real template expander over one probe definition.
@@ -264,8 +247,6 @@ local SHOTS = {
 	{name = "Q4_lying_quarters", hub = "Q", u = 17, h = 3, v = -7, pitch = 18},
 	{name = "Q6_cut_jungle_2x2", hub = "Q", u = -25, h = 2.6, v = -4, pitch = 6, yaw = 48},
 	{name = "Q6_cut_apple_2x2", hub = "Q", u = -36, h = 2.6, v = -4, pitch = 6, yaw = 48},
-	{name = "Q6v_cut_jungle_2x2_centre_row", hub = "Q", u = -58, h = 2.6, v = -4, pitch = 6, yaw = 48},
-	{name = "Q6v_cut_apple_2x2_centre_row", hub = "Q", u = -69, h = 2.6, v = -4, pitch = 6, yaw = 48},
 	{name = "R1_rotations_raised", hub = "R", u = 0, h = 10, v = -9, pitch = 45},
 	{name = "R2_rotations_eye", hub = "R", u = 0, h = 3.5, v = -12, pitch = 8},
 }

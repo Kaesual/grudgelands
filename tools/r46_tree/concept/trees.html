@@ -175,7 +175,7 @@ var DEFAULT_BARK = "m";
 //            top and bottom; the two faces on the axis side (+x and +z for
 //            facedir 0) are closed with the end grain as a cut along the
 //            trunk (Round 47, the user: a partly felled trunk shows cut wood,
-//            not a hollow shell): the cap's edge row stretched down the face.
+//            not a hollow shell): the end grain's centre row stretched down.
 //   branch   connected node box, 10/16 thick.
 //   twig     connected node box, 6/16 thick; the only piece that also
 //            connects to leaves (only to a leaf above it, see LEAF_SIDES)
@@ -276,15 +276,13 @@ var DEFAULT_BARK = "m";
 			});
 		}
 		// The two axis-side faces, end grain (tile 1) like the caps, as a
-		// cut along the trunk (Round 47, the user): the one texel row of the
-		// end grain under their shared top edge with the top cap, stretched
-		// down the whole face. Along the edge each face keeps the cap's
-		// texture coordinate, so the rings meet the cap's there and run down
-		// the trunk as stripes; across it every vertex takes the same
-		// coordinate, half a texel (1/32 of a 16-px texture) inside the
-		// cap's border, so the whole face samples the row the cap shows at
-		// that edge rather than the wrapped one beyond it.
-		var ROW = 1 - 1 / 32;
+		// cut along the trunk (Round 47, the user): a one-texel strip from
+		// the middle of the end grain, stretched down the whole face, so the
+		// rings run down the trunk as stripes. Along the top edge each face
+		// keeps the cap's texture coordinate; across it every vertex takes
+		// the same one, the middle of the centre texel row 8 (0.5 + 1/32 of
+		// a 16-px texture), not the dark bark ring of the cap's border.
+		var ROW = 0.5 + 1 / 32;
 		var inner = [];
 		// The +z face (x runs along it) and the +x face (z runs along it),
 		// each the whole node side from the axis edge to the far border.

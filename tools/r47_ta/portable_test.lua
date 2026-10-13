@@ -20,7 +20,7 @@
 --   D. jungle bark M on default:jungletree and the jungle shapes, the PNGs
 --      and the quarter .obj byte-equal to their Round 46 sources; the mesh's
 --      two axis-side faces closed with the end grain as a cut along the
---      trunk (the cap's edge row stretched down, meeting the cap's rings);
+--      trunk (the end grain's centre row stretched down the face);
 --   E. template rotation: the real wp40/r6_templates.lua turns a small cell
 --      set (a 2 x 2 quarter trunk with a limb along x and one along z) so that
 --      for all four turns every quarter's corner faces the trunk axis and
@@ -372,7 +372,7 @@ check(read("mods/ITEMS/grug_trees/models/grug_tree_quarter_oct.obj") ==
 -- The mesh: caps and the two closed axis-side faces in the end-grain group
 -- (material 1), three bark faces (material 2). In the file x is mirrored
 -- for the loader, so the axis-side faces lie on x = -0.5 (the node's +x)
--- and z = 0.5; each shows the cap's edge row stretched down the face.
+-- and z = 0.5; each shows the end grain's centre row stretched down.
 do
 	local obj = read("mods/ITEMS/grug_trees/models/grug_tree_quarter_oct.obj")
 	local v, vt, groups, current = {}, {}, {}, nil
@@ -417,7 +417,7 @@ do
 			end
 			-- a cut along the trunk: one texture coordinate runs along the
 			-- top edge as the cap's does, the other is the same on every
-			-- vertex and samples the cap's edge texel row (16 px)
+			-- vertex and samples the end grain's centre texel row (8 of 16)
 			local along = face[1].t[1] ~= face[2].t[1] and 1 or 2
 			local across = 3 - along
 			for _, corner in ipairs(face) do
@@ -428,8 +428,8 @@ do
 					check(cap and cap[along] == corner.t[along],
 						"axis-side face's stripes meet the top cap's rings at " ..
 						corner.v[1] .. "," .. corner.v[3])
-					check(cap and cap[across] == 1 and math.floor(corner.t[across] * 16) == 15,
-						"axis-side face samples the cap's edge row at " ..
+					check(math.floor(corner.t[across] * 16) == 8,
+						"axis-side face samples the end grain's centre row at " ..
 						corner.v[1] .. "," .. corner.v[3])
 				end
 			end
