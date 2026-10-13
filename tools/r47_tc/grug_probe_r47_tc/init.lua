@@ -17,8 +17,11 @@
 local P = "[r47tc] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r47tc_settle") or "") or 6
-local FILTER = core.settings:get("r47tc_shots") or "F,S,T"
+local FILTER = core.settings:get("r47tc_shots") or "F,S,T,G,W"
 local TIME_OF_DAY = 0.42
+-- "groves" (the groves follow-up): the capital groves and Hearthpine instead
+-- of the forests and saplings.
+local MODE = core.settings:get("r47tc_mode") or "forests"
 
 local function log(msg) core.log("action", P .. msg) end
 
@@ -262,18 +265,46 @@ core.register_globalstep(function(dtime)
 		player:set_physics_override({gravity = 0, speed = 0, jump = 0})
 		core.set_timeofday(TIME_OF_DAY)
 		local started = core.get_us_time()
-		find_spots()
+		if MODE == "greening" then
+			for _, key in ipairs({"highcourt", "lethariel", "dawnmere", "stillgrave"}) do
+				local a = grug_core.settlement_socket_anchor(key)
+				if a then
+					spots["W_" .. key] = {x = a.x, y = a.y, z = a.z}
+					log("spot W_" .. key .. " at " .. core.pos_to_string(a))
+				end
+			end
+		elseif MODE == "groves" then
+			-- the first grove or copse socket of three capitals, and
+			-- Hearthpine's anchor
+			for _, row in ipairs({{"lethariel", "G1_lethariel_grove"},
+					{"highcourt", "G2_highcourt_grove"}, {"nhal_veyr", "G3_nhal_veyr_copse"}}) do
+				for _, socket in ipairs(grug_core.settlement_sockets_at(row[1]) or {}) do
+					if socket.id:match("grove") or socket.id:match("copse") then
+						spots[row[2]] = vector.round(socket.pos)
+						spots[row[2]].y = spots[row[2]].y - 1
+						log("spot " .. row[2] .. " " .. socket.id .. " at " ..
+							core.pos_to_string(spots[row[2]]))
+						break
+					end
+				end
+			end
+			local hp = grug_core.settlement_socket_anchor("hearthpine")
+			if hp then spots.G4_hearthpine = hp end
+		else
+			find_spots()
+			-- the sapling platform's sky over the first forest's wild column
+			local base = spots.F1_apple_aspen or spots.F2_silverwood
+			if base then spots.S = {x = base.x, y = SKY_Y, z = base.z} end
+		end
 		log(("spot search %.1f s"):format((core.get_us_time() - started) / 1e6))
-		-- the sapling platform's sky over the first forest's wild column
-		local base = spots.F1_apple_aspen or spots.F2_silverwood
-		if base then spots.S = {x = base.x, y = SKY_Y, z = base.z} end
 		state.phase = "emerge"
 		state.emerge_started = core.get_us_time()
 		state.pending = 0
 		for label, s in pairs(spots) do
 			state.pending = state.pending + 1
-			core.emerge_area({x = s.x - 44, y = s.y - 8, z = s.z - 44},
-				{x = s.x + 44, y = s.y + 44, z = s.z + 44}, function(_, _, remaining)
+			local r = MODE == "greening" and label ~= "T" and 100 or 44
+			core.emerge_area({x = s.x - r, y = s.y - 8, z = s.z - r},
+				{x = s.x + r, y = s.y + 44, z = s.z + r}, function(_, _, remaining)
 					if remaining == 0 then
 						state.pending = state.pending - 1
 						log("emerged " .. label)
@@ -284,10 +315,31 @@ core.register_globalstep(function(dtime)
 		if state.pending > 0 then return end
 		log(string.format("emerge done in %.1f s",
 			(core.get_us_time() - state.emerge_started) / 1e6))
-		add_forest_shots()
-		build_saplings()
-		SHOTS[#SHOTS + 1] = {name = "T1_start_town", spot = "T", dx = 45, dy = 40, dz = 0,
-			yaw = 90, pitch = 38, first = true}
+		if MODE == "greening" then
+			for _, key in ipairs({"highcourt", "lethariel", "dawnmere", "stillgrave"}) do
+				if spots["W_" .. key] then
+					SHOTS[#SHOTS + 1] = {name = "W_" .. key .. "_wide", spot = "W_" .. key,
+						dx = 95, dy = 70, dz = 0, yaw = 90, pitch = 33, first = true}
+				end
+			end
+		elseif MODE == "groves" then
+			for _, label in ipairs({"G1_lethariel_grove", "G2_highcourt_grove",
+					"G3_nhal_veyr_copse"}) do
+				if spots[label] then
+					SHOTS[#SHOTS + 1] = {name = label, spot = label, dx = 22, dy = 16, dz = 0,
+						yaw = 90, pitch = 32, first = true}
+				end
+			end
+			if spots.G4_hearthpine then
+				SHOTS[#SHOTS + 1] = {name = "G4_hearthpine", spot = "G4_hearthpine", dx = 60,
+					dy = 45, dz = 0, yaw = 90, pitch = 35, first = true}
+			end
+		else
+			add_forest_shots()
+			build_saplings()
+			SHOTS[#SHOTS + 1] = {name = "T1_start_town", spot = "T", dx = 45, dy = 40, dz = 0,
+				yaw = 90, pitch = 38, first = true}
+		end
 		filter_shots()
 		hide_hud(player)
 		state.phase = "shoot"
