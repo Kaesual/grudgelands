@@ -1,9 +1,11 @@
--- Closed R7 production content resolvers: the 88-row production-R6
+-- Closed R7 production content resolvers: the 116-row production-R6
 -- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
 -- (84 -> 87 rows); Round 33 removed the six cultural source rows (93 -> 87);
--- Round 47 added the Anthracite ore (87 -> 88).
+-- Round 47 added the Anthracite ore (87 -> 88) and the 28 tree shape nodes
+-- of the generated trees (lane TC; the quarter, base, branch and twig of
+-- seven woods, decoration role: 88 -> 116).
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -96,10 +98,38 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_nodes:dirt_with_silver_litter", 1},
 		{"grug_nodes:mesa_clay", 1},
 		{"grug_nodes:mud", 9},
+		{"grug_trees:acacia_base", 8},
+		{"grug_trees:acacia_branch", 8},
+		{"grug_trees:acacia_quarter", 8},
+		{"grug_trees:acacia_twig", 8},
+		{"grug_trees:apple_base", 8},
+		{"grug_trees:apple_branch", 8},
+		{"grug_trees:apple_quarter", 8},
+		{"grug_trees:apple_twig", 8},
+		{"grug_trees:aspen_base", 8},
+		{"grug_trees:aspen_branch", 8},
+		{"grug_trees:aspen_quarter", 8},
+		{"grug_trees:aspen_twig", 8},
+		{"grug_trees:gravewood_base", 8},
+		{"grug_trees:gravewood_branch", 8},
 		{"grug_trees:gravewood_leaves", 8},
+		{"grug_trees:gravewood_quarter", 8},
 		{"grug_trees:gravewood_tree", 8},
+		{"grug_trees:gravewood_twig", 8},
+		{"grug_trees:jungle_base", 8},
+		{"grug_trees:jungle_branch", 8},
+		{"grug_trees:jungle_quarter", 8},
+		{"grug_trees:jungle_twig", 8},
+		{"grug_trees:pine_base", 8},
+		{"grug_trees:pine_branch", 8},
+		{"grug_trees:pine_quarter", 8},
+		{"grug_trees:pine_twig", 8},
+		{"grug_trees:silverwood_base", 8},
+		{"grug_trees:silverwood_branch", 8},
 		{"grug_trees:silverwood_leaves", 8},
+		{"grug_trees:silverwood_quarter", 8},
 		{"grug_trees:silverwood_tree", 8},
+		{"grug_trees:silverwood_twig", 8},
 	}
 	local P9G_NAMES = {
 		"grug_gathering:corn_source",
@@ -206,7 +236,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 88 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 116 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 

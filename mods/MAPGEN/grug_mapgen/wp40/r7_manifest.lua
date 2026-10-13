@@ -96,7 +96,7 @@ return function(canonical, raw_sha256, settlement_order)
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
 		"r6_artifact_sha256", "r6_catalog_sha256",
 		"r6_accepted_content_sha256", "r6_template_inputs_sha256",
-		"wp43_projection_sha256", "noise_schema", "noise_sha256",
+		"r6_generated_templates_sha256", "wp43_projection_sha256", "noise_schema", "noise_sha256",
 		"native_schema", "native_sha256", "gathering_schema",
 		"gathering_sha256", "production_r6_content_schema",
 		"production_r6_content_sha256", "production_r6_semantic_sha256",
@@ -316,7 +316,7 @@ return function(canonical, raw_sha256, settlement_order)
 			anchor_content = true, anchor_roster = true,
 			anchor_roster_sha256 = true,
 			settlement_content = true, settlement_blueprints = true,
-			decoded_templates = true,
+			decoded_templates = true, template_counts = true,
 			consumer_payload = true, protection_depth_below_placement = true,
 		}
 		for key in pairs(inputs) do
@@ -481,16 +481,40 @@ return function(canonical, raw_sha256, settlement_order)
 				end
 			end
 		end
-		if type(inputs.decoded_templates) ~= "table" or
-				#inputs.decoded_templates ~= 24 then
+		-- Round 47 lane TC: the template population is derived, not typed:
+		-- one record per template row of the R6 catalog, MTS rows whole
+		-- (`static`, frozen below) and generated tree rows as their species
+		-- and one digest per variant, as many as the species table says
+		-- (`template_counts`, tree_templates.lua). The generated digests are
+		-- this world's; their roll-up is published, never pinned (the lane
+		-- fixture tools/r47_tc pins sample seeds).
+		local decoded = inputs.decoded_templates
+		local template_rows = 0
+		for index = 1, #r6.decorations do
+			if r6.decorations[index].kind == "template" then
+				template_rows = template_rows + 1
+			end
+		end
+		if type(decoded) ~= "table" or type(decoded.static) ~= "table" or
+				type(decoded.generated) ~= "table" or
+				#decoded.static + #decoded.generated ~= template_rows then
 			fail("decoded template population differs")
+		end
+		for index = 1, #decoded.generated do
+			local row = decoded.generated[index]
+			local count = type(row) == "table" and inputs.template_counts[row.species]
+			if type(count) ~= "number" or type(row.digests) ~= "table" or
+					#row.digests ~= count then
+				fail("generated template population differs at " .. tostring(row and
+					row.definition_id))
+			end
 		end
 		local r6_catalog = graph_digest({surfaces = r6.surfaces,
 			resources = r6.resources, decorations = r6.decorations})
 		local frozen = {
 			schema = "grug_wp40_r7_source_projection_v1",
 			accepted_r6_content = graph_digest(inputs.accepted_r6_rows),
-			decoded_templates = graph_digest(inputs.decoded_templates),
+			decoded_templates = graph_digest(decoded.static),
 			wp43_projection = graph_digest(inputs.wp43_projection),
 			production_semantics = inputs.production_content.semantic_digest,
 			p9g_semantics = inputs.p9g_content.semantic_digest,
@@ -587,6 +611,7 @@ return function(canonical, raw_sha256, settlement_order)
 			r6_catalog_sha256 = r6_catalog,
 			r6_accepted_content_sha256 = frozen.accepted_r6_content,
 			r6_template_inputs_sha256 = frozen.decoded_templates,
+			r6_generated_templates_sha256 = graph_digest(decoded.generated),
 			wp43_projection_sha256 = frozen.wp43_projection,
 			noise_schema = native.noise_schema, noise_sha256 = native.noise_digest,
 			native_schema = native.native_schema, native_sha256 = native.native_digest,

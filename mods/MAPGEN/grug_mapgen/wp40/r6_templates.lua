@@ -1,6 +1,15 @@
 -- Immutable WP40 R6 schematic expansion and quarter-turn materialization.
+--
+-- Round 47 lane TC: a row whose asset is `treegen:<species>` is a generated
+-- tree (tree_templates.lua). `generated` = {full_seed = the world seed
+-- string, trees = the tree_templates module} builds its variants for this
+-- world at every construction, in main and emerge alike; a row of an MTS
+-- asset is expanded as before. Generated variants pass the same checks
+-- (bounds, vocabulary, decoration role, registered solids, no 4dir), are
+-- stored sparse and turned per placement (`generated_cells`), and their
+-- settlement class is computed here, never pinned in the row.
 
-return function(hash, content, template_source)
+return function(hash, content, template_source, generated)
 	local MAX_SAFE = 9007199254740991
 	local FACEDIR_ROTATE = {
 		0,1,2,3, 1,2,3,0, 2,3,0,1, 3,0,1,2,
@@ -12,10 +21,6 @@ return function(hash, content, template_source)
 	}
 	local WALL_TO_ROT = {[2] = 0, [3] = 2, [4] = 1, [5] = 3}
 	local ROT_TO_WALL = {[0] = 2, [1] = 4, [2] = 3, [3] = 5}
-	local SILVERWOOD = {
-		["default:aspen_tree"] = "grug_trees:silverwood_tree",
-		["default:aspen_leaves"] = "grug_trees:silverwood_leaves",
-	}
 
 	local function fail(message)
 		error("fail_template: " .. message, 0)
@@ -92,11 +97,15 @@ return function(hash, content, template_source)
 	local definitions = content.decorations()
 	local source_cache = {}
 	local records, by_id = {}, {}
+	local trees = generated and generated.trees
+	if generated ~= nil and (type(generated) ~= "table" or
+			type(generated.full_seed) ~= "string" or generated.full_seed == "" or
+			type(trees) ~= "table" or type(trees.variant) ~= "function") then
+		fail("generated tree seam differs")
+	end
 
 	local function replacement_for(definition, name)
-		if definition.id == "elf_forest_silverwood" then
-			return SILVERWOOD[name] or name
-		elseif definition.id == "swamp_papyrus" and name == "default:dirt" then
+		if definition.id == "swamp_papyrus" and name == "default:dirt" then
 			return "grug_nodes:mud"
 		elseif definition.id == "deep_forest_apple_log" and
 				name == "flowers:mushroom_brown" then
@@ -292,8 +301,8 @@ return function(hash, content, template_source)
 		-- So the anchor is the schematic's lowest OCCUPIED slice. That consumes a
 		-- leading all-air slice, and it is exactly the node `offset_y_plus_1`
 		-- names, which is why that rule adds nothing here and may not be combined
-		-- with an air base. `offset_y_minus_4` sinks the emergent jungle tree on
-		-- purpose and is authored against this anchor already, so it stands.
+		-- with an air base. (`offset_y_minus_4`, which sank the emergent jungle
+		-- schematic, left with it in Round 47: the kapok is a generated tree.)
 		local occupied_base = 0
 		while occupied_base < sy - 1 do
 			local empty = true
@@ -308,9 +317,7 @@ return function(hash, content, template_source)
 			occupied_base = occupied_base + 1
 		end
 		local offset_y = -occupied_base
-		if definition.rule:find("offset_y_minus_4", 1, true) then
-			offset_y = -4
-		elseif definition.rule:find("offset_y_plus_1", 1, true) and
+		if definition.rule:find("offset_y_plus_1", 1, true) and
 				occupied_base ~= 0 then
 			fail("template offsets its own air base at " .. definition.id)
 		end
@@ -330,9 +337,137 @@ return function(hash, content, template_source)
 		return result
 	end
 
+	-- GENERATED TREES. One variant set per species and world, shared by
+	-- every row of that species. The checks are the MTS cells' own:
+	-- bounds (the generator's box, x and z -8..8 -- wood may reach 8, one
+	-- past the leaf box -- and y -1..63), the cell bound, every node in the
+	-- production content with the decoration role, a registered solid, and
+	-- no 4dir/degrotate rotation kind.
+	local species_variants = {}
+	local generated_seconds = 0
+	local name_refs = {}
+	local function generated_ref(name)
+		local cached = name_refs[name]
+		if cached then return cached[1], cached[2] end
+		local content_ref = content.content_ref(name)
+		if not content_ref then fail("template node is absent from content manifest: " .. name) end
+		local mask = contract.content_kind_masks[content_ref]
+		if math.floor(mask / 8) % 2 ~= 1 then
+			fail("template node lacks decoration role: " .. name)
+		end
+		local target_cid, target_kind = contract.resolve_r6(content_ref, 0)
+		if target_cid == contract.ignore_cid or target_kind ~= 1 then
+			fail("template node is not a registered solid: " .. name)
+		end
+		local kind = param2_kind(content_ref, 0)
+		if kind ~= "none" and kind ~= "facedir" then
+			fail("generated tree node has rotation kind " .. kind .. ": " .. name)
+		end
+		name_refs[name] = {content_ref, kind}
+		return content_ref, kind
+	end
+	local function check_cell(x, y, z, param2, kind, label)
+		integer(x, label .. " x", -8, 8)
+		integer(y, label .. " y", -1, 63)
+		integer(z, label .. " z", -8, 8)
+		integer(param2, label .. " param2", 0, 23)
+		if kind == "none" and param2 ~= 0 then fail(label .. " turns a node without rotation") end
+	end
+	local function variants_of(key)
+		local list = species_variants[key]
+		if list then return list end
+		local row = trees.BY_KEY[key]
+		if not row then fail("unknown generated species " .. tostring(key)) end
+		local started = os.clock()
+		local seeds = trees.template_seeds(key, function(k)
+			return hash.digest_count("tree_template_seed_v1", generated.full_seed,
+				{key, k}, 2)
+		end)
+		list = {}
+		for index = 1, #seeds do
+			local v = trees.variant(key, seeds[index])
+			if v.count + v.root_count > 16384 then fail("generated tree cell bound exceeded") end
+			v.ref, v.kind, v.rref, v.rkind = {}, {}, {}, {}
+			for cell = 1, v.count do
+				v.ref[cell], v.kind[cell] = generated_ref(v.name[cell])
+				check_cell(v.x[cell], v.y[cell], v.z[cell], v.param2[cell], v.kind[cell],
+					"generated tree cell")
+			end
+			for cell = 1, v.root_count do
+				v.rref[cell], v.rkind[cell] = generated_ref(v.rname[cell])
+				check_cell(v.rx[cell], v.ry[cell], v.rz[cell], v.rparam2[cell],
+					v.rkind[cell], "generated root cell")
+			end
+			for run = 1, #v.runs do
+				local r = v.runs[run]
+				integer(r.first, "root run start", 1, v.root_count)
+				integer(r.last, "root run end", r.first, v.root_count)
+				integer(r.parent, "root run parent", 0, run - 1)
+			end
+			v.bounds = {}
+			for rotation = 0, 3 do
+				local min_x, max_x, min_y, max_y, min_z, max_z =
+					trees.rotated_bounds(v, rotation)
+				v.bounds[rotation + 1] = {min_x = min_x, max_x = max_x, min_y = min_y,
+					max_y = max_y, min_z = min_z, max_z = max_z}
+			end
+			v.digest = hash.hex(hash.sha256_bytes(v.bytes))
+			v.bytes = nil
+			list[index] = v
+		end
+		generated_seconds = generated_seconds + os.clock() - started
+		species_variants[key] = list
+		return list
+	end
+
+	local function generated_record(definition, key)
+		local variants = variants_of(key)
+		local rotations = {}
+		local computed_class = 2
+		for rotation = 0, 3 do
+			local union
+			for index = 1, #variants do
+				local b = variants[index].bounds[rotation + 1]
+				if not union then
+					union = {min_x = b.min_x, max_x = b.max_x, min_y = b.min_y,
+						max_y = b.max_y, min_z = b.min_z, max_z = b.max_z}
+				else
+					union.min_x = math.min(union.min_x, b.min_x)
+					union.max_x = math.max(union.max_x, b.max_x)
+					union.min_y = math.min(union.min_y, b.min_y)
+					union.max_y = math.max(union.max_y, b.max_y)
+					union.min_z = math.min(union.min_z, b.min_z)
+					union.max_z = math.max(union.max_z, b.max_z)
+				end
+				if b.max_x - b.min_x + 1 > 5 or b.max_z - b.min_z + 1 > 5 then
+					computed_class = 1
+				end
+			end
+			union.rotation = rotation
+			union.size_x = union.max_x - union.min_x + 1
+			union.size_y = union.max_y - union.min_y + 1
+			union.size_z = union.max_z - union.min_z + 1
+			rotations[rotation + 1] = union
+		end
+		if definition.settlement_class ~= nil then
+			fail("generated template pins a settlement class at " .. definition.id)
+		end
+		return {definition_id = definition.id, species = key, generated = true,
+			rotations = rotations, variants = variants}, computed_class
+	end
+
+	local classes = {}
 	for index = 1, #definitions do
 		local definition = definitions[index]
-		if definition.kind == "template" then
+		local generated_key = definition.kind == "template" and
+			definition.asset_or_node:match("^treegen:([a-z_]+)$")
+		if generated_key then
+			if not trees then fail("generated template without a world seed at " .. definition.id) end
+			local record, class = generated_record(definition, generated_key)
+			classes[definition.id] = class
+			records[#records + 1] = record
+			by_id[definition.id] = record
+		elseif definition.kind == "template" then
 			local sx, sy, sz, yslice, cells = base_record(definition)
 			local rotations = {}
 			local computed_class = 2
@@ -343,8 +478,7 @@ return function(hash, content, template_source)
 				local span_z = record.max_z - record.min_z + 1
 				if span_x > 5 or span_z > 5 then computed_class = 1 end
 			end
-			if definition.id == "emergent_jungle_tree" or
-					definition.id == "deep_forest_apple_log" or
+			if definition.id == "deep_forest_apple_log" or
 					definition.id == "badlands_large_cactus" or
 					definition.id == "swamp_papyrus" then
 				computed_class = 1
@@ -385,13 +519,118 @@ return function(hash, content, template_source)
 		return string.byte(digest, 1) < probability
 	end
 
+	-- A generated record's copy: its own rotations, the variants shared
+	-- (read-only by contract; they are the world's and never change).
+	local function copy_record(record)
+		if not record or not record.generated then return copy(record) end
+		return {definition_id = record.definition_id, species = record.species,
+			generated = true, rotations = copy(record.rotations),
+			variants = record.variants}
+	end
+
 	local module = {}
-	function module.record(definition_id) return copy(by_id[definition_id]) end
-	function module.records() return copy(records) end
+	function module.record(definition_id) return copy_record(by_id[definition_id]) end
+	function module.records()
+		local result = {}
+		for index = 1, #records do result[index] = copy_record(records[index]) end
+		return result
+	end
+	-- The settlement class each generated row computed (rows id -> 1 or 2),
+	-- for r6_content.lua's once-only `set_template_classes`.
+	function module.generated_classes() return copy(classes) end
+	-- The identity the R7 manifest binds: the MTS records whole (frozen), and
+	-- per generated row its species and the digest of every variant (this
+	-- world's; the lane fixture pins sample seeds).
+	function module.identity()
+		local static, generated_rows = {}, {}
+		for index = 1, #records do
+			local record = records[index]
+			if record.generated then
+				local digests = {}
+				for v = 1, #record.variants do digests[v] = record.variants[v].digest end
+				generated_rows[#generated_rows + 1] = {definition_id = record.definition_id,
+					species = record.species, digests = digests}
+			else
+				static[#static + 1] = copy(record)
+			end
+		end
+		return {static = static, generated = generated_rows}
+	end
+	-- CPU seconds this construction spent building the generated variants.
+	function module.generated_seconds() return generated_seconds end
+	function module.root_ground_names()
+		local names = {}
+		for index = 1, #(trees and trees.ROOT_GROUND or {}) do
+			names[index] = trees.ROOT_GROUND[index]
+		end
+		return names
+	end
 	function module.rotation(definition_id, rotation)
 		integer(rotation, "rotation index", 0, 3)
 		local record = by_id[definition_id]
 		return record and copy(record.rotations[rotation + 1]) or nil
+	end
+	-- The variant (1-based) a generated row's candidate at a root takes: a
+	-- digest of the row and the root, independent of its rotation's.
+	function module.variant_index(full_seed, definition_id, root_x, root_y, root_z)
+		local record = by_id[definition_id]
+		if not record or not record.generated then fail("not a generated template") end
+		local digest = hash.digest_count("decoration_variant_v1", full_seed,
+			{definition_id, root_x, root_y, root_z}, 4)
+		local a, b = string.byte(digest, 1, 2)
+		return (a * 256 + b) % #record.variants + 1
+	end
+	-- Which root runs a placed tree keeps (handoff §5): a run whose every
+	-- cell passes the writer's test `cell_ok(cell)` (ground right under the
+	-- cell's column at the foot, none at the foot's level, the cell free),
+	-- a fork's toe only with its parent run. Returns kept[run] = boolean.
+	function module.kept_root_runs(runs, cell_ok)
+		local kept = {}
+		for run_index = 1, #runs do
+			local run = runs[run_index]
+			local ok = run.parent == 0 or kept[run.parent] == true
+			for part = 1, ok and #run or 0 do
+				if not cell_ok(run[part]) then
+					ok = false
+					break
+				end
+			end
+			kept[run_index] = ok
+		end
+		return kept
+	end
+	-- One generated variant turned by `rotation`, as the writer's cells
+	-- {x, y, z, include, content_ref, param2, force_place, optional} (stems
+	-- force-placed, leaves optional), its root runs (each {parent, cells})
+	-- and its turned bounds.
+	function module.generated_cells(definition_id, variant_index, rotation)
+		integer(rotation, "rotation index", 0, 3)
+		local record = by_id[definition_id]
+		local v = record and record.generated and record.variants[variant_index]
+		if not v then fail("generated variant differs") end
+		local rotate, stem, leaf = trees.rotate, trees.STEM, trees.LEAF
+		local cells = {}
+		for index = 1, v.count do
+			local x, z = rotate(v.x[index], v.z[index], rotation)
+			local flag = v.flag[index]
+			cells[index] = {x = x, y = v.y[index], z = z, include = true,
+				content_ref = v.ref[index],
+				param2 = rotate_param2(v.kind[index], v.param2[index], rotation),
+				force_place = flag == stem, optional = flag == leaf}
+		end
+		local runs = {}
+		for run_index = 1, #v.runs do
+			local run = v.runs[run_index]
+			local list = {parent = run.parent}
+			for index = run.first, run.last do
+				local x, z = rotate(v.rx[index], v.rz[index], rotation)
+				list[#list + 1] = {x = x, y = v.ry[index], z = z,
+					content_ref = v.rref[index],
+					param2 = rotate_param2(v.rkind[index], v.rparam2[index], rotation)}
+			end
+			runs[run_index] = list
+		end
+		return cells, runs, v.bounds[rotation + 1]
 	end
 	function module.rotation_runtime(definition_id, rotation)
 		integer(rotation, "rotation index", 0, 3)
