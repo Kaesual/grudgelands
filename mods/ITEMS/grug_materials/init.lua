@@ -50,6 +50,7 @@ for _, rock in ipairs(grug_materials.DECORATIVE_ROCKS) do
 end
 
 dofile(modpath .. "/ores.lua")
+dofile(modpath .. "/torch.lua")
 dofile(modpath .. "/derivatives.lua")
 -- tools.lua first: it moves default's four tool grades into this namespace,
 -- and overrides.lua then edits the canonical names.

@@ -116,15 +116,17 @@ or guild land.
 
 The stone burns fuel whether anybody is near it or not (ruling 10).
 
-- **Accepted fuel:** coal lumps (`default:coal_lump`) and charcoal
-  (`grug_smelting:charcoal`) only; both burn equally long. Coal blocks and
-  every other fuel are refused.
-- **Burn time:** one lump = **7 h 16 min = 26 160 s**. The stone has one fuel
-  slot of at most 99 items; a full slot lasts 99 × 26 160 s = 2 589 840 s
-  ≈ 30 days of real time.
+- **Accepted fuel:** coal lumps (`default:coal_lump`), charcoal
+  (`grug_smelting:charcoal`) and Anthracite (`grug_materials:anthracite`,
+  Round 47 ruling 12) only; coal lumps and charcoal burn equally long,
+  Anthracite counts **1.5 lumps**. Coal blocks and every other fuel are
+  refused.
+- **Burn time:** one lump = **7 h 16 min = 26 160 s**, one Anthracite
+  = **10 h 54 min = 39 240 s**. The cap is counted in time: **99 lumps'
+  worth**, 99 × 26 160 s = 2 589 840 s ≈ 30 days of real time.
 - **Paid until.** Inserted fuel is converted at once into a "paid until"
   timestamp in the claim registry (`os.time()` seconds):
-  `paid_until = max(paid_until, now) + lumps × 26 160`. Protection only
+  `paid_until = max(paid_until, now) + pieces × seconds per piece`. Protection only
   compares that timestamp with the wall clock: no mapblock has to be loaded
   and nothing is replayed. Offline time and server downtime count.
 - `remaining = max(0, paid_until − now)`. The claim is **active** while
@@ -132,12 +134,15 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
 - **Fuel-slot arithmetic** (the implementation's one source of truth):
   - the displayed stack is `ceil(remaining / 26 160)` lumps, so a partly
     burnt lump still shows as one;
-  - new fuel is accepted up to `99 − displayed stack`; topping up always
-    works up to the full stack;
+  - new fuel is accepted while its whole time fits under the cap: pieces
+    `= floor((99 × 26 160 − remaining) / seconds per piece)`; for lumps that
+    is `99 − displayed stack`, as before Round 47. A piece that does not fit
+    whole is refused with the room left ("Not enough room for one
+    Anthracite …"), the rest of a stack comes back;
   - inserted fuel can never be taken out again;
   - on pick-up the owner gets `floor(remaining / 26 160)` whole lumps back
-    as charcoal (coal lumps when `grug_smelting` is absent); the partly burnt
-    lump is lost. When the inventory is full, the returned lumps drop on the
+    as charcoal (coal lumps when `grug_smelting` is absent), whatever fuel
+    paid the time; the partly burnt lump is lost. When the inventory is full, the returned lumps drop on the
     ground.
 - Activation (§2a) pays its 5 lumps into the same timestamp. A draft's fuel
   slot refuses fuel.

@@ -151,8 +151,8 @@ universal pick.
 | Tier | Levels | ilvl | Metal | Processing | Tier rock (mapgen band) | Next-pick material available no deeper than |
 |---|---:|---:|---|---|---|---:|
 | T1 | 1–10 | 1 | **Bronze** | Copper + Tin, dual furnace | `default:stone`, y ≥ −100 | Iron: y ≥ −100 |
-| T2 | 11–20 | 11 | **Iron** | Iron ore, normal furnace | `grug_materials:t2_stone`, −101…−300 | mined Coal/Steel inputs: y ≥ −300 |
-| T3 | 21–30 | 21 | **Steel** | Iron Bar + mined Coal, dual furnace | `grug_materials:t3_stone`, −301…−500 | Silver: y ≥ −500 |
+| T2 | 11–20 | 11 | **Iron** | Iron ore, normal furnace | `grug_materials:t2_stone`, −101…−300 | Anthracite (the Steel input): y ≥ −300 (lower half of T2) |
+| T3 | 21–30 | 21 | **Steel** | Iron Bar + Anthracite, dual furnace | `grug_materials:t3_stone`, −301…−500 | Silver: y ≥ −500 |
 | T4 | 31–40 | 31 | **Silversteel** | Steel + Silver, dual furnace | `grug_materials:t4_stone`, −501…−700 | Emberglass: y ≥ −700 |
 | T5 | 41–50 | 41 | **Embersteel** | Silversteel + Emberglass, dual furnace | `grug_materials:t5_stone`, −701…−1000 | Abyssal Crystal: y ≥ −1000 |
 | T6 | 51–60 | 51 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | `grug_materials:t6_stone`, below −1000 | no T7 prerequisite |
@@ -182,7 +182,7 @@ universal pick.
 
 Every natural resource has a minimum **harvest tier**: the pick tier of the
 rock layer where it first appears (Round 24 ruling 2). A weaker pick cannot dig
-the ore at all (§3.0.4). The tier holds at any depth, so Coal exposed at
+the ore at all (§3.0.4). The tier holds at any depth, so Copper exposed at
 y = −600 is still mined with a T1 pick. Tool-metal ores are therefore mined
 one tier below the gear they make. Iron is the one T1 resource that needs a
 metal pick: the Bronze pick (Round 47 ruling 7).
@@ -191,7 +191,7 @@ metal pick: the Bronze pick (Round 47 ruling 7).
 |---|---|
 | T1 — any pick, incl. the Wood/Stone starters | Coal, Copper, Tin, Quartz; Citrine |
 | T1 — the Bronze pick (not Wood or Stone) | Iron |
-| T2 | Gold; Jade |
+| T2 | Gold, Anthracite; Jade |
 | T3 | Silver; Garnet |
 | T4 | Emberglass; Sapphire |
 | T5 | Abyssal Crystal; Ruby |
@@ -220,7 +220,7 @@ the six species has one tier and occurs **in the tier rock of that tier and,
 thinner, in the two tier rocks below it** (Round 46 ruling 3), identically in
 every race region, zone and faction. Its harvest tier equals its tier at any
 depth, so it needs the pick of its own layer; the deeper rock needs the
-deeper pick anyway, so no new gate appears (Coal at depth works the same
+deeper pick anyway, so no new gate appears (Copper at depth works the same
 way). Gathering XP follows the harvest tier too: a Citrine dug in T3 rock pays
 T1 gem XP.
 
@@ -295,12 +295,14 @@ purchase token; no universal progression step requires it.
 nodes, the five single-input smelts, the five alloys below, the storage
 pack/unpack pairs of §3.0.1 and the station's own craft recipe are registered
 and audited at every server start. **Round 21 decision (2026-09-24):** normal Copper, Tin, Iron, Silver and Gold smelts
-each take **10 seconds**. Separate alloy durations retain the existing
-4/6/8/10/12-second calibration. Earlier measured timings:
+each take **10 seconds**, and since Round 47 (ruling 17) every alloy takes
+the same 10 seconds in the dual furnace (the 4/6/8/10/12-second calibration
+is retired). Earlier measured timings:
 [`wp26-implementation.md`](../research/wp26-implementation.md).
 
 Round 21 furnace rules: both furnaces accept
-only logs (15s), mined coal (80s) and charcoal (80s) as fuel. One log cooks into
+only logs (15s), mined coal (80s), charcoal (80s) and Anthracite (120s,
+Round 47 ruling 11) as fuel. One log cooks into
 one distinct charcoal item in 10s. New fuel ignites only with a valid recipe
 and output space; the current piece burns out even if work stops. Continued
 processing refuels without an intervening dark tick. Flame shows remaining
@@ -308,12 +310,24 @@ burn time; arrow shows recipe progress. Personal/shared inventory semantics
 remain unchanged. Active personal jobs illuminate the physical furnace until
 the latest observed private fuel piece expires; only that cosmetic deadline is
 shared, while each player's flame and progress remain private. Charcoal does
-not replace mined coal in Steel or coal quests. Torches are one Basic recipe:
+not replace mined coal in coal quests. Torches are one Basic recipe:
 **1 Coal or 1 Charcoal + 1 stick → 10 torches** (Round 46 ruling 4; 4 per
 coal before), light 12; the vendor torch stays 1c. Charcoal is in the coal
 group with the coal lump, so the recipe takes either (the crafting box
 chooses which, [inventory_equipment.md](inventory_equipment.md) §1), and
 Black Dye takes charcoal too.
+
+**Anthracite** (Round 47 rulings 8–10) is the deep coal: an ore of its own
+(`grug_materials:stone_with_anthracite`, item `grug_materials:anthracite`,
+Iron pick) from the lower half of T2 down; Coal ends at T2 (no Coal ore
+below y −300). It is **not** in the coal group, so it is named wherever it
+is accepted: Steel, furnace fuel, the Claim Stone (1.5 lumps,
+[housing.md](housing.md)), the T3 enchant inputs and its own torch. The
+**Anthracite torch** is a Basic recipe, **1 Anthracite + 1 stick → 10
+torches**, light 14 (the Coal torch 12): spawns need light 7 or less in
+caves and 5 or less at night, so it keeps cave spawns away within 6 nodes
+(the Coal torch 4) and night spawns within 8 (6). Floor, wall and ceiling
+forms as the Coal torch.
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
 the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
@@ -322,13 +336,14 @@ the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
 |---|---|---|
 | Bronze bar | Copper + Tin | dual furnace |
 | Iron bar | Iron lump | normal furnace |
-| Steel bar | 1 Iron Bar + 1 mined Coal | dual furnace |
+| Steel bar | 1 Iron Bar + 1 Anthracite | dual furnace |
 | Silversteel bar | Steel + Silver | dual furnace |
 | Embersteel bar | Silversteel + Emberglass | dual furnace |
 | Abyssal Steel bar | Embersteel + Abyssal Crystal | dual furnace |
 
-Steel has two material inputs. Mined Coal occupies the second material slot;
-burning Coal or Charcoal as fuel never substitutes for it. The dual furnace
+Steel has two material inputs. Anthracite occupies the second material slot
+(Round 47 ruling 9; Coal and Charcoal never make Steel); burning fuel never
+substitutes for it. The dual furnace
 therefore keeps two material slots plus fuel. No universal bar consumes a
 gem or trophy.
 
@@ -1234,7 +1249,7 @@ becoming a side door around the pick-tier gate of §3.0.4.
 | Contested approaches 31–40 | equivalent T4 access | T4, elite chances on elites | all six race approaches are contested |
 | Front 41–50 | equivalent T5 access | T5, elite chances on elites | The Broken Causeway and The Shattered Line; war-front objectives and quest hooks; no free supply crates |
 | High front 51–60 / endpoints 60 | equivalent T6 access | T6; elites common | two contested dragons and the apex camps |
-| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; each gem from its own tier rock, thinner two tiers deeper (§3.0.1); deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
+| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, Anthracite by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; each gem from its own tier rock, thinner two tiers deeper (§3.0.1); deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**

@@ -15,4 +15,8 @@ return {
 		was = 4, removed = true},
 	{output = "default:torch", count = 10, added = {
 		{group = "coal", n = 1}, {group = "stick", n = 1}}},
+	-- Round 47 ruling 10: the Anthracite torch (light 14), 10 from 1
+	-- Anthracite and 1 stick. Anthracite is not in the coal group (ruling 9).
+	{output = "grug_materials:anthracite_torch", count = 10, added = {
+		{item = "grug_materials:anthracite", n = 1}, {group = "stick", n = 1}}},
 }

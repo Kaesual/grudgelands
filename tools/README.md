@@ -921,3 +921,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the game as 0.47.0 and runs the tool through `tool_run.py` with that
   declaration); `portable_test.lua` the join part (stays in
   `run_fixtures.sh`); `evidence/` the last run.
+  `r47_an` Anthracite (`portable_test.lua`: the ore row and node, the WP40
+  rows (no Coal below T2, the T2 lower half, never rarer than Iron from
+  T3), Steel only from Anthracite and the 10 s alloys with the smelting
+  audit, the furnace fuels, the Claim Stone's time cap, fit refusal and
+  refund through the real api, the torch triple and its Basic row, the
+  enchant inputs and group tokens; `evidence/` the seed 12345 census of
+  `r46_or/run.sh` before and after lane OR's merge).

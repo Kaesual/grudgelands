@@ -120,7 +120,7 @@ core.register_on_mods_loaded(function()
 		assert(core.registered_items[recipe.output_name], "station operation preview item missing")
 		local same_tier
 		for _, item in ipairs(recipe.flat_inputs) do
-			assert(core.registered_items[item], "station operation material missing: " .. item)
+			assert(grug_jobs.token_registered(item), "station operation material missing: " .. item)
 			if grug_jobs.ingredient_tier(item) == recipe.tier then same_tier = true end
 		end
 		assert(same_tier, "station operation needs an ingredient of its own tier")

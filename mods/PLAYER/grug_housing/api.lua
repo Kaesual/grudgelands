@@ -30,6 +30,7 @@ grug_housing.RADIUS = model.RADIUS
 grug_housing.MIN_Y = model.MIN_Y
 grug_housing.LUMP_SECONDS = model.LUMP_SECONDS
 grug_housing.FUEL_MAX = model.FUEL_MAX
+grug_housing.FUEL_CAP_SECONDS = model.FUEL_CAP_SECONDS
 -- Round 26 rulings 8-10: a draft lasts DRAFT_SECONDS, activation pays
 -- ACTIVATION_LUMPS, pick-up waits PICKUP_LOCK_SECONDS after activation.
 grug_housing.DRAFT_SECONDS = model.DRAFT_SECONDS
@@ -50,9 +51,12 @@ grug_housing.STONE_NODES = {
 }
 
 -- Ruling 10: coal lumps and charcoal burn alike; coal blocks are refused.
+-- Seconds of fuel per piece. Round 47 ruling 12: Anthracite counts 1.5
+-- lumps (10 h 54 min).
 grug_housing.FUEL_ITEMS = {
-	["default:coal_lump"] = true,
-	["grug_smelting:charcoal"] = true,
+	["default:coal_lump"] = model.LUMP_SECONDS,
+	["grug_smelting:charcoal"] = model.LUMP_SECONDS,
+	["grug_materials:anthracite"] = model.LUMP_SECONDS * 3 / 2,
 }
 -- Unburnt whole lumps come back as charcoal on pick-up, the cheaper lump
 -- (any log makes it), so placing and picking up never turns charcoal into
@@ -71,7 +75,17 @@ end
 grug_housing.FUEL_ORDER = {"grug_smelting:charcoal", "default:coal_lump"}
 
 function grug_housing.is_fuel(itemname)
-	return grug_housing.FUEL_ITEMS[itemname] == true
+	return grug_housing.FUEL_ITEMS[itemname] ~= nil
+end
+
+-- Seconds one piece of the item burns in a Claim Stone, 0 for a non-fuel.
+function grug_housing.fuel_seconds(itemname)
+	return grug_housing.FUEL_ITEMS[itemname] or 0
+end
+
+-- Seconds the stone still takes under its cap (Round 47 ruling 12).
+function grug_housing.fuel_room_seconds(claim)
+	return math.max(0, model.FUEL_CAP_SECONDS - model.remaining_seconds(claim))
 end
 
 -- The claim covering pos (x/z only, y >= MIN_Y), or nil.
@@ -259,10 +273,12 @@ function grug_housing.activate(player)
 		"in place for %d hours."):format(model.PICKUP_LOCK_SECONDS / 3600)
 end
 
--- Burns count lumps into paid_until; returns the number accepted
--- (at most 99 - ceil(remaining / LUMP_SECONDS)); 0 for a draft.
-function grug_housing.add_fuel(claim, count)
-	local accepted = model.add_fuel(claim, count)
+-- Burns count pieces of `itemname` (a lump when nil) into paid_until;
+-- returns the number accepted: as many as fit whole under the cap of 99
+-- lumps' worth (Round 47 ruling 12); 0 for a draft.
+function grug_housing.add_fuel(claim, count, itemname)
+	local seconds = itemname and grug_housing.FUEL_ITEMS[itemname] or model.LUMP_SECONDS
+	local accepted = model.add_fuel(claim, count, seconds)
 	if accepted > 0 then
 		grug_housing.sync_stone_node(claim)
 		grug_housing.notify_claim_changed(claim, "fuel")

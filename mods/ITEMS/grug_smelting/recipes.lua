@@ -5,20 +5,19 @@
 -- (grug_jobs/basic_recipes.lua); the audit checks them there.
 --
 -- INPUT-FORM RULE (task card §3.1, binding): an alloy input is the material's
--- BAR where a bar exists; mined Coal, Emberglass and Abyssal Crystal enter as
--- their mined items, because no bar form of them exists or may be invented.
+-- BAR where a bar exists; mined Anthracite, Emberglass and Abyssal Crystal
+-- enter as their mined items, because no bar form of them exists or may be
+-- invented.
 -- `grug_materials.PROCESSED_MATERIALS` already encodes that distinction --
 -- `item` is the nine-unit storage input for all twelve rows, `bar_item` exists
 -- only on the ten `kind = "bar"` rows -- so the storage family is derived from
 -- the registry rather than repeated here.
 --
--- COOK TIMES ARE CALIBRATION, NOT CONTRACT. The task card's §1 non-goal "No
--- number freezing" is binding: the literals below are WP26's own first
--- calibration (the six-tier ladder made monotone, the T1 alloy deliberately
--- close to the normal furnace's 3 s so the first station upgrade does not feel
--- slower), measured once in the engine and documented in
--- `docs/research/wp26-implementation.md`. Nothing reads them as a design
--- number and no other work package inherits them.
+-- COOK TIMES. Every bar takes SMELT_TIME (10 s) in the normal furnace and,
+-- since Round 47 (ruling 17), every alloy takes the same ALLOY_TIME in the
+-- dual furnace: an alloy takes as long as a bar. WP26's first calibration
+-- (a monotone 4 to 12 s ladder, `docs/research/wp26-implementation.md`) is
+-- history.
 
 local PROCESSED = grug_materials.PROCESSED_MATERIALS
 
@@ -36,9 +35,9 @@ local SMELTS = {
 	{"grug_materials:gold_bar", "default:gold_lump"},
 }
 
--- The engine's own default is 3 s; it is spelled out because it is a number
--- WP26 chose, not one it inherited.
+-- Spelled out for every cooking recipe (the engine's default would be 3 s).
 local SMELT_TIME = 10
+local ALLOY_TIME = SMELT_TIME
 
 -- In default's coal group with the coal lump (Round 46 lane ID): the one
 -- torch recipe takes either ("Charcoal or Coal Lump"), and so does black dye.
@@ -67,21 +66,22 @@ end
 --
 -- §3.3 -- the dual furnace: two materials, either order, one of each
 --
--- Mined Coal occupies a MATERIAL slot for Steel; Coal or Charcoal burning in
--- the fuel slot never substitutes for it (§3.0.2). The node's fuel-slot filter
--- and the matcher together are what make that true (`node.lua`).
+-- Steel is Iron Bar + mined Anthracite and only that (Round 47 ruling 9):
+-- Anthracite occupies a MATERIAL slot, and fuel burning in the fuel slot
+-- (Anthracite too) never substitutes for it (§3.0.2). The matcher needs both
+-- material slots filled, so a lone Iron Bar matches nothing.
 --
 local ALLOYS = {
 	{"grug_materials:bronze_bar",
-		"grug_materials:copper_bar", "grug_materials:tin_bar", 4},
+		"grug_materials:copper_bar", "grug_materials:tin_bar", ALLOY_TIME},
 	{"grug_materials:steel_bar",
-		"grug_materials:iron_bar", "default:coal_lump", 6},
+		"grug_materials:iron_bar", "grug_materials:anthracite", ALLOY_TIME},
 	{"grug_materials:silversteel_bar",
-		"grug_materials:steel_bar", "grug_materials:silver_bar", 8},
+		"grug_materials:steel_bar", "grug_materials:silver_bar", ALLOY_TIME},
 	{"grug_materials:embersteel_bar",
-		"grug_materials:silversteel_bar", "grug_materials:emberglass", 10},
+		"grug_materials:silversteel_bar", "grug_materials:emberglass", ALLOY_TIME},
 	{"grug_materials:abyssal_steel_bar",
-		"grug_materials:embersteel_bar", "grug_materials:abyssal_crystal", 12},
+		"grug_materials:embersteel_bar", "grug_materials:abyssal_crystal", ALLOY_TIME},
 }
 
 for _, row in ipairs(ALLOYS) do
@@ -184,6 +184,27 @@ core.register_on_mods_loaded(function()
 		if grug_smelting.match(row[2], row[3]) ~= recipe or
 				grug_smelting.match(row[3], row[2]) ~= recipe then
 			fail("alloy " .. row[1] .. " does not match in both slot orders")
+		end
+		-- Round 47 ruling 17: an alloy takes as long as a bar.
+		if recipe.time ~= SMELT_TIME then
+			fail("alloy " .. row[1] .. " does not take " .. SMELT_TIME .. " s")
+		end
+	end
+	-- Round 47 ruling 9: Steel only from Iron Bar + Anthracite, never from Coal
+	-- or anything else of the coal group, and Anthracite is not in that group.
+	local steel = grug_smelting.recipe_for("grug_materials:steel_bar")
+	if not steel or steel.inputs[1] ~= "grug_materials:iron_bar" or
+			steel.inputs[2] ~= "grug_materials:anthracite" then
+		fail("Steel is not Iron Bar + Anthracite")
+	end
+	if core.get_item_group("grug_materials:anthracite", "coal") ~= 0 then
+		fail("Anthracite is in the coal group")
+	end
+	for _, recipe in ipairs(grug_smelting.RECIPES) do
+		for _, input in ipairs(recipe.inputs) do
+			if core.get_item_group(input, "coal") ~= 0 then
+				fail("alloy " .. recipe.output .. " takes " .. input .. " of the coal group")
+			end
 		end
 	end
 

@@ -93,6 +93,7 @@ local LINES = {
 		grug_housing.DRAFT_SECONDS / 60, grug_housing.ACTIVATION_LUMPS),
 	"or it crumbles and I give you a new one.",
 	"It burns coal lumps or charcoal: 99 lumps last about 30 days.",
+	"Anthracite burns too and counts as 1.5 lumps.",
 	"When the fuel runs out, the protection ends.",
 	("After activation the stone stays in place for %d hours."):format(
 		grug_housing.PICKUP_LOCK_SECONDS / 3600),

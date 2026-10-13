@@ -1,8 +1,9 @@
--- Closed R7 production content resolvers: the 87-row production-R6
+-- Closed R7 production content resolvers: the 88-row production-R6
 -- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
--- (84 -> 87 rows); Round 33 removed the six cultural source rows (93 -> 87).
+-- (84 -> 87 rows); Round 33 removed the six cultural source rows (93 -> 87);
+-- Round 47 added the Anthracite ore (87 -> 88).
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -70,6 +71,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_materials:basalt", 1},
 		{"grug_materials:granite", 1},
 		{"grug_materials:slate", 1},
+		{"grug_materials:stone_with_anthracite", 4},
 		{"grug_materials:stone_with_citrine", 4},
 		{"grug_materials:stone_with_diamond", 4},
 		{"grug_materials:stone_with_emberglass", 4},
@@ -204,7 +206,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 87 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 88 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 

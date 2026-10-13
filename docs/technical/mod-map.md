@@ -61,7 +61,7 @@ mobs_redo fork publishes `mobs`.
 
 | Mod | Owns | Seams other mods use | Rules |
 |---|---|---|---|
-| `grug_materials` | The six material tiers, tier rock and mining, ores, resources, the race-region registry, tool lifetimes and the tool aliases | `TIERS`, `RESOURCES`, `PROCESSED_MATERIALS`, `TOOL_ALIASES`, `register_on_harvest` | [items_crafting.md](../design/items_crafting.md) |
+| `grug_materials` | The six material tiers, tier rock and mining, ores, resources, the race-region registry, tool lifetimes and the tool aliases, the Anthracite torch | `TIERS`, `RESOURCES`, `PROCESSED_MATERIALS`, `TOOL_ALIASES`, `register_on_harvest` | [items_crafting.md](../design/items_crafting.md) |
 | `grug_nodes` | Signature surface and structure nodes (with the swamp's mud variants, wet grass, moss carpet, reeds and cattails, Round 47), crop soil and crop visuals | `crop_visual`, `bind_crop_soil_callbacks` | [farming.md](../design/farming.md) |
 | `grug_trees` | The race trees Silverwood and Gravewood; the swamp tree's leaves and hanging moss on gravewood's wood (Round 47); the tree shape nodes `grug_trees:<wood>_quarter\|base\|branch\|twig` of the seven wood types (`shapes.lua`, Round 47), the leaf decay of every wood (radius 3), the leaves' and the ground's `connect_sides` overrides and the jungle bark | `silverwood_replacements`, `shape_nodes` (`[wood][shape]` → node name), `shape_woods` (`[wood]` → trunk and leaf) | [biomes_mobs.md](../design/biomes_mobs.md) §5 |
 | `grug_gathering` | The closed gathering catalogue and harvest authorization | `register_herb_authorizer` | [professions.md](../design/professions.md) |

@@ -321,8 +321,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   dragon channels remain full-column exceptions.
 
   Natural resources need the pick of the layer where they first appear, at any
-  depth: T1 digs Copper, Tin, Coal, Iron, Quartz and Citrine; T2 Gold and
-  Jade; T3 Silver and Garnet; T4 Emberglass and Sapphire; T5 Abyssal Crystal
+  depth: T1 digs Copper, Tin, Coal, Iron, Quartz and Citrine; T2 Gold,
+  Anthracite and Jade; T3 Silver and Garnet; T4 Emberglass and Sapphire; T5 Abyssal Crystal
   and Ruby; T6 Diamond. Each gem occurs in the rock of its own tier and,
   thinner, one and two tiers deeper, everywhere (`items_crafting.md` §3.0.1). A weaker pick cannot dig the ore at all
   (the former under-tier shatter path is retired). Crafted storage/building
@@ -885,8 +885,9 @@ land do not exist.
 - A placed stone is a draft that protects nothing and crumbles after
   5 minutes unless the owner activates it with 5 lumps; for 12 hours after
   activation it cannot be picked up (Round 26, `housing.md` §2a).
-- The stone burns coal lumps or charcoal (one lump = 7 h 16 min; 99 lumps
-  ≈ 30 days) as a "paid until" timestamp; server downtime counts. Without
+- The stone burns coal lumps, charcoal or Anthracite (one lump = 7 h 16 min,
+  Anthracite 1.5 lumps; at most 99 lumps' worth ≈ 30 days) as a "paid until"
+  timestamp; server downtime counts. Without
   fuel the claim protects nothing, and anyone may destroy the stone with a
   pick.
 - While fuelled, only the owner and players on its permission list may act

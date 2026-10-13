@@ -1,0 +1,17 @@
+SEED=12345 tools/r46_or/run.sh OUT 300 (2026-10-13, branch r47-an before lane OR's merge: Anthracite T2 over the full band, the lower-half placeholder); boot PASS
+emerged in 11.8 s
+column x 368..447 z -2352..-2273 y -1312..127
+zone elandor_goldmead_vale; columns hard-protected at y -20: 0 []; water classes [land=6400]
+T1 | y -100..127 | host 795111 | resources 42934 | share 5.40 % (table 5.40 %, ratio 0.999)
+T1 | coal=12429 (1/64 vs 64); copper=8276 (1/96 vs 96); tin=8269 (1/96 vs 96); iron=6204 (1/128 vs 128); quartz=6194 (1/128 vs 128); citrine=1562 (1/509 vs 512)
+T2 | y -300..-101 | host 1201415 | resources 49690 | share 4.14 % (table 4.13 %, ratio 1.000)
+T2 | coal=9388 (1/128 vs 128); copper=6270 (1/192 vs 192); tin=6262 (1/192 vs 192); iron=12513 (1/96 vs 96); quartz=4703 (1/255 vs 256); citrine=1173 (1/1024 vs 1024); gold=2338 (1/514 vs 512); anthracite=4687 (1/256 vs 256); jade=2356 (1/510 vs 512)
+T3 | y -500..-301 | host 1223382 | resources 44781 | share 3.66 % (table 3.66 %, ratio 1.000)
+T3 | copper=3186 (1/384 vs 384); tin=3187 (1/384 vs 384); iron=9553 (1/128 vs 128); quartz=2392 (1/511 vs 512); citrine=594 (1/2060 vs 2048); gold=4783 (1/256 vs 256); anthracite=12739 (1/96 vs 96); jade=1188 (1/1030 vs 1024); silver=4777 (1/256 vs 256); garnet=2382 (1/514 vs 512)
+T4 | y -700..-501 | host 1160578 | resources 47032 | share 4.05 % (table 4.05 %, ratio 1.000)
+T4 | copper=3023 (1/384 vs 384); tin=3005 (1/386 vs 384); iron=3021 (1/384 vs 384); quartz=2269 (1/511 vs 512); gold=9074 (1/128 vs 128); anthracite=9068 (1/128 vs 128); jade=567 (1/2047 vs 2048); silver=9062 (1/128 vs 128); garnet=1136 (1/1022 vs 1024); emberglass=4534 (1/256 vs 256); sapphire=2273 (1/511 vs 512)
+T5 | y -1000..-701 | host 789914 | resources 30469 | share 3.86 % (table 3.86 %, ratio 1.000)
+T5 | copper=2063 (1/383 vs 384); tin=2063 (1/383 vs 384); iron=2064 (1/383 vs 384); quartz=1550 (1/510 vs 512); gold=3086 (1/256 vs 256); anthracite=6161 (1/128 vs 128); silver=3090 (1/256 vs 256); garnet=378 (1/2090 vs 2048); emberglass=6160 (1/128 vs 128); sapphire=779 (1/1014 vs 1024); abyssal_crystal=1543 (1/512 vs 512); ruby=1532 (1/516 vs 512)
+T6 | y -1312..-1001 | host 1554102 | resources 53870 | share 3.47 % (table 3.47 %, ratio 1.000)
+T6 | copper=4037 (1/385 vs 384); tin=4042 (1/384 vs 384); iron=4042 (1/384 vs 384); quartz=3020 (1/515 vs 512); gold=6075 (1/256 vs 256); anthracite=12150 (1/128 vs 128); silver=3042 (1/511 vs 512); emberglass=6070 (1/256 vs 256); sapphire=768 (1/2024 vs 2048); abyssal_crystal=6065 (1/256 vs 256); ruby=1520 (1/1022 vs 1024); diamond=3039 (1/511 vs 512)
+RESULT PASS checks=48 failures=0

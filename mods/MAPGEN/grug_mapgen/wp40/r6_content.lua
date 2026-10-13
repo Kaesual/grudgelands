@@ -104,13 +104,16 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	}
 	-- Gems (economy plan §6, Round 46 ruling 3): each in the tier rock of its
 	-- own tier, then at 2x and 4x the denominator one and two tiers deeper.
-	-- Coal and Iron in T3 carry the Round 46 Steel-band correction. The
-	-- fourth entry is the row's `lower_half_of` band (Round 47 ruling 6): a
+	-- Iron in T3 carries the Round 46 Steel-band correction. The fourth
+	-- entry is the row's `lower_half_of` band (Round 47 ruling 6): a
 	-- next-tier ore lies only in the lower half of the band before its own.
+	-- Round 47 (rulings 8-9): Anthracite starts in the lower half of T2
+	-- (mixed with Coal) and replaces Coal from T3 down: no Coal below y -300.
 	local RESOURCE_EXPECTED = {
 		abyssal_crystal = {5, 2, {false, false, false, false, 512, 256}, 5},
+		anthracite = {2, 8, {false, 256, 96, 128, 128, 128}, 2},
 		citrine = {1, 2, {512, 1024, 2048, false, false, false}},
-		coal = {1, 8, {64, 128, 96, 128, 128, 128}},
+		coal = {1, 8, {64, 128, false, false, false, false}},
 		copper = {1, 8, {96, 192, 384, 384, 384, 384}},
 		diamond = {6, 2, {false, false, false, false, false, 512}},
 		emberglass = {4, 4, {false, false, false, 256, 128, 256}, 4},
@@ -273,7 +276,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	end
 
 	local resources, resource_by_key = {}, {}
-	if dense(manifest_values.resources, "resource catalog", "fail_resource_manifest") ~= 15 then
+	if dense(manifest_values.resources, "resource catalog", "fail_resource_manifest") ~= 16 then
 		fail("fail_resource_manifest", "resource catalog population differs")
 	end
 	for index = 1, #manifest_values.resources do
@@ -345,7 +348,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	if type(wp43_projection) ~= "table" or
 			wp43_projection.schema ~= "grug_wp43_projection_v1" or
 			dense(wp43_projection.resources, "WP43 resources",
-				"fail_resource_manifest") ~= 15 or
+				"fail_resource_manifest") ~= 16 or
 			dense(wp43_projection.tiers, "WP43 tiers", "fail_resource_manifest") ~= 6 then
 		fail("fail_resource_manifest", "WP43 projection differs")
 	end

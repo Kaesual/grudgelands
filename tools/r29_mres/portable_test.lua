@@ -118,8 +118,10 @@ for tier, key in ipairs(GEMS) do
 		end
 	end
 end
--- Round 46: T3 is the Steel band (Iron Bar + mined Coal); both at T2 supply.
-eq(row_by_key.coal.denominators[3], 96, "Coal in T3")
+-- Round 46: T3 is the Steel band; Round 47 (rulings 8-9): Anthracite takes
+-- Coal's place there (Steel = Iron Bar + Anthracite), no Coal below T2.
+eq(row_by_key.coal.denominators[3], false, "no Coal in T3")
+eq(row_by_key.anthracite.denominators[3], 96, "Anthracite in T3")
 eq(row_by_key.iron.denominators[3], 128, "Iron in T3")
 -- Diamond in the deep bands: the row's multiplier on its 512 host nodes.
 local diamond = row_by_key.diamond

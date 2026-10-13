@@ -83,6 +83,14 @@ return function(canonical, raw_sha256, settlement_order)
 	-- the lower half a `lower_half_of` resource row is limited to) and the
 	-- Iron resource row `pick_level = 1` (ruling 7, Iron behind the Bronze
 	-- pick); only the WP43 projection moves. Was `dccd68e9032403bc...`.
+	-- Round 47 AN: the Anthracite ore joins the resource roster (T2 lower
+	-- half, T3-T6) and the production rows (87 -> 88,
+	-- `grug_materials:stone_with_anthracite`), Coal leaves T3-T6. That moves
+	-- the accepted-content limb (was `8e98cd41632dd59f...`), the production
+	-- semantics (was `4ddd35d62aa98d1f...`), the decoded templates, whose
+	-- cells carry production content refs that shift with the inserted
+	-- sorted row (was `766f28cc566f8c55...`), and the WP43 projection (was
+	-- `d78726f71bc347b5...`).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -354,7 +362,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"4ddd35d62aa98d1f51daf438f9ee0d18ebb8b918d134e350335d8c772b9d3804" or
+				"1631b6cf61b64c9be0ee53cd6848e5ef02b570030d29b3f42bd0e269234d584d" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -493,11 +501,11 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"8e98cd41632dd59f247ebccd139d7d3a021be149d21bc5ea030839a7a6c38e30" or
+				"38ee5a576433d753265f02822ece509dde936697d59cb0074d6bbc43804f4110" or
 			frozen.decoded_templates ~=
-				"766f28cc566f8c55b6512ce8fdc1342d9819228a2e39065fb2eb728ad6fab683" or
+				"70b1930b719c340d825ffe0887f0dc1d6fdfe25930e93130aafdfc439fb80020" or
 			frozen.wp43_projection ~=
-				"d78726f71bc347b5e0b6bb2764a617a349dcb979d90d44409826b4431e4139fa" or
+				"785f36400419118f26dcefaa3fa1a5ecf82d33181f319620afa8b8f31a252bfc" or
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" then
 			fail("frozen source projection differs: accepted=" ..

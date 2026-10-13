@@ -131,6 +131,7 @@ return {
 		{output = "grug_materials:abyssal_crystal_block", count = 1, ingredients = {{item = "grug_materials:abyssal_crystal", n = 9}}},
 		{output = "grug_materials:abyssal_steel_bar", count = 9, ingredients = {{item = "grug_materials:abyssal_steel_block", n = 1}}},
 		{output = "grug_materials:abyssal_steel_block", count = 1, ingredients = {{item = "grug_materials:abyssal_steel_bar", n = 9}}},
+		{output = "grug_materials:anthracite_torch", count = 10, ingredients = {{item = "grug_materials:anthracite", n = 1}, {group = "stick", n = 1}}},
 		{output = "grug_materials:axe_abyssal_steel", count = 1, ingredients = {{item = "grug_materials:abyssal_steel_bar", n = 3}, {group = "stick", n = 2}}},
 		{output = "grug_materials:axe_bronze", count = 1, ingredients = {{item = "grug_materials:bronze_bar", n = 3}, {group = "stick", n = 2}}},
 		{output = "grug_materials:axe_embersteel", count = 1, ingredients = {{item = "grug_materials:embersteel_bar", n = 3}, {group = "stick", n = 2}}},

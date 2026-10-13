@@ -277,12 +277,16 @@ function H.permission(claim, name)
 	if name == claim.owner then return "owner" end
 	return claim.permissions[name]
 end
-function H.add_fuel(claim, count)
+-- Round 47 ruling 12: the cap in time, per-item seconds (Anthracite 1.5
+-- lumps), a piece only when it fits whole; for lumps the same as before.
+function H.fuel_room_seconds(claim) return math.max(0, 99 * LUMP - H.remaining_seconds(claim)) end
+function H.add_fuel(claim, count, itemname)
 	calls.add_fuel[#calls.add_fuel + 1] = count
-	local free = 99 - math.ceil(H.remaining_seconds(claim) / LUMP)
+	local each = itemname and H.fuel_seconds(itemname) or LUMP
+	local free = math.floor(H.fuel_room_seconds(claim) / each)
 	local accepted = math.max(0, math.min(count, free))
 	if accepted > 0 then
-		claim.paid_until = math.max(now, claim.paid_until) + accepted * LUMP
+		claim.paid_until = math.max(now, claim.paid_until) + accepted * each
 		H.notify_claim_changed(claim, "fuel")
 	end
 	return accepted
@@ -433,10 +437,10 @@ do
 	check(#closed == closes + 1 and closed[#closed].formname == "grug_housing:stone",
 		"PT9 a started trip closes the form")
 	H.open_stone_interface(owner, claim)
-	has(last_shown("owner").fs, "Fuel: coal lumps or charcoal", "PT9 the form opens on the first tab")
+	has(last_shown("owner").fs, "Fuel: coal lumps, charcoal or anthracite", "PT9 the form opens on the first tab")
 	submit(owner, "grug_housing:stone", {stone_tab = "2"})
 	submit(owner, "grug_housing:stone", {stone_tab = "1"})
-	has(last_shown("owner").fs, "Fuel: coal lumps or charcoal", "PT9 back to the first tab")
+	has(last_shown("owner").fs, "Fuel: coal lumps, charcoal or anthracite", "PT9 back to the first tab")
 	-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): Close has
 	-- the focus when the form opens and after a tab click, never the name
 	-- field, which would eat the inventory key.
@@ -501,6 +505,17 @@ eq(dropped[1]:get_count(), 3, "all three refused lumps dropped")
 has(last_shown("owner").fs, "\27(c@#ff6060)The fuel slot is full (99 lumps).",
 	"refusal message in red")
 owner.main_full = false
+-- Round 47 ruling 12: with half a lump's room, a lump is refused as full
+-- and Anthracite (1.5 lumps) with the room it would need.
+claim.paid_until = now + 98 * LUMP + LUMP / 2
+eq(put(owner, "grug_materials:anthracite 2"), 2, "R47 Anthracite is fuel")
+has(last_shown("owner").fs, "Not enough room for one grug_materials:anthracite " ..
+	"(10 h 54 min): the stone takes only 3 h 38 min more.", "R47 the fit refusal names the room")
+eq(owner.given[#owner.given]:get_count(), 2, "R47 both pieces come back")
+claim.paid_until = now + 97 * LUMP
+eq(put(owner, "grug_materials:anthracite 2"), 2, "R47 two lumps' room")
+has(last_shown("owner").fs, "Added 1\\, 1 returned", "R47 one Anthracite fits, one returns")
+eq(claim.paid_until, now + 97 * LUMP + LUMP * 3 / 2, "R47 Anthracite adds 1.5 lumps")
 
 -- Out of reach: the form no longer acts.
 owner.pos = {x = 40, y = 10, z = 0}

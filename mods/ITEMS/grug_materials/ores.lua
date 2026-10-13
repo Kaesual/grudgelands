@@ -1,11 +1,18 @@
 -- Canonical natural resources and material items (WP43).
 
 -- Stored, pre-coloured mineral overlays drawn over `default_stone.png`
--- (Round 24 ruling 17; `tools/r24_art/build_rock_ore_textures.py`).
+-- (Round 24 ruling 17; `tools/r24_art/build_rock_ore_textures.py`; the
+-- Anthracite overlay from Round 47 lane ART, `tools/r47_art/anthracite/`).
 local ORE_VISUALS = {
 	quartz = true, silver = true, citrine = true, garnet = true, jade = true,
 	emberglass = true, diamond = true, sapphire = true, ruby = true,
-	abyssal_crystal = true,
+	abyssal_crystal = true, anthracite = true,
+}
+
+-- Stored item images (Round 47 lane ART's Anthracite set, the user's pick
+-- of 2026-10-13); the other raw items are tinted vendored images below.
+local STORED_ITEM_IMAGES = {
+	anthracite = "grug_materials_anthracite_lump.png",
 }
 
 -- Vendor payouts are grug_traders' price module (class and harvest tier).
@@ -23,6 +30,7 @@ local ITEM_VISUALS = {
 }
 
 local function item_texture(key)
+	if STORED_ITEM_IMAGES[key] then return STORED_ITEM_IMAGES[key] end
 	local visual = ITEM_VISUALS[key]
 	return visual[1] .. "^[colorize:" .. visual[2]
 end

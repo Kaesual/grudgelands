@@ -59,7 +59,8 @@ for tier = 1, 6 do
 end
 local LEVEL_BY_KEY = {coal = 0, copper = 0, tin = 0, quartz = 0, citrine = 0, iron = 1,
 	gold = 2, jade = 2, silver = 3, garnet = 3, emberglass = 4, sapphire = 4,
-	abyssal_crystal = 5, ruby = 5, diamond = 6}
+	abyssal_crystal = 5, ruby = 5, diamond = 6,
+	anthracite = 2} -- Round 47 lane AN: Anthracite needs the Iron pick
 for _, resource in ipairs(M.RESOURCES) do
 	local groups = H.nodes[resource.natural_node].groups
 	check((groups.level or 0) == LEVEL_BY_KEY[resource.key] and
@@ -168,15 +169,22 @@ if ok_ffi then
 	check(digest(projection) == pinned, "live projection matches its pin")
 	for _, tier in ipairs(projection.tiers) do tier.lower_half_y_max = nil end
 	for _, resource in ipairs(projection.resources) do resource.pick_level = nil end
+	-- Round 47 lane AN adds the Anthracite row; without it the rest is unchanged.
+	for index = #projection.resources, 1, -1 do
+		if projection.resources[index].key == "anthracite" then
+			table.remove(projection.resources, index)
+		end
+	end
 	check(digest(projection) ==
 		"dccd68e9032403bcea294efd2035165501043ab1aa008561cad5547eb2e2c7c7",
-		"the projection without lower_half_y_max and pick_level is the Round 46 pin")
+		"the projection without lower_half_y_max, pick_level and Anthracite is the Round 46 pin")
 else
 	print("note: no ffi, pin section skipped")
 end
 
 -- 4. The rows and the R6 content checks -----------------------------------------
-local HALF = {iron = 1, silver = 3, emberglass = 4, abyssal_crystal = 5}
+local HALF = {iron = 1, silver = 3, emberglass = 4, abyssal_crystal = 5,
+	anthracite = 2} -- Round 47 lane AN: Anthracite in T2's lower half
 local manifest = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua")()
 for _, row in ipairs(manifest.resources) do
 	check(row.lower_half_of == HALF[row.key], row.key .. " lower half " ..

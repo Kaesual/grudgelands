@@ -210,7 +210,7 @@
       "level": 24,
       "requires": [],
       "title": "A Measure That Stays Put",
-      "text": "My surveying brace shifted in the rain, and for one alarming moment my measurements gave the river a new address. Bring me six planks of any wood and six Steel Bars here at Bridgechalk Dig. Alloy iron with coal to make the steel, whenever your other work leaves time. I need the brace to stay put long enough to trust the next reading.",
+      "text": "My surveying brace shifted in the rain, and for one alarming moment my measurements gave the river a new address. Bring me six planks of any wood and six Steel Bars here at Bridgechalk Dig. Alloy iron with anthracite to make the steel, whenever your other work leaves time. I need the brace to stay put long enough to trust the next reading.",
       "objectives": [
         {
           "type": "item",
@@ -227,7 +227,7 @@
         "weight": 2,
         "items": []
       },
-      "lesson": "Steel: iron and coal alloy.",
+      "lesson": "Steel: iron and anthracite alloy.",
       "duration_min": 14
     },
     {

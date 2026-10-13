@@ -153,6 +153,8 @@ end
 -- A later edit's items (tools/r45_rg/edits.lua; the charcoal of Round 46 is
 -- registered by grug_smelting, which this stub does not load).
 for _, edit in ipairs(dofile(repo .. "/tools/r45_rg/edits.lua")) do
+	-- An added row may make a new item (Round 47: the Anthracite torch).
+	if edit.added then ensure(edit.output) end
 	for _, entry in ipairs(edit.added or {}) do ensure(entry.item or "") end
 end
 

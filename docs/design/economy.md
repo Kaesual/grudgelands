@@ -236,7 +236,7 @@ housing isles, purchased depth rights, guild founding and every guild
 bank/claim fee are retired. The one Claim Stone per player is free from the
 Housing Steward at level 20; there are no tiers, upgrades, additional stones
 or faction pools. Its only running cost is fuel: coal lumps or charcoal, one
-lump per 7 h 16 min of protection; activation pays the first 5 lumps at once
+lump per 7 h 16 min of protection, or Anthracite at 1.5 lumps; activation pays the first 5 lumps at once
 (Round 26). A claim never grants private ore,
 purchased mining depth or a material unavailable in the ordinary world.
 

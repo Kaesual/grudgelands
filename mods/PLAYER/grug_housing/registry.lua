@@ -34,6 +34,10 @@ return function(api)
 	M.MIN_Y = -100           -- rulings 1-2: the claim and the stone from y -100
 	M.LUMP_SECONDS = 26160   -- ruling 10: one lump or charcoal, 7 h 16 min
 	M.FUEL_MAX = 99          -- ruling 10: one fuel slot of 99 items
+	-- Round 47 ruling 12: the cap is counted in time, 99 lumps' worth (about
+	-- 30 days), so a fuel that burns longer than a lump (Anthracite, api.lua)
+	-- fills it with fewer pieces. A piece goes in only if its whole time fits.
+	M.FUEL_CAP_SECONDS = M.FUEL_MAX * M.LUMP_SECONDS
 	M.DRAFT_SECONDS = 300    -- R26 ruling 8: an unactivated stone lasts 5 min
 	M.ACTIVATION_LUMPS = 5   -- R26 ruling 9: activation pays 5 lumps at once
 	M.PICKUP_LOCK_SECONDS = 43200 -- R26 ruling 10: 12 h after activation
@@ -270,10 +274,13 @@ return function(api)
 		return max(0, claim.paid_until - now())
 	end
 
-	-- Lumps the fuel slot still takes: 99 minus the stack the remaining time
-	-- stands for (a started lump counts as one).
-	function M.fuel_room(claim)
-		return max(0, M.FUEL_MAX - ceil(M.remaining_seconds(claim) / M.LUMP_SECONDS))
+	-- Pieces of `seconds_each` (default one lump) whose whole time still fits
+	-- under the cap. For lumps that is 99 minus the stack the remaining time
+	-- stands for (a started lump counts as one), as before Round 47.
+	function M.fuel_room(claim, seconds_each)
+		seconds_each = tonumber(seconds_each) or M.LUMP_SECONDS
+		return max(0, floor((M.FUEL_CAP_SECONDS - M.remaining_seconds(claim)) /
+			seconds_each))
 	end
 
 	-- Whole unburnt lumps, returned on pick-up.
@@ -647,17 +654,20 @@ return function(api)
 		return result
 	end
 
-	-- Ruling 10: burns up to count lumps into paid_until; returns the number
-	-- accepted (never more than the slot still takes). A draft takes no fuel:
-	-- it is activated first (R26 ruling 9).
-	function M.add_fuel(claim, count)
+	-- Ruling 10: burns up to count pieces of `seconds_each` (default one
+	-- lump; Round 47 ruling 12) into paid_until; returns the number accepted
+	-- (never more than fit whole under the cap). A draft takes no fuel: it
+	-- is activated first (R26 ruling 9).
+	function M.add_fuel(claim, count, seconds_each)
 		count = floor(tonumber(count) or 0)
-		if not claim or not claims[claim.id] or count <= 0 or M.is_draft(claim) then
+		seconds_each = tonumber(seconds_each) or M.LUMP_SECONDS
+		if not claim or not claims[claim.id] or count <= 0 or seconds_each <= 0 or
+				M.is_draft(claim) then
 			return 0
 		end
-		local accepted = min(count, M.fuel_room(claim))
+		local accepted = min(count, M.fuel_room(claim, seconds_each))
 		if accepted <= 0 then return 0 end
-		claim.paid_until = max(now(), claim.paid_until) + accepted * M.LUMP_SECONDS
+		claim.paid_until = max(now(), claim.paid_until) + accepted * seconds_each
 		save_claim(claim)
 		return accepted
 	end
