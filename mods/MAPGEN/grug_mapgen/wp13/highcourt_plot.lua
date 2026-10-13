@@ -102,7 +102,7 @@ local function loader(directory)
 	end
 
 	-- The plot's own ground area: the part's extent grown by two nodes on
-	-- every side and then clamped into the envelope, so the kerb, the
+	-- every side and then clamped into the envelope, so the
 	-- doorstep path and the lamps stand on the plot and not beside it.
 	local function ground_area(part, ox, oz, turns, margin, reach)
 		local order, count = part.buffer:cells()
@@ -292,9 +292,9 @@ local function loader(directory)
 			dressing.path_light(buf, palette, x0 + 1, z0 + 1)
 			dressing.path_light(buf, palette, x1 - 1, z0 + 1)
 		else
-			-- 3. The kerb of the plot, and the doorstep path from the part's
-			-- own apron out to the street edge of the plot.
-			dressing.inlay(buf, palette, x0, z0, x1, z1)
+			-- 3. The doorstep path from the part's own apron out to the street
+			-- edge of the plot (no kerb round the plot since Round 47: the user
+			-- disliked the stone frame round every capital building).
 			for z = z0 + 1, oz - 1 do
 				for x = -1, 1 do
 					buf:put(x, 0, z, palette.node("path"))
