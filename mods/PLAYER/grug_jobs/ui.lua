@@ -9,8 +9,10 @@
 --   middle  the crafting box (craft_box.lua; replaceable, lane EU adds the
 --           enchant and upgrade boxes); the professions overview while no
 --           recipe is chosen;
---   right   the output area (grug_craft_out, take-only), Take all and the
---           running job: the green indicator, its label, the progress bar.
+--   right   the running job (the green indicator, its label, the progress
+--           bar) and, only while it holds something, the overflow
+--           (grug_craft_out, take-only; Round 47 ruling 18: finished items
+--           go into the inventory, jobs.lua drains the overflow into it).
 --
 -- Runtime state lives in the sfinv context (context.grug_craft), never in
 -- player meta: the area, the page, the applied search and the typed text,
@@ -21,11 +23,13 @@
 --
 -- Traffic (spec §1, §4.4, plan §5): one ingredient pass per build
 -- (grug_jobs.ingredient_counts), which feeds ×N, "Craftable only" and the
--- crafting box. A click is answered with one resend; a pure scrollbar event
--- of the inventory view never reaches this page (sfinv.handle_scroll). Per
--- job the page is sent at its start (the Craft now click), at its end (the
--- timer, only while the player's current page is Crafting) and at a cancel
--- (the Stop click). The search runs at most once per second: a search
+-- crafting box (the room check of Max reuses its lists). A click is
+-- answered with one resend; a pure scrollbar event of the inventory view
+-- never reaches this page (sfinv.handle_scroll). Per job the page is sent
+-- at its start (the Craft now click), at its end (the timer, only while the
+-- player's current page is Crafting) and at a cancel (the Stop click); a
+-- craft delivered into the inventory sends nothing (the client shows the
+-- lists live), and the overflow appearing or emptying sends it once. The search runs at most once per second: a search
 -- request within a second of the last one is ignored without a resend, like
 -- Sort's cooldown (spec ruling 5). "×" beside the field empties it and shows
 -- the whole list at once, outside that limit (0.45.1 fix plan row 6).
@@ -65,7 +69,7 @@ local F = {
 	area = "grug_craft_area", row = "grug_craft_row",
 	prev = "grug_craft_prev", next = "grug_craft_next",
 	search = "grug_craft_search", find = "grug_craft_find", clear = "grug_craft_clear",
-	only = "grug_craft_only", take = "grug_craft_take",
+	only = "grug_craft_only",
 	qty = "grug_craft_qty", max = "grug_craft_max",
 	minus = "grug_craft_minus", plus = "grug_craft_plus",
 	go = "grug_craft_go", stop = "grug_craft_stop", recheck = "grug_craft_recheck",
@@ -79,6 +83,7 @@ local SELECTED_ROW = "#8a682f80"
 local BOX_COLOR = "#00000040"
 local DIM = "#9a9a9a"
 local RUN_COLOR = "#5fd068"
+local NOTE_COLOR = "#f0c75e"
 
 -- Layout (real coordinates; the frame is 13.5 wide). The boxes end a gap
 -- above the short view's Inventory box, as on the other tabs
@@ -319,26 +324,43 @@ function grug_jobs.progress_bar(x, y, w, h, job, now)
 		n(x), n(y), n(w), n(h), BAR_TEXTURE, BAR_FRAMES, duration, start)
 end
 
-local function output_content(fs, job)
+-- The right column: the running job at its top; below it the overflow,
+-- drawn only while it holds something (the slots, a note that they empty
+-- themselves; shift-click goes to the inbox, grug_inventory/inbox.lua:
+-- main[9..] and the bags).
+local OVERFLOW_NOTE = "These move into your inventory when there is room."
+local function output_content(fs, player, job)
 	local x = OUT.x + 0.2
-	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]label[%s,%s;Output]"):format(n(OUT.x), n(OUT.y),
-		n(OUT.w), n(OUT.h), BOX_COLOR, n(x), n(OUT.y + 0.35))
-	-- Shift-click goes to the inbox (grug_inventory/inbox.lua): main[9..]
-	-- and the bags.
-	fs[#fs + 1] = ("list[current_player;%s;%s,%s;2,2;]listring[current_player;%s]" ..
-		"listring[current_player;grug_inbox]listring[current_player;main]"):format(
-		grug_jobs.OUTPUT_LIST, n(x), n(OUT.y + 0.7), grug_jobs.OUTPUT_LIST)
-	fs[#fs + 1] = ("button[%s,%s;2.5,0.6;%s;Take all]"):format(n(x), n(OUT.y + 3.1), F.take)
-	local y = OUT.y + 4.15
+	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]"):format(n(OUT.x), n(OUT.y), n(OUT.w), n(OUT.h),
+		BOX_COLOR)
+	local y = OUT.y + 0.4
 	if not job then
 		fs[#fs + 1] = ("label[%s,%s;No job running]"):format(n(x), n(y))
-		return
+	else
+		fs[#fs + 1] = ("box[%s,%s;0.2,0.2;%s]label[%s,%s;%s]"):format(n(x), n(y - 0.1),
+			RUN_COLOR, n(x + 0.3), n(y), esc(core.colorize(RUN_COLOR,
+			grug_jobs.JOB_RUN_LABELS[job.kind or "recipe"] or "Working…")))
+		y = wrapped_labels(fs, x, y + 0.5, 2.5, job_label(job))
+		fs[#fs + 1] = grug_jobs.progress_bar(x, y, 2.5, 0.27, job, grug_jobs.now())
 	end
-	fs[#fs + 1] = ("box[%s,%s;0.2,0.2;%s]label[%s,%s;%s]"):format(n(x), n(y - 0.1),
-		RUN_COLOR, n(x + 0.3), n(y), esc(core.colorize(RUN_COLOR,
-		grug_jobs.JOB_RUN_LABELS[job.kind or "recipe"] or "Working…")))
-	y = wrapped_labels(fs, x, y + 0.5, 2.5, job_label(job))
-	fs[#fs + 1] = grug_jobs.progress_bar(x, y, 2.5, 0.27, job, grug_jobs.now())
+	if player:get_inventory():is_empty(grug_jobs.OUTPUT_LIST) then return end
+	y = OUT.y + 2.6
+	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(y), esc(core.colorize(NOTE_COLOR,
+		"Overflow")))
+	fs[#fs + 1] = ("list[current_player;%s;%s,%s;2,2;]listring[current_player;%s]" ..
+		"listring[current_player;grug_inbox]listring[current_player;main]"):format(
+		grug_jobs.OUTPUT_LIST, n(x), n(y + 0.35), grug_jobs.OUTPUT_LIST)
+	wrapped_labels(fs, x, y + 2.95, 2.5, OVERFLOW_NOTE, DIM)
+end
+
+-- Resends the Crafting page when it is the player's current page (the
+-- server cannot tell whether the window is open; a resend while it is
+-- closed is cheap): jobs.lua when the overflow appears or empties.
+function grug_jobs.refresh_crafting_page(player)
+	local context = sfinv.contexts[player:get_player_name()]
+	if context and context.page == PAGE then
+		sfinv.set_player_inventory_formspec(player, context)
+	end
 end
 
 --
@@ -433,7 +455,7 @@ function grug_jobs.crafting_page_content(player, context)
 	local box = boxes[st.box or "recipe"] or boxes.recipe
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
 		recipe = recipe})
-	output_content(fs, job)
+	output_content(fs, player, job)
 	return table.concat(fs)
 end
 
@@ -511,11 +533,6 @@ local function receive_fields(player, context, fields)
 	if fields[F.only] then
 		st.only, st.page, handled = fields[F.only] == "true", 1, true
 	end
-	if fields[F.take] then
-		local _, left = grug_jobs.take_all(player)
-		if left then st.note = "Not everything fit into your inventory." end
-		handled = true
-	end
 	local box = boxes[st.box or "recipe"] or boxes.recipe
 	if box.fields(player, st, fields) then handled = true end
 	if not handled then
@@ -545,8 +562,5 @@ sfinv.override_page(PAGE, {
 -- that build or that click's own resend.
 grug_jobs.register_on_job_end(function(player, job, outcome, source)
 	if source == "open" or source == "start" or source == "stop" then return end
-	local context = sfinv.contexts[player:get_player_name()]
-	if context and context.page == PAGE then
-		sfinv.set_player_inventory_formspec(player, context)
-	end
+	grug_jobs.refresh_crafting_page(player)
 end)

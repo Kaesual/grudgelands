@@ -31,7 +31,11 @@
 --   J  sends per job: one at the start, one at the end (only while the
 --      current page is Crafting), one at a cancel; a Stop refused without
 --      room; no resend on a pure scrollbar event or on closing the window;
---      browsing while a job runs, a second job cannot start; Take all;
+--      browsing while a job runs, a second job cannot start; the crafts
+--      in the inventory (Round 47);
+--   V  Round 47 ruling 18: the overflow slots drawn only while they hold
+--      something, their drain and the page resend, "Max: N (inventory
+--      room)" and the refusal without room;
 --   O  the professions overview in the crafting box while no recipe is
 --      chosen, and gone from the Character tab;
 --   D  Round 45 playtest fix 3: the box in three areas (output; the
@@ -583,11 +587,10 @@ has(fs, "style[grug_craft_area1;bgcolor=#8a682f", "P Basic is the default area, 
 has(fs, "style[grug_craft_area2,grug_craft_area3,grug_craft_area4,grug_craft_area5;bgcolor=#3d3d3d",
 	"P one style for the other tabs")
 has(fs, "Basic: no tier", "P Basic has no tier")
-has(fs, "list[current_player;grug_craft_out;10.6,1.65;2,2;]", "P the four output slots")
-has(fs, "listring[current_player;grug_craft_out]listring[current_player;grug_inbox]" ..
-	"listring[current_player;main]",
-	"P shift-click moves the output into the inbox (Round 45 PT5: main and the bags)")
-has(fs, "grug_craft_take;Take all]", "P Take all")
+-- Round 47 ruling 18: crafts land in the inventory; the overflow slots are
+-- drawn only while they hold something (V below), and Take all is gone.
+lacks(fs, "list[current_player;grug_craft_out;", "P no overflow slots while empty")
+lacks(fs, "grug_craft_take", "P no Take all")
 has(fs, "No job running", "P idle status")
 has(fs, "field_close_on_enter[grug_craft_search;false]", "P Enter in the search keeps the window")
 geometry_ok(fs, "P Basic page 1")
@@ -865,11 +868,12 @@ eq(J.job_state(cook), nil, "J the job ended")
 eq(cook.sent, sent + 1, "J the end sends the page once")
 has(cook.formspec, "No job running", "J idle after the end")
 has(cook.formspec, "grug_craft_go;Craft now]", "J Stop turned back into Craft now")
-eq(cook.inv:get_stack(OUT, 1):get_count(), 12, "J the stews in the output area")
+eq(cook.inv:get_stack("main", 10):get_count(), 12, "J the stews in the inventory (R47)")
+check(cook.inv:is_empty(OUT), "J ... not in the output list")
 eq(feed_lines[#feed_lines], "Hearty Stew ×12 is ready", "J the feed line")
 -- On another page the end sends nothing.
 put(cook, "main", 9, "t:meat 5")
-put(cook, "main", 10, "t:grain 5")
+put(cook, "main", 11, "t:grain 5")
 click(cook, {[FIELDS.qty] = "2", [FIELDS.go] = "Craft now"})
 check(J.job_state(cook) ~= nil, "J a second job after the first")
 sfinv.set_page(cook, "grug_inventory:inventory")
@@ -879,7 +883,7 @@ run_timers()
 eq(J.job_state(cook), nil, "J the job ended on another page")
 eq(cook.sent, sent, "J ... and sent nothing")
 fs = open(cook)
-eq(cook.inv:get_stack(OUT, 1):get_count(), 14, "J the output area collects both")
+eq(cook.inv:get_stack("main", 10):get_count(), 14, "J the inventory collects both")
 -- Cancel: one resend, everything back.
 click(cook, {[FIELDS.qty] = "3", [FIELDS.go] = "Craft now"})
 eq(count_of(cook, "t:meat"), 0, "J the third job took the meat")
@@ -896,16 +900,12 @@ end
 click(cook, {[FIELDS.stop] = "Stop"})
 check(J.job_state(cook) ~= nil, "J a Stop without room keeps the job")
 says(cook.formspec, "Not enough inventory space to cancel", "J the refusal")
--- Take all with a full inventory: the note, the stack stays.
-click(cook, {[FIELDS.take] = "Take all"})
-says(cook.formspec, "Not everything fit into your inventory.", "J Take all's leftover note")
-eq(cook.inv:get_stack(OUT, 1):get_count(), 14, "J the stews stay in the output area")
-for index = 9, 32 do put(cook, "main", index, "") end
-click(cook, {[FIELDS.take] = "Take all"})
-eq(cook.inv:get_stack(OUT, 1):get_count(), 0, "J Take all empties the output area")
-eq(count_of(cook, "t:stew"), 14, "J into the inventory")
+for index = 1, 32 do
+	if cook.inv:get_stack("main", index):get_name() == "t:torch" then put(cook, "main", index, "") end
+end
 advance(4)
 run_timers()
+eq(count_of(cook, "t:stew"), 17, "J every stew in the inventory (12 + 2 + 3)")
 -- A job that ended while no timer ran (a logout, say) completes inside the
 -- build that opens the tab, or inside the next start: still one send each.
 put(cook, "main", 9, "t:meat 4")
@@ -927,6 +927,60 @@ eq(cook.sent, sent + 1, "J a due job completed by the next start: one send")
 check(J.job_state(cook) ~= nil, "J ... and the new job runs")
 advance(2)
 run_timers()
+
+------------------------------------------------------------------------------
+-- V. Round 47 ruling 18: the overflow, drawn only while it holds something;
+-- the room limit in the box.
+------------------------------------------------------------------------------
+do
+	local v = new_player("overflow")
+	fs = open(v)
+	lacks(fs, "grug_craft_out", "V no overflow slots while it is empty")
+	lacks(fs, "Overflow", "V ... and no heading")
+	put(v, OUT, 1, "t:stew 3")
+	fs = open(v)
+	has(fs, "list[current_player;grug_craft_out;10.6,3.9;2,2;]",
+		"V the overflow slots while it holds something")
+	has(fs, "listring[current_player;grug_craft_out]listring[current_player;grug_inbox]" ..
+		"listring[current_player;main]",
+		"V shift-click moves the overflow into the inbox (Round 45 PT5: main and the bags)")
+	says(fs, "These move into your inventory when there is room.", "V the note")
+	geometry_ok(fs, "V the overflow shown")
+	-- The drain: a poll moves it in, the open page is resent without the slots.
+	J.watch_overflow(v)
+	sent = v.sent
+	advance(J.OVERFLOW_POLL)
+	run_timers()
+	eq(count_of(v, "t:stew"), 3, "V the stews moved into the inventory")
+	check(v.inv:is_empty(OUT), "V the overflow is empty")
+	eq(v.sent, sent + 1, "V the page is resent once")
+	lacks(v.formspec, "grug_craft_out;", "V ... without the slots")
+	-- A full inventory: Max names the room, Craft now refuses with the note.
+	v.meta.fields["grug_jobs:learned:cooking"] = 1
+	v.meta.fields["grug_jobs:level:cooking"] = 1
+	for index = 1, 32 do put(v, "main", index, "t:torch 99") end
+	-- (50 crafts would empty both slots, yet 50 stews need three)
+	put(v, "main", 9, "t:meat 50")
+	put(v, "main", 10, "t:grain 50")
+	open(v)
+	click(v, {[FIELDS.area .. "2"] = "Cooking"})
+	click(v, {[FIELDS.row .. "1"] = ""})
+	has(v.formspec, "Max: 0 (inventory room)]", "V Max names the inventory's room")
+	click(v, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now"})
+	eq(J.job_state(v), nil, "V no job without room")
+	says(v.formspec, "Not enough room in inventory", "V the note")
+	-- With a job and the overflow at once, everything stays in its column.
+	put(v, "main", 12, "")
+	click(v, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now"})
+	check(J.job_state(v) ~= nil, "V a job with room for it")
+	put(v, OUT, 2, "t:stew 1")
+	fs = open(v)
+	has(fs, "grug_craft_out;", "V the overflow beside the running job")
+	has(fs, "animated_image[10.6,", "V ... and the bar")
+	geometry_ok(fs, "V a job and the overflow")
+	advance(1.5)
+	run_timers()
+end
 
 -- The bar's numbers, the texture.
 do
@@ -1237,7 +1291,7 @@ do
 	has(help, "@MENDER@ in every start town and capital", "H the repair line takes the title")
 	for _, part in ipairs({"Everyone knows Cooking from the start",
 			"Alchemy (Brewing Stand): brews finished potions and elixirs",
-			"Basic area of the Crafting tab", "Take all moves it into your inventory",
+			"Basic area of the Crafting tab", "each item goes into your inventory as it is done",
 			"These stations open no window; furnaces and dual furnaces still do"}) do
 		has(help, part, "H Help says: " .. part)
 	end

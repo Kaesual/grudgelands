@@ -1,5 +1,6 @@
 -- Round 45 lane JB portable test (LuaJIT): crafting jobs (round45-plan.md
--- §3, §4.3; ui-crafting-rework-plan.md §2.19-2.22, §2.31, §2.36, §4.4).
+-- §3, §4.3; ui-crafting-rework-plan.md §2.19-2.22, §2.31, §2.36, §4.4;
+-- Round 47 lane CR: delivery into the inventory, round47-plan.md ruling 18).
 --
 --   luajit tools/r45_jb/portable_test.lua [REPO]
 --
@@ -8,15 +9,18 @@
 -- under a stub engine with a wall clock, the microsecond counter, core.after
 -- and player meta. Checks:
 --   S  the start checks: busy, unknown recipe, quantity, profession, the
---      station within 4 nodes (once, at the start), output space (none,
---      reduced; partial stacks counted), ingredients (none, reduced);
+--      station within 4 nodes (once, at the start), ingredients (none,
+--      reduced), the room for the whole order in the inventory once the
+--      ingredients are taken (none, reduced; partial stacks counted, the
+--      slots the ingredients free counted, nothing written by the check);
 --   O  the consumption order (bags, main[9..], the hotbar last), the
 --      metadata rule for item and group entries, ×N from the same rule,
 --      item entries before group entries;
---   C  completion by the online timer: the result in the output area, gear
---      through grug_items.crafted_output (one call per stack), several
---      stacks above stack_max, the feed line, the end hook, the craft sound
---      once, the achievement callback with the job's items; no step work;
+--   C  completion by the online timer: the result in the inventory, each
+--      craft as it finishes, gear through grug_items.crafted_output (one
+--      call per stack), several stacks above stack_max, the feed line, the
+--      end hook, the craft sound once, the achievement callback with the
+--      job's items; no step work;
 --      the start hook (PT8): once per started job, with the nearest station
 --      in range (none without a station); a forge job ends without a cue;
 --   X  XP = min(crafts, XP left in the tier), only for progress recipes of
@@ -28,7 +32,16 @@
 --   K  cancel: refunds everything with room, refused without room (no side
 --      effects), a Stop after the end time completes; a target stack (EU) is
 --      refunded; a job whose recipe is gone returns its ingredients;
---   A  the output area: created at join for every player, take-only (put,
+--   D  per-craft delivery (Round 47): each craft lands as it finishes, the
+--      count stored in the job; a cancel delivers what is due and refunds
+--      only the unfinished crafts (per entry in the take's order, the
+--      chosen kinds kept; a removed recipe its share), the delivered crafts
+--      count for XP without the craft sound; offline crafts at the join;
+--   V  the overflow: what no longer fits goes to the output list, which
+--      drains into the inventory by a poll only while it holds something
+--      (no poll otherwise), the page resend when it appears and empties,
+--      the feet for the overflow's own overflow, a drain after a join;
+--   A  the output list: created at join for every player, take-only (put,
 --      move in and swaps refused, taking out allowed), Take all through the
 --      give helper with the leftover kept.
 -- Every job checks that no item is lost or duplicated.
@@ -479,6 +492,11 @@ do
 		count = 5}), nil, "A taking out of the output area is allowed")
 	eq(allow(old, "take", {listname = OUT, index = 2, stack = ItemStack("t:stone 5")}), nil,
 		"A dropping out of the output area is allowed")
+	-- Round 47: what the list holds at a join drains into the inventory.
+	advance(1)
+	run_timers()
+	eq(count_of(old, "t:stone", {main = true}), 5, "A the join's overflow drains into main")
+	check(old.inv:is_empty(OUT), "A ... and the output list is empty")
 end
 
 eq(#afters, 0, "C no timer for players without a job")
@@ -502,7 +520,8 @@ do
 	eq(J.crafts_from_counts(counts, torch), 30, "O ×N from the same rule")
 	local most, by_ingredients, by_space = J.max_craftable(p, torch)
 	eq(by_ingredients, 30, "O max_craftable: the ingredient limit")
-	eq(by_space, math.floor(4 * 99 / 4), "O max_craftable: the space limit")
+	-- Round 47: the room is the inventory's; all 30 crafts fit.
+	eq(by_space, 30, "O max_craftable: the room limit")
 	eq(most, 30, "O max_craftable: the smaller")
 	local ok = J.start_job(p, torch.id, 15)
 	check(ok, "O a 15-torch job starts")
@@ -619,30 +638,60 @@ do
 	advance(3.1)
 	run_timers()
 	eq(job_of(p), nil, "S the job ends without the forge (checked only at the start)")
-	eq(stack_at(p, OUT, 1):get_name(), "t:sword", "S the sword is in the output area")
+	eq(count_of(p, "t:sword", {main = true}), 1, "S the sword is in the inventory")
+	check(p.inv:is_empty(OUT), "S ... not in the output list")
 
-	-- Output space: none, reduced, partial stacks counted.
+	-- Round 47 ruling 18: the room for the whole order in the inventory once
+	-- the ingredients are taken; none, reduced, partial stacks counted.
 	local q = new_player("s2")
-	fill(q, OUT, 1, 4, "t:stone 99")
+	J.learn(q, "cooking")
 	put(q, "main", 9, "t:meat 99")
 	put(q, "main", 10, "t:grain 99")
-	J.learn(q, "cooking")
+	fill(q, "main", 1, 8, "t:stone 99")
+	fill(q, "main", 11, 32, "t:stone 99")
 	ok, reason, info = J.start_job(q, stew.id, 1)
-	check(not ok and info.code == "space" and info.max == 0, "S a full output area")
-	eq(reason, "No space in the output area", "S the no-space reason")
-	put(q, OUT, 1, "t:stew 15")
-	put(q, OUT, 2, "")
-	eq(J.output_capacity(q, stew), 5 + 20, "S room: a partial stack plus an empty slot")
-	ok, reason, info = J.start_job(q, stew.id, 30)
-	check(not ok and info.code == "space" and info.max == 25, "S output limits the quantity")
-	eq(reason, "Not enough space in the output area — quantity reduced to 25",
-		"S the space note")
+	check(not ok and info.code == "space" and info.max == 0, "S a full inventory refuses")
+	eq(reason, "Not enough room in inventory", "S the no-room reason")
 	eq(count_of(q, "t:meat"), 99, "S a refused start consumes nothing")
+	local _, by_ing, by_room = J.max_craftable(q, stew)
+	eq(by_ing .. "/" .. by_room, "99/0", "S max_craftable: the room limit 0")
+	put(q, "main", 20, "t:stew 15")
+	ok, reason, info = J.start_job(q, stew.id, 30)
+	check(not ok and info.code == "space" and info.max == 5, "S the room limits the quantity")
+	eq(reason, "Not enough room in inventory — quantity reduced to 5", "S the reduction note")
+	eq(select(3, J.max_craftable(q, stew)), 5, "S max_craftable: a partial stack's room")
 	local tagged = ItemStack("t:stew 1")
 	tagged.fields = {grug_quality = "2"}
-	q.inv:set_stack(OUT, 3, tagged)
-	put(q, OUT, 2, "t:stew 19")
-	eq(J.output_capacity(q, stew), 5 + 1, "S a stack with metadata takes no more")
+	q.inv:set_stack("main", 20, tagged)
+	eq(select(3, J.max_craftable(q, stew)), 0, "S a stack with metadata takes no more")
+	-- The slots the ingredients free count: one meat and one grain left, a
+	-- craft of one empties both slots.
+	put(q, "main", 9, "t:meat 1")
+	put(q, "main", 10, "t:grain 1")
+	local before = q.inv:get_list("main")
+	check(J.output_fits(q, stew.ingredients, 1, {ItemStack("t:stew")}), "S the freed slot counts")
+	local same = true
+	for index, stack in ipairs(q.inv:get_list("main")) do
+		if stack:to_string() ~= before[index]:to_string() then same = false end
+	end
+	check(same, "S the room check writes nothing")
+	ok = J.start_job(q, stew.id, 1)
+	check(ok, "S ... so the craft starts")
+	advance(1.01)
+	run_timers()
+	eq(stack_at(q, "main", 9):to_string(), "t:stew 1 0", "S the stew lands in a freed slot")
+	check(q.inv:is_empty(OUT), "S ... with nothing in the output list")
+	-- The whole order: 8 stews in two partial stacks of 4 room each fit,
+	-- 9 do not.
+	fill(q, "main", 1, 32, "t:stone 99")
+	put(q, "main", 1, "t:stew 16")
+	put(q, "main", 2, "t:stew 16")
+	put(q, "main", 3, "t:meat 50")
+	put(q, "main", 4, "t:grain 50")
+	_, reason = J.start_job(q, stew.id, 9)
+	eq(reason, "Not enough room in inventory — quantity reduced to 8", "S the whole order counts")
+	check(J.start_job(q, stew.id, 8), "S the order that fits starts")
+	J.cancel_job(q)
 end
 
 ------------------------------------------------------------------------------
@@ -663,12 +712,14 @@ do
 	advance(9.9)
 	run_timers()
 	check(job_of(p) ~= nil, "C still running at 9.9 s")
-	check(stack_at(p, OUT, 1):is_empty(), "C nothing in the output area yet")
+	-- Round 47: each craft lands as it finishes.
+	eq(count_of(p, "t:stew", {main = true}), 9, "C nine stews delivered by 9.9 s")
+	eq(#sounds - sounds_before, 0, "C no sound before the end")
 	advance(0.2)
 	run_timers()
 	eq(job_of(p), nil, "C the timer completed the job")
-	eq(stack_at(p, OUT, 1):get_name() .. " " .. stack_at(p, OUT, 1):get_count(), "t:stew 10",
-		"C the stew in the output area")
+	eq(stack_at(p, "main", 11):to_string(), "t:stew 10 0", "C the stew in the inventory")
+	check(p.inv:is_empty(OUT), "C nothing in the output list")
 	eq(last_feed(), "Hearty Stew ×10 is ready", "C the HUD feed line")
 	eq(#sounds - sounds_before, 1, "C the craft sound once per job")
 	eq(sounds[#sounds], "craft_cooking@c1", "C the cooking cue")
@@ -699,8 +750,7 @@ do
 	run_timers()
 	eq(J.profession_level(x, "cooking"), 2, "X a saturated profession advances at the job end")
 	eq(J.crafts_in_tier(x, "cooking"), 0, "X the next tier starts at 0")
-	eq(stack_at(x, OUT, 1):get_count() + stack_at(x, OUT, 2):get_count(), 22,
-		"X the output area holds 4 + 15 + 3 stews")
+	eq(count_of(x, "t:stew", {main = true}), 22, "X the inventory holds 4 + 15 + 3 stews")
 	-- A T1 recipe at profession T2 gives no XP.
 	J.take_all(x)
 	J.start_job(x, stew.id, 2)
@@ -739,8 +789,9 @@ do
 	eq(#sounds, sounds_at_start, "C a forge job's end plays no craft cue (PT8)")
 	J.STATION_SOUNDS = nil
 	eq(crafted_calls - calls, 3, "C crafted_output once per sword")
+	-- main[9] and [10] hold the bars and sticks left: the swords follow.
 	for index = 1, 3 do
-		local stack = stack_at(smith, OUT, index)
+		local stack = stack_at(smith, "main", 10 + index)
 		check(stack:get_name() == "t:sword" and stack:get_count() == 1 and
 			stack:get_meta():get_int("grug_quality") == 1,
 			"C sword " .. index .. " in its own slot, made by crafted_output")
@@ -748,21 +799,27 @@ do
 	eq(last_feed(), "Copper Sword ×3 is ready", "C the gear feed line")
 	nodes = {}
 
+	-- Round 47: a job is no longer capped by the four output slots; the
+	-- inventory's room counts: a partial stack, two free slots and the two
+	-- slots the take empties (the coal's and the first sticks').
 	local big = new_player("c3")
 	put(big, "main", 9, "t:stick 99")
 	put(big, "main", 10, "t:stick 99")
 	put(big, "main", 11, "t:coal 99")
-	put(big, OUT, 1, "t:torch 50")
+	put(big, "main", 12, "t:torch 50")
+	fill(big, "main", 13, 30, "t:dirt 99")
+	fill(big, "main", 1, 8, "t:dirt 99")
 	local most, _, by_space = J.max_craftable(big, torch)
-	eq(by_space, math.floor((49 + 3 * 99) / 4), "C room: partial stack + 3 slots, per 4 torches")
-	check(J.start_job(big, torch.id, 60), "C 60 crafts = 240 torches start")
-	advance(60)
+	eq(by_space, 99, "C room: 49 + 4 x 99 holds 99 crafts of 4 torches")
+	check(J.start_job(big, torch.id, 99), "C 99 crafts = 396 torches start")
+	advance(99)
 	run_timers()
-	eq(stack_at(big, OUT, 1):get_count(), 99, "C the partial stack filled first")
-	eq(stack_at(big, OUT, 2):get_count(), 99, "C then a stack of stack_max")
-	eq(stack_at(big, OUT, 3):get_count(), 92, "C and the rest (50 + 240 = 290)")
-	check(stack_at(big, OUT, 4):is_empty(), "C the fourth slot unused")
-	eq(count_of(big, "t:torch"), 290, "C no torch lost or duplicated")
+	eq(stack_at(big, "main", 12):get_count(), 99, "C the partial stack filled first")
+	eq(stack_at(big, "main", 9):get_count() + stack_at(big, "main", 11):get_count(), 198,
+		"C then the freed slots, stacks of stack_max")
+	eq(stack_at(big, "main", 32):get_count(), 50, "C and the rest (50 + 396 = 446)")
+	eq(count_of(big, "t:torch"), 446, "C no torch lost or duplicated")
+	check(big.inv:is_empty(OUT), "C nothing in the output list")
 end
 
 ------------------------------------------------------------------------------
@@ -781,7 +838,7 @@ do
 	advance(6)
 	run_timers()
 	eq(job_of(p), nil, "X the job finishes")
-	eq(count_of(p, "t:sword", {[OUT] = true}), 2, "X its swords are delivered")
+	eq(count_of(p, "t:sword", {main = true}), 2, "X its swords are delivered")
 	eq(J.crafts_in_tier(p, "weaponsmith"), 0, "X without XP, also after relearning")
 	nodes = {}
 end
@@ -821,7 +878,7 @@ do
 	advance(2)
 	run_timers()
 	eq(job_of(p), nil, "R the job completes after the restart")
-	eq(stack_at(p, OUT, 1):get_count(), 20, "R the 20 stews in the output area")
+	eq(count_of(p, "t:stew", {main = true}), 20, "R the 20 stews in the inventory")
 	eq(ends[#ends].source, "timer", "R completed by the re-armed timer")
 
 	-- Logout, login after the end: completes at login.
@@ -833,7 +890,7 @@ do
 	join(p)
 	eq(job_of(p), nil, "R the login completes a finished job")
 	eq(ends[#ends].source, "join", "R completed at the join")
-	eq(stack_at(p, OUT, 2):get_count(), 5, "R the stews delivered at login")
+	eq(count_of(p, "t:stew", {main = true}), 25, "R the 5 stews delivered at login")
 	eq(last_feed(), "Hearty Stew ×5 is ready", "R the feed line at login")
 
 	-- Opening the Crafting tab catches up (the timer may come a step later).
@@ -842,7 +899,7 @@ do
 	check(J.update_job(p, "open"), "R update_job completes a due job")
 	eq(ends[#ends].source, "open", "R completed while the tab was built")
 	run_timers()
-	eq(stack_at(p, OUT, 2):get_count(), 7, "R the stale timer delivers nothing twice")
+	eq(count_of(p, "t:stew", {main = true}), 27, "R the stale timer delivers nothing twice")
 	check(not J.update_job(p, "open"), "R update_job without a job does nothing")
 end
 
@@ -856,7 +913,7 @@ do
 	put(p, "main", 9, "t:stick 30")
 	put(p, "main", 10, "t:coal 40")
 	check(J.start_job(p, torch.id, 35), "K a 35-craft job starts")
-	advance(10)
+	advance(0.9)
 	local ok, outcome = J.cancel_job(p)
 	check(ok and outcome == "cancelled", "K cancel with room")
 	eq(job_of(p), nil, "K the job is gone")
@@ -908,7 +965,7 @@ do
 	advance(2.01)
 	ok, outcome = J.cancel_job(s)
 	check(ok and outcome == "completed", "K a Stop after the end completes")
-	eq(count_of(s, "t:torch", {[OUT] = true}), 8, "K the torches delivered, no refund")
+	eq(count_of(s, "t:torch", {main = true}), 8, "K the torches delivered, no refund")
 	eq(count_of(s, "t:stick"), 3, "K the sticks stay consumed")
 	ok, outcome = J.cancel_job(s)
 	check(not ok, "K cancel without a job")
@@ -941,7 +998,7 @@ do
 		consumed = {"t:oak 3 0"}, duration = 1})
 	advance(1)
 	run_timers()
-	eq(count_of(gone, "t:oak", {[OUT] = true}), 3, "K a removed recipe returns its ingredients")
+	eq(count_of(gone, "t:oak", {main = true}), 3, "K a removed recipe returns its ingredients")
 
 	-- A job of an unknown kind (an EU job read by a build without EU) falls
 	-- back to the recipe kind: its ingredients and its target come back.
@@ -953,9 +1010,9 @@ do
 	advance(1)
 	run_timers()
 	eq(job_of(lost), nil, "K the unknown-kind job ends")
-	eq(count_of(lost, "t:gem", {[OUT] = true}), 3, "K its ingredients come back")
+	eq(count_of(lost, "t:gem", {main = true}), 3, "K its ingredients come back")
 	local back
-	for _, stack in ipairs(lost.inv.lists[OUT]) do
+	for _, stack in ipairs(lost.inv.lists.main) do
 		if stack:get_name() == "t:sword" then back = stack end
 	end
 	check(back and back:get_meta():get_string("grug_quality") == "4",
@@ -976,9 +1033,215 @@ do
 	advance(3)
 	run_timers()
 	eq(inner, false, "K the nested update_job finds no job")
-	eq(count_of(nested, "t:stew", {[OUT] = true}), 3, "K one delivery: 3 stews, not 6")
+	eq(count_of(nested, "t:stew", {main = true}), 3, "K one delivery: 3 stews, not 6")
 	eq(J.crafts_in_tier(nested, "cooking"), 3, "K one award: 3 XP")
 	eq(#ends - ends_before, 1, "K one end hook")
+end
+
+------------------------------------------------------------------------------
+-- D. Round 47 ruling 18: each craft is delivered as it finishes.
+------------------------------------------------------------------------------
+do
+	-- A 4-craft torch job: 4 torches per second; the feed line and the sound
+	-- once, at the end.
+	local p = new_player("d1")
+	put(p, "main", 9, "t:stick 10")
+	put(p, "main", 10, "t:coal 10")
+	local feeds, sounds_before = #feed_lines, #sounds
+	check(J.start_job(p, torch.id, 4), "D a 4-craft job starts")
+	eq(job_of(p).delivered, 0, "D a new job counts its deliveries")
+	for second = 1, 3 do
+		advance(1)
+		run_timers()
+		eq(count_of(p, "t:torch"), 4 * second, "D " .. second .. " s: " .. 4 * second .. " torches")
+		eq(job_of(p) and job_of(p).delivered, second, "D ... the count stored in the job")
+	end
+	eq(#feed_lines - feeds, 0, "D no feed line before the end")
+	eq(#sounds - sounds_before, 0, "D no sound before the end")
+	advance(1)
+	run_timers()
+	eq(job_of(p), nil, "D the job ends with the fourth craft")
+	eq(count_of(p, "t:torch"), 16, "D 16 torches")
+	eq(#feed_lines - feeds, 1, "D one feed line")
+	eq(last_feed(), "Torch ×16 is ready", "D ... for the whole job")
+	eq(#sounds - sounds_before, 1, "D the craft sound once, at the end")
+	eq(#afters, 0, "D no timer left")
+
+	-- Opening the tab (update_job) delivers what is due between two timers.
+	check(J.start_job(p, torch.id, 3), "D a 3-craft job")
+	advance(2.5)
+	J.update_job(p, "open")
+	eq(count_of(p, "t:torch"), 24, "D update_job delivers the two due crafts")
+	run_timers()
+	eq(count_of(p, "t:torch"), 24, "D ... and the late timer nothing twice")
+	advance(0.5)
+	run_timers()
+	eq(count_of(p, "t:torch"), 28, "D the last craft at the end")
+	eq(job_of(p), nil, "D ... which ends the job")
+
+	-- A job stored before Round 47 (no delivery count) delivers at its end.
+	local old = new_player("d0")
+	J.begin_job(old, {kind = "recipe", recipe = torch.id, quantity = 3,
+		consumed = {"t:stick 3 0", "t:coal 3 0"}, duration = 3})
+	advance(2.5)
+	run_timers()
+	J.update_job(old, "open")
+	eq(count_of(old, "t:torch"), 0, "D an old job delivers nothing before its end")
+	advance(0.5)
+	run_timers()
+	eq(count_of(old, "t:torch"), 12, "D ... and everything at its end")
+
+	-- Offline: the crafts finished while away arrive at the join.
+	local o = new_player("d2")
+	put(o, "main", 9, "t:stick 10")
+	put(o, "main", 10, "t:coal 10")
+	check(J.start_job(o, torch.id, 5), "D a 5-craft job")
+	advance(1.5)
+	run_timers()
+	eq(count_of(o, "t:torch"), 4, "D one craft before the logout")
+	leave(o)
+	advance(10)
+	run_timers()
+	eq(count_of(o, "t:torch"), 4, "D nothing while offline")
+	join(o)
+	eq(job_of(o), nil, "D the join completes the job")
+	eq(count_of(o, "t:torch"), 20, "D ... and delivers the other four crafts")
+	eq(ends[#ends].source, "join", "D completed at the join")
+	check(J.start_job(o, torch.id, 4), "D a 4-craft job")
+	leave(o)
+	advance(2.5)
+	join(o)
+	eq(count_of(o, "t:torch"), 28, "D a join in the middle delivers the two due crafts")
+	check(job_of(o) ~= nil and job_of(o).delivered == 2, "D ... and the job runs on")
+	advance(1.5)
+	run_timers()
+	eq(count_of(o, "t:torch"), 36, "D the rest after the join")
+
+	-- A cancel delivers what is due (no timer ran), refunds the unfinished
+	-- crafts, and the delivered ones count for XP without the craft sound.
+	local c = new_player("d3")
+	J.learn(c, "cooking")
+	put(c, "main", 9, "t:meat 10")
+	put(c, "main", 10, "t:grain 10")
+	local awards_before = #awards
+	check(J.start_job(c, stew.id, 10), "D a 10-stew job")
+	advance(3.5)
+	local sounds_mid = #sounds
+	local ok, outcome = J.cancel_job(c)
+	check(ok and outcome == "cancelled", "D the cancel")
+	eq(count_of(c, "t:stew"), 3, "D the three finished stews are kept")
+	eq(count_of(c, "t:meat") .. "/" .. count_of(c, "t:grain"), "7/7",
+		"D the seven unfinished crafts' ingredients come back")
+	eq(J.crafts_in_tier(c, "cooking"), 3, "D the delivered crafts count for XP")
+	eq(#awards - awards_before, 1, "D one achievement callback")
+	eq(awards[#awards].items, 3, "D ... with the delivered items")
+	eq(#sounds, sounds_mid, "D no craft sound at a cancel")
+
+	-- The refund per entry in the take's order: an item entry and a group
+	-- entry that also takes it (2 wood + 1 oak per craft) get back their own
+	-- kinds.
+	local m = new_player("d4")
+	put(m, "main", 9, "t:oak 3")
+	put(m, "main", 10, "t:pine 6")
+	check(J.start_job(m, mixed.id, 3), "D three mixed crafts")
+	advance(1.2)
+	run_timers()
+	J.cancel_job(m)
+	eq(count_of(m, "t:gem"), 1, "D one craft delivered")
+	eq(count_of(m, "t:oak") .. "/" .. count_of(m, "t:pine"), "2/4",
+		"D two crafts' oak and pine back, each entry its own")
+	-- The kind chosen for a group (Round 46 picks) is what comes back.
+	local k = new_player("d5")
+	put(k, "main", 9, "t:oak 16")
+	put(k, "main", 10, "t:pine 16")
+	check(J.start_job(k, chest.id, 2, {wood = "t:pine"}), "D two chests of pine")
+	eq(job_of(k).picks.wood, "t:pine", "D the job keeps the choice")
+	advance(1.5)
+	run_timers()
+	J.cancel_job(k)
+	eq(count_of(k, "t:chest"), 1, "D one chest delivered")
+	eq(count_of(k, "t:oak") .. "/" .. count_of(k, "t:pine"), "16/8", "D the pine comes back")
+	-- A recipe gone with crafts delivered: its unfinished share.
+	local g = new_player("d6")
+	J.begin_job(g, {kind = "recipe", recipe = "removed|y", quantity = 4, delivered = 1,
+		consumed = {"t:oak 8 0", "t:pine 4 0"}, duration = 4})
+	J.cancel_job(g)
+	eq(count_of(g, "t:oak") .. "/" .. count_of(g, "t:pine"), "6/3",
+		"D a removed recipe returns three quarters")
+end
+
+------------------------------------------------------------------------------
+-- V. Round 47 ruling 18: the overflow and its drain.
+------------------------------------------------------------------------------
+do
+	local refreshes = {}
+	J.refresh_crafting_page = function(player)
+		refreshes[#refreshes + 1] = player:get_player_name()
+	end
+	local p = new_player("v1")
+	J.learn(p, "cooking")
+	put(p, "main", 9, "t:meat 10")
+	put(p, "main", 10, "t:grain 10")
+	check(J.start_job(p, stew.id, 4), "V a 4-stew job starts with room")
+	advance(1)
+	run_timers()
+	eq(count_of(p, "t:stew", {main = true}), 1, "V the first stew in the inventory")
+	-- The inventory fills up during the job.
+	for index = 1, 32 do
+		if stack_at(p, "main", index):is_empty() then put(p, "main", index, "t:dirt 99") end
+	end
+	put(p, "main", 11, "t:stew 20")
+	advance(1)
+	run_timers()
+	eq(stack_at(p, OUT, 1):to_string(), "t:stew 1 0", "V the second stew goes to the overflow")
+	eq(#refreshes, 1, "V the open page is resent once, to show the slots")
+	advance(1) -- the drain's poll finds no room; the third craft too
+	run_timers()
+	eq(stack_at(p, OUT, 1):get_count(), 2, "V the third stew joins it")
+	advance(1)
+	run_timers()
+	eq(job_of(p), nil, "V the job ends")
+	eq(stack_at(p, OUT, 1):get_count(), 3, "V the fourth stew too")
+	eq(#refreshes, 1, "V no resend while the overflow only grows")
+	check(#afters == 1, "V one drain poll runs")
+	-- A slot frees: the next poll moves the overflow in.
+	put(p, "main", 30, "")
+	advance(J.OVERFLOW_POLL)
+	run_timers()
+	eq(stack_at(p, "main", 30):to_string(), "t:stew 3 0", "V the drain moves it into the inventory")
+	check(p.inv:is_empty(OUT), "V the overflow is empty")
+	eq(#refreshes, 2, "V the open page is resent once, to drop the slots")
+	eq(#afters, 0, "V no poll once it is empty")
+	eq(count_of(p, "t:stew"), 23, "V no stew lost or duplicated (20 + 3)")
+	-- The overflow's own overflow drops at the player's feet.
+	local dropped_before = #dropped
+	put(p, "main", 30, "t:dirt 99")
+	fill(p, OUT, 1, 4, "t:stone 99")
+	put(p, "main", 9, "t:meat 10")
+	put(p, "main", 10, "t:grain 10")
+	put(p, "main", 11, "t:stew 18")
+	put(p, "main", 12, "t:dirt 99")
+	check(J.start_job(p, stew.id, 2), "V a 2-stew job with room for both")
+	put(p, "main", 11, "t:stew 20")
+	advance(1)
+	run_timers()
+	advance(1)
+	run_timers()
+	eq(#dropped - dropped_before, 2, "V what fits nowhere drops at the feet, craft by craft")
+	eq(dropped[#dropped]:to_string(), "t:stew 1 0", "V ... one stew each")
+	-- A rejoin starts one poll chain, never two.
+	leave(p)
+	advance(J.OVERFLOW_POLL)
+	run_timers()
+	join(p)
+	join(p)
+	local polls = #afters
+	eq(polls, 1, "V one poll after a rejoin")
+	for index = 1, 4 do put(p, OUT, index, "") end
+	advance(J.OVERFLOW_POLL)
+	run_timers()
+	eq(#afters, 0, "V a list emptied by hand ends the poll")
+	J.refresh_crafting_page = nil
 end
 
 ------------------------------------------------------------------------------
