@@ -225,8 +225,9 @@ carpets (12 %).
   `grug_materials.NATURAL_GROUND_NODES`; pins in their own commit.
 - **Habitats**: the swamp's mob spawn lists (`grug_mobs/*.lua`,
   `spawn_regions.lua`) take mud_dry, mud_mottled and mud_with_wet_grass
-  next to mud (not moss soil: those lists name nodes for every biome, and
-  moss soil is also the elf forest's); the gathering catalog's swamp hosts,
+  next to mud; the three swamp-only lists (crocodile, bog ooze, bog fowl,
+  zone-gated to the swamp family) take moss soil too (the user,
+  2026-10-13); the gathering catalog's swamp hosts,
   world content's swamp soil and the P9G hosts take all five grounds (they
   are per biome); renewal knows the pass's plants as natural.
 - **Proof**: `tools/r47_sw/portable_test.lua` (the rule on a synthetic
