@@ -668,7 +668,12 @@ end
 local function settle_cut_trees(self)
 	if not self.cut_trees or next(self.cut_trees) == nil then return end
 	local removed = false
-	for id in pairs(self.cut_trees) do
+	-- newest first: a later tree's wood may stand on an earlier one's leaf,
+	-- and that leaf must go back before the earlier tree is taken out
+	local ids = {}
+	for id in pairs(self.cut_trees) do ids[#ids + 1] = id end
+	table.sort(ids, function(a, b) return a > b end)
+	for _, id in ipairs(ids) do
 		local tree = self.grown_trees[id]
 		for index = #tree.writes, 1, -1 do
 			local w = tree.writes[index]
