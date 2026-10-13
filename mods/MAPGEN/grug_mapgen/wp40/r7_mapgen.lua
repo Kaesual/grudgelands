@@ -72,8 +72,15 @@ local runtime = dofile(wp40 .. "/r7_runtime.lua")(core, wp40,
 	default_path .. "/schematics", payload.projection, catalog,
 	payload.water_layout, payload.road_layout, payload.capital_layout,
 	payload.prepared_blueprints, payload.placement_layout)
+local emerge_started = os.clock()
 local built = runtime.build(native.identities(), payload.manifest_sha256)
 if built.full_seed ~= payload.full_seed then fail("main/emerge seed differs") end
+-- The world's generated trees (Round 47): the same roll-up as main's line,
+-- which the manifest digest comparison above already holds equal.
+core.log("action", ("[grug_mapgen] emerge tree templates: roll-up %s, %.3f s CPU " ..
+	"(runtime build %.2f s)"):format(
+	built.manifest.values.r6_generated_templates_sha256:sub(1, 16),
+	built.template_seconds or 0, os.clock() - emerge_started))
 local native_baseline = core.settings and
 	type(core.settings.get_bool) == "function" and
 	core.settings:get_bool("grug_mapgen_r8_native_baseline", false) or false

@@ -123,8 +123,18 @@ function H.new(repo)
 	-- the shipped habitat_registry.
 	function B.content(extra_surface_names, habitat_module)
 		local factory = dofile(wp40 .. "/r6_content.lua")
-		return factory(manifest, B.contract(extra_surface_names), B.projection,
+		local content = factory(manifest, B.contract(extra_surface_names), B.projection,
 			habitat_module or habitat)
+		-- The generated trees' settlement class (Round 47): r6_templates.lua
+		-- computes it from a world's variants, which this harness does not
+		-- build; every generated tree spans more than five nodes, so class 1
+		-- (the planner reads it only for its placement order).
+		local classes = {}
+		for _, row in ipairs(manifest.decorations) do
+			if row.settlement_class == nil then classes[row.id] = 1 end
+		end
+		content.set_template_classes(classes)
+		return content
 	end
 
 	-- The real R6 planner over a planner source; the R5 planner is a stub

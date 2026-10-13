@@ -1748,9 +1748,8 @@ local function loader(directory)
 		-- Two rows of trees on the field side.
 		local trees = 0
 		for x = 3, len - 4, 5 do
-			dressing.broadleaf(buf, palette, x, 6, 5)
-			dressing.broadleaf(buf, palette, x + 2, d - 2, 4)
-			trees = trees + 2
+			if dressing.broadleaf(buf, palette, x, 6, 5) then trees = trees + 1 end
+			if dressing.broadleaf(buf, palette, x + 2, d - 2, 4) then trees = trees + 1 end
 		end
 		dressing.undergrowth(buf, palette, 0, 4, len - 1, d - 1, 7)
 

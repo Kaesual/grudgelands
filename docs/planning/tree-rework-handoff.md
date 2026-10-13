@@ -125,6 +125,15 @@ for GLX on this host, and `LC_ALL=C` is required (see `tools/luanti_headless.sh`
 
 ## 5. Integration plan (proposal)
 
+**Built in Round 47** (lanes TA nodes, TB port, TC world), with two changes
+to this plan by the user's rulings: the variants are not `.mts` files but
+built from each world's seed at every server start (32 per species, kapok
+16: `wp40/tree_templates.lua`, expanded by `r6_templates.lua`), and the
+town trees use the generator too. Where each piece lives:
+[biomes_mobs.md](../design/biomes_mobs.md) §2.1 and §5, the
+[module guide](../technical/module-guide.md) (mapgen), the fixtures
+`tools/r47_tb` and `tools/r47_tc`.
+
 - **Port `treegen.js` to Lua 1:1** (pure, no engine calls). It uses only
   integer maths on doubles, a 16-direction table, Park–Miller random numbers,
   an explicit cell order and sorted output (`DESIGN.md` "Porting to Lua").

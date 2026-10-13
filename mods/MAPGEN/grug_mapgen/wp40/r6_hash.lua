@@ -15,6 +15,10 @@ return function(raw_sha256)
 		"resource_frontier_rank_v1",
 		"resource_root_shuffle_v1",
 		"template_probability_v1",
+		-- Round 47 lane TC: the seeded trees (tree_templates.lua): a world's
+		-- template seeds and the variant a tree candidate takes.
+		"tree_template_seed_v1",
+		"decoration_variant_v1",
 	}
 	local DOMAIN_SET = {}
 	for index = 1, #DOMAIN_VALUES do

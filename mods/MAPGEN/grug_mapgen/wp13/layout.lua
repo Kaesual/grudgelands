@@ -190,8 +190,7 @@ local function loader(directory)
 			local x, z, height = spot[1], spot[2], spot[3] or 10
 			if M.natural(buf, x, z) and
 					M.free_area(buf, x - 2, z - 2, x + 2, z + 2, height + 1) then
-				dressing.tree(buf, palette, x, z, height)
-				planted = planted + 1
+				if dressing.tree(buf, palette, x, z, height) then planted = planted + 1 end
 			end
 		end
 		return planted
@@ -220,8 +219,7 @@ local function loader(directory)
 				if M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
 						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
 							stem + 5) then
-					draw(buf, palette, tx, tz, stem)
-					planted = planted + 1
+					if draw(buf, palette, tx, tz, stem) then planted = planted + 1 end
 				end
 			end
 		end
@@ -245,8 +243,7 @@ local function loader(directory)
 						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
 						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
 							height + 2) then
-					dressing.gravewood(buf, palette, tx, tz, height)
-					planted = planted + 1
+					if dressing.gravewood(buf, palette, tx, tz, height) then planted = planted + 1 end
 				end
 			end
 		end
@@ -289,8 +286,7 @@ local function loader(directory)
 					M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
 					M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
 						height + 2) then
-				dressing.columnar(buf, palette, tx, tz, height)
-				planted = planted + 1
+				if dressing.columnar(buf, palette, tx, tz, height) then planted = planted + 1 end
 			end
 		end
 		for _, spot in ipairs(spots or {}) do
@@ -332,8 +328,7 @@ local function loader(directory)
 						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
 						M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
 							height + 2) then
-					dressing.tree(buf, palette, tx, tz, height)
-					planted = planted + 1
+					if dressing.tree(buf, palette, tx, tz, height) then planted = planted + 1 end
 				end
 			end
 		end
@@ -359,8 +354,7 @@ local function loader(directory)
 						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
 						M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
 							height + 4) then
-					dressing.jungle_tree(buf, palette, tx, tz, height)
-					planted = planted + 1
+					if dressing.jungle_tree(buf, palette, tx, tz, height) then planted = planted + 1 end
 				end
 			end
 		end
@@ -393,8 +387,7 @@ local function loader(directory)
 			local x, z, height = spot[1], spot[2], spot[3] or 18
 			if rooted(x - 2, z - 2, x + 2, z + 2) and
 					M.free_area(buf, x - 3, z - 3, x + 3, z + 3, height + 5) then
-				dressing.emergent(buf, palette, x, z, height)
-				planted = planted + 1
+				if dressing.emergent(buf, palette, x, z, height) then planted = planted + 1 end
 			end
 		end
 		return planted

@@ -11,7 +11,7 @@
 #   JOBS=<n> parallel seeds (default 8), each under `chrt --idle 0` and
 #   `ionice -c3`. There is no wall-clock limit: a slow seed is waited for.
 #   RESULTS=<file> also writes every seed's result line there (OK seed seconds
-#   roster_sha256 chunks chunk_seconds), e.g. to compare rosters with a
+#   roster_sha256 chunks chunk_seconds trees), e.g. to compare rosters with a
 #   baseline run.
 # Prints one line per failed seed and a summary; the log of every seed is in
 # the printed directory (kept on a failure). Exits 1 on any failure.

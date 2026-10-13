@@ -10,7 +10,7 @@ return function(dependencies)
 		terrain_field = true,
 		raw_sha256 = true, hash_factory = true, content_factory = true,
 		templates_factory = true, planner_factory = true, settlement_factory = true,
-		habitat = true,
+		habitat = true, tree_templates = true,
 	}
 	for key in pairs(dependencies) do
 		if not ALLOWED[key] then
@@ -98,8 +98,13 @@ return function(dependencies)
 		if configured_water_level ~= 1 then fail("fail_manifest", "water level differs") end
 		local content_module = dependencies.content_factory(manifest_values,
 			content_contract, wp43_projection, dependencies.habitat)
+		-- The world's own trees (Round 47 lane TC): the generated variants
+		-- come from this seed string in every environment, and their rows'
+		-- settlement classes are settled before the planner reads a row.
 		local templates_module = dependencies.templates_factory(hash, content_module,
-			template_source)
+			template_source, {full_seed = full_seed_string,
+				trees = dependencies.tree_templates})
+		content_module.set_template_classes(templates_module.generated_classes())
 		if construction_mode == "authority" then
 			if type(r5_module.new_source_runtime) ~= "function" then
 				fail("fail_status", "R5 source-only runtime constructor is absent")
@@ -117,6 +122,8 @@ return function(dependencies)
 			return zones_session, {
 				schema = "grug_wp40_r6_authority_identity_v1",
 				template_records = templates_module.records(),
+				template_identity = templates_module.identity(),
+				template_seconds = templates_module.generated_seconds(),
 				planner_source = planner_source,
 				-- The vegetation and altitude rule the emerge planner and
 				-- surface selector use (habitat_registry.lua), for renewal.
@@ -285,6 +292,8 @@ return function(dependencies)
 		return session, writer, zones_session, settlement_fixture, {
 			schema = "grug_wp40_r6_private_identity_v1",
 			template_records = templates_module.records(),
+			template_identity = templates_module.identity(),
+			template_seconds = templates_module.generated_seconds(),
 			planner_fixture = planner_fixture, planner_source = planner_source,
 			successor_tail = successor_tail,
 			direct_evidence_fixture = direct_evidence_fixture,

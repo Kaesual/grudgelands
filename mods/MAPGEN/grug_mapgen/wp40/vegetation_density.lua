@@ -48,28 +48,38 @@ return function(deps)
 	-- separate renewal classes (Round 23 Phase 2 ruling 8): each is counted
 	-- against its own natural density. Every template row is in exactly one
 	-- of TREES, SHRUBS and NOT_RENEWED.
-	local APPLE = {sapling = "default:sapling", markers = {"default:tree"}}
-	local JUNGLE = {sapling = "default:junglesapling", markers = {"default:jungletree"}}
-	local PINE = {sapling = "default:pine_sapling", markers = {"default:pine_tree"}}
+	-- A generated tree (Round 47) is marked by its trunk: the log cube of a
+	-- 1 x 1 trunk and the faceted quarter of a 2 x 2 or 3 x 3 (the corners
+	-- of a 3 x 3; its edges and centre are logs). Limbs, twigs and roots are
+	-- not markers: they leave the trunk's columns.
+	local function trunk_markers(trunk, wood)
+		return {trunk, "grug_trees:" .. wood .. "_quarter"}
+	end
+	local APPLE = {sapling = "default:sapling",
+		markers = trunk_markers("default:tree", "apple")}
+	local JUNGLE = {sapling = "default:junglesapling",
+		markers = trunk_markers("default:jungletree", "jungle")}
+	local PINE = {sapling = "default:pine_sapling",
+		markers = trunk_markers("default:pine_tree", "pine")}
 	local GRAVEWOOD = {sapling = "grug_trees:gravewood_sapling",
-		markers = {"grug_trees:gravewood_tree"}}
+		markers = trunk_markers("grug_trees:gravewood_tree", "gravewood")}
 	local BUSH = {sapling = "default:bush_sapling", markers = {"default:bush_stem"}}
 	local TREES = {
 		meadows_apple_tree = APPLE,
 		deep_forest_apple_tree = APPLE,
 		elf_forest_apple_tree = APPLE,
 		deep_forest_aspen_tree = {sapling = "default:aspen_sapling",
-			markers = {"default:aspen_tree"}},
+			markers = trunk_markers("default:aspen_tree", "aspen")},
 		elf_forest_silverwood = {sapling = "grug_trees:silverwood_sapling",
-			markers = {"grug_trees:silverwood_tree"}},
+			markers = trunk_markers("grug_trees:silverwood_tree", "silverwood")},
 		jungle_tree = JUNGLE,
 		jungle_edge_jungle_tree = JUNGLE,
 		emergent_jungle_tree = {sapling = "default:emergent_jungle_sapling",
-			markers = {"default:jungletree"}},
+			markers = JUNGLE.markers},
 		pine_hills_pine_tree = PINE,
 		pine_hills_small_pine_tree = PINE,
 		savanna_acacia_tree = {sapling = "default:acacia_sapling",
-			markers = {"default:acacia_tree"}},
+			markers = trunk_markers("default:acacia_tree", "acacia")},
 		blight_gravewood = GRAVEWOOD,
 		bone_forest_gravewood = GRAVEWOOD,
 	}
@@ -125,10 +135,27 @@ return function(deps)
 	end
 	local function marker_columns(row, markers)
 		local record = records[row.id]
-		local rotation = record and record.rotations and record.rotations[1]
-		if not rotation then fail("template record missing: " .. row.id) end
 		local wanted = {}
 		for index = 1, #markers do wanted[markers[index]] = true end
+		-- A generated tree: the mean over this world's variants.
+		if record and record.generated then
+			local total = 0
+			for v = 1, #record.variants do
+				local variant = record.variants[v]
+				local columns, count = {}, 0
+				for cell = 1, variant.count do
+					if wanted[variant.name[cell]] then
+						local key = variant.x[cell] .. "," .. variant.z[cell]
+						if not columns[key] then columns[key], count = true, count + 1 end
+					end
+				end
+				if count == 0 then fail("template has no marker column: " .. row.id) end
+				total = total + count
+			end
+			return total / #record.variants
+		end
+		local rotation = record and record.rotations and record.rotations[1]
+		if not rotation then fail("template record missing: " .. row.id) end
 		local columns, count = {}, 0
 		local sx, sy, sz = rotation.size_x, rotation.size_y, rotation.size_z
 		for z = 1, sz do
@@ -238,10 +265,19 @@ return function(deps)
 	end
 	-- Template cells are the rest of what the decorations place naturally.
 	for index = 1, #deps.template_records do
-		local rotation = deps.template_records[index].rotations[1]
-		for c = 1, #rotation.cells do
-			local name = rotation.cells[c].name
-			if name ~= "air" then natural[name] = true end
+		local record = deps.template_records[index]
+		if record.generated then
+			for v = 1, #record.variants do
+				local variant = record.variants[v]
+				for c = 1, variant.count do natural[variant.name[c]] = true end
+				for c = 1, variant.root_count do natural[variant.rname[c]] = true end
+			end
+		else
+			local rotation = record.rotations[1]
+			for c = 1, #rotation.cells do
+				local name = rotation.cells[c].name
+				if name ~= "air" then natural[name] = true end
+			end
 		end
 	end
 

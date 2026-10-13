@@ -117,6 +117,11 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		end
 	end
 	if not runtime then runtime, built, construction_seconds = construct(nil) end
+	-- The world's generated trees (Round 47 lane TC): the variants' roll-up and
+	-- the CPU seconds main spent on them; emerge logs its own (r7_mapgen.lua).
+	core_api.log("action", ("[grug_mapgen] main tree templates: roll-up %s, %.3f s CPU"):format(
+		built.manifest.values.r6_generated_templates_sha256:sub(1, 16),
+		built.template_seconds or 0))
 	-- Every settlement with its fitted anchor, in roster order (the NPC
 	-- sockets below and the settlement cores of the world protection).
 	local socket_rows = runtime.settlement_sockets(built)

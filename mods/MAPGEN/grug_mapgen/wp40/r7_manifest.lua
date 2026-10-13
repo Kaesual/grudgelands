@@ -91,12 +91,21 @@ return function(canonical, raw_sha256, settlement_order)
 	-- cells carry production content refs that shift with the inserted
 	-- sorted row (was `766f28cc566f8c55...`), and the WP43 projection (was
 	-- `d78726f71bc347b5...`).
+	-- Round 47 TC: the trees come from the seeded generator. The 28 tree
+	-- shape nodes join the production rows (88 -> 116), which moves the
+	-- accepted-content limb (was `38ee5a576433d753...`) and the production
+	-- semantics (was `1631b6cf61b64c9b...`); the frozen `decoded_templates`
+	-- limb now holds only the ten MTS template records (the fourteen tree
+	-- rows are generated per world: their digests are published as
+	-- `r6_generated_templates_sha256` and pinned for sample seeds by
+	-- tools/r47_tc), was `70b1930b719c340d...`. The WP43 projection, the
+	-- consumer payload and the P9G semantics are unchanged.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
 		"r6_artifact_sha256", "r6_catalog_sha256",
 		"r6_accepted_content_sha256", "r6_template_inputs_sha256",
-		"wp43_projection_sha256", "noise_schema", "noise_sha256",
+		"r6_generated_templates_sha256", "wp43_projection_sha256", "noise_schema", "noise_sha256",
 		"native_schema", "native_sha256", "gathering_schema",
 		"gathering_sha256", "production_r6_content_schema",
 		"production_r6_content_sha256", "production_r6_semantic_sha256",
@@ -316,7 +325,7 @@ return function(canonical, raw_sha256, settlement_order)
 			anchor_content = true, anchor_roster = true,
 			anchor_roster_sha256 = true,
 			settlement_content = true, settlement_blueprints = true,
-			decoded_templates = true,
+			decoded_templates = true, template_counts = true,
 			consumer_payload = true, protection_depth_below_placement = true,
 		}
 		for key in pairs(inputs) do
@@ -362,7 +371,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"1631b6cf61b64c9be0ee53cd6848e5ef02b570030d29b3f42bd0e269234d584d" or
+				"663ce500e083a017f5b7b2b01f287d7164fbf1918ede355f74f4eb0acbb4b2fb" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -481,16 +490,40 @@ return function(canonical, raw_sha256, settlement_order)
 				end
 			end
 		end
-		if type(inputs.decoded_templates) ~= "table" or
-				#inputs.decoded_templates ~= 24 then
+		-- Round 47 lane TC: the template population is derived, not typed:
+		-- one record per template row of the R6 catalog, MTS rows whole
+		-- (`static`, frozen below) and generated tree rows as their species
+		-- and one digest per variant, as many as the species table says
+		-- (`template_counts`, tree_templates.lua). The generated digests are
+		-- this world's; their roll-up is published, never pinned (the lane
+		-- fixture tools/r47_tc pins sample seeds).
+		local decoded = inputs.decoded_templates
+		local template_rows = 0
+		for index = 1, #r6.decorations do
+			if r6.decorations[index].kind == "template" then
+				template_rows = template_rows + 1
+			end
+		end
+		if type(decoded) ~= "table" or type(decoded.static) ~= "table" or
+				type(decoded.generated) ~= "table" or
+				#decoded.static + #decoded.generated ~= template_rows then
 			fail("decoded template population differs")
+		end
+		for index = 1, #decoded.generated do
+			local row = decoded.generated[index]
+			local count = type(row) == "table" and inputs.template_counts[row.species]
+			if type(count) ~= "number" or type(row.digests) ~= "table" or
+					#row.digests ~= count then
+				fail("generated template population differs at " .. tostring(row and
+					row.definition_id))
+			end
 		end
 		local r6_catalog = graph_digest({surfaces = r6.surfaces,
 			resources = r6.resources, decorations = r6.decorations})
 		local frozen = {
 			schema = "grug_wp40_r7_source_projection_v1",
 			accepted_r6_content = graph_digest(inputs.accepted_r6_rows),
-			decoded_templates = graph_digest(inputs.decoded_templates),
+			decoded_templates = graph_digest(decoded.static),
 			wp43_projection = graph_digest(inputs.wp43_projection),
 			production_semantics = inputs.production_content.semantic_digest,
 			p9g_semantics = inputs.p9g_content.semantic_digest,
@@ -501,9 +534,9 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"38ee5a576433d753265f02822ece509dde936697d59cb0074d6bbc43804f4110" or
+				"e9d36ba378e43fe1991fffa20ee46da7d61e3005a89bb7b01e7b6e864304fd2b" or
 			frozen.decoded_templates ~=
-				"70b1930b719c340d825ffe0887f0dc1d6fdfe25930e93130aafdfc439fb80020" or
+				"7e14c75d6aa7c124fc6eb35f91c49e89f3420baefa0db82ef18fcdd3d548e2f9" or
 			frozen.wp43_projection ~=
 				"785f36400419118f26dcefaa3fa1a5ecf82d33181f319620afa8b8f31a252bfc" or
 			frozen.consumer_payload ~=
@@ -587,6 +620,7 @@ return function(canonical, raw_sha256, settlement_order)
 			r6_catalog_sha256 = r6_catalog,
 			r6_accepted_content_sha256 = frozen.accepted_r6_content,
 			r6_template_inputs_sha256 = frozen.decoded_templates,
+			r6_generated_templates_sha256 = graph_digest(decoded.generated),
 			wp43_projection_sha256 = frozen.wp43_projection,
 			noise_schema = native.noise_schema, noise_sha256 = native.noise_digest,
 			native_schema = native.native_schema, native_sha256 = native.native_digest,

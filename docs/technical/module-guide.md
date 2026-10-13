@@ -1798,7 +1798,21 @@ tools](#player-meta-read-by-external-tools).
   owner-only**: a tree whose rotated footprint leaves its root's 80-node
   chunk is dropped, so tall trees thin out in height bands and along chunk
   borders (`docs/research/wp40-simple-map-r6-contract.md` §8.2, "Treeless
-  bands").
+  bands"). A tree's roots lie inside its footprint, so a root run is
+  written with its tree or not at all.
+  **Trees come from the seeded generator** (Round 47): `wp40/treegen.lua`
+  (pure, the port of the approved concept) and `wp40/tree_templates.lua`
+  (the species table, the template seeds, the sparse variants). A
+  `treegen:<species>` decoration row is expanded by `r6_templates.lua` into
+  this world's variants at every construction, in main and emerge from the
+  same seed string, so the two environments build identical templates (the
+  manifest publishes their roll-up, `r6_generated_templates_sha256`, and
+  both environments log it); its settlement class is computed, never pinned.
+  The writer turns a variant per placement and places its roots
+  (`kept_root_runs`) with a two-read ground test per cell. Saplings
+  (`grug_trees/growth.lua`) and the town trees (`wp13/dressing.lua`) use the
+  same generator. A change to the generator or the species table moves the
+  sample pins of `tools/r47_tc/portable_test.lua`.
   **Seed-dependent POI placement** (Round 46, `world_zones.md` §8.5):
   `A.source` is the authored source, whose placed anchors
   (`placement_mode = "placed"`) carry no position; `W.place()` returns the

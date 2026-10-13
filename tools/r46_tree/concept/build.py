@@ -57,7 +57,9 @@ TODAY = {
     "pine": (SCHEM + "pine_tree.mts", 0, "pine_tree.mts (small_pine_tree.mts: 12 high, 9 logs, 55 needles)"),
     "aspen": (SCHEM + "aspen_tree.mts", 0, "aspen_tree.mts"),
     "silverwood": (SCHEM + "aspen_tree.mts", 0, "aspen_tree.mts with silverwood nodes"),
-    "gravewood": ("mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts", 0,
+    # The gravewood assets left the game in Round 47 (lane TC: every tree is
+    # generated); they stay here as this viewer's "today".
+    "gravewood": ("tools/r46_tree/concept/today/grug_gravewood_small.mts", 0,
                   "grug_gravewood_small.mts (blight; the tall one in bone forest: 23 logs, 8 leaves)"),
 }
 

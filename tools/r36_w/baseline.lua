@@ -9,7 +9,9 @@
 --
 -- (written once from main before the decor pass; portable_test.lua compares
 -- the current tree's record with that file). Rewritten by Round 47 lane NZ
--- for the NPC facing fixes (ruling 20): 77 socket facings, nothing else. As a module:
+-- for the NPC facing fixes (ruling 20): 77 socket facings, nothing else; and by
+-- lane TC for the generated town trees (ruling 3): bounds, cleared airspace
+-- and the sockets placed from a part's extent move with the trees. As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}

@@ -1127,6 +1127,19 @@ local function settlement_factory()
 				row.partial_leaves = row.kind == "template" and
 					(class == "shrub" or class == "shrub_band") or nil
 				row.plant_purpose = rule.band_cover(row) and "cover" or "vegetation"
+				-- A generated tree (Round 47 lane TC, tree_templates.lua).
+				row.generated_tree = row.kind == "template" and
+					row.asset_or_node:match("^treegen:") ~= nil or nil
+			end
+		end
+		-- The ground a generated tree's root stands in (the root runs below):
+		-- the content ids of the production surfaces that are ground.
+		local root_ground_cids = {}
+		if type(templates.root_ground_names) == "function" then
+			local names = templates.root_ground_names()
+			for index = 1, #names do
+				local ref = content.content_ref(names[index])
+				if ref then root_ground_cids[contract.content_cids[ref]] = true end
 			end
 		end
 		local projection = content.wp43_projection()
@@ -1296,6 +1309,11 @@ local function settlement_factory()
 			modified_voxels = 0, content_dirty_columns = 0,
 			param2_dirty_columns = 0, light_dirty_columns = 0,
 			liquid_dirty_columns = 0, replay_count = 0,
+			-- Per template row: owner-rooted candidates, those clipped by the
+			-- owner (mapchunk border), those accepted, and the generated trees'
+			-- root runs tried and written (Round 47 lane TC, measured by
+			-- tools/r47_tc/forest.lua).
+			templates = {},
 		}
 		local last_ledger, last_run_count, last_sun_runs = false, 0, 0
 
@@ -1927,7 +1945,12 @@ local function settlement_factory()
 							fail("fail_ledger", "decoration stable ref differs")
 						end
 						local interface_ref = 0
-						if row.kind == "template" then
+						if row.generated_tree then
+							-- The offline evidence path predates the generated trees
+							-- (Round 47) and has no caller left; it refuses them
+							-- rather than pretend a schematic.
+							fail("fail_ledger", "generated trees have no evidence path")
+						elseif row.kind == "template" then
 							interface_ref = feature_ref
 							local rotation_digest = helpers.digest4(
 								"decoration_rotation_v1",
@@ -2417,6 +2440,7 @@ local function settlement_factory()
 			r8_cave_writer_disabled = r8_cave_writer_disabled,
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
+			root_ground_cids = root_ground_cids, template_metrics = metrics_state.templates,
 			r8_hash = hash,
 			template_rotation = runtime_mode and (templates.rotation_runtime or
 				templates.rotation) or
@@ -3198,7 +3222,25 @@ local function settlement_factory()
 							local row = decorations[catalog]
 							local cells, min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = {}, 0, 0, 0, 0, 0, 0
 							local template_ref = 0
-							if row.kind == "template" then
+							local root_runs
+							if row.generated_tree then
+								-- A generated tree (Round 47): this world's variant by a
+								-- digest of the root, turned like every template; its
+								-- roots are optional runs (below, after acceptance).
+								local rotation_digest = helpers.digest4(
+									"decoration_rotation_v1",
+									row.id, root_x, root_y, root_z)
+								local rotation = math.floor(string.byte(rotation_digest, 1) / 64)
+								local variant = helpers.r8_templates.variant_index(
+									helpers.r8_full_seed, row.id, root_x, root_y, root_z)
+								local bounds
+								cells, root_runs, bounds = helpers.r8_templates.generated_cells(
+									row.id, variant, rotation)
+								template_ref = stable_state.decoration[catalog]
+								min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = bounds.min_x,
+									bounds.max_x, bounds.min_y, bounds.max_y,
+									bounds.min_z, bounds.max_z
+							elseif row.kind == "template" then
 								local rotation_digest = helpers.digest4(
 									"decoration_rotation_v1",
 									row.id, root_x, root_y, root_z)
@@ -3319,8 +3361,9 @@ local function settlement_factory()
 													opcode <= 4) then
 											if cell_record.force_place then
 												flags.forbidden_old_class = true
-											elseif row.partial_leaves then
-												-- a shrub's leaf against ground: skip the cell
+											elseif row.partial_leaves or cell_record.optional then
+												-- a shrub's leaf, or a generated tree's leaf,
+												-- against ground: skip the cell
 												cell_record.include = false
 											else
 												flags.insufficient_clearance = true
@@ -3334,6 +3377,22 @@ local function settlement_factory()
 								"wrong_host", "insufficient_clearance", "occupied_collision",
 								"resource_collision", "decoration_collision",
 								"forbidden_old_class"})
+							local template_metrics
+							if row.kind == "template" then
+								template_metrics = helpers.template_metrics[row.id]
+								if not template_metrics then
+									template_metrics = {candidates = 0, clipped = 0, accepted = 0,
+										root_runs = 0, root_runs_written = 0}
+									helpers.template_metrics[row.id] = template_metrics
+								end
+								template_metrics.candidates = template_metrics.candidates + 1
+								if flags.clipped_owner then
+									template_metrics.clipped = template_metrics.clipped + 1
+								end
+								if not reason then
+									template_metrics.accepted = template_metrics.accepted + 1
+								end
+							end
 							local aggregate
 							if ledger then
 								aggregate = ledger.decorations[row.id] or
@@ -3362,6 +3421,49 @@ local function settlement_factory()
 											stable_state.decoration[catalog], template_ref, 8, -1)
 										if aggregate then
 											aggregate.emitted = aggregate.emitted + 1
+										end
+									end
+								end
+								-- THE ROOTS (Round 47 lane TC, handoff §5): a run is
+								-- written only if every cell of it has ground right
+								-- under its column at the foot (y - 1) and none at the
+								-- foot's level (the terrain neither falls away nor
+								-- rises there), and the cell itself is free; a fork's
+								-- toe only with its parent run. Every root cell lies
+								-- inside the tree's bounds, so a run at a mapchunk
+								-- border is complete or absent with its tree.
+								if root_runs then
+									local root_ground_cids = helpers.root_ground_cids
+									local kept = helpers.r8_templates.kept_root_runs(root_runs,
+										function(cell_record)
+											local x, z = root_x + cell_record.x, root_z + cell_record.z
+											local y = root_y + cell_record.y
+											if not (inside_owner(x, root_y - 1, z) and
+													inside_owner(x, root_y, z) and inside_owner(x, y, z)) or
+													not root_ground_cids[final_data[index_at(x, root_y - 1, z)]] or
+													root_ground_cids[final_data[index_at(x, root_y, z)]] then
+												return false
+											end
+											local index = index_at(x, y, z)
+											local class_id = classify(final_data[index], final_param2[index])
+											return class_id == CLASS_AIR or class_id == CLASS_NATURAL_VEGETATION
+										end)
+									for run_index = 1, #root_runs do
+										local run = root_runs[run_index]
+										template_metrics.root_runs = template_metrics.root_runs + 1
+										if kept[run_index] then
+											template_metrics.root_runs_written =
+												template_metrics.root_runs_written + 1
+											for part = 1, #run do
+												local cell_record = run[part]
+												write_intent(root_x + cell_record.x,
+													root_y + cell_record.y, root_z + cell_record.z,
+													cell_record.content_ref, cell_record.param2, 12,
+													stable_state.decoration[catalog], template_ref, 8, -1)
+												if aggregate then
+													aggregate.emitted = aggregate.emitted + 1
+												end
+											end
 										end
 									end
 								end

@@ -313,9 +313,17 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	end
 	for index = 1, #manifest_values.decorations do
 		local row = manifest_values.decorations[index]
+		-- A generated tree (`treegen:<species>`, Round 47 lane TC) carries no
+		-- settlement class: r6_templates.lua computes it from this world's
+		-- variants and `set_template_classes` fills it in before any planner
+		-- or writer reads the rows.
+		local generated_tree = row.kind == "template" and
+			type(row.asset_or_node) == "string" and
+			row.asset_or_node:match("^treegen:[a-z_]+$") ~= nil
 		exact_fields(row, {id = true, biomes = true, kind = true, asset_or_node = true,
 			host = true, numerator = true, denominator = true, rule = true,
-			settlement_class = true}, "decoration row", "fail_content_manifest")
+			settlement_class = generated_tree and "optional" or true},
+			"decoration row", "fail_content_manifest")
 		text(row.id, "decoration ID", "fail_content_manifest")
 		if decoration_by_id[row.id] or (index > 1 and not less_bytes(
 				manifest_values.decorations[index - 1].id, row.id)) then
@@ -334,9 +342,17 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			"fail_content_manifest")
 		safe_integer(row.denominator, "decoration denominator", 1, 2000,
 			"fail_content_manifest")
-		safe_integer(row.settlement_class, "settlement class", 1, 4,
-			"fail_content_manifest")
-		if (row.kind == "simple" and row.settlement_class ~= 3 and
+		if generated_tree then
+			if row.settlement_class ~= nil then
+				fail("fail_content_manifest", "generated tree pins a settlement class")
+			end
+		else
+			safe_integer(row.settlement_class, "settlement class", 1, 4,
+				"fail_content_manifest")
+		end
+		if generated_tree then
+			-- class computed later
+		elseif (row.kind == "simple" and row.settlement_class ~= 3 and
 				row.settlement_class ~= 4) or
 				(row.kind == "template" and row.settlement_class ~= 1 and
 					row.settlement_class ~= 2) then
@@ -566,6 +582,24 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	end
 
 	local module = {}
+	-- Once per construction: the settlement class of every generated tree
+	-- row, as r6_templates.lua computed it (1 or 2).
+	local classes_set = false
+	function module.set_template_classes(classes)
+		if classes_set then fail("fail_content_manifest", "template classes set twice") end
+		classes_set = true
+		for index = 1, #decorations do
+			local row = decorations[index]
+			if row.settlement_class == nil then
+				local class = type(classes) == "table" and classes[row.id]
+				if class ~= 1 and class ~= 2 then
+					fail("fail_content_manifest", "generated tree class missing at " .. row.id)
+				end
+				row.settlement_class = class
+				decoration_by_id[row.id].settlement_class = class
+			end
+		end
+	end
 	function module.required_inputs() return deep_copy(REQUIRED_INPUTS) end
 	function module.surfaces() return deep_copy(surfaces) end
 	function module.resources() return deep_copy(resources) end

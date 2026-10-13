@@ -137,7 +137,7 @@ local function key(x, y, z) return ((y + 64) * 256 + (x + 128)) * 256 + (z + 128
 
 local function new_tree(species, seed, is_ground)
 	return {species = species, seed = seed, cells = {}, order = {}, stem_list = {}, stem_set = {},
-		clusters = {}, path = {}, facts = {}, roots = {}, is_ground = is_ground}
+		clusters = {}, path = {}, facts = {}, roots = {}, root_runs = {}, is_ground = is_ground}
 end
 
 -- The flat ground of the viewer: everything below the tree's foot.
@@ -479,6 +479,10 @@ local function finish(t)
 		shapes = count.quarter + count.base + count.branch + count.twig,
 		height = max_y + 1, width = max_x - min_x + 1, depth = max_z - min_z + 1,
 		min = {min_x, 0, min_z}, max = {max_x, max_y, max_z}, facts = t.facts, roots = t.roots,
+		-- Lua only (Round 47 lane TC): the roots grouped into the runs they
+		-- were placed in, {first, last, parent} over `roots`, for the world's
+		-- per-cell ground test (a fork's toe depends on its parent run).
+		root_runs = t.root_runs,
 	}
 end
 
@@ -1194,18 +1198,21 @@ local function root_cell_ok(t, c, p)
 end
 
 -- Place a list of cells {x, y, z, kind, rot} after `from` if every one
--- passes the ground and space test.
-local function place_run(t, from, run)
+-- passes the ground and space test. `parent` (Lua only, Round 47 lane TC):
+-- the index in t.root_runs of the run a fork's toe hangs on, or 0.
+local function place_run(t, from, run, parent)
 	local p = from
 	for i = 1, #run do
 		if not root_cell_ok(t, run[i], p) then return false end
 		p = run[i]
 	end
+	local first = #t.roots + 1
 	for j = 1, #run do
 		local r = run[j]
 		put_cell(t, r[1], r[2], r[3], r[4], r[5])
 		t.roots[#t.roots + 1] = {r[1], r[2], r[3]}
 	end
+	t.root_runs[#t.root_runs + 1] = {first = first, last = #t.roots, parent = parent or 0}
 	return true
 end
 
@@ -1226,7 +1233,8 @@ local function root_run(t, a, d, h, reach, fork)
 	if not place_run(t, {a[1], h, a[2]}, run) then return false end
 	if fork ~= 0 and reach >= 2 then
 		local c = run[h + 2]
-		place_run(t, c, {{c[1] - dz * fork, 0, c[3] + dx * fork, "twig", dx ~= 0 and 4 or 12}})
+		place_run(t, c, {{c[1] - dz * fork, 0, c[3] + dx * fork, "twig", dx ~= 0 and 4 or 12}},
+			#t.root_runs)
 	end
 	return true
 end

@@ -3,9 +3,8 @@
 -- Four of the six races reuse a minetest_game tree (oak/pine/acacia/jungle);
 -- only the Elf and the Undead tree need own nodes:
 --
---   * Silverwood (Elf)    -- pale silver bark, pale sage leaves. Shape is
---                            default's aspen, so it can reuse default's
---                            aspen schematic with node `replacements`.
+--   * Silverwood (Elf)    -- pale silver bark, pale sage leaves; a tall,
+--                            columnar tree of its own (Round 47 generator).
 --   * Gravewood (Undead)  -- blackened, knotted dead branches with a few
 --                            scattered grey leaf remnants.
 --
@@ -21,9 +20,8 @@
 -- twig) of all seven wood types, the jungle bark and the leaf decay of every
 -- wood (Round 47).
 --
--- R7 P9 resolves Silverwood through default's aspen plus replacements and
--- Gravewood through this mod's original .mts assets in the single mapgen
--- transaction. The great_silverwood.mts treehouse remains WP13.
+-- The world generator (WP40 R7) and every sapling grow all trees from the
+-- seeded generator (Round 47: wp40/treegen.lua, wp40/tree_templates.lua).
 
 grug_trees = {}
 
@@ -38,85 +36,61 @@ local function grow_sapling(...)
 end
 
 --
--- Growth
+-- Growth (Round 47 lane TC): every tree sapling grows the seeded generator's
+-- tree of its species (growth.lua over the world generator's own
+-- wp40/tree_templates.lua, the same trees the world places): a seed from
+-- the world seed and the sapling's position, roots tested on the real
+-- ground, free cells only, the terrain guard per cell. The bushes keep
+-- default's schematics.
 --
 
--- Node replacements for the aspen schematics. R7 P9's silverwood template
--- resolver needs the same table, so it lives on the mod table.
-grug_trees.silverwood_replacements = {
-	["default:aspen_tree"] = "grug_trees:silverwood_tree",
-	["default:aspen_leaves"] = "grug_trees:silverwood_leaves",
-}
-
--- Silverwood grows default's aspen schematic with the aspen nodes swapped
--- for ours -- exactly what R7 P9 template placement does as well.
---
--- LANDMINE (first found in the retired engine-decoration path): Luanti caches
--- file-loaded schematics BY FULL PATH, so place_schematic(pos, "<path>",
--- rot, replacements) only applies those replacements on the FIRST load of
--- that path; every later call reuses the cached object and its replacements.
--- default.grow_new_aspen_tree() places this very same
--- aspen_tree_from_sapling.mts with NO replacements, so whichever sapling
--- happened to grow first in a session would decide for both -- silver aspens
--- or green silverwoods, at random per server run.
---
--- Reading the file into a table and registering it once gives us a private
--- schematic handle with the replacements baked in: no path in the cache, no
--- collision with default, and no per-growth re-load either.
-local SILVERWOOD_SCHEMATIC = core.register_schematic(
-	core.read_schematic(core.get_modpath("default") ..
-		"/schematics/aspen_tree_from_sapling.mts", {}),
-	grug_trees.silverwood_replacements)
-
-if not SILVERWOOD_SCHEMATIC then
-	error("grug_trees: cannot register the silverwood schematic")
-end
-
-function grug_trees.grow_silverwood(pos)
-	core.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
-		SILVERWOOD_SCHEMATIC, "0", nil, false)
-end
-
-local gravewood_schematics = {}
-for _, filename in ipairs({"grug_gravewood_small.mts", "grug_gravewood_tall.mts"}) do
-	local schematic = core.read_schematic(core.get_modpath("grug_trees") ..
-		"/schematics/" .. filename, {})
-	local handle = schematic and core.register_schematic(schematic)
-	if not handle then error("grug_trees: cannot register " .. filename) end
-	gravewood_schematics[#gravewood_schematics + 1] = {handle = handle,
-		height = schematic.size.y}
-end
-
--- Saplings and mapgen consume the same face-connected, bent dead-tree assets.
-function grug_trees.grow_gravewood(pos)
-	local schematic = gravewood_schematics[math.random(#gravewood_schematics)]
-	-- Check the complete rotation-invariant volume before removing the sapling:
-	-- partially obstructed placement must not leave disconnected branch tips.
-	for z = pos.z - 3, pos.z + 3 do
-		for y = pos.y, pos.y + schematic.height - 1 do
-			for x = pos.x - 3, pos.x + 3 do
-				if x ~= pos.x or y ~= pos.y or z ~= pos.z then
-					local node = core.get_node({x = x, y = y, z = z})
-					local def = core.registered_nodes[node.name]
-					if node.name == "ignore" or not def or not def.buildable_to then
-						default.on_grow_failed(pos)
-						return
-					end
-				end
-			end
-		end
+-- The generator is read at the first growth, not at load (grug_mapgen's
+-- files are pure; this mod does not depend on that mod's load).
+local tree_templates
+local function trees()
+	if not tree_templates then
+		local wp40 = core.get_modpath("grug_mapgen") .. "/wp40"
+		tree_templates = dofile(wp40 .. "/tree_templates.lua")(dofile(wp40 .. "/treegen.lua"))
 	end
-	core.remove_node(pos)
-	core.place_schematic({x = pos.x - 3, y = pos.y, z = pos.z - 3},
-		schematic.handle, tostring(math.random(0, 3) * 90), nil, false)
+	return tree_templates
 end
 
-default.register_sapling_growth("grug_trees:silverwood_sapling", {
-	grow = grug_trees.grow_silverwood,
+grug_trees.growth = dofile(core.get_modpath("grug_trees") .. "/growth.lua")({
+	trees = trees,
+	get_node = function(pos) return core.get_node(pos) end,
+	set_node = function(pos, node) return core.set_node(pos, node) end,
+	registered_nodes = core.registered_nodes,
+	get_item_group = function(name, group) return core.get_item_group(name, group) end,
+	alterable = function(pos) return grug_core.world_alterable(pos) end,
+	-- The position hash: SHA-256 of the world seed string, the species and
+	-- the sapling's position (tree_templates.seed_from_digest).
+	seed = function(species, pos)
+		return trees().seed_from_digest(core.sha256(table.concat({
+			"grug_sapling_tree_v1", core.get_mapgen_setting("seed"), species,
+			pos.x, pos.y, pos.z}, ":"), true))
+	end,
 })
-default.register_sapling_growth("grug_trees:gravewood_sapling", {
-	grow = grug_trees.grow_gravewood,
-})
+
+for sapling, species in pairs(grug_trees.growth.SPECIES) do
+	default.register_sapling_growth(sapling, {
+		grow = function(pos)
+			if not grug_trees.growth.grow(pos, sapling) then
+				default.on_grow_failed(pos)
+			end
+		end,
+	})
+	-- Placing a sapling checks player protection over the volume its tree
+	-- can grow into (the vendored sapling_on_place; the volume is the
+	-- generator's, not the old schematic's).
+	local volume = grug_trees.growth.VOLUMES[species]
+	core.register_on_mods_loaded(function()
+		core.override_item(sapling, {on_place = function(itemstack, placer, pointed_thing)
+			return default.sapling_on_place(itemstack, placer, pointed_thing, sapling,
+				{x = volume.min.x, y = 1, z = volume.min.z},
+				{x = volume.max.x, y = volume.max.y, z = volume.max.z}, 4)
+		end})
+	end)
+end
 
 --
 -- Silverwood (Elf)
@@ -187,19 +161,7 @@ core.register_node("grug_trees:silverwood_sapling", {
 		core.get_node_timer(pos):start(math.random(300, 1500))
 	end,
 
-	on_place = function(itemstack, placer, pointed_thing)
-		-- Same grown volume as default's aspen: the schematic is aspen's.
-		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
-			"grug_trees:silverwood_sapling",
-			-- minp, maxp to be checked, relative to sapling pos
-			-- minp_relative.y = 1 because sapling pos has been checked
-			{x = -2, y = 1, z = -2},
-			{x = 2, y = 12, z = 2},
-			-- maximum interval of interior volume check
-			4)
-
-		return itemstack
-	end,
+	-- on_place: the growth section above (the generated tree's volume).
 })
 
 --
@@ -306,16 +268,7 @@ core.register_node("grug_trees:gravewood_sapling", {
 		core.get_node_timer(pos):start(math.random(300, 1500))
 	end,
 
-	on_place = function(itemstack, placer, pointed_thing)
-		-- Both grown silhouettes fit this shared rotation-invariant envelope.
-		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
-			"grug_trees:gravewood_sapling",
-			{x = -3, y = 0, z = -3},
-			{x = 3, y = 8, z = 3},
-			2)
-
-		return itemstack
-	end,
+	-- on_place: the growth section above (the generated tree's volume).
 })
 
 --

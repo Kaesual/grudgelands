@@ -167,6 +167,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r7_zone_overlay_factory = dofile(wp40_directory .. "/r7_zone_overlay.lua")
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
 	local template_source_factory = dofile(wp40_directory .. "/r7_template_source.lua")
+	-- The seeded tree generator and the world's tree templates (Round 47).
+	local tree_templates = dofile(wp40_directory .. "/tree_templates.lua")(
+		dofile(wp40_directory .. "/treegen.lua"))
 	local fetch_mapgen_object = core_api.get_mapgen_object
 
 	local r6_module = r6_factory({r5_factory = r5_factory,
@@ -179,14 +182,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		raw_sha256 = raw_sha256, hash_factory = hash_factory,
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
 		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory,
-		habitat = habitat_registry})
+		habitat = habitat_registry, tree_templates = tree_templates})
 	if type(r6_module.new_runtime) ~= "function" or
 			type(r6_module.new_authority) ~= "function" then
 		fail("R6 runtime constructor differs")
 	end
 	local r6_manifest = r7_r6_manifest()
-	local template_source = template_source_factory(core_api, schematic_directory,
-		wp40_directory .. "/../../../ITEMS/grug_trees/schematics")
+	local template_source = template_source_factory(core_api, schematic_directory)
 	-- Every WP13 settlement, in the fixed roster order, plus the sorted ASCII
 	-- union of every blueprint's palette: one opcode-37 content channel serves
 	-- them all, so a cell's content ref is an index into this union.
@@ -443,13 +445,20 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			settlement_blueprints = settlement_identities,
 			anchor_roster = anchor_roster.copy_rows(),
 			anchor_roster_sha256 = anchor_roster.sha256,
-			decoded_templates = r6_identity.template_records,
+			decoded_templates = r6_identity.template_identity,
+			template_counts = (function()
+				local counts = {}
+				for _, row in ipairs(tree_templates.SPECIES) do counts[row.key] = row.count end
+				return counts
+			end)(),
 			consumer_payload = consumer_payload,
 			protection_depth_below_placement = source.protection_depth_below_placement})
 		r7_manifest_module.validate(manifest, expected_manifest_sha256)
 		if authority_only then
 			return {schema = "grug_wp40_r7_authority_runtime_v1",
 				full_seed = full_seed, manifest = manifest,
+				-- CPU seconds of this world's generated tree variants (Round 47).
+				template_seconds = r6_identity.template_seconds,
 				zones_session = public_zones_session, content = content_set,
 				anchor_roster = anchor_roster, consumer_payload = consumer_payload,
 				-- The pure column query, published so the load-time socket export
@@ -511,6 +520,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		return {schema = "grug_wp40_r7_runtime_v1", full_seed = full_seed,
 			manifest = manifest, session = session, writer = writer,
+			template_seconds = r6_identity.template_seconds,
 			zones_session = public_zones_session, content = content_set,
 			anchor_roster = anchor_roster,
 			consumer_payload = consumer_payload,

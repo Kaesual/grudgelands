@@ -87,36 +87,39 @@ silver|3|-;-;256;128;256;512|4|3
 tin|1|96;192;384;384;384;384|8
 ]]
 
+-- id|biomes|kind|asset or node|host|numerator|denominator|rules|settlement
+-- class. A template asset `treegen:<species>` is a generated tree of this
+-- world (Round 47, tree_templates.lua; class "-": computed).
 local DECORATION_ROWS = [[
 badlands_dry_shrub|grug_badlands;grug_badlands_east|simple|default:dry_shrub|grug_nodes:mesa_clay|1|125|param2_4|4
 badlands_large_cactus|grug_badlands;grug_badlands_east|template|large_cactus.mts|grug_nodes:mesa_clay|1|1000|center_xz;quarter_turn_rotation|1
 blight_bone_pile|grug_blight|simple|grug_nodes:bone_pile|grug_nodes:blight_dirt|1|500|none|4
 blight_dry_shrub|grug_blight|simple|default:dry_shrub|grug_nodes:blight_dirt|3|200|param2_4|4
-blight_gravewood|grug_blight|template|grug_gravewood_small.mts|grug_nodes:blight_dirt|3|2000|center_xz;quarter_turn_rotation|1
+blight_gravewood|grug_blight|template|treegen:gravewood|grug_nodes:blight_dirt|3|2000|center_xz;quarter_turn_rotation|-
 bone_forest_bone_pile|grug_bone_forest|simple|grug_nodes:bone_pile|grug_nodes:dirt_with_bone_litter|1|250|none|4
 bone_forest_dry_shrub|grug_bone_forest|simple|default:dry_shrub|grug_nodes:dirt_with_bone_litter|3|200|param2_4|4
-bone_forest_gravewood|grug_bone_forest|template|grug_gravewood_tall.mts|grug_nodes:dirt_with_bone_litter|3|200|center_xz;quarter_turn_rotation|1
+bone_forest_gravewood|grug_bone_forest|template|treegen:gravewood|grug_nodes:dirt_with_bone_litter|3|200|center_xz;quarter_turn_rotation|-
 crags_pine_bush|grug_crags|template|pine_bush.mts|default:gravel|3|500|center_xz;quarter_turn_rotation|2
-crags_snowy_pine|grug_crags|template|snowy_pine_tree_from_sapling.mts|default:gravel|1|500|surface_y_at_least_60;center_xz;quarter_turn_rotation|2
+crags_snowy_pine|grug_crags|template|treegen:pine|default:gravel|1|500|surface_y_at_least_60;center_xz;quarter_turn_rotation|-
 deep_forest_apple_log|grug_deep_forest|template|apple_log.mts|grug_nodes:dirt_with_forest_litter|1|1000|offset_y_plus_1;center_x_only;replace_mushroom_with_air;quarter_turn_rotation|1
-deep_forest_apple_tree|grug_deep_forest|template|apple_tree.mts|grug_nodes:dirt_with_forest_litter|3|250|center_xz;quarter_turn_rotation|1
-deep_forest_aspen_tree|grug_deep_forest|template|aspen_tree.mts|grug_nodes:dirt_with_forest_litter|1|125|center_xz;quarter_turn_rotation|2
+deep_forest_apple_tree|grug_deep_forest|template|treegen:apple|grug_nodes:dirt_with_forest_litter|3|250|center_xz;quarter_turn_rotation|-
+deep_forest_aspen_tree|grug_deep_forest|template|treegen:aspen|grug_nodes:dirt_with_forest_litter|1|125|center_xz;quarter_turn_rotation|-
 deep_forest_bush|grug_deep_forest|template|bush.mts|grug_nodes:dirt_with_forest_litter|1|250|center_xz;quarter_turn_rotation|2
 deep_forest_fern_1|grug_deep_forest|simple|default:fern_1|grug_nodes:dirt_with_forest_litter|1|50|one_entry_per_variant|4
 deep_forest_fern_2|grug_deep_forest|simple|default:fern_2|grug_nodes:dirt_with_forest_litter|1|50|one_entry_per_variant|4
 deep_forest_fern_3|grug_deep_forest|simple|default:fern_3|grug_nodes:dirt_with_forest_litter|1|50|one_entry_per_variant|4
-elf_forest_apple_tree|grug_elf_forest|template|apple_tree.mts|grug_nodes:dirt_with_silver_litter|1|500|center_xz;quarter_turn_rotation|1
+elf_forest_apple_tree|grug_elf_forest|template|treegen:apple|grug_nodes:dirt_with_silver_litter|1|500|center_xz;quarter_turn_rotation|-
 elf_forest_bush|grug_elf_forest|template|bush.mts|grug_nodes:dirt_with_silver_litter|1|250|center_xz;quarter_turn_rotation|2
 elf_forest_grass_1|grug_elf_forest|simple|default:grass_1|grug_nodes:dirt_with_silver_litter|1|50|one_entry_per_variant|4
 elf_forest_grass_2|grug_elf_forest|simple|default:grass_2|grug_nodes:dirt_with_silver_litter|1|50|one_entry_per_variant|4
 elf_forest_grass_3|grug_elf_forest|simple|default:grass_3|grug_nodes:dirt_with_silver_litter|1|50|one_entry_per_variant|4
-elf_forest_silverwood|grug_elf_forest|template|aspen_tree.mts|grug_nodes:dirt_with_silver_litter|1|200|silverwood_replacements;center_xz;quarter_turn_rotation|2
-emergent_jungle_tree|grug_deep_jungle;grug_jungle_fringe|template|emergent_jungle_tree.mts|grug_nodes:dirt_with_canopy_litter|1|200|surface_y_at_most_32;offset_y_minus_4;center_xz;quarter_turn_rotation|1
-jungle_edge_jungle_tree|grug_jungle_edge|template|jungle_tree.mts|default:dirt_with_rainforest_litter|1|125|center_xz;quarter_turn_rotation|2
+elf_forest_silverwood|grug_elf_forest|template|treegen:silverwood|grug_nodes:dirt_with_silver_litter|1|200|center_xz;quarter_turn_rotation|-
+emergent_jungle_tree|grug_deep_jungle;grug_jungle_fringe|template|treegen:kapok|grug_nodes:dirt_with_canopy_litter|1|200|surface_y_at_most_32;center_xz;quarter_turn_rotation|-
+jungle_edge_jungle_tree|grug_jungle_edge|template|treegen:jungle|default:dirt_with_rainforest_litter|1|125|center_xz;quarter_turn_rotation|-
 jungle_edge_junglegrass|grug_jungle_edge|simple|default:junglegrass|default:dirt_with_rainforest_litter|1|25|none|4
 jungle_junglegrass|grug_deep_jungle;grug_jungle_fringe|simple|default:junglegrass|grug_nodes:dirt_with_canopy_litter|1|20|none|4
-jungle_tree|grug_deep_jungle;grug_jungle_fringe|template|jungle_tree.mts|grug_nodes:dirt_with_canopy_litter|1|50|center_xz;quarter_turn_rotation|2
-meadows_apple_tree|grug_meadows|template|apple_tree.mts|default:dirt_with_grass|3|2000|center_xz;quarter_turn_rotation|1
+jungle_tree|grug_deep_jungle;grug_jungle_fringe|template|treegen:jungle|grug_nodes:dirt_with_canopy_litter|1|50|center_xz;quarter_turn_rotation|-
+meadows_apple_tree|grug_meadows|template|treegen:apple|default:dirt_with_grass|3|2000|center_xz;quarter_turn_rotation|-
 meadows_bush|grug_meadows|template|bush.mts|default:dirt_with_grass|1|250|center_xz;quarter_turn_rotation|2
 meadows_grass_1|grug_meadows|simple|default:grass_1|default:dirt_with_grass|3|50|one_entry_per_variant|4
 meadows_grass_2|grug_meadows|simple|default:grass_2|default:dirt_with_grass|3|50|one_entry_per_variant|4
@@ -128,10 +131,10 @@ pine_hills_fern_1|grug_pine_hills|simple|default:fern_1|default:dirt_with_conife
 pine_hills_fern_2|grug_pine_hills|simple|default:fern_2|default:dirt_with_coniferous_litter|1|50|one_entry_per_variant|4
 pine_hills_fern_3|grug_pine_hills|simple|default:fern_3|default:dirt_with_coniferous_litter|1|50|one_entry_per_variant|4
 pine_hills_pine_bush|grug_pine_hills|template|pine_bush.mts|default:dirt_with_coniferous_litter|3|500|center_xz;quarter_turn_rotation|2
-pine_hills_pine_tree|grug_pine_hills|template|pine_tree.mts|default:dirt_with_coniferous_litter|1|250|center_xz;quarter_turn_rotation|2
-pine_hills_small_pine_tree|grug_pine_hills|template|small_pine_tree.mts|default:dirt_with_coniferous_litter|1|500|center_xz;quarter_turn_rotation|2
+pine_hills_pine_tree|grug_pine_hills|template|treegen:pine|default:dirt_with_coniferous_litter|1|250|center_xz;quarter_turn_rotation|-
+pine_hills_small_pine_tree|grug_pine_hills|template|treegen:pine|default:dirt_with_coniferous_litter|1|500|center_xz;quarter_turn_rotation|-
 savanna_acacia_bush|grug_savanna|template|acacia_bush.mts|default:dry_dirt_with_dry_grass|1|250|center_xz;quarter_turn_rotation|2
-savanna_acacia_tree|grug_savanna|template|acacia_tree.mts|default:dry_dirt_with_dry_grass|1|500|center_xz;quarter_turn_rotation|1
+savanna_acacia_tree|grug_savanna|template|treegen:acacia|default:dry_dirt_with_dry_grass|1|500|center_xz;quarter_turn_rotation|-
 savanna_dry_grass_1|grug_savanna|simple|default:dry_grass_1|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
 savanna_dry_grass_2|grug_savanna|simple|default:dry_grass_2|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
 savanna_dry_grass_3|grug_savanna|simple|default:dry_grass_3|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
@@ -191,7 +194,9 @@ return function()
 		decorations[#decorations + 1] = {id = row[1], biomes = array(row[2]),
 			kind = row[3], asset_or_node = row[4], host = row[5],
 			numerator = assert(tonumber(row[6])), denominator = assert(tonumber(row[7])),
-			rule = row[8], settlement_class = assert(tonumber(row[9]))}
+			-- "-": a generated tree's class, computed from the world's variants
+			-- (r6_templates.lua), never pinned here.
+			rule = row[8], settlement_class = row[9] ~= "-" and assert(tonumber(row[9])) or nil}
 	end)
 	return {
 		schema = "grug_wp40_r6_manifest_values_v1",
