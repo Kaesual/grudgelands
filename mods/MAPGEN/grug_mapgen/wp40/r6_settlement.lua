@@ -15,6 +15,12 @@ local function settlement_factory()
 	local FACE_X = {1, -1, 0, 0, 0, 0}
 	local FACE_Y = {0, 0, 1, -1, 0, 0}
 	local FACE_Z = {0, 0, 0, 0, 1, -1}
+	-- THE FOREST DENSITY PARAMETER (Round 47 groves follow-up): generated trees
+	-- interleave their crowns (each reserves only its own cells), and two
+	-- accepted generated trees of one owner keep their roots this many nodes
+	-- apart (Chebyshev, strictly less refuses). Lane TD measures density
+	-- against it; 1 would be wood-against-wood only.
+	local TREE_SPACING = 4
 	local R8_CAVE_COMPONENT_RADIUS = 12
 	local R8_CAVE_COMPONENT_MINIMUM = 24
 
@@ -2441,6 +2447,7 @@ local function settlement_factory()
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
 			root_ground_cids = root_ground_cids, template_metrics = metrics_state.templates,
+			tree_spacing = TREE_SPACING,
 			r8_hash = hash,
 			template_rotation = runtime_mode and (templates.rotation_runtime or
 				templates.rotation) or
@@ -3209,6 +3216,9 @@ local function settlement_factory()
 			end
 
 			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
+			-- `tree_roots`: the roots of the generated trees accepted in this owner
+			-- (Round 47), kept TREE_SPACING apart.
+			local tree_roots = {}
 			for class = 1, 4 do
 				for cell = 1, plan.candidate_cell_count do
 					local cell_base = (cell - 1) * CELL_STRIDE
@@ -3323,13 +3333,54 @@ local function settlement_factory()
 											local excluded = helpers.exclusion_reason(x, z,
 												row.plant_purpose)
 											if excluded then flags[excluded] = true end
-											if occupancy[index] == 1 then flags.occupied_collision = true
+											-- A generated tree claims only its own cells
+											-- (below); every other decoration its box, and a
+											-- generated tree's leaf (-4) counts against it.
+											if row.generated_tree then
+												-- per cell, below
+											elseif occupancy[index] == 1 then flags.occupied_collision = true
 											elseif occupancy[index] >= 2 and
 													occupancy[index] <= #resources + 1 then
 												flags.resource_collision = true
-											elseif occupancy[index] == -1 then
+											elseif occupancy[index] == -1 or occupancy[index] == -4 then
 												flags.decoration_collision = true end
 										end
+									end
+								end
+							end
+							-- GENERATED TREES INTERLEAVE (Round 47 groves follow-up): a
+							-- tree reserves its wood cells (-1) and its leaf cells
+							-- (-4), not its box. Wood never lands on wood, a reserved
+							-- box, a settlement cell or an ore claim; a leaf there or
+							-- on another tree's leaf is left out (the first leaf
+							-- stays); wood may take another tree's leaf. Its root
+							-- keeps TREE_SPACING (Chebyshev) from every generated tree
+							-- this owner accepted, the one density parameter of the
+							-- interleaved forest. The whole tree still lies inside the
+							-- owner (clipped_owner above), so a crown never meets one
+							-- of another mapchunk and none is cut at a border.
+							if row.generated_tree and not flags.clipped_owner then
+								local spacing = helpers.tree_spacing
+								for index = 1, #tree_roots do
+									local other = tree_roots[index]
+									if math.abs(other[1] - root_x) < spacing and
+											math.abs(other[2] - root_z) < spacing then
+										flags.decoration_collision = true
+										break
+									end
+								end
+								for part = 1, #cells do
+									local cell_record = cells[part]
+									local occupant = occupancy[index_at(root_x + cell_record.x,
+										root_y + cell_record.y, root_z + cell_record.z)]
+									if occupant ~= 0 and not (occupant == -4 and
+											not cell_record.optional) then
+										if cell_record.optional then
+											cell_record.include = false
+										elseif occupant == 1 then flags.occupied_collision = true
+										elseif occupant == -1 or occupant == -4 then
+											flags.decoration_collision = true
+										else flags.resource_collision = true end
 									end
 								end
 							end
@@ -3402,12 +3453,16 @@ local function settlement_factory()
 							if reason then metric_rejection(ledger, "decoration", row.id, reason)
 							else
 								if aggregate then aggregate.accepted = aggregate.accepted + 1 end
-								for z = root_z + min_fz, root_z + max_fz do
-									for y = root_y + min_fy, root_y + max_fy do
-										for x = root_x + min_fx, root_x + max_fx do
-											occupancy[index_at(x, y, z)] = -1
-											if aggregate then
-												aggregate.reserved = aggregate.reserved + 1
+								if row.generated_tree then
+									tree_roots[#tree_roots + 1] = {root_x, root_z}
+								else
+									for z = root_z + min_fz, root_z + max_fz do
+										for y = root_y + min_fy, root_y + max_fy do
+											for x = root_x + min_fx, root_x + max_fx do
+												occupancy[index_at(x, y, z)] = -1
+												if aggregate then
+													aggregate.reserved = aggregate.reserved + 1
+												end
 											end
 										end
 									end
@@ -3415,10 +3470,13 @@ local function settlement_factory()
 								for part = 1, #cells do
 									local cell_record = cells[part]
 									if cell_record.include then
+										-- a generated tree reserves its wood (-1) and its
+										-- leaves (-4); every other template its box (above)
 										write_intent(root_x + cell_record.x,
 											root_y + cell_record.y, root_z + cell_record.z,
 											cell_record.content_ref, cell_record.param2, 12,
-											stable_state.decoration[catalog], template_ref, 8, -1)
+											stable_state.decoration[catalog], template_ref, 8,
+											cell_record.optional and -4 or -1)
 										if aggregate then
 											aggregate.emitted = aggregate.emitted + 1
 										end
@@ -3446,7 +3504,8 @@ local function settlement_factory()
 											end
 											local index = index_at(x, y, z)
 											local class_id = classify(final_data[index], final_param2[index])
-											return class_id == CLASS_AIR or class_id == CLASS_NATURAL_VEGETATION
+											return (occupancy[index] == 0 or occupancy[index] == -4) and
+												(class_id == CLASS_AIR or class_id == CLASS_NATURAL_VEGETATION)
 										end)
 									for run_index = 1, #root_runs do
 										local run = root_runs[run_index]
