@@ -1,0 +1,154 @@
+// Round 46 lane TREE, step 2: checks for the concept generator and page.
+//
+//   node tools/r46_tree/concept/check.js [seeds]
+//
+// For every species and seeds 1..N (default 500): the same seed gives the
+// same node list twice; the tree fits 16 x 16 nodes and 32 high; no node
+// below the ground; all wood is one face-connected piece standing on the
+// ground; every leaf has wood within the leaf decay reach (3, cube search);
+// quarter pieces carry facedir 0..3, base/branch/twig/log grain 0, 4 or 12;
+// a quarter is met from the side only by trunk pieces or a limb base, from
+// above only by a quarter of the same turn or a twig; the .obj files match;
+// roots only in apple / jungle (2 x 2) and kapok (always), apple ones one
+// cell long, all within their reach of the trunk, only where the
+// ground test passes, and the tree otherwise the same on any ground.
+// Then the inline scripts of trees.html must parse.
+'use strict';
+var fs = require('fs');
+var path = require('path');
+var vm = require('vm');
+var G = require('./treegen.js');
+
+var N = parseInt(process.argv[2] || '500', 10);
+var WOOD = {trunk: true, quarter: true, base: true, branch: true, twig: true};
+var S = require('./shapes.js');
+var failures = 0;
+function fail(msg) { failures++; if (failures < 30) { console.log('FAIL ' + msg); } }
+
+var summary = [];
+G.ORDER.forEach(function (sp) {
+	var agg = {wood: 0, leaves: 0, shapes: 0, height: 0, maxH: 0, maxW: 0, minH: 99, rooted: 0, roots: 0};
+	for (var seed = 1; seed <= N; seed++) {
+		var a = G.generate(sp, seed);
+		var b = G.generate(sp, seed);
+		if (JSON.stringify(a.nodes) !== JSON.stringify(b.nodes)) { fail(sp + ' ' + seed + ' not deterministic'); }
+		var map = {};
+		var minX = 99, maxX = -99, minZ = 99, maxZ = -99, maxY = -99;
+		a.nodes.forEach(function (n) {
+			var k = n.x + ',' + n.y + ',' + n.z;
+			if (map[k]) { fail(sp + ' ' + seed + ' duplicate ' + k); }
+			map[k] = n;
+			minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x);
+			minZ = Math.min(minZ, n.z); maxZ = Math.max(maxZ, n.z);
+			maxY = Math.max(maxY, n.y);
+			if (n.y < 0) { fail(sp + ' ' + seed + ' node below ground'); }
+			if (n.kind === 'quarter' && !(n.rot >= 0 && n.rot <= 3)) { fail(sp + ' ' + seed + ' quarter rot ' + n.rot); }
+			if ((n.kind === 'trunk' || n.kind === 'base' || n.kind === 'branch' || n.kind === 'twig') && [0, 4, 12].indexOf(n.rot) < 0) {
+				fail(sp + ' ' + seed + ' grain rot ' + n.rot);
+			}
+		});
+		if (maxX - minX + 1 > 16 || maxZ - minZ + 1 > 16) { fail(sp + ' ' + seed + ' wider than 16'); }
+		if (maxY + 1 > 32) { fail(sp + ' ' + seed + ' higher than 32'); }
+		// wood: one face-connected piece touching y = 0
+		var wood = a.nodes.filter(function (n) { return WOOD[n.kind]; });
+		var seen = {}, stack = [];
+		wood.forEach(function (n) { if (n.y === 0) { seen[n.x + ',0,' + n.z] = true; stack.push(n); } });
+		if (!stack.length) { fail(sp + ' ' + seed + ' no wood on the ground'); }
+		while (stack.length) {
+			var c = stack.pop();
+			[[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].forEach(function (d) {
+				var k = (c.x + d[0]) + ',' + (c.y + d[1]) + ',' + (c.z + d[2]);
+				var nb = map[k];
+				if (nb && WOOD[nb.kind] && !seen[k]) { seen[k] = true; stack.push(nb); }
+			});
+		}
+		if (Object.keys(seen).length !== wood.length) { fail(sp + ' ' + seed + ' wood in ' + 'more than one piece'); }
+		// a slanted quarter is met only by what closes cleanly: from the side
+		// by other trunk pieces or a limb base, from above by a quarter of the
+		// same turn or a twig (6/16 fits inside the slant)
+		a.nodes.forEach(function (n) {
+			if (n.kind !== 'quarter') { return; }
+			[[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (d) {
+				var nb = map[(n.x + d[0]) + ',' + n.y + ',' + (n.z + d[1])];
+				if (nb && (nb.kind === 'branch' || nb.kind === 'twig')) { fail(sp + ' ' + seed + ' ' + nb.kind + ' beside a quarter'); }
+			});
+			var up = map[n.x + ',' + (n.y + 1) + ',' + n.z];
+			if (up && WOOD[up.kind] && up.kind !== 'twig' && !(up.kind === 'quarter' && up.rot === n.rot)) {
+				fail(sp + ' ' + seed + ' ' + up.kind + ' on a quarter');
+			}
+		});
+		// leaves within reach 3 of wood (cube search)
+		a.nodes.forEach(function (n) {
+			if (n.kind !== 'leaves') { return; }
+			for (var dx = -3; dx <= 3; dx++) {
+				for (var dy = -3; dy <= 3; dy++) {
+					for (var dz = -3; dz <= 3; dz++) {
+						var nb = map[(n.x + dx) + ',' + (n.y + dy) + ',' + (n.z + dz)];
+						if (nb && WOOD[nb.kind]) { return; }
+					}
+				}
+			}
+			fail(sp + ' ' + seed + ' leaf out of decay reach');
+		});
+		// roots: only apple / jungle (2 x 2 only) and kapok (always); on an
+		// uneven ground only where its test passes, and the rest of the tree
+		// the same as on flat ground
+		var thick = a.nodes.some(function (n) { return n.y === 0 && n.kind === 'quarter'; });
+		if (a.roots.length && !(sp === 'kapok' || ((sp === 'apple' || sp === 'jungle') && thick))) {
+			fail(sp + ' ' + seed + ' has roots');
+		}
+		if (sp === 'kapok' && !a.roots.length) { fail(sp + ' ' + seed + ' kapok without roots'); }
+		// apple roots are one cell (a base at the foot); every root cell lies
+		// within its species' reach (apple 1, jungle 2, kapok 3) of the trunk
+		var reach = {apple: 1, jungle: 2, kapok: 3}[sp];
+		a.roots.forEach(function (r) {
+			var n = map[r[0] + ',' + r[1] + ',' + r[2]];
+			if (sp === 'apple' && !(r[1] === 0 && n.kind === 'base')) { fail(sp + ' ' + seed + ' apple root longer than 1'); }
+			var near = false;
+			a.nodes.forEach(function (m) {
+				if ((m.kind === 'quarter' || m.kind === 'trunk') && m.y === 0 &&
+					Math.abs(m.x - r[0]) + Math.abs(m.z - r[2]) <= reach + 1) { near = true; }
+			});
+			if (!near) { fail(sp + ' ' + seed + ' root reaches too far'); }
+		});
+		if (a.roots.length) { agg.rooted++; agg.roots += a.roots.length; }
+		var top = function (x, z) { return ((x + 50) * 7919 + (z + 50) * 104729 + seed * 31) % 3 - 1; };
+		var bumpy = function (x, y, z) { return y < top(x, z); };
+		var c = G.generate(sp, seed, bumpy);
+		c.roots.forEach(function (r) {
+			if (!bumpy(r[0], -1, r[2]) || bumpy(r[0], 0, r[2])) { fail(sp + ' ' + seed + ' root without ground test'); }
+		});
+		var rootKey = {};
+		a.roots.concat(c.roots).forEach(function (r) { rootKey[r.join(',')] = true; });
+		var strip = function (t) {
+			return JSON.stringify(t.nodes.filter(function (n) { return !rootKey[n.x + ',' + n.y + ',' + n.z]; }));
+		};
+		if (strip(a) !== strip(c)) { fail(sp + ' ' + seed + ' tree changes with the ground'); }
+		agg.wood += a.wood; agg.leaves += a.count.leaves; agg.shapes += a.shapes; agg.height += a.height;
+		agg.maxH = Math.max(agg.maxH, a.height); agg.minH = Math.min(agg.minH, a.height);
+		agg.maxW = Math.max(agg.maxW, maxX - minX + 1, maxZ - minZ + 1);
+	}
+	summary.push(sp + ': mean wood ' + (agg.wood / N).toFixed(1) + ', leaves ' + (agg.leaves / N).toFixed(1) +
+		', shape nodes ' + (agg.shapes / N).toFixed(1) + ', height ' + agg.minH + '-' + agg.maxH +
+		' (mean ' + (agg.height / N).toFixed(1) + '), widest ' + agg.maxW +
+		(agg.rooted ? ', rooted ' + agg.rooted + ' (' + agg.roots + ' root cells)' : ''));
+});
+summary.forEach(function (l) { console.log(l); });
+
+// the page's inline scripts parse
+var html = fs.readFileSync(path.join(__dirname, 'trees.html'), 'utf8');
+var re = /<script>([\s\S]*?)<\/script>/g, m, count = 0;
+while ((m = re.exec(html)) !== null) {
+	try { new vm.Script(m[1]); count++; } catch (e) { fail('inline script ' + count + ' does not parse: ' + e.message); }
+}
+if (!/three@0\.147\.0\/build\/three\.min\.js/.test(html)) { fail('three.js is not pinned to 0.147.0'); }
+// the committed .obj files match the shape data
+Object.keys(S.PROFILES).forEach(function (name) {
+	var file = path.join(__dirname, 'models', 'grug_tree_quarter_' + name + '.obj');
+	if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== S.toObj(name)) {
+		fail(file + ' is stale: run node shapes.js');
+	}
+});
+console.log(count + ' inline scripts parse');
+console.log(failures ? failures + ' FAILURES' : 'PASS (' + N + ' seeds x ' + G.ORDER.length + ' species)');
+process.exit(failures ? 1 : 0);
