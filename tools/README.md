@@ -952,4 +952,19 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   writer's template counts (candidates, owner clips, accepted, root runs)
   and the construction's CPU seconds; `capture.sh` with
   `grug_probe_r47_tc` the engine captures of forests, a grown sapling and
-  a town.
+  a town;
+  `r47_td` forest render cost (a measurement, no fixture):
+  `density.lua REPO SEED [CHUNKS_PER_BIOME]` counts the standing trees per
+  biome and species in forest chunks written by the seed fleet's runtime
+  (run it on this tree and on an export of an older commit to compare);
+  `measure.sh OUT_DIR` (`MODE=forest SPECIES=<key>` or `MODE=capital`) with
+  `grug_probe_r47_td` builds test forests on a sky platform (today's
+  schematics, copied into the probe's `schematics/` from
+  `mods/BASE/default/schematics`, LGPL-2.1+ / CC BY-SA 3.0 unmodified,
+  and the game's own old gravewood from the concept's `today/`; the
+  generated trees; trimmed crowns; a dense grove)
+  or shows a capital, and records in one real client on Xvfb the frame
+  times (Mesa's Gallium HUD dump, llvmpipe), the client profiler's draw
+  calls and vertices, and the client's memory, through `drive.py`;
+  `report.py RUN_DIR...` prints the tables. One measuring run per boot,
+  about 4 minutes.
