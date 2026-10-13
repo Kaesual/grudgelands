@@ -1308,8 +1308,13 @@ function M.config(prepared, content, raw_sha256)
 							rects[#rects + 1] = rect
 						end
 					end
-					state.green = blueprint.city.green({x = anchor.x, z = anchor.z}, rects,
-						column)
+					-- built on the first chunk that asks, dropped with the idle
+					-- release below (its slots and column memos run to tens of
+					-- MB for a whole city), rebuilt the same on demand
+					state.make_green = function()
+						return blueprint.city.green({x = anchor.x, z = anchor.z}, rects,
+							column)
+					end
 				end
 				local b = blueprint.bounds
 				state.box = {min_x = anchor.x + b.min.x, max_x = anchor.x + b.max.x,
@@ -1408,6 +1413,12 @@ function M.config(prepared, content, raw_sha256)
 		local function release(state)
 			if state.cells and not state.blueprint.cells then
 				state.cells = nil
+				metrics.release_calls = metrics.release_calls + 1
+			end
+			-- the city's trees (a pure function of the layout and the final
+			-- columns): rebuilt on the next chunk that asks
+			if state.green then
+				state.green = nil
 				metrics.release_calls = metrics.release_calls + 1
 			end
 		end
@@ -1620,6 +1631,7 @@ function M.config(prepared, content, raw_sha256)
 					local cells = state.edge.cells({min_x = context.min_x,
 						max_x = context.max_x, min_z = context.min_z,
 						max_z = context.max_z}, column)
+					if state.make_green and not state.green then state.green = state.make_green() end
 					if state.green then
 						local trees = state.green.cells({min_x = context.min_x,
 							max_x = context.max_x, min_z = context.min_z,

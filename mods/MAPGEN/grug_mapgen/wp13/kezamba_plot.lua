@@ -240,7 +240,8 @@ local function loader(directory)
 			dressing.path_light(buf, palette, x0, z0 + 1)
 			dressing.path_light(buf, palette, x1, z0 + 1)
 		else
-			dressing.inlay(buf, palette, x0, z0, x1, z1)
+			-- the doorstep path (no kerb round the plot since Round 47: the user
+			-- disliked the stone frame round every capital building)
 			for z = z0 + 1, oz - 1 do
 				for x = -1, 1 do
 					buf:put(x, 0, z, palette.node("path"))

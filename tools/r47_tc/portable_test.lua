@@ -629,11 +629,14 @@ do
 		for _, tree in ipairs(b.grown_trees or {}) do
 			if tree.cut then
 				cut = cut + 1
+				-- nothing of a removed tree stays: no wood and no leaf of its own
+				-- (a cell holding its name now is a prop's or another tree's write)
 				for _, w in ipairs(tree.writes) do
 					local cell = b.cell[w.key]
-					if w.wood and cell and cell.name == w.name and
+					if cell and cell.name == w.name and
 							(not w.prev_name or w.prev_name ~= w.name) then
-						broken = broken + 1
+						local owner = b.grown_wood and b.grown_wood[w.key]
+						if w.wood or not owner then broken = broken + 1 end
 					end
 				end
 			else
@@ -643,6 +646,54 @@ do
 					if w.wood and (not cell or cell.name ~= w.name) then broken = broken + 1 end
 				end
 			end
+		end
+	end
+	-- two cut trees where the later one's wood stands on the earlier one's
+	-- leaf: taken out newest first, no leaf of either floats afterwards
+	do
+		local dressing = dofile(wp13 .. "/dressing.lua")(wp13)
+		local human = palettes.new("human")
+		local buf = pad(16)
+		buf.tree_spacing = 3
+		local planted = {}
+		for gx = -9, 9, 3 do
+			for gz = -9, 9, 3 do
+				if dressing.broadleaf(buf, human, gx, gz, 5) then planted[#planted + 1] = true end
+			end
+		end
+		local overlap
+		for id = #buf.grown_trees, 2, -1 do
+			for _, w in ipairs(buf.grown_trees[id].writes) do
+				if w.wood and w.prev_name == human.node("tree_leaves") then overlap = id break end
+			end
+			if overlap then break end
+		end
+		check(overlap ~= nil, "the dense lattice has a tree whose wood stands on a leaf")
+		if overlap then
+			-- cut the overlapping tree and every earlier one by a prop on a wood cell
+			local cut_ids = {overlap}
+			for id = 1, overlap - 1 do cut_ids[#cut_ids + 1] = id end
+			for _, id in ipairs(cut_ids) do
+				for _, w in ipairs(buf.grown_trees[id].writes) do
+					if w.wood and buf.grown_wood[w.key] == id then
+						local x, y, z = w.key:match("^(%-?%d+):(%-?%d+):(%-?%d+)$")
+						buf:put(tonumber(x), tonumber(y), tonumber(z), "default:cobble")
+						break
+					end
+				end
+			end
+			buf:cells()
+			local floating = 0
+			for _, id in ipairs(cut_ids) do
+				for _, w in ipairs(buf.grown_trees[id].writes) do
+					local cell = buf.cell[w.key]
+					if cell and cell.name == w.name and not w.wood and
+							not (buf.grown_leaves[w.key]) then
+						floating = floating + 1
+					end
+				end
+			end
+			check(floating == 0, "no leaf of a removed tree is restored (" .. floating .. ")")
 		end
 	end
 	print(("E5: %d town trees standing, %d cut by a later write and taken out"):format(
