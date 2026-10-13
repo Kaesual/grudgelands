@@ -85,7 +85,8 @@ TC is the largest and riskiest lane. AN touches the most files.
 2. **Generated from the world seed** at every server start, in both Lua
    environments. There is no file in the world folder, so every world has
    its own trees.
-3. **Town trees** use the generator too.
+3. **Town trees** use the generator too (the handoff's recommendation;
+   the user has not ruled on it yet, see §8).
 4. **Leaf cost:** decided on TD's measured numbers, not before.
 5. **Swamp trees**, alike in spirit to gravewood: their own species in the
    generator, built from gravewood's wood nodes.
@@ -108,9 +109,13 @@ TC is the largest and riskiest lane. AN touches the most files.
 11. **Fuel:** Anthracite burns 120 s in the furnaces (Coal 80 s).
 12. **Claim stone:** the fill cap is counted in time (99 lumps' worth,
     about 30 days), not in items. Anthracite counts 1.5 lumps. A piece goes
-    in only if its whole time fits.
+    in only if its whole time fits. The pick-up refund stays as today (the
+    remaining time in Charcoal).
 13. **Enchants:** the T2 Coal inputs become `group:coal` (Charcoal works).
     The T3 inputs become Anthracite.
+    **Unchanged:** the Coal torch (any `group:coal`), black dye, the Coal
+    block, the Coal quests (levels 3 and 12–15, where Coal still lies) and
+    Coal and Charcoal as fuel.
 
 **Furnaces:**
 
@@ -128,6 +133,8 @@ TC is the largest and riskiest lane. AN touches the most files.
     - If the inventory has filled up meanwhile, the rest goes to the output
       slots. They show only when they hold something, and they empty
       themselves into the inventory as soon as there is room.
+    - A craft with a quantity above 1 delivers each item as it finishes,
+      not all at the end.
 19. **Basic recipe unlock:**
     - A Basic recipe is listed once the player has held every ingredient at
       least once. A group ingredient counts when any member was held.
@@ -153,6 +160,17 @@ TC is the largest and riskiest lane. AN touches the most files.
 **Swamp:**
 
 23. **Concept first** in the browser, the build after the user's pick.
+
+**Coordinator choices** (details the user did not rule on; a lane may
+propose otherwise in its report):
+- Zone XP uses `min(zone level_min, character level)`, so a low character
+  gains no large bonus by walking into high zones.
+- Existing characters get their current zone marked as visited, silently,
+  at their first login after the update.
+- Jungle bark M is wired through tile overrides with own texture names,
+  not by patching the vendored texture.
+- Saplings grow through the generator too (handoff §5).
+- Anthracite needs an Iron pick (`level 2`), as its band does anyway.
 
 ## 3. The ore table (lanes OR and AN)
 
@@ -323,6 +341,7 @@ counts from these numbers.
 - The overflow uses the existing output list. It is drawn only when
   non-empty and drained by a cheap poll for players who have overflow.
 - The drop-at-feet fallback stays for the overflow's own overflow.
+- Each item of a multi-item craft is delivered as it finishes.
 - Offline completion delivers at join.
 
 **Unlock (ruling 19):**
@@ -533,8 +552,7 @@ After merges: `tools/sync_to_luanti.sh`.
 
 ## 8. Open questions for the user
 
-1. **Crafting with a quantity above 1:** deliver each item as it finishes,
-   not all at the end? Recommendation: yes. Items are usable sooner, and
-   the overflow case gets rarer still.
+1. **Town trees** through the generator too? Recommendation: yes, so towns
+   match the wild.
 2. **The swamp concept:** after SW's page.
 3. **Leaf counts:** after TD.
