@@ -14,6 +14,8 @@
 --      recorded second run of shapes.lua shows they change nothing else;
 --   C. leaf decay: each wood's leaves search their trunk and four shapes in
 --      radius 3, and every piece's after_destruct starts its leaves' decay;
+--      with lane SW's swamp leaves and hanging moss registered, gravewood's
+--      one registration covers all three and its twig joins the swamp leaves;
 --   D. jungle bark M on default:jungletree and the jungle shapes, the PNGs
 --      and the quarter .obj byte-equal to their Round 46 sources;
 --   E. template rotation: the real wp40/r6_templates.lua turns a small cell
@@ -304,6 +306,70 @@ do
 		end
 	end
 	for name in pairs(ground) do check(overrides[name], name .. " overridden by the recorded run") end
+end
+
+-- B2. with lane SW's swamp foliage registered (it decays to gravewood wood):
+-- one gravewood decay registration over all three leaves, the twig joins the
+-- swamp leaves from below. Without them (above) the lists stay as they are.
+do
+	local SWAMP_LEAVES, MOSS = "grug_trees:swamp_leaves", "grug_trees:swamp_hanging_moss"
+	check(nodes[SWAMP_LEAVES] == nil or nodes[MOSS] ~= nil, "swamp nodes come as a pair")
+	local defs, loaded = {}, {}
+	local rec = {registered_nodes = {}}
+	for name, def in pairs(nodes) do
+		local copy = {}
+		for k, v in pairs(def) do copy[k] = v end
+		rec.registered_nodes[name] = copy
+	end
+	for _, name in ipairs({SWAMP_LEAVES, MOSS}) do
+		rec.registered_nodes[name] = rec.registered_nodes[name] or
+			{name = name, groups = {leafdecay = 3, leaves = 1}}
+	end
+	function rec.override_item(name, redef)
+		local def = rec.registered_nodes[name] or defs[name]
+		for k, v in pairs(redef) do def[k] = v end
+	end
+	function rec.register_node(name, def) defs[name] = def end
+	function rec.register_on_mods_loaded(fn) loaded[#loaded + 1] = fn end
+	function rec.log() end
+	local seen
+	function rec.find_node_near(_, radius, names)
+		seen = {radius = radius, names = names}
+		return {x = 1, y = 0, z = 0}
+	end
+	function rec.find_nodes_in_area(_, _, names) seen = {names = names} return {} end
+	local saved_core, saved_mt, saved_gt = core, minetest, grug_trees
+	local saved_sub, saved_add = vector.subtract, vector.add
+	_G.core, _G.minetest, _G.grug_trees = rec, rec, {}
+	vector.subtract = function(a, b) return {x = a.x - b, y = a.y - b, z = a.z - b} end
+	vector.add = function(a, b) return {x = a.x + b, y = a.y + b, z = a.z + b} end
+	dofile(repo .. "/mods/ITEMS/grug_trees/shapes.lua")
+	local gravewood = {"grug_trees:gravewood_tree", "grug_trees:gravewood_quarter",
+		"grug_trees:gravewood_base", "grug_trees:gravewood_branch", "grug_trees:gravewood_twig"}
+	local all_leaves = {"grug_trees:gravewood_leaves", SWAMP_LEAVES, MOSS}
+	for _, leaf in ipairs(all_leaves) do
+		seen = nil
+		rec.registered_nodes[leaf].on_timer({x = 0, y = 0, z = 0})
+		check(seen and seen.radius == 3 and same_set(seen.names, gravewood),
+			"with SW: " .. leaf .. " decays to gravewood wood in radius 3")
+	end
+	for _, piece in ipairs(gravewood) do
+		seen = nil
+		local def = rec.registered_nodes[piece] or defs[piece]
+		def.after_destruct({x = 0, y = 0, z = 0}, {name = piece})
+		check(seen and same_set(seen.names, all_leaves),
+			"with SW: " .. piece .. " starts the decay of all three gravewood leaves")
+	end
+	local twig = defs["grug_trees:gravewood_twig"].connects_to
+	check(set_of(twig)[SWAMP_LEAVES] and set_of(twig)["grug_trees:gravewood_leaves"] and
+		not set_of(twig)[MOSS], "with SW: the gravewood twig joins both gravewood leaves, not the moss")
+	check(deep_equal(rec.registered_nodes[SWAMP_LEAVES].connect_sides, {"bottom"}) and
+		rec.registered_nodes[MOSS].connect_sides == nil,
+		"with SW: swamp leaves connect_sides bottom, the moss none")
+	check(set_of(defs["grug_trees:apple_twig"].connects_to)[SWAMP_LEAVES] == nil,
+		"with SW: other woods' twigs do not join swamp leaves")
+	_G.core, _G.minetest, _G.grug_trees = saved_core, saved_mt, saved_gt
+	vector.subtract, vector.add = saved_sub, saved_add
 end
 
 -- ---------------------------------------------------------------------------

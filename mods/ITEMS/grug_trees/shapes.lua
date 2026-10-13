@@ -34,7 +34,13 @@ local WOODS = {
 	{key = "silverwood", trunk = "grug_trees:silverwood_tree",
 		leaves = {"grug_trees:silverwood_leaves"}},
 	{key = "gravewood", trunk = "grug_trees:gravewood_tree",
-		leaves = {"grug_trees:gravewood_leaves"}},
+		leaves = {"grug_trees:gravewood_leaves"},
+		-- The swamp trees' foliage (Round 47 lane SW) decays to gravewood wood
+		-- too; whichever of these exist when this file runs join the decay,
+		-- and the swamp leaves also take the twig like a leaf. Both must be
+		-- registered before this file (the end of init.lua).
+		optional_leaves = {"grug_trees:swamp_leaves", "grug_trees:swamp_hanging_moss"},
+		optional_joins = {"grug_trees:swamp_leaves"}},
 }
 local SHAPES = {"quarter", "base", "branch", "twig"}
 
@@ -78,6 +84,16 @@ grug_trees.shape_nodes = {}
 grug_trees.shape_woods = {}
 
 for _, wood in ipairs(WOODS) do
+	-- One decay registration per trunk: default.register_leafdecay replaces
+	-- the trunk's after_destruct, so every leaf of the trunk is in this list.
+	local decay_leaves = table.copy(wood.leaves)
+	for _, name in ipairs(wood.optional_leaves or {}) do
+		if core.registered_nodes[name] then decay_leaves[#decay_leaves + 1] = name end
+	end
+	local joined_leaves = {wood.leaves[1]}
+	for _, name in ipairs(wood.optional_joins or {}) do
+		if core.registered_nodes[name] then joined_leaves[#joined_leaves + 1] = name end
+	end
 	local trunk = assert(core.registered_nodes[wood.trunk],
 		"grug_trees: missing trunk " .. wood.trunk)
 	local names = {}
@@ -90,7 +106,7 @@ for _, wood in ipairs(WOODS) do
 		branch = table.copy(wood_pieces),
 		twig = table.copy(wood_pieces),
 	}
-	connects.twig[#connects.twig + 1] = wood.leaves[1]
+	for _, leaf in ipairs(joined_leaves) do connects.twig[#connects.twig + 1] = leaf end
 	for _, ground in ipairs(GROUND) do
 		connects.base[#connects.base + 1] = ground
 		connects.twig[#connects.twig + 1] = ground
@@ -139,10 +155,12 @@ for _, wood in ipairs(WOODS) do
 	-- Leaves keep a trunk piece within 3 (the generator keeps every leaf that
 	-- close to wood); this replaces default's and grug_trees' own decay
 	-- registration of these leaves (jungle and acacia had radius 2).
-	default.register_leafdecay({trunks = wood_pieces, leaves = wood.leaves, radius = 3})
+	default.register_leafdecay({trunks = wood_pieces, leaves = decay_leaves, radius = 3})
 
 	-- A twig joins its leaf only through the leaf's bottom: only a leaf above.
-	core.override_item(wood.leaves[1], {connect_sides = {"bottom"}})
+	for _, leaf in ipairs(joined_leaves) do
+		core.override_item(leaf, {connect_sides = {"bottom"}})
+	end
 end
 
 -- The ground joins a root only through its top. Every mod's ground is
