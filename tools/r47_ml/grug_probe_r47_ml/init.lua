@@ -17,8 +17,9 @@ local function log(msg) core.log("action", P .. msg) end
 local W = grug_map.window
 local atlas = grug_map.atlas
 
--- {name, layer, zoom, pick(player) -> a world position for the pointer or
--- nil, icon (W.PLACE_ICON for the shot), quest = true for quest mode}
+-- {name, layer, zoom, centre(player) -> the view's centre (default the
+-- player), pick(player, centre) -> a world position for the pointer or nil,
+-- icon (W.PLACE_ICON for the shot), quest = true for quest mode}
 local function nearest(rows, pos, pred)
 	local best, best_d
 	for _, row in ipairs(rows) do
@@ -39,8 +40,11 @@ local SHOTS = {
 	{name = "L2_bosses_1x", layer = "bosses", zoom = 1,
 		pick = function(p) return nearest(markers(p, "bosses"), p:get_pos(),
 			function(row) return row.kind == "king" end) end},
+	-- At the own capital (the start town has only its mender).
 	{name = "L3_trainers_4x", layer = "trainers", zoom = 4,
-		pick = function(p) return nearest(markers(p, "trainers"), p:get_pos()) end},
+		centre = function(p) return nearest(markers(p, "towns"), p:get_pos(),
+			function(row) return row.kind == "capital" and row.faction == "accord" end) end,
+		pick = function(p, at) return nearest(markers(p, "trainers"), at) end},
 	{name = "L4_towns_1x", layer = "towns", zoom = 1,
 		pick = function(p) return nearest(markers(p, "towns"), p:get_pos(),
 			function(row) return row.kind == "capital" end) end},
@@ -136,7 +140,9 @@ local function show(player, shot)
 	local session = W.sessions[NAME]
 	session.layer = shot.layer
 	session.zoom = shot.zoom
-	session.scroll_x, session.scroll_y = atlas.centre_scroll(atlas.view(), player:get_pos(), shot.zoom)
+	local centre = shot.centre and shot.centre(player) or player:get_pos()
+	shot.at = centre
+	session.scroll_x, session.scroll_y = atlas.centre_scroll(atlas.view(), centre, shot.zoom)
 	session.follow = shot.zoom == 1
 	session.quest_selected = shot.quest and W.probe_quest and W.probe_quest.id or nil
 	W.request(player)
@@ -185,7 +191,7 @@ core.register_globalstep(function(dtime)
 		if not state.logged and state.waited >= SETTLE then
 			state.logged = true
 			local session = W.sessions[NAME]
-			local x, y = screen_of(player, session, shot.pick and shot.pick(player))
+			local x, y = screen_of(player, session, shot.pick and shot.pick(player, shot.at))
 			log(("SHOT %s %s %s"):format(shot.name, x or "-", y or "-"))
 			log(("CHECK %s: %d bytes, layer %s, zoom %dx, %d button rows, markers %d, targets %d, " ..
 				"map tooltips %d"):format(shot.name, session.bytes or 0, tostring(session.layer),

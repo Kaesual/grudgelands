@@ -234,17 +234,22 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   client shows the first rect under the pointer (`guiFormSpecMenu.cpp`
   drawMenu), so they are sent topmost first: the party arrows', then the
   markers' in reverse draw order. They are clipped to the map's view.
-- **Zones layer** (Round 47 ruling 7): one `label[]` per zone, its name on
-  the first line and its level band ("Levels 1–10", "Level 60") on the
-  second, over a translucent dark box (`#1a1208a0`), at a constant text
-  size at every zoom; the box is sized from the text at 0.52 em per
-  character of the client's font (16 px times its GUI scaling, from the
-  window information). Placement (`grug_map/zone_labels.lua`) reuses Round
+- **Zones layer** (Round 47 ruling 7): per zone its name and, a line
+  below, its level band ("Levels 1–10", "Level 60"), one `label[]` per
+  line one line height apart (a two-line label would put them 0.5 units
+  apart), over a translucent dark box (`#1a1208a0`) kept inside the map, at
+  a constant text size at every zoom; the box is sized from the text at
+  0.52 em per character and 1.2 em per line of the client's font (16 px
+  times its GUI scaling; pixels per unit from the window information). Placement (`grug_map/zone_labels.lua`) reuses Round
   28 M1's: at start each zone's land is sampled on a 32-node grid and its
   label put at the cell farthest from its border and coast (the pole of
   inaccessibility), nudged clear of the labels placed before it and of the
   baked region names, sized at 1x on a 1920×1080 window; it is not cached.
-  At 1x small zones may still collide (seed 42 figures below).
+  At 1x small zones may still collide: seed 42 has 38 labels, 3
+  overlapping pairs and none over a region name at 1x on 1920×1080
+  (placement 0.14 s at start, the grid 0.13 of it); on smaller windows
+  (1035×696: 8.84 units of map at 53 px per unit) the same text covers
+  much more of the map.
 - **Quest boxes** (ruling 14, the quest log of [quests.md](quests.md)):
   the list box (the active count, the Quest HUD switch, the list, Track on
   HUD and Abandon with its confirmation) and below it the selected quest's
@@ -326,9 +331,9 @@ Comparisons (not targets; seed 42, an Accord or Throng viewer with seven
 active quests at its start town, engine probe `tools/r44_mq/grug_probe_r44_mq`,
 2026-10-13). Round 47, at 85 % of 1920×1080 (one button row), zoom 1x/8x,
 the Accord viewer: Quests 6.0/6.1 KB (30 markers, each with its tooltip;
-the Throng viewer 32), Bosses 5.1/5.1 KB (19), Trainers 7.1/7.3 KB (39),
+the Throng viewer 32), Bosses 5.1/5.2 KB (19), Trainers 7.1/7.3 KB (39),
 Towns 8.3/8.5 KB (54), POIs 7.3/7.5 KB (40), PvP 4.9/4.9 KB (18), Zones
-6.2/6.3 KB (38 labels and boxes), None 2.9/2.9 KB; quest mode with the
+6.9/7.1 KB (38 boxes with two labels each), None 2.9/2.9 KB; quest mode with the
 first kill quest 3.9/3.9 KB (its three targets and the hand-in NPC, four
 tooltips). The eight buttons with their tooltips and styles are part of
 every figure. Round 44's window on the same seed and day: 5.0/5.1 KB with
@@ -404,17 +409,24 @@ pixel its centre lies in, which takes their mean):
 
 | Quality | Size | Nodes per pixel | Relief grid | Tiles | Download | First render |
 |---|---|---|---|---|---|---|
-| `normal` (default) | 1080×960 | about 6.7 | 8 nodes | 6 + 6 | about 0.81 + 0.90 MB | about 10 s |
-| `high` | 3600×3200 | 2 | 4 nodes | 56 + 6 | about 6.10 + 1.09 MB | about 47 s |
+| `normal` (default) | 1080×960 | about 6.7 | 8 nodes | 6 + 6 | about 0.87 + 0.89 MB | about 9 s |
+| `high` | 3600×3200 | 2 | 4 nodes | 56 + 6 | about 6.51 + 1.08 MB | about 47 s |
 
 Sizes and times are comparisons from one engine run each on the development
-workstation (seed 42, 2026-10-08), not targets; the second figure is the
-minimap's copy. Before Round 44 (same seed and day) the normal base was
+workstation (seed 42, 2026-10-13, Round 47: the world map's image without
+icons), not targets; the second figure is the minimap's copy. On the same
+seed and day with the icons baked (Round 46) the world map's image was
+0.80 MB at normal and 5.96 MB at high (the icons' flat areas compress
+better than the terrain under them); the minimap's copy is byte for byte
+the same size before and after (0.89 and 1.08 MB), and the renders took
+9.0 s and 45.6 s before, 9.1 s and 46.9 s after (run-to-run noise). The
+Round 44 figures (2026-10-08, the world of that round): 0.81 + 0.90 MB and
+6.10 + 1.09 MB. Before Round 44 (seed 42, 2026-10-08) the normal base was
 0.91 MB and the minimap showed it (no copy), the high base 6.74 MB plus a
 1.09 MB copy; the renders took 9.6 s and 46.1 s before, 9.8 s and 47.3 s
 after (run-to-run noise; baking and the copy cost about 0.1 s at normal and
-0.5 s at high). The baked icons cover terrain detail, so the Map tab's tiles
-got smaller; at normal the minimap's own copy adds about 0.90 MB to the
+0.5 s at high). The baked icons covered terrain detail, so in Round 44 the
+map's tiles got smaller (until Round 47); at normal the minimap's own copy adds about 0.90 MB to the
 download. Before Round 27 the normal base was one
 PNG of about 0.56 MB in about the same time; high as one PNG would be about
 8.06 MB. No edge exceeds 4096 px, because some GPUs cannot hold larger
