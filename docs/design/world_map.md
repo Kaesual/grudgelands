@@ -624,7 +624,7 @@ drawn from the base image above. The gliding version (approved in playtest,
   name. The band is checked at the minimap's 5 s check and sends one
   `hud_change` when its step changes, so a clock jump (`/time`, sleeping)
   shows within 5 s; the mail icon changes when the mail count does. Both
-  are placeholders until the art picks of Round 48.
+  carry the user's Round 48 art picks (band A, envelope B; `tools/r48_artm`).
 - No client mod, per-viewer entity proxies or fog of war.
 
 ## Zone and town names

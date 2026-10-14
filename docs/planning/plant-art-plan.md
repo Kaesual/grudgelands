@@ -1,9 +1,10 @@
 # Partial plan — plant art design round (GPT-6 Astra)
 
-> **Scheduled in Round 48** ([round48-plan.md](round48-plan.md)). Its §2
+> **Built in Round 48** (0.48.0, 2026-10-14;
+> [completion](round48-plan.md#completion-2026-10-14)). The round plan's §2
 > rulings and §3 interfaces override this file where they differ.
 
-Status: **partial plan for the next round**, not yet scheduled; companion
+Status: **partial plan for the next round**, built in Round 48 (see above); companion
 of [plant-growth-plan.md](plant-growth-plan.md), which owns the game logic.
 The item list comes from the user's plant review of 2026-10-14 (the review
 page's stored feedback, 11 marked plants, and the chat of the same day). A

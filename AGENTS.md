@@ -12,26 +12,25 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.47.0, Round 47 "Trees, mining progression and crafting
-feedback" (**map reset** plus the migration step 0.47.0: stored tool
-capabilities rebuilt at the next join), is complete on main
-([completion](docs/planning/round47-plan.md#completion-2026-10-14)): trees
-from the seeded generator with shape nodes, roots and saplings, denser town
-groves and greened capitals, the swamp, next-tier ores in the lower half of
-the band before, Iron behind a Bronze pick, Anthracite and Steel from it,
-quieter furnaces, crafts delivered into the inventory, Basic recipes
-unlocked by held ingredients, NPCs facing away from walls, first-entry zone
-XP and the map window's marker layers. The user worked through the GUI
-checklist of 0.46.0 and 0.47.0 (everything works) and pushed main at
-`6a8afb9f` (2026-10-14). Production runs 0.45.1 and moves to 0.47.0 in one
-update (0.46.0 was never deployed on its own).
+**Current state:** 0.48.0, Round 48 "Mail, plants and light, selling,
+smaller bags" (**map reset** plus the migration step 0.48.0: bags at half
+size, what no longer fits mailed as "Lost and Found" letters), is complete
+on main and not pushed
+([completion](docs/planning/round48-plan.md#completion-2026-10-14)):
+mailboxes on the twelve waystone pads with letters, attachments, postage,
+messages to the admin and announcements (`grug_mail`, the privilege
+`mail_admin`), the starter quest and the welcome and level letters, plant
+light 8 for crops, papyrus and cactus, Melon and Mushroom crops, the Salt
+Pan, selling almost everything in lots with today's payouts unchanged,
+cactus and leaves as fuel, the daytime band beside the minimap and bags of
+4 / 8 / 12 / 16 slots. Its GUI test is open. origin/main is `6a8afb9f`
+(0.47.0); production runs 0.45.1 and moves to 0.48.0 in one update.
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
-47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45 and of
-0.45.1 are open. The class redesign
+47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48 and
+of 0.45.1 are open. The class redesign
 is parked ([continuation](docs/planning/class-redesign/continuation.md)).
-Next: [Round 48](docs/planning/round48-plan.md) (mail, plants and light,
-selling, smaller bags; 0.48.0). Details: [STATUS](docs/STATUS.md).
+Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 
@@ -315,9 +314,13 @@ The topic rules below name the one path to use; the
 ### Economy and travel
 
 - **One price module pays every vendor** (`grug_traders/prices.lua`, pure
-  `price_rules.lua`): no price fields, no `set_price`; a new sellable needs a
-  class and a tier; a new recipe passes the load audit (output ≤ inputs)
-  ([economy.md](docs/design/economy.md)).
+  `price_rules.lua`): no price fields, no `set_price`; today's payouts are a
+  first pass that stays unchanged, and a second pass in milli-copper prices
+  the rest (bulk goods in lots, crafted goods at half their material value,
+  pack blocks at nine times their item, Round 48); a new loot or gathered item
+  still needs a class and a tier, a crafted good is priced by its recipe; a
+  new recipe passes the load audit (output ≤ inputs) ([economy.md
+  §2](docs/design/economy.md)).
 - **Money check:** `tools/r29_e4/income.py --check` (mount, boat and respec
   prices, the crown fee) after any change to loot, repair or quest copper.
   Quests pay copper from their weight unless `rewards.copper` is set. Quest

@@ -470,9 +470,21 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   T3 and the only Steel source; quieter furnaces; crafts delivered into
   the inventory and Basic recipes unlocked by held ingredients; NPCs
   facing away from walls and first-entry zone XP; the map window's
-  marker layers. Complete on 2026-10-14; main pushed by the user as a
-  backup, the closing documentation on the user's word. Next: the GUI
-  test of 0.46.0 and 0.47.0 together.
+  marker layers. Complete on 2026-10-14; the GUI test of 0.46.0 and
+  0.47.0 together passed and the user pushed main at `6a8afb9f`
+  (2026-10-14).
+- [x] **Round 48 "Mail, plants and light, selling, smaller bags"**
+  ([completion](docs/planning/round48-plan.md#completion-2026-10-14)),
+  version 0.48.0, **map reset** plus the step 0.48.0: mailboxes on the
+  twelve waystone pads with letters, attachments and postage, messages to
+  the admin, announcements and the Admin Mail tab, the starter quest and
+  the welcome and level letters; plant light for crops, papyrus and
+  cactus, saplings by daylight, Melon and Mushroom crops, spores, the Salt
+  Pan and salt regrowing in the wild; selling almost everything (lots,
+  crafted goods at half value) with every old payout unchanged; cactus and
+  leaves as fuel; the daytime band beside the minimap; bags at half size,
+  with what no longer fits mailed at the next join. Complete on
+  2026-10-14; not pushed (on the user's word). Next: its GUI test.
 
 ### Remaining work
 
@@ -507,15 +519,17 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 44](BACKLOG.md#round-44-carry-overs),
   [Round 45](BACKLOG.md#round-45-carry-overs),
   [0.45.1](BACKLOG.md#0451-carry-overs),
-  [Round 46](BACKLOG.md#round-46-carry-overs) and
-  [Round 47](BACKLOG.md#round-47-carry-overs) carry-overs (Round 40: the
+  [Round 46](BACKLOG.md#round-46-carry-overs),
+  [Round 47](BACKLOG.md#round-47-carry-overs) and
+  [Round 48](BACKLOG.md#round-48-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
   Round 44: theoretical UI and step notes, the map icon overlaps for the
   GUI test; Round 45: theoretical crafting, inventory, mount and step
   notes; Round 46: depth pulse, spawn, placement, crafting and price
-  notes; Round 47: tree, swamp, mining, crafting and map window notes);
+  notes; Round 47: tree, swamp, mining, crafting and map window notes;
+  Round 48: mail, plant, price, HUD and step notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

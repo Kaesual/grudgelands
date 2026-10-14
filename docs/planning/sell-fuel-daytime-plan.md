@@ -1,9 +1,10 @@
 # Partial plan — selling (almost) everything, leaf and cactus fuel, the daytime band, smaller bags
 
-> **Scheduled in Round 48** ([round48-plan.md](round48-plan.md)). Its §2
+> **Built in Round 48** (0.48.0, 2026-10-14;
+> [completion](round48-plan.md#completion-2026-10-14)). The round plan's §2
 > rulings and §3 interfaces override this file where they differ.
 
-Status: **partial plan for Round 48**, not yet scheduled. The user approved
+Status: **partial plan for Round 48**, built in Round 48 (see above). The user approved
 the concept in chat on 2026-10-14; a coordinator folds this file into the
 round plan together with the [mail plan](mail-plan.md) and the [plant growth
 plan](plant-growth-plan.md). Rulings in §2 are the user's; §3 lists the

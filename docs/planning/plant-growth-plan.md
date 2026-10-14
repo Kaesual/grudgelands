@@ -1,9 +1,10 @@
 # Partial plan — plant growth, light, seeds and salt
 
-> **Scheduled in Round 48** ([round48-plan.md](round48-plan.md)). Its §2
+> **Built in Round 48** (0.48.0, 2026-10-14;
+> [completion](round48-plan.md#completion-2026-10-14)). The round plan's §2
 > rulings and §3 interfaces override this file where they differ.
 
-Status: **partial plan for the next round**, not yet scheduled. The user
+Status: **partial plan for the next round**, built in Round 48 (see above). The user
 approved the concept in chat on 2026-10-14 and added the salt and
 wild-visual rulings the same day (§2.15–2.21); a coordinator folds this
 file into the round plan together with other partial plans. Rulings in §2

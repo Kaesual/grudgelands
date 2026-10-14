@@ -19,9 +19,61 @@ generation. Resume with the [continuation plan](planning/class-redesign/continua
 Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
 is open.
 
-- **Round 48 "Mail, plants and light, selling, smaller bags" planned and
-  started** (2026-10-14, version 0.48.0, **map reset** plus the migration
-  step 0.48.0; [plan](planning/round48-plan.md)).
+- **Round 48 "Mail, plants and light, selling, smaller bags" complete on
+  main, not pushed** (pushed only on the user's word; GUI test open)
+  (2026-10-14, version 0.48.0, **map reset** plus the migration step
+  0.48.0,
+  [plan, decisions, numbers and GUI checklist](planning/round48-plan.md#completion-2026-10-14)).
+  origin/main stays at `6a8afb9f` (0.47.0); production runs 0.45.1 and
+  moves to 0.48.0 in one update that crosses the map resets 0.46.0, 0.47.0
+  and 0.48.0 and the steps 0.47.0 and 0.48.0. From main `c4a0a729` (the
+  version bump): WORLD, HUD, FARM, MAIL (and its follow-up), ARTP, ARTM,
+  SELL, QUEST, BAGS and ADMIN merged up to `a5b280e9`, then this
+  documentation lane D. Each code lane independently reviewed by Opus
+  (FARM MERGE AFTER FIXES with a Medium, a crop losing a stage's progress
+  when its light went out, fixed; MAIL MERGE AFTER FIXES, a double-click
+  Send and the shift-click ring, fixed; SELL MERGE AFTER FIXES, wording
+  only, fixed by the coordinator; ADMIN two Lows fixed before the merge;
+  every fix delta with game logic reviewed again), ARTP and ARTM on the
+  user's picks, the letter and quest texts by GPT-6 Astra with an Opus
+  text review and the user's picks. Main has 189 portable fixtures (8
+  new). Lanes' gates: every lane's full fixture run green, FARM's `quick`
+  seed fleet 100/100, the price comparison 0 of 393 old payouts changed
+  (306 new), BAGS's step test 25/25 (16 letters, nothing lost), smoke
+  boots PASS; on lane D's branch `tools/r37_dc` and `check_upgrade.py`
+  (0.48.0 against origin/main) PASS. **Round-end gates (coordinator,
+  2026-10-14, on main `a5b280e9`):** full fixtures 189/189, the full seed
+  fleet 304/304 (on `3d76ceaf`, whose world generation is final),
+  `check_upgrade.py`, `check_fresh_server.py`, `validate.py --game` (0
+  errors), `income.py --check`, the data, names, model, texture and
+  web-data checks, every declared step's test in the container and a smoke
+  boot PASS. The declaration is
+  `{"schema": 2, "version": "0.48.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"]}`:
+  the fourth map reset and the fourth step (bags at half size, leftovers
+  by mail).
+  - **Mail (MAIL, WORLD, HUD, ADMIN, QUEST, ARTM):** `grug_mail` with the
+    mailbox window, letters with up to four attached stacks, postage, 30-day
+    expiry, messages to the admin as tickets and announcements; a mailbox on
+    each of the twelve waystone pads; the unread icon beside the minimap;
+    the privilege `mail_admin` and the Admin Mail tab; the system quest kind
+    with the starter quest, the welcome letter and two level letters
+    ([mail.md](design/mail.md)).
+  - **Plants (FARM, ARTP):** plant light 8 for crops, papyrus and cactus,
+    saplings only by daylight, Melon and Mushroom crops, spores, the Salt
+    Pan, salts regrowing in the wild, plant tooltips, wild crops as grown
+    plants, nine plant textures ([farming.md](design/farming.md)).
+  - **Selling and fuel (SELL, FARM):** today's payouts unchanged by
+    construction, a milli-copper second pass for 306 new payouts, lots,
+    crafted goods at half value, storage blocks nine times; cactus and
+    leaves as fuel ([economy.md §2](design/economy.md)).
+  - **HUD (HUD, ARTM):** the daytime band and the corner stack with the
+    minimap hidden ([world_map.md](design/world_map.md)).
+  - **Bags (BAGS):** 4 / 8 / 12 / 16 slots, the Small Bag 20c, the step
+    0.48.0 with "Lost and Found" letters
+    ([inventory_equipment.md §3](design/inventory_equipment.md#3-bags-classic-mmo-model-lott-implementation-pattern)).
+  - Its GUI test (desktop and web build, a new world after the map reset
+    and an existing 0.47.0 character) is open
+    ([carry-overs](../BACKLOG.md#round-48-carry-overs)).
 - **Round 47 "Trees, mining progression and crafting feedback" complete,
   GUI-accepted and pushed** (the user worked through the GUI checklist of
   0.46.0 and 0.47.0, everything works, and pushed main at `6a8afb9f`)
