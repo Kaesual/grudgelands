@@ -1033,4 +1033,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   screenshots of every tab and dialog of the mailbox window and Help → Mail
   (a stand-in mailbox beside the human start's waystone; the TA method:
   Xvfb and one real client; `GUI_SCALE`, `SUFFIX=`), one queue run of one
-  slot.
+  slot;
+  `r48_admin` the Admin Mail tab (`portable_test.lua`: `grug_mail/admin.lua`
+  with the real `grug_mail`, the real sfinv and `grug_inventory/ui.lua` on a
+  stub engine: the privilege gates the tab and its place after Help, grant
+  and revoke, the header with version and mailbox, a report's copy, Send
+  answer, Close, Delete, double clicks, admin letters, an announcement
+  stored once and read per player, a non-admin's submission refused);
+  `capture.sh OUT_DIR` with `grug_probe_r48_admin` the engine screenshots of
+  the tab (the r48_mail method; `GUI_SCALE`, `SUFFIX=`).

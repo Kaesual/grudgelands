@@ -1523,7 +1523,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_mail`; `model.lua` is the pure model (no engine calls; letters,
   tickets, broadcasts, limits, expiry, pages, postage, unread count, report
   rules; fixture `tools/r48_mail`), `store.lua` the storage, `api.lua` the
-  API below, `window.lua` the mailbox window. Depends on `grug_core`,
+  API below, `window.lua` the mailbox window, `admin.lua` the Admin Mail tab
+  (below). Depends on `grug_core`,
   `grug_money`, `grug_inventory`, `grug_factions`, `grug_classes`, `grug_xp`,
   `grug_map` and `sfinv`, so it loads after `grug_map` (and with it after
   `grug_quests`, `grug_home` and `grug_mounts`).
@@ -1610,6 +1611,27 @@ tools](#player-meta-read-by-external-tools).
   The Write tab's rings put `grug_mail_out` right after `main` and after
   each bag (the engine follows the first entry naming the source list). The focus
   sits on an invisible button at every send ("UI and formspecs").
+- **The Admin Mail tab** (`admin.lua`, lane ADMIN): the privilege
+  `mail_admin` (`grug_mail.ADMIN_PRIV`; `give_to_admin`, not
+  `give_to_singleplayer`) and the sfinv page `grug_mail:admin`
+  (`grug_mail.ADMIN_PAGE`), last in `grug_inventory.TAB_ORDER`, `is_in_nav`
+  only with the privilege, no inventory view (`show_inv = false`). The
+  privilege's `on_grant` / `on_revoke` redraw the inventory formspec (a
+  revoke leaves the page through `sfinv.set_page`) and return nothing, so
+  `core.run_priv_callbacks` still runs the global callbacks. The page state
+  lives in the sfinv context (`context.grug_mail_admin`: view, filter, page,
+  selection, drafts); `grug_mail.admin_fields` re-checks the privilege on
+  every event (without it: a warning line, the page left, nothing done).
+  It calls only the stores: `tickets`, `ticket`, `answer_ticket`,
+  `close_ticket(id, admin, false)`, `delete_ticket`, `send_system(name,
+  "admin", ...)` (no stacks), `send_broadcast`, `broadcasts`,
+  `delete_broadcast`; `grug_mail.admin_header(ticket)` formats the frozen
+  header. The sending buttons carry the draw serial
+  (`mail_admin_<answer|close|send>_<n>`); a click whose serial is not newer
+  than the last successful send's is dropped with its fields. Typed text is
+  kept from every event of the page and written back as the fields'
+  defaults. Fixture `tools/r48_admin` (the real sfinv and
+  `grug_inventory/ui.lua`).
 
 ## Housing
 
