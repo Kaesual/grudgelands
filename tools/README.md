@@ -999,4 +999,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   times (Mesa's Gallium HUD dump, llvmpipe), the client profiler's draw
   calls and vertices, and the client's memory, through `drive.py`;
   `report.py RUN_DIR...` prints the tables. One measuring run per boot,
-  about 4 minutes.
+  about 4 minutes;
+  `r48_world` the mailbox on the waystone pads (`portable_test.lua`: the
+  node through the real `world_nodes.lua` on a fake engine, its right-click
+  with and without `grug_mail`; one mailbox on each of the twelve pads, off
+  the cross arms, not beside the stone, on the pad, front toward the stone;
+  none in any other composition or capital plot; each resolving through the
+  real socket registry to its settlement's label);
+  `placeholder_textures.py` writes the mailbox's placeholder textures (until
+  the art pick replaces them); `capture.sh OUT_DIR` with
+  `grug_probe_r48_world` the in-engine check of the twelve pads and one
+  screenshot per pad.
