@@ -22,8 +22,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
   Character · Talents & Skills · Crafting · Party & PvP · Map & Quests ·
-  Help (0.45.1; before, Help came before Map). The quest log is in the map
-  window. Creative's tabs, for creative players, follow the table.
+  Help (0.45.1; before, Help came before Map) · Admin Mail (Round 48, only
+  with the `mail_admin` privilege, [mail](mail.md) §6). The quest log is in
+  the map window. Creative's tabs, for creative players, follow the table.
 - **Inventory views** (`grug_inventory.inventory_view(player, mode,
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one 8-wide grid in a scroll area (each bag starts a new row; a

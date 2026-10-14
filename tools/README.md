@@ -1044,6 +1044,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   size, a moved stack refused without loss, the money ceiling before any
   removal, the pack rule on the real `prices.lua`; the price rules and the
   milli-copper second pass are in `r29_e1`);
+  `r48_admin` the Admin Mail tab (`portable_test.lua`: `grug_mail/admin.lua`
+  with the real `grug_mail`, the real sfinv and `grug_inventory/ui.lua` on a
+  stub engine: the privilege gates the tab and its place after Help, grant
+  and revoke, the header with version and mailbox, a report's copy, Send
+  answer, Close, Delete, double clicks, admin letters, an announcement
+  stored once and read per player, a non-admin's submission refused);
+  `capture.sh OUT_DIR` with `grug_probe_r48_admin` the engine screenshots of
+  the tab (the r48_mail method; `GUI_SCALE`, `SUFFIX=`);
   `r48_quest` the system quest and the game's letters (`portable_test.lua`:
   the real `grug_quests` registry, state, labels and hud, `grug_map`'s
   quest box and the real `grug_mail` with `grug_money` on the `r48_mail`

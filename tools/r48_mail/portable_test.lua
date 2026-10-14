@@ -512,6 +512,9 @@ dofile(ROOT .. "/mods/PLAYER/grug_housing/soulbound.lua")
 current_mod = "grug_money"
 dofile(ROOT .. "/mods/PLAYER/grug_money/init.lua")
 current_mod = "grug_mail"
+-- The Admin Mail tab (admin.lua, lane ADMIN) registers an sfinv page; its
+-- own fixture is tools/r48_admin.
+sfinv = {register_page = function() end}
 dofile(ROOT .. "/mods/PLAYER/grug_mail/init.lua")
 for _, f in ipairs(callbacks.mods_loaded) do f() end
 

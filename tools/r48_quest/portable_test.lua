@@ -463,6 +463,9 @@ local turn_ins = {}
 Q.register_on_turn_in(function(player, id) turn_ins[#turn_ins + 1] = player:get_player_name() .. ":" .. id end)
 local quest_box = dofile(ROOT .. "/mods/PLAYER/grug_map/quest_box.lua")
 current_mod = "grug_mail"
+-- The Admin Mail tab (admin.lua) registers an sfinv page; tools/r48_admin
+-- tests it.
+sfinv = {register_page = function() end}
 dofile(ROOT .. "/mods/PLAYER/grug_mail/init.lua")
 for _, f in ipairs(callbacks.mods_loaded) do f() end
 

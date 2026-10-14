@@ -120,12 +120,47 @@ letters (lane QUEST). Seams and storage: the
 
 ## 6. The admin side
 
-- A privilege, `mail_admin`, opens the **Admin Mail** inventory tab: the
-  shared admin inbox (filters Open and All), each message with its header
-  (§4), answering and closing, and new admin letters to one player or to all
-  players (an announcement), text only. Admin letters carry no items
-  (admins have `/give`). "Closed by <admin>" shows only in that tab.
-  Built by lane ADMIN (Round 48).
+- A privilege, **`mail_admin`**, opens the **Admin Mail** inventory tab. The
+  server's admin has it (`give_to_admin`); in singleplayer it is not given
+  on its own (`/grant <name> mail_admin`). The tab comes after Help and
+  shows only with the privilege; granting or revoking it redraws the
+  inventory window at once, and a revoke leaves the tab if it is open. The
+  tab shows no player inventory. Every action checks the privilege again: a
+  form sent without it does nothing.
+- **The inbox** is shared by every admin and has no limit. Filters **Open**
+  (with the number of open messages) and **All**, newest first, 8 rows a
+  page; each row shows topic, sender, subject, state and date. The selected
+  message shows its subject, date and time and its header: sender, level,
+  faction, race and class, position, "Sent from Mailbox in …" and the game
+  version, all as they were when it was sent. A **Player report** shows the
+  reason, the note and the frozen copy of the reported letter (its sender,
+  time, subject, text and attachments).
+- **Send answer and close** sends the answer as an ordinary admin letter
+  "Re: <subject>" from "Server Admin" into the player's Letters and closes
+  the message as answered; the answer box starts with the message quoted.
+  **Close without answer** closes it without a letter. A closed message
+  shows "Answered and closed by <admin>" or "Closed without answer by
+  <admin>" with the time, only in this tab; players see Answered or Closed
+  (§4). **Delete** removes a message for everyone, the player's copy too.
+- **New admin letter:** to one player (any character the server knows,
+  either faction, also offline; always delivered) or, with **All players**
+  ticked, an announcement (§5), stored once. A subject is required. Text
+  only: admin letters carry no items (admins have `/give`). A preview shows
+  how the letter appears in the player's mailbox (the row with the shield
+  badge, "Server Admin", the subject, and the banner "Sent by the server
+  administration"); it follows the typed text at **Update preview** and at
+  every other click. Players can answer an admin letter or an announcement
+  with Reply, which writes a new message to the admin (§2).
+- **Announcements** (the third filter) lists the sent announcements with the
+  admin who sent them; Delete removes one from every player's Announcements.
+- **Logging (§4):** besides every message, report, answer and closing, the
+  server log names the admin's real name for every answer, closing,
+  deletion, admin letter and announcement. Players never see that name.
+- A click on a sending button (Send answer, Close, Send) from a form older
+  than the last successful send, a double click, does nothing; so does a
+  click on Send answer, Close or Delete from a form drawn for another
+  message than the one selected now. Send answer refuses an empty answer
+  and one that is only the untouched quote.
 
 ## 7. The unread icon
 
