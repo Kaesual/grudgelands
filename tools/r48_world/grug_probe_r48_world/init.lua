@@ -9,7 +9,7 @@
 -- emerged; then one CHECK line (the waystone in the socket's cell, exactly one
 -- mailbox within 6 nodes, at the stone + (2, 0, 1), its param2, the
 -- settlement whose waypoint socket lies within three nodes of it and that
--- settlement's label) and one shot, from the pad's -x/+z side looking at the
+-- settlement's label) and one shot, from the pad's -x side looking at the
 -- mailbox's front.
 
 local P = "[r48world] "
@@ -19,8 +19,10 @@ local TIME_OF_DAY = 0.5
 local MAILBOX = "grug_mapgen:mailbox"
 local KEYS = {"hearthpine", "dawnmere", "silverleaf", "stillgrave", "sunscar", "kapok",
 	"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak", "kezamba"}
--- the camera from the stone's ground cell, and the point it looks at
-local CAMERA = {x = -5, y = 4, z = 5}
+-- the camera from the stone's ground cell (the first of these with a clear
+-- line to the mailbox), and the point it looks at
+local CAMERAS = {{x = -5, y = 4, z = 5}, {x = -6, y = 4, z = -3}, {x = -4, y = 3, z = 3},
+	{x = -6, y = 6, z = 1}, {x = -3, y = 3, z = -2}}
 local TARGET = {x = 1.5, y = 1.3, z = 0.6}
 
 local function log(msg) core.log("action", P .. msg) end
@@ -63,6 +65,8 @@ end
 
 local function check_pad(pad)
 	local s = pad.stone
+	-- the emerged blocks may have left the active map again
+	core.load_area(vector.subtract(s, 8), vector.add(s, 8))
 	local stone = core.get_node(s).name
 	local found = core.find_nodes_in_area(vector.subtract(s, 6), vector.add(s, 6), {MAILBOX})
 	local want = {x = s.x + 2, y = s.y, z = s.z + 1}
@@ -76,9 +80,36 @@ local function check_pad(pad)
 	return ok
 end
 
+-- The first camera whose eye is in air and whose line to the mailbox meets
+-- nothing before it (nodes only).
+local function pick_camera(pad)
+	local s = pad.stone
+	local t = {x = s.x + TARGET.x, y = s.y - 1 + TARGET.y, z = s.z + TARGET.z}
+	local box = {x = s.x + 2, y = s.y, z = s.z + 1}
+	for index, c in ipairs(CAMERAS) do
+		local eye = {x = s.x + c.x, y = s.y + c.y, z = s.z + c.z}
+		local clear = core.get_node(vector.round(eye)).name == "air"
+		if clear then
+			for hit in core.raycast(eye, t, false, false) do
+				if hit.type == "node" then
+					clear = vector.equals(hit.under, box)
+					break
+				end
+			end
+		end
+		if clear then
+			log(("camera %s: %d"):format(pad.key, index))
+			return c
+		end
+	end
+	log("camera " .. pad.key .. ": none clear, the first")
+	return CAMERAS[1]
+end
+
 local function camera_of(shot)
 	local s = shot.pad.stone
-	local eye = {x = s.x + CAMERA.x, y = s.y - 1 + 1 + CAMERA.y, z = s.z + CAMERA.z}
+	local c = shot.camera
+	local eye = {x = s.x + c.x, y = s.y + c.y, z = s.z + c.z}
 	local t = {x = s.x + TARGET.x, y = s.y - 1 + TARGET.y, z = s.z + TARGET.z}
 	local dx, dy, dz = t.x - eye.x, t.y - eye.y, t.z - eye.z
 	-- the look direction is (-sin yaw, ., cos yaw); pitch positive looks down
@@ -176,7 +207,8 @@ core.register_globalstep(function(dtime)
 		local passed = 0
 		for _, pad in ipairs(pads) do
 			if check_pad(pad) then passed = passed + 1 end
-			SHOTS[#SHOTS + 1] = {name = ("%02d_%s"):format(pad.index, pad.key), pad = pad}
+			SHOTS[#SHOTS + 1] = {name = ("%02d_%s"):format(pad.index, pad.key), pad = pad,
+				camera = pick_camera(pad)}
 		end
 		log(("CHECK %d of %d pads pass"):format(passed, #pads))
 		hide_hud(player)
