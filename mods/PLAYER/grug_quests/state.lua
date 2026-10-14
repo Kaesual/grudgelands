@@ -296,14 +296,26 @@ function Q.marker_states(player)
 	memo.raw, memo.fresh, memo.expires = raw, true, expires
 	return memo.states, memo.version
 end
+-- The quest log holds at most MAX_ACTIVE quests (quests.md).
+Q.MAX_ACTIVE = 20
+local function active_count(state)
+	local count = 0
+	for _ in pairs(state.active) do count = count + 1 end
+	return count
+end
+-- Whether the log is full: Q.accept would refuse any quest (a system
+-- quest's grant skips it then, grug_mail quest.lua).
+function Q.log_full(player)
+	return active_count(load(player)) >= Q.MAX_ACTIVE
+end
 function Q.accept(player, id)
 	local def, state = Q.registered_quests[id], editable(player)
 	if not def then return false, "This quest is not available." end
 	local allowed, reason = offerable(player, def, state)
 	if not allowed then return false, reason end
-	local count = 0
-	for _ in pairs(state.active) do count = count + 1 end
-	if count >= 20 then return false, "Your quest log is full (20 quests). Complete or abandon a quest first." end
+	if active_count(state) >= Q.MAX_ACTIVE then
+		return false, ("Your quest log is full (%d quests). Complete or abandon a quest first."):format(Q.MAX_ACTIVE)
+	end
 	-- A travel quest's conversation counts from the start (ruling 39, see
 	-- progress): the destination shows its "?" at once; the turn-in still
 	-- needs the visit.
@@ -361,6 +373,7 @@ function Q.journal(player, counts)
 		rows[#rows + 1] = {id = id, title = def.title, description = Q.quest_text(def),
 			objectives = objectives, ready = ready, npc = def.turnin_npc,
 			repeatable = def.repeatable ~= nil, travel = Q.is_travel(def),
+			turnin_text = def.turnin_text,
 			rewards = table.copy(def.rewards), reward_xp = Q.reward_xp(def)}
 	end
 	return {quests = rows, tracked = table.copy(state.tracked), hud_enabled = state.hud ~= false}
