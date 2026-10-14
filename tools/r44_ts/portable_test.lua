@@ -246,7 +246,8 @@ if check(bx ~= nil, "the catalog in a Skills box, labelled inside") then
 end
 check(form:find("list[detached:grug_skills_scout", 1, true) >
 	form:find("real_coordinates[false]", 1, true), "drawn after the view, in the page content")
-has(form, "list[current_player;main;0,0.000;8,3;8]", "the short inventory below")
+-- Round 48 INV: the view prints each element's column, so x is "0.000".
+has(form, "list[current_player;main;0.000,0.000;8,3;8]", "the short inventory below")
 local catalog = H.catalog("scout")
 eq(catalog.inv:get_size("catalog"), 4, "four unlocked abilities, no mount")
 for i = 1, 4 do
