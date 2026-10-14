@@ -1038,4 +1038,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   derived admin shield and NPC seal; writes the HUD parts, calls HUD's
   compositor for the finished images, and records all shipped paths,
   dimensions and hashes in `r48_artm/drafts/manifest.json`;
-  `r48_artm/previews/final.png` the final sheet at native and integer scales.
+  `r48_artm/previews/final.png` the final sheet at native and integer scales;
+  `r48_sell` the vendor's sell side (`portable_test.lua`: lot rows over the
+  carried lists, All over several slots, the greyed row below the lot
+  size, a moved stack refused without loss, the money ceiling before any
+  removal, the pack rule on the real `prices.lua`; the price rules and the
+  milli-copper second pass are in `r29_e1`).
