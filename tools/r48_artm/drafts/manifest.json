@@ -1,0 +1,1526 @@
+{
+  "schema": 1,
+  "stage": "Round 48 ARTM step 2; user picks installed",
+  "author": "GPT-6 Astra",
+  "date": "2026-10-14",
+  "license": "CC0-1.0",
+  "upgrade_class": "compatible",
+  "generator": "generate.py",
+  "drafts": [
+    {
+      "thing": "mailbox",
+      "draft": "A",
+      "title": "Wayside chest",
+      "idea": "A broad oak box with a flat metal lid and a bright envelope plaque.",
+      "files": [
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_top.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_side.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_front.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_back.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "boxes": [
+        {
+          "part": "foot",
+          "bounds": [
+            -0.1875,
+            -0.5,
+            -0.1875,
+            0.1875,
+            -0.4375,
+            0.1875
+          ]
+        },
+        {
+          "part": "post",
+          "bounds": [
+            -0.125,
+            -0.4375,
+            -0.125,
+            0.125,
+            -0.0625,
+            0.125
+          ]
+        },
+        {
+          "part": "wide_box",
+          "bounds": [
+            -0.4375,
+            -0.0625,
+            -0.25,
+            0.4375,
+            0.375,
+            0.3125
+          ]
+        },
+        {
+          "part": "flat_lid",
+          "bounds": [
+            -0.5,
+            0.375,
+            -0.3125,
+            0.5,
+            0.5,
+            0.375
+          ]
+        }
+      ],
+      "box_units": "node units; xmin,ymin,zmin,xmax,ymax,zmax; +Y up; front -Z",
+      "tile_order": [
+        "top",
+        "top",
+        "side",
+        "side",
+        "back",
+        "front"
+      ],
+      "uv": "node-aligned, 16 px per node; shared face tiles for every box, no per-box stretching"
+    },
+    {
+      "thing": "mailbox",
+      "draft": "B",
+      "title": "Letter pillar",
+      "idea": "A narrow upright iron cassette with a brass mail slot and envelope plate.",
+      "files": [
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_top.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_side.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_front.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_back.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "boxes": [
+        {
+          "part": "foot",
+          "bounds": [
+            -0.1875,
+            -0.5,
+            -0.1875,
+            0.1875,
+            -0.4375,
+            0.1875
+          ]
+        },
+        {
+          "part": "post",
+          "bounds": [
+            -0.0625,
+            -0.4375,
+            -0.0625,
+            0.0625,
+            -0.1875,
+            0.0625
+          ]
+        },
+        {
+          "part": "tall_box",
+          "bounds": [
+            -0.3125,
+            -0.1875,
+            -0.25,
+            0.3125,
+            0.4375,
+            0.25
+          ]
+        },
+        {
+          "part": "cap",
+          "bounds": [
+            -0.375,
+            0.4375,
+            -0.3125,
+            0.375,
+            0.5,
+            0.3125
+          ]
+        }
+      ],
+      "box_units": "node units; xmin,ymin,zmin,xmax,ymax,zmax; +Y up; front -Z",
+      "tile_order": [
+        "top",
+        "top",
+        "side",
+        "side",
+        "back",
+        "front"
+      ],
+      "uv": "node-aligned, 16 px per node; shared face tiles for every box, no per-box stretching"
+    },
+    {
+      "thing": "mailbox",
+      "draft": "C",
+      "title": "Sheltered post",
+      "idea": "A squat wooden letter box under a stepped copper roof on a stout post.",
+      "files": [
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_top.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_side.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_front.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_back.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "boxes": [
+        {
+          "part": "foot",
+          "bounds": [
+            -0.1875,
+            -0.5,
+            -0.1875,
+            0.1875,
+            -0.4375,
+            0.1875
+          ]
+        },
+        {
+          "part": "post",
+          "bounds": [
+            -0.125,
+            -0.4375,
+            -0.125,
+            0.125,
+            -0.125,
+            0.125
+          ]
+        },
+        {
+          "part": "box",
+          "bounds": [
+            -0.375,
+            -0.125,
+            -0.25,
+            0.375,
+            0.25,
+            0.25
+          ]
+        },
+        {
+          "part": "eave",
+          "bounds": [
+            -0.5,
+            0.25,
+            -0.375,
+            0.5,
+            0.3125,
+            0.375
+          ]
+        },
+        {
+          "part": "roof_lower",
+          "bounds": [
+            -0.375,
+            0.3125,
+            -0.3125,
+            0.375,
+            0.375,
+            0.3125
+          ]
+        },
+        {
+          "part": "roof_upper",
+          "bounds": [
+            -0.25,
+            0.375,
+            -0.25,
+            0.25,
+            0.4375,
+            0.25
+          ]
+        },
+        {
+          "part": "ridge",
+          "bounds": [
+            -0.125,
+            0.4375,
+            -0.1875,
+            0.125,
+            0.5,
+            0.1875
+          ]
+        }
+      ],
+      "box_units": "node units; xmin,ymin,zmin,xmax,ymax,zmax; +Y up; front -Z",
+      "tile_order": [
+        "top",
+        "top",
+        "side",
+        "side",
+        "back",
+        "front"
+      ],
+      "uv": "node-aligned, 16 px per node; shared face tiles for every box, no per-box stretching"
+    },
+    {
+      "thing": "icon",
+      "draft": "A",
+      "title": "Open letter",
+      "idea": "An open folded letter exposes a pale written page above its envelope.",
+      "files": [
+        {
+          "path": "drafts/icon/A/grug_map_mail.png",
+          "size": [
+            32,
+            32
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "badge_reserved_rect": [
+        18,
+        22,
+        14,
+        10
+      ],
+      "badge_example_origins": {
+        "3": [
+          24,
+          22
+        ],
+        "9+": [
+          18,
+          22
+        ]
+      }
+    },
+    {
+      "thing": "icon",
+      "draft": "B",
+      "title": "Sealed envelope",
+      "idea": "A broad closed envelope has a crisp dark flap and a small wax closure.",
+      "files": [
+        {
+          "path": "drafts/icon/B/grug_map_mail.png",
+          "size": [
+            32,
+            32
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "badge_reserved_rect": [
+        18,
+        22,
+        14,
+        10
+      ],
+      "badge_example_origins": {
+        "3": [
+          24,
+          22
+        ],
+        "9+": [
+          18,
+          22
+        ]
+      }
+    },
+    {
+      "thing": "icon",
+      "draft": "C",
+      "title": "Ribbon seal",
+      "idea": "A scalloped wax seal with a tiny envelope impression hangs over two paper tails.",
+      "files": [
+        {
+          "path": "drafts/icon/C/grug_map_mail.png",
+          "size": [
+            32,
+            32
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "badge_reserved_rect": [
+        18,
+        22,
+        14,
+        10
+      ],
+      "badge_example_origins": {
+        "3": [
+          24,
+          22
+        ],
+        "9+": [
+          18,
+          22
+        ]
+      }
+    },
+    {
+      "thing": "band",
+      "draft": "A",
+      "title": "Brass channel",
+      "idea": "A fine brass rectangle carries an eight-ray sun, crescent and single pointer.",
+      "files": [
+        {
+          "path": "drafts/band/A/sun.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/moon.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/frame.png",
+          "size": [
+            168,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/marker.png",
+          "size": [
+            10,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/palette.json",
+          "type": "application/json"
+        }
+      ],
+      "geometry": {
+        "day": "#bda778",
+        "night": "#273d50",
+        "dawn_dusk": "#b88563",
+        "blend_width_px": 8,
+        "cycle_px": 160,
+        "day_px": 120,
+        "night_px": 40,
+        "sun_phase_px": 60,
+        "moon_phase_px": 140,
+        "frame_size": [
+          168,
+          40
+        ],
+        "viewport": [
+          4,
+          8,
+          160,
+          24
+        ],
+        "frame_mode": "exact-size overlay",
+        "marker_origin": [
+          79,
+          0
+        ],
+        "now_x": 84,
+        "symbol_y": 12,
+        "blend_rule": "Linear blend toward dawn_dusk within blend_width_px/2 on each side of phase 0 and 120; 0 disables blending.",
+        "scroll_rule": "phase=(viewport_x + now_phase - 80) modulo 160; increasing now_phase moves symbols left"
+      }
+    },
+    {
+      "thing": "band",
+      "draft": "B",
+      "title": "Carved timber",
+      "idea": "Notched timber holds a diamond sun and half moon between opposing pointers.",
+      "files": [
+        {
+          "path": "drafts/band/B/sun.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/moon.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/frame.png",
+          "size": [
+            168,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/marker.png",
+          "size": [
+            10,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/palette.json",
+          "type": "application/json"
+        }
+      ],
+      "geometry": {
+        "day": "#a7b894",
+        "night": "#314843",
+        "dawn_dusk": "#bbaa79",
+        "blend_width_px": 0,
+        "cycle_px": 160,
+        "day_px": 120,
+        "night_px": 40,
+        "sun_phase_px": 60,
+        "moon_phase_px": 140,
+        "frame_size": [
+          168,
+          40
+        ],
+        "viewport": [
+          4,
+          8,
+          160,
+          24
+        ],
+        "frame_mode": "exact-size overlay",
+        "marker_origin": [
+          79,
+          0
+        ],
+        "now_x": 84,
+        "symbol_y": 12,
+        "blend_rule": "Linear blend toward dawn_dusk within blend_width_px/2 on each side of phase 0 and 120; 0 disables blending.",
+        "scroll_rule": "phase=(viewport_x + now_phase - 80) modulo 160; increasing now_phase moves symbols left"
+      }
+    },
+    {
+      "thing": "band",
+      "draft": "C",
+      "title": "Slate rails",
+      "idea": "Open slate rails bracket a round sun and cut moon under a small bead and hairline.",
+      "files": [
+        {
+          "path": "drafts/band/C/sun.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/moon.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/frame.png",
+          "size": [
+            168,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/marker.png",
+          "size": [
+            10,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/palette.json",
+          "type": "application/json"
+        }
+      ],
+      "geometry": {
+        "day": "#8eabb5",
+        "night": "#283149",
+        "dawn_dusk": "#b28f89",
+        "blend_width_px": 12,
+        "cycle_px": 160,
+        "day_px": 120,
+        "night_px": 40,
+        "sun_phase_px": 60,
+        "moon_phase_px": 140,
+        "frame_size": [
+          168,
+          40
+        ],
+        "viewport": [
+          4,
+          8,
+          160,
+          24
+        ],
+        "frame_mode": "exact-size overlay",
+        "marker_origin": [
+          79,
+          0
+        ],
+        "now_x": 84,
+        "symbol_y": 12,
+        "blend_rule": "Linear blend toward dawn_dusk within blend_width_px/2 on each side of phase 0 and 120; 0 disables blending.",
+        "scroll_rule": "phase=(viewport_x + now_phase - 80) modulo 160; increasing now_phase moves symbols left"
+      }
+    }
+  ],
+  "previews": [
+    {
+      "path": "previews/mailbox.png",
+      "size": [
+        1200,
+        748
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "previews/icon.png",
+      "size": [
+        1200,
+        840
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "previews/band.png",
+      "size": [
+        1200,
+        1664
+      ],
+      "mode": "RGBA"
+    }
+  ],
+  "preview_references": [
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_waystone.png",
+      "sha256": "df2ca91de1cf64d664d378257e9b32e414c60d712b7e966efcdbb1d26a7a298c",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_waystone_top.png",
+      "sha256": "3c89201ff5575967ca883b4e36eae4a699f7e86a87c86c539fb9f9b30a1bd66e",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_3.png",
+      "sha256": "0a62fa4274ca1ce111ff1ddd953f974b82f6fec9fe8763d4c5e87f95121ac0da",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_4.png",
+      "sha256": "7d165b22eae44c5e7ee1812370cbcbc50101c9b338db9650852ac5caf2284fa4",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_9.png",
+      "sha256": "8ff0ca5e1f2ca2aeeeb476d4588d2f1da44003e45f42d24d5435bd17f1e1bda4",
+      "license": "CC0-1.0"
+    }
+  ],
+  "preview_plus": "Cross assembled from existing digit 4 strokes, preview only; HUD owns the final + glyph.",
+  "runtime_validation": "No engine run. Ten-node mailbox recognition and desktop/web HUD readability await the user's GUI check.",
+  "picks": {
+    "mailbox": "A",
+    "icon": "B",
+    "band": "A"
+  },
+  "pick_date": "2026-10-14",
+  "pick_changes_requested": false,
+  "shipped_path_base": "repository root",
+  "shipped": [
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_mailbox_top.png",
+      "draft": "mailbox A (Wayside chest)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "byte-identical copy of drafts/mailbox/A/grug_mapgen_mailbox_top.png",
+      "sha256": "650378d5df8bb31b5a0a1753d1dd0f2ed55784fd48db06852b1d8a302e2a4bf5",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_mailbox_side.png",
+      "draft": "mailbox A (Wayside chest)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "byte-identical copy of drafts/mailbox/A/grug_mapgen_mailbox_side.png",
+      "sha256": "6603baf4d91c1cb07da4d9736033ea33057e19f356cfa043599079bb2cc60b71",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_mailbox_front.png",
+      "draft": "mailbox A (Wayside chest)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "byte-identical copy of drafts/mailbox/A/grug_mapgen_mailbox_front.png",
+      "sha256": "5fb177ce8912f0161eb045c6dbdffab6af6abce692557021c9a35638e2c99db4",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_mailbox_back.png",
+      "draft": "mailbox A (Wayside chest)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "byte-identical copy of drafts/mailbox/A/grug_mapgen_mailbox_back.png",
+      "sha256": "a2bc801be14dd7630d5de3c22ca4bc6c08a5e1149573177590b25fce724d2dc1",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "tools/r48_hud/parts/mail_icon.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "48x40 redraw of drafts/icon/B/grug_map_mail.png; same design and palette, sized to meet the HUD digits",
+      "sha256": "d0edf985ba0e92ba5af5ff20c5ea3c5e41246db33db8bb946d4b18ee3b4dbc12",
+      "size": [
+        48,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "tools/r48_hud/parts/sun.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "byte-identical copy of drafts/band/A/sun.png",
+      "sha256": "1248cc8409aaac2620ade68e1ffad2bf7ec1703fde1874c280c046ea2849f6f9",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "tools/r48_hud/parts/moon.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "byte-identical copy of drafts/band/A/moon.png",
+      "sha256": "f2d3eae66db44c697abacb43dc7e244e41f8691dc4727e70c4c53f62237b8c33",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "tools/r48_hud/parts/frame.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "drafts/band/A/frame.png adapted to 160x40; brass rim inside all four edges, transparent 154x34 interior",
+      "sha256": "025067df641bfc0e2106a89e9a7a74af3d6c40e1604ce65e6b54eb7b429ddcec",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "tools/r48_hud/parts/marker.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "drafts/band/A/marker.png on a transparent 160x40 canvas at x=75; tip at x=80",
+      "sha256": "e80f5bc3723c918a2df90fa2569874f504894ad85c12ebfc619f14ad841c7930",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "tools/r48_hud/parts/palette.json",
+      "draft": "band A and icon B",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "picked day/night colours and 8px blend; HUD's direct day/night interpolation replaces the draft's third twilight colour; no badge pill",
+      "sha256": "244694c62a0d835aba587c8006f5ac90be0308d756ee74d4d0dbf900a4628b18",
+      "type": "application/json"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_00.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "37f345bce6b27883e04539731f83675211ebc6d4ad62d0cc0f354588f11acd3d",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_01.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "62dcf58a108c1221c2dcf74b8376abcb9cd26ee99da2d0d529acde4be187ee2f",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_02.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "84bf81478e34e0da4b33b02195101b39001e2241c54b9e36b3315c4878d45999",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_03.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "363b5fc205d50531785c9cadd0b11c393c6f30f8e71f3192e05714fcd421fa50",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_04.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "f11466a334b1701fa0b89703843c4dea3718fb0f4691bec9939904452dd80bef",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_05.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "d89dd42c41697b1b794a6b5e0ed1724045b321dc185881915ecbdc96dd2dbd6e",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_06.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "3ffae8c56512e780a7e2abb5db59edad8f7dc2f3680ac109f28ca8deb2fd550f",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_07.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "ae0b10097d162c640e48ce6d0a41b9dd4abec130ad6d85777bf6e81e4fede741",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_08.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "534aebd0f4a613e3b727236e1da07b109914ec42be7770547fbe36fc8058e0bc",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_09.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "5be1c60c104b559225a514bbb65f3d7c860ffbb640a4b19b91a6379f09f15bb6",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_10.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "63154367823e60a23d7491b9485f3f0eb8d7aed740402ffc27158229807ab3f5",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_11.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "46ecd7d1eea5005f0d780783c54aa33ac63d2e15d5a2a940508630dd4c8c3f4c",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_12.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "662619bd8da3233157e95c055d8de92f789af307c465b03becf3c11d39bfb69d",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_13.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "b21bc852436c2d1a752730ccb5d6784a968ec8772c12876205aa6151f5a280fb",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_14.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "3f865c225082fe98a313f69821c7a6c10530f891c8224eb98428971b77943ef2",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_15.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "bdaea35af317610fd0362b728797ffd91886535f0ba0eb01ae8972823f5a5ec1",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_16.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "6be9b10ec6a7e9d9c3a3fe248ee43d8eded703006042af9f36d12e886404684b",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_17.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "bd1794ee98938afa6c109d9676ca3ebee9317e725bccb6f639247d614a82bd7b",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_18.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "d144d8c688b415f448841579dd78d2cf8ab0e16352c5c58d8054b7b264f94357",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_19.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "a464ceec860001ddabd0de2a98363a1beb26206684eed9d2914c10b15aaea250",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_20.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "37c9adb0c9f089cc284719358332bf3055965d7396b19d4b45f3148b78310d0c",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_21.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "7f87c513a5bef75255114eea8b6676e65b4f7660d5e34f274c5b554fcabd8075",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_22.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "2614eb58dc30193642e47d140ef74da29db5ff0192237ad684bd450273490850",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_23.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "fc05a072fa3f8df4565e3d0771aa100698ab6d8e07c85f9fc900383c9c597ad9",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_24.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "093e9da490e9ccbebe2772c2b1346738b97524c87df5aeb60d573f8d64fc6651",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_25.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "8212f023faf81e3dfb16e88d3e536f828fe3990f585d28c5dd46742f7a699e73",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_26.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "50aa4c04acda47264db5174a9b53bbd0d8b8396ee6d74b8c456262060414bda1",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_27.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "407899a126bdb078a2ff5b480d6b53089ad76f9b8490a57c65b37e3bf7e4d3cc",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_28.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "7c185ce2ddaebf30de294b52f5d05f457acf705ec0e15b9fe13849330f76eb92",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_29.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "9650659f3ee96584fa26d16a45ee6e2f4d9bb52fa03469a38db033b4fd8d6958",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_30.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "21834f56823a8f572ca6921ce2bf50d94f1bc87602524d284d8ec9c7d5a643b4",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_31.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "6ac21a8a31d111392aa22a1e4545cd152ae3e5c41ecaaf4a0926a29e34004e5a",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_32.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "edd3d6e8c5381b352e3599d3041182b587f0d1a094349d3a02becdbff1d36225",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_33.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "dd51a6c9335e0e564cde69c505290c35dde8bd2b49a98df1d8889da97ca06305",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_34.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "f53f5bb0cc3ba3de0769d4e2d7c4f224fa37569303e69a800ed8c4d0538ff965",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_35.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "095f7c37210f8ca02854178a6b07254e02e628bb850f381dea7f4505563c5315",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_36.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "ca4be961e3aff092e0b85b65acf7fa5f069da2afd50040e4833a347f76bbd6c9",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_37.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "703be5ab49951195d9a5f7f982c57d163a9fe5c0320fb968369ae13f73fa3f32",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_38.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "1ea4bbaa769a7ec71ce5f0014c7e31b788d30ca3d297ade4f74571562c35190e",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_daytime_39.png",
+      "draft": "band A (Brass channel)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "e9fe7f9e6a7c53989ad3e0800cb878c1eef910bd6af32516bb7e6cf8cfddc6fd",
+      "size": [
+        160,
+        40
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_1.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "9cd958d0a780e133b058dfd3fdcf8c5137cc101619ccaf0e0b531cfcaad72792",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_2.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "c2318cda2c00e311ee85a749ac6216a237a316b046aa0662f07560d13daa2237",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_3.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "e1dd8ef5247469fc13cb012f81bfe6463903ccf65398b818221b2b4df914e612",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_4.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "b0c638c17494025272223da7b4b99833ddee8e3b1b81d451f74c4a90591b5006",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_5.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "ee1832bdb32bd96db1dfdb0696016961175363ead975959d170baa1e47ffb9f4",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_6.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "8f8e58d4c5710a5d4fa6154db2db0ebedd46f2599a2c839b7ea4cbb4fb71e24b",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_7.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "0ce9ec80fab520fa1c5abddac68d1e10304caacd988e1e0663a01ea8805d9782",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_8.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "19e0461624fc578c15683d74f655f998d595fdb94f04a20de7f2845cdb5bf3b4",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_9.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "e860e14cc7c545591e6ca7ee5cf8e5767763e0a7336de3075f7f4295e5a011a3",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_map/textures/grug_map_mail_9p.png",
+      "draft": "icon B (Sealed envelope)",
+      "generator": "tools/r48_hud/gen_hud_textures.py",
+      "adaptation": "composed from ARTM's picked parts; cooldown glyphs remain HUD-owned",
+      "sha256": "badddcb1c9dbc9ba439850596586ba50c49654104b5252c924f210362927ad55",
+      "size": [
+        60,
+        52
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_mail/textures/grug_mail_admin_badge.png",
+      "draft": "derived from icon B and band A",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "original 32x32 mark; envelope outline, parchment and wax palette, band's brass",
+      "sha256": "e645c66e1c73937d7ba9090fdb5c7bc97061461c7eb1e203f55df3c48ce7ea8a",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "mods/PLAYER/grug_mail/textures/grug_mail_npc_seal.png",
+      "draft": "derived from icon B and band A",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "original 32x32 mark; envelope outline, parchment and wax palette, band's brass",
+      "sha256": "a16891705c770d53f60ba7b1e07ea9e3b099b2895259b665d7ab388c4360c93e",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "tools/r48_artm/previews/final.png",
+      "draft": "mailbox A, icon B, band A and derived marks",
+      "generator": "tools/r48_artm/generate.py",
+      "adaptation": "final compositions at labelled integer scales; existing CC0 waystone textures and cooldown digits",
+      "sha256": "a33bb8253aa4058effe104989a2998d2cd06184f3a989daad73e4c047f08bbf3",
+      "size": [
+        1200,
+        1376
+      ],
+      "mode": "RGBA"
+    }
+  ],
+  "final_palette": {
+    "day": "#bda778",
+    "night": "#273d50",
+    "blend": 8,
+    "badge": null,
+    "badge_rim": "#d8caa6"
+  },
+  "final_preview_references": [
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_1.png",
+      "sha256": "139e78cb3b8976ca8630d0a5e281eff731580fc3015f34e1f738e43acf527010",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_2.png",
+      "sha256": "49c8882cb1cf617a941a4c66122a0db3237cd7281785143752e78903f9a56b90",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_3.png",
+      "sha256": "0a62fa4274ca1ce111ff1ddd953f974b82f6fec9fe8763d4c5e87f95121ac0da",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_4.png",
+      "sha256": "7d165b22eae44c5e7ee1812370cbcbc50101c9b338db9650852ac5caf2284fa4",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_5.png",
+      "sha256": "8f8d4aeb0602104d986c648069e9bb6d49a557b1d26989381095ecbd8c93b698",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_6.png",
+      "sha256": "d5224c65f5ed8a5a3e2d37c0d81738e922cd27ebc7961057b54ce1cc8c6f0fac",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_7.png",
+      "sha256": "2a45f709b68ad1583318fcff9a66086f9421c9ee731fbef6cfbeeab9e5a60832",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_8.png",
+      "sha256": "88f4272777b83537ba2d8eb1627dd3f6253a9d5124f8f69d8c4ad22d4be5b925",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_9.png",
+      "sha256": "8ff0ca5e1f2ca2aeeeb476d4588d2f1da44003e45f42d24d5435bd17f1e1bda4",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_p.png",
+      "sha256": "d33209e49ea07bed65373aa9180fc68a5f7ab9e9a13f3fc22007e417738764ac",
+      "license": "CC0-1.0"
+    }
+  ]
+}
