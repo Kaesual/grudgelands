@@ -24,7 +24,10 @@ is open.
   (2026-10-14, version 0.48.0, **map reset** plus the migration step
   0.48.0,
   [plan, decisions, numbers and GUI checklist](planning/round48-plan.md#completion-2026-10-14)).
-  origin/main stays at `6a8afb9f` (0.47.0); production runs 0.45.1 and
+  Follow-up lane HUD2 (`2ad1a1b8`, after the round's documentation; review
+  MERGE): the mail icon and the daytime band in one row left of the
+  minimap, the band at 75 %, the icon at the same height (the user's
+  variant A). origin/main stays at `6a8afb9f` (0.47.0); production runs 0.45.1 and
   moves to 0.48.0 in one update that crosses the map resets 0.46.0, 0.47.0
   and 0.48.0 and the steps 0.47.0 and 0.48.0. From main `c4a0a729` (the
   version bump): WORLD, HUD, FARM, MAIL (and its follow-up), ARTP, ARTM,
