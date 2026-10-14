@@ -181,9 +181,9 @@ local LOST_AND_FOUND = {
 	kind = "npc",
 	from = "Lost and Found",
 	subject = "Your bags got smaller",
-	body = "Bags in the realm now hold half as much as before. Everything still fit\n" ..
+	body = "Bags in the realm now hold half as much as before. Everything still fit " ..
 		"where it could; the items that no longer did are attached to this letter.\n\n" ..
-		"Make room in your bags, then use Take all to collect them. Like every\n" ..
+		"Make room in your bags, then use Take all to collect them. Like every " ..
 		"letter, this one is deleted 30 days after it arrived, attachments too.",
 }
 

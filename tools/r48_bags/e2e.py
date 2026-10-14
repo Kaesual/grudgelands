@@ -62,6 +62,7 @@ MARKER = "grug_core:migrate:0.48.0"
 CONTENT = ["grug_bag%d_content" % i for i in range(1, 5)]
 CARRIED = ["main"] + CONTENT
 SENDER, SUBJECT = "Lost and Found", "Your bags got smaller"
+BODY_START = "Bags in the realm now hold half as much as before."
 
 
 def state(world):
@@ -138,13 +139,30 @@ def carried(lists, hotbar=True):
 
 def letters_of(world, name):
     """The letters grug_mail stores for `name` (its mod storage), each as
-    {"from", "subject", "stacks"}. The storage layout is lane MAIL's:
-    read_letters (below) adapts it."""
+    {"kind", "from", "subject", "body", "stacks"}."""
     return read_letters(it.storage(world, "grug_mail"), name)
 
 
 def read_letters(storage, name):
-    raise NotImplementedError("grug_mail's storage layout: pending lane MAIL's merge")
+    """grug_mail/store.lua: key `box:<name>`, core.serialize of the mailbox
+    (model.lua `new_box`: {letters = {...}}, newest first); a letter's
+    attachments are item strings in `items`."""
+    raw = storage.get("box:" + name)
+    if not raw:
+        return []
+    box = codec.deserialize(raw)
+    letters = box.get("letters") or [] if isinstance(box, dict) else []
+    if isinstance(letters, dict):
+        letters = [letters[k] for k in sorted(letters)]
+    out = []
+    for letter in letters:
+        items = letter.get("items") or []
+        if isinstance(items, dict):
+            items = [items[k] for k in sorted(items)]
+        out.append({"kind": letter.get("kind"), "from": letter.get("from"),
+                    "subject": letter.get("subject"), "body": letter.get("body"),
+                    "stacks": list(items)})
+    return out
 
 
 def scenario(run):
@@ -262,9 +280,11 @@ def scenario(run):
           json.dumps((light.get("settled") or {}).get("feed")))
     letters = letters_of(w, "hoarder")
     stacks = [item for letter in letters for item in letter["stacks"]]
-    check("mail", "16 letters from %s, \"%s\", 15 of four stacks and one of three"
+    check("mail", "16 npc letters from %s, \"%s\", the coordinator's text, 15 of four "
+                  "stacks and one of three"
           % (SENDER, SUBJECT),
           len(letters) == 16 and all(l["from"] == SENDER and l["subject"] == SUBJECT
+                                     and l["kind"] == "npc" and BODY_START in (l["body"] or "")
                                      for l in letters)
           and sorted(len(l["stacks"]) for l in letters) == [3] + [4] * 15,
           json.dumps([(l["from"], len(l["stacks"])) for l in letters])[:300])
