@@ -1206,8 +1206,9 @@ main profession slot (professions.md §1).
   ([economy.md](economy.md) §2).
 
 Every craft output follows the **anti-loop rule: the payout of a crafted
-item is at most the summed payout of its ingredients** (economy.md §2) —
-vendors are a floor, never a factory profit.
+item is at most the summed value of its ingredients** (a crafted ingredient
+at its value before the Round 48 halving; economy.md §2) — vendors are a
+floor, never a factory profit.
 
 ## 4. Material art contract
 

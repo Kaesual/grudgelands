@@ -180,6 +180,188 @@ function M.resolve(data)
 	return values
 end
 
+--
+-- Lots (Round 48, sell plan §3.2-§3.4 under round48-plan.md ruling 2.2).
+-- Values below are integer milli-copper (mc, 1c = 1000 mc): no fractions.
+--
+
+M.MILLI = 1000
+
+-- The lot sizes, smallest first; 99 is the stack size.
+M.LOTS = {1, 2, 5, 10, 20, 50, 99}
+
+-- What the vendor pays for a value in mc: copper, lot. The lot is the
+-- smallest size whose value reaches 1c, and it pays floor(value × lot / 1000)
+-- copper; lot 1 sells singly (3500 mc pays 3c each). 0, nil when even 99 are
+-- worth less than 1c.
+function M.lot_offer(value)
+	if not value or value <= 0 then
+		return 0, nil
+	end
+	for _, lot in ipairs(M.LOTS) do
+		local copper = math.floor(value * lot / M.MILLI)
+		if copper >= 1 then
+			return copper, lot
+		end
+	end
+	return 0, nil
+end
+
+-- The second pass (ruling 2.2): resolve() above runs unchanged and yields
+-- today's payout for every item that has one; this one prices, in mc, only
+-- the items without one. `data`:
+--   first[item]    = copper   resolve()'s result (0 = known, not sellable)
+--   bulk[item]     = mc       the explicit bulk table (§3.2)
+--   storage[item]  = {item = <content>, count = n}  a storage block: n times
+--                             its content's value, no discount (§3.3.3)
+--   keep[item]     = true     vendor goods, gear and classified goods: they
+--                             keep the first pass (a 1-2c supply stays 0)
+--   never[item]    = true     never sellable and no value (§3.4)
+--   candidates[item] = true   further items to price (every registered one)
+--   recipes_for, group_members  as for resolve()
+-- Returns item -> mc for every item whose value is known (0 = known, not
+-- sellable), item -> material value (mc; a crafted good before its halving,
+-- else its value) for the loop audit, and the set of crafted items.
+--
+-- Rules, in this order: a first-pass payout above 0 (× 1000), which no other
+-- rule moves; the never list; the bulk table; storage blocks; kept goods
+-- (their first-pass value); else a crafted good: the material value of its
+-- cheapest recipe (inputs summed per output unit, floor; a group by its
+-- cheapest member), halved once. Later recipes count a crafted input at its
+-- material value before the halving, so the halving is never applied twice
+-- along a chain. An item without a usable recipe keeps its first-pass value
+-- (a free world material: 0) or none.
+--
+-- Recipe cycles are common here (pack and unpack, slabs and blocks), so the
+-- crafted values are found by repeated passes instead of resolve()'s walk:
+-- each pass lowers an item to its cheapest recipe over what is known so far,
+-- until nothing changes. Values only fall, so it ends; the result is at most
+-- every recipe of each crafted item, which is what the loop audit asks.
+M.MAX_PASSES = 100
+
+function M.resolve_values(data)
+	local first, bulk, storage = data.first, data.bulk, data.storage
+	local keep, never = data.keep, data.never
+	local names, seen = {}, {}
+	for _, set in ipairs({first, bulk, storage, data.candidates or {}}) do
+		for item in pairs(set) do
+			if not seen[item] then
+				seen[item] = true
+				names[#names + 1] = item
+			end
+		end
+	end
+	table.sort(names) -- one fixed order
+
+	local material = {} -- item -> mc before the halving
+	local crafted, derived = {}, {}
+	for _, item in ipairs(names) do
+		local paid = first[item]
+		if paid and paid > 0 then
+			material[item] = paid * M.MILLI
+		elseif never[item] then
+			material[item] = nil -- no value at all
+		elseif bulk[item] then
+			material[item] = bulk[item]
+		elseif storage[item] then
+			derived[#derived + 1] = item
+		elseif keep[item] then
+			material[item] = paid and paid * M.MILLI
+		elseif #data.recipes_for(item) > 0 then
+			crafted[item] = true
+			derived[#derived + 1] = item
+		elseif paid then
+			material[item] = 0 -- a free world material without a recipe
+		end
+	end
+
+	local function final(item)
+		local v = material[item]
+		return v and crafted[item] and math.floor(v / 2) or v
+	end
+
+	local function input_value(name)
+		local groups = groups_of(name)
+		if not groups then
+			return material[name]
+		end
+		local best
+		for _, member in ipairs(data.group_members(groups)) do
+			local v = material[member]
+			if v and (not best or v < best) then
+				best = v
+			end
+		end
+		return best
+	end
+
+	local function recipe_value(item)
+		local best
+		for _, recipe in ipairs(data.recipes_for(item)) do
+			local sum = 0
+			for _, input in ipairs(recipe.inputs) do
+				local v = input_value(input)
+				if not v then
+					sum = nil
+					break
+				end
+				sum = sum + v
+			end
+			if sum then
+				local per_unit = math.floor(sum / math.max(1, recipe.count))
+				if not best or per_unit < best then
+					best = per_unit
+				end
+			end
+		end
+		return best
+	end
+
+	local function settle()
+		for _ = 1, M.MAX_PASSES do
+			local changed = false
+			for _, item in ipairs(derived) do
+				local v
+				if storage[item] then
+					local content = final(storage[item].item)
+					v = content and content * storage[item].count
+				else
+					v = recipe_value(item)
+				end
+				if v and (not material[item] or v < material[item]) then
+					material[item] = v
+					changed = true
+				end
+			end
+			if not changed then return end
+		end
+	end
+	-- A candidate left without a usable recipe keeps its first-pass value (a
+	-- free world material, 0) and is no crafted good; recipes that count it
+	-- may then fall, so settle again until no such item is left.
+	repeat
+		settle()
+		local seeded = false
+		for _, item in ipairs(derived) do
+			if crafted[item] and not material[item] and first[item] then
+				crafted[item] = nil
+				material[item] = first[item] * M.MILLI
+				seeded = true
+			end
+		end
+	until not seeded
+
+	local values = {}
+	for _, item in ipairs(names) do
+		if material[item] then
+			values[item] = final(item)
+		else
+			crafted[item] = nil -- no usable recipe
+		end
+	end
+	return values, material, crafted
+end
+
 -- The summed input value of one recipe, or nil when an input is unknown.
 local function recipe_sum(recipe, input_value)
 	local sum = 0
@@ -235,10 +417,18 @@ end
 -- inputs pay. Returns one message per recipe that pays more, sorted. Same
 -- input rules as resolve(): unknown inputs make the recipe unknown, a group
 -- counts its cheapest known member. `price(item)` is the final payout (0 or
--- more), `known(item)` whether an item has a value at all.
-function M.loop_findings(items, recipes_for, price, known, group_members)
+-- more), `known(item)` whether an item has a value at all; `unit` names the
+-- unit of the numbers in the messages ("c" unless given). Round 48: the
+-- startup audit judges the combined table in "mc", and `input_price` (price
+-- unless given) counts a consumed crafted good at its material value before
+-- the halving, as its recipes do: the halving is a discount on selling the
+-- crafted form, so turning two slabs back into a block, or a block back into
+-- its nine gems, gains nothing a player did not put in.
+function M.loop_findings(items, recipes_for, price, known, group_members, unit,
+		input_price)
+	unit = unit or "c"
 	local findings = {}
-	local input_value = audit_input_value(price, known, group_members)
+	local input_value = audit_input_value(input_price or price, known, group_members)
 	for _, item in ipairs(items) do
 		local out = price(item)
 		if out > 0 then
@@ -247,8 +437,8 @@ function M.loop_findings(items, recipes_for, price, known, group_members)
 				local count = math.max(1, recipe.count)
 				if sum and out * count > sum then
 					findings[#findings + 1] = "'" .. item .. "' x" .. count ..
-						" pays " .. out * count .. "c but its " .. recipe.method ..
-						" recipe consumes only " .. sum .. "c (" ..
+						" pays " .. out * count .. unit .. " but its " .. recipe.method ..
+						" recipe consumes only " .. sum .. unit .. " (" ..
 						table.concat(recipe.inputs, ", ") .. ")"
 				end
 			end

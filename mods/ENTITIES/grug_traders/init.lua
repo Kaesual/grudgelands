@@ -49,17 +49,27 @@ local FUNCTION_DROPS = {
 	},
 }
 
+-- What the vendor pays for an item, for messages: "3c", "1c per 50", "0c".
+local function offer_text(itemname)
+	local copper, lot = grug_traders.price_rules.lot_offer(grug_traders.sell_value(itemname))
+	if lot and lot > 1 then
+		return copper .. "c per " .. lot
+	end
+	return copper .. "c"
+end
+
 -- The real no-buyback-loop boundary, public so the focused stock KAT can
 -- exercise the same complete stock/catalog walk used at server startup.
+-- Judged per unit in milli-copper, so a lot good (Round 48) is judged too.
 function grug_traders.audit_sell_buy_prices()
 	local failures = {}
+	local milli = grug_traders.price_rules.MILLI
 	local function check(itemname, price)
 		local discounted = grug_traders.discounted_price(price)
-		local buyback = grug_traders.sell_price(itemname)
-		if buyback >= discounted then
+		if grug_traders.sell_value(itemname) >= discounted * milli then
 			local message = "[grug_traders] MONEY LOOP: '" .. itemname ..
 				"' sells for " .. discounted .. "c (discounted) but buys back " ..
-				"at " .. buyback .. "c"
+				"at " .. offer_text(itemname)
 			failures[#failures + 1] = message
 			core.log("error", message)
 		end
@@ -88,7 +98,7 @@ core.register_on_mods_loaded(function()
 	local unpriced = {} -- item name -> list of entity names
 	local order = {}
 	local function note(itemname, entity_name)
-		if grug_traders.sell_price(itemname) > 0 then
+		if grug_traders.sell_value(itemname) > 0 then
 			return
 		end
 		if not unpriced[itemname] then
@@ -161,12 +171,15 @@ core.register_on_mods_loaded(function()
 	-- goods are capped by their cheapest recipe when they are priced, so
 	-- this mostly guards loot and gathered goods that a recipe can also make.
 	-- A recipe is judged only when every input is known (a group by its
-	-- cheapest known member): an unknown input is not a free lunch.
+	-- cheapest known member): an unknown input is not a free lunch. Since
+	-- Round 48 it judges the combined table of both passes in milli-copper
+	-- (round48-plan.md ruling 2.2), lot goods and crafted goods included; a
+	-- consumed crafted good counts its material value before the halving.
 	--
 	local findings = grug_traders.price_rules.loop_findings(
 		grug_traders.priced_items(), grug_traders.recipes_for,
-		grug_traders.sell_price, grug_traders.price_known,
-		grug_traders.group_members)
+		grug_traders.sell_value, grug_traders.price_known,
+		grug_traders.group_members, "mc", grug_traders.material_value)
 	for _, message in ipairs(findings) do
 		core.log("error", "[grug_traders] CRAFT LOOP: " .. message ..
 			" — ruling 5 of economy-vendor-plan.md")
@@ -176,10 +189,10 @@ core.register_on_mods_loaded(function()
 	-- free world material, it belongs in prices.lua's free set.
 	for _, item in ipairs(grug_traders.price_rules.unjudged_sold(
 			grug_traders.sold_items(), grug_traders.recipes_for,
-			grug_traders.sell_price, grug_traders.price_known,
+			grug_traders.sell_value, grug_traders.price_known,
 			grug_traders.group_members)) do
 		core.log("warning", "[grug_traders] '" .. item .. "' is sold and pays " ..
-			grug_traders.sell_price(item) .. "c back, but no recipe that makes it " ..
+			offer_text(item) .. " back, but no recipe that makes it " ..
 			"can be judged (an input has no value) — a free input belongs in " ..
 			"prices.lua's free set")
 	end

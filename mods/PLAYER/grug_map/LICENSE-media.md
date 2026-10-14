@@ -91,19 +91,73 @@ provenance are in `tools/r46_art/README.md`.
 |------|--------|--------------------------|---------|
 | `textures/grug_map_repair.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; a 16×16 hammer over an anvil, copied from `tools/r46_art/repair/A1c/grug_map_repair.png`; `tools/r46_art/paint_art.py` (Python/Pillow) | CC0-1.0 |
 
-# Minimap side elements (Round 48, placeholders)
+# Minimap side elements (Round 48, picked art)
 
-The daytime band and the mail icon beside the minimap. **Placeholders**
-until the art lane's picks replace the parts: composed by
-`tools/r48_hud/gen_hud_textures.py` (Python standard library; own work,
-Round 48 lane HUD, 2026-10-14) from the parts in `tools/r48_hud/parts/`
-(drawn procedurally by the same script's `--placeholders` mode) and the
-cooldown digits of `tools/r40_cd/gen_cooldown_textures.py`. No third-party
-source pixels. **CC0-1.0**. Re-run the script to change them (`--check`
-verifies them).
+The user's picks: **icon B (Sealed envelope)** and **band A (Brass channel)**,
+original **CC0-1.0** artwork by **GPT-6 Astra**, **Round 48**, 2026-10-14.
+The parts in `tools/r48_hud/parts/` are drawn by
+`tools/r48_artm/generate.py` and its `final_art.py` helper, adapted from
+`tools/r48_artm/drafts/icon/B/` and `tools/r48_artm/drafts/band/A/`.
+The finished files below are composed by **`tools/r48_hud/gen_hud_textures.py`**
+(`--check`), including the existing project CC0 cooldown glyphs from
+`tools/r40_cd/gen_cooldown_textures.py`; the composition credit does not
+claim authorship of those glyphs. No downloaded source pixels.
 
-- `textures/grug_map_daytime_00.png` … `_39.png` (160×40, one 20-minute
-  world day per image with the "now" marker in the middle, one image per
-  30 real seconds).
-- `textures/grug_map_mail_1.png` … `_9.png`, `textures/grug_map_mail_9p.png`
-  (60×52, an envelope with the unread badge).
+The envelope is redrawn at 48×40 in the same design; the frame and marker
+are 160×40 overlays, the pointer at x=80. The day/night colours and 8px
+blend use HUD's interpolation; the unread digits have no pill. Sun and
+moon remain byte-identical to the draft. Final images: mail 60×52,
+bands 160×40, all RGBA. See `tools/r48_artm/README.md` for the adaptations.
+
+| File | Author | Source / modifications | License |
+|---|---|---|---|
+| `textures/grug_map_daytime_00.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_01.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_02.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_03.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_04.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_05.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_06.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_07.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_08.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_09.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_10.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_11.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_12.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_13.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_14.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_15.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_16.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_17.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_18.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_19.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_20.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_21.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_22.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_23.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_24.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_25.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_26.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_27.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_28.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_29.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_30.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_31.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_32.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_33.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_34.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_35.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_36.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_37.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_38.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_daytime_39.png` | GPT-6 Astra (Round 48) | band A (Brass channel); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_1.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_2.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_3.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_4.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_5.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_6.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_7.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_8.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_9.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+| `textures/grug_map_mail_9p.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |

@@ -7,7 +7,7 @@ stages per family. Exact copies and stage selections are reproducible through
 
 | Families | Pinned source | License / author chain | Treatment |
 |---|---|---|---|
-| grain, carrot, cassava/potato, onion, pepper, pumpkin, three berries, melon, ember moss, potato, corn | `x_farming` `ac5f69d5` | media CC BY-SA 4.0; README License section and `LICENSE.txt` per-file exceptions | four representative source stages selected; three berry identities use baked 22% colour grades |
+| grain, carrot, pepper, pumpkin (stages 1–3), three berries, melon, ember moss, potato, corn | `x_farming` `ac5f69d5` | media CC BY-SA 4.0; README License section and `LICENSE.txt` per-file exceptions | four representative source stages selected; three berry identities use baked 22% colour grades |
 | salt crust | `x_farming` `ac5f69d5`, `x_farming_salt_{1..4}_top.png`, `x_farming_salt_{1..3}_side.png`, `x_farming_salt_1_bottom.png` | CC BY-SA 4.0 for the top/side files; bottom derived by TenPlus1 from random-geek and Neuromancer textures, CC BY-SA 3.0 | four animated crystal tops and their authored shallow nodebox progression; copied/renamed |
 | sugar cane, bamboo | shipped `default_papyrus.png`, minetest_game `b5243f3e` | CC BY-SA 3.0, minetest_game contributors | upright plantlike tile copied or baked with 28% green colour grade; engine stage scale supplies growth |
 | cave cap | `goblins` `ce27b15f`, `goblins_mushroom_brown*.png`, Francisco Athens | CC BY-SA 3.0 | four authored mushroom stages copied/renamed |
@@ -75,19 +75,33 @@ VoxeLibre contributors, **CC BY-SA 4.0**, per `LEGAL.md` textures section and
 The wood and metal silhouettes replace the axe placeholder; material color
 treatments remain owned by Round-11 ART.
 
-## Round 48 placeholders (until the plant art pick)
+## Round 48 picked plant art
 
-Placeholders under the plant art plan's target names
-(`docs/planning/plant-art-plan.md` §6), baked by
-`tools/r48_farm/gen_placeholders.py` from files already listed above; each
-keeps its source's author and licence. The art lane's final files replace
-them together with these rows.
+The user-selected drafts from `tools/r48_artp/generate.py` replace the
+plant art plan’s target textures (`docs/planning/plant-art-plan.md` §6).
+Every file below is an unchanged copy of its recorded draft, dedicated
+to [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
 
-| File | Source (row above) | Treatment |
-|---|---|---|
-| `grug_farming_melon_{1..4}.png` | `grug_farming_pumpkin_{1..4}.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | colorize `#61a94e` at 95/255 |
-| `grug_farming_mushroom_{1..4}.png` | `grug_farming_cave_cap_{1..4}.png` (`goblins`, Francisco Athens, CC BY-SA 3.0) | colorize `#9b7653` at 80/255 |
-| `grug_farming_melon_seeds.png` | `grug_farming_seed_melon.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | unchanged copy |
-| `grug_farming_mushroom_spores.png` | `grug_farming_seed_beetroot.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | colorize `#c8b49a` at 90/255 |
-| `grug_farming_seed_cassava.png` | `grug_farming_seed_potato.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | colorize `#d8b27a` at 32/255 (the former runtime modifier, baked) |
-| `grug_farming_salt_pan.png` | `grug_farming_salt_crust_4.png` (`x_farming`, CC BY-SA 4.0) | first 16 × 16 animation frame |
+| File | Author / artwork | Licence | Source / treatment |
+|---|---|---|---|
+| `grug_farming_cassava_1.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `cassava/C`; byte-identical copy |
+| `grug_farming_cassava_2.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `cassava/C`; byte-identical copy |
+| `grug_farming_cassava_3.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `cassava/C`; byte-identical copy |
+| `grug_farming_cassava_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `cassava/C`; byte-identical copy |
+| `grug_farming_seed_cassava.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `cassava/C`; byte-identical copy |
+| `grug_farming_wild_onion_1.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
+| `grug_farming_wild_onion_2.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
+| `grug_farming_wild_onion_3.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
+| `grug_farming_wild_onion_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
+| `grug_farming_pumpkin_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `pumpkin/A`; byte-identical copy |
+| `grug_farming_melon_1.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `melon/B`; byte-identical copy |
+| `grug_farming_melon_2.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `melon/B`; byte-identical copy |
+| `grug_farming_melon_3.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `melon/B`; byte-identical copy |
+| `grug_farming_melon_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `melon/B`; byte-identical copy |
+| `grug_farming_melon_seeds.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `melon/B`; byte-identical copy |
+| `grug_farming_mushroom_1.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `mushroom/A`; byte-identical copy |
+| `grug_farming_mushroom_2.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `mushroom/A`; byte-identical copy |
+| `grug_farming_mushroom_3.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `mushroom/A`; byte-identical copy |
+| `grug_farming_mushroom_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `mushroom/A`; byte-identical copy |
+| `grug_farming_mushroom_spores.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `mushroom/A`; byte-identical copy |
+| `grug_farming_salt_pan.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `salt_pan/A`; byte-identical copy |
