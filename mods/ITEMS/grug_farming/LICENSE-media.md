@@ -49,7 +49,7 @@ Nine unchanged renamed source sprites from pinned `x_farming`
 CC BY-SA 4.0 (`LICENSE.txt:463` and its per-file list):
 `x_farming_{barley,beetroot,carrot,corn,cotton,melon,potato,pumpkin,strawberry}_seed.png`.
 They ship locally as `grug_farming_seed_<family>.png`. The pure
-`seed_visuals.lua` map assigns all 17 crops one of these seed silhouettes;
+`seed_visuals.lua` map assigned all 17 crops of Round 11 one of these seed silhouettes;
 native color modifiers distinguish fantasy families that deliberately share a
 shape. Harvest icons and growth nodes are unchanged.
 
@@ -74,3 +74,20 @@ VoxeLibre contributors, **CC BY-SA 4.0**, per `LEGAL.md` textures section and
 `mods/ITEMS/mcl_farming/README.txt`. No upstream hoe code is copied.
 The wood and metal silhouettes replace the axe placeholder; material color
 treatments remain owned by Round-11 ART.
+
+## Round 48 placeholders (until the plant art pick)
+
+Placeholders under the plant art plan's target names
+(`docs/planning/plant-art-plan.md` §6), baked by
+`tools/r48_farm/gen_placeholders.py` from files already listed above; each
+keeps its source's author and licence. The art lane's final files replace
+them together with these rows.
+
+| File | Source (row above) | Treatment |
+|---|---|---|
+| `grug_farming_melon_{1..4}.png` | `grug_farming_pumpkin_{1..4}.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | colorize `#61a94e` at 95/255 |
+| `grug_farming_mushroom_{1..4}.png` | `grug_farming_cave_cap_{1..4}.png` (`goblins`, Francisco Athens, CC BY-SA 3.0) | colorize `#9b7653` at 80/255 |
+| `grug_farming_melon_seeds.png` | `grug_farming_seed_melon.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | unchanged copy |
+| `grug_farming_mushroom_spores.png` | `grug_farming_seed_beetroot.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | colorize `#c8b49a` at 90/255 |
+| `grug_farming_seed_cassava.png` | `grug_farming_seed_potato.png` (`x_farming`, SaKeL, CC BY-SA 4.0) | colorize `#d8b27a` at 32/255 (the former runtime modifier, baked) |
+| `grug_farming_salt_pan.png` | `grug_farming_salt_crust_4.png` (`x_farming`, CC BY-SA 4.0) | first 16 × 16 animation frame |

@@ -19,8 +19,10 @@ function default.can_grow(pos)
 	if minetest.get_item_group(node_under.name, "soil") == 0 then
 		return false
 	end
-	local light_level = minetest.get_node_light(pos)
-	if not light_level or light_level < 13 then
+	-- GRUG PATCH: trees and bushes grow only in daylight (Round 48,
+	-- plant-growth-plan.md §3.2): natural light 13 measured as at noon, so
+	-- torches never help a sapling, a glass roof does, and night only waits.
+	if (core.get_natural_light(pos, 0.5) or 0) < 13 then
 		return false
 	end
 	return true

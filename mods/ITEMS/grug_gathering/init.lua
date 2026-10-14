@@ -7,6 +7,9 @@ local modpath = core.get_modpath(core.get_current_modname())
 local catalog = dofile(modpath .. "/catalog.lua")
 local harvest = dofile(modpath .. "/harvest.lua")({core = core})
 local registered_nodes = dofile(modpath .. "/nodes.lua")(core, catalog, harvest)
+-- Round 48: the sources' and items' look, overridden outside the hashed
+-- catalog and node files.
+dofile(modpath .. "/presentation.lua")
 
 function grug_gathering.manifest()
 	return catalog.manifest()

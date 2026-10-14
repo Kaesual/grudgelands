@@ -320,8 +320,9 @@ broke the immersion).
 - **Now playing** (0.45.1): while a track really plays, a small box under
   the minimap's location line names its title and artist (`D.tracks`
   `title` and `artist`, as `LICENSE-media.md` credits them); it is hidden in
-  the pause, on leaving, with music off or at volume 0 and with the minimap
-  hidden ([world_map.md](world_map.md) "Now playing").
+  the pause, on leaving and with music off or at volume 0; with the minimap
+  hidden or unavailable it stands in the top-right corner (Round 48,
+  [world_map.md](world_map.md) "Now playing").
 - Track list, lengths, titles and artists: `D.tracks`; credits in
   [CREDITS.md](../../CREDITS.md).
 

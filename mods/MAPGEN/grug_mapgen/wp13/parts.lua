@@ -86,6 +86,8 @@ local PARAM2_KIND = {
 	["grug_jobs:tanning_rack"] = M.FACEDIR,
 	["grug_jobs:carving_bench"] = M.FACEDIR,
 	["grug_jobs:jewellers_bench"] = M.FACEDIR,
+	-- the mailbox beside every waystone (Round 48, dressing.waystone)
+	["grug_mapgen:mailbox"] = M.FACEDIR,
 	["grug_decor:capital_product_weaponsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_armorsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_tailor"] = M.FACEDIR,

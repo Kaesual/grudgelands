@@ -705,9 +705,23 @@ registered in `grug_mapgen/world_nodes.lua` so the settlement content resolves
 it) at its centre, in the cell of the settlement's `travel_waypoint` socket
 (role `waypoint`; no NPC stands there). Players arrive beside the stone.
 
+- **Mailbox** (Round 48, [mail plan](../planning/mail-plan.md) ruling 1): the
+  pads of the six starts and six capitals carry one mailbox each
+  (`grug_mapgen:mailbox`, registered beside the waystone; it cannot be dug or
+  blown up, and a right-click opens grug_mail's mailbox window). The one
+  function that writes the waystone, `dressing.waystone`, writes it too, so
+  these twelve pads have one and no other settlement has any (the PvP
+  fortresses place their stone directly and have none). It stands at one
+  offset for all twelve, **(+2, +1) from the stone** (pad-local x/z): on the
+  pad's ground off its cross arms, so the ways to the stone stay free, not
+  beside the stone, so its arrival sides stay free, within three nodes of the
+  `travel_waypoint` socket, which names the mailbox after its settlement; its
+  front (facedir 1) looks −x, toward the stone. On a start's reach-3 pad
+  that is a cell of the diamond's stone rim. A capital that cannot take the
+  offset may pass its own to `dressing.waystone`; none does.
 - **Capitals:** the existing kerbed plaza with the stone cross and diamond
   (reach 6, Lethariel 5, Kezamba a cross only) gets the waystone at the cross's
-  centre; nothing else stands on the plaza.
+  centre and the mailbox beside it; nothing else stands on the plaza.
 - **PvP fortresses:** the capitals' stone cross and diamond at reach 3 in
   the fortress's south-east yard (`r31_pvp_poi_blueprint.lua`); the socket
   has no arrival side, so a traveller arrives on the stone's +x side first.

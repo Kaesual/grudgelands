@@ -11,6 +11,18 @@
 -- location.lua), and while a capital's music plays a "Now playing" box under
 -- that line names the track (0.45.1; grug_ambience tells it which).
 --
+-- Side elements (Round 48 lane HUD): the mail icon with its unread count
+-- (grug_mail calls M.set_mail_count) and the daytime band stand left of the
+-- bezel. With the minimap hidden or unavailable they stay, together with
+-- "Now playing", in the top-right corner inside the minimap's box (ruling
+-- 2.1 of the round plan). They are separate from the minimap's own
+-- elements: created at the first step, never removed while the player is
+-- online, placed again when the window or the mode changes (geometry:
+-- minimap_view.lua side_layout). The band is checked on the SLOW tick and
+-- sends one hud_change when its position (one per 30 real seconds)
+-- changes; the globalstep runs this part also when the minimap is
+-- unavailable.
+--
 -- Glide (test variant for the playtest): the arrow stays in the centre and
 -- the map moves under it pixel by pixel. The map is ONE
 -- image element whose texture is the player's grid cell (ruling 9: the
@@ -89,6 +101,9 @@ local PLAYING_ICON = "grug_ambience_note.png"
 
 local base, view -- set by M.install
 local players = {}
+-- Unread letters per online player (M.set_mail_count), kept apart from the
+-- minimap state so a count told before this mod's join callback is kept.
+local mail_counts = {}
 -- Positions read once per server step (`step`), shared by every party
 -- member's minimap: name -> {step, player, x, z, frame}; the heading frame
 -- is read only when a party arrow needs it.
@@ -242,24 +257,42 @@ local function create(player, state)
 	hud.location = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
 		alignment = {x = 0, y = 1}, text = "", number = LOCATION_COLOR,
 		z_index = Z.bezel}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
-	hud.playing_box = image(player, Z.bezel, true)
-	hud.playing_icon = image(player, Z.bezel + 1, true)
-	hud.playing_text = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
-		alignment = {x = 1, y = 1}, text = "", number = LOCATION_COLOR,
-		z_index = Z.bezel + 1}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
-	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location,
-		hud.playing_box, hud.playing_icon, hud.playing_text}
+	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location}
 	for _, list in ipairs({hud.markers, hud.party}) do
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
 	state.hud, state.cell_x, state.cell_y, state.static = hud, nil, nil, nil
-	state.near, state.box, state.window = nil, nil, nil
+	state.near, state.frame_box, state.window = nil, nil, nil
 	-- what the map, markers and party arrows were last drawn for
 	state.mx, state.my, state.drawn_near, state.drawn_frame = nil, nil, nil, nil
 	state.party_shown, state.seen, state.members = nil, {}, {}
 	for i = 1, PARTY_SLOTS do state.seen[i] = {} end
-	-- the new elements are empty: the box is drawn on the first window check
-	state.playing_drawn, state.playing_frame = nil, nil
+end
+
+-- The side elements (Round 48): the mail icon, the daytime band and the
+-- "Now playing" box, which stay while the minimap is hidden or unavailable.
+local function create_side(player, state)
+	local side = {mail = image(player, Z.bezel, true), band = image(player, Z.bezel, true),
+		playing_box = image(player, Z.bezel, true),
+		playing_icon = image(player, Z.bezel + 1, true)}
+	side.playing_text = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
+		alignment = {x = 1, y = 1}, text = "", number = LOCATION_COLOR,
+		z_index = Z.bezel + 1}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
+	side.all = {side.mail, side.band, side.playing_box, side.playing_icon, side.playing_text}
+	state.side, state.side_box, state.side_frame, state.side_layout = side, nil, nil, nil
+	return side
+end
+
+-- The minimap box for the player's window (read every WINDOW seconds);
+-- kept as the same table while nothing in it changed.
+local function read_box(player, state)
+	local box = layout.minimap_box(core.get_player_window_information(player:get_player_name()))
+	local last = state.box
+	if not last or last.size ~= box.size or last.center_x ~= box.center_x or
+			last.center_y ~= box.center_y or last.hud ~= box.hud or last.gui ~= box.gui or
+			last.width ~= box.width or last.height ~= box.height then
+		state.box = box
+	end
 end
 
 -- The markers that do not move by themselves (ruling 8): quest givers with
@@ -331,37 +364,77 @@ local function location_top(frame)
 end
 
 -- The "Now playing" box for `state.playing` (a track row of grug_ambience's
--- data: title and artist; nil hides it). Called only when the track or the
--- frame changed; like show(), only what changed is sent.
+-- data: title and artist; nil hides it): under the location line with the
+-- minimap shown, below the band in the corner otherwise. Called only when
+-- the track or the side layout changed; like show(), only what changed is
+-- sent.
 local function draw_playing(player, state)
-	local hud, frame, track = state.hud, state.frame, state.playing
-	state.playing_drawn, state.playing_frame = track, frame
+	local side, box, track = state.side, state.box, state.playing
 	if not track then
-		return show(player, frame, hud.playing_box, "") +
-			show(player, frame, hud.playing_icon, "") +
-			show_text(player, frame, hud.playing_text, "")
+		return show(player, box, side.playing_box, "") +
+			show(player, box, side.playing_icon, "") +
+			show_text(player, box, side.playing_text, "")
 	end
-	local box = V.now_playing_box(frame, location_top(frame), track.title, track.artist)
-	return show(player, frame, hud.playing_box,
-			("[fill:%dx%d:%s"):format(box.w, box.h, PLAYING_BOX_COLOR), box.x, box.y,
-			exact(box.w, box.w, frame)) +
-		show(player, frame, hud.playing_icon, PLAYING_ICON, box.icon_x, box.icon_y,
-			exact(box.icon, texture_size(PLAYING_ICON), frame)) +
-		show_text(player, frame, hud.playing_text, track.title .. "\n" .. track.artist,
-			LOCATION_COLOR, box.text_x, box.text_y)
+	local frame, placed = state.side_frame, state.side_layout
+	local g
+	if frame then
+		g = V.now_playing_box(frame, location_top(frame), track.title, track.artist)
+	else
+		g = V.now_playing_corner(box, placed.playing_right, placed.playing_top,
+			track.title, track.artist)
+	end
+	return show(player, box, side.playing_box,
+			("[fill:%dx%d:%s"):format(g.w, g.h, PLAYING_BOX_COLOR), g.x, g.y,
+			exact(g.w, g.w, box)) +
+		show(player, box, side.playing_icon, PLAYING_ICON, g.icon_x, g.icon_y,
+			exact(g.icon, texture_size(PLAYING_ICON), box)) +
+		show_text(player, box, side.playing_text, track.title .. "\n" .. track.artist,
+			LOCATION_COLOR, g.text_x, g.text_y)
+end
+
+-- The mail icon for the player's unread count (hidden at 0).
+local function draw_mail(player, state)
+	local placed = state.side_layout.mail
+	return show(player, state.box, state.side.mail,
+		V.mail_texture(mail_counts[player:get_player_name()]), placed.x, placed.y,
+		exact(placed.w, V.SIDE.mail_w, state.box))
+end
+
+-- The daytime band at the world clock's current position.
+local function draw_band(player, state)
+	local placed = state.side_layout.band
+	local position = V.daytime_position(core.get_timeofday(), grug_core.DAY_PHASE_START,
+		grug_core.DAY_PHASE_END)
+	return show(player, state.box, state.side.band, V.daytime_texture(position),
+		placed.x, placed.y, exact(placed.w, V.SIDE.band_w, state.box))
+end
+
+-- The side elements: placed again when the window or the mode (minimap
+-- shown, or hidden or unavailable) changed; otherwise only the band, on the
+-- SLOW tick. The mail icon and "Now playing" are drawn when they are told.
+local function update_side(player, state, slow)
+	if not state.box then read_box(player, state) end
+	if not state.side then create_side(player, state) end
+	local frame = view and state.hud and state.frame or false
+	if state.side_box ~= state.box or state.side_frame ~= frame then
+		state.side_box, state.side_frame = state.box, frame
+		state.side_layout = V.side_layout(state.box, frame or nil)
+		forget_positions(state.side)
+		return draw_mail(player, state) + draw_band(player, state) +
+			draw_playing(player, state)
+	end
+	if slow then return draw_band(player, state) end
+	return 0
 end
 
 -- What depends only on the window: the frame, the sea disc, the bezel and
--- the arrow's place and size. The location line is read here too, and the
--- "Now playing" box is placed again after a window change.
+-- the arrow's place and size. The location line is read here too.
 local function update_window(player, state)
 	local hud, changes = state.hud, 0
-	local box = layout.minimap_box(core.get_player_window_information(player:get_player_name()))
-	local last = state.box
-	if not last or last.size ~= box.size or last.center_x ~= box.center_x or
-			last.center_y ~= box.center_y or last.hud ~= box.hud or last.gui ~= box.gui or
-			last.width ~= box.width or last.height ~= box.height then
-		state.box, state.frame = box, V.frame(view, box)
+	if not state.box then read_box(player, state) end
+	local box = state.box
+	if state.frame_box ~= box then
+		state.frame_box, state.frame = box, V.frame(view, box)
 		forget_positions(hud)
 		local frame = state.frame
 		local sea = math.floor(frame.hole + 2)
@@ -390,9 +463,6 @@ local function update_window(player, state)
 	if location then text, color = location.text_of(player) end
 	changes = changes + show_text(player, frame, hud.location, text, color or LOCATION_COLOR,
 		frame.center_x, location_top(frame))
-	if state.playing_drawn ~= state.playing or state.playing_frame ~= frame then
-		changes = changes + draw_playing(player, state)
-	end
 	return changes
 end
 
@@ -492,7 +562,7 @@ local function update(player, state, slow, window)
 	end
 	if not state.hud then create(player, state) end
 	local changes = 0
-	if window or slow or not state.box then
+	if window or slow or not state.frame_box or state.frame_box ~= state.box then
 		changes = changes + update_window(player, state)
 	end
 	local frame = state.frame
@@ -540,23 +610,41 @@ local function update(player, state, slow, window)
 	return changes + draw_party(player, state, frame, mx, my, moved)
 end
 
--- Redraw one player's minimap now (the Map tab's switch, a quest change).
+-- Redraw one player's minimap now (the Map tab's switch, a quest change);
+-- the side elements follow the mode at once.
 function M.refresh(player)
 	local state = players[player:get_player_name()]
-	if state and view then update(player, state, true) end
+	if not state then return end
+	if view then update(player, state, true) end
+	update_side(player, state, false)
 end
 
 -- The "Now playing" box (0.45.1): grug_ambience tells the track that
 -- really plays (its data row with title and artist) or nil, only when that
--- changes. With the minimap hidden or unavailable nothing is drawn; the
--- track is kept, so switching the minimap on shows the box again.
+-- changes. It is drawn under the location line, or in the top-right corner
+-- with the minimap hidden or unavailable (Round 48).
 function M.set_now_playing(name, track)
 	local state = players[name]
 	if not state then return end
 	state.playing = track
-	local player = state.hud and state.frame and core.get_player_by_name(name)
+	local player = state.side_layout and core.get_player_by_name(name)
 	if player then
 		M.stats.changes = M.stats.changes + draw_playing(player, state)
+	end
+end
+
+-- The mail icon (Round 48, the round plan's interface 3.1; grug_mail calls
+-- it on every change of the unread count and at join): `count` unread
+-- letters and broadcasts, 0 hides the icon, 1-9 show the digit, more "9+".
+-- The count is kept per player, so a relayout or a mode switch draws it
+-- again.
+function M.set_mail_count(name, count)
+	count = math.max(0, math.floor(tonumber(count) or 0))
+	mail_counts[name] = count > 0 and count or nil
+	local state = players[name]
+	local player = state and state.side_layout and core.get_player_by_name(name)
+	if player then
+		M.stats.changes = M.stats.changes + draw_mail(player, state)
 	end
 end
 
@@ -626,7 +714,7 @@ core.register_on_joinplayer(function(player)
 end)
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	players[name], where[name] = nil, nil
+	players[name], where[name], mail_counts[name] = nil, nil, nil
 end)
 grug_parties.register_on_change(function(name)
 	local state = players[name]
@@ -643,8 +731,10 @@ grug_factions.register_on_faction_chosen(function(player)
 	if state then state.static = nil end
 end)
 
+-- Every step: the minimap (when available) and the side elements, which
+-- also run while the minimap is hidden or unavailable (Round 48); the
+-- window is read every WINDOW seconds for both.
 core.register_globalstep(function(dtime)
-	if not view then return end
 	step = step + 1
 	for _, player in ipairs(core.get_connected_players()) do
 		local state = players[player:get_player_name()]
@@ -656,7 +746,10 @@ core.register_globalstep(function(dtime)
 			local window = state.window >= WINDOW
 			if window then state.window = 0 end
 			local started = core.get_us_time()
-			local changes = update(player, state, is_slow, window)
+			if window or is_slow then read_box(player, state) end
+			local changes = 0
+			if view then changes = update(player, state, is_slow, window) end
+			changes = changes + update_side(player, state, is_slow)
 			M.stats.updates = M.stats.updates + 1
 			M.stats.us = M.stats.us + (core.get_us_time() - started)
 			M.stats.changes = M.stats.changes + changes

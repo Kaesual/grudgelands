@@ -301,8 +301,11 @@ is retired). Earlier measured timings:
 [`wp26-implementation.md`](../research/wp26-implementation.md).
 
 Round 21 furnace rules: both furnaces accept
-only logs (15s), mined coal (80s), charcoal (80s) and Anthracite (120s,
-Round 47 ruling 11) as fuel. One log cooks into
+only logs (15s), mined coal (80s), charcoal (80s), Anthracite (120s,
+Round 47 ruling 11), cactus (15s) and every leaves node (2s, five per
+10-second smelt; Round 48, sell-fuel-daytime-plan ruling 1) as fuel;
+saplings and papyrus are no fuel, and the Claim Stone's upkeep stays coal,
+charcoal and Anthracite ([housing.md](housing.md)). One log cooks into
 one distinct charcoal item in 10s. New fuel ignites only with a valid recipe
 and output space; the current piece burns out even if work stops. Continued
 processing refuels without an intervening dark tick. Flame shows remaining
@@ -1045,6 +1048,11 @@ main profession slot (professions.md §1).
 
   **Cooking plant sources.** The current farming and renewal contract is in
   [farming.md](farming.md), with geographic projection in `world_zones.md`.
+  Every row below is a crop except Salt Crust (Round 48: salt is no plant;
+  it comes from the wild and from the Salt Pan, and regrows in the wild like
+  Rock Salt). Of the gathering foods, Potato, Corn, Melon and Mushroom are
+  crops; Wild Cocoa and Rock Salt stay gather-only, as do the spices
+  (Sunleaf, Marshbloom, Stormkelp) and the healing herbs.
   Their `Raw tier` is the band of the lowest source;
   `Recipe tier` is the profession ingredient tier and may deliberately differ.
 
@@ -1059,7 +1067,7 @@ main profession slot (professions.md §1).
   | Sugar Cane | T1 | T2 | inedible sweetener | fresh and salt shores in every band |
   | Bamboo Shoot | T1 | T1 | raw HP food | jungle and swamp shores |
   | Cave Cap | T3 | T3 | raw HP food | caves at y −100…−500 |
-  | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 44–50 |
+  | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 44–50; the Salt Pan |
   | Ember Moss | T5 | T5 | inedible Alchemy reagent | T5 stone (`grug_materials:t5_stone`) at y ≤ −701 |
 
   Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, the Raw
