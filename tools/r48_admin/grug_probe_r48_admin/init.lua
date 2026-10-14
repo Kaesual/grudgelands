@@ -41,7 +41,11 @@ local function fill_inbox()
 			level = level, faction = faction, race = race, class = class,
 			pos = {x = x, y = y, z = z}}
 	end
-	local function add(ticket) table.insert(tickets, 1, ticket) end
+	local function add(ticket)
+		table.insert(tickets, 1, ticket)
+		-- The senders as known characters, so an answer reaches them.
+		S.index_player(ticket.from, ticket.faction)
+	end
 	local closed = M.ticket(S.next_id(), "Brakka", "Other", "Name change?",
 		"Can I change the name of my character?",
 		header(12, "throng", "orc", "warrior", -2310, 9, 880, "Grakmar"), now - 4 * 86400)
@@ -94,6 +98,10 @@ end
 
 -- Each shot: a step that sets the page up, then the screenshot.
 local SHOTS = {
+	{name = "X0_tabs_inventory", run = function(player)
+		sfinv.set_page(player, sfinv.get_homepage_name(player))
+		show(player)
+	end},
 	{name = "X1_inbox", run = function(player)
 		sfinv.set_page(player, grug_mail.ADMIN_PAGE)
 		show(player)

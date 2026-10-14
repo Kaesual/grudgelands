@@ -230,8 +230,8 @@ local function ticket_panel(fs, state, ticket)
 		esc(message_text(ticket)))
 	if ticket.state == "open" then
 		fs[#fs + 1] = ("label[%.2f,9.95;%s]"):format(X, esc(colored(COLOR.dim,
-			("Answer · arrives in %s's Letters as \"%s\" from the %s and closes the ticket")
-			:format(ticket.from, clip(M.reply_subject(ticket.subject), 40), M.ADMIN_LABEL))))
+			("Answer · arrives as \"Re: ...\" from the %s in %s's Letters"):format(
+			M.ADMIN_LABEL, ticket.from))))
 		fs[#fs + 1] = ("textarea[%.2f,10.2;%.2f,1.75;mail_admin_answer;;%s]"):format(X,
 			CONTENT_W, esc(state.answer))
 	else
@@ -240,10 +240,10 @@ local function ticket_panel(fs, state, ticket)
 	fs[#fs + 1] = status_line(state, 12.25)
 	if ticket.state == "open" then
 		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete;Delete]" ..
-			"button[%.2f,12.6;2.7,0.8;%s;Close without answer]" ..
-			"style[%s;bgcolor=#3d5f8a]button[%.2f,12.6;2.9,0.8;%s;Send answer and close]")
-			:format(X + CONTENT_W - 7.4, X + CONTENT_W - 5.7, serial(state, "close"),
-				serial(state, "answer"), X + CONTENT_W - 2.9, serial(state, "answer"))
+			"button[%.2f,12.6;3.2,0.8;%s;Close without answer]" ..
+			"style[%s;bgcolor=#3d5f8a]button[%.2f,12.6;3.4,0.8;%s;Send answer and close]")
+			:format(X + CONTENT_W - 8.4, X + CONTENT_W - 6.7, serial(state, "close"),
+				serial(state, "answer"), X + CONTENT_W - 3.4, serial(state, "answer"))
 	else
 		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete;Delete]"):format(
 			X + CONTENT_W - 1.6)
@@ -303,9 +303,8 @@ local function inbox_view(state, fs)
 	end
 	fs[#fs + 1] = pager(X, 5.35, page, pages)
 	fs[#fs + 1] = ("label[%.2f,5.7;%s]"):format(X + 4.0, esc(colored(COLOR.dim, announcements and
-		("%d announcements"):format(#list) or
-		("%d shown · %d open in all · messages are deleted 30 days after they arrive")
-			:format(#list, open_count))))
+		(#list == 1 and "1 announcement" or ("%d announcements"):format(#list)) or
+		("%d shown · %d open · deleted 30 days after arrival"):format(#list, open_count))))
 	if selected and announcements then
 		broadcast_panel(fs, state, selected)
 	elseif selected then
