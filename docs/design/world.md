@@ -271,10 +271,13 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   and travel, never in waiting for a timer. Renewable ore would have
   capped every material's value at its respawn interval and turned mining
   into a rotation instead of an expedition. Wild plants instead follow the
-  habitat-driven renewal in [farming.md](farming.md); no ore, gem, Rock
-  Salt or Salt Crust joins that plant exception. **There is no mineral
-  exception:** renewable ores are removed entirely, mining camps and the apex
-  camps included (user decision 2026-09-29,
+  habitat-driven renewal in [farming.md](farming.md); no ore or gem joins
+  that plant exception. **The one mineral exception is salt** (Round 48,
+  user ruling 2026-10-14): Rock Salt and Salt Crust regrow in the wild like
+  the resource plants, at their unchanged initial density, and Salt Crust
+  also comes from a crafted salt pan ([farming.md](farming.md) "The salt
+  pan"). Renewable ores are removed entirely, mining camps and the apex camps
+  included (user decision 2026-09-29,
   [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) E5).
 - **R5 — Active Claim Stones**: a fuelled Claim Stone provides the only
   player-owned protection (§5, `housing.md`). Inside its 101 × 101 column

@@ -30,8 +30,10 @@ local PLANTS = {
 		kind = "raw_food", image = "grug_cooking_bamboo_shoot.png"},
 	{name = "cave_cap", description = "Cave Cap", tier = 3,
 		kind = "raw_food", image = "grug_cooking_cave_cap.png"},
+	-- Round 48: salt is no plant (plant-growth-plan.md §2.15): no crop, no
+	-- seeds; it comes from the wild and from the salt pan (grug_farming).
 	{name = "salt_crust", description = "Salt Crust", tier = 5,
-		kind = "salt", image = "grug_cooking_salt_crust.png"},
+		kind = "salt", image = "grug_cooking_salt_crust.png", crop = false},
 	{name = "ember_moss", description = "Ember Moss", tier = 5,
 		kind = "reagent", image = "grug_cooking_ember_moss.png"},
 }

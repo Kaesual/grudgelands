@@ -143,12 +143,12 @@ historical evidence, not instructions to restore the old map.
 Gathering split (professions.md §2), **revised 2026-08-07 — the herbs
 split in two**:
 
-| Marker | Who may gather it | Farmable later |
+| Marker | Who may gather it | Farmable |
 |---|---|---|
-| `[food]` | everyone | yes — becomes a crop with the farming package |
+| `[food]` | everyone | yes — a crop ([farming.md](farming.md)) |
 | `[food found-only]` | everyone | **never** — found in the world, never grown |
 | `[herb Tn]` | **healing herb** — Alchemy only, tier n | **never** |
-| `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by Alchemy **and** by Cooking | yes |
+| `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by Alchemy **and** by Cooking | **never** (Round 48 ruling 5: spices stay gather-only) |
 
 Both plant lines keep the same three tiers: T1 (levels 10–25), T2 (25–45)
 and T3 (45–60), and each line has exactly one plant per tier, reachable on
@@ -166,12 +166,13 @@ ever touching alchemy's.
 world integration summary in `world.md` §5) only the owner and players with
 the Everything permission can dig or harvest a crop; harvesting counts as
 digging. Only cooking ingredients are cultivated: the
-`[food]` and `[spice Tn]` lines of this section, never a `[herb Tn]` or
-`[food found-only]`. The "Farmable later" column above is therefore
-also the cultivated plant set.
+`[food]` line of this section, never a `[spice Tn]`, `[herb Tn]` or
+`[food found-only]`. The "Farmable" column above is therefore
+also the cultivated plant set. Round 48 made Melon and Mushroom crops and
+kept every spice gather-only.
 
 The table describes biome vegetation identity. Exact gathering sources and
-the seventeen cultivated families follow §2.2 and `world_zones.md` §11 plus
+the eighteen cultivated families follow §2.2 and `world_zones.md` §11 plus
 its Round 10 source rules; farming and Cooking are no longer a future-only
 placeholder.
 
@@ -180,16 +181,16 @@ placeholder.
 | grug_meadows | apple (generated) sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[spice T1]` | fields/roads near settlements (WP13) |
 | grug_pine_hills | pine (generated; two rows) (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss on stone `[herb T1]` | scattered boulders (deco) |
 | grug_elf_forest | silverwood + apple mix (generated) (fill 0.007) | pale grass, white flowers; wild berries `[food]`; sunleaf `[spice T1]` | great-silverwood only via settlement schematics |
-| grug_deep_forest | apple + aspen (generated) dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food found-only]`; dragonweed edge `[herb T2]` | dark, high tree density |
+| grug_deep_forest | apple + aspen (generated) dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food]`; dragonweed edge `[herb T2]` | dark, high tree density |
 | grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
 | grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
 | grug_badlands (+ `_east`) | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
 | grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
-| grug_bone_forest | gravewood (generated) dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
+| grug_bone_forest | gravewood (generated) dense (fill 0.015), bone piles | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); papyrus lives at the water in the swamp (§2.1) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
-| grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), papyrus_on_dirt, dead bush | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools 1–2 deep (mud floor), Round 47 |
-| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[found-only salt, inedible]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
+| grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), papyrus_on_dirt, dead bush | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]` | shallow water pools 1–2 deep (mud floor), Round 47 |
+| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 ### 2.1 WP40 surface and deterministic decoration projection
@@ -298,20 +299,26 @@ two mountain islands. The final P7 support must match the zone-specific host;
 mountain beach sand is not retained to make the resource placeable. No other
 gathering source set, density or harvest rule changes.
 
-| Source | Exact opportunity density | Classification | Farmable in WP32 |
+| Source | Exact opportunity density | Classification | Farmable (Round 48) |
 |---|---:|---|---|
 | Potato | 1/256 | universal food | yes |
 | Corn | 1/256 | universal food | yes |
-| Sunleaf | 1/384 | universal spice T1 | yes |
-| Mushroom | 1/384 | universal found-only food | no |
+| Sunleaf | 1/384 | universal spice T1 | no |
+| Mushroom | 1/384 | universal found-only food | yes |
 | Gravemoss | 1/512 | healing herb T1 | no |
-| Marshbloom | 1/512 | universal spice T2 | yes |
+| Marshbloom | 1/512 | universal spice T2 | no |
 | Melon | 1/512 | universal food | yes |
 | Dragonweed | 1/768 | healing herb T2 | no |
 | Crimson Lotus | 1/1024 | healing herb T3 | no |
-| Stormkelp | 1/1024 | universal spice T3 | yes |
+| Stormkelp | 1/1024 | universal spice T3 | no |
 | Wild Cocoa | 1/1024 | universal found-only food | no |
 | Rock Salt | 1/1024 | universal found-only food | no |
+
+The classification column is the WP33 catalog's, whose fields are hashed into
+the mapgen manifest and stay as they are; the farming status is the last
+column (Round 48: Mushroom became a crop, the three spices stay gather-only).
+Every source renews in the wild ([farming.md](farming.md)), Rock Salt since
+Round 48 at its full initial density.
 
 The complete gathering population is closed at **20 identities**: these twelve
 new P9G sources and eight existing R6 sources (Apple, Blueberries, Oak, Mountain
@@ -339,7 +346,7 @@ T3 healing herb**. Biomes now follow the zone palettes of `world_zones.md`
 §11).
 
 **Spices** (gathered by everyone, used by both Alchemy and
-Cooking — which costs no main slot — and farmable once farming ships):
+Cooking — which costs no main slot — and never farmed, Round 48 ruling 5):
 **sunleaf T1** (meadows, savanna, elf forest, jungle edge),
 **marshbloom T2** (swamp), **stormkelp T3** (the exact cardinal dry-shore
 predicate in `world_zones.md` §11). Sunleaf and Marshbloom sit on workable
@@ -366,8 +373,9 @@ the region an ingredient comes from):
   by both factions
   (§6) — every level-41+ zone is contested and shared — so neither
   faction is cut off from the top of the cooking ladder.
-- **Deliberately found-only** (never a crop): mushrooms, wild cocoa and
-  inedible rock salt. That keeps the top of the cooking ladder a reason to
+- **Deliberately found-only** (never a crop): wild cocoa and inedible rock
+  salt (mushrooms became a crop in Round 48; rock salt regrows in the wild
+  since then). That keeps the top of the cooking ladder a reason to
   travel, and it keeps a tier unlock ("find cocoa in the jungle") usable
   as a quest goal.
 
@@ -1289,7 +1297,8 @@ world generator, saplings and town trees place the pieces (Round 47 lanes TB/TC)
 acacia, pine, aspen, silverwood and gravewood — with a seed hashed from the
 world seed and the sapling's position, so one spot always grows the same
 tree (`grug_trees/growth.lua`). The growth conditions stay default's (soil
-below, light 13). A tree takes only free cells (air or a plant a node may
+below), with natural light 13 as at noon since Round 48: daylight only, a
+glass roof lets it through, torches never count ([farming.md](farming.md)). A tree takes only free cells (air or a plant a node may
 replace) that the terrain guard allows; a wood cell that does not fit fails
 the growth and the sapling tries again later, a leaf there is left out.
 Roots test the real ground. Placing a sapling checks protection over the
@@ -1370,8 +1379,8 @@ nodes and, thinner, one and two tiers deeper (Round 46). The signature wood foll
 | Linen cloth | 10–30 | home-zone **bandit camps**, mirefolk | same |
 | Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
 | Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 21–60 | deep-forest/fringe spiders; both 41–50 fronts by night (Round 46); T5–T6 outlaws | bone-forest/jungle spiders; the same fronts and outlaws |
-| Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
-| Food plants, **found-only** (everyone, never farmable) | 25–60 (wild cocoa 51–60) | mushrooms (deep forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
+| Food plants (everyone, farmable) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), mushrooms (deep forest/swamp), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, mushrooms (bone forest/swamp), meat/fish |
+| Food plants, **found-only** (everyone, never farmable) | 45–60 (wild cocoa 51–60) | wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemy) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
 | Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
 | Healing herbs T3 | 45–60 | crimson lotus (jungle fringe, The Skyglass Canopy) | crimson lotus (deep jungle) |

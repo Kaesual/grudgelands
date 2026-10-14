@@ -316,13 +316,16 @@ local function load_farming()
 	real_dofile(path("mods/CORE/grug_core/node_rightclick.lua"))
 	grug_nodes = {bind_crop_soil_callbacks = function() end,
 		crop_visual = real_dofile(path("mods/ITEMS/grug_nodes/crop_visual.lua"))}
-	default = {node_sound_leaves_defaults = function() return {} end}
+	default = {node_sound_leaves_defaults = function() return {} end,
+		node_sound_metal_defaults = function() return {} end,
+		plant_lit = function() return true end}
 	grug_cooking = {PLANTS = {
 		{name = "fire_pepper", description = "Fire Pepper", item = "grug_cooking:fire_pepper", image = "p.png"},
 		{name = "sugar_cane", description = "Sugar Cane", item = "grug_cooking:sugar_cane", image = "s.png"},
 	}}
 	for _, item in ipairs({"grug_cooking:fire_pepper", "grug_cooking:sugar_cane",
-			"grug_gathering:potato", "grug_gathering:corn"}) do
+			"grug_gathering:potato", "grug_gathering:corn", "grug_gathering:melon",
+			"grug_gathering:mushroom"}) do
 		c.registered_items[item] = {name = item, description = item .. "\nx", inventory_image = "i.png"}
 	end
 	grug_mapgen = {wp40 = {vegetation = {}, planner_source = {}}}

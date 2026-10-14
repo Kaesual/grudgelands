@@ -7,6 +7,7 @@ local SHAPES = {
 	frost_melon = "ground_fruit", sugar_cane = "cane",
 	bamboo_shoot = "bamboo", cave_cap = "mushroom", salt_crust = "salt",
 	ember_moss = "mat", potato = "root", corn = "corn",
+	melon = "ground_fruit", mushroom = "mushroom",
 }
 
 local BOUNDS = {

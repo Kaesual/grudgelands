@@ -362,7 +362,7 @@ tools](#player-meta-read-by-external-tools).
 - **Crop registration**: `grug_nodes` registers complete `grug_farming:soil` and
   `soil_wet` definitions before synchronous mapgen compilation, and exports
   `crop_visual(key, stage, sounds)` and `bind_crop_soil_callbacks`. FARM binds
-  its real callbacks once and owns the 17 crop families, timers and current-world
+  its real callbacks once and owns the 18 crop families, timers and current-world
   activation. Mapgen has no FARM dependency; do not defer world authority.
   Tall crops keep state, timers and drops on the root; hidden helpers never own
   rewards. Multi-position growth/harvest preflights loaded, protected and exact
@@ -371,6 +371,17 @@ tools](#player-meta-read-by-external-tools).
   Since Round 30 soil without a growing crop checks its water once a minute
   (15 s under a growing crop; planting and regrowth re-arm 15 s), and the
   crop geometry LBM leaves a plant whose helpers already stand untouched.
+  Since Round 48 the soil check under a growing crop also reads the crop's
+  light (`default.plant_lit`, light 8 as at noon, defined with
+  `default.PLANT_LIGHT` in the patched `default/functions.lua` and shared by
+  papyrus and cactus) and pauses or resumes it on every check; profiles with
+  `dark` (Cave Cap, Mushroom, Ember Moss) skip it. `grug_cooking.PLANTS` rows
+  with `crop = false` (Salt Crust) are no crop. The Salt Pan
+  (`salt_pan.lua`) runs on its own node timer; the tooltip pass
+  (`tooltips.lua`, `grug_farming.apply_plant_tooltips`) runs at
+  `register_on_mods_loaded`. The P9G sources' and items' looks are runtime
+  overrides in `grug_gathering/presentation.lua`, never catalog fields (the
+  catalog is hashed into the mapgen manifest).
 
 ## Skills catalogue
 
