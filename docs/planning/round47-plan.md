@@ -953,7 +953,11 @@ still open and is tested on the same build.
 
 ### Round-end gates
 
-**Round-end gates** (coordinator): pending — full fixtures, the full seed
-fleet on main, `check_upgrade.py`, `check_fresh_server.py` and a smoke
-boot. On lane D's branch: `tools/r37_dc` and `check_upgrade.py` (0.47.0
+**Round-end gates** (coordinator, 2026-10-14, on main `c8e1ca12`): full
+fixtures 181/181, the full seed fleet 304/304 (34 min 40 s),
+`check_upgrade.py` (0.47.0 against origin/main `b3a30ab0`),
+`check_fresh_server.py`, `r28_design/validate.py --game` (0 errors),
+`income.py --check`, `build_doc.py --check`, the names checks, the bat,
+enchant-mask, cloak and web-data checks and a smoke boot PASS; synced. On
+lane D's branch: `tools/r37_dc` and `check_upgrade.py` (0.47.0
 against origin/main) PASS.

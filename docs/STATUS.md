@@ -45,7 +45,10 @@ is open.
   for OR, AN, TC (each step) and SW, and 100/100 on main `6cb71e25`;
   `check_fresh_server.py` PASS, smoke boots PASS; on lane D's branch
   `tools/r37_dc` and `check_upgrade.py` (0.47.0 against origin/main) PASS.
-  **Round-end gates (coordinator):** pending.
+  **Round-end gates (coordinator, 2026-10-14, on main `c8e1ca12`):** full
+  fixtures 181/181, the full seed fleet 304/304, `check_upgrade.py`,
+  `check_fresh_server.py`, the data, names, model and web-data checks and a
+  smoke boot PASS.
   The declaration is
   `{"schema": 2, "version": "0.47.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0"]}`:
   the third map reset and the third step (stored tool capabilities rebuilt
@@ -71,7 +74,7 @@ is open.
   - **NPCs, zones, map (NZ, ML):** 230 sockets facing walls → 0, the
     banner 4 s, first-entry zone XP; the map window's eight marker layers,
     quest mode, named markers and party names.
-  - Next: the round-end gates, then the user's GUI test of 0.46.0 and
+  - Next: the user's GUI test of 0.46.0 and
     0.47.0 together (frame rate on a real GPU first); the push on the
     user's word ([BACKLOG](../BACKLOG.md#round-47-carry-overs)).
 
