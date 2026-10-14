@@ -622,8 +622,8 @@ Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
 | Weaponsmith | sword, dagger, battle axe | enchants | enchants | enchants | enchants | enchants | enchants |
 | Armorsmith | metal armour, shield | enchants | enchants | enchants | enchants | enchants | enchants |
 | Woodcarver | staff, wand | enchants | enchants | enchants | enchants | enchants | enchants |
-| Leatherworker | leather armour, bow | enchants, 8-slot bag | enchants, 16-slot bag | enchants | enchants, 24-slot bag | enchants, 32-slot bag | enchants |
-| Tailor | cloth armour, spellbook | enchants, spellbook, 8-slot bag | enchants, spellbook, 16-slot bag | enchants, spellbook | enchants, spellbook, 24-slot bag | enchants, spellbook, 32-slot bag | enchants, spellbook |
+| Leatherworker | leather armour, bow | enchants, 4-slot bag | enchants, 8-slot bag | enchants | enchants, 12-slot bag | enchants, 16-slot bag | enchants |
+| Tailor | cloth armour, spellbook | enchants, spellbook, 4-slot bag | enchants, spellbook, 8-slot bag | enchants, spellbook | enchants, spellbook, 12-slot bag | enchants, spellbook, 16-slot bag | enchants, spellbook |
 | Goldsmith | trinket | enchants, six trinkets | enchants, six trinkets | enchants, six trinkets | enchants, six trinkets | enchants, six trinkets | enchants, six trinkets |
 <!-- end generated -->
 

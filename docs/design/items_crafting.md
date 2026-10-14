@@ -864,12 +864,12 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
 
 **Exclusive recipes**:
 
-- **Bags** (`inventory_equipment.md` §3) — **four sizes, 8 / 16 / 24 / 32
-  slots**, at profession T1 / T2 / T4 / T5 (no mastery band since Round 45).
-  The 8-slot bag (six patch bolts, two light leathers) stays
-  vendor-sellable, because it is the floor tier (vendor floor rule); the
-  16-slot bag is 8 woven bolts + 2 cured leather, the 24-slot 10 heavy
-  bolts + 4 spider silk + 2 heavy leather, and the 32-slot ("huge bag")
+- **Bags** (`inventory_equipment.md` §3) — **four sizes, 4 / 8 / 12 / 16
+  slots** (halved in Round 48), at profession T1 / T2 / T4 / T5 (no mastery
+  band since Round 45). The 4-slot bag (six patch bolts, two light leathers)
+  stays vendor-sellable, because it is the floor tier (vendor floor rule);
+  the 8-slot bag is 8 woven bolts + 2 cured leather, the 12-slot 10 heavy
+  bolts + 4 spider silk + 2 heavy leather, and the 16-slot ("huge bag")
   is the Master addition of 2026-08-07.
 - **Named cloth enchantments** across all six tiers (§6b); no separate kit line.
 - **Spellbooks** (Round 33, from the Goldsmith): two bolts of the tier and a
@@ -1296,8 +1296,8 @@ an enemy player's kill; the raiders' skeleton materials; whelps have none).
 
 **Bags** drop from any mob at **0.1%** per kill (not from the Kraken and
 the Reed Angelfish, which drop no quality loot at all), independent of the gear roll,
-sized by the mob's level: 1–15 → 8 slots, 16–30 → 16, 31–45 → 24, 46+ → 32
-(the cloth bag line of `grug_inventory`). The 8-slot bag stays on sale; larger
+sized by the mob's level: 1–15 → 4 slots, 16–30 → 8, 31–45 → 12, 46+ → 16
+(the cloth bag line of `grug_inventory`). The 4-slot bag stays on sale; larger
 bags otherwise come only from the Tailor or the Leatherworker.
 
 Found enchantments do not imply a separate refined state. A found item's

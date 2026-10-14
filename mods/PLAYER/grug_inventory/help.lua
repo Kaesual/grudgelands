@@ -133,7 +133,7 @@ local SECTIONS = {
 		"• The Talents & Skills tab keeps every unlocked skill: drag one onto your hotbar. Skills stay on the hotbar; drag one back to the list to remove it and take it again at any time.",
 		"",
 		heading("Bags, food and repair"),
-		"• The Inventory tab holds up to four bags of 8 to 32 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
+		"• The Inventory tab holds up to four bags of 4 to 16 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
 		"• The potion belt on the Inventory tab holds four potions or elixirs; drink them from the quickbar (E).",
 		"• Eat food out of combat for a five-minute buff: instant healing, regeneration and sometimes extra stats. Only one food buff is active at a time.",
 		"• Gear wears out with use and stops working when broken. Repairs are made only in towns: every profession trainer of your faction repairs it for money, and so does @MENDER@ in every start town and capital (the hammer and anvil on the map).",

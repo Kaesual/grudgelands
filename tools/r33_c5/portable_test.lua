@@ -303,8 +303,9 @@ do
 	end
 	eq(loops, 0, "C no buy-then-sell loop on the gear shelf")
 	local potion = read_file("mods/ENTITIES/grug_traders/stock.lua")
-	check(potion:find('item = "grug_inventory:bag_small", price = 80', 1, true) ~= nil,
-		"C the 8-slot bag stays on sale")
+	-- Round 48: the Small Bag holds 4 slots and costs 20c (sell plan ruling 10).
+	check(potion:find('item = "grug_inventory:bag_small", price = 20', 1, true) ~= nil,
+		"C the 4-slot bag stays on sale")
 end
 
 ------------------------------------------------------------------------------
