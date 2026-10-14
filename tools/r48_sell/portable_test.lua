@@ -12,7 +12,9 @@
 --      a forged All or "1" for a lot row sells nothing;
 --   D. a stack moved out between render and click refuses without loss;
 --   E. the money ceiling refuses before anything is removed;
---   F. a single good still sells one unit, at its quality factor.
+--   F. a single good still sells one unit, at its quality factor;
+--   G. the real resolution: a block with a free 1 -> 9 unpack pays nine
+--      times its item, a one-way block is halved (Round 48 Q2 ruling).
 --
 -- Usage (repo root): luajit tools/r48_sell/portable_test.lua [REPO]
 
@@ -266,6 +268,33 @@ check(has("12c each"), "F a blue gem sells at x3")
 click("sell1_1")
 eq(money, 12, "F one sold for 12c")
 eq(count_of(inv, "t:gem"), 1, "F one left")
+
+------------------------------------------------------------------------------
+-- G. The real resolution (prices.lua under registry stubs): a block that nine
+-- items pack into and that unpacks into the nine back pays nine times its item
+-- (no halving); a block that does not unpack is a crafted good (halved).
+------------------------------------------------------------------------------
+do
+	local GROUPS = {["t:lump"] = {grug_trash_loot = 1}}
+	core.registered_items = {["t:lump"] = {}, ["t:lumpblock"] = {}, ["t:oneway"] = {}}
+	core.get_item_group = function(name, group) return (GROUPS[name] or {})[group] or 0 end
+	core.get_all_craft_recipes = function() return {} end
+	grug_jobs = {recipes = { -- luacheck: ignore
+		{output = "t:lumpblock", count = 1, area = "basic", ingredients = {{item = "t:lump", n = 9}}},
+		{output = "t:lump", count = 9, area = "basic", ingredients = {{item = "t:lumpblock", n = 1}}},
+		{output = "t:oneway", count = 1, area = "basic", ingredients = {{item = "t:lump", n = 9}}},
+	}, ingredient_token = function(entry) return entry.item end}
+	grug_mobs = {read_data_json = function() return {} end} -- luacheck: ignore
+	grug_materials = {RESOURCES = {}, PROCESSED_MATERIALS = {}} -- luacheck: ignore
+	grug_gear = {BRACKETS = {}, drop_pool = {}} -- luacheck: ignore
+	grug_traders = {stock = {}, profession_stock = {}, GEAR_BRACKET = 1, -- luacheck: ignore
+		bracket_stock = function() return {} end, discounted_price = function(p) return p end}
+	dofile(ROOT .. "/mods/ENTITIES/grug_traders/prices.lua")
+	grug_traders.resolve_prices()
+	eq(grug_traders.sell_price("t:lump"), 1, "G a trash lump pays 1c")
+	eq(grug_traders.sell_price("t:lumpblock"), 9, "G a block that unpacks for free pays nine lumps")
+	eq(grug_traders.sell_price("t:oneway"), 4, "G a block without the way back is halved (9c / 2)")
+end
 
 if failures > 0 then
 	error(("R48 SELL PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)

@@ -171,9 +171,11 @@ items without one:
   material value before the halving, so a potion made from a mixture is not
   halved twice. Tools need no rule of their own; halved they stay below the
   gear buy-back of their tier. Wear is ignored, as for gear.
-- **Storage blocks** (the twelve pack/unpack rows of `grug_smelting`: the
-  metal blocks, Emberglass and Abyssal Crystal) pay **nine times** their
-  item's payout, because unpacking is free.
+- **Storage blocks** pay **nine times** their item's payout, because
+  unpacking is free: the twelve pack/unpack rows of `grug_smelting` (the
+  metal blocks, Emberglass and Abyssal Crystal) and every other block that
+  nine of one item make and that gives the nine back (Coal Block, the
+  cut-gem blocks, the meat blocks).
 - **Vendor goods and gear** keep the first pass: the 5 % buy-back, and a
   1–2c supply (thread, torch, stick) stays unsellable.
 - **Never sellable:** the Bag of Coins, the Fallen Crown, both Captain's

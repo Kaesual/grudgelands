@@ -341,6 +341,27 @@ local function reference_prices(sold)
 	return reference
 end
 
+-- The item nine of which pack into `block` by a recipe, when one `block`
+-- also unpacks into those nine; else nil.
+local function pack_content(block)
+	for _, recipe in ipairs(recipes_for(block)) do
+		local content = recipe.inputs[1]
+		local same = recipe.count == 1 and #recipe.inputs == 9 and
+			not content:find("^group:")
+		for i = 2, #recipe.inputs do
+			if recipe.inputs[i] ~= content then same = false end
+		end
+		if same then
+			for _, back in ipairs(recipes_for(content)) do
+				if back.count == 9 and #back.inputs == 1 and back.inputs[1] == block then
+					return content
+				end
+			end
+		end
+	end
+	return nil
+end
+
 -- The second pass's inputs (sell plan §3.2-§3.4): the bulk table, the storage
 -- blocks, what keeps the first pass, the never list, every registered item.
 local function second_pass_data(classified, reference)
@@ -373,6 +394,16 @@ local function second_pass_data(classified, reference)
 		if core.registered_items[material.block_node] and
 				core.registered_items[material.item] then
 			storage[material.block_node] = {item = material.item, count = 9}
+		end
+	end
+	-- Every other block with the same free pair (the coordinator's ruling on
+	-- the lane's question 2): nine of one item make it and one gives the nine
+	-- back (Coal Block, the cut-gem blocks, the meat blocks ...). Halving it
+	-- as a crafted good would only send players to unpack before selling.
+	for itemname in pairs(candidates) do
+		if not storage[itemname] then
+			local content = pack_content(itemname)
+			if content then storage[itemname] = {item = content, count = 9} end
 		end
 	end
 	return {first = payouts, bulk = bulk, storage = storage, keep = keep,
