@@ -1000,3 +1000,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   calls and vertices, and the client's memory, through `drive.py`;
   `report.py RUN_DIR...` prints the tables. One measuring run per boot,
   about 4 minutes.
+- **Round 48** (`r48_<lane>`): `r48_bags` the bags at half size and the
+  migration step 0.48.0 (`portable_test.lua`: the eight bags' sizes and
+  descriptions, the sort without and with target sizes (order, merge,
+  leftovers from the end in the cells beyond the targets, soulbound and
+  bound stacks never left over, the hotbar untouched), the join part with a
+  `grug_mail.send_system` stand-in: four full 32-slot bags into 4 x 16 and
+  16 letters of four stacks, a second run changing nothing, a failing send
+  that loses nothing and a rerun; stays in `run_fixtures.sh`); `run.sh
+  [EVIDENCE_DIR]` runs `test_step.py` (the offline step: markers only) in
+  the runner's container and `e2e.py` (a 0.47.0 world built by the 0.47.0
+  game with `grug_probe_r48_bags`, the guard's refusal, the shipped tool,
+  boots and joins of this checkout: the sort into the new sizes, the
+  letters read back from `grug_mail`'s storage, a second join); `evidence/`
+  the last run.
