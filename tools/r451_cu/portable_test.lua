@@ -723,11 +723,12 @@ has(f.formspec, FOCUS, "F × focuses Search")
 ------------------------------------------------------------------------------
 eq(table.concat(I.TAB_ORDER, ","), "grug_inventory:inventory,grug_inventory:character," ..
 	"grug_classes:talents,sfinv:crafting,grug_parties:group,grug_map:atlas," ..
-	"grug_inventory:help", "T the order: Map & Quests before Help")
+	"grug_inventory:help,grug_mail:admin", -- Round 48: Admin Mail after Help
+	"T the order: Map & Quests before Help")
 grug_map = {}
 dofile(ROOT .. "/mods/PLAYER/grug_map/page.lua")
 for _, name in ipairs({"grug_inventory:character", "grug_classes:talents",
-		"grug_parties:group", "grug_inventory:help"}) do
+		"grug_parties:group", "grug_inventory:help", "grug_mail:admin"}) do
 	sfinv.register_page(name, {title = name, get = function() return "" end})
 end
 I.order_tabs()

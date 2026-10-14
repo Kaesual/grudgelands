@@ -431,9 +431,11 @@ do
 
 	-- No textarea in our mods has a name (a named one is editable), except
 	-- the text boxes players type into: since Round 48 the mailbox's
-	-- message boxes (grug_mail/window.lua, Write and To the admin).
+	-- message boxes (grug_mail/window.lua, Write and To the admin) and the
+	-- Admin Mail tab's answer and letter boxes (grug_mail/admin.lua).
 	local INPUTS = {["mods/PLAYER/grug_mail/window.lua"] = {mail_body = true,
-		admin_body = true}}
+		admin_body = true}, ["mods/PLAYER/grug_mail/admin.lua"] = {
+		mail_admin_answer = true, mail_admin_body = true}}
 	local named, seen = {}, 0
 	for _, path in ipairs(lines_of("grep -rlF --include=*.lua 'textarea[' '" .. ROOT ..
 			"/mods' | grep -v '/mods/BASE/'")) do
