@@ -1009,4 +1009,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `placeholder_textures.py` writes the mailbox's placeholder textures (until
   the art pick replaces them); `capture.sh OUT_DIR` with
   `grug_probe_r48_world` the in-engine check of the twelve pads and one
-  screenshot per pad.
+  screenshot per pad;
+  `r48_hud` the minimap's side elements (`portable_test.lua`: the daytime
+  band's position over the two clock speeds, the mail badge per count,
+  placement beside the bezel and in the corner over desktop and web windows
+  at GUI scaling 1 and 2, the runtime with the minimap unavailable; the
+  minimap-shown runtime is `r27_minimap` block H); `gen_hud_textures.py`
+  (`--check`, `--placeholders`) composes the 40 band and 10 mail images
+  from `parts/` and the cooldown digits; `capture.sh OUT_DIR` with
+  `grug_probe_r48_hud` the engine screenshots (minimap shown and hidden,
+  mail 0, 3 and 9+, day and night, with "Now playing"; `GUI=`, `SUFFIX=`;
+  the r47_ml method), one queue run of one slot.

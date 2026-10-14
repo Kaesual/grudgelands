@@ -139,6 +139,8 @@ core = {
 		table.sort(list, function(a, b) return a.name < b.name end)
 		return list
 	end,
+	-- the daytime band beside the minimap (Round 48 lane HUD) reads the clock
+	get_timeofday = function() return 0.5 end,
 	get_player_window_information = function(name) return windows[name] end,
 	formspec_escape = function(text)
 		return (text:gsub("\\", "\\\\"):gsub("%]", "\\]"):gsub("%[", "\\[")
@@ -253,6 +255,7 @@ local sockets = {
 	{id = "c", role = "quest", pos = {x = 60, y = 10, z = -260}},
 }
 grug_core = {
+	DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125, -- atmosphere.lua (Round 48 band)
 	register_tag_visibility = function() end,
 	feed_item = function() end,
 	feed = function() return true end,
