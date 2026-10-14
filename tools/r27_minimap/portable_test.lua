@@ -31,7 +31,11 @@
 --      geometry over windows: tools/r451_mu): drawn under the location line
 --      when grug_ambience names a track, only changes sent, placed again on
 --      a window or GUI scaling change, gone with the minimap and back with
---      it, hidden for no track.
+--      it, hidden for no track; since Round 48 it moves to the corner with
+--      the minimap hidden;
+--   H  the side elements (Round 48 lane HUD): the mail icon left of the
+--      bezel and top-aligned, the daytime band bottom-aligned, both and
+--      "Now playing" in the top-right corner with the minimap hidden.
 -- Prints "R27 MINIMAP PORTABLE PASS checks=<n>" or the failures, plus the
 -- measured per-update cost as a comparison.
 local repo = arg[1] or "."
@@ -129,6 +133,8 @@ rawset(_G, "core", {
 	get_connected_players = connected,
 	get_player_by_name = function(name) return players[name] end,
 	get_player_window_information = function(name) return windows[name] end,
+	-- the daytime band beside the minimap (Round 48 lane HUD) reads the clock
+	get_timeofday = function() return 0.5 end,
 	formspec_escape = function(text)
 		return (text:gsub("\\", "\\\\"):gsub("%]", "\\]"):gsub("%[", "\\[")
 			:gsub(";", "\\;"):gsub(",", "\\,"))
@@ -136,6 +142,7 @@ rawset(_G, "core", {
 	registered_entities = {},
 })
 rawset(_G, "grug_core", {
+	DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125, -- atmosphere.lua (Round 48 band)
 	zone_authority_installed = function() return false end,
 	settlement_socket_settlements = function() return {} end,
 	faction_ids = {"accord", "throng"},
@@ -519,6 +526,21 @@ local function elements(p)
 	table.sort(list, function(a, b) return a.id < b.id end)
 	return list
 end
+-- The minimap's own elements: without the side elements (Round 48: the
+-- mail icon, the daytime band and "Now playing"), which stay while it is
+-- hidden (tools/r48_hud; block H below).
+local SIDE_TEXT = {"^grug_map_daytime_", "^grug_map_mail_", "^%[fill:", "^grug_ambience_note"}
+local function minimap_elements(p)
+	local list = {}
+	for _, e in ipairs(elements(p)) do
+		local side = e.def.type == "text" and e.def.alignment and e.def.alignment.x == 1
+		for _, pattern in ipairs(SIDE_TEXT) do
+			side = side or type(e.def.text) == "string" and e.def.text:find(pattern) ~= nil
+		end
+		if not side and e.def.text ~= "" then list[#list + 1] = e end
+	end
+	return list
+end
 local function by_text(p, pattern)
 	local out = {}
 	for _, e in ipairs(elements(p)) do
@@ -676,8 +698,10 @@ do
 		local inside, count = true, 0
 		for _, e in ipairs(elements(me)) do
 			local t = e.def.text
+			-- (the side elements beside the bezel, Round 48, are not markers)
 			if e.def.type == "image" and t ~= "" and not t:find("combine") and
-					not t:find("bezel") and not t:find("mask") and not t:find("rim_") then
+					not t:find("bezel") and not t:find("mask") and not t:find("rim_") and
+					not t:find("daytime") and not t:find("grug_map_mail") then
 				local x, y = screen(e.def, me)
 				count = count + 1
 				inside = inside and math.sqrt((x - frame.center_x) ^ 2 +
@@ -734,9 +758,11 @@ end
 -- tools/r44_mq's): off removes every element and persists, on restores.
 check(minimap.enabled(me), "R the minimap is on by default")
 minimap.set_enabled(me, false)
-check(not minimap.enabled(me) and #elements(me) == 0, "R switch off removes every element")
+-- Round 48: the side elements stay (ruling 2.1), every minimap element goes.
+check(not minimap.enabled(me) and #minimap_elements(me) == 0 and
+	#elements(me) == 5, "R switch off removes every minimap element")
 step(0.25)
-check(#elements(me) == 0, "R stays off")
+check(#minimap_elements(me) == 0, "R stays off")
 minimap.set_enabled(me, true)
 check(minimap.enabled(me) and #by_text(me, "^%[combine:") == 1, "R switch on restores it")
 
@@ -798,7 +824,9 @@ do
 	placed(lullaby, "HUD and GUI scaling 2")
 	minimap.set_enabled(me, false)
 	minimap.set_now_playing("me", feast)
-	check(#elements(me) == 0, "P a hidden minimap shows no box, also for a new track")
+	-- Round 48 ruling 2.1: the box moves to the top-right corner (block H).
+	check(#minimap_elements(me) == 0 and #by_text(me, "^%[fill:") == 1,
+		"P a hidden minimap keeps the box (in the corner), also for a new track")
 	minimap.set_enabled(me, true)
 	placed(feast, "switching the minimap on shows the box of the playing track")
 	minimap.set_now_playing("me", nil)
@@ -808,6 +836,75 @@ do
 	minimap.set_now_playing("me", nil)
 	step(WINDOW)
 	check(me.sent == sent, "P hidden stays quiet")
+	windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 1, real_gui_scaling = 1}
+	step(WINDOW)
+	frame = frame_of(me)
+end
+
+-- ---------------------------------------------------------------------------
+-- H: the side elements beside the minimap (Round 48 lane HUD; the pure
+-- geometry, the unavailable minimap and the band's updates: tools/r48_hud)
+-- ---------------------------------------------------------------------------
+do
+	local function side(pattern)
+		local found = by_text(me, pattern)[1]
+		if not found then return nil end
+		local x, y = screen(found, me)
+		return {x = x, y = y, text = found.text, scale = found.scale.x}
+	end
+	local function near_px(a, b) return math.abs(a - b) <= 1 end
+	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
+	step(WINDOW)
+	local f = frame_of(me)
+	local box = layout.minimap_box(windows.me)
+	local left, top = f.center_x - f.diameter / 2, f.center_y - f.diameter / 2
+	check(side("^grug_map_mail_") == nil, "H no letters: no mail icon")
+	minimap.set_mail_count("me", 3)
+	local mail, band = side("^grug_map_mail_"), side("^grug_map_daytime_")
+	local L = V.side_layout(box, f)
+	check(mail and mail.text == "grug_map_mail_3.png" and near_px(mail.y, top) and
+		mail.x + L.mail.w <= left and near_px(mail.x, L.mail.x),
+		"H shown: the mail icon left of the bezel, top-aligned")
+	check(band and band.text == "grug_map_daytime_15.png" and band.x + L.band.w <= left and
+		near_px(band.y + L.band.h, top + f.diameter),
+		"H shown: the band left of the bezel, bottom-aligned, at noon's position")
+	check(band and math.floor(160 * band.scale * f.hud) == L.band.w and
+		math.abs(L.band.w / f.diameter - 0.5) <= 0.1, "H the band is about half the bezel wide")
+	local sent = me.sent
+	minimap.set_mail_count("me", 3)
+	for _ = 1, 12 do step(WINDOW) end
+	check(me.sent == sent, "H the same count and a still clock send nothing")
+	minimap.set_mail_count("me", 12)
+	check(side("^grug_map_mail_").text == "grug_map_mail_9p.png" and me.sent == sent + 1,
+		"H twelve letters: 9+, one hud_change")
+	-- hidden: the corner stack inside the box, "Now playing" below the band
+	local track = {title = "Fantasy Orchestral Theme", artist = "joth"}
+	minimap.set_now_playing("me", track)
+	minimap.set_enabled(me, false)
+	local H = V.side_layout(box, nil)
+	mail, band = side("^grug_map_mail_"), side("^grug_map_daytime_")
+	local fill = side("^%[fill:")
+	local right, bottom = box.center_x + box.size / 2, box.center_y + box.size / 2
+	check(mail and near_px(mail.x + H.mail.w, right) and near_px(mail.y, box.center_y - box.size / 2),
+		"H hidden: the mail icon in the top-right corner")
+	check(band and near_px(band.x + H.band.w, right) and band.y >= mail.y + H.mail.h,
+		"H hidden: the band under the mail icon")
+	local g = V.now_playing_corner(box, H.playing_right, H.playing_top, track.title, track.artist)
+	check(fill and near_px(fill.x, g.x) and near_px(fill.y, g.y) and g.y >= band.y + H.band.h and
+		g.y + g.h <= bottom and near_px(g.x + g.w, right),
+		"H hidden: Now playing below the band, inside the box")
+	minimap.set_mail_count("me", 0)
+	check(side("^grug_map_mail_") == nil and side("^grug_map_daytime_") ~= nil,
+		"H hidden, no letters: the icon goes, the band stays")
+	minimap.set_mail_count("me", 1)
+	minimap.set_enabled(me, true)
+	mail, fill = side("^grug_map_mail_"), side("^%[fill:")
+	local under = V.now_playing_box(f, f.center_y + f.diameter / 2 + 4 * f.hud, track.title,
+		track.artist)
+	check(mail and mail.text == "grug_map_mail_1.png" and near_px(mail.y, top) and
+		fill and near_px(fill.y, under.y), "H shown again: back beside the bezel and under the line")
+	minimap.set_now_playing("me", nil)
+	minimap.set_mail_count("me", 0)
 	windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 1, real_gui_scaling = 1}
 	step(WINDOW)
 	frame = frame_of(me)

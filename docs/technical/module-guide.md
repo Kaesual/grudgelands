@@ -362,7 +362,7 @@ tools](#player-meta-read-by-external-tools).
 - **Crop registration**: `grug_nodes` registers complete `grug_farming:soil` and
   `soil_wet` definitions before synchronous mapgen compilation, and exports
   `crop_visual(key, stage, sounds)` and `bind_crop_soil_callbacks`. FARM binds
-  its real callbacks once and owns the 17 crop families, timers and current-world
+  its real callbacks once and owns the 18 crop families, timers and current-world
   activation. Mapgen has no FARM dependency; do not defer world authority.
   Tall crops keep state, timers and drops on the root; hidden helpers never own
   rewards. Multi-position growth/harvest preflights loaded, protected and exact
@@ -371,6 +371,17 @@ tools](#player-meta-read-by-external-tools).
   Since Round 30 soil without a growing crop checks its water once a minute
   (15 s under a growing crop; planting and regrowth re-arm 15 s), and the
   crop geometry LBM leaves a plant whose helpers already stand untouched.
+  Since Round 48 the soil check under a growing crop also reads the crop's
+  light (`default.plant_lit`, light 8 as at noon, defined with
+  `default.PLANT_LIGHT` in the patched `default/functions.lua` and shared by
+  papyrus and cactus) and pauses or resumes it on every check; profiles with
+  `dark` (Cave Cap, Mushroom, Ember Moss) skip it. `grug_cooking.PLANTS` rows
+  with `crop = false` (Salt Crust) are no crop. The Salt Pan
+  (`salt_pan.lua`) runs on its own node timer; the tooltip pass
+  (`tooltips.lua`, `grug_farming.apply_plant_tooltips`) runs at
+  `register_on_mods_loaded`. The P9G sources' and items' looks are runtime
+  overrides in `grug_gathering/presentation.lua`, never catalog fields (the
+  catalog is hashed into the mapgen manifest).
 
 ## Skills catalogue
 
@@ -1628,6 +1639,26 @@ tools](#player-meta-read-by-external-tools).
   Fixture:
   `tools/r27_minimap/portable_test.lua`; traffic comparison:
   `tools/r27_minimap/bench_glide.lua`.
+  **Side elements** (Round 48): the mail icon, the daytime band and the
+  "Now playing" box are `state.side`, apart from the minimap's own
+  `state.hud`: created at the first step, never removed while the player
+  is online, placed by `minimap_view.lua` `side_layout(box, frame)` (beside
+  the bezel with a frame, in the box's top-right corner without one) again
+  whenever the window box or the mode changes. The globalstep reads the
+  window box for both every 0.5 s and runs the side part also without a
+  view (minimap unavailable) and with the minimap hidden; the band is
+  recomputed on the 5 s check (`daytime_position(timeofday, start, end)`,
+  pure: real seconds since 04:30, 40 steps over the two clock speeds) and
+  sent only when its image changes. Other mods use
+  `grug_map.minimap.set_mail_count(name, n)` (0 hides; grug_mail calls it on
+  every unread change and at join; the count is kept per online player in
+  `mail_counts`, so a call before grug_map's join callback still counts) and
+  `set_now_playing(name, track)`. The images are finished files from
+  `tools/r48_hud/gen_hud_textures.py` (`--check`; its parts in
+  `tools/r48_hud/parts/`, the badge digits from `tools/r40_cd`). Fixtures
+  `tools/r48_hud` (position, badge, placement over windows, the unavailable
+  runtime) and `tools/r27_minimap` block H (beside the bezel, hide and
+  show).
   Zone and town names (Round 28 M1): `location.lua` samples each player's
   location every second, writes the line under the minimap and the entry
   banner (until Round 44 it also placed one zone marker per zone at
@@ -2068,8 +2099,9 @@ tools](#player-meta-read-by-external-tools).
     scheduler pass, a delivery and a music switch and calls
     `grug_map.minimap.set_now_playing(name, D.tracks[id] or nil)` only on a
     change; the minimap draws the box (`minimap_view.lua`
-    `now_playing_box`, three elements created and removed with the
-    minimap). Fixtures `tools/r451_mu` and `tools/r27_minimap` block P.
+    `now_playing_box`, three side elements that stay with the minimap hidden
+    or unavailable and then stand in the corner, `now_playing_corner`, since
+    Round 48). Fixtures `tools/r451_mu` and `tools/r27_minimap` block P.
 
 ## UI and formspecs
 

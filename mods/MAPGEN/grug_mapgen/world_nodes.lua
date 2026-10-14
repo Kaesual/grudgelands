@@ -69,6 +69,37 @@ return function(engine, directory, nodes, gathering)
   end,
  })
 
+ -- The mailbox (Round 48, mail plan ruling 1): written by `dressing.waystone`
+ -- beside every waystone, so it too exists before the settlement content is
+ -- resolved. A post with a box, one node tall, its front (the -z tile)
+ -- turned by facedir; like the waystone it can never be dug or blown up.
+ -- What a right-click does is grug_mail's (it loads after grug_mapgen, so it
+ -- is looked up here).
+ -- Placeholder shape and textures until the art pick (lane ARTM).
+ engine.register_node("grug_mapgen:mailbox", {
+  description="Mailbox",
+  drawtype="nodebox",
+  tiles={"grug_mapgen_mailbox_top.png","grug_mapgen_mailbox_top.png",
+   "grug_mapgen_mailbox_side.png","grug_mapgen_mailbox_side.png",
+   "grug_mapgen_mailbox_side.png","grug_mapgen_mailbox_front.png"},
+  paramtype="light",
+  paramtype2="facedir",
+  node_box={type="fixed",fixed={{-0.0625,-0.5,-0.0625,0.0625,0,0.0625},
+   {-0.25,0,-0.3125,0.25,0.5,0.3125}}},
+  groups={not_in_creative_inventory=1},
+  diggable=false,
+  is_ground_content=false,
+  drop="",
+  on_blast=function() end,
+  sounds=default.node_sound_wood_defaults(),
+  on_rightclick=function(pos, _, clicker)
+   local mail=rawget(_G,"grug_mail")
+   if mail and mail.open_mailbox and clicker and clicker:is_player() then
+    mail.open_mailbox(clicker, pos)
+   end
+  end,
+ })
+
  -- This occupies the air node immediately above the source-water surface;
  -- its thin box sits at the bottom of that node and never replaces water.
  engine.register_node(catalog.freshwater[1], {

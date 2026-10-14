@@ -197,8 +197,31 @@ local function loader(directory)
 	-- what a right-click does. It stands IN the waypoint socket's cell.
 	M.WAYSTONE = "grug_mapgen:waystone"
 
-	function M.waystone(buf, x, z)
+	-- The mailbox (Round 48, mail plan ruling 1) stands on the same pad, so
+	-- every pad that gets a waystone gets one and no other settlement does.
+	-- One offset from the stone for all twelve pads: off the pad's cross arms
+	-- (the ways to the stone stay free), not beside the stone (the arrival
+	-- sides stay free), within reach of the waypoint socket (grug_mail names
+	-- the mailbox after that settlement); facedir 1 turns its front to -x,
+	-- toward the stone. A capital that cannot take it passes its own.
+	M.MAILBOX = "grug_mapgen:mailbox"
+	M.MAILBOX_OFFSET = {x = 2, z = 1, facedir = 1}
+
+	function M.waystone(buf, x, z, mailbox)
 		buf:put(x, 1, z, M.WAYSTONE)
+		local m = mailbox or M.MAILBOX_OFFSET
+		local mx, mz = x + m.x, z + m.z
+		-- Open pad ground: nothing stands on the cell or hangs over it.
+		local ground = buf:at(mx, 0, mz)
+		local open = ground ~= nil and ground.name ~= "air"
+		for y = 1, 2 do
+			local cell = buf:at(mx, y, mz)
+			if cell ~= nil and cell.name ~= "air" then open = false end
+		end
+		if not open then
+			error("wp13: mailbox cell " .. mx .. "," .. mz .. " is not open pad ground", 0)
+		end
+		buf:put(mx, 1, mz, M.MAILBOX, m.facedir)
 	end
 
 	-- A start's waypoint pad: the capitals' pad (a signature-stone cross and
