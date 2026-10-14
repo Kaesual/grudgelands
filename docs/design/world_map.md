@@ -598,9 +598,10 @@ drawn from the base image above. The gliding version (approved in playtest,
   - the **mail icon** (an envelope with its count right of it, as high as
     the envelope) shows the player's unread letters and broadcasts: hidden
     at 0, the digit 1–9, "9+" above ([mail plan](../planning/mail-plan.md)
-    ruling 14; "9+" overlaps the envelope's right end, so every count has
-    the same width); drawn exactly as high as the band (57 × 23 px at
-    1080p, 37 × 15 at 720p);
+    ruling 14; the image is wide enough for "9+" beside the envelope, the
+    user's choice, so a single digit leaves room on its right and every
+    count has the same width); drawn exactly as high as the band (72 × 23
+    px at 1080p, 47 × 15 at 720p);
   - the **daytime band** shows roughly where the world day stands, not a
     clock (no numbers): one 20-minute day of day and night sections at their
     real lengths (the 15-minute day phase three quarters of it, with the

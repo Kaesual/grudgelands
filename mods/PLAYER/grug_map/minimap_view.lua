@@ -228,9 +228,11 @@ end
 -- follow the minimap's box (25 % of the window height), as the bezel does:
 -- the band `band` of the box wide (Round 48 HUD2: 75 % of lane HUD's 0.45;
 -- 92 x 23 px at 1080p, 60 x 15 at 720p), the mail icon exactly as high as
--- the band (the user's ruling of 2026-10-14; 57 x 23 at 1080p). `row_gap` HUD px separate the band from the mail
--- icon, `gap` the mail icon from the bezel and the row from "Now playing".
-V.SIDE = {band_w = 160, band_h = 40, mail_w = 69, mail_h = 28, band = 0.3375,
+-- the band (the user's ruling of 2026-10-14; 72 x 23 at 1080p, room for
+-- "9+" beside the envelope). `row_gap` HUD px separate the band from the
+-- mail icon, `gap` the mail icon from the bezel and the row from "Now
+-- playing".
+V.SIDE = {band_w = 160, band_h = 40, mail_w = 87, mail_h = 28, band = 0.3375,
 	gap = 4, row_gap = 8}
 
 -- The height the client draws a `tw` x `th` texture at that minimap.lua's

@@ -14,13 +14,14 @@ them into mods/PLAYER/grug_map/textures/:
       middle; the band moves right to left, so the coming phase enters from
       the right.
   grug_map_mail_1.png .. _9.png, grug_map_mail_9p.png  the mail icon with its
-      unread count, 69 x 28 px each (0 unread shows no icon at all). The
+      unread count, 87 x 28 px each (0 unread shows no icon at all). The
       envelope (cropped to its opaque pixels) stands at the left, vertically
-      centred; the count stands right of it, right-aligned and as high as the
-      envelope, so it stays readable when the icon is drawn as low as the
-      daytime band beside it (Round 48 lane HUD2: about 23 px at 1080p, 15
-      at 720p). "9+" is wider than one digit and overlaps the envelope's
-      right end, so every image keeps the same width. The digits are the
+      centred; the count stands right of it, left-aligned after a small gap
+      and as high as the envelope, so it stays readable when the icon is
+      drawn as low as the daytime band beside it (Round 48 lane HUD2: about
+      23 px at 1080p, 15 at 720p). The canvas is wide enough for "9+" beside
+      the envelope (the user's choice: the count never overlaps it), so one
+      digit leaves room on the right and every image has the same size. The digits are the
       cooldown digits of tools/r40_cd/gen_cooldown_textures.py (read from
       their generated files, at 3 px per glyph cell), the "+" included.
 
@@ -65,10 +66,10 @@ POSITIONS, DAY_POSITIONS = 40, 30  # minimap_view.lua V.DAYTIME
 STEP = BAND_W // POSITIONS  # 4 px per position
 DAY_W = DAY_POSITIONS * STEP  # 120 px of day, 40 of night
 SUN_U, MOON_U = DAY_W // 2, DAY_W + (BAND_W - DAY_W) // 2
-MAIL_W, MAIL_H = 69, 28  # minimap_view.lua V.SIDE mail_w, mail_h
-COUNT_GAP = 2  # px between the envelope and a one-digit count
-DIGIT_W = GLYPH_W * CELL
-ENVELOPE_W = MAIL_W - COUNT_GAP - DIGIT_W  # 46
+MAIL_W, MAIL_H = 87, 28  # minimap_view.lua V.SIDE mail_w, mail_h
+COUNT_GAP = 2  # px between the envelope and the count
+WIDEST_W = (ADVANCE + GLYPH_W) * CELL  # "9+", 39 px
+ENVELOPE_W = MAIL_W - COUNT_GAP - WIDEST_W  # 46
 CLEAR = (0, 0, 0, 0)
 
 
@@ -275,14 +276,16 @@ def mail_image(text, parts, palette):
     text_w = ((len(text) - 1) * ADVANCE + GLYPH_W) * CELL
     text_h = GLYPH_H * CELL
     top = (MAIL_H - text_h) // 2
-    left = MAIL_W - text_w
+    left = len(envelope[0]) + COUNT_GAP
     if palette.get("badge"):
-        # a pill as high as the image behind the count
+        # a pill as high as the image behind the count, within the canvas
         pad = 2
-        w = max(MAIL_H, text_w + 2 * pad)
+        w = min(MAIL_W - left, max(MAIL_H, text_w + 2 * pad))
         rim = color(palette["badge_rim"]) if palette.get("badge_rim") else None
-        paste(canvas, pill(w, MAIL_H, color(palette["badge"]), rim), MAIL_W - w, 0)
-        left = MAIL_W - w + (w - text_w) // 2
+        paste(canvas, pill(w, MAIL_H, color(palette["badge"]), rim), left, 0)
+        left += (w - text_w) // 2
+    if left + text_w > MAIL_W:
+        raise SystemExit("the count %r does not fit beside the envelope" % text)
     x = left
     for g in glyphs:
         paste(canvas, g, x, top)

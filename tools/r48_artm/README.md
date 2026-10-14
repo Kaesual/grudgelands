@@ -37,9 +37,10 @@ small wax closure, colours, pale outer edge and dark inner contour.
 The larger envelope meets the final compositor's half-size cooldown
 digits; the 32 × 32 proposal would leave them detached. `badge: null`
 keeps the preview's digits without a pill. Ten finished **60 × 52 RGBA**
-images (since the follow-up lane HUD2 **69 × 28**: the compositor crops the
+images (since the follow-up lane HUD2 **87 × 28**: the compositor crops the
 envelope to its 46 × 28 opaque pixels and draws the count beside it at
-3 px per glyph cell, so it stays readable at the band's height): `mods/PLAYER/grug_map/textures/grug_map_mail_1.png` through
+3 px per glyph cell, with room for "9+", so it stays readable at the band's
+height): `mods/PLAYER/grug_map/textures/grug_map_mail_1.png` through
 `_9.png`, plus `_9p.png`.
 
 **Band parts:** `tools/r48_hud/parts/{sun,moon,frame,marker}.png` and
