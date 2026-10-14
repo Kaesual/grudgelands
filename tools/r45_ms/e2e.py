@@ -234,8 +234,11 @@ def check_names(reg, game):
         check("names", "%s: every gear item of the step now has another definition value "
                        "(the pin keeps each)" % game,
               set(gear) >= set(STEP.GEAR) and not same_values, json.dumps(same_values[:8]))
-        check("names", "%s: the bag sizes are unchanged (the join sizes bag lists by them)"
-              % game, reg.get("bags") == STEP.BAG_SLOTS, json.dumps(reg.get("bags")))
+        # Round 48 halved every bag; its own step 0.48.0 re-lays the bags out.
+        halved = {name: size // 2 for name, size in STEP.BAG_SLOTS.items()}
+        check("names", "%s: the step's bags, at half their sizes since 0.48.0 (the join sizes "
+                       "bag lists by them)" % game, reg.get("bags") == halved,
+              json.dumps(reg.get("bags")))
     check("names", "%s: the items under %s (and the mixture group) are ST's 40 mixtures"
           % (game, STEP.MIXTURE_PREFIX),
           reg.get("mixtures") == MIXTURES, json.dumps(reg.get("mixtures")))

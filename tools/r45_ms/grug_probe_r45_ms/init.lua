@@ -297,6 +297,11 @@ local function on_join(player)
 		loaded_meta_marker = player:get_meta():get_string("grug_core:migrate:0.45.0")}
 	obs.joins[#obs.joins + 1] = entry
 	local drops_before = #drops
+	-- Round 48: the step 0.48.0's join part sorts main[9..] and the bags
+	-- into the halved bags (its own test is tools/r48_bags); this test holds
+	-- the 0.45.0 join part's slots, so the later step's marker goes before
+	-- grug_core's runner.
+	if not setup then player:get_meta():set_string("grug_core:migrate:0.48.0", "") end
 	log("joined " .. name)
 	if setup and BUILD[name] then
 		core.after(0.5, function()
