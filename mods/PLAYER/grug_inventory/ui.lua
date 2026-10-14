@@ -95,12 +95,15 @@ end
 --
 -- Inventory views (spec §3.1-§3.2). "full" (the Inventory tab) and "short"
 -- (every other page with an inventory) both draw main[9..] and then each
--- equipped bag's content list as one 8-wide grid in a scroll_container, and
--- the hotbar (main[1..8]) below it, outside the scroll area. Bag sizes are
--- multiples of 8, so the grid has no gaps. Both are boxed (LAYOUT below): an
--- Inventory box with the grid and the Hotbar box, each labelled inside. The
--- full view shows VIEW_ROWS.full rows, the short one two; the Hotbar box is
--- at one place in every tab, so it does not jump on a tab switch.
+-- equipped bag's content list in a scroll_container, and the hotbar
+-- (main[1..8]) below it, outside the scroll area. The lists flow on as one
+-- 8-wide grid (the user, Round 48 playtest): a bag (4, 8, 12 or 16 slots)
+-- starts in the column after the previous list's last slot, so only the very
+-- last row may be partial (view_elements below). Both are boxed (LAYOUT
+-- below): an Inventory box with the grid and the Hotbar box, each labelled
+-- inside. The full view shows VIEW_ROWS.full rows, the short one two; the
+-- Hotbar box is at one place in every tab, so it does not jump on a tab
+-- switch.
 -- No listring: shift-click has no job inside one inventory.
 --
 -- The scroll position: the client does not keep a scroll_container's
@@ -182,21 +185,34 @@ function grug_inventory.area_box(x, y, w, h, label, color)
 		core.formspec_escape(label))
 end
 
--- The lists of the scroll area, top to bottom: {list, start, rows}.
-local function view_sections(inv)
-	local sections = {}
-	local main_rows = math.ceil(math.max(0, inv:get_size("main") - 8) / 8)
-	if main_rows > 0 then
-		sections[1] = {list = "main", start = 8, rows = main_rows}
-	end
-	for i = 1, grug_inventory.BAG_COUNT do
-		local list = grug_inventory.content_list(i)
-		local rows = math.ceil(inv:get_size(list) / 8)
-		if rows > 0 then
-			sections[#sections + 1] = {list = list, start = 0, rows = rows}
+-- The scroll area's list[] elements and its row count. main[9..] and the
+-- equipped bags' content lists, in that order, flow on 8 wide: each list
+-- starts at the flow position after the previous one's last slot. A list[]
+-- draws w * h slots from its start index row by row (guiInventoryList.cpp
+-- draw), so a list that starts or ends mid-row is split into at most three
+-- elements: its partial first row, its full rows, its partial last row.
+-- Each element: {list, col, row, w, h, start}.
+local function view_elements(inv)
+	local elements, pos = {}, 0
+	local function flow(list, start, count)
+		local last = start + count
+		while start < last do
+			local col, left = pos % 8, last - start
+			local w, h = 8, math.floor(left / 8)
+			if col > 0 or left < 8 then
+				w, h = math.min(8 - col, left), 1
+			end
+			elements[#elements + 1] = {list = list, col = col,
+				row = math.floor(pos / 8), w = w, h = h, start = start}
+			start, pos = start + w * h, pos + w * h
 		end
 	end
-	return sections
+	flow("main", 8, math.max(0, inv:get_size("main") - 8))
+	for i = 1, grug_inventory.BAG_COUNT do
+		local list = grug_inventory.content_list(i)
+		flow(list, 0, inv:get_size(list))
+	end
+	return elements, math.ceil(pos / 8)
 end
 
 -- The scrollbar's maximum for `rows` content rows shown `visible` at a time.
@@ -210,9 +226,7 @@ function grug_inventory.inventory_view(player, mode, context)
 	local visible = grug_inventory.VIEW_ROWS[mode]
 	assert(visible, "inventory_view: unknown mode " .. tostring(mode))
 	local inv = player:get_inventory()
-	local sections = view_sections(inv)
-	local rows = 0
-	for _, section in ipairs(sections) do rows = rows + section.rows end
+	local elements, rows = view_elements(inv)
 	local area_h = visible * PITCH - (PITCH - SLOT)
 	local box_y, box_h = LAYOUT.inventory_y, LAYOUT.inventory_h
 	if mode == "short" then
@@ -251,11 +265,10 @@ function grug_inventory.inventory_view(player, mode, context)
 	end
 	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;vertical;%.3f]"):format(
 		view_x, area_y, VIEW_W, area_h, field, SCROLL_FACTOR)
-	local row = 0
-	for _, section in ipairs(sections) do
-		fs[#fs + 1] = ("list[current_player;%s;0,%.3f;8,%d;%d]"):format(
-			section.list, row * PITCH, section.rows, section.start)
-		row = row + section.rows
+	for _, element in ipairs(elements) do
+		fs[#fs + 1] = ("list[current_player;%s;%.3f,%.3f;%d,%d;%d]"):format(
+			element.list, element.col * PITCH, element.row * PITCH, element.w,
+			element.h, element.start)
 	end
 	fs[#fs + 1] = "scroll_container_end[]"
 

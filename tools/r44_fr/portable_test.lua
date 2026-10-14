@@ -11,9 +11,10 @@
 --      content after real_coordinates[false], a page's own header (the Map
 --      tab) left alone;
 --   3. the views, full and short, with 0-4 bags of mixed sizes: main[9..]
---      first, then each equipped bag's list in slot order as one 8-wide grid
---      without gaps, the hotbar outside the scroll area and at one place in
---      both views, both views boxed (an Inventory and a Hotbar box, labelled
+--      first, then each equipped bag's list in slot order flowing on as one
+--      8-wide grid (Round 48: every slot drawn once at its flow position, the
+--      rows and scroll range from the flowed slots), the hotbar outside the
+--      scroll area and at one place in both views, both views boxed (an Inventory and a Hotbar box, labelled
 --      inside), slot counts, the scrollbar only when the grid is taller than
 --      the view with a thumb shorter than its track, no listring on the
 --      Inventory page; the Inventory page's boxed layout (Round 45 playtest:
@@ -394,55 +395,76 @@ local function hotbar_y(fs)
 	return tonumber(y)
 end
 
+-- Round 48 playtest (the user): bags hold 4, 8, 12 or 16 slots and the lists
+-- flow on 8 wide, each starting in the column after the previous list's last
+-- slot; only the very last row may be partial. Every (list, index) is drawn
+-- exactly once, at its flow position; elements stay inside the 8 columns.
 local cases = {
 	{label = "no bags", bags = {}},
-	{label = "one 8-slot bag", bags = {8}},
-	{label = "16 and 24, slot 2 empty", bags = {16, 0, 24}},
-	{label = "four mixed", bags = {32, 8, 24, 16}},
-	{label = "four 32", bags = {32, 32, 32, 32}},
+	{label = "one 4", bags = {4}},
+	{label = "three 4s", bags = {4, 4, 4}, elements = 4},
+	{label = "4 and 12", bags = {4, 12}},
+	{label = "4, slot 2 empty, 12", bags = {4, 0, 12}},
+	{label = "12, 4 and 8", bags = {12, 4, 8}},
+	{label = "four 16s", bags = {16, 16, 16, 16}},
 }
 local hotbars = {}
 for _, case in ipairs(cases) do
 	local player = make_player("p", lists_with_bags(case.bags))
-	local expected_lists, total = {{"main", 3, 8}}, 24
-	for i = 1, 4 do
-		local size = case.bags[i] or 0
-		if size > 0 then
-			expected_lists[#expected_lists + 1] = {"grug_bag" .. i .. "_content", size / 8, 0}
-			total = total + size
+	-- want["list#index"] = flow position (0-based) of that slot.
+	local want, total = {}, 0
+	local function expect(list, first, count)
+		for index = first, first + count - 1 do
+			want[list .. "#" .. index] = total
+			total = total + 1
 		end
 	end
+	expect("main", 9, 24)
+	for i = 1, 4 do
+		expect("grug_bag" .. i .. "_content", 1, case.bags[i] or 0)
+	end
+	local flowed_rows = math.ceil(total / 8)
 	for _, mode in ipairs({"full", "short"}) do
 		local view = grug_inventory.inventory_view(player, mode, {})
 		local label = case.label .. ", " .. mode
 		formspec_ok(view, label)
 		local inner = list_elements(scroll_part(view) or "")
-		eq(#inner, #expected_lists, label .. ": lists in the scroll area")
-		local count, row = 0, 0
-		for index, element in ipairs(inner) do
-			local want = expected_lists[index] or {}
-			eq(element.list, want[1], label .. ": list " .. index)
-			eq(element.h, want[2], label .. ": rows of list " .. index)
-			eq(element.start, want[3], label .. ": start of list " .. index)
-			eq(element.w, 8, label .. ": 8 wide")
-			check(math.abs(element.y - row * 1.25) < 1e-6, label .. ": no gap before list " .. index)
-			row = row + element.h
-			count = count + element.w * element.h
+		if case.elements then
+			eq(#inner, case.elements, label .. ": list elements in the scroll area")
 		end
+		local seen, count, misplaced, row = {}, 0, 0, 0
+		for _, element in ipairs(inner) do
+			local col = element.x / 1.25
+			check(math.abs(col - math.floor(col + 0.5)) < 1e-6 and col >= 0 and
+				col + element.w <= 8 + 1e-6, label .. ": " .. element.list .. " inside the 8 columns")
+			for k = 0, element.w * element.h - 1 do
+				local key = element.list .. "#" .. (element.start + k + 1)
+				local x = math.floor(col + 0.5) + k % element.w
+				local y = element.y / 1.25 + math.floor(k / element.w)
+				local pos = math.floor(y + 0.5) * 8 + x
+				check(not seen[key], label .. ": " .. key .. " drawn once")
+				seen[key] = true
+				if want[key] ~= pos then misplaced = misplaced + 1 end
+				count = count + 1
+			end
+			row = math.max(row, math.floor(element.y / 1.25 + 0.5) + element.h)
+		end
+		eq(misplaced, 0, label .. ": every slot at its flow position")
 		eq(count, total, label .. ": slots in the scroll area")
+		eq(row, flowed_rows, label .. ": rows = ceil(slots / 8)")
 		hotbars[mode] = hotbar_y(view)
 		check(hotbars[mode] ~= nil, label .. ": the hotbar row")
 		local visible = grug_inventory.VIEW_ROWS[mode]
 		local max = view:match("scrollbaroptions%[min=0;max=(%d+);")
-		if row > visible then
-			eq(tonumber(max), (row - visible) * 10, label .. ": scroll range")
+		if flowed_rows > visible then
+			eq(tonumber(max), (flowed_rows - visible) * 10, label .. ": scroll range")
 			has(view, "scrollbar[", label .. ": a scrollbar")
 			-- Round 45 playtest: the engine draws the thumb as
 			-- thumbsize / (max + 1) of the track; it shows the visible share
 			-- of the rows and is shorter than the track, so it can be dragged.
 			local thumb = tonumber(view:match("scrollbaroptions%[min=0;max=%d+;" ..
 				"smallstep=%d+;largestep=%d+;thumbsize=(%d+);arrows=hide%]"))
-			eq(thumb, math.max(1, math.floor(visible * (max + 1) / row + 0.5)),
+			eq(thumb, math.max(1, math.floor(visible * (max + 1) / flowed_rows + 0.5)),
 				label .. ": the thumb shows the visible share")
 			check(thumb and thumb < max + 1, label .. ": the thumb is shorter than the track")
 			-- The options are reset to the engine's defaults right after the
