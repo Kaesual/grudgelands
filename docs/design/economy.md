@@ -175,7 +175,8 @@ items without one:
   unpacking is free: the twelve pack/unpack rows of `grug_smelting` (the
   metal blocks, Emberglass and Abyssal Crystal) and every other block that
   nine of one item make and that gives the nine back (Coal Block, the
-  cut-gem blocks, the meat blocks).
+  cut-gem blocks). A one-way pack (the meat blocks, packed from any meat
+  and never unpacked) stays a crafted good.
 - **Vendor goods and gear** keep the first pass: the 5 % buy-back, and a
   1–2c supply (thread, torch, stick) stays unsellable.
 - **Never sellable:** the Bag of Coins, the Fallen Crown, both Captain's
@@ -202,8 +203,8 @@ items without one:
   per slot with **1** and **All**, at its quality factor. A **lot good** gets
   **one row per item name**, its count summed over every carried list
   (30 + 30 Cobblestone make a lot of 50), e.g. `Cobblestone x143` ·
-  `1c per 50` · **All (2c)**. Lot goods carry no quality, so nothing is lost
-  by merging.
+  `1c per 50` · **All (2c)**. Lot goods sell without a quality factor and
+  wear is ignored, so merging their stacks changes no price.
 - Below its lot size the row is greyed with `Need 50 to sell` and has no
   button, so the player learns that the item sells in lots.
 - **All** sells as many whole lots as the player carries and leaves the

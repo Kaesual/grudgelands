@@ -1033,4 +1033,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   screenshots of every tab and dialog of the mailbox window and Help → Mail
   (a stand-in mailbox beside the human start's waystone; the TA method:
   Xvfb and one real client; `GUI_SCALE`, `SUFFIX=`), one queue run of one
-  slot.
+  slot;
+  `r48_sell` the vendor's sell side (`portable_test.lua`: lot rows over the
+  carried lists, All over several slots, the greyed row below the lot
+  size, a moved stack refused without loss, the money ceiling before any
+  removal, the pack rule on the real `prices.lua`; the price rules and the
+  milli-copper second pass are in `r29_e1`).

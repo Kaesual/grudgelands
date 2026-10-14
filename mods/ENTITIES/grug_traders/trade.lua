@@ -123,8 +123,8 @@ end
 -- unit}); a lot good (Round 48, sell plan §3.5) gets ONE row per item name
 -- with its count over every carried list ({item, count, lot, copper}: copper
 -- per lot), placed where its first stack is, so 30 + 30 Cobblestone in two
--- slots still make a lot of 50. Lot goods carry no quality, so merging their
--- stacks loses nothing.
+-- slots still make a lot of 50. Lot goods sell without a quality factor and
+-- wear is ignored, so merging their stacks changes no price.
 local function current_rows(player)
 	local rows, lots = {}, {}
 	local inv = player:get_inventory()

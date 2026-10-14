@@ -398,7 +398,8 @@ local function second_pass_data(classified, reference)
 	end
 	-- Every other block with the same free pair (the coordinator's ruling on
 	-- the lane's question 2): nine of one item make it and one gives the nine
-	-- back (Coal Block, the cut-gem blocks, the meat blocks ...). Halving it
+	-- back (Coal Block, the cut-gem blocks ...; a one-way pack such as a meat
+	-- block is not one and stays a crafted good). Halving it
 	-- as a crafted good would only send players to unpack before selling.
 	for itemname in pairs(candidates) do
 		if not storage[itemname] then
@@ -481,7 +482,7 @@ end
 
 -- What the vendor pays for a stack (or an item name): copper, lot. Lot 1 is
 -- a single good at stack_sell_price (its quality included); a larger lot pays
--- `copper` per `lot` units (lot goods carry no quality); 0, nil = not sold.
+-- `copper` per `lot` units (no quality factor, wear ignored); 0, nil = not sold.
 function grug_traders.sell_offer(stack)
 	if type(stack) == "string" then stack = ItemStack(stack) end
 	local copper, lot = rules.lot_offer(grug_traders.sell_value(stack:get_name()))
