@@ -1043,4 +1043,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   carried lists, All over several slots, the greyed row below the lot
   size, a moved stack refused without loss, the money ceiling before any
   removal, the pack rule on the real `prices.lua`; the price rules and the
-  milli-copper second pass are in `r29_e1`).
+  milli-copper second pass are in `r29_e1`);
+  `r48_quest` the system quest and the game's letters (`portable_test.lua`:
+  the real `grug_quests` registry, state, labels and hud, `grug_map`'s
+  quest box and the real `grug_mail` with `grug_money` on the `r48_mail`
+  stub engine: the system quest kind and its refusals, the starter quest's
+  grant at arrival and join once, the full log skipping it, the tracker and
+  log text, the turn-in by opening a mailbox with XP, 25c, the turn-in hook
+  and the completion line, the welcome letter once, the level letters with
+  their conditions, a jump 14 -> 21 and the filled placeholders).

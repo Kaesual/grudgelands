@@ -51,12 +51,14 @@ end
 -- Description, objective lines and the reward line, separated by an empty
 -- line each like the quest-offer dialogue (Round 32: one text field, so it
 -- scrolls only when everything together does not fit). No hard wrap: the
--- textarea wraps at its own width.
+-- textarea wraps at its own width. A system quest (Round 48: no objectives,
+-- no NPC) shows its turn-in text in the objectives' place.
 local function detail_text(quest)
 	local objectives = {}
 	for _, objective in ipairs(quest.objectives) do
 		objectives[#objectives + 1] = objective_label(objective)
 	end
+	if quest.turnin_text then objectives[#objectives + 1] = quest.turnin_text .. "." end
 	local rewards = {}
 	if quest.reward_xp > 0 then rewards[#rewards + 1] = quest.reward_xp .. " XP" end
 	if quest.rewards.copper > 0 then rewards[#rewards + 1] = grug_money.format(quest.rewards.copper) end
@@ -146,9 +148,11 @@ function M.content(session, journal, rect)
 		esc(quest.title .. (quest.repeatable and " (Repeatable)" or "")))
 	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + PAD, text_y + PAD + ROW_H * 1.5,
 		esc(level_line(quest)))
-	-- The status line at the bottom: where to hand in, or the last notice.
+	-- The status line at the bottom: where to hand in, or the last notice. A
+	-- system quest's hand-in is its turn-in text in the text field (it is
+	-- too long for this one-line label).
 	local status
-	if quest.ready then
+	if quest.ready and not quest.turnin_text then
 		local npc = grug_quests.registered_npcs[quest.npc]
 		status = (quest.travel and "Travel to " or "Ready to return to ") ..
 			(npc and npc.title or quest.npc) .. "."

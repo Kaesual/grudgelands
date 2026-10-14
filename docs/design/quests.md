@@ -11,7 +11,9 @@ quest files and the front bounty baseline
 a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
 2026-10-05 ([plan](../planning/round36-plan.md) §2.5, §2.7); the repeatable
 quests removed by Round 46 ruling 8, 2026-10-12
-([plan](../planning/round46-plan.md) §2).
+([plan](../planning/round46-plan.md) §2); the system quest kind and the
+starter quest by Round 48, 2026-10-14
+([mail plan](../planning/mail-plan.md) rulings 15 and 17.2).
 
 
 ### Confirmed by the user
@@ -78,7 +80,8 @@ quests removed by Round 46 ruling 8, 2026-10-12
   constant for the tracker, the auto-track on accept and the quest-log
   notice). Each tracked quest is one HUD line showing only its objective
   (e.g. "0/4 Bring Raw Meat"), no title; a quest ready to turn in shows
-  "Return to <turn-in NPC>". A quest with several objectives shows them on
+  "Return to <turn-in NPC>" (a system quest its own line, "System quests"
+  below). A quest with several objectives shows them on
   one compact line ("Wood Axe 0/1, Wood Pickaxe 0/1"), a travel quest reads
   "Travel to <NPC>" and a repeatable starts with "Repeatable: ". Two quests
   with identical objectives may read the same. Keep the tab authoritative; do not place the entire journal
@@ -399,6 +402,28 @@ dialogue list and detail (with the cooldown), the quest log and the HUD;
 while it cools down the giver lists it with "Repeatable again in N min.".
 Its first completion counts for every quest that requires it; a repeat
 starts its counters from zero.
+
+## System quests (Round 48)
+
+A **system quest** is registered by code, not by a quest file: it has no
+quest giver, no turn-in NPC, no objectives, no quest drops and no repeat
+(mail plan ruling 17.2, [mail.md](mail.md) §8). The mod that owns it
+accepts it through the normal accept (the 20-quest log limit holds) and
+turns it in through the normal turn-in, so its rewards, the turn-in hook
+and the achievements work as for any quest. It is ready to turn in from
+the start. Instead of "Return to <NPC>" the tracker shows its own turn-in
+line (cut to the tracker's width like every line) and the quest log shows
+it as a sentence in the text field, where the objectives stand; no NPC and
+no map target is marked for it. No quest file can require it.
+
+The one system quest is the starter quest `mailbox_visit`, "Use a mailbox
+in one of the cities" (level 1, both factions): turn-in line "Open a
+mailbox beside the waystone of a capital or a starting village", turned in
+by opening any mailbox; reward one kill equivalent at level 1 (30 XP) and a
+fixed 25c (`rewards.copper`, the first letters' postage). Quests have no
+completion text: its completion line goes to the message feed with the
+turn-in. The quest tools (`validate.py`, `ledger.py`, `income.py`) read
+only the quest files, so they do not count it.
 
 ## Quest data (per zone)
 

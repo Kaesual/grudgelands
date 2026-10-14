@@ -414,7 +414,10 @@ core.create_detached_inventory = function(_, _, owner) return new_inventory(owne
 local function new_player(name, faction)
 	local inv = new_inventory(name)
 	inv:set_size("main", 32)
-	local meta = setmetatable({fields = {}}, Meta)
+	-- Lane QUEST's welcome letter and starter quest are settled: their own
+	-- fixture is tools/r48_quest (these mailboxes stay as this file counts them).
+	local meta = setmetatable({fields = {["grug_mail:welcome_sent"] = "1",
+		["grug_mail:quest_granted"] = "1"}}, Meta)
 	local player = {inv = inv, meta = meta, online = true, hp = 20,
 		pos = {x = 0, y = 10, z = 0}, faction = faction, level = 12}
 	function player:get_player_name() return name end
@@ -459,15 +462,20 @@ grug_core = {
 grug_classes = {
 	get_class = function(player) return player.class_id or "warrior" end,
 	get_race = function() return "dwarf" end,
+	register_on_arrival = function() end,
 }
-grug_xp = {get_level = function(player) return player.level end}
+grug_xp = {get_level = function(player) return player.level end,
+	register_on_level_change = function() end}
+-- Lane QUEST's starter quest (grug_mail quest.lua; tested in tools/r48_quest).
+grug_quests = {register_quest = function() end, quest_held = function() return nil end}
 grug_factions = {
 	get_faction = function(player) return player.faction end,
 	register_on_faction_chosen = function(f) table.insert(callbacks.faction, f) end,
 }
 grug_gear = {initialize_weapon_tooltip = function() return false end}
 grug_abilities = {is_unlocked = function() return true end}
-grug_mounts = {owns_tier = function() return true end}
+grug_mounts = {owns_tier = function() return true end, RIDING_TIERS = {1, 2, 3, 4},
+	owned_tier_ids = function() return {} end}
 grug_housing, grug_skills = {}, {}
 local mail_counts = {}
 grug_map = {minimap = {set_mail_count = function(name, n) mail_counts[name] = n end}}
