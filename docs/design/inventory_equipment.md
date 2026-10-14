@@ -26,9 +26,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   window. Creative's tabs, for creative players, follow the table.
 - **Inventory views** (`grug_inventory.inventory_view(player, mode,
   context)`): `main[9..]`, then each equipped bag's content list in slot
-  order, as one 8-wide grid in a scroll area (bag sizes are multiples of 8,
-  so there are no gaps), and the hotbar (`main[1..8]`) below it, outside the
-  scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
+  order, as one 8-wide grid in a scroll area (each bag starts a new row; a
+  4- or 12-slot bag leaves half a row empty, Round 48 ruling), and the
+  hotbar (`main[1..8]`) below it, outside the scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
   `grug_inventory.LAYOUT`): an **Inventory** box with the grid and its
   scrollbar and the gold **Hotbar** box, each labelled inside, top left
   above the slots. **Full** shows seven rows (the Inventory tab, layout
@@ -433,14 +433,15 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 - **Base inventory stays 32 slots** (must not feel cramped); **4 bag
   slots** extend it. Cloth and leather each have four named variants, at
-  profession tiers T1 / T2 / T4 / T5: **8 / 16 / 24 / 32** slots (`bagslots` group; bag slots + contents are
-  player-inventory lists, see above). Four huge bags therefore add 128
-  slots. The parallel cloth/leather catalog is an explicit one-item-per-concept
+  profession tiers T1 / T2 / T4 / T5: **4 / 8 / 12 / 16** slots (`bagslots` group; bag slots + contents are
+  player-inventory lists, see above; halved in Round 48). Four of the
+  largest therefore add 64 slots, 96 in all. The parallel cloth/leather catalog is an explicit one-item-per-concept
   exception; neither material grants stats, affixes or extra capacity.
 - Cloth bags are Tailor products and leather bags are Leatherworker products.
-  The **small 8-slot cloth bag is the
-  exception and stays vendor-sellable**: it is the floor tier of its
-  item category (professions.md §4), so it is bought, not crafted-only.
+  The **small 4-slot cloth bag is the
+  exception and stays vendor-sellable** (the Small Bag, 20c since Round
+  48): it is the floor tier of its item category (professions.md §4), so
+  it is bought, not crafted-only.
 - **The give order** (Round 44, spec `ui-crafting-rework-plan.md` §2.4):
   every item source — pickup, dug blocks, loot, boss loot, purchases, quest
   rewards and drops, fishing, harvests, refunds, equipment returns, station
@@ -481,7 +482,19 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   higher tier first (gear bracket, food tier, else the item level's tier),
   then the name, then the higher quality. Stacks merge only when name, wear
   and metadata are identical; free slots end up contiguous at the end; a
-  soulbound item stays in `main`.
+  soulbound item stays in `main`. The same sort can lay everything out into
+  smaller target bag sizes (`grug_inventory.sort(player, sizes)`, Round 48):
+  what does not fit is the end of the order and is handed back to the
+  caller, never a soulbound or bound item; only the migration step 0.48.0
+  uses it.
+- **The bag change of 0.48.0** (Round 48, the migration step 0.48.0,
+  [upgrade contract](../technical/upgrade-contract.md) §5.8): at each
+  existing character's first join, `main[9..]` and the bags were sorted
+  once into the new sizes; what no longer fit arrived as "Lost and Found"
+  letters of four stacks each ([mail](mail.md)), with one feed line. The
+  bags' join callback never shrinks a content list over items (`set_size`
+  would delete them): a character whose step did not finish keeps them
+  until it runs again.
 - **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
   elixirs only (group `grug_potion`), created for every player; filled here
   and drunk from the quickbar (below).

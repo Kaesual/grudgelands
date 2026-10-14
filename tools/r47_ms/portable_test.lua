@@ -216,7 +216,11 @@ end
 
 -- A. The registry.
 local registry = grug_core.migrations
-check(registry.versions[#registry.versions] == "0.47.0", "A 0.47.0 is the last listed step")
+-- Round 48 lists 0.48.0 after it: 0.47.0 is listed, after 0.45.0.
+local listed = {}
+for index, version in ipairs(registry.versions) do listed[version] = index end
+check(listed["0.47.0"] and listed["0.45.0"] and listed["0.47.0"] > listed["0.45.0"],
+	"A 0.47.0 is listed after 0.45.0")
 local handler = registry.handlers["0.47.0"]
 check(handler and type(handler.character) == "function" and handler.world == nil,
 	"A 0.47.0 has a character handler and no world handler")
