@@ -655,8 +655,9 @@ open questions for the user.
     title "Admin")**; `/revoke` removes the tab, also while it is open.
 17. The ticket shows under Open with the version and "Sent from Mailbox in
     …"; Send answer and close: the player gets "Re: …" from Server Admin
-    and sees Answered; Close without answer: no letter, the player sees
-    Closed; an answer that is only the quote is refused.
+    (the mail icon lights) and sees Answered; Close without answer: no
+    letter, the player sees Closed; an answer that is only the quote is
+    refused.
 18. Report a letter: the admin sees its frozen copy.
 19. A new admin letter to All players: both characters find it under
     Announcements with the shield badge, each with its own read state;

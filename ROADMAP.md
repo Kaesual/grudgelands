@@ -174,7 +174,9 @@ B1–B7) settle the rest:
 ### Delivered foundation
 
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
-(2026-10-06); Rounds 36–38 and 40 are open ([project status](docs/STATUS.md)).
+(2026-10-06), Round 42's playtest (2026-10-08), Rounds 46 and 47 too
+(2026-10-14); Rounds 36–38, 40, 41, 43–45 and 48 and 0.45.1 are open
+([project status](docs/STATUS.md)).
 
 - [x] Standalone game, faction/race/class creation, progression and four classes
   including Scout; current-ray combat, equipped weapons, talents and shared movement.
@@ -484,7 +486,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   crafted goods at half value) with every old payout unchanged; cactus and
   leaves as fuel; the daytime band beside the minimap; bags at half size,
   with what no longer fits mailed at the next join. Complete on
-  2026-10-14; not pushed (on the user's word). Next: its GUI test.
+  2026-10-14; not pushed (pushed only on the user's word). Next: its GUI
+  test.
 
 ### Remaining work
 

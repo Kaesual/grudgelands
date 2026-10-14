@@ -2237,9 +2237,7 @@ severity). The items the user decides in the GUI test are in the
   unread count leaves out announcements (their read set is player meta);
   if another mod's window replaces the mailbox window, the session never
   finishes and the stacks wait in `grug_mail_out` until the next mailbox
-  close or join (nothing is lost); at a migration join each "Lost and
-  Found" letter also raises MAIL's (self-replacing) "New letter" notice
-  and a recount.
+  close or join (nothing is lost).
 - **Admin Mail** (ADMIN): the answer text is not stored in the ticket (it
   is in the server log only); typed text is lost when the admin switches
   tabs or the window is resent before an event; an answer to a character
@@ -2294,7 +2292,9 @@ severity). The items the user decides in the GUI test are in the
   could refuse instead); the letters reach mod storage before the player's
   inventory is saved, so an engine crash in that window could duplicate
   or lose items (engine-level, theoretical); the `bags.lua` header
-  "Recipes deliberately do not exist yet" is stale.
+  "Recipes deliberately do not exist yet" is stale; at a migration join
+  each "Lost and Found" letter also raises MAIL's (self-replacing) "New
+  letter" notice and a recount.
 - **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` or
   `io.popen` in `tools/r35_f`, `tools/r44_ih`, `tools/r33_c1` and
   `tools/r37_po`.

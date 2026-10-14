@@ -29,11 +29,11 @@ arrives by mail (the "Bags" point below).
 - **Mail and mailboxes:** every capital and every starting village has a
   mailbox on its waystone's pad, two blocks east and one north of the
   stone. It opens a window with Letters, Announcements, Write and To the
-  admin. Write to any character of your own faction, online or not:
-  postage is 5c a letter plus 30c for each attached stack, up to four
-  stacks ("Send (65c)"; if you change the attachments after the window
-  was drawn, the first Send shows the new postage and the second pays
-  it). Soulbound items, skills and mount items cannot be sent. A mailbox
+  admin. Write to any character of your own faction, online or not, once
+  it has joined since the update: postage is 5c a letter plus 30c for
+  each attached stack, up to four stacks ("Send (65c)"; if you change
+  the attachments after the window was drawn, the first Send shows the
+  new postage and the second pays it). Soulbound items, skills and mount items cannot be sent. A mailbox
   holds 50 player letters; every letter is deleted 30 days after it
   arrived, its attachments too. Take all moves every attachment into your
   bags or none. Reply quotes the letter; Report sends a player letter to
