@@ -683,9 +683,13 @@ do -- send_system with stacks (round plan §3.2)
 		"B the stacks are stored like attachments, meta included")
 	check(grug_mail.take_all(brakka, id), "B system attachments are taken like player ones")
 	eq(census(brakka)["t:dirt"], 104, "B every stack arrived")
-	local refused = grug_mail.send_system("Brakka", "npc", "x", "s", "b",
+	local refused, reason = grug_mail.send_system("Brakka", "npc", "x", "s", "b",
 		{"t:dirt", "t:dirt", "t:dirt", "t:dirt", "t:dirt"})
-	check(not refused, "B five stacks are refused")
+	check(refused == false and type(reason) == "string", "B five stacks are refused: false, reason")
+	check(id ~= nil and ok == true, "B success returns true and the id, never nil")
+	refused, reason = grug_mail.send_system("Nobody", "npc", "x", "s", "b", {"t:dirt"})
+	check(refused == false and type(reason) == "string" and #letters_of("Nobody") == 0,
+		"B an unknown recipient returns false, reason and stores nothing")
 	ok = grug_mail.send_system("Brakka", "admin", "Jan", "Hello", "Text")
 	check(ok and letters_of("Brakka")[1].from == "Server Admin",
 		"B an admin letter shows Server Admin, never the admin's name")

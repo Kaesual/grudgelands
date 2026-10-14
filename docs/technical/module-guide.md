@@ -1546,7 +1546,10 @@ tools](#player-meta-read-by-external-tools).
     name in any letter case or any name `core.player_exists` knows, also
     offline and during a join. `stacks`: up to four `ItemStack` strings,
     stored and taken like player attachments; only the 0.48.0 bag migration
-    passes them (admin letters carry no items). Returns ok and the letter id.
+    passes them (admin letters carry no items). Returns `true` and the
+    new letter id, or `false` and a reason (unknown recipient, unknown kind,
+    more than four stacks); never nil, so a caller that retries on anything
+    not truthy (the 0.48.0 bag migration) never sends a letter twice.
   - `open_mailbox(player, pos)` — the mailbox node's right-click (lane
     WORLD's `grug_mapgen:mailbox`, `grug_mail.MAILBOX_NODE`); runs the
     `register_on_mailbox_open(fn(player, pos))` callbacks, then shows the

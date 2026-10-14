@@ -169,7 +169,8 @@ end
 -- delivered: no limit, no faction, no postage. `stacks` (optional, up to
 -- four ItemStack strings) is stored and taken like player attachments; only
 -- the 0.48.0 bag migration passes it (admin letters carry no items, ruling
--- 5). Returns ok and the letter id, or false and a message.
+-- 5). Returns true and the new letter id, or false and a message; never nil
+-- (the migration retries at the next join on anything that is not truthy).
 function grug_mail.send_system(to_name, kind, from_label, subject, body, stacks)
 	if kind ~= "admin" and kind ~= "npc" then
 		return false, "Unknown letter kind: " .. tostring(kind)
