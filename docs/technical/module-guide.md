@@ -1669,7 +1669,11 @@ tools](#player-meta-read-by-external-tools).
   `delete_broadcast`; `grug_mail.admin_header(ticket)` formats the frozen
   header. The sending buttons carry the draw serial
   (`mail_admin_<answer|close|send>_<n>`); a click whose serial is not newer
-  than the last successful send's is dropped with its fields. Typed text is
+  than the last successful send's is dropped with its fields. Answer, Close
+  and Delete also carry the id of the message they were drawn for
+  (`mail_admin_answer_<n>_<id>`, `mail_admin_delete_<id>`); a click whose id
+  is not the current selection (a row chosen in between) is dropped with its
+  fields too. Typed text is
   kept from every event of the page and written back as the fields'
   defaults. Fixture `tools/r48_admin` (the real sfinv and
   `grug_inventory/ui.lua`).

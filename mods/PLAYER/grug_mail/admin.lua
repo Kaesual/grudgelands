@@ -20,7 +20,12 @@
 -- defaults. The three sending buttons carry the serial of the draw they
 -- belong to (mail_admin_<action>_<n>); a click from a form drawn before the
 -- last successful send (a double click) acts on nothing and its fields are
--- not kept (they are the text the first click already sent).
+-- not kept (they are the text the first click already sent). The buttons
+-- that act on the selected message or announcement also carry its id
+-- (mail_admin_answer_<n>_<id>, mail_admin_close_<n>_<id>,
+-- mail_admin_delete_<id>): a click from a form drawn for another selection
+-- (a row clicked, then a button of the older form) acts on nothing either,
+-- and its typed answer is not kept.
 
 local M = grug_mail.model
 local PAGE = "grug_mail:admin"
@@ -239,14 +244,16 @@ local function ticket_panel(fs, state, ticket)
 	end
 	fs[#fs + 1] = status_line(state, 12.25)
 	if ticket.state == "open" then
-		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete;Delete]" ..
+		local close = serial(state, "close") .. "_" .. ticket.id
+		local answer = serial(state, "answer") .. "_" .. ticket.id
+		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete_%d;Delete]" ..
 			"button[%.2f,12.6;3.2,0.8;%s;Close without answer]" ..
 			"style[%s;bgcolor=#3d5f8a]button[%.2f,12.6;3.4,0.8;%s;Send answer and close]")
-			:format(X + CONTENT_W - 8.4, X + CONTENT_W - 6.7, serial(state, "close"),
-				serial(state, "answer"), X + CONTENT_W - 3.4, serial(state, "answer"))
+			:format(X + CONTENT_W - 8.4, ticket.id, X + CONTENT_W - 6.7, close, answer,
+				X + CONTENT_W - 3.4, answer)
 	else
-		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete;Delete]"):format(
-			X + CONTENT_W - 1.6)
+		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete_%d;Delete]"):format(
+			X + CONTENT_W - 1.6, ticket.id)
 	end
 end
 
@@ -264,8 +271,8 @@ local function broadcast_panel(fs, state, broadcast)
 	fs[#fs + 1] = status_line(state, 12.25)
 	fs[#fs + 1] = ("label[%.2f,13.0;%s]"):format(X, esc(colored(COLOR.dim,
 		"Deleting removes it from every player's Announcements.")))
-	fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete;Delete]"):format(
-		X + CONTENT_W - 1.6)
+	fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete_%d;Delete]"):format(
+		X + CONTENT_W - 1.6, broadcast.id)
 end
 
 -- The list the filter shows, newest first.
@@ -413,15 +420,41 @@ local function keep_drafts(state, fields)
 	if fields.mail_admin_all ~= nil then state.compose.all = fields.mail_admin_all == "true" end
 end
 
--- The serial of a sending button in `fields` (any draw), and its action.
+-- The sending button in `fields` (any draw): its action, its draw serial
+-- and, for answer and close, the message id it was drawn for.
 local function sending(fields)
 	for field in pairs(fields) do
-		local action, number = field:match("^mail_admin_(%a+)_(%d+)$")
-		if action == "answer" or action == "close" or action == "send" then
-			return action, tonumber(number)
+		local action, number, id = field:match("^mail_admin_(%a+)_(%d+)_(%d+)$")
+		if action == "answer" or action == "close" then
+			return action, tonumber(number), tonumber(id)
 		end
+		action, number = field:match("^mail_admin_(%a+)_(%d+)$")
+		if action == "send" then return action, tonumber(number) end
 	end
 	return nil
+end
+
+-- The id a Delete button was drawn for, or nil.
+local function deleting(fields)
+	for field in pairs(fields) do
+		local id = field:match("^mail_admin_delete_(%d+)$")
+		if id then return tonumber(id) end
+	end
+	return nil
+end
+
+-- Whether a button of `fields` was drawn for another message than the one
+-- selected now (the selection changed between the draw and the click).
+local function other_selection(state, action, target, delete_id)
+	if state.view ~= "inbox" then return action == "answer" or action == "close" or
+		delete_id ~= nil end
+	local selected = state.filter == "announcements" and state.selected_broadcast or
+		state.selected
+	if (action == "answer" or action == "close") and
+			(state.filter == "announcements" or target ~= state.selected) then
+		return true
+	end
+	return delete_id ~= nil and delete_id ~= selected
 end
 
 -- Whether the event asks for nothing (an Enter in a single-line field): no
@@ -469,7 +502,7 @@ local function inbox_event(player, state, fields, action)
 		return
 	end
 	local announcements = state.filter == "announcements"
-	if fields.mail_admin_delete then
+	if deleting(fields) then
 		if announcements then
 			local id = state.selected_broadcast
 			if id then say(state, grug_mail.delete_broadcast(id, name)) end
@@ -485,8 +518,12 @@ local function inbox_event(player, state, fields, action)
 		local ticket = grug_mail.ticket(state.selected)
 		if not ticket then
 			say(state, false, "That message is gone.")
-		elseif M.clean(state.answer, M.BODY_MAX, true) == "" then
-			say(state, false, "Write an answer, or close the message without one.")
+		elseif M.clean(state.answer, M.BODY_MAX, true) == "" or
+				M.clean(state.answer, M.BODY_MAX, true) ==
+				M.clean(M.quote(ticket.body), M.BODY_MAX, true) then
+			-- Empty, or only the quote the box starts with.
+			say(state, false, "Write an answer above the quoted message, or close " ..
+				"the message without one.")
 		else
 			local ok, failure = grug_mail.answer_ticket(ticket.id, name, state.answer)
 			if ok then
@@ -572,9 +609,12 @@ function grug_mail.admin_fields(player, context, fields)
 		sfinv.set_page(player, sfinv.get_homepage_name(player))
 		return true
 	end
-	local action, number = sending(fields)
-	if action and number <= state.floor then
-		show(player, context) -- a double click: no action, its text is not kept
+	local action, number, target = sending(fields)
+	if (action and number <= state.floor) or
+			other_selection(state, action, target, deleting(fields)) then
+		-- A double click, or a button of a form drawn for another selection:
+		-- no action, and its text is not kept.
+		show(player, context)
 		return true
 	end
 	keep_drafts(state, fields)

@@ -86,7 +86,7 @@ end
 
 local function serial(player, action)
 	local state_ = context_of(player).grug_mail_admin
-	return "mail_admin_" .. action .. "_" .. state_.draw
+	return "mail_admin_" .. action .. "_" .. state_.draw .. "_" .. tostring(state_.selected)
 end
 
 local function row_of(player, subject)

@@ -157,7 +157,10 @@ letters (lane QUEST). Seams and storage: the
   server log names the admin's real name for every answer, closing,
   deletion, admin letter and announcement. Players never see that name.
 - A click on a sending button (Send answer, Close, Send) from a form older
-  than the last successful send, a double click, does nothing.
+  than the last successful send, a double click, does nothing; so does a
+  click on Send answer, Close or Delete from a form drawn for another
+  message than the one selected now. Send answer refuses an empty answer
+  and one that is only the untouched quote.
 
 ## 7. The unread icon
 

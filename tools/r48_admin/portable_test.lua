@@ -209,7 +209,12 @@ grug_classes = {
 	registered_classes = {warrior = {name = "Warrior"}, mage = {name = "Mage"}},
 	registered_races = {dwarf = {name = "Dwarf"}, orc = {name = "Orc"}},
 }
-grug_xp = {get_level = function(player) return player.level end}
+grug_xp = {get_level = function(player) return player.level end,
+	register_on_level_change = function() end}
+grug_classes.register_on_arrival = function() end
+-- Lane QUEST's starter quest and letters (tools/r48_quest tests them): the
+-- quest registers into a stub; every character here has had both already.
+grug_quests = {register_quest = function() end}
 grug_money = {get = function() return 0 end, format = function(n) return n .. "c" end}
 local mail_counts = {}
 grug_map = {minimap = {set_mail_count = function(name, n) mail_counts[name] = n end}}
@@ -235,7 +240,8 @@ for _, f in ipairs(callbacks.mods_loaded) do f() end
 
 local function new_player(name, faction, race, class, level)
 	local inv = new_inventory()
-	local meta = setmetatable({fields = {}}, Meta)
+	local meta = setmetatable({fields = {["grug_mail:welcome_sent"] = "1",
+		["grug_mail:quest_granted"] = "1"}}, Meta)
 	local player = {online = true, hp = 20, pos = {x = 412.4, y = 18, z = -1290.2},
 		faction = faction, race = race, class = class, level = level, formspec = ""}
 	function player:get_player_name() return name end
@@ -286,9 +292,10 @@ local function open_tab(player, title)
 	end
 	return false
 end
--- The name a sending button has in the form shown now.
+-- The name an action button has in the form shown now
+-- (mail_admin_<action>_<draw>[_<id>], mail_admin_delete_<id>).
 local function button(player, action)
-	return player.formspec:match("(mail_admin_" .. action .. "_%d+);")
+	return player.formspec:match("(mail_admin_" .. action .. "_[%d_]+);")
 end
 local function letters_of(name) return grug_mail.store.box(name).letters end
 local function logged(...)
@@ -391,10 +398,35 @@ end
 do
 	send(jan, {mail_admin_list = "CHG:3:3"}) -- Alice's bug report (the report is row 1)
 	local before = #letters_of("Alice")
+	local brakka_before = #letters_of("Brakka")
 	local answer = button(jan, "answer")
 	send(jan, {mail_admin_answer = "   ", [answer] = "Send answer and close"})
 	has(jan.formspec, "Write an answer", "A an empty answer is refused")
 	eq(grug_mail.ticket(first_id).state, "open", "A the refused answer leaves it open")
+	answer = button(jan, "answer")
+	send(jan, {mail_admin_answer = "\n\n> When I right-click it nothing happens.  ",
+		[answer] = "Send answer and close"})
+	has(jan.formspec, "Write an answer above the quoted message",
+		"A an answer that is only the untouched quote is refused")
+	eq(#letters_of("Alice"), before, "A the quote alone sends nothing")
+	-- A stale form: A's buttons clicked after row B was selected (one round
+	-- trip apart) act on nothing, and A's typed answer does not become B's.
+	local a_answer, a_close, a_delete = button(jan, "answer"), button(jan, "close"),
+		button(jan, "delete")
+	check(a_answer:find("_" .. first_id .. "$") and a_delete == "mail_admin_delete_" .. first_id,
+		"A the action buttons carry the selected message's id")
+	send(jan, {mail_admin_list = "CHG:2:3"}) -- Brakka's question
+	has(jan.formspec, "From Brakka", "A row B is selected")
+	send(jan, {mail_admin_answer = "Private answer for Alice.", [a_answer] = "Send answer and close"})
+	send(jan, {[a_close] = "Close without answer"})
+	send(jan, {[a_delete] = "Delete"})
+	check(grug_mail.ticket(first_id).state == "open" and grug_mail.ticket(second_id).state == "open",
+		"A a stale click closes neither message")
+	check(#letters_of("Alice") == before and #letters_of("Brakka") == brakka_before,
+		"A a stale click sends no letter")
+	check(grug_mail.ticket(first_id) and grug_mail.ticket(second_id), "A a stale click deletes nothing")
+	lacks(jan.formspec, "Private answer for Alice.", "A the stale answer text is not kept for B")
+	send(jan, {mail_admin_list = "CHG:3:3"}) -- back to Alice's
 	answer = button(jan, "answer")
 	send(jan, {mail_admin_answer = "Fixed after a restart.", [answer] = "Send answer and close"})
 	local ticket = grug_mail.ticket(first_id)
@@ -437,7 +469,7 @@ do
 	-- Delete removes it for everyone.
 	send(jan, {mail_admin_filter_all = "All"})
 	send(jan, {mail_admin_list = "CHG:2:3"})
-	send(jan, {mail_admin_delete = "Delete"})
+	send(jan, {[button(jan, "delete")] = "Delete"})
 	check(grug_mail.ticket(second_id) == nil and
 		#grug_mail.model.tickets_of(grug_mail.tickets(), "Brakka") == 0,
 		"A Delete removes the message for everyone")
@@ -513,7 +545,7 @@ do
 	has(jan.formspec, "Restart on Sunday", "C the tab lists the sent announcements")
 	send(jan, {mail_admin_list = "CHG:1:2"})
 	has(jan.formspec, "To all players\\, by Jan", "C an announcement shows who sent it")
-	send(jan, {mail_admin_delete = "Delete"})
+	send(jan, {[button(jan, "delete")] = "Delete"})
 	eq(#grug_mail.broadcasts(), 0, "C Delete removes the announcement for everyone")
 	eq(grug_mail.unread_count("Brakka"), brakka_before, "C and from the unread count")
 	-- Discard.
@@ -539,9 +571,11 @@ do
 	context.grug_mail_admin = {view = "inbox", filter = "all", page = 1, draw = 5, floor = 0,
 		answer = "", selected = report.id, rows = {report},
 		compose = {to = "Alice", all = true, subject = "Hacked", body = "x"}}
-	send(brakka, {mail_admin_answer = "Ha.", mail_admin_answer_5 = "Send answer and close"})
-	send(brakka, {mail_admin_close_5 = "Close without answer"})
-	send(brakka, {mail_admin_delete = "Delete"})
+	send(brakka, {mail_admin_answer = "Ha.", ["mail_admin_answer_5_" .. report.id] = "Send answer and close"})
+	context.page = PAGE
+	send(brakka, {["mail_admin_close_5_" .. report.id] = "Close without answer"})
+	context.page = PAGE
+	send(brakka, {["mail_admin_delete_" .. report.id] = "Delete"})
 	context = sfinv.get_or_create_context(brakka)
 	context.page = PAGE
 	context.grug_mail_admin = {view = "compose", page = 1, draw = 5, floor = 0, answer = "",
