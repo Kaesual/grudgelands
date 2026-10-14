@@ -24,7 +24,7 @@ voices](#mob-voices), [Dawn departure](#dawn-departure), [Mobs in
 water](#mobs-in-water), [Enchantments](#enchantments), [Materials and
 tier-rock gating](#materials-and-tier-rock-gating), [Traders and
 money](#traders-and-money), [Quests](#quests), [Parties](#parties),
-[Housing](#housing), [Travel](#travel), [Atlas](#atlas),
+[Mail](#mail), [Housing](#housing), [Travel](#travel), [Atlas](#atlas),
 [Preparation](#preparation), [World version and
 migrations](#world-version-and-migrations), [Fishing](#fishing), [Mapgen and
 biomes](#mapgen-and-biomes), [World atlas rules](#world-atlas-rules),
@@ -1525,6 +1525,100 @@ tools](#player-meta-read-by-external-tools).
   (fixture `tools/r32_f4`). Current geometry and offline presentation:
   [parties.md](../design/parties.md).
 
+## Mail
+
+- **`grug_mail` (Round 48, [mail.md](../design/mail.md)):** one global
+  `grug_mail`; `model.lua` is the pure model (no engine calls; letters,
+  tickets, broadcasts, limits, expiry, pages, postage, unread count, report
+  rules; fixture `tools/r48_mail`), `store.lua` the storage, `api.lua` the
+  API below, `window.lua` the mailbox window. Depends on `grug_core`,
+  `grug_money`, `grug_inventory`, `grug_factions`, `grug_classes`, `grug_xp`,
+  `grug_map` and `sfinv`, so it loads after `grug_map` (and with it after
+  `grug_quests`, `grug_home` and `grug_mounts`).
+- **Storage:** offline player meta cannot be written (`ObjectRef:get_meta`
+  needs a live object, `l_object.cpp` `l_get_meta`), so mail lives in the
+  mod's storage, `core.serialize`, each key read and written whole:
+  `box:<name>` (a player's letters, newest first), `tickets` (the admin
+  inbox, every player's messages), `broadcasts`, `factions` (the recipient
+  index: lower-case name → `{name, faction}`, written at
+  `grug_factions.register_on_faction_chosen` and at every join) and
+  `next_id` (one monotonic counter for letters, tickets and broadcasts). The
+  per-player read set of the broadcasts is player meta
+  `grug_mail:broadcasts_read` (written only while the player is online).
+  Expired entries (30 days, `os.time()`) are pruned whenever a key is read;
+  there is no pass over every player. Not map-bound: no
+  `grug_core.map_reset.clear` ([upgrade contract](upgrade-contract.md) §3.2).
+  Stored attachments are item strings (`ItemStack:to_string()`), so item
+  meta survives; a future item-removal step scans them and the list
+  `grug_mail_out` (upgrade contract §1).
+- **The API** (the contract lanes ADMIN, QUEST and BAGS build on):
+  - `send_letter(player, to_name, subject, body[, quoted])` — player mail:
+    a created character of the sender's faction (the index), never the
+    sender, not into a mailbox at 50 player letters; postage `5 + 30 ×
+    stacks` and the four `grug_mail_out` slots leave in one
+    `grug_money.take_with_inventory` call. `quoted` is the slot stacks the
+    window showed the postage for: a slot that differs refuses before
+    anything is taken. Returns ok, message.
+  - `send_system(to_name, kind, from_label, subject, body[, stacks])` —
+    `kind` "admin" (always shown from "Server Admin", whatever the label) or
+    "npc"; always delivered (no limit, faction or postage), to an indexed
+    name in any letter case or any name `core.player_exists` knows, also
+    offline and during a join. `stacks`: up to four `ItemStack` strings,
+    stored and taken like player attachments; only the 0.48.0 bag migration
+    passes them (admin letters carry no items). Returns `true` and the
+    new letter id, or `false` and a reason (unknown recipient, unknown kind,
+    more than four stacks); never nil, so a caller that retries on anything
+    not truthy (the 0.48.0 bag migration) never sends a letter twice.
+  - `open_mailbox(player, pos)` — the mailbox node's right-click (lane
+    WORLD's `grug_mapgen:mailbox`, `grug_mail.MAILBOX_NODE`); runs the
+    `register_on_mailbox_open(fn(player, pos))` callbacks, then shows the
+    window. `mailbox_label(pos)`: the `display_name` of the settlement whose
+    `waypoint` socket lies within 16 nodes (collected at mods-loaded).
+  - `unread_count(name)` (unread letters plus, for an online player, unread
+    broadcasts) and `refresh_count(name)`, which hands the count to
+    `grug_map.minimap.set_mail_count(name, n)` when that function exists
+    (lane HUD) and to `register_on_count(fn(name, count))` listeners; called
+    at every change and at join.
+  - Tickets: `send_ticket(player, topic, subject, body, mailbox)`,
+    `report_letter(player, id, reason, note, mailbox)` (a "Player report"
+    ticket with a frozen `report` copy of the letter), `tickets()`,
+    `ticket(id)`, `close_ticket(id, admin_name[, answered])`,
+    `answer_ticket(id, admin_name, body)` (an admin letter "Re: <subject>",
+    then closed as answered) and `delete_ticket(id, by_name)` (gone for
+    everyone). A ticket stores the header the admin sees (mailbox, version,
+    level, faction, race, class, position). Every message, report, answer,
+    closing and deletion is one `core.log("action", "[grug_mail] ...")` line.
+  - Broadcasts: `send_broadcast(subject, body, admin_name)`, `broadcasts()`,
+    `delete_broadcast(id, admin_name)`, `read_broadcast(player, id)`.
+  - Letters: `open_letter(player, id)` (marks read), `take_all(player, id)`
+    (`grug_inventory.fits` first, then `give`; all or nothing),
+    `delete_letter(player, id)`, `return_attachments(player)` (the slots
+    through `give`; leftovers stay).
+- **The attachment list `grug_mail_out`:** four slots of the player's own
+  inventory, sized at join (where stacks a disconnect left also go back),
+  drawn only on the Write tab. Not a carried list
+  (`grug_inventory.carried_lists`), so selling, crafting, the sort and the
+  migrations never touch it, and no detached inventory is involved (a
+  disconnect loses nothing). The existing allow callbacks refuse what must
+  not go there: `grug_housing/soulbound.lua` (only `main`) and
+  `grug_skills/bound_items.lua` (skills only on the hotbar, mount items only
+  in `main` and the bags); the fixture runs both. The Write tab rings
+  `grug_mail_out` → the shift-click inbox → `main`, and each bag into the
+  slots.
+- **The window** (`grug_mail:mailbox_<serial>`, formspec v6 at the inventory
+  window's size, the short inventory view on Write): every event re-checks
+  the mailbox node at the opening position and a living player within 6
+  nodes, else the window closes and the slots go back. Typed text is kept
+  from every event and written back as the fields' defaults; the window is
+  never resent on an inventory move (a resend drops unsent text), which is
+  why Send compares the slots with the quote of the last draw. The two Send
+  buttons carry the draw's serial (`write_send_<n>`, `admin_send_<n>`): a
+  click from a form already replaced (a double click, or a second click
+  after a refusal that showed new postage) acts on nothing and only redraws.
+  The Write tab's rings put `grug_mail_out` right after `main` and after
+  each bag (the engine follows the first entry naming the source list). The focus
+  sits on an invisible button at every send ("UI and formspecs").
+
 ## Housing
 
 - **Housing (Round 25, Round 26 drafts):** `mods/PLAYER/grug_housing` implements
@@ -2137,8 +2231,8 @@ tools](#player-meta-read-by-external-tools).
   every `textarea[]`, a read-only one too, and an edit box or a table eats
   letter keys. So a window with an edit box or a table names a harmless button in
   `set_focus[<name>;true]`, placed before that button (Party & PvP: Refresh;
-  Talents & Skills and Inventory: an invisible zero-size button with no
-  action; Character: the selected mode's button, never Return home; Help: the
+  Talents & Skills, Inventory and the mailbox window: an invisible
+  zero-size button with no action; Character: the selected mode's button, never Return home; Help: the
   open sub-page's button; Claim Stone and Crownbinder: Close; the creation
   window: the chosen faction). Forced, because an unforced `set_focus` only
   applies when the window shows a new form name, and the inventory key opens
