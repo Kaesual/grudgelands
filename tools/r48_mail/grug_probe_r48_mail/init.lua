@@ -112,7 +112,7 @@ local SHOTS = {
 	end},
 	{name = "L4_delete_dialog", run = function(player)
 		mail_fields(player, {report_cancel = "Cancel"})
-		mail_fields(player, {delete = "Delete"})
+		mail_fields(player, {["delete_" .. grug_mail.session(NAME).selected.letters] = "Delete"})
 	end},
 	{name = "L5_letters_npc", run = function(player)
 		mail_fields(player, {delete_cancel = "Cancel"})
