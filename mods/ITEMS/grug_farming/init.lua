@@ -255,11 +255,16 @@ local function crop_timer(pos, elapsed)
 	local state = crop_by_node[node.name]
 	if not state or state.stage >= STAGES then return false end
 	local below = {x = pos.x, y = pos.y - 1, z = pos.z}
-	-- Expired timers are removed before Luanti invokes any callbacks. If the
-	-- soil callback dried this crop first, or it stands in the dark, this
-	-- stale callback must credit no part of its elapsed value and must not
-	-- restart; the soil check resumes it from the kept progress.
+	-- Expired timers are removed before Luanti invokes any callbacks, so a
+	-- crop that went dry or dark since its last soil check expires here, and
+	-- the next check's pause finds no timer to read. Its stage was complete,
+	-- and the soil check confirmed wet and lit at most SOIL_INTERVAL ago:
+	-- keep that much (never less than saved before), credit no dry or dark
+	-- time and do not restart; the soil check resumes it from this progress.
 	if core.get_node(below).name ~= SOIL_WET or not crop_lit(pos, state) then
+		local meta = core.get_meta(pos)
+		meta:set_float(CROP_PROGRESS_META, math.max(meta:get_float(CROP_PROGRESS_META),
+			STAGE_SECONDS - SOIL_INTERVAL))
 		return false
 	end
 	local advance = math.floor(elapsed / STAGE_SECONDS)
@@ -508,6 +513,10 @@ for index = 1, #crops do
 end
 
 grug_farming.CROPS = crops
+
+-- Round 48: Salt Crust is no crop. Seeds a player still holds read as Salt
+-- Crust (coordinator decision; one seed was half a crust).
+core.register_alias("grug_farming:seed_salt_crust", "grug_cooking:salt_crust")
 
 grug_farming.salt_pan = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/salt_pan.lua")({

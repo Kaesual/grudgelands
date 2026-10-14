@@ -97,6 +97,7 @@ do
 			registered_items[name] = def
 		end,
 		register_craft = noop, register_globalstep = noop, register_on_mods_loaded = noop,
+		register_alias = noop,
 		register_lbm = function(def) lbms[def.name] = def end,
 		log = noop, sound_play = noop, record_protection_violation = noop,
 		is_protected = function() return false end,

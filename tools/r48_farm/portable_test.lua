@@ -4,10 +4,14 @@
 --      a crop in the dark does not advance, a light resumes it with its
 --      progress kept, darkness pauses it again; light 7 pauses, light 8
 --      grows (measured as at noon); Cave Cap, Mushroom and Ember Moss grow at
---      light 0; a stale timer in the dark credits nothing.
+--      light 0; a stale timer in the dark credits nothing; a crop whose
+--      timer expires after it went dark (or, in the same step as the soil
+--      check, dry) keeps its stage's progress through the engine's expiry
+--      order (review fix).
 --   C  Melon and Mushroom plant, grow, regrow to stage 2 on a right-click
 --      harvest; seeds and spores; 18 crop families; no Salt Crust crop, seed
---      or seed recipe; the Basic catalog's seed rows (grug_jobs).
+--      or seed recipe (held seeds alias to Salt Crust); the Basic
+--      catalog's seed rows (grug_jobs).
 --   S  the salt pan: placement (stone, sand, dirt; not on a liquid, not
 --      without protection), filling in the dark, pausing without water with
 --      the progress kept, the scrape, the drops, the recipe row and the
@@ -104,7 +108,9 @@ function stack_mt:take_item(n)
 end
 
 local mods_loaded = {}
+local registered_aliases = {}
 local C = permissive({
+	register_alias = function(name, target) registered_aliases[name] = target end,
 	registered_nodes = registered_nodes, registered_items = registered_items,
 	registered_tools = {},
 	settings = permissive({get_bool = function(_, _, value) return value end,
@@ -343,6 +349,76 @@ do
 	light_at(crop, 8)
 	fire(crop, 200)
 	eq(name_at(crop), "grug_farming:carrot_2", "L in light a full stage advances")
+	-- The engine's timer step (nodetimer.cpp): every running timer gains
+	-- the step's time; the expired ones are removed first, then their
+	-- callbacks run (here the soil below a crop first, the order that loses
+	-- the most); a callback returning true restarts its timer.
+	local function run_seconds(seconds, events)
+		for second = 1, seconds do
+			local expired = {}
+			for k, timer in pairs(W.timers) do
+				if timer.started then
+					timer.elapsed = timer.elapsed + 1
+					if timer.elapsed >= timer.timeout then
+						timer.started = false
+						local x, y, z = k:match("^(-?%d+),(-?%d+),(-?%d+)$")
+						expired[#expired + 1] = {pos = P(tonumber(x), tonumber(y), tonumber(z)),
+							elapsed = timer.elapsed, timeout = timer.timeout}
+					end
+				end
+			end
+			table.sort(expired, function(a, b)
+				if a.pos.y ~= b.pos.y then return a.pos.y < b.pos.y end
+				return a.pos.x < b.pos.x
+			end)
+			for _, entry in ipairs(expired) do
+				local def = registered_nodes[name_at(entry.pos)]
+				if def and def.on_timer and def.on_timer(entry.pos, entry.elapsed) then
+					C.get_node_timer(entry.pos):start(entry.timeout)
+				end
+			end
+			if events and events[second] then events[second]() end
+		end
+	end
+	-- The review's case: lit for 196 s, the light goes after the soil check
+	-- at 195 s, the crop's timer expires at 200 s before the next check; lit
+	-- again at 220 s, the check at 225 s resumes it with the stage's kept
+	-- progress (185 s, no dark time), so it reaches stage 2 at 240 s.
+	do
+		local dark_soil = field(60)
+		light_at(P(60, 1, 0), 8)
+		local dark = plant("grug_farming:seed_carrot", dark_soil)
+		run_seconds(15)
+		check(C.get_node_timer(dark):is_started(), "L lit: the carrot grows")
+		run_seconds(181, {[181] = function() light_at(dark, 0) end})
+		run_seconds(5)
+		eq(name_at(dark), "grug_farming:carrot_1", "L dark at expiry: no stage advance")
+		check(not C.get_node_timer(dark):is_started(), "L dark at expiry: the timer stays off")
+		eq(C.get_meta(dark):get_float("wet_progress"), 185,
+			"L dark at expiry: the stage's lit progress is kept (185 s)")
+		run_seconds(25, {[19] = function() light_at(dark, 8) end})
+		check(C.get_node_timer(dark):is_started(), "L relit: the check resumes the carrot")
+		run_seconds(15)
+		eq(name_at(dark), "grug_farming:carrot_2", "L relit: stage 2 15 s later (progress not 0)")
+	end
+	-- Its dry twin: the water goes, and the soil check and the crop's timer
+	-- expire in the same step, the soil first; the crop keeps 185 s too.
+	do
+		local dry_soil = field(70)
+		light_at(P(70, 1, 0), 8)
+		local dry = plant("grug_farming:seed_carrot", dry_soil)
+		C.get_node_timer(dry_soil).elapsed = 10 -- soil checks at 5, 20, ..., 200 s
+		run_seconds(199, {[199] = function() W.nodes["70,0,2"] = nil end})
+		check(C.get_node_timer(dry):is_started(), "L dry twin: growing until the water goes")
+		run_seconds(1)
+		eq(name_at(dry_soil), SOIL, "L dry twin: the soil dried in the same step")
+		eq(name_at(dry), "grug_farming:carrot_1", "L dry twin: no stage advance")
+		eq(C.get_meta(dry):get_float("wet_progress"), 185, "L dry twin: progress kept (185 s)")
+		run_seconds(15, {[1] = function() set(P(70, 0, 2), "default:water_source") end})
+		check(C.get_node_timer(dry):is_started(), "L dry twin: rewetting resumes it")
+		run_seconds(15)
+		eq(name_at(dry), "grug_farming:carrot_2", "L dry twin: stage 2 within 15 s")
+	end
 	-- Light-exempt crops grow at light 0.
 	for index, crop_key in ipairs({"cave_cap", "mushroom", "ember_moss"}) do
 		local exempt_soil = field(10 * index)
@@ -365,6 +441,9 @@ do
 	eq(#grug_farming.CROPS, 18, "C 18 crop families")
 	for _, fn in ipairs(mods_loaded) do fn() end -- population check and tooltips
 	check(registered_items["grug_farming:seed_salt_crust"] == nil, "C no Salt Crust seeds")
+	local alias = registered_aliases["grug_farming:seed_salt_crust"]
+	eq(alias, "grug_cooking:salt_crust", "C held Salt Crust Seeds read as Salt Crust (alias)")
+	check(alias and registered_items[alias] ~= nil, "C the alias resolves to a registered item")
 	check(registered_nodes["grug_farming:salt_crust_1"] == nil, "C no Salt Crust crop")
 	eq(registered_items["grug_farming:seed_melon"].description:match("^[^\n]+"),
 		"Melon Seeds", "C Melon Seeds")
@@ -505,7 +584,10 @@ do
 	eq(name_at(P(310, 51, 0)), "default:water_source", "S a plain bucket pours ordinary water")
 	local old = ItemStack("grug_farming:water_bucket")
 	old:get_meta():set_string("water_family", "ordinary")
-	full.on_place(old, player, {type = "node", under = target, above = P(311, 51, 0)})
+	local poured = full.on_place(old, player, {type = "node", under = target, above = P(311, 51, 0)})
+	eq(name_at(P(311, 51, 0)), "default:water_source", "S a 0.47 bucket (water_family=ordinary) pours ordinary water")
+	eq(poured:get_name(), "grug_farming:empty_iron_bucket", "S and comes back empty")
+	check(#old:get_meta():get_keys() > 0, "S such a bucket is no plain stack until poured and refilled")
 end
 
 -- R: salt renewal.
