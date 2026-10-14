@@ -679,10 +679,10 @@ open questions for the user.
 23. Resize the window and set GUI scaling 2: everything follows, nothing
     overlaps (also at 1024 × 600 with GUI scaling 2 next to a long target
     frame line). The band at 75 % (92 × 23 px at 1080p) and the icon at the
-    same height; the count stands beside the envelope and "9+" overlaps its
-    right third **(decide)**. At night the band's frame fades into the tan
-    ends at this size (nearest scaling drops its inner line) **(decide:
-    thicker frame lines)**.
+    same height; the count stands fully beside the envelope, "9+" included
+    (the user's choice). At night the band's frame fades into the tan ends
+    at this size (nearest scaling drops its inner line; the user: okay as
+    is).
 
 **Plants and light:**
 
@@ -731,8 +731,10 @@ open questions for the user.
   the minimap along its top edge (right-aligned in the corner with the
   minimap hidden, "Now playing" below), the band at 75 % (92 × 23 px at
   1080p, 4 : 1), the icon at the same height with the count beside the
-  envelope (mail images recomposed to 69 × 28). Review MERGE (the band's
-  frame fading at night is a GUI-test question). Fixtures 189/189, smoke
+  envelope (mail images recomposed). Review MERGE. Then the user's two
+  answers: the count fully beside the envelope (mail images 87 × 28, the
+  icon 72 × 23 at 1080p; a display delta checked by the coordinator), and
+  the band's frame fading at night stays as is. Fixtures 189/189, smoke
   boot PASS.
 
 ### Round-end gates
