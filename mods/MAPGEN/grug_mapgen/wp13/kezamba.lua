@@ -358,7 +358,7 @@ local function loader(directory)
 		end
 
 		-- 3. THE TRAVEL PLAZA (WP17): paving, two kerb rings and nothing
-		-- above the ground course but the waystone (step 10b).
+		-- above the ground course but the waystone and its mailbox (step 10b).
 		do
 			local ok, bx, bz = mask.pad_area(PLAZA.x1, PLAZA.z1, PLAZA.x2,
 				PLAZA.z2)

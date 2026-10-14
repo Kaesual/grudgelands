@@ -128,7 +128,7 @@ local function loader(directory)
 	local handles = elf.handles()
 
 	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
-	-- everything above its paving but the waystone.
+	-- everything above its paving but the waystone and its mailbox.
 	local PLAZA = {x1 = 18, z1 = -20, x2 = 32, z2 = -8}
 
 	-- The QUAY: the marble promenade along the mere's edge. It is authored as
@@ -484,8 +484,8 @@ local function loader(directory)
 			end
 		end
 
-		-- 4. The travel plaza: paving, two kerb rings and only the waystone
-		-- inside it.
+		-- 4. The travel plaza: paving, two kerb rings and only the waystone and
+		-- its mailbox inside it.
 		pave(AVENUE, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2, 6)
 		dressing.inlay(buf, elf_palette, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2)
 		dressing.inlay(buf, elf_palette, PLAZA.x1 + 3, PLAZA.z1 + 3,
