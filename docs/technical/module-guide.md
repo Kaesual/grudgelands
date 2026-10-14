@@ -1335,9 +1335,17 @@ tools](#player-meta-read-by-external-tools).
     registry's records, the dual furnace's and the engine's cooking recipes;
     Round 45). It reads each
     item's tier from its own registration and resolves once when every mod
-    has loaded; items carry **no** price field. `grug_traders.sell_price`
-    returns the payout, and **0 means "not sellable"**. A new loot or
-    gathered item gets a class there, not a number in its def.
+    has loaded; items carry **no** price field. Since Round 48 that first
+    pass runs unchanged and a second pass in milli-copper
+    (`price_rules.resolve_values`) prices only the items without a payout:
+    the bulk table, storage blocks, crafted goods at half their material
+    value, the never list ([economy.md](../design/economy.md) §2).
+    `grug_traders.sell_value` returns an item's value in milli-copper (0 =
+    not sellable); `grug_traders.sell_price` the copper of a good that sells
+    **singly**, and 0 for a lot good or an unsellable one;
+    `grug_traders.sell_offer(stack)` the vendor's offer for any stack as
+    `copper, lot` (lot 1 = singly, quality included; `0, nil` = not sold). A
+    new loot or gathered item gets a class there, not a number in its def.
   - **`grug_gear` is a GENERATED catalog, never a hand-written list**:
     the six bracket catalogs come out of the §3.1/§3.2 curves at load
     time. Public surface for anything that sells gear:
