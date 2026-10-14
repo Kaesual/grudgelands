@@ -1,16 +1,20 @@
 -- Pure plant-habitat vocabulary shared by initial mapgen and runtime renewal.
--- It reads no engine global and owns the renewable/excluded source boundary.
+-- It reads no engine global and owns the renewable sources and their initial density.
 local M = {}
 
-local EXCLUDED = {rock_salt = true, salt_crust = true}
+-- Every source renews in the wild (Round 48: the two salts too, a deliberate
+-- exception to world.md R4). Renewable rows are generated at half their
+-- catalog density, except the salts, whose initial density stays as before
+-- (plant-growth-plan.md §2.18-§2.19), so world generation is unchanged.
+local FULL_INITIAL_DENSITY = {rock_salt = true, salt_crust = true}
 
 function M.is_renewable(key)
-	return type(key) == "string" and not EXCLUDED[key]
+	return type(key) == "string"
 end
 
 function M.initial_denominator(key, denominator)
 	assert(type(denominator) == "number" and denominator > 0)
-	return M.is_renewable(key) and denominator * 2 or denominator
+	return FULL_INITIAL_DENSITY[key] and denominator or denominator * 2
 end
 
 -- Expected natural plants per eligible column (or cave-floor node) of one

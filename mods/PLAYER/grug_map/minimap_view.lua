@@ -156,7 +156,8 @@ function V.place(v, frame, ox, oy, mx, my, x, z)
 end
 
 -- The "Now playing" box (0.45.1): while a capital's music plays, a small
--- box under the location line with a music-note icon on the left and two
+-- box under the location line (in the top-right corner while the minimap
+-- is hidden or unavailable, Round 48) with a music-note icon on the left and two
 -- left-aligned lines right of it, the title and the artist (the name alone:
 -- "by" made the line longer and said nothing the second line does not).
 -- Its text is HUD text in the location line's default font, sized by GUI
@@ -171,6 +172,30 @@ end
 V.NOW_PLAYING = {gap = 4, pad = 4, icon = 36, icon_gap = 6, line = 20,
 	font = 16, char_em = 0.6, line_em = 1.15}
 
+-- The box's height at GUI scaling `gui` (two lines and the padding; the
+-- width depends on the text).
+function V.now_playing_height(gui)
+	local P = V.NOW_PLAYING
+	return 2 * math.floor(P.pad * gui + 0.5) + math.ceil(2 * P.line * gui)
+end
+
+-- The box for `title` and `artist` at GUI scaling `gui`, placed by `place`
+-- (width -> top-left x/y).
+local function playing_box(gui, title, artist, place)
+	local P = V.NOW_PLAYING
+	local chars = math.max(#title, #artist)
+	local text_w = math.ceil(chars * P.char_em * P.font * gui)
+	local pad, icon = math.floor(P.pad * gui + 0.5), math.floor(P.icon * gui + 0.5)
+	local icon_gap = math.floor(P.icon_gap * gui + 0.5)
+	local w = pad + icon + icon_gap + text_w + pad
+	local h = V.now_playing_height(gui)
+	local x, y = place(w)
+	local text_h = 2 * P.line_em * P.font * gui
+	return {x = x, y = y, w = w, h = h,
+		icon_x = x + pad, icon_y = y + math.floor((h - icon) / 2 + 0.5), icon = icon,
+		text_x = x + pad + icon + icon_gap, text_y = y + math.floor((h - text_h) / 2 + 0.5)}
+end
+
 -- The box for `title` and `artist` with the location line's top at
 -- `line_top` (real screen pixels): the box's top-left x/y, width and height,
 -- the icon's top-left and size, and the text's top-left. The box sits `gap`
@@ -179,19 +204,105 @@ V.NOW_PLAYING = {gap = 4, pad = 4, icon = 36, icon_gap = 6, line = 20,
 -- window's right margin) and grows to the left.
 function V.now_playing_box(frame, line_top, title, artist)
 	local P, gui = V.NOW_PLAYING, frame.gui
-	local chars = math.max(#title, #artist)
-	local text_w = math.ceil(chars * P.char_em * P.font * gui)
-	local pad, icon = math.floor(P.pad * gui + 0.5), math.floor(P.icon * gui + 0.5)
-	local icon_gap = math.floor(P.icon_gap * gui + 0.5)
-	local w = pad + icon + icon_gap + text_w + pad
-	local h = 2 * pad + math.ceil(2 * P.line * gui)
 	local right = frame.center_x + frame.diameter / 2
-	local x = math.floor(math.min(frame.center_x - w / 2, right - w) + 0.5)
-	local y = math.floor(line_top + P.line * gui + P.gap * frame.hud + 0.5)
-	local text_h = 2 * P.line_em * P.font * gui
-	return {x = x, y = y, w = w, h = h,
-		icon_x = x + pad, icon_y = y + math.floor((h - icon) / 2 + 0.5), icon = icon,
-		text_x = x + pad + icon + icon_gap, text_y = y + math.floor((h - text_h) / 2 + 0.5)}
+	return playing_box(gui, title, artist, function(w)
+		return math.floor(math.min(frame.center_x - w / 2, right - w) + 0.5),
+			math.floor(line_top + P.line * gui + P.gap * frame.hud + 0.5)
+	end)
+end
+
+-- The same box in the top-right corner while the minimap is hidden or
+-- unavailable (Round 48 ruling 2.1): its right edge on `right`, its top at
+-- `top` (side_layout's playing_right and playing_top); it grows to the left.
+function V.now_playing_corner(box, right, top, title, artist)
+	return playing_box(box.gui or 1, title, artist, function(w)
+		return math.floor(right - w + 0.5), top
+	end)
+end
+
+-- The minimap's side elements (Round 48 lane HUD; docs/design/world_map.md
+-- "Minimap"): the mail icon and the daytime band. Both are finished images
+-- (tools/r48_hud/gen_hud_textures.py): the band BAND_W x BAND_H texture px,
+-- one 20-minute cycle with the "now" marker in the middle; the mail icon
+-- MAIL_W x MAIL_H with its digit badge. Their drawn sizes follow the
+-- minimap's box (25 % of the window height), as the bezel does: the band
+-- `band` of the box wide (about half the bezel's diameter, which fills
+-- 0.79-0.99 of the box), the mail icon `mail` of the box high. `gap` HUD px
+-- separate them from the bezel and from each other.
+V.SIDE = {band_w = 160, band_h = 40, mail_w = 60, mail_h = 52, band = 0.45, mail = 0.19,
+	gap = 4}
+
+-- Where the side elements go in the minimap `box`
+-- (grug_core.hud_layout.minimap_box). With the minimap shown (`frame`, the
+-- bezel's V.frame) the mail icon stands left of the bezel, top-aligned with
+-- it, and the band left of the bezel, bottom-aligned (sell plan §3.6.5).
+-- With the minimap hidden or unavailable (frame nil) they stand in the
+-- box's top-right corner, the mail icon above the band, and "Now playing"
+-- goes below the band (playing_right, playing_top; Round 48 ruling 2.1);
+-- the mail icon's place stays reserved while it is hidden, so nothing
+-- jumps when a letter arrives. Returns {mail = {x, y, w, h}, band = {...}}
+-- in real screen pixels, plus playing_right and playing_top when hidden.
+function V.side_layout(box, frame)
+	local S = V.SIDE
+	local gap = S.gap * box.hud
+	local bw = math.floor(box.size * S.band + 0.5)
+	local bh = math.floor(bw * S.band_h / S.band_w + 0.5)
+	local mh = math.floor(box.size * S.mail + 0.5)
+	local mw = math.floor(mh * S.mail_w / S.mail_h + 0.5)
+	local mail, band = {w = mw, h = mh}, {w = bw, h = bh}
+	local out = {mail = mail, band = band}
+	if frame then
+		local left = frame.center_x - frame.diameter / 2
+		local top = frame.center_y - frame.diameter / 2
+		mail.x, mail.y = math.floor(left - gap - mw + 0.5), math.floor(top + 0.5)
+		band.x = math.floor(left - gap - bw + 0.5)
+		band.y = math.floor(top + frame.diameter - bh + 0.5)
+	else
+		local right = box.center_x + box.size / 2
+		local top = math.floor(box.center_y - box.size / 2 + 0.5)
+		mail.x, mail.y = math.floor(right - mw + 0.5), top
+		band.x, band.y = math.floor(right - bw + 0.5), math.floor(top + mh + gap + 0.5)
+		out.playing_right = right
+		out.playing_top = math.floor(band.y + bh + gap + 0.5)
+	end
+	return out
+end
+
+-- The daytime band's position (sell plan §3.6.2): 0 .. positions - 1 over
+-- one world day, one per 30 real seconds. The world clock runs at two
+-- speeds (grug_core.DAY_TIME_SPEED in the day phase, NIGHT_TIME_SPEED at
+-- night), so `timeofday` is not linear in real time: the day phase
+-- [day_start, day_end) maps linearly onto the first `day` positions (900
+-- real seconds), the night onto the rest (300). 04:30 is 0, 19:30 is 30.
+V.DAYTIME = {positions = 40, day = 30}
+function V.daytime_position(timeofday, day_start, day_end)
+	local D = V.DAYTIME
+	local at
+	if timeofday >= day_start and timeofday < day_end then
+		at = (timeofday - day_start) / (day_end - day_start) * D.day
+	else
+		local night = (timeofday - day_end) % 1 / (1 - (day_end - day_start))
+		at = D.day + night * (D.positions - D.day)
+	end
+	-- the small margin keeps a whole position from flooring to the one
+	-- before through rounding
+	local position = math.floor(at + 1e-6)
+	if position < 0 then return 0 end
+	if position >= D.positions then return D.positions - 1 end
+	return position
+end
+
+function V.daytime_texture(position)
+	return ("grug_map_daytime_%02d.png"):format(position)
+end
+
+-- The mail icon for `count` unread letters (mail plan ruling 14): none for
+-- 0, the digit 1-9, "9+" above.
+function V.mail_texture(count)
+	count = math.floor(tonumber(count) or 0)
+	if count <= 0 then return "" end
+	if count <= 9 then return ("grug_map_mail_%d.png"):format(count) end
+	return "grug_map_mail_9p.png"
 end
 
 -- A rim arrow for a point at dx/dy (screen, y down) from the centre: on the

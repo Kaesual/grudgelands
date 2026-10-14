@@ -90,3 +90,20 @@ provenance are in `tools/r46_art/README.md`.
 | Files (final paths relative to this mod) | Author | Source / tool disclosure | License |
 |------|--------|--------------------------|---------|
 | `textures/grug_map_repair.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; a 16×16 hammer over an anvil, copied from `tools/r46_art/repair/A1c/grug_map_repair.png`; `tools/r46_art/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+# Minimap side elements (Round 48, placeholders)
+
+The daytime band and the mail icon beside the minimap. **Placeholders**
+until the art lane's picks replace the parts: composed by
+`tools/r48_hud/gen_hud_textures.py` (Python standard library; own work,
+Round 48 lane HUD, 2026-10-14) from the parts in `tools/r48_hud/parts/`
+(drawn procedurally by the same script's `--placeholders` mode) and the
+cooldown digits of `tools/r40_cd/gen_cooldown_textures.py`. No third-party
+source pixels. **CC0-1.0**. Re-run the script to change them (`--check`
+verifies them).
+
+- `textures/grug_map_daytime_00.png` … `_39.png` (160×40, one 20-minute
+  world day per image with the "now" marker in the middle, one image per
+  30 real seconds).
+- `textures/grug_map_mail_1.png` … `_9.png`, `textures/grug_map_mail_9p.png`
+  (60×52, an envelope with the unread badge).

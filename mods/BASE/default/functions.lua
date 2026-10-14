@@ -198,6 +198,29 @@ end
 -- Papyrus and cactus growing
 --
 
+-- GRUG PATCH: one light rule for plants (Round 48, plant-growth-plan.md):
+-- papyrus, cactus and the farm crops grow at plant light 8 or more, the
+-- level at which no monster spawns, measured as at noon (the larger of noon
+-- daylight and artificial light), so torchlit plants grow indoors and
+-- outdoor plants keep growing at night. Papyrus grows on any soil or sand
+-- near water, cactus on sand or mesa clay (the badlands ground), and both
+-- ask the terrain guard (grug_core.world_alterable), so they never grow in a
+-- town or POI. The guard and the light are read last, after the cheap tests.
+default.PLANT_LIGHT = 8
+
+function default.plant_lit(pos)
+	return (core.get_node_light(pos, 0.5) or 0) >= default.PLANT_LIGHT
+end
+
+function default.cactus_ground(name)
+	return core.get_item_group(name, "sand") > 0 or name == "grug_nodes:mesa_clay"
+end
+
+local function papyrus_ground(name)
+	return core.get_item_group(name, "soil") > 0 or
+		core.get_item_group(name, "sand") > 0
+end
+
 -- Wrapping the functions in ABM action is necessary to make overriding them possible
 
 function default.grow_cactus(pos, node)
@@ -205,7 +228,7 @@ function default.grow_cactus(pos, node)
 		return
 	end
 	pos.y = pos.y - 1
-	if minetest.get_item_group(minetest.get_node(pos).name, "sand") == 0 then
+	if not default.cactus_ground(core.get_node(pos).name) then
 		return
 	end
 	pos.y = pos.y + 1
@@ -218,7 +241,7 @@ function default.grow_cactus(pos, node)
 	if height == 4 or node.name ~= "air" then
 		return
 	end
-	if minetest.get_node_light(pos) < 13 then
+	if not default.plant_lit(pos) or not grug_core.world_alterable(pos) then
 		return
 	end
 	minetest.set_node(pos, {name = "default:cactus"})
@@ -228,12 +251,7 @@ end
 function default.grow_papyrus(pos, node)
 	pos.y = pos.y - 1
 	local name = minetest.get_node(pos).name
-	if name ~= "default:dirt" and
-			name ~= "default:dirt_with_grass" and
-			name ~= "default:dirt_with_dry_grass" and
-			name ~= "default:dirt_with_rainforest_litter" and
-			name ~= "default:dry_dirt" and
-			name ~= "default:dry_dirt_with_dry_grass" then
+	if not papyrus_ground(name) then
 		return
 	end
 	if not minetest.find_node_near(pos, 3, {"group:water"}) then
@@ -249,7 +267,7 @@ function default.grow_papyrus(pos, node)
 	if height == 4 or node.name ~= "air" then
 		return
 	end
-	if minetest.get_node_light(pos) < 13 then
+	if not default.plant_lit(pos) or not grug_core.world_alterable(pos) then
 		return
 	end
 	minetest.set_node(pos, {name = "default:papyrus"})
@@ -259,7 +277,7 @@ end
 minetest.register_abm({
 	label = "Grow cactus",
 	nodenames = {"default:cactus"},
-	neighbors = {"group:sand"},
+	neighbors = {"group:sand", "grug_nodes:mesa_clay"},
 	interval = 12,
 	chance = 83,
 	action = function(...)
@@ -270,17 +288,7 @@ minetest.register_abm({
 minetest.register_abm({
 	label = "Grow papyrus",
 	nodenames = {"default:papyrus"},
-	-- Grows on the dirt and surface dirt nodes of the biomes papyrus appears in,
-	-- including the old savanna nodes.
-	-- 'default:dirt_with_grass' is here only because it was allowed before.
-	neighbors = {
-		"default:dirt",
-		"default:dirt_with_grass",
-		"default:dirt_with_dry_grass",
-		"default:dirt_with_rainforest_litter",
-		"default:dry_dirt",
-		"default:dry_dirt_with_dry_grass",
-	},
+	neighbors = {"group:soil", "group:sand"},
 	interval = 14,
 	chance = 71,
 	action = function(...)

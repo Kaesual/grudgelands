@@ -8,18 +8,22 @@ automatic.sizes = {
 	dual_furnace = {input = 2, fuel = 1, output = 2},
 }
 
--- Seconds of flame per item in both furnaces; wood burns 15 s (below).
--- Round 47 ruling 11: Anthracite 120 s.
+-- Seconds of flame per item in both furnaces; wood burns 15 s and leaves
+-- 2 s (below). Round 47 ruling 11: Anthracite 120 s. Round 48 (sell plan
+-- ruling 1, §3.1): cactus burns like a log, every leaves node briefly (five
+-- per 10-second smelt); saplings and papyrus stay no fuel.
 local FURNACE_FUELS = {
 	["default:coal_lump"] = 80,
 	["grug_smelting:charcoal"] = 80,
 	["grug_materials:anthracite"] = 120,
+	["default:cactus"] = 15,
 }
 
 function automatic.fuel_time(station, stack)
 	local name = stack:get_name()
 	if FURNACE_FUELS[name] then return FURNACE_FUELS[name] end
 	if core.get_item_group(name, "tree") > 0 then return 15 end
+	if core.get_item_group(name, "leaves") > 0 then return 2 end
 	return 0
 end
 

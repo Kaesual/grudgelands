@@ -1,35 +1,54 @@
 # Farming and wild plant renewal
 
 Decided 2026-09-20. This file owns farming and its Basic recipes (hoes,
-bucket, seeds), renewable wild plants and the water-only bucket; the food and
-material catalog remains in [items_crafting.md](items_crafting.md) §3.7. These
-rules supersede the former blanket non-renewal wording for plants, but never
-authorize renewable natural minerals in the wild (the cultivated Salt Crust
-basin below is the one deliberate farm exception).
+bucket, seeds, the salt pan), the light rule for plants, renewable wild plants
+and the water-only bucket; the food and material catalog remains in
+[items_crafting.md](items_crafting.md) §3.7. These rules supersede the former
+blanket non-renewal wording for plants, but never authorize renewable natural
+minerals in the wild, with one deliberate exception: the two salts, Rock Salt
+and Salt Crust, regrow in the wild (Round 48, [world.md](world.md) R4).
 
 ## Cultivation and tools
 
-All seventeen shipped crop families retain their growth and hydration timings.
+Eighteen crop families (Round 48: Melon and Mushroom joined, Salt Crust left
+for the salt pan below) retain their growth and hydration timings.
 Cultivated crops and their seeds remain distinct from natural source nodes.
 Seeds use recognizable seed silhouettes from licensed references, rather than
 recolored harvest icons. Reusing an appropriate seed silhouette is allowed.
 **Seeds:** any player crafts one harvest item of a family into two of its
-seeds (a Basic recipe, every family).
+seeds (a Basic recipe, every family). Only cultivated plants drop seeds: wild
+sources drop their harvest item only. The seeds of the three light-exempt
+families (Cave Cap, Mushroom, Ember Moss) are called **Spores**. Spices and
+healing herbs stay gather-only (Sunleaf, Marshbloom, Stormkelp, Gravemoss,
+Dragonweed, Crimson Lotus); Ember Moss is both a healing herb in the wild and
+a crop. Ground cover (grass, ferns, reeds, cattails, moss carpet and the like)
+drops itself for decoration and has no seeds and no propagation.
 
 Every family has four logical stages at 200 seconds per advance. Growth runs
 only above wet crop soil; drying pauses exact partial progress and rewetting
 resumes it. Crop soil checks for water within three nodes every 15 seconds
 while a growing crop stands on it and once a minute otherwise; planting and
-regrowth return it to the 15-second check at once. Destructively harvesting stages 1–3 always returns exactly one seed
+regrowth return it to the 15-second check at once.
+
+**Light** (Round 48). A growing crop also needs **plant light 8**, the level at
+which no monster spawns: daylight or torchlight, measured as at noon (the
+larger of noon daylight and artificial light at the crop), so outdoor crops
+keep growing at night and a torchlit field grows indoors. Darkness pauses a
+crop exactly like dryness: its progress is kept, none accrues, and the soil's
+15-second check resumes it when light returns (one light read per growing crop
+per check). Fungi and cave plants need no light: **Cave Cap, Mushroom and
+Ember Moss** grow in the dark. The same light rule and value
+(`default.PLANT_LIGHT`) serve papyrus and cactus below.
+
+Destructively harvesting stages 1–3 always returns exactly one seed
 and no ingredient. Mature annual crops return one ingredient plus one seed and
 must be replanted. Yield is deterministic and remains one ingredient.
 
 | Class | Families | Mature harvest |
 |---|---|---|
 | annual low crop | Wild Grain, Carrot, Cassava, Wild Onion, Potato | remove and replant |
-| regrowing bush/patch | Fire Pepper, Blightberry, Sunberry, Jungle Berry, Cave Cap, Ember Moss | pick one ingredient; rooted plant returns to stage 2 |
-| regrowing ground fruit | Pumpkin, Frost Melon | pick one fruit; rooted vine returns to stage 2 |
-| salt crust | Salt Crust | scrape one crust; basin returns to stage 1 |
+| regrowing bush/patch | Fire Pepper, Blightberry, Sunberry, Jungle Berry, Cave Cap, Mushroom, Ember Moss | pick one ingredient; rooted plant returns to stage 2 |
+| regrowing ground fruit | Pumpkin, Frost Melon, Melon | pick one fruit; rooted vine returns to stage 2 |
 | retained vertical | Sugar Cane, Bamboo Shoot | harvest upper growth; root returns to stage 1 |
 | annual vertical | Corn | remove the whole mature stalk and replant |
 
@@ -62,13 +81,57 @@ their stack at exhaustion, refusing further conversion until repaired under
 [durability_repair.md](durability_repair.md). Higher material tiers buy lifetime,
 not faster growth or different soil.
 
+## Papyrus, cactus and saplings
+
+Round 48. **Papyrus** grows on any soil (every dirt, litter, mud and farm soil
+node) or sand with water within 3 nodes; **cactus** on sand or mesa clay (the
+badlands ground). Both need plant light 8 measured as at noon, as crops do, so
+both grow indoors by torchlight, and both grow to four pieces at their
+upstream pace (papyrus every 14 s at 1/71, cactus every 12 s at 1/83). They
+regrow from their bottom piece: digging a piece takes every piece above it
+(papyrus as upstream, cactus since Round 48), so leaving the bottom piece keeps
+the plant. Neither grows where the terrain guard refuses
+(`grug_core.world_alterable`: towns, capitals, landmarks), so the reed rows of
+a capital's fields stay as built. A rotated cactus piece (`param2` ≥ 4) never
+grows; the generated badlands cacti stand on trunks taller than four pieces and
+so stay as generated, while wild swamp papyrus grows to its cap of four. The
+Large Cactus Seedling follows the cactus ground and light.
+
+**Saplings** (trees and bushes) grow only by daylight: natural light 13
+measured as at noon. Torches never help a sapling; a glass roof lets the sun
+through. Picked apples and blueberries keep their vendored regrowth (light 11
+from any source).
+
+## The salt pan
+
+Round 48: salt is no plant. A crafted **Salt Pan** (Basic recipe: 3 Embersteel
+Bars, 1 filled Water Bucket, which is used up, and 1 Salt Crust) is placed on
+the top face of any solid, walkable ground that is no liquid, with the usual
+protection check. With water within 3 nodes it collects Salt Crust through
+four fill stages of 200 seconds each, needs no light, and keeps its progress
+while the water is gone. Right-click on a full pan scrapes one Salt Crust and
+empties it to stage 1; digging returns the pan, a full one also its crust. It
+wears the wild salt basin's look. The pan makes Salt Crust only; Rock Salt
+stays gather-only.
+
+## Tooltips
+
+Every plant item and harvest carries one line that says how it grows or where
+it comes from (`grug_farming/tooltips.lua`, one pass after the other
+description writers): a crop's harvest item and its seeds or spores (light or
+"even in the dark"), papyrus, cactus, saplings, Salt Crust, the Salt Pan, the
+gather-only spices and foods ("Found in the wild only") and the alchemists'
+healing herbs.
+
 ## Initial wild population
 
 Halve the initial density of all harvestable wild food, Cooking and gathering
 plant sources, including the older Potato and Corn sources. Double each source
 candidate denominator and retain the existing geographic, biome, support,
 shore, level and depth predicates. Do not relocate rejected initial candidates.
-Grass, decorative flowers, ores, gems, Rock Salt and Salt Crust are excluded.
+Grass, decorative flowers, ores and gems are excluded. Rock Salt and Salt
+Crust keep their full initial density (Round 48: they renew, but the world
+generates them as before).
 
 ## Wild plant renewal
 
@@ -86,9 +149,10 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
 - *Resource plants* (the renewable world content and P9G gathering rows) count
   **per species**, at `1 / initial_denominator` per eligible column (cave rows:
   per eligible cave-floor node), with each row's zone, biome, support, level or
-  depth and shore predicates. Rock Salt and Salt Crust are minerals and never
-  renew in the wild; the cultivated Salt Crust basin (above) is the
-  deliberate farm exception.
+  depth and shore predicates. Rock Salt (the three coast zones and their
+  shore rule) and Salt Crust (mesa clay in The Shattered Line) renew too, at
+  their full initial density (Round 48, the deliberate exception to
+  [world.md](world.md) R4).
 - *Ground cover* (grass, dry grass, ferns, junglegrass, dry shrubs) counts **as
   one total** at the sum of the biome's decoration rates
   ([biomes_mobs.md](biomes_mobs.md) §2.1), thinned per support exactly like the
@@ -161,7 +225,8 @@ any non-natural node, farm soil or unloaded terrain. Natural nodes are air,
 liquids, generated ground and ores (`grug_natural`), the tree, leaf, sapling,
 flora and fruit families and every node the generator places as vegetation.
 The snowy crags pine and the crags pine bush (gravel), the fallen apple log, the badlands cactus
-(mesa clay) and swamp papyrus have no renewal path.
+and swamp papyrus have no renewal path (the last two grow from their own
+stands, above).
 
 **Rates** (first version by feel, tuned in playtest; constants in
 `grug_farming/renewal.lua`): each player is serviced once per 5 seconds with
@@ -171,7 +236,8 @@ visits per player and step, independent of world size.
 
 **Apples and blueberries** are not renewal plants: a picked natural apple
 (`param2 = 0`) and picked blueberry leaves regrow through the vendored
-`default` node timers. Ores and other minerals retain [world.md](world.md) R4.
+`default` node timers. Ores and other minerals retain [world.md](world.md) R4
+(the two salts excepted).
 
 ## Water bucket
 
@@ -179,8 +245,10 @@ One empty Iron Bucket and one filled Water Bucket, both stack size one. The
 Basic recipe is three `grug_materials:iron_bar` (the pinned VoxeLibre V
 layout until Round 45). There is no profession, character-level or Housing prerequisite.
 
-Fill only from actual ordinary or river water sources. Preserve that family in
-filled-stack metadata and place the same source family again. Invalid/missing
+Fill only from actual ordinary or river water sources and place the same
+source family again. A bucket of ordinary water carries no metadata (Round 48:
+so it counts as a recipe ingredient, the salt pan's); river water keeps its
+family in the stack's metadata and reads "River Water Bucket". Invalid
 metadata, flowing water, lava and protected decorative water are refused, and
 a filled bucket never replaces an existing liquid. Check reach and the
 player's protection at the node removed/placed; both filling and placing are

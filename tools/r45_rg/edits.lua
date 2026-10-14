@@ -19,4 +19,18 @@ return {
 	-- Anthracite and 1 stick. Anthracite is not in the coal group (ruling 9).
 	{output = "grug_materials:anthracite_torch", count = 10, added = {
 		{item = "grug_materials:anthracite", n = 1}, {group = "stick", n = 1}}},
+	-- Round 48 (plant-growth-plan.md §2.6-§2.7, §2.15-§2.16, §3.11): Melon and
+	-- Mushroom are crops, each harvest makes two seeds or spores; Salt Crust
+	-- is no crop (its seed row goes) and comes from the Salt Pan: 3 Embersteel
+	-- Bars, a filled Water Bucket (used up) and 1 Salt Crust.
+	{output = "grug_farming:seed_melon", count = 2, added = {
+		{item = "grug_gathering:melon", n = 1}}},
+	{output = "grug_farming:seed_mushroom", count = 2, added = {
+		{item = "grug_gathering:mushroom", n = 1}}},
+	{output = "grug_farming:seed_salt_crust", signature = "grug_cooking:salt_crust*1",
+		was = 2, removed = true},
+	{output = "grug_farming:salt_pan", count = 1, added = {
+		{item = "grug_materials:embersteel_bar", n = 3},
+		{item = "grug_farming:water_bucket", n = 1},
+		{item = "grug_cooking:salt_crust", n = 1}}},
 }
