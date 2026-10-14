@@ -220,6 +220,10 @@ precedence over preserving the exact mathematical ratio.
   showpieces 1g (wagon wheel, four paintings) — at every level, with the
   ordinary 5 % buy-back. All are grug_decor's harvested kit, licensed per
   file in its `LICENSE-media.md`.
+- **Postage** (Round 48, [mail.md](mail.md)): **5c** per letter to another
+  player plus **30c per attached stack**, up to four stacks (35c, 65c, 95c,
+  125c); mail to the admin is free. A small, steady sink at the mailboxes;
+  `tools/r29_e4/income.py` does not check it.
 - **No profession-replacement services:** cultural finishes, the PvP weapon
   counter and the Warding Draught were removed (Round 33), and with them the
   cultural masters and helper NPCs that would have performed them.

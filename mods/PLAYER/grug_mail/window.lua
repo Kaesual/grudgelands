@@ -137,34 +137,45 @@ local function frame(player, session, counts)
 end
 
 -- The four attachment cells of a letter: item images with their tooltip.
+local CELL, CELL_STEP = 0.8, 0.9
 local function attachment_cells(fs, items, x, y)
 	for index = 1, M.STACKS do
-		local cx = x + (index - 1) * 1.0
-		fs[#fs + 1] = ("box[%.2f,%.2f;0.9,0.9;#1e2126]"):format(cx, y)
+		local cx = x + (index - 1) * CELL_STEP
+		fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#1e2126]"):format(cx, y, CELL, CELL)
 		local item = items[index]
 		if item then
 			local stack = ItemStack(item)
-			fs[#fs + 1] = ("item_image[%.2f,%.2f;0.9,0.9;%s]"):format(cx, y, esc(item))
-			fs[#fs + 1] = ("tooltip[%.2f,%.2f;0.9,0.9;%s]"):format(cx, y,
+			fs[#fs + 1] = ("item_image[%.2f,%.2f;%.2f,%.2f;%s]"):format(cx, y, CELL, CELL,
+				esc(item))
+			fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(cx, y, CELL, CELL,
 				esc(stack:get_description()))
 		end
 	end
 end
+
+-- Shortened for a list column (the column grows with its longest cell, and
+-- the date must stay in view).
+local function clip(text, max)
+	if M.text_length(text) <= max then return text end
+	return M.truncate(text, max - 3) .. "..."
+end
+local FROM_CHARS, SUBJECT_CHARS = 15, 18
 
 -- A letter or broadcast list as a table[] of one page: the unread dot, the
 -- badge, sender, subject (with the number of attachments) and date.
 local function letter_table(fs, name, rows, selected_id, x, y, w, h)
 	fs[#fs + 1] = ("tableoptions[background=#0d0e10;border=true;highlight=#2c3a4f;" ..
 		"color=%s]"):format(COLOR.text)
-	fs[#fs + 1] = ("tablecolumns[color,span=1;text,width=0.8;image,width=1,1=%s,2=%s;" ..
-		"color;text,width=7;text,width=10;text,align=right,width=3.5]"):format(BADGE, SEAL)
+	fs[#fs + 1] = ("tablecolumns[color,span=1;text,width=0.6;image,width=1,1=%s,2=%s;" ..
+		"color;text,width=6;text,width=8;text,align=right,width=3]"):format(BADGE, SEAL)
 	local cells, selected = {}, 0
 	for index, row in ipairs(rows) do
-		local subject = row.subject ~= "" and row.subject or "(no subject)"
-		if row.items and #row.items > 0 then subject = subject .. " (+" .. #row.items .. ")" end
+		local marker = row.items and #row.items > 0 and (" (+" .. #row.items .. ")") or ""
+		local subject = clip(row.subject ~= "" and row.subject or "(no subject)",
+			SUBJECT_CHARS - #marker) .. marker
 		local badge = (row.kind == "admin" or not row.kind) and 1 or row.kind == "npc" and 2 or 0
 		local entries = {COLOR.dot, row.read and "" or "•", tostring(badge),
-			row.read and COLOR.read or COLOR.unread, row.from or M.ADMIN_LABEL,
+			row.read and COLOR.read or COLOR.unread, clip(row.from or M.ADMIN_LABEL, FROM_CHARS),
 			subject, date(row.time)}
 		for _, entry in ipairs(entries) do cells[#cells + 1] = esc(entry) end
 		if row.id == selected_id then selected = index end
@@ -180,11 +191,12 @@ local function table_row(value)
 end
 
 --
--- Letters and Announcements
+-- Letters and Announcements: the list left, the reading pane right
 --
 
-local LIST_X, LIST_Y, LIST_W, LIST_H = 0.4, 1.45, 6.3, 5.4
-local PANE_X, PANE_W = 7.0, 6.1
+local LIST_X, LIST_Y, LIST_W, LIST_H = 0.4, 1.45, 7.5, 5.4
+local PANE_X, PANE_W = 8.15, 4.95
+local BODY_Y = 3.15
 
 local function reading_head(fs, entry, kind)
 	if kind == "admin" then
@@ -195,46 +207,51 @@ local function reading_head(fs, entry, kind)
 		fs[#fs + 1] = ("image[%.2f,1.25;0.5,0.5;%s]label[%.2f,1.5;%s]"):format(PANE_X + 0.1,
 			SEAL, PANE_X + 0.75, esc(colored(COLOR.dim, "From a character of the realm")))
 	end
-	fs[#fs + 1] = ("label[%.2f,2.15;%s]label[%.2f,2.15;%s]"):format(PANE_X,
-		esc(entry.subject ~= "" and entry.subject or "(no subject)"),
-		PANE_X + PANE_W - 1.3, esc(colored(COLOR.dim, date(entry.time))))
-	fs[#fs + 1] = ("label[%.2f,2.6;%s]"):format(PANE_X,
-		esc(colored(COLOR.dim, "From: ") .. (entry.from or M.ADMIN_LABEL)))
+	fs[#fs + 1] = ("label[%.2f,2.15;%s]"):format(PANE_X, esc(grug_inventory.wrap_text(
+		entry.subject ~= "" and entry.subject or "(no subject)", 34)))
+	fs[#fs + 1] = ("label[%.2f,2.9;%s]label[%.2f,2.9;%s]"):format(PANE_X,
+		esc(colored(COLOR.dim, "From: ") .. (entry.from or M.ADMIN_LABEL)),
+		PANE_X + PANE_W - 1.0, esc(colored(COLOR.dim, date(entry.time))))
 end
 
 local function reading_body(fs, entry, height)
-	fs[#fs + 1] = ("box[%.2f,2.95;%.2f,%.2f;#0d0e10]textarea[%.2f,2.95;%.2f,%.2f;;;%s]")
-		:format(PANE_X, PANE_W, height, PANE_X, PANE_W, height, esc(entry.body))
+	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#0d0e10]textarea[%.2f,%.2f;%.2f,%.2f;;;%s]")
+		:format(PANE_X, BODY_Y, PANE_W, height, PANE_X, BODY_Y, PANE_W, height,
+			esc(entry.body))
+end
+
+local function dialog_box(fs, y, h)
+	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;%s]box[%.2f,%.2f;%.2f,%.2f;%s]"):format(
+		PANE_X, y, PANE_W, h, COLOR.alarm, PANE_X + 0.03, y + 0.03, PANE_W - 0.06, h - 0.06,
+		COLOR.dialog)
 end
 
 local function report_dialog(fs, session, letter)
-	fs[#fs + 1] = ("box[%.2f,7.8;%.2f,4.2;%s]box[%.2f,7.83;%.2f,4.14;%s]"):format(
-		PANE_X, PANE_W, COLOR.alarm, PANE_X + 0.03, PANE_W - 0.06, COLOR.dialog)
-	fs[#fs + 1] = ("label[%.2f,8.15;%s]"):format(PANE_X + 0.2,
-		esc(colored(COLOR.bad, "Really report this letter from " .. letter.from .. "?")))
+	dialog_box(fs, 7.75, 4.7)
+	fs[#fs + 1] = ("label[%.2f,8.1;%s]"):format(PANE_X + 0.2, esc(colored(COLOR.bad,
+		"Really report this letter\nfrom " .. letter.from .. "?")))
 	local reasons = {}
 	for index, reason in ipairs(M.REPORT_REASONS) do reasons[index] = esc(reason) end
-	fs[#fs + 1] = ("label[%.2f,8.85;Reason]dropdown[%.2f,8.55;4.3,0.6;report_reason;%s;%d;true]")
-		:format(PANE_X + 0.2, PANE_X + 1.6, table.concat(reasons, ","), session.report.reason)
-	fs[#fs + 1] = ("label[%.2f,9.6;Note]field[%.2f,9.3;4.3,0.6;report_note;;%s]" ..
-		"field_close_on_enter[report_note;false]"):format(PANE_X + 0.2, PANE_X + 1.6,
+	fs[#fs + 1] = ("label[%.2f,9.3;Reason]dropdown[%.2f,9.0;3.35,0.6;report_reason;%s;%d;true]")
+		:format(PANE_X + 0.2, PANE_X + 1.4, table.concat(reasons, ","), session.report.reason)
+	fs[#fs + 1] = ("label[%.2f,10.05;Note]field[%.2f,9.75;3.35,0.6;report_note;;%s]" ..
+		"field_close_on_enter[report_note;false]"):format(PANE_X + 0.2, PANE_X + 1.4,
 		esc(session.report.note))
-	fs[#fs + 1] = ("label[%.2f,10.3;%s]"):format(PANE_X + 0.2,
-		esc(colored(COLOR.dim, "Optional. A copy of the letter goes to the server admin.")))
-	fs[#fs + 1] = ("button[%.2f,10.9;2,0.8;report_cancel;Cancel]" ..
-		"style[report_confirm;bgcolor=#8a3a2c]button[%.2f,10.9;2,0.8;report_confirm;Report]")
-		:format(PANE_X + 1.6, PANE_X + 3.9)
+	fs[#fs + 1] = ("label[%.2f,10.7;%s]"):format(PANE_X + 0.2, esc(colored(COLOR.dim,
+		"The note is optional. A copy of the\nletter goes to the server admin.")))
+	fs[#fs + 1] = ("button[%.2f,11.45;1.6,0.75;report_cancel;Cancel]" ..
+		"style[report_confirm;bgcolor=#8a3a2c]button[%.2f,11.45;1.6,0.75;report_confirm;Report]")
+		:format(PANE_X + 1.4, PANE_X + 3.15)
 end
 
 local function delete_dialog(fs)
-	fs[#fs + 1] = ("box[%.2f,9.4;%.2f,2.6;%s]box[%.2f,9.43;%.2f,2.54;%s]"):format(
-		PANE_X, PANE_W, COLOR.alarm, PANE_X + 0.03, PANE_W - 0.06, COLOR.dialog)
-	fs[#fs + 1] = ("label[%.2f,9.8;%s]label[%.2f,10.25;%s]"):format(PANE_X + 0.2,
-		esc(colored(COLOR.bad, "This letter still holds its attachments.")), PANE_X + 0.2,
+	dialog_box(fs, 9.25, 2.9)
+	fs[#fs + 1] = ("label[%.2f,9.6;%s]label[%.2f,10.25;%s]"):format(PANE_X + 0.2,
+		esc(colored(COLOR.bad, "This letter still holds\nits attachments.")), PANE_X + 0.2,
 		esc("Delete it together with them?"))
-	fs[#fs + 1] = ("button[%.2f,10.9;2,0.8;delete_cancel;Cancel]" ..
-		"style[delete_confirm;bgcolor=#8a3a2c]button[%.2f,10.9;2,0.8;delete_confirm;Delete]")
-		:format(PANE_X + 1.6, PANE_X + 3.9)
+	fs[#fs + 1] = ("button[%.2f,11.15;1.6,0.75;delete_cancel;Cancel]" ..
+		"style[delete_confirm;bgcolor=#8a3a2c]button[%.2f,11.15;1.6,0.75;delete_confirm;Delete]")
+		:format(PANE_X + 1.4, PANE_X + 3.15)
 end
 
 local function letters_tab(player, session, fs)
@@ -262,37 +279,38 @@ local function letters_tab(player, session, fs)
 	else
 		reading_head(fs, selected, selected.kind)
 		local dialog = session.dialog
-		reading_body(fs, selected, 4.6)
+		reading_body(fs, selected, 4.3)
 		if dialog == "report" then
 			report_dialog(fs, session, selected)
 		else
 			if M.has_items(selected) then
-				fs[#fs + 1] = ("label[%.2f,7.95;Attachments]"):format(PANE_X)
-				attachment_cells(fs, selected.items, PANE_X, 8.2)
-				fs[#fs + 1] = ("button[%.2f,8.3;2,0.7;take_all;Take all]"):format(PANE_X + 4.1)
+				fs[#fs + 1] = ("label[%.2f,7.8;Attachments]"):format(PANE_X)
+				attachment_cells(fs, selected.items, PANE_X, 8.05)
+				fs[#fs + 1] = ("button[%.2f,8.1;1.35,0.7;take_all;Take all]"):format(
+					PANE_X + PANE_W - 1.35)
 			end
 			if dialog == "delete" then
 				delete_dialog(fs)
 			else
 				local x = PANE_X
 				if M.reply_kind(selected) then
-					fs[#fs + 1] = ("style[reply;bgcolor=#3d5f8a]button[%.2f,9.5;1.9,0.8;reply;Reply]")
+					fs[#fs + 1] = ("style[reply;bgcolor=#3d5f8a]button[%.2f,9.25;1.55,0.75;reply;Reply]")
 						:format(x)
-					x = x + 2.05
+					x = x + 1.725
 				else
-					fs[#fs + 1] = ("label[%.2f,9.9;%s]"):format(x, esc(colored(COLOR.dim,
-						"Letters from characters of the realm\ncannot be answered.")))
+					fs[#fs + 1] = ("label[%.2f,9.6;%s]"):format(x, esc(colored(COLOR.dim,
+						"Letters from characters of the\nrealm cannot be answered.")))
 				end
 				if selected.kind == "player" then
 					if selected.reported then
-						fs[#fs + 1] = ("label[%.2f,9.9;%s]"):format(x + 0.2,
+						fs[#fs + 1] = ("label[%.2f,9.6;%s]"):format(x + 0.2,
 							esc(colored(COLOR.dim, "Reported")))
 					else
-						fs[#fs + 1] = ("button[%.2f,9.5;1.9,0.8;report;Report]"):format(x)
+						fs[#fs + 1] = ("button[%.2f,9.25;1.55,0.75;report;Report]"):format(x)
 					end
 				end
-				fs[#fs + 1] = ("button[%.2f,9.5;1.9,0.8;delete;Delete]"):format(
-					PANE_X + PANE_W - 1.9)
+				fs[#fs + 1] = ("button[%.2f,9.25;1.55,0.75;delete;Delete]"):format(
+					PANE_X + PANE_W - 1.55)
 			end
 		end
 	end
@@ -327,8 +345,8 @@ local function announcements_tab(player, session, fs)
 			"Choose an announcement to read it.")))
 	else
 		reading_head(fs, selected, "admin")
-		reading_body(fs, selected, 6.2)
-		fs[#fs + 1] = ("style[reply;bgcolor=#3d5f8a]button[%.2f,9.5;1.9,0.8;reply;Reply]")
+		reading_body(fs, selected, 5.8)
+		fs[#fs + 1] = ("style[reply;bgcolor=#3d5f8a]button[%.2f,9.25;1.55,0.75;reply;Reply]")
 			:format(PANE_X)
 	end
 	fs[#fs + 1] = status_line(session, 12.75)
@@ -370,27 +388,26 @@ local function write_tab(player, session, fs)
 		"field_close_on_enter[mail_to;false]"):format(esc(draft.to))
 	fs[#fs + 1] = ("label[5.8,1.375;Subject]field[7.0,1.05;6.1,0.65;mail_subject;;%s]" ..
 		"field_close_on_enter[mail_subject;false]"):format(esc(draft.subject))
-	fs[#fs + 1] = ("label[0.4,2.0;Message]textarea[0.4,2.25;12.7,3.25;mail_body;;%s]")
+	fs[#fs + 1] = ("label[0.4,2.0;Message]textarea[0.4,2.25;12.7,3.0;mail_body;;%s]")
 		:format(esc(draft.body))
-	fs[#fs + 1] = "label[0.4,5.85;Attachments]"
-	fs[#fs + 1] = ("list[current_player;%s;0.4,6.1;4,1;]"):format(ATTACH)
-	fs[#fs + 1] = ("label[0.4,7.45;%s]"):format(esc(colored(COLOR.dim,
-		"Drag up to four stacks in or out. Soulbound items and skills do not fit.")))
+	fs[#fs + 1] = "label[0.4,5.6;Attachments]"
+	fs[#fs + 1] = ("list[current_player;%s;0.4,5.85;4,1;]"):format(ATTACH)
 	local breakdown = "Postage: letter " .. grug_money.format(M.POSTAGE_LETTER)
 	if count > 0 then
 		breakdown = breakdown .. " + " .. count .. " x " ..
 			grug_money.format(M.POSTAGE_STACK)
 	end
-	fs[#fs + 1] = ("label[5.6,6.3;%s]label[5.6,6.75;%s]"):format(
+	fs[#fs + 1] = ("label[5.6,6.1;%s]label[5.6,6.55;%s]"):format(
 		esc(breakdown .. " = " .. grug_money.format(postage)),
 		esc(colored(COLOR.dim, "30c for every attachment slot used")))
-	fs[#fs + 1] = ("button[8.6,7.05;2.2,0.8;write_discard;Discard]" ..
-		"style[write_send;bgcolor=#3d5f8a]button[10.9,7.05;2.2,0.8;write_send;%s]"):format(
+	fs[#fs + 1] = ("label[0.4,7.2;%s]label[0.4,7.6;%s]"):format(esc(colored(COLOR.dim,
+		"Drag up to four stacks in or out. Soulbound items and skills do not fit.")),
+		esc(colored(COLOR.dim, "The letter arrives at once, also when the recipient is " ..
+		"offline. Only players of your faction.")))
+	fs[#fs + 1] = status_line(session, 8.4)
+	fs[#fs + 1] = ("button[8.6,8.0;2.2,0.8;write_discard;Discard]" ..
+		"style[write_send;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;write_send;%s]"):format(
 		esc("Send (" .. grug_money.format(postage) .. ")"))
-	fs[#fs + 1] = ("label[0.4,7.95;%s]"):format(esc(colored(COLOR.dim,
-		"The letter arrives at once, also when the recipient is offline. " ..
-		"Only players of your faction.")))
-	fs[#fs + 1] = status_line(session, 8.5)
 	fs[#fs + 1] = grug_inventory.inventory_view(player, "short", session.inv)
 	fs[#fs + 1] = rings(player)
 end
@@ -405,18 +422,23 @@ local ADMIN_HINT = "Questions, problems or a player to report? Feedback on " ..
 local function ticket_table(fs, rows, selected_id, x, y, w, h)
 	fs[#fs + 1] = ("tableoptions[background=#0d0e10;border=true;highlight=#2c3a4f;" ..
 		"color=%s]"):format(COLOR.text)
-	fs[#fs + 1] = "tablecolumns[text,width=10;color;text,align=right,width=4]"
+	fs[#fs + 1] = "tablecolumns[text,width=12;color;text,align=right,width=5]"
 	local cells, selected = {}, 0
 	for index, ticket in ipairs(rows) do
 		local state = M.ticket_state(ticket)
 		local color = state == "Open" and COLOR.open or state == "Answered" and
 			COLOR.answered or COLOR.closed
-		for _, entry in ipairs({ticket.subject, color, state}) do cells[#cells + 1] = esc(entry) end
+		for _, entry in ipairs({clip(ticket.subject, 30), color, state}) do
+			cells[#cells + 1] = esc(entry)
+		end
 		if ticket.id == selected_id then selected = index end
 	end
 	fs[#fs + 1] = ("table[%.2f,%.2f;%.2f,%.2f;tickets;%s;%d]"):format(x, y, w, h,
 		table.concat(cells, ","), selected)
 end
+
+-- The right column of To the admin: the player's own messages.
+local TICKET_X, TICKET_W = 7.0, 6.1
 
 local function admin_tab(player, session, fs)
 	local name = player:get_player_name()
@@ -429,16 +451,15 @@ local function admin_tab(player, session, fs)
 		grug_inventory.wrap_text(ADMIN_HINT, 48))))
 	local topics = {}
 	for index, topic in ipairs(M.TOPICS) do topics[index] = esc(topic) end
-	fs[#fs + 1] = ("label[0.4,3.45;Topic]dropdown[1.6,3.15;5.1,0.6;admin_topic;%s;%d;true]")
+	fs[#fs + 1] = ("label[0.4,3.6;Topic]dropdown[1.6,3.3;5.1,0.6;admin_topic;%s;%d;true]")
 		:format(table.concat(topics, ","), draft.topic)
-	fs[#fs + 1] = ("label[0.4,4.15;Subject]field[1.6,3.85;5.1,0.6;admin_subject;;%s]" ..
+	fs[#fs + 1] = ("label[0.4,4.3;Subject]field[1.6,4.0;5.1,0.6;admin_subject;;%s]" ..
 		"field_close_on_enter[admin_subject;false]"):format(esc(draft.subject))
-	fs[#fs + 1] = ("label[0.4,4.8;Message]textarea[0.4,5.05;6.3,3.4;admin_body;;%s]")
+	fs[#fs + 1] = ("label[0.4,4.95;Message]textarea[0.4,5.2;6.3,3.3;admin_body;;%s]")
 		:format(esc(draft.body))
-	fs[#fs + 1] = ("label[0.4,8.8;%s]"):format(esc(colored(COLOR.dim,
+	fs[#fs + 1] = ("label[0.4,8.85;%s]"):format(esc(colored(COLOR.dim,
 		"Sent from " .. mailbox_text(session) .. ",\nversion " ..
-		tostring(grug_inventory.GAME_VERSION or "unknown") .. " is attached.")))
-	fs[#fs + 1] = ("label[0.4,9.65;%s]"):format(esc(colored(COLOR.dim,
+		tostring(grug_inventory.GAME_VERSION or "unknown") .. " is attached.\n" ..
 		("You have %d of %d open messages."):format(M.open_tickets(tickets, name),
 		M.OPEN_TICKETS))))
 	fs[#fs + 1] = "button[0.4,10.2;2.2,0.8;admin_discard;Discard]" ..
@@ -448,15 +469,15 @@ local function admin_tab(player, session, fs)
 	local rows, page, pages = M.page(own, session.pages.tickets)
 	session.pages.tickets = page
 	session.rows = rows
-	fs[#fs + 1] = ("label[%.2f,1.4;Your messages to the admin]"):format(PANE_X)
-	ticket_table(fs, rows, selected and selected.id, PANE_X, 1.7, PANE_W, 4.0)
-	fs[#fs + 1] = pager("tickets", PANE_X, 5.9, page, pages)
+	fs[#fs + 1] = ("label[%.2f,1.4;Your messages to the admin]"):format(TICKET_X)
+	ticket_table(fs, rows, selected and selected.id, TICKET_X, 1.7, TICKET_W, 4.0)
+	fs[#fs + 1] = pager("tickets", TICKET_X, 5.9, page, pages)
 	if #own == 0 then
-		fs[#fs + 1] = ("label[%.2f,7.0;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,7.0;%s]"):format(TICKET_X, esc(colored(COLOR.dim,
 			"You have not written to the admin.")))
 	elseif selected then
-		fs[#fs + 1] = ("label[%.2f,7.0;%s]label[%.2f,7.45;%s]"):format(PANE_X,
-			esc(selected.subject), PANE_X, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,7.0;%s]label[%.2f,7.45;%s]"):format(TICKET_X,
+			esc(clip(selected.subject, 44)), TICKET_X, esc(colored(COLOR.dim,
 			"You, " .. date(selected.time) .. " · " .. selected.topic .. " · ") ..
 			M.ticket_state(selected)))
 		local text = selected.body
@@ -468,13 +489,13 @@ local function admin_tab(player, session, fs)
 				tostring(report.body))
 		end
 		fs[#fs + 1] = ("box[%.2f,7.75;%.2f,2.6;#0d0e10]textarea[%.2f,7.75;%.2f,2.6;;;%s]")
-			:format(PANE_X, PANE_W, PANE_X, PANE_W, esc(text))
+			:format(TICKET_X, TICKET_W, TICKET_X, TICKET_W, esc(text))
 		if selected.answered then
-			fs[#fs + 1] = ("label[%.2f,10.65;%s]"):format(PANE_X, esc(colored(COLOR.dim,
-				"The answer is in your Letters, from the Server Admin.")))
+			fs[#fs + 1] = ("label[%.2f,10.65;%s]"):format(TICKET_X, esc(colored(COLOR.dim,
+				"The answer is in your Letters.")))
 		end
 		fs[#fs + 1] = ("button[%.2f,11.0;1.9,0.8;ticket_delete;Delete]"):format(
-			PANE_X + PANE_W - 1.9)
+			TICKET_X + TICKET_W - 1.9)
 	end
 	fs[#fs + 1] = status_line(session, 12.75)
 	fs[#fs + 1] = ("label[0.4,13.25;%s]"):format(esc(colored(COLOR.dim,

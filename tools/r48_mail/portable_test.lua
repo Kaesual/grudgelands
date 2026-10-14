@@ -813,11 +813,11 @@ do
 	check(formspecs.Alice.text:find("Take all", 1, true) and formspecs.Alice.text:find("report", 1, true),
 		"D a player letter shows Take all and Report")
 	send_fields(alice, {report = "Report"})
-	check(formspecs.Alice.text:find("Really report this letter from Brakka?", 1, true),
+	check(formspecs.Alice.text:find("Really report this letter\nfrom Brakka?", 1, true),
 		"D Report asks first")
 	send_fields(alice, {report_cancel = "Cancel"})
 	send_fields(alice, {delete = "Delete"})
-	check(session.dialog == "delete" and formspecs.Alice.text:find("still holds its attachments", 1, true),
+	check(session.dialog == "delete" and formspecs.Alice.text:find("still holds\nits attachments", 1, true),
 		"D deleting a letter with attachments asks first")
 	send_fields(alice, {delete_cancel = "Cancel"})
 	send_fields(alice, {letters = "CHG:2:5"})
