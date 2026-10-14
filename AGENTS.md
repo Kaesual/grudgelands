@@ -21,16 +21,17 @@ groves and greened capitals, the swamp, next-tier ores in the lower half of
 the band before, Iron behind a Bronze pick, Anthracite and Steel from it,
 quieter furnaces, crafts delivered into the inventory, Basic recipes
 unlocked by held ingredients, NPCs facing away from walls, first-entry zone
-XP and the map window's marker layers. The user pushed main at `b3a30ab0`
-as a backup; the closing documentation is not pushed yet (pushed only on
-the user's word). Production runs 0.45.1 and moves to 0.47.0 in one
+XP and the map window's marker layers. The user worked through the GUI
+checklist of 0.46.0 and 0.47.0 (everything works) and pushed main at
+`6a8afb9f` (2026-10-14). Production runs 0.45.1 and moves to 0.47.0 in one
 update (0.46.0 was never deployed on its own).
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
-(2026-10-06), Round 42's playtest was accepted (2026-10-08); the GUI tests
-of Rounds 36–38, 40, 41, 43–47 and of 0.45.1 are open. The class redesign
+(2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
+47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45 and of
+0.45.1 are open. The class redesign
 is parked ([continuation](docs/planning/class-redesign/continuation.md)).
-Next: the round-end gates, then the GUI test of 0.46.0 and 0.47.0
-together. Details: [STATUS](docs/STATUS.md).
+Next: [Round 48](docs/planning/round48-plan.md) (mail, plants and light,
+selling, smaller bags; 0.48.0). Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
 

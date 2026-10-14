@@ -624,8 +624,9 @@ capabilities that crafted and broken tools keep in item meta are rebuilt
 at each character's next join (step 0.47.0). The production world
 (0.45.1) moves to 0.47.0 in one update and crosses both map resets
 (0.46.0 was never deployed on its own). **Push:** the user pushed main at
-`b3a30ab0` as a backup (2026-10-14); this closing documentation is not
-pushed yet (pushed only on the user's word). Production runs 0.45.1.
+`b3a30ab0` as a backup (2026-10-14), then, after working through the GUI
+checklist below (everything works), at `6a8afb9f` with this closing
+documentation. Production runs 0.45.1.
 
 ### Lanes
 

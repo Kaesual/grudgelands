@@ -109,9 +109,8 @@ example E5) are cited below. WP34 followed in Round 46.
 
 - **Latest delivery: [Round 47 "Trees, mining progression and crafting
   feedback"](docs/planning/round47-plan.md#completion-2026-10-14)**
-  (2026-10-14, version 0.47.0, **map reset** plus the step 0.47.0; main
-  pushed by the user as a backup, the closing docs not yet; GUI test
-  open): trees from the seeded generator, greener towns and capitals, the
+  (2026-10-14, version 0.47.0, **map reset** plus the step 0.47.0;
+  GUI-accepted together with 0.46.0 and pushed at `6a8afb9f`): trees from the seeded generator, greener towns and capitals, the
   swamp, the lower-half ore rule and the Bronze gate, Anthracite and Steel
   from it, quieter furnaces, crafts into the inventory, the Basic unlock by
   held ingredients, NPC facing, first-entry zone XP and the map window's

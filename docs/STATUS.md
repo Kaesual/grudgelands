@@ -19,9 +19,13 @@ generation. Resume with the [continuation plan](planning/class-redesign/continua
 Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
 is open.
 
-- **Round 47 "Trees, mining progression and crafting feedback" complete
-  on main; the closing documentation not pushed yet (pushed only on the
-  user's word)** (2026-10-14, version 0.47.0, **map reset** plus the
+- **Round 48 "Mail, plants and light, selling, smaller bags" planned and
+  started** (2026-10-14, version 0.48.0, **map reset** plus the migration
+  step 0.48.0; [plan](planning/round48-plan.md)).
+- **Round 47 "Trees, mining progression and crafting feedback" complete,
+  GUI-accepted and pushed** (the user worked through the GUI checklist of
+  0.46.0 and 0.47.0, everything works, and pushed main at `6a8afb9f`)
+  (2026-10-14, version 0.47.0, **map reset** plus the
   migration step 0.47.0,
   [plan, decisions, numbers and GUI checklist](planning/round47-plan.md#completion-2026-10-14)).
   The user pushed main at `b3a30ab0` (every build lane merged) as a
@@ -74,9 +78,8 @@ is open.
   - **NPCs, zones, map (NZ, ML):** 230 sockets facing walls → 0, the
     banner 4 s, first-entry zone XP; the map window's eight marker layers,
     quest mode, named markers and party names.
-  - Next: the user's GUI test of 0.46.0 and
-    0.47.0 together (frame rate on a real GPU first); the push on the
-    user's word ([BACKLOG](../BACKLOG.md#round-47-carry-overs)).
+  - GUI test of 0.46.0 and 0.47.0 together passed (2026-10-14); pushed
+    at `6a8afb9f` ([carry-overs](../BACKLOG.md#round-47-carry-overs)).
 
 - **Round 46 "World generation and player feedback" complete; 0.46.0
   never deployed on its own** (2026-10-13, version
