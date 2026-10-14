@@ -590,7 +590,41 @@ drawn from the base image above. The gliding version (approved in playtest,
   Luanti has no custom keybinds), stored per player in player meta, on by
   default. If the server has no base image (the render failed) or cannot
   write the minimap's round mask to the world directory, the map window
-  shows "No minimap available" instead; the native minimap stays off.
+  shows "No minimap available" instead; the native minimap stays off. The
+  side elements below stay in either case.
+- **Side elements** (Round 48): two small images beside the minimap, sized
+  with the minimap's box (they grow with the window like the bezel):
+  - the **mail icon** (an envelope with a digit badge) shows the player's
+    unread letters and broadcasts: hidden at 0, the digit 1–9, "9+" above
+    ([mail plan](../planning/mail-plan.md) ruling 14); 19 % of the box high
+    (51 px at 1080p);
+  - the **daytime band** shows roughly where the world day stands, not a
+    clock (no numbers): one 20-minute day of day and night sections at their
+    real lengths (the 15-minute day phase three quarters of it, with the
+    sun at its centre; the 5-minute night a quarter, with the moon), with a
+    fixed "now" marker in the middle. It moves from right to left, so the
+    coming phase enters from the right, in 40 steps of 30 real seconds (the
+    day phase's clock runs at 60, the night's at 108, so the step is real
+    time, not clock time: 04:30 is the first step, 19:30 the 31st). It is
+    45 % of the box wide (about half the bezel) at 4 : 1 (122 × 31 px at
+    1080p). Its phase edges are the night mobs' spawn clock's, so it also
+    shows when night mobs come.
+
+  With the minimap shown, the mail icon stands left of the bezel,
+  top-aligned with it, and the band left of the bezel, bottom-aligned
+  (4 HUD px from the bezel). With the minimap hidden or unavailable, the
+  mail icon, the band and "Now playing" stand stacked in the top-right
+  corner inside the minimap's box (the mail icon at the top, its place kept
+  while it is hidden so nothing jumps, then the band, then "Now playing"),
+  so the quest tracker and the other elements laid out around that box keep
+  their places (round plan ruling 2.1). Both images are finished files
+  (`grug_map_daytime_00` … `_39`, `grug_map_mail_1` … `_9` and `_9p`)
+  composed by `tools/r48_hud/gen_hud_textures.py` from its parts (the
+  badge's digits are the cooldown digits); the HUD only switches the file
+  name. The band is checked at the minimap's 5 s check and sends one
+  `hud_change` when its step changes, so a clock jump (`/time`, sleeping)
+  shows within 5 s; the mail icon changes when the mail count does. Both
+  are placeholders until the art picks of Round 48.
 - No client mod, per-viewer entity proxies or fog of war.
 
 ## Zone and town names
@@ -626,9 +660,10 @@ were in, and quest texts and level routes now name zones.
   than the bezel, ends at the bezel's right edge and grows to the left (about
   280 px for "Fantasy Orchestral Theme" at 1080p). It is hidden in the pause
   between tracks, while a pick waits for its download, on leaving the
-  capital (with the fade-out), with music off or at volume 0, and with the
-  minimap hidden or unavailable (switching the minimap on shows it again).
-  grug_ambience tells the minimap only when the playing track changes; the
+  capital (with the fade-out), and with music off or at volume 0. With the
+  minimap hidden or unavailable it stands in the top-right corner below the
+  daytime band, its right edge on the minimap box's (Round 48; until then
+  it was hidden). grug_ambience tells the minimap only when the playing track changes; the
   minimap places the box again after a window or GUI scaling change and
   sends only what changed. The note icon is the user's pick (a silver
   beamed pair of notes, 24 px art drawn 36 GUI px high, as tall as the two
