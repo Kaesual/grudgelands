@@ -97,7 +97,7 @@ local function new_session(pos)
 		pages = {letters = 1, announcements = 1, tickets = 1}, selected = {},
 		draft = {to = "", subject = "", body = ""},
 		admin = {topic = 1, subject = "", body = ""},
-		report = {reason = 1, note = ""}, inv = {}}
+		report = {reason = 1, note = ""}, inv = {}, draw = 0}
 end
 
 --
@@ -358,13 +358,24 @@ end
 -- Write
 --
 
+-- The two Send buttons carry the serial of the draw they belong to
+-- ("write_send_<n>", "admin_send_<n>"): a click from a form the server has
+-- already replaced (a quick second click after a sent letter, or after a
+-- refused Send that showed new postage) acts on nothing (see the events).
+local function send_button(session, prefix)
+	return prefix .. "_" .. session.draw
+end
+
 -- The rings: shift-click from an attachment slot goes through the inbox to
--- the give order; from `main` and from each bag into the attachment slots
--- (grug_inventory/inbox.lua and ui.lua bag_rings).
+-- the give order; from `main` and from each bag into the attachment slots.
+-- The engine takes the entry after the FIRST one naming the source list
+-- (guiFormSpecMenu.cpp getNextInventoryRing), so the attachment list follows
+-- `main` at once and again after each bag (ui.lua bag_rings' pattern).
 local function rings(player)
 	local fs = {"listring[current_player;" .. ATTACH .. "]",
 		"listring[current_player;" .. grug_inventory.INBOX_LIST .. "]",
-		"listring[current_player;main]"}
+		"listring[current_player;main]",
+		"listring[current_player;" .. ATTACH .. "]"}
 	local inv = player:get_inventory()
 	for i = 1, grug_inventory.BAG_COUNT do
 		local list = grug_inventory.content_list(i)
@@ -406,7 +417,8 @@ local function write_tab(player, session, fs)
 		"offline. Only players of your faction.")))
 	fs[#fs + 1] = status_line(session, 8.4)
 	fs[#fs + 1] = ("button[8.6,8.0;2.2,0.8;write_discard;Discard]" ..
-		"style[write_send;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;write_send;%s]"):format(
+		"style[%s;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;%s;%s]"):format(
+		send_button(session, "write_send"), send_button(session, "write_send"),
 		esc("Send (" .. grug_money.format(postage) .. ")"))
 	fs[#fs + 1] = grug_inventory.inventory_view(player, "short", session.inv)
 	fs[#fs + 1] = rings(player)
@@ -462,8 +474,9 @@ local function admin_tab(player, session, fs)
 		tostring(grug_inventory.GAME_VERSION or "unknown") .. " is attached.\n" ..
 		("You have %d of %d open messages."):format(M.open_tickets(tickets, name),
 		M.OPEN_TICKETS))))
-	fs[#fs + 1] = "button[0.4,10.2;2.2,0.8;admin_discard;Discard]" ..
-		"style[admin_send;bgcolor=#3d5f8a]button[4.5,10.2;2.2,0.8;admin_send;Send (free)]"
+	fs[#fs + 1] = ("button[0.4,10.2;2.2,0.8;admin_discard;Discard]" ..
+		"style[%s;bgcolor=#3d5f8a]button[4.5,10.2;2.2,0.8;%s;Send (free)]"):format(
+		send_button(session, "admin_send"), send_button(session, "admin_send"))
 
 	local selected = M.find(own, session.selected.tickets)
 	local rows, page, pages = M.page(own, session.pages.tickets)
@@ -525,6 +538,7 @@ function grug_mail.window_formspec(player, session)
 end
 
 local function show(player, session)
+	session.draw = session.draw + 1
 	core.show_formspec(player:get_player_name(), session.formname,
 		grug_mail.window_formspec(player, session))
 end
@@ -667,7 +681,7 @@ local function write_event(player, session, fields)
 		session.draft = {to = "", subject = "", body = ""}
 		grug_mail.return_attachments(player)
 		say(session, true, "Letter discarded.")
-	elseif fields.write_send then
+	elseif fields[send_button(session, "write_send")] then
 		local draft = session.draft
 		local ok, message = grug_mail.send_letter(player, draft.to, draft.subject,
 			draft.body, session.quote)
@@ -685,7 +699,7 @@ local function admin_event(player, session, fields)
 	if fields.admin_discard then
 		session.admin = {topic = 1, subject = "", body = ""}
 		say(session, true, "Message discarded.")
-	elseif fields.admin_send then
+	elseif fields[send_button(session, "admin_send")] then
 		local draft = session.admin
 		local ok, message = grug_mail.send_ticket(player, M.TOPICS[draft.topic],
 			draft.subject, draft.body, mailbox_text(session))
@@ -722,8 +736,8 @@ end
 -- The buttons, tables and tabs: the fields that ask for an action.
 local ACTIONS = {reply = true, report = true, report_cancel = true,
 	report_confirm = true, take_all = true, delete = true, delete_cancel = true,
-	delete_confirm = true, write_discard = true, write_send = true,
-	admin_discard = true, admin_send = true, ticket_delete = true, letters = true,
+	delete_confirm = true, write_discard = true, admin_discard = true,
+	ticket_delete = true, letters = true,
 	announcements = true, tickets = true, grug_mail_tab = true}
 
 -- Whether the event asks for nothing (an Enter in a single-line field):
@@ -731,11 +745,22 @@ local ACTIONS = {reply = true, report = true, report_cancel = true,
 local function idle(fields)
 	if not fields.key_enter_field then return false end
 	for field in pairs(fields) do
-		if ACTIONS[field] or field:match("_prev$") or field:match("_next$") then
+		if ACTIONS[field] or field:match("_prev$") or field:match("_next$") or
+				field:match("_send_%d+$") then
 			return false
 		end
 	end
 	return true
+end
+
+-- A Send from an older draw than the one shown last: no action and none of
+-- its fields kept (they are the text the first click already sent).
+local function stale(session, fields)
+	for field in pairs(fields) do
+		local serial = field:match("^write_send_(%d+)$") or field:match("^admin_send_(%d+)$")
+		if serial and tonumber(serial) ~= session.draw then return true end
+	end
+	return false
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -750,6 +775,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not at_mailbox(player, session.pos) then
 		finish(player, session)
 		core.close_formspec(name, formname)
+		return true
+	end
+	if stale(session, fields) then
+		show(player, session)
 		return true
 	end
 	keep_drafts(session, fields)

@@ -154,6 +154,9 @@ function grug_mail.send_letter(player, to_name, subject, body, quoted)
 	end
 	local ok, failure = grug_money.take_with_inventory(player, postage, changes)
 	if not ok then return false, failure end
+	-- Read again after the payment: a money callback might have written to
+	-- this mailbox meanwhile, and the copy above would overwrite it.
+	box = S.box(recipient)
 	local letter = M.letter(S.next_id(), "player", name, subject, body, items, S.now())
 	M.deliver(box, letter)
 	S.save_box(recipient, box)

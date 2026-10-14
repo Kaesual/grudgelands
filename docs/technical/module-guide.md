@@ -1592,7 +1592,12 @@ tools](#player-meta-read-by-external-tools).
   nodes, else the window closes and the slots go back. Typed text is kept
   from every event and written back as the fields' defaults; the window is
   never resent on an inventory move (a resend drops unsent text), which is
-  why Send compares the slots with the quote of the last draw. The focus
+  why Send compares the slots with the quote of the last draw. The two Send
+  buttons carry the draw's serial (`write_send_<n>`, `admin_send_<n>`): a
+  click from a form already replaced (a double click, or a second click
+  after a refusal that showed new postage) acts on nothing and only redraws.
+  The Write tab's rings put `grug_mail_out` right after `main` and after
+  each bag (the engine follows the first entry naming the source list). The focus
   sits on an invisible button at every send ("UI and formspecs").
 
 ## Housing

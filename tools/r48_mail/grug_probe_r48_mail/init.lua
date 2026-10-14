@@ -134,7 +134,7 @@ local SHOTS = {
 	end},
 	{name = "W2_write_refused", run = function(player)
 		mail_fields(player, {mail_to = "Grommash", mail_subject = "Hi", mail_body = "Hello",
-			write_send = "Send"})
+			["write_send_" .. grug_mail.session(NAME).draw] = "Send"})
 	end},
 	{name = "T1_to_the_admin", run = function(player)
 		local session = grug_mail.session(NAME)

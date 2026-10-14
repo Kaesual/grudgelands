@@ -781,6 +781,10 @@ local function send_fields(player, fields)
 		if f(player, form and form.formname or "", fields) then return end
 	end
 end
+-- The name a Send button has in the form shown now ("write_send_<n>").
+local function button(player, prefix)
+	return formspecs[player:get_player_name()].text:match("(" .. prefix .. "_%d+);")
+end
 
 do
 	local opened = {}
@@ -840,17 +844,51 @@ do
 		"D Reply on a player letter opens Write with the quote")
 	-- Write: the quote, a changed slot, the second Send.
 	local money = grug_money.get(alice)
+	local brakka_letters = #letters_of("Brakka")
 	alice.inv:set_stack(ATTACH, 1, ItemStack("t:dirt 4"))
+	local first = button(alice, "write_send")
 	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
-		write_send = "Send (5c)"})
+		[first] = "Send (5c)"})
 	check(session.status and session.status:find("attachments changed", 1, true) and
 		grug_money.get(alice) == money, "D a slot filled after the quote: Send refuses")
 	check(formspecs.Alice.text:find("Send (35c)", 1, true), "D the new postage shows")
+	local second = button(alice, "write_send")
+	check(second ~= first, "D every draw names its Send button anew")
 	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
-		write_send = "Send (35c)"})
+		[first] = "Send (5c)"})
+	check(grug_money.get(alice) == money and #letters_of("Brakka") == brakka_letters and
+		not alice.inv:is_empty(ATTACH),
+		"D a quick second click from the refused form charges and sends nothing")
+	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
+		[button(alice, "write_send")] = "Send (35c)"})
 	check(session.status_ok and grug_money.get(alice) == money - 35 and alice.inv:is_empty(ATTACH),
-		"D the second Send pays the shown postage")
+		"D Send from the latest form pays the shown postage")
 	eq(letters_of("Brakka")[1].body, "Thanks!", "D the typed text was sent")
+	local sent = button(alice, "write_send")
+	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
+		[second] = "Send (35c)"})
+	check(grug_money.get(alice) == money - 35 and #letters_of("Brakka") == brakka_letters + 1 and
+		session.draft.to == "" and session.draft.body == "",
+		"D a double click on Send sends one letter; the stale fields are not kept")
+	check(button(alice, "write_send") ~= sent, "D the stale click redraws the window")
+	-- The shift-click rings with a bag: main and the bag both lead to the
+	-- attachment slots, the attachment slots to the inbox (the engine takes
+	-- the entry after the first one naming the source list).
+	alice.inv:set_size("grug_bag1_content", 8)
+	send_fields(alice, {grug_mail_tab = "3"})
+	local ring = {}
+	for list in formspecs.Alice.text:gmatch("listring%[current_player;([^%]]+)%]") do
+		ring[#ring + 1] = list
+	end
+	local function next_of(list)
+		for index, entry in ipairs(ring) do
+			if entry == list then return ring[index % #ring + 1] end
+		end
+	end
+	check(next_of("main") == ATTACH and next_of("grug_bag1_content") == ATTACH and
+		next_of(ATTACH) == grug_inventory.INBOX_LIST,
+		"D shift-click: main and the bag into the attachment slots, the slots out via the inbox")
+	alice.inv:set_size("grug_bag1_content", 0)
 	-- The inventory view's scrollbar: its value is kept, a pure scroll
 	-- event sends nothing.
 	local shown = formspecs.Alice.text
@@ -861,9 +899,13 @@ do
 	formspecs.Alice.text = shown
 	-- To the admin through the window.
 	send_fields(alice, {grug_mail_tab = "4"})
+	local admin_send = button(alice, "admin_send")
 	send_fields(alice, {admin_topic = "2", admin_subject = "Lag", admin_body = "Slow.",
-		admin_send = "Send (free)"})
+		[admin_send] = "Send (free)"})
+	send_fields(alice, {admin_topic = "2", admin_subject = "Lag", admin_body = "Slow.",
+		[admin_send] = "Send (free)"})
 	local own = M.tickets_of(grug_mail.tickets(), "Alice")
+	eq(#own, 1, "D a double click on Send (free) makes one ticket")
 	check(own[1] and own[1].topic == "Bug report" and own[1].mailbox == "Mailbox in Dur Brannoc",
 		"D the window sends a ticket with topic and mailbox")
 	send_fields(alice, {tickets = "CHG:1:1"})
