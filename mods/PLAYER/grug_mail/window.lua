@@ -711,7 +711,8 @@ local TAB_EVENTS = {letters = letters_event, announcements = announcements_event
 -- of every event is kept; a pure scroll event ends here without a resend.
 local function scrolled(session, fields)
 	local raw = fields[grug_inventory.SCROLL_FIELDS.short]
-	local kind, value = type(raw) == "string" and raw:match("^(%u+):(%-?%d+)$")
+	local kind, value
+	if type(raw) == "string" then kind, value = raw:match("^(%u+):(%-?%d+)$") end
 	if kind == "CHG" or kind == "VAL" then
 		session.inv.grug_inv_scroll = {short = math.max(0, tonumber(value))}
 	end

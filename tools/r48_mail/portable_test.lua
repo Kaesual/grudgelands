@@ -847,6 +847,14 @@ do
 	check(session.status_ok and grug_money.get(alice) == money - 35 and alice.inv:is_empty(ATTACH),
 		"D the second Send pays the shown postage")
 	eq(letters_of("Brakka")[1].body, "Thanks!", "D the typed text was sent")
+	-- The inventory view's scrollbar: its value is kept, a pure scroll
+	-- event sends nothing.
+	local shown = formspecs.Alice.text
+	formspecs.Alice.text = "unchanged"
+	send_fields(alice, {grug_inv_scroll_short = "CHG:20"})
+	check(formspecs.Alice.text == "unchanged" and session.inv.grug_inv_scroll.short == 20,
+		"D a scroll event keeps the value and sends nothing")
+	formspecs.Alice.text = shown
 	-- To the admin through the window.
 	send_fields(alice, {grug_mail_tab = "4"})
 	send_fields(alice, {admin_topic = "2", admin_subject = "Lag", admin_body = "Slow.",
