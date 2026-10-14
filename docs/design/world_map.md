@@ -592,12 +592,15 @@ drawn from the base image above. The gliding version (approved in playtest,
   write the minimap's round mask to the world directory, the map window
   shows "No minimap available" instead; the native minimap stays off. The
   side elements below stay in either case.
-- **Side elements** (Round 48): two small images beside the minimap, sized
-  with the minimap's box (they grow with the window like the bezel):
-  - the **mail icon** (an envelope with a digit badge) shows the player's
-    unread letters and broadcasts: hidden at 0, the digit 1–9, "9+" above
-    ([mail plan](../planning/mail-plan.md) ruling 14); 19 % of the box high
-    (51 px at 1080p);
+- **Side elements** (Round 48): two small images in one row beside the
+  minimap, sized with the minimap's box (they grow with the window like the
+  bezel):
+  - the **mail icon** (an envelope with its count right of it, as high as
+    the envelope) shows the player's unread letters and broadcasts: hidden
+    at 0, the digit 1–9, "9+" above ([mail plan](../planning/mail-plan.md)
+    ruling 14; "9+" overlaps the envelope's right end, so every count has
+    the same width); drawn exactly as high as the band (57 × 23 px at
+    1080p, 37 × 15 at 720p);
   - the **daytime band** shows roughly where the world day stands, not a
     clock (no numbers): one 20-minute day of day and night sections at their
     real lengths (the 15-minute day phase three quarters of it, with the
@@ -606,21 +609,23 @@ drawn from the base image above. The gliding version (approved in playtest,
     coming phase enters from the right, in 40 steps of 30 real seconds (the
     day phase's clock runs at 60, the night's at 108, so the step is real
     time, not clock time: 04:30 is the first step, 19:30 the 31st). It is
-    45 % of the box wide (about half the bezel) at 4 : 1 (122 × 31 px at
-    1080p). Its phase edges are the night mobs' spawn clock's, so it also
+    about 34 % of the box wide (75 % of Round 48's first 45 %, the user's
+    choice of 2026-10-14) at 4 : 1 (92 × 23 px at 1080p, 60 × 15 at 720p). Its phase edges are the night mobs' spawn clock's, so it also
     shows when night mobs come.
 
-  With the minimap shown, the mail icon stands left of the bezel,
-  top-aligned with it, and the band left of the bezel, bottom-aligned
-  (4 HUD px from the bezel). With the minimap hidden or unavailable, the
-  mail icon, the band and "Now playing" stand stacked in the top-right
-  corner inside the minimap's box (the mail icon at the top, its place kept
-  while it is hidden so nothing jumps, then the band, then "Now playing"),
-  so the quest tracker and the other elements laid out around that box keep
-  their places (round plan ruling 2.1). Both images are finished files
+  The two stand in one row, band left and mail icon right, 8 HUD px apart,
+  the same height and vertically centred on the row (the user's variant A,
+  2026-10-14); the mail icon's place stays kept while it is hidden, so
+  nothing jumps when a letter arrives. With the minimap shown, the row
+  stands left of the bezel (the mail icon 4 HUD px from it), its top on the
+  bezel's top; the location line and "Now playing" stay under the bezel.
+  With the minimap hidden or unavailable, the row stands right-aligned in
+  the top-right corner inside the minimap's box, and "Now playing" 4 HUD px
+  below it, so the quest tracker and the other elements laid out around that
+  box keep their places (round plan ruling 2.1). Both images are finished files
   (`grug_map_daytime_00` … `_39`, `grug_map_mail_1` … `_9` and `_9p`)
   composed by `tools/r48_hud/gen_hud_textures.py` from its parts (the
-  badge's digits are the cooldown digits); the HUD only switches the file
+  count's digits are the cooldown digits); the HUD only switches the file
   name. The band is checked at the minimap's 5 s check and sends one
   `hud_change` when its step changes, so a clock jump (`/time`, sleeping)
   shows within 5 s; the mail icon changes when the mail count does. Both
@@ -662,7 +667,7 @@ were in, and quest texts and level routes now name zones.
   between tracks, while a pick waits for its download, on leaving the
   capital (with the fade-out), and with music off or at volume 0. With the
   minimap hidden or unavailable it stands in the top-right corner below the
-  daytime band, its right edge on the minimap box's (Round 48; until then
+  row of the daytime band and the mail icon, its right edge on the minimap box's (Round 48; until then
   it was hidden). grug_ambience tells the minimap only when the playing track changes; the
   minimap places the box again after a window or GUI scaling change and
   sends only what changed. The note icon is the user's pick (a silver

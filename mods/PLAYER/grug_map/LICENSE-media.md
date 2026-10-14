@@ -106,8 +106,10 @@ claim authorship of those glyphs. No downloaded source pixels.
 The envelope is redrawn at 48×40 in the same design; the frame and marker
 are 160×40 overlays, the pointer at x=80. The day/night colours and 8px
 blend use HUD's interpolation; the unread digits have no pill. Sun and
-moon remain byte-identical to the draft. Final images: mail 60×52,
-bands 160×40, all RGBA. See `tools/r48_artm/README.md` for the adaptations.
+moon remain byte-identical to the draft. Final images: mail 69×28 (since
+the follow-up lane HUD2 the envelope is cropped to its 46×28 opaque pixels
+and the count stands beside it at 3 px per glyph cell, so it stays readable
+at the band's height), bands 160×40, all RGBA. See `tools/r48_artm/README.md` for the adaptations.
 
 | File | Author | Source / modifications | License |
 |---|---|---|---|

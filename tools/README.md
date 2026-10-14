@@ -1012,8 +1012,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   screenshot per pad;
   `r48_hud` the minimap's side elements (`portable_test.lua`: the daytime
   band's position over the two clock speeds, the mail badge per count,
-  placement beside the bezel and in the corner over desktop and web windows
-  at GUI scaling 1 and 2, the runtime with the minimap unavailable; the
+  the one row of band and mail icon (equal drawn heights, centred) beside
+  the bezel and in the corner over desktop and web windows at GUI scaling
+  1 and 2, the runtime with the minimap unavailable; the
   minimap-shown runtime is `r27_minimap` block H); `gen_hud_textures.py`
   (`--check`) composes the 40 band and 10 mail images from ARTM's picked
   `parts/` and the cooldown digits; `capture.sh OUT_DIR` with

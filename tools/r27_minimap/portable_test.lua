@@ -33,9 +33,10 @@
 --      a window or GUI scaling change, gone with the minimap and back with
 --      it, hidden for no track; since Round 48 it moves to the corner with
 --      the minimap hidden;
---   H  the side elements (Round 48 lane HUD): the mail icon left of the
---      bezel and top-aligned, the daytime band bottom-aligned, both and
---      "Now playing" in the top-right corner with the minimap hidden.
+--   H  the side elements (Round 48 lane HUD, one row since follow-up lane
+--      HUD2): the daytime band and the mail icon in one row left of the
+--      bezel, top-aligned with it; the row right-aligned in the top-right
+--      corner and "Now playing" below it with the minimap hidden.
 -- Prints "R27 MINIMAP PORTABLE PASS checks=<n>" or the failures, plus the
 -- measured per-update cost as a comparison.
 local repo = arg[1] or "."
@@ -865,11 +866,13 @@ do
 	check(mail and mail.text == "grug_map_mail_3.png" and near_px(mail.y, top) and
 		mail.x + L.mail.w <= left and near_px(mail.x, L.mail.x),
 		"H shown: the mail icon left of the bezel, top-aligned")
-	check(band and band.text == "grug_map_daytime_15.png" and band.x + L.band.w <= left and
-		near_px(band.y + L.band.h, top + f.diameter),
-		"H shown: the band left of the bezel, bottom-aligned, at noon's position")
+	check(band and band.text == "grug_map_daytime_15.png" and band.x + L.band.w <= mail.x and
+		near_px(band.y, top), "H shown: the band left of the mail icon in the row, at noon's position")
 	check(band and math.floor(160 * band.scale * f.hud) == L.band.w and
-		math.abs(L.band.w / f.diameter - 0.5) <= 0.1, "H the band is about half the bezel wide")
+		math.floor(V.SIDE.band_h * band.scale * f.hud) ==
+			math.floor(V.SIDE.mail_h * mail.scale * f.hud) and
+		math.abs(L.band.w / f.diameter - 0.38) <= 0.05,
+		"H the band about 0.38 of the bezel wide, the mail icon drawn as high")
 	local sent = me.sent
 	minimap.set_mail_count("me", 3)
 	for _ = 1, 12 do step(WINDOW) end
@@ -887,12 +890,12 @@ do
 	local right, bottom = box.center_x + box.size / 2, box.center_y + box.size / 2
 	check(mail and near_px(mail.x + H.mail.w, right) and near_px(mail.y, box.center_y - box.size / 2),
 		"H hidden: the mail icon in the top-right corner")
-	check(band and near_px(band.x + H.band.w, right) and band.y >= mail.y + H.mail.h,
-		"H hidden: the band under the mail icon")
+	check(band and near_px(band.x + H.band.w, mail.x - 8 * box.hud) and near_px(band.y, mail.y),
+		"H hidden: the band left of the mail icon in the row")
 	local g = V.now_playing_corner(box, H.playing_right, H.playing_top, track.title, track.artist)
-	check(fill and near_px(fill.x, g.x) and near_px(fill.y, g.y) and g.y >= band.y + H.band.h and
+	check(fill and near_px(fill.x, g.x) and near_px(fill.y, g.y) and g.y >= mail.y + H.mail.h and
 		g.y + g.h <= bottom and near_px(g.x + g.w, right),
-		"H hidden: Now playing below the band, inside the box")
+		"H hidden: Now playing below the row, inside the box")
 	minimap.set_mail_count("me", 0)
 	check(side("^grug_map_mail_") == nil and side("^grug_map_daytime_") ~= nil,
 		"H hidden, no letters: the icon goes, the band stays")

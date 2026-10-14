@@ -12,16 +12,20 @@
 --      39; a simulated world clock at its two speeds gives one position per
 --      30 real seconds over the whole day, never backwards;
 --   M  the mail icon per unread count: none for 0, 1-9, 9+ above;
---   L  placement over desktop and web windows at GUI scaling 1 and 2: shown,
---      the mail icon left of the bezel and top-aligned, the band
---      bottom-aligned, about half the bezel wide at 4:1; hidden, the three
---      elements stacked in the corner inside the minimap's box; none
---      overlaps another or the quest tracker;
+--   L  placement over desktop and web windows at GUI scaling 1 and 2 (the
+--      user's variant A of follow-up lane HUD2): one row, band then mail
+--      icon, both drawn exactly as high (as the client truncates them) and
+--      vertically centred; the band 75 % of lane HUD's width at 4:1; shown,
+--      the row left of the bezel with its top on the bezel's top; hidden,
+--      the row right-aligned in the corner and "Now playing" below it,
+--      inside the minimap's box; the gaps; none overlaps another or the
+--      quest tracker;
 --   R  runtime with the minimap unavailable: the side elements are drawn and
 --      updated (the globalstep no longer returns at once), the band sends one
 --      hud_change per position and nothing in between, a clock jump shows
---      within the 5 s tick, a count told before the join is kept, a resize
---      places everything again;
+--      within the 5 s tick, a count told before the join is kept, the mail
+--      icon's slot stays reserved at 0 letters, the mail icon is drawn as
+--      high as the band, a resize places everything again;
 --   F  the generated images (40 band, 10 mail, the "+" digit) and their
 --      LICENSE-media rows.
 -- Prints "R48 HUD PORTABLE PASS checks=<n>" or the failures.
@@ -153,22 +157,45 @@ do
 		local frame = V.frame(v, box)
 		local quest, lines = tracker(window, box)
 		local S = V.SIDE
+		-- the client's drawn size of a tw x th texture at exact()'s scale for
+		-- w px (minimap.lua: (w + 0.25) / (tw x hud), truncated, hud.cpp)
+		local function drawn(w, tw, th)
+			local scale = (w + 0.25) / (tw * box.hud)
+			return math.floor(tw * scale * box.hud), math.floor(th * scale * box.hud)
+		end
+		local gap, row_gap = S.gap * box.hud, S.row_gap * box.hud
+		local function row_checks(L, mode)
+			local mw, mh = drawn(L.mail.w, S.mail_w, S.mail_h)
+			local bw, bh = drawn(L.band.w, S.band_w, S.band_h)
+			check(mw == L.mail.w and mh == L.mail.h and bw == L.band.w and bh == L.band.h,
+				("L %s %s: the client draws the sizes laid out (mail %dx%d, band %dx%d)"):format(
+					label, mode, mw, mh, bw, bh))
+			check(L.mail.h == L.band.h and L.mail.y == L.band.y,
+				("L %s %s: mail and band equally high (%d px), vertically centred"):format(label,
+					mode, L.mail.h))
+			check(L.band.x + L.band.w <= L.mail.x and
+				math.abs(L.mail.x - (L.band.x + L.band.w) - row_gap) <= 1,
+				("L %s %s: band left of the mail icon, %d px apart"):format(label, mode,
+					L.mail.x - (L.band.x + L.band.w)))
+			local today = math.floor(box.size * 0.45 + 0.5) -- lane HUD's band width
+			local aspect = L.band.w / L.band.h
+			check(math.abs(L.band.w - 0.75 * today) <= 1 and aspect >= 3.8 and aspect <= 4.2,
+				("L %s %s: band %d x %d, 75 %% of %d px, %.2f : 1"):format(label, mode, L.band.w,
+					L.band.h, today, aspect))
+			check(math.abs(L.mail.w / L.mail.h - S.mail_w / S.mail_h) < 0.05, "L " .. label ..
+				" " .. mode .. ": the mail icon keeps its image's aspect")
+		end
 		-- shown
 		local L = V.side_layout(box, frame)
+		row_checks(L, "shown")
 		local mail = rect(L.mail.x, L.mail.y, L.mail.w, L.mail.h)
 		local band = rect(L.band.x, L.band.y, L.band.w, L.band.h)
 		local left, top = frame.center_x - frame.diameter / 2, frame.center_y - frame.diameter / 2
-		check(mail.x + mail.w <= left and band.x + band.w <= left and mail.x >= 0 and band.x >= 0,
-			"L " .. label .. " shown: left of the bezel")
-		check(math.abs(mail.y - top) <= 0.5 and
-			math.abs(band.y + band.h - (top + frame.diameter)) <= 0.5,
-			"L " .. label .. " shown: mail top-aligned, band bottom-aligned with the bezel")
-		local share, aspect = band.w / frame.diameter, band.w / band.h
-		check(share >= 0.4 and share <= 0.6 and aspect >= 3.8 and aspect <= 4.2,
-			("L %s shown: band %d x %d, %.2f of the bezel, %.2f : 1"):format(label, band.w,
-				band.h, share, aspect))
-		check(math.abs(mail.w / mail.h - S.mail_w / S.mail_h) < 0.05, "L " .. label ..
-			" the mail icon keeps its image's aspect")
+		check(mail.x + mail.w <= left and math.abs(left - (mail.x + mail.w) - gap) <= 1 and
+			band.x >= 0, ("L %s shown: the row left of the bezel, %d px from it"):format(label,
+				left - (mail.x + mail.w)))
+		check(math.abs(mail.y - top) <= 0.5 and math.abs(band.y - top) <= 0.5,
+			"L " .. label .. " shown: the row's top on the bezel's top")
 		check(not overlap(mail, band), "L " .. label .. " shown: mail and band apart")
 		local line_top = frame.center_y + frame.diameter / 2 + 4 * frame.hud
 		local clear = true
@@ -182,11 +209,12 @@ do
 			"L " .. label .. " shown: clear of the quest tracker (" .. lines .. " lines)")
 		-- hidden
 		local H = V.side_layout(box, nil)
+		row_checks(H, "hidden")
 		mail = rect(H.mail.x, H.mail.y, H.mail.w, H.mail.h)
 		band = rect(H.band.x, H.band.y, H.band.w, H.band.h)
 		check(mail.w == L.mail.w and band.w == L.band.w, "L " .. label .. " the same sizes in both modes")
 		local bx, by = box.center_x - box.size / 2, box.center_y - box.size / 2
-		local inside, apart, quest_clear = true, true, true
+		local inside, apart, quest_clear, below = true, true, true, true
 		local deepest = 0
 		for _, track in pairs(D.tracks) do
 			local g = V.now_playing_corner(box, H.playing_right, H.playing_top, track.title,
@@ -201,15 +229,21 @@ do
 			end
 			apart = apart and not overlap(mail, band) and not overlap(mail, playing) and
 				not overlap(band, playing)
+			below = below and math.abs(playing.y - (mail.y + mail.h) - gap) <= 1 and
+				math.abs(playing.x + playing.w - (bx + box.size)) <= 0.5
 			deepest = math.max(deepest, playing.y + playing.h - by)
 		end
-		check(inside, ("L %s hidden: the stack inside the box (%d of %d px)"):format(label,
-			deepest, box.size))
+		check(inside, ("L %s hidden: the row and Now playing inside the box (%d of %d px)"):format(
+			label, deepest, box.size))
 		check(apart, "L " .. label .. " hidden: mail, band and Now playing apart")
+		check(below, "L " .. label .. " hidden: Now playing right-aligned just below the row")
 		check(quest_clear, "L " .. label .. " hidden: clear of the quest tracker")
-		check(math.abs(mail.x + mail.w - (bx + box.size)) <= 0.5 and
-			math.abs(band.x + band.w - (bx + box.size)) <= 0.5 and math.abs(mail.y - by) <= 0.5,
-			"L " .. label .. " hidden: in the top-right corner")
+		check(math.abs(mail.x + mail.w - (bx + box.size)) <= 0.5 and math.abs(mail.y - by) <= 0.5,
+			"L " .. label .. " hidden: the row right-aligned in the top-right corner")
+		if w[1] == 1920 and w[3] == 1 and w[4] == 1 then
+			print(("L 1080p: band %dx%d, mail %dx%d, gaps %d / %d px, hidden Now playing top %d"):
+				format(L.band.w, L.band.h, L.mail.w, L.mail.h, row_gap, gap, H.playing_top))
+		end
 		check(V.now_playing_height(window.real_gui_scaling) ==
 			V.now_playing_box(frame, line_top, "a", "b").h, "L " .. label .. " the box height")
 	end
@@ -353,10 +387,22 @@ do
 	local g = V.now_playing_corner(box, H.playing_right, H.playing_top, track.title, track.artist)
 	check(fill and math.abs(fx - g.x) < 0.5 and math.abs(fy - g.y) < 0.5 and fy >= by + H.band.h,
 		"R unavailable: Now playing in the corner below the band")
+	-- the client draws the mail icon exactly as high as the band
+	local function height(def, tw, th)
+		return math.floor(th * def.scale.y * windows.me.real_hud_scaling),
+			math.floor(tw * def.scale.x * windows.me.real_hud_scaling)
+	end
+	local mh, mw = height(mail, V.SIDE.mail_w, V.SIDE.mail_h)
+	local bh, bw = height(band, V.SIDE.band_w, V.SIDE.band_h)
+	check(mh == bh and mh == H.mail.h and mw == H.mail.w and bw == H.band.w,
+		("R the mail icon drawn %dx%d, the band %dx%d: equally high"):format(mw, mh, bw, bh))
 	minimap.set_mail_count("me", 12)
 	check(mail.text == "grug_map_mail_9p.png", "R twelve letters: 9+")
+	local _, _, bx0, by0 = find("^grug_map_daytime_")
 	minimap.set_mail_count("me", 0)
-	check(mail.text == "", "R no letters: the icon is hidden")
+	local _, _, bx1, by1 = find("^grug_map_daytime_")
+	check(mail.text == "" and bx1 == bx0 and by1 == by0 and math.abs(bx1 - H.band.x) < 0.5,
+		"R no letters: the icon is hidden, its slot kept (the band does not move)")
 	minimap.set_mail_count("me", 2)
 	-- A resize places everything again (positions are window fractions).
 	windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 1, real_gui_scaling = 2}

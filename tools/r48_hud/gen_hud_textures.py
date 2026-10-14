@@ -14,14 +14,20 @@ them into mods/PLAYER/grug_map/textures/:
       middle; the band moves right to left, so the coming phase enters from
       the right.
   grug_map_mail_1.png .. _9.png, grug_map_mail_9p.png  the mail icon with its
-      unread badge, 60 x 52 px each (0 unread shows no icon at all). The
-      badge's digits are the cooldown digits of
-      tools/r40_cd/gen_cooldown_textures.py (read from their generated files,
-      at half size), the "+" included.
+      unread count, 69 x 28 px each (0 unread shows no icon at all). The
+      envelope (cropped to its opaque pixels) stands at the left, vertically
+      centred; the count stands right of it, right-aligned and as high as the
+      envelope, so it stays readable when the icon is drawn as low as the
+      daytime band beside it (Round 48 lane HUD2: about 23 px at 1080p, 15
+      at 720p). "9+" is wider than one digit and overlaps the envelope's
+      right end, so every image keeps the same width. The digits are the
+      cooldown digits of tools/r40_cd/gen_cooldown_textures.py (read from
+      their generated files, at 3 px per glyph cell), the "+" included.
 
 Parts (tools/r48_hud/parts/; the art lane replaces them with its picks and
 reruns this script, any 8-bit PNG):
-  mail_icon.png   the envelope, at most 48 x 40, drawn at the top left
+  mail_icon.png   the envelope, any transparent margin; its opaque pixels
+                  at most 46 x 28
   sun.png         drawn centred on the day phase's centre (at most 40 px)
   moon.png        drawn centred on the night's centre (at most 40 px)
   frame.png       160 x 40 overlay drawn over the band, sun and moon
@@ -50,16 +56,19 @@ OUT = REPO / "mods/PLAYER/grug_map/textures"
 DIGITS = REPO / "mods/PLAYER/grug_abilities/textures"
 DIGIT = "grug_abilities_cd_digit_%s.png"
 # The cooldown glyphs: 7 x 9 cells of 4 px, ADVANCE cells apart
-# (grug_abilities/cooldown_math.lua GLYPH_*); drawn here at half size.
+# (grug_abilities/cooldown_math.lua GLYPH_*); drawn here at CELL px a cell.
 GLYPH_CELL, GLYPH_W, GLYPH_H, ADVANCE = 4, 7, 9, 6
-HALF = 2
+CELL = 3
 
 BAND_W, BAND_H = 160, 40  # minimap_view.lua V.SIDE band_w, band_h
 POSITIONS, DAY_POSITIONS = 40, 30  # minimap_view.lua V.DAYTIME
 STEP = BAND_W // POSITIONS  # 4 px per position
 DAY_W = DAY_POSITIONS * STEP  # 120 px of day, 40 of night
 SUN_U, MOON_U = DAY_W // 2, DAY_W + (BAND_W - DAY_W) // 2
-MAIL_W, MAIL_H = 60, 52  # minimap_view.lua V.SIDE mail_w, mail_h
+MAIL_W, MAIL_H = 69, 28  # minimap_view.lua V.SIDE mail_w, mail_h
+COUNT_GAP = 2  # px between the envelope and a one-digit count
+DIGIT_W = GLYPH_W * CELL
+ENVELOPE_W = MAIL_W - COUNT_GAP - DIGIT_W  # 46
 CLEAR = (0, 0, 0, 0)
 
 
@@ -223,10 +232,20 @@ def band_image(position, parts, palette):
 # The mail icon and its badge
 # ---------------------------------------------------------------------------
 def glyph(char):
-    """A cooldown digit at half size (one cell HALF px)."""
+    """A cooldown digit at CELL px a cell (its cells sampled, then each
+    repeated CELL times: the pixel art stays crisp)."""
     full = read_png(DIGITS / (DIGIT % char))
-    step = GLYPH_CELL // HALF
-    return [row[::step] for row in full[::step]]
+    cells = [row[::GLYPH_CELL] for row in full[::GLYPH_CELL]]
+    return [[px for px in row for _ in range(CELL)] for row in cells for _ in range(CELL)]
+
+
+def crop(image):
+    """The image cut to its pixels with any alpha."""
+    rows = [y for y, row in enumerate(image) if any(px[3] for px in row)]
+    cols = [x for x in range(len(image[0])) if any(row[x][3] for row in image)]
+    if not rows:
+        return [[CLEAR]]
+    return [row[cols[0]:cols[-1] + 1] for row in image[rows[0]:rows[-1] + 1]]
 
 
 def pill(width, height, fill, rim):
@@ -250,22 +269,24 @@ def pill(width, height, fill, rim):
 
 def mail_image(text, parts, palette):
     canvas = [[CLEAR] * MAIL_W for _ in range(MAIL_H)]
-    paste(canvas, parts["mail_icon"], 0, 0)
-    cell = HALF
+    envelope = parts["mail_icon"]
+    paste(canvas, envelope, 0, (MAIL_H - len(envelope)) // 2)
     glyphs = [glyph(ch) for ch in text]
-    text_w = ((len(text) - 1) * ADVANCE + GLYPH_W) * cell
-    text_h = GLYPH_H * cell
-    pad = 2
-    h = text_h + 2 * pad
-    w = max(h, text_w + 2 * pad)
-    left, top = MAIL_W - w, MAIL_H - h
+    text_w = ((len(text) - 1) * ADVANCE + GLYPH_W) * CELL
+    text_h = GLYPH_H * CELL
+    top = (MAIL_H - text_h) // 2
+    left = MAIL_W - text_w
     if palette.get("badge"):
+        # a pill as high as the image behind the count
+        pad = 2
+        w = max(MAIL_H, text_w + 2 * pad)
         rim = color(palette["badge_rim"]) if palette.get("badge_rim") else None
-        paste(canvas, pill(w, h, color(palette["badge"]), rim), left, top)
-    x = left + (w - text_w) // 2
+        paste(canvas, pill(w, MAIL_H, color(palette["badge"]), rim), MAIL_W - w, 0)
+        left = MAIL_W - w + (w - text_w) // 2
+    x = left
     for g in glyphs:
-        paste(canvas, g, x, top + pad)
-        x += ADVANCE * cell
+        paste(canvas, g, x, top)
+        x += ADVANCE * CELL
     return canvas
 
 
@@ -314,18 +335,17 @@ def placeholder_parts():
         for x in range(middle - 4 + k, middle + 4 - k):
             marker[3 + k][x] = (255, 244, 214, 255)
             marker[BAND_H - 4 - k][x] = (255, 244, 214, 255)
-    envelope = [[CLEAR] * 48 for _ in range(40)]
+    envelope = [[CLEAR] * 46 for _ in range(28)]
     paper, seal = (239, 230, 207, 255), (143, 59, 43, 255)
-    for y in range(40):
-        for x in range(48):
-            if 2 <= x <= 45 and 4 <= y <= 35:
-                edge = min(x - 2, y - 4, 45 - x, 35 - y)
-                envelope[y][x] = ink if edge < 2 else paper
-    for x in range(4, 44):  # the flap: a V from the top corners to the middle
-        y = 6 + abs(x + 0.5 - 24) * -16 / 20 + 16
+    for y in range(28):
+        for x in range(46):
+            edge = min(x, y, 45 - x, 27 - y)
+            envelope[y][x] = ink if edge < 2 else paper
+    for x in range(2, 44):  # the flap: a V from the top corners to the middle
+        y = 2 + (21 - abs(x + 0.5 - 23)) * 12 / 21
         for dy in (-1, 0):
             envelope[int(y) + dy][x] = ink
-    paste(envelope, disc(10, seal, (90, 30, 20, 255), 4.5), 19, 17)
+    paste(envelope, disc(10, seal, (90, 30, 20, 255), 4.5), 18, 9)
     palette = {"day": "#6fb3df", "night": "#1f2a55", "blend": 8, "badge": "#b8322a",
                "badge_rim": "#ffffff"}
     return {"mail_icon": envelope, "sun": sun, "moon": moon, "frame": frame,
@@ -340,9 +360,9 @@ def load_parts():
     for name in ("frame", "marker"):
         if len(parts[name]) != BAND_H or len(parts[name][0]) != BAND_W:
             raise SystemExit("%s.png must be %d x %d" % (name, BAND_W, BAND_H))
-    icon = parts["mail_icon"]
-    if len(icon) > MAIL_H or len(icon[0]) > MAIL_W:
-        raise SystemExit("mail_icon.png must fit %d x %d" % (MAIL_W, MAIL_H))
+    icon = parts["mail_icon"] = crop(parts["mail_icon"])
+    if len(icon) > MAIL_H or len(icon[0]) > ENVELOPE_W:
+        raise SystemExit("mail_icon.png's opaque pixels must fit %d x %d" % (ENVELOPE_W, MAIL_H))
     return parts, palette
 
 
