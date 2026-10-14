@@ -83,6 +83,7 @@ do
 	check(#rows == 8 and rows[1].id == 1 and page == 1 and pages == 3, "A page 1 of 17 rows")
 	rows, page = M.page(list, 3)
 	check(#rows == 1 and rows[1].id == 17 and page == 3, "A last page holds the rest")
+	local _
 	_, page = M.page(list, 9)
 	eq(page, 3, "A a page past the end clamps to the last")
 	_, page = M.page(list, 0)
@@ -873,7 +874,6 @@ do
 end
 
 if failures > 0 then
-	print(("R48 MAIL PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R48 MAIL PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R48 MAIL PORTABLE PASS checks=%d"):format(checks))
