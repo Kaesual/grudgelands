@@ -743,8 +743,9 @@ open questions for the user.
   The inventory view now lays out `main[9..]` and the equipped bags as one
   8-wide flow: a bag starts in the column after the previous list's last
   slot, only the last row may be partial (a list split into up to three
-  `list[]` elements). Compatible, no version change. Review MERGE (2500
-  layout combinations checked by a scratch sweep).
+  `list[]` elements). Compatible; released as **0.48.1**, since 0.48.0
+  had been pushed meanwhile. Review MERGE (2500 layout combinations
+  checked by a scratch sweep).
 
 ### Round-end gates
 

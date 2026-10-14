@@ -19,15 +19,21 @@ generation. Resume with the [continuation plan](planning/class-redesign/continua
 Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
 is open.
 
-- **Round 48 "Mail, plants and light, selling, smaller bags" complete on
-  main, not pushed** (pushed only on the user's word; GUI test open)
+- **0.48.1, a compatible fix after the user's first 0.48.0 playtest, on
+  main, not pushed** (2026-10-14): fix lane INV (`2386eadf`, review MERGE)
+  lets the bags' slots flow on in 8-wide rows instead of each bag starting
+  a row (a 4- or 12-slot bag left half a row empty). On main: full
+  fixtures 189/189, smoke boot, `check_upgrade.py` (0.48.1 against
+  origin/main `f915d777`) PASS.
+- **Round 48 "Mail, plants and light, selling, smaller bags" complete and
+  pushed** (origin/main `f915d777`; GUI test open)
   (2026-10-14, version 0.48.0, **map reset** plus the migration step
   0.48.0,
   [plan, decisions, numbers and GUI checklist](planning/round48-plan.md#completion-2026-10-14)).
   Follow-up lane HUD2 (`2ad1a1b8`, after the round's documentation; review
   MERGE): the mail icon and the daytime band in one row left of the
   minimap, the band at 75 %, the icon at the same height (the user's
-  variant A). origin/main stays at `6a8afb9f` (0.47.0); production runs 0.45.1 and
+  variant A). Production on 0.45.1
   moves to 0.48.0 in one update that crosses the map resets 0.46.0, 0.47.0
   and 0.48.0 and the steps 0.47.0 and 0.48.0. From main `c4a0a729` (the
   version bump): WORLD, HUD, FARM, MAIL (and its follow-up), ARTP, ARTM,
@@ -1161,8 +1167,9 @@ is open.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.48.0 (Round 48, a map reset plus the
-  step 0.48.0, not pushed) on 0.47.0 (Round 47, a map reset plus the step
+- **Latest game:** main carries 0.48.1 (a compatible fix, not pushed) on
+  0.48.0 (Round 48, a map reset plus the step 0.48.0, pushed at
+  origin/main `f915d777`) on 0.47.0 (Round 47, a map reset plus the step
   0.47.0) and 0.46.0 (Round 46, a map reset, never deployed on its own;
   both GUI-accepted and pushed at origin/main `6a8afb9f`) on
   0.45.1 (pushed, in production) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on

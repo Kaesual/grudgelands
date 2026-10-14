@@ -98,7 +98,8 @@ papyrus and cactus grow indoors, Melon and Mushroom join the crops and a
 Salt Pan collects salt. Vendors buy almost everything, cheap goods in
 lots, and what sold before still pays the same; leaves and cactus burn
 as fuel, a daytime band sits beside the minimap, and bags hold half as
-much (what no longer fits arrives by mail). 0.47.0 before it grew new
+much (what no longer fits arrives by mail); 0.48.1 lets their slots flow
+on in rows of eight. 0.47.0 before it grew new
 trees from each world's seed, gave the swamp its own ground and added a
 mining ladder with Anthracite and Steel.
 

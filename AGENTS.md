@@ -12,10 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.48.0, Round 48 "Mail, plants and light, selling,
+**Current state:** 0.48.1 (a compatible fix: bag slots flow on in rows
+of eight) on 0.48.0, Round 48 "Mail, plants and light, selling,
 smaller bags" (**map reset** plus the migration step 0.48.0: bags at half
-size, what no longer fits mailed as "Lost and Found" letters), is complete
-on main and not pushed
+size, what no longer fits mailed as "Lost and Found" letters); 0.48.0 is
+pushed (origin/main `f915d777`), 0.48.1 is on main and not pushed
 ([completion](docs/planning/round48-plan.md#completion-2026-10-14)):
 mailboxes on the twelve waystone pads with letters, attachments, postage,
 messages to the admin and announcements (`grug_mail`, the privilege
@@ -23,8 +24,7 @@ messages to the admin and announcements (`grug_mail`, the privilege
 light 8 for crops, papyrus and cactus, Melon and Mushroom crops, the Salt
 Pan, selling almost everything in lots with today's payouts unchanged,
 cactus and leaves as fuel, the daytime band beside the minimap and bags of
-4 / 8 / 12 / 16 slots. Its GUI test is open. origin/main is `6a8afb9f`
-(0.47.0); production runs 0.45.1 and moves to 0.48.0 in one update.
+4 / 8 / 12 / 16 slots. Its GUI test is open.
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
 47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48 and

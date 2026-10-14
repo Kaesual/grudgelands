@@ -12,6 +12,14 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.48.1 — fix after the first 0.48.0 playtest (2026-10-14)
+
+Existing worlds play on: no migration step, no map reset, no new world.
+
+- **Inventory:** the bags' slots flow on in rows of eight. A bag starts
+  right after the last slot of the one before, so three Small Bags fill
+  one and a half rows instead of three half-empty ones.
+
 ## 0.48.0 — mail, plants and light, selling, smaller bags (2026-10-14)
 
 Mailboxes beside every waystone of the capitals and starting villages,
@@ -91,8 +99,7 @@ arrives by mail (the "Bags" point below).
   minimap hidden the row moves into the top-right corner with "Now
   playing" right below it, and the quest tracker keeps its place.
 - **Bags:** every bag holds half as much: 4, 8, 12 and 16 slots (were 8,
-  16, 24 and 32), their slots flowing on in rows of eight in the
-  inventory. The Small Bag costs 20c (was 80c). At each existing
+  16, 24 and 32). The Small Bag costs 20c (was 80c). At each existing
   character's first join after the update, the inventory and bags are
   sorted once into the new sizes (the hotbar and equipped gear stay as
   they are); what no longer fits arrives as "Lost and Found" letters of
