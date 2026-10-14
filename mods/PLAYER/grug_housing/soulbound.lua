@@ -5,9 +5,11 @@
 -- bags and need an entitlement, a soulbound item may sit nowhere but "main".
 -- Chests, furnaces and stations, bags, the craft grid, equipment slots and
 -- every detached inventory (trash, catalogues, workspaces) refuse it. Trades
--- never offer it (it has no sell price) and there is no mail. Death keeps the
--- whole inventory in this game, so the stone stays; dropping destroys it
--- (the item's on_drop, stone.lua).
+-- never offer it (it has no sell price) and it cannot be mailed: a letter's
+-- attachments come only from the player list grug_mail_out (grug_mail,
+-- Round 48), which the move and put rules below refuse like every list but
+-- "main". Death keeps the whole inventory in this game, so the stone stays;
+-- dropping destroys it (the item's on_drop, stone.lua).
 
 local function soulbound(stack)
 	return stack ~= nil and not stack:is_empty() and

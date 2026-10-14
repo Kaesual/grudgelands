@@ -38,7 +38,13 @@ local function fill(stack, user, pointed)
 	local family = node and families[node.name]
 	if not family then return stack end
 	local result = ItemStack(FILLED)
-	result:get_meta():set_string("water_family", family)
+	-- Round 48: ordinary water carries no metadata, so a Water Bucket counts
+	-- as a recipe ingredient (only stacks without metadata do; the Salt Pan
+	-- takes one). River water keeps its family and says so.
+	if family ~= "ordinary" then
+		result:get_meta():set_string("water_family", family)
+		result:get_meta():set_string("description", "River Water Bucket")
+	end
 	if not core.set_node(pos, {name = "air"}) then return stack end
 	return result
 end
@@ -49,7 +55,8 @@ local function place(stack, user, pointed)
 	if stack:get_count() ~= 1 or not pointed or pointed.type ~= "node" then
 		return stack
 	end
-	local source = sources[stack:get_meta():get_string("water_family")]
+	local family = stack:get_meta():get_string("water_family")
+	local source = sources[family ~= "" and family or "ordinary"]
 	if not source then return stack end
 	local under = core.get_node_or_nil(pointed.under)
 	if not under then return stack end

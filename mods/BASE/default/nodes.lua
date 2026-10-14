@@ -1332,6 +1332,13 @@ minetest.register_node("default:cactus", {
 	groups = {choppy = 3},
 	sounds = default.node_sound_wood_defaults(),
 	on_place = minetest.rotate_node,
+
+	-- GRUG PATCH: harvested like papyrus (Round 48, plant-growth-plan.md
+	-- §3.7): digging a piece takes every piece above it, so the bottom piece
+	-- stays and regrows instead of leaving the top floating.
+	after_dig_node = function(pos, node, metadata, digger)
+		default.dig_up(pos, node, digger)
+	end,
 })
 
 minetest.register_node("default:large_cactus_seedling", {
@@ -1386,15 +1393,16 @@ minetest.register_node("default:large_cactus_seedling", {
 			return
 		end
 
-		if minetest.get_item_group(node_under.name, "sand") == 0 then
+		-- GRUG PATCH: the cactus ground and plant light of grow_cactus
+		-- (Round 48, plant-growth-plan.md §3.6; default/functions.lua).
+		if not default.cactus_ground(node_under.name) then
 			-- Seedling dies
 			minetest.remove_node(pos)
 			return
 		end
 
-		local light_level = minetest.get_node_light(pos)
-		if not light_level or light_level < 13 then
-			-- Too dark for growth, try later in case it's night
+		if not default.plant_lit(pos) then
+			-- Too dark for growth, try later in case a light comes
 			minetest.get_node_timer(pos):start(300)
 			return
 		end

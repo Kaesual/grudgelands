@@ -1,4 +1,4 @@
--- Help page: a short player guide in six sub-pages, selected by buttons at
+-- Help page: a short player guide in seven sub-pages, selected by buttons at
 -- the top of the page. Every sub-page is static text, so each one is built
 -- once at load time; opening the page only concatenates the button row. The
 -- Sound sub-page adds the music and ambience controls of grug_ambience
@@ -48,7 +48,7 @@ local function body(lines)
 end
 
 local SECTIONS = {
-	{id = "start", label = "Start", x = 0.0, w = 1.5, text = body({
+	{id = "start", label = "Start", x = 0.0, w = 1.3, text = body({
 		heading("Your first steps"),
 		"• Your starter weapon is already equipped on the Character page. Open the Talents & Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
 		"• Talk to the people of your start town. A yellow ! above someone means they have a quest for you.",
@@ -75,7 +75,7 @@ local SECTIONS = {
 		"• Nobody can dig or place blocks in capitals, start towns and the treeless strip around them (only grass and low plants grow there, so you can see where the protection ends). This applies from 100 blocks below the town up to the sky; deeper down the normal rules apply.",
 		"• In the level 1-30 zones only their own faction may dig and build. Zones of level 31 and above, and everything below y -500, are open to both factions.",
 	})},
-	{id = "quests", label = "Quests & Professions", x = 1.5, w = 3.1, text = body({
+	{id = "quests", label = "Quests & Professions", x = 1.3, w = 2.9, text = body({
 		heading("Quests"),
 		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = needs a higher level. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
 		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, take it to the person with the yellow ? (often the giver) and press Complete.",
@@ -100,7 +100,7 @@ local SECTIONS = {
 		"• Cooking: meals with a five-minute buff. Simple dishes are crafted in the Crafting tab; good dishes are prepared raw there and finished in a furnace.",
 		"• A profession starts at tier 1. 10, 15, 20, 25 and 30 crafts at your current tier open the next one, but your level caps it: tier 1 up to level 10, tier 2 from level 11, up to tier 6 from level 51. Every item a job makes counts, up to what the tier still needs. Only finished goods (gear, trinkets, bags, potions, dishes) and enchants count: upgrades, stations and materials such as bolts, settings or cut gems do not.",
 	})},
-	{id = "basics", label = "Basics", x = 4.6, w = 1.5, text = body({
+	{id = "basics", label = "Basics", x = 4.2, w = 1.3, text = body({
 		heading("Ores and depth"),
 		"• Deeper stone is harder and needs a better pick; its tooltip names the pick tier. Any pick breaks the stone near the surface (down to y -100); below that you need Iron (T2) from y -101, Steel (T3) from y -301, Silversteel (T4) from y -501, Embersteel (T5) from y -701 and Abyssal Steel (T6) from y -1001.",
 		"• Every ore and gem needs the pick of the layer where it first appears, at any depth: Copper found deep down still breaks with any pick. Iron is the exception: it needs a Bronze pick or better.",
@@ -146,7 +146,21 @@ local SECTIONS = {
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
 		"• The Party & PvP tab makes a party of up to 10 players of your faction and holds the Flag me for PvP button.",
 	})},
-	{id = "formulas", label = "Formulas", x = 6.1, w = 1.7, text = body({
+	-- Round 48 (mail plan §3.21): the mailboxes, postage, the limits and the
+	-- way to the admin.
+	{id = "mail", label = "Mail", x = 5.5, w = 1.1, text = body({
+		heading("Mailboxes"),
+		"• Every capital and starting village has a mailbox beside its waystone. Right-click it to read your letters, to write to players of your faction (online or offline) and to write to the server admin.",
+		"• Postage: 5c per letter and 30c for each attached stack, up to four stacks (a stack of 12 ingots costs as much as a single axe). Drag the stacks into the attachment slots of the Write tab; soulbound items and skills do not fit. A Bag of Coins sends money.",
+		"• A mailbox holds 50 letters from players; a full one takes no more until its owner deletes some. Letters from the admin and from the people of the realm always arrive.",
+		"• Every letter is deleted 30 days after it arrives, its attachments too: take them out with Take all.",
+		"• The letter icon beside the minimap shows how many letters and announcements you have not read yet. Announcements are letters from the admin to all players.",
+		"",
+		heading("Writing to the admin"),
+		"• The To the admin tab of every mailbox sends questions, bug reports, feedback and player reports to the server admin, free of charge. The game version and the mailbox you write from are attached. You can have five open messages at a time; the answer arrives as a letter from the Server Admin.",
+		"• A rude or dishonest letter from a player can be reported with its Report button: a copy goes to the admin.",
+	})},
+	{id = "formulas", label = "Formulas", x = 6.6, w = 1.5, text = body({
 		heading("Character formulas"),
 		"Your current values are on the Character page; these are the rules behind them.",
 		"",
@@ -166,14 +180,14 @@ local SECTIONS = {
 		"• Mana regeneration is 1 + 0.15 x level per second out of combat. The Troll multiplier applies only out of combat. In combat you regenerate the larger of one quarter of that rate and 0.25% of your maximum mana per second; Cold Focus multiplies that combat rate.",
 		"• Food regeneration pauses while you are in combat; its other bonuses stay active.",
 	})},
-	{id = "about", label = "About", x = 7.8, w = 1.4, text = body({
+	{id = "about", label = "About", x = 8.1, w = 1.2, text = body({
 		heading("About Grudgelands" .. (grug_inventory.GAME_VERSION and
 			", version " .. grug_inventory.GAME_VERSION or "")),
 		"Grudgelands is open source and in active development. Use Discord for questions and feedback, GitHub issues for concrete bugs.",
 		"",
 		"Copy a link (desktop): click into it, press Ctrl+A, then Ctrl+C. Open asks before starting your browser.",
 	})},
-	{id = "sound", label = "Sound", x = 9.2, w = 1.2, text = body({
+	{id = "sound", label = "Sound", x = 9.3, w = 1.1, text = body({
 		heading("Music and ambience"),
 		"• Music plays only in the six capitals, each with its own pieces, one after another with short pauses. It starts when you enter a capital and fades out when you leave.",
 		"• In a capital the music takes the place of the ambience; with music off you hear the capital's ambience instead.",

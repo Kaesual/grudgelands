@@ -1,6 +1,6 @@
 # Media Origin and Licenses (grug_gathering)
 
-This mod ships no copied or generated media files. Every inventory image and
+WP33 shipped no copied or generated media files (later rounds below add some). Every inventory image and
 source-node tile is a runtime colorized derivative of media vendored in
 `mods/BASE/default` from minetest_game commit `b5243f3`. The originals and
 their complete attribution are in `mods/BASE/default/license.txt`; the image
@@ -28,3 +28,20 @@ renames of `x_farming_potato.png` and `x_farming_corn.png` from x_farming
 `ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84`, media CC BY-SA 4.0. They replace
 clay/grass texture expressions only; source nodes and gathering behavior are
 unchanged.
+
+## Round 48 placeholders (until the plant art pick)
+
+Placeholders under the plant art plan's target names
+(`docs/planning/plant-art-plan.md` §6), wired by `presentation.lua` and baked
+by `tools/r48_farm/gen_placeholders.py`: today's runtime composites of the
+vendored `mods/BASE/default` images (minetest_game `b5243f3`, CC BY-SA 3.0,
+attribution in `mods/BASE/default/license.txt`), written as files. The art
+lane's final files replace them together with these rows.
+
+| File | Source | Treatment |
+|---|---|---|
+| `grug_gathering_melon.png` | `default_apple.png` | colorize `#61a94e` at 95/255 |
+| `grug_gathering_mushroom.png` | `default_pine_bush_sapling.png` | colorize `#9b7653` at 150/255 |
+| `grug_gathering_sunleaf.png`, `grug_gathering_sunleaf_plant.png` | `default_grass_3.png` | colorize `#e5d34a` at 105/255 |
+| `grug_gathering_gravemoss.png`, `grug_gathering_gravemoss_plant.png` | `default_fern_1.png` | colorize `#526c45` at 100/255 |
+| `grug_gathering_wild_cocoa.png`, `grug_gathering_wild_cocoa_plant.png` | `default_pine_bush_sapling.png` | colorize `#70452d` at 175/255 |

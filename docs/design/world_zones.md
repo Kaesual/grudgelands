@@ -2125,9 +2125,11 @@ All fifteen Cooking plant identities below have independent wild source nodes
 identities remain `grug_farming:seed_<key>` and `<key>_1`…`<key>_4`.
 Those are rooted logical-stage identities. Tall cultivated families may use
 hidden, non-owning upper helper nodes; wild sources remain single-node.
-Potato/Corn retain the exact separate WP33 sources above. All seventeen families
-are farmable on legal editable ground. Salt Crust is neither Rock Salt nor an
-alias, and Frost Melon is distinct from the existing gathering Melon.
+Potato/Corn retain the exact separate WP33 sources above. Fourteen of these
+families and the four gathering crops (Potato, Corn and, since Round 48, Melon
+and Mushroom) are farmable on legal editable ground; Salt Crust is no crop
+since Round 48 (the salt pan, [farming.md](farming.md)). Salt Crust is neither
+Rock Salt nor an alias, and Frost Melon is distinct from the gathering Melon.
 
 The six starts are Hearthpine, Dawnmere, Silverleaf, Stillgrave, Sunscar and
 Kapok. Their paired level-11–20 homes are Copperfell, Goldmead, Starbough,

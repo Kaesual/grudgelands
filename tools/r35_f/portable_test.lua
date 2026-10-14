@@ -429,7 +429,11 @@ do
 	check(form:find("button[7.8,8.4;2,0.7;turnin;Complete]", 1, true) ~= nil and
 		form:find("accept;Accept]", 1, true) == nil, "Q Complete for the preselected ready quest")
 
-	-- No textarea in our mods has a name (a named one is editable).
+	-- No textarea in our mods has a name (a named one is editable), except
+	-- the text boxes players type into: since Round 48 the mailbox's
+	-- message boxes (grug_mail/window.lua, Write and To the admin).
+	local INPUTS = {["mods/PLAYER/grug_mail/window.lua"] = {mail_body = true,
+		admin_body = true}}
 	local named, seen = {}, 0
 	for _, path in ipairs(lines_of("grep -rlF --include=*.lua 'textarea[' '" .. ROOT ..
 			"/mods' | grep -v '/mods/BASE/'")) do
@@ -437,7 +441,10 @@ do
 		for args in text:gmatch("textarea%[([^%]\"]*)") do
 			seen = seen + 1
 			local name = args:match("^[^;]*;[^;]*;([^;]*);")
-			if name and name ~= "" then named[#named + 1] = path .. ": " .. name end
+			local inputs = INPUTS[path:sub(#ROOT + 2)] or {}
+			if name and name ~= "" and not inputs[name] then
+				named[#named + 1] = path .. ": " .. name
+			end
 		end
 	end
 	check(seen >= 10, "Q the textarea scan sees the game's text fields (got " .. seen .. ")")
