@@ -84,11 +84,12 @@ arrives by mail (the "Bags" point below).
   and the hotbar before the bags.
 - **Fuel:** cactus burns 15 s in a furnace (about one and a half bars),
   leaves 2 s (five per bar).
-- **The daytime band:** a small band left of the minimap shows where the
-  day stands, without numbers: the long day with the sun, the short night
-  with the moon, the coming phase entering from the right. With the
-  minimap hidden, the mail icon, the band and "Now playing" stand stacked
-  in the top-right corner, and the quest tracker keeps its place.
+- **The daytime band:** a small band shows where the day stands, without
+  numbers: the long day with the sun, the short night with the moon, the
+  coming phase entering from the right. It stands in one row with the mail
+  icon, the same height, left of the minimap along its top edge; with the
+  minimap hidden the row moves into the top-right corner with "Now
+  playing" right below it, and the quest tracker keeps its place.
 - **Bags:** every bag holds half as much: 4, 8, 12 and 16 slots (were 8,
   16, 24 and 32). The Small Bag costs 20c (was 80c). At each existing
   character's first join after the update, the inventory and bags are

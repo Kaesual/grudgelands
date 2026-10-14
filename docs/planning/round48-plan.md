@@ -665,19 +665,24 @@ open questions for the user.
 
 **The mail icon, the daytime band and the corner:**
 
-20. The band sits left of the bezel at its bottom, the mail icon left of
-    the bezel at its top; the sun section long, the moon section short, the
-    next phase entering from the right; it moves about every 30 s, and
+20. The band and the mail icon stand in one row left of the bezel (band,
+    icon, minimap), the same height, their tops on the bezel's top (the
+    user's variant A, follow-up lane HUD2); the sun section long, the moon
+    section short, the next phase entering from the right; it moves about every 30 s, and
     after `/time 19:00` it shows night coming within about 5 s; no numbers.
 21. More than nine unread letters: "9+".
-22. Hide the minimap: the mail icon, the band and "Now playing" (in a
-    capital) stand stacked in the top-right corner, none overlapping
-    another, and the quest tracker stays in place. With no mail the
-    empty mail slot is kept, so the band does not move up **(decide:
-    close up instead)**; a wide "Now playing" grows to the left.
+22. Hide the minimap: the same row right-aligned in the top-right corner,
+    "Now playing" (in a capital) right below it, none overlapping another,
+    and the quest tracker stays in place. With no mail the icon's slot is
+    kept, so the band does not move **(decide: close up instead)**; a wide
+    "Now playing" grows to the left.
 23. Resize the window and set GUI scaling 2: everything follows, nothing
-    overlaps. Band and icon sizes (band 45 %, icon 19 % of the minimap's
-    box) **(decide)**.
+    overlaps (also at 1024 × 600 with GUI scaling 2 next to a long target
+    frame line). The band at 75 % (92 × 23 px at 1080p) and the icon at the
+    same height; the count stands beside the envelope and "9+" overlaps its
+    right third **(decide)**. At night the band's frame fades into the tan
+    ends at this size (nearest scaling drops its inner line) **(decide:
+    thicker frame lines)**.
 
 **Plants and light:**
 
@@ -718,6 +723,17 @@ open questions for the user.
     bricks now sell in lots. All takes from the main inventory and the
     hotbar before the bags.
 35. The vendor sells the Small Bag (4 slots) for 20c.
+
+### Follow-up lanes
+
+- **HUD2** (`2ad1a1b8`): after looking at screenshots and a wireframe, the user
+  chose variant A: the mail icon and the daytime band in one row left of
+  the minimap along its top edge (right-aligned in the corner with the
+  minimap hidden, "Now playing" below), the band at 75 % (92 × 23 px at
+  1080p, 4 : 1), the icon at the same height with the count beside the
+  envelope (mail images recomposed to 69 × 28). Review MERGE (the band's
+  frame fading at night is a GUI-test question). Fixtures 189/189, smoke
+  boot PASS.
 
 ### Round-end gates
 
