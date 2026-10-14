@@ -15,7 +15,18 @@
     3,
     4
   ],
-  "picked": false,
+  "picked": {
+    "cassava": "C",
+    "wild_onion": "A",
+    "pumpkin": "A",
+    "melon": "B",
+    "mushroom": "A",
+    "sunleaf": "C",
+    "gravemoss": "A",
+    "wild_cocoa": "B",
+    "salt_pan": "A"
+  },
+  "baseline_revision": "6295c1d9ea5eecb7c6aab020ff1247b316075f35",
   "items": [
     {
       "item": "cassava",
@@ -71,7 +82,44 @@
           "label": "seed"
         }
       ],
-      "preview": "tools/r48_artp/previews/cassava.png"
+      "preview": "tools/r48_artp/previews/cassava.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_cassava_1.png",
+          "draft": "tools/r48_artp/drafts/cassava/C/grug_farming_cassava_1.png",
+          "role": "1",
+          "sha256": "306635a5d1b36a6e8de6df122d57eb5f60020b13054ce936a271e8e538c06712",
+          "replaced_sha256": "3822161ad748bd89f303f61df5ec8f2cdd2b2edfeab3cc6359eaf0696a03b3c4"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_cassava_2.png",
+          "draft": "tools/r48_artp/drafts/cassava/C/grug_farming_cassava_2.png",
+          "role": "2",
+          "sha256": "06f540d40a1d104494a00366c585e9b21e8156834101eacdb569a158c1adf14d",
+          "replaced_sha256": "3822161ad748bd89f303f61df5ec8f2cdd2b2edfeab3cc6359eaf0696a03b3c4"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_cassava_3.png",
+          "draft": "tools/r48_artp/drafts/cassava/C/grug_farming_cassava_3.png",
+          "role": "3",
+          "sha256": "448b57841e35a3ec1ef335b6a7caaf13b197c8b03646a5c1856026b4f9be5c68",
+          "replaced_sha256": "5f8662d5164269275f6d0b384a8b602597a102a3f8cf0250e59676dfc69bd188"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_cassava_4.png",
+          "draft": "tools/r48_artp/drafts/cassava/C/grug_farming_cassava_4.png",
+          "role": "4",
+          "sha256": "0b5600168a65bd7017416b9509118bd34c04607ad0802b6679cbcce1fbdf7a23",
+          "replaced_sha256": "c5c2588957ef7292cb0ce7a5d9dee31c7db34df9d16366b43c385bcda03f3eaf"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_seed_cassava.png",
+          "draft": "tools/r48_artp/drafts/cassava/C/grug_farming_seed_cassava.png",
+          "role": "cutting",
+          "sha256": "53378262f93c3a5fa81095c9a727216fe7e090dca1e5c5b391f7ceeeac90e48b",
+          "replaced_sha256": "7067536fdb66f3e02181c8f14411e8b2d05f1c2fc68cc7b8a6ab97200a0354a9"
+        }
+      ]
     },
     {
       "item": "wild_onion",
@@ -105,7 +153,37 @@
           "label": "harvest"
         }
       ],
-      "preview": "tools/r48_artp/previews/wild_onion.png"
+      "preview": "tools/r48_artp/previews/wild_onion.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_1.png",
+          "draft": "tools/r48_artp/drafts/wild_onion/A/grug_farming_wild_onion_1.png",
+          "role": "1",
+          "sha256": "f67b4d550fde100fc31ca8b2589ba28a457b42726c0ab115b801fe1e227dc314",
+          "replaced_sha256": "e23a10c9dd765c6e8408e3fa183547fea838dae84bdd94e1242cfa98f3d3d4eb"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_2.png",
+          "draft": "tools/r48_artp/drafts/wild_onion/A/grug_farming_wild_onion_2.png",
+          "role": "2",
+          "sha256": "ed7b401e68530edd8f84ca9bca532fbd0c6f0f544602275cfad71ead955b131f",
+          "replaced_sha256": "4045b1f19dbb79733ffe1f3c9a04ef084548e3771c3565d12469fb416ef62fb0"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_3.png",
+          "draft": "tools/r48_artp/drafts/wild_onion/A/grug_farming_wild_onion_3.png",
+          "role": "3",
+          "sha256": "e4fdc59ff5b8edf8bc64131c5e9ba723c9d01a12f147234065e5ce1992b29265",
+          "replaced_sha256": "b23c8594c7045235f43fdeb247be39f242e2baa76d0389002fb488db206bc144"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_4.png",
+          "draft": "tools/r48_artp/drafts/wild_onion/A/grug_farming_wild_onion_4.png",
+          "role": "4",
+          "sha256": "9c39cb89ece117dc5a8a9c557825cb47dddc65a1077ee5ed8e0286b90fabe935",
+          "replaced_sha256": "aa2d9b9b7c11fcb900eadc7505bea9b0b0083e01a05a4892ec4b225f0efaa362"
+        }
+      ]
     },
     {
       "item": "pumpkin",
@@ -151,7 +229,16 @@
           "label": "harvest"
         }
       ],
-      "preview": "tools/r48_artp/previews/pumpkin.png"
+      "preview": "tools/r48_artp/previews/pumpkin.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_pumpkin_4.png",
+          "draft": "tools/r48_artp/drafts/pumpkin/A/grug_farming_pumpkin_4.png",
+          "role": "4",
+          "sha256": "e7ff481d243da253a579e0fb3b3fe88c400f038093e6d8d8728bb625bf11ffe0",
+          "replaced_sha256": "d8d6467920d9f6f10e443e96a5740d5fc2b76c6e9e7554047cc626949e5ddf34"
+        }
+      ]
     },
     {
       "item": "melon",
@@ -192,7 +279,51 @@
           "label": "apple"
         }
       ],
-      "preview": "tools/r48_artp/previews/melon.png"
+      "preview": "tools/r48_artp/previews/melon.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_melon_1.png",
+          "draft": "tools/r48_artp/drafts/melon/B/grug_farming_melon_1.png",
+          "role": "1",
+          "sha256": "5fe20e241c33379cca950574ec79a0036b33e55c92cc0692c04ce15507f6970c",
+          "replaced_sha256": "7914ae51469c6ba2039a81a97886284a5afde693e35b15d220dfa4170d7a9484"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_melon_2.png",
+          "draft": "tools/r48_artp/drafts/melon/B/grug_farming_melon_2.png",
+          "role": "2",
+          "sha256": "2e4887d8243a27251183a69a7a68fed6435a0e5aefb5ff5f5280f918b5de6ee2",
+          "replaced_sha256": "5826736457ffc8cb9b6c1560675bd5e2a0938ae04a048009acdf7d553a3a2ef3"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_melon_3.png",
+          "draft": "tools/r48_artp/drafts/melon/B/grug_farming_melon_3.png",
+          "role": "3",
+          "sha256": "ece74dd7397c5f4e652d47ea3179cfef7cbc4fd9720dc301e82ea65f01ddd830",
+          "replaced_sha256": "818ecaf17e6926d61d270dd8a4e5cd56e6f0c9918ab3fa04bea79764ae435400"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_melon_4.png",
+          "draft": "tools/r48_artp/drafts/melon/B/grug_farming_melon_4.png",
+          "role": "4",
+          "sha256": "172b64d7476f0237330f32ce3884726ff8cf765abe50cfdb155fa7b7d6e6f522",
+          "replaced_sha256": "3b391e930d7f41cae727c26ac58e22e0c6288f66d93c94e8fe727102307745ac"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_melon_seeds.png",
+          "draft": "tools/r48_artp/drafts/melon/B/grug_farming_melon_seeds.png",
+          "role": "seed",
+          "sha256": "72db7ca6c75039afb17c073d7c9d12ba4c4ca3550843fa3530febb0b90505053",
+          "replaced_sha256": "a68525db6fb202cdb61c597c3032de590769285baac9d5728830d5810e58dce2"
+        },
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_melon.png",
+          "draft": "tools/r48_artp/drafts/melon/B/grug_gathering_melon.png",
+          "role": "item",
+          "sha256": "be7db3d52b930149f0f61d7bbea2a5fbbaba4b366b47d1a4b22ff42b2b855366",
+          "replaced_sha256": "d5577b9c359a562e9a28a46712c4087884a17a73cd61bff6ae75b959faa9bd95"
+        }
+      ]
     },
     {
       "item": "mushroom",
@@ -233,7 +364,51 @@
           "label": "cave item"
         }
       ],
-      "preview": "tools/r48_artp/previews/mushroom.png"
+      "preview": "tools/r48_artp/previews/mushroom.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_mushroom_1.png",
+          "draft": "tools/r48_artp/drafts/mushroom/A/grug_farming_mushroom_1.png",
+          "role": "1",
+          "sha256": "70e7e39d75dba8cf5d20d03e0caf90335ea18becc2b291dba740db008fad928b",
+          "replaced_sha256": "a4fd890a02c4576146dca63ad975e304615bc703b9e7fc224824a0da55d8921a"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_mushroom_2.png",
+          "draft": "tools/r48_artp/drafts/mushroom/A/grug_farming_mushroom_2.png",
+          "role": "2",
+          "sha256": "3d81d7b5caf28b73442a3b6a53b924898c50dce76452d2eadce8769cf959b3dd",
+          "replaced_sha256": "ea33481bf06eb4b7f44efdefb4343801b415deadf4c25026cc6a208e7ffbae31"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_mushroom_3.png",
+          "draft": "tools/r48_artp/drafts/mushroom/A/grug_farming_mushroom_3.png",
+          "role": "3",
+          "sha256": "7e8cb5289afaf02db863d3a8299d563924f077c95bb51c8cd31e72f321186bde",
+          "replaced_sha256": "3bf92236719a2f70c08c7634302db9700e9a1e68e0a579d1c18a2c2f82ea792f"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_mushroom_4.png",
+          "draft": "tools/r48_artp/drafts/mushroom/A/grug_farming_mushroom_4.png",
+          "role": "4",
+          "sha256": "cd0d2c18545f147d3e2582cffaffb373710371b66ce6ee9535b9d052deb0c08d",
+          "replaced_sha256": "7f735b8f9cf88327950671ce5c57cedf03c0a29eb50f58d17131d9d8964d5f95"
+        },
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_mushroom_spores.png",
+          "draft": "tools/r48_artp/drafts/mushroom/A/grug_farming_mushroom_spores.png",
+          "role": "spores",
+          "sha256": "2efec47c91602cb23ec8208f7548eaae5811e4f3c64120bfd9d660fcb93268a2",
+          "replaced_sha256": "b933060babfe6493d6f8430772182d1e2d72af59ca60b2fe37099eef4e1e084f"
+        },
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_mushroom.png",
+          "draft": "tools/r48_artp/drafts/mushroom/A/grug_gathering_mushroom.png",
+          "role": "item",
+          "sha256": "c74788172e3767571ea376c6f07f8d5a7cd1c25ed2e6f1510a44f3cd970192fd",
+          "replaced_sha256": "154d5f635b8af7b6bc5cd07673a8a7d698ae821ffde8af8aa8b8bf2a73f4c661"
+        }
+      ]
     },
     {
       "item": "sunleaf",
@@ -266,7 +441,23 @@
           "label": "grass 5"
         }
       ],
-      "preview": "tools/r48_artp/previews/sunleaf.png"
+      "preview": "tools/r48_artp/previews/sunleaf.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_sunleaf_plant.png",
+          "draft": "tools/r48_artp/drafts/sunleaf/C/grug_gathering_sunleaf_plant.png",
+          "role": "world",
+          "sha256": "0a569c29285d327b5baa48560e70b47a4bc63b968ad64e00ab656508f70e27fb",
+          "replaced_sha256": "b3ac53835c17f658dbaff1f24f537a8dbb5327182cd2d3cd4eaa9de149902075"
+        },
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_sunleaf.png",
+          "draft": "tools/r48_artp/drafts/sunleaf/C/grug_gathering_sunleaf.png",
+          "role": "item",
+          "sha256": "3de15c5db448a7e28e190ae517394f8ef4699e42fcea2f3a7947bfb8471ccb31",
+          "replaced_sha256": "b3ac53835c17f658dbaff1f24f537a8dbb5327182cd2d3cd4eaa9de149902075"
+        }
+      ]
     },
     {
       "item": "gravemoss",
@@ -291,7 +482,23 @@
           "label": "fern"
         }
       ],
-      "preview": "tools/r48_artp/previews/gravemoss.png"
+      "preview": "tools/r48_artp/previews/gravemoss.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_gravemoss_plant.png",
+          "draft": "tools/r48_artp/drafts/gravemoss/A/grug_gathering_gravemoss_plant.png",
+          "role": "world",
+          "sha256": "f52bcff7a158ebf00bbf8b4b28e96c0bec3fe517b7b42ea3cf9a266b1fddb90c",
+          "replaced_sha256": "ba198f923b87dda304f55805203741de4646e747e8380a534caaac18745b9f6e"
+        },
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_gravemoss.png",
+          "draft": "tools/r48_artp/drafts/gravemoss/A/grug_gathering_gravemoss.png",
+          "role": "item",
+          "sha256": "8f5025e008f5251c031f9bd6874d0b48ddca9cac82c7ed08c2750646e915fa0f",
+          "replaced_sha256": "ba198f923b87dda304f55805203741de4646e747e8380a534caaac18745b9f6e"
+        }
+      ]
     },
     {
       "item": "wild_cocoa",
@@ -316,7 +523,23 @@
           "label": "sapling"
         }
       ],
-      "preview": "tools/r48_artp/previews/wild_cocoa.png"
+      "preview": "tools/r48_artp/previews/wild_cocoa.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_wild_cocoa_plant.png",
+          "draft": "tools/r48_artp/drafts/wild_cocoa/B/grug_gathering_wild_cocoa_plant.png",
+          "role": "world",
+          "sha256": "28ebc7bb1c67f3ed176fc6c8c6d1fc3391ccc985512be825268168b9ffe0fccf",
+          "replaced_sha256": "07e06b7c2a3214fe5076351f1b17a491389de62f98ae291c716793f7af9cb8a6"
+        },
+        {
+          "path": "mods/ITEMS/grug_gathering/textures/grug_gathering_wild_cocoa.png",
+          "draft": "tools/r48_artp/drafts/wild_cocoa/B/grug_gathering_wild_cocoa.png",
+          "role": "item",
+          "sha256": "84eca29c526861118da496f7ce09fdf59a960a048fa765d6fac6388a8c32a71e",
+          "replaced_sha256": "07e06b7c2a3214fe5076351f1b17a491389de62f98ae291c716793f7af9cb8a6"
+        }
+      ]
     },
     {
       "item": "salt_pan",
@@ -363,7 +586,16 @@
           "label": "salt"
         }
       ],
-      "preview": "tools/r48_artp/previews/salt_pan.png"
+      "preview": "tools/r48_artp/previews/salt_pan.png",
+      "shipped": [
+        {
+          "path": "mods/ITEMS/grug_farming/textures/grug_farming_salt_pan.png",
+          "draft": "tools/r48_artp/drafts/salt_pan/A/grug_farming_salt_pan.png",
+          "role": "item",
+          "sha256": "f5b7ad7950fd31d2dcc95bda136c58eeca5aaacc65f668018179182da9bd55e7",
+          "replaced_sha256": "a5831cb9b6a7361b9bd16b4bbf9eb3e0fd6ba3d35898944b2b7b31e5384b46b2"
+        }
+      ]
     }
   ],
   "drafts": [
@@ -938,6 +1170,23 @@
         "dark",
         "soil"
       ]
+    },
+    {
+      "path": "tools/r48_artp/previews/final.png",
+      "size": [
+        1812,
+        2116
+      ],
+      "mode": "RGBA",
+      "scales": [
+        1,
+        4
+      ],
+      "grounds": [
+        "light",
+        "dark",
+        "soil"
+      ]
     }
   ],
   "reference_sha256": {
@@ -974,6 +1223,8 @@
     "mods/ITEMS/grug_farming/textures/grug_farming_salt_crust_3.png": "5a586ae4ab5d03acd199a4b0a289f612ab862b1fada10fe7e6c4928a1ca370dc",
     "mods/ITEMS/grug_farming/textures/grug_farming_salt_crust_4.png": "a744c7fdc3fee345ea222a886cce15f57047f0819a033127e0ee9414063ade52",
     "mods/ITEMS/grug_farming/textures/grug_farming_salt_crust_4_side.png": "ad8c396b297c82fa425b5f4d74137134a6f3d19ca0afefdf1f2475f4048d1e23",
+    "mods/ITEMS/grug_farming/textures/grug_farming_seed_beetroot.png": "d3f37204d8c272e8e252fafc26b62a69e21df6ddbdbf429f765a51e893ba9cd2",
+    "mods/ITEMS/grug_farming/textures/grug_farming_seed_melon.png": "abd378f2a54ba68d2c02c7ab86af1e2bdbbde186d78a8773bfb7907af312fc37",
     "mods/ITEMS/grug_farming/textures/grug_farming_seed_potato.png": "8c7a58fd6ff76f12481179334131ab9b352ae3d8bc1bc1d3ac52d3b93f4b8712",
     "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_1.png": "e23a10c9dd765c6e8408e3fa183547fea838dae84bdd94e1242cfa98f3d3d4eb",
     "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_2.png": "4045b1f19dbb79733ffe1f3c9a04ef084548e3771c3565d12469fb416ef62fb0",

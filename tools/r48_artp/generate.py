@@ -8,15 +8,23 @@ Code: GPL-3.0-or-later. Original draft artwork: CC0-1.0, GPT-6 Astra.
 """
 
 import argparse
+from functools import lru_cache
 import hashlib
+import io
 import json
 from pathlib import Path
+import subprocess
 
 from PIL import Image, ImageDraw
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 DATE = "2026-10-14"
+# Preserve both the draft comparisons and the exact pre-installation textures.
+BASELINE_REVISION = "6295c1d9ea5eecb7c6aab020ff1247b316075f35"
+PICKS = {"cassava": "C", "wild_onion": "A", "pumpkin": "A", "melon": "B",
+         "mushroom": "A", "sunleaf": "C", "gravemoss": "A",
+         "wild_cocoa": "B", "salt_pan": "A"}
 CLEAR = (0, 0, 0, 0)
 NEAREST = Image.Resampling.NEAREST
 GREEN = ["30452b", "486435", "6d8842", "a3b85e"]
@@ -774,8 +782,13 @@ def build_drafts():
     return entries, images
 
 
+@lru_cache(maxsize=None)
+def baseline_bytes(path):
+    return subprocess.check_output(["git", "show", f"{BASELINE_REVISION}:{path}"], cwd=ROOT)
+
+
 def source_image(spec):
-    with Image.open(ROOT / spec["path"]) as src:
+    with Image.open(io.BytesIO(baseline_bytes(spec["path"]))) as src:
         im = src.convert("RGBA")
     if "frame" in spec:
         y = spec["frame"] * 16
@@ -910,20 +923,95 @@ def preview(item, entries, images):
     return out
 
 
-def manifest(entries, previews):
-    source_paths = sorted({s["path"] for rows in [*CURRENT.values(), *NEIGHBORS.values()] for s in rows})
+def shipped_files(entries):
+    shipped = {item: [] for item in PICKS}
+    for entry in entries:
+        if entry["draft"] != PICKS[entry["item"]]:
+            continue
+        for draft, role in zip(entry["files"], entry["roles"]):
+            name = Path(draft).name
+            mod = "grug_farming" if name.startswith("grug_farming_") else "grug_gathering"
+            path = f"mods/ITEMS/{mod}/textures/{name}"
+            content = (ROOT/path).read_bytes()
+            assert content == (ROOT/draft).read_bytes(), f"Shipped file differs from picked draft: {path}"
+            with Image.open(io.BytesIO(content)) as im:
+                assert im.size == (16, 16) and im.mode == "RGBA", path
+            shipped[entry["item"]].append({
+                "path": path, "draft": draft, "role": role,
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "replaced_sha256": hashlib.sha256(baseline_bytes(path)).hexdigest(),
+            })
+    assert sum(map(len, shipped.values())) == 29
+    return shipped
+
+
+def final_preview(shipped):
+    """Composite actual installed files beside the exact files they replaced."""
+    panel_width, row_height = 604, 228
+    out = Image.new("RGBA", (3*panel_width, 64+len(shipped)*row_height), color("202927"))
+    draw = ImageDraw.Draw(out)
+    label(out, (16, 14), "GRUDGELANDS / ROUND 48 / SHIPPED PLANT ART", "f1e9d1", 2)
+    label(out, (16, 36), "BEFORE: FARM BASELINE / AFTER: USER PICKS / EACH TILE: 1X LEFT AND 4X RIGHT", "b7c2ac")
+    for row, (item, files) in enumerate(shipped.items()):
+        y = 64+row*row_height
+        label(out, (16, y), TITLES[item]+" / PICK "+PICKS[item], "f1e9d1", 2)
+        for col, (ground, bg, ink) in enumerate(GROUNDS):
+            x = col*panel_width
+            draw.rectangle((x+2, y+22, x+panel_width-3, y+row_height-9), fill=color(bg))
+            label(out, (x+12, y+31), ground, ink)
+            label(out, (x+8, y+83), "BEFORE", ink)
+            label(out, (x+8, y+163), "AFTER", ink)
+            for n, entry in enumerate(files):
+                tx = x+64+n*88
+                label(out, (tx, y+46), entry["role"], ink)
+                for ty, data in [(y+62, baseline_bytes(entry["path"])),
+                                 (y+142, (ROOT/entry["path"]).read_bytes())]:
+                    with Image.open(io.BytesIO(data)) as source:
+                        tile = source.convert("RGBA")
+                    assert tile.size == (16, 16), entry["path"]
+                    out.alpha_composite(tile, (tx, ty+48))
+                    out.alpha_composite(tile.resize((64, 64), NEAREST), (tx+20, ty))
+    return out
+
+
+def replaced_source(path):
+    """Source of the replaced file, as recorded by FARM's baseline ledgers."""
+    name = Path(path).name
+    for family, source in [("melon", "pumpkin"), ("mushroom", "cave_cap")]:
+        if name in [f"grug_farming_{family}_{n}.png" for n in range(1, 5)]:
+            return FARM+name.replace(f"_{family}_", f"_{source}_")
+    sources = {
+        "grug_farming_seed_cassava.png": FARM+"grug_farming_seed_potato.png",
+        "grug_farming_melon_seeds.png": FARM+"grug_farming_seed_melon.png",
+        "grug_farming_mushroom_spores.png": FARM+"grug_farming_seed_beetroot.png",
+        "grug_farming_salt_pan.png": FARM+"grug_farming_salt_crust_4.png",
+        "grug_gathering_melon.png": BASE+"default_apple.png",
+        "grug_gathering_mushroom.png": BASE+"default_pine_bush_sapling.png",
+    }
+    for item, source in [("sunleaf", "default_grass_3.png"), ("gravemoss", "default_fern_1.png"),
+                         ("wild_cocoa", "default_pine_bush_sapling.png")]:
+        for suffix in ["", "_plant"]:
+            sources[f"grug_gathering_{item}{suffix}.png"] = BASE+source
+    return sources.get(name, path)
+
+
+def manifest(entries, previews, shipped):
+    source_paths = sorted({s["path"] for rows in [*CURRENT.values(), *NEIGHBORS.values()] for s in rows}
+                          | {replaced_source(s["path"]) for rows in shipped.values() for s in rows})
     return {
         "schema": 1, "date": DATE, "author": "GPT-6 Astra",
         "path_base": "repository root", "draft_license": "CC0-1.0",
         "draft_size": [16, 16], "draft_mode": "RGBA",
-        "stage_order": [1, 2, 3, 4], "picked": False,
+        "stage_order": [1, 2, 3, 4], "picked": PICKS,
+        "baseline_revision": BASELINE_REVISION,
         "items": [{"item": key, "current": list(dict.fromkeys(s["path"] for s in CURRENT[key])),
                    "current_views": CURRENT[key], "neighbors": NEIGHBORS[key],
-                   "preview": f"tools/r48_artp/previews/{key}.png"} for key in IDEAS],
+                   "preview": f"tools/r48_artp/previews/{key}.png",
+                   "shipped": shipped[key]} for key in IDEAS],
         "drafts": entries,
         "previews": [{"path": path, "size": list(im.size), "mode": im.mode,
                       "scales": [1, 4], "grounds": [g[0] for g in GROUNDS]} for path, im in previews.items()],
-        "reference_sha256": {path: hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in source_paths},
+        "reference_sha256": {path: hashlib.sha256(baseline_bytes(path)).hexdigest() for path in source_paths},
     }
 
 
@@ -947,6 +1035,8 @@ def reference_credit(path):
         return "Oz-tal", "CC BY-SA 3.0 Unported", "https://codeberg.org/tenplus1/farming/src/commit/1a918c7ae3778c3406ad91de6b83a174facad8f0/textures/crops_onion.png"
     exact = {
         "grug_farming_seed_potato.png": "x_farming_potato_seed.png",
+        "grug_farming_seed_melon.png": "x_farming_melon_seed.png",
+        "grug_farming_seed_beetroot.png": "x_farming_beetroot_seed.png",
         "grug_cooking_pumpkin.png": "x_farming_pumpkin_mash.png",
         "grug_cooking_frost_melon.png": "x_farming_melon.png",
         "grug_cooking_salt_crust.png": "x_farming_salt.png",
@@ -997,7 +1087,11 @@ def ledger(images, previews, data):
              "| --- | --- | --- | --- | --- |"]
     for path in previews:
         item = Path(path).stem
-        credits = [reference_credit(s["path"]) for s in CURRENT[item]+NEIGHBORS[item]]
+        if item == "final":
+            credits = [reference_credit(replaced_source(s["path"]))
+                       for entry in data["items"] for s in entry["shipped"]]
+        else:
+            credits = [reference_credit(s["path"]) for s in CURRENT[item]+NEIGHBORS[item]]
         authors = "; ".join(sorted({c[0] for c in credits}))
         license_name = "CC BY-SA 4.0 International" if any("4.0" in c[1] for c in credits) else "CC BY-SA 3.0 Unported"
         rows.append(f"| `previews/{item}.png` | GPT-6 Astra; {authors} | {DATE} | {license_name} | [generate.py](generate.py); comparison operations listed above |")
@@ -1005,6 +1099,11 @@ def ledger(images, previews, data):
              "and [CC BY-SA 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/).", "",
              "## Existing comparison inputs", "",
              "One row per source file; these are read-only references, not new assets.",
+             "All existing inputs are read from the manifest's `baseline_revision`",
+             "before the picked textures shipped. `previews/final.png` compares the",
+             "29 exact replaced files at that revision with the installed picks.",
+             "The baseline mod ledgers record the replaced files' source treatments;",
+             "the manifest records their hashes and the installed draft mappings.",
              "Their SHA-256 values and presentation modifiers are recorded in",
              "[drafts/manifest.json](drafts/manifest.json). Attribution follows the",
              "[farming ledger](../../mods/ITEMS/grug_farming/LICENSE-media.md),",
@@ -1020,6 +1119,12 @@ def ledger(images, previews, data):
     for path in data["reference_sha256"]:
         author, license_name, url = reference_credit(path)
         rows.append(f"| `{path}` | {author} | {license_name} | [Source]({url}) |")
+    rows += ["", "## Replaced files in the final comparison", "",
+             "Each file below is read at `baseline_revision`; its source is credited above.", "",
+             "| Replaced file | Original source file |", "| --- | --- |"]
+    for entry in data["items"]:
+        for shipped in entry["shipped"]:
+            rows.append(f"| `{shipped['path']}` | `{replaced_source(shipped['path'])}` |")
     return "\n".join(rows)+"\n"
 
 
@@ -1029,8 +1134,10 @@ def main():
     args = parser.parse_args()
     entries, images = build_drafts()
     assert len(entries) == 27 and len(images) == 87
+    shipped = shipped_files(entries)
     previews = {f"tools/r48_artp/previews/{item}.png": preview(item, entries, images) for item in IDEAS}
-    data = manifest(entries, previews)
+    previews["tools/r48_artp/previews/final.png"] = final_preview(shipped)
+    data = manifest(entries, previews, shipped)
     document = json.dumps(data, indent=2, ensure_ascii=False)+"\n"
     media_ledger = ledger(images, previews, data)
     outputs = images | previews
@@ -1044,15 +1151,20 @@ def main():
                 assert saved.tobytes() == im.tobytes(), f"Stale pixels: {path}"
         assert (HERE/"drafts/manifest.json").read_text() == document, "Stale manifest"
         assert (HERE/"LICENSE-media.md").read_text() == media_ledger, "Stale media ledger"
-        print("PASS: 27 drafts, 87 transparent 16x16 RGBA sprites, 9 RGBA previews; pixels, manifest and ledger reproducible.")
+        print("PASS: 27 drafts, 87 transparent 16x16 RGBA sprites, 10 RGBA previews; pixels, manifest and ledger reproducible.")
+        print("PASS: all 29 shipped files are byte-identical to their picked drafts, 16x16 RGBA; SHA-256 recorded.")
     else:
         for path, im in outputs.items():
             target = ROOT/path
             target.parent.mkdir(parents=True, exist_ok=True)
+            if target.exists():
+                with Image.open(target) as saved:
+                    if saved.mode == im.mode and saved.size == im.size and saved.tobytes() == im.tobytes():
+                        continue
             im.save(target, format="PNG", optimize=False, compress_level=9)
         (HERE/"drafts/manifest.json").write_text(document)
         (HERE/"LICENSE-media.md").write_text(media_ledger)
-        print("Wrote 27 drafts / 87 sprites, 9 comparison PNGs, manifest and media ledger.")
+        print("Generated 27 drafts / 87 sprites, 10 comparison PNGs, manifest and media ledger; existing matching PNGs preserved.")
 
 
 if __name__ == "__main__":

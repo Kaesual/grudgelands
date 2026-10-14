@@ -1,11 +1,41 @@
-# Round 48 ARTP — plant art drafts
+# Round 48 ARTP — picked plant art
 
-Step 1, 2026-10-14, by **GPT-6 Astra**: **27 alternatives, 87 original
-16 × 16 RGBA sprites and nine comparison sheets**. These are proposals for
-the user's pick, with no selection assumed. The
+Completed 2026-10-14 by **GPT-6 Astra**: the user picked one of the three
+drafts for each of the nine items, with no change requests. All **29 selected
+files now ship as byte-identical copies**, with no redraw. The original
+**27 alternatives, 87 sprites and nine draft comparison sheets** remain
+available. The
 [plant art plan](../../docs/planning/plant-art-plan.md) owns the brief.
-Change classification: **compatible**; this package adds only design artifacts
-under `tools/r48_artp/`. It changes no runtime files or saved state.
+Change classification: **compatible**; this step replaces art and its
+licence records, with no gameplay or saved-state change.
+
+## Shipped picks
+
+`grug_farming_*` files ship in `mods/ITEMS/grug_farming/textures/`;
+`grug_gathering_*` files ship in `mods/ITEMS/grug_gathering/textures/`.
+Each row copies every PNG from `drafts/<item>/<pick>/`. `{1..4}` denotes
+four separate stage files.
+
+| Item | Pick | Shipped filenames |
+| --- | --- | --- |
+| Cassava | C | `grug_farming_cassava_{1..4}.png`, `grug_farming_seed_cassava.png` |
+| Wild Onion | A | `grug_farming_wild_onion_{1..4}.png` |
+| Pumpkin | A | `grug_farming_pumpkin_4.png` |
+| Melon | B | `grug_farming_melon_{1..4}.png`, `grug_farming_melon_seeds.png`, `grug_gathering_melon.png` |
+| Mushroom | A | `grug_farming_mushroom_{1..4}.png`, `grug_farming_mushroom_spores.png`, `grug_gathering_mushroom.png` |
+| Sunleaf | C | `grug_gathering_sunleaf_plant.png`, `grug_gathering_sunleaf.png` |
+| Gravemoss | A | `grug_gathering_gravemoss_plant.png`, `grug_gathering_gravemoss.png` |
+| Wild Cocoa | B | `grug_gathering_wild_cocoa_plant.png`, `grug_gathering_wild_cocoa.png` |
+| Salt Pan | A | `grug_farming_salt_pan.png` |
+
+[Final comparison](previews/final.png): all 29 installed files beside the
+exact textures they replaced, on light, dark and soil grounds. Each tile
+appears at 1× on the left and 4× nearest-neighbour on the right. The
+**BEFORE** rows include FARM's placeholder PNGs and the previous Cassava,
+Wild Onion and Pumpkin stages; **AFTER** rows read the installed files.
+The baseline is commit `6295c1d9ea5eecb7c6aab020ff1247b316075f35`.
+
+## Original alternatives
 
 **Cassava.** A: one woody trunk with a high crown of five-fingered leaves,
 and one budded stem cutting. B: a forked shrub with two spreading leaf
@@ -85,16 +115,21 @@ are authored in that file. The draft pass starts with transparent canvases
 and never reads existing textures. No downloads, external fonts, random
 input, antialiasing or image-generation service are needed. Preview-only
 reads occur after all new sprites have been drawn. Regeneration writes
-only the package's PNGs, manifest and media ledger. The README is edited
-by hand.
+only the package's PNGs, manifest and media ledger; existing PNGs whose
+pixels match are left byte-for-byte untouched. The README and the two mod
+ledgers are edited by hand. Installation copies draft bytes into the mods;
+the generator verifies those copies and never writes into `mods/`.
 
 `--check` does not write files. It checks the exact PNG set, every file's
 size and mode, every generated pixel, manifest contents and media ledger.
+It also verifies all 29 shipped files against their selected draft bytes,
+their 16 × 16 RGBA format and the SHA-256 values recorded in the manifest.
 All **87 draft PNGs are 16 × 16 RGBA with binary alpha**; all **nine
-previews are RGBA** at the larger dimensions recorded in the manifest.
-The PNGs were also visually inspected on the three grounds. No Lua,
-fixtures, engine runs, GUI sync, merge or push belong to this step.
-The user's selections and any correction requests remain the next step.
+draft previews and the final comparison are RGBA** at the larger dimensions
+recorded in the manifest. The PNGs were also visually inspected on the
+three grounds. No fixtures, engine runs, GUI sync, merge or push belong to
+this step. The obsolete FARM placeholder generator has been removed;
+the presentation file's generator comment now points to this package.
 
 ## Coordinator handoff
 
@@ -106,13 +141,18 @@ paths** everywhere. Its `drafts` array contains one entry for every
 `*_plant.png` world sprite and the plain item filename. No extra wild
 sprite is needed for Melon or Mushroom: their stage 4 is their wild art.
 
-The manifest's `items` array holds each item's `current` source paths,
-`current_views` (labels and exact runtime colour modifiers), `neighbors`
-and `preview`. `reference_sha256` records every source file read by the
-comparison pass, so changes to the baseline are reviewable. These paths
-are references to existing art, not draft assets or new CC0 files.
+The manifest's `picked` map records the user's nine selections. Each item
+also has a `shipped` array with destination, draft path, role, installed
+SHA-256 and replaced-file SHA-256. The manifest's `items` array retains
+each item's draft-step `current` source paths, `current_views` (labels and
+exact runtime colour modifiers), `neighbors` and `preview`.
+`reference_sha256` records the historical comparison sources. Existing art
+is read with `git show` from `baseline_revision`, so the repository must
+retain that commit for regeneration. The nine original comparisons remain
+unchanged after installation. Historical source paths are references to
+existing art at that revision, not draft assets or new CC0 files.
 
-Each comparison places **current / A / B / C** in columns, repeats them
+Each draft comparison places **current / A / B / C** in columns, repeats them
 on **light / dark / soil** grounds, and shows **1× then 4× nearest
 neighbour** tiles. Stages run left to right, followed by planting and
 harvest icons where applicable. The final row repeats the neighbours
@@ -122,7 +162,9 @@ Salt basin tops show their **first 16 × 16 animation frame**. These are
 raw texture comparisons; world scaling, lighting and crossed-quad
 rendering remain for the later desktop and web playtest.
 
-Every new sprite is **CC0-1.0**. Comparison sheets also contain the
+Every new sprite is **CC0-1.0**. The two mod ledgers record each installed
+file's author, licence, Round 48 generator and selected draft.
+Comparison sheets also contain the
 repository's licensed existing art, so they retain the appropriate
 CC BY-SA licences. [LICENSE-media.md](LICENSE-media.md) lists every PNG,
 date, author and source, including the existing comparison inputs.

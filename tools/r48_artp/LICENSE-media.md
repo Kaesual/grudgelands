@@ -125,6 +125,7 @@ animations. No source pixels enter the draft outputs.
 | `previews/gravemoss.png` | GPT-6 Astra; Mossmanikin | 2026-10-14 | CC BY-SA 3.0 Unported | [generate.py](generate.py); comparison operations listed above |
 | `previews/wild_cocoa.png` | GPT-6 Astra; paramat | 2026-10-14 | CC BY-SA 3.0 Unported | [generate.py](generate.py); comparison operations listed above |
 | `previews/salt_pan.png` | GPT-6 Astra; SaKeL | 2026-10-14 | CC BY-SA 4.0 International | [generate.py](generate.py); comparison operations listed above |
+| `previews/final.png` | GPT-6 Astra; Francisco Athens; Gambit; Mossmanikin; SaKeL; celeron55 (Perttu Ahola); paramat | 2026-10-14 | CC BY-SA 4.0 International | [generate.py](generate.py); comparison operations listed above |
 
 Licence texts: [CC BY-SA 3.0 Unported](https://creativecommons.org/licenses/by-sa/3.0/)
 and [CC BY-SA 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/).
@@ -132,6 +133,11 @@ and [CC BY-SA 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/
 ## Existing comparison inputs
 
 One row per source file; these are read-only references, not new assets.
+All existing inputs are read from the manifest's `baseline_revision`
+before the picked textures shipped. `previews/final.png` compares the
+29 exact replaced files at that revision with the installed picks.
+The baseline mod ledgers record the replaced files' source treatments;
+the manifest records their hashes and the installed draft mappings.
 Their SHA-256 values and presentation modifiers are recorded in
 [drafts/manifest.json](drafts/manifest.json). Attribution follows the
 [farming ledger](../../mods/ITEMS/grug_farming/LICENSE-media.md),
@@ -178,8 +184,46 @@ was downloaded. Existing project attributions remain in
 | `mods/ITEMS/grug_farming/textures/grug_farming_salt_crust_3.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_salt_3_top.png) |
 | `mods/ITEMS/grug_farming/textures/grug_farming_salt_crust_4.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_salt_4_top.png) |
 | `mods/ITEMS/grug_farming/textures/grug_farming_salt_crust_4_side.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_salt_3_side.png) |
+| `mods/ITEMS/grug_farming/textures/grug_farming_seed_beetroot.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_beetroot_seed.png) |
+| `mods/ITEMS/grug_farming/textures/grug_farming_seed_melon.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_melon_seed.png) |
 | `mods/ITEMS/grug_farming/textures/grug_farming_seed_potato.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_potato_seed.png) |
 | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_1.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_beetroot_1.png) |
 | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_2.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_beetroot_3.png) |
 | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_3.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_beetroot_5.png) |
 | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_4.png` | SaKeL | CC BY-SA 4.0 International | [Source](https://bitbucket.org/minetest_gamers/x_farming/src/ac5f69d5103d4af841b1a5ed3a0b49a4e19d0c84/textures/x_farming_beetroot_8.png) |
+
+## Replaced files in the final comparison
+
+Each file below is read at `baseline_revision`; its source is credited above.
+
+| Replaced file | Original source file |
+| --- | --- |
+| `mods/ITEMS/grug_farming/textures/grug_farming_cassava_1.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cassava_1.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_cassava_2.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cassava_2.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_cassava_3.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cassava_3.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_cassava_4.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cassava_4.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_seed_cassava.png` | `mods/ITEMS/grug_farming/textures/grug_farming_seed_potato.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_1.png` | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_1.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_2.png` | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_2.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_3.png` | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_3.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_4.png` | `mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_4.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_pumpkin_4.png` | `mods/ITEMS/grug_farming/textures/grug_farming_pumpkin_4.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_melon_1.png` | `mods/ITEMS/grug_farming/textures/grug_farming_pumpkin_1.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_melon_2.png` | `mods/ITEMS/grug_farming/textures/grug_farming_pumpkin_2.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_melon_3.png` | `mods/ITEMS/grug_farming/textures/grug_farming_pumpkin_3.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_melon_4.png` | `mods/ITEMS/grug_farming/textures/grug_farming_pumpkin_4.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_melon_seeds.png` | `mods/ITEMS/grug_farming/textures/grug_farming_seed_melon.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_melon.png` | `mods/BASE/default/textures/default_apple.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_mushroom_1.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cave_cap_1.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_mushroom_2.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cave_cap_2.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_mushroom_3.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cave_cap_3.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_mushroom_4.png` | `mods/ITEMS/grug_farming/textures/grug_farming_cave_cap_4.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_mushroom_spores.png` | `mods/ITEMS/grug_farming/textures/grug_farming_seed_beetroot.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_mushroom.png` | `mods/BASE/default/textures/default_pine_bush_sapling.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_sunleaf_plant.png` | `mods/BASE/default/textures/default_grass_3.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_sunleaf.png` | `mods/BASE/default/textures/default_grass_3.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_gravemoss_plant.png` | `mods/BASE/default/textures/default_fern_1.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_gravemoss.png` | `mods/BASE/default/textures/default_fern_1.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_wild_cocoa_plant.png` | `mods/BASE/default/textures/default_pine_bush_sapling.png` |
+| `mods/ITEMS/grug_gathering/textures/grug_gathering_wild_cocoa.png` | `mods/BASE/default/textures/default_pine_bush_sapling.png` |
+| `mods/ITEMS/grug_farming/textures/grug_farming_salt_pan.png` | `mods/ITEMS/grug_farming/textures/grug_farming_salt_crust_4.png` |
