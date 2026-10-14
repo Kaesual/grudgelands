@@ -240,18 +240,20 @@ local function report_dialog(fs, session, letter)
 	fs[#fs + 1] = ("label[%.2f,10.7;%s]"):format(PANE_X + 0.2, esc(colored(COLOR.dim,
 		"The note is optional. A copy of the\nletter goes to the server admin.")))
 	fs[#fs + 1] = ("button[%.2f,11.45;1.6,0.75;report_cancel;Cancel]" ..
-		"style[report_confirm;bgcolor=#8a3a2c]button[%.2f,11.45;1.6,0.75;report_confirm;Report]")
-		:format(PANE_X + 1.4, PANE_X + 3.15)
+		"style[report_confirm_%d;bgcolor=#8a3a2c]button[%.2f,11.45;1.6,0.75;report_confirm_%d;Report]")
+		:format(PANE_X + 1.4, letter.id, PANE_X + 3.15, letter.id)
 end
 
-local function delete_dialog(fs)
+-- The confirm buttons and Delete carry the letter's id: a click from a form
+-- drawn for another letter (a row clicked meanwhile) acts on nothing.
+local function delete_dialog(fs, letter)
 	dialog_box(fs, 9.25, 2.9)
 	fs[#fs + 1] = ("label[%.2f,9.6;%s]label[%.2f,10.25;%s]"):format(PANE_X + 0.2,
 		esc(colored(COLOR.bad, "This letter still holds\nits attachments.")), PANE_X + 0.2,
 		esc("Delete it together with them?"))
 	fs[#fs + 1] = ("button[%.2f,11.15;1.6,0.75;delete_cancel;Cancel]" ..
-		"style[delete_confirm;bgcolor=#8a3a2c]button[%.2f,11.15;1.6,0.75;delete_confirm;Delete]")
-		:format(PANE_X + 1.4, PANE_X + 3.15)
+		"style[delete_confirm_%d;bgcolor=#8a3a2c]button[%.2f,11.15;1.6,0.75;delete_confirm_%d;Delete]")
+		:format(PANE_X + 1.4, letter.id, PANE_X + 3.15, letter.id)
 end
 
 local function letters_tab(player, session, fs)
@@ -290,7 +292,7 @@ local function letters_tab(player, session, fs)
 					PANE_X + PANE_W - 1.35)
 			end
 			if dialog == "delete" then
-				delete_dialog(fs)
+				delete_dialog(fs, selected)
 			else
 				local x = PANE_X
 				if M.reply_kind(selected) then
@@ -309,8 +311,8 @@ local function letters_tab(player, session, fs)
 						fs[#fs + 1] = ("button[%.2f,9.25;1.55,0.75;report;Report]"):format(x)
 					end
 				end
-				fs[#fs + 1] = ("button[%.2f,9.25;1.55,0.75;delete;Delete]"):format(
-					PANE_X + PANE_W - 1.55)
+				fs[#fs + 1] = ("button[%.2f,9.25;1.55,0.75;delete_%d;Delete]"):format(
+					PANE_X + PANE_W - 1.55, selected.id)
 			end
 		end
 	end
@@ -507,8 +509,8 @@ local function admin_tab(player, session, fs)
 			fs[#fs + 1] = ("label[%.2f,10.65;%s]"):format(TICKET_X, esc(colored(COLOR.dim,
 				"The answer is in your Letters.")))
 		end
-		fs[#fs + 1] = ("button[%.2f,11.0;1.9,0.8;ticket_delete;Delete]"):format(
-			TICKET_X + TICKET_W - 1.9)
+		fs[#fs + 1] = ("button[%.2f,11.0;1.9,0.8;ticket_delete_%d;Delete]"):format(
+			TICKET_X + TICKET_W - 1.9, selected.id)
 	end
 	fs[#fs + 1] = status_line(session, 12.75)
 	fs[#fs + 1] = ("label[0.4,13.25;%s]"):format(esc(colored(COLOR.dim,
@@ -634,21 +636,21 @@ local function letters_event(player, session, fields)
 		session.report = {reason = 1, note = ""}
 	elseif fields.report_cancel or fields.delete_cancel then
 		session.dialog = nil
-	elseif letter and fields.report_confirm then
+	elseif letter and fields["report_confirm_" .. letter.id] and session.dialog == "report" then
 		local ok, message = grug_mail.report_letter(player, letter.id,
 			M.REPORT_REASONS[session.report.reason], session.report.note, mailbox_text(session))
 		say(session, ok, message)
 		if ok then session.dialog = nil end
 	elseif letter and fields.take_all then
 		say(session, grug_mail.take_all(player, letter.id))
-	elseif letter and fields.delete then
+	elseif letter and fields["delete_" .. letter.id] then
 		if M.has_items(letter) then
 			session.dialog = "delete"
 		else
 			say(session, grug_mail.delete_letter(player, letter.id))
 			session.selected.letters = nil
 		end
-	elseif letter and fields.delete_confirm then
+	elseif letter and fields["delete_confirm_" .. letter.id] and session.dialog == "delete" then
 		say(session, grug_mail.delete_letter(player, letter.id))
 		session.selected.letters, session.dialog = nil, nil
 	else
@@ -705,7 +707,7 @@ local function admin_event(player, session, fields)
 			draft.subject, draft.body, mailbox_text(session))
 		say(session, ok, message)
 		if ok then session.admin = {topic = 1, subject = "", body = ""} end
-	elseif fields.ticket_delete then
+	elseif session.selected.tickets and fields["ticket_delete_" .. session.selected.tickets] then
 		local ticket = grug_mail.ticket(session.selected.tickets)
 		if ticket and ticket.from == name then
 			say(session, grug_mail.delete_ticket(ticket.id, name))
@@ -735,9 +737,8 @@ end
 
 -- The buttons, tables and tabs: the fields that ask for an action.
 local ACTIONS = {reply = true, report = true, report_cancel = true,
-	report_confirm = true, take_all = true, delete = true, delete_cancel = true,
-	delete_confirm = true, write_discard = true, admin_discard = true,
-	ticket_delete = true, letters = true,
+	take_all = true, delete_cancel = true, write_discard = true, admin_discard = true,
+	letters = true,
 	announcements = true, tickets = true, grug_mail_tab = true}
 
 -- Whether the event asks for nothing (an Enter in a single-line field):
@@ -746,7 +747,8 @@ local function idle(fields)
 	if not fields.key_enter_field then return false end
 	for field in pairs(fields) do
 		if ACTIONS[field] or field:match("_prev$") or field:match("_next$") or
-				field:match("_send_%d+$") then
+				field:match("_send_%d+$") or field:match("^delete_%d+$") or
+				field:match("_confirm_%d+$") or field:match("^ticket_delete_%d+$") then
 			return false
 		end
 	end

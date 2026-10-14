@@ -1,7 +1,7 @@
 {
-  "day": "#6fb3df",
-  "night": "#1f2a55",
+  "day": "#bda778",
+  "night": "#273d50",
   "blend": 8,
-  "badge": "#b8322a",
-  "badge_rim": "#ffffff"
+  "badge": null,
+  "badge_rim": "#d8caa6"
 }

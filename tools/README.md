@@ -1006,8 +1006,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the cross arms, not beside the stone, on the pad, front toward the stone;
   none in any other composition or capital plot; each resolving through the
   real socket registry to its settlement's label);
-  `placeholder_textures.py` writes the mailbox's placeholder textures (until
-  the art pick replaces them); `capture.sh OUT_DIR` with
+  the mailbox art is pick A from `r48_artm/generate.py`; `capture.sh OUT_DIR` with
   `grug_probe_r48_world` the in-engine check of the twelve pads and one
   screenshot per pad;
   `r48_hud` the minimap's side elements (`portable_test.lua`: the daytime
@@ -1015,8 +1014,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   placement beside the bezel and in the corner over desktop and web windows
   at GUI scaling 1 and 2, the runtime with the minimap unavailable; the
   minimap-shown runtime is `r27_minimap` block H); `gen_hud_textures.py`
-  (`--check`, `--placeholders`) composes the 40 band and 10 mail images
-  from `parts/` and the cooldown digits; `capture.sh OUT_DIR` with
+  (`--check`) composes the 40 band and 10 mail images
+  from ARTM's picked `parts/` and the cooldown digits; `capture.sh OUT_DIR` with
   `grug_probe_r48_hud` the engine screenshots (minimap shown and hidden,
   mail 0, 3 and 9+, day and night, with "Now playing"; `GUI=`, `SUFFIX=`;
   the r47_ml method), one queue run of one slot;
@@ -1028,12 +1027,23 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   refused with nothing lost, the guards, closing, item meta, Take all,
   refusals, `send_system` with stacks, tickets, reports, answers,
   broadcasts, expiry and the window's tabs, dialogs and reach);
-  `gen_placeholders.py` (`--check`) the placeholder admin badge and NPC
-  seal; `capture.sh OUT_DIR` with `grug_probe_r48_mail` the engine
+  the admin badge and NPC seal come from `r48_artm/generate.py`;
+  `capture.sh OUT_DIR` with `grug_probe_r48_mail` the engine
   screenshots of every tab and dialog of the mailbox window and Help → Mail
   (a stand-in mailbox beside the human start's waystone; the TA method:
   Xvfb and one real client; `GUI_SCALE`, `SUFFIX=`), one queue run of one
   slot;
+  `r48_artm/generate.py` (`--check`) the original art proposals and the
+  user's final picks: mailbox A, envelope B, daytime band A, with the
+  derived admin shield and NPC seal; writes the HUD parts, calls HUD's
+  compositor for the finished images, and records all shipped paths,
+  dimensions and hashes in `r48_artm/drafts/manifest.json`;
+  `r48_artm/previews/final.png` the final sheet at native and integer scales;
+  `r48_sell` the vendor's sell side (`portable_test.lua`: lot rows over the
+  carried lists, All over several slots, the greyed row below the lot
+  size, a moved stack refused without loss, the money ceiling before any
+  removal, the pack rule on the real `prices.lua`; the price rules and the
+  milli-copper second pass are in `r29_e1`);
   `r48_quest` the system quest and the game's letters (`portable_test.lua`:
   the real `grug_quests` registry, state, labels and hud, `grug_map`'s
   quest box and the real `grug_mail` with `grug_money` on the `r48_mail`
