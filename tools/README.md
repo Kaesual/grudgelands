@@ -1033,4 +1033,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   screenshots of every tab and dialog of the mailbox window and Help → Mail
   (a stand-in mailbox beside the human start's waystone; the TA method:
   Xvfb and one real client; `GUI_SCALE`, `SUFFIX=`), one queue run of one
-  slot.
+  slot;
+  `r48_quest` the system quest and the game's letters (`portable_test.lua`:
+  the real `grug_quests` registry, state, labels and hud, `grug_map`'s
+  quest box and the real `grug_mail` with `grug_money` on the `r48_mail`
+  stub engine: the system quest kind and its refusals, the starter quest's
+  grant at arrival and join once, the full log skipping it, the tracker and
+  log text, the turn-in by opening a mailbox with XP, 25c, the turn-in hook
+  and the completion line, the welcome letter once, the level letters with
+  their conditions, a jump 14 -> 21 and the filled placeholders).
