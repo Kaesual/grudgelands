@@ -999,8 +999,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   times (Mesa's Gallium HUD dump, llvmpipe), the client profiler's draw
   calls and vertices, and the client's memory, through `drive.py`;
   `report.py RUN_DIR...` prints the tables. One measuring run per boot,
-  about 4 minutes;
-  `r48_world` the mailbox on the waystone pads (`portable_test.lua`: the
+  about 4 minutes.
+- **Round 48** (`r48_<lane>`): `r48_world` the mailbox on the waystone pads (`portable_test.lua`: the
   node through the real `world_nodes.lua` on a fake engine, its right-click
   with and without `grug_mail`; one mailbox on each of the twelve pads, off
   the cross arms, not beside the stone, on the pad, front toward the stone;
@@ -1019,4 +1019,18 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   from `parts/` and the cooldown digits; `capture.sh OUT_DIR` with
   `grug_probe_r48_hud` the engine screenshots (minimap shown and hidden,
   mail 0, 3 and 9+, day and night, with "Now playing"; `GUI=`, `SUFFIX=`;
-  the r47_ml method), one queue run of one slot.
+  the r47_ml method), one queue run of one slot;
+  `r48_mail` mail (`portable_test.lua`: the
+  pure model `grug_mail/model.lua`, then the real `grug_mail` with the real
+  `grug_money`, the give and fit helpers of `grug_inventory` and the guards
+  `grug_skills/bound_items.lua` and `grug_housing/soulbound.lua` on a stub
+  engine: postage and the attachment slots in one step, a changed slot
+  refused with nothing lost, the guards, closing, item meta, Take all,
+  refusals, `send_system` with stacks, tickets, reports, answers,
+  broadcasts, expiry and the window's tabs, dialogs and reach);
+  `gen_placeholders.py` (`--check`) the placeholder admin badge and NPC
+  seal; `capture.sh OUT_DIR` with `grug_probe_r48_mail` the engine
+  screenshots of every tab and dialog of the mailbox window and Help → Mail
+  (a stand-in mailbox beside the human start's waystone; the TA method:
+  Xvfb and one real client; `GUI_SCALE`, `SUFFIX=`), one queue run of one
+  slot.

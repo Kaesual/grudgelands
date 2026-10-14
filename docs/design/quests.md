@@ -104,7 +104,9 @@ quests removed by Round 46 ruling 8, 2026-10-12
   "Repeatable quests" below.
 - One-time XP/coin/item rewards, with all prerequisites, consumed items and
   reward space preflighted together; insufficient space refuses the turn-in
-  without consumption or a dropped reward. Avoid adding mail/escrow systems.
+  without consumption or a dropped reward. A quest reward never waits in the
+  mail or in an escrow: it is paid at the turn-in or refused (the mailbox,
+  [mail.md](mail.md), carries letters, not quest rewards).
 - Every quest description includes its minimum level and the titles of its
   prerequisite quests. `min_level` gates accepting; the reward XP is
   `grug_xp.quest_reward(level, weight)`, the authored weight in kill

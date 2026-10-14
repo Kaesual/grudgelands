@@ -47,8 +47,9 @@ Accepted defaults:
 - One pending invitation per inviter/recipient pair; duplicate sends are a
   no-op and cannot create duplicate notifications.
 - Invitations are short-lived (120 seconds), session-only, and require an
-  online inviter/recipient to send/accept. No offline mailbox; leaving the
-  server expires that player's invitations but **never** their membership.
+  online inviter/recipient to send/accept. Invitations never go through the
+  mail ([mail.md](mail.md)); leaving the server expires that player's
+  invitations but **never** their membership.
 - Limit pending incoming invitations to ten so many different senders cannot
   grow the queue indefinitely. This is a storage cap, not another rate timer.
 - Turning invites off removes pending incoming invitations as well.

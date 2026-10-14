@@ -37,7 +37,7 @@ What a change needs:
 |---|---|
 | Nothing saved changes meaning | compatible |
 | World generation, or map-bound state (§3.2) the new code cannot read | map reset |
-| A removed item: a step replaces or removes it in inventories, offline characters included (items in node inventories on the map need the deferred map part, Round 43 ruling 4); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
+| A removed item: a step replaces or removes it in inventories, offline characters included (items in node inventories on the map need the deferred map part, Round 43 ruling 4), and in the mail (since 0.48.0: the item strings of letter attachments in `grug_mail`'s mod storage, keys `box:<name>`, and the player list `grug_mail_out`); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
 | Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
@@ -139,6 +139,7 @@ written in `register_on_mods_loaded`, after every clear.
 | `grug_core` `reset_world` | — | the world record itself |
 | `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up or destruction |
 | `grug_parties` `parties`, `grug_repair` `item_serial` | — | not map-bound; the serial is a monotonic counter |
+| `grug_mail` (Round 48): `box:<name>`, `tickets`, `broadcasts`, `factions`, `next_id` | — | not map-bound: letters, attachments, tickets and announcements survive a map reset; `next_id` is a monotonic counter |
 
 The world-folder caches (world layouts, region maps, the world-map tiles and
 zone grid) derive from the seed and the code and stay valid. The settlement

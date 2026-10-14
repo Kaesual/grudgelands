@@ -1,0 +1,158 @@
+# Mail
+
+Mailboxes, letters between players, letters from the admin and from the
+people of the realm, messages to the admin and announcements to all
+players. Decided by the user on 2026-10-14
+([mail plan](../planning/mail-plan.md) §2, with the round's changes in
+[Round 48](../planning/round48-plan.md) §2); built in Round 48 (0.48.0):
+the mod `grug_mail` with the mailbox window (lane MAIL), the mailbox on the
+waystone pads (lane WORLD), the mail icon beside the minimap (lane HUD), the
+Admin Mail tab (lane ADMIN) and the starter quest with the welcome and level
+letters (lane QUEST). Seams and storage: the
+[module guide](../technical/module-guide.md#mail).
+
+## 1. Mailboxes
+
+- Every capital core and every starting village has one mailbox, placed by
+  the world generator on the waystone's pad, a few nodes to the side of the
+  stone ([settlements](settlements.md)). There is no other way to read or
+  write mail: no chat command, no inventory tab (the admin's Admin Mail tab
+  is the one exception, §6). The map shows no extra marker: the mailbox
+  stands beside a waystone the map already shows.
+- A mailbox is named after its settlement ("Mailbox in Dur Brannoc"): the
+  settlement whose waystone stands within 16 nodes.
+- Right-clicking it opens one window with four tabs: **Letters**,
+  **Announcements**, **Write** and **To the admin**. The tab captions carry
+  the unread count ("Letters (2)"). Every action checks again that the
+  mailbox still stands and the player is alive within 6 nodes of it;
+  otherwise the window closes. The window's header names the mailbox and
+  the player's purse.
+- Lists are paginated, 8 rows per page, newest first.
+
+## 2. Letters
+
+- **Kinds.** A player letter (from a character of the same faction), an
+  admin letter (always shown from **"Server Admin"**, never the admin's own
+  name; a shield badge in the list and the banner "Sent by the server
+  administration" in the letter) and a letter from a character of the realm
+  (an NPC such as the Riding Trainer, with a seal badge).
+- **Read state** is automatic: clicking a letter opens and marks it read.
+  There is no "mark read".
+- **Limits.** A mailbox holds **50 player letters**; a full mailbox refuses
+  player mail ("Brakka's mailbox is full."). Admin and NPC letters are always
+  delivered, beyond the limit.
+- **Expiry.** Every letter is deleted **30 days** after it arrived, its
+  attachments too, with no return to the sender. The Letters tab says so
+  ("Letters are deleted 30 days after they arrive, attachments too.").
+- **Reply** on a player letter opens Write with the sender, "Re: <subject>"
+  (never "Re: Re:") and the quoted text; it costs postage as usual. Reply on
+  an admin letter or an announcement opens To the admin with "Re: <subject>".
+  NPC letters have no Reply ("Letters from characters of the realm cannot be
+  answered.") and no Report.
+- **Take all** moves every attachment into the inventory, through the
+  inventory's usual order, or none: without room the items stay in the
+  letter.
+- **Delete** removes a letter; a letter that still holds attachments asks
+  first.
+- **Report** (player letters only, once each): a reason (Spam, Insult or
+  harassment, Scam, Other), an optional note (200 characters) and a
+  confirmation ("Really report this letter from …?"). The report becomes a
+  "Player report" message to the admin holding a frozen copy of the letter:
+  sender, time, subject, text and the attachments' names.
+- A letter for an online player raises the feed line "New letter from
+  <sender>." No sound.
+
+## 3. Writing letters
+
+- Recipients are created characters of the **sender's own faction**, typed
+  by name (any letter case); a character of the other faction and an
+  unknown name get the same answer: "There is no player called X in your
+  faction." Sending to oneself is refused. A character that has not joined
+  since 0.48.0 is not known yet and cannot receive player mail until it
+  joins (admin and NPC mail reach it).
+- **Postage:** **5c** per letter plus **30c per attached stack**, up to **4**
+  stacks ("one item" is one stack: twelve ingots cost as much as one axe).
+  A Bag of Coins is an ordinary attachment; there is no cash on delivery and
+  no money sent as a number.
+- **Attachments** go into four attachment slots of the player's own
+  inventory (the list `grug_mail_out`), dragged in on the Write tab like any
+  slot. Soulbound items (the Claim Stone), skills and mount items do not
+  fit. Item meta (quality, enchants, the crown, wear) travels with the item.
+- **Send** takes the postage and the four slots in one transaction. The
+  button shows the postage for the slots as last drawn ("Send (65c)"); when
+  the slots changed since (a stack dragged in after the window was drawn),
+  Send refuses without taking anything and shows the new postage, and the
+  next Send pays it.
+- Closing the window without sending gives the stacks back; what does not
+  fit stays in the slots and shows at the next mailbox (and returns at the
+  next join when there is room). **Discard** clears the letter and gives the
+  stacks back.
+- Text limits: subject 60 characters (required), message 1,500. Control
+  characters (colour codes among them) are removed.
+- Letters to other players vanish for the sender once sent: there is no
+  sent folder.
+
+## 4. Messages to the admin
+
+- The To the admin tab sends a message with a **topic** (Feedback, Bug
+  report, Question, Player report, Other), a subject and a text, free of
+  charge and without items. The game version and the mailbox ("Sent from
+  Mailbox in Dur Brannoc") are always attached, never optional; so are the
+  sender's level, faction, race, class and position, which only the admin
+  sees.
+- The tab's hint: "Questions, problems or a player to report? Feedback on
+  the game and bug reports are very welcome too. Mail to the admin is free."
+- A player has at most **5 open** messages to the admin, reports included.
+- Each message is a **ticket**: the player keeps seeing their own messages
+  with their state, **Open**, **Answered** or **Closed** (closed without an
+  answer), and can delete them. **Deleting removes the ticket for
+  everyone**; the server log keeps every message, answer and closing.
+- An admin's answer arrives as an ordinary admin letter "Re: <subject>" in
+  Letters and closes the ticket. Tickets expire after 30 days like letters;
+  the admin inbox has no limit.
+
+## 5. Announcements
+
+- A letter from the admin to **all players** is stored once and shown in
+  every player's Announcements tab, with the shield badge, also to
+  characters created after it was sent, until it expires after 30 days.
+  Each player's read state is their own.
+
+## 6. The admin side
+
+- A privilege, `mail_admin`, opens the **Admin Mail** inventory tab: the
+  shared admin inbox (filters Open and All), each message with its header
+  (§4), answering and closing, and new admin letters to one player or to all
+  players (an announcement), text only. Admin letters carry no items
+  (admins have `/give`). "Closed by <admin>" shows only in that tab.
+  Built by lane ADMIN (Round 48).
+
+## 7. The unread icon
+
+- An icon beside the minimap counts unread letters (admin letters and
+  answers included) and unread announcements, with a digit from 1 to 9 and
+  "9+" above; it is gone when nothing is unread. With the minimap hidden it
+  moves into the top-right corner with the daytime band and "Now playing"
+  ([world map](world_map.md)). The count updates at every change and at
+  join.
+
+## 8. System letters
+
+- The game itself sends admin-kind and NPC letters: the welcome letter, the
+  Riding Trainer's letter at level 15 and the Housing Steward's at level 20,
+  with the starter quest "Use a mailbox in one of the cities" that opening any
+  mailbox completes (lane QUEST, Round 48), and the "Lost and Found" letters
+  of the 0.48.0 bag migration, which carry the items that no longer fit the
+  smaller bags as attachments ([inventory](inventory_equipment.md)). Only
+  that migration sends items in a system letter.
+
+## 9. Help
+
+- Help → Mail sums the rules up: the mailboxes beside the waystones,
+  postage, the 50-letter and 30-day rules and writing to the admin.
+
+## 10. Persistence
+
+- Mail is not bound to the map: a map reset keeps every letter, ticket and
+  announcement. Expired entries are removed when a list is read and at join,
+  never by a pass over every player.
