@@ -12,6 +12,12 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.48.0 — mail, plants and light, selling, smaller bags (in progress)
+
+Round 48 is under way ([plan](docs/planning/round48-plan.md)); lane D writes
+this entry when the round closes. **Map reset** plus a migration step (bags
+shrink to half; what no longer fits arrives by mail).
+
 ## 0.47.0 — trees, mining progression and crafting feedback (2026-10-14)
 
 New trees grown from each world's seed, a swamp worth walking through, a

@@ -351,13 +351,12 @@ acceptance lines, done by the coordinator before the round starts).
 - engine runs only through `tools/luanti_headless.sh` with `LC_ALL=C`;
 - never the user's Luanti folder.
 
-**The version bump:** when the first lane with a change beyond
-"compatible" merges (normally WORLD), the coordinator sets `game.conf` to
-0.48.0, adds 0.48.0 to `map_reset` in `tools/web_data/upgrade.json`,
-adds the CHANGELOG placeholder and runs `check_upgrade.py`. The
-`migrate` entry comes with BAGS's merge, together with its step file and
-the handler (`check_upgrade.py` requires the step file for every
-`migrate` entry and the game's step registry to equal the list).
+**The version bump** (done by the coordinator before the worktrees, so every
+lane starts from it): `game.conf` 0.48.0, 0.48.0 in `map_reset` of
+`tools/web_data/upgrade.json`, the CHANGELOG placeholder. The `migrate` entry
+comes with BAGS's merge, together with its step file and the handler
+(`check_upgrade.py` requires the step file for every `migrate` entry and
+the game's step registry to equal the list).
 
 **File ownership (the briefs list exact files):**
 
