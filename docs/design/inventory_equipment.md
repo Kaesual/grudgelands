@@ -27,9 +27,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   the map window. Creative's tabs, for creative players, follow the table.
 - **Inventory views** (`grug_inventory.inventory_view(player, mode,
   context)`): `main[9..]`, then each equipped bag's content list in slot
-  order, as one 8-wide grid in a scroll area (each bag starts a new row; a
-  4- or 12-slot bag leaves half a row empty, Round 48 ruling), and the
-  hotbar (`main[1..8]`) below it, outside the scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
+  order, as one continuous 8-wide grid in a scroll area: each bag starts in
+  the column right after the previous list's last slot, so only the very
+  last row may be partial (three 4-slot bags make one and a half rows; the
+  user, Round 48 playtest, replacing the round's earlier "half-empty rows
+  are accepted"), and the hotbar (`main[1..8]`) below it, outside the
+  scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
   `grug_inventory.LAYOUT`): an **Inventory** box with the grid and its
   scrollbar and the gold **Hotbar** box, each labelled inside, top left
   above the slots. **Full** shows seven rows (the Inventory tab, layout
