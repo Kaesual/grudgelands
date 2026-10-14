@@ -107,8 +107,18 @@ in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33, WP9 and
 WP13 in Round 36. The audit's letters and numbers (for
 example E5) are cited below. WP34 followed in Round 46.
 
-- **Latest delivery: [Round 47 "Trees, mining progression and crafting
-  feedback"](docs/planning/round47-plan.md#completion-2026-10-14)**
+- **Latest delivery: [Round 48 "Mail, plants and light, selling, smaller
+  bags"](docs/planning/round48-plan.md#completion-2026-10-14)**
+  (2026-10-14, version 0.48.0, **map reset** plus the step 0.48.0; not
+  pushed; GUI test open): mailboxes, letters with attachments, messages to
+  the admin and the Admin Mail tab, the starter quest and the welcome and
+  level letters, plant light, Melon and Mushroom crops, the Salt Pan,
+  selling almost everything in lots, cactus and leaf fuel, the daytime band
+  and bags at half size with the leftovers mailed
+  ([Round 48](#round-48--mail-plants-and-light-selling-smaller-bags),
+  [carry-overs](#round-48-carry-overs)).
+- [Round 47 "Trees, mining progression and crafting
+  feedback"](docs/planning/round47-plan.md#completion-2026-10-14)
   (2026-10-14, version 0.47.0, **map reset** plus the step 0.47.0;
   GUI-accepted together with 0.46.0 and pushed at `6a8afb9f`): trees from the seeded generator, greener towns and capitals, the
   swamp, the lower-half ore rule and the Bronze gate, Anthracite and Steel
@@ -119,7 +129,7 @@ example E5) are cited below. WP34 followed in Round 46.
 - [Round 46 "World generation and player
   feedback"](docs/planning/round46-plan.md#completion-2026-10-13)
   (2026-10-13, version 0.46.0, **map reset**, never deployed on its own;
-  GUI test open): seed-dependent POI placement, the revised ore, gem and coal
+  GUI-accepted with Round 47): seed-dependent POI placement, the revised ore, gem and coal
   table, kill XP by level difference, the repeatables removed, underground
   spawns and the depth pulse (WP34), rage by weapon speed and the caster
   spell base, coin bags, plain dishes, repair only in towns and the
@@ -2072,8 +2082,8 @@ severity).
 
 ### Round 47 — trees, mining progression and crafting feedback
 
-**Delivered 2026-10-14; main pushed by the user as a backup at `b3a30ab0`,
-the closing documentation not yet (pushed only on the user's word)**
+**Delivered 2026-10-14; GUI-accepted together with 0.46.0 and pushed by
+the user at `6a8afb9f` (2026-10-14)**
 ([completion](docs/planning/round47-plan.md#completion-2026-10-14), plan
 [round47-plan.md](docs/planning/round47-plan.md)); every code lane
 independently reviewed by Opus, every follow-up delta with game logic
@@ -2186,6 +2196,109 @@ severity).
 - **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` in
   `tools/r45_ms/portable_test.lua` and `tools/r45_rg/portable_test.lua:546`.
 
+### Round 48 — mail, plants and light, selling, smaller bags
+
+**Delivered 2026-10-14; not pushed (pushed only on the user's word); GUI
+test open** ([completion](docs/planning/round48-plan.md#completion-2026-10-14),
+plan [round48-plan.md](docs/planning/round48-plan.md)); every code lane
+independently reviewed by Opus, every fix delta with game logic reviewed
+again, ARTP and ARTM on the user's picks, the letters and the quest text
+by GPT-6 Astra with an Opus text review and the user's picks. Version
+0.48.0, **map reset** (the mailboxes) plus the step 0.48.0 (bags at half
+size, leftovers by mail); the production world moves from 0.45.1 in one
+update.
+
+- **Mail** (MAIL, WORLD, HUD, ADMIN, QUEST, ARTM): `grug_mail`, the
+  mailbox on the twelve waystone pads, the unread icon, the privilege
+  `mail_admin` and the Admin Mail tab, the system quest kind, the starter
+  quest and the welcome and level letters ([mail.md](docs/design/mail.md),
+  [mail plan](docs/planning/mail-plan.md)).
+- **Plants** (FARM, ARTP): plant light, papyrus, cactus and saplings,
+  Melon and Mushroom, spores, the Salt Pan, salt renewal, tooltips and the
+  picked plant art ([farming.md](docs/design/farming.md),
+  [plant growth plan](docs/planning/plant-growth-plan.md),
+  [plant art plan](docs/planning/plant-art-plan.md)).
+- **Selling, fuel, the daytime band and bags** (SELL, FARM, HUD, BAGS):
+  [economy.md §2](docs/design/economy.md),
+  [world_map.md](docs/design/world_map.md),
+  [inventory_equipment.md §3](docs/design/inventory_equipment.md#3-bags-classic-mmo-model-lott-implementation-pattern),
+  the step ([upgrade contract §5.8](docs/technical/upgrade-contract.md#58-the-declared-steps));
+  [sell plan](docs/planning/sell-fuel-daytime-plan.md).
+
+### Round 48 carry-overs
+
+**Noted 2026-10-14** ([completion](docs/planning/round48-plan.md#completion-2026-10-14)),
+the reviews' and reports' backlog notes (theoretical or accepted, no
+severity). The items the user decides in the GUI test are in the
+[GUI checklist](docs/planning/round48-plan.md#gui-checklist-round-48).
+
+- **Mail** (MAIL): names that differ only in letter case share one index
+  entry (the engine normally forbids such names); an offline player's
+  unread count leaves out announcements (their read set is player meta);
+  if another mod's window replaces the mailbox window, the session never
+  finishes and the stacks wait in `grug_mail_out` until the next mailbox
+  close or join (nothing is lost).
+- **Admin Mail** (ADMIN): the answer text is not stored in the ticket (it
+  is in the server log only); typed text is lost when the admin switches
+  tabs or the window is resent before an event; an answer to a character
+  the server no longer knows is refused (Close remains); no notice for
+  online admins when a ticket arrives, no count in the tab caption and no
+  unread mark per ticket (the wireframe shows them, the plan does not);
+  each inbox draw deserializes the ticket store two or three times; a
+  forged far-future draw serial (admins only) blocks that admin's own sends
+  until a rejoin.
+- **Starter quest and letters** (QUEST): abandoning the starter quest is
+  final (its flag stays set); a character created and disconnected before
+  its arrival gets the quest and the welcome letter early at its next
+  join; on a veteran's first join the level letters arrive before the
+  welcome letter (`grug_xp`'s join hook runs first; only the order in the
+  mailbox changes); `income.py` and `ledger.py` read only the zone files,
+  so the starter quest's one-time 25c and 30 XP are not counted;
+  `turnin_text` lives in `grug_mail/quest.lua`, not in `texts.lua` (it is
+  the plan's sentence, not a picked text).
+- **HUD** (HUD): `set_mail_count` keeps a count for a name that is not
+  online until that player joins and leaves (`minimap.lua` "per online
+  player" is slightly wrong; storing only for known players is a small
+  fix); the corner stack can end a few px below the minimap's box at small
+  heights with large GUI scaling (a 1024 × 600 window at GUI 2 fills it
+  exactly; GUI 2.5 or more at 720p overflows), which matters only with ten
+  tracked quests; with the minimap hidden a wide "Now playing" box grows
+  to the left of the minimap's box.
+- **The mailbox** (WORLD): a capital offset passed without `facedir` would
+  write param2 0 (none exists); the offline render banks of `tools/r36_p`
+  and `tools/r31_s` do not know the mailbox.
+- **Plants** (FARM): the badlands cactus's `NOT_RENEWED` reason in
+  `vegetation_density.lua` ("cannot grow on mesa clay") is stale, so its
+  renewal could now be enabled; the Large Cactus Seedling has no tooltip
+  line; papyrus and cactus may grow in village ground (only the terrain
+  guard's towns, capitals and landmarks refuse, as for saplings); a
+  player-built cactus stack now digs up as a whole, as papyrus does; held
+  Salt Crust Seeds become one Salt Crust each (the alias doubles their
+  negligible value).
+- **Prices** (SELL): the Salt Pan stays unsellable because its recipe's
+  Water Bucket has no value (a filled bucket could count as its empty
+  one); the meat blocks have no unpack recipe and stay crafted goods (4c,
+  one-way); the second pass settles in at most `MAX_PASSES = 100` lowering
+  passes, so a future slow loss cycle would stop settling quietly (the
+  CRAFT LOOP audit would then log at start); lot goods that are tools
+  (Wooden and Stone Hoe, Iron Shovel) merge regardless of wear, and
+  `remove_item` picks which one stays; some bag values look odd but follow
+  their recipes (Large Bag 136c against Great Cloth Bag 17c, the Leather Pack
+  8c against the Rucksack 3s20c); tree shape nodes (not held normally) get the log
+  value; the new set is larger than planned (306 against about 220).
+- **Bags and the step** (BAGS): if guarded stacks ever outnumbered the
+  target cells, the sort would leave them over and the step would mail
+  them (cannot happen today: `main[9..]` alone has 24 cells; the handler
+  could refuse instead); the letters reach mod storage before the player's
+  inventory is saved, so an engine crash in that window could duplicate
+  or lose items (engine-level, theoretical); the `bags.lua` header
+  "Recipes deliberately do not exist yet" is stale; at a migration join
+  each "Lost and Found" letter also raises MAIL's (self-replacing) "New
+  letter" notice and a recount.
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` or
+  `io.popen` in `tools/r35_f`, `tools/r44_ih`, `tools/r33_c1` and
+  `tools/r37_po`.
+
 ### Audit 2026-10 open questions
 
 **Open, for the user** (collected 2026-10-05 from the
@@ -2245,7 +2358,7 @@ blocks a fix; until a ruling the docs describe the code as it is (plan
 - **CORE-03** — switching off the atmosphere (a graphics fallback) also
   mutes the ambience beds: keep the beds then? ([core code](docs/audit-2026-10/code/06-core-hud-ambience.md))
 - **ITM-16 / fuels** — furnaces burn only coal, charcoal, Anthracite (Round
-  47) and logs, the
+  47), logs and, since Round 48, cactus (15 s) and leaves (2 s), the
   brewing stand the engine fuels (planks yes, charcoal no): intended? The
   brewing stand takes no fuel since Round 45 (no automatic brewing); the
   furnace half stays open.

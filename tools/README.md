@@ -1000,13 +1000,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   calls and vertices, and the client's memory, through `drive.py`;
   `report.py RUN_DIR...` prints the tables. One measuring run per boot,
   about 4 minutes.
-- **Round 48** (`r48_<lane>`): `r48_world` the mailbox on the waystone pads (`portable_test.lua`: the
-  node through the real `world_nodes.lua` on a fake engine, its right-click
-  with and without `grug_mail`; one mailbox on each of the twelve pads, off
-  the cross arms, not beside the stone, on the pad, front toward the stone;
-  none in any other composition or capital plot; each resolving through the
-  real socket registry to its settlement's label);
-  the mailbox art is pick A from `r48_artm/generate.py`; `capture.sh OUT_DIR` with
+- **Round 48** (`r48_<lane>`): `r48_world` the mailbox on the waystone
+  pads (`portable_test.lua`: the node through the real `world_nodes.lua` on
+  a fake engine, its right-click with and without `grug_mail`; one mailbox
+  on each of the twelve pads, off the cross arms, not beside the stone, on
+  the pad, front toward the stone; none in any other composition or capital
+  plot; each resolving through the real socket registry to its
+  settlement's label; the mailbox art is pick A from
+  `r48_artm/generate.py`); `capture.sh OUT_DIR` with
   `grug_probe_r48_world` the in-engine check of the twelve pads and one
   screenshot per pad;
   `r48_hud` the minimap's side elements (`portable_test.lua`: the daytime
@@ -1014,31 +1015,47 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   placement beside the bezel and in the corner over desktop and web windows
   at GUI scaling 1 and 2, the runtime with the minimap unavailable; the
   minimap-shown runtime is `r27_minimap` block H); `gen_hud_textures.py`
-  (`--check`) composes the 40 band and 10 mail images
-  from ARTM's picked `parts/` and the cooldown digits; `capture.sh OUT_DIR` with
+  (`--check`) composes the 40 band and 10 mail images from ARTM's picked
+  `parts/` and the cooldown digits; `capture.sh OUT_DIR` with
   `grug_probe_r48_hud` the engine screenshots (minimap shown and hidden,
   mail 0, 3 and 9+, day and night, with "Now playing"; `GUI=`, `SUFFIX=`;
   the r47_ml method), one queue run of one slot;
-  `r48_mail` mail (`portable_test.lua`: the
-  pure model `grug_mail/model.lua`, then the real `grug_mail` with the real
+  `r48_farm` plants, light, salt and fuel (`portable_test.lua`: the real
+  `grug_farming` with `default.plant_lit` on a fake engine: crops pausing
+  in the dark and resuming with their progress kept, also through the
+  engine's timer expiry order, the three light-exempt families, Melon and
+  Mushroom with seeds and spores, the 18 families and the Basic seed rows,
+  the Salt Pan (placement, filling, scrape, drops, the plain Water Bucket
+  it consumes), salt renewal, papyrus, cactus and saplings, the wild looks
+  and the art plan's file names, the tooltips; the fuels are in `r47_an`);
+  `grug_probe_farm` the engine probe (`PROBE=` of `luanti_headless.sh`:
+  noon light in a dark box, by a torch and under glass, the Salt Pan
+  recipe, tooltips and wild looks);
+  `r48_mail` mail (`portable_test.lua`: the pure model
+  `grug_mail/model.lua`, then the real `grug_mail` with the real
   `grug_money`, the give and fit helpers of `grug_inventory` and the guards
   `grug_skills/bound_items.lua` and `grug_housing/soulbound.lua` on a stub
   engine: postage and the attachment slots in one step, a changed slot
   refused with nothing lost, the guards, closing, item meta, Take all,
   refusals, `send_system` with stacks, tickets, reports, answers,
-  broadcasts, expiry and the window's tabs, dialogs and reach);
-  the admin badge and NPC seal come from `r48_artm/generate.py`;
-  `capture.sh OUT_DIR` with `grug_probe_r48_mail` the engine
-  screenshots of every tab and dialog of the mailbox window and Help → Mail
-  (a stand-in mailbox beside the human start's waystone; the TA method:
-  Xvfb and one real client; `GUI_SCALE`, `SUFFIX=`), one queue run of one
-  slot;
-  `r48_artm/generate.py` (`--check`) the original art proposals and the
-  user's final picks: mailbox A, envelope B, daytime band A, with the
-  derived admin shield and NPC seal; writes the HUD parts, calls HUD's
-  compositor for the finished images, and records all shipped paths,
-  dimensions and hashes in `r48_artm/drafts/manifest.json`;
-  `r48_artm/previews/final.png` the final sheet at native and integer scales;
+  broadcasts, expiry and the window's tabs, dialogs, reach and stale
+  clicks; the admin badge and NPC seal come from `r48_artm/generate.py`);
+  `capture.sh OUT_DIR` with `grug_probe_r48_mail` the engine screenshots of
+  every tab and dialog of the mailbox window and Help → Mail (a stand-in
+  mailbox beside the human start's waystone; the TA method: Xvfb and one
+  real client; `GUI_SCALE`, `SUFFIX=`), one queue run of one slot;
+  `r48_artp` GPT-6 Astra's plant art (`generate.py`, `--check`: three
+  drafts for each of nine plant items, the comparison sheets in
+  `previews/`, and a check that the 29 shipped files equal the user's
+  picks byte for byte; `drafts/manifest.json` the picks and hashes,
+  `README.md` the picks and provenance), provenance, not a fixture;
+  `r48_artm` GPT-6 Astra's mail and daytime art (`generate.py`, `--check`,
+  with `final_art.py`: the original proposals and the user's picks,
+  mailbox A, envelope B and daytime band A, with the derived admin shield
+  and NPC seal; it writes the HUD parts, calls HUD's compositor for the
+  finished images and records every shipped path, size and hash in
+  `drafts/manifest.json`; `previews/final.png` the final sheet at native
+  and integer scales), provenance, not a fixture;
   `r48_sell` the vendor's sell side (`portable_test.lua`: lot rows over the
   carried lists, All over several slots, the greyed row below the lot
   size, a moved stack refused without loss, the money ceiling before any
@@ -1048,10 +1065,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   with the real `grug_mail`, the real sfinv and `grug_inventory/ui.lua` on a
   stub engine: the privilege gates the tab and its place after Help, grant
   and revoke, the header with version and mailbox, a report's copy, Send
-  answer, Close, Delete, double clicks, admin letters, an announcement
-  stored once and read per player, a non-admin's submission refused);
-  `capture.sh OUT_DIR` with `grug_probe_r48_admin` the engine screenshots of
-  the tab (the r48_mail method; `GUI_SCALE`, `SUFFIX=`);
+  answer, Close, Delete, double and stale clicks, admin letters, an
+  announcement stored once and read per player, a non-admin's submission
+  refused); `capture.sh OUT_DIR` with `grug_probe_r48_admin` the engine
+  screenshots of the tab (the r48_mail method; `GUI_SCALE`, `SUFFIX=`);
   `r48_quest` the system quest and the game's letters (`portable_test.lua`:
   the real `grug_quests` registry, state, labels and hud, `grug_map`'s
   quest box and the real `grug_mail` with `grug_money` on the `r48_mail`
@@ -1059,13 +1076,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   grant at arrival and join once, the full log skipping it, the tracker and
   log text, the turn-in by opening a mailbox with XP, 25c, the turn-in hook
   and the completion line, the welcome letter once, the level letters with
-  their conditions, a jump 14 -> 21 and the filled placeholders);
-  `r48_bags` the bags at half size and the
-  migration step 0.48.0 (`portable_test.lua`: the eight bags' sizes and
-  descriptions, the sort without and with target sizes (order, merge,
-  leftovers from the end in the cells beyond the targets, soulbound and
-  bound stacks never left over, the hotbar untouched), the join part with a
-  `grug_mail.send_system` stand-in: four full 32-slot bags into 4 x 16 and
+  their conditions, a jump 14 → 21 and the filled placeholders);
+  `r48_bags` the bags at half size and the migration step 0.48.0
+  (`portable_test.lua`: the eight bags' sizes and descriptions, the sort
+  without and with target sizes (order, merge, leftovers from the end in
+  the cells beyond the targets, soulbound and bound stacks never left
+  over, the hotbar untouched), the join part with a
+  `grug_mail.send_system` stand-in: four full 32-slot bags into 4 × 16 and
   16 letters of four stacks, a second run changing nothing, a failing send
   that loses nothing and a rerun; stays in `run_fixtures.sh`); `run.sh
   [EVIDENCE_DIR]` runs `test_step.py` (the offline step: markers only) in

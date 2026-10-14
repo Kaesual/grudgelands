@@ -12,11 +12,107 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.48.0 — mail, plants and light, selling, smaller bags (in progress)
+## 0.48.0 — mail, plants and light, selling, smaller bags (2026-10-14)
 
-Round 48 is under way ([plan](docs/planning/round48-plan.md)); lane D writes
-this entry when the round closes. **Map reset** plus a migration step (bags
-shrink to half; what no longer fits arrives by mail).
+Mailboxes beside every waystone of the capitals and starting villages,
+letters with attachments between players and to the admin, plants that
+need light (and some that do not), Melon and Mushroom as crops, a salt
+pan, a vendor that buys almost everything, leaves and cactus as fuel, a
+daytime band beside the minimap and bags at half size. **Map reset**
+needed: the mailboxes are placed by world generation, so an existing
+world's map is generated anew from its seed. Characters keep their level,
+gear, inventory, money, quests, professions, mounts and waypoints; their
+position and home claim go with the old map. **Plus a migration step:**
+the bags shrink at each character's next join, and what no longer fits
+arrives by mail (the "Bags" point below).
+
+- **Mail and mailboxes:** every capital and every starting village has a
+  mailbox on its waystone's pad, two blocks east and one north of the
+  stone. It opens a window with Letters, Announcements, Write and To the
+  admin. Write to any character of your own faction, online or not, once
+  it has joined since the update: postage is 5c a letter plus 30c for
+  each attached stack, up to four stacks ("Send (65c)"; if you change
+  the attachments after the window was drawn, the first Send shows the
+  new postage and the second pays it). Soulbound items, skills and mount items cannot be sent. A mailbox
+  holds 50 player letters; every letter is deleted 30 days after it
+  arrived, its attachments too. Take all moves every attachment into your
+  bags or none. Reply quotes the letter; Report sends a player letter to
+  the admin. An envelope beside the minimap counts unread letters (1–9,
+  then 9+).
+- **The starter quest and letters:** every character gets the quest "Use
+  a mailbox in one of the cities" (30 XP and 25c) and a welcome letter;
+  existing characters get both at their first join. At level 15 the
+  Riding Trainer writes (only while you own no riding tier), at level 20
+  the Housing Steward (only if you never had a Claim Stone).
+- **Writing to the admin** is free: pick a topic (Feedback, Bug report,
+  Question, Player report, Other); the game version and the mailbox are
+  attached. Up to five open messages; each shows Open, Answered or Closed,
+  and an answer arrives as a letter from "Server Admin". The admin can
+  also send letters to one player or announcements to all.
+- **Plants and light:** a growing crop needs daylight or torchlight (light
+  8, measured as at noon, so outdoor fields still grow at night and a
+  torchlit field grows indoors); in the dark it pauses and keeps its
+  progress. Cave Cap, Mushroom and Ember Moss grow in the dark. Papyrus
+  grows on any soil or sand near water, cactus on sand or mesa clay, both
+  indoors by torchlight; digging a piece takes every piece above it, so
+  leaving the bottom piece keeps the plant. Saplings grow only in
+  daylight (a glass roof lets it through; torches do not help).
+- **New crops, spores and salt:** Melon and Mushroom are crops (Melon
+  Seeds, Mushroom Spores); the seeds of Cave Cap, Mushroom and Ember Moss
+  are called Spores. Salt Crust is no longer a crop: the **Salt Pan** (3
+  Embersteel Bars, a Water Bucket and a Salt Crust) placed near water
+  fills with Salt Crust, also in the dark; right-click scrapes it. Salt
+  Crust Seeds you still hold become Salt Crust. Rock Salt and Salt Crust
+  now regrow in the wild. A bucket of river water is a "River Water
+  Bucket" and goes into no recipe; a Water Bucket filled in 0.47 must be
+  poured and refilled once before the Salt Pan recipe takes it. Every
+  plant item has a line on how it grows or where it is found, and the
+  wild crops (Potato and Corn in the meadows, Melon in the jungle) look
+  like grown plants.
+- **Selling almost everything:** vendors buy potions, dishes, seeds,
+  tools, crafted bags, stations, blocks and building materials. Cheap goods
+  sell in lots: "Cobblestone x143 · 1c per 50 · All (2c)" sells 100 and
+  leaves 43; below one lot the row is greyed ("Need 50 to sell"). Stone,
+  sand, gravel, leaves and saplings sell at 1c per 50, logs and cactus at
+  1c per 20, planks at 1c per 99; the Mason's cobblestone, gravel and
+  bricks now sell in these lots too. Crafted goods pay half the value of
+  their materials, storage blocks nine times their item. **Everything that
+  sold in 0.47 sells for exactly the same price**; only the Small Bag's
+  buy-back follows its new price (1c). The Bag of Coins, the Fallen Crown,
+  the Captain's Orders, soulbound items, dirt and the like stay unsellable,
+  and so does the Salt Pan for now. All takes from your main inventory
+  and the hotbar before the bags.
+- **Fuel:** cactus burns 15 s in a furnace (about one and a half bars),
+  leaves 2 s (five per bar).
+- **The daytime band:** a small band left of the minimap shows where the
+  day stands, without numbers: the long day with the sun, the short night
+  with the moon, the coming phase entering from the right. With the
+  minimap hidden, the mail icon, the band and "Now playing" stand stacked
+  in the top-right corner, and the quest tracker keeps its place.
+- **Bags:** every bag holds half as much: 4, 8, 12 and 16 slots (were 8,
+  16, 24 and 32). The Small Bag costs 20c (was 80c). At each existing
+  character's first join after the update, the inventory and bags are
+  sorted once into the new sizes (the hotbar and equipped gear stay as
+  they are); what no longer fits arrives as "Lost and Found" letters of
+  four stacks each, with one line in the feed. Make room, then Take all.
+- **New art:** the mailbox, the envelope icon, the daytime band with sun
+  and moon, the admin shield and the NPC seal; Cassava, Wild Onion,
+  Pumpkin, Melon, Mushroom, Sunleaf, Gravemoss, Wild Cocoa and the Salt
+  Pan.
+- **This release needs a map reset and a migration step** (for the
+  server's host): stop the server, back the world up, empty the map, run
+  `python3 tools/migrate.py --world <world directory>` from the new
+  version's checkout, raise `grug_reset_world` and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#1-four-outcomes)).
+  The tool only marks each character; at its next join the game sorts its
+  bags into the new sizes and mails the rest. Mail lives in the world's
+  mod storage, not in the map, so letters survive this and later map
+  resets. The new privilege `mail_admin` opens the Admin Mail tab
+  (messages to the admin, answers, admin letters and announcements); the
+  server's admin has it, anyone else needs `/grant <name> mail_admin`. A
+  world on 0.45.1 (or 0.47.0) moves to 0.48.0 in one update, crossing
+  every map reset and step in between (0.46.0, 0.47.0 and 0.48.0).
 
 ## 0.47.0 — trees, mining progression and crafting feedback (2026-10-14)
 

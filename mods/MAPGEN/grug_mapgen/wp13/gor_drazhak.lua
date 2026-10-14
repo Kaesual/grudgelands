@@ -77,7 +77,7 @@ local function loader(directory)
 	local HALL = {w = 31, d = 27, rise = 7, base = 2, arcade = 5, dais = 9}
 
 	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
-	-- everything above its paving but the waystone. x1 is 11 and not 8, for
+	-- everything above its paving but the waystone and its mailbox. x1 is 11 and not 8, for
 	-- the reason Dur Brannoc records: the east colonnade's eaves oversail its
 	-- own footprint to x = 9, and a plaza that starts there has ten slabs
 	-- hanging over the square the pad is kept clear for.
@@ -403,9 +403,9 @@ local function loader(directory)
 			end
 		end
 
-		-- 3. The travel plaza: paving, two kerb rings and only the waystone
-		-- inside it. Travel needs room and sky, so the rest of its decoration
-		-- is drawn INTO the ground course.
+		-- 3. The travel plaza: paving, two kerb rings and only the waystone and
+		-- its mailbox inside it. Travel needs room and sky, so the rest of its
+		-- decoration is drawn INTO the ground course.
 		pave(AVENUE, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2, 6)
 		dressing.inlay(buf, orc, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2)
 		dressing.inlay(buf, orc, PLAZA.x1 + 4, PLAZA.z1 + 4,

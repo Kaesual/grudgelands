@@ -90,16 +90,17 @@ and its profession trainers.
 
 ## Current state
 
-**0.47.0** grows new trees from each world's seed, with thick trunks,
-limbs, twigs and roots, in the wild and in greener towns and capitals, and
-gives the swamp its own ground, pools, plants and stilted trees. Mining
-gains a ladder: the next layer's ore lies deeper, Iron needs a Bronze pick,
-and Anthracite replaces Coal deep down and makes Steel. Crafts land in your
-bags, Basic recipes appear once you have held their ingredients, NPCs no
-longer face walls, a first visit to a zone pays XP and the map window shows
-one marker layer at a time. 0.46.0 before it placed villages, camps, mines
-and the PvP strongholds anew on every world and answered player feedback
-on XP, caves, rage, loot, cooking and repairs.
+**0.48.0** puts a mailbox beside the waystone of every capital and
+starting village: write letters with attachments to your faction, read
+the welcome letter and write to the admin for free. Crops now need
+daylight or torchlight (mushrooms and cave plants grow in the dark),
+papyrus and cactus grow indoors, Melon and Mushroom join the crops and a
+Salt Pan collects salt. Vendors buy almost everything, cheap goods in
+lots, and what sold before still pays the same; leaves and cactus burn
+as fuel, a daytime band sits beside the minimap, and bags hold half as
+much (what no longer fits arrives by mail). 0.47.0 before it grew new
+trees from each world's seed, gave the swamp its own ground and added a
+mining ladder with Anthracite and Steel.
 
 Read the [changelog](CHANGELOG.md) for changes and upgrade requirements,
 and the [project status](docs/STATUS.md) for delivery and playtest progress.
@@ -262,7 +263,7 @@ investigations and delivery records.
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags and crafting stations; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
-| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [atlas](docs/design/world_map.md): maps, minimap and markers. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers. |
 | Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 

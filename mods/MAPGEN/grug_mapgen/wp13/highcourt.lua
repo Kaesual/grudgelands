@@ -340,8 +340,8 @@ local function loader(directory)
 
 	-- The waypoint plaza (WP17): a flat, open, kerbed square east of the
 	-- approach, with its lamps outside the open area and nothing inside it
-	-- but the waystone at the pad's centre. Travel needs room and sky: a
-	-- player arrives beside the stone.
+	-- but the waystone at the pad's centre and its mailbox. Travel needs room
+	-- and sky: a player arrives beside the stone.
 	local PLAZA = {x1 = 12, z1 = -32, x2 = 32, z2 = -12}
 
 	-- The city around the core -- its outline, streets, walls or planted
@@ -448,7 +448,8 @@ local function loader(directory)
 			end
 		end
 
-		-- 3. The waypoint plaza: paving, a kerb, and only the waystone in it.
+		-- 3. The waypoint plaza: paving, a kerb, and only the waystone and its
+		-- mailbox in it.
 		pave(AVENUE, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2, 6)
 		dressing.inlay(buf, human, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2)
 		dressing.inlay(buf, human, PLAZA.x1 + 4, PLAZA.z1 + 4,
