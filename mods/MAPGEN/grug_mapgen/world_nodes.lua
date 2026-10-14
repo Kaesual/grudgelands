@@ -75,17 +75,19 @@ return function(engine, directory, nodes, gathering)
  -- turned by facedir; like the waystone it can never be dug or blown up.
  -- What a right-click does is grug_mail's (it loads after grug_mapgen, so it
  -- is looked up here).
- -- Placeholder shape and textures until the art pick (lane ARTM).
+ -- Shape and textures are lane ARTM's pick A (Wayside chest).
  engine.register_node("grug_mapgen:mailbox", {
   description="Mailbox",
   drawtype="nodebox",
   tiles={"grug_mapgen_mailbox_top.png","grug_mapgen_mailbox_top.png",
    "grug_mapgen_mailbox_side.png","grug_mapgen_mailbox_side.png",
-   "grug_mapgen_mailbox_side.png","grug_mapgen_mailbox_front.png"},
+   "grug_mapgen_mailbox_back.png","grug_mapgen_mailbox_front.png"},
   paramtype="light",
   paramtype2="facedir",
-  node_box={type="fixed",fixed={{-0.0625,-0.5,-0.0625,0.0625,0,0.0625},
-   {-0.25,0,-0.3125,0.25,0.5,0.3125}}},
+  node_box={type="fixed",fixed={{-0.1875,-0.5,-0.1875,0.1875,-0.4375,0.1875},
+   {-0.125,-0.4375,-0.125,0.125,-0.0625,0.125},
+   {-0.4375,-0.0625,-0.25,0.4375,0.375,0.3125},
+   {-0.5,0.375,-0.3125,0.5,0.5,0.375}}},
   groups={not_in_creative_inventory=1},
   diggable=false,
   is_ground_content=false,

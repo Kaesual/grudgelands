@@ -1,165 +1,171 @@
-# Round 48 ARTM — Mail and daytime proposals
+# Round 48 ARTM — Picked mail and daytime art
 
-Step 1, **2026-10-14**, by **GPT-6 Astra**. Nine proposals await the user's
-three independent picks. All new artwork is original pixel art, dedicated
-to **CC0-1.0**. The coordinator builds the pick page from this directory.
+Step 2, **2026-10-14**, by **GPT-6 Astra**. The user picked **mailbox A
+(Wayside chest), icon B (Sealed envelope), band A (Brass channel)** with
+no change requests. All new artwork is original pixel art, dedicated to
+**CC0-1.0**. The original nine proposals remain for provenance.
+
+## Shipped files and adaptations
+
+Paths below are repository-relative. The complete per-file list, sizes,
+mode, source draft, generator and SHA-256 are in the `shipped` array of
+[drafts/manifest.json](drafts/manifest.json); its paths start at the
+repository root, while the historical `drafts` paths start here.
+
+### 1. Mailbox A — Wayside chest
+
+`mods/MAPGEN/grug_mapgen/textures/grug_mapgen_mailbox_` plus `top.png`,
+`side.png`, `front.png`, `back.png`: the four **16 × 16 RGBA** draft A
+files, copied **byte-identically**. `world_nodes.lua` uses the manifest's
+four A boxes (foot, post, wide box, flat lid), in node units, and tiles
+**top, top, side, side, back, front**. Only those fields and the placeholder
+comment changed. WORLD's obsolete placeholder generator was removed.
+
+Every box shares the six tiles with node-aligned UVs; the default front
+is negative Z. The preview renderer samples these UVs following
+`reference_projects/luanti/src/client/content_mapblock.cpp`,
+`generateCuboidTextureCoords` and `nodebox_tile_dirs` (read from the main
+checkout's pinned reference during step 1). It uses an orthographic camera
+at 24 pixels per node; each straight-view canvas is 38 × 38 pixels.
+Lighting is illustrative; perspective and distance filtering are not simulated.
+
+### 2. Icon B — Sealed envelope; band A — Brass channel
+
+**Mail HUD part:** `tools/r48_hud/parts/mail_icon.png`, **48 × 40 RGBA**.
+B redrawn at the larger allowed size with the same wide folded paper,
+small wax closure, colours, pale outer edge and dark inner contour.
+The larger envelope meets the final compositor's half-size cooldown
+digits; the 32 × 32 proposal would leave them detached. `badge: null`
+keeps the preview's digits without a pill. Ten finished **60 × 52 RGBA**
+images: `mods/PLAYER/grug_map/textures/grug_map_mail_1.png` through
+`_9.png`, plus `_9p.png`.
+
+**Band parts:** `tools/r48_hud/parts/{sun,moon,frame,marker}.png` and
+`palette.json`. Sun and moon are byte-identical **16 × 16 RGBA** A
+sprites. The frame is **160 × 40 RGBA**, with its three-pixel brass rim
+inside the image and a transparent **154 × 34** interior. The HUD
+compositor fills its entire 160 × 40 canvas, so the rim encloses that
+full height instead of the draft's 24-pixel viewport and transparent
+exterior. The original 10 × 40 marker is placed at (75, 0) on a
+transparent **160 × 40** overlay, putting its pointer tip at **x = 80**.
+Day `#bda778`, night `#273d50`, blend **8 px**; the contract's direct
+day/night interpolation replaces the draft's third twilight colour.
+The unused `badge_rim` is `#d8caa6`, the envelope's pale outer contour.
+Forty finished **160 × 40 RGBA** files:
+`mods/PLAYER/grug_map/textures/grug_map_daytime_00.png` through `_39.png`.
+HUD's compositor and cooldown glyphs are unchanged.
+
+### 3. Mail window — Admin shield and NPC wax seal
+
+`mods/PLAYER/grug_mail/textures/grug_mail_admin_badge.png` and
+`grug_mail_npc_seal.png`, both **32 × 32 RGBA**. Original derived marks:
+a brass shield with a pale check and a wax seal with a folded envelope
+impression. Both use B's pale/dark contours, paper/wax colours and A's
+brass. Painted by `generate.py` through `final_art.py`. MAIL's obsolete
+placeholder generator was removed; no mail Lua comment named it.
+
+### 4. Records and final sheet
+
+This README, the manifest and the media ledgers here and in `grug_mapgen`,
+`grug_map`, `grug_mail` record the picks and shipped files. The tools index
+records the final generators. One row per PNG and palette appears in the
+local [LICENSE-media.md](LICENSE-media.md), including the generated parts;
+each mod's ledger records every final PNG in that mod.
+
+[previews/final.png](previews/final.png), **1200 × 1376 RGBA**, shows:
+
+- mailbox front and side nodebox studies at **4×**, the four texture
+  swatches and existing waystone side/top textures at **4×**;
+- actual HUD compositions **1, 3, 9+** at **1× and 2×**, on light sand
+  and dark forest ground;
+- actual bands **15 (noon), 30 (dusk), 35 (midnight)** at **1× and 3×**;
+- shield and seal at **1× and 2×** on the window dialog's dark grey
+  `#24272c`, plus **1×** samples on its list `#0d0e10` and admin banner
+  `#3a3018` backgrounds (`grug_mail/window.lua`).
+
+All enlargement uses nearest-neighbour pixels. The final sheet calls the
+real HUD compositor; it does not approximate its symbols, phase positions
+or digits. The mailbox views are offline nodebox renders, not screenshots.
+
+## Original proposal catalogue (step 1)
 
 | Thing | A | B | C |
 | --- | --- | --- | --- |
-| Mailbox | **Wayside chest:** a broad oak box, flat metal lid and pale envelope plaque. | **Letter pillar:** an upright iron cassette, brass slot and envelope plate. | **Sheltered post:** a wooden box beneath a stepped copper roof. |
-| Mail icon | **Open letter:** a written page above an unfolded envelope. | **Sealed envelope:** a wide folded envelope with a small wax closure. | **Ribbon seal:** a scalloped seal bearing an envelope impression over two paper tails. |
-| Daytime band | **Brass channel:** an eight-ray sun, crescent and single downward pointer. | **Carved timber:** a diamond sun, half moon and opposing pointers in a notched frame. | **Slate rails:** a round sun, cut moon and fine vertical marker beneath a bead. |
+| Mailbox | **Wayside chest:** broad oak box, flat metal lid, pale envelope plaque. | **Letter pillar:** upright iron cassette, brass slot, envelope plate. | **Sheltered post:** wooden box beneath a stepped copper roof. |
+| Mail icon | **Open letter:** written page above an unfolded envelope. | **Sealed envelope:** wide folded envelope with a small wax closure. | **Ribbon seal:** scalloped seal with envelope impression and two paper tails. |
+| Daytime band | **Brass channel:** eight-ray sun, crescent, single downward pointer. | **Carved timber:** diamond sun, half moon, opposing pointers, notched frame. | **Slate rails:** round sun, cut moon, fine vertical marker beneath a bead. |
 
 The mailbox designs share a pale letter symbol, warm wood and subdued metal
-to fit both The Accord and The Throng and their starting villages. Their
-body proportions and lid silhouettes differ. Each HUD icon has a dark
-outline and a pale outer edge for contrast on light and dark ground.
+to fit both The Accord and The Throng. The manifest preserves all draft
+geometry, files and composition rules. No original draft pixels changed.
 
-## Review images
+The original sheets are [mailbox.png](previews/mailbox.png) (1200 × 748),
+[icon.png](previews/icon.png) (1200 × 840), and
+[band.png](previews/band.png) (1200 × 1664). Read native samples at 100%.
+Their band frame is 168 × 40, viewport `(4, 8, 160, 24)`, marker 10 × 40
+at (79, 0), now axis x=84; each icon is 32 × 32 with a reserved lower-right
+badge rectangle. These are historical proposal dimensions, superseded
+only in the shipped adaptations above.
 
-Open the PNGs at **100%** to judge the native HUD samples. Every enlargement
-uses nearest-neighbour scaling; there is no antialiasing.
-
-- [Mailbox comparison](previews/mailbox.png), **1200 × 748**: all three
-  nodeboxes rendered isometrically on original stone paving, followed by
-  front and side views, all at **4×**. The four face textures and the
-  existing waystone side/top textures are also shown at 4×. Native node
-  renders use an orthographic camera at 24 pixels per node; the isometric
-  canvas is 84 × 58 and each straight view is 38 × 38. These are offline
-  material studies, not engine screenshots.
-- [Icon comparison](previews/icon.png), **1200 × 840**: each **32 × 32**
-  icon without a badge, with **3**, and with **9+**, at **1× and 2×** on
-  four original ground swatches: light grass, sand, forest and night.
-- [Band comparison](previews/band.png), **1200 × 1664**: every style at
-  **noon, dusk and midnight**, each at **1× and 3×**. Sun and moon swatches
-  on the right are 4×. The cyclic strip correctly splits the opposite
-  phase's symbol across its two outer edges at noon and midnight.
-
-## Files and handoff
-
-[drafts/manifest.json](drafts/manifest.json) is the machine-readable index:
-thing, draft, title, idea, file paths, dimensions, mode, geometry and
-reference hashes. Paths inside the manifest are relative to this directory.
-
-### Mailbox nodeboxes
-
-Each `drafts/mailbox/<A|B|C>/` contains four **16 × 16 RGBA** files:
-
-- `grug_mapgen_mailbox_top.png`
-- `grug_mapgen_mailbox_side.png`
-- `grug_mapgen_mailbox_front.png`
-- `grug_mapgen_mailbox_back.png`
-
-The manifest gives every box as
-`[xmin, ymin, zmin, xmax, ymax, zmax]` in **node units**. Positive Y is up;
-the default front is **negative Z**. All three candidates fit within one
-node, from Y = −0.5 to +0.5, with a narrow post and a wider upper box.
-A and B each use four boxes; C uses seven for its stepped roof.
-
-Use the normal six-face order **top, top, side, side, back, front**.
-Every box shares those same six tiles: lower texture rows draw the post,
-upper rows draw the box and roof. There is no per-part material or mesh
-requirement. The back has no letter emblem. Rotation is the WORLD lane's
-placement concern.
-
-The preview renderer samples **node-aligned UVs**, rather than stretching a
-whole tile over each smaller box. This follows
-`reference_projects/luanti/src/client/content_mapblock.cpp`,
-`generateCuboidTextureCoords` and `nodebox_tile_dirs` (read from the main
-checkout's pinned reference). Face shading is illustrative; engine lighting,
-perspective and distance filtering are not simulated.
-
-### Mail HUD icon
-
-Each `drafts/icon/<A|B|C>/grug_map_mail.png` is **32 × 32 RGBA**. Its
-lower-right rectangle **x = 18…31, y = 22…31** is transparent for the
-badge. The examples put **3** at (24, 22), or **9** at (18, 22) and **+**
-at (24, 22). These placements fit within the 32 × 32 image.
-
-The preview reads the shipped cooldown digit PNGs from
-`mods/PLAYER/grug_abilities/textures/` and reduces their four-pixel cells
-to one pixel, giving **7 × 9** outlined glyphs. No numeral is redrawn.
-This branch does not yet contain the HUD lane's final `+` glyph: the
-preview-only plus reuses the existing digit 4's crossbar pixels horizontally
-and vertically, with their original white and black. **No plus asset is
-delivered or added to the cooldown generator.** The HUD lane owns the final
-plus and badge image composition.
-
-### Daytime band
-
-Each `drafts/band/<A|B|C>/` contains:
-
-| File | Size / purpose |
-| --- | --- |
-| `sun.png` | 16 × 16 RGBA, transparent sprite |
-| `moon.png` | 16 × 16 RGBA, transparent sprite |
-| `frame.png` | 168 × 40 RGBA, **exact-size overlay**, not a 9-slice |
-| `marker.png` | 10 × 40 RGBA, fixed overlay |
-| `palette.json` | Day, night and optional transition colour; full composition geometry |
-
-The visible cycle is exactly **160 pixels** wide: **120 day + 40 night**.
-The frame adds four pixels outside either end, making the complete HUD
-image **168 × 40**. The content viewport is `(4, 8, 160, 24)` in
-`(x, y, width, height)` notation; the symbols are placed at Y = 12.
-The sun's cycle centre is 60; the moon's is 140. The marker's origin is
-(79, 0), with the fixed now axis at X = 84.
-
-Composition order is strip, symbols clipped to the viewport, frame, marker.
-For each viewport X, sample `(X + now_phase - 80) modulo 160`.
-Increasing `now_phase` moves the strip right to left. The preview phases
-are 60 (noon), 120 (dusk/day-to-night boundary), and 140 (midnight).
-The HUD lane supplies its existing time-to-phase function and 40 finished
-images; this proposal generator does not implement runtime timekeeping.
-
-A blends across an 8-pixel interval around each boundary, C across 12
-pixels; B has a hard boundary. Blend colours are overlays within the
-existing phases, not extra phases or extra width. Exact interpolation is
-recorded in `palette.json`. The parts contain no numbers or text.
+Step 1 preceded HUD's final `+` glyph: its preview-only plus reuses digit
+4's crossbar pixels. Its badges reduce existing cooldown glyphs to 7 × 9
+cells. The final sheet instead uses HUD's actual half-size glyphs and `+`.
+The draft preview phases (60, 120, 140) are exact cycle centres; final
+images 15, 30, 35 use HUD's existing half-step offsets (62, 122, 142).
 
 ## Regeneration and verification
 
-Python **3 standard library only**; no installed image library is needed:
+Python **3 standard library only**:
 
 ```sh
 python3 tools/r48_artm/generate.py
+python3 tools/r48_hud/gen_hud_textures.py
 python3 tools/r48_artm/generate.py --check
+python3 tools/r48_hud/gen_hud_textures.py --check
 ```
 
-The generator writes only inside this directory. `--check` rebuilds the
-expected output in memory and compares every generated file byte for byte.
-It decodes **every PNG**, checks CRCs, dimensions, 8-bit RGBA mode and pixels,
-rejects unexpected PNGs, and checks binary alpha, zero transparent RGB and
-the icon badge reserve. The result is **30 PNGs**: 12 mailbox face textures,
-3 icons, 12 band parts and 3 preview sheets. The other generated files are
-three palettes, the manifest and the media ledger.
+`generate.py` and its `final_art.py` helper write the original proposals,
+the final sheet, the picked HUD parts and the named final PNGs under
+`mods/`; HUD composition uses `tools/r48_hud/gen_hud_textures.py` itself.
+The explicit HUD invocation above is also the standalone recomposition
+path. Do not use its `--placeholders` option: it overwrites picked parts.
 
-All preview reference images are existing **CC0** project artwork. The
-manifest records their exact SHA-256 values and
-[LICENSE-media.md](LICENSE-media.md) records every image and palette.
-All new textures, icons, symbols, frames, backgrounds and caption lettering
-are drawn directly by the committed generator. No media was downloaded.
+`--check` rebuilds expected output in memory and compares every generated
+file byte for byte. It decodes **every PNG**, checks CRCs, dimensions,
+8-bit RGBA mode and pixels, rejects unexpected PNGs here, and checks binary
+alpha, zero transparent RGB and the original icon badge reserves.
+The result is **92 PNGs**: the original 30, four shipped mailbox textures,
+five HUD parts, 50 composed HUD images, two window marks and the final
+sheet. Four palettes, the manifest and the local ledger bring the generated
+total to **98 files**. The mod ledgers are maintained as documentation.
 
-Delivery verification (2026-10-14): generation and `--check` **PASS**;
-an independent decode with installed Pillow confirmed all 30 PNG modes and
-dimensions against the manifest and all 30 image ledger rows. All three
-comparison sheets were visually inspected. Pillow is only an independent
-inspection tool here, not a generator dependency.
+All source images are original or existing project **CC0** artwork.
+Reference hashes are recorded in the manifest. No media, fonts or other
+material was downloaded. Captions and ground swatches are original. Pillow
+is used only for independent inspection, not as a generator dependency.
+
+Delivery checks (2026-10-14): both generators' `--check` **PASS**;
+independent Pillow decode of all **92 PNGs** confirms manifest sizes,
+RGBA and binary alpha. Hashes and every final media-ledger row match;
+the four mailbox copies, sun and moon are byte-identical to their drafts.
+The Lua delta is limited to the specified mailbox fields and comment,
+with its boxes and tile order checked against the manifest.
+`bash tools/check_lua.sh mods/MAPGEN/grug_mapgen/world_nodes.lua` **PASS**
+(plain-5.1 parser and all six sweeps); `luajit tools/web_data/export.lua .
+--check` **PASS** (web data unchanged); documentation links and
+`git diff --check` **PASS**. The final sheet was visually inspected.
+No fixtures were run, as required by this art brief.
 
 ## Scope and remaining validation
 
-Upgrade classification: **compatible**, proposal files only. The mailbox
-placement change belongs to WORLD and its round-level map reset.
+Upgrade classification: **compatible**, art and the existing mailbox
+node's in-bounds shape only; no stored-state format, node ID or placement
+changes. WORLD owns the placement and its round-level map reset.
 
-The cited plan facts are confirmed at this branch's base: the waystone
-textures are 16 × 16, cooldown digits are in `mods/PLAYER/grug_abilities/`
-(not `mods/ITEMS/`), and the band uses the 120:40 cycle. Round 48 §2.1
-overrides the earlier mail plan's hidden-minimap placement rule. The open
-root TODOs do not block this art work. The HTML mail wireframe was read as
-non-binding context.
-
-No `mods/` files, Lua, fixtures, runtime code, sounds or external worktree
-files are changed. No agents, engine, push or merge are used. This step's
-review is the user's art pick; the admin shield, NPC seal and final asset
-installation belong to the separate step 2 brief. Ten-node mailbox
-recognition and actual desktop/web HUD readability remain GUI checks for
-the user after integration; the offline previews do not establish those.
+The brief's file facts are confirmed: WORLD registers the named node;
+HUD composes the fixed names from parts; MAIL uses the two 32 × 32 marks.
+The open root TODOs do not block this art work. No fixtures, gameplay logic
+or sounds are changed. No agents, engine, push or merge are used. The review
+basis is the user's art pick; the coordinator checks the adaptation at
+integration. Ten-node mailbox recognition and actual desktop/web HUD
+readability remain GUI checks for the user.
