@@ -141,7 +141,7 @@ function grug_mail.send_letter(player, to_name, subject, body, quoted)
 	for index = 1, M.STACKS do
 		local stack = ItemStack(expected[index] or "")
 		if not current[index]:equals(stack) then
-			return false, "The attachments changed. Check the postage and press Send again."
+			return false, "The attachments changed: check the new postage, then Send."
 		end
 		changes[index] = {list = ATTACH, index = index, expected = stack,
 			replacement = ItemStack("")}
