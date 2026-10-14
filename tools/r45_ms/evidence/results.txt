@@ -9,12 +9,12 @@ PASS  names  0.44.0: no alias names a gear item, a mixture or a bag
 PASS  setup  saved: every placed stack as built (71 stacks)
 PASS  setup  saved: smith is a level-10 warrior wearing an Iron Chestplate a fresh copy of which 0.44.0 also allows (10 / 10)
 PASS  setup  saved: the grids hold 9 (smith), 3 (scribe) and 1 (sleeper) stacks, craftresult a sword (scribe) and torches (smith); seen-items meta on smith and sleeper
-PASS  guard  boot R (0.45.0): the 0.44.0 world without the tool is refused, naming the step and the command line
+PASS  guard  boot R (0.48.0): the 0.44.0 world without the tool is refused, naming the step and the command line
 PASS  guard  the refused start wrote nothing
-PASS  tool   --check: world 0.44.0, due 0.45.0, write access on all three backends, nothing written
+PASS  tool   --check: world 0.44.0, due 0.45.0, 0.47.0, 0.48.0, write access on all three backends, nothing written
 PASS  tool   migrate: the events start, step_start/step_done per due step, done; exit 0
 PASS  tool   step 0.45.0 wrote three inventories, two seen-items deletions and three markers, nothing else
-PASS  tool   the record is 0.45.0
+PASS  tool   the record is 0.48.0
 PASS  step   scribe: every slot of every list as the step must leave it (mixtures gone, craft moved, unmodified gear pinned, everything else unchanged)
 PASS  step   sleeper: every slot of every list as the step must leave it (mixtures gone, craft moved, unmodified gear pinned, everything else unchanged)
 PASS  step   smith: every slot of every list as the step must leave it (mixtures gone, craft moved, unmodified gear pinned, everything else unchanged)
@@ -38,12 +38,12 @@ PASS  pg     platform: plain T2 gear pinned at 10 / 10 (smith's equipped Iron Ch
 PASS  pg     platform: no mixture left in any list
 PASS  pg     platform: grug_jobs:seen_items deleted, the marker on all three
 PASS  pg     the PostgreSQL run finished
-PASS  tool   --check after: world 0.45.0, nothing due
-PASS  boot   boot A (0.45.0): starts from 0.45.0 with nothing due; smith and scribe joined and left; the record is 0.45.0
-PASS  names  0.45.0: every gear item of the step now has another definition value (the pin keeps each)
-PASS  names  0.45.0: the bag sizes are unchanged (the join sizes bag lists by them)
-PASS  names  0.45.0: the items under grug_alchemy:mixture_ (and the mixture group) are ST's 40 mixtures
-PASS  names  0.45.0: no alias names a gear item, a mixture or a bag
+PASS  tool   --check after: world 0.48.0, nothing due
+PASS  boot   boot A (0.48.0): starts from 0.48.0 with nothing due; smith and scribe joined and left; the record is 0.48.0
+PASS  names  0.48.0: every gear item of the step now has another definition value (the pin keeps each)
+PASS  names  0.48.0: the step's bags, at half their sizes since 0.48.0 (the join sizes bag lists by them)
+PASS  names  0.48.0: the items under grug_alchemy:mixture_ (and the mixture group) are ST's 40 mixtures
+PASS  names  0.48.0: no alias names a gear item, a mixture or a bag
 PASS  boot   smith's join: the engine loaded the migrated inventory (the grid with its stored size) and the marker
 PASS  boot   scribe's join: the engine loaded the migrated inventory (the grid with its stored size) and the marker
 PASS  boot   after the join: no mixture, the craft grid gone (size 0), the marker cleared, for smith and scribe

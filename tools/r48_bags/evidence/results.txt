@@ -1,0 +1,27 @@
+PASS  setup  the 0.47.0 commit 6a8afb9f exported (its game and launcher)
+PASS  setup  boot S (0.47.0): a new world, hoarder, light and sleeper joined, were built and left
+PASS  setup  0.47.0 saved hoarder with four 32-slot bags and 152 stacks in main[9..] and the bags
+PASS  guard  boot R (0.48.0): the 0.47.0 world without the tool is refused, naming the step 0.48.0 and the command line
+PASS  guard  the refused start wrote nothing
+PASS  tool   --check: world 0.47.0, due [0.48.0], nothing written
+PASS  tool   migrate: start, step_start, step_done, done; exit 0
+PASS  tool   step 0.48.0 wrote three markers and nothing else
+PASS  step   every character carries the marker; inventories and the other meta unchanged; the record is 0.48.0
+PASS  step   nothing else changed: the three meta rows and the record
+PASS  tool   --check after: world 0.48.0, nothing due
+PASS  boot   boot A (0.48.0): starts from 0.48.0; hoarder and light joined with the marker and left
+PASS  boot   as loaded (before the runner): four 32-slot content lists
+PASS  boot   after the join: the marker cleared, four 16-slot content lists
+PASS  boot   after the join: main[9..] and the four bags full (88 stacks)
+PASS  boot   after the join: the hotbar untouched
+PASS  boot   after the join: the Claim Stone in main[9..]
+PASS  boot   after the join: one feed line naming 16 letters
+PASS  boot   after the join: 16 unread letters
+PASS  boot   light (no bags): the marker cleared, the inventory unchanged, no letter
+PASS  mail   16 npc letters from Lost and Found, "Your bags got smaller", the coordinator's text, 15 of four stacks and one of three
+PASS  mail   nothing lost or duplicated: the inventory before equals the inventory after plus the letters (count, wear and meta)
+PASS  mail   no letter for light
+PASS  boot   saved after boot A: hoarder's and light's markers gone; sleeper (offline) keeps its marker and its 8-slot bag of 8 stacks
+PASS  again  boot B: hoarder joins again: the inventory as boot A left it (meta compared as a table), no feed line, still 16 letters
+
+25 checks, 0 failed

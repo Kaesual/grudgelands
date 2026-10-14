@@ -47,7 +47,7 @@
 @@ -73 +67 @@
 -'item' | 'smith' | '5:0' | 'grug_gear:chest_metal_iron 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron...(359)
 +'item' | 'smith' | '5:0' | 'grug_gear:chest_metal_iron 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Iron...(414)
-@@ -75,3 +69,4 @@
+@@ -75,3 +69,6 @@
 -'item' | 'smith' | '7:0' | 'grug_gear:feet_metal_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bro...(339)
 -'item' | 'smith' | '8:0' | 'grug_gear:sword_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze S...(459)
 -'item' | 'smith' | '9:0' | 'grug_gear:shield_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze ...(294)
@@ -55,13 +55,19 @@
 +'item' | 'smith' | '8:0' | 'grug_gear:sword_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze S...(512)
 +'item' | 'smith' | '9:0' | 'grug_gear:shield_bronze 1 0 "\\u0001description\\u0002\\u001b(c@#FFFFFF)Bronze ...(347)
 +'meta' | 'scribe' | 'grug_core:migrate:0.45.0' | '1'
-@@ -80 +75 @@
++'meta' | 'scribe' | 'grug_core:migrate:0.47.0' | '1'
++'meta' | 'scribe' | 'grug_core:migrate:0.48.0' | '1'
+@@ -80 +77,3 @@
 -'meta' | 'sleeper' | 'grug_jobs:seen_items' | 'return {"default:apple"}'
 +'meta' | 'sleeper' | 'grug_core:migrate:0.45.0' | '1'
-@@ -85,0 +81 @@
++'meta' | 'sleeper' | 'grug_core:migrate:0.47.0' | '1'
++'meta' | 'sleeper' | 'grug_core:migrate:0.48.0' | '1'
+@@ -85,0 +85,3 @@
 +'meta' | 'smith' | 'grug_core:migrate:0.45.0' | '1'
-@@ -88 +83,0 @@
++'meta' | 'smith' | 'grug_core:migrate:0.47.0' | '1'
++'meta' | 'smith' | 'grug_core:migrate:0.48.0' | '1'
+@@ -88 +89,0 @@
 -'meta' | 'smith' | 'grug_jobs:seen_items' | 'return {"default:dirt"}'
-@@ -97 +92 @@
+@@ -97 +98 @@
 -'storage' | 'grug_core' | 'world_version' | '0.44.0'
-+'storage' | 'grug_core' | 'world_version' | '0.45.0'
++'storage' | 'grug_core' | 'world_version' | '0.48.0'

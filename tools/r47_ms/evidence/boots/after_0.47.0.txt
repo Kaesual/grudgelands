@@ -1,9 +1,9 @@
 launcher: staged patch: patch_version.diff
-seconds: 48, exit 0
+seconds: 52, exit 0
 joins: ['miner logged in (protocol 52), stayed 4.0 s']
 --- log lines
 ACTION[Main]: [grug_core] world version 0.47.0, game 0.47.0: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:36874.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32943.
 ACTION[Server]: miner [127.0.0.1] joins game. List of players: miner
 ACTION[Server]: [r47_ms_probe] joined miner
 ACTION[Server]: [grug_core] migration 0.47.0: miner's online work is done

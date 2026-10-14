@@ -118,6 +118,19 @@ def identity(item):
     return (stack.name, stack.wear, json.dumps(stack.meta, sort_keys=True)), stack.count
 
 
+def normal(lists):
+    """Every list's stacks as (name, count, wear, meta): the game's join
+    rebuilds gear tooltips, which may store the same meta in another order."""
+    out = {}
+    for name, stacks in (lists or {}).items():
+        out[name] = []
+        for item in stacks:
+            stack = codec.ItemStack.parse(item) if item else None
+            out[name].append(stack and (stack.name, stack.count, stack.wear,
+                                        json.dumps(stack.meta, sort_keys=True)))
+    return out
+
+
 def census(items):
     total = Counter()
     for item in items:
@@ -303,9 +316,9 @@ def scenario(run):
     b = it.boot(run, w, "again_%s" % NEW_VERSION, joins=("hoarder",))
     obs = b.obs or {}
     again = ((obs.get("joins") or [{}])[0]).get("settled") or {}
-    check("again", "boot B: hoarder joins again: the inventory as boot A left it, no feed "
-                   "line, still 16 letters",
-          b.rc == 0 and again.get("lists") == lists and not again.get("feed")
+    check("again", "boot B: hoarder joins again: the inventory as boot A left it (meta "
+                   "compared as a table), no feed line, still 16 letters",
+          b.rc == 0 and normal(again.get("lists")) == normal(lists) and not again.get("feed")
           and len(letters_of(w, "hoarder")) == 16, "rc %d" % b.rc)
 
 

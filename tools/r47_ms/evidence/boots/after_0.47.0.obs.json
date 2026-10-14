@@ -162,21 +162,6 @@
       "stored": true,
       "wear": 0
      },
-     "grug_craft_out[1]": {
-      "as_crafted_now": true,
-      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"cracky\":{\"maxlevel\":1,\"times\":[null,2.25,0.89999997615814209,0.44999998807907104],\"uses\":100},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,60.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":2,\"times\":[null,3.2999999523162842,2.0999999046325684,0.69999998807907104],\"uses\":34},\"grug_pick_level\":{\"maxlevel\":1,\"times\":[null,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104],\"uses\":100},\"grug_resource\":{\"maxlevel\":1,\"times\":[null,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104],\"uses\":100}},\"max_drop_level\":1,\"punch_attack_uses\":0}",
-      "definition": true,
-      "dig": {
-       "iron_ore": 0.44999998807907104,
-       "stone": 0.44999998807907104,
-       "t2_stone": false
-      },
-      "item": "grug_materials:pick_bronze",
-      "kept": false,
-      "maxlevel": 1,
-      "stored": true,
-      "wear": 0
-     },
      "main[10]": {
       "as_crafted_now": true,
       "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"choppy\":{\"maxlevel\":2,\"times\":[null,2.5,1.3999999761581421,1.0],\"uses\":112}},\"max_drop_level\":1,\"punch_attack_uses\":0}",
@@ -279,6 +264,21 @@
       "item": "grug_materials:pick_wood",
       "kept": false,
       "maxlevel": 0,
+      "stored": true,
+      "wear": 0
+     },
+     "main[9]": {
+      "as_crafted_now": true,
+      "caps_text": "{\"damage_groups\":{\"fleshy\":0},\"full_punch_interval\":1.0,\"groupcaps\":{\"cracky\":{\"maxlevel\":1,\"times\":[null,2.25,0.89999997615814209,0.44999998807907104],\"uses\":100},\"grug_claim_stone\":{\"maxlevel\":0,\"times\":[null,60.0],\"uses\":0},\"grug_loose\":{\"maxlevel\":2,\"times\":[null,3.2999999523162842,2.0999999046325684,0.69999998807907104],\"uses\":34},\"grug_pick_level\":{\"maxlevel\":1,\"times\":[null,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104],\"uses\":100},\"grug_resource\":{\"maxlevel\":1,\"times\":[null,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104,0.44999998807907104],\"uses\":100}},\"max_drop_level\":1,\"punch_attack_uses\":0}",
+      "definition": true,
+      "dig": {
+       "iron_ore": 0.44999998807907104,
+       "stone": 0.44999998807907104,
+       "t2_stone": false
+      },
+      "item": "grug_materials:pick_bronze",
+      "kept": false,
+      "maxlevel": 1,
       "stored": true,
       "wear": 0
      }

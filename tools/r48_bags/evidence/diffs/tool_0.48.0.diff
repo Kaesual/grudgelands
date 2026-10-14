@@ -1,0 +1,11 @@
+--- before
++++ after
+@@ -176,0 +177 @@
++'meta' | 'hoarder' | 'grug_core:migrate:0.48.0' | '1'
+@@ -179,0 +181 @@
++'meta' | 'light' | 'grug_core:migrate:0.48.0' | '1'
+@@ -182,0 +185 @@
++'meta' | 'sleeper' | 'grug_core:migrate:0.48.0' | '1'
+@@ -190 +193 @@
+-'storage' | 'grug_core' | 'world_version' | '0.47.0'
++'storage' | 'grug_core' | 'world_version' | '0.48.0'

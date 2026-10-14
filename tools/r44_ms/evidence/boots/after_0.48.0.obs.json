@@ -195,12 +195,8 @@
      ]
     },
     "grug_bag1_content": {
-     "size": 8,
+     "size": 4,
      "stacks": [
-      "",
-      "",
-      "default:apple 3",
-      "",
       "",
       "",
       "",
@@ -270,6 +266,15 @@
       ""
      ]
     },
+    "grug_mail_out": {
+     "size": 4,
+     "stacks": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
     "grug_offhand": {
      "size": 1,
      "stacks": [
@@ -330,11 +335,9 @@
       "",
       "",
       "grug_abilities:taunt 1 0 \"\\u0001wield_image\\u0002grug_gear_item_sword_bronze.png\\u0003grug_skin\\u00024|grug_gear_item_sword_bronze.png\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|1\\u0003description\\u0002Taunt (Warrior)\\nfree, 8 s cooldown\\nForces the target mob to attack you.\\u0003\"",
-      "default:torch 3",
-      "",
-      "",
-      "default:torch 20",
+      "default:apple 5",
       "grug_materials:pick_steel 1 1234 \"\\u0001description\\u0002\\u001b(c@#FFFFFF)\\u001b(T@default)Steel Pickaxe\\u001bE\\u001b(c@#fff)\\nRequires level 15\\nUsable by: All classes\\nDurability: 982 / 1000\\u0003grug_quality\\u00021\\u0003grug_base_name\\u0002\\u001b(T@default)Steel Pickaxe\\u001bE\\u0003\"",
+      "default:torch 23",
       "",
       "",
       "",
@@ -353,7 +356,9 @@
       "",
       "",
       "",
-      "default:apple 2"
+      "",
+      "",
+      ""
      ]
     }
    }
@@ -593,6 +598,15 @@
       ""
      ]
     },
+    "grug_mail_out": {
+     "size": 4,
+     "stacks": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
     "grug_offhand": {
      "size": 1,
      "stacks": [
@@ -684,15 +698,17 @@
  ],
  "leaves": 2,
  "load": {
-  "from": "0.45.0",
-  "game": "0.45.0",
+  "from": "0.48.0",
+  "game": "0.48.0",
   "new_world": false,
   "steps": [
    "0.44.0",
-   "0.45.0"
+   "0.45.0",
+   "0.47.0",
+   "0.48.0"
   ]
  },
- "phase": "after_0.45.0",
+ "phase": "after_0.48.0",
  "registrations": {
   "aliases": null,
   "groups": {
