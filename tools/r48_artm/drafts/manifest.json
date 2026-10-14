@@ -1,0 +1,705 @@
+{
+  "schema": 1,
+  "stage": "Round 48 ARTM step 1; proposals awaiting user picks",
+  "author": "GPT-6 Astra",
+  "date": "2026-10-14",
+  "license": "CC0-1.0",
+  "upgrade_class": "compatible",
+  "generator": "generate.py",
+  "drafts": [
+    {
+      "thing": "mailbox",
+      "draft": "A",
+      "title": "Wayside chest",
+      "idea": "A broad oak box with a flat metal lid and a bright envelope plaque.",
+      "files": [
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_top.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_side.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_front.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/A/grug_mapgen_mailbox_back.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "boxes": [
+        {
+          "part": "foot",
+          "bounds": [
+            -0.1875,
+            -0.5,
+            -0.1875,
+            0.1875,
+            -0.4375,
+            0.1875
+          ]
+        },
+        {
+          "part": "post",
+          "bounds": [
+            -0.125,
+            -0.4375,
+            -0.125,
+            0.125,
+            -0.0625,
+            0.125
+          ]
+        },
+        {
+          "part": "wide_box",
+          "bounds": [
+            -0.4375,
+            -0.0625,
+            -0.25,
+            0.4375,
+            0.375,
+            0.3125
+          ]
+        },
+        {
+          "part": "flat_lid",
+          "bounds": [
+            -0.5,
+            0.375,
+            -0.3125,
+            0.5,
+            0.5,
+            0.375
+          ]
+        }
+      ],
+      "box_units": "node units; xmin,ymin,zmin,xmax,ymax,zmax; +Y up; front -Z",
+      "tile_order": [
+        "top",
+        "top",
+        "side",
+        "side",
+        "back",
+        "front"
+      ],
+      "uv": "node-aligned, 16 px per node; shared face tiles for every box, no per-box stretching"
+    },
+    {
+      "thing": "mailbox",
+      "draft": "B",
+      "title": "Letter pillar",
+      "idea": "A narrow upright iron cassette with a brass mail slot and envelope plate.",
+      "files": [
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_top.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_side.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_front.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/B/grug_mapgen_mailbox_back.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "boxes": [
+        {
+          "part": "foot",
+          "bounds": [
+            -0.1875,
+            -0.5,
+            -0.1875,
+            0.1875,
+            -0.4375,
+            0.1875
+          ]
+        },
+        {
+          "part": "post",
+          "bounds": [
+            -0.0625,
+            -0.4375,
+            -0.0625,
+            0.0625,
+            -0.1875,
+            0.0625
+          ]
+        },
+        {
+          "part": "tall_box",
+          "bounds": [
+            -0.3125,
+            -0.1875,
+            -0.25,
+            0.3125,
+            0.4375,
+            0.25
+          ]
+        },
+        {
+          "part": "cap",
+          "bounds": [
+            -0.375,
+            0.4375,
+            -0.3125,
+            0.375,
+            0.5,
+            0.3125
+          ]
+        }
+      ],
+      "box_units": "node units; xmin,ymin,zmin,xmax,ymax,zmax; +Y up; front -Z",
+      "tile_order": [
+        "top",
+        "top",
+        "side",
+        "side",
+        "back",
+        "front"
+      ],
+      "uv": "node-aligned, 16 px per node; shared face tiles for every box, no per-box stretching"
+    },
+    {
+      "thing": "mailbox",
+      "draft": "C",
+      "title": "Sheltered post",
+      "idea": "A squat wooden letter box under a stepped copper roof on a stout post.",
+      "files": [
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_top.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_side.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_front.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/mailbox/C/grug_mapgen_mailbox_back.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "boxes": [
+        {
+          "part": "foot",
+          "bounds": [
+            -0.1875,
+            -0.5,
+            -0.1875,
+            0.1875,
+            -0.4375,
+            0.1875
+          ]
+        },
+        {
+          "part": "post",
+          "bounds": [
+            -0.125,
+            -0.4375,
+            -0.125,
+            0.125,
+            -0.125,
+            0.125
+          ]
+        },
+        {
+          "part": "box",
+          "bounds": [
+            -0.375,
+            -0.125,
+            -0.25,
+            0.375,
+            0.25,
+            0.25
+          ]
+        },
+        {
+          "part": "eave",
+          "bounds": [
+            -0.5,
+            0.25,
+            -0.375,
+            0.5,
+            0.3125,
+            0.375
+          ]
+        },
+        {
+          "part": "roof_lower",
+          "bounds": [
+            -0.375,
+            0.3125,
+            -0.3125,
+            0.375,
+            0.375,
+            0.3125
+          ]
+        },
+        {
+          "part": "roof_upper",
+          "bounds": [
+            -0.25,
+            0.375,
+            -0.25,
+            0.25,
+            0.4375,
+            0.25
+          ]
+        },
+        {
+          "part": "ridge",
+          "bounds": [
+            -0.125,
+            0.4375,
+            -0.1875,
+            0.125,
+            0.5,
+            0.1875
+          ]
+        }
+      ],
+      "box_units": "node units; xmin,ymin,zmin,xmax,ymax,zmax; +Y up; front -Z",
+      "tile_order": [
+        "top",
+        "top",
+        "side",
+        "side",
+        "back",
+        "front"
+      ],
+      "uv": "node-aligned, 16 px per node; shared face tiles for every box, no per-box stretching"
+    },
+    {
+      "thing": "icon",
+      "draft": "A",
+      "title": "Open letter",
+      "idea": "An open folded letter exposes a pale written page above its envelope.",
+      "files": [
+        {
+          "path": "drafts/icon/A/grug_map_mail.png",
+          "size": [
+            32,
+            32
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "badge_reserved_rect": [
+        18,
+        22,
+        14,
+        10
+      ],
+      "badge_example_origins": {
+        "3": [
+          24,
+          22
+        ],
+        "9+": [
+          18,
+          22
+        ]
+      }
+    },
+    {
+      "thing": "icon",
+      "draft": "B",
+      "title": "Sealed envelope",
+      "idea": "A broad closed envelope has a crisp dark flap and a small wax closure.",
+      "files": [
+        {
+          "path": "drafts/icon/B/grug_map_mail.png",
+          "size": [
+            32,
+            32
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "badge_reserved_rect": [
+        18,
+        22,
+        14,
+        10
+      ],
+      "badge_example_origins": {
+        "3": [
+          24,
+          22
+        ],
+        "9+": [
+          18,
+          22
+        ]
+      }
+    },
+    {
+      "thing": "icon",
+      "draft": "C",
+      "title": "Ribbon seal",
+      "idea": "A scalloped wax seal with a tiny envelope impression hangs over two paper tails.",
+      "files": [
+        {
+          "path": "drafts/icon/C/grug_map_mail.png",
+          "size": [
+            32,
+            32
+          ],
+          "mode": "RGBA"
+        }
+      ],
+      "badge_reserved_rect": [
+        18,
+        22,
+        14,
+        10
+      ],
+      "badge_example_origins": {
+        "3": [
+          24,
+          22
+        ],
+        "9+": [
+          18,
+          22
+        ]
+      }
+    },
+    {
+      "thing": "band",
+      "draft": "A",
+      "title": "Brass channel",
+      "idea": "A fine brass rectangle carries an eight-ray sun, crescent and single pointer.",
+      "files": [
+        {
+          "path": "drafts/band/A/sun.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/moon.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/frame.png",
+          "size": [
+            168,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/marker.png",
+          "size": [
+            10,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/A/palette.json",
+          "type": "application/json"
+        }
+      ],
+      "geometry": {
+        "day": "#bda778",
+        "night": "#273d50",
+        "dawn_dusk": "#b88563",
+        "blend_width_px": 8,
+        "cycle_px": 160,
+        "day_px": 120,
+        "night_px": 40,
+        "sun_phase_px": 60,
+        "moon_phase_px": 140,
+        "frame_size": [
+          168,
+          40
+        ],
+        "viewport": [
+          4,
+          8,
+          160,
+          24
+        ],
+        "frame_mode": "exact-size overlay",
+        "marker_origin": [
+          79,
+          0
+        ],
+        "now_x": 84,
+        "symbol_y": 12,
+        "blend_rule": "Linear blend toward dawn_dusk within blend_width_px/2 on each side of phase 0 and 120; 0 disables blending.",
+        "scroll_rule": "phase=(viewport_x + now_phase - 80) modulo 160; increasing now_phase moves symbols left"
+      }
+    },
+    {
+      "thing": "band",
+      "draft": "B",
+      "title": "Carved timber",
+      "idea": "Notched timber holds a diamond sun and half moon between opposing pointers.",
+      "files": [
+        {
+          "path": "drafts/band/B/sun.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/moon.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/frame.png",
+          "size": [
+            168,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/marker.png",
+          "size": [
+            10,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/B/palette.json",
+          "type": "application/json"
+        }
+      ],
+      "geometry": {
+        "day": "#a7b894",
+        "night": "#314843",
+        "dawn_dusk": "#bbaa79",
+        "blend_width_px": 0,
+        "cycle_px": 160,
+        "day_px": 120,
+        "night_px": 40,
+        "sun_phase_px": 60,
+        "moon_phase_px": 140,
+        "frame_size": [
+          168,
+          40
+        ],
+        "viewport": [
+          4,
+          8,
+          160,
+          24
+        ],
+        "frame_mode": "exact-size overlay",
+        "marker_origin": [
+          79,
+          0
+        ],
+        "now_x": 84,
+        "symbol_y": 12,
+        "blend_rule": "Linear blend toward dawn_dusk within blend_width_px/2 on each side of phase 0 and 120; 0 disables blending.",
+        "scroll_rule": "phase=(viewport_x + now_phase - 80) modulo 160; increasing now_phase moves symbols left"
+      }
+    },
+    {
+      "thing": "band",
+      "draft": "C",
+      "title": "Slate rails",
+      "idea": "Open slate rails bracket a round sun and cut moon under a small bead and hairline.",
+      "files": [
+        {
+          "path": "drafts/band/C/sun.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/moon.png",
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/frame.png",
+          "size": [
+            168,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/marker.png",
+          "size": [
+            10,
+            40
+          ],
+          "mode": "RGBA"
+        },
+        {
+          "path": "drafts/band/C/palette.json",
+          "type": "application/json"
+        }
+      ],
+      "geometry": {
+        "day": "#8eabb5",
+        "night": "#283149",
+        "dawn_dusk": "#b28f89",
+        "blend_width_px": 12,
+        "cycle_px": 160,
+        "day_px": 120,
+        "night_px": 40,
+        "sun_phase_px": 60,
+        "moon_phase_px": 140,
+        "frame_size": [
+          168,
+          40
+        ],
+        "viewport": [
+          4,
+          8,
+          160,
+          24
+        ],
+        "frame_mode": "exact-size overlay",
+        "marker_origin": [
+          79,
+          0
+        ],
+        "now_x": 84,
+        "symbol_y": 12,
+        "blend_rule": "Linear blend toward dawn_dusk within blend_width_px/2 on each side of phase 0 and 120; 0 disables blending.",
+        "scroll_rule": "phase=(viewport_x + now_phase - 80) modulo 160; increasing now_phase moves symbols left"
+      }
+    }
+  ],
+  "previews": [
+    {
+      "path": "previews/mailbox.png",
+      "size": [
+        1200,
+        748
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "previews/icon.png",
+      "size": [
+        1200,
+        840
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "previews/band.png",
+      "size": [
+        1200,
+        1664
+      ],
+      "mode": "RGBA"
+    }
+  ],
+  "preview_references": [
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_waystone.png",
+      "sha256": "df2ca91de1cf64d664d378257e9b32e414c60d712b7e966efcdbb1d26a7a298c",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_waystone_top.png",
+      "sha256": "3c89201ff5575967ca883b4e36eae4a699f7e86a87c86c539fb9f9b30a1bd66e",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_3.png",
+      "sha256": "0a62fa4274ca1ce111ff1ddd953f974b82f6fec9fe8763d4c5e87f95121ac0da",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_4.png",
+      "sha256": "7d165b22eae44c5e7ee1812370cbcbc50101c9b338db9650852ac5caf2284fa4",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_cd_digit_9.png",
+      "sha256": "8ff0ca5e1f2ca2aeeeb476d4588d2f1da44003e45f42d24d5435bd17f1e1bda4",
+      "license": "CC0-1.0"
+    }
+  ],
+  "preview_plus": "Cross assembled from existing digit 4 strokes, preview only; HUD owns the final + glyph.",
+  "runtime_validation": "No engine run. Ten-node mailbox recognition and desktop/web HUD readability await the user's GUI check."
+}
