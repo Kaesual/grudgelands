@@ -28,6 +28,9 @@ if has_ffi then
 	end
 end
 local players, windows = {}, {}
+-- Simulated seconds since 04:30 at the day phase's clock speed (60): the
+-- daytime band beside the minimap (Round 48) changes once per 30 s.
+local clock = 0
 local traffic = {packets = 0, bytes = 0}
 local function new_player(name, pos)
 	local meta, huds, next_id = {}, {}, 0
@@ -79,6 +82,7 @@ rawset(_G, "core", {
 	end,
 	get_player_by_name = function(name) return players[name] end,
 	get_player_window_information = function(name) return windows[name] end,
+	get_timeofday = function() return 0.1875 + clock * 60 / 86400 end,
 	formspec_escape = function(text) return text end,
 	registered_entities = {},
 })
@@ -94,7 +98,8 @@ for gx = -2400, 2400, 250 do
 			pos = {x = gx + (i * 37) % 90, y = 30, z = gz + (i * 53) % 90}}
 	end
 end
-rawset(_G, "grug_core", {settlement_socket_settlements = function()
+rawset(_G, "grug_core", {DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125,
+	settlement_socket_settlements = function()
 		return {{key = "town", race_id = "human", anchor = {x = 0, z = -1500}}}
 	end,
 	settlement_sockets_at = function() return sockets end,
@@ -122,7 +127,8 @@ end, register_on_change = function() end})
 rawset(_G, "grug_home", {get = function() return nil end, locations = function()
 	return {{id = "inn", label = "Inn", pos = {x = -80, y = 20, z = -1450}}}
 end, known_waypoints = function() return {} end, claim_waypoint = function() return nil end})
-rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
+rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}},
+	trainer_teaches = function() return true end}) -- Round 45 (lane ST)
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 -- The location line under the minimap (Round 28 M1) reads this every step.
 rawset(_G, "grug_map", {atlas = dofile(tree .. "/mods/PLAYER/grug_map/atlas.lua"),
@@ -151,7 +157,7 @@ local rows = {}
 for _, speed in ipairs({{"walk", 4}, {"sprint", 6}, {"ride", 8}, {"fly", 12}}) do
 	for _, p in ipairs({me, p1, p2}) do p.pos.x, p.pos.z = p.pos.x - 200, p.pos.z end
 	-- settle at the start, then measure
-	for _ = 1, 40 do for i = 1, #steps do steps[i](DT) end end
+	for _ = 1, 40 do clock = clock + DT; for i = 1, #steps do steps[i](DT) end end
 	traffic.packets, traffic.bytes = 0, 0
 	local spent, count = 0, math.floor(SECONDS / DT)
 	for _ = 1, count do
@@ -159,6 +165,7 @@ for _, speed in ipairs({{"walk", 4}, {"sprint", 6}, {"ride", 8}, {"fly", 12}}) d
 			p.pos.x = p.pos.x + speed[2] * DT * 0.8
 			p.pos.z = p.pos.z + speed[2] * DT * 0.6
 		end
+		clock = clock + DT
 		local t0 = now_us()
 		for i = 1, #steps do steps[i](DT) end
 		spent = spent + (now_us() - t0)
