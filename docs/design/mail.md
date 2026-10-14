@@ -170,13 +170,38 @@ letters (lane QUEST). Seams and storage: the
 
 ## 8. System letters
 
-- The game itself sends admin-kind and NPC letters: the welcome letter, the
-  Riding Trainer's letter at level 15 and the Housing Steward's at level 20,
-  with the starter quest "Use a mailbox in one of the cities" that opening any
-  mailbox completes (lane QUEST, Round 48), and the "Lost and Found" letters
-  of the 0.48.0 bag migration, which carry the items that no longer fit the
-  smaller bags as attachments ([inventory](inventory_equipment.md)). Only
-  that migration sends items in a system letter.
+- The game itself sends admin-kind and NPC letters: the welcome letter and
+  the two level letters below (lane QUEST, Round 48), and the "Lost and
+  Found" letters of the 0.48.0 bag migration, which carry the items that no
+  longer fit the smaller bags as attachments
+  ([inventory](inventory_equipment.md)). Only that migration sends items in
+  a system letter.
+- Each of the three letters goes to a character **once**, and only to a
+  created character (a player still creating one gets nothing yet). The
+  texts are the user's picks (2026-10-14); the player's name and the
+  capital of the player's race are filled in when the letter is sent, so no
+  text names a fixed place.
+  - The **welcome letter** ("Welcome to Grudgelands"), an admin letter, at
+    the character's arrival, or at the first join after 0.48.0 for a
+    character created before. It says that feedback and bug reports are very
+    welcome and that writing to the admin is free.
+  - The **Riding Trainer's letter** at level **15**, only while the
+    character owns no riding tier (a boat is not one).
+  - The **Housing Steward's letter** at level **20**, only while the
+    character never had a Claim Stone.
+  A jump over both levels (14 → 21) sends both. A character that is past
+  the level when 0.48.0 arrives gets the letter at its next join, but only
+  while it is still useful; a letter that is no longer useful is never sent
+  later.
+- **The starter quest** "Use a mailbox in one of the cities" (a system
+  quest, [quests](quests.md) "System quests"): every character gets it once,
+  at its arrival or at its next join; with a full quest log (20 quests) it
+  is skipped for good, and an abandoned one does not come back. The tracker
+  and the quest log read "Open a mailbox beside the waystone of a capital or
+  a starting village". Opening any mailbox completes it before the window
+  opens: 30 XP and 25c (the first letters' postage), and its completion line
+  in the message feed. A full purse refuses the turn-in with the reason in
+  the feed and keeps the quest.
 
 ## 9. Help
 

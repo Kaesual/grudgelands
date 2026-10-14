@@ -32,11 +32,14 @@ end
 -- travel quest reads "Travel to <NPC>" throughout (Round 28 ruling 39);
 -- several objectives share one compact line, "Wood Axe 0/1, Wood Pickaxe
 -- 0/1" (ruling 41); a repeatable starts with "Repeatable: " (ruling 42).
+-- A system quest (no NPC, no objectives; Round 48) reads its turn-in text.
 -- Two quests with the same objective may read the same (accepted).
 function grug_quests.hud_line(quest, width)
 	local text
 	local npc = grug_quests.registered_npcs[quest.npc]
-	if quest.travel then
+	if quest.turnin_text then
+		text = quest.turnin_text
+	elseif quest.travel then
 		text = "Travel to " .. (npc and npc.title or tostring(quest.npc))
 	elseif quest.ready then
 		text = "Return to " .. (npc and npc.title or tostring(quest.npc))

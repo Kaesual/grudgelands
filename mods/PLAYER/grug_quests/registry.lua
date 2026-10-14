@@ -29,6 +29,11 @@ grug_quests.USE_HOLD_MIN, grug_quests.USE_HOLD_MAX = 1, 15
 -- settlement key or a recipe quest place "zone/id", use.lua), the `object`
 -- kind shown there, the `label` of the act and its `hold` in seconds, and
 -- counts once.
+-- A system quest (Round 48, mail plan §3.18) is registered by code with
+-- `system = true`: no NPC, no objectives, no quest drops, no repeat. Its own
+-- mod accepts it through Q.accept and turns it in through Q.turn_in (the one
+-- completion path); `turnin_text` is what the quest log and the tracker show
+-- instead of "Return to <NPC>".
 function grug_quests.register_quest(id, def)
 	assert(type(id) == "string" and not quests[id], "Duplicate quest")
 	assert(type(def.title) == "string" and type(def.description) == "string")
@@ -47,7 +52,15 @@ function grug_quests.register_quest(id, def)
 	assert(integer(def.min_level) and def.min_level >= 1 and integer(def.level) and def.level >= 1)
 	assert(integer(def.rewards.copper))
 	assert(not def.repeatable or (integer(def.repeatable.cooldown) and def.repeatable.cooldown > 0))
-	assert(type(def.objectives) == "table" and #def.objectives > 0)
+	if def.system then
+		assert(def.npc == nil and def.turnin_npc == nil and #(def.objectives or {}) == 0 and
+			#def.quest_drops == 0 and not def.repeatable and
+			type(def.turnin_text) == "string" and def.turnin_text ~= "",
+			"A system quest has no NPC, objectives, quest drops or repeat and names its turn-in text")
+		def.objectives = {}
+	else
+		assert(type(def.objectives) == "table" and #def.objectives > 0)
+	end
 	for _, objective in ipairs(def.objectives) do
 		assert(integer(objective.count) and objective.count > 0)
 		assert(objective.type == "item" or objective.type == "kill" or objective.type == "talk" or
@@ -153,11 +166,14 @@ function grug_quests.validate_registry()
 	end
 	for id, def in pairs(quests) do
 		visit(id)
-		assert(npcs[def.npc] and npcs[def.turnin_npc], "Unknown quest NPC: " .. id)
-		-- A quest never sends a player to an NPC that will not serve them (a
-		-- conversation's NPC is the turn-in NPC, register_quest).
-		assert(npcs[def.turnin_npc].faction == npcs[def.npc].faction,
-			"Quest turn-in NPC of another faction: " .. id)
+		-- A system quest has no NPC (register_quest).
+		if not def.system then
+			assert(npcs[def.npc] and npcs[def.turnin_npc], "Unknown quest NPC: " .. id)
+			-- A quest never sends a player to an NPC that will not serve them
+			-- (a conversation's NPC is the turn-in NPC, register_quest).
+			assert(npcs[def.turnin_npc].faction == npcs[def.npc].faction,
+				"Quest turn-in NPC of another faction: " .. id)
+		end
 		for _, objective in ipairs(def.objectives) do
 			if objective.type == "item" then
 				assert(not objective.item or core.registered_items[objective.item], "Unknown quest item: " .. id)

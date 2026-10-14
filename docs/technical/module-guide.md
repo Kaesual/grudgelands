@@ -1508,6 +1508,17 @@ tools](#player-meta-read-by-external-tools).
   catalog requires only V1 overworld content; the Nether is reserved for the
   first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
+  Since Round 48 a **system quest** (`register_quest` with `system = true`
+  and a `turnin_text`; no NPC, objectives, quest drops or repeat,
+  [quests.md](../design/quests.md) "System quests") is registered by its
+  own mod: `validate_registry` skips its NPC checks, no NPC lists or marks
+  it, the journal row carries `turnin_text`, which `hud_line` shows instead
+  of "Return to <NPC>" and `grug_map/quest_box.lua` writes into the text
+  field (the status label stays empty). Its mod accepts it with `Q.accept`
+  (`Q.log_full` asks the `Q.MAX_ACTIVE` = 20 limit first) and turns it in
+  with `Q.turn_in`, the one completion path. The only one is grug_mail's
+  `mailbox_visit` (below, "Mail"); the Python quest tools read only the zone
+  files (fixture `tools/r48_quest`).
 
 ## Parties
 
@@ -1531,11 +1542,12 @@ tools](#player-meta-read-by-external-tools).
   `grug_mail`; `model.lua` is the pure model (no engine calls; letters,
   tickets, broadcasts, limits, expiry, pages, postage, unread count, report
   rules; fixture `tools/r48_mail`), `store.lua` the storage, `api.lua` the
-  API below, `window.lua` the mailbox window, `admin.lua` the Admin Mail tab
-  (below). Depends on `grug_core`,
-  `grug_money`, `grug_inventory`, `grug_factions`, `grug_classes`, `grug_xp`,
-  `grug_map` and `sfinv`, so it loads after `grug_map` (and with it after
-  `grug_quests`, `grug_home` and `grug_mounts`).
+  API below, `window.lua` the mailbox window, `admin.lua` the Admin Mail
+  tab; `texts.lua`, `letters.lua` and `quest.lua` the game's own letters and the starter quest (below).
+  Depends on `grug_core`, `grug_money`, `grug_inventory`, `grug_factions`,
+  `grug_classes`, `grug_xp`, `grug_map`, `grug_quests`, `grug_mounts`,
+  `grug_housing` and `sfinv`, so it loads after all of them (and with
+  `grug_map` after `grug_home`).
 - **Storage:** offline player meta cannot be written (`ObjectRef:get_meta`
   needs a live object, `l_object.cpp` `l_get_meta`), so mail lives in the
   mod's storage, `core.serialize`, each key read and written whole:
@@ -1606,6 +1618,27 @@ tools](#player-meta-read-by-external-tools).
   in `main` and the bags); the fixture runs both. The Write tab rings
   `grug_mail_out` → the shift-click inbox → `main`, and each bag into the
   slots.
+- **The starter quest and the game's letters** (lane QUEST,
+  [mail.md](../design/mail.md) §8): `texts.lua` holds the user's picked
+  texts (copied, never reworded); `letters.lua` sends them through
+  `send_system`, `{player}` and `{capital}` (the `display_name` of the
+  settlement in the `capital` slot of the player's race,
+  `grug_core.settlement_socket_settlements`) filled at send time: the
+  welcome letter (`send_welcome`) at `grug_classes.register_on_arrival` and
+  at every join, the level letters (`send_level_letters`, `LEVEL_LETTERS`)
+  from `grug_xp.register_on_level_change` (once per jump and at every join
+  with `old_level = nil`), the riding letter while
+  `grug_mounts.owned_tier_ids` holds none of `RIDING_TIERS`, the steward's
+  while `grug_housing.player_claim(name)` is "never". `quest.lua` registers
+  the system quest `mailbox_visit` (`STARTER_QUEST`), grants it at arrival
+  and join (`grant_starter_quest`) and turns it in from its own
+  `register_on_mailbox_open` callback, posting the completion line to the
+  feed (key `quest:mailbox_visit`). All of them act only for a created
+  character (`character_ready`: class and faction). One player-meta flag
+  each, set once done or no longer useful (the quest's also when the log
+  was full): `grug_mail:quest_granted`, `grug_mail:welcome_sent`,
+  `grug_mail:letter_riding`, `grug_mail:letter_housing`. Fixture
+  `tools/r48_quest`.
 - **The window** (`grug_mail:mailbox_<serial>`, formspec v6 at the inventory
   window's size, the short inventory view on Write): every event re-checks
   the mailbox node at the opening position and a living player within 6

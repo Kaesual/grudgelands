@@ -12,3 +12,7 @@ grug_mail.store = dofile(path .. "/store.lua")
 dofile(path .. "/api.lua")
 dofile(path .. "/window.lua")
 dofile(path .. "/admin.lua")
+-- The starter quest and the game's own letters (lane QUEST).
+grug_mail.texts = dofile(path .. "/texts.lua")
+dofile(path .. "/letters.lua")
+dofile(path .. "/quest.lua")
