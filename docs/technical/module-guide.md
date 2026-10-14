@@ -1803,8 +1803,10 @@ tools](#player-meta-read-by-external-tools).
   **Side elements** (Round 48): the mail icon, the daytime band and the
   "Now playing" box are `state.side`, apart from the minimap's own
   `state.hud`: created at the first step, never removed while the player
-  is online, placed by `minimap_view.lua` `side_layout(box, frame)` (beside
-  the bezel with a frame, in the box's top-right corner without one) again
+  is online, placed by `minimap_view.lua` `side_layout(box, frame)` (one row,
+  band then mail icon, equally high as the client draws them: left of the
+  bezel and top-aligned with a frame, right-aligned in the box's top-right
+  corner without one, "Now playing" below it) again
   whenever the window box or the mode changes. The globalstep reads the
   window box for both every 0.5 s and runs the side part also without a
   view (minimap unavailable) and with the minimap hidden; the band is
@@ -1816,9 +1818,9 @@ tools](#player-meta-read-by-external-tools).
   `mail_counts`, so a call before grug_map's join callback still counts) and
   `set_now_playing(name, track)`. The images are finished files from
   `tools/r48_hud/gen_hud_textures.py` (`--check`; its parts in
-  `tools/r48_hud/parts/`, the badge digits from `tools/r40_cd`). Fixtures
-  `tools/r48_hud` (position, badge, placement over windows, the unavailable
-  runtime) and `tools/r27_minimap` block H (beside the bezel, hide and
+  `tools/r48_hud/parts/`, the count's digits from `tools/r40_cd`). Fixtures
+  `tools/r48_hud` (position, badge, the row's geometry over windows, the
+  unavailable runtime) and `tools/r27_minimap` block H (beside the bezel, hide and
   show).
   Zone and town names (Round 28 M1): `location.lua` samples each player's
   location every second, writes the line under the minimap and the entry

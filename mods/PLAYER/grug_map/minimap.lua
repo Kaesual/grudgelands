@@ -12,10 +12,11 @@
 -- that line names the track (0.45.1; grug_ambience tells it which).
 --
 -- Side elements (Round 48 lane HUD): the mail icon with its unread count
--- (grug_mail calls M.set_mail_count) and the daytime band stand left of the
--- bezel. With the minimap hidden or unavailable they stay, together with
--- "Now playing", in the top-right corner inside the minimap's box (ruling
--- 2.1 of the round plan). They are separate from the minimap's own
+-- (grug_mail calls M.set_mail_count) and the daytime band stand in one row
+-- left of the bezel, top-aligned with it (follow-up lane HUD2). With the
+-- minimap hidden or unavailable the row stays right-aligned in the top-right
+-- corner of the minimap's box, with "Now playing" below it (ruling 2.1 of
+-- the round plan). They are separate from the minimap's own
 -- elements: created at the first step, never removed while the player is
 -- online, placed again when the window or the mode changes (geometry:
 -- minimap_view.lua side_layout). The band is checked on the SLOW tick and
@@ -204,7 +205,8 @@ end
 
 -- The scale that draws a `texture_px` texture exactly `px` screen pixels
 -- wide: the client truncates texture_px x scale x HUD factor, so a quarter
--- pixel more keeps the whole pixel.
+-- pixel more keeps the whole pixel (minimap_view.lua side_layout counts
+-- on it for the drawn heights).
 local function exact(px, texture_px, frame)
 	return (px + 0.25) / (texture_px * frame.hud)
 end
@@ -365,7 +367,7 @@ end
 
 -- The "Now playing" box for `state.playing` (a track row of grug_ambience's
 -- data: title and artist; nil hides it): under the location line with the
--- minimap shown, below the band in the corner otherwise. Called only when
+-- minimap shown, below the side row in the corner otherwise. Called only when
 -- the track or the side layout changed; like show(), only what changed is
 -- sent.
 local function draw_playing(player, state)

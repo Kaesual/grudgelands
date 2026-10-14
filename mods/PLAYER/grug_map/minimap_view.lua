@@ -224,46 +224,67 @@ end
 -- "Minimap"): the mail icon and the daytime band. Both are finished images
 -- (tools/r48_hud/gen_hud_textures.py): the band BAND_W x BAND_H texture px,
 -- one 20-minute cycle with the "now" marker in the middle; the mail icon
--- MAIL_W x MAIL_H with its digit badge. Their drawn sizes follow the
--- minimap's box (25 % of the window height), as the bezel does: the band
--- `band` of the box wide (about half the bezel's diameter, which fills
--- 0.79-0.99 of the box), the mail icon `mail` of the box high. `gap` HUD px
--- separate them from the bezel and from each other.
-V.SIDE = {band_w = 160, band_h = 40, mail_w = 60, mail_h = 52, band = 0.45, mail = 0.19,
-	gap = 4}
+-- MAIL_W x MAIL_H, the envelope with the count beside it. Their drawn sizes
+-- follow the minimap's box (25 % of the window height), as the bezel does:
+-- the band `band` of the box wide (Round 48 HUD2: 75 % of lane HUD's 0.45;
+-- 92 x 23 px at 1080p, 60 x 15 at 720p), the mail icon exactly as high as
+-- the band (the user's ruling of 2026-10-14; 57 x 23 at 1080p). `row_gap` HUD px separate the band from the mail
+-- icon, `gap` the mail icon from the bezel and the row from "Now playing".
+V.SIDE = {band_w = 160, band_h = 40, mail_w = 69, mail_h = 28, band = 0.3375,
+	gap = 4, row_gap = 8}
+
+-- The height the client draws a `tw` x `th` texture at that minimap.lua's
+-- exact() scales to `w` px wide: the client truncates th x scale x HUD
+-- factor (hud.cpp), and exact() adds a quarter pixel to the width.
+local function drawn_height(w, tw, th)
+	return math.floor(th * (w + 0.25) / tw)
+end
+
+-- The narrowest width at which that texture is drawn `h` px high: the
+-- fifth of a pixel keeps the height off the truncation edge.
+local function width_for(h, tw, th)
+	return math.ceil(h * tw / th - 0.2)
+end
 
 -- Where the side elements go in the minimap `box`
--- (grug_core.hud_layout.minimap_box). With the minimap shown (`frame`, the
--- bezel's V.frame) the mail icon stands left of the bezel, top-aligned with
--- it, and the band left of the bezel, bottom-aligned (sell plan §3.6.5).
--- With the minimap hidden or unavailable (frame nil) they stand in the
--- box's top-right corner, the mail icon above the band, and "Now playing"
--- goes below the band (playing_right, playing_top; Round 48 ruling 2.1);
--- the mail icon's place stays reserved while it is hidden, so nothing
--- jumps when a letter arrives. Returns {mail = {x, y, w, h}, band = {...}}
--- in real screen pixels, plus playing_right and playing_top when hidden.
+-- (grug_core.hud_layout.minimap_box): one row, band left, mail icon right,
+-- both the same height and vertically centred on the row (Round 48 HUD2,
+-- the user's variant A). With the minimap shown (`frame`, the bezel's
+-- V.frame) the row stands left of the bezel, its top on the bezel's top.
+-- With the minimap hidden or unavailable (frame nil) it stands right-aligned
+-- in the box's top-right corner, and "Now playing" goes below it
+-- (playing_right, playing_top; Round 48 ruling 2.1). The mail icon's place
+-- stays reserved while it is hidden, so nothing jumps when a letter
+-- arrives. Returns {mail = {x, y, w, h}, band = {...}} in real screen
+-- pixels (w and h as the client draws them), plus playing_right and
+-- playing_top when hidden.
 function V.side_layout(box, frame)
 	local S = V.SIDE
-	local gap = S.gap * box.hud
-	local bw = math.floor(box.size * S.band + 0.5)
-	local bh = math.floor(bw * S.band_h / S.band_w + 0.5)
-	local mh = math.floor(box.size * S.mail + 0.5)
-	local mw = math.floor(mh * S.mail_w / S.mail_h + 0.5)
-	local mail, band = {w = mw, h = mh}, {w = bw, h = bh}
-	local out = {mail = mail, band = band}
+	-- the band's height from its share of the box at the image's aspect,
+	-- then both widths that the client draws at exactly that height
+	local bh = math.floor(box.size * S.band * S.band_h / S.band_w + 0.5)
+	local bw = width_for(bh, S.band_w, S.band_h)
+	local mw = width_for(bh, S.mail_w, S.mail_h)
+	bh = drawn_height(bw, S.band_w, S.band_h)
+	local mh = drawn_height(mw, S.mail_w, S.mail_h)
+	local row = math.max(bh, mh)
+	local right, top
 	if frame then
-		local left = frame.center_x - frame.diameter / 2
-		local top = frame.center_y - frame.diameter / 2
-		mail.x, mail.y = math.floor(left - gap - mw + 0.5), math.floor(top + 0.5)
-		band.x = math.floor(left - gap - bw + 0.5)
-		band.y = math.floor(top + frame.diameter - bh + 0.5)
+		right = frame.center_x - frame.diameter / 2 - S.gap * box.hud
+		top = frame.center_y - frame.diameter / 2
 	else
-		local right = box.center_x + box.size / 2
-		local top = math.floor(box.center_y - box.size / 2 + 0.5)
-		mail.x, mail.y = math.floor(right - mw + 0.5), top
-		band.x, band.y = math.floor(right - bw + 0.5), math.floor(top + mh + gap + 0.5)
+		right = box.center_x + box.size / 2
+		top = box.center_y - box.size / 2
+	end
+	top = math.floor(top + 0.5)
+	local mail = {w = mw, h = mh, x = math.floor(right - mw + 0.5),
+		y = top + math.floor((row - mh) / 2)}
+	local band = {w = bw, h = bh, x = math.floor(mail.x - S.row_gap * box.hud - bw + 0.5),
+		y = top + math.floor((row - bh) / 2)}
+	local out = {mail = mail, band = band}
+	if not frame then
 		out.playing_right = right
-		out.playing_top = math.floor(band.y + bh + gap + 0.5)
+		out.playing_top = math.floor(top + row + S.gap * box.hud + 0.5)
 	end
 	return out
 end
