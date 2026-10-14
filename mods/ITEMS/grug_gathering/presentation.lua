@@ -8,7 +8,7 @@
 --   * Melon and Mushroom items, and Sunleaf, Gravemoss and Wild Cocoa, take
 --     files of their own; for the last three the source's world sprite
 --     (`_plant`) is a file apart from the item icon. Placeholders until the
---     art lane's pick replaces the PNGs (tools/r48_farm/gen_placeholders.py).
+--     picks from tools/r48_artp/generate.py replaced them in Round 48.
 local CROP_LOOK = {"corn", "melon", "mushroom", "potato"}
 local ITEM_ICON = {"gravemoss", "melon", "mushroom", "sunleaf", "wild_cocoa"}
 local WORLD_SPRITE = {"gravemoss", "sunleaf", "wild_cocoa"}

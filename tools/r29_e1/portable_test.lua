@@ -16,6 +16,10 @@
 --   4. loop_findings(): an overpriced loot output is reported, break-even is
 --      allowed (ruling 5's ≤), unknown inputs are not judged;
 --   5. shelf_findings(): enchant inputs and materials above T1 fail;
+--   5b. Round 48: the lot ladder, the second pass in milli-copper (today's
+--      payouts kept, bulk, storage blocks, crafted goods halved once along a
+--      chain, the never list) and the loop audit on the combined table
+--      (a converting gain flagged, sand <-> sandstone and slab -> block not);
 --   6. the shipped shelves are exactly the economy plan's §2.3 table.
 --
 -- Usage (repo root): luajit tools/r29_e1/portable_test.lua [ROOT]
@@ -203,6 +207,114 @@ eq(#failed, 2, "two shelf entries break the vendor rule")
 eq(failed[1] and failed[1].item, "t:t2", "a T2 material fails")
 eq(failed[1] and failed[1].reason, "tier 2 material", "its reason")
 eq(failed[2] and failed[2].reason, "enchant input", "an enchant input fails")
+
+------------------------------------------------------------------------------
+-- 5b. Round 48 (sell plan §3.2-§3.4 under round48-plan.md ruling 2.2): the
+-- lot ladder, the second pass in milli-copper, the audit on the combined
+-- table.
+------------------------------------------------------------------------------
+local function offer(value)
+	local copper, lot = rules.lot_offer(value)
+	return copper .. "/" .. tostring(lot)
+end
+eq(offer(20), "1/50", "lot: 20 mc sells 1c per 50")
+eq(offer(80), "1/20", "lot: 80 mc sells 1c per 20")
+eq(offer(12), "1/99", "lot: 12 mc sells 1c per 99")
+eq(offer(8), "0/nil", "lot: 8 mc is not sellable (99 make less than 1c)")
+eq(offer(3500), "3/1", "lot: 3500 mc sells singly at 3c each")
+eq(offer(1000), "1/1", "lot: 1000 mc sells singly at 1c")
+eq(offer(999), "1/2", "lot: 999 mc sells 1c per 2")
+eq(offer(0), "0/nil", "lot: 0 is not sellable")
+eq(offer(nil), "0/nil", "lot: no value is not sellable")
+
+local SECOND = {
+	-- today's payout (1c, floored per step and counting sand 0) is kept,
+	-- though a milli-copper walk would give 1000 + 2 × 20 + 500 = 1540 mc
+	["t:old"] = {{method = "normal", count = 1, inputs = {"t:lump", "t:sand", "t:sand", "t:half"}}},
+	["t:half"] = {{method = "normal", count = 2, inputs = {"t:lump"}}},
+	-- a chain: the mixture is halved, the potion counts it unhalved
+	["t:mixture"] = {{method = "normal", count = 1, inputs = {"t:herb", "t:herb"}}},
+	["t:potion2"] = {{method = "normal", count = 1, inputs = {"t:mixture", "t:herb"}}},
+	-- bulk conversions run both ways
+	["t:sandstone"] = {{method = "normal", count = 1, inputs = {"t:sand", "t:sand", "t:sand", "t:sand"}}},
+	["t:sand"] = {{method = "normal", count = 4, inputs = {"t:sandstone"}}},
+	-- a slab is a crafted good; two make the block again
+	["t:slab"] = {{method = "normal", count = 6, inputs = {"t:block", "t:block", "t:block"}}},
+	["t:block"] = {{method = "normal", count = 1, inputs = {"t:slab", "t:slab"}}},
+	-- the never list wins over a recipe
+	["t:bound"] = {{method = "normal", count = 1, inputs = {"t:lump"}}},
+	-- a crafted good from a vendor supply (0) and planks
+	["t:sign"] = {{method = "normal", count = 1, inputs = {"t:thread", "group:wood", "group:wood"}}},
+	-- a crafted cycle through a classified unit: pack nine, unpack nine
+	["t:gemblock"] = {{method = "normal", count = 1, inputs = {"t:gem", "t:gem", "t:gem",
+		"t:gem", "t:gem", "t:gem", "t:gem", "t:gem", "t:gem"}}},
+	["t:gem"] = {{method = "normal", count = 9, inputs = {"t:gemblock"}}},
+	-- an unknown input leaves the item unpriced
+	["t:odd"] = {{method = "normal", count = 1, inputs = {"t:lump", "t:mystery"}}},
+	-- a free world material made from a free one keeps 0
+	["t:dye"] = {{method = "normal", count = 1, inputs = {"t:flower"}}},
+}
+local first = {["t:lump"] = 1, ["t:herb"] = 1, ["t:gem"] = 4, ["t:bar"] = 7, ["t:old"] = 1,
+	["t:sand"] = 0, ["t:sandstone"] = 0, ["t:block"] = 0, ["t:planks"] = 0,
+	["t:thread"] = 0, ["t:cobble"] = 0, ["t:flower"] = 0, ["t:dye"] = 0, ["t:pick"] = 0}
+local second = {
+	first = first,
+	bulk = {["t:sand"] = 20, ["t:sandstone"] = 80, ["t:block"] = 20, ["t:planks"] = 12,
+		["t:cobble"] = 20},
+	storage = {["t:barblock"] = {item = "t:bar", count = 9}},
+	keep = {["t:lump"] = true, ["t:herb"] = true, ["t:gem"] = true, ["t:bar"] = true,
+		["t:thread"] = true, ["t:cobble"] = true, ["t:pick"] = true},
+	never = {["t:bound"] = true, ["t:coins"] = true},
+	candidates = {["t:mixture"] = true, ["t:potion2"] = true, ["t:slab"] = true,
+		["t:bound"] = true, ["t:sign"] = true, ["t:gemblock"] = true, ["t:half"] = true,
+		["t:odd"] = true, ["t:coins"] = true, ["t:barblock"] = true},
+	recipes_for = function(item) return SECOND[item] or {} end,
+	group_members = function(groups) return groups[1] == "wood" and {"t:planks"} or {} end,
+}
+local mc, material, crafted = rules.resolve_values(second)
+eq(mc["t:old"], 1000, "an item priced today keeps its payout (a mc walk would give 1540)")
+eq(mc["t:lump"], 1000, "a first-pass payout × 1000")
+eq(mc["t:mixture"], 1000, "a crafted good pays half its material value")
+eq(material["t:mixture"], 2000, "its material value before the halving")
+eq(mc["t:potion2"], 1500, "the halving applies once along a chain (3000 / 2, not 1000 + 500)")
+eq(mc["t:sand"], 20, "bulk sand 20 mc")
+eq(mc["t:sandstone"], 80, "bulk sandstone = four sand")
+eq(mc["t:slab"], 5, "a slab: half of 3 blocks / 6")
+eq(mc["t:block"], 20, "the block keeps its bulk value")
+eq(mc["t:bound"], nil, "the never list: no value despite a recipe")
+eq(mc["t:coins"], nil, "the never list: the coin bag has no value")
+eq(mc["t:thread"], 0, "a 1-2c vendor supply stays 0")
+eq(mc["t:cobble"], 20, "a vendor-sold bulk good takes its bulk value")
+eq(mc["t:pick"], 0, "a vendor good keeps the first pass (0)")
+eq(mc["t:sign"], 12, "a vendor supply counts 0, planks 12 mc each: half of 24")
+eq(mc["t:barblock"], 63000, "a storage block pays nine bars, no discount")
+eq(mc["t:gemblock"], 18000, "a block packed in its own recipe is a crafted good")
+eq(mc["t:half"], 250, "a crafted good made in pairs: 500 mc each, halved")
+eq(mc["t:odd"], nil, "an unknown input leaves a crafted good unpriced")
+eq(mc["t:dye"], 0, "a free world material from a free one stays 0")
+check(crafted["t:potion2"] and crafted["t:slab"] and not crafted["t:block"] and
+	not crafted["t:barblock"] and not crafted["t:odd"], "the crafted set")
+
+-- The audit over the combined table: the output at its final value, a
+-- consumed crafted good at its material value.
+local function audit(items, input_price)
+	return rules.loop_findings(items, function(item) return SECOND[item] or {} end,
+		function(item) return mc[item] or 0 end,
+		function(item) return mc[item] ~= nil end, second.group_members, "mc",
+		input_price)
+end
+local by_material = function(item) return material[item] or 0 end
+eq(#audit({"t:sand", "t:sandstone", "t:block", "t:slab", "t:mixture", "t:potion2",
+	"t:sign", "t:gemblock", "t:gem", "t:half", "t:old"}, by_material), 0,
+	"sand <-> sandstone, slab -> block, gem block -> gems: no loop")
+check(#audit({"t:block"}) == 1, "judged at the halved value, two slabs back into a block would flag")
+SECOND["t:gravel"] = {{method = "normal", count = 1, inputs = {"t:sand", "t:sand"}}}
+mc["t:gravel"] = 80
+local gain = audit({"t:gravel"}, by_material)
+eq(#gain, 1, "a converting gain is flagged (80 mc from two sand)")
+check(gain[1] and gain[1]:find("pays 80mc but its normal recipe consumes only 40mc", 1, true) ~= nil,
+	"the finding names milli-copper")
+SECOND["t:gravel"], mc["t:gravel"] = nil, nil
 
 ------------------------------------------------------------------------------
 -- 6. The shipped shelves (economy-vendor-plan.md §2.3).

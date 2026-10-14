@@ -827,10 +827,27 @@ do
 	check(formspecs.Alice.text:find("Really report this letter\nfrom Brakka?", 1, true),
 		"D Report asks first")
 	send_fields(alice, {report_cancel = "Cancel"})
-	send_fields(alice, {delete = "Delete"})
+	send_fields(alice, {["delete_" .. first.id] = "Delete"})
 	check(session.dialog == "delete" and formspecs.Alice.text:find("still holds\nits attachments", 1, true),
 		"D deleting a letter with attachments asks first")
 	send_fields(alice, {delete_cancel = "Cancel"})
+	-- A confirm (or Delete) from a form drawn for another letter: a row was
+	-- clicked meanwhile, so the old form's button acts on nothing.
+	local count, tickets_before = #letters_of("Alice"), #grug_mail.tickets()
+	local second_letter = letters_of("Alice")[2]
+	send_fields(alice, {["delete_" .. first.id] = "Delete"})
+	send_fields(alice, {letters = "CHG:2:5"})
+	send_fields(alice, {["delete_confirm_" .. first.id] = "Delete"})
+	check(#letters_of("Alice") == count and session.selected.letters == second_letter.id,
+		"D a stale Delete confirm after a row change deletes nothing")
+	send_fields(alice, {letters = "CHG:1:5"})
+	send_fields(alice, {report = "Report"})
+	send_fields(alice, {letters = "CHG:3:5"})
+	send_fields(alice, {["report_confirm_" .. first.id] = "Report"})
+	check(#grug_mail.tickets() == tickets_before and not letters_of("Alice")[1].reported,
+		"D a stale Report confirm after a row change reports nothing")
+	send_fields(alice, {["delete_" .. first.id] = "Delete"})
+	eq(#letters_of("Alice"), count, "D a stale Delete for another letter deletes nothing")
 	send_fields(alice, {letters = "CHG:2:5"})
 	check(formspecs.Alice.text:find("cannot be answered", 1, true), "D an NPC letter has no Reply")
 	send_fields(alice, {letters = "CHG:3:5"})
@@ -912,7 +929,7 @@ do
 	check(own[1] and own[1].topic == "Bug report" and own[1].mailbox == "Mailbox in Dur Brannoc",
 		"D the window sends a ticket with topic and mailbox")
 	send_fields(alice, {tickets = "CHG:1:1"})
-	send_fields(alice, {ticket_delete = "Delete"})
+	send_fields(alice, {["ticket_delete_" .. own[1].id] = "Delete"})
 	check(not grug_mail.ticket(own[1].id), "D the player deletes their own ticket")
 	-- Closing returns the attachments; reach ends the session.
 	alice.inv:set_stack(ATTACH, 2, ItemStack("t:ingot 2"))

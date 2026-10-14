@@ -15,8 +15,24 @@
 --                            nothing made only from them pays
 --   everything else          0: not sellable
 --
--- A concrete stack sells at its item's payout times its quality factor
--- (stack_sell_price: blue ×3, gold ×6).
+-- That first pass runs unchanged since Round 48 (round48-plan.md ruling 2.2):
+-- it yields today's payout for every item that has one. A second pass in
+-- milli-copper (price_rules.resolve_values; sell plan §3.2-§3.4) then prices
+-- only the items without one:
+--
+--   bulk goods               the explicit bulk table below (cobble, sand,
+--                            leaves, logs, planks ...), sold in lots
+--   storage blocks           nine times their bar's payout
+--   crafted goods            half the material value of their cheapest
+--                            recipe (potions, dishes, seeds, tools, bags ...)
+--   vendor goods and gear    keep the first pass (a 1-2c supply stays 0)
+--   the never list           not sellable (Bag of Coins, bound and quest
+--                            items)
+--
+-- A value below 1c sells in lots (price_rules.lot_offer: the smallest of 1,
+-- 2, 5, 10, 20, 50, 99 worth 1c). A concrete stack of a single good sells at
+-- its item's payout times its quality factor (stack_sell_price: blue ×3,
+-- gold ×6); sell_offer gives the lot of any stack.
 --
 -- The rules themselves are pure (price_rules.lua); this file only reads the
 -- registries. An item's TIER is read from its own registration, so a tier
@@ -55,10 +71,13 @@ local PROCESSED_GROUPS = {"grug_leather_grade", "grug_tailor_bolt",
 	"grug_tailor_bundle", "grug_wood_grade", "grug_jewellery_setting",
 	"grug_metal_rod"}
 
--- Free world materials: anyone digs or chops them without limit, so traders
--- pay nothing for them and a recipe counts them 0. Without this a vendor good
--- made only from them (a wooden pick, a stone brick, a glass vial) would keep
--- its 5 % buy-back and turn digging into money.
+-- Free world materials of the first pass: anyone digs or chops them without
+-- limit, so the first pass pays nothing for them and counts them 0 in a
+-- recipe. Without this a vendor good made only from them (a wooden pick, a
+-- stone brick, a glass vial) would keep its 5 % buy-back and turn digging
+-- into money. The first pass keeps this set unchanged (ruling 2.2); the
+-- second pass prices the bulk ones through BULK below, and the rest (dirt,
+-- clay, snow, ice, flowers, dyes ...) stays worth 0.
 local FREE_GROUPS = {"wood", "tree", "leaves", "sapling", "sand", "stone",
 	"soil", "flower", "dye", "grug_natural", "grug_stratum"}
 local FREE = {
@@ -70,6 +89,40 @@ local FREE = {
 	["default:snow"] = true, ["default:snowblock"] = true,
 	["default:ice"] = true,
 }
+
+-- The bulk table of the second pass (sell plan §3.2), in milli-copper: the
+-- raw bulk materials and the plain building conversions made from them, so
+-- no rule has to find conversions in the recipe graph. Sandstone is worth
+-- exactly four sand (4 sand <-> 1 sandstone both ways); planks a quarter log,
+-- rounded down. Stairs, slabs and walls are crafted goods.
+local BULK = {}
+for _, name in ipairs({"default:cobble", "default:mossycobble",
+		"default:desert_cobble", "grug_materials:granite", "grug_materials:basalt",
+		"grug_materials:slate", "default:stone", "default:stonebrick",
+		"default:stone_block", "default:desert_stone", "default:desert_stonebrick",
+		"default:desert_stone_block", "default:sand", "default:desert_sand",
+		"default:silver_sand", "default:gravel"}) do
+	BULK[name] = 20 -- 1c per 50
+end
+for _, name in ipairs({"default:sandstone", "default:sandstonebrick",
+		"default:sandstone_block", "default:desert_sandstone",
+		"default:desert_sandstone_brick", "default:desert_sandstone_block",
+		"default:silver_sandstone", "default:silver_sandstone_brick",
+		"default:silver_sandstone_block"}) do
+	BULK[name] = 80 -- 1c per 20
+end
+BULK["default:cactus"] = 50 -- as a log
+-- By group, first match: leaves and saplings 1c per 50, logs 1c per 20,
+-- planks 1c per 99.
+local BULK_GROUPS = {{"leaves", 20}, {"sapling", 20}, {"tree", 50}, {"wood", 12}}
+
+-- Never sellable (sell plan §3.4): the Bag of Coins (economy.md §1), the
+-- Fallen Crown, both Captain's Orders, and every soulbound or bound item
+-- (the Claim Stone, ability items, the retired mount and boat items).
+local NEVER = {["grug_money:bag_of_coins"] = true,
+	["grug_mobs:throng_captains_orders"] = true,
+	["grug_mobs:accord_captains_orders"] = true}
+local NEVER_GROUPS = {"grug_soulbound", "grug_bound_skill", "grug_rare_trophy"}
 
 -- Groups whose rating is the item's tier.
 local TIER_GROUPS = {"grug_leather_grade", "grug_tailor_bolt", "grug_wood_grade",
@@ -254,6 +307,8 @@ grug_traders.group_members = group_members
 --
 
 local payouts -- item -> copper (0 = known, not sellable); nil before load
+local values -- item -> milli-copper, both passes (0 = known, not sellable)
+local material -- item -> milli-copper before the halving (the loop audit)
 local sold = {} -- item -> lowest vendor price, filled with the payouts
 
 -- Lowest price any vendor asks for each item: the core stock, the profession
@@ -286,6 +341,77 @@ local function reference_prices(sold)
 	return reference
 end
 
+-- The item nine of which pack into `block` by a recipe, when one `block`
+-- also unpacks into those nine; else nil.
+local function pack_content(block)
+	for _, recipe in ipairs(recipes_for(block)) do
+		local content = recipe.inputs[1]
+		local same = recipe.count == 1 and #recipe.inputs == 9 and
+			not content:find("^group:")
+		for i = 2, #recipe.inputs do
+			if recipe.inputs[i] ~= content then same = false end
+		end
+		if same then
+			for _, back in ipairs(recipes_for(content)) do
+				if back.count == 9 and #back.inputs == 1 and back.inputs[1] == block then
+					return content
+				end
+			end
+		end
+	end
+	return nil
+end
+
+-- The second pass's inputs (sell plan §3.2-§3.4): the bulk table, the storage
+-- blocks, what keeps the first pass, the never list, every registered item.
+local function second_pass_data(classified, reference)
+	local bulk, storage, keep, never, candidates = {}, {}, {}, {}, {}
+	local gear_price = rawget(grug_gear, "get_price")
+	for itemname in pairs(core.registered_items) do
+		candidates[itemname] = true
+		if BULK[itemname] then
+			bulk[itemname] = BULK[itemname]
+		else
+			for _, row in ipairs(BULK_GROUPS) do
+				if group(itemname, row[1]) then
+					bulk[itemname] = row[2]
+					break
+				end
+			end
+		end
+		if classified[itemname] or sold[itemname] or reference[itemname] or
+				(gear_price and gear_price(itemname)) then
+			keep[itemname] = true
+		end
+		if NEVER[itemname] then never[itemname] = true end
+		for _, name in ipairs(NEVER_GROUPS) do
+			if group(itemname, name) then never[itemname] = true end
+		end
+	end
+	-- The storage rows grug_smelting packs and unpacks: nine of the item make
+	-- one block, unpacking is free, so a block pays nine times its item.
+	for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
+		if core.registered_items[material.block_node] and
+				core.registered_items[material.item] then
+			storage[material.block_node] = {item = material.item, count = 9}
+		end
+	end
+	-- Every other block with the same free pair (the coordinator's ruling on
+	-- the lane's question 2): nine of one item make it and one gives the nine
+	-- back (Coal Block, the cut-gem blocks ...; a one-way pack such as a meat
+	-- block is not one and stays a crafted good). Halving it
+	-- as a crafted good would only send players to unpack before selling.
+	for itemname in pairs(candidates) do
+		if not storage[itemname] then
+			local content = pack_content(itemname)
+			if content then storage[itemname] = {item = content, count = 9} end
+		end
+	end
+	return {first = payouts, bulk = bulk, storage = storage, keep = keep,
+		never = never, candidates = candidates, recipes_for = recipes_for,
+		group_members = group_members}
+end
+
 function grug_traders.resolve_prices()
 	load_registries()
 	local gathered = {}
@@ -313,22 +439,38 @@ function grug_traders.resolve_prices()
 		if core.registered_items[item] then processed[item] = true end
 	end
 	sold = sold_prices()
+	local reference = reference_prices(sold)
 	payouts = rules.resolve({
 		classified = classified,
 		processed = processed,
 		sold = sold,
-		reference = reference_prices(sold),
+		reference = reference,
 		free = free,
 		discounted = grug_traders.discounted_price,
 		recipes_for = recipes_for,
 		group_members = group_members,
 	})
+	values, material = rules.resolve_values(second_pass_data(classified, reference))
 	return payouts
 end
 
--- Vendor payout of an item in COPPER; 0 = the vendor does not buy it.
+-- Value of an item in MILLI-COPPER, both passes; 0 = not sellable.
+function grug_traders.sell_value(itemname)
+	return values and values[itemname] or 0
+end
+
+-- Material value in MILLI-COPPER: a crafted good's value before its halving,
+-- any other item's sell_value. What a recipe counts when it consumes it.
+function grug_traders.material_value(itemname)
+	return material and material[itemname] or 0
+end
+
+-- Vendor payout of one item that sells singly, in COPPER: today's payout, or
+-- a new one of 1c or more. 0 = the vendor does not buy it singly: a lot good
+-- (sell_offer) or not sellable.
 function grug_traders.sell_price(itemname)
-	return payouts and payouts[itemname] or 0
+	local copper, lot = rules.lot_offer(grug_traders.sell_value(itemname))
+	return lot == 1 and copper or 0
 end
 
 -- Vendor payout of one concrete stack's unit in COPPER: the item's payout
@@ -338,9 +480,21 @@ function grug_traders.stack_sell_price(stack)
 		stack:get_meta():get_int("grug_quality"))
 end
 
+-- What the vendor pays for a stack (or an item name): copper, lot. Lot 1 is
+-- a single good at stack_sell_price (its quality included); a larger lot pays
+-- `copper` per `lot` units (no quality factor, wear ignored); 0, nil = not sold.
+function grug_traders.sell_offer(stack)
+	if type(stack) == "string" then stack = ItemStack(stack) end
+	local copper, lot = rules.lot_offer(grug_traders.sell_value(stack:get_name()))
+	if lot == 1 then
+		return grug_traders.stack_sell_price(stack), 1
+	end
+	return copper, lot
+end
+
 -- Whether the item has a value at all (a sum may count it, 0 included).
 function grug_traders.price_known(itemname)
-	return payouts ~= nil and payouts[itemname] ~= nil
+	return values ~= nil and values[itemname] ~= nil
 end
 
 -- Every item a vendor sells, sorted.
@@ -365,11 +519,11 @@ function grug_traders.shelf_tier(itemname)
 	return tier
 end
 
--- Every item with a payout above 0, sorted.
+-- Every item with a value above 0 (both passes, lot goods included), sorted.
 function grug_traders.priced_items()
 	local list = {}
-	for item, copper in pairs(payouts or {}) do
-		if copper > 0 then list[#list + 1] = item end
+	for item, value in pairs(values or {}) do
+		if value > 0 then list[#list + 1] = item end
 	end
 	table.sort(list)
 	return list

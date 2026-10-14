@@ -1,0 +1,30 @@
+{
+  "day": "#bda778",
+  "night": "#273d50",
+  "dawn_dusk": "#b88563",
+  "blend_width_px": 8,
+  "cycle_px": 160,
+  "day_px": 120,
+  "night_px": 40,
+  "sun_phase_px": 60,
+  "moon_phase_px": 140,
+  "frame_size": [
+    168,
+    40
+  ],
+  "viewport": [
+    4,
+    8,
+    160,
+    24
+  ],
+  "frame_mode": "exact-size overlay",
+  "marker_origin": [
+    79,
+    0
+  ],
+  "now_x": 84,
+  "symbol_y": 12,
+  "blend_rule": "Linear blend toward dawn_dusk within blend_width_px/2 on each side of phase 0 and 120; 0 disables blending.",
+  "scroll_rule": "phase=(viewport_x + now_phase - 80) modulo 160; increasing now_phase moves symbols left"
+}

@@ -129,18 +129,93 @@ precedence over preserving the exact mathematical ratio.
   is also loot pays the lower of both.
 - **Free world materials** (wood and logs, leaves, saplings, stone, cobble,
   sand, sandstone, gravel, clay, glass, snow, ice, flowers and dyes) are worth
-  0 and count 0 in a recipe, so a vendor good made only from them (a wooden
-  pick, a stone brick, a glass vial) pays nothing back. The load audit warns
-  when a sold good keeps a buy-back only because none of its recipes can be
-  judged.
+  0 and count 0 in a recipe **of the rules above**, so a vendor good made
+  only from them (a wooden pick, a stone brick, a glass vial) pays nothing
+  back. The load audit warns when a sold good keeps a buy-back only because
+  none of its recipes can be judged.
 - One price module (`grug_traders/prices.lua`) owns every payout; items have
-  no per-definition price field. Anything it does not price is not sellable.
+  no per-definition price field.
+
+**Selling almost everything** (Round 48,
+[sell plan](../planning/sell-fuel-daytime-plan.md) §3.2–§3.5 under
+[round48-plan.md](../planning/round48-plan.md) ruling 2.2). The rules above
+run unchanged as a **first pass** in whole copper and give every item that
+paid before exactly its old payout. A **second pass** then prices only the
+items without one:
+
+- **Values in milli-copper** (mc, 1c = 1000 mc): integers, no fractions;
+  recipe values divide with `floor`, so rounding only ever lowers a value.
+  An item the first pass pays counts its payout × 1000.
+- **Lots:** the vendor pays for the smallest lot of **1, 2, 5, 10, 20, 50,
+  99** whose value reaches 1c, `floor(value × lot / 1000)` copper. A value
+  of 1c or more sells singly as before (3500 mc pays 3c each); less than 1c
+  per 99 (the stack size) is not sellable.
+- **The bulk table** (explicit, so no rule detects conversions):
+
+  | Material | Value | Sells as |
+  |---|---:|---|
+  | Cobblestone, Mossy and Desert Cobblestone, Granite, Basalt, Slate; Stone, Desert Stone and their bricks and blocks | 20 mc | 1c per 50 |
+  | Sand, Desert Sand, Silver Sand, Gravel | 20 mc | 1c per 50 |
+  | Leaves (`group:leaves`), saplings (`group:sapling`) | 20 mc | 1c per 50 |
+  | Sandstone, Desert and Silver Sandstone and their bricks and blocks | 80 mc (four sand) | 1c per 20 |
+  | Logs (`group:tree`) and Cactus | 50 mc | 1c per 20 |
+  | Planks (`group:wood`) | 12 mc (a quarter log, rounded down) | 1c per 99 |
+
+  Sandstone is exactly four sand, because the recipes run both ways. The
+  table wins over the vendor rule: the Mason's Cobblestone, Gravel and
+  bricks sell in these lots too (always below their shelf price).
+- **Crafted goods** (no class, sold by no vendor, not gear: potions,
+  dishes, seeds, tools, bags, stations, furniture, stairs ...) pay **half**
+  the material value of their cheapest recipe, without exceptions. The
+  halving is one last step: a later recipe counts a crafted input at its
+  material value before the halving, so a potion made from a mixture is not
+  halved twice. Tools need no rule of their own; halved they stay below the
+  gear buy-back of their tier. Wear is ignored, as for gear.
+- **Storage blocks** pay **nine times** their item's payout, because
+  unpacking is free: the twelve pack/unpack rows of `grug_smelting` (the
+  metal blocks, Emberglass and Abyssal Crystal) and every other block that
+  nine of one item make and that gives the nine back (Coal Block, the
+  cut-gem blocks). A one-way pack (the meat blocks, packed from any meat
+  and never unpacked) stays a crafted good.
+- **Vendor goods and gear** keep the first pass: the 5 % buy-back, and a
+  1–2c supply (thread, torch, stick) stays unsellable.
+- **Never sellable:** the Bag of Coins, the Fallen Crown, both Captain's
+  Orders, soulbound and bound items (`grug_soulbound`, `grug_bound_skill`:
+  the Claim Stone, ability items, the retired mount and boat items); and,
+  having no value, dirt and the soils, clay, snow, ice, ground cover,
+  flowers and dyes, obsidian, and anything no player can hold (growth
+  stages, door halves, liquids, mapgen nodes).
 - A craft, cook, pack/unpack or service loop may not print money: an output
-  pays **at most** the summed payout of its consumed inputs (break-even is
+  pays **at most** the summed value of its consumed inputs (break-even is
   allowed). The startup audit judges every engine, dual-furnace and
-  profession-station recipe whose inputs are all priced, a `group:` input by
-  its cheapest priced member. Goods a vendor sells are capped by their
-  cheapest such recipe, so 100 arrows from one bar sell for nothing.
+  profession-station recipe whose inputs are all priced, over the combined
+  table of both passes in milli-copper, a `group:` input by its cheapest
+  priced member, and a consumed crafted good at its material value before
+  the halving (two slabs back into a block, or a block back into its nine
+  gems, gain nothing a player did not put in). Goods a vendor sells are
+  capped by their cheapest such recipe, so 100 arrows from one bar sell for
+  nothing.
+
+**The sell window** (the trader's Sell tab):
+
+- It lists what the player carries in `main` and the bags
+  (`grug_inventory.carried_lists`). A good that sells singly keeps one row
+  per slot with **1** and **All**, at its quality factor. A **lot good** gets
+  **one row per item name**, its count summed over every carried list
+  (30 + 30 Cobblestone make a lot of 50), e.g. `Cobblestone x143` ·
+  `1c per 50` · **All (2c)**. Lot goods sell without a quality factor and
+  wear is ignored, so merging their stacks changes no price.
+- Below its lot size the row is greyed with `Need 50 to sell` and has no
+  button, so the player learns that the item sells in lots.
+- **All** sells as many whole lots as the player carries and leaves the
+  rest: `Sold 100 Cobblestone for 2c. 43 left.` The units are taken with the
+  engine's `remove_item`, list by list, only after every check has passed.
+- Security as for every trade action: the row is recomputed server-side on
+  every click and cross-checked against the one shown (item, lot, copper,
+  total count); a mismatch re-renders without selling. A sale that would
+  cross the money ceiling is refused before anything is removed.
+- The hint line reads: "The vendor buys most things you carry. Cheap goods
+  sell in lots, e.g. 1c per 50; the rest stays with you."
 
 ## 3. Income streams and tier pacing
 
