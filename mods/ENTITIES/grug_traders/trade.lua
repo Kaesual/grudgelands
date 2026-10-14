@@ -33,6 +33,9 @@ local SELL_ROWS = 8 -- rows per page
 
 local FORM_W, FORM_H = 14, 10.2
 
+-- A lot row below its lot size (sell plan §3.5.3).
+local GREYED = "#8a8a8a"
+
 -- player name -> {vendor, faction, pos, mode, tab, page, offer, rows}
 local sessions = {}
 
@@ -115,9 +118,15 @@ local function current_offer(player, session, vendor, discount)
 	return offer
 end
 
--- Every stack in the player's main list and bags the vendor would buy.
+-- Every stack in the player's main list and bags the vendor would buy. A
+-- good that sells singly keeps one row per slot ({list, index, item, count,
+-- unit}); a lot good (Round 48, sell plan §3.5) gets ONE row per item name
+-- with its count over every carried list ({item, count, lot, copper}: copper
+-- per lot), placed where its first stack is, so 30 + 30 Cobblestone in two
+-- slots still make a lot of 50. Lot goods carry no quality, so merging their
+-- stacks loses nothing.
 local function current_rows(player)
-	local rows = {}
+	local rows, lots = {}, {}
 	local inv = player:get_inventory()
 	if not inv then
 		return rows
@@ -134,11 +143,29 @@ local function current_rows(player)
 						count = stack:get_count(),
 						unit = unit,
 					}
+				else
+					local name = stack:get_name()
+					local copper, lot = grug_traders.sell_offer(stack)
+					if lots[name] then
+						lots[name].count = lots[name].count + stack:get_count()
+					elseif lot and lot > 1 and copper > 0 then
+						lots[name] = {item = name, count = stack:get_count(),
+							lot = lot, copper = copper}
+						rows[#rows + 1] = lots[name]
+					end
 				end
 			end
 		end
 	end
 	return rows
+end
+
+-- "1c per 50" for a lot row, "3c each" for a single one.
+local function rate_text(row)
+	if row.lot then
+		return grug_money.format(row.copper) .. " per " .. row.lot
+	end
+	return grug_money.format(row.unit) .. " each"
 end
 
 --
@@ -225,21 +252,37 @@ local function render_sell(parts, player, session)
 	local first = (session.page - 1) * SELL_ROWS + 1
 
 	-- esc(): the hint contains a semicolon, which is a formspec field separator.
-	parts[#parts + 1] = "label[0.6,2.0;" .. esc("The vendor buys every drop " ..
-		"you carry. One click sells; there is no confirmation.") .. "]"
+	-- Two lines, so the long one fits the window.
+	parts[#parts + 1] = "label[0.6,1.75;" .. esc("The vendor buys most things " ..
+		"you carry.\nCheap goods sell in lots, e.g. 1c per 50; the rest stays " ..
+		"with you.") .. "]"
 	for offset = 0, SELL_ROWS - 1 do
 		local i = first + offset
 		local row = rows[i]
 		if row then
 			local y = 2.5 + offset * 0.8
+			-- Below its lot size a lot row is greyed and has no button: the
+			-- player learns that the item sells in lots.
+			local short = row.lot and row.count < row.lot
+			local function text(value)
+				return esc(short and core.colorize(GREYED, value) or value)
+			end
 			parts[#parts + 1] = ("item_image[0.7,%.2f;0.7,0.7;%s]"):format(y, row.item)
 			parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.35,
-				esc(short_desc(row.item) .. " x" .. row.count))
-			parts[#parts + 1] = ("label[7.4,%.2f;%s each]"):format(y + 0.35,
-				esc(grug_money.format(row.unit)))
-			parts[#parts + 1] = ("button[10.0,%.2f;1.3,0.7;sell1_%d;1]"):format(y, i)
-			parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;sellall_%d;All (%s)]")
-				:format(y, i, esc(grug_money.format(row.count * row.unit)))
+				text(short_desc(row.item) .. " x" .. row.count))
+			parts[#parts + 1] = ("label[7.4,%.2f;%s]"):format(y + 0.35, text(rate_text(row)))
+			if short then
+				parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35,
+					text("Need " .. row.lot .. " to sell"))
+			elseif row.lot then
+				parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;sellall_%d;All (%s)]")
+					:format(y, i, esc(grug_money.format(
+						math.floor(row.count / row.lot) * row.copper)))
+			else
+				parts[#parts + 1] = ("button[10.0,%.2f;1.3,0.7;sell1_%d;1]"):format(y, i)
+				parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;sellall_%d;All (%s)]")
+					:format(y, i, esc(grug_money.format(row.count * row.unit)))
+			end
 		end
 	end
 	if #rows == 0 then
@@ -419,10 +462,81 @@ local function do_buy(player, session, vendor, index)
 		grug_money.format(entry.price) .. ".")
 end
 
+-- A lot row's "All" (sell plan §3.5.4-§3.5.6): as many whole lots as the
+-- player carries over every carried list; the rest stays. The row is
+-- recomputed server-side and cross-checked against the one shown (item, lot,
+-- copper, total count); the money ceiling is checked before anything is
+-- removed, and the units are taken with the engine's remove_item, list by
+-- list, only after every check has passed.
+local function do_sell_lots(player, shown)
+	local fresh
+	for _, row in ipairs(current_rows(player)) do
+		if row.lot and row.item == shown.item then
+			fresh = row
+			break
+		end
+	end
+	if not fresh or fresh.lot ~= shown.lot or fresh.copper ~= shown.copper or
+			fresh.count ~= shown.count then
+		show(player, "Your items have changed.")
+		return
+	end
+	local lots = math.floor(fresh.count / fresh.lot)
+	if lots < 1 then
+		show(player)
+		return
+	end
+	local total = lots * fresh.copper
+	-- As for single goods: refuse the whole sale rather than let
+	-- grug_money.add clamp it after the items are gone.
+	if grug_money.get(player) + total > grug_money.MAX then
+		show(player, "You cannot carry that much money.")
+		return
+	end
+	local inv = player:get_inventory()
+	local wanted = lots * fresh.lot
+	local removed = 0
+	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+		if removed >= wanted then break end
+		local take = ItemStack(fresh.item)
+		take:set_count(wanted - removed)
+		removed = removed + inv:remove_item(list, take):get_count()
+	end
+	-- removed == wanted: the count was taken over the same lists in this same
+	-- callback. Should it ever fall short, pay only the whole lots taken and
+	-- give the part-lot back, so no unit is lost and none is paid twice.
+	local sold_lots = math.floor(removed / fresh.lot)
+	local rest = removed - sold_lots * fresh.lot
+	if rest > 0 then
+		local back = ItemStack(fresh.item)
+		back:set_count(rest)
+		grug_inventory.give(player, back)
+	end
+	if sold_lots < 1 then
+		show(player)
+		return
+	end
+	total = sold_lots * fresh.copper
+	grug_money.add(player, total)
+	grug_sounds.play("vendor_sell", player)
+	show(player, "Sold " .. sold_lots * fresh.lot .. " " .. short_desc(fresh.item) ..
+		" for " .. grug_money.format(total) .. ". " ..
+		(fresh.count - sold_lots * fresh.lot) .. " left.")
+end
+
 local function do_sell(player, session, index, sell_all)
 	local shown = session.rows and session.rows[index]
 	if not shown then
 		show(player)
+		return
+	end
+	if shown.lot then
+		-- A lot row has only "All"; a "1" for it comes from no rendered button.
+		if sell_all then
+			do_sell_lots(player, shown)
+		else
+			show(player)
+		end
 		return
 	end
 	local inv = player:get_inventory()
