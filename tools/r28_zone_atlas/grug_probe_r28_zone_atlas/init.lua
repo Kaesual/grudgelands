@@ -70,20 +70,24 @@ local function run()
 	end
 	table.sort(out.quest_npcs, function(a, b) return a.id < b.id end)
 	for id, def in pairs(grug_quests.registered_quests) do
-		local objectives = {}
-		for _, o in ipairs(def.objectives) do
-			local row = copy_plain(o)
-			if o.mobs then row.mobs = table.copy(o.mobs) end
-			objectives[#objectives + 1] = row
+		-- A system quest (Round 48: no NPC, no objectives) has no place in
+		-- the zone atlas, whose tools key every quest by its giver.
+		if not def.system then
+			local objectives = {}
+			for _, o in ipairs(def.objectives) do
+				local row = copy_plain(o)
+				if o.mobs then row.mobs = table.copy(o.mobs) end
+				objectives[#objectives + 1] = row
+			end
+			-- The text as the giver reads it on this seed (placeholders filled).
+			local description = grug_quests.quest_text(def, true):gsub("\n\nRequirements:.*$", "")
+			out.quests[#out.quests + 1] = {id = id, title = def.title, npc = def.npc,
+				turnin_npc = def.turnin_npc, min_level = def.min_level, level = def.level,
+				prerequisites = table.copy(def.prerequisites), objectives = objectives,
+				xp = grug_quests.reward_xp(def), copper = def.rewards.copper,
+				reward_items = table.copy(def.rewards.items), description = description,
+				repeatable = def.repeatable}
 		end
-		-- The text as the giver reads it on this seed (placeholders filled).
-		local description = grug_quests.quest_text(def, true):gsub("\n\nRequirements:.*$", "")
-		out.quests[#out.quests + 1] = {id = id, title = def.title, npc = def.npc,
-			turnin_npc = def.turnin_npc, min_level = def.min_level, level = def.level,
-			prerequisites = table.copy(def.prerequisites), objectives = objectives,
-			xp = grug_quests.reward_xp(def), copper = def.rewards.copper,
-			reward_items = table.copy(def.rewards.items), description = description,
-			repeatable = def.repeatable}
 	end
 	table.sort(out.quests, function(a, b) return a.id < b.id end)
 	log(("quest npcs: %d, quests: %d"):format(#out.quest_npcs, #out.quests))
