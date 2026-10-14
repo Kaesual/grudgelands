@@ -596,8 +596,10 @@ open questions for the user.
 1. A 0.47.0 world taken to 0.48.0 with the map reset and the step; Help →
    About shows 0.48.0.
 2. A 0.47.0 character with full bags joins: the inventory is sorted, the
-   bags show 4 / 8 / 12 / 16 slots (a 4- or 12-slot bag leaves half a row
-   empty), the hotbar and gear are unchanged, one feed line, the mail icon
+   bags show 4 / 8 / 12 / 16 slots (the slots flow on in 8-wide rows:
+   three 4-slot bags make one and a half rows, 4 + 12 + 8 two and a half;
+   drag, shift-click and Sort work in a partial row; fix lane INV), the
+   hotbar and gear are unchanged, one feed line, the mail icon
    counts the "Lost and Found" letters; Take all brings the items back once
    there is room, and without room they stay in the letter.
 3. The Sort button works as before.
@@ -736,6 +738,13 @@ open questions for the user.
   icon 72 × 23 at 1080p; a display delta checked by the coordinator), and
   the band's frame fading at night stays as is. Fixtures 189/189, smoke
   boot PASS.
+- **INV** (`2386eadf`): the user's first play test found a 4- or 12-slot bag
+  leaving half a row empty (ruling 9 of the sell plan had accepted that).
+  The inventory view now lays out `main[9..]` and the equipped bags as one
+  8-wide flow: a bag starts in the column after the previous list's last
+  slot, only the last row may be partial (a list split into up to three
+  `list[]` elements). Compatible, no version change. Review MERGE (2500
+  layout combinations checked by a scratch sweep).
 
 ### Round-end gates
 

@@ -91,7 +91,8 @@ arrives by mail (the "Bags" point below).
   minimap hidden the row moves into the top-right corner with "Now
   playing" right below it, and the quest tracker keeps its place.
 - **Bags:** every bag holds half as much: 4, 8, 12 and 16 slots (were 8,
-  16, 24 and 32). The Small Bag costs 20c (was 80c). At each existing
+  16, 24 and 32), their slots flowing on in rows of eight in the
+  inventory. The Small Bag costs 20c (was 80c). At each existing
   character's first join after the update, the inventory and bags are
   sorted once into the new sizes (the hotbar and equipped gear stay as
   they are); what no longer fits arrives as "Lost and Found" letters of

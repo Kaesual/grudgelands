@@ -85,7 +85,8 @@ without a migration would silently destroy items in the cut slots.
    at most 16 letters, which always fit: system letters are delivered
    beyond the limit, and nobody has letters yet at the update).
 9. Half-empty rows in the inventory grid (a 4- or 12-slot bag) are
-   accepted.
+   accepted. *(Superseded by the user's play test: the slots flow on in
+   8-wide rows, Round 48 fix lane INV.)*
 10. **The vendor's Small Bag costs 20c** (today 80c).
 
 ## 3. Defaults chosen by this draft
@@ -283,7 +284,8 @@ About 220 items become sellable.
 5. The inventory grid needs no code change: each bag starts a row
    (`grug_inventory/ui.lua:191-193`), a 4- or 12-slot bag leaves half a row
    empty (ruling 9). The doc sentence "bag sizes are multiples of 8, so
-   there are no gaps" goes.
+   there are no gaps" goes. *(Superseded: fix lane INV lets the slots flow
+   on in 8-wide rows.)*
 
 ## 4. Lanes
 
