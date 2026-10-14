@@ -13,6 +13,6 @@
 @@ -20,2 +13,0 @@
 -'item' | 'rider' | '17:7' | 'grug_abilities:charge 1 0 "\\u0001description\\u0002Charge (Warrior)\\nfree, 10...(641)
 -'item' | 'rider' | '1:0' | 'grug_mounts:apprentice_mount 1 0 "\\u0001inventory_image\\u0002grug_mounts_icon...(212)
-@@ -41 +33 @@
+@@ -42 +34 @@
 -'storage' | 'grug_core' | 'world_version' | '0.43.0'
 +'storage' | 'grug_core' | 'world_version' | '0.44.0'

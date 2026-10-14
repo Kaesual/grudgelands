@@ -37,35 +37,38 @@ end
 --
 -- Bag items. Recipes deliberately do not exist yet: bags are Tailor
 -- products (WP10) plus one vendor-sold small bag (WP7). Test via /give.
+-- Sizes 4 / 8 / 12 / 16 since 0.48.0, half the earlier ones (Round 48,
+-- sell-fuel-daytime-plan.md ruling 7); the migration step 0.48.0 moved
+-- what no longer fit (grug_core/migrations.lua).
 --
 
 core.register_craftitem("grug_inventory:bag_small", {
-	description = "Small Bag (8 slots)",
+	description = "Small Bag (4 slots)",
 	inventory_image = "grug_inventory_bag_small.png",
+	stack_max = 1,
+	groups = {bagslots = 4},
+})
+
+core.register_craftitem("grug_inventory:bag_medium", {
+	description = "Medium Bag (8 slots)",
+	inventory_image = "grug_inventory_bag_medium.png",
 	stack_max = 1,
 	groups = {bagslots = 8},
 })
 
-core.register_craftitem("grug_inventory:bag_medium", {
-	description = "Medium Bag (16 slots)",
-	inventory_image = "grug_inventory_bag_medium.png",
-	stack_max = 1,
-	groups = {bagslots = 16},
-})
-
 core.register_craftitem("grug_inventory:bag_large", {
-	description = "Large Bag (24 slots)",
+	description = "Large Bag (12 slots)",
 	inventory_image = "grug_inventory_bag_large.png",
 	stack_max = 1,
-	groups = {bagslots = 24},
+	groups = {bagslots = 12},
 })
 
 local extra_bags = {
-	{"bag_great", "Great Cloth Bag", 32, "grug_inventory_bag_large.png"},
-	{"bag_leather_pouch", "Leather Pouch", 8, "grug_inventory_bag_small.png^[colorize:#6b4428:58"},
-	{"bag_leather_satchel", "Leather Satchel", 16, "grug_inventory_bag_medium.png^[colorize:#6b4428:58"},
-	{"bag_leather_pack", "Leather Pack", 24, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
-	{"bag_leather_rucksack", "Leather Rucksack", 32, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
+	{"bag_great", "Great Cloth Bag", 16, "grug_inventory_bag_large.png"},
+	{"bag_leather_pouch", "Leather Pouch", 4, "grug_inventory_bag_small.png^[colorize:#6b4428:58"},
+	{"bag_leather_satchel", "Leather Satchel", 8, "grug_inventory_bag_medium.png^[colorize:#6b4428:58"},
+	{"bag_leather_pack", "Leather Pack", 12, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
+	{"bag_leather_rucksack", "Leather Rucksack", 16, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
 }
 for _, row in ipairs(extra_bags) do
 	core.register_craftitem("grug_inventory:" .. row[1], {
@@ -343,14 +346,33 @@ end
 -- List setup & rules
 --
 
+-- Each content list takes its bag's size. set_size truncates, so a list is
+-- only shrunk when the cut cells are empty: a character whose bag change
+-- did not finish (the migration step 0.48.0's join part failed and holds
+-- the character, grug_core/migrations.lua) keeps the stacks there until
+-- that join part runs again.
+local function cut_cells_empty(inv, list, size)
+	for index = size + 1, inv:get_size(list) do
+		if not inv:get_stack(list, index):is_empty() then return false end
+	end
+	return true
+end
+
 core.register_on_joinplayer(function(player)
 	local inv = player:get_inventory()
 	inv:set_size(QUIVER_LIST, QUIVER_STACKS)
 	for i = 1, grug_inventory.BAG_COUNT do
 		inv:set_size(grug_inventory.bag_list(i), 1)
 		local bag = inv:get_stack(grug_inventory.bag_list(i), 1)
-		inv:set_size(grug_inventory.content_list(i),
-			grug_inventory.bag_slots_of(bag))
+		local list = grug_inventory.content_list(i)
+		local size = grug_inventory.bag_slots_of(bag)
+		if size >= inv:get_size(list) or cut_cells_empty(inv, list, size) then
+			inv:set_size(list, size)
+		else
+			core.log("warning", "[grug_inventory] " .. list .. " of " ..
+				player:get_player_name() .. " holds items beyond its bag's " ..
+				size .. " slots; kept until the bag migration finishes")
+		end
 	end
 end)
 

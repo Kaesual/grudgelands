@@ -251,8 +251,14 @@ def scenario(run):
           old_iron.get("maxlevel") == 1 and old_iron.get("dig", {}).get("t2_stone") is False,
           json.dumps(old_iron))
     bad = []
+    # Round 47 CR: the crafting overflow (grug_craft_out) moves into the
+    # inventory when there is room, at the join too, so the output area's
+    # rebuilt pick is found in the one slot that holds a tool only after it.
+    moved = [k for k in (settled.get("tools") or {}) if k not in (loaded.get("tools") or {})]
     for slot, (item, maxlevel, iron_ore) in MINER.items():
         f = tool_at(settled, slot)
+        if slot.startswith("grug_craft_out[") and not f and len(moved) == 1:
+            f = tool_at(settled, moved[0])
         if f.get("item") != item or not f.get("as_crafted_now") or not f.get("definition") or \
                 (maxlevel is not None and f.get("maxlevel") != maxlevel) or \
                 bool(f.get("dig", {}).get("iron_ore")) != iron_ore:

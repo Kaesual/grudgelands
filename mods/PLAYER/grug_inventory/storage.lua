@@ -301,22 +301,49 @@ local function before(a, b)
 	return ka.position < kb.position
 end
 
+-- Soulbound and bound items (the Claim Stone, skill and mount items) are
+-- never left over by a sort into smaller sizes: the mail cannot carry them.
+local function guarded(stack)
+	return soulbound(stack) or core.get_item_group(stack:get_name(), "grug_bound_skill") > 0
+end
+
 -- Sort the player's main[9..] and bags; true when any slot changed. Writes
 -- only the slots that change, so at most the five lists are resent once.
-function grug_inventory.sort(player)
+--
+-- `sizes` (optional; the migration step 0.48.0, grug_core/migrations.lua)
+-- maps a bag's content list to a smaller target size: the sort then lays
+-- every stack of main[9..] and the bags, the cells beyond the targets
+-- included, out into main[9..] and each bag's first `size` cells. What does
+-- not fit is the end of the order (the rest category, low tiers last),
+-- except guarded stacks, which take their cells first; those leftovers fill
+-- the cells beyond the targets, in order, and are returned as a second
+-- value, a list of {list, index, stack}. The caller takes them out and then
+-- shrinks the lists; this function never calls set_size. A size above a
+-- list's current one counts as the current one. Without `sizes` (the Sort
+-- button) the targets are the current sizes and nothing is left over.
+function grug_inventory.sort(player, sizes)
 	local inv = player and player:get_inventory()
-	if not inv then return false end
-	local slots, entries = {}, {}
+	if not inv then return false, {} end
+	local slots, beyond, entries = {}, {}, {}
 	for _, slot in ipairs(ordered_slots(inv)) do
 		if not (slot.list == "main" and slot.index <= HOTBAR) then
-			slots[#slots + 1] = slot
+			local size = sizes and sizes[slot.list]
+			if size and slot.index > size then
+				beyond[#beyond + 1] = slot
+			else
+				slots[#slots + 1] = slot
+			end
 		end
 	end
-	local cells = cells_of(inv, slots)
-	for position, cell in ipairs(cells) do
-		if not cell.stack:is_empty() then
-			entries[#entries + 1] = {stack = ItemStack(cell.stack),
-				key = sort_key(cell.stack, position)}
+	local cells, rest = cells_of(inv, slots), cells_of(inv, beyond)
+	local position = 0
+	for _, group in ipairs({cells, rest}) do
+		for _, cell in ipairs(group) do
+			position = position + 1
+			if not cell.stack:is_empty() then
+				entries[#entries + 1] = {stack = ItemStack(cell.stack),
+					key = sort_key(cell.stack, position)}
+			end
 		end
 	end
 	table.sort(entries, before)
@@ -324,13 +351,28 @@ function grug_inventory.sort(player)
 	local merged = {}
 	for _, entry in ipairs(entries) do
 		local last = merged[#merged]
-		local rest = entry.stack
+		local stack = entry.stack
 		if last and last.key.identity == entry.key.identity then
-			rest = last.stack:add_item(rest)
+			stack = last.stack:add_item(stack)
 		end
-		if not rest:is_empty() then
-			merged[#merged + 1] = {stack = rest, key = entry.key}
+		if not stack:is_empty() then
+			merged[#merged + 1] = {stack = stack, key = entry.key}
 		end
+	end
+	-- More stacks than target cells: the last unguarded ones are left over.
+	local leftovers = {}
+	local excess = #merged - #cells
+	for index = #merged, 1, -1 do
+		if excess <= 0 then break end
+		if not guarded(merged[index].stack) then
+			table.insert(leftovers, 1, table.remove(merged, index))
+			excess = excess - 1
+		end
+	end
+	-- Only guarded stacks beyond the targets (never with four bags of the
+	-- smallest size: main[9..] alone has 24 cells): they stay beyond too.
+	while #merged > #cells do
+		table.insert(leftovers, 1, table.remove(merged))
 	end
 	-- A soulbound stack the order would put into a bag takes the last
 	-- main slot instead; the stacks after it shift by one.
@@ -342,15 +384,24 @@ function grug_inventory.sort(player)
 			table.insert(merged, main_slots, entry)
 		end
 	end
-	local changed = false
-	for position, cell in ipairs(cells) do
-		local wanted = merged[position] and merged[position].stack or ItemStack("")
+	local changed, left = false, {}
+	local function place(cell, wanted)
 		if cell.stack:to_string() ~= wanted:to_string() then
 			inv:set_stack(cell.list, cell.index, wanted)
 			changed = true
 		end
 	end
-	return changed
+	for index, cell in ipairs(cells) do
+		place(cell, merged[index] and merged[index].stack or ItemStack(""))
+	end
+	for index, cell in ipairs(rest) do
+		local wanted = leftovers[index] and leftovers[index].stack or ItemStack("")
+		place(cell, wanted)
+		if not wanted:is_empty() then
+			left[#left + 1] = {list = cell.list, index = cell.index, stack = ItemStack(wanted)}
+		end
+	end
+	return changed, left
 end
 
 --

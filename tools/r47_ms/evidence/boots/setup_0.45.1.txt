@@ -1,10 +1,10 @@
 launcher: staged probe: grug_probe_r47_ms
-seconds: 50, exit 0
+seconds: 55, exit 0
 joins: ['miner registered (protocol 52), stayed 4.0 s', 'sleeper registered (protocol 52), stayed 4.0 s']
 --- log lines
 ACTION[Main]: [grug_core] world version 0.45.1 recorded for a new world
 ACTION[Main]: [grug_core] world version 0.45.1 (a new world), game 0.45.1: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:36874.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32943.
 ACTION[Server]: miner [127.0.0.1] joins game. List of players: miner
 ACTION[Server]: [r47_ms_probe] joined miner
 ACTION[Server]: [r47_ms_probe] built miner

@@ -356,8 +356,9 @@ do
 	for name, size in source:gmatch('{"([%w_]+)", "[^"]+", (%d+),') do slots[name] = tonumber(size) end
 	local saved = grug_items.BAG_DROPS.chance
 	grug_items.BAG_DROPS.chance = 100
-	for _, row in ipairs({{1, 8}, {15, 8}, {16, 16}, {30, 16}, {31, 24}, {45, 24}, {46, 32},
-			{60, 32}, {70, 32}}) do
+	-- Sizes halved in Round 48 (4 / 8 / 12 / 16); the drop rows are unchanged.
+	for _, row in ipairs({{1, 4}, {15, 4}, {16, 8}, {30, 8}, {31, 12}, {45, 12}, {46, 16},
+			{60, 16}, {70, 16}}) do
 		local mob = {name = "grug_mobs:wolf", _grug_tier = "critter", _grug_level = row[1]}
 		local out = grug_items.roll_mob_gear(mob, seed_of(row[1]))
 		local bag = out[#out]
@@ -369,10 +370,10 @@ do
 	local dragon = {name = "grug_mobs:dragon_ice", _grug_boss_id = "dragon:ice",
 		_grug_tier = "boss", _grug_level = 70}
 	local out = grug_items.roll_mob_gear(dragon, 7)
-	check(#out == 3 and slots[out[3]:get_name():match(":(.+)$")] == 32,
+	check(#out == 3 and slots[out[3]:get_name():match(":(.+)$")] == 16,
 		"D a dragon's bag comes beside its two items")
 	grug_items.BAG_DROPS.chance = saved
-	check(slots.bag_small == 8, "D the 8-slot bag is the vendor's small bag")
+	check(slots.bag_small == 4, "D the 4-slot bag is the vendor's small bag")
 end
 
 ------------------------------------------------------------------------------

@@ -234,8 +234,11 @@ def check_names(reg, game):
         check("names", "%s: every gear item of the step now has another definition value "
                        "(the pin keeps each)" % game,
               set(gear) >= set(STEP.GEAR) and not same_values, json.dumps(same_values[:8]))
-        check("names", "%s: the bag sizes are unchanged (the join sizes bag lists by them)"
-              % game, reg.get("bags") == STEP.BAG_SLOTS, json.dumps(reg.get("bags")))
+        # Round 48 halved every bag; its own step 0.48.0 re-lays the bags out.
+        halved = {name: size // 2 for name, size in STEP.BAG_SLOTS.items()}
+        check("names", "%s: the step's bags, at half their sizes since 0.48.0 (the join sizes "
+                       "bag lists by them)" % game, reg.get("bags") == halved,
+              json.dumps(reg.get("bags")))
     check("names", "%s: the items under %s (and the mixture group) are ST's 40 mixtures"
           % (game, STEP.MIXTURE_PREFIX),
           reg.get("mixtures") == MIXTURES, json.dumps(reg.get("mixtures")))
@@ -406,8 +409,11 @@ def scenario(run):
     check("step", "no mixture left in any list of any character",
           not any(mixtures_in(after[n]["inv"]) for n in CHARACTERS)
           and all(mixtures_in(before[n]["inv"]) for n in CHARACTERS))
+    # The later declared steps' markers (0.47.0, 0.48.0) are theirs, not this step's.
+    later = {"grug_core:migrate:" + v for v in DUE if v != "0.45.0"}
     meta_ok = all(after[n]["meta"].get(MARKER) == "1" and SEEN not in after[n]["meta"]
-                  and {k: v for k, v in after[n]["meta"].items() if k != MARKER}
+                  and {k: v for k, v in after[n]["meta"].items()
+                       if k != MARKER and k not in later}
                   == {k: v for k, v in before[n]["meta"].items() if k != SEEN}
                   for n in CHARACTERS)
     check("step", "player meta: the marker on all three, seen-items gone, nothing else changed",

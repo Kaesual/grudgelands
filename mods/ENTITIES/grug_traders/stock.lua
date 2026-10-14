@@ -52,7 +52,7 @@ function grug_traders.register_stock(def)
 	})
 end
 
-grug_traders.register_stock({item = "grug_inventory:bag_small", price = 80, category = "goods"})
+grug_traders.register_stock({item = "grug_inventory:bag_small", price = 20, category = "goods"})
 grug_traders.register_stock({item = "grug_traders:potion_healing_weak", price = 8, category = "goods"})
 grug_traders.register_stock({item = "default:torch", price = 1, category = "goods"})
 grug_traders.register_stock({item = "grug_gear:arrow", price = 3, category = "goods"})

@@ -114,9 +114,10 @@ FAMILIES = {prof: ", ".join(FAMILY_LABEL[f] for f in OWNER if OWNER[f] == prof)
 # grug_artisans/goldsmith.lua; the spellbook moves to the Tailor).
 PRODUCTS = {
     "weaponsmith": {}, "armorsmith": {}, "woodcarver": {},
-    "leatherworker": {1: "8-slot bag", 2: "16-slot bag", 4: "24-slot bag", 5: "32-slot bag"},
-    "tailor": dict((t, "spellbook" + {1: ", 8-slot bag", 2: ", 16-slot bag", 4: ", 24-slot bag",
-                                         5: ", 32-slot bag"}.get(t, "")) for t in range(1, 7)),
+    # Bag sizes halved in Round 48 (grug_inventory/bags.lua).
+    "leatherworker": {1: "4-slot bag", 2: "8-slot bag", 4: "12-slot bag", 5: "16-slot bag"},
+    "tailor": dict((t, "spellbook" + {1: ", 4-slot bag", 2: ", 8-slot bag", 4: ", 12-slot bag",
+                                         5: ", 16-slot bag"}.get(t, "")) for t in range(1, 7)),
     "goldsmith": dict((t, "six trinkets") for t in range(1, 7)),
 }
 OWN_MATERIAL = {

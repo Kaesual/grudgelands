@@ -239,6 +239,8 @@ item("t:pick", {description = "Pick", stack_max = 1, groups = {pickaxe = 1}})
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
 local I = grug_inventory
 local Q, BELT = I.QUIVER_LIST, I.POTION_BELT
+-- Round 48 halved the bags (4 / 8 / 12 / 16 slots): the swap, removal and
+-- sort layouts below follow those sizes.
 local BAG = {small = "grug_inventory:bag_small", medium = "grug_inventory:bag_medium",
 	large = "grug_inventory:bag_large", great = "grug_inventory:bag_great"}
 
@@ -461,31 +463,31 @@ do
 	-- To a larger bag: the contents stay.
 	local p = new_player("c1", "warrior")
 	equip_bag(p, 1, BAG.large)
-	fill_list(p, I.content_list(1), 1, 24, "t:dirt 10")
+	fill_list(p, I.content_list(1), 1, 12, "t:dirt 10")
 	put(p, "main", 12, BAG.great)
 	local before = census(p)
 	eq(move(p, "main", 12, I.bag_list(1), 1), 1, "swap to a larger bag: allowed")
 	eq(name_at(p, I.bag_list(1), 1), BAG.great, "swap: the larger bag equipped")
 	eq(name_at(p, "main", 12), BAG.large, "swap: the old bag where the new one was")
-	eq(p.inv:get_size(I.content_list(1)), 32, "swap: the list grows")
-	eq(count_at(p, I.content_list(1), 24), 10, "swap: the contents stay")
+	eq(p.inv:get_size(I.content_list(1)), 16, "swap: the list grows")
+	eq(count_at(p, I.content_list(1), 12), 10, "swap: the contents stay")
 	same_census(before, census(p), "swap to a larger bag")
 
 	-- To a smaller bag with room: the kept cells first, then main[9..].
 	local s = new_player("c2", "warrior")
 	equip_bag(s, 1, BAG.large)
-	for index = 5, 24 do put(s, I.content_list(1), index, "t:dirt 99") end
+	for index = 5, 12 do put(s, I.content_list(1), index, "t:dirt 99") end
 	put(s, "main", 10, BAG.small)
 	before = census(s)
 	eq(move(s, "main", 10, I.bag_list(1), 1), 1, "swap to a smaller bag: allowed with room")
-	eq(p.inv:get_size(I.content_list(1)), 32, "other player untouched")
-	eq(s.inv:get_size(I.content_list(1)), 8, "swap: the list shrinks to the small bag")
+	eq(p.inv:get_size(I.content_list(1)), 16, "other player untouched")
+	eq(s.inv:get_size(I.content_list(1)), 4, "swap: the list shrinks to the small bag")
 	local in_bag = 0
-	for index = 1, 8 do in_bag = in_bag + count_at(s, I.content_list(1), index) end
-	eq(in_bag, 8 * 99, "swap: the overflow fills the kept cells first")
+	for index = 1, 4 do in_bag = in_bag + count_at(s, I.content_list(1), index) end
+	eq(in_bag, 4 * 99, "swap: the overflow fills the kept cells first")
 	eq(count_at(s, "main", 9), 99, "swap: the rest of the overflow into main[9..]")
-	eq(count_at(s, "main", 21), 99, "swap: twelve stacks in main[9..]")
-	eq(name_at(s, "main", 22), "", "swap: nothing beyond the overflow")
+	eq(count_at(s, "main", 13), 99, "swap: four stacks in main[9..]")
+	eq(name_at(s, "main", 14), "", "swap: nothing beyond the overflow")
 	eq(name_at(s, "main", 10), BAG.large, "swap: the old bag on the dragged bag's slot")
 	same_census(before, census(s), "swap to a smaller bag")
 
@@ -493,26 +495,26 @@ do
 	-- one lying in main): the same rule.
 	local r = new_player("c2r", "warrior")
 	equip_bag(r, 1, BAG.medium)
-	fill_list(r, I.content_list(1), 1, 16, "t:dirt 99")
+	fill_list(r, I.content_list(1), 1, 8, "t:dirt 99")
 	put(r, "main", 30, BAG.small)
 	before = census(r)
 	eq(move(r, I.bag_list(1), 1, "main", 30), 1, "swap by dragging the equipped bag: allowed")
 	eq(name_at(r, I.bag_list(1), 1), BAG.small, "swap by drag: the small bag equipped")
-	eq(r.inv:get_size(I.content_list(1)), 8, "swap by drag: the list shrinks")
-	eq(count_at(r, "main", 16), 99, "swap by drag: eight stacks moved to main[9..16]")
+	eq(r.inv:get_size(I.content_list(1)), 4, "swap by drag: the list shrinks")
+	eq(count_at(r, "main", 12), 99, "swap by drag: four stacks moved to main[9..12]")
 	same_census(before, census(r), "swap by dragging the equipped bag")
 
 	-- To a smaller bag without room: refused, nothing moves.
 	local f = new_player("c3", "warrior")
 	equip_bag(f, 1, BAG.medium)
-	fill_list(f, I.content_list(1), 1, 16, "t:dirt 99")
+	fill_list(f, I.content_list(1), 1, 8, "t:dirt 99")
 	fill_list(f, "main", 1, 32, "t:stone 99")
 	put(f, "main", 20, BAG.small)
 	before = census(f)
 	feed_lines = {}
 	eq(move(f, "main", 20, I.bag_list(1), 1), 0, "swap to a smaller bag: refused without room")
 	eq(name_at(f, I.bag_list(1), 1), BAG.medium, "refused swap: the bag stays")
-	eq(f.inv:get_size(I.content_list(1)), 16, "refused swap: the list keeps its size")
+	eq(f.inv:get_size(I.content_list(1)), 8, "refused swap: the list keeps its size")
 	check(#feed_lines > 0 and feed_lines[#feed_lines].key == "bag_contents",
 		"refused swap: one keyed feed line")
 	same_census(before, census(f), "refused swap")
@@ -526,13 +528,14 @@ do
 	local p = new_player("d1", "warrior")
 	equip_bag(p, 1, BAG.small)
 	equip_bag(p, 2, BAG.small)
-	fill_list(p, I.content_list(1), 1, 8, "t:dirt 99")
+	fill_list(p, I.content_list(1), 1, 4, "t:dirt 99")
 	fill_list(p, "main", 9, 24, "t:stone 99")
+	fill_list(p, "main", 26, 29, "t:stone 99")
 	local before = census(p)
 	eq(move(p, I.bag_list(1), 1, "main", 25), 1, "removal: allowed with room")
 	eq(name_at(p, "main", 25), BAG.small, "removal: the bag in its landing slot")
 	eq(p.inv:get_size(I.content_list(1)), 0, "removal: the list is gone")
-	eq(count_at(p, "main", 26), 99, "removal: contents after the landing slot")
+	eq(count_at(p, "main", 30), 99, "removal: contents after the landing slot")
 	eq(count_at(p, "main", 32), 99, "removal: main[9..] filled to the end")
 	eq(count_at(p, I.content_list(2), 1), 99, "removal: then the other bag")
 	same_census(before, census(p), "removal by drag")
@@ -540,9 +543,9 @@ do
 	-- Exactly as many free slots as contents, one of them the landing slot.
 	local t = new_player("d2", "warrior")
 	equip_bag(t, 1, BAG.small)
-	fill_list(t, I.content_list(1), 1, 8, "t:dirt 99")
+	fill_list(t, I.content_list(1), 1, 4, "t:dirt 99")
 	fill_list(t, "main", 1, 32, "t:stone 99")
-	for index = 25, 32 do put(t, "main", index, "") end
+	for index = 25, 28 do put(t, "main", index, "") end
 	before = census(t)
 	eq(move(t, I.bag_list(1), 1, "main", 25), 0, "removal: the landing slot does not count")
 	eq(name_at(t, I.bag_list(1), 1), BAG.small, "refused removal: the bag stays")
@@ -567,7 +570,7 @@ do
 	dropped = {}
 	local full = new_player("d4", "warrior")
 	equip_bag(full, 1, BAG.small)
-	fill_list(full, I.content_list(1), 1, 8, "t:dirt 99")
+	fill_list(full, I.content_list(1), 1, 4, "t:dirt 99")
 	fill_list(full, "main", 1, 32, "t:stone 99")
 	check(not drop(full, I.bag_list(1), 1), "drop: refused without room")
 	eq(name_at(full, I.bag_list(1), 1), BAG.small, "refused drop: the bag stays")
@@ -581,7 +584,7 @@ do
 	eq(move(b, I.bag_list(1), 1, I.bag_list(3), 1), 0, "bag slot to bag slot: refused with contents")
 	put(b, I.content_list(1), 1, "")
 	eq(move(b, I.bag_list(1), 1, I.bag_list(3), 1), 1, "bag slot to bag slot: empty bags move")
-	eq(b.inv:get_size(I.content_list(3)), 8, "bag slot to bag slot: the new slot's list")
+	eq(b.inv:get_size(I.content_list(3)), 4, "bag slot to bag slot: the new slot's list")
 	eq(b.inv:get_size(I.content_list(1)), 0, "bag slot to bag slot: the old list gone")
 	eq(move(b, "main", 9, I.bag_list(4), 1), 0, "an empty source moves nothing")
 	put(b, "main", 9, "t:dirt")
@@ -616,7 +619,7 @@ end
 ------------------------------------------------------------------------------
 do
 	local p = new_player("f1", "warrior")
-	equip_bag(p, 1, BAG.small)
+	equip_bag(p, 1, BAG.medium)
 	put(p, "main", 1, "t:pick")
 	put(p, "main", 2, "t:dirt 3")
 	local rare = ItemStack("t:sword_t3")

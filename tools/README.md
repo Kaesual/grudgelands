@@ -1051,4 +1051,18 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   grant at arrival and join once, the full log skipping it, the tracker and
   log text, the turn-in by opening a mailbox with XP, 25c, the turn-in hook
   and the completion line, the welcome letter once, the level letters with
-  their conditions, a jump 14 -> 21 and the filled placeholders).
+  their conditions, a jump 14 -> 21 and the filled placeholders);
+  `r48_bags` the bags at half size and the
+  migration step 0.48.0 (`portable_test.lua`: the eight bags' sizes and
+  descriptions, the sort without and with target sizes (order, merge,
+  leftovers from the end in the cells beyond the targets, soulbound and
+  bound stacks never left over, the hotbar untouched), the join part with a
+  `grug_mail.send_system` stand-in: four full 32-slot bags into 4 x 16 and
+  16 letters of four stacks, a second run changing nothing, a failing send
+  that loses nothing and a rerun; stays in `run_fixtures.sh`); `run.sh
+  [EVIDENCE_DIR]` runs `test_step.py` (the offline step: markers only) in
+  the runner's container and `e2e.py` (a 0.47.0 world built by the 0.47.0
+  game with `grug_probe_r48_bags`, the guard's refusal, the shipped tool,
+  boots and joins of this checkout: the sort into the new sizes, the
+  letters read back from `grug_mail`'s storage, a second join); `evidence/`
+  the last run.

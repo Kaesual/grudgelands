@@ -1,0 +1,18 @@
+launcher: staged probe: grug_probe_r48_bags
+seconds: 53, exit 0
+joins: ['hoarder logged in (protocol 52), stayed 4.0 s', 'light logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.48.0, game 0.48.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33580.
+ACTION[Server]: hoarder [127.0.0.1] joins game. List of players: hoarder
+ACTION[Server]: [r48_bags_probe] joined hoarder
+ACTION[Server]: [grug_core] migration 0.48.0: 63 stacks of hoarder in 16 letters
+ACTION[Server]: [grug_core] migration 0.48.0: hoarder's online work is done
+ACTION[Server]: [r48_bags_probe] left hoarder
+ACTION[Server]: hoarder leaves game. List of players: 
+ACTION[Server]: light [127.0.0.1] joins game. List of players: light
+ACTION[Server]: [r48_bags_probe] joined light
+ACTION[Server]: [grug_core] migration 0.48.0: light's online work is done
+ACTION[Server]: [r48_bags_probe] left light
+ACTION[Server]: light leaves game. List of players: 
+ACTION[Server]: [r48_bags_probe] observations written: every planned character left

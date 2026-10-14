@@ -349,14 +349,15 @@ def scenario(run):
                                                                           sorted(got))[:6]))
     settled = probe_lists(hero.get("settled"))
     keeps = [e for e in entries if e["role"] == "keep"]
-    # Every stack held after the join (name, count, wear): a later declared
-    # step may move a kept stack (0.45.0 empties the craft grid).
+    # Every kept item held after the join (name and wear, counted): a later
+    # declared step may move a kept stack (0.45.0 empties the craft grid) or
+    # merge it with an equal one (0.48.0 sorts main[9..] and the bags).
     held = Counter()
     for stacks in settled.values():
         for text in stacks:
             if text:
                 x = ItemStack.parse(text)
-                held[(x.name, x.count, x.wear)] += 1
+                held[(x.name, x.wear)] += x.count
     lost = []
     for e in keeps:
         # The join refreshes a skill's meta and a tool's description; the
@@ -366,14 +367,14 @@ def scenario(run):
             ok = name_of(text) == e["item"]
         else:
             y = ItemStack.parse(got44[e["list"]][e["slot"] - 1])
-            ok = held[(y.name, y.count, y.wear)] > 0
-            held[(y.name, y.count, y.wear)] -= 1
+            ok = held[(y.name, y.wear)] >= y.count
+            held[(y.name, y.wear)] -= y.count
             text = y.to_string()
         if not ok:
             lost.append("%s[%d] %s: %r" % (e["list"], e["slot"], e["item"], text[:60]))
     check("boot", "rider after the game's join: no mount item, no skill outside the hotbar; "
-                  "the hotbar skills in place and every other kept stack held (name, count, "
-                  "wear)",
+                  "the hotbar skills in place and every other kept item held (name and wear, "
+                  "counted)",
           settled and not offenders(settled) and not lost,
           json.dumps({"offenders": offenders(settled), "lost": lost}))
     owned = hero.get("mounts") or {}

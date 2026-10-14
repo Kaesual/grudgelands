@@ -40,6 +40,10 @@ WORK = pg.WORK
 check = pg.check
 COUNTS = {"characters": 3, "player_meta": 2, "inventories": 3, "positions": 0,
           "privileges": 0, "mod_storage": 0, "markers": 3}
+# The tool applies every declared step after 0.44.0 (0.47.0 and 0.48.0 came
+# later); the rows still equal the SQLite run, which went the same way.
+DUE = [v for v in json.loads((REPO / "tools" / "web_data" / "upgrade.json").read_text())
+       ["migrate"] if tuple(map(int, v.split("."))) > (0, 44, 0)]
 
 
 def shipped(case, world):
@@ -105,7 +109,7 @@ def main():
     done = pg.last(ev)
     step = next((e for e in ev if e.get("event") == "step_done"), {})
     check("pg migrate (all on PostgreSQL): step 0.45.0 from 0.44.0 with the SQLite run's counts",
-          rc == 0 and done.get("applied") == ["0.45.0"] and step.get("counts") == COUNTS
+          rc == 0 and done.get("applied") == DUE and step.get("counts") == COUNTS
           and done.get("backends") == {"player": "postgresql", "auth": "postgresql",
                                        "mod_storage": "postgresql"},
           "exit %d %s %s" % (rc, json.dumps(step), json.dumps(done)))
@@ -120,7 +124,7 @@ def main():
     result = pg.dump_pg("grug_it_platform", world / "mod_storage.sqlite")
     check("platform layout (player and auth on PostgreSQL, mod storage SQLite): every row "
           "equals the SQLite world after the same run",
-          rc == 0 and pg.last(ev).get("applied") == ["0.45.0"] and result == post,
+          rc == 0 and pg.last(ev).get("applied") == DUE and result == post,
           "exit %d; %s" % (rc, pg.diff(result, post)))
     step_writes("grug_it_platform", "platform")
     (WORK / "pg_results.json").write_text(json.dumps(pg.results, indent=1) + "\n")
