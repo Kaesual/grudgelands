@@ -49,8 +49,16 @@ local function soil_interval(pos)
 		SOIL_INTERVAL or IDLE_SOIL_INTERVAL
 end
 
+-- The light rule (Round 48, plant-growth-plan.md §3.1 and §3.8): a growing
+-- crop advances only while its root has plant light (default.plant_lit:
+-- default.PLANT_LIGHT, the level at which no monster spawns, measured as at
+-- noon), unless its profile is `dark` (the fungi and cave plants). Darkness
+-- pauses a crop exactly like dryness: the progress is kept, none accrues.
+local function crop_lit(pos, state)
+	return state.crop.profile.dark or default.plant_lit(pos)
+end
+
 local function pause_crop_timer(pos)
-	if not growing_crop_at(pos) then return end
 	local timer = core.get_node_timer(pos)
 	if not timer:is_started() then return end
 	core.get_meta(pos):set_float(CROP_PROGRESS_META, timer:get_elapsed())
@@ -58,7 +66,6 @@ local function pause_crop_timer(pos)
 end
 
 local function resume_crop_timer(pos)
-	if not growing_crop_at(pos) then return end
 	local timer = core.get_node_timer(pos)
 	if timer:is_started() then return end
 	local elapsed = core.get_meta(pos):get_float(CROP_PROGRESS_META)
@@ -75,21 +82,26 @@ local function start_crop_timer(pos)
 			core.get_node_timer(below):get_timeout() ~= SOIL_INTERVAL then
 		start_soil_timer(below)
 	end
-	if soil == SOIL_WET then
+	local state = growing_crop_at(pos)
+	if soil == SOIL_WET and state and crop_lit(pos, state) then
 		core.get_node_timer(pos):set(STAGE_SECONDS, 0)
 	else
 		core.get_node_timer(pos):stop()
 	end
 end
 
+-- Wet and lit grows, anything else pauses. Light is no node state, so the
+-- check under a growing crop asks it every time (one light read per growing
+-- crop per 15 s), not only when the soil changes.
 local function soil_timer(pos)
 	local node = core.get_node(pos)
 	local wet = core.find_node_near(pos, WATER_RADIUS, {"group:water"}) ~= nil
 	local wanted = wet and SOIL_WET or SOIL_DRY
-	if node.name ~= wanted then
-		core.swap_node(pos, {name = wanted})
-		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
-		if wanted == SOIL_WET then
+	if node.name ~= wanted then core.swap_node(pos, {name = wanted}) end
+	local above = {x = pos.x, y = pos.y + 1, z = pos.z}
+	local state = growing_crop_at(above)
+	if state then
+		if wet and crop_lit(above, state) then
 			resume_crop_timer(above)
 		else
 			pause_crop_timer(above)
@@ -163,12 +175,21 @@ local function add_crop(key, description, item, image)
 	return row
 end
 
+-- Every Cooking plant is a crop, except the rows marked `crop = false`
+-- (Salt Crust, Round 48: salt is no plant).
+local cooking_crops = 0
 for index = 1, #grug_cooking.PLANTS do
 	local plant = grug_cooking.PLANTS[index]
-	add_crop(plant.name, plant.description, plant.item, plant.image)
+	if plant.crop ~= false then
+		add_crop(plant.name, plant.description, plant.item, plant.image)
+		cooking_crops = cooking_crops + 1
+	end
 end
 
-for _, key in ipairs({"potato", "corn"}) do
+-- The gathering foods that are crops: the staples and, since Round 48, Melon
+-- and Mushroom.
+local GATHERING_CROPS = {"potato", "corn", "melon", "mushroom"}
+for _, key in ipairs(GATHERING_CROPS) do
 	local item = "grug_gathering:" .. key
 	local definition = assert(core.registered_items[item],
 		"grug_farming: missing staple " .. item)
@@ -235,9 +256,12 @@ local function crop_timer(pos, elapsed)
 	if not state or state.stage >= STAGES then return false end
 	local below = {x = pos.x, y = pos.y - 1, z = pos.z}
 	-- Expired timers are removed before Luanti invokes any callbacks. If the
-	-- soil callback dried this crop first, this stale callback must credit no
-	-- part of its elapsed value and must not restart while dry.
-	if core.get_node(below).name ~= SOIL_WET then return false end
+	-- soil callback dried this crop first, or it stands in the dark, this
+	-- stale callback must credit no part of its elapsed value and must not
+	-- restart; the soil check resumes it from the kept progress.
+	if core.get_node(below).name ~= SOIL_WET or not crop_lit(pos, state) then
+		return false
+	end
 	local advance = math.floor(elapsed / STAGE_SECONDS)
 	local remainder = elapsed % STAGE_SECONDS
 	if advance < 1 then
@@ -420,7 +444,8 @@ for index = 1, #crops do
 		end
 	end
 	core.register_craftitem(row.seed, {
-		description = row.description .. " Seeds",
+		-- The light-exempt fungi and moss spread by spores (Round 48).
+		description = row.description .. (row.profile.dark and " Spores" or " Seeds"),
 		inventory_image = assert(seed_visuals[row.key],
 			"grug_farming: missing seed visual " .. row.key),
 		groups = {seed = 1, grug_farming_seed = 1},
@@ -483,6 +508,21 @@ for index = 1, #crops do
 end
 
 grug_farming.CROPS = crops
+
+grug_farming.salt_pan = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/salt_pan.lua")({
+	STAGES = STAGES, STAGE_SECONDS = STAGE_SECONDS, SOIL_INTERVAL = SOIL_INTERVAL,
+	WATER_RADIUS = WATER_RADIUS, give_harvest = give_harvest,
+})
+
+-- One tooltip line per plant item (tooltips.lua), after every description
+-- writer has run.
+local apply_plant_tooltips = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/tooltips.lua")
+function grug_farming.apply_plant_tooltips()
+	return apply_plant_tooltips(crops)
+end
+core.register_on_mods_loaded(grug_farming.apply_plant_tooltips)
 
 local crop_root_names = {}
 for index = 1, #crops do
@@ -596,7 +636,8 @@ do
 end
 
 core.register_on_mods_loaded(function()
-	if #crops ~= #grug_cooking.PLANTS + 2 then
+	-- 18 families (farming.md): 14 Cooking plants and 4 gathering foods.
+	if #crops ~= 18 or cooking_crops ~= 14 then
 		error("grug_farming: crop population differs", 0)
 	end
 	for index = 1, #crops do

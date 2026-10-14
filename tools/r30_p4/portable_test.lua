@@ -123,6 +123,8 @@ do
 			timers[k] = timers[k] or new_timer()
 			return timers[k]
 		end,
+		-- Round 48: crops need plant light; this field is lit.
+		get_node_light = function() return 15 end,
 		find_node_near = function(pos, radius, names)
 			assert(names[1] == "group:water")
 			for x = pos.x - radius, pos.x + radius do
@@ -137,7 +139,9 @@ do
 		end,
 	}
 	_G.default = {node_sound_leaves_defaults = function() return {} end,
-		sapling_growth_defs = {}}
+		node_sound_metal_defaults = function() return {} end,
+		sapling_growth_defs = {},
+		plant_lit = function(pos) return core.get_node_light(pos, 0.5) >= 8 end}
 	_G.grug_materials = {TIERS = {}}
 	_G.grug_core = {natural_renewal_allowed = function() return true end}
 	-- The seeds' on_place asks it first (Round 37, ITM-03).
@@ -149,15 +153,17 @@ do
 	}
 	local profiles = dofile(repo .. "/mods/ITEMS/grug_farming/crop_profiles.lua")
 	local plants = {}
+	-- Round 48: four crops come from grug_gathering.
+	local gathering = {potato = true, corn = true, melon = true, mushroom = true}
 	for crop in pairs(profiles) do
-		if crop ~= "potato" and crop ~= "corn" then
+		if not gathering[crop] then
 			local item = "grug_cooking:" .. crop
 			registered_items[item] = {description = crop, inventory_image = crop .. ".png"}
 			plants[#plants + 1] = {name = crop, description = crop, item = item}
 		end
 	end
 	table.sort(plants, function(a, b) return a.name < b.name end)
-	for _, crop in ipairs({"potato", "corn"}) do
+	for crop in pairs(gathering) do
 		registered_items["grug_gathering:" .. crop] = {description = crop,
 			inventory_image = crop .. ".png"}
 	end

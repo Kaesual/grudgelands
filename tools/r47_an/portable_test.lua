@@ -12,6 +12,8 @@
 --      Charcoal), every alloy 10 s as a bar, and the startup audit passing
 --      (and failing when Anthracite joins the coal group);
 --   C. furnace fuel: Coal and Charcoal 80 s, Anthracite 120 s, wood 15 s;
+--      Round 48 (FUEL): cactus 15 s, three leaf kinds 2 s, a sapling,
+--      papyrus and the Coal Block still 0;
 --   D. the Claim Stone (ruling 12): the cap in time (99 lumps' worth),
 --      Anthracite 1.5 lumps, a piece only when its whole time fits, lumps
 --      as before, existing paid_until values read unchanged, the pick-up
@@ -231,6 +233,24 @@ for _, station in ipairs({"furnace", "dual_furnace"}) do
 		"C " .. station .. " Anthracite 120 s (ruling 11)")
 	eq(automatic.fuel_time(station, ItemStack("default:tree")), 15, "C " .. station .. " a log 15 s")
 	eq(automatic.fuel_time(station, ItemStack("default:coalblock")), 0, "C " .. station .. " no Coal Block")
+end
+-- Round 48 (sell plan ruling 1, §3.1): cactus 15 s, every leaves node 2 s;
+-- saplings and papyrus stay no fuel.
+groups_of["default:cactus"] = {choppy = 3}
+for _, leaves in ipairs({"default:leaves", "default:pine_needles", "grug_trees:swamp_leaves"}) do
+	groups_of[leaves] = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1}
+end
+groups_of["default:sapling"] = {snappy = 2, dig_immediate = 3, flammable = 2, sapling = 1}
+groups_of["default:papyrus"] = {snappy = 3, flammable = 2}
+for _, station in ipairs({"furnace", "dual_furnace"}) do
+	eq(automatic.fuel_time(station, ItemStack("default:cactus")), 15, "C " .. station .. " cactus 15 s")
+	for _, leaves in ipairs({"default:leaves", "default:pine_needles", "grug_trees:swamp_leaves"}) do
+		eq(automatic.fuel_time(station, ItemStack(leaves)), 2, "C " .. station .. " " .. leaves .. " 2 s")
+	end
+	eq(automatic.fuel_time(station, ItemStack("default:sapling")), 0, "C " .. station .. " no sapling")
+	eq(automatic.fuel_time(station, ItemStack("default:papyrus")), 0, "C " .. station .. " no papyrus")
+	eq(automatic.fuel_time(station, ItemStack("default:coalblock")), 0,
+		"C " .. station .. " still no Coal Block")
 end
 
 -- ---------------------------------------------------------------------------
