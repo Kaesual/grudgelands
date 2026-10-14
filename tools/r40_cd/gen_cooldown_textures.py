@@ -9,7 +9,9 @@ Writes into mods/PLAYER/grug_abilities/textures/:
       whole square (pick P1).
   grug_abilities_cd_digit_0.png .. _9.png, grug_abilities_cd_digit_m.png
       the image digits (pick N3): the 5 x 7 glyphs of the accepted preview
-      page, white with a black outline one glyph cell wide, CELL px per cell,
+      page (and since Round 48 grug_abilities_cd_digit_p.png, a "+" in their
+      style for the mail icon's "9+" badge, tools/r48_hud), white with a
+      black outline one glyph cell wide, CELL px per cell,
       so a glyph is 7 x 9 cells (28 x 36 px). The overlay places them
       ADVANCE cells apart and scales a cell to a whole number of screen
       pixels (grug_abilities/cooldown_math.lua; its GLYPH_* constants match
@@ -52,6 +54,10 @@ FONT = {
     "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
     "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
     "m": ["00000", "00000", "11010", "10101", "10101", "10101", "10101"],
+    # Round 48 lane HUD: the "+" of the mail icon's "9+" badge
+    # (tools/r48_hud/gen_hud_textures.py composes it); "p" because "+" is
+    # not allowed in a texture name.
+    "p": ["00000", "00100", "00100", "11111", "00100", "00100", "00000"],
 }
 
 
