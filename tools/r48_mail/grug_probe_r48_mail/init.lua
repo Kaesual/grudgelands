@@ -3,8 +3,8 @@
 -- tools/luanti_headless.sh and connects one real client. The driver
 -- (character creation, SHOT / ack handshake) follows tools/r47_tc's probe.
 --
--- Until lane WORLD merges there is no mailbox node: the probe registers a
--- stand-in under the final name grug_mapgen:mailbox (a plain box), places it
+-- Without lane WORLD's mailbox node the probe registers a stand-in under the
+-- final name grug_mapgen:mailbox (a plain box); either way it places one
 -- three nodes east of the start's waystone, fills the character's mailbox
 -- with sample letters, a broadcast and tickets, and opens every tab and
 -- dialog through the window's own field handler.
@@ -98,7 +98,10 @@ end
 -- Each shot: a step that sets the window up, then the screenshot.
 local SHOTS = {
 	{name = "L1_letters_admin", run = function(player)
-		grug_mail.open_mailbox(player, mailbox)
+		-- Through the node's own right-click (lane WORLD's node once merged).
+		local node = core.get_node(mailbox)
+		core.registered_nodes[node.name].on_rightclick(mailbox, node, player, ItemStack(""))
+		log("right-click opened the window: " .. tostring(grug_mail.session(NAME) ~= nil))
 		mail_fields(player, {letters = "CHG:" .. row_of("Welcome to Grudgelands") .. ":5"})
 	end},
 	{name = "L2_letters_player", run = function(player)
