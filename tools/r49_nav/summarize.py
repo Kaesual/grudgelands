@@ -88,6 +88,56 @@ def fails(trial):
     return " ".join(f"{k}={c[k]}" for k in keys if c.get(k)) or "-"
 
 
+SYMBOLS = [
+    ("air", "."), ("bush_stem", "S"), ("bush_leaves", "b"),
+    ("blueberry", "u"), ("_quarter", "Q"), ("_base", "r"), ("_branch", "r"),
+    ("_twig", "r"), ("tree", "T"), ("leaves", "l"), ("needles", "l"),
+    ("grass", ","), ("fern", ","), ("flower", ","), ("water", "~"),
+]
+
+
+def symbol(name):
+    for key, sym in SYMBOLS:
+        if key in name:
+            return sym
+    return "#"
+
+
+def print_geometry(trial):
+    """One natural trial's nodes, a layer per y (x right, z down), with the
+    start (A) and the target (B) marked in their feet layers."""
+    site = trial["site"]
+    g = site["geometry"]
+    frame = trial["frame"]
+    minp, maxp, pal, cells = g["minp"], g["maxp"], g["palette"], g["cells"]
+    nx = maxp["x"] - minp["x"] + 1
+    nz = maxp["z"] - minp["z"] + 1
+    start = (frame["x"], frame["y"] + 1, frame["z"])
+    tu, tv, th = trial["target"]
+    target = (frame["x"] + tu, frame["y"] + th, frame["z"] + tv)
+    print(f"{trial['scene']} {trial['mover']}: obstacle {site.get('obstacle_node')}"
+          f" at {site.get('obstacle')}, start {start}, target {target}")
+    print("legend: . air, # ground/other, T trunk, Q quarter trunk, r root/limb,"
+          " l leaves, b bush leaves, S bush stem, u blueberry, , plants, ~ water")
+    i = 0
+    for y in range(minp["y"], maxp["y"] + 1):
+        rows = []
+        for z in range(minp["z"], maxp["z"] + 1):
+            row = ""
+            for x in range(minp["x"], maxp["x"] + 1):
+                ch = symbol(pal[cells[i] - 1])
+                if (x, y, z) == start:
+                    ch = "A"
+                elif (x, y, z) == target:
+                    ch = "B"
+                row += ch
+                i += 1
+            rows.append(row)
+        print(f"y {y} (h {y - frame['y']}):")
+        for row in rows:
+            print("  " + row)
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
@@ -99,6 +149,13 @@ def main():
         for key in ("events", "ratios", "track"):
             t[key] = t.get(key) or []
         t["counts"] = t.get("counts") or {}
+    if len(sys.argv) >= 4 and sys.argv[2] == "--geometry":
+        for t in trials:
+            if t["scene"] == sys.argv[3] and t.get("site"):
+                print_geometry(t)
+                return 0
+        print("no such natural trial")
+        return 1
     if len(sys.argv) >= 5 and sys.argv[2] == "--events":
         for t in trials:
             if t["scene"] == sys.argv[3] and t["mover"] == sys.argv[4]:
@@ -146,7 +203,12 @@ def main():
             if p12 and st.get("path12_ok") is False:
                 p12 = f"{p12} rej"
             hit_at = t.get("hit_at")
-            print(f"| {t['scene']} | {','.join(str(x) for x in t['target'])}"
+            site = t.get("site")
+            name = t["scene"]
+            if site:
+                node = (site.get("obstacle_node") or "").split(":")[-1]
+                name += f" ({node}, d {site.get('dist')}, dh {site.get('dh')})"
+            print(f"| {name} | {','.join(str(x) for x in t['target'])}"
                   f" | {classify(t)} | {t.get('t_hit', '')}"
                   f" | {','.join(str(x) for x in hit_at) if hit_at else ''}"
                   f" | {t.get('min_d')} | {st.get('line')} | {p6} | {p12}"

@@ -326,10 +326,20 @@ do
 	end
 end
 
--- Engine searches and the head-room/width check.
+-- Engine searches and the head-room/width check. A "pad" variant batch
+-- widens the box with the episode's failures (VARIANT, set per batch).
+local VARIANT = {}
+local repair_path -- the "repair" variant, below
+local PAD_STEPS = {6, 12, 16}
 do
 	local orig_search = NAV.search
 	NAV.search = function(from, goal, padding, jump, drop)
+		local rec0 = in_combat_step
+		if VARIANT.pad and rec0 and rec0.ent then
+			local nst = rec0.ent.temp and rec0.ent.temp.grug_nav
+			local fails = nst and nst.fails or 0
+			padding = PAD_STEPS[math.min(fails + 1, #PAD_STEPS)]
+		end
 		local t0 = now()
 		local path = orig_search(from, goal, padding, jump, drop)
 		local rec = in_combat_step
@@ -345,6 +355,51 @@ do
 		return path
 	end
 	local orig_check = NAV.check_path
+
+	-- The "repair" variant (a phase 2 candidate): a path the head-room or
+	-- width check rejects is mended locally instead of thrown away. Every
+	-- waypoint that does not fit is replaced by the first neighbour (the 8
+	-- round it, on its level or one up or down) that fits, stands on walkable
+	-- ground, is a step from the previous kept waypoint and near the next
+	-- one. No new search; nil when a waypoint has no such neighbour.
+	local function cell_fits(body, c)
+		if not orig_check(body, {c, c}) then return false end
+		local node = core.get_node_or_nil({x = c.x, y = c.y - 1, z = c.z})
+		local def = node and core.registered_nodes[node.name]
+		return def ~= nil and def.walkable == true
+	end
+	local OFFS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
+	function repair_path(body, path)
+		local out, shifted = {path[1]}, 0
+		for i = 2, #path do
+			local p = path[i]
+			if cell_fits(body, p) then
+				out[#out + 1] = p
+			else
+				local prev, nxt = out[#out], path[i + 1]
+				local found
+				for _, o in ipairs(OFFS) do
+					for _, dy in ipairs({0, 1, -1}) do
+						local c = {x = p.x + o[1], y = p.y + dy, z = p.z + o[2]}
+						if abs(c.x - prev.x) <= 1 and abs(c.z - prev.z) <= 1
+								and c.y - prev.y <= body.step and prev.y - c.y <= body.drop
+								and (not nxt or (abs(c.x - nxt.x) <= 2 and abs(c.z - nxt.z) <= 2
+									and abs(c.y - nxt.y) <= 2))
+								and cell_fits(body, c) then
+							found = c
+							break
+						end
+					end
+					if found then break end
+				end
+				if not found then return nil, shifted end
+				shifted = shifted + 1
+				out[#out + 1] = found
+			end
+		end
+		return out, shifted
+	end
+
 	NAV.check_path = function(body, path)
 		local out = orig_check(body, path)
 		local rec = in_combat_step
@@ -362,6 +417,11 @@ do
 				detail[3] = {u, v, h}
 			end
 			event(rec, "reject_at", detail)
+			if VARIANT.repair then
+				local fixed, shifted = repair_path(body, path)
+				out = fixed and orig_check(body, fixed)
+				event(rec, out and "repaired" or "repair_failed", shifted)
+			end
 		end
 		return out
 	end
@@ -457,6 +517,24 @@ core.register_entity(MOD .. ":dummy", {
 local MOVERS = {
 	zombie = {entity = "grug_mobs:zombie", T = 20, note = "narrow, 1.9 tall"},
 	rat = {entity = "grug_mobs:giant_rat", T = 20, note = "wide (1.28), 1 tall"},
+	-- Fix candidates (phase 2 proposals), applied by the probe only:
+	--   pad    a failed search widens the next one of the same stuck episode:
+	--          padding 6, then 12, then 16 (PAD_STEPS);
+	--   narrow the rat's collision box 0.98 wide instead of 1.28 (a narrow
+	--          mob: no 2x2 width check, it passes 1-wide gaps);
+	--   repair a rejected path is mended (repair_path) instead of failing.
+	zombie_pad = {entity = "grug_mobs:zombie", T = 20, variant = "pad",
+		note = "zombie, padding escalation"},
+	rat_pad = {entity = "grug_mobs:giant_rat", T = 20, variant = "pad",
+		note = "rat, padding escalation"},
+	zombie_fix = {entity = "grug_mobs:zombie", T = 20, variant = "pad,repair",
+		note = "zombie, padding escalation and path repair"},
+	rat_fix = {entity = "grug_mobs:giant_rat", T = 20, variant = "pad,repair",
+		note = "rat, padding escalation and path repair"},
+	rat_narrow = {entity = "grug_mobs:giant_rat", T = 20, variant = "narrow",
+		note = "rat with a 0.98-wide collision box"},
+	rat_narrow_pad = {entity = "grug_mobs:giant_rat", T = 20, variant = "narrow,pad",
+		note = "rat 0.98 wide, padding escalation"},
 	archer = {entity = "grug_mobs:skeleton_archer", T = 12,
 		note = "ranged ground mob (dogshoot), no navigation today"},
 }
@@ -478,6 +556,17 @@ local function lane_spec(index)
 		start = cell_pos(index, 0, 0, 1),
 		target = cell_pos(index, t[1], t[2], t[3]), target_local = t,
 		side = {x = 0, z = 1}, strafe = scene.strafe}
+end
+
+-- The "narrow" variant: a collision box 0.98 wide, kept on the entity (the
+-- level code rescales from base_colbox).
+local function narrow(ent)
+	local b = ent.base_colbox
+	if b[4] - b[1] <= 0.98 then return end
+	ent.base_colbox = {-0.49, b[2], -0.49, 0.49, b[5], 0.49}
+	local box = OB.physics_box(ent.base_colbox, ent)
+	ent.object:set_properties({collisionbox = box})
+	ent._grug_cbox = box
 end
 
 local function new_rec(mover_id, spec)
@@ -552,6 +641,7 @@ local function start_trial(rec)
 	local spec = rec.spec
 	local g = spec.target
 	rec.goal_cell = {x = g.x, y = g.y, z = g.z}
+	if VARIANT.narrow then narrow(ent) end
 	grug_mobs.place_on_ground(obj, feet(spec.start))
 	obj:set_velocity({x = 0, y = 0, z = 0})
 	ent:set_yaw(core.dir_to_yaw({x = g.x - spec.start.x, y = 0,
@@ -653,10 +743,13 @@ local function run_batch(mover_id, specs, label, done)
 	end
 	core.set_timeofday(0)
 	active = {}
+	VARIANT = {}
+	for word in (mover.variant or ""):gmatch("[%w_]+") do VARIANT[word] = true end
 	local recs = {}
 	for _, spec in ipairs(specs) do
 		local obj = core.add_entity(feet(spec.start), mover.entity)
 		local ent = obj and obj:get_luaentity()
+		if ent and VARIANT.narrow then narrow(ent) end
 		local rec = new_rec(mover_id, spec)
 		rec.entity = mover.entity
 		if ent then
@@ -697,6 +790,7 @@ local function run_batch(mover_id, specs, label, done)
 				if rec.dummy then rec.dummy:remove() end
 			end
 			active = {}
+			VARIANT = {}
 			results.batches[#results.batches + 1] = {mover = mover_id, label = label,
 				seconds = r2((now() - t_start) / 1e6), cpu_s = r2(os.clock() - cpu0),
 				searches = NAV.counters.searches - c0.searches,
@@ -977,17 +1071,20 @@ end
 ---------------------------------------------------------------------------
 -- Run
 ---------------------------------------------------------------------------
-local function lane_specs(phase)
+-- Every lane of the selected lists runs in one batch per mover ("lanes"),
+-- then the natural trials ("real").
+local function lane_specs()
 	local specs = {}
-	for index, lane in ipairs(LANES) do
-		if lane.phase == phase then specs[#specs + 1] = lane_spec(index) end
-	end
+	for index in ipairs(LANES) do specs[#specs + 1] = lane_spec(index) end
 	return specs
 end
 
 local function run_all()
 	local queue = {}
-	for _, phase in ipairs(PHASE_ORDER) do
+	local jobs = {}
+	if #LANES > 0 then jobs[#jobs + 1] = "lanes" end
+	if PHASES.real then jobs[#jobs + 1] = "real" end
+	for _, phase in ipairs(jobs) do
 		for _, mover in ipairs(MOVER_ORDER) do
 			queue[#queue + 1] = {phase = phase, mover = mover}
 		end
@@ -1004,7 +1101,7 @@ local function run_all()
 			core.request_shutdown("r49nav done", false, 0)
 			return
 		end
-		local specs = job.phase == "real" and real_specs or lane_specs(job.phase)
+		local specs = job.phase == "real" and real_specs or lane_specs()
 		log("batch " .. job.phase .. " " .. job.mover .. " (" .. #specs .. " trials)")
 		run_batch(job.mover, specs, job.phase .. "_" .. job.mover, next_batch)
 	end
