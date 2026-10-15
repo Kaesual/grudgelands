@@ -239,7 +239,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			cache_hits = 0, cache_misses = 0, cache_evictions = 0}
 
 		-- THE 2-D RESULT PER CHUNK COLUMN (Round 49 lane CACHE). The scan, the
-		-- rank digests, the budgets and the sort below read only the column's
+		-- rank draws, the budgets and the sort below read only the column's
 		-- x/z owner, the seed and session-constant pure functions of x, y and z
 		-- (`column_values_at`, `analytic_p7_ref`, `production_content`, the
 		-- habitat density and the budget hash), never the chunk's voxels or its
@@ -249,7 +249,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		-- kept list instead of scanning again. Keyed by the owner's x/z bounds,
 		-- first in first out over COLUMN_CACHE_LIMIT columns (a few dozen roots
 		-- each). Production only: the ledger counts every eligible column inside
-		-- the 3-D owner and records each root's cell and digest, which needs the
+		-- the 3-D owner and records each root's cell and rank, which needs the
 		-- scan.
 		local COLUMN_CACHE_LIMIT = 256
 		local column_cache = not emit_ledger and {} or nil
