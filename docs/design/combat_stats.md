@@ -964,12 +964,14 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   both sides of the body, ground below, steps up to the mob's step height
   and drops down to its fear height; a diagonal step needs both corner cells
   free with ground under them; harmless water is ground for a mob that
-  floats. Fliers never search. A ground `dogshoot` family (Round 49) that
-  cannot see its target walks at it like a melee mob, stuck detector and
+  floats. Fliers never search. A ground `dogshoot` family (Round 49) in
+  its ranged phase that cannot see its target walks at it like a melee mob, stuck detector and
   search included, until it sees it; then it stops and shoots, which ends
   its stuck episode like a strike; it never shoots without sight. Its melee
   phase navigates like any melee mob. A flying `dogshoot` mob keeps
-  upstream's switch (it shoots from range whether or not it sees). This
+  upstream's switch (it shoots from range whether or not it sees); a
+  `dogshoot` mob without a ranged phase (no `dogshoot_switch`: the ranged
+  kings) keeps upstream's branches and never searches. This
   replaces mobs_redo's stuck
   timer, the 1 s blocked-line-of-sight trigger and the sidestep of the
   close-cover ruling of 2026-09-17 and the walk-speed crawl of a wedged

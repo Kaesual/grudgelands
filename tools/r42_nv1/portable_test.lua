@@ -1031,15 +1031,23 @@ do
 		if melee(self, ds_var, dist, in_sight) then return "dogfight" end
 		if shoot(self, ds_var) then return "shoot" end
 	end
-	local archer = {attack_type = "dogshoot", reach = 3, pathfinding = 1}
+	local archer = {attack_type = "dogshoot", reach = 3, pathfinding = 1,
+		dogshoot_switch = 1}
 	check(branch(archer, 1, 10, false) == "dogfight", "S1 no sight: walk and path")
 	check(branch(archer, 1, 10, true) == "shoot", "S1 sight: shoot")
 	check(branch(archer, 2, 10, true) == "dogfight"
 		and branch(archer, 2, 10, false) == "dogfight", "S1 the melee phase")
 	check(branch(archer, 1, 2, true) == "dogfight", "S1 in reach: melee")
-	local wisp = {attack_type = "dogshoot", reach = 2, pathfinding = 1, fly = true}
+	local wisp = {attack_type = "dogshoot", reach = 2, pathfinding = 1, fly = true,
+		dogshoot_switch = 1}
 	check(branch(wisp, 1, 10, false) == "shoot" and branch(wisp, 1, 10, true) == "shoot",
 		"S2 a flier shoots as before")
+	-- S6 a dogshoot mob without a switch (ds_var 0: the ranged kings) keeps
+	-- upstream's branches: melee in reach, otherwise none, seen or not.
+	local king = {attack_type = "dogshoot", reach = 3, pathfinding = 1}
+	check(branch(king, 0, 10, false) == nil and branch(king, 0, 10, true) == nil
+		and branch(king, 0, 2, true) == "dogfight", "S6 no switch: as upstream")
+	check(not can_nav(king, true), "S6 no switch: no navigation")
 	local zombie = {attack_type = "dogfight", reach = 3, pathfinding = 1}
 	check(branch(zombie, 0, 10, false) == "dogfight", "S3 dogfight unchanged")
 	check(can_nav(archer, true) and can_nav(zombie, true), "S4 ground dogshoot navigates")
@@ -1051,7 +1059,8 @@ do
 	local s = api:find("\t\telseif self.attack_type == \"shoot\"", 1, true)
 	local e = api:find("p.y = p.y - 0.5 ; s.y = s.y + 0.5", s, true)
 	local head = api:sub(s, e)
-	check(head:find("grug_nav.combat_step(self, s, dtime, self.attack, target_pos, dist,\n"
+	check(head:find("self.attack_type == \"dogshoot\" and self.dogshoot_switch", 1, true) ~= nil
+		and head:find("grug_nav.combat_step(self, s, dtime, self.attack, target_pos, dist,\n"
 		.. "\t\t\t\t\t\ttrue, self.keep_flying == true)", 1, true) ~= nil
 		and head:find("grug_nav.command(self, s, 0)", 1, true) ~= nil,
 		"S5 a shooting ground dogshoot mob strikes in the navigation's terms")

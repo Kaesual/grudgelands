@@ -591,10 +591,12 @@ ruling 18's padding 6):
   (`PADDING_STEPS`; `nst.searches`, reset with the episode's progress);
   `nav.PADDING` (6) stays the route cache's.
 - `mobs/api.lua`, three new markers in `do_states()`'s attack state: a
-  ground `dogshoot` mob that cannot see its target takes the dogfight branch
-  (walk, stuck detector, search) instead of the shoot branch, so it never
-  shoots without sight; `can_nav` admits ground `dogshoot` mobs with
-  `pathfinding`; the shoot branch calls `grug_nav.combat_step` with
+  ground `dogshoot` mob in its ranged phase (`dogshoot_switch` 1) that cannot
+  see its target takes the dogfight branch (walk, stuck detector, search)
+  instead of the shoot branch, so it never shoots without sight; `can_nav`
+  admits ground `dogshoot` mobs with a `dogshoot_switch` and `pathfinding`
+  (one without a switch, the ranged kings, keeps upstream's branches); the
+  shoot branch calls `grug_nav.combat_step` with
   `striking` true (seeing and shooting ends the stuck episode like a
   strike) and commands 0. Fliers keep upstream's switch. This reverses the
   WP6-T10 patch (d) rule kept by Round 42 NV1 (no search for a `dogshoot`
