@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Round 49 lane CACHE: summarize a shell-order probe boot.
 
-    python3 -I tools/r49_cache/analyze.py OUT/probe.txt
+    python3 -I tools/r49_cache/analyze.py OUT/server.log
 
-probe.txt holds the probe's [r49cache] lines and the GRUG_MGPROF lines of the
-boot (tools/r49_cache/run_probe.sh). Per phase: the chunks the probe
+The server log of a probe boot (tools/r49_cache/run_probe.sh): the probe's
+[r49cache] lines and the GRUG_MGPROF line of every callback. Per phase: the chunks the probe
 generated, and for every chunk column the chunks with Lua work in generation
 order. The first such chunk of a column pays the cold column cost; a later
 one "re-pays" it when its zones column cache misses reach half a column
@@ -124,7 +124,31 @@ def main(path):
             print("  chunks generated between a column's previous chunk and its "
                   f"re-paying one: median {statistics.median(gaps):.0f}, min {min(gaps)}, "
                   f"max {max(gaps)}")
-        lua = [r for r in rows if r.get("result") not in SKIPS]
+        # The column cache is first in first out: a column's tuples go when as
+        # many misses as the limit came after they were inserted (by the
+        # column's last chunk that missed most of them), however often they
+        # were hit since. That distance per later chunk, against limits.
+        distances, inserted = [], {}
+        seq = [r for r in rows if r.get("result") not in SKIPS]
+        misses_upto = [0]
+        for r in seq:
+            misses_upto.append(misses_upto[-1] + num(r, "cc_misses"))
+        for position, r in enumerate(seq):
+            x, _, z = r["minp"].split(",")
+            key = (x, z)
+            if key in inserted:
+                distances.append(misses_upto[position] -
+                                 misses_upto[inserted[key] + 1])
+            if num(r, "cc_misses") >= REPAY:
+                inserted[key] = position
+        if distances:
+            print(f"  insertion distance of later chunks (misses since the column's tuples "
+                  f"went in): median {statistics.median(distances):.0f}, max "
+                  f"{max(distances):.0f}")
+            for limit in (65536, 131072, 196608, 262144):
+                over = sum(1 for d in distances if d >= limit)
+                print(f"    limit {limit}: {over} of {len(distances)} later chunks beyond it")
+        lua = seq
         for counter in ("cc_evictions", "c.cell_cache_miss", "c.cell_cache_eviction",
                         "c.p9g_cache_hit", "c.p9g_cache_miss", "c.p9g_cache_eviction",
                         "c.front_cache_miss", "c.front_cache_flush", "c.cave_cache_miss",

@@ -8,7 +8,7 @@
 -- differ from the plan the kept roots were ranked on):
 -- 1. Hit equals miss: runtime H (the shipped limit) writes the surface
 --    chunks of two columns so that the second chunk of each column hits the
---    kept roots; runtime M (the same source with the limit 1) writes them in
+--    kept roots; runtime M (the same sources with both limits 1) writes them in
 --    an order that evicts every column before its second chunk, so each of
 --    those chunks scans again. Every chunk writes the same bytes and the
 --    same writer result in both, and P9G settles the same number of sources
@@ -21,6 +21,11 @@
 --    holds no y range: the hit chunks above lie at another height than the
 --    chunk that kept them). Nothing else the 2-D result reads varies within
 --    a session: the seed, the source rows and pure functions of x, y, z.
+-- The zones column cache of the mapgen planner (wp40/zones.lua, purpose
+-- "mapgen"): H runs the shipped mapgen limit and its four chunks evict
+-- nothing; M runs the limit 1, so nearly every column query recomputes its
+-- tuple, and the bytes above are the same (hit equals miss here too; the
+-- main environment's source keeps 65,536 and is tools/r31_c's).
 -- Prints "R49 CACHE PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
 local checks = 0
@@ -31,30 +36,41 @@ local function check(ok, label)
 end
 
 local SEED = "12345"
-local P9G_PATH = "/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua"
+local WP40 = "/mods/MAPGEN/grug_mapgen/wp40/"
+-- The two limits as the sources spell them: {file, pattern of the number}.
+local LIMITS = {
+	p9g = {"r7_p9g.lua", "(local COLUMN_CACHE_LIMIT = )(%d+)"},
+	zones = {"zones.lua", "(cache_purpose == \"mapgen\" and )(%d+)"},
+}
 
--- The shipped limit, read from the source.
-local shipped_limit
-do
-	local file = assert(io.open(repo .. P9G_PATH, "rb"))
-	shipped_limit = tonumber(file:read("*a"):match("local COLUMN_CACHE_LIMIT = (%d+)"))
+local function read(name)
+	local file = assert(io.open(repo .. WP40 .. name, "rb"))
+	local text = file:read("*a")
 	file:close()
+	return text
 end
-check(shipped_limit and shipped_limit >= 2,
-	"the shipped P9G column cache limit is read (" .. tostring(shipped_limit) .. ")")
+local shipped = {}
+for key, limit in pairs(LIMITS) do
+	local _, value = read(limit[1]):match(limit[2])
+	shipped[key] = tonumber(value)
+end
+check(shipped.p9g and shipped.p9g >= 2,
+	"the shipped P9G column cache limit is read (" .. tostring(shipped.p9g) .. ")")
+check(shipped.zones and shipped.zones >= 65536,
+	"the shipped mapgen column cache limit is read (" .. tostring(shipped.zones) .. ")")
 
--- One runtime; with `limit`, r7_p9g.lua is loaded with that cache limit.
-local function runtime(limit)
+-- One runtime; `limits` ({p9g = n, zones = n}) loads the sources with those
+-- cache limits.
+local function runtime(limits)
 	local real_dofile = dofile
 	dofile = function(path, ...)
-		if limit and type(path) == "string" and path:sub(-#P9G_PATH) == P9G_PATH then
-			local file = assert(io.open(path, "rb"))
-			local text = file:read("*a")
-			file:close()
-			local patched, count = text:gsub("local COLUMN_CACHE_LIMIT = %d+",
-				"local COLUMN_CACHE_LIMIT = " .. limit)
-			assert(count == 1, "COLUMN_CACHE_LIMIT not found once")
-			return assert(loadstring(patched, "@" .. path))(...)
+		for key, value in pairs(limits or {}) do
+			local name = LIMITS[key][1]
+			if type(path) == "string" and path:sub(-#(WP40 .. name)) == WP40 .. name then
+				local patched, count = read(name):gsub(LIMITS[key][2], "%1" .. value)
+				assert(count == 1, name .. ": the limit is not found once")
+				return assert(loadstring(patched, "@" .. path))(...)
+			end
 		end
 		return real_dofile(path, ...)
 	end
@@ -75,6 +91,9 @@ end
 
 local function p9g_metrics(R)
 	return R.built.session.metrics().p9g
+end
+local function column_metrics(R)
+	return R.built.session.metrics().planner
 end
 
 -- Writes `order` (chunk names) in R: name -> {result, hash, accepted}.
@@ -99,19 +118,26 @@ local NAMES = {"A_S1", "A_S2", "C_S1", "C_S2"}
 
 local H = runtime(nil)
 local h_metrics = p9g_metrics(H)
-check(h_metrics.column_cache_limit == shipped_limit,
-	"runtime H runs the shipped limit (" .. tostring(h_metrics.column_cache_limit) .. ")")
+check(h_metrics.column_cache_limit == shipped.p9g,
+	"runtime H runs the shipped P9G limit (" .. tostring(h_metrics.column_cache_limit) .. ")")
+check(column_metrics(H).runtime_column_cache_limit == shipped.zones,
+	"runtime H's mapgen planner runs the shipped column cache limit (" ..
+		tostring(column_metrics(H).runtime_column_cache_limit) .. ")")
 -- A_S2 and C_S1 hit (the second chunk of their column).
 local hit = write(H, CHUNKS, {"A_S1", "A_S2", "C_S2", "C_S1"})
 h_metrics = p9g_metrics(H)
+local h_columns = column_metrics(H)
 H = nil
 collectgarbage()
 
-local M = runtime(1)
-check(p9g_metrics(M).column_cache_limit == 1, "runtime M runs the limit 1")
+local M = runtime({p9g = 1, zones = 1})
+check(p9g_metrics(M).column_cache_limit == 1 and
+	column_metrics(M).runtime_column_cache_limit == 1,
+	"runtime M runs the P9G and the column cache limit 1")
 -- Every column is evicted before its second chunk.
 local miss = write(M, CHUNKS, {"A_S1", "C_S1", "A_S2", "C_S2"})
 local m_metrics = p9g_metrics(M)
+local m_columns = column_metrics(M)
 
 -- 1. Hit equals miss.
 for _, name in ipairs(NAMES) do
@@ -139,5 +165,16 @@ check(m_metrics.column_cache_misses == 4 and m_metrics.column_cache_hits == 0 an
 -- column is never served A's roots, and the hits came at another height.
 check(CHUNKS.A_S2.y ~= CHUNKS.A_S1.y and CHUNKS.C_S1.y ~= CHUNKS.C_S2.y,
 	"the hit chunks lie at another height than the chunks that kept the roots")
+
+-- The zones column cache: H's chunks evict nothing; M's recompute nearly
+-- every query (and wrote the same bytes, above).
+check(h_columns.runtime_column_cache_evictions == 0 and
+	h_columns.runtime_column_cache_hits > 10 * h_columns.runtime_column_cache_misses,
+	("H: the column cache holds both columns (hits %d, misses %d, evictions %d)")
+		:format(h_columns.runtime_column_cache_hits, h_columns.runtime_column_cache_misses,
+			h_columns.runtime_column_cache_evictions))
+check(m_columns.runtime_column_cache_misses > 10 * h_columns.runtime_column_cache_misses,
+	("M: the column cache recomputes nearly every query (misses %d, hits %d)")
+		:format(m_columns.runtime_column_cache_misses, m_columns.runtime_column_cache_hits))
 
 print(("R49 CACHE PORTABLE PASS checks=%d"):format(checks))

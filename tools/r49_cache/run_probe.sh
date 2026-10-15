@@ -4,8 +4,7 @@
 # (tools/mgprof/stages.patch) plus this lane's cache counters
 # (tools/r49_cache/counters.patch), both on the staged game copy only, and
 # the probe grug_probe_r49cache (chunks in player-shell order), then copies
-# the server log and the extracted lines to OUT and summarizes them
-# (tools/r49_cache/analyze.py).
+# the server log to OUT and summarizes it (tools/r49_cache/analyze.py).
 #
 # Usage: tools/r49_cache/run_probe.sh OUT
 # Environment: TIMEOUT (default 300 s); QUEUE=<script> runs the boot through
@@ -36,9 +35,8 @@ kept="$(sed -n 's/^kept: //p' "$out/headless.txt" | tail -n 1)"
 if [[ -n "$kept" && "$kept" == /tmp/grudgelands-headless.?* && -d "$kept" ]]; then
 	rm -rf "$kept"
 fi
-grep -h -e '\[r49cache\]' -e 'GRUG_MGPROF ' "$out/server.log" >"$out/probe.txt" 2>/dev/null || true
-python3 -I "$here/analyze.py" "$out/probe.txt" | tee "$out/summary.txt" || true
-if [[ $boot -eq 0 ]] && grep -q 'RESULT PASS' "$out/probe.txt"; then
+python3 -I "$here/analyze.py" "$out/server.log" | tee "$out/summary.txt" || true
+if [[ $boot -eq 0 ]] && grep -q '\[r49cache\] RESULT PASS' "$out/server.log"; then
 	echo "r49 cache probe: PASS"
 	exit 0
 fi
