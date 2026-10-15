@@ -173,14 +173,14 @@
           "path": "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_3.png",
           "draft": "tools/r48_artp/drafts/wild_onion/A/grug_farming_wild_onion_3.png",
           "role": "3",
-          "sha256": "e4fdc59ff5b8edf8bc64131c5e9ba723c9d01a12f147234065e5ce1992b29265",
+          "sha256": "8c2f106bf2ba59ebd15365a3f68fe37073768d8c9e33b371e8691b081e27d40b",
           "replaced_sha256": "b23c8594c7045235f43fdeb247be39f242e2baa76d0389002fb488db206bc144"
         },
         {
           "path": "mods/ITEMS/grug_farming/textures/grug_farming_wild_onion_4.png",
           "draft": "tools/r48_artp/drafts/wild_onion/A/grug_farming_wild_onion_4.png",
           "role": "4",
-          "sha256": "9c39cb89ece117dc5a8a9c557825cb47dddc65a1077ee5ed8e0286b90fabe935",
+          "sha256": "8cecefd4d51b85b50eb50d2f56cb3273552647818f6e4fa09b2c83690dbcb771",
           "replaced_sha256": "aa2d9b9b7c11fcb900eadc7505bea9b0b0083e01a05a4892ec4b225f0efaa362"
         }
       ]

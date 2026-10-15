@@ -91,8 +91,8 @@ to [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
 | `grug_farming_seed_cassava.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `cassava/C`; byte-identical copy |
 | `grug_farming_wild_onion_1.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
 | `grug_farming_wild_onion_2.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
-| `grug_farming_wild_onion_3.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
-| `grug_farming_wild_onion_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy |
+| `grug_farming_wild_onion_3.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy; Round 49: the generator sets the bulb half in the ground |
+| `grug_farming_wild_onion_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `wild_onion/A`; byte-identical copy; Round 49: the generator sets the bulb half in the ground |
 | `grug_farming_pumpkin_4.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `pumpkin/A`; byte-identical copy |
 | `grug_farming_melon_1.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `melon/B`; byte-identical copy |
 | `grug_farming_melon_2.png` | Original pixel art by GPT-6 Astra | CC0 1.0 | Round 48; generator `tools/r48_artp/generate.py`; draft `melon/B`; byte-identical copy |

@@ -9,6 +9,14 @@ available. The
 Change classification: **compatible**; this step replaces art and its
 licence records, with no gameplay or saved-state change.
 
+**Round 49:** Wild Onion A stages 3 and 4 sit half in the ground (ruling 9
+of the [gameplay plan](../../docs/planning/round49-gameplay-draft.md)): the
+painter moves the bulb down until the bottom edge cuts it at about its
+widest row, the leaf tips stay. `generate.py` now also writes the picked
+drafts to their shipped paths, so one run updates the game and `--check`
+still holds every shipped file byte-identical to its draft. The harvest
+icon `grug_cooking_wild_onion.png` is unchanged.
+
 ## Shipped picks
 
 `grug_farming_*` files ship in `mods/ITEMS/grug_farming/textures/`;
