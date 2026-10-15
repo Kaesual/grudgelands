@@ -184,9 +184,11 @@ local function pick_columns()
 	return choose()
 end
 
--- The cost of one P8 frontier rank digest (helpers.digest11: an 11-field
--- framed string through core.sha256), measured with the shipped r6_hash.lua
--- in this process, to turn the boot's digest counts into milliseconds.
+-- The cost of one framed 11-field SHA-256 digest (as the former P8
+-- frontier rank digests; since Round 49 lane HASH only the seeded trees'
+-- domain is left) and of one placement hash draw (r6_hash.lua `placement`,
+-- what replaced the placement digests), measured with the shipped
+-- r6_hash.lua in this process, to turn the boot's counts into milliseconds.
 local function bench_digest()
 	local hash = dofile(core.get_modpath("grug_mapgen") .. "/wp40/r6_hash.lua")(
 		function(bytes) return core.sha256(bytes, true) end)
@@ -196,10 +198,18 @@ local function bench_digest()
 	local t0 = core.get_us_time()
 	for index = 1, n do
 		fields[8] = index
-		hash.digest_count("resource_frontier_rank_v1", "12345", fields, 11)
+		hash.digest_count("tree_template_seed_v1", "12345", fields, 11)
 	end
 	log(("bench digest11 n=%d us_per_call=%.2f"):format(n,
 		(core.get_us_time() - t0) / n))
+	if hash.placement then
+		local mix = hash.placement("12345")
+		local m, acc = 1000000, 0
+		t0 = core.get_us_time()
+		for index = 1, m do acc = (acc + mix(index, -63, -145, 7919)) % 16777213 end
+		log(("bench placement_mix n=%d us_per_call=%.4f (acc %d)"):format(m,
+			(core.get_us_time() - t0) / m, acc))
+	end
 end
 
 -- Insecure diagnostic boots only (io.open outside the world is refused in
@@ -324,6 +334,40 @@ local function ore_census(list)
 	end
 end
 
+-- Round 49 lane HASH: every node name of the surface chunks (S1, S2) with
+-- its count, so the decoration, tree and gathering-source density of two
+-- boots can be compared kind by kind (tools/r49_hash/density_compare.py
+-- reads these lines from the two server logs).
+local function surface_census(list)
+	for _, row in ipairs(list) do
+		if row.id:find("S1", 1, true) or row.id:find("S2", 1, true) then
+			local minp = {x = row.x, y = row.y, z = row.z}
+			local maxp = {x = row.x + 79, y = row.y + 79, z = row.z + 79}
+			local vm = core.get_voxel_manip(minp, maxp)
+			local emin, emax = vm:read_from_map(minp, maxp)
+			local area = VoxelArea(emin, emax)
+			local data = vm:get_data()
+			local counts = {}
+			for z = minp.z, maxp.z do
+				for y = minp.y, maxp.y do
+					local index = area:index(minp.x, y, z)
+					for _ = minp.x, maxp.x do
+						local cid = data[index]
+						counts[cid] = (counts[cid] or 0) + 1
+						index = index + 1
+					end
+				end
+			end
+			local names = {}
+			for cid, count in pairs(counts) do
+				names[#names + 1] = core.get_name_from_content_id(cid) .. "=" .. count
+			end
+			table.sort(names)
+			log(("surface_count id=%s %s"):format(row.id, table.concat(names, " ")))
+		end
+	end
+end
+
 local function finish(ok, message)
 	pcall(bench_digest)
 	pcall(log_maps)
@@ -344,6 +388,8 @@ local function run_chunks(list)
 			core.after(GAP, function()
 				local ok, err = pcall(ore_census, list)
 				if not ok then log("ore census failed: " .. tostring(err)) end
+				ok, err = pcall(surface_census, list)
+				if not ok then log("surface census failed: " .. tostring(err)) end
 				finish(true, #list .. " chunks")
 			end)
 			return
