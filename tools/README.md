@@ -1114,3 +1114,19 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   row's tooltip (the r48_mail method; `warp_pointer.py` moves the Xvfb
   pointer onto a form position with ctypes and libX11, so the tooltip
   shows), one queue run of one slot.
+- **Round 49 lane NAV** (`r49_nav`, diagnosis only, no fixture): the
+  short-range chase probe `grug_probe_r49_nav` (disposable, staged with
+  `PROBE=`). `run.sh OUT LABEL [TIMEOUT]` boots it through the shared queue
+  (seed 12345); `R49NAV_PHASES=scenes,extra,real` picks the main scene list
+  (bushes on flat ground and at or on 1- and 2-high terraces, trunks,
+  distances 3–8), the second list (a strafing target, a target on a bush, a
+  grove, a trunk with stubs) and natural trials on the seed's first meadows,
+  deep forest and pine hills sites (bushes, blueberry bushes and trunks found
+  there; the geometry round each trial is saved); `R49NAV_MOVERS` the movers
+  (`zombie`, `rat`, `archer`, and the phase 2 candidates applied by the probe
+  only: `zombie_fix`/`rat_fix` = padding escalation 6/12/16 plus local repair
+  of a path the head-room or width check rejects, `rat_narrow` = a 0.98-wide
+  rat); `R49NAV_SCENES` filters lanes. It records the navigation events, the
+  detector windows, the counted failures and why, the line tests, the engine
+  searches and the rejected waypoints. `summarize.py RESULTS.json`
+  (`--events SCENE MOVER`, `--geometry SCENE`); `evidence/boot1..3` the runs.
